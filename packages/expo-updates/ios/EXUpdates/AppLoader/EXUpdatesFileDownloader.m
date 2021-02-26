@@ -3,6 +3,7 @@
 #import <EXUpdates/EXUpdatesAppLauncherNoDatabase.h>
 #import <EXUpdates/EXUpdatesCrypto.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
+#import <EXUpdates/EXUpdatesSelectionPolicyFilterAware.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -169,12 +170,12 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
                                         config:self->_config
                                   successBlock:^(BOOL isValid) {
                                                   if (isValid) {
-                                                    mutableManifest[@"isVerified"] = @(YES);
-                                                    EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:[mutableManifest copy]
-                                                                                                         response:response
-                                                                                                           config:self->_config
-                                                                                                         database:database];
-                                                    successBlock(update);
+                                                    [self _createUpdateWithManifest:mutableManifest
+                                                                           response:response
+                                                                           database:database
+                                                                         isVerified:YES
+                                                                       successBlock:successBlock
+                                                                         errorBlock:errorBlock];
                                                   } else {
                                                     NSError *error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain code:1003 userInfo:@{NSLocalizedDescriptionKey: @"Manifest verification failed"}];
                                                     errorBlock(error, response);
@@ -185,14 +186,36 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
                                                 }
       ];
     } else {
-      mutableManifest[@"isVerified"] = @(NO);
-      EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:[(NSDictionary *)mutableManifest copy]
-                                                           response:response
-                                                             config:self->_config
-                                                           database:database];
-      successBlock(update);
+      [self _createUpdateWithManifest:mutableManifest
+                             response:response
+                             database:database
+                           isVerified:NO
+                         successBlock:successBlock
+                           errorBlock:errorBlock];
     }
   } errorBlock:errorBlock];
+}
+
+- (void)_createUpdateWithManifest:(NSMutableDictionary *)mutableManifest
+                         response:(NSURLResponse *)response
+                         database:(EXUpdatesDatabase *)database
+                       isVerified:(BOOL)isVerified
+                     successBlock:(EXUpdatesFileDownloaderManifestSuccessBlock)successBlock
+                       errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock
+{
+  mutableManifest[@"isVerified"] = @(isVerified);
+  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:mutableManifest.copy
+                                                       response:response
+                                                         config:_config
+                                                       database:database];
+  if (![EXUpdatesSelectionPolicyFilterAware doesUpdate:update matchFilters:update.manifestFilters]) {
+    NSError *error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                         code:1021
+                                     userInfo:@{NSLocalizedDescriptionKey: @"Downloaded manifest is invalid; provides filters that do not match its content"}];
+    errorBlock(error, response);
+  } else {
+    successBlock(update);
+  }
 }
 
 - (void)downloadDataFromURL:(NSURL *)url

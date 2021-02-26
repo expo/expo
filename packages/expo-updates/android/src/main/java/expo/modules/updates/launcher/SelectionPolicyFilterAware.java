@@ -10,7 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import expo.modules.updates.db.entity.UpdateEntity;
-import expo.modules.updates.manifest.Manifest;
 
 /**
  * Update selection policy which chooses an update to launch based on the manifest filters
@@ -99,7 +98,7 @@ public class SelectionPolicyFilterAware implements SelectionPolicy {
     return newUpdate.commitTime.after(launchedUpdate.commitTime);
   }
 
-  /* package */ boolean matchesFilters(UpdateEntity update, JSONObject manifestFilters) {
+  public static boolean matchesFilters(UpdateEntity update, JSONObject manifestFilters) {
     if (manifestFilters == null || update.metadata == null || !update.metadata.has("updateMetadata")) {
       // empty matches all
       return true;
