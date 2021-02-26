@@ -106,6 +106,17 @@ If the user or Facebook cancelled the login, returns `{ type: 'cancel' }`.
 
 Otherwise, returns `{ type: 'success' } &` [`FacebookAuthenticationCredential`][#facebookauthenticationcredential].
 
+### `Facebook.setAdvertiserTrackingEnabledAsync(enabled: boolean): Promise<boolean>`
+
+Sets whether Facebook SDK can use the device's Identifier for Advertisers (IDFA) to serve personalized ads to the user.
+Starting with iOS 14.5, an app will need to receive the user's permission to access their device's advertising identifier. Tracking refers to the act of linking user or device data collected from your app with user or device data collected from other companies' apps, websites, or offline properties for targeted advertising or advertising measurement purposes.
+
+Use this method to indicate whether Facebook SDK can use event data for ads in line with your own legal obligations, platform terms and commitments you've made to your users.
+
+#### Returns
+
+A promise that resolves to a boolean whether the value is set successfully. It will always return `false` on Android, iOS 13 and below.
+
 ### `Facebook.setAutoLogAppEventsEnabledAsync(enabled: boolean): Promise<void>`
 
 Sets whether the Facebook SDK should log app events. App events involve e.g. app installs, app launches (more info [here (Android)](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#auto-events) and [here (iOS)](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#auto-events)). In some cases, you may want to disable or delay the collection of automatically logged events, such as to obtain user consent or fulfill legal obligations. This method corresponds to [this iOS](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#disable-auto-events) and [this Android](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#disable-auto-events) native SDK method.
