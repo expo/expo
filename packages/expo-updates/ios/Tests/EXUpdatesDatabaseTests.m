@@ -56,7 +56,7 @@
   XCTAssertNil(error);
 }
 
-- (void)testSetServerData_OverwriteAllFields
+- (void)testSetMetadata_OverwriteAllFields
 {
   NSHTTPURLResponse *response1 = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://exp.host/"] statusCode:200 HTTPVersion:@"HTTP/2" headerFields:@{
     @"expo-manifest-filters": @"branch-name=\"rollout-1\",test=\"value\""
@@ -89,7 +89,7 @@
   XCTAssertEqualObjects(expected, actual);
 }
 
-- (void)testSetServerData_OverwriteEmpty
+- (void)testSetMetadata_OverwriteEmpty
 {
   NSHTTPURLResponse *response1 = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://exp.host/"] statusCode:200 HTTPVersion:@"HTTP/2" headerFields:@{
     @"expo-manifest-filters": @"branch-name=\"rollout-1\""
@@ -122,7 +122,7 @@
   XCTAssertEqualObjects(expected, actual);
 }
 
-- (void)testSetServerData_OverwriteNull
+- (void)testSetMetadata_OverwriteNull
 {
   NSHTTPURLResponse *response1 = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://exp.host/"] statusCode:200 HTTPVersion:@"HTTP/2" headerFields:@{
     @"expo-manifest-filters": @"branch-name=\"rollout-1\""

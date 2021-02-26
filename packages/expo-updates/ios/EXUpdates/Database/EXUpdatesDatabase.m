@@ -521,21 +521,21 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
 {
   sqlite3_exec(_db, "BEGIN;", NULL, NULL, NULL);
   if (updateManifest.serverDefinedHeaders) {
-    if ([self _setJsonData:updateManifest.serverDefinedHeaders
+    if (![self _setJsonData:updateManifest.serverDefinedHeaders
                    withKey:EXUpdatesDatabaseServerDefinedHeadersKey
                   scopeKey:updateManifest.scopeKey
            isInTransaction:YES
-                     error:error] == nil) {
+                     error:error]) {
       sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL);
       return;
     }
   }
   if (updateManifest.manifestFilters) {
-    if ([self _setJsonData:updateManifest.manifestFilters
+    if (![self _setJsonData:updateManifest.manifestFilters
                    withKey:EXUpdatesDatabaseManifestFiltersKey
                   scopeKey:updateManifest.scopeKey
            isInTransaction:YES
-                     error:error] == nil) {
+                     error:error]) {
       sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL);
       return;
     }
