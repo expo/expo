@@ -37,5 +37,13 @@
   },
   "dependencies": {
     "expo-firebase-core": "~2.0.0"
+  },
+  "peerDependencies": {
+    "react-native-webview": "*"
+  },
+  "peerDependenciesMeta": {
+    "react-native-webview": {
+      "optional": true
+    }
   }
 }
