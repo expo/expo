@@ -69,7 +69,7 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     moduleRegistry.registerInternalModule(new UpdatesBinding(scopedContext, experienceProperties));
 
     // Overriding expo-facebook
-    moduleRegistry.registerExportedModule(new ScopedFacebookModule(scopedContext, manifest));
+    moduleRegistry.registerExportedModule(new ScopedFacebookModule(scopedContext));
 
     // Scoping Amplitude
     moduleRegistry.registerExportedModule(new ScopedAmplitudeModule(scopedContext, experienceId));

@@ -10,12 +10,6 @@
 
 UM_REGISTER_SINGLETON_MODULE(EXFacebookAppDelegate)
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary *)launchOptions
-{
-   return [[FBSDKApplicationDelegate sharedInstance] application:application
-                             didFinishLaunchingWithOptions:launchOptions];
-}
-
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {
   if ([[FBSDKApplicationDelegate sharedInstance] application:app

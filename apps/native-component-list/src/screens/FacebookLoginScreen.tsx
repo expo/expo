@@ -17,7 +17,7 @@ export default class FacebookLoginScreen extends React.Component {
   };
 
   render() {
-    const permissions = ['public_profile', 'email', 'user_friends'];
+    const permissions = ['public_profile', 'email'];
 
     return (
       <ScrollView style={{ padding: 10 }}>
@@ -29,11 +29,7 @@ export default class FacebookLoginScreen extends React.Component {
         />
         <ListButton
           onPress={async () => await Facebook.setAutoInitEnabledAsync(true)}
-          title="Set autoinit to true"
-        />
-        <ListButton
-          onPress={async () => await Facebook.setAutoInitEnabledAsync(false)}
-          title="Set autoinit to false"
+          title="Set autoinit to true (should show deprecation warning)"
         />
         <ListButton
           onPress={() => this._testFacebookLogin(permissions)}

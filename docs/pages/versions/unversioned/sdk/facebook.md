@@ -38,7 +38,6 @@ Expo Go from the Android Play Store will use the Facebook App ID that you provid
 - Add the fields `facebookAppId` and `facebookDisplayName`, using your [Facebook App ID and Facebook Display Name](https://developers.facebook.com/docs/facebook-login/ios), respectively.
 
 - Optional fields
-  - `facebookAutoInitEnabled`, defaults to `false`
   - `facebookAutoLogAppEventsEnabled`, defaults to Facebook's default policy (Only applies to standalone apps)
   - `facebookAdvertiserIDCollectionEnabled`, defaults to Facebook's default policy (Only applies to standalone apps)
 
@@ -106,12 +105,6 @@ A map of options:
 If the user or Facebook cancelled the login, returns `{ type: 'cancel' }`.
 
 Otherwise, returns `{ type: 'success' } &` [`FacebookAuthenticationCredential`][#facebookauthenticationcredential].
-
-### `Facebook.setAutoInitEnabledAsync(enabled: boolean): Promise<void>`
-
-Sets whether the Facebook SDK should autoinitialize itself. SDK initialization involves e.g. fetching app settings from Facebook or a profile of the logged in user. In some cases, you may want to disable or delay the SDK initialization, such as to obtain user consent or fulfill legal obligations. This method corresponds to [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#disable-sdk-initialization) and [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#disable-sdk-initialization) native SDK methods. Even though calling this method with `enabled === true` initializes the Facebook SDK on iOS, it does not on Android and we recommend always calling `initializeAsync` before performing any actions with effects that should be visible to the user (like `loginWithPermissions`).
-
-In Expo, by default, autoinitialization of the Facebook SDK is disabled. You may change this value at runtime by calling this method or customize this feature at build time by setting the appropriate `app.json` fields. The value set with this method persists across launches of the app and overrides the build-time configuration value.
 
 ### `Facebook.setAutoLogAppEventsEnabledAsync(enabled: boolean): Promise<void>`
 
