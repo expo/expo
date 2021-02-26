@@ -37,14 +37,6 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*",
-    "unimodules-constants-interface": "*"
-  },
-  "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
-  },
   "dependencies": {
     "@expo/config-plugins": "^1.0.18",
     "invariant": "^2.2.4"

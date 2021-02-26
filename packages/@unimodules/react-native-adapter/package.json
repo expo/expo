@@ -33,17 +33,6 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "peerDependencies": {
-    "react-native": "*",
-    "react-native-web": "~0.13.7"
-  },
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*",
-    "unimodules-app-loader": "*",
-    "unimodules-font-interface": "*",
-    "unimodules-image-loader-interface": "*",
-    "unimodules-permissions-interface": "*"
-  },
   "dependencies": {
     "invariant": "^2.2.4",
     "lodash": "^4.5.0"

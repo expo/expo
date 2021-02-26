@@ -30,11 +30,6 @@
   "jest": {
     "preset": "jest-expo/universal"
   },
-  "peerDependencies": {
-    "react": "16.13.1",
-    "react-native": "*",
-    "react-native-web": "~0.13.7"
-  },
   "dependencies": {
     "@expo/config": "^3.2.3",
     "babel-jest": "^25.2.0",

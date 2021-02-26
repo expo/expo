@@ -29,10 +29,6 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/checkbox",
-  "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
-  },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"
   },

@@ -35,9 +35,6 @@
   "jest": {
     "preset": "expo-module-scripts/enzyme"
   },
-  "peerDependencies": {
-    "react-native-web": "~0.13.7"
-  },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"
   }

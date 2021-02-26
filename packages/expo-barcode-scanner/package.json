@@ -34,13 +34,6 @@
   "jest": {
     "preset": "expo-module-scripts/ios"
   },
-  "peerDependencies": {
-    "@unimodules/core": "*",
-    "react": "*",
-    "react-native": "*",
-    "unimodules-barcode-scanner-interface": "*",
-    "unimodules-permissions-interface": "*"
-  },
   "dependencies": {
     "@expo/config-plugins": "^1.0.18"
   },
