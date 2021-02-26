@@ -49,6 +49,26 @@ export async function logOutAsync(): Promise<void> {
 }
 
 /**
+ * Sets whether Facebook SDK should enable advertising tracking,
+ * (more info [here](https://developers.facebook.com/docs/app-events/guides/advertising-tracking-enabled)).
+ *
+ * Limitations:
+ * 1. AdvertiserTrackingEnabled is only available for iOS 14+.
+ * 2. For iOS 13 or earlier, AdvertiserTrackingEnabled uses the Limit Ad Tracking setting as its value.
+ *
+ * This method corresponds to [this](https://developers.facebook.com/docs/app-events/guides/advertising-tracking-enabled)
+ *
+ * @param enabled Whether advertising tracking of the Facebook SDK should be enabled
+ * @return Whether the value is set successfully. It will always return false in Android, iOS 13 and below.
+ */
+export async function setAdvertiserTrackingEnabledAsync(enabled: boolean): Promise<boolean> {
+  if (!ExponentFacebook.setAdvertiserTrackingEnabledAsync) {
+    return false;
+  }
+  return await ExponentFacebook.setAdvertiserTrackingEnabledAsync(enabled);
+}
+
+/**
  * Sets whether Facebook SDK should log app events. App events involve eg. app installs,
  * app launches (more info [here](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#auto-events)
  * and [here](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#auto-events)).
@@ -69,25 +89,12 @@ export async function setAutoLogAppEventsEnabledAsync(enabled: boolean): Promise
 }
 
 /**
- * Sets whether Facebook SDK should autoinitialize itself. SDK initialization involves eg.
- * fetching app settings from Facebook or a profile of the logged in user.
- * In some cases, you may want to disable or delay the SDK initialization,
- * such as to obtain user consent or fulfill legal obligations.
- *
- * This method corresponds to [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#disable-sdk-initialization)
- * and [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#disable-sdk-initialization) native SDK methods.
- *
- * Note: Even though calling this method with `enabled == true` initialized the Facebook SDK on iOS,
- * it does not on Android and we recommend always calling `initializeAsync` before performing
- * any actions with effects that should be visible to the user (like `loginWithPermissions`).
- *
- * @param enabled Whether autoinitialization of the Facebook SDK should be enabled
+ * @deprecated Explicitly call `initializeAsync` instead.
  */
 export async function setAutoInitEnabledAsync(enabled: boolean): Promise<void> {
-  if (!ExponentFacebook.setAutoInitEnabledAsync) {
-    throw new UnavailabilityError('Facebook', 'setAutoInitEnabledAsync');
-  }
-  await ExponentFacebook.setAutoInitEnabledAsync(enabled);
+  console.warn(
+    'The `autoInitEnabled` option has been removed from Facebook SDK — we recommend to explicitly use `initializeAsync` instead.'
+  );
 }
 
 /**
