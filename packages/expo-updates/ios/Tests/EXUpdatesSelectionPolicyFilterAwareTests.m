@@ -173,25 +173,25 @@
     @"firstkey": @"value1",
     @"secondkey": @"wrong-value"
   };
-  XCTAssertFalse([_selectionPolicy doesUpdate:_updateMultipleFilters matchFilters:filtersBadMatch], @"should fail unless all filters pass");
+  XCTAssertFalse([EXUpdatesSelectionPolicyFilterAware doesUpdate:_updateMultipleFilters matchFilters:filtersBadMatch], @"should fail unless all filters pass");
 
   NSDictionary *filtersGoodMatch = @{
     @"firstkey": @"value1",
     @"secondkey": @"value2"
   };
-  XCTAssertTrue([_selectionPolicy doesUpdate:_updateMultipleFilters matchFilters:filtersGoodMatch], @"should pass if all filters pass");
+  XCTAssertTrue([EXUpdatesSelectionPolicyFilterAware doesUpdate:_updateMultipleFilters matchFilters:filtersGoodMatch], @"should pass if all filters pass");
 }
 
 - (void)testDoesUpdateMatchFilters_EmptyMatchesAll
 {
-  XCTAssertTrue([_selectionPolicy doesUpdate:_updateDefault1 matchFilters:@{@"field-that-update-doesnt-have": @"value"}], @"no field counts as a match");
+  XCTAssertTrue([EXUpdatesSelectionPolicyFilterAware doesUpdate:_updateDefault1 matchFilters:@{@"field-that-update-doesnt-have": @"value"}], @"no field counts as a match");
 }
 
 - (void)testDoesUpdateMatchFilters_Null
 {
   // null filters or null updateMetadata (i.e. bare or legacy manifests) is counted as a match
-  XCTAssertTrue([_selectionPolicy doesUpdate:_updateDefault1 matchFilters:nil]);
-  XCTAssertTrue([_selectionPolicy doesUpdate:_updateNoMetadata matchFilters:_manifestFilters]);
+  XCTAssertTrue([EXUpdatesSelectionPolicyFilterAware doesUpdate:_updateDefault1 matchFilters:nil]);
+  XCTAssertTrue([EXUpdatesSelectionPolicyFilterAware doesUpdate:_updateNoMetadata matchFilters:_manifestFilters]);
 }
 
 @end

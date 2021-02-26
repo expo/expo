@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithRuntimeVersion:(NSString *)runtimeVersion;
 - (instancetype)initWithRuntimeVersions:(NSArray<NSString *> *)runtimeVersions;
 
-- (BOOL)doesUpdate:(EXUpdatesUpdate *)update matchFilters:(nullable NSDictionary *)filters;
++ (BOOL)doesUpdate:(EXUpdatesUpdate *)update matchFilters:(nullable NSDictionary *)filters;
 
 @end
 
