@@ -40,5 +40,10 @@
   },
   "peerDependencies": {
     "react-native-webview": "*"
+  },
+  "peerDependenciesMeta": {
+    "react-native-webview": {
+      "optional": true
+    }
   }
 }

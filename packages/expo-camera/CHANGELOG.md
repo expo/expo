@@ -15,6 +15,8 @@
 
 ### 🐛 Bug fixes
 
+- Remove peerDependencies and unimodulePeerDependencies from Expo modules. ([#11980](https://github.com/expo/expo/pull/11980) by [@brentvatne](https://github.com/brentvatne))
+
 ## 10.0.0 — 2021-01-15
 
 ### ⚠️ Notices

@@ -41,9 +41,6 @@
   "dependencies": {
     "rtl-detect": "^1.0.2"
   },
-  "peerDependencies": {
-    "@unimodules/core": "~5.1.2"
-  },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"
   }

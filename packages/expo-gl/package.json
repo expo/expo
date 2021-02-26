@@ -36,13 +36,6 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "peerDependencies": {
-    "@unimodules/core": "*",
-    "react": "*",
-    "react-native": "*",
-    "unimodules-camera-interface": "*",
-    "unimodules-file-system-interface": "*"
-  },
   "dependencies": {
     "expo-gl-cpp": "~10.0.0",
     "invariant": "^2.2.4"

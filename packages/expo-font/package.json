@@ -33,16 +33,6 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*",
-    "expo-asset": "*",
-    "expo-constants": "*",
-    "unimodules-font-interface": "*"
-  },
-  "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
-  },
   "dependencies": {
     "fontfaceobserver": "^2.1.0"
   },

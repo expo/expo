@@ -35,9 +35,6 @@
     "qs": "^6.5.0",
     "url-parse": "^1.4.4"
   },
-  "peerDependencies": {
-    "react-native": "*"
-  },
   "devDependencies": {
     "@types/qs": "^6.5.3",
     "expo-module-scripts": "^2.0.0"

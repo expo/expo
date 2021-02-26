@@ -33,14 +33,6 @@
   "jest": {
     "preset": "expo-module-scripts/ios"
   },
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*",
-    "unimodules-permissions-interface": "*"
-  },
-  "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
-  },
   "devDependencies": {
     "@testing-library/react-hooks": "^3.3.0",
     "expo-module-scripts": "^2.0.0"

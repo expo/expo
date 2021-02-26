@@ -44,9 +44,6 @@
     "expo-dev-menu-interface": "0.1.2",
     "fuse.js": "^6.4.6"
   },
-  "peerDependencies": {
-    "react-native": ">=0.62.0"
-  },
   "devDependencies": {
     "@react-navigation/core": "5.10.0",
     "@react-navigation/native": "5.5.1",

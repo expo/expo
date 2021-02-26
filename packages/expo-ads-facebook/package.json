@@ -34,13 +34,6 @@
     "fbemitter": "^2.1.1",
     "nullthrows": "^1.1.0"
   },
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*"
-  },
-  "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
-  },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"
   }

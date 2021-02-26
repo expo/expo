@@ -37,11 +37,6 @@
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
-  "peerDependencies": {
-    "react": "16.13.1",
-    "react-native": "*",
-    "react-native-web": "~0.13.7"
-  },
   "dependencies": {
     "chalk": "^2.4.2",
     "enzyme": "~3.11.0",
