@@ -34,7 +34,6 @@ public class NotificationContent implements Parcelable, Serializable {
   private boolean mAutoDismiss;
   private String mCategoryId;
   private boolean mSticky;
-  private String mTag;
 
   protected NotificationContent() {
   }
@@ -116,11 +115,6 @@ public class NotificationContent implements Parcelable, Serializable {
     return mSticky;
   }
 
-  @Nullable
-  public String getTag() {
-    return mTag;
-  }
-
   @Override
   public int describeContents() {
     return 0;
@@ -148,7 +142,6 @@ public class NotificationContent implements Parcelable, Serializable {
     mAutoDismiss = in.readByte() == 1;
     mCategoryId = in.readString();
     mSticky = in.readByte() == 1;
-    mTag = in.readString();
   }
 
   @Override
@@ -167,7 +160,6 @@ public class NotificationContent implements Parcelable, Serializable {
     dest.writeByte((byte) (mAutoDismiss ? 1 : 0));
     dest.writeString(mCategoryId);
     dest.writeByte((byte) (mSticky ? 1 : 0));
-    dest.writeString(mTag);
   }
 
   //                                           EXPONOTIFCONTENT02
@@ -195,7 +187,6 @@ public class NotificationContent implements Parcelable, Serializable {
     out.writeByte(mAutoDismiss ? 1 : 0);
     out.writeObject(mCategoryId != null ? mCategoryId.toString() : null);
     out.writeByte(mSticky ? 1 : 0);
-    out.writeObject(mTag);
   }
 
   private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
@@ -243,7 +234,6 @@ public class NotificationContent implements Parcelable, Serializable {
       mCategoryId = new String(categoryIdString);
     }
     mSticky = in.readByte() == 1;
-    mText = (String) in.readObject();
   }
 
   private void readObjectNoData() throws ObjectStreamException {
@@ -264,7 +254,6 @@ public class NotificationContent implements Parcelable, Serializable {
     private boolean mAutoDismiss;
     private String mCategoryId;
     private boolean mSticky;
-    private String mTag;
 
     public Builder() {
       useDefaultSound();
@@ -345,11 +334,6 @@ public class NotificationContent implements Parcelable, Serializable {
       return this;
     }
 
-    public Builder setTag(String tag) {
-      mTag = tag;
-      return this;
-    }
-
     public NotificationContent build() {
       NotificationContent content = new NotificationContent();
       content.mTitle = mTitle;
@@ -366,7 +350,6 @@ public class NotificationContent implements Parcelable, Serializable {
       content.mAutoDismiss = mAutoDismiss;
       content.mCategoryId = mCategoryId;
       content.mSticky = mSticky;
-      content.mTag = mTag;
       return content;
     }
   }

@@ -26,7 +26,6 @@ public class JSONNotificationContentBuilder extends NotificationContent.Builder 
   private static final String AUTO_DISMISS_KEY = "autoDismiss";
   private static final String CATEGORY_IDENTIFIER_KEY = "categoryId";
   private static final String STICKY_KEY = "sticky";
-  private static final String TAG_KEY = "tag";
 
   private SoundResolver mSoundResolver;
 
@@ -44,8 +43,7 @@ public class JSONNotificationContentBuilder extends NotificationContent.Builder 
       .setColor(getColor(payload))
       .setAutoDismiss(getAutoDismiss(payload))
       .setCategoryId(getCategoryId(payload))
-      .setSticky(getSticky(payload))
-      .setTag(getTag(payload));
+      .setSticky(getSticky(payload));
 
     if (shouldPlayDefaultSound(payload)) {
       useDefaultSound();
@@ -200,13 +198,5 @@ public class JSONNotificationContentBuilder extends NotificationContent.Builder 
     }
     // TODO: the default value should be determined by NotificationContent.Builder
     return false;
-  }
-
-  protected String getTag(JSONObject payload) {
-    try {
-      return payload.getString(TAG_KEY);
-    } catch (JSONException e) {
-      return null;
-    }
   }
 }
