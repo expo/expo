@@ -18,6 +18,7 @@
   return [EXScopedNotificationsUtils shouldNotificationRequest:notification.request beHandledByExperience:experienceId];
 }
 
+// rename method to scope identifier? or create new method
 + (NSString *)scopedCategoryIdentifierWithId:(NSString *)categoryId forExperience:(NSString *)experienceId
 {
   NSString *scope = [EXScopedNotificationsUtils escapedString:experienceId];
