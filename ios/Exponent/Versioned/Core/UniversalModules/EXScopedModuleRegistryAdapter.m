@@ -145,13 +145,19 @@
 #endif
 
 #if __has_include(<EXNotifications/EXNotificationsEmitter.h>)
-  EXScopedNotificationsEmitter *notificationsEmmitter = [[EXScopedNotificationsEmitter alloc] initWithExperienceId:experienceId];
-  [moduleRegistry registerExportedModule:notificationsEmmitter];
+  // only override in Expo Go
+  if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
+    EXScopedNotificationsEmitter *notificationsEmmitter = [[EXScopedNotificationsEmitter alloc] initWithExperienceId:experienceId];
+    [moduleRegistry registerExportedModule:notificationsEmmitter];
+  }
 #endif
   
 #if __has_include(<EXNotifications/EXNotificationsHandlerModule.h>)
-  EXScopedNotificationsHandlerModule *notificationsHandler = [[EXScopedNotificationsHandlerModule alloc] initWithExperienceId:experienceId];
-  [moduleRegistry registerExportedModule:notificationsHandler];
+  // only override in Expo Go
+  if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
+    EXScopedNotificationsHandlerModule *notificationsHandler = [[EXScopedNotificationsHandlerModule alloc] initWithExperienceId:experienceId];
+    [moduleRegistry registerExportedModule:notificationsHandler];
+  }
 #endif
   
 #if __has_include(<EXNotifications/EXNotificationsHandlerModule.h>)
@@ -168,8 +174,11 @@
 #endif
     
 #if __has_include(<EXNotifications/EXNotificationPresentationModule.h>)
-  EXScopedNotificationPresentationModule *notificationPresentationModule = [[EXScopedNotificationPresentationModule alloc] initWithExperienceId:experienceId];
-  [moduleRegistry registerExportedModule:notificationPresentationModule];
+  // only override in Expo Go
+  if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
+    EXScopedNotificationPresentationModule *notificationPresentationModule = [[EXScopedNotificationPresentationModule alloc] initWithExperienceId:experienceId];
+    [moduleRegistry registerExportedModule:notificationPresentationModule];
+  }
 #endif
   
 #if __has_include(<EXNotifications/EXNotificationCategoriesModule.h>)
