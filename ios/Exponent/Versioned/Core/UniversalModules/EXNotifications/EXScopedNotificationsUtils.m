@@ -18,21 +18,20 @@
   return [EXScopedNotificationsUtils shouldNotificationRequest:notification.request beHandledByExperience:experienceId];
 }
 
-// rename method to scope identifier? or create new method
-+ (NSString *)scopedCategoryIdentifierWithId:(NSString *)categoryId forExperience:(NSString *)experienceId
++ (NSString *)scopedIdentifierFromId:(NSString *)unscopedId forExperience:(NSString *)experienceId
 {
   NSString *scope = [EXScopedNotificationsUtils escapedString:experienceId];
-  NSString *escapedCategoryId = [EXScopedNotificationsUtils escapedString:categoryId];
+  NSString *escapedCategoryId = [EXScopedNotificationsUtils escapedString:unscopedId];
   return [NSString stringWithFormat:@"%@/%@", scope, escapedCategoryId];
 }
 
-+ (BOOL)isCategoryId:(NSString *)identifier scopedByExperience:(NSString *)experienceId
++ (BOOL)isId:(NSString *)identifier scopedByExperience:(NSString *)experienceId
 {
   NSString *scopeFromCategoryId = [EXScopedNotificationsUtils getScopeAndIdentifierFromScopedIdentifier:identifier].scopeKey;
   return [scopeFromCategoryId isEqualToString:experienceId];
 }
 
-+ (ScopedCategoryIdentifierComponents)getScopeAndIdentifierFromScopedIdentifier:(NSString *)scopedIdentifier
++ (ScopedIdentifierComponents)getScopeAndIdentifierFromScopedIdentifier:(NSString *)scopedIdentifier
 {
   NSString *scope = @"";
   NSString *identifier = @"";
@@ -54,9 +53,9 @@
     scope = [scopedIdentifier substringWithRange:[match rangeAtIndex:1]];
     identifier = [scopedIdentifier substringWithRange:[match rangeAtIndex:2]];
   }
-  ScopedCategoryIdentifierComponents components;
+  ScopedIdentifierComponents components;
   components.scopeKey = [EXScopedNotificationsUtils unescapedString:scope];
-  components.categoryIdentifier = [EXScopedNotificationsUtils unescapedString:identifier];
+  components.identifier = [EXScopedNotificationsUtils unescapedString:identifier];
   return components;
 }
 

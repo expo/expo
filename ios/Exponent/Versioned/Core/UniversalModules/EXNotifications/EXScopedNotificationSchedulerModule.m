@@ -26,8 +26,8 @@
                                                           content:(NSDictionary *)contentInput
                                                           trigger:(NSDictionary *)triggerInput
 {
-  NSString *scopedIdentifier = [EXScopedNotificationsUtils scopedCategoryIdentifierWithId:identifier
-                                                                                    forExperience:_experienceId];
+  NSString *scopedIdentifier = [EXScopedNotificationsUtils scopedIdentifierFromId:identifier
+                                                                    forExperience:_experienceId];
   return [super buildNotificationRequestWithIdentifier:scopedIdentifier content:contentInput trigger:triggerInput];
 }
 
@@ -35,7 +35,7 @@
 {
   NSMutableArray *serializedRequests = [NSMutableArray new];
   for (UNNotificationRequest *request in requests) {
-    if ([EXScopedNotificationsUtils isCategoryId:request.identifier scopedByExperience:_experienceId]) {
+    if ([EXScopedNotificationsUtils isId:request.identifier scopedByExperience:_experienceId]) {
       [serializedRequests addObject:[EXScopedNotificationSerializer serializedNotificationRequest:request]];
     }
   }
@@ -45,8 +45,8 @@
 
 - (void)cancelNotification:(NSString *)identifier resolve:(UMPromiseResolveBlock)resolve rejecting:(UMPromiseRejectBlock)reject
 {
-  NSString *scopedIdentifier = [EXScopedNotificationsUtils scopedCategoryIdentifierWithId:identifier
-                                                                            forExperience:_experienceId];
+  NSString *scopedIdentifier = [EXScopedNotificationsUtils scopedIdentifierFromId:identifier
+                                                                    forExperience:_experienceId];
   [super cancelNotification:scopedIdentifier resolve:resolve rejecting:reject];
 }
 
@@ -56,7 +56,7 @@
   [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
     NSMutableArray<NSString *> *toRemove = [NSMutableArray new];
     for (UNNotificationRequest *request in requests) {
-      if ([EXScopedNotificationsUtils isCategoryId:request.identifier scopedByExperience:experienceId]) {
+      if ([EXScopedNotificationsUtils isId:request.identifier scopedByExperience:experienceId]) {
         [toRemove addObject:request.identifier];
       }
     }

@@ -42,7 +42,7 @@
         // Usually we would scope the input ID and then check equality, but remote notifications do not
         // have the scoping prefix, so instead let's remove the scope if there is one, then check for
         // equality against the input
-        NSString *unscopedIdentifier = [EXScopedNotificationsUtils getScopeAndIdentifierFromScopedIdentifier:notification.request.identifier].categoryIdentifier;
+        NSString *unscopedIdentifier = [EXScopedNotificationsUtils getScopeAndIdentifierFromScopedIdentifier:notification.request.identifier].identifier;
         if ([unscopedIdentifier isEqualToString:identifier]) {
           [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:@[notification.request.identifier]];
         }

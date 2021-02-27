@@ -26,7 +26,7 @@
   [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
     NSMutableArray* existingCategories = [NSMutableArray new];
     for (UNNotificationCategory *category in categories) {
-      if ([EXScopedNotificationsUtils isCategoryId:category.identifier scopedByExperience:self->_experienceId]) {
+      if ([EXScopedNotificationsUtils isId:category.identifier scopedByExperience:self->_experienceId]) {
         [existingCategories addObject:[self serializeCategory:category]];
       }
     }
@@ -40,8 +40,8 @@
                                       resolve:(UMPromiseResolveBlock)resolve
                                        reject:(UMPromiseRejectBlock)reject
 {
-  NSString *scopedCategoryIdentifier = [EXScopedNotificationsUtils scopedCategoryIdentifierWithId:categoryId
-                                                                                    forExperience:_experienceId];
+  NSString *scopedCategoryIdentifier = [EXScopedNotificationsUtils scopedIdentifierFromId:categoryId
+                                                                            forExperience:_experienceId];
   [super setNotificationCategoryWithCategoryId:scopedCategoryIdentifier
                                        actions:actions
                                        options:options
@@ -53,8 +53,8 @@
                                          resolve:(UMPromiseResolveBlock)resolve
                                           reject:(UMPromiseRejectBlock)reject
 {
-  NSString *scopedCategoryIdentifier = [EXScopedNotificationsUtils scopedCategoryIdentifierWithId:categoryId
-                                                                                    forExperience:_experienceId];
+  NSString *scopedCategoryIdentifier = [EXScopedNotificationsUtils scopedIdentifierFromId:categoryId
+                                                                            forExperience:_experienceId];
   [super deleteNotificationCategoryWithCategoryId:scopedCategoryIdentifier
                                           resolve:resolve
                                            reject:reject];
@@ -63,7 +63,7 @@
 - (NSMutableDictionary *)serializeCategory:(UNNotificationCategory *)category
 {
   NSMutableDictionary* serializedCategory = [EXNotificationCategoriesModule serializeCategory:category];
-  serializedCategory[@"identifier"] = [EXScopedNotificationsUtils getScopeAndIdentifierFromScopedIdentifier:serializedCategory[@"identifier"]].categoryIdentifier;
+  serializedCategory[@"identifier"] = [EXScopedNotificationsUtils getScopeAndIdentifierFromScopedIdentifier:serializedCategory[@"identifier"]].identifier;
 
   return serializedCategory;
 }
