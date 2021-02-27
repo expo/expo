@@ -27,6 +27,7 @@ public class JSONNotificationContentBuilder extends NotificationContent.Builder 
   private static final String CATEGORY_IDENTIFIER_KEY = "categoryId";
   private static final String STICKY_KEY = "sticky";
 
+
   private SoundResolver mSoundResolver;
 
   public JSONNotificationContentBuilder(Context context) {
