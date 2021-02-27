@@ -6,6 +6,8 @@ import android.service.notification.StatusBarNotification
 import android.util.Log
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationBehavior
+import expo.modules.notifications.notifications.model.NotificationRequest
+import expo.modules.notifications.notifications.model.triggers.FirebaseNotificationTrigger
 import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder
 import expo.modules.notifications.service.delegates.ExpoPresentationDelegate
 import expo.modules.notifications.service.delegates.SharedPreferencesNotificationCategoriesStore
@@ -40,5 +42,20 @@ class ScopedExpoPresentationDelegate(context: Context) : ExpoPresentationDelegat
       }
     }
     return super.getNotification(statusBarNotification)
+  }
+
+  /**
+   * Prevent notifications of different experiences overwriting each other in Expo Go.
+   * The notification is either a remote notification sent through Expo's push
+   * service, or a local notification.
+   */
+  override fun getNotifyId(request: NotificationRequest): Int {
+    var experienceId: String? = "";
+    if (request.trigger is FirebaseNotificationTrigger) {
+      experienceId = (request.trigger as FirebaseNotificationTrigger).remoteMessage.data["experienceId"]
+    } else if (request is ScopedNotificationRequest) {
+      experienceId = request.experienceIdString
+    }
+    return experienceId?.hashCode() ?: super.getNotifyId(request)
   }
 }

@@ -95,8 +95,15 @@ open class ExpoPresentationDelegate(
       }
       return
     }
-    val tag = notification.notificationRequest.content.tag ?: notification.notificationRequest.identifier
-    NotificationManagerCompat.from(context).notify(tag, ANDROID_NOTIFICATION_ID, createNotification(notification, behavior))
+    NotificationManagerCompat.from(context).notify(
+      notification.notificationRequest.identifier,
+      getNotifyId(notification.notificationRequest),
+      createNotification(notification, behavior)
+    )
+  }
+
+  protected open fun getNotifyId(request: NotificationRequest): Int {
+    return ANDROID_NOTIFICATION_ID;
   }
 
   /**
