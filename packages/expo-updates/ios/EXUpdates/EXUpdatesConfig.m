@@ -7,6 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXUpdatesConfig ()
 
 @property (nonatomic, readwrite, assign) BOOL isEnabled;
+@property (nonatomic, readwrite, assign) BOOL expectsSignedManifest;
 @property (nonatomic, readwrite, strong) NSString *scopeKey;
 @property (nonatomic, readwrite, strong) NSURL *updateUrl;
 @property (nonatomic, readwrite, strong) NSDictionary *requestHeaders;
@@ -43,6 +44,7 @@ static NSString * const EXUpdatesConfigNeverString = @"NEVER";
 {
   if (self = [super init]) {
     _isEnabled = YES;
+    _expectsSignedManifest = NO;
     _requestHeaders = @{};
     _releaseChannel = EXUpdatesDefaultReleaseChannelName;
     _launchWaitMs = @(0);
@@ -66,7 +68,12 @@ static NSString * const EXUpdatesConfigNeverString = @"NEVER";
   if (isEnabled && [isEnabled isKindOfClass:[NSNumber class]]) {
     _isEnabled = [(NSNumber *)isEnabled boolValue];
   }
-
+  
+  id expectsSignedManifest = config[@"EXExpectsSignedManifest"];
+  if (expectsSignedManifest && [expectsSignedManifest isKindOfClass:[NSNumber class]]) {
+    _expectsSignedManifest = [(NSNumber *)expectsSignedManifest boolValue];
+  }
+  
   id updateUrl = config[EXUpdatesConfigUpdateUrlKey];
   if (updateUrl && [updateUrl isKindOfClass:[NSString class]]) {
     NSURL *url = [NSURL URLWithString:(NSString *)updateUrl];

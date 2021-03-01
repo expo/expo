@@ -203,7 +203,10 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
                      successBlock:(EXUpdatesFileDownloaderManifestSuccessBlock)successBlock
                        errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock
 {
-  mutableManifest[@"isVerified"] = @(isVerified);
+  if ( _config.expectsSignedManifest && !isVerified ){
+    // There are a few cases in Expo Go where we do actually want to use the unsigned manifest anyway.
+    mutableManifest[@"isVerified"] = @(isVerified);
+  }
   EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:mutableManifest.copy
                                                        response:response
                                                          config:_config
@@ -313,8 +316,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
   [request setValue:@"1" forHTTPHeaderField:@"Expo-API-Version"];
   [request setValue:@"BARE" forHTTPHeaderField:@"Expo-Updates-Environment"];
   [request setValue:@"true" forHTTPHeaderField:@"Expo-JSON-Error"];
-  // as of 2020-11-25, the EAS Update alpha returns an error if Expo-Accept-Signature: true is included in the request
-  [request setValue:(_config.usesLegacyManifest ? @"true" : @"false") forHTTPHeaderField:@"Expo-Accept-Signature"];
+  [request setValue:(_config.expectsSignedManifest ? @"true" : @"false") forHTTPHeaderField:@"Expo-Accept-Signature"];
   [request setValue:_config.releaseChannel forHTTPHeaderField:@"Expo-Release-Channel"];
 
   NSString *runtimeVersion = _config.runtimeVersion;
