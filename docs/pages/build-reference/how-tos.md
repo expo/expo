@@ -71,3 +71,16 @@ This is an example of how your package.json might look like:
 ```
 
 If you are not using `credentials.json` for Android/iOS credentials, it is fine for `experimental.npmToken` to be the only entry in the file. Add `credentials.json` to `.gitignore` if it's not there already.
+
+## Using npm cache with yarn v1
+
+By default npm cache deployed on EAS Build won't work with yarn v1, because `yarn.lock` files contain urls to registries for every package and yarn does not provide any way to override it. The issue is fixed in yarn v2, but the yarn team does not plan to backport it to yarn v1. If you want to take advantage of the npm cache you can use the `eas-build-pre-install` script to override the registry in the `yarn.lock`.
+
+e.g.
+```
+{
+ "scripts": {
+    "eas-build-pre-install": "bash -c \"[ ! -z \\\"NPM_CACHE_URL\\\" ] && sed -i -e \\\"s#https://registry.yarnpkg.com#$NPM_CACHE_URL#g\\\" yarn.lock\""
+  }
+}
+```
