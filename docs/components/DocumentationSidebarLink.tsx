@@ -39,7 +39,7 @@ const STYLES_DEFAULT = css`
   font-size: 15px;
 
   :visited {
-    color: ${theme.text.secondary};
+    color: ${theme.text.default};
   }
 
   :hover {
