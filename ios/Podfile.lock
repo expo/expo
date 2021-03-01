@@ -1964,27 +1964,27 @@ PODS:
   - GoogleDataTransportCCTSupport (3.0.0):
     - GoogleDataTransport (~> 6.0)
     - nanopb (~> 0.3.901)
-  - GoogleMaps (3.10.0):
-    - GoogleMaps/Maps (= 3.10.0)
-  - GoogleMaps/Base (3.10.0)
-  - GoogleMaps/Maps (3.10.0):
+  - GoogleMaps (3.6.0):
+    - GoogleMaps/Maps (= 3.6.0)
+  - GoogleMaps/Base (3.6.0)
+  - GoogleMaps/Maps (3.6.0):
     - GoogleMaps/Base
   - GoogleSignIn (5.0.2):
     - AppAuth (~> 1.2)
     - GTMAppAuth (~> 1.0)
     - GTMSessionFetcher/Core (~> 1.1)
-  - GoogleToolboxForMac/DebugUtils (2.3.1):
-    - GoogleToolboxForMac/Defines (= 2.3.1)
-  - GoogleToolboxForMac/Defines (2.3.1)
-  - GoogleToolboxForMac/Logger (2.3.1):
-    - GoogleToolboxForMac/Defines (= 2.3.1)
-  - "GoogleToolboxForMac/NSData+zlib (2.3.1)":
-    - GoogleToolboxForMac/Defines (= 2.3.1)
-  - "GoogleToolboxForMac/NSDictionary+URLArguments (2.3.1)":
-    - GoogleToolboxForMac/DebugUtils (= 2.3.1)
-    - GoogleToolboxForMac/Defines (= 2.3.1)
-    - "GoogleToolboxForMac/NSString+URLArguments (= 2.3.1)"
-  - "GoogleToolboxForMac/NSString+URLArguments (2.3.1)"
+  - GoogleToolboxForMac/DebugUtils (2.3.0):
+    - GoogleToolboxForMac/Defines (= 2.3.0)
+  - GoogleToolboxForMac/Defines (2.3.0)
+  - GoogleToolboxForMac/Logger (2.3.0):
+    - GoogleToolboxForMac/Defines (= 2.3.0)
+  - "GoogleToolboxForMac/NSData+zlib (2.3.0)":
+    - GoogleToolboxForMac/Defines (= 2.3.0)
+  - "GoogleToolboxForMac/NSDictionary+URLArguments (2.3.0)":
+    - GoogleToolboxForMac/DebugUtils (= 2.3.0)
+    - GoogleToolboxForMac/Defines (= 2.3.0)
+    - "GoogleToolboxForMac/NSString+URLArguments (= 2.3.0)"
+  - "GoogleToolboxForMac/NSString+URLArguments (2.3.0)"
   - GoogleUtilities/AppDelegateSwizzler (6.7.2):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
@@ -2022,8 +2022,8 @@ PODS:
     - nanopb/encode (= 0.3.9011)
   - nanopb/decode (0.3.9011)
   - nanopb/encode (0.3.9011)
-  - PromisesObjC (1.2.12)
-  - Protobuf (3.14.0)
+  - PromisesObjC (1.2.11)
+  - Protobuf (3.13.0)
   - RCTRequired (0.63.2)
   - RCTTypeSafety (0.63.2):
     - FBLazyVector (= 0.63.2)
@@ -3967,9 +3967,9 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: db118eb61a97dd8c4f7014e368d3c335cbbcf80a
   GoogleDataTransport: 9a8a16f79feffc7f42096743de2a7c4815e84020
   GoogleDataTransportCCTSupport: 0f39025e8cf51f168711bd3fb773938d7e62ddb5
-  GoogleMaps: 8c080862ff2748ece9929471b30feb56a6c5079d
+  GoogleMaps: 82f8fe307193bb4de6ef6bf9e88f1d624b718f9d
   GoogleSignIn: 7137d297ddc022a7e0aa4619c86d72c909fa7213
-  GoogleToolboxForMac: 471e0c05d39506e50e6398f46fa9a12ae0efeff9
+  GoogleToolboxForMac: 1350d40e86a76f7863928d63bcb0b89c84c521c5
   GoogleUtilities: 7f2f5a07f888cdb145101d6042bc4422f57e70b3
   GTMAppAuth: 197a8dabfea5d665224aa00d17f164fc2248dab9
   GTMSessionFetcher: b3503b20a988c4e20cc189aa798fd18220133f52
@@ -3977,8 +3977,8 @@ SPEC CHECKSUMS:
   lottie-ios: 3a3758ef5a008e762faec9c9d50a39842f26d124
   lottie-react-native: 55abec29d1a068cd43fdd2e7353e409fdaee8389
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
-  PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
-  Protobuf: 0cde852566359049847168e51bd1c690e0f70056
+  PromisesObjC: 8c196f5a328c2cba3e74624585467a557dcb482f
+  Protobuf: 3dac39b34a08151c6d949560efe3f86134a3f748
   RCTRequired: f13f25e7b12f925f1f6a6a8c69d929a03c0129fe
   RCTTypeSafety: 44982c5c8e43ff4141eb519a8ddc88059acd1f3a
   React: e1c65dd41cb9db13b99f24608e47dd595f28ca9a
