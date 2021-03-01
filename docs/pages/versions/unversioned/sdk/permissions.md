@@ -264,7 +264,7 @@ This object contains information, per requested permission, using the [`Permissi
 
 ### `PermissionInfo`
 
-This object contains information about a single requested permission, it's retuned within the `PermissionResponse` using the `permissions` property. It also may include additional platform-specific info, like the scope of the permission.
+This object contains information about a single requested permission, it's returned within the `PermissionResponse` using the `permissions` property. It also may include additional platform-specific info, like the scope of the permission.
 
 ```ts
 interface PermissionInfo {
