@@ -26,6 +26,7 @@ export const globalExtras = css`
     outline: none;
     cursor: pointer;
     margin-bottom: 0.5rem;
+    color: ${theme.text.default};
 
     ::-webkit-details-marker {
       color: ${theme.icon.default};
