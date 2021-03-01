@@ -62,7 +62,7 @@ export default function App() {
         return;
       }
       /* @end */
-      let { status } = await Location.requestPermissionsAsync();
+      let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         setErrorMsg('Permission to access location was denied');
         return;
@@ -123,6 +123,8 @@ A promise resolving to `true` if location services are enabled on the device, or
 
 ### `Location.requestPermissionsAsync()`
 
+> **Deprecated.** Use [`requestForegroundPermissionsAsync`](#locationrequestforegroundpermissionsasync) or [`requestBackgroundPermissionsAsync`](#locationrequestbackgroundpermissionsasync).
+
 Asks the user to grant permissions for location. Alias for `Permissions.askAsync(Permissions.LOCATION)`.
 
 #### Returns
@@ -131,11 +133,48 @@ A promise that resolves to an object of type [LocationPermissionResponse](#locat
 
 ### `Location.getPermissionsAsync()`
 
+> **Deprecated.** Use [`getForegroundPermissionsAsync`](#locationgetforegroundpermissionsasync) or [`getBackgroundPermissionsAsync`](#locationgetbackgroundpermissionsasync).
+
 Checks user's permissions for accessing location. Alias for `Permissions.getAsync(Permissions.LOCATION)`.
 
 #### Returns
 
 A promise that resolves to an object of type [LocationPermissionResponse](#locationpermissionresponse).
+
+### `Location.requestForegroundPermissionsAsync()`
+
+Asks the user to grant permissions for location while the app is in the foreground.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+### `Location.getForegroundPermissionsAsync()`
+
+Checks user's permissions for accessing location while the app is in the foreground.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+### `Location.requestBackgroundPermissionsAsync()`
+
+Asks the user to grant permissions for location while the app is in the background.
+On **Android 11 or higher**: this method will open the system settings page - you should before that explain to the user why your application needs background location permission. For example, you can use `Modal` component from `react-native` to do that.
+
+> **Note**: Foreground permissions should be granted before asking for the background permissions (your app can't obtain background permission without foreground permission).
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+### `Location.getBackgroundPermissionsAsync()`
+
+Checks user's permissions for accessing location while the app is in the background.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ### `Location.getLastKnownPositionAsync(options)`
 

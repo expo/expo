@@ -1,4 +1,4 @@
-import { PermissionStatus } from 'unimodules-permissions-interface';
+import { PermissionStatus, PermissionResponse } from 'unimodules-permissions-interface';
 import { LocationAccuracy, LocationCallback, LocationGeocodedAddress, LocationGeocodedLocation, LocationHeadingCallback, LocationHeadingObject, LocationLastKnownOptions, LocationObject, LocationOptions, LocationPermissionResponse, LocationProviderStatus, LocationRegion, LocationSubscription, LocationTaskOptions, LocationActivityType, LocationGeofencingEventType, LocationGeofencingRegionState, LocationGeocodingOptions } from './Location.types';
 import { LocationEventEmitter } from './LocationEventEmitter';
 import { setGoogleApiKey } from './LocationGoogleGeocoding';
@@ -51,6 +51,22 @@ export declare function getPermissionsAsync(): Promise<LocationPermissionRespons
  * Requests the user to grant location permissions.
  */
 export declare function requestPermissionsAsync(): Promise<LocationPermissionResponse>;
+/**
+ * Gets the current state of foreground location permissions.
+ */
+export declare function getForegroundPermissionsAsync(): Promise<LocationPermissionResponse>;
+/**
+ * Requests the user to grant foreground location permissions.
+ */
+export declare function requestForegroundPermissionsAsync(): Promise<LocationPermissionResponse>;
+/**
+ * Gets the current state of background location permissions.
+ */
+export declare function getBackgroundPermissionsAsync(): Promise<PermissionResponse>;
+/**
+ * Requests the user to grant background location permissions.
+ */
+export declare function requestBackgroundPermissionsAsync(): Promise<PermissionResponse>;
 /**
  * Returns `true` if the device has location services enabled or `false` otherwise.
  */
