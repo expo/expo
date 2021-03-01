@@ -97,6 +97,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
 {
   NSURLRequest *request = [self createManifestRequestWithURL:url extraHeaders:extraHeaders];
   [self _downloadDataWithRequest:request successBlock:^(NSData *data, NSURLResponse *response) {
+    //NSLog(@"JJ started!");
     if (![response isKindOfClass:[NSHTTPURLResponse class]]) {
       errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
                                      code:1040
@@ -170,6 +171,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
                                         config:self->_config
                                   successBlock:^(BOOL isValid) {
                                                   if (isValid) {
+                                                    //NSLog(@"JJ signed! success!");
                                                     [self _createUpdateWithManifest:mutableManifest
                                                                            response:response
                                                                            database:database
