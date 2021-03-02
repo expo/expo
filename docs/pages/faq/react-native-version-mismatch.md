@@ -23,7 +23,7 @@ The packager that you're running in your terminal (either with `expo start` or `
 
 - If this is a managed workflow project, either remove the `sdkVersion` field from your `app.json` file, or make sure it matches the value of the `expo` dependency in your `package.json` file.
 
-- If this is a managed workflow project, you should make sure your `react-native` version is correct. Luckily, this is easy- just run `expo upgrade` and go through the steps to "upgrade" to your current SDK version. Expo CLI will make sure that your dependency versions for packages like `expo` and `react-native` are correct. Your `react-native` version should be pointing to a `.tar.gz` file that has your SDK version in it, something like `https://github.com/expo/react-native/archive/sdk-XX.X.X.tar.gz`.
+- If this is a managed workflow project, you should make sure your `react-native` version is correct. Run `expo upgrade` and follow the prompts. Expo CLI will make sure that your dependency versions for packages like `expo` and `react-native` are aligned. Your `react-native` version should be pointing to a `.tar.gz` file that has your SDK version in it, something like `https://github.com/expo/react-native/archive/sdk-XX.X.X.tar.gz`.
 
 - If this is a bare workflow project, and this error is occurring right after upgrading your React Native version, you should double-check that you've performed each of the upgrade steps correctly.
 
