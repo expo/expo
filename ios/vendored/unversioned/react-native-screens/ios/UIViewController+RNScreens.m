@@ -5,6 +5,7 @@
 
 @implementation UIViewController (RNScreens)
 
+#if !TARGET_OS_TV
 - (UIViewController *)reactNativeScreensChildViewControllerForStatusBarStyle
 {
   UIViewController *childVC = [self findChildRNScreensViewController];
@@ -21,6 +22,12 @@
 {
   UIViewController *childVC = [self findChildRNScreensViewController];
   return childVC ? childVC.preferredStatusBarUpdateAnimation : [self reactNativeScreensPreferredStatusBarUpdateAnimation];
+}
+
+- (UIInterfaceOrientationMask)reactNativeScreensSupportedInterfaceOrientations
+{
+  UIViewController *childVC = [self findChildRNScreensViewController];
+  return childVC ? childVC.supportedInterfaceOrientations : [self reactNativeScreensSupportedInterfaceOrientations];
 }
 
 - (UIViewController *)findChildRNScreensViewController
@@ -46,7 +53,11 @@
    
    method_exchangeImplementations(class_getInstanceMethod(uiVCClass, @selector(preferredStatusBarUpdateAnimation)),
                                   class_getInstanceMethod(uiVCClass, @selector(reactNativeScreensPreferredStatusBarUpdateAnimation)));
+
+   method_exchangeImplementations(class_getInstanceMethod(uiVCClass, @selector(supportedInterfaceOrientations)),
+                                  class_getInstanceMethod(uiVCClass, @selector(reactNativeScreensSupportedInterfaceOrientations)));
   });
 }
+#endif
 
 @end

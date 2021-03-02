@@ -1,13 +1,11 @@
 package versioned.host.exp.exponent.modules.api.screens;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 
 import com.facebook.react.bridge.ReactContext;
@@ -64,6 +62,52 @@ public class ScreenFragment extends Fragment {
 
   public Screen getScreen() {
     return mScreenView;
+  }
+
+  public void onContainerUpdate() {
+    if (!hasChildScreenWithConfig(getScreen())) {
+      // if there is no child with config, we look for a parent with config to set the orientation
+      ScreenStackHeaderConfig config = findHeaderConfig();
+      if (config != null && config.getScreenFragment().getActivity() != null) {
+        config.getScreenFragment().getActivity().setRequestedOrientation(config.getScreenOrientation());
+      }
+    }
+  }
+
+  private @Nullable ScreenStackHeaderConfig findHeaderConfig() {
+    ViewParent parent = getScreen().getContainer();
+    while (parent != null) {
+      if (parent instanceof Screen) {
+        ScreenStackHeaderConfig headerConfig = ((Screen) parent).getHeaderConfig();
+        if (headerConfig != null) {
+          return headerConfig;
+        }
+      }
+      parent = parent.getParent();
+    }
+    return null;
+  }
+
+  protected boolean hasChildScreenWithConfig(Screen screen) {
+    if (screen == null) {
+      return false;
+    }
+    for (ScreenContainer sc : screen.getFragment().getChildScreenContainers()) {
+      // we check only the top screen for header config
+      Screen topScreen = sc.getTopScreen();
+      ScreenStackHeaderConfig headerConfig = topScreen != null ? topScreen.getHeaderConfig(): null;
+      if (headerConfig != null) {
+        return true;
+      }
+      if (hasChildScreenWithConfig(topScreen)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public List<ScreenContainer> getChildScreenContainers() {
+    return mChildScreenContainers;
   }
 
   protected void dispatchOnWillAppear() {
