@@ -5,7 +5,7 @@
 
 @interface EXBaseLocationRequester : NSObject<UMPermissionsRequester>
 
-@property (nonatomic, strong) CLLocationManager *locMgr;
+@property (nonatomic, strong) CLLocationManager *locationManager;
 @property (nonatomic, strong) UMPromiseResolveBlock resolve;
 @property (nonatomic, strong) UMPromiseRejectBlock reject;
 

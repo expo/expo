@@ -45,10 +45,12 @@ export declare function geocodeAsync(address: string, options?: LocationGeocodin
 export declare function reverseGeocodeAsync(location: Pick<LocationGeocodedLocation, 'latitude' | 'longitude'>, options?: LocationGeocodingOptions): Promise<LocationGeocodedAddress[]>;
 /**
  * Gets the current state of location permissions.
+ * @deprecated Use `getForegroundPermissions` or `getBackgroundPermissions` instead.
  */
 export declare function getPermissionsAsync(): Promise<LocationPermissionResponse>;
 /**
  * Requests the user to grant location permissions.
+ * @deprecated Use `requestForegroundPermissionsAsync` or `requestBackgroundPermissionsAsync` instead.
  */
 export declare function requestPermissionsAsync(): Promise<LocationPermissionResponse>;
 /**

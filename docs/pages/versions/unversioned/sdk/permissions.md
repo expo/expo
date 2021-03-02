@@ -375,13 +375,6 @@ The permission type for location access while the app is in the background.
 
 > If you would like to access location data in a standalone app, note that you'll need to provide location usage descriptions in `app.json`. For more information see [Deploying to App Stores guide](../../../distribution/app-stores.md#system-permissions-dialogs-on-ios).
 
-### `Permissions.LOCATION_BACKGROUND`
-
-A permission to change the brightness of the screen, system wide.
-
-- **Android:** it requires the [`WRITE_SETTINGS`][settings-android-write] permission in your manifest.
-- **iOS:** _this permission has no effect on iOS and is resolved as `granted` immediately._
-
 ### `Permissions.CAMERA`
 
 The permission type for photo and video taking.

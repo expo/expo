@@ -160,7 +160,7 @@ A promise that resolves to an object of type [PermissionResponse](permissions.md
 ### `Location.requestBackgroundPermissionsAsync()`
 
 Asks the user to grant permissions for location while the app is in the background.
-On **Android 11 or higher**: this method will open the system settings page - you should before that explain to the user why your application needs background location permission. For example, you can use `Modal` component from `react-native` to do that.
+On **Android 11 or higher**: this method will open the system settings page - before that happens you should explain to the user why your application needs background location permission. For example, you can use `Modal` component from `react-native` to do that.
 
 > **Note**: Foreground permissions should be granted before asking for the background permissions (your app can't obtain background permission without foreground permission).
 

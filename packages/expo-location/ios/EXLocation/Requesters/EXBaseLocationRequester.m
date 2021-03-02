@@ -60,8 +60,8 @@
     [UMUtilities performSynchronouslyOnMainThread:^{
       UM_ENSURE_STRONGIFY(self)
       self.locationManagerWasCalled = false;
-      self.locMgr = [[CLLocationManager alloc] init];
-      self.locMgr.delegate = self;
+      self.locationManager = [[CLLocationManager alloc] init];
+      self.locationManager.delegate = self;
     }];
 
     // 1. Why do we call CLLocationManager methods by those dynamically created selectors?

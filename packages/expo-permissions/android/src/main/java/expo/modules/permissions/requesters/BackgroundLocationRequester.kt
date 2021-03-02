@@ -54,7 +54,6 @@ class BackgroundLocationRequester : PermissionRequester {
   @RequiresApi(Build.VERSION_CODES.Q)
   private fun parseAndroidPermissionsForAndroidQ(permissionsResponse: Map<String, PermissionsResponse>): Bundle {
     return Bundle().apply {
-
       val accessFineLocation = permissionsResponse.getValue(Manifest.permission.ACCESS_FINE_LOCATION)
       val accessCoarseLocation = permissionsResponse.getValue(Manifest.permission.ACCESS_COARSE_LOCATION)
       val accessBackgroundLocation = permissionsResponse.getValue(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
@@ -71,7 +70,7 @@ class BackgroundLocationRequester : PermissionRequester {
           PermissionsStatus.DENIED
         }
         else -> {
-          PermissionsStatus.DENIED
+          PermissionsStatus.UNDETERMINED
         }
       }
 

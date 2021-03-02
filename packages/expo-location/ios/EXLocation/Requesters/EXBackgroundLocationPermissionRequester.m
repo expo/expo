@@ -35,10 +35,13 @@ static SEL alwaysAuthorizationSelector;
 
 - (void)requestLocationPermissions
 {
-  if ([EXBaseLocationRequester isConfiguredForAlwaysAuthorization] && [self.locMgr respondsToSelector:alwaysAuthorizationSelector]) {
+  if ([EXBaseLocationRequester isConfiguredForAlwaysAuthorization] && [self.locationManager respondsToSelector:alwaysAuthorizationSelector]) {
     _wasAsked = true;
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleAppBecomingActive) name:UIApplicationDidBecomeActiveNotification object:nil];
-    ((void (*)(id, SEL))objc_msgSend)(self.locMgr, alwaysAuthorizationSelector);
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleAppBecomingActive)
+                                                 name:UIApplicationDidBecomeActiveNotification
+                                               object:nil];
+    ((void (*)(id, SEL))objc_msgSend)(self.locationManager, alwaysAuthorizationSelector);
   } else {
     self.reject(@"ERR_LOCATION_INFO_PLIST", @"One of the `NSLocation*UsageDescription` keys must be present in Info.plist to be able to use geolocation.", nil);
     
