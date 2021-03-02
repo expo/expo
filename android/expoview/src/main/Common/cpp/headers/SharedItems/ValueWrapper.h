@@ -3,8 +3,8 @@
 #include "WorkletsCache.h"
 #include "SharedParent.h"
 #include <jsi/jsi.h>
-#include <JSIStoreValueUser.h>
 #include <string>
+#include "JSIStoreValueUser.h"
 #include "HostFunctionHandler.h"
 
 namespace reanimated {
@@ -18,9 +18,9 @@ public:
   ValueType getType() const {
     return type;
   }
-    
+
   virtual ~ValueWrapper() {}
-  
+
   static inline bool asBoolean(const std::unique_ptr<ValueWrapper>& valueContainer);
   static inline double asNumber(const std::unique_ptr<ValueWrapper>& valueContainer);
   static inline const std::string& asString(const std::unique_ptr<ValueWrapper>& valueContainer);
@@ -29,9 +29,9 @@ public:
   static inline const std::shared_ptr<RemoteObject>& asRemoteObject(const std::unique_ptr<ValueWrapper>& valueContainer);
   static inline std::vector<std::shared_ptr<ShareableValue>>& asFrozenArray(const std::unique_ptr<ValueWrapper>& valueContainer);
   static inline const std::shared_ptr<MutableValue>& asMutableValue(const std::unique_ptr<ValueWrapper>& valueContainer);
-  
+
   static const HostFunctionWrapper* asHostFunctionWrapper(const std::unique_ptr<ValueWrapper>& valueContainer);
-  
+
 protected:
     ValueType type;
 };

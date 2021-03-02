@@ -2,14 +2,13 @@
 
 #include "WorkletsCache.h"
 #include "SharedParent.h"
-#include "Logger.h"
 #include "ValueWrapper.h"
 #include "HostFunctionHandler.h"
+#include "JSIStoreValueUser.h"
 #include <string>
 #include <mutex>
 #include <unordered_map>
 #include <jsi/jsi.h>
-#include <JSIStoreValueUser.h>
 
 using namespace facebook;
 
@@ -30,7 +29,7 @@ private:
   bool containsHostFunction = false;
 
   ShareableValue(NativeReanimatedModule *module, std::shared_ptr<Scheduler> s): StoreUser(s), module(module) {}
-  
+
   jsi::Value toJSValue(jsi::Runtime &rt);
   jsi::Object createHost(jsi::Runtime &rt, std::shared_ptr<jsi::HostObject> host);
   void adapt(jsi::Runtime &rt, const jsi::Value &value, ValueType objectType);

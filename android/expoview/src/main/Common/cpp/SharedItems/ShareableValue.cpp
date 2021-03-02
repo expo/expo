@@ -1,7 +1,6 @@
 #include "ShareableValue.h"
 #include "SharedParent.h"
 #include "NativeReanimatedModule.h"
-#include "Logger.h"
 #include "MutableValue.h"
 #include "MutableValueSetterProxy.h"
 #include "RemoteObject.h"
@@ -213,7 +212,7 @@ jsi::Value ShareableValue::toJSValue(jsi::Runtime &rt) {
       return jsi::Value(ValueWrapper::asNumber(valueContainer));
     case ValueType::StringType: {
       auto& stringValue = ValueWrapper::asString(valueContainer);
-      return jsi::Value(rt, jsi::String::createFromAscii(rt, stringValue));
+      return jsi::Value(rt, jsi::String::createFromUtf8(rt, stringValue));
     }
     case ValueType::FrozenObjectType: {
       auto& frozenObject = ValueWrapper::asFrozenObject(valueContainer);

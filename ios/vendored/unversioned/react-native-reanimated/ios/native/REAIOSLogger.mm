@@ -1,5 +1,4 @@
 #include "REAIOSLogger.h"
-#include "Logger.h"
 #import <Foundation/Foundation.h>
 
 namespace reanimated {
