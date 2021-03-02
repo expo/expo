@@ -151,7 +151,6 @@ export function getTestModules() {
     modules.push(optionalRequire(() => require('./tests/Calendar')));
     modules.push(optionalRequire(() => require('./tests/CalendarReminders')));
     modules.push(optionalRequire(() => require('./tests/MediaLibrary')));
-    modules.push(optionalRequire(() => require('./tests/Notifications')));
 
     modules.push(optionalRequire(() => require('./tests/Battery')));
     if (Constants.isDevice) {
