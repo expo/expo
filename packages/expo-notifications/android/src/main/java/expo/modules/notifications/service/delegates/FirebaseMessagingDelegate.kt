@@ -78,7 +78,7 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
   }
 
   /**
-   * To match iOS behavior- we want to assign the remote message's tag as the notification ID.
+   * To match iOS behavior, we want to assign the remote message's tag as the notification ID.
    * If a notification comes in with the same tag as a notification that is already in the tray,
    * the existing notification is replaced, but the ID can remain constant.
    */
