@@ -30,6 +30,8 @@ This will ensure that you get a version of the package that is compatible with t
 
 ### Use the `.expo.[js/json/ts/tsx]` extension to provide Expo Go specific fallbacks
 
+> ⚠️ The `.expo` extension will be removed in SDK 41. [Learn more about alternatives](https://github.com/expo/fyi/blob/master/expo-extension-migration.md).
+
 Picture this: you need a beautiful map in your app and Google Maps just won't cut it, so you add '@mapbox/react-native-mapbox-gl'. Expo doesn't include this in the SDK, so you can't run any code that imports it in the Expo Go app. You can handle this by making `MyMap.js` and `MyMap.expo.js` as follows:
 
 ```js
