@@ -45,7 +45,7 @@ export const PACKAGES_TO_PREBUILD = [
   // 'expo-document-picker',
   // 'expo-error-recovery',
   'expo-face-detector',
-  // 'expo-facebook',
+  'expo-facebook',
   'expo-file-system',
   // 'expo-firebase-analytics',
   // 'expo-firebase-core',
