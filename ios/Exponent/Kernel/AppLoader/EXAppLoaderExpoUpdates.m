@@ -314,6 +314,7 @@ NS_ASSUME_NONNULL_BEGIN
     @"EXUpdatesEnabled": @([EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled),
     @"EXUpdatesLaunchWaitMs": launchWaitMs,
     @"EXUpdatesCheckOnLaunch": shouldCheckOnLaunch ? @"ALWAYS" : @"NEVER",
+    @"EXUpdatesExpectsSignedManifest": @YES,
     @"EXUpdatesRequestHeaders": [self _requestHeaders]
   }];
 
