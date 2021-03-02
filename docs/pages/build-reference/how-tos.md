@@ -74,7 +74,7 @@ If you are not using `credentials.json` for Android/iOS credentials, it is fine 
 
 ## Using npm cache with yarn v1
 
-By default npm cache deployed on EAS Build won't work with yarn v1, because `yarn.lock` files contain urls to registries for every package and yarn does not provide any way to override it. The issue is fixed in yarn v2, but the yarn team does not plan to backport it to yarn v1. If you want to take advantage of the npm cache you can use the `eas-build-pre-install` script to override the registry in the `yarn.lock`.
+By default the EAS npm cache won't work with yarn v1, because `yarn.lock` files contain URLs to registries for every package and yarn does not provide any way to override it. The issue is fixed in yarn v2, but the yarn team does not plan to backport it to yarn v1. If you want to take advantage of the npm cache, you can use the `eas-build-pre-install` script to override the registry in your `yarn.lock`.
 
 e.g.
 ```
