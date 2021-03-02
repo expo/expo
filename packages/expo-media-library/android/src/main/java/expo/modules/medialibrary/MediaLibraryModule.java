@@ -295,7 +295,7 @@ public class MediaLibraryModule extends ExportedModule implements ActivityEventL
   }
 
   @ExpoMethod
-  public void migrateAlbumAsync(String albumId, Promise promise) {
+  public void migrateAlbumIfNeededAsync(String albumId, Promise promise) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
       promise.resolve(null);
       return;
@@ -326,6 +326,11 @@ public class MediaLibraryModule extends ExportedModule implements ActivityEventL
     }
 
     File albumDir = assets.get(0).getParentFile();
+    if (albumDir == null) {
+      promise.reject(ERROR_NO_ALBUM, "Couldn't get album path.");
+      return;
+    }
+
     if (albumDir.canWrite()) {
       // Nothing to migrate
       promise.resolve(null);

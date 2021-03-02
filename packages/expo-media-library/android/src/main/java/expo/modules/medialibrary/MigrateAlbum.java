@@ -37,7 +37,7 @@ public class MigrateAlbum extends AsyncTask<Void, Void, Void> {
 
   @Override
   protected Void doInBackground(Void... voids) {
-    // Previously, users may save different assets type in the same directory.
+    // Previously, users were able to save different assets type in the same directory.
     // But now, it's not always possible.
     // If album contains movies or pictures, we can move it to Environment.DIRECTORY_PICTURES.
     // Otherwise, we reject.
@@ -47,7 +47,7 @@ public class MigrateAlbum extends AsyncTask<Void, Void, Void> {
       .collect(Collectors.toSet());
 
     if (assetsRelativePaths.size() > 1) {
-      mPromise.reject(ERROR_UNABLE_TO_MIGRATE, "The album contains incompatible file types/");
+      mPromise.reject(ERROR_UNABLE_TO_MIGRATE, "The album contains incompatible file types.");
       return null;
     }
 
