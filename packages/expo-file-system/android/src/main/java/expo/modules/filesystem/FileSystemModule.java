@@ -1003,6 +1003,13 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
   public void onNewIntent(Intent intent) {
   }
 
+  /**
+   * Checks if the provided URI is compatible with the Storage Access Framework.
+   * For more information check out https://developer.android.com/guide/topics/providers/document-provider.
+   *
+   * @param uri
+   * @return whatever the provided URI is SAF URI
+   */
   private static boolean isSAFUri(Uri uri) {
     return ("content".equals(uri.getScheme()) && uri.getHost().startsWith("com.android.externalstorage"));
   }
