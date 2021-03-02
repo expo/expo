@@ -27,6 +27,7 @@ Package-specific changes not released in any SDK will be added here just before 
 ### 🐛 Bug fixes
 
 - Fix Expo CLI logging, which was not always limiting the length of strings to 10k characters. ([#11776](https://github.com/expo/expo/pull/11776) by [@fson](https://github.com/fson))
+- Fix bare templates on Android to pass `null` to `com/facebook/react/ReactActivity.onCreate` to [avoid potential inconsistencies when restoring from background](https://github.com/expo/expo/issues/12002).
 
 ## 40.0.0 — 2020-11-17
 
