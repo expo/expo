@@ -42,7 +42,7 @@ If you need to exclude some of the unimodules that you are not using but they go
 
 <br />
 
-The last step is to install the project's CocoaPods again in order to pull in unimodules that are deteced by `use_unimodules!` directive that we added to the `Podfile`:
+Save all of your changes. The last step is to install the project's CocoaPods again in order to pull in unimodules that are detected by `use_unimodules!` directive that we added to the `Podfile`:
 
 <InstallSection packageName="react-native-unimodules" cmd={["npx pod-install"]} hideBareInstructions />
 
