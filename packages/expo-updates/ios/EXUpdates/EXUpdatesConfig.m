@@ -69,7 +69,7 @@ static NSString * const EXUpdatesConfigNeverString = @"NEVER";
     _isEnabled = [(NSNumber *)isEnabled boolValue];
   }
   
-  id expectsSignedManifest = config[@"EXExpectsSignedManifest"];
+  id expectsSignedManifest = config[@"EXUpdatesExpectsSignedManifest"];
   if (expectsSignedManifest && [expectsSignedManifest isKindOfClass:[NSNumber class]]) {
     _expectsSignedManifest = [(NSNumber *)expectsSignedManifest boolValue];
   }

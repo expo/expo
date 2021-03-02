@@ -203,7 +203,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
                      successBlock:(EXUpdatesFileDownloaderManifestSuccessBlock)successBlock
                        errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock
 {
-  if ( _config.expectsSignedManifest && !isVerified ){
+  if (_config.expectsSignedManifest) {
     // There are a few cases in Expo Go where we still want to use the unsigned manifest anyway, so don't mark it as unverified.
     mutableManifest[@"isVerified"] = @(isVerified);
   }
