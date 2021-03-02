@@ -350,6 +350,31 @@ Due to the design of the location permission API on iOS we aren't able to provid
 - if you provide both `NSLocationWhenInUseUsageDescription` and `NSLocationAlwaysAndWhenInUseUsageDescription`, your application will only ask for "when in use" permission on iOS 10, whereas on iOS 11+ it will show a dialog to the user where he'll be able to pick whether he'd like to give your app permission to access location always or only when the app is in use,
 - if you provide all three: `NSLocationWhenInUseUsageDescription`, `NSLocationAlwaysAndWhenInUseUsageDescription` and `NSLocationAlwaysUsageDescription`, your application on iOS 11+ will still show a dialog described above and on iOS 10 it will only ask for "always" location permission.
 
+### `Permissions.LOCATION_FOREGROUND`
+
+The permission type for location access while the app is in the foreground.
+
+- **Android:** it requires the [`ACCESS_COARSE_LOCATION`][location-android-coarse] and [`ACCESS_FINE_LOCATION`][location-android-fine] permissions in your manifest.
+- **iOS:** it requires the `expo-location` module and [`NSLocationWhenInUseUsageDescription`][location-foreground-ios-plist] message.
+
+[location-foreground-ios-plist]: https://developer.apple.com/documentation/bundleresources/information_property_list/nslocationwheninuseusagedescription
+
+> If you would like to access location data in a standalone app, note that you'll need to provide location usage descriptions in `app.json`. For more information see [Deploying to App Stores guide](../../../distribution/app-stores.md#system-permissions-dialogs-on-ios).
+
+### `Permissions.LOCATION_BACKGROUND`
+
+The permission type for location access while the app is in the background.
+
+- **Android:** it requires the [`ACCESS_BACKGROUND_LOCATION`][location-android-background] permission in your manifest.
+- **iOS:** it requires the `expo-location` module and [`NSLocationAlwaysAndWhenInUseUsageDescription`][location-background-ios-plist] message.
+
+[location-android-background]: https://developer.android.com/reference/android/Manifest.permission#ACCESS_BACKGROUND_LOCATION
+[location-background-ios-plist]: https://developer.apple.com/documentation/bundleresources/information_property_list/nslocationalwaysandwheninuseusagedescription
+
+> **Note**: Foreground permissions should be granted before asking for the background permissions (your app can't obtain background permission without foreground permission).
+
+> If you would like to access location data in a standalone app, note that you'll need to provide location usage descriptions in `app.json`. For more information see [Deploying to App Stores guide](../../../distribution/app-stores.md#system-permissions-dialogs-on-ios).
+
 ### `Permissions.CAMERA`
 
 The permission type for photo and video taking.

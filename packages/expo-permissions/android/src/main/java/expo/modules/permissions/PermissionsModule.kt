@@ -5,7 +5,9 @@ package expo.modules.permissions
 import android.Manifest
 import android.content.Context
 import android.os.Bundle
-import expo.modules.permissions.requesters.LocationRequester
+import expo.modules.permissions.requesters.BackgroundLocationRequester
+import expo.modules.permissions.requesters.ForegroundLocationRequester
+import expo.modules.permissions.requesters.LegacyLocationRequester
 import expo.modules.permissions.requesters.NotificationRequester
 import expo.modules.permissions.requesters.PermissionRequester
 import expo.modules.permissions.requesters.RemindersRequester
@@ -36,11 +38,14 @@ class PermissionsModule(context: Context) : ExportedModule(context) {
       SimpleRequester(Manifest.permission.READ_CONTACTS)
     }
     mRequesters = mapOf(
-      PermissionsTypes.LOCATION.type to LocationRequester(if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+      // Legacy requester
+      PermissionsTypes.LOCATION.type to LegacyLocationRequester(if (android.os.Build.VERSION.SDK_INT == android.os.Build.VERSION_CODES.Q) {
         mPermissions.isPermissionPresentInManifest(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
       } else {
         false
       }),
+      PermissionsTypes.LOCATION_FOREGROUND.type to ForegroundLocationRequester(),
+      PermissionsTypes.LOCATION_BACKGROUND.type to BackgroundLocationRequester(),
       PermissionsTypes.CAMERA.type to SimpleRequester(Manifest.permission.CAMERA),
       PermissionsTypes.CONTACTS.type to contactsRequester,
       PermissionsTypes.AUDIO_RECORDING.type to SimpleRequester(Manifest.permission.RECORD_AUDIO),

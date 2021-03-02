@@ -1,5 +1,5 @@
 import { Platform } from '@unimodules/core';
-import { PermissionStatus } from 'unimodules-permissions-interface';
+import { PermissionStatus, PermissionResponse } from 'unimodules-permissions-interface';
 
 import ExpoLocation from './ExpoLocation';
 import {
@@ -155,16 +155,53 @@ export async function reverseGeocodeAsync(
 
 /**
  * Gets the current state of location permissions.
+ * @deprecated Use `getForegroundPermissions` or `getBackgroundPermissions` instead.
  */
 export async function getPermissionsAsync(): Promise<LocationPermissionResponse> {
+  console.warn(
+    `"getPermissionsAsync" is now deprecated. Please, use "getForegroundPermissions" or "getBackgroundPermissions" instead.`
+  );
   return await ExpoLocation.getPermissionsAsync();
 }
 
 /**
  * Requests the user to grant location permissions.
+ * @deprecated Use `requestForegroundPermissionsAsync` or `requestBackgroundPermissionsAsync` instead.
  */
 export async function requestPermissionsAsync(): Promise<LocationPermissionResponse> {
+  console.warn(
+    `"requestPermissionsAsync" is now deprecated. Please, use "requestForegroundPermissionsAsync" or "requestBackgroundPermissionsAsync" instead.`
+  );
+
   return await ExpoLocation.requestPermissionsAsync();
+}
+
+/**
+ * Gets the current state of foreground location permissions.
+ */
+export async function getForegroundPermissionsAsync(): Promise<LocationPermissionResponse> {
+  return await ExpoLocation.getForegroundPermissionsAsync();
+}
+
+/**
+ * Requests the user to grant foreground location permissions.
+ */
+export async function requestForegroundPermissionsAsync(): Promise<LocationPermissionResponse> {
+  return await ExpoLocation.requestForegroundPermissionsAsync();
+}
+
+/**
+ * Gets the current state of background location permissions.
+ */
+export async function getBackgroundPermissionsAsync(): Promise<PermissionResponse> {
+  return await ExpoLocation.getBackgroundPermissionsAsync();
+}
+
+/**
+ * Requests the user to grant background location permissions.
+ */
+export async function requestBackgroundPermissionsAsync(): Promise<PermissionResponse> {
+  return await ExpoLocation.requestBackgroundPermissionsAsync();
 }
 
 // --- Location service
