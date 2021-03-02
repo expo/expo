@@ -3,7 +3,7 @@ import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system';
 import * as Progress from 'expo-progress';
 import React from 'react';
-import { Alert, ScrollView, StyleSheet } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Platform } from 'react-native';
 
 import ListButton from '../components/ListButton';
 
@@ -176,6 +176,14 @@ export default class FileSystemScreen extends React.Component<{}, State> {
     alert(`${Math.round(freeBytes / 1024 / 1024)} MB available`);
   };
 
+  _askForDirPermissions = async () => {
+    const uri = await FileSystem.askForDirectoryPermissionsAsync();
+    if (uri) {
+      const files = await FileSystem.readDirectoryAsync(uri);
+      alert(`Files inside ${uri}:\n\n${JSON.stringify(files)}`);
+    }
+  };
+
   render() {
     return (
       <ScrollView style={{ padding: 10 }}>
@@ -189,6 +197,9 @@ export default class FileSystemScreen extends React.Component<{}, State> {
         <ListButton onPress={this._getInfoAsset} title="Get Info Asset" />
         <ListButton onPress={this._copyAndReadAsset} title="Copy and Read Asset" />
         <ListButton onPress={this._alertFreeSpace} title="Alert free space" />
+        {Platform.OS === 'android' && (
+          <ListButton onPress={this._askForDirPermissions} title="Ask for directory permissions" />
+        )}
       </ScrollView>
     );
   }

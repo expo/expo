@@ -189,11 +189,13 @@ export class DownloadResumable {
         this._subscription = null;
     }
 }
-// Android only
-export async function askForDirectoryPermissions(initialFileUrl = null) {
-    if (!ExponentFileSystem.askForDirectoryPermissions) {
-        throw new UnavailabilityError('expo-file-system', 'askForDirectoryPermissions');
+/**
+ * Android only
+ */
+export async function askForDirectoryPermissionsAsync(initialFileUrl = null) {
+    if (!ExponentFileSystem.askForDirectoryPermissionsAsync) {
+        throw new UnavailabilityError('expo-file-system', 'askForDirectoryPermissionsAsync');
     }
-    return await ExponentFileSystem.askForDirectoryPermissions(initialFileUrl);
+    return await ExponentFileSystem.askForDirectoryPermissionsAsync(initialFileUrl);
 }
 //# sourceMappingURL=FileSystem.js.map

@@ -160,24 +160,12 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
   }
 
   private EnumSet<Permission> permissionsForUri(Uri uri) {
-    if (isSAFUri(getContext(), uri)) {
-      DocumentFile documentFile = getNearestSAFFile(uri);
-      EnumSet<Permission> permissions = EnumSet.noneOf(Permission.class);
-      if (documentFile.canRead()) {
-        permissions.add(Permission.READ);
-      }
-
-      if (documentFile.canWrite()) {
-        permissions.add(Permission.WRITE);
-      }
-
-      return permissions;
+    if (isSAFUri(uri)) {
+      return permissionsForSAFUri(uri);
     }
-
     if ("content".equals(uri.getScheme())) {
       return EnumSet.of(Permission.READ);
     }
-
     if ("asset".equals(uri.getScheme())) {
       return EnumSet.of(Permission.READ);
     }
@@ -189,6 +177,20 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
       return EnumSet.of(Permission.READ);
     }
     return EnumSet.noneOf(Permission.class);
+  }
+
+  private EnumSet<Permission> permissionsForSAFUri(Uri uri) {
+    DocumentFile documentFile = getNearestSAFFile(uri);
+    EnumSet<Permission> permissions = EnumSet.noneOf(Permission.class);
+    if (documentFile.canRead()) {
+      permissions.add(Permission.READ);
+    }
+
+    if (documentFile.canWrite()) {
+      permissions.add(Permission.WRITE);
+    }
+
+    return permissions;
   }
 
   // For now we only need to ensure one permission at a time, this allows easier error message strings,
@@ -324,7 +326,7 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
         } else if (uri.getScheme() == null) {
           // this is probably an asset embedded by the packager in resources
           contents = IOUtils.toString(openResourceInputStream(uriStr));
-        } else if (isSAFUri(getContext(), uri)) {
+        } else if (isSAFUri(uri)) {
           contents = IOUtils.toString(getContext().getContentResolver().openInputStream(uri));
         } else {
           throw new IOException("Unsupported scheme for location '" + uri + "'.");
@@ -358,7 +360,7 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
           }
         }
       }
-
+      promise.resolve(null);
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
       promise.reject(e);
@@ -389,7 +391,7 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
               "File '" + uri + "' could not be deleted because it could not be found");
           }
         }
-      } else if (isSAFUri(getContext(), uri)) {
+      } else if (isSAFUri(uri)) {
         DocumentFile file = getNearestSAFFile(uri);
         if (file.exists()) {
           file.delete();
@@ -436,7 +438,7 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
           promise.reject("ERR_FILESYSTEM_CANNOT_MOVE_FILE",
             "File '" + fromUri + "' could not be moved to '" + toUri + "'");
         }
-      } else if (isSAFUri(getContext(), fromUri)) {
+      } else if (isSAFUri(fromUri)) {
         DocumentFile documentFile = getNearestSAFFile(fromUri);
         if (!documentFile.exists()) {
           promise.reject("ERR_FILESYSTEM_CANNOT_MOVE_FILE", "File '" + fromUri + "' could not be moved to '" + toUri + "'");
@@ -444,6 +446,7 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
         }
         File output = new File(toUri.getPath());
         transformFilesFromSAF(documentFile, output, false);
+        promise.resolve(null);
       } else {
         throw new IOException("Unsupported scheme for location '" + fromUri + "'.");
       }
@@ -478,14 +481,15 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
           FileUtils.copyFile(from, to);
         }
         promise.resolve(null);
-      } else if (isSAFUri(getContext(), fromUri)) {
+      } else if (isSAFUri(fromUri)) {
         DocumentFile documentFile = getNearestSAFFile(fromUri);
         if (!documentFile.exists()) {
-          promise.reject(null);
+          promise.reject("ERR_FILESYSTEM_CANNOT_FIND_FILE", "File '" + fromUri + "' could not be copied because it could not be found");
           return;
         }
         File output = new File(toUri.getPath());
         transformFilesFromSAF(documentFile, output, true);
+        promise.resolve(null);
       } else if ("content".equals(fromUri.getScheme())) {
         InputStream in = getContext().getContentResolver().openInputStream(fromUri);
         OutputStream out = new FileOutputStream(uriToFile(toUri));
@@ -516,10 +520,8 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
       return;
     }
 
-    if (!outputDir.exists()) {
-      if (!outputDir.mkdirs()) {
-        throw new IOException("Couldn't create folder in output dir.");
-      }
+    if (!outputDir.exists() || !outputDir.mkdirs()) {
+      throw new IOException("Couldn't create folder in output dir.");
     }
 
     if (documentFile.isDirectory()) {
@@ -527,9 +529,7 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
         if (documentFile.getName() == null) {
           continue;
         }
-
         transformFilesFromSAF(file, new File(outputDir, documentFile.getName()), copy);
-
       }
 
       if (!copy) {
@@ -597,7 +597,7 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
           promise.reject("ERR_FILESYSTEM_CANNOT_READ_DIRECTORY",
             "Directory '" + uri + "' could not be read.");
         }
-      } else if (isSAFUri(getContext(), uri)) {
+      } else if (isSAFUri(uri)) {
         DocumentFile file = DocumentFile.fromTreeUri(getContext(), uri);
         if (file == null || !file.exists() || !file.isDirectory()) {
           promise.reject("ERR_FILESYSTEM_CANNOT_READ_DIRECTORY",
@@ -948,7 +948,7 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
   }
 
   @ExpoMethod
-  public void askForDirectoryPermissions(final String initialFileUrl, Promise promise) {
+  public void askForDirectoryPermissionsAsync(final String initialFileUrl, Promise promise) {
     if (mDirPermissionsRequest != null) {
       promise.reject("ERR_FILESYSTEM_CANNOT_ASK_FOR_PERMISSIONS", "You have an unfinished permission request.");
       return;
@@ -956,7 +956,6 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
 
     try {
       Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         Uri fileUri = initialFileUrl == null ? null : Uri.parse(initialFileUrl);
         if (fileUri != null) {
@@ -974,7 +973,6 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
 
       mDirPermissionsRequest = promise;
       activity.startActivityForResult(intent, DIR_PERMISSIONS_REQUEST_CODE);
-
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
       promise.reject("ERR_FILESYSTEM_CANNOT_ASK_FOR_PERMISSIONS", "Can't ask for permissions.", e);
@@ -1005,8 +1003,8 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
   public void onNewIntent(Intent intent) {
   }
 
-  private static boolean isSAFUri(Context context, Uri uri) {
-    return ("content".equals(uri.getScheme()) && uri.getHost().startsWith("com.android.externalstorage.documents"));
+  private static boolean isSAFUri(Uri uri) {
+    return ("content".equals(uri.getScheme()) && uri.getHost().startsWith("com.android.externalstorage"));
   }
 
   private static byte[] getInputStreamBytes(InputStream inputStream) throws IOException {
@@ -1261,7 +1259,7 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
       return new FileInputStream(uriToFile(uri));
     } else if ("asset".equals(uri.getScheme())) {
       return openAssetInputStream(uri);
-    } else if (isSAFUri(getContext(), uri)) {
+    } else if (isSAFUri(uri)) {
       return getContext().getContentResolver().openInputStream(uri);
     }
 
@@ -1273,7 +1271,7 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
       return new FileOutputStream(uriToFile(uri));
     }
 
-    if (isSAFUri(getContext(), uri)) {
+    if (isSAFUri(uri)) {
       return getContext().getContentResolver().openOutputStream(uri);
     }
 

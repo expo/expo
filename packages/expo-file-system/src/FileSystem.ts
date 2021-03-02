@@ -314,13 +314,15 @@ export class DownloadResumable {
   }
 }
 
-// Android only
-export async function askForDirectoryPermissions(
+/**
+ * Android only
+ */
+export async function askForDirectoryPermissionsAsync(
   initialFileUrl: string | null = null
-): Promise<boolean> {
-  if (!ExponentFileSystem.askForDirectoryPermissions) {
-    throw new UnavailabilityError('expo-file-system', 'askForDirectoryPermissions');
+): Promise<string | false> {
+  if (!ExponentFileSystem.askForDirectoryPermissionsAsync) {
+    throw new UnavailabilityError('expo-file-system', 'askForDirectoryPermissionsAsync');
   }
 
-  return await ExponentFileSystem.askForDirectoryPermissions(initialFileUrl);
+  return await ExponentFileSystem.askForDirectoryPermissionsAsync(initialFileUrl);
 }
