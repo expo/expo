@@ -14,7 +14,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `@react-native-segmented-control/segmented-control` from `2.2.1` to `2.3.0`. Side note: the package has changed its NPM scope from `@react-native-community/segmented-control`. ([#11996](https://github.com/expo/expo/pull/11996) by [@tsapeta](https://github.com/tsapeta))
 - Updated `@react-native-community/viewpager` from `4.2.0` to `4.2.3`. ([#12003](https://github.com/expo/expo/pull/12003) by [@tsapeta](https://github.com/tsapeta))
 - Updated `react-native-gesture-handler` from `1.8.0` to `1.10.2`. ([#12031](https://github.com/expo/expo/pull/12031) by [@tsapeta](https://github.com/tsapeta))
-- Updated `react-native-screens` from `2.15.2` to `2.18.0`. ([#12047](https://github.com/expo/expo/pull/12047) by [@tsapeta](https://github.com/tsapeta))
+- Updated `react-native-screens` from `2.15.2` to `2.18.1`. ([#12047](https://github.com/expo/expo/pull/12047) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🛠 Breaking changes
 
