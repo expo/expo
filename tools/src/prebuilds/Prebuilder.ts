@@ -219,6 +219,7 @@ async function findFrameworkForProjectAsync(projectName: string): Promise<string
   const searchNames = new Set([
     projectName,
     projectName.replace(/\/+/, ''), // Firebase/MLVision -> FirebaseMLVision
+    projectName.replace(/\/+.*$/, ''), // FacebookSDK/* -> FacebookSDK
   ]);
 
   for (const name of searchNames) {
