@@ -11,6 +11,8 @@ export type PermissionType =
   | 'mediaLibraryWriteOnly'
   | 'audioRecording'
   | 'location'
+  | 'locationForeground'
+  | 'locationBackground'
   | 'userFacingNotifications'
   | 'notifications'
   | 'contacts'

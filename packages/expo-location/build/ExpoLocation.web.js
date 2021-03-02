@@ -119,6 +119,18 @@ export default {
     async requestPermissionsAsync() {
         return getPermissionsAsync();
     },
+    async requestForegroundPermissionsAsync() {
+        return getPermissionsAsync();
+    },
+    async requestBackgroundPermissionsAsync() {
+        return getPermissionsAsync();
+    },
+    async getForegroundPermissionsAsync() {
+        return getPermissionsAsync();
+    },
+    async getBackgroundPermissionsAsync() {
+        return getPermissionsAsync();
+    },
     // no-op
     startObserving() { },
     stopObserving() { },
