@@ -28,7 +28,9 @@ public class Screen extends ViewGroup {
   public enum StackAnimation {
     DEFAULT,
     NONE,
-    FADE
+    FADE,
+    SLIDE_FROM_RIGHT,
+    SLIDE_FROM_LEFT
   }
 
   public enum ReplaceAnimation {
@@ -146,6 +148,14 @@ public class Screen extends ViewGroup {
         }
       }
     }
+  }
+
+  protected ScreenStackHeaderConfig getHeaderConfig() {
+    View child = getChildAt(0);
+    if (child instanceof ScreenStackHeaderConfig) {
+      return (ScreenStackHeaderConfig) child;
+    }
+    return null;
   }
 
   /**

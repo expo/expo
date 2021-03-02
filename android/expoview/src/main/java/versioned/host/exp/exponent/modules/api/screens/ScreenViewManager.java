@@ -67,6 +67,10 @@ public class ScreenViewManager extends ViewGroupManager<Screen> {
       view.setStackAnimation(Screen.StackAnimation.NONE);
     } else if ("fade".equals(animation)) {
       view.setStackAnimation(Screen.StackAnimation.FADE);
+    } else if ("slide_from_right".equals(animation)) {
+      view.setStackAnimation(Screen.StackAnimation.SLIDE_FROM_RIGHT);
+    } else if ("slide_from_left".equals(animation)) {
+      view.setStackAnimation(Screen.StackAnimation.SLIDE_FROM_LEFT);
     }
   }
 

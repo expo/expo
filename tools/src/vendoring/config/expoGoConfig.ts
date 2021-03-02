@@ -31,6 +31,7 @@ const config: VendoringTargetConfig = {
     'react-native-screens': {
       source: 'https://github.com/software-mansion/react-native-screens.git',
       semverPrefix: '~',
+      ios: {},
     },
     'react-native-appearance': {
       source: 'https://github.com/expo/react-native-appearance.git',
