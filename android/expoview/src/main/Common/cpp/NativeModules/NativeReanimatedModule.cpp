@@ -1,6 +1,4 @@
 #include "NativeReanimatedModule.h"
-#include "Logger.h"
-#include "SpeedChecker.h"
 #include "ShareableValue.h"
 #include "MapperRegistry.h"
 #include "Mapper.h"

@@ -1,5 +1,5 @@
 #include "RuntimeDecorator.h"
-#include "Logger.h"
+#include "ReanimatedHiddenHeaders.h"
 #include <unordered_map>
 #include <memory>
 
