@@ -97,7 +97,6 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
 {
   NSURLRequest *request = [self createManifestRequestWithURL:url extraHeaders:extraHeaders];
   [self _downloadDataWithRequest:request successBlock:^(NSData *data, NSURLResponse *response) {
-    //NSLog(@"JJ started!");
     if (![response isKindOfClass:[NSHTTPURLResponse class]]) {
       errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
                                      code:1040
@@ -171,7 +170,6 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
                                         config:self->_config
                                   successBlock:^(BOOL isValid) {
                                                   if (isValid) {
-                                                    //NSLog(@"JJ signed! success!");
                                                     [self _createUpdateWithManifest:mutableManifest
                                                                            response:response
                                                                            database:database
@@ -206,7 +204,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
                        errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock
 {
   if ( _config.expectsSignedManifest && !isVerified ){
-    // There are a few cases in Expo Go where we do actually want to use the unsigned manifest anyway.
+    // There are a few cases in Expo Go where we still want to use the unsigned manifest anyway, so don't mark it as unverified.
     mutableManifest[@"isVerified"] = @(isVerified);
   }
   EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:mutableManifest.copy
