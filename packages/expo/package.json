@@ -75,17 +75,6 @@
     "pretty-format": "^26.4.0",
     "react-native-safe-area-context": "3.1.9",
     "serialize-error": "^2.1.0",
-    "unimodules-app-loader": "~2.0.0",
-    "unimodules-barcode-scanner-interface": "~6.0.0",
-    "unimodules-camera-interface": "~6.0.0",
-    "unimodules-constants-interface": "~6.0.0",
-    "unimodules-face-detector-interface": "~6.0.0",
-    "unimodules-file-system-interface": "~6.0.0",
-    "unimodules-font-interface": "~6.0.0",
-    "unimodules-image-loader-interface": "~6.0.0",
-    "unimodules-permissions-interface": "~6.0.0",
-    "unimodules-sensors-interface": "~6.0.0",
-    "unimodules-task-manager-interface": "~6.0.0",
     "uuid": "^3.4.0"
   },
   "devDependencies": {
