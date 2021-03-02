@@ -61,9 +61,62 @@ See the [eas.json reference](/build/eas-json.md) for more information.
 
 ## Using secrets in environment variables
 
-🚧 We are currently working on a secrets API that will allow developers to store generic encrypted secrets and selectively expose them to build jobs. This feature will be available before EAS Build graduates from preview.
+For values that you want to expose to your EAS Build hooks but are too sensitive to include in your source code, you can use our Secrets feature found on the Expo website.
 
-App signing credentials secrets are stored in `credentials.json`, which should not be committed to git. This file can also be used to set the `NPM_TOKEN` environment variable in order to give you access to your organization's private packages. [Learn more](how-tos.md).
+These secrets are encrypted at rest and in transit, and are only decrypted in a secure environment by EAS servers.
+
+You can create up to 100 account-wide and app-specific secrets. Account-wide, or "global" secrets will be exposed to every build environment across all of your apps. App-specific secrets only apply to the app they're defined on, and override global secrets with the same name.
+
+### Linking source code to EAS
+
+<!-- TODO: either implement `eas link` or add this to `eas build:configure` -->
+
+To set up secrets for your app, you need to first link your source code to a matching app identifier on our servers.
+
+You can do this using the `eas link` command inside your project directory.
+
+### Finding the secrets UI
+
+To create secrets to use across all apps in an account, you can navigate to the "Secrets" tab under the account settings:
+
+![Global secrets location](/static/images/eas-build/environment-secrets/secrets-account-nav.png)
+
+To create secrets to in a specific app, you can navigate to the "Secrets" tab under the app dashboard:
+
+![App secrets location](/static/images/eas-build/environment-secrets/secrets-project-nav.png)
+
+### Adding secrets
+
+When setting up secrets for a new account or app, you'll be met with this UI:
+
+![Empty secrets UI](/static/images/eas-build/environment-secrets/secrets-empty.png)
+
+Click the "Create" button in the top-right of the table to create a new secret.
+
+A secret needs a name and a value. The name can only contain alphanumeric characters and underscores:
+
+![Secret creation UI filled](/static/images/eas-build/environment-secrets/secrets-create-filled.png)
+
+![Secret UI with stored secret](/static/images/eas-build/environment-secrets/secrets-populated.png)
+
+After creating a secret, you can access the value via EAS Build hooks in Node.JS as `process.env.VARIABLE_NAME` or in shell scripts as `$VARIABLE_NAME`:
+
+```json
+// package.json
+{
+  "scripts": {
+    "eas-build-pre-install": "echo $VARIABLE_NAME",
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "web": "expo start --web",
+    "start": "react-native start",
+    "test": "jest"
+  },
+ ...
+}
+```
+
+Learn more about EAS Build hooks [here](/build-reference/how-tos/#eas-build-specific-npm-hooks).
 
 ## Built-in environment variables
 

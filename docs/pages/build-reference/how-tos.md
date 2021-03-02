@@ -60,15 +60,9 @@ This is an example of how your package.json might look like:
 ## How to use private package repositories
 
 - Configure your project in a way that works with `yarn` and relies on the `NPM_TOKEN` env variable to authenticate with private repositories
-- add `experimental.npmToken` in `credentials.json`
+- add `NPM_TOKEN` to your account or project's secrets. See the [secret environment variables](/build-reference/variables/#using-secrets-in-environment-variables) docs to learn how to do this.
 
-```json
-{
-  "experimental": {
-    "npmToken": "example npm token"
-  }
-}
-```
+![Secret creation UI filled](/static/images/eas-build/environment-secrets/secrets-create-filled.png)
 
 If you are not using `credentials.json` for Android/iOS credentials, it is fine for `experimental.npmToken` to be the only entry in the file. Add `credentials.json` to `.gitignore` if it's not there already.
 
@@ -101,10 +95,8 @@ APP_ENV=production eas build --platform ios --profile production
 ```js
 // example app.config.js
 
-const isStaging = process.env.APP_ENV === "staging";
-const bundleIdentifier = isStaging
-  ? "xyz.easbuildapp.staging"
-  : "xyz.easbuildapp";
+const isStaging = process.env.APP_ENV === 'staging';
+const bundleIdentifier = isStaging ? 'xyz.easbuildapp.staging' : 'xyz.easbuildapp';
 
 export default ({ config }) => ({
   expo: {
@@ -114,7 +106,6 @@ export default ({ config }) => ({
     },
   },
 });
-
 ```
 
 ```json
@@ -130,14 +121,14 @@ export default ({ config }) => ({
         "worflow": "generic",
         "scheme": "myapp-staging",
         "env": {
-            "APP_ENV": "staging"
+          "APP_ENV": "staging"
         }
       },
       "production": {
         "worflow": "generic",
         "scheme": "myapp",
         "env": {
-            "APP_ENV": "production"
+          "APP_ENV": "production"
         }
       }
     }
