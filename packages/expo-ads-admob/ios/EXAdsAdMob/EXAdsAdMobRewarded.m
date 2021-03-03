@@ -7,9 +7,8 @@ static NSString *const EXAdsAdMobRewardedDidRewardUser = @"rewardedVideoDidRewar
 static NSString *const EXAdsAdMobRewardedDidLoad = @"rewardedVideoDidLoad";
 static NSString *const EXAdsAdMobRewardedDidFailToLoad = @"rewardedVideoDidFailToLoad";
 static NSString *const EXAdsAdMobRewardedDidOpen = @"rewardedVideoDidOpen";
-static NSString *const EXAdsAdMobRewardedDidStart = @"rewardedVideoDidStart";
+static NSString *const EXAdsAdMobRewardedDidFailToOpen = @"rewardedVideoDidFailToOpen";
 static NSString *const EXAdsAdMobRewardedDidClose = @"rewardedVideoDidClose";
-static NSString *const EXAdsAdMobRewardedWillLeaveApplication = @"rewardedVideoWillLeaveApplication";
 
 @interface EXAdsAdMobRewarded ()
 
@@ -41,9 +40,7 @@ UM_EXPORT_MODULE(ExpoAdsAdMobRewardedVideoAdManager);
            EXAdsAdMobRewardedDidLoad,
            EXAdsAdMobRewardedDidFailToLoad,
            EXAdsAdMobRewardedDidOpen,
-           EXAdsAdMobRewardedDidStart,
            EXAdsAdMobRewardedDidClose,
-           EXAdsAdMobRewardedWillLeaveApplication,
            ];
 }
 
@@ -78,7 +75,7 @@ UM_EXPORT_METHOD_AS(requestAd,
   if (_requestAdRejecter == nil) {
     _requestAdResolver = resolve;
     _requestAdRejecter = reject;
-    [GADRewardBasedVideoAd sharedInstance].delegate = self;
+    self.rewardedAd = [[GADRewardedAd alloc] initWithAdUnitID:self->_adUnitID];
     GADRequest *request = [GADRequest request];
     if (additionalRequestParams) {
       GADExtras *extras = [[GADExtras alloc] init];
@@ -88,8 +85,17 @@ UM_EXPORT_METHOD_AS(requestAd,
     UM_WEAKIFY(self);
     dispatch_async(dispatch_get_main_queue(), ^{
       UM_ENSURE_STRONGIFY(self);
-      [[GADRewardBasedVideoAd sharedInstance] loadRequest:request
-                                             withAdUnitID:self->_adUnitID];
+      [self.rewardedAd loadRequest:request completionHandler:^(GADRequestError * _Nullable error) {
+        if (error) {
+          [self _maybeSendEventWithName:EXAdsAdMobRewardedDidFailToLoad body:@{ @"name": [error description] }];
+          _requestAdRejecter(@"E_AD_REQUEST_FAILED", [error description], error);
+          [self _cleanupRequestAdPromise];
+        } else {
+          [self _maybeSendEventWithName:EXAdsAdMobRewardedDidLoad body:nil];
+          _requestAdResolver(nil);
+          [self _cleanupRequestAdPromise];
+        }
+      }];
     });
   } else {
     reject(@"E_AD_REQUESTING", @"An ad is already being requested, await the previous promise.", nil);
@@ -100,14 +106,14 @@ UM_EXPORT_METHOD_AS(showAd,
                     showAd:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (_showAdResolver == nil && [[GADRewardBasedVideoAd sharedInstance] isReady]) {
+  if (_showAdResolver == nil && self.rewardedAd.isReady) {
     _showAdResolver = resolve;
     UM_WEAKIFY(self);
     dispatch_async(dispatch_get_main_queue(), ^{
       UM_ENSURE_STRONGIFY(self);
-      [[GADRewardBasedVideoAd sharedInstance] presentFromRootViewController:self.utilities.currentViewController];
+      [self.rewardedAd presentFromRootViewController:self.utilities.currentViewController];
     });
-  } else if ([[GADRewardBasedVideoAd sharedInstance] isReady]) {
+  } else if (self.rewardedAd.isReady) {
     reject(@"E_AD_BEING_SHOWN", @"Ad is already being shown, await the previous promise.", nil);
   } else {
     reject(@"E_AD_NOT_READY", @"Ad is not ready.", nil);
@@ -136,42 +142,28 @@ UM_EXPORT_METHOD_AS(getIsReady,
                     getIsReady:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  resolve([NSNumber numberWithBool:[[GADRewardBasedVideoAd sharedInstance] isReady]]);
+  resolve([NSNumber numberWithBool:self.rewardedAd.isReady]);
 }
 
 
-- (void)rewardBasedVideoAd:(GADRewardBasedVideoAd *)rewardBasedVideoAd didRewardUserWithReward:(GADAdReward *)reward {
+- (void)rewardedAd:(GADRewardedAd *)rewardedAd userDidEarnReward:(GADAdReward *)reward {
   [self _maybeSendEventWithName:EXAdsAdMobRewardedDidRewardUser body:@{ @"type": reward.type, @"amount": reward.amount }];
 }
 
-- (void)rewardBasedVideoAdDidReceiveAd:(GADRewardBasedVideoAd *)rewardBasedVideoAd {
-  [self _maybeSendEventWithName:EXAdsAdMobRewardedDidLoad body:nil];
-  _requestAdResolver(nil);
-  [self _cleanupRequestAdPromise];
-}
-
-- (void)rewardBasedVideoAdDidOpen:(GADRewardBasedVideoAd *)rewardBasedVideoAd {
+- (void)rewardedAdDidPresent:(GADRewardedAd *)rewardedAd {
   [self _maybeSendEventWithName:EXAdsAdMobRewardedDidOpen body:nil];
   _showAdResolver(nil);
   _showAdResolver = nil;
 }
 
-- (void)rewardBasedVideoAdDidStartPlaying:(GADRewardBasedVideoAd *)rewardBasedVideoAd {
-  [self _maybeSendEventWithName:EXAdsAdMobRewardedDidStart body:nil];
-}
-
-- (void)rewardBasedVideoAdDidClose:(GADRewardBasedVideoAd *)rewardBasedVideoAd {
-  [self _maybeSendEventWithName:EXAdsAdMobRewardedDidClose body:nil];
-}
-
-- (void)rewardBasedVideoAdWillLeaveApplication:(GADRewardBasedVideoAd *)rewardBasedVideoAd {
-  [self _maybeSendEventWithName:EXAdsAdMobRewardedWillLeaveApplication body:nil];
-}
-
-- (void)rewardBasedVideoAd:(GADRewardBasedVideoAd *)rewardBasedVideoAd didFailToLoadWithError:(NSError *)error {
-  [self _maybeSendEventWithName:EXAdsAdMobRewardedDidFailToLoad body:@{ @"name": [error description] }];
+- (void)rewardedAd:(GADRewardedAd *)rewardedAd didFailToPresentWithError:(NSError *)error {
+  [self _maybeSendEventWithName:EXAdsAdMobRewardedDidFailToOpen body:@{ @"name": [error description] }];
   _requestAdRejecter(@"E_AD_REQUEST_FAILED", [error description], error);
   [self _cleanupRequestAdPromise];
+}
+
+- (void)rewardedAdDidDismiss:(GADRewardedAd *)rewardedAd {
+  [self _maybeSendEventWithName:EXAdsAdMobRewardedDidClose body:nil];
 }
 
 - (void)_cleanupRequestAdPromise
