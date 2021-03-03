@@ -670,7 +670,9 @@ export async function test(t) {
         });
 
         t.it('returns an empty array if there are no categories', async () => {
-          t.expect((await Notifications.getNotificationCategoriesAsync()).length).toEqual(existingCategoriesCount);
+          t.expect((await Notifications.getNotificationCategoriesAsync()).length).toEqual(
+            existingCategoriesCount
+          );
         });
 
         t.it('returns an array with the just-created categories', async () => {
@@ -684,7 +686,9 @@ export async function test(t) {
             testCategory2.actions,
             testCategory2.options
           );
-          t.expect((await Notifications.getNotificationCategoriesAsync()).length).toEqual(existingCategoriesCount + 2);
+          t.expect((await Notifications.getNotificationCategoriesAsync()).length).toEqual(
+            existingCategoriesCount + 2
+          );
         });
       });
 
