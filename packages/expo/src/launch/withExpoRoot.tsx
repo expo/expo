@@ -19,11 +19,6 @@ export default function withExpoRoot<P extends InitialProps>(
   AppRootComponent: React.ComponentType<P>
 ): React.ComponentType<P> {
   return function ExpoRoot(props: P) {
-    const didInitialize = React.useRef(false);
-    if (!didInitialize.current) {
-      didInitialize.current = true;
-    }
-
     useDevKeepAwake();
 
     const combinedProps = {

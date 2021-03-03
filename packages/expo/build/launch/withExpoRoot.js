@@ -13,10 +13,6 @@ if (__DEV__) {
 }
 export default function withExpoRoot(AppRootComponent) {
     return function ExpoRoot(props) {
-        const didInitialize = React.useRef(false);
-        if (!didInitialize.current) {
-            didInitialize.current = true;
-        }
         useDevKeepAwake();
         const combinedProps = {
             ...props,
