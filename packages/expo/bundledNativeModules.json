@@ -99,7 +99,7 @@
   "expo-image-loader": "~2.0.0",
   "expo-screen-orientation": "~3.0.0",
   "unimodules-app-loader": "~2.0.0",
-  "expo-notifications": "~0.9.0",
+  "expo-notifications": "~0.10.0",
   "expo-splash-screen": "~0.9.0",
   "firebase": "8.2.3",
   "@react-native-community/slider": "3.0.3",
