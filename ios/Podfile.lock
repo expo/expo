@@ -4,7 +4,7 @@ PODS:
     - lottie-ios (~> 3.1.8)
   - ABI38_0_0EXAdsAdMob (8.2.1):
     - ABI38_0_0UMCore
-    - Google-Mobile-Ads-SDK (= 7.55.1)
+    - Google-Mobile-Ads-SDK (= 7.69.0)
   - ABI38_0_0EXAdsFacebook (8.2.1):
     - ABI38_0_0UMCore
     - FBAudienceNetwork
@@ -534,7 +534,7 @@ PODS:
     - lottie-ios (~> 3.1.8)
   - ABI39_0_0EXAdsAdMob (8.3.0):
     - ABI39_0_0UMCore
-    - Google-Mobile-Ads-SDK (= 7.55.1)
+    - Google-Mobile-Ads-SDK (= 7.69.0)
   - ABI39_0_0EXAdsFacebook (8.4.0):
     - ABI39_0_0UMCore
     - FBAudienceNetwork
@@ -1074,7 +1074,7 @@ PODS:
     - lottie-ios (~> 3.1.8)
   - ABI40_0_0EXAdsAdMob (8.4.0):
     - ABI40_0_0UMCore
-    - Google-Mobile-Ads-SDK (= 7.55.1)
+    - Google-Mobile-Ads-SDK (= 7.69.0)
   - ABI40_0_0EXAdsFacebook (8.4.1):
     - ABI40_0_0UMCore
     - FBAudienceNetwork (~> 5.9.0)
@@ -1643,7 +1643,7 @@ PODS:
   - CocoaLumberjack/Core (3.5.3)
   - DoubleConversion (1.1.6)
   - EXAdsAdMob (9.0.0):
-    - Google-Mobile-Ads-SDK (= 7.55.1)
+    - Google-Mobile-Ads-SDK (= 7.69.0)
     - UMCore
   - EXAdsFacebook (9.0.0):
     - FBAudienceNetwork (~> 5.9.0)
@@ -1947,7 +1947,7 @@ PODS:
     - GoogleMaps
   - Google-Maps-iOS-Utils/QuadTree (2.1.0):
     - GoogleMaps
-  - Google-Mobile-Ads-SDK (7.55.1):
+  - Google-Mobile-Ads-SDK (7.69.0):
     - GoogleAppMeasurement (~> 6.0)
   - GoogleAPIClientForREST/Core (1.5.1):
     - GTMSessionFetcher (>= 1.1.7)
