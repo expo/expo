@@ -4,9 +4,15 @@
 
 ### 🛠 Breaking changes
 
+- Removed the `rewardedVideoWillLeaveApplication` event (use AppState instead)
+- Removed the `rewardedVideoDidStart` event
+
 ### 🎉 New features
 
 - Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
+- Upgraded underlying Admob iOS SDK to v7.69.0 & Android SDK to v19.7.0
+- (iOS) Added support for SKAdNetwork(todo)
+- Added the `rewardedVideoDidFailToOpen` event
 
 ### 🐛 Bug fixes
 
