@@ -7,3 +7,5 @@ The [managed workflow](../introduction/managed-vs-bare.md#managed-workflow) has 
 The process of ejecting is easily reversible so don't worry about experimenting with it. Just commit any changes you want to keep and then follow along with this guide. If you decide you want to abort it, just check out your most recent commit. You can also reverse it in the future by deleting the `ios` and `android` directories.
 
 To eject to the bare workflow, you can run `expo eject` and follow the instructions. Head over to the [bare workflow walkthrough](../bare/exploring-bare-workflow.md) to learn more about what the workflow will look like after ejecting.
+
+> 💡 We recommend upgrading to the latest SDK version before ejecting. It will be more difficult to upgrade your app after ejecting because you will also be responsible for native iOS and Android related upgrade steps.
