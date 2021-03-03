@@ -28,9 +28,7 @@ The packager that you're running in your terminal (either with `expo start` or `
 - If this is a bare workflow project, and this error is occurring right after upgrading your React Native version, you should double-check that you've performed each of the upgrade steps correctly.
 
 - Finally:
-  - Clear your project's node modules: `rm -rf node_modules/`
-  - Clear your yarn or npm cache, depending on which you’re using, with `yarn cache clean` or `npm cache clean`
-  - Reinstall your dependencies with either `yarn` or `npm install`
-  - Clear your watchman state by running `watchman watch-del-all`
-  - Restart your local packager and clear its cache with `expo start -c`
+  - Clear your cache by running `rm -rf node_modules && yarn cache clean && yarn && watchman watch-del-all && rm -rf $TMPDIR/react-native-packager-cache-* && rm -rf $TMPDIR/metro-bundler-cache-* && expo start -c`
+     - Commands if you are using NPM can be found [here.](clear-cache-osx-linux)
+     - Commands if you are using Windows can be found [here.](clear-cache-windows)
   - If this is a bare workflow app, run `npx pod-install`, then rebuild your native projects (run `yarn android` to rebuild for Android, and `yarn ios` to rebuild iOS)
