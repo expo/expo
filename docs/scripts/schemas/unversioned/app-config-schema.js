@@ -665,9 +665,10 @@ export default {
       },
       useNextNotificationsApi: {
         description:
-          'A Boolean value that indicates whether the app should use the new notifications API. Only applies to SDK 40 and below- in SDK 41, you must use the new API.',
+          '@deprecated A Boolean value that indicates whether the app should use the modern notifications API. Only applies to SDK 40 and below - SDK 41 and later do not include the legacy notifications API.',
         type: 'boolean',
         fallback: false,
+        meta: { deprecated: true },
       },
       icon: {
         description:

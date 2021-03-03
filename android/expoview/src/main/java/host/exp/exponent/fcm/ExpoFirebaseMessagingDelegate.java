@@ -52,7 +52,7 @@ public class ExpoFirebaseMessagingDelegate extends FirebaseMessagingDelegate {
 
         // If an experience is on SDK 41 or above, use the new notifications API
         // It is removed beginning with SDK41
-        if (sdkVersion > 40) {
+        if (sdkVersion >= 41) {
           dispatchToNextNotificationModule(remoteMessage);
           return;
         } else if (sdkVersion <= 40 && sdkVersion >= 38) {
