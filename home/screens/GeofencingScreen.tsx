@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import * as Location from 'expo-location';
 import { Notifications } from 'expo';
+import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 import * as TaskManager from 'expo-task-manager';
 import * as React from 'react';
