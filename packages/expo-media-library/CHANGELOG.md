@@ -12,6 +12,8 @@
 ### 🐛 Bug fixes
 
 - Remove peerDependencies and unimodulePeerDependencies from Expo modules. ([#11980](https://github.com/expo/expo/pull/11980) by [@brentvatne](https://github.com/brentvatne))
+- In 'getAssetInfoAsync', return 'isNetworkAsset' field for photo assets as boolean, rather than number. ([#12086](https://github.com/expo/expo/pull/12086) by [@drtangible](https://github.com/drtangible))
+
 
 ## 11.0.0 — 2021-01-15
 
