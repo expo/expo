@@ -37,7 +37,7 @@
     "expo-location": "~11.0.0",
     "expo-media-library": "~11.0.0",
     "expo-network": "~3.0.0",
-    "expo-notifications": "~0.9.0",
+    "expo-notifications": "~0.10.0",
     "expo-permissions": "~11.0.0",
     "expo-random": "~11.0.0",
     "expo-secure-store": "~10.0.0",
