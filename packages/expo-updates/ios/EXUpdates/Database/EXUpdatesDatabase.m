@@ -1,6 +1,7 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesDatabase.h>
+#import <EXUpdates/EXUpdatesDatabase+Tests.h>
+#import <EXUpdates/EXUpdatesDatabaseInitialization.h>
 #import <EXUpdates/EXUpdatesDatabaseUtils.h>
 
 #import <sqlite3.h>
@@ -10,12 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXUpdatesDatabase ()
 
 @property (nonatomic, assign) sqlite3 *db;
-@property (nonatomic, readwrite, strong) NSLock *lock;
 
 @end
-
-static NSString * const EXUpdatesDatabaseErrorDomain = @"EXUpdatesDatabase";
-static NSString * const EXUpdatesDatabaseFilename = @"expo-v4.db";
 
 static NSString * const EXUpdatesDatabaseManifestFiltersKey = @"manifestFilters";
 static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefinedHeaders";
@@ -34,48 +31,13 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
 
 - (BOOL)openDatabaseInDirectory:(NSURL *)directory withError:(NSError ** _Nullable)error
 {
+  dispatch_assert_queue(_databaseQueue);
   sqlite3 *db;
-  NSURL *dbUrl = [directory URLByAppendingPathComponent:EXUpdatesDatabaseFilename];
-  BOOL shouldInitializeDatabase = ![[NSFileManager defaultManager] fileExistsAtPath:[dbUrl path]];
-  int resultCode = sqlite3_open([[dbUrl path] UTF8String], &db);
-  if (resultCode != SQLITE_OK) {
-    NSLog(@"Error opening SQLite db: %@", [self _errorFromSqlite:_db].localizedDescription);
-    sqlite3_close(db);
-
-    if (resultCode == SQLITE_CORRUPT || resultCode == SQLITE_NOTADB) {
-      NSString *archivedDbFilename = [NSString stringWithFormat:@"%f-%@", [[NSDate date] timeIntervalSince1970], EXUpdatesDatabaseFilename];
-      NSURL *destinationUrl = [directory URLByAppendingPathComponent:archivedDbFilename];
-      NSError *err;
-      if ([[NSFileManager defaultManager] moveItemAtURL:dbUrl toURL:destinationUrl error:&err]) {
-        NSLog(@"Moved corrupt SQLite db to %@", archivedDbFilename);
-        if (sqlite3_open([[dbUrl absoluteString] UTF8String], &db) != SQLITE_OK) {
-          if (error != nil) {
-            *error = [self _errorFromSqlite:_db];
-          }
-          return NO;
-        }
-        shouldInitializeDatabase = YES;
-      } else {
-        NSString *description = [NSString stringWithFormat:@"Could not move existing corrupt database: %@", [err localizedDescription]];
-        if (error != nil) {
-          *error = [NSError errorWithDomain:EXUpdatesDatabaseErrorDomain
-                                       code:1004
-                                   userInfo:@{ NSLocalizedDescriptionKey: description, NSUnderlyingErrorKey: err }];
-        }
-        return NO;
-      }
-    } else {
-      if (error != nil) {
-        *error = [self _errorFromSqlite:_db];
-      }
-      return NO;
-    }
+  if (![EXUpdatesDatabaseInitialization initializeDatabaseWithLatestSchemaInDirectory:directory database:&db error:error]) {
+    return NO;
   }
+  NSAssert(db, @"Database appears to have initialized successfully, but there is no handle");
   _db = db;
-
-  if (shouldInitializeDatabase) {
-    return [self _initializeDatabase:error];
-  }
   return YES;
 }
 
@@ -88,67 +50,6 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
 - (void)dealloc
 {
   [self closeDatabase];
-}
-
-- (BOOL)_initializeDatabase:(NSError **)error
-{
-  NSAssert(_db, @"Missing database handle");
-  dispatch_assert_queue(_databaseQueue);
-
-  NSString * const createTableStmts = @"\
-   PRAGMA foreign_keys = ON;\
-   CREATE TABLE \"updates\" (\
-   \"id\"  BLOB UNIQUE,\
-   \"scope_key\"  TEXT NOT NULL,\
-   \"commit_time\"  INTEGER NOT NULL,\
-   \"runtime_version\"  TEXT NOT NULL,\
-   \"launch_asset_id\" INTEGER,\
-   \"metadata\"  TEXT,\
-   \"status\"  INTEGER NOT NULL,\
-   \"keep\"  INTEGER NOT NULL,\
-   PRIMARY KEY(\"id\"),\
-   FOREIGN KEY(\"launch_asset_id\") REFERENCES \"assets\"(\"id\") ON DELETE CASCADE\
-   );\
-   CREATE TABLE \"assets\" (\
-   \"id\"  INTEGER PRIMARY KEY AUTOINCREMENT,\
-   \"url\"  TEXT,\
-   \"key\"  TEXT NOT NULL UNIQUE,\
-   \"headers\"  TEXT,\
-   \"type\"  TEXT NOT NULL,\
-   \"metadata\"  TEXT,\
-   \"download_time\"  INTEGER NOT NULL,\
-   \"relative_path\"  TEXT NOT NULL,\
-   \"hash\"  BLOB NOT NULL,\
-   \"hash_type\"  INTEGER NOT NULL,\
-   \"marked_for_deletion\"  INTEGER NOT NULL\
-   );\
-   CREATE TABLE \"updates_assets\" (\
-   \"update_id\"  BLOB NOT NULL,\
-   \"asset_id\" INTEGER NOT NULL,\
-   FOREIGN KEY(\"update_id\") REFERENCES \"updates\"(\"id\") ON DELETE CASCADE,\
-   FOREIGN KEY(\"asset_id\") REFERENCES \"assets\"(\"id\") ON DELETE CASCADE\
-   );\
-   CREATE TABLE \"json_data\" (\
-   \"id\" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\
-   \"key\" TEXT NOT NULL,\
-   \"value\" TEXT NOT NULL,\
-   \"last_updated\" INTEGER NOT NULL,\
-   \"scope_key\" TEXT NOT NULL\
-   );\
-   CREATE UNIQUE INDEX \"index_updates_scope_key_commit_time\" ON \"updates\" (\"scope_key\", \"commit_time\");\
-   CREATE INDEX \"index_updates_launch_asset_id\" ON \"updates\" (\"launch_asset_id\");\
-   CREATE INDEX \"index_json_data_scope_key\" ON \"json_data\" (\"scope_key\")\
-   ";
-
-  char *errMsg;
-  if (sqlite3_exec(_db, [createTableStmts UTF8String], NULL, NULL, &errMsg) != SQLITE_OK) {
-    if (error != nil) {
-      *error = [self _errorFromSqlite:_db];
-    }
-    sqlite3_free(errMsg);
-    return NO;
-  };
-  return YES;
 }
 
 # pragma mark - insert and update
