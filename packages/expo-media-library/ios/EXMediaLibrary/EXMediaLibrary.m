@@ -440,7 +440,7 @@ UM_EXPORT_METHOD_AS(getAssetInfoAsync,
                                  completionHandler:^(PHContentEditingInput * _Nullable contentEditingInput, NSDictionary * _Nonnull info) {
         result[@"localUri"] = [contentEditingInput.fullSizeImageURL absoluteString];
         result[@"orientation"] = @(contentEditingInput.fullSizeImageOrientation);
-        result[@"isNetworkAsset"] = [info objectForKey:PHContentEditingInputResultIsInCloudKey];
+        result[@"isNetworkAsset"] = @([[info objectForKey:PHContentEditingInputResultIsInCloudKey] boolValue]);
         
         CIImage *ciImage = [CIImage imageWithContentsOfURL:contentEditingInput.fullSizeImageURL];
         result[@"exif"] = ciImage.properties;

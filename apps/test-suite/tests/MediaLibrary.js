@@ -342,6 +342,94 @@ export async function test(t) {
       });
     });
 
+    t.describe('getAssetInfoAsync', async () => {
+      t.it('shouldDownloadFromNetwork: false, for photos', async () => {
+        const mediaType = MediaLibrary.MediaType.photo;
+        const options = { mediaType, album };
+        const { assets } = await MediaLibrary.getAssetsAsync(options);
+        const value = await MediaLibrary.getAssetInfoAsync(assets[0], {
+          shouldDownloadFromNetwork: false,
+        });
+        const keys = Object.keys(value);
+
+        const expectedExtraKeys = Platform.select({
+          ios: ['isNetworkAsset'],
+          default: [],
+        });
+        expectedExtraKeys.forEach(key => t.expect(keys).toContain(key));
+        if (Platform.OS === 'ios') {
+          t.expect(value['isNetworkAsset']).toBe(false);
+        }
+      });
+
+      t.it('shouldDownloadFromNetwork: true, for photos', async () => {
+        const mediaType = MediaLibrary.MediaType.photo;
+        const options = { mediaType, album };
+        const { assets } = await MediaLibrary.getAssetsAsync(options);
+        const value = await MediaLibrary.getAssetInfoAsync(assets[0], {
+          shouldDownloadFromNetwork: true,
+        });
+        const keys = Object.keys(value);
+
+        // This is inconsistent with the documentation, which states
+        // that this field is only available if flag `shouldDownloadFromNetwork`
+        // is set to `false`.
+        //
+        // TODO: Return only when `shouldDownloadFromNetwork` is false, or clarify documentation.
+        const expectedExtraKeys = Platform.select({
+          ios: ['isNetworkAsset'],
+          default: [],
+        });
+        expectedExtraKeys.forEach(key => t.expect(keys).toContain(key));
+        if (Platform.OS === 'ios') {
+          t.expect(value['isNetworkAsset']).toBe(false);
+        }
+      });
+
+      t.it('shouldDownloadFromNetwork: false, for videos', async () => {
+        const mediaType = MediaLibrary.MediaType.video;
+        const options = { mediaType, album };
+        const { assets } = await MediaLibrary.getAssetsAsync(options);
+        const value = await MediaLibrary.getAssetInfoAsync(assets[0], {
+          shouldDownloadFromNetwork: false,
+        });
+        const keys = Object.keys(value);
+
+        const expectedExtraKeys = Platform.select({
+          ios: ['isNetworkAsset'],
+          default: [],
+        });
+        expectedExtraKeys.forEach(key => t.expect(keys).toContain(key));
+        if (Platform.OS === 'ios') {
+          t.expect(value['isNetworkAsset']).toBe(false);
+        }
+      });
+
+      t.it('shouldDownloadFromNetwork: true, for videos', async () => {
+        const mediaType = MediaLibrary.MediaType.video;
+        const options = { mediaType, album };
+        const { assets } = await MediaLibrary.getAssetsAsync(options);
+        const value = await MediaLibrary.getAssetInfoAsync(assets[0], {
+          shouldDownloadFromNetwork: true,
+        });
+        const keys = Object.keys(value);
+
+        // This is inconsistent with the documentation, which states
+        // that this field is only available if flag `shouldDownloadFromNetwork`
+        // is set to `false`.
+        //
+        // TODO: Return only when `shouldDownloadFromNetwork` is false, or clarify documentation.
+        const expectedExtraKeys = Platform.select({
+          ios: ['isNetworkAsset'],
+          default: [],
+        });
+        expectedExtraKeys.forEach(key => t.expect(keys).toContain(key));
+        if (Platform.OS === 'ios') {
+          t.expect(value['isNetworkAsset']).toBe(false);
+        }
+      });
+    });
+
     t.describe('Delete tests', async () => {
       t.it('deleteAssetsAsync', async () => {
         const { assets } = await MediaLibrary.getAssetsAsync({ album, mediaType: MEDIA_TYPES });
