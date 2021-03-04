@@ -448,6 +448,19 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
+  'stripe-react-native': {
+    repoUrl: 'https://github.com/stripe/stripe-react-native',
+    installableInManagedApps: true,
+    steps: [
+      {
+        sourceAndroidPath: 'android/src/main/java/com/reactnativestripesdk',
+        targetAndroidPath: 'modules/api/components/reactnativestripesdk',
+        sourceAndroidPackage: 'com.reactnativestripesdk.StripeSdkPackage',
+        targetAndroidPackage:
+          'versioned.host.exp.exponent.modules.api.components.reactnativestripesdk',
+      },
+    ],
+  },
 };
 
 async function renameIOSSymbolsAsync(file: string, iosPrefix: string) {
