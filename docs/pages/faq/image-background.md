@@ -2,6 +2,8 @@
 title: How to set a background image on a component in Expo and React Native
 ---
 
+import SnackInline from '~/components/plugins/SnackInline';
+
 If you are looking for a replacement for the `background-image` in css or the `backgroundImage` stylesheet property, or need to display an image as the background for a container in your screen, you’re in the right place.
 
 In Expo and React Native, you use the ImageBackground component to achieve this effect.
@@ -25,7 +27,7 @@ const App = () => (
       <Text style={styles.text}>Elements</Text>
       <Text style={styles.text}>in Front of</Text>
       <Text style={styles.text}>Background</Text>
-      /* @end */
+    /* @end */
     </ImageBackground>
   </View>
 );
