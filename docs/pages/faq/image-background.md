@@ -25,7 +25,7 @@ const App = () => (
       <Text style={styles.text}>Elements</Text>
       <Text style={styles.text}>in Front of</Text>
       <Text style={styles.text}>Background</Text>
-      /* @end */
+    /* @end */
     </ImageBackground>
   </View>
 );
