@@ -50,13 +50,13 @@ public class ExpoFirebaseMessagingDelegate extends FirebaseMessagingDelegate {
         JSONObject manifest = new JSONObject(experienceDBObject.manifest);
         int sdkVersion = ABIVersion.toNumber(manifest.getString("sdkVersion")) / 10000;
 
-        // If an experience is on SDK newer than 39, that is SDK40 and beyond up till UNVERSIONED
-        // we only use the new notifications API as it is going to be removed from SDK40.
-        if (sdkVersion >= 40) {
+        // If an experience is on SDK 41 or above, use the new notifications API
+        // It is removed beginning with SDK41
+        if (sdkVersion >= 41) {
           dispatchToNextNotificationModule(remoteMessage);
           return;
-        } else if (sdkVersion == 38 || sdkVersion == 39) {
-          // In SDK38 and 39 we want to let people decide which notifications API to use,
+        } else if (sdkVersion <= 40 && sdkVersion >= 38) {
+          // In SDK 38, 39, & 40 we want to let people decide which notifications API to use,
           // the next or the legacy one.
           JSONObject androidSection = manifest.optJSONObject("android");
           if (androidSection != null) {

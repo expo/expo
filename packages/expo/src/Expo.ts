@@ -6,4 +6,4 @@ export { Logs };
 export { default as registerRootComponent } from './launch/registerRootComponent';
 
 // @ts-ignore
-export { Linking, Notifications } from './deprecated';
+export { Linking } from './deprecated';
