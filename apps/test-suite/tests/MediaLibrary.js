@@ -371,19 +371,11 @@ export async function test(t) {
         });
         const keys = Object.keys(value);
 
-        // This is inconsistent with the documentation, which states
-        // that this field is only available if flag `shouldDownloadFromNetwork`
-        // is set to `false`.
-        //
-        // TODO: Return only when `shouldDownloadFromNetwork` is false, or clarify documentation.
         const expectedExtraKeys = Platform.select({
           ios: ['isNetworkAsset'],
           default: [],
         });
-        expectedExtraKeys.forEach(key => t.expect(keys).toContain(key));
-        if (Platform.OS === 'ios') {
-          t.expect(value['isNetworkAsset']).toBe(false);
-        }
+        expectedExtraKeys.forEach(key => t.expect(keys).not.toContain(key));
       });
 
       t.it('shouldDownloadFromNetwork: false, for videos', async () => {
@@ -414,19 +406,11 @@ export async function test(t) {
         });
         const keys = Object.keys(value);
 
-        // This is inconsistent with the documentation, which states
-        // that this field is only available if flag `shouldDownloadFromNetwork`
-        // is set to `false`.
-        //
-        // TODO: Return only when `shouldDownloadFromNetwork` is false, or clarify documentation.
         const expectedExtraKeys = Platform.select({
           ios: ['isNetworkAsset'],
           default: [],
         });
-        expectedExtraKeys.forEach(key => t.expect(keys).toContain(key));
-        if (Platform.OS === 'ios') {
-          t.expect(value['isNetworkAsset']).toBe(false);
-        }
+        expectedExtraKeys.forEach(key => t.expect(keys).not.toContain(key));
       });
     });
 
