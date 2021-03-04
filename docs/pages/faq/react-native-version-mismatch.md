@@ -1,8 +1,8 @@
 ---
-title: React Native version mismatch error
+title: '"React Native version mismatch" errors'
 ---
 
-When developing a React Native app, it's not uncommon to run into an error that looks like:
+When developing an Expo or React Native app, it's not uncommon to run into an error that looks like:
 
 ```
 React Native version mismatch.
@@ -28,7 +28,7 @@ The packager that you're running in your terminal (either with `expo start` or `
 - If this is a bare workflow project, and this error is occurring right after upgrading your React Native version, you should double-check that you've performed each of the upgrade steps correctly.
 
 - Finally:
-  - Clear your cache by running `rm -rf node_modules && yarn cache clean && yarn && watchman watch-del-all && rm -rf $TMPDIR/react-native-packager-cache-* && rm -rf $TMPDIR/metro-bundler-cache-* && expo start -c`
-     - Commands if you are using NPM can be found [here.](clear-cache-osx-linux)
+  - Clear your bundler caches by running `rm -rf node_modules && yarn cache clean && yarn && watchman watch-del-all && rm -rf $TMPDIR/haste-map-* && rm -rf $TMPDIR/metro-cache && expo start --clear`
+     - Commands if you are using npm can be found [here.](clear-cache-macos-linux)
      - Commands if you are using Windows can be found [here.](clear-cache-windows)
-  - If this is a bare workflow app, run `npx pod-install`, then rebuild your native projects (run `yarn android` to rebuild for Android, and `yarn ios` to rebuild iOS)
+  - If this is a bare workflow project, run `npx pod-install`, then rebuild your native projects (run `yarn android` to rebuild for Android, and `yarn ios` to rebuild iOS)
