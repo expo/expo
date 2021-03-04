@@ -440,7 +440,9 @@ UM_EXPORT_METHOD_AS(getAssetInfoAsync,
                                  completionHandler:^(PHContentEditingInput * _Nullable contentEditingInput, NSDictionary * _Nonnull info) {
         result[@"localUri"] = [contentEditingInput.fullSizeImageURL absoluteString];
         result[@"orientation"] = @(contentEditingInput.fullSizeImageOrientation);
-        result[@"isNetworkAsset"] = @([[info objectForKey:PHContentEditingInputResultIsInCloudKey] boolValue]);
+        result[@"isNetworkAsset"] = [info objectForKey:PHContentEditingInputResultIsInCloudKey] != nil
+          ? @([[info objectForKey:PHContentEditingInputResultIsInCloudKey] boolValue])
+          : @(NO);
         
         CIImage *ciImage = [CIImage imageWithContentsOfURL:contentEditingInput.fullSizeImageURL];
         result[@"exif"] = ciImage.properties;
@@ -469,7 +471,9 @@ UM_EXPORT_METHOD_AS(getAssetInfoAsync,
             [exporter exportAsynchronouslyWithCompletionHandler:^{
                 if (exporter.status == AVAssetExportSessionStatusCompleted) {
                     result[@"localUri"] = videoFileOutputURL.absoluteString;
-                    result[@"isNetworkAsset"] = [info objectForKey:PHImageResultIsInCloudKey];
+                    result[@"isNetworkAsset"] = [info objectForKey:PHImageResultIsInCloudKey] != nil
+                      ? [info objectForKey:PHImageResultIsInCloudKey]
+                      : @(NO);
                     resolve(result);
                 } else if (exporter.status == AVAssetExportSessionStatusFailed) {
                     reject(@"E_EXPORT_FAILED", @"Could not export the requested video.", nil);
@@ -481,7 +485,9 @@ UM_EXPORT_METHOD_AS(getAssetInfoAsync,
         } else {
             AVURLAsset *urlAsset = (AVURLAsset *)asset;
             result[@"localUri"] = [[urlAsset URL] absoluteString];
-            result[@"isNetworkAsset"] = [info objectForKey:PHImageResultIsInCloudKey];
+            result[@"isNetworkAsset"] = [info objectForKey:PHImageResultIsInCloudKey] != nil
+              ? [info objectForKey:PHImageResultIsInCloudKey]
+              : @(NO);
             resolve(result);
         }
       }];
