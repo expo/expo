@@ -1189,10 +1189,10 @@
   dependencies:
     cross-spawn "^6.0.5"
 
-"@expo/styleguide@^2.0.2":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@expo/styleguide/-/styleguide-2.0.2.tgz#e6f5e10a5e9fd9f49845104f9ed216d1cdeabd0e"
-  integrity sha512-jrW6vRLfYu0rHzNd2kuRRH1eUidTCXHzukpgK9qQQo+YLXvWscb9KTaQppe/VqnQVWIHep0nUyseKDKhjcGG9w==
+"@expo/styleguide@^2.1.4":
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide/-/styleguide-2.1.4.tgz#6599008643ac8cdd9cb8cf6ce6055e0b7bfeb3da"
+  integrity sha512-6avY0jc9uwnaaHO2C6zITYnWsTZMx+EZuMW9EcdNpHkeibAgsHkGeH9ZEQDrxVGay+qu7HK8FI9lN2cY56ncZQ==
 
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
