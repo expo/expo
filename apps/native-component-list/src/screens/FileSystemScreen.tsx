@@ -5,10 +5,16 @@ import * as Progress from 'expo-progress';
 import React from 'react';
 import { Alert, ScrollView, StyleSheet, Platform } from 'react-native';
 
+import HeadingText from '../components/HeadingText';
 import ListButton from '../components/ListButton';
+import SimpleActionDemo from '../components/SimpleActionDemo';
+
+const { StorageAccessFramework } = FileSystem;
 
 interface State {
   downloadProgress: number;
+  permittedURI: string | null;
+  createdFileURI: string | null;
 }
 
 // See: https://github.com/expo/expo/pull/10229#discussion_r490961694
@@ -20,6 +26,8 @@ export default class FileSystemScreen extends React.Component<{}, State> {
 
   readonly state: State = {
     downloadProgress: 0,
+    permittedURI: null,
+    createdFileURI: null,
   };
 
   download?: FileSystem.DownloadResumable;
@@ -177,11 +185,74 @@ export default class FileSystemScreen extends React.Component<{}, State> {
   };
 
   _askForDirPermissions = async () => {
-    const uri = await FileSystem.askForDirectoryPermissionsAsync();
-    if (uri) {
-      const files = await FileSystem.readDirectoryAsync(uri);
-      alert(`Files inside ${uri}:\n\n${JSON.stringify(files)}`);
+    const permissions = await StorageAccessFramework.requestDirectoryPermissionsAsync();
+    if (permissions.granted) {
+      const uri = permissions.directoryUri;
+      this.setState({
+        permittedURI: uri,
+      });
+      alert(`You selected: ${uri}`);
     }
+  };
+
+  _readSAFDirAsync = async () => {
+    return await StorageAccessFramework.readDirectoryAsync(this.state.permittedURI!);
+  };
+
+  _creatSAFFileAsync = async () => {
+    const createdFile = await StorageAccessFramework.createFileAsync(
+      this.state.permittedURI!,
+      'test',
+      'text/plain'
+    );
+
+    this.setState({
+      createdFileURI: createdFile,
+    });
+
+    return createdFile;
+  };
+
+  _writeToSAFFileAsync = async () => {
+    await StorageAccessFramework.writeAsStringAsync(
+      this.state.createdFileURI!,
+      'Expo is awesome 🚀🚀🚀'
+    );
+
+    return 'Done 👍';
+  };
+
+  _readSAFFileAsync = async () => {
+    return await StorageAccessFramework.readAsStringAsync(this.state.createdFileURI!);
+  };
+
+  _deleteSAFFileAsync = async () => {
+    await StorageAccessFramework.deleteAsync(this.state.createdFileURI!);
+
+    this.setState({
+      createdFileURI: null,
+    });
+  };
+
+  _copySAFFileToInternalStorageAsync = async () => {
+    const outputDir = FileSystem.cacheDirectory! + '/SAFTest';
+    await StorageAccessFramework.copyAsync({
+      from: this.state.createdFileURI!,
+      to: outputDir,
+    });
+
+    return await FileSystem.readDirectoryAsync(outputDir);
+  };
+
+  _moveSAFFileToInternalStorageAsync = async () => {
+    await StorageAccessFramework.moveAsync({
+      from: this.state.createdFileURI!,
+      to: FileSystem.cacheDirectory!,
+    });
+
+    this.setState({
+      createdFileURI: null,
+    });
   };
 
   render() {
@@ -198,7 +269,41 @@ export default class FileSystemScreen extends React.Component<{}, State> {
         <ListButton onPress={this._copyAndReadAsset} title="Copy and Read Asset" />
         <ListButton onPress={this._alertFreeSpace} title="Alert free space" />
         {Platform.OS === 'android' && (
-          <ListButton onPress={this._askForDirPermissions} title="Ask for directory permissions" />
+          <>
+            <HeadingText>Storage Access Framework</HeadingText>
+            <ListButton
+              onPress={this._askForDirPermissions}
+              title="Ask for directory permissions"
+            />
+            {this.state.permittedURI && (
+              <>
+                <SimpleActionDemo title="Read directory" action={this._readSAFDirAsync} />
+                <SimpleActionDemo title="Creat a file" action={this._creatSAFFileAsync} />
+
+                {this.state.createdFileURI && (
+                  <>
+                    <SimpleActionDemo
+                      title="Write to created file"
+                      action={this._writeToSAFFileAsync}
+                    />
+                    <SimpleActionDemo
+                      title="Read from created file"
+                      action={this._readSAFFileAsync}
+                    />
+                    <ListButton title="Delete created file" onPress={this._deleteSAFFileAsync} />
+                    <SimpleActionDemo
+                      title="Copy file to internal storage"
+                      action={this._copySAFFileToInternalStorageAsync}
+                    />
+                    <ListButton
+                      title="Move file to internal storage"
+                      onPress={this._moveSAFFileToInternalStorageAsync}
+                    />
+                  </>
+                )}
+              </>
+            )}
+          </>
         )}
       </ScrollView>
     );

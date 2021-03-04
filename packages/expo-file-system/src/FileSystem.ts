@@ -13,6 +13,7 @@ import {
   FileInfo,
   FileSystemAcceptedUploadHttpMethod,
   FileSystemDownloadResult,
+  FileSystemRequestDirectoryPermissionsResult,
   FileSystemSessionType,
   FileSystemUploadOptions,
   FileSystemUploadResult,
@@ -39,6 +40,7 @@ export {
   EncodingType,
   FileInfo,
   FileSystemDownloadResult,
+  FileSystemRequestDirectoryPermissionsResult,
   FileSystemAcceptedUploadHttpMethod,
   FileSystemSessionType,
   FileSystemUploadOptions,
@@ -314,15 +316,66 @@ export class DownloadResumable {
   }
 }
 
+const baseReadAsStringAsync = readAsStringAsync;
+const baseWriteAsStringAsync = writeAsStringAsync;
+const baseDeleteAsync = deleteAsync;
+const baseMoveAsync = moveAsync;
+const baseCopyAsync = copyAsync;
 /**
  * Android only
  */
-export async function askForDirectoryPermissionsAsync(
-  initialFileUrl: string | null = null
-): Promise<string | false> {
-  if (!ExponentFileSystem.askForDirectoryPermissionsAsync) {
-    throw new UnavailabilityError('expo-file-system', 'askForDirectoryPermissionsAsync');
+export namespace StorageAccessFramework {
+  export function getUriForDirectoryInRoot(folderName: string) {
+    return `content://com.android.externalstorage.documents/tree/primary:${folderName}/document/primary:${folderName}`;
   }
 
-  return await ExponentFileSystem.askForDirectoryPermissionsAsync(initialFileUrl);
+  export async function requestDirectoryPermissionsAsync(
+    initialFileUrl: string | null = null
+  ): Promise<FileSystemRequestDirectoryPermissionsResult> {
+    if (!ExponentFileSystem.requestDirectoryPermissionsAsync) {
+      throw new UnavailabilityError(
+        'expo-file-system',
+        'StorageAccessFramework.requestDirectoryPermissionsAsync'
+      );
+    }
+
+    return await ExponentFileSystem.requestDirectoryPermissionsAsync(initialFileUrl);
+  }
+
+  export async function readDirectoryAsync(dirUri: string): Promise<string[]> {
+    if (!ExponentFileSystem.readSAFDirectoryAsync) {
+      throw new UnavailabilityError(
+        'expo-file-system',
+        'StorageAccessFramework.readDirectoryAsync'
+      );
+    }
+    return await ExponentFileSystem.readSAFDirectoryAsync(dirUri, {});
+  }
+
+  export async function makeDirectoryAsync(parentUri: string, dirName: string): Promise<string> {
+    if (!ExponentFileSystem.makeSAFDirectoryAsync) {
+      throw new UnavailabilityError(
+        'expo-file-system',
+        'StorageAccessFramework.makeDirectoryAsync'
+      );
+    }
+    return await ExponentFileSystem.makeSAFDirectoryAsync(parentUri, dirName);
+  }
+
+  export async function createFileAsync(
+    parentUri: string,
+    fileName: string,
+    mimeType: string
+  ): Promise<string> {
+    if (!ExponentFileSystem.createSAFFileAsync) {
+      throw new UnavailabilityError('expo-file-system', 'StorageAccessFramework.createFileAsync');
+    }
+    return await ExponentFileSystem.createSAFFileAsync(parentUri, fileName, mimeType);
+  }
+
+  export const writeAsStringAsync = baseWriteAsStringAsync;
+  export const readAsStringAsync = baseReadAsStringAsync;
+  export const deleteAsync = baseDeleteAsync;
+  export const moveAsync = baseMoveAsync;
+  export const copyAsync = baseCopyAsync;
 }

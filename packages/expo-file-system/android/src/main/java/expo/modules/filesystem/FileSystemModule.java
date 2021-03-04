@@ -520,7 +520,7 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
       return;
     }
 
-    if (!outputDir.exists() || !outputDir.mkdirs()) {
+    if (!outputDir.exists() && !outputDir.mkdirs()) {
       throw new IOException("Couldn't create folder in output dir.");
     }
 
@@ -598,18 +598,8 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
             "Directory '" + uri + "' could not be read.");
         }
       } else if (isSAFUri(uri)) {
-        DocumentFile file = DocumentFile.fromTreeUri(getContext(), uri);
-        if (file == null || !file.exists() || !file.isDirectory()) {
-          promise.reject("ERR_FILESYSTEM_CANNOT_READ_DIRECTORY",
-            "Uri '" + uri + "' doesn't exist or isn't a directory.");
-          return;
-        }
-        DocumentFile[] children = file.listFiles();
-        List<String> result = new ArrayList<>();
-        for (DocumentFile child : children) {
-          result.add(child.getUri().toString());
-        }
-        promise.resolve(result);
+        promise.reject("ERR_FILESYSTEM_UNSUPPORTED_SCHEME",
+          "Can't read Storage Access Framework directory, use StorageAccessFramework.readDirectoryAsync() instead.");
       } else {
         throw new IOException("Unsupported scheme for location '" + uri + "'.");
       }
@@ -948,7 +938,88 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
   }
 
   @ExpoMethod
-  public void askForDirectoryPermissionsAsync(final String initialFileUrl, Promise promise) {
+  public void readSAFDirectoryAsync(String uriStr, Map<String, Object> options, Promise promise) {
+    try {
+      Uri uri = Uri.parse(uriStr);
+      ensurePermission(uri, Permission.READ);
+      if (isSAFUri(uri)) {
+        DocumentFile file = DocumentFile.fromTreeUri(getContext(), uri);
+        if (file == null || !file.exists() || !file.isDirectory()) {
+          promise.reject("ERR_FILESYSTEM_CANNOT_READ_DIRECTORY",
+            "Uri '" + uri + "' doesn't exist or isn't a directory.");
+          return;
+        }
+        DocumentFile[] children = file.listFiles();
+        List<String> result = new ArrayList<>();
+        for (DocumentFile child : children) {
+          result.add(child.getUri().toString());
+        }
+        promise.resolve(result);
+      } else {
+        throw new IOException("Unsupported scheme for location '" + uri + "'.");
+      }
+    } catch (Exception e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject(e);
+    }
+  }
+
+  @ExpoMethod
+  public void makeSAFDirectoryAsync(String uriStr, String dirName, Promise promise) {
+    try {
+      Uri uri = Uri.parse(uriStr);
+      ensurePermission(uri, Permission.WRITE);
+      if (isSAFUri(uri)) {
+        DocumentFile dir = getNearestSAFFile(uri);
+        if (!dir.isDirectory()) {
+          promise.reject("ERR_FILESYSTEM_CANNOT_CREATE_DIRECTORY", "Provided uri '" + uri + "' is not pointing to a directory.");
+          return;
+        }
+
+        DocumentFile newDir = dir.createDirectory(dirName);
+        if (newDir == null) {
+          promise.reject("ERR_FILESYSTEM_CANNOT_CREATE_DIRECTORY", "Unknown error.");
+          return;
+        }
+
+        promise.resolve(newDir.getUri().toString());
+      } else {
+        throw new IOException("Unsupported scheme for location '" + uri + "'.");
+      }
+    } catch (Exception e) {
+      promise.reject(e);
+    }
+  }
+
+  @ExpoMethod
+  public void createSAFFileAsync(String uriStr, String fileName, String mimeType, Promise promise) {
+    try {
+      Uri uri = Uri.parse(uriStr);
+      ensurePermission(uri, Permission.WRITE);
+      if (isSAFUri(uri)) {
+        DocumentFile dir = getNearestSAFFile(uri);
+        if (!dir.isDirectory()) {
+          promise.reject("ERR_FILESYSTEM_CANNOT_CREATE_FILE", "Provided uri '" + uri + "' is not pointing to a directory.");
+          return;
+        }
+
+        DocumentFile newFile = dir.createFile(mimeType, fileName);
+        if (newFile == null) {
+          promise.reject("ERR_FILESYSTEM_CANNOT_CREATE_FILE", "Unknown error.");
+          return;
+        }
+
+        promise.resolve(newFile.getUri().toString());
+      } else {
+        throw new IOException("Unsupported scheme for location '" + uri + "'.");
+      }
+    } catch (Exception e) {
+      promise.reject(e);
+    }
+  }
+
+  @ExpoMethod
+  public void requestDirectoryPermissionsAsync(final String initialFileUrl, Promise promise) {
     if (mDirPermissionsRequest != null) {
       promise.reject("ERR_FILESYSTEM_CANNOT_ASK_FOR_PERMISSIONS", "You have an unfinished permission request.");
       return;
@@ -982,6 +1053,8 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
   @Override
   public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
     if (requestCode == DIR_PERMISSIONS_REQUEST_CODE && mDirPermissionsRequest != null) {
+      Bundle result = new Bundle();
+
       if (resultCode == Activity.RESULT_OK) {
         Uri treeUri = data.getData();
 
@@ -989,11 +1062,13 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
           & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         activity.getContentResolver().takePersistableUriPermission(treeUri, takeFlags);
 
-        mDirPermissionsRequest.resolve(treeUri.toString());
+        result.putBoolean("granted", true);
+        result.putString("directoryUri", treeUri.toString());
       } else {
-        mDirPermissionsRequest.resolve(false);
+        result.putBoolean("granted", false);
       }
 
+      mDirPermissionsRequest.resolve(result);
       mModuleRegistry.getModule(UIManager.class).unregisterActivityEventListener(this);
       mDirPermissionsRequest = null;
     }

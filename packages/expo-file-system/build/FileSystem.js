@@ -189,13 +189,52 @@ export class DownloadResumable {
         this._subscription = null;
     }
 }
+const baseReadAsStringAsync = readAsStringAsync;
+const baseWriteAsStringAsync = writeAsStringAsync;
+const baseDeleteAsync = deleteAsync;
+const baseMoveAsync = moveAsync;
+const baseCopyAsync = copyAsync;
 /**
  * Android only
  */
-export async function askForDirectoryPermissionsAsync(initialFileUrl = null) {
-    if (!ExponentFileSystem.askForDirectoryPermissionsAsync) {
-        throw new UnavailabilityError('expo-file-system', 'askForDirectoryPermissionsAsync');
+export var StorageAccessFramework;
+(function (StorageAccessFramework) {
+    function getUriForDirectoryInRoot(folderName) {
+        return `content://com.android.externalstorage.documents/tree/primary:${folderName}/document/primary:${folderName}`;
     }
-    return await ExponentFileSystem.askForDirectoryPermissionsAsync(initialFileUrl);
-}
+    StorageAccessFramework.getUriForDirectoryInRoot = getUriForDirectoryInRoot;
+    async function requestDirectoryPermissionsAsync(initialFileUrl = null) {
+        if (!ExponentFileSystem.requestDirectoryPermissionsAsync) {
+            throw new UnavailabilityError('expo-file-system', 'StorageAccessFramework.requestDirectoryPermissionsAsync');
+        }
+        return await ExponentFileSystem.requestDirectoryPermissionsAsync(initialFileUrl);
+    }
+    StorageAccessFramework.requestDirectoryPermissionsAsync = requestDirectoryPermissionsAsync;
+    async function readDirectoryAsync(dirUri) {
+        if (!ExponentFileSystem.readSAFDirectoryAsync) {
+            throw new UnavailabilityError('expo-file-system', 'StorageAccessFramework.readDirectoryAsync');
+        }
+        return await ExponentFileSystem.readSAFDirectoryAsync(dirUri, {});
+    }
+    StorageAccessFramework.readDirectoryAsync = readDirectoryAsync;
+    async function makeDirectoryAsync(parentUri, dirName) {
+        if (!ExponentFileSystem.makeSAFDirectoryAsync) {
+            throw new UnavailabilityError('expo-file-system', 'StorageAccessFramework.makeDirectoryAsync');
+        }
+        return await ExponentFileSystem.makeSAFDirectoryAsync(parentUri, dirName);
+    }
+    StorageAccessFramework.makeDirectoryAsync = makeDirectoryAsync;
+    async function createFileAsync(parentUri, fileName, mimeType) {
+        if (!ExponentFileSystem.createSAFFileAsync) {
+            throw new UnavailabilityError('expo-file-system', 'StorageAccessFramework.createFileAsync');
+        }
+        return await ExponentFileSystem.createSAFFileAsync(parentUri, fileName, mimeType);
+    }
+    StorageAccessFramework.createFileAsync = createFileAsync;
+    StorageAccessFramework.writeAsStringAsync = baseWriteAsStringAsync;
+    StorageAccessFramework.readAsStringAsync = baseReadAsStringAsync;
+    StorageAccessFramework.deleteAsync = baseDeleteAsync;
+    StorageAccessFramework.moveAsync = baseMoveAsync;
+    StorageAccessFramework.copyAsync = baseCopyAsync;
+})(StorageAccessFramework || (StorageAccessFramework = {}));
 //# sourceMappingURL=FileSystem.js.map

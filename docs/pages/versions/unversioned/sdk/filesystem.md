@@ -356,11 +356,11 @@ Enumerate the contents of a directory.
 
 #### Arguments
 
-- **fileUri (_string_)** -- `file://` or [SAF](#saf-uri) URI to the directory.
+- **fileUri (_string_)** -- `file://` URI to the directory.
 
 #### Returns
 
-A Promise that resolves to an array of strings, each containing the name of a file or directory contained in the directory at `fileUri` if `file://` URI was provided. However, if [SAF](#saf-uri) URI was used, it will return an array of [SAF](#saf-uri) URIs to files in the given directory.
+A Promise that resolves to an array of strings, each containing the name of a file or directory contained in the directory at `fileUri`.
 
 ### `FileSystem.downloadAsync(uri, fileUri, options)`
 
@@ -597,23 +597,129 @@ FileSystem.getTotalDiskCapacityAsync().then(totalDiskCapacity => {
 
 Returns a Promise that resolves to a number that specifies the total internal disk storage capacity in bytes, or JavaScript's [`MAX_SAFE_INTEGER`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER) if the capacity is greater than 2<sup>53</sup> - 1 bytes.
 
-### `FileSystem.askForDirectoryPermissionsAsync(initialFileUrl)`
+## Storage Access Framework (**Android only**)
+
+The `StorageAccessFramework` is a namespace inside of the `expo-file-system` module, which encapsulates all functions which can be used with [SAF URIs](#saf-uri). You can read more about SAF in the [Android documentation](https://developer.android.com/guide/topics/providers/document-provider).
+
+## SAF URI
+
+A SAF URI is a URI that is compatible with the Storage Access Framework. It should look like this `content://com.android.externalstorage.*`. The easiest way to obtain such URI is by `askForDirectoryPermissionsAsync` method.
+
+## API
+
+```js
+import { StorageAccessFramework } from 'expo-file-system';
+```
+
+### Example Usage
+
+```ts
+import { StorageAccessFramework } from 'expo-file-system';
+
+// Requests permissions for external directory
+const permissions = await StorageAccessFramework.requestDirectoryPermissionsAsync();
+
+if (permissions.granted) {
+  // Gets SAF URI from response
+  const uri = permissions.directoryUri;
+
+  // Gets all files inside of selected directory
+  const files = await StorageAccessFramework.readDirectoryAsync(uri);
+  alert(`Files inside ${uri}:\n\n${JSON.stringify(files)}`);
+}
+```
+
+### `StorageAccessFramework.getUriForDirectoryInRoot(folderName)`
+
+Gets a [SAF URI](#saf-uri) pointing to a folder in the Android root directory. You can use this function to get URI for `StorageAccessFramework.requestForDirectoryPermissionsAsync` when you trying to migrate an album. In that case, the name of the album is the folder name.
+
+#### Arguments
+
+- **folderName (_string_)** -- The name of the folder which is located in the Android root directory.
+
+#### Returns
+
+Returns a [SAF URI](#saf-uri) to a folder.
+
+### `StorageAccessFramework.requestForDirectoryPermissionsAsync(initialFileUrl)`
 
 **Android only**. Allows users to select a specific directory, granting your app access to all of the files and sub-directories within that directory.
 
 #### Arguments
 
-- **initialFileUrl (_string_)** -- **Optional**. The [SAF URI](#saf-uri) of the directory that the file picker should display when it first loads. **Available only on Android R or higher**.
+- **initialFileUrl (_string_)** -- **Optional**. The [SAF URI](#saf-uri) of the directory that the file picker should display when it first loads. If URI is incorrect or points to a non-existing folder, it's ignored. **Available only on Android R or higher**.
 
 #### Returns
 
-Returns a Promise that resolves to a `false` if permissions weren't granted or `string` that represents a [SAF URI](#saf-uri).
+Returns a Promise that resolves to an object with the following fields:
+
+- **granted (_boolean_)** -- Whether the permissions were granted.
+
+- **directoryUri (_string_)** -- The [SAF URI](#saf-uri) to the user's selected directory. Available only if permissions were granted.
+
+### `StorageAccessFramework.readDirectoryAsync(dirUri)`
+
+Enumerate the contents of a directory.
+
+#### Arguments
+
+- **dirUri (_string_)** -- [SAF](#saf-uri) URI to the directory.
+
+#### Returns
+
+A Promise that resolves to an array of strings, each containing the full [SAF URI](#saf-uri) of a file or directory contained in the directory at `fileUri`.
+
+### `StorageAccessFramework.makeDirectoryAsync(parentUri: string, dirName: string)`
+
+Creates a new empty directory.
+
+#### Arguments
+
+- **parentUri (_string_)** -- The [SAF](#saf-uri) URI to the parent directory.
+
+- **dirName (_string_)** -- The name of new directory.
+
+#### Returns
+
+A Promise that resolves to a [SAF URI](#saf-uri) to the created directory.
+
+### `StorageAccessFramework.createFileAsync(parentUri: string, fileName: string, mimeType: string)`
+
+Creates a new empty file.
+
+#### Arguments
+
+- **parentUri (_string_)** -- The [SAF](#saf-uri) URI to the parent directory.
+
+- **fileName (_string_)** -- The name of new file **without the extension**.
+
+- **mimeType (_string_)** -- The MIME of new file.
+
+#### Returns
+
+A Promise that resolves to a [SAF URI](#saf-uri) to the created file.
+
+### `StorageAccessFramework.writeAsStringAsync(fileUri, contents, options)`
+
+Alias to [FileSystem.writeAsStringAsync(fileUri, contents, options)](#filesystemwriteasstringasyncfileuri-contents-options).
+
+### `StorageAccessFramework.writeAsStringAsync(fileUri, contents, options)`
+
+Alias to [FileSystem.readAsStringAsync(fileUri, options)](#filesystemreadasstringasyncfileuri-options)
+
+### `StorageAccessFramework.deleteAsync(fileUri, options)`
+
+Alias to [FileSystem.deleteAsync(fileUri, options)](#filesystemdeleteasyncfileuri-options)
+
+### `StorageAccessFramework.moveAsync(options)`
+
+Alias to [FileSystem.moveAsync(options)](#filesystemmoveasyncoptions)
+
+### `StorageAccessFramework.copyAsync(options)`
+
+Alias to [FileSystem.copyAsync(options)](#filesystemcopyasyncoptions)
 
 #
-
-## SAF URI
-
-A SAF URI is a URI that is compatible with the Storage Access Framework. It should look like this `content://com.android.externalstorage.*`. The easiest way to obtain such URI is by `askForDirectoryPermissionsAsync` method. You can read more about SAF in the [Android documentation](https://developer.android.com/guide/topics/providers/document-provider).
 
 ## Supported URI schemes
 
@@ -628,7 +734,7 @@ In this table, you can see what type of URI can be handled by each method. For e
 | `moveAsync`               | Source:<br/>`file://`,<br/>[SAF URI](#saf-uri)<br/><br/>Destination:<br/>`file://`                                                        | Source:<br/>`file://`<br/><br/>Destination:<br/>`file://`                                       |
 | `copyAsync`               | Source:<br/>`file://`,<br/>`content://`,<br/>`asset://`,<br/>[SAF URI](#saf-uri),<br/>no scheme**\***<br/><br/>Destination:<br/>`file://` | Source:<br/>`file://`,<br/>`ph://`,<br/>`assets-library://`<br/><br/>Destination:<br/>`file://` |
 | `makeDirectoryAsync`      | `file://`                                                                                                                                 | `file://`                                                                                       |
-| `readDirectoryAsync`      | `file://`,<br/>[SAF URI](#saf-uri)                                                                                                        | `file://`                                                                                       |
+| `readDirectoryAsync`      | `file://`                                                                                                                                 | `file://`                                                                                       |
 | `downloadAsync`           | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                                                                 | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                       |
 | `uploadAsync`             | Source:<br/>`file://`<br/><br/>Destination:<br/>`http://`<br/>`https://`                                                                  | Source:<br/>`file://`<br/><br/>Destination:<br/>`http://`<br/>`https://`                        |
 | `createDownloadResumable` | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                                                                 | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                       |  |
