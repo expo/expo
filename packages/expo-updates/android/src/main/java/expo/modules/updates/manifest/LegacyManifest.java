@@ -122,14 +122,8 @@ public class LegacyManifest implements Manifest {
   public ArrayList<AssetEntity> getAssetEntityList() {
     ArrayList<AssetEntity> assetList = new ArrayList<>();
 
-    String key;
-    try {
-      key = "bundle-" + UpdatesUtils.sha256(mBundleUrl.toString());
-    } catch (Exception e) {
-      key = "bundle-" + mCommitTime.getTime();
-      Log.e(TAG, "Failed to get SHA-256 checksum of bundle URL");
-    }
-    AssetEntity bundleAssetEntity = new AssetEntity(key, "js");
+    // legacy manifests do not provide a key for the bundle, so we use null
+    AssetEntity bundleAssetEntity = new AssetEntity(null, "js");
     bundleAssetEntity.url = mBundleUrl;
     bundleAssetEntity.isLaunchAsset = true;
     bundleAssetEntity.embeddedAssetFilename = BUNDLE_FILENAME;

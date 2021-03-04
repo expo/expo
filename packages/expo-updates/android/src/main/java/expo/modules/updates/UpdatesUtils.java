@@ -28,6 +28,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Random;
 import java.util.TimeZone;
 
 import androidx.annotation.Nullable;
@@ -98,6 +99,10 @@ public class UpdatesUtils {
   }
 
   public static String createFilenameForAsset(AssetEntity asset) {
+    if (asset.key == null) {
+      // create a filename that's unlikely to collide with any other asset
+      return "asset-" + new Date().getTime() + "-" + new Random().nextInt();
+    }
     return asset.key;
   }
 
