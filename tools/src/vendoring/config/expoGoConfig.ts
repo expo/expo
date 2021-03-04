@@ -12,7 +12,7 @@ const config: VendoringTargetConfig = {
   },
   modules: {
     'lottie-react-native': {
-      source: 'https://github.com/react-native-community/lottie-react-native.git',
+      source: 'https://github.com/lottie-react-native/lottie-react-native.git',
       ios: {},
       // android: {
       //   includeFiles: 'src/android/**',
@@ -44,13 +44,13 @@ const config: VendoringTargetConfig = {
       source: 'https://github.com/gre/react-native-view-shot.git',
     },
     'react-native-svg': {
-      source: 'https://github.com/react-native-community/react-native-svg.git',
+      source: 'https://github.com/react-native-svg/react-native-svg',
     },
     'react-native-maps': {
-      source: 'https://github.com/react-native-community/react-native-maps.git',
+      source: 'https://github.com/react-native-maps/react-native-maps',
     },
     '@react-native-community/netinfo': {
-      source: 'https://github.com/react-native-community/react-native-netinfo.git',
+      source: 'https://github.com/react-native-netinfo/react-native-netinfo',
       ios: {},
     },
     'react-native-webview': {
@@ -141,8 +141,11 @@ const config: VendoringTargetConfig = {
     '@react-native-community/datetimepicker': {
       source: 'https://github.com/react-native-community/react-native-datetimepicker.git',
     },
+    // NOTE(brentvatne): masked-view has been renamed to
+    // @react-native-masked-view/masked-view but we should synchronize moving
+    // over to the new package name along with React Navigation
     '@react-native-community/masked-view': {
-      source: 'https://github.com/react-native-community/react-native-masked-view',
+      source: 'https://github.com/react-native-masked-view/masked-view',
     },
     '@react-native-community/viewpager': {
       source: 'https://github.com/callstack/react-native-viewpager',
@@ -160,7 +163,7 @@ const config: VendoringTargetConfig = {
       ios: {},
     },
     '@react-native-community/slider': {
-      source: 'https://github.com/react-native-community/react-native-slider',
+      source: 'https://github.com/callstack/react-native-slider',
     },
   },
 };
