@@ -9,7 +9,8 @@
 {
   [EXScopedNotificationCategoryMigrator renameLegacyCategoryIdentifiersForExperience:experienceId withBlock:^(UNNotificationCategory *oldCategory) {
     NSString *unscopedLegacyCategoryId = [EXScopedNotificationsUtils unscopedLegacyCategoryIdentifierWithId:oldCategory.identifier forExperience:experienceId];
-    NSString *newCategoryId = [EXScopedNotificationsUtils scopedCategoryIdentifierWithId:unscopedLegacyCategoryId forExperience:experienceId];
+    NSString *newCategoryId = [EXScopedNotificationsUtils scopedIdentifierFromId:unscopedLegacyCategoryId
+                                                                   forExperience:experienceId];
     UNNotificationCategory *newCategory = [EXScopedNotificationCategoryMigrator createNewCategoryFrom:oldCategory withNewIdentifier:newCategoryId];
     return newCategory;
   }];

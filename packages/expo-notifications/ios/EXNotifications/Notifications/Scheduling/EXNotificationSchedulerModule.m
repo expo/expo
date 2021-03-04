@@ -67,8 +67,7 @@ UM_EXPORT_METHOD_AS(scheduleNotificationAsync,
                      scheduleNotification:(NSString *)identifier notificationSpec:(NSDictionary *)notificationSpec triggerSpec:(NSDictionary *)triggerSpec resolve:(UMPromiseResolveBlock)resolve rejecting:(UMPromiseRejectBlock)reject)
 {
   @try {
-    UNNotificationContent *content = [_builder notificationContentFromRequest:notificationSpec];
-    UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:[self triggerFromParams:triggerSpec]];
+    UNNotificationRequest *request = [self buildNotificationRequestWithIdentifier:identifier content:notificationSpec trigger:triggerSpec];
     [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
       if (error) {
         NSString *message = [NSString stringWithFormat:@"Failed to schedule notification. %@", error];
@@ -120,6 +119,15 @@ UM_EXPORT_METHOD_AS(getNextTriggerDateAsync,
     NSString *message = [NSString stringWithFormat:@"Failed to get next trigger date. %@", exception];
     reject(@"ERR_NOTIFICATIONS_FAILED_TO_GET_NEXT_TRIGGER_DATE", message, nil);
   }
+}
+
+- (UNNotificationRequest *)buildNotificationRequestWithIdentifier:(NSString *)identifier
+                                                          content:(NSDictionary *)contentInput
+                                                          trigger:(NSDictionary *)triggerInput
+{
+  UNNotificationContent *content = [_builder notificationContentFromRequest:contentInput];
+  UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:[self triggerFromParams:triggerInput]];
+  return request;
 }
 
 - (NSArray * _Nonnull)serializeNotificationRequests:(NSArray<UNNotificationRequest *> * _Nonnull) requests

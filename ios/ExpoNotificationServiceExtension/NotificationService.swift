@@ -17,7 +17,7 @@ class NotificationService: UNNotificationServiceExtension {
     if let bestAttemptContent = request.content.mutableCopy() as? UNMutableNotificationContent {
       // Modify notification content here...
       if (!request.content.categoryIdentifier.isEmpty && (request.content.userInfo["experienceId"]) != nil) {
-        bestAttemptContent.categoryIdentifier = EXScopedNotificationsUtils.scopedCategoryIdentifier(withId: request.content.categoryIdentifier, forExperience: request.content.userInfo["experienceId"] as! String)
+        bestAttemptContent.categoryIdentifier = EXScopedNotificationsUtils.scopedIdentifier(fromId: request.content.categoryIdentifier, forExperience: request.content.userInfo["experienceId"] as! String)
       }
       contentHandler(bestAttemptContent)
     }
