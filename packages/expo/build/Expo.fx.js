@@ -26,7 +26,7 @@ if (Platform.OS !== 'web' && !window.navigator?.geolocation) {
     }
     catch {
         const logLocationPolyfillWarning = (method) => {
-            console.warn(`window.navigator.geolocation.${method} is not available. Install expo-location in your project to polyfill it.`);
+            console.warn(`window.navigator.geolocation.${method} is not available. Install expo-location in your project to polyfill it automatically. This polyfill will be removed in SDK 43, at which time you will need to import and execute installWebGeolocationPolyfill() manually in your project.`);
         };
         // @ts-ignore
         window.navigator.geolocation = {
