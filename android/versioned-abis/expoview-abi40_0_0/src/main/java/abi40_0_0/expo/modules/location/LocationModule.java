@@ -49,9 +49,13 @@ import abi40_0_0.org.unimodules.core.interfaces.ExpoMethod;
 import abi40_0_0.org.unimodules.core.interfaces.LifecycleEventListener;
 import abi40_0_0.org.unimodules.core.interfaces.services.EventEmitter;
 import abi40_0_0.org.unimodules.core.interfaces.services.UIManager;
+import abi40_0_0.org.unimodules.interfaces.constants.ConstantsInterface;
 import abi40_0_0.org.unimodules.interfaces.permissions.Permissions;
 import abi40_0_0.org.unimodules.interfaces.permissions.PermissionsResponse;
 import abi40_0_0.org.unimodules.interfaces.permissions.PermissionsStatus;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 
 import abi40_0_0.expo.modules.location.exceptions.LocationBackgroundUnauthorizedException;
@@ -97,6 +101,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   private SensorManager mSensorManager;
   private GeomagneticField mGeofield;
   private FusedLocationProviderClient mLocationProvider;
+  private JSONObject mManifest;
 
   private Map<Integer, LocationCallback> mLocationCallbacks = new HashMap<>();
   private Map<Integer, LocationRequest> mLocationRequests = new HashMap<>();
@@ -144,6 +149,15 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
     if (mUIManager != null) {
       mUIManager.registerLifecycleEventListener(this);
+    }
+
+    ConstantsInterface constants = moduleRegistry.getModule(ConstantsInterface.class);
+    if (constants != null && constants.getConstants().containsKey("manifest")) {
+      try {
+        mManifest = new JSONObject((String) constants.getConstants().get("manifest"));
+      } catch (ClassCastException | JSONException exception) {
+        exception.printStackTrace();
+      }
     }
   }
 
@@ -386,7 +400,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void startLocationUpdatesAsync(String taskName, Map<String, Object> options, final Promise promise) {
-    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("Reading the device GPS location in the background with expo-location");
+    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("Reading the device GPS location in the background with expo-location", mManifest);
 
     if (isMissingBackgroundPermissions()) {
       promise.reject(new LocationBackgroundUnauthorizedException());
@@ -403,7 +417,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void stopLocationUpdatesAsync(String taskName, final Promise promise) {
-    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("Reading the device GPS location in the background with expo-location");
+    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("Reading the device GPS location in the background with expo-location", mManifest);
 
     if (isMissingBackgroundPermissions()) {
       promise.reject(new LocationBackgroundUnauthorizedException());
@@ -420,7 +434,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void hasStartedLocationUpdatesAsync(String taskName, final Promise promise) {
-    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("Reading the device GPS location in the background with expo-location");
+    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("Reading the device GPS location in the background with expo-location", mManifest);
 
     if (isMissingBackgroundPermissions()) {
       promise.reject(new LocationBackgroundUnauthorizedException());
@@ -435,7 +449,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void startGeofencingAsync(String taskName, Map<String, Object> options, final Promise promise) {
-    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("The geofencing API in expo-location");
+    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("The geofencing API in expo-location", mManifest);
 
     if (isMissingBackgroundPermissions()) {
       promise.reject(new LocationBackgroundUnauthorizedException());
@@ -452,7 +466,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void stopGeofencingAsync(String taskName, final Promise promise) {
-    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("The geofencing API in expo-location");
+    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("The geofencing API in expo-location", mManifest);
 
     if (isMissingBackgroundPermissions()) {
       promise.reject(new LocationBackgroundUnauthorizedException());
@@ -469,7 +483,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void hasStartedGeofencingAsync(String taskName, final Promise promise) {
-    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("The geofencing API in expo-location");
+    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("The geofencing API in expo-location", mManifest);
 
     if (isMissingBackgroundPermissions()) {
       promise.reject(new LocationBackgroundUnauthorizedException());

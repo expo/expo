@@ -4,7 +4,9 @@ import android.app.Application
 import android.os.Build
 import android.view.Gravity
 import android.widget.Toast
+import host.exp.exponent.ExponentManifest
 import host.exp.exponent.di.NativeModuleDepsProvider
+import org.json.JSONObject
 import javax.inject.Inject
 
 // TODO: Remove when we drop support for SDK 40
@@ -17,9 +19,13 @@ object ToastHelper {
     NativeModuleDepsProvider.getInstance().inject(ToastHelper::class.java, this)
   }
 
-  fun functionMayNotWorkOnAndroidRWarning(featureName: String) {
+  fun functionMayNotWorkOnAndroidRWarning(featureName: String, manifest: JSONObject?) {
     try {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (!ExponentManifest.isDebugModeEnabled(manifest)) {
+          return
+        }
+
         applicationContext?.let {
           val message = "$featureName may not work in Expo Go when you're using Android R.\nSee https://expo.fyi/android-r"
           Toast
