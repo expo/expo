@@ -30,7 +30,7 @@ public class UpdatesDatabaseMigrationTest {
   }
 
   @Test
-  public void migrate4To5() throws IOException {
+  public void testMigrate4To5() throws IOException {
     SupportSQLiteDatabase db = helper.createDatabase(TEST_DB, 4);
 
     // db has schema version 4. insert some data using SQL queries.
