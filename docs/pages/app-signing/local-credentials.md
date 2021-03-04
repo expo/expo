@@ -120,7 +120,7 @@ If your iOS app is using [App Extensions](https://developer.apple.com/app-extens
 
 Let's say that your project consists of a main application target (named `multitarget`) and a Share Extension target (named `shareextension`).
 
-<ImageSpotlight src="/static/images/eas-build/multi-target.png" style={{maxWidth: 360}} />
+<ImageSpotlight alt="Xcode multi target configuration" src="/static/images/eas-build/multi-target.png" style={{maxWidth: 360}} />
 
 In this case your `credentials.json` should like like this:
 

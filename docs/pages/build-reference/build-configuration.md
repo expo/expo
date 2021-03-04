@@ -12,7 +12,7 @@ EAS CLI performs the following steps when configuring your project:
 
 If you only want to use EAS Build for a single platform, that's fine. If you change your mind, you can come back and the other later.
 
-<ImageSpotlight src="/static/images/eas-build/walkthrough/04-configure-platform.png" containerStyle={{ paddingBottom: 0 }} />
+<ImageSpotlight alt="Terminal running eas build command with platform iOS and Android options available" src="/static/images/eas-build/walkthrough/04-configure-platform.png" containerStyle={{ paddingBottom: 0 }} />
 
 #### 2. Create eas.json
 
@@ -51,7 +51,7 @@ EAS CLI performs two steps:
 
   > This step also patches `build.gradle` by including there our custom signing configuration. The configuration itself is saved to a separate file: `eas-build.gradle`.
 
-<ImageSpotlight src="/static/images/eas-build/walkthrough/05-configure-android.png" containerStyle={{ paddingBottom: 0 }} />
+<ImageSpotlight alt="Android configuration prompt in eas build:configure" src="/static/images/eas-build/walkthrough/05-configure-android.png" containerStyle={{ paddingBottom: 0 }} />
 
 #### 4. Configure the iOS project
 
@@ -59,6 +59,6 @@ Similar configuration step is performed for the iOS project. EAS Build resolved 
 
 Make sure to choose the bundle identifier defined in app.json because it'll be used to identify you app on the Apple App Store.
 
-<ImageSpotlight src="/static/images/eas-build/walkthrough/06-configure-xcode.png" containerStyle={{ paddingBottom: 0 }} />
+<ImageSpotlight alt="Xcode configuration prompt in eas build:configure" src="/static/images/eas-build/walkthrough/06-configure-xcode.png" containerStyle={{ paddingBottom: 0 }} />
 
 That's all there is to configuring a project to be compatible with EAS Build.

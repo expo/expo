@@ -6,7 +6,7 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
 **Expo Development Client** is an open source project to improve your development experience while working on your Expo and React Native projects. It allows your team to focus on the JavaScript portion of your project, only needing to interact with XCode or Android Studio when you need to make changes to the native code used in your project.
 
-<ImageSpotlight src="/static/images/development-clients-overview.png" style={{ maxWidth: 605 }} />
+<ImageSpotlight alt="Diagram that visualizes the difference between Expo Go and Custom development clients" src="/static/images/development-clients-overview.png" style={{ maxWidth: 605 }} />
 
 > ⚠️ **Managed Expo projects are not yet supported**, but we are working on bringing the Development Client to the Managed Workflow! If you want to build a managed Expo project with the Development Client, you'll have to eject it first. See the [Ejecting to Bare Workflow](../workflow/customizing.md) page to learn how.
 

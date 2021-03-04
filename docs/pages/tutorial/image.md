@@ -8,7 +8,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 Let's imagine that our designer has provided us with a beautiful logo:
 
 
-<ImageSpotlight src="/static/images/tutorial/logo.png" style={{maxWidth: 305, maxHeight: 159}} />
+<ImageSpotlight alt="A pretty bad logo with the text 'Image Share' and the emoji of the sun behind mountains" src="/static/images/tutorial/logo.png" style={{maxWidth: 305, maxHeight: 159}} />
 
 Save this image to the `assets` directory inside of your project and call it `logo.png`.
 

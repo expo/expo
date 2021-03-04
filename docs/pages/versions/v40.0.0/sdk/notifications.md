@@ -160,7 +160,7 @@ await Notifications.scheduleNotificationAsync({
 });
 ```
 
-<ImageSpotlight src="/static/images/notification-sound-ios.jpeg" style={{maxWidth: 305}} />
+<ImageSpotlight alt="notification.wav inside of app resources in Xcode project organizer" src="/static/images/notification-sound-ios.jpeg" style={{maxWidth: 305}} />
 
 </p>
 </details>
