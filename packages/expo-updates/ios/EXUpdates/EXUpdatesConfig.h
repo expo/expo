@@ -13,6 +13,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesCheckAutomaticallyConfig) {
 @interface EXUpdatesConfig : NSObject
 
 @property (nonatomic, readonly) BOOL isEnabled;
+@property (nonatomic, readonly) BOOL expectsSignedManifest;
 @property (nonatomic, readonly) NSString *scopeKey;
 @property (nonatomic, readonly) NSURL *updateUrl;
 @property (nonatomic, readonly) NSDictionary *requestHeaders;

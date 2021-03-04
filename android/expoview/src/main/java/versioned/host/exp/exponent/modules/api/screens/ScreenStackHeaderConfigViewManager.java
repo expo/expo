@@ -134,6 +134,10 @@ public class ScreenStackHeaderConfigViewManager extends ViewGroupManager<ScreenS
     config.setDirection(direction);
   }
 
+  @ReactProp(name = "screenOrientation")
+  public void setScreenOrientation(ScreenStackHeaderConfig config, String screenOrientation) {
+    config.setScreenOrientation(screenOrientation);
+  }
 
 //  RCT_EXPORT_VIEW_PROPERTY(backTitle, NSString)
 //  RCT_EXPORT_VIEW_PROPERTY(backTitleFontFamily, NSString)
