@@ -17,11 +17,11 @@ object ToastHelper {
     NativeModuleDepsProvider.getInstance().inject(ToastHelper::class.java, this)
   }
 
-  fun functionMayNotWorkOnAndroidRWarning() {
+  fun functionMayNotWorkOnAndroidRWarning(featureName: String) {
     try {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         applicationContext?.let {
-          val message = "This feature may not work in Expo Go when you're using Android R.\nSee https://expo.fyi/android-r"
+          val message = "$featureName may not work in Expo Go when you're using Android R.\nSee https://expo.fyi/android-r"
           Toast
             .makeText(it, message, Toast.LENGTH_LONG)
             .apply {

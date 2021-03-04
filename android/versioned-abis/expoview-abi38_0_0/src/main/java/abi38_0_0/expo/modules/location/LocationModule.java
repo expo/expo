@@ -421,7 +421,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void startLocationUpdatesAsync(String taskName, Map<String, Object> options, final Promise promise) {
-    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning();
+    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("Reading the device GPS location in the background with expo-location");
 
     try {
       mTaskManager.registerTask(taskName, LocationTaskConsumer.class, options);
@@ -433,7 +433,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void stopLocationUpdatesAsync(String taskName, final Promise promise) {
-    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning();
+    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("Reading the device GPS location in the background with expo-location");
 
     try {
       mTaskManager.unregisterTask(taskName, LocationTaskConsumer.class);
@@ -445,7 +445,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void hasStartedLocationUpdatesAsync(String taskName, final Promise promise) {
-    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning();
+    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("Reading the device GPS location in the background with expo-location");
 
     promise.resolve(mTaskManager.taskHasConsumerOfClass(taskName, LocationTaskConsumer.class));
   }
@@ -455,7 +455,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void startGeofencingAsync(String taskName, Map<String, Object> options, final Promise promise) {
-    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning();
+    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("The geofencing API in expo-location");
 
     try {
       mTaskManager.registerTask(taskName, GeofencingTaskConsumer.class, options);
@@ -467,7 +467,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void stopGeofencingAsync(String taskName, final Promise promise) {
-    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning();
+    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("The geofencing API in expo-location");
 
     try {
       mTaskManager.unregisterTask(taskName, GeofencingTaskConsumer.class);
@@ -479,7 +479,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void hasStartedGeofencingAsync(String taskName, final Promise promise) {
-    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning();
+    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("The geofencing API in expo-location");
 
     promise.resolve(mTaskManager.taskHasConsumerOfClass(taskName, GeofencingTaskConsumer.class));
   }

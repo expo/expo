@@ -109,7 +109,7 @@ public class MediaLibraryModule extends ExportedModule {
 
   @ExpoMethod
   public void saveToLibraryAsync(String localUri, Promise promise) {
-    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning();
+    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("Saving assets to albums with expo-media-library");
 
     if (isMissingWritePermission()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_WRITE_PERMISSION_MESSAGE);
@@ -122,7 +122,7 @@ public class MediaLibraryModule extends ExportedModule {
 
   @ExpoMethod
   public void createAssetAsync(String localUri, Promise promise) {
-    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning();
+    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("Creating assets with expo-media-library");
 
     if (isMissingPermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
@@ -135,7 +135,7 @@ public class MediaLibraryModule extends ExportedModule {
 
   @ExpoMethod
   public void addAssetsToAlbumAsync(List<String> assetsId, String albumId, boolean copyToAlbum, Promise promise) {
-    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning();
+    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("Adding assets to albums with expo-media-library");
 
     if (isMissingPermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
@@ -149,7 +149,7 @@ public class MediaLibraryModule extends ExportedModule {
 
   @ExpoMethod
   public void removeAssetsFromAlbumAsync(List<String> assetsId, String albumId, Promise promise) {
-    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning();
+    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("Removing assets from albums with expo-media-library");
 
     if (isMissingPermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
@@ -162,7 +162,7 @@ public class MediaLibraryModule extends ExportedModule {
 
   @ExpoMethod
   public void deleteAssetsAsync(List<String> assetsId, Promise promise) {
-    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning();
+    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("Removing assets with expo-media-library");
 
     if (isMissingPermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
@@ -209,7 +209,7 @@ public class MediaLibraryModule extends ExportedModule {
 
   @ExpoMethod
   public void createAlbumAsync(String albumName, String assetId, boolean copyAsset, Promise promise) {
-    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning();
+    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("Creating albums with expo-media-library");
 
     if (isMissingPermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
@@ -222,7 +222,7 @@ public class MediaLibraryModule extends ExportedModule {
 
   @ExpoMethod
   public void deleteAlbumsAsync(List<String> albumIds, Promise promise) {
-    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning();
+    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("Deleting albums with expo-media-library");
 
     if (isMissingPermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
