@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.media.MediaScannerConnection;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.provider.MediaStore;
 
 import org.unimodules.core.Promise;
@@ -17,6 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_IO_EXCEPTION;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_MEDIA_LIBRARY_CORRUPTED;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_ALBUM;
+import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_SAVE_PERMISSION;
 import static expo.modules.medialibrary.MediaLibraryConstants.EXTERNAL_CONTENT;
@@ -82,6 +84,11 @@ class AddAssetsToAlbum extends AsyncTask<Void, Void, Void> {
 
       File album = getAlbum();
       if (album == null) {
+        return null;
+      }
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !album.canWrite()) {
+        mPromise.reject(ERROR_NO_PERMISSIONS, "The application doesn't have permission to write to the album's directory. For more information, check out https://expo.fyi/android-r.");
         return null;
       }
 
