@@ -40,7 +40,7 @@ target 'Exponent' do
 
   # Evaluate all files matching `versioned-react-native/ABI*/dependencies.rb` glob pattern
   # and install ReactABIXX_0_0 pods with all versioned unimodules.
-  use_versioned_abis!
+  # use_versioned_abis!
 
   # Build React Native with RCT_DEV enabled and RCT_ENABLE_INSPECTOR and
   # RCT_ENABLE_PACKAGER_CONNECTION disabled
