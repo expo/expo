@@ -1,10 +1,9 @@
 import { useFocusEffect } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
 import { usePermissions } from '@use-expo/permissions';
+import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
 import * as Permissions from 'expo-permissions';
-import * as FileSystem from 'expo-file-system';
-
 import React from 'react';
 import {
   Alert,
@@ -94,7 +93,7 @@ export default function MediaLibraryScreen({ navigation, route }: Props) {
     const goToAlbums = () => navigation.navigate('MediaAlbums');
     const clearAlbumSelection = () => navigation.setParams({ album: undefined });
     const addImage = async () => {
-      const randomNameGenerator = num => {
+      const randomNameGenerator: (num: number) => string = num => {
         let res = '';
         for (let i = 0; i < num; i++) {
           const random = Math.floor(Math.random() * 27);
