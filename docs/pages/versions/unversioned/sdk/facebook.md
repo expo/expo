@@ -89,6 +89,26 @@ A map of options:
 [d-fbsdk-ios-config]: https://developers.facebook.com/docs/facebook-login/ios#4--configure-your-project
 [d-fbsdk-android-manifest]: https://developers.facebook.com/docs/facebook-login/android#manifest
 
+### `Facebook.requestPermissionsAsync()`
+
+Asks for permissions to use data for tracking the user or the device.
+
+> iOS: it requires the `NSUserTrackingUsageDescription` message added to the `info.plist`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+### `Facebook.getPermissionsAsync()`
+
+Checks application's permissions for using data for tracking the user or the device.
+
+> iOS: it requires the `NSUserTrackingUsageDescription` message added to the `info.plist`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
 ### `Facebook.logInWithReadPermissionsAsync(options)`
 
 Prompts the user to log into Facebook and grants your app permission

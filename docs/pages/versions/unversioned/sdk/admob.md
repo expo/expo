@@ -106,6 +106,26 @@ Returns whether the AdMob API is enabled on the current device. This does not ch
 
 Async `boolean`, indicating whether the AdMob API is available on the current device. Currently this resolves `true` on iOS and Android only.
 
+### `requestPermissionsAsync()`
+
+Asks for permissions to use data for tracking the user or the device.
+
+> iOS: it requires the `NSUserTrackingUsageDescription` message added to the `info.plist`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+### `getPermissionsAsync()`
+
+Checks application's permissions for using data for tracking the user or the device.
+
+> iOS: it requires the `NSUserTrackingUsageDescription` message added to the `info.plist`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
 ### setTestDeviceIDAsync(testDeviceID)
 
 Sets the test device ID. For simulators/emulators you can use `'EMULATOR'` for the test device ID.

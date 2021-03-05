@@ -15,6 +15,7 @@ Pod::Spec.new do |s|
 
   s.dependency 'UMCore'
   s.dependency 'UMConstantsInterface'
+  s.dependency 'UMPermissionsInterface'
   s.dependency 'FacebookSDK/CoreKit', $FacebookSDKVersion || '9.0.1'
   s.dependency 'FacebookSDK/LoginKit', $FacebookSDKVersion || '9.0.1'
 
