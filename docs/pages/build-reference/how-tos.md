@@ -84,3 +84,62 @@ e.g.
   }
 }
 ```
+
+## Maintaining generic project with multiple bundle identifiers
+
+The current implementation of `eas build` and `eas build:configure` assumes that the native project can only have one bundle identifier, so as a temporary workaround we added `experimental.disableIosBundleIdentifierValidation`, to disable that validation in both commands. With that flag enabled, the value from app.json/app.config.js will take precedence, you can configure your project like in the example below.
+
+```bash
+# to build staging
+APP_ENV=staging eas build --platform ios --profile staging
+
+# to build production
+APP_ENV=production eas build --platform ios --profile production
+```
+
+```js
+// example app.config.js
+
+const isStaging = process.env.APP_ENV === "staging";
+const bundleIdentifier = isStaging
+  ? "xyz.easbuildapp.staging"
+  : "xyz.easbuildapp";
+
+export default ({ config }) => ({
+  expo: {
+    ...config,
+    ios: {
+      bundleIdentifier,
+    },
+  },
+});
+
+```
+
+```json
+// example eas.json
+
+{
+  "experimental": {
+    "disableIosBundleIdentifierValidation": true
+  },
+  "build": {
+    "ios": {
+      "staging": {
+        "worflow": "generic",
+        "scheme": "myapp-staging",
+        "env": {
+            "APP_ENV": "staging"
+        }
+      },
+      "production": {
+        "worflow": "generic",
+        "scheme": "myapp",
+        "env": {
+            "APP_ENV": "production"
+        }
+      }
+    }
+  }
+}
+```
