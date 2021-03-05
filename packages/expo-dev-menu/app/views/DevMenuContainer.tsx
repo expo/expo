@@ -4,6 +4,8 @@ import Animated from 'react-native-reanimated';
 
 import DevMenuContext from '../DevMenuContext';
 import * as DevMenuInternal from '../DevMenuInternal';
+import NavigationHeaderButton from '../components/NavigationHeaderButton';
+import DevMenuScreen from '../components/items/DevMenuScreen';
 import DevMenuMainScreen from '../screens/DevMenuMainScreen';
 import DevMenuSettingsScreen from '../screens/DevMenuSettingsScreen';
 import DevMenuTestScreen from '../screens/DevMenuTestScreen';
@@ -16,6 +18,26 @@ type Props = {
 };
 
 const { call, cond, eq, onChange } = Animated;
+
+function applyNavigationSettings(navigationOptions) {
+  return ({ navigation }) => ({
+    headerTitleAlign: 'center',
+    headerStyle: {
+      height: 60,
+    },
+    headerTitleStyle: {
+      fontSize: 16,
+    },
+    safeAreaInsets: {
+      top: 5,
+      right: 0,
+      bottom: 0,
+      left: 0,
+    },
+    headerLeft: () => <NavigationHeaderButton onPress={() => navigation.pop()} />,
+    ...navigationOptions,
+  });
+}
 
 // @refresh
 export default class DevMenuContainer extends React.PureComponent<Props, any> {
@@ -81,17 +103,17 @@ export default class DevMenuContainer extends React.PureComponent<Props, any> {
     {
       name: 'Main',
       component: DevMenuMainScreen,
-      options: DevMenuMainScreen.navigationOptions,
+      options: applyNavigationSettings(DevMenuMainScreen.navigationOptions),
     },
     {
       name: 'Settings',
       component: DevMenuSettingsScreen,
-      options: DevMenuSettingsScreen.navigationOptions,
+      options: applyNavigationSettings(DevMenuSettingsScreen.navigationOptions),
     },
     {
       name: 'Test',
       component: DevMenuTestScreen,
-      options: DevMenuTestScreen.navigationOptions,
+      options: applyNavigationSettings(DevMenuTestScreen.navigationOptions),
     },
   ];
 
@@ -100,6 +122,18 @@ export default class DevMenuContainer extends React.PureComponent<Props, any> {
       ...this.props,
       ...this.providedContext,
     };
+
+    const devMenuScreens = (this.props.devMenuScreens as {
+      screenName: string;
+      items: any;
+    }[]).map(screenInfo => {
+      return {
+        name: screenInfo.screenName,
+        component: DevMenuScreen,
+        options: applyNavigationSettings(DevMenuScreen.navigationOptions),
+        props: { items: screenInfo.items },
+      };
+    });
 
     return (
       <DevMenuContext.Provider value={providedContext}>
@@ -114,7 +148,7 @@ export default class DevMenuContainer extends React.PureComponent<Props, any> {
             initialSnap={0}
             snapPoints={this.snapPoints}
             callbackNode={this.callbackNode}
-            screens={this.screens}>
+            screens={[...this.screens, ...devMenuScreens]}>
             <DevMenuOnboarding show={this.props.showOnboardingView} />
           </DevMenuBottomSheet>
         </View>

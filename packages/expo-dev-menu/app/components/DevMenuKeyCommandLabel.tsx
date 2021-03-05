@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
 
 import { DevMenuKeyCommandsEnum, doesDeviceSupportKeyCommands } from '../DevMenuInternal';
 import { StyledText } from './Text';
@@ -55,5 +55,9 @@ const styles = StyleSheet.create({
     width: CHARACTER_WIDTH,
     fontSize: CHARACTER_WIDTH,
     textAlign: 'center',
+    fontFamily: Platform.select({
+      android: 'monospace',
+      ios: 'Courier',
+    }),
   },
 });

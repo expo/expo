@@ -77,7 +77,9 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 {
   if (![self _shouldStartLoadingUpdate:updateManifest]) {
     if (_successBlock) {
-      _successBlock(nil);
+      dispatch_async(_completionQueue, ^{
+        self->_successBlock(nil);
+      });
     }
     return;
   }
@@ -116,6 +118,21 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
   dispatch_async(_database.databaseQueue, ^{
     NSError *existingUpdateError;
     EXUpdatesUpdate *existingUpdate = [self->_database updateWithId:updateManifest.updateId config:self->_config error:&existingUpdateError];
+
+    // if something has gone wrong on the server and we have two updates with the same id
+    // but different scope keys, we should try to launch something rather than show a cryptic
+    // error to the user.
+    if (existingUpdate && ![existingUpdate.scopeKey isEqualToString:updateManifest.scopeKey]) {
+      NSError *setScopeKeyError;
+      [self->_database setScopeKey:updateManifest.scopeKey onUpdate:existingUpdate error:&setScopeKeyError];
+
+      if (setScopeKeyError) {
+        [self _finishWithError:setScopeKeyError];
+        return;
+      }
+
+      NSLog(@"EXUpdatesAppLoader: Loaded an update with the same ID but a different scopeKey than one we already have on disk. This is a server error. Overwriting the scopeKey and loading the existing update.");
+    }
 
     if (existingUpdate && existingUpdate.status == EXUpdatesUpdateStatusReady) {
       if (self->_successBlock) {

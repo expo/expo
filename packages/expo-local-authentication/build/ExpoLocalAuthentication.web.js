@@ -1,3 +1,4 @@
+import { SecurityLevel } from './LocalAuthentication.types';
 export default {
     get name() {
         return 'ExpoLocalAuthentication';
@@ -7,6 +8,9 @@ export default {
     },
     async isEnrolledAsync() {
         return false;
+    },
+    async getEnrolledLevelAsync() {
+        return SecurityLevel.NONE;
     },
     async supportedAuthenticationTypesAsync() {
         return [];

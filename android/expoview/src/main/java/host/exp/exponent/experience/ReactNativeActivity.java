@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.internal.BundleJSONConverter;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
 import com.facebook.react.modules.core.PermissionAwareActivity;
@@ -40,7 +41,6 @@ import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import de.greenrobot.event.EventBus;
-import host.exp.exponent.ABIVersion;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.experience.splashscreen.LoadingView;
@@ -58,7 +58,6 @@ import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry;
 import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.ExperienceActivityUtils;
-import host.exp.exponent.utils.JSONBundleConverter;
 import host.exp.exponent.utils.ScopedPermissionsRequester;
 import host.exp.expoview.Exponent;
 import host.exp.expoview.R;
@@ -136,7 +135,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
 
   private FrameLayout mContainerView;
   /**
-   * This view is optional and available only when the app runs in Expo Client.
+   * This view is optional and available only when the app runs in Expo Go.
    */
   @Nullable private LoadingView mLoadingView;
   private FrameLayout mReactContainerView;
@@ -429,9 +428,8 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
     RNObject versionedUtils = new RNObject("host.exp.exponent.VersionedUtils").loadVersion(mSDKVersion);
     RNObject builder = versionedUtils.callRecursive("getReactInstanceManagerBuilder", instanceManagerBuilderProperties);
 
-    if (ABIVersion.toNumber(mSDKVersion) >= ABIVersion.toNumber("36.0.0")) {
-      builder.call("setCurrentActivity", this);
-    }
+    // This used to not be called prior to SDK 36
+    builder.call("setCurrentActivity", this);
 
     // ReactNativeInstance is considered to be resumed when it has its activity attached, which is expected to be the case here
     builder.call("setInitialLifecycleState", RNObject.versionedEnum(mSDKVersion, "com.facebook.react.common.LifecycleState", "RESUMED"));
@@ -470,7 +468,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
     }
 
     try {
-      exponentProps.put("manifest", mManifest);
+      exponentProps.put("manifestString", mManifest.toString());
       exponentProps.put("shell", mIsShellApp);
       exponentProps.put("initialUri", mIntentUri == null ? null : mIntentUri.toString());
     } catch (JSONException e) {
@@ -509,7 +507,11 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
       mExponentSharedPreferences.updateExperienceMetadata(mExperienceIdString, metadata);
     }
 
-    bundle.putBundle("exp", JSONBundleConverter.JSONToBundle(exponentProps));
+    try {
+      bundle.putBundle("exp", BundleJSONConverter.convertToBundle(exponentProps));
+    } catch (JSONException e) {
+      throw new Error("JSONObject failed to be converted to Bundle", e);
+    }
 
     if (!delegate.isInForeground()) {
       return new RNObject("com.facebook.react.ReactInstanceManager");

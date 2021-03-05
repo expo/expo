@@ -23,7 +23,7 @@ export async function getIosIdForVendorAsync() {
     if (!ExpoApplication.getIosIdForVendorAsync) {
         throw new UnavailabilityError('expo-application', 'getIosIdForVendorAsync');
     }
-    return await ExpoApplication.getIosIdForVendorAsync();
+    return (await ExpoApplication.getIosIdForVendorAsync()) ?? null;
 }
 export var ApplicationReleaseType;
 (function (ApplicationReleaseType) {

@@ -8,7 +8,7 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
 
-import expo.modules.random.RandomPackage;
+import expo.modules.devlauncher.DevLauncherController;
 
 import org.unimodules.adapters.react.ModuleRegistryAdapter;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
@@ -18,6 +18,8 @@ import java.util.List;
 import dev.expo.payments.generated.BasePackageList;
 
 public class MainApplication extends Application implements ReactApplication {
+  static final boolean USE_DEV_CLIENT = false;
+
   private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(
     new BasePackageList().getPackageList()
   );
@@ -31,7 +33,6 @@ public class MainApplication extends Application implements ReactApplication {
     @Override
     protected List<ReactPackage> getPackages() {
       List<ReactPackage> packages = new PackageList(this).getPackages();
-      packages.add(new RandomPackage());
       packages.add(new ModuleRegistryAdapter(mModuleRegistryProvider));
       return packages;
     }
@@ -51,5 +52,10 @@ public class MainApplication extends Application implements ReactApplication {
   public void onCreate() {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
+    ReactNativeFlipper.initializeFlipper(this);
+
+    if (USE_DEV_CLIENT) {
+      DevLauncherController.initialize(this, mReactNativeHost);
+    }
   }
 }

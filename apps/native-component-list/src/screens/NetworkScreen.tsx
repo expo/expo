@@ -49,9 +49,9 @@ export default function NetworkScreen() {
         {JSON.stringify(
           {
             ipAddress: ip,
-            networkState: networkState,
+            networkState,
             airplaneModeEnabled: airplaneMode,
-            macAddress: macAddress,
+            macAddress,
             eth0_macAddress: eth0MacAddress,
             wlan0_macAddress: wlan0MacAddress,
             custom_macAddress: customMacAddress,
@@ -62,7 +62,7 @@ export default function NetworkScreen() {
       </MonoText>
       {Platform.OS === 'android' && (
         <TextInput
-          autoCapitalize={'none'}
+          autoCapitalize="none"
           autoCorrect={false}
           placeholder="Mac Address interface name"
           value={name}

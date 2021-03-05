@@ -13,11 +13,11 @@ export interface TaskManagerError {
 /**
  * Represents the object that is passed to the task executor.
  */
-export interface TaskManagerTaskBody {
+export interface TaskManagerTaskBody<T = object> {
   /**
    * An object of data passed to the task executor. Its properties depends on the type of the task.
    */
-  data: object;
+  data: T;
 
   /**
    * Error object if the task failed or `null` otherwise.
@@ -28,6 +28,9 @@ export interface TaskManagerTaskBody {
    * Additional details containing unique ID of task event and name of the task.
    */
   executionInfo: {
+    // iOS only
+    appState?: 'active' | 'background' | 'inactive';
+
     eventId: string;
     taskName: string;
   };
@@ -198,4 +201,8 @@ if (ExpoTaskManager) {
       }
     }
   );
+}
+
+export async function isAvailableAsync(): Promise<boolean> {
+  return await ExpoTaskManager.isAvailableAsync();
 }

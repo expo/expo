@@ -9,15 +9,18 @@
 @property (nonatomic, strong) NSString *experienceId;
 @property (nonatomic, strong) NSDictionary *unversionedConstants;
 
+@property (nonatomic, weak) id<ABI38_0_0EXConstantsDeviceInstallationUUIDManager> deviceInstallationUUIDManager;
+
 @end
 
 @implementation ABI38_0_0EXConstantsBinding : ABI38_0_0EXConstantsService
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId andParams:(NSDictionary *)params
+- (instancetype)initWithExperienceId:(NSString *)experienceId andParams:(NSDictionary *)params deviceInstallationUUIDManager:(id<ABI38_0_0EXConstantsDeviceInstallationUUIDManager>)deviceInstallationUUIDManager
 {
   if (self = [super init]) {
     _experienceId = experienceId;
     _unversionedConstants = params[@"constants"];
+    _deviceInstallationUUIDManager = deviceInstallationUUIDManager;
     if (_unversionedConstants && _unversionedConstants[@"appOwnership"]) {
       _appOwnership = _unversionedConstants[@"appOwnership"];
     }
@@ -62,6 +65,11 @@
     // not correct in standalone apps
     return [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
   }
+}
+
+- (NSString *)installationId
+{
+  return [_deviceInstallationUUIDManager deviceInstallationUUID];
 }
 
 @end

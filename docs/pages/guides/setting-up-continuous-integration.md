@@ -51,9 +51,7 @@ script:
 
 > Put this into `.travis.yml` in the root of your repository.
 
-<center>
-	<a href="https://travis-ci.com/byCedric/expo-guide-ci/builds/79027881" target="_blank">See it in action</a>
-</center>
+<a href="https://travis-ci.com/byCedric/expo-guide-ci/builds/79027881" target="_blank">See it in action</a>
 
 </p>
 </details>
@@ -80,9 +78,7 @@ jest-tests:
 
 > Put this into `.gitlab-ci.yml` in the root of your repository.
 
-<center>
-	<a href="https://gitlab.com/byCedric/expo-guide-ci/pipelines/25800111" target="_blank">See it in action</a>
-</center>
+<a href="https://gitlab.com/byCedric/expo-guide-ci/pipelines/25800111" target="_blank">See it in action</a>
 
 </p>
 </details>
@@ -109,9 +105,7 @@ pipelines:
 
 > Put this into `bitbucket-pipelines.yml` in the root of your repository.
 
-<center>
-	<a href="https://bitbucket.org/byCedric/expo-guide-ci/addon/pipelines/home#!/results/2" target="_blank">See it in action</a>
-</center>
+<a href="https://bitbucket.org/byCedric/expo-guide-ci/addon/pipelines/home#!/results/2" target="_blank">See it in action</a>
 
 </p>
 </details>
@@ -149,9 +143,7 @@ script:
 
 > Put this into `.travis.yml` in the root of your repository.
 
-<center>
-	<a href="https://travis-ci.com/byCedric/expo-guide-ci/builds/79027970" target="_blank">See it in action</a>
-</center>
+<a href="https://travis-ci.com/byCedric/expo-guide-ci/builds/79027970" target="_blank">See it in action</a>
 
 </p>
 </details>
@@ -179,9 +171,7 @@ jest-tests:
 
 > Put this into `.gitlab-ci.yml` in the root of your repository.
 
-<center>
-	<a href="https://gitlab.com/byCedric/expo-guide-ci/pipelines/25800165" target="_blank">See it in action</a>
-</center>
+<a href="https://gitlab.com/byCedric/expo-guide-ci/pipelines/25800165" target="_blank">See it in action</a>
 
 </p>
 </details>
@@ -210,9 +200,7 @@ pipelines:
 
 > Put this into `bitbucket-pipelines.yml` in the root of your repository.
 
-<center>
-	<a href="https://bitbucket.org/byCedric/expo-guide-ci/addon/pipelines/home#!/results/3" target="_blank">See it in action</a>
-</center>
+<a href="https://bitbucket.org/byCedric/expo-guide-ci/addon/pipelines/home#!/results/3" target="_blank">See it in action</a>
 
 </p>
 </details>
@@ -300,9 +288,7 @@ jobs:
 
 > Put this into `.travis.yml` in the root of your repository.
 
-<center>
-	<a href="https://travis-ci.com/byCedric/expo-guide-ci/builds/79032797" target="_blank">See it in action</a>
-</center>
+<a href="https://travis-ci.com/byCedric/expo-guide-ci/builds/79032797" target="_blank">See it in action</a>
 
 </p>
 </details>
@@ -337,9 +323,7 @@ expo-deployments:
 
 > Put this into `.gitlab-ci.yml` in the root of your repository.
 
-<center>
-	<a href="https://gitlab.com/byCedric/expo-guide-ci/pipelines/25806602" target="_blank">See it in action</a>
-</center>
+<a href="https://gitlab.com/byCedric/expo-guide-ci/pipelines/25806602" target="_blank">See it in action</a>
 
 </p>
 </details>
@@ -378,9 +362,7 @@ pipelines:
 
 > Put this into `bitbucket-pipelines.yml` in the root of your repository.
 
-<center>
-	<a href="https://bitbucket.org/byCedric/expo-guide-ci/addon/pipelines/home#!/results/11" target="_blank">See it in action</a>
-</center>
+<a href="https://bitbucket.org/byCedric/expo-guide-ci/addon/pipelines/home#!/results/11" target="_blank">See it in action</a>
 
 </p>
 </details>
@@ -448,9 +430,9 @@ Here are some extra links that might help you further.
 
 ### Useful subjects
 
-- [Release channels](../../distribution/release-channels/)
-- [Building standalone apps](../../distribution/building-standalone-apps/)
-- [Configuring OTA Updates](../configuring-ota-updates/)
+- [Release channels](../distribution/release-channels.md)
+- [Building standalone apps](../distribution/building-standalone-apps.md)
+- [Configuring OTA Updates](configuring-ota-updates.md)
 
 ### Official documentation CI/CD vendors
 

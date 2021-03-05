@@ -12,7 +12,7 @@ It's like a fancy radio button, or in Apple's words: "A horizontal control that 
 
 ## Installation
 
-<InstallSection packageName="@react-native-community/segmented-control" href="https://github.com/react-native-community/segmented-control#getting-started" />
+<InstallSection packageName="@react-native-segmented-control/segmented-control" href="https://github.com/react-native-segmented-control/segmented-control#getting-started" />
 
 ## Usage
 

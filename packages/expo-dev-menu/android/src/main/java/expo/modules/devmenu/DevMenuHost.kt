@@ -7,7 +7,9 @@ import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.devsupport.DevServerHelper
+import com.facebook.react.shell.MainReactPackage
 import expo.modules.devmenu.react.DevMenuReactInternalSettings
+import expo.modules.devmenu.safearea.MockedSafeAreaPackage
 import java.io.BufferedReader
 import java.io.FileNotFoundException
 import java.io.InputStreamReader
@@ -16,13 +18,14 @@ import java.io.InputStreamReader
  * Class that represents react host used by dev menu.
  */
 class DevMenuHost(application: Application) : ReactNativeHost(application) {
-  private lateinit var reactPackages: List<ReactPackage>
 
-  fun setPackages(packages: List<ReactPackage>) {
-    reactPackages = packages
-  }
-
-  override fun getPackages() = reactPackages.toMutableList()
+  override fun getPackages() = listOf(
+    MainReactPackage(null),
+    DevMenuPackage(),
+    getVendoredPackage("com.swmansion.reanimated.ReanimatedPackage"),
+    getVendoredPackage("com.swmansion.gesturehandler.react.RNGestureHandlerPackage"),
+    MockedSafeAreaPackage()
+  )
 
   override fun getUseDeveloperSupport() = false // change it and run `yarn start` in `expo-dev-menu` to launch dev menu from local packager
 
@@ -62,6 +65,7 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
           newValue = devMenuInternalReactSettings
         )
 
+        Log.i(DEV_MENU_TAG, "DevSettings was correctly injected.")
       } catch (e: FileNotFoundException) {
         Log.e(DEV_MENU_TAG, "Couldn't find `dev-menu-packager-host` file.", e)
       } catch (e: Exception) {

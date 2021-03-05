@@ -103,7 +103,7 @@ export default function SearchBar({
     }
   };
 
-  let searchInputStyle: TextStyle = {};
+  const searchInputStyle: TextStyle = {};
   if (textColor) {
     searchInputStyle.color = textColor;
   }

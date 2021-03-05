@@ -3,6 +3,7 @@ package expo.modules.updates.manifest;
 import android.net.Uri;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
 import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.UpdatesUtils;
 import expo.modules.updates.db.entity.AssetEntity;
@@ -13,14 +14,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DateFormat;
+import java.net.URI;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
 import java.util.UUID;
 
 import static expo.modules.updates.loader.EmbeddedLoader.BUNDLE_FILENAME;
@@ -75,9 +72,7 @@ public class LegacyManifest implements Manifest {
       id = UUID.fromString(manifestJson.getString("releaseId"));
       String commitTimeString = manifestJson.getString("commitTime");
       try {
-        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
-        formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-        commitTime = formatter.parse(commitTimeString);
+        commitTime = UpdatesUtils.parseDateString(commitTimeString);
       } catch (ParseException e) {
         Log.e(TAG, "Could not parse commitTime", e);
         commitTime = new Date();
@@ -98,6 +93,14 @@ public class LegacyManifest implements Manifest {
     JSONArray bundledAssets = manifestJson.optJSONArray("bundledAssets");
 
     return new LegacyManifest(manifestJson,configuration.getUpdateUrl(), id, configuration.getScopeKey(), commitTime, runtimeVersion, manifestJson, bundleUrl, bundledAssets);
+  }
+
+  public @Nullable JSONObject getServerDefinedHeaders() {
+    return null;
+  }
+
+  public @Nullable JSONObject getManifestFilters() {
+    return null;
   }
 
   public JSONObject getRawManifestJson() {
@@ -158,32 +161,35 @@ public class LegacyManifest implements Manifest {
 
   private Uri getAssetsUrlBase() {
     if (mAssetsUrlBase == null) {
-      String hostname = mManifestUrl.getHost();
-      if (hostname == null) {
-        mAssetsUrlBase = Uri.parse(EXPO_ASSETS_URL_BASE);
-      } else {
-        for (String expoDomain : EXPO_DOMAINS) {
-          if (hostname.contains(expoDomain)) {
-            mAssetsUrlBase = Uri.parse(EXPO_ASSETS_URL_BASE);
-            break;
-          }
-        }
-
-        if (mAssetsUrlBase == null) {
-          // use manifest url as the base
-          String assetsPath = getRawManifestJson().optString("assetUrlOverride", "assets");
-          Uri.Builder assetsBaseUrlBuilder = mManifestUrl.buildUpon();
-          List<String> segments = mManifestUrl.getPathSegments();
-          assetsBaseUrlBuilder.path("");
-          for (int i = 0; i < segments.size() - 1; i++) {
-            assetsBaseUrlBuilder.appendPath(segments.get(i));
-          }
-          assetsBaseUrlBuilder.appendPath(assetsPath);
-          mAssetsUrlBase = assetsBaseUrlBuilder.build();
-        }
-      }
+      mAssetsUrlBase = getAssetsUrlBase(mManifestUrl, getRawManifestJson());
     }
     return mAssetsUrlBase;
+  }
+
+  /* package */ static Uri getAssetsUrlBase(Uri manifestUrl, JSONObject manifestJson) {
+    String hostname = manifestUrl.getHost();
+    if (hostname == null) {
+      return Uri.parse(EXPO_ASSETS_URL_BASE);
+    } else {
+      for (String expoDomain : EXPO_DOMAINS) {
+        if (hostname.equals(expoDomain) || hostname.endsWith("." + expoDomain)) {
+          return Uri.parse(EXPO_ASSETS_URL_BASE);
+        }
+      }
+
+      // assetUrlOverride may be an absolute or relative URL
+      // if relative, we should resolve with respect to the manifest URL
+      // java.net.URI's resolve method does this for us
+      String assetsPathOrUrl = manifestJson.optString("assetUrlOverride", "assets");
+      try {
+        URI assetsURI = new URI(assetsPathOrUrl);
+        URI manifestURI = new URI(manifestUrl.toString());
+        return Uri.parse(manifestURI.resolve(assetsURI).toString());
+      } catch (Exception e) {
+        Log.e(TAG, "Failed to parse assetUrlOverride, falling back to default asset path", e);
+        return manifestUrl.buildUpon().appendPath("assets").build();
+      }
+    }
   }
 
   public boolean isDevelopmentMode() {

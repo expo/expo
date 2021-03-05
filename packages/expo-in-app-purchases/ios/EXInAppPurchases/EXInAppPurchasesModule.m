@@ -151,6 +151,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   NSMutableArray *result = [NSMutableArray array];
   
   for (SKProduct *validProduct in response.products) {
+    if (!validProduct.localizedDescription) { continue; } // skip product with nil values - this can happen if it is in review "rejected" state
     NSDictionary *productData = [self getProductData:validProduct];
     [result addObject:productData];
   }
@@ -167,6 +168,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   }
   
   for (SKProduct *validProduct in response.products) {
+    if (!validProduct.localizedDescription) { continue; } // skip product with nil values - this can happen if it is in review "rejected" state
     [self purchase:validProduct];
   }
 }
@@ -322,8 +324,13 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   
   NSDecimalNumber *oneMillion = [[NSDecimalNumber alloc] initWithInt:1000000];
   NSDecimalNumber *priceAmountMicros = [product.price decimalNumberByMultiplyingBy:oneMillion];
-  NSString *price = [NSString stringWithFormat:@"%@%@", product.priceLocale.currencySymbol, product.price];
   NSString *description = product.localizedDescription ?: @"";
+  NSString *title = product.localizedTitle ?: @"";
+  
+  NSNumberFormatter *priceFormatter = [[NSNumberFormatter alloc] init];
+  priceFormatter.numberStyle = NSNumberFormatterCurrencyStyle;
+  priceFormatter.locale = product.priceLocale;
+  NSString *price = [priceFormatter stringFromNumber:product.price];
   
   return @{
            @"description": description,
@@ -332,7 +339,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
            @"priceCurrencyCode": product.priceLocale.currencyCode,
            @"productId": product.productIdentifier,
            @"subscriptionPeriod": subscriptionPeriod,
-           @"title": product.localizedTitle,
+           @"title": title,
            @"type": type
            };
 }
@@ -411,35 +418,41 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
            };
 }
 
-// Convert native error code to match TS enum
+// Convert native error code to match TS enum IAPErrorCode
 - (int)errorCodeNativeToJS:(SKErrorCode)errorCode
 {
   switch(errorCode) {
     case SKErrorUnknown:
-      return 0;
+    case SKErrorUnsupportedPlatform:
+      return 0; // UNKNOWN
     case SKErrorClientInvalid:
     case SKErrorPaymentInvalid:
     case SKErrorPaymentNotAllowed:
     case SKErrorPaymentCancelled:
-      return 1;
+    case SKErrorOverlayCancelled:
+      return 1; // PAYMENT_INVALID
+    case SKErrorOverlayTimeout:
+      return 4; // SERVICE_TIMEOUT
     case SKErrorStoreProductNotAvailable:
-      return 6;
+      return 6; // ITEM_UNAVAILABLE
     case SKErrorCloudServiceRevoked:
     case SKErrorCloudServicePermissionDenied:
     case SKErrorCloudServiceNetworkConnectionFailed:
-      return 10;
+      return 10; // CLOUD_SERVICE
     case SKErrorPrivacyAcknowledgementRequired:
-      return 11;
+      return 11; // PRIVACY_UNACKNOWLEDGED
     case SKErrorUnauthorizedRequestData:
-      return 12;
+      return 12; // UNAUTHORIZED_REQUEST
     case SKErrorInvalidSignature:
     case SKErrorInvalidOfferPrice:
     case SKErrorInvalidOfferIdentifier:
-      return 13;
+    case SKErrorOverlayInvalidConfiguration:
+    case SKErrorIneligibleForOffer:
+      return 13; // INVALID_IDENTIFIER
     case SKErrorMissingOfferParams:
-      return 14;
+      return 14; // MISSING_PARAMS
     default:
-      return 0;
+      return 0; // UNKNOWN
   }
 }
 

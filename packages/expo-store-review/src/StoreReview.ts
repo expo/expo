@@ -1,4 +1,4 @@
-import { Platform, deprecate } from '@unimodules/core';
+import { Platform } from '@unimodules/core';
 import Constants from 'expo-constants';
 import * as Linking from 'expo-linking';
 
@@ -12,15 +12,6 @@ import StoreReview from './ExpoStoreReview';
  */
 export async function isAvailableAsync(): Promise<boolean> {
   return StoreReview.isAvailableAsync();
-}
-
-/**
- * @deprecated use `isAvailableAsync()` instead
- */
-export function isSupported(): void {
-  deprecate('expo-store-review', 'StoreReview.isSupported', {
-    replacement: 'StoreReview.isAvailableAsync',
-  });
 }
 
 /**
@@ -59,10 +50,10 @@ export function storeUrl(): string | null {
   const { manifest } = Constants;
   // eslint-disable-next-line no-undef
   if (Platform.OS === 'ios' && manifest?.ios) {
-    return manifest.ios.appStoreUrl;
+    return manifest.ios.appStoreUrl ?? null;
     // eslint-disable-next-line no-undef
   } else if (Platform.OS === 'android' && manifest?.android) {
-    return manifest.android.playStoreUrl;
+    return manifest.android.playStoreUrl ?? null;
   }
   return null;
 }

@@ -27,7 +27,6 @@ import org.unimodules.core.interfaces.ActivityEventListener
 import org.unimodules.core.interfaces.ActivityProvider
 import org.unimodules.core.interfaces.ExpoMethod
 import org.unimodules.core.interfaces.LifecycleEventListener
-import org.unimodules.core.interfaces.services.EventEmitter
 import org.unimodules.core.interfaces.services.UIManager
 import org.unimodules.core.utilities.FileUtilities.generateOutputPath
 import org.unimodules.interfaces.imageloader.ImageLoader
@@ -58,7 +57,6 @@ class ImagePickerModule(
   private val mImageLoader: ImageLoader by moduleRegistry()
   private val mUIManager: UIManager by moduleRegistry()
   private val mPermissions: Permissions by moduleRegistry()
-  private val mEventEmitter: EventEmitter by moduleRegistry()
   private val mActivityProvider: ActivityProvider by moduleRegistry()
 
   private lateinit var _experienceActivity: WeakReference<Activity>
@@ -82,13 +80,13 @@ class ImagePickerModule(
   //region expo methods
 
   @ExpoMethod
-  fun requestCameraRollPermissionsAsync(promise: Promise) {
-    Permissions.askForPermissionsWithPermissionsManager(mPermissions, promise, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
+  fun requestMediaLibraryPermissionsAsync(writeOnly: Boolean, promise: Promise) {
+    Permissions.askForPermissionsWithPermissionsManager(mPermissions, promise, *getMediaLibraryPermissions(writeOnly))
   }
 
   @ExpoMethod
-  fun getCameraRollPermissionsAsync(promise: Promise) {
-    Permissions.getPermissionsWithPermissionsManager(mPermissions, promise, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
+  fun getMediaLibraryPermissionsAsync(writeOnly: Boolean, promise: Promise) {
+    Permissions.getPermissionsWithPermissionsManager(mPermissions, promise, *getMediaLibraryPermissions(writeOnly))
   }
 
   @ExpoMethod
@@ -159,6 +157,14 @@ class ImagePickerModule(
   //endregion
 
   //region helpers
+
+  private fun getMediaLibraryPermissions(writeOnly: Boolean): Array<String> {
+    return if (writeOnly) {
+      arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    } else {
+      arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
+    }
+  }
 
   private fun launchCameraWithPermissionsGranted(promise: Promise, cameraIntent: Intent, pickerOptions: ImagePickerOptions) {
     val imageFile = createOutputFile(

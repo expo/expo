@@ -54,23 +54,24 @@ class LoadedGalleryScreen extends React.Component<
   };
 
   toggleSelection = (uri: string, isSelected: boolean) => {
-    let selected = this.state.selected;
-    if (isSelected) {
-      selected.push(uri);
-    } else {
-      selected = selected.filter(item => item !== uri);
-    }
-    this.setState({ selected });
+    this.setState(({ selected }) => {
+      if (isSelected) {
+        selected.push(uri);
+      } else {
+        selected = selected.filter(item => item !== uri);
+      }
+      return { selected };
+    });
   };
 
   saveToGallery = async () => {
     const photos = this.state.selected;
 
     if (photos.length > 0) {
-      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
 
       if (status !== 'granted') {
-        throw new Error('Denied CAMERA_ROLL permissions!');
+        throw new Error('Denied MEDIA_LIBRARY permissions!');
       }
 
       const promises = photos.map(photoUri => {

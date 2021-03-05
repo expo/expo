@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
+import androidx.annotation.Nullable;
 import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.UpdatesUtils;
 import expo.modules.updates.db.entity.AssetEntity;
@@ -58,6 +59,14 @@ public class BareManifest implements Manifest {
     }
 
     return new BareManifest(manifestJson, id, configuration.getScopeKey(), commitTime, runtimeVersion, metadata, assets);
+  }
+
+  public @Nullable JSONObject getServerDefinedHeaders() {
+    return null;
+  }
+
+  public @Nullable JSONObject getManifestFilters() {
+    return null;
   }
 
   public JSONObject getRawManifestJson() {

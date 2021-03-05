@@ -13,10 +13,9 @@ project(":expo-random").projectDir = new File("../packages/expo-random/android")
 
 [
     // ADD_NEW_SUPPORTED_ABIS_HERE
+    "abi40_0_0",
     "abi39_0_0",
     "abi38_0_0",
-    "abi37_0_0",
-    "abi36_0_0",
 ].forEach({ abiVariant ->
   include ":expoview-$abiVariant"
   project(":expoview-$abiVariant").projectDir = new File(rootDir, "versioned-abis/expoview-$abiVariant")
@@ -34,10 +33,6 @@ includeUnimodulesProjects(
         target      : 'react-native',
         exclude     : [
             'expo-module-template',
-// FLAG_BEGIN_REMOVE__UPDATE_EXPOKIT - used during `et android-build-packages`
-// section below previous line comment flag contains modules that need to be built for `expokit-npm-package`
-            'expo-in-app-purchases',
-// FLAG_END_REMOVE__UPDATE_EXPOKIT
         ]
     ]
 // WHEN_DISTRIBUTING_REMOVE_TO_HERE

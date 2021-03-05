@@ -18,9 +18,9 @@ Expo includes support for [Lottie](https://airbnb.design/lottie/), the animation
 ## Usage
 
 <SnackInline
-  label="Lottie"
-  dependencies={['lottie-react-native']}
-  files={{
+label="Lottie"
+dependencies={['lottie-react-native']}
+files={{
     'assets/gradientBall.json': 'assets/gradientBall.json'
   }}>
 
@@ -76,14 +76,13 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
 });
-
 ```
 
 </SnackInline>
 
 ## Importing Lottie
 
- You can import it like this:
+You can import it like this:
 
 ```javascript
 import LottieView from 'lottie-react-native';
@@ -92,6 +91,7 @@ import LottieView from 'lottie-react-native';
 ## Known Issues
 
 > The Lottie SDK is currently considered to be under Expo's "DangerZone" because it's implementation is still in Alpha.
+
 - Importing Lottie 3 files causes the previewer to crash without a visible error, because Expo relies on `lottie-react-native` v2.
 
 ## Using the Lottie API

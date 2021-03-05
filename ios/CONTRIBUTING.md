@@ -26,7 +26,6 @@ This code can be run in a few contexts:
 
 - As the Expo Client app.
 - As a standalone (shell) app. In this case, the project is pre-built, and then some tooling modifies configurations in the NSBundle to cause it to run as a standalone app.
-- As the ExpoKit library. In this case, AppDelegate and RootView are omitted, and all the other classes are installed via CocoaPods inside an external project.
 
 The `EXShellManager` class keeps track of how the code is being run. Mostly it reads the contents of a couple `.plist` files in the bundle.
 
@@ -35,7 +34,7 @@ The `EXShellManager` class keeps track of how the code is being run. Mostly it r
 We use CocoaPods to manage dependencies. Rather than committing `Podfile`, we use `template-files/ios/dependencies.json`. To add a dependency:
 
 - Add it to `dependencies.json`
-- Run `et ios-generate-dynamic-macros`. This will write `Podfile` (for the Expo Client) and `ExpoKit.podspec` (for ExpoKit, which uses almost all of the same code as Expo Client, and therefore has the same dependencies).
+- Run `et ios-generate-dynamic-macros`. This will write `Podfile` (for the Expo Client) and `ExpoKit.podspec` (for standalone apps, which use almost all of the same code as Expo Client, and therefore have the same dependencies).
 
 ## Testing
 
@@ -75,8 +74,8 @@ The Expo Client is an iOS app containing the Expo Kernel. The Kernel is a piece 
 
 Almost everything in the project is included in the ExpoKit library (see `ExpoKit.podspec`). The Expo Client is just a special user of ExpoKit. Therefore it includes some extra classes to provide an entry point to the application:
 
-- `EXAppDelegate`: The app delegate. Try to keep this file small. Mostly it should call into `ExpoKit` methods, unless you really want to add functionality that is specific to Expo Client and should not work in other ExpoKit projects.
-- `EXRootViewController`: Same story as AppDelegate. This implements any view controller functionality which only needs to apply to Expo Client and not other ExpoKit proejcts.
+- `EXAppDelegate`: The app delegate. Try to keep this file small. Mostly it should call into `ExpoKit` methods, unless you really want to add functionality that is specific to Expo Client and should not work in standalone apps.
+- `EXRootViewController`: Same story as AppDelegate. This implements any view controller functionality which only needs to apply to Expo Client and not standalone apps.
 
 ### Versioned directory
 
@@ -87,7 +86,7 @@ Everything under this directory will be duplicated and namespaced when we releas
 
 ### ExpoKit directory
 
-This contains the public ExpoKit API exposed by the ExpoKit CocoaPod.
+This contains the public ExpoKit API exposed by the ExpoKit CocoaPod, which basically ends up being used only in standalone iOS apps.
 
 ### ReactAppManager
 

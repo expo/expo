@@ -1,11 +1,25 @@
 const { jsExtensions } = require('./extensions');
 
 module.exports = {
-  parser: 'babel-eslint',
+  parser: '@babel/eslint-parser',
   parserOptions: {
     sourceType: 'module',
-    ecmaVersion: 2019,
+    ecmaVersion: 2021,
     ecmaFeatures: { impliedStrict: true },
+    requireConfigFile: false,
+    babelOptions: {
+      parserOpts: {
+        plugins: [
+          // Languages extensions used in Expo projects and dependencies
+          'flow',
+          'jsx',
+          // Stage 3+ proposals that aren't supported by the base ECMAScript version
+          'classProperties',
+          'classPrivateProperties',
+          'classPrivateMethods',
+        ],
+      },
+    },
   },
   env: { es6: true, jest: true },
   globals: {
@@ -107,6 +121,7 @@ module.exports = {
     'no-useless-escape': 'warn',
     'no-useless-rename': 'warn',
     'no-useless-return': 'warn',
+    'no-var': 'warn',
     'no-void': 'warn',
     'no-whitespace-before-property': 'warn',
     'no-with': 'warn',
@@ -155,7 +170,7 @@ module.exports = {
   settings: {
     'import/extensions': jsExtensions,
     'import/parsers': {
-      'babel-eslint': jsExtensions,
+      '@babel/eslint-parser': jsExtensions,
     },
     'import/resolver': {
       node: { extensions: jsExtensions },

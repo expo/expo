@@ -5,7 +5,7 @@ title: Picking an image
 import SnackInline from '~/components/plugins/SnackInline';
 import Video from '~/components/plugins/Video'
 
-So far we have been using code from React and React Native in our app. React gives us a nice way to build components and React Native gives us pre-built components that work on iOS, Android, and web &mdash; like `View`, `Text`, `TouchableOpacity`. React Native does *not* provide us with an image picker. For this, we can use an Expo library called [expo-image-picker](/versions/latest/sdk/imagepicker/):
+So far we have been using code from React and React Native in our app. React gives us a nice way to build components and React Native gives us pre-built components that work on iOS, Android, and web &mdash; like `View`, `Text`, `TouchableOpacity`. React Native does _not_ provide us with an image picker. For this, we can use an Expo library called [expo-image-picker](../versions/latest/sdk/imagepicker.md):
 
 > **`expo-image-picker`** provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.
 
@@ -17,7 +17,6 @@ So far we have been using code from React and React Native in our app. React giv
 
 </p>
 </details> -->
-
 
 ## Installing expo-image-picker
 
@@ -33,10 +32,11 @@ In your project directory, run `expo install expo-image-picker`. This will tell 
 
 ## Picking an image
 
-With the library installed our project, we can now actually use it.
+With the library installed in our project, we can now actually use it.
 
 <SnackInline label="Image picker" templateId="tutorial/image-picker-log" dependencies={['expo-image-picker']}>
 
+<!-- prettier-ignore -->
 ```js
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -46,7 +46,7 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 export default function App() {
   /* @info Request permissions to access the "camera roll", then launch the picker and log the result. */
   let openImagePickerAsync = async () => {
-    let permissionResult = await ImagePicker.requestCameraRollPermissionsAsync();
+    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (permissionResult.granted === false) {
       alert("Permission to access camera roll is required!");
@@ -89,13 +89,14 @@ Now we will take the data that we get from the image picker and use it to show t
 
 <SnackInline label="Image picker show image" templateId="tutorial/image-picker-show" dependencies={['expo-image-picker']}>
 
+<!-- prettier-ignore -->
 ```js
 export default function App() {
   /* @info Initialize a variable to hold our selected image data */const [selectedImage, setSelectedImage] = React.useState(null);/* @end */
 
 
   let openImagePickerAsync = async () => {
-    let permissionResult = await ImagePicker.requestCameraRollPermissionsAsync();
+    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (permissionResult.granted === false) {
       alert('Permission to access camera roll is required!');
@@ -156,4 +157,4 @@ Your app should now look and behave like this:
 
 > 👀 You might expect that because we gave our image an equal width and height it would be a square, but in the above video it's rectangular. This is because of `resizeMode`, an image style property that lets us control how the image is resized to fit the given dimensions. Try switching it from `contain` to `stretch` or `cover` to see other behaviors.
 
-🥳 We have made great progress! Up next, [let's make it possible to share the image](../../tutorial/sharing/).
+🥳 We have made great progress! Up next, [let's make it possible to share the image](../tutorial/sharing.md).

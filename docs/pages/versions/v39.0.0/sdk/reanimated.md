@@ -1,6 +1,6 @@
 ---
 title: Reanimated
-sourceCodeUrl: 'https://github.com/kmagiera/react-native-reanimated'
+sourceCodeUrl: 'https://github.com/software-mansion/react-native-reanimated'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -18,7 +18,11 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ### Experimental support for v2-alpha
 
-The second major version of this library offers a much easier API, along with significantly improved performance characteristics. It also requires that [TurboModules](https://github.com/react-native-community/discussions-and-proposals/issues/40) are enabled in your app, and [TurboModules are not compatible with JavaScript debugging in Chrome](https://docs.swmansion.com/react-native-reanimated/docs/next/#known-problems-and-limitations). Because of this limitation, you need to opt in to using the alpha version of this library. To opt in, add the `experiments.turboModules` key to your `app.json`:
+The second major version of this library offers a much easier API, along with significantly improved performance characteristics. It also requires that [TurboModules](https://github.com/react-native-community/discussions-and-proposals/issues/40) are enabled in your app, and [TurboModules are not compatible with JavaScript debugging in Chrome](https://docs.swmansion.com/react-native-reanimated/docs/next/#known-problems-and-limitations). Because of this limitation, you need to opt in to using the alpha version of this library.
+
+> ⏩ If you want to play with v2-alpha in a new project before adding it to an existing project, run `npx crna --template with-reanimated2` to create a project with it configured and ready to use.
+
+To opt in to using TurboModules for react-native-reanimated, add the `experiments.turboModules` key to your `app.json`:
 
 ```json
 {
@@ -34,7 +38,7 @@ You also need to install the library directly with npm or yarn rather than using
 
 ```
 # This exact version is supported:
-npm install react-native-reanimated@2.0.0-alpha.6 
+npm install react-native-reanimated@2.0.0-alpha.6.1
 ```
 
 Finally, you'll need to add the babel plugin to `babel.config.js`:
@@ -44,10 +48,21 @@ module.exports = function(api) {
   api.cache(true);
   return {
     presets: ['babel-preset-expo'],
-    plugins: ['react-native-reanimated/plugin']
+    plugins: ['react-native-reanimated/plugin'],
   };
 };
 ```
+
+Note: If you load other babel plugins, the Reanimated plugin has to be listed last in the plugins array.
+
+When you run the project you will get a warning about an incompatible version:
+
+```
+Some of your project's dependencies are not compatible with currently installed expo package version:
+ - react-native-reanimated - expected version range: ~1.13.0 - actual version installed: 2.0.0-alpha.6.1
+```
+
+You can ignore this, as you are intentionally opting in to an experimental feature.
 
 ## API Usage
 

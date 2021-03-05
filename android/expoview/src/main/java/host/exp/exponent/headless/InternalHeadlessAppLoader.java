@@ -29,6 +29,7 @@ import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.experience.DetachedModuleRegistryAdapter;
 import host.exp.exponent.kernel.ExponentUrls;
+import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.taskManager.AppLoaderInterface;
 import host.exp.exponent.taskManager.AppRecordInterface;
 import host.exp.exponent.utils.AsyncCondition;
@@ -135,6 +136,9 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
     mManifest = manifest;
     mSdkVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
 
+    // Notifications logic uses this to determine which experience to route a notification to
+    ExponentDB.saveExperience(mManifestUrl, manifest, bundleUrl);
+
     // Sometime we want to release a new version without adding a new .aar. Use TEMPORARY_ABI_VERSION
     // to point to the unversioned code in ReactAndroid.
     if (Constants.TEMPORARY_ABI_VERSION != null && Constants.TEMPORARY_ABI_VERSION.equals(mSdkVersion)) {
@@ -220,7 +224,7 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
   @SuppressWarnings("unchecked")
   private List<ReactPackage> reactPackages() {
     if (!Constants.isStandaloneApp()) {
-      // Pass null if it's on Expo Client. In that case packages from ExperiencePackagePicker will be used instead.
+      // Pass null if it's on Expo Go. In that case packages from ExperiencePackagePicker will be used instead.
       return null;
     }
     try {
@@ -235,7 +239,7 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
   @SuppressWarnings("unchecked")
   public List<Package> expoPackages() {
     if (!Constants.isStandaloneApp()) {
-      // Pass null if it's on Expo Client. In that case packages from ExperiencePackagePicker will be used instead.
+      // Pass null if it's on Expo Go. In that case packages from ExperiencePackagePicker will be used instead.
       return null;
     }
     try {
@@ -301,7 +305,7 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
     RNObject builder = versionedUtils.callRecursive("getReactInstanceManagerBuilder", instanceManagerBuilderProperties);
 
     // Since there is no activity to be attached, we cannot set ReactInstanceManager state to RESUMED, so we opt to BEFORE_RESUME
-    builder.call("setInitialLifecycleState", LifecycleState.BEFORE_RESUME);
+    builder.call("setInitialLifecycleState", RNObject.versionedEnum(mSDKVersion, "com.facebook.react.common.LifecycleState", "BEFORE_RESUME"));
 
     if (extraNativeModules != null) {
       for (Object nativeModule : extraNativeModules) {

@@ -70,7 +70,7 @@ An ID which is used to associate this `InputAccessoryView` to specified TextInpu
 
 | Type                         | Required |
 | ---------------------------- | -------- |
-| [style](../view-style-props/) | No       |
+| [style](view-style-props.md) | No       |
 
 # Known issues
 

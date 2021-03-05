@@ -45,7 +45,11 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                     requester:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [_requester requestPermissions:requestedPermissions withResolver:resolve rejecter:reject];
+  [EXUserFacingNotificationsPermissionsRequester setRequestedPermissions:requestedPermissions];
+  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+                                                         withRequester:[EXUserFacingNotificationsPermissionsRequester class]
+                                                               resolve:resolve
+                                                                reject:reject];
 }
 
 # pragma mark - UMModuleRegistryConsumer

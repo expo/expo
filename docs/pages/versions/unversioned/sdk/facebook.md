@@ -24,12 +24,12 @@ For bare apps, here are links to the [iOS Installation Walkthrough](https://deve
 
 Follow [Facebook's developer documentation](https://developers.facebook.com/docs/apps/register) to register an application with Facebook's API and get an application ID. Take note of this application ID because it will be used as the `appId` option in your [`Facebook.logInWithReadPermissionsAsync`](#expofacebookloginwithreadpermissionsasync 'Facebook.logInWithReadPermissionsAsync') call.
 
-Then follow these steps based on the platforms you're targetting. This will need to be done from the [Facebook developer site](https://developers.facebook.com/). You don't need to set up the iOS and Android standalone apps right away, you can do that at any time in the future if you just want to get the Expo client version running first.
+Then follow these steps based on the platforms you're targetting. This will need to be done from the [Facebook developer site](https://developers.facebook.com/).
 
-**No configuration is needed to use the Facebook SDK in the App Store Expo client**, because all of your Facebook API calls will be made with Expo's Facebook App ID. The slight downside to this is that you can't customize which permissions your app requests from Facebook (like `user_photos` or `user_friends`), or integrate Facebook login with other services like Firebase auth. If you need that functionality, you have two options:
+Expo Go from the Android Play Store will use the Facebook App ID that you provide, however, all Facebook API calls in the **Expo Go from the iOS App Store will use Expo's own Facebook App ID**. This is due to underlying configuration limitations, but the good news is it means less setup for you! The slight downside to this is that you can't customize which permissions your app requests from Facebook (like `user_photos` or `user_friends`), or integrate Facebook login with other services like Firebase auth. If you need that functionality on iOS, you have two options:
 
-- Build a [standalone app](../../distribution/building-standalone-apps/)
-- Build a [custom Expo Client app](../../guides/adhoc-builds/)
+- Build a [custom Expo Go app](../../../guides/adhoc-builds.md)
+- Build a [standalone app](../../../distribution/building-standalone-apps.md)
 
 #### Configure `app.json`
 
@@ -38,11 +38,10 @@ Then follow these steps based on the platforms you're targetting. This will need
 - Add the fields `facebookAppId` and `facebookDisplayName`, using your [Facebook App ID and Facebook Display Name](https://developers.facebook.com/docs/facebook-login/ios), respectively.
 
 - Optional fields
-  - `facebookAutoInitEnabled`, defaults to `false`
   - `facebookAutoLogAppEventsEnabled`, defaults to Facebook's default policy (Only applies to standalone apps)
   - `facebookAdvertiserIDCollectionEnabled`, defaults to Facebook's default policy (Only applies to standalone apps)
 
-#### iOS Custom Expo client
+#### iOS Custom Expo Go
 
 - Add your custom client's Bundle ID (shown in the output after running `expo client:ios`) in the app settings page pictured below. It should look something like: `dev.expo.client.xxxxx`
 
@@ -52,7 +51,7 @@ Then follow these steps based on the platforms you're targetting. This will need
 
 #### Android standalone app
 
-- [Build your standalone app](../../distribution/building-standalone-apps/#building-standalone-apps) for Android.
+- [Build your standalone app](../../../distribution/building-standalone-apps.md#building-standalone-apps) for Android.
 - Run `expo fetch:android:hashes`.
 - Copy `Facebook Key Hash` and paste it as a key hash in your Facebook developer page pictured below.
 
@@ -107,11 +106,16 @@ If the user or Facebook cancelled the login, returns `{ type: 'cancel' }`.
 
 Otherwise, returns `{ type: 'success' } &` [`FacebookAuthenticationCredential`][#facebookauthenticationcredential].
 
-### `Facebook.setAutoInitEnabledAsync(enabled: boolean): Promise<void>`
+### `Facebook.setAdvertiserTrackingEnabledAsync(enabled: boolean): Promise<boolean>`
 
-Sets whether the Facebook SDK should autoinitialize itself. SDK initialization involves e.g. fetching app settings from Facebook or a profile of the logged in user. In some cases, you may want to disable or delay the SDK initialization, such as to obtain user consent or fulfill legal obligations. This method corresponds to [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#disable-sdk-initialization) and [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#disable-sdk-initialization) native SDK methods. Even though calling this method with `enabled === true` initializes the Facebook SDK on iOS, it does not on Android and we recommend always calling `initializeAsync` before performing any actions with effects that should be visible to the user (like `loginWithPermissions`).
+Sets whether Facebook SDK can use the device's Identifier for Advertisers (IDFA) to serve personalized ads to the user.
+Starting with iOS 14.5, an app will need to receive the user's permission to access their device's advertising identifier. Tracking refers to the act of linking user or device data collected from your app with user or device data collected from other companies' apps, websites, or offline properties for targeted advertising or advertising measurement purposes.
 
-In Expo, by default, autoinitialization of the Facebook SDK is disabled. You may change this value at runtime by calling this method or customize this feature at build time by setting the appropriate `app.json` fields. The value set with this method persists across launches of the app and overrides the build-time configuration value.
+Use this method to indicate whether Facebook SDK can use event data for ads in line with your own legal obligations, platform terms and commitments you've made to your users.
+
+#### Returns
+
+A promise that resolves to a boolean whether the value is set successfully. It will always return `false` on Android, iOS 13 and below.
 
 ### `Facebook.setAutoLogAppEventsEnabledAsync(enabled: boolean): Promise<void>`
 

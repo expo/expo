@@ -1,5 +1,5 @@
 ---
-title: Using Styled Components with Expo
+title: Using Styled Components
 ---
 
 Styled Components is a CSS-in-JS solution that enables you to create React components with a given style very easily. Using `styled-components` with Expo, you can create universal styles that'll work the same across web, mobile, and desktop!
@@ -23,17 +23,17 @@ const Container = styled.View`
   background-color: #fff;
   align-items: center;
   justify-content: center;
-`
+`;
 const Title = styled.Text`
   color: #000;
   text-align: center;
   font-size: 16px;
-`
+`;
 export default () => (
-    <Container>
-        <Title>Hello</Title>
-    </Container>
-)
+  <Container>
+    <Title>Hello</Title>
+  </Container>
+);
 ```
 
 ## Usage with Next.js

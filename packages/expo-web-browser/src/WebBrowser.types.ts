@@ -56,23 +56,21 @@ export type WebBrowserCustomTabsResults = {
   servicePackages: string[];
 };
 
-export const WebBrowserResultType = {
+export enum WebBrowserResultType {
   /**
    * iOS only
    */
-  CANCEL: 'cancel',
+  CANCEL = 'cancel',
   /**
    * iOS only
    */
-  DISMISS: 'dismiss',
+  DISMISS = 'dismiss',
   /**
    * Android only
    */
-  OPENED: 'opened',
-  LOCKED: 'locked',
-} as const;
-
-export type WebBrowserResultType = typeof WebBrowserResultType[keyof typeof WebBrowserResultType];
+  OPENED = 'opened',
+  LOCKED = 'locked',
+}
 
 export type WebBrowserResult = {
   // cancel and dismiss are iOS only, opened is Android only

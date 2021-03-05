@@ -31,7 +31,7 @@ repositories {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 29)
+  compileSdkVersion safeExtGet("compileSdkVersion", 30)
 
   compileOptions {
     sourceCompatibility = '1.8'
@@ -40,7 +40,7 @@ android {
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 29)
+    targetSdkVersion safeExtGet("targetSdkVersion", 30)
     versionCode 1
     versionName "1.0"
   }
@@ -87,7 +87,7 @@ dependencies {
   api 'javax.inject:javax.inject:1'
 
   // Our dependencies
-  api "androidx.appcompat:appcompat:1.1.0"
+  api "androidx.appcompat:appcompat:1.2.0"
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
   api 'de.greenrobot:eventbus:2.4.0'
 
@@ -106,7 +106,7 @@ dependencies {
   api 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
   api 'commons-codec:commons-codec:1.10'
   api 'net.openid:appauth:0.7.1'
-  api 'com.airbnb.android:lottie:2.5.6'
+  api 'com.airbnb.android:lottie:3.4.0'
   compileOnly 'io.branch.sdk.android:library:4.1.0'
   api "androidx.exifinterface:exifinterface:1.0.0"
   api "androidx.legacy:legacy-support-v4:1.0.0"
@@ -124,7 +124,7 @@ dependencies {
   annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.0'
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 
-  // Used only in Expo client, see Analytics.java
+  // Used only in Expo Go, see Analytics.java
   compileOnly 'com.amplitude:android-sdk:2.23.2'
 
   // expo-file-system

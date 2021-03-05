@@ -49,9 +49,9 @@ class ProgressBarExample extends React.Component<ProgressBarExampleProps, Progre
 
   progressLoop() {
     const timeout = setTimeout(() => {
-      this.setState({
-        progress: this.state.progress === 1 ? 0 : Math.min(1, this.state.progress + 0.01),
-      });
+      this.setState(state => ({
+        progress: state.progress === 1 ? 0 : Math.min(1, state.progress + 0.01),
+      }));
 
       this.progressLoop();
     }, 17 * 2);

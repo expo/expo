@@ -10,8 +10,8 @@ To accomplish this, we provide not only our [privacy policy](https://expo.io/pri
 
 Find out more about:
 
-- [GDPR and Expo](../gdpr/)
-- [HIPAA and Expo](../hipaa/)
-- [Privacy Shield and Expo](../privacy-shield/)
+- [GDPR and Expo](gdpr.md)
+- [HIPAA and Expo](hipaa.md)
+- [Privacy Shield and Expo](privacy-shield.md)
 
 If you have any questions, please post in [our forums](https://forums.expo.io/).

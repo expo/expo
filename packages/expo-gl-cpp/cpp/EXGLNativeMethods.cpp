@@ -285,7 +285,7 @@ NATIVE_METHOD(bufferData) {
   } else if (sizeOrData.isNull() || sizeOrData.isUndefined()) {
     addToNextBatch([=] { glBufferData(target, 0, nullptr, usage); });
   } else if (sizeOrData.isObject()) {
-    auto data = rawArrayBuffer(runtime, sizeOrData.getObject(runtime));
+    auto data = rawTypedArray(runtime, sizeOrData.getObject(runtime));
     addToNextBatch(
         [=, data{std::move(data)}] { glBufferData(target, data.size(), data.data(), usage); });
   }
@@ -298,7 +298,7 @@ NATIVE_METHOD(bufferSubData) {
   if (ARG(2, const jsi::Value &).isNull()) {
     addToNextBatch([=] { glBufferSubData(target, offset, 0, nullptr); });
   } else {
-    auto data = rawArrayBuffer(runtime, ARG(2, jsi::Object));
+    auto data = rawTypedArray(runtime, ARG(2, jsi::Object));
     addToNextBatch(
         [=, data{std::move(data)}] { glBufferSubData(target, offset, data.size(), data.data()); });
   }
@@ -500,7 +500,21 @@ NATIVE_METHOD(renderbufferStorage) {
 // Renderbuffers (WebGL2)
 // ----------------------
 
-UNIMPL_NATIVE_METHOD(getInternalformatParameter)
+NATIVE_METHOD(getInternalformatParameter) {
+  auto target = ARG(0, GLenum);
+  auto internalformat = ARG(1, GLenum);
+  auto pname = ARG(2, GLenum);
+
+  std::vector<TypedArrayBase::ContentType<TypedArrayKind::Int32Array>> glResults;
+  addBlockingToNextBatch([&] {
+    GLint count;
+    glGetInternalformativ(target, internalformat, GL_NUM_SAMPLE_COUNTS, 1, &count);
+    glResults.resize(count);
+    glGetInternalformativ(target, internalformat, pname, count, glResults.data());
+  });
+
+  return TypedArray<TypedArrayKind::Int32Array>(runtime, glResults);
+}
 
 UNIMPL_NATIVE_METHOD(renderbufferStorageMultisample)
 
@@ -561,7 +575,7 @@ NATIVE_METHOD(texImage2D, 6) {
     auto data = ARG(8, jsi::Object);
 
     if (data.isArrayBuffer(runtime) || isTypedArray(runtime, data)) {
-      std::vector<uint8_t> vec = rawArrayBuffer(runtime, std::move(data));
+      std::vector<uint8_t> vec = rawTypedArray(runtime, std::move(data));
       if (unpackFLipY) {
         flipPixels(vec.data(), width * bytesPerPixel(type, format), height);
       }
@@ -619,7 +633,7 @@ NATIVE_METHOD(texSubImage2D, 6) {
     auto data = ARG(8, jsi::Object);
 
     if (data.isArrayBuffer(runtime) || isTypedArray(runtime, data)) {
-      std::vector<uint8_t> vec = rawArrayBuffer(runtime, std::move(data));
+      std::vector<uint8_t> vec = rawTypedArray(runtime, std::move(data));
       if (unpackFLipY) {
         flipPixels(vec.data(), width * bytesPerPixel(type, format), height);
       }
@@ -694,7 +708,7 @@ NATIVE_METHOD(texImage3D) {
   };
 
   if (data.isArrayBuffer(runtime) || isTypedArray(runtime, data)) {
-    std::vector<uint8_t> vec = rawArrayBuffer(runtime, std::move(data));
+    std::vector<uint8_t> vec = rawTypedArray(runtime, std::move(data));
     if (unpackFLipY) {
       flip(vec.data());
     }
@@ -747,7 +761,7 @@ NATIVE_METHOD(texSubImage3D) {
   };
 
   if (data.isArrayBuffer(runtime) || isTypedArray(runtime, data)) {
-    std::vector<uint8_t> vec = rawArrayBuffer(runtime, std::move(data));
+    std::vector<uint8_t> vec = rawTypedArray(runtime, std::move(data));
     if (unpackFLipY) {
       flip(vec.data());
     }

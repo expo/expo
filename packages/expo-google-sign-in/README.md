@@ -1,6 +1,6 @@
 # expo-google-sign-in
 
-Enables native Google authentication features in your app! This module can only be used in ExpoKit, or a Standalone Expo app. For in-depth setup, check out this guide: https://blog.expo.io/react-native-google-sign-in-with-expo-d1707579a7ce
+Enables native Google authentication features in your app!
 
 # API documentation
 

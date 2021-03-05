@@ -126,8 +126,10 @@ static NSString * const EXUpdatesExpoTestDomain = @"expo.test";
       [host containsString:EXUpdatesExpoTestDomain]) {
     return [NSURL URLWithString:EXUpdatesExpoAssetBaseUrl];
   } else {
-    NSString *assetsPath = manifest[@"assetUrlOverride"] ?: @"assets";
-    return [manifestUrl.URLByDeletingLastPathComponent URLByAppendingPathComponent:assetsPath];
+    NSString *assetsPathOrUrl = manifest[@"assetUrlOverride"] ?: @"assets";
+    // assetUrlOverride may be an absolute or relative URL
+    // if relative, we should resolve with respect to the manifest URL
+    return [NSURL URLWithString:assetsPathOrUrl relativeToURL:manifestUrl].absoluteURL.standardizedURL;
   }
 }
 

@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI37_0_0/Expo/EXDocumentPicker/ABI37_0_0EXDocumentPicker/ABI37_0_0EXDocumentPickerModule.h

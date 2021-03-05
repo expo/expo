@@ -14,7 +14,7 @@ export default function SwitchScreen() {
         <Switch
           value={value}
           onValueChange={setValue}
-          thumbColor={'gold'}
+          thumbColor="gold"
           trackColor={{ true: Colors.tintColor, false: 'red' }}
         />
       </Section>

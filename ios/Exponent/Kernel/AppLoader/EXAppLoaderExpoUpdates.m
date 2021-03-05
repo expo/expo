@@ -19,7 +19,7 @@
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
 #import <EXUpdates/EXUpdatesReaper.h>
-#import <EXUpdates/EXUpdatesSelectionPolicyNewest.h>
+#import <EXUpdates/EXUpdatesSelectionPolicyFilterAware.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 #import <React/RCTUtils.h>
 #import <sys/utsname.h>
@@ -174,6 +174,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didStartLoadingUpdate:(EXUpdatesUpdate *)update
 {
+  // expo-cli does not always respect our SDK version headers and respond with a compatible update or an error
+  // so we need to check the compatibility here
+  EXManifestResource *manifestResource = [[EXManifestResource alloc] initWithManifestUrl:_httpManifestUrl originalUrl:_manifestUrl];
+  NSError *manifestCompatibilityError = [manifestResource verifyManifestSdkVersion:update.rawManifest];
+  if (manifestCompatibilityError) {
+    _error = manifestCompatibilityError;
+    if (self.delegate) {
+      [self.delegate appLoader:self didFailWithError:_error];
+      return;
+    }
+  }
+
   _remoteUpdateStatus = kEXAppLoaderRemoteUpdateStatusDownloading;
   [self _setShouldShowRemoteUpdateStatus:update.rawManifest];
   [self _setOptimisticManifest:[self _processManifest:update.rawManifest]];
@@ -181,6 +193,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithLauncher:(id<EXUpdatesAppLauncher>)launcher isUpToDate:(BOOL)isUpToDate
 {
+  if (_error) {
+    return;
+  }
+
   if (!_optimisticManifest) {
     [self _setOptimisticManifest:[self _processManifest:launcher.launchedUpdate.rawManifest]];
   }
@@ -202,7 +218,7 @@ NS_ASSUME_NONNULL_BEGIN
   if ([EXEnvironment sharedEnvironment].isDetached) {
     _isEmergencyLaunch = YES;
     [self _launchWithNoDatabaseAndError:error];
-  } else {
+  } else if (!_error) {
     _error = error;
 
     // if the error payload conforms to the error protocol, we can parse it and display
@@ -287,14 +303,18 @@ NS_ASSUME_NONNULL_BEGIN
     }
   }
 
+  NSURL *httpManifestUrl = [[self class] _httpUrlFromManifestUrl:_manifestUrl];
+
   _config = [EXUpdatesConfig configWithDictionary:@{
-    @"EXUpdatesURL": [[self class] _httpUrlFromManifestUrl:_manifestUrl].absoluteString,
+    @"EXUpdatesURL": httpManifestUrl.absoluteString,
     @"EXUpdatesSDKVersion": [self _sdkVersions],
-    @"EXUpdatesScopeKey": _manifestUrl.absoluteString,
+    @"EXUpdatesScopeKey": httpManifestUrl.absoluteString,
+    @"EXUpdatesReleaseChannel": [EXEnvironment sharedEnvironment].releaseChannel,
     @"EXUpdatesHasEmbeddedUpdate": @([EXEnvironment sharedEnvironment].isDetached),
     @"EXUpdatesEnabled": @([EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled),
     @"EXUpdatesLaunchWaitMs": launchWaitMs,
     @"EXUpdatesCheckOnLaunch": shouldCheckOnLaunch ? @"ALWAYS" : @"NEVER",
+    @"EXUpdatesExpectsSignedManifest": @YES,
     @"EXUpdatesRequestHeaders": [self _requestHeaders]
   }];
 
@@ -307,7 +327,7 @@ NS_ASSUME_NONNULL_BEGIN
 
   NSMutableArray *sdkVersions = [[EXVersions sharedInstance].versions[@"sdkVersions"] ?: @[[EXVersions sharedInstance].temporarySdkVersion] mutableCopy];
   [sdkVersions addObject:@"UNVERSIONED"];
-  _selectionPolicy = [[EXUpdatesSelectionPolicyNewest alloc] initWithRuntimeVersions:sdkVersions];
+  _selectionPolicy = [[EXUpdatesSelectionPolicyFilterAware alloc] initWithRuntimeVersions:sdkVersions];
 
   EXUpdatesAppLoaderTask *loaderTask = [[EXUpdatesAppLoaderTask alloc] initWithConfig:_config
                                                                              database:updatesDatabaseManager.database
@@ -396,6 +416,7 @@ NS_ASSUME_NONNULL_BEGIN
       [self.delegate appLoader:self didLoadBundleWithProgress:progress];
     }
   } success:^(NSData *bundle) {
+    self.isUpToDate = YES;
     self.bundle = bundle;
     if (self.delegate) {
       [self.delegate appLoader:self didFinishLoadingManifest:self.optimisticManifest bundle:self.bundle];

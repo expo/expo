@@ -22,11 +22,11 @@ import * as Contacts from 'expo-contacts';
 import { Gyroscope } from 'expo-sensors';
 ```
 
-This allows you to write [`Contacts.getContactsAsync()`](sdk/contacts/#getcontactsasync) and read the contacts from the device, read the gyroscope sensor to detect device movement, or render a Camera view and take photos.
+This allows you to write [`Contacts.getContactsAsync()`](sdk/contacts.md#getcontactsasync) and read the contacts from the device, read the gyroscope sensor to detect device movement, or render a Camera view and take photos.
 
 ## These packages work in bare React Native apps too
 
-The easiest way to create a bare React Native app with support for the Expo SDK is `npx create-react-native-app myapp`. If you have an existing app that you would like to add Expo SDK packages to, read about [integrating into existing apps](../../bare/existing-apps/).
+The easiest way to create a bare React Native app with support for the Expo SDK is `npx create-react-native-app myapp`. If you have an existing app that you would like to add Expo SDK packages to, read about [integrating into existing apps](../../bare/existing-apps.md).
 
 ## Each Expo SDK version depends on a React Native version
 

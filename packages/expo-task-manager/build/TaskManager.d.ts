@@ -8,11 +8,11 @@ export interface TaskManagerError {
 /**
  * Represents the object that is passed to the task executor.
  */
-export interface TaskManagerTaskBody {
+export interface TaskManagerTaskBody<T = object> {
     /**
      * An object of data passed to the task executor. Its properties depends on the type of the task.
      */
-    data: object;
+    data: T;
     /**
      * Error object if the task failed or `null` otherwise.
      */
@@ -21,6 +21,7 @@ export interface TaskManagerTaskBody {
      * Additional details containing unique ID of task event and name of the task.
      */
     executionInfo: {
+        appState?: 'active' | 'background' | 'inactive';
         eventId: string;
         taskName: string;
     };
@@ -95,3 +96,4 @@ export declare function unregisterTaskAsync(taskName: string): Promise<void>;
  * signing out and you no longer need to track his location or run any other background tasks.
  */
 export declare function unregisterAllTasksAsync(): Promise<void>;
+export declare function isAvailableAsync(): Promise<boolean>;

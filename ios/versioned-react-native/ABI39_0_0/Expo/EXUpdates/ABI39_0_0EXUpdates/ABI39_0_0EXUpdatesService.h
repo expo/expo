@@ -22,6 +22,7 @@ typedef void (^ABI39_0_0EXUpdatesAppRelaunchCompletionBlock)(BOOL success);
 @property (nonatomic, readonly, assign) BOOL isUsingEmbeddedAssets;
 @property (nonatomic, readonly, assign) BOOL isStarted;
 @property (nonatomic, readonly, assign) BOOL isEmergencyLaunch;
+@property (nonatomic, readonly, assign) BOOL canRelaunch;
 
 - (void)requestRelaunchWithCompletion:(ABI39_0_0EXUpdatesAppRelaunchCompletionBlock)completion;
 

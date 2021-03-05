@@ -16,7 +16,7 @@ A performant interface for rendering basic, flat lists, supporting the most hand
 - ScrollToIndex support.
 - Multiple column support.
 
-If you need section support, use [`<SectionList>`](../sectionlist/).
+If you need section support, use [`<SectionList>`](sectionlist.md).
 
 ## Example
 
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-To render multiple columns, use the [`numColumns`](../flatlist/#numcolumns) prop. Using this approach instead of a `flexWrap` layout can prevent conflicts with the item height logic.
+To render multiple columns, use the [`numColumns`](flatlist.md#numcolumns) prop. Using this approach instead of a `flexWrap` layout can prevent conflicts with the item height logic.
 
 More complex, multi-select example demonstrating `` usage for perf optimization and avoiding bugs.
 
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-This is a convenience wrapper around [`<VirtualizedList>`](../virtualizedlist/), and thus inherits its props (as well as those of [`<ScrollView>`](../scrollview/)) that aren't explicitly listed here, along with the following caveats:
+This is a convenience wrapper around [`<VirtualizedList>`](virtualizedlist.md), and thus inherits its props (as well as those of [`<ScrollView>`](scrollview.md)) that aren't explicitly listed here, along with the following caveats:
 
 - Internal state is not preserved when content scrolls out of the render window. Make sure all your data is captured in the item data or external stores like Flux, Redux, or Relay.
 - This is a `PureComponent` which means that it will not re-render if `props` remain shallow-equal. Make sure that everything your `renderItem` function depends on is passed as a prop (e.g. `extraData`) that is not `===` after updates, otherwise your UI may not update on changes. This includes the `data` prop and parent component state.
@@ -161,7 +161,7 @@ This is a convenience wrapper around [`<VirtualizedList>`](../virtualizedlist/),
 
 ## Props
 
-Inherits [ScrollView Props](../scrollview/#props), unless it is nested in another FlatList of same orientation.
+Inherits [ScrollView Props](scrollview.md#props), unless it is nested in another FlatList of same orientation.
 
 ### `renderItem`
 
@@ -213,7 +213,7 @@ Example usage:
 
 ### `data`
 
-For simplicity, data is a plain array. If you want to use something else, like an immutable list, use the underlying [`VirtualizedList`](../virtualizedlist/) directly.
+For simplicity, data is a plain array. If you want to use something else, like an immutable list, use the underlying [`VirtualizedList`](virtualizedlist.md) directly.
 
 | Type  | Required |
 | ----- | -------- |

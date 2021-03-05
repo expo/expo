@@ -5,7 +5,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-38/packages/expo-constants
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-constants`** provides system information that remains constant throughout the lifetime of your app's install.
 
@@ -21,13 +20,11 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 import Constants from 'expo-constants';
 ```
 
-<TableOfContentSection title='Properties' contents={['Constants.appOwnership', 'Constants.deviceName', 'Constants.deviceYearClass', 'Constants.expoVersion', 'Constants.getWebViewUserAgentAsync()', 'Constants.installationId', 'Constants.isDevice', 'Constants.manifest', 'Constants.nativeAppVersion', 'Constants.nativeBuildVersion', 'Constants.platform', 'Constants.sessionId', 'Constants.statusBarHeight', 'Constants.systemFonts']} />
-
 ## Properties
 
 ### `Constants.appOwnership`
 
-Returns `expo`, `standalone`, or `guest`. If `expo`, the experience is running inside of the Expo client. If `standalone`, it is a [standalone app](../../distribution/building-standalone-apps/#building-standalone-apps). If `guest`, it has been opened through a link from a standalone app.
+Returns `expo`, `standalone`, or `guest`. If `expo`, the experience is running inside of the Expo client. If `standalone`, it is a [standalone app](../../../distribution/building-standalone-apps.md#building-standalone-apps). If `guest`, it has been opened through a link from a standalone app.
 
 ### `Constants.deviceName`
 
@@ -55,7 +52,7 @@ An identifier that is unique to this particular device and installation of the E
 
 ### `Constants.manifest`
 
-The [manifest](../../workflow/how-expo-works/#expo-manifest) object for the app.
+The [manifest](../../../guides/how-expo-works.md#expo-manifest) object for the app.
 
 ### `Constants.nativeAppVersion`
 

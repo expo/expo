@@ -1,9 +1,16 @@
 import { CalendarTriggerInput as NativeCalendarTriggerInput } from './NotificationScheduler.types';
 
-export interface PushNotificationTrigger {
-  type: 'push';
-  remoteMessage?: FirebaseRemoteMessage;
-}
+/**
+ * `payload` is set only on iOS,
+ * `remoteMessage` is set only on Android,
+ * no extra entry is for Web
+ */
+export type PushNotificationTrigger = { type: 'push' } & (
+  | { payload: Record<string, unknown> }
+  | { remoteMessage: FirebaseRemoteMessage }
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  | {}
+);
 
 export interface CalendarNotificationTrigger {
   type: 'calendar';
@@ -83,6 +90,14 @@ export interface WeeklyNotificationTrigger {
   minute: number;
 }
 
+export interface YearlyNotificationTrigger {
+  type: 'yearly';
+  day: number;
+  month: number;
+  hour: number;
+  minute: number;
+}
+
 export interface FirebaseRemoteMessage {
   collapseKey: string | null;
   data: { [key: string]: string };
@@ -135,6 +150,7 @@ export type NotificationTrigger =
   | TimeIntervalNotificationTrigger
   | DailyNotificationTrigger
   | WeeklyNotificationTrigger
+  | YearlyNotificationTrigger
   | UnknownNotificationTrigger;
 
 export type ChannelAwareTriggerInput = {
@@ -165,15 +181,29 @@ export interface WeeklyTriggerInput {
   repeats: true;
 }
 
+export interface YearlyTriggerInput {
+  channelId?: string;
+  day: number;
+  month: number;
+  hour: number;
+  minute: number;
+  repeats: true;
+}
+
 export type DateTriggerInput = Date | number | { channelId?: string; date: Date | number };
+
+export type SchedulableNotificationTriggerInput =
+  | DateTriggerInput
+  | TimeIntervalTriggerInput
+  | DailyTriggerInput
+  | WeeklyTriggerInput
+  | YearlyTriggerInput
+  | CalendarTriggerInput;
 
 export type NotificationTriggerInput =
   | null
   | ChannelAwareTriggerInput
-  | DateTriggerInput
-  | TimeIntervalTriggerInput
-  | DailyTriggerInput
-  | CalendarTriggerInput;
+  | SchedulableNotificationTriggerInput;
 
 export enum AndroidNotificationPriority {
   MIN = 'min',

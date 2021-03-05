@@ -26,9 +26,10 @@ public class ScopedNotificationsHandler extends NotificationsHandler {
   }
 
   @Override
-  public void onNotificationResponseReceived(NotificationResponse response) {
+  public boolean onNotificationResponseReceived(NotificationResponse response) {
     if (mScopedNotificationsUtils.shouldHandleNotification(response.getNotification(), mExperienceId)) {
-      super.onNotificationResponseReceived(response);
+      return super.onNotificationResponseReceived(response);
     }
+    return false;
   }
 }

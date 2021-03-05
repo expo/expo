@@ -42,6 +42,7 @@ const MyProfileQuery = gql`
         description
         fullName
         slug
+        isDraft
       }
     }
   }
@@ -113,6 +114,7 @@ const OtherProfileQuery = gql`
           description
           fullName
           slug
+          isDraft
         }
       }
     }

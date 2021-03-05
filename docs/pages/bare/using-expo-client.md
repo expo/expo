@@ -1,23 +1,23 @@
 ---
-title: Using Expo client in Bare Workflow
-sidebar_title: Using Expo client
+title: Using Expo Go in Bare Workflow
+sidebar_title: Using Expo Go
 ---
 
-It's not currently possible to include your own native code in the Expo client, so it might surprise you to learn that it is still possible to run your bare app in the Expo client.
+It's not currently possible to include your own native code in Expo Go, so it might surprise you to learn that it is still possible to run your bare project in the Expo Go app.
 
 Inside a freshly initialized bare project, run `expo start` and you can now run it in the client. Read on to learn more about the limitations, why you might want to still use the client in spite of the limitations, and patterns you can apply to make this work well for you.
 
 ## What are the limitations?
 
-You will not be able to use the parts of your app that require custom native code. To run your bare app in the Expo client, you need to avoid calling any custom native code (native code that isn't included in the Expo SDK). For some apps this may mean that you won't be able to use the Expo client almost at all &mdash; for example, if your app depends on custom native code for something as fundamental as navigation or state management (eg: Realm or the Firebase native SDK) then not much of your app will be usable in the client. If your app only has some in app purchases, analytics, a custom map view, an AR view, and so on, then this may actually work great for you &mdash; that particular functionality would not be usable in the client but the rest of the app still would be.
+You will not be able to use the parts of your app that require custom native code. To run your bare app in Expo Go, you need to avoid calling any custom native code (native code that isn't included in the Expo SDK). For some apps this may mean that you won't be able to use the Expo Go app almost at all &mdash; for example, if your app depends on custom native code for something as fundamental as navigation or state management (eg: Realm or the Firebase native SDK) then not much of your app will be usable in the client. If your app only has some in app purchases, analytics, a custom map view, an AR view, and so on, then this may actually work great for you &mdash; that particular functionality would not be usable in Expo Go but the rest of the app still would be.
 
 ## Why might you want to do this?
 
-There are a number of benefits to keeping your app runnable in the Expo client.
+There are a number of benefits to keeping your project runnable in the Expo Go app.
 
 - Share your progress with stakeholders by publishing or sharing the development URL to see changes live
 - Continuously deploy builds from pull requests
-- No need to do native builds for iOS and Android in development because you use the Expo client instead
+- No need to do native builds for iOS and Android in development because you use the Expo Go app instead
 - Develop the JavaScript side of your app from any machine of your choice, eg: use Windows for iOS development if you have an iOS device
 - Easily get new contributors set up on the project, only Node.js and a phone are required
 - You can use `expo-cli` for a great development experience
@@ -26,11 +26,13 @@ There are a number of benefits to keeping your app runnable in the Expo client.
 
 ### Prefer `expo install` over `npm install` to add Expo SDK packages
 
-This will ensure that you get a version of the package that is compatible with the SDK version in your app. If you use `npm install` directly instead, you may end up with a newer version of the package that isn't supported in Expo client yet.
+This will ensure that you get a version of the package that is compatible with the SDK version in your app. If you use `npm install` directly instead, you may end up with a newer version of the package that isn't supported in Expo Go yet.
 
-### Use the `.expo.[js/json/ts/tsx]` extension to provide Expo client specific fallbacks
+### Use the `.expo.[js/json/ts/tsx]` extension to provide Expo Go specific fallbacks
 
-Picture this: you need a beautiful map in your app and Google Maps just won't cut it, so you add '@mapbox/react-native-mapbox-gl'. Expo doesn't include this in the SDK, so you can't run any code that imports it in the Expo client app. You can handle this by making `MyMap.js` and `MyMap.expo.js` as follows:
+> ⚠️ The `.expo` extension will be removed in SDK 41. [Learn more about alternatives](https://github.com/expo/fyi/blob/master/expo-extension-migration.md).
+
+Picture this: you need a beautiful map in your app and Google Maps just won't cut it, so you add '@mapbox/react-native-mapbox-gl'. Expo doesn't include this in the SDK, so you can't run any code that imports it in the Expo Go app. You can handle this by making `MyMap.js` and `MyMap.expo.js` as follows:
 
 ```js
 // MyMap.js

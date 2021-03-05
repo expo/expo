@@ -6,7 +6,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-web-brows
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-web-browser`** provides access to the system's web browser and supports handling redirects. On iOS, it uses `SFSafariViewController` or `SFAuthenticationSession`, depending on the method you call, and on Android it uses `ChromeCustomTabs`. As of iOS 11, `SFSafariViewController` no longer shares cookies with the Safari, so if you are using `WebBrowser` for authentication you will want to use `WebBrowser.openAuthSessionAsync`, and if you just want to open a webpage (such as your app privacy policy), then use `WebBrowser.openBrowserAsync`.
 
@@ -50,15 +49,13 @@ export default class App extends Component {
 
 ### Handling deep links from the WebBrowser
 
-If you are using the `WebBrowser` window for authentication or another use case where you would like to pass information back into your app through a deep link, be sure to add a handler with `Linking.addEventListener` before opening the browser. When the listener fires, you should call [dismissBrowser](#webbrowserdismissbrowser) -- it will not automatically dismiss when a deep link is handled. Aside from that, redirects from `WebBrowser` work the same as other deep links. [Read more about it in the Linking guide](../../workflow/linking/#handling-links-into-your-app).
+If you are using the `WebBrowser` window for authentication or another use case where you would like to pass information back into your app through a deep link, be sure to add a handler with `Linking.addEventListener` before opening the browser. When the listener fires, you should call [dismissBrowser](#webbrowserdismissbrowser) -- it will not automatically dismiss when a deep link is handled. Aside from that, redirects from `WebBrowser` work the same as other deep links. [Read more about it in the Linking guide](../../../guides/linking.md#handling-links-into-your-app).
 
 ## API
 
 ```js
 import * as WebBrowser from 'expo-web-browser';
 ```
-
-<TableOfContentSection title="Error Codes" contents={['ERR_WEB_BROWSER_REDIRECT', 'ERR_WEB_BROWSER_BLOCKED', 'ERR_WEB_BROWSER_CRYPTO']} />
 
 ### `WebBrowser.openBrowserAsync(url)`
 
@@ -125,7 +122,7 @@ How this works on web:
 #### Arguments
 
 - **url (_string_)** -- The url to open in the web browser. This should be a login page.
-- **redirectUrl (_string_)** -- **optional**: the url to deep link back into your app. By default, this will be [Constants.linkingUrl](../constants/#expoconstantslinkinguri)
+- **redirectUrl (_string_)** -- **optional**: the url to deep link back into your app. By default, this will be [Constants.linkingUrl](constants.md#expoconstantslinkinguri)
 - **browserParams (_object_)** -- **optional**: an object with the same keys as [`openBrowserAsync`'s `browserParams` object](#webbrowseropenbrowserasyncurl). If there is no native AuthSession implementation available (which is the case on Android) these params will be used in the browser polyfill. If there is a native AuthSession implementation, these params will be ignored.
 
 Returns a Promise:

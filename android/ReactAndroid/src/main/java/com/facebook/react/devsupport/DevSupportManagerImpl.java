@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.devsupport;
 
 import android.content.Context;
@@ -39,13 +40,43 @@ import java.util.Map;
  * {@code <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>}
  * {@code <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>}
  */
-public class DevSupportManagerImpl extends DevSupportManagerBase {
+public final class DevSupportManagerImpl extends DevSupportManagerBase {
 
-    public DevSupportManagerImpl(Context applicationContext, ReactInstanceManagerDevHelper reactInstanceManagerHelper, @Nullable String packagerPathForJSBundleName, boolean enableOnCreate, int minNumShakes) {
-        super(applicationContext, reactInstanceManagerHelper, packagerPathForJSBundleName, enableOnCreate, null, null, minNumShakes, null);
-    }
+  public DevSupportManagerImpl(
+      Context applicationContext,
+      ReactInstanceManagerDevHelper reactInstanceManagerHelper,
+      @Nullable String packagerPathForJSBundleName,
+      boolean enableOnCreate,
+      int minNumShakes) {
 
-    public DevSupportManagerImpl(Context applicationContext, ReactInstanceManagerDevHelper reactInstanceManagerHelper, @Nullable String packagerPathForJSBundleName, boolean enableOnCreate, @Nullable RedBoxHandler redBoxHandler, @Nullable DevBundleDownloadListener devBundleDownloadListener, int minNumShakes, @Nullable Map<String, RequestHandler> customPackagerCommandHandlers) {
-        super(applicationContext, reactInstanceManagerHelper, packagerPathForJSBundleName, enableOnCreate, redBoxHandler, devBundleDownloadListener, minNumShakes, customPackagerCommandHandlers);
-    }
+    super(
+        applicationContext,
+        reactInstanceManagerHelper,
+        packagerPathForJSBundleName,
+        enableOnCreate,
+        null,
+        null,
+        minNumShakes,
+        null);
+  }
+
+  public DevSupportManagerImpl(
+      Context applicationContext,
+      ReactInstanceManagerDevHelper reactInstanceManagerHelper,
+      @Nullable String packagerPathForJSBundleName,
+      boolean enableOnCreate,
+      @Nullable RedBoxHandler redBoxHandler,
+      @Nullable DevBundleDownloadListener devBundleDownloadListener,
+      int minNumShakes,
+      @Nullable Map<String, RequestHandler> customPackagerCommandHandlers) {
+    super(
+        applicationContext,
+        reactInstanceManagerHelper,
+        packagerPathForJSBundleName,
+        enableOnCreate,
+        redBoxHandler,
+        devBundleDownloadListener,
+        minNumShakes,
+        customPackagerCommandHandlers);
+  }
 }

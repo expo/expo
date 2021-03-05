@@ -227,15 +227,20 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
       
       if ([_data.player.currentItem.asset tracksWithMediaType:AVMediaTypeVideo].count > 0) {
         AVAssetTrack *videoTrack = [[_data.player.currentItem.asset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
-        CGFloat width = videoTrack.naturalSize.width;
-        CGFloat height = videoTrack.naturalSize.height;
-        CGAffineTransform preferredTransform = [videoTrack preferredTransform];
-        CGFloat tx = preferredTransform.tx;
-        CGFloat ty = preferredTransform.ty;
+        
+        // Videos can specify whether they should be rotated when displayed,
+        // using a transform matrix. We apply the transform matrix to get the
+        // actual size that will be displayed on screen.
+        CGSize actualSize = CGSizeApplyAffineTransform(videoTrack.naturalSize, videoTrack.preferredTransform);
+        
+        // The rotation transform can result in negative widths/heights, so we
+        // need to make sure we return positive numbers that make sense.
+        CGFloat width = fabs(actualSize.width);
+        CGFloat height = fabs(actualSize.height);
         
         naturalSize = @{@"width": @(width),
                         @"height": @(height),
-                        @"orientation": ((width == tx && height == ty) || (tx == 0 && ty == 0)) ? @"landscape" : @"portrait"};
+                        @"orientation": width < height ? @"portrait" : @"landscape"};
       } else {
         
         // For certain Assets (e.g. AVURLAsset/HSL-streams/m3u8 files), the natural size

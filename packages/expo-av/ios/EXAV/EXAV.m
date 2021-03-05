@@ -14,6 +14,7 @@
 #import <EXAV/EXVideoView.h>
 #import <EXAV/EXAudioRecordingPermissionRequester.h>
 
+NSString *const EXAudioRecordingOptionsIsMeteringEnabledKey = @"isMeteringEnabled";
 NSString *const EXAudioRecordingOptionsKey = @"ios";
 NSString *const EXAudioRecordingOptionExtensionKey = @"extension";
 NSString *const EXAudioRecordingOptionOutputFormatKey = @"outputFormat";
@@ -529,9 +530,20 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
     int durationMillisFromRecorder = [self _getDurationMillisOfRecordingAudioRecorder];
     // After stop, the recorder's duration goes to zero, so we replace it with the correct duration in this case.
     int durationMillis = durationMillisFromRecorder == 0 ? _audioRecorderDurationMillis : durationMillisFromRecorder;
-    return @{@"canRecord": @(YES),
-             @"isRecording": @([_audioRecorder isRecording]),
-             @"durationMillis": @(durationMillis)};
+
+    NSMutableDictionary *result = [@{
+      @"canRecord": @(YES),
+      @"isRecording": @([_audioRecorder isRecording]),
+      @"durationMillis": @(durationMillis),
+    } mutableCopy];
+
+    if (_audioRecorder.meteringEnabled) {
+      [_audioRecorder updateMeters];
+      float currentLevel = [_audioRecorder averagePowerForChannel: 0];
+      result[@"metering"] = @(currentLevel);
+    }
+
+    return result;
   } else {
     return nil;
   }
@@ -795,6 +807,9 @@ UM_EXPORT_METHOD_AS(prepareAudioRecorder,
       reject(@"E_AUDIO_RECORDERNOTCREATED", [NSString stringWithFormat:@"Prepare encountered an error: %@", error.description], error);
       return;
     } else if ([_audioRecorder prepareToRecord]) {
+        if(options[EXAudioRecordingOptionsIsMeteringEnabledKey]) {
+        _audioRecorder.meteringEnabled = true;
+        }
       resolve(@{@"uri": [[_audioRecorder url] absoluteString],
                 @"status": [self _getAudioRecorderStatus]});
     } else {

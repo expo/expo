@@ -1,1 +1,0 @@
-../../../../../versioned-react-native/ABI37_0_0/ReactNative/ReactCommon/yoga/yoga/event/ABI37_0_0event.h

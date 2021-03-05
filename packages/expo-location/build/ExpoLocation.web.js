@@ -102,19 +102,33 @@ export default {
     },
     async watchPositionImplAsync(watchId, options) {
         return new Promise(resolve => {
-            // @ts-ignore
+            // @ts-ignore: the types here need to be fixed
             watchId = global.navigator.geolocation.watchPosition(position => {
                 lastKnownPosition = geolocationPositionToJSON(position);
                 LocationEventEmitter.emit('Expo.locationChanged', {
                     watchId,
                     location: lastKnownPosition,
                 });
-            }, null, options);
+            }, undefined, 
+            // @ts-ignore: the options object needs to be fixed
+            options);
             resolve(watchId);
         });
     },
     getPermissionsAsync,
     async requestPermissionsAsync() {
+        return getPermissionsAsync();
+    },
+    async requestForegroundPermissionsAsync() {
+        return getPermissionsAsync();
+    },
+    async requestBackgroundPermissionsAsync() {
+        return getPermissionsAsync();
+    },
+    async getForegroundPermissionsAsync() {
+        return getPermissionsAsync();
+    },
+    async getBackgroundPermissionsAsync() {
         return getPermissionsAsync();
     },
     // no-op

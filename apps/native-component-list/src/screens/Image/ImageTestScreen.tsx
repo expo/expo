@@ -25,7 +25,7 @@ let compareEnabled: boolean = false;
 type Props = StackScreenProps<Links, 'ImageTest'>;
 
 function useForceUpdate() {
-  const [, updateState] = React.useState();
+  const [, updateState] = React.useState<any>();
   const forceUpdate = React.useCallback(() => updateState({}), []);
   return forceUpdate;
 }

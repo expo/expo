@@ -14,11 +14,7 @@ public class ScopedNotificationRequest extends NotificationRequest {
 
   public ScopedNotificationRequest(String identifier, NotificationContent content, NotificationTrigger trigger, @Nullable String experienceId) {
     super(identifier, content, trigger);
-    if (experienceId == null) {
-      mExperienceIdString = null;
-    } else {
-      mExperienceIdString = experienceId;
-    }
+    mExperienceIdString = experienceId;
   }
 
   private ScopedNotificationRequest(Parcel in) {
@@ -33,7 +29,7 @@ public class ScopedNotificationRequest extends NotificationRequest {
     return mExperienceIdString.equals(experienceId);
   }
 
-  public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+  public static final Creator<ScopedNotificationRequest> CREATOR = new Creator<ScopedNotificationRequest>() {
     public ScopedNotificationRequest createFromParcel(Parcel in) {
       return new ScopedNotificationRequest(in);
     }

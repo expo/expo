@@ -7,8 +7,12 @@ import {
 export type PermissionType =
   | 'camera'
   | 'cameraRoll'
+  | 'mediaLibrary'
+  | 'mediaLibraryWriteOnly'
   | 'audioRecording'
   | 'location'
+  | 'locationForeground'
+  | 'locationBackground'
   | 'userFacingNotifications'
   | 'notifications'
   | 'contacts'
@@ -26,7 +30,9 @@ export interface PermissionMap {
 }
 
 export interface PermissionInfo extends UMPermissionResponse {
-  // iOS only - Permission.CAMERA_ROLL
+  /**
+   * iOS only - Permission.MEDIA_LIBRARY/MEDIA_LIBRARY_WRITE_ONLY
+   */
   accessPrivileges?: 'all' | 'limited' | 'none';
   scope?: 'whenInUse' | 'always' | 'none';
   android?: PermissionDetailsLocationAndroid;

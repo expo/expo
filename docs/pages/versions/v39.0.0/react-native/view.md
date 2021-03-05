@@ -472,7 +472,7 @@ This is a reserved performance property exposed by `RCTView` and is useful for s
 
 | Type                                | Required |
 | ----------------------------------- | -------- |
-| [view styles](../view-style-props/) | No       |
+| [view styles](view-style-props.md) | No       |
 
 ---
 

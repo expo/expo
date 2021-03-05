@@ -8,7 +8,7 @@ on:
       - .github/workflows/android-unit-tests.yml
       - 'android/**'
       - 'fastlane/**'
-      - 'tools/expotools/**'
+      - 'tools/**'
       - yarn.lock
   pull_request:
     branches: [master]
@@ -16,7 +16,7 @@ on:
       - .github/workflows/android-unit-tests.yml
       - 'android/**'
       - 'fastlane/**'
-      - 'tools/expotools/**'
+      - 'tools/**'
       - yarn.lock
 
 jobs:
@@ -30,14 +30,14 @@ jobs:
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: yarn install --frozen-lockfile
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
@@ -54,7 +54,7 @@ jobs:
         if: steps.cache-android-ndk.outputs.cache-hit != 'true'
         run: |
           sudo $ANDROID_HOME/tools/bin/sdkmanager --install "ndk;19.2.5345600"
-      - run: echo "::add-path::$(pwd)/bin"
+      - run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: Run native Android unit tests
         env:
           ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/

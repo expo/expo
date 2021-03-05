@@ -1,1 +1,0 @@
-../../../../../versioned-react-native/ABI36_0_0/ReactNative/Libraries/TypeSafety/ABI36_0_0RCTConvertHelpers.h

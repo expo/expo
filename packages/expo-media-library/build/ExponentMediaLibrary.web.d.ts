@@ -8,7 +8,7 @@ declare const _default: {
     readonly SortBy: {
         [key: string]: string;
     };
-    getPermissionsAsync(): Promise<PermissionResponse>;
-    requestPermissionsAsync(): Promise<PermissionResponse>;
+    getPermissionsAsync(_writeOnly: boolean): Promise<PermissionResponse>;
+    requestPermissionsAsync(_writeOnly: boolean): Promise<PermissionResponse>;
 };
 export default _default;

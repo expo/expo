@@ -10,6 +10,7 @@ import org.json.JSONObject
 class ManagedAppSplashScreenConfiguration private constructor() {
   var resizeMode: SplashScreenImageResizeMode = SplashScreenImageResizeMode.CONTAIN
     private set
+
   @ColorInt
   var backgroundColor = Color.parseColor("#ffffff")
     private set
@@ -36,7 +37,7 @@ class ManagedAppSplashScreenConfiguration private constructor() {
     }
 
     private fun parseResizeMode(manifest: JSONObject): SplashScreenImageResizeMode? {
-      val resizeMode = getStringFromManifest(
+      val resizeMode = getStringFromJSONObject(
         manifest,
         arrayOf(
           ExponentManifest.MANIFEST_ANDROID_INFO_KEY,
@@ -52,7 +53,7 @@ class ManagedAppSplashScreenConfiguration private constructor() {
     }
 
     private fun parseBackgroundColor(manifest: JSONObject): Int? {
-      val backgroundColor = getStringFromManifest(
+      val backgroundColor = getStringFromJSONObject(
         manifest,
         arrayOf(
           ExponentManifest.MANIFEST_ANDROID_INFO_KEY,
@@ -69,8 +70,30 @@ class ManagedAppSplashScreenConfiguration private constructor() {
       } else null
     }
 
+    /**
+     * Tries to retrieve imageUrl from the manifest checking for value for keys/paths in following order
+     * - android-scoped splash dpi images (starting from 'xxx-hdpi" and ending with 'mdpi')
+     * - android-scoped splash imageUrl
+     * - generic splash imageUrl
+     */
     private fun parseImageUrl(manifest: JSONObject): String? {
-      return getStringFromManifest(
+      val androidSplash = manifest
+        .optJSONObject(ExponentManifest.MANIFEST_ANDROID_INFO_KEY)
+        ?.optJSONObject(ExponentManifest.MANIFEST_SPLASH_INFO_KEY)
+      if (androidSplash != null) {
+        val dpiRelatedImageUrl = getStringFromJSONObject(
+          androidSplash,
+          *arrayOf("xxxhdpi", "xxhdpi", "xhdpi", "hdpi", "mdpi"
+        )
+          .map { s -> "${s}Url" }
+          .map { s -> arrayOf(s) }
+          .toTypedArray())
+        if (dpiRelatedImageUrl != null) {
+          return dpiRelatedImageUrl
+        }
+      }
+
+      return getStringFromJSONObject(
         manifest,
         arrayOf(
           ExponentManifest.MANIFEST_ANDROID_INFO_KEY,
@@ -84,9 +107,9 @@ class ManagedAppSplashScreenConfiguration private constructor() {
       )
     }
 
-    private fun getStringFromManifest(manifest: JSONObject, vararg paths: Array<String>): String? {
+    private fun getStringFromJSONObject(jsonObject: JSONObject, vararg paths: Array<String>): String? {
       for (path in paths) {
-        val pathResult = getStringFromManifest(manifest, path)
+        val pathResult = getStringFromJSONObject(jsonObject, path)
         if (pathResult != null) {
           return pathResult
         }
@@ -94,8 +117,8 @@ class ManagedAppSplashScreenConfiguration private constructor() {
       return null
     }
 
-    private fun getStringFromManifest(manifest: JSONObject, path: Array<String>): String? {
-      var json: JSONObject? = manifest
+    private fun getStringFromJSONObject(jsonObject: JSONObject, path: Array<String>): String? {
+      var json: JSONObject? = jsonObject
       for (i in path.indices) {
         val isLastKey = i == path.size - 1
         val key = path[i]

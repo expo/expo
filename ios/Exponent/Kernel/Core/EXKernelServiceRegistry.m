@@ -8,12 +8,12 @@
 #import "EXKernelLinkingManager.h"
 #import "EXKernelService.h"
 #import "EXRemoteNotificationManager.h"
-#import "EXScreenOrientationManager.h"
 #import "EXSensorManager.h"
 #import "EXUpdatesDatabaseManager.h"
 #import "EXUpdatesManager.h"
 #import "EXUserNotificationManager.h"
 #import "EXUserNotificationCenter.h"
+#import "EXDeviceInstallationUUIDService.h"
 
 #import <UMCore/UMModuleRegistryProvider.h>
 
@@ -24,12 +24,12 @@
 @property (nonatomic, strong) EXHomeModuleManager *homeModuleManager;
 @property (nonatomic, strong) EXKernelLinkingManager *linkingManager;
 @property (nonatomic, strong) EXRemoteNotificationManager *remoteNotificationManager;
-@property (nonatomic, strong) EXScreenOrientationManager *screenOrientationManager;
 @property (nonatomic, strong) EXSensorManager *sensorManager;
 @property (nonatomic, strong) EXUpdatesDatabaseManager *updatesDatabaseManager;
 @property (nonatomic, strong) EXUpdatesManager *updatesManager;
 @property (nonatomic, strong) EXUserNotificationManager *notificationsManager;
 @property (nonatomic, strong) EXUserNotificationCenter *notificationCenter;
+@property (nonatomic, strong) EXDeviceInstallationUUIDService *deviceInstallationUUIDService;
 @property (nonatomic, strong) NSDictionary<NSString *, id> *allServices;
 
 @end
@@ -45,14 +45,22 @@
     [self remoteNotificationManager];
     [self linkingManager];
     [self homeModuleManager];
-    [self screenOrientationManager];
     [self sensorManager];
     [self updatesDatabaseManager];
     [self updatesManager];
     [self notificationsManager];
     [self notificationCenter];
+    [self deviceInstallationUUIDService];
   }
   return self;
+}
+
+- (EXDeviceInstallationUUIDService *)deviceInstallationUUIDService
+{
+  if (!_deviceInstallationUUIDService) {
+    _deviceInstallationUUIDService = [[EXDeviceInstallationUUIDService alloc] init];
+  }
+  return _deviceInstallationUUIDService;
 }
 
 - (EXCachedResourceManager *)cachedResourceManager
@@ -93,14 +101,6 @@
     _homeModuleManager = [[EXHomeModuleManager alloc] init];
   }
   return _homeModuleManager;
-}
-
-- (EXScreenOrientationManager *)screenOrientationManager
-{
-  if (!_screenOrientationManager) {
-    _screenOrientationManager = [[EXScreenOrientationManager alloc] init];
-  }
-  return _screenOrientationManager;
 }
 
 - (EXSensorManager *)sensorManager
@@ -159,12 +159,12 @@
                                   self.homeModuleManager,
                                   self.linkingManager,
                                   self.remoteNotificationManager,
-                                  self.screenOrientationManager,
                                   self.sensorManager,
                                   self.updatesDatabaseManager,
                                   self.updatesManager,
                                   self.notificationsManager,
-                                  self.notificationCenter
+                                  self.notificationCenter,
+                                  self.deviceInstallationUUIDService
                                   ];
     NSArray *allServices = [registryServices arrayByAddingObjectsFromArray:[[UMModuleRegistryProvider singletonModules] allObjects]];
     for (id service in allServices) {

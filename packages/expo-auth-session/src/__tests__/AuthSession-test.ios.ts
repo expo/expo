@@ -1,16 +1,25 @@
-import Constants from 'expo-constants';
-import * as WebBrowser from 'expo-web-browser';
+import { ExecutionEnvironment } from 'expo-constants';
 import { mockLinking, mockProperty, unmockAllProperties } from 'jest-expo';
 
-import * as AuthSession from '../AuthSession';
-import { getSessionUrlProvider } from '../SessionUrlProvider';
-
 function applyMocks() {
-  mockProperty(Constants.manifest, 'id', '@example/abc');
+  jest.doMock('expo-constants', () => {
+    const ConstantsModule = jest.requireActual('expo-constants');
+    const { default: Constants } = ConstantsModule;
+    return {
+      ...ConstantsModule,
+      // must explicitly include this in order to mock both default and named exports
+      __esModule: true,
+      default: {
+        ...Constants,
+        executionEnvironment: ExecutionEnvironment.Standalone,
+        manifest: { ...Constants.manifest, id: '@example/abc' },
+      },
+    };
+  });
 }
 
-function mockOpenAuthSessionAsync(openBrowserFn) {
-  mockProperty(WebBrowser, 'openAuthSessionAsync', jest.fn(openBrowserFn));
+function mockOpenAuthSessionAsync(webBrowserModule, openBrowserFn) {
+  mockProperty(webBrowserModule, 'openAuthSessionAsync', jest.fn(openBrowserFn));
 }
 
 beforeEach(() => {
@@ -19,25 +28,30 @@ beforeEach(() => {
 
 afterEach(() => {
   unmockAllProperties();
+  jest.resetModules();
 });
 
 it(`returns correct redirect URL from getRedirectUrl`, () => {
-  expect(AuthSession.getRedirectUrl()).toEqual('https://auth.expo.io/@example/abc');
+  const { getRedirectUrl } = require('../AuthSession');
+  expect(getRedirectUrl()).toEqual('https://auth.expo.io/@example/abc');
 });
 
 it(`returns the correct return URL from getDefaultReturnUrl`, () => {
-  expect(AuthSession.getDefaultReturnUrl()).toEqual(
-    'exp://exp.host/@test/test/--/expo-auth-session'
-  );
+  const { getDefaultReturnUrl } = require('../AuthSession');
+  expect(getDefaultReturnUrl()).toEqual('exp://exp.host/@test/test/--/expo-auth-session');
 });
 
 it(`opens WebBrowser startAsync to the start URL`, async () => {
   const authUrl = 'abcd.com';
   const returnUrl = 'efgh.com';
 
-  mockOpenAuthSessionAsync(async () => ({ type: 'cancel' }));
-  await AuthSession.startAsync({ authUrl, returnUrl });
+  const { startAsync } = require('../AuthSession');
+  const WebBrowser = require('expo-web-browser');
 
+  mockOpenAuthSessionAsync(WebBrowser, async () => ({ type: 'cancel' }));
+  await startAsync({ authUrl, returnUrl });
+
+  const { getSessionUrlProvider } = require('../SessionUrlProvider');
   expect(WebBrowser.openAuthSessionAsync).toHaveBeenCalledWith(
     getSessionUrlProvider().getStartUrl(authUrl, returnUrl),
     returnUrl,
@@ -55,15 +69,17 @@ it(`only lets you call startAsync once at a time`, async () => {
 
   jest.useFakeTimers();
 
-  mockOpenAuthSessionAsync(() => {
+  const { startAsync } = require('../AuthSession');
+  const WebBrowser = require('expo-web-browser');
+
+  mockOpenAuthSessionAsync(WebBrowser, () => {
     return new Promise(resolve => {
       setTimeout(() => resolve(normalResponse), 0);
     });
   });
-
   const parallelStartAsyncCalls = Promise.all([
-    AuthSession.startAsync({ authUrl, returnUrl }),
-    AuthSession.startAsync({ authUrl, returnUrl }),
+    startAsync({ authUrl, returnUrl }),
+    startAsync({ authUrl, returnUrl }),
   ]);
 
   jest.runAllTimers();
@@ -80,7 +96,8 @@ it(`returns success with params on redirect`, async () => {
   const returnUrl = 'https://example-return.io/+';
   const returnUrlWithParams = `${returnUrl}?id=42#token=abc123`;
 
-  const authSessionPromise = AuthSession.startAsync({
+  const { startAsync } = require('../AuthSession');
+  const authSessionPromise = startAsync({
     authUrl,
     returnUrl,
   });
@@ -96,7 +113,9 @@ it(`returns error when errorCode is present`, async () => {
 
   const authUrl = 'http://example.io';
   const returnUrl = 'https://example-return.io/+';
-  const authSessionPromise = AuthSession.startAsync({
+
+  const { startAsync } = require('../AuthSession');
+  const authSessionPromise = startAsync({
     authUrl,
     returnUrl,
   });
@@ -113,7 +132,8 @@ it(`returns error when errorCode is present`, async () => {
 it(`throws from AuthSession.startAsync if authUrl is falsy`, async () => {
   expect.assertions(1);
   try {
-    await AuthSession.startAsync({
+    const { startAsync } = require('../AuthSession');
+    await startAsync({
       authUrl: null as any,
     });
   } catch (e) {
@@ -122,14 +142,15 @@ it(`throws from AuthSession.startAsync if authUrl is falsy`, async () => {
 });
 
 it(`lets us call AuthSession.startAsync after param validation throws`, async () => {
-  AuthSession.startAsync({ authUrl: null as any });
+  const { startAsync } = require('../AuthSession');
+  startAsync({ authUrl: null as any });
 
   const emitLinkingEvent = mockLinking();
   const authUrl = 'http://example.io';
   const returnUrl = 'https://example-return.io/+';
   const returnUrlWithParams = `${returnUrl}?id=42#token=abc123`;
 
-  const authSessionPromise = AuthSession.startAsync({
+  const authSessionPromise = startAsync({
     authUrl,
     returnUrl,
   });
@@ -141,8 +162,10 @@ it(`lets us call AuthSession.startAsync after param validation throws`, async ()
 });
 
 it(`warns if user is @anonymous in getRedirectUrl`, () => {
+  const Constants = require('expo-constants').default;
   mockProperty(Constants.manifest, 'id', '@anonymous/abc');
   mockProperty(console, 'warn', jest.fn());
-  AuthSession.getRedirectUrl();
+  const { getRedirectUrl } = require('../AuthSession');
+  getRedirectUrl();
   expect((console.warn as jest.Mock).mock.calls).toMatchSnapshot();
 });

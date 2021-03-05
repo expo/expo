@@ -1,3 +1,5 @@
+import { EvilIcons } from '@expo/vector-icons';
+import { StackNavigationProp } from '@react-navigation/stack';
 import React from 'react';
 import {
   StyleSheet,
@@ -8,8 +10,6 @@ import {
   PixelRatio,
   ListRenderItem,
 } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { EvilIcons } from '@expo/vector-icons';
 
 import examples from './examples';
 

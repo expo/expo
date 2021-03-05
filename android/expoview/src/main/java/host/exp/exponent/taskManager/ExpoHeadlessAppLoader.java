@@ -14,6 +14,7 @@ import java.util.Map;
 
 import host.exp.exponent.headless.InternalHeadlessAppLoader;
 
+@DoNotStrip
 public class ExpoHeadlessAppLoader implements HeadlessAppLoader {
 
   private static final String TAG = "TaskManagerInternalAppL";

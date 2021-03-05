@@ -7,7 +7,6 @@
 @class EXKernelLinkingManager;
 @class EXKernelModuleManager;
 @class EXRemoteNotificationManager;
-@class EXScreenOrientationManager;
 @class EXUpdatesDatabaseManager;
 @class EXUpdatesManager;
 @class EXUserNotificationManager;
@@ -19,7 +18,6 @@
 @property (nonatomic, readonly) EXKernelModuleManager *kernelModuleManager;
 @property (nonatomic, readonly) EXKernelLinkingManager *linkingManager;
 @property (nonatomic, readonly) EXRemoteNotificationManager *remoteNotificationManager;
-@property (nonatomic, readonly) EXScreenOrientationManager *screenOrientationManager;
 @property (nonatomic, readonly) EXUpdatesDatabaseManager *updatesDatabaseManager;
 @property (nonatomic, readonly) EXUpdatesManager *updatesManager;
 @property (nonatomic, readonly) EXUserNotificationManager *notificationsManager;

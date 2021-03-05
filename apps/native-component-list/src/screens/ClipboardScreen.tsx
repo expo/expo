@@ -1,5 +1,6 @@
+import Clipboard from 'expo-clipboard';
 import * as React from 'react';
-import { Button, Clipboard, Text, TextInput } from 'react-native';
+import { Button, Text, TextInput } from 'react-native';
 
 import { Page, Section } from '../components/Page';
 
@@ -29,7 +30,7 @@ function GetStringExample() {
 
       <Button
         onPress={async () => {
-          const value = await Clipboard.getString();
+          const value = await Clipboard.getStringAsync();
           console.log('got clipboard:', value);
           setValue(value);
         }}
@@ -47,12 +48,13 @@ function SetStringExample() {
       <Button
         onPress={() => {
           console.log('copy to clipboard:', value);
-          Clipboard.setString(value);
+          const success = Clipboard.setString(value);
+          console.log({ success });
         }}
         title="Copy to clipboard"
       />
       <TextInput
-        multiline={true}
+        multiline
         onChangeText={setValue}
         value={value}
         style={{ padding: 8, height: 48, margin: 8, borderBottomWidth: 1 }}

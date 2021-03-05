@@ -39,8 +39,7 @@ import javax.inject.Inject;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import de.greenrobot.event.EventBus;
-import expo.modules.splashscreen.SplashScreen;
-import host.exp.exponent.ABIVersion;
+import expo.modules.splashscreen.singletons.SplashScreen;
 import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExpoUpdatesAppLoader;
@@ -67,6 +66,7 @@ import host.exp.exponent.notifications.ExponentNotificationManager;
 import host.exp.exponent.notifications.NotificationConstants;
 import host.exp.exponent.notifications.PushNotificationHelper;
 import host.exp.exponent.notifications.ReceivedNotificationEvent;
+import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.AsyncCondition;
 import host.exp.exponent.utils.ExperienceActivityUtils;
@@ -98,7 +98,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   private static final String TAG = ExperienceActivity.class.getSimpleName();
 
   private static final String KERNEL_STARTED_RUNNING_KEY = "experienceActivityKernelDidLoad";
-  private static final int NOTIFICATION_ID = 10101;
+  public static final int PERSISTENT_EXPONENT_NOTIFICATION_ID = 10101;
   private static String READY_FOR_BUNDLE = "readyForBundle";
 
   private static ExperienceActivity sCurrentActivity;
@@ -107,11 +107,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   private ExponentNotification mNotification;
   private ExponentNotification mTempNotification;
   private boolean mIsShellApp;
-  private String mIntentUri;
+  protected String mIntentUri;
   private boolean mIsReadyForBundle;
-
-  // TODO: Remove this flag and assume it is always false, once we drop support for SDK37
-  private boolean mWillBeReloaded = false;
 
   private RemoteViews mNotificationRemoteViews;
   private NotificationCompat.Builder mNotificationBuilder;
@@ -400,8 +397,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     }
 
     this.hideLoadingView();
-    ManagedAppSplashScreenConfiguration config = ManagedAppSplashScreenConfiguration.parseManifest(manifest);
     if (mManagedAppSplashScreenViewProvider == null) {
+      ManagedAppSplashScreenConfiguration config = ManagedAppSplashScreenConfiguration.parseManifest(manifest);
       mManagedAppSplashScreenViewProvider = new ManagedAppSplashScreenViewProvider(config);
       SplashScreen.show(this, mManagedAppSplashScreenViewProvider, getRootViewClass(manifest), true);
     } else {
@@ -467,6 +464,12 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     mManifestUrl = manifestUrl;
     mManifest = manifest;
 
+    // TODO(eric): remove when deleting old AppLoader class/logic
+    mExponentSharedPreferences.updateManifest(mManifestUrl, manifest, bundleUrl);
+
+    // Notifications logic uses this to determine which experience to route a notification to
+    ExponentDB.saveExperience(mManifestUrl, manifest, bundleUrl);
+
     new ExponentNotificationManager(this).maybeCreateNotificationChannelGroup(mManifest);
 
     Kernel.ExperienceActivityTask task = mKernel.getExperienceActivityTask(mManifestUrl);
@@ -518,18 +521,13 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
     ExperienceActivityUtils.updateOrientation(mManifest, this);
     ExperienceActivityUtils.updateSoftwareKeyboardLayoutMode(mManifest, this);
+    ExperienceActivityUtils.overrideUiMode(mManifest, this);
 
-    if (ABIVersion.toNumber(mSDKVersion) >= ABIVersion.toNumber("38.0.0")) {
-      ExperienceActivityUtils.overrideUiMode(mManifest, this);
-      mWillBeReloaded = false;
-    } else {
-      mWillBeReloaded = ExperienceActivityUtils.overrideUserInterfaceStyle(mManifest, this);
-    }
     addNotification(kernelOptions);
 
     ExponentNotification notificationObject = null;
     // Activity could be restarted due to Dark Mode change, only pop options if that will not happen
-    if (mKernel.hasOptionsForManifestUrl(manifestUrl) && !mWillBeReloaded) {
+    if (mKernel.hasOptionsForManifestUrl(manifestUrl)) {
       KernelConstants.ExperienceOptions options = mKernel.popOptionsForManifestUrl(manifestUrl);
 
       // if the kernel has an intent for our manifest url, that's the intent that triggered
@@ -602,9 +600,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     // setOptimisticManifest from showing a rogue splash screen
     mShouldShowLoadingViewWithOptimisticManifest = false;
 
-    // To prevents starting application twice, we start react instance only if we know that the current activity won't be restarted.
-    // Restart of the activity could be triggered by dark mode change.
-    if (!isDebugModeEnabled() && !mWillBeReloaded) {
+    if (!isDebugModeEnabled()) {
       final boolean finalIsReadyForBundle = mIsReadyForBundle;
       AsyncCondition.wait(READY_FOR_BUNDLE, new AsyncCondition.AsyncConditionListener() {
         @Override
@@ -727,7 +723,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
    */
 
   private void addNotification(final JSONObject options) {
-    if (mManifestUrl == null || mManifest == null) {
+    if (mIsShellApp || mManifestUrl == null || mManifest == null) {
       return;
     }
 
@@ -736,39 +732,13 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       return;
     }
 
-    if (!mManifest.optBoolean(ExponentManifest.MANIFEST_SHOW_EXPONENT_NOTIFICATION_KEY) && mIsShellApp) {
-      return;
-    }
-
-    RemoteViews remoteViews = new RemoteViews(getPackageName(), mIsShellApp ? R.layout.notification_shell_app : R.layout.notification);
+    RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.notification);
     remoteViews.setCharSequence(R.id.home_text_button, "setText", name);
 
     // Home
     Intent homeIntent = new Intent(this, LauncherActivity.class);
     remoteViews.setOnClickPendingIntent(R.id.home_image_button, PendingIntent.getActivity(this, 0,
       homeIntent, 0));
-
-    // Info
-    // Doing PendingIntent.getActivity doesn't work here - it opens the activity in the main
-    // stack and not in the experience's stack
-    remoteViews.setOnClickPendingIntent(R.id.home_text_button, PendingIntent.getService(this, 0,
-      ExponentIntentService.getActionInfoScreen(this, mManifestUrl), PendingIntent.FLAG_UPDATE_CURRENT));
-
-    if (!mIsShellApp) {
-      // Share
-      // TODO: add analytics
-      Intent shareIntent = new Intent(Intent.ACTION_SEND);
-      shareIntent.setType("text/plain");
-      shareIntent.putExtra(Intent.EXTRA_SUBJECT, name + " on Exponent");
-      shareIntent.putExtra(Intent.EXTRA_TEXT, mManifestUrl);
-      remoteViews.setOnClickPendingIntent(R.id.share_button, PendingIntent.getActivity(this, 0,
-        Intent.createChooser(shareIntent, "Share a link to " + name), PendingIntent.FLAG_UPDATE_CURRENT));
-
-      // Save
-      remoteViews.setOnClickPendingIntent(R.id.save_button, PendingIntent.getService(this, 0,
-        ExponentIntentService.getActionSaveExperience(this, mManifestUrl),
-        PendingIntent.FLAG_UPDATE_CURRENT));
-    }
 
     // Reload
     remoteViews.setOnClickPendingIntent(R.id.reload_button, PendingIntent.getService(this, 0,
@@ -778,7 +748,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
     // Build the actual notification
     final NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-    notificationManager.cancel(NOTIFICATION_ID);
+    notificationManager.cancel(PERSISTENT_EXPONENT_NOTIFICATION_ID);
 
     new ExponentNotificationManager(this).maybeCreateExpoPersistentNotificationChannel();
     mNotificationBuilder = new NotificationCompat.Builder(this, NotificationConstants.NOTIFICATION_EXPERIENCE_CHANNEL_ID)
@@ -789,7 +759,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       .setPriority(Notification.PRIORITY_MAX);
 
     mNotificationBuilder.setColor(ContextCompat.getColor(this, R.color.colorPrimary));
-    notificationManager.notify(NOTIFICATION_ID, mNotificationBuilder.build());
+    notificationManager.notify(PERSISTENT_EXPONENT_NOTIFICATION_ID, mNotificationBuilder.build());
   }
 
   private void removeNotification() {
@@ -800,7 +770,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
   public static void removeNotification(Context context) {
     NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-    notificationManager.cancel(NOTIFICATION_ID);
+    notificationManager.cancel(PERSISTENT_EXPONENT_NOTIFICATION_ID);
   }
 
   public void onNotificationAction() {

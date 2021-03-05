@@ -72,9 +72,13 @@
     return;
   }
 
-  if (self.window) {
-    self.window.hidden = YES;
-  }
+  UM_WEAKIFY(self);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UM_ENSURE_STRONGIFY(self);
+    if (self.window) {
+      self.window.hidden = YES;
+    }
+  });
 }
 
 - (void)updateStatusWithProgress:(EXLoadingProgress *)progress

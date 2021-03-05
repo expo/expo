@@ -22,7 +22,7 @@ export default function CellularScreen() {
             isoCountryCode: Cellular.isoCountryCode,
             mobileCountryCode: Cellular.mobileCountryCode,
             mobileNetworkCode: Cellular.mobileNetworkCode,
-            generation: generation,
+            generation,
             generationName: generationMap[generation ?? 0],
           },
           null,

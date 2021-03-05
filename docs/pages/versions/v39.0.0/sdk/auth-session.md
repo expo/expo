@@ -5,25 +5,15 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-39/packages/expo-auth-sess
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import InstallSection from '~/components/plugins/InstallSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 import { SocialGrid, SocialGridItem, CreateAppButton } from '~/components/plugins/AuthSessionElements';
 import TerminalBlock from '~/components/plugins/TerminalBlock';
 import SnackInline from '~/components/plugins/SnackInline';
+import { InlineCode } from '~/components/base/code';
 
-`AuthSession` is the easiest way to add web browser based authentication (for example, browser-based OAuth flows) to your app, built on top of [WebBrowser](../webbrowser/), [Crypto](../crypto/), and [Random](../random/). If you would like to understand how it does this, read this document from top to bottom. If you just want to use it, jump to the [Authentication Guide](/guides/authentication).
+`AuthSession` is the easiest way to add web browser based authentication (for example, browser-based OAuth flows) to your app, built on top of [WebBrowser](webbrowser.md), [Crypto](crypto.md), and [Random](random.md). If you would like to understand how it does this, read this document from top to bottom. If you just want to use it, jump to the [Authentication Guide](../../../guides/authentication.md).
 
 <PlatformsSection android emulator ios simulator web />
-
-<TableOfContentSection title="Table of contents" contents={[
-"Installation",
-"Guides",
-"API",
-"Hooks",
-"Methods",
-"Classes",
-"Types",
-"Advanced usage"
-]} />
 
 ## Installation
 
@@ -72,15 +62,15 @@ In order to be able to deep link back into your app, you will need to set a `sch
 
 ## Guides
 
-The guides have moved: [Authentication Guide](/guides/authentication).
+The guides have moved: [Authentication Guide](../../../guides/authentication.md).
 
 ## How web browser based authentication flows work
 
 The typical flow for browser-based authentication in mobile apps is as follows:
 
 - **Initiation**: the user presses a sign in button
-- **Open web browser**: the app opens up a web browser to the authentication provider sign in page. The url that is opened for the sign in page usually includes information to identify the app, and a URL to redirect to on success. _Note: the web browser should share cookies with your system web browser so that users do not need to sign in again if they are already authenticated on the system browser -- Expo's [WebBrowser](../webbrowser/) API takes care of this._
-- **Authentication provider redirects**: upon successful authentication, the authentication provider should redirect back to the application by redirecting to URL provided by the app in the query parameters on the sign in page ([read more about how linking works in mobile apps](../../workflow/linking/)), _provided that the URL is in the allowlist of allowed redirect URLs_. Allowlisting redirect URLs is important to prevent malicious actors from pretending to be your application. The redirect includes data in the URL (such as user id and token), either in the location hash, query parameters, or both.
+- **Open web browser**: the app opens up a web browser to the authentication provider sign in page. The url that is opened for the sign in page usually includes information to identify the app, and a URL to redirect to on success. _Note: the web browser should share cookies with your system web browser so that users do not need to sign in again if they are already authenticated on the system browser -- Expo's [WebBrowser](webbrowser.md) API takes care of this._
+- **Authentication provider redirects**: upon successful authentication, the authentication provider should redirect back to the application by redirecting to URL provided by the app in the query parameters on the sign in page ([read more about how linking works in mobile apps](../../../guides/linking.md)), _provided that the URL is in the allowlist of allowed redirect URLs_. Allowlisting redirect URLs is important to prevent malicious actors from pretending to be your application. The redirect includes data in the URL (such as user id and token), either in the location hash, query parameters, or both.
 - **App handles redirect**: the redirect is handled by the app and data is parsed from the redirect URL.
 
 ## What `auth.expo.io` does for you
@@ -124,7 +114,7 @@ const [request, response, promptAsync] = useAuthRequest({ ... }, { ... });
 Load an authorization request for a code. Returns a loaded request, a response, and a prompt method.
 When the prompt method completes then the response will be fulfilled.
 
-> 🚨 In order to close the popup window on web, you need to invoke `WebBrowser.maybeCompleteAuthSession()`. See the [Identity example](/guides/authentication#identity-4) for more info.
+> 🚨 In order to close the popup window on web, you need to invoke `WebBrowser.maybeCompleteAuthSession()`. See the [Identity example](../../../guides/authentication.md#identity-4) for more info.
 
 If an Implicit grant flow was used, you can pass the `response.params` to `TokenResponse.fromQueryParams()` to get a `TokenResponse` instance which you can use to easily refresh the token.
 
@@ -325,13 +315,13 @@ This error method will add the missing description for more context on what went
 
 Object returned after an auth request has completed.
 
-| Name      | Type                     | Description                                                                | Default |
-| --------- | ------------------------ | -------------------------------------------------------------------------- | ------- |
-| type      | `string`                 | How the auth completed `'cancel', 'dismiss', 'locked', 'error', 'success'` | `.Code` |
-| url       | `string`                 | Auth URL that was opened                                                   |         |
-| error     | `AuthError | null`       | Possible error if the auth failed with type `error`                        |         |
-| params    | `Record<string, string>` | Query params from the `url` as an object                                   |         |
-| errorCode | `string | null`          | Legacy error code query param, use `error` instead                         |         |
+| Name      | Type                                       | Description                                                                | Default |
+| --------- | ------------------------------------------ | -------------------------------------------------------------------------- | ------- |
+| type      | `string`                                   | How the auth completed `'cancel', 'dismiss', 'locked', 'error', 'success'` | `.Code` |
+| url       | `string`                                   | Auth URL that was opened                                                   |         |
+| error     | <InlineCode>AuthError \| null</InlineCode> | Possible error if the auth failed with type `error`                        |         |
+| params    | `Record<string, string>`                   | Query params from the `url` as an object                                   |         |
+| errorCode | <InlineCode>string \| null</InlineCode>    | Legacy error code query param, use `error` instead                         |         |
 
 - If the user cancelled the auth session by closing the browser or popup, the result is `{ type: 'cancel' }`.
 - If the auth is dismissed manually with `AuthSession.dismiss()`, the result is `{ type: 'dismiss' }`.
@@ -354,19 +344,19 @@ desired grant type by using the a response type: [Section 3.1.1][s311].
 
 Represents an OAuth authorization request as JSON.
 
-| Name                | Type                      | Description                                                    | Default | Spec                            |
-| ------------------- | ------------------------- | -------------------------------------------------------------- | ------- | ------------------------------- |
-| responseType        | `ResponseType | string`   | Specifies what is returned from the authorization server       | `.Code` | [Section 3.1.1][s311]           |
-| clientId            | `string`                  | Unique ID representing the info provided by the client         |         | [Section 2.2][s22]              |
-| redirectUri         | `string`                  | The server will redirect to this URI when complete             |         | [Section 3.1.2][s312]           |
-| prompt              | `Prompt`                  | Should the user be prompted to login or consent again.         |         | [Section 3.1.2.1][oidc-authreq] |
-| scopes              | `string[]`                | List of strings to request access to                           |         | [Section 3.3][s33]              |
-| clientSecret        | `?string`                 | Client secret supplied by an auth provider                     |         | [Section 2.3.1][s231]           |
-| codeChallengeMethod | `CodeChallengeMethod`     | Method used to generate the code challenge                     | `.S256` | [Section 6.2][s62]              |
-| codeChallenge       | `?string`                 | Derived from the code verifier using the `CodeChallengeMethod` |         | [Section 4.2][s42]              |
-| state               | `?string`                 | Used for protection against Cross-Site Request Forgery         |         | [Section 10.12][s1012]          |
-| usePKCE             | `?boolean`                | Should use Proof Key for Code Exchange                         | `true`  | [PKCE][pkce]                    |
-| extraParams         | `?Record<string, string>` | Extra query params that'll be added to the query string        |         | `N/A`                           |
+| Name                | Type                                            | Description                                                    | Default | Spec                            |
+| ------------------- | ----------------------------------------------- | -------------------------------------------------------------- | ------- | ------------------------------- |
+| responseType        | <InlineCode>ResponseType \| string</InlineCode> | Specifies what is returned from the authorization server       | `.Code` | [Section 3.1.1][s311]           |
+| clientId            | `string`                                        | Unique ID representing the info provided by the client         |         | [Section 2.2][s22]              |
+| redirectUri         | `string`                                        | The server will redirect to this URI when complete             |         | [Section 3.1.2][s312]           |
+| prompt              | `Prompt`                                        | Should the user be prompted to login or consent again.         |         | [Section 3.1.2.1][oidc-authreq] |
+| scopes              | `string[]`                                      | List of strings to request access to                           |         | [Section 3.3][s33]              |
+| clientSecret        | `?string`                                       | Client secret supplied by an auth provider                     |         | [Section 2.3.1][s231]           |
+| codeChallengeMethod | `CodeChallengeMethod`                           | Method used to generate the code challenge                     | `.S256` | [Section 6.2][s62]              |
+| codeChallenge       | `?string`                                       | Derived from the code verifier using the `CodeChallengeMethod` |         | [Section 4.2][s42]              |
+| state               | `?string`                                       | Used for protection against Cross-Site Request Forgery         |         | [Section 10.12][s1012]          |
+| usePKCE             | `?boolean`                                      | Should use Proof Key for Code Exchange                         | `true`  | [PKCE][pkce]                    |
+| extraParams         | `?Record<string, string>`                       | Extra query params that'll be added to the query string        |         | `N/A`                           |
 
 ### `AuthRequestPromptOptions`
 
@@ -572,7 +562,7 @@ const result = await AuthSession.startAsync({
 
 ### Filtering out AuthSession events in Linking handlers
 
-There are many reasons why you might want to handle inbound links into your app, such as push notifications or just regular deep linking (you can read more about this in the [Linking guide](../../workflow/linking/)); authentication redirects are only one type of deep link, and `AuthSession` handles these particular links for you. In your own `Linking.addEventListener` handlers, you can filter out deep links that are handled by `AuthSession` by checking if the URL includes the `+expo-auth-session` string -- if it does, you can ignore it. This works because `AuthSession` adds `+expo-auth-session` to the default `returnUrl`; however, if you provide your own `returnUrl`, you may want to consider adding a similar identifier to enable you to filter out `AuthSession` events from other handlers.
+There are many reasons why you might want to handle inbound links into your app, such as push notifications or just regular deep linking (you can read more about this in the [Linking guide](../../../guides/linking.md)); authentication redirects are only one type of deep link, and `AuthSession` handles these particular links for you. In your own `Linking.addEventListener` handlers, you can filter out deep links that are handled by `AuthSession` by checking if the URL includes the `+expo-auth-session` string -- if it does, you can ignore it. This works because `AuthSession` adds `+expo-auth-session` to the default `returnUrl`; however, if you provide your own `returnUrl`, you may want to consider adding a similar identifier to enable you to filter out `AuthSession` events from other handlers.
 
 #### With React Navigation v5
 

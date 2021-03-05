@@ -101,6 +101,13 @@ bool TypedArrayBase::hasBuffer(jsi::Runtime &runtime) const {
   return buffer.isObject() && buffer.asObject(runtime).isArrayBuffer(runtime);
 }
 
+std::vector<uint8_t> TypedArrayBase::toVector(jsi::Runtime &runtime) {
+  auto start =
+      reinterpret_cast<uint8_t *>(getBuffer(runtime).data(runtime) + byteOffset(runtime));
+  auto end = start + byteLength(runtime);
+  return std::vector<uint8_t>(start, end);
+}
+
 jsi::ArrayBuffer TypedArrayBase::getBuffer(jsi::Runtime &runtime) const {
   auto buffer = getProperty(runtime, propNameIDCache.get(runtime, Prop::Buffer));
   if (buffer.isObject() && buffer.asObject(runtime).isArrayBuffer(runtime)) {

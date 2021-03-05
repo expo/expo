@@ -10,6 +10,8 @@ NS_ASSUME_NONNULL_BEGIN
                                        config:(EXUpdatesConfig *)config
                                      database:(EXUpdatesDatabase *)database;
 
++ (NSURL *)bundledAssetBaseUrlWithManifest:(NSDictionary *)manifest config:(EXUpdatesConfig *)config;
+
 @end
 
 NS_ASSUME_NONNULL_END

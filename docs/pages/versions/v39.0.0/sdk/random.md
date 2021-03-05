@@ -6,7 +6,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-39/packages/expo-random'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-**`expo-random`** provides a native interface for creating strong random bytes. With `Random` you can create values equivalent to `Node.js` core `crypto.randomBytes` API.
+**`expo-random`** provides a native interface for creating strong random bytes. With `Random` you can create values equivalent to `Node.js` core `crypto.randomBytes` API. `expo-random` also works with `expo-standard-web-crypto`, which implements the W3C Crypto API for generating random bytes.
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -37,7 +37,6 @@ Generates completely random bytes using native implementations. The `byteCount` 
 
 - **randomBytes (_Uint8Array_)** -- An array of random bytes with the same length as the `byteCount`.
 
-
 ### `Random.getRandomBytesAsync(byteCount)`
 
 Generates completely random bytes using native implementations. The `byteCount` property is a `number` indicating the number of bytes to generate in the form of a `Uint8Array`.
@@ -49,4 +48,3 @@ Generates completely random bytes using native implementations. The `byteCount` 
 ## Returns
 
 - **randomBytes (_Promise&lt;Uint8Array&gt;_)** -- An array of random bytes with the same length as the `byteCount`.
-

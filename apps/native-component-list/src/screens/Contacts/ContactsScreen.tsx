@@ -9,8 +9,8 @@ import { RefreshControl, StyleSheet, Text, View } from 'react-native';
 
 import HeaderIconButton, { HeaderContainerRight } from '../../components/HeaderIconButton';
 import { useResolvedValue } from '../../utilities/useResolvedValue';
-import ContactsList from './ContactsList';
 import * as ContactUtils from './ContactUtils';
+import ContactsList from './ContactsList';
 
 type StackParams = {
   ContactDetail: { id: string };

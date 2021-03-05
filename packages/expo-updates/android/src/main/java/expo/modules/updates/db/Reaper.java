@@ -2,10 +2,13 @@ package expo.modules.updates.db;
 
 import android.util.Log;
 
+import org.json.JSONObject;
+
 import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.launcher.SelectionPolicy;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
+import expo.modules.updates.manifest.ManifestMetadata;
 
 import java.io.File;
 import java.util.LinkedList;
@@ -23,7 +26,8 @@ public class Reaper {
 
     List<UpdateEntity> allUpdates = database.updateDao().loadAllUpdatesForScope(configuration.getScopeKey());
 
-    List<UpdateEntity> updatesToDelete = selectionPolicy.selectUpdatesToDelete(allUpdates, launchedUpdate);
+    JSONObject manifestFilters = ManifestMetadata.getManifestFilters(database, configuration);
+    List<UpdateEntity> updatesToDelete = selectionPolicy.selectUpdatesToDelete(allUpdates, launchedUpdate, manifestFilters);
     database.updateDao().deleteUpdates(updatesToDelete);
 
     List<AssetEntity> assetsToDelete = database.assetDao().deleteUnusedAssets();

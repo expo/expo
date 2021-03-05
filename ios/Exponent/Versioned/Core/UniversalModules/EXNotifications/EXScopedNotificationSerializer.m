@@ -1,6 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import "EXScopedNotificationSerializer.h"
+#import "EXScopedNotificationsUtils.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -11,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
   NSDictionary *serializedResponse = [super serializedNotificationResponse:response];
   NSMutableDictionary *serializedResponseMutable = [serializedResponse mutableCopy];
   serializedResponseMutable[@"notification"] = [self serializedNotification:response.notification];
-
+  
   return [serializedResponseMutable copy];
 }
 
@@ -24,32 +25,22 @@ NS_ASSUME_NONNULL_BEGIN
   return [serializedNotificationMutable copy];
 }
 
-+ (NSDictionary *)serializedNotificationRequest:(UNNotificationRequest *)request
++ (NSDictionary *)serializedNotificationContent:(UNNotificationRequest *)request
 {
-  NSDictionary *serializedRequest = [super serializedNotificationRequest:request];
-  NSMutableDictionary *serializedRequestMutable = [serializedRequest mutableCopy];
-  serializedRequestMutable[@"content"] = [self serializedNotificationContent:request.content isRemote:[request.trigger isKindOfClass:[UNPushNotificationTrigger class]]];
-  
-  return [serializedRequestMutable copy];
-}
-
-+ (NSDictionary *)serializedNotificationContent:(UNNotificationContent *)content isRemote:(BOOL)isRemote
-{
-  NSDictionary *serializedContent = [super serializedNotificationContent:content isRemote:isRemote];
+  NSDictionary *serializedContent = [super serializedNotificationContent:request];
   NSMutableDictionary *serializedContentMutable = [serializedContent mutableCopy];
-  serializedContentMutable[@"categoryIdentifier"] = content.categoryIdentifier ? [self removeCategoryIdentifierPrefix: content.categoryIdentifier userInfo:content.userInfo] : [NSNull null];
-
+  serializedContentMutable[@"categoryIdentifier"] = request.content.categoryIdentifier ? [EXScopedNotificationsUtils getScopeAndIdentifierFromScopedIdentifier:request.content.categoryIdentifier].identifier : [NSNull null];
+  
   return [serializedContentMutable copy];
 }
 
-+ (NSString *)removeCategoryIdentifierPrefix:(NSString *)identifier userInfo:(NSDictionary *)userInfo
++ (NSDictionary *)serializedNotificationRequest:(UNNotificationRequest *)request
 {
-  NSString *experienceId = userInfo[@"experienceId"] ?: [NSNull null];
-  if (experienceId) {
-    NSString *scopedCategoryPrefix = [NSString stringWithFormat:@"%@-", experienceId];
-    return [identifier stringByReplacingOccurrencesOfString:scopedCategoryPrefix withString:@""];
-  }
-  return identifier;
+  NSDictionary* serializedRequest = [super serializedNotificationRequest:request];
+  NSMutableDictionary *serializedRequestMutable = [serializedRequest mutableCopy];
+  serializedRequestMutable[@"identifier"] = [EXScopedNotificationsUtils getScopeAndIdentifierFromScopedIdentifier:request.identifier].identifier;
+
+  return [serializedRequestMutable copy];
 }
 
 @end

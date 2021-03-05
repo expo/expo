@@ -31,7 +31,7 @@ const SERVER_ERROR_TEXT = dedent`
 
 export type Project = {
   id: string;
-  description?: string;
+  description: string;
   fullName: string;
   iconUrl: string;
   lastPublishedTime: number;
@@ -39,7 +39,7 @@ export type Project = {
   packageName: string;
   privacy: string;
   sdkVersion: string;
-  packageUsername?: string;
+  packageUsername: string;
 };
 
 type Props = {
@@ -213,6 +213,7 @@ function ProjectList({ data, loadMoreAsync, belongsToCurrentUser, listTitle }: P
             return <InfiniteScrollView {...props} />;
           }
         }}
+        // @ts-expect-error typescript cannot infer that props should include infinite-scroll-view props
         canLoadMore={canLoadMore}
         onLoadMoreAsync={handleLoadMoreAsync}
       />

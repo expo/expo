@@ -23,6 +23,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesDatabaseHashType) {
 - (void)updateAsset:(EXUpdatesAsset *)asset error:(NSError ** _Nullable)error;
 - (void)mergeAsset:(EXUpdatesAsset *)asset withExistingEntry:(EXUpdatesAsset *)existingAsset error:(NSError ** _Nullable)error;
 - (void)markUpdateFinished:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error;
+- (void)setScopeKey:(NSString *)scopeKey onUpdate:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error;
 
 - (void)deleteUpdates:(NSArray<EXUpdatesUpdate *> *)updates error:(NSError ** _Nullable)error;
 - (nullable NSArray<EXUpdatesAsset *> *)deleteUnusedAssetsWithError:(NSError ** _Nullable)error;
@@ -32,6 +33,12 @@ typedef NS_ENUM(NSInteger, EXUpdatesDatabaseHashType) {
 - (nullable EXUpdatesUpdate *)updateWithId:(NSUUID *)updateId config:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error;
 - (nullable NSArray<EXUpdatesAsset *> *)assetsWithUpdateId:(NSUUID *)updateId error:(NSError ** _Nullable)error;
 - (nullable EXUpdatesAsset *)assetWithKey:(NSString *)key error:(NSError ** _Nullable)error;
+
+- (nullable NSDictionary *)serverDefinedHeadersWithScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error;
+- (nullable NSDictionary *)manifestFiltersWithScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error;
+- (void)setServerDefinedHeaders:(NSDictionary *)serverDefinedHeaders withScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error;
+- (void)setManifestFilters:(NSDictionary *)manifestFilters withScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error;
+- (void)setMetadataWithManifest:(EXUpdatesUpdate *)updateManifest error:(NSError ** _Nullable)error;
 
 @end
 

@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI36_0_0/Expo/UMCore/ABI36_0_0UMCore/UMModuleRegistryProvider/ABI36_0_0UMModuleRegistryProvider.h

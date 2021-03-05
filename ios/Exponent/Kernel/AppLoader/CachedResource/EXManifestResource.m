@@ -64,7 +64,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   if (error) {
     * error = [self formatError:[NSError errorWithDomain:EXNetworkErrorDomain code:0 userInfo:@{
                                                                                        @"errorCode": @"NO_COMPATIBLE_EXPERIENCE_FOUND",
-                                                                                       NSLocalizedDescriptionKey: [NSString stringWithFormat:@"No compatible experience found at %@. Only %@ are supported.", self.originalUrl, [[EXVersions sharedInstance].versions[@"sdkVersions"] componentsJoinedByString:@","]]
+                                                                                       NSLocalizedDescriptionKey: [NSString stringWithFormat:@"No compatible project found at %@. Only %@ are supported.", self.originalUrl, [[EXVersions sharedInstance].versions[@"sdkVersions"] componentsJoinedByString:@","]]
                                                                                        }]];
   }
   return nil;
@@ -122,7 +122,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
       }
     }
     
-    NSError *sdkVersionError = [self _verifyManifestSdkVersion:innerManifestObj];
+    NSError *sdkVersionError = [self verifyManifestSdkVersion:innerManifestObj];
     if (sdkVersionError) {
       errorBlock(sdkVersionError);
       return;
@@ -323,9 +323,10 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   return nil;
 }
 
-- (NSError *)_verifyManifestSdkVersion:(NSDictionary *)maybeManifest
+- (NSError *)verifyManifestSdkVersion:(NSDictionary *)maybeManifest
 {
   NSString *errorCode;
+  NSDictionary *metadata;
   if (maybeManifest && maybeManifest[@"sdkVersion"]) {
     if (![maybeManifest[@"sdkVersion"] isEqualToString:@"UNVERSIONED"]) {
       NSInteger manifestSdkVersion = [maybeManifest[@"sdkVersion"] integerValue];
@@ -334,6 +335,9 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
         NSInteger newestSdkVersion = [[self _latestSdkVersionSupported] integerValue];
         if (manifestSdkVersion < oldestSdkVersion) {
           errorCode = @"EXPERIENCE_SDK_VERSION_OUTDATED";
+          // since we are spoofing this error, we put the SDK version of the project as the
+          // "available" SDK version -- it's the only one available from the server
+          metadata = @{@"availableSDKVersions": @[maybeManifest[@"sdkVersion"]]};
         }
         if (manifestSdkVersion > newestSdkVersion) {
           errorCode = @"EXPERIENCE_SDK_VERSION_TOO_NEW";
@@ -355,6 +359,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
     // will be handled by _validateErrorData:
     return [self formatError:[NSError errorWithDomain:EXNetworkErrorDomain code:0 userInfo:@{
       @"errorCode": errorCode,
+      @"metadata": metadata ?: @{},
     }]];
   } else {
     return nil;
@@ -401,17 +406,17 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   if ([errorCode isEqualToString:@"EXPERIENCE_NOT_FOUND"]
       || [errorCode isEqualToString:@"EXPERIENCE_NOT_PUBLISHED_ERROR"]
       || [errorCode isEqualToString:@"EXPERIENCE_RELEASE_NOT_FOUND_ERROR"]) {
-    formattedMessage = [NSString stringWithFormat:@"No experience found at %@.", self.originalUrl];
+    formattedMessage = [NSString stringWithFormat:@"No project found at %@.", self.originalUrl];
   } else if ([errorCode isEqualToString:@"EXPERIENCE_SDK_VERSION_OUTDATED"]) {
     NSDictionary *metadata = userInfo[@"metadata"];
     NSArray *availableSDKVersions = metadata[@"availableSDKVersions"];
     NSString *sdkVersionRequired = [availableSDKVersions firstObject];
     
     NSString *earliestSDKVersion = [self _earliestSdkVersionSupported];
-    formattedMessage = [NSString stringWithFormat:@"The experience you requested uses Expo SDK v%@, but this copy of Expo Client "
+    formattedMessage = [NSString stringWithFormat:@"The project you requested uses Expo SDK v%@, but this copy of Expo Go "
                         "requires at least v%@. The author should update their experience to a newer Expo SDK version.", sdkVersionRequired, earliestSDKVersion];
   } else if ([errorCode isEqualToString:@"EXPERIENCE_SDK_VERSION_TOO_NEW"]) {
-    formattedMessage = @"The experience you requested requires a newer version of the Expo Client app. Please download the latest version from the App Store.";
+    formattedMessage = @"The project you requested requires a newer version of Expo Go. Please download the latest version from the App Store.";
   } else if ([errorCode isEqualToString:@"NO_COMPATIBLE_EXPERIENCE_FOUND"]){
     formattedMessage = rawMessage; // No compatible experience found at ${originalUrl}. Only ${currentSdkVersions} are supported.
   } else if ([errorCode isEqualToString:@"EXPERIENCE_NOT_VIEWABLE"]) {

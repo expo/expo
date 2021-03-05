@@ -20,6 +20,10 @@ void Scheduler::setJSCallInvoker(std::shared_ptr<facebook::react::CallInvoker> j
   jsCallInvoker_ = jsCallInvoker;
 }
 
+void Scheduler::setModule(std::shared_ptr<NativeReanimatedModule> module) {
+  this->module = module;
+}
+
 Scheduler::~Scheduler() {}
 
 }

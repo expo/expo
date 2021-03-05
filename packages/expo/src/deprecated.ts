@@ -1,6 +1,6 @@
 import deprecatedModule from './deprecatedModule';
 
-declare var module: any;
+declare let module: any;
 
 Object.defineProperties(module.exports, {
   Linking: {
@@ -12,18 +12,6 @@ Object.defineProperties(module.exports, {
         'expo-linking'
       );
       return require('expo-linking');
-    },
-  },
-  Notifications: {
-    enumerable: true,
-    get() {
-      deprecatedModule(
-        `import { Notifications } from 'expo' -> import * as Notifications from 'expo-notifications'\n`,
-        'Notifications',
-        'expo-notifications',
-        'Note the breaking changes in the new Notifications API: https://docs.expo.io/versions/latest/sdk/notifications/ . This legacy API will be removed in SDK 40.'
-      );
-      return require('./Notifications/Notifications').default;
     },
   },
 });

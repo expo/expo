@@ -1,6 +1,11 @@
 <!-- Banner Image -->
 
-[![Expo](/style/header.png)](https://expo.io)
+<p align="center">
+  <a href="https://expo.io/">
+    <img alt="expo sdk" height="128" src="./style/banner.png">
+    <h1 align="center">Expo</h1>
+  </a>
+</p>
 
 <p align="center">
  
@@ -17,10 +22,6 @@
 <a aria-label="expo downloads" href="http://www.npmtrends.com/expo" target="_blank">
     <img alt="Downloads" src="https://img.shields.io/npm/dm/expo.svg?style=flat-square&labelColor=gray&color=33CC12&label=Downloads" />
 </a>
-    <br>
-    <a aria-label="Circle CI" href="https://circleci.com/gh/expo/expo/tree/master">
-    <img alt="Circle CI" src="https://flat.badgen.net/circleci/github/expo/expo?label=Circle%20CI&labelColor=555555&icon=circleci">
-  </a>
   
 </p>
 
@@ -57,7 +58,7 @@ Expo is an open-source platform for making universal native apps that run on And
 
 <p>Learn about building and deploying universal apps <a aria-label="expo documentation" href="https://docs.expo.io">in our official docs!</a></p>
 
-- [Getting Started](https://docs.expo.io/versions/latest/)
+- [Getting Started](https://docs.expo.io/)
 - [API Reference](https://docs.expo.io/versions/latest/sdk/overview/)
 - [Using Custom Native Modules](https://docs.expo.io/versions/latest/bare/exploring-bare-workflow/)
 
@@ -73,7 +74,7 @@ Expo is an open-source platform for making universal native apps that run on And
 - [`home`](/home) contains the JavaScript source code of the app.
 - [`ios`](/ios) contains the iOS project.
 - [`ios/Exponent.xcworkspace`](/ios) is the Xcode workspace. Always open this instead of `Exponent.xcodeproj` because the workspace also loads the CocoaPods dependencies.
-- [`tools/expotools`](/tools/expotools) contains build and configuration tools.
+- [`tools`](/tools) contains build and configuration tools.
 - [`template-files`](/template-files) contains templates for files that require private keys. They are populated using the keys in `template-files/keys.json`.
 - [`template-files/ios/dependencies.json`](/template-files/ios/dependencies.json) specifies the CocoaPods dependencies of the app.
 

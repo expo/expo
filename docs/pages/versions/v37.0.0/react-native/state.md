@@ -52,4 +52,4 @@ In a real application, you probably won't be setting state with a timer. You mig
 
 When setState is called, BlinkApp will re-render its Component. By calling setState within the Timer, the component will re-render every time the Timer ticks.
 
-State works the same way as it does in React, so for more details on handling state, you can look at the [React.Component API](https://reactjs.org/docs/react-component.html#setstate). At this point, you may have noticed that most of our examples use the default text color. To customize the text color, you will have to [learn about Style](../style/).
+State works the same way as it does in React, so for more details on handling state, you can look at the [React.Component API](https://reactjs.org/docs/react-component.html#setstate). At this point, you may have noticed that most of our examples use the default text color. To customize the text color, you will have to [learn about Style](style.md).

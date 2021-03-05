@@ -6,15 +6,25 @@ Your app's icon is what users see on the home screen of their devices, as well a
 
 ## Configuring your App's Icon
 
-The most straightforward way to provide an icon for your app is to provide the [icon](../../workflow/configuration/#icon) key in `app.json`. If you want to do the minimum possible, this key alone is sufficient. However, Expo also accepts platform-specific keys under `ios.icon` and `android.icon`. If either of these exist, they will take priority over the base `icon` key on their respective platform. Further customization of the Android icon is possible using the `android.adaptiveIcon` key, which will override both of the previously mentioned settings. Most production-quality apps will probably want to provide something slightly different between iOS and Android.
+The most straightforward way to provide an icon for your app is to provide the [icon](../workflow/configuration.md#icon) key in `app.json`. If you want to do the minimum possible, this key alone is sufficient. However, Expo also accepts platform-specific keys under `ios.icon` and `android.icon`. If either of these exist, they will take priority over the base `icon` key on their respective platform. Further customization of the Android icon is possible using the `android.adaptiveIcon` key, which will override both of the previously mentioned settings. Most production-quality apps will probably want to provide something slightly different between iOS and Android.
 
 ## Icon Best Practices
+
+### Design
+
+Create an app icon and splash image with the [Figma template](https://www.figma.com/file/ddc0glVeILssZl0Dcn1lSS/App-Icon-and-Splash?node-id=0%3A1) and video below:
+
+<object width="100%" height="400">
+  <param name="movie" value="https://youtube.com/embed/mVOFvLSiJ_s" />
+  <param name="wmode" value="transparent" />
+  <embed src="https://youtube.com/embed/mVOFvLSiJ_s" type="application/x-shockwave-flash" wmode="transparent" width="100%" height="400" />
+</object>
 
 ### iOS
 
 - The icon you use for iOS should follow the [Apple Human Interface Guidelines](https://developer.apple.com/ios/human-interface-guidelines/icons-and-images/app-icon/) for iOS Icons.
 - Use a png file.
-- 1024x1024 is a good size. The Expo [build service](../../distribution/building-standalone-apps/) will generate the other sizes for you. The largest size it generates is 1024x1024.
+- 1024x1024 is a good size. The Expo [build service](../distribution/building-standalone-apps.md) will generate the other sizes for you. The largest size it generates is 1024x1024.
 - The icon must be exactly square, i.e. a 1023x1024 icon is not valid.
 - Make sure the icon fills the whole square, with no rounded corners or other transparent pixels. The operating system will mask your icon when appropriate.
 
@@ -29,6 +39,6 @@ The most straightforward way to provide an icon for your app is to provide the [
 - You may still want to follow some of the [Apple best practices](https://developer.apple.com/ios/human-interface-guidelines/icons-and-images/app-icon/) to ensure your icon looks professional, such as testing your icon on different wallpapers, and avoiding text besides your product's wordmark.
 - Provide something that's at least 512x512 pixels. Since you already need 1024x1024 for iOS, it won't hurt to just provide that here as well.
 
-### Expo client and Web
+### Expo Go and Web
 
-- If your app contains `privacy: public` in [app.json](../../workflow/configuration/), it will show up on your expo.io profile. We will mask your icon to have rounded corners in that circumstance, so if it already looks reasonable on iOS, it will probably look good here as well.
+- If your app contains `privacy: public` in [app.json](../workflow/configuration.md), it will show up on your expo.io profile. We will mask your icon to have rounded corners in that circumstance, so if it already looks reasonable on iOS, it will probably look good here as well.

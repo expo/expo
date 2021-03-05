@@ -8,19 +8,15 @@ import android.app.Application;
 import android.app.RemoteInput;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 
-import androidx.core.content.pm.ShortcutInfoCompat;
-import androidx.core.content.pm.ShortcutManagerCompat;
-import androidx.core.graphics.drawable.IconCompat;
-
 import android.util.Log;
 import android.widget.Toast;
 
+import com.facebook.internal.BundleJSONConverter;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
@@ -47,7 +43,8 @@ import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 import expo.modules.notifications.notifications.model.NotificationResponse;
-import expo.modules.notifications.notifications.service.NotificationResponseReceiver;
+import expo.modules.notifications.service.NotificationsService;
+import expo.modules.notifications.service.delegates.ExpoHandlingDelegate;
 import host.exp.exponent.ExpoUpdatesAppLoader;
 import host.exp.exponent.LauncherActivity;
 import host.exp.exponent.ReactNativeStaticHelpers;
@@ -74,13 +71,10 @@ import host.exp.exponent.exceptions.ExceptionUtils;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.AsyncCondition;
-import host.exp.exponent.utils.JSONBundleConverter;
 import okhttp3.OkHttpClient;
 import versioned.host.exp.exponent.ExpoTurboPackage;
 import versioned.host.exp.exponent.ExponentPackage;
 import versioned.host.exp.exponent.ReactUnthemedRootView;
-import versioned.host.exp.exponent.ReadableObjectUtils;
-import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedJSIModulePackage;
 
 
 // TOOD: need to figure out when we should reload the kernel js. Do we do it every time you visit
@@ -171,7 +165,6 @@ public class Kernel extends KernelInterface {
       // clientBuilder.addNetworkInterceptor(new StethoInterceptor());
     }
 
-    mExponentNetwork.addInterceptors(client);
     ReactNativeStaticHelpers.setExponentNetwork(mExponentNetwork);
   }
 
@@ -277,7 +270,7 @@ public class Kernel extends KernelInterface {
                 .setJSBundleFile(localBundlePath)
                 .addPackage(new MainReactPackage())
                 .addPackage(ExponentPackage.kernelExponentPackage(mContext, mExponentManifest.getKernelManifest(), HomeActivity.homeExpoPackages()))
-                .addPackage(ExpoTurboPackage.createWithManifest(mExponentManifest.getKernelManifest()))
+                .addPackage(ExpoTurboPackage.kernelExpoTurboPackage(mExponentManifest.getKernelManifest()))
                 .setInitialLifecycleState(LifecycleState.RESUMED);
 
             if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE && mExponentManifest.isDebugModeEnabled(mExponentManifest.getKernelManifest())) {
@@ -365,7 +358,11 @@ public class Kernel extends KernelInterface {
     }
 
     Bundle bundle = new Bundle();
-    bundle.putBundle("exp", JSONBundleConverter.JSONToBundle(exponentProps));
+    try {
+      bundle.putBundle("exp", BundleJSONConverter.convertToBundle(exponentProps));
+    } catch (JSONException e) {
+      throw new Error("JSONObject failed to be converted to Bundle", e);
+    }
     return bundle;
   }
 
@@ -460,7 +457,7 @@ public class Kernel extends KernelInterface {
 
     setActivityContext(activity);
 
-    if (intent.getAction() != null && NotificationResponseReceiver.NOTIFICATION_OPEN_APP_ACTION.equals(intent.getAction())) {
+    if (intent.getAction() != null && ExpoHandlingDelegate.OPEN_APP_INTENT_ACTION.equals(intent.getAction())) {
       if (!openExperienceFromNotificationIntent(intent)) {
         openDefaultUrl();
       }
@@ -496,6 +493,7 @@ public class Kernel extends KernelInterface {
       }
 
       // Shortcut
+      // TODO: Remove once we decide to stop supporting shortcuts to experiences.
       String shortcutManifestUrl = bundle.getString(KernelConstants.SHORTCUT_MANIFEST_URL_KEY);
       if (shortcutManifestUrl != null) {
         openExperience(new KernelConstants.ExperienceOptions(shortcutManifestUrl, intentUri, null));
@@ -523,7 +521,7 @@ public class Kernel extends KernelInterface {
   }
 
   private boolean openExperienceFromNotificationIntent(Intent intent) {
-    NotificationResponse response = NotificationResponseReceiver.getNotificationResponse(intent);
+    NotificationResponse response = NotificationsService.Companion.getNotificationResponseFromIntent(intent);
     String experienceIdString = ScopedNotificationsUtils.getExperienceId(response);
     if (experienceIdString == null) {
       return false;
@@ -1010,13 +1008,8 @@ public class Kernel extends KernelInterface {
           break;
         }
 
-        if (weakActivity.isLoading()) {
-          // Already loading. Don't need to do anything.
-          return true;
-        } else {
-          Exponent.getInstance().runOnUiThread(weakActivity::startLoading);
-          break;
-        }
+        Exponent.getInstance().runOnUiThread(weakActivity::startLoading);
+        break;
       }
     }
 
@@ -1109,43 +1102,5 @@ public class Kernel extends KernelInterface {
   // TODO: probably need to call this from other places.
   public void setHasError() {
     mHasError = true;
-  }
-
-  /*
-   *
-   * Shortcuts
-   *
-   */
-
-  public void installShortcut(final String manifestUrl, final ReadableMap manifest, final String bundleUrl) {
-    JSONObject manifestJson = ReadableObjectUtils.readableToJson(manifest);
-    mExponentSharedPreferences.updateManifest(manifestUrl, manifestJson, bundleUrl);
-    installShortcut(manifestUrl);
-  }
-
-  public void installShortcut(final String manifestUrl) {
-    ExponentSharedPreferences.ManifestAndBundleUrl manifestAndBundleUrl = mExponentSharedPreferences.getManifest(manifestUrl);
-    final JSONObject manifestJson = manifestAndBundleUrl.manifest;
-
-    // TODO: show loading indicator while fetching bitmap
-    final String iconUrl = manifestJson.optString(ExponentManifest.MANIFEST_ICON_URL_KEY);
-    mExponentManifest.loadIconBitmap(iconUrl, new ExponentManifest.BitmapListener() {
-      @Override
-      public void onLoadBitmap(Bitmap bitmap) {
-        Intent shortcutIntent = new Intent(mContext, LauncherActivity.class);
-        shortcutIntent.setAction(Intent.ACTION_MAIN);
-        shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        shortcutIntent.putExtra(KernelConstants.SHORTCUT_MANIFEST_URL_KEY, manifestUrl);
-
-        ShortcutInfoCompat pinShortcutInfo =
-          new ShortcutInfoCompat.Builder(mContext, manifestUrl)
-                 .setIcon(IconCompat.createWithBitmap(bitmap))
-              .setShortLabel(manifestJson.optString(ExponentManifest.MANIFEST_NAME_KEY))
-              .setIntent(shortcutIntent)
-              .build();
-
-        ShortcutManagerCompat.requestPinShortcut(mContext, pinShortcutInfo, null);
-      }
-    });
   }
 }

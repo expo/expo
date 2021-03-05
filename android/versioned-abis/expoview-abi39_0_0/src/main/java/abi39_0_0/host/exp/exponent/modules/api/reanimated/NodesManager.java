@@ -114,8 +114,10 @@ public class NodesManager implements EventDispatcherListener {
   private NativeProxy mNativeProxy;
 
   public void onCatalystInstanceDestroy() {
-    mNativeProxy.onCatalystInstanceDestroy();
-    mNativeProxy = null;
+    if (mNativeProxy != null) {
+      mNativeProxy.onCatalystInstanceDestroy();
+      mNativeProxy = null;
+    }
   }
 
   public void initWithContext(ReactApplicationContext reactApplicationContext) {

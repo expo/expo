@@ -40,7 +40,14 @@ export default class OpenFromClipboardButton extends React.Component<Props> {
 
     // Show info for iOS/Android simulator about how to make clipboard contents available
     if (!isValid) {
-      return <ListItem onPress={this.onPress} subtitle={message} last />;
+      return (
+        <ListItem
+          onPress={this.onPress}
+          subtitle={message}
+          style={{ paddingVertical: 15, paddingHorizontal: 15 }}
+          last
+        />
+      );
     } else {
       return (
         <ListItem
@@ -48,6 +55,7 @@ export default class OpenFromClipboardButton extends React.Component<Props> {
           title="Open from Clipboard"
           subtitle={clipboardContents}
           onPress={this.handlePressAsync}
+          style={{ paddingVertical: 15 }}
           last
         />
       );

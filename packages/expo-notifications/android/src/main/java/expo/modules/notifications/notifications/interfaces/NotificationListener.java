@@ -15,18 +15,23 @@ public interface NotificationListener {
    *
    * @param notification Notification received
    */
-  void onNotificationReceived(Notification notification);
+  default void onNotificationReceived(Notification notification) {
+  }
 
   /**
    * Callback called when new notification response is received.
    *
    * @param response Notification response received
+   * @return Whether the notification response has been handled
    */
-  void onNotificationResponseReceived(NotificationResponse response);
+  default boolean onNotificationResponseReceived(NotificationResponse response) {
+    return false;
+  }
 
   /**
    * Callback called when some notifications are dropped.
    * See {@link FirebaseMessagingService#onDeletedMessages()}
    */
-  void onNotificationsDropped();
+  default void onNotificationsDropped() {
+  }
 }

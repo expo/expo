@@ -31,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (instancetype)updateWithId:(NSUUID *)updateId
+                    scopeKey:(NSString *)scopeKey
                   commitTime:(NSDate *)commitTime
               runtimeVersion:(NSString *)runtimeVersion
                     metadata:(nullable NSDictionary *)metadata
@@ -44,6 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                        config:config
                                                      database:database];
   update.updateId = updateId;
+  update.scopeKey = scopeKey;
   update.commitTime = commitTime;
   update.runtimeVersion = runtimeVersion;
   update.metadata = metadata;
@@ -53,6 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (instancetype)updateWithManifest:(NSDictionary *)manifest
+                          response:(nullable NSURLResponse *)response
                             config:(EXUpdatesConfig *)config
                           database:(EXUpdatesDatabase *)database
 {
@@ -62,6 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                   database:database];
   } else {
     return [EXUpdatesNewUpdate updateWithNewManifest:manifest
+                                            response:response
                                               config:config
                                             database:database];
   }
@@ -82,8 +86,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                 database:database];
     }
   } else {
-    if (manifest[@"runtimeVersion"]) {
+    // bare (embedded) manifests should never have a runtimeVersion field
+    if (manifest[@"manifest"] || manifest[@"runtimeVersion"]) {
       return [EXUpdatesNewUpdate updateWithNewManifest:manifest
+                                              response:nil
                                                 config:config
                                               database:database];
     } else {

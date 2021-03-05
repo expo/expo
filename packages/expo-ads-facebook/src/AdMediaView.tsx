@@ -22,4 +22,5 @@ export default class AdMediaView extends React.Component<Props> {
 
 // The native AdMediaView has the same props as regular View
 export type NativeAdMediaView = React.Component<Props>;
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- the type and variable share a name
 export const NativeAdMediaView = requireNativeViewManager('MediaView');

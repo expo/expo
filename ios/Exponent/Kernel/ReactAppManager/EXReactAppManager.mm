@@ -14,7 +14,9 @@
 #import "EXReactAppManager+Private.h"
 #import "EXVersionManager.h"
 #import "EXVersions.h"
+#import "EXAppViewController.h"
 #import <UMCore/UMModuleRegistryProvider.h>
+#import <EXConstants/EXConstantsService.h>
 #import <EXSplashScreen/EXSplashScreenService.h>
 
 #import <React/RCTBridge.h>
@@ -153,6 +155,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
         @"experienceUrl": RCTNullIfNil(_appRecord.appLoader.manifestUrl? _appRecord.appLoader.manifestUrl.absoluteString: nil),
         @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
         @"manifest": _appRecord.appLoader.manifest,
+        @"executionEnvironment": [self _executionEnvironment],
         @"appOwnership": [self _appOwnership],
         @"isHeadless": @(_isHeadless),
         @"supportedExpoSdks": [EXVersions sharedInstance].versions[@"sdkVersions"],
@@ -296,7 +299,9 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 - (void)loadSourceForBridge:(RCTBridge *)bridge withBlock:(RCTSourceLoadBlock)loadCallback
 {
   // clear any potentially old loading state
-  [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:nil forExperienceId:_appRecord.experienceId];
+  if (_appRecord.experienceId) {
+    [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:nil forExperienceId:_appRecord.experienceId];
+  }
   [self _stopObservingBridgeNotifications];
   [self _startObservingBridgeNotificationsForBridge:bridge];
   
@@ -304,6 +309,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     if ([_appRecord.appLoader supportsBundleReload]) {
       [_appRecord.appLoader forceBundleReload];
     } else {
+      NSAssert(_appRecord.experienceId, @"EXKernelAppRecord.experienceId should be nonnull if we have a manifest with developer tools enabled");
       [[EXKernel sharedInstance] reloadAppWithExperienceId:_appRecord.experienceId];
     }
   }
@@ -413,6 +419,11 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     _hasBridgeEverLoaded = YES;
     [_versionManager bridgeFinishedLoading:_reactBridge];
     [self appStateDidBecomeActive];
+
+    // TODO: temporary solution for hiding LoadingProgressWindow
+    if (_appRecord.viewController) {
+      [_appRecord.viewController hideLoadingProgressWindow];
+    }
     
     // TODO: To be removed once SDK 38 is phased out
     // Above SDK 38 this code is invoked in different place
@@ -421,7 +432,9 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     }
   } else if ([notification.name isEqualToString:[self versionedString:RCTJavaScriptDidFailToLoadNotification]]) {
     NSError *error = (notification.userInfo) ? notification.userInfo[@"error"] : nil;
-    [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:error forExperienceId:_appRecord.experienceId];
+    if (_appRecord.experienceId) {
+      [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:error forExperienceId:_appRecord.experienceId];
+    }
 
     UM_WEAKIFY(self);
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -534,7 +547,9 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   UM_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
     UM_ENSURE_STRONGIFY(self);
-    [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceFinishedLoadingWithId:self.appRecord.experienceId];
+    if (self.appRecord.experienceId) {
+      [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceFinishedLoadingWithId:self.appRecord.experienceId];
+    }
     [self.delegate reactAppManagerFinishedLoadingJavaScript:self];
   });
 }
@@ -668,6 +683,8 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   NSMutableDictionary *props = [NSMutableDictionary dictionary];
   NSMutableDictionary *expProps = [NSMutableDictionary dictionary];
 
+  NSAssert(_appRecord.experienceId, @"Experience id should be nonnull when getting initial properties for root view");
+
   NSDictionary *errorRecoveryProps = [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager developerInfoForExperienceId:_appRecord.experienceId];
   if ([[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:_appRecord.experienceId]) {
     [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager increaseAutoReloadBuffer];
@@ -686,7 +703,18 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     expProps[@"notification"] = initialNotification.properties;
   }
 
-  expProps[@"manifest"] = _appRecord.appLoader.manifest;
+  NSString *manifestString = nil;
+  if (_appRecord.appLoader.manifest && [NSJSONSerialization isValidJSONObject:_appRecord.appLoader.manifest]) {
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:_appRecord.appLoader.manifest options:0 error:&error];
+    if (jsonData) {
+      manifestString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    } else {
+      DDLogWarn(@"Failed to serialize JSON manifest: %@", error);
+    }
+  }
+
+  expProps[@"manifestString"] = manifestString;
   if (_appRecord.appLoader.manifestUrl) {
     expProps[@"initialUri"] = [_appRecord.appLoader.manifestUrl absoluteString];
   }
@@ -700,6 +728,15 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     return @"standalone";
   }
   return @"expo";
+}
+
+- (NSString *)_executionEnvironment
+{
+  if ([EXEnvironment sharedEnvironment].isDetached) {
+    return EXConstantsExecutionEnvironmentStandalone;
+  } else {
+    return EXConstantsExecutionEnvironmentStoreClient;
+  }
 }
 
 - (NSString *)scopedDocumentDirectory

@@ -12,7 +12,7 @@ class DevMenuAppInstance: NSObject, RCTBridgeDelegate {
 
     super.init()
 
-    self.bridge = RCTBridge.init(delegate: self, launchOptions: nil)
+    self.bridge = DevMenuRCTBridge.init(delegate: self, launchOptions: nil)
   }
 
   /**
@@ -37,7 +37,11 @@ class DevMenuAppInstance: NSObject, RCTBridgeDelegate {
   }
 
   func extraModules(for bridge: RCTBridge!) -> [RCTBridgeModule]! {
-    return [DevMenuInternalModule(manager: manager)]
+    var modules: [RCTBridgeModule] = [DevMenuInternalModule(manager: manager)]
+    modules.append(contentsOf: DevMenuVendoredModulesUtils.vendoredModules())
+    modules.append(MockedRNCSafeAreaProvider.init())
+    modules.append(DevMenuLoadingView.init())
+    return modules
   }
 
   func bridge(_ bridge: RCTBridge!, didNotFindModule moduleName: String!) -> Bool {

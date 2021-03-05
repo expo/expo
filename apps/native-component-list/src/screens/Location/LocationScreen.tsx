@@ -3,8 +3,8 @@ import * as Location from 'expo-location';
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
-import SimpleActionDemo from '../../components/SimpleActionDemo';
 import ListButton from '../../components/ListButton';
+import SimpleActionDemo from '../../components/SimpleActionDemo';
 
 type Subscription = { remove: () => any };
 type SubscriptionDemoProps = {
@@ -65,12 +65,28 @@ export default class LocationScreen extends React.Component<{
     return (
       <ScrollView style={styles.scrollView}>
         <SimpleActionDemo
-          title="requestPermissionsAsync"
+          title="requestPermissionsAsync (legacy)"
           action={() => Location.requestPermissionsAsync()}
         />
         <SimpleActionDemo
-          title="getPermissionsAsync"
+          title="getPermissionsAsync (legacy)"
           action={() => Location.getPermissionsAsync()}
+        />
+        <SimpleActionDemo
+          title="requestForegroundPermissionsAsync"
+          action={() => Location.requestForegroundPermissionsAsync()}
+        />
+        <SimpleActionDemo
+          title="getForegroundPermissionsAsync"
+          action={() => Location.getForegroundPermissionsAsync()}
+        />
+        <SimpleActionDemo
+          title="requestBackgroundPermissionsAsync"
+          action={async () => Location.requestBackgroundPermissionsAsync()}
+        />
+        <SimpleActionDemo
+          title="getBackgroundPermissionsAsync"
+          action={() => Location.getBackgroundPermissionsAsync()}
         />
         <SimpleActionDemo
           title="hasServicesEnabledAsync"

@@ -1,5 +1,6 @@
 ---
 title: Using Electron with Expo for Web
+sidebar_title: Using Electron
 ---
 
 > 🚨 Electron support is experimental, so the workflow is suboptimal and subject to breaking changes. If you find bugs please report them on [expo/expo-cli](https://github.com/expo/expo-cli/issues) with the `[electron]` tag in the title.
@@ -9,13 +10,13 @@ title: Using Electron with Expo for Web
 To simplify this we created the package `@expo/electron-adapter` which wraps [`electron-webpack`][electron-webpack] and adds support for Expo web and other universal React packages.
 
 - [🏁 Setup](#-setup)
-- [⚽️ Usage](#-usage)
+- [⚽️ Usage](#️-usage)
   - [Starting a project](#starting-a-project)
   - [Customizing the main process](#customizing-the-main-process)
   - [Building your project](#building-your-project)
 - [🧸 Behavior](#-behavior)
 - [Contributing](#contributing)
-- [Learn More](#learn-more-about-electron)
+- [Learn more about Electron](#learn-more-about-electron)
 
 ## 🏁 Setup
 
@@ -50,7 +51,7 @@ To simplify this we created the package `@expo/electron-adapter` which wraps [`e
 
 - To reveal the main process (highly recommended) run - `yarn expo-electron customize`
   - This will generate the `electron/main/` and `electron/webpack.config.js` files for you to customize.
-  - Everything running in the `electron/main/` folder is on a different process to the rest of your app. Think of this like the native code in the Expo Client app (but not really because it's JavaScript and simple).
+  - Everything running in the `electron/main/` folder is on a different process to the rest of your app. Think of this like the native code in the Expo Go app (but not really because it's JavaScript and simple).
 - To revert back to the default main process or reset to the latest default template simply delete the `electron/` folder and the adapter will go back to using the hidden version.
 
 ### Building your project

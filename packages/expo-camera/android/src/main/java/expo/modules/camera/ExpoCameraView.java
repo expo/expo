@@ -51,6 +51,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
   private static final String FAST_MODE_KEY = "fastMode";
   private static final String MAX_DURATION_KEY = "maxDuration";
   private static final String MAX_FILE_SIZE_KEY = "maxFileSize";
+  private static final String VIDEO_BITRATE_KEY = "videoBitrate";
 
   private Queue<Promise> mPictureTakenPromises = new ConcurrentLinkedQueue<>();
   private Map<Promise, Map<String, Object>> mPictureTakenOptions = new ConcurrentHashMap<>();
@@ -229,6 +230,10 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
       CamcorderProfile profile = CamcorderProfile.get(getCameraId(), CamcorderProfile.QUALITY_HIGH);
       if (options.get(QUALITY_KEY) != null) {
         profile = CameraViewHelper.getCamcorderProfile(getCameraId(), ((Double) options.get(QUALITY_KEY)).intValue());
+      }
+
+      if (options.get(VIDEO_BITRATE_KEY) != null) {
+        profile.videoBitRate = ((Double) options.get(VIDEO_BITRATE_KEY)).intValue();
       }
 
       Boolean muteValue = (Boolean) options.get(MUTE_KEY);

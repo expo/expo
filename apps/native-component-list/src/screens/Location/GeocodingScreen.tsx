@@ -1,11 +1,11 @@
+import { usePermissions } from '@use-expo/permissions';
 import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import SimpleActionDemo from '../../components/SimpleActionDemo';
 import TitleSwitch from '../../components/TitledSwitch';
-import { usePermissions } from '@use-expo/permissions';
-import * as Permissions from 'expo-permissions';
 // Location.setGoogleApiKey('<PROVIDE_YOUR_OWN_API_KEY HERE>');
 
 const forwardGeocodingAddresses = [

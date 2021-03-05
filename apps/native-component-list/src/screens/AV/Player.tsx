@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import SegmentedControl from '@react-native-community/segmented-control';
 import Slider from '@react-native-community/slider';
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import React from 'react';
 import {
   GestureResponderEvent,
@@ -18,17 +18,16 @@ import Colors from '../../constants/Colors';
 
 interface Props {
   header?: JSX.Element;
-  extraButtons?: Array<
-    () =>
-      | React.ReactNode
-      | {
-          iconName: string;
-          title: string;
-          onPress: (event: GestureResponderEvent) => void;
-          active: boolean;
-          disable?: boolean;
-        }
-  >;
+  extraButtons?: (
+    | {
+        iconName: string;
+        title: string;
+        onPress: (event: GestureResponderEvent) => void;
+        active: boolean;
+        disable?: boolean;
+      }
+    | (() => React.ReactNode)
+  )[];
   style?: StyleProp<ViewStyle>;
 
   // Functions
@@ -51,7 +50,7 @@ interface Props {
   durationMillis: number;
   shouldCorrectPitch: boolean;
   isPlaying: boolean;
-  isMuted?: boolean;
+  isMuted: boolean;
 
   // Error
   errorMessage?: string;
@@ -80,7 +79,7 @@ export default function Player(props: Props) {
     return (
       <TouchableOpacity onPress={_toggleLooping} disabled={!props.isLoaded}>
         <Ionicons
-          name={'ios-repeat'}
+          name="ios-repeat"
           size={34}
           style={[styles.icon, !props.isLooping && { color: '#C1C1C1' }]}
         />
@@ -250,19 +249,19 @@ function PitchControl({
         alignItems: 'center',
         flexDirection: 'row',
         paddingHorizontal: 4,
-        height: height,
+        height,
         justifyContent: 'center',
       }}
       onPress={() => {
         onPress(!value);
       }}>
-      <Ionicons name={`ios-stats`} size={24} color={color} style={{}} />
+      <Ionicons name="ios-stats" size={24} color={color} style={{}} />
       <Text
         style={{
           textDecorationLine: disabled ? 'line-through' : 'none',
           textAlign: 'center',
           fontWeight: 'bold',
-          color: color,
+          color,
           marginLeft: 8,
           fontSize: 12,
         }}>
@@ -300,7 +299,7 @@ function SpeedSegmentedControl({ onValueChange }: { onValueChange: (value: numbe
         values={data.map(i => i + 'x')}
         fontStyle={{ color: Colors.tintColor }}
         selectedIndex={index}
-        tintColor={'white'}
+        tintColor="white"
         onChange={event => {
           setIndex(event.nativeEvent.selectedSegmentIndex);
         }}
@@ -347,7 +346,9 @@ function VolumeSlider({
   }, [isMutedActive, value]);
 
   React.useEffect(() => {
-    if (value !== volume) setValue(volume);
+    if (value !== volume) {
+      onValueChanged({ volume, isMuted });
+    }
   }, [volume]);
 
   const height = 36;
@@ -356,7 +357,7 @@ function VolumeSlider({
       style={[{ flexDirection: 'row', width: 100 }, disabled && { opacity: 0.7 }]}
       pointerEvents={disabled ? 'none' : 'auto'}>
       <TouchableOpacity
-        style={{ alignItems: 'center', width: height, height: height, justifyContent: 'center' }}
+        style={{ alignItems: 'center', width: height, height, justifyContent: 'center' }}
         onPress={() => {
           onValueChanged({ isMuted: !isMuted, volume });
         }}>
@@ -365,7 +366,7 @@ function VolumeSlider({
       <Slider
         value={isMutedActive ? 0 : value}
         maximumValue={1}
-        style={{ height: height }}
+        style={{ height, flex: 1 }}
         thumbTintColor={color}
         minimumTrackTintColor={color}
         onSlidingComplete={value => {

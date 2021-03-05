@@ -21,6 +21,7 @@ public interface UpdatesInterface {
 
   boolean isEmergencyLaunch();
   boolean isUsingEmbeddedAssets();
+  boolean canRelaunch();
   UpdateEntity getLaunchedUpdate();
   Map<AssetEntity, String> getLocalAssetFiles();
 

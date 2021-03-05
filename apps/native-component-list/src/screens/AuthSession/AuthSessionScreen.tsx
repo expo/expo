@@ -1,18 +1,18 @@
 import { H2 } from '@expo/html-elements';
 import * as AuthSession from 'expo-auth-session';
 import { useAuthRequest } from 'expo-auth-session';
-import * as GoogleAuthSession from 'expo-auth-session/providers/google';
 import * as FacebookAuthSession from 'expo-auth-session/providers/facebook';
+import * as GoogleAuthSession from 'expo-auth-session/providers/google';
 import Constants from 'expo-constants';
 import { maybeCompleteAuthSession } from 'expo-web-browser';
 import React from 'react';
 import { Platform, ScrollView, View } from 'react-native';
 
 import { getGUID } from '../../api/guid';
+import TitledPicker from '../../components/TitledPicker';
 import TitledSwitch from '../../components/TitledSwitch';
 import { AuthSection } from './AuthResult';
 import LegacyAuthSession from './LegacyAuthSession';
-import TitledPicker from '../../components/TitledPicker';
 
 maybeCompleteAuthSession();
 
@@ -102,6 +102,7 @@ function AuthSessionProviders(props: {
     Google,
     GoogleFirebase,
     Facebook,
+    Imgur,
     Spotify,
     Strava,
     Twitch,
@@ -188,49 +189,49 @@ function GoogleFirebase({ prompt, language, usePKCE }: any) {
 }
 
 // Couldn't get this working. API is really confusing.
-function Azure({ useProxy, prompt, usePKCE }: any) {
-  const redirectUri = AuthSession.makeRedirectUri({
-    path: 'redirect',
-    preferLocalhost: true,
-    useProxy,
-    native: Platform.select<string>({
-      ios: 'msauth.dev.expo.Payments://auth',
-      android: 'msauth://dev.expo.payments/sZs4aocytGUGvP1%2BgFAavaPMPN0%3D',
-    }),
-  });
+// function Azure({ useProxy, prompt, usePKCE }: any) {
+//   const redirectUri = AuthSession.makeRedirectUri({
+//     path: 'redirect',
+//     preferLocalhost: true,
+//     useProxy,
+//     native: Platform.select<string>({
+//       ios: 'msauth.dev.expo.Payments://auth',
+//       android: 'msauth://dev.expo.payments/sZs4aocytGUGvP1%2BgFAavaPMPN0%3D',
+//     }),
+//   });
 
-  // 'https://login.microsoftonline.com/your-tenant-id/v2.0',
-  const discovery = AuthSession.useAutoDiscovery(
-    'https://login.microsoftonline.com/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0'
-  );
-  const [request, result, promptAsync] = useAuthRequest(
-    // config
-    {
-      clientId: '96891596-721b-4ae1-8e67-674809373165',
-      redirectUri,
-      prompt,
-      extraParams: {
-        domain_hint: 'live.com',
-      },
-      // redirectUri: 'msauth.{bundleId}://auth',
-      scopes: ['openid', 'profile', 'email', 'offline_access'],
-      usePKCE,
-    },
-    // discovery
-    discovery
-  );
+//   // 'https://login.microsoftonline.com/your-tenant-id/v2.0',
+//   const discovery = AuthSession.useAutoDiscovery(
+//     'https://login.microsoftonline.com/f8cdef31-a31e-4b4a-93e4-5f571e91255a/v2.0'
+//   );
+//   const [request, result, promptAsync] = useAuthRequest(
+//     // config
+//     {
+//       clientId: '96891596-721b-4ae1-8e67-674809373165',
+//       redirectUri,
+//       prompt,
+//       extraParams: {
+//         domain_hint: 'live.com',
+//       },
+//       // redirectUri: 'msauth.{bundleId}://auth',
+//       scopes: ['openid', 'profile', 'email', 'offline_access'],
+//       usePKCE,
+//     },
+//     // discovery
+//     discovery
+//   );
 
-  return (
-    <AuthSection
-      title="azure"
-      disabled={isInClient}
-      request={request}
-      result={result}
-      promptAsync={promptAsync}
-      useProxy={useProxy}
-    />
-  );
-}
+//   return (
+//     <AuthSection
+//       title="azure"
+//       disabled={isInClient}
+//       request={request}
+//       result={result}
+//       promptAsync={promptAsync}
+//       useProxy={useProxy}
+//     />
+//   );
+// }
 
 function Okta({ redirectUri, usePKCE, useProxy }: any) {
   const discovery = AuthSession.useAutoDiscovery('https://dev-720924.okta.com/oauth2/default');
@@ -303,6 +304,59 @@ function Reddit({ redirectUri, prompt, usePKCE, useProxy }: any) {
       request={request}
       result={result}
       promptAsync={promptAsync}
+      useProxy={useProxy}
+    />
+  );
+}
+
+// Imgur Docs https://api.imgur.com/oauth2
+// Create app https://api.imgur.com/oauth2/addclient
+function Imgur({ redirectUri, prompt, usePKCE, useProxy }: any) {
+  let clientId: string;
+
+  if (isInClient) {
+    if (useProxy) {
+      // Using the proxy in the client.
+      // This expects the URI to be 'https://auth.expo.io/@community/native-component-list'
+      // so you'll need to be signed into community or be using the public demo
+      clientId = '5287e6c03ffac8b';
+    } else {
+      // Normalize the host to `localhost` for other testers
+      // Expects: exp://127.0.0.1:19000/--/redirect
+      clientId = '7ab2f3cc75427a0';
+    }
+  } else {
+    if (Platform.OS === 'web') {
+      // web apps with uri scheme `https://localhost:19006`
+      clientId = '181b22d17a3743e';
+    } else {
+      // Native bare apps with uri scheme `bareexpo`
+      clientId = 'd839d91135a16cc';
+    }
+  }
+
+  const [request, result, promptAsync] = useAuthRequest(
+    {
+      clientId,
+      responseType: AuthSession.ResponseType.Token,
+      redirectUri,
+      scopes: [],
+      usePKCE,
+      prompt,
+    },
+    // discovery
+    {
+      authorizationEndpoint: 'https://api.imgur.com/oauth2/authorize',
+      tokenEndpoint: 'https://api.imgur.com/oauth2/token',
+    }
+  );
+
+  return (
+    <AuthSection
+      title="imgur"
+      request={request}
+      result={result}
+      promptAsync={() => promptAsync({ useProxy, windowFeatures: { width: 500, height: 750 } })}
       useProxy={useProxy}
     />
   );
@@ -551,8 +605,6 @@ function Strava({ redirectUri, prompt, usePKCE, useProxy }: any) {
   );
 
   React.useEffect(() => {
-    let isMounted = true;
-
     if (request && result?.type === 'success' && result.params.code) {
       AuthSession.exchangeCodeAsync(
         {
@@ -569,9 +621,6 @@ function Strava({ redirectUri, prompt, usePKCE, useProxy }: any) {
         console.log('RES: ', result);
       });
     }
-    return () => {
-      isMounted = false;
-    };
   }, [result]);
 
   return (

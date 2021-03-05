@@ -8,6 +8,16 @@
 
 ### 🐛 Bug fixes
 
+- Remove peerDependencies and unimodulePeerDependencies from Expo modules. ([#11980](https://github.com/expo/expo/pull/11980) by [@brentvatne](https://github.com/brentvatne))
+
+## 8.2.2 — 2021-01-15
+
+_This version does not introduce any user-facing changes._
+
+## 8.2.1 — 2020-11-17
+
+_This version does not introduce any user-facing changes._
+
 ## 8.2.0 — 2020-08-18
 
 ### 🎉 New features

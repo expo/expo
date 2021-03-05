@@ -71,6 +71,11 @@ NS_ASSUME_NONNULL_BEGIN
   return [_updatesKernelService isEmergencyLaunchForExperienceId:_experienceId];
 }
 
+- (BOOL)canRelaunch
+{
+  return YES;
+}
+
 - (void)requestRelaunchWithCompletion:(EXUpdatesAppRelaunchCompletionBlock)completion
 {
   return [_updatesKernelService requestRelaunchForExperienceId:_experienceId withCompletion:completion];

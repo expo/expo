@@ -1,4 +1,4 @@
-import images from './images';
 import defaultImage from './defaultImage';
+import images from './images';
 
 export { images, defaultImage };

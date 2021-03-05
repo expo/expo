@@ -11,7 +11,7 @@ const screens = [
   'BlurView',
   'Button',
   'Camera',
-  'CheckBox',
+  'Checkbox',
   'DateTimePicker',
   'DrawerLayoutAndroid',
   'FacebookAds',

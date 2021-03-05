@@ -61,12 +61,12 @@ function BrightnessView() {
     }
   }
 
-  const initBrightness = {
+  const initBrightness: Record<string, number | null> = {
     Brightness: brightness,
     SystemBrightness: systemBrightness,
   };
 
-  let views = brightnessTypes.map(type => {
+  const views = brightnessTypes.map(type => {
     const currentBrightness = initBrightness[type] ?? 0;
     return (
       <View key={type} style={{ padding: 20 }}>

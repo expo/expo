@@ -1,5 +1,5 @@
 import { EvilIcons } from '@expo/vector-icons';
-import { Link, useLinkProps, useNavigation } from '@react-navigation/native';
+import { Link, useLinkProps } from '@react-navigation/native';
 import React from 'react';
 import {
   FlatList,
@@ -47,12 +47,11 @@ function LinkButton({
         pointerEvents={rest.disabled === true ? 'none' : 'auto'}
         onPressIn={() => setIsPressed(true)}
         onPressOut={() => setIsPressed(false)}
-        onClick={onPress}
+        onPress={onPress}
         {...props}
         {...rest}
         style={[
           {
-            transitionDuration: '150ms',
             backgroundColor: isPressed ? '#dddddd' : undefined,
           },
           rest.style,

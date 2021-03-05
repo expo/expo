@@ -5,17 +5,18 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-39/packages/expo-app-auth'
 
 import InstallSection from '~/components/plugins/InstallSection';
 import SnackInline from '~/components/plugins/SnackInline';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { H3 } from '~/components/plugins/Headings';
+import { InlineCode } from '~/components/base/code';
 
-> ⚠️ For web support and more authentication methods, use the new [**AuthSession**](../auth-session) API
+> ⚠️ For web support and more authentication methods, use the new [**AuthSession**](auth-session.md) API
 
 **`expo-app-auth`** allows you to authenticate and authorize your users through the native OAuth library AppAuth by [OpenID](https://github.com/openid).
 
 Many services that let you authenticate with them or login with them, like GitHub, Google, GitLab, etc., use the OAuth 2.0 protocol. It's the industry standard.
 
-If you are trying to implement sign in with [Google](../google-sign-in) or [Facebook](../facebook), there are special modules in the Expo SDK for those (though this module will work).
+If you are trying to implement sign in with [Google](google-sign-in.md) or [Facebook](facebook.md), there are special modules in the Expo SDK for those (though this module will work).
 
 <PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6883' }} />
 
@@ -47,11 +48,11 @@ To create a scheme that is appropriate for the environment, be sure to use `Link
 import { Linking } from 'expo';
 
 const prefix = Linking.makeUrl('/');
-// Expo Client: `exp://ADDRESS:PORT`
+// Expo client: `exp://ADDRESS:PORT`
 // Standalone: `myapp://`
 ```
 
-For more info on [Linking in Expo](../../workflow/linking).
+For more info on [Linking in Expo](../../../guides/linking.md).
 
 ## Bare Workflow
 
@@ -180,7 +181,7 @@ There are a couple different methods for authenticating your app in React Native
 
 ### AuthSession
 
-The [`AuthSession`](../auth-session) API is built on top of [`expo-web-browser`](../webbrowser) and cuts out a lot of the tricky steps involved with web authentication. Both `AppAuth` and `AuthSession` use `SFAuthenticationSession` and `ChromeCustomTabs` to authenticate natively, but AppAuth has built in support for [OpenID](https://github.com/openid). AuthSession uses an extra Expo service that makes development easier (especially across teams) but this can have some extra [security considerations](../auth-session#security-considerations).
+The [`AuthSession`](auth-session.md) API is built on top of [`expo-web-browser`](webbrowser.md) and cuts out a lot of the tricky steps involved with web authentication. Both `AppAuth` and `AuthSession` use `SFAuthenticationSession` and `ChromeCustomTabs` to authenticate natively, but AppAuth has built in support for [OpenID](https://github.com/openid). AuthSession uses an extra Expo service that makes development easier (especially across teams) but this can have some extra [security considerations](auth-session.md#security-considerations).
 
 ### react-native-app-auth
 
@@ -191,12 +192,6 @@ The `expo-app-auth` module is based on [react-native-app-auth](https://github.co
 ```js
 import * as AppAuth from 'expo-app-auth';
 ```
-
-<TableOfContentSection title='Methods' contents={['AppAuth.authAsync()', 'AppAuth.refreshAsync()', 'AppAuth.revokeAsync()']} />
-
-<TableOfContentSection title='Constants' contents={['AppAuth.OAuthRedirect', 'AppAuth.URLSchemes']} />
-
-<TableOfContentSection title='Types' contents={['TokenResponse', 'OAuthBaseProps', 'OAuthProps', 'OAuthRevokeOptions', 'OAuthServiceConfiguration', 'OAuthParameters', 'OAuthDisplayParameter', 'OAuthPromptParameter', 'OAuthNonceParameter', 'OAuthUILocalesParameter', 'OAuthIDTokenHintParamater', 'OAuthMaxAgeParameter', 'OAuthLoginHintParameter', 'OAuthACRValuesParameter']} />
 
 ## Methods
 
@@ -302,7 +297,7 @@ await AppAuth.revokeAsync(config, options);
 
 ### `AppAuth.OAuthRedirect`
 
-Redirect scheme used to assemble the `redirectUrl` prop. In standalone apps, this is either the `android.package` (for Android) or `ios.bundleIdentifier` (for iOS) value from your `app.json`. However, for apps running in the Expo Client, `AppAuth.OAuthRedirect` is `host.exp.exponent`.
+Redirect scheme used to assemble the `redirectUrl` prop. In standalone apps, this is either the `android.package` (for Android) or `ios.bundleIdentifier` (for iOS) value from your `app.json`. However, for apps running in the Expo client, `AppAuth.OAuthRedirect` is `host.exp.exponent`.
 
 ### `AppAuth.URLSchemes`
 
@@ -319,14 +314,14 @@ Return value of the following `AppAuth` methods:
 - `AppAuth.authAsync()`
 - `AppAuth.refreshAsync()`
 
-| Name                      | Type                       | Description                                                                               |
-| ------------------------- | -------------------------- | ----------------------------------------------------------------------------------------- |
-| accessToken               | `string | null`            | Access token generated by the auth server                                                 |
-| accessTokenExpirationDate | `string | null`            | Approximate expiration date and time of the access token                                  |
-| additionalParameters      | `{ [string]: any } | null` | Additional parameters returned from the auth server                                       |
-| idToken                   | `string | null`            | ID Token value associated with the authenticated session                                  |
-| tokenType                 | `string | null`            | Typically "Bearer" when defined or a value the client has negotiated with the auth Server |
-| refreshToken              | `string | undefined`       | The most recent refresh token received from the auth server                               |
+| Name                      | Type                                                   | Description                                                                               |
+| ------------------------- | ------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
+| accessToken               | <InlineCode>string \| null</InlineCode>                | Access token generated by the auth server                                                 |
+| accessTokenExpirationDate | <InlineCode>string \| null</InlineCode>                | Approximate expiration date and time of the access token                                  |
+| additionalParameters      | <InlineCode>\{ \[string\]: any \} \| null</InlineCode> | Additional parameters returned from the auth server                                       |
+| idToken                   | <InlineCode>string \| null</InlineCode>                | ID Token value associated with the authenticated session                                  |
+| tokenType                 | <InlineCode>string \| null</InlineCode>                | Typically "Bearer" when defined or a value the client has negotiated with the auth Server |
+| refreshToken              | <InlineCode>string \| undefined</InlineCode>           | The most recent refresh token received from the auth server                               |
 
 ### `OAuthBaseProps`
 
@@ -340,16 +335,16 @@ Return value of the following `AppAuth` methods:
 
 extends `OAuthBaseProps`, is used to create OAuth flows.
 
-| Name                                                                                                                               | Type                        | Description                                                                                                 |
-| ---------------------------------------------------------------------------------------------------------------------------------- | --------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| clientId                                                                                                                           | `string`                    | The client identifier                                                                                       |
-| [issuer](http://openid.github.io/AppAuth-iOS/docs/latest/interface_o_i_d_service_discovery.html#a7bd40452bb3a0094f251934fd85a8fd6) | `string`                    | URL using the https scheme with no query or fragment component that the OP asserts as its Issuer Identifier |
-| serviceConfiguration                                                                                                               | `OAuthServiceConfiguration` | specifies how to connect to a particular OAuth provider                                                     |
-| clientSecret                                                                                                                       | `string | undefined`        | used to prove that identity of the client when exchaning an authorization code for an access token          |
-| [scopes](https://tools.ietf.org/html/rfc6749#section-3.3)                                                                          | `Array\<string\> | undefined` | a list of space-delimited, case-sensitive strings define the scope of the access requested                  |
-| redirectUrl                                                                                                                        | `string | undefined`        | The client's redirect URI. Default: `AppAuth.OAuthRedirect + ':/oauthredirect'`                             |
-| [additionalParameters](https://tools.ietf.org/html/rfc6749#section-3.1)                                                            | `OAuthParameters`           | Extra props passed to the OAuth server request                                                              |
-| canMakeInsecureRequests                                                                                                            | `boolean | undefined`       | **Android: Only** enables the use of HTTP requests                                                          |
+| Name                                                                                                                               | Type                                                 | Description                                                                                                 |
+| ---------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| clientId                                                                                                                           | `string`                                             | The client identifier                                                                                       |
+| [issuer](http://openid.github.io/AppAuth-iOS/docs/latest/interface_o_i_d_service_discovery.html#a7bd40452bb3a0094f251934fd85a8fd6) | `string`                                             | URL using the https scheme with no query or fragment component that the OP asserts as its Issuer Identifier |
+| serviceConfiguration                                                                                                               | `OAuthServiceConfiguration`                          | specifies how to connect to a particular OAuth provider                                                     |
+| clientSecret                                                                                                                       | <InlineCode>string \| undefined</InlineCode>         | used to prove that identity of the client when exchaning an authorization code for an access token          |
+| [scopes](https://tools.ietf.org/html/rfc6749#section-3.3)                                                                          | <InlineCode>Array<string\> \| undefined</InlineCode> | a list of space-delimited, case-sensitive strings define the scope of the access requested                  |
+| redirectUrl                                                                                                                        | <InlineCode>string \| undefined</InlineCode>         | The client's redirect URI. Default: `AppAuth.OAuthRedirect + ':/oauthredirect'`                             |
+| [additionalParameters](https://tools.ietf.org/html/rfc6749#section-3.1)                                                            | `OAuthParameters`                                    | Extra props passed to the OAuth server request                                                              |
+| canMakeInsecureRequests                                                                                                            | <InlineCode>boolean \| undefined</InlineCode>        | **Android: Only** enables the use of HTTP requests                                                          |
 
 ### `OAuthRevokeOptions`
 
@@ -360,28 +355,28 @@ extends `OAuthBaseProps`, is used to create OAuth flows.
 
 ### `OAuthServiceConfiguration`
 
-| Name                                                                                                                                             | Type                 | Description                                                   |
-| ------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------- | ------------------------------------------------------------- |
-| [authorizationEndpoint](https://openid.net/specs/openid-connect-core-1_0.html#AuthorizationEndpoint)                                             | `string | undefined` | Optional URL of the OP's OAuth 2.0 Authorization Endpoint     |
-| [registrationEndpoint](http://openid.github.io/AppAuth-iOS/docs/latest/interface_o_i_d_service_discovery.html#ab6a4608552978d3bce67b93b45321555) | `string | undefined` | Optional URL of the OP's Dynamic Client Registration Endpoint |
-| revocationEndpoint                                                                                                                               | `string | undefined` | Optional URL of the OAuth server used for revoking tokens     |
-| tokenEndpoint                                                                                                                                    | `string`             | URL of the OP's OAuth 2.0 Token Endpoint                      |
+| Name                                                                                                                                             | Type                                         | Description                                                   |
+| ------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------- | ------------------------------------------------------------- |
+| [authorizationEndpoint](https://openid.net/specs/openid-connect-core-1_0.html#AuthorizationEndpoint)                                             | <InlineCode>string \| undefined</InlineCode> | Optional URL of the OP's OAuth 2.0 Authorization Endpoint     |
+| [registrationEndpoint](http://openid.github.io/AppAuth-iOS/docs/latest/interface_o_i_d_service_discovery.html#ab6a4608552978d3bce67b93b45321555) | <InlineCode>string \| undefined</InlineCode> | Optional URL of the OP's Dynamic Client Registration Endpoint |
+| revocationEndpoint                                                                                                                               | <InlineCode>string \| undefined</InlineCode> | Optional URL of the OAuth server used for revoking tokens     |
+| tokenEndpoint                                                                                                                                    | `string`                                     | URL of the OP's OAuth 2.0 Token Endpoint                      |
 
 ### `OAuthParameters`
 
 Learn more about OAuth Parameters on this exciting page: [openid-connect-core](https://openid.net/specs/openid-connect-core-1_0.html).
 To save time I've copied over some of the relevant information, which you can find below.
 
-| Name          | Type                                    |
-| ------------- | --------------------------------------- |
-| nonce         | `OAuthNonceParameter | undefined`       |
-| display       | `OAuthParametersDisplay | undefined`    |
-| prompt        | `OAuthPromptParameter | undefined`      |
-| max_age       | `OAuthMaxAgeParameter | undefined`      |
-| ui_locales    | `OAuthUILocalesParameter | undefined`   |
-| id_token_hint | `OAuthIDTokenHintParameter | undefined` |
-| login_hint    | `OAuthLoginHintParameter | undefined`   |
-| acr_values    | `OAuthACRValuesParameter | undefined`   |
+| Name          | Type                                                            |
+| ------------- | --------------------------------------------------------------- |
+| nonce         | <InlineCode>OAuthNonceParameter \| undefined</InlineCode>       |
+| display       | <InlineCode>OAuthParametersDisplay \| undefined</InlineCode>    |
+| prompt        | <InlineCode>OAuthPromptParameter \| undefined</InlineCode>      |
+| max_age       | <InlineCode>OAuthMaxAgeParameter \| undefined</InlineCode>      |
+| ui_locales    | <InlineCode>OAuthUILocalesParameter \| undefined</InlineCode>   |
+| id_token_hint | <InlineCode>OAuthIDTokenHintParameter \| undefined</InlineCode> |
+| login_hint    | <InlineCode>OAuthLoginHintParameter \| undefined</InlineCode>   |
+| acr_values    | <InlineCode>OAuthACRValuesParameter \| undefined</InlineCode>   |
 
 Other parameters MAY be sent. See Sections [3.2.2](https://openid.net/specs/openid-connect-core-1_0.html#ImplicitAuthorizationEndpoint), [3.3.2](https://openid.net/specs/openid-connect-core-1_0.html#HybridAuthorizationEndpoint), [5.2](https://openid.net/specs/openid-connect-core-1_0.html#ClaimsLanguagesAndScripts), [5.5](https://openid.net/specs/openid-connect-core-1_0.html#ClaimsParameter), [6](https://openid.net/specs/openid-connect-core-1_0.html#JWTRequests), and [7.2.1](https://openid.net/specs/openid-connect-core-1_0.html#RegistrationParameter) for additional Authorization Request parameters and parameter values defined by this specification.
 

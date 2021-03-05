@@ -4,9 +4,47 @@
 
 ### 🛠 Breaking changes
 
+- Splitting location permissions into `Foreground` and `Background` permissions. ([#12063](https://github.com/expo/expo/pull/12063) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🎉 New features
 
+- Converted plugin to TypeScript. ([#11715](https://github.com/expo/expo/pull/11715) by [@EvanBacon](https://github.com/EvanBacon))
+- Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
+
 ### 🐛 Bug fixes
+
+- Remove sticky notification on service stop on Android. ([#11775](https://github.com/expo/expo/pull/11775) by [@zaguiini](https://github.com/zaguiini))
+- Remove peerDependencies and unimodulePeerDependencies from Expo modules. ([#11980](https://github.com/expo/expo/pull/11980) by [@brentvatne](https://github.com/brentvatne))
+
+## 11.0.0 — 2021-01-15
+
+### ⚠️ Notices
+
+- The package is now shipped with prebuilt binaries on iOS. You can read more about it on [expo.fyi/prebuilt-modules](https://expo.fyi/prebuilt-modules). ([#11224](https://github.com/expo/expo/pull/11224) by [@tsapeta](https://github.com/tsapeta))
+
+### 🛠 Breaking changes
+
+- Dropped support for iOS 10.0 ([#11344](https://github.com/expo/expo/pull/11344) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- Created config plugins ([#11538](https://github.com/expo/expo/pull/11538) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+- Fixed background location permission check on Android. ([#11399](https://github.com/expo/expo/pull/11399) by [@peterdn](https://github.com/peterdn))
+
+## 10.0.0 — 2020-11-17
+
+### 🛠 Breaking changes
+
+- Make background location an opt-in permission on Android. ([#10989](https://github.com/expo/expo/pull/10989) by [@bycedric](https://github.com/bycedric))
+
+## 9.0.1 — 2020-10-02
+
+### 🐛 Bug fixes
+
+- Redeliver intent when restarting task service. ([#10410](https://github.com/expo/expo/pull/10410) by [@byCedric](https://github.com/byCedric))
 
 ## 9.0.0 — 2020-08-18
 

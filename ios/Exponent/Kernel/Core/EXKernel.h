@@ -54,11 +54,6 @@ typedef NS_ENUM(NSInteger, EXKernelErrorCode) {
  */
 - (void)sendUrl:(NSString *)url toAppRecord:(EXKernelAppRecord *)app;
 
-/**
- *  An id that uniquely identifies this installation of Exponent.
- */
-+ (NSString *)deviceInstallUUID;
-
 - (void)logAnalyticsEvent:(NSString *)eventId forAppRecord:(EXKernelAppRecord *)appRecord;
 
 @end

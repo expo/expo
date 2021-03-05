@@ -23,6 +23,15 @@ expo install expo-barcode-scanner
 
 ### Configure for iOS
 
+Add `NSCameraUsageDescription` and `NSMicrophoneUsageDescription` key to your `Info.plist`:
+
+```xml
+<key>NSCameraUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to use the camera</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to use the microphone</string>
+```
+
 Run `npx pod-install` after installing the npm package.
 
 ### Configure for Android

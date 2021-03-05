@@ -11,6 +11,7 @@ export type Snack = {
   fullName: string;
   slug: string;
   description: string;
+  isDraft?: boolean;
 };
 
 type Props = {
@@ -88,6 +89,7 @@ function SnackList({ data, loadMoreAsync, belongsToCurrentUser }: Props) {
         url={snack.fullName}
         title={snack.name}
         subtitle={snack.description}
+        isDraft={snack.isDraft}
       />
     );
   }, []);
@@ -107,6 +109,7 @@ function SnackList({ data, loadMoreAsync, belongsToCurrentUser }: Props) {
         data={data}
         keyExtractor={extractKey}
         renderItem={renderItem}
+        // @ts-expect-error typescript cannot infer that props should include infinite-scroll-view props
         renderLoadingIndicator={() => <View />}
         renderScrollComponent={props => <InfiniteScrollView {...props} />}
         style={style}

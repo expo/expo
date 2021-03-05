@@ -16,6 +16,7 @@ const mp4Source = require('../assets/big_buck_bunny.mp4');
 const hlsStreamUri = 'http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8';
 const hlsStreamUriWithRedirect = 'http://bit.ly/1iy90bn';
 let source = null; // Local URI of the downloaded default source is set in a beforeAll callback.
+let portraitVideoSource = null;
 let imageSource = null;
 let webmSource = null;
 
@@ -27,6 +28,10 @@ export function test(t, { setPortalChild, cleanupPortal }) {
       const mp4Asset = Asset.fromModule(mp4Source);
       await mp4Asset.downloadAsync();
       source = { uri: mp4Asset.localUri };
+
+      const portraitAsset = Asset.fromModule(require('../assets/portrait_video.mp4'));
+      await portraitAsset.downloadAsync();
+      portraitVideoSource = { uri: portraitAsset.localUri };
 
       const imageAsset = Asset.fromModule(require('../assets/black-128x256.png'));
       await imageAsset.downloadAsync();
@@ -306,7 +311,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         t.expect(status.naturalSize).toBeDefined();
         t.expect(status.naturalSize.width).toBeDefined();
         t.expect(status.naturalSize.height).toBeDefined();
-        t.expect(status.naturalSize.orientation).toBeDefined();
+        t.expect(status.naturalSize.orientation).toBe('landscape');
       });
 
       t.it('gets called with the `status` object', async () => {
@@ -352,6 +357,18 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         t.expect(status.naturalSize.height).toBeDefined();
         t.expect(status.naturalSize.orientation).toBeDefined();
       });
+
+      t.it('correctly detects portrait video', async () => {
+        const props = {
+          style,
+          source: portraitVideoSource,
+        };
+        const status = await mountAndWaitFor(<Video {...props} />, 'onReadyForDisplay');
+        t.expect(status.naturalSize).toBeDefined();
+        t.expect(status.naturalSize.width).toBeDefined();
+        t.expect(status.naturalSize.height).toBeDefined();
+        t.expect(status.naturalSize.orientation).toBe('portrait');
+      })
     });
 
     t.describe('Video fullscreen player', () => {

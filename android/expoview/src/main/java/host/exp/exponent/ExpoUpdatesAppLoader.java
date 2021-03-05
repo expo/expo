@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,17 +27,15 @@ import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.Launcher;
 import expo.modules.updates.launcher.NoDatabaseLauncher;
 import expo.modules.updates.launcher.SelectionPolicy;
-import expo.modules.updates.launcher.SelectionPolicyNewest;
+import expo.modules.updates.launcher.SelectionPolicyFilterAware;
 import expo.modules.updates.loader.EmbeddedLoader;
 import expo.modules.updates.loader.LoaderTask;
 import expo.modules.updates.manifest.Manifest;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.exceptions.ManifestException;
 import host.exp.exponent.kernel.ExpoViewKernel;
-import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.kernel.KernelConfig;
-import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 
 public class ExpoUpdatesAppLoader {
@@ -158,13 +157,14 @@ public class ExpoUpdatesAppLoader {
 
     mKernel.addAppLoaderForManifestUrl(mManifestUrl, this);
 
-    Uri manifestUrl = mExponentManifest.httpManifestUrl(mManifestUrl);
+    Uri httpManifestUrl = mExponentManifest.httpManifestUrl(mManifestUrl);
 
     HashMap<String, Object> configMap = new HashMap<>();
-    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY, manifestUrl);
-    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_SCOPE_KEY_KEY, mManifestUrl);
+    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY, httpManifestUrl);
+    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_SCOPE_KEY_KEY, httpManifestUrl.toString());
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_SDK_VERSION_KEY, Constants.SDK_VERSIONS);
-    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE, Constants.isStandaloneApp());
+    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_RELEASE_CHANNEL_KEY, Constants.RELEASE_CHANNEL);
+    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY, Constants.isStandaloneApp());
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_ENABLED_KEY, Constants.ARE_REMOTE_UPDATES_ENABLED);
     if (mUseCacheOnly) {
       configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY, "NEVER");
@@ -180,13 +180,14 @@ public class ExpoUpdatesAppLoader {
     }
 
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY, getRequestHeaders());
+    configMap.put("expectsSignedManifest", true);
 
     UpdatesConfiguration configuration = new UpdatesConfiguration();
     configuration.loadValuesFromMap(configMap);
 
     List<String> sdkVersionsList = new ArrayList<>(Constants.SDK_VERSIONS_LIST);
     sdkVersionsList.add(RNObject.UNVERSIONED);
-    SelectionPolicy selectionPolicy = new SelectionPolicyNewest(sdkVersionsList);
+    SelectionPolicy selectionPolicy = new SelectionPolicyFilterAware(sdkVersionsList);
 
     File directory;
     try {
@@ -210,12 +211,17 @@ public class ExpoUpdatesAppLoader {
     }
 
     new LoaderTask(configuration, mDatabaseHolder, directory, selectionPolicy, new LoaderTask.LoaderTaskCallback() {
+      private boolean didAbort = false;
+
       @Override
       public void onFailure(Exception e) {
         if (Constants.isStandaloneApp()) {
           mIsEmergencyLaunch = true;
           launchWithNoDatabase(context, e);
         } else {
+          if (didAbort) {
+            return;
+          }
           Exception exception = e;
           try {
             JSONObject errorJson = new JSONObject(e.getMessage());
@@ -249,6 +255,14 @@ public class ExpoUpdatesAppLoader {
 
       @Override
       public void onRemoteManifestLoaded(Manifest manifest) {
+        // expo-cli does not always respect our SDK version headers and respond with a compatible update or an error
+        // so we need to check the compatibility here
+        if (!isValidSdkVersion(manifest.getRawManifestJson().optString("sdkVersion"))) {
+          mCallback.onError(formatExceptionForIncompatibleSdk(manifest.getRawManifestJson().optString("sdkVersion", "null")));
+          didAbort = true;
+          return;
+        }
+
         setShouldShowAppLoaderStatus(manifest.getRawManifestJson());
         mCallback.onOptimisticManifest(manifest.getRawManifestJson());
         updateStatus(AppLoaderStatus.DOWNLOADING_NEW_UPDATE);
@@ -256,10 +270,13 @@ public class ExpoUpdatesAppLoader {
 
       @Override
       public void onSuccess(Launcher launcher, boolean isUpToDate) {
+        if (didAbort) {
+          return;
+        }
         mLauncher = launcher;
         mIsUpToDate = isUpToDate;
         try {
-          JSONObject manifest = processAndSaveManifest(launcher.getLaunchedUpdate().metadata);
+          JSONObject manifest = processManifest(launcher.getLaunchedUpdate().metadata);
           mCallback.onManifestCompleted(manifest);
 
           // ReactAndroid will load the bundle on its own in development mode
@@ -273,6 +290,9 @@ public class ExpoUpdatesAppLoader {
 
       @Override
       public void onBackgroundUpdateFinished(LoaderTask.BackgroundUpdateStatus status, @Nullable UpdateEntity update, @Nullable Exception exception) {
+        if (didAbort) {
+          return;
+        }
         try {
           JSONObject jsonParams = new JSONObject();
           if (status == LoaderTask.BackgroundUpdateStatus.ERROR) {
@@ -300,7 +320,14 @@ public class ExpoUpdatesAppLoader {
 
   private void launchWithNoDatabase(Context context, Exception e) {
     mLauncher = new NoDatabaseLauncher(context, mUpdatesConfiguration, e);
-    mCallback.onManifestCompleted(EmbeddedLoader.readEmbeddedManifest(context, mUpdatesConfiguration).getRawManifestJson());
+
+    JSONObject manifest = EmbeddedLoader.readEmbeddedManifest(context, mUpdatesConfiguration).getRawManifestJson();
+    try {
+      manifest = processManifest(manifest);
+    } catch (Exception ex) {
+      Log.e(TAG, "Failed to process manifest; attempting to launch with raw manifest. This may cause errors or unexpected behavior.", e);
+    }
+    mCallback.onManifestCompleted(manifest);
 
     String launchAssetFile = mLauncher.getLaunchAssetFile();
     if (launchAssetFile == null) {
@@ -310,7 +337,7 @@ public class ExpoUpdatesAppLoader {
     mCallback.onBundleCompleted(launchAssetFile);
   }
 
-  private JSONObject processAndSaveManifest(JSONObject manifest) throws JSONException {
+  private JSONObject processManifest(JSONObject manifest) throws JSONException {
     Uri parsedManifestUrl = Uri.parse(mManifestUrl);
     if (!manifest.has(ExponentManifest.MANIFEST_IS_VERIFIED_KEY) &&
         isThirdPartyHosted(parsedManifestUrl) &&
@@ -326,6 +353,9 @@ public class ExpoUpdatesAppLoader {
       manifest.put(ExponentManifest.MANIFEST_ID_KEY, sandboxedId);
       manifest.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true);
     }
+    if (Constants.isStandaloneApp()) {
+      manifest.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true);
+    }
     if (!manifest.has(ExponentManifest.MANIFEST_IS_VERIFIED_KEY)) {
       manifest.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, false);
     }
@@ -335,11 +365,6 @@ public class ExpoUpdatesAppLoader {
       // automatically verified
       manifest.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true);
     }
-
-    String bundleUrl = ExponentUrls.toHttp(manifest.getString(ExponentManifest.MANIFEST_BUNDLE_URL_KEY));
-
-    mExponentSharedPreferences.updateManifest(mManifestUrl, manifest, bundleUrl);
-    ExponentDB.saveExperience(mManifestUrl, manifest, bundleUrl);
 
     return manifest;
   }
@@ -422,5 +447,38 @@ public class ExpoUpdatesAppLoader {
     } else {
       return "EXPO_DEVICE";
     }
+  }
+
+  private boolean isValidSdkVersion(String sdkVersion) {
+    if (RNObject.UNVERSIONED.equals(sdkVersion)) {
+      return true;
+    }
+
+    for (final String version : Constants.SDK_VERSIONS_LIST) {
+      if (version.equals(sdkVersion)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  private ManifestException formatExceptionForIncompatibleSdk(String sdkVersion) {
+    JSONObject errorJson = new JSONObject();
+    try {
+      errorJson.put("message", "Invalid SDK version");
+      if (ABIVersion.toNumber(sdkVersion) > ABIVersion.toNumber(Constants.SDK_VERSIONS_LIST.get(0))) {
+        errorJson.put("errorCode", "EXPERIENCE_SDK_VERSION_TOO_NEW");
+      } else {
+        errorJson.put("errorCode", "EXPERIENCE_SDK_VERSION_OUTDATED");
+        errorJson.put("metadata", new JSONObject().put(
+          "availableSDKVersions",
+          new JSONArray().put(sdkVersion))
+        );
+      }
+    } catch (Exception e) {
+      Log.e(TAG, "Failed to format error message for incompatible SDK version", e);
+    }
+    return new ManifestException(new Exception("Incompatible SDK version"), mManifestUrl, errorJson);
   }
 }

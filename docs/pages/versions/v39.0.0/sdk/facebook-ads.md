@@ -8,11 +8,13 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-ads-facebook`** provides access to the Facebook Audience SDK, allowing you to monetize your app with targeted ads.
 
-<PlatformsSection android emulator ios simulator />
+<PlatformsSection android ios />
 
 ## Installation
 
 <InstallSection packageName="expo-ads-facebook" />
+
+For bare apps, you will also need to follow [Facebook's Get Started guide](https://developers.facebook.com/docs/audience-network/get-started).
 
 ## Configuration
 
@@ -22,14 +24,16 @@ You need to create a placement ID to display ads. Follow steps 1 and 3 from the 
 
 ### Configuring app.json
 
-In your project's [app.json](../../workflow/configuration/), add your [Facebook App ID and Facebook Display Name](https://developers.facebook.com/docs/facebook-login/ios) under the `facebookAppId` and `facebookDisplayName` keys.
+In your project's [app.json](../../../workflow/configuration.md), add your [Facebook App ID and Facebook Display Name](https://developers.facebook.com/docs/facebook-login/ios) under the `facebookAppId` and `facebookDisplayName` keys.
 
-- In the Expo Client, all of your Facebook API calls will be made with Expo's Facebook App ID. This means you will not see any related ad info in your Facebook developer page while running your project in the Expo Client.
-- To use your app's own Facebook App ID (and thus see any related ad info in your Facebook developer page), you'll need to [build a standalone app](../../distribution/building-standalone-apps/).
+- In the Expo client, all of your Facebook API calls will be made with Expo's Facebook App ID. This means you will not see any related ad info in your Facebook developer page while running your project in the Expo client.
+- To use your app's own Facebook App ID (and thus see any related ad info in your Facebook developer page), you'll need to [build a standalone app](../../../distribution/building-standalone-apps.md).
 
 ### Development vs Production
 
-When using Facebook Ads in development, you'll need to register your device to be able to show ads. You can add the following at the top of your file to register your device:
+When using Facebook Ads in development, you can use Facebook's test ad IDs so that there's minimal setup needed on your part. Wherever a `placementId` is required, simply provide `DEMO_AD_TYPE#YOUR_PLACEMENT_ID` where `DEMO_AD_TYPE` is one of the values [shown here in the "Demo Ad Type Table"](https://developers.facebook.com/docs/audience-network/overview/in-house-mediation/server-to-server/testing/).
+
+Another option is to add the following at the top of your file to register your device:
 
 ```js
 import * as FacebookAds from 'expo-ads-facebook';
@@ -341,4 +345,8 @@ FacebookAds.AdSettings.setUrlPrefix('...');
 
 **Note:** This method should never be used in production
 
-#
+## Troubleshooting
+
+Facebook provides a [table of common errors](https://developers.facebook.com/docs/audience-network/guides/test/checklist-errors/) when attempting to serve ads, this should be your first reference if you run into any issues.
+
+There are also some changes with iOS 14 that impact the Audience Network's ability to serve ads. According to facebook, _["some iOS 14 users may not see any ads from Audience Network, while others may still see ads from us, but they'll be less relevant"](https://www.facebook.com/audiencenetwork/news-and-insights/preparing-audience-network-for-ios14)_.

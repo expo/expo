@@ -4,8 +4,10 @@ import android.content.Context;
 import android.util.Log;
 
 import expo.modules.updates.db.dao.AssetDao;
+import expo.modules.updates.db.dao.JSONDataDao;
 import expo.modules.updates.db.dao.UpdateDao;
 import expo.modules.updates.db.entity.AssetEntity;
+import expo.modules.updates.db.entity.JSONDataEntity;
 import expo.modules.updates.db.entity.UpdateAssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 
@@ -16,7 +18,7 @@ import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {UpdateEntity.class, UpdateAssetEntity.class, AssetEntity.class}, exportSchema = false, version = 3)
+@Database(entities = {UpdateEntity.class, UpdateAssetEntity.class, AssetEntity.class, JSONDataEntity.class}, exportSchema = false, version = 4)
 @TypeConverters({Converters.class})
 public abstract class UpdatesDatabase extends RoomDatabase {
 
@@ -27,6 +29,7 @@ public abstract class UpdatesDatabase extends RoomDatabase {
 
   public abstract UpdateDao updateDao();
   public abstract AssetDao assetDao();
+  public abstract JSONDataDao jsonDataDao();
 
   public static synchronized UpdatesDatabase getInstance(Context context) {
     if (sInstance == null) {

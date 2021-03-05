@@ -27,7 +27,7 @@ struct JNIArgs {
 
 struct JTurboModule : jni::JavaClass<JTurboModule> {
   static auto constexpr kJavaDescriptor =
-      "Labi39_0_0/com/facebook/react/turbomodule/core/interfaces/TurboModule;";
+      "Labi40_0_0/com/facebook/react/turbomodule/core/interfaces/TurboModule;";
 };
 
 class JSI_EXPORT JavaTurboModule : public TurboModule {

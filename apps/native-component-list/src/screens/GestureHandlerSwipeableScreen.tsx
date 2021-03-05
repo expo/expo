@@ -11,9 +11,7 @@ const Row: React.FunctionComponent<{ item: Item }> = ({ item }) => (
     <Text numberOfLines={2} style={styles.messageText}>
       {item.message}
     </Text>
-    <Text style={styles.dateText}>
-      {item.when} {'❭'}
-    </Text>
+    <Text style={styles.dateText}>{item.when} ❭</Text>
   </RectButton>
 );
 

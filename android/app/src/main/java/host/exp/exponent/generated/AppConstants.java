@@ -5,6 +5,7 @@ import com.facebook.common.internal.DoNotStrip;
 import java.util.ArrayList;
 import java.util.List;
 
+import expo.modules.splashscreen.SplashScreenImageResizeMode;
 import host.exp.exponent.BuildConfig;
 import host.exp.exponent.Constants;
 
@@ -21,6 +22,7 @@ public class AppConstants {
   public static int UPDATES_FALLBACK_TO_CACHE_TIMEOUT = 0;
   public static final List<Constants.EmbeddedResponse> EMBEDDED_RESPONSES;
   public static boolean FCM_ENABLED = true;
+  public static SplashScreenImageResizeMode SPLASH_SCREEN_IMAGE_RESIZE_MODE = SplashScreenImageResizeMode.CONTAIN;
 
   static {
     List<Constants.EmbeddedResponse> embeddedResponses = new ArrayList<>();
@@ -45,6 +47,7 @@ public class AppConstants {
     constants.EMBEDDED_RESPONSES = EMBEDDED_RESPONSES;
     constants.ANDROID_VERSION_CODE = BuildConfig.VERSION_CODE;
     constants.FCM_ENABLED = FCM_ENABLED;
+    constants.SPLASH_SCREEN_IMAGE_RESIZE_MODE = SPLASH_SCREEN_IMAGE_RESIZE_MODE;
     return constants;
   }
 }

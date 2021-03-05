@@ -25,7 +25,7 @@ export default function ScrollViewScreen() {
   const { width } = useWindowDimensions();
   const isMobile = width <= 640;
   const imageStyle = {
-    width: width,
+    width,
     height: width / 2,
   };
 

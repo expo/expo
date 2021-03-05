@@ -56,10 +56,10 @@ export default {
    * Camera roll permissions don't need to be requested on web, so we always
    * respond with granted.
    */
-  async getCameraRollPermissionsAsync(): Promise<PermissionResponse> {
+  async getMediaLibraryPermissionsAsync(_writeOnly: boolean) {
     return permissionGrantedResponse();
   },
-  async requestCameraRollPermissionsAsync(): Promise<PermissionResponse> {
+  async requestMediaLibraryPermissionsAsync(_writeOnly: boolean): Promise<PermissionResponse> {
     return permissionGrantedResponse();
   },
 };
@@ -109,11 +109,16 @@ function openFileBrowserAsync<T extends OpenFileBrowserOptions>({
             selected: imgs,
           } as ExpandImagePickerResult<T>);
         }
-      } else {
-        resolve({ cancelled: true } as ExpandImagePickerResult<T>);
       }
       document.body.removeChild(input);
     });
+
+    document.body.onfocus = () => {
+      if (!input.value.length) {
+        resolve({ cancelled: true } as ExpandImagePickerResult<T>);
+        document.body.onfocus = null;
+      }
+    };
 
     const event = new MouseEvent('click');
     input.dispatchEvent(event);

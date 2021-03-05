@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
 
 ## Props
 
-Inherits [TouchableWithoutFeedback Props](../touchablewithoutfeedback/#props).
+Inherits [TouchableWithoutFeedback Props](touchablewithoutfeedback.md#props).
 
 ### `style`
 

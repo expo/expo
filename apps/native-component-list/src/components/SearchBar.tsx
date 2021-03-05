@@ -45,7 +45,7 @@ export default function SearchBar({
     _textInput.current?.blur();
   };
 
-  let searchInputStyle: TextStyle = {};
+  const searchInputStyle: TextStyle = {};
   if (textColor) {
     searchInputStyle.color = textColor;
   }

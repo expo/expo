@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Debug;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.LruCache;
 
@@ -83,7 +84,6 @@ public class ExponentManifest {
   public static final String MANIFEST_PACKAGER_OPTS_KEY = "packagerOpts";
   public static final String MANIFEST_PACKAGER_OPTS_DEV_KEY = "dev";
   public static final String MANIFEST_BUNDLE_URL_KEY = "bundleUrl";
-  public static final String MANIFEST_SHOW_EXPONENT_NOTIFICATION_KEY = "androidShowExponentNotificationInShellApp";
   public static final String MANIFEST_REVISION_ID_KEY = "revisionId";
   public static final String MANIFEST_PUBLISHED_TIME_KEY = "publishedTime";
   public static final String MANIFEST_COMMIT_TIME_KEY = "commitTime";
@@ -631,12 +631,12 @@ public class ExponentManifest {
   }
 
   @Nullable
-  private Bitmap getIconFromCache(final String iconUrl) {
-    if (iconUrl != null && !iconUrl.isEmpty()) {
-      return mMemoryCache.get(iconUrl);
+  private Bitmap getIconFromCache(@Nullable final String iconUrl) {
+    if (TextUtils.isEmpty(iconUrl)) {
+      return BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_launcher);
     }
 
-    return BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_launcher);
+    return mMemoryCache.get(iconUrl);
   }
 
 

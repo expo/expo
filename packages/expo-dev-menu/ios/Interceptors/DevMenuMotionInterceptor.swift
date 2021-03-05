@@ -15,6 +15,8 @@ class DevMenuMotionInterceptor {
       }
     }
   }
+  
+  static var isEnabled: Bool = true
 
   static private func swizzle() {
     DevMenuUtils.swizzle(
@@ -28,7 +30,7 @@ class DevMenuMotionInterceptor {
 extension UIWindow {
   @objc
   func EXDevMenu_motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
-    if event?.subtype == .motionShake {
+    if event?.subtype == .motionShake && DevMenuMotionInterceptor.isEnabled {
       DevMenuManager.shared.toggleMenu()
     }
   }

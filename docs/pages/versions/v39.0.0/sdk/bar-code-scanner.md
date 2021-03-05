@@ -19,7 +19,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Configuration
 
-In managed apps, scanning barcodes with the camera requires the [`Permission.CAMERA`](../permissions/#permissionscamera) permission. See the [usage example](#usage) below.
+In managed apps, scanning barcodes with the camera requires the [`Permission.CAMERA`](permissions.md#permissionscamera) permission. See the [usage example](#usage) below.
 
 ## Supported formats
 
@@ -53,7 +53,7 @@ In managed apps, scanning barcodes with the camera requires the [`Permission.CAM
 
 ## Usage
 
-You must request permission to access the user's camera before attempting to get it. To do this, you will want to use the [Permissions](../permissions/) API. You can see this in practice in the following example.
+You must request permission to access the user's camera before attempting to get it. To do this, you will want to use the [Permissions](permissions.md) API. You can see this in practice in the following example.
 
 <SnackInline label="Basic BarCodeScanner usage" templateId="bar-code-scanner" dependencies={['expo-barcode-scanner']}>
 
@@ -169,6 +169,6 @@ Object of type `BarCodeScannerResult` contains following keys:
 - **type (_BarCodeScanner.Constants.BarCodeType_)** -- The barcode type.
 - **data (_string_)** -- The information encoded in the bar code.
 - **bounds : [BarCodeScanner.BarCodeBounds](#barcodescannerbarcodebounds)** -- (_Optional_) The `BarCodeBounds` object.
-- **cornerPoints : Array\<[BarCodeScanner.BarCodePoint](#barcodescannerbarcodepoint)\>** -- (_Optional_) Corner points of the bounding box.
+- **cornerPoints : Array<[BarCodeScanner.BarCodePoint](#barcodescannerbarcodepoint)\>** -- (_Optional_) Corner points of the bounding box.
 
 > **NOTE** `bounds` and `cornerPoints` are not always available. On iOS, for `code39` and `pdf417` you don't get those values. Moreover, on iOS, those values don't have to bounds the whole barcode. For some types, they will represent the area used by the scanner.

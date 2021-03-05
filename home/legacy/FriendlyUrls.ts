@@ -1,5 +1,7 @@
 import url from 'url';
 
+import Config from '../api/Config';
+
 const FriendlyUrls = {
   toFriendlyString(rawUrl: string, removeHomeHost: boolean = true) {
     if (!rawUrl) {
@@ -7,7 +9,7 @@ const FriendlyUrls = {
     }
 
     const components = url.parse(rawUrl, false, true);
-    if (components.hostname === 'exp.host') {
+    if (components.hostname === Config.api.host) {
       components.slashes = false;
       components.protocol = '';
       components.pathname = components.pathname ? components.pathname.substr(1) : '';

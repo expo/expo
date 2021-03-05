@@ -4,35 +4,44 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.util.Log
 import android.view.KeyEvent
-import com.facebook.react.ReactApplication
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.devsupport.DevInternalSettings
 import com.facebook.react.devsupport.interfaces.DevSupportManager
-import expo.interfaces.devmenu.items.DevMenuAction
-import expo.interfaces.devmenu.items.DevMenuItem
-import expo.interfaces.devmenu.items.DevMenuItemImportance
-import expo.interfaces.devmenu.items.KeyCommand
 import expo.interfaces.devmenu.DevMenuExtensionInterface
+import expo.interfaces.devmenu.items.DevMenuItemImportance
+import expo.interfaces.devmenu.items.DevMenuItemsContainer
+import expo.interfaces.devmenu.items.DevMenuScreen
+import expo.interfaces.devmenu.items.DevMenuSelectionList
+import expo.interfaces.devmenu.items.KeyCommand
+import expo.interfaces.devmenu.items.screen
+import expo.modules.devmenu.DEV_MENU_TAG
+import expo.modules.devmenu.modules.DevMenuManagerProvider
 
 class DevMenuExtension(reactContext: ReactApplicationContext)
   : ReactContextBaseJavaModule(reactContext), DevMenuExtensionInterface {
   override fun getName() = "ExpoDevMenuExtensions"
 
-  private val devSupportManager: DevSupportManager?
-    get() {
-      val reactApplication = currentActivity?.application as ReactApplication?
-      return reactApplication?.reactNativeHost?.reactInstanceManager?.devSupportManager
-    }
+  private val devMenuManager by lazy {
+    reactContext
+      .getNativeModule(DevMenuManagerProvider::class.java)
+      .getDevMenuManager()
+  }
 
-  override fun devMenuItems(): List<DevMenuItem>? {
+  private val devSupportManager: DevSupportManager?
+    get() = devMenuManager.getSession()?.reactInstanceManager?.devSupportManager
+
+
+  override fun devMenuItems() = DevMenuItemsContainer.export {
     val reactDevManager = devSupportManager
     val devSettings = reactDevManager?.devSettings
 
     if (reactDevManager == null || devSettings == null) {
-      return emptyList()
+      Log.w(DEV_MENU_TAG, "Couldn't export dev-menu items, because react-native bridge doesn't support dev options.")
+      return@export
     }
 
     // RN will temporary disable `devSupport` if the current activity isn't active.
@@ -45,22 +54,40 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
       reactDevManager.devSupportEnabled = currentSetting
     }
 
-    val reloadAction = DevMenuAction("reload") {
+    val reloadAction = {
       UiThreadUtil.runOnUiThread {
         reactDevManager.handleReloadJS()
       }
-    }.apply {
+    }
+
+    val elementInspectorAction = {
+      runWithDevSupportEnabled {
+        reactDevManager.toggleElementInspector()
+      }
+    }
+
+    val performanceMonitorAction = {
+      requestOverlaysPermission()
+      runWithDevSupportEnabled {
+        reactDevManager.setFpsDebugEnabled(!devSettings.isFpsDebugEnabled)
+      }
+    }
+
+    val remoteDebugAction = {
+      UiThreadUtil.runOnUiThread {
+        devSettings.isRemoteJSDebugEnabled = !devSettings.isRemoteJSDebugEnabled
+        reactDevManager.handleReloadJS()
+      }
+    }
+
+    action("reload", reloadAction) {
       label = { "Reload" }
       glyphName = { "reload" }
       keyCommand = KeyCommand(KeyEvent.KEYCODE_R)
       importance = DevMenuItemImportance.HIGHEST.value
     }
 
-    val elementInspectorAction = DevMenuAction("inspector") {
-      runWithDevSupportEnabled {
-        reactDevManager.toggleElementInspector()
-      }
-    }.apply {
+    action("inspector", elementInspectorAction) {
       isEnabled = { devSettings.isElementInspectorEnabled }
       label = { if (isEnabled()) "Hide Element Inspector" else "Show Element Inspector" }
       glyphName = { "border-style" }
@@ -68,12 +95,7 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
       importance = DevMenuItemImportance.HIGH.value
     }
 
-    val performanceMonitorAction = DevMenuAction("performance-monitor") {
-      requestOverlaysPermission()
-      runWithDevSupportEnabled {
-        reactDevManager.setFpsDebugEnabled(!devSettings.isFpsDebugEnabled)
-      }
-    }.apply {
+    action("performance-monitor", performanceMonitorAction) {
       isEnabled = { devSettings.isFpsDebugEnabled }
       label = { if (isEnabled()) "Hide Performance Monitor" else "Show Performance Monitor" }
       glyphName = { "speedometer" }
@@ -81,12 +103,7 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
       importance = DevMenuItemImportance.HIGH.value
     }
 
-    val remoteDebugAction = DevMenuAction("remote-debug") {
-      UiThreadUtil.runOnUiThread {
-        devSettings.isRemoteJSDebugEnabled = !devSettings.isRemoteJSDebugEnabled
-        reactDevManager.handleReloadJS()
-      }
-    }.apply {
+    action("remote-debug", remoteDebugAction) {
       isEnabled = {
         devSettings.isRemoteJSDebugEnabled
       }
@@ -95,27 +112,80 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
       importance = DevMenuItemImportance.LOW.value
     }
 
-    val result = mutableListOf(
-      reloadAction,
-      elementInspectorAction,
-      remoteDebugAction,
-      performanceMonitorAction
-    )
-
     if (devSettings is DevInternalSettings) {
-      val fastRefreshAction = DevMenuAction("fast-refresh") {
+      val fastRefreshAction = {
         devSettings.isHotModuleReplacementEnabled = !devSettings.isHotModuleReplacementEnabled
-      }.apply {
+      }
+
+      action("fast-refresh", fastRefreshAction) {
         isEnabled = { devSettings.isHotModuleReplacementEnabled }
         label = { if (isEnabled()) "Disable Fast Refresh" else "Enable Fast Refresh" }
         glyphName = { "run-fast" }
         importance = DevMenuItemImportance.LOW.value
       }
-
-      result.add(fastRefreshAction)
     }
 
-    return result
+    group {
+      importance = DevMenuItemImportance.LOWEST.value
+
+      link("testScreen") {
+        label = { "Test screen" }
+        glyphName = { "test-tube" }
+      }
+    }
+  }
+
+  override fun devMenuScreens(): List<DevMenuScreen>? {
+    return listOf(
+      screen("testScreen") {
+        group {
+          selectionList {
+            addItem(DevMenuSelectionList.Item().apply {
+              isChecked = { true }
+              title = { "release-1.0" }
+              warning = { "You are currently running an older development client version than the latest \"release-1.0\" update. To get the latest, upgrade this development client app." }
+              tags = {
+                listOf(
+                  DevMenuSelectionList.Item.Tag().apply {
+                    glyphName = { "ios-git-network" }
+                    text = { "production" }
+                  },
+                  DevMenuSelectionList.Item.Tag().apply {
+                    glyphName = { "ios-cloud" }
+                    text = { "90%" }
+                  }
+                )
+              }
+            })
+
+            addItem(DevMenuSelectionList.Item().apply {
+              title = { "pr-134" }
+            })
+
+            addItem(DevMenuSelectionList.Item().apply {
+              title = { "release-1.1" }
+              warning = { "You are currently running an older development client version than the latest \"release-1.0\" update. To get the latest, upgrade this development client app." }
+              tags = {
+                listOf(
+                  DevMenuSelectionList.Item.Tag().apply {
+                    glyphName = { "ios-git-network" }
+                    text = { "production" }
+                  },
+                  DevMenuSelectionList.Item.Tag().apply {
+                    glyphName = { "ios-cloud" }
+                    text = { "10%" }
+                  }
+                )
+              }
+            })
+
+            addItem(DevMenuSelectionList.Item().apply {
+              title = { "pr-21" }
+            })
+          }
+        }
+      }
+    )
   }
 
   /**

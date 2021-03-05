@@ -8,19 +8,21 @@ const GROUPS = {
   'The Basics': ['Conceptual Overview', 'Get Started', 'Tutorial', 'Next Steps'],
   'Managed Workflow': [
     'Fundamentals',
+    'Assorted Guides',
     'Push Notifications',
     'Distributing Your App',
     'Expo Accounts',
-    'Assorted Guides',
     'Regulatory Compliance',
   ],
-  Deprecated: ['ExpoKit'],
+  Deprecated: ['ExpoKit', 'Archived'],
   'Bare Workflow': ['Essentials'],
   'Expo SDK': ['Expo SDK'],
   'Configuration Files': ['Configuration Files'],
   'React Native': ['React Native'],
   Preview: ['Preview'],
-  'EAS Build': ['EAS Build'],
+  'EAS Build': ['Start Building', 'App Signing', 'Reference'],
+  'EAS Submit': ['EAS Submit'],
+  'Development Clients': ['Development Clients'],
 };
 
 // This array provides the **ordering** for pages within each section
@@ -30,16 +32,62 @@ const sections = [
     reference: ['Introduction', 'Support and feedback'],
   },
   {
-    name: 'EAS Build',
+    name: 'Start Building',
     reference: [
-      'Introduction',
-      'EAS Build from scratch in 5 minutes',
-      'Set up your project and environment',
+      'EAS Build',
+      'Creating your first build',
       'Configuration with eas.json',
+      'Over-the-air updates',
+      'Internal distribution',
+      'Triggering builds from CI',
+    ],
+  },
+  {
+    name: 'Archived',
+    reference: [
+      // Order doesn't matter probably, but put something here if you want to order it
+    ],
+  },
+  {
+    name: 'App Signing',
+    reference: [
+      'Using automatically managed credentials',
+      'Using local credentials',
+      'Using existing credentials',
+      'Syncing credentials between remote and local sources',
+    ],
+  },
+  {
+    name: 'Reference',
+    reference: [
+      'Limitations',
+      'Integrating with JavaScript tooling',
+      'Environment variables and secrets',
+      'Build server infrastructure',
+      'Caching dependencies',
+      'Application identifiers',
+      'Build configuration process',
       'Android build process',
       'iOS build process',
-      'Advanced credentials configuration',
-      'How to: configuration examples',
+    ],
+  },
+  {
+    name: 'EAS Submit',
+    reference: [
+      'EAS Submit',
+      'Submitting to the Google Play Store',
+      'Submitting to the Apple App Store',
+    ],
+  },
+  {
+    name: 'Development Clients',
+    reference: [
+      'Introduction',
+      'Installation',
+      'Building With EAS',
+      'Building iOS Locally',
+      'Building Android Locally',
+      'Extending the Development Menu',
     ],
   },
   {
@@ -77,7 +125,9 @@ const sections = [
   {
     name: 'Expo Accounts',
     reference: [
-      'Personal Account',
+      'Account Types',
+      'Two-Factor Authentication',
+      'Programmatic Access',
       'Working Together',
     ],
   },
@@ -86,59 +136,15 @@ const sections = [
     reference: ['Data Privacy & Protection', 'Privacy Shield', 'HIPAA', 'GDPR'],
   },
   {
-    name: 'Push Notifications',
-    reference: [
-      'Push Notifications Overview',
-      'Push Notifications Setup',
-      "Sending Notifications with Expo's Push API",
-      'Sending Notifications with APNs & FCM',
-      'Receiving Notifications',
-      'Using FCM for Push Notifications',
-    ],
-  },
-  {
-    name: 'Assorted Guides',
-    reference: [
-      'Assets',
-      'Icons',
-      'Using Custom Fonts',
-      'Routing & Navigation',
-      'Authentication',
-      'App Icons',
-      'Create a Splash Screen',
-      'Configuring the Status Bar',
-      'Configuring OTA Updates',
-      'Preloading & Caching Assets',
-      'Offline Support',
-      'Progressive Web Apps',
-      'Customizing Metro',
-      'Customizing Webpack',
-      'Notification Channels',
-      'Error Handling',
-      'Testing with Jest',
-      'Account Permissions',
-      'Using TypeScript',
-      'Using Modern JavaScript',
-      'Using ClojureScript',
-      'Using Firebase',
-      'Using GraphQL',
-      'Using Sentry',
-      'Using Bugsnag',
-      'User Interface Component Libraries',
-      'Crafting Educational Materials',
-      'Custom Fonts',
-    ],
-  },
-  {
     name: 'Distributing Your App',
     reference: [
       'Overview',
       'Building Standalone Apps',
-      'Build Webhooks',
       'App Signing',
       'Deploying to App Stores',
       'Release Channels',
       'Advanced Release Channels',
+      'Build Webhooks',
       'Hosting Updates on Your Servers',
       'Building Standalone Apps on Your CI',
       'Uploading Apps to the Apple App Store and Google Play',
@@ -164,24 +170,67 @@ const sections = [
       'Managed Workflow Walkthrough',
       'Up and Running',
       'Expo CLI',
-      'Using Libraries',
-      'Viewing Logs',
+      'Using libraries',
+      'Viewing logs',
       'Development and Production Mode',
       'iOS Simulator',
       'Android Studio Emulator',
       'Debugging',
       'Common Development Errors',
       'Configuration with app.json / app.config.js',
-      'Publishing',
-      'Release Channels',
-      'Building Standalone Apps',
+      'Publishing updates',
+      'Upgrading Expo SDK',
       'Developing for Web',
-      'Upgrading Expo SDK Walkthrough',
-      'Linking',
-      'How Expo Works',
       'Ejecting to Bare Workflow',
       'Glossary of terms',
-      'exp Command-Line Interface',
+    ],
+  },
+  {
+    name: 'Assorted Guides',
+    reference: [
+      'Assets',
+      'Custom Fonts',
+      'Icons',
+      'Routing & Navigation',
+      'TypeScript',
+      'App Icons',
+      'Create a Splash Screen',
+      'Configuring the Status Bar',
+      'Authentication',
+      'User Interface Component Libraries',
+      'Preloading & Caching Assets',
+      'Environment variables in Expo',
+      'Configuring OTA Updates',
+      'Customizing Metro',
+      'Customizing Webpack',
+      'Offline Support',
+      'Progressive Web Apps',
+      'Web Performance',
+      'Notification Channels',
+      'Error Handling',
+      'Testing with Jest',
+      'Account Permissions',
+      'Crafting Educational Materials',
+      'How Expo Works',
+      'Linking',
+      'Handling Assets',
+      'Running in the Browser',
+      'Setting up Continuous Integration',
+      'Native Firebase',
+      'Testing on physical devices',
+      'Troubleshooting Proxies',
+      'Custom Expo Go builds',
+      'Using Firebase',
+      'Using Sentry',
+      'Using Bugsnag',
+      'Using Modern JavaScript',
+      'Using ClojureScript',
+      'Using GraphQL',
+      'Using Electron',
+      'Using Gatsby',
+      'Using Next.js',
+      'Using Preact',
+      'Using Styled Components',
     ],
   },
   {
@@ -199,6 +248,18 @@ const sections = [
       'Ejecting from Managed Workflow',
       'Migrating from ExpoKit',
       'Updating your App',
+    ],
+  },
+  {
+    name: 'Push Notifications',
+    reference: [
+      'Push Notifications Overview',
+      'Push Notifications Setup',
+      "Sending Notifications with Expo's Push API",
+      'Sending Notifications with APNs & FCM',
+      'Receiving Notifications',
+      'Using FCM for Push Notifications',
+      'Troubleshooting and FAQ',
     ],
   },
   {
@@ -317,17 +378,20 @@ const ROOT = [
   'Tutorial',
   'Conceptual Overview',
   'Fundamentals',
+  'Assorted Guides',
   'Push Notifications',
   'Distributing Your App',
   'Expo Accounts',
   'Regulatory Compliance',
-  'Assorted Guides',
   'Essentials',
   'Configuration Files',
   'Expo SDK',
   'React Native',
   'ExpoKit',
 ];
+
+// These directories will not be placed in the sidebar, but will still be searchable
+const hiddenSections = ['FAQ'];
 
 const sortAccordingToReference = (arr, reference) => {
   reference = Array.from(reference).reverse();
@@ -352,6 +416,7 @@ const sortNav = nav => {
     const section = nav.find(o => {
       return o.name.toLowerCase() === name.toLowerCase();
     });
+
     if (section) {
       section.posts = sortAccordingToReference(section.posts, reference);
     }
@@ -401,13 +466,17 @@ const sortedReference = Object.assign(
 const sortedGeneral = groupNav(sortNav(prevaledNavigationData.general));
 const sortedStarting = groupNav(sortNav(prevaledNavigationData.starting));
 const sortedPreview = groupNav(sortNav(prevaledNavigationData.preview));
+const sortedEas = groupNav(sortNav(prevaledNavigationData.eas));
 
 module.exports = {
   generalDirectories: prevaledNavigationData.generalDirectories,
   startingDirectories: prevaledNavigationData.startingDirectories,
   previewDirectories: prevaledNavigationData.previewDirectories,
+  easDirectories: prevaledNavigationData.easDirectories,
   starting: sortedStarting,
   general: sortedGeneral,
   preview: sortedPreview,
+  eas: sortedEas,
   reference: { ...sortedReference, latest: sortedReference['v' + packageVersion] },
+  hiddenSections,
 };

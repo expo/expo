@@ -1,6 +1,7 @@
 package expo.modules.updates.db.dao;
 
 import androidx.room.Delete;
+import androidx.room.Update;
 import expo.modules.updates.db.enums.UpdateStatus;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
@@ -36,6 +37,9 @@ public abstract class UpdateDao {
   @Query("UPDATE updates SET status = :status WHERE id = :id;")
   public abstract void _markUpdateWithStatus(UpdateStatus status, UUID id);
 
+  @Update
+  public abstract void _updateUpdate(UpdateEntity update);
+
 
   /**
    * for public use
@@ -61,6 +65,11 @@ public abstract class UpdateDao {
 
   @Insert
   public abstract void insertUpdate(UpdateEntity update);
+
+  public void setUpdateScopeKey(UpdateEntity update, String newScopeKey) {
+    update.scopeKey = newScopeKey;
+    _updateUpdate(update);
+  }
 
   @Transaction
   public void markUpdateFinished(UpdateEntity update, boolean hasSkippedEmbeddedAssets) {

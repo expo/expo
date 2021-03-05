@@ -11,6 +11,7 @@ export interface NotificationSchedulerModule extends ProxyNativeModule {
   ) => Promise<string>;
   cancelScheduledNotificationAsync?: (identifier: string) => Promise<void>;
   cancelAllScheduledNotificationsAsync?: () => Promise<void>;
+  getNextTriggerDateAsync?: (trigger: NotificationTriggerInput) => Promise<number>;
 }
 
 export interface ChannelAwareTriggerInput {
@@ -62,6 +63,15 @@ export interface WeeklyTriggerInput {
   minute: number;
 }
 
+export interface YearlyTriggerInput {
+  type: 'yearly';
+  channelId?: string;
+  day: number;
+  month: number;
+  hour: number;
+  minute: number;
+}
+
 export interface DateTriggerInput {
   type: 'date';
   channelId?: string;
@@ -75,4 +85,5 @@ export type NotificationTriggerInput =
   | CalendarTriggerInput
   | TimeIntervalTriggerInput
   | DailyTriggerInput
-  | WeeklyTriggerInput;
+  | WeeklyTriggerInput
+  | YearlyTriggerInput;

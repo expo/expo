@@ -3,7 +3,7 @@ id: touchablewithoutfeedback
 title: TouchableWithoutFeedback
 ---
 
-> If you're looking for a more extensive and future-proof way to handle touch-based input, check out the [Pressable](../pressable/) API.
+> If you're looking for a more extensive and future-proof way to handle touch-based input, check out the [Pressable](pressable.md) API.
 
 Do not use unless you have a very good reason. All elements that respond to press should have a visual feedback when touched.
 

@@ -7,7 +7,7 @@ import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
-**`react-native-maps`** provides a Map component that uses Apple Maps or Google Maps on iOS and Google Maps on Android. Expo uses react-native-maps at [react-community/react-native-maps](https://github.com/react-community/react-native-maps). No setup required for use within the Expo Client app. See below for instructions on how to configure for deployment as a standalone app on Android and iOS.
+**`react-native-maps`** provides a Map component that uses Apple Maps or Google Maps on iOS and Google Maps on Android. Expo uses react-native-maps at [react-community/react-native-maps](https://github.com/react-community/react-native-maps). No setup required for use within the Expo client app. See below for instructions on how to configure for deployment as a standalone app on Android and iOS.
 
 <PlatformsSection android emulator ios simulator />
 
@@ -95,11 +95,11 @@ Apple Maps will work with no extra configuration. For Google Maps:
 8.  Copy the API key (the first text input on the page) into `app.json` under the `ios.config.googleMapsApiKey` field.
 9.  Press `Save` and then rebuild the app.
 
-**Note:** This can also be accessed through your app's [Constants](../../sdk/constants#constantsmanifest) (via `Constants.manifest.ios.config.googleMapsApiKey`) if you'd prefer not to have the API key in your code.
+**Note:** This can also be accessed through your app's [Constants](../sdk/constants.md#constantsmanifest) (via `Constants.manifest.ios.config.googleMapsApiKey`) if you'd prefer not to have the API key in your code.
 
 ### Deploying Google Maps to bare for iOS
 
-If you want to add MapView with Google Maps to a [bare](../../introduction/managed-vs-bare/) (ejected) project on iOS, you may need to manually provide a key by calling:
+If you want to add MapView with Google Maps to a [bare](../../../introduction/managed-vs-bare.md) (ejected) project on iOS, you may need to manually provide a key by calling:
 
 ```
 [GMSServices provideApiKey:@"your api key"]

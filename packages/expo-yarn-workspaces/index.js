@@ -3,6 +3,9 @@
 const debug = require('debug')('workspaces');
 const findYarnWorkspaceRoot = require('find-yarn-workspace-root');
 const fs = require('fs');
+const { getDefaultConfig } = require('@expo/metro-config');
+// TODO: Use the vendored metro config in a future version after SDK 41 is released
+// const { getDefaultConfig } = require('expo/metro-config');
 const blacklist = require('metro-config/src/defaults/blacklist');
 const { assetExts } = require('metro-config/src/defaults/defaults');
 const path = require('path');
@@ -19,6 +22,11 @@ const path = require('path');
 exports.createMetroConfiguration = function createMetroConfiguration(projectPath) {
   projectPath = path.resolve(projectPath);
   debug(`Creating a Metro configuration for the project at %s`, projectPath);
+  const {
+    // Remove the React Native reporter.
+    reporter,
+    ...defaultConfig
+  } = getDefaultConfig(projectPath);
 
   let watchFolders;
   let extraNodeModules;
@@ -38,13 +46,14 @@ exports.createMetroConfiguration = function createMetroConfiguration(projectPath
   }
 
   return {
+    ...defaultConfig,
     // Search for modules from the project's root directory
     projectRoot: projectPath,
 
     // Include npm packages from the workspace root, where packages are hoisted
     watchFolders,
-
     resolver: {
+      ...defaultConfig.resolver,
       // test-suite includes a db asset
       assetExts: [...assetExts, 'db'],
 
@@ -62,11 +71,9 @@ exports.createMetroConfiguration = function createMetroConfiguration(projectPath
     },
 
     transformer: {
+      ...defaultConfig.transformer,
       // Ignore file-relative Babel configurations and apply only the project's
       enableBabelRCLookup: false,
-
-      // Temporarily include the Expo asset plugin; figure out a more general way to include it
-      assetPlugins: ['expo/tools/hashAssetFiles'],
     },
   };
 };

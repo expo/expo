@@ -3,7 +3,7 @@ package host.exp.exponent.kernel.services;
 import android.app.Activity;
 import android.content.Context;
 
-import expo.modules.splashscreen.SplashScreen;
+import expo.modules.splashscreen.singletons.SplashScreen;
 import host.exp.exponent.kernel.ExperienceId;
 
 /**

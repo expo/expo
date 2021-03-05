@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import expo.modules.splashscreen.SplashScreenImageResizeMode;
 import host.exp.exponent.analytics.EXL;
 
 public class Constants {
@@ -29,6 +30,7 @@ public class Constants {
     public List<Constants.EmbeddedResponse> EMBEDDED_RESPONSES;
     public int ANDROID_VERSION_CODE;
     public boolean FCM_ENABLED;
+    public SplashScreenImageResizeMode SPLASH_SCREEN_IMAGE_RESIZE_MODE;
     // no longer used, but we need to leave this here so that people's old detached apps don't break
     public boolean ANALYTICS_ENABLED;
     // same but since SDK32
@@ -57,6 +59,7 @@ public class Constants {
   public static int ANDROID_VERSION_CODE;
   public static boolean FCM_ENABLED;
   public static boolean ANALYTICS_ENABLED;
+  public static SplashScreenImageResizeMode SPLASH_SCREEN_IMAGE_RESIZE_MODE;
 
   public static void setSdkVersions(List<String> sdkVersions) {
     ABI_VERSIONS = TextUtils.join(",", sdkVersions);
@@ -68,22 +71,19 @@ public class Constants {
   }
 
   static {
-    Set<String> abiVersions = new HashSet<>();
+    List<String> abiVersions = new ArrayList<>();
     // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
     // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
     // ADD ABI VERSIONS HERE DO NOT MODIFY
+    // BEGIN_SDK_40
+    abiVersions.add("40.0.0");
+    // END_SDK_40
     // BEGIN_SDK_39
     abiVersions.add("39.0.0");
     // END_SDK_39
     // BEGIN_SDK_38
     abiVersions.add("38.0.0");
     // END_SDK_38
-    // BEGIN_SDK_37
-    abiVersions.add("37.0.0");
-    // END_SDK_37
-    // BEGIN_SDK_36
-    abiVersions.add("36.0.0");
-    // END_SDK_36
     // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
     // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
@@ -91,7 +91,7 @@ public class Constants {
       abiVersions.add(TEMPORARY_ABI_VERSION);
     }
 
-    setSdkVersions(new ArrayList<>(abiVersions));
+    setSdkVersions(abiVersions);
 
     List<EmbeddedResponse> embeddedResponses = new ArrayList<>();
     // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
@@ -119,6 +119,7 @@ public class Constants {
 
       embeddedResponses.addAll(appConstants.EMBEDDED_RESPONSES);
       EMBEDDED_RESPONSES = embeddedResponses;
+      SPLASH_SCREEN_IMAGE_RESIZE_MODE = appConstants.SPLASH_SCREEN_IMAGE_RESIZE_MODE;
     } catch (ClassNotFoundException e) {
       e.printStackTrace();
     } catch (IllegalAccessException e) {

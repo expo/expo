@@ -1,4 +1,5 @@
 import Ionicons from '@expo/vector-icons/build/Ionicons';
+import Slider from '@react-native-community/slider';
 import { usePermissions } from '@use-expo/permissions';
 import * as BarCodeScanner from 'expo-barcode-scanner';
 import { BlurView } from 'expo-blur';
@@ -20,22 +21,24 @@ import {
   Pressable,
 } from 'react-native';
 import { Path, Svg, SvgProps } from 'react-native-svg';
-import Slider from '@react-native-community/slider';
 
 import Colors from '../constants/Colors';
 
 function useCameraTypes(): CameraType[] | null {
-  if (Platform.OS !== 'web') return [CameraType.front, CameraType.back];
   const [types, setTypes] = React.useState<CameraType[] | null>(null);
 
   React.useEffect(() => {
     let isMounted = true;
-    // TODO: This method isn't supported on native
-    Camera.getAvailableCameraTypesAsync().then(types => {
-      if (isMounted) {
-        setTypes(types as CameraType[]);
-      }
-    });
+    if (Platform.OS !== 'web') {
+      setTypes([CameraType.front, CameraType.back]);
+    } else {
+      // TODO: This method isn't supported on native
+      Camera.getAvailableCameraTypesAsync().then(types => {
+        if (isMounted) {
+          setTypes(types as CameraType[]);
+        }
+      });
+    }
     return () => {
       isMounted = false;
     };
@@ -79,17 +82,20 @@ function useToggleCameraType(
 }
 
 function useCameraAvailable(): boolean {
-  if (Platform.OS !== 'web') return true;
   const [isAvailable, setAvailable] = React.useState(false);
 
   React.useEffect(() => {
     let isMounted = true;
-    // TODO: This method isn't supported on native
-    Camera.isAvailableAsync().then(isAvailable => {
-      if (isMounted) {
-        setAvailable(isAvailable);
-      }
-    });
+    if (Platform.OS !== 'web') {
+      setAvailable(true);
+    } else {
+      // TODO: This method isn't supported on native
+      Camera.isAvailableAsync().then(isAvailable => {
+        if (isMounted) {
+          setAvailable(isAvailable);
+        }
+      });
+    }
     return () => {
       isMounted = false;
     };
@@ -190,7 +196,7 @@ function QRCodeView() {
 
       {showFooter && (
         <View pointerEvents="box-none" style={[styles.footer, { bottom: 30 }]}>
-          <QRFooterButton disabled={!toggle} onPress={toggle} iconName="ios-reverse-camera" />
+          <QRFooterButton disabled={!toggle} onPress={toggle} iconName="camera-reverse" />
           <QRFooterButton
             disabled={type !== CameraType.back}
             onPress={onFlashToggle}
@@ -226,6 +232,7 @@ function OverlayView({
   const onPress = () => {
     clearTimeout(timer.current);
     setOverlayActive(true);
+    // @ts-expect-error: TS resolves node types first
     timer.current = setTimeout(() => {
       setOverlayActive(() => false);
     }, 5000);
@@ -370,6 +377,7 @@ const styles = StyleSheet.create({
     width: size,
     height: size,
     borderRadius: size / 2,
+    overflow: 'hidden',
     justifyContent: 'center',
     alignItems: 'center',
   },
