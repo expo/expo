@@ -69,7 +69,7 @@ PODS:
     - UMFileSystemInterface
   - EXErrorRecovery (2.0.1):
     - UMCore
-  - EXFacebook (10.0.0):
+  - EXFacebook (11.0.0):
     - FacebookSDK/CoreKit (= 9.0.1)
     - FacebookSDK/LoginKit (= 9.0.1)
     - UMConstantsInterface
@@ -146,7 +146,7 @@ PODS:
     - UMPermissionsInterface
   - EXNetwork (3.0.0):
     - UMCore
-  - EXNotifications (0.9.0):
+  - EXNotifications (0.10.0):
     - UMCore
     - UMPermissionsInterface
   - EXPermissions (11.0.0):
@@ -658,11 +658,11 @@ PODS:
     - React-Core
   - RNDateTimePicker (3.0.4):
     - React-Core
-  - RNGestureHandler (1.8.0):
-    - React
+  - RNGestureHandler (1.10.2):
+    - React-Core
   - RNReanimated (1.13.1):
     - React
-  - RNScreens (2.15.2):
+  - RNScreens (2.18.1):
     - React-Core
   - RNSharedElement (0.7.0):
     - React
@@ -1228,7 +1228,7 @@ SPEC CHECKSUMS:
   EXDevice: 101eddd9bc28faba8246ba0c499a65a4821a6b5e
   EXDocumentPicker: 5cef8a8593a9232961a2a0e9aa9349a723cafdc7
   EXErrorRecovery: f2dd13f3cc0b99edf47570b19a323d6c69687d6b
-  EXFacebook: 1755173e6ea7aa851cea80535d6e920bd064d2ac
+  EXFacebook: 9c5a4f6ebbeb1bf29dcbe081375303fa09aed5c8
   EXFaceDetector: 8c6c88864a8f9420190aae8a7c19ba569792d0df
   EXFileSystem: 9bdb09527eda7fa19ef8f5b3f490ca3887840f31
   EXFirebaseAnalytics: db3028d0b0b87e4f2a6605947f943417befcad72
@@ -1251,7 +1251,7 @@ SPEC CHECKSUMS:
   EXMailComposer: 73a06458b79d4c33a57e03a297feefe1567ac9f5
   EXMediaLibrary: 9d212a2434ad41ca593bac8cb68cdfc7ba5e5144
   EXNetwork: 4575670ffeea0854a6c5232ab7f215c485f0a457
-  EXNotifications: 39b642b1ded0f26e614fd5ce313decfb93401b6d
+  EXNotifications: f92ac486b8a43e493e286d5d3ac569426e3fd6bc
   EXPermissions: 015f1129f80266f6c38e3691102546232b641614
   expo-dev-launcher: 0351bdeef423c28146573adbdeb822ed42b941b8
   expo-dev-menu: bbce00e72ede1b7308c469f288b365a9a917a173
@@ -1284,8 +1284,8 @@ SPEC CHECKSUMS:
   FirebaseCoreDiagnostics: b59c024493a409f8aecba02c99928d0d8431d159
   FirebaseCoreDiagnosticsInterop: 296e2c5f5314500a850ad0b83e9e7c10b011a850
   FirebaseInstanceID: ce993a3c3670a8f5d47ce371ac5d143c560608c5
-  FirebaseMLCommon: 074a67e05122b1c9f6401a4e33b2cea3b4efd224
-  FirebaseMLVision: 7a456009787690e3b53436092ae9b635563de8f3
+  FirebaseMLCommon: b8e390c725354c194856df096d0a8d64ae42a4c9
+  FirebaseMLVision: 3cf6158ab38b2059ccf8bf785041086bfa06da14
   FirebaseMLVisionFaceModel: 1003e20ab8979cb77d7a39c93faeb58c959a63f1
   Flipper: 8c34da52a467af6171044444c314dbeb8d5a6d35
   Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
@@ -1341,9 +1341,9 @@ SPEC CHECKSUMS:
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
   RNCPicker: 6780c753e9e674065db90d9c965920516402579d
   RNDateTimePicker: 3d1931e387248cb8f1d1d33740d4a1a82dfe622a
-  RNGestureHandler: 7a5833d0f788dbd107fbb913e09aa0c1ff333c39
+  RNGestureHandler: e66feb0fda7da74ea6a3094656b3c1efe05f5c07
   RNReanimated: dd8c286ab5dd4ba36d3a7fef8bff7e08711b5476
-  RNScreens: 3d682bcaba69a4f8e55543d90818704f34338db1
+  RNScreens: f7ad633b2e0190b77b6a7aab7f914fad6f198d8d
   RNSharedElement: 00b1a1420d213a34459bb9a5aacabb38107d7948
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   SDWebImage: e3eae2eda88578db0685a0c88597fdadd9433f05
