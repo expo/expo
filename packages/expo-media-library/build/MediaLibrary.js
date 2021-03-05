@@ -266,10 +266,10 @@ export async function migrateAlbumIfNeededAsync(album) {
  *
  * @param album
  */
-export async function checkIfAlbumShouldBeMigratedAsync(album) {
-    if (!MediaLibrary.checkIfAlbumShouldBeMigratedAsync) {
+export async function albumNeedsMigrationAsync(album) {
+    if (!MediaLibrary.albumNeedsMigrationAsync) {
         return false;
     }
-    return await MediaLibrary.checkIfAlbumShouldBeMigratedAsync(getId(album));
+    return await MediaLibrary.albumNeedsMigrationAsync(getId(album));
 }
 //# sourceMappingURL=MediaLibrary.js.map

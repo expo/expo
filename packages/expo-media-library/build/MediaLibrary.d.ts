@@ -134,4 +134,4 @@ export declare function migrateAlbumIfNeededAsync(album: AlbumRef): Promise<void
  *
  * @param album
  */
-export declare function checkIfAlbumShouldBeMigratedAsync(album: AlbumRef): Promise<boolean>;
+export declare function albumNeedsMigrationAsync(album: AlbumRef): Promise<boolean>;
