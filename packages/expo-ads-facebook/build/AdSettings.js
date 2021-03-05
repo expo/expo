@@ -36,6 +36,12 @@ export default {
         return await CTKAdSettingsManager.getPermissionsAsync();
     },
     /**
+     * Sets whether Facebook SDK should enable advertising tracking.
+     */
+    setAdvertiserTrackingEnabled(enabled) {
+        CTKAdSettingsManager.setAdvertiserTrackingEnabled(enabled);
+    },
+    /**
      * Registers given device with `deviceHash` to receive test Facebook ads.
      */
     addTestDevice(deviceHash) {
