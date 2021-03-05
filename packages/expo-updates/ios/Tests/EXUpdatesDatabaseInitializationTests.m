@@ -77,6 +77,38 @@ CREATE INDEX \"index_json_data_scope_key\" ON \"json_data\" (\"scope_key\")\
   XCTAssertNil(error);
 }
 
+- (void)testDatabasePersistence
+{
+  sqlite3 *db;
+  NSError *initializeError;
+  [EXUpdatesDatabaseInitialization initializeDatabaseWithLatestSchemaInDirectory:_testDatabaseDir
+                                                                        database:&db
+                                                                           error:&initializeError];
+  XCTAssertNil(initializeError);
+
+  // insert some test data
+  NSString * const insertSql = @"INSERT INTO \"assets\" (\"url\",\"key\",\"headers\",\"type\",\"metadata\",\"download_time\",\"relative_path\",\"hash\",\"hash_type\",\"marked_for_deletion\") VALUES\
+  (NULL,'bundle-1614137401950',NULL,'js',NULL,1614137406588,'bundle-1614137401950','6ff4ee75b48a21c7a9ed98015ff6bfd0a47b94cd087c5e2258262e65af239952',0,0);";
+  NSError *insertError;
+  [EXUpdatesDatabaseUtils executeSql:insertSql withArgs:nil onDatabase:db error:&insertError];
+  XCTAssertNil(insertError);
+
+  // mimic the app closing and reopening
+  sqlite3_close(db);
+  sqlite3 *newDb;
+  NSError *newInitializeError;
+  [EXUpdatesDatabaseInitialization initializeDatabaseWithLatestSchemaInDirectory:_testDatabaseDir
+                                                                        database:&newDb
+                                                                           error:&newInitializeError];
+  XCTAssertNil(newInitializeError);
+
+  // ensure the data is still there
+  NSString * const selectSql = @"SELECT * FROM `assets` WHERE `url` IS NULL AND `key` = 'bundle-1614137401950' AND `headers` IS NULL AND `type` = 'js' AND `metadata` IS NULL AND `download_time` = 1614137406588 AND `relative_path` = 'bundle-1614137401950' AND `hash` = '6ff4ee75b48a21c7a9ed98015ff6bfd0a47b94cd087c5e2258262e65af239952' AND `hash_type` = 0 AND `marked_for_deletion` = 0";
+  NSArray<NSDictionary *> *rows = [EXUpdatesDatabaseUtils executeSql:selectSql withArgs:nil onDatabase:newDb error:nil];
+  XCTAssertEqual(1, rows.count);
+  XCTAssertEqualObjects(@1, rows[0][@"id"]);
+}
+
 - (void)testMigration4To5
 {
   sqlite3 *db;
