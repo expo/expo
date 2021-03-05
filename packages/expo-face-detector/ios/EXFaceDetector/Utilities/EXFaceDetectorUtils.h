@@ -10,7 +10,7 @@
 #import <CoreMedia/CoreMedia.h>
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
-#import <Firebase/Firebase.h>
+#import <GoogleMLKit/MLKit.h>
 
 typedef float (^EXFaceDetectionAngleTransformBlock)(float);
 
@@ -18,11 +18,13 @@ typedef float (^EXFaceDetectionAngleTransformBlock)(float);
 
 + (NSDictionary *)constantsToExport;
 
-+ (BOOL) areOptionsEqual:(FIRVisionFaceDetectorOptions *)first to:(FIRVisionFaceDetectorOptions *)second;
++ (BOOL)areOptionsEqual:(MLKFaceDetectorOptions *)first
+                     to:(MLKFaceDetectorOptions *)second;
 
-+ (FIRVisionFaceDetectorOptions *)mapOptions:(NSDictionary*)options;
++ (MLKFaceDetectorOptions *)mapOptions:(NSDictionary*)options;
 
-+ (FIRVisionFaceDetectorOptions *) newOptions:(FIRVisionFaceDetectorOptions* )options withValues:(NSDictionary *)values;
++ (MLKFaceDetectorOptions *)newOptions:(MLKFaceDetectorOptions*)options
+                            withValues:(NSDictionary *)values;
 
 + (EXFaceDetectionAngleTransformBlock)angleTransformerFromTransform:(CGAffineTransform)transform;
 
