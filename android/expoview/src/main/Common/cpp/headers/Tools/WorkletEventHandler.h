@@ -9,7 +9,7 @@ namespace reanimated {
 
 class EventHandlerRegistry;
 
-class EventHandler {
+class WorkletEventHandler {
   friend EventHandlerRegistry;
 
 private:
@@ -18,7 +18,7 @@ private:
   jsi::Function handler;
 
 public:
-  EventHandler(unsigned long id,
+  WorkletEventHandler(unsigned long id,
                std::string eventName,
                jsi::Function &&handler): id(id), eventName(eventName), handler(std::move(handler)) {}
   void process(jsi::Runtime &rt, jsi::Value &eventValue);

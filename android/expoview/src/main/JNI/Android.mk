@@ -13,6 +13,7 @@ PROJECT_FILES := $(PROJECT_FILES:$(LOCAL_PATH)/%=%)
 LOCAL_SRC_FILES := $(PROJECT_FILES)
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH) \
+  $(LOCAL_PATH)/../Common/cpp/hidden_headers \
 	$(LOCAL_PATH)/../cpp/headers \
 	$(LOCAL_PATH)/../Common/cpp/headers \
 	$(LOCAL_PATH)/../Common/cpp/headers/NativeModules \

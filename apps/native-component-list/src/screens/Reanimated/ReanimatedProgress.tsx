@@ -41,12 +41,11 @@ export default class Example extends React.Component {
 
 const styles = StyleSheet.create({
   centerAll: {
-    flex: 1,
     alignItems: 'center',
-    marginTop: 50,
+    marginBottom: 10,
   },
   bar: {
-    marginTop: 30,
+    marginTop: 10,
     height: 5,
     width: '80%',
     backgroundColor: '#aaa',

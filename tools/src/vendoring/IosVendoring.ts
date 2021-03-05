@@ -29,7 +29,8 @@ export async function vendorAsync(
   // Get a list of source files specified by the podspec.
   const filesPatterns = ([] as string[]).concat(
     podspec.source_files,
-    podspec.ios?.source_files ?? []
+    podspec.ios?.source_files ?? [],
+    podspec.preserve_paths ?? []
   );
   const files = await searchFilesAsync(sourceDirectory, filesPatterns);
 
