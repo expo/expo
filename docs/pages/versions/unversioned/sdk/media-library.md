@@ -8,7 +8,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-media-library`** provides access to the user's media library, allowing them to access their existing images and videos from your app, as well as save new ones. You can also subscribe to any updates made to the user's media library.
 
-> ⚠️ If your app created an album using SDK <= 40 and you want to add more assets to this album, you need to migrate it to the new scoped directory. Otherwise, your app won't have access to the old album directory and expo-media-library won't be able to add new assets to it. However, all other functions will work without problems. You only need to migrate the old album if you want to add something to it. For more information, check out [Android R changes](https://expo.fyi/android-r) and [`MediaLibrary.migrateAlbumIfNeededAsync`](#medialibrarymigratealbumifneededasyncalbum).
+> ⚠️ If your Android app created an album using SDK <= 40 and you want to add more assets to this album, you may need to migrate it to the new scoped directory. Otherwise, your app won't have access to the old album directory and expo-media-library won't be able to add new assets to it. However, all other functions will work without problems. You only need to migrate the old album if you want to add something to it. For more information, check out [Android R changes](https://expo.fyi/android-r) and [`MediaLibrary.migrateAlbumIfNeededAsync`](#medialibrarymigratealbumifneededasyncalbum).
 
 <PlatformsSection android emulator ios simulator />
 
@@ -81,7 +81,7 @@ On **iOS 11+**, it's possible to use this method without asking for `CAMERA_ROLL
 
 - **localUri (_string_)** -- A URI to the image or video file. It must contain an extension. On Android it must be a local path, so it must start with `file:///`.
 
-### `MediaLibrary.checkIfAlbumShouldBeMigratedAsync(album)`
+### `MediaLibrary.albumNeedsMigrationAsync(album)`
 
 Checks if the album should be migrated to a different location. In other words, it checks if the application has the write permission to the album folder. If not, it returns `true`, otherwise `false`.
 

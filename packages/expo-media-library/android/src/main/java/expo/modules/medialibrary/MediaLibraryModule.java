@@ -356,7 +356,7 @@ public class MediaLibraryModule extends ExportedModule implements ActivityEventL
   }
 
   @ExpoMethod
-  public void checkIfAlbumShouldBeMigratedAsync(String albumId, Promise promise) {
+  public void albumNeedsMigrationAsync(String albumId, Promise promise) {
     if (isMissingPermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
       return;

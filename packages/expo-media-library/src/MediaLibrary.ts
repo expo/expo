@@ -463,10 +463,10 @@ export async function migrateAlbumIfNeededAsync(album: AlbumRef): Promise<void> 
  *
  * @param album
  */
-export async function checkIfAlbumShouldBeMigratedAsync(album: AlbumRef): Promise<boolean> {
-  if (!MediaLibrary.checkIfAlbumShouldBeMigratedAsync) {
+export async function albumNeedsMigrationAsync(album: AlbumRef): Promise<boolean> {
+  if (!MediaLibrary.albumNeedsMigrationAsync) {
     return false;
   }
 
-  return await MediaLibrary.checkIfAlbumShouldBeMigratedAsync(getId(album));
+  return await MediaLibrary.albumNeedsMigrationAsync(getId(album));
 }
