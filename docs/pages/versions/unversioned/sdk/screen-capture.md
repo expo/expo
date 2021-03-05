@@ -90,7 +90,7 @@ import {
 
 ### `isAvailableAsync()`
 
-Returns whether the Screen Capture API is enabled on the current device.
+Returns whether the Screen Capture API is available on the current device.
 
 #### Returns
 
