@@ -53,7 +53,7 @@ To clear the various caches, run:
 
 ## What these commands are doing
 
-This is what the individual commands do:
+It is a good habit to understand commands you find on the internet before you run them. We explain each command below for Expo CLI, npm, and Yarn, but the corresponding commands React Native CLI have the same behavior.
 
 | Command                 | Description |
 | ----------------------- | ----------- |

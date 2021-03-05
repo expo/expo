@@ -51,7 +51,7 @@ There are a number of different caches associated with your project that can pre
 
 ## What these commands are doing
 
-If you would like to understand what all that command is doing:
+It is a good habit to understand commands you find on the internet before you run them. We explain each command below for Expo CLI, npm, and Yarn, but the corresponding commands React Native CLI have the same behavior.
 
 | Command                 | Description |
 | ----------------------- | ----------- |
