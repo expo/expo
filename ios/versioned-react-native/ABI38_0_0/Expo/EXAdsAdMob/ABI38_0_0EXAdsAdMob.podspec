@@ -17,8 +17,8 @@ Pod::Spec.new do |s|
   s.requires_arc   = true
 
   s.dependency 'ABI38_0_0UMCore'
-  s.dependency 'Google-Mobile-Ads-SDK', "7.55.1"
+  s.dependency 'Google-Mobile-Ads-SDK', "7.69.0"
 
 end
 
-  
+
