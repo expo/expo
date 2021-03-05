@@ -1,4 +1,4 @@
-import { EventEmitter, Subscription } from '@unimodules/core';
+import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
 import { useEffect } from 'react';
 
 import ExpoScreenCapture from './ExpoScreenCapture';
@@ -7,6 +7,15 @@ const activeTags: Set<string> = new Set();
 const emitter = new EventEmitter(ExpoScreenCapture);
 
 const onScreenshotEventName = 'onScreenshot';
+
+/**
+ * Returns whether the Screen Capture API is available on the current device.
+ *
+ * @returns Async `boolean`, indicating whether the Screen Capture API is available on the current device. Currently this resolves `true` on iOS and Android only.
+ */
+export async function isAvailableAsync(): Promise<boolean> {
+  return !!ExpoScreenCapture.preventScreenCapture && !!ExpoScreenCapture.allowScreenCapture;
+}
 
 /**
  * Prevents screenshots and screen recordings. If you are
@@ -28,6 +37,10 @@ const onScreenshotEventName = 'onScreenshot';
  * ```
  */
 export async function preventScreenCaptureAsync(key: string = 'default'): Promise<void> {
+  if (!ExpoScreenCapture.preventScreenCapture) {
+    throw new UnavailabilityError('ScreenCapture', 'preventScreenCaptureAsync');
+  }
+
   if (!activeTags.has(key)) {
     activeTags.add(key);
     await ExpoScreenCapture.preventScreenCapture();
@@ -50,6 +63,10 @@ export async function preventScreenCaptureAsync(key: string = 'default'): Promis
  * ```
  */
 export async function allowScreenCaptureAsync(key: string = 'default'): Promise<void> {
+  if (!ExpoScreenCapture.preventScreenCapture) {
+    throw new UnavailabilityError('ScreenCapture', 'allowScreenCaptureAsync');
+  }
+
   activeTags.delete(key);
   if (activeTags.size === 0) {
     await ExpoScreenCapture.allowScreenCapture();
