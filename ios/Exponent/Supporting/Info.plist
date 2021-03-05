@@ -109,6 +109,8 @@
 	<string>Give Expo projects permission to access your photos</string>
 	<key>NSRemindersUsageDescription</key>
 	<string>Allow Expo projects to access your reminders</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Allow Expo projects to use data for tracking the user or the device</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>

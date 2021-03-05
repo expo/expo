@@ -1645,9 +1645,11 @@ PODS:
   - EXAdsAdMob (9.0.0):
     - Google-Mobile-Ads-SDK (= 7.55.1)
     - UMCore
+    - UMPermissionsInterface
   - EXAdsFacebook (9.0.0):
     - FBAudienceNetwork (~> 5.9.0)
     - UMCore
+    - UMPermissionsInterface
   - EXAmplitude (10.0.0):
     - Amplitude (~> 6.0.0)
     - UMConstantsInterface
@@ -1718,6 +1720,7 @@ PODS:
     - FacebookSDK/LoginKit (= 9.0.1)
     - UMConstantsInterface
     - UMCore
+    - UMPermissionsInterface
   - EXFaceDetector (9.0.1):
     - Firebase/Core (= 6.14.0)
     - Firebase/MLVision (= 6.14.0)
@@ -3886,8 +3889,8 @@ SPEC CHECKSUMS:
   Branch: 9a37f707974a128c37829033c49018b79c7e7a2d
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: cde416483dac037923206447da6e1454df403714
-  EXAdsAdMob: c6ff22c4155bbf712acd286741f948ce24ed72b8
-  EXAdsFacebook: 2929d3b81f1c7a3f37661089a4dec9d8785591eb
+  EXAdsAdMob: a26e7f6296749d391bc21f1c1ca881321556a400
+  EXAdsFacebook: 7ff475ac6d7229c075130811318f73a189f58007
   EXAmplitude: 5e3dabb2ba3d05200a63787b2334e13346df94fb
   EXAppAuth: 39f4af401c042f45405738604cbb7f85e25e87fb
   EXAppleAuthentication: f808549b4f641a2915b1c892b4b21b77f5998e8b
@@ -3908,7 +3911,7 @@ SPEC CHECKSUMS:
   EXDevice: 101eddd9bc28faba8246ba0c499a65a4821a6b5e
   EXDocumentPicker: 5cef8a8593a9232961a2a0e9aa9349a723cafdc7
   EXErrorRecovery: f2dd13f3cc0b99edf47570b19a323d6c69687d6b
-  EXFacebook: 9c5a4f6ebbeb1bf29dcbe081375303fa09aed5c8
+  EXFacebook: 4c7bfd576d7d996ad59ffdcdcb5acd4183980dc0
   EXFaceDetector: 8c6c88864a8f9420190aae8a7c19ba569792d0df
   EXFileSystem: 9bdb09527eda7fa19ef8f5b3f490ca3887840f31
   EXFirebaseAnalytics: db3028d0b0b87e4f2a6605947f943417befcad72

@@ -74,6 +74,7 @@ PODS:
     - FacebookSDK/LoginKit (= 9.0.1)
     - UMConstantsInterface
     - UMCore
+    - UMPermissionsInterface
   - EXFaceDetector (9.0.1):
     - Firebase/Core (= 6.14.0)
     - Firebase/MLVision (= 6.14.0)
@@ -1228,7 +1229,7 @@ SPEC CHECKSUMS:
   EXDevice: 101eddd9bc28faba8246ba0c499a65a4821a6b5e
   EXDocumentPicker: 5cef8a8593a9232961a2a0e9aa9349a723cafdc7
   EXErrorRecovery: f2dd13f3cc0b99edf47570b19a323d6c69687d6b
-  EXFacebook: 9c5a4f6ebbeb1bf29dcbe081375303fa09aed5c8
+  EXFacebook: 4c7bfd576d7d996ad59ffdcdcb5acd4183980dc0
   EXFaceDetector: 8c6c88864a8f9420190aae8a7c19ba569792d0df
   EXFileSystem: 9bdb09527eda7fa19ef8f5b3f490ca3887840f31
   EXFirebaseAnalytics: db3028d0b0b87e4f2a6605947f943417befcad72
