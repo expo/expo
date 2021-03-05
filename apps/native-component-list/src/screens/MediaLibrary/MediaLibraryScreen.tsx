@@ -3,6 +3,8 @@ import { StackScreenProps } from '@react-navigation/stack';
 import { usePermissions } from '@use-expo/permissions';
 import * as MediaLibrary from 'expo-media-library';
 import * as Permissions from 'expo-permissions';
+import * as FileSystem from 'expo-file-system';
+
 import React from 'react';
 import {
   Alert,
@@ -91,11 +93,37 @@ export default function MediaLibraryScreen({ navigation, route }: Props) {
   React.useLayoutEffect(() => {
     const goToAlbums = () => navigation.navigate('MediaAlbums');
     const clearAlbumSelection = () => navigation.setParams({ album: undefined });
+    const addImage = async () => {
+      const randomNameGenerator = num => {
+        let res = '';
+        for (let i = 0; i < num; i++) {
+          const random = Math.floor(Math.random() * 27);
+          res += String.fromCharCode(97 + random);
+        }
+        return res;
+      };
+
+      const localPath = FileSystem.cacheDirectory + randomNameGenerator(5) + '.jpg';
+      await FileSystem.downloadAsync('https://picsum.photos/200', localPath);
+      await MediaLibrary.saveToLibraryAsync(localPath);
+      await FileSystem.deleteAsync(localPath);
+    };
+
+    const removeAlbum = async () => {
+      await MediaLibrary.deleteAlbumsAsync(album);
+      clearAlbumSelection();
+    };
 
     navigation.setOptions({
       title: 'Media Library',
       headerRight: () => (
-        <View style={{ marginRight: 5 }}>
+        <View style={{ marginRight: 5, flexDirection: 'row' }}>
+          <RNButton
+            title={album ? 'Remove' : 'Add'}
+            onPress={album ? removeAlbum : addImage}
+            color={Colors.tintColor}
+          />
+          <View style={{ width: 5 }} />
           <RNButton
             title={album ? 'Show all' : 'Albums'}
             onPress={album ? clearAlbumSelection : goToAlbums}
