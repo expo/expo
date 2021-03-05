@@ -79,8 +79,8 @@ CREATE INDEX \"index_json_data_scope_key\" ON \"json_data\" (\"scope_key\")\
   NSURL *dbUrl = [directory URLByAppendingPathComponent:filename];
   BOOL shouldInitializeDatabaseSchema = ![[NSFileManager defaultManager] fileExistsAtPath:[dbUrl path]];
 
-  BOOL didMigrate = [[self class] _migrateDatabaseInDirectory:directory];
-  if (!didMigrate) {
+  BOOL success = [[self class] _migrateDatabaseInDirectory:directory];
+  if (!success) {
     NSError *removeFailedMigrationError;
     if ([NSFileManager.defaultManager fileExistsAtPath:dbUrl.path] &&
         ![NSFileManager.defaultManager removeItemAtPath:dbUrl.path error:&removeFailedMigrationError]) {
@@ -157,7 +157,7 @@ CREATE INDEX \"index_json_data_scope_key\" ON \"json_data\" (\"scope_key\")\
 {
   NSURL *latestURL = [directory URLByAppendingPathComponent:EXUpdatesDatabaseLatestFilename];
   if ([NSFileManager.defaultManager fileExistsAtPath:latestURL.path]) {
-    return NO;
+    return YES;
   }
 
   // find the newest database version that exists and try to migrate that file (ignore any older ones)
