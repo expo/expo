@@ -956,7 +956,7 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
         }
         promise.resolve(result);
       } else {
-        throw new IOException("Unsupported scheme for location '" + uri + "'.");
+        throw new IOException("The URI '" + uri + "' is not a Storage Access Framework URI. Try using FileSystem.readDirectoryAsync instead.");
       }
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
@@ -984,7 +984,7 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
 
         promise.resolve(newDir.getUri().toString());
       } else {
-        throw new IOException("Unsupported scheme for location '" + uri + "'.");
+        throw new IOException("The URI '" + uri + "' is not a Storage Access Framework URI. Try using FileSystem.makeDirectoryAsync instead.");
       }
     } catch (Exception e) {
       promise.reject(e);
@@ -1011,7 +1011,7 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
 
         promise.resolve(newFile.getUri().toString());
       } else {
-        throw new IOException("Unsupported scheme for location '" + uri + "'.");
+        throw new IOException("The URI '" + uri + "' is not a Storage Access Framework URI.");
       }
     } catch (Exception e) {
       promise.reject(e);

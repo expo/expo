@@ -334,7 +334,7 @@ Create a copy of a file or directory. Directories are recursively copied with al
 
 - **options (_object_)** -- A map of options:
 
-  - **from (_string_)** -- [SAF](#saf-uri) URI, URI to the asset, file directory to copy. It can be e.g. URI returned by [`CameraRoll.getPhotos()`](https://reactnative.dev/docs/cameraroll.html#getphotos). See [supported URI schemes](#supported-uri-schemes-1).
+  - **from (_string_)** -- URI or [SAF](#saf-uri) URI to the asset, file, or directory to copy. It can be e.g. the URI returned by [`CameraRoll.getPhotos()`](https://reactnative.dev/docs/cameraroll.html#getphotos). See [supported URI schemes](#supported-uri-schemes-1).
 
   - **to (_string_)** -- The `file://` URI to the new copy to create.
 
@@ -603,7 +603,7 @@ The `StorageAccessFramework` is a namespace inside of the `expo-file-system` mod
 
 ## SAF URI
 
-A SAF URI is a URI that is compatible with the Storage Access Framework. It should look like this `content://com.android.externalstorage.*`. The easiest way to obtain such URI is by `askForDirectoryPermissionsAsync` method.
+A SAF URI is a URI that is compatible with the Storage Access Framework. It should look like this `content://com.android.externalstorage.*`. The easiest way to obtain such URI is by `requestDirectoryPermissionsAsync` method.
 
 ## API
 
@@ -629,9 +629,66 @@ if (permissions.granted) {
 }
 ```
 
+### Migrating an album
+
+```ts
+import * as MediaLibrary from 'expo-media-library';
+import * as FileSystem from 'expo-file-system';
+const { StorageAccessFramework } = FileSystem;
+
+async function migrateAlbum(albumName: string) {
+  // Gets SAF URI to the album
+  const albumUri = StorageAccessFramework.getUriForDirectoryInRoot(albumName);
+
+  // Requests permissions
+  const permissions = await StorageAccessFramework.requestDirectoryPermissionsAsync(albumUri);
+  if (!permissions.granted) {
+    return;
+  }
+
+  const permittedUri = permissions.directoryUri;
+  // Checks if users selected the correct folder
+  if (!permittedUri.includes(albumName)) {
+    return;
+  }
+
+  const mediaLibraryPermissions = await MediaLibrary.requestPermissionsAsync();
+  if (!mediaLibraryPermissions.granted) {
+    return;
+  }
+
+  // Moves files from external storage to internal storage
+  await StorageAccessFramework.moveAsync({
+    from: permittedUri,
+    to: FileSystem.documentDirectory!,
+  });
+
+  const outputDir = FileSystem.documentDirectory! + albumName;
+  const migratedFiles = await FileSystem.readDirectoryAsync(outputDir);
+
+  // Creates assets from local files
+  const [newAlbumCreator, ...assets] = await Promise.all(
+    migratedFiles.map<Promise<MediaLibrary.Asset>>(
+      async fileName => await MediaLibrary.createAssetAsync(outputDir + '/' + fileName)
+    )
+  );
+
+  // Album was empty
+  if (!newAlbumCreator) {
+    return;
+  }
+
+  // Creates a new album in the scoped directory
+  const newAlbum = await MediaLibrary.createAlbumAsync(albumName, newAlbumCreator, false);
+  if (assets.length) {
+    await MediaLibrary.addAssetsToAlbumAsync(assets, newAlbum, false);
+  }
+}
+```
+
 ### `StorageAccessFramework.getUriForDirectoryInRoot(folderName)`
 
-Gets a [SAF URI](#saf-uri) pointing to a folder in the Android root directory. You can use this function to get URI for `StorageAccessFramework.requestForDirectoryPermissionsAsync` when you trying to migrate an album. In that case, the name of the album is the folder name.
+Gets a [SAF URI](#saf-uri) pointing to a folder in the Android root directory. You can use this function to get URI for `StorageAccessFramework.requestDirectoryPermissionsAsync` when you trying to migrate an album. In that case, the name of the album is the folder name.
 
 #### Arguments
 
@@ -641,7 +698,7 @@ Gets a [SAF URI](#saf-uri) pointing to a folder in the Android root directory. Y
 
 Returns a [SAF URI](#saf-uri) to a folder.
 
-### `StorageAccessFramework.requestForDirectoryPermissionsAsync(initialFileUrl)`
+### `StorageAccessFramework.requestDirectoryPermissionsAsync(initialFileUrl)`
 
 **Android only**. Allows users to select a specific directory, granting your app access to all of the files and sub-directories within that directory.
 
@@ -703,7 +760,7 @@ A Promise that resolves to a [SAF URI](#saf-uri) to the created file.
 
 Alias to [FileSystem.writeAsStringAsync(fileUri, contents, options)](#filesystemwriteasstringasyncfileuri-contents-options).
 
-### `StorageAccessFramework.writeAsStringAsync(fileUri, contents, options)`
+### `StorageAccessFramework.readAsStringAsync(fileUri, options)`
 
 Alias to [FileSystem.readAsStringAsync(fileUri, options)](#filesystemreadasstringasyncfileuri-options)
 
