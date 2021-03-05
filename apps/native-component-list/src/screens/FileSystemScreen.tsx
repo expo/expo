@@ -201,6 +201,7 @@ export default class FileSystemScreen extends React.Component<{}, State> {
 
   _creatSAFFileAsync = async () => {
     const createdFile = await StorageAccessFramework.createFileAsync(
+      // eslint-disable-next-line react/no-access-state-in-setstate
       this.state.permittedURI!,
       'test',
       'text/plain'
@@ -278,7 +279,7 @@ export default class FileSystemScreen extends React.Component<{}, State> {
             {this.state.permittedURI && (
               <>
                 <SimpleActionDemo title="Read directory" action={this._readSAFDirAsync} />
-                <SimpleActionDemo title="Creat a file" action={this._creatSAFFileAsync} />
+                <SimpleActionDemo title="Create a file" action={this._creatSAFFileAsync} />
 
                 {this.state.createdFileURI && (
                   <>
