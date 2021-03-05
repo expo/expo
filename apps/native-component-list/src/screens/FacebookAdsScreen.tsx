@@ -2,6 +2,7 @@ import * as FacebookAds from 'expo-ads-facebook';
 import React from 'react';
 import { ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 
+import SimpleActionDemo from '../components/SimpleActionDemo';
 import Colors from '../constants/Colors';
 
 const {
@@ -133,6 +134,14 @@ export default class App extends React.Component {
   render() {
     return (
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+        <SimpleActionDemo
+          title="get app tracking permissions"
+          action={async () => await FacebookAds.AdSettings.getPermissionsAsync()}
+        />
+        <SimpleActionDemo
+          title="request app tracking permissions"
+          action={async () => await FacebookAds.AdSettings.requestPermissionsAsync()}
+        />
         <Text style={styles.header}>Native Ad</Text>
         {adsManager && <FullNativeAd adsManager={adsManager} />}
         <Text style={styles.header}>Banner Ad</Text>
