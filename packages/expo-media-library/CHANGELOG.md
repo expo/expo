@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Changed location of newly created albums on Android. From now, albums won't be saved in the root folder. ([#12017](https://github.com/expo/expo/pull/12017) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🎉 New features
 
 - Converted plugin to TypeScript. ([#11715](https://github.com/expo/expo/pull/11715) by [@EvanBacon](https://github.com/EvanBacon))
