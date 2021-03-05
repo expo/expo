@@ -5,6 +5,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ## Unpublished
 
+- Remove deprecated `Linking` module from `expo`. ([#12128](https://github.com/expo/expo/pull/12128) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 📚 3rd party library updates
 
 - Updated `@react-native-picker/picker` from `1.9.2` to `1.9.11`. ([#11956](https://github.com/expo/expo/pull/11956) by [@tsapeta](https://github.com/tsapeta))
