@@ -1,9 +1,9 @@
-import { colors } from '@expo/styleguide';
+import { palette } from '@expo/styleguide';
 import * as React from 'react';
 
 export const ExternalLink: React.FC<{ size?: number; stroke?: string }> = ({
   size = 24,
-  stroke = colors.dark.white,
+  stroke = palette.dark.white,
 }) => (
   <svg
     aria-label="check"

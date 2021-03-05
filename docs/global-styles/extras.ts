@@ -1,5 +1,5 @@
 import { css } from '@emotion/core';
-import { theme, colors } from '@expo/styleguide';
+import { theme, palette } from '@expo/styleguide';
 
 import * as Constants from '~/constants/theme';
 
@@ -26,6 +26,7 @@ export const globalExtras = css`
     outline: none;
     cursor: pointer;
     margin-bottom: 0.5rem;
+    color: ${theme.text.default};
 
     ::-webkit-details-marker {
       color: ${theme.icon.default};
@@ -77,7 +78,7 @@ export const globalExtras = css`
     margin-bottom: 0.5rem;
     text-decoration: none;
     background: ${theme.button.primary};
-    color: ${colors.dark.white};
+    color: ${palette.dark.white};
     font-family: ${Constants.fontFamilies.book};
     font-size: 1rem;
     cursor: pointer;

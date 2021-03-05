@@ -20,7 +20,7 @@ Currently, only one image is supported per platform, more images will be availab
 - Android workers run on Kubernetes in an isolated environment
   - Every build gets its own container running on a dedicated Kubernetes node
   - Build resources: 4 CPU, 16 GB RAM (14 GB after k8s overhead)
-- NPM cache deployed with Kubernetes
+- NPM cache deployed with Kubernetes (works with npm and yarn v2, and yarn v1 works with a [workaround](how-tos/#using-npm-cache-with-yarn-v1))
 - Maven cache deployed with Kubernetes, cached repositories:
   - `maven-central` - [https://repo1.maven.org/maven2/](https://repo1.maven.org/maven2/)
   - `google` - [https://maven.google.com/](https://maven.google.com/)
@@ -49,7 +49,7 @@ Currently, only one image is supported per platform, more images will be availab
   - Every build gets its own fresh macOS VM
   - Hardware: Intel(R) Xeon(R) CPU E5-2697 (12 core/24 threads), 64 GB RAM
   - Build resource limits: 6 cores, 8 GB RAM
-- NPM cache
+- NPM cache (works with npm and yarn v2, and yarn v1 works with a [workaround](how-tos/#using-npm-cache-with-yarn-v1))
 
 #### Image `macos-catalina-11.15-xcode-12.1` (alias `default`, `latest`)
 

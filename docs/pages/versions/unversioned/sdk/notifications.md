@@ -4,6 +4,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-notificat
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
@@ -15,7 +16,7 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 
 - 📣 schedule a one-off notification for a specific date, or some time from now,
 - 🔁 schedule a notification repeating in some time interval (or a calendar date match on iOS),
-- 1️⃣ get and set application badge icon number,
+- 💯 get and set application badge icon number,
 - 📲 fetch a native device push token so you can send push notifications with FCM and APNS,
 - 😎 fetch an Expo push token so you can send push notifications with Expo,
 - 📬 listen to incoming notifications,
@@ -34,20 +35,6 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 <InstallSection packageName="expo-notifications" />
 
 ### Android
-
-Open your `app.json` and add the following inside of the "expo" field:
-
-```
-{
-  "expo": {
-    ...
-    "android": {
-      ...
-      "useNextNotificationsApi": true,
-    }
-  }
-}
-```
 
 On Android, this module requires permission to subscribe to device boot. It's used to setup the scheduled notifications right after the device (re)starts. The `RECEIVE_BOOT_COMPLETED` permission is added automatically.
 
@@ -161,7 +148,7 @@ await Notifications.scheduleNotificationAsync({
 });
 ```
 
-<img src="/static/images/notification-sound-ios.jpeg" style={{maxWidth: 305}} />
+<ImageSpotlight alt="notification.wav inside of app resources in Xcode project organizer" src="/static/images/notification-sound-ios.jpeg" style={{maxWidth: 305}} />
 
 </p>
 </details>
@@ -280,8 +267,6 @@ async function registerForPushNotificationsAsync() {
 ```
 
 </SnackInline>
-
-> **Note** this demo will not work with **remote** notifications (sent via the Expo Notifications service) on Android when you run it from the snack, because `app.json` needs to contain the `useNextNotificationsApi` flag. Unfortunately, Snack doesn't support custom `app.json` files.
 
 ## Custom notification icon and colors (Android only)
 
@@ -1100,7 +1085,7 @@ A `Promise` resolving once the channel group is removed (or if there was no chan
 
 Notification categories allow you to create interactive push notifications, so that a user can respond directly to the incoming notification either via buttons or a text response. A category defines the set of actions a user can take, and then those actions are applied to a notification by specifying the `categoryIdentifier` in the [`NotificationContent`](#notificationcontent).
 
-<img width="50%" src="/static/images/sdk/notifications/categories.png" style={{width: 800}} alt="image of notification categories on iOS and Android"/>
+<ImageSpotlight src="/static/images/sdk/notifications/categories.png" style={{maxWidth: 800}} alt="image of notification categories on iOS and Android"/>
 
 On iOS, notification categories also allow you to customize your notifications further. With each category, not only can you set interactive actions a user can take, but you can also configure things like the placeholder text to display when the user disables notification previews for your app.
 

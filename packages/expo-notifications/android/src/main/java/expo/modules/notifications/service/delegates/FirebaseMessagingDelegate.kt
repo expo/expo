@@ -70,11 +70,20 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
   }
 
   protected fun createNotification(remoteMessage: RemoteMessage): Notification {
-    val identifier = remoteMessage.messageId ?: UUID.randomUUID().toString()
+    val identifier = getNotificationIdentifier(remoteMessage)
     val payload = JSONObject(remoteMessage.data as Map<*, *>)
     val content = JSONNotificationContentBuilder(context).setPayload(payload).build()
     val request = createNotificationRequest(identifier, content, FirebaseNotificationTrigger(remoteMessage))
     return Notification(request, Date(remoteMessage.sentTime))
+  }
+
+  /**
+   * To match iOS behavior, we want to assign the remote message's tag as the notification ID.
+   * If a notification comes in with the same tag as a notification that is already in the tray,
+   * the existing notification is replaced, but the ID can remain constant.
+   */
+  protected fun getNotificationIdentifier(remoteMessage: RemoteMessage): String {
+    return remoteMessage.data?.get("tag") ?: remoteMessage.messageId ?: UUID.randomUUID().toString()
   }
 
   protected open fun createNotificationRequest(

@@ -212,7 +212,12 @@ export type PermissionDetailsLocationIOS = {
 };
 
 export type PermissionDetailsLocationAndroid = {
+  /**
+   * @deprecated use `accuracy` instead
+   */
   scope: 'fine' | 'coarse' | 'none';
+
+  accuracy: 'fine' | 'coarse' | 'none';
 };
 
 export interface LocationPermissionResponse extends UMPermissionResponse {

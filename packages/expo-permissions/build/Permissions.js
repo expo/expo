@@ -11,7 +11,10 @@ export const MEDIA_LIBRARY_WRITE_ONLY = 'mediaLibraryWriteOnly';
  */
 export const CAMERA_ROLL = MEDIA_LIBRARY;
 export const AUDIO_RECORDING = 'audioRecording';
+/** @deprecated Use `LOCATION_FOREGROUND` or `LOCATION_BACKGROUND` instead */
 export const LOCATION = 'location';
+export const LOCATION_FOREGROUND = 'locationForeground';
+export const LOCATION_BACKGROUND = 'locationBackground';
 export const USER_FACING_NOTIFICATIONS = 'userFacingNotifications';
 export const NOTIFICATIONS = 'notifications';
 export const CONTACTS = 'contacts';

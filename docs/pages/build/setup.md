@@ -2,6 +2,8 @@
 title: Creating your first build
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+
 In this guide, you'll learn how to build a ready-to-submit binary for the Apple App Store and Google Play Store using EAS Build. For a simple app, you should expect to have kicked off your builds for Android and iOS within a few minutes.
 
 ## Prerequisites
@@ -19,7 +21,7 @@ Don't have a project yet? No problem: it's quick and easy to create a "Hello wor
 - Run `expo init PROJECT_NAME` (let's assume `PROJECT_NAME` is `abcd`) and choose a bare workflow template (either `minimal` or `minimal (TypeScript)`).
 - EAS Build also works well with projects created by `npx react-native`, `create-react-native-app`, `ignite-cli`, and other project bootstrapping tools.
 
-<center><img src="/static/images/eas-build/walkthrough/01-init.png" /></center>
+<ImageSpotlight alt="Terminal running expo init, with minimal (TypeScript) selected" src="/static/images/eas-build/walkthrough/01-init.png" />
 
 </p>
 </details>

@@ -33,3 +33,9 @@ Here you will find a list of errors that are commonly encountered by developers 
 - The SDK version you are running has been deprecated and is no longer supported.
 
 - [Upgrade your project](../workflow/upgrading-expo-sdk-walkthrough.md) to a supported SDK version. If you are using a supported version and see this message, you'll need to update your Expo Go app. If you experience this error in a standalone app, make sure you have published a JS bundle for the specific SDK version and release channel for the given binary via `expo publish`.
+
+### React Native version mismatch
+
+- The packager running in your terminal is using a different version of React Native than the app in your device or simulator.
+
+- [Align your versions of react-native](../faq/react-native-version-mismatch) by checking the versions in your `app.json` and `package.json` 

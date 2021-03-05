@@ -3,6 +3,7 @@ title: Walkthrough
 sidebar_title: Walkthrough
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import Video from '~/components/plugins/Video'
 
 There's no need to install anything or even understand everything here, this page is meant to give you an overview of some of the big pieces of building a managed app. In the same way that getting a quick tour of Paris won't make you an expert on Paris, this walkthrough serves to help you identify a few landmarks and the most important areas in the managed workflow. You can do a walkthrough of the [bare workflow](../bare/exploring-bare-workflow.md) later on.
@@ -37,9 +38,8 @@ Let's scroll through the [API Reference](/versions/latest/) to find packages tha
 
 Let's say we had mockups for our app that look like the following:
 
-<div style={{flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 10}}>
-<img src="/static/images/exploring-managed/mockups.png" alt="Mockups of app screens" />
-</div>
+
+<ImageSpotlight alt="Mockups of app screens" src="/static/images/exploring-managed/mockups.png" />
 
 > _Note: These are actually screenshots from [Sindre Sorhus'](https://github.com/sindresorhus) open source app [Blear](https://sindresorhus.com/blear), but let's pretend they are mockups for the sake of demonstration._
 

@@ -34,8 +34,8 @@
   [content setUserInfo:userInfo];
   
   if (content.categoryIdentifier && _isInExpoGo) {
-    NSString *scopedCategoryIdentifier = [EXScopedNotificationsUtils scopedCategoryIdentifierWithId:content.categoryIdentifier
-                                                                                      forExperience:_experienceId];
+    NSString *scopedCategoryIdentifier = [EXScopedNotificationsUtils scopedIdentifierFromId:content.categoryIdentifier
+                                                                              forExperience:_experienceId];
     [content setCategoryIdentifier:scopedCategoryIdentifier];
   }
   

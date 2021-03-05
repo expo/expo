@@ -390,6 +390,9 @@ const ROOT = [
   'ExpoKit',
 ];
 
+// These directories will not be placed in the sidebar, but will still be searchable
+const hiddenSections = ['FAQ'];
+
 const sortAccordingToReference = (arr, reference) => {
   reference = Array.from(reference).reverse();
 
@@ -475,4 +478,5 @@ module.exports = {
   preview: sortedPreview,
   eas: sortedEas,
   reference: { ...sortedReference, latest: sortedReference['v' + packageVersion] },
+  hiddenSections,
 };

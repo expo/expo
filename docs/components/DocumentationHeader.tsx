@@ -1,7 +1,7 @@
 import { css } from '@emotion/core';
 import {
   theme,
-  colors,
+  palette,
   useTheme,
   ThemeDarkIcon,
   ThemeLightIcon,
@@ -109,7 +109,7 @@ const STYLES_SEARCH_OVERLAY = css`
     right: 0px;
     bottom: 0px;
     opacity: 0.5;
-    background-color: ${colors.dark.black};
+    background-color: ${palette.dark.black};
   }
 `;
 
@@ -279,7 +279,7 @@ function SelectTheme() {
     setLoaded(true);
   }, []);
 
-  if (!loaded) return null;
+  if (!loaded) return <div />;
 
   return (
     <div css={SELECT_THEME_CONTAINER}>

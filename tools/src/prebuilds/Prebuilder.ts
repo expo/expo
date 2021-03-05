@@ -45,7 +45,7 @@ export const PACKAGES_TO_PREBUILD = [
   // 'expo-document-picker',
   // 'expo-error-recovery',
   'expo-face-detector',
-  // 'expo-facebook',
+  'expo-facebook',
   'expo-file-system',
   // 'expo-firebase-analytics',
   // 'expo-firebase-core',
@@ -219,6 +219,7 @@ async function findFrameworkForProjectAsync(projectName: string): Promise<string
   const searchNames = new Set([
     projectName,
     projectName.replace(/\/+/, ''), // Firebase/MLVision -> FirebaseMLVision
+    projectName.replace(/\/+.*$/, ''), // FacebookSDK/* -> FacebookSDK
   ]);
 
   for (const name of searchNames) {
