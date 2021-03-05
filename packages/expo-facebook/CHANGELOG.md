@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Added the app tracking permission. ([#12123](https://github.com/expo/expo/pull/12123) by [@lukmccall](https://github.com/lukmccall))
+
 ## 11.0.0 — 2021-03-02
 
 ### ⚠️ Notices
