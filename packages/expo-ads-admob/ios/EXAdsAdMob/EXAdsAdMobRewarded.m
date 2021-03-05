@@ -14,6 +14,7 @@ static NSString *const EXAdsAdMobRewardedDidClose = @"rewardedVideoDidClose";
 
 @property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
 @property (nonatomic, weak) id<UMUtilitiesInterface> utilities;
+@property (nonatomic, strong) GADRewardedAd* rewardedAd;
 
 @end
 
@@ -88,11 +89,11 @@ UM_EXPORT_METHOD_AS(requestAd,
       [self.rewardedAd loadRequest:request completionHandler:^(GADRequestError * _Nullable error) {
         if (error) {
           [self _maybeSendEventWithName:EXAdsAdMobRewardedDidFailToLoad body:@{ @"name": [error description] }];
-          _requestAdRejecter(@"E_AD_REQUEST_FAILED", [error description], error);
+          self->  _requestAdRejecter(@"E_AD_REQUEST_FAILED", [error description], error);
           [self _cleanupRequestAdPromise];
         } else {
           [self _maybeSendEventWithName:EXAdsAdMobRewardedDidLoad body:nil];
-          _requestAdResolver(nil);
+          self->  _requestAdResolver(nil);
           [self _cleanupRequestAdPromise];
         }
       }];
@@ -111,7 +112,7 @@ UM_EXPORT_METHOD_AS(showAd,
     UM_WEAKIFY(self);
     dispatch_async(dispatch_get_main_queue(), ^{
       UM_ENSURE_STRONGIFY(self);
-      [self.rewardedAd presentFromRootViewController:self.utilities.currentViewController];
+      [self.rewardedAd presentFromRootViewController:self.utilities.currentViewController delegate:self];
     });
   } else if (self.rewardedAd.isReady) {
     reject(@"E_AD_BEING_SHOWN", @"Ad is already being shown, await the previous promise.", nil);
