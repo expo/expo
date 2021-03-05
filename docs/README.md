@@ -69,7 +69,7 @@ You can validate all current links by running `$ yarn lint-links`.
 
 ### Server-side redirects
 
-These redirects are limited in their expensiveness - you can map a path to another path, but no regular expressions or anything are supported. See client-side redirects for more of that. Server-side redirects are re-created on each run of `deploy.sh`.
+These redirects are limited in their expressiveness - you can map a path to another path, but no regular expressions or anything are supported. See client-side redirects for more of that. Server-side redirects are re-created on each run of `deploy.sh`.
 
 We currently do two client-side redirects, using meta tags with `http-equiv="refresh"`:
 
