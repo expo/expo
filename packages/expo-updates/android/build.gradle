@@ -54,6 +54,9 @@ android {
   testOptions {
     unitTests.includeAndroidResources = true
   }
+  sourceSets {
+    androidTest.assets.srcDirs += files("$projectDir/src/androidTest/schemas".toString())
+  }
 }
 
 if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
@@ -88,4 +91,5 @@ dependencies {
   androidTestImplementation 'androidx.test:runner:1.1.0'
   androidTestImplementation 'androidx.test:rules:1.1.0'
   androidTestImplementation 'org.mockito:mockito-android:3.7.7'
+  androidTestImplementation "androidx.room:room-testing:$room_version"
 }
