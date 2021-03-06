@@ -6,7 +6,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo/src/Updat
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-The `Updates` API from **`expo`** allows you to programatically control and respond to over-the-air updates to your app.
+The `Updates` API from **`expo`** allows you to programmatically control and respond to over-the-air updates to your app.
 
 <PlatformsSection android emulator ios simulator />
 
