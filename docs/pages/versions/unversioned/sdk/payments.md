@@ -665,7 +665,7 @@ A source object returned from creating a source (via `createSourceWithParamsAsyn
 | owner            | Object            | Information about the owner of the payment instrument                                                                                                         |
 | receiver         | Object (Optional) | Information related to the receiver flow. Present if the source is a receiver                                                                                 |
 | redirect         | Object (Optional) | Information related to the redirect flow. Present if the source is authenticated by a redirect                                                                |
-| status           | String            | The status of the source. Can be one of: **pending ‖ chargeable ‖ consumed ‖ cancelled ‖ failed**                                                              |
+| status           | String            | The status of the source. Can be one of: **pending ‖ chargable ‖ consumed ‖ cancelled ‖ failed**                                                              |
 | type             | String            | The type of the source. Can be one of: **bancontact ‖ card ‖ griopay ‖ ideal ‖ sepaDebit ‖ sofort ‖ threeDSecure ‖ alipay ‖ unknown**                         |
 | usage            | String            | Whether this source should be reusable or not. Can be one of: **reusable ‖ single ‖ unknown**                                                                 |
 | verification     | Object (Optional) | Information related to the verification flow. Present if the source is authenticated by a verification                                                        |
