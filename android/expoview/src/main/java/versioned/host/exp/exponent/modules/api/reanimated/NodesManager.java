@@ -136,7 +136,6 @@ public class NodesManager implements EventDispatcherListener {
     }
   }
   private Queue<NativeUpdateOperation> mOperationsInBatch = new LinkedList<>();
-  private boolean mTryRunBatchUpdatesSynchronously = false;
 
   public NodesManager(ReactContext context) {
     mContext = context;
@@ -196,19 +195,13 @@ public class NodesManager implements EventDispatcherListener {
     if (!mOperationsInBatch.isEmpty()) {
       final Queue<NativeUpdateOperation> copiedOperationsQueue = mOperationsInBatch;
       mOperationsInBatch = new LinkedList<>();
-      final boolean trySynchronously = mTryRunBatchUpdatesSynchronously;
-      mTryRunBatchUpdatesSynchronously = false;
       final Semaphore semaphore = new Semaphore(0);
       mContext.runOnNativeModulesQueueThread(
               // FIXME replace `mContext` with `mContext.getExceptionHandler()` after RN 0.59 support is dropped
               new GuardedRunnable(mContext) {
                 @Override
                 public void runGuarded() {
-                  boolean queueWasEmpty = UIManagerReanimatedHelper.isOperationQueueEmpty(mUIImplementation);
-                  boolean shouldDispatchUpdates = trySynchronously && queueWasEmpty;
-                  if (!shouldDispatchUpdates) {
-                    semaphore.release();
-                  }
+                  boolean shouldDispatchUpdates = UIManagerReanimatedHelper.isOperationQueueEmpty(mUIImplementation);
                   while (!copiedOperationsQueue.isEmpty()) {
                     NativeUpdateOperation op = copiedOperationsQueue.remove();
                     ReactShadowNode shadowNode = mUIImplementation.resolveShadowNode(op.mViewTag);
@@ -216,22 +209,18 @@ public class NodesManager implements EventDispatcherListener {
                       mUIManager.updateView(op.mViewTag, shadowNode.getViewClass(), op.mNativeProps);
                     }
                   }
-                  if (queueWasEmpty) {
+                  if (shouldDispatchUpdates) {
                     mUIImplementation.dispatchViewUpdates(-1); // no associated batchId
                   }
-                  if (shouldDispatchUpdates) {
-                    semaphore.release();
-                  }
+                  semaphore.release();
                 }
               });
-      if (trySynchronously) {
-        while (true) {
-          try {
-            semaphore.acquire();
-            break;
-          } catch (InterruptedException e) {
-            //noop
-          }
+      while (true) {
+        try {
+          semaphore.acquire();
+          break;
+        } catch (InterruptedException e) {
+          //noop
         }
       }
     }
@@ -409,10 +398,7 @@ public class NodesManager implements EventDispatcherListener {
     ((PropsNode) node).disconnectFromView(viewTag);
   }
 
-  public void enqueueUpdateViewOnNativeThread(int viewTag, WritableMap nativeProps, boolean trySynchronously) {
-    if (trySynchronously) {
-      mTryRunBatchUpdatesSynchronously = true;
-    }
+  public void enqueueUpdateViewOnNativeThread(int viewTag, WritableMap nativeProps) {
     mOperationsInBatch.add(new NativeUpdateOperation(viewTag, nativeProps));
   }
 
@@ -467,7 +453,7 @@ public class NodesManager implements EventDispatcherListener {
       int viewTag = event.getViewTag();
       String key = viewTag + eventName;
 
-      shouldSaveEvent |= (mCustomEventHandler != null && mNativeProxy != null && mNativeProxy.isAnyHandlerWaitingForEvent(key));
+      shouldSaveEvent |= (mCustomEventHandler != null && mNativeProxy.isAnyHandlerWaitingForEvent(key));
       if (shouldSaveEvent) {
         mEventQueue.offer(new CopiedEvent(event));
       }
@@ -558,7 +544,7 @@ public class NodesManager implements EventDispatcherListener {
                 viewTag, new ReactStylesDiffMap(newUIProps));
       }
       if (hasNativeProps) {
-        enqueueUpdateViewOnNativeThread(viewTag, newNativeProps, true);
+        enqueueUpdateViewOnNativeThread(viewTag, newNativeProps);
       }
       if (hasJSProps) {
         WritableMap evt = Arguments.createMap();

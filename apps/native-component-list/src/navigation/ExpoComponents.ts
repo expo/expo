@@ -43,7 +43,12 @@ const Pressable = optionalRequire(() => require('../screens/PressableScreen'));
 const ProgressBarAndroid = optionalRequire(() => require('../screens/ProgressBarAndroidScreen'));
 const ProgressViewIOS = optionalRequire(() => require('../screens/ProgressViewIOSScreen'));
 const QRCode = optionalRequire(() => require('../screens/QRCodeScreen'));
-const Reanimated = optionalRequire(() => require('../screens/Reanimated/ReanimatedScreen'));
+const ReanimatedImagePreview = optionalRequire(() =>
+  require('../screens/Reanimated/ReanimatedImagePreviewScreen')
+);
+const ReanimatedProgress = optionalRequire(() =>
+  require('../screens/Reanimated/ReanimatedProgressScreen')
+);
 const ScreensScreens = optionalRequire(() => require('../screens/Screens'));
 const ScrollView = optionalRequire(() => require('../screens/ScrollViewScreen'));
 const Slider = optionalRequire(() => require('../screens/SliderScreen'));
@@ -104,7 +109,8 @@ const optionalScreens: { [key: string]: React.ComponentType | null } = {
   HTML,
   Image,
   ...ImageScreens,
-  Reanimated,
+  ReanimatedImagePreview,
+  ReanimatedProgress,
   Gif,
   FacebookAds,
   SegmentedControl,
