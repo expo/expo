@@ -31,6 +31,18 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
 {
   if (self = [super init]) {
     _sessionConfiguration = sessionConfiguration;
+
+    NSURL *cachesDirectory = [[NSFileManager.defaultManager URLsForDirectory:NSCachesDirectory inDomains:NSUserDomainMask] lastObject];
+    NSURL *cacheDirectory = [cachesDirectory URLByAppendingPathComponent:@"NSURLCache-expo-updates"];
+    BOOL cacheDirectoryExists = [NSFileManager.defaultManager fileExistsAtPath:cacheDirectory.path];
+    if (!cacheDirectoryExists) {
+      cacheDirectoryExists = [NSFileManager.defaultManager createDirectoryAtPath:cacheDirectory.path withIntermediateDirectories:YES attributes:kNilOptions error:nil];
+    }
+    if (cacheDirectoryExists) {
+      // TODO(eric): reduce cache size once we have a confident solution for snack bundles
+      _sessionConfiguration.URLCache = [[NSURLCache alloc] initWithMemoryCapacity:8*1024*1024 diskCapacity:200*1024*1024 directoryURL:cacheDirectory];
+    }
+
     _session = [NSURLSession sessionWithConfiguration:_sessionConfiguration delegate:self delegateQueue:nil];
     _config = updatesConfig;
   }

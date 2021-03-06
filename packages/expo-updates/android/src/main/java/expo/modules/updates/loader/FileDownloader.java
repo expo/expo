@@ -67,7 +67,8 @@ public class FileDownloader {
   }
 
   private static Cache getCache(Context context) {
-    int cacheSize = 50 * 1024 * 1024; // 50 MiB
+    // TODO(eric): reduce cache size once we have a confident solution for snack bundles
+    int cacheSize = 200 * 1024 * 1024; // 200 MiB
     return new Cache(getCacheDirectory(context), cacheSize);
   }
 
