@@ -86,7 +86,7 @@ public class BareManifest implements Manifest {
   public ArrayList<AssetEntity> getAssetEntityList() {
     ArrayList<AssetEntity> assetList = new ArrayList<>();
 
-    AssetEntity bundleAssetEntity = new AssetEntity(null, "js");
+    AssetEntity bundleAssetEntity = new AssetEntity("bundle-" + mCommitTime.getTime(), "js");
     bundleAssetEntity.isLaunchAsset = true;
     bundleAssetEntity.embeddedAssetFilename = EmbeddedLoader.BARE_BUNDLE_FILENAME;
     assetList.add(bundleAssetEntity);

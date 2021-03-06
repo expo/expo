@@ -70,8 +70,8 @@ static NSString * const EXUpdatesExpoTestDomain = @"expo.test";
 
   NSMutableArray<EXUpdatesAsset *> *processedAssets = [NSMutableArray new];
 
-  // legacy manifests do not provide a key for the bundle, so we use nil
-  EXUpdatesAsset *jsBundleAsset = [[EXUpdatesAsset alloc] initWithKey:nil type:EXUpdatesEmbeddedBundleFileType];
+  NSString *bundleKey = manifest[@"bundleKey"] ?: nil;
+  EXUpdatesAsset *jsBundleAsset = [[EXUpdatesAsset alloc] initWithKey:bundleKey type:EXUpdatesEmbeddedBundleFileType];
   jsBundleAsset.url = bundleUrl;
   jsBundleAsset.isLaunchAsset = YES;
   jsBundleAsset.mainBundleFilename = EXUpdatesEmbeddedBundleFilename;

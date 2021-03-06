@@ -122,8 +122,8 @@ public class LegacyManifest implements Manifest {
   public ArrayList<AssetEntity> getAssetEntityList() {
     ArrayList<AssetEntity> assetList = new ArrayList<>();
 
-    // legacy manifests do not provide a key for the bundle, so we use null
-    AssetEntity bundleAssetEntity = new AssetEntity(null, "js");
+    String bundleKey = mManifestJson.optString("bundleKey", null);
+    AssetEntity bundleAssetEntity = new AssetEntity(bundleKey, "js");
     bundleAssetEntity.url = mBundleUrl;
     bundleAssetEntity.isLaunchAsset = true;
     bundleAssetEntity.embeddedAssetFilename = BUNDLE_FILENAME;
