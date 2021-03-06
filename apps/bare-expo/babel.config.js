@@ -16,9 +16,6 @@ module.exports = function(api) {
   return {
     // [Custom] Needed for decorators
     presets: ['babel-preset-expo'],
-    plugins: [
-      'react-native-reanimated/plugin',
-      ['babel-plugin-module-resolver', moduleResolverConfig],
-    ],
+    plugins: [['babel-plugin-module-resolver', moduleResolverConfig]],
   };
 };
