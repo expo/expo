@@ -90,4 +90,4 @@ Create an image thumbnail from video provided via `uri`.
 
 #### Returns
 
-Returns `{ uri, width, height }` where `uri` is a URI to the created image (useable as the source for an `Image`/`Video` element), `width, height` specify the dimensions of the image.
+Returns `{ uri, width, height }` where `uri` is a URI to the created image (usable as the source for an `Image`/`Video` element), `width, height` specify the dimensions of the image.

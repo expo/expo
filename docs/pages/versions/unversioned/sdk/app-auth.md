@@ -273,7 +273,7 @@ Use this method for signing-out. Returns a fetch request.
 
 | Name    | Type                 | Description                                             |
 | ------- | -------------------- | ------------------------------------------------------- |
-| props   | `OAuthBaseProps`     | The same OAuth configuratiton used for the initial flow |
+| props   | `OAuthBaseProps`     | The same OAuth configuration used for the initial flow |
 | options | `OAuthRevokeOptions` | Refresh token or access token to revoke                 |
 
 ### Example
