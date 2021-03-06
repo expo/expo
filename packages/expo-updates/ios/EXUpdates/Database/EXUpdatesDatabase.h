@@ -19,6 +19,10 @@ typedef NS_ENUM(NSInteger, EXUpdatesDatabaseHashType) {
 
 - (void)addUpdate:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error;
 - (void)addNewAssets:(NSArray<EXUpdatesAsset *> *)assets toUpdateWithId:(NSUUID *)updateId error:(NSError ** _Nullable)error;
+/**
+ * This method may return NO if a matching entry for the existing asset cannot be found in the database.
+ * In this case, the error pointer will not be set.
+ */
 - (BOOL)addExistingAsset:(EXUpdatesAsset *)asset toUpdateWithId:(NSUUID *)updateId error:(NSError ** _Nullable)error;
 - (void)updateAsset:(EXUpdatesAsset *)asset error:(NSError ** _Nullable)error;
 - (void)mergeAsset:(EXUpdatesAsset *)asset withExistingEntry:(EXUpdatesAsset *)existingAsset error:(NSError ** _Nullable)error;
