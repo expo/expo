@@ -108,7 +108,7 @@ A promise that resolves to an object that contains following keys:
 
 ### `MediaLibrary.getAssetInfoAsync(asset, options)`
 
-Provides more informations about an asset, including GPS location, local URI and EXIF metadata.
+Provides more information about an asset, including GPS location, local URI and EXIF metadata.
 
 #### Arguments
 

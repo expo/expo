@@ -200,7 +200,7 @@ Invokes the `listener` function when the screen orientation changes from `portra
 
 #### Returns
 
-Returns an [`Subscription`](#subscription) object that can later be used to unsuscribe updates to the listener.
+Returns an [`Subscription`](#subscription) object that can later be used to unsubscribe updates to the listener.
 
 ### `ScreenOrientation.removeOrientationChangeListeners()`
 

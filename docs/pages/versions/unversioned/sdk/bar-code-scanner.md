@@ -49,7 +49,7 @@ In managed apps, scanning barcodes with the camera requires the [`Permission.CAM
 >
 > - When an ITF-14 barcode is recognized, it's type can sometimes be set to `interleaved2of5`.
 
-> - Scanning for either `PDF417` and/or `Code39` formats can result in a noticable increase in battery consumption on iOS. It is recommended to provide only the bar code formats you expect to scan to the `barCodeTypes` prop.
+> - Scanning for either `PDF417` and/or `Code39` formats can result in a noticeable increase in battery consumption on iOS. It is recommended to provide only the bar code formats you expect to scan to the `barCodeTypes` prop.
 
 ## Usage
 
