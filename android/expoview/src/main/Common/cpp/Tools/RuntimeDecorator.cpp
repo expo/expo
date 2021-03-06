@@ -1,5 +1,5 @@
 #include "RuntimeDecorator.h"
-#include "ReanimatedHiddenHeaders.h"
+#include "Logger.h"
 #include <unordered_map>
 #include <memory>
 
@@ -121,11 +121,11 @@ void RuntimeDecorator::addNativeObjects(jsi::Runtime &rt,
       const jsi::Value *args,
       size_t count
       ) -> jsi::Value {
-    rt.global().setProperty(rt, "console", args[0]);
+    rt.global().setProperty(rt, args[0].asString(rt), args[1]);
     return jsi::Value::undefined();
   };
-  jsi::Value setGlobalConsole = jsi::Function::createFromHostFunction(rt, jsi::PropNameID::forAscii(rt, "_setGlobalConsole"), 1, clb5);
-  rt.global().setProperty(rt, "_setGlobalConsole", setGlobalConsole);
+  jsi::Value globalSetter = jsi::Function::createFromHostFunction(rt, jsi::PropNameID::forAscii(rt, "_globalSetter"), 1, clb5);
+  rt.global().setProperty(rt, "_globalSetter", globalSetter);
   
   auto clb6 = [getCurrentTime](
       jsi::Runtime &rt,

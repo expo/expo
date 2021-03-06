@@ -1,10 +1,12 @@
 #include "NativeReanimatedModule.h"
+#include "Logger.h"
+#include "SpeedChecker.h"
 #include "ShareableValue.h"
 #include "MapperRegistry.h"
 #include "Mapper.h"
 #include "RuntimeDecorator.h"
 #include "EventHandlerRegistry.h"
-#include "WorkletEventHandler.h"
+#include "EventHandler.h"
 #include "FrozenObject.h"
 #include <functional>
 #include <thread>
@@ -22,20 +24,18 @@ void extractMutables(jsi::Runtime &rt,
 {
   switch (sv->type)
   {
-  case ValueType::MutableValueType: {
-    auto& mutableValue = ValueWrapper::asMutableValue(sv->valueContainer);
-    res.push_back(mutableValue);
+  case ValueType::MutableValueType:
+    res.push_back(sv->mutableValue);
     break;
-  }
-  case ValueType::FrozenArrayType:
-    for (auto &it : ValueWrapper::asFrozenArray(sv->valueContainer))
+  case ValueType::ArrayType:
+    for (auto &it : sv->frozenArray)
     {
       extractMutables(rt, it, res);
     }
     break;
   case ValueType::RemoteObjectType:
-  case ValueType::FrozenObjectType:
-    for (auto &it : ValueWrapper::asFrozenObject(sv->valueContainer)->map)
+  case ValueType::ObjectType:
+    for (auto &it : sv->frozenObject->map)
     {
       extractMutables(rt, it.second, res);
     }
@@ -125,9 +125,8 @@ jsi::Value NativeReanimatedModule::startMapper(jsi::Runtime &rt, const jsi::Valu
 
   scheduler->scheduleOnUI([=] {
     auto mapperFunction = mapperShareable->getValue(*runtime).asObject(*runtime).asFunction(*runtime);
-    std::shared_ptr<jsi::Function> mapperFunctionPointer = std::make_shared<jsi::Function>(std::move(mapperFunction));
-    std::shared_ptr<Mapper> mapperPointer = std::make_shared<Mapper>(this, newMapperId, mapperFunctionPointer, inputMutables, outputMutables);
-    mapperRegistry->startMapper(mapperPointer);
+    auto mapper = std::make_shared<Mapper>(this, newMapperId, std::move(mapperFunction), inputMutables, outputMutables);
+    mapperRegistry->startMapper(mapper);
     maybeRequestRender();
   });
 
@@ -139,7 +138,6 @@ void NativeReanimatedModule::stopMapper(jsi::Runtime &rt, const jsi::Value &mapp
   unsigned long id = mapperId.asNumber();
   scheduler->scheduleOnUI([=] {
     mapperRegistry->stopMapper(id);
-    maybeRequestRender();
   });
 }
 
@@ -153,7 +151,7 @@ jsi::Value NativeReanimatedModule::registerEventHandler(jsi::Runtime &rt, const 
 
   scheduler->scheduleOnUI([=] {
     auto handlerFunction = handlerShareable->getValue(*runtime).asObject(*runtime).asFunction(*runtime);
-    auto handler = std::make_shared<WorkletEventHandler>(newRegistrationId, eventName, std::move(handlerFunction));
+    auto handler = std::make_shared<EventHandler>(newRegistrationId, eventName, std::move(handlerFunction));
     eventHandlerRegistry->registerEventHandler(handler);
   });
 
@@ -201,15 +199,13 @@ void NativeReanimatedModule::onEvent(std::string eventName, std::string eventAsS
         maybeRequestRender();
       }
     }
-    catch(std::exception &e) {
-     std::string str = e.what();
-     this->errorHandler->setError(str);
-     this->errorHandler->raise();
-   } catch(...) {
-     std::string str = "OnEvent error";
-     this->errorHandler->setError(str);
-     this->errorHandler->raise();
-  }
+    catch (...)
+    {
+      if (!errorHandler->raise())
+      {
+        throw;
+      }
+    }
 }
 
 bool NativeReanimatedModule::isAnyHandlerWaitingForEvent(std::string eventName) {
@@ -245,14 +241,13 @@ void NativeReanimatedModule::onRender(double timestampMs)
     {
       maybeRequestRender();
     }
-  } catch(std::exception &e) {
-    std::string str = e.what();
-    this->errorHandler->setError(str);
-    this->errorHandler->raise();
-  } catch(...) {
-    std::string str = "OnRender error";
-    this->errorHandler->setError(str);
-    this->errorHandler->raise();
+  }
+  catch (...)
+  {
+    if (!errorHandler->raise())
+    {
+      throw;
+    }
   }
 }
 

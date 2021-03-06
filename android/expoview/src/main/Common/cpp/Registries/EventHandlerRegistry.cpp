@@ -1,9 +1,9 @@
 #include "EventHandlerRegistry.h"
-#include "WorkletEventHandler.h"
+#include "EventHandler.h"
 
 namespace reanimated {
 
-void EventHandlerRegistry::registerEventHandler(std::shared_ptr<WorkletEventHandler> eventHandler) {
+void EventHandlerRegistry::registerEventHandler(std::shared_ptr<EventHandler> eventHandler) {
   const std::lock_guard<std::mutex> lock(instanceMutex);
   eventMappings[eventHandler->eventName][eventHandler->id] = eventHandler;
   eventHandlers[eventHandler->id] = eventHandler;
@@ -14,15 +14,11 @@ void EventHandlerRegistry::unregisterEventHandler(unsigned long id) {
   auto handlerIt = eventHandlers.find(id);
   if (handlerIt != eventHandlers.end()) {
     eventMappings[handlerIt->second->eventName].erase(id);
-    if (eventMappings[handlerIt->second->eventName].empty()) {
-      eventMappings.erase(handlerIt->second->eventName);
-    }
-    eventHandlers.erase(handlerIt);
   }
 }
 
 void EventHandlerRegistry::processEvent(jsi::Runtime &rt, std::string eventName, std::string eventPayload) {
-  std::vector<std::shared_ptr<WorkletEventHandler>> handlersForEvent;
+  std::vector<std::shared_ptr<EventHandler>> handlersForEvent;
   {
     const std::lock_guard<std::mutex> lock(instanceMutex);
     auto handlersIt = eventMappings.find(eventName);

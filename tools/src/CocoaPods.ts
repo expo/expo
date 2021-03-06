@@ -10,11 +10,9 @@ export type Podspec = {
   platforms: Record<string, string>;
   source_files: string | string[];
   exclude_files: string | string[];
-  preserve_paths: string | string[];
   compiler_flags: string;
   frameworks: string | string[];
   pod_target_xcconfig: Record<string, string>;
-  xcconfig: Record<string, string>;
   dependencies: Record<string, any>;
   info_plist: Record<string, string>;
   ios?: Podspec;

@@ -2,10 +2,7 @@
 
 #define CHECK_SPEED 0
 
-#include "./Logger.h"
-#include <memory>
-#include <functional>
-#include <string>
+#include "Logger.h"
 
 namespace reanimated
 {
