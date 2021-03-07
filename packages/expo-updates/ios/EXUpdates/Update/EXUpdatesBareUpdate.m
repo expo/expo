@@ -32,7 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
 
   NSMutableArray<EXUpdatesAsset *> *processedAssets = [NSMutableArray new];
 
-  NSString *bundleKey = [NSString stringWithFormat:@"bundle-%@", uuid.UUIDString];
+  // use unsanitized id value from manifest
+  NSString *bundleKey = [NSString stringWithFormat:@"bundle-%@", updateId];
   EXUpdatesAsset *jsBundleAsset = [[EXUpdatesAsset alloc] initWithKey:bundleKey type:EXUpdatesBareEmbeddedBundleFileType];
   jsBundleAsset.isLaunchAsset = YES;
   jsBundleAsset.mainBundleFilename = EXUpdatesBareEmbeddedBundleFilename;

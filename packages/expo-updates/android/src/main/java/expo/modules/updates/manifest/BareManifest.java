@@ -86,7 +86,9 @@ public class BareManifest implements Manifest {
   public ArrayList<AssetEntity> getAssetEntityList() {
     ArrayList<AssetEntity> assetList = new ArrayList<>();
 
-    AssetEntity bundleAssetEntity = new AssetEntity("bundle-" + mId, "js");
+    // use unsanitized id value from manifest
+    String bundleKey = "bundle-" + mManifestJson.optString("id", mId.toString());
+    AssetEntity bundleAssetEntity = new AssetEntity(bundleKey, "js");
     bundleAssetEntity.isLaunchAsset = true;
     bundleAssetEntity.embeddedAssetFilename = EmbeddedLoader.BARE_BUNDLE_FILENAME;
     assetList.add(bundleAssetEntity);
