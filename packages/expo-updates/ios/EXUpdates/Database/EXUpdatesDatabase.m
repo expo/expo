@@ -84,7 +84,7 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
     VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, 0);";
     if ([self _executeSql:assetInsertSql
                  withArgs:@[
-                          asset.key,
+                          asset.key ?: [NSNull null],
                           asset.url ? asset.url.absoluteString : [NSNull null],
                           asset.headers ?: [NSNull null],
                           asset.type,
@@ -120,6 +120,10 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
 
 - (BOOL)addExistingAsset:(EXUpdatesAsset *)asset toUpdateWithId:(NSUUID *)updateId error:(NSError ** _Nullable)error
 {
+  if (!asset.key) {
+    return NO;
+  }
+
   BOOL success;
 
   sqlite3_exec(_db, "BEGIN;", NULL, NULL, NULL);
@@ -159,7 +163,7 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
   NSString * const assetUpdateSql = @"UPDATE \"assets\" SET \"headers\" = ?2, \"type\" = ?3, \"metadata\" = ?4, \"download_time\" = ?5, \"relative_path\" = ?6, \"hash\" = ?7, \"url\" = ?8 WHERE \"key\" = ?1;";
   [self _executeSql:assetUpdateSql
            withArgs:@[
-                      asset.key,
+                      asset.key ?: [NSNull null],
                       asset.headers ?: [NSNull null],
                       asset.type,
                       asset.metadata ?: [NSNull null],
@@ -342,8 +346,12 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
   return assets;
 }
 
-- (nullable EXUpdatesAsset *)assetWithKey:(NSString *)key error:(NSError ** _Nullable)error
+- (nullable EXUpdatesAsset *)assetWithKey:(nullable NSString *)key error:(NSError ** _Nullable)error
 {
+  if (!key) {
+    return nil;
+  }
+
   NSString * const sql = @"SELECT * FROM assets WHERE \"key\" = ?1 LIMIT 1;";
 
   NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:@[key] error:error];
@@ -496,8 +504,12 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
   if (rowUrl && [rowUrl isKindOfClass:[NSString class]]) {
     url = [NSURL URLWithString:rowUrl];
   }
+  NSString *key;
+  if (row[@"key"] && row[@"key"] != NSNull.null) {
+    key = row[@"key"];
+  }
 
-  EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithKey:row[@"key"] type:row[@"type"]];
+  EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithKey:key type:row[@"type"]];
   asset.url = url;
   asset.downloadTime = [NSDate dateWithTimeIntervalSince1970:([(NSNumber *)row[@"download_time"] doubleValue] / 1000)];
   asset.filename = row[@"relative_path"];

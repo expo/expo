@@ -116,7 +116,7 @@ public class NewManifest implements Manifest {
     ArrayList<AssetEntity> assetList = new ArrayList<>();
 
     try {
-      AssetEntity bundleAssetEntity = new AssetEntity("bundle-" + mCommitTime.getTime(), mLaunchAsset.getString("contentType"));
+      AssetEntity bundleAssetEntity = new AssetEntity(mLaunchAsset.getString("key"), mLaunchAsset.getString("contentType"));
       bundleAssetEntity.url = Uri.parse(mLaunchAsset.getString("url"));
       bundleAssetEntity.isLaunchAsset = true;
       bundleAssetEntity.embeddedAssetFilename = BUNDLE_FILENAME;

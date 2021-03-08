@@ -76,6 +76,9 @@ public abstract class AssetDao {
   }
 
   public @Nullable AssetEntity loadAssetWithKey(String key) {
+    if (key == null) {
+      return null;
+    }
     List<AssetEntity> assets = _loadAssetWithKey(key);
     if (assets.size() > 0) {
       return assets.get(0);

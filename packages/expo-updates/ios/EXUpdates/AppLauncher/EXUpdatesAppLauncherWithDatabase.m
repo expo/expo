@@ -235,7 +235,7 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
   if (embeddedManifest) {
     EXUpdatesAsset *matchingAsset;
     for (EXUpdatesAsset *embeddedAsset in embeddedManifest.assets) {
-      if ([embeddedAsset.key isEqualToString:asset.key]) {
+      if (embeddedAsset.key && [embeddedAsset.key isEqualToString:asset.key]) {
         matchingAsset = embeddedAsset;
         break;
       }
