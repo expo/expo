@@ -4,7 +4,7 @@ PODS:
     - lottie-ios (~> 3.1.8)
   - ABI38_0_0EXAdsAdMob (8.2.1):
     - ABI38_0_0UMCore
-    - Google-Mobile-Ads-SDK (= 7.55.1)
+    - Google-Mobile-Ads-SDK (= 7.69.0)
   - ABI38_0_0EXAdsFacebook (8.2.1):
     - ABI38_0_0UMCore
     - FBAudienceNetwork
@@ -77,19 +77,17 @@ PODS:
   - ABI38_0_0EXFaceDetector (8.2.1):
     - ABI38_0_0UMCore
     - ABI38_0_0UMFaceDetectorInterface
-    - Firebase/Core (= 6.14.0)
-    - Firebase/MLVision (= 6.14.0)
-    - Firebase/MLVisionFaceModel (= 6.14.0)
+    - GoogleMLKit/FaceDetection (= 2.1.0)
   - ABI38_0_0EXFileSystem (9.0.1):
     - ABI38_0_0UMCore
     - ABI38_0_0UMFileSystemInterface
   - ABI38_0_0EXFirebaseAnalytics (2.4.1):
     - ABI38_0_0EXFirebaseCore
     - ABI38_0_0UMCore
-    - Firebase/Core (= 6.14.0)
+    - Firebase/Core (= 7.7.0)
   - ABI38_0_0EXFirebaseCore (1.1.1):
     - ABI38_0_0UMCore
-    - Firebase/Core (= 6.14.0)
+    - Firebase/Core (= 7.7.0)
   - ABI38_0_0EXFont (8.2.1):
     - ABI38_0_0UMCore
     - ABI38_0_0UMFontInterface
@@ -534,7 +532,7 @@ PODS:
     - lottie-ios (~> 3.1.8)
   - ABI39_0_0EXAdsAdMob (8.3.0):
     - ABI39_0_0UMCore
-    - Google-Mobile-Ads-SDK (= 7.55.1)
+    - Google-Mobile-Ads-SDK (= 7.69.0)
   - ABI39_0_0EXAdsFacebook (8.4.0):
     - ABI39_0_0UMCore
     - FBAudienceNetwork
@@ -605,19 +603,17 @@ PODS:
   - ABI39_0_0EXFaceDetector (8.3.0):
     - ABI39_0_0UMCore
     - ABI39_0_0UMFaceDetectorInterface
-    - Firebase/Core (= 6.14.0)
-    - Firebase/MLVision (= 6.14.0)
-    - Firebase/MLVisionFaceModel (= 6.14.0)
+    - GoogleMLKit/FaceDetection (= 2.1.0)
   - ABI39_0_0EXFileSystem (9.2.0):
     - ABI39_0_0UMCore
     - ABI39_0_0UMFileSystemInterface
   - ABI39_0_0EXFirebaseAnalytics (2.5.0):
     - ABI39_0_0EXFirebaseCore
     - ABI39_0_0UMCore
-    - Firebase/Core (= 6.14.0)
+    - Firebase/Core (= 7.7.0)
   - ABI39_0_0EXFirebaseCore (1.2.0):
     - ABI39_0_0UMCore
-    - Firebase/Core (= 6.14.0)
+    - Firebase/Core (= 7.7.0)
   - ABI39_0_0EXFont (8.3.0):
     - ABI39_0_0UMCore
     - ABI39_0_0UMFontInterface
@@ -1074,7 +1070,7 @@ PODS:
     - lottie-ios (~> 3.1.8)
   - ABI40_0_0EXAdsAdMob (8.4.0):
     - ABI40_0_0UMCore
-    - Google-Mobile-Ads-SDK (= 7.55.1)
+    - Google-Mobile-Ads-SDK (= 7.69.0)
   - ABI40_0_0EXAdsFacebook (8.4.1):
     - ABI40_0_0UMCore
     - FBAudienceNetwork (~> 5.9.0)
@@ -1145,19 +1141,17 @@ PODS:
   - ABI40_0_0EXFaceDetector (8.4.0):
     - ABI40_0_0UMCore
     - ABI40_0_0UMFaceDetectorInterface
-    - Firebase/Core (= 6.14.0)
-    - Firebase/MLVision (= 6.14.0)
-    - Firebase/MLVisionFaceModel (= 6.14.0)
+    - GoogleMLKit/FaceDetection (= 2.1.0)
   - ABI40_0_0EXFileSystem (9.3.0):
     - ABI40_0_0UMCore
     - ABI40_0_0UMFileSystemInterface
   - ABI40_0_0EXFirebaseAnalytics (2.6.0):
     - ABI40_0_0EXFirebaseCore
     - ABI40_0_0UMCore
-    - Firebase/Core (= 6.14.0)
+    - Firebase/Core (= 7.7.0)
   - ABI40_0_0EXFirebaseCore (1.3.0):
     - ABI40_0_0UMCore
-    - Firebase/Core (= 6.14.0)
+    - Firebase/Core (= 7.7.0)
   - ABI40_0_0EXFont (8.4.0):
     - ABI40_0_0UMCore
     - ABI40_0_0UMFontInterface
@@ -1643,7 +1637,7 @@ PODS:
   - CocoaLumberjack/Core (3.5.3)
   - DoubleConversion (1.1.6)
   - EXAdsAdMob (9.0.0):
-    - Google-Mobile-Ads-SDK (= 7.55.1)
+    - Google-Mobile-Ads-SDK (= 7.69.0)
     - UMCore
     - UMPermissionsInterface
   - EXAdsFacebook (9.0.0):
@@ -1722,9 +1716,7 @@ PODS:
     - UMCore
     - UMPermissionsInterface
   - EXFaceDetector (9.0.1):
-    - Firebase/Core (= 6.14.0)
-    - Firebase/MLVision (= 6.14.0)
-    - Firebase/MLVisionFaceModel (= 6.14.0)
+    - GoogleMLKit/FaceDetection (= 2.1.0)
     - UMCore
     - UMFaceDetectorInterface
     - UMFileSystemInterface
@@ -1733,10 +1725,10 @@ PODS:
     - UMFileSystemInterface
   - EXFirebaseAnalytics (3.0.0):
     - EXFirebaseCore
-    - Firebase/Core (= 6.14.0)
+    - Firebase/Core (= 7.7.0)
     - UMCore
   - EXFirebaseCore (2.0.0):
-    - Firebase/Core (= 6.14.0)
+    - Firebase/Core (= 7.7.0)
     - UMCore
   - EXFont (9.0.0):
     - UMCore
@@ -1868,62 +1860,34 @@ PODS:
   - FBSDKCoreKit/Basics (9.0.1)
   - FBSDKCoreKit/Core (9.0.1):
     - FBSDKCoreKit/Basics
-  - Firebase/Core (6.14.0):
+  - Firebase/Core (7.7.0):
     - Firebase/CoreOnly
-    - FirebaseAnalytics (= 6.1.7)
-  - Firebase/CoreOnly (6.14.0):
-    - FirebaseCore (= 6.5.0)
-  - Firebase/MLVision (6.14.0):
-    - Firebase/CoreOnly
-    - FirebaseMLVision (~> 0.19.0)
-  - Firebase/MLVisionFaceModel (6.14.0):
-    - Firebase/CoreOnly
-    - FirebaseMLVisionFaceModel (~> 0.19.0)
-  - FirebaseAnalytics (6.1.7):
-    - FirebaseCore (~> 6.5)
-    - FirebaseInstanceID (~> 4.2)
-    - GoogleAppMeasurement (= 6.1.7)
-    - GoogleUtilities/AppDelegateSwizzler (~> 6.0)
-    - GoogleUtilities/MethodSwizzler (~> 6.0)
-    - GoogleUtilities/Network (~> 6.0)
-    - "GoogleUtilities/NSData+zlib (~> 6.0)"
-    - nanopb (= 0.3.9011)
-  - FirebaseCore (6.5.0):
-    - FirebaseCoreDiagnostics (~> 1.0)
-    - FirebaseCoreDiagnosticsInterop (~> 1.0)
-    - GoogleUtilities/Environment (~> 6.4)
-    - GoogleUtilities/Logger (~> 6.4)
-  - FirebaseCoreDiagnostics (1.2.4):
-    - FirebaseCoreDiagnosticsInterop (~> 1.2)
-    - GoogleDataTransportCCTSupport (~> 3.0)
-    - GoogleUtilities/Environment (~> 6.5)
-    - GoogleUtilities/Logger (~> 6.5)
-    - nanopb (~> 0.3.901)
-  - FirebaseCoreDiagnosticsInterop (1.2.0)
-  - FirebaseInstanceID (4.2.8):
-    - FirebaseCore (~> 6.5)
-    - GoogleUtilities/Environment (~> 6.4)
-    - GoogleUtilities/UserDefaults (~> 6.4)
-  - FirebaseMLCommon (0.19.0):
-    - FirebaseCore (~> 6.3)
-    - FirebaseInstanceID (~> 4.2)
-    - GoogleToolboxForMac/Logger (~> 2.1)
-    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
-    - "GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)"
-    - GoogleUtilities/UserDefaults (~> 6.0)
-    - GTMSessionFetcher/Core (~> 1.1)
-    - Protobuf (~> 3.5)
-  - FirebaseMLVision (0.19.0):
-    - FirebaseCore (~> 6.3)
-    - FirebaseMLCommon (~> 0.19)
-    - GoogleAPIClientForREST/Core (~> 1.3)
-    - GoogleAPIClientForREST/Vision (~> 1.3)
-    - GoogleToolboxForMac/Logger (~> 2.1)
-    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
-    - GTMSessionFetcher/Core (~> 1.1)
-    - Protobuf (~> 3.5)
-  - FirebaseMLVisionFaceModel (0.19.0):
-    - FirebaseMLVision (~> 0.19)
+    - FirebaseAnalytics (= 7.7.0)
+  - Firebase/CoreOnly (7.7.0):
+    - FirebaseCore (= 7.7.0)
+  - FirebaseAnalytics (7.7.0):
+    - FirebaseCore (~> 7.0)
+    - FirebaseInstallations (~> 7.0)
+    - GoogleAppMeasurement (= 7.7.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.0)
+    - GoogleUtilities/MethodSwizzler (~> 7.0)
+    - GoogleUtilities/Network (~> 7.0)
+    - "GoogleUtilities/NSData+zlib (~> 7.0)"
+    - nanopb (~> 2.30907.0)
+  - FirebaseCore (7.7.0):
+    - FirebaseCoreDiagnostics (~> 7.4)
+    - GoogleUtilities/Environment (~> 7.0)
+    - GoogleUtilities/Logger (~> 7.0)
+  - FirebaseCoreDiagnostics (7.7.0):
+    - GoogleDataTransport (~> 8.0)
+    - GoogleUtilities/Environment (~> 7.0)
+    - GoogleUtilities/Logger (~> 7.0)
+    - nanopb (~> 2.30907.0)
+  - FirebaseInstallations (7.7.0):
+    - FirebaseCore (~> 7.0)
+    - GoogleUtilities/Environment (~> 7.0)
+    - GoogleUtilities/UserDefaults (~> 7.0)
+    - PromisesObjC (~> 1.2)
   - Folly (2020.01.13.00):
     - boost-for-react-native
     - DoubleConversion
@@ -1950,62 +1914,64 @@ PODS:
     - GoogleMaps
   - Google-Maps-iOS-Utils/QuadTree (2.1.0):
     - GoogleMaps
-  - Google-Mobile-Ads-SDK (7.55.1):
-    - GoogleAppMeasurement (~> 6.0)
-  - GoogleAPIClientForREST/Core (1.5.1):
-    - GTMSessionFetcher (>= 1.1.7)
-  - GoogleAPIClientForREST/Vision (1.5.1):
-    - GoogleAPIClientForREST/Core
-    - GTMSessionFetcher (>= 1.1.7)
-  - GoogleAppMeasurement (6.1.7):
-    - GoogleUtilities/AppDelegateSwizzler (~> 6.0)
-    - GoogleUtilities/MethodSwizzler (~> 6.0)
-    - GoogleUtilities/Network (~> 6.0)
-    - "GoogleUtilities/NSData+zlib (~> 6.0)"
-    - nanopb (= 0.3.9011)
-  - GoogleDataTransport (6.2.1)
-  - GoogleDataTransportCCTSupport (3.0.0):
-    - GoogleDataTransport (~> 6.0)
-    - nanopb (~> 0.3.901)
+  - Google-Mobile-Ads-SDK (7.69.0):
+    - GoogleAppMeasurement (~> 7.0)
+    - GoogleUserMessagingPlatform (~> 1.1)
+  - GoogleAppMeasurement (7.7.0):
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.0)
+    - GoogleUtilities/MethodSwizzler (~> 7.0)
+    - GoogleUtilities/Network (~> 7.0)
+    - "GoogleUtilities/NSData+zlib (~> 7.0)"
+    - nanopb (~> 2.30907.0)
+  - GoogleDataTransport (8.2.0):
+    - nanopb (~> 2.30907.0)
   - GoogleMaps (3.6.0):
     - GoogleMaps/Maps (= 3.6.0)
   - GoogleMaps/Base (3.6.0)
   - GoogleMaps/Maps (3.6.0):
     - GoogleMaps/Base
+  - GoogleMLKit/FaceDetection (2.1.0):
+    - GoogleMLKit/MLKitCore
+    - MLKitFaceDetection (~> 1.2.0)
+  - GoogleMLKit/MLKitCore (2.1.0):
+    - MLKitCommon (~> 2.1.0)
   - GoogleSignIn (5.0.2):
     - AppAuth (~> 1.2)
     - GTMAppAuth (~> 1.0)
     - GTMSessionFetcher/Core (~> 1.1)
-  - GoogleToolboxForMac/DebugUtils (2.3.0):
-    - GoogleToolboxForMac/Defines (= 2.3.0)
-  - GoogleToolboxForMac/Defines (2.3.0)
-  - GoogleToolboxForMac/Logger (2.3.0):
-    - GoogleToolboxForMac/Defines (= 2.3.0)
-  - "GoogleToolboxForMac/NSData+zlib (2.3.0)":
-    - GoogleToolboxForMac/Defines (= 2.3.0)
-  - "GoogleToolboxForMac/NSDictionary+URLArguments (2.3.0)":
-    - GoogleToolboxForMac/DebugUtils (= 2.3.0)
-    - GoogleToolboxForMac/Defines (= 2.3.0)
-    - "GoogleToolboxForMac/NSString+URLArguments (= 2.3.0)"
-  - "GoogleToolboxForMac/NSString+URLArguments (2.3.0)"
-  - GoogleUtilities/AppDelegateSwizzler (6.7.2):
+  - GoogleToolboxForMac/DebugUtils (2.3.1):
+    - GoogleToolboxForMac/Defines (= 2.3.1)
+  - GoogleToolboxForMac/Defines (2.3.1)
+  - GoogleToolboxForMac/Logger (2.3.1):
+    - GoogleToolboxForMac/Defines (= 2.3.1)
+  - "GoogleToolboxForMac/NSData+zlib (2.3.1)":
+    - GoogleToolboxForMac/Defines (= 2.3.1)
+  - "GoogleToolboxForMac/NSDictionary+URLArguments (2.3.1)":
+    - GoogleToolboxForMac/DebugUtils (= 2.3.1)
+    - GoogleToolboxForMac/Defines (= 2.3.1)
+    - "GoogleToolboxForMac/NSString+URLArguments (= 2.3.1)"
+  - "GoogleToolboxForMac/NSString+URLArguments (2.3.1)"
+  - GoogleUserMessagingPlatform (1.4.0)
+  - GoogleUtilities/AppDelegateSwizzler (7.2.2):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
     - GoogleUtilities/Network
-  - GoogleUtilities/Environment (6.7.2):
+  - GoogleUtilities/Environment (7.2.2):
     - PromisesObjC (~> 1.2)
-  - GoogleUtilities/Logger (6.7.2):
+  - GoogleUtilities/Logger (7.2.2):
     - GoogleUtilities/Environment
-  - GoogleUtilities/MethodSwizzler (6.7.2):
+  - GoogleUtilities/MethodSwizzler (7.2.2):
     - GoogleUtilities/Logger
-  - GoogleUtilities/Network (6.7.2):
+  - GoogleUtilities/Network (7.2.2):
     - GoogleUtilities/Logger
     - "GoogleUtilities/NSData+zlib"
     - GoogleUtilities/Reachability
-  - "GoogleUtilities/NSData+zlib (6.7.2)"
-  - GoogleUtilities/Reachability (6.7.2):
+  - "GoogleUtilities/NSData+zlib (7.2.2)"
+  - GoogleUtilities/Reachability (7.2.2):
     - GoogleUtilities/Logger
-  - GoogleUtilities/UserDefaults (6.7.2):
+  - GoogleUtilities/UserDefaults (7.2.2):
+    - GoogleUtilities/Logger
+  - GoogleUtilitiesComponents (1.0.0):
     - GoogleUtilities/Logger
   - GTMAppAuth (1.1.0):
     - AppAuth/Core (~> 1.4)
@@ -2020,13 +1986,31 @@ PODS:
   - lottie-react-native (3.4.0):
     - lottie-ios (~> 3.1.8)
     - React
-  - nanopb (0.3.9011):
-    - nanopb/decode (= 0.3.9011)
-    - nanopb/encode (= 0.3.9011)
-  - nanopb/decode (0.3.9011)
-  - nanopb/encode (0.3.9011)
-  - PromisesObjC (1.2.11)
-  - Protobuf (3.13.0)
+  - MLKitCommon (2.1.0):
+    - GoogleDataTransport (~> 8.0)
+    - GoogleToolboxForMac/Logger (~> 2.1)
+    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
+    - "GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)"
+    - GoogleUtilities/UserDefaults (~> 7.0)
+    - GoogleUtilitiesComponents (~> 1.0)
+    - GTMSessionFetcher/Core (~> 1.1)
+    - Protobuf (~> 3.12)
+  - MLKitFaceDetection (1.2.0):
+    - MLKitCommon (~> 2.1)
+    - MLKitVision (~> 1.2)
+  - MLKitVision (1.2.0):
+    - GoogleToolboxForMac/Logger (~> 2.1)
+    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
+    - GTMSessionFetcher/Core (~> 1.1)
+    - MLKitCommon (~> 2.1)
+    - Protobuf (~> 3.12)
+  - nanopb (2.30907.0):
+    - nanopb/decode (= 2.30907.0)
+    - nanopb/encode (= 2.30907.0)
+  - nanopb/decode (2.30907.0)
+  - nanopb/encode (2.30907.0)
+  - PromisesObjC (1.2.12)
+  - Protobuf (3.14.0)
   - RCTRequired (0.63.2)
   - RCTTypeSafety (0.63.2):
     - FBLazyVector (= 0.63.2)
@@ -2739,25 +2723,25 @@ SPEC REPOS:
     - FirebaseAnalytics
     - FirebaseCore
     - FirebaseCoreDiagnostics
-    - FirebaseCoreDiagnosticsInterop
-    - FirebaseInstanceID
-    - FirebaseMLCommon
-    - FirebaseMLVision
-    - FirebaseMLVisionFaceModel
+    - FirebaseInstallations
     - Google-Maps-iOS-Utils
     - Google-Mobile-Ads-SDK
-    - GoogleAPIClientForREST
     - GoogleAppMeasurement
     - GoogleDataTransport
-    - GoogleDataTransportCCTSupport
     - GoogleMaps
+    - GoogleMLKit
     - GoogleSignIn
     - GoogleToolboxForMac
+    - GoogleUserMessagingPlatform
     - GoogleUtilities
+    - GoogleUtilitiesComponents
     - GTMAppAuth
     - GTMSessionFetcher
     - JKBigInteger2
     - lottie-ios
+    - MLKitCommon
+    - MLKitFaceDetection
+    - MLKitVision
     - nanopb
     - PromisesObjC
     - Protobuf
@@ -3585,7 +3569,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   ABI38_0_0-lottie-react-native: b9b005825715f16de7666983998fad689abb8cd9
-  ABI38_0_0EXAdsAdMob: 603040c1db1cc6f37537091d97af8e2b5eefb25e
+  ABI38_0_0EXAdsAdMob: e05502b9384593ee077046382afce4406c35df7c
   ABI38_0_0EXAdsFacebook: e4f6d3f5ecd06a2e304b349546387c76212edd78
   ABI38_0_0EXAmplitude: e076fea5f0a29989631fdb3b4bf5e461751f85ad
   ABI38_0_0EXAppAuth: bae52f278c583c2e073f0857948e7c5a2f798a9e
@@ -3608,10 +3592,10 @@ SPEC CHECKSUMS:
   ABI38_0_0EXDocumentPicker: 17eb95bd9fce893664fdff073b8bafcc5554a0e0
   ABI38_0_0EXErrorRecovery: 90c36f95f438e4e10f54da858fd0367bf2822c9a
   ABI38_0_0EXFacebook: 92d77f024a2712f7e88ced2e4d82548381b70cfd
-  ABI38_0_0EXFaceDetector: 2de304f2321475330b504359f5bc6312c422c4ea
+  ABI38_0_0EXFaceDetector: bc0101b12130eb8e76cb85aaceb915165801f135
   ABI38_0_0EXFileSystem: 82f2c793f06481ebf635b1583be8ad22be77880f
-  ABI38_0_0EXFirebaseAnalytics: 7da8d4a243932f637d4ac0859369791c5fc4e568
-  ABI38_0_0EXFirebaseCore: df61e244e0fc459fff89f79ab7878cd166bf1a27
+  ABI38_0_0EXFirebaseAnalytics: 7b9cadf044c29bf6e09d17777bfada50ddb50714
+  ABI38_0_0EXFirebaseCore: 71bf544a9d8194011a011d36e5cc1fa088b925ad
   ABI38_0_0EXFont: bec752800b812571ffb77a919a48c2be464bcf38
   ABI38_0_0EXGL: 979a4684c1a78fef4af57c74f6804ced1deb5e0d
   ABI38_0_0EXGoogleSignIn: 0ea7f8181a364cc2aa3807d6dd4013f08603f60c
@@ -3684,7 +3668,7 @@ SPEC CHECKSUMS:
   ABI38_0_0UMTaskManagerInterface: 26dcad5c9e8a4bf6c6a2caa71dd418034cc120b1
   ABI38_0_0Yoga: b5cdb5cd24cced7ad15b84a6a7500e8f4098a250
   ABI39_0_0-lottie-react-native: f67bc5229cd919107137b81045e1a72e18afc597
-  ABI39_0_0EXAdsAdMob: 760d2007213b2eb84fc832dfd1bcba1ef9c7313f
+  ABI39_0_0EXAdsAdMob: 409abe0403cc5b02e6240c5a0aa4d79112e4ced1
   ABI39_0_0EXAdsFacebook: d6e11307c23444b8c5f809866e273fb24f4d3ec9
   ABI39_0_0EXAmplitude: 75a77f8459efe03dd46fd79e1ebf5525599dcda6
   ABI39_0_0EXAppAuth: da5325b3b2fece50f55a8562ff3a15df5df318c1
@@ -3706,10 +3690,10 @@ SPEC CHECKSUMS:
   ABI39_0_0EXDocumentPicker: e41459f89fa90a19948fc04c53cbec4e755c4f09
   ABI39_0_0EXErrorRecovery: fcb973c35c1c62571a656f5ac7e13a15ad81b002
   ABI39_0_0EXFacebook: e0aea16d328c84bb380fc0eeefb561c148d3810d
-  ABI39_0_0EXFaceDetector: 7585231d3d29ef858446588c74d7e1efde3e31da
+  ABI39_0_0EXFaceDetector: b77b0066439edb742a669f125aedac302ca761e2
   ABI39_0_0EXFileSystem: 3b9b7ac8acc528f505bd022751859dcec6906b39
-  ABI39_0_0EXFirebaseAnalytics: a2fe0c204a6fb2985a6bb4019967b0ac0220c74f
-  ABI39_0_0EXFirebaseCore: cac3b592ba6ed3da05c3fdbdd79d5f7a6998f33d
+  ABI39_0_0EXFirebaseAnalytics: b249893f0c0c5927744d3d42d7ab7c4e057c03bf
+  ABI39_0_0EXFirebaseCore: 943b44c148856ad90485d131cba435ce63c02f95
   ABI39_0_0EXFont: ee64c24f0997507b2b242e42018003648abd592f
   ABI39_0_0EXGL: 77dbcc054446f653a53514e985b6e0d0afdb18a0
   ABI39_0_0EXGoogleSignIn: 87050286d78380140f37bcf70c56649e6e94674c
@@ -3784,7 +3768,7 @@ SPEC CHECKSUMS:
   ABI39_0_0UMTaskManagerInterface: f960a07d2b633c634e76f4817912dc0c99a60e53
   ABI39_0_0Yoga: 341913ed0ab0e924b93cd1bd4200267d74013d8b
   ABI40_0_0-lottie-react-native: 26e0e92bec37b7d428d850d6d33c0327df520bf7
-  ABI40_0_0EXAdsAdMob: 40f8d79dfe799d1052837948bc2c0616baf7a472
+  ABI40_0_0EXAdsAdMob: 8778f0ee1aac15a7f590c26609d9812142366935
   ABI40_0_0EXAdsFacebook: ab814b79f952ac7122b946358f25903ae7d7f221
   ABI40_0_0EXAmplitude: fb7793f57385650c460819f1b83ab58ca99ac376
   ABI40_0_0EXAppAuth: 0bc2ff698131a99c3fa6fef0ec97ecfabb45a8ae
@@ -3806,10 +3790,10 @@ SPEC CHECKSUMS:
   ABI40_0_0EXDocumentPicker: ce340d2364abf6628326ac7cf8465d6e7f68ba25
   ABI40_0_0EXErrorRecovery: 50279fd4c645138d6840e0e58fa9a3a09efae397
   ABI40_0_0EXFacebook: 2851c103153dc658b5ad7a35965dd34742432c80
-  ABI40_0_0EXFaceDetector: 0bae4eabdc3e70b8636eb0f4a1b2eb20ed969feb
+  ABI40_0_0EXFaceDetector: 0cbce7988210361c02c9175a0bfa9ffbf632e18c
   ABI40_0_0EXFileSystem: d000d93b8759f43c410df7b87b327a8b72a8f334
-  ABI40_0_0EXFirebaseAnalytics: fa6a81e6b75c1dc082da03e3d6025d854afeab64
-  ABI40_0_0EXFirebaseCore: 200462a5651ecfa3dc66cb9b422e968ad53e2fab
+  ABI40_0_0EXFirebaseAnalytics: 538d5f73daf8abe0ebb26d9af1cd85e0f2b44cb2
+  ABI40_0_0EXFirebaseCore: 7bac67a61d6fc762ad261c5f973384f49729b4ed
   ABI40_0_0EXFont: 00e458a095115c91883839ed92ed7b90dddd15cd
   ABI40_0_0EXGL: e40ae6fccb19fa26dd27e5d9cb566f1529b9de0d
   ABI40_0_0EXGoogleSignIn: ff1eefb09175b61659649448a6638e660d9ae7b9
@@ -3889,7 +3873,7 @@ SPEC CHECKSUMS:
   Branch: 9a37f707974a128c37829033c49018b79c7e7a2d
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: cde416483dac037923206447da6e1454df403714
-  EXAdsAdMob: a26e7f6296749d391bc21f1c1ca881321556a400
+  EXAdsAdMob: 471954959199dd2a968e9cd73865a26bb1052513
   EXAdsFacebook: 7ff475ac6d7229c075130811318f73a189f58007
   EXAmplitude: 5e3dabb2ba3d05200a63787b2334e13346df94fb
   EXAppAuth: 39f4af401c042f45405738604cbb7f85e25e87fb
@@ -3912,10 +3896,10 @@ SPEC CHECKSUMS:
   EXDocumentPicker: 5cef8a8593a9232961a2a0e9aa9349a723cafdc7
   EXErrorRecovery: f2dd13f3cc0b99edf47570b19a323d6c69687d6b
   EXFacebook: 4c7bfd576d7d996ad59ffdcdcb5acd4183980dc0
-  EXFaceDetector: 8c6c88864a8f9420190aae8a7c19ba569792d0df
+  EXFaceDetector: 831761847f9b5ad15e50de4c8eec5081cac96733
   EXFileSystem: 9bdb09527eda7fa19ef8f5b3f490ca3887840f31
-  EXFirebaseAnalytics: db3028d0b0b87e4f2a6605947f943417befcad72
-  EXFirebaseCore: 2600f770440abaf0ef7b4a6df69f9e6cc2ea76b6
+  EXFirebaseAnalytics: 387a819b6cb26fed94f510d2e0c6a4948cd248ef
+  EXFirebaseCore: 542d499fbe2dbd1d54589b0b5258f145440bc7c7
   EXFont: ec06a9fb8f0d558fb7afa8540f3d932622fa85d6
   EXGL: 21b387fcb505b57c5942339a4733def64599665f
   EXGL_CPP: e943090d937fcb75186e8c7e436270b8fc2b8b01
@@ -3958,35 +3942,35 @@ SPEC CHECKSUMS:
   FBLazyVector: 3ef4a7f62e7db01092f9d517d2ebc0d0677c4a37
   FBReactNativeSpec: dc7fa9088f0f2a998503a352b0554d69a4391c5a
   FBSDKCoreKit: fada1a6a0076724678993ff05a633848765ff18c
-  Firebase: 0219bb4782eb1406f1b9b0628a2e625484ce910d
-  FirebaseAnalytics: f68b9f3f1241385129ae0a83b63627fc420c05e5
-  FirebaseCore: 632e05cc5e1199d9147122c16d92305eb04c34bd
-  FirebaseCoreDiagnostics: b59c024493a409f8aecba02c99928d0d8431d159
-  FirebaseCoreDiagnosticsInterop: 296e2c5f5314500a850ad0b83e9e7c10b011a850
-  FirebaseInstanceID: ce993a3c3670a8f5d47ce371ac5d143c560608c5
-  FirebaseMLCommon: b8e390c725354c194856df096d0a8d64ae42a4c9
-  FirebaseMLVision: 3cf6158ab38b2059ccf8bf785041086bfa06da14
-  FirebaseMLVisionFaceModel: 1003e20ab8979cb77d7a39c93faeb58c959a63f1
+  Firebase: cd2ab85eec8170dc260186159f21072ecb679ad5
+  FirebaseAnalytics: f3f8f75de34fe04141a69bb1c4bd7e24a80178e1
+  FirebaseCore: ac35d680a0bf32319a59966a1478e0741536b97b
+  FirebaseCoreDiagnostics: 179bf3831213451c8addd036aca7fcf5492ec154
+  FirebaseInstallations: 42c86e7b02ff75b7f27f85833bf5dcb5f38a9774
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
   Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875
-  Google-Mobile-Ads-SDK: f206aff290f26fde422495c6cd187e50efbed57e
-  GoogleAPIClientForREST: 4bb409633efcc2e1b3f945afe7e35039b5a61db2
-  GoogleAppMeasurement: db118eb61a97dd8c4f7014e368d3c335cbbcf80a
-  GoogleDataTransport: 9a8a16f79feffc7f42096743de2a7c4815e84020
-  GoogleDataTransportCCTSupport: 0f39025e8cf51f168711bd3fb773938d7e62ddb5
+  Google-Mobile-Ads-SDK: 2f288748a42920d1c744946a460896a95b0e9110
+  GoogleAppMeasurement: 0c3b134b2c0a90c4c24833873894bfe0e42a0384
+  GoogleDataTransport: 1024b1a4dfbd7a0e92cb20d7e0a6f1fb66b449a4
   GoogleMaps: 82f8fe307193bb4de6ef6bf9e88f1d624b718f9d
+  GoogleMLKit: 6ca2a10de262ee1017b52ac045e8967884ace992
   GoogleSignIn: 7137d297ddc022a7e0aa4619c86d72c909fa7213
-  GoogleToolboxForMac: 1350d40e86a76f7863928d63bcb0b89c84c521c5
-  GoogleUtilities: 7f2f5a07f888cdb145101d6042bc4422f57e70b3
+  GoogleToolboxForMac: 471e0c05d39506e50e6398f46fa9a12ae0efeff9
+  GoogleUserMessagingPlatform: b168e8c46cd8f92aa3e34b584c4ca78a411ce367
+  GoogleUtilities: 31c5b01f978a70c6cff2afc6272b3f1921614b43
+  GoogleUtilitiesComponents: a69c0b3b369ba443e988141e75ef49d9010b1c80
   GTMAppAuth: 197a8dabfea5d665224aa00d17f164fc2248dab9
   GTMSessionFetcher: b3503b20a988c4e20cc189aa798fd18220133f52
   JKBigInteger2: e91672035c42328c48b7dd015b66812ddf40ca9b
   lottie-ios: 3a3758ef5a008e762faec9c9d50a39842f26d124
   lottie-react-native: 55abec29d1a068cd43fdd2e7353e409fdaee8389
-  nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
-  PromisesObjC: 8c196f5a328c2cba3e74624585467a557dcb482f
-  Protobuf: 3dac39b34a08151c6d949560efe3f86134a3f748
+  MLKitCommon: 9ed187a042139d51c0d8bf6a8301bb20b375c576
+  MLKitFaceDetection: 5b92261dd6e4205e3dab0df62537ac3f4e90e5db
+  MLKitVision: 51385878c9100024478971856510f9271ff555b5
+  nanopb: 59221d7f958fb711001e6a449489542d92ae113e
+  PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
+  Protobuf: 0cde852566359049847168e51bd1c690e0f70056
   RCTRequired: f13f25e7b12f925f1f6a6a8c69d929a03c0129fe
   RCTTypeSafety: 44982c5c8e43ff4141eb519a8ddc88059acd1f3a
   React: e1c65dd41cb9db13b99f24608e47dd595f28ca9a

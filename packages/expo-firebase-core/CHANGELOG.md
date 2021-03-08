@@ -2,6 +2,10 @@
 
 ## Unpublished
 
+### 📚 native library updates
+
+- Updated native `firebase sdk version` from `6.14.0` to `7.7.0` on iOS. ([#12125](https://github.com/expo/expo/pull/12125) by [@bbarthec](https://github.com/bbarthec))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
