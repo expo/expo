@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Handle `ActivityNotFoundException` error to prevent crashes. ([#12078](https://github.com/expo/expo/pull/12078) by [@robertying](https://github.com/robertying))
+
 ## 8.4.0 — 2020-11-17
 
 _This version does not introduce any user-facing changes._
