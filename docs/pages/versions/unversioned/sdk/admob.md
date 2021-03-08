@@ -227,22 +227,19 @@ Opens a rewarded AdMob ad.
 | Name                            | Description                                    |
 | ------------------------------- | ---------------------------------------------- |
 | `setAdUnitID(adUnitID: string)` | sets the AdUnit ID for all future ad requests. |
-
 | `requestAdAsync(options)` | (async) requests a rewarded ad. An optional `options` object argument may specify `servePersonalizedAds: true` value — then ad will be personalized. |
 | `showAdAsync()` | (async) shows a rewarded if it is ready (async) |
 
 #### Events
 
-| iOS                                          | _this library_                      | Android                            |
-| -------------------------------------------- | ----------------------------------- | ---------------------------------- |
-| `rewardBasedVideoAd:didRewardUserWithReward` | `rewardedVideoDidRewardUser`        | `onRewarded`                       |
-| `rewardBasedVideoAdDidReceiveAd`             | `rewardedVideoDidLoad`              | `onRewardedVideoAdLoaded`          |
-| `rewardBasedVideoAd:didFailToLoadWithError`  | `rewardedVideoDidFailToLoad`        | `onRewardedVideoAdFailedToLoad`    |
-| `rewardBasedVideoAdDidOpen`                  | `rewardedVideoDidOpen`              | `onRewardedVideoAdOpened`          |
-|                                              | `rewardedVideoDidComplete`          | `onRewardedVideoCompleted`         |
-| `rewardBasedVideoAdDidClose`                 | `rewardedVideoDidClose`             | `onRewardedVideoAdClosed`          |
-| `rewardBasedVideoAdWillLeaveApplication`     | `rewardedVideoWillLeaveApplication` | `onRewardedVideoAdLeftApplication` |
-| `rewardBasedVideoAdDidStartPlaying`          | `rewardedVideoDidStart`             | `onRewardedVideoStarted`           |
+| Events are based on native ad lifecycle |
+| -------------------------------- |
+| `rewardedVideoUserDidEarnReward` |
+| `rewardedVideoDidLoad`           |
+| `rewardedVideoDidFailToLoad`     |
+| `rewardedVideoDidPresent`        |
+| `rewardedVideoDidFailToPresent`  |
+| `rewardedVideoDidDismiss`        |
 
 #### Test ID
 

@@ -69,13 +69,13 @@ function AdMobView() {
     setTestDeviceIDAsync('EMULATOR');
     AdMobRewarded.setAdUnitID(AdMobRewardedTestUnitID);
     AdMobInterstitial.setAdUnitID(AdMobInterstitialTestUnitID);
-    AdMobRewarded.addEventListener('rewardedVideoDidClose', reloadRewarded);
+    AdMobRewarded.addEventListener('rewardedVideoDidDismiss', reloadRewarded);
     AdMobInterstitial.addEventListener('interstitialDidClose', reloadInterstitial);
     reloadRewarded();
     reloadInterstitial();
 
     return () => {
-      AdMobRewarded.removeEventListener('rewardedVideoDidClose', reloadRewarded);
+      AdMobRewarded.removeEventListener('rewardedVideoDidDismiss', reloadRewarded);
       AdMobInterstitial.removeEventListener('interstitialDidClose', reloadInterstitial);
     };
   }, []);

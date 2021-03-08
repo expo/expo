@@ -7,11 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
 
 @interface EXCSBufferOrientationCalculator : NSObject
 
-+ (CGAffineTransform)pointTransformForInterfaceOrientation:(UIInterfaceOrientation)orientation forBufferWidth:(CGFloat)bufferWidth andBufferHeight:(CGFloat)bufferHeight andVideoWidth:(CGFloat)videoWidth andVideoHeight:(CGFloat)videoHeight andMirrored:(BOOL)mirrored;
++ (CGAffineTransform)pointTransformForInterfaceOrientation:(UIInterfaceOrientation)orientation
+                                            forBufferWidth:(CGFloat)bufferWidth
+                                           andBufferHeight:(CGFloat)bufferHeight
+                                             andVideoWidth:(CGFloat)videoWidth
+                                            andVideoHeight:(CGFloat)videoHeight
+                                               andMirrored:(BOOL)mirrored;
 
 @end

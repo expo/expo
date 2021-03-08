@@ -6,7 +6,6 @@
 //  Copyright © 2017 650 Industries. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
 #import <ABI40_0_0UMFaceDetectorInterface/ABI40_0_0UMFaceDetectorManager.h>
 
@@ -17,8 +16,10 @@
 - (void)setIsEnabled:(BOOL)enabled;
 - (void)updateSettings:(NSDictionary *)settings;
 
-- (void)maybeStartFaceDetectionOnSession:(AVCaptureSession *)session withPreviewLayer:(AVCaptureVideoPreviewLayer *)previewLayer;
-- (void)maybeStartFaceDetectionOnSession:(AVCaptureSession *)session withPreviewLayer:(AVCaptureVideoPreviewLayer *)previewLayer mirrored:(BOOL)mirrored;
+- (void)maybeStartFaceDetectionOnSession:(AVCaptureSession *)session
+                        withPreviewLayer:(AVCaptureVideoPreviewLayer *)previewLayer;
+- (void)maybeStartFaceDetectionOnSession:(AVCaptureSession *)session
+                        withPreviewLayer:(AVCaptureVideoPreviewLayer *)previewLayer mirrored:(BOOL)mirrored;
 - (void)stopFaceDetection;
 
 @end

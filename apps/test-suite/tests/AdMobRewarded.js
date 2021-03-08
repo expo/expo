@@ -94,12 +94,12 @@ export function test(t) {
             await AdMobRewarded.dismissAdAsync();
           });
 
-          t.it('calls rewardedVideoDidOpen listener', async () => {
-            const didOpenListener = t.jasmine.createSpy('rewardedVideoDidOpen');
-            AdMobRewarded.addEventListener('rewardedVideoDidOpen', didOpenListener);
+          t.it('calls rewardedVideoDidPresent listener', async () => {
+            const didOpenListener = t.jasmine.createSpy('rewardedVideoDidPresent');
+            AdMobRewarded.addEventListener('rewardedVideoDidPresent', didOpenListener);
             await AdMobRewarded.showAdAsync();
             t.expect(didOpenListener).toHaveBeenCalled();
-            AdMobRewarded.removeEventListener('rewardedVideoDidOpen', didOpenListener);
+            AdMobRewarded.removeEventListener('rewardedVideoDidPresent', didOpenListener);
             await AdMobRewarded.dismissAdAsync();
           });
 
@@ -142,12 +142,12 @@ export function test(t) {
             await AdMobRewarded.dismissAdAsync();
           });
 
-          t.it('calls rewardedVideoDidClose listener', async () => {
-            const didCloseListener = t.jasmine.createSpy('rewardedVideoDidClose');
-            AdMobRewarded.addEventListener('rewardedVideoDidClose', didCloseListener);
+          t.it('calls rewardedVideoDidDismiss listener', async () => {
+            const didCloseListener = t.jasmine.createSpy('rewardedVideoDidDismiss');
+            AdMobRewarded.addEventListener('rewardedVideoDidDismiss', didCloseListener);
             await AdMobRewarded.dismissAdAsync();
             t.expect(didCloseListener).toHaveBeenCalled();
-            AdMobRewarded.removeEventListener('rewardedVideoDidClose', didCloseListener);
+            AdMobRewarded.removeEventListener('rewardedVideoDidDismiss', didCloseListener);
           });
         });
 
