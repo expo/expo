@@ -95,7 +95,7 @@ Now when we run `expo build:ios` it will kick off a build with the Expo build se
 
 > _Note: Running `expo build:[ios/android]` uses the Expo build service &mdash; if you would rather run builds on your own infrastructure, read about how to do this in [Building Standalone Apps on Your CI](../distribution/turtle-cli.md)_
 
-Now you can use [Application Loader](https://help.apple.com/itc/apploader/) to upload the app to App Store Connect, but we find that it’s a bit easier to run `expo upload:ios` instead. Once it's up on App Store Connect, you'll have to do some manual work within their web interface. [Read more about deploying to app stores](../distribution/app-stores.md).
+Now you can use [Transporter](https://apps.apple.com/app/transporter/id1450874784) to upload the app to App Store Connect, but we find that it’s a bit easier to run `expo upload:ios` instead. Once it's up on App Store Connect, you'll have to do some manual work within their web interface. [Read more about deploying to app stores](../distribution/app-stores.md).
 
 <Video file="exploring-managed/uploadios.mp4" spaceAfter />
 
