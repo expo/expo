@@ -1,8 +1,23 @@
-import { NativeModulesProxy } from '@unimodules/core';
+import { NativeModulesProxy, UnavailabilityError } from '@unimodules/core';
+import { Platform } from 'react-native';
+import {
+  PermissionResponse,
+  PermissionStatus,
+  PermissionExpiration,
+} from 'unimodules-permissions-interface';
 
 const { CTKAdSettingsManager } = NativeModulesProxy;
 
 export type AdLogLevel = 'none' | 'debug' | 'verbose' | 'warning' | 'error' | 'notification';
+
+export { PermissionResponse, PermissionStatus, PermissionExpiration };
+
+const androidPermissionsResponse: PermissionResponse = {
+  granted: true,
+  expires: 'never',
+  canAskAgain: true,
+  status: PermissionStatus.GRANTED,
+};
 
 // TODO: rewrite the docblocks
 export default {
@@ -11,6 +26,27 @@ export default {
    */
   get currentDeviceHash(): string {
     return CTKAdSettingsManager.currentDeviceHash;
+  },
+
+  async requestPermissionsAsync(): Promise<PermissionResponse> {
+    if (Platform.OS === 'android') {
+      return Promise.resolve(androidPermissionsResponse);
+    }
+
+    if (!CTKAdSettingsManager.requestPermissionsAsync) {
+      throw new UnavailabilityError('expo-ads-facebook', 'requestPermissionsAsync');
+    }
+    return await CTKAdSettingsManager.requestPermissionsAsync();
+  },
+  async getPermissionsAsync(): Promise<PermissionResponse> {
+    if (Platform.OS === 'android') {
+      return Promise.resolve(androidPermissionsResponse);
+    }
+
+    if (!CTKAdSettingsManager.getPermissionsAsync) {
+      throw new UnavailabilityError('expo-ads-facebook', 'getPermissionsAsync');
+    }
+    return await CTKAdSettingsManager.getPermissionsAsync();
   },
 
   /**
