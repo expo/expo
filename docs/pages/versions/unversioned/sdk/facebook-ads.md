@@ -283,6 +283,26 @@ Promise will be rejected when there's an error loading ads from Facebook Audienc
 
 AdSettings contains global settings for all ad controls.
 
+#### requestPermissionsAsync
+
+Asks for permissions to use data for tracking the user or the device.
+
+> iOS: it requires the `NSUserTrackingUsageDescription` message added to the `info.plist`.
+
+##### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+#### getPermissionsAsync
+
+Checks application's permissions for using data for tracking the user or the device.
+
+> iOS: it requires the `NSUserTrackingUsageDescription` message added to the `info.plist`.
+
+##### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
 #### currentDeviceHash
 
 Constant which contains current device's hash.

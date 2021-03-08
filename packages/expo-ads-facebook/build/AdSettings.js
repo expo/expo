@@ -1,5 +1,14 @@
-import { NativeModulesProxy } from '@unimodules/core';
+import { NativeModulesProxy, UnavailabilityError } from '@unimodules/core';
+import { Platform } from 'react-native';
+import { PermissionStatus, } from 'unimodules-permissions-interface';
 const { CTKAdSettingsManager } = NativeModulesProxy;
+export { PermissionStatus };
+const androidPermissionsResponse = {
+    granted: true,
+    expires: 'never',
+    canAskAgain: true,
+    status: PermissionStatus.GRANTED,
+};
 // TODO: rewrite the docblocks
 export default {
     /**
@@ -7,6 +16,24 @@ export default {
      */
     get currentDeviceHash() {
         return CTKAdSettingsManager.currentDeviceHash;
+    },
+    async requestPermissionsAsync() {
+        if (Platform.OS === 'android') {
+            return Promise.resolve(androidPermissionsResponse);
+        }
+        if (!CTKAdSettingsManager.requestPermissionsAsync) {
+            throw new UnavailabilityError('expo-ads-facebook', 'requestPermissionsAsync');
+        }
+        return await CTKAdSettingsManager.requestPermissionsAsync();
+    },
+    async getPermissionsAsync() {
+        if (Platform.OS === 'android') {
+            return Promise.resolve(androidPermissionsResponse);
+        }
+        if (!CTKAdSettingsManager.getPermissionsAsync) {
+            throw new UnavailabilityError('expo-ads-facebook', 'getPermissionsAsync');
+        }
+        return await CTKAdSettingsManager.getPermissionsAsync();
     },
     /**
      * Registers given device with `deviceHash` to receive test Facebook ads.
