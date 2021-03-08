@@ -24,7 +24,7 @@
 - Send persisted serverDefinedHeaders in manifest requests ([#11994](https://github.com/expo/expo/pull/11994) by [@esamelson](https://github.com/esamelson))
 - Only require signatures with expo go (android). ([#12027](https://github.com/expo/expo/pull/12027) by [@jkhales](https://github.com/jkhales))
 - Only require signatures with expo go (iOS). ([#12072](https://github.com/expo/expo/pull/12072) by [@jkhales](https://github.com/jkhales))
-
+- Make asset keys nullable ([#12084](https://github.com/expo/expo/pull/12084) by [@esamelson](https://github.com/esamelson))
 
 ### 🐛 Bug fixes
 
