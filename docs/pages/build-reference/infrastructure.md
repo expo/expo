@@ -20,7 +20,7 @@ Currently, only one image is supported per platform, more images will be availab
 - Android workers run on Kubernetes in an isolated environment
   - Every build gets its own container running on a dedicated Kubernetes node
   - Build resources: 4 CPU, 16 GB RAM (14 GB after k8s overhead)
-- NPM cache deployed with Kubernetes. [Learn more](caching/#javascript-dependencies)
+- npm cache deployed with Kubernetes. [Learn more](caching/#javascript-dependencies)
 - Maven cache deployed with Kubernetes. [Learn more](caching/#android-dependencies)
 - Global gradle configuration in `~/.gradle/gradle.properties`:
 
@@ -44,7 +44,7 @@ Currently, only one image is supported per platform, more images will be availab
   - Every build gets its own fresh macOS VM
   - Hardware: Intel(R) Xeon(R) CPU E5-2697 (12 core/24 threads), 64 GB RAM
   - Build resource limits: 6 cores, 8 GB RAM
-- NPM cache. [Learn more](caching/#javascript-dependencies)
+- npm cache. [Learn more](caching/#javascript-dependencies)
 
 #### Image `macos-catalina-11.15-xcode-12.1` (alias `default`, `latest`)
 

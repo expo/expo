@@ -8,13 +8,13 @@ Before a build job can begin compiling your project, all project dependencies ne
 
 ## Custom caching
 
-Build profile in [eas.json](../build/eas-json) supports the `cache` field that can be used to configure caching for specific files and directories. Specified files will be uploaded to S3 after successful build and restored after JavaScript dependencies are installed (restoring does not override existing files). Changing the `cache.key` value will invalidate the cache, but any other modification to the `cache` object will also do that.
+The `cache` field on build profiles in [eas.json](../build/eas-json) can be used to configure caching for specific files and directories. Specified files will be saved to persistent storage after a successful build and restored on subsequent builds after the JavaScript dependencies are installed. Restoring does not overwrite existing files. Changing the `cache.key` value will invalidate the cache. Changing any other property of the `cache` object will also invalidate the cache.
 
-Caching is implemented on S3 storage, so it's not fast enough to cache `node_modules` or CocoaPods, it's intended only for files that require significant computation to generate, e.g. compilation results (both final binaries and any intermediate files).
+The caching implementation is built on top of Amazon S3, and it's not fast enough to give you any benefit from caching `node_modules` or CocoaPods; it's intended only for files that require significant computation to generate, e.g. compilation results (both final binaries and any intermediate files).
 
 ## JavaScript dependencies
 
-EAS Build runs an npm cache server that can speed up downloading JavaScript dependencies for your build jobs. It's supported for both platforms, for projects that are using  npm or yarn v2 it will work out of the box, but yarn v1 will require this [workaround](how-tos/#using-npm-cache-with-yarn-v1).
+EAS Build runs an npm cache server that can speed up downloading JavaScript dependencies for your build jobs. Projects that are using npm or yarn v2 will use the cache by default, but yarn v1 will require that you apply this [workaround](how-tos/#using-npm-cache-with-yarn-v1).
 
 It is not yet possible to save and restore `node_modules` between builds.
 
@@ -32,6 +32,6 @@ Currently we are caching:
 
 ## iOS dependencies
 
-There is no caching done for CocoaPods dependencies yet, but we are caching the `Podfile.lock` file.
+There is no caching done for CocoaPods dependencies yet, only the `Podfile.lock` file is cached (in order provide consistent results across managed app builds).
 
 <br />
