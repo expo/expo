@@ -48,7 +48,7 @@ Apps are served from Expo CLI through a tunnel service by default (we currently 
 
 ## Deploying to the App / Play Store
 
-When you're ready, you can run `expo build:ios` or `expo build:android` and Expo will build your app and output a link to the binary required for you to submit. Then you can use something like Application Loader for iOS, or directly upload an APK for Android.
+When you're ready, you can run `expo build:ios` or `expo build:android` and Expo will build your app and output a link to the binary required for you to submit. Then you can use something like [Transporter](https://apps.apple.com/app/transporter/id1450874784) for iOS, or directly upload an APK for Android.
 
 If you prefer to build your app on your own machine, you can [follow these steps](https://github.com/expo/expo#standalone-apps).
 
