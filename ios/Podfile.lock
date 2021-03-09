@@ -7,7 +7,7 @@ PODS:
     - Google-Mobile-Ads-SDK (= 7.69.0)
   - ABI38_0_0EXAdsFacebook (8.2.1):
     - ABI38_0_0UMCore
-    - FBAudienceNetwork
+    - FBAudienceNetwork (= 6.3.0)
   - ABI38_0_0EXAmplitude (8.2.1):
     - ABI38_0_0UMConstantsInterface
     - ABI38_0_0UMCore
@@ -535,7 +535,7 @@ PODS:
     - Google-Mobile-Ads-SDK (= 7.69.0)
   - ABI39_0_0EXAdsFacebook (8.4.0):
     - ABI39_0_0UMCore
-    - FBAudienceNetwork
+    - FBAudienceNetwork (= 6.3.0)
   - ABI39_0_0EXAmplitude (8.3.1):
     - ABI39_0_0UMConstantsInterface
     - ABI39_0_0UMCore
@@ -1073,7 +1073,7 @@ PODS:
     - Google-Mobile-Ads-SDK (= 7.69.0)
   - ABI40_0_0EXAdsFacebook (8.4.1):
     - ABI40_0_0UMCore
-    - FBAudienceNetwork (~> 5.9.0)
+    - FBAudienceNetwork (= 6.3.0)
   - ABI40_0_0EXAmplitude (9.0.0):
     - ABI40_0_0UMConstantsInterface
     - ABI40_0_0UMCore
@@ -1641,7 +1641,7 @@ PODS:
     - UMCore
     - UMPermissionsInterface
   - EXAdsFacebook (9.0.0):
-    - FBAudienceNetwork (~> 5.9.0)
+    - FBAudienceNetwork (= 6.3.0)
     - UMCore
     - UMPermissionsInterface
   - EXAmplitude (10.0.0):
@@ -1844,8 +1844,8 @@ PODS:
     - FBSDKCoreKit (~> 9.0.1)
   - FacebookSDK/LoginKit (9.0.1):
     - FacebookSDK/CoreKit
-  - FBAudienceNetwork (5.9.0):
-    - FBSDKCoreKit/Basics (>= 5.6.0)
+  - FBAudienceNetwork (6.3.0):
+    - FBSDKCoreKit/Basics (>= 7.0.1)
   - FBLazyVector (0.63.2)
   - FBReactNativeSpec (0.63.2):
     - Folly (= 2020.01.13.00)
@@ -3602,7 +3602,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   ABI38_0_0-lottie-react-native: b9b005825715f16de7666983998fad689abb8cd9
   ABI38_0_0EXAdsAdMob: e05502b9384593ee077046382afce4406c35df7c
-  ABI38_0_0EXAdsFacebook: e4f6d3f5ecd06a2e304b349546387c76212edd78
+  ABI38_0_0EXAdsFacebook: 6ee946d7dadbc307a7fd6cf532eb4587ce34b009
   ABI38_0_0EXAmplitude: e076fea5f0a29989631fdb3b4bf5e461751f85ad
   ABI38_0_0EXAppAuth: bae52f278c583c2e073f0857948e7c5a2f798a9e
   ABI38_0_0EXAppleAuthentication: 224e97627dd31b3c7ae847f05d4acaec59ec0571
@@ -3701,7 +3701,7 @@ SPEC CHECKSUMS:
   ABI38_0_0Yoga: b5cdb5cd24cced7ad15b84a6a7500e8f4098a250
   ABI39_0_0-lottie-react-native: f67bc5229cd919107137b81045e1a72e18afc597
   ABI39_0_0EXAdsAdMob: 409abe0403cc5b02e6240c5a0aa4d79112e4ced1
-  ABI39_0_0EXAdsFacebook: d6e11307c23444b8c5f809866e273fb24f4d3ec9
+  ABI39_0_0EXAdsFacebook: ba961283c441792855ddc67ff13715fbac9be4d3
   ABI39_0_0EXAmplitude: 75a77f8459efe03dd46fd79e1ebf5525599dcda6
   ABI39_0_0EXAppAuth: da5325b3b2fece50f55a8562ff3a15df5df318c1
   ABI39_0_0EXAppleAuthentication: 2f97cbd679c6ada55f480c559b89ff9d8151d66d
@@ -3801,7 +3801,7 @@ SPEC CHECKSUMS:
   ABI39_0_0Yoga: 341913ed0ab0e924b93cd1bd4200267d74013d8b
   ABI40_0_0-lottie-react-native: 26e0e92bec37b7d428d850d6d33c0327df520bf7
   ABI40_0_0EXAdsAdMob: 8778f0ee1aac15a7f590c26609d9812142366935
-  ABI40_0_0EXAdsFacebook: ab814b79f952ac7122b946358f25903ae7d7f221
+  ABI40_0_0EXAdsFacebook: ff83a8c50cd306885da97b4b4c71f14f7ef927b2
   ABI40_0_0EXAmplitude: fb7793f57385650c460819f1b83ab58ca99ac376
   ABI40_0_0EXAppAuth: 0bc2ff698131a99c3fa6fef0ec97ecfabb45a8ae
   ABI40_0_0EXAppleAuthentication: 10cb5a2248faa299df924b386569b2003456b2a8
@@ -3906,7 +3906,7 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   EXAdsAdMob: 471954959199dd2a968e9cd73865a26bb1052513
-  EXAdsFacebook: 7ff475ac6d7229c075130811318f73a189f58007
+  EXAdsFacebook: e205d10eeb29a126afdced377820c8db531f861b
   EXAmplitude: 5e3dabb2ba3d05200a63787b2334e13346df94fb
   EXAppAuth: 39f4af401c042f45405738604cbb7f85e25e87fb
   EXAppleAuthentication: f808549b4f641a2915b1c892b4b21b77f5998e8b
@@ -3970,7 +3970,7 @@ SPEC CHECKSUMS:
   EXVideoThumbnails: 0be939563a5d46ce0d1fa9baea7d454b99475763
   EXWebBrowser: 2e708935a91ae0f51f5f8ffc85ba673950f34833
   FacebookSDK: 3b40a3bf7c42f727126e666877860497f7dafe4c
-  FBAudienceNetwork: 648648b13d8ea3d39676542dece2b04dbe867497
+  FBAudienceNetwork: 58b4d0f2359783e5bc9ee59f138b4fda43173ac4
   FBLazyVector: 3ef4a7f62e7db01092f9d517d2ebc0d0677c4a37
   FBReactNativeSpec: dc7fa9088f0f2a998503a352b0554d69a4391c5a
   FBSDKCoreKit: fada1a6a0076724678993ff05a633848765ff18c

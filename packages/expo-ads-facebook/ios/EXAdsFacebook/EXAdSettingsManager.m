@@ -60,6 +60,15 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                                                                 reject:reject];
 }
 
+UM_EXPORT_METHOD_AS(setAdvertiserTrackingEnabled,
+                    setAdvertiserTrackingEnabled:(BOOL)enabled
+                    resolve:(UMPromiseResolveBlock)resolve
+                    reject:(UMPromiseRejectBlock)reject)
+{
+  [FBAdSettings setAdvertiserTrackingEnabled:enabled];
+  resolve(nil);
+}
+
 UM_EXPORT_METHOD_AS(addTestDevice,
                     addTestDevice:(NSString *)deviceHash
                     resolve:(UMPromiseResolveBlock)resolver

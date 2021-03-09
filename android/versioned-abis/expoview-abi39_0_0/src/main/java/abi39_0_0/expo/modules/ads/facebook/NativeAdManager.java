@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.facebook.ads.AdError;
-import com.facebook.ads.AdIconView;
 import com.facebook.ads.MediaView;
 import com.facebook.ads.NativeAdsManager;
 
@@ -156,7 +155,7 @@ public class NativeAdManager implements InternalModule {
         try {
           NativeAdView nativeAdView = null;
           MediaView mediaView = null;
-          AdIconView adIconView = null;
+          MediaView adIconView = null;
 
           if (adTag != -1) {
             nativeAdView = (NativeAdView) viewHolder.get(adTag);
@@ -167,7 +166,7 @@ public class NativeAdManager implements InternalModule {
           }
 
           if (adIconViewTag != -1) {
-            adIconView = (AdIconView) viewHolder.get(adIconViewTag);
+            adIconView = (MediaView) viewHolder.get(adIconViewTag);
           }
 
           List<View> clickableViews = new ArrayList<>();
