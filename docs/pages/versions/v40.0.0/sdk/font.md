@@ -125,7 +125,7 @@ export default class App extends React.Component {
       // Any string can be used as the fontFamily name. Here we use an object to provide more control
       'Montserrat-SemiBold': {
         uri: require('./assets/fonts/Montserrat-SemiBold.ttf'),
-        fontDisplay: Font.FontDisplay.FALLBACK,
+        display: Font.FontDisplay.FALLBACK,
       },
     });
     /* @end */
