@@ -95,11 +95,11 @@ Interrupts current speech and deletes all in queue.
 
 ### `Speech.pause()`
 
-Pauses current speech.
+Pauses current speech. This method is not available on Android.
 
 ### `Speech.resume()`
 
-Resumes speaking previously paused speech or does nothing if there's none.
+Resumes speaking previously paused speech or does nothing if there's none. This method is not available on Android.
 
 ### `Speech.isSpeakingAsync()`
 
