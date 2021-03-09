@@ -176,14 +176,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
             NSString *name = _params[@"name"];
             if ([name isEqualToString:@"reload"]) {
               [weakSelf _handleRefreshCommand];
-            } else if ([name isEqualToString:@"devMenu"]) {
+            } else if ([name isEqualToString:@"toggleDevMenu"]) {
               [weakSelf _handleMenuCommand];
-            } else if ([name isEqualToString:@"disableRemoteDebugging"]) {
-              [weakSelf _handleDisableDebuggingCommand];
-            } else if ([name isEqualToString:@"toggleInspector"]) {
+            } else if ([name isEqualToString:@"toggleRemoteDebugging"]) {
+              [weakSelf _handleToggleRemoteDebuggingCommand];
+            } else if ([name isEqualToString:@"toggleElementInspector"]) {
               [weakSelf _handleToggleInspectorCommand];
+            } else if ([name isEqualToString:@"togglePerformanceMonitor"]) {
+              [weakSelf _handleTogglePerformanceMonitorCommand];
             }
-            // TODO: Toggle performance monitor
           }
         }
       }
@@ -230,6 +231,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)_handleDisableDebuggingCommand
 {
   [[EXKernel sharedInstance].visibleApp.appManager disableRemoteDebugging];
+}
+
+- (void)_handleToggleRemoteDebuggingCommand
+{
+  [[EXKernel sharedInstance].visibleApp.appManager toggleRemoteDebugging];
+  // This reloads manifest and JS
+  [[EXKernel sharedInstance] reloadVisibleApp];
+}
+
+- (void)_handleTogglePerformanceMonitorCommand
+{
+  [[EXKernel sharedInstance].visibleApp.appManager togglePerformanceMonitor];
 }
 
 - (void)_handleToggleInspectorCommand

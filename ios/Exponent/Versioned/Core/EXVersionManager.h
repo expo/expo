@@ -19,6 +19,8 @@
  */
 - (void)showDevMenuForBridge:(id)bridge;
 - (void)disableRemoteDebuggingForBridge:(id)bridge;
+- (void)toggleRemoteDebuggingForBridge:(id)bridge;
+- (void)togglePerformanceMonitorForBridge:(id)bridge;
 - (void)toggleElementInspectorForBridge:(id)bridge;
 
 - (NSDictionary<NSString *, NSString *> *)devMenuItemsForBridge:(id)bridge;

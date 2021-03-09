@@ -262,6 +262,27 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   devSettings.isDebuggingRemotely = NO;
 }
 
+- (void)toggleRemoteDebuggingForBridge:(id)bridge
+{
+  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForBridge:bridge named:@"DevSettings"];
+  devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
+}
+
+- (void)togglePerformanceMonitorForBridge:(id)bridge
+{
+  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForBridge:bridge named:@"DevSettings"];
+  id perfMonitor = [self _moduleInstanceForBridge:bridge named:@"PerfMonitor"];
+  if (perfMonitor) {
+    if (devSettings.isPerfMonitorShown) {
+      [perfMonitor hide];
+      devSettings.isPerfMonitorShown = NO;
+    } else {
+      [perfMonitor show];
+      devSettings.isPerfMonitorShown = YES;
+    }
+  }
+}
+
 - (void)toggleElementInspectorForBridge:(id)bridge
 {
   RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForBridge:bridge named:@"DevSettings"];
