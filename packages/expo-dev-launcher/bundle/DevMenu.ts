@@ -1,7 +1,7 @@
 import { NativeModules } from 'react-native';
 
-export const DevMenu = NativeModules.ExpoDevMenu;
-
 export function isDevMenuAvailable(): boolean {
-  return !!DevMenu;
+  return !!NativeModules.ExpoDevMenu;
 }
+
+export const DevMenu = NativeModules.ExpoDevMenu;

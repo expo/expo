@@ -8,6 +8,10 @@ type Props = {
 };
 
 export default class BottomTabs extends React.Component<Props, object> {
+  openProfile = () => DevMenu.openProfile?.();
+  openMenu = () => DevMenu.openMenu?.();
+  openSettings = () => DevMenu.openSettings?.();
+
   render() {
     return (
       <View style={[styles.bottomTabsAbsoluteContainer, { height: this.props.height }]}>
@@ -15,27 +19,21 @@ export default class BottomTabs extends React.Component<Props, object> {
           <TouchableHighlight
             underlayColor="#ddd"
             style={styles.bottomTabsItem}
-            onPress={() => {
-              DevMenu.openProfile?.();
-            }}>
+            onPress={this.openProfile}>
             <Text style={styles.bottomTabsItemContent}>Profile</Text>
           </TouchableHighlight>
 
           <TouchableHighlight
             underlayColor="#ddd"
             style={styles.bottomTabsItem}
-            onPress={() => {
-              DevMenu.openMenu?.();
-            }}>
+            onPress={this.openMenu}>
             <Text style={styles.bottomTabsItemContent}>Menu</Text>
           </TouchableHighlight>
 
           <TouchableHighlight
             underlayColor="#ddd"
             style={styles.bottomTabsItem}
-            onPress={() => {
-              DevMenu.openSettings?.();
-            }}>
+            onPress={this.openSettings}>
             <Text style={styles.bottomTabsItemContent}>Settings</Text>
           </TouchableHighlight>
         </View>
