@@ -87,7 +87,7 @@ e.g.
 
 ## Maintaining generic project with multiple bundle identifiers
 
-The current implementation of `eas build` and `eas build:configure` assumes that the native project can only have one bundle identifier, so as a temporary workaround we added `experimental.disableIosBundleIdentifierValidation`, to disable that validation in both commands. With that flag enabled, the value from app.json/app.config.js will take precedence, you can configure your project like in the example below.
+It's common to have multiple schemes with unique bundle identifiers in iOS projects in order to have development and production versions of your app on one phone at the same time. The current implementations of `eas build` and `eas build:configure` assume that the native project can only have one bundle identifier, so as a temporary workaround we added `experimental.disableIosBundleIdentifierValidation`, to disable that validation in both commands. With that flag enabled, the value of the bundle identifier from `app.json`/`app.config.js` will take precedence, and you can use the `scheme` property in your `eas.json` to switch between build schemes.
 
 ```bash
 # to build staging
