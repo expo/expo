@@ -327,6 +327,16 @@ an instance of AdsManager once again.
 FacebookAds.AdSettings.clearTestDevices();
 ```
 
+### setAdvertiserTrackingEnabled (iOS)
+
+Indicate to the Audience Network SDK if the user has consented to advertising tracking. This only applies to iOS 14+ and for all other versions "Limited Ad Tracking" is used. [Learn more](https://developers.facebook.com/docs/app-events/guides/advertising-tracking-enabled/).
+
+```js
+FacebookAds.AdSettings.setAdvertisingTrackingEnabled(true);
+```
+
+**Note:** This method is a no-op on Android and on iOS <= 13.
+
 #### setLogLevel (iOS)
 
 Sets current SDK log level.
@@ -346,6 +356,8 @@ Configures the ad control for treatment as child-directed.
 ```js
 FacebookAds.AdSettings.setIsChildDirected(true | false);
 ```
+
+> This is called `setMixedAudience` in the underlying Android SDK.
 
 #### setMediationService
 

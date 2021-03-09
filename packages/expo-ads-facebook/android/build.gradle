@@ -63,5 +63,5 @@ repositories {
 
 dependencies {
   unimodule 'unimodules-core'
-  api 'com.facebook.android:audience-network-sdk:5.11.0'
+  api "com.facebook.android:audience-network-sdk:${safeExtGet('fbAudienceNetworkVersion', '6.3.0')}"
 }

@@ -23,7 +23,7 @@ export class AuthRequest {
         this.scopes = request.scopes;
         this.clientSecret = request.clientSecret;
         this.prompt = request.prompt;
-        this.state = request.state ?? PKCE.generateRandomAsync(10);
+        this.state = request.state ?? PKCE.generateRandom(10);
         this.extraParams = request.extraParams ?? {};
         this.codeChallengeMethod = request.codeChallengeMethod ?? CodeChallengeMethod.S256;
         // PKCE defaults to true
@@ -62,7 +62,7 @@ export class AuthRequest {
             codeChallenge: this.codeChallenge,
             codeChallengeMethod: this.codeChallengeMethod,
             prompt: this.prompt,
-            state: await this.getStateAsync(),
+            state: this.state,
             extraParams: this.extraParams,
             usePKCE: this.usePKCE,
         };
@@ -189,12 +189,6 @@ export class AuthRequest {
         // Store the URL for later
         this.url = `${discovery.authorizationEndpoint}?${query}`;
         return this.url;
-    }
-    async getStateAsync() {
-        // Resolve any pending state.
-        if (this.state instanceof Promise)
-            this.state = await this.state;
-        return this.state;
     }
     async ensureCodeIsSetupAsync() {
         if (this.codeVerifier) {

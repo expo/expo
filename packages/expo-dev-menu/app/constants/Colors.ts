@@ -13,6 +13,7 @@ export default {
     warningBackground: '#fef6d0',
     warningColor: '#886636',
     warningBorders: '#fceca8',
+    error: '#dc3545',
   },
   dark: {
     tint: '#aca2f6',
@@ -28,5 +29,6 @@ export default {
     warningBackground: '#feffb0',
     warningColor: '#886636',
     warningBorders: '#fceca8',
+    error: '#dc3545',
   },
 };

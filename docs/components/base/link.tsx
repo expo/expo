@@ -14,6 +14,10 @@ const STYLES_EXTERNAL_LINK = css`
   :hover {
     text-decoration: underline;
   }
+
+  code {
+    color: ${theme.link.default};
+  }
 `;
 
 function isLinkAbsolute(href?: string) {

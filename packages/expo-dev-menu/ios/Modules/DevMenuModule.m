@@ -5,5 +5,7 @@
 @interface RCT_EXTERN_REMAP_MODULE(ExpoDevMenu, DevMenuModule, NSObject)
 
 RCT_EXTERN_METHOD(openMenu)
+RCT_EXTERN_METHOD(openProfile)
+RCT_EXTERN_METHOD(openSettings)
 
 @end
