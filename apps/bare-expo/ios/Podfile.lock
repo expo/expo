@@ -565,7 +565,7 @@ PODS:
     - React
   - react-native-netinfo (6.0.0):
     - React-Core
-  - react-native-safe-area-context (3.1.9):
+  - react-native-safe-area-context (3.2.0):
     - React-Core
   - react-native-segmented-control (2.3.0):
     - React-Core
@@ -573,7 +573,7 @@ PODS:
     - React
   - react-native-view-shot (3.1.2):
     - React
-  - react-native-viewpager (4.2.3):
+  - react-native-viewpager (5.0.11):
     - React-Core
   - react-native-webview (11.2.3):
     - React-Core
@@ -643,7 +643,7 @@ PODS:
     - React
   - RNCPicker (1.9.11):
     - React-Core
-  - RNDateTimePicker (3.0.4):
+  - RNDateTimePicker (3.2.0):
     - React-Core
   - RNGestureHandler (1.10.2):
     - React-Core
@@ -1333,11 +1333,11 @@ SPEC CHECKSUMS:
   React-jsinspector: b14e62ebe7a66e9231e9581279909f2fc3db6606
   react-native-appearance: 0f0e5fc2fcef70e03d48c8fe6b00b9158c2ba8aa
   react-native-netinfo: e849fc21ca2f4128a5726c801a82fc6f4a6db50d
-  react-native-safe-area-context: b6e0e284002381d2ff29fa4fff42b4d8282e3c94
+  react-native-safe-area-context: f0906bf8bc9835ac9a9d3f97e8bde2a997d8da79
   react-native-segmented-control: 83a05d42acd1234ad5e061d603c145973a61b5ee
   react-native-slider: e99fc201cefe81270fc9d81714a7a0f5e566b168
   react-native-view-shot: 4475fde003fe8a210053d1f98fb9e06c1d834e1c
-  react-native-viewpager: 936c67cba6e9ca19793d04321427a44cb8e43395
+  react-native-viewpager: b99b53127d830885917ef84809c5065edd614a78
   react-native-webview: 6520e3e7b4933de76b95ef542c8d7115cf45b68e
   React-RCTActionSheet: 910163b6b09685a35c4ebbc52b66d1bfbbe39fc5
   React-RCTAnimation: 9a883bbe1e9d2e158d4fb53765ed64c8dc2200c6
@@ -1352,7 +1352,7 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: 2a692bcb9b69b76a2f1a95f33db057129700af64
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
   RNCPicker: 6780c753e9e674065db90d9c965920516402579d
-  RNDateTimePicker: 3d1931e387248cb8f1d1d33740d4a1a82dfe622a
+  RNDateTimePicker: 17593e41b6b1585aeb8ecbe1c1cbc30cba3d0b4b
   RNGestureHandler: e66feb0fda7da74ea6a3094656b3c1efe05f5c07
   RNReanimated: 5231286440b796e09df3bfa5c1b12b02bfe07664
   RNScreens: f7ad633b2e0190b77b6a7aab7f914fad6f198d8d
