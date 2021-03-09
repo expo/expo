@@ -10,7 +10,7 @@ interface DevMenuManagerInterface {
   /**
    * Opens the dev menu in provided [activity]
    */
-  fun openMenu(activity: Activity)
+  fun openMenu(activity: Activity, screen: String? = null)
 
   /**
    * Closes the dev menu.

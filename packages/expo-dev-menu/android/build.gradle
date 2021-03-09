@@ -117,4 +117,6 @@ dependencies {
   api "androidx.lifecycle:lifecycle-extensions:2.2.0"
 
   api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
+
+  api "androidx.browser:browser:1.2.0"
 }

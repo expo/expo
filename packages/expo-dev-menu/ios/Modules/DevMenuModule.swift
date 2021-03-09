@@ -16,4 +16,14 @@ open class DevMenuModule: NSObject, RCTBridgeModule {
   func openMenu() {
     DevMenuManager.shared.openMenu()
   }
+
+  @objc
+  func openSettings() {
+    DevMenuManager.shared.openMenu("Settings")
+  }
+  
+  @objc
+  func openProfile() {
+    DevMenuManager.shared.openMenu("Profile")
+  }
 }

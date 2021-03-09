@@ -138,7 +138,6 @@ const SearchResults = ({
 };
 
 const AllItems = ({ elements }: { elements: DevMenuSelectionListItem[] }) => {
-  console.log(elements);
   const selectedElements = elements.filter(e => e.isChecked);
   const othersElements = elements.filter(e => !e.isChecked);
   return (
