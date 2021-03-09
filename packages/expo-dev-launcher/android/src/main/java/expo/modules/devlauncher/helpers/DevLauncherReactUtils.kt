@@ -3,6 +3,7 @@ package expo.modules.devlauncher.helpers
 import android.content.Context
 import android.util.Log
 import com.facebook.react.ReactNativeHost
+import com.facebook.react.ReactPackage
 import expo.modules.devlauncher.react.DevLauncherInternalSettings
 
 fun injectDebugServerHost(context: Context, reactNativeHost: ReactNativeHost, debugServerHost: String): Boolean {
@@ -24,5 +25,14 @@ fun injectDebugServerHost(context: Context, reactNativeHost: ReactNativeHost, de
   } catch (e: Exception) {
     Log.e("DevLauncher", "Unable to inject debug server host settings.", e)
     false
+  }
+}
+
+fun findDevMenuPackage(): ReactPackage? {
+  return try {
+    val clazz = Class.forName("expo.modules.devmenu.DevMenuPackage")
+    clazz.newInstance() as? ReactPackage
+  } catch (e: Exception) {
+    null
   }
 }
