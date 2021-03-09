@@ -17,6 +17,8 @@
 - (instancetype)init
 {
   if (self = [super init]) {
+    // Set it just above the LogBox so users can easily access it.
+    self.windowLevel = UIWindowLevelStatusBar - 0.5;
     self.backgroundColor = [UIColor clearColor];
     self.bounds = [[UIScreen mainScreen] bounds];
     self.hidden = YES;
