@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed incorrect image cropping ([#12021](https://github.com/expo/expo/pull/12021) by [@rSkogeby](https://github.com/rskogeby))
+- Fixed incorrect image cropping on Web. ([#12021](https://github.com/expo/expo/pull/12021) by [@rSkogeby](https://github.com/rskogeby))
 
 ## 9.0.0 — 2021-01-15
 
