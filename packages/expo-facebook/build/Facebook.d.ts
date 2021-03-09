@@ -1,5 +1,8 @@
+import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'unimodules-permissions-interface';
 import { FacebookAuthenticationCredential, FacebookLoginResult, FacebookOptions, FacebookInitializationOptions } from './Facebook.types';
-export { FacebookLoginResult, FacebookOptions, FacebookAuthenticationCredential };
+export { FacebookLoginResult, FacebookOptions, FacebookAuthenticationCredential, PermissionResponse, PermissionStatus, PermissionExpiration, };
+export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
+export declare function getPermissionsAsync(): Promise<PermissionResponse>;
 export declare function logInWithReadPermissionsAsync(options?: FacebookOptions): Promise<FacebookLoginResult>;
 /**
  * Returns the `FacebookAuthenticationCredential` object if a user is authenticated, and `null` if no valid authentication exists.

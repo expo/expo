@@ -77,10 +77,70 @@ If you are not using `credentials.json` for Android/iOS credentials, it is fine 
 By default the EAS npm cache won't work with yarn v1, because `yarn.lock` files contain URLs to registries for every package and yarn does not provide any way to override it. The issue is fixed in yarn v2, but the yarn team does not plan to backport it to yarn v1. If you want to take advantage of the npm cache, you can use the `eas-build-pre-install` script to override the registry in your `yarn.lock`.
 
 e.g.
+
 ```
 {
  "scripts": {
-    "eas-build-pre-install": "bash -c \"[ ! -z \\\"NPM_CACHE_URL\\\" ] && sed -i -e \\\"s#https://registry.yarnpkg.com#$NPM_CACHE_URL#g\\\" yarn.lock\""
+    "eas-build-pre-install": "bash -c \"[ ! -z \\\"EAS_BUILD_NPM_CACHE_URL\\\" ] && sed -i -e \\\"s#https://registry.yarnpkg.com#$EAS_BUILD_NPM_CACHE_URL#g\\\" yarn.lock\""
+  }
+}
+```
+
+## Maintaining generic projects with multiple bundle identifiers
+
+It's common to have multiple schemes with unique bundle identifiers in iOS projects in order to have development and production versions of your app on one phone at the same time. The current implementations of `eas build` and `eas build:configure` assume that the native project can only have one bundle identifier, so as a temporary workaround we added `experimental.disableIosBundleIdentifierValidation`, to disable that validation in both commands. With that flag enabled, the value of the bundle identifier from `app.json`/`app.config.js` will take precedence, and you can use the `scheme` property in your `eas.json` to switch between build schemes.
+
+```bash
+# to build staging
+APP_ENV=staging eas build --platform ios --profile staging
+
+# to build production
+APP_ENV=production eas build --platform ios --profile production
+```
+
+```js
+// example app.config.js
+
+const isStaging = process.env.APP_ENV === "staging";
+const bundleIdentifier = isStaging
+  ? "xyz.easbuildapp.staging"
+  : "xyz.easbuildapp";
+
+export default ({ config }) => ({
+  expo: {
+    ...config,
+    ios: {
+      bundleIdentifier,
+    },
+  },
+});
+
+```
+
+```json
+// example eas.json
+
+{
+  "experimental": {
+    "disableIosBundleIdentifierValidation": true
+  },
+  "build": {
+    "ios": {
+      "staging": {
+        "worflow": "generic",
+        "scheme": "myapp-staging",
+        "env": {
+            "APP_ENV": "staging"
+        }
+      },
+      "production": {
+        "worflow": "generic",
+        "scheme": "myapp",
+        "env": {
+            "APP_ENV": "production"
+        }
+      }
+    }
   }
 }
 ```

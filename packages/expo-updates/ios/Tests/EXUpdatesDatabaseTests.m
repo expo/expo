@@ -3,7 +3,7 @@
 #import <XCTest/XCTest.h>
 
 #import <EXUpdates/EXUpdatesConfig.h>
-#import <EXUpdates/EXUpdatesDatabase.h>
+#import <EXUpdates/EXUpdatesDatabase+Tests.h>
 #import <EXUpdates/EXUpdatesNewUpdate.h>
 
 @interface EXUpdatesDatabaseTests : XCTestCase
@@ -54,6 +54,25 @@
   NSError *error;
   [NSFileManager.defaultManager removeItemAtPath:_testDatabaseDir.path error:&error];
   XCTAssertNil(error);
+}
+
+- (void)testForeignKeys
+{
+  __block NSError *expectedError;
+  EXUpdatesUpdate *update = [EXUpdatesNewUpdate updateWithNewManifest:_manifest response:nil config:_config database:_db];
+  dispatch_sync(_db.databaseQueue, ^{
+    NSError *updatesError;
+    [_db addUpdate:update error:&updatesError];
+    if (updatesError) {
+      return;
+    }
+
+    NSError *updatesAssetsError;
+    [_db _executeSql:@"INSERT OR REPLACE INTO updates_assets (\"update_id\", \"asset_id\") VALUES (?1, ?2)" withArgs:@[update.updateId, @(47)] error:&updatesAssetsError];
+    expectedError = updatesAssetsError;
+  });
+  XCTAssertNotNil(expectedError);
+  XCTAssertEqual(787, expectedError.code); // SQLITE_CONSTRAINT_FOREIGNKEY
 }
 
 - (void)testSetMetadata_OverwriteAllFields

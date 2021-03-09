@@ -129,7 +129,7 @@ public class PropsNode extends Node implements FinalNode {
                 mDiffMap);
       }
       if (hasNativeProps) {
-        mNodesManager.enqueueUpdateViewOnNativeThread(mConnectedViewTag, nativeProps);
+        mNodesManager.enqueueUpdateViewOnNativeThread(mConnectedViewTag, nativeProps, false);
       }
       if (hasJSProps) {
         WritableMap evt = Arguments.createMap();

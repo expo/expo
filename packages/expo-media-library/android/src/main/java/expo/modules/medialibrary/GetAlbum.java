@@ -22,7 +22,7 @@ class GetAlbum extends AsyncTask<Void, Void, Void> {
   @Override
   protected Void doInBackground(Void... params) {
     final String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + " != " + MediaStore.Files.FileColumns.MEDIA_TYPE_NONE +
-        " AND " + MediaStore.Images.Media.BUCKET_DISPLAY_NAME + "=?";
+        " AND " + MediaStore.MediaColumns.BUCKET_DISPLAY_NAME + "=?";
     final String[] selectionArgs = new String[]{mAlbumName};
 
     queryAlbum(mContext, selection, selectionArgs, mPromise);

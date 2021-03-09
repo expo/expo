@@ -2,6 +2,9 @@
 title: Setting a component's background image
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import SnackInline from '~/components/plugins/SnackInline';
+
 The `ImageBackground` component lets you display an image as the background of another component in Expo and React Native apps. For example, you can set the background image of a screen in your app with `ImageBackground` inside the screen's container view.
 
 This component is conceptually similar to CSS's `background-image` stylesheet property and the `backgroundImage` DOM style property.
@@ -11,6 +14,7 @@ This component is conceptually similar to CSS's `background-image` stylesheet pr
 The `ImageBackground` component accepts mostly the same props as the `Image` component with a few differences. The `style` prop is applied to a view that wraps an inner image; the `imageStyle` prop is applied to the image itself. The `imageRef` prop also is applied to the inner image.
 
 ## Example
+
 <SnackInline>
 
 <!-- prettier-ignore -->
@@ -62,8 +66,6 @@ export default App;
 
 </SnackInline>
 
-The example above renders a screen like:
+The example above renders a screen like this:
 
-<img src="/static/images/imagebackground-example.png"
-     width="276" height="494"
-     style={{ display: 'block', width: 'auto', marginBottom: 30, marginLeft: 'auto', marginRight: 'auto' }}/>
+<ImageSpotlight style={{ maxWidth: 276 }} containerStyle={{ marginTop: 0 }} src="/static/images/imagebackground-example.png" alt="Text rendered on top of an image background" />

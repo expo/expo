@@ -13,7 +13,6 @@
 #import <ABI38_0_0UMCore/ABI38_0_0UMModuleRegistry.h>
 #import <ABI38_0_0EXFaceDetector/ABI38_0_0EXFaceEncoder.h>
 #import <ABI38_0_0EXFaceDetector/ABI38_0_0EXCSBufferOrientationCalculator.h>
-#import <Firebase/Firebase.h>
 
 @interface ABI38_0_0EXFaceDetectorModule ()
 
@@ -50,31 +49,27 @@ ABI38_0_0UM_EXPORT_MODULE(ExpoFaceDetector);
 
 ABI38_0_0UM_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)options resolver:(ABI38_0_0UMPromiseResolveBlock)resolve rejecter:(ABI38_0_0UMPromiseRejectBlock)reject)
 {
-  if (![FIRApp defaultApp]) {
-    reject(@"E_FACE_DETECTION_FAILED", @"Firebase is not configured", nil);
-    return;
-  }
   NSString *uri = options[@"uri"];
   if (uri == nil) {
     reject(@"E_FACE_DETECTION_FAILED", @"You must define a URI.", nil);
     return;
   }
-  
+
   NSURL *url = [NSURL URLWithString:uri];
   NSString *path = [url.path stringByStandardizingPath];
-  
+
   NSException *exception;
   id<ABI38_0_0UMFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(ABI38_0_0UMFileSystemInterface)];
   if (!fileSystem || exception) {
     reject(@"E_MODULE_UNAVAILABLE", @"No file system module", nil);
     return;
   }
-  
+
   if (!([fileSystem permissionsForURI:url] & ABI38_0_0UMFileSystemPermissionRead)) {
     reject(@"E_FILESYSTEM_PERMISSIONS", [NSString stringWithFormat:@"File '%@' isn't readable.", uri], nil);
     return;
   }
-  
+
   @try {
     UIImage *image = [[UIImage alloc] initWithContentsOfFile:path];
     CIImage *ciImage = image.CIImage;
@@ -86,15 +81,15 @@ ABI38_0_0UM_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)op
     UIImage *temporaryImage = [UIImage imageWithCIImage:ciImage];
     CGRect tempImageRect = CGRectMake(0, 0, temporaryImage.size.width, temporaryImage.size.height);
     CGImageRef cgImage = [context createCGImage:ciImage fromRect:tempImageRect];
-    
+
     UIImage *finalImage = [UIImage imageWithCGImage:cgImage];
     ABI38_0_0EXFaceDetector* detector = [[ABI38_0_0EXFaceDetector alloc] initWithOptions: [ABI38_0_0EXFaceDetectorUtils mapOptions:options]];
-    [detector detectFromImage:finalImage completionListener:^(NSArray<FIRVisionFace *> * _Nullable faces, NSError * _Nullable error) {
+    [detector detectFromImage:finalImage completionListener:^(NSArray<MLKFace *> * _Nullable faces, NSError * _Nullable error) {
       NSMutableArray<NSDictionary*>* reportableFaces = [NSMutableArray new];
-      
+
       if(faces.count > 0) {
         ABI38_0_0EXFaceEncoder *encoder = [[ABI38_0_0EXFaceEncoder alloc] init];
-        for(FIRVisionFace* face in faces)
+        for(MLKFace* face in faces)
       {
           [reportableFaces addObject:[encoder encode:face]];
         }

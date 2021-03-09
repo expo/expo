@@ -1,7 +1,5 @@
 package expo.modules.updates;
 
-import android.net.Uri;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,6 +15,14 @@ public class UpdatesUtilsTest {
   public void testCreateFilenameForAsset() {
     AssetEntity assetEntity = new AssetEntity("key", "png");
     Assert.assertEquals("key", UpdatesUtils.createFilenameForAsset(assetEntity));
+  }
+
+  @Test
+  public void testCreateFilenameForAsset_NullKey() {
+    // asset filenames with null keys should be unique
+    AssetEntity asset1 = new AssetEntity(null, "bundle");
+    AssetEntity asset2 = new AssetEntity(null, "bundle");
+    Assert.assertNotEquals(UpdatesUtils.createFilenameForAsset(asset1), UpdatesUtils.createFilenameForAsset(asset2));
   }
 
   @Test

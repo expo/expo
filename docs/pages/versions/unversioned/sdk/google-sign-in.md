@@ -379,7 +379,7 @@ All of the available authentication error codes.
 - `GoogleSignIn.ERRORS.SIGN_IN_REQUIRED` Attempting to access user data before any user has been authenticated
 - `GoogleSignIn.ERRORS.TASK_IN_PROGRESS` An existing auth task is already running.
 - `GoogleSignIn.ERRORS.SIGN_IN_EXCEPTION` A general error has occurred
-- `GoogleSignIn.ERRORS.SIGN_IN_FAILED` A Play Services error has occured (Android only)
+- `GoogleSignIn.ERRORS.SIGN_IN_FAILED` A Play Services error has occurred (Android only)
 - `GoogleSignIn.ERRORS.INVALID_ACCOUNT` An invalid account has been provided with `accountName` (Android only)
 - `GoogleSignIn.ERRORS.SIGN_IN_NETWORK_ERROR` An issue with the internet connection has caused the auth task to fail (Android only)
 

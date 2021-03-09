@@ -1,12 +1,12 @@
 name: Publish Expo Web
 on:
   workflow_dispatch: {}
-  pull_request:
-    paths:
-      - .github/workflows/web.yml
-      - yarn.lock
-      - apps/**
-      - packages/**
+  # pull_request:
+  #   paths:
+  #     - .github/workflows/web.yml
+  #     - yarn.lock
+  #     - apps/**
+  #     - packages/**
 
 jobs:
   build:

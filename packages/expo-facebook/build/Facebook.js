@@ -1,5 +1,32 @@
 import { UnavailabilityError } from '@unimodules/core';
+import { Platform } from 'react-native';
+import { PermissionStatus, } from 'unimodules-permissions-interface';
 import ExponentFacebook from './ExponentFacebook';
+export { PermissionStatus, };
+const androidPermissionsResponse = {
+    granted: true,
+    expires: 'never',
+    canAskAgain: true,
+    status: PermissionStatus.GRANTED,
+};
+export async function requestPermissionsAsync() {
+    if (Platform.OS === 'android') {
+        return Promise.resolve(androidPermissionsResponse);
+    }
+    if (!ExponentFacebook.requestPermissionsAsync) {
+        throw new UnavailabilityError('Facebook', 'requestPermissionsAsync');
+    }
+    return await ExponentFacebook.requestPermissionsAsync();
+}
+export async function getPermissionsAsync() {
+    if (Platform.OS === 'android') {
+        return Promise.resolve(androidPermissionsResponse);
+    }
+    if (!ExponentFacebook.getPermissionsAsync) {
+        throw new UnavailabilityError('Facebook', 'getPermissionsAsync');
+    }
+    return await ExponentFacebook.getPermissionsAsync();
+}
 export async function logInWithReadPermissionsAsync(options = {}) {
     if (!ExponentFacebook.logInWithReadPermissionsAsync) {
         throw new UnavailabilityError('Facebook', 'logInWithReadPermissionsAsync');

@@ -2,6 +2,10 @@
 
 ## Unpublished
 
+### 📚 native library updates
+
+- Migrated from `Firebase/MLVision` native library to `GoogleMLKit/FaceDetection@2.1.0` on iOS. ([#12125](https://github.com/expo/expo/pull/12125) by [@bbarthec](https://github.com/bbarthec))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features

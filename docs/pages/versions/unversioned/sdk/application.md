@@ -48,7 +48,7 @@ The internal build version of the native application that the app store may use 
 
 ### `Application.androidId`
 
-**Android only.** The value of [`Settings.Secure.ANDROID_ID`](https://developer.android.com/reference/android/provider/Settings.Secure.html#ANDROID_ID). This is a hexademical `string` unique to each combination of app-signing key, user, and device. The value may change if a factory reset is performed on the device or if an APK signing key changes. For more information about how the platform handles `ANDROID_ID` in Android 8.0 (API level 26) and higher, see [Android 8.0 Behavior Changes](https://developer.android.com/about/versions/oreo/android-8.0-changes.html#privacy-all). On iOS and web, this value is `null`.
+**Android only.** The value of [`Settings.Secure.ANDROID_ID`](https://developer.android.com/reference/android/provider/Settings.Secure.html#ANDROID_ID). This is a hexadecimal `string` unique to each combination of app-signing key, user, and device. The value may change if a factory reset is performed on the device or if an APK signing key changes. For more information about how the platform handles `ANDROID_ID` in Android 8.0 (API level 26) and higher, see [Android 8.0 Behavior Changes](https://developer.android.com/about/versions/oreo/android-8.0-changes.html#privacy-all). On iOS and web, this value is `null`.
 
 Note: In versions of the platform lower than Android 8.0 (API level 26), this value remains constant for the lifetime of the user's device. See the [Android_ID](https://developer.android.com/reference/android/provider/Settings.Secure.html#ANDROID_ID) official docs for more information.
 

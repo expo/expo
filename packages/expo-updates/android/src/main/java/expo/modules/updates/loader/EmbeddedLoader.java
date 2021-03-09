@@ -99,7 +99,7 @@ public class EmbeddedLoader {
     } else if (asset.resourcesFilename != null && asset.resourcesFolder != null) {
       return copyResourceAndGetHash(asset, destination, context);
     } else {
-      throw new AssertionError("Failed to copy asset " + asset.key + " from APK assets or resources because not enough information was provided.");
+      throw new AssertionError("Failed to copy embedded asset " + asset.key + " from APK assets or resources because not enough information was provided.");
     }
   }
 
@@ -195,6 +195,7 @@ public class EmbeddedLoader {
       if (!existingAssetFound) {
         // the database and filesystem have gotten out of sync
         // do our best to create a new entry for this file even though it already existed on disk
+        // TODO: we should probably get rid of this assumption that if an asset exists on disk with the same filename, it's the same asset
         byte[] hash = null;
         try {
           hash = UpdatesUtils.sha256(new File(mUpdatesDirectory, asset.relativePath));

@@ -106,6 +106,26 @@ Returns whether the AdMob API is enabled on the current device. This does not ch
 
 Async `boolean`, indicating whether the AdMob API is available on the current device. Currently this resolves `true` on iOS and Android only.
 
+### `requestPermissionsAsync()`
+
+Asks for permissions to use data for tracking the user or the device.
+
+> iOS: it requires the `NSUserTrackingUsageDescription` message added to the `info.plist`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+### `getPermissionsAsync()`
+
+Checks application's permissions for using data for tracking the user or the device.
+
+> iOS: it requires the `NSUserTrackingUsageDescription` message added to the `info.plist`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
 ### setTestDeviceIDAsync(testDeviceID)
 
 Sets the test device ID. For simulators/emulators you can use `'EMULATOR'` for the test device ID.
@@ -207,22 +227,19 @@ Opens a rewarded AdMob ad.
 | Name                            | Description                                    |
 | ------------------------------- | ---------------------------------------------- |
 | `setAdUnitID(adUnitID: string)` | sets the AdUnit ID for all future ad requests. |
-
 | `requestAdAsync(options)` | (async) requests a rewarded ad. An optional `options` object argument may specify `servePersonalizedAds: true` value — then ad will be personalized. |
 | `showAdAsync()` | (async) shows a rewarded if it is ready (async) |
 
 #### Events
 
-| iOS                                          | _this library_                      | Android                            |
-| -------------------------------------------- | ----------------------------------- | ---------------------------------- |
-| `rewardBasedVideoAd:didRewardUserWithReward` | `rewardedVideoDidRewardUser`        | `onRewarded`                       |
-| `rewardBasedVideoAdDidReceiveAd`             | `rewardedVideoDidLoad`              | `onRewardedVideoAdLoaded`          |
-| `rewardBasedVideoAd:didFailToLoadWithError`  | `rewardedVideoDidFailToLoad`        | `onRewardedVideoAdFailedToLoad`    |
-| `rewardBasedVideoAdDidOpen`                  | `rewardedVideoDidOpen`              | `onRewardedVideoAdOpened`          |
-|                                              | `rewardedVideoDidComplete`          | `onRewardedVideoCompleted`         |
-| `rewardBasedVideoAdDidClose`                 | `rewardedVideoDidClose`             | `onRewardedVideoAdClosed`          |
-| `rewardBasedVideoAdWillLeaveApplication`     | `rewardedVideoWillLeaveApplication` | `onRewardedVideoAdLeftApplication` |
-| `rewardBasedVideoAdDidStartPlaying`          | `rewardedVideoDidStart`             | `onRewardedVideoStarted`           |
+| Events are based on native ad lifecycle |
+| -------------------------------- |
+| `rewardedVideoUserDidEarnReward` |
+| `rewardedVideoDidLoad`           |
+| `rewardedVideoDidFailToLoad`     |
+| `rewardedVideoDidPresent`        |
+| `rewardedVideoDidFailToPresent`  |
+| `rewardedVideoDidDismiss`        |
 
 #### Test ID
 

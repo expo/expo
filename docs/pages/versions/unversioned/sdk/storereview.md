@@ -3,14 +3,15 @@ title: StoreReview
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-store-review'
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-store-review`** provides access to the `SKStoreReviewController` API in iOS 10.3+ devices, and `ReviewManager` API in Android 5.0+ allowing you to ask the user to rate your app without ever having to leave the app itself.
 
-<PlatformsSection android emulator ios simulator />
+<ImageSpotlight src="/static/images/store-review.png" alt="Screenshots of the store review API in action on iOS" />
 
-![](/static/images/store-review.png)
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
