@@ -5,7 +5,9 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-mail-comp
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import Video from '~/components/plugins/Video'
+import Video from '~/components/plugins/Video';
+
+import API from '../partials/expo-mail-composer/MailComposer.md';
 
 **`expo-mail-composer`** allows you to compose and send emails quickly and easily using the OS UI. This module can't be used on iOS Simulators since you can't sign into a mail account on them.
 
@@ -22,6 +24,8 @@ import Video from '~/components/plugins/Video'
 ```js
 import * as MailComposer from 'expo-mail-composer';
 ```
+
+<API />
 
 ## Methods
 

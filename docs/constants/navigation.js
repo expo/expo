@@ -414,7 +414,7 @@ const sortNav = nav => {
 
   sections.forEach(({ name, reference }) => {
     const section = nav.find(o => {
-      return o.name.toLowerCase() === name.toLowerCase();
+      return o?.name?.toLowerCase() === name.toLowerCase();
     });
 
     if (section) {
