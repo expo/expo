@@ -1,5 +1,5 @@
 import React from 'react';
-import { PixelRatio, StyleSheet, TouchableOpacity, View, Text } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 
 type Props = {
   title?: string;

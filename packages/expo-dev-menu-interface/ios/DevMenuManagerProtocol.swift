@@ -8,9 +8,16 @@ public protocol DevMenuManagerProtocol {
   @objc
   var isVisible: Bool { get }
   
+  @objc
+  var delegate: DevMenuDelegateProtocol? { get set }
+  
   /**
    Opens up the dev menu.
    */
+  @objc
+  @discardableResult
+  func openMenu(_ screen: String?) -> Bool
+  
   @objc
   @discardableResult
   func openMenu() -> Bool
