@@ -12,10 +12,12 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `@react-native-community/netinfo` from `5.9.7` to `6.0.0`. ([#11947](https://github.com/expo/expo/pull/11947) by [@tsapeta](https://github.com/tsapeta)) and ([#12112](https://github.com/expo/expo/pull/12112) by [@brentvatne](https://github.com/brentvatne))
 - Updated `react-native-webview` from `10.10.2` to `11.2.3`. ([#11964](https://github.com/expo/expo/pull/11964) by [@tsapeta](https://github.com/tsapeta))
 - Updated `@react-native-segmented-control/segmented-control` from `2.2.1` to `2.3.0`. Side note: the package has changed its NPM scope from `@react-native-community/segmented-control`. ([#11996](https://github.com/expo/expo/pull/11996) by [@tsapeta](https://github.com/tsapeta))
-- Updated `@react-native-community/viewpager` from `4.2.0` to `4.2.3`. ([#12003](https://github.com/expo/expo/pull/12003) by [@tsapeta](https://github.com/tsapeta))
+- Updated `@react-native-community/viewpager` from `4.2.0` to `5.0.11`. ([#12003](https://github.com/expo/expo/pull/12003) by [@tsapeta](https://github.com/tsapeta)) and ([#12169]([https://github.com/expo/expo/pull/12169) by [@brentvatne](https://github.com/brentvatne))
 - Updated `react-native-gesture-handler` from `1.8.0` to `1.10.2`. ([#12031](https://github.com/expo/expo/pull/12031) by [@tsapeta](https://github.com/tsapeta))
 - Updated `react-native-screens` from `2.15.2` to `2.18.1`. ([#12047](https://github.com/expo/expo/pull/12047) by [@tsapeta](https://github.com/tsapeta))
 - Updated `react-native-reanimated` to stable release `2.0.0`. ([#12039](https://github.com/expo/expo/pull/12039) by [@tsapeta](https://github.com/tsapeta))
+- Updated `react-native-safe-area-context` from `3.1.9` to `3.2.0`. ([#12170](https://github.com/expo/expo/pull/12170) by [@brentvatne](https://github.com/brentvatne))
+- Updated `@react-native-community/datetimepicker` from `3.0.4` to `3.2.0`. ([#12171](https://github.com/expo/expo/pull/12171) by [@brentvatne](https://github.com/brentvatne))
 
 ### 🛠 Breaking changes
 
