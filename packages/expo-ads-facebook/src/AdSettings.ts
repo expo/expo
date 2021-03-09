@@ -53,6 +53,14 @@ export default {
    * Sets whether Facebook SDK should enable advertising tracking.
    */
   setAdvertiserTrackingEnabled(enabled: boolean): void {
+    // noop outside of iOS
+    if (Platform.OS !== 'ios') {
+      return;
+    }
+
+    if (!CTKAdSettingsManager.setAdvertiserTrackingEnabled) {
+      throw new UnavailabilityError('expo-ads-facebook', 'setAdvertiserTrackingEnabled');
+    }
     CTKAdSettingsManager.setAdvertiserTrackingEnabled(enabled);
   },
 
