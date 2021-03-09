@@ -4,6 +4,7 @@ import { Alert, Platform, ScrollView } from 'react-native';
 
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
+import SimpleActionDemo from '../components/SimpleActionDemo';
 
 const appId = '629712900716487';
 
@@ -26,6 +27,14 @@ export default class FacebookLoginScreen extends React.Component {
             await Facebook.initializeAsync({ appId, version: Platform.select({ web: 'v5.0' }) })
           }
           title="Initialize Facebook SDK"
+        />
+        <SimpleActionDemo
+          title="get tracking permissions"
+          action={async () => await Facebook.getPermissionsAsync()}
+        />
+        <SimpleActionDemo
+          title="request tracking permissions"
+          action={async () => await Facebook.requestPermissionsAsync()}
         />
         <ListButton
           onPress={async () => await Facebook.setAutoInitEnabledAsync(true)}

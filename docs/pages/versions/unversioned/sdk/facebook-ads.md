@@ -61,7 +61,7 @@ FacebookAds.InterstitialAdManager.showAd(placementId)
   .catch(error => {});
 ```
 
-The method returns a promise that will be rejected when an error occurs during a call (e.g. no fill from ad server or network error) and resolved when the user either dimisses or interacts with the displayed ad.
+The method returns a promise that will be rejected when an error occurs during a call (e.g. no fill from ad server or network error) and resolved when the user either dismisses or interacts with the displayed ad.
 
 ### Native Ads
 
@@ -282,6 +282,26 @@ Promise will be rejected when there's an error loading ads from Facebook Audienc
 ### AdSettings
 
 AdSettings contains global settings for all ad controls.
+
+#### requestPermissionsAsync
+
+Asks for permissions to use data for tracking the user or the device.
+
+> iOS: it requires the `NSUserTrackingUsageDescription` message added to the `info.plist`.
+
+##### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+#### getPermissionsAsync
+
+Checks application's permissions for using data for tracking the user or the device.
+
+> iOS: it requires the `NSUserTrackingUsageDescription` message added to the `info.plist`.
+
+##### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 #### currentDeviceHash
 

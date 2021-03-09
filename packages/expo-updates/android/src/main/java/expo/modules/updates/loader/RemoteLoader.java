@@ -219,6 +219,7 @@ public class RemoteLoader {
           if (!existingAssetFound) {
             // the database and filesystem have gotten out of sync
             // do our best to create a new entry for this file even though it already existed on disk
+            // TODO: we should probably get rid of this assumption that if an asset exists on disk with the same filename, it's the same asset
             byte[] hash = null;
             try {
               hash = UpdatesUtils.sha256(new File(mUpdatesDirectory, asset.relativePath));

@@ -21,7 +21,6 @@ class GetAssetInfo extends AsyncTask<Void, Void, Void> {
 
   @Override
   protected Void doInBackground(Void... params) {
-
     final String selection = Media._ID + "=?";
     final String[] selectionArgs = {mAssetId};
     queryAssetInfo(mContext, selection, selectionArgs, true, mPromise);

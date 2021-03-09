@@ -1,6 +1,7 @@
 package expo.modules.updates.db;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteConstraintException;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -9,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +21,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import expo.modules.updates.db.dao.AssetDao;
 import expo.modules.updates.db.dao.UpdateDao;
 import expo.modules.updates.db.entity.AssetEntity;
+import expo.modules.updates.db.entity.UpdateAssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
@@ -60,6 +63,23 @@ public class UpdatesDatabaseTest {
 
     updateDao.deleteUpdates(Arrays.asList(testUpdate));
     Assert.assertEquals(0, updateDao.loadAllUpdatesForScope(projectId).size());
+  }
+
+  @Test(expected = SQLiteConstraintException.class)
+  public void testForeignKeys() {
+    UUID uuid = UUID.randomUUID();
+    Date date = new Date();
+    String runtimeVersion = "1.0";
+    String projectId = "https://exp.host/@esamelson/test-project";
+
+    UpdateEntity testUpdate = new UpdateEntity(uuid, date, runtimeVersion, projectId);
+    updateDao.insertUpdate(testUpdate);
+
+    try {
+      assetDao._insertUpdateAsset(new UpdateAssetEntity(uuid, 47));
+    } finally {
+      updateDao.deleteUpdates(Collections.singletonList(testUpdate));
+    }
   }
 
   @Test
