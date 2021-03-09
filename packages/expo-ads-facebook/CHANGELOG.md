@@ -12,6 +12,7 @@
 
 - Remove peerDependencies and unimodulePeerDependencies from Expo modules. ([#11980](https://github.com/expo/expo/pull/11980) by [@brentvatne](https://github.com/brentvatne))
 - Added the app tracking permission. ([#12123](https://github.com/expo/expo/pull/12123) by [@lukmccall](https://github.com/lukmccall))
+- Update FBAudienceNetwork to 6.3.0. ([#12133](https://github.com/expo/expo/pull/12133) by [@tsapeta](https://github.com/tsapeta))
 
 ## 9.0.0 — 2021-01-15
 
