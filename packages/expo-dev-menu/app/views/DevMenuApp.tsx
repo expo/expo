@@ -64,7 +64,7 @@ function DevMenuApp(props) {
 
           routeNameRef.current = currentRouteName;
         }}>
-        <DevMenuContainer {...props} />
+        <DevMenuContainer {...props} navigation={navigationRef.current} />
       </NavigationContainer>
     </View>
   );

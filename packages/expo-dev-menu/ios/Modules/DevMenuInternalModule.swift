@@ -1,7 +1,15 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
+import SafariServices
 
 @objc(DevMenuInternalModule)
 public class DevMenuInternalModule: NSObject, RCTBridgeModule {
+  @objc
+  var redirectResolve: RCTPromiseResolveBlock?
+  @objc
+  var redirectReject: RCTPromiseRejectBlock?
+  @objc
+  var authSession: SFAuthenticationSession?
+  
   public static func moduleName() -> String! {
     return "ExpoDevMenuInternal"
   }
@@ -124,5 +132,16 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
   func onScreenChangeAsync(_ currentScreen: String?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
     manager.setCurrentScreen(currentScreen)
     resolve(nil)
+  }
+  
+  @objc
+  func saveAsync(_ key: String, data: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    UserDefaults.standard.set(data, forKey: key)
+    resolve(nil)
+  }
+  
+  @objc
+  func getAsync(_ key: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    resolve(UserDefaults.standard.string(forKey: key))
   }
 }

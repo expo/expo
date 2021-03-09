@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-Let's assume that our `SlackIcon` class is located in `my-project/components/SlackIcon.js`, and our icon images are in `my-project/assets/images`, in order to refer to the image we use require and include the relative path. You can provide versions of your icon at various pixel densities and the appropriate image will be automatically used for you. In this example, we actually have `slack-icon@2x.png` and `slack-icon@3x.png`, so if I view this on an iPhone 6s the image I will see is `slack-icon@3x.png`. More on this in the [Images guide in the react-native documentation](https://reactnative.dev/docs/images.html#static-image-resources).
+Let's assume that our `SlackIcon` class is located in `my-project/components/SlackIcon.js`, and our icon images are in `my-project/assets/images`, in order to refer to the image we use require and include the relative path. You can provide versions of your icon at various pixel densities and the appropriate image will be automatically used for you. In this example, we actually have `slack-icon@2x.png` and `slack-icon@3x.png`, so if I view this on an iPhone 6s the image I will see is `slack-icon@3x.png`. More on this in the [Images guide in the react-native documentation](https://reactnative.dev/docs/images#static-image-resources).
 
 We also set the `fadeDuration` (an Android specific property) to `0` because we usually want the icon to appear immediately rather than fade in over several hundred milliseconds.
 
@@ -224,13 +224,13 @@ const styles = StyleSheet.create({
 
 ### Properties
 
-Any [`Text`](http://reactnative.dev/docs/text.html), [`TouchableHighlight`](http://reactnative.dev/docs/touchablehighlight.html) or [`TouchableWithoutFeedback`](http://reactnative.dev/docs/touchablewithoutfeedback.html) property in addition to these:
+Any [`Text`](http://reactnative.dev/docs/text), [`TouchableHighlight`](http://reactnative.dev/docs/touchablehighlight) or [`TouchableWithoutFeedback`](http://reactnative.dev/docs/touchablewithoutfeedback) property in addition to these:
 
 | Prop                  | Description                                                                                                                                       | Default               |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
 | **`color`**           | Text and icon color, use `iconStyle` or nest a `Text` component if you need different colors.                                                     | `white`               |
 | **`size`**            | Icon size.                                                                                                                                        | `20`                  |
-| **`iconStyle`**       | Styles applied to the icon only, good for setting margins or a different color. _Note: use `iconStyle` for margins or expect unstable behaviour._ | \`{marginRight: 10}\` |
+| **`iconStyle`**       | Styles applied to the icon only, good for setting margins or a different color. _Note: use `iconStyle` for margins or expect unstable behaviour._ | `{marginRight: 10}` |
 | **`backgroundColor`** | Background color of the button.                                                                                                                   | `#007AFF`             |
 | **`borderRadius`**    | Border radius of the button, set to `0` to disable.                                                                                               | `5`                   |
 | **`onPress`**         | A function called when the button is pressed.                                                                                                     | _None_                |
