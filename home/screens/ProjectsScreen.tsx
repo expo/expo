@@ -98,7 +98,7 @@ class ProjectsView extends React.Component<Props, State> {
     // @evanbacon: Without this setTimeout, the state doesn't update correctly and the "Recently in Development" items don't load for 10 seconds.
     setTimeout(() => {
       this._startPollingForProjects();
-    }, 1)
+    }, 1);
 
     // NOTE(brentvatne): if we add QR code button to the menu again, we'll need to
     // find a way to move this listener up to the root of the app in order to ensure
