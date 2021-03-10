@@ -4,6 +4,14 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+## 12.0.0 — 2021-03-10
+
+### 🛠 Breaking changes
+
 - Splitting location permissions into `Foreground` and `Background` permissions. ([#12063](https://github.com/expo/expo/pull/12063) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🎉 New features

@@ -6,6 +6,12 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+## 3.2.0 — 2021-03-10
+
+### 🎉 New features
+
 - Use sync random method for PKCE. ([#10298](https://github.com/expo/expo/pull/10298) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes

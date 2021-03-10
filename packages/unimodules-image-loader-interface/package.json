@@ -1,6 +1,6 @@
 {
   "name": "unimodules-image-loader-interface",
-  "version": "6.0.0",
+  "version": "6.1.0",
   "description": "Interface for ImageLoader",
   "main": "index.js",
   "keywords": [

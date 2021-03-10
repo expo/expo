@@ -6,6 +6,12 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+## 10.1.0 — 2021-03-10
+
+### 🎉 New features
+
 - Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
 - Add `currency`, `isMetric`, `decimalSeparator`, `digitGroupingSeparator` properties. ([#11663](https://github.com/expo/expo/pull/11663) by [@IjzerenHein](https://github.com/IjzerenHein))
 - Add support for `region` property for Android. ([#11663](https://github.com/expo/expo/pull/11663) by [@IjzerenHein](https://github.com/IjzerenHein))
