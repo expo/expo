@@ -118,6 +118,9 @@ public class FileDownloader {
           }
 
           try {
+            String expoProtocolVersion = response.header("expo-protocol-version", null);
+            configuration.setUsesLegacyManifest(expoProtocolVersion == null);
+
             String updateResponseBody = response.body().string();
             JSONObject updateResponseJson = extractUpdateResponseJson(updateResponseBody, configuration);
 
@@ -311,11 +314,6 @@ public class FileDownloader {
             .header("Expo-Updates-Environment", "BARE")
             .header("Expo-JSON-Error", "true")
             .header("Expo-Accept-Signature", String.valueOf(configuration.expectsSignedManifest()));
-
-    // legacy manifest loads should ignore cache-control headers from the server and always load remotely
-    if (configuration.usesLegacyManifest()) {
-      requestBuilder = requestBuilder.cacheControl(CacheControl.FORCE_NETWORK);
-    }
 
     String runtimeVersion = configuration.getRuntimeVersion();
     String sdkVersion = configuration.getSdkVersion();

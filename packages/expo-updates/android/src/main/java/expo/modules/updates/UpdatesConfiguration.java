@@ -25,7 +25,6 @@ public class UpdatesConfiguration {
   public static final String UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY = "checkOnLaunch";
   public static final String UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY = "launchWaitMs";
   public static final String UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY = "hasEmbeddedUpdate";
-  public static final String UPDATES_CONFIGURATION_USES_LEGACY_MANIFEST_KEY = "usesLegacyManifest";
 
   private static final String UPDATES_CONFIGURATION_RELEASE_CHANNEL_DEFAULT_VALUE = "default";
   private static final int UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_DEFAULT_VALUE = 0;
@@ -117,7 +116,6 @@ public class UpdatesConfiguration {
       mSdkVersion = ai.metaData.getString("expo.modules.updates.EXPO_SDK_VERSION");
       mReleaseChannel = ai.metaData.getString("expo.modules.updates.EXPO_RELEASE_CHANNEL", "default");
       mLaunchWaitMs = ai.metaData.getInt("expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS", 0);
-      mUsesLegacyManifest = ai.metaData.getBoolean("expo.modules.updates.EXPO_LEGACY_MANIFEST", true);
 
       Object runtimeVersion = ai.metaData.get("expo.modules.updates.EXPO_RUNTIME_VERSION");
       mRuntimeVersion = runtimeVersion == null ? null : String.valueOf(runtimeVersion);
@@ -136,6 +134,10 @@ public class UpdatesConfiguration {
       Log.e(TAG, "Could not read expo-updates configuration data in AndroidManifest", e);
     }
     return this;
+  }
+
+  public void setUsesLegacyManifest(Boolean usesLegacyManifest) {
+    mUsesLegacyManifest = usesLegacyManifest;
   }
 
   public UpdatesConfiguration loadValuesFromMap(Map<String, Object> map) {
@@ -199,11 +201,6 @@ public class UpdatesConfiguration {
     Boolean hasEmbeddedUpdateFromMap = readValueCheckingType(map, UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY, Boolean.class);
     if (hasEmbeddedUpdateFromMap != null) {
       mHasEmbeddedUpdate = hasEmbeddedUpdateFromMap;
-    }
-
-    Boolean usesLegacyManifestFromMap = readValueCheckingType(map, UPDATES_CONFIGURATION_USES_LEGACY_MANIFEST_KEY, Boolean.class);
-    if (usesLegacyManifestFromMap != null) {
-      mUsesLegacyManifest = usesLegacyManifestFromMap;
     }
 
     return this;
