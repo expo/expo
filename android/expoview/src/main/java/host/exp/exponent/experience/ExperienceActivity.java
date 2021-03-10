@@ -317,6 +317,15 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     }
   }
 
+  public boolean toggleDevMenu() {
+    if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
+      mDevMenuManager.toggleInActivity(this);
+      return true;
+    }
+    return false;
+  }
+
+
   /**
    * Handles command line command `adb shell input keyevent 82` that toggles the dev menu on the current experience activity.
    */
