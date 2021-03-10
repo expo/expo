@@ -11,7 +11,7 @@
   "dependencies": {
     "@expo/html-elements": "^0.0.2",
     "async-retry": "^1.1.4",
-    "expo": "~40.0.0-alpha.0",
+    "expo": "~41.0.0-alpha.0",
     "expo-ads-admob": "~10.0.0",
     "expo-ads-facebook": "~10.0.0",
     "expo-analytics-segment": "~10.1.0",
