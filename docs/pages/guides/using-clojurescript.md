@@ -11,7 +11,7 @@ next___FILE: ./using-firebase.md
 
 If you're already convinced about ClojureScript and Expo and know what to do once you have figwheel running, you can just read this section. Otherwise, we encourage you to read the entire guide.
 
-```javascript
+```sh
 lein new expo your-project
 
 cd your-project && yarn install
@@ -42,7 +42,7 @@ It all begins with a [Simple Made Easy](https://www.infoq.com/presentations/Simp
 
 ## 1. Create an Expo project
 
-```javascript
+```sh
 # Default to use Reagent / Re-frame
 lein new expo your-project
 
@@ -56,7 +56,7 @@ cd your-project && yarn install
 
 ### CLI REPL
 
-```javascript
+```sh
 lein figwheel
 ```
 
@@ -86,7 +86,7 @@ Run `(start-figwheel)` in the connected REPL.
 
 ### Using Expo CLI
 
-```javascript
+```sh
 # Install Expo CLI if you have not already
 npm install -g expo-cli
 
@@ -101,7 +101,7 @@ For more information, see [Expo CLI](../workflow/expo-cli.md).
 
 ## 4. Publish your app
 
-```javascript
+```sh
 # Generate main.js
 lein prod-build
 
