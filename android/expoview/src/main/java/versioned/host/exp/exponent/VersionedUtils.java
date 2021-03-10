@@ -77,7 +77,7 @@ public class VersionedUtils {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         FLog.w(
           ReactConstants.TAG,
-          "Overlay permissions needs to be granted in order for react native apps to run in dev mode");
+          "Overlay permissions needs to be granted in order for React Native apps to run in development mode");
         if (intent.resolveActivity(context.getPackageManager()) != null) {
           context.startActivity(intent);
         }
