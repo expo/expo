@@ -57,7 +57,7 @@ CREATE INDEX \"index_json_data_scope_key\" ON \"json_data\" (\"scope_key\")\
 @implementation EXUpdatesDatabaseInitialization
 
 + (BOOL)initializeDatabaseWithLatestSchemaInDirectory:(NSURL *)directory
-                                             database:(struct sqlite3 **)database
+                                             database:(struct sqlite3 * _Nullable * _Nonnull)database
                                                 error:(NSError ** _Nullable)error
 {
   return [[self class] initializeDatabaseWithSchema:EXUpdatesDatabaseInitializationLatestSchema
@@ -72,7 +72,7 @@ CREATE INDEX \"index_json_data_scope_key\" ON \"json_data\" (\"scope_key\")\
                             filename:(NSString *)filename
                          inDirectory:(NSURL *)directory
                        shouldMigrate:(BOOL)shouldMigrate
-                            database:(struct sqlite3 **)database
+                            database:(struct sqlite3 * _Nullable * _Nonnull)database
                                error:(NSError ** _Nullable)error
 {
   sqlite3 *db;
@@ -186,7 +186,7 @@ CREATE INDEX \"index_json_data_scope_key\" ON \"json_data\" (\"scope_key\")\
       return NO;
     }
 
-    for (int i = startingMigrationIndex; i < migrations.count; i++) {
+    for (NSUInteger i = startingMigrationIndex; i < migrations.count; i++) {
       NSError *migrationError;
       id<EXUpdatesDatabaseMigration> migration = migrations[i];
       if (![migration runMigrationOnDatabase:db error:&migrationError]) {

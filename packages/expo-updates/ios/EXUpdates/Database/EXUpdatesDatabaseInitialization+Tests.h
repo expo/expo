@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
                             filename:(NSString *)filename
                          inDirectory:(NSURL *)directory
                        shouldMigrate:(BOOL)shouldMigrate
-                            database:(struct sqlite3 **)database
+                            database:(struct sqlite3 * _Nullable * _Nonnull)database
                                error:(NSError ** _Nullable)error;
 
 @end
