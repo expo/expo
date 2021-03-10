@@ -11,35 +11,50 @@ const path = require('path');
 
 const version = process.argv[2];
 
-if (!version) {
-  console.log('Please enter a version number\n');
-  console.log('E.g., "yarn run schema-sync 38" \nor, "yarn run schema-sync unversioned"');
-  return;
+async function run() {
+  if (!version) {
+    console.log('Please enter a version number\n');
+    console.log('E.g., "yarn run schema-sync 38" \nor, "yarn run schema-sync unversioned"');
+    return;
+  }
+
+  if (version === 'unversioned') {
+    const { data } = await axios.get(
+      `http://exp.host/--/api/v2/project/configuration/schema/UNVERSIONED`
+    );
+
+    await fs.writeFile(
+      `scripts/schemas/unversioned/app-config-schema.js`,
+      'export default ',
+      'utf8'
+    );
+    await fs.appendFile(
+      `scripts/schemas/unversioned/app-config-schema.js`,
+      JSON.stringify(data.data.schema.properties),
+      'utf8'
+    );
+  } else {
+    try {
+      console.log(`Fetching schema for ${version} from production...`);
+      await fetchAndWriteSchema(version, false);
+    } catch (e) {
+      console.log(`Unable to fetch schema for ${version} from production, trying staging...`);
+      await fetchAndWriteSchema(version, true);
+    }
+  }
 }
 
-if (version === 'unversioned') {
-  axios
-    .get(`http://exp.host/--/api/v2/project/configuration/schema/UNVERSIONED`)
-    .then(async ({ data }) => {
-      await fs.writeFile(
-        `scripts/schemas/unversioned/app-config-schema.js`,
-        'export default ',
-        'utf8'
-      );
-      await fs.appendFile(
-        `scripts/schemas/unversioned/app-config-schema.js`,
-        JSON.stringify(data.data.schema.properties),
-        'utf8'
-      );
-    });
-} else {
+async function fetchAndWriteSchema(version, staging) {
   const schemaPath = `scripts/schemas/v${version}.0.0/app-config-schema.js`;
   fs.ensureDirSync(path.dirname(schemaPath));
 
-  axios
-    .get(`http://exp.host/--/api/v2/project/configuration/schema/${version}.0.0`)
-    .then(async ({ data }) => {
-      await fs.writeFile(schemaPath, 'export default ', 'utf8');
-      await fs.appendFile(schemaPath, JSON.stringify(data.data.schema.properties), 'utf8');
-    });
+  const hostname = staging ? 'staging.exp.host' : 'exp.host';
+
+  const { data } = await axios.get(
+    `http://${hostname}/--/api/v2/project/configuration/schema/${version}.0.0`
+  );
+  await fs.writeFile(schemaPath, 'export default ', 'utf8');
+  await fs.appendFile(schemaPath, JSON.stringify(data.data.schema.properties), 'utf8');
 }
+
+run();
