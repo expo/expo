@@ -75,6 +75,7 @@ import okhttp3.OkHttpClient;
 import versioned.host.exp.exponent.ExpoTurboPackage;
 import versioned.host.exp.exponent.ExponentPackage;
 import versioned.host.exp.exponent.ReactUnthemedRootView;
+import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedJSIModulePackage;
 
 
 // TOOD: need to figure out when we should reload the kernel js. Do we do it every time you visit
@@ -271,6 +272,7 @@ public class Kernel extends KernelInterface {
                 .addPackage(new MainReactPackage())
                 .addPackage(ExponentPackage.kernelExponentPackage(mContext, mExponentManifest.getKernelManifest(), HomeActivity.homeExpoPackages()))
                 .addPackage(ExpoTurboPackage.kernelExpoTurboPackage(mExponentManifest.getKernelManifest()))
+                .setJSIModulesPackage((reactApplicationContext, jsContext) -> new ReanimatedJSIModulePackage().getJSIModules(reactApplicationContext, jsContext))
                 .setInitialLifecycleState(LifecycleState.RESUMED);
 
             if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE && mExponentManifest.isDebugModeEnabled(mExponentManifest.getKernelManifest())) {
