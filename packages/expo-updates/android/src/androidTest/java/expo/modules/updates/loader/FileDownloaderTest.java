@@ -28,30 +28,6 @@ public class FileDownloaderTest {
   }
 
   @Test
-  public void testCacheControl_LegacyManifest() {
-    HashMap<String, Object> configMap = new HashMap<>();
-    configMap.put("updateUrl", Uri.parse("https://exp.host/@test/test"));
-    configMap.put("runtimeVersion", "1.0");
-    configMap.put("usesLegacyManifest", true);
-    UpdatesConfiguration config = new UpdatesConfiguration().loadValuesFromMap(configMap);
-
-    Request actual = FileDownloader.setHeadersForManifestUrl(config, null, context);
-    Assert.assertEquals("no-cache", actual.header("Cache-Control"));
-  }
-
-  @Test
-  public void testCacheControl_NewManifest() {
-    HashMap<String, Object> configMap = new HashMap<>();
-    configMap.put("updateUrl", Uri.parse("https://exp.host/manifest/00000000-0000-0000-0000-000000000000"));
-    configMap.put("runtimeVersion", "1.0");
-    configMap.put("usesLegacyManifest", false);
-    UpdatesConfiguration config = new UpdatesConfiguration().loadValuesFromMap(configMap);
-
-    Request actual = FileDownloader.setHeadersForManifestUrl(config, null, context);
-    Assert.assertNull(actual.header("Cache-Control"));
-  }
-
-  @Test
   public void testExtraHeaders_ObjectTypes() throws JSONException {
     HashMap<String, Object> configMap = new HashMap<>();
     configMap.put("updateUrl", Uri.parse("https://exp.host/manifest/00000000-0000-0000-0000-000000000000"));
