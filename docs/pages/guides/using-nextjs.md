@@ -3,7 +3,7 @@ title: Using Next.js with Expo for Web
 sidebar_title: Using Next.js
 ---
 
-> Warning: Support for Next.js is experimental. Please open an issue at [expo-cli/issues](https://github.com/expo/expo-cli/issues) if you encountered any problems.
+> Please open any issues related to Next.js with Expo at [expo-cli/issues](https://github.com/expo/expo-cli/issues).
 
 [Next.js](https://nextjs.org/) is a React framework that provides simple page-based routing as well as server-side rendering. To use Next.js with Expo for web we recommend that you use a library called [`@expo/next-adapter`][next-adapter] to handle the configuration and integration of the tools.
 
