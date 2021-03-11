@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix warning in Xcode about wrong variable return type ([#12190](https://github.com/expo/expo/pull/12190) by [@esamelson](https://github.com/esamelson))
+
 ## 1.0.0 — 2021-03-10
 
 ### 🎉 New features

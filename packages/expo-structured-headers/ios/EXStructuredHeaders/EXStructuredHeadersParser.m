@@ -166,7 +166,7 @@ static NSString * const EXStructuredHeadersParserErrorDomain = @"EXStructuredHea
       member = [self _parseAnItemOrInnerListWithError:error];
       if (!member) return nil;
     } else {
-      NSArray *parameters = [self _parseParametersWithError:error];
+      NSDictionary *parameters = [self _parseParametersWithError:error];
       if (!parameters) return nil;
       member = [self _memberEntryWithValue:@(YES) parameters:parameters];
     }
