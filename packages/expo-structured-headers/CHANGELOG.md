@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 1.0.1 — 2021-03-11
+
+### 🐛 Bug fixes
+
 - Fix warning in Xcode about wrong variable return type ([#12190](https://github.com/expo/expo/pull/12190) by [@esamelson](https://github.com/esamelson))
 - Add prebuilt xcframework
 
