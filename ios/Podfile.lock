@@ -1824,14 +1824,14 @@ PODS:
     - UMFileSystemInterface
   - EXStoreReview (4.0.0):
     - UMCore
-  - EXStructuredHeaders (1.0.0):
+  - EXStructuredHeaders (1.0.1):
     - UMCore
   - EXTaskManager (9.1.0):
     - UMAppLoader
     - UMConstantsInterface
     - UMCore
     - UMTaskManagerInterface
-  - EXUpdates (0.5.0):
+  - EXUpdates (0.5.1):
     - EXStructuredHeaders
     - React-Core
     - UMCore
@@ -3964,9 +3964,9 @@ SPEC CHECKSUMS:
   EXSplashScreen: 34d4681fe08c1a94a5ff0f80c8526e4b8222bcd3
   EXSQLite: f345a40a57f97ecf7a98e5d302d9b48b58757544
   EXStoreReview: 55af7e57fe467e535c11d0c90d81fb36e44005a3
-  EXStructuredHeaders: 99b4a74850058a7eaeb7e4fe27f5cb605276c1f3
+  EXStructuredHeaders: 7e7eec19a326bc58cca2fb3edbac0afaecb89c16
   EXTaskManager: b873efc04d604ac3884ce28f7264427461841bed
-  EXUpdates: 504a7560a1e6fda101f34e10396cbed80f8c878e
+  EXUpdates: bb20b8ea221ea54eef1eac4e9e0e32fbbcf49cb1
   EXVideoThumbnails: cd257fc6e07884a704a5674d362a6410933acb68
   EXWebBrowser: 0b466c50e5ff61c9758095d49d5081e3229d77ac
   FacebookSDK: 3b40a3bf7c42f727126e666877860497f7dafe4c

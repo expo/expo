@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 0.5.1 — 2021-03-11
+
+### 🐛 Bug fixes
+
 - Add prebuilt xcframework
 
 ## 0.5.0 — 2021-03-10
