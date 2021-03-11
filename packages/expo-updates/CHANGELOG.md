@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - remove UPDATES_CONFIGURATION_USES_LEGACY_MANIFEST_KEY constant. ([#12181](https://github.com/expo/expo/pull/12181) by [@jkhales](https://github.com/jkhales))
+- Jonathan/e 499 remove EXUpdatesUsesLegacyManifest Plist constant (ios). ([#12249](https://github.com/expo/expo/pull/12249) by [@jkhales](https://github.com/jkhales))
 
 ### 🎉 New features
 

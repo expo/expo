@@ -78,10 +78,6 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
 - (NSURLRequest *)createManifestRequestWithURL:(NSURL *)url extraHeaders:(nullable NSDictionary *)extraHeaders
 {
   NSURLRequestCachePolicy cachePolicy = _sessionConfiguration ? _sessionConfiguration.requestCachePolicy : NSURLRequestUseProtocolCachePolicy;
-  if (_config.usesLegacyManifest) {
-    // legacy manifest loads should ignore cache-control headers from the server and always load remotely
-    cachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
-  }
 
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:cachePolicy timeoutInterval:EXUpdatesDefaultTimeoutInterval];
   [self _setManifestHTTPHeaderFields:request withExtraHeaders:extraHeaders];
@@ -207,10 +203,18 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
     // There are a few cases in Expo Go where we still want to use the unsigned manifest anyway, so don't mark it as unverified.
     mutableManifest[@"isVerified"] = @(isVerified);
   }
+
+  NSError *error;
   EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:mutableManifest.copy
                                                        response:response
                                                          config:_config
-                                                       database:database];
+                                                       database:database
+                                                          error:&error];
+  if (error) {
+    errorBlock(error, response);
+    return;
+  }
+
   if (![EXUpdatesSelectionPolicyFilterAware doesUpdate:update matchFilters:update.manifestFilters]) {
     NSError *error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
                                          code:1021

@@ -8,6 +8,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
+
+
 @interface EXUpdatesUpdate ()
 
 @property (nonatomic, strong, readwrite) NSDictionary *rawManifest;
@@ -58,16 +61,33 @@ NS_ASSUME_NONNULL_BEGIN
                           response:(nullable NSURLResponse *)response
                             config:(EXUpdatesConfig *)config
                           database:(EXUpdatesDatabase *)database
+                             error:(NSError **)error
 {
-  if (config.usesLegacyManifest) {
+  if (![response isKindOfClass:[NSHTTPURLResponse class]]) {
+    *error = [NSError errorWithDomain:EXUpdatesUpdateErrorDomain
+                                code:1001
+                            userInfo:@{NSLocalizedDescriptionKey:@"response must be a NSHTTPURLResponse"}];
+    return nil;
+  }
+  
+  NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+  NSDictionary *headerDictionary = [httpResponse allHeaderFields];
+  NSNumber *expoProtocolVersion = headerDictionary[@"expo-protocol-version"];
+
+  if (expoProtocolVersion == nil) {
     return [EXUpdatesLegacyUpdate updateWithLegacyManifest:manifest
                                                     config:config
                                                   database:database];
-  } else {
+  } else if (expoProtocolVersion.integerValue == 0) {
     return [EXUpdatesNewUpdate updateWithNewManifest:manifest
                                             response:response
                                               config:config
                                             database:database];
+  } else {
+    *error = [NSError errorWithDomain:EXUpdatesUpdateErrorDomain
+                                code:1000
+                            userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"expo-protocol-version '%@' is invalid", expoProtocolVersion]}];
+    return nil;
   }
 }
 
@@ -75,28 +95,14 @@ NS_ASSUME_NONNULL_BEGIN
                                     config:(EXUpdatesConfig *)config
                                   database:(nullable EXUpdatesDatabase *)database
 {
-  if (config.usesLegacyManifest) {
-    if (manifest[@"releaseId"]) {
-      return [EXUpdatesLegacyUpdate updateWithLegacyManifest:manifest
-                                                      config:config
-                                                    database:database];
-    } else {
-      return [EXUpdatesBareUpdate updateWithBareManifest:manifest
-                                                  config:config
-                                                database:database];
-    }
+  if (manifest[@"releaseId"]) {
+    return [EXUpdatesLegacyUpdate updateWithLegacyManifest:manifest
+                                                    config:config
+                                                  database:database];
   } else {
-    // bare (embedded) manifests should never have a runtimeVersion field
-    if (manifest[@"manifest"] || manifest[@"runtimeVersion"]) {
-      return [EXUpdatesNewUpdate updateWithNewManifest:manifest
-                                              response:nil
+    return [EXUpdatesBareUpdate updateWithBareManifest:manifest
                                                 config:config
                                               database:database];
-    } else {
-      return [EXUpdatesBareUpdate updateWithBareManifest:manifest
-                                                  config:config
-                                                database:database];
-    }
   }
 }
 
