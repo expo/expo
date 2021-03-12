@@ -118,9 +118,6 @@ public class FileDownloader {
           }
 
           try {
-            String expoProtocolVersion = response.header("expo-protocol-version", null);
-            configuration.setUsesLegacyManifest(expoProtocolVersion == null);
-
             String updateResponseBody = response.body().string();
             JSONObject updateResponseJson = extractUpdateResponseJson(updateResponseBody, configuration);
 

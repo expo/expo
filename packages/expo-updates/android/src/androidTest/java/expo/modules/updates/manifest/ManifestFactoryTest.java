@@ -13,6 +13,9 @@ import java.util.HashMap;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 import expo.modules.updates.UpdatesConfiguration;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class ManifestFactoryTest {
 
@@ -28,9 +31,12 @@ public class ManifestFactoryTest {
 
   @Test
   public void testGetManifest_Legacy() throws JSONException {
+    ManifestResponse response = mock(ManifestResponse.class);
+    when(response.header("expo-protocol-version")).thenReturn(null);
+
     Manifest actual = ManifestFactory.getManifest(
       new JSONObject(legacyManifestJson),
-      null,
+      response,
       createConfig()
     );
     Assert.assertTrue(actual instanceof LegacyManifest);
@@ -38,15 +44,28 @@ public class ManifestFactoryTest {
 
   @Test
   public void testGetManifest_New() throws JSONException {
-    UpdatesConfiguration config = createConfig();
-    config.setUsesLegacyManifest(false);
+    ManifestResponse response = mock(ManifestResponse.class);
+    when(response.header("expo-protocol-version")).thenReturn("0");
+
     Manifest actual = ManifestFactory.getManifest(
       new JSONObject(newManifestJson),
-      null,
-      config
+      response,
+      createConfig()
     );
 
     Assert.assertTrue(actual instanceof NewManifest);
+  }
+
+  @Test(expected = Error.class)
+  public void testGetManifest_Error() throws JSONException {
+    ManifestResponse response = mock(ManifestResponse.class);
+    when(response.header("expo-protocol-version")).thenReturn("1");
+
+    ManifestFactory.getManifest(
+      new JSONObject(newManifestJson),
+      response,
+      createConfig()
+    );
   }
 
   @Test

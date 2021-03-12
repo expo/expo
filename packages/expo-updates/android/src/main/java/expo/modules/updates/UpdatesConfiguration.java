@@ -46,7 +46,6 @@ public class UpdatesConfiguration {
   private int mLaunchWaitMs = UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_DEFAULT_VALUE;
   private CheckAutomaticallyConfiguration mCheckOnLaunch = CheckAutomaticallyConfiguration.ALWAYS;
   private boolean mHasEmbeddedUpdate = true;
-  private boolean mUsesLegacyManifest = true;
 
   public boolean isEnabled() {
     return mIsEnabled;
@@ -99,10 +98,6 @@ public class UpdatesConfiguration {
     return mHasEmbeddedUpdate;
   }
 
-  public boolean usesLegacyManifest() {
-    return mUsesLegacyManifest;
-  }
-
   public UpdatesConfiguration loadValuesFromMetadata(Context context) {
     try {
       ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
@@ -134,10 +129,6 @@ public class UpdatesConfiguration {
       Log.e(TAG, "Could not read expo-updates configuration data in AndroidManifest", e);
     }
     return this;
-  }
-
-  public void setUsesLegacyManifest(Boolean usesLegacyManifest) {
-    mUsesLegacyManifest = usesLegacyManifest;
   }
 
   public UpdatesConfiguration loadValuesFromMap(Map<String, Object> map) {

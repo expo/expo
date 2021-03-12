@@ -10,10 +10,14 @@ public class ManifestFactory {
   private static final String TAG = ManifestFactory.class.getSimpleName();
 
   public static Manifest getManifest(JSONObject manifestJson, ManifestResponse httpResponse, UpdatesConfiguration configuration) throws JSONException {
-    if (configuration.usesLegacyManifest()) {
+    String expoProtocolVersion = httpResponse.header("expo-protocol-version");
+
+    if (expoProtocolVersion == null) {
       return LegacyManifest.fromLegacyManifestJson(manifestJson, configuration);
-    } else {
+    } else if (expoProtocolVersion == "0") {
       return NewManifest.fromManifestJson(manifestJson, httpResponse, configuration);
+    } else {
+      throw new Error("Unsupported expo-protocol-version: " + expoProtocolVersion);
     }
   }
 

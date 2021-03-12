@@ -15,6 +15,6 @@ public class ManifestResponse {
   }
 
   public String header(String name) {
-    return mResponse.header(name);
+    return mResponse.header(name, null);
   }
 }
