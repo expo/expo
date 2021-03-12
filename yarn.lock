@@ -1797,10 +1797,10 @@
   dependencies:
     cross-spawn "^6.0.5"
 
-"@expo/vector-icons@^12.0.0":
-  version "12.0.0"
-  resolved "https://registry.yarnpkg.com/@expo/vector-icons/-/vector-icons-12.0.0.tgz#200859ed32095847abd5cce8efe9aa1c7286f1f8"
-  integrity sha512-R8kVnAamF48bFEctgunkgYB4HImQ/wO2d0r23QgW3snSWe+gZmXukcvm45d8SRCvnMdRRXnZdTsYLYKSNrux4Q==
+"@expo/vector-icons@^12.0.4":
+  version "12.0.4"
+  resolved "https://registry.yarnpkg.com/@expo/vector-icons/-/vector-icons-12.0.4.tgz#52061fffab83ca74af52288b5f839b090f7dabed"
+  integrity sha512-/EFbXri7jZmqj1jTY6wpauvMN0DY0Epic003d43yWqrScLlVERaxXrOR07BNuCZvVMHBAzXN4VbOzUUUTq6j8g==
   dependencies:
     lodash.frompairs "^4.0.1"
     lodash.isequal "^4.5.0"
