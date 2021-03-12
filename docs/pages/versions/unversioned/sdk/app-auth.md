@@ -10,7 +10,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { H3 } from '~/components/plugins/Headings';
 import { InlineCode } from '~/components/base/code';
 
-> ⚠️ For web support and more authentication methods, use the new [**AuthSession**](auth-session.md) API
+> ⚠️ This package has been replaced by [**AuthSession** (expo-auth-session)](auth-session.md), which provides the same capabilities as **AppAuth** plus additional features, including support for the web platform. **AppAuth** (expo-app-auth) is deprecated and will be removed from the Expo SDK in SDK 43.
 
 **`expo-app-auth`** allows you to authenticate and authorize your users through the native OAuth library AppAuth by [OpenID](https://github.com/openid).
 
