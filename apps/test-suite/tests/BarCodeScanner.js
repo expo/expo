@@ -2,7 +2,6 @@
 
 import { Asset } from 'expo-asset';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { Platform } from 'react-native';
 
@@ -46,12 +45,12 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
 
     t.beforeAll(async () => {
       await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
-        return Permissions.askAsync(Permissions.CAMERA);
+        return BarCodeScanner.requestPermissionsAsync();
       });
     });
 
     t.beforeEach(async () => {
-      const { status } = await Permissions.getAsync(Permissions.CAMERA);
+      const { status } = await BarCodeScanner.getPermissionsAsync();
       t.expect(status).toEqual('granted');
     });
 

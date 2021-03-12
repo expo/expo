@@ -1,8 +1,5 @@
-'use strict';
-
-import { Video } from 'expo-av';
+import { Audio, Video } from 'expo-av';
 import { Camera } from 'expo-camera';
-import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { Platform } from 'react-native';
 
@@ -32,10 +29,10 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
 
     t.beforeAll(async () => {
       await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
-        return Permissions.askAsync(Permissions.CAMERA);
+        return Camera.requestPermissionsAsync();
       });
       await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
-        return Permissions.askAsync(Permissions.AUDIO_RECORDING);
+        return Audio.requestPermissionsAsync();
       });
 
       originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
@@ -47,7 +44,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
     });
 
     t.beforeEach(async () => {
-      const { status } = await Permissions.getAsync(Permissions.CAMERA);
+      const { status } = await Camera.getPermissionsAsync();
       t.expect(status).toEqual('granted');
     });
 
