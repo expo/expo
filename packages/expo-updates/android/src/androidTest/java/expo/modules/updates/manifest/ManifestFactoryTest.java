@@ -10,7 +10,6 @@ import org.junit.runner.RunWith;
 
 import java.util.HashMap;
 
-import androidx.room.Update;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 import expo.modules.updates.UpdatesConfiguration;
 
