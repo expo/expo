@@ -18,19 +18,10 @@ public class ManifestFactory {
   }
 
   public static Manifest getEmbeddedManifest(JSONObject manifestJson, UpdatesConfiguration configuration) throws JSONException {
-    if (configuration.usesLegacyManifest()) {
-      if (manifestJson.has("releaseId")) {
-        return LegacyManifest.fromLegacyManifestJson(manifestJson, configuration);
-      } else {
-        return BareManifest.fromManifestJson(manifestJson, configuration);
-      }
+    if (manifestJson.has("releaseId")) {
+      return LegacyManifest.fromLegacyManifestJson(manifestJson, configuration);
     } else {
-      // bare (embedded) manifests should never have a runtimeVersion field
-      if (manifestJson.has("manifest") || manifestJson.has("runtimeVersion")) {
-        return NewManifest.fromManifestJson(manifestJson, null, configuration);
-      } else {
-        return BareManifest.fromManifestJson(manifestJson, configuration);
-      }
+      return BareManifest.fromManifestJson(manifestJson, configuration);
     }
   }
 }
