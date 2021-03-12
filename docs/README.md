@@ -163,6 +163,21 @@ You may need to tweak the script as the source docs change; the script hackily t
 
 The React Native docs are actually versioned but we currently read off of master.
 
+### Adding video
+
+- Record the video using QuickTime
+- Install `ffmpeg` (`brew install ffmpeg`)
+- Run `ffmpeg -i your-video-name.mov -vcodec h264 -acodec mp2 your-video-name.mp4` to convert to mp4.
+- If the width of the video is larger than ~1200px, then run this to shrink it: `ffmpeg -i your-video.mp4 -filter:v scale="1280:trunc(ow/a/2)*2" your-video-smaller.mp4`
+- Put the video in the appropriate location in `public/static/videos` and use it in your docs page MDX like this:
+
+```js
+import Video from '~/components/plugins/Video'
+
+// Change the path to point to the relative path to your video from within the `static/videos` directory
+<Video file="guides/color-schemes.mp4" />
+```
+
 #### TODOs: 
 - Handle image sizing in imports better 
 - Read from the appropriate version (configurable) of the React Native docs, not just master 
