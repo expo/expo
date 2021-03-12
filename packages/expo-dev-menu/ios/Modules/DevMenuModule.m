@@ -8,4 +8,7 @@ RCT_EXTERN_METHOD(openMenu)
 RCT_EXTERN_METHOD(openProfile)
 RCT_EXTERN_METHOD(openSettings)
 
+RCT_EXTERN_METHOD(isLoggedInAsync:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
+RCT_EXTERN_METHOD(queryDevSessionsAsync:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
+
 @end
