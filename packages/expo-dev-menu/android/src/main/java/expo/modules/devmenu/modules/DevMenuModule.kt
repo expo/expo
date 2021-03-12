@@ -1,8 +1,11 @@
 package expo.modules.devmenu.modules
 
+import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class DevMenuModule(reactContext: ReactApplicationContext)
   : ReactContextBaseJavaModule(reactContext) {
@@ -21,6 +24,48 @@ class DevMenuModule(reactContext: ReactApplicationContext)
         devMenuManager.openMenu(this, screen)
       }
   }
+
+  @ReactMethod
+  fun isLoggedInAsync(promise: Promise) {
+    promise.resolve(
+      devMenuManager
+        .getExpoApiClient()
+        .isLoggedIn()
+    )
+  }
+
+  @ReactMethod
+  fun queryMyProjectsAsync(promise: Promise) {
+    GlobalScope.launch {
+      try {
+        devMenuManager
+          .getExpoApiClient()
+          .queryMyProjects()
+          .use {
+            promise.resolve(it.body()?.charStream()?.readText() ?: "")
+          }
+      } catch (e: Exception) {
+        promise.reject("ERR_DEVMENU_CANNOT_GET_PROJECTS", e.message, e)
+      }
+    }
+  }
+
+  @ReactMethod
+  fun queryDevSessionsAsync(promise: Promise) {
+    GlobalScope.launch {
+      try {
+        devMenuManager
+          .getExpoApiClient()
+          .queryDevSessions()
+          .use {
+            promise.resolve(it.body()?.charStream()?.readText() ?: "")
+          }
+      } catch (e: Exception) {
+        promise.reject("ERR_DEVMENU_CANNOT_GET_DEV_SESSIONS", e.message, e)
+      }
+    }
+  }
+
 
   @ReactMethod
   fun openMenu() {

@@ -55,6 +55,10 @@ private let extensionToDevMenuScreensMap = NSMapTable<DevMenuExtensionProtocol, 
  */
 @objc
 open class DevMenuManager: NSObject, DevMenuManagerProtocol {
+  lazy var expoSessionDelegate: DevMenuExpoSessionDelegate = DevMenuExpoSessionDelegate(manager: self)
+  
+  public var expoApiClient: DevMenuExpoApiClientProtocol = DevMenuExpoApiClient()
+  
   /**
    Shared singleton instance.
    */
@@ -118,6 +122,7 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
     self.window = DevMenuWindow(manager: self)
     
     DevMenuSettings.setup()
+    self.expoSessionDelegate.restoreSession()
   }
 
   /**
@@ -178,6 +183,15 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
   @objc
   public func setCurrentScreen(_ screenName: String?) {
     currentScreen = screenName
+  }
+  
+  @objc
+  public func sendEventToDelegateBridge(_ eventName: String, data: Any?) {
+    guard let bridge = delegate?.appBridge?(forDevMenuManager: self) as? RCTBridge else {
+      return;
+    }
+    
+    bridge.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [eventName, data])
   }
 
   // MARK: internals

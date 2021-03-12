@@ -31,6 +31,11 @@ abstract class DevMenuAwareReactActivity : ReactActivity() {
     return DevMenuManager.onKeyEvent(keyCode, event) || super.onKeyUp(keyCode, event)
   }
 
+  override fun onDestroy() {
+    super.onDestroy()
+    currentReactNative = null
+  }
+
   companion object {
     @get:Synchronized
     @set:Synchronized

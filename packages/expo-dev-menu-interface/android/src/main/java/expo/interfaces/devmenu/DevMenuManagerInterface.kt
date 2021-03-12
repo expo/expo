@@ -91,4 +91,14 @@ interface DevMenuManagerInterface {
    * Set the current screen on which all action will be dispatched.
    */
   fun setCurrentScreen(screen: String?)
+
+  /**
+   * @return a instance of [DevMenuExpoApiClientInterface]
+   */
+  fun getExpoApiClient(): DevMenuExpoApiClientInterface
+
+  /**
+   * Sends an event to the delegate's bridge if exists.
+   */
+  fun sendEventToDelegateBridge(eventName: String, eventData: Any?)
 }
