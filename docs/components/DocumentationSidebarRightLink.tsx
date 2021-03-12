@@ -14,9 +14,6 @@ const STYLES_LINK = css`
   font-size: 14px;
   display: block;
   text-decoration: none;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   margin-bottom: 6px;
   cursor: pointer;
 
@@ -32,6 +29,9 @@ const STYLES_LINK_HEADER = css`
 const STYLES_LINK_CODE = css`
   font-family: ${Constants.fontFamilies.mono};
   font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 const STYLES_LINK_ACTIVE = css`
