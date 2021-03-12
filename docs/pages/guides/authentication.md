@@ -882,7 +882,7 @@ export default function App() {
 
 [c-google]: https://console.developers.google.com/apis/credentials
 
-> Be sure to install the peerDependency `yarn add expo-application`
+> Be sure to install the peerDependency `expo install expo-application`
 
 There are 4 different types of client IDs you can provide:
 
@@ -898,7 +898,7 @@ To create a client ID, go to the [Credentials Page][c-google]:
 
 #### Development in the Expo Go app
 
-While developing in Expo Go, you cannot use proper native authentication. Instead you must use web login during development. Be sure to follow the **standalone** guide below for setting up production apps.
+While developing in Expo Go, you will need to use the authentication proxy. Be sure to follow the **standalone** guides below for setting up production apps.
 
 First, be sure to login to your Expo account `expo login`. This will be part of the redirect URL.
 
@@ -909,9 +909,9 @@ First, be sure to login to your Expo account `expo login`. This will be part of 
 - **URIs** (Authorized JavaScript origins): https://auth.expo.io
 - **Authorized redirect URIs**: https://auth.expo.io/@your-username/your-project-slug
 
-#### iOS Native
+#### Standalone iOS apps
 
-This can only be used in Standalone, custom clients, and bare workflow apps. This method cannot be used in the Expo Go app.
+This can only be used in standalone and bare workflow apps. This method cannot be used in the Expo Go app.
 
 [Create a new Google Client ID][c-google] that will be used with `iosClientId`.
 
@@ -921,15 +921,12 @@ This can only be used in Standalone, custom clients, and bare workflow apps. Thi
 - Your app needs to conform to the URI scheme matching your bundle identifier.
   - _Standalone_: Automatically added, do nothing.
   - _Bare workflow_: Run `npx uri-scheme add <your bundle id> --ios`
-- To test this you can:
-  1. Eject to bare: `expo eject` and run `yarn ios`
-  2. Create a custom client: `expo client:ios`
-  3. Build a production IPA: `expo build:ios`
+- To test this for managed apps, run a build: `expo build:ios`.
 - Whenever you change the values in `app.json` you'll need to rebuild the native app.
 
-#### Android Native
+#### Standalone Android apps
 
-This can only be used in Standalone, and bare workflow apps. This method cannot be used in the Expo Go app.
+This can only be used in standalone and bare workflow apps. This method cannot be used in the Expo Go app.
 
 [Create a new Google Client ID][c-google] that will be used with `androidClientId`.
 
@@ -942,9 +939,7 @@ This can only be used in Standalone, and bare workflow apps. This method cannot 
 - **Signing-certificate fingerprint**:
   - Run `expo credentials:manager -p android` then select "Update upload Keystore" -> "Generate new keystore" -> "Go back to experience overview"
   - Copy your "Google Certificate Fingerprint", it will output a string that looks like `A1:B2:C3` but longer.
-- To test this you can:
-  1. Eject to bare: `expo eject` and run `yarn ios`
-  2. Build a production IPA: `expo build:android`
+- To test this for managed apps, run a build: `expo build:android`.
 - Whenever you change the values in `app.json` you'll need to rebuild the native app.
 
 #### Web Apps
