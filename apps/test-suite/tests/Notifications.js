@@ -527,7 +527,7 @@ export async function test(t) {
         }
       });
 
-      t.xdescribe('setNotificationChannelGroupsAsync()', () => {
+      t.describe('setNotificationChannelGroupsAsync()', () => {
         t.afterEach(async () => {
           await Notifications.deleteNotificationChannelGroupAsync(testChannelGroupId);
         });
