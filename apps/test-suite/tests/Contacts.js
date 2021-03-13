@@ -290,8 +290,6 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll,
           });
 
           const contactWithoutPhone = getWithoutPhone.data[0];
-
-          console.log({ contactWithoutPhone });
           expect(contactWithoutPhone.phoneNumbers).toBeUndefined();
         });
 
