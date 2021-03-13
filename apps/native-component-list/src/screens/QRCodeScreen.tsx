@@ -342,7 +342,7 @@ function QRFooterButton({
   style?: StyleProp<ViewStyle>;
   onPress?: (() => void) | null;
   isActive?: boolean;
-  iconName: string;
+  iconName: React.ComponentProps<typeof Ionicons>['name'];
   iconSize?: number;
   disabled?: boolean;
 }) {
