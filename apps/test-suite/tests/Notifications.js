@@ -527,7 +527,7 @@ export async function test(t) {
         }
       });
 
-      t.describe('setNotificationChannelGroupsAsync()', () => {
+      t.xdescribe('setNotificationChannelGroupsAsync()', () => {
         t.afterEach(async () => {
           await Notifications.deleteNotificationChannelGroupAsync(testChannelGroupId);
         });
@@ -705,7 +705,12 @@ export async function test(t) {
             testCategory1.options
           );
 
-          t.expect(testCategory1.identifier).toEqual(resultCategory.identifier);
+          // remove information in environment
+          // e.g "@andrew123/test-suite/testIdentifier" -> "testIdentifier"
+          const identifierSlug = resultCategory.identifier.split('/').pop();
+
+          t.expect(testCategory1.identifier).toEqual(identifierSlug);
+
           testCategory1.actions.forEach((action, i) => {
             t.expect(action.identifier).toEqual(resultCategory.actions[i].identifier);
             t.expect(action.buttonTitle).toEqual(resultCategory.actions[i].buttonTitle);
@@ -725,7 +730,11 @@ export async function test(t) {
             testCategory2.options
           );
 
-          t.expect(testCategory2.identifier).toEqual(resultCategory.identifier);
+          // remove information in environment
+          // e.g "@andrew123/test-suite/testIdentifier" -> "testIdentifier"
+          const identifierSlug = resultCategory.identifier.split('/').pop();
+
+          t.expect(testCategory2.identifier).toEqual(identifierSlug);
           testCategory2.actions.forEach((action, i) => {
             t.expect(action.identifier).toEqual(resultCategory.actions[i].identifier);
             t.expect(action.buttonTitle).toEqual(resultCategory.actions[i].buttonTitle);
