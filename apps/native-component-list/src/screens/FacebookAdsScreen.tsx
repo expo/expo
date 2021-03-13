@@ -147,10 +147,12 @@ export default class App extends React.Component<any, { showNativeAd: boolean }>
   render() {
     return (
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-        {Platform.OS === 'ios' && <SimpleActionDemo
-          title="enable ad tracking (necessary on ios 14.5+)"
-          action={async () => await FacebookAds.AdSettings.setAdvertiserTrackingEnabled(true)}
-        />}
+        {Platform.OS === 'ios' && (
+          <SimpleActionDemo
+            title="enable ad tracking (necessary on ios 14.5+)"
+            action={async () => await FacebookAds.AdSettings.setAdvertiserTrackingEnabled(true)}
+          />
+        )}
         {/* note(brentvatne): this appears to do nothing, so I commented it out to avoid confusion */}
         {/* <SimpleActionDemo
           title="disable ad tracking"
