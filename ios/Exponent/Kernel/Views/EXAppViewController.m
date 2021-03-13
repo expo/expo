@@ -420,7 +420,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appLoader:(EXAppLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress
 {
-  [self.appLoadingProgressWindowController updateStatusWithProgress:progress];
+  if (self->_appRecord.appManager.status != kEXReactAppManagerStatusRunning) {
+    [self.appLoadingProgressWindowController updateStatusWithProgress:progress];
+  }
 }
 
 - (void)appLoader:(EXAppLoader *)appLoader didFinishLoadingManifest:(NSDictionary *)manifest bundle:(NSData *)data
