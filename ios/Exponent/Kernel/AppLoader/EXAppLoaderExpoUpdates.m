@@ -37,6 +37,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) EXAppLoaderRemoteUpdateStatus remoteUpdateStatus;
 @property (nonatomic, assign) BOOL shouldShowRemoteUpdateStatus;
 @property (nonatomic, assign) BOOL isUpToDate;
+
+/**
+ * Stateful variable to let us prevent multiple simultaneous fetches from the development server.
+ * This can happen when reloading a bundle with remote debugging enabled;
+ * RN requests the bundle multiple times for some reason.
+ */
 @property (nonatomic, assign) BOOL isLoadingDevelopmentJavaScriptResource;
 
 @property (nonatomic, strong, nullable) NSError *error;
