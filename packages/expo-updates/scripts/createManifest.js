@@ -65,6 +65,8 @@ const filterPlatformAssetScales = require('./filterPlatformAssetScales');
 
   fs.writeFileSync(path.join(destinationDir, 'app.manifest'), JSON.stringify(manifest));
 })().catch(e => {
+  // Wrap in regex to make it easier for log parsers (like `@expo/xcpretty`) to find this error.
+  e.message = `@build-script-error-begin\n${e.message}\n@build-script-error-end\n`
   console.error(e);
   process.exit(1);
 });
