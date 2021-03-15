@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent scoped category IDs from being returned from `setNotificationCategoryAsync`. ([#12212](https://github.com/expo/expo/pull/12212 by [@cruzach](https://github.com/cruzach))
+
 ## 0.11.0 — 2021-03-10
 
 ### 🎉 New features
