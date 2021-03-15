@@ -30,7 +30,7 @@ public class ManifestFactoryTest {
   }
 
   @Test
-  public void testGetManifest_Legacy() throws JSONException {
+  public void testGetManifest_Legacy() throws Exception {
     ManifestResponse response = mock(ManifestResponse.class);
     when(response.header("expo-protocol-version")).thenReturn(null);
 
@@ -43,9 +43,9 @@ public class ManifestFactoryTest {
   }
 
   @Test
-  public void testGetManifest_New() throws JSONException {
+  public void testGetManifest_New() throws Exception {
     ManifestResponse response = mock(ManifestResponse.class);
-    when(response.header("expo-protocol-version")).thenReturn("0");
+    when(response.header("expo-protocol-version", null)).thenReturn("0");
 
     Manifest actual = ManifestFactory.getManifest(
       new JSONObject(newManifestJson),
@@ -57,9 +57,8 @@ public class ManifestFactoryTest {
   }
 
   @Test(expected = Exception.class)
-  public void testGetManifest_UnsupportedProtocolVersion() throws JSONException {
+  public void testGetManifest_UnsupportedProtocolVersion() throws Exception {
     ManifestResponse response = mock(ManifestResponse.class);
-    when(response.header("expo-protocol-version")).thenReturn("1");
 
     ManifestFactory.getManifest(
       new JSONObject(newManifestJson),

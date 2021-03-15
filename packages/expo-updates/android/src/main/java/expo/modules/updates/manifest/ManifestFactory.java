@@ -9,8 +9,8 @@ public class ManifestFactory {
 
   private static final String TAG = ManifestFactory.class.getSimpleName();
 
-  public static Manifest getManifest(JSONObject manifestJson, ManifestResponse httpResponse, UpdatesConfiguration configuration) throws JSONException {
-    String expoProtocolVersion = httpResponse.header("expo-protocol-version");
+  public static Manifest getManifest(JSONObject manifestJson, ManifestResponse httpResponse, UpdatesConfiguration configuration) throws Exception {
+    String expoProtocolVersion = httpResponse.header("expo-protocol-version", null);
 
     if (expoProtocolVersion == null) {
       return LegacyManifest.fromLegacyManifestJson(manifestJson, configuration);

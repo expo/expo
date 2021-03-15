@@ -15,6 +15,10 @@ public class ManifestResponse {
   }
 
   public String header(String name) {
-    return mResponse.header(name, null);
+    return mResponse.header(name);
+  }
+
+  public String header(String name, String defaultValue) {
+    return mResponse.header(name, defaultValue);
   }
 }
