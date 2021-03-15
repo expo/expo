@@ -646,7 +646,7 @@ Calling this function checks current permissions settings related to notificatio
 
 #### Returns
 
-It returns a `Promise` resolving to an object representing permission settings (`NotificationPermissionsStatus`).
+It returns a `Promise` resolving to an object representing permission settings ([`NotificationPermissionsStatus`](#notificationpermissionsstatus)). On iOS, make sure you [properly interpret the permissions response](#interpreting-the-ios-permissions-response).
 
 #### Examples
 
@@ -691,7 +691,7 @@ Each option corresponds to a different native platform authorization option (a l
 
 #### Returns
 
-It returns a `Promise` resolving to an object representing permission settings (`NotificationPermissionsStatus`).
+It returns a `Promise` resolving to an object representing permission settings ([`NotificationPermissionsStatus`](#notificationpermissionsstatus)). On iOS, make sure you [properly interpret the permissions response](#interpreting-the-ios-permissions-response).
 
 #### Examples
 
@@ -711,6 +711,16 @@ export function requestPermissionsAsync() {
   });
 }
 ```
+
+### Interpreting the iOS permissions response
+
+On iOS, permissions for sending notifications are a little more granular than they are on Android. Because of this, you should rely on the `NotificationPermissionsStatus`'s `ios.status` field, instead of the root `status` field. This value will be one of the following, accessible under `Notifications.IosAuthorizationStatus`:
+
+- `NOT_DETERMINED`: The user hasn't yet made a choice about whether the app is allowed to schedule notifications
+- `DENIED`: The app isn't authorized to schedule or receive notifications
+- `AUTHORIZED`: The app is authorized to schedule or receive notifications
+- `PROVISIONAL`: The application is provisionally authorized to post noninterruptive user notifications
+- `EPHEMERAL`: The app is authorized to schedule or receive notifications for a limited amount of time
 
 ## Managing application badge icon
 
@@ -1439,7 +1449,7 @@ export interface DailyNotificationTrigger {
 }
 ```
 
-### `WeeklyNotificationTrigger`
+#### `WeeklyNotificationTrigger`
 
 A trigger related to a weekly notification. This is an Android-only type, the same functionality will be achieved on iOS with a `CalendarNotificationTrigger`.
 
@@ -1452,7 +1462,7 @@ export interface WeeklyNotificationTrigger {
 }
 ```
 
-### `YearlyNotificationTrigger`
+#### `YearlyNotificationTrigger`
 
 A trigger related to a yearly notification. This is an Android-only type, the same functionality will be achieved on iOS with a `CalendarNotificationTrigger`.
 
@@ -1465,6 +1475,7 @@ export interface YearlyNotificationTrigger {
   minute: number;
 }
 ```
+
 #### `CalendarNotificationTrigger`
 
 A trigger related to a [`UNCalendarNotificationTrigger`](https://developer.apple.com/documentation/usernotifications/uncalendarnotificationtrigger?language=objc), available only on iOS.
@@ -1858,6 +1869,35 @@ export interface NotificationAction {
     isDestructive?: boolean;
     isAuthenticationRequired?: boolean;
     opensAppToForeground?: boolean;
+  };
+}
+```
+
+#### `NotificationPermissionsStatus`
+
+```ts
+export interface NotificationPermissionsStatus {
+  status: 'granted' | 'undetermined' | 'denied'; // on iOS, you should check `ios.status`
+  granted: boolean;
+  expires: 'never' | number;
+  canAskAgain: boolean;
+  android?: {
+    importance: number;
+    interruptionFilter?: number;
+  };
+  ios?: {
+    status: IosAuthorizationStatus;
+    allowsDisplayInNotificationCenter: boolean | null;
+    allowsDisplayOnLockScreen: boolean | null;
+    allowsDisplayInCarPlay: boolean | null;
+    allowsAlert: boolean | null;
+    allowsBadge: boolean | null;
+    allowsSound: boolean | null;
+    allowsCriticalAlerts?: boolean | null;
+    alertStyle: IosAlertStyle;
+    allowsPreviews?: IosAllowsPreviews;
+    providesAppNotificationSettings?: boolean;
+    allowsAnnouncements?: boolean | null;
   };
 }
 ```
