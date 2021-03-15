@@ -1717,6 +1717,9 @@ PODS:
     - UMPermissionsInterface
   - EXFaceDetector (10.0.0):
     - GoogleMLKit/FaceDetection (= 2.1.0)
+    - MLKitCommon (= 2.1.0)
+    - MLKitFaceDetection (= 1.2.0)
+    - MLKitVision (= 1.2.0)
     - UMCore
     - UMFaceDetectorInterface
     - UMFileSystemInterface
@@ -3928,7 +3931,7 @@ SPEC CHECKSUMS:
   EXDocumentPicker: 5b10e7ee57c0877738e89fdfc96ba91412834a58
   EXErrorRecovery: 720641265b8cf95e6cdeb1884ac38e794a352488
   EXFacebook: 19557469cf50cdfc844eabb14e5518db802d1130
-  EXFaceDetector: 23af13bb3329433e6422c9308388adc1699ec25a
+  EXFaceDetector: e496dcad8dee006c45b39b7d958f8c2241857a65
   EXFileSystem: b0f2bd62531acb3bc6541a5121f0b1338aaee34f
   EXFirebaseAnalytics: 0c5a4572e4ec16d188770cdb58f75818b5e2c719
   EXFirebaseCore: 7865e37021ddcff5c575a4598686a2939d6c4183
