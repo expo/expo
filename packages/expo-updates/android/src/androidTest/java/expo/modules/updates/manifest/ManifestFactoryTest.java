@@ -56,8 +56,8 @@ public class ManifestFactoryTest {
     Assert.assertTrue(actual instanceof NewManifest);
   }
 
-  @Test(expected = Error.class)
-  public void testGetManifest_Error() throws JSONException {
+  @Test(expected = Exception.class)
+  public void testGetManifest_UnsupportedProtocolVersion() throws JSONException {
     ManifestResponse response = mock(ManifestResponse.class);
     when(response.header("expo-protocol-version")).thenReturn("1");
 
