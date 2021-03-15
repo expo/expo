@@ -62,7 +62,7 @@
 
 - (NSMutableDictionary *)serializeCategory:(UNNotificationCategory *)category
 {
-  NSMutableDictionary* serializedCategory = [EXNotificationCategoriesModule serializeCategory:category];
+  NSMutableDictionary* serializedCategory = [super serializeCategory:category];
   serializedCategory[@"identifier"] = [EXScopedNotificationsUtils getScopeAndIdentifierFromScopedIdentifier:serializedCategory[@"identifier"]].identifier;
 
   return serializedCategory;
