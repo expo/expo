@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Wrap native bundle script error in regex. ([#12185](https://github.com/expo/expo/pull/12185) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ## 0.5.0 — 2021-03-10
