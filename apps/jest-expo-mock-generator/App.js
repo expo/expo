@@ -1,10 +1,12 @@
 import mux from '@expo/mux';
-import getInstallationIdAsync from 'expo/build/environment/getInstallationIdAsync';
 import Constants from 'expo-constants';
+import getInstallationIdAsync from 'expo/build/environment/getInstallationIdAsync';
 import React from 'react';
 import { NativeModules, StyleSheet, Text, View } from 'react-native';
+import { v4 as uuidV4 } from 'uuid';
 
 const { logUrl } = Constants.manifest;
+const sessionId = uuidV4();
 
 const { ExpoNativeModuleIntrospection } = NativeModules;
 
@@ -53,7 +55,7 @@ async function _sendRawLogAsync(message, logUrl) {
     'Proxy-Connection': 'keep-alive',
     Accept: 'application/json',
     'Device-Id': await getInstallationIdAsync(),
-    'Session-Id': new Date().getTime().toString(),
+    'Session-Id': sessionId,
   };
   if (Constants.deviceName) {
     headers['Device-Name'] = Constants.deviceName;
