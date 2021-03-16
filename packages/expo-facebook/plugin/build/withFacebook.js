@@ -8,6 +8,7 @@ const withFacebook = config => {
     config = withFacebookAndroid_1.withFacebookAppIdString(config);
     config = withFacebookAndroid_1.withFacebookManifest(config);
     config = withFacebookIOS_1.withFacebookIOS(config);
+    config = withFacebookIOS_1.withUserTrackingPermission(config);
     return config;
 };
 exports.default = config_plugins_1.createRunOncePlugin(withFacebook, pkg.name, pkg.version);
