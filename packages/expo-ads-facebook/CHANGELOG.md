@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added user tracking permission to iOS plugin. ([#12219](https://github.com/expo/expo/pull/12219) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 - Stop passing through `iconSize` and `orientation` to `AdOptionsView` on iOS, where it is not supported. ([#12200](https://github.com/expo/expo/pull/12200) by [@brentvatne](https://github.com/brentvatne))

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added user tracking permission to iOS plugin. ([#12219](https://github.com/expo/expo/pull/12219) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ## 10.0.0 — 2021-03-10
