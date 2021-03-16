@@ -7,13 +7,7 @@ type Config = {
 export default function vendoredModulesTransformsFactory(prefix: string): Config {
   return {
     'stripe-react-native': {
-      content: [
-        // { todo: open PR to edit this at source
-        //   paths: ['ApplePayButtonManager.m', 'CardFieldManager.m'],
-        //   find: /"RCTViewManager.h"/,
-        //   replaceWith: '<React/RCTViewManager.h>',
-        // },
-      ],
+      content: [],
     },
     'lottie-react-native': {
       content: [
