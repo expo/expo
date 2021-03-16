@@ -18,6 +18,7 @@ const STYLES_OPTIONAL = css`
 
 type Props = {
   packageName: string;
+  version?: string;
 };
 
 const renderers = {
@@ -164,8 +165,8 @@ const renderType = (typeEntry: object): JSX.Element => {
   );
 };
 
-const processData = (packageName: string): JSX.Element => {
-  const data = require('~/data/' + packageName + '.json');
+const processData = (packageName: string, version: string = 'unversioned'): JSX.Element => {
+  const data = require(`~/public/static/data/${version}/${packageName}.json`);
 
   const methods = data.children.filter(g => g.kind === 64);
   const types = data.children.filter(g => g.kind === 4194304);
@@ -185,6 +186,6 @@ const processData = (packageName: string): JSX.Element => {
   );
 };
 
-const APISection: React.FC<Props> = ({ packageName }) => <div>{processData(packageName)}</div>;
+const APISection: React.FC<Props> = ({ packageName, version }) => processData(packageName, version);
 
 export default APISection;

@@ -1,11 +1,13 @@
 import { exec } from 'child_process';
+import fs from 'fs';
+
+const dataPath = '../../docs/public/static/data/unversioned';
 
 const executeCommand = (pkgName, entryPoint = 'index', wholeModule = false) => {
   const entry = wholeModule ? `../${pkgName}/src` : `../${pkgName}/src/${entryPoint}`;
-  const docsPath = '../../docs/data';
 
   exec(
-    `yarn command ${entry} --tsconfig ../${pkgName}/tsconfig.json --json ${docsPath}/${pkgName}.json --out ${docsPath}/${pkgName} --plugin none`,
+    `yarn command ${entry} --tsconfig ../${pkgName}/tsconfig.json --json ${dataPath}/${pkgName}.json --out ${dataPath}/${pkgName} --plugin none`,
     (error, stdout, stderr) => {
       if (error && error.message && error.message.length > 0) {
         console.error(error.message);
@@ -13,6 +15,15 @@ const executeCommand = (pkgName, entryPoint = 'index', wholeModule = false) => {
         console.error(stderr);
       }
       console.log(`Successful extraction of ${entryPoint} from ${pkgName}!`);
+
+      // Currently there is no option to skip HTML generation, so we need to remove the files
+      const htmlContentPath = `${dataPath}/${pkgName}`;
+      try {
+        fs.rmdirSync(htmlContentPath, { recursive: true });
+        console.log(`${htmlContentPath} is deleted!`);
+      } catch (err) {
+        console.error(`Error while deleting ${htmlContentPath}.`);
+      }
     }
   );
 };
