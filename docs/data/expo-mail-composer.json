@@ -1,0 +1,364 @@
+{
+	"id": 0,
+	"name": "expo-mail-composer",
+	"kind": 0,
+	"kindString": "Project",
+	"flags": {},
+	"originalName": "",
+	"children": [
+		{
+			"id": 18,
+			"name": "MailComposerStatus",
+			"kind": 4,
+			"kindString": "Enumeration",
+			"flags": {},
+			"children": [
+				{
+					"id": 22,
+					"name": "CANCELLED",
+					"kind": 16,
+					"kindString": "Enumeration member",
+					"flags": {},
+					"defaultValue": "\"cancelled\""
+				},
+				{
+					"id": 21,
+					"name": "SAVED",
+					"kind": 16,
+					"kindString": "Enumeration member",
+					"flags": {},
+					"defaultValue": "\"saved\""
+				},
+				{
+					"id": 20,
+					"name": "SENT",
+					"kind": 16,
+					"kindString": "Enumeration member",
+					"flags": {},
+					"defaultValue": "\"sent\""
+				},
+				{
+					"id": 19,
+					"name": "UNDETERMINED",
+					"kind": 16,
+					"kindString": "Enumeration member",
+					"flags": {},
+					"defaultValue": "\"undetermined\""
+				}
+			],
+			"groups": [
+				{
+					"title": "Enumeration members",
+					"kind": 16,
+					"children": [
+						22,
+						21,
+						20,
+						19
+					]
+				}
+			]
+		},
+		{
+			"id": 6,
+			"name": "MailComposerOptions",
+			"kind": 4194304,
+			"kindString": "Type alias",
+			"flags": {},
+			"comment": {
+				"shortText": "A map defining the data to fill the mail."
+			},
+			"type": {
+				"type": "reflection",
+				"declaration": {
+					"id": 7,
+					"name": "__type",
+					"kind": 65536,
+					"kindString": "Type literal",
+					"flags": {},
+					"children": [
+						{
+							"id": 14,
+							"name": "attachments",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isOptional": true
+							},
+							"comment": {
+								"shortText": "An array of app's internal file uris to attach."
+							},
+							"type": {
+								"type": "array",
+								"elementType": {
+									"type": "intrinsic",
+									"name": "string"
+								}
+							}
+						},
+						{
+							"id": 10,
+							"name": "bccRecipients",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isOptional": true
+							},
+							"comment": {
+								"shortText": "An array of e-mail addresses of the BCC recipients."
+							},
+							"type": {
+								"type": "array",
+								"elementType": {
+									"type": "intrinsic",
+									"name": "string"
+								}
+							}
+						},
+						{
+							"id": 12,
+							"name": "body",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isOptional": true
+							},
+							"comment": {
+								"shortText": "Body of the mail."
+							},
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						},
+						{
+							"id": 9,
+							"name": "ccRecipients",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isOptional": true
+							},
+							"comment": {
+								"shortText": "An array of e-mail addresses of the CC recipients."
+							},
+							"type": {
+								"type": "array",
+								"elementType": {
+									"type": "intrinsic",
+									"name": "string"
+								}
+							}
+						},
+						{
+							"id": 13,
+							"name": "isHtml",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isOptional": true
+							},
+							"comment": {
+								"shortText": "Whether the body contains HTML tags so it could be formatted properly. Not working perfectly on Android."
+							},
+							"type": {
+								"type": "intrinsic",
+								"name": "boolean"
+							}
+						},
+						{
+							"id": 8,
+							"name": "recipients",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isOptional": true
+							},
+							"comment": {
+								"shortText": "An array of e-mail addresses of the recipients."
+							},
+							"type": {
+								"type": "array",
+								"elementType": {
+									"type": "intrinsic",
+									"name": "string"
+								}
+							}
+						},
+						{
+							"id": 11,
+							"name": "subject",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {
+								"isOptional": true
+							},
+							"comment": {
+								"shortText": "Subject of the mail."
+							},
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								14,
+								10,
+								12,
+								9,
+								13,
+								8,
+								11
+							]
+						}
+					]
+				}
+			}
+		},
+		{
+			"id": 15,
+			"name": "MailComposerResult",
+			"kind": 4194304,
+			"kindString": "Type alias",
+			"flags": {},
+			"type": {
+				"type": "reflection",
+				"declaration": {
+					"id": 16,
+					"name": "__type",
+					"kind": 65536,
+					"kindString": "Type literal",
+					"flags": {},
+					"children": [
+						{
+							"id": 17,
+							"name": "status",
+							"kind": 1024,
+							"kindString": "Property",
+							"flags": {},
+							"type": {
+								"type": "reference",
+								"id": 18,
+								"name": "MailComposerStatus"
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Properties",
+							"kind": 1024,
+							"children": [
+								17
+							]
+						}
+					]
+				}
+			}
+		},
+		{
+			"id": 1,
+			"name": "composeAsync",
+			"kind": 64,
+			"kindString": "Function",
+			"flags": {},
+			"signatures": [
+				{
+					"id": 2,
+					"name": "composeAsync",
+					"kind": 4096,
+					"kindString": "Call signature",
+					"flags": {},
+					"comment": {
+						"shortText": "Opens a mail modal for iOS and a mail app intent for Android and fills the fields with provided data. On iOS you will need to be signed into the Mail app.",
+						"returns": "Resolves to a promise with object containing status field that could be either sent, saved or cancelled. Android does not provide such info so it always resolves to sent.\n"
+					},
+					"parameters": [
+						{
+							"id": 3,
+							"name": "options",
+							"kind": 32768,
+							"kindString": "Parameter",
+							"flags": {},
+							"type": {
+								"type": "reference",
+								"id": 6,
+								"name": "MailComposerOptions"
+							}
+						}
+					],
+					"type": {
+						"type": "reference",
+						"typeArguments": [
+							{
+								"type": "reference",
+								"id": 15,
+								"name": "MailComposerResult"
+							}
+						],
+						"name": "Promise"
+					}
+				}
+			]
+		},
+		{
+			"id": 4,
+			"name": "isAvailableAsync",
+			"kind": 64,
+			"kindString": "Function",
+			"flags": {},
+			"signatures": [
+				{
+					"id": 5,
+					"name": "isAvailableAsync",
+					"kind": 4096,
+					"kindString": "Call signature",
+					"flags": {},
+					"comment": {
+						"shortText": "Determine if the `MailComposer` API can be used in this app.",
+						"returns": "A promise resolves to `true` if the API can be used, and `false` otherwise.\n- Returns `true` on iOS when the device has a default email setup for sending mail.\n- Can return `false` on iOS if an MDM profile is setup to block outgoing mail. If this is the case, you may want to use the Linking API instead.\n- Always returns `true` in the browser and on Android.\n"
+					},
+					"type": {
+						"type": "reference",
+						"typeArguments": [
+							{
+								"type": "intrinsic",
+								"name": "boolean"
+							}
+						],
+						"name": "Promise"
+					}
+				}
+			]
+		}
+	],
+	"groups": [
+		{
+			"title": "Enumerations",
+			"kind": 4,
+			"children": [
+				18
+			]
+		},
+		{
+			"title": "Type aliases",
+			"kind": 4194304,
+			"children": [
+				6,
+				15
+			]
+		},
+		{
+			"title": "Functions",
+			"kind": 64,
+			"children": [
+				1,
+				4
+			]
+		}
+	]
+}

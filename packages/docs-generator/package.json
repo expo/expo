@@ -7,11 +7,10 @@
   "scripts": {
     "start": "yarn build && yarn generate",
     "build": "tsc",
-    "command": "typedoc --emit --disableSources --hideGenerator --readme none --excludePrivate --excludeProtected",
+    "command": "typedoc --disableSources --hideGenerator --readme none --excludePrivate --excludeProtected",
     "generate": "node build/index.js"
   },
   "devDependencies": {
-    "typedoc": "^0.20.29",
-    "typedoc-plugin-markdown": "^3.6.0"
+    "typedoc": "^0.20.32"
   }
 }
