@@ -11,6 +11,7 @@
     "@expo/mux": "^1.0.7",
     "expo": "~41.0.0-alpha.0",
     "react": "16.13.1",
-    "react-native": "0.63.2"
+    "react-native": "0.63.2",
+    "uuid": "^3.4.0"
   }
 }
