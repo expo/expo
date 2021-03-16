@@ -50,6 +50,7 @@
     "react-visibility-sensor": "^5.1.0"
   },
   "devDependencies": {
+    "@apidevtools/json-schema-ref-parser": "^9.0.7",
     "@emotion/babel-preset-css-prop": "^10.0.27",
     "@testing-library/jest-dom": "5.11.0",
     "@testing-library/react": "10.4.3",
