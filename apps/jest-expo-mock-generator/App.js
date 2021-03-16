@@ -65,7 +65,7 @@ async function _sendRawLogAsync(message, logUrl) {
     headers,
     body: JSON.stringify([
       {
-        count: 1,
+        count: 0,
         level: 'info',
         body: [message],
         includesStack: false,
