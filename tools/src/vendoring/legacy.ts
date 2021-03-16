@@ -455,7 +455,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       {
         sourceAndroidPath: 'android/src/main/java/com/reactnativestripesdk',
         targetAndroidPath: 'modules/api/components/reactnativestripesdk',
-        sourceAndroidPackage: 'com.reactnativestripesdk.StripeSdkPackage',
+        sourceAndroidPackage: 'com.reactnativestripesdk',
         targetAndroidPackage:
           'versioned.host.exp.exponent.modules.api.components.reactnativestripesdk',
       },
