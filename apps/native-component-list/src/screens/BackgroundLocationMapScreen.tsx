@@ -11,8 +11,8 @@ import * as React from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 import MapView from 'react-native-maps';
 
-import Button from '../../components/Button';
-import Colors from '../../constants/Colors';
+import Button from '../components/Button';
+import Colors from '../constants/Colors';
 
 const STORAGE_KEY = 'expo-home-locations';
 const LOCATION_UPDATES_TASK = 'location-updates';

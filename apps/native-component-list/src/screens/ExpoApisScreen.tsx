@@ -37,6 +37,7 @@ const screens = [
   'AsyncStorage',
   'AuthSession',
   'BackgroundFetch',
+  'BackgroundLocation',
   'Battery',
   'Branch',
   'Brightness',
