@@ -7,7 +7,18 @@ type Config = {
 export default function vendoredModulesTransformsFactory(prefix: string): Config {
   return {
     'stripe-react-native': {
-      content: [],
+      content: [
+        {
+          paths: 'ApplePayButtonManager.m',
+          find: /RCT_EXTERN_MODULE\(/,
+          replaceWith: `RCT_EXTERN_REMAP_MODULE(ApplePayButtonManager, ${prefix}`,
+        },
+        {
+          paths: 'CardFieldManager.m',
+          find: /RCT_EXTERN_MODULE\(/,
+          replaceWith: `RCT_EXTERN_REMAP_MODULE(CardFieldManager, ${prefix}`,
+        },
+      ],
     },
     'lottie-react-native': {
       content: [
