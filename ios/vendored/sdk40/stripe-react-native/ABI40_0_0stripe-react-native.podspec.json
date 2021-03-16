@@ -1,0 +1,22 @@
+{
+  "name": "ABI40_0_0stripe-react-native",
+  "version": "0.1.0",
+  "summary": "Stripe SDK for ABI40_0_0React Native",
+  "homepage": "http://callstack.com#readme",
+  "license": "MIT",
+  "authors": "Stripe",
+  "platforms": {
+    "ios": "11.0"
+  },
+  "source": {
+    "git": "http://callstack.com.git",
+    "tag": "0.1.0"
+  },
+  "source_files": "ios/**/*.{h,m,mm,swift}",
+  "dependencies": {
+    "ABI40_0_0React": [],
+    "Stripe": [
+      "~> 21.1.0"
+    ]
+  }
+}

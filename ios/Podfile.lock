@@ -1079,6 +1079,9 @@ PODS:
     - DoubleConversion
     - Folly (= 2020.01.13.00)
     - glog
+  - ABI40_0_0stripe-react-native (0.1.0):
+    - ABI40_0_0React
+    - Stripe (~> 21.1.0)
   - ABI40_0_0UMAppLoader (1.4.0)
   - ABI40_0_0UMBarCodeScannerInterface (5.4.0)
   - ABI40_0_0UMCameraInterface (5.4.0)
@@ -2581,6 +2584,7 @@ DEPENDENCIES:
   - ABI40_0_0React-RCTText (from `./versioned-react-native/ABI40_0_0/ReactNative/Libraries/Text`)
   - ABI40_0_0React-RCTVibration (from `./versioned-react-native/ABI40_0_0/ReactNative/Libraries/Vibration`)
   - ABI40_0_0ReactCommon/turbomodule/core (from `./versioned-react-native/ABI40_0_0/ReactNative/ReactCommon`)
+  - ABI40_0_0stripe-react-native (from `./vendored/sdk40/stripe-react-native`)
   - ABI40_0_0UMAppLoader (from `./versioned-react-native/ABI40_0_0/Expo/UMAppLoader`)
   - ABI40_0_0UMBarCodeScannerInterface (from `./versioned-react-native/ABI40_0_0/Expo/UMBarCodeScannerInterface`)
   - ABI40_0_0UMCameraInterface (from `./versioned-react-native/ABI40_0_0/Expo/UMCameraInterface`)
@@ -3227,6 +3231,8 @@ EXTERNAL SOURCES:
     :path: "./versioned-react-native/ABI40_0_0/ReactNative/Libraries/Vibration"
   ABI40_0_0ReactCommon:
     :path: "./versioned-react-native/ABI40_0_0/ReactNative/ReactCommon"
+  ABI40_0_0stripe-react-native:
+    :path: "./vendored/sdk40/stripe-react-native"
   ABI40_0_0UMAppLoader:
     :path: "./versioned-react-native/ABI40_0_0/Expo/UMAppLoader"
   ABI40_0_0UMBarCodeScannerInterface:
@@ -3854,6 +3860,7 @@ SPEC CHECKSUMS:
   ABI40_0_0React-RCTText: 751f8dc0a38a065ecbb4959e34f245ded6201789
   ABI40_0_0React-RCTVibration: 0af914d4561424079b59183d2076cbfe6b2b7128
   ABI40_0_0ReactCommon: 7e3a8173b14b84ac4b394039608c65bd88d1feae
+  ABI40_0_0stripe-react-native: c9823bfe1dcf568f7296389d8bace133298b6c72
   ABI40_0_0UMAppLoader: eeeacd3776104df35437d16de391ace93f17b8b9
   ABI40_0_0UMBarCodeScannerInterface: 2d09dae6750fed3905dfe141db7ec62f7215f90f
   ABI40_0_0UMCameraInterface: 13e29848bcf4dd9c77ebcd1117836a8781b1c4dc
