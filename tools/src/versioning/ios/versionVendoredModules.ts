@@ -60,23 +60,27 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
   return {
     path: [
       {
-        find: /^([^/]+\.podspec\.json)$\b/,
-        replaceWith: `${prefix}-$1`,
+        find: /([^/]+\.podspec\.json)$\b/,
+        replaceWith: `${prefix}$1`,
+      },
+      {
+        find: /\b(RNC[^/]*\.)(h|m|mm)/,
+        replaceWith: `${prefix}$1$2`,
       },
     ],
     content: [
       {
         paths: '*.podspec.json',
         find: /"name": "([\w-]+)"/,
-        replaceWith: `"name": "${prefix}-$1"`,
+        replaceWith: `"name": "${prefix}$1"`,
       },
       {
         find: /\b(React)/g,
         replaceWith: `${prefix}$1`,
       },
       {
-        find: /\b(RCT\w+)\b/g,
-        replaceWith: `${prefix}$1`,
+        find: /\b(RCT|RNC)(\w+)\b/g,
+        replaceWith: `${prefix}$1$2`,
       },
       {
         paths: '*.swift',

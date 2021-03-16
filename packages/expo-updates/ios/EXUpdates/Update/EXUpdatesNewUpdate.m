@@ -1,5 +1,6 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
+#import <EXStructuredHeaders/EXStructuredHeadersParser.h>
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesNewUpdate.h>
 #import <EXUpdates/EXUpdatesUpdate+Private.h>
@@ -11,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation EXUpdatesNewUpdate
 
 + (EXUpdatesUpdate *)updateWithNewManifest:(NSDictionary *)rootManifest
+                                  response:(nullable NSURLResponse *)response
                                     config:(EXUpdatesConfig *)config
                                   database:(EXUpdatesDatabase *)database
 {
@@ -45,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 
   NSMutableArray<EXUpdatesAsset *> *processedAssets = [NSMutableArray new];
 
-  NSString *bundleKey = [NSString stringWithFormat:@"bundle-%@", commitTime];
+  NSString *bundleKey = launchAsset[@"key"];
   EXUpdatesAsset *jsBundleAsset = [[EXUpdatesAsset alloc] initWithKey:bundleKey type:EXUpdatesEmbeddedBundleFileType];
   jsBundleAsset.url = bundleUrl;
   jsBundleAsset.isLaunchAsset = YES;
@@ -92,7 +94,38 @@ NS_ASSUME_NONNULL_BEGIN
   update.assets = processedAssets;
   update.metadata = manifest;
 
+  if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+    NSDictionary *headersDictionary = ((NSHTTPURLResponse *)response).allHeaderFields;
+    update.serverDefinedHeaders = [[self class] dictionaryWithStructuredHeader:headersDictionary[@"expo-server-defined-headers"]];
+    update.manifestFilters = [[self class] dictionaryWithStructuredHeader:headersDictionary[@"expo-manifest-filters"]];
+  }
+
   return update;
+}
+
++ (nullable NSDictionary *)dictionaryWithStructuredHeader:(NSString *)headerString
+{
+  if (!headerString) {
+    return nil;
+  }
+
+  EXStructuredHeadersParser *parser = [[EXStructuredHeadersParser alloc] initWithRawInput:headerString fieldType:EXStructuredHeadersParserFieldTypeDictionary ignoringParameters:YES];
+  NSError *error;
+  NSDictionary *parserOutput = [parser parseStructuredFieldsWithError:&error];
+  if (!parserOutput || error || ![parserOutput isKindOfClass:[NSDictionary class]]) {
+    NSLog(@"Error parsing header value: %@", error ? error.localizedDescription : @"Header was not a structured fields dictionary");
+    return nil;
+  }
+
+  NSMutableDictionary *mutableDict = [NSMutableDictionary dictionaryWithCapacity:parserOutput.count];
+  [parserOutput enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+    // ignore any dictionary entries whose type is not string, number, or boolean
+    // since this will be re-serialized to JSON
+    if ([obj isKindOfClass:[NSString class]] || [obj isKindOfClass:[NSNumber class]]) {
+      mutableDict[key] = obj;
+    }
+  }];
+  return mutableDict.copy;
 }
 
 @end

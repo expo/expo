@@ -49,11 +49,8 @@ public class NotificationManager implements SingletonModule, expo.modules.notifi
       WeakReference<NotificationListener> listenerReference = new WeakReference<>(listener);
       mListenerReferenceMap.put(listener, listenerReference);
       if (!mPendingNotificationResponses.isEmpty()) {
-        Iterator<NotificationResponse> responseIterator = mPendingNotificationResponses.iterator();
-        while (responseIterator.hasNext()) {
-          if (listener.onNotificationResponseReceived(responseIterator.next())) {
-            responseIterator.remove();
-          }
+        for (NotificationResponse pendingResponse : mPendingNotificationResponses) {
+          listener.onNotificationResponseReceived(pendingResponse);
         }
       }
     }

@@ -144,7 +144,7 @@ Camera flash mode. Use one of `Camera.Constants.FlashMode`. When `on`, the flash
 
 ### `autoFocus`
 
-State of camera auto focus. Use one of `Camera.Constants.AutoFocus`. When `on`, auto focus will be enabled, when `off`, it wont't and focus will lock as it was in the moment of change but it can be adjusted on some devices via `focusDepth` prop.
+State of camera auto focus. Use one of `Camera.Constants.AutoFocus`. When `on`, auto focus will be enabled, when `off`, it won't and focus will lock as it was in the moment of change but it can be adjusted on some devices via `focusDepth` prop.
 
 ### `zoom`
 
@@ -260,7 +260,7 @@ Takes a picture and saves it to app's cache directory. Photos are rotated to mat
 
 #### Returns
 
-Returns a Promise that resolves to an object: `{ uri, width, height, exif, base64 }` where `uri` is a URI to the local image file on iOS, Android, and a base64 string on web (useable as the source for an `Image` element). The `width, height` properties specify the dimensions of the image. `base64` is included if the `base64` option was truthy, and is a string containing the JPEG data of the image in Base64--prepend that with `'data:image/jpg;base64,'` to get a data URI, which you can use as the source for an `Image` element for example. `exif` is included if the `exif` option was truthy, and is an object containing EXIF data for the image--the names of its properties are EXIF tags and their values are the values for those tags.
+Returns a Promise that resolves to an object: `{ uri, width, height, exif, base64 }` where `uri` is a URI to the local image file on iOS, Android, and a base64 string on web (usable as the source for an `Image` element). The `width, height` properties specify the dimensions of the image. `base64` is included if the `base64` option was truthy, and is a string containing the JPEG data of the image in Base64--prepend that with `'data:image/jpg;base64,'` to get a data URI, which you can use as the source for an `Image` element for example. `exif` is included if the `exif` option was truthy, and is an object containing EXIF data for the image--the names of its properties are EXIF tags and their values are the values for those tags.
 
 On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem.md#expofilesystemcopyasyncoptions) to make a permanent copy of the image.
 
@@ -281,6 +281,7 @@ Starts recording a video that will be saved to cache directory. Videos are rotat
   - **maxFileSize (_number_)** -- Maximum video file size in bytes.
   - **mute (_boolean_)** -- If present, video will be recorded with no sound.
   - **mirror (_boolean_)** -- (iOS only; on Android, this is handled in the user's device settings) If `true`, the recorded video will be flipped along the vertical axis. iOS flips videos recorded with the front camera by default, but you can reverse that back by setting this to `true`.
+  - **videoBitrate (_number_)** -- Android only and works if `useCamera2Api` is set to `true`. (int greater than 0) This option specifies a desired video bitrate.  For example, 5\*1000\*1000 would be 5Mbps.
 
 #### Returns
 

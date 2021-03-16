@@ -8,6 +8,13 @@
 
 ### 🐛 Bug fixes
 
+## 9.1.0 — 2021-03-10
+
+### 🎉 New features
+
+- Created config plugin. ([#11977](https://github.com/expo/expo/pull/11977) by [@EvanBacon](https://github.com/EvanBacon))
+- Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
+
 ## 9.0.1 — 2021-01-15
 
 _This version does not introduce any user-facing changes._

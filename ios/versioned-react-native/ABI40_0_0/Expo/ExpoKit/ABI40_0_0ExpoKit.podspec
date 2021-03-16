@@ -127,8 +127,6 @@ Pod::Spec.new do |s|
     ss.dependency         "Analytics"
     ss.dependency         "AppAuth"
     ss.dependency         "FBAudienceNetwork"
-    ss.dependency         "FBSDKCoreKit"
-    ss.dependency         "FBSDKLoginKit"
     ss.dependency         "GoogleSignIn"
     ss.dependency         "GoogleMaps"
     ss.dependency         "Google-Maps-iOS-Utils"

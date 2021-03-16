@@ -5,7 +5,7 @@
 #import <EXUpdates/EXUpdatesAppLauncherNoDatabase.h>
 #import <EXUpdates/EXUpdatesAppLauncherWithDatabase.h>
 #import <EXUpdates/EXUpdatesReaper.h>
-#import <EXUpdates/EXUpdatesSelectionPolicyNewest.h>
+#import <EXUpdates/EXUpdatesSelectionPolicyFilterAware.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -56,7 +56,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
   if (self = [super init]) {
     _config = [self _loadConfigFromExpoPlist];
     _database = [[EXUpdatesDatabase alloc] init];
-    _selectionPolicy = [[EXUpdatesSelectionPolicyNewest alloc] initWithRuntimeVersion:[EXUpdatesUtils getRuntimeVersionWithConfig:_config]];
+    _selectionPolicy = [[EXUpdatesSelectionPolicyFilterAware alloc] initWithRuntimeVersion:[EXUpdatesUtils getRuntimeVersionWithConfig:_config]];
     _assetFilesQueue = dispatch_queue_create("expo.controller.AssetFilesQueue", DISPATCH_QUEUE_SERIAL);
     _controllerQueue = dispatch_queue_create("expo.controller.ControllerQueue", DISPATCH_QUEUE_SERIAL);
     _isStarted = NO;
@@ -72,7 +72,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
                                  userInfo:@{}];
   }
   [_config loadConfigFromDictionary:configuration];
-  _selectionPolicy = [[EXUpdatesSelectionPolicyNewest alloc] initWithRuntimeVersion:[EXUpdatesUtils getRuntimeVersionWithConfig:_config]];
+  _selectionPolicy = [[EXUpdatesSelectionPolicyFilterAware alloc] initWithRuntimeVersion:[EXUpdatesUtils getRuntimeVersionWithConfig:_config]];
 }
 
 - (void)start

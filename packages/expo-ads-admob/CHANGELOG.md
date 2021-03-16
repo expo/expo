@@ -6,7 +6,29 @@
 
 ### 🎉 New features
 
+- Added user tracking permission to iOS plugin. ([#12219](https://github.com/expo/expo/pull/12219) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
+
+## 10.0.0 — 2021-03-10
+
+### 📚 native library updates
+
+- Updated `Google-Mobile-Ads-SDK` from `7.55.1` to `7.69.0` on iOS and `com.google.android.gms:play-services-ads` from `17.2.1` to `19.4.0` on Android. ([#12125](https://github.com/expo/expo/pull/12125) by [@bbarthec](https://github.com/bbarthec))
+
+### 🛠 Breaking changes
+
+- Removed the `rewardedVideoWillLeaveApplication` event (use AppState instead). ([#12125](https://github.com/expo/expo/pull/12125) by [@bbarthec](https://github.com/bbarthec))
+- Removed following events: `rewardedVideoDidRewardUser`, `rewardedVideoDidOpen`, `rewardedVideoDidComplete`, `rewardedVideoDidClose`, `rewardedVideoDidStart` and introduced: `rewardedVideoUserDidEarnReward`, `rewardedVideoDidPresent`, `rewardedVideoDidFailToPresent`, `rewardedVideoDidDismiss`. ([#12125](https://github.com/expo/expo/pull/12125) by [@bbarthec](https://github.com/bbarthec))
+
+### 🎉 New features
+
+- Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
+
+### 🐛 Bug fixes
+
+- Remove peerDependencies and unimodulePeerDependencies from Expo modules. ([#11980](https://github.com/expo/expo/pull/11980) by [@brentvatne](https://github.com/brentvatne))
+- Added the app tracking permission. ([#12123](https://github.com/expo/expo/pull/12123) by [@lukmccall](https://github.com/lukmccall))
 
 ## 9.0.0 — 2021-01-15
 

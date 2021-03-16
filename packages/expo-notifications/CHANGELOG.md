@@ -8,6 +8,27 @@
 
 ### 🐛 Bug fixes
 
+- Prevent scoped category IDs from being returned from `setNotificationCategoryAsync`. ([#12212](https://github.com/expo/expo/pull/12212 by [@cruzach](https://github.com/cruzach))
+
+## 0.11.0 — 2021-03-10
+
+### 🎉 New features
+
+- Allow for remote notifications to overwrite notifications already existing in the tray. ([#12050](https://github.com/expo/expo/pull/12050) and [#12055](https://github.com/expo/expo/pull/12055) by [@cruzach](https://github.com/cruzach))
+- Notifications from different experiences in Expo Go can no longer overwrite each other. ([#12050](https://github.com/expo/expo/pull/12050) and [#12055](https://github.com/expo/expo/pull/12055) by [@cruzach](https://github.com/cruzach))
+
+## 0.10.0 — 2021-03-03
+
+### 🎉 New features
+
+- Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
+- Added `YearlyTriggerInput` that allows scheduling a yearly recurring notification for a specific day of the year, hour and minute. It is supported on both iOS and Android. ([#11898](https://github.com/expo/expo/pull/11898) by [@raulmt](https://github.com/raulmt))
+
+### 🐛 Bug fixes
+
+- Notification categories will no longer be lost after ejecting to the bare workflow (if ejecting after SDK 41). ([#11651](https://github.com/expo/expo/pull/11651) by [@cruzach](https://github.com/cruzach))
+- Notify all listeners of pending notification responses. ([#11536](https://github.com/expo/expo/pull/11536) by [@esamelson](https://github.com/esamelson))
+
 ## 0.9.0 — 2021-01-15
 
 ### ⚠️ Notices
@@ -168,7 +189,7 @@ _This version does not introduce any user-facing changes._
 ### 🛠 Breaking changes
 
 - > Note that this may or may not be a breaking change for you — if you'd expect the notification to be automatically dismissed when tapped on this is a bug fix and a new feature (fixes inconsistency between platforms as on iOS this is the only supported behavior; adds the ability to customize the behavior on Android). If you'd expect the notification to only be dismissed at your will this is a breaking change and you'll need to add `autoDismiss: false` to your notification content inputs.
-Changed the default notification behavior on Android to be automatically dismissed when clicked. This is customizable with the `autoDismiss` parameter of `NotificationContentInput`. ([#8241](https://github.com/expo/expo/pull/8241) by [@thorbenprimke](https://github.com/thorbenprimke))
+- Changed the default notification behavior on Android to be automatically dismissed when clicked. This is customizable with the `autoDismiss` parameter of `NotificationContentInput`. ([#8241](https://github.com/expo/expo/pull/8241) by [@thorbenprimke](https://github.com/thorbenprimke))
 
 ### 🎉 New features
 

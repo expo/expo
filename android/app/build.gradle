@@ -11,7 +11,7 @@ def safeExtGet(prop, fallback) {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 29)
+  compileSdkVersion safeExtGet("compileSdkVersion", 30)
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
@@ -21,11 +21,11 @@ android {
   defaultConfig {
     applicationId 'host.exp.exponent'
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 29)
+    targetSdkVersion safeExtGet("targetSdkVersion", 30)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 136
-    versionName '2.18.0'
+    versionCode 143
+    versionName '2.18.7'
     // END VERSIONS
 
     multiDexEnabled true
@@ -124,7 +124,7 @@ dependencies {
   implementation 'com.segment.analytics.android:analytics:4.3.0'
   implementation 'com.google.zxing:core:3.3.3'
   implementation 'net.openid:appauth:0.4.1'
-  implementation 'com.airbnb.android:lottie:2.5.6'
+  implementation 'com.airbnb.android:lottie:3.4.0'
   implementation('io.nlopez.smartlocation:library:3.2.11') {
     transitive = false
   }

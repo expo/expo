@@ -60,6 +60,8 @@ typedef enum EXReactAppManagerStatus {
  * Clear any executor class on the bridge and reload. Used by Cmd+N devtool key command.
  */
 - (void)disableRemoteDebugging;
+- (void)toggleRemoteDebugging;
+- (void)togglePerformanceMonitor;
 - (void)toggleElementInspector;
 - (void)showDevMenu;
 

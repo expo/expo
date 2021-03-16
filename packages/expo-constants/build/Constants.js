@@ -1,5 +1,5 @@
 import { CodedError, NativeModulesProxy } from '@unimodules/core';
-import { Platform } from 'react-native';
+import { Platform, NativeModules } from 'react-native';
 import { AppOwnership, ExecutionEnvironment, UserInterfaceIdiom, } from './Constants.types';
 import ExponentConstants from './ExponentConstants';
 export { AppOwnership, ExecutionEnvironment, UserInterfaceIdiom, };
@@ -20,6 +20,16 @@ if (NativeModulesProxy.ExpoUpdates) {
         manifest = updatesManifest;
     }
 }
+// If dev-launcher defines a non-empty manifest, prefer that one
+if (NativeModules.EXDevLauncher) {
+    let devLauncherManifest;
+    if (NativeModules.EXDevLauncher.manifestString) {
+        devLauncherManifest = JSON.parse(NativeModules.EXDevLauncher.manifestString);
+    }
+    if (devLauncherManifest && Object.keys(devLauncherManifest).length > 0) {
+        manifest = devLauncherManifest;
+    }
+}
 // Fall back to ExponentConstants.manifest if we don't have one from Updates
 if (!manifest && ExponentConstants && ExponentConstants.manifest) {
     manifest = ExponentConstants.manifest;
@@ -29,13 +39,36 @@ if (!manifest && ExponentConstants && ExponentConstants.manifest) {
     }
 }
 const { name, appOwnership, ...nativeConstants } = (ExponentConstants || {});
+let warnedAboutInstallationId = false;
+let warnedAboutDeviceId = false;
+let warnedAboutLinkingUrl = false;
 const constants = {
     ...nativeConstants,
     // Ensure this is null in bare workflow
     appOwnership: appOwnership ?? null,
+    // Deprecated fields
+    get installationId() {
+        if (!warnedAboutInstallationId) {
+            console.warn(`Constants.installationId has been deprecated in favor of generating and storing your own ID. Implement it using expo-application's androidId on Android and a storage API such as expo-secure-store on iOS and localStorage on the web. This API will be removed in SDK 44.`);
+            warnedAboutInstallationId = true;
+        }
+        return nativeConstants.installationId;
+    },
     // Legacy aliases
-    deviceId: nativeConstants.installationId,
-    linkingUrl: nativeConstants.linkingUri,
+    get deviceId() {
+        if (!warnedAboutDeviceId) {
+            console.warn(`Constants.deviceId has been deprecated in favor of generating and storing your own ID. This API will be removed in SDK 44.`);
+            warnedAboutDeviceId = true;
+        }
+        return nativeConstants.installationId;
+    },
+    get linkingUrl() {
+        if (!warnedAboutLinkingUrl) {
+            console.warn(`Constants.linkingUrl has been renamed to Constants.linkingUri. Consider using the Linking API directly. Constants.linkingUrl will be removed in SDK 44.`);
+            warnedAboutLinkingUrl = true;
+        }
+        return nativeConstants.linkingUri;
+    },
 };
 Object.defineProperties(constants, {
     manifest: {

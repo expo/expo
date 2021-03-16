@@ -33,7 +33,7 @@ target 'Exponent' do
   pod 'EXRandom', path: '../packages/expo-random/ios'
 
   # Install vendored pods.
-  use_pods! 'vendored/unversioned/*/*.podspec.json'
+  use_pods! 'vendored/unversioned/**/*.podspec.json'
 
   # Unversioned React Native
   use_react_native! path: '../react-native-lab/react-native'

@@ -8,6 +8,16 @@
 
 ### 🐛 Bug fixes
 
+## 10.0.0 — 2021-03-10
+
+### 📚 native library updates
+
+- Migrated from `Firebase/MLVision` native library to `GoogleMLKit/FaceDetection@2.1.0` on iOS. ([#12125](https://github.com/expo/expo/pull/12125) by [@bbarthec](https://github.com/bbarthec))
+
+### 🎉 New features
+
+- Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
+
 ## 9.0.1 — 2021-01-15
 
 _This version does not introduce any user-facing changes._

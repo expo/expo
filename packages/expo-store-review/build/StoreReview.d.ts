@@ -6,10 +6,6 @@
  */
 export declare function isAvailableAsync(): Promise<boolean>;
 /**
- * @deprecated use `isAvailableAsync()` instead
- */
-export declare function isSupported(): void;
-/**
  * Use the iOS `SKStoreReviewController` or Android `ReviewManager` API
  * to prompt a user rating without leaving the app.
  */

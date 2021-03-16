@@ -17,6 +17,8 @@
 
 #import <EXDevLauncher-Swift.h>
 
+@import EXDevMenuInterface;
+
 // Uncomment the below and set it to a React Native bundler URL to develop the launcher JS
 //#define DEV_LAUNCHER_URL "http://10.0.0.176:8090/index.bundle?platform=ios&dev=true&minify=false"
 
@@ -97,6 +99,11 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   };
 }
 
+- (EXDevLauncherManifest *)appManifest
+{
+  return self.manifest;
+}
+
 - (void)startWithWindow:(UIWindow *)window delegate:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
 {
   _delegate = delegate;
@@ -106,18 +113,33 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   [self navigateToLauncher];
 }
 
-- (void)navigateToLauncher {
+- (void)navigateToLauncher
+{
   [_appBridge invalidate];
+  self.manifest = nil;
 
   if (@available(iOS 12, *)) {
     [self _applyUserInterfaceStyle:UIUserInterfaceStyleUnspecified];
   }
   
   _launcherBridge = [[EXDevLauncherRCTBridge alloc] initWithDelegate:self launchOptions:_launchOptions];
-
+  
+  id<DevMenuManagerProviderProtocol> devMenuManagerProvider = [_launcherBridge modulesConformingToProtocol:@protocol(DevMenuManagerProviderProtocol)].firstObject;
+  
+  if (devMenuManagerProvider) {
+    id<DevMenuManagerProtocol> devMenuManager = [devMenuManagerProvider getDevMenuManager];
+    devMenuManager.delegate = [[EXDevLauncherMenuDelegate alloc] initWithBridge:_launcherBridge];
+  }
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:_launcherBridge
                                                    moduleName:@"main"
-                                            initialProperties:nil];
+                                            initialProperties:@{
+                                              @"isSimulator":
+                                                              #if TARGET_IPHONE_SIMULATOR
+                                                              @YES
+                                                              #else
+                                                              @NO
+                                                              #endif
+                                            }];
 
   [self _ensureUserInterfaceStyleIsInSyncWithViewController:rootView];
   
@@ -207,6 +229,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 
 - (void)_initApp:(NSURL *)bundleUrl manifest:(EXDevLauncherManifest * _Nullable)manifest
 {
+  self.manifest = manifest;
   __block UIInterfaceOrientation orientation = manifest.orientation;
   __block UIColor *backgroundColor = manifest.backgroundColor;
   

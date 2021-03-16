@@ -1,1 +1,0 @@
-../../../../../../../packages/expo-image/ios/EXImageViewManager.h

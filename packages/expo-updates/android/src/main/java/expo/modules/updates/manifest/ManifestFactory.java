@@ -9,11 +9,11 @@ public class ManifestFactory {
 
   private static final String TAG = ManifestFactory.class.getSimpleName();
 
-  public static Manifest getManifest(JSONObject manifestJson, UpdatesConfiguration configuration) throws JSONException {
+  public static Manifest getManifest(JSONObject manifestJson, ManifestResponse httpResponse, UpdatesConfiguration configuration) throws JSONException {
     if (configuration.usesLegacyManifest()) {
       return LegacyManifest.fromLegacyManifestJson(manifestJson, configuration);
     } else {
-      return NewManifest.fromManifestJson(manifestJson, configuration);
+      return NewManifest.fromManifestJson(manifestJson, httpResponse, configuration);
     }
   }
 
@@ -27,7 +27,7 @@ public class ManifestFactory {
     } else {
       // bare (embedded) manifests should never have a runtimeVersion field
       if (manifestJson.has("manifest") || manifestJson.has("runtimeVersion")) {
-        return NewManifest.fromManifestJson(manifestJson, configuration);
+        return NewManifest.fromManifestJson(manifestJson, null, configuration);
       } else {
         return BareManifest.fromManifestJson(manifestJson, configuration);
       }

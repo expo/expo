@@ -3,8 +3,8 @@ import {
   buildResourceItem,
   readResourcesXMLAsync,
 } from '@expo/config-plugins/build/android/Resources';
-import { writeXMLAsync } from '@expo/config-plugins/build/android/XML';
 import { createAndroidManifestPlugin } from '@expo/config-plugins/build/plugins/android-plugins';
+import { writeXMLAsync } from '@expo/config-plugins/build/utils/XML';
 import { ExpoConfig } from '@expo/config-types';
 import { generateImageAsync } from '@expo/image-utils';
 import fs from 'fs-extra';

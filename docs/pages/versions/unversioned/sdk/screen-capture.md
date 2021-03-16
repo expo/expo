@@ -96,6 +96,14 @@ import * as ScreenCapture from 'expo-screen-capture';
 
 ## Methods
 
+### `isAvailableAsync()`
+
+Returns whether the Screen Capture API is available on the current device.
+
+#### Returns
+
+Async `boolean`, indicating whether the Screen Capture API is available on the current device. Currently this resolves `true` on iOS and Android only.
+
 ### `usePreventScreenCapture(key)`
 
 A React hook to prevent screen capturing for as long as the owner component is mounted.

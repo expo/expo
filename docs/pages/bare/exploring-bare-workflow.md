@@ -27,6 +27,8 @@ If you already have a React Native project that has been created with `react-nat
 
 If you already have an Expo managed workflow app and you need to customize the native code, you can eject to the bare workflow by running `expo eject`. This will give you a vanilla React Native app that includes all of the Expo SDK APIs that you were using already, and no more than that. The outcome is that you will be in just as good of a position as if you had started your app in the bare workflow from scratch, only you probably saved yourself some time!
 
+> 💡 We recommend upgrading to the latest SDK version before ejecting. It will be more difficult to upgrade your app after ejecting because you will also be responsible for native iOS and Android related upgrade steps.
+
 <Video file="exploring-bare/eject.mp4" spaceAfter />
 
 ## Build and open the project
@@ -47,9 +49,9 @@ The process for doing this is the same as any other React Native app. Here we ar
 
 <Video file="exploring-bare/custom.mp4" spaceAfter />
 
-## Open the project with the Expo client app on iOS or Android
+## Open the project with the Expo Go app on iOS or Android
 
-You can continue using the Expo client _even after you’ve added native code that the client doesn’t support_, you just need to add guards to prevent the native APIs from being invoked when they aren’t available. In this block of code, we're going to prevent the `AttractionList` component from being imported when we were in the Expo client, because `AttractionList` uses `react-native-mapbox-gl`, which is not included in the Expo SDK.
+You can continue using the Expo Go app _even after you’ve added native code that the client doesn’t support_, you just need to add guards to prevent the native APIs from being invoked when they aren’t available. In this block of code, we're going to prevent the `AttractionList` component from being imported when we were in Expo Go, because `AttractionList` uses `react-native-mapbox-gl`, which is not included in the Expo SDK.
 
 <Video file="exploring-bare/guard.mp4" />
 

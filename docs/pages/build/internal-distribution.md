@@ -3,6 +3,7 @@ title: Internal distribution
 ---
 
 import TerminalBlock from '~/components/plugins/TerminalBlock';
+import { theme } from '@expo/styleguide'
 
 Uploading your app to TestFlight and Google Play beta can be time consuming and limiting (e.g. TestFlight can only have one active build at a time). You can skip these services entirely by building binaries that can be downloaded and installed to physical devices directly from a web browser.
 
@@ -10,7 +11,7 @@ EAS Build can help you with this by providing sharable URLs for your builds with
 
 > 😅 Installing an app on iOS is a bit trickier than on Android, but it's possible thanks to ad hoc and enterprise provisioning profiles. We'll talk more about this later in this doc.
 
-<h1 style={{borderBottom: 'none', marginTop: 30, marginBottom: 15, fontFamily: 'expo-brand-bold'}}>Setting up internal distribution</h1>
+<h1 style={{borderBottom: 'none', marginTop: 30, marginBottom: 15, fontFamily: 'expo-brand-bold', color: theme.text.default}}>Setting up internal distribution</h1>
 
 The following three steps will guide you through adding internal distribution to a project that is [already set up to build with EAS Build](setup.md). It will only take a few minutes in total to: configure the project, add a couple of test iOS devices to a provisioning profile, and start builds for Android and iOS.
 
@@ -45,6 +46,8 @@ Open up `eas.json` and add a new build profile for iOS and/or Android.
 
 > If you override the `gradleCommand` on Android, you should ensure that it produces an `apk` rather than an `aab`, so it is directly installable to an Android device.
 
+## 2. Configure app signing
+
 ### 2.1 Configure app signing credentials for Android
 
 Android does not restrict distribution of applications &mdash; the operating system is capable of installing any compatible `apk` file. As a result, configuring app signing credentials for internal distribution is no different from other types of builds. The main benefit of using internal distribution in this case is to have an easily shareable URL to provide to testers for downloading the app.
@@ -53,7 +56,7 @@ Android does not restrict distribution of applications &mdash; the operating sys
 
 Apple restricts distribution of applications on iPhones and iPads, so we will need to build the app with an ad-hoc provisioning profile that explicitly lists the devices that the application can run on.
 
-An alternative to ad hoc provisioning is enterprise provisioning, but this is expensive ($299 USD per year from Apple) and not yet supported by EAS Build internal distribution (support is planned and coming soon).
+An alternative to ad hoc provisioning is enterprise provisioning, but this is expensive (\$299 USD per year from Apple) and not yet supported by EAS Build internal distribution (support is planned and coming soon).
 
 <!--
 (@dsokal) this is not implemented yet
@@ -87,7 +90,7 @@ The next step is to generate or update the provisioning profile. When you procee
 
 > **Are you using manual local credentials?** Make sure to point your `credentials.json` to an ad hoc <!-- or enterprise -->provisioning profile that you generate through the Apple Developer portal. Beware that EAS CLI does only a limited validation of your local credentials, and you will have to handle device UDID registration manually. Read more about [using local credentials](/app-signing/local-credentials.md).
 
-### 3. Run a build with the internal build profile
+## 3. Run a build with the internal build profile
 
 Now that we have set up our build profile and app signing, running a build for internal distribution is just like any other build.
 

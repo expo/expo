@@ -45,8 +45,7 @@ public class InterstitialAdManager extends ExportedModule implements Interstitia
 
     mPromise = p;
     mInterstitial = new InterstitialAd(mActivityProvider.getCurrentActivity(), placementId);
-    mInterstitial.setAdListener(this);
-    mInterstitial.loadAd();
+    mInterstitial.loadAd(mInterstitial.buildLoadAdConfig().withAdListener(this).build());
   }
 
   @Override

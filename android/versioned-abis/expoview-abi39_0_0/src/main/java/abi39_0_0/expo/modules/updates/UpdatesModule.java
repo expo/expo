@@ -15,7 +15,6 @@ import abi39_0_0.org.unimodules.core.interfaces.ExpoMethod;
 
 import androidx.annotation.Nullable;
 import expo.modules.updates.db.DatabaseHolder;
-import expo.modules.updates.db.UpdatesDatabase;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.Launcher;
@@ -66,7 +65,9 @@ public class UpdatesModule extends ExportedModule {
         if (localAssetFiles != null) {
           Map<String, String> localAssets = new HashMap<>();
           for (AssetEntity asset : localAssetFiles.keySet()) {
-            localAssets.put(asset.key, localAssetFiles.get(asset));
+            if (asset.key != null) {
+              localAssets.put(asset.key, localAssetFiles.get(asset));
+            }
           }
           constants.put("localAssets", localAssets);
         }
@@ -121,7 +122,7 @@ public class UpdatesModule extends ExportedModule {
         return;
       }
 
-      FileDownloader.downloadManifest(updatesService.getConfiguration(), getContext(), new FileDownloader.ManifestDownloadCallback() {
+      FileDownloader.downloadManifest(updatesService.getConfiguration(), null, getContext(), new FileDownloader.ManifestDownloadCallback() {
         @Override
         public void onFailure(String message, Exception e) {
           promise.reject("ERR_UPDATES_CHECK", message, e);
@@ -141,7 +142,7 @@ public class UpdatesModule extends ExportedModule {
             return;
           }
 
-          if (updatesService.getSelectionPolicy().shouldLoadNewUpdate(manifest.getUpdateEntity(), launchedUpdate)) {
+          if (updatesService.getSelectionPolicy().shouldLoadNewUpdate(manifest.getUpdateEntity(), launchedUpdate, null)) {
             updateInfo.putBoolean("isAvailable", true);
             updateInfo.putString("manifestString", manifest.getRawManifestJson().toString());
             promise.resolve(updateInfo);
@@ -184,8 +185,8 @@ public class UpdatesModule extends ExportedModule {
               public boolean onManifestLoaded(Manifest manifest) {
                 return updatesService.getSelectionPolicy().shouldLoadNewUpdate(
                   manifest.getUpdateEntity(),
-                  updatesService.getLaunchedUpdate()
-                );
+                  updatesService.getLaunchedUpdate(),
+                  null);
               }
 
               @Override

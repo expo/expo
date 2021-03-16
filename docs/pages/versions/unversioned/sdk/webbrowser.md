@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
 
 ### Handling deep links from the WebBrowser
 
-If you are using the `WebBrowser` window for authentication or another use case where you would like to pass information back into your app through a deep link, be sure to add a handler with `Linking.addEventListener` before opening the browser. When the listener fires, you should call [dismissBrowser](#webbrowserdismissbrowser) -- it will not automatically dismiss when a deep link is handled. Aside from that, redirects from `WebBrowser` work the same as other deep links. [Read more about it in the Linking guide](../../../workflow/linking.md#handling-links-into-your-app).
+If you are using the `WebBrowser` window for authentication or another use case where you would like to pass information back into your app through a deep link, be sure to add a handler with `Linking.addEventListener` before opening the browser. When the listener fires, you should call [dismissBrowser](#webbrowserdismissbrowser) -- it will not automatically dismiss when a deep link is handled. Aside from that, redirects from `WebBrowser` work the same as other deep links. [Read more about it in the Linking guide](../../../guides/linking.md#handling-links-into-your-app).
 
 ## API
 
@@ -193,7 +193,7 @@ This method initiates (if needed) [CustomTabsSession](https://developer.android.
 
 #### Arguments
 
-- **url (_string_)** -- url of page that is likely to be loaded firts when opening browser
+- **url (_string_)** -- url of page that is likely to be loaded first when opening browser
 - **package (_string_)** -- **optional** -- package of browser to be informed. If not set, preferred browser will be used.
 
 #### Returns
@@ -228,7 +228,7 @@ The promise resolves with `{ type: 'dismiss' }`.
 
 _Android only_
 
-Returns a list of applications package names supporting Custom Tabs, Custom Tabs service, user chosen and preferred one. This may not be fully reliable, since it uses `PackageManager.getResolvingActivities` under the hood. (For example, some browsers might not be present in `browserPackages` list once another browser is set to defult.)
+Returns a list of applications package names supporting Custom Tabs, Custom Tabs service, user chosen and preferred one. This may not be fully reliable, since it uses `PackageManager.getResolvingActivities` under the hood. (For example, some browsers might not be present in `browserPackages` list once another browser is set to default.)
 
 #### Returns
 

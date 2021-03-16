@@ -2,10 +2,11 @@
 title: Creating your first build
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+
 In this guide, you'll learn how to build a ready-to-submit binary for the Apple App Store and Google Play Store using EAS Build. For a simple app, you should expect to have kicked off your builds for Android and iOS within a few minutes.
 
 ## Prerequisites
-
 
 EAS Build is a brand new and rapidly evolving service. It can't do everything yet, so before you set out to create a build for your project we recommend consulting the [limitations](/build-reference/limitations.md) page and the other prequisites below.
 
@@ -13,18 +14,19 @@ EAS Build is a brand new and rapidly evolving service. It can't do everything ye
 <p>
 
 Don't have a project yet? No problem: it's quick and easy to create a "Hello world" app that you can use with this guide.
+
 <div style={{marginTop: -10}} />
 
 - Install Expo CLI by running `npm install -g expo-cli` (or `yarn global add expo-cli`).
 - Run `expo init PROJECT_NAME` (let's assume `PROJECT_NAME` is `abcd`) and choose a bare workflow template (either `minimal` or `minimal (TypeScript)`).
 - EAS Build also works well with projects created by `npx react-native`, `create-react-native-app`, `ignite-cli`, and other project bootstrapping tools.
 
-<center><img src="/static/images/eas-build/walkthrough/01-init.png" /></center>
+<ImageSpotlight alt="Terminal running expo init, with minimal (TypeScript) selected" src="/static/images/eas-build/walkthrough/01-init.png" />
 
 </p>
 </details>
 
-> EAS Build has early and rapidly improving support for managed workflow projects, but we recommend using it with bare React Native projects for best results right now.
+> Support for managed workflow projects is rapidly improving, but not yet ready for production, so we recommend using it with bare React Native projects for best results right now.
 
 <details><summary><h4>💡 An Expo account with an EAS Priority Plan subscription.</h4></summary>
 <p>
@@ -40,7 +42,7 @@ Don't have a project yet? No problem: it's quick and easy to create a "Hello wor
 <details><summary><h4>🍎 If you want to build for iOS: Apple Developer Program membership.</h4></summary>
 <p>
 
-- If you are going to use EAS Build to create release builds for the Apple App Store, this requires access to an account with a $99 USD [Apple Developer Program](https://developer.apple.com/programs) membership.
+- If you are going to use EAS Build to create release builds for the Apple App Store, this requires access to an account with a \$99 USD [Apple Developer Program](https://developer.apple.com/programs) membership.
 
 </p>
 </details>
@@ -69,6 +71,7 @@ Run `eas build:configure` to configure your iOS and Android projects to run on E
 
 Additional configuration may be required for some scenarios:
 
+- Does your app code depend on environment variables? [Add them to your build configuration](/build-reference/variables.md).
 - Is your project inside of a monorepo? [Follow these instructions](/build-reference/how-tos.md#how-to-set-up-eas-build-with).
 - Do you use private npm packages? [Add your npm token](/build-reference/how-tos.md#how-to-use-private-package-repositories).
 

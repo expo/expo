@@ -1,4 +1,5 @@
 import { css } from '@emotion/core';
+import { palette } from '@expo/styleguide';
 
 import { paragraph } from '~/components/base/typography';
 import * as Constants from '~/constants/theme';
@@ -6,22 +7,22 @@ import * as Constants from '~/constants/theme';
 export const globalTippy = css`
   div.tippy-tooltip {
     text-align: left;
-    background: ${Constants.expoColors.black};
+    background: ${palette.dark.black};
   }
 
   .tippy-popper[x-placement^='top'] .tippy-tooltip .tippy-roundarrow {
-    fill: ${Constants.expoColors.black};
+    fill: ${palette.dark.black};
   }
 
   .tippy-tooltip.expo-theme .tippy-content {
     ${paragraph};
-    color: ${Constants.colors.white};
+    color: ${palette.dark.gray[900]};
     font-family: ${Constants.fonts.book};
-    background: ${Constants.expoColors.black};
+    background: ${palette.dark.black};
     padding: 8px;
   }
 
   .tippy-content a {
-    color: #eee;
+    color: ${palette.dark.gray[900]};
   }
 `;

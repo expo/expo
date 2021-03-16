@@ -28,7 +28,7 @@ function OptionsButton({ showActionSheetWithOptions }: any) {
   return (
     <TouchableOpacity style={styles.container} onPress={handlePress}>
       <Ionicons
-        name={Platform.select({ ios: 'ios-more', default: 'md-more' })}
+        name={Platform.select({ ios: 'ios-ellipsis-horizontal', default: 'md-ellipsis-vertical' })}
         size={27}
         color={Colors.light.tintColor}
       />

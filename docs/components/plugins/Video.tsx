@@ -87,7 +87,7 @@ export default class Video extends React.Component<Props, State> {
                 position: 'relative',
                 width: '100%',
                 height: 400,
-                backgroundColor: 'black',
+                backgroundColor: '#000',
                 marginBottom,
               }}>
               <FilePlayer
@@ -123,7 +123,7 @@ export default class Video extends React.Component<Props, State> {
                     left: 0,
                     bottom: 0,
                     right: 0,
-                    backgroundColor: 'black',
+                    backgroundColor: '#000',
                     width: '100%',
                     height: 400,
                     opacity: isVisible ? 0 : 0.7,

@@ -1,21 +1,23 @@
 ---
 title: Using Gatsby with Expo for Web
+sidebar_title: Using Gatsby
 ---
 
-> Notice: Pre-rendering is an experimental feature with Expo so modules might not be fully optimized for Gatsby and the workflow is subject to breaking changes. If you find bugs please report them on [expo/expo](https://github.com/expo/expo/issues) with the `[Gatsby]` tag in the title.
+> Please open any issues related to Gatsby with Expo at [expo-cli/issues](https://github.com/expo/expo-cli/issues).
 
 - [Example](#example)
 - [🏁 Setup](#-setup)
   - [Expo projects with Gatsby](#expo-projects-with-gatsby)
   - [Gatsby projects with Expo](#gatsby-projects-with-expo)
-- [New Commands](#️-new-commands)
+- [⌨️ New Commands](#️-new-commands)
+- [📁 File Structure](#-file-structure)
 - [Contributing](#contributing)
-- [Learn more](#learn-more-about-gatsby)
+- [Learn more about Gatsby](#learn-more-about-gatsby)
 
 [Gatsby](https://www.gatsbyjs.org/) is a React framework that helps you perform pre-rendering on your websites.
 Using Gatsby with Expo will enable you to [pre-render](https://www.netlify.com/blog/2016/11/22/prerendering-explained/) the web part of your Expo app. You'll also be able to use the web-enabled Expo SDK libraries (eg: Permissions, GestureHandler, Camera) with the Gatsby toolchain!
 
-This guide will show you how to use the Gatsby CLI to develop your websites with the Expo SDK.
+This guide will show you how to use the Gatsby CLI to develop your websites with the Expo web.
 
 ## Example
 

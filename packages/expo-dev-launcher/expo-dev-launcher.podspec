@@ -18,6 +18,8 @@ Pod::Spec.new do |s|
   s.requires_arc   = true
   s.header_dir     = 'EXDevLauncher'
 
+  s.xcconfig = { 'GCC_PREPROCESSOR_DEFINITIONS' => 'EX_DEV_LAUNCHER_ENABLED=1', 'OTHER_SWIFT_FLAGS' => '-DEX_DEV_LAUNCHER_ENABLED=1' }
+
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }
   

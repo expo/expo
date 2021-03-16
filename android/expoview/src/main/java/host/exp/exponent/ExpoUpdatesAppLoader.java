@@ -27,7 +27,7 @@ import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.Launcher;
 import expo.modules.updates.launcher.NoDatabaseLauncher;
 import expo.modules.updates.launcher.SelectionPolicy;
-import expo.modules.updates.launcher.SelectionPolicyNewest;
+import expo.modules.updates.launcher.SelectionPolicyFilterAware;
 import expo.modules.updates.loader.EmbeddedLoader;
 import expo.modules.updates.loader.LoaderTask;
 import expo.modules.updates.manifest.Manifest;
@@ -180,13 +180,14 @@ public class ExpoUpdatesAppLoader {
     }
 
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY, getRequestHeaders());
+    configMap.put("expectsSignedManifest", true);
 
     UpdatesConfiguration configuration = new UpdatesConfiguration();
     configuration.loadValuesFromMap(configMap);
 
     List<String> sdkVersionsList = new ArrayList<>(Constants.SDK_VERSIONS_LIST);
     sdkVersionsList.add(RNObject.UNVERSIONED);
-    SelectionPolicy selectionPolicy = new SelectionPolicyNewest(sdkVersionsList);
+    SelectionPolicy selectionPolicy = new SelectionPolicyFilterAware(sdkVersionsList);
 
     File directory;
     try {

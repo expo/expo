@@ -1,3 +1,5 @@
+import { ExpoConfig } from '@expo/config-types';
+
 export enum AppOwnership {
   Standalone = 'standalone',
   Expo = 'expo',
@@ -34,29 +36,11 @@ export interface WebManifest {
   [key: string]: any;
 }
 
-export interface AppManifest {
-  name?: string;
-  description?: string;
-  slug?: string;
-  sdkVersion?: string;
-  version?: string;
+export interface AppManifest extends ExpoConfig {
   /** Published Apps Only */
   releaseId?: string;
   revisionId?: string;
   releaseChannel?: string;
-  orientation?: string;
-  primaryColor?: string;
-  icon?: string;
-  notification?: {
-    icon?: string;
-    color?: string;
-    [key: string]: any;
-  };
-  loading?: {
-    icon?: string;
-    [key: string]: any;
-  };
-  entryPoint?: string;
   packagerOpts?: {
     hostType?: string;
     dev?: boolean;
@@ -111,6 +95,10 @@ export interface NativeConstants {
   expoVersion: string | null;
   isDetached?: boolean;
   intentUri?: string;
+  /**
+   * @deprecated Constants.installationId is deprecated in favor of generating your own ID and
+   * storing it. This API will be removed in SDK 44.
+   */
   installationId: string;
   isDevice: boolean;
   isHeadless: boolean;
@@ -129,6 +117,14 @@ export interface NativeConstants {
 }
 
 export interface Constants extends NativeConstants {
+  /**
+   * @deprecated Constants.deviceId is deprecated in favor of generating your own ID and storing it.
+   * This API will be removed in SDK 44.
+   */
   deviceId?: string;
+  /**
+   * @deprecated Constants.linkingUrl has been renamed to Constants.linkingUri. Consider using the
+   * Linking API directly. Constants.linkingUrl will be removed in SDK 44.
+   */
   linkingUrl?: string;
 }

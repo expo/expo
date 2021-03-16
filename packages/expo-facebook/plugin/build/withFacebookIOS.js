@@ -1,11 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setFacebookApplicationQuerySchemes = exports.setFacebookDisplayName = exports.setFacebookAppId = exports.setFacebookAdvertiserIDCollectionEnabled = exports.setFacebookAutoLogAppEventsEnabled = exports.setFacebookAutoInitEnabled = exports.setFacebookScheme = exports.setFacebookConfig = exports.getFacebookAdvertiserIDCollection = exports.getFacebookAutoLogAppEvents = exports.getFacebookAutoInitEnabled = exports.getFacebookDisplayName = exports.getFacebookAppId = exports.getFacebookScheme = exports.withFacebookIOS = void 0;
+exports.withUserTrackingPermission = exports.setFacebookApplicationQuerySchemes = exports.setFacebookDisplayName = exports.setFacebookAppId = exports.setFacebookAdvertiserIDCollectionEnabled = exports.setFacebookAutoLogAppEventsEnabled = exports.setFacebookAutoInitEnabled = exports.setFacebookScheme = exports.setFacebookConfig = exports.getFacebookAdvertiserIDCollection = exports.getFacebookAutoLogAppEvents = exports.getFacebookAutoInitEnabled = exports.getFacebookDisplayName = exports.getFacebookAppId = exports.getFacebookScheme = exports.withFacebookIOS = void 0;
 const config_plugins_1 = require("@expo/config-plugins");
 const ios_plugins_1 = require("@expo/config-plugins/build/plugins/ios-plugins");
 const { Scheme } = config_plugins_1.IOSConfig;
 const { appendScheme } = Scheme;
 const fbSchemes = ['fbapi', 'fb-messenger-api', 'fbauth2', 'fbshareextension'];
+const USER_TRACKING = 'Allow $(PRODUCT_NAME) to use data for tracking the user or the device';
 exports.withFacebookIOS = ios_plugins_1.createInfoPlistPlugin(setFacebookConfig, 'withFacebookIOS');
 /**
  * Getters
@@ -158,3 +159,12 @@ function setFacebookApplicationQuerySchemes(config, infoPlist) {
     };
 }
 exports.setFacebookApplicationQuerySchemes = setFacebookApplicationQuerySchemes;
+exports.withUserTrackingPermission = (config, { userTrackingPermission } = {}) => {
+    if (!config.ios)
+        config.ios = {};
+    if (!config.ios.infoPlist)
+        config.ios.infoPlist = {};
+    config.ios.infoPlist.NSUserTrackingUsageDescription =
+        userTrackingPermission || config.ios.infoPlist.NSUserTrackingUsageDescription || USER_TRACKING;
+    return config;
+};

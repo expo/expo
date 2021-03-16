@@ -33,6 +33,8 @@ const DIR_MAPPING = {
   submit: 'EAS Submit',
   accounts: 'Expo Accounts',
   clients: 'Development Clients',
+  archived: 'Archived',
+  faq: 'FAQ',
 };
 
 const processUrl = path => {

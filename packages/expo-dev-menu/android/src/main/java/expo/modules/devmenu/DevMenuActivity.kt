@@ -24,8 +24,10 @@ class DevMenuActivity : ReactActivity() {
         putBoolean("enableDevelopmentTools", true)
         putBoolean("showOnboardingView", DevMenuManager.getSettings()?.isOnboardingFinished != true)
         putParcelableArray("devMenuItems", DevMenuManager.serializedItems().toTypedArray())
+        putParcelableArray("devMenuScreens", DevMenuManager.serializedScreens().toTypedArray())
         putString("uuid", UUID.randomUUID().toString())
         putBundle("appInfo", DevMenuManager.getSession()?.appInfo ?: Bundle.EMPTY)
+        putString("openScreen", DevMenuManager.getSession()?.openScreen)
       }
 
       override fun createRootView() = getVendoredClass<ReactRootView>("com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView", arrayOf(Context::class.java), arrayOf(this@DevMenuActivity))

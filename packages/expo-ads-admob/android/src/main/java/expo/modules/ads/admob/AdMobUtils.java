@@ -3,6 +3,7 @@ package expo.modules.ads.admob;
 import android.content.Context;
 import android.os.Bundle;
 
+import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 
@@ -43,6 +44,12 @@ import com.google.android.gms.ads.AdSize;
     }
 
     return null;
+  }
+
+  static Bundle createEventForAdFailedToLoad(AdError error) {
+    Bundle event = new Bundle();
+    event.putString("error", error.getMessage());
+    return event;
   }
 
   static Bundle createEventForAdFailedToLoad(int errorCode) {

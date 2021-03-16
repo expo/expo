@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI38_0_0/Expo/ExpoKit/Core/UniversalModules/EXScopedFileSystem/ABI38_0_0EXScopedFileSystemModule.h

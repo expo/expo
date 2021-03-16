@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI40_0_0/Expo/UMPermissionsInterface/ABI40_0_0UMPermissionsInterface/ABI40_0_0UMPermissionsMethodsDelegate.h

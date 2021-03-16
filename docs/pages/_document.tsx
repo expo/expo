@@ -1,4 +1,5 @@
 import { Global } from '@emotion/core';
+import { BlockingSetInitialColorMode } from '@expo/styleguide';
 import { extractCritical } from 'emotion-server';
 import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/document';
 import * as React from 'react';
@@ -50,7 +51,7 @@ export default class MyDocument extends Document<{ css?: string }> {
             ]}
           />
 
-          <link rel="stylesheet" href="/static/libs/algolia/algolia.min.css" />
+          <link rel="stylesheet" href="/static/libs/algolia/algolia.css" />
           <link rel="stylesheet" href="/static/libs/algolia/algolia-mobile.css" />
           <link
             rel="stylesheet"
@@ -60,6 +61,7 @@ export default class MyDocument extends Document<{ css?: string }> {
           />
         </Head>
         <body>
+          <BlockingSetInitialColorMode />
           <Main />
           <NextScript />
         </body>

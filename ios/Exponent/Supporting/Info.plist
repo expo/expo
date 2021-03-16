@@ -17,7 +17,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.17.0</string>
+	<string>2.18.4</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -32,6 +32,7 @@
 				<string>exp</string>
 				<string>exps</string>
 				<string>fb1696089354000816</string>
+				<string>expauth</string>
 			</array>
 		</dict>
 		<dict>
@@ -54,7 +55,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>2.17.0</string>
+	<string>2.18.4</string>
 	<key>FacebookAdvertiserIDCollectionEnabled</key>
 	<false/>
 	<key>FacebookAppID</key>
@@ -101,13 +102,15 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow Expo projects to access your microphone</string>
 	<key>NSMotionUsageDescription</key>
-	<string>Allow Expo projects to access your device's accelerometer</string>
+	<string>Allow Expo projects to access your device&apos;s accelerometer</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Give Expo projects permission to save photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Give Expo projects permission to access your photos</string>
 	<key>NSRemindersUsageDescription</key>
 	<string>Allow Expo projects to access your reminders</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Allow Expo projects to use data for tracking the user or the device</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
@@ -131,5 +134,16 @@
 	<string>Automatic</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>SKAdNetworkItems</key>
+	<array>
+		<dict>
+			<key>SKAdNetworkIdentifier</key>
+			<string>v9wttpbfk9.skadnetwork</string>
+		</dict>
+		<dict>
+			<key>SKAdNetworkIdentifier</key>
+			<string>n38lu8286q.skadnetwork</string>
+		</dict>
+	</array>
 </dict>
 </plist>

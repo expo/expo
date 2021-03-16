@@ -134,6 +134,14 @@
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
+      <intent-filter>
+        <data android:scheme="expauth"/>
+
+        <action android:name="android.intent.action.VIEW"/>
+
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+      </intent-filter>
       <!-- END HOME INTENT FILTERS -->
     </activity>
 
@@ -313,7 +321,7 @@
     <meta-data
       android:name="expo.modules.notifications.default_notification_color"
       android:resource="@color/notification_icon_color" />
-      
+
     <!-- Applied to Firebase notification messages -->
     <meta-data
       android:name="com.google.firebase.messaging.default_notification_icon"

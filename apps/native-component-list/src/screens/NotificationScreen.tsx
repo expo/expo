@@ -1,5 +1,4 @@
 import { Subscription } from '@unimodules/core';
-import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
 import React from 'react';
@@ -41,7 +40,7 @@ export default class NotificationScreen extends React.Component<
         this._handelNotificationResponseReceived
       );
       // Using the same category as in `registerForPushNotificationsAsync`
-      Notifications.setNotificationCategoryAsync(`${Constants.manifest.id}:welcome`, [
+      Notifications.setNotificationCategoryAsync('welcome', [
         {
           buttonTitle: `Don't open app`,
           identifier: 'first-button',

@@ -1,4 +1,6 @@
 import {
+  requestPermissionsAsync,
+  getPermissionsAsync,
   AdMobBanner,
   AdMobInterstitial,
   AdMobRewarded,
@@ -9,6 +11,7 @@ import * as React from 'react';
 import { StyleSheet, Platform, Switch, Text, View } from 'react-native';
 
 import Button from '../components/Button';
+import SimpleActionDemo from '../components/SimpleActionDemo';
 import { useResolvedValue } from '../utilities/useResolvedValue';
 
 export default function AdMobScreen() {
@@ -66,13 +69,13 @@ function AdMobView() {
     setTestDeviceIDAsync('EMULATOR');
     AdMobRewarded.setAdUnitID(AdMobRewardedTestUnitID);
     AdMobInterstitial.setAdUnitID(AdMobInterstitialTestUnitID);
-    AdMobRewarded.addEventListener('rewardedVideoDidClose', reloadRewarded);
+    AdMobRewarded.addEventListener('rewardedVideoDidDismiss', reloadRewarded);
     AdMobInterstitial.addEventListener('interstitialDidClose', reloadInterstitial);
     reloadRewarded();
     reloadInterstitial();
 
     return () => {
-      AdMobRewarded.removeEventListener('rewardedVideoDidClose', reloadRewarded);
+      AdMobRewarded.removeEventListener('rewardedVideoDidDismiss', reloadRewarded);
       AdMobInterstitial.removeEventListener('interstitialDidClose', reloadInterstitial);
     };
   }, []);
@@ -130,6 +133,14 @@ function AdMobView() {
   return (
     <View style={styles.container}>
       <View style={{ flex: 1 }}>
+        <SimpleActionDemo
+          title="get tracking permissions"
+          action={async () => await getPermissionsAsync()}
+        />
+        <SimpleActionDemo
+          title="request tracking permissions"
+          action={async () => await requestPermissionsAsync()}
+        />
         <Button
           style={styles.button}
           onPress={onPress}

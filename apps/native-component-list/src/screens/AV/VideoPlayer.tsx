@@ -1,4 +1,4 @@
-import SegmentedControl from '@react-native-community/segmented-control';
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { diff } from 'deep-object-diff';
 import { Asset } from 'expo-asset';
 import { AVPlaybackStatus, ResizeMode, Video, VideoFullscreenUpdateEvent } from 'expo-av';

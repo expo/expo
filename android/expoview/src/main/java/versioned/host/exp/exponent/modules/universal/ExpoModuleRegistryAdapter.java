@@ -69,7 +69,7 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     moduleRegistry.registerInternalModule(new UpdatesBinding(scopedContext, experienceProperties));
 
     // Overriding expo-facebook
-    moduleRegistry.registerExportedModule(new ScopedFacebookModule(scopedContext, manifest));
+    moduleRegistry.registerExportedModule(new ScopedFacebookModule(scopedContext));
 
     // Scoping Amplitude
     moduleRegistry.registerExportedModule(new ScopedAmplitudeModule(scopedContext, experienceId));
@@ -86,6 +86,9 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     moduleRegistry.registerExportedModule(new ScopedServerRegistrationModule(scopedContext));
     moduleRegistry.registerInternalModule(new ScopedNotificationsChannelsProvider(scopedContext, experienceId));
     moduleRegistry.registerInternalModule(new ScopedNotificationsCategoriesSerializer());
+
+    // Overriding expo-secure-stoore
+    moduleRegistry.registerExportedModule(new ScopedSecureStoreModule(scopedContext));
 
     // ReactAdapterPackage requires ReactContext
     ReactApplicationContext reactContext = (ReactApplicationContext) scopedContext.getContext();

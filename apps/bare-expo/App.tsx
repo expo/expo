@@ -48,5 +48,5 @@ export default function Main() {
     }
   }, []);
 
-  return <MainNavigator uriPrefix="bareexpo://" />;
+  return <MainNavigator />;
 }

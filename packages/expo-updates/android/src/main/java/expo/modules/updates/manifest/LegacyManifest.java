@@ -3,6 +3,7 @@ package expo.modules.updates.manifest;
 import android.net.Uri;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
 import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.UpdatesUtils;
 import expo.modules.updates.db.entity.AssetEntity;
@@ -94,6 +95,14 @@ public class LegacyManifest implements Manifest {
     return new LegacyManifest(manifestJson,configuration.getUpdateUrl(), id, configuration.getScopeKey(), commitTime, runtimeVersion, manifestJson, bundleUrl, bundledAssets);
   }
 
+  public @Nullable JSONObject getServerDefinedHeaders() {
+    return null;
+  }
+
+  public @Nullable JSONObject getManifestFilters() {
+    return null;
+  }
+
   public JSONObject getRawManifestJson() {
     return mManifestJson;
   }
@@ -113,14 +122,8 @@ public class LegacyManifest implements Manifest {
   public ArrayList<AssetEntity> getAssetEntityList() {
     ArrayList<AssetEntity> assetList = new ArrayList<>();
 
-    String key;
-    try {
-      key = "bundle-" + UpdatesUtils.sha256(mBundleUrl.toString());
-    } catch (Exception e) {
-      key = "bundle-" + mCommitTime.getTime();
-      Log.e(TAG, "Failed to get SHA-256 checksum of bundle URL");
-    }
-    AssetEntity bundleAssetEntity = new AssetEntity(key, "js");
+    String bundleKey = mManifestJson.optString("bundleKey", null);
+    AssetEntity bundleAssetEntity = new AssetEntity(bundleKey, "js");
     bundleAssetEntity.url = mBundleUrl;
     bundleAssetEntity.isLaunchAsset = true;
     bundleAssetEntity.embeddedAssetFilename = BUNDLE_FILENAME;

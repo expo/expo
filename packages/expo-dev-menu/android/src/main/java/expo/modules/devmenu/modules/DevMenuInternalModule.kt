@@ -1,7 +1,11 @@
 package expo.modules.devmenu.modules
 
+import android.content.Context
+import android.content.Intent
 import android.graphics.Typeface
+import android.net.Uri
 import android.os.Build
+import androidx.browser.customtabs.CustomTabsIntent
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
@@ -10,6 +14,8 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.views.text.ReactFontManager
 
 private var fontsWereLoaded = false
+
+private const val DEV_MENU_STORE = "expo.modules.devmenu.store"
 
 class DevMenuInternalModule(reactContext: ReactApplicationContext)
   : ReactContextBaseJavaModule(reactContext) {
@@ -27,6 +33,8 @@ class DevMenuInternalModule(reactContext: ReactApplicationContext)
 
   private val doesDeviceSupportKeyCommands
     get() = Build.FINGERPRINT.contains("vbox") || Build.FINGERPRINT.contains("generic")
+
+  private val localStore = reactContext.getSharedPreferences(DEV_MENU_STORE, Context.MODE_PRIVATE)
 
   override fun getConstants(): Map<String, Any> {
     return mapOf(
@@ -110,5 +118,49 @@ class DevMenuInternalModule(reactContext: ReactApplicationContext)
       it.devSupportEnabled = true
       it.showDevOptionsDialog()
     }
+  }
+
+  @ReactMethod
+  fun onScreenChangeAsync(currentScreen: String?, promise: Promise) {
+    devMenuManger.setCurrentScreen(currentScreen)
+    promise.resolve(null)
+  }
+
+  @ReactMethod
+  fun openWebBrowserAsync(startUrl: String?, promise: Promise) {
+    requireNotNull(startUrl)
+
+    val intent = createCustomTabsIntent()
+    intent.data = Uri.parse(startUrl)
+
+    reactApplicationContext.currentActivity!!.startActivity(intent)
+    promise.resolve(null)
+  }
+
+  private fun createCustomTabsIntent(): Intent {
+    val builder = CustomTabsIntent.Builder()
+    builder.setShowTitle(false)
+
+    val intent = builder.build().intent
+
+    // We cannot use builder's method enableUrlBarHiding, because there is no corresponding disable method and some browsers enables it by default.
+    intent.putExtra(CustomTabsIntent.EXTRA_ENABLE_URLBAR_HIDING, false)
+
+    return intent
+  }
+
+  @ReactMethod
+  fun saveAsync(key: String, data: String, promise: Promise) {
+    localStore
+      .edit()
+      .putString(key, data)
+      .apply()
+
+    promise.resolve(null)
+  }
+
+  @ReactMethod
+  fun getAsync(key: String, promise: Promise) {
+    promise.resolve(localStore.getString(key, null))
   }
 }

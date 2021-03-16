@@ -19,7 +19,7 @@
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
 #import <EXUpdates/EXUpdatesReaper.h>
-#import <EXUpdates/EXUpdatesSelectionPolicyNewest.h>
+#import <EXUpdates/EXUpdatesSelectionPolicyFilterAware.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 #import <React/RCTUtils.h>
 #import <sys/utsname.h>
@@ -37,6 +37,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) EXAppLoaderRemoteUpdateStatus remoteUpdateStatus;
 @property (nonatomic, assign) BOOL shouldShowRemoteUpdateStatus;
 @property (nonatomic, assign) BOOL isUpToDate;
+
+/**
+ * Stateful variable to let us prevent multiple simultaneous fetches from the development server.
+ * This can happen when reloading a bundle with remote debugging enabled;
+ * RN requests the bundle multiple times for some reason.
+ */
+@property (nonatomic, assign) BOOL isLoadingDevelopmentJavaScriptResource;
 
 @property (nonatomic, strong, nullable) NSError *error;
 
@@ -89,6 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
   _remoteUpdateStatus = kEXAppLoaderRemoteUpdateStatusChecking;
   _shouldShowRemoteUpdateStatus = YES;
   _isUpToDate = NO;
+  _isLoadingDevelopmentJavaScriptResource = NO;
 }
 
 - (EXAppLoaderStatus)status
@@ -130,6 +138,13 @@ NS_ASSUME_NONNULL_BEGIN
                                  userInfo:@{}];
   }
   NSAssert([self supportsBundleReload], @"Tried to force a bundle reload on a non-development bundle");
+  if (self.isLoadingDevelopmentJavaScriptResource) {
+    // prevent multiple simultaneous fetches from the development server.
+    // this can happen when reloading a bundle with remote debugging enabled;
+    // RN requests the bundle multiple times for some reason.
+    // TODO: fix inside of RN
+    return;
+  }
   [self _loadDevelopmentJavaScriptResource];
 }
 
@@ -314,6 +329,7 @@ NS_ASSUME_NONNULL_BEGIN
     @"EXUpdatesEnabled": @([EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled),
     @"EXUpdatesLaunchWaitMs": launchWaitMs,
     @"EXUpdatesCheckOnLaunch": shouldCheckOnLaunch ? @"ALWAYS" : @"NEVER",
+    @"EXUpdatesExpectsSignedManifest": @YES,
     @"EXUpdatesRequestHeaders": [self _requestHeaders]
   }];
 
@@ -326,7 +342,7 @@ NS_ASSUME_NONNULL_BEGIN
 
   NSMutableArray *sdkVersions = [[EXVersions sharedInstance].versions[@"sdkVersions"] ?: @[[EXVersions sharedInstance].temporarySdkVersion] mutableCopy];
   [sdkVersions addObject:@"UNVERSIONED"];
-  _selectionPolicy = [[EXUpdatesSelectionPolicyNewest alloc] initWithRuntimeVersions:sdkVersions];
+  _selectionPolicy = [[EXUpdatesSelectionPolicyFilterAware alloc] initWithRuntimeVersions:sdkVersions];
 
   EXUpdatesAppLoaderTask *loaderTask = [[EXUpdatesAppLoaderTask alloc] initWithConfig:_config
                                                                              database:updatesDatabaseManager.database
@@ -409,6 +425,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_loadDevelopmentJavaScriptResource
 {
+  _isLoadingDevelopmentJavaScriptResource = YES;
   EXAppFetcher *appFetcher = [[EXAppFetcher alloc] initWithAppLoader:self];
   [appFetcher fetchJSBundleWithManifest:self.optimisticManifest cacheBehavior:EXCachedResourceNoCache timeoutInterval:kEXJSBundleTimeout progress:^(EXLoadingProgress *progress) {
     if (self.delegate) {
@@ -417,11 +434,13 @@ NS_ASSUME_NONNULL_BEGIN
   } success:^(NSData *bundle) {
     self.isUpToDate = YES;
     self.bundle = bundle;
+    self.isLoadingDevelopmentJavaScriptResource = NO;
     if (self.delegate) {
       [self.delegate appLoader:self didFinishLoadingManifest:self.optimisticManifest bundle:self.bundle];
     }
   } error:^(NSError *error) {
     self.error = error;
+    self.isLoadingDevelopmentJavaScriptResource = NO;
     if (self.delegate) {
       [self.delegate appLoader:self didFailWithError:error];
     }

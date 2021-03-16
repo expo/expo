@@ -12,12 +12,16 @@ import {
   StyleSheet,
   TextInput,
   Platform,
-  TouchableOpacity,
   NativeEventEmitter,
+  RefreshControl,
 } from 'react-native';
 
-import ListItem from './ListItem';
-const DevLauncher = NativeModules.EXDevLauncher;
+import { isDevMenuAvailable } from './DevMenu';
+import BottomTabs from './components/BottomTabs';
+import Button from './components/Button';
+import ListItem from './components/ListItem';
+
+const DevLauncher = NativeModules.EXDevLauncherInternal;
 
 // Use development client native module to load app at given URL, notifying of
 // errors
@@ -32,29 +36,62 @@ const loadAppFromUrl = async (urlString: string, setLoading: (boolean) => void) 
   }
 };
 
-//
-// Reusable button for below code
-//
-
-const Button = ({ label, onPress }) => (
-  <TouchableOpacity style={styles.buttonContainer} onPress={onPress}>
-    <Text style={styles.buttonText}>{label}</Text>
-  </TouchableOpacity>
-);
-
-//
-// Super barebones UI supporting at least loading an app from a QR
-// code, while we figure out what the design for this screen should be / decide
-// on features to support
-//
-
 const ON_NEW_DEEP_LINK_EVENT = 'expo.modules.devlauncher.onnewdeeplink';
 
-const App = () => {
+const baseAddress = Platform.select({
+  ios: 'http://localhost',
+  android: 'http://10.0.2.2',
+});
+const statusPage = 'status';
+const portsToCheck = [
+  8081,
+  19000,
+  19001,
+  19002,
+  19003,
+  19004,
+  19005,
+  19006,
+  19007,
+  19008,
+  19009,
+  19010,
+];
+
+const bottomContainerHeight = isDevMenuAvailable() ? 40 : 0;
+
+const App = ({ isSimulator }) => {
   const [loading, setLoading] = useState(false);
   const [textInputUrl, setTextInputUrl] = useState('');
   const [recentlyOpenedApps, setRecentlyOpenedApps] = useState({});
   const [pendingDeepLink, setPendingDeepLink] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = React.useState(false);
+  const [localPackagers, setLocalPackagers] = useState([]);
+
+  const detectLocalPackagers = async setLocalPackagers => {
+    if (!isSimulator) {
+      return [];
+    }
+
+    const onlinePackagers = [];
+    for (const port of portsToCheck) {
+      try {
+        const address = `${baseAddress}:${port}`;
+        const { status } = await fetch(`${address}/${statusPage}`);
+        if (status === 200) {
+          onlinePackagers.push(address);
+        }
+      } catch (e) {}
+    }
+
+    setLocalPackagers(onlinePackagers);
+  };
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    detectLocalPackagers(setLocalPackagers);
+    setRefreshing(false);
+  }, []);
 
   useEffect(() => {
     const getPendingDeepLink = async () => {
@@ -74,6 +111,7 @@ const App = () => {
 
     getRecentlyOpenedApps();
     getPendingDeepLink();
+    detectLocalPackagers(setLocalPackagers);
 
     return () => {
       onNewDeepLinkListener.remove();
@@ -114,7 +152,9 @@ const App = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" />
-      <ScrollView style={styles.container}>
+      <ScrollView
+        style={styles.container}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
         <>
           {pendingDeepLink && (
             <View style={styles.pendingDeepLinkContainer}>
@@ -160,6 +200,14 @@ const App = () => {
               onChangeText={text => setTextInputUrl(text)}
             />
             <Button onPress={onPressGoToUrl} label="Connect to URL" />
+            {localPackagers.length > 0 && (
+              <>
+                <Text style={[styles.infoText, { marginTop: 12 }]}>Running packagers:</Text>
+                {localPackagers.map(url => (
+                  <ListItem key={url} title={url} onPress={() => loadAppFromUrl(url, setLoading)} />
+                ))}
+              </>
+            )}
             {recentlyProjects.length > 0 && (
               <>
                 <Text style={[styles.infoText, { marginTop: 12 }]}>Recently opened projects:</Text>
@@ -169,6 +217,7 @@ const App = () => {
           </View>
         </>
       </ScrollView>
+      {bottomContainerHeight > 0 && <BottomTabs height={bottomContainerHeight} />}
     </SafeAreaView>
   );
 };
@@ -176,27 +225,16 @@ const App = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#fff',
   },
   container: {
     flex: 1,
+    marginBottom: bottomContainerHeight,
   },
 
   homeContainer: {
-    paddingTop: 24,
     paddingHorizontal: 24,
-  },
-
-  barCodeScannerContainer: {
-    paddingTop: 24,
-    width: '100%',
-    aspectRatio: 1,
-    borderRadius: 8,
-    overflow: 'hidden',
-    paddingHorizontal: 24,
-  },
-  barCodeScanner: {
-    flex: 1,
+    paddingBottom: 10,
   },
 
   pendingDeepLinkContainer: {
@@ -211,7 +249,7 @@ const styles = StyleSheet.create({
   },
   pendingDeepLink: {
     marginTop: 10,
-    color: '#ffffff',
+    color: '#fff',
     fontWeight: '700',
     fontSize: 16,
   },
@@ -223,19 +261,6 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 24,
-  },
-
-  buttonContainer: {
-    backgroundColor: '#4630eb',
-    borderRadius: 4,
-    padding: 12,
-    marginVertical: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#ffffff',
-    fontSize: 16,
   },
 
   headingText: {

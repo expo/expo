@@ -14,6 +14,10 @@
 - (void)deleteNotificationCategoryWithCategoryId:(NSString *)categoryId
                                          resolve:(UMPromiseResolveBlock)resolve 
                                           reject:(UMPromiseRejectBlock)reject;
+- (NSMutableDictionary *)serializeCategory:(UNNotificationCategory *)category;
+- (UNNotificationCategory *)createCategoryWithId:(NSString*)categoryId
+                                         actions:(NSArray *)actions
+                                         options:(NSDictionary *)options;
 - (NSMutableDictionary *)serializeCategoryOptions:(UNNotificationCategory *)category;
 - (NSMutableArray *)serializeActions:(NSArray<UNNotificationAction *>*)actions;
 - (NSMutableDictionary *)serializeActionOptions:(NSUInteger)options;

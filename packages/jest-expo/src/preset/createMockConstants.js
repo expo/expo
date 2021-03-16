@@ -30,6 +30,7 @@ module.exports = function createMockConstants() {
       extra: expoConfig.extra,
       hostUri: mockHostUri,
       sdkVersion: mockSdkVersion,
+      scheme: expoConfig.scheme,
     },
   };
 };

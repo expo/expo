@@ -28,28 +28,7 @@ Then you can start to configure the native projects using steps below.
 
 ## 🤖 Android
 
-1.  Add the `dev-menu` to the android project.
-
-    I. Open `settings.gradle` and add the following lines:
-
-    ```gradle
-    include(":expo-dev-menu")
-    project(":expo-dev-menu").projectDir = new File("../node_modules/expo-dev-menu/android")
-    ```
-
-    II. Go to the `build.gradle` of your application and add `expo-dev-menu` as a dependency:
-
-    ```gradle
-    dependencies {
-      ...
-      implementation project(":expo-dev-menu")
-      ...
-    }
-    ```
-
-    > _Note_: You don't have to use `implementationDebug` to add `expo-dev-menu` only to the debug builds. This package will be removed from the release build automatically.
-
-2.  Set up the `DevMenuManager` in the native code.
+1.  Set up the `DevMenuManager` in the native code.
 
     You can do it in two ways. We recommend using the basic initialization. However, if you have the custom activity in your application, then the advanced one will be more suitable for you.
 
@@ -219,7 +198,7 @@ Then you can start to configure the native projects using steps below.
    ```objc
    ...
    // Firstly, you need to import EXDevMenu package.
-   #if __has_include(<EXDevMenu/EXDevMenu-umbrella.h>)
+   #if defined(EX_DEV_MENU_ENABLED)
    @import EXDevMenu;
    #endif
    ...
@@ -234,7 +213,7 @@ Then you can start to configure the native projects using steps below.
                                                       moduleName:@"devMenuDemo"
                                                initialProperties:nil];
      // Add those lines.
-     #if __has_include(<EXDevMenu/EXDevMenu-umbrella.h>)
+     #if defined(EX_DEV_MENU_ENABLED)
      [DevMenuManager configureWithBridge:bridge];
      #endif
    }
@@ -249,8 +228,8 @@ Then you can start to configure the native projects using steps below.
    ```swift
    ...
    // Firstly, you need to import EXDevMenu package.
-   #if canImport(EXDevMenu)
-   import EXDevMenu
+   #if EX_DEV_MENU_ENABLED
+   @import EXDevMenu
    #endif
    ...
 
@@ -262,7 +241,7 @@ Then you can start to configure the native projects using steps below.
        if let bridge = RCTBridge(delegate: self, launchOptions: launchOptions) {
          ...
          // Add those lines.
-         #if canImport(EXDevMenu)
+         #if EX_DEV_MENU_ENABLED
          DevMenuManager.configure(withBridge: bridge)
          #endif
        }

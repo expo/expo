@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
+import androidx.annotation.Nullable;
 import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.UpdatesUtils;
 import expo.modules.updates.db.entity.AssetEntity;
@@ -60,6 +61,14 @@ public class BareManifest implements Manifest {
     return new BareManifest(manifestJson, id, configuration.getScopeKey(), commitTime, runtimeVersion, metadata, assets);
   }
 
+  public @Nullable JSONObject getServerDefinedHeaders() {
+    return null;
+  }
+
+  public @Nullable JSONObject getManifestFilters() {
+    return null;
+  }
+
   public JSONObject getRawManifestJson() {
     return mManifestJson;
   }
@@ -77,7 +86,9 @@ public class BareManifest implements Manifest {
   public ArrayList<AssetEntity> getAssetEntityList() {
     ArrayList<AssetEntity> assetList = new ArrayList<>();
 
-    AssetEntity bundleAssetEntity = new AssetEntity("bundle-" + mCommitTime.getTime(), "js");
+    // use unsanitized id value from manifest
+    String bundleKey = "bundle-" + mManifestJson.optString("id", mId.toString());
+    AssetEntity bundleAssetEntity = new AssetEntity(bundleKey, "js");
     bundleAssetEntity.isLaunchAsset = true;
     bundleAssetEntity.embeddedAssetFilename = EmbeddedLoader.BARE_BUNDLE_FILENAME;
     assetList.add(bundleAssetEntity);

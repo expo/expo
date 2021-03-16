@@ -14,9 +14,11 @@ const Alert = optionalRequire(() => require('../screens/AlertScreen'));
 const AppAuth = optionalRequire(() => require('../screens/AppAuthScreen'));
 const Appearance = optionalRequire(() => require('../screens/AppearanceScreen'));
 const AppleAuthentication = optionalRequire(() => require('../screens/AppleAuthenticationScreen'));
+const AsyncStorage = optionalRequire(() => require('../screens/AsyncStorageScreen'));
 const Audio = optionalRequire(() => require('../screens/AV/AudioScreen'));
 const AuthSession = optionalRequire(() => require('../screens/AuthSession/AuthSessionScreen'));
 const BackgroundFetch = optionalRequire(() => require('../screens/BackgroundFetchScreen'));
+const BackgroundLocation = optionalRequire(() => require('../screens/BackgroundLocationMapScreen'));
 const Battery = optionalRequire(() => require('../screens/BatteryScreen'));
 const Branch = optionalRequire(() => require('../screens/BranchScreen'));
 const Brightness = optionalRequire(() => require('../screens/BrightnessScreen'));
@@ -28,6 +30,7 @@ const ContactDetail = optionalRequire(() => require('../screens/Contacts/Contact
 const Contacts = optionalRequire(() => require('../screens/Contacts/ContactsScreen'));
 const Device = optionalRequire(() => require('../screens/DeviceScreen'));
 const DocumentPicker = optionalRequire(() => require('../screens/DocumentPickerScreen'));
+const Errors = optionalRequire(() => require('../screens/ErrorScreen'));
 const Events = optionalRequire(() => require('../screens/EventsScreen'));
 const FacebookLogin = optionalRequire(() => require('../screens/FacebookLoginScreen'));
 const FaceDetector = optionalRequire(() => require('../screens/FaceDetectorScreen'));
@@ -87,8 +90,10 @@ const optionalScreens: {
   AppAuth,
   Appearance,
   AppleAuthentication,
+  AsyncStorage,
   Audio,
   AuthSession,
+  BackgroundLocation,
   BackgroundFetch,
   Battery,
   Branch,
@@ -108,6 +113,7 @@ const optionalScreens: {
   Constants,
   Contacts,
   ContactDetail,
+  Errors,
   Events,
   ImageManipulator,
   ImagePicker,

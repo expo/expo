@@ -27,6 +27,7 @@
 				<string>msauth.dev.expo.Payments</string>
 				<string>com.googleusercontent.apps.29635966244-v8mbqt2mtno71thelt7f2i6pob104f6e</string>
 				<string>dev.expo.Payments</string>
+				<string>expo-dev-menu</string>
 			</array>
 		</dict>
 		<dict>
@@ -75,6 +76,8 @@
 	<string>Give bare-expo periences permission to access your photos</string>
 	<key>NSRemindersUsageDescription</key>
 	<string>Allow bare-expo to access your reminders</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Allow Expo projects to use data for tracking the user or the device</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

@@ -9,9 +9,6 @@
     "platforms": ["android", "ios", "web"],
     "ios": {
       "bundleIdentifier": "io.expo.testsuite"
-    },
-    "android": {
-      "useNextNotificationsApi": true
     }
   }
 }

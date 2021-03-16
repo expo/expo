@@ -53,15 +53,6 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
   }
 
   @ExpoMethod
-  public void setAutoInitEnabledAsync(final Boolean enabled, final Promise promise) {
-    FacebookSdk.setAutoInitEnabled(enabled);
-    if (enabled) {
-      FacebookSdk.fullyInitialize();
-    }
-    promise.resolve(null);
-  }
-
-  @ExpoMethod
   public void setAdvertiserIDCollectionEnabledAsync(final Boolean enabled, Promise promise) {
     FacebookSdk.setAdvertiserIDCollectionEnabled(enabled);
     promise.resolve(null);

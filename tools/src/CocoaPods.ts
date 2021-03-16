@@ -1,3 +1,4 @@
+import { StdioOptions } from 'child_process';
 import { spawnAsync, spawnJSONCommandAsync } from './Utils';
 
 /**
@@ -9,11 +10,14 @@ export type Podspec = {
   platforms: Record<string, string>;
   source_files: string | string[];
   exclude_files: string | string[];
+  preserve_paths: string | string[];
   compiler_flags: string;
   frameworks: string | string[];
   pod_target_xcconfig: Record<string, string>;
+  xcconfig: Record<string, string>;
   dependencies: Record<string, any>;
   info_plist: Record<string, string>;
+  ios?: Podspec;
 };
 
 /**
@@ -23,19 +27,24 @@ export async function readPodspecAsync(podspecPath: string): Promise<Podspec> {
   return await spawnJSONCommandAsync('pod', ['ipc', 'spec', podspecPath]);
 }
 
-type PodInstallOptions = {
+type PodInstallOptions = Partial<{
   /**
    * Whether to use `--no-repo-update` flag.
    */
   noRepoUpdate: boolean;
-};
+
+  /**
+   * stdio passed to the child process.
+   */
+  stdio: StdioOptions;
+}>;
 
 /**
  * Installs pods under given project path.
  */
 export async function podInstallAsync(
   projectPath: string,
-  options: PodInstallOptions = { noRepoUpdate: false }
+  options: PodInstallOptions = { noRepoUpdate: false, stdio: 'pipe' }
 ): Promise<void> {
   const args = ['install'];
 
@@ -44,5 +53,6 @@ export async function podInstallAsync(
   }
   await spawnAsync('pod', args, {
     cwd: projectPath,
+    stdio: options.stdio ?? 'pipe',
   });
 }

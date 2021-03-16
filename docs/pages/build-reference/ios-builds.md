@@ -18,7 +18,7 @@ The first phase happens on your computer. EAS CLI is in charge of completing the
    - Depending on the value of `builds.ios.PROFILE_NAME.credentialsSource`, the credentials are obtained from either the local `credentials.json` file or from the EAS servers. If the `auto` or `remote` mode is selected but no credentials exist yet, you're offered to generate them.
 
 3. **Generic** projects require an additional step: check whether the Xcode project is configured to be buildable on the EAS servers (i.e. ensure the correct bundle identifier and Apple Team ID are set).
-4. Create the tarball containing all your project sources - run `git archive --format=tar.gz --prefix project/ -o project.tar.gz HEAD`.
+4. Create the tarball containing shallow clone of your local repository (`git clone --depth 1 ...`).
 5. Upload the project tarball to a private AWS S3 bucket and send the build request to EAS Build.
 
 ### Remote Steps

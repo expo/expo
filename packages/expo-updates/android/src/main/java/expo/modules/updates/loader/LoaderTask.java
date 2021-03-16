@@ -6,6 +6,8 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
 
+import org.json.JSONObject;
+
 import java.io.File;
 
 import androidx.annotation.Nullable;
@@ -19,6 +21,7 @@ import expo.modules.updates.launcher.DatabaseLauncher;
 import expo.modules.updates.launcher.Launcher;
 import expo.modules.updates.launcher.SelectionPolicy;
 import expo.modules.updates.manifest.Manifest;
+import expo.modules.updates.manifest.ManifestMetadata;
 
 public class LoaderTask {
 
@@ -224,7 +227,8 @@ public class LoaderTask {
       // so we can launch it
       UpdateEntity embeddedUpdate = EmbeddedLoader.readEmbeddedManifest(context, mConfiguration).getUpdateEntity();
       UpdateEntity launchableUpdate = launcher.getLaunchableUpdate(database, context);
-      if (mSelectionPolicy.shouldLoadNewUpdate(embeddedUpdate, launchableUpdate)) {
+      JSONObject manifestFilters = ManifestMetadata.getManifestFilters(database, mConfiguration);
+      if (mSelectionPolicy.shouldLoadNewUpdate(embeddedUpdate, launchableUpdate, manifestFilters)) {
         new EmbeddedLoader(context, mConfiguration, database, mDirectory).loadEmbeddedUpdate();
       }
     }
@@ -261,7 +265,8 @@ public class LoaderTask {
           public boolean onManifestLoaded(Manifest manifest) {
             if (mSelectionPolicy.shouldLoadNewUpdate(
                   manifest.getUpdateEntity(),
-                  mCandidateLauncher == null ? null : mCandidateLauncher.getLaunchedUpdate())) {
+                  mCandidateLauncher == null ? null : mCandidateLauncher.getLaunchedUpdate(),
+                  manifest.getManifestFilters())) {
               mIsUpToDate = false;
               mCallback.onRemoteManifestLoaded(manifest);
               return true;

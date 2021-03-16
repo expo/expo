@@ -136,6 +136,8 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
 
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
+  [super setModuleRegistry:moduleRegistry];
+  
   id<UMAppLifecycleService> appLifecycleService = [moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)];
   [appLifecycleService registerAppLifecycleListener:self];
 }
