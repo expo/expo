@@ -87,6 +87,16 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
         find: /@objc\(([^)]+)\)/g,
         replaceWith: `@objc(${prefix}$1)`,
       },
+      {
+        paths: '*.podspec.json',
+        find: new RegExp(`${prefix}React-${prefix}RCT`, 'g'),
+        replaceWith: `${prefix}React-RCT`,
+      },
+      {
+        paths: '*.podspec.json',
+        find: new RegExp(`${prefix}React-Core\\/${prefix}RCT`, 'g'),
+        replaceWith: `${prefix}React-Core/RCT`,
+      },
     ],
   };
 }
