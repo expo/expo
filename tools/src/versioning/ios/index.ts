@@ -28,7 +28,6 @@ const EXTERNAL_REACT_ABI_DEPENDENCIES = [
   'AppAuth',
   'FBAudienceNetwork',
   'FBSDKCoreKit',
-  'FBSDKLoginKit',
   'GoogleSignIn',
   'GoogleMaps',
   'Google-Maps-iOS-Utils',
