@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Wrap native bundle script error in regex. ([#12185](https://github.com/expo/expo/pull/12185) by [@EvanBacon](https://github.com/EvanBacon))
+- add method to read stringified requestHeaders. ([#12229](https://github.com/expo/expo/pull/12229) by [@jkhales](https://github.com/jkhales))
 
 ### 🐛 Bug fixes
 
