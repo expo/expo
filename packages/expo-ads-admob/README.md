@@ -32,6 +32,13 @@ In your app's `Info.plist` file, add a `GADApplicationIdentifier` key with a str
 <string>ca-app-pub-3940256099942544~1458002511</string>
 ```
 
+Add `NSUserTrackingUsageDescription` key to your `Info.plist`:
+
+```xml
+<key>NSUserTrackingUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to use data for tracking the user or the device</string>
+```
+
 ### Configure for Android
 
 Ensure that there is a `meta-data` element inside the `application` node inside `AndroidManifest.xml` file (located typically under `/android/app/src/main/AndroidManifest.xml`) with `android:name` of `"com.google.android.gms.ads.APPLICATION_ID"` and a value of your AdMob App ID. Google's Mobile Ads SDK documentation shows precisely how to do this [here](https://developers.google.com/admob/android/quick-start#update_your_androidmanifestxml). In the end your `AndroidManifest.xml` should look more or less like this:
