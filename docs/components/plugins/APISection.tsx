@@ -60,96 +60,109 @@ const resolveTypeName = (typeEntry: object): string | JSX.Element => {
 };
 
 const renderMethod = (methodEntry: object): JSX.Element =>
-  methodEntry.signatures.map((signature) => (
+  methodEntry.signatures.map(signature => {
+    const { name, parameters, comment, type } = signature;
+    return (
+      <>
+        <H3>
+          <InlineCode>{name}()</InlineCode>
+        </H3>
+        {parameters ? <H4>Arguments</H4> : null}
+        {parameters ? (
+          <UL>
+            {parameters?.map(p => (
+              <LI>
+                <InlineCode>
+                  {p.name}: {resolveTypeName(p.type)}
+                </InlineCode>
+              </LI>
+            ))}
+          </UL>
+        ) : null}
+        {comment?.shortText ? (
+          <ReactMarkdown renderers={renderers}>{comment.shortText}</ReactMarkdown>
+        ) : null}
+        <br />
+        {comment?.returns ? <H4>Returns</H4> : null}
+        {comment?.returns ? (
+          <UL>
+            <LI returnType>
+              <InlineCode>{resolveTypeName(type)}</InlineCode>
+            </LI>
+          </UL>
+        ) : null}
+        {comment?.returns ? (
+          <ReactMarkdown renderers={renderers}>{comment.returns}</ReactMarkdown>
+        ) : null}
+        <hr />
+      </>
+    );
+  });
+
+const renderEnum = (enumEntry: object): JSX.Element => {
+  const { name, children, comment } = enumEntry;
+  return (
     <>
       <H3>
-        <InlineCode>{signature.name}()</InlineCode>
+        <InlineCode>{name}</InlineCode>
       </H3>
-      {signature.parameters ? <H4>Arguments</H4> : null}
-      {signature.parameters ? (
-        <UL>
-          {signature.parameters?.map(p => (
-            <LI>
-              <InlineCode>
-                {p.name}: {resolveTypeName(p.type)}
-              </InlineCode>
-            </LI>
-          ))}
-        </UL>
-      ) : null}
-      {signature.comment?.shortText ? (
-        <ReactMarkdown renderers={renderers}>{signature.comment.shortText}</ReactMarkdown>
-      ) : null}
-      <br />
-      {signature.comment?.returns ? <H4>Returns</H4> : null}
-      {signature.comment?.returns ? (
-        <UL><LI returnType><InlineCode>{resolveTypeName(signature.type)}</InlineCode></LI></UL>
-      ) : null}
-      {signature.comment?.returns ? (
-        <ReactMarkdown renderers={renderers}>{signature.comment.returns}</ReactMarkdown>
-      ) : null}
-      <hr/>
-    </>
-  ));
-
-const renderEnum = (enumEntry: object): JSX.Element => (
-  <>
-    <H3>
-      <InlineCode>{enumEntry.name}</InlineCode>
-    </H3>
-    <UL>
-      {enumEntry.children.map(enumValue => (
-        <LI key={enumValue.name}>
-          <InlineCode>
-            {enumEntry.name}.{enumValue.name}
-          </InlineCode>
-          {enumEntry.comment ? ` - ${enumEntry.comment.shortText}` : null}
-        </LI>
-      ))}
-    </UL>
-  </>
-);
-
-const renderType = (typeEntry: object): JSX.Element => (
-  <>
-    <H3>
-      <InlineCode>{typeEntry.name}</InlineCode>
-    </H3>
-    {typeEntry.comment ? (
-      <P><ReactMarkdown renderers={renderers}>{typeEntry.comment.shortText}</ReactMarkdown></P>
-    ) : null}
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          {/*<th>Optional</th>*/}
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-        {typeEntry.type.declaration.children.map(typeProperty => (
-          <tr key={typeProperty.name}>
-            <td>
-              <B>{typeProperty.name}</B>
-              {typeProperty.flags?.isOptional ? (
-                <>
-                  <br />
-                  <span css={STYLES_OPTIONAL}>(optional)</span>
-                </>
-              ) : null}
-            </td>
-            {/*<td>{typeProperty.flags?.isOptional ? <em>Yes</em> : <em>No</em>}</td>*/}
-            <td>
-              <InlineCode>{resolveTypeName(typeProperty.type)}</InlineCode>
-            </td>
-            <td>{typeProperty.comment ? typeProperty.comment.shortText : '-'}</td>
-          </tr>
+      <UL>
+        {children.map(enumValue => (
+          <LI key={enumValue.name}>
+            <InlineCode>
+              {name}.{enumValue.name}
+            </InlineCode>
+            {comment ? ` - ${comment.shortText}` : null}
+          </LI>
         ))}
-      </tbody>
-    </table>
-  </>
-);
+      </UL>
+    </>
+  );
+};
+
+const renderType = (typeEntry: object): JSX.Element => {
+  const { name, comment, type } = typeEntry;
+  return (
+    <>
+      <H3>
+        <InlineCode>{name}</InlineCode>
+      </H3>
+      {comment ? (
+        <P>
+          <ReactMarkdown renderers={renderers}>{comment.shortText}</ReactMarkdown>
+        </P>
+      ) : null}
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {type.declaration.children.map(typeProperty => (
+            <tr key={typeProperty.name}>
+              <td>
+                <B>{typeProperty.name}</B>
+                {typeProperty.flags?.isOptional ? (
+                  <>
+                    <br />
+                    <span css={STYLES_OPTIONAL}>(optional)</span>
+                  </>
+                ) : null}
+              </td>
+              <td>
+                <InlineCode>{resolveTypeName(typeProperty.type)}</InlineCode>
+              </td>
+              <td>{typeProperty.comment ? typeProperty.comment.shortText : '-'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
+  );
+};
 
 const processData = (packageName: string): JSX.Element => {
   const data = require('~/data/' + packageName + '.json');
@@ -158,11 +171,10 @@ const processData = (packageName: string): JSX.Element => {
   const types = data.children.filter(g => g.kind === 4194304);
   const enums = data.children.filter(g => g.kind === 4);
 
-  console.warn(methods[0]);
+  // TODO: Props, Constants, Static Methods and probably few more sections
 
   return (
     <>
-      {/*<H2>Props</H2>*/}
       {methods ? <H2>Methods</H2> : null}
       {methods ? methods.map(renderMethod) : null}
       {types ? <H2>Types</H2> : null}

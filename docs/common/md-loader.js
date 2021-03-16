@@ -5,7 +5,9 @@ module.exports = function(src) {
 
   return (
     `import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
+
 export const meta = ${JSON.stringify(attributes)}
+
 export default withDocumentationElements(meta);
 ` + body
   );
