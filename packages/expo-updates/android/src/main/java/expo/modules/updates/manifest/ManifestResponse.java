@@ -15,8 +15,9 @@ public class ManifestResponse {
     mResponse = response;
   }
 
+  @Nullable
   public String header(String name) {
-    return mResponse.header(name);
+    return this.header(name,null);
   }
 
   @Nullable
