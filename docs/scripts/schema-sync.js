@@ -5,6 +5,7 @@ yarn run schema-sync 38 -> updates the schema that versions/v38.0.0/sdk/app-conf
 yarn run schema-sync unversioned -> updates the schema that versions/unversioned/sdk/app-config.md uses
 */
 
+const parser = require('@apidevtools/json-schema-ref-parser');
 const axios = require('axios');
 const fs = require('fs-extra');
 const path = require('path');
@@ -19,9 +20,10 @@ async function run() {
   }
 
   if (version === 'unversioned') {
-    const { data } = await axios.get(
+    const response = await axios.get(
       `http://exp.host/--/api/v2/project/configuration/schema/UNVERSIONED`
     );
+    const schema = await preprocessSchema(response.data.data.schema);
 
     await fs.writeFile(
       `scripts/schemas/unversioned/app-config-schema.js`,
@@ -30,7 +32,7 @@ async function run() {
     );
     await fs.appendFile(
       `scripts/schemas/unversioned/app-config-schema.js`,
-      JSON.stringify(data.data.schema.properties),
+      JSON.stringify(schema.properties),
       'utf8'
     );
   } else {
@@ -50,11 +52,18 @@ async function fetchAndWriteSchema(version, staging) {
 
   const hostname = staging ? 'staging.exp.host' : 'exp.host';
 
-  const { data } = await axios.get(
+  const response = await axios.get(
     `http://${hostname}/--/api/v2/project/configuration/schema/${version}.0.0`
   );
+  const schema = await preprocessSchema(response.data.data.schema);
+
   await fs.writeFile(schemaPath, 'export default ', 'utf8');
-  await fs.appendFile(schemaPath, JSON.stringify(data.data.schema.properties), 'utf8');
+  await fs.appendFile(schemaPath, JSON.stringify(schema.properties), 'utf8');
+}
+
+async function preprocessSchema(schema) {
+  // replace all $ref references with the actual definitions
+  return await parser.dereference(schema);
 }
 
 run();
