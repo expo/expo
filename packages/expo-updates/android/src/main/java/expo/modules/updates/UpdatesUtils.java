@@ -13,6 +13,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import org.apache.commons.io.FileUtils;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,7 +28,10 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Random;
 import java.util.TimeZone;
 
@@ -39,6 +43,17 @@ public class UpdatesUtils {
   private static final String TAG = UpdatesUtils.class.getSimpleName();
   private static final String UPDATES_DIRECTORY_NAME = ".expo-internal";
   private static final String UPDATES_EVENT_NAME = "Expo.nativeUpdatesEvent";
+
+  public static Map<String,String> getMapFromStringifiedJSON(String stringifiedJSON) throws Exception {
+    JSONObject jsonObject = new JSONObject(stringifiedJSON);
+    Iterator<String> keys = jsonObject.keys();
+    Map<String, String> newMap = new HashMap<>();
+    while(keys.hasNext()){
+      String key = keys.next();
+      newMap.put(key, (String) jsonObject.get(key));
+    }
+    return newMap;
+  }
 
   public static File getOrCreateUpdatesDirectory(Context context) throws Exception {
     File updatesDirectory = new File(context.getFilesDir(), UPDATES_DIRECTORY_NAME);
