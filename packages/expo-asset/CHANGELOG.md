@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Removed annoying yellowbox warning message in bare workflow when there's no manifest available. ([#12237](https://github.com/expo/expo/pull/12237) by [@bbarthec](https://github.com/bbarthec))
+
 ## 8.3.0 — 2021-03-10
 
 ### 🐛 Bug fixes

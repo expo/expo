@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 import * as Logs from '../logs/Logs';
 import RemoteLogging from '../logs/RemoteLogging';
-if (Constants.manifest && Constants.manifest.logUrl) {
+if (Constants.__unsafeNoWarnManifest?.logUrl) {
     // Enable logging to the Expo dev tools only if this JS is not running in a web browser (ex: the
     // remote debugger). In Expo Web we don't show console logs in the CLI, so there's no special case needed.
     if (!isRunningInWebBrowser()) {
