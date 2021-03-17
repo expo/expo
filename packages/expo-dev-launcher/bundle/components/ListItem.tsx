@@ -1,22 +1,80 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Platform, Image } from 'react-native';
+
+import { MainText, SecondaryText } from './Text';
+import { MainView } from './Views';
 
 type Props = {
   title?: string;
+  subtitle?: string;
   onPress?: () => void;
+  onLongPress?: () => void;
   disabled?: boolean;
+  image?: number | string;
 };
 
 class ListItem extends React.PureComponent<Props> {
+  private renderTitle() {
+    const { title } = this.props;
+
+    return title ? (
+      <View style={styles.titleContainer}>
+        <MainText style={styles.titleText} ellipsizeMode="tail" numberOfLines={1}>
+          {title}
+        </MainText>
+      </View>
+    ) : (
+      undefined
+    );
+  }
+
+  private renderSubtitle() {
+    const { title, subtitle, image } = this.props;
+    const isCentered = !title && !image;
+
+    return subtitle ? (
+      <SecondaryText
+        style={[styles.subtitleText, isCentered ? styles.subtitleCentered : undefined]}
+        ellipsizeMode="tail"
+        numberOfLines={title ? 1 : 2}>
+        {subtitle}
+      </SecondaryText>
+    ) : (
+      undefined
+    );
+  }
+
+  private renderImage() {
+    const { image } = this.props;
+
+    const source = typeof image === 'number' ? image : { uri: image };
+    if (!image) {
+      return undefined;
+    }
+
+    return (
+      <View style={styles.imageContainer}>
+        <Image source={source} style={styles.image} />
+      </View>
+    );
+  }
+
   render() {
-    const { title, ...props } = this.props;
+    const { title, subtitle, ...props } = this.props;
 
     return (
       <TouchableOpacity {...props}>
-        <View style={styles.container}>
-          <Text style={styles.title}>{title}</Text>
-          {this.props.children}
-        </View>
+        <MainView style={styles.container}>
+          {this.renderImage()}
+          <View
+            style={[
+              styles.textContainer,
+              title && subtitle ? styles.textContainerBoth : undefined,
+            ]}>
+            {this.renderTitle()}
+            {this.renderSubtitle()}
+          </View>
+        </MainView>
       </TouchableOpacity>
     );
   }
@@ -25,17 +83,58 @@ class ListItem extends React.PureComponent<Props> {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 5,
-    paddingHorizontal: 20,
-    backgroundColor: '#f5f5f5',
-    marginBottom: 2,
-    marginTop: 2,
+    minHeight: 44,
+    paddingStart: 15,
+    borderBottomWidth: 1,
   },
-  title: {
-    paddingVertical: 10,
+
+  imageContainer: {
+    alignSelf: 'center',
+    borderRadius: 3,
+    marginEnd: 10,
+  },
+  image: {
+    backgroundColor: '#fff',
+    borderRadius: 3,
+    width: 54,
+    height: 54,
+  },
+
+  textContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
+  textContainerBoth: {
+    paddingTop: 13,
+    paddingBottom: 13,
+  },
+
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 2,
+  },
+  titleText: {
+    flex: 1,
     fontSize: 15,
+    ...Platform.select({
+      ios: {
+        fontWeight: '500',
+      },
+      android: {
+        fontWeight: '400',
+        marginTop: 1,
+      },
+    }),
+  },
+
+  subtitleText: {
+    fontSize: 13,
+  },
+  subtitleCentered: {
+    textAlign: 'center',
+    marginEnd: 10,
   },
 });
 

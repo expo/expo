@@ -1,43 +1,34 @@
 import React from 'react';
-import { Text, View, StyleSheet, TouchableHighlight } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 
-import { DevMenu } from '../DevMenu';
+import { openProfile, openMenu, openSettings } from '../DevMenu';
+import { MainText } from '../components/Text';
+import { MainView } from '../components/Views';
 
 type Props = {
   height: number;
 };
 
 export default class BottomTabs extends React.Component<Props, object> {
-  openProfile = () => DevMenu.openProfile?.();
-  openMenu = () => DevMenu.openMenu?.();
-  openSettings = () => DevMenu.openSettings?.();
-
   render() {
     return (
-      <View style={[styles.bottomTabsAbsoluteContainer, { height: this.props.height }]}>
+      <MainView style={[styles.bottomTabsAbsoluteContainer, { height: this.props.height }]}>
         <View style={styles.bottomTabsContainer}>
-          <TouchableHighlight
-            underlayColor="#ddd"
-            style={styles.bottomTabsItem}
-            onPress={this.openProfile}>
-            <Text style={styles.bottomTabsItemContent}>Profile</Text>
-          </TouchableHighlight>
+          <TouchableOpacity style={styles.bottomTabsItem} onPress={openProfile}>
+            <MainText style={styles.bottomTabsItemContent}>Profile</MainText>
+          </TouchableOpacity>
 
-          <TouchableHighlight
-            underlayColor="#ddd"
-            style={styles.bottomTabsItem}
-            onPress={this.openMenu}>
-            <Text style={styles.bottomTabsItemContent}>Menu</Text>
-          </TouchableHighlight>
+          <TouchableOpacity
+            style={[styles.bottomTabsItem, { borderLeftWidth: 0.5, borderRightWidth: 0.5 }]}
+            onPress={openMenu}>
+            <MainText style={styles.bottomTabsItemContent}>Menu</MainText>
+          </TouchableOpacity>
 
-          <TouchableHighlight
-            underlayColor="#ddd"
-            style={styles.bottomTabsItem}
-            onPress={this.openSettings}>
-            <Text style={styles.bottomTabsItemContent}>Settings</Text>
-          </TouchableHighlight>
+          <TouchableOpacity style={styles.bottomTabsItem} onPress={openSettings}>
+            <MainText style={styles.bottomTabsItemContent}>Settings</MainText>
+          </TouchableOpacity>
         </View>
-      </View>
+      </MainView>
     );
   }
 }
@@ -56,14 +47,11 @@ const styles = StyleSheet.create({
   },
   bottomTabsItem: {
     flexGrow: 1,
-    borderColor: 'rgba(0, 0, 0, 0.2)',
-    borderTopWidth: 0.8,
-    borderWidth: 0.3,
+    borderTopWidth: 0.5,
     justifyContent: 'center',
   },
   bottomTabsItemContent: {
     alignSelf: 'center',
-    color: '#000',
     fontSize: 12,
   },
 });

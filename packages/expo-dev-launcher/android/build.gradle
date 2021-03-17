@@ -82,8 +82,8 @@ dependencies {
 
   implementation 'commons-io:commons-io:2.6'
 
-  implementation("com.squareup.okhttp3:okhttp:3.14.9")
-  implementation 'com.google.code.gson:gson:2.8.5'
+  implementation 'com.squareup.okhttp3:okhttp:3.14.9'
+  implementation 'com.google.code.gson:gson:2.8.6'
 
   // Fixes
   // Cannot access 'androidx....' which is a supertype of 'expo.modules.devmenu.DevMenuActivity'.
@@ -92,7 +92,7 @@ dependencies {
   api "androidx.lifecycle:lifecycle-extensions:2.2.0"
 
   api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5")
   implementation "org.jetbrains.kotlin:kotlin-reflect:${safeExtGet('kotlinVersion', '1.4.21')}"
 }
