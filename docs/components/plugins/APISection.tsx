@@ -74,7 +74,7 @@ const renderMethod = (methodEntry: object): JSX.Element =>
         {parameters ? (
           <UL>
             {parameters?.map(p => (
-              <LI>
+              <LI key={`param-${p.name}`}>
                 <InlineCode>
                   {p.name}: {resolveTypeName(p.type)}
                 </InlineCode>

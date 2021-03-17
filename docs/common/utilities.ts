@@ -1,7 +1,7 @@
 import GithubSlugger from 'github-slugger';
 
 function hasChildren(node: React.ReactNode): node is React.ReactElement {
-  return (node as React.ReactElement)?.props?.children !== undefined;
+  return (node as React.ReactElement).props?.children !== undefined;
 }
 
 /**

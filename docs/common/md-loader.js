@@ -9,6 +9,7 @@ module.exports = function(src) {
 export const meta = ${JSON.stringify(attributes)}
 
 export default withDocumentationElements(meta);
+
 ` + body
   );
 };
