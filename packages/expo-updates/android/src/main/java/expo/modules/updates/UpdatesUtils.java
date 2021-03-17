@@ -50,11 +50,14 @@ public class UpdatesUtils {
     Map<String, String> newMap = new HashMap<>();
     while(keys.hasNext()){
       String key = keys.next();
+      String val;
       try{
-        newMap.put(key, (String) jsonObject.get(key));
+        val = (String) jsonObject.get(key);
       } catch (ClassCastException e){
         throw new Exception("The JSON must be string valued.");
       }
+      newMap.put(key, val);
+
     }
     return newMap;
   }
