@@ -13,6 +13,11 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🐛 Bug fixes
 
+ - **`expo`**
+  - Add manifest existence checks to avoid yellowbox warning on bare workflow. ([#12230](https://github.com/expo/expo/pull/12230) by [@mogery](https://github.com/mogery))
+ - **`expo-asset`**
+  - Add manifest existence checks to avoid yellowbox warning on bare workflow. ([#12230](https://github.com/expo/expo/pull/12230) by [@mogery](https://github.com/mogery))
+
 ## 41.0.0 — 2021-03-10
 
 ### 📚 3rd party library updates
