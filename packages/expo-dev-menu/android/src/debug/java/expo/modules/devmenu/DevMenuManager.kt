@@ -325,6 +325,10 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       ?.emit(eventName, eventData)
   }
 
+  override fun isInitialized(): Boolean {
+    return delegate !== null
+  }
+
   override fun serializedItems(): List<Bundle> = delegateRootMenuItems.map { it.serialize() }
 
   override fun serializedScreens(): List<Bundle> = delegateScreens.map { it.serialize() }

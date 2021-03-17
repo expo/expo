@@ -101,4 +101,9 @@ interface DevMenuManagerInterface {
    * Sends an event to the delegate's bridge if exists.
    */
   fun sendEventToDelegateBridge(eventName: String, eventData: Any?)
+
+  /**
+   * Whether delegate was initialized
+   */
+  fun isInitialized(): Boolean
 }
