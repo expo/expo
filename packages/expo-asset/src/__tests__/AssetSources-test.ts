@@ -188,6 +188,7 @@ function _mockConstants(constants: { [key: string]: any }): void {
     return {
       ...Constants,
       ...constants,
+      appOwnership: "standalone",
       manifest: { ...Constants.manifest, ...constants.manifest },
     };
   });

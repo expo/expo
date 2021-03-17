@@ -2,6 +2,7 @@ import { NativeModulesProxy } from '@unimodules/core';
 import computeMd5 from 'blueimp-md5';
 import Constants from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
+import * as Updates from 'expo-updates';
 
 import { getManifestBaseUrl } from './AssetUris';
 
@@ -30,7 +31,13 @@ export function getLocalAssets() {
 }
 
 export function getManifest(): { [key: string]: any } {
-  return Constants.manifest ?? {};
+  if (IS_MANAGED_ENV) {
+    return Constants.manifest ?? {};
+  } else if (IS_BARE_ENV_WITH_UPDATES) {
+    return Updates.manifest ?? {};
+  } else {
+    return {};
+  }
 }
 
 // Compute manifest base URL if available
