@@ -8931,15 +8931,6 @@ expo-three@5.2.0:
     color-temperature "0.2.7"
     expo-asset-utils "^1.0.0"
 
-expo-updates@^0.4.2:
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/expo-updates/-/expo-updates-0.4.2.tgz#15862bc209fa3fb98d3fa16b7aac4edfcc33f182"
-  integrity sha512-89bvwemgmWWPGAHHnzSFCryWW3TmPNozcShwi7976KAlNcXM7Aitv7uifxtkdBt85TECFm5N6LY278psjyt8Dg==
-  dependencies:
-    "@expo/metro-config" "^0.1.16"
-    fbemitter "^2.1.1"
-    uuid "^3.4.0"
-
 express@4.16.4:
   version "4.16.4"
   resolved "https://registry.yarnpkg.com/express/-/express-4.16.4.tgz#fddef61926109e24c515ea97fd2f1bdbf62df12e"
