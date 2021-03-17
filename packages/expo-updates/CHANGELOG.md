@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- remove UPDATES_CONFIGURATION_USES_LEGACY_MANIFEST_KEY constant. ([#12181](https://github.com/expo/expo/pull/12181) by [@jkhales](https://github.com/jkhales))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
@@ -17,8 +19,6 @@
 ### 🛠 Breaking changes
 
 - Dropped support for iOS 10.0 ([#11344](https://github.com/expo/expo/pull/11344) by [@tsapeta](https://github.com/tsapeta))
-- remove UPDATES_CONFIGURATION_USES_LEGACY_MANIFEST_KEY constant. ([#12181](https://github.com/expo/expo/pull/12181) by [@jkhales](https://github.com/jkhales))
-
 
 ### 🎉 New features
 
