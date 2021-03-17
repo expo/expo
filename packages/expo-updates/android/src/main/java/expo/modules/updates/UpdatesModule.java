@@ -14,6 +14,9 @@ import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
 
+// this unused import must stay because of versioning
+import expo.modules.updates.UpdatesConfiguration;
+
 import androidx.annotation.Nullable;
 import expo.modules.updates.db.DatabaseHolder;
 import expo.modules.updates.db.entity.AssetEntity;
