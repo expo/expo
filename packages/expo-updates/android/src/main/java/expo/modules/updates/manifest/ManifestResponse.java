@@ -17,7 +17,7 @@ public class ManifestResponse {
 
   @Nullable
   public String header(String name) {
-    return this.header(name,null);
+    return mResponse.header(name);
   }
 
   @Nullable

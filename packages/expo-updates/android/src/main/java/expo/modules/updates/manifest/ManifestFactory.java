@@ -14,7 +14,7 @@ public class ManifestFactory {
 
     if (expoProtocolVersion == null) {
       return LegacyManifest.fromLegacyManifestJson(manifestJson, configuration);
-    } else if ( Integer.valueOf(expoProtocolVersion) == 0) {
+    } else if (Integer.valueOf(expoProtocolVersion) == 0) {
       return NewManifest.fromManifestJson(manifestJson, httpResponse, configuration);
     } else {
       throw new Exception("Unsupported expo-protocol-version: " + expoProtocolVersion);
