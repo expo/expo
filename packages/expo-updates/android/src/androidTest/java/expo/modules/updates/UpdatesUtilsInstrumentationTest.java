@@ -1,6 +1,5 @@
 package expo.modules.updates;
 
-import org.json.JSONException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,7 +12,6 @@ import java.util.Map;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import static expo.modules.updates.UpdatesUtils.getMapFromStringifiedJSON;
-import static org.hamcrest.CoreMatchers.is;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class UpdatesUtilsInstrumentationTest {
@@ -37,7 +35,7 @@ public class UpdatesUtilsInstrumentationTest {
   @Test
   public void testGetMapFromStringifiedJSON_empty() throws Exception {
     Map<String,String> emptyMap = getMapFromStringifiedJSON("{}");
-    Assert.assertThat(emptyMap, is(new HashMap<>()));
+    Assert.assertEquals(emptyMap, new HashMap<>());
   }
 
   @Test
@@ -46,7 +44,7 @@ public class UpdatesUtilsInstrumentationTest {
     expected.put("expo-channel-name","main");
 
     Map<String,String> emptyMap = getMapFromStringifiedJSON("{'expo-channel-name':'main'}");
-    Assert.assertThat(emptyMap, is(expected));
+    Assert.assertEquals(emptyMap, expected);
   }
 
   @Test(expected = Exception.class)
