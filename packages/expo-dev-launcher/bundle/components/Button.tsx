@@ -1,18 +1,23 @@
 import React from 'react';
 import { Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-export default ({ label, onPress }) => (
-  <TouchableOpacity style={styles.buttonContainer} onPress={onPress}>
-    <Text style={styles.buttonText}>{label}</Text>
-  </TouchableOpacity>
-);
+import Colors from '../constants/Colors';
+import { useThemeName } from '../hooks/useThemeName';
 
+export default ({ label, onPress }) => {
+  const themeName = useThemeName();
+  const backgroundColor = themeName === 'dark' ? Colors.dark.tint : Colors.light.tint;
+
+  return (
+    <TouchableOpacity style={[styles.buttonContainer, { backgroundColor }]} onPress={onPress}>
+      <Text style={styles.buttonText}>{label}</Text>
+    </TouchableOpacity>
+  );
+};
 const styles = StyleSheet.create({
   buttonContainer: {
-    backgroundColor: '#4630eb',
     borderRadius: 4,
     padding: 12,
-    marginVertical: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },
