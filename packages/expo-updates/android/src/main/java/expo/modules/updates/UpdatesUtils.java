@@ -50,7 +50,7 @@ public class UpdatesUtils {
     Map<String, String> newMap = new HashMap<>();
     while(keys.hasNext()){
       String key = keys.next();
-      newMap.put(key, jsonObject.get(key).toString());
+      newMap.put(key, (String) jsonObject.get(key));
     }
     return newMap;
   }

@@ -48,13 +48,14 @@ public class UpdatesUtilsInstrumentationTest {
     Assert.assertThat(emptyMap, is(expected));
   }
 
-  @Test
-  public void testGetMapFromStringifiedJSON_stringifiesUnexpectedValue() throws Exception {
-    Map<String, String> expected = new HashMap<>();
-    expected.put("expo-channel-name","[\"main\"]");
+  @Test(expected = Exception.class)
+  public void testGetMapFromStringifiedJSON_throwsIntegerValue() throws Exception {
+    getMapFromStringifiedJSON("{'expo-channel-name': 5}");
+  }
 
-    Map<String,String> emptyMap = getMapFromStringifiedJSON("{'expo-channel-name':['main']}");
-    Assert.assertThat(emptyMap, is(expected));
+  @Test(expected = Exception.class)
+  public void testGetMapFromStringifiedJSON_throwsNonStringValue() throws Exception {
+    getMapFromStringifiedJSON("{'expo-channel-name':['main']}");
   }
 
   @Test(expected = Exception.class)
