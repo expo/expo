@@ -38,6 +38,10 @@ android {
   }
 
   buildTypes {
+    buildTypes.each {
+      it.buildConfigField 'String', 'VERSION', "\"${defaultConfig.versionName}\""
+    }
+
     releaseWithDevLauncher {
       initWith release
       matchingFallbacks = ['release', 'debug']

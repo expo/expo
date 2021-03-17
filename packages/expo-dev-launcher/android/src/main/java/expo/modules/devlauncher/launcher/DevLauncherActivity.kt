@@ -60,15 +60,20 @@ class DevLauncherActivity : ReactActivity(), ReactInstanceManager.ReactInstanceE
 
   override fun onReactContextInitialized(context: ReactContext) {
     reactInstanceManager.removeReactInstanceEventListener(this)
+    setUpDevMenuDelegateIfPresent(context)
+  }
 
-    val devMenuManagerProvider = context.catalystInstance.nativeModules.find { nativeModule ->
-      nativeModule is DevMenuManagerProviderInterface
-    } as? DevMenuManagerProviderInterface
+  private fun setUpDevMenuDelegateIfPresent(context: ReactContext) {
+    DevLauncherController.instance.maybeInitDevMenuDelegate(context)
 
-    val devMenuManager = devMenuManagerProvider?.getDevMenuManager() ?: return
-    devMenuManager.initializeWithReactNativeHost(reactNativeHost)
+    val devMenuManagerProvider = context
+      .catalystInstance
+      .nativeModules
+      .find { nativeModule ->
+        nativeModule is DevMenuManagerProviderInterface
+      } as? DevMenuManagerProviderInterface
 
-    this.devMenuManager = devMenuManager
+    this.devMenuManager = devMenuManagerProvider?.getDevMenuManager()
   }
 
   private val isSimulator

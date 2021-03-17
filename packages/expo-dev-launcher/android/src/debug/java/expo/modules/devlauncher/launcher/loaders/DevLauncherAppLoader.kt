@@ -10,6 +10,7 @@ import com.facebook.react.ReactActivity
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReactContext
+import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.helpers.injectDebugServerHost
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
@@ -46,6 +47,9 @@ abstract class DevLauncherAppLoader(
       require(appHost.reactInstanceManager.currentReactContext == null) { "App react context shouldn't be created before." }
       appHost.reactInstanceManager.addReactInstanceEventListener(object : ReactInstanceManager.ReactInstanceEventListener {
         override fun onReactContextInitialized(context: ReactContext) {
+          // App can be started from deep link.
+          // That's why, we maybe need to initialized dev menu here.
+          DevLauncherController.instance.maybeInitDevMenuDelegate(context)
           onReactContext(context)
           appHost.reactInstanceManager.removeReactInstanceEventListener(this)
           continuation!!.resume(true)
