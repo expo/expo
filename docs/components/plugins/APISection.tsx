@@ -1,14 +1,17 @@
 import { css } from '@emotion/core';
 import { theme } from '@expo/styleguide';
-import * as React from 'react';
+import React, { useContext } from 'react';
 import ReactMarkdown from 'react-markdown';
 
+import DocumentationPageContext from '~/components/DocumentationPageContext';
 import { InlineCode } from '~/components/base/code';
 import { InternalLink } from '~/components/base/link';
 import { UL, LI } from '~/components/base/list';
 import { B, P } from '~/components/base/paragraph';
 import { paragraph } from '~/components/base/typography';
 import { H2, H3, H4 } from '~/components/plugins/Headings';
+
+const LATEST_VERSION = `v${require('~/package.json').version}`;
 
 const STYLES_OPTIONAL = css`
   color: ${theme.text.secondary};
@@ -18,7 +21,6 @@ const STYLES_OPTIONAL = css`
 
 type Props = {
   packageName: string;
-  version?: string;
 };
 
 const renderers = {
@@ -186,6 +188,11 @@ const processData = (packageName: string, version: string = 'unversioned'): JSX.
   );
 };
 
-const APISection: React.FC<Props> = ({ packageName, version }) => processData(packageName, version);
+const APISection: React.FC<Props> = ({ packageName }) => {
+  const { version } = useContext(DocumentationPageContext);
+  const resolvedVersion =
+    version === 'unversioned' ? version : version === 'latest' ? LATEST_VERSION : version;
+  return processData(packageName, resolvedVersion);
+};
 
 export default APISection;
