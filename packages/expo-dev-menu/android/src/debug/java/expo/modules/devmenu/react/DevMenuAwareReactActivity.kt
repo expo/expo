@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.MotionEvent
 import com.facebook.react.ReactActivity
-import com.facebook.react.ReactNativeHost
 import expo.modules.devmenu.DevMenuManager
 
 /**
@@ -14,8 +13,7 @@ import expo.modules.devmenu.DevMenuManager
 abstract class DevMenuAwareReactActivity : ReactActivity() {
   override fun onPostCreate(savedInstanceState: Bundle?) {
     super.onPostCreate(savedInstanceState)
-    if (currentReactNative == null || currentReactNative != reactNativeHost) {
-      currentReactNative = reactNativeHost
+    if (!DevMenuManager.isInitialized()) {
       DevMenuManager.initializeWithReactNativeHost(reactNativeHost)
     } else {
       DevMenuManager.synchronizeDelegate()
@@ -29,16 +27,5 @@ abstract class DevMenuAwareReactActivity : ReactActivity() {
 
   override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
     return DevMenuManager.onKeyEvent(keyCode, event) || super.onKeyUp(keyCode, event)
-  }
-
-  override fun onDestroy() {
-    super.onDestroy()
-    currentReactNative = null
-  }
-
-  companion object {
-    @get:Synchronized
-    @set:Synchronized
-    var currentReactNative: ReactNativeHost? = null
   }
 }

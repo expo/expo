@@ -12,13 +12,13 @@ Pod::Spec.new do |s|
   s.homepage       = package['homepage']
   s.platform       = :ios, '11.0'
   s.swift_version  = '5.2'
-  s.source         = { :git => 'https://github.com/github_account/expo-development-client.git', :tag => '#{s.version}' }
+  s.source         = { :git => 'https://github.com/github_account/expo-development-client.git', :tag => "#{s.version}" }
   s.source_files   = 'ios/**/*.{h,m,swift,cpp}'
   s.preserve_paths = 'ios/**/*.{h,m,swift}'
   s.requires_arc   = true
   s.header_dir     = 'EXDevLauncher'
 
-  s.xcconfig = { 'GCC_PREPROCESSOR_DEFINITIONS' => 'EX_DEV_LAUNCHER_ENABLED=1', 'OTHER_SWIFT_FLAGS' => '-DEX_DEV_LAUNCHER_ENABLED=1' }
+  s.xcconfig = { 'GCC_PREPROCESSOR_DEFINITIONS' => "EX_DEV_LAUNCHER_ENABLED=1 EX_DEV_LAUNCHER_VERSION=#{s.version}", 'OTHER_SWIFT_FLAGS' => '-DEX_DEV_LAUNCHER_ENABLED=1' }
 
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }

@@ -19,6 +19,13 @@
 
 @import EXDevMenuInterface;
 
+#ifdef EX_DEV_LAUNCHER_VERSION
+#define STRINGIZE(x) #x
+#define STRINGIZE2(x) STRINGIZE(x)
+
+#define VERSION @ STRINGIZE2(EX_DEV_LAUNCHER_VERSION)
+#endif
+
 // Uncomment the below and set it to a React Native bundler URL to develop the launcher JS
 //#define DEV_LAUNCHER_URL "http://10.0.0.176:8090/index.bundle?platform=ios&dev=true&minify=false"
 
@@ -53,6 +60,13 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     [[RCTAsyncLocalStorage alloc] init],
     [[EXDevLauncherLoadingView alloc] init]
   ];
+}
+
++ (NSString * _Nullable)version {
+#ifdef VERSION
+  return VERSION;
+#endif
+  return nil;
 }
 
 #ifdef DEV_LAUNCHER_URL
@@ -124,12 +138,9 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   
   _launcherBridge = [[EXDevLauncherRCTBridge alloc] initWithDelegate:self launchOptions:_launchOptions];
   
-  id<DevMenuManagerProviderProtocol> devMenuManagerProvider = [_launcherBridge modulesConformingToProtocol:@protocol(DevMenuManagerProviderProtocol)].firstObject;
+  // Set up the `expo-dev-menu` delegate if menu is available
+  [self _maybeInitDevMenuDelegate:_launcherBridge];
   
-  if (devMenuManagerProvider) {
-    id<DevMenuManagerProtocol> devMenuManager = [devMenuManagerProvider getDevMenuManager];
-    devMenuManager.delegate = [[EXDevLauncherMenuDelegate alloc] initWithBridge:_launcherBridge];
-  }
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:_launcherBridge
                                                    moduleName:@"main"
                                             initialProperties:@{
@@ -176,7 +187,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 
 - (BOOL)_handleExternalDeepLink:(NSURL *)url options:(NSDictionary *)options
 {
-  if ([self _isAppRunning]) {
+  if ([self isAppRunning]) {
     return false;
   }
   
@@ -249,7 +260,8 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     }
     
     [self.delegate devLauncherController:self didStartWithSuccess:YES];
-    
+    [self _maybeInitDevMenuDelegate:_appBridge];
+
     [self _ensureUserInterfaceStyleIsInSyncWithViewController:_window.rootViewController];
 
     [[UIDevice currentDevice] setValue:@(orientation) forKey:@"orientation"];
@@ -262,7 +274,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   });
 }
 
-- (BOOL)_isAppRunning
+- (BOOL)isAppRunning
 {
   return [_appBridge isValid];
 }
@@ -310,6 +322,19 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   
   // change RN appearance
   RCTOverrideAppearancePreference(colorSchema);
+}
+
+- (void)_maybeInitDevMenuDelegate:(RCTBridge *)bridge
+{
+  static dispatch_once_t once;
+  dispatch_once(&once, ^{
+    id<DevMenuManagerProviderProtocol> devMenuManagerProvider = [bridge modulesConformingToProtocol:@protocol(DevMenuManagerProviderProtocol)].firstObject;
+    
+    if (devMenuManagerProvider) {
+      id<DevMenuManagerProtocol> devMenuManager = [devMenuManagerProvider getDevMenuManager];
+      devMenuManager.delegate = [[EXDevLauncherMenuDelegate alloc] initWithLauncherController:self];
+    }
+  });
 }
 
 @end
