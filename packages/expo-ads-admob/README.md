@@ -39,6 +39,8 @@ Add `NSUserTrackingUsageDescription` key to your `Info.plist`:
 <string>Allow $(PRODUCT_NAME) to use data for tracking the user or the device</string>
 ```
 
+Add the required `SKAdNetworkIdentifier` items to your `Info.plist`: [Google SKAdNetwork](https://developers.google.com/admob/ios/ios14#skadnetwork).
+
 ### Configure for Android
 
 Ensure that there is a `meta-data` element inside the `application` node inside `AndroidManifest.xml` file (located typically under `/android/app/src/main/AndroidManifest.xml`) with `android:name` of `"com.google.android.gms.ads.APPLICATION_ID"` and a value of your AdMob App ID. Google's Mobile Ads SDK documentation shows precisely how to do this [here](https://developers.google.com/admob/android/quick-start#update_your_androidmanifestxml). In the end your `AndroidManifest.xml` should look more or less like this:
