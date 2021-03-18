@@ -183,16 +183,7 @@ public class StripeModule extends ExportedModule {
       ArgCheck.notEmptyString(mPublicKey);
 
       mStripe.createCardToken(
-        new CardParams(
-          (String)cardData.get("number"),
-          new Integer((int)Math.round((Double)cardData.get("expMonth"))),
-          new Integer((int)Math.round((Double)cardData.get("expYear"))),
-          Converters.getValue(cardData, "cvc"),
-          Converters.getValue(cardData, "name"),
-          null,
-          Converters.getValue(cardData, "currency"),
-          null
-        ),
+        Converters.createCardParams(cardData),
         null,
         null,
         new ApiResultCallback<Token>() {

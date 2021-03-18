@@ -1,13 +1,9 @@
 package expo.modules.payments.stripe;
-import android.app.Activity;
-import android.util.Log;
-import android.content.Intent;
-import androidx.annotation.NonNull;
 
-import org.unimodules.core.Promise;
-import expo.modules.payments.stripe.util.ArgCheck;
-import expo.modules.payments.stripe.util.Converters;
-import expo.modules.payments.stripe.util.Fun0;
+import android.app.Activity;
+import android.content.Intent;
+import android.util.Log;
+
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -23,14 +19,21 @@ import com.google.android.gms.wallet.ShippingAddressRequirements;
 import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
-import com.stripe.android.model.Token;
 import com.stripe.android.Stripe;
+import com.stripe.android.model.Token;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.unimodules.core.Promise;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
-import org.json.JSONObject;
-import org.json.JSONException;
+
+import androidx.annotation.NonNull;
+import expo.modules.payments.stripe.util.ArgCheck;
+import expo.modules.payments.stripe.util.Converters;
+import expo.modules.payments.stripe.util.Fun0;
 
 import static expo.modules.payments.stripe.Errors.toErrorCode;
 import static expo.modules.payments.stripe.util.Converters.convertTokenToWritableMap;

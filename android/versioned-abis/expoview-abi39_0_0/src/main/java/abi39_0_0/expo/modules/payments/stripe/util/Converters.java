@@ -22,6 +22,7 @@ import com.stripe.android.model.Token;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -164,6 +165,34 @@ public class Converters {
     }
 
     return allowedCountriesForShipping;
+  }
+  
+  public static CardParams createCardParams(final Map<String, Object> cardData) {
+    Address address = new Address(
+      getValue(cardData, "addressCity"),
+      getValue(cardData, "country"),
+      getValue(cardData, "addressLine1"),
+      getValue(cardData, "addressLine2"),
+      getValue(cardData, "addressZip"),
+      getValue(cardData, "addressState")
+    );
+    Map <String, String> metaData = new HashMap<String, String>();
+    metaData.put("brand", getValue(cardData, "brand"));
+    metaData.put("last4", getValue(cardData, "last4"));
+    metaData.put("fingerprint", getValue(cardData, "fingerprint"));
+    metaData.put("funding", getValue(cardData, "funding"));
+    metaData.put("id", getValue(cardData, "id"));
+    return 
+      new CardParams(
+        (String)cardData.get("number"),
+        new Integer((int)Math.round((Double)cardData.get("expMonth"))),
+        new Integer((int)Math.round((Double)cardData.get("expYear"))),
+        getValue(cardData, "cvc"),
+        getValue(cardData, "name"),
+        address,
+        getValue(cardData, "currency"),
+        metaData
+      );
   }
 
   @NonNull

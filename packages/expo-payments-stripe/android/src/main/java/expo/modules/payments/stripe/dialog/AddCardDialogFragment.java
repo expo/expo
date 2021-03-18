@@ -1,38 +1,38 @@
 package expo.modules.payments.stripe.dialog;
 
-import androidx.annotation.NonNull;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.core.content.ContextCompat;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-import android.content.Context;
-import android.text.TextUtils;
 
 import com.devmarvel.creditcardentry.fields.SecurityCodeText;
 import com.devmarvel.creditcardentry.library.CreditCard;
 import com.devmarvel.creditcardentry.library.CreditCardForm;
-
-import org.unimodules.core.Promise;
-import expo.modules.payments.stripe.R;
-import expo.modules.payments.stripe.StripeModule;
-import expo.modules.payments.stripe.util.CardFlipAnimator;
-import expo.modules.payments.stripe.util.Converters;
-import expo.modules.payments.stripe.util.Utils;
-
 import com.stripe.android.ApiResultCallback;
 import com.stripe.android.model.Card;
 import com.stripe.android.model.Source;
 import com.stripe.android.model.SourceParams;
 import com.stripe.android.model.Token;
+
+import org.unimodules.core.Promise;
+
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import expo.modules.payments.stripe.R;
+import expo.modules.payments.stripe.StripeModule;
+import expo.modules.payments.stripe.util.CardFlipAnimator;
+import expo.modules.payments.stripe.util.Converters;
+import expo.modules.payments.stripe.util.Utils;
 
 
 /**

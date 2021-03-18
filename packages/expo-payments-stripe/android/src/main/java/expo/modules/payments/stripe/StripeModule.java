@@ -9,36 +9,35 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.text.TextUtils;
 
+import com.google.android.gms.wallet.WalletConstants;
+import com.stripe.android.ApiResultCallback;
+import com.stripe.android.Stripe;
+import com.stripe.android.model.Source;
+import com.stripe.android.model.Source.Flow;
+import com.stripe.android.model.SourceParams;
+import com.stripe.android.model.Token;
+
+import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ActivityEventListener;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.services.UIManager;
-import expo.modules.payments.stripe.dialog.AddCardDialogFragment;
-import expo.modules.payments.stripe.util.ArgCheck;
-import expo.modules.payments.stripe.util.Converters;
-import expo.modules.payments.stripe.util.Fun0;
-import com.google.android.gms.wallet.WalletConstants;
-import com.stripe.android.ApiResultCallback;
-import com.stripe.android.Stripe;
-import com.stripe.android.model.CardParams;
-import com.stripe.android.model.Source;
-import com.stripe.android.model.Source.Flow;
-import com.stripe.android.model.Source.Status;
-import com.stripe.android.model.SourceParams;
-import com.stripe.android.model.Token;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.unimodules.core.ExportedModule;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import expo.modules.payments.stripe.dialog.AddCardDialogFragment;
+import expo.modules.payments.stripe.util.ArgCheck;
+import expo.modules.payments.stripe.util.Converters;
+import expo.modules.payments.stripe.util.Fun0;
 
 import static expo.modules.payments.stripe.Errors.getDescription;
 import static expo.modules.payments.stripe.Errors.getErrorCode;
@@ -49,8 +48,8 @@ import static expo.modules.payments.stripe.util.Converters.createBankAccountToke
 import static expo.modules.payments.stripe.util.Converters.getStringOrNull;
 import static expo.modules.payments.stripe.util.InitializationOptions.ANDROID_PAY_MODE_KEY;
 import static expo.modules.payments.stripe.util.InitializationOptions.ANDROID_PAY_MODE_PRODUCTION;
-import static expo.modules.payments.stripe.util.InitializationOptions.PUBLISHABLE_KEY;
 import static expo.modules.payments.stripe.util.InitializationOptions.ANDROID_PAY_MODE_TEST;
+import static expo.modules.payments.stripe.util.InitializationOptions.PUBLISHABLE_KEY;
 
 public class StripeModule extends ExportedModule {
   private static final String META_DATA_SCHEME_KEY = "standaloneStripeScheme";
@@ -183,16 +182,7 @@ public class StripeModule extends ExportedModule {
       ArgCheck.notEmptyString(mPublicKey);
 
       mStripe.createCardToken(
-        new CardParams(
-          (String)cardData.get("number"),
-          new Integer((int)Math.round((Double)cardData.get("expMonth"))),
-          new Integer((int)Math.round((Double)cardData.get("expYear"))),
-          Converters.getValue(cardData, "cvc"),
-          Converters.getValue(cardData, "name"),
-          null,
-          Converters.getValue(cardData, "currency"),
-          null
-        ),
+        Converters.createCardParams(cardData),
         null,
         null,
         new ApiResultCallback<Token>() {
