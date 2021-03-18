@@ -43,7 +43,7 @@ public class UpdatesUtilsInstrumentationTest {
     Map<String, String> expected = new HashMap<>();
     expected.put("expo-channel-name","main");
 
-    Map<String,String> emptyMap = getMapFromStringifiedJSON("{'expo-channel-name':'main'}");
+    Map<String,String> emptyMap = getMapFromStringifiedJSON("{\"expo-channel-name\":\"main\"}");
     Assert.assertEquals(emptyMap, expected);
   }
 

@@ -54,7 +54,7 @@ public class UpdatesUtils {
       try{
         val = (String) jsonObject.get(key);
       } catch (ClassCastException e){
-        throw new Exception("The JSON must be string valued.");
+        throw new Exception("The values in the JSON object must be strings");
       }
       newMap.put(key, val);
 
