@@ -1,7 +1,7 @@
 import { MailComposerOptions, MailComposerResult } from './MailComposer.types';
 /**
  * Opens a mail modal for iOS and a mail app intent for Android and fills the fields with provided data. On iOS you will need to be signed into the Mail app.
- * @return Resolves to a promise with object containing status field that could be either sent, saved or cancelled. Android does not provide such info so it always resolves to sent.
+ * @return A promise fulfilled with an object containing a `status` field that specifies whether an email was sent, saved, or cancelled. Android does not provide this info, so the status is always set as if the email were sent.
  */
 export declare function composeAsync(options: MailComposerOptions): Promise<MailComposerResult>;
 /**
