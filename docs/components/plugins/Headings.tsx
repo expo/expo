@@ -23,7 +23,7 @@ const createHeading: CreateHeading = (Component, defaultLevel, type = HeadingTyp
 }) => {
   return (
     <Permalink nestingLevel={defaultLevel} additionalProps={{ sidebarType: type, ...props }}>
-      <Component type={type}>{children}</Component>
+      <Component>{children}</Component>
     </Permalink>
   );
 };
