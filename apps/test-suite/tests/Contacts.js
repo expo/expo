@@ -25,16 +25,6 @@ async function sortContacts(expect, sortField) {
   }
 }
 
-async function getContactAtIndex(index, fields) {
-  // Make sure the contact has a phone number to skip!
-  const { data } = await Contacts.getContactsAsync({
-    fields,
-    pageSize: 1,
-    pageOffset: index,
-  });
-  return data[0];
-}
-
 export async function test({ describe, it, xdescribe, jasmine, expect, afterAll, beforeAll }) {
   const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? xdescribe : describe;
@@ -212,6 +202,20 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll,
         });
 
         it('returns correct shape', async () => {
+          const contact = {
+            [Contacts.Fields.FirstName]: 'Eric',
+            [Contacts.Fields.LastName]: 'Cartman',
+            [Contacts.Fields.JobTitle]: 'Actor',
+            [Contacts.Fields.PhoneNumbers]: [
+              {
+                number: '123456789',
+                label: 'work',
+              },
+            ],
+          };
+
+          const newContactId = await createContact(contact);
+
           const {
             data,
             hasNextPage,
@@ -219,7 +223,7 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll,
             total,
             ...props
           } = await Contacts.getContactsAsync({
-            pageSize: 1,
+            id: newContactId,
           });
 
           // Test some constant values
@@ -232,10 +236,8 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll,
 
           expect(data.length).toBe(1);
           expect(hasPreviousPage).toBe(false);
-          //This could fail, if the device only has 1 contact
-          expect(hasNextPage).toBe(true);
-          //This could fail, if the device only has 1 contact
-          expect(total).toBeGreaterThan(1);
+          expect(hasNextPage).toBe(false);
+          expect(total).toEqual(1);
 
           // Nothing else.
           expect(Object.keys(props).length).toBe(0);
@@ -244,7 +246,6 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll,
           expect(data[0]).toEqual(
             jasmine.objectContaining({
               contactType: jasmine.any(String),
-              name: jasmine.any(String),
               id: jasmine.any(String),
             })
           );
@@ -252,10 +253,30 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll,
         });
 
         it('skips phone number if not asked', async () => {
-          const initialContact = await getContactAtIndex(0, [Contacts.Fields.PhoneNumbers]);
-          expect(initialContact.phoneNumbers).toBeDefined();
-          expect(initialContact.phoneNumbers.length).toBeGreaterThan(0);
-          expect(initialContact.phoneNumbers[0]).toEqual(
+          const fakeContactWithPhoneNumber = {
+            [Contacts.Fields.FirstName]: 'Eric',
+            [Contacts.Fields.LastName]: 'Cartman',
+            [Contacts.Fields.JobTitle]: 'Actor',
+            [Contacts.Fields.PhoneNumbers]: [
+              {
+                number: '123456789',
+                label: 'work',
+              },
+            ],
+          };
+
+          const newContactId = await createContact(fakeContactWithPhoneNumber);
+
+          const getWithPhone = await Contacts.getContactsAsync({
+            fields: [Contacts.Fields.PhoneNumbers],
+            id: newContactId,
+          });
+
+          const contactWithPhone = getWithPhone.data[0];
+
+          expect(contactWithPhone.phoneNumbers).toBeDefined();
+          expect(contactWithPhone.phoneNumbers.length).toBeGreaterThan(0);
+          expect(contactWithPhone.phoneNumbers[0]).toEqual(
             jasmine.objectContaining({
               id: jasmine.any(String),
               label: jasmine.any(String),
@@ -263,8 +284,13 @@ export async function test({ describe, it, xdescribe, jasmine, expect, afterAll,
             })
           );
 
-          const initialContactWithoutNumbers = await getContactAtIndex(0, []);
-          expect(initialContactWithoutNumbers.phoneNumbers).toBeUndefined();
+          const getWithoutPhone = await Contacts.getContactsAsync({
+            fields: [],
+            id: newContactId,
+          });
+
+          const contactWithoutPhone = getWithoutPhone.data[0];
+          expect(contactWithoutPhone.phoneNumbers).toBeUndefined();
         });
 
         it('respects the page size', async () => {

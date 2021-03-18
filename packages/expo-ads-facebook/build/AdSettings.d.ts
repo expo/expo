@@ -9,6 +9,10 @@ declare const _default: {
     requestPermissionsAsync(): Promise<PermissionResponse>;
     getPermissionsAsync(): Promise<PermissionResponse>;
     /**
+     * Sets whether Facebook SDK should enable advertising tracking.
+     */
+    setAdvertiserTrackingEnabled(enabled: boolean): void;
+    /**
      * Registers given device with `deviceHash` to receive test Facebook ads.
      */
     addTestDevice(deviceHash: string): void;

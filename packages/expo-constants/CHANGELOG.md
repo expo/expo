@@ -6,6 +6,15 @@
 
 ### 🎉 New features
 
+- Added new `Constants.__unsafeNoWarnManifest` property that behaves as `Constants.manifest` property, but suppresses warning upon no manifest available. ([#12237](https://github.com/expo/expo/pull/12237) by [@bbarthec](https://github.com/bbarthec))
+  > Warning: don't use this property, it's introduced for internal use only.
+
+### 🐛 Bug fixes
+
+## 10.1.0 — 2021-03-10
+
+### 🎉 New features
+
 - Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
 - Use `@expo/config-types` package for `ExpoConfig` type. ([#11810](https://github.com/expo/expo/pull/11810) by [@EvanBacon](https://github.com/EvanBacon))
 

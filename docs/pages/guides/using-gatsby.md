@@ -3,7 +3,7 @@ title: Using Gatsby with Expo for Web
 sidebar_title: Using Gatsby
 ---
 
-> Notice: Pre-rendering is an experimental feature with Expo so modules might not be fully optimized for Gatsby and the workflow is subject to breaking changes. If you find bugs please report them on [expo/expo](https://github.com/expo/expo/issues) with the `[Gatsby]` tag in the title.
+> Please open any issues related to Gatsby with Expo at [expo-cli/issues](https://github.com/expo/expo-cli/issues).
 
 - [Example](#example)
 - [🏁 Setup](#-setup)

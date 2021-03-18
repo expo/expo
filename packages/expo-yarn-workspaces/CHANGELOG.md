@@ -6,6 +6,12 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+## 1.4.0 — 2021-03-10
+
+### 🎉 New features
+
 - Extend `expo/metro-config`. ([#11912](https://github.com/expo/expo/pull/11912) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes

@@ -100,7 +100,7 @@
 
 - In `universe`, `cd server/www/xdl-schemas`.
 - `cp UNVERSIONED-schema.json XX.X.X-schema.json`
-- Commit and push to `master` in order to deploy to staging. It is also good to deploy to production, you can feel free to do this at any time as long as `www` is safe to deploy.
+- Commit and push to `main` in order to deploy to staging. It is also good to deploy to production, you can feel free to do this at any time as long as `www` is safe to deploy.
 
 ## 0.4. Update versions on staging
 

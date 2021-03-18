@@ -196,6 +196,7 @@ const sections = [
       'App Icons',
       'Create a Splash Screen',
       'Configuring the Status Bar',
+      'Light and Dark modes',
       'Authentication',
       'User Interface Component Libraries',
       'Preloading & Caching Assets',

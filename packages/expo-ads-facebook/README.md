@@ -25,6 +25,13 @@ expo install expo-ads-facebook
 
 Run `npx pod-install` after installing the npm package.
 
+Add `NSUserTrackingUsageDescription` key to your `Info.plist`:
+
+```xml
+<key>NSUserTrackingUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to use data for tracking the user or the device</string>
+```
+
 ### Configure for Android
 
 No additional set up necessary.

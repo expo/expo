@@ -5,6 +5,7 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.shell.MainReactPackage
 import expo.modules.devlauncher.DevLauncherPackage
 import expo.modules.devlauncher.R
+import expo.modules.devlauncher.helpers.findDevMenuPackage
 import expo.modules.devlauncher.helpers.injectDebugServerHost
 import org.apache.commons.io.IOUtils
 import java.io.File
@@ -24,9 +25,10 @@ class DevLauncherClientHost(
 
   override fun getUseDeveloperSupport() = launcherIp != null
 
-  override fun getPackages() = listOf(
+  override fun getPackages() = listOfNotNull(
     MainReactPackage(null),
-    DevLauncherPackage()
+    DevLauncherPackage(),
+    findDevMenuPackage()
   )
 
   override fun getJSMainModuleName() = "index"

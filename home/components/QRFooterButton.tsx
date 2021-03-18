@@ -23,7 +23,7 @@ export default function QRFooterButton({
 }: {
   onPress: () => void;
   isActive?: boolean;
-  iconName: string;
+  iconName: React.ComponentProps<typeof Ionicons>['name'];
   iconSize?: number;
 }) {
   const tint = isActive ? 'default' : 'dark';

@@ -132,3 +132,11 @@ export function openDevMenuFromReactNative() {
 export async function onScreenChangeAsync(currentScreen: string | null): Promise<void> {
   return await DevMenu.onScreenChangeAsync(currentScreen);
 }
+
+export async function saveAsync(key: string, data: string): Promise<void> {
+  return await DevMenu.saveAsync(key, data);
+}
+
+export async function getAsync(key: string): Promise<string | null> {
+  return await DevMenu.getAsync(key);
+}

@@ -605,6 +605,20 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   }
 }
 
+- (void)toggleRemoteDebugging
+{
+  if ([self enablesDeveloperTools]) {
+    [self.versionManager toggleRemoteDebuggingForBridge:self.reactBridge];
+  }
+}
+
+- (void)togglePerformanceMonitor
+{
+  if ([self enablesDeveloperTools]) {
+    [self.versionManager togglePerformanceMonitorForBridge:self.reactBridge];
+  }
+}
+
 - (void)toggleElementInspector
 {
   if ([self enablesDeveloperTools]) {

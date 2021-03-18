@@ -8,7 +8,6 @@ import { Svg, Path } from 'react-native-svg';
 import Colors from '../constants/Colors';
 
 type Props = {
-  name: string;
   size?: number;
   style?: any;
   lightColor?: string;
@@ -16,7 +15,8 @@ type Props = {
   color?: string;
 };
 
-export const Ionicons = (props: Props) => {
+type IconiconNames = React.ComponentProps<typeof DefaultIonicons>['name'];
+export const Ionicons = (props: Props & { name: IconiconNames }) => {
   const theme = useTheme();
   const darkColor = props.darkColor || '#fff';
   const lightColor = props.lightColor || '#ccc';
@@ -24,7 +24,8 @@ export const Ionicons = (props: Props) => {
   return <DefaultIonicons color={theme.dark ? darkColor : lightColor} {...props} />;
 };
 
-export const MaterialIcons = (props: Props) => {
+type MaterialIconNames = React.ComponentProps<typeof DefaultMaterialIcons>['name'];
+export const MaterialIcons = (props: Props & { name: MaterialIconNames }) => {
   const theme = useTheme();
   const darkColor = props.darkColor || '#fff';
   const lightColor = props.lightColor || '#ccc';

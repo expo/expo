@@ -2,6 +2,22 @@
 
 ## Unpublished
 
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+- Wrap native bundle script error in regex. ([#12185](https://github.com/expo/expo/pull/12185) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+## 0.5.1 — 2021-03-11
+
+### 🐛 Bug fixes
+
+- Add prebuilt xcframework
+
+## 0.5.0 — 2021-03-10
+
 ### ⚠️ Notices
 
 - The package is now shipped with prebuilt binaries on iOS. You can read more about it on [expo.fyi/prebuilt-modules](https://expo.fyi/prebuilt-modules). ([#11224](https://github.com/expo/expo/pull/11224) by [@tsapeta](https://github.com/tsapeta))

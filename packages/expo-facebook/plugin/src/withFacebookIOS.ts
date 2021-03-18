@@ -1,4 +1,4 @@
-import { IOSConfig } from '@expo/config-plugins';
+import { ConfigPlugin, IOSConfig } from '@expo/config-plugins';
 import { InfoPlist } from '@expo/config-plugins/build/ios/IosConfig.types';
 import { createInfoPlistPlugin } from '@expo/config-plugins/build/plugins/ios-plugins';
 import { ExpoConfig } from '@expo/config-types';
@@ -17,6 +17,8 @@ type ExpoConfigFacebook = Pick<
 >;
 
 const fbSchemes = ['fbapi', 'fb-messenger-api', 'fbauth2', 'fbshareextension'];
+
+const USER_TRACKING = 'Allow $(PRODUCT_NAME) to use data for tracking the user or the device';
 
 export const withFacebookIOS = createInfoPlistPlugin(setFacebookConfig, 'withFacebookIOS');
 
@@ -196,3 +198,14 @@ export function setFacebookApplicationQuerySchemes(
     LSApplicationQueriesSchemes: updatedSchemes,
   };
 }
+
+export const withUserTrackingPermission: ConfigPlugin<{
+  userTrackingPermission?: string;
+} | void> = (config, { userTrackingPermission } = {}) => {
+  if (!config.ios) config.ios = {};
+  if (!config.ios.infoPlist) config.ios.infoPlist = {};
+  config.ios.infoPlist.NSUserTrackingUsageDescription =
+    userTrackingPermission || config.ios.infoPlist.NSUserTrackingUsageDescription || USER_TRACKING;
+
+  return config;
+};

@@ -8,6 +8,14 @@
 
 ### 🐛 Bug fixes
 
+## 3.2.0 — 2021-03-10
+
+### 🎉 New features
+
+- Use sync random method for PKCE. ([#10298](https://github.com/expo/expo/pull/10298) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
 - Remove peerDependencies and unimodulePeerDependencies from Expo modules. ([#11980](https://github.com/expo/expo/pull/11980) by [@brentvatne](https://github.com/brentvatne))
 - Fix dependencies to align with bundledNativeModules.json. ([#12113](https://github.com/expo/expo/pull/12113) by [@brentvatne](https://github.com/brentvatne))
 

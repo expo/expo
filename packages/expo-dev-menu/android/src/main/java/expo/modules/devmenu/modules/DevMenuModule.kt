@@ -14,12 +14,26 @@ class DevMenuModule(reactContext: ReactApplicationContext)
       .getDevMenuManager()
   }
 
-  @ReactMethod
-  fun openMenu() {
+  private fun openMenuOn(screen: String?) {
     reactApplicationContext
       .currentActivity
       ?.run {
-        devMenuManager.openMenu(this)
+        devMenuManager.openMenu(this, screen)
       }
+  }
+
+  @ReactMethod
+  fun openMenu() {
+    openMenuOn(null)
+  }
+
+  @ReactMethod
+  fun openProfile() {
+    openMenuOn("Profile")
+  }
+
+  @ReactMethod
+  fun openSettings() {
+    openMenuOn("Settings")
   }
 }

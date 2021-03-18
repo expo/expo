@@ -44,10 +44,6 @@ export default class LocationScreen extends React.Component<{
     title: 'Location',
   };
 
-  _goToBackgroundLocationMap = () => {
-    this.props.navigation.navigate('BackgroundLocationMap');
-  };
-
   _goToGeofencingMap = () => {
     this.props.navigation.navigate('Geofencing');
   };
@@ -55,7 +51,6 @@ export default class LocationScreen extends React.Component<{
   renderLocationMapButton() {
     return (
       <View style={{ marginTop: 30, paddingHorizontal: 10 }}>
-        <ListButton onPress={this._goToBackgroundLocationMap} title="Background location map" />
         <ListButton onPress={this._goToGeofencingMap} title="Geofencing map" />
       </View>
     );

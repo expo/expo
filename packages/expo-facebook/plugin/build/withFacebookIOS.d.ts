@@ -1,8 +1,8 @@
-import { IOSConfig } from '@expo/config-plugins';
+import { ConfigPlugin, IOSConfig } from '@expo/config-plugins';
 import { InfoPlist } from '@expo/config-plugins/build/ios/IosConfig.types';
 import { ExpoConfig } from '@expo/config-types';
 declare type ExpoConfigFacebook = Pick<ExpoConfig, 'facebookScheme' | 'facebookAdvertiserIDCollectionEnabled' | 'facebookAppId' | 'facebookAutoInitEnabled' | 'facebookAutoLogAppEventsEnabled' | 'facebookDisplayName'>;
-export declare const withFacebookIOS: import("@expo/config-plugins").ConfigPlugin<void>;
+export declare const withFacebookIOS: ConfigPlugin<void>;
 /**
  * Getters
  * TODO: these getters are the same between ios/android, we could reuse them
@@ -19,6 +19,9 @@ export declare function getFacebookAdvertiserIDCollection(config: ExpoConfigFace
 export declare function setFacebookConfig(config: ExpoConfigFacebook, infoPlist: InfoPlist): IOSConfig.InfoPlist;
 export declare function setFacebookScheme(config: ExpoConfigFacebook, infoPlist: InfoPlist): IOSConfig.InfoPlist;
 export declare function setFacebookAutoInitEnabled(config: ExpoConfigFacebook, { FacebookAutoInitEnabled, ...infoPlist }: InfoPlist): {
+    UIStatusBarHidden?: boolean | undefined;
+    UIStatusBarStyle?: string | undefined;
+    UILaunchStoryboardName?: string | undefined;
     CFBundleShortVersionString?: string | undefined;
     CFBundleVersion?: string | undefined;
     CFBundleDisplayName?: string | undefined;
@@ -42,6 +45,9 @@ export declare function setFacebookAutoInitEnabled(config: ExpoConfigFacebook, {
     } | undefined;
 } | {
     FacebookAutoInitEnabled: boolean;
+    UIStatusBarHidden?: boolean | undefined;
+    UIStatusBarStyle?: string | undefined;
+    UILaunchStoryboardName?: string | undefined;
     CFBundleShortVersionString?: string | undefined;
     CFBundleVersion?: string | undefined;
     CFBundleDisplayName?: string | undefined;
@@ -65,6 +71,9 @@ export declare function setFacebookAutoInitEnabled(config: ExpoConfigFacebook, {
     } | undefined;
 };
 export declare function setFacebookAutoLogAppEventsEnabled(config: ExpoConfigFacebook, { FacebookAutoLogAppEventsEnabled, ...infoPlist }: InfoPlist): {
+    UIStatusBarHidden?: boolean | undefined;
+    UIStatusBarStyle?: string | undefined;
+    UILaunchStoryboardName?: string | undefined;
     CFBundleShortVersionString?: string | undefined;
     CFBundleVersion?: string | undefined;
     CFBundleDisplayName?: string | undefined;
@@ -88,6 +97,9 @@ export declare function setFacebookAutoLogAppEventsEnabled(config: ExpoConfigFac
     } | undefined;
 } | {
     FacebookAutoLogAppEventsEnabled: boolean;
+    UIStatusBarHidden?: boolean | undefined;
+    UIStatusBarStyle?: string | undefined;
+    UILaunchStoryboardName?: string | undefined;
     CFBundleShortVersionString?: string | undefined;
     CFBundleVersion?: string | undefined;
     CFBundleDisplayName?: string | undefined;
@@ -111,6 +123,9 @@ export declare function setFacebookAutoLogAppEventsEnabled(config: ExpoConfigFac
     } | undefined;
 };
 export declare function setFacebookAdvertiserIDCollectionEnabled(config: ExpoConfigFacebook, { FacebookAdvertiserIDCollectionEnabled, ...infoPlist }: InfoPlist): {
+    UIStatusBarHidden?: boolean | undefined;
+    UIStatusBarStyle?: string | undefined;
+    UILaunchStoryboardName?: string | undefined;
     CFBundleShortVersionString?: string | undefined;
     CFBundleVersion?: string | undefined;
     CFBundleDisplayName?: string | undefined;
@@ -134,6 +149,9 @@ export declare function setFacebookAdvertiserIDCollectionEnabled(config: ExpoCon
     } | undefined;
 } | {
     FacebookAdvertiserIDCollectionEnabled: boolean;
+    UIStatusBarHidden?: boolean | undefined;
+    UIStatusBarStyle?: string | undefined;
+    UILaunchStoryboardName?: string | undefined;
     CFBundleShortVersionString?: string | undefined;
     CFBundleVersion?: string | undefined;
     CFBundleDisplayName?: string | undefined;
@@ -157,6 +175,9 @@ export declare function setFacebookAdvertiserIDCollectionEnabled(config: ExpoCon
     } | undefined;
 };
 export declare function setFacebookAppId(config: Pick<ExpoConfigFacebook, 'facebookAppId'>, { FacebookAppID, ...infoPlist }: InfoPlist): {
+    UIStatusBarHidden?: boolean | undefined;
+    UIStatusBarStyle?: string | undefined;
+    UILaunchStoryboardName?: string | undefined;
     CFBundleShortVersionString?: string | undefined;
     CFBundleVersion?: string | undefined;
     CFBundleDisplayName?: string | undefined;
@@ -180,6 +201,9 @@ export declare function setFacebookAppId(config: Pick<ExpoConfigFacebook, 'faceb
     } | undefined;
 } | {
     FacebookAppID: string;
+    UIStatusBarHidden?: boolean | undefined;
+    UIStatusBarStyle?: string | undefined;
+    UILaunchStoryboardName?: string | undefined;
     CFBundleShortVersionString?: string | undefined;
     CFBundleVersion?: string | undefined;
     CFBundleDisplayName?: string | undefined;
@@ -203,6 +227,9 @@ export declare function setFacebookAppId(config: Pick<ExpoConfigFacebook, 'faceb
     } | undefined;
 };
 export declare function setFacebookDisplayName(config: ExpoConfigFacebook, { FacebookDisplayName, ...infoPlist }: InfoPlist): {
+    UIStatusBarHidden?: boolean | undefined;
+    UIStatusBarStyle?: string | undefined;
+    UILaunchStoryboardName?: string | undefined;
     CFBundleShortVersionString?: string | undefined;
     CFBundleVersion?: string | undefined;
     CFBundleDisplayName?: string | undefined;
@@ -226,6 +253,9 @@ export declare function setFacebookDisplayName(config: ExpoConfigFacebook, { Fac
     } | undefined;
 } | {
     FacebookDisplayName: string;
+    UIStatusBarHidden?: boolean | undefined;
+    UIStatusBarStyle?: string | undefined;
+    UILaunchStoryboardName?: string | undefined;
     CFBundleShortVersionString?: string | undefined;
     CFBundleVersion?: string | undefined;
     CFBundleDisplayName?: string | undefined;
@@ -249,4 +279,7 @@ export declare function setFacebookDisplayName(config: ExpoConfigFacebook, { Fac
     } | undefined;
 };
 export declare function setFacebookApplicationQuerySchemes(config: Pick<ExpoConfigFacebook, 'facebookAppId'>, infoPlist: InfoPlist): InfoPlist;
+export declare const withUserTrackingPermission: ConfigPlugin<{
+    userTrackingPermission?: string;
+} | void>;
 export {};

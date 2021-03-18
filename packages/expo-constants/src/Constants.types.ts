@@ -127,4 +127,11 @@ export interface Constants extends NativeConstants {
    * Linking API directly. Constants.linkingUrl will be removed in SDK 44.
    */
   linkingUrl?: string;
+  /**
+   * @warning do not use this property. Use `manifest` by default.
+   *
+   * In certain cases accessing manifest via this property
+   * suppresses important warning about missing manifest.
+   */
+  __unsafeNoWarnManifest: AppManifest;
 }

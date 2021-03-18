@@ -12,12 +12,15 @@ import {
   StyleSheet,
   TextInput,
   Platform,
-  TouchableOpacity,
   NativeEventEmitter,
   RefreshControl,
 } from 'react-native';
 
-import ListItem from './ListItem';
+import { isDevMenuAvailable } from './DevMenu';
+import BottomTabs from './components/BottomTabs';
+import Button from './components/Button';
+import ListItem from './components/ListItem';
+
 const DevLauncher = NativeModules.EXDevLauncherInternal;
 
 // Use development client native module to load app at given URL, notifying of
@@ -32,22 +35,6 @@ const loadAppFromUrl = async (urlString: string, setLoading: (boolean) => void) 
     Alert.alert('Error loading app', e.message);
   }
 };
-
-//
-// Reusable button for below code
-//
-
-const Button = ({ label, onPress }) => (
-  <TouchableOpacity style={styles.buttonContainer} onPress={onPress}>
-    <Text style={styles.buttonText}>{label}</Text>
-  </TouchableOpacity>
-);
-
-//
-// Super barebones UI supporting at least loading an app from a QR
-// code, while we figure out what the design for this screen should be / decide
-// on features to support
-//
 
 const ON_NEW_DEEP_LINK_EVENT = 'expo.modules.devlauncher.onnewdeeplink';
 
@@ -70,6 +57,8 @@ const portsToCheck = [
   19009,
   19010,
 ];
+
+const bottomContainerHeight = isDevMenuAvailable() ? 40 : 0;
 
 const App = ({ isSimulator }) => {
   const [loading, setLoading] = useState(false);
@@ -219,7 +208,6 @@ const App = ({ isSimulator }) => {
                 ))}
               </>
             )}
-
             {recentlyProjects.length > 0 && (
               <>
                 <Text style={[styles.infoText, { marginTop: 12 }]}>Recently opened projects:</Text>
@@ -229,6 +217,7 @@ const App = ({ isSimulator }) => {
           </View>
         </>
       </ScrollView>
+      {bottomContainerHeight > 0 && <BottomTabs height={bottomContainerHeight} />}
     </SafeAreaView>
   );
 };
@@ -236,14 +225,16 @@ const App = ({ isSimulator }) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#fff',
   },
   container: {
     flex: 1,
+    marginBottom: bottomContainerHeight,
   },
 
   homeContainer: {
     paddingHorizontal: 24,
+    paddingBottom: 10,
   },
 
   pendingDeepLinkContainer: {
@@ -258,7 +249,7 @@ const styles = StyleSheet.create({
   },
   pendingDeepLink: {
     marginTop: 10,
-    color: '#ffffff',
+    color: '#fff',
     fontWeight: '700',
     fontSize: 16,
   },
@@ -270,19 +261,6 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 24,
-  },
-
-  buttonContainer: {
-    backgroundColor: '#4630eb',
-    borderRadius: 4,
-    padding: 12,
-    marginVertical: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#ffffff',
-    fontSize: 16,
   },
 
   headingText: {

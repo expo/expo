@@ -56,8 +56,8 @@ import androidx.annotation.Nullable;
 
     windowInsets.top = Math.max(windowInsets.top - visibleRect.top, 0);
     windowInsets.left = Math.max(windowInsets.left - visibleRect.left, 0);
-    windowInsets.bottom = Math.max(visibleRect.top + view.getHeight() + windowInsets.bottom - windowHeight, 0);
-    windowInsets.right = Math.max(visibleRect.left + view.getWidth() + windowInsets.right - windowWidth, 0);
+    windowInsets.bottom = Math.max(Math.min(visibleRect.top + view.getHeight() - windowHeight, 0) + windowInsets.bottom, 0);
+    windowInsets.right = Math.max(Math.min(visibleRect.left + view.getWidth() - windowWidth, 0) + windowInsets.right, 0);
     return windowInsets;
   }
 

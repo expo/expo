@@ -2,7 +2,6 @@
 
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
-import * as Permissions from 'expo-permissions';
 import * as TaskManager from 'expo-task-manager';
 import { Platform } from 'react-native';
 
@@ -21,7 +20,7 @@ export async function test(t) {
     const providerStatus = await Location.getProviderStatusAsync();
     if (providerStatus.locationServicesEnabled) {
       const { status } = await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
-        return Permissions.askAsync(Permissions.LOCATION);
+        return Location.requestForegroundPermissionsAsync();
       });
       if (status === 'granted') {
         const location = await testFunction();
@@ -63,17 +62,34 @@ export async function test(t) {
   }
 
   t.describe('Location', () => {
-    describeWithPermissions('Location.requestPermissionsAsync()', () => {
-      t.it('requests for permissions', async () => {
-        const permission = await Location.requestPermissionsAsync();
+    // On Android, foreground permission needs to be asked before the background permissions
+    describeWithPermissions('Location.requestForegroundPermissionsAsync()', () => {
+      t.it('requests foreground location permissions', async () => {
+        const permission = await Location.requestForegroundPermissionsAsync();
         t.expect(permission.granted).toBe(true);
         t.expect(permission.status).toBe(Location.PermissionStatus.GRANTED);
       });
     });
 
-    describeWithPermissions('Location.getPermissionsAsync()', () => {
-      t.it('gets location permissions', async () => {
-        const permission = await Location.getPermissionsAsync();
+    describeWithPermissions('Location.getForegroundPermissionsAsync()', () => {
+      t.it('gets foreground location permissions', async () => {
+        const permission = await Location.getForegroundPermissionsAsync();
+        t.expect(permission.granted).toBe(true);
+        t.expect(permission.status).toBe(Location.PermissionStatus.GRANTED);
+      });
+    });
+
+    describeWithPermissions('Location.requestBackgroundPermissionsAsync()', () => {
+      t.it('requests background location permissions', async () => {
+        const permission = await Location.requestBackgroundPermissionsAsync();
+        t.expect(permission.granted).toBe(true);
+        t.expect(permission.status).toBe(Location.PermissionStatus.GRANTED);
+      });
+    });
+
+    describeWithPermissions('Location.getBackgroundPermissionsAsync()', () => {
+      t.it('gets background location permissions', async () => {
+        const permission = await Location.getBackgroundPermissionsAsync();
         t.expect(permission.granted).toBe(true);
         t.expect(permission.status).toBe(Location.PermissionStatus.GRANTED);
       });
@@ -349,7 +365,7 @@ export async function test(t) {
           // Disable Compass Test if in simulator
           if (Constants.isDevice) {
             const { status } = await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
-              return Permissions.askAsync(Permissions.LOCATION);
+              return Location.requestForegroundPermissionsAsync();
             });
             if (status === 'granted') {
               const heading = await Location.getHeadingAsync();

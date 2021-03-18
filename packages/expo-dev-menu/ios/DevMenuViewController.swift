@@ -79,7 +79,8 @@ class DevMenuViewController: UIViewController {
       "devMenuItems": manager.serializedDevMenuItems(),
       "devMenuScreens": manager.serializedDevMenuScreens(),
       "appInfo": manager.session?.appInfo ?? [:],
-      "uuid": UUID.init().uuidString
+      "uuid": UUID.init().uuidString,
+      "openScreen": manager.session?.openScreen
     ]
   }
 
