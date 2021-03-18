@@ -2,8 +2,8 @@ import { ConfigPlugin, createRunOncePlugin } from '@expo/config-plugins';
 
 import { withFacebookAppIdString, withFacebookManifest } from './withFacebookAndroid';
 import { withFacebookIOS, withUserTrackingPermission } from './withFacebookIOS';
-import { withSKAdNetworkIdentifiers } from './withSKAdNetworkIdentifiers';
 import { withNoopSwiftFile } from './withNoopSwiftFile';
+import { withSKAdNetworkIdentifiers } from './withSKAdNetworkIdentifiers';
 
 const pkg = require('expo-facebook/package.json');
 

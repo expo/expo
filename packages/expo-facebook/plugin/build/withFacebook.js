@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("@expo/config-plugins");
 const withFacebookAndroid_1 = require("./withFacebookAndroid");
 const withFacebookIOS_1 = require("./withFacebookIOS");
-const withSKAdNetworkIdentifiers_1 = require("./withSKAdNetworkIdentifiers");
 const withNoopSwiftFile_1 = require("./withNoopSwiftFile");
+const withSKAdNetworkIdentifiers_1 = require("./withSKAdNetworkIdentifiers");
 const pkg = require('expo-facebook/package.json');
 const withFacebook = config => {
     config = withFacebookAndroid_1.withFacebookAppIdString(config);
