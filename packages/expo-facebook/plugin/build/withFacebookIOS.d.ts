@@ -35,11 +35,15 @@ export declare function setFacebookAutoInitEnabled(config: ExpoConfigFacebook, {
     FacebookDisplayName?: string | undefined;
     FacebookAutoLogAppEventsEnabled?: boolean | undefined;
     FacebookAdvertiserIDCollectionEnabled?: boolean | undefined;
+    UIBackgroundModes?: string[] | undefined;
     UISupportedInterfaceOrientations?: import("@expo/config-plugins/build/ios/IosConfig.types").InterfaceOrientation[] | undefined;
     GMSApiKey?: string | undefined;
     GADApplicationIdentifier?: string | undefined;
     UIUserInterfaceStyle?: "Light" | "Dark" | "Automatic" | undefined;
     UIRequiresFullScreen?: boolean | undefined;
+    SKAdNetworkItems?: {
+        SKAdNetworkIdentifier: string;
+    }[] | undefined;
     branch_key?: {
         live?: string | undefined;
     } | undefined;
@@ -61,11 +65,15 @@ export declare function setFacebookAutoInitEnabled(config: ExpoConfigFacebook, {
     FacebookDisplayName?: string | undefined;
     FacebookAutoLogAppEventsEnabled?: boolean | undefined;
     FacebookAdvertiserIDCollectionEnabled?: boolean | undefined;
+    UIBackgroundModes?: string[] | undefined;
     UISupportedInterfaceOrientations?: import("@expo/config-plugins/build/ios/IosConfig.types").InterfaceOrientation[] | undefined;
     GMSApiKey?: string | undefined;
     GADApplicationIdentifier?: string | undefined;
     UIUserInterfaceStyle?: "Light" | "Dark" | "Automatic" | undefined;
     UIRequiresFullScreen?: boolean | undefined;
+    SKAdNetworkItems?: {
+        SKAdNetworkIdentifier: string;
+    }[] | undefined;
     branch_key?: {
         live?: string | undefined;
     } | undefined;
@@ -87,11 +95,15 @@ export declare function setFacebookAutoLogAppEventsEnabled(config: ExpoConfigFac
     FacebookDisplayName?: string | undefined;
     FacebookAutoInitEnabled?: boolean | undefined;
     FacebookAdvertiserIDCollectionEnabled?: boolean | undefined;
+    UIBackgroundModes?: string[] | undefined;
     UISupportedInterfaceOrientations?: import("@expo/config-plugins/build/ios/IosConfig.types").InterfaceOrientation[] | undefined;
     GMSApiKey?: string | undefined;
     GADApplicationIdentifier?: string | undefined;
     UIUserInterfaceStyle?: "Light" | "Dark" | "Automatic" | undefined;
     UIRequiresFullScreen?: boolean | undefined;
+    SKAdNetworkItems?: {
+        SKAdNetworkIdentifier: string;
+    }[] | undefined;
     branch_key?: {
         live?: string | undefined;
     } | undefined;
@@ -113,11 +125,15 @@ export declare function setFacebookAutoLogAppEventsEnabled(config: ExpoConfigFac
     FacebookDisplayName?: string | undefined;
     FacebookAutoInitEnabled?: boolean | undefined;
     FacebookAdvertiserIDCollectionEnabled?: boolean | undefined;
+    UIBackgroundModes?: string[] | undefined;
     UISupportedInterfaceOrientations?: import("@expo/config-plugins/build/ios/IosConfig.types").InterfaceOrientation[] | undefined;
     GMSApiKey?: string | undefined;
     GADApplicationIdentifier?: string | undefined;
     UIUserInterfaceStyle?: "Light" | "Dark" | "Automatic" | undefined;
     UIRequiresFullScreen?: boolean | undefined;
+    SKAdNetworkItems?: {
+        SKAdNetworkIdentifier: string;
+    }[] | undefined;
     branch_key?: {
         live?: string | undefined;
     } | undefined;
@@ -139,11 +155,15 @@ export declare function setFacebookAdvertiserIDCollectionEnabled(config: ExpoCon
     FacebookDisplayName?: string | undefined;
     FacebookAutoInitEnabled?: boolean | undefined;
     FacebookAutoLogAppEventsEnabled?: boolean | undefined;
+    UIBackgroundModes?: string[] | undefined;
     UISupportedInterfaceOrientations?: import("@expo/config-plugins/build/ios/IosConfig.types").InterfaceOrientation[] | undefined;
     GMSApiKey?: string | undefined;
     GADApplicationIdentifier?: string | undefined;
     UIUserInterfaceStyle?: "Light" | "Dark" | "Automatic" | undefined;
     UIRequiresFullScreen?: boolean | undefined;
+    SKAdNetworkItems?: {
+        SKAdNetworkIdentifier: string;
+    }[] | undefined;
     branch_key?: {
         live?: string | undefined;
     } | undefined;
@@ -165,11 +185,15 @@ export declare function setFacebookAdvertiserIDCollectionEnabled(config: ExpoCon
     FacebookDisplayName?: string | undefined;
     FacebookAutoInitEnabled?: boolean | undefined;
     FacebookAutoLogAppEventsEnabled?: boolean | undefined;
+    UIBackgroundModes?: string[] | undefined;
     UISupportedInterfaceOrientations?: import("@expo/config-plugins/build/ios/IosConfig.types").InterfaceOrientation[] | undefined;
     GMSApiKey?: string | undefined;
     GADApplicationIdentifier?: string | undefined;
     UIUserInterfaceStyle?: "Light" | "Dark" | "Automatic" | undefined;
     UIRequiresFullScreen?: boolean | undefined;
+    SKAdNetworkItems?: {
+        SKAdNetworkIdentifier: string;
+    }[] | undefined;
     branch_key?: {
         live?: string | undefined;
     } | undefined;
@@ -191,11 +215,15 @@ export declare function setFacebookAppId(config: Pick<ExpoConfigFacebook, 'faceb
     FacebookAutoInitEnabled?: boolean | undefined;
     FacebookAutoLogAppEventsEnabled?: boolean | undefined;
     FacebookAdvertiserIDCollectionEnabled?: boolean | undefined;
+    UIBackgroundModes?: string[] | undefined;
     UISupportedInterfaceOrientations?: import("@expo/config-plugins/build/ios/IosConfig.types").InterfaceOrientation[] | undefined;
     GMSApiKey?: string | undefined;
     GADApplicationIdentifier?: string | undefined;
     UIUserInterfaceStyle?: "Light" | "Dark" | "Automatic" | undefined;
     UIRequiresFullScreen?: boolean | undefined;
+    SKAdNetworkItems?: {
+        SKAdNetworkIdentifier: string;
+    }[] | undefined;
     branch_key?: {
         live?: string | undefined;
     } | undefined;
@@ -217,11 +245,15 @@ export declare function setFacebookAppId(config: Pick<ExpoConfigFacebook, 'faceb
     FacebookAutoInitEnabled?: boolean | undefined;
     FacebookAutoLogAppEventsEnabled?: boolean | undefined;
     FacebookAdvertiserIDCollectionEnabled?: boolean | undefined;
+    UIBackgroundModes?: string[] | undefined;
     UISupportedInterfaceOrientations?: import("@expo/config-plugins/build/ios/IosConfig.types").InterfaceOrientation[] | undefined;
     GMSApiKey?: string | undefined;
     GADApplicationIdentifier?: string | undefined;
     UIUserInterfaceStyle?: "Light" | "Dark" | "Automatic" | undefined;
     UIRequiresFullScreen?: boolean | undefined;
+    SKAdNetworkItems?: {
+        SKAdNetworkIdentifier: string;
+    }[] | undefined;
     branch_key?: {
         live?: string | undefined;
     } | undefined;
@@ -243,11 +275,15 @@ export declare function setFacebookDisplayName(config: ExpoConfigFacebook, { Fac
     FacebookAutoInitEnabled?: boolean | undefined;
     FacebookAutoLogAppEventsEnabled?: boolean | undefined;
     FacebookAdvertiserIDCollectionEnabled?: boolean | undefined;
+    UIBackgroundModes?: string[] | undefined;
     UISupportedInterfaceOrientations?: import("@expo/config-plugins/build/ios/IosConfig.types").InterfaceOrientation[] | undefined;
     GMSApiKey?: string | undefined;
     GADApplicationIdentifier?: string | undefined;
     UIUserInterfaceStyle?: "Light" | "Dark" | "Automatic" | undefined;
     UIRequiresFullScreen?: boolean | undefined;
+    SKAdNetworkItems?: {
+        SKAdNetworkIdentifier: string;
+    }[] | undefined;
     branch_key?: {
         live?: string | undefined;
     } | undefined;
@@ -269,11 +305,15 @@ export declare function setFacebookDisplayName(config: ExpoConfigFacebook, { Fac
     FacebookAutoInitEnabled?: boolean | undefined;
     FacebookAutoLogAppEventsEnabled?: boolean | undefined;
     FacebookAdvertiserIDCollectionEnabled?: boolean | undefined;
+    UIBackgroundModes?: string[] | undefined;
     UISupportedInterfaceOrientations?: import("@expo/config-plugins/build/ios/IosConfig.types").InterfaceOrientation[] | undefined;
     GMSApiKey?: string | undefined;
     GADApplicationIdentifier?: string | undefined;
     UIUserInterfaceStyle?: "Light" | "Dark" | "Automatic" | undefined;
     UIRequiresFullScreen?: boolean | undefined;
+    SKAdNetworkItems?: {
+        SKAdNetworkIdentifier: string;
+    }[] | undefined;
     branch_key?: {
         live?: string | undefined;
     } | undefined;
