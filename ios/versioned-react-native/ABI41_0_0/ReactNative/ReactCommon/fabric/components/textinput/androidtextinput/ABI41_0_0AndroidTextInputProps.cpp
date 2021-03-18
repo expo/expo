@@ -359,7 +359,7 @@ folly::dynamic AndroidTextInputProps::getDynamic() const {
 
 #pragma mark - DebugStringConvertible
 
-#if ABI41_0_0RN_DEBUG_STRING_CONVERTIBLE
+#if RN_DEBUG_STRING_CONVERTIBLE
 // TODO: codegen these
 SharedDebugStringConvertibleList AndroidTextInputProps::getDebugProps() const {
   return {};

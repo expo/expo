@@ -156,7 +156,7 @@ BaseTextProps::BaseTextProps(
 
 #pragma mark - DebugStringConvertible
 
-#if ABI41_0_0RN_DEBUG_STRING_CONVERTIBLE
+#if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList BaseTextProps::getDebugProps() const {
   return textAttributes.getDebugProps();
 }
