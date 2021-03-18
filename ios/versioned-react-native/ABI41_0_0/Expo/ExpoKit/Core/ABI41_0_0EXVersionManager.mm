@@ -45,9 +45,9 @@
 #import "ABI41_0_0EXScopedModuleRegistryAdapter.h"
 #import "ABI41_0_0EXScopedModuleRegistryDelegate.h"
 
-#import "ABI41_0_0REAModule.h"
-#import "ABI41_0_0REAEventDispatcher.h"
-#import "ABI41_0_0NativeProxy.h"
+#import <ABI41_0_0RNReanimated/ABI41_0_0REAModule.h>
+#import <ABI41_0_0RNReanimated/ABI41_0_0REAEventDispatcher.h>
+#import <ABI41_0_0RNReanimated/NativeProxy.h>
 
 #import <ABI41_0_0React/ABI41_0_0RCTCxxBridgeDelegate.h>
 #import <ABI41_0_0React/ABI41_0_0CoreModulesPlugins.h>

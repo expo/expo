@@ -10,7 +10,7 @@
 namespace ABI41_0_0facebook {
 namespace ABI41_0_0React {
 
-#if ABI41_0_0RN_DEBUG_STRING_CONVERTIBLE
+#if RN_DEBUG_STRING_CONVERTIBLE
 
 DebugStringConvertibleItem::DebugStringConvertibleItem(
     const std::string &name,
