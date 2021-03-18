@@ -40,5 +40,58 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
         },
       ],
     },
+    'react-native-reanimated': {
+      content: [
+        {
+          find: 'namespace reanimated',
+          replaceWith: `namespace ${prefix}reanimated`,
+        },
+        {
+          find: /\breanimated::/g,
+          replaceWith: `${prefix}reanimated::`,
+        },
+        {
+          paths: '*.h',
+          find: /ReactCommon\//g,
+          replaceWith: `ReactCommon/${prefix}`,
+        },
+        {
+          paths: '**/Transitioning/*.m',
+          find: `RCTConvert+${prefix}REATransition.h`,
+          replaceWith: 'RCTConvert+REATransition.h',
+        },
+        {
+          find: /(_bridge_reanimated)/g,
+          replaceWith: `${prefix}$1`,
+        },
+        {
+          paths: 'REATransitionAnimation.m',
+          find: /(SimAnimationDragCoefficient)\(/g,
+          replaceWith: `${prefix}$1(`,
+        },
+      ],
+    },
+    'react-native-gesture-handler': {
+      path: [
+        {
+          find: /Handlers\/RN(\w+)Handler\.(h|m)/,
+          replaceWith: `Handlers/${prefix}RN$1Handler.$2`,
+        },
+      ],
+      content: [
+        {
+          find: `UIView+${prefix}React.h`,
+          replaceWith: `${prefix}UIView+React.h`,
+        },
+        {
+          paths: '*.{h,m}',
+          find: /\bRN(\w+)(Handler|GestureRecognizer)\b/g,
+          replaceWith: `${prefix}RN$1$2`,
+        },
+      ],
+    },
+    'react-native-screens': {
+      content: [],
+    },
   };
 }
