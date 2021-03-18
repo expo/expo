@@ -23,7 +23,7 @@ type Props = {
   packageName: string;
 };
 
-const renderers = {
+const renderers: React.ComponentProps<typeof ReactMarkdown>['renderers'] = {
   inlineCode: ({ value }) => <InlineCode>{value}</InlineCode>,
   list: ({ children }) => <UL>{children}</UL>,
   listItem: ({ children }) => <LI>{children}</LI>,
@@ -31,19 +31,12 @@ const renderers = {
   text: ({ value }) => <span css={paragraph}>{value}</span>,
 };
 
-const resolveTypeName = (typeEntry: object): string | JSX.Element => {
-  const { name, type, elementType, typeArguments } = typeEntry;
+const resolveTypeName = ({ elementType, name, type, typeArguments }: any): string | JSX.Element => {
   if (name) {
     if (type === 'reference') {
       if (typeArguments) {
         if (name === 'Promise') {
-          return (
-            <>
-              {`Promise<`}
-              {typeArguments.map(resolveTypeName)}
-              {`>`}
-            </>
-          );
+          return <span>{`Promise<${typeArguments.map(resolveTypeName)}>`}</span>;
         } else {
           return typeArguments.map(resolveTypeName);
         }
@@ -62,8 +55,8 @@ const resolveTypeName = (typeEntry: object): string | JSX.Element => {
   return 'undefined';
 };
 
-const renderMethod = (methodEntry: object): JSX.Element =>
-  methodEntry.signatures.map(signature => {
+const renderMethod = ({ signatures }: any): JSX.Element =>
+  signatures.map((signature: any) => {
     const { name, parameters, comment, type } = signature;
     return (
       <>
@@ -73,7 +66,7 @@ const renderMethod = (methodEntry: object): JSX.Element =>
         {parameters ? <H4>Arguments</H4> : null}
         {parameters ? (
           <UL>
-            {parameters?.map(p => (
+            {parameters?.map((p: any) => (
               <LI key={`param-${p.name}`}>
                 <InlineCode>
                   {p.name}: {resolveTypeName(p.type)}
@@ -102,15 +95,14 @@ const renderMethod = (methodEntry: object): JSX.Element =>
     );
   });
 
-const renderEnum = (enumEntry: object): JSX.Element => {
-  const { name, children, comment } = enumEntry;
+const renderEnum = ({ name, children, comment }: any): JSX.Element => {
   return (
     <>
       <H3>
         <InlineCode>{name}</InlineCode>
       </H3>
       <UL>
-        {children.map(enumValue => (
+        {children.map((enumValue: any) => (
           <LI key={enumValue.name}>
             <InlineCode>
               {name}.{enumValue.name}
@@ -123,8 +115,7 @@ const renderEnum = (enumEntry: object): JSX.Element => {
   );
 };
 
-const renderType = (typeEntry: object): JSX.Element => {
-  const { name, comment, type } = typeEntry;
+const renderType = ({ name, comment, type }: any): JSX.Element => {
   return (
     <>
       <H3>
@@ -144,7 +135,7 @@ const renderType = (typeEntry: object): JSX.Element => {
           </tr>
         </thead>
         <tbody>
-          {type.declaration.children.map(typeProperty => (
+          {type.declaration.children.map((typeProperty: any) => (
             <tr key={typeProperty.name}>
               <td>
                 <B>{typeProperty.name}</B>
@@ -168,24 +159,29 @@ const renderType = (typeEntry: object): JSX.Element => {
 };
 
 const processData = (packageName: string, version: string = 'unversioned'): JSX.Element => {
-  const data = require(`~/public/static/data/${version}/${packageName}.json`);
+  try {
+    const data = require(`~/public/static/data/${version}/${packageName}.json`);
 
-  const methods = data.children.filter(g => g.kind === 64);
-  const types = data.children.filter(g => g.kind === 4194304);
-  const enums = data.children.filter(g => g.kind === 4);
+    const methods = data.children.filter(g => g.kind === 64);
+    const types = data.children.filter(g => g.kind === 4194304);
+    const enums = data.children.filter(g => g.kind === 4);
 
-  // TODO: Props, Constants, Static Methods and probably few more sections
+    // TODO: Props, Constants, Static Methods and probably few more sections
 
-  return (
-    <>
-      {methods ? <H2>Methods</H2> : null}
-      {methods ? methods.map(renderMethod) : null}
-      {types ? <H2>Types</H2> : null}
-      {types ? types.map(renderType) : null}
-      {enums ? <H2>Enums</H2> : null}
-      {enums ? enums.map(renderEnum) : null}
-    </>
-  );
+    return (
+      <>
+        {methods ? <H2>Methods</H2> : null}
+        {methods ? methods.map(renderMethod) : null}
+        {types ? <H2>Types</H2> : null}
+        {types ? types.map(renderType) : null}
+        {enums ? <H2>Enums</H2> : null}
+        {enums ? enums.map(renderEnum) : null}
+      </>
+    );
+  } catch (e) {
+    console.warn(e);
+    return <P>No API data file found!</P>;
+  }
 };
 
 const APISection: React.FC<Props> = ({ packageName }) => {
