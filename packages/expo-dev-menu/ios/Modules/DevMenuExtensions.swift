@@ -22,7 +22,11 @@ open class DevMenuExtensions: NSObject, RCTBridgeModule, DevMenuExtensionProtoco
   // MARK: DevMenuExtensionProtocol
 
   @objc
-  open func devMenuItems() -> DevMenuItemsContainerProtocol? {
+  open func devMenuItems(_ settings: DevMenuExtensionSettingsProtocol) -> DevMenuItemsContainerProtocol? {
+    if (!settings.wasRunOnDevelopmentBridge()) {
+      return nil
+    }
+    
     guard let devSettings = bridge?.module(forName: "DevSettings") as? RCTDevSettings else {
       return nil
     }
@@ -41,7 +45,6 @@ open class DevMenuExtensions: NSObject, RCTBridgeModule, DevMenuExtensionProtoco
     }
     inspector.isEnabled = { devSettings.isElementInspectorShown }
 
-    #if DEBUG
     let remoteDebug = DevMenuExtensions.remoteDebugAction {
       DispatchQueue.main.async {
         devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely
@@ -70,7 +73,6 @@ open class DevMenuExtensions: NSObject, RCTBridgeModule, DevMenuExtensionProtoco
     container.addItem(remoteDebug)
     container.addItem(fastRefresh)
     container.addItem(perfMonitor)
-    #endif
   
     container.addItem(reload)
     container.addItem(inspector)
@@ -89,7 +91,11 @@ open class DevMenuExtensions: NSObject, RCTBridgeModule, DevMenuExtensionProtoco
   }
   
   @objc
-  open func devMenuScreens() -> [DevMenuScreen]? {
+  open func devMenuScreens(_ settings: DevMenuExtensionSettingsProtocol) -> [DevMenuScreen]? {
+    if (!settings.wasRunOnDevelopmentBridge()) {
+      return nil
+    }
+    
     let testScreen = DevMenuScreen("testScreen")
 
     let selectionList = DevMenuSelectionList()

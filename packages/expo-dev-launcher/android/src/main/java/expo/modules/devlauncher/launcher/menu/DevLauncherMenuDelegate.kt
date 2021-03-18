@@ -6,7 +6,6 @@ import expo.interfaces.devmenu.DevMenuDelegateInterface
 import expo.modules.devlauncher.BuildConfig
 import expo.modules.devlauncher.DevLauncherController
 
-
 private class LauncherDelegate(private val controller: DevLauncherController) : DevMenuDelegateInterface {
   override fun appInfo(): Bundle = Bundle().apply {
     putString("appName", "Development Client")
@@ -18,6 +17,10 @@ private class LauncherDelegate(private val controller: DevLauncherController) : 
   override fun reactInstanceManager(): ReactInstanceManager {
     return controller.devClientHost.reactInstanceManager
   }
+
+  override fun supportsDevelopment(): Boolean {
+    return false
+  }
 }
 
 private class AppDelegate(private val controller: DevLauncherController) : DevMenuDelegateInterface {
@@ -25,11 +28,16 @@ private class AppDelegate(private val controller: DevLauncherController) : DevMe
     putString("appName", controller.manifest?.name ?: "Development Client - App")
     putString("appVersion", controller.manifest?.version)
     putString("appIcon", null)
-    putString("hostUrl", controller.manifest?.hostUri ?: reactInstanceManager().devSupportManager?.sourceUrl)
+    putString("hostUrl", controller.manifest?.hostUri
+      ?: reactInstanceManager().devSupportManager?.sourceUrl)
   }
 
   override fun reactInstanceManager(): ReactInstanceManager {
     return controller.appHost.reactInstanceManager
+  }
+
+  override fun supportsDevelopment(): Boolean {
+    return true
   }
 }
 
@@ -50,5 +58,9 @@ class DevLauncherMenuDelegate(private val controller: DevLauncherController) : D
 
   override fun reactInstanceManager(): ReactInstanceManager {
     return currentDelegate.reactInstanceManager()
+  }
+
+  override fun supportsDevelopment(): Boolean {
+    return currentDelegate.supportsDevelopment()
   }
 }

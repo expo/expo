@@ -25,8 +25,12 @@ RCT_EXTERN void RCTRegisterModule(Class);
   return YES;
 }
 
-- (id<DevMenuItemsContainerProtocol>)devMenuItems
+- (id<DevMenuItemsContainerProtocol>)devMenuItems:(id<DevMenuExtensionSettingsProtocol>)settings
 {
+  if (![EXDevLauncherController.sharedInstance isAppRunning]) {
+    return nil;
+  }
+  
   DevMenuItemsContainer *container = [DevMenuItemsContainer new];
   
   DevMenuAction *backToLauncher = [[DevMenuAction alloc] initWithId:@"backToLauncher" action:^{

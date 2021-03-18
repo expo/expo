@@ -56,6 +56,7 @@ private let extensionToDevMenuScreensMap = NSMapTable<DevMenuExtensionProtocol, 
 @objc
 open class DevMenuManager: NSObject, DevMenuManagerProtocol {
   lazy var expoSessionDelegate: DevMenuExpoSessionDelegate = DevMenuExpoSessionDelegate(manager: self)
+  lazy var extensionSettings: DevMenuExtensionSettingsProtocol = DevMenuExtensionDefaultSettings(manager: self)
   
   public var expoApiClient: DevMenuExpoApiClientProtocol = DevMenuExpoApiClient()
   
@@ -306,7 +307,7 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
       return itemsContainer
     }
     
-    if let itemsContainer = ext.devMenuItems?() {
+    if let itemsContainer = ext.devMenuItems?(extensionSettings) {
       extensionToDevMenuItemsMap.setObject(itemsContainer, forKey: ext)
       return itemsContainer
     }
@@ -319,7 +320,7 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
       return screenContainer.screens
     }
     
-    if let screens = ext.devMenuScreens?() {
+    if let screens = ext.devMenuScreens?(extensionSettings) {
       let container = DevMenuScreensContainer(screens: screens)
       extensionToDevMenuScreensMap.setObject(container, forKey: ext)
       return screens
