@@ -25,4 +25,4 @@ import APISection from '~/components/plugins/APISection';
 import * as MailComposer from 'expo-mail-composer';
 ```
 
-<APISection packageName="expo-mail-composer" />
+<APISection packageName="expo-mail-composer" apiName="MailComposer" />

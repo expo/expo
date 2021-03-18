@@ -6,7 +6,11 @@ import ReactMarkdown from 'react-markdown';
 import { InlineCode } from '~/components/base/code';
 import { B } from '~/components/base/paragraph';
 import { H2, H3Code } from '~/components/plugins/Headings';
-import { DataProps, renderers, resolveTypeName } from '~/components/plugins/api/APISectionUtils';
+import {
+  APISubSectionProps,
+  renderers,
+  resolveTypeName,
+} from '~/components/plugins/api/APISectionUtils';
 
 const STYLES_OPTIONAL = css`
   color: ${theme.text.secondary};
@@ -51,7 +55,7 @@ const renderType = ({ name, comment, type }: any): JSX.Element => (
   </div>
 );
 
-const APISectionTypes: React.FC<DataProps> = ({ data }) =>
+const APISectionTypes: React.FC<APISubSectionProps> = ({ data }) =>
   data ? (
     <>
       <H2 key="types-header">Types</H2>

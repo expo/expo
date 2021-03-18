@@ -5,15 +5,22 @@ import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
 import { B } from '~/components/base/paragraph';
 import { H2, H3Code, H4 } from '~/components/plugins/Headings';
-import { DataProps, renderers, resolveTypeName } from '~/components/plugins/api/APISectionUtils';
+import {
+  APISubSectionProps,
+  renderers,
+  resolveTypeName,
+} from '~/components/plugins/api/APISectionUtils';
 
-const renderMethod = ({ signatures }: any): JSX.Element =>
+const renderMethod = ({ signatures }: any, apiName?: string): JSX.Element =>
   signatures.map((signature: any) => {
     const { name, parameters, comment, type } = signature;
     return (
       <div key={`method-signature-${name}-${parameters?.length || 0}`}>
         <H3Code>
-          <InlineCode>{name}()</InlineCode>
+          <InlineCode>
+            {apiName ? `${apiName}.` : ''}
+            {name}()
+          </InlineCode>
         </H3Code>
         {parameters ? <H4>Arguments</H4> : null}
         {parameters ? (
@@ -47,11 +54,11 @@ const renderMethod = ({ signatures }: any): JSX.Element =>
     );
   });
 
-const APISectionMethods: React.FC<DataProps> = ({ data }) =>
+const APISectionMethods: React.FC<APISubSectionProps> = ({ data, apiName }) =>
   data ? (
     <>
       <H2 key="methods-header">Methods</H2>
-      {data.map(renderMethod)}
+      {data.map(method => renderMethod(method, apiName))}
     </>
   ) : null;
 

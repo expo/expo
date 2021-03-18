@@ -3,7 +3,7 @@ import React from 'react';
 import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
 import { H2, H3Code } from '~/components/plugins/Headings';
-import { DataProps } from '~/components/plugins/api/APISectionUtils';
+import { APISubSectionProps } from '~/components/plugins/api/APISectionUtils';
 
 const renderEnum = ({ name, children, comment }: any): JSX.Element => (
   <div key={`enum-definition-${name}`}>
@@ -23,7 +23,7 @@ const renderEnum = ({ name, children, comment }: any): JSX.Element => (
   </div>
 );
 
-const APISectionEnums: React.FC<DataProps> = ({ data }) =>
+const APISectionEnums: React.FC<APISubSectionProps> = ({ data }) =>
   data ? (
     <>
       <H2 key="enums-header">Enums</H2>

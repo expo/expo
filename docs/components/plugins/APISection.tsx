@@ -11,9 +11,14 @@ const LATEST_VERSION = `v${require('~/package.json').version}`;
 
 type Props = {
   packageName: string;
+  apiName?: string;
 };
 
-const renderAPI = (packageName: string, version: string = 'unversioned'): JSX.Element => {
+const renderAPI = (
+  packageName: string,
+  version: string = 'unversioned',
+  apiName?: string
+): JSX.Element => {
   try {
     const data = require(`~/public/static/data/${version}/${packageName}.json`);
 
@@ -23,7 +28,7 @@ const renderAPI = (packageName: string, version: string = 'unversioned'): JSX.El
 
     return (
       <div>
-        <APISectionMethods data={methods} />
+        <APISectionMethods data={methods} apiName={apiName} />
         <APISectionTypes data={types} />
         <APISectionEnums data={enums} />
       </div>
@@ -33,11 +38,11 @@ const renderAPI = (packageName: string, version: string = 'unversioned'): JSX.El
   }
 };
 
-const APISection: React.FC<Props> = ({ packageName }) => {
+const APISection: React.FC<Props> = ({ packageName, apiName }) => {
   const { version } = useContext(DocumentationPageContext);
   const resolvedVersion =
     version === 'unversioned' ? version : version === 'latest' ? LATEST_VERSION : version;
-  return renderAPI(packageName, resolvedVersion);
+  return renderAPI(packageName, resolvedVersion, apiName);
 };
 
 export default APISection;
