@@ -64,8 +64,8 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
         replaceWith: `${prefix}$1`,
       },
       {
-        find: /\b(RNC[^/]*\.)(h|m|mm)/,
-        replaceWith: `${prefix}$1$2`,
+        find: /\b(RCT|RNC|RNG|RNR|REA|RNS)([^/]*\.)(h|m|mm)/,
+        replaceWith: `${prefix}$1$2$3`,
       },
     ],
     content: [
@@ -79,8 +79,42 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
         replaceWith: `${prefix}$1`,
       },
       {
-        find: /\b(RCT|RNC)(\w+)\b/g,
+        find: /\b(RCT|RNC|RNG|RNR|REA|RNS)(\w+)\b/g,
         replaceWith: `${prefix}$1$2`,
+      },
+      {
+        find: /facebook::/g,
+        replaceWith: `${prefix}facebook::`,
+      },
+      {
+        find: /react::/g,
+        replaceWith: `${prefix}React::`,
+      },
+      {
+        find: /using namespace (facebook|react)/g,
+        replaceWith: (_, p1) => {
+          return `using namespace ${prefix}${p1 === 'react' ? 'React' : p1}`;
+        },
+      },
+      {
+        find: /r(eactTag|eactSubviews|eactSuperview|eactViewController|eactSetFrame|eactAddControllerToClosestParent|eactZIndex)/gi,
+        replaceWith: `${prefix}R$1`,
+      },
+      {
+        find: /<jsi\/(.*)\.h>/,
+        replaceWith: `<${prefix}jsi/${prefix}$1.h>`,
+      },
+      {
+        find: /(JSCExecutorFactory|HermesExecutorFactory)\.h/g,
+        replaceWith: `${prefix}$1.h`,
+      },
+      {
+        find: /viewForReactTag/g,
+        replaceWith: `viewFor${prefix}ReactTag`,
+      },
+      {
+        find: /isReactRootView/g,
+        replaceWith: `is${prefix}ReactRootView`,
       },
       {
         paths: '*.swift',
