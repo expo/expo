@@ -49,16 +49,16 @@ public class UpdatesUtilsInstrumentationTest {
 
   @Test(expected = Exception.class)
   public void testGetMapFromStringifiedJSON_throwsIntegerValue() throws Exception {
-    getMapFromStringifiedJSON("{'expo-channel-name': 5}");
+    getMapFromStringifiedJSON("{\"expo-channel-name\": 5}");
   }
 
   @Test(expected = Exception.class)
   public void testGetMapFromStringifiedJSON_throwsNonStringValue() throws Exception {
-    getMapFromStringifiedJSON("{'expo-channel-name':['main']}");
+    getMapFromStringifiedJSON("{\"expo-channel-name\":[\"main\"]}");
   }
 
   @Test(expected = Exception.class)
   public void testGetMapFromStringifiedJSON_throwsNonStringKey() throws Exception {
-    getMapFromStringifiedJSON("{7:['main']}");
+    getMapFromStringifiedJSON("{7:[\"main\"]}");
   }
 }
