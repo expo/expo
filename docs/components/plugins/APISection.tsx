@@ -28,7 +28,8 @@ const renderers: React.ComponentProps<typeof ReactMarkdown>['renderers'] = {
   list: ({ children }) => <UL>{children}</UL>,
   listItem: ({ children }) => <LI>{children}</LI>,
   link: ({ href, children }) => <InternalLink href={href}>{children}</InternalLink>,
-  text: ({ value }) => <span css={paragraph}>{value}</span>,
+  paragraph: ({ children }) => (children ? <P>{children}</P> : null),
+  text: ({ value }) => (value ? <span css={paragraph}>{value}</span> : null),
 };
 
 const resolveTypeName = ({ elementType, name, type, typeArguments }: any): string | JSX.Element => {
@@ -59,7 +60,7 @@ const renderMethod = ({ signatures }: any): JSX.Element =>
   signatures.map((signature: any) => {
     const { name, parameters, comment, type } = signature;
     return (
-      <>
+      <div key={`method-signature-${name}-${parameters?.length || 0}`}>
         <H3>
           <InlineCode>{name}()</InlineCode>
         </H3>
@@ -91,13 +92,13 @@ const renderMethod = ({ signatures }: any): JSX.Element =>
           <ReactMarkdown renderers={renderers}>{comment.returns}</ReactMarkdown>
         ) : null}
         <hr />
-      </>
+      </div>
     );
   });
 
 const renderEnum = ({ name, children, comment }: any): JSX.Element => {
   return (
-    <>
+    <div key={`enum-definition-${name}`}>
       <H3>
         <InlineCode>{name}</InlineCode>
       </H3>
@@ -111,21 +112,17 @@ const renderEnum = ({ name, children, comment }: any): JSX.Element => {
           </LI>
         ))}
       </UL>
-    </>
+    </div>
   );
 };
 
 const renderType = ({ name, comment, type }: any): JSX.Element => {
   return (
-    <>
+    <div key={`type-definition-${name}`}>
       <H3>
         <InlineCode>{name}</InlineCode>
       </H3>
-      {comment ? (
-        <P>
-          <ReactMarkdown renderers={renderers}>{comment.shortText}</ReactMarkdown>
-        </P>
-      ) : null}
+      {comment ? <ReactMarkdown renderers={renderers}>{comment.shortText}</ReactMarkdown> : null}
       <table>
         <thead>
           <tr>
@@ -154,7 +151,7 @@ const renderType = ({ name, comment, type }: any): JSX.Element => {
           ))}
         </tbody>
       </table>
-    </>
+    </div>
   );
 };
 
@@ -162,25 +159,25 @@ const processData = (packageName: string, version: string = 'unversioned'): JSX.
   try {
     const data = require(`~/public/static/data/${version}/${packageName}.json`);
 
-    const methods = data.children.filter(g => g.kind === 64);
-    const types = data.children.filter(g => g.kind === 4194304);
-    const enums = data.children.filter(g => g.kind === 4);
+    const methods = data.children?.filter((g: any) => g.kind === 64);
+    const types = data.children?.filter((g: any) => g.kind === 4194304);
+    const enums = data.children?.filter((g: any) => g.kind === 4);
 
     // TODO: Props, Constants, Static Methods and probably few more sections
 
     return (
       <>
-        {methods ? <H2>Methods</H2> : null}
+        {methods ? <H2 key="methods-header">Methods</H2> : null}
         {methods ? methods.map(renderMethod) : null}
-        {types ? <H2>Types</H2> : null}
+        {types ? <H2 key="types-header">Types</H2> : null}
         {types ? types.map(renderType) : null}
-        {enums ? <H2>Enums</H2> : null}
+        {enums ? <H2 key="enums-header">Enums</H2> : null}
         {enums ? enums.map(renderEnum) : null}
       </>
     );
   } catch (e) {
-    console.warn(e);
-    return <P>No API data file found!</P>;
+    console.warn(`~/public/static/data/${version}/${packageName}.json`, e);
+    return <P>No API data file found, sorry!</P>;
   }
 };
 
