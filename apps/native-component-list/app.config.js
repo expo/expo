@@ -1,8 +1,8 @@
 export default ({ config }) => {
-  config.version = '40.0.0';
+  config.version = '41.0.0';
   // app.json defines the sdkVersion as UNVERSIONED, we can override it here dynamically if we need to,
   // for example with an environment variable.
-  // config.sdkVersion = '40.0.0';
+  // config.sdkVersion = '41.0.0';
   config.plugins = [
     // iOS plugins
     // Add a plugin to modify the AppDelegate.
