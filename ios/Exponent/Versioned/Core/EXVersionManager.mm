@@ -45,9 +45,9 @@
 #import "EXScopedModuleRegistryAdapter.h"
 #import "EXScopedModuleRegistryDelegate.h"
 
-#import "REAModule.h"
-#import "REAEventDispatcher.h"
-#import "NativeProxy.h"
+#import <RNReanimated/REAModule.h>
+#import <RNReanimated/REAEventDispatcher.h>
+#import <RNReanimated/NativeProxy.h>
 
 #import <React/RCTCxxBridgeDelegate.h>
 #import <React/CoreModulesPlugins.h>
