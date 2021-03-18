@@ -18,6 +18,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule
 import expo.interfaces.devmenu.DevMenuDelegateInterface
 import expo.interfaces.devmenu.DevMenuExpoApiClientInterface
 import expo.interfaces.devmenu.DevMenuExtensionInterface
+import expo.interfaces.devmenu.DevMenuExtensionSettingsInterface
 import expo.interfaces.devmenu.DevMenuManagerInterface
 import expo.interfaces.devmenu.DevMenuSettingsInterface
 import expo.interfaces.devmenu.items.DevMenuAction
@@ -37,7 +38,8 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private var threeFingerLongPressDetector: ThreeFingerLongPressDetector? = null
   private var session: DevMenuSession? = null
   private var settings: DevMenuSettingsInterface? = null
-  private var delegate: DevMenuDelegateInterface? = null
+  internal var delegate: DevMenuDelegateInterface? = null
+  private var extensionSettings: DevMenuExtensionSettingsInterface = DevMenuDefaultExtensionSettings(this)
   private var shouldLaunchDevMenuOnStart: Boolean = false
   private lateinit var devMenuHost: DevMenuHost
   private var currentReactInstanceManager: WeakReference<ReactInstanceManager?> = WeakReference(null)
@@ -79,7 +81,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   private val cachedDevMenuScreens by KeyValueCachedProperty<ReactInstanceManager, List<DevMenuScreen>> {
     delegateExtensions
-      .map { it.devMenuScreens() ?: emptyList() }
+      .map { it.devMenuScreens(extensionSettings) ?: emptyList() }
       .flatten()
   }
 
@@ -91,7 +93,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   private val cachedDevMenuItems by KeyValueCachedProperty<ReactInstanceManager, List<DevMenuItemsContainerInterface>> {
     delegateExtensions
-      .mapNotNull { it.devMenuItems() }
+      .mapNotNull { it.devMenuItems(extensionSettings) }
   }
 
   private val delegateMenuItemsContainers: List<DevMenuItemsContainerInterface>

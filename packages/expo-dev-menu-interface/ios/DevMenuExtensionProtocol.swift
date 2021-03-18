@@ -1,5 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+@objc
+public protocol DevMenuExtensionSettingsProtocol {
+  func wasRunOnDevelopmentBridge() -> Bool
+}
+
 /**
  A protocol for React Native bridge modules that want to provide their own dev menu actions.
  */
@@ -16,9 +21,9 @@ public protocol DevMenuExtensionProtocol {
    It's called only once for the extension instance — results are being cached on first dev menu launch.
    */
   @objc
-  optional func devMenuItems() -> DevMenuItemsContainerProtocol?
+  optional func devMenuItems(_ settings: DevMenuExtensionSettingsProtocol) -> DevMenuItemsContainerProtocol?
   
   @objc
-  optional func devMenuScreens() -> [DevMenuScreen]?
+  optional func devMenuScreens(_ settings: DevMenuExtensionSettingsProtocol) -> [DevMenuScreen]?
 }
  

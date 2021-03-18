@@ -1,10 +1,5 @@
 import EXDevMenuInterface
 
-private protocol Delegate {
-  var bridge: RCTBridge { get }
-  var appInfo: [String : Any]? { get }
-}
-
 private class LauncherDelegate : DevMenuDelegateProtocol {
   private let controller: EXDevLauncherController
   
@@ -23,6 +18,10 @@ private class LauncherDelegate : DevMenuDelegateProtocol {
       "appIcon": NSNull(),
       "hostUrl": NSNull(),
     ]
+  }
+  
+  public func supportsDevelopment() -> Bool {
+    return false
   }
 }
 
@@ -54,6 +53,10 @@ private class AppDelegate : DevMenuDelegateProtocol {
       "hostUrl": manifest.bundleUrl,
     ]
   }
+  
+  public func supportsDevelopment() -> Bool {
+    return true
+  }
 }
 
 
@@ -62,7 +65,6 @@ public class EXDevLauncherMenuDelegate : NSObject, DevMenuDelegateProtocol {
   private let controller: EXDevLauncherController
   private let appDelegate: AppDelegate
   private let launcherDelegate: LauncherDelegate
-
 
   @objc
   public init(withLauncherController launcherController: EXDevLauncherController) {
@@ -85,5 +87,13 @@ public class EXDevLauncherMenuDelegate : NSObject, DevMenuDelegateProtocol {
   
   public func appInfo(forDevMenuManager manager: DevMenuManagerProtocol) -> [String : Any]? {
     return currentDelegate.appInfo?(forDevMenuManager: manager)
+  }
+  
+  public func supportsDevelopment() -> Bool {
+    guard let supportsDevelopment = currentDelegate.supportsDevelopment?() else {
+      return true
+    }
+    
+    return supportsDevelopment
   }
 }
