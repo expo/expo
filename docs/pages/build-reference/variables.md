@@ -67,15 +67,9 @@ These secrets are encrypted at rest and in transit, and are only decrypted in a 
 
 You can create up to 100 account-wide and app-specific secrets. Account-wide, or "global" secrets will be exposed to every build environment across all of your apps. App-specific secrets only apply to the app they're defined on, and override global secrets with the same name.
 
-### Linking source code to EAS
+For managing secrets, we provide a web-based UI and a set of EAS CLI commands.
 
-<!-- TODO: either implement `eas link` or add this to `eas build:configure` -->
-
-To set up secrets for your app, you need to first link your source code to a matching app identifier on our servers.
-
-You can do this using the `eas link` command inside your project directory.
-
-### Finding the secrets UI
+### Finding the secrets web UI
 
 To create secrets to use across all apps in an account, you can navigate to the "Secrets" tab under the account settings:
 
@@ -85,7 +79,13 @@ To create secrets to in a specific app, you can navigate to the "Secrets" tab un
 
 ![App secrets location](/static/images/eas-build/environment-secrets/secrets-project-nav.png)
 
-### Adding secrets
+If you haven't published your app yet and it isn't visible on the projects list, use the create a project on the project list page.
+
+![Create project button location](/static/images/eas-build/environment-secrets/project-creation-navigation.png)
+
+![Create project UI](/static/images/eas-build/environment-secrets/project-creation-web.png)
+
+### Adding secrets from the web UI
 
 When setting up secrets for a new account or app, you'll be met with this UI:
 
@@ -98,6 +98,52 @@ A secret needs a name and a value. The name can only contain alphanumeric charac
 ![Secret creation UI filled](/static/images/eas-build/environment-secrets/secrets-create-filled.png)
 
 ![Secret UI with stored secret](/static/images/eas-build/environment-secrets/secrets-populated.png)
+
+### Adding secrets from EAS CLI
+
+To create a new secret, run `eas secrets:create`
+
+```
+> eas secrets:create project SECRET_NAME secretvalue
+✔ Linked to project @fiberjw/keitai-demo-2
+✔ You're inside the project directory. Would you like to use fiberjw account? … yes
+✔ ️Created a new secret SECRET_NAME on project @fiberjw/keitai-demo-2.
+```
+
+To view the secrets you currently have for this project, run `eas secrets:list`:
+
+```
+> eas secrets:list
+✔ Linked to project @fiberjw/keitai-demo-2
+Secrets for this account and project:
+┌─────────────────┬─────────┬─────────────────┬──────────────────────────────────────┐
+│ Name            │ Target  │ Updated at      │ ID                                   │
+├─────────────────┼─────────┼─────────────────┼──────────────────────────────────────┤
+│ Anotherone      │ project │ Mar 11 17:51:36 │ e6625438-d1ed-463b-a143-dd3c2d8f57d6 │
+├─────────────────┼─────────┼─────────────────┼──────────────────────────────────────┤
+│ sdalskdasdlkasj │ project │ Mar 14 20:57:31 │ f093af84-cc8e-45c0-b969-0e86c724369d │
+├─────────────────┼─────────┼─────────────────┼──────────────────────────────────────┤
+│ hellllo         │ account │ Mar 14 20:10:52 │ aa08a553-289e-4a6a-9063-8607a4358df5 │
+├─────────────────┼─────────┼─────────────────┼──────────────────────────────────────┤
+│ sdalskdasdlkasj │ account │ Mar 14 22:10:06 │ 52904cd8-8b23-4afc-aaba-403b9ded7f9f │
+├─────────────────┼─────────┼─────────────────┼──────────────────────────────────────┤
+│ SECRET_NAME     │ project │ Mar 15 17:46:08 │ 0fdde012-43e2-433d-abb6-9f5b01b63cdf │
+└─────────────────┴─────────┴─────────────────┴──────────────────────────────────────┘
+```
+
+To delete a secret, run `eas secrets:delete`:
+
+```
+> eas secrets:delete 5ba31194-3fc1-45d0-a76c-d5c2ea09c9b9
+
+You are about to permamently delete secret with id: "5ba31194-3fc1-45d0-a76c-d5c2ea09c9b9".
+This action is irreversable.
+
+✔ Are you sure you wish to proceed? … no / yes
+✔ ️Deleted secret with id "5ba31194-3fc1-45d0-a76c-d5c2ea09c9b9".
+```
+
+### Accessing secrets in EAS Build
 
 After creating a secret, you can access the value via EAS Build hooks in Node.JS as `process.env.VARIABLE_NAME` or in shell scripts as `$VARIABLE_NAME`:
 
