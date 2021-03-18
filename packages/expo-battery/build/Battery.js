@@ -2,6 +2,7 @@ import { EventEmitter } from '@unimodules/core';
 import { BatteryState, } from './Battery.types';
 import ExpoBattery from './ExpoBattery';
 const BatteryEventEmitter = new EventEmitter(ExpoBattery);
+// battery goes brrr
 export async function isAvailableAsync() {
     return Promise.resolve((ExpoBattery && ExpoBattery.isSupported) || false);
 }

@@ -14,6 +14,8 @@ import ExpoBattery from './ExpoBattery';
 
 const BatteryEventEmitter = new EventEmitter(ExpoBattery);
 
+// battery goes brrr
+
 export async function isAvailableAsync(): Promise<boolean> {
   return Promise.resolve((ExpoBattery && ExpoBattery.isSupported) || false);
 }
