@@ -23,6 +23,10 @@ type Props = {
   packageName: string;
 };
 
+type DataProps = {
+  data: Record<string, any>[];
+};
+
 const renderers: React.ComponentProps<typeof ReactMarkdown>['renderers'] = {
   inlineCode: ({ value }) => <InlineCode>{value}</InlineCode>,
   list: ({ children }) => <UL>{children}</UL>,
@@ -55,6 +59,14 @@ const resolveTypeName = ({ elementType, name, type, typeArguments }: any): strin
   }
   return 'undefined';
 };
+
+const Methods: React.FC<DataProps> = ({ data }) =>
+  data ? (
+    <>
+      <H2 key="methods-header">Methods</H2>
+      {data.map(renderMethod)}
+    </>
+  ) : null;
 
 const renderMethod = ({ signatures }: any): JSX.Element =>
   signatures.map((signature: any) => {
@@ -96,6 +108,14 @@ const renderMethod = ({ signatures }: any): JSX.Element =>
     );
   });
 
+const Enums: React.FC<DataProps> = ({ data }) =>
+  data ? (
+    <>
+      <H2 key="enums-header">Enums</H2>
+      {data.map(renderEnum)}
+    </>
+  ) : null;
+
 const renderEnum = ({ name, children, comment }: any): JSX.Element => {
   return (
     <div key={`enum-definition-${name}`}>
@@ -115,6 +135,14 @@ const renderEnum = ({ name, children, comment }: any): JSX.Element => {
     </div>
   );
 };
+
+const Types: React.FC<DataProps> = ({ data }) =>
+  data ? (
+    <>
+      <H2 key="types-header">Types</H2>
+      {data.map(renderType)}
+    </>
+  ) : null;
 
 const renderType = ({ name, comment, type }: any): JSX.Element => {
   return (
@@ -155,25 +183,28 @@ const renderType = ({ name, comment, type }: any): JSX.Element => {
   );
 };
 
-const processData = (packageName: string, version: string = 'unversioned'): JSX.Element => {
+enum TypeDocKind {
+  Enum = 4,
+  Function = 64,
+  TypeAlias = 4194304,
+}
+
+const renderAPI = (packageName: string, version: string = 'unversioned'): JSX.Element => {
   try {
     const data = require(`~/public/static/data/${version}/${packageName}.json`);
 
-    const methods = data.children?.filter((g: any) => g.kind === 64);
-    const types = data.children?.filter((g: any) => g.kind === 4194304);
-    const enums = data.children?.filter((g: any) => g.kind === 4);
+    const methods = data.children?.filter((g: any) => g.kind === TypeDocKind.Function);
+    const types = data.children?.filter((g: any) => g.kind === TypeDocKind.TypeAlias);
+    const enums = data.children?.filter((g: any) => g.kind === TypeDocKind.Enum);
 
     // TODO: Props, Constants, Static Methods and probably few more sections
 
     return (
-      <>
-        {methods ? <H2 key="methods-header">Methods</H2> : null}
-        {methods ? methods.map(renderMethod) : null}
-        {types ? <H2 key="types-header">Types</H2> : null}
-        {types ? types.map(renderType) : null}
-        {enums ? <H2 key="enums-header">Enums</H2> : null}
-        {enums ? enums.map(renderEnum) : null}
-      </>
+      <div>
+        <Methods data={methods} />
+        <Types data={types} />
+        <Enums data={enums} />
+      </div>
     );
   } catch (e) {
     console.warn(`~/public/static/data/${version}/${packageName}.json`, e);
@@ -185,7 +216,7 @@ const APISection: React.FC<Props> = ({ packageName }) => {
   const { version } = useContext(DocumentationPageContext);
   const resolvedVersion =
     version === 'unversioned' ? version : version === 'latest' ? LATEST_VERSION : version;
-  return processData(packageName, resolvedVersion);
+  return renderAPI(packageName, resolvedVersion);
 };
 
 export default APISection;
