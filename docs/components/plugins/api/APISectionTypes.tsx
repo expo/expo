@@ -5,7 +5,7 @@ import ReactMarkdown from 'react-markdown';
 
 import { InlineCode } from '~/components/base/code';
 import { B } from '~/components/base/paragraph';
-import { H2, H3 } from '~/components/plugins/Headings';
+import { H2, H3Code } from '~/components/plugins/Headings';
 import { DataProps, renderers, resolveTypeName } from '~/components/plugins/api/APISectionUtils';
 
 const STYLES_OPTIONAL = css`
@@ -16,9 +16,9 @@ const STYLES_OPTIONAL = css`
 
 const renderType = ({ name, comment, type }: any): JSX.Element => (
   <div key={`type-definition-${name}`}>
-    <H3>
+    <H3Code>
       <InlineCode>{name}</InlineCode>
-    </H3>
+    </H3Code>
     {comment ? <ReactMarkdown renderers={renderers}>{comment.shortText}</ReactMarkdown> : null}
     <table>
       <thead>

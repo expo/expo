@@ -5,7 +5,6 @@ import { InlineCode } from '~/components/base/code';
 import { InternalLink } from '~/components/base/link';
 import { LI, UL } from '~/components/base/list';
 import { P } from '~/components/base/paragraph';
-import { paragraph } from '~/components/base/typography';
 
 export type DataProps = {
   data: Record<string, any>[];
@@ -23,7 +22,7 @@ export const renderers: React.ComponentProps<typeof ReactMarkdown>['renderers'] 
   listItem: ({ children }) => <LI>{children}</LI>,
   link: ({ href, children }) => <InternalLink href={href}>{children}</InternalLink>,
   paragraph: ({ children }) => (children ? <P>{children}</P> : null),
-  text: ({ value }) => (value ? <span css={paragraph}>{value}</span> : null),
+  text: ({ value }) => (value ? <span>{value}</span> : null),
 };
 
 export const resolveTypeName = ({
@@ -47,7 +46,11 @@ export const resolveTypeName = ({
           return typeArguments.map(resolveTypeName);
         }
       } else {
-        return <InternalLink href={`#${name.toLowerCase()}`}>{name}</InternalLink>;
+        return (
+          <InternalLink href={`#${name.toLowerCase()}`} key={`type-link-${name}`}>
+            {name}
+          </InternalLink>
+        );
       }
     } else {
       return name;

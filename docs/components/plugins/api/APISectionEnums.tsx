@@ -2,14 +2,14 @@ import React from 'react';
 
 import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
-import { H2, H3 } from '~/components/plugins/Headings';
+import { H2, H3Code } from '~/components/plugins/Headings';
 import { DataProps } from '~/components/plugins/api/APISectionUtils';
 
 const renderEnum = ({ name, children, comment }: any): JSX.Element => (
   <div key={`enum-definition-${name}`}>
-    <H3>
+    <H3Code>
       <InlineCode>{name}</InlineCode>
-    </H3>
+    </H3Code>
     <UL>
       {children.map((enumValue: any) => (
         <LI key={enumValue.name}>

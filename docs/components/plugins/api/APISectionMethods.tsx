@@ -3,7 +3,8 @@ import ReactMarkdown from 'react-markdown';
 
 import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
-import { H2, H3, H4 } from '~/components/plugins/Headings';
+import { B } from '~/components/base/paragraph';
+import { H2, H3Code, H4 } from '~/components/plugins/Headings';
 import { DataProps, renderers, resolveTypeName } from '~/components/plugins/api/APISectionUtils';
 
 const renderMethod = ({ signatures }: any): JSX.Element =>
@@ -11,17 +12,17 @@ const renderMethod = ({ signatures }: any): JSX.Element =>
     const { name, parameters, comment, type } = signature;
     return (
       <div key={`method-signature-${name}-${parameters?.length || 0}`}>
-        <H3>
+        <H3Code>
           <InlineCode>{name}()</InlineCode>
-        </H3>
+        </H3Code>
         {parameters ? <H4>Arguments</H4> : null}
         {parameters ? (
           <UL>
             {parameters?.map((p: any) => (
               <LI key={`param-${p.name}`}>
-                <InlineCode>
-                  {p.name}: {resolveTypeName(p.type)}
-                </InlineCode>
+                <B>
+                  {p.name} (<InlineCode>{resolveTypeName(p.type)}</InlineCode>)
+                </B>
               </LI>
             ))}
           </UL>
