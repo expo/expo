@@ -1,4 +1,5 @@
 {
+  "//change this for a test run": "1.2.3",
   "@expo/vector-icons": "^12.0.0",
   "@react-native-community/netinfo": "6.0.0",
   "@react-native-community/async-storage": "~1.12.0",
