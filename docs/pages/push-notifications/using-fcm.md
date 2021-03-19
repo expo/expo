@@ -43,7 +43,7 @@ Note that FCM is not currently available for Expo iOS apps.
     ]
   }
   ```
-  **Note:** Firebase will create an API key in the Google Cloud Platform console with a name like `Android key (auto created by Firebase)`. **This is not always the same key as the one found in `google-services.json`. Always confirm your key and associated restrictions in the Google Cloud Platform console.**
+>  **Note:** Firebase will create an API key in the Google Cloud Platform console with a name like `Android key (auto created by Firebase)`. **This is not always the same key as the one found in `google-services.json`. Always confirm your key and associated restrictions in the Google Cloud Platform console.**
 
 6. Finally, make a new build of your app by running `expo build:android`.
 
