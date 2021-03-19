@@ -2180,14 +2180,6 @@ PODS:
     - React-cxxreact (= 0.63.2)
     - React-jsi (= 0.63.2)
   - React-jsinspector (0.63.2)
-  - react-native-netinfo (6.0.0):
-    - React-Core
-  - react-native-segmented-control (2.3.0):
-    - React-Core
-  - react-native-viewpager (5.0.11):
-    - React-Core
-  - react-native-webview (11.2.3):
-    - React-Core
   - React-RCTActionSheet (0.63.2):
     - React-Core/RCTActionSheetHeaders (= 0.63.2)
   - React-RCTAnimation (0.63.2):
@@ -2248,39 +2240,6 @@ PODS:
     - React-Core (= 0.63.2)
     - React-cxxreact (= 0.63.2)
     - React-jsi (= 0.63.2)
-  - RNCPicker (1.9.11):
-    - React-Core
-  - RNGestureHandler (1.10.2):
-    - React-Core
-  - RNReanimated (2.0.0):
-    - DoubleConversion
-    - FBLazyVector
-    - FBReactNativeSpec
-    - Folly
-    - glog
-    - RCTRequired
-    - RCTTypeSafety
-    - React
-    - React-callinvoker
-    - React-Core
-    - React-Core/DevSupport
-    - React-Core/RCTWebSocket
-    - React-CoreModules
-    - React-cxxreact
-    - React-jsi
-    - React-jsiexecutor
-    - React-jsinspector
-    - React-RCTActionSheet
-    - React-RCTAnimation
-    - React-RCTBlob
-    - React-RCTImage
-    - React-RCTLinking
-    - React-RCTNetwork
-    - React-RCTSettings
-    - React-RCTText
-    - React-RCTVibration
-    - ReactCommon/turbomodule/core
-    - Yoga
   - UMAppLoader (2.1.0)
   - UMBarCodeScannerInterface (6.1.0):
     - UMCore
@@ -2706,10 +2665,6 @@ DEPENDENCIES:
   - React-jsi (from `../react-native-lab/react-native/ReactCommon/jsi`)
   - React-jsiexecutor (from `../react-native-lab/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../react-native-lab/react-native/ReactCommon/jsinspector`)
-  - "react-native-netinfo (from `./vendored/unversioned/@react-native-community/netinfo`)"
-  - "react-native-segmented-control (from `./vendored/unversioned/@react-native-segmented-control/segmented-control`)"
-  - "react-native-viewpager (from `./vendored/unversioned/@react-native-community/viewpager`)"
-  - react-native-webview (from `./vendored/unversioned/react-native-webview`)
   - React-RCTActionSheet (from `../react-native-lab/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../react-native-lab/react-native/Libraries/NativeAnimation`)
   - React-RCTBlob (from `../react-native-lab/react-native/Libraries/Blob`)
@@ -2720,9 +2675,6 @@ DEPENDENCIES:
   - React-RCTText (from `../react-native-lab/react-native/Libraries/Text`)
   - React-RCTVibration (from `../react-native-lab/react-native/Libraries/Vibration`)
   - ReactCommon/turbomodule/core (from `../react-native-lab/react-native/ReactCommon`)
-  - "RNCPicker (from `./vendored/unversioned/@react-native-picker/picker`)"
-  - RNGestureHandler (from `./vendored/unversioned/react-native-gesture-handler`)
-  - RNReanimated (from `./vendored/unversioned/react-native-reanimated`)
   - UMAppLoader (from `../packages/unimodules-app-loader/ios`)
   - UMBarCodeScannerInterface (from `../packages/unimodules-barcode-scanner-interface/ios`)
   - UMCameraInterface (from `../packages/unimodules-camera-interface/ios`)
@@ -3534,14 +3486,6 @@ EXTERNAL SOURCES:
     :path: "../react-native-lab/react-native/ReactCommon/jsiexecutor"
   React-jsinspector:
     :path: "../react-native-lab/react-native/ReactCommon/jsinspector"
-  react-native-netinfo:
-    :path: "./vendored/unversioned/@react-native-community/netinfo"
-  react-native-segmented-control:
-    :path: "./vendored/unversioned/@react-native-segmented-control/segmented-control"
-  react-native-viewpager:
-    :path: "./vendored/unversioned/@react-native-community/viewpager"
-  react-native-webview:
-    :path: "./vendored/unversioned/react-native-webview"
   React-RCTActionSheet:
     :path: "../react-native-lab/react-native/Libraries/ActionSheetIOS"
   React-RCTAnimation:
@@ -3562,12 +3506,6 @@ EXTERNAL SOURCES:
     :path: "../react-native-lab/react-native/Libraries/Vibration"
   ReactCommon:
     :path: "../react-native-lab/react-native/ReactCommon"
-  RNCPicker:
-    :path: "./vendored/unversioned/@react-native-picker/picker"
-  RNGestureHandler:
-    :path: "./vendored/unversioned/react-native-gesture-handler"
-  RNReanimated:
-    :path: "./vendored/unversioned/react-native-reanimated"
   UMAppLoader:
     :path: "../packages/unimodules-app-loader/ios"
   UMBarCodeScannerInterface:
@@ -4011,10 +3949,6 @@ SPEC CHECKSUMS:
   React-jsi: 54245e1d5f4b690dec614a73a3795964eeef13a8
   React-jsiexecutor: 8ca588cc921e70590820ce72b8789b02c67cce38
   React-jsinspector: b14e62ebe7a66e9231e9581279909f2fc3db6606
-  react-native-netinfo: e849fc21ca2f4128a5726c801a82fc6f4a6db50d
-  react-native-segmented-control: 83a05d42acd1234ad5e061d603c145973a61b5ee
-  react-native-viewpager: b99b53127d830885917ef84809c5065edd614a78
-  react-native-webview: 6520e3e7b4933de76b95ef542c8d7115cf45b68e
   React-RCTActionSheet: 910163b6b09685a35c4ebbc52b66d1bfbbe39fc5
   React-RCTAnimation: 9a883bbe1e9d2e158d4fb53765ed64c8dc2200c6
   React-RCTBlob: 39cf0ece1927996c4466510e25d2105f67010e13
@@ -4025,9 +3959,6 @@ SPEC CHECKSUMS:
   React-RCTText: 1b6773e776e4b33f90468c20fe3b16ca3e224bb8
   React-RCTVibration: 4d2e726957f4087449739b595f107c0d4b6c2d2d
   ReactCommon: a0a1edbebcac5e91338371b72ffc66aa822792ce
-  RNCPicker: 6780c753e9e674065db90d9c965920516402579d
-  RNGestureHandler: e66feb0fda7da74ea6a3094656b3c1efe05f5c07
-  RNReanimated: 5231286440b796e09df3bfa5c1b12b02bfe07664
   UMAppLoader: fe2708bb0ac5cd70052bc207d06aa3b7e72b9e97
   UMBarCodeScannerInterface: 79f92bea5f7af39b381a4c82298105ceb537408a
   UMCameraInterface: 81ff46700da88435f17afedfc88915eaede7e6a6
