@@ -31,7 +31,11 @@ const renderAPI = (
     const data = require(`~/public/static/data/${version}/${packageName}.json`);
 
     const methods = filterData(data.children, TypeDocKind.Function);
-    const types = filterData(data.children, TypeDocKind.TypeAlias, entry => entry.type.declaration);
+    const types = filterData(
+      data.children,
+      TypeDocKind.TypeAlias,
+      entry => entry.type.declaration || entry.type.types
+    );
     const props = filterData(data.children, TypeDocKind.TypeAlias, entry =>
       entry.name.includes('Props')
     );
