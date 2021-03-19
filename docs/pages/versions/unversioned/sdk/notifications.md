@@ -429,6 +429,8 @@ A few different listeners are exposed, so we've provided a chart below which wil
 
 A React hook always returning the notification response that was received most recently (a notification response designates an interaction with a notification, such as tapping on it).
 
+> If you don't want to use a hook, you can use `Notifications.getLastNotificationResponseAsync()` instead.
+
 #### Returns
 
 The hook may return one of these three types/values:
