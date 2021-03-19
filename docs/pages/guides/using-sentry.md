@@ -40,7 +40,7 @@ Once you have each of these: organization name, project name, DSN, and auth toke
 ### Install and configure Sentry
 
 - In your project, install the Expo integration: `expo install sentry-expo`
-  > If you're using SDK 39 or below, run `yarn add sentry-expo@~3.0.0` or `npm i sentry-expo@~3.0.0`
+  > If you're using SDK 39 or lower, run `npm install sentry-expo@~3.0.0`
 - Add the following in your app's main file (usually `App.js`):
 
 ```javascript
