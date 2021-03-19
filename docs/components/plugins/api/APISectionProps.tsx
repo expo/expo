@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown';
 
 import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
-import { B, P } from '~/components/base/paragraph';
+import { B } from '~/components/base/paragraph';
 import { H2 } from '~/components/plugins/Headings';
 import {
   APISubSectionProps,
