@@ -1,0 +1,186 @@
+[
+    {
+        "name": "basic integer",
+        "raw": ["42"],
+        "header_type": "item",
+        "expected": [42, []]
+    },
+    {
+        "name": "zero integer",
+        "raw": ["0"],
+        "header_type": "item",
+        "expected": [0, []]
+    },
+    {
+        "name": "negative zero",
+        "raw": ["-0"],
+        "header_type": "item",
+        "expected": [0, []],
+        "canonical": ["0"]
+    },
+    {
+        "name": "double negative zero",
+        "raw": ["--0"],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "negative integer",
+        "raw": ["-42"],
+        "header_type": "item",
+        "expected": [-42, []]
+    },
+    {
+        "name": "leading 0 integer",
+        "raw": ["042"],
+        "header_type": "item",
+        "expected": [42, []],
+        "canonical": ["42"]
+    },
+    {
+        "name": "leading 0 negative integer",
+        "raw": ["-042"],
+        "header_type": "item",
+        "expected": [-42, []],
+        "canonical": ["-42"]
+    },
+    {
+        "name": "leading 0 zero",
+        "raw": ["00"],
+        "header_type": "item",
+        "expected": [0, []],
+        "canonical": ["0"]
+    },
+    {
+        "name": "comma",
+        "raw": ["2,3"],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "negative non-DIGIT first character",
+        "raw": ["-a23"],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "sign out of place",
+        "raw": ["4-2"],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "whitespace after sign",
+        "raw": ["- 42"],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "long integer",
+        "raw": ["123456789012345"],
+        "header_type": "item",
+        "expected": [123456789012345, []]
+    },
+    {
+        "name": "long negative integer",
+        "raw": ["-123456789012345"],
+        "header_type": "item",
+        "expected": [-123456789012345, []]
+    },
+    {
+        "name": "too long integer",
+        "raw": ["1234567890123456"],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "negative too long integer",
+        "raw": ["-1234567890123456"],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "simple decimal",
+        "raw": ["1.23"],
+        "header_type": "item",
+        "expected": [1.23, []]
+    },
+    {
+        "name": "negative decimal",
+        "raw": ["-1.23"],
+        "header_type": "item",
+        "expected": [-1.23, []]
+    },
+    {
+        "name": "decimal, whitespace after decimal",
+        "raw": ["1. 23"],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "decimal, whitespace before decimal",
+        "raw": ["1 .23"],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "negative decimal, whitespace after sign",
+        "raw": ["- 1.23"],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "tricky precision decimal",
+        "raw": ["123456789012.1"],
+        "header_type": "item",
+        "expected": [123456789012.1, []]
+    },
+    {
+        "name": "double decimal decimal",
+        "raw": ["1.5.4"],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "adjacent double decimal decimal",
+        "raw": ["1..4"],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "decimal with three fractional digits",
+        "raw": ["1.123"],
+        "header_type": "item",
+        "expected": [1.123, []]
+    },
+    {
+        "name": "negative decimal with three fractional digits",
+        "raw": ["-1.123"],
+        "header_type": "item",
+        "expected": [-1.123, []]
+    },
+    {
+        "name": "decimal with four fractional digits",
+        "raw": ["1.1234"],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "negative decimal with four fractional digits",
+        "raw": ["-1.1234"],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "decimal with thirteen integer digits",
+        "raw": ["1234567890123.0"],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "negative decimal with thirteen integer digits",
+        "raw": ["-1234567890123.0"],
+        "header_type": "item",
+        "must_fail": true
+    }
+]
