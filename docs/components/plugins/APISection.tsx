@@ -4,6 +4,7 @@ import DocumentationPageContext from '~/components/DocumentationPageContext';
 import { P } from '~/components/base/paragraph';
 import APISectionEnums from '~/components/plugins/api/APISectionEnums';
 import APISectionMethods from '~/components/plugins/api/APISectionMethods';
+import APISectionProps from '~/components/plugins/api/APISectionProps';
 import APISectionTypes from '~/components/plugins/api/APISectionTypes';
 import { TypeDocKind } from '~/components/plugins/api/APISectionUtils';
 
@@ -14,6 +15,13 @@ type Props = {
   apiName?: string;
 };
 
+const filterData = (
+  entries: any[],
+  kind: TypeDocKind,
+  additionalCondition: (entry: any) => boolean = () => true
+) =>
+  entries ? entries.filter((entry: any) => entry.kind === kind && additionalCondition(entry)) : [];
+
 const renderAPI = (
   packageName: string,
   version: string = 'unversioned',
@@ -22,13 +30,17 @@ const renderAPI = (
   try {
     const data = require(`~/public/static/data/${version}/${packageName}.json`);
 
-    const methods = data.children?.filter((g: any) => g.kind === TypeDocKind.Function);
-    const types = data.children?.filter((g: any) => g.kind === TypeDocKind.TypeAlias);
-    const enums = data.children?.filter((g: any) => g.kind === TypeDocKind.Enum);
+    const methods = filterData(data.children, TypeDocKind.Function);
+    const types = filterData(data.children, TypeDocKind.TypeAlias, entry => entry.type.declaration);
+    const props = filterData(data.children, TypeDocKind.TypeAlias, entry =>
+      entry.name.includes('Props')
+    );
+    const enums = filterData(data.children, TypeDocKind.Enum);
 
     return (
       <div>
         <APISectionMethods data={methods} apiName={apiName} />
+        <APISectionProps data={props} />
         <APISectionTypes data={types} />
         <APISectionEnums data={enums} />
       </div>

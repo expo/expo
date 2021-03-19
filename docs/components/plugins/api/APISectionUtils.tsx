@@ -56,7 +56,7 @@ export const resolveTypeName = ({
     } else {
       return name;
     }
-  } else if (elementType.name) {
+  } else if (elementType?.name) {
     if (type === 'array') {
       return elementType.name + '[]';
     }
