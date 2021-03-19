@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added noop Swift file generation to iOS plugin. ([#12251](https://github.com/expo/expo/pull/12251) by [@EvanBacon](https://github.com/EvanBacon))
+- Added SKAdNetwork identifiers to iOS plugin. ([#12243](https://github.com/expo/expo/pull/12243) by [@EvanBacon](https://github.com/EvanBacon))
 - Added user tracking permission to iOS plugin. ([#12219](https://github.com/expo/expo/pull/12219) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
