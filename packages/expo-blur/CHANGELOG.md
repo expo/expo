@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix types - tint now a string union `'dark' | 'light' | 'default'` rather than any string. ([#12264](https://github.com/expo/expo/pull/12264) by [@brentvatne](https://github.com/brentvatne))
+
 ## 9.0.1 — 2021-03-10
 
 ### 🐛 Bug fixes
