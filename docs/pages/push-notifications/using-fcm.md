@@ -27,7 +27,7 @@ Note that FCM is not currently available for Expo iOS apps.
   }
   ```
 
-5.  Confirm that the API key in the `google-services.json` file has the correct restrictions in the [Google Cloud Platform API Credentials console](https://console.cloud.google.com/apis/credentials). Firebase requires the API key to have access to both `Firebase Cloud Messaging API` and `Firebase Installations API` for push notifications to work correctly. The API key in the `google-services.json` file can be found under the `client.api_key.current_key` field, e.g.
+5.  Confirm that your API key in `google-services.json` has the correct "API restrictions" in the [Google Cloud Platform API Credentials console](https://console.cloud.google.com/apis/credentials). For push notifications to work correctly, Firebase requires the API key to either be unrestricted (the key can call any API), or have access to both `Firebase Cloud Messaging API` and `Firebase Installations API`. The API key can be found under the `client.api_key.current_key` field in `google-services.json`.
 
   ```javascript
   {
