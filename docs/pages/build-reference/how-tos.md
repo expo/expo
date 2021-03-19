@@ -2,6 +2,8 @@
 title: Integrating with JavaScript tooling
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+
 This document outlines how to configure EAS Build for some common scenarios, such as monorepos and repositories with private dependencies. The examples described here do not provide step-by-step instructions to set up EAS Build from scratch. Instead, they explain the changes from the standard process that are necessary to acommodate the given scenario.
 
 ## EAS Build-specific npm hooks
@@ -62,7 +64,7 @@ This is an example of how your package.json might look like:
 - Configure your project in a way that works with `yarn` and relies on the `NPM_TOKEN` env variable to authenticate with private repositories
 - add `NPM_TOKEN` to your account or project's secrets. See the [secret environment variables](/build-reference/variables/#using-secrets-in-environment-variables) docs to learn how to do this.
 
-![Secret creation UI filled](/static/images/eas-build/environment-secrets/secrets-create-filled.png)
+<ImageSpotlight alt="Secret creation UI filled" src="/static/images/eas-build/environment-secrets/secrets-create-filled.png" />
 
 If you are not using `credentials.json` for Android/iOS credentials, it is fine for `experimental.npmToken` to be the only entry in the file. Add `credentials.json` to `.gitignore` if it's not there already.
 

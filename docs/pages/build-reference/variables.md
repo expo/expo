@@ -2,6 +2,8 @@
 title: Environment variables and secrets
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+
 The ["Environment variables in Expo"](/guides/environment-variables.md) guide presents several options for how you can access system environment variables to your app JavaScript code. This can be a useful way to inject values in your code, but [these values should not be secrets](/guides/environment-variables.md#security-considerations), and so the value it provides can be summarized as a convenience for accommodating certain development workflows.
 
 Using the techniques described in the environment variables document above, environment variables are inlined (the `process.env.X` text is replaced with it's evaluated result) in your app's JavaScript code _at the the time that the app is built_, and included in the app bundle. This means that the substitution would occur on EAS Build servers and not on your development machine, so if you tried to run a build on EAS Build without explicitly providing values or fallbacks for the environment variables, then you are likely encounter either a build-time or runtime error.
@@ -73,31 +75,31 @@ For managing secrets, we provide a web-based UI and a set of EAS CLI commands.
 
 To create secrets to use across all apps in an account, you can navigate to the "Secrets" tab under the account settings:
 
-![Global secrets location](/static/images/eas-build/environment-secrets/secrets-account-nav.png)
+<ImageSpotlight alt="Global secrets location" src="/static/images/eas-build/environment-secrets/secrets-account-nav.png" />
 
 To create secrets to in a specific app, you can navigate to the "Secrets" tab under the app dashboard:
 
-![App secrets location](/static/images/eas-build/environment-secrets/secrets-project-nav.png)
+<ImageSpotlight alt="App secrets location" src="/static/images/eas-build/environment-secrets/secrets-project-nav.png" />
 
 If you haven't published your app yet and it isn't visible on the projects list, use the create a project on the project list page.
 
-![Create project button location](/static/images/eas-build/environment-secrets/project-creation-navigation.png)
+<ImageSpotlight alt="Create project button location" src="/static/images/eas-build/environment-secrets/project-creation-navigation.png" />
 
-![Create project UI](/static/images/eas-build/environment-secrets/project-creation-web.png)
+<ImageSpotlight alt="Create project UI" src="/static/images/eas-build/environment-secrets/project-creation-web.png" />
 
 ### Adding secrets from the web UI
 
 When setting up secrets for a new account or app, you'll be met with this UI:
 
-![Empty secrets UI](/static/images/eas-build/environment-secrets/secrets-empty.png)
+<ImageSpotlight alt="Empty secrets UI" src="/static/images/eas-build/environment-secrets/secrets-empty.png" />
 
 Click the "Create" button in the top-right of the table to create a new secret.
 
 A secret needs a name and a value. The name can only contain alphanumeric characters and underscores:
 
-![Secret creation UI filled](/static/images/eas-build/environment-secrets/secrets-create-filled.png)
+<ImageSpotlight alt="Secret creation UI filled" src="/static/images/eas-build/environment-secrets/secrets-create-filled.png" />
 
-![Secret UI with stored secret](/static/images/eas-build/environment-secrets/secrets-populated.png)
+<ImageSpotlight alt="Secret UI with stored secret" src="/static/images/eas-build/environment-secrets/secrets-populated.png" />
 
 ### Adding secrets from EAS CLI
 
@@ -112,7 +114,7 @@ To create a new secret, run `eas secrets:create`
 
 To view the secrets you currently have for this project, run `eas secrets:list`:
 
-```
+````
 > eas secrets:list
 ✔ Linked to project @fiberjw/keitai-demo-2
 Secrets for this account and project:
@@ -129,19 +131,7 @@ Secrets for this account and project:
 ├─────────────────┼─────────┼─────────────────┼──────────────────────────────────────┤
 │ SECRET_NAME     │ project │ Mar 15 17:46:08 │ 0fdde012-43e2-433d-abb6-9f5b01b63cdf │
 └─────────────────┴─────────┴─────────────────┴──────────────────────────────────────┘
-```
 
-To delete a secret, run `eas secrets:delete`:
-
-```
-> eas secrets:delete 5ba31194-3fc1-45d0-a76c-d5c2ea09c9b9
-
-You are about to permamently delete secret with id: "5ba31194-3fc1-45d0-a76c-d5c2ea09c9b9".
-This action is irreversable.
-
-✔ Are you sure you wish to proceed? … no / yes
-✔ ️Deleted secret with id "5ba31194-3fc1-45d0-a76c-d5c2ea09c9b9".
-```
 
 ### Accessing secrets in EAS Build
 
@@ -160,7 +150,7 @@ After creating a secret, you can access the value via EAS Build hooks in Node.JS
   },
  ...
 }
-```
+````
 
 Learn more about EAS Build hooks [here](/build-reference/how-tos/#eas-build-specific-npm-hooks).
 
