@@ -56,7 +56,7 @@
 #import <strings.h>
 
 // Import 3rd party modules that need to be scoped.
-#import <ABI41_0_0React-native-webview/ABI41_0_0RNCWebViewManager.h>
+#import "ABI41_0_0RNCWebViewManager.h"
 
 ABI41_0_0RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *ABI41_0_0EXGetScopedModuleClasses(void);
 ABI41_0_0RCT_EXTERN void ABI41_0_0EXRegisterScopedModule(Class, ...);

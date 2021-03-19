@@ -56,7 +56,7 @@
 #import <strings.h>
 
 // Import 3rd party modules that need to be scoped.
-#import <react-native-webview/RNCWebViewManager.h>
+#import "RNCWebViewManager.h"
 
 RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(void);
 RCT_EXTERN void EXRegisterScopedModule(Class, ...);
