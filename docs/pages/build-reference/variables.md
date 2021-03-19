@@ -63,31 +63,31 @@ See the [eas.json reference](/build/eas-json.md) for more information.
 
 ## Using secrets in environment variables
 
-For values that you want to expose to your EAS Build hooks but are too sensitive to include in your source code, you can use our Secrets feature found on the Expo website.
+To provide your build jobs with access to values that are too sensitive to include in your source code and git repository, you can use "Secrets".
 
 These secrets are encrypted at rest and in transit, and are only decrypted in a secure environment by EAS servers.
 
-You can create up to 100 account-wide and app-specific secrets. Account-wide, or "global" secrets will be exposed to every build environment across all of your apps. App-specific secrets only apply to the app they're defined on, and override global secrets with the same name.
+It is possible to create up to 100 account-wide secrets for each Expo account and 100 app-specific secrets for each app (you probably won't need that many). Account-wide, or "global" secrets will be exposed to every build environment across all of your apps. App-specific secrets apply to the app they're defined on, and override global secrets with the same name.
 
-For managing secrets, we provide a web-based UI and a set of EAS CLI commands.
+You can manage secrets through the Expo website and EAS CLI.
 
-### Finding the secrets web UI
+### Secrets on the Expo website
 
-To create secrets to use across all apps in an account, you can navigate to the "Secrets" tab under the account settings:
+To create secrets to use across all apps in an account, navigate to the "Secrets" tab under the [account settings](https://expo.io/settings/secrets):
 
 <ImageSpotlight alt="Global secrets location" src="/static/images/eas-build/environment-secrets/secrets-account-nav.png" />
 
-To create secrets to in a specific app, you can navigate to the "Secrets" tab under the app dashboard:
+To create secrets to in a specific project, navigate to the "Secrets" tab under the project dashboard:
 
-<ImageSpotlight alt="App secrets location" src="/static/images/eas-build/environment-secrets/secrets-project-nav.png" />
+<ImageSpotlight alt="Project secrets location" src="/static/images/eas-build/environment-secrets/secrets-project-nav.png" />
 
-If you haven't published your app yet and it isn't visible on the projects list, use the create a project on the project list page.
+If you haven't published your project yet and it isn't visible on the website, create one on the project list page.
 
 <ImageSpotlight alt="Create project button location" src="/static/images/eas-build/environment-secrets/project-creation-navigation.png" />
 
 <ImageSpotlight alt="Create project UI" src="/static/images/eas-build/environment-secrets/project-creation-web.png" />
 
-### Adding secrets from the web UI
+### Adding secrets with the website
 
 When setting up secrets for a new account or app, you'll be met with this UI:
 
@@ -101,41 +101,37 @@ A secret needs a name and a value. The name can only contain alphanumeric charac
 
 <ImageSpotlight alt="Secret UI with stored secret" src="/static/images/eas-build/environment-secrets/secrets-populated.png" />
 
-### Adding secrets from EAS CLI
+### Adding secrets with EAS CLI
 
 To create a new secret, run `eas secrets:create`
 
 ```
 > eas secrets:create project SECRET_NAME secretvalue
-✔ Linked to project @fiberjw/keitai-demo-2
+✔ Linked to project @fiberjw/goodweebs
 ✔ You're inside the project directory. Would you like to use fiberjw account? … yes
-✔ ️Created a new secret SECRET_NAME on project @fiberjw/keitai-demo-2.
+✔ ️Created a new secret SECRET_NAME on project @fiberjw/goodweebs.
 ```
 
 To view the secrets you currently have for this project, run `eas secrets:list`:
 
-````
+```
 > eas secrets:list
-✔ Linked to project @fiberjw/keitai-demo-2
+✔ Linked to project @fiberjw/goodweebs
 Secrets for this account and project:
 ┌─────────────────┬─────────┬─────────────────┬──────────────────────────────────────┐
 │ Name            │ Target  │ Updated at      │ ID                                   │
 ├─────────────────┼─────────┼─────────────────┼──────────────────────────────────────┤
-│ Anotherone      │ project │ Mar 11 17:51:36 │ e6625438-d1ed-463b-a143-dd3c2d8f57d6 │
+│ NPM_TOKEN       │ project │ Mar 11 17:51:36 │ e6625438-d1ed-463b-a143-dd3c2d8f57d6 │
 ├─────────────────┼─────────┼─────────────────┼──────────────────────────────────────┤
-│ sdalskdasdlkasj │ project │ Mar 14 20:57:31 │ f093af84-cc8e-45c0-b969-0e86c724369d │
+│ sentryApiKey    │ project │ Mar 14 20:57:31 │ f093af84-cc8e-45c0-b969-0e86c724369d │
 ├─────────────────┼─────────┼─────────────────┼──────────────────────────────────────┤
-│ hellllo         │ account │ Mar 14 20:10:52 │ aa08a553-289e-4a6a-9063-8607a4358df5 │
-├─────────────────┼─────────┼─────────────────┼──────────────────────────────────────┤
-│ sdalskdasdlkasj │ account │ Mar 14 22:10:06 │ 52904cd8-8b23-4afc-aaba-403b9ded7f9f │
-├─────────────────┼─────────┼─────────────────┼──────────────────────────────────────┤
-│ SECRET_NAME     │ project │ Mar 15 17:46:08 │ 0fdde012-43e2-433d-abb6-9f5b01b63cdf │
+│ APP_UPLOAD_KEY  │ account │ Mar 14 20:10:52 │ aa08a553-289e-4a6a-9063-8607a4358df5 │
 └─────────────────┴─────────┴─────────────────┴──────────────────────────────────────┘
-
+```
 
 ### Accessing secrets in EAS Build
 
-After creating a secret, you can access the value via EAS Build hooks in Node.JS as `process.env.VARIABLE_NAME` or in shell scripts as `$VARIABLE_NAME`:
+After creating a secret, you can access the value via EAS Build hooks in Node.js as `process.env.VARIABLE_NAME` or in shell scripts as `$VARIABLE_NAME`:
 
 ```json
 // package.json
@@ -150,9 +146,9 @@ After creating a secret, you can access the value via EAS Build hooks in Node.JS
   },
  ...
 }
-````
+```
 
-Learn more about EAS Build hooks [here](/build-reference/how-tos/#eas-build-specific-npm-hooks).
+[Learn more about EAS Build hooks](/build-reference/how-tos/#eas-build-specific-npm-hooks).
 
 ## Built-in environment variables
 
