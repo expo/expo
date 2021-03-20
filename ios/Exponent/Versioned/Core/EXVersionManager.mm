@@ -45,9 +45,9 @@
 #import "EXScopedModuleRegistryAdapter.h"
 #import "EXScopedModuleRegistryDelegate.h"
 
-#import "REAModule.h"
-#import "REAEventDispatcher.h"
-#import "NativeProxy.h"
+#import <RNReanimated/REAModule.h>
+#import <RNReanimated/REAEventDispatcher.h>
+#import <RNReanimated/NativeProxy.h>
 
 #import <React/RCTCxxBridgeDelegate.h>
 #import <React/CoreModulesPlugins.h>
@@ -56,7 +56,7 @@
 #import <strings.h>
 
 // Import 3rd party modules that need to be scoped.
-#import <react-native-webview/RNCWebViewManager.h>
+#import "RNCWebViewManager.h"
 
 RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(void);
 RCT_EXTERN void EXRegisterScopedModule(Class, ...);

@@ -11,13 +11,13 @@ import * as TestUtils from '../TestUtils';
 import { isInteractive } from '../utils/Environment';
 import { waitFor } from './helpers';
 
-export const name = 'expo-notifications';
+export const name = 'Notifications';
 
 export async function test(t) {
   const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
 
-  t.describe('expo-notifications', () => {
+  t.describe('Notifications', () => {
     t.describe('getDevicePushTokenAsync', () => {
       let subscription = null;
       let tokenFromEvent = null;
@@ -1638,6 +1638,7 @@ export async function test(t) {
               }),
             })
           );
+          t.expect(event).toEqual(await Notifications.getLastNotificationResponseAsync());
         },
         10000
       );

@@ -1,9 +1,7 @@
 import { useFocusEffect } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
-import { usePermissions } from '@use-expo/permissions';
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
-import * as Permissions from 'expo-permissions';
 import React from 'react';
 import {
   Alert,
@@ -85,6 +83,23 @@ function reducer(
   }
 }
 
+function useMediaLibraryPermissions(): [undefined | MediaLibrary.PermissionResponse] {
+  const [permissions, setPermissions] = React.useState<
+    undefined | MediaLibrary.PermissionResponse
+  >();
+
+  React.useEffect(() => {
+    async function askAsync() {
+      const response = await MediaLibrary.requestPermissionsAsync();
+      setPermissions(response);
+    }
+
+    askAsync();
+  }, []);
+
+  return [permissions];
+}
+
 export default function MediaLibraryScreen({ navigation, route }: Props) {
   const album = route.params?.album;
 
@@ -134,7 +149,7 @@ export default function MediaLibraryScreen({ navigation, route }: Props) {
   }, [album, navigation]);
 
   // Ensure the permissions are granted.
-  const [permission] = usePermissions(Permissions.MEDIA_LIBRARY, { ask: true });
+  const [permission] = useMediaLibraryPermissions();
 
   if (!permission) {
     return null;
@@ -154,10 +169,7 @@ export default function MediaLibraryScreen({ navigation, route }: Props) {
     <MediaLibraryView
       navigation={navigation}
       route={route}
-      accessPrivileges={
-        (permission.permissions[Permissions.CAMERA_ROLL] as MediaLibrary.PermissionResponse)
-          .accessPrivileges
-      }
+      accessPrivileges={(permission as MediaLibrary.PermissionResponse).accessPrivileges}
     />
   );
 }

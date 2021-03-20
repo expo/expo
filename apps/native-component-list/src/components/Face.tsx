@@ -36,6 +36,7 @@ export const scaledLandmarks = (scale: number) => (face: FaceFeature) => {
   const renderLandmark = (position?: { x: number; y: number }) =>
     position && (
       <View
+        key={`${position?.x ?? 'no-x'}${position?.y ?? 'no-y'}`}
         style={[
           styles.landmark,
           {

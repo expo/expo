@@ -2,7 +2,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as TaskManager from 'expo-task-manager';
 import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import Button from '../components/Button';
 import HeadingText from '../components/HeadingText';
@@ -73,6 +73,10 @@ export default function TaskManagerScreen(props: {
   const renderNavigationButtons = () => {
     return (
       <View>
+        <Text>
+          Note: this screen may not work properly for you, work is needed to investigate further and
+          improve it
+        </Text>
         <Button
           style={styles.button}
           buttonStyle={{ backgroundColor: 'green' }}
