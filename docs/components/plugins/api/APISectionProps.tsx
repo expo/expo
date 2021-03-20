@@ -15,10 +15,12 @@ export type APISectionPropsDefaults = {
   defaultProps?: any;
 };
 
-const extractDefaultProps = (defaultProps: any, propName: string) => {
+const UNKNOWN_VALUE = '...';
+
+const extractDefaultPropValue = (defaultProps: any, propName: string) => {
   return defaultProps?.type?.declaration?.children?.filter(
     (defaultProp: any) => defaultProp.name === propName
-  );
+  )[0].defaultValue;
 };
 
 const renderProps = (data: any, defaultValues: any): JSX.Element => {
@@ -28,7 +30,7 @@ const renderProps = (data: any, defaultValues: any): JSX.Element => {
       <UL>
         {props?.map((def: any) =>
           def.declaration?.children.map((prop: any) =>
-            renderProp(prop, extractDefaultProps(defaultValues, prop.name)[0])
+            renderProp(prop, extractDefaultPropValue(defaultValues, prop.name))
           )
         )}
       </UL>
@@ -53,12 +55,12 @@ const renderProp = (prop: any, defaultValue: any) => (
           }}>
           {prop.comment.shortText}
         </ReactMarkdown>
-        {defaultValue.defaultValue ? (
-          <span>
-            {' Default: '}
-            <InlineCode>{defaultValue.defaultValue}</InlineCode>
-          </span>
-        ) : null}
+      </span>
+    ) : null}
+    {defaultValue && defaultValue !== UNKNOWN_VALUE ? (
+      <span>
+        {' Default: '}
+        <InlineCode>{defaultValue}</InlineCode>
       </span>
     ) : null}
   </LI>
