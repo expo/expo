@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Slider from '@react-native-community/slider';
 import { Subscription } from '@unimodules/core';
 import * as AppleAuthentication from 'expo-apple-authentication';

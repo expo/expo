@@ -79,7 +79,7 @@ export default function Player(props: Props) {
     return (
       <TouchableOpacity onPress={_toggleLooping} disabled={!props.isLoaded}>
         <Ionicons
-          name="ios-repeat"
+          name="repeat"
           size={34}
           style={[styles.icon, !props.isLooping && { color: '#C1C1C1' }]}
         />
@@ -171,40 +171,18 @@ export default function Player(props: Props) {
         </Text>
         {_renderReplayButton()}
       </View>
-      <View style={[styles.container, styles.buttonsContainer]}>
+
+      <View style={styles.container}>
         <VolumeSlider
           isMuted={props.isMuted}
           disabled={!props.isLoaded}
+          style={{ width: undefined, flex: 1 }}
           volume={props.volume}
           onValueChanged={({ isMuted, volume }) => {
             props.setIsMutedAsync(isMuted);
             props.setVolume(volume);
           }}
         />
-        {_renderAuxiliaryButton({
-          iconName: 'skip-backward',
-          title: 'Replay',
-          onPress: props.replayAsync,
-          active: false,
-        })}
-
-        {_renderAuxiliaryButton({
-          iconName: 'rewind',
-          title: 'Seek Backward',
-          onPress: _seekBackward,
-        })}
-        {_renderAuxiliaryButton({
-          iconName: 'fastforward',
-          title: 'Seek Forward',
-          onPress: _seekForward,
-        })}
-        {props.nextAsync &&
-          _renderAuxiliaryButton({
-            iconName: 'skip-forward',
-            title: 'Next',
-            onPress: props.nextAsync,
-            active: false,
-          })}
       </View>
 
       <View style={[styles.container, styles.buttonsContainer]}>
@@ -213,7 +191,12 @@ export default function Player(props: Props) {
           return _renderAuxiliaryButton(button);
         })}
       </View>
-      <View style={{ flexDirection: 'row', flex: 1, justifyContent: 'space-between' }}>
+
+      <View
+        style={[
+          styles.container,
+          { flexDirection: 'row', flex: 1, justifyContent: 'space-between' },
+        ]}>
         <PitchControl
           disabled={Platform.OS === 'web'}
           value={props.shouldCorrectPitch}
@@ -224,6 +207,33 @@ export default function Player(props: Props) {
             props.setRateAsync(rate, props.shouldCorrectPitch);
           }}
         />
+      </View>
+
+      <View style={[styles.container, styles.buttonsContainer]}>
+        {_renderAuxiliaryButton({
+          iconName: 'play-skip-back',
+          title: 'Replay',
+          onPress: props.replayAsync,
+          active: false,
+        })}
+
+        {_renderAuxiliaryButton({
+          iconName: 'play-back',
+          title: 'Seek Backward',
+          onPress: _seekBackward,
+        })}
+        {_renderAuxiliaryButton({
+          iconName: 'play-forward',
+          title: 'Seek Forward',
+          onPress: _seekForward,
+        })}
+        {props.nextAsync &&
+          _renderAuxiliaryButton({
+            iconName: 'play-skip-forward',
+            title: 'Next',
+            onPress: props.nextAsync,
+            active: false,
+          })}
       </View>
       {_maybeRenderErrorOverlay()}
     </View>
@@ -255,7 +265,7 @@ function PitchControl({
       onPress={() => {
         onPress(!value);
       }}>
-      <Ionicons name="ios-stats" size={24} color={color} style={{}} />
+      <Ionicons name="ios-stats-chart" size={24} color={color} style={{}} />
       <Text
         style={{
           textDecorationLine: disabled ? 'line-through' : 'none',
@@ -316,11 +326,13 @@ function VolumeSlider({
   disabled,
   color = Colors.tintColor,
   onValueChanged,
+  style,
 }: {
   volume: number;
   isMuted: boolean;
   disabled?: boolean;
   color?: string;
+  style?: any;
   onValueChanged: (data: { isMuted: boolean; volume: number }) => void;
 }) {
   const [value, setValue] = React.useState(volume);
@@ -354,7 +366,7 @@ function VolumeSlider({
   const height = 36;
   return (
     <View
-      style={[{ flexDirection: 'row', width: 100 }, disabled && { opacity: 0.7 }]}
+      style={[{ flexDirection: 'row', width: 100 }, disabled && { opacity: 0.7 }, style]}
       pointerEvents={disabled ? 'none' : 'auto'}>
       <TouchableOpacity
         style={{ alignItems: 'center', width: height, height, justifyContent: 'center' }}

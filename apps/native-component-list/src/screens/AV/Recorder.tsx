@@ -1,6 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
-import * as Permissions from 'expo-permissions';
 import React from 'react';
 import {
   ScrollView,
@@ -44,7 +43,7 @@ export default class Recorder extends React.Component<
   _prepare = (options: Audio.RecordingOptions) => async () => {
     const recordingObject = new Audio.Recording();
     try {
-      await Permissions.askAsync(Permissions.AUDIO_RECORDING);
+      await Audio.requestPermissionsAsync();
       await recordingObject.prepareToRecordAsync(options);
       recordingObject.setOnRecordingStatusUpdate(this._updateStateToStatus);
       const status = await recordingObject.getStatusAsync();
