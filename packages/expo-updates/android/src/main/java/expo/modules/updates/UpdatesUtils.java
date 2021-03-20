@@ -48,12 +48,12 @@ public class UpdatesUtils {
     JSONObject jsonObject = new JSONObject(stringifiedJSON);
     Iterator<String> keys = jsonObject.keys();
     Map<String, String> newMap = new HashMap<>();
-    while(keys.hasNext()){
+    while (keys.hasNext()) {
       String key = keys.next();
       String val;
-      try{
+      try {
         val = (String) jsonObject.get(key);
-      } catch (ClassCastException e){
+      } catch (ClassCastException e) {
         throw new Exception("The values in the JSON object must be strings");
       }
       newMap.put(key, val);
