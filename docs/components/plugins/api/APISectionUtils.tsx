@@ -14,6 +14,8 @@ export type APISubSectionProps = {
 export enum TypeDocKind {
   Enum = 4,
   Function = 64,
+  Class = 128,
+  Property = 1024,
   TypeAlias = 4194304,
 }
 

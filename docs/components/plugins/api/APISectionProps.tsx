@@ -11,44 +11,67 @@ import {
   resolveTypeName,
 } from '~/components/plugins/api/APISectionUtils';
 
-const renderProp = (data: any): JSX.Element => {
+export type APISectionPropsDefaults = {
+  defaultProps?: any;
+};
+
+const extractDefaultProps = (defaultProps: any, propName: string) => {
+  return defaultProps?.type?.declaration?.children?.filter(
+    (defaultProp: any) => defaultProp.name === propName
+  );
+};
+
+const renderProps = (data: any, defaultValues: any): JSX.Element => {
   const props = data.type.types.filter((e: any) => e.declaration);
   return (
     <div key={`props-definition-${data.name}`}>
       <UL>
         {props?.map((def: any) =>
-          def.declaration?.children.map((prop: any) => (
-            <LI>
-              <B>
-                {prop.name} (<InlineCode>{resolveTypeName(prop.type)}</InlineCode>)
-              </B>
-              {prop.comment ? (
-                <span>
-                  {' - '}
-                  <ReactMarkdown
-                    renderers={{
-                      ...renderers,
-                      ...{
-                        paragraph: ({ children }) => (children ? <span>{children}</span> : null),
-                      },
-                    }}>
-                    {prop.comment.shortText}
-                  </ReactMarkdown>
-                </span>
-              ) : null}
-            </LI>
-          ))
+          def.declaration?.children.map((prop: any) =>
+            renderProp(prop, extractDefaultProps(defaultValues, prop.name)[0])
+          )
         )}
       </UL>
     </div>
   );
 };
 
-const APISectionProps: React.FC<APISubSectionProps> = ({ data }) =>
+const renderProp = (prop: any, defaultValue: any) => (
+  <LI>
+    <B>
+      {prop.name} (<InlineCode>{resolveTypeName(prop.type)}</InlineCode>)
+    </B>
+    {prop.comment ? (
+      <span>
+        {' - '}
+        <ReactMarkdown
+          renderers={{
+            ...renderers,
+            ...{
+              paragraph: ({ children }) => (children ? <span>{children}</span> : null),
+            },
+          }}>
+          {prop.comment.shortText}
+        </ReactMarkdown>
+        {defaultValue.defaultValue ? (
+          <span>
+            {'   Default: '}
+            <InlineCode>{defaultValue.defaultValue}</InlineCode>
+          </span>
+        ) : null}
+      </span>
+    ) : null}
+  </LI>
+);
+
+const APISectionProps: React.FC<APISubSectionProps & APISectionPropsDefaults> = ({
+  data,
+  defaultProps,
+}) =>
   data && data.length ? (
     <>
       <H2 key="props-header">Props</H2>
-      {data.map(renderProp)}
+      {data.map((prop: any) => renderProps(prop, defaultProps))}
     </>
   ) : null;
 

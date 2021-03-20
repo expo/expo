@@ -39,12 +39,17 @@ const renderAPI = (
     const props = filterData(data.children, TypeDocKind.TypeAlias, entry =>
       entry.name.includes('Props')
     );
+    const defaultProps = filterData(
+      filterData(data.children, TypeDocKind.Class)[0]?.children,
+      TypeDocKind.Property,
+      entry => entry.name === 'defaultProps'
+    )[0];
     const enums = filterData(data.children, TypeDocKind.Enum);
 
     return (
       <div>
         <APISectionMethods data={methods} apiName={apiName} />
-        <APISectionProps data={props} />
+        <APISectionProps data={props} defaultProps={defaultProps} />
         <APISectionTypes data={types} />
         <APISectionEnums data={enums} />
       </div>
