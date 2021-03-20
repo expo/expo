@@ -1,11 +1,10 @@
-import { usePermissions } from '@use-expo/permissions';
 import * as Location from 'expo-location';
-import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import SimpleActionDemo from '../../components/SimpleActionDemo';
 import TitleSwitch from '../../components/TitledSwitch';
+import usePermissions from '../../utilities/usePermissions';
 // Location.setGoogleApiKey('<PROVIDE_YOUR_OWN_API_KEY HERE>');
 
 const forwardGeocodingAddresses = [
@@ -25,7 +24,7 @@ const reverseGeocodingCoords = [
 ];
 
 export default function GeocodingScreen() {
-  usePermissions(Permissions.LOCATION, { ask: true });
+  usePermissions(Location.requestForegroundPermissionsAsync);
 
   const [useGoogleMaps, setGoogleMaps] = React.useState(false);
 

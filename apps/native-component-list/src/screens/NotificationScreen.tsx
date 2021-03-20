@@ -1,6 +1,5 @@
 import { Subscription } from '@unimodules/core';
 import * as Notifications from 'expo-notifications';
-import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { Alert, Platform, ScrollView } from 'react-native';
 
@@ -75,9 +74,8 @@ export default class NotificationScreen extends React.Component<
   }
 
   render() {
-    console.log(this.state);
     return (
-      <ScrollView style={{ padding: 10 }}>
+      <ScrollView contentContainerStyle={{ padding: 10, paddingBottom: 40 }}>
         <HeadingText>Local Notifications</HeadingText>
         <ListButton
           onPress={this._LEGACY_presentLocalNotificationAsync}
@@ -192,9 +190,9 @@ export default class NotificationScreen extends React.Component<
   };
 
   _obtainUserFacingNotifPermissionsAsync = async () => {
-    let permission = await Permissions.getAsync(Permissions.USER_FACING_NOTIFICATIONS);
+    let permission = await Notifications.getPermissionsAsync();
     if (permission.status !== 'granted') {
-      permission = await Permissions.askAsync(Permissions.USER_FACING_NOTIFICATIONS);
+      permission = await Notifications.requestPermissionsAsync();
       if (permission.status !== 'granted') {
         Alert.alert(`We don't have permission to present notifications.`);
       }
@@ -202,10 +200,11 @@ export default class NotificationScreen extends React.Component<
     return permission;
   };
 
+  // This is the same thing as user-facing notifications in expo-notifications
   _obtainRemoteNotifPermissionsAsync = async () => {
-    let permission = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+    let permission = await Notifications.getPermissionsAsync();
     if (permission.status !== 'granted') {
-      permission = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      permission = await Notifications.requestPermissionsAsync();
       if (permission.status !== 'granted') {
         Alert.alert(`We don't have permission to receive remote notifications.`);
       }

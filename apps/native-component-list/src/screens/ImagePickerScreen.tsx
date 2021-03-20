@@ -1,6 +1,5 @@
 import { Video } from 'expo-av';
 import * as ImagePicker from 'expo-image-picker';
-import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { Image, Platform, ScrollView, View, StyleSheet } from 'react-native';
 
@@ -9,12 +8,21 @@ import MonoText from '../components/MonoText';
 import SimpleActionDemo from '../components/SimpleActionDemo';
 import TitleSwitch from '../components/TitledSwitch';
 
-async function requestPermissionAsync(permission: Permissions.PermissionType) {
+async function requestCameraPermissionAsync() {
   // Image Picker doesn't need permissions in the web
   if (Platform.OS === 'web') {
     return true;
   }
-  const { status } = await Permissions.askAsync(permission);
+  const { status } = await ImagePicker.requestCameraPermissionsAsync();
+  return status === 'granted';
+}
+
+async function requestMediaLibraryPermissionAsync() {
+  // Image Picker doesn't need permissions in the web
+  if (Platform.OS === 'web') {
+    return true;
+  }
+  const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
   return status === 'granted';
 }
 
@@ -37,7 +45,7 @@ export default class ImagePickerScreen extends React.Component<{}, State> {
   };
 
   showCamera = async (mediaTypes: ImagePicker.MediaTypeOptions, allowsEditing = false) => {
-    await requestPermissionAsync(Permissions.CAMERA);
+    await requestCameraPermissionAsync();
     const result = await ImagePicker.launchCameraAsync({
       mediaTypes,
       allowsEditing,
@@ -52,7 +60,7 @@ export default class ImagePickerScreen extends React.Component<{}, State> {
   };
 
   showPicker = async (mediaTypes: ImagePicker.MediaTypeOptions, allowsEditing = false) => {
-    await requestPermissionAsync(Permissions.MEDIA_LIBRARY);
+    await requestMediaLibraryPermissionAsync();
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes,
       allowsEditing,
