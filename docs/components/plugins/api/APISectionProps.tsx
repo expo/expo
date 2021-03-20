@@ -37,7 +37,7 @@ const renderProps = (data: any, defaultValues: any): JSX.Element => {
 };
 
 const renderProp = (prop: any, defaultValue: any) => (
-  <LI>
+  <LI key={`prop-entry-${prop.name}`}>
     <B>
       {prop.name} (<InlineCode>{resolveTypeName(prop.type)}</InlineCode>)
     </B>
@@ -55,7 +55,7 @@ const renderProp = (prop: any, defaultValue: any) => (
         </ReactMarkdown>
         {defaultValue.defaultValue ? (
           <span>
-            {'   Default: '}
+            {' Default: '}
             <InlineCode>{defaultValue.defaultValue}</InlineCode>
           </span>
         ) : null}
