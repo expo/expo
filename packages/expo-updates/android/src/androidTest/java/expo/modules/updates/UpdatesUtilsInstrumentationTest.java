@@ -11,7 +11,7 @@ import java.util.Map;
 
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
-import static expo.modules.updates.UpdatesUtils.getMapFromStringifiedJSON;
+import static expo.modules.updates.UpdatesUtils.getHeadersMapFromJSONString;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class UpdatesUtilsInstrumentationTest {
@@ -33,32 +33,32 @@ public class UpdatesUtilsInstrumentationTest {
   }
 
   @Test
-  public void testGetMapFromStringifiedJSON_empty() throws Exception {
-    Map<String,String> emptyMap = getMapFromStringifiedJSON("{}");
+  public void testgetHeadersMapFromJSONString_empty() throws Exception {
+    Map<String,String> emptyMap = getHeadersMapFromJSONString("{}");
     Assert.assertEquals(emptyMap, new HashMap<>());
   }
 
   @Test
-  public void testGetMapFromStringifiedJSON_expectedFormat() throws Exception {
+  public void testgetHeadersMapFromJSONString_expectedFormat() throws Exception {
     Map<String, String> expected = new HashMap<>();
     expected.put("expo-channel-name","main");
 
-    Map<String,String> emptyMap = getMapFromStringifiedJSON("{\"expo-channel-name\":\"main\"}");
+    Map<String,String> emptyMap = getHeadersMapFromJSONString("{\"expo-channel-name\":\"main\"}");
     Assert.assertEquals(emptyMap, expected);
   }
 
   @Test(expected = Exception.class)
-  public void testGetMapFromStringifiedJSON_throwsIntegerValue() throws Exception {
-    getMapFromStringifiedJSON("{\"expo-channel-name\": 5}");
+  public void testgetHeadersMapFromJSONString_throwsIntegerValue() throws Exception {
+    getHeadersMapFromJSONString("{\"expo-channel-name\": 5}");
   }
 
   @Test(expected = Exception.class)
-  public void testGetMapFromStringifiedJSON_throwsNonStringValue() throws Exception {
-    getMapFromStringifiedJSON("{\"expo-channel-name\":[\"main\"]}");
+  public void testgetHeadersMapFromJSONString_throwsNonStringValue() throws Exception {
+    getHeadersMapFromJSONString("{\"expo-channel-name\":[\"main\"]}");
   }
 
   @Test(expected = Exception.class)
-  public void testGetMapFromStringifiedJSON_throwsNonStringKey() throws Exception {
-    getMapFromStringifiedJSON("{7:[\"main\"]}");
+  public void testgetHeadersMapFromJSONString_throwsNonStringKey() throws Exception {
+    getHeadersMapFromJSONString("{7:[\"main\"]}");
   }
 }

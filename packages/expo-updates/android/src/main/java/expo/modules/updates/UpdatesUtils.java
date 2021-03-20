@@ -44,7 +44,7 @@ public class UpdatesUtils {
   private static final String UPDATES_DIRECTORY_NAME = ".expo-internal";
   private static final String UPDATES_EVENT_NAME = "Expo.nativeUpdatesEvent";
 
-  public static Map<String,String> getMapFromStringifiedJSON(String stringifiedJSON) throws Exception {
+  public static Map<String,String> getHeadersMapFromJSONString(String stringifiedJSON) throws Exception {
     JSONObject jsonObject = new JSONObject(stringifiedJSON);
     Iterator<String> keys = jsonObject.keys();
     Map<String, String> newMap = new HashMap<>();

@@ -11,7 +11,7 @@ import java.util.Map;
 
 import androidx.annotation.Nullable;
 
-import static expo.modules.updates.UpdatesUtils.getMapFromStringifiedJSON;
+import static expo.modules.updates.UpdatesUtils.getHeadersMapFromJSONString;
 
 public class UpdatesConfiguration {
 
@@ -133,7 +133,7 @@ public class UpdatesConfiguration {
       }
 
       String headerString = ai.metaData.getString("expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY", "{}");
-      mRequestHeaders = getMapFromStringifiedJSON(headerString);
+      mRequestHeaders = getHeadersMapFromJSONString(headerString);
 
       // used only for expo-updates development
       mHasEmbeddedUpdate = ai.metaData.getBoolean("expo.modules.updates.HAS_EMBEDDED_UPDATE", true);
