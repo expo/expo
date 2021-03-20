@@ -1,10 +1,8 @@
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { usePermissions } from '@use-expo/permissions';
 import * as Location from 'expo-location';
-import * as Permissions from 'expo-permissions';
 import * as TaskManager from 'expo-task-manager';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import * as React from 'react';
@@ -13,6 +11,7 @@ import MapView from 'react-native-maps';
 
 import Button from '../components/Button';
 import Colors from '../constants/Colors';
+import usePermissions from '../utilities/usePermissions';
 
 const STORAGE_KEY = 'expo-home-locations';
 const LOCATION_UPDATES_TASK = 'location-updates';
@@ -74,7 +73,7 @@ function reducer(state: State, action: Partial<State>): State {
 }
 
 export default function BackgroundLocationMapScreen(props: Props) {
-  const [permission] = usePermissions(Permissions.LOCATION, { ask: true });
+  const [permission] = usePermissions(Location.requestBackgroundPermissionsAsync);
 
   React.useEffect(() => {
     (async () => {
@@ -85,7 +84,7 @@ export default function BackgroundLocationMapScreen(props: Props) {
     })();
   }, [props.navigation]);
 
-  if (!permission?.granted) {
+  if (!permission) {
     return (
       <Text style={styles.errorText}>
         Location permissions are required in order to use this feature. You can manually enable them

@@ -4,6 +4,9 @@ function optionalRequire(requirer: () => { default: React.ComponentType }) {
   try {
     return requirer().default;
   } catch (e) {
+    // Comment this log out if you want to, but it's valuable to know which
+    // screens have not loaded and why when testing.
+    console.log(e);
     return null;
   }
 }
