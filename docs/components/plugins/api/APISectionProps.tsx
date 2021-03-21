@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
 import { B } from '~/components/base/paragraph';
-import { H2 } from '~/components/plugins/Headings';
+import { H2, H4 } from '~/components/plugins/Headings';
 import {
   APISubSectionProps,
   renderers,
@@ -27,6 +27,28 @@ const extractDefaultPropValue = (prop: any, defaultProps: any) => {
   )[0]?.defaultValue;
 };
 
+const extractInheritedProps = (data: any[]) => {
+  const inheritedProps = data.filter((e: any) => e.type === 'reference');
+  if (inheritedProps.length) {
+    return (
+      <div>
+        <H4>Inherited Props</H4>
+        <UL>
+          {inheritedProps.map((ip: any) => {
+            const component = ip?.typeArguments[0].queryType?.name;
+            return component ? (
+              <LI key={`inherited-prop-${component}`}>
+                <InlineCode>{component}</InlineCode>
+              </LI>
+            ) : null;
+          })}
+        </UL>
+      </div>
+    );
+  }
+  return null;
+};
+
 const renderProps = (data: any, defaultValues: any): JSX.Element => {
   const props = data.type.types.filter((e: any) => e.declaration);
   return (
@@ -38,6 +60,7 @@ const renderProps = (data: any, defaultValues: any): JSX.Element => {
           )
         )}
       </UL>
+      {extractInheritedProps(data.type.types)}
     </div>
   );
 };

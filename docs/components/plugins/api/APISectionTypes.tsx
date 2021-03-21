@@ -19,7 +19,7 @@ const STYLES_OPTIONAL = css`
 `;
 
 const defineLiteralType = (types: any[]) => {
-  const uniqueTypes = Array.from(new Set(types.map((t: any) => typeof t)));
+  const uniqueTypes = Array.from(new Set(types.map((t: any) => typeof t.value)));
   if (uniqueTypes.length === 1) {
     return '`' + uniqueTypes[0] + '` - ';
   }
