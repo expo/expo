@@ -28,7 +28,7 @@ Manual smoke tests are included in `apps/native-component-list`, this is a good 
 
 ## 📦 Download and Setup
 
-1. [Fork](https://help.github.com/articles/fork-a-repo/) this repository to your own GitHub account and then [clone](https://help.github.com/articles/cloning-a-repository/) it to your local device. (`git remote add upstream git@github.com:expo/expo.git` 😉)
+1. [Fork](https://help.github.com/articles/fork-a-repo/) this repository to your own GitHub account and then [clone](https://help.github.com/articles/cloning-a-repository/) it to your local device. (`git remote add upstream git@github.com:expo/expo.git` 😉) Note: you must have `git lfs` already installed.
 1. Ensure [direnv](https://direnv.net/) is installed on your computer.
 1. Run the setup script with: `npm run setup:native` (if you just want to contribute to the docs, you can run `npm run setup:docs`). This command does the following for you:
 
@@ -40,13 +40,14 @@ Manual smoke tests are included in `apps/native-component-list`, this is a good 
    - Ensures your computer is set up for React Native (will install the Android NDK if it's not present)
    - Downloads the Node packages (`yarn install`)
 
-3. Navigate to the bare sandbox project `cd apps/bare-expo`
-4. Run the project on any platform (maybe start with web; it's the fastest! 😁)
+1. Navigate to the bare sandbox project `cd apps/bare-expo`
+1. Run the project on any platform (maybe start with web; it's the fastest! 😁)
 
    - Web: `yarn web`
    - iOS: `yarn ios`
    - Android: `yarn android`
-5. You are now running the `test-suite` app via the `bare-expo` project. The next section explains how you can begin to make changes to SDK packages.
+
+1. You are now running the `test-suite` app via the `bare-expo` project. The next section explains how you can begin to make changes to SDK packages.
 
 > If this didn't work for you as described, please [open an issue.](https://github.com/expo/expo/issues/new/choose)
 
@@ -55,6 +56,7 @@ Manual smoke tests are included in `apps/native-component-list`, this is a good 
 All Expo SDK packages can be found in the `packages/` directory. These packages are automatically linked to the projects in the `apps/` directory, so you can edit them in-place and see the changes in the running app.
 
  <!-- (meaning any iOS, Android, web, or API changes can be tested from `apps/bare-expo/`). -->
+
 1. Navigate to a package you want to edit. Ex: `cd packages/expo-constants`
 2. Start the TypeScript build in watch mode: `yarn build`
 3. Edit code in that package's `src/` directory
