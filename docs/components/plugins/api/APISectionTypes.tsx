@@ -18,6 +18,17 @@ const STYLES_OPTIONAL = css`
   padding-top: 22px;
 `;
 
+const defineLiteralType = (types: any[]) => {
+  const uniqueTypes = Array.from(new Set(types.map((t: any) => typeof t)));
+  if (uniqueTypes.length === 1) {
+    return '`' + uniqueTypes[0] + '` - ';
+  }
+  return undefined;
+};
+
+const decorateValue = (type: any) =>
+  typeof type.value === 'string' ? "`'" + type.value + "'`" : `'` + type.value + '`';
+
 const renderType = ({ name, comment, type }: any): JSX.Element | undefined => {
   if (type.declaration) {
     return (
@@ -66,17 +77,14 @@ const renderType = ({ name, comment, type }: any): JSX.Element | undefined => {
             <InlineCode>{name}</InlineCode>
           </H3Code>
           <ReactMarkdown renderers={renderers}>
-            {`\`${typeof validTypes[0].value}\` - Acceptable values are: ${validTypes
-              .map((t: any) => '`' + t.value + '`')
-              .join(', ')}.`}
+            {defineLiteralType(validTypes) +
+              `Acceptable values are: ${validTypes.map(decorateValue).join(', ')}.`}
           </ReactMarkdown>
         </div>
       );
     }
-    return undefined;
-  } else {
-    return undefined;
   }
+  return undefined;
 };
 
 const APISectionTypes: React.FC<APISubSectionProps> = ({ data }) =>
