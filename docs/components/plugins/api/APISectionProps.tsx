@@ -17,10 +17,14 @@ export type APISectionPropsDefaults = {
 
 const UNKNOWN_VALUE = '...';
 
-const extractDefaultPropValue = (defaultProps: any, propName: string) => {
+const extractDefaultPropValue = (prop: any, defaultProps: any) => {
+  const annotationDefault = prop?.comment?.tags?.filter((tag: any) => tag.tag === 'default');
+  if (annotationDefault?.length) {
+    return annotationDefault[0].text;
+  }
   return defaultProps?.type?.declaration?.children?.filter(
-    (defaultProp: any) => defaultProp.name === propName
-  )[0].defaultValue;
+    (defaultProp: any) => defaultProp.name === prop.name
+  )[0]?.defaultValue;
 };
 
 const renderProps = (data: any, defaultValues: any): JSX.Element => {
@@ -30,7 +34,7 @@ const renderProps = (data: any, defaultValues: any): JSX.Element => {
       <UL>
         {props?.map((def: any) =>
           def.declaration?.children.map((prop: any) =>
-            renderProp(prop, extractDefaultPropValue(defaultValues, prop.name))
+            renderProp(prop, extractDefaultPropValue(prop, defaultValues))
           )
         )}
       </UL>
