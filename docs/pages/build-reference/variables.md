@@ -112,7 +112,7 @@ To create a new secret, run `eas secrets:create`
 ✔ ️Created a new secret SECRET_NAME on project @fiberjw/goodweebs.
 ```
 
-To view the secrets you currently have for this project, run `eas secrets:list`:
+To view any existing secrets for this project, run `eas secrets:list`:
 
 ```
 > eas secrets:list
