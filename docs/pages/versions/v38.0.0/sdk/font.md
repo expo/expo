@@ -147,7 +147,7 @@ await loadAsync({
 
 ### `FontResource`
 
-Used to dictate the resource that is loaded into the provided font namespace when used with [`loadAsync`](#loadasync). Optionally on web you can define a `display` value which sets the [`font-display`](#FontDisplay) property for a given typeface in the browser.
+Used to dictate the resource that is loaded into the provided font namespace when used with [`loadAsync`](#fontloadasyncobject). Optionally on web you can define a `display` value which sets the [`font-display`](#fontdisplay) property for a given typeface in the browser.
 
 ```ts
 type FontResource = {
@@ -158,7 +158,7 @@ type FontResource = {
 
 ### `FontSource`
 
-The different types of assets you can provide to the [`loadAsync()`](#loadAsync) function. A font source can be a URI, a module ID, or an Expo Asset.
+The different types of assets you can provide to the [`loadAsync()`](#fontloadasyncobject) function. A font source can be a URI, a module ID, or an Expo Asset.
 
 ```ts
 type FontSource = string | number | Asset | FontResource;
