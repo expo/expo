@@ -66,7 +66,6 @@ This is an example of how your package.json might look like:
 
 <ImageSpotlight alt="Secret creation UI filled" src="/static/images/eas-build/environment-secrets/secrets-create-filled.png" />
 
-If you are not using `credentials.json` for Android/iOS credentials, it is fine for `experimental.npmToken` to be the only entry in the file. Add `credentials.json` to `.gitignore` if it's not there already.
 
 ## Using npm cache with yarn v1
 
