@@ -32,7 +32,6 @@
     "@expo/config-types": "^40.0.0-beta.2",
     "eslint": "^7.9.0",
     "expo-yarn-workspaces": "*",
-    "prettier": "^1.19.1",
-    "typedoc": "^0.20.32"
+    "prettier": "^1.19.1"
   }
 }

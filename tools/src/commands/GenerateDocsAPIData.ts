@@ -1,5 +1,5 @@
 import { Command } from '@expo/commander';
-import { exec } from 'child_process';
+import { Application, TSConfigReader, TypeDocReader } from 'typedoc';
 
 type ActionOptions = {
   pkgName: string;
@@ -14,6 +14,11 @@ const executeCommand = async (
   entryPoint = 'index',
   wholeModule = false
 ) => {
+  const app = new Application();
+
+  app.options.addReader(new TSConfigReader());
+  app.options.addReader(new TypeDocReader());
+
   const entry = wholeModule
     ? `./packages/${pkgName}/src`
     : `./packages/${pkgName}/src/${entryPoint}`;
@@ -21,22 +26,23 @@ const executeCommand = async (
   const tsConfigPath = `./packages/${pkgName}/tsconfig.json`;
   const jsonOutputPath = `${DATA_PATH}/${pkgName}.json`;
 
-  exec(
-    'typedoc --emit --disableSources --hideGenerator --readme none --excludePrivate --excludeProtected ' +
-      `${entry} --tsconfig ${tsConfigPath} --json ${jsonOutputPath}`,
-    (error, stdout, stderr) => {
-      if (error && error.message && error.message.length > 0) {
-        console.error(error.message);
-        reject();
-      } else if (stderr) {
-        console.error(stderr);
-        reject();
-      } else {
-        console.log(stdout);
-        resolve();
-      }
-    }
-  );
+  app.bootstrap({
+    entryPoints: [entry],
+    tsconfig: tsConfigPath,
+    disableSources: true,
+    hideGenerator: true,
+    excludePrivate: true,
+    excludeProtected: true,
+  });
+
+  const project = app.convert();
+
+  if (project) {
+    await app.generateJson(project, jsonOutputPath);
+    resolve();
+  } else {
+    reject();
+  }
 };
 
 async function action({ pkgName }: ActionOptions) {
@@ -47,7 +53,7 @@ async function action({ pkgName }: ActionOptions) {
   if (pkgName) {
     if (packagesMapping[pkgName]) {
       new Promise((resolve, reject) => {
-        executeCommand(resolve, reject, pkgName, ...packagesMapping[pkgName]);
+        executeCommand(resolve, reject, pkgName, ...packagesMapping[pkgName]).catch(console.error);
       }).then(
         () => {
           console.log(`🎉 Successful extraction of docs API data '${pkgName}' packages!`);
@@ -62,7 +68,7 @@ async function action({ pkgName }: ActionOptions) {
   } else {
     const work = Object.keys(packagesMapping).map(key => {
       return new Promise((resolve, reject) => {
-        executeCommand(resolve, reject, key, ...packagesMapping[key]);
+        executeCommand(resolve, reject, key, ...packagesMapping[key]).catch(console.error);
       });
     });
 
