@@ -73,7 +73,7 @@ You can manage secrets through the Expo website and EAS CLI.
 
 ### Secrets on the Expo website
 
-To create secrets to use across all apps in an account, navigate to the "Secrets" tab under the [account settings](https://expo.io/settings/secrets):
+To create account-wide secrets, navigate to the "Secrets" tab under your account or organization's [settings](https://expo.io/settings/secrets):
 
 <ImageSpotlight alt="Global secrets location" src="/static/images/eas-build/environment-secrets/secrets-account-nav.png" />
 
