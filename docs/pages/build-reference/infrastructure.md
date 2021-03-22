@@ -13,8 +13,6 @@ When selecting an image for the build you can use the full name provided below o
 - `default` alias will be assigned to the environment that most closely resembles the configuration used for Expo SDK development.
 - `latest` alias will be assigned to the image with the most up to date versions of the software.
 
-Currently, only one image is supported per platform, more images will be available in the future.
-
 ## Android build server configurations
 
 - Android workers run on Kubernetes in an isolated environment
@@ -46,7 +44,7 @@ Currently, only one image is supported per platform, more images will be availab
   - Build resource limits: 6 cores, 8 GB RAM
 - npm cache. [Learn more](caching/#javascript-dependencies)
 
-#### Image `macos-catalina-11.15-xcode-12.1` (alias `default`, `latest`)
+#### Image `macos-catalina-11.15-xcode-12.1`
 
 - macOS Catalina 10.15.4
 - Xcode 12.1 (12A7403)
@@ -55,3 +53,13 @@ Currently, only one image is supported per platform, more images will be availab
 - fastlane 2.170.0
 - CocoaPods 1.10.0
 - Ruby 2.6.3p62 (2019-04-16 revision 67580) [universal.x86_64-darwin19]
+
+#### Image `macos-catalina-11.15-xcode-12.4` (alias `default`, `latest`)
+
+- macOS Catalina 10.15.7
+- Xcode 12.4 (12D4e)
+- Node.js 14.15.1
+- Yarn 1.22.10
+- fastlane 2.178.0
+- CocoaPods 1.10.1
+- Ruby 2.7.0p0 (2019-12-25 revision 647ee6f091) [x86_64-darwin19]
