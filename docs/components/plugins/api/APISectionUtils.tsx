@@ -28,6 +28,13 @@ export const renderers: React.ComponentProps<typeof ReactMarkdown>['renderers'] 
   text: ({ value }) => (value ? <span>{value}</span> : null),
 };
 
+export const inlineRenderers: React.ComponentProps<typeof ReactMarkdown>['renderers'] = {
+  ...renderers,
+  ...{
+    paragraph: ({ children }) => (children ? <span>{children}</span> : null),
+  },
+};
+
 export const resolveTypeName = ({
   elementType,
   name,

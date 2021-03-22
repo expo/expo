@@ -7,7 +7,7 @@ import { B } from '~/components/base/paragraph';
 import { H2, H4 } from '~/components/plugins/Headings';
 import {
   APISubSectionProps,
-  renderers,
+  inlineRenderers,
   resolveTypeName,
 } from '~/components/plugins/api/APISectionUtils';
 
@@ -17,13 +17,13 @@ export type APISectionPropsDefaults = {
 
 const UNKNOWN_VALUE = '...';
 
-const extractDefaultPropValue = (prop: any, defaultProps: any) => {
-  const annotationDefault = prop?.comment?.tags?.filter((tag: any) => tag.tag === 'default');
+const extractDefaultPropValue = ({ comment, name }: any, defaultProps: any) => {
+  const annotationDefault = comment?.tags?.filter((tag: any) => tag.tag === 'default');
   if (annotationDefault?.length) {
     return annotationDefault[0].text;
   }
   return defaultProps?.type?.declaration?.children?.filter(
-    (defaultProp: any) => defaultProp.name === prop.name
+    (defaultProp: any) => defaultProp.name === name
   )[0]?.defaultValue;
 };
 
@@ -49,10 +49,10 @@ const extractInheritedProps = (data: any[]) => {
   return null;
 };
 
-const renderProps = (data: any, defaultValues: any): JSX.Element => {
-  const props = data.type.types.filter((e: any) => e.declaration);
+const renderProps = ({ name, type }: any, defaultValues: any): JSX.Element => {
+  const props = type.types.filter((e: any) => e.declaration);
   return (
-    <div key={`props-definition-${data.name}`}>
+    <div key={`props-definition-${name}`}>
       <UL>
         {props?.map((def: any) =>
           def.declaration?.children.map((prop: any) =>
@@ -60,28 +60,20 @@ const renderProps = (data: any, defaultValues: any): JSX.Element => {
           )
         )}
       </UL>
-      {extractInheritedProps(data.type.types)}
+      {extractInheritedProps(type.types)}
     </div>
   );
 };
 
-const renderProp = (prop: any, defaultValue: any) => (
-  <LI key={`prop-entry-${prop.name}`}>
+const renderProp = ({ comment, name, type }: any, defaultValue: any) => (
+  <LI key={`prop-entry-${name}`}>
     <B>
-      {prop.name} (<InlineCode>{resolveTypeName(prop.type)}</InlineCode>)
+      {name} (<InlineCode>{resolveTypeName(type)}</InlineCode>)
     </B>
-    {prop.comment ? (
+    {comment ? (
       <span>
         {' - '}
-        <ReactMarkdown
-          renderers={{
-            ...renderers,
-            ...{
-              paragraph: ({ children }) => (children ? <span>{children}</span> : null),
-            },
-          }}>
-          {prop.comment.shortText}
-        </ReactMarkdown>
+        <ReactMarkdown renderers={inlineRenderers}>{comment.shortText}</ReactMarkdown>
       </span>
     ) : null}
     {defaultValue && defaultValue !== UNKNOWN_VALUE ? (

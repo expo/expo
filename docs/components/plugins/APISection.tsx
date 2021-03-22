@@ -28,23 +28,21 @@ const renderAPI = (
   apiName?: string
 ): JSX.Element => {
   try {
-    const data = require(`~/public/static/data/${version}/${packageName}.json`);
+    const data = require(`~/public/static/data/${version}/${packageName}.json`).children;
 
-    const methods = filterData(data.children, TypeDocKind.Function);
+    const methods = filterData(data, TypeDocKind.Function);
     const types = filterData(
-      data.children,
+      data,
       TypeDocKind.TypeAlias,
       entry => entry.type.declaration || entry.type.types
     );
-    const props = filterData(data.children, TypeDocKind.TypeAlias, entry =>
-      entry.name.includes('Props')
-    );
+    const props = filterData(data, TypeDocKind.TypeAlias, entry => entry.name.includes('Props'));
     const defaultProps = filterData(
-      filterData(data.children, TypeDocKind.Class)[0]?.children,
+      filterData(data, TypeDocKind.Class)[0]?.children,
       TypeDocKind.Property,
       entry => entry.name === 'defaultProps'
     )[0];
-    const enums = filterData(data.children, TypeDocKind.Enum);
+    const enums = filterData(data, TypeDocKind.Enum);
 
     return (
       <div>
@@ -54,7 +52,7 @@ const renderAPI = (
         <APISectionEnums data={enums} />
       </div>
     );
-  } catch (e) {
+  } catch (error) {
     return <P>No API data file found, sorry!</P>;
   }
 };
