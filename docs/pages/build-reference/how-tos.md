@@ -130,14 +130,14 @@ export default ({ config }) => ({
         "worflow": "generic",
         "scheme": "myapp-staging",
         "env": {
-            "APP_ENV": "staging"
+          "APP_ENV": "staging"
         }
       },
       "production": {
         "worflow": "generic",
         "scheme": "myapp",
         "env": {
-            "APP_ENV": "production"
+          "APP_ENV": "production"
         }
       }
     }
