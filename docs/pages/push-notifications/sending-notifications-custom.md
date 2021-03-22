@@ -227,9 +227,8 @@ admin.messaging().sendToDevice(
       // here is a "message". For more info see:
       // https://docs.expo.io/versions/latest/sdk/notifications/#android-push-notification-payload-specification
 
-      body: {        // ⚠️ As per Android payload format specified above, the
-        photoId: 42, // additional "data" should be placed under "body" key.
-      }
+      body:                              // ⚠️ As per Android payload format specified above, the
+        JSON.stringify({ photoId: 42 }), // additional "data" should be placed under "body" key.
     },
   },
   options
