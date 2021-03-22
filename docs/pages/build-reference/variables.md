@@ -77,7 +77,7 @@ To create secrets to use across all apps in an account, navigate to the "Secrets
 
 <ImageSpotlight alt="Global secrets location" src="/static/images/eas-build/environment-secrets/secrets-account-nav.png" />
 
-To create secrets to in a specific project, navigate to the "Secrets" tab under the project dashboard:
+To create app-specific secrets, navigate to the "Secrets" tab in the project dashboard:
 
 <ImageSpotlight alt="Project secrets location" src="/static/images/eas-build/environment-secrets/secrets-project-nav.png" />
 
