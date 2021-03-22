@@ -26,7 +26,7 @@ Highly efficient method for loading fonts from static or remote resources which 
 
 #### Arguments
 
-- **{ [fontFamily: string]: FontSource }** -- A map of `fontFamily`s to [`FontSource`](#FontSource)s. After loading the font you can use the **key** in the `fontFamily` style prop of a `Text` element.
+- **{ [fontFamily: string]: FontSource }** -- A map of `fontFamily`s to [`FontSource`](#fontsource)s. After loading the font you can use the **key** in the `fontFamily` style prop of a `Text` element.
 
 #### Example
 
