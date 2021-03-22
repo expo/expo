@@ -51,7 +51,7 @@ When selecting an image for the build you can use the full name provided below o
 - Node.js 14.15.1
 - Yarn 1.22.10
 - fastlane 2.170.0
-- CocoaPods 1.10.0
+- CocoaPods 1.10.1
 - Ruby 2.6.3p62 (2019-04-16 revision 67580) [universal.x86_64-darwin19]
 
 #### Image `macos-catalina-11.15-xcode-12.4` (alias `default`, `latest`)
