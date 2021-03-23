@@ -6,7 +6,7 @@ import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import * as React from 'react';
-import { Platform, StyleSheet, Text, View, Modal, Pressable } from 'react-native';
+import { Platform, StyleSheet, Text, View, Modal } from 'react-native';
 import MapView from 'react-native-maps';
 
 import Button from '../../components/Button';
