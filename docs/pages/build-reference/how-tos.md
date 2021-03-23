@@ -127,14 +127,14 @@ export default ({ config }) => ({
   "build": {
     "ios": {
       "staging": {
-        "worflow": "generic",
+        "workflow": "generic",
         "scheme": "myapp-staging",
         "env": {
           "APP_ENV": "staging"
         }
       },
       "production": {
-        "worflow": "generic",
+        "workflow": "generic",
         "scheme": "myapp",
         "env": {
           "APP_ENV": "production"
