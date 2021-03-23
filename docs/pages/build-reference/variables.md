@@ -67,7 +67,7 @@ To provide your build jobs with access to values that are too sensitive to inclu
 
 These secrets are encrypted at rest and in transit, and are only decrypted in a secure environment by EAS servers.
 
-You can create up to 100 account-wide secrets for each Expo account and 100 app-specific secrets for each app (you probably won't need that many). Account-wide, or "global" secrets will be exposed to every build environment across all of your apps. App-specific secrets only apply to the app they're defined for, and will override any global secrets with the same name.
+You can create up to 100 account-wide secrets for each Expo account and 100 app-specific secrets for each app (you probably won't need that many). Account-wide secrets will be exposed to every build environment across all of your apps. App-specific secrets only apply to the app they're defined for, and will override any account-wide secrets with the same name.
 
 You can manage secrets through the Expo website and EAS CLI.
 
@@ -75,7 +75,7 @@ You can manage secrets through the Expo website and EAS CLI.
 
 To create account-wide secrets, navigate to the "Secrets" tab under your account or organization's [settings](https://expo.io/settings/secrets):
 
-<ImageSpotlight alt="Global secrets location" src="/static/images/eas-build/environment-secrets/secrets-account-nav.png" />
+<ImageSpotlight alt="account-wide secrets location" src="/static/images/eas-build/environment-secrets/secrets-account-nav.png" />
 
 To create app-specific secrets, navigate to the "Secrets" tab in the project dashboard:
 
