@@ -8,7 +8,6 @@
 
 #import <React/RCTDefines.h>
 #import <React/RCTUtils.h>
-#import <React/RCTPackagerConnection.h>
 
 #import <UIKit/UIKit.h>
 
