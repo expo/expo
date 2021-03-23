@@ -111,7 +111,7 @@ dependencies {
   api "androidx.exifinterface:exifinterface:1.0.0"
   api "androidx.legacy:legacy-support-v4:1.0.0"
   api "androidx.browser:browser:1.0.0"
-  
+
   // react-native-screens
   api 'androidx.fragment:fragment:1.2.2'
   api 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
@@ -139,9 +139,9 @@ dependencies {
   api 'com.android.installreferrer:installreferrer:1.0'
 
   //dbflow
-  annotationProcessor "com.github.Raizlabs.DBFlow:dbflow-processor:${safeExtGet('dbFlowVersion', '4.2.4')}"
-  api "com.github.Raizlabs.DBFlow:dbflow-core:${safeExtGet('dbFlowVersion', '4.2.4')}"
-  api "com.github.Raizlabs.DBFlow:dbflow:${safeExtGet('dbFlowVersion', '4.2.4')}"
+  annotationProcessor "com.github.agrosner.DBFlow:dbflow-processor:${safeExtGet('dbFlowVersion', '4.2.4')}"
+  api "com.github.agrosner.DBFlow:dbflow-core:${safeExtGet('dbFlowVersion', '4.2.4')}"
+  api "com.github.agrosner.DBFlow:dbflow:${safeExtGet('dbFlowVersion', '4.2.4')}"
 
   implementation 'com.cronutils:cron-utils:4.1.3'
 }
