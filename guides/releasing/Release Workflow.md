@@ -29,7 +29,7 @@
   - [3.3. Make a simulator/emulator build](#33-make-a-simulatoremulator-build)
 - [Stage 4 - Standalone apps](#stage-4---standalone-apps)
   - [4.1. Make shell app build](#41-make-shell-app-build)
-  - [4.3. Deploy Turtle with new shell tarballs](#43-deploy-turtle-with-new-shell-tarballs)
+  - [4.2. Deploy Turtle with new shell tarballs](#42-deploy-turtle-with-new-shell-tarballs)
 - [Stage 5 - Beta release](#stage-5---beta-release)
   - [5.1. Deploy Turtle to production](#51-deploy-turtle-to-production)
   - [5.2. Deploy new docs with beta version](#52-deploy-new-docs-with-beta-version)
@@ -422,7 +422,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 - Copy the url to the tarball that has been uploaded to `exp-artifacts` S3 bucket (it's printed in `Upload shell app tarball to S3` step of the workflow).
 - Now go to `expo/turtle` repo and put the copied link into `shellTarballs/{ios,android}/sdkXX` file and put appropriate change information in the `CHANGELOG.md` file, commit and then push changes.
 
-## 4.3. Deploy Turtle with new shell tarballs
+## 4.2. Deploy Turtle with new shell tarballs
 
 **Why:** Once we've made standalone and adhoc client shell apps, we're now ready to deploy Turtle to staging, test it and then roll out to production.
 
