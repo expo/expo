@@ -6,6 +6,9 @@
 
 ### 🎉 New features
 
+- Add new `Recording.createAsync` API for faster recording on iOS. ([#12294](https://github.com/expo/expo/pull/12294) by [@IjzerenHein](https://github.com/IjzerenHein))
+- Add `keepAudioActiveHint` recording option to prevent deactivation of the Audio session when recording on iOS. ([#12294](https://github.com/expo/expo/pull/12294) by [@IjzerenHein](https://github.com/IjzerenHein))
+
 ### 🐛 Bug fixes
 
 ## 9.1.0 — 2021-03-10
