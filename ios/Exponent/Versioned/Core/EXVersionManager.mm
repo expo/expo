@@ -289,12 +289,14 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   [devSettings toggleElementInspector];
 }
 
+#if DEBUG || RCT_DEV
 - (uint32_t)addWebSocketNotificationHandler:(void (^)(NSDictionary<NSString *, id> *))handler
                                     queue:(dispatch_queue_t)queue
                                 forMethod:(NSString *)method
 {
   return [[RCTPackagerConnection sharedPackagerConnection] addNotificationHandler:handler queue:queue forMethod:method];
 }
+#endif
 
 #pragma mark - internal
 
