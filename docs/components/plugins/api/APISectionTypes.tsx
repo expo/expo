@@ -4,13 +4,15 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown';
 
 import { InlineCode } from '~/components/base/code';
+import { UL } from '~/components/base/list';
 import { B } from '~/components/base/paragraph';
-import { H2, H3Code } from '~/components/plugins/Headings';
+import { H2, H3Code, H4 } from '~/components/plugins/Headings';
 import {
   APISubSectionProps,
   inlineRenderers,
   renderers,
   resolveTypeName,
+  renderParam,
 } from '~/components/plugins/api/APISectionUtils';
 
 const STYLES_OPTIONAL = css`
@@ -30,50 +32,61 @@ const defineLiteralType = (types: any[]) => {
 const decorateValue = (type: any) =>
   typeof type.value === 'string' ? "`'" + type.value + "'`" : `'` + type.value + '`';
 
+const renderTypePropertyRow = (typeProperty: any): JSX.Element => (
+  <tr key={typeProperty.name}>
+    <td>
+      <B>{typeProperty.name}</B>
+      {typeProperty.flags?.isOptional ? (
+        <>
+          <br />
+          <span css={STYLES_OPTIONAL}>(optional)</span>
+        </>
+      ) : null}
+    </td>
+    <td>
+      <InlineCode>{resolveTypeName(typeProperty.type)}</InlineCode>
+    </td>
+    <td>
+      {typeProperty.comment ? (
+        <ReactMarkdown renderers={inlineRenderers}>{typeProperty.comment.shortText}</ReactMarkdown>
+      ) : (
+        '-'
+      )}
+    </td>
+  </tr>
+);
+
 const renderType = ({ name, comment, type }: any): JSX.Element | undefined => {
   if (type.declaration) {
     return (
       <div key={`type-definition-${name}`}>
         <H3Code>
-          <InlineCode>{name}</InlineCode>
+          <InlineCode>
+            {name}
+            {type.declaration.signatures ? '()' : ''}
+          </InlineCode>
         </H3Code>
         {comment ? <ReactMarkdown renderers={renderers}>{comment.shortText}</ReactMarkdown> : null}
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            {type.declaration.children.map((typeProperty: any) => (
-              <tr key={typeProperty.name}>
-                <td>
-                  <B>{typeProperty.name}</B>
-                  {typeProperty.flags?.isOptional ? (
-                    <>
-                      <br />
-                      <span css={STYLES_OPTIONAL}>(optional)</span>
-                    </>
-                  ) : null}
-                </td>
-                <td>
-                  <InlineCode>{resolveTypeName(typeProperty.type)}</InlineCode>
-                </td>
-                <td>
-                  {typeProperty.comment ? (
-                    <ReactMarkdown renderers={inlineRenderers}>
-                      {typeProperty.comment.shortText}
-                    </ReactMarkdown>
-                  ) : (
-                    '-'
-                  )}
-                </td>
+        {type.declaration.children ? (
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Description</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>{type.declaration.children.map(renderTypePropertyRow)}</tbody>
+          </table>
+        ) : null}
+        {type.declaration.signatures
+          ? type.declaration.signatures.map(({ parameters }: any) => (
+              <div>
+                {parameters ? <H4>Arguments</H4> : null}
+                {parameters ? <UL>{parameters?.map(renderParam)}</UL> : null}
+              </div>
+            ))
+          : null}
       </div>
     );
   } else if (type.types && type.type === 'union') {

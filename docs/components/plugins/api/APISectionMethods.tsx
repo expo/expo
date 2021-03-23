@@ -3,28 +3,13 @@ import ReactMarkdown from 'react-markdown';
 
 import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
-import { B } from '~/components/base/paragraph';
 import { H2, H3Code, H4 } from '~/components/plugins/Headings';
 import {
   APISubSectionProps,
-  inlineRenderers,
   renderers,
+  renderParam,
   resolveTypeName,
 } from '~/components/plugins/api/APISectionUtils';
-
-const renderParam = ({ comment, name, type }: any): JSX.Element => (
-  <LI key={`param-${name}`}>
-    <B>
-      {name} (<InlineCode>{resolveTypeName(type)}</InlineCode>)
-    </B>
-    {comment?.text ? (
-      <>
-        {' - '}
-        <ReactMarkdown renderers={inlineRenderers}>{comment?.text}</ReactMarkdown>
-      </>
-    ) : null}
-  </LI>
-);
 
 const renderMethod = ({ signatures }: any, apiName?: string): JSX.Element =>
   signatures.map((signature: any) => {

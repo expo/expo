@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import { InlineCode } from '~/components/base/code';
 import { InternalLink } from '~/components/base/link';
 import { LI, UL } from '~/components/base/list';
-import { P } from '~/components/base/paragraph';
+import { B, P } from '~/components/base/paragraph';
 
 export type APISubSectionProps = {
   data: Record<string, any>[];
@@ -73,3 +73,17 @@ export const resolveTypeName = ({
   }
   return 'undefined';
 };
+
+export const renderParam = ({ comment, name, type }: any): JSX.Element => (
+  <LI key={`param-${name}`}>
+    <B>
+      {name} (<InlineCode>{resolveTypeName(type)}</InlineCode>)
+    </B>
+    {comment?.text ? (
+      <>
+        {' - '}
+        <ReactMarkdown renderers={inlineRenderers}>{comment?.text}</ReactMarkdown>
+      </>
+    ) : null}
+  </LI>
+);
