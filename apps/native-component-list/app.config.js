@@ -36,6 +36,11 @@ export default ({ config }) => {
     ],
   ];
 
+  // NOTE(brentvatne):
+  // This adds an ios.scheme property to manifest, which does not validate
+  // against our schema but works with config plugins. Comment this plugin
+  // out if you need to publish.
+  //
   config.plugins.push([
     'expo-payments-stripe',
     {
@@ -43,6 +48,7 @@ export default ({ config }) => {
       merchantId: 'merchant.com.example.development',
     },
   ]);
+
   config.plugins.push([
     'expo-document-picker',
     {
