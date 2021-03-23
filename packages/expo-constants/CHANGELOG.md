@@ -6,10 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+## 10.1.1 — 2021-03-23
+
+### 🎉 New features
+
 - Added new `Constants.__unsafeNoWarnManifest` property that behaves as `Constants.manifest` property, but suppresses warning upon no manifest available. ([#12237](https://github.com/expo/expo/pull/12237) by [@bbarthec](https://github.com/bbarthec))
   > Warning: don't use this property, it's introduced for internal use only.
-
-### 🐛 Bug fixes
 
 ## 10.1.0 — 2021-03-10
 

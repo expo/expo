@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 9.2.0 — 2021-03-23
+
+### 🐛 Bug fixes
+
 - Updated underlying native library on Android from v8 to v16. ([#12250](https://github.com/expo/expo/pull/12250) by [@cruzach](https://github.com/cruzach))
 
 ## 9.1.0 — 2021-03-10
