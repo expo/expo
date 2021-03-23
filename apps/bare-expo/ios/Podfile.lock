@@ -34,7 +34,7 @@ PODS:
     - ZXingObjC/PDF417
   - EXBattery (4.1.0):
     - UMCore
-  - EXBlur (9.0.1):
+  - EXBlur (9.0.2):
     - UMCore
   - EXBrightness (9.1.0):
     - UMCore
@@ -52,7 +52,7 @@ PODS:
     - UMPermissionsInterface
   - EXCellular (3.1.0):
     - UMCore
-  - EXConstants (10.1.0):
+  - EXConstants (10.1.1):
     - UMConstantsInterface
     - UMCore
   - EXContacts (9.1.0):
@@ -68,13 +68,13 @@ PODS:
     - UMFileSystemInterface
   - EXErrorRecovery (2.1.0):
     - UMCore
-  - EXFacebook (11.0.1):
+  - EXFacebook (11.0.2):
     - FacebookSDK/CoreKit (= 9.0.1)
     - FacebookSDK/LoginKit (= 9.0.1)
     - UMConstantsInterface
     - UMCore
     - UMPermissionsInterface
-  - EXFaceDetector (10.0.0):
+  - EXFaceDetector (10.0.1):
     - GoogleMLKit/FaceDetection (= 2.1.0)
     - MLKitCommon (= 2.1.0)
     - MLKitFaceDetection (= 1.2.0)
@@ -110,7 +110,7 @@ PODS:
     - UMCore
   - EXHaptics (10.0.0):
     - UMCore
-  - EXImageLoader (2.1.0):
+  - EXImageLoader (2.1.1):
     - React-Core
     - UMCore
     - UMImageLoaderInterface
@@ -147,7 +147,7 @@ PODS:
     - UMPermissionsInterface
   - EXNetwork (3.1.0):
     - UMCore
-  - EXNotifications (0.11.0):
+  - EXNotifications (0.11.1):
     - UMCore
     - UMPermissionsInterface
   - EXPermissions (12.0.0):
@@ -1232,19 +1232,19 @@ SPEC CHECKSUMS:
   EXBackgroundFetch: 5348a5e4eaf3cc5d993425823d9d01de2866ec4e
   EXBarCodeScanner: 250af16c5b9c1ef11bdc0c5b045b2ebe679808b0
   EXBattery: 03199bf4db5edb0978f658ab0f3ee931c8bc819a
-  EXBlur: 1c0dcc4a2bd86ae265008fd559fb57d86b5b882f
+  EXBlur: 78fe13b091326e39e09a1f14357997cd7756be75
   EXBrightness: c44e722e50ee0d9b4056e1e9eecf2c49ea5c2d05
   EXCalendar: f94d2a4376eaba3bbdabbc4b06e145d0bfe0f4d9
   EXCamera: dd244e6fb25301ae57cb9bc966bf8bc8cd355fe4
   EXCellular: 06e641f1c34e9d772da3c69cfe9ef4828791e3f8
-  EXConstants: 7b62561d1c9d786492e13472ff5b868ba8628086
+  EXConstants: 7c75e5019483e84cc658c133f48607c951652465
   EXContacts: fed2b61413f7ceed629bca63f7579cb720778e31
   EXCrypto: 9cbeb90f6c60a8ae9f26242fd2db916b21c55700
   EXDevice: e69996534618927956e80a91135b5c0dd1d7d114
   EXDocumentPicker: 5b10e7ee57c0877738e89fdfc96ba91412834a58
   EXErrorRecovery: 720641265b8cf95e6cdeb1884ac38e794a352488
-  EXFacebook: 19557469cf50cdfc844eabb14e5518db802d1130
-  EXFaceDetector: e496dcad8dee006c45b39b7d958f8c2241857a65
+  EXFacebook: 50208a5f802863af28d60e857e525fd0d3f96dc6
+  EXFaceDetector: c309852d636c773340a0a0e5dd25985ad4f39f6e
   EXFileSystem: b0f2bd62531acb3bc6541a5121f0b1338aaee34f
   EXFirebaseAnalytics: 0c5a4572e4ec16d188770cdb58f75818b5e2c719
   EXFirebaseCore: 7865e37021ddcff5c575a4598686a2939d6c4183
@@ -1254,7 +1254,7 @@ SPEC CHECKSUMS:
   EXGL_CPP_LEGACY: 0d65426183da75b3c263f88fc92ac27515926422
   EXGoogleSignIn: 9737eb53d327c3d5e668ea00bed490695d880893
   EXHaptics: 2de40c5f50a9e78da92c209db06db5134d8cac0b
-  EXImageLoader: 52be46f86a52f79df445b73e165ed6244bca43de
+  EXImageLoader: da941c9399e01ec28f2d5b270bdd21f2c8ca596c
   EXImageManipulator: a099e4694070c7cb86aa0b0b1afa3ea184153a7d
   EXImagePicker: a8be9e6db14d692d04d723cac92d5c47f0b42ce3
   EXInAppPurchases: 781153434a138c7c5d20706f47c4003e3d76b5a1
@@ -1266,7 +1266,7 @@ SPEC CHECKSUMS:
   EXMailComposer: 3905ca3554cc1142f45bc54632e12e23b8a464a0
   EXMediaLibrary: b7595816ee5261f7e1b9c48616d65b28e487f123
   EXNetwork: 5358bd8f47f780e81b18971cef36fce0ebe0af67
-  EXNotifications: 519c824c38ccdf74cb01766ba244f970f53897b1
+  EXNotifications: f199ea16d9e963759bf68f4d6952b3591638e612
   EXPermissions: 67ff17d3c12ea06066492dde4242f8047658fd62
   expo-dev-launcher: 0351bdeef423c28146573adbdeb822ed42b941b8
   expo-dev-menu: bbce00e72ede1b7308c469f288b365a9a917a173
