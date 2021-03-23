@@ -163,51 +163,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                              action:^(__unused UIKeyCommand *_) {
                                [weakSelf _handleKernelMenuCommand];
                              }];
-  
-  // Attach listeners to the bundler's dev server web socket connection.
-  // This enables tools to automatically reload the client remotely (i.e. in expo-cli).
-  
-  // Enable a lot of tools under the same command namespace
-  [[RCTPackagerConnection sharedPackagerConnection]
-      addNotificationHandler:^(id params) {
-        if (params != [NSNull null] && (NSDictionary *)params) {
-          NSDictionary *_params = (NSDictionary *)params;
-          if (_params[@"name"] != nil && (NSString *)_params[@"name"]) {
-            NSString *name = _params[@"name"];
-            if ([name isEqualToString:@"reload"]) {
-              [weakSelf _handleRefreshCommand];
-            } else if ([name isEqualToString:@"toggleDevMenu"]) {
-              [weakSelf _handleMenuCommand];
-            } else if ([name isEqualToString:@"toggleRemoteDebugging"]) {
-              [weakSelf _handleToggleRemoteDebuggingCommand];
-            } else if ([name isEqualToString:@"toggleElementInspector"]) {
-              [weakSelf _handleToggleInspectorCommand];
-            } else if ([name isEqualToString:@"togglePerformanceMonitor"]) {
-              [weakSelf _handleTogglePerformanceMonitorCommand];
-            }
-          }
-        }
-      }
-                       queue:dispatch_get_main_queue()
-                   forMethod:@"sendDevCommand"];
-  
-  // These (reload and devMenu) are here to match RN dev tooling.
-  
-  // Reload the app on "reload"
-  [[RCTPackagerConnection sharedPackagerConnection]
-      addNotificationHandler:^(id params) {
-        [weakSelf _handleRefreshCommand];
-      }
-                       queue:dispatch_get_main_queue()
-                   forMethod:@"reload"];
-  
-  // Open the dev menu on "devMenu"
-  [[RCTPackagerConnection sharedPackagerConnection]
-      addNotificationHandler:^(id params) {
-        [weakSelf _handleMenuCommand];
-      }
-                       queue:dispatch_get_main_queue()
-                   forMethod:@"devMenu"];
+
 }
 
 - (void)_handleMenuCommand
