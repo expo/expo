@@ -638,6 +638,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (void)setupWebSocketControls
 {
+#if DEBUG || RCT_DEV
   if ([self enablesDeveloperTools]) {
     if ([_versionManager respondsToSelector:@selector(addWebSocketNotificationHandler:queue:forMethod:)]) {
       __weak typeof(self) weakSelf = self;
@@ -685,6 +686,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
                                              forMethod:@"devMenu"];
     }
   }
+#endif
 }
 
 - (NSDictionary<NSString *, NSString *> *)devMenuItems
