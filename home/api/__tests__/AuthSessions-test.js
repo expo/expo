@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 import uuid from 'uuid';
 
-jest.mock('@react-native-community/async-storage', () => ({
+jest.mock('@react-native-async-storage/async-storage', () => ({
   setItem: jest.fn(() => new Promise(resolve => resolve(null))),
   getItem: jest.fn(() => new Promise(resolve => resolve(null))),
   removeItem: jest.fn(() => new Promise(resolve => resolve(null))),
