@@ -7,9 +7,24 @@ import { B } from '~/components/base/paragraph';
 import { H2, H3Code, H4 } from '~/components/plugins/Headings';
 import {
   APISubSectionProps,
+  inlineRenderers,
   renderers,
   resolveTypeName,
 } from '~/components/plugins/api/APISectionUtils';
+
+const renderParam = ({comment, name, type}: any) => (
+  <LI key={`param-${name}`}>
+    <B>
+      {name} (<InlineCode>{resolveTypeName(type)}</InlineCode>)
+    </B>
+    {comment?.text ? (
+      <>
+        {' - '}
+        <ReactMarkdown renderers={inlineRenderers}>{comment?.text}</ReactMarkdown>
+      </>
+    ) : null}
+  </LI>
+);
 
 const renderMethod = ({ signatures }: any, apiName?: string): JSX.Element =>
   signatures.map((signature: any) => {
@@ -23,21 +38,10 @@ const renderMethod = ({ signatures }: any, apiName?: string): JSX.Element =>
           </InlineCode>
         </H3Code>
         {parameters ? <H4>Arguments</H4> : null}
-        {parameters ? (
-          <UL>
-            {parameters?.map((p: any) => (
-              <LI key={`param-${p.name}`}>
-                <B>
-                  {p.name} (<InlineCode>{resolveTypeName(p.type)}</InlineCode>)
-                </B>
-              </LI>
-            ))}
-          </UL>
-        ) : null}
+        {parameters ? <UL>{parameters?.map(renderParam)}</UL> : null}
         {comment?.shortText ? (
           <ReactMarkdown renderers={renderers}>{comment.shortText}</ReactMarkdown>
         ) : null}
-        <br />
         {comment?.returns ? <H4>Returns</H4> : null}
         {comment?.returns ? (
           <UL>

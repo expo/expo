@@ -8,6 +8,7 @@ import { B } from '~/components/base/paragraph';
 import { H2, H3Code } from '~/components/plugins/Headings';
 import {
   APISubSectionProps,
+  inlineRenderers,
   renderers,
   resolveTypeName,
 } from '~/components/plugins/api/APISectionUtils';
@@ -60,7 +61,15 @@ const renderType = ({ name, comment, type }: any): JSX.Element | undefined => {
                 <td>
                   <InlineCode>{resolveTypeName(typeProperty.type)}</InlineCode>
                 </td>
-                <td>{typeProperty.comment ? typeProperty.comment.shortText : '-'}</td>
+                <td>
+                  {typeProperty.comment ? (
+                    <ReactMarkdown renderers={inlineRenderers}>
+                      {typeProperty.comment.shortText}
+                    </ReactMarkdown>
+                  ) : (
+                    '-'
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
