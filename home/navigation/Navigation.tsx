@@ -222,34 +222,46 @@ function TabNavigator(props: { theme: string }) {
 
 const ModalStack = createStackNavigator();
 
-export default (props: { theme: string }) => (
-  <NavigationContainer theme={Themes[props.theme]}>
-    <ModalStack.Navigator
-      initialRouteName="RootStack"
-      screenOptions={({ route, navigation }) => ({
-        headerShown: false,
-        gestureEnabled: true,
-        cardOverlayEnabled: true,
-        cardStyle: { backgroundColor: 'transparent' },
-        headerStatusBarHeight:
-          navigation.dangerouslyGetState().routes.indexOf(route) > 0 ? 0 : undefined,
-        ...TransitionPresets.ModalPresentationIOS,
-      })}
-      mode="modal">
-      <ModalStack.Screen name="RootStack">
-        {() => (
-          <RootStack.Navigator initialRouteName="Tabs" mode="modal">
-            <RootStack.Screen name="Tabs" options={{ headerShown: false }}>
-              {() => <TabNavigator theme={props.theme} />}
-            </RootStack.Screen>
-          </RootStack.Navigator>
-        )}
-      </ModalStack.Screen>
-      <ModalStack.Screen name="QRCode" component={QRCodeScreen} />
-      <ModalStack.Screen name="Experience" component={ExperienceScreen} />
-    </ModalStack.Navigator>
-  </NavigationContainer>
-);
+export default (props: { theme: string }) => {
+  const linking = {
+    prefixes: ['expogo://'],
+    config: {
+      initialRouteName: 'RootStack',
+      screens: {
+        QRCode: 'qr-scanner',
+      },
+    },
+  };
+
+  return (
+    <NavigationContainer theme={Themes[props.theme]} linking={linking}>
+      <ModalStack.Navigator
+        initialRouteName="RootStack"
+        screenOptions={({ route, navigation }) => ({
+          headerShown: false,
+          gestureEnabled: true,
+          cardOverlayEnabled: true,
+          cardStyle: { backgroundColor: 'transparent' },
+          headerStatusBarHeight:
+            navigation.dangerouslyGetState().routes.indexOf(route) > 0 ? 0 : undefined,
+          ...TransitionPresets.ModalPresentationIOS,
+        })}
+        mode="modal">
+        <ModalStack.Screen name="RootStack">
+          {() => (
+            <RootStack.Navigator initialRouteName="Tabs" mode="modal">
+              <RootStack.Screen name="Tabs" options={{ headerShown: false }}>
+                {() => <TabNavigator theme={props.theme} />}
+              </RootStack.Screen>
+            </RootStack.Navigator>
+          )}
+        </ModalStack.Screen>
+        <ModalStack.Screen name="QRCode" component={QRCodeScreen} />
+        <ModalStack.Screen name="Experience" component={ExperienceScreen} />
+      </ModalStack.Navigator>
+    </NavigationContainer>
+  );
+};
 
 const styles = StyleSheet.create({
   icon: {
