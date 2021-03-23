@@ -1,9 +1,10 @@
 import React from 'react';
+import ReactMarkdown from 'react-markdown';
 
 import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
 import { H2, H3Code } from '~/components/plugins/Headings';
-import { APISubSectionProps } from '~/components/plugins/api/APISectionUtils';
+import { APISubSectionProps, inlineRenderers } from '~/components/plugins/api/APISectionUtils';
 
 const renderEnum = ({ name, children, comment }: any): JSX.Element => (
   <div key={`enum-definition-${name}`}>
@@ -16,7 +17,12 @@ const renderEnum = ({ name, children, comment }: any): JSX.Element => (
           <InlineCode>
             {name}.{enumValue.name}
           </InlineCode>
-          {comment ? ` - ${comment.shortText}` : null}
+          {comment ? (
+            <>
+              {' - '}
+              <ReactMarkdown renderers={inlineRenderers}>{comment?.shortText}</ReactMarkdown>
+            </>
+          ) : null}
         </LI>
       ))}
     </UL>

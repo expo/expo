@@ -12,7 +12,7 @@ import {
   resolveTypeName,
 } from '~/components/plugins/api/APISectionUtils';
 
-const renderParam = ({comment, name, type}: any) => (
+const renderParam = ({ comment, name, type }: any): JSX.Element => (
   <LI key={`param-${name}`}>
     <B>
       {name} (<InlineCode>{resolveTypeName(type)}</InlineCode>)

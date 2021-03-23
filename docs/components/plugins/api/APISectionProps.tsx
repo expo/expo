@@ -27,22 +27,22 @@ const extractDefaultPropValue = ({ comment, name }: any, defaultProps: any) => {
   )[0]?.defaultValue;
 };
 
-const extractInheritedProps = (data: any[]) => {
-  const inheritedProps = data.filter((e: any) => e.type === 'reference');
+const renderInheritedProp = (ip: any) => {
+  const component = ip?.typeArguments[0].queryType?.name;
+  return component ? (
+    <LI key={`inherited-prop-${component}`}>
+      <InlineCode>{component}</InlineCode>
+    </LI>
+  ) : null;
+};
+
+const renderInheritedProps = (data: any[]) => {
+  const inheritedProps = data.filter((ip: any) => ip.type === 'reference');
   if (inheritedProps.length) {
     return (
       <div>
         <H4>Inherited Props</H4>
-        <UL>
-          {inheritedProps.map((ip: any) => {
-            const component = ip?.typeArguments[0].queryType?.name;
-            return component ? (
-              <LI key={`inherited-prop-${component}`}>
-                <InlineCode>{component}</InlineCode>
-              </LI>
-            ) : null;
-          })}
-        </UL>
+        <UL>{inheritedProps.map(renderInheritedProp)}</UL>
       </div>
     );
   }
@@ -60,7 +60,7 @@ const renderProps = ({ name, type }: any, defaultValues: any): JSX.Element => {
           )
         )}
       </UL>
-      {extractInheritedProps(type.types)}
+      {renderInheritedProps(type.types)}
     </div>
   );
 };
