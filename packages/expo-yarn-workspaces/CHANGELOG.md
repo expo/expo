@@ -6,9 +6,13 @@
 
 ### 🎉 New features
 
-- Updated `@expo/metro-config` with deprecated `.expo.*` extension support and improved error stack traces. ([#12252](https://github.com/expo/expo/pull/12252) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
+
+## 1.4.1 — 2021-03-23
+
+### 🎉 New features
+
+- Updated `@expo/metro-config` with deprecated `.expo.*` extension support and improved error stack traces. ([#12252](https://github.com/expo/expo/pull/12252) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 1.4.0 — 2021-03-10
 
