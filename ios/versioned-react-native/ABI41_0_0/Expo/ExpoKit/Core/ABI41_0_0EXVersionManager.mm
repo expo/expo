@@ -289,6 +289,12 @@ ABI41_0_0RCT_EXTERN void ABI41_0_0EXRegisterScopedModule(Class, ...);
   [devSettings toggleElementInspector];
 }
 
+- (uint32_t)addWebSocketNotificationHandler:(void (^)(NSDictionary<NSString *, id> *))handler
+                                    queue:(dispatch_queue_t)queue
+                                forMethod:(NSString *)method
+{
+  return [[ABI41_0_0RCTPackagerConnection sharedPackagerConnection] addNotificationHandler:handler queue:queue forMethod:method];
+}
 
 #pragma mark - internal
 
