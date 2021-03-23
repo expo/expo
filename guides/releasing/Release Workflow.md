@@ -268,7 +268,7 @@ In the managed workflow, we use our forked `react-native` repository because we 
 
 | Prerequisites                                                                                                          |
 | ---------------------------------------------------------------------------------------------------------------------- |
-| [1.4. Update JS dependencies required for build](14-update-js-dependencies-required-for-build)                         |
+| [1.4. Update JS dependencies required for build](#14-update-js-dependencies-required-for-build)                        |
 | [2.1. Versioned Quality Assurance - Expo Go for iOS/Android](#21-versioned-quality-assurance---expo-go-for-iosandroid) |
 
 **How:**
@@ -412,7 +412,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 | Prerequisites                                                                                   |
 | ----------------------------------------------------------------------------------------------- |
-| [1.4. Update JS dependencies required for build](14-update-js-dependencies-required-for-build)  |
+| [1.4. Update JS dependencies required for build](#14-update-js-dependencies-required-for-build) |
 
 **Why:** Shell app is a simple app on which Expo's Turtle work on to generate a standalone app. On iOS, shell app is compiled before it is uploaded to Turtle, so the process of building a standalone app is reduced to the minimum. We need to prepare such app for the new SDK, compile it, then put it into a tarball and put its url to Turtle's shellTarballs configs.
 
