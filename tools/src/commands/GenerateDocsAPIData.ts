@@ -10,21 +10,20 @@ const DATA_PATH = './docs/public/static/data/unversioned';
 const executeCommand = async (
   resolve,
   reject,
-  pkgName,
-  entryPoint = 'index',
-  wholeModule = false
+  pkgName: string,
+  entryPoint: string | boolean = 'index.ts',
+  jsonFileName: string = pkgName
 ) => {
   const app = new Application();
 
   app.options.addReader(new TSConfigReader());
   app.options.addReader(new TypeDocReader());
 
-  const entry = wholeModule
-    ? `./packages/${pkgName}/src`
-    : `./packages/${pkgName}/src/${entryPoint}`;
+  const entry =
+    entryPoint === true ? `./packages/${pkgName}/src` : `./packages/${pkgName}/src/${entryPoint}`;
 
   const tsConfigPath = `./packages/${pkgName}/tsconfig.json`;
-  const jsonOutputPath = `${DATA_PATH}/${pkgName}.json`;
+  const jsonOutputPath = `${DATA_PATH}/${jsonFileName}.json`;
 
   app.bootstrap({
     entryPoints: [entry],
