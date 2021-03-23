@@ -15,6 +15,7 @@
   - [1.1. Cut off release branch](#11-cut-off-release-branch)
   - [1.2. Unversioned Quality Assurance](#12-unversioned-quality-assurance)
   - [1.3. Version code for the new SDK](#13-version-code-for-the-new-sdk)
+  - [1.4. Update JS dependencies required for build](#14-update-js-dependencies-required-for-build)
 - [Stage 2 - Quality Assurance](#stage-2---quality-assurance)
   - [2.1. Versioned Quality Assurance - Expo Go for iOS/Android](#21-versioned-quality-assurance---expo-go-for-iosandroid)
   - [2.2. Standalone App Quality Assurance](#22-standalone-app-quality-assurance)
@@ -27,9 +28,8 @@
   - [3.2. Build and submit](#32-build-and-submit)
   - [3.3. Make a simulator/emulator build](#33-make-a-simulatoremulator-build)
 - [Stage 4 - Standalone apps](#stage-4---standalone-apps)
-  - [4.1. Update JS dependencies required for build](#41-update-js-dependencies-required-for-build)
-  - [4.2. Make shell app build](#42-make-shell-app-build)
-  - [4.3. Deploy Turtle with new shell tarballs](#43-deploy-turtle-with-new-shell-tarballs)
+  - [4.1. Make shell app build](#41-make-shell-app-build)
+  - [4.2. Deploy Turtle with new shell tarballs](#42-deploy-turtle-with-new-shell-tarballs)
 - [Stage 5 - Beta release](#stage-5---beta-release)
   - [5.1. Deploy Turtle to production](#51-deploy-turtle-to-production)
   - [5.2. Deploy new docs with beta version](#52-deploy-new-docs-with-beta-version)
@@ -237,6 +237,16 @@ In the managed workflow, we use our forked `react-native` repository because we 
   - You may need to make a change like [this one](https://github.com/expo/expo/commit/8581608ab748ed3092b71befc3a0b8a48f0f20a0#diff-c31b32364ce19ca8fcd150a417ecce58) in order to get the project to build, as the manifest merger script we're currently using doesn't handle this properly.
 - Commit the changes to the `sdk-XX` branch and push. Take a look at the GitHub stats of added/deleted lines in your commit and be proud of your most productive day this month 😎.
 
+## 1.4. Update JS dependencies required for build
+
+**Why:** When building an iOS shell app XDL installs some extra packages needed for the build process.
+
+**How:**
+
+- Run `et update-versions -k 'packagesToInstallWhenEjecting.react-native-unimodules' -v 'X.Y.Z'` where `X.Y.Z` is the version of `react-native-unimodules` that is going to be used in ejected and standalone apps using this new SDK version.
+- Run `et update-versions -k 'packagesToInstallWhenEjecting.react-native' -v 'https://github.com/expo/react-native/archive/sdk-XX.X.X.tar.gz'` using the corresponding tag created in step [0.5](#05-tag-react-native-fork).
+- Run `et promote-versions-to-prod` to promote these versions to production, since the production endpoint is used when building the shell app.
+
 # Stage 2 - Quality Assurance
 
 ## 2.1. Versioned Quality Assurance - Expo Go for iOS/Android
@@ -258,16 +268,26 @@ In the managed workflow, we use our forked `react-native` repository because we 
 
 | Prerequisites                                                                                                          |
 | ---------------------------------------------------------------------------------------------------------------------- |
+| [1.4. Update JS dependencies required for build](#14-update-js-dependencies-required-for-build)                        |
 | [2.1. Versioned Quality Assurance - Expo Go for iOS/Android](#21-versioned-quality-assurance---expo-go-for-iosandroid) |
 
 **How:**
 
 - Go through another guide about [Quality Assurance](Quality%20Assurance.md). Run `native-component-list` and `test-suite` in standalone apps and repeat the same tests as above.
+- Before proceeding, you may want to publish `native-component-list` for the SDK version that you are testing.
+
 - **Android**:
   - The process for building a standalone app locally is to publish the app you want to build and then run `et android-shell-app --url <url> --sdkVersion XX.X.X`.
 - **iOS**:
-  - In theory it should be possible to run `et ios-shell-app --url <url> --sdkVersion XX.X.X` + some more options to create a workspace that should be buildable in Xcode. Good luck!
-    > Note from Stanley (@sjchmiela) — I used `et ios-shell-app --action create-workspace -u "https://staging.exp.host/@sjchmiela/native-component-list/index.exp?sdkVersion=39.0.0" -s 39.0.0 --skipRepoUpdate` when I was testing SDK39 shell apps and it created a buildable Xcode workspace. I hope it does that for you too!
+  - To create a workspace that you can open up in Xcode and build/run/debug:
+    - `et ios-shell-app --action create-workspace -u "https://exp.host/@username/project-slug/index.exp?sdkVersion=xx.0.0" -s xx.0.0 --skipRepoUpdate`.
+    - Open `shellAppWorkspaces/default/ios` in Xcode. Drag the assets from `shellAppWorkspaces/default/ios/ExpoKitApp/` into the ExpoKitApp group in Xcode.
+    - Build and run.
+  - To test the end-to-end standalone app build process, it's easiest to use a simulator build:
+    - Delete any `shellAppWorkspaces*` directories from previous QA.
+    - Run ` et ios-shell-app --action build --type simulator --configuration Release`
+    - Run `et ios-shell-app --url "https://exp.host/@username/project-slug/index.exp?sdkVersion=41.0.0" --action configure --type simulator -s xx.0.0 --archivePath shellAppBase-simulator/Build/Products/Release-iphonesimulator/ExpoKitApp.app --output app.tar.gz`
+    - Find the simulator build in `shellAppBase-simulator/Build/Products/Release-iphonesimulator/` and drag it into your simulator to run it.
 
 ## 2.3. Web Quality Assurance
 
@@ -388,35 +408,21 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 # Stage 4 - Standalone apps
 
-## 4.1. Update JS dependencies required for build
-
-| Prerequisites                                                                               |
-| ------------------------------------------------------------------------------------------- |
-| [2.6. Publish any missing or changed packages](#26-publish-any-missing-or-changed-packages) |
-
-**Why:** When building an iOS shell app XDL installs some extra packages needed for the build process.
-
-**How:**
-
-- Run `et update-versions -k 'packagesToInstallWhenEjecting.react-native-unimodules' -v 'X.Y.Z'` where `X.Y.Z` is the version of `react-native-unimodules` that is going to be used in ejected and standalone apps using this new SDK version.
-
-## 4.2. Make shell app build
+## 4.1. Make shell app build
 
 | Prerequisites                                                                                   |
 | ----------------------------------------------------------------------------------------------- |
-| [4.1. Update JS dependencies required for build](#41-update-js-dependencies-required-for-build) |
+| [1.4. Update JS dependencies required for build](#14-update-js-dependencies-required-for-build) |
 
 **Why:** Shell app is a simple app on which Expo's Turtle work on to generate a standalone app. On iOS, shell app is compiled before it is uploaded to Turtle, so the process of building a standalone app is reduced to the minimum. We need to prepare such app for the new SDK, compile it, then put it into a tarball and put its url to Turtle's shellTarballs configs.
 
 **How:**
 
-- Run `et update-versions -k 'packagesToInstallWhenEjecting.react-native' -v 'https://github.com/expo/react-native/archive/sdk-XX.X.X.tar.gz'` using the corresponding tag created in step [0.5](#05-tag-react-native-fork).
-- Run `et promote-versions-to-prod` to promote these versions to production, since the production endpoint is used when building the shell app.
 - On the release branch, run `et dispatch shell-app-ios-upload` and/or `et dispatch shell-app-android` and wait for the job(s) to finish.
 - Copy the url to the tarball that has been uploaded to `exp-artifacts` S3 bucket (it's printed in `Upload shell app tarball to S3` step of the workflow).
 - Now go to `expo/turtle` repo and put the copied link into `shellTarballs/{ios,android}/sdkXX` file and put appropriate change information in the `CHANGELOG.md` file, commit and then push changes.
 
-## 4.3. Deploy Turtle with new shell tarballs
+## 4.2. Deploy Turtle with new shell tarballs
 
 **Why:** Once we've made standalone and adhoc client shell apps, we're now ready to deploy Turtle to staging, test it and then roll out to production.
 

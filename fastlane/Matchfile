@@ -8,5 +8,5 @@ storage_mode("google_cloud")
 type("appstore")
 
 # App-specific options
-app_identifier(["host.exp.Exponent", "host.exp.Exponent.NotificationServiceExtension"])
+app_identifier(["host.exp.Exponent", "host.exp.Exponent.ExpoNotificationServiceExtension"])
 team_id("C8D8QTF339")

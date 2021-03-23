@@ -6,10 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+## 10.0.1 — 2021-03-23
+
+### 🎉 New features
+
 - Added SKAdNetwork identifiers to iOS plugin. ([#12243](https://github.com/expo/expo/pull/12243) by [@EvanBacon](https://github.com/EvanBacon))
 - Added user tracking permission to iOS plugin. ([#12219](https://github.com/expo/expo/pull/12219) by [@EvanBacon](https://github.com/EvanBacon))
-
-### 🐛 Bug fixes
 
 ## 10.0.0 — 2021-03-10
 

@@ -29,8 +29,9 @@ Manual smoke tests are included in `apps/native-component-list`, this is a good 
 ## 📦 Download and Setup
 
 1. [Fork](https://help.github.com/articles/fork-a-repo/) this repository to your own GitHub account and then [clone](https://help.github.com/articles/cloning-a-repository/) it to your local device. (`git remote add upstream git@github.com:expo/expo.git` 😉)
-1. Ensure [direnv](https://direnv.net/) is installed on your computer.
-1. Run the setup script with: `npm run setup:native` (if you just want to contribute to the docs, you can run `npm run setup:docs`). This command does the following for you:
+2. Ensure [direnv](https://direnv.net/) is installed on your computer.
+3. If you will be working with the iOS project, ensure **ruby 2.7** is installed on your machine. macOS comes with ruby 2.6, which will give you issues; if you use homebrew you can just run `brew install ruby@2.7`.
+4. Run the setup script with: `npm run setup:native` (if you just want to contribute to the docs, you can run `npm run setup:docs`). This command does the following for you:
 
    <!-- TODO(Bacon): Split this into 2 scripts so people can contribute to docs without installing React Native -->
 
@@ -40,13 +41,13 @@ Manual smoke tests are included in `apps/native-component-list`, this is a good 
    - Ensures your computer is set up for React Native (will install the Android NDK if it's not present)
    - Downloads the Node packages (`yarn install`)
 
-3. Navigate to the bare sandbox project `cd apps/bare-expo`
-4. Run the project on any platform (maybe start with web; it's the fastest! 😁)
+5. Navigate to the bare sandbox project `cd apps/bare-expo`
+6. Run the project on any platform (maybe start with web; it's the fastest! 😁)
 
    - Web: `yarn web`
    - iOS: `yarn ios`
    - Android: `yarn android`
-5. You are now running the `test-suite` app via the `bare-expo` project. The next section explains how you can begin to make changes to SDK packages.
+7. You are now running the `test-suite` app via the `bare-expo` project. The next section explains how you can begin to make changes to SDK packages.
 
 > If this didn't work for you as described, please [open an issue.](https://github.com/expo/expo/issues/new/choose)
 
