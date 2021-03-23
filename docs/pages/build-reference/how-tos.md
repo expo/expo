@@ -2,6 +2,8 @@
 title: Integrating with JavaScript tooling
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+
 This document outlines how to configure EAS Build for some common scenarios, such as monorepos and repositories with private dependencies. The examples described here do not provide step-by-step instructions to set up EAS Build from scratch. Instead, they explain the changes from the standard process that are necessary to acommodate the given scenario.
 
 ## EAS Build-specific npm hooks
@@ -60,17 +62,10 @@ This is an example of how your package.json might look like:
 ## How to use private package repositories
 
 - Configure your project in a way that works with `yarn` and relies on the `NPM_TOKEN` env variable to authenticate with private repositories
-- add `experimental.npmToken` in `credentials.json`
+- Add `NPM_TOKEN` to your account or project's secrets. See the [secret environment variables](/build-reference/variables/#using-secrets-in-environment-variables) docs to learn how to do this.
 
-```json
-{
-  "experimental": {
-    "npmToken": "example npm token"
-  }
-}
-```
+<ImageSpotlight alt="Secret creation UI filled" src="/static/images/eas-build/environment-secrets/secrets-create-filled.png" />
 
-If you are not using `credentials.json` for Android/iOS credentials, it is fine for `experimental.npmToken` to be the only entry in the file. Add `credentials.json` to `.gitignore` if it's not there already.
 
 ## Using npm cache with yarn v1
 
@@ -101,10 +96,8 @@ APP_ENV=production eas build --platform ios --profile production
 ```js
 // example app.config.js
 
-const isStaging = process.env.APP_ENV === "staging";
-const bundleIdentifier = isStaging
-  ? "xyz.easbuildapp.staging"
-  : "xyz.easbuildapp";
+const isStaging = process.env.APP_ENV === 'staging';
+const bundleIdentifier = isStaging ? 'xyz.easbuildapp.staging' : 'xyz.easbuildapp';
 
 export default ({ config }) => ({
   expo: {
@@ -114,7 +107,6 @@ export default ({ config }) => ({
     },
   },
 });
-
 ```
 
 ```json
