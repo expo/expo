@@ -30,9 +30,16 @@ export const renderers: React.ComponentProps<typeof ReactMarkdown>['renderers'] 
 
 export const inlineRenderers: React.ComponentProps<typeof ReactMarkdown>['renderers'] = {
   ...renderers,
-  ...{
-    paragraph: ({ children }) => (children ? <span>{children}</span> : null),
-  },
+  paragraph: ({ children }) => (children ? <span>{children}</span> : null),
+};
+
+type TypeDefinitionData = {
+  name: string;
+  type: string;
+  elementType?: {
+    name: string;
+  };
+  typeArguments?: TypeDefinitionData[];
 };
 
 export const resolveTypeName = ({
@@ -74,7 +81,15 @@ export const resolveTypeName = ({
   return 'undefined';
 };
 
-export const renderParam = ({ comment, name, type }: any): JSX.Element => (
+type MethodParamData = {
+  name: string;
+  type: any;
+  comment?: {
+    text: string;
+  };
+};
+
+export const renderParam = ({ comment, name, type }: MethodParamData): JSX.Element => (
   <LI key={`param-${name}`}>
     <B>
       {name} (<InlineCode>{resolveTypeName(type)}</InlineCode>)

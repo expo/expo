@@ -44,7 +44,7 @@ const renderMethod = ({ signatures }: any, apiName?: string): JSX.Element =>
   });
 
 const APISectionMethods: React.FC<APISubSectionProps> = ({ data, apiName }) =>
-  data && data.length ? (
+  data?.length ? (
     <>
       <H2 key="methods-header">Methods</H2>
       {data.map(method => renderMethod(method, apiName))}

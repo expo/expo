@@ -30,7 +30,7 @@ const renderEnum = ({ name, children, comment }: any): JSX.Element => (
 );
 
 const APISectionEnums: React.FC<APISubSectionProps> = ({ data }) =>
-  data && data.length ? (
+  data?.length ? (
     <>
       <H2 key="enums-header">Enums</H2>
       {data.map(renderEnum)}

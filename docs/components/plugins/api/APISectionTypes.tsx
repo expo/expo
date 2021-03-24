@@ -110,7 +110,7 @@ const renderType = ({ name, comment, type }: any): JSX.Element | undefined => {
 };
 
 const APISectionTypes: React.FC<APISubSectionProps> = ({ data }) =>
-  data && data.length ? (
+  data?.length ? (
     <>
       <H2 key="types-header">Types</H2>
       {data.map(renderType)}

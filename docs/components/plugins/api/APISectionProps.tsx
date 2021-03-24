@@ -89,7 +89,7 @@ const APISectionProps: React.FC<APISubSectionProps & APISectionPropsDefaults> = 
   data,
   defaultProps,
 }) =>
-  data && data.length ? (
+  data?.length ? (
     <>
       <H2 key="props-header">Props</H2>
       {data.map((prop: any) => renderProps(prop, defaultProps))}
