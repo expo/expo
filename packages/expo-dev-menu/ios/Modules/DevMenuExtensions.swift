@@ -45,6 +45,7 @@ open class DevMenuExtensions: NSObject, RCTBridgeModule, DevMenuExtensionProtoco
     }
     inspector.isEnabled = { devSettings.isElementInspectorShown }
 
+    #if DEBUG
     let remoteDebug = DevMenuExtensions.remoteDebugAction {
       DispatchQueue.main.async {
         devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely
@@ -76,7 +77,8 @@ open class DevMenuExtensions: NSObject, RCTBridgeModule, DevMenuExtensionProtoco
   
     container.addItem(reload)
     container.addItem(inspector)
-  
+    #endif
+    
     let group = DevMenuGroup()
     group.importance = DevMenuScreenItem.ImportanceLowest
     
