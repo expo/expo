@@ -35,16 +35,6 @@ ABI41_0_0UM_EXPORT_MODULE(ExpoNetwork);
   _moduleRegistry = moduleRegistry;
 }
 
-
-ABI41_0_0UM_EXPORT_METHOD_AS(getMacAddressAsync,
-                    resolver:(ABI41_0_0UMPromiseResolveBlock)resolve
-                    rejecter:(ABI41_0_0UMPromiseRejectBlock)reject)
-{
-  //some iOS privacy issues
-  NSString *address = @"02:00:00:00:00:00";
-  resolve(address);
-}
-
 ABI41_0_0UM_EXPORT_METHOD_AS(getIpAddressAsync,
                     getIpAddressAsyncWithResolver:(ABI41_0_0UMPromiseResolveBlock)resolve rejecter:(ABI41_0_0UMPromiseRejectBlock)reject)
 {
