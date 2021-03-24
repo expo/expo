@@ -36,15 +36,22 @@ export const inlineRenderers: React.ComponentProps<typeof ReactMarkdown>['render
 export type CommentData = {
   text?: string;
   shortText?: string;
+  returns?: string;
 };
 
-type TypeDefinitionData = {
+export type TypeDefinitionData = {
   name: string;
   type: string;
   elementType?: {
     name: string;
   };
   typeArguments?: TypeDefinitionData[];
+};
+
+export type MethodParamData = {
+  name: string;
+  type: TypeDefinitionData;
+  comment?: CommentData;
 };
 
 export const resolveTypeName = ({
@@ -84,12 +91,6 @@ export const resolveTypeName = ({
     return elementType.name + type;
   }
   return 'undefined';
-};
-
-type MethodParamData = {
-  name: string;
-  type: TypeDefinitionData;
-  comment?: CommentData;
 };
 
 export const renderParam = ({ comment, name, type }: MethodParamData): JSX.Element => (

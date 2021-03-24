@@ -5,49 +5,68 @@ import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
 import { H2, H3Code, H4 } from '~/components/plugins/Headings';
 import {
-  APISubSectionProps,
+  CommentData,
+  MethodParamData,
   renderers,
   renderParam,
   resolveTypeName,
+  TypeDefinitionData,
 } from '~/components/plugins/api/APISectionUtils';
 
-const renderMethod = ({ signatures }: any, apiName?: string): JSX.Element =>
-  signatures.map((signature: any) => {
-    const { name, parameters, comment, type } = signature;
-    return (
-      <div key={`method-signature-${name}-${parameters?.length || 0}`}>
-        <H3Code>
-          <InlineCode>
-            {apiName ? `${apiName}.` : ''}
-            {name}()
-          </InlineCode>
-        </H3Code>
-        {parameters ? <H4>Arguments</H4> : null}
-        {parameters ? <UL>{parameters?.map(renderParam)}</UL> : null}
-        {comment?.shortText ? (
-          <ReactMarkdown renderers={renderers}>{comment.shortText}</ReactMarkdown>
-        ) : null}
-        {comment?.returns ? <H4>Returns</H4> : null}
-        {comment?.returns ? (
+export type APISectionMethodsProps = {
+  data: MethodDefinitionData[];
+  apiName?: string;
+};
+
+type MethodDefinitionData = {
+  signatures: MethodSignatureData[];
+};
+
+type MethodSignatureData = {
+  name: string;
+  parameters: MethodParamData[];
+  comment: CommentData;
+  type: TypeDefinitionData;
+};
+
+const renderMethod = (
+  { signatures }: MethodDefinitionData,
+  index?: number,
+  apiName?: string,
+): JSX.Element[] =>
+  signatures.map(({ name, parameters, comment, type }: MethodSignatureData) => (
+    <div key={`method-signature-${name}-${parameters?.length || 0}`}>
+      <H3Code>
+        <InlineCode>
+          {apiName ? `${apiName}.` : ''}
+          {name}()
+        </InlineCode>
+      </H3Code>
+      {parameters ? <H4>Arguments</H4> : null}
+      {parameters ? <UL>{parameters?.map(renderParam)}</UL> : null}
+      {comment?.shortText ? (
+        <ReactMarkdown renderers={renderers}>{comment.shortText}</ReactMarkdown>
+      ) : null}
+      {comment?.returns ? (
+        <div>
+          <H4>Returns</H4>
           <UL>
             <LI returnType>
               <InlineCode>{resolveTypeName(type)}</InlineCode>
             </LI>
           </UL>
-        ) : null}
-        {comment?.returns ? (
           <ReactMarkdown renderers={renderers}>{comment.returns}</ReactMarkdown>
-        ) : null}
-        <hr />
-      </div>
-    );
-  });
+        </div>
+      ) : null}
+      {index !== signatures.length ? <hr /> : null}
+    </div>
+  ));
 
-const APISectionMethods: React.FC<APISubSectionProps> = ({ data, apiName }) =>
+const APISectionMethods: React.FC<APISectionMethodsProps> = ({ data, apiName }) =>
   data?.length ? (
     <>
       <H2 key="methods-header">Methods</H2>
-      {data.map(method => renderMethod(method, apiName))}
+      {data.map((method, index) => renderMethod(method, index, apiName))}
     </>
   ) : null;
 
