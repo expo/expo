@@ -70,3 +70,4 @@ This is because the adb version on your system is different from the adb version
 - Copy `adb` from Android SDK directory to `usr/bin` directory:
 
 `$sudo cp ~/Library/Android/sdk/platform-tools/adb /usr/bin`
+# 11
