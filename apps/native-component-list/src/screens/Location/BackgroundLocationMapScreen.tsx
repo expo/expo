@@ -73,6 +73,8 @@ function reducer(state: State, action: Partial<State>): State {
 }
 
 export default function BackgroundLocationMapScreen(props: Props) {
+  const [permission] = usePermissions(Location.requestForegroundPermissionsAsync);
+
   React.useEffect(() => {
     (async () => {
       if (!(await Location.isBackgroundLocationAvailableAsync())) {
@@ -81,6 +83,15 @@ export default function BackgroundLocationMapScreen(props: Props) {
       }
     })();
   }, [props.navigation]);
+
+  if (!permission) {
+    return (
+      <Text style={styles.errorText}>
+        Location permissions are required in order to use this feature. You can manually enable them
+        at any time in the "Location Services" section of the Settings app.
+      </Text>
+    );
+  }
 
   return <BackgroundLocationMapView />;
 }
@@ -345,9 +356,9 @@ const PermissionsModal = () => {
           <Text style={styles.modalHeader}>Background location access</Text>
 
           <Text style={styles.modalText}>
-            In order to keep the MapView updated, Native Component List requires access to your
-            location even while the app is backgrounded. Otherwise, your location on the map will
-            only be updated while the app is foregrounded.
+            This app collects location data to enable updating the MapView in the background even
+            when the app is closed or not in use. Otherwise, your location on the map will only be
+            updated while the app is foregrounded.
           </Text>
           <Text style={styles.modalText}>
             This data is not used for anything other than updating the position on the map, and this
