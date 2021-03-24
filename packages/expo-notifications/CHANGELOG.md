@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed an issue on Android where dismissing notifications by ID inside of Expo Go did nothing. ([#12306](https://github.com/expo/expo/pull/12306 by [@cruzach](https://github.com/cruzach))
+
 ## 0.11.1 — 2021-03-23
 
 ### 🎉 New features
