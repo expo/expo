@@ -21,7 +21,9 @@ const AsyncStorage = optionalRequire(() => require('../screens/AsyncStorageScree
 const Audio = optionalRequire(() => require('../screens/AV/AudioScreen'));
 const AuthSession = optionalRequire(() => require('../screens/AuthSession/AuthSessionScreen'));
 const BackgroundFetch = optionalRequire(() => require('../screens/BackgroundFetchScreen'));
-const BackgroundLocation = optionalRequire(() => require('../screens/BackgroundLocationMapScreen'));
+const BackgroundLocation = optionalRequire(() =>
+  require('../screens/Location/BackgroundLocationMapScreen')
+);
 const Battery = optionalRequire(() => require('../screens/BatteryScreen'));
 const Branch = optionalRequire(() => require('../screens/BranchScreen'));
 const Brightness = optionalRequire(() => require('../screens/BrightnessScreen'));
