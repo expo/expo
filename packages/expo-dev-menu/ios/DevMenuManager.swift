@@ -55,6 +55,11 @@ private let extensionToDevMenuScreensMap = NSMapTable<DevMenuExtensionProtocol, 
  */
 @objc
 open class DevMenuManager: NSObject, DevMenuManagerProtocol {
+  lazy var expoSessionDelegate: DevMenuExpoSessionDelegate = DevMenuExpoSessionDelegate(manager: self)
+  lazy var extensionSettings: DevMenuExtensionSettingsProtocol = DevMenuExtensionDefaultSettings(manager: self)
+  
+  public var expoApiClient: DevMenuExpoApiClientProtocol = DevMenuExpoApiClient()
+  
   /**
    Shared singleton instance.
    */
@@ -118,6 +123,7 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
     self.window = DevMenuWindow(manager: self)
     
     DevMenuSettings.setup()
+    self.expoSessionDelegate.restoreSession()
   }
 
   /**
@@ -178,6 +184,15 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
   @objc
   public func setCurrentScreen(_ screenName: String?) {
     currentScreen = screenName
+  }
+  
+  @objc
+  public func sendEventToDelegateBridge(_ eventName: String, data: Any?) {
+    guard let bridge = delegate?.appBridge?(forDevMenuManager: self) as? RCTBridge else {
+      return;
+    }
+    
+    bridge.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [eventName, data])
   }
 
   // MARK: internals
@@ -292,7 +307,7 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
       return itemsContainer
     }
     
-    if let itemsContainer = ext.devMenuItems?() {
+    if let itemsContainer = ext.devMenuItems?(extensionSettings) {
       extensionToDevMenuItemsMap.setObject(itemsContainer, forKey: ext)
       return itemsContainer
     }
@@ -305,7 +320,7 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
       return screenContainer.screens
     }
     
-    if let screens = ext.devMenuScreens?() {
+    if let screens = ext.devMenuScreens?(extensionSettings) {
       let container = DevMenuScreensContainer(screens: screens)
       extensionToDevMenuScreensMap.setObject(container, forKey: ext)
       return screens

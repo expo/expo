@@ -37,4 +37,8 @@
 
 - (EXDevLauncherManifest *)appManifest;
 
+- (BOOL)isAppRunning;
+
++ (NSString * _Nullable)version;
+
 @end

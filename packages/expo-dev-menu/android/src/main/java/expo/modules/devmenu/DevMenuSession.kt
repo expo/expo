@@ -28,7 +28,7 @@ class DevMenuSession(
     val reactContext = reactInstanceManager.currentReactContext ?: return@apply
     val applicationContext = reactContext.applicationContext
     putCharSequence("appName", guessAppName(applicationContext))
-    putLong("appVersion", guessAppVersion(applicationContext))
+    putString("appVersion", guessAppVersion(applicationContext).toString())
     putString("appIcon", guessAppIcon(applicationContext))
     putString("hostUrl", reactContext.catalystInstance?.sourceURL)
   }

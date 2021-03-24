@@ -10,8 +10,8 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.devsupport.DevInternalSettings
-import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.interfaces.devmenu.DevMenuExtensionInterface
+import expo.interfaces.devmenu.DevMenuExtensionSettingsInterface
 import expo.interfaces.devmenu.items.DevMenuItemImportance
 import expo.interfaces.devmenu.items.DevMenuItemsContainer
 import expo.interfaces.devmenu.items.DevMenuScreen
@@ -19,28 +19,25 @@ import expo.interfaces.devmenu.items.DevMenuSelectionList
 import expo.interfaces.devmenu.items.KeyCommand
 import expo.interfaces.devmenu.items.screen
 import expo.modules.devmenu.DEV_MENU_TAG
-import expo.modules.devmenu.modules.DevMenuManagerProvider
 
 class DevMenuExtension(reactContext: ReactApplicationContext)
   : ReactContextBaseJavaModule(reactContext), DevMenuExtensionInterface {
   override fun getName() = "ExpoDevMenuExtensions"
 
-  private val devMenuManager by lazy {
-    reactContext
-      .getNativeModule(DevMenuManagerProvider::class.java)
-      .getDevMenuManager()
-  }
+  override fun devMenuItems(settings: DevMenuExtensionSettingsInterface) = DevMenuItemsContainer.export {
+    if (!settings.wasRunOnDevelopmentBridge()) {
+      return@export
+    }
 
-  private val devSupportManager: DevSupportManager?
-    get() = devMenuManager.getSession()?.reactInstanceManager?.devSupportManager
-
-
-  override fun devMenuItems() = DevMenuItemsContainer.export {
-    val reactDevManager = devSupportManager
+    val reactDevManager = settings
+      .manager
+      .getSession()
+      ?.reactInstanceManager
+      ?.devSupportManager
     val devSettings = reactDevManager?.devSettings
 
     if (reactDevManager == null || devSettings == null) {
-      Log.w(DEV_MENU_TAG, "Couldn't export dev-menu items, because react-native bridge doesn't support dev options.")
+      Log.w(DEV_MENU_TAG, "Couldn't export dev-menu items, because react-native bridge doesn't contain the dev support manager.")
       return@export
     }
 
@@ -135,7 +132,11 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
     }
   }
 
-  override fun devMenuScreens(): List<DevMenuScreen>? {
+  override fun devMenuScreens(settings: DevMenuExtensionSettingsInterface): List<DevMenuScreen>? {
+    if (!settings.wasRunOnDevelopmentBridge()) {
+      return null
+    }
+
     return listOf(
       screen("testScreen") {
         group {
