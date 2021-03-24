@@ -6,6 +6,12 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+## 0.4.0 — 2021-03-24
+
+### 🎉 New features
+
 - Extensions from now can export their own screen. ([#11384](https://github.com/expo/expo/pull/11384) by [@lukmccall](https://github.com/lukmccall))
 - Added option to sign in using an Expo account. ([#11915](https://github.com/expo/expo/pull/11915) by [@lukmccall](https://github.com/lukmccall))
 - Made menu appearing faster on Android by re-using the react root view. ([#12275](https://github.com/expo/expo/pull/12275) by [@lukmccall](https://github.com/lukmccall))
