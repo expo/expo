@@ -28,7 +28,7 @@ export function getGUID(): string {
   if (['storeClient', 'standalone'].includes(Constants.executionEnvironment)) {
     if (!GUID)
       throw new Error(
-        `No valid GUID for Expo client on platform: ${
+        `No valid GUID for Expo Go on platform: ${
           Platform.OS
         }. Supported native platforms are currently: ${Object.keys(managedMap).join(', ')}`
       );
