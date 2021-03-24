@@ -153,13 +153,13 @@ PODS:
   - EXPermissions (12.0.0):
     - UMCore
     - UMPermissionsInterface
-  - expo-dev-launcher (0.2.0):
+  - expo-dev-launcher (0.3.0):
     - expo-dev-menu-interface
     - React
-  - expo-dev-menu (0.3.1):
+  - expo-dev-menu (0.4.0):
     - expo-dev-menu-interface
     - React
-  - expo-dev-menu-interface (0.1.2):
+  - expo-dev-menu-interface (0.2.0):
     - React
   - expo-image (1.0.0-alpha.0):
     - React-Core
@@ -1268,9 +1268,9 @@ SPEC CHECKSUMS:
   EXNetwork: 5358bd8f47f780e81b18971cef36fce0ebe0af67
   EXNotifications: f199ea16d9e963759bf68f4d6952b3591638e612
   EXPermissions: 67ff17d3c12ea06066492dde4242f8047658fd62
-  expo-dev-launcher: 32dfba9bc0a5c4ccfcb7b1176e3a834f41a5b159
-  expo-dev-menu: bbce00e72ede1b7308c469f288b365a9a917a173
-  expo-dev-menu-interface: 3c93377ecf505dc4aba68e61685d30353c39b335
+  expo-dev-launcher: d6ffbe10033d79c47991aaf768495610da43a39f
+  expo-dev-menu: 0d1d68bd626f6c8dea354fc3e62b76c3327bb1f6
+  expo-dev-menu-interface: e6f313b7b0c0c79b1987cf26bc5c969bad69bb7d
   expo-image: 07527eb7a57f5ac939c5ded392bcf64c975b9c87
   EXPrint: f6d272e7729d188a05686817ce8d84683da36073
   EXRandom: 9408fc33e4c140ea13a0e0ca9fbf5eb7724e1ada
