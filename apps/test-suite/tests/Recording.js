@@ -451,5 +451,19 @@ export async function test(t) {
         });
       }
     });
+
+    t.describe('Recording.createAsync()', () => {
+      t.afterEach(async () => {
+        await waitFor(defaultRecordingDurationMillis);
+        await recordingObject.stopAndUnloadAsync();
+      });
+
+      t.it('creates and starts recording', async () => {
+        recordingObject = await Audio.Recording.createAsync(
+          Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY
+        );
+        await retryForStatus(recordingObject, { isRecording: true });
+      });
+    });
   });
 }
