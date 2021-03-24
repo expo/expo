@@ -46,7 +46,6 @@ const executeCommand = async (
 
   if (project) {
     await app.generateJson(project, jsonOutputPath);
-    logger.log(chalk.gray(`🎉 Successful extraction of docs API data for '${packageName}' package!`));
   } else {
     throw new Error(`💥 Failed to extract API data from source code for '${packageName}' package.`);
   }
