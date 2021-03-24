@@ -26,22 +26,6 @@ import * as Linking from 'expo-linking';
 
 ## Methods
 
-### `Linking.makeUrl(path, options, scheme)`
-
-> An alias for `Linking.createURL()`
-
-Helper method for constructing a deep link into your app, given an optional path and set of query parameters. Creates a URI scheme with three slashes for legacy purposes.
-
-#### Arguments
-
-- **path (_string_)** -- Any path into your app.
-- **queryParams (_object_)** -- An object with a set of query parameters. These will be merged with any Expo-specific parameters that are needed (e.g. release channel) and then appended to the url as a query string.
-- **scheme (_string_)** -- Optional URI protocol to use in the URL `<scheme>:///`, when undefined the scheme will be chosen from the Expo config (app.config.js or app.json).
-
-#### Returns
-
-A URL string which points to your app with the given deep link information.
-
 ### `Linking.createURL(path, options)`
 
 Helper method for constructing a deep link into your app, given an optional path and set of query parameters. Creates a URI scheme with two slashes by default.
@@ -83,8 +67,31 @@ A promise that resolves to an object with the following keys:
 - **path (_string_)** -- The path specified by the url used to open the app.
 - **queryParams (_object_)** -- The set of query parameters specified by the query string of the url used to open the app.
 
+### `Linking.makeUrl(path, options, scheme)`
+
+> An alias for `Linking.createURL()`. This method is deprecated and will be removed in a future SDK version.**
+
+Helper method for constructing a deep link into your app, given an optional path and set of query parameters. Creates a URI scheme with three slashes for legacy purposes.
+
+#### Arguments
+
+- **path (_string_)** -- Any path into your app.
+- **queryParams (_object_)** -- An object with a set of query parameters. These will be merged with any Expo-specific parameters that are needed (e.g. release channel) and then appended to the url as a query string.
+- **scheme (_string_)** -- Optional URI protocol to use in the URL `<scheme>:///`, when undefined the scheme will be chosen from the Expo config (app.config.js or app.json).
+
+#### Returns
+
+A URL string which points to your app with the given deep link information.
+
+
 ## Hooks
 
+### `Linking.useURL()`
+
+Returns the initial URL followed by any subsequent changes to the URL.
+
 ### `Linking.useUrl()`
+
+> An alias for `Linking.useURL()`. This method is deprecated and will be removed in a future SDK version.**
 
 Returns the initial URL followed by any subsequent changes to the URL.
