@@ -87,19 +87,21 @@ await Network.getIpAddressAsync();
 
 ### `Network.getMacAddressAsync(interfaceName?)`
 
-Gets the specified network interface's Mac address. On Android, it requires [`android.permission.ACCESS_WIFI_STATE`](https://developer.android.com/reference/android/Manifest.permission#ACCESS_WIFI_STATE) permission to access available network interfaces.
+> **This method is deprecated and will be removed in a future SDK version.**
+
+Gets the specified network interface's MAC address.
+
+Beginning with iOS 7 and Android 11, non-system applications can no longer access the device's MAC address. In SDK 41, this method will always resolve to a predefined value that isn't useful.
+
+If you need to identify the device, use the `getIosIdForVendorAsync()` method / `androidId` property of the `expo-application` unimodule instead.
 
 #### Arguments (Android Only)
 
-- **interfaceName (_string | null_)** -- A string representing interface name (`eth0`, `wlan0`) or `null` (default), meaning the method should fetch the MAC address of the first available interface. (On iOS this argument is ignored.)
+- **interfaceName (_string | null_)** -- A string representing interface name (`eth0`, `wlan0`) or `null` (default), meaning the method should fetch the MAC address of the first available interface.
 
 #### Returns
 
-A `Promise` that resolves to a `string` of the network adapter MAC address or `null` if there's no such address matching the interface. On web, the `Promise` resolves to `null`.
-
-[Note from Apple](https://developer.apple.com/library/archive/releasenotes/General/WhatsNewIniOS/Articles/iOS7.html#//apple_ref/doc/uid/TP40013162-SW1): In iOS 7 and later, if you ask for the MAC address of an iOS device, the system returns the value `"02:00:00:00:00:00"`.
-
-If you need to identify the device, use the `getIosIdForVendorAsync()` method of the `expo-application` unimodule instead.
+A `Promise` that resolves to the value `"02:00:00:00:00:00"`.
 
 **Examples**
 
