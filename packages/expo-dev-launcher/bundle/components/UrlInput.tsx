@@ -13,14 +13,14 @@ export default ({ onPress }: Props) => {
   const themeName = useThemeName();
   const [textInputUrl, setTextInputUrl] = React.useState('');
   const borderColor = themeName === 'dark' ? Colors.dark.border : Colors.light.border;
-
+  const color = themeName === 'dark' ? Colors.dark.text : Colors.light.text;
   return (
     <View>
       <MainText style={styles.textMarginBottom}>
         Or, enter the URL of a local bundler manually:
       </MainText>
       <TextInput
-        style={[styles.urlTextInput, { borderColor }]}
+        style={[styles.urlTextInput, { borderColor, color }]}
         placeholder="exp://192..."
         placeholderTextColor="#b0b0ba"
         value={textInputUrl}

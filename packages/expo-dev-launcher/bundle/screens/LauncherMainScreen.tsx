@@ -261,9 +261,9 @@ class LauncherMainScreen extends React.Component<Props, State> {
     }
 
     return (
-      <View>
+      <View style={styles.container}>
         <ScrollView
-          style={styles.container}
+          style={styles.scrollView}
           refreshControl={
             <RefreshControl refreshing={this.state.isRefreshing} onRefresh={this.refresh} />
           }>
@@ -293,6 +293,9 @@ class LauncherMainScreen extends React.Component<Props, State> {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  scrollView: {
     marginBottom: bottomContainerHeight,
   },
 
