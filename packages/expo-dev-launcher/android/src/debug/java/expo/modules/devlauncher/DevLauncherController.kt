@@ -8,6 +8,8 @@ import androidx.annotation.UiThread
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactNativeHost
+import com.facebook.react.bridge.ReactContext
+import expo.interfaces.devmenu.DevMenuManagerProviderInterface
 import expo.modules.devlauncher.helpers.changeUrlScheme
 import expo.modules.devlauncher.helpers.getAppUrlFromDevLauncherUrl
 import expo.modules.devlauncher.helpers.getFieldInClassHierarchy
@@ -23,6 +25,7 @@ import expo.modules.devlauncher.launcher.loaders.DevLauncherExpoAppLoader
 import expo.modules.devlauncher.launcher.loaders.DevLauncherReactNativeAppLoader
 import expo.modules.devlauncher.launcher.manifest.DevLauncherManifestParser
 import expo.modules.devlauncher.launcher.manifest.DevLauncherManifest
+import expo.modules.devlauncher.launcher.menu.DevLauncherMenuDelegate
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityNOPDelegate
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityRedirectDelegate
 import kotlinx.coroutines.GlobalScope
@@ -36,26 +39,28 @@ private val DEV_LAUNCHER_HOST: String? = null
 private const val NEW_ACTIVITY_FLAGS =
   Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION
 
+private var MenuDelegateWasInitialized = false
+
 class DevLauncherController private constructor(
-  private val mContext: Context,
-  private val mAppHost: ReactNativeHost
+  private val context: Context,
+  internal val appHost: ReactNativeHost
 ) {
-  val devClientHost = DevLauncherClientHost((mContext as Application), DEV_LAUNCHER_HOST)
+  val devClientHost = DevLauncherClientHost((context as Application), DEV_LAUNCHER_HOST)
   private val httpClient = OkHttpClient()
   private val lifecycle = DevLauncherLifecycle()
-  private val recentlyOpedAppsRegistry = DevLauncherRecentlyOpenedAppsRegistry(mContext)
+  private val recentlyOpedAppsRegistry = DevLauncherRecentlyOpenedAppsRegistry(context)
   var manifest: DevLauncherManifest? = null
     private set
   val pendingIntentRegistry = DevLauncherIntentRegistry()
 
-  enum class Mode {
+  internal  enum class Mode {
     LAUNCHER, APP
   }
 
-  var mode = Mode.LAUNCHER
+  internal var mode = Mode.LAUNCHER
 
   suspend fun loadApp(url: Uri, mainActivity: ReactActivity? = null) {
-    ensureHostWasCleared(mAppHost, activityToBeInvalidated = mainActivity)
+    ensureHostWasCleared(appHost, activityToBeInvalidated = mainActivity)
 
     val parsedUrl = changeUrlScheme(url, "http")
 
@@ -64,10 +69,10 @@ class DevLauncherController private constructor(
 
     val appLoader = if (!manifestParser.isManifestUrl()) {
       // It's (maybe) a raw React Native bundle
-      DevLauncherReactNativeAppLoader(url, mAppHost, mContext)
+      DevLauncherReactNativeAppLoader(url, appHost, context)
     } else {
       manifest = manifestParser.parseManifest()
-      DevLauncherExpoAppLoader(manifest!!, mAppHost, mContext)
+      DevLauncherExpoAppLoader(manifest!!, appHost, context)
     }
 
     val appLoaderListener = appLoader.createOnDelegateWillBeCreatedListener()
@@ -89,11 +94,11 @@ class DevLauncherController private constructor(
   fun getRecentlyOpenedApps(): Map<String, String?> = recentlyOpedAppsRegistry.getRecentlyOpenedApps()
 
   fun navigateToLauncher() {
-    ensureHostWasCleared(mAppHost)
+    ensureHostWasCleared(appHost)
 
     mode = Mode.LAUNCHER
     manifest = null
-    mContext.applicationContext.startActivity(createLauncherIntent())
+    context.applicationContext.startActivity(createLauncherIntent())
   }
 
   private fun handleIntent(intent: Intent?, activityToBeInvalidated: ReactActivity?): Boolean {
@@ -135,6 +140,23 @@ class DevLauncherController private constructor(
     }
   }
 
+  fun maybeInitDevMenuDelegate(context: ReactContext) {
+    if (MenuDelegateWasInitialized) {
+      return
+    }
+    MenuDelegateWasInitialized = true
+
+    val devMenuManagerProvider = context
+      .catalystInstance
+      .nativeModules
+      .find { nativeModule ->
+        nativeModule is DevMenuManagerProviderInterface
+      } as? DevMenuManagerProviderInterface
+
+    val devMenuManager = devMenuManagerProvider?.getDevMenuManager() ?: return
+    devMenuManager.setDelegate(DevLauncherMenuDelegate(instance))
+  }
+
   @UiThread
   private fun clearHost(host: ReactNativeHost, activityToBeInvalidated: ReactActivity?) {
     host.clear()
@@ -171,7 +193,7 @@ class DevLauncherController private constructor(
   }
 
   private fun createLauncherIntent() =
-    Intent(mContext, DevLauncherActivity::class.java)
+    Intent(context, DevLauncherActivity::class.java)
       .apply { addFlags(NEW_ACTIVITY_FLAGS) }
 
   private fun createAppIntent() =
@@ -193,12 +215,12 @@ class DevLauncherController private constructor(
   private fun createBasicAppIntent() =
     if (sLauncherClass == null) {
       checkNotNull(
-        mContext
+        context
           .packageManager
-          .getLaunchIntentForPackage(mContext.packageName)
+          .getLaunchIntentForPackage(context.packageName)
       ) { "Couldn't find the launcher class." }
     } else {
-      Intent(mContext, sLauncherClass!!)
+      Intent(context, sLauncherClass!!)
     }.apply { addFlags(NEW_ACTIVITY_FLAGS) }
 
   companion object {
