@@ -1,7 +1,7 @@
 {
   "name": "native-component-list",
   "version": "0.0.0",
-  "description": "A list of the various APIs you can use with the Expo client",
+  "description": "A list of the various APIs you can use with the Expo Go",
   "author": "Expo",
   "private": true,
   "main": "__generated__/AppEntry.js",

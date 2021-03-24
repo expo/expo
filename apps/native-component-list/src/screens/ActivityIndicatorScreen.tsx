@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ActivityIndicator, StyleSheet } from 'react-native';
+import { ActivityIndicator, Platform, StyleSheet } from 'react-native';
 
 import { Page, Section } from '../components/Page';
 import Colors from '../constants/Colors';
@@ -37,14 +37,18 @@ export default function ActivityIndicatorScreen() {
         <ActivityIndicator style={styles.item} size="large" color="red" />
         <ActivityIndicator size="large" color="blue" />
       </Section>
-      <Section title="hidesWhenStopped" row>
-        <ActivityIndicatorStopping hidesWhenStopped={false} />
-        <ActivityIndicatorStopping hidesWhenStopped />
-      </Section>
-      <Section title="Larger" row>
-        <ActivityIndicator style={styles.item} size="small" />
-        <ActivityIndicator size="large" />
-      </Section>
+      {Platform.OS === 'android' ? null : (
+        <>
+          <Section title="hidesWhenStopped" row>
+            <ActivityIndicatorStopping hidesWhenStopped={false} />
+            <ActivityIndicatorStopping hidesWhenStopped />
+          </Section>
+          <Section title="Larger" row>
+            <ActivityIndicator style={styles.item} size="small" />
+            <ActivityIndicator size="large" />
+          </Section>
+        </>
+      )}
     </Page>
   );
 }
