@@ -193,13 +193,12 @@ class LauncherMainScreen extends React.Component<Props, State> {
       // We're temporarily skipping snack projects
       .filter(project => project.source !== 'snack')
       .map(project => {
-        const { url, description, hideImage } = project;
+        const { url, description } = project;
         return (
           <ListItem
             key={url}
             title={description}
             subtitle={url}
-            image={hideImage ? undefined : require('../assets/cli.png')}
             onPress={() => this.loadApp(url)}
             onLongPress={() => {
               const message = url;
