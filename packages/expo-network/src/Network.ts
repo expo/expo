@@ -1,4 +1,4 @@
-import { Platform, UnavailabilityError } from '@unimodules/core';
+import { UnavailabilityError } from '@unimodules/core';
 
 import ExpoNetwork from './ExpoNetwork';
 import { NetworkState, NetworkStateType } from './Network.types';
@@ -19,15 +19,15 @@ export async function getIpAddressAsync(): Promise<string> {
   return await ExpoNetwork.getIpAddressAsync();
 }
 
+/**
+ * @deprecated getMacAddressAsync has been deprecated and will be removed in a future SDK version.
+ * It always returns '02:00:00:00:00:00'.
+ */
 export async function getMacAddressAsync(interfaceName: string | null = null): Promise<string> {
-  if (!ExpoNetwork.getMacAddressAsync) {
-    throw new UnavailabilityError('expo-network', 'getMacAddressAsync');
-  }
-  if (Platform.OS === 'android') {
-    return await ExpoNetwork.getMacAddressAsync(interfaceName);
-  } else {
-    return await ExpoNetwork.getMacAddressAsync();
-  }
+  console.warn(
+    'Network.getMacAddressAsync has been deprecated and will be removed in a future SDK version. To uniquely identify a device, use the expo-application module instead.'
+  );
+  return '02:00:00:00:00:00';
 }
 
 export async function isAirplaneModeEnabledAsync(): Promise<boolean> {
