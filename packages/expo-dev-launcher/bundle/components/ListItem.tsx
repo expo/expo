@@ -23,9 +23,7 @@ class ListItem extends React.PureComponent<Props> {
           {title}
         </MainText>
       </View>
-    ) : (
-      undefined
-    );
+    ) : null;
   }
 
   private renderSubtitle() {
@@ -34,14 +32,12 @@ class ListItem extends React.PureComponent<Props> {
 
     return subtitle ? (
       <SecondaryText
-        style={[styles.subtitleText, isCentered ? styles.subtitleCentered : undefined]}
+        style={[styles.subtitleText, isCentered ? styles.subtitleCentered : null]}
         ellipsizeMode="tail"
         numberOfLines={title ? 1 : 2}>
         {subtitle}
       </SecondaryText>
-    ) : (
-      undefined
-    );
+    ) : null;
   }
 
   private renderImage() {
@@ -49,7 +45,7 @@ class ListItem extends React.PureComponent<Props> {
 
     const source = typeof image === 'number' ? image : { uri: image };
     if (!image) {
-      return undefined;
+      return null;
     }
 
     return (
@@ -66,11 +62,7 @@ class ListItem extends React.PureComponent<Props> {
       <TouchableOpacity {...props}>
         <MainView style={styles.container}>
           {this.renderImage()}
-          <View
-            style={[
-              styles.textContainer,
-              title && subtitle ? styles.textContainerBoth : undefined,
-            ]}>
+          <View style={[styles.textContainer, title && subtitle ? styles.textContainerBoth : null]}>
             {this.renderTitle()}
             {this.renderSubtitle()}
           </View>
