@@ -212,7 +212,7 @@ Then you can start to configure the native projects using steps below.
      RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
                                                       moduleName:@"devMenuDemo"
                                                initialProperties:nil];
-     // Add those lines.
+     // Add those lines only if you aren't using the dev-launcher.
      #if defined(EX_DEV_MENU_ENABLED)
      [DevMenuManager configureWithBridge:bridge];
      #endif
