@@ -15,8 +15,13 @@ class DevMenuInternalWebBrowserModule(private val reactContext: ReactApplication
     val intent = createCustomTabsIntent()
     intent.data = Uri.parse(startUrl)
 
-    reactContext.currentActivity!!.startActivity(intent)
-    promise.resolve(null)
+    reactContext.currentActivity?.let {
+      it.startActivity(intent)
+      promise.resolve(null)
+      return
+    }
+
+    promise.reject("ERR_DEVMENU_CANNOT_OPEN_BROWSER", "Current activity is null.")
   }
 
   private fun createCustomTabsIntent(): Intent {
