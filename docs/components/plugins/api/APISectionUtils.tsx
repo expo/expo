@@ -33,6 +33,11 @@ export const inlineRenderers: React.ComponentProps<typeof ReactMarkdown>['render
   paragraph: ({ children }) => (children ? <span>{children}</span> : null),
 };
 
+export type CommentData = {
+  text?: string;
+  shortText?: string;
+};
+
 type TypeDefinitionData = {
   name: string;
   type: string;
@@ -47,7 +52,7 @@ export const resolveTypeName = ({
   name,
   type,
   typeArguments,
-}: any): string | JSX.Element => {
+}: TypeDefinitionData): string | JSX.Element => {
   if (name) {
     if (type === 'reference') {
       if (typeArguments) {
@@ -60,7 +65,7 @@ export const resolveTypeName = ({
             </span>
           );
         } else {
-          return typeArguments.map(resolveTypeName);
+          return `${typeArguments.map(resolveTypeName)}`;
         }
       } else {
         return (
@@ -83,10 +88,8 @@ export const resolveTypeName = ({
 
 type MethodParamData = {
   name: string;
-  type: any;
-  comment?: {
-    text: string;
-  };
+  type: TypeDefinitionData;
+  comment?: CommentData;
 };
 
 export const renderParam = ({ comment, name, type }: MethodParamData): JSX.Element => (
@@ -97,7 +100,7 @@ export const renderParam = ({ comment, name, type }: MethodParamData): JSX.Eleme
     {comment?.text ? (
       <>
         {' - '}
-        <ReactMarkdown renderers={inlineRenderers}>{comment?.text}</ReactMarkdown>
+        <ReactMarkdown renderers={inlineRenderers}>{comment.text}</ReactMarkdown>
       </>
     ) : null}
   </LI>

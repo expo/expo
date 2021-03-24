@@ -4,23 +4,37 @@ import ReactMarkdown from 'react-markdown';
 import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
 import { H2, H3Code } from '~/components/plugins/Headings';
-import { APISubSectionProps, inlineRenderers } from '~/components/plugins/api/APISectionUtils';
+import { CommentData, inlineRenderers } from '~/components/plugins/api/APISectionUtils';
 
-const renderEnum = ({ name, children, comment }: any): JSX.Element => (
+export type APISectionEnumsProps = {
+  data: EnumDefinitionData[];
+};
+
+type EnumDefinitionData = {
+  name: string;
+  children: EnumValueData[];
+  comment?: CommentData;
+};
+
+type EnumValueData = {
+  name: string;
+};
+
+const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Element => (
   <div key={`enum-definition-${name}`}>
     <H3Code>
       <InlineCode>{name}</InlineCode>
     </H3Code>
     <UL>
-      {children.map((enumValue: any) => (
+      {children.map((enumValue: EnumValueData) => (
         <LI key={enumValue.name}>
           <InlineCode>
             {name}.{enumValue.name}
           </InlineCode>
-          {comment ? (
+          {comment?.shortText ? (
             <>
               {' - '}
-              <ReactMarkdown renderers={inlineRenderers}>{comment?.shortText}</ReactMarkdown>
+              <ReactMarkdown renderers={inlineRenderers}>{comment.shortText}</ReactMarkdown>
             </>
           ) : null}
         </LI>
@@ -29,7 +43,7 @@ const renderEnum = ({ name, children, comment }: any): JSX.Element => (
   </div>
 );
 
-const APISectionEnums: React.FC<APISubSectionProps> = ({ data }) =>
+const APISectionEnums: React.FC<APISectionEnumsProps> = ({ data }) =>
   data?.length ? (
     <>
       <H2 key="enums-header">Enums</H2>
