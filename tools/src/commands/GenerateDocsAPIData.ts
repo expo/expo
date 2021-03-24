@@ -1,28 +1,36 @@
 import { Command } from '@expo/commander';
+import chalk from 'chalk';
 import { Application, TSConfigReader, TypeDocReader } from 'typedoc';
 
+import logger from '../Logger';
+
 type ActionOptions = {
-  pkgName: string;
+  packageName: string;
 };
+
+type EntryPoint = string | boolean;
+
+type CommandAdditionalParams = [
+  // TODO: figure out why Prettier don't like this type def
+  // eslint-disable-next-line prettier/prettier
+  entryPoint: EntryPoint,
+  jsonFileName?: string
+];
 
 const DATA_PATH = './docs/public/static/data/unversioned';
 
 const executeCommand = async (
-  resolve,
-  reject,
-  pkgName: string,
-  entryPoint: string | boolean = 'index.ts',
-  jsonFileName: string = pkgName
+  packageName: string,
+  entryPoint: EntryPoint = 'index.ts',
+  jsonFileName: string = packageName
 ) => {
   const app = new Application();
 
   app.options.addReader(new TSConfigReader());
   app.options.addReader(new TypeDocReader());
 
-  const entry =
-    entryPoint === true ? `./packages/${pkgName}/src` : `./packages/${pkgName}/src/${entryPoint}`;
-
-  const tsConfigPath = `./packages/${pkgName}/tsconfig.json`;
+  const entry = `./packages/${packageName}/src${(entryPoint === true ? '' : `/${entryPoint}`)}`;
+  const tsConfigPath = `./packages/${packageName}/tsconfig.json`;
   const jsonOutputPath = `${DATA_PATH}/${jsonFileName}.json`;
 
   app.bootstrap({
@@ -38,47 +46,36 @@ const executeCommand = async (
 
   if (project) {
     await app.generateJson(project, jsonOutputPath);
-    resolve();
+    logger.log(chalk.gray(`🎉 Successful extraction of docs API data for '${packageName}' package!`));
   } else {
-    reject();
+    throw new Error(`💥 Failed to extract API data from source code for '${packageName}' package.`);
   }
 };
 
-async function action({ pkgName }: ActionOptions) {
-  const packagesMapping = {
+async function action({ packageName }: ActionOptions) {
+  const packagesMapping: Record<string, CommandAdditionalParams> = {
     'expo-mail-composer': ['MailComposer.ts'],
+    'expo-blur': ['index.ts'],
+    'expo-sharing': ['Sharing.ts'],
+    'expo-sensors': ['Pedometer.ts', 'expo-pedometer'],
   };
 
-  if (pkgName) {
-    if (packagesMapping[pkgName]) {
-      new Promise((resolve, reject) => {
-        executeCommand(resolve, reject, pkgName, ...packagesMapping[pkgName]).catch(console.error);
-      }).then(
-        () => {
-          console.log(`🎉 Successful extraction of docs API data '${pkgName}' packages!`);
-        },
-        () => {
-          console.error(`💥 There was an error during extraction of '${pkgName}' docs API data!`);
-        }
-      );
+  if (packageName) {
+    if (packagesMapping[packageName]) {
+      executeCommand(packageName, ...packagesMapping[packageName]).catch(logger.error);
     } else {
-      console.warn(`🚨 Package '${pkgName}' API data generation is not supported yet!`);
+      logger.warn(`🚨 Package '${packageName}' API data generation is not supported yet!`);
     }
   } else {
-    const work = Object.keys(packagesMapping).map(key => {
-      return new Promise((resolve, reject) => {
-        executeCommand(resolve, reject, key, ...packagesMapping[key]).catch(console.error);
-      });
-    });
-
-    Promise.all(work).then(
-      () => {
-        console.log(`🎉 Successful extraction of docs API data for all available packages!`);
-      },
-      () => {
-        console.error(`💥 There was an error during extraction of docs API data!`);
-      }
-    );
+    try {
+      const work = Object.entries(packagesMapping).map(([key, value]) => (
+        executeCommand(key, ...value)
+      ));
+      await Promise.all(work);
+      console.log(chalk.green(`\n🎉 Successful extraction of docs API data for all available packages!`));
+    } catch (error) {
+      logger.error(error);
+    }
   }
 }
 
@@ -87,6 +84,6 @@ export default (program: Command) => {
     .command('generate-docs-api-data')
     .alias('gdad')
     .description(`Extract API data for docs using TypeDoc.`)
-    .option('-p, --pkgName <pkgName>', 'Extract API data only for the specific package.')
+    .option('-p, --packageName <packageName>', 'Extract API data only for the specific package.')
     .asyncAction(action);
 };
