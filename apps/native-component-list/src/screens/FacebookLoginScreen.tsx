@@ -73,7 +73,11 @@ export default class FacebookLoginScreen extends React.Component {
         ]);
       }
     } catch (e) {
-      Alert.alert('Error!', e.message, [{ text: 'OK', onPress: () => {} }]);
+      Alert.alert(
+        'Error!',
+        `It is possible that you are not included in the Facebook test app (id: ${appId}).\n\nRaw Message: ${e.message}.`,
+        [{ text: 'OK', onPress: () => {} }]
+      );
     }
   };
 }
