@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed "Safari cannot open the page because the address is invalid" on iOS. ([#12319](https://github.com/expo/expo/pull/12319) by [@lukmccall](https://github.com/lukmccall))
+
 ## 0.4.0 — 2021-03-24
 
 ### 🎉 New features
