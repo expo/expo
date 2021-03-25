@@ -91,7 +91,7 @@ await Network.getIpAddressAsync();
 
 Gets the specified network interface's MAC address.
 
-Beginning with iOS 7 and Android 11, non-system applications can no longer access the device's MAC address. In SDK 41, this method will always resolve to a predefined value that isn't useful.
+Beginning with iOS 7 and Android 11, non-system applications can no longer access the device's MAC address. In SDK 41 and above, this method will always resolve to a predefined value that isn't useful.
 
 If you need to identify the device, use the `getIosIdForVendorAsync()` method / `androidId` property of the `expo-application` unimodule instead.
 
@@ -102,13 +102,6 @@ If you need to identify the device, use the `getIosIdForVendorAsync()` method / 
 #### Returns
 
 A `Promise` that resolves to the value `"02:00:00:00:00:00"`.
-
-**Examples**
-
-```js
-await Network.getMacAddressAsync();
-// "E5:12:D8:E5:69:97"
-```
 
 ### `Network.isAirplaneModeEnabledAsync()`
 
