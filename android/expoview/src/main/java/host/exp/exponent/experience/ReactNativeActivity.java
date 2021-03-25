@@ -632,8 +632,9 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
   public void onRequestPermissionsResult(final int requestCode, final String[] permissions, @NonNull final int[] grantResults) {
     if (requestCode == EXPONENT_PERMISSIONS_REQUEST) {
       if (permissions.length > 0 && grantResults.length == permissions.length && mScopedPermissionsRequester != null) {
-        mScopedPermissionsRequester.onRequestPermissionsResult(permissions, grantResults);
-        mScopedPermissionsRequester = null;
+        if (mScopedPermissionsRequester.onRequestPermissionsResult(permissions, grantResults)) {
+          mScopedPermissionsRequester = null;
+        }
       }
     } else {
       super.onRequestPermissionsResult(requestCode, permissions, grantResults);
