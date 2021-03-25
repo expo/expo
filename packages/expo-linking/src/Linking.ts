@@ -335,7 +335,7 @@ export async function canOpenURL(url: string): Promise<boolean> {
 /**
  * Returns the initial URL followed by any subsequent changes to the URL.
  */
-export function useUrl(): string | null {
+export function useURL(): string | null {
   const [url, setLink] = useState<string | null>(null);
 
   function onChange(event: { url: string }) {
@@ -349,6 +349,17 @@ export function useUrl(): string | null {
   }, []);
 
   return url;
+}
+
+/**
+ * Returns the initial URL followed by any subsequent changes to the URL.
+ * @deprecated Use `useURL` instead.
+ */
+export function useUrl(): string | null {
+  console.warn(
+    `Linking.useUrl has been deprecated in favor of Linking.useURL. This API will be removed in SDK 44.`
+  );
+  return useURL();
 }
 
 export * from './Linking.types';
