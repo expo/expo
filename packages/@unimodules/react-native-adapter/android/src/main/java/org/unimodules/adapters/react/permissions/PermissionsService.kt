@@ -12,9 +12,8 @@ import android.os.Bundle
 import android.provider.Settings
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-
 import com.facebook.react.modules.core.PermissionAwareActivity
-
+import com.facebook.react.modules.core.PermissionListener
 import org.unimodules.core.ModuleRegistry
 import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ActivityProvider
@@ -25,6 +24,8 @@ import org.unimodules.interfaces.permissions.Permissions
 import org.unimodules.interfaces.permissions.PermissionsResponse
 import org.unimodules.interfaces.permissions.PermissionsResponseListener
 import org.unimodules.interfaces.permissions.PermissionsStatus
+import java.util.*
+import kotlin.collections.HashMap
 
 private const val PERMISSIONS_REQUEST: Int = 13
 private const val PREFERENCE_FILENAME = "expo.modules.permissions.asked"
@@ -37,6 +38,9 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
   private var mWriteSettingsPermissionBeingAsked = false // change this directly before calling corresponding startActivity
   private var mAskAsyncListener: PermissionsResponseListener? = null
   private var mAskAsyncRequestedPermissions: Array<out String>? = null
+
+  private val mPendingPermissionCalls: Queue<Pair<Array<out String>, PermissionsResponseListener>> = LinkedList()
+  private var mCurrentPermissionListener: PermissionsResponseListener? = null
 
   private lateinit var mAskedPermissionsCache: SharedPreferences
 
@@ -230,20 +234,50 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
   protected fun delegateRequestToActivity(permissions: Array<out String>, listener: PermissionsResponseListener) {
     addToAskedPermissionsCache(permissions)
 
-    mActivityProvider?.currentActivity?.run {
-      if (this is PermissionAwareActivity) {
-        requestPermissions(permissions, PERMISSIONS_REQUEST) { requestCode, receivePermissions, grantResults ->
-          return@requestPermissions if (requestCode == PERMISSIONS_REQUEST) {
-            listener.onResult(parseNativeResult(receivePermissions, grantResults))
-            true
-          } else {
-            listener.onResult(parseNativeResult(receivePermissions, IntArray(receivePermissions.size) { PackageManager.PERMISSION_DENIED }))
-            false
-          }
+    val currentActivity = mActivityProvider?.currentActivity
+    if (currentActivity is PermissionAwareActivity) {
+      synchronized(this@PermissionsService) {
+        if (mCurrentPermissionListener != null) {
+          mPendingPermissionCalls.add(permissions to listener)
+        } else {
+          mCurrentPermissionListener = listener
+          currentActivity.requestPermissions(permissions, PERMISSIONS_REQUEST, createPermissionRequester())
         }
-      } else {
-        listener.onResult(parseNativeResult(permissions, IntArray(permissions.size) { PackageManager.PERMISSION_DENIED }))
       }
+    } else {
+      listener.onResult(parseNativeResult(permissions, IntArray(permissions.size) { PackageManager.PERMISSION_DENIED }))
+    }
+  }
+
+  private fun createPermissionRequester(): PermissionListener {
+    return PermissionListener { requestCode, receivePermissions, grantResults ->
+      if (requestCode == PERMISSIONS_REQUEST) {
+        synchronized(this@PermissionsService) {
+          val currentListener = requireNotNull(mCurrentPermissionListener)
+          currentListener.onResult(parseNativeResult(receivePermissions, grantResults))
+          mCurrentPermissionListener = null
+
+          mPendingPermissionCalls.poll()?.let { pendingCall ->
+            val activity = mActivityProvider?.currentActivity as? PermissionAwareActivity
+            if (activity == null) {
+              // clear all pending calls, because we don't have access to the activity instance
+              pendingCall.second.onResult(parseNativeResult(pendingCall.first, IntArray(pendingCall.first.size) { PackageManager.PERMISSION_DENIED }))
+              mPendingPermissionCalls.forEach {
+                it.second.onResult(parseNativeResult(it.first, IntArray(it.first.size) { PackageManager.PERMISSION_DENIED }))
+              }
+              mPendingPermissionCalls.clear()
+              return@let
+            }
+
+            mCurrentPermissionListener = pendingCall.second
+            activity.requestPermissions(pendingCall.first, PERMISSIONS_REQUEST, createPermissionRequester())
+            return@PermissionListener false
+          }
+
+          return@PermissionListener true
+        }
+      }
+      return@PermissionListener false
     }
   }
 
