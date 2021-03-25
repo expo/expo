@@ -241,7 +241,7 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
           mPendingPermissionCalls.add(permissions to listener)
         } else {
           mCurrentPermissionListener = listener
-          currentActivity.requestPermissions(permissions, PERMISSIONS_REQUEST, createPermissionRequester())
+          currentActivity.requestPermissions(permissions, PERMISSIONS_REQUEST, createListenerWithPendingPermissionsRequest())
         }
       }
     } else {
@@ -249,7 +249,7 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
     }
   }
 
-  private fun createPermissionRequester(): PermissionListener {
+  private fun createListenerWithPendingPermissionsRequest(): PermissionListener {
     return PermissionListener { requestCode, receivePermissions, grantResults ->
       if (requestCode == PERMISSIONS_REQUEST) {
         synchronized(this@PermissionsService) {
@@ -270,7 +270,7 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
             }
 
             mCurrentPermissionListener = pendingCall.second
-            activity.requestPermissions(pendingCall.first, PERMISSIONS_REQUEST, createPermissionRequester())
+            activity.requestPermissions(pendingCall.first, PERMISSIONS_REQUEST, createListenerWithPendingPermissionsRequest())
             return@PermissionListener false
           }
 
