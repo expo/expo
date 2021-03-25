@@ -57,7 +57,7 @@ function TextInputButton({ text }: { text: string }) {
 }
 
 export default function LinkingScreen() {
-  const url = Linking.useUrl();
+  const url = Linking.useURL();
 
   React.useEffect(() => {
     if (url) {
