@@ -412,6 +412,8 @@ A static convenience method to construct and start a recording is also provided:
 
   - **onRecordingStatusUpdate (_function_)** -- A function taking a single parameter `status` (a dictionary, described in `getStatusAsync`).
 
+  - **progressUpdateIntervalMillis (_number_)** -- The interval between calls of `onRecordingStatusUpdate`.
+
   #### Returns
 
   A `Promise` that is rejected if creation failed, or fulfilled with the following dictionary if creation succeeded:
