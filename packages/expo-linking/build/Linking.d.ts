@@ -94,5 +94,10 @@ export declare function canOpenURL(url: string): Promise<boolean>;
 /**
  * Returns the initial URL followed by any subsequent changes to the URL.
  */
+export declare function useURL(): string | null;
+/**
+ * Returns the initial URL followed by any subsequent changes to the URL.
+ * @deprecated Use `useURL` instead.
+ */
 export declare function useUrl(): string | null;
 export * from './Linking.types';

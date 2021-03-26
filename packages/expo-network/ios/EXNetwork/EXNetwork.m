@@ -35,16 +35,6 @@ UM_EXPORT_MODULE(ExpoNetwork);
   _moduleRegistry = moduleRegistry;
 }
 
-
-UM_EXPORT_METHOD_AS(getMacAddressAsync,
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
-{
-  //some iOS privacy issues
-  NSString *address = @"02:00:00:00:00:00";
-  resolve(address);
-}
-
 UM_EXPORT_METHOD_AS(getIpAddressAsync,
                     getIpAddressAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
 {

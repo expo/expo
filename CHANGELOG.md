@@ -30,6 +30,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `react-native-reanimated` to stable release `2.0.0`. ([#12039](https://github.com/expo/expo/pull/12039) by [@tsapeta](https://github.com/tsapeta))
 - Updated `react-native-safe-area-context` from `3.1.9` to `3.2.0`. ([#12170](https://github.com/expo/expo/pull/12170) by [@brentvatne](https://github.com/brentvatne))
 - Updated `@react-native-community/datetimepicker` from `3.0.4` to `3.2.0`. ([#12171](https://github.com/expo/expo/pull/12171) by [@brentvatne](https://github.com/brentvatne))
+- Updated `firebase` from `7.9.0` to `8.2.3`. ([#11692](https://github.com/expo/expo/pull/11692) by [@IjzerenHein](https://github.com/IjzerenHein)) ([#12297](https://github.com/expo/expo/pull/12297) by [@fson](https://github.com/fson))
 
 ### 🛠 Breaking changes
 

@@ -62,12 +62,13 @@ const url = StoreReview.storeUrl();
 
 ### `StoreReview.hasAction()`
 
-This returns a promise that resolves to a boolean that let's you know if the module can perform any action. This is used for cases where the `app.json` doesn't have the proper fields, and `StoreReview.isAvailableAsync()` returns false.
+This returns a promise that fulfills to is `true` if `StoreReview.requestReview()` is capable directing the user to some kind of store review flow. If the app config (`app.json`) does not contain store URLs and native store review capabilities are not available then the promise will fulfill to `false`.
 
 #### Example
 
 ```js
 if (await StoreReview.hasAction()) {
+  // you can call StoreReview.requestReview()
 }
 ```
 

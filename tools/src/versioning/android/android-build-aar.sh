@@ -21,6 +21,9 @@ pushd versioned-react-native
 rm -rf ReactAndroid/build
 set -e
 ./gradlew assembleRelease
+# 2021-03-23: hacky workaround for weird issue with missing .so libs
+# if we build the aar twice after cleaning, the libs will be packaged correctly
+./gradlew assembleRelease
 popd
 
 mkdir -p expoview/libs

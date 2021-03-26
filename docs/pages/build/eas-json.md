@@ -72,7 +72,7 @@ The schema of a build profile for a generic Android project looks like this:
   "yarn": string,
   "ndk": string,
   "env": Record<string, string> // default: {}
-  "cache": null || {
+  "cache": null | {
     "key": string // default: ""
     "customPaths": string[] // default: []
   }
@@ -142,7 +142,7 @@ The schema of a build profile for a managed Android project looks like this:
   "yarn": string,
   "ndk": string,
   "env": Record<string, string> // default: {}
-  "cache": null || {
+  "cache": null | {
     "key": string // default: ""
     "customPaths": string[] // default: []
   }
@@ -205,7 +205,7 @@ The schema of a build profile for a generic iOS project looks like this:
   "fastlane": string,
   "cocoapods": string,
   "env": Record<string, string> // default: {}
-  "cache": null || {
+  "cache": null | {
     "key": string // default: ""
     "cacheDefaultPaths": boolean // default: true
     "customPaths": string[] // default: []
@@ -271,7 +271,7 @@ The schema of a build profile for a managed iOS project looks like this:
   "fastlane": string,
   "cocoapods": string,
   "env": Record<string, string> // default: {}
-  "cache": null || {
+  "cache": null | {
     "key": string // default: ""
     "cacheDefaultPaths": boolean // default: true
     "customPaths": string[] // default: []

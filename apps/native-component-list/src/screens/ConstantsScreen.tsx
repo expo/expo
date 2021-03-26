@@ -58,7 +58,7 @@ class ExpoConstant extends React.Component<{ value?: any; name: string }, State>
 }
 
 // Ignore deprecated properties
-const IGNORED_CONSTANTS = ['linkingUrl'];
+const IGNORED_CONSTANTS = ['__unsafeNoWarnManifest', 'linkingUrl'];
 
 export default class ConstantsScreen extends React.PureComponent {
   render() {

@@ -50,8 +50,8 @@ class ScopedExpoPresentationDelegate(context: Context) : ExpoPresentationDelegat
    * The notification is either a remote notification sent through Expo's push
    * service, or a local notification.
    */
-  override fun getNotifyId(request: NotificationRequest): Int {
-    if (Constants.isStandaloneApp()) {
+  override fun getNotifyId(request: NotificationRequest?): Int {
+    if (Constants.isStandaloneApp() || request == null) {
       return super.getNotifyId(request)
     }
     val experienceId = if (request.trigger is FirebaseNotificationTrigger) {

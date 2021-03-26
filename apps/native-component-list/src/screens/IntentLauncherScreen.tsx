@@ -47,7 +47,7 @@ export default class IntentLauncherScreen extends React.Component {
         {this.renderSettingsLink('Wireless Settings', IntentLauncher.ACTION_WIRELESS_SETTINGS)}
 
         {this.renderSettingsLink(
-          'Application Details for Expo Client',
+          'Application Details for Expo Go',
           IntentLauncher.ACTION_APPLICATION_DETAILS_SETTINGS,
           {
             data: 'package:host.exp.exponent',

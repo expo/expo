@@ -65,6 +65,7 @@ which is otherwise unavailable in react-native using the Firebase JavaScript SDK
         "firebase": {
           "appId": "xxxxxxxxxxxxx:web:xxxxxxxxxxxxxxxx",
           "apiKey": "AIzaXXXXXXXX-xxxxxxxxxxxxxxxxxxx",
+          "projectId": "my-awesome-project-id",
           ...
           "measurementId": "G-XXXXXXXXXXXX"
         }

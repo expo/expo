@@ -240,7 +240,7 @@ public class SegmentModule extends ExportedModule {
   @ExpoMethod
   public void setEnabledAsync(final boolean enabled, final Promise promise) {
     if (mConstants.getAppOwnership().equals("expo")) {
-      promise.reject("E_UNSUPPORTED", "Setting Segment's `enabled` is not supported in Expo Client.");
+      promise.reject("E_UNSUPPORTED", "Setting Segment's `enabled` is not supported in Expo Go.");
       return;
     }
     mSharedPreferences.edit().putBoolean(ENABLED_PREFERENCE_KEY, enabled).apply();
