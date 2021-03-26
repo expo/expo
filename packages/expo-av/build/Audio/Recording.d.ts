@@ -115,7 +115,7 @@ export declare class Recording {
     _enablePollingIfNecessaryAndPossible(): void;
     _callOnRecordingStatusUpdateForNewStatus(status: RecordingStatus): void;
     _performOperationAndHandleStatusAsync(operation: () => Promise<RecordingStatus>): Promise<RecordingStatus>;
-    static createAsync: (options?: RecordingOptions, onRecordingStatusUpdate?: ((status: RecordingStatus) => void) | null) => Promise<{
+    static createAsync: (options?: RecordingOptions, onRecordingStatusUpdate?: ((status: RecordingStatus) => void) | null, progressUpdateIntervalMillis?: number | null) => Promise<{
         recording: Recording;
         status: RecordingStatus;
     }>;

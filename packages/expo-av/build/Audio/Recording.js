@@ -295,8 +295,11 @@ export class Recording {
     }
 }
 // Note that all calls automatically call onRecordingStatusUpdate as a side effect.
-Recording.createAsync = async (options = RECORDING_OPTIONS_PRESET_LOW_QUALITY, onRecordingStatusUpdate = null) => {
+Recording.createAsync = async (options = RECORDING_OPTIONS_PRESET_LOW_QUALITY, onRecordingStatusUpdate = null, progressUpdateIntervalMillis = null) => {
     const recording = new Recording();
+    if (progressUpdateIntervalMillis) {
+        recording._progressUpdateIntervalMillis = progressUpdateIntervalMillis;
+    }
     recording.setOnRecordingStatusUpdate(onRecordingStatusUpdate);
     await recording.prepareToRecordAsync({
         ...options,
