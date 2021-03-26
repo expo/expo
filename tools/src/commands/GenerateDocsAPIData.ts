@@ -1,6 +1,7 @@
 import { Command } from '@expo/commander';
 import chalk from 'chalk';
 import { Application, TSConfigReader, TypeDocReader } from 'typedoc';
+import fs from 'fs-extra';
 
 import logger from '../Logger';
 
@@ -18,6 +19,7 @@ type CommandAdditionalParams = [
 ];
 
 const DATA_PATH = './docs/public/static/data/unversioned';
+const MINIFY_JSON = true;
 
 const executeCommand = async (
   packageName: string,
@@ -46,6 +48,9 @@ const executeCommand = async (
 
   if (project) {
     await app.generateJson(project, jsonOutputPath);
+    if (MINIFY_JSON) {
+      await fs.writeFile(jsonOutputPath, JSON.stringify(await fs.readJson(jsonOutputPath), null, 0));
+    }
   } else {
     throw new Error(`💥 Failed to extract API data from source code for '${packageName}' package.`);
   }
