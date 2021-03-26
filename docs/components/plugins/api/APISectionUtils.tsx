@@ -6,11 +6,6 @@ import { InternalLink } from '~/components/base/link';
 import { LI, UL } from '~/components/base/list';
 import { B, P } from '~/components/base/paragraph';
 
-export type APISubSectionProps = {
-  data: Record<string, any>[];
-  apiName?: string;
-};
-
 export enum TypeDocKind {
   Enum = 4,
   Function = 64,

@@ -8,12 +8,51 @@ import { UL } from '~/components/base/list';
 import { B } from '~/components/base/paragraph';
 import { H2, H3Code, H4 } from '~/components/plugins/Headings';
 import {
-  APISubSectionProps,
   inlineRenderers,
   renderers,
   resolveTypeName,
   renderParam,
+  CommentData,
+  TypeDefinitionData,
+  MethodParamData,
 } from '~/components/plugins/api/APISectionUtils';
+
+export type APISectionTypesProps = {
+  data: TypeData[];
+};
+
+type TypeData = {
+  name: string;
+  comment: CommentData;
+  type: TypeDeclarationData;
+};
+
+type TypeDeclarationData = {
+  declaration: {
+    signatures: TypeSignaturesData[];
+    children: TypePropertyData[];
+  };
+  type: string;
+  types: TypeValueData[];
+};
+
+type TypeSignaturesData = {
+  parameters: MethodParamData[];
+};
+
+type TypePropertyData = {
+  name: string;
+  flags: {
+    isOptional: boolean;
+  };
+  comment: CommentData;
+  type: TypeDefinitionData;
+};
+
+type TypeValueData = {
+  type: string;
+  value: string | boolean | null;
+};
 
 const STYLES_OPTIONAL = css`
   color: ${theme.text.secondary};
@@ -21,18 +60,18 @@ const STYLES_OPTIONAL = css`
   padding-top: 22px;
 `;
 
-const defineLiteralType = (types: any[]) => {
-  const uniqueTypes = Array.from(new Set(types.map((t: any) => typeof t.value)));
+const defineLiteralType = (types: TypeValueData[]): string | undefined => {
+  const uniqueTypes = Array.from(new Set(types.map((t: TypeValueData) => typeof t.value)));
   if (uniqueTypes.length === 1) {
     return '`' + uniqueTypes[0] + '` - ';
   }
   return undefined;
 };
 
-const decorateValue = (type: any) =>
+const decorateValue = (type: TypeValueData): string =>
   typeof type.value === 'string' ? "`'" + type.value + "'`" : `'` + type.value + '`';
 
-const renderTypePropertyRow = (typeProperty: any): JSX.Element => (
+const renderTypePropertyRow = (typeProperty: TypePropertyData): JSX.Element => (
   <tr key={typeProperty.name}>
     <td>
       <B>{typeProperty.name}</B>
@@ -47,7 +86,7 @@ const renderTypePropertyRow = (typeProperty: any): JSX.Element => (
       <InlineCode>{resolveTypeName(typeProperty.type)}</InlineCode>
     </td>
     <td>
-      {typeProperty.comment ? (
+      {typeProperty?.comment?.shortText ? (
         <ReactMarkdown renderers={inlineRenderers}>{typeProperty.comment.shortText}</ReactMarkdown>
       ) : (
         '-'
@@ -56,8 +95,9 @@ const renderTypePropertyRow = (typeProperty: any): JSX.Element => (
   </tr>
 );
 
-const renderType = ({ name, comment, type }: any): JSX.Element | undefined => {
+const renderType = ({ name, comment, type }: TypeData): JSX.Element | undefined => {
   if (type.declaration) {
+    // Object Types
     return (
       <div key={`type-definition-${name}`}>
         <H3Code>
@@ -66,7 +106,9 @@ const renderType = ({ name, comment, type }: any): JSX.Element | undefined => {
             {type.declaration.signatures ? '()' : ''}
           </InlineCode>
         </H3Code>
-        {comment ? <ReactMarkdown renderers={renderers}>{comment.shortText}</ReactMarkdown> : null}
+        {comment?.shortText ? (
+          <ReactMarkdown renderers={renderers}>{comment.shortText}</ReactMarkdown>
+        ) : null}
         {type.declaration.children ? (
           <table>
             <thead>
@@ -80,7 +122,7 @@ const renderType = ({ name, comment, type }: any): JSX.Element | undefined => {
           </table>
         ) : null}
         {type.declaration.signatures
-          ? type.declaration.signatures.map(({ parameters }: any) => (
+          ? type.declaration.signatures.map(({ parameters }: TypeSignaturesData) => (
               <div>
                 {parameters ? <H4>Arguments</H4> : null}
                 {parameters ? <UL>{parameters?.map(renderParam)}</UL> : null}
@@ -91,7 +133,7 @@ const renderType = ({ name, comment, type }: any): JSX.Element | undefined => {
     );
   } else if (type.types && type.type === 'union') {
     // Literal Types
-    const validTypes = type.types.filter((t: any) => t.type === 'literal');
+    const validTypes = type.types.filter((t: TypeValueData) => t.type === 'literal');
     if (validTypes.length) {
       return (
         <div key={`type-definition-${name}`}>
@@ -109,7 +151,7 @@ const renderType = ({ name, comment, type }: any): JSX.Element | undefined => {
   return undefined;
 };
 
-const APISectionTypes: React.FC<APISubSectionProps> = ({ data }) =>
+const APISectionTypes: React.FC<APISectionTypesProps> = ({ data }) =>
   data?.length ? (
     <>
       <H2 key="types-header">Types</H2>
