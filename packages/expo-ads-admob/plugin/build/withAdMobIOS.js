@@ -35,7 +35,7 @@ function setAdMobConfig(config, infoPlist) {
     infoPlist = setGoogleMobileAdsAppId(config, infoPlist);
     return infoPlist;
 }
-const USER_TRACKING = 'Allow $(PRODUCT_NAME) to use data for tracking the user or the device';
+const USER_TRACKING = 'This identifier will be used to deliver personalized ads to you.';
 exports.withUserTrackingPermission = (config, { userTrackingPermission } = {}) => {
     if (!config.ios)
         config.ios = {};
