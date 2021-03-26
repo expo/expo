@@ -4,20 +4,26 @@ import ReactMarkdown from 'react-markdown';
 import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
 import { H2, H3Code } from '~/components/plugins/Headings';
-import { CommentData, inlineRenderers } from '~/components/plugins/api/APISectionUtils';
+import {
+  CommentData,
+  inlineRenderers,
+  TypeDocKind,
+} from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionEnumsProps = {
   data: EnumDefinitionData[];
 };
 
-type EnumDefinitionData = {
+export type EnumDefinitionData = {
   name: string;
   children: EnumValueData[];
   comment?: CommentData;
+  kind: TypeDocKind;
 };
 
-type EnumValueData = {
+export type EnumValueData = {
   name: string;
+  kind: TypeDocKind;
 };
 
 const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Element => (
@@ -28,6 +34,7 @@ const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Elemen
     <UL>
       {children.map((enumValue: EnumValueData) => (
         <LI key={enumValue.name}>
+          {console.warn(enumValue)}
           <InlineCode>
             {name}.{enumValue.name}
           </InlineCode>

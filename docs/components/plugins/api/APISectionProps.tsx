@@ -5,23 +5,27 @@ import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
 import { B } from '~/components/base/paragraph';
 import { H2, H4 } from '~/components/plugins/Headings';
+import { TypeDeclarationData } from '~/components/plugins/api/APISectionTypes';
 import {
   CommentData,
+  CommentTagData,
   inlineRenderers,
   resolveTypeName,
   TypeDefinitionData,
+  TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionPropsProps = {
-  data: PropsDefinition[];
-  defaultProps?: any;
+  data: PropsDefinitionData[];
+  defaultProps: DefaultPropsDefinitionData;
 };
 
-type PropsDefinition = {
+export type PropsDefinitionData = {
   name: string;
   type: {
-    types: any;
+    types: TypeDeclarationData[];
   };
+  kind: TypeDocKind;
 };
 
 type PropData = {
@@ -30,10 +34,19 @@ type PropData = {
   type: TypeDefinitionData;
 };
 
+export type DefaultPropsDefinitionData = {
+  name: string;
+  type: TypeDeclarationData;
+  kind: TypeDocKind;
+};
+
 const UNKNOWN_VALUE = '...';
 
-const extractDefaultPropValue = ({ comment, name }: PropData, defaultProps: any): string => {
-  const annotationDefault = comment?.tags?.filter((tag: any) => tag.tag === 'default');
+const extractDefaultPropValue = (
+  { comment, name }: PropData,
+  defaultProps: DefaultPropsDefinitionData
+): string => {
+  const annotationDefault = comment?.tags?.filter((tag: CommentTagData) => tag.tag === 'default');
   if (annotationDefault?.length) {
     return annotationDefault[0].text;
   }
@@ -64,12 +77,15 @@ const renderInheritedProps = (data: any[]): JSX.Element | undefined => {
   return undefined;
 };
 
-const renderProps = ({ name, type }: PropsDefinition, defaultValues: any): JSX.Element => {
-  const props = type.types.filter((e: any) => e.declaration);
+const renderProps = (
+  { name, type }: PropsDefinitionData,
+  defaultValues: DefaultPropsDefinitionData
+): JSX.Element => {
+  const props = type.types.filter((e: TypeDeclarationData) => e.declaration);
   return (
     <div key={`props-definition-${name}`}>
       <UL>
-        {props?.map((def: any) =>
+        {props?.map((def: TypeDeclarationData) =>
           def.declaration?.children.map((prop: PropData) =>
             renderProp(prop, extractDefaultPropValue(prop, defaultValues))
           )
@@ -104,7 +120,9 @@ const APISectionProps: React.FC<APISectionPropsProps> = ({ data, defaultProps })
   data?.length ? (
     <>
       <H2 key="props-header">Props</H2>
-      {data.map((propsDefinition: PropsDefinition) => renderProps(propsDefinition, defaultProps))}
+      {data.map((propsDefinition: PropsDefinitionData) =>
+        renderProps(propsDefinition, defaultProps)
+      )}
     </>
   ) : null;
 

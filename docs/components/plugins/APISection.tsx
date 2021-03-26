@@ -2,10 +2,15 @@ import React, { useContext } from 'react';
 
 import DocumentationPageContext from '~/components/DocumentationPageContext';
 import { P } from '~/components/base/paragraph';
-import APISectionEnums from '~/components/plugins/api/APISectionEnums';
-import APISectionMethods from '~/components/plugins/api/APISectionMethods';
-import APISectionProps from '~/components/plugins/api/APISectionProps';
-import APISectionTypes from '~/components/plugins/api/APISectionTypes';
+import APISectionEnums, { EnumDefinitionData } from '~/components/plugins/api/APISectionEnums';
+import APISectionMethods, {
+  MethodDefinitionData,
+} from '~/components/plugins/api/APISectionMethods';
+import APISectionProps, {
+  DefaultPropsDefinitionData,
+  PropsDefinitionData,
+} from '~/components/plugins/api/APISectionProps';
+import APISectionTypes, { TypeGeneralData } from '~/components/plugins/api/APISectionTypes';
 import { TypeDocKind } from '~/components/plugins/api/APISectionUtils';
 
 const LATEST_VERSION = `v${require('~/package.json').version}`;
@@ -15,12 +20,20 @@ type Props = {
   apiName?: string;
 };
 
+type GeneratedData = EnumDefinitionData &
+  MethodDefinitionData &
+  PropsDefinitionData &
+  DefaultPropsDefinitionData &
+  TypeGeneralData;
+
 const filterData = (
-  entries: any[],
+  entries: GeneratedData[],
   kind: TypeDocKind,
-  additionalCondition: (entry: any) => boolean = () => true
+  additionalCondition: (entry: GeneratedData) => boolean = () => true
 ) =>
-  entries ? entries.filter((entry: any) => entry.kind === kind && additionalCondition(entry)) : [];
+  entries
+    ? entries.filter((entry: GeneratedData) => entry.kind === kind && additionalCondition(entry))
+    : [];
 
 const renderAPI = (
   packageName: string,
@@ -34,11 +47,13 @@ const renderAPI = (
     const types = filterData(
       data,
       TypeDocKind.TypeAlias,
-      entry => entry.type.declaration || entry.type.types
+      entry => !!(entry.type.declaration || entry.type.types)
     );
     const props = filterData(data, TypeDocKind.TypeAlias, entry => entry.name.includes('Props'));
     const defaultProps = filterData(
-      filterData(data, TypeDocKind.Class)[0]?.children,
+      data.filter(
+        (defaultProp: DefaultPropsDefinitionData) => defaultProp.kind === TypeDocKind.Class
+      )[0]?.children,
       TypeDocKind.Property,
       entry => entry.name === 'defaultProps'
     )[0];

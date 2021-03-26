@@ -11,6 +11,7 @@ import {
   renderParam,
   resolveTypeName,
   TypeDefinitionData,
+  TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionMethodsProps = {
@@ -18,8 +19,9 @@ export type APISectionMethodsProps = {
   apiName?: string;
 };
 
-type MethodDefinitionData = {
+export type MethodDefinitionData = {
   signatures: MethodSignatureData[];
+  kind: TypeDocKind;
 };
 
 type MethodSignatureData = {

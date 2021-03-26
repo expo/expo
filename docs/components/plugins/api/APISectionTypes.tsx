@@ -15,19 +15,21 @@ import {
   CommentData,
   TypeDefinitionData,
   MethodParamData,
+  TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionTypesProps = {
-  data: TypeData[];
+  data: TypeGeneralData[];
 };
 
-type TypeData = {
+export type TypeGeneralData = {
   name: string;
   comment: CommentData;
   type: TypeDeclarationData;
+  kind: TypeDocKind;
 };
 
-type TypeDeclarationData = {
+export type TypeDeclarationData = {
   declaration: {
     signatures: TypeSignaturesData[];
     children: TypePropertyData[];
@@ -47,6 +49,7 @@ type TypePropertyData = {
   };
   comment: CommentData;
   type: TypeDefinitionData;
+  defaultValue: string;
 };
 
 type TypeValueData = {
@@ -95,7 +98,7 @@ const renderTypePropertyRow = (typeProperty: TypePropertyData): JSX.Element => (
   </tr>
 );
 
-const renderType = ({ name, comment, type }: TypeData): JSX.Element | undefined => {
+const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | undefined => {
   if (type.declaration) {
     // Object Types
     return (
