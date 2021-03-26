@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 12.0.1 — 2021-03-26
+
+### 🐛 Bug fixes
+
 - Add missing unimodules-permissions-interface dependency
 
 ## 12.0.0 — 2021-03-10

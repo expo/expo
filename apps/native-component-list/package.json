@@ -101,7 +101,7 @@
     "expo-linking": "~2.2.0",
     "expo-local-authentication": "~11.0.0",
     "expo-localization": "~10.1.0",
-    "expo-location": "~12.0.0",
+    "expo-location": "~12.0.1",
     "expo-mail-composer": "~10.1.0",
     "expo-media-library": "~12.0.0",
     "expo-payments-stripe": "~9.2.0",
