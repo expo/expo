@@ -6,7 +6,7 @@ const ios_plugins_1 = require("@expo/config-plugins/build/plugins/ios-plugins");
 const { Scheme } = config_plugins_1.IOSConfig;
 const { appendScheme } = Scheme;
 const fbSchemes = ['fbapi', 'fb-messenger-api', 'fbauth2', 'fbshareextension'];
-const USER_TRACKING = 'Allow $(PRODUCT_NAME) to use data for tracking the user or the device';
+const USER_TRACKING = 'This identifier will be used to deliver personalized ads to you.';
 exports.withFacebookIOS = ios_plugins_1.createInfoPlistPlugin(setFacebookConfig, 'withFacebookIOS');
 /**
  * Getters
