@@ -224,7 +224,7 @@ const ModalStack = createStackNavigator();
 
 export default (props: { theme: string }) => {
   const linking = {
-    prefixes: ['expogo://'],
+    prefixes: ['expo-home://'],
     config: {
       initialRouteName: 'RootStack',
       screens: {

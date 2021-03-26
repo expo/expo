@@ -143,7 +143,7 @@
         <category android:name="android.intent.category.BROWSABLE"/>
       </intent-filter>
       <intent-filter>
-        <data android:scheme="expogo"/>
+        <data android:scheme="expo-home"/>
 
         <action android:name="android.intent.action.VIEW"/>
 
