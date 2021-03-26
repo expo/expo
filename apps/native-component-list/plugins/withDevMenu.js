@@ -47,21 +47,21 @@ const withDevMenu = config => {
         }
 
         // Add swizzling invocation
-        if (!contents.includes(swizzleMethodInvocationBlock)) {
-          // self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc]
-          contents = contents.replace(
-            /self\.moduleRegistryAdapter = \[\[UMModuleRegistryAdapter alloc\]/g,
-            `${swizzleMethodInvocationBlock}
-  self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc]`
-          );
-        }
+  //       if (!contents.includes(swizzleMethodInvocationBlock)) {
+  //         // self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc]
+  //         contents = contents.replace(
+  //           /self\.moduleRegistryAdapter = \[\[UMModuleRegistryAdapter alloc\]/g,
+  //           `${swizzleMethodInvocationBlock}
+  // self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc]`
+  //         );
+  //       }
 
         // Add swizzling method
-        if (!contents.match(/\(void\)\s?ensureReactMethodSwizzlingSetUp/g)) {
-          const sections = contents.split('@end');
-          sections[sections.length - 2] += swizzleMethodBlock;
-          contents = sections.join('@end');
-        }
+        // if (!contents.match(/\(void\)\s?ensureReactMethodSwizzlingSetUp/g)) {
+        //   const sections = contents.split('@end');
+        //   sections[sections.length - 2] += swizzleMethodBlock;
+        //   contents = sections.join('@end');
+        // }
       } else {
         throw new Error(
           `Cannot append DevMenu module to AppDelegate of language "${fileInfo.language}"`

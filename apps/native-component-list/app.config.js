@@ -3,7 +3,13 @@ export default ({ config }) => {
   // app.json defines the sdkVersion as UNVERSIONED, we can override it here dynamically if we need to,
   // for example with an environment variable.
   // config.sdkVersion = '41.0.0';
-  config.plugins = [
+
+  if (!Array.isArray(config.plugins)) {
+    config.plugins = [];
+  }
+  config.plugins.push(
+    'expo-dev-menu', 
+    'expo-dev-launcher',
     // iOS plugins
     // Add a plugin to modify the AppDelegate.
     './plugins/withNotFoundModule',
@@ -34,7 +40,7 @@ export default ({ config }) => {
         packagePath: '../../../packages/unimodules-test-core/android',
       },
     ],
-  ];
+  );
 
   // NOTE(brentvatne):
   // This adds an ios.scheme property to manifest, which does not validate
