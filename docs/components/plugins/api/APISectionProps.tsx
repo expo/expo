@@ -5,7 +5,7 @@ import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
 import { B } from '~/components/base/paragraph';
 import { H2, H4 } from '~/components/plugins/Headings';
-import { TypeDeclarationData } from '~/components/plugins/api/APISectionTypes';
+import { TypeDeclarationData, TypePropertyData } from '~/components/plugins/api/APISectionTypes';
 import {
   CommentData,
   CommentTagData,
@@ -51,12 +51,12 @@ const extractDefaultPropValue = (
     return annotationDefault[0].text;
   }
   return defaultProps?.type?.declaration?.children?.filter(
-    (defaultProp: any) => defaultProp.name === name
+    (defaultProp: TypePropertyData) => defaultProp.name === name
   )[0]?.defaultValue;
 };
 
-const renderInheritedProp = (ip: any) => {
-  const component = ip?.typeArguments[0].queryType?.name;
+const renderInheritedProp = (ip: TypeDeclarationData) => {
+  const component = ip?.typeArguments ? ip.typeArguments[0]?.queryType?.name : null;
   return component ? (
     <LI key={`inherited-prop-${component}`}>
       <InlineCode>{component}</InlineCode>
@@ -64,8 +64,8 @@ const renderInheritedProp = (ip: any) => {
   ) : null;
 };
 
-const renderInheritedProps = (data: any[]): JSX.Element | undefined => {
-  const inheritedProps = data.filter((ip: any) => ip.type === 'reference');
+const renderInheritedProps = (data: TypeDeclarationData[]): JSX.Element | undefined => {
+  const inheritedProps = data.filter((ip: TypeDeclarationData) => ip.type === 'reference');
   if (inheritedProps.length) {
     return (
       <div>

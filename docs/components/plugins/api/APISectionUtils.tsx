@@ -46,6 +46,9 @@ export type TypeDefinitionData = {
   elementType?: {
     name: string;
   };
+  queryType?: {
+    name: string;
+  };
   typeArguments?: TypeDefinitionData[];
 };
 

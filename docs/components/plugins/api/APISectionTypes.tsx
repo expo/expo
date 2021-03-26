@@ -36,13 +36,14 @@ export type TypeDeclarationData = {
   };
   type: string;
   types: TypeValueData[];
+  typeArguments?: TypeDefinitionData[];
 };
 
 type TypeSignaturesData = {
   parameters: MethodParamData[];
 };
 
-type TypePropertyData = {
+export type TypePropertyData = {
   name: string;
   flags: {
     isOptional: boolean;
