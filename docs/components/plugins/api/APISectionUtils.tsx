@@ -37,6 +37,12 @@ export type CommentData = {
   text?: string;
   shortText?: string;
   returns?: string;
+  tags?: CommentTagData[];
+};
+
+export type CommentTagData = {
+  tag: string;
+  text: string;
 };
 
 export type TypeDefinitionData = {

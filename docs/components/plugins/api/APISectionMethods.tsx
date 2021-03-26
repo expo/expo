@@ -32,7 +32,7 @@ type MethodSignatureData = {
 const renderMethod = (
   { signatures }: MethodDefinitionData,
   index?: number,
-  apiName?: string,
+  apiName?: string
 ): JSX.Element[] =>
   signatures.map(({ name, parameters, comment, type }: MethodSignatureData) => (
     <div key={`method-signature-${name}-${parameters?.length || 0}`}>

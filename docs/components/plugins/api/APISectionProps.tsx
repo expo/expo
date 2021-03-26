@@ -6,18 +6,33 @@ import { LI, UL } from '~/components/base/list';
 import { B } from '~/components/base/paragraph';
 import { H2, H4 } from '~/components/plugins/Headings';
 import {
-  APISubSectionProps,
+  CommentData,
   inlineRenderers,
   resolveTypeName,
+  TypeDefinitionData,
 } from '~/components/plugins/api/APISectionUtils';
 
-export type APISectionPropsDefaults = {
+export type APISectionPropsProps = {
+  data: PropsDefinition[];
   defaultProps?: any;
+};
+
+type PropsDefinition = {
+  name: string;
+  type: {
+    types: any;
+  };
+};
+
+type PropData = {
+  name: string;
+  comment: CommentData;
+  type: TypeDefinitionData;
 };
 
 const UNKNOWN_VALUE = '...';
 
-const extractDefaultPropValue = ({ comment, name }: any, defaultProps: any) => {
+const extractDefaultPropValue = ({ comment, name }: PropData, defaultProps: any): string => {
   const annotationDefault = comment?.tags?.filter((tag: any) => tag.tag === 'default');
   if (annotationDefault?.length) {
     return annotationDefault[0].text;
@@ -36,7 +51,7 @@ const renderInheritedProp = (ip: any) => {
   ) : null;
 };
 
-const renderInheritedProps = (data: any[]) => {
+const renderInheritedProps = (data: any[]): JSX.Element | undefined => {
   const inheritedProps = data.filter((ip: any) => ip.type === 'reference');
   if (inheritedProps.length) {
     return (
@@ -46,16 +61,16 @@ const renderInheritedProps = (data: any[]) => {
       </div>
     );
   }
-  return null;
+  return undefined;
 };
 
-const renderProps = ({ name, type }: any, defaultValues: any): JSX.Element => {
+const renderProps = ({ name, type }: PropsDefinition, defaultValues: any): JSX.Element => {
   const props = type.types.filter((e: any) => e.declaration);
   return (
     <div key={`props-definition-${name}`}>
       <UL>
         {props?.map((def: any) =>
-          def.declaration?.children.map((prop: any) =>
+          def.declaration?.children.map((prop: PropData) =>
             renderProp(prop, extractDefaultPropValue(prop, defaultValues))
           )
         )}
@@ -65,12 +80,12 @@ const renderProps = ({ name, type }: any, defaultValues: any): JSX.Element => {
   );
 };
 
-const renderProp = ({ comment, name, type }: any, defaultValue: any) => (
+const renderProp = ({ comment, name, type }: PropData, defaultValue: string) => (
   <LI key={`prop-entry-${name}`}>
     <B>
       {name} (<InlineCode>{resolveTypeName(type)}</InlineCode>)
     </B>
-    {comment ? (
+    {comment?.shortText ? (
       <span>
         {' - '}
         <ReactMarkdown renderers={inlineRenderers}>{comment.shortText}</ReactMarkdown>
@@ -85,14 +100,11 @@ const renderProp = ({ comment, name, type }: any, defaultValue: any) => (
   </LI>
 );
 
-const APISectionProps: React.FC<APISubSectionProps & APISectionPropsDefaults> = ({
-  data,
-  defaultProps,
-}) =>
+const APISectionProps: React.FC<APISectionPropsProps> = ({ data, defaultProps }) =>
   data?.length ? (
     <>
       <H2 key="props-header">Props</H2>
-      {data.map((prop: any) => renderProps(prop, defaultProps))}
+      {data.map((propsDefinition: PropsDefinition) => renderProps(propsDefinition, defaultProps))}
     </>
   ) : null;
 
