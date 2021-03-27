@@ -6,14 +6,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-FOUNDATION_EXPORT NSString * const ABI38_0_0EXUpdatesEventName;
-FOUNDATION_EXPORT NSString * const ABI38_0_0EXUpdatesErrorEventType;
-FOUNDATION_EXPORT NSString * const ABI38_0_0EXUpdatesNotAvailableEventType;
-FOUNDATION_EXPORT NSString * const ABI38_0_0EXUpdatesDownloadStartEventType;
-FOUNDATION_EXPORT NSString * const ABI38_0_0EXUpdatesDownloadProgressEventType;
-FOUNDATION_EXPORT NSString * const ABI38_0_0EXUpdatesDownloadFinishedEventType;
+FOUNDATION_EXPORT NSString * const ABI38_0_0EXSyncEventName;
+FOUNDATION_EXPORT NSString * const ABI38_0_0EXSyncErrorEventType;
+FOUNDATION_EXPORT NSString * const ABI38_0_0EXSyncNotAvailableEventType;
+FOUNDATION_EXPORT NSString * const ABI38_0_0EXSyncDownloadStartEventType;
+FOUNDATION_EXPORT NSString * const ABI38_0_0EXSyncDownloadProgressEventType;
+FOUNDATION_EXPORT NSString * const ABI38_0_0EXSyncDownloadFinishedEventType;
 
-@protocol ABI38_0_0EXUpdatesScopedModuleDelegate
+@protocol ABI38_0_0EXSyncScopedModuleDelegate
 
 - (void)updatesModuleDidSelectReload:(id)scopedModule;
 - (void)updatesModuleDidSelectReloadFromCache:(id)scopedModule;

@@ -19,7 +19,7 @@
 #import "EXReactAppManager.h"
 #import "EXScreenOrientationManager.h"
 #import "EXVersions.h"
-#import "EXUpdatesManager.h"
+#import "EXSyncManager.h"
 #import "EXUtil.h"
 
 #import <EXSplashScreen/EXSplashScreenService.h>

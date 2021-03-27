@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXReactAppManager.h"
-#import "EXAppLoaderExpoUpdates.h"
+#import "EXAppLoaderNew.h"
 #import "EXKernelAppRecord.h"
 #import "EXAppViewController.h"
 
@@ -16,7 +16,7 @@ NSString *kEXKernelBridgeDidBackgroundNotification = @"EXKernelBridgeDidBackgrou
 {
   if (self = [super init]) {
     _appManager = [[EXReactAppManager alloc] initWithAppRecord:self initialProps:initialProps];
-    _appLoader = [[EXAppLoaderExpoUpdates alloc] initWithManifestUrl:manifestUrl];
+    _appLoader = [[EXAppLoaderNew alloc] initWithManifestUrl:manifestUrl];
     _viewController = [[EXAppViewController alloc] initWithAppRecord:self];
     _timeCreated = [NSDate date];
   }

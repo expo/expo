@@ -2,7 +2,7 @@
 
 #import "EXHeadlessAppRecord.h"
 #import "EXReactAppManager.h"
-#import "EXAppLoaderExpoUpdates.h"
+#import "EXAppLoaderNew.h"
 
 @interface EXHeadlessAppRecord ()
 
@@ -28,7 +28,7 @@
     [_appManager setIsHeadless:YES];
     [_appManager setDelegate:self];
 
-    _appLoader = [[EXAppLoaderExpoUpdates alloc] initWithManifestUrl:manifestUrl];
+    _appLoader = [[EXAppLoaderNew alloc] initWithManifestUrl:manifestUrl];
 
     [_appLoader setDelegate:self];
     [_appLoader request];

@@ -18,7 +18,7 @@
 #import "EXScopedErrorRecoveryModule.h"
 #import "EXScopedFacebook.h"
 #import "EXScopedFirebaseCore.h"
-#import "EXUpdatesBinding.h"
+#import "EXSyncBinding.h"
 
 #import "EXScopedReactNativeAdapter.h"
 #import "EXExpoUserNotificationCenterProxy.h"
@@ -41,8 +41,8 @@
 {
   UMModuleRegistry *moduleRegistry = [self.moduleRegistryProvider moduleRegistry];
 
-#if __has_include(<EXUpdates/EXUpdatesService.h>)
-  EXUpdatesBinding *updatesBinding = [[EXUpdatesBinding alloc] initWithExperienceId:experienceId updatesKernelService:kernelServices[EX_UNVERSIONED(@"EXUpdatesManager")] databaseKernelService:kernelServices[EX_UNVERSIONED(@"EXUpdatesDatabaseManager")]];
+#if __has_include(<EXUpdates/EXSyncService.h>)
+  EXSyncBinding *updatesBinding = [[EXSyncBinding alloc] initWithExperienceId:experienceId updatesKernelService:kernelServices[EX_UNVERSIONED(@"EXSyncManager")] databaseKernelService:kernelServices[EX_UNVERSIONED(@"EXSyncDatabaseManager")]];
   [moduleRegistry registerInternalModule:updatesBinding];
 #endif
 

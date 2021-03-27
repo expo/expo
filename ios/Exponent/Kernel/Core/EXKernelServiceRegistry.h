@@ -8,8 +8,8 @@
 @class EXKernelModuleManager;
 @class EXRemoteNotificationManager;
 @class EXScreenOrientationManager;
-@class EXUpdatesDatabaseManager;
-@class EXUpdatesManager;
+@class EXSyncDatabaseManager;
+@class EXSyncManager;
 @class EXUserNotificationManager;
 
 @interface EXKernelServiceRegistry : NSObject <EXKernelAppRegistryDelegate>
@@ -20,8 +20,8 @@
 @property (nonatomic, readonly) EXKernelLinkingManager *linkingManager;
 @property (nonatomic, readonly) EXRemoteNotificationManager *remoteNotificationManager;
 @property (nonatomic, readonly) EXScreenOrientationManager *screenOrientationManager;
-@property (nonatomic, readonly) EXUpdatesDatabaseManager *updatesDatabaseManager;
-@property (nonatomic, readonly) EXUpdatesManager *updatesManager;
+@property (nonatomic, readonly) EXSyncDatabaseManager *updatesDatabaseManager;
+@property (nonatomic, readonly) EXSyncManager *updatesManager;
 @property (nonatomic, readonly) EXUserNotificationManager *notificationsManager;
 
 @property (nonatomic, readonly) NSDictionary<NSString *, id> *allServices;

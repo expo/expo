@@ -4,12 +4,12 @@
 #import <ABI38_0_0React/ABI38_0_0RCTUIManager.h>
 #import <ABI38_0_0React/ABI38_0_0RCTBridge.h>
 
-NSString * const ABI38_0_0EXUpdatesEventName = @"Exponent.nativeUpdatesEvent";
-NSString * const ABI38_0_0EXUpdatesErrorEventType = @"error";
-NSString * const ABI38_0_0EXUpdatesNotAvailableEventType = @"noUpdateAvailable";
-NSString * const ABI38_0_0EXUpdatesDownloadStartEventType = @"downloadStart";
-NSString * const ABI38_0_0EXUpdatesDownloadProgressEventType = @"downloadProgress";
-NSString * const ABI38_0_0EXUpdatesDownloadFinishedEventType = @"downloadFinished";
+NSString * const ABI38_0_0EXSyncEventName = @"Exponent.nativeUpdatesEvent";
+NSString * const ABI38_0_0EXSyncErrorEventType = @"error";
+NSString * const ABI38_0_0EXSyncNotAvailableEventType = @"noUpdateAvailable";
+NSString * const ABI38_0_0EXSyncDownloadStartEventType = @"downloadStart";
+NSString * const ABI38_0_0EXSyncDownloadProgressEventType = @"downloadProgress";
+NSString * const ABI38_0_0EXSyncDownloadFinishedEventType = @"downloadFinished";
 
 ABI38_0_0EX_DEFINE_SCOPED_MODULE_GETTER(ABI38_0_0EXUpdates, updates)
 
@@ -39,7 +39,7 @@ ABI38_0_0EX_EXPORT_SCOPED_MODULE(ExponentUpdates, UpdatesManager)
 
 - (void)sendEventWithBody:(NSDictionary *)body
 {
-  [_bridge enqueueJSCall:@"ABI38_0_0RCTDeviceEventEmitter.emit" args:@[ABI38_0_0EXUpdatesEventName, body]];
+  [_bridge enqueueJSCall:@"ABI38_0_0RCTDeviceEventEmitter.emit" args:@[ABI38_0_0EXSyncEventName, body]];
 }
 
 ABI38_0_0RCT_EXPORT_METHOD(reload)
@@ -81,28 +81,28 @@ ABI38_0_0RCT_EXPORT_METHOD(fetchUpdateAsync:(ABI38_0_0RCTPromiseResolveBlock)res
 {
   if ([self _areDevToolsEnabledWithManifest:_manifest]) {
     [self sendEventWithBody:@{
-                               @"type": ABI38_0_0EXUpdatesErrorEventType,
+                               @"type": ABI38_0_0EXSyncErrorEventType,
                                @"message": @"Cannot fetch updates in dev mode"
                                }];
     reject(@"E_FETCH_UPDATE_FAILED", @"Cannot fetch updates in dev mode", nil);
     return;
   }
   [_kernelUpdatesServiceDelegate updatesModule:self didRequestBundleWithCompletionQueue:_methodQueue start:^{
-    [self sendEventWithBody:@{ @"type": ABI38_0_0EXUpdatesDownloadStartEventType }];
+    [self sendEventWithBody:@{ @"type": ABI38_0_0EXSyncDownloadStartEventType }];
   } success:^(NSDictionary * _Nullable manifest) {
     if (manifest) {
       [self sendEventWithBody:@{
-        @"type": ABI38_0_0EXUpdatesDownloadFinishedEventType,
+        @"type": ABI38_0_0EXSyncDownloadFinishedEventType,
         @"manifest": manifest
       }];
       resolve(manifest);
     } else {
-      [self sendEventWithBody:@{ @"type": ABI38_0_0EXUpdatesNotAvailableEventType }];
+      [self sendEventWithBody:@{ @"type": ABI38_0_0EXSyncNotAvailableEventType }];
       resolve(nil);
     }
   } failure:^(NSError * _Nonnull error) {
     [self sendEventWithBody:@{
-      @"type": ABI38_0_0EXUpdatesErrorEventType,
+      @"type": ABI38_0_0EXSyncErrorEventType,
       @"message": error.localizedDescription
     }];
     reject(@"E_CHECK_UPDATE_FAILED", error.localizedDescription, error);

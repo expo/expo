@@ -18,7 +18,7 @@
 #import "ABI40_0_0EXScopedErrorRecoveryModule.h"
 #import "ABI40_0_0EXScopedFacebook.h"
 #import "ABI40_0_0EXScopedFirebaseCore.h"
-#import "ABI40_0_0EXUpdatesBinding.h"
+#import "ABI40_0_0EXSyncBinding.h"
 
 #import "ABI40_0_0EXScopedReactNativeAdapter.h"
 #import "ABI40_0_0EXExpoUserNotificationCenterProxy.h"
@@ -41,8 +41,8 @@
 {
   ABI40_0_0UMModuleRegistry *moduleRegistry = [self.moduleRegistryProvider moduleRegistry];
 
-#if __has_include(<ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesService.h>)
-  ABI40_0_0EXUpdatesBinding *updatesBinding = [[ABI40_0_0EXUpdatesBinding alloc] initWithExperienceId:experienceId updatesKernelService:kernelServices[@"EXUpdatesManager"] databaseKernelService:kernelServices[@"EXUpdatesDatabaseManager"]];
+#if __has_include(<ABI40_0_0EXUpdates/ABI40_0_0EXSyncService.h>)
+  ABI40_0_0EXSyncBinding *updatesBinding = [[ABI40_0_0EXSyncBinding alloc] initWithExperienceId:experienceId updatesKernelService:kernelServices[@"EXSyncManager"] databaseKernelService:kernelServices[@"EXSyncDatabaseManager"]];
   [moduleRegistry registerInternalModule:updatesBinding];
 #endif
 

@@ -8,7 +8,7 @@
 #import "EXAppFetcherDevelopmentMode.h"
 #import "EXAppFetcherCacheOnly.h"
 #import "EXAppFetcherWithTimeout.h"
-#import "EXAppLoader+Updates.h"
+#import "EXAppLoader+Sync.h"
 #import "EXKernelAppRecord.h"
 #import "EXKernelAppRegistry.h"
 #import "EXKernelLinkingManager.h"

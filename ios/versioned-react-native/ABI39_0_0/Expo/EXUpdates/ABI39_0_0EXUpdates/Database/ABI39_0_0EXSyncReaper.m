@@ -1,0 +1,79 @@
+//  Copyright © 2019 650 Industries. All rights reserved.
+
+#import <ABI39_0_0EXUpdates/ABI39_0_0EXSyncFileDownloader.h>
+#import <ABI39_0_0EXUpdates/ABI39_0_0EXSyncReaper.h>
+
+NS_ASSUME_NONNULL_BEGIN
+
+@implementation ABI39_0_0EXSyncReaper
+
++ (void)reapUnusedUpdatesWithConfig:(ABI39_0_0EXSyncConfig *)config
+                           database:(ABI39_0_0EXSyncDatabase *)database
+                          directory:(NSURL *)directory
+                    selectionPolicy:(id<ABI39_0_0EXSyncSelectionPolicy>)selectionPolicy
+                     launchedUpdate:(ABI39_0_0EXSyncManifest *)launchedUpdate
+{
+  dispatch_async(database.databaseQueue, ^{
+    NSError *error;
+    NSDate *beginDeleteFromDatabase = [NSDate date];
+
+    [database markUpdateFinished:launchedUpdate error:&error];
+    if (error) {
+      NSLog(@"Error reaping updates: %@", error.localizedDescription);
+      return;
+    }
+
+    NSArray<ABI39_0_0EXSyncManifest *> *allUpdates = [database allUpdatesWithConfig:config error:&error];
+    if (!allUpdates || error) {
+      NSLog(@"Error reaping updates: %@", error.localizedDescription);
+      return;
+    }
+    NSArray<ABI39_0_0EXSyncManifest *> *updatesToDelete = [selectionPolicy updatesToDeleteWithLaunchedUpdate:launchedUpdate updates:allUpdates];
+    [database deleteUpdates:updatesToDelete error:&error];
+    if (error) {
+      NSLog(@"Error reaping updates: %@", error.localizedDescription);
+      return;
+    }
+
+    NSArray<ABI39_0_0EXSyncAsset *> *assetsForDeletion = [database deleteUnusedAssetsWithError:&error];
+    if (error) {
+      NSLog(@"Error reaping updates: %@", error.localizedDescription);
+      return;
+    }
+
+    NSLog(@"Deleted assets and updates from SQLite in %f ms", [beginDeleteFromDatabase timeIntervalSinceNow] * -1000);
+
+    dispatch_async([ABI39_0_0EXSyncFileDownloader assetFilesQueue], ^{
+      NSUInteger deletedAssets = 0;
+      NSMutableArray<ABI39_0_0EXSyncAsset *> *erroredAssets = [NSMutableArray new];
+
+      NSDate *beginDeleteAssets = [NSDate date];
+      for (ABI39_0_0EXSyncAsset *asset in assetsForDeletion) {
+        NSURL *localUrl = [directory URLByAppendingPathComponent:asset.filename];
+        NSError *error;
+        if ([NSFileManager.defaultManager fileExistsAtPath:localUrl.path] && ![NSFileManager.defaultManager removeItemAtURL:localUrl error:&error]) {
+          NSLog(@"Error deleting asset at %@: %@", localUrl, error.localizedDescription);
+          [erroredAssets addObject:asset];
+        } else {
+          deletedAssets++;
+        }
+      }
+      NSLog(@"Deleted %lu assets from disk in %f ms", (unsigned long)deletedAssets, [beginDeleteAssets timeIntervalSinceNow] * -1000);
+
+      NSDate *beginRetryDeletes = [NSDate date];
+      // retry errored deletions
+      for (ABI39_0_0EXSyncAsset *asset in erroredAssets) {
+        NSURL *localUrl = [directory URLByAppendingPathComponent:asset.filename];
+        NSError *error;
+        if ([NSFileManager.defaultManager fileExistsAtPath:localUrl.path] && ![NSFileManager.defaultManager removeItemAtURL:localUrl error:&error]) {
+          NSLog(@"Retried deleting asset at %@ and failed again: %@", localUrl, error.localizedDescription);
+        }
+      }
+      NSLog(@"Retried deleting assets from disk in %f ms", [beginRetryDeletes timeIntervalSinceNow] * -1000);
+    });
+  });
+}
+
+@end
+
+NS_ASSUME_NONNULL_END
