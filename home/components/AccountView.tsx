@@ -1,27 +1,26 @@
 import { StackScreenProps } from '@react-navigation/stack';
+import { AccountData } from 'containers/Account';
 import dedent from 'dedent';
 import { take, takeRight } from 'lodash';
 import React from 'react';
-import { ActivityIndicator, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import FadeIn from 'react-native-fade-in-image';
 
-import ListItem from '../components/ListItem';
-import ScrollView from '../components/NavigationScrollView';
-import { Project } from '../components/ProjectList';
-import ProjectListItem from '../components/ProjectListItem';
-import RefreshControl from '../components/RefreshControl';
-import SectionHeader from '../components/SectionHeader';
-import { Snack } from '../components/SnackList';
-import { StyledText } from '../components/Text';
-import { StyledView } from '../components/Views';
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
 import { AllStackRoutes } from '../navigation/Navigation.types';
-import EmptyProfileProjectsNotice from './EmptyProfileProjectsNotice';
-import EmptyProfileSnacksNotice from './EmptyProfileSnacksNotice';
+import EmptyAccountProjectsNotice from './EmptyAccountProjectsNotice';
+import EmptyAccountSnacksNotice from './EmptyAccountSnacksNotice';
+import ListItem from './ListItem';
+import ScrollView from './NavigationScrollView';
 import PrimaryButton from './PrimaryButton';
+import ProjectListItem from './ProjectListItem';
+import RefreshControl from './RefreshControl';
+import SectionHeader from './SectionHeader';
 import SeeAllProjectsButton from './SeeAllProjectsButton';
 import SnackListItem from './SnackListItem';
+import { StyledText } from './Text';
+import { StyledView } from './Views';
 
 const MAX_APPS_TO_DISPLAY = 3;
 const MAX_SNACKS_TO_DISPLAY = 3;
@@ -36,38 +35,25 @@ const SERVER_ERROR_TEXT = dedent`
   Sorry about this. We will resolve the issue as soon as possible.
 `;
 
-export type ProfileViewProps = {
-  isOwnProfile: boolean;
-  username: string;
+export type AccountViewProps = {
+  accountName: string;
   isAuthenticated: boolean;
-} & StackScreenProps<AllStackRoutes, 'Profile'>;
+  isCurrentUsersPersonalAccount: boolean;
+} & StackScreenProps<AllStackRoutes, 'Account'>;
 
 type QueryProps = {
   loading: boolean;
   error?: Error;
   refetch: (props: any) => void;
-  data: any;
+  data?: AccountData;
 };
 
-export type Profile = {
-  id: string;
-  username: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  profilePhoto: string;
-  isLegacy: boolean;
-  appCount: number;
-  apps: Project[];
-  snacks: Snack[];
-};
+type Props = AccountViewProps & QueryProps;
 
-type Props = ProfileViewProps & QueryProps;
-
-export default function ProfileView({
-  username,
+export default function AccountView({
+  accountName,
   navigation,
-  isOwnProfile,
+  isCurrentUsersPersonalAccount,
   loading,
   error,
   refetch,
@@ -98,7 +84,7 @@ export default function ProfileView({
     }
     try {
       setRefreshing(true);
-      await refetch({ fetchPolicy: 'network-only' });
+      refetch({ fetchPolicy: 'network-only' });
     } catch (e) {
       // TODO(brentvatne): Put this into Sentry
       console.log({ e });
@@ -114,17 +100,13 @@ export default function ProfileView({
     }
   };
 
-  // NOTE(brentvatne): investigate why `user` is null when there
-  // is an error, even if it loaded before. This seems undesirable,
-  // can it be avoided with apollo-client?
-
-  if (error && !data.user) {
+  if (error && !data?.account.byName) {
     return (
-      <ProfileError error={error} isRefetching={isRefreshing} onRefresh={_handleRefreshAsync} />
+      <AccountErrorView error={error} isRefetching={isRefreshing} onRefresh={_handleRefreshAsync} />
     );
   }
 
-  if (loading && !data.user) {
+  if (loading && !data?.account.byName) {
     return (
       <View style={{ flex: 1, padding: 30, alignItems: 'center' }}>
         <ActivityIndicator color={Colors.light.tintColor} />
@@ -137,20 +119,20 @@ export default function ProfileView({
       refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={_handleRefreshAsync} />}
       contentContainerStyle={{ paddingBottom: 20 }}
       style={styles.container}>
-      {data.user && (
+      {data?.account.byName && (
         <>
-          <ProfileHeader data={data} />
-          <ProfileProjectsSection
+          <AccountHeader data={data} />
+          <AccountProjectsSection
             data={data}
-            isOwnProfile={isOwnProfile}
+            isCurrentUsersPersonalAccount={isCurrentUsersPersonalAccount}
             navigation={navigation}
-            username={username}
+            accountName={accountName}
           />
-          <ProfileSnacksSection
+          <AccountSnacksSection
             data={data}
-            isOwnProfile={isOwnProfile}
+            isCurrentUsersPersonalAccount={isCurrentUsersPersonalAccount}
             navigation={navigation}
-            username={username}
+            accountName={accountName}
           />
         </>
       )}
@@ -158,7 +140,7 @@ export default function ProfileView({
   );
 }
 
-function ProfileError({
+function AccountErrorView({
   error,
   isRefetching,
   onRefresh,
@@ -194,26 +176,22 @@ function ProfileError({
   );
 }
 
-function ProfileHeader({ data }: Pick<Props, 'data'>) {
-  const { firstName, lastName, username, profilePhoto } = data.user;
+function AccountHeader({ data }: { data: NonNullable<Props['data']> }) {
+  const primaryAccountOwner = data.account.byName.owner;
 
-  if (data.user.isLegacy) {
-    // Legacy Header
+  if (!primaryAccountOwner) {
     return (
-      <View style={styles.header}>
-        <View
-          style={[styles.headerAvatar, styles.headerAvatarContainer, styles.legacyHeaderAvatar]}
-        />
+      <StyledView style={styles.header} darkBackgroundColor="#000" darkBorderColor="#000">
         <View style={styles.headerAccountsList}>
-          <Text style={styles.headerAccountText}>@{username}</Text>
+          <StyledText style={styles.headerAccountText} lightColor="#232B3A" darkColor="#ccc">
+            @{data.account.byName.name}
+          </StyledText>
         </View>
-      </View>
+      </StyledView>
     );
   }
 
-  function _maybeRenderGithubAccount() {
-    // ..
-  }
+  const { firstName, lastName, profilePhoto } = primaryAccountOwner;
 
   return (
     <StyledView style={styles.header} darkBackgroundColor="#000" darkBorderColor="#000">
@@ -227,26 +205,24 @@ function ProfileHeader({ data }: Pick<Props, 'data'>) {
       </StyledText>
       <View style={styles.headerAccountsList}>
         <StyledText style={styles.headerAccountText} lightColor="#232B3A" darkColor="#ccc">
-          @{username}
+          @{data.account.byName.name}
         </StyledText>
-        {_maybeRenderGithubAccount()}
       </View>
     </StyledView>
   );
 }
 
-function ProfileProjectsSection({
-  data: {
-    user: { apps, appCount },
-  },
-  isOwnProfile,
+function AccountProjectsSection({
+  data,
+  isCurrentUsersPersonalAccount,
   navigation,
-  username,
-}: Pick<Props, 'data' | 'isOwnProfile' | 'navigation' | 'username'>) {
+  accountName,
+}: Pick<Props, 'isCurrentUsersPersonalAccount' | 'navigation' | 'accountName'> & {
+  data: NonNullable<Props['data']>;
+}) {
   const onPressProjectList = () => {
-    navigation.navigate('ProjectsForUser', {
-      username,
-      belongsToCurrentUser: isOwnProfile,
+    navigation.navigate('ProjectsForAccount', {
+      accountName,
     });
   };
 
@@ -266,8 +242,9 @@ function ProfileProjectsSection({
   };
 
   const renderContents = () => {
-    if (!apps?.length) {
-      return <EmptyProfileProjectsNotice isOwnProfile={isOwnProfile} />;
+    const apps = data.account.byName.apps;
+    if (!apps.length) {
+      return <EmptyAccountProjectsNotice />;
     }
     const otherApps = takeRight(apps, Math.max(0, apps.length - MAX_APPS_TO_DISPLAY));
     return (
@@ -275,7 +252,7 @@ function ProfileProjectsSection({
         {take(apps, MAX_APPS_TO_DISPLAY).map(renderApp)}
         <SeeAllProjectsButton
           apps={otherApps}
-          appCount={appCount - MAX_APPS_TO_DISPLAY}
+          appCount={100 - MAX_APPS_TO_DISPLAY}
           onPress={onPressProjectList}
         />
       </>
@@ -290,18 +267,17 @@ function ProfileProjectsSection({
   );
 }
 
-function ProfileSnacksSection({
-  data: {
-    user: { snacks },
-  },
-  isOwnProfile,
+function AccountSnacksSection({
+  data,
+  isCurrentUsersPersonalAccount,
   navigation,
-  username,
-}: Pick<Props, 'data' | 'isOwnProfile' | 'navigation' | 'username'>) {
+  accountName,
+}: Pick<Props, 'isCurrentUsersPersonalAccount' | 'navigation' | 'accountName'> & {
+  data: NonNullable<Props['data']>;
+}) {
   const onPressSnackList = () => {
-    navigation.navigate('SnacksForUser', {
-      username,
-      belongsToCurrentUser: isOwnProfile,
+    navigation.navigate('SnacksForAccount', {
+      accountName,
     });
   };
 
@@ -318,8 +294,11 @@ function ProfileSnacksSection({
   };
 
   const renderContents = () => {
+    const snacks = data.account.byName.snacks;
     if (!snacks?.length) {
-      return <EmptyProfileSnacksNotice isOwnProfile={isOwnProfile} />;
+      return (
+        <EmptyAccountSnacksNotice isCurrentUsersPersonalAccount={isCurrentUsersPersonalAccount} />
+      );
     }
     const otherSnacks = takeRight(snacks, Math.max(0, snacks.length - MAX_SNACKS_TO_DISPLAY));
     return (

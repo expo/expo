@@ -224,15 +224,8 @@ function ExperienceActionItem({
 function ExperienceHeader(
   props: Pick<Experience, 'fullName' | 'icon' | 'iconUrl' | 'privacy' | 'name' | 'username'>
 ) {
-  const navigation = useNavigation();
-
   const onPress = () => {
     Linking.openURL(UrlUtils.normalizeUrl(props.fullName!));
-  };
-
-  const onPressUsername = () => {
-    navigation.goBack();
-    navigation.navigate('Profile', { username: props.username });
   };
 
   return (
@@ -256,9 +249,7 @@ function ExperienceHeader(
         }}>
         {props.name}
       </StyledText>
-      <StyledText onPress={onPressUsername} style={{ fontSize: 16, opacity: 0.6 }}>
-        By {props.username}
-      </StyledText>
+      <StyledText style={{ fontSize: 16, opacity: 0.6 }}>By {props.username}</StyledText>
     </View>
   );
 }

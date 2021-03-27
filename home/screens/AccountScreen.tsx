@@ -5,21 +5,24 @@ import { StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import ProfileUnauthenticated from '../components/ProfileUnauthenticated';
-import { OtherProfile, MyProfile } from '../containers/Profile';
+import Account from '../containers/Account';
 import getViewerUsernameAsync from '../utils/getViewerUsernameAsync';
 import isUserAuthenticated from '../utils/isUserAuthenticated';
 
-export default function ProfileScreen({
+export default function AccountScreen({
   navigation,
   ...props
-}: StackScreenProps<AllStackRoutes, 'Profile'>) {
-  const { isAuthenticated, username } = useSelector(
+}: StackScreenProps<AllStackRoutes, 'Account'>) {
+  const {
+    isAuthenticated,
+    accountName,
+  }: { isAuthenticated: boolean; accountName?: string } = useSelector(
     React.useCallback(
       data => {
         const isAuthenticated = isUserAuthenticated(data.session);
         return {
           isAuthenticated,
-          username: props.route.params?.username,
+          accountName: props.route.params?.accountName,
         };
       },
       [props.route]
@@ -27,58 +30,55 @@ export default function ProfileScreen({
   );
 
   return (
-    <ProfileView
+    <AccountView
       {...props}
       isAuthenticated={isAuthenticated}
-      username={username}
+      accountName={accountName}
       navigation={navigation}
     />
   );
 }
 
-function ProfileView(
+function AccountView(
   props: {
-    username: string;
+    accountName?: string;
     isAuthenticated: boolean;
-  } & StackScreenProps<AllStackRoutes, 'Profile'>
+  } & StackScreenProps<AllStackRoutes, 'Account'>
 ) {
-  // NOTE: An empty username prop means to display the viewer's profile. We use null to
-  // indicate we don't yet know if this is the viewer's own profile.
-  const [isOwnProfile, setIsOwnProfile] = React.useState(
-    !props.route.params?.username ? true : null
-  );
+  // undefined means not yet computed, show loading screen
+  const [viewerUsername, setViewerUsername] = React.useState<string | null | undefined>(null);
 
   React.useEffect(() => {
-    if (isOwnProfile !== null) {
-      return;
-    }
-
     if (!props.isAuthenticated) {
-      // NOTE: this logic likely should be moved to a hook that runs whenever
-      // the prop is updated
-      setIsOwnProfile(false);
+      setViewerUsername(null);
     } else {
       getViewerUsernameAsync().then(
-        username => {
-          setIsOwnProfile(username === props.username);
+        viewerUsername => {
+          setViewerUsername(viewerUsername);
         },
         error => {
-          setIsOwnProfile(false);
+          setViewerUsername(null);
           console.warn(`There was an error fetching the viewer's username`, error);
         }
       );
     }
-  }, []);
+  }, [props.isAuthenticated]);
 
-  if (isOwnProfile === null) {
+  if (viewerUsername === undefined) {
     return <View style={styles.loadingContainer} />;
-  } else if (!props.isAuthenticated && isOwnProfile) {
-    return <ProfileUnauthenticated />;
-  } else if (isOwnProfile) {
-    return <MyProfile {...props} isOwnProfile={isOwnProfile} />;
   }
 
-  return <OtherProfile {...props} isOwnProfile={isOwnProfile} />;
+  if (!props.isAuthenticated || !viewerUsername) {
+    return <ProfileUnauthenticated />;
+  }
+
+  return (
+    <Account
+      {...props}
+      accountName={props.accountName ?? viewerUsername}
+      isCurrentUsersPersonalAccount={viewerUsername === props.accountName}
+    />
+  );
 }
 
 const styles = StyleSheet.create({
