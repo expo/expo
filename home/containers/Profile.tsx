@@ -34,6 +34,7 @@ const MyProfileQuery = gql`
         lastPublishedTime
         name
         packageName
+        username
         sdkVersion
         privacy
       }
@@ -104,7 +105,7 @@ const OtherProfileQuery = gql`
           name
           iconUrl
           packageName
-          packageUsername
+          username
           description
           sdkVersion
           lastPublishedTime
