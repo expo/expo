@@ -33,7 +33,8 @@ type MethodSignatureData = {
 
 const renderMethod = (
   { signatures }: MethodDefinitionData,
-  index?: number,
+  index: number,
+  dataLength?: number,
   apiName?: string
 ): JSX.Element[] =>
   signatures.map(({ name, parameters, comment, type }: MethodSignatureData) => (
@@ -60,7 +61,7 @@ const renderMethod = (
           <ReactMarkdown renderers={renderers}>{comment.returns}</ReactMarkdown>
         </div>
       ) : null}
-      {index !== signatures.length ? <hr /> : null}
+      {index + 1 !== dataLength ? <hr /> : null}
     </div>
   ));
 
@@ -68,7 +69,7 @@ const APISectionMethods: React.FC<APISectionMethodsProps> = ({ data, apiName }) 
   data?.length ? (
     <>
       <H2 key="methods-header">Methods</H2>
-      {data.map((method, index) => renderMethod(method, index, apiName))}
+      {data.map((method, index) => renderMethod(method, index, data.length, apiName))}
     </>
   ) : null;
 
