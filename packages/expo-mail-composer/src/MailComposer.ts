@@ -1,6 +1,7 @@
 import ExpoMailComposer from './ExpoMailComposer';
 import { MailComposerOptions, MailComposerResult } from './MailComposer.types';
 
+// @needsAudit
 /**
  * Opens a mail modal for iOS and a mail app intent for Android and fills the fields with provided
  * data. On iOS you will need to be signed into the Mail app.
@@ -12,6 +13,7 @@ export async function composeAsync(options: MailComposerOptions): Promise<MailCo
   return await ExpoMailComposer.composeAsync(options);
 }
 
+// @needsAudit
 /**
  * Determine if the `MailComposer` API can be used in this app.
  * @return A promise resolves to `true` if the API can be used, and `false` otherwise.

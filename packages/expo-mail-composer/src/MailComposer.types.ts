@@ -1,3 +1,4 @@
+// @needsAudit
 /**
  * A map defining the data to fill the mail.
  */
@@ -33,10 +34,12 @@ export type MailComposerOptions = {
   attachments?: string[];
 };
 
+// @docsMissing
 export type MailComposerResult = {
   status: MailComposerStatus;
 };
 
+// @docsMissing
 export enum MailComposerStatus {
   UNDETERMINED = 'undetermined',
   SENT = 'sent',
