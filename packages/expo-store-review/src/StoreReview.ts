@@ -4,6 +4,7 @@ import * as Linking from 'expo-linking';
 
 import StoreReview from './ExpoStoreReview';
 
+// @needs-audit
 /**
  * Determines if the platform has the capabilities to use `StoreReview.requestReview()`.
  * @return
@@ -16,6 +17,7 @@ export async function isAvailableAsync(): Promise<boolean> {
   return StoreReview.isAvailableAsync();
 }
 
+// @needs-audit
 /**
  * In ideal circumstances this will open a native modal and allow the user to select a star rating
  * that will then be applied to the App Store, without leaving the app. If the device is running
@@ -44,6 +46,7 @@ export async function requestReview(): Promise<void> {
   }
 }
 
+// @needs-audit
 /**
  * This uses the `Constants` API to get the `Constants.manifest.ios.appStoreUrl` on iOS, or the
  * `Constants.manifest.android.playStoreUrl` on Android.
@@ -62,6 +65,7 @@ export function storeUrl(): string | null {
   return null;
 }
 
+// @needs-audit
 /**
  * @return This returns a promise that fulfills to `true` if `StoreReview.requestReview()` is capable
  * directing the user to some kind of store review flow. If the app config (`app.json`) does not
