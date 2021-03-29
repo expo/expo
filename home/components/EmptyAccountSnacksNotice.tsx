@@ -12,33 +12,20 @@ function handleLearnMorePress() {
   WebBrowser.openBrowserAsync('https://snack.expo.io');
 }
 
-export default function EmptyAccountSnacksNotice({
-  isCurrentUsersPersonalAccount,
-}: {
-  isCurrentUsersPersonalAccount: boolean;
-}) {
-  if (isCurrentUsersPersonalAccount) {
-    return (
-      <StyledView style={styles.container} lightBackgroundColor={Colors.light.greyBackground}>
-        <StyledText style={[SharedStyles.noticeDescriptionText, styles.descriptionText]}>
-          Snacks that you save to your profile will appear here!
-        </StyledText>
-
-        <PrimaryButton
-          plain
-          onPress={handleLearnMorePress}
-          fallback={TouchableOpacity}
-          style={{ marginBottom: 5 }}>
-          Learn more about Snack
-        </PrimaryButton>
-      </StyledView>
-    );
-  }
+export default function EmptyAccountSnacksNotice() {
   return (
     <StyledView style={styles.container} lightBackgroundColor={Colors.light.greyBackground}>
       <StyledText style={[SharedStyles.noticeDescriptionText, styles.descriptionText]}>
         No saved Snacks
       </StyledText>
+
+      <PrimaryButton
+        plain
+        onPress={handleLearnMorePress}
+        fallback={TouchableOpacity}
+        style={{ marginBottom: 5 }}>
+        Learn more about Snack
+      </PrimaryButton>
     </StyledView>
   );
 }

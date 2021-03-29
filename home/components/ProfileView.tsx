@@ -1,27 +1,20 @@
 import { StackScreenProps } from '@react-navigation/stack';
-import { AccountData } from 'containers/Account';
+import { ProfileData } from 'containers/Profile';
 import dedent from 'dedent';
-import { take, takeRight } from 'lodash';
 import React from 'react';
-import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import FadeIn from 'react-native-fade-in-image';
 
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
 import { AllStackRoutes } from '../navigation/Navigation.types';
-import EmptyAccountProjectsNotice from './EmptyAccountProjectsNotice';
-import EmptyAccountSnacksNotice from './EmptyAccountSnacksNotice';
 import ListItem from './ListItem';
 import ScrollView from './NavigationScrollView';
 import PrimaryButton from './PrimaryButton';
-import ProjectListItem from './ProjectListItem';
 import RefreshControl from './RefreshControl';
 import SectionHeader from './SectionHeader';
-import SeeAllProjectsButton from './SeeAllProjectsButton';
-import SnackListItem from './SnackListItem';
 import { StyledText } from './Text';
-
-const MAX_APPS_TO_DISPLAY = 3;
-const MAX_SNACKS_TO_DISPLAY = 3;
+import { StyledView } from './Views';
 
 const NETWORK_ERROR_TEXT = dedent`
   Your connection appears to be offline.
@@ -33,27 +26,18 @@ const SERVER_ERROR_TEXT = dedent`
   Sorry about this. We will resolve the issue as soon as possible.
 `;
 
-export type AccountViewProps = {
-  accountName: string;
-} & StackScreenProps<AllStackRoutes, 'Account'>;
+export type ProfileViewProps = StackScreenProps<AllStackRoutes, 'Profile'>;
 
 type QueryProps = {
   loading: boolean;
   error?: Error;
   refetch: (props: any) => void;
-  data?: AccountData;
+  data?: ProfileData;
 };
 
-type Props = AccountViewProps & QueryProps;
+type Props = ProfileViewProps & QueryProps;
 
-export default function AccountView({
-  accountName,
-  navigation,
-  loading,
-  error,
-  refetch,
-  data,
-}: Props) {
+export default function ProfileView({ navigation, loading, error, refetch, data }: Props) {
   const [isRefreshing, setRefreshing] = React.useState(false);
   const mounted = React.useRef<boolean | null>(true);
 
@@ -95,13 +79,13 @@ export default function AccountView({
     }
   };
 
-  if (error && !data?.account.byName) {
+  if (error) {
     return (
-      <AccountErrorView error={error} isRefetching={isRefreshing} onRefresh={_handleRefreshAsync} />
+      <ProfileErrorView error={error} isRefetching={isRefreshing} onRefresh={_handleRefreshAsync} />
     );
   }
 
-  if (loading && !data?.account.byName) {
+  if (loading) {
     return (
       <View style={{ flex: 1, padding: 30, alignItems: 'center' }}>
         <ActivityIndicator color={Colors.light.tintColor} />
@@ -114,17 +98,17 @@ export default function AccountView({
       refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={_handleRefreshAsync} />}
       contentContainerStyle={{ paddingBottom: 20 }}
       style={styles.container}>
-      {data?.account.byName && (
+      {data?.me && (
         <>
-          <AccountProjectsSection data={data} navigation={navigation} accountName={accountName} />
-          <AccountSnacksSection data={data} navigation={navigation} accountName={accountName} />
+          <ProfileHeader data={data} />
+          <ProfileAccountsSection data={data} navigation={navigation} />
         </>
       )}
     </ScrollView>
   );
 }
 
-function AccountErrorView({
+function ProfileErrorView({
   error,
   isRefetching,
   onRefresh,
@@ -160,105 +144,52 @@ function AccountErrorView({
   );
 }
 
-function AccountProjectsSection({
-  data,
-  navigation,
-  accountName,
-}: Pick<Props, 'navigation' | 'accountName'> & {
-  data: NonNullable<Props['data']>;
-}) {
-  const onPressProjectList = () => {
-    navigation.navigate('ProjectsForAccount', {
-      accountName,
-    });
-  };
-
-  const renderApp = (app: any, i: number) => {
-    return (
-      <ProjectListItem
-        key={i}
-        url={app.fullName}
-        unlisted={app.privacy === 'unlisted'}
-        image={app.iconUrl || require('../assets/placeholder-app-icon.png')}
-        title={app.name}
-        sdkVersion={app.sdkVersion}
-        subtitle={app.packageName || app.fullName}
-        experienceInfo={{ username: app.username, slug: app.packageName }}
-      />
-    );
-  };
-
-  const renderContents = () => {
-    const apps = data.account.byName.apps;
-    if (!apps.length) {
-      return <EmptyAccountProjectsNotice />;
-    }
-    const otherApps = takeRight(apps, Math.max(0, apps.length - MAX_APPS_TO_DISPLAY));
-    return (
-      <>
-        {take(apps, MAX_APPS_TO_DISPLAY).map(renderApp)}
-        <SeeAllProjectsButton
-          apps={otherApps}
-          appCount={data.account.byName.appCount - MAX_APPS_TO_DISPLAY}
-          onPress={onPressProjectList}
-        />
-      </>
-    );
-  };
-
+function ProfileHeader({ data }: { data: NonNullable<Props['data']> }) {
+  const { firstName, lastName, profilePhoto } = data.me;
   return (
-    <View>
-      <SectionHeader title="Published projects" />
-      {renderContents()}
-    </View>
+    <StyledView style={styles.header} darkBackgroundColor="#000" darkBorderColor="#000">
+      <View style={styles.headerAvatarContainer}>
+        <FadeIn>
+          <Image style={styles.headerAvatar} source={{ uri: profilePhoto }} />
+        </FadeIn>
+      </View>
+      <StyledText style={styles.headerFullNameText}>
+        {firstName} {lastName}
+      </StyledText>
+      <View style={styles.headerAccountsList}>
+        <StyledText style={styles.headerAccountText} lightColor="#232B3A" darkColor="#ccc">
+          @{data.me.username}
+        </StyledText>
+      </View>
+    </StyledView>
   );
 }
 
-function AccountSnacksSection({
+function ProfileAccountsSection({
   data,
   navigation,
-  accountName,
-}: Pick<Props, 'navigation' | 'accountName'> & {
+}: Pick<Props, 'navigation'> & {
   data: NonNullable<Props['data']>;
 }) {
-  const onPressSnackList = () => {
-    navigation.navigate('SnacksForAccount', {
-      accountName,
-    });
+  const onPressAccount = (accountName: string) => {
+    navigation.navigate('Account', { accountName });
   };
 
-  const renderSnack = (snack: any, i: number) => {
+  const renderAccount = (account: { id: string; name: string }) => {
     return (
-      <SnackListItem
-        key={i}
-        url={snack.fullName}
-        title={snack.name}
-        subtitle={snack.description}
-        isDraft={snack.isDraft}
+      <ListItem
+        key={account.id}
+        title={`@${account.name}`}
+        onPress={() => onPressAccount(account.name)}
       />
     );
   };
 
-  const renderContents = () => {
-    const snacks = data.account.byName.snacks;
-    if (!snacks?.length) {
-      return <EmptyAccountSnacksNotice />;
-    }
-    const otherSnacks = takeRight(snacks, Math.max(0, snacks.length - MAX_SNACKS_TO_DISPLAY));
-    return (
-      <>
-        {take(snacks, MAX_SNACKS_TO_DISPLAY).map(renderSnack)}
-        {otherSnacks.length > 0 && (
-          <ListItem title="See all snacks" onPress={onPressSnackList} arrowForward last />
-        )}
-      </>
-    );
-  };
-
+  const accounts = data.me.accounts;
   return (
     <View>
-      <SectionHeader title="Saved snacks" />
-      {renderContents()}
+      <SectionHeader title="Accounts & Organizations" />
+      {accounts.map(renderAccount)}
     </View>
   );
 }
