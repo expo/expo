@@ -1,5 +1,5 @@
 import { A } from '@expo/html-elements';
-import { useNavigation, useTheme } from '@react-navigation/native';
+import { useTheme } from '@react-navigation/native';
 import * as WebBrowser from 'expo-web-browser';
 import * as React from 'react';
 import {
