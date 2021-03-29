@@ -25,6 +25,7 @@ export interface AccountData {
         lastName: string | null;
         profilePhoto: string;
       } | null;
+      appCount: number;
       apps: Project[];
       snacks: Snack[];
     };
@@ -48,6 +49,7 @@ const AccountDataQuery = gql`
           lastName
           profilePhoto
         }
+        appCount
         apps(limit: ${APP_LIMIT}, offset: 0) {
           id
           fullName

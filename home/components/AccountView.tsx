@@ -252,7 +252,7 @@ function AccountProjectsSection({
         {take(apps, MAX_APPS_TO_DISPLAY).map(renderApp)}
         <SeeAllProjectsButton
           apps={otherApps}
-          appCount={100 - MAX_APPS_TO_DISPLAY}
+          appCount={data.account.byName.appCount - MAX_APPS_TO_DISPLAY}
           onPress={onPressProjectList}
         />
       </>
