@@ -2,7 +2,7 @@ import { Platform } from '@unimodules/core';
 import Constants from 'expo-constants';
 import * as Linking from 'expo-linking';
 import StoreReview from './ExpoStoreReview';
-// @needs-audit
+// @needsAudit
 /**
  * Determines if the platform has the capabilities to use `StoreReview.requestReview()`.
  * @return
@@ -14,7 +14,7 @@ import StoreReview from './ExpoStoreReview';
 export async function isAvailableAsync() {
     return StoreReview.isAvailableAsync();
 }
-// @needs-audit
+// @needsAudit
 /**
  * In ideal circumstances this will open a native modal and allow the user to select a star rating
  * that will then be applied to the App Store, without leaving the app. If the device is running
@@ -42,7 +42,7 @@ export async function requestReview() {
         console.warn("Expo.StoreReview.requestReview(): Couldn't link to store, please make sure the `android.playStoreUrl` & `ios.appStoreUrl` fields are filled out in your `app.json`");
     }
 }
-// @needs-audit
+// @needsAudit
 /**
  * This uses the `Constants` API to get the `Constants.manifest.ios.appStoreUrl` on iOS, or the
  * `Constants.manifest.android.playStoreUrl` on Android.
@@ -61,7 +61,7 @@ export function storeUrl() {
     }
     return null;
 }
-// @needs-audit
+// @needsAudit
 /**
  * @return This returns a promise that fulfills to `true` if `StoreReview.requestReview()` is capable
  * directing the user to some kind of store review flow. If the app config (`app.json`) does not
