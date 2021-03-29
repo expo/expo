@@ -9,47 +9,47 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.text.TextUtils;
 
-import com.google.android.gms.wallet.WalletConstants;
-import com.stripe.android.ApiResultCallback;
-import com.stripe.android.Stripe;
-import com.stripe.android.model.Source;
-import com.stripe.android.model.Source.Flow;
-import com.stripe.android.model.SourceParams;
-import com.stripe.android.model.Token;
-
-import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ActivityEventListener;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.services.UIManager;
+import expo.modules.payments.stripe.dialog.AddCardDialogFragment;
+import expo.modules.payments.stripe.util.ArgCheck;
+import expo.modules.payments.stripe.util.Converters;
+import expo.modules.payments.stripe.util.Fun0;
+import com.google.android.gms.wallet.WalletConstants;
+import com.stripe.android.SourceCallback;
+import com.stripe.android.Stripe;
+import com.stripe.android.TokenCallback;
+import com.stripe.android.model.Source;
+import com.stripe.android.model.SourceParams;
+import com.stripe.android.model.Token;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import expo.modules.payments.stripe.dialog.AddCardDialogFragment;
-import expo.modules.payments.stripe.util.ArgCheck;
-import expo.modules.payments.stripe.util.Converters;
-import expo.modules.payments.stripe.util.Fun0;
+import org.unimodules.core.ExportedModule;
 
 import static expo.modules.payments.stripe.Errors.getDescription;
 import static expo.modules.payments.stripe.Errors.getErrorCode;
 import static expo.modules.payments.stripe.Errors.toErrorCode;
 import static expo.modules.payments.stripe.util.Converters.convertSourceToWritableMap;
 import static expo.modules.payments.stripe.util.Converters.convertTokenToWritableMap;
-import static expo.modules.payments.stripe.util.Converters.createBankAccountTokenParams;
+import static expo.modules.payments.stripe.util.Converters.createBankAccount;
+import static expo.modules.payments.stripe.util.Converters.createCard;
 import static expo.modules.payments.stripe.util.Converters.getStringOrNull;
 import static expo.modules.payments.stripe.util.InitializationOptions.ANDROID_PAY_MODE_KEY;
 import static expo.modules.payments.stripe.util.InitializationOptions.ANDROID_PAY_MODE_PRODUCTION;
-import static expo.modules.payments.stripe.util.InitializationOptions.ANDROID_PAY_MODE_TEST;
 import static expo.modules.payments.stripe.util.InitializationOptions.PUBLISHABLE_KEY;
+import static expo.modules.payments.stripe.util.InitializationOptions.ANDROID_PAY_MODE_TEST;
 
 public class StripeModule extends ExportedModule {
   private static final String META_DATA_SCHEME_KEY = "standaloneStripeScheme";
@@ -181,16 +181,13 @@ public class StripeModule extends ExportedModule {
       ArgCheck.nonNull(mStripe);
       ArgCheck.notEmptyString(mPublicKey);
 
-      mStripe.createCardToken(
-        Converters.createCardParams(cardData),
-        null,
-        null,
-        new ApiResultCallback<Token>() {
-          @Override
-          public void onSuccess(@NonNull Token token) {
+      mStripe.createToken(
+        createCard(cardData),
+        mPublicKey,
+        new TokenCallback() {
+          public void onSuccess(Token token) {
             promise.resolve(convertTokenToWritableMap(token));
           }
-          @Override
           public void onError(Exception error) {
             error.printStackTrace();
             promise.reject(toErrorCode(error), error.getMessage());
@@ -208,15 +205,13 @@ public class StripeModule extends ExportedModule {
       ArgCheck.notEmptyString(mPublicKey);
 
       mStripe.createBankAccountToken(
-        createBankAccountTokenParams(accountData),
+        createBankAccount(accountData),
         mPublicKey,
         null,
-        new ApiResultCallback<Token>() {
-          @Override
-          public void onSuccess(@NonNull Token token) {
+        new TokenCallback() {
+          public void onSuccess(Token token) {
             promise.resolve(convertTokenToWritableMap(token));
           }
-          @Override
           public void onError(Exception error) {
             error.printStackTrace();
             promise.reject(toErrorCode(error), error.getMessage());
@@ -338,15 +333,15 @@ public class StripeModule extends ExportedModule {
 
     ArgCheck.nonNull(sourceParams);
 
-    mStripe.createSource(sourceParams, new ApiResultCallback<Source>() {
+    mStripe.createSource(sourceParams, new SourceCallback() {
       @Override
       public void onError(Exception error) {
         promise.reject(toErrorCode(error), error);
       }
 
       @Override
-      public void onSuccess(@NonNull Source source) {
-        if (Flow.Redirect.equals(source.getFlow())) {
+      public void onSuccess(Source source) {
+        if (Source.REDIRECT.equals(source.getFlow())) {
           Activity currentActivity = getCurrentActivity();
           if (currentActivity == null) {
             promise.reject(
@@ -438,18 +433,19 @@ public class StripeModule extends ExportedModule {
         }
 
         switch (source.getStatus()) {
-          case Chargeable:
-          case Consumed:
+          case Source.CHARGEABLE:
+          case Source.CONSUMED:
             promise.resolve(convertSourceToWritableMap(source));
             break;
-          case Canceled:
+          case Source.CANCELED:
             promise.reject(
               getErrorCode(mErrorCodes, "redirectCancelled"),
               getDescription(mErrorCodes, "redirectCancelled")
             );
             break;
-          case Pending:
-          case Failed:
+          case Source.PENDING:
+          case Source.FAILED:
+          case Source.UNKNOWN:
             promise.reject(
               getErrorCode(mErrorCodes, "redirectFailed"),
               getDescription(mErrorCodes, "redirectFailed")
