@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactMarkdown from 'react-markdown';
 
 import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
@@ -8,7 +7,8 @@ import { H2, H4 } from '~/components/plugins/Headings';
 import { TypeDeclarationData, TypePropertyData } from '~/components/plugins/api/APISectionTypes';
 import {
   CommentData,
-  CommentTagData, CommentTextBlock,
+  CommentTagData,
+  CommentTextBlock,
   inlineRenderers,
   resolveTypeName,
   TypeDefinitionData,

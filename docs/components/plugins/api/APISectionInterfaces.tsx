@@ -1,13 +1,14 @@
 import React from 'react';
-import ReactMarkdown from 'react-markdown';
 
 import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
 import { H2, H3Code } from '~/components/plugins/Headings';
 import { TypeDeclarationData } from '~/components/plugins/api/APISectionTypes';
 import {
-  CommentData, CommentTextBlock,
-  inlineRenderers, renderers,
+  CommentData,
+  CommentTextBlock,
+  inlineRenderers,
+  renderers,
   TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
 

@@ -15,7 +15,8 @@ import {
   CommentData,
   MethodParamData,
   TypeDefinitionData,
-  TypeDocKind, CommentTextBlock,
+  TypeDocKind,
+  CommentTextBlock,
 } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionTypesProps = {

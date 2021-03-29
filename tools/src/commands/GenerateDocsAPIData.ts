@@ -62,6 +62,7 @@ async function action({ packageName }: ActionOptions) {
     'expo-blur': ['index.ts'],
     'expo-sharing': ['Sharing.ts'],
     'expo-sensors': ['Pedometer.ts', 'expo-pedometer'],
+    'expo-store-review': ['StoreReview.ts'],
   };
 
   if (packageName) {
