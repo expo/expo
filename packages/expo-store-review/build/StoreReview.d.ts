@@ -25,5 +25,12 @@ export declare function storeUrl(): string | null;
  * directing the user to some kind of store review flow. If the app config (`app.json`) does not
  * contain store URLs and native store review capabilities are not available then the promise
  * will fulfill to `false`.
+ *
+ * # Example
+ * ```ts
+ * if (await StoreReview.hasAction()) {
+ *   // you can call StoreReview.requestReview()
+ * }
+ * ```
  */
 export declare function hasAction(): Promise<boolean>;
