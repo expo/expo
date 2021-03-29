@@ -6,8 +6,8 @@ import { LI, UL } from '~/components/base/list';
 import { H2, H3Code } from '~/components/plugins/Headings';
 import { TypeDeclarationData } from '~/components/plugins/api/APISectionTypes';
 import {
-  CommentData,
-  inlineRenderers,
+  CommentData, CommentTextBlock,
+  inlineRenderers, renderers,
   TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
 
@@ -34,9 +34,7 @@ const renderInterface = ({ name, children, comment }: InterfaceDefinitionData): 
     <H3Code>
       <InlineCode>{name}</InlineCode>
     </H3Code>
-    {comment?.shortText ? (
-      <ReactMarkdown renderers={inlineRenderers}>{comment.shortText}</ReactMarkdown>
-    ) : null}
+    <CommentTextBlock comment={comment} renderers={renderers} />
     <UL>
       {children.map((interfaceValue: InterfaceValueData) => (
         <LI key={interfaceValue.name}>
@@ -44,14 +42,7 @@ const renderInterface = ({ name, children, comment }: InterfaceDefinitionData): 
             {name}.{interfaceValue.name}
             {interfaceValue.type.declaration.signatures ? '()' : ''}
           </InlineCode>
-          {interfaceValue?.comment?.shortText ? (
-            <>
-              {' - '}
-              <ReactMarkdown renderers={inlineRenderers}>
-                {interfaceValue.comment.shortText}
-              </ReactMarkdown>
-            </>
-          ) : null}
+          <CommentTextBlock comment={interfaceValue.comment} renderers={inlineRenderers} withDash />
         </LI>
       ))}
     </UL>

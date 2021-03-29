@@ -5,8 +5,8 @@ import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
 import { H2, H3Code } from '~/components/plugins/Headings';
 import {
-  CommentData,
-  inlineRenderers,
+  CommentData, CommentTextBlock,
+  inlineRenderers, renderers,
   TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
 
@@ -37,12 +37,7 @@ const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Elemen
           <InlineCode>
             {name}.{enumValue.name}
           </InlineCode>
-          {comment?.shortText ? (
-            <>
-              {' - '}
-              <ReactMarkdown renderers={inlineRenderers}>{comment.shortText}</ReactMarkdown>
-            </>
-          ) : null}
+          <CommentTextBlock comment={comment} renderers={inlineRenderers} withDash />
         </LI>
       ))}
     </UL>

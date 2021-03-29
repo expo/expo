@@ -8,7 +8,7 @@ import { H2, H4 } from '~/components/plugins/Headings';
 import { TypeDeclarationData, TypePropertyData } from '~/components/plugins/api/APISectionTypes';
 import {
   CommentData,
-  CommentTagData,
+  CommentTagData, CommentTextBlock,
   inlineRenderers,
   resolveTypeName,
   TypeDefinitionData,
@@ -101,12 +101,7 @@ const renderProp = ({ comment, name, type }: PropData, defaultValue: string) => 
     <B>
       {name} (<InlineCode>{resolveTypeName(type)}</InlineCode>)
     </B>
-    {comment?.shortText ? (
-      <span>
-        {' - '}
-        <ReactMarkdown renderers={inlineRenderers}>{comment.shortText}</ReactMarkdown>
-      </span>
-    ) : null}
+    <CommentTextBlock comment={comment} renderers={inlineRenderers} withDash />
     {defaultValue && defaultValue !== UNKNOWN_VALUE ? (
       <span>
         {' Default: '}

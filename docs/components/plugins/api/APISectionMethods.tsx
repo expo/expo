@@ -5,6 +5,7 @@ import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
 import { H2, H3Code, H4 } from '~/components/plugins/Headings';
 import {
+  CommentTextBlock,
   CommentData,
   MethodParamData,
   renderers,
@@ -47,10 +48,8 @@ const renderMethod = (
       </H3Code>
       {parameters ? <H4>Arguments</H4> : null}
       {parameters ? <UL>{parameters?.map(renderParam)}</UL> : null}
-      {comment?.shortText ? (
-        <ReactMarkdown renderers={renderers}>{comment.shortText}</ReactMarkdown>
-      ) : null}
-      {comment?.returns ? (
+      <CommentTextBlock comment={comment} renderers={renderers} />
+      {resolveTypeName(type) !== 'undefined' ? (
         <div>
           <H4>Returns</H4>
           <UL>
@@ -58,7 +57,9 @@ const renderMethod = (
               <InlineCode>{resolveTypeName(type)}</InlineCode>
             </LI>
           </UL>
-          <ReactMarkdown renderers={renderers}>{comment.returns}</ReactMarkdown>
+          {comment?.returns ? (
+            <ReactMarkdown renderers={renderers}>{comment.returns}</ReactMarkdown>
+          ) : null}
         </div>
       ) : null}
       {index + 1 !== dataLength ? <hr /> : null}

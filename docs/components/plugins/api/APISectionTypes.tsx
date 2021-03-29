@@ -15,7 +15,7 @@ import {
   CommentData,
   MethodParamData,
   TypeDefinitionData,
-  TypeDocKind,
+  TypeDocKind, CommentTextBlock,
 } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionTypesProps = {
@@ -110,9 +110,7 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
             {type.declaration.signatures ? '()' : ''}
           </InlineCode>
         </H3Code>
-        {comment?.shortText ? (
-          <ReactMarkdown renderers={renderers}>{comment.shortText}</ReactMarkdown>
-        ) : null}
+        <CommentTextBlock comment={comment} renderers={renderers} />
         {type.declaration.children ? (
           <table>
             <thead>

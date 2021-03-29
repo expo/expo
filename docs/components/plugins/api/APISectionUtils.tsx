@@ -108,11 +108,32 @@ export const renderParam = ({ comment, name, type }: MethodParamData): JSX.Eleme
     <B>
       {name} (<InlineCode>{resolveTypeName(type)}</InlineCode>)
     </B>
-    {comment?.text ? (
-      <>
-        {' - '}
-        <ReactMarkdown renderers={inlineRenderers}>{comment.text}</ReactMarkdown>
-      </>
-    ) : null}
+    <CommentTextBlock comment={comment} renderers={inlineRenderers} withDash />
   </LI>
 );
+
+type CommentTextBlockProps = {
+  comment?: CommentData;
+  renderers?: React.ComponentProps<typeof ReactMarkdown>['renderers'];
+  withDash?: boolean;
+};
+
+export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
+  comment,
+  renderers,
+  withDash,
+}) => {
+  const shortText = comment?.shortText ? (
+    <ReactMarkdown renderers={renderers}>{comment.shortText}</ReactMarkdown>
+  ) : null;
+  const text = comment?.text ? (
+    <ReactMarkdown renderers={renderers}>{comment.text}</ReactMarkdown>
+  ) : null;
+  return (
+    <>
+      {withDash && (shortText || text) ? ' - ' : null}
+      {shortText}
+      {text}
+    </>
+  );
+};
