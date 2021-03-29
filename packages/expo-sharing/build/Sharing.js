@@ -2,7 +2,7 @@ import { UnavailabilityError } from '@unimodules/core';
 import Sharing from './ExpoSharing';
 /**
  * Determine if the sharing API can be used in this app.
- * @return A promise that resolves to `true` if the sharing API can be used, and `false` otherwise.
+ * @return A promise that fulfills with `true` if the sharing API can be used, and `false` otherwise.
  */
 export async function isAvailableAsync() {
     if (Sharing) {

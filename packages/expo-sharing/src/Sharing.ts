@@ -20,7 +20,7 @@ export type SharingOptions = {
 
 /**
  * Determine if the sharing API can be used in this app.
- * @return A promise that resolves to `true` if the sharing API can be used, and `false` otherwise.
+ * @return A promise that fulfills with `true` if the sharing API can be used, and `false` otherwise.
  */
 export async function isAvailableAsync(): Promise<boolean> {
   if (Sharing) {
