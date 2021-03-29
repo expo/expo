@@ -16,7 +16,7 @@ export function watchStepCount(callback) {
  * Get the step count between two dates.
  * @param start A date indicating the start of the range over which to measure steps.
  * @param end A date indicating the end of the range over which to measure steps.
- * @return Returns a promise that resolves to a [`PedometerResult`](#pedometerresult).
+ * @return Returns a promise that fulfills with a [`PedometerResult`](#pedometerresult).
  *
  * As [Apple documentation states](https://developer.apple.com/documentation/coremotion/cmpedometer/1613946-querypedometerdatafromdate?language=objc):
  * > Only the past seven days worth of data is stored and available for you to retrieve. Specifying
@@ -31,7 +31,7 @@ export async function getStepCountAsync(start, end) {
 }
 /**
  * Returns whether the pedometer is enabled on the device.
- * @return Returns a promise that resolves to a `boolean`, indicating whether the pedometer is
+ * @return Returns a promise that fulfills with a `boolean`, indicating whether the pedometer is
  * available on this device.
  */
 export async function isAvailableAsync() {
