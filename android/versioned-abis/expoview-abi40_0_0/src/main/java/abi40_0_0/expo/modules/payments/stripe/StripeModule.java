@@ -24,12 +24,10 @@ import abi40_0_0.expo.modules.payments.stripe.util.ArgCheck;
 import abi40_0_0.expo.modules.payments.stripe.util.Converters;
 import abi40_0_0.expo.modules.payments.stripe.util.Fun0;
 import com.google.android.gms.wallet.WalletConstants;
-import com.stripe.android.ApiResultCallback;
+import com.stripe.android.SourceCallback;
 import com.stripe.android.Stripe;
-import com.stripe.android.model.CardParams;
+import com.stripe.android.TokenCallback;
 import com.stripe.android.model.Source;
-import com.stripe.android.model.Source.Flow;
-import com.stripe.android.model.Source.Status;
 import com.stripe.android.model.SourceParams;
 import com.stripe.android.model.Token;
 
@@ -45,7 +43,8 @@ import static abi40_0_0.expo.modules.payments.stripe.Errors.getErrorCode;
 import static abi40_0_0.expo.modules.payments.stripe.Errors.toErrorCode;
 import static abi40_0_0.expo.modules.payments.stripe.util.Converters.convertSourceToWritableMap;
 import static abi40_0_0.expo.modules.payments.stripe.util.Converters.convertTokenToWritableMap;
-import static abi40_0_0.expo.modules.payments.stripe.util.Converters.createBankAccountTokenParams;
+import static abi40_0_0.expo.modules.payments.stripe.util.Converters.createBankAccount;
+import static abi40_0_0.expo.modules.payments.stripe.util.Converters.createCard;
 import static abi40_0_0.expo.modules.payments.stripe.util.Converters.getStringOrNull;
 import static abi40_0_0.expo.modules.payments.stripe.util.InitializationOptions.ANDROID_PAY_MODE_KEY;
 import static abi40_0_0.expo.modules.payments.stripe.util.InitializationOptions.ANDROID_PAY_MODE_PRODUCTION;
@@ -182,16 +181,13 @@ public class StripeModule extends ExportedModule {
       ArgCheck.nonNull(mStripe);
       ArgCheck.notEmptyString(mPublicKey);
 
-      mStripe.createCardToken(
-        Converters.createCardParams(cardData),
-        null,
-        null,
-        new ApiResultCallback<Token>() {
-          @Override
-          public void onSuccess(@NonNull Token token) {
+      mStripe.createToken(
+        createCard(cardData),
+        mPublicKey,
+        new TokenCallback() {
+          public void onSuccess(Token token) {
             promise.resolve(convertTokenToWritableMap(token));
           }
-          @Override
           public void onError(Exception error) {
             error.printStackTrace();
             promise.reject(toErrorCode(error), error.getMessage());
@@ -209,15 +205,13 @@ public class StripeModule extends ExportedModule {
       ArgCheck.notEmptyString(mPublicKey);
 
       mStripe.createBankAccountToken(
-        createBankAccountTokenParams(accountData),
+        createBankAccount(accountData),
         mPublicKey,
         null,
-        new ApiResultCallback<Token>() {
-          @Override
-          public void onSuccess(@NonNull Token token) {
+        new TokenCallback() {
+          public void onSuccess(Token token) {
             promise.resolve(convertTokenToWritableMap(token));
           }
-          @Override
           public void onError(Exception error) {
             error.printStackTrace();
             promise.reject(toErrorCode(error), error.getMessage());
@@ -339,13 +333,15 @@ public class StripeModule extends ExportedModule {
 
     ArgCheck.nonNull(sourceParams);
 
-    mStripe.createSource(sourceParams, new ApiResultCallback<Source>() {
+    mStripe.createSource(sourceParams, new SourceCallback() {
+      @Override
       public void onError(Exception error) {
         promise.reject(toErrorCode(error), error);
       }
 
-      public void onSuccess(@NonNull Source source) {
-        if (Flow.Redirect.equals(source.getFlow())) {
+      @Override
+      public void onSuccess(Source source) {
+        if (Source.REDIRECT.equals(source.getFlow())) {
           Activity currentActivity = getCurrentActivity();
           if (currentActivity == null) {
             promise.reject(
@@ -437,18 +433,19 @@ public class StripeModule extends ExportedModule {
         }
 
         switch (source.getStatus()) {
-          case Chargeable:
-          case Consumed:
+          case Source.CHARGEABLE:
+          case Source.CONSUMED:
             promise.resolve(convertSourceToWritableMap(source));
             break;
-          case Canceled:
+          case Source.CANCELED:
             promise.reject(
               getErrorCode(mErrorCodes, "redirectCancelled"),
               getDescription(mErrorCodes, "redirectCancelled")
             );
             break;
-          case Pending:
-          case Failed:
+          case Source.PENDING:
+          case Source.FAILED:
+          case Source.UNKNOWN:
             promise.reject(
               getErrorCode(mErrorCodes, "redirectFailed"),
               getDescription(mErrorCodes, "redirectFailed")
