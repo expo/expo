@@ -2,7 +2,7 @@
 title: 'Styling a React Native Button'
 ---
 
-React Native exports a [`<Button />`](https://reactnative.dev/docs/button) component that exposes the native button element for Android, iOS, and the web. The `<Button />` component accepts `title` and `onPress` props, however it does not accept a `style` prop, which makes it hard to custom style. The closest we can get to styling a `<Button />` exported from React Native is with the `color` prop. Below is an example of two buttons on Android, iOS, and the web. The first button is the default `<Button />` and the second is another default `<Button />` with its `color` prop set to `"red".
+React Native exports a [`<Button />`](https://reactnative.dev/docs/button) component that exposes the native button element for Android, iOS, and the web. The `<Button />` component accepts `title` and `onPress` props, however it does not accept a `style` prop, which makes it hard to customize the style. The closest we can get to styling a `<Button />` exported from React Native is with the `color` prop. Below is an example of two buttons on Android, iOS, and the web. The first button is the default `<Button />` and the second is another default `<Button />` with its `color` prop set to `"red".
 
 ![default-button](https://user-images.githubusercontent.com/6455018/112760134-f82c9c80-8fc3-11eb-86fd-59a4d9abf68b.png)
 
