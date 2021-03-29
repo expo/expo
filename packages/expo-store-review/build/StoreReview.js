@@ -5,7 +5,7 @@ import StoreReview from './ExpoStoreReview';
 /**
  * Determines if the platform has the capabilities to use `StoreReview.requestReview()`.
  * @return
- * This returns a promise that resolves to `boolean` depending on the platform:
+ * This returns a promise fulfills with `boolean`, depending on the platform:
  * - On iOS, it will resolve to `true` if the device is running iOS 10.3+.
  * - On Android, it will resolve to `true` if the device is running Android 5.0+.
  * - On Web, it will resolve to `false`.
