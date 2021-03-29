@@ -35,6 +35,10 @@ internal fun mapConfirmationMethod(captureMethod: PaymentIntent.ConfirmationMeth
   }
 }
 
+internal fun mapToReturnURL(urlScheme: String): String {
+  return "$urlScheme://safepay"
+}
+
 internal fun mapIntentShipping(shipping: PaymentIntent.Shipping): WritableMap {
   val map: WritableMap = WritableNativeMap()
   val address: WritableMap = WritableNativeMap()
@@ -89,6 +93,30 @@ internal fun mapPaymentMethodType(type: PaymentMethod.Type?): String {
     PaymentMethod.Type.Sofort -> "Sofort"
     PaymentMethod.Type.Upi -> "Upi"
     else -> "Unknown"
+  }
+}
+
+internal fun mapToPaymentMethodType(type: String?): PaymentMethod.Type? {
+  return when (type) {
+    "Card" -> PaymentMethod.Type.Card
+    "Ideal" -> PaymentMethod.Type.Ideal
+    "Alipay" -> PaymentMethod.Type.Alipay
+    "AuBecsDebit" -> PaymentMethod.Type.AuBecsDebit
+    "BacsDebit" -> PaymentMethod.Type.BacsDebit
+    "Bancontact" -> PaymentMethod.Type.Bancontact
+    "AfterpayClearpay" -> PaymentMethod.Type.AfterpayClearpay
+    "CardPresent" -> PaymentMethod.Type.CardPresent
+    "Eps" -> PaymentMethod.Type.Eps
+    "Fpx" -> PaymentMethod.Type.Fpx
+    "Giropay" -> PaymentMethod.Type.Giropay
+    "GrabPay" -> PaymentMethod.Type.GrabPay
+    "Netbanking" -> PaymentMethod.Type.Netbanking
+    "Oxxo" -> PaymentMethod.Type.Oxxo
+    "P24" -> PaymentMethod.Type.P24
+    "SepaDebit" -> PaymentMethod.Type.SepaDebit
+    "Sofort" -> PaymentMethod.Type.Sofort
+    "Upi" -> PaymentMethod.Type.Upi
+    else -> null
   }
 }
 
@@ -243,8 +271,7 @@ internal fun mapToPaymentMethodCreateParams(cardData: ReadableMap): PaymentMetho
     if (cardData.hasKey("postalCode")) Address.Builder().setPostalCode(cardData.getString("postalCode").orEmpty()).build() else null,
     if (cardData.hasKey("currency")) cardData.getString("currency") else null,
     null)
-
-  return PaymentMethodCreateParams.createCard(cardParams)
+    return PaymentMethodCreateParams.createCard(cardParams)
 }
 
 internal fun mapToCard(card: ReadableMap): PaymentMethodCreateParams.Card {
@@ -260,21 +287,24 @@ fun getValOr(map: ReadableMap, key: String, default: String? = ""): String? {
   return if (map.hasKey(key)) map.getString(key) else default
 }
 
-internal fun mapToBillingDetails(billingDatails: ReadableMap): PaymentMethod.BillingDetails {
+internal fun mapToBillingDetails(billingDetails: ReadableMap?): PaymentMethod.BillingDetails? {
+  if (billingDetails == null) {
+    return null
+  }
   val address = Address.Builder()
-    .setPostalCode(getValOr(billingDatails, "addressPostalCode"))
-    .setCity(getValOr(billingDatails, "addressCity"))
-    .setCountry(getValOr(billingDatails, "addressCountry"))
-    .setLine1(getValOr(billingDatails, "addressLine1"))
-    .setLine2(getValOr(billingDatails, "addressLine2"))
-    .setState(getValOr(billingDatails, "addressState"))
+    .setPostalCode(getValOr(billingDetails, "addressPostalCode"))
+    .setCity(getValOr(billingDetails, "addressCity"))
+    .setCountry(getValOr(billingDetails, "addressCountry"))
+    .setLine1(getValOr(billingDetails, "addressLine1"))
+    .setLine2(getValOr(billingDetails, "addressLine2"))
+    .setState(getValOr(billingDetails, "addressState"))
     .build()
 
   return PaymentMethod.BillingDetails.Builder()
     .setAddress(address)
-    .setName(getValOr(billingDatails, "name"))
-    .setPhone(getValOr(billingDatails, "phone"))
-    .setEmail(getValOr(billingDatails, "email"))
+    .setName(getValOr(billingDetails, "name"))
+    .setPhone(getValOr(billingDetails, "phone"))
+    .setEmail(getValOr(billingDetails, "email"))
     .build()
 }
 
@@ -282,7 +312,7 @@ private fun getStringOrNull(map: ReadableMap?, key: String): String? {
   return if (map?.hasKey(key) == true) map.getString(key) else null
 }
 
-private fun getIntOrNull(map: ReadableMap?, key: String): Int? {
+fun getIntOrNull(map: ReadableMap?, key: String): Int? {
   return if (map?.hasKey(key) == true) map.getInt(key) else null
 }
 
@@ -432,7 +462,7 @@ internal fun mapSetupIntentUsage(type: StripeIntent.Usage?): String {
   }
 }
 
-fun mapToPaymentIntentFutureUsage(type: String): ConfirmPaymentIntentParams.SetupFutureUsage {
+fun mapToPaymentIntentFutureUsage(type: String?): ConfirmPaymentIntentParams.SetupFutureUsage {
   return when (type) {
     "OffSession" ->  ConfirmPaymentIntentParams.SetupFutureUsage.OffSession
     "OnSession" ->  ConfirmPaymentIntentParams.SetupFutureUsage.OnSession

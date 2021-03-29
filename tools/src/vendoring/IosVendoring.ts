@@ -54,10 +54,10 @@ export async function vendorAsync(
   logger.log('📄 Generating %s', chalk.magenta(podspecJsonFile));
 
   if (await promptToReinstallPodsAsync()) {
-    logger.log('♻️  Reinstalling pods at %s', chalk.magenta(IOS_DIR));
-    await podInstallAsync(IOS_DIR, {
-      noRepoUpdate: true,
-    });
+    //logger.log('♻️  Reinstalling pods at %s', chalk.magenta(IOS_DIR));
+    // await podInstallAsync(IOS_DIR, {
+    //   noRepoUpdate: true,
+    // });
   }
 }
 

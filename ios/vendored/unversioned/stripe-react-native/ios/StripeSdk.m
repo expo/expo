@@ -1,13 +1,11 @@
 #import <React/RCTBridgeModule.h>
+#import <React/RCTEventEmitter.h>
 
-@interface RCT_EXTERN_MODULE(StripeSdk, NSObject)
+@interface RCT_EXTERN_MODULE(StripeSdk, RCTEventEmitter)
+
 
 RCT_EXTERN_METHOD(
-                  initialise:(NSString *)publishableKey
-                  appInfo: (NSDictionary *)appInfo
-                  stripeAccountId: (NSString *)stripeAccountId
-                  params: (NSDictionary *)params
-                  merchantIdentifier: (NSString *)merchantIdentifier
+                  initialise:(NSDictionary *)params
                   )
 
 RCT_EXTERN_METHOD(
@@ -19,6 +17,20 @@ RCT_EXTERN_METHOD(
                   resolver: (RCTPromiseResolveBlock)resolve
                   rejecter: (RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(
+                  updateApplePaySummaryItems:(NSArray *)summaryItems
+                  resolver: (RCTPromiseResolveBlock)resolve
+                  rejecter: (RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(
+                  createTokenForCVCUpdate:(NSString *)cvc
+                  resolver: (RCTPromiseResolveBlock)resolve
+                  rejecter: (RCTPromiseRejectBlock)reject)
+
+RCT_EXTERN_METHOD(
+                  handleURLCallback:(NSString *)url
+                  resolver: (RCTPromiseResolveBlock)resolve
+                  rejecter: (RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(
                   confirmApplePayPayment:(NSString *)clientSecret

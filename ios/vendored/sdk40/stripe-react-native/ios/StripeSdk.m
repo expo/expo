@@ -5,11 +5,7 @@
 
 
 ABI40_0_0RCT_EXTERN_METHOD(
-                  initialise:(NSString *)publishableKey
-                  appInfo: (NSDictionary *)appInfo
-                  stripeAccountId: (NSString *)stripeAccountId
-                  params: (NSDictionary *)params
-                  merchantIdentifier: (NSString *)merchantIdentifier
+                  initialise:(NSDictionary *)params
                   )
 
 ABI40_0_0RCT_EXTERN_METHOD(
@@ -28,6 +24,11 @@ ABI40_0_0RCT_EXTERN_METHOD(
 
 ABI40_0_0RCT_EXTERN_METHOD(
                   createTokenForCVCUpdate:(NSString *)cvc
+                  resolver: (ABI40_0_0RCTPromiseResolveBlock)resolve
+                  rejecter: (ABI40_0_0RCTPromiseRejectBlock)reject)
+
+ABI40_0_0RCT_EXTERN_METHOD(
+                  handleURLCallback:(NSString *)url
                   resolver: (ABI40_0_0RCTPromiseResolveBlock)resolve
                   rejecter: (ABI40_0_0RCTPromiseRejectBlock)reject)
 

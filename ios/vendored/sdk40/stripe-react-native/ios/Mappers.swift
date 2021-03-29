@@ -123,17 +123,40 @@ class Mappers {
         }
     }
     
-    class func mapCardParamsToPaymentMethodParams(params: NSDictionary, billingDetails: STPPaymentMethodBillingDetails?) -> STPPaymentMethodParams {
+    class func mapToPaymentMethodType(type: String?) -> STPPaymentMethodType? {
+        if let type = type {
+            switch type {
+            case "Card": return STPPaymentMethodType.card
+            case "Alipay": return STPPaymentMethodType.alipay
+            case "GrabPay": return STPPaymentMethodType.grabPay
+            case "Ideal": return STPPaymentMethodType.iDEAL
+            case "Fpx": return STPPaymentMethodType.FPX
+            case "CardPresent": return STPPaymentMethodType.cardPresent
+            case "SepaDebit": return STPPaymentMethodType.SEPADebit
+            case "AuBecsDebit": return STPPaymentMethodType.AUBECSDebit
+            case "BacsDebit": return STPPaymentMethodType.bacsDebit
+            case "Giropay": return STPPaymentMethodType.giropay
+            case "P24": return STPPaymentMethodType.przelewy24
+            case "Eps": return STPPaymentMethodType.EPS
+            case "Bancontact": return STPPaymentMethodType.bancontact
+            case "Oxxo": return STPPaymentMethodType.OXXO
+            case "Sofort": return STPPaymentMethodType.sofort
+            case "Upi": return STPPaymentMethodType.UPI
+            default: return STPPaymentMethodType.unknown
+            }
+        }
+        return nil
+    }
+
+    class func mapToPaymentMethodCardParams(params: NSDictionary) -> STPPaymentMethodCardParams {
         let cardSourceParams = STPCardParams()
         cardSourceParams.number = ABI40_0_0RCTConvert.nsString(params["number"])
         cardSourceParams.cvc = ABI40_0_0RCTConvert.nsString(params["cvc"])
         cardSourceParams.expMonth = ABI40_0_0RCTConvert.nsuInteger(params["expiryMonth"])
         cardSourceParams.expYear = ABI40_0_0RCTConvert.nsuInteger(params["expiryYear"])
         
-        let cardParams = STPPaymentMethodCardParams(cardSourceParams: cardSourceParams)
-        return STPPaymentMethodParams(card: cardParams, billingDetails: billingDetails, metadata: nil)
+        return STPPaymentMethodCardParams(cardSourceParams: cardSourceParams)
     }
-    
     
     class func mapCaptureMethod(_ captureMethod: STPPaymentIntentCaptureMethod?) -> String {
         if let captureMethod = captureMethod {
@@ -238,7 +261,10 @@ class Mappers {
         return "Unknown"
     }
     
-    class func mapToBillingDetails(billingDetails: NSDictionary) -> STPPaymentMethodBillingDetails {
+    class func mapToBillingDetails(billingDetails: NSDictionary?) -> STPPaymentMethodBillingDetails? {
+        guard let billingDetails = billingDetails else {
+            return nil
+        }
         let billing = STPPaymentMethodBillingDetails()
         billing.email = ABI40_0_0RCTConvert.nsString(billingDetails["email"])
         billing.phone = ABI40_0_0RCTConvert.nsString(billingDetails["phone"])
@@ -433,6 +459,10 @@ class Mappers {
         
         
         return intent
+    }
+    
+    class func mapToReturnURL(urlScheme: String, paymentType: STPPaymentMethodType) -> String {
+        return urlScheme + "://safepay"
     }
     
     class func mapUICustomization(_ params: NSDictionary) -> STPThreeDSUICustomization {

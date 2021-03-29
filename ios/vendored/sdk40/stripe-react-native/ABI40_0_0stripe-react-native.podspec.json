@@ -13,10 +13,13 @@
     "tag": "0.1.0"
   },
   "source_files": "ios/**/*.{h,m,mm,swift}",
+  "pod_target_xcconfig": {
+    "HEADER_SEARCH_PATHS": "\"${PODS_XCFRAMEWORKS_BUILD_DIR}/Stripe3DS2/Headers\""
+  },
+  "swift_versions": "5.0",
   "dependencies": {
     "ABI40_0_0React": [],
-    "Stripe": [
-      "~> 21.1.0"
-    ]
-  }
+    "Stripe": ["~> 21.3.1"]
+  },
+  "swift_version": "5.0"
 }

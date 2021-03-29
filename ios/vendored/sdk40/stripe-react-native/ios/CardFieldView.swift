@@ -17,6 +17,59 @@ class CardFieldView: UIView, STPPaymentCardTextFieldDelegate {
             cardField.postalCodeEntryEnabled = postalCodeEnabled
         }
     }
+	
+		@objc var placeholder: NSDictionary = NSDictionary() {
+				didSet {
+						if let numberPlaceholder = placeholder["number"]  as? String {
+							cardField.numberPlaceholder = numberPlaceholder
+						} else {
+							cardField.numberPlaceholder = "1234123412341234"
+						}
+						if let expirationPlaceholder = placeholder["expiration"]  as? String {
+							cardField.expirationPlaceholder = expirationPlaceholder
+						}
+						if let cvcPlaceholder = placeholder["cvc"]  as? String {
+							cardField.cvcPlaceholder = cvcPlaceholder
+						}
+						if let postalCodePlaceholder = placeholder["postalCode"]  as? String {
+							cardField.postalCodePlaceholder = postalCodePlaceholder
+						}
+				}
+		}
+    
+    @objc var cardStyle: NSDictionary = NSDictionary() {
+        didSet {
+            if let borderWidth = cardStyle["borderWidth"]  as? Int {
+                cardField.borderWidth = CGFloat(borderWidth)
+						} else {
+							cardField.borderWidth = CGFloat(0)
+						}
+            if let backgroundColor = cardStyle["backgroundColor"]  as? String {
+                cardField.backgroundColor = UIColor(hexString: backgroundColor)
+            }
+            if let borderColor = cardStyle["borderColor"]  as? String {
+                cardField.borderColor = UIColor(hexString: borderColor)
+            }
+            if let cornerRadius = cardStyle["cornerRadius"]  as? Int {
+                cardField.cornerRadius = CGFloat(cornerRadius)
+            }
+            if let cursorColor = cardStyle["cursorColor"]  as? String {
+                cardField.cursorColor = UIColor(hexString: cursorColor)
+            }
+            if let textColor = cardStyle["textColor"]  as? String {
+                cardField.textColor = UIColor(hexString: textColor)
+            }
+            if let textErrorColor = cardStyle["textErrorColor"]  as? String {
+                cardField.textErrorColor = UIColor(hexString: textErrorColor)
+            }
+            if let fontSize = cardStyle["fontSize"]  as? Int {
+                cardField.font = UIFont.systemFont(ofSize: CGFloat(fontSize))
+            }
+            if let placeholderColor = cardStyle["placeholderColor"]  as? String {
+                cardField.placeholderColor = UIColor(hexString: placeholderColor)
+            }
+        }
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
