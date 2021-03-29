@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import { InlineCode } from '~/components/base/code';
 import { InternalLink } from '~/components/base/link';
 import { LI, UL } from '~/components/base/list';
-import { B, P } from '~/components/base/paragraph';
+import { B, P, Quote } from '~/components/base/paragraph';
 
 export enum TypeDocKind {
   Enum = 4,
@@ -15,6 +15,7 @@ export enum TypeDocKind {
 }
 
 export const renderers: React.ComponentProps<typeof ReactMarkdown>['renderers'] = {
+  blockquote: ({ children }) => <Quote>{children}</Quote>,
   inlineCode: ({ value }) => <InlineCode>{value}</InlineCode>,
   list: ({ children }) => <UL>{children}</UL>,
   listItem: ({ children }) => <LI>{children}</LI>,

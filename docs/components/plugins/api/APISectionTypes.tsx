@@ -127,7 +127,7 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
         ) : null}
         {type.declaration.signatures
           ? type.declaration.signatures.map(({ parameters }: TypeSignaturesData) => (
-              <div>
+              <div key={`type-definition-signature-${name}`}>
                 {parameters ? <H4>Arguments</H4> : null}
                 {parameters ? <UL>{parameters?.map(renderParam)}</UL> : null}
               </div>
