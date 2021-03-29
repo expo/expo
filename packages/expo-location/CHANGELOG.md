@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 12.0.2 — 2021-03-29
+
+### 🐛 Bug fixes
+
 - Lock the unimodules-permissions-interface dependency to the same version in react-native-unimodules
 
 ## 12.0.1 — 2021-03-26

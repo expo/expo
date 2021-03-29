@@ -2378,7 +2378,7 @@ PODS:
     - UMCore
   - EXLocalization (10.1.0):
     - UMCore
-  - EXLocation (12.0.1):
+  - EXLocation (12.0.2):
     - UMCore
     - UMPermissionsInterface
     - UMTaskManagerInterface
@@ -4926,7 +4926,7 @@ SPEC CHECKSUMS:
   EXLinearGradient: 39b1cf1df5b885e8c35e8afedc9d8893b9fced4b
   EXLocalAuthentication: 8dac12d95b099e75ec8d4ac2c40719b857ce528c
   EXLocalization: f139efe4a06be1041815879959346e3d437a6e93
-  EXLocation: 43b0b33eeb9fc68db1a72e47f3297190d30bec92
+  EXLocation: bf9799796c511ca6981b257e1964e10d3dec371a
   EXMailComposer: 3905ca3554cc1142f45bc54632e12e23b8a464a0
   EXMediaLibrary: b7595816ee5261f7e1b9c48616d65b28e487f123
   EXNetwork: 5358bd8f47f780e81b18971cef36fce0ebe0af67
