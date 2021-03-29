@@ -10,6 +10,7 @@ export enum TypeDocKind {
   Enum = 4,
   Function = 64,
   Class = 128,
+  Interface = 256,
   Property = 1024,
   TypeAlias = 4194304,
 }
@@ -80,11 +81,15 @@ export const resolveTypeName = ({
           return `${typeArguments.map(resolveTypeName)}`;
         }
       } else {
-        return (
-          <InternalLink href={`#${name.toLowerCase()}`} key={`type-link-${name}`}>
-            {name}
-          </InternalLink>
-        );
+        if (name === 'Date') {
+          return name;
+        } else {
+          return (
+            <InternalLink href={`#${name.toLowerCase()}`} key={`type-link-${name}`}>
+              {name}
+            </InternalLink>
+          );
+        }
       }
     } else {
       return name;

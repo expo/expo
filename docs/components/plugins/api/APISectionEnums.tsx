@@ -34,7 +34,6 @@ const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Elemen
     <UL>
       {children.map((enumValue: EnumValueData) => (
         <LI key={enumValue.name}>
-          {console.warn(enumValue)}
           <InlineCode>
             {name}.{enumValue.name}
           </InlineCode>

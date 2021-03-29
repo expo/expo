@@ -3,6 +3,9 @@ import React, { useContext } from 'react';
 import DocumentationPageContext from '~/components/DocumentationPageContext';
 import { P } from '~/components/base/paragraph';
 import APISectionEnums, { EnumDefinitionData } from '~/components/plugins/api/APISectionEnums';
+import APISectionInterfaces, {
+  InterfaceDefinitionData,
+} from '~/components/plugins/api/APISectionInterfaces';
 import APISectionMethods, {
   MethodDefinitionData,
 } from '~/components/plugins/api/APISectionMethods';
@@ -24,7 +27,8 @@ type GeneratedData = EnumDefinitionData &
   MethodDefinitionData &
   PropsDefinitionData &
   DefaultPropsDefinitionData &
-  TypeGeneralData;
+  TypeGeneralData &
+  InterfaceDefinitionData;
 
 const filterData = (
   entries: GeneratedData[],
@@ -58,12 +62,14 @@ const renderAPI = (
       entry => entry.name === 'defaultProps'
     )[0];
     const enums = filterData(data, TypeDocKind.Enum);
+    const interfaces = filterData(data, TypeDocKind.Interface);
 
     return (
       <div>
         <APISectionMethods data={methods} apiName={apiName} />
         <APISectionProps data={props} defaultProps={defaultProps} />
         <APISectionTypes data={types} />
+        <APISectionInterfaces data={interfaces} />
         <APISectionEnums data={enums} />
       </div>
     );

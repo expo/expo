@@ -13,8 +13,8 @@ import {
   resolveTypeName,
   renderParam,
   CommentData,
-  TypeDefinitionData,
   MethodParamData,
+  TypeDefinitionData,
   TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
 
