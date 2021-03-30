@@ -9,13 +9,11 @@ import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
 
 > ⚠️ **Managed Expo projects are not yet supported**, but we are working on bringing the Development Client to the Managed Workflow! If you want to build a managed Expo project with the Development Client, you'll have to eject it first. See the [Ejecting to Bare Workflow](../workflow/customizing.md) page to learn how.
 
-<!-- commenting out until https://github.com/expo/examples/pull/236 lands
 ## Create a new project with the Development Client
 
 The easiest way to get started is to initialize a new project by executing the following command:
 
-<InstallSection packageName="expo-development-client" cmd={["npx crna -t with-dev-launcher"]} hideBareInstructions />
--->
+<InstallSection packageName="expo-development-client" cmd={["npx crna -t with-dev-client"]} hideBareInstructions />
 
 ## Add the Development Client to the existing project
 
