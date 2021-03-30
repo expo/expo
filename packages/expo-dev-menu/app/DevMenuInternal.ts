@@ -152,3 +152,11 @@ export async function restoreSessionAsync(): Promise<{
   }
   return await DevMenu.restoreSessionAsync();
 }
+
+export async function getAuthSchemeAsync(): Promise<string> {
+  if (Platform.OS === 'android') {
+    return 'expo-dev-menu';
+  }
+
+  return await DevMenu.getAuthSchemeAsync();
+}
