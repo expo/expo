@@ -2999,10 +2999,10 @@ expo-status-bar@~1.0.4:
   resolved "https://registry.yarnpkg.com/expo-status-bar/-/expo-status-bar-1.0.4.tgz#d8a4c4418b5868c1606969b12bdee85b6fa7d8a4"
   integrity sha512-s7nc496D/Zn1NGiMJ5wu6HyIdXxbgGtmZZtbHm7rpbcmLdf28GmMSNHDx7M0t00BMhky7VAurTCUo+BJs8ugsw==
 
-expo@~41.0.0-beta.0:
-  version "41.0.0-beta.0"
-  resolved "https://registry.yarnpkg.com/expo/-/expo-41.0.0-beta.0.tgz#4aa3a3ef066b45acc298d0b80fa41bdf85a8539c"
-  integrity sha512-GhaETAcWgKON/E4A4uVou6adPFKcCyeeAJBii0uioVzpVC7NmDw1KpWKN+v2goGyM2KF8pcwFzcMrlOCDcubMQ==
+expo@~41.0.0-beta.1:
+  version "41.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/expo/-/expo-41.0.0-beta.1.tgz#ccebe40b1eabaf4ffd8783e319ef8fbbfd543fb8"
+  integrity sha512-t6Zyxh5ycBLMD+tinm1q1u9QWvOrWT0+vmZCDUrciMUmMgs00ggf9VZRytIeWfE5DsPlROi9t5GOA2C/tIRfsA==
   dependencies:
     "@babel/runtime" "^7.1.2"
     "@expo/metro-config" "^0.1.59"
