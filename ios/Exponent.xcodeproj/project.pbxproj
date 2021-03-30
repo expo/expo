@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		0726F0592007E438004992E7 /* EXKernelAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F0582007E438004992E7 /* EXKernelAppRecord.m */; };
 		0726F05C2007E446004992E7 /* EXKernelAppRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F05B2007E446004992E7 /* EXKernelAppRegistry.m */; };
@@ -342,6 +341,11 @@
 		FCB4099525C6207C00326AC8 /* EXScopedNotificationsUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B2F7C02D246B09AE0060EE06 /* EXScopedNotificationsUtils.m */; };
 		FCF6D37025B34BC200808BF5 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF6D36F25B34BC200808BF5 /* NotificationService.swift */; };
 		FCF6D37425B34BC200808BF5 /* ExpoNotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FCF6D36D25B34BC200808BF5 /* ExpoNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		8EB6942567004F20BE34CDEF /* RNSScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = B696AAD508AB4FFA8AA4E0E9 /* RNSScreen.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		359D12573B8248BB82058F9F /* RNSScreenContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 80A9CE8B902C4BE69448412E /* RNSScreenContainer.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		9A4CB562FA064CADA02DB9DC /* RNSScreenStack.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B53F9F312974EA5BEDDE2F3 /* RNSScreenStack.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		F9C03A516F134660857247A0 /* RNSScreenStackHeaderConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = A18D4E8310D2454F83C59332 /* RNSScreenStackHeaderConfig.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		1CCBD74345E041ECA114D9AE /* UIViewController+RNScreens.m in Sources */ = {isa = PBXBuildFile; fileRef = 5285834BFA98484DBB19AA3D /* UIViewController+RNScreens.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1063,6 +1067,16 @@
 		FCF6D36D25B34BC200808BF5 /* ExpoNotificationServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ExpoNotificationServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		FCF6D36F25B34BC200808BF5 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		FCF6D37125B34BC200808BF5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6A73CB9B8F684CDCA4C39A84 /* RNSScreen.h */ = {isa = PBXFileReference; name = "RNSScreen.h"; path = "RNSScreen.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		B696AAD508AB4FFA8AA4E0E9 /* RNSScreen.m */ = {isa = PBXFileReference; name = "RNSScreen.m"; path = "RNSScreen.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		11E245A81FBF4D61B8678EB7 /* RNSScreenContainer.h */ = {isa = PBXFileReference; name = "RNSScreenContainer.h"; path = "RNSScreenContainer.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		80A9CE8B902C4BE69448412E /* RNSScreenContainer.m */ = {isa = PBXFileReference; name = "RNSScreenContainer.m"; path = "RNSScreenContainer.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		1C1AD3763CB64AA9A34E8274 /* RNSScreenStack.h */ = {isa = PBXFileReference; name = "RNSScreenStack.h"; path = "RNSScreenStack.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		6B53F9F312974EA5BEDDE2F3 /* RNSScreenStack.m */ = {isa = PBXFileReference; name = "RNSScreenStack.m"; path = "RNSScreenStack.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		650877E67A8B4E319FB0F721 /* RNSScreenStackHeaderConfig.h */ = {isa = PBXFileReference; name = "RNSScreenStackHeaderConfig.h"; path = "RNSScreenStackHeaderConfig.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		A18D4E8310D2454F83C59332 /* RNSScreenStackHeaderConfig.m */ = {isa = PBXFileReference; name = "RNSScreenStackHeaderConfig.m"; path = "RNSScreenStackHeaderConfig.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		4C7549AA1A7F4CA2A19E7889 /* UIViewController+RNScreens.h */ = {isa = PBXFileReference; name = "UIViewController+RNScreens.h"; path = "UIViewController+RNScreens.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		5285834BFA98484DBB19AA3D /* UIViewController+RNScreens.m */ = {isa = PBXFileReference; name = "UIViewController+RNScreens.m"; path = "UIViewController+RNScreens.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1232,6 +1246,16 @@
 				07D2D5922603F9C100656E97 /* RNSScreenStackHeaderConfig.m */,
 				07D2D5962603F9C100656E97 /* UIViewController+RNScreens.h */,
 				07D2D5982603F9C100656E97 /* UIViewController+RNScreens.m */,
+				6A73CB9B8F684CDCA4C39A84 /* RNSScreen.h */,
+				B696AAD508AB4FFA8AA4E0E9 /* RNSScreen.m */,
+				11E245A81FBF4D61B8678EB7 /* RNSScreenContainer.h */,
+				80A9CE8B902C4BE69448412E /* RNSScreenContainer.m */,
+				1C1AD3763CB64AA9A34E8274 /* RNSScreenStack.h */,
+				6B53F9F312974EA5BEDDE2F3 /* RNSScreenStack.m */,
+				650877E67A8B4E319FB0F721 /* RNSScreenStackHeaderConfig.h */,
+				A18D4E8310D2454F83C59332 /* RNSScreenStackHeaderConfig.m */,
+				4C7549AA1A7F4CA2A19E7889 /* UIViewController+RNScreens.h */,
+				5285834BFA98484DBB19AA3D /* UIViewController+RNScreens.m */,
 			);
 			name = Screens;
 			sourceTree = "<group>";
@@ -3012,6 +3036,11 @@
 				BCB61D782B4944E89A1F0371 /* RNCSliderManager.m in Sources */,
 				07CB4E1A26045B620057443E /* RCTOnPageSelected.m in Sources */,
 				8B1448C54DEB4CFDB79D7E45 /* RNCSafeAreaViewMode.m in Sources */,
+				8EB6942567004F20BE34CDEF /* RNSScreen.m in Sources */,
+				359D12573B8248BB82058F9F /* RNSScreenContainer.m in Sources */,
+				9A4CB562FA064CADA02DB9DC /* RNSScreenStack.m in Sources */,
+				F9C03A516F134660857247A0 /* RNSScreenStackHeaderConfig.m in Sources */,
+				1CCBD74345E041ECA114D9AE /* UIViewController+RNScreens.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
