@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 2.2.1 — 2021-03-30
+
+### 🐛 Bug fixes
+
 - Replace useUrl with useURL and update documentation. ([#12310](https://github.com/expo/expo/pull/12310) by [@brentvatne](https://github.com/brentvatne))
 
 ## 2.2.0 — 2021-03-10
