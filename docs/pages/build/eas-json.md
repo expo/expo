@@ -71,9 +71,10 @@ The schema of a build profile for a generic Android project looks like this:
   "node": string,
   "yarn": string,
   "ndk": string,
-  "env": Record<string, string> // default: {}
-  "cache": null | {
-    "key": string // default: ""
+  "env": Record<string, string>,
+  "cache": {
+    "disabled": boolean, // default: false
+    "key": string,
     "customPaths": string[] // default: []
   }
 }
@@ -91,8 +92,8 @@ The schema of a build profile for a generic Android project looks like this:
 - `node` - version of Node.js
 - `yarn` - version of Yarn
 - `ndk` - version of Android NDK
-- `env` - environment variables that should be set during the build process (should only be used for values that you would commit to your git repository, i.e: not passwords or secrets).
-- `cache` configures paths that will be saved and restored in the next build. The cache can be explicitly invalidated by updating the value of the `key` field. Values in `customPaths` support both absolute and relative paths, where relative paths are resolved from the directory with `eas.json`. This feature is intended for caching values that require a lot of computation, e.g. compilation results (both final binaries and any intermediate files), but it wouldn't work well for `node_modules` because the cache is not local to the machine, so a download speed is similar to downloading from the npm registry.
+- `env` - environment variables that should be set during the build process (should only be used for values that you would commit to your git repository, i.e. not passwords or secrets).
+- `cache` configures paths that will be saved and restored in the next build. The cache can be explicitly invalidated by updating the value of the `key` field. Values in `customPaths` support both absolute and relative paths, where relative paths are resolved from the directory with `eas.json`. This feature is intended for caching values that require a lot of computation, e.g. compilation results (both final binaries and any intermediate files), but it wouldn't work well for `node_modules` because the cache is not local to the machine, so a download speed is similar to downloading from the npm registry. Set `"disabled": true` to disable caching.
 
 #### Examples
 
@@ -141,9 +142,10 @@ The schema of a build profile for a managed Android project looks like this:
   "node": string,
   "yarn": string,
   "ndk": string,
-  "env": Record<string, string> // default: {}
-  "cache": null | {
-    "key": string // default: ""
+  "env": Record<string, string>,
+  "cache": {
+    "disabled" : boolean, // default: false
+    "key": string,
     "customPaths": string[] // default: []
   }
 }
@@ -159,8 +161,8 @@ The schema of a build profile for a managed Android project looks like this:
 - `node` - version of Node.js
 - `yarn` - version of Yarn
 - `ndk` - version of Android NDK
-- `env` - environment variables that should be set during the build process (should only be used for values that you would commit to your git repository, i.e: not passwords or secrets).
-- `cache` configures paths that will be saved and restored in the next build. The cache can be explicitly invalidated by updating the value of the `key` field. Values in `customPaths` support both absolute and relative paths, where relative paths are resolved from the directory with `eas.json`. This feature is intended for caching values that require a lot of computation, e.g. compilation results (both final binaries and any intermediate files), but it wouldn't work well for `node_modules` because the cache is not local to the machine, so a download speed is similar to downloading from the npm registry.
+- `env` - environment variables that should be set during the build process (should only be used for values that you would commit to your git repository, i.e. not passwords or secrets).
+- `cache` configures paths that will be saved and restored in the next build. The cache can be explicitly invalidated by updating the value of the `key` field. Values in `customPaths` support both absolute and relative paths, where relative paths are resolved from the directory with `eas.json`. This feature is intended for caching values that require a lot of computation, e.g. compilation results (both final binaries and any intermediate files), but it wouldn't work well for `node_modules` because the cache is not local to the machine, so a download speed is similar to downloading from the npm registry. Set `"disabled": true` to disable caching.
 
 #### Examples
 
@@ -193,10 +195,10 @@ The schema of a build profile for a generic iOS project looks like this:
   "extends": string,
   "credentialsSource": "local" | "remote" | "auto", // default: "auto"
   "scheme": string,
-  "schemeBuildConfiguration": "Release" | "Debug" | "Auto" // default: "Release",
+  "schemeBuildConfiguration": "Release" | "Debug" | "Auto", // default: "Release",
   "artifactPath": string, // default: "ios/build/App.ipa"
   "releaseChannel": string, // default: "default"
-  "distribution": "store", | "internal" | "simulator", // default: "store"
+  "distribution": "store" | "internal" | "simulator", // default: "store"
   "autoIncrement": boolean | "version" | "buildNumber", // default: false
   "image": string, // default: "default"
   "node": string,
@@ -204,10 +206,11 @@ The schema of a build profile for a generic iOS project looks like this:
   "bundler": string,
   "fastlane": string,
   "cocoapods": string,
-  "env": Record<string, string> // default: {}
-  "cache": null | {
-    "key": string // default: ""
-    "cacheDefaultPaths": boolean // default: true
+  "env": Record<string, string>,
+  "cache": {
+    "disabled" : boolean, // default: false
+    "key": string,
+    "cacheDefaultPaths": boolean, // default: true
     "customPaths": string[] // default: []
   }
 }
@@ -228,8 +231,8 @@ The schema of a build profile for a generic iOS project looks like this:
 - `bundler` - version of [bundler](https://bundler.io/)
 - `fastlane` - version of fastlane
 - `cocoapods` - version of CocoaPods
-- `env` - environment variables that should be set during the build process (should only be used for values that you would commit to your git repository, i.e: not passwords or secrets).
-- `cache` configures paths that will be saved and restored in the next build. The cache can be explicitly invalidated by updating the value of the `key` field. Values in `customPaths` support both absolute and relative paths, where relative paths are resolved from the directory with `eas.json`. If you set `cacheDefaultPaths` to true, or leave the `cache` config unspecified, `Podfile.lock` will be cached by default. This feature is intended for caching values that require a lot of computation, e.g. compilation results (both final binaries and any intermediate files), but it wouldn't work well for `node_modules` because the cache is not local to the machine, so a download speed is similar to downloading from the npm registry.
+- `env` - environment variables that should be set during the build process (should only be used for values that you would commit to your git repository, i.e. not passwords or secrets).
+- `cache` configures paths that will be saved and restored in the next build. The cache can be explicitly invalidated by updating the value of the `key` field. Values in `customPaths` support both absolute and relative paths, where relative paths are resolved from the directory with `eas.json`. If you set `cacheDefaultPaths` to true, or leave the `cache` config unspecified, `Podfile.lock` will be cached by default. This feature is intended for caching values that require a lot of computation, e.g. compilation results (both final binaries and any intermediate files), but it wouldn't work well for `node_modules` because the cache is not local to the machine, so a download speed is similar to downloading from the npm registry. Set `"disabled": true` to disable caching.
 
 #### Examples
 
@@ -270,10 +273,11 @@ The schema of a build profile for a managed iOS project looks like this:
   "bundler": string,
   "fastlane": string,
   "cocoapods": string,
-  "env": Record<string, string> // default: {}
-  "cache": null | {
-    "key": string // default: ""
-    "cacheDefaultPaths": boolean // default: true
+  "env": Record<string, string>,
+  "cache": {
+    "disabled": boolean, // default: false
+    "key": string,
+    "cacheDefaultPaths": boolean, // default: true
     "customPaths": string[] // default: []
   }
 }
@@ -291,8 +295,8 @@ The schema of a build profile for a managed iOS project looks like this:
 - `bundler` - version of [bundler](https://bundler.io/)
 - `fastlane` - version of fastlane
 - `cocoapods` - version of CocoaPods
-- `env` - environment variables that should be set during the build process (should only be used for values that you would commit to your git repository, i.e: not passwords or secrets).
-- `cache` configures paths that will be saved and restored in the next build. The cache can be explicitly invalidated by updating the value of the `key` field. Values in `customPaths` support both absolute and relative paths, where relative paths are resolved from the directory with `eas.json`. If you set `cacheDefaultPaths` to true, or leave the `cache` config unspecified, `Podfile.lock` will be cached by default. This feature is intended for caching values that require a lot of computation, e.g. compilation results (both final binaries and any intermediate files), but it wouldn't work well for `node_modules` because the cache is not local to the machine, so a download speed is similar to downloading from the npm registry.
+- `env` - environment variables that should be set during the build process (should only be used for values that you would commit to your git repository, i.e. not passwords or secrets).
+- `cache` configures paths that will be saved and restored in the next build. The cache can be explicitly invalidated by updating the value of the `key` field. Values in `customPaths` support both absolute and relative paths, where relative paths are resolved from the directory with `eas.json`. If you set `cacheDefaultPaths` to true, or leave the `cache` config unspecified, `Podfile.lock` will be cached by default. This feature is intended for caching values that require a lot of computation, e.g. compilation results (both final binaries and any intermediate files), but it wouldn't work well for `node_modules` because the cache is not local to the machine, so a download speed is similar to downloading from the npm registry. Set `"disabled": true` to disable caching.
 
 #### Examples
 
