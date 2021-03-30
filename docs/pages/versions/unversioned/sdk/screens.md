@@ -20,11 +20,4 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 The complete API reference and documentation is available [in the README](https://github.com/software-mansion/react-native-screens).
 
-To use `react-native-screens` with React Navigation, you will need to enable it before rendering any screens. Add the following code to your main application file (e.g. App.js):
-
-```js
-import { enableScreens } from 'react-native-screens';
-enableScreens();
-```
-
 To use the native stack navigator, refer to the [createNativeStackNavigator documentation](https://reactnavigation.org/docs/native-stack-navigator).
