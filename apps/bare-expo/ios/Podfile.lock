@@ -133,7 +133,7 @@ PODS:
     - UMCore
   - EXLocalization (10.1.0):
     - UMCore
-  - EXLocation (12.0.0):
+  - EXLocation (12.0.2):
     - UMCore
     - UMPermissionsInterface
     - UMTaskManagerInterface
@@ -156,7 +156,7 @@ PODS:
   - expo-dev-launcher (0.3.0):
     - expo-dev-menu-interface
     - React
-  - expo-dev-menu (0.4.0):
+  - expo-dev-menu (0.4.1):
     - expo-dev-menu-interface
     - React
   - expo-dev-menu-interface (0.2.0):
@@ -1262,14 +1262,14 @@ SPEC CHECKSUMS:
   EXLinearGradient: 39b1cf1df5b885e8c35e8afedc9d8893b9fced4b
   EXLocalAuthentication: 8dac12d95b099e75ec8d4ac2c40719b857ce528c
   EXLocalization: f139efe4a06be1041815879959346e3d437a6e93
-  EXLocation: d0450dfa1196c2e86524b538f5e41ac93958e204
+  EXLocation: bf9799796c511ca6981b257e1964e10d3dec371a
   EXMailComposer: 3905ca3554cc1142f45bc54632e12e23b8a464a0
   EXMediaLibrary: b7595816ee5261f7e1b9c48616d65b28e487f123
   EXNetwork: 5358bd8f47f780e81b18971cef36fce0ebe0af67
   EXNotifications: f199ea16d9e963759bf68f4d6952b3591638e612
   EXPermissions: 67ff17d3c12ea06066492dde4242f8047658fd62
   expo-dev-launcher: d6ffbe10033d79c47991aaf768495610da43a39f
-  expo-dev-menu: 0d1d68bd626f6c8dea354fc3e62b76c3327bb1f6
+  expo-dev-menu: 9cab52a55688aef281dee77a101af83658c59b48
   expo-dev-menu-interface: e6f313b7b0c0c79b1987cf26bc5c969bad69bb7d
   expo-image: 07527eb7a57f5ac939c5ded392bcf64c975b9c87
   EXPrint: f6d272e7729d188a05686817ce8d84683da36073
