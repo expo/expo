@@ -127,6 +127,20 @@ platform :ios do
     setup_circle_ci
   end
 
+  lane :prepare_schemes do |options|
+    recreate_schemes(
+      project: "ios/Pods/#{options[:pod]}.xcodeproj"
+    )
+  end
+
+  lane :test_module do |options|
+    scan(
+      project: "ios/Pods/#{options[:pod]}.xcodeproj",
+      scheme: "#{options[:pod]}-Unit-Tests",
+      clean: false,
+    )
+  end
+
   lane :test do
     scan(
       workspace: "ios/Exponent.xcworkspace",
