@@ -4823,9 +4823,9 @@ jest-environment-node@^25.5.0:
     semver "^6.3.0"
 
 jest-expo@~41.0.0-alpha.0:
-  version "41.0.0-alpha.0"
-  resolved "https://registry.yarnpkg.com/jest-expo/-/jest-expo-41.0.0-alpha.0.tgz#89d4bf29bc39e3da0bd03aa248624b38da58ddae"
-  integrity sha512-c4W7dR4aLXObiRJ7bGURLn6Libj2Ujyf7y0b9hBHigIlIxSPjx7cFkOGApZzL7oHbNbtBYAwN+/YOQLvz5YwHA==
+  version "41.0.0-beta.0"
+  resolved "https://registry.yarnpkg.com/jest-expo/-/jest-expo-41.0.0-beta.0.tgz#a5a51aa66a379f04249b5e7ddce8fe8b78df4a78"
+  integrity sha512-RB1N5xHAPUKfVY5JzocqPKI7pSk0NCp61vHjJlCYgqMyXmdY1IGH6aNiDggtA9ToAADw2SpnjhDdY8W9zVZcKQ==
   dependencies:
     "@expo/config" "^3.2.3"
     babel-jest "^25.2.0"
