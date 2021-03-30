@@ -23,6 +23,7 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
   private static let sessionKey = "expo-dev-menu.session"
   private static let userLoginEvent = "expo.dev-menu.user-login"
   private static let userLogoutEvent = "expo.dev-menu.user-logout"
+  private static let defaultScheme = "expo-dev-menu"
 
   let manager: DevMenuManager
 
@@ -150,5 +151,33 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
   @objc
   func restoreSessionAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
     resolve(manager.expoSessionDelegate.restoreSession())
+  }
+  
+  @objc
+  func getAuthSchemeAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    guard let urlTypesArray = Bundle.main.infoDictionary?["CFBundleURLTypes"] as? [NSDictionary] else {
+      resolve(DevMenuInternalModule.defaultScheme)
+      return
+    }
+        
+    if (urlTypesArray
+          .contains(where: { ($0["CFBundleURLSchemes"] as? [String] ?? [])
+                      .contains(DevMenuInternalModule.defaultScheme) })) {
+      resolve(DevMenuInternalModule.defaultScheme)
+      return
+    }
+    
+    for urlType in urlTypesArray {
+      guard let schemes = urlType["CFBundleURLSchemes"] as? [String] else {
+        continue
+      }
+      
+      if schemes.first != nil {
+        resolve(schemes.first)
+        return
+      }
+    }
+    
+    resolve(DevMenuInternalModule.defaultScheme)
   }
 }
