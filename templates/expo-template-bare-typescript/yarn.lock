@@ -3660,10 +3660,10 @@ expo-updates@~0.5.3:
     resolve-from "^5.0.0"
     uuid "^3.4.0"
 
-expo@~41.0.0-beta.0:
-  version "41.0.0-beta.0"
-  resolved "https://registry.yarnpkg.com/expo/-/expo-41.0.0-beta.0.tgz#4aa3a3ef066b45acc298d0b80fa41bdf85a8539c"
-  integrity sha512-GhaETAcWgKON/E4A4uVou6adPFKcCyeeAJBii0uioVzpVC7NmDw1KpWKN+v2goGyM2KF8pcwFzcMrlOCDcubMQ==
+expo@~41.0.0-beta.1:
+  version "41.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/expo/-/expo-41.0.0-beta.1.tgz#ccebe40b1eabaf4ffd8783e319ef8fbbfd543fb8"
+  integrity sha512-t6Zyxh5ycBLMD+tinm1q1u9QWvOrWT0+vmZCDUrciMUmMgs00ggf9VZRytIeWfE5DsPlROi9t5GOA2C/tIRfsA==
   dependencies:
     "@babel/runtime" "^7.1.2"
     "@expo/metro-config" "^0.1.59"
@@ -6713,10 +6713,10 @@ react-native-safe-area-context@3.2.0:
   resolved "https://registry.yarnpkg.com/react-native-safe-area-context/-/react-native-safe-area-context-3.2.0.tgz#06113c6b208f982d68ab5c3cebd199ca93db6941"
   integrity sha512-k2Nty4PwSnrg9HwrYeeE+EYqViYJoOFwEy9LxL5RIRfoqxAq/uQXNGwpUg2/u4gnKpBbEPa9eRh15KKMe/VHkA==
 
-react-native-screens@~2.18.1:
-  version "2.18.1"
-  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-2.18.1.tgz#47b9991c6f762d00d0ed3233e5283d523e859885"
-  integrity sha512-r5WZLpmx2hHjC1RgMdPq5YpSU9tEhBpUaZ5M1SUtNIONyiLqQVxabhRCINdebIk4depJiIl7yw2Q85zJyeX6fw==
+react-native-screens@~3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-3.0.0.tgz#ee4c2d69abf7411603868b57214feec5e8f637fa"
+  integrity sha512-35II5oxTaVp3OP8y0eLPOPpQkxG4fRKQ+dL1YSE1we5kCZFOU0l/Rn0T79HbyUu1LPwUZr6lZupPs0ULnRyMuQ==
 
 react-native-unimodules@~0.13.1:
   version "0.13.1"
