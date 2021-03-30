@@ -75,7 +75,7 @@
   },
   "devDependencies": {
     "@types/jest": "^26.0.20",
-    "jest-expo": "~41.0.0-alpha.0",
+    "jest-expo": "~41.0.0-beta.0",
     "react-native-bundle-visualizer": "^2.2.1",
     "uuid": "^3.3.2"
   }
