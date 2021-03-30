@@ -4,6 +4,8 @@ import url from 'url';
 
 import DevMenuContext from '../../DevMenuContext';
 import * as DevMenuWebBrowser from '../../DevMenuWebBrowser';
+import * as DevMenuInternal from '../../DevMenuInternal';
+
 import Colors from '../../constants/Colors';
 import Endpoints from '../../constants/Endpoints';
 import Button from '../Button';
@@ -31,7 +33,8 @@ export default function UnauthenticatedProfile() {
     setIsAuthenticating(true);
 
     try {
-      const redirectBase = 'expo-dev-menu://auth';
+      const scheme = await DevMenuInternal.getAuthSchemeAsync();
+      const redirectBase = `${scheme}://auth`;
       const authSessionURL = `${
         Endpoints.website.origin
       }/${urlPath}?app_redirect_uri=${encodeURIComponent(redirectBase)}`;
