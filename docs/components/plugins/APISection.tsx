@@ -2,21 +2,13 @@ import React, { useContext } from 'react';
 
 import DocumentationPageContext from '~/components/DocumentationPageContext';
 import { P } from '~/components/base/paragraph';
-import APISectionConstants, {
-  ConstantDefinitionData,
-} from '~/components/plugins/api/APISectionConstants';
-import APISectionEnums, { EnumDefinitionData } from '~/components/plugins/api/APISectionEnums';
-import APISectionInterfaces, {
-  InterfaceDefinitionData,
-} from '~/components/plugins/api/APISectionInterfaces';
-import APISectionMethods, {
-  MethodDefinitionData,
-} from '~/components/plugins/api/APISectionMethods';
-import APISectionProps, {
-  DefaultPropsDefinitionData,
-  PropsDefinitionData,
-} from '~/components/plugins/api/APISectionProps';
-import APISectionTypes, { TypeGeneralData } from '~/components/plugins/api/APISectionTypes';
+import { DefaultPropsDefinitionData, GeneratedData } from '~/components/plugins/api/APIDataTypes';
+import APISectionConstants from '~/components/plugins/api/APISectionConstants';
+import APISectionEnums from '~/components/plugins/api/APISectionEnums';
+import APISectionInterfaces from '~/components/plugins/api/APISectionInterfaces';
+import APISectionMethods from '~/components/plugins/api/APISectionMethods';
+import APISectionProps from '~/components/plugins/api/APISectionProps';
+import APISectionTypes from '~/components/plugins/api/APISectionTypes';
 import { TypeDocKind } from '~/components/plugins/api/APISectionUtils';
 
 const LATEST_VERSION = `v${require('~/package.json').version}`;
@@ -26,15 +18,7 @@ type Props = {
   apiName?: string;
 };
 
-type GeneratedData = EnumDefinitionData &
-  MethodDefinitionData &
-  PropsDefinitionData &
-  DefaultPropsDefinitionData &
-  TypeGeneralData &
-  InterfaceDefinitionData &
-  ConstantDefinitionData;
-
-const filterData = (
+const filterDataByKind = (
   entries: GeneratedData[],
   kind: TypeDocKind,
   additionalCondition: (entry: GeneratedData) => boolean = () => true
@@ -51,23 +35,25 @@ const renderAPI = (
   try {
     const data = require(`~/public/static/data/${version}/${packageName}.json`).children;
 
-    const methods = filterData(data, TypeDocKind.Function);
-    const types = filterData(
+    const methods = filterDataByKind(data, TypeDocKind.Function);
+    const types = filterDataByKind(
       data,
       TypeDocKind.TypeAlias,
       entry => !!(entry.type.declaration || entry.type.types)
     );
-    const props = filterData(data, TypeDocKind.TypeAlias, entry => entry.name.includes('Props'));
-    const defaultProps = filterData(
+    const props = filterDataByKind(data, TypeDocKind.TypeAlias, entry =>
+      entry.name.includes('Props')
+    );
+    const defaultProps = filterDataByKind(
       data.filter(
         (defaultProp: DefaultPropsDefinitionData) => defaultProp.kind === TypeDocKind.Class
       )[0]?.children,
       TypeDocKind.Property,
       entry => entry.name === 'defaultProps'
     )[0];
-    const enums = filterData(data, TypeDocKind.Enum);
-    const interfaces = filterData(data, TypeDocKind.Interface);
-    const constants = filterData(data, TypeDocKind.Variable, entry => entry.flags.isConst);
+    const enums = filterDataByKind(data, TypeDocKind.Enum);
+    const interfaces = filterDataByKind(data, TypeDocKind.Interface);
+    const constants = filterDataByKind(data, TypeDocKind.Variable, entry => entry.flags.isConst);
 
     return (
       <div>

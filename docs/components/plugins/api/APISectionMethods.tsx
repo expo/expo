@@ -4,32 +4,17 @@ import ReactMarkdown from 'react-markdown';
 import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
 import { H2, H3Code, H4 } from '~/components/plugins/Headings';
+import { MethodDefinitionData, MethodSignatureData } from '~/components/plugins/api/APIDataTypes';
 import {
   CommentTextBlock,
-  CommentData,
-  MethodParamData,
   renderers,
   renderParam,
   resolveTypeName,
-  TypeDefinitionData,
-  TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionMethodsProps = {
   data: MethodDefinitionData[];
   apiName?: string;
-};
-
-export type MethodDefinitionData = {
-  signatures: MethodSignatureData[];
-  kind: TypeDocKind;
-};
-
-type MethodSignatureData = {
-  name: string;
-  parameters: MethodParamData[];
-  comment: CommentData;
-  type: TypeDefinitionData;
 };
 
 const renderMethod = (

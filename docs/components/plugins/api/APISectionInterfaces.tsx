@@ -3,31 +3,15 @@ import React from 'react';
 import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
 import { H2, H3Code } from '~/components/plugins/Headings';
-import { TypeDeclarationData } from '~/components/plugins/api/APISectionTypes';
+import { InterfaceDefinitionData, InterfaceValueData } from '~/components/plugins/api/APIDataTypes';
 import {
-  CommentData,
   CommentTextBlock,
   inlineRenderers,
   renderers,
-  TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionInterfacesProps = {
   data: InterfaceDefinitionData[];
-};
-
-export type InterfaceDefinitionData = {
-  name: string;
-  children: InterfaceValueData[];
-  comment?: CommentData;
-  kind: TypeDocKind;
-};
-
-export type InterfaceValueData = {
-  name: string;
-  type: TypeDeclarationData;
-  kind: TypeDocKind;
-  comment?: CommentData;
 };
 
 const renderInterface = ({ name, children, comment }: InterfaceDefinitionData): JSX.Element => (

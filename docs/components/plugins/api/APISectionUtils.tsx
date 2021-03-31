@@ -6,6 +6,12 @@ import { H4 } from '~/components/base/headings';
 import { InternalLink } from '~/components/base/link';
 import { LI, UL } from '~/components/base/list';
 import { B, P, Quote } from '~/components/base/paragraph';
+import {
+  CommentData,
+  MethodParamData,
+  TypeDefinitionData,
+  TypeDefinitionTypesData,
+} from '~/components/plugins/api/APIDataTypes';
 
 export enum TypeDocKind {
   Enum = 4,
@@ -39,43 +45,6 @@ export const renderers: React.ComponentProps<typeof ReactMarkdown>['renderers'] 
 export const inlineRenderers: React.ComponentProps<typeof ReactMarkdown>['renderers'] = {
   ...renderers,
   paragraph: ({ children }) => (children ? <span>{children}</span> : null),
-};
-
-export type CommentData = {
-  text?: string;
-  shortText?: string;
-  returns?: string;
-  tags?: CommentTagData[];
-};
-
-export type CommentTagData = {
-  tag: string;
-  text: string;
-};
-
-export type TypeDefinitionData = {
-  name: string;
-  type: string;
-  types?: TypeDefinitionTypesData[];
-  elementType?: {
-    name: string;
-  };
-  queryType?: {
-    name: string;
-  };
-  typeArguments?: TypeDefinitionData[];
-};
-
-export type TypeDefinitionTypesData = {
-  type: string;
-  name?: string;
-  value?: string | null;
-};
-
-export type MethodParamData = {
-  name: string;
-  type: TypeDefinitionData;
-  comment?: CommentData;
 };
 
 export const resolveTypeName = ({

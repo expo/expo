@@ -8,55 +8,21 @@ import { UL } from '~/components/base/list';
 import { B } from '~/components/base/paragraph';
 import { H2, H3Code, H4 } from '~/components/plugins/Headings';
 import {
+  TypeGeneralData,
+  TypePropertyData,
+  TypeSignaturesData,
+  TypeValueData,
+} from '~/components/plugins/api/APIDataTypes';
+import {
   inlineRenderers,
   renderers,
   resolveTypeName,
   renderParam,
-  CommentData,
-  MethodParamData,
-  TypeDefinitionData,
-  TypeDocKind,
   CommentTextBlock,
 } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionTypesProps = {
   data: TypeGeneralData[];
-};
-
-export type TypeGeneralData = {
-  name: string;
-  comment: CommentData;
-  type: TypeDeclarationData;
-  kind: TypeDocKind;
-};
-
-export type TypeDeclarationData = {
-  declaration: {
-    signatures: TypeSignaturesData[];
-    children: TypePropertyData[];
-  };
-  type: string;
-  types: TypeValueData[];
-  typeArguments?: TypeDefinitionData[];
-};
-
-type TypeSignaturesData = {
-  parameters: MethodParamData[];
-};
-
-export type TypePropertyData = {
-  name: string;
-  flags: {
-    isOptional: boolean;
-  };
-  comment: CommentData;
-  type: TypeDefinitionData;
-  defaultValue: string;
-};
-
-type TypeValueData = {
-  type: string;
-  value: string | boolean | null;
 };
 
 const STYLES_OPTIONAL = css`

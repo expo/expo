@@ -2,25 +2,12 @@ import React from 'react';
 
 import { InlineCode } from '~/components/base/code';
 import { H2, H3Code } from '~/components/plugins/Headings';
-import {
-  CommentData,
-  CommentTextBlock,
-  renderers,
-  TypeDocKind,
-} from '~/components/plugins/api/APISectionUtils';
+import { ConstantDefinitionData } from '~/components/plugins/api/APIDataTypes';
+import { CommentTextBlock, renderers } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionConstantsProps = {
   data: ConstantDefinitionData[];
   apiName?: string;
-};
-
-export type ConstantDefinitionData = {
-  name: string;
-  flags: {
-    isConst: boolean;
-  };
-  comment?: CommentData;
-  kind: TypeDocKind;
 };
 
 const renderConstant = (

@@ -4,40 +4,23 @@ import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
 import { B } from '~/components/base/paragraph';
 import { H2, H4 } from '~/components/plugins/Headings';
-import { TypeDeclarationData, TypePropertyData } from '~/components/plugins/api/APISectionTypes';
 import {
-  CommentData,
   CommentTagData,
+  DefaultPropsDefinitionData,
+  PropData,
+  PropsDefinitionData,
+  TypeDeclarationData,
+  TypePropertyData,
+} from '~/components/plugins/api/APIDataTypes';
+import {
   CommentTextBlock,
   inlineRenderers,
   resolveTypeName,
-  TypeDefinitionData,
-  TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionPropsProps = {
   data: PropsDefinitionData[];
   defaultProps: DefaultPropsDefinitionData;
-};
-
-export type PropsDefinitionData = {
-  name: string;
-  type: {
-    types: TypeDeclarationData[];
-  };
-  kind: TypeDocKind;
-};
-
-type PropData = {
-  name: string;
-  comment: CommentData;
-  type: TypeDefinitionData;
-};
-
-export type DefaultPropsDefinitionData = {
-  name: string;
-  type: TypeDeclarationData;
-  kind: TypeDocKind;
 };
 
 const UNKNOWN_VALUE = '...';
