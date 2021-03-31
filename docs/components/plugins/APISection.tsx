@@ -2,6 +2,9 @@ import React, { useContext } from 'react';
 
 import DocumentationPageContext from '~/components/DocumentationPageContext';
 import { P } from '~/components/base/paragraph';
+import APISectionConstants, {
+  ConstantDefinitionData,
+} from '~/components/plugins/api/APISectionConstants';
 import APISectionEnums, { EnumDefinitionData } from '~/components/plugins/api/APISectionEnums';
 import APISectionInterfaces, {
   InterfaceDefinitionData,
@@ -28,7 +31,8 @@ type GeneratedData = EnumDefinitionData &
   PropsDefinitionData &
   DefaultPropsDefinitionData &
   TypeGeneralData &
-  InterfaceDefinitionData;
+  InterfaceDefinitionData &
+  ConstantDefinitionData;
 
 const filterData = (
   entries: GeneratedData[],
@@ -63,9 +67,11 @@ const renderAPI = (
     )[0];
     const enums = filterData(data, TypeDocKind.Enum);
     const interfaces = filterData(data, TypeDocKind.Interface);
+    const constants = filterData(data, TypeDocKind.Variable, entry => entry.flags.isConst);
 
     return (
       <div>
+        <APISectionConstants data={constants} apiName={apiName} />
         <APISectionMethods data={methods} apiName={apiName} />
         <APISectionProps data={props} defaultProps={defaultProps} />
         <APISectionTypes data={types} />

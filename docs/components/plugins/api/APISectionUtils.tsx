@@ -9,6 +9,7 @@ import { B, P, Quote } from '~/components/base/paragraph';
 
 export enum TypeDocKind {
   Enum = 4,
+  Variable = 32,
   Function = 64,
   Class = 128,
   Interface = 256,
