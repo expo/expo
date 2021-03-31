@@ -11,6 +11,8 @@ import java.util.Map;
 
 import androidx.annotation.Nullable;
 
+import static expo.modules.updates.UpdatesUtils.getHeadersMapFromJSONString;
+
 public class UpdatesConfiguration {
 
   private static final String TAG = UpdatesConfiguration.class.getSimpleName();
@@ -122,6 +124,9 @@ public class UpdatesConfiguration {
         Log.e(TAG, "Invalid value " + checkOnLaunchString + " for expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH in AndroidManifest; defaulting to ALWAYS");
         mCheckOnLaunch = CheckAutomaticallyConfiguration.ALWAYS;
       }
+
+      String headerString = ai.metaData.getString("expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY", "{}");
+      mRequestHeaders = getHeadersMapFromJSONString(headerString);
 
       // used only for expo-updates development
       mHasEmbeddedUpdate = ai.metaData.getBoolean("expo.modules.updates.HAS_EMBEDDED_UPDATE", true);

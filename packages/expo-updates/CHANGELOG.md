@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- add method to read stringified requestHeaders. ([#12229](https://github.com/expo/expo/pull/12229) by [@jkhales](https://github.com/jkhales))
+
 ### 🐛 Bug fixes
 
 ## 0.5.3 — 2021-03-30
