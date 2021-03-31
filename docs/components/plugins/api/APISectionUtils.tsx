@@ -55,6 +55,7 @@ export type CommentTagData = {
 export type TypeDefinitionData = {
   name: string;
   type: string;
+  types?: TypeDefinitionTypesData[];
   elementType?: {
     name: string;
   };
@@ -62,6 +63,12 @@ export type TypeDefinitionData = {
     name: string;
   };
   typeArguments?: TypeDefinitionData[];
+};
+
+export type TypeDefinitionTypesData = {
+  type: string;
+  name?: string;
+  value?: string | null;
 };
 
 export type MethodParamData = {
@@ -74,6 +81,7 @@ export const resolveTypeName = ({
   elementType,
   name,
   type,
+  types,
   typeArguments,
 }: TypeDefinitionData): string | JSX.Element => {
   if (name) {
@@ -109,6 +117,8 @@ export const resolveTypeName = ({
       return elementType.name + '[]';
     }
     return elementType.name + type;
+  } else if (type === 'union' && types?.length) {
+    return types.map((t: TypeDefinitionTypesData) => `${t.name || t.value}`).join(' | ');
   }
   return 'undefined';
 };
