@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 12.0.1 — 2021-03-31
+
+_This version does not introduce any user-facing changes._
+
 ## 12.0.0 — 2021-03-10
 
 ### 🛠 Breaking changes
