@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `tests` field to options in `use_unimodules` ruby script. ([#11972](https://github.com/expo/expo/pull/11972) by [@esamelson](https://github.com/esamelson))
+
 ### 🐛 Bug fixes
 
 ## 0.13.1 — 2021-03-30
