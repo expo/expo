@@ -70,28 +70,45 @@ const constants = {
         return nativeConstants.linkingUri;
     },
 };
+function getManifest(suppressWarning = false) {
+    if (!manifest) {
+        const invalidManifestType = manifest === null ? 'null' : 'undefined';
+        if (nativeConstants.executionEnvironment === ExecutionEnvironment.Bare &&
+            Platform.OS !== 'web') {
+            if (!suppressWarning) {
+                console.warn(`Constants.manifest is ${invalidManifestType} because the embedded app.config could not be read. Ensure that you have installed the expo-constants build scripts if you need to read from Constants.manifest.`);
+            }
+        }
+        else if (nativeConstants.executionEnvironment === ExecutionEnvironment.StoreClient ||
+            nativeConstants.executionEnvironment === ExecutionEnvironment.Standalone) {
+            // If we somehow get here, this is a truly exceptional state to be in.
+            // Constants.manifest should *always* be defined in those contexts.
+            throw new CodedError('ERR_CONSTANTS_MANIFEST_UNAVAILABLE', `Constants.manifest is ${invalidManifestType}, must be an object.`);
+        }
+    }
+    return manifest;
+}
 Object.defineProperties(constants, {
     manifest: {
         enumerable: true,
         get() {
-            if (!manifest) {
-                const invalidManifestType = manifest === null ? 'null' : 'undefined';
-                if (nativeConstants.executionEnvironment === ExecutionEnvironment.Bare &&
-                    Platform.OS !== 'web') {
-                    console.warn(`Constants.manifest is ${invalidManifestType} because the embedded app.config could not be read. Ensure that you have installed the expo-constants build scripts if you need to read from Constants.manifest.`);
-                }
-                else if (nativeConstants.executionEnvironment === ExecutionEnvironment.StoreClient ||
-                    nativeConstants.executionEnvironment === ExecutionEnvironment.Standalone) {
-                    // If we somehow get here, this is a truly exceptional state to be in.
-                    // Constants.manifest should *always* be defined in those contexts.
-                    throw new CodedError('ERR_CONSTANTS_MANIFEST_UNAVAILABLE', `Constants.manifest is ${invalidManifestType}, must be an object.`);
-                }
-            }
-            return manifest;
+            return getManifest();
         },
         // This setter is only useful to mock the value for tests
         set(value) {
             manifest = value;
+        },
+    },
+    /**
+     * Use `manifest` property by default.
+     * This property is only used for internal purposes.
+     * It behaves similarly to the original one, but suppresses warning upon no manifest available.
+     * `expo-asset` uses it to prevent users from seeing mentioned warning.
+     */
+    __unsafeNoWarnManifest: {
+        enumerable: true,
+        get() {
+            return getManifest(true);
         },
     },
 });

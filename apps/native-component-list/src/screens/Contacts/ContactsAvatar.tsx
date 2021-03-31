@@ -36,7 +36,6 @@ export default function Avatar({ image, name = '', style, onPress }: Props) {
     <TouchableOpacity
       disabled={!onPress}
       onPress={() => onPress?.()}
-      accessibilityTraits="image"
       style={[styles.container, style]}>
       {image ? getImage() : <Text style={styles.text}>{getInitials()}</Text>}
     </TouchableOpacity>

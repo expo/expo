@@ -4,12 +4,24 @@
 
 ### 🛠 Breaking changes
 
+- remove UPDATES_CONFIGURATION_USES_LEGACY_MANIFEST_KEY constant. ([#12181](https://github.com/expo/expo/pull/12181) by [@jkhales](https://github.com/jkhales))
+
 ### 🎉 New features
 
-- Wrap native bundle script error in regex. ([#12185](https://github.com/expo/expo/pull/12185) by [@EvanBacon](https://github.com/EvanBacon))
 - add method to read stringified requestHeaders. ([#12229](https://github.com/expo/expo/pull/12229) by [@jkhales](https://github.com/jkhales))
 
 ### 🐛 Bug fixes
+
+## 0.5.3 — 2021-03-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.5.2 — 2021-03-23
+
+### 🎉 New features
+
+- Updated `@expo/metro-config` with deprecated `.expo.*` extension support and improved error stack traces. ([#12252](https://github.com/expo/expo/pull/12252) by [@EvanBacon](https://github.com/EvanBacon))
+- Wrap native bundle script error in regex. ([#12185](https://github.com/expo/expo/pull/12185) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.5.1 — 2021-03-11
 

@@ -100,6 +100,7 @@ templates/**/Pods/**
 /fastlane/Deployment
 /Preview.html
 /gc_keys.json
+/fastlane/gc_keys.json
 
 # CI
 /android/logcat.txt

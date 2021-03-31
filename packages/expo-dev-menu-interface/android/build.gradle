@@ -3,7 +3,7 @@ apply plugin: 'maven'
 apply plugin: 'kotlin-android'
 
 group = 'host.exp.exponent'
-version = '0.1.2'
+version = '0.2.0'
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -52,7 +52,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
     versionCode 6
-    versionName '0.1.2'
+    versionName '0.2.0'
   }
   lintOptions {
     abortOnError false
@@ -62,6 +62,8 @@ android {
 dependencies {
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
+
+  implementation 'com.squareup.okhttp3:okhttp:3.14.9'
 
   api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
 }

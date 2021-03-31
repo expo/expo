@@ -31,6 +31,7 @@ data class DevLauncherManifest(
   val bundleUrl: String,
   val hostUri: String,
   val mainModuleName: String,
+  val version: String,
 
   val orientation: DevLauncherOrientation?,
 

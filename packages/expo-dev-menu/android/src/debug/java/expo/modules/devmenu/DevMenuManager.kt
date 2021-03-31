@@ -16,7 +16,9 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import expo.interfaces.devmenu.DevMenuDelegateInterface
+import expo.interfaces.devmenu.DevMenuExpoApiClientInterface
 import expo.interfaces.devmenu.DevMenuExtensionInterface
+import expo.interfaces.devmenu.DevMenuExtensionSettingsInterface
 import expo.interfaces.devmenu.DevMenuManagerInterface
 import expo.interfaces.devmenu.DevMenuSettingsInterface
 import expo.interfaces.devmenu.items.DevMenuAction
@@ -25,6 +27,7 @@ import expo.interfaces.devmenu.items.DevMenuScreen
 import expo.interfaces.devmenu.items.DevMenuScreenItem
 import expo.interfaces.devmenu.items.KeyCommand
 import expo.interfaces.devmenu.items.getItemsOfType
+import expo.modules.devmenu.api.DevMenuExpoApiClient
 import expo.modules.devmenu.detectors.ShakeDetector
 import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
 import expo.modules.devmenu.modules.DevMenuSettings
@@ -35,11 +38,13 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private var threeFingerLongPressDetector: ThreeFingerLongPressDetector? = null
   private var session: DevMenuSession? = null
   private var settings: DevMenuSettingsInterface? = null
-  private var delegate: DevMenuDelegateInterface? = null
+  internal var delegate: DevMenuDelegateInterface? = null
+  private var extensionSettings: DevMenuExtensionSettingsInterface = DevMenuDefaultExtensionSettings(this)
   private var shouldLaunchDevMenuOnStart: Boolean = false
   private lateinit var devMenuHost: DevMenuHost
   private var currentReactInstanceManager: WeakReference<ReactInstanceManager?> = WeakReference(null)
   private var currentScreenName: String? = null
+  private val expoApiClient = DevMenuExpoApiClient()
 
   //region helpers
 
@@ -76,7 +81,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   private val cachedDevMenuScreens by KeyValueCachedProperty<ReactInstanceManager, List<DevMenuScreen>> {
     delegateExtensions
-      .map { it.devMenuScreens() ?: emptyList() }
+      .map { it.devMenuScreens(extensionSettings) ?: emptyList() }
       .flatten()
   }
 
@@ -88,7 +93,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   private val cachedDevMenuItems by KeyValueCachedProperty<ReactInstanceManager, List<DevMenuItemsContainerInterface>> {
     delegateExtensions
-      .mapNotNull { it.devMenuItems() }
+      .mapNotNull { it.devMenuItems(extensionSettings) }
   }
 
   private val delegateMenuItemsContainers: List<DevMenuItemsContainerInterface>
@@ -316,6 +321,16 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       ?.run { action() }
   }
 
+  override fun sendEventToDelegateBridge(eventName: String, eventData: Any?) {
+    delegateReactContext
+      ?.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+      ?.emit(eventName, eventData)
+  }
+
+  override fun isInitialized(): Boolean {
+    return delegate !== null
+  }
+
   override fun serializedItems(): List<Bundle> = delegateRootMenuItems.map { it.serialize() }
 
   override fun serializedScreens(): List<Bundle> = delegateScreens.map { it.serialize() }
@@ -324,7 +339,9 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   override fun getSettings(): DevMenuSettingsInterface? = settings
 
-  override fun getMenuHost() = devMenuHost
+  override fun getMenuHost(): ReactNativeHost = devMenuHost
+
+  override fun getExpoApiClient(): DevMenuExpoApiClientInterface = expoApiClient
 
   override fun synchronizeDelegate() {
     val newReactInstanceManager = requireNotNull(delegate).reactInstanceManager()

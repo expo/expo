@@ -7,7 +7,7 @@ apply plugin: 'de.undercouch.download'
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 //maven repository info
 group = 'host.exp.exponent'
-version = '39.0.0'
+version = '41.0.0'
 
 
 //Upload android library to maven with javadoc and android sources
@@ -177,7 +177,7 @@ dependencies {
   api 'org.webkit:android-jsc:r245459' // needs to be before react-native
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  api 'com.facebook.react:react-native:39.0.0'
+  api 'com.facebook.react:react-native:41.0.0'
   addUnimodulesDependencies([
       modulesPaths : ['../../packages'],
       configuration: 'compileOnly',
@@ -212,6 +212,9 @@ dependencies {
   // Versioned react native
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+  // BEGIN_SDK_41
+  api 'host.exp:reactandroid-abi41_0_0:1.0.0'
+  // END_SDK_41
   // BEGIN_SDK_40
   api 'host.exp:reactandroid-abi40_0_0:1.0.0'
   // END_SDK_40
@@ -296,9 +299,9 @@ dependencies {
   api 'com.android.installreferrer:installreferrer:1.0'
 
   //dbflow
-  annotationProcessor "com.github.Raizlabs.DBFlow:dbflow-processor:${safeExtGet('dbFlowVersion', '4.2.4')}"
-  api "com.github.Raizlabs.DBFlow:dbflow-core:${safeExtGet('dbFlowVersion', '4.2.4')}"
-  api "com.github.Raizlabs.DBFlow:dbflow:${safeExtGet('dbFlowVersion', '4.2.4')}"
+  annotationProcessor "com.github.agrosner.DBFlow:dbflow-processor:${safeExtGet('dbFlowVersion', '4.2.4')}"
+  api "com.github.agrosner.DBFlow:dbflow-core:${safeExtGet('dbFlowVersion', '4.2.4')}"
+  api "com.github.agrosner.DBFlow:dbflow:${safeExtGet('dbFlowVersion', '4.2.4')}"
 
   implementation 'com.cronutils:cron-utils:4.1.3'
 

@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+## 4.0.1 — 2021-03-30
+
+### 🐛 Bug fixes
+
+- Make expo-firebase-analytics work with firebase 8.x.x. ([#12297](https://github.com/expo/expo/pull/12297) by [@fson](https://github.com/fson))
+
 ## 4.0.0 — 2021-03-10
 
 ### 📚 native library updates

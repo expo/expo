@@ -1,9 +1,9 @@
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system';
-import * as Progress from 'expo-progress';
+// import * as Progress from 'expo-progress';
 import React from 'react';
-import { Alert, ScrollView, StyleSheet, Platform } from 'react-native';
+import { Alert, ScrollView, Text, Platform } from 'react-native';
 
 import HeadingText from '../components/HeadingText';
 import ListButton from '../components/ListButton';
@@ -261,10 +261,16 @@ export default class FileSystemScreen extends React.Component<{}, State> {
       <ScrollView style={{ padding: 10 }}>
         <ListButton onPress={this._download} title="Download file (512KB)" />
         <ListButton onPress={this._startDownloading} title="Start Downloading file (5MB)" />
+        {this.state.downloadProgress ? (
+          <Text style={{ paddingVertical: 15 }}>
+            Download progress: {this.state.downloadProgress * 100}%
+          </Text>
+        ) : null}
+        {/* Add back progress bar once deprecation warnings from reanimated 2 are resolved */}
+        {/* <Progress.Bar style={styles.progress} isAnimated progress={this.state.downloadProgress} /> */}
         <ListButton onPress={this._pause} title="Pause Download" />
         <ListButton onPress={this._resume} title="Resume Download" />
         <ListButton onPress={this._getInfo} title="Get Info" />
-        <Progress.Bar style={styles.progress} isAnimated progress={this.state.downloadProgress} />
         <ListButton onPress={this._readAsset} title="Read Asset" />
         <ListButton onPress={this._getInfoAsset} title="Get Info Asset" />
         <ListButton onPress={this._copyAndReadAsset} title="Copy and Read Asset" />
@@ -310,10 +316,3 @@ export default class FileSystemScreen extends React.Component<{}, State> {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  progress: {
-    marginHorizontal: 10,
-    marginVertical: 32,
-  },
-});

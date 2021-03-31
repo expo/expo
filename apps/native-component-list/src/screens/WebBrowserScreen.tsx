@@ -139,7 +139,10 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
       readerMode: this.state.readerMode,
       enableDefaultShareMenuItem: this.state.enableDefaultShare,
     };
-    const result = await WebBrowser.openBrowserAsync('https://expo.io', args);
+    const result = await WebBrowser.openBrowserAsync(
+      'https://blog.expo.io/expo-sdk-40-is-now-available-d4d73e67da33',
+      args
+    );
     setTimeout(() => Alert.alert('Result', JSON.stringify(result, null, 2)), 1000);
   };
 

@@ -6,11 +6,10 @@ import {
   Octicons,
 } from '@expo/vector-icons';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import { Camera, BarCodeScanningResult } from 'expo-camera';
+import { Camera, BarCodeScanningResult, PermissionStatus } from 'expo-camera';
 import { AutoFocus, CameraType, FlashMode, WhiteBalance } from 'expo-camera/build/Camera.types';
 import Constants from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
-import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { Alert, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { isIphoneX } from 'react-native-iphone-x-helper';
@@ -78,7 +77,7 @@ interface State {
   faces: any[];
   newPhotos: boolean;
   permissionsGranted: boolean;
-  permission?: Permissions.PermissionStatus;
+  permission?: PermissionStatus;
   pictureSize?: any;
   pictureSizes: any[];
   pictureSizeId: number;
@@ -115,7 +114,7 @@ export default class CameraScreen extends React.Component<{}, State> {
     if (Platform.OS !== 'web') {
       this.ensureDirectoryExistsAsync();
     }
-    Permissions.askAsync(Permissions.CAMERA).then(({ status }) => {
+    Camera.requestPermissionsAsync().then(({ status }) => {
       this.setState({ permission: status, permissionsGranted: status === 'granted' });
     });
   }

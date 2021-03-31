@@ -1,23 +1,22 @@
 // tslint:disable max-classes-per-file
 import { Ionicons } from '@expo/vector-icons';
-import { usePermissions } from '@use-expo/permissions';
 import * as Contacts from 'expo-contacts';
 import * as ImagePicker from 'expo-image-picker';
 import * as Linking from 'expo-linking';
-import * as Permissions from 'expo-permissions';
 import * as React from 'react';
 import { Platform, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import HeaderIconButton, { HeaderContainerRight } from '../../components/HeaderIconButton';
 import Colors from '../../constants/Colors';
+import usePermissions from '../../utilities/usePermissions';
 import ContactDetailList, { DetailListItem } from './ContactDetailList';
 import * as ContactUtils from './ContactUtils';
 import ContactsAvatar from './ContactsAvatar';
 
 const isIos = Platform.OS === 'ios';
 
-async function getPermissionAsync(permission: Permissions.PermissionType) {
-  const { status } = await Permissions.askAsync(permission);
+async function getPermissionAsync() {
+  const { status } = await ImagePicker.getMediaLibraryPermissionsAsync();
   if (status !== 'granted') {
     Linking.openSettings();
     return false;
@@ -26,7 +25,7 @@ async function getPermissionAsync(permission: Permissions.PermissionType) {
 }
 
 export default function ContactDetailScreen(props: any) {
-  const [permission] = usePermissions(Permissions.CONTACTS, { ask: true });
+  const [permission] = usePermissions(Contacts.requestPermissionsAsync);
 
   if (!permission) {
     return (
@@ -250,7 +249,7 @@ function ContactDetailView({
   };
 
   const _selectPhoto = async () => {
-    const permission = await getPermissionAsync(Permissions.MEDIA_LIBRARY);
+    const permission = await getPermissionAsync();
     if (!permission) {
       return;
     }

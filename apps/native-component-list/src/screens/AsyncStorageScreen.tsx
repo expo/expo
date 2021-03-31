@@ -1,6 +1,7 @@
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Updates from 'expo-updates';
 import * as React from 'react';
-import { Button, DevSettings, StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, View } from 'react-native';
 
 import { Page, Section } from '../components/Page';
 
@@ -38,7 +39,7 @@ function PersistExample() {
       <Button title="Increment by 10" onPress={increment} />
       <Button title="Reset" onPress={clearItem} />
 
-      {needsRestart ? <Button onPress={() => DevSettings.reload()} title="Reload App" /> : null}
+      {needsRestart ? <Button onPress={() => Updates.reloadAsync()} title="Reload App" /> : null}
     </View>
   );
 }

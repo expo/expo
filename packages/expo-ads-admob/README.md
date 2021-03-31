@@ -36,8 +36,10 @@ Add `NSUserTrackingUsageDescription` key to your `Info.plist`:
 
 ```xml
 <key>NSUserTrackingUsageDescription</key>
-<string>Allow $(PRODUCT_NAME) to use data for tracking the user or the device</string>
+<string>This identifier will be used to deliver personalized ads to you.</string>
 ```
+
+Add the required `SKAdNetworkIdentifier` items to your `Info.plist`: [Google SKAdNetwork](https://developers.google.com/admob/ios/ios14#skadnetwork).
 
 ### Configure for Android
 

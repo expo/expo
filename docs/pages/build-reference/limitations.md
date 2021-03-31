@@ -32,19 +32,11 @@ This means you can't use automatically managed credentials if your project has m
 <details><summary><h4>Limited dependency caching.</h4></summary>
 <p>
 
-Build jobs on Android install npm and Maven dependencies from a local cache, but there is no caching of npm or CocoaPods packages on iOS yet.
+Build jobs for Android install npm and Maven dependencies from a local cache. Build jobs for iOS install npm dependencies from a local cache, but there is no caching for CocoaPods yet.
 
 Intermediate artifacts like `node_modules` directories are not cached and restored (eg: based on `yarn.lock` or `package-lock.json`), but if you commit them to your git repository then they will be uploaded to build servers.
 
 [Learn more about dependendy caching](./caching.md).
-
-</p>
-</details>
-
-<details id="environment-variables"><summary><h4>Providing secrets through environment variables is not yet supported.</h4></summary>
-<p>
-
-You can use the `env` key on build profiles in `eas.json` to provide plaintext environment variables to the build environment, you can read more in the [environment variables guide](variables.md). We are currently working on an encrypted secrets store that will allow you to selectively and securely make them secrets available to your build jobs, but it's not available for usage yet.
 
 </p>
 </details>

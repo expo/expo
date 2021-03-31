@@ -406,7 +406,7 @@ try {
   - `canRecord` : a boolean set to `true`.
   - `isRecording` : a boolean describing if the `Recording` is currently recording.
   - `durationMillis` : the current duration of the recorded audio.
-  - `metering` : a number that's the most recent reading of the loudness in dB. Present or not based on Recording options. See `RecordingOptions` for more information.
+  - `metering` : a number that's the most recent reading of the loudness in dB. The value ranges from –160 dBFS, indicating minimum power, to 0 dBFS, indicating maximum power. Present or not based on Recording options. See `RecordingOptions` for more information.
 
   After `stopAndUnloadAsync()` is called, the `status` will be as follows:
 
@@ -727,7 +727,7 @@ export const RECORDING_OPTIONS_PRESET_HIGH_QUALITY: RecordingOptions = {
 };
 
 export const RECORDING_OPTIONS_PRESET_LOW_QUALITY: RecordingOptions = {
-  isMeteringEnabled: false,
+  isMeteringEnabled: true,
   android: {
     extension: '.3gp',
     outputFormat: RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_THREE_GPP,

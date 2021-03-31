@@ -19,11 +19,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import host.exp.exponent.ExponentManifest;
 import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule;
 import versioned.host.exp.exponent.modules.internal.ExponentIntentModule;
 import versioned.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorageModule;
 
+import static host.exp.exponent.kernel.KernelConstants.INTENT_URI_KEY;
 import static host.exp.exponent.kernel.KernelConstants.IS_HEADLESS_KEY;
 import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;
 
@@ -45,10 +48,13 @@ public class ExpoTurboPackage extends TurboReactPackage {
     mManifest = manifest;
   }
 
-  public static ExpoTurboPackage kernelExpoTurboPackage(JSONObject manifest) {
+  public static ExpoTurboPackage kernelExpoTurboPackage(JSONObject manifest, @Nullable String initialURL) {
     Map<String, Object> kernelExperienceProperties = new HashMap<>();
     kernelExperienceProperties.put(LINKING_URI_KEY, "exp://");
     kernelExperienceProperties.put(IS_HEADLESS_KEY, false);
+    if (initialURL != null) {
+      kernelExperienceProperties.put(INTENT_URI_KEY, initialURL);
+    }
     return new ExpoTurboPackage(kernelExperienceProperties, manifest);
   }
 

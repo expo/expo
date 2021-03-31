@@ -53,10 +53,6 @@ class AppDelegate: UMAppDelegateWrapper {
       window?.rootViewController = rootViewController
       window?.makeKeyAndVisible()
       self.bridge = bridge
-
-      #if EX_DEV_MENU_ENABLED
-      DevMenuManager.configure(withBridge: bridge)
-      #endif
       return bridge;
     }
     return nil;

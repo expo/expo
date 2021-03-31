@@ -16,8 +16,8 @@
 		B5693E911FABD46800307FA4 /* launch_background_image.png in Resources */ = {isa = PBXBuildFile; fileRef = B5693E8F1FABD46800307FA4 /* launch_background_image.png */; };
 		B5693E921FABD46800307FA4 /* launch_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = B5693E901FABD46800307FA4 /* launch_icon.png */; };
 		B5CFBF4F1EDE419400B4BE24 /* EXBuildConstants.plist in Resources */ = {isa = PBXBuildFile; fileRef = B5CFBF4E1EDE419400B4BE24 /* EXBuildConstants.plist */; };
-		B5DB04801F3A684600E91581 /* shell-app-manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = B5DB047E1F3A684600E91581 /* shell-app-manifest.json */; };
-		B5DB04811F3A684600E91581 /* shell-app.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B5DB047F1F3A684600E91581 /* shell-app.bundle */; };
+		B5DB04801F3A684600E91581 /* app.manifest in Resources */ = {isa = PBXBuildFile; fileRef = B5DB047E1F3A684600E91581 /* app.manifest */; };
+		B5DB04811F3A684600E91581 /* app.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B5DB047F1F3A684600E91581 /* app.bundle */; };
 		EBB8117C1BFA0514F79CAF74 /* libPods-exponent-view-template.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C4A88D15726AD99E8A257BC7 /* libPods-exponent-view-template.a */; };
 		F1107ED325E3D66200B93714 /* SwiftEnabler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1107ED225E3D66200B93714 /* SwiftEnabler.swift */; };
 /* End PBXBuildFile section */
@@ -37,8 +37,8 @@
 		B5693E8F1FABD46800307FA4 /* launch_background_image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = launch_background_image.png; sourceTree = "<group>"; };
 		B5693E901FABD46800307FA4 /* launch_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = launch_icon.png; sourceTree = "<group>"; };
 		B5CFBF4E1EDE419400B4BE24 /* EXBuildConstants.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = EXBuildConstants.plist; sourceTree = "<group>"; };
-		B5DB047E1F3A684600E91581 /* shell-app-manifest.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "shell-app-manifest.json"; sourceTree = "<group>"; };
-		B5DB047F1F3A684600E91581 /* shell-app.bundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "shell-app.bundle"; sourceTree = "<group>"; };
+		B5DB047E1F3A684600E91581 /* app.manifest */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = app.manifest; sourceTree = "<group>"; };
+		B5DB047F1F3A684600E91581 /* app.bundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = app.bundle; sourceTree = "<group>"; };
 		C4A88D15726AD99E8A257BC7 /* libPods-exponent-view-template.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-exponent-view-template.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F1107ED225E3D66200B93714 /* SwiftEnabler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftEnabler.swift; sourceTree = "<group>"; };
 		F1107F6B25E3E72A00B93714 /* Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
@@ -112,8 +112,8 @@
 				B5693E8F1FABD46800307FA4 /* launch_background_image.png */,
 				B5693E901FABD46800307FA4 /* launch_icon.png */,
 				B5693E8D1FABD16A00307FA4 /* LaunchScreen.xib */,
-				B5DB047E1F3A684600E91581 /* shell-app-manifest.json */,
-				B5DB047F1F3A684600E91581 /* shell-app.bundle */,
+				B5DB047E1F3A684600E91581 /* app.manifest */,
+				B5DB047F1F3A684600E91581 /* app.bundle */,
 				B5CFBF4E1EDE419400B4BE24 /* EXBuildConstants.plist */,
 				B501732A1DC01252003445D9 /* EXShell.plist */,
 				B56386661DB9994300A0598C /* EXSDKVersions.plist */,
@@ -202,8 +202,8 @@
 				B56386671DB9994300A0598C /* EXSDKVersions.plist in Resources */,
 				B5693E921FABD46800307FA4 /* launch_icon.png in Resources */,
 				B5693E8E1FABD16A00307FA4 /* LaunchScreen.xib in Resources */,
-				B5DB04801F3A684600E91581 /* shell-app-manifest.json in Resources */,
-				B5DB04811F3A684600E91581 /* shell-app.bundle in Resources */,
+				B5DB04801F3A684600E91581 /* app.manifest in Resources */,
+				B5DB04811F3A684600E91581 /* app.bundle in Resources */,
 				B56386511DB9693800A0598C /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -395,6 +395,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = C8D8QTF339;
+				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = "$(SRCROOT)/exponent-view-template/Supporting/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.getexponent.exponent-view-template";
@@ -413,6 +414,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = C8D8QTF339;
+				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = "$(SRCROOT)/exponent-view-template/Supporting/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.getexponent.exponent-view-template";

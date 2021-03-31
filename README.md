@@ -8,21 +8,21 @@
 </p>
 
 <p align="center">
- 
    <a aria-label="SDK version" href="https://www.npmjs.com/package/expo" target="_blank">
-    <img alt="Expo SDK version" src="https://img.shields.io/npm/v/expo.svg?style=flat-square&label=SDK&labelColor=000000&color=4630EB">
+    <img alt="Expo SDK version" src="https://img.shields.io/npm/v/expo.svg?style=flat-square&label=SDK&labelColor=000000&color=4630EB" />
   </a>
-    
   <a aria-label="Join our forums" href="https://forums.expo.io" target="_blank">
-    <img alt="" src="https://img.shields.io/badge/Ask%20Questions%20-blue.svg?style=flat-square&logo=discourse&logoWidth=15&labelColor=000000&color=4630EB">
+    <img alt="Forums" src="https://img.shields.io/badge/Ask%20Questions%20-blue.svg?style=flat-square&logo=discourse&logoWidth=15&labelColor=000000&color=4630EB" />
+  </a>
+  <a aria-label="Join our Discord" href="https://discord.gg/4gtbPAdpaE" target="_blank">
+    <img alt="Discord" src="https://img.shields.io/discord/695411232856997968.svg?style=flat-square&labelColor=000000&color=4630EB&logo=discord&logoColor=FFFFFF&label=" />
   </a>
   <a aria-label="Expo is free to use" href="https://github.com/expo/expo/blob/master/LICENSE" target="_blank">
     <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-success.svg?style=flat-square&color=33CC12" target="_blank" />
   </a>
-<a aria-label="expo downloads" href="http://www.npmtrends.com/expo" target="_blank">
+  <a aria-label="expo downloads" href="http://www.npmtrends.com/expo" target="_blank">
     <img alt="Downloads" src="https://img.shields.io/npm/dm/expo.svg?style=flat-square&labelColor=gray&color=33CC12&label=Downloads" />
-</a>
-  
+  </a>
 </p>
 
 <p align="center">

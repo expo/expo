@@ -237,7 +237,7 @@ function ProfileHeader({ data }: Pick<Props, 'data'>) {
 
 function ProfileProjectsSection({
   data: {
-    user: { apps, appCount, ...user },
+    user: { apps, appCount },
   },
   isOwnProfile,
   navigation,
@@ -250,8 +250,6 @@ function ProfileProjectsSection({
     });
   };
 
-  const currentUsername = username || user.username;
-
   const renderApp = (app: any, i: number) => {
     return (
       <ProjectListItem
@@ -262,7 +260,7 @@ function ProfileProjectsSection({
         title={app.name}
         sdkVersion={app.sdkVersion}
         subtitle={app.packageName || app.fullName}
-        experienceInfo={{ username: app.username || currentUsername, slug: app.packageName }}
+        experienceInfo={{ username: app.username, slug: app.packageName }}
       />
     );
   };

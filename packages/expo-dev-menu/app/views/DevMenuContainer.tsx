@@ -84,9 +84,11 @@ export default class DevMenuContainer extends React.PureComponent<Props, any> {
     });
 
     const tryRestoreSession = async () => {
-      const session = await LocalStorage.getSessionAsync();
+      const session = await DevMenuInternal.restoreSessionAsync();
       if (session) {
-        await this.setSession(session);
+        try {
+          await this.setSession(session);
+        } catch (ignore) {}
       }
     };
 
@@ -138,7 +140,7 @@ export default class DevMenuContainer extends React.PureComponent<Props, any> {
 
   setSession = async session => {
     setApolloSession(session);
-    await LocalStorage.saveSessionAsync(session);
+    await DevMenuInternal.setSessionAsync(session);
 
     this.setState({ isAuthenticated: session !== null });
     if (!session) {

@@ -20,6 +20,10 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
   }
   
   private static var fontsWereLoaded = false;
+  private static let sessionKey = "expo-dev-menu.session"
+  private static let userLoginEvent = "expo.dev-menu.user-login"
+  private static let userLogoutEvent = "expo.dev-menu.user-logout"
+  private static let defaultScheme = "expo-dev-menu"
 
   let manager: DevMenuManager
 
@@ -135,13 +139,45 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
   }
   
   @objc
-  func saveAsync(_ key: String, data: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    UserDefaults.standard.set(data, forKey: key)
-    resolve(nil)
+  func setSessionAsync(_ session: Dictionary<String, Any>?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    do {
+      try manager.expoSessionDelegate.setSessionAsync(session)
+      resolve(nil)
+    } catch let error {
+      reject("ERR_DEVMENU_CANNOT_SAVE_SESSION", error.localizedDescription, error);
+    }
   }
   
   @objc
-  func getAsync(_ key: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    resolve(UserDefaults.standard.string(forKey: key))
+  func restoreSessionAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    resolve(manager.expoSessionDelegate.restoreSession())
+  }
+  
+  @objc
+  func getAuthSchemeAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    guard let urlTypesArray = Bundle.main.infoDictionary?["CFBundleURLTypes"] as? [NSDictionary] else {
+      resolve(DevMenuInternalModule.defaultScheme)
+      return
+    }
+        
+    if (urlTypesArray
+          .contains(where: { ($0["CFBundleURLSchemes"] as? [String] ?? [])
+                      .contains(DevMenuInternalModule.defaultScheme) })) {
+      resolve(DevMenuInternalModule.defaultScheme)
+      return
+    }
+    
+    for urlType in urlTypesArray {
+      guard let schemes = urlType["CFBundleURLSchemes"] as? [String] else {
+        continue
+      }
+      
+      if schemes.first != nil {
+        resolve(schemes.first)
+        return
+      }
+    }
+    
+    resolve(DevMenuInternalModule.defaultScheme)
   }
 }

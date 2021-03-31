@@ -24,7 +24,7 @@ const PublicAppsQuery = gql`
         name
         iconUrl
         packageName
-        packageUsername
+        username
         description
         lastPublishedTime
         sdkVersion

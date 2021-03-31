@@ -137,6 +137,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
                                            initialProperties:[self initialPropertiesForRootView]];
     }
 
+    [self setupWebSocketControls];
     [_delegate reactAppManagerIsReadyForLoad:self];
     
     NSAssert([_reactBridge isLoading], @"React bridge should be loading once initialized");
@@ -624,6 +625,68 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   if ([self enablesDeveloperTools]) {
     [self.versionManager toggleElementInspectorForBridge:self.reactBridge];
   }
+}
+
+- (void)toggleDevMenu
+{
+  if ([EXEnvironment sharedEnvironment].isDetached) {
+    [[EXKernel sharedInstance].visibleApp.appManager showDevMenu];
+  } else {
+    [[EXKernel sharedInstance] switchTasks];
+  }
+}
+
+- (void)setupWebSocketControls
+{
+#if DEBUG || RCT_DEV
+  if ([self enablesDeveloperTools]) {
+    if ([_versionManager respondsToSelector:@selector(addWebSocketNotificationHandler:queue:forMethod:)]) {
+      __weak typeof(self) weakSelf = self;
+
+      // Attach listeners to the bundler's dev server web socket connection.
+      // This enables tools to automatically reload the client remotely (i.e. in expo-cli).
+
+      // Enable a lot of tools under the same command namespace
+      [_versionManager addWebSocketNotificationHandler:^(id params) {
+        if (params != [NSNull null] && (NSDictionary *)params) {
+          NSDictionary *_params = (NSDictionary *)params;
+          if (_params[@"name"] != nil && (NSString *)_params[@"name"]) {
+            NSString *name = _params[@"name"];
+            if ([name isEqualToString:@"reload"]) {
+              [[EXKernel sharedInstance] reloadVisibleApp];
+            } else if ([name isEqualToString:@"toggleDevMenu"]) {
+              [weakSelf toggleDevMenu];
+            } else if ([name isEqualToString:@"toggleRemoteDebugging"]) {
+              [weakSelf toggleRemoteDebugging];
+            } else if ([name isEqualToString:@"toggleElementInspector"]) {
+              [weakSelf toggleElementInspector];
+            } else if ([name isEqualToString:@"togglePerformanceMonitor"]) {
+              [weakSelf togglePerformanceMonitor];
+            }
+          }
+        }
+      }
+                                                 queue:dispatch_get_main_queue()
+                                             forMethod:@"sendDevCommand"];
+
+      // These (reload and devMenu) are here to match RN dev tooling.
+
+      // Reload the app on "reload"
+      [_versionManager addWebSocketNotificationHandler:^(id params) {
+        [[EXKernel sharedInstance] reloadVisibleApp];
+      }
+                                                 queue:dispatch_get_main_queue()
+                                             forMethod:@"reload"];
+
+      // Open the dev menu on "devMenu"
+      [_versionManager addWebSocketNotificationHandler:^(id params) {
+        [weakSelf toggleDevMenu];
+      }
+                                                 queue:dispatch_get_main_queue()
+                                             forMethod:@"devMenu"];
+    }
+  }
+#endif
 }
 
 - (NSDictionary<NSString *, NSString *> *)devMenuItems

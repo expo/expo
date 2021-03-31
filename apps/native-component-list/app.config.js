@@ -1,8 +1,8 @@
 export default ({ config }) => {
-  config.version = '40.0.0';
+  config.version = '41.0.0';
   // app.json defines the sdkVersion as UNVERSIONED, we can override it here dynamically if we need to,
   // for example with an environment variable.
-  // config.sdkVersion = '40.0.0';
+  // config.sdkVersion = '41.0.0';
   config.plugins = [
     // iOS plugins
     // Add a plugin to modify the AppDelegate.
@@ -36,6 +36,11 @@ export default ({ config }) => {
     ],
   ];
 
+  // NOTE(brentvatne):
+  // This adds an ios.scheme property to manifest, which does not validate
+  // against our schema but works with config plugins. Comment this plugin
+  // out if you need to publish.
+  //
   config.plugins.push([
     'expo-payments-stripe',
     {
@@ -43,6 +48,7 @@ export default ({ config }) => {
       merchantId: 'merchant.com.example.development',
     },
   ]);
+
   config.plugins.push([
     'expo-document-picker',
     {

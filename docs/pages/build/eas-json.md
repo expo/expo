@@ -72,7 +72,7 @@ The schema of a build profile for a generic Android project looks like this:
   "yarn": string,
   "ndk": string,
   "env": Record<string, string> // default: {}
-  "cache": null || {
+  "cache": null | {
     "key": string // default: ""
     "customPaths": string[] // default: []
   }
@@ -142,7 +142,7 @@ The schema of a build profile for a managed Android project looks like this:
   "yarn": string,
   "ndk": string,
   "env": Record<string, string> // default: {}
-  "cache": null || {
+  "cache": null | {
     "key": string // default: ""
     "customPaths": string[] // default: []
   }
@@ -201,10 +201,11 @@ The schema of a build profile for a generic iOS project looks like this:
   "image": string, // default: "default"
   "node": string,
   "yarn": string,
+  "bundler": string,
   "fastlane": string,
   "cocoapods": string,
   "env": Record<string, string> // default: {}
-  "cache": null || {
+  "cache": null | {
     "key": string // default: ""
     "cacheDefaultPaths": boolean // default: true
     "customPaths": string[] // default: []
@@ -224,6 +225,7 @@ The schema of a build profile for a generic iOS project looks like this:
 - `image` - image with build environment. [Learn more about it here](../build-reference/infrastructure).
 - `node` - version of Node.js
 - `yarn` - version of Yarn
+- `bundler` - version of [bundler](https://bundler.io/)
 - `fastlane` - version of fastlane
 - `cocoapods` - version of CocoaPods
 - `env` - environment variables that should be set during the build process (should only be used for values that you would commit to your git repository, i.e: not passwords or secrets).
@@ -265,10 +267,11 @@ The schema of a build profile for a managed iOS project looks like this:
   "image": string, // default: "default"
   "node": string,
   "yarn": string,
+  "bundler": string,
   "fastlane": string,
   "cocoapods": string,
   "env": Record<string, string> // default: {}
-  "cache": null || {
+  "cache": null | {
     "key": string // default: ""
     "cacheDefaultPaths": boolean // default: true
     "customPaths": string[] // default: []
@@ -285,6 +288,7 @@ The schema of a build profile for a managed iOS project looks like this:
 - `image` - image with build environment. [Learn more about it here](../build-reference/infrastructure).
 - `node` - version of Node.js
 - `yarn` - version of Yarn
+- `bundler` - version of [bundler](https://bundler.io/)
 - `fastlane` - version of fastlane
 - `cocoapods` - version of CocoaPods
 - `env` - environment variables that should be set during the build process (should only be used for values that you would commit to your git repository, i.e: not passwords or secrets).

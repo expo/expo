@@ -283,7 +283,7 @@ export async function canOpenURL(url) {
 /**
  * Returns the initial URL followed by any subsequent changes to the URL.
  */
-export function useUrl() {
+export function useURL() {
     const [url, setLink] = useState(null);
     function onChange(event) {
         setLink(event.url);
@@ -294,6 +294,14 @@ export function useUrl() {
         return () => removeEventListener('url', onChange);
     }, []);
     return url;
+}
+/**
+ * Returns the initial URL followed by any subsequent changes to the URL.
+ * @deprecated Use `useURL` instead.
+ */
+export function useUrl() {
+    console.warn(`Linking.useUrl has been deprecated in favor of Linking.useURL. This API will be removed in SDK 44.`);
+    return useURL();
 }
 export * from './Linking.types';
 //# sourceMappingURL=Linking.js.map

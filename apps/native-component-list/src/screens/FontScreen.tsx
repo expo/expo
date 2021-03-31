@@ -26,7 +26,7 @@ export default class FontScreen extends React.Component {
           <MaterialIcons name="all-inclusive" size={25} />
         </View>
 
-        <View style={{ paddingVertical: 10, paddingHorizontal: 15 }}>
+        <View style={{ paddingVertical: 10, paddingHorizontal: 15, flex: 1 }}>
           <Text style={{ fontFamily: 'space-mono', fontSize: 16 }}>
             Font icons sets and other custom fonts can be loaded from the web
           </Text>
@@ -36,9 +36,8 @@ export default class FontScreen extends React.Component {
           {Platform.OS === 'ios' && (
             <Text
               adjustsFontSizeToFit
+              numberOfLines={2}
               style={{
-                flex: 1,
-                height: 32,
                 fontFamily: 'space-mono',
                 fontSize: 420,
               }}>
@@ -48,9 +47,8 @@ export default class FontScreen extends React.Component {
           {Platform.OS === 'ios' && (
             <Text
               adjustsFontSizeToFit
+              numberOfLines={1}
               style={{
-                flex: 1,
-                height: 32,
                 fontFamily: 'Roboto',
                 fontSize: 420,
               }}>

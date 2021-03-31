@@ -1,4 +1,4 @@
-import { DeviceEventEmitter, NativeModules, EventSubscription } from 'react-native';
+import { DeviceEventEmitter, NativeModules, EventSubscription, Platform } from 'react-native';
 
 const DevMenu = NativeModules.ExpoDevMenuInternal;
 
@@ -133,10 +133,30 @@ export async function onScreenChangeAsync(currentScreen: string | null): Promise
   return await DevMenu.onScreenChangeAsync(currentScreen);
 }
 
-export async function saveAsync(key: string, data: string): Promise<void> {
-  return await DevMenu.saveAsync(key, data);
+export async function setSessionAsync(
+  session: { [key: string]: any; sessionSecret: string } | null
+): Promise<void> {
+  return await DevMenu.setSessionAsync(session);
 }
 
-export async function getAsync(key: string): Promise<string | null> {
-  return await DevMenu.getAsync(key);
+export async function restoreSessionAsync(): Promise<{
+  [key: string]: any;
+  sessionSecret: string;
+}> {
+  if (Platform.OS === 'android') {
+    try {
+      return JSON.parse(await DevMenu.restoreSessionAsync());
+    } catch (exception) {
+      return null;
+    }
+  }
+  return await DevMenu.restoreSessionAsync();
+}
+
+export async function getAuthSchemeAsync(): Promise<string> {
+  if (Platform.OS === 'android') {
+    return 'expo-dev-menu';
+  }
+
+  return await DevMenu.getAuthSchemeAsync();
 }

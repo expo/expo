@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
@@ -69,6 +71,7 @@ import versioned.host.exp.exponent.modules.universal.ScopedModuleRegistryAdapter
 // This is an Expo module but not a unimodule
 import expo.modules.random.RandomModule;
 
+import static host.exp.exponent.kernel.KernelConstants.INTENT_URI_KEY;
 import static host.exp.exponent.kernel.KernelConstants.IS_HEADLESS_KEY;
 import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;
 
@@ -115,11 +118,14 @@ public class ExponentPackage implements ReactPackage {
   }
 
 
-  public static ExponentPackage kernelExponentPackage(Context context, JSONObject manifest, List<Package> expoPackages) {
+  public static ExponentPackage kernelExponentPackage(Context context, JSONObject manifest, List<Package> expoPackages, @Nullable String initialURL) {
     Map<String, Object> kernelExperienceProperties = new HashMap<>();
     List<SingletonModule> singletonModules = ExponentPackage.getOrCreateSingletonModules(context, manifest, expoPackages);
     kernelExperienceProperties.put(LINKING_URI_KEY, "exp://");
     kernelExperienceProperties.put(IS_HEADLESS_KEY, false);
+    if (initialURL != null) {
+      kernelExperienceProperties.put(INTENT_URI_KEY, initialURL);
+    }
     return new ExponentPackage(true, kernelExperienceProperties, manifest, expoPackages, singletonModules);
   }
 

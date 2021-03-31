@@ -24,8 +24,8 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 143
-    versionName '2.18.7'
+    versionCode 144
+    versionName '2.18.8'
     // END VERSIONS
 
     multiDexEnabled true
@@ -157,7 +157,7 @@ dependencies {
   testImplementation 'org.mockito:mockito-core:1.10.19'
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  implementation('host.exp.exponent:expoview:39.0.0@aar') {
+  implementation('host.exp.exponent:expoview:41.0.0@aar') {
     transitive = true
     exclude group: 'com.squareup.okhttp3', module: 'okhttp'
     exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
@@ -175,6 +175,11 @@ dependencies {
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
 
   // ADD_NEW_SDKS_HERE
+
+
+  // BEGIN_SDK_41
+  implementation(project(':expoview-abi41_0_0'))
+  // END_SDK_41
 
 
   // BEGIN_SDK_40

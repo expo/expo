@@ -42,7 +42,7 @@ const MyProjectsQuery = gql`
         iconUrl
         lastPublishedTime
         name
-        packageUsername
+        username
         packageName
         privacy
         sdkVersion
@@ -139,7 +139,7 @@ const OtherProjectsQuery = gql`
           name
           iconUrl
           packageName
-          packageUsername
+          username
           description
           lastPublishedTime
           sdkVersion

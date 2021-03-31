@@ -9,6 +9,7 @@ import android.app.RemoteInput;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -39,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
@@ -169,6 +171,29 @@ public class Kernel extends KernelInterface {
     ReactNativeStaticHelpers.setExponentNetwork(mExponentNetwork);
   }
 
+  @Nullable
+  private String getKernelInitialURL() {
+    Activity activity = getActivityContext();
+    if (activity == null) {
+      return null;
+    }
+
+    Intent intent = activity.getIntent();
+    if (intent == null) {
+      return null;
+    }
+
+    String action = intent.getAction();
+    Uri uri = intent.getData();
+
+    if (uri != null
+      && (Intent.ACTION_VIEW.equals(action) || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action))) {
+      return uri.toString();
+    }
+
+    return null;
+  }
+
   // Don't call this until a loading screen is up, since it has to do some work on the main thread.
   public void startJSKernel(Activity activity) {
     if (Constants.isStandaloneApp()) {
@@ -264,16 +289,17 @@ public class Kernel extends KernelInterface {
         Exponent.getInstance().runOnUiThread(new Runnable() {
           @Override
           public void run() {
+            String initialURL = getKernelInitialURL();
 
             ReactInstanceManagerBuilder builder = ReactInstanceManager.builder()
-                .setApplication(mApplicationContext)
-                .setCurrentActivity(getActivityContext())
-                .setJSBundleFile(localBundlePath)
-                .addPackage(new MainReactPackage())
-                .addPackage(ExponentPackage.kernelExponentPackage(mContext, mExponentManifest.getKernelManifest(), HomeActivity.homeExpoPackages()))
-                .addPackage(ExpoTurboPackage.kernelExpoTurboPackage(mExponentManifest.getKernelManifest()))
-                .setJSIModulesPackage((reactApplicationContext, jsContext) -> new ReanimatedJSIModulePackage().getJSIModules(reactApplicationContext, jsContext))
-                .setInitialLifecycleState(LifecycleState.RESUMED);
+              .setApplication(mApplicationContext)
+              .setCurrentActivity(getActivityContext())
+              .setJSBundleFile(localBundlePath)
+              .addPackage(new MainReactPackage())
+              .addPackage(ExponentPackage.kernelExponentPackage(mContext, mExponentManifest.getKernelManifest(), HomeActivity.homeExpoPackages(), initialURL))
+              .addPackage(ExpoTurboPackage.kernelExpoTurboPackage(mExponentManifest.getKernelManifest(), initialURL))
+              .setJSIModulesPackage((reactApplicationContext, jsContext) -> new ReanimatedJSIModulePackage().getJSIModules(reactApplicationContext, jsContext))
+              .setInitialLifecycleState(LifecycleState.RESUMED);
 
             if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE && mExponentManifest.isDebugModeEnabled(mExponentManifest.getKernelManifest())) {
               Exponent.enableDeveloperSupport("UNVERSIONED", mExponentManifest.getKernelManifestField(ExponentManifest.MANIFEST_DEBUGGER_HOST_KEY),
