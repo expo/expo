@@ -281,10 +281,14 @@ export class Package {
       );
     }
     if (platform === 'ios') {
-      return fs
-        .readFileSync(path.join(this.path, this.iosSubdirectory, `${this.podspecName}.podspec`))
-        .toString()
-        .includes('test_spec');
+      return (
+        this.isSupportedOnPlatform(platform) &&
+        !!this.podspecName &&
+        fs
+          .readFileSync(path.join(this.path, this.iosSubdirectory, `${this.podspecName}.podspec`))
+          .toString()
+          .includes('test_spec')
+      );
     }
     // TODO(tsapeta): Support web.
     throw new Error(`"hasNativeTestsAsync" for platform "${platform}" is not implemented yet.`);

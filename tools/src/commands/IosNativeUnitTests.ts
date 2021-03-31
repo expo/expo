@@ -10,14 +10,9 @@ export async function iosNativeUnitTests() {
   let packagesTested: string[] = [];
   let errors: any[] = [];
   for (const pkg of packages) {
-    if (
-      !pkg.isSupportedOnPlatform('ios') ||
-      !(await pkg.hasNativeTestsAsync('ios')) ||
-      !pkg.podspecName
-    ) {
+    if (!(await pkg.hasNativeTestsAsync('ios'))) {
       continue;
     }
-    packagesTested.push(pkg.packageName);
 
     try {
       await spawnAsync('fastlane', ['prepare_schemes', `pod:${pkg.podspecName}`], {
@@ -56,6 +51,8 @@ export async function iosNativeUnitTests() {
         cwd: Directories.getExpoRepositoryRootDir(),
         stdio: 'inherit',
       });
+
+      packagesTested.push(pkg.packageName);
     } catch (error) {
       errors.push(error);
     }
