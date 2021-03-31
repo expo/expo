@@ -112,3 +112,7 @@ Finally, the push notification services from Apple, Google, etc... make a best e
 ### My notification icon on Android is a grey or white square
 
 This indicates an issue with the image asset you're providing. The image should be all white with a transparent background (this is required and enforced by Google, not Expo). [See here for more information](https://clevertap.com/blog/fixing-notification-icon-for-android-lollipop-and-above/).
+
+### I'm getting back an error message when I send a notification
+
+Check the `details` property of the returned push ticket or receipt for more information which you can use to debug further. [Read here for common error code responses and their associated solutions](/push-notifications/sending-notifications.md#errors).
