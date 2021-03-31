@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 6.2.1 — 2021-03-30
+
+_This version does not introduce any user-facing changes._
+
 ## 6.2.0 — 2021-03-10
 
 ### 🎉 New features

@@ -8,6 +8,13 @@
 
 ### 🐛 Bug fixes
 
+## 0.4.1 — 2021-03-30
+
+### 🐛 Bug fixes
+
+- Fix misspellings in READMEs. ([#12346](https://github.com/expo/expo/pull/12346) by [@wschurman](https://github.com/wschurman))
+- Fixed "Safari cannot open the page because the address is invalid" on iOS. ([#12319](https://github.com/expo/expo/pull/12319) by [@lukmccall](https://github.com/lukmccall))
+
 ## 0.4.0 — 2021-03-24
 
 ### 🎉 New features

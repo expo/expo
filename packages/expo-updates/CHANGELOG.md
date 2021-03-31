@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 0.5.3 — 2021-03-30
+
+_This version does not introduce any user-facing changes._
+
 ## 0.5.2 — 2021-03-23
 
 ### 🎉 New features

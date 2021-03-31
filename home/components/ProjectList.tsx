@@ -39,7 +39,7 @@ export type Project = {
   packageName: string;
   privacy: string;
   sdkVersion: string;
-  packageUsername: string;
+  username: string;
 };
 
 type Props = {
@@ -144,7 +144,7 @@ function ProjectList({ data, loadMoreAsync, belongsToCurrentUser, listTitle }: P
   };
 
   const renderItem = ({ item: app, index }) => {
-    const experienceInfo = { username: app.username || app.packageUsername, slug: app.packageName };
+    const experienceInfo = { username: app.username, slug: app.packageName };
     if (belongsToCurrentUser) {
       return (
         <ProjectListItem
@@ -167,7 +167,7 @@ function ProjectList({ data, loadMoreAsync, belongsToCurrentUser, listTitle }: P
           iconUrl={app.iconUrl}
           name={app.name}
           projectUrl={app.fullName}
-          username={app.packageUsername}
+          username={app.username}
           description={app.description}
           onPressUsername={handlePressUsername}
           experienceInfo={experienceInfo}
