@@ -2,6 +2,7 @@ import { EventEmitter, UnavailabilityError } from '@unimodules/core';
 import invariant from 'invariant';
 import ExponentPedometer from './ExponentPedometer';
 const PedometerEventEmitter = new EventEmitter(ExponentPedometer);
+// @needsAudit
 /**
  * Subscribe to pedometer updates.
  * @param callback A callback that is invoked when new step count data is available. The callback is
@@ -12,6 +13,7 @@ const PedometerEventEmitter = new EventEmitter(ExponentPedometer);
 export function watchStepCount(callback) {
     return PedometerEventEmitter.addListener('Exponent.pedometerUpdate', callback);
 }
+// @needsAudit
 /**
  * Get the step count between two dates.
  * @param start A date indicating the start of the range over which to measure steps.
@@ -29,6 +31,7 @@ export async function getStepCountAsync(start, end) {
     invariant(start <= end, 'Pedometer: The start date must precede the end date.');
     return await ExponentPedometer.getStepCountAsync(start.getTime(), end.getTime());
 }
+// @needsAudit
 /**
  * Returns whether the pedometer is enabled on the device.
  * @return Returns a promise that fulfills with a `boolean`, indicating whether the pedometer is

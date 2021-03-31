@@ -5,14 +5,18 @@ import ExponentPedometer from './ExponentPedometer';
 
 const PedometerEventEmitter = new EventEmitter(ExponentPedometer);
 
+// @needsAudit
 export type PedometerResult = {
   /**
    * Number of steps taken between the given dates.
    */
   steps: number;
 };
+
+// @docsMissing
 export type PedometerUpdateCallback = (result: PedometerResult) => void;
 
+// @needsAudit
 export interface PedometerListener {
   /**
    * A method to unsubscribe the listener.
@@ -20,6 +24,7 @@ export interface PedometerListener {
   remove: () => void;
 }
 
+// @needsAudit
 /**
  * Subscribe to pedometer updates.
  * @param callback A callback that is invoked when new step count data is available. The callback is
@@ -31,6 +36,7 @@ export function watchStepCount(callback: PedometerUpdateCallback): PedometerList
   return PedometerEventEmitter.addListener('Exponent.pedometerUpdate', callback);
 }
 
+// @needsAudit
 /**
  * Get the step count between two dates.
  * @param start A date indicating the start of the range over which to measure steps.
@@ -49,6 +55,7 @@ export async function getStepCountAsync(start: Date, end: Date): Promise<Pedomet
   return await ExponentPedometer.getStepCountAsync(start.getTime(), end.getTime());
 }
 
+// @needsAudit
 /**
  * Returns whether the pedometer is enabled on the device.
  * @return Returns a promise that fulfills with a `boolean`, indicating whether the pedometer is
