@@ -1,5 +1,6 @@
 package expo.modules.updates.manifest;
 
+import androidx.annotation.Nullable;
 import okhttp3.Response;
 
 /**
@@ -14,7 +15,13 @@ public class ManifestResponse {
     mResponse = response;
   }
 
+  @Nullable
   public String header(String name) {
     return mResponse.header(name);
+  }
+
+  @Nullable
+  public String header(String name, String defaultValue) {
+    return mResponse.header(name, defaultValue);
   }
 }

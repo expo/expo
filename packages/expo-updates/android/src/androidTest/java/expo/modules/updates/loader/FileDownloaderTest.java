@@ -36,7 +36,7 @@ public class FileDownloaderTest {
     UpdatesConfiguration config = new UpdatesConfiguration().loadValuesFromMap(configMap);
 
     Request actual = FileDownloader.setHeadersForManifestUrl(config, null, context);
-    Assert.assertEquals("no-cache", actual.header("Cache-Control"));
+    Assert.assertNull(actual.header("Cache-Control"));
   }
 
   @Test
