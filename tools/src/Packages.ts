@@ -285,8 +285,10 @@ export class Package {
         this.isSupportedOnPlatform(platform) &&
         !!this.podspecName &&
         fs
-          .readFileSync(path.join(this.path, this.iosSubdirectory, `${this.podspecName}.podspec`))
-          .toString()
+          .readFileSync(
+            path.join(this.path, this.iosSubdirectory, `${this.podspecName}.podspec`),
+            'utf8'
+          )
           .includes('test_spec')
       );
     }

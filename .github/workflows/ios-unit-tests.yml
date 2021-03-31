@@ -37,7 +37,7 @@ jobs:
         env:
           GIT_CRYPT_KEY_BASE64: ${{ secrets.GIT_CRYPT_KEY_BASE64 }}
         run: |
-          if [[ ${GIT_CRYPT_KEY_BASE64:-unset} = unset ]]; then
+          if [[ -z "$GIT_CRYPT_KEY_BASE64" ]]; then
             echo 'git-crypt key not present in environment'
           else
             git crypt unlock <(echo $GIT_CRYPT_KEY_BASE64 | base64 --decode)
