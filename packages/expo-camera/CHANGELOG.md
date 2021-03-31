@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+## 11.0.1 - 2021-03-31
+
+### 🐛 Bug fixes
+
+- Fix typing on `Camera.Constants`. ([#12343](https://github.com/expo/expo/pull/12343) by [@HBiede](https://github.com/HBiede))
+
 ## 11.0.0 — 2021-03-10
 
 ### 🛠 Breaking changes
