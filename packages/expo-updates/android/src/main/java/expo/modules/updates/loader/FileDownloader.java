@@ -155,7 +155,7 @@ public class FileDownloader {
                       if (isValid) {
                         try {
                           createManifest(preManifest, response, true, configuration, callback);
-                        } catch (JSONException e) {
+                        } catch (Exception e) {
                           callback.onFailure("Failed to parse manifest data", e);
                         }
                       } else {
@@ -183,7 +183,7 @@ public class FileDownloader {
     boolean isVerified,
     UpdatesConfiguration configuration,
     ManifestDownloadCallback callback
-  ) throws JSONException {
+  ) throws Exception {
     if (configuration.expectsSignedManifest()) {
       preManifest.put("isVerified", isVerified);
     }
@@ -311,11 +311,6 @@ public class FileDownloader {
             .header("Expo-Updates-Environment", "BARE")
             .header("Expo-JSON-Error", "true")
             .header("Expo-Accept-Signature", String.valueOf(configuration.expectsSignedManifest()));
-
-    // legacy manifest loads should ignore cache-control headers from the server and always load remotely
-    if (configuration.usesLegacyManifest()) {
-      requestBuilder = requestBuilder.cacheControl(CacheControl.FORCE_NETWORK);
-    }
 
     String runtimeVersion = configuration.getRuntimeVersion();
     String sdkVersion = configuration.getSdkVersion();
