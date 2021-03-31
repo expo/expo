@@ -113,7 +113,7 @@ public class AdMobRewardedVideoAdModule extends ExportedModule {
 
         mRewardedAd = new RewardedAd(mActivityProvider.getCurrentActivity(), mAdUnitID);
 
-        if( !ssvOptions.isEmpty() ) {
+        if( ssvOptions != null && !ssvOptions.isEmpty() ) {
           // Check if ReadableArguments has a value (see doc on ReadableArguments here https://github.com/expo/expo/blob/59794c1cc56ac8ea110c208ba0711dbd1e044594/packages/%40unimodules/core/android/src/main/java/org/unimodules/core/arguments/ReadableArguments.java#L10)
           ServerSideVerificationOptions options = new ServerSideVerificationOptions.Builder();
           String userId = ssvOptions.getString("userId");
