@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 
 import DocumentationPageContext from '~/components/DocumentationPageContext';
 import { P } from '~/components/base/paragraph';
-import { DefaultPropsDefinitionData, GeneratedData } from '~/components/plugins/api/APIDataTypes';
+import { GeneratedData } from '~/components/plugins/api/APIDataTypes';
 import APISectionConstants from '~/components/plugins/api/APISectionConstants';
 import APISectionEnums from '~/components/plugins/api/APISectionEnums';
 import APISectionInterfaces from '~/components/plugins/api/APISectionInterfaces';
@@ -45,9 +45,10 @@ const renderAPI = (
       entry.name.includes('Props')
     );
     const defaultProps = filterDataByKind(
-      data.filter(
-        (defaultProp: DefaultPropsDefinitionData) => defaultProp.kind === TypeDocKind.Class
-      )[0]?.children,
+      data
+        .filter((entry: GeneratedData) => entry.kind === TypeDocKind.Class)
+        .map((entry: GeneratedData) => entry.children)
+        .flat(),
       TypeDocKind.Property,
       entry => entry.name === 'defaultProps'
     )[0];
@@ -56,14 +57,14 @@ const renderAPI = (
     const constants = filterDataByKind(data, TypeDocKind.Variable, entry => entry.flags.isConst);
 
     return (
-      <div>
+      <>
         <APISectionConstants data={constants} apiName={apiName} />
         <APISectionMethods data={methods} apiName={apiName} />
         <APISectionProps data={props} defaultProps={defaultProps} />
         <APISectionTypes data={types} />
         <APISectionInterfaces data={interfaces} />
         <APISectionEnums data={enums} />
-      </div>
+      </>
     );
   } catch (error) {
     return <P>No API data file found, sorry!</P>;
