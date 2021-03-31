@@ -17,7 +17,13 @@ export enum TypeDocKind {
 }
 
 export const renderers: React.ComponentProps<typeof ReactMarkdown>['renderers'] = {
-  blockquote: ({ children }) => <Quote>{children}</Quote>,
+  blockquote: ({ children }) => (
+    <Quote>
+      {React.Children.map(children, child =>
+        child.type.name === 'paragraph' ? child.props.children : child
+      )}
+    </Quote>
+  ),
   code: ({ value, language }) => <Code className={`language-${language}`}>{value}</Code>,
   heading: ({ children }) => <H4>{children}</H4>,
   inlineCode: ({ value }) => <InlineCode>{value}</InlineCode>,
@@ -25,6 +31,7 @@ export const renderers: React.ComponentProps<typeof ReactMarkdown>['renderers'] 
   listItem: ({ children }) => <LI>{children}</LI>,
   link: ({ href, children }) => <InternalLink href={href}>{children}</InternalLink>,
   paragraph: ({ children }) => (children ? <P>{children}</P> : null),
+  strong: ({ children }) => <B>{children}</B>,
   text: ({ value }) => (value ? <span>{value}</span> : null),
 };
 
