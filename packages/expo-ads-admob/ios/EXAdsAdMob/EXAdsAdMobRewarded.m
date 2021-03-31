@@ -70,7 +70,8 @@ UM_EXPORT_METHOD_AS(setAdUnitID,
 }
 
 UM_EXPORT_METHOD_AS(requestAd,
-                    requestAdWithAdditionalRequestParams:(NSDictionary *)additionalRequestParams
+                     requestAdWithAdditionalRequestParams:(NSDictionary *)additionalRequestParams
+                     serverSideVerificationOptions:(NSDictionary *)ssvOptions
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
@@ -84,6 +85,16 @@ UM_EXPORT_METHOD_AS(requestAd,
       GADExtras *extras = [[GADExtras alloc] init];
       extras.additionalParameters = additionalRequestParams;
       [request registerAdNetworkExtras:extras];
+    }
+    if(ssvOptions) {
+      GADServerSideVerificationOptions *options = [[GADServerSideVerificationOptions alloc] init];
+      if(ssvOptions[@"userId"]) {
+        options.userIdentifier = ssvOptions[@"userId"];
+      }
+      if(ssvOptions[@"customData"]) {
+        options.customRewardString = ssvOptions[@"customData"];
+      }
+      self.rewardedAd.serverSideVerificationOptions = options;
     }
     UM_WEAKIFY(self);
     dispatch_async(dispatch_get_main_queue(), ^{
