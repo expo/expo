@@ -15,7 +15,7 @@ class AnimationViewManagerModule: ABI41_0_0RCTViewManager {
     }
     
     
-    @objc(ABI41_0_0play:fromFrame:toFrame:)
+    @objc(play:fromFrame:toFrame:)
     public func play(_ ABI41_0_0ReactTag: NSNumber, startFrame: NSNumber, endFrame: NSNumber) {
         
         self.bridge.uiManager.addUIBlock { (uiManager, viewRegistry) in
@@ -40,7 +40,7 @@ class AnimationViewManagerModule: ABI41_0_0RCTViewManager {
         }      
     }
     
-    @objc(ABI41_0_0reset:)
+    @objc(reset:)
     public func reset(_ ABI41_0_0ReactTag: NSNumber) {
         self.bridge.uiManager.addUIBlock { uiManager, viewRegistry in
             guard let view = viewRegistry?[ABI41_0_0ReactTag] as? ContainerView else {
@@ -54,7 +54,7 @@ class AnimationViewManagerModule: ABI41_0_0RCTViewManager {
         }
     }
     
-    @objc(ABI41_0_0pause:)
+    @objc(pause:)
     public func pause(_ ABI41_0_0ReactTag: NSNumber) {
         self.bridge.uiManager.addUIBlock { uiManager, viewRegistry in
             guard let view = viewRegistry?[ABI41_0_0ReactTag] as? ContainerView else {
@@ -68,7 +68,7 @@ class AnimationViewManagerModule: ABI41_0_0RCTViewManager {
         }
     }
 
-    @objc(ABI41_0_0resume:)
+    @objc(resume:)
     public func resume(_ ABI41_0_0ReactTag: NSNumber) {
         self.bridge.uiManager.addUIBlock { uiManager, viewRegistry in
             guard let view = viewRegistry?[ABI41_0_0ReactTag] as? ContainerView else {
