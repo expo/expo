@@ -5,6 +5,8 @@ type ModalStackRoutes = {
 export type AllStackRoutes = {
   Projects: object;
   Profile: object;
+  ProfileAllProjects: object;
+  ProfileAllSnacks: object;
   Account: { accountName: string };
   UserSettings: object;
   ProjectsForAccount: { accountName: string };

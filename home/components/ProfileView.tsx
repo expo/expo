@@ -1,20 +1,29 @@
 import { StackScreenProps } from '@react-navigation/stack';
-import { ProfileData } from 'containers/Profile';
 import dedent from 'dedent';
+import { take, takeRight } from 'lodash';
 import React from 'react';
 import { ActivityIndicator, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import FadeIn from 'react-native-fade-in-image';
 
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
+import { ProfileData } from '../containers/Profile';
 import { AllStackRoutes } from '../navigation/Navigation.types';
+import EmptyAccountProjectsNotice from './EmptyAccountProjectsNotice';
+import EmptyAccountSnacksNotice from './EmptyAccountSnacksNotice';
 import ListItem from './ListItem';
 import ScrollView from './NavigationScrollView';
 import PrimaryButton from './PrimaryButton';
+import ProjectListItem from './ProjectListItem';
 import RefreshControl from './RefreshControl';
 import SectionHeader from './SectionHeader';
+import SeeAllProjectsButton from './SeeAllProjectsButton';
+import SnackListItem from './SnackListItem';
 import { StyledText } from './Text';
 import { StyledView } from './Views';
+
+const MAX_APPS_TO_DISPLAY = 3;
+const MAX_SNACKS_TO_DISPLAY = 3;
 
 const NETWORK_ERROR_TEXT = dedent`
   Your connection appears to be offline.
@@ -102,6 +111,8 @@ export default function ProfileView({ navigation, loading, error, refetch, data 
         <>
           <ProfileHeader data={data} />
           <ProfileAccountsSection data={data} navigation={navigation} />
+          <ProfileProjectsSection data={data} navigation={navigation} />
+          <ProfileSnacksSection data={data} navigation={navigation} />
         </>
       )}
     </ScrollView>
@@ -156,7 +167,7 @@ function ProfileHeader({ data }: { data: NonNullable<Props['data']> }) {
       <StyledText style={styles.headerFullNameText}>
         {firstName} {lastName}
       </StyledText>
-      <View style={styles.headerAccountsList}>
+      <View style={styles.headerAccountName}>
         <StyledText style={styles.headerAccountText} lightColor="#232B3A" darkColor="#ccc">
           @{data.me.username}
         </StyledText>
@@ -175,21 +186,120 @@ function ProfileAccountsSection({
     navigation.navigate('Account', { accountName });
   };
 
-  const renderAccount = (account: { id: string; name: string }) => {
+  const accounts = data.me.accounts;
+
+  const renderAccount = (account: { id: string; name: string }, index: number) => {
     return (
       <ListItem
         key={account.id}
         title={`@${account.name}`}
         onPress={() => onPressAccount(account.name)}
+        last={index === accounts.length - 1}
       />
     );
   };
 
-  const accounts = data.me.accounts;
   return (
     <View>
       <SectionHeader title="Accounts & Organizations" />
       {accounts.map(renderAccount)}
+    </View>
+  );
+}
+
+function ProfileProjectsSection({
+  data,
+  navigation,
+}: Pick<Props, 'navigation'> & {
+  data: NonNullable<Props['data']>;
+}) {
+  const onPressProjectList = () => {
+    navigation.navigate('ProfileAllProjects', {});
+  };
+
+  const renderApp = (app: any, i: number) => {
+    return (
+      <ProjectListItem
+        key={i}
+        url={app.fullName}
+        unlisted={app.privacy === 'unlisted'}
+        image={app.iconUrl || require('../assets/placeholder-app-icon.png')}
+        title={app.name}
+        sdkVersion={app.sdkVersion}
+        subtitle={app.packageName || app.fullName}
+        experienceInfo={{ username: app.username, slug: app.packageName }}
+      />
+    );
+  };
+
+  const renderContents = () => {
+    const apps = data.me.apps;
+    if (!apps.length) {
+      return <EmptyAccountProjectsNotice />;
+    }
+    const otherApps = takeRight(apps, Math.max(0, apps.length - MAX_APPS_TO_DISPLAY));
+    return (
+      <>
+        {take(apps, MAX_APPS_TO_DISPLAY).map(renderApp)}
+        <SeeAllProjectsButton
+          apps={otherApps}
+          appCount={data.me.appCount - MAX_APPS_TO_DISPLAY}
+          onPress={onPressProjectList}
+        />
+      </>
+    );
+  };
+
+  return (
+    <View>
+      <SectionHeader title="Recent projects" />
+      {renderContents()}
+    </View>
+  );
+}
+
+function ProfileSnacksSection({
+  data,
+  navigation,
+}: Pick<Props, 'navigation'> & {
+  data: NonNullable<Props['data']>;
+}) {
+  const onPressSnackList = () => {
+    navigation.navigate('ProfileAllSnacks', {});
+  };
+
+  const renderSnack = (snack: any, i: number) => {
+    return (
+      <SnackListItem
+        key={i}
+        url={snack.fullName}
+        title={snack.name}
+        subtitle={snack.description}
+        isDraft={snack.isDraft}
+      />
+    );
+  };
+
+  const renderContents = () => {
+    const snacks = data.me.snacks;
+    if (!snacks?.length) {
+      return <EmptyAccountSnacksNotice />;
+    }
+    const otherSnacks = takeRight(snacks, Math.max(0, snacks.length - MAX_SNACKS_TO_DISPLAY));
+    return (
+      <>
+        {take(snacks, MAX_SNACKS_TO_DISPLAY).map(renderSnack)}
+        {otherSnacks.length > 0 && (
+          <ListItem title="See all snacks" onPress={onPressSnackList} arrowForward last />
+        )}
+      </>
+    );
+  };
+
+  return (
+    <View>
+      <SectionHeader title="Recent snacks" />
+      {renderContents()}
     </View>
   );
 }
@@ -203,7 +313,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    marginBottom: 5,
+    marginBottom: 12,
   },
   headerAvatarContainer: {
     marginTop: 20,
@@ -219,7 +329,7 @@ const styles = StyleSheet.create({
   legacyHeaderAvatar: {
     backgroundColor: '#eee',
   },
-  headerAccountsList: {
+  headerAccountName: {
     paddingBottom: 20,
   },
   headerAccountText: {

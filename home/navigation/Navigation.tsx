@@ -16,6 +16,8 @@ import DiagnosticsScreen from '../screens/DiagnosticsScreen';
 import ExperienceScreen from '../screens/ExperienceScreen';
 import GeofencingScreen from '../screens/GeofencingScreen';
 import LocationDiagnosticsScreen from '../screens/LocationDiagnosticsScreen';
+import ProfileAllProjectsScreen from '../screens/ProfileAllProjectsScreen';
+import ProfileAllSnacksScreen from '../screens/ProfileAllSnacksScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import ProjectsForAccountScreen from '../screens/ProjectsForAccountScreen';
 import ProjectsScreen from '../screens/ProjectsScreen';
@@ -83,6 +85,16 @@ function ProfileStackScreen() {
         name="Profile"
         component={ProfileScreen}
         options={profileNavigationOptions}
+      />
+      <ProfileStack.Screen
+        name="ProfileAllProjects"
+        component={ProfileAllProjectsScreen}
+        options={{ title: 'Projects' }}
+      />
+      <ProfileStack.Screen
+        name="ProfileAllSnacks"
+        component={ProfileAllSnacksScreen}
+        options={{ title: 'Snacks' }}
       />
       <ProfileStack.Screen
         name="Account"

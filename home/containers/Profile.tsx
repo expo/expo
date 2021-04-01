@@ -1,5 +1,7 @@
 import { useQuery } from '@apollo/client';
 import { StackScreenProps } from '@react-navigation/stack';
+import { Project } from 'components/ProjectList';
+import { Snack } from 'components/SnackList';
 import gql from 'graphql-tag';
 import { AllStackRoutes } from 'navigation/Navigation.types';
 import * as React from 'react';
@@ -7,6 +9,9 @@ import * as React from 'react';
 import ProfileView from '../components/ProfileView';
 import { useDispatch } from '../redux/Hooks';
 import SessionActions from '../redux/SessionActions';
+
+const APP_LIMIT = 3;
+const SNACK_LIMIT = 3;
 
 export interface ProfileData {
   me: {
@@ -19,6 +24,9 @@ export interface ProfileData {
       id: string;
       name: string;
     }[];
+    appCount: number;
+    apps: Project[];
+    snacks: Snack[];
   };
 }
 
@@ -35,6 +43,26 @@ const ProfileDataQuery = gql`
       accounts {
         id
         name
+      }
+      appCount
+      apps(limit: ${APP_LIMIT}, offset: 0) {
+        id
+        description
+        fullName
+        iconUrl
+        lastPublishedTime
+        name
+        packageName
+        username
+        sdkVersion
+        privacy
+      }
+      snacks(limit: ${SNACK_LIMIT}, offset: 0) {
+        name
+        description
+        fullName
+        slug
+        isDraft
       }
     }
   }
