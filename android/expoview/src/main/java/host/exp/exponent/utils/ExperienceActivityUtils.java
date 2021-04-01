@@ -256,8 +256,15 @@ public class ExperienceActivityUtils {
 
   public static void setTaskDescription(final ExponentManifest exponentManifest,
                                         final JSONObject manifest, final Activity activity) {
-    final String iconUrl = manifest.optString(ExponentManifest.MANIFEST_ICON_URL_KEY);
+    final String iconUrl = manifest.optString(ExponentManifest.MANIFEST_ICON_URL_KEY, null);
     final int color = exponentManifest.getColorFromManifest(manifest);
+
+    if (iconUrl == null) {
+      activity.setTaskDescription(new ActivityManager.TaskDescription(
+              manifest.optString(ExponentManifest.MANIFEST_NAME_KEY)
+      ));
+      return;
+    }
 
     exponentManifest.loadIconBitmap(iconUrl, new ExponentManifest.BitmapListener() {
       @Override

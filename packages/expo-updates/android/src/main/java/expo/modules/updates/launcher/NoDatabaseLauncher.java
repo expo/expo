@@ -65,6 +65,10 @@ public class NoDatabaseLauncher implements Launcher {
     return null;
   }
 
+  public @Nullable String getLaunchAssetUrl() {
+    return null;
+  }
+
   public @Nullable String getBundleAssetName() {
     return mBundleAssetName;
   }

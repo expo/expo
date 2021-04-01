@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static expo.modules.updates.loader.EmbeddedLoader.BUNDLE_FILENAME;
 
@@ -69,7 +71,14 @@ public class NewManifest implements Manifest {
     }
 
     UUID id = UUID.fromString(manifestJson.getString("id"));
+
     String runtimeVersion = manifestJson.getString("runtimeVersion");
+    Pattern expoSDKRuntimeVersionRegex = Pattern.compile("^exposdk:(\\d+\\.\\d+\\.\\d+)$");
+    Matcher expoSDKRuntimeVersionMatch = expoSDKRuntimeVersionRegex.matcher(runtimeVersion);
+    if (expoSDKRuntimeVersionMatch.find()) {
+      runtimeVersion = expoSDKRuntimeVersionMatch.group(1);
+    }
+
     JSONObject launchAsset = manifestJson.getJSONObject("launchAsset");
     JSONArray assets = manifestJson.optJSONArray("assets");
 

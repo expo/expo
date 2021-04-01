@@ -6,7 +6,6 @@ import Colors from '../constants/Colors';
 import * as UrlUtils from '../utils/UrlUtils';
 import { useSDKExpired } from '../utils/useSDKExpired';
 import Badge from './Badge';
-import { Experience } from './ExperienceView.types';
 import ListItem from './ListItem';
 import { StyledText } from './Text';
 
@@ -16,7 +15,11 @@ type Props = React.ComponentProps<typeof ListItem> & {
   releaseChannel?: string;
   username?: string;
   sdkVersion?: string;
-  experienceInfo?: Pick<Experience, 'username' | 'slug'>;
+  experienceInfo?: {
+    id: string;
+    username: string;
+    slug: string;
+  };
   onPressUsername?: (username: string) => void;
 };
 
@@ -48,7 +51,14 @@ function ProjectListItem({
       handleLongPress();
       return;
     }
-    Linking.openURL(UrlUtils.normalizeUrl(url));
+    if (props.experienceInfo) {
+      console.log('wat');
+      Linking.openURL(
+        `exps://updates.expo.dev/${props.experienceInfo?.id}?runtime-version=exposdk%3A40.0.0&channel-name=main`
+      );
+    } else {
+      Linking.openURL(UrlUtils.normalizeUrl(url));
+    }
   };
 
   const handleLongPress = () => {

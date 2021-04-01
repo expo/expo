@@ -1,14 +1,14 @@
 import { StackScreenProps } from '@react-navigation/stack';
-import { Project } from 'components/ProjectList';
-import { Snack } from 'components/SnackList';
-import { AccountData } from 'containers/Account';
 import dedent from 'dedent';
 import { take, takeRight } from 'lodash';
 import React from 'react';
 import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from 'react-native';
 
+import { Project } from '../components/ProjectList';
+import { Snack } from '../components/SnackList';
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
+import { AccountData } from '../containers/Account';
 import { AllStackRoutes } from '../navigation/Navigation.types';
 import EmptyAccountProjectsNotice from './EmptyAccountProjectsNotice';
 import EmptyAccountSnacksNotice from './EmptyAccountSnacksNotice';
@@ -187,7 +187,7 @@ function AccountProjectsSection({
         title={app.name}
         sdkVersion={app.sdkVersion}
         subtitle={app.packageName || app.fullName}
-        experienceInfo={{ username: app.username, slug: app.packageName }}
+        experienceInfo={{ id: app.id, username: app.username, slug: app.packageName }}
         last={i === apps.length - 1}
       />
     );

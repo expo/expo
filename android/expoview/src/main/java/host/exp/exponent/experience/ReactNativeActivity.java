@@ -285,7 +285,14 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
       return mReactRootView.rnClass();
     }
 
-    String sdkVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
+    String sdkVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY, null);
+    if (sdkVersion == null) {
+      String runtimeVersion = manifest.optString(ExponentManifest.MANIFEST_RUNTIME_VERSION_KEY, null);
+      if (runtimeVersion != null) {
+        sdkVersion = "40.0.0";
+      }
+    }
+
     if (Constants.TEMPORARY_ABI_VERSION != null && Constants.TEMPORARY_ABI_VERSION.equals(mSDKVersion)) {
       sdkVersion = RNObject.UNVERSIONED;
     }
@@ -480,7 +487,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
       if (metadata.has(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS)) {
         try {
           exponentProps.put(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS,
-            metadata.getJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS));
+            metadata.getJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS).toString());
         } catch (JSONException e) {
           e.printStackTrace();
         }

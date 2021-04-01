@@ -21,6 +21,7 @@ import com.facebook.internal.BundleJSONConverter;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
+import com.facebook.react.ReactPackage;
 import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReadableMap;
@@ -35,6 +36,7 @@ import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -593,8 +595,8 @@ public class Kernel extends KernelInterface {
         }
       }
 
-      // ignore any query param other than the release-channel
-      // as these will cause the client to treat this as a different experience
+      // transfer the release-channel param to the built URL as this will cause the client to treat
+      // this as a different experience
       String releaseChannel = uri.getQueryParameter(ExponentManifest.QUERY_PARAM_KEY_RELEASE_CHANNEL);
       builder.query(null);
       if (releaseChannel != null) {
@@ -607,6 +609,15 @@ public class Kernel extends KernelInterface {
           releaseChannel = releaseChannel.substring(0, releaseChannelDeepLinkPosition);
         }
         builder.appendQueryParameter(ExponentManifest.QUERY_PARAM_KEY_RELEASE_CHANNEL, releaseChannel);
+      }
+
+      // transfer the expo-updates query params: runtime-version, channel-name
+      List<String> expoUpdatesQueryParameters = Arrays.asList(ExponentManifest.QUERY_PARAM_KEY_EXPO_UPDATES_RUNTIME_VERSION, ExponentManifest.QUERY_PARAM_KEY_EXPO_UPDATES_CHANNEL_NAME);
+      for (String queryParameter : expoUpdatesQueryParameters) {
+        String queryParameterValue = uri.getQueryParameter(queryParameter);
+        if (queryParameterValue != null) {
+          builder.appendQueryParameter(queryParameter, queryParameterValue);
+        }
       }
 
       // ignore fragments as well (e.g. those added by auth-session)
@@ -694,10 +705,10 @@ public class Kernel extends KernelInterface {
         }
 
         @Override
-        public void onManifestCompleted(final JSONObject manifest) {
+        public void onManifestCompleted(final JSONObject manifest, final String bundleUrl) {
           Exponent.getInstance().runOnUiThread(() -> {
             try {
-              openManifestUrlStep2(manifestUrl, manifest, finalExistingTask);
+              openManifestUrlStep2(manifestUrl, manifest, bundleUrl, finalExistingTask);
             } catch (JSONException e) {
               handleError(e);
             }
@@ -739,8 +750,7 @@ public class Kernel extends KernelInterface {
     }
   }
 
-  private void openManifestUrlStep2(String manifestUrl, JSONObject manifest, ActivityManager.AppTask existingTask) throws JSONException {
-    String bundleUrl = ExponentUrls.toHttp(manifest.getString("bundleUrl"));
+  private void openManifestUrlStep2(String manifestUrl, JSONObject manifest, String bundleUrl, ActivityManager.AppTask existingTask) throws JSONException {
     Kernel.ExperienceActivityTask task = getExperienceActivityTask(manifestUrl);
     task.bundleUrl = bundleUrl;
 

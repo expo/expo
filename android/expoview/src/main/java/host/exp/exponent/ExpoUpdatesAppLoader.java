@@ -82,7 +82,7 @@ public class ExpoUpdatesAppLoader {
 
   public interface AppLoaderCallback {
     void onOptimisticManifest(JSONObject optimisticManifest);
-    void onManifestCompleted(JSONObject manifest);
+    void onManifestCompleted(JSONObject manifest, String bundleUrl);
     void onBundleCompleted(String localBundlePath);
     void emitEvent(JSONObject params);
     void updateStatus(AppLoaderStatus status);
@@ -265,16 +265,18 @@ public class ExpoUpdatesAppLoader {
 
       @Override
       public void onRemoteManifestLoaded(Manifest manifest) {
+        JSONObject rawManifestJson = manifest.getRawManifestJson();
+
         // expo-cli does not always respect our SDK version headers and respond with a compatible update or an error
         // so we need to check the compatibility here
-        if (!isValidSdkVersion(manifest.getRawManifestJson().optString("sdkVersion"))) {
-          mCallback.onError(formatExceptionForIncompatibleSdk(manifest.getRawManifestJson().optString("sdkVersion", "null")));
+        if (rawManifestJson.has(ExponentManifest.MANIFEST_SDK_VERSION_KEY) && !isValidSdkVersion(rawManifestJson.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY))) {
+          mCallback.onError(formatExceptionForIncompatibleSdk(rawManifestJson.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY, "null")));
           didAbort = true;
           return;
         }
 
-        setShouldShowAppLoaderStatus(manifest.getRawManifestJson());
-        mCallback.onOptimisticManifest(manifest.getRawManifestJson());
+        setShouldShowAppLoaderStatus(rawManifestJson);
+        mCallback.onOptimisticManifest(rawManifestJson);
         updateStatus(AppLoaderStatus.DOWNLOADING_NEW_UPDATE);
       }
 
@@ -287,7 +289,7 @@ public class ExpoUpdatesAppLoader {
         mIsUpToDate = isUpToDate;
         try {
           JSONObject manifest = processManifest(launcher.getLaunchedUpdate().metadata);
-          mCallback.onManifestCompleted(manifest);
+          mCallback.onManifestCompleted(manifest, launcher.getLaunchAssetUrl());
 
           // ReactAndroid will load the bundle on its own in development mode
           if (!ExponentManifest.isDebugModeEnabled(manifest)) {
@@ -337,7 +339,7 @@ public class ExpoUpdatesAppLoader {
     } catch (Exception ex) {
       Log.e(TAG, "Failed to process manifest; attempting to launch with raw manifest. This may cause errors or unexpected behavior.", e);
     }
-    mCallback.onManifestCompleted(manifest);
+    mCallback.onManifestCompleted(manifest, mLauncher.getLaunchAssetUrl());
 
     String launchAssetFile = mLauncher.getLaunchAssetFile();
     if (launchAssetFile == null) {

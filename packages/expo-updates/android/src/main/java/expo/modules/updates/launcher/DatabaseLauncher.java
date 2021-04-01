@@ -35,6 +35,7 @@ public class DatabaseLauncher implements Launcher {
 
   private UpdateEntity mLaunchedUpdate = null;
   private String mLaunchAssetFile = null;
+  private String mLaunchAssetUrl = null;
   private String mBundleAssetName = null;
   private Map<AssetEntity, String> mLocalAssetFiles = null;
 
@@ -57,6 +58,10 @@ public class DatabaseLauncher implements Launcher {
 
   public @Nullable String getLaunchAssetFile() {
     return mLaunchAssetFile;
+  }
+
+  public @Nullable String getLaunchAssetUrl() {
+    return mLaunchAssetUrl;
   }
 
   public @Nullable String getBundleAssetName() {
@@ -102,6 +107,7 @@ public class DatabaseLauncher implements Launcher {
     if (launchAsset.relativePath == null) {
       throw new AssertionError("Launch Asset relativePath should not be null");
     }
+    mLaunchAssetUrl = launchAsset.url.toString();
 
     File launchAssetFile = ensureAssetExists(launchAsset, database, context);
     if (launchAssetFile != null) {

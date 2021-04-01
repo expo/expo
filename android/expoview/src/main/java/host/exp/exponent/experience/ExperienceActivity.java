@@ -209,15 +209,9 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
         }
 
         @Override
-        public void onManifestCompleted(final JSONObject manifest) {
+        public void onManifestCompleted(final JSONObject manifest, final String bundleUrl) {
           Exponent.getInstance().runOnUiThread(() -> {
-            try {
-              String bundleUrl = ExponentUrls.toHttp(manifest.getString("bundleUrl"));
-
-              setManifest(mManifestUrl, manifest, bundleUrl, null);
-            } catch (JSONException e) {
-              mKernel.handleError(e);
-            }
+            setManifest(mManifestUrl, manifest, bundleUrl, null);
           });
         }
 
@@ -487,7 +481,13 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     task.activityId = mActivityId;
     task.bundleUrl = bundleUrl;
 
-    mSDKVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
+    mSDKVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY, null);
+    if (mSDKVersion == null) {
+      String runtimeVersion = manifest.optString(ExponentManifest.MANIFEST_RUNTIME_VERSION_KEY, null);
+      if (runtimeVersion != null) {
+        mSDKVersion = "40.0.0";
+      }
+    }
     mIsShellApp = manifestUrl.equals(Constants.INITIAL_URL);
 
     // Sometime we want to release a new version without adding a new .aar. Use TEMPORARY_ABI_VERSION

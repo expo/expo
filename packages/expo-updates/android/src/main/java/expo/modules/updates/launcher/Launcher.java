@@ -15,6 +15,7 @@ public interface Launcher {
 
   @Nullable UpdateEntity getLaunchedUpdate();
   @Nullable String getLaunchAssetFile();
+  @Nullable String getLaunchAssetUrl();
   @Nullable String getBundleAssetName();
   @Nullable Map<AssetEntity, String> getLocalAssetFiles();
   boolean isUsingEmbeddedAssets();

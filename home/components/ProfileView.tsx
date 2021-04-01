@@ -5,6 +5,7 @@ import React from 'react';
 import { ActivityIndicator, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import FadeIn from 'react-native-fade-in-image';
 
+import { Project } from '../components/ProjectList';
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
 import { ProfileData } from '../containers/Profile';
@@ -220,7 +221,7 @@ function ProfileProjectsSection({
     navigation.navigate('ProfileAllProjects', {});
   };
 
-  const renderApp = (app: any, i: number) => {
+  const renderApp = (app: Project, i: number) => {
     return (
       <ProjectListItem
         key={i}
@@ -230,7 +231,7 @@ function ProfileProjectsSection({
         title={app.name}
         sdkVersion={app.sdkVersion}
         subtitle={app.packageName || app.fullName}
-        experienceInfo={{ username: app.username, slug: app.packageName }}
+        experienceInfo={{ id: app.id, username: app.username, slug: app.packageName }}
       />
     );
   };

@@ -92,16 +92,10 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
       }
 
       @Override
-      public void onManifestCompleted(final JSONObject manifest) {
+      public void onManifestCompleted(final JSONObject manifest, final String bundleUrl) {
         Exponent.getInstance().runOnUiThread(() -> {
-          try {
-            String bundleUrl = ExponentUrls.toHttp(manifest.getString("bundleUrl"));
-
-            sActivityIdToBundleUrl.put(mActivityId, bundleUrl);
-            setManifest(mManifestUrl, manifest, bundleUrl);
-          } catch (JSONException e) {
-            mCallback.onComplete(false, new Exception(e.getMessage()));
-          }
+          sActivityIdToBundleUrl.put(mActivityId, bundleUrl);
+          setManifest(mManifestUrl, manifest, bundleUrl);
         });
       }
 
