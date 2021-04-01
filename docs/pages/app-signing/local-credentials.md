@@ -140,6 +140,7 @@ In this case your `credentials.json` should like like this:
         "path": "ios/certs/another-dist.p12",
         "password": "ANOTHER_DISTRIBUTION_CERTIFICATE_PASSWORD"
       } /* @end */
+
     }
   }
 }
