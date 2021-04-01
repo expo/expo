@@ -5,12 +5,19 @@ import path from 'path';
 import * as Directories from '../Directories';
 import * as Packages from '../Packages';
 
-export async function iosNativeUnitTests() {
-  const packages = await Packages.getListOfPackagesAsync();
+export async function iosNativeUnitTests({ packages }: { packages?: string }) {
+  const allPackages = await Packages.getListOfPackagesAsync();
+  const packageNamesFilter = packages ? packages.split(',') : [];
   let packagesTested: string[] = [];
   let errors: any[] = [];
-  for (const pkg of packages) {
+  for (const pkg of allPackages) {
     if (!(await pkg.hasNativeTestsAsync('ios'))) {
+      if (packageNamesFilter.includes(pkg.packageName)) {
+        throw new Error(`The package ${pkg.packageName} does not include iOS unit tests.`);
+      }
+      continue;
+    }
+    if (packageNamesFilter.length > 0 && !packageNamesFilter.includes(pkg.packageName)) {
       continue;
     }
 
@@ -78,6 +85,10 @@ export async function iosNativeUnitTests() {
 export default (program: any) => {
   program
     .command('ios-native-unit-tests')
+    .option(
+      '--packages <string>',
+      '[optional] Comma-separated list of package names to run unit tests for. Defaults to all packages with unit tests.'
+    )
     .description('Runs iOS native unit tests for each package that provides them.')
     .asyncAction(iosNativeUnitTests);
 };

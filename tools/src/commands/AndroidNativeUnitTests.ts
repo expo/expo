@@ -1,9 +1,9 @@
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 
-import { filterAsync } from '../Utils';
 import * as Directories from '../Directories';
 import * as Packages from '../Packages';
+import { filterAsync } from '../Utils';
 
 const ANDROID_DIR = Directories.getAndroidDir();
 
@@ -17,7 +17,13 @@ const excludedInTests = [
 
 type TestType = 'local' | 'instrumented';
 
-export async function androidNativeUnitTests({ type }: { type: TestType }) {
+export async function androidNativeUnitTests({
+  type,
+  packages,
+}: {
+  type: TestType;
+  packages?: string;
+}) {
   if (!type) {
     throw new Error(
       'Must specify which type of unit test to run with `--type local` or `--type instrumented`.'
@@ -27,7 +33,8 @@ export async function androidNativeUnitTests({ type }: { type: TestType }) {
     throw new Error('Invalid type specified. Must use `--type local` or `--type instrumented`.');
   }
 
-  const packages = await Packages.getListOfPackagesAsync();
+  const allPackages = await Packages.getListOfPackagesAsync();
+  const packageNamesFilter = packages ? packages.split(',') : [];
 
   function consoleErrorOutput(
     output: string,
@@ -38,22 +45,33 @@ export async function androidNativeUnitTests({ type }: { type: TestType }) {
     console.error(lines.map((line) => `${chalk.gray(label)} ${colorifyLine(line)}`).join('\n'));
   }
 
-  const androidPackages = await filterAsync(packages, async (pkg) => {
+  const androidPackages = await filterAsync(allPackages, async (pkg) => {
     const pkgSlug = pkg.packageSlug;
 
+    if (packageNamesFilter.length > 0 && !packageNamesFilter.includes(pkg.packageName)) {
+      return false;
+    }
+
+    let includesTests;
     if (type === 'instrumented') {
-      return (
+      includesTests =
         pkg.isSupportedOnPlatform('android') &&
         (await pkg.hasNativeInstrumentationTestsAsync('android')) &&
-        !excludedInTests.includes(pkgSlug)
-      );
+        !excludedInTests.includes(pkgSlug);
     } else {
-      return (
+      includesTests =
         pkg.isSupportedOnPlatform('android') &&
         (await pkg.hasNativeTestsAsync('android')) &&
-        !excludedInTests.includes(pkgSlug)
+        !excludedInTests.includes(pkgSlug);
+    }
+
+    if (!includesTests && packageNamesFilter.includes(pkg.packageName)) {
+      throw new Error(
+        `The package ${pkg.packageName} does not include Android ${type} unit tests.`
       );
     }
+
+    return includesTests;
   });
 
   console.log(chalk.green('Packages to test: '));
@@ -79,13 +97,16 @@ export async function androidNativeUnitTests({ type }: { type: TestType }) {
     throw error;
   }
   console.log(chalk.green('Finished android unit tests successfully.'));
-  return;
 }
 
 export default (program: any) => {
   program
     .command('android-native-unit-tests')
     .option('-t, --type <string>', 'Type of unit test to run: local or instrumented')
+    .option(
+      '--packages <string>',
+      '[optional] Comma-separated list of package names to run unit tests for. Defaults to all packages with unit tests.'
+    )
     .description('Runs Android native unit tests for each package that provides them.')
     .asyncAction(androidNativeUnitTests);
 };
