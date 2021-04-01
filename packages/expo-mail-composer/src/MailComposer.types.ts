@@ -1,3 +1,4 @@
+// @needsAudit
 /**
  * A map defining the data to fill the mail.
  */
@@ -15,27 +16,30 @@ export type MailComposerOptions = {
    */
   bccRecipients?: string[];
   /**
-   * Subject of the mail.
+   * Subject of the e-mail.
    */
   subject?: string;
   /**
-   * Body of the mail.
+   * Body of the e-mail.
    */
   body?: string;
   /**
-   * Whether the body contains HTML tags so it could be formatted properly. Not working perfectly on Android.
+   * Whether the body contains HTML tags so it could be formatted properly.
+   * Not working perfectly on Android.
    */
   isHtml?: boolean;
   /**
-   * An array of app's internal file uris to attach.
+   * An array of app's internal file URIs to attach.
    */
   attachments?: string[];
 };
 
+// @docsMissing
 export type MailComposerResult = {
   status: MailComposerStatus;
 };
 
+// @docsMissing
 export enum MailComposerStatus {
   UNDETERMINED = 'undetermined',
   SENT = 'sent',
