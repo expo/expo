@@ -113,10 +113,10 @@ export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
   renderers,
   withDash,
 }) => {
-  const shortText = comment?.shortText ? (
+  const shortText = comment?.shortText?.trim().length ? (
     <ReactMarkdown renderers={renderers}>{comment.shortText}</ReactMarkdown>
   ) : null;
-  const text = comment?.text ? (
+  const text = comment?.text?.trim().length ? (
     <ReactMarkdown renderers={renderers}>{comment.text}</ReactMarkdown>
   ) : null;
   return (
