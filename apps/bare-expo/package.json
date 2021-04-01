@@ -123,7 +123,7 @@
     "expo-dev-menu-interface": "0.2.0",
     "expo-dev-launcher": "0.3.0",
     "expo-image": "~1.0.0-alpha.0",
-    "expo-notifications": "~0.11.2",
+    "expo-notifications": "~0.11.3",
     "expo-random": "~11.1.0",
     "expo-splash-screen": "~0.10.0",
     "native-component-list": "*",

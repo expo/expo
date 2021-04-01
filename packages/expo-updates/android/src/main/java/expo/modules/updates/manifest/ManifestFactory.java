@@ -9,28 +9,23 @@ public class ManifestFactory {
 
   private static final String TAG = ManifestFactory.class.getSimpleName();
 
-  public static Manifest getManifest(JSONObject manifestJson, ManifestResponse httpResponse, UpdatesConfiguration configuration) throws JSONException {
-    if (configuration.usesLegacyManifest()) {
+  public static Manifest getManifest(JSONObject manifestJson, ManifestResponse httpResponse, UpdatesConfiguration configuration) throws Exception {
+    String expoProtocolVersion = httpResponse.header("expo-protocol-version", null);
+
+    if (expoProtocolVersion == null) {
       return LegacyManifest.fromLegacyManifestJson(manifestJson, configuration);
-    } else {
+    } else if (Integer.valueOf(expoProtocolVersion) == 0) {
       return NewManifest.fromManifestJson(manifestJson, httpResponse, configuration);
+    } else {
+      throw new Exception("Unsupported expo-protocol-version: " + expoProtocolVersion);
     }
   }
 
   public static Manifest getEmbeddedManifest(JSONObject manifestJson, UpdatesConfiguration configuration) throws JSONException {
-    if (configuration.usesLegacyManifest()) {
-      if (manifestJson.has("releaseId")) {
-        return LegacyManifest.fromLegacyManifestJson(manifestJson, configuration);
-      } else {
-        return BareManifest.fromManifestJson(manifestJson, configuration);
-      }
+    if (manifestJson.has("releaseId")) {
+      return LegacyManifest.fromLegacyManifestJson(manifestJson, configuration);
     } else {
-      // bare (embedded) manifests should never have a runtimeVersion field
-      if (manifestJson.has("manifest") || manifestJson.has("runtimeVersion")) {
-        return NewManifest.fromManifestJson(manifestJson, null, configuration);
-      } else {
-        return BareManifest.fromManifestJson(manifestJson, configuration);
-      }
+      return BareManifest.fromManifestJson(manifestJson, configuration);
     }
   }
 }
