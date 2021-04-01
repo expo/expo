@@ -24,6 +24,11 @@ target 'Exponent' do
       'expo-in-app-purchases',
       'expo-payments-stripe',
     ],
+    # Modules for which to include Tests subspec
+    tests: [
+      'expo-updates',
+      'expo-structured-headers',
+    ],
     flags: {
       :inhibit_warnings => false
     }
