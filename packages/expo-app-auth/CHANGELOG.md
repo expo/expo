@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Added info plist plugin. ([#12379](https://github.com/expo/expo/pull/12379) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 10.1.0 — 2021-03-10
 
 ### 🎉 New features
