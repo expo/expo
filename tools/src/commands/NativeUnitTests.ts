@@ -1,9 +1,8 @@
-import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 
-import * as Directories from '../Directories';
 import { androidNativeUnitTests } from './AndroidNativeUnitTests';
+import { iosNativeUnitTests } from './IosNativeUnitTests';
 
 type PlatformName = 'android' | 'ios' | 'both';
 type TestType = 'local' | 'instrumented';
@@ -31,17 +30,8 @@ async function thisAction({
   const runAndroid = platform === 'android' || platform === 'both';
   const runIos = platform === 'ios' || platform === 'both';
   if (runIos) {
-    try {
-      await spawnAsync('fastlane scan', undefined, {
-        cwd: Directories.getIosDir(),
-        stdio: 'inherit',
-      });
-    } catch (e) {
-      console.log('Something went wrong:');
-      console.log(e);
-    }
+    await iosNativeUnitTests();
   }
-
   if (runAndroid) {
     await androidNativeUnitTests({ type });
   }

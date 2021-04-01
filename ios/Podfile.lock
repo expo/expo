@@ -2435,12 +2435,18 @@ PODS:
     - UMCore
   - EXStructuredHeaders (1.0.1):
     - UMCore
+  - EXStructuredHeaders/Tests (1.0.1):
+    - UMCore
   - EXTaskManager (9.1.0):
     - UMAppLoader
     - UMConstantsInterface
     - UMCore
     - UMTaskManagerInterface
   - EXUpdates (0.5.3):
+    - EXStructuredHeaders
+    - React-Core
+    - UMCore
+  - EXUpdates/Tests (0.5.3):
     - EXStructuredHeaders
     - React-Core
     - UMCore
@@ -3380,8 +3386,10 @@ DEPENDENCIES:
   - EXSQLite (from `../packages/expo-sqlite/ios`)
   - EXStoreReview (from `../packages/expo-store-review/ios`)
   - EXStructuredHeaders (from `../packages/expo-structured-headers/ios`)
+  - EXStructuredHeaders/Tests (from `../packages/expo-structured-headers/ios`)
   - EXTaskManager (from `../packages/expo-task-manager/ios`)
   - EXUpdates (from `../packages/expo-updates/ios`)
+  - EXUpdates/Tests (from `../packages/expo-updates/ios`)
   - EXVideoThumbnails (from `../packages/expo-video-thumbnails/ios`)
   - EXWebBrowser (from `../packages/expo-web-browser/ios`)
   - FBLazyVector (from `../react-native-lab/react-native/Libraries/FBLazyVector`)
@@ -5021,6 +5029,6 @@ SPEC CHECKSUMS:
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 7c937a8f5ce894562f2a147325b68d5451b6ecc2
+PODFILE CHECKSUM: 6b88e502c782e433ea3d7a0b6ef8da7e812c5afc
 
 COCOAPODS: 1.10.1
