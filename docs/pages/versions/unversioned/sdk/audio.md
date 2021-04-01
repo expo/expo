@@ -389,14 +389,15 @@ try {
 
 A static convenience method to construct and start a recording is also provided:
 
-- `Audio.Recording.createAsync(options, onRecordingStatusUpdate = null)`
+- `Audio.Recording.createAsync(options, onRecordingStatusUpdate = null, progressUpdateIntervalMillis = null)`
 
-  Creates and starts a recording using the given options, with optional `onRecordingStatusUpdate`.
+  Creates and starts a recording using the given options, with optional `onRecordingStatusUpdate` and `progressUpdateIntervalMillis`.
 
   ```javascript
-  const { recording } = await Audio.Recording.createAsync(
+  const { recording, status } = await Audio.Recording.createAsync(
     options,
     onRecordingStatusUpdate,
+    progressUpdateIntervalMillis,
   );
 
   // Which is equivalent to the following:
@@ -412,7 +413,7 @@ A static convenience method to construct and start a recording is also provided:
 
   - **onRecordingStatusUpdate (_function_)** -- A function taking a single parameter `status` (a dictionary, described in `getStatusAsync`).
 
-  - **progressUpdateIntervalMillis (_number_)** -- The interval between calls of `onRecordingStatusUpdate`.
+  - **progressUpdateIntervalMillis (_number_)** -- The interval between calls of `onRecordingStatusUpdate`. This value defaults to 500 milliseconds.
 
   #### Returns
 
