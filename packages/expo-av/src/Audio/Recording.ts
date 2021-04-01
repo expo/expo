@@ -12,6 +12,7 @@ import { Sound } from './Sound';
 
 export type RecordingOptions = {
   isMeteringEnabled?: boolean;
+  keepAudioActiveHint?: boolean;
   android: {
     extension: string;
     outputFormat: number;
@@ -244,6 +245,29 @@ export class Recording {
   }
 
   // Note that all calls automatically call onRecordingStatusUpdate as a side effect.
+
+  static createAsync = async (
+    options: RecordingOptions = RECORDING_OPTIONS_PRESET_LOW_QUALITY,
+    onRecordingStatusUpdate: ((status: RecordingStatus) => void) | null = null,
+    progressUpdateIntervalMillis: number | null = null
+  ): Promise<{ recording: Recording; status: RecordingStatus }> => {
+    const recording: Recording = new Recording();
+    if (progressUpdateIntervalMillis) {
+      recording._progressUpdateIntervalMillis = progressUpdateIntervalMillis;
+    }
+    recording.setOnRecordingStatusUpdate(onRecordingStatusUpdate);
+    await recording.prepareToRecordAsync({
+      ...options,
+      keepAudioActiveHint: true,
+    });
+    try {
+      const status = await recording.startAsync();
+      return { recording, status };
+    } catch (err) {
+      recording.stopAndUnloadAsync();
+      throw err;
+    }
+  };
 
   // Get status API
 
