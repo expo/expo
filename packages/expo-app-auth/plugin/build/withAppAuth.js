@@ -35,7 +35,7 @@ const withAppAuthInfoPlist = (config, OAuthRedirect) => {
             config.modResults.CFBundleURLTypes = [];
         }
         if (!((_a = config.ios) === null || _a === void 0 ? void 0 : _a.bundleIdentifier)) {
-            config_plugins_1.WarningAggregator.addWarningIOS('expo-app-auth', 'The ios.bundleIdentifier must be defined in the app.json!');
+            config_plugins_1.WarningAggregator.addWarningIOS('expo-app-auth', 'ios.bundleIdentifier must be defined in app.json or app.config.js');
             return config;
         }
         config.modResults.CFBundleURLTypes.push({
