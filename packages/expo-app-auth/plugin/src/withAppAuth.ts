@@ -51,7 +51,7 @@ const withAppAuthInfoPlist: ConfigPlugin<string | void> = (config, OAuthRedirect
     if (!config.ios?.bundleIdentifier) {
       WarningAggregator.addWarningIOS(
         'expo-app-auth',
-        'The ios.bundleIdentifier must be defined in the app.json!'
+        'ios.bundleIdentifier must be defined in app.json or app.config.js'
       );
       return config;
     }
