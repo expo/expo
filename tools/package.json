@@ -12,7 +12,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
-    "clean": "rm -rf build",
+    "clean": "rm -rf build cache",
     "et": "bin/expotools.js",
     "postinstall": "expo-module configure"
   },
