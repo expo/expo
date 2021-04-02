@@ -56,7 +56,7 @@ No additional configuration is necessary to use `react-native-maps` in Expo Go. 
 
 ## Deploying Google Maps to an Android standalone app
 
-> If you've already registered a project for another service or platform, such as Maps for iOS or Google Sign In, you enable the **Maps SDK for Android** on your project and jump to step 4.
+> If you've already registered a project for another Google service on Android, such as Google Sign In, you enable the **Maps SDK for Android** on your project and jump to step 4.
 
 #### 1. Register a Google Cloud API project and enable the Maps SDK for Android
 
@@ -82,11 +82,12 @@ No additional configuration is necessary to use `react-native-maps` in Expo Go. 
 
 #### 4. Add the API key to your project
 
-- Copy the **API Key** value from the Credentials page from the previous step into your `app.json` under the `android.config.googleMaps.apiKey` field.
+- Copy your **API Key** into your `app.json` under the `android.config.googleMaps.apiKey` field.
+- Rebuild the app binary and re-submit to Google Play or sideload it (depending on how you configured your API key) to test that the configuration was successful.
 
 ## Deploying Google Maps to an iOS standalone app
 
-> If you've already registered a project for another service or platform, such as Maps for Android or Google Sign In, you enable the **Maps SDK for iOS** on your project and jump to step 4.
+> If you've already registered a project for another Google service on iOS, such as Google Sign In, you enable the **Maps SDK for iOS** on your project and jump to step 3.
 
 #### 1. Register a Google Cloud API project and enable the Maps SDK for Android
 
@@ -106,7 +107,7 @@ No additional configuration is necessary to use `react-native-maps` in Expo Go. 
 
 - Copy your API key into `app.json` under the `ios.config.googleMapsApiKey` field.
 - In your code, import `{ PROVIDER_GOOGLE }` from `react-native-maps` and add the property `provider=PROVIDER_GOOGLE` to your `<MapView>`. This property works on both iOS and Android.
-- Rebuild the app binary. An easy way to test that the configuration has been successful is to do a simulator build.
+- Rebuild the app binary. An easy way to test that the configuration was successful is to do a simulator build.
 
 ## Configuring for web
 
