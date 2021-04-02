@@ -28,7 +28,7 @@ const renderMethod = (
       <H3Code>
         <InlineCode>
           {apiName ? `${apiName}.` : ''}
-          {name}()
+          {name}({parameters?.map(param => param.name).join(', ')})
         </InlineCode>
       </H3Code>
       {parameters ? <H4>Arguments</H4> : null}
