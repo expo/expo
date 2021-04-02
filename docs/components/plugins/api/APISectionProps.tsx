@@ -28,7 +28,7 @@ const UNKNOWN_VALUE = '...';
 const extractDefaultPropValue = (
   { comment, name }: PropData,
   defaultProps: DefaultPropsDefinitionData
-): string => {
+): string | undefined => {
   const annotationDefault = comment?.tags?.filter((tag: CommentTagData) => tag.tag === 'default');
   if (annotationDefault?.length) {
     return annotationDefault[0].text;
@@ -79,7 +79,7 @@ const renderProps = (
   );
 };
 
-const renderProp = ({ comment, name, type }: PropData, defaultValue: string) => (
+const renderProp = ({ comment, name, type }: PropData, defaultValue?: string) => (
   <LI key={`prop-entry-${name}`}>
     <B>
       {name} (<InlineCode>{resolveTypeName(type)}</InlineCode>)

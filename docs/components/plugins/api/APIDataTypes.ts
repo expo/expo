@@ -136,7 +136,7 @@ export type TypeGeneralData = {
 };
 
 export type TypeDeclarationData = {
-  declaration: {
+  declaration?: {
     signatures: TypeSignaturesData[];
     children: TypePropertyData[];
   };

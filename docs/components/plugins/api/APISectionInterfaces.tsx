@@ -25,7 +25,7 @@ const renderInterface = ({ name, children, comment }: InterfaceDefinitionData): 
         <LI key={interfaceValue.name}>
           <InlineCode>
             {name}.{interfaceValue.name}
-            {interfaceValue.type.declaration.signatures ? '()' : ''}
+            {interfaceValue.type.declaration?.signatures ? '()' : ''}
           </InlineCode>
           <CommentTextBlock comment={interfaceValue.comment} renderers={inlineRenderers} withDash />
         </LI>
