@@ -119,7 +119,11 @@ export enum ApplicationReleaseType {
   APP_STORE = 5,
 }
 
-// @docsMissing
+// @needsAudit
+/**
+ * **iOS Only.** Gets the iOS application release type.
+ * @return Returns a promise which fulfills with [`ApplicationReleaseType`](#applicationreleasetype) enum.
+ */
 export async function getIosApplicationReleaseTypeAsync(): Promise<ApplicationReleaseType> {
   if (!ExpoApplication.getApplicationReleaseTypeAsync) {
     throw new UnavailabilityError('expo-application', 'getApplicationReleaseTypeAsync');
@@ -127,7 +131,13 @@ export async function getIosApplicationReleaseTypeAsync(): Promise<ApplicationRe
   return await ExpoApplication.getApplicationReleaseTypeAsync();
 }
 
-// @docsMissing
+// @needsAudit
+/**
+ * **iOS Only.** Gets the current [Apple Push Notification (APN)](https://developer.apple.com/documentation/bundleresources/entitlements/aps-environment?language=objc)
+ * service environment.
+ * @return Returns a promise which fulfills with `'development'` or `'production'` string based
+ * on the current APN environment.
+ */
 export async function getIosPushNotificationServiceEnvironmentAsync(): Promise<string> {
   if (!ExpoApplication.getPushNotificationServiceEnvironmentAsync) {
     throw new UnavailabilityError('expo-application', 'getPushNotificationServiceEnvironmentAsync');
