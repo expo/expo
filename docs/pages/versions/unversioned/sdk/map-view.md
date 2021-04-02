@@ -97,7 +97,7 @@ No additional configuration is necessary to use `react-native-maps` in Expo Go. 
 #### 2. Create an API key
 
 - Go to [Google Cloud Credential manager](https://console.cloud.google.com/apis/credentials) and click **Create Credentials**, then **API Key**.
-- In the modal, click **RESTRICT KEY**.
+- In the modal, click **Restrict Key**.
 - Choose the **iOS apps** radio button under **Key restriction**.
 - Under **Accept requests from an iOS application with one of these bundle identifiers**, click the **Add an item** button.
 - Add your `ios.bundleIdentifier` from `app.json` eg: `com.company.myapp`) to the bundle ID field.
