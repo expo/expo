@@ -89,7 +89,8 @@
     "transformer-proxy": "^0.3.4",
     "uuid": "^3.1.0",
     "ws": "^6.1.0",
-    "xcode": "^2.0.0"
+    "xcode": "^2.0.0",
+    "typedoc": "^0.20.32"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
