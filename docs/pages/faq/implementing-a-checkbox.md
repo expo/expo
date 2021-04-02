@@ -31,18 +31,30 @@ function MyCheckbox() {
 
   return (
     <Pressable
-      style={[
-        styles.checkboxContainer,
-        checked && styles.checkboxContainerChecked,
-      ]}
+      style={[styles.checkboxBase, checked && styles.checkboxChecked]}
       onPress={onCheckmarkPress}>
       {checked && <Ionicons name="checkmark" size={24} color="white" />}
     </Pressable>
   );
 }
 
+function App() {
+  return (
+    <View style={styles.appContainer}>
+      <Text style={styles.appTitle}>Checkbox Example</Text>
+
+      <View style={styles.checkboxContainer}>
+        <MyCheckbox />
+        <Text style={styles.checkboxLabel}>{`⬅️ Click!`}</Text>
+      </View>
+    </View>
+  );
+}
+
+export default App;
+
 const styles = StyleSheet.create({
-  checkboxContainer: {
+  checkboxBase: {
     width: 24,
     height: 24,
     justifyContent: 'center',
@@ -53,31 +65,32 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
 
-  checkboxContainerChecked: {
+  checkboxChecked: {
     backgroundColor: 'coral',
   },
+
+  appContainer: {
+    flex: 1,
+    alignItems: 'center',
+  },
+
+  appTitle: {
+    marginVertical: 16,
+    fontWeight: 'bold',
+    fontSize: 24,
+  },
+
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  checkboxLabel: {
+    marginLeft: 8,
+    fontWeight: 500,
+    fontSize: 18,
+  },
 });
-
-function App() {
-  return (
-    <View style={{ flex: 1, alignItems: 'center' }}>
-      <View style={{ marginVertical: 16 }}>
-        <Text style={{ marginLeft: 8, fontWeight: 'bold', fontSize: 24 }}>
-          Checkbox Example
-        </Text>
-      </View>
-
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <MyCheckbox />
-        <Text style={{ marginLeft: 8, fontWeight: 'semibold', fontSize: 18 }}>
-          Click me!
-        </Text>
-      </View>
-    </View>
-  );
-}
-
-export default App;
 ```
 
 </SnackInline>
@@ -88,64 +101,212 @@ _Note: https://icons.expo.fyi is a great resource for finding all of the icons a
 
 This checkbox isn't useful in this state because the `checked` value is only accessible from within the component - more often than not you'll want to control the checkbox from outside. This is achievable by defining `checked` and `onChange` as props that are passed into the checkbox:
 
+<SnackInline>
 
 ```jsx
 import React, { useState } from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-function MyCheckbox({ checked, onChange }) {
+function MyCheckbox({
+  /* @info Define checked and onChange as props instead of state*/ checked,
+  onChange /* @end */,
+}) {
   function onCheckmarkPress() {
     onChange(!checked);
   }
 
   return (
     <Pressable
-      style={[styles.checkboxContainer, checked && styles.checkboxContainerChecked]}
+      style={[styles.checkboxBase, checked && styles.checkboxChecked]}
       onPress={onCheckmarkPress}>
       {checked && <Ionicons name="checkmark" size={24} color="white" />}
     </Pressable>
   );
 }
 
-// ...styles
+function App() {
+  /* @info Move the checked and onChange values outside of the checkbox component */
+  const [checked, onChange] = useState(false);
+  /* @end */
+
+  return (
+    <View style={styles.appContainer}>
+      <Text style={styles.appTitle}>Checkbox Example</Text>
+
+      <View style={styles.checkboxContainer}>
+        <MyCheckbox
+          /* @info Pass the checked and onChange props to the checkbox */ checked={checked}
+          onChange={onChange} /* @end */
+        />
+        <Text style={styles.checkboxLabel}>{`⬅️ Click!`}</Text>
+      </View>
+    </View>
+  );
+}
+
+export default App;
+
+const styles = StyleSheet.create({
+  checkboxBase: {
+    width: 24,
+    height: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: 'coral',
+    backgroundColor: 'transparent',
+  },
+
+  checkboxChecked: {
+    backgroundColor: 'coral',
+  },
+
+  appContainer: {
+    flex: 1,
+    alignItems: 'center',
+  },
+
+  appTitle: {
+    marginVertical: 16,
+    fontWeight: 'bold',
+    fontSize: 24,
+  },
+
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  checkboxLabel: {
+    marginLeft: 8,
+    fontWeight: 500,
+    fontSize: 18,
+  },
+});
 ```
+
+</SnackInline>
 
 _Note: This pattern is referred to as a "controlled component" - you can read more about them here: https://reactjs.org/docs/forms.html#controlled-components_
-
-Now the checkbox can be fully controlled from a parent component like so:
-
-```jsx
-import React, { useState } from 'react';
-import MyCheckbox from './MyCheckbox';
-
-function MyForm() {
-  const [checked, onChange] = useState(false);
-
-  return <MyCheckbox checked={checked} onChange={onChange} />;
-}
-```
 
 ## Extending the interface
 
 It's common enough to need to render different styles when the checkmark is `checked` and when it is not. Let's add this to the checkbox's props and make it more reusable:
 
+<SnackInline>
+
 ```jsx
 import React, { useState } from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-function MyCheckbox({ checked, onChange, activeButtonStyle, inactiveButtonStyle, iconProps }) {
+function MyCheckbox({
+  checked,
+  onChange,
+  /* @info Add style and icon props to make the checkbox reusable throughout your codebase */ buttonStyle = {},
+  activeButtonStyle = {},
+  inactiveButtonStyle = {},
+  activeIconProps = {},
+  inactiveIconProps = {},
+  /* @end */
+}) {
   function onCheckmarkPress() {
     onChange(!checked);
   }
 
+  /* @info Set icon props based on the checked value */
+  const iconProps = checked ? activeIconProps : inactiveIconProps; /* @end */
+
   return (
-    <Pressable style={checked ? activeButtonStyle : inactiveButtonStyle} onPress={onCheckmarkPress}>
-      {checked && <Ionicons name="checkmark" size={24} color="white" {...iconProps} />}
+    <Pressable
+      style={[
+        buttonStyle,
+        /* @info Pass the active / inactive style props to the button based on the current checked value */ checked
+          ? activeButtonStyle
+          : inactiveButtonStyle,
+        /* @end */
+      ]}
+      onPress={onCheckmarkPress}>
+      {checked && (
+        <Ionicons
+          name="checkmark"
+          size={24}
+          color="white"
+          /* @info Pass along any custom icon properties to the Icon component */
+          {...iconProps}
+          /* @end */
+        />
+      )}
     </Pressable>
   );
 }
+
+function App() {
+  const [checked, onChange] = useState(false);
+
+  return (
+    <View style={styles.appContainer}>
+      <Text style={styles.appTitle}>Checkbox Example</Text>
+
+      <View style={styles.checkboxContainer}>
+        <MyCheckbox
+          checked={checked}
+          onChange={onChange}
+          /* @info Pass in base and active styles for the checkbox */
+          buttonStyle={styles.checkboxBase}
+          activeButtonStyle={styles.checkboxChecked}
+          /* @end */
+        />
+        <Text style={styles.checkboxLabel}>{`⬅️ Click!`}</Text>
+      </View>
+    </View>
+  );
+}
+
+export default App;
+
+const styles = StyleSheet.create({
+  checkboxBase: {
+    width: 24,
+    height: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: 'coral',
+    backgroundColor: 'transparent',
+  },
+
+  checkboxChecked: {
+    backgroundColor: 'coral',
+  },
+
+  appContainer: {
+    flex: 1,
+    alignItems: 'center',
+  },
+
+  appTitle: {
+    marginVertical: 16,
+    fontWeight: 'bold',
+    fontSize: 24,
+  },
+
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  checkboxLabel: {
+    marginLeft: 8,
+    fontWeight: 500,
+    fontSize: 18,
+  },
+});
 ```
+
+</SnackInline>
 
 Now this checkbox ticks all of the boxes of what it should be. It toggles between `checked` states, can be controlled, and its styles are fully customizable.
