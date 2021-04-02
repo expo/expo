@@ -28,7 +28,7 @@ import App from './App';
 registerRootComponent(App);
 ```
 
-where `registerRootComponent` is:
+where `registerRootComponent` is implemented as:
 
 ```js
 function registerRootComponent(component) {
@@ -63,5 +63,5 @@ In the bare workflow, ensure that the names you are registering on the JavaScrip
 
 This error can also occur in a few other scenarios, but it's less predictable and the fixes would be more specific to your project. For example, some other cases are:
 
-- You're connecting to the wrong project's local packager. Try closing out other Expo CLI or React Native CLI processes (find them with `ps -A | grep "expo\|react-native"`)
-- If this error is only occuring in your production app, then try running the app locally in production mode with `expo start --no-dev --minify` to find the source of the error
+- You're connecting to the wrong project's local packager. Try closing out other Expo CLI or React Native CLI processes (find them with `ps -A | grep "expo\|react-native"`).
+- If this error is only occuring in your production app, then try running the app locally in production mode with `expo start --no-dev --minify` to find the source of the error.
