@@ -1,5 +1,5 @@
 ---
-title: Building With EAS
+title: Building with EAS
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -10,7 +10,9 @@ If you would like to use EAS Build to generate and distribute builds of the Deve
 
 The easiest way to do this is to duplicate the scheme for your main application. [You can find Apple's instructions for how to do so here](https://developer.apple.com/library/archive/documentation/ToolsLanguages/Conceptual/Xcode_Overview/ManagingSchemes.html)
 
-Once this is done, you will need to set the `Build Configuration` for your Development Client to `Debug`
+Once this is done, you will need to set the `Build Configuration` for your Development Client to `Debug`. To do that you need to click on your scheme, then click on Edit Scheme, then Archive and change `Build Configuration` to `Debug`.
+
+Then click on Manage schemes and make sure your Development Client scheme is `shared`.
 
 ## Setting up EAS
 
@@ -42,7 +44,8 @@ Assuming you named your new XCode scheme `Project - Development Client`, edit yo
       "development": {
         "workflow": "generic",
         "distribution": "internal",
-        "scheme": "Project - Development Client"
+        "scheme": "Project - Development Client",
+        "schemeBuildConfiguration": "Debug"
       }
     }
   }
@@ -65,7 +68,7 @@ Register any devices you would like to use your development client on to your ad
 Generate the build signed with your ad hoc provisioning profile.
 <InstallSection packageName="expo-dev-launcher" cmd={["eas build --profile development --platform ios"]} hideBareInstructions />
 
-You will need to generate a new build to install successfully on any new builds added to your provisioning profile.  [You can find more guidance on distributing your app to your team here.](https://docs.expo.io/build/internal-distribution/)
+You will need to generate a new build to install successfully on any new builds added to your provisioning profile. [You can find more guidance on distributing your app to your team here.](https://docs.expo.io/build/internal-distribution/)
 
 ### For Android:
 
