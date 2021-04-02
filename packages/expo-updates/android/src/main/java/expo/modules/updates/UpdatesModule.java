@@ -25,7 +25,7 @@ import expo.modules.updates.loader.RemoteLoader;
 import expo.modules.updates.manifest.ManifestMetadata;
 
 // this unused import must stay because of versioning
-import expo.modules.updates.UpdatesConfiguration;
+
 
 public class UpdatesModule extends ExportedModule {
   private static final String NAME = "ExpoUpdates";
@@ -140,7 +140,7 @@ public class UpdatesModule extends ExportedModule {
       JSONObject extraHeaders = ManifestMetadata.getServerDefinedHeaders(databaseHolder.getDatabase(), updatesService.getConfiguration());
       databaseHolder.releaseDatabase();
 
-      FileDownloader.downloadManifest(updatesService.getConfiguration(), extraHeaders, getContext(), new FileDownloader.ManifestDownloadCallback() {
+      updatesService.getFileDownloader().downloadManifest(updatesService.getConfiguration(), extraHeaders, getContext(), new FileDownloader.ManifestDownloadCallback() {
         @Override
         public void onFailure(String message, Exception e) {
           promise.reject("ERR_UPDATES_CHECK", message, e);
@@ -189,9 +189,8 @@ public class UpdatesModule extends ExportedModule {
 
       AsyncTask.execute(() -> {
         final DatabaseHolder databaseHolder = updatesService.getDatabaseHolder();
-        new RemoteLoader(getContext(), updatesService.getConfiguration(), databaseHolder.getDatabase(), updatesService.getDirectory())
+        new RemoteLoader(getContext(), updatesService.getConfiguration(), databaseHolder.getDatabase(), updatesService.getFileDownloader(), updatesService.getDirectory())
           .start(
-            updatesService.getConfiguration().getUpdateUrl(),
             new RemoteLoader.LoaderCallback() {
               @Override
               public void onFailure(Exception e) {
