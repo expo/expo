@@ -65,7 +65,7 @@ public class FileDownloader {
   }
 
   private File getCacheDirectory(Context context) {
-    return new File(context.getApplicationContext().getCacheDir(), "okhttp");
+    return new File(context.getCacheDir(), "okhttp");
   }
 
   public void downloadFileToPath(Request request, final File destination, final FileDownloadCallback callback) {
