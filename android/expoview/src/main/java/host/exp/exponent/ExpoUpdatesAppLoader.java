@@ -349,7 +349,7 @@ public class ExpoUpdatesAppLoader {
 
   private JSONObject processManifest(JSONObject manifest) throws JSONException {
     Uri parsedManifestUrl = Uri.parse(mManifestUrl);
-    if (!manifest.has(ExponentManifest.MANIFEST_IS_VERIFIED_KEY) &&
+    if (!manifest.optBoolean(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, false) &&
         isThirdPartyHosted(parsedManifestUrl) &&
         !Constants.isStandaloneApp()) {
       // Sandbox third party apps and consider them verified
