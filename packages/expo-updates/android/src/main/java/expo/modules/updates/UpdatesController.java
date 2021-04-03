@@ -25,6 +25,7 @@ import expo.modules.updates.launcher.NoDatabaseLauncher;
 import expo.modules.updates.launcher.Launcher;
 import expo.modules.updates.launcher.SelectionPolicy;
 import expo.modules.updates.launcher.SelectionPolicyFilterAware;
+import expo.modules.updates.loader.FileDownloader;
 import expo.modules.updates.loader.LoaderTask;
 import expo.modules.updates.manifest.Manifest;
 
@@ -51,6 +52,7 @@ public class UpdatesController {
   private Launcher mLauncher;
   private DatabaseHolder mDatabaseHolder;
   private SelectionPolicy mSelectionPolicy;
+  private FileDownloader mFileDownloader;
 
   // launch conditions
   private boolean mIsLoaderTaskFinished = false;
@@ -60,6 +62,7 @@ public class UpdatesController {
     mUpdatesConfiguration = updatesConfiguration;
     mDatabaseHolder = new DatabaseHolder(UpdatesDatabase.getInstance(context));
     mSelectionPolicy = new SelectionPolicyFilterAware(UpdatesUtils.getRuntimeVersion(updatesConfiguration));
+    mFileDownloader = new FileDownloader(context);
     if (context instanceof ReactApplication) {
       mReactNativeHost = new WeakReference<>(((ReactApplication) context).getReactNativeHost());
     }
@@ -209,6 +212,10 @@ public class UpdatesController {
     return mSelectionPolicy;
   }
 
+  public FileDownloader getFileDownloader() {
+    return mFileDownloader;
+  }
+
   public boolean isEmergencyLaunch() {
     return mIsEmergencyLaunch;
   }
@@ -228,7 +235,7 @@ public class UpdatesController {
       mIsEmergencyLaunch = true;
     }
 
-    new LoaderTask(mUpdatesConfiguration, mDatabaseHolder, mUpdatesDirectory, mSelectionPolicy, new LoaderTask.LoaderTaskCallback() {
+    new LoaderTask(mUpdatesConfiguration, mDatabaseHolder, mUpdatesDirectory, mFileDownloader, mSelectionPolicy, new LoaderTask.LoaderTaskCallback() {
       @Override
       public void onFailure(Exception e) {
         mLauncher = new NoDatabaseLauncher(context, mUpdatesConfiguration, e);
@@ -296,7 +303,7 @@ public class UpdatesController {
     final String oldLaunchAssetFile = mLauncher.getLaunchAssetFile();
 
     UpdatesDatabase database = getDatabase();
-    final DatabaseLauncher newLauncher = new DatabaseLauncher(mUpdatesConfiguration, mUpdatesDirectory, mSelectionPolicy);
+    final DatabaseLauncher newLauncher = new DatabaseLauncher(mUpdatesConfiguration, mUpdatesDirectory, mFileDownloader, mSelectionPolicy);
     newLauncher.launch(database, context, new Launcher.LauncherCallback() {
       @Override
       public void onFailure(Exception e) {
