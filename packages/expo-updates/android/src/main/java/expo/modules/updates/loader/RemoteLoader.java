@@ -1,7 +1,6 @@
 package expo.modules.updates.loader;
 
 import android.content.Context;
-import android.net.Uri;
 import android.util.Log;
 
 import org.json.JSONObject;
@@ -27,6 +26,7 @@ public class RemoteLoader {
   private Context mContext;
   private UpdatesConfiguration mConfiguration;
   private UpdatesDatabase mDatabase;
+  private FileDownloader mFileDownloader;
   private File mUpdatesDirectory;
 
   private Manifest mManifest;
@@ -53,16 +53,17 @@ public class RemoteLoader {
     boolean onManifestLoaded(Manifest manifest);
   }
 
-  public RemoteLoader(Context context, UpdatesConfiguration configuration, UpdatesDatabase database, File updatesDirectory) {
+  public RemoteLoader(Context context, UpdatesConfiguration configuration, UpdatesDatabase database, FileDownloader fileDownloader, File updatesDirectory) {
     mContext = context;
     mConfiguration = configuration;
     mDatabase = database;
+    mFileDownloader = fileDownloader;
     mUpdatesDirectory = updatesDirectory;
   }
 
   // lifecycle methods for class
 
-  public void start(Uri url, LoaderCallback callback) {
+  public void start(LoaderCallback callback) {
     if (mCallback != null) {
       callback.onFailure(new Exception("RemoteLoader has already started. Create a new instance in order to load multiple URLs in parallel."));
       return;
@@ -71,7 +72,7 @@ public class RemoteLoader {
     mCallback = callback;
     JSONObject extraHeaders = ManifestMetadata.getServerDefinedHeaders(mDatabase, mConfiguration);
 
-    FileDownloader.downloadManifest(mConfiguration, extraHeaders, mContext, new FileDownloader.ManifestDownloadCallback() {
+    mFileDownloader.downloadManifest(mConfiguration, extraHeaders, mContext, new FileDownloader.ManifestDownloadCallback() {
       @Override
       public void onFailure(String message, Exception e) {
         finishWithError(message, e);
@@ -186,7 +187,7 @@ public class RemoteLoader {
         continue;
       }
 
-      FileDownloader.downloadAsset(assetEntity, mUpdatesDirectory, mConfiguration, mContext, new FileDownloader.AssetDownloadCallback() {
+      mFileDownloader.downloadAsset(assetEntity, mUpdatesDirectory, mConfiguration, new FileDownloader.AssetDownloadCallback() {
         @Override
         public void onFailure(Exception e, AssetEntity assetEntity) {
           Log.e(TAG, "Failed to download asset from " + assetEntity.url, e);

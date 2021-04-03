@@ -18,6 +18,7 @@ import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.Launcher;
 import expo.modules.updates.launcher.SelectionPolicy;
+import expo.modules.updates.loader.FileDownloader;
 
 public class UpdatesService implements InternalModule, UpdatesInterface {
 
@@ -48,6 +49,11 @@ public class UpdatesService implements InternalModule, UpdatesInterface {
   @Override
   public File getDirectory() {
     return UpdatesController.getInstance().getUpdatesDirectory();
+  }
+
+  @Override
+  public FileDownloader getFileDownloader() {
+    return UpdatesController.getInstance().getFileDownloader();
   }
 
   @Override
