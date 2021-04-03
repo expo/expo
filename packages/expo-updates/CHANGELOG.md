@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed Updates module methods in Android Expo Go by refactoring FileDownloader to have mostly instance methods rather than static methods.
+
 ## 0.5.3 — 2021-03-30
 
 _This version does not introduce any user-facing changes._

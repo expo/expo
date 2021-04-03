@@ -38,7 +38,7 @@ public class FileDownloader {
 
   private static final String TAG = FileDownloader.class.getSimpleName();
 
-  private static OkHttpClient sClient;
+  private OkHttpClient mClient;
 
   public interface FileDownloadCallback {
     void onFailure(Exception e);
@@ -55,28 +55,21 @@ public class FileDownloader {
     void onSuccess(AssetEntity assetEntity, boolean isNew);
   }
 
-  private static OkHttpClient getClient(Context context) {
-    if (sClient == null) {
-      sClient = new OkHttpClient.Builder().cache(getCache(context)).build();
-    } else {
-      if (sClient.cache() == null || !getCacheDirectory(context).getAbsolutePath().equals(sClient.cache().directory().getAbsolutePath())) {
-        throw new AssertionError("Error: trying to access static OkHttpClient that was created with a different context.");
-      }
-    }
-    return sClient;
+  public FileDownloader(Context context) {
+    mClient = new OkHttpClient.Builder().cache(getCache(context)).build();
   }
 
-  private static Cache getCache(Context context) {
+  private Cache getCache(Context context) {
     int cacheSize = 50 * 1024 * 1024; // 50 MiB
     return new Cache(getCacheDirectory(context), cacheSize);
   }
 
-  private static File getCacheDirectory(Context context) {
+  private File getCacheDirectory(Context context) {
     return new File(context.getCacheDir(), "okhttp");
   }
 
-  public static void downloadFileToPath(Request request, final File destination, final Context context, final FileDownloadCallback callback) {
-    downloadData(request, context, new Callback() {
+  public void downloadFileToPath(Request request, final File destination, final FileDownloadCallback callback) {
+    downloadData(request, new Callback() {
       @Override
       public void onFailure(Call call, IOException e) {
         callback.onFailure(e);
@@ -102,9 +95,9 @@ public class FileDownloader {
     });
   }
 
-  public static void downloadManifest(final UpdatesConfiguration configuration, JSONObject extraHeaders, final Context context, final ManifestDownloadCallback callback) {
+  public void downloadManifest(final UpdatesConfiguration configuration, JSONObject extraHeaders, final Context context, final ManifestDownloadCallback callback) {
     try {
-      downloadData(setHeadersForManifestUrl(configuration, extraHeaders, context), context, new Callback() {
+      downloadData(setHeadersForManifestUrl(configuration, extraHeaders, context), new Callback() {
         @Override
         public void onFailure(Call call, IOException e) {
           callback.onFailure("Failed to download manifest from URL: " + configuration.getUpdateUrl(), e);
@@ -141,10 +134,10 @@ public class FileDownloader {
 
             if (signature != null && !isUnsignedFromXDL) {
               Crypto.verifyPublicRSASignature(
-                  manifestString,
-                  signature,
-                  context,
-                  new Crypto.RSASignatureListener() {
+                manifestString,
+                signature,
+                FileDownloader.this,
+                new Crypto.RSASignatureListener() {
                     @Override
                     public void onError(Exception e, boolean isNetworkError) {
                       callback.onFailure("Could not validate signed manifest", e);
@@ -196,7 +189,7 @@ public class FileDownloader {
     }
   }
 
-  public static void downloadAsset(final AssetEntity asset, File destinationDirectory, UpdatesConfiguration configuration, Context context, final AssetDownloadCallback callback) {
+  public void downloadAsset(final AssetEntity asset, File destinationDirectory, UpdatesConfiguration configuration, final AssetDownloadCallback callback) {
     if (asset.url == null) {
       callback.onFailure(new Exception("Could not download asset " + asset.key + " with no URL"), asset);
       return;
@@ -210,7 +203,7 @@ public class FileDownloader {
       callback.onSuccess(asset, false);
     } else {
       try {
-        downloadFileToPath(setHeadersForUrl(asset.url, configuration), path, context, new FileDownloadCallback() {
+        downloadFileToPath(setHeadersForUrl(asset.url, configuration), path, new FileDownloadCallback() {
           @Override
           public void onFailure(Exception e) {
             callback.onFailure(e, asset);
@@ -230,18 +223,18 @@ public class FileDownloader {
     }
   }
 
-  public static void downloadData(Request request, Context context, Callback callback) {
-    downloadData(request, callback, context, false);
+  public void downloadData(Request request, Callback callback) {
+    downloadData(request, callback, false);
   }
 
-  private static void downloadData(final Request request, final Callback callback, Context context, final boolean isRetry) {
-    getClient(context).newCall(request).enqueue(new Callback() {
+  private void downloadData(final Request request, final Callback callback, final boolean isRetry) {
+    mClient.newCall(request).enqueue(new Callback() {
       @Override
       public void onFailure(Call call, IOException e) {
         if (isRetry) {
           callback.onFailure(call, e);
         } else {
-          downloadData(request, callback, context, true);
+          downloadData(request, callback, true);
         }
       }
 
