@@ -1,5 +1,5 @@
 ---
-title: 'zIndex in React Native'
+title: 'Stacking overlapping views with zIndex in Expo and React Native apps'
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
