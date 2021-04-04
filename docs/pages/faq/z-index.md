@@ -122,35 +122,15 @@ Along with specifying how the component will stack, you can break out of the def
 export default function App() {
   return (
     <View style={styles.root}>
-      <View
-        style={[
-          styles.container,
-          {
-            backgroundColor: '#e1e4e8',
-          },
-        ]}>
+      <View style={[styles.container, { backgroundColor: '#e1e4e8' }]}>
         <View
           style={[
             styles.item,
-            {
-              backgroundColor: '#6638f0',
-              position: 'absolute',
-              top: 32,
-              left: 32,
-              zIndex: 1,
-            },
+            { backgroundColor: '#6638f0', position: 'absolute', top: 32, left: 32, zIndex: 1 },
           ]}
         />
         <View style={[styles.item, { backgroundColor: '#5cc9f5' }]} />
-        <View
-          style={[
-            styles.item,
-            {
-              backgroundColor: '#4af2a1',
-              marginTop: -16,
-            },
-          ]}
-        />
+        <View style={[styles.item, { backgroundColor: '#4af2a1', marginTop: -16 }]} />
       </View>
     </View>
   );
@@ -165,35 +145,15 @@ You can even make the component extend outside of the parent's visual bounds.
 export default function App() {
   return (
     <View style={styles.root}>
-      <View
-        style={[
-          styles.container,
-          {
-            backgroundColor: '#e1e4e8',
-          },
-        ]}>
+      <View style={[styles.container, { backgroundColor: '#e1e4e8' }]}>
         <View
           style={[
             styles.item,
-            {
-              backgroundColor: '#6638f0',
-              position: 'absolute',
-              top: -32,
-              left: -32,
-              zIndex: 1,
-            },
+            { backgroundColor: '#6638f0', position: 'absolute', top: -32, left: -32, zIndex: 1 },
           ]}
         />
         <View style={[styles.item, { backgroundColor: '#5cc9f5' }]} />
-        <View
-          style={[
-            styles.item,
-            {
-              backgroundColor: '#4af2a1',
-              marginTop: -16,
-            },
-          ]}
-        />
+        <View style={[styles.item, { backgroundColor: '#4af2a1', marginTop: -16 }]} />
       </View>
     </View>
   );
@@ -208,45 +168,17 @@ While a `position: 'absolute'` component may seem like it operates independently
 export default function App() {
   return (
     <View style={styles.root}>
-      <View
-        style={[
-          styles.container,
-          {
-            backgroundColor: '#e1e4e8',
-          },
-        ]}>
+      <View style={[styles.container, { backgroundColor: '#e1e4e8' }]}>
         <View
           style={[
             styles.item,
-            {
-              backgroundColor: '#6638f0',
-              position: 'absolute',
-              top: -32,
-              left: -32,
-              zIndex: 100,
-            },
+            { backgroundColor: '#6638f0', position: 'absolute', top: -32, left: -32, zIndex: 100 },
           ]}
         />
         <View style={[styles.item, { backgroundColor: '#5cc9f5' }]} />
-        <View
-          style={[
-            styles.item,
-            {
-              backgroundColor: '#4af2a1',
-              marginTop: -16,
-            },
-          ]}
-        />
+        <View style={[styles.item, { backgroundColor: '#4af2a1', marginTop: -16 }]} />
       </View>
-      <View
-        style={[
-          styles.container,
-          {
-            backgroundColor: '#dcffe4',
-            marginTop: -284,
-          },
-        ]}
-      />
+      <View style={[styles.container, { backgroundColor: '#dcffe4', marginTop: -284 }]} />
     </View>
   );
 }
