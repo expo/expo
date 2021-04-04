@@ -4,7 +4,7 @@ title: 'zIndex in React Native'
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
-`zIndex` is the React Native analog of [CSS's `z-index` property](https://developer.mozilla.org/en-US/docs/Web/CSS/z-index) which lets the developer control what order components are displayed over one another.
+`zIndex` is the Expo and React Native analog of [CSS's `z-index` property](https://developer.mozilla.org/en-US/docs/Web/CSS/z-index) which lets the developer control the order in which components are displayed over one another.
 
 ## Default `zIndex` behavior
 
