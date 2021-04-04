@@ -88,7 +88,7 @@ export default function App() {
 
 ## Changing the `zIndex` of an element
 
-If you want to change how a component stacks without changing the order that it occurs in the component tree, use `zIndex`:
+If you want to change how a component stacks without changing the order in which it occurs in the component tree, use `zIndex`:
 
 <ImageSpotlight style={{maxWidth: 360}} alt="Three components where the second is stacked above the first and third" src="/static/images/z-index/relative-z-index.png" />
 
