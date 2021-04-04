@@ -8,7 +8,7 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
 ## Default `zIndex` behavior
 
-Without specifying an explicit `zIndex` or `position`, components that occur later in the tree have a higher `zIndex`.
+Without specifying an explicit `zIndex` or `position`, components that occur later in the tree have a higher z-order.
 
 <ImageSpotlight style={{maxWidth: 360}} alt="Three square components in a square parent container" src="/static/images/z-index/default-layout.png" />
 
