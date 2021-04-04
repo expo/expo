@@ -114,7 +114,7 @@ export default function App() {
 
 ## Manually positioning your component
 
-Along with specifying how the component will stack, you can break out of the default layout set by the component's parent and by changing the `position` property on that component to `'absolute'` and specifying the distance it should be from its parent with the style properties `top`, `right`, `bottom`, and `left`.
+Along with specifying how the component will stack, you can break out of the default layout set by the component's parent by changing the `position` property on the child component to `'absolute'` and specifying the distance it should be from its parent with the style properties `top`, `right`, `bottom`, and `left`.
 
 <ImageSpotlight style={{maxWidth: 360}} alt="Position absolute example" src="/static/images/z-index/absolute-position.png" />
 
