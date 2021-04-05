@@ -43,4 +43,4 @@ And here's the result of this code:
 
 <img width="973" alt="Screen Shot 2021-03-28 at 1 02 59 PM" src="https://user-images.githubusercontent.com/6455018/112760791-34f99300-8fc6-11eb-9acf-459641cb02e2.png" />
 
-React Native's `<Button />` component does not accept a `style` prop, and it's `color` prop is limited and appears differently across Android, iOS, and the web. With the `<Pressable />` component, we can create custom buttons that fit our app's design. Those styles will also be the same across Android, iOS, and the web, which will give our apps a consistent look on every platform.
+React Native's `<Button />` component does not accept a `style` prop, and its `color` prop is limited and appears differently across Android, iOS, and the web. With the `<Pressable />` component, we can create custom buttons that fit our app's design. Those styles will also be the same across Android, iOS, and the web, which will give our apps a consistent look on every platform.
