@@ -5,7 +5,7 @@ title: Adding a border to text in Expo and React Native apps
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import SnackInline from '~/components/plugins/SnackInline';
 
-To add a border to a `Text` component in React Native, we will need to use a `View` component.
+To add a border to a `Text` component in Expo and React Native apps, we will need to use a `View` component.
 
 We will be adding a border to text, similar to the one shown below.
 
