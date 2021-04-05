@@ -73,7 +73,6 @@ module.exports = {
       ],
     });
 
-
     // Fix inline or browser MDX usage: https://mdxjs.com/getting-started/webpack#running-mdx-in-the-browser
     // Webpack 4
     config.node = { fs: 'empty' };
