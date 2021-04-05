@@ -15,8 +15,7 @@
 @property (nonatomic, strong) NSDictionary *easNewManifest;
 @property (nonatomic, strong) NSDictionary *bareManifest;
 
-@property (nonatomic, strong) EXUpdatesConfig *configUsesLegacyManifestTrue;
-@property (nonatomic, strong) EXUpdatesConfig *configUsesLegacyManifestFalse;
+@property (nonatomic, strong) EXUpdatesConfig *config;
 @property (nonatomic, strong) EXUpdatesDatabase *database;
 
 @end
@@ -46,14 +45,8 @@
     @"commitTime": @(1609975977832)
   };
 
-  _configUsesLegacyManifestTrue = [EXUpdatesConfig configWithDictionary:@{
+  _config = [EXUpdatesConfig configWithDictionary:@{
     @"EXUpdatesURL": @"https://exp.host/@test/test",
-    @"EXUpdatesUsesLegacyManifest": @(YES)
-  }];
-
-  _configUsesLegacyManifestFalse = [EXUpdatesConfig configWithDictionary:@{
-    @"EXUpdatesURL": @"https://exp.host/@test/test",
-    @"EXUpdatesUsesLegacyManifest": @(NO)
   }];
 
   _database = [EXUpdatesDatabase new];
@@ -66,37 +59,31 @@
 
 - (void)testUpdateWithManifest_Legacy
 {
-  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_legacyManifest response:nil config:_configUsesLegacyManifestTrue database:_database];
+  NSError *error;
+  NSURLResponse* response =  [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://example.com"] statusCode:200 HTTPVersion:nil headerFields:@{}];
+
+  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_legacyManifest response:response config:_config database:_database error:&error];
   XCTAssert(update != nil);
 }
 
 - (void)testUpdateWithManifest_New
 {
-  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_easNewManifest response:nil config:_configUsesLegacyManifestFalse database:_database];
+  NSError *error;
+  NSURLResponse* response =  [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://example.com"] statusCode:200 HTTPVersion:nil headerFields:@{@"expo-protocol-version" : @"0"}];
+
+  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_easNewManifest response:response config:_config database:_database error:&error];
   XCTAssert(update != nil);
 }
 
 - (void)testUpdateWithEmbeddedManifest_Legacy
 {
-  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithEmbeddedManifest:_legacyManifest config:_configUsesLegacyManifestTrue database:_database];
-  XCTAssert(update != nil);
-}
-
-- (void)testUpdateWithEmbeddedManifest_New
-{
-  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithEmbeddedManifest:_easNewManifest config:_configUsesLegacyManifestFalse database:_database];
+  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithEmbeddedManifest:_legacyManifest config:_config database:_database];
   XCTAssert(update != nil);
 }
 
 - (void)testUpdateWithEmbeddedManifest_Legacy_Bare
 {
-  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithEmbeddedManifest:_bareManifest config:_configUsesLegacyManifestTrue database:_database];
-  XCTAssert(update != nil);
-}
-
-- (void)testUpdateWithEmbeddedManifest_New_Bare
-{
-  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithEmbeddedManifest:_bareManifest config:_configUsesLegacyManifestFalse database:_database];
+  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithEmbeddedManifest:_bareManifest config:_config database:_database];
   XCTAssert(update != nil);
 }
 
