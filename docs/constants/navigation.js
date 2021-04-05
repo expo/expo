@@ -167,8 +167,6 @@ const sections = [
   {
     name: 'Fundamentals',
     reference: [
-      'Managed Workflow Walkthrough',
-      'Up and Running',
       'Expo CLI',
       'Using libraries',
       'Viewing logs',
@@ -181,6 +179,7 @@ const sections = [
       'Publishing updates',
       'Upgrading Expo SDK',
       'Developing for Web',
+      'Snack: a playground in your browser',
       'Ejecting to Bare Workflow',
       'Glossary of terms',
     ],
