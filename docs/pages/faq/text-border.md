@@ -15,7 +15,7 @@ Not what you had in mind? [Reach out to us on the forums.](https://forums.expo.i
 
 ## How to add a border to text
 
-To add a border to text in React Native, wrap the `Text` component with a `View` component. The `View` component has `style` props that allow us to add a border and customize its appearance.
+To add a border to text, wrap the `Text` component with a `View` component. The `View` component has `style` props that allow us to add a border and customize its appearance.
 
 For a full list of `View` `style` props, please refer to the React Native docs on [View Style Props](https://reactnative.dev/docs/view-style-props).
 
