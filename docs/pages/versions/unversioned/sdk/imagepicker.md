@@ -133,6 +133,8 @@ A promise that resolves to an object of type [MediaLibraryPermissionResponse](#i
 
 Display the system UI for choosing an image or a video from the phone's library. Requires `Permissions.MEDIA_LIBRARY` on iOS 10 only. On mobile web, this must be called immediately in a user interaction like a button press, otherwise the browser will block the request without a warning.
 
+> **Notes for Web:** The system UI can only be shown after user activation (e.g. a `Button` press). Therefore, calling `launchImageLibraryAsync` in `componentDidMount`, for example, will **not** work as intended. The `{ cancelled: true }` event may **not** be invoked on Chrome for Android when picking photos due to a native bug where the `window` does not invoke `visibilitychange` upon returning.
+
 #### Arguments
 
 - **options (_object_)** --
