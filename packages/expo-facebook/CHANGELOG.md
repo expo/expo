@@ -6,9 +6,17 @@
 
 ### 🎉 New features
 
-- Updated user tracking permission message. ([#12322](https://github.com/expo/expo/pull/12322) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🐛 Bug fixes
+
+## 11.0.4 — 2021-03-31
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.3 — 2021-03-30
+
+### 🎉 New features
+
+- Updated user tracking permission message. ([#12322](https://github.com/expo/expo/pull/12322) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 11.0.2 — 2021-03-23
 

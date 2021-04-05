@@ -4,11 +4,15 @@
 
 ### 🛠 Breaking changes
 
-- Downgraded underlying native library on Android from v16 to v8.
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+## 9.2.1 — 2021-03-30
+
+### 🛠 Breaking changes
+
+- Downgraded underlying native library on Android from v16 to v8.
 
 ## 9.2.0 — 2021-03-23
 

@@ -4,9 +4,19 @@
 
 ### 🛠 Breaking changes
 
+- remove UPDATES_CONFIGURATION_USES_LEGACY_MANIFEST_KEY constant. ([#12181](https://github.com/expo/expo/pull/12181) by [@jkhales](https://github.com/jkhales))
+
 ### 🎉 New features
 
+- add method to read stringified requestHeaders. ([#12229](https://github.com/expo/expo/pull/12229) by [@jkhales](https://github.com/jkhales))
+
 ### 🐛 Bug fixes
+
+- Fixed Updates module methods in Android Expo Go by refactoring FileDownloader to have mostly instance methods rather than static methods.
+
+## 0.5.3 — 2021-03-30
+
+_This version does not introduce any user-facing changes._
 
 ## 0.5.2 — 2021-03-23
 

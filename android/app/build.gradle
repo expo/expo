@@ -67,7 +67,7 @@ android {
     abortOnError false
   }
   packagingOptions {
-    pickFirst "**"
+    pickFirst "lib/**"
   }
 }
 

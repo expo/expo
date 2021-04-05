@@ -29,6 +29,7 @@ import expo.modules.updates.launcher.NoDatabaseLauncher;
 import expo.modules.updates.launcher.SelectionPolicy;
 import expo.modules.updates.launcher.SelectionPolicyFilterAware;
 import expo.modules.updates.loader.EmbeddedLoader;
+import expo.modules.updates.loader.FileDownloader;
 import expo.modules.updates.loader.LoaderTask;
 import expo.modules.updates.manifest.Manifest;
 import host.exp.exponent.di.NativeModuleDepsProvider;
@@ -69,6 +70,7 @@ public class ExpoUpdatesAppLoader {
 
   private UpdatesConfiguration mUpdatesConfiguration;
   private File mUpdatesDirectory;
+  private FileDownloader mFileDownloader;
   private SelectionPolicy mSelectionPolicy;
   private Launcher mLauncher;
   private boolean mIsEmergencyLaunch = false;
@@ -120,6 +122,13 @@ public class ExpoUpdatesAppLoader {
     return mSelectionPolicy;
   }
 
+  public FileDownloader getFileDownloader() {
+    if (mFileDownloader == null) {
+      throw new IllegalStateException("Tried to access FileDownloader before it was set");
+    }
+    return mFileDownloader;
+  }
+
   public Launcher getLauncher() {
     if (mLauncher == null) {
       throw new IllegalStateException("Tried to access Launcher before it was set");
@@ -155,6 +164,7 @@ public class ExpoUpdatesAppLoader {
     isStarted = true;
     mStatus = AppLoaderStatus.CHECKING_FOR_UPDATE;
 
+    mFileDownloader = new FileDownloader(context);
     mKernel.addAppLoaderForManifestUrl(mManifestUrl, this);
 
     Uri httpManifestUrl = mExponentManifest.httpManifestUrl(mManifestUrl);
@@ -210,7 +220,7 @@ public class ExpoUpdatesAppLoader {
       return;
     }
 
-    new LoaderTask(configuration, mDatabaseHolder, directory, selectionPolicy, new LoaderTask.LoaderTaskCallback() {
+    new LoaderTask(configuration, mDatabaseHolder, directory, mFileDownloader, selectionPolicy, new LoaderTask.LoaderTaskCallback() {
       private boolean didAbort = false;
 
       @Override
@@ -339,7 +349,7 @@ public class ExpoUpdatesAppLoader {
 
   private JSONObject processManifest(JSONObject manifest) throws JSONException {
     Uri parsedManifestUrl = Uri.parse(mManifestUrl);
-    if (!manifest.has(ExponentManifest.MANIFEST_IS_VERIFIED_KEY) &&
+    if (!manifest.optBoolean(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, false) &&
         isThirdPartyHosted(parsedManifestUrl) &&
         !Constants.isStandaloneApp()) {
       // Sandbox third party apps and consider them verified

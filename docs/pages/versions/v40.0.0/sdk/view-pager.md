@@ -10,7 +10,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 **`@react-native-community/viewpager`** exposes a component that provides the layout and gestures to scroll between pages of content, like a carousel.
 
-<Video file={"sdk/viewpager.mp4"} loop={"false"}/>
+<Video file={"sdk/viewpager.mp4"} loop={false}/>
 
 <PlatformsSection android emulator ios simulator />
 
