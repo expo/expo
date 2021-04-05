@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Added SSR guard. ([#12420](https://github.com/expo/expo/pull/12420) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 9.1.0 — 2021-03-10
 
 ### 🎉 New features
