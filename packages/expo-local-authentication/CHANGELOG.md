@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Avoid LAContext#biometryType bug on iOS 11.0.0. ([#12413](https://github.com/expo/expo/pull/12413) by [@mickamy](https://github.com/mickamy/))
+
 ## 11.0.0 — 2021-03-10
 
 ### 🛠 Breaking changes
