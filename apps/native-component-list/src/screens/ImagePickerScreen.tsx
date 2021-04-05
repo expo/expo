@@ -43,7 +43,7 @@ function ImagePickerScreen() {
       base64: base64Enabled,
     });
     console.log(`Duration: ${Date.now() - time}ms`);
-    console.log(`Results:`,result);
+    console.log(`Results:`, result);
     if (result.cancelled) {
       setSelection(undefined);
     } else {
@@ -61,7 +61,7 @@ function ImagePickerScreen() {
       quality: compressionEnabled ? 0.1 : 1.0,
     });
     console.log(`Duration: ${Date.now() - time}ms`);
-    console.log(`Results:`,result);
+    console.log(`Results:`, result);
     if (result.cancelled) {
       setSelection(undefined);
     } else {

@@ -15,13 +15,13 @@ export default function DocumentPickerScreen() {
       copyToCacheDirectory: copyToCache,
     });
     console.log(`Duration: ${Date.now() - time}ms`);
-    console.log(`Results:`,result);
+    console.log(`Results:`, result);
     if (result.type === 'success') {
       setDocument(result);
     } else {
       setTimeout(() => {
         if (Platform.OS === 'web') {
-          alert('Cancelled')
+          alert('Cancelled');
         } else {
           Alert.alert('Cancelled');
         }
