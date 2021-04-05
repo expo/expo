@@ -34,7 +34,7 @@ function ProfileView(
   } & StackScreenProps<AllStackRoutes, 'Profile'>
 ) {
   // undefined means not yet computed, show loading screen
-  const [viewerUsername, setViewerUsername] = React.useState<string | null | undefined>(null);
+  const [viewerUsername, setViewerUsername] = React.useState<string | null | undefined>(undefined);
 
   React.useEffect(() => {
     if (!props.isAuthenticated) {

@@ -9,7 +9,7 @@ import { StyledText } from './Text';
 import { StyledView } from './Views';
 
 function handleLearnMorePress() {
-  WebBrowser.openBrowserAsync('https://snack.expo.io');
+  WebBrowser.openBrowserAsync('https://docs.expo.io/workflow/snack');
 }
 
 export default function EmptyAccountSnacksNotice() {

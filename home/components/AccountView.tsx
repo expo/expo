@@ -1,4 +1,6 @@
 import { StackScreenProps } from '@react-navigation/stack';
+import { Project } from 'components/ProjectList';
+import { Snack } from 'components/SnackList';
 import { AccountData } from 'containers/Account';
 import dedent from 'dedent';
 import { take, takeRight } from 'lodash';
@@ -112,7 +114,7 @@ export default function AccountView({
   return (
     <ScrollView
       refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={_handleRefreshAsync} />}
-      contentContainerStyle={{ paddingBottom: 20 }}
+      contentContainerStyle={{ paddingBottom: 20, paddingTop: 12 }}
       style={styles.container}>
       {data?.account.byName && (
         <>
@@ -173,7 +175,9 @@ function AccountProjectsSection({
     });
   };
 
-  const renderApp = (app: any, i: number) => {
+  const apps = data.account.byName.apps;
+
+  const renderApp = (app: Project, i: number) => {
     return (
       <ProjectListItem
         key={i}
@@ -184,12 +188,12 @@ function AccountProjectsSection({
         sdkVersion={app.sdkVersion}
         subtitle={app.packageName || app.fullName}
         experienceInfo={{ username: app.username, slug: app.packageName }}
+        last={i === apps.length - 1}
       />
     );
   };
 
   const renderContents = () => {
-    const apps = data.account.byName.apps;
     if (!apps.length) {
       return <EmptyAccountProjectsNotice />;
     }
@@ -227,7 +231,9 @@ function AccountSnacksSection({
     });
   };
 
-  const renderSnack = (snack: any, i: number) => {
+  const snacks = data.account.byName.snacks;
+
+  const renderSnack = (snack: Snack, i: number) => {
     return (
       <SnackListItem
         key={i}
@@ -235,12 +241,12 @@ function AccountSnacksSection({
         title={snack.name}
         subtitle={snack.description}
         isDraft={snack.isDraft}
+        last={i === snacks.length - 1}
       />
     );
   };
 
   const renderContents = () => {
-    const snacks = data.account.byName.snacks;
     if (!snacks?.length) {
       return <EmptyAccountSnacksNotice />;
     }

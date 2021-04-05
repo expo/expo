@@ -187,6 +187,9 @@ function ProfileAccountsSection({
   };
 
   const accounts = data.me.accounts;
+  if (accounts.length === 1) {
+    return null;
+  }
 
   const renderAccount = (account: { id: string; name: string }, index: number) => {
     return (
@@ -268,6 +271,8 @@ function ProfileSnacksSection({
     navigation.navigate('ProfileAllSnacks', {});
   };
 
+  const snacks = data.me.snacks;
+
   const renderSnack = (snack: any, i: number) => {
     return (
       <SnackListItem
@@ -276,12 +281,12 @@ function ProfileSnacksSection({
         title={snack.name}
         subtitle={snack.description}
         isDraft={snack.isDraft}
+        last={i === snacks.length - 1}
       />
     );
   };
 
   const renderContents = () => {
-    const snacks = data.me.snacks;
     if (!snacks?.length) {
       return <EmptyAccountSnacksNotice />;
     }
