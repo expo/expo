@@ -21,8 +21,8 @@ export default function App() {
   return (
     <View style={styles.container}>
       /* @info */
-      <Ionicons name="md-checkmark-circle" size={32} color="green" />
-      /* @end */
+      <Ionicons name="md-checkmark-circle" size={32} color="green" />/* @end */
+
     </View>
   );
 }
