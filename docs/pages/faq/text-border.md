@@ -11,8 +11,6 @@ We will be adding a border to text, similar to the one shown below.
 
 <ImageSpotlight style={{ maxWidth: 276 }} containerStyle={{ marginTop: 0 }} src="/static/images/textborder-example.png" alt="Text rendered with a border" />
 
-Not what you had in mind? [Reach out to us on the forums.](https://forums.expo.io/)
-
 ## How to add a border to text
 
 To add a border to text, wrap the `Text` component with a `View` component. The `View` component has `style` props that allow us to add a border and customize its appearance.
