@@ -12,6 +12,43 @@ Sentry.init({
   beforeSend: preprocessSentryError,
 });
 
+interface GAWindow extends Window {
+  ga(cmd: string, event: string, props?: Record<string, any>): void;
+}
+
+export function reportWebVitals({
+  id,
+  name,
+  label,
+  value,
+}: {
+  id: string;
+  name: string;
+  label: string;
+  value: number;
+}) {
+  const ga = ((window as unknown) as GAWindow).ga;
+  if (ga) {
+    ga('send', 'event', {
+      eventCategory: label === 'web-vital' ? 'Web Vitals' : 'Next.js custom metric',
+      eventAction: name,
+      // The `id` value will be unique to the current page load. When sending
+      // multiple values from the same page (e.g. for CLS), Google Analytics can
+      // compute a total by grouping on this ID (note: requires `eventLabel` to
+      // be a dimension in your report).
+      eventLabel: id,
+      // Google Analytics metrics must be integers, so the value is rounded.
+      // For CLS the value is first multiplied by 1000 for greater precision
+      // (note: increase the multiplier for greater precision if needed).
+      eventValue: Math.round(name === 'CLS' ? value * 1000 : value),
+      // Use a non-interaction event to avoid affecting bounce rate.
+      nonInteraction: true,
+      // Use `sendBeacon()` if the browser supports it.
+      transport: 'beacon',
+    });
+  }
+}
+
 export default class MyApp extends App {
   render() {
     const { Component, pageProps } = this.props;
