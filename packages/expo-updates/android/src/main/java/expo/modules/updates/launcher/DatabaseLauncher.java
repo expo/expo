@@ -1,6 +1,7 @@
 package expo.modules.updates.launcher;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 
 import org.json.JSONObject;
@@ -116,7 +117,7 @@ public class DatabaseLauncher implements Launcher {
         if (assetFile != null) {
           mLocalAssetFiles.put(
               asset,
-              assetFile.toURI().toString()
+              Uri.fromFile(assetFile).toString()
           );
         }
       }
