@@ -1,5 +1,5 @@
 ---
-title: 'Implementing a checkbox in React Native'
+title: 'Implementing a checkbox for Expo and React Native apps'
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
