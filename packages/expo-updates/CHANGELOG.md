@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fixed Updates module methods in Android Expo Go by refactoring FileDownloader to have mostly instance methods rather than static methods.
+- Fixed local assets URIs on Android to be compliant with File URI specification. Now file URI takes the form of `file:///*` instead of `file:/*`. ([#12428](https://github.com/expo/expo/pull/12428) by [@tsapeta](https://github.com/tsapeta))
 
 ## 0.5.3 — 2021-03-30
 
@@ -80,8 +81,8 @@ _This version does not introduce any user-facing changes._
 ### 🛠 Breaking changes
 
 - This version adds an internal database migration, which means that when a user's device upgrades from an app with `expo-updates@0.3.x` to an app with `expo-updates@0.4.x`, any updates they had previously downloaded will no longer be accessible.
-  -   For **managed workflow apps**, this is inconsequential as this upgrade will be part of a major SDK version upgrade. You do not need to do anything if your app is made using the managed workflow.
-  -   For **bare workflow apps**, this means updates downloaded on clients running `expo-updates@0.3.x` will need to be redownloaded in order to run after those clients are upgraded to `expo-updates@0.4.x`. We recommend incrementing your runtime/SDK version after updating to `expo-updates@0.4.x`, and republishing any OTA updates that you do not intend to distribute embedded in your application binary.
+  - For **managed workflow apps**, this is inconsequential as this upgrade will be part of a major SDK version upgrade. You do not need to do anything if your app is made using the managed workflow.
+  - For **bare workflow apps**, this means updates downloaded on clients running `expo-updates@0.3.x` will need to be redownloaded in order to run after those clients are upgraded to `expo-updates@0.4.x`. We recommend incrementing your runtime/SDK version after updating to `expo-updates@0.4.x`, and republishing any OTA updates that you do not intend to distribute embedded in your application binary.
 
 ## 0.4.0 — 2020-11-17
 
