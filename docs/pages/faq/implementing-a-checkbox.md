@@ -5,7 +5,7 @@ title: 'Implementing a checkbox in React Native'
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import SnackInline from '~/components/plugins/SnackInline';
 
-One fairly common component that is not offered out of the box by React Native is the mighty checkbox. There are several packages available on npm, however it is simple enough to implement yourself, and by doing so you have full customization and control over the look and feel of your checkbox.
+One fairly common component that is not offered out of the box by Expo is the mighty checkbox. There are several packages available on npm; however, it is simple enough to implement yourself, and by doing so you have full customization and control over the look and feel of your checkbox.
 
 Not what you had in mind? [Reach out to us on the forums.](https://forums.expo.io/)
 
