@@ -80,8 +80,9 @@
   NSError *error;
   NSURLResponse* response =  [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://example.com"] statusCode:200 HTTPVersion:nil headerFields:@{@"expo-protocol-version" : @"1"}];
 
-  [EXUpdatesUpdate updateWithManifest:_easNewManifest response:response config:_config database:_database error:&error];
+  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_easNewManifest response:response config:_config database:_database error:&error];
   XCTAssert(error != nil);
+  XCTAssert(update == nil);
 }
 
 - (void)testUpdateWithEmbeddedManifest_Legacy
