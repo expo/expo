@@ -22,6 +22,7 @@ const GROUPS = {
   Preview: ['Preview'],
   'EAS Build': ['Start Building', 'App Signing', 'Reference'],
   'EAS Submit': ['EAS Submit'],
+  'EAS Update': ['EAS Update'],
   'Development Clients': ['Development Clients'],
 };
 
@@ -41,6 +42,10 @@ const sections = [
       'Internal distribution',
       'Triggering builds from CI',
     ],
+  },
+  {
+    name: 'EAS Update',
+    reference: ['EAS Update Spec', 'Protocol', 'Server', 'Client', 'Expo Structured Field Values'],
   },
   {
     name: 'Archived',
@@ -413,7 +418,10 @@ const sortNav = nav => {
 
   sections.forEach(({ name, reference }) => {
     const section = nav.find(o => {
-      return o.name.toLowerCase() === name.toLowerCase();
+      if (!o.name) {
+        console.log({ name, reference, o, nav });
+      }
+      return (o.name || '').toLowerCase() === name.toLowerCase();
     });
 
     if (section) {

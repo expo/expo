@@ -31,6 +31,7 @@ const DIR_MAPPING = {
   'app-signing': 'App Signing',
   'build-reference': 'Reference',
   submit: 'EAS Submit',
+  'update-spec': 'EAS Update',
   accounts: 'Expo Accounts',
   clients: 'Development Clients',
   archived: 'Archived',
@@ -131,7 +132,7 @@ const startingDirectories = ['introduction', 'get-started', 'tutorial', 'next-st
 
 let previewDirectories, easDirectories;
 if (isEasReleased) {
-  easDirectories = ['eas', 'build', 'app-signing', 'build-reference', 'submit'];
+  easDirectories = ['eas', 'build', 'app-signing', 'build-reference', 'submit', 'update-spec'];
   previewDirectories = ['preview', 'clients'];
 } else {
   easDirectories = [];
@@ -143,6 +144,7 @@ if (isEasReleased) {
     'build-reference',
     'submit',
     'clients',
+    'update-spec',
   ];
 }
 
