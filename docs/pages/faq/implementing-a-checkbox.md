@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-_Note: This pattern is referred to as a "controlled component" - you can read more about them here: https://reactjs.org/docs/forms.html#controlled-components_
+_Note: This pattern is referred to as a "controlled component" — you can read more about them here: https://reactjs.org/docs/forms.html#controlled-components_
 
 ## Extending the interface
 
