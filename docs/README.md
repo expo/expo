@@ -39,6 +39,8 @@ yarn run export-server
 
 You can find the source of the documentation inside the `pages/versions` directory. Documentation is mostly written in markdown with the help of some React components (for Snack embeds, etc). The routes and navbar are automatically inferred from the directory structure within `versions`.
 
+If you have a codeblock using `/* @info */` highlighting, use `<!-- prettier-ignore -->` on the block and take care to preview the block in the browser to ensure that the indentation is correct - the highlighting annotation will sometimes swallow newlines.
+
 ## Editing Code
 
 The docs are written with Next.js and TypeScript. If you need to make code changes, follow steps from the [Running locally](#running-locally) section, then open a separate terminal and run the TypeScript compiler in watch mode - it will watch your code changes and notify you about errors.
