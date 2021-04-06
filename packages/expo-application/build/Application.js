@@ -112,8 +112,8 @@ export var ApplicationReleaseType;
 })(ApplicationReleaseType || (ApplicationReleaseType = {}));
 // @needsAudit
 /**
- * **iOS Only.** Gets the iOS application release type.
- * @return Returns a promise which fulfills with [`ApplicationReleaseType`](#applicationreleasetype) enum.
+ * **iOS only.** Gets the iOS application release type.
+ * @return Returns a promise which fulfills with an [`ApplicationReleaseType`](#applicationreleasetype).
  */
 export async function getIosApplicationReleaseTypeAsync() {
     if (!ExpoApplication.getApplicationReleaseTypeAsync) {
@@ -123,10 +123,10 @@ export async function getIosApplicationReleaseTypeAsync() {
 }
 // @needsAudit
 /**
- * **iOS Only.** Gets the current [Apple Push Notification (APN)](https://developer.apple.com/documentation/bundleresources/entitlements/aps-environment?language=objc)
+ * **iOS only.** Gets the current [Apple Push Notification (APN)](https://developer.apple.com/documentation/bundleresources/entitlements/aps-environment?language=objc)
  * service environment.
- * @return Returns a promise which fulfills with `'development'` or `'production'` string based
- * on the current APN environment.
+ * @return Returns a promise fulfilled with the string, either `'development'` or `'production'`,
+ * based on the current APN environment.
  */
 export async function getIosPushNotificationServiceEnvironmentAsync() {
     if (!ExpoApplication.getPushNotificationServiceEnvironmentAsync) {
