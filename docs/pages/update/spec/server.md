@@ -1,8 +1,26 @@
 ---
-title: Asset Server
-sidebar_title: Asset Server
+title: Server
+sidebar_title: Server
 ---
 
+* can be served on the same server or separate
+* rollouts
+* branches
+* headers
+
+
+## Manifest Server
+
+### Cacheing
+
+Assets must be served with a `cache-control` header set to an appropriately short period of time.
+
+For example:
+```
+cache-control: max-age=0, private
+```
+
+## Asset Server
 The asset server hosts all of the files reference by an update's manifest.
 
 ### Compression

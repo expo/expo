@@ -12,6 +12,5 @@ The manifest is the metadata for an update that contains information used by the
 It can be hosted at any http endpoint, and run by any app that  conforms to the standards.
 
 - [Protocol](protocol.md)
-- [Manifest Server](manifest-server.md)
-- [Asset Server](asset-server.md)
+- [Server](server.md)
 - [Client](client.md) 

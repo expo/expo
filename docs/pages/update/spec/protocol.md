@@ -67,7 +67,7 @@ then the response body is referred to as the `manifest` and must be a json with 
 ### Body Details
   * `id` The ID must uniquely specify the manifest, however the different headers may accompany identical IDs in a response.
   * `createdAt` Time created is essential as the client selects the most recent update (subject to any contraints supplied in the `expo-manifest-filters` header).
-  * `runtimeVersion`
+  * `runtimeVersion` Can be any string defined by the developer. It stipulates what native code setup is required to run the associated javascript bundle.
   * `Asset` Provides information about the asset.
     * `hash` SHA256 hash of the file to guarantee integrity.
     * `key` Key used by the bundler.
