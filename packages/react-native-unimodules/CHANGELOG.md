@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Removed exported `Permissions` object and removed `expo-permissions` from dependencies. ([#TO_BE_FILLED](https://github.com/unimodules/react-native-unimodules/pull/TO_BE_FILLED) by [@bbarthec](https://github.com/bbarthec))
+- Removed exported `Permissions` object and removed `expo-permissions` from dependencies. ([#12405](https://github.com/unimodules/react-native-unimodules/pull/12405) by [@bbarthec](https://github.com/bbarthec))
   > `expo-permissions` is now deprecated — the functionality has been moved to other expo packages that directly use these permissions (e.g. `expo-location`, `expo-camera`).
 
 ### 🎉 New features
