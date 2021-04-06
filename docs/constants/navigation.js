@@ -167,8 +167,6 @@ const sections = [
   {
     name: 'Fundamentals',
     reference: [
-      'Managed Workflow Walkthrough',
-      'Up and Running',
       'Expo CLI',
       'Using libraries',
       'Viewing logs',
@@ -181,6 +179,7 @@ const sections = [
       'Publishing updates',
       'Upgrading Expo SDK',
       'Developing for Web',
+      'Snack: a playground in your browser',
       'Ejecting to Bare Workflow',
       'Glossary of terms',
     ],
@@ -189,7 +188,7 @@ const sections = [
     name: 'Assorted Guides',
     reference: [
       'Assets',
-      'Custom Fonts',
+      'Fonts',
       'Icons',
       'Routing & Navigation',
       'TypeScript',
@@ -199,7 +198,7 @@ const sections = [
       'Light and Dark modes',
       'Authentication',
       'User Interface Component Libraries',
-      'Preloading & Caching Assets',
+      'Asset Caching',
       'Environment variables in Expo',
       'Configuring OTA Updates',
       'Customizing Metro',
@@ -214,7 +213,6 @@ const sections = [
       'Crafting Educational Materials',
       'How Expo Works',
       'Linking',
-      'Handling Assets',
       'Running in the Browser',
       'Setting up Continuous Integration',
       'Native Firebase',
