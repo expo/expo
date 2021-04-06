@@ -1,5 +1,5 @@
 ---
-title: EAS Update Spec
+title: Technical Spec
 sidebar_title: Introduction
 ---
 EAS update is a protocol for managing over the air updates to an app running on multiple platforms. 

@@ -31,7 +31,7 @@ const DIR_MAPPING = {
   'app-signing': 'App Signing',
   'build-reference': 'Reference',
   submit: 'EAS Submit',
-  'update-spec': 'EAS Update',
+  'update-spec': 'Technical Spec',
   accounts: 'Expo Accounts',
   clients: 'Development Clients',
   archived: 'Archived',

@@ -20,6 +20,9 @@ For example:
 cache-control: max-age=0, private
 ```
 
+### Branch Mapping
+...
+
 ## Asset Server
 The asset server hosts all of the files reference by an update's manifest.
 

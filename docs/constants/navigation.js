@@ -22,7 +22,7 @@ const GROUPS = {
   Preview: ['Preview'],
   'EAS Build': ['Start Building', 'App Signing', 'Reference'],
   'EAS Submit': ['EAS Submit'],
-  'EAS Update': ['EAS Update'],
+  'EAS Update': ['Technical Spec'],
   'Development Clients': ['Development Clients'],
 };
 
@@ -42,10 +42,6 @@ const sections = [
       'Internal distribution',
       'Triggering builds from CI',
     ],
-  },
-  {
-    name: 'EAS Update',
-    reference: ['EAS Update Spec', 'Protocol', 'Server', 'Client', 'Expo Structured Field Values'],
   },
   {
     name: 'Archived',
@@ -83,6 +79,10 @@ const sections = [
       'Submitting to the Google Play Store',
       'Submitting to the Apple App Store',
     ],
+  },
+  {
+    name: 'Technical Spec',
+    reference: ['Technical Spec', 'Protocol', 'Server', 'Client', 'Expo Structured Field Values'],
   },
   {
     name: 'Development Clients',
@@ -418,10 +418,7 @@ const sortNav = nav => {
 
   sections.forEach(({ name, reference }) => {
     const section = nav.find(o => {
-      if (!o.name) {
-        console.log({ name, reference, o, nav });
-      }
-      return (o.name || '').toLowerCase() === name.toLowerCase();
+      return o.name.toLowerCase() === name.toLowerCase();
     });
 
     if (section) {
