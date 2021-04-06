@@ -38,7 +38,7 @@ function MyCheckbox() {
   );
 }
 
-function App() {
+export default function App() {
   return (
     <View style={styles.appContainer}>
       <Text style={styles.appTitle}>Checkbox Example</Text>
@@ -50,8 +50,6 @@ function App() {
     </View>
   );
 }
-
-export default App;
 
 const styles = StyleSheet.create({
   checkboxBase: {
