@@ -7,8 +7,6 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 One fairly common component that is not offered out of the box by Expo is the mighty checkbox. There are several packages available on npm; however, it is simple enough to implement yourself, and by doing so you have full customization and control over the look and feel of your checkbox.
 
-Not what you had in mind? [Reach out to us on the forums.](https://forums.expo.io/)
-
 ## Understanding the checkbox
 
 A checkbox is basically a button that exists in one of two states — it is checked or it isn't. This makes it a perfect candidate for the `useState()` hook. Our first iteration will render a button that toggles between checked and unchecked states. When the checkbox is checked, we'll render a checkmark icon in the center of the button.
