@@ -12,6 +12,7 @@ const GROUPS = {
     'Push Notifications',
     'Distributing Your App',
     'Expo Accounts',
+    'Troubleshooting',
     'Regulatory Compliance',
   ],
   Deprecated: ['ExpoKit', 'Archived'],
