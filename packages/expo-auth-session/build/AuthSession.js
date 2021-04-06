@@ -7,9 +7,8 @@ import { CodeChallengeMethod, Prompt, ResponseType, } from './AuthRequest.types'
 import { fetchDiscoveryAsync, resolveDiscoveryAsync, } from './Discovery';
 import { generateHexStringAsync } from './PKCE';
 import { getQueryParams } from './QueryParams';
-import { getSessionUrlProvider } from './SessionUrlProvider';
+import sessionUrlProvider from './SessionUrlProvider';
 let _authLock = false;
-const sessionUrlProvider = getSessionUrlProvider();
 export async function startAsync(options) {
     const returnUrl = options.returnUrl || sessionUrlProvider.getDefaultReturnUrl();
     const authUrl = options.authUrl;

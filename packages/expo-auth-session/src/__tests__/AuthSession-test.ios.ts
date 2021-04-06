@@ -51,9 +51,9 @@ it(`opens WebBrowser startAsync to the start URL`, async () => {
   mockOpenAuthSessionAsync(WebBrowser, async () => ({ type: 'cancel' }));
   await startAsync({ authUrl, returnUrl });
 
-  const { getSessionUrlProvider } = require('../SessionUrlProvider');
+  const sessionUrlProvider = require('../SessionUrlProvider');
   expect(WebBrowser.openAuthSessionAsync).toHaveBeenCalledWith(
-    getSessionUrlProvider().getStartUrl(authUrl, returnUrl),
+    sessionUrlProvider.getStartUrl(authUrl, returnUrl),
     returnUrl,
     { showInRecents: false }
   );

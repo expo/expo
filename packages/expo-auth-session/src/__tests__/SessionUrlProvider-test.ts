@@ -1,9 +1,9 @@
 import Constants from 'expo-constants';
 import { mockProperty, unmockAllProperties } from 'jest-expo';
 
-import { ManagedSessionUrlProvider } from '../ManagedSessionUrlProvider';
+import { SessionUrlProvider } from '../SessionUrlProvider';
 
-const managedSessionUrlProvider = new ManagedSessionUrlProvider();
+const managedSessionUrlProvider = new SessionUrlProvider();
 
 function applyMocks() {
   mockProperty(Constants.manifest, 'id', '@example/abc');

@@ -14,10 +14,8 @@ import { DiscoveryDocument } from './Discovery';
 import { AuthError } from './Errors';
 import * as PKCE from './PKCE';
 import * as QueryParams from './QueryParams';
-import { getSessionUrlProvider } from './SessionUrlProvider';
+import sessionUrlProvider from './SessionUrlProvider';
 import { TokenResponse } from './TokenRequest';
-
-const sessionUrlProvider = getSessionUrlProvider();
 
 let _authLock: boolean = false;
 

@@ -26,10 +26,9 @@ import {
 } from './Discovery';
 import { generateHexStringAsync } from './PKCE';
 import { getQueryParams } from './QueryParams';
-import { getSessionUrlProvider } from './SessionUrlProvider';
+import sessionUrlProvider from './SessionUrlProvider';
 
 let _authLock = false;
-const sessionUrlProvider = getSessionUrlProvider();
 
 export async function startAsync(options: AuthSessionOptions): Promise<AuthSessionResult> {
   const returnUrl = options.returnUrl || sessionUrlProvider.getDefaultReturnUrl();
