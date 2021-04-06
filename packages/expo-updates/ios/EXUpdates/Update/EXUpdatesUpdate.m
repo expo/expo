@@ -72,7 +72,7 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
   
   NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
   NSDictionary *headerDictionary = [httpResponse allHeaderFields];
-  NSNumber *expoProtocolVersion = headerDictionary[@"expo-protocol-version"];
+  NSString *expoProtocolVersion = headerDictionary[@"expo-protocol-version"];
 
   if (expoProtocolVersion == nil) {
     return [EXUpdatesLegacyUpdate updateWithLegacyManifest:manifest
