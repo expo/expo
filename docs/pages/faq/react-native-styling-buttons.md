@@ -41,6 +41,6 @@ const styles = StyleSheet.create({
 
 And here's the result of this code:
 
-<img width="973" alt="Screen Shot 2021-03-28 at 1 02 59 PM" src="/static/images/faq-button-style-pressable.png" alt="Custom styled button component using Pressable" />
+<img width="973" src="/static/images/faq-button-style-pressable.png" alt="Custom styled button component using Pressable" />
 
 React Native's `<Button />` component does not accept a `style` prop, and its `color` prop is limited and appears differently across Android, iOS, and the web. With the `<Pressable />` component, we can create custom buttons that fit our app's design. Those styles will also be the same across Android, iOS, and the web, which will give our apps a consistent look on every platform.
