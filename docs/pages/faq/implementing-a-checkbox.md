@@ -109,7 +109,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 function MyCheckbox({
-  /* @info Define checked and onChange as props instead of state*/ checked,
+  /* @info Define checked and onChange as props instead of state */ checked,
   onChange /* @end */,
 }) {
   function onCheckmarkPress() {
