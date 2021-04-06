@@ -99,7 +99,7 @@ _Note: https://icons.expo.fyi is a great resource for finding all of the icons a
 
 ## Controlling the checkbox
 
-This checkbox isn't useful in this state because the `checked` value is only accessible from within the component - more often than not you'll want to control the checkbox from outside. This is achievable by defining `checked` and `onChange` as props that are passed into the checkbox:
+This checkbox isn't useful in this state because the `checked` value is accessible only from within the component — more often than not you'll want to control the checkbox from outside. This is achievable by defining `checked` and `onChange` as props that are passed into the checkbox:
 
 <SnackInline>
 
