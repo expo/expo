@@ -311,7 +311,7 @@ export default function App() {
       clientId: 'CLIENT_ID',
       // There are no scopes so just pass an empty array
       scopes: [],
-      // Dropbox doesn't support PKCE
+      // Set to false for implicit authentication
       usePKCE: false,
       // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
@@ -424,7 +424,7 @@ export default function App() {
 
 Auth code responses (`ResponseType.Code`) will only work in native with `useProxy: true` or `usePKCE: true`. The PCKE OAuth workflow returns an authentication code which can be exchanged for a short-lived access token and a long-lived refresh-token. This allows for long-session Dropbox connections.
 
-<SnackInline label='Dropbox Auth Code' dependencies={['expo-auth-session', 'expo-web-browser']}>
+<SnackInline label='Dropbox PKCE' dependencies={['expo-auth-session', 'expo-web-browser']}>
 
 <!-- prettier-ignore -->
 ```tsx
@@ -444,12 +444,15 @@ const discovery = {
 };
 
 export default function App() {
-  /* @info request will containt the <b>codeVerifier</b> which will need to be used with the Dropbox token endpoint to exchange the code for an access token and a refresh token*/
+  /* @info request will contain the <b>codeVerifier</b> which will need to be used with the Dropbox token endpoint to exchange the authorization code for an access token and a refresh token*/
   const [request, response, promptAsync] = useAuthRequest(
     {
+      //Set response type to code to obtain authorization code instead of an access token
+      responseType: ResponseType.Code,
       clientId: 'CLIENT_ID',
       // There are no scopes so just pass an empty array
       scopes: [],
+      // Set to true for PCKE flow
       usePKCE: true,
       redirectUri: makeRedirectUri({
         // For usage in bare and standalone
@@ -462,10 +465,11 @@ export default function App() {
     },
     discovery
   );
+  /* @end */
 
   React.useEffect(() => {
     if (response?.type === 'success') {
-      /* @info Exchange the code for an access token and refresh token via the Dropbox token enpoint using client_id and client_secret. Alternatively you can use the <b>Implicit</b> auth method. */
+      /* @info Exchange the authorization code for an access token and refresh token via the Dropbox token enpoint using client_id and client_secret. Alternatively you can use the <b>Implicit</b> auth method. */
       const { code } = response.params;
       /* @end */
     }
