@@ -187,7 +187,7 @@ const sections = [
   },
   {
     name: 'UI Programming',
-    reference: ['Styling a React Native Button'],
+    reference: ['Styling a React Native Button', "Setting a component's background image"],
   },
   {
     name: 'Assorted Guides',
