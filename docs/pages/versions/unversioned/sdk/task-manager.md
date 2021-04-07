@@ -4,6 +4,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-task-mana
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-task-manager`** provides an API that allows you to manage long-running tasks, in particular those tasks that can run while your app is in the background.
 Some features of this module are used by other modules under the hood. Here is a list of Expo modules that use TaskManager:
@@ -159,6 +160,8 @@ Returns a promise that resolves as soon as all tasks are completely unregistered
 
 ## Example
 
+<SnackInline dependencies={["expo-task-manager", "expo-location"]}>
+
 ```javascript
 import React from 'react';
 import { Text, TouchableOpacity } from 'react-native';
@@ -195,3 +198,5 @@ TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
 
 export default PermissionsButton;
 ```
+
+</SnackInline>
