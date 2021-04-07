@@ -17,17 +17,19 @@ A conforming implementation of may provide additional functionality, but must no
 ### Overview
 
 EAS Update is a protocol for managing over the air updates to an app running on multiple platforms. 
-In particular, it is a protocol for obtaining `updates`: an `update` is a [manifest](#manifest) together with the assets it references.
+In particular, it is a protocol for fetching an `update` where an `update` is defined as a [manifest](#manifest) together with the assets it references.
 
 An app running a conformant EAS Update client will load the most recent update saved by the client.
 
-In order to obtain an `update` a client starts with a [request](#request). 
-  1. If the response body is a new manifest (checking the manifest ID is sufficient) it proceeds to download and store the assets refenced by the manifest.
-  2. It updates the local state according to any metadata provided by the response [headers](#headers)
+In order to obtain an `update`:
+1. The client makes a [request](#request). 
+2. If the response body is a new manifest (checking the manifest ID is sufficient) it proceeds to download and store the assets refenced by the manifest.
+3. The client updates the local state according to any metadata provided by the response [headers](#headers)
 
 We anticipate the primary user of this spec will be companies who need to manage their own update server to satisfy internal requirements.
 
 ## Request
+
 A conformant client MUST make a GET request with the following standard headers:
 
 ```
@@ -37,11 +39,12 @@ expo-runtime-version: string
 expo-channel-name: string
 ```
 Along with any headers stipulated by a previous responses' [server defined headers](#server-defined-headers):
-  * `expo-platform` MUST be platform type the client is running on: 
-      * iOS MUST be `expo-platform: ios`
-      * android MUST be `expo-platform: android`
-  * `expo-runtime-version` MUST be the runtime version the client is running on.
-  * `expo-channel-name` MUST be the name of the channel that the client is associated with.
+
+* `expo-platform` MUST be platform type the client is running on: 
+    * iOS MUST be `expo-platform: ios`
+    * android MUST be `expo-platform: android`
+* `expo-runtime-version` MUST be the runtime version the client is running on.
+* `expo-channel-name` MUST be the name of the channel that the client is associated with.
 
 If the client wishes to verify the integrity of the request it may require a a signature be included as a response header `expo-manifest-signature`:
 ```
@@ -64,33 +67,34 @@ The choice of manifest and headers are dependent on the values of the request he
 
 ```
 expo-protocol-version: 0
-expo-manifest-signature-version: 0
+expo-manifest-signature-version: number
 expo-manifest-signature: string
-expo-sfv-version: 0
+expo-sfv-version: number
 expo-manifest-filters: expo-sfv
 expo-server-defined-headers: expo-sfv
 cache-control: *
 content-type: application/json; charset=utf-8
 ```
-  * `expo-protocol-version` MUST be `0`
-  * `expo-manifest-signature-version` MUST be `0`
-  * `expo-manifest-signature` version `0` MUST be an RSA SHA256 signature of the response body.
-  * `expo-sfv-version` MUST be `0`
-  * `expo-sfv`   [expo-sfv](expo-sfv.md) version `0` is a partial implementation of Structured Field Values outlined in [IETF RFC 8941](https://tools.ietf.org/html/rfc8941)
-  * `expo-manifest-filters` is an [expo-sfv](expo-sfv.md) dictionary and is used to filter the updates stored by the client by `updateMetadata` attributes found in the [manifest](#manifest).
-  
-  For example: `expo-manifest-filters: branchname="main"` instructs the client to load the most recent update it has stored whose `updateMetadata` contains:
-    ```
-    updateMetadata: {
-      branchname: 'main',
-      ...
-    }
-    ```
-  If the `branchname` manifest filter is included, it MUST equal the `branchName` in the `manifest.updateMetadata`.
-  * `expo-server-defined-headers`  is an [expo-sfv](expo-sfv.md) dictionary. It is defines headers that a client MUST store and include in every subsequent [request](#request).
-  
-  For example, during a rollout we require a client to send back a stable token: `expo-server-defined-headers: expo-rollout-token="token". 
-  * `cache-control` We recommend `cache-control: private, max-age=0`, but the only requirement is that it is a reasonable time frame. Please keep in mind that `updates` should be expected to be regularly created and the cache policy should not block this.
+
+* `expo-protocol-version` describes the protocol in this doc and MUST be `0`.
+* `expo-manifest-signature-version` MUST be included if the `expo-accept-signature` header was set to true in the request. Must be a number.
+* `expo-manifest-signature` version `0` MUST be an RSA SHA256 signature of the response body.
+* `expo-sfv-version` MUST be a number.
+* `expo-sfv`   [expo-sfv](expo-sfv.md) version `0` is a partial implementation of Structured Field Values outlined in [IETF RFC 8941](https://tools.ietf.org/html/rfc8941)
+* `expo-manifest-filters` is an [expo-sfv](expo-sfv.md) dictionary and is used to filter the updates stored by the client by `updateMetadata` attributes found in the [manifest](#manifest).
+  * For example: `expo-manifest-filters: branchname="main"` instructs the client to load the most recent update it has stored whose `updateMetadata` contains:
+
+  ```
+  updateMetadata: {
+    branchname: 'main',
+    ...
+  }
+  ```
+  * If the `branchname` manifest filter is included, it MUST equal the `branchName` in the `manifest.updateMetadata`.
+* `expo-server-defined-headers`  is an [expo-sfv](expo-sfv.md) dictionary. It is defines headers that a client MUST store and include in every subsequent [request](#request).
+
+  * For example, during a rollout we require a client to send back a stable token: `expo-server-defined-headers: expo-rollout-token="token". 
+* `cache-control` We recommend `cache-control: private, max-age=0`, but the only requirement is that it is a reasonable time frame. Please keep in mind that `updates` should be expected to be regularly created and the cache policy should not block this.
 
 ### Manifest
 
@@ -138,12 +142,13 @@ A conformant server MUST return a `400` error if a manifest is not found.
 
 ## Server
 
-There are two roles:
+There are two functions for a conformant server:
   * serve the correct [response](#response) to a given [request](#request)
   * host the assets refenced in the [manifests](#manifest)
 These naturally can be hosted on different servers, but it is also possible to do it all on a single server.
 
 ### Cacheing Policy
+
 Both the Manifest and the Asset endpoints MUST be served with a `cache-control` header set to an appropriately short period of time.
 
 For example:
@@ -156,7 +161,7 @@ cache-control: max-age=0, private
 Assets SHOULD be capable being served with `zip` and `brotli` compression.
 The asset hosted at a particular URL MUST NOT be changed.
 
-### Channel and Branches
+### Channels and Branches
 
 A `branch` is a collection of `updates` stored on the server, ordered by creation time.
 
@@ -168,7 +173,7 @@ The server MUST use the name of this branch to
 
 The simplest case is to create a single branch of the same name for a given channel.
 
-More complex use cases would be to create multiple branches for a given channel and use request header `expo-rollout-token` to portions of users to different branches. This maybe useful for A/B testing or for gradually rolling out a new major version of an app.
+More complex use cases would be to create multiple branches for a given channel. Then, using the request header `expo-rollout-token`, divide the users into groups that are mapped to different branches. This is useful for A/B testing or for gradually rolling out a new major version of an app.
 
 ## Client
 
