@@ -138,13 +138,12 @@ A conformant server MUST return a `400` error if a manifest is not found.
 
 ## Server
 
-* can be served on the same server or separate
-* rollouts
-* branches
-* headers
+There are two roles:
+  * serve the correct [response](#response) to a given [request](#request)
+  * host the assets refenced in the [manifests](#manifest)
+These naturally can be hosted on different servers, but it is also possible to do it all on a single server.
 
-
-### Cacheing
+### Cacheing Policy
 Both the Manifest and the Asset endpoints MUST be served with a `cache-control` header set to an appropriately short period of time.
 
 For example:
@@ -155,38 +154,22 @@ cache-control: max-age=0, private
 ### Compression
 
 Assets SHOULD be capable being served with `zip` and `brotli` compression.
+The asset hosted at a particular URL MUST NOT be changed.
 
-### Uploads
+### Channel and Branches
 
-The server must upload assets to unique urls that can be computed from the asset. For example, the `sha256` hash of an asset. 
+A `branch` is a collection of `updates` stored on the server, ordered by creation time.
 
-### Branch Mapping
-...
+The server MUST implement logic that maps a request to a `branch` determined by the request header `expo-channel-name` as well as any of optional server defined headers.
 
-The asset server hosts all of the files reference by an update's manifest.
+The server MUST use the name of this branch to 
+  * define the `branchname` value of the `expo-manifest-filters` response header.
+  * define the `branchName` value of the `updateMetadata` JSON inside the [manifest](#manifest)
 
+The simplest case is to create a single branch of the same name for a given channel.
+
+More complex use cases would be to create multiple branches for a given channel and use request header `expo-rollout-token` to portions of users to different branches. This maybe useful for A/B testing or for gradually rolling out a new major version of an app.
 
 ## Client
 
-A client must have a method to check for updates. Some examples are:
-   * check on open, block till updated
-   * check on open, update in the background
-The request for a manifest must include the following headers with a request [headers](protocol/#request)
-
-After fetching a manifest a client must download and store the related assets and store them.
-
-A client must run the most recent update satisfying the 'manifest filters' it has stored. If there is no previously downloaded update, the client must fallback to an `embedded update` that is included in the initial build step.
-
-* must save and send back any headers specified by `serverDefinedHeaders`
-
 See the [reference client](https://github.com/expo/expo/tree/master/packages/expo-updates)
-
-## Index
-- [Manifest](manifest.md) 
-
-The standard flow of an update:
-  1. Client requests the current manifest
-  2. If the manifest is new, the client downloads all of the assets specified by the new manifest.
-The protocol begins with a client making a GET request to the manifest server.
-
-The manifest is the metadata for an update that contains information used by the client to determine which update to launch, and how to download all of the assets required to run the update (JS bundle, images, fonts, etc).
