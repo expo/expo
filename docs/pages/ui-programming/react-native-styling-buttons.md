@@ -1,7 +1,9 @@
 ---
-title: Styling a React Native Button
+title: Styling a React Native button
 sidebar_title: Styling buttons
 ---
+
+import SnackInline from '~/components/plugins/SnackInline';
 
 React Native exports a [`<Button />`](https://reactnative.dev/docs/button) component that exposes the native button element for Android, iOS, and the web. The `<Button />` component accepts `title` and `onPress` props but it does not accept a `style` prop, which makes it hard to customize the style. The closest we can get to styling a `<Button />` exported from React Native is with the `color` prop. Below is an example of two buttons on Android, iOS, and the web. The first button is the default `<Button />` and the second is another default `<Button />` with its `color` prop set to `"red".
 
@@ -9,9 +11,13 @@ React Native exports a [`<Button />`](https://reactnative.dev/docs/button) compo
 
 To create a button with a custom style, we can to turn to the [`<Pressable />`](../versions/latest/react-native/pressable/) component.`<Pressable />`let's us fully customize the appearance of a pressable element (like a button), in addition to allowing us to customize it's behavior. Here's an example of using`<Pressable />` to create a button component:
 
+<SnackInline>
+
+<!-- prettier-ignore -->
 ```jsx
 import React from 'react';
 import { Text, View, StyleSheet, Pressable } from 'react-native';
+
 export default function Button(props) {
   const { onPress, title = 'Save' } = props;
   return (
@@ -20,6 +26,7 @@ export default function Button(props) {
     </Pressable>
   );
 }
+
 const styles = StyleSheet.create({
   button: {
     alignItems: 'center',
@@ -39,6 +46,8 @@ const styles = StyleSheet.create({
   },
 });
 ```
+
+</SnackInline>
 
 And here's the result of this code:
 
