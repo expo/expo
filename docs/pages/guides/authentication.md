@@ -203,14 +203,14 @@ export default function App() {
 
 <!-- prettier-ignore -->
 ```tsx
-import * as React from "react";
-import * as WebBrowser from "expo-web-browser";
 import {
-  makeRedirectUri,
-  useAuthRequest,
   exchangeCodeAsync,
+  makeRedirectUri,
   TokenResponse,
+  useAuthRequest,
 } from "expo-auth-session";
+import * as WebBrowser from "expo-web-browser";
+import * as React from "react";
 import { Button } from "react-native";
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
@@ -239,13 +239,13 @@ export default function App() {
     },
     discovery
   );
-  const [
+  const {
     // The token will be auto exchanged after auth completes.
     token,
     /* @info If the auto exchange fails, you can display the error. */
     exchangeError,
     /* @end */
-  ] = useAutoExchange(
+  } = useAutoExchange(
     /* @info The auth code will be exchanged for an access token as soon as it's available. */
     response?.type === "success" ? response.params.code : null
     /* @end */
@@ -274,18 +274,24 @@ export default function App() {
   );
 }
 
+type State = {
+  token: TokenResponse | null;
+  exchangeError: Error | null;
+};
+
 // A hook to automatically exchange the auth token for an access token.
 // this should be performed in a server and not here in the application.
 // For educational purposes only:
-function useAutoExchange(code?: string): [TokenResponse | null, Error | null] {
-  const [accessToken, setToken] = React.useState<TokenResponse | null>(null);
-  const [error, setError] = React.useState<Error | null>(null);
+function useAutoExchange(code?: string): State {
+  const [state, setState] = React.useReducer(
+    (state: State, action: Partial<State>) => ({ ...state, ...action }),
+    { token: null, exchangeError: null }
+  );
   const isMounted = useMounted();
 
   React.useEffect(() => {
     if (!code) {
-      setToken(null);
-      setError(null);
+      setState({ token: null, exchangeError: null });
       return;
     }
 
@@ -302,19 +308,19 @@ function useAutoExchange(code?: string): [TokenResponse | null, Error | null] {
       },
       discovery
     )
-      .then((results) => {
+      .then((token) => {
         if (isMounted.current) {
-          setToken(results);
+          setState({ token, exchangeError: null });
         }
       })
-      .catch((error) => {
+      .catch((exchangeError) => {
         if (isMounted.current) {
-          setError(error);
+          setState({ exchangeError, token: null });
         }
       });
   }, [code]);
 
-  return [accessToken, error];
+  return state;
 }
 
 function useMounted() {
@@ -326,7 +332,6 @@ function useMounted() {
   }, []);
   return isMounted;
 }
-
 ```
 
 </SnackInline>
