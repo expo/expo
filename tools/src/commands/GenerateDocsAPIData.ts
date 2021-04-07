@@ -54,7 +54,7 @@ const executeCommand = async (
         jsonOutputPath,
         JSON.stringify(recursiveOmitBy(
           await fs.readJson(jsonOutputPath),
-          ({ key }) => key === 'id'
+          ({ key }) => key === 'id' || key === 'groups'
         ), null, 0)
       );
     }
@@ -65,14 +65,14 @@ const executeCommand = async (
 
 async function action({ packageName }: ActionOptions) {
   const packagesMapping: Record<string, CommandAdditionalParams> = {
+    'expo-application': ['Application.ts'],
     'expo-blur': ['index.ts'],
+    'expo-keep-awake': ['index.ts'],
     'expo-mail-composer': ['MailComposer.ts'],
     'expo-sensors': ['Pedometer.ts', 'expo-pedometer'],
     'expo-sharing': ['Sharing.ts'],
-    'expo-store-review': ['StoreReview.ts'],
-    'expo-application': ['Application.ts'],
-    'expo-keep-awake': ['index.ts'],
     'expo-splash-screen': ['SplashScreen.ts'],
+    'expo-store-review': ['StoreReview.ts'],
   };
 
   if (packageName) {
