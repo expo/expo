@@ -46,7 +46,7 @@ Here you will find a list of errors that are commonly encountered by developers 
 
 - [Align your AppKey](../troubleshooting/application-has-not-been-registered) with the native side of your project.
 
-## Application not behaving as expected
+### Application not behaving as expected
 
 - It is possible caches may be preventing you from seeing the current state of your application.
 
