@@ -35,6 +35,7 @@ const DIR_MAPPING = {
   clients: 'Development Clients',
   archived: 'Archived',
   faq: 'FAQ',
+  troubleshooting: 'Troubleshooting',
 };
 
 const processUrl = path => {
