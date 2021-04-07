@@ -1,5 +1,6 @@
 ---
-title: Deferred Computation in Expo and React Native
+title: Delaying Your Code To Run Later
+sidebar_title: Delaying Your Code
 ---
 
 import SnackInline from '~/components/plugins/SnackInline'
