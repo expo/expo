@@ -11,7 +11,6 @@ import abi41_0_0.expo.modules.imagepicker.ImagePickerConstants.exifTags
 import abi41_0_0.expo.modules.imagepicker.exporters.ImageExporter
 import abi41_0_0.expo.modules.imagepicker.exporters.ImageExporter.Listener
 import abi41_0_0.expo.modules.imagepicker.fileproviders.FileProvider
-import abi41_0_0.expo.modules.imagepicker.slashifyFilePath
 import abi41_0_0.org.unimodules.core.Promise
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -32,7 +31,7 @@ open class ImageResultTask(private val promise: Promise,
       val imageExporterHandler = object : Listener {
         override fun onResult(out: ByteArrayOutputStream?, width: Int, height: Int) {
           val response = Bundle().apply {
-            putString("uri", slashifyFilePath(outputFile.toURI().toString()))
+            putString("uri", Uri.fromFile(outputFile).toString())
             putInt("width", width)
             putInt("height", height)
             putBoolean("cancelled", false)
