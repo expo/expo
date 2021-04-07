@@ -390,7 +390,7 @@ const ROOT = [
 ];
 
 // These directories will not be placed in the sidebar, but will still be searchable
-const hiddenSections = ['FAQ'];
+const hiddenSections = ['FAQ', 'Troubleshooting'];
 
 const sortAccordingToReference = (arr, reference) => {
   reference = Array.from(reference).reverse();
