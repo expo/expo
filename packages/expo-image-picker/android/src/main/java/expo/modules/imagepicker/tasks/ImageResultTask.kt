@@ -11,7 +11,6 @@ import expo.modules.imagepicker.ImagePickerConstants.exifTags
 import expo.modules.imagepicker.exporters.ImageExporter
 import expo.modules.imagepicker.exporters.ImageExporter.Listener
 import expo.modules.imagepicker.fileproviders.FileProvider
-import expo.modules.imagepicker.slashifyFilePath
 import org.unimodules.core.Promise
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -32,7 +31,7 @@ open class ImageResultTask(private val promise: Promise,
       val imageExporterHandler = object : Listener {
         override fun onResult(out: ByteArrayOutputStream?, width: Int, height: Int) {
           val response = Bundle().apply {
-            putString("uri", slashifyFilePath(outputFile.toURI().toString()))
+            putString("uri", Uri.fromFile(outputFile).toString())
             putInt("width", width)
             putInt("height", height)
             putBoolean("cancelled", false)
