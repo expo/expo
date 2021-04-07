@@ -23,6 +23,7 @@ const DIR_MAPPING = {
   workflow: 'Fundamentals',
   distribution: 'Distributing Your App',
   expokit: 'ExpoKit',
+  'ui-programming': 'UI Programming',
   'regulatory-compliance': 'Regulatory Compliance',
   'push-notifications': 'Push Notifications',
   preview: 'Preview',

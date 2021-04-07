@@ -8,6 +8,7 @@ const GROUPS = {
   'The Basics': ['Conceptual Overview', 'Get Started', 'Tutorial', 'Next Steps'],
   'Managed Workflow': [
     'Fundamentals',
+    'UI Programming',
     'Assorted Guides',
     'Push Notifications',
     'Distributing Your App',
@@ -183,6 +184,10 @@ const sections = [
       'Ejecting to Bare Workflow',
       'Glossary of terms',
     ],
+  },
+  {
+    name: 'UI Programming',
+    reference: ['Styling a React Native Button'],
   },
   {
     name: 'Assorted Guides',
@@ -377,6 +382,7 @@ const ROOT = [
   'Tutorial',
   'Conceptual Overview',
   'Fundamentals',
+  'UI Programming',
   'Assorted Guides',
   'Push Notifications',
   'Distributing Your App',
