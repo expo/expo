@@ -61,12 +61,14 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
                           response:(nullable NSURLResponse *)response
                             config:(EXUpdatesConfig *)config
                           database:(EXUpdatesDatabase *)database
-                             error:(NSError **)error
+                             error:(NSError ** _Nullable)error
 {
   if (![response isKindOfClass:[NSHTTPURLResponse class]]) {
-    *error = [NSError errorWithDomain:EXUpdatesUpdateErrorDomain
-                                code:1001
-                            userInfo:@{NSLocalizedDescriptionKey:@"response must be a NSHTTPURLResponse"}];
+    if(error){
+      *error = [NSError errorWithDomain:EXUpdatesUpdateErrorDomain
+                                  code:1001
+                              userInfo:@{NSLocalizedDescriptionKey:@"response must be a NSHTTPURLResponse"}];
+    }
     return nil;
   }
   
@@ -84,9 +86,11 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
                                               config:config
                                             database:database];
   } else {
-    *error = [NSError errorWithDomain:EXUpdatesUpdateErrorDomain
-                                code:1000
-                            userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"expo-protocol-version '%@' is invalid", expoProtocolVersion]}];
+    if(error){
+      *error = [NSError errorWithDomain:EXUpdatesUpdateErrorDomain
+                                  code:1000
+                              userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"expo-protocol-version '%@' is invalid", expoProtocolVersion]}];
+    }
     return nil;
   }
 }
