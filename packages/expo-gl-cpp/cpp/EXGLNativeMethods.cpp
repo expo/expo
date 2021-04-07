@@ -1572,7 +1572,7 @@ NATIVE_METHOD(getSupportedExtensions) {
 
   jsi::Array extensions(runtime, supportedExtensions.size());
   int i = 0;
-  for (auto extensionName : supportedExtensions) {
+  for (auto const &extensionName : supportedExtensions) {
     extensions.setValueAtIndex(runtime, i++, jsi::String::createFromUtf8(runtime, extensionName));
   }
   return extensions;
