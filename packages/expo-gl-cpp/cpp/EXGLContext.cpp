@@ -140,5 +140,38 @@ jsi::Value EXGLContext::exglDeleteObject(
 jsi::Value EXGLContext::exglUnimplemented(std::string name) {
   throw std::runtime_error("EXGL: " + name + "() isn't implemented yet!");
 }
+
+void EXGLContext::maybeReadAndCacheSupportedExtensions() {
+  if (supportedExtensions.size() == 0) {
+    addBlockingToNextBatch([&] {
+      GLint numExtensions = 0;
+      glGetIntegerv(GL_NUM_EXTENSIONS, &numExtensions);
+
+      for (auto i = 0; i < numExtensions; i++) {
+        std::string extensionName(reinterpret_cast<const char *>(glGetStringi(GL_EXTENSIONS, i)));
+
+        // OpenGL ES prefixes extension names with `GL_`, need to trim this.
+        if (extensionName.substr(0, 3) == "GL_") {
+          extensionName.erase(0, 3);
+        }
+        supportedExtensions.insert(extensionName);
+      }
+    });
+
+    supportedExtensions.insert("OES_texture_float_linear");
+    supportedExtensions.insert("OES_texture_half_float_linear");
+
+    // OpenGL ES 3.0 supports these out of the box.
+    if (supportsWebGL2) {
+      supportedExtensions.insert("WEBGL_compressed_texture_astc");
+      supportedExtensions.insert("WEBGL_compressed_texture_etc");
+    }
+
+#ifdef __APPLE__
+    // All iOS devices support PVRTC compression format.
+    supportedExtensions.insert("WEBGL_compressed_texture_pvrtc");
+#endif
+  }
+}
 } // namespace gl_cpp
 } // namespace expo
