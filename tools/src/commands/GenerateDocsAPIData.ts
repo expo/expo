@@ -2,6 +2,7 @@ import { Command } from '@expo/commander';
 import chalk from 'chalk';
 import { Application, TSConfigReader, TypeDocReader } from 'typedoc';
 import fs from 'fs-extra';
+import recursiveOmitBy from 'recursive-omit-by';
 
 import logger from '../Logger';
 
@@ -49,7 +50,13 @@ const executeCommand = async (
   if (project) {
     await app.generateJson(project, jsonOutputPath);
     if (MINIFY_JSON) {
-      await fs.writeFile(jsonOutputPath, JSON.stringify(await fs.readJson(jsonOutputPath), null, 0));
+      await fs.writeFile(
+        jsonOutputPath,
+        JSON.stringify(recursiveOmitBy(
+          await fs.readJson(jsonOutputPath),
+          ({ key }) => key === 'id'
+        ), null, 0)
+      );
     }
   } else {
     throw new Error(`💥 Failed to extract API data from source code for '${packageName}' package.`);
