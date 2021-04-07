@@ -91,8 +91,8 @@ import { Constants } from 'react-native-unimodules';
 console.log(Constants.systemFonts);
 ```
 
-It's possible that you will not have to use any of the code provided by this package directly, it may be used only by other Expo modules that you install. You will likely want to use something like [FileSystem](/versions/latest/sdk/filesystem/) or [Permissions](/versions/latest/sdk/permissions/), and to do that you can import the following modules like so:
+It's possible that you will not have to use any of the code provided by this package directly, it may be used only by other Expo modules that you install. You will likely want to use something like [FileSystem](/versions/latest/sdk/filesystem/), and to do that you can import the following modules like so:
 
 ```js
-import { Asset, Constants, FileSystem, Permissions } from 'react-native-unimodules';
+import { Asset, Constants, FileSystem } from 'react-native-unimodules';
 ```
