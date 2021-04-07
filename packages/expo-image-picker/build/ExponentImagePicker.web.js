@@ -1,3 +1,4 @@
+import { Platform } from '@unimodules/core';
 import { PermissionStatus } from 'unimodules-permissions-interface';
 import { v4 } from 'uuid';
 import { MediaTypeOptions, } from './ImagePicker.types';
@@ -11,12 +12,20 @@ export default {
         return 'ExponentImagePicker';
     },
     async launchImageLibraryAsync({ mediaTypes = MediaTypeOptions.Images, allowsMultipleSelection = false, }) {
+        // SSR guard
+        if (!Platform.isDOMAvailable) {
+            return { cancelled: true };
+        }
         return await openFileBrowserAsync({
             mediaTypes,
             allowsMultipleSelection,
         });
     },
     async launchCameraAsync({ mediaTypes = MediaTypeOptions.Images, allowsMultipleSelection = false, }) {
+        // SSR guard
+        if (!Platform.isDOMAvailable) {
+            return { cancelled: true };
+        }
         return await openFileBrowserAsync({
             mediaTypes,
             allowsMultipleSelection,
@@ -85,12 +94,6 @@ function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelec
             }
             document.body.removeChild(input);
         });
-        document.body.onfocus = () => {
-            if (!input.value.length) {
-                resolve({ cancelled: true });
-                document.body.onfocus = null;
-            }
-        };
         const event = new MouseEvent('click');
         input.dispatchEvent(event);
     });

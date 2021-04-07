@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- Added SSR guard. ([#12420](https://github.com/expo/expo/pull/12420) by [@EvanBacon](https://github.com/EvanBacon))
+- Reverted focus state listener PR. ([#12420](https://github.com/expo/expo/pull/12420) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 10.1.1 — 2021-03-31
 
 _This version does not introduce any user-facing changes._
