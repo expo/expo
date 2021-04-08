@@ -1,10 +1,15 @@
 ---
 title: Update Spec
-sidebar_title: EAS Update
+sidebar_title: EAS Update 0
 ---
+
+version 0
+
+---
+
 ## Introduction
 
-This is the specification for EAS Update, a protocol for managing over the air updates to apps running on multiple platforms.
+This is the specification for EAS Update a protocol for managing over the air updates to apps running on multiple platforms.
 
 ### Conformance
 
@@ -67,9 +72,9 @@ The choice of manifest and headers are dependent on the values of the request he
 
 ```
 expo-protocol-version: 0
-expo-manifest-signature-version: number
+expo-manifest-signature-version: 0
 expo-manifest-signature: string
-expo-sfv-version: number
+expo-sfv-version: 0
 expo-manifest-filters: expo-sfv
 expo-server-defined-headers: expo-sfv
 cache-control: *
@@ -77,11 +82,11 @@ content-type: application/json; charset=utf-8
 ```
 
 * `expo-protocol-version` describes the protocol in this doc and MUST be `0`.
-* `expo-manifest-signature-version` MUST be included if the `expo-accept-signature` header was set to true in the request. Must be a number.
+* `expo-manifest-signature-version` MUST be included if the `expo-accept-signature` header was set to true in the request. EAS Update version 0 MUST set this to `0`.
 * `expo-manifest-signature` version `0` MUST be an RSA SHA256 signature of the response body.
-* `expo-sfv-version` MUST be a number.
-* `expo-sfv`   [expo-sfv](expo-sfv.md) version `0` is a partial implementation of Structured Field Values outlined in [IETF RFC 8941](https://tools.ietf.org/html/rfc8941)
-* `expo-manifest-filters` is an [expo-sfv](expo-sfv.md) dictionary and is used to filter the updates stored by the client by `updateMetadata` attributes found in the [manifest](#manifest).
+* `expo-sfv-version`  EAS Update version 0 MUST set this to `0`.
+* `expo-sfv`   [expo SFV 0](expo-sfv-0.md) version `0` is a partial implementation of Structured Field Values outlined in [IETF RFC 8941](https://tools.ietf.org/html/rfc8941)
+* `expo-manifest-filters` is an [expo SFV 0](expo-sfv-0.md) dictionary and is used to filter the updates stored by the client by `updateMetadata` attributes found in the [manifest](#manifest).
   * For example: `expo-manifest-filters: branchname="main"` instructs the client to load the most recent update it has stored whose `updateMetadata` contains:
 
   ```
