@@ -16,6 +16,9 @@ import DiagnosticsScreen from '../screens/DiagnosticsScreen';
 import ExperienceScreen from '../screens/ExperienceScreen';
 import GeofencingScreen from '../screens/GeofencingScreen';
 import LocationDiagnosticsScreen from '../screens/LocationDiagnosticsScreen';
+import ProfileAllProjectsScreen from '../screens/ProfileAllProjectsScreen';
+import ProfileAllSnacksScreen from '../screens/ProfileAllSnacksScreen';
+import ProfileScreen from '../screens/ProfileScreen';
 import ProjectsForAccountScreen from '../screens/ProjectsForAccountScreen';
 import ProjectsScreen from '../screens/ProjectsScreen';
 import QRCodeScreen from '../screens/QRCodeScreen';
@@ -36,8 +39,15 @@ function useThemeName() {
 const accountNavigationOptions = ({ route }) => {
   const accountName = route.params?.accountName;
   return {
-    title: accountName ?? 'Profile',
-    headerRight: () => (accountName ? <OptionsButton /> : <UserSettingsButton />),
+    title: `@${accountName}`,
+    headerRight: () => <OptionsButton />,
+  };
+};
+
+const profileNavigationOptions = ({ route }) => {
+  return {
+    title: 'Profile',
+    headerRight: () => <UserSettingsButton />,
   };
 };
 
@@ -71,6 +81,21 @@ function ProfileStackScreen() {
     <ProfileStack.Navigator
       initialRouteName="Profile"
       screenOptions={defaultNavigationOptions(theme)}>
+      <ProfileStack.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={profileNavigationOptions}
+      />
+      <ProfileStack.Screen
+        name="ProfileAllProjects"
+        component={ProfileAllProjectsScreen}
+        options={{ title: 'Projects' }}
+      />
+      <ProfileStack.Screen
+        name="ProfileAllSnacks"
+        component={ProfileAllSnacksScreen}
+        options={{ title: 'Snacks' }}
+      />
       <ProfileStack.Screen
         name="Account"
         component={AccountScreen}
