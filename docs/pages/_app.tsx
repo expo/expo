@@ -8,6 +8,8 @@ import React from 'react';
 import { preprocessSentryError } from '~/common/sentry-utilities';
 import 'react-diff-view/style/index.css';
 import '@expo/styleguide/dist/expo-colors.css';
+import '../public/static/libs/algolia/algolia.css';
+import '../public/static/libs/algolia/algolia-mobile.css';
 
 Sentry.init({
   dsn: 'https://67e35a01698649d5aa33aaab61777851@sentry.io/1526800',
