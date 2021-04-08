@@ -16791,6 +16791,11 @@ react-native-safe-modules@^1.0.0:
   dependencies:
     dedent "^0.6.0"
 
+react-native-screens@2.15.2:
+  version "2.15.2"
+  resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-2.15.2.tgz#a449700e895b462937211ec72ed6f09652758f06"
+  integrity sha512-CagNf2APXkVoRlF3Mugr264FbKbrBg9eXUkqhIPVeZB8EsdS8XPrnt99yj/pzmT+yJMBY0dGrjXT8+68WYh6YQ==
+
 react-native-screens@~3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-3.0.0.tgz#ee4c2d69abf7411603868b57214feec5e8f637fa"

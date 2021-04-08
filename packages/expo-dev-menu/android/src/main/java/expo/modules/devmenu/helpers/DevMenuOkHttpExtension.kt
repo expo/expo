@@ -58,6 +58,7 @@ fun fetchGraphQL(url: Uri, query: String, authHeader: Pair<String, String>? = nu
         query
           .trimIndent()
           .replace("\n", "\\n")
+          .replace("\"", "\\\"")
       }\"}")
     )
     .addHeader("Content-Type", "application/json")

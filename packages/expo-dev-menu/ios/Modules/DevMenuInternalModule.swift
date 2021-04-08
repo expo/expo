@@ -80,13 +80,31 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
     DevMenuInternalModule.fontsWereLoaded = true
     resolve(nil)
   }
+
+  @objc
+  func fetchDataSourceAsync(_ dataSourceId: String, resolve: @escaping RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    if dataSourceId == nil {
+      return reject("ERR_DEVMENU_DATA_SOURCE_FAILED", "DataSource ID not provided.", nil)
+    }
+    
+    for dataSource in manager.devMenuDataSources {
+      if (dataSource.id == dataSourceId) {
+        dataSource.fetchData { data in
+          resolve(data.map { $0.serialize() })
+        }
+        return;
+      }
+    }
+
+    return reject("ERR_DEVMENU_DATA_SOURCE_FAILED", "DataSource \(dataSourceId) not founded.", nil)
+  }
   
   @objc
-  func dispatchActionAsync(_ actionId: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+  func dispatchActionAsync(_ actionId: String, args: [String : Any]?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
     if actionId == nil {
       return reject("ERR_DEVMENU_ACTION_FAILED", "Action ID not provided.", nil)
     }
-    manager.dispatchAction(withId: actionId)
+    manager.dispatchCallable(withId: actionId, args: args)
     resolve(nil)
   }
 

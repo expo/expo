@@ -3,6 +3,7 @@ package expo.modules.devmenu.extensions
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.KeyEvent
@@ -12,8 +13,10 @@ import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.devsupport.DevInternalSettings
 import expo.interfaces.devmenu.DevMenuExtensionInterface
 import expo.interfaces.devmenu.DevMenuExtensionSettingsInterface
+import expo.interfaces.devmenu.items.DevMenuDataSourceInterface
 import expo.interfaces.devmenu.items.DevMenuItemImportance
 import expo.interfaces.devmenu.items.DevMenuItemsContainer
+import expo.interfaces.devmenu.items.DevMenuListDataSource
 import expo.interfaces.devmenu.items.DevMenuScreen
 import expo.interfaces.devmenu.items.DevMenuSelectionList
 import expo.interfaces.devmenu.items.KeyCommand
@@ -141,50 +144,38 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
       screen("testScreen") {
         group {
           selectionList {
-            addItem(DevMenuSelectionList.Item().apply {
-              isChecked = { true }
-              title = { "release-1.0" }
-              warning = { "You are currently running an older development client version than the latest \"release-1.0\" update. To get the latest, upgrade this development client app." }
-              tags = {
-                listOf(
-                  DevMenuSelectionList.Item.Tag().apply {
-                    glyphName = { "ios-git-network" }
-                    text = { "production" }
-                  },
-                  DevMenuSelectionList.Item.Tag().apply {
-                    glyphName = { "ios-cloud" }
-                    text = { "90%" }
-                  }
-                )
-              }
-            })
-
-            addItem(DevMenuSelectionList.Item().apply {
-              title = { "pr-134" }
-            })
-
-            addItem(DevMenuSelectionList.Item().apply {
-              title = { "release-1.1" }
-              warning = { "You are currently running an older development client version than the latest \"release-1.0\" update. To get the latest, upgrade this development client app." }
-              tags = {
-                listOf(
-                  DevMenuSelectionList.Item.Tag().apply {
-                    glyphName = { "ios-git-network" }
-                    text = { "production" }
-                  },
-                  DevMenuSelectionList.Item.Tag().apply {
-                    glyphName = { "ios-cloud" }
-                    text = { "10%" }
-                  }
-                )
-              }
-            })
-
-            addItem(DevMenuSelectionList.Item().apply {
-              title = { "pr-21" }
-            })
+            dataSourceId = { "updatesList" }
+            addOnClick {
+              print(it.toString())
+            }
           }
         }
+      }
+    )
+  }
+
+  override fun devMenuDataSources(settings: DevMenuExtensionSettingsInterface): List<DevMenuDataSourceInterface> {
+    return listOf(
+      DevMenuListDataSource("updatesList") {
+        val client = settings.manager.getExpoApiClient()
+        val response = client.queryUpdateBranches("3d4813b8-ad48-4e1e-9e8f-0f7d108bf041")
+        val data = response.data
+        if (response.status != 200 || data == null) {
+          return@DevMenuListDataSource emptyList()
+        }
+
+        return@DevMenuListDataSource data
+          .flatMap { it.updates.toList() }
+          .filter { it.platform == "android" }
+          .map {
+            DevMenuSelectionList.Item().apply {
+              onClickData = {
+                Bundle().apply { putString("id", it.id) }
+              }
+              title = { it.message }
+
+            }
+          }
       }
     )
   }

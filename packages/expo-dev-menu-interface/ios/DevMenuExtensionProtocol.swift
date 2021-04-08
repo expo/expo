@@ -25,5 +25,8 @@ public protocol DevMenuExtensionProtocol {
   
   @objc
   optional func devMenuScreens(_ settings: DevMenuExtensionSettingsProtocol) -> [DevMenuScreen]?
+  
+  @objc
+  optional func devMenuDataSources(_ settings: DevMenuExtensionSettingsProtocol) -> [DevMenuDataSourceProtocol]?
 }
  
