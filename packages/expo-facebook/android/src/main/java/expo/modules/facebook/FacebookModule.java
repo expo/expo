@@ -224,7 +224,7 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
 
   @ExpoMethod
   public void logEventAsync(String eventName, double valueToSum, ReadableArguments parameters, Promise promise) {
-    mAppEventLogger.logEvent(eventName, valueToSum, parameters.toBundle());
+    mAppEventLogger.logEvent(eventName, valueToSum, bundleWithNullValuesAsStrings(parameters));
     promise.resolve(null);
   }
 
@@ -234,7 +234,7 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
       mAppEventLogger.logPurchase(
               BigDecimal.valueOf(purchaseAmount),
               Currency.getInstance(currencyCode),
-              parameters.toBundle());
+              bundleWithNullValuesAsStrings(parameters));
       promise.resolve(null);
   }
 
@@ -325,5 +325,24 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
   @Override
   public void onNewIntent(Intent intent) {
     // do nothing
+  }
+
+  private Bundle bundleWithNullValuesAsStrings(ReadableArguments parameters) {
+    Bundle result = new Bundle();
+    for (String key : parameters.keys()) {
+      Object value = parameters.get(key);
+      if (value == null) {
+        result.putString(key, "null");
+      } else if (value instanceof String) {
+        result.putString(key, (String) value);
+      } else if (value instanceof Integer) {
+        result.putInt(key, (Integer) value);
+      } else if (value instanceof Double) {
+        result.putDouble(key, (Double) value);
+      } else if (value instanceof Long) {
+        result.putLong(key, (Long) value);
+      }
+    }
+    return result;
   }
 }
