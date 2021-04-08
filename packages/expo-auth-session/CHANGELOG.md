@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for useProxy in bare workflow. ([#12464](https://github.com/expo/expo/pull/12464) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ## 3.2.1 — 2021-03-30
