@@ -24,9 +24,9 @@ In React Native you may need to update a component's state at the end of your co
 - `setState` is asynchronous, so if you need to mutate the existing state, pass a function rather than an object to the method.
 
 
-
+<Tabs>
+<Tab label="With Hooks">
 <SnackInline>
-
 
 <!-- prettier-ignore -->
 ```jsx
@@ -50,10 +50,12 @@ const App = () => {
 
   return (<Text>Count is {count}</Text>);
 };
+
+export default App;
 ```
 </SnackInline>
-
-
+</Tab>
+<Tab label="With Class Components">
 <SnackInline>
 
 <!-- prettier-ignore -->
@@ -84,8 +86,9 @@ export default class App extends React.Component {
   }
 }
 ```
-
 </SnackInline>
+</Tab>
+</Tabs>
 
 
 
