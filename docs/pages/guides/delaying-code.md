@@ -5,18 +5,18 @@ sidebar_title: Delaying Your Code
 
 import SnackInline from '~/components/plugins/SnackInline'
 
-When building an application, you will often need to perform some computation after a period of time rather than in response to some event or component lifecycle event.  Because mobile applications rely heavily on interactions and your computation shares a JS thread with updates to the UI, performant apps must be careful to schedule work in small increments and at times that will not impact your users' experience.
+When building an application, much of your code will run in response to events like component lifecycle events and user interactions. Sometimes you'll need to delay when your code runs instead of running it immediately after an event. Because mobile applications need to respond quickly to interactions and the code for your user interface (such as React components that update the UI) shares a JS thread with other event-handling code, responsive apps must be careful to schedule work in small increments and at times that won't impact your users' experience.
 
 
 ## While your app is in the foreground
- While your application is in the foreground, you have access to all of the techniques available in JS development like setTimeout, setInterval, and requestAnimationFrame.  If you are not familiar with these methods or when you might use them we recommend Mozilla's guide on [asynchronous Javascript](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Timeouts_and_intervals).
+ While your application is in the foreground, you have access to scheduling functions that are often available in other JS environments like `setTimeout`, `setInterval`, and `requestAnimationFrame`. If you are not familiar with these methods or when you might use them we recommend Mozilla's guide on [asynchronous Javascript](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Timeouts_and_intervals).
 
-React Native provides an additional timing technique with InteractionManager.  InteractionManager allows you to schedule computationally expensive computations to run after any interactions and animations they might impact have completed.  You can schedule computations to run with `InteractionManager.runAfterInteractions(() => { /* your task */})` React Native itself, and high-quality libraries you might use, already register themselves with `InteractionManager`.  If you need to, you can register any other animations via `InteractionManager.createInteractionHandle()` on the start of your animation and signal completion via `InteractionManager.clearInteractionHandle(resultOfCallToCreateInteractionHandle)`
+React Native provides an additional timing technique with [InteractionManager](https://reactnative.dev/docs/interactionmanager). InteractionManager allows you to schedule computationally expensive code to run after any interactions and animations they might impact have completed. You can schedule computations to run with `InteractionManager.runAfterInteractions(() => { /* your task */ })`. React Native itself, and high-quality libraries you might use, already register animations with `InteractionManager`. If you need to, you can register any other animations via `InteractionManager.createInteractionHandle()` on the start of your animation and signal completion via `InteractionManager.clearInteractionHandle(resultOfCallToCreateInteractionHandle)`.
 
 
 ### Usage in React Native
 
-In React Native You may need to update your application's state as a result of your computation.  A few points to note:
+In React Native You may need to update your application's state as a result of your computation. A few points to note:
 - Make sure that your timers do not live beyond the lifecycle of your component by clearing your timers created in componentWillUnmount.
 - You must bind the context, either explicitly or by using arrow notation, to have access to methods like setState when your computation is run.
 - setState is asynchronous, so if you need to mutate the existing state, pass a function rather than an object to the method.
@@ -57,7 +57,7 @@ export default class App extends React.Component {
 
 ## While your app is in the background
 
-For some use cases, you want your computation to continue even while your user switches to another app.  Setting this up manually can be complex, so we provide some modules that simplify things for the most common use cases.
+For some use cases, you want your computation to continue even while your user switches to another app. Setting this up manually can be complex, so we provide some modules that simplify things for the most common use cases.
 
 
 | If you want to... | You can use... |
