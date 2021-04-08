@@ -7,7 +7,5 @@ import ProjectsList from '../containers/ProjectsList';
 export default function ProjectsForAccountScreen({
   route,
 }: StackScreenProps<AllStackRoutes, 'ProjectsForAccount'>) {
-  const { accountName } = route.params ?? {};
-
-  return <ProjectsList accountName={accountName} />;
+  return <ProjectsList accountName={route.params.accountName} />;
 }
