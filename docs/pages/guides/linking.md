@@ -166,7 +166,7 @@ Once you build your standalone app and install it to your device, you will be ab
 If your app is ejected, note that like some other parts of `app.json`, changing the `scheme` key after your app is already ejected will not have the desired effect. If you'd like to change the deep link scheme in your bare app, you'll need to replace the existing scheme with the new one in the following locations:
 
 - `scheme` in `app.json`
-- Under the first occurrence of `CFBundleURLSchemes` in `ios/<your-project-name>/Supporting/Info.plist`
+- Under the first occurrence of `CFBundleURLSchemes` in `ios/<your-project-name>/Info.plist`
 - In the `data android:scheme` tag in `android/app/src/main/AndroidManifest.xml`
 
 ### `Linking` module
