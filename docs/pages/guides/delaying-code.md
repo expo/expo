@@ -21,7 +21,7 @@ React Native provides an additional timing technique with [InteractionManager](h
 In React Native you may need to update a component's state at the end of your computation. A few points to note:
 - Make sure that your timers do not live beyond the lifecycle of your component by clearing your timers in an effect hook's cleanup function or the `componentWillUnmount` lifecycle method.
 - With class components, you must bind the context, either explicitly or by using arrow functions, to have access to methods like `setState` when your computation is run.
-- `setState` is asynchronous, so if you need to mutate the existing state, pass a function rather than an object to the method.
+- `setState` is asynchronous, so if you need to [mutate the existing state](https://reactjs.org/docs/react-component.html#setstate), pass a function rather than an object to the method.
 
 
 <Tabs>
