@@ -16,7 +16,7 @@ import LegacyAuthSession from './LegacyAuthSession';
 
 maybeCompleteAuthSession();
 
-const isInClient = Constants.executionEnvironment === ExecutionEnvironment.StoreClient
+const isInClient = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
 
 const languages = [
   { key: 'en', value: 'English' },
@@ -39,11 +39,7 @@ export default function AuthSessionScreen() {
         }}>
         <View style={{ marginBottom: 8 }}>
           <H2>Settings</H2>
-          <TitledSwitch
-            title="Use Proxy"
-            value={useProxy}
-            setValue={setProxy}
-          />
+          <TitledSwitch title="Use Proxy" value={useProxy} setValue={setProxy} />
           <TitledSwitch
             title="Switch Accounts"
             value={!!prompt}
