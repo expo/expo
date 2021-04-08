@@ -49,6 +49,7 @@ const screens = [
   'Device',
   'DocumentPicker',
   'FaceDetector',
+  'FacebookAppEvents',
   'FacebookLogin',
   'FileSystem',
   'FirebaseRecaptcha',
