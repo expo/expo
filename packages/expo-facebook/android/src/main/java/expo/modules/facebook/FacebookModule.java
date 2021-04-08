@@ -4,12 +4,16 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import androidx.annotation.Nullable;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsConstants;
+import com.facebook.appevents.AppEventsLogger;
+import com.facebook.internal.AttributionIdentifiers;
 import com.facebook.login.LoginBehavior;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
@@ -23,21 +27,29 @@ import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.services.UIManager;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Currency;
 import java.util.List;
 
 public class FacebookModule extends ExportedModule implements ActivityEventListener {
   private final static String ERR_FACEBOOK_MISCONFIGURED = "ERR_FACEBOOK_MISCONFIGURED";
   private final static String ERR_FACEBOOK_LOGIN = "ERR_FACEBOOK_LOGIN";
+  private static final String PUSH_PAYLOAD_KEY = "fb_push_payload";
+  private static final String PUSH_PAYLOAD_CAMPAIGN_KEY = "campaign";
 
+  private Context mContext;
   private CallbackManager mCallbackManager;
   private ModuleRegistry mModuleRegistry;
+  private AppEventsLogger mAppEventLogger;
+  private AttributionIdentifiers mAttributionIdentifiers;
   protected String mAppId;
   protected String mAppName;
 
   public FacebookModule(Context context) {
     super(context);
+    mContext = context;
     mCallbackManager = CallbackManager.Factory.create();
   }
 
@@ -120,6 +132,8 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
           FacebookSdk.fullyInitialize();
           mAppId = FacebookSdk.getApplicationId();
           mAppName = FacebookSdk.getApplicationName();
+          mAppEventLogger = AppEventsLogger.newLogger(mContext);
+          mAttributionIdentifiers = AttributionIdentifiers.getAttributionIdentifiers(mContext);
           promise.resolve(null);
         }
       });
@@ -200,6 +214,99 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
     } catch (FacebookException e) {
       promise.reject(ERR_FACEBOOK_LOGIN, "An error occurred while trying to log in to Facebook", e);
     }
+  }
+
+  @ExpoMethod
+  public void setFlushBehaviorAsync(String flushBehavior, Promise promise) {
+    AppEventsLogger.setFlushBehavior(AppEventsLogger.FlushBehavior.valueOf(flushBehavior.toUpperCase()));
+    promise.resolve(null);
+  }
+
+  @ExpoMethod
+  public void logEventAsync(String eventName, double valueToSum, ReadableArguments parameters, Promise promise) {
+    mAppEventLogger.logEvent(eventName, valueToSum, parameters.toBundle());
+    promise.resolve(null);
+  }
+
+  @ExpoMethod
+  public void logPurchaseAsync(double purchaseAmount, String currencyCode,
+    @Nullable ReadableArguments parameters, Promise promise) {
+      mAppEventLogger.logPurchase(
+              BigDecimal.valueOf(purchaseAmount),
+              Currency.getInstance(currencyCode),
+              parameters.toBundle());
+      promise.resolve(null);
+  }
+
+  @ExpoMethod
+  public void logPushNotificationOpenAsync(String campaign, Promise promise) {
+    // the Android FBSDK expects the fb_push_payload to be a JSON string
+    Bundle payload = new Bundle();
+    payload.putString(PUSH_PAYLOAD_KEY, String.format("{\"%s\" : \"%s\"}",PUSH_PAYLOAD_CAMPAIGN_KEY , campaign));
+    mAppEventLogger.logPushNotificationOpen(payload);
+    promise.resolve(null);
+  }
+
+  @ExpoMethod
+  public void setUserIDAsync(final String userID, Promise promise) {
+      mAppEventLogger.setUserID(userID);
+      promise.resolve(null);
+  }
+
+  @ExpoMethod
+  @Nullable
+  public void getUserIDAsync(Promise promise) {
+    promise.resolve(mAppEventLogger.getUserID());
+  }
+
+  @ExpoMethod
+  public void getAnonymousIDAsync(Promise promise) {
+    try {
+      promise.resolve(mAppEventLogger.getAnonymousAppDeviceGUID(mContext));
+    } catch (Exception e) {
+      promise.reject("E_ANONYMOUS_ID_ERROR", "Can not get anonymousID", e);
+    }
+  }
+
+  @ExpoMethod
+  public void getAdvertiserIDAsync(Promise promise) {
+    try {
+      promise.resolve(mAttributionIdentifiers.getAndroidAdvertiserId());
+    } catch (Exception e) {
+      promise.reject("E_ADVERTISER_ID_ERROR", "Can not get advertiserID", e);
+    }
+  }
+
+  @ExpoMethod
+  public void getAttributionIDAsync(Promise promise) {
+    try {
+      promise.resolve(mAttributionIdentifiers.getAttributionId());
+    } catch (Exception e) {
+      promise.reject("E_ATTRIBUTION_ID_ERROR", "Can not get attributionID", e);
+    }
+  }
+
+  @ExpoMethod
+  public void setUserDataAsync(ReadableArguments userData, Promise promise) {
+    AppEventsLogger.setUserData(
+      userData.getString("email"),
+      userData.getString("firstName"),
+      userData.getString("lastName"),
+      userData.getString("phone"),
+      userData.getString("dateOfBirth"),
+      userData.getString("gender"),
+      userData.getString("city"),
+      userData.getString("state"),
+      userData.getString("zip"),
+      userData.getString("country")
+    );
+    promise.resolve(null);
+  }
+
+  @ExpoMethod
+  public void flushAsync(Promise promise) {
+    mAppEventLogger.flush();
+    promise.resolve(null);
   }
 
   @Override
