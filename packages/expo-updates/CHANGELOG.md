@@ -5,7 +5,9 @@
 ### 🛠 Breaking changes
 
 - remove UPDATES_CONFIGURATION_USES_LEGACY_MANIFEST_KEY constant. ([#12181](https://github.com/expo/expo/pull/12181) by [@jkhales](https://github.com/jkhales))
-- Jonathan/e 499 remove EXUpdatesUsesLegacyManifest Plist constant (ios). ([#12249](https://github.com/expo/expo/pull/12249) by [@jkhales](https://github.com/jkhales))
+- remove EXUpdatesUsesLegacyManifest Plist constant (ios). ([#12249](https://github.com/expo/expo/pull/12249) by [@jkhales](https://github.com/jkhales))
+- crash if EXUpdatesRequestHeaders is not a dictionary (ios). ([#12457](https://github.com/expo/expo/pull/12457) by [@jkhales](https://github.com/jkhales))
+
 
 ### 🎉 New features
 

@@ -95,8 +95,21 @@ static NSString * const EXUpdatesConfigNeverString = @"NEVER";
   }
 
   id requestHeaders = config[EXUpdatesConfigRequestHeadersKey];
-  if (requestHeaders && [requestHeaders isKindOfClass:[NSDictionary class]]) {
+  if (requestHeaders) {
+    if(![requestHeaders isKindOfClass:[NSDictionary class]]){
+      @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                     reason:[NSString stringWithFormat:@"PList key '%@' must be a string valued Dictionary.", EXUpdatesConfigRequestHeadersKey]
+                                   userInfo:@{}];
+    }
     _requestHeaders = (NSDictionary *)requestHeaders;
+    
+    for (id key in _requestHeaders){
+      if (![_requestHeaders[key] isKindOfClass:[NSString class]]){
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                       reason:[NSString stringWithFormat:@"PList key '%@' must be a string valued Dictionary.", EXUpdatesConfigRequestHeadersKey]
+                                     userInfo:@{}];
+      }
+    }
   }
 
   id releaseChannel = config[EXUpdatesConfigReleaseChannelKey];
