@@ -88,7 +88,11 @@ export const resolveTypeName = ({
     }
     return elementType.name + type;
   } else if (type === 'union' && types?.length) {
-    return types.map((t: TypeDefinitionTypesData) => `${t.name || t.value}`).join(' | ');
+    return types
+      .map((t: TypeDefinitionTypesData) =>
+        t.type === 'array' ? `${t.elementType?.name}[]` : `${t.name || t.value}`
+      )
+      .join(' | ');
   }
   return 'undefined';
 };
