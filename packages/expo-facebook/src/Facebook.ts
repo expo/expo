@@ -244,6 +244,9 @@ function transformNativeFacebookAuthenticationCredential(
  * Logs an event with eventName and optional parameters. Supports the optional parameter `valueToSum`,
  * which when reported, all of the valueToSum properties are summed together. For example, if 10 people purchased
  * one item and each item cost $10 (and passed in valueToSum) then they would be added together to report $100.
+ * Parameters must be either strings or numbers, otherwise no event will be logged.
+ *
+ * To view and test app events, please visit Facebook's Event Manager- https://www.facebook.com/events_manager2/list/app/
  */
 export async function logEventAsync(eventName: string, parameters: Params = {}): Promise<void> {
   if (!ExponentFacebook.logEventAsync) {
@@ -259,6 +262,7 @@ export async function logEventAsync(eventName: string, parameters: Params = {}):
 
 /**
  * Logs a purchase event with the amount, currency code, and optional parameters.
+ * Parameters must be either strings or numbers, otherwise no event will be logged.
  * See http://en.wikipedia.org/wiki/ISO_4217 for currencyCodes.
  */
 export async function logPurchaseAsync(
