@@ -2,8 +2,8 @@ import * as Facebook from 'expo-facebook';
 import React from 'react';
 import { Text, Platform, ScrollView, View } from 'react-native';
 
-import ListButton from '../components/ListButton';
 import HeadingText from '../components/HeadingText';
+import ListButton from '../components/ListButton';
 import SimpleActionDemo from '../components/SimpleActionDemo';
 
 const appId = '629712900716487';
