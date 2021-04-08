@@ -50,13 +50,11 @@ const executeCommand = async (
   if (project) {
     await app.generateJson(project, jsonOutputPath);
     if (MINIFY_JSON) {
-      await fs.writeFile(
-        jsonOutputPath,
-        JSON.stringify(recursiveOmitBy(
-          await fs.readJson(jsonOutputPath),
-          ({ key }) => key === 'id' || key === 'groups'
-        ), null, 0)
+      const minifiedJson = recursiveOmitBy(
+        await fs.readJson(jsonOutputPath),
+        ({ key }) => key === 'id' || key === 'groups'
       );
+      await fs.writeFile(jsonOutputPath, JSON.stringify(minifiedJson, null, 0));
     }
   } else {
     throw new Error(`💥 Failed to extract API data from source code for '${packageName}' package.`);
