@@ -3,7 +3,7 @@ import * as AuthSession from 'expo-auth-session';
 import { useAuthRequest } from 'expo-auth-session';
 import * as FacebookAuthSession from 'expo-auth-session/providers/facebook';
 import * as GoogleAuthSession from 'expo-auth-session/providers/google';
-import Constants from 'expo-constants';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { maybeCompleteAuthSession } from 'expo-web-browser';
 import React from 'react';
 import { Platform, ScrollView, View } from 'react-native';
@@ -16,7 +16,7 @@ import LegacyAuthSession from './LegacyAuthSession';
 
 maybeCompleteAuthSession();
 
-const isInClient = Platform.OS !== 'web' && Constants.appOwnership === 'expo';
+const isInClient = Constants.executionEnvironment === ExecutionEnvironment.StoreClient
 
 const languages = [
   { key: 'en', value: 'English' },
@@ -40,7 +40,6 @@ export default function AuthSessionScreen() {
         <View style={{ marginBottom: 8 }}>
           <H2>Settings</H2>
           <TitledSwitch
-            disabled={!isInClient}
             title="Use Proxy"
             value={useProxy}
             setValue={setProxy}

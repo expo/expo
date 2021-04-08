@@ -8,7 +8,8 @@ export class SessionUrlProvider {
         const hostAddress = SessionUrlProvider.getHostAddress();
         const isExpoHosted = hostAddress.hostUri &&
             (/^(.*\.)?(expo\.io|exp\.host|exp\.direct|expo\.test)(:.*)?(\/.*)?$/.test(hostAddress.hostUri) ||
-                manifest.developer);
+                (!!manifest.developer &&
+                    Constants.executionEnvironment === ExecutionEnvironment.StoreClient));
         let scheme = 'exp';
         let path = SessionUrlProvider.SESSION_PATH;
         const manifestScheme = resolveScheme({});
@@ -48,9 +49,6 @@ export class SessionUrlProvider {
         return encodeURI(`${scheme}://${hostUri}${path}${parameters}`);
     }
     getStartUrl(authUrl, returnUrl) {
-        // if (ExecutionEnvironment.Bare === Constants.executionEnvironment) {
-        //   return authUrl;
-        // }
         const queryString = qs.stringify({
             authUrl,
             returnUrl,
@@ -61,9 +59,25 @@ export class SessionUrlProvider {
         if (Platform.OS === 'web') {
             return [window.location.origin, urlPath].filter(Boolean).join('/');
         }
-        const redirectUrl = `${SessionUrlProvider.BASE_URL}/${manifest.id}`;
+        const legacyExpoProjectId = manifest.currentFullName || manifest.id;
+        if (!legacyExpoProjectId) {
+            let nextSteps = '';
+            if (__DEV__) {
+                if (Constants.executionEnvironment === ExecutionEnvironment.Bare) {
+                    nextSteps =
+                        ' Please ensure you have the latest version of expo-constants installed and rebuild your native app. You can verify that currentFullName is defined by running `expo config --type public | grep currentFullName`';
+                }
+                else if (Constants.executionEnvironment === ExecutionEnvironment.StoreClient) {
+                    nextSteps =
+                        ' Please report this as a bug with the contents of `expo config --type public`.';
+                }
+            }
+            throw new Error('Cannot use AuthSession proxy because the project ID is not defined.' + nextSteps);
+        }
+        const redirectUrl = `${SessionUrlProvider.BASE_URL}/${legacyExpoProjectId}`;
         if (__DEV__) {
-            SessionUrlProvider.warnIfAnonymous(manifest.id, redirectUrl);
+            SessionUrlProvider.warnIfAnonymous(legacyExpoProjectId, redirectUrl);
+            // TODO: Verify with the dev server that the manifest is up to date.
         }
         return redirectUrl;
     }

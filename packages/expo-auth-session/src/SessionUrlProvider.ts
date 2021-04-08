@@ -99,9 +99,6 @@ export class SessionUrlProvider {
     if (__DEV__) {
       SessionUrlProvider.warnIfAnonymous(legacyExpoProjectId, redirectUrl);
       // TODO: Verify with the dev server that the manifest is up to date.
-      // if (Constants.executionEnvironment === ExecutionEnvironment.Bare) {
-      //   SessionUrlProvider.warnIfBareManifestNeedsUpdate(legacyExpoProjectId);
-      // }
     }
     return redirectUrl;
   }
@@ -136,11 +133,6 @@ export class SessionUrlProvider {
         `You are not currently signed in to Expo on your development machine. As a result, the redirect URL for AuthSession will be "${url}". If you are using an OAuth provider that requires whitelisting redirect URLs, we recommend that you do not whitelist this URL -- instead, you should sign in to Expo to acquired a unique redirect URL. Additionally, if you do decide to publish this app using Expo, you will need to register an account to do it.`
       );
     }
-  }
-  private static warnIfBareManifestNeedsUpdate(currentId: string, serverId: string): void {
-    console.warn(
-      `The app manifest appears to be out of date. Expected Project ID "${serverId}" but found "${currentId}" this will effect redirect URIs. Please rebuild the native app to update the ID.`
-    );
   }
 
   private static removeScheme(url: string) {
