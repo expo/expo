@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add support for user-initiated background tracking without background permission ([#12456](https://github.com/expo/expo/pull/12456) by [@bycedric](https://github.com/bycedric))
+
 ## 12.0.2 — 2021-03-29
 
 ### 🐛 Bug fixes
