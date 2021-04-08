@@ -7,13 +7,13 @@ import { Tab, Tabs } from '~/components/plugins/Tabs'
 
 import SnackInline from '~/components/plugins/SnackInline'
 
-When building an application, much of your code will run in response to events like component lifecycle events and user interactions. Sometimes you'll need to delay when your code runs instead of running it immediately after an event. Because mobile applications need to respond quickly to interactions and the code for your user interface (such as React components that update the UI) shares a JS thread with other event-handling code, responsive apps must be careful to schedule work in small increments and at times that won't impact your users' experience.
+When building an application, much of your code will run in response to events like component lifecycle events and user interactions. Sometimes you'll need to delay when your code runs instead of running it immediately after an event. Responsive applications need to respond quickly to user interactions and render smooth animations, but the code for your user interface (such as React components that update the UI) shares a JS thread with other event-handling code. Therefore, you should be careful to schedule work in small increments and at times that won't impact your users' experience to deliver a great experience to your users.
 
 
 ## Delaying code while your app is in the foreground
  While your application is in the foreground, you have access to scheduling functions that are often available in other JS environments like `setTimeout`, `setInterval`, and `requestAnimationFrame`. If you are not familiar with these methods or when you might use them we recommend Mozilla's guide on [asynchronous JavaScript](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Timeouts_and_intervals).
 
- ### InteractionManager
+### InteractionManager
 
 React Native provides an additional timing technique with [InteractionManager](https://reactnative.dev/docs/interactionmanager). InteractionManager allows you to schedule computationally expensive code to run after any interactions and animations they might impact have completed. You can schedule computations to run with `InteractionManager.runAfterInteractions(() => { /* your task */ })`.
 
