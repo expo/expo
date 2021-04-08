@@ -100,7 +100,8 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
       `https://fake-auth.netlify.com?state=faker&redirect_uri=${encodeURIComponent(
         redirectUrl
       )}&prompt=${shouldPrompt ? 'consent' : 'none'}`,
-      redirectUrl
+      redirectUrl,
+      { createTask: this.state.createTask }
     );
     return result;
   };
