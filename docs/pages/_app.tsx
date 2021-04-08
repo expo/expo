@@ -1,3 +1,5 @@
+/// <reference types="google.analytics" />
+
 import { ThemeProvider } from '@expo/styleguide';
 import * as Sentry from '@sentry/browser';
 import App from 'next/app';
@@ -12,10 +14,6 @@ Sentry.init({
   beforeSend: preprocessSentryError,
 });
 
-interface GAWindow extends Window {
-  ga(cmd: string, event: string, props?: Record<string, any>): void;
-}
-
 export function reportWebVitals({
   id,
   name,
@@ -27,7 +25,7 @@ export function reportWebVitals({
   label: string;
   value: number;
 }) {
-  const ga = ((window as unknown) as GAWindow).ga;
+  const ga = window.ga;
   if (ga) {
     ga('send', 'event', {
       eventCategory: label === 'web-vital' ? 'Web Vitals' : 'Next.js custom metric',
