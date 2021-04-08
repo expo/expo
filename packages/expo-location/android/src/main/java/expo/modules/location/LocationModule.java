@@ -483,11 +483,6 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void stopLocationUpdatesAsync(String taskName, final Promise promise) {
-    if (isMissingBackgroundPermissions()) {
-      promise.reject(new LocationBackgroundUnauthorizedException());
-      return;
-    }
-
     try {
       mTaskManager.unregisterTask(taskName, LocationTaskConsumer.class);
       promise.resolve(null);
@@ -498,11 +493,6 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void hasStartedLocationUpdatesAsync(String taskName, final Promise promise) {
-    if (isMissingBackgroundPermissions()) {
-      promise.reject(new LocationBackgroundUnauthorizedException());
-      return;
-    }
-
     promise.resolve(mTaskManager.taskHasConsumerOfClass(taskName, LocationTaskConsumer.class));
   }
 
