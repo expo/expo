@@ -130,4 +130,11 @@ module.exports = {
     });
     return pathMap;
   },
+  async headers() {
+    const cacheHeaders = [{ key: 'Cache-Control', value: 'public, max-age=15552000, immutable' }];
+    return [
+      { source: '/static/fonts/:font*', headers: cacheHeaders },
+      { source: '/static/libs/:lib*', headers: cacheHeaders },
+    ];
+  },
 };
