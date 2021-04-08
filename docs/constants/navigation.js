@@ -212,6 +212,7 @@ const sections = [
       'Progressive Web Apps',
       'Web Performance',
       'Notification Channels',
+      'Delaying Your Code To Run Later',
       'Error Handling',
       'Testing with Jest',
       'Account Permissions',
