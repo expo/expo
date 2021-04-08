@@ -333,5 +333,5 @@ const RENAMED_PAGES: Record<string, string> = {
   '/faq/clear-cache-windows/': '/troubleshooting/clear-cache-windows/',
   '/faq/clear-cache-macos-linux/': '/troubleshooting/clear-cache-macos-linux/',
   '/faq/application-has-not-been-registered/':
-   '/troubleshooting/application-has-not-been-registered/',
+    '/troubleshooting/application-has-not-been-registered/',
 };
