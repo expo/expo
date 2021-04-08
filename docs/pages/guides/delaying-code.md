@@ -99,6 +99,6 @@ For some use cases, you want your computation to continue even while your user s
 
 | If you want to... | You can use... |
 | ----------------------- | ----------- |
-| fetch data from some endpoint          | [expo-background-fetch](https://docs.expo.io/versions/latest/sdk/background-fetch/) |
-| respond to changes in the user's location           | [expo-location](https://docs.expo.io/versions/latest/sdk/location/) |
-| perform a generic long-running computation   | [expo-task-manager](https://docs.expo.io/versions/latest/sdk/task-manager/) |
+| fetch data from some endpoint          | [expo-background-fetch](../versions/latest/sdk/background-fetch.md) |
+| respond to changes in the user's location           | [expo-location](../versions/latest/sdk/location.md) |
+| perform a generic long-running computation   | [expo-task-manager](../versions/latest/sdk/task-manager.md) |
