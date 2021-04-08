@@ -3,6 +3,7 @@ title: Delaying Your Code To Run Later
 sidebar_title: Delaying Your Code
 ---
 
+import { Tab, Tabs } from '~/components/plugins/Tabs'
 import SnackInline from '~/components/plugins/SnackInline'
 
 When building an application, much of your code will run in response to events like component lifecycle events and user interactions. Sometimes you'll need to delay when your code runs instead of running it immediately after an event. Because mobile applications need to respond quickly to interactions and the code for your user interface (such as React components that update the UI) shares a JS thread with other event-handling code, responsive apps must be careful to schedule work in small increments and at times that won't impact your users' experience.
@@ -16,15 +17,43 @@ React Native provides an additional timing technique with [InteractionManager](h
 
 ### Usage in React Native
 
-In React Native You may need to update your application's state as a result of your computation. A few points to note:
-- Make sure that your timers do not live beyond the lifecycle of your component by clearing your timers created in componentWillUnmount.
-- You must bind the context, either explicitly or by using arrow notation, to have access to methods like setState when your computation is run.
-- setState is asynchronous, so if you need to mutate the existing state, pass a function rather than an object to the method.
+In React Native you may need to update a component's state at the end of your computation. A few points to note:
+- Make sure that your timers do not live beyond the lifecycle of your component by clearing your timers in an effect hook's cleanup function or the `componentWillUnmount` lifecycle method.
+- With class components, you must bind the context, either explicitly or by using arrow functions, to have access to methods like `setState` when your computation is run.
+- `setState` is asynchronous, so if you need to mutate the existing state, pass a function rather than an object to the method.
 
+<Tabs>
+<Tab label="Using Hooks">
 <SnackInline>
+```jsx
+import React, { useState, useEffect } from 'react';
+import { Text } from 'react-native';
 
+const App = () => {
+  // Set the initial count to 0
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    // increment the count by 1
+    const countTimer = setInterval(() => {
+      setCount((prevCount) => prevCount + 1);
+    // every 1000 milliseconds
+    }, 1000);
+    // and clear this timer when the component is unmounted
+    return function cleanup() {
+      clearInterval(countTimer);
+    };
+  });
+
+  return (<Text>Count is {count}</Text>);
+};
+```
+
+</SnackInline>
+</Tab>
+<Tab label="New notifications">
+<SnackInline>
 <!-- prettier-ignore -->
-```js
+```jsx
 import React from 'react';
 import { Text } from 'react-native';
 
@@ -47,17 +76,19 @@ export default class App extends React.Component {
   }
 
   render() {
-    return <Text>{this.state.count}</Text>;
+    return <Text>Count is {this.state.count}</Text>;
   }
 }
 ```
 
 </SnackInline>
+</Tab>
+</Tabs>
 
 
 ## While your app is in the background
 
-For some use cases, you want your computation to continue even while your user switches to another app. Setting this up manually can be complex, so we provide some modules that simplify things for the most common use cases.
+For some use cases, you want your computation to continue even while your user switches to another app. Setting this up manually can be complex, so Expo provides some modules that simplify things for the most common use cases.
 
 
 | If you want to... | You can use... |
