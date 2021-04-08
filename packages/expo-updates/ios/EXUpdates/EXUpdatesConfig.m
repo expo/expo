@@ -95,7 +95,12 @@ static NSString * const EXUpdatesConfigNeverString = @"NEVER";
   }
 
   id requestHeaders = config[EXUpdatesConfigRequestHeadersKey];
-  if (requestHeaders && [requestHeaders isKindOfClass:[NSDictionary class]]) {
+  if (requestHeaders) {
+    if(![requestHeaders isKindOfClass:[NSDictionary class]]){
+      @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                     reason:[NSString stringWithFormat:@"PList key '%@' must be a Dictionary.",EXUpdatesConfigRequestHeadersKey]
+                                   userInfo:@{}];
+    }
     _requestHeaders = (NSDictionary *)requestHeaders;
   }
 
