@@ -41,6 +41,8 @@ export default class FacebookAppEventsScreen extends React.Component {
               myParam: 'thanks for testing this!',
               // @ts-ignore
               'this is null': null,
+              number: 5,
+              double: 5.0,
             })
           }
           title="Log an event"
@@ -80,7 +82,9 @@ export default class FacebookAppEventsScreen extends React.Component {
           title="Set user data"
         />
 
-        <View>
+        <ListButton onPress={async () => await Facebook.flushAsync()} title="Flush" />
+
+        <View style={{ paddingBottom: 30 }}>
           <HeadingText style={{ textAlign: 'center' }}>
             To view app events in Expo Go on iOS, go to this dashboard:
           </HeadingText>
