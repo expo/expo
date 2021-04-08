@@ -13,7 +13,13 @@ When building an application, much of your code will run in response to events l
 ## While your app is in the foreground
  While your application is in the foreground, you have access to scheduling functions that are often available in other JS environments like `setTimeout`, `setInterval`, and `requestAnimationFrame`. If you are not familiar with these methods or when you might use them we recommend Mozilla's guide on [asynchronous JavaScript](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Timeouts_and_intervals).
 
-React Native provides an additional timing technique with [InteractionManager](https://reactnative.dev/docs/interactionmanager). InteractionManager allows you to schedule computationally expensive code to run after any interactions and animations they might impact have completed. You can schedule computations to run with `InteractionManager.runAfterInteractions(() => { /* your task */ })`. React Native itself, and high-quality libraries you might use, already register animations with `InteractionManager`. If you need to, you can register any other animations via `InteractionManager.createInteractionHandle()` on the start of your animation and signal completion via `InteractionManager.clearInteractionHandle(resultOfCallToCreateInteractionHandle)`.
+ ### InteractionManager
+
+React Native provides an additional timing technique with [InteractionManager](https://reactnative.dev/docs/interactionmanager). InteractionManager allows you to schedule computationally expensive code to run after any interactions and animations they might impact have completed. You can schedule computations to run with `InteractionManager.runAfterInteractions(() => { /* your task */ })`.
+
+React Native itself, and high-quality libraries you might use, already register animations with `InteractionManager`. If you need to, you can:
+- register any other animations via `InteractionManager.createInteractionHandle()` on the start of your animation 
+- signal completion via `InteractionManager.clearInteractionHandle(resultOfCallToCreateInteractionHandle)`
 
 
 ### Usage in React Native
