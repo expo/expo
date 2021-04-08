@@ -4,6 +4,7 @@ sidebar_title: Delaying Your Code
 ---
 
 import { Tab, Tabs } from '~/components/plugins/Tabs'
+
 import SnackInline from '~/components/plugins/SnackInline'
 
 When building an application, much of your code will run in response to events like component lifecycle events and user interactions. Sometimes you'll need to delay when your code runs instead of running it immediately after an event. Because mobile applications need to respond quickly to interactions and the code for your user interface (such as React components that update the UI) shares a JS thread with other event-handling code, responsive apps must be careful to schedule work in small increments and at times that won't impact your users' experience.
@@ -22,9 +23,12 @@ In React Native you may need to update a component's state at the end of your co
 - With class components, you must bind the context, either explicitly or by using arrow functions, to have access to methods like `setState` when your computation is run.
 - `setState` is asynchronous, so if you need to mutate the existing state, pass a function rather than an object to the method.
 
-<Tabs>
-<Tab label="Using Hooks">
+
+
 <SnackInline>
+
+
+<!-- prettier-ignore -->
 ```jsx
 import React, { useState, useEffect } from 'react';
 import { Text } from 'react-native';
@@ -47,11 +51,11 @@ const App = () => {
   return (<Text>Count is {count}</Text>);
 };
 ```
-
 </SnackInline>
-</Tab>
-<Tab label="New notifications">
+
+
 <SnackInline>
+
 <!-- prettier-ignore -->
 ```jsx
 import React from 'react';
@@ -82,8 +86,7 @@ export default class App extends React.Component {
 ```
 
 </SnackInline>
-</Tab>
-</Tabs>
+
 
 
 ## While your app is in the background
