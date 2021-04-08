@@ -1,14 +1,13 @@
 import { StackScreenProps } from '@react-navigation/stack';
-import { Project } from 'components/ProjectList';
-import { Snack } from 'components/SnackList';
-import { AccountData } from 'containers/Account';
 import dedent from 'dedent';
 import { take, takeRight } from 'lodash';
 import React from 'react';
-import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import FadeIn from 'react-native-fade-in-image';
 
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
+import { ProfileData } from '../containers/Profile';
 import { AllStackRoutes } from '../navigation/Navigation.types';
 import EmptyAccountProjectsNotice from './EmptyAccountProjectsNotice';
 import EmptyAccountSnacksNotice from './EmptyAccountSnacksNotice';
@@ -21,6 +20,7 @@ import SectionHeader from './SectionHeader';
 import SeeAllProjectsButton from './SeeAllProjectsButton';
 import SnackListItem from './SnackListItem';
 import { StyledText } from './Text';
+import { StyledView } from './Views';
 
 const MAX_APPS_TO_DISPLAY = 3;
 const MAX_SNACKS_TO_DISPLAY = 3;
@@ -35,27 +35,18 @@ const SERVER_ERROR_TEXT = dedent`
   Sorry about this. We will resolve the issue as soon as possible.
 `;
 
-export type AccountViewProps = {
-  accountName: string;
-} & StackScreenProps<AllStackRoutes, 'Account'>;
+export type ProfileViewProps = StackScreenProps<AllStackRoutes, 'Profile'>;
 
 type QueryProps = {
   loading: boolean;
   error?: Error;
   refetch: (props: any) => void;
-  data?: AccountData;
+  data?: ProfileData;
 };
 
-type Props = AccountViewProps & QueryProps;
+type Props = ProfileViewProps & QueryProps;
 
-export default function AccountView({
-  accountName,
-  navigation,
-  loading,
-  error,
-  refetch,
-  data,
-}: Props) {
+export default function ProfileView({ navigation, loading, error, refetch, data }: Props) {
   const [isRefreshing, setRefreshing] = React.useState(false);
   const mounted = React.useRef<boolean | null>(true);
 
@@ -97,13 +88,13 @@ export default function AccountView({
     }
   };
 
-  if (error && !data?.account.byName) {
+  if (error) {
     return (
-      <AccountErrorView error={error} isRefetching={isRefreshing} onRefresh={_handleRefreshAsync} />
+      <ProfileErrorView error={error} isRefetching={isRefreshing} onRefresh={_handleRefreshAsync} />
     );
   }
 
-  if (loading && !data?.account.byName) {
+  if (loading) {
     return (
       <View style={{ flex: 1, padding: 30, alignItems: 'center' }}>
         <ActivityIndicator color={Colors.light.tintColor} />
@@ -114,19 +105,21 @@ export default function AccountView({
   return (
     <ScrollView
       refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={_handleRefreshAsync} />}
-      contentContainerStyle={{ paddingBottom: 20, paddingTop: 12 }}
+      contentContainerStyle={{ paddingBottom: 20 }}
       style={styles.container}>
-      {data?.account.byName && (
+      {data?.me && (
         <>
-          <AccountProjectsSection data={data} navigation={navigation} accountName={accountName} />
-          <AccountSnacksSection data={data} navigation={navigation} accountName={accountName} />
+          <ProfileHeader data={data} />
+          <ProfileAccountsSection data={data} navigation={navigation} />
+          <ProfileProjectsSection data={data} navigation={navigation} />
+          <ProfileSnacksSection data={data} navigation={navigation} />
         </>
       )}
     </ScrollView>
   );
 }
 
-function AccountErrorView({
+function ProfileErrorView({
   error,
   isRefetching,
   onRefresh,
@@ -162,22 +155,72 @@ function AccountErrorView({
   );
 }
 
-function AccountProjectsSection({
+function ProfileHeader({ data }: { data: NonNullable<Props['data']> }) {
+  const { firstName, lastName, profilePhoto } = data.me;
+  return (
+    <StyledView style={styles.header} darkBackgroundColor="#000" darkBorderColor="#000">
+      <View style={styles.headerAvatarContainer}>
+        <FadeIn>
+          <Image style={styles.headerAvatar} source={{ uri: profilePhoto }} />
+        </FadeIn>
+      </View>
+      <StyledText style={styles.headerFullNameText}>
+        {firstName} {lastName}
+      </StyledText>
+      <View style={styles.headerAccountName}>
+        <StyledText style={styles.headerAccountText} lightColor="#232B3A" darkColor="#ccc">
+          @{data.me.username}
+        </StyledText>
+      </View>
+    </StyledView>
+  );
+}
+
+function ProfileAccountsSection({
   data,
   navigation,
-  accountName,
-}: Pick<Props, 'navigation' | 'accountName'> & {
+}: Pick<Props, 'navigation'> & {
+  data: NonNullable<Props['data']>;
+}) {
+  const onPressAccount = (accountName: string) => {
+    navigation.navigate('Account', { accountName });
+  };
+
+  const accounts = data.me.accounts;
+  if (accounts.length === 1) {
+    return null;
+  }
+
+  const renderAccount = (account: { id: string; name: string }, index: number) => {
+    return (
+      <ListItem
+        key={account.id}
+        title={`@${account.name}`}
+        onPress={() => onPressAccount(account.name)}
+        last={index === accounts.length - 1}
+      />
+    );
+  };
+
+  return (
+    <View>
+      <SectionHeader title="Accounts & Organizations" />
+      {accounts.map(renderAccount)}
+    </View>
+  );
+}
+
+function ProfileProjectsSection({
+  data,
+  navigation,
+}: Pick<Props, 'navigation'> & {
   data: NonNullable<Props['data']>;
 }) {
   const onPressProjectList = () => {
-    navigation.navigate('ProjectsForAccount', {
-      accountName,
-    });
+    navigation.navigate('ProfileAllProjects', {});
   };
 
-  const apps = data.account.byName.apps;
-
-  const renderApp = (app: Project, i: number) => {
+  const renderApp = (app: any, i: number) => {
     return (
       <ProjectListItem
         key={i}
@@ -188,12 +231,12 @@ function AccountProjectsSection({
         sdkVersion={app.sdkVersion}
         subtitle={app.packageName || app.fullName}
         experienceInfo={{ username: app.username, slug: app.packageName }}
-        last={i === apps.length - 1}
       />
     );
   };
 
   const renderContents = () => {
+    const apps = data.me.apps;
     if (!apps.length) {
       return <EmptyAccountProjectsNotice />;
     }
@@ -203,7 +246,7 @@ function AccountProjectsSection({
         {take(apps, MAX_APPS_TO_DISPLAY).map(renderApp)}
         <SeeAllProjectsButton
           apps={otherApps}
-          appCount={data.account.byName.appCount - MAX_APPS_TO_DISPLAY}
+          appCount={data.me.appCount - MAX_APPS_TO_DISPLAY}
           onPress={onPressProjectList}
         />
       </>
@@ -212,28 +255,25 @@ function AccountProjectsSection({
 
   return (
     <View>
-      <SectionHeader title="Published projects" />
+      <SectionHeader title="Recent projects" />
       {renderContents()}
     </View>
   );
 }
 
-function AccountSnacksSection({
+function ProfileSnacksSection({
   data,
   navigation,
-  accountName,
-}: Pick<Props, 'navigation' | 'accountName'> & {
+}: Pick<Props, 'navigation'> & {
   data: NonNullable<Props['data']>;
 }) {
   const onPressSnackList = () => {
-    navigation.navigate('SnacksForAccount', {
-      accountName,
-    });
+    navigation.navigate('ProfileAllSnacks', {});
   };
 
-  const snacks = data.account.byName.snacks;
+  const snacks = data.me.snacks;
 
-  const renderSnack = (snack: Snack, i: number) => {
+  const renderSnack = (snack: any, i: number) => {
     return (
       <SnackListItem
         key={i}
@@ -263,7 +303,7 @@ function AccountSnacksSection({
 
   return (
     <View>
-      <SectionHeader title="Saved snacks" />
+      <SectionHeader title="Recent snacks" />
       {renderContents()}
     </View>
   );
@@ -278,7 +318,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    marginBottom: 5,
+    marginBottom: 12,
   },
   headerAvatarContainer: {
     marginTop: 20,
@@ -294,7 +334,7 @@ const styles = StyleSheet.create({
   legacyHeaderAvatar: {
     backgroundColor: '#eee',
   },
-  headerAccountsList: {
+  headerAccountName: {
     paddingBottom: 20,
   },
   headerAccountText: {
