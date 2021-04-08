@@ -4,10 +4,9 @@ type ModalStackRoutes = {
 
 export type AllStackRoutes = {
   Projects: object;
-  Profile: { username?: string };
+  Account: { accountName?: string };
   UserSettings: object;
-  ExploreAndSearch: object;
-  ProjectsForUser: { username: string; belongsToCurrentUser?: boolean };
-  SnacksForUser: { username: string; belongsToCurrentUser?: boolean };
+  ProjectsForAccount: { accountName: string };
+  SnacksForAccount: { accountName: string };
   Experience: { username: string; slug: string };
 } & ModalStackRoutes;

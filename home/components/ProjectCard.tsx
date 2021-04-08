@@ -19,10 +19,7 @@ import * as UrlUtils from '../utils/UrlUtils';
 import { useSDKExpired } from '../utils/useSDKExpired';
 import { Experience } from './ExperienceView.types';
 
-export type PressUsernameHandler = (username: string) => void;
-
 type Props = {
-  onPressUsername: PressUsernameHandler;
   style: any;
   description: string;
   iconUrl: string;
@@ -35,7 +32,6 @@ type Props = {
 };
 
 export default function ProjectCard({
-  onPressUsername,
   style,
   description,
   iconUrl,
@@ -86,17 +82,6 @@ export default function ProjectCard({
     Linking.openURL(url);
   };
 
-  const _handlePressUsername = () => {
-    // note(brentvatne): navigation should do this automatically
-    Keyboard.dismiss();
-
-    if (onPressUsername) {
-      onPressUsername(username);
-    } else {
-      navigation.navigate('Profile', { username });
-    }
-  };
-
   return (
     <View style={[styles.spacerContainer, style]}>
       <StyledButton
@@ -116,7 +101,6 @@ export default function ProjectCard({
                 <StyledText
                   lightColor="rgba(36, 44, 58, 0.4)"
                   darkColor="#ccc"
-                  onPress={_handlePressUsername}
                   style={styles.projectExtraInfoText}
                   ellipsizeMode="tail"
                   numberOfLines={1}>

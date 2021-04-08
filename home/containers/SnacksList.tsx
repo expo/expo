@@ -4,90 +4,12 @@ import * as React from 'react';
 
 import SnackList, { Snack } from '../components/SnackList';
 
-interface MySnacksData {
-  me: {
-    id: string;
-    snacks: Snack[];
-  };
-}
-
-interface MySnacksVars {
-  limit: number;
-  offset: number;
-}
-
-const MySnacksQuery = gql`
-  query Home_MySnacks($limit: Int!, $offset: Int!) {
-    me {
-      id
-      snacks(limit: $limit, offset: $offset) {
-        name
-        description
-        fullName
-        slug
-        isDraft
-      }
-    }
-  }
-`;
-
-function useMySnacksQuery() {
-  const { data, fetchMore } = useQuery<MySnacksData, MySnacksVars>(MySnacksQuery, {
-    variables: {
-      limit: 15,
-      offset: 0,
-    },
-    fetchPolicy: 'cache-and-network',
-  });
-
-  const snacks = data?.me?.snacks;
-
-  const loadMoreAsync = React.useCallback(() => {
-    return fetchMore({
-      variables: {
-        offset: snacks?.length || 0,
-      },
-      updateQuery(previousData, { fetchMoreResult }) {
-        if (!fetchMoreResult?.me) {
-          return previousData;
-        }
-        const combinedData = {
-          me: {
-            ...previousData.me,
-            ...fetchMoreResult.me,
-            snacks: [...previousData.me.snacks, ...fetchMoreResult.me.snacks],
-          },
-        };
-
-        return {
-          ...combinedData,
-          snacks: combinedData.me.snacks,
-        };
-      },
-    });
-  }, [fetchMore, snacks]);
-
-  return {
-    data: {
-      ...data,
-      snacks,
-    },
-    loadMoreAsync,
-  };
-}
-
-export function MySnacksList() {
-  const { data, loadMoreAsync } = useMySnacksQuery();
-  return <SnackList data={data.snacks ?? []} loadMoreAsync={loadMoreAsync} belongsToCurrentUser />;
-}
-
-const OtherSnacksQuery = gql`
-  query Home_UsersSnacks($username: String!, $limit: Int!, $offset: Int!) {
-    user {
-      byUsername(username: $username) {
+const SnacksQuery = gql`
+  query Home_AccountSnacks($accountName: String!, $limit: Int!, $offset: Int!) {
+    account {
+      byName(accountName: $accountName) {
         id
-        username
-
+        name
         snacks(limit: $limit, offset: $offset) {
           name
           description
@@ -100,33 +22,33 @@ const OtherSnacksQuery = gql`
   }
 `;
 
-interface OtherSnacksData {
-  user: {
-    byUsername: {
+interface SnacksData {
+  account: {
+    byName: {
       id: string;
-      username: string;
+      name: string;
       snacks: Snack[];
     };
   };
 }
 
-interface OtherSnacksVars {
-  username: string;
+interface SnacksVars {
+  accountName: string;
   limit: number;
   offset: number;
 }
 
-function useOtherSnacksQuery({ username }: { username: string }) {
-  const { data, fetchMore } = useQuery<OtherSnacksData, OtherSnacksVars>(OtherSnacksQuery, {
+function useSnacksQuery({ accountName }: { accountName: string }) {
+  const { data, fetchMore } = useQuery<SnacksData, SnacksVars>(SnacksQuery, {
     variables: {
-      username: username.replace('@', ''),
+      accountName,
       limit: 15,
       offset: 0,
     },
     fetchPolicy: 'cache-and-network',
   });
 
-  const snacks = data?.user?.byUsername?.snacks;
+  const snacks = data?.account.byName.snacks;
 
   const loadMoreAsync = React.useCallback(() => {
     return fetchMore({
@@ -134,42 +56,34 @@ function useOtherSnacksQuery({ username }: { username: string }) {
         offset: snacks?.length || 0,
       },
       updateQuery: (previousData, { fetchMoreResult }) => {
-        if (!fetchMoreResult?.user?.byUsername) {
+        if (!fetchMoreResult?.account?.byName) {
           return previousData;
         }
-        const combinedData = {
-          user: {
-            ...previousData.user,
-            ...fetchMoreResult.user,
-            byUsername: {
-              ...previousData.user.byUsername,
-              ...fetchMoreResult.user.byUsername,
+        return {
+          account: {
+            ...previousData.account,
+            ...fetchMoreResult.account,
+            byName: {
+              ...previousData.account.byName,
+              ...fetchMoreResult.account.byName,
               snacks: [
-                ...previousData.user.byUsername.snacks,
-                ...fetchMoreResult.user.byUsername.snacks,
+                ...previousData.account.byName.snacks,
+                ...fetchMoreResult.account.byName.snacks,
               ],
             },
           },
-        };
-
-        return {
-          ...combinedData,
-          snacks: combinedData.user.byUsername.snacks,
         };
       },
     });
   }, [fetchMore, snacks]);
 
   return {
-    data: {
-      ...data,
-      snacks,
-    },
+    snacks,
     loadMoreAsync,
   };
 }
 
-export function OtherSnacksList({ username }: { username: string }) {
-  const { data, loadMoreAsync } = useOtherSnacksQuery({ username });
-  return <SnackList data={data.snacks ?? []} loadMoreAsync={loadMoreAsync} />;
+export default function SnacksList({ accountName }: { accountName: string }) {
+  const { snacks, loadMoreAsync } = useSnacksQuery({ accountName });
+  return <SnackList data={snacks ?? []} loadMoreAsync={loadMoreAsync} />;
 }
