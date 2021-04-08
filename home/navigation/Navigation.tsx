@@ -10,17 +10,16 @@ import OpenProjectByURLButton from '../components/OpenProjectByURLButton.ios';
 import OptionsButton from '../components/OptionsButton';
 import UserSettingsButton from '../components/UserSettingsButton';
 import * as Themes from '../constants/Themes';
+import AccountScreen from '../screens/AccountScreen';
 import AudioDiagnosticsScreen from '../screens/AudioDiagnosticsScreen';
 import DiagnosticsScreen from '../screens/DiagnosticsScreen';
 import ExperienceScreen from '../screens/ExperienceScreen';
-import ExploreScreen from '../screens/ExploreScreen';
 import GeofencingScreen from '../screens/GeofencingScreen';
 import LocationDiagnosticsScreen from '../screens/LocationDiagnosticsScreen';
-import ProfileScreen from '../screens/ProfileScreen';
-import ProjectsForUserScreen from '../screens/ProjectsForUserScreen';
+import ProjectsForAccountScreen from '../screens/ProjectsForAccountScreen';
 import ProjectsScreen from '../screens/ProjectsScreen';
 import QRCodeScreen from '../screens/QRCodeScreen';
-import SnacksForUserScreen from '../screens/SnacksForUserScreen';
+import SnacksForAccountScreen from '../screens/SnacksForAccountScreen';
 import UserSettingsScreen from '../screens/UserSettingsScreen';
 import Environment from '../utils/Environment';
 import BottomTab, { getNavigatorProps } from './BottomTabNavigator';
@@ -34,11 +33,11 @@ function useThemeName() {
   return theme.dark ? 'dark' : 'light';
 }
 
-const profileNavigationOptions = ({ route }) => {
-  const username = route.params?.username;
+const accountNavigationOptions = ({ route }) => {
+  const accountName = route.params?.accountName;
   return {
-    title: username ?? 'Profile',
-    headerRight: () => (username ? <OptionsButton /> : <UserSettingsButton />),
+    title: accountName ?? 'Profile',
+    headerRight: () => (accountName ? <OptionsButton /> : <UserSettingsButton />),
   };
 };
 
@@ -60,44 +59,7 @@ function ProjectsStackScreen() {
           }),
         }}
       />
-      <ProjectsStack.Screen
-        name="Profile"
-        component={ProfileScreen}
-        options={profileNavigationOptions}
-      />
     </ProjectsStack.Navigator>
-  );
-}
-
-const ExploreStack = createStackNavigator();
-
-function ExploreStackScreen() {
-  const theme = useThemeName();
-  return (
-    <ExploreStack.Navigator
-      initialRouteName="ExploreAndSearch"
-      screenOptions={defaultNavigationOptions(theme)}>
-      <ExploreStack.Screen
-        name="ExploreAndSearch"
-        component={ExploreScreen}
-        options={{ title: 'Explore' }}
-      />
-      <ExploreStack.Screen
-        name="Profile"
-        component={ProfileScreen}
-        options={profileNavigationOptions}
-      />
-      <ExploreStack.Screen
-        name="ProjectsForUser"
-        component={ProjectsForUserScreen}
-        options={{ title: 'Projects' }}
-      />
-      <ExploreStack.Screen
-        name="SnacksForUser"
-        component={SnacksForUserScreen}
-        options={{ title: 'Snacks' }}
-      />
-    </ExploreStack.Navigator>
   );
 }
 
@@ -110,9 +72,9 @@ function ProfileStackScreen() {
       initialRouteName="Profile"
       screenOptions={defaultNavigationOptions(theme)}>
       <ProfileStack.Screen
-        name="Profile"
-        component={ProfileScreen}
-        options={profileNavigationOptions}
+        name="Account"
+        component={AccountScreen}
+        options={accountNavigationOptions}
       />
       <ProfileStack.Screen
         name="UserSettings"
@@ -120,13 +82,13 @@ function ProfileStackScreen() {
         options={{ title: 'Options' }}
       />
       <ProfileStack.Screen
-        name="ProjectsForUser"
-        component={ProjectsForUserScreen}
+        name="ProjectsForAccount"
+        component={ProjectsForAccountScreen}
         options={{ title: 'Projects' }}
       />
       <ProfileStack.Screen
-        name="SnacksForUser"
-        component={SnacksForUserScreen}
+        name="SnacksForAccount"
+        component={SnacksForAccountScreen}
         options={{ title: 'Snacks' }}
       />
     </ProfileStack.Navigator>
@@ -182,18 +144,6 @@ function TabNavigator(props: { theme: string }) {
           tabBarLabel: 'Projects',
         }}
       />
-      {!Environment.IsIOSRestrictedBuild && (
-        <BottomTab.Screen
-          name="ExploreStack"
-          component={ExploreStackScreen}
-          options={{
-            tabBarIcon: props => (
-              <Ionicons {...props} style={styles.icon} name="ios-search" size={24} />
-            ),
-            tabBarLabel: 'Explore',
-          }}
-        />
-      )}
       {Platform.OS === 'ios' && (
         <BottomTab.Screen
           name="DiagnosticsStack"

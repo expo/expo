@@ -12,8 +12,12 @@ function handleLearnMorePress() {
   WebBrowser.openBrowserAsync('https://snack.expo.io');
 }
 
-export default function EmptyProfileSnacksNotice({ isOwnProfile }: { isOwnProfile: boolean }) {
-  if (isOwnProfile) {
+export default function EmptyAccountSnacksNotice({
+  isCurrentUsersPersonalAccount,
+}: {
+  isCurrentUsersPersonalAccount: boolean;
+}) {
+  if (isCurrentUsersPersonalAccount) {
     return (
       <StyledView style={styles.container} lightBackgroundColor={Colors.light.greyBackground}>
         <StyledText style={[SharedStyles.noticeDescriptionText, styles.descriptionText]}>
