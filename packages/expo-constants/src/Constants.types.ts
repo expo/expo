@@ -51,7 +51,6 @@ export interface AppManifest extends ExpoConfig {
     lanType?: string;
     [key: string]: any;
   };
-  xde?: boolean;
   developer?: {
     tool?: string;
     [key: string]: any;

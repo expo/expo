@@ -55,9 +55,8 @@ The following is an example of a manifest being served through Expo CLI. The fir
     "urlRandomness":"2v-w3z",
     "lanType":"ip"
   },
-  "xde":true,
   "developer":{
-    "tool":"xde"
+    "tool":"expo-cli"
   },
   "bundleUrl":"http://packager.2v-w3z.notbrent.internal.exp.direct:80/apps/new-project-template/main.bundle?platform=ios&dev=false&strict=false&minify=false&hot=false&includeAssetFileHashes=true",
   "debuggerHost":"packager.2v-w3z.notbrent.internal.exp.direct:80",
