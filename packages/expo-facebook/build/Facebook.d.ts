@@ -1,6 +1,26 @@
 import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'unimodules-permissions-interface';
 import { FacebookAuthenticationCredential, FacebookLoginResult, FacebookOptions, FacebookInitializationOptions } from './Facebook.types';
 export { FacebookLoginResult, FacebookOptions, FacebookAuthenticationCredential, PermissionResponse, PermissionStatus, PermissionExpiration, };
+declare type Params = {
+    [key: string]: string | number;
+};
+/**
+ * Info about a user to increase chances of matching a Facebook user.
+ * See https://developers.facebook.com/docs/app-events/advanced-matching for
+ * more info about the expected format of each field.
+ */
+declare type UserData = {
+    email?: string;
+    firstName?: string;
+    lastName?: string;
+    phone?: string;
+    dateOfBirth?: string;
+    gender?: 'm' | 'f';
+    city?: string;
+    state?: string;
+    zip?: string;
+    country?: string;
+};
 export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
 export declare function getPermissionsAsync(): Promise<PermissionResponse>;
 export declare function logInWithReadPermissionsAsync(options?: FacebookOptions): Promise<FacebookLoginResult>;
@@ -74,3 +94,49 @@ export declare function initializeAsync(optionsOrAppId: FacebookInitializationOp
  * @param enabled Whether `advertiser-id` should be collected
  */
 export declare function setAdvertiserIDCollectionEnabledAsync(enabled: boolean): Promise<void>;
+/**
+ * Logs an event with eventName and optional parameters. Supports the optional parameter `valueToSum`,
+ * which when reported, all of the valueToSum properties are summed together. For example, if 10 people purchased
+ * one item and each item cost $10 (and passed in valueToSum) then they would be added together to report $100.
+ */
+export declare function logEventAsync(eventName: string, parameters?: Params): Promise<void>;
+/**
+ * Logs a purchase event with the amount, currency code, and optional parameters.
+ * See http://en.wikipedia.org/wiki/ISO_4217 for currencyCodes.
+ */
+export declare function logPurchaseAsync(purchaseAmount: number, currencyCode: string, parameters?: Params): Promise<void>;
+/**
+ * Logs an app event that tracks that the application was opened via Push Notification. Accepts
+ * a string describing the campaign of the Push Notification.
+ */
+export declare function logPushNotificationOpenAsync(campaign: string): Promise<void>;
+/**
+ * Explicitly kicks off flushing of events to Facebook.
+ */
+export declare function flushAsync(): Promise<void>;
+/**
+ * Sets a custom user ID to associate with all app events.
+ * The userID is persisted until it is cleared by passing nil.
+ */
+export declare function setUserIDAsync(userID: string | null): Promise<void>;
+/**
+ * @return A promise fulfilled with the user id or null if not set.
+ */
+export declare function getUserIDAsync(): Promise<string | null>;
+/**
+ * @return A promise fulfilled with an anonymous id or null if not set.
+ */
+export declare function getAnonymousIDAsync(): Promise<string | null>;
+/**
+ * @return A promise fulfilled with the advertiser id or null if not set.
+ */
+export declare function getAdvertiserIDAsync(): Promise<string | null>;
+/**
+ * **Android only.**
+ * @return A promise fulfilled with the attribution id or null if not set.
+ */
+export declare function getAttributionIDAsync(): Promise<string | null>;
+/**
+ * Sets additional data about the user to increase the chances of matching a Facebook user.
+ */
+export declare function setUserDataAsync(userData: UserData): Promise<void>;
