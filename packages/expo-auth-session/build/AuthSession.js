@@ -10,10 +10,7 @@ import { getQueryParams } from './QueryParams';
 import sessionUrlProvider from './SessionUrlProvider';
 let _authLock = false;
 export async function startAsync(options) {
-    const returnUrl = options.returnUrl || sessionUrlProvider.getDefaultReturnUrl();
     const authUrl = options.authUrl;
-    const startUrl = sessionUrlProvider.getStartUrl(authUrl, returnUrl);
-    const showInRecents = options.showInRecents || false;
     // Prevent accidentally starting to an empty url
     if (!authUrl) {
         throw new Error('No authUrl provided to AuthSession.startAsync. An authUrl is required -- it points to the page where the user will be able to sign in.');
@@ -26,6 +23,9 @@ export async function startAsync(options) {
         }
         return { type: 'locked' };
     }
+    const returnUrl = options.returnUrl || sessionUrlProvider.getDefaultReturnUrl();
+    const startUrl = sessionUrlProvider.getStartUrl(authUrl, returnUrl);
+    const showInRecents = options.showInRecents || false;
     // About to start session, set lock
     _authLock = true;
     let result;
@@ -60,9 +60,7 @@ export async function startAsync(options) {
 export function dismiss() {
     dismissAuthSession();
 }
-export function getDefaultReturnUrl() {
-    return sessionUrlProvider.getDefaultReturnUrl();
-}
+export const getDefaultReturnUrl = sessionUrlProvider.getDefaultReturnUrl;
 /**
  * @deprecated Use `makeRedirectUri({ path, useProxy })` instead.
  *

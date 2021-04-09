@@ -114,10 +114,6 @@ export class SessionUrlProvider {
   private static removeLeadingSlash(url: string) {
     return url.replace(/^\//, '');
   }
-
-  private static removeTrailingSlash(url: string) {
-    return url.replace(/\/$/, '');
-  }
 }
 
 export default new SessionUrlProvider();

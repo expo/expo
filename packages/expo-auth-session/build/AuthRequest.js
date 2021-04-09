@@ -72,7 +72,7 @@ export class AuthRequest {
      * @param discovery
      * @param promptOptions
      */
-    async promptAsync(discovery, { url, ...options } = {}) {
+    async promptAsync(discovery, { url, proxyOptions, ...options } = {}) {
         if (!url) {
             if (!this.url) {
                 // Generate a new url
@@ -89,7 +89,7 @@ export class AuthRequest {
         let startUrl = url;
         let returnUrl = this.redirectUri;
         if (options.useProxy) {
-            returnUrl = sessionUrlProvider.getDefaultReturnUrl();
+            returnUrl = sessionUrlProvider.getDefaultReturnUrl(proxyOptions?.path, proxyOptions);
             startUrl = sessionUrlProvider.getStartUrl(url, returnUrl);
         }
         // Prevent multiple sessions from running at the same time, WebBrowser doesn't

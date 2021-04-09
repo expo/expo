@@ -1,54 +1,29 @@
 import { Platform } from '@unimodules/react-native-adapter';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { resolveScheme } from 'expo-linking/build/Schemes';
+import * as Linking from 'expo-linking';
 import qs from 'qs';
 const { manifest } = Constants;
 export class SessionUrlProvider {
-    getDefaultReturnUrl(urlPath) {
-        const hostAddress = SessionUrlProvider.getHostAddress();
-        const isExpoHosted = hostAddress.hostUri &&
-            (/^(.*\.)?(expo\.io|exp\.host|exp\.direct|expo\.test)(:.*)?(\/.*)?$/.test(hostAddress.hostUri) ||
-                (!!manifest.developer &&
-                    Constants.executionEnvironment === ExecutionEnvironment.StoreClient));
-        let scheme = 'exp';
+    getDefaultReturnUrl(urlPath, options) {
+        const queryParams = SessionUrlProvider.getHostAddressQueryParams();
         let path = SessionUrlProvider.SESSION_PATH;
-        const manifestScheme = resolveScheme({});
-        const isCustomEnvironment = [
-            ExecutionEnvironment.Standalone,
-            ExecutionEnvironment.Bare,
-        ].includes(Constants.executionEnvironment);
-        if (isCustomEnvironment && manifestScheme) {
-            scheme = manifestScheme;
-        }
-        let hostUri = hostAddress.hostUri || '';
-        if (isCustomEnvironment && manifestScheme && isExpoHosted) {
-            hostUri = '';
-        }
-        if (path) {
-            if (isExpoHosted && hostUri) {
-                path = `/--/${SessionUrlProvider.removeLeadingSlash(path)}`;
-            }
-            if (!path.startsWith('/')) {
-                path = `/${path}`;
-            }
-        }
-        else {
-            path = '';
-        }
         if (urlPath) {
-            path = [path, urlPath].filter(Boolean).join('/');
+            path = [path, SessionUrlProvider.removeLeadingSlash(urlPath)].filter(Boolean).join('/');
         }
-        let { parameters } = hostAddress;
-        if (parameters) {
-            parameters = `?${parameters}`;
-        }
-        else {
-            parameters = '';
-        }
-        hostUri = SessionUrlProvider.removeTrailingSlash(hostUri);
-        return encodeURI(`${scheme}://${hostUri}${path}${parameters}`);
+        return Linking.createURL(path, {
+            // The redirect URL doesn't matter for the proxy as long as it's valid, so silence warnings if needed.
+            scheme: options?.scheme ?? resolveScheme({ isSilent: true }),
+            queryParams,
+            // true by default for legacy purposes
+            isTripleSlashed: options?.isTripleSlashed ?? true,
+        });
     }
     getStartUrl(authUrl, returnUrl) {
+        if (Platform.OS === 'web' && !Platform.isDOMAvailable) {
+            // Return nothing in SSR envs
+            return '';
+        }
         const queryString = qs.stringify({
             authUrl,
             returnUrl,
@@ -57,7 +32,13 @@ export class SessionUrlProvider {
     }
     getRedirectUrl(urlPath) {
         if (Platform.OS === 'web') {
-            return [window.location.origin, urlPath].filter(Boolean).join('/');
+            if (Platform.isDOMAvailable) {
+                return [window.location.origin, urlPath].filter(Boolean).join('/');
+            }
+            else {
+                // Return nothing in SSR envs
+                return '';
+            }
         }
         const legacyExpoProjectId = manifest.currentFullName || manifest.id;
         if (!legacyExpoProjectId) {
@@ -81,7 +62,7 @@ export class SessionUrlProvider {
         }
         return redirectUrl;
     }
-    static getHostAddress() {
+    static getHostAddressQueryParams() {
         let hostUri = Constants.manifest?.hostUri;
         if (!hostUri &&
             (ExecutionEnvironment.StoreClient === Constants.executionEnvironment || resolveScheme({}))) {
@@ -95,11 +76,11 @@ export class SessionUrlProvider {
             }
         }
         const uriParts = hostUri?.split('?');
-        const parameters = uriParts?.[1];
-        if (uriParts?.length > 0) {
-            hostUri = uriParts[0];
+        try {
+            return qs.parse(uriParts?.[1]);
         }
-        return { hostUri, parameters };
+        catch { }
+        return undefined;
     }
     static warnIfAnonymous(id, url) {
         if (id.startsWith('@anonymous/')) {
@@ -111,9 +92,6 @@ export class SessionUrlProvider {
     }
     static removeLeadingSlash(url) {
         return url.replace(/^\//, '');
-    }
-    static removeTrailingSlash(url) {
-        return url.replace(/\/$/, '');
     }
 }
 SessionUrlProvider.BASE_URL = `https://auth.expo.io`;
