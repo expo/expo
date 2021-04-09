@@ -58,7 +58,7 @@ export declare type AuthSessionRedirectUriOptions = {
     preferLocalhost?: boolean;
     /**
      * Manual scheme to use in Bare and Standalone native app contexts.
-     * Overwrites all other properties when used in custom apps.
+     * Takes precedence over all other properties.
      * You must define the URI scheme that will be used in a custom built native application or standalone Expo application.
      * The value should conform to your native app's URI schemes.
      * You can see conformance with:

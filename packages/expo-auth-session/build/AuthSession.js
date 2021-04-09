@@ -73,7 +73,7 @@ export function getRedirectUrl(path) {
  * Create a redirect url for the current platform.
  *
  * - **Web:** Generates a path based on the current \`window.location\`. For production web apps you should hard code the URL.
- * - **Managed, and Custom workflow:** Uses the `scheme` property of your `app.config.js` or `app.json`.
+ * - **Managed:** Uses the `scheme` property of your `app.config.js` or `app.json`.
  *   - **Proxy:** Uses auth.expo.io as the base URL for the path. This only works in Expo client and standalone environments.
  * - **Bare workflow:** Provide either the `scheme` or a manual `native` property to use.
  *
