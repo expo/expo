@@ -463,12 +463,12 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void startLocationUpdatesAsync(String taskName, Map<String, Object> options, final Promise promise) {
-    boolean useForegroundService = LocationTaskConsumer.useForegroundService(options);
+    boolean shouldUseForegroundService = LocationTaskConsumer.shouldUseForegroundService(options);
 
     // There are two ways of starting this service.
     // 1. As a background location service, this requires the background location permission.
     // 2. As a user-initiated foreground service with notification, this does NOT require the background location permission.
-    if (!useForegroundService && isMissingBackgroundPermissions()) {
+    if (!shouldUseForegroundService && isMissingBackgroundPermissions()) {
       promise.reject(new LocationBackgroundUnauthorizedException());
       return;
     }
