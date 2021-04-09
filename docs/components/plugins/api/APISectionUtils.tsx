@@ -47,6 +47,8 @@ export const inlineRenderers: React.ComponentProps<typeof ReactMarkdown>['render
   paragraph: ({ children }) => (children ? <span>{children}</span> : null),
 };
 
+const nonLinkableTypes = ['Date', 'Uint8Array'];
+
 export const resolveTypeName = ({
   elementType,
   name,
@@ -69,7 +71,7 @@ export const resolveTypeName = ({
           return `${typeArguments.map(resolveTypeName)}`;
         }
       } else {
-        if (name === 'Date') {
+        if (nonLinkableTypes.includes(name)) {
           return name;
         } else {
           return (
