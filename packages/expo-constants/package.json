@@ -41,7 +41,7 @@
     "expo-module-scripts": "^2.0.0"
   },
   "dependencies": {
-    "@expo/config": "^3.3.18",
+    "@expo/config": "^3.3.35",
     "uuid": "^3.3.2"
   }
 }
