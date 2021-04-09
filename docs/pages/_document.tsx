@@ -57,6 +57,14 @@ export default class MyDocument extends Document<{ css?: string }> {
             crossOrigin="anonymous"
           />
 
+          <link
+            rel="preload"
+            href="/static/fonts/Inter-Regular.woff2?v=3.15"
+            as="font"
+            type="font/woff2"
+            crossOrigin="anonymous"
+          />
+
           {getInitGoogleScriptTag({ id: 'UA-107832480-3' })}
           {getGoogleScriptTag()}
         </Head>
