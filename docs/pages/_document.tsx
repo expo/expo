@@ -36,7 +36,6 @@ export default class MyDocument extends Document<{ css?: string }> {
       <Html lang="en">
         <Head>
           <script src="/static/libs/tippy/tippy.all.min.js" />
-          <script src="/static/libs/nprogress/nprogress.js" />
 
           <Global
             styles={[
