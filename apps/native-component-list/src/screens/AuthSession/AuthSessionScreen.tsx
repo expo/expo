@@ -1,4 +1,4 @@
-import { H2 } from '@expo/html-elements';
+import { H2, H4 } from '@expo/html-elements';
 import * as AuthSession from 'expo-auth-session';
 import { useAuthRequest } from 'expo-auth-session';
 import * as FacebookAuthSession from 'expo-auth-session/providers/facebook';
@@ -34,8 +34,15 @@ export default function AuthSessionScreen() {
     <View style={{ flex: 1, alignItems: 'center' }}>
       <ScrollView
         contentContainerStyle={{
-          maxWidth: 640,
           paddingHorizontal: 12,
+          ...Platform.select({
+            default: {
+              maxWidth: '100%',
+            }, 
+            web: {
+              maxWidth: 640,
+            }
+          })
         }}>
         <View style={{ marginBottom: 8 }}>
           <H2>Settings</H2>
@@ -52,6 +59,7 @@ export default function AuthSessionScreen() {
             value={language}
             setValue={setLanguage}
           />
+          <H4>ID: {Constants.manifest.currentFullName || Constants.manifest.id || 'unset'}</H4>
         </View>
         <H2>Services</H2>
         <AuthSessionProviders
@@ -80,11 +88,11 @@ function AuthSessionProviders(props: {
   const { useProxy, usePKCE, prompt, language } = props;
 
   const redirectUri = AuthSession.makeRedirectUri({
-    native: 'bareexpo://redirect',
     path: 'redirect',
     preferLocalhost: true,
     useProxy,
   });
+
   const options = {
     useProxy,
     usePKCE,

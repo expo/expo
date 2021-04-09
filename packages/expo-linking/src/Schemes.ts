@@ -142,7 +142,7 @@ export function resolveScheme(props: { scheme?: string }): string {
   if (props.scheme) {
     if (__DEV__) {
       // Bare workflow development assertion about the provided scheme matching the Expo config.
-      if (schemes.includes(props.scheme)) {
+      if (!schemes.includes(props.scheme)) {
         // TODO: Will this cause issues for things like Facebook or Google that use `reversed-client-id://` or `fb<FBID>:/`?
         // Traditionally these APIs don't use the Linking API directly.
         console.warn(

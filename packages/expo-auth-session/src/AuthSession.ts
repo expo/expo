@@ -108,39 +108,70 @@ export function getRedirectUrl(path?: string): string {
 
 /**
  * Create a redirect url for the current platform.
+ *
  * - **Web:** Generates a path based on the current \`window.location\`. For production web apps you should hard code the URL.
  * - **Managed, and Custom workflow:** Uses the `scheme` property of your `app.config.js` or `app.json`.
  *   - **Proxy:** Uses auth.expo.io as the base URL for the path. This only works in Expo client and standalone environments.
- * - **Bare workflow:** Will fallback to using the `native` option for bare workflow React Native apps.
+ * - **Bare workflow:** Provide either the `scheme` or a manual `native` property to use.
  *
  * @param options Additional options for configuring the path.
+ *
+ * @example
+ * ```ts
+ * const redirectUri = makeRedirectUri({
+ *   scheme: 'my-scheme',
+ *   path: 'redirect'
+ * });
+ * // Custom app: my-scheme:///redirect
+ * // Expo Go: exp://127.0.0.1:19000/--/redirect
+ * // Web dev: https://localhost:19006/redirect
+ * // Web prod: https://yourwebsite.com/redirect
+ *
+ * const redirectUri2 = makeRedirectUri({
+ *   scheme: 'scheme2',
+ *   isTripleSlashed: false,
+ *   preferLocalhost: true,
+ * });
+ * // Custom app: scheme2://
+ * // Expo Go: exp://localhost:19000
+ * // Web dev: https://localhost:19006
+ * // Web prod: https://yourwebsite.com
+ * ```
+ *
+ * const redirectUri3 = makeRedirectUri({
+ *   useProxy: true,
+ * });
+ * // Custom app: https://auth.expo.io/@username/slug
+ * // Expo Go: https://auth.expo.io/@username/slug
+ * // Web dev: https://localhost:19006
+ * // Web prod: https://yourwebsite.com
+ * ```
  */
 export function makeRedirectUri({
   native,
+  scheme,
+  isTripleSlashed,
+  queryParams,
   path,
   preferLocalhost,
   useProxy,
 }: AuthSessionRedirectUriOptions = {}): string {
-  if (Platform.OS !== 'web') {
-    // Bare workflow
-    if (Constants.executionEnvironment === ExecutionEnvironment.Bare) {
-      if (!native) {
-        // TODO(Bacon): Link to docs or fyi
-        console.warn(
-          "makeRedirectUri requires you define a `native` scheme for bare workflow, and standalone native apps, you'll need to manually define it based on your app's URI schemes."
-        );
-      }
-      // Returning an empty string makes types easier to work with.
-      // Server will throw an error about the invalid URI scheme.
-      return native || '';
-    }
+  if (
+    Platform.OS !== 'web' &&
+    native &&
+    [ExecutionEnvironment.Standalone, ExecutionEnvironment.Bare].includes(
+      Constants.executionEnvironment
+    )
+  ) {
     // Should use the user-defined native scheme in standalone builds
-    if (Constants.executionEnvironment === ExecutionEnvironment.Standalone && native) {
-      return native;
-    }
+    return native;
   }
   if (!useProxy || Platform.OS === 'web') {
-    const url = Linking.makeUrl(path);
+    const url = Linking.createURL(path || '', {
+      isTripleSlashed: isTripleSlashed ?? true,
+      scheme,
+      queryParams,
+    });
 
     if (preferLocalhost) {
       const ipAddress = url.match(
