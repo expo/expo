@@ -31,18 +31,13 @@ import sessionUrlProvider from './SessionUrlProvider';
 let _authLock = false;
 
 export async function startAsync(options: AuthSessionOptions): Promise<AuthSessionResult> {
-  const returnUrl = options.returnUrl || sessionUrlProvider.getDefaultReturnUrl();
   const authUrl = options.authUrl;
-  const startUrl = sessionUrlProvider.getStartUrl(authUrl, returnUrl);
-  const showInRecents = options.showInRecents || false;
-
   // Prevent accidentally starting to an empty url
   if (!authUrl) {
     throw new Error(
       'No authUrl provided to AuthSession.startAsync. An authUrl is required -- it points to the page where the user will be able to sign in.'
     );
   }
-
   // Prevent multiple sessions from running at the same time, WebBrowser doesn't
   // support it this makes the behavior predictable.
   if (_authLock) {
@@ -54,6 +49,10 @@ export async function startAsync(options: AuthSessionOptions): Promise<AuthSessi
 
     return { type: 'locked' };
   }
+
+  const returnUrl = options.returnUrl || sessionUrlProvider.getDefaultReturnUrl();
+  const startUrl = sessionUrlProvider.getStartUrl(authUrl, returnUrl);
+  const showInRecents = options.showInRecents || false;
 
   // About to start session, set lock
   _authLock = true;
@@ -93,9 +92,7 @@ export function dismiss() {
   dismissAuthSession();
 }
 
-export function getDefaultReturnUrl(): string {
-  return sessionUrlProvider.getDefaultReturnUrl();
-}
+export const getDefaultReturnUrl = sessionUrlProvider.getDefaultReturnUrl;
 
 /**
  * @deprecated Use `makeRedirectUri({ path, useProxy })` instead.

@@ -1,7 +1,9 @@
 import { Platform } from '@unimodules/react-native-adapter';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { resolveScheme } from 'expo-linking/build/Schemes';
-import qs from 'qs';
+import * as Linking from 'expo-linking';
+import qs, { ParsedQs } from 'qs';
+import { CreateURLOptions } from 'expo-linking';
 
 const { manifest } = Constants;
 
@@ -9,61 +11,27 @@ export class SessionUrlProvider {
   private static readonly BASE_URL = `https://auth.expo.io`;
   private static readonly SESSION_PATH = 'expo-auth-session';
 
-  getDefaultReturnUrl(urlPath?: string): string {
-    const hostAddress = SessionUrlProvider.getHostAddress();
-    const isExpoHosted =
-      hostAddress.hostUri &&
-      (/^(.*\.)?(expo\.io|exp\.host|exp\.direct|expo\.test)(:.*)?(\/.*)?$/.test(
-        hostAddress.hostUri
-      ) ||
-        (!!manifest.developer &&
-          Constants.executionEnvironment === ExecutionEnvironment.StoreClient));
-
-    let scheme = 'exp';
+  getDefaultReturnUrl(urlPath?: string, options?: Omit<CreateURLOptions, 'queryParams'>): string {
+    const queryParams = SessionUrlProvider.getHostAddressQueryParams();
     let path = SessionUrlProvider.SESSION_PATH;
-    const manifestScheme = resolveScheme({});
-
-    const isCustomEnvironment = [
-      ExecutionEnvironment.Standalone,
-      ExecutionEnvironment.Bare,
-    ].includes(Constants.executionEnvironment);
-    if (isCustomEnvironment && manifestScheme) {
-      scheme = manifestScheme;
-    }
-
-    let hostUri = hostAddress.hostUri || '';
-    if (isCustomEnvironment && manifestScheme && isExpoHosted) {
-      hostUri = '';
-    }
-
-    if (path) {
-      if (isExpoHosted && hostUri) {
-        path = `/--/${SessionUrlProvider.removeLeadingSlash(path)}`;
-      }
-
-      if (!path.startsWith('/')) {
-        path = `/${path}`;
-      }
-    } else {
-      path = '';
-    }
-
     if (urlPath) {
-      path = [path, urlPath].filter(Boolean).join('/');
+      path = [path, SessionUrlProvider.removeLeadingSlash(urlPath)].filter(Boolean).join('/');
     }
 
-    let { parameters } = hostAddress;
-    if (parameters) {
-      parameters = `?${parameters}`;
-    } else {
-      parameters = '';
-    }
-
-    hostUri = SessionUrlProvider.removeTrailingSlash(hostUri);
-    return encodeURI(`${scheme}://${hostUri}${path}${parameters}`);
+    return Linking.createURL(path, {
+      // The redirect URL doesn't matter for the proxy as long as it's valid, so silence warnings if needed.
+      scheme: options?.scheme ?? resolveScheme({ isSilent: true }),
+      queryParams,
+      // true by default for legacy purposes
+      isTripleSlashed: options?.isTripleSlashed ?? true,
+    });
   }
 
   getStartUrl(authUrl: string, returnUrl: string): string {
+    if (Platform.OS === 'web' && !Platform.isDOMAvailable) {
+      // Return nothing in SSR envs
+      return '';
+    }
     const queryString = qs.stringify({
       authUrl,
       returnUrl,
@@ -74,7 +42,12 @@ export class SessionUrlProvider {
 
   getRedirectUrl(urlPath?: string): string {
     if (Platform.OS === 'web') {
-      return [window.location.origin, urlPath].filter(Boolean).join('/');
+      if (Platform.isDOMAvailable) {
+        return [window.location.origin, urlPath].filter(Boolean).join('/');
+      } else {
+        // Return nothing in SSR envs
+        return '';
+      }
     }
 
     const legacyExpoProjectId = manifest.currentFullName || manifest.id;
@@ -103,7 +76,7 @@ export class SessionUrlProvider {
     return redirectUrl;
   }
 
-  private static getHostAddress(): { hostUri: string; parameters: string | undefined } {
+  private static getHostAddressQueryParams(): ParsedQs | undefined {
     let hostUri: string = Constants.manifest?.hostUri;
     if (
       !hostUri &&
@@ -119,12 +92,11 @@ export class SessionUrlProvider {
     }
 
     const uriParts = hostUri?.split('?');
-    const parameters = uriParts?.[1];
-    if (uriParts?.length > 0) {
-      hostUri = uriParts[0];
-    }
+    try {
+      return qs.parse(uriParts?.[1]);
+    } catch {}
 
-    return { hostUri, parameters };
+    return undefined;
   }
 
   private static warnIfAnonymous(id, url): void {

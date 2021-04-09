@@ -97,7 +97,7 @@ export function makeUrl(path = '', queryParams, scheme) {
  * @param scheme URI protocol `<scheme>://` that must be built into your native app.
  * @param queryParams An object of parameters that will be converted into a query string.
  */
-export function createURL(path, { scheme, queryParams = {}, isTripleSlashed = false, } = {}) {
+export function createURL(path, { scheme, queryParams = {}, isTripleSlashed = false } = {}) {
     if (Platform.OS === 'web') {
         if (!Platform.isDOMAvailable)
             return '';

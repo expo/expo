@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import URL from 'url-parse';
 
 import NativeLinking from './ExpoLinking';
-import { ParsedURL, QueryParams, URLListener } from './Linking.types';
+import { CreateURLOptions, ParsedURL, QueryParams, URLListener } from './Linking.types';
 import { hasCustomScheme, resolveScheme } from './Schemes';
 
 function validateURL(url: string): void {
@@ -110,15 +110,7 @@ export function makeUrl(path: string = '', queryParams?: QueryParams, scheme?: s
  */
 export function createURL(
   path: string,
-  {
-    scheme,
-    queryParams = {},
-    isTripleSlashed = false,
-  }: {
-    scheme?: string;
-    queryParams?: QueryParams;
-    isTripleSlashed?: boolean;
-  } = {}
+  { scheme, queryParams = {}, isTripleSlashed = false }: CreateURLOptions = {}
 ): string {
   if (Platform.OS === 'web') {
     if (!Platform.isDOMAvailable) return '';

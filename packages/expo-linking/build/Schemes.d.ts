@@ -12,4 +12,5 @@ export declare function collectManifestSchemes(): string[];
 export declare function hasConstantsManifest(): boolean;
 export declare function resolveScheme(props: {
     scheme?: string;
+    isSilent?: boolean;
 }): string;

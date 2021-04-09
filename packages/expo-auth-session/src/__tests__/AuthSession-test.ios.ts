@@ -36,11 +36,6 @@ it(`returns correct redirect URL from getRedirectUrl`, () => {
   expect(getRedirectUrl()).toEqual('https://auth.expo.io/@example/abc');
 });
 
-it(`returns the correct return URL from getDefaultReturnUrl`, () => {
-  const { getDefaultReturnUrl } = require('../AuthSession');
-  expect(getDefaultReturnUrl()).toEqual('exp://exp.host/@test/test/--/expo-auth-session');
-});
-
 it(`opens WebBrowser startAsync to the start URL`, async () => {
   const authUrl = 'abcd.com';
   const returnUrl = 'efgh.com';
@@ -51,7 +46,7 @@ it(`opens WebBrowser startAsync to the start URL`, async () => {
   mockOpenAuthSessionAsync(WebBrowser, async () => ({ type: 'cancel' }));
   await startAsync({ authUrl, returnUrl });
 
-  const sessionUrlProvider = require('../SessionUrlProvider');
+  const sessionUrlProvider = require('../SessionUrlProvider').default;
   expect(WebBrowser.openAuthSessionAsync).toHaveBeenCalledWith(
     sessionUrlProvider.getStartUrl(authUrl, returnUrl),
     returnUrl,
