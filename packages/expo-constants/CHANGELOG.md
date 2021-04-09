@@ -4,6 +4,9 @@
 
 ### 🛠 Breaking changes
 
+- Remove the `xde` property from `Constants.manifest`. ([#12438](https://github.com/expo/expo/pull/12438) by [@fson](https://github.com/fson))
+- Update `@expo/config` to include `currentFullName` in embedded config manifest. [Related PR on expo-cli](https://github.com/expo/expo-cli/pull/3376).
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
