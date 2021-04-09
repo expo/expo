@@ -123,7 +123,7 @@ class AlgoliaSearch extends React.Component<Props> {
 
   private processUrl(url: string) {
     // Update URLs for new doc URLs
-    const routes = url.split('/');
+    var routes = url.split('/');
     routes[routes.length - 1] = routes[routes.length - 1].replace('.html', '');
     return routes.join('/');
   }
