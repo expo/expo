@@ -2,6 +2,7 @@ import { Command } from '@expo/commander';
 import chalk from 'chalk';
 import { Application, TSConfigReader, TypeDocReader } from 'typedoc';
 import fs from 'fs-extra';
+import recursiveOmitBy from 'recursive-omit-by';
 
 import logger from '../Logger';
 
@@ -49,7 +50,11 @@ const executeCommand = async (
   if (project) {
     await app.generateJson(project, jsonOutputPath);
     if (MINIFY_JSON) {
-      await fs.writeFile(jsonOutputPath, JSON.stringify(await fs.readJson(jsonOutputPath), null, 0));
+      const minifiedJson = recursiveOmitBy(
+        await fs.readJson(jsonOutputPath),
+        ({ key }) => key === 'id' || key === 'groups'
+      );
+      await fs.writeFile(jsonOutputPath, JSON.stringify(minifiedJson, null, 0));
     }
   } else {
     throw new Error(`💥 Failed to extract API data from source code for '${packageName}' package.`);
@@ -58,14 +63,14 @@ const executeCommand = async (
 
 async function action({ packageName }: ActionOptions) {
   const packagesMapping: Record<string, CommandAdditionalParams> = {
+    'expo-application': ['Application.ts'],
     'expo-blur': ['index.ts'],
+    'expo-keep-awake': ['index.ts'],
     'expo-mail-composer': ['MailComposer.ts'],
     'expo-sensors': ['Pedometer.ts', 'expo-pedometer'],
     'expo-sharing': ['Sharing.ts'],
-    'expo-store-review': ['StoreReview.ts'],
-    'expo-application': ['Application.ts'],
-    'expo-keep-awake': ['index.ts'],
     'expo-splash-screen': ['SplashScreen.ts'],
+    'expo-store-review': ['StoreReview.ts'],
   };
 
   if (packageName) {
