@@ -1,5 +1,6 @@
 ---
 title: Adding a border to text in Expo and React Native apps
+sidebar_title: Adding a border to text
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';

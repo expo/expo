@@ -187,7 +187,7 @@ const sections = [
   },
   {
     name: 'UI Programming',
-    reference: ['Styling a React Native Button', "Setting a component's background image"],
+    reference: ['Styling a React Native Button', "Setting a component's background image", 'Adding a border to text in Expo and React Native apps'],
   },
   {
     name: 'Assorted Guides',
