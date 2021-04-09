@@ -67,6 +67,7 @@ async function action({ packageName }: ActionOptions) {
     'expo-blur': ['index.ts'],
     'expo-keep-awake': ['index.ts'],
     'expo-mail-composer': ['MailComposer.ts'],
+    'expo-random': ['Random.ts'],
     'expo-sensors': ['Pedometer.ts', 'expo-pedometer'],
     'expo-sharing': ['Sharing.ts'],
     'expo-splash-screen': ['SplashScreen.ts'],
