@@ -46,7 +46,12 @@ export default function AuthSessionScreen() {
         }}>
         <View style={{ marginBottom: 8 }}>
           <H2>Settings</H2>
-          <TitledSwitch title="Use Proxy" disabled={Platform.OS === 'web'} value={useProxy} setValue={setProxy} />
+          <TitledSwitch
+            title="Use Proxy"
+            disabled={Platform.OS === 'web'}
+            value={useProxy}
+            setValue={setProxy}
+          />
           <TitledSwitch
             title="Switch Accounts"
             value={!!prompt}
