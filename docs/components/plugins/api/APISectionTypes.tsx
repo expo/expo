@@ -58,7 +58,9 @@ const renderTypePropertyRow = (typeProperty: TypePropertyData): JSX.Element => (
     </td>
     <td>
       {typeProperty?.comment?.shortText ? (
-        <ReactMarkdown renderers={mdInlineRenderers}>{typeProperty.comment.shortText}</ReactMarkdown>
+        <ReactMarkdown renderers={mdInlineRenderers}>
+          {typeProperty.comment.shortText}
+        </ReactMarkdown>
       ) : (
         '-'
       )}
