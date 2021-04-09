@@ -1,5 +1,5 @@
-import marked from 'marked';
 import { unescape } from 'lodash';
+import marked from 'marked';
 
 export enum TokenType {
   HEADING = 'heading',
@@ -248,7 +248,9 @@ export class MarkdownRenderer implements Renderer {
     let output = this.indent(indent) + bullet + ' ';
 
     if (token.tokens[0]) {
-      output += this.renderToken(token.tokens[0], ctx).trimRight() + EOL;
+      // `renderToken` result is indented by default (e.g. got TextToken), but when dealing with lists
+      // then list items indents are handled in above code instead
+      output += this.renderToken(token.tokens[0], ctx).trim() + EOL;
     }
 
     for (const child of token.tokens.slice(1)) {

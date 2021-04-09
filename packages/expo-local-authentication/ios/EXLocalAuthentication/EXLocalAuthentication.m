@@ -45,7 +45,7 @@ UM_EXPORT_METHOD_AS(hasHardwareAsync,
   BOOL isSupported = [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error];
   BOOL isAvailable;
 
-  if (@available(iOS 11.0, *)) {
+  if (@available(iOS 11.0.1, *)) {
     isAvailable = isSupported || error.code != LAErrorBiometryNotAvailable;
   } else {
     isAvailable = isSupported || error.code != LAErrorTouchIDNotAvailable;
@@ -187,7 +187,7 @@ UM_EXPORT_METHOD_AS(authenticateAsync,
 {
   static BOOL isFaceIDDevice = NO;
 
-  if (@available(iOS 11.0, *)) {
+  if (@available(iOS 11.0.1, *)) {
     static dispatch_once_t onceToken;
 
     dispatch_once(&onceToken, ^{
@@ -208,7 +208,7 @@ UM_EXPORT_METHOD_AS(authenticateAsync,
   dispatch_once(&onceToken, ^{
     LAContext *context = [LAContext new];
     [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:nil];
-    if (@available(iOS 11.0, *)) {
+    if (@available(iOS 11.0.1, *)) {
       isTouchIDDevice = context.biometryType == LABiometryTypeTouchID;
     } else {
       isTouchIDDevice = true;

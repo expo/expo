@@ -1,13 +1,14 @@
+import { Platform } from '@unimodules/core';
 import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 import { v4 } from 'uuid';
 
 import {
+  ExpandImagePickerResult,
+  ImageInfo,
+  ImagePickerMultipleResult,
   ImagePickerResult,
   MediaTypeOptions,
   OpenFileBrowserOptions,
-  ImagePickerMultipleResult,
-  ImageInfo,
-  ExpandImagePickerResult,
 } from './ImagePicker.types';
 
 const MediaTypeInput = {
@@ -25,6 +26,10 @@ export default {
     mediaTypes = MediaTypeOptions.Images,
     allowsMultipleSelection = false,
   }): Promise<ImagePickerResult | ImagePickerMultipleResult> {
+    // SSR guard
+    if (!Platform.isDOMAvailable) {
+      return { cancelled: true };
+    }
     return await openFileBrowserAsync({
       mediaTypes,
       allowsMultipleSelection,
@@ -35,6 +40,10 @@ export default {
     mediaTypes = MediaTypeOptions.Images,
     allowsMultipleSelection = false,
   }): Promise<ImagePickerResult | ImagePickerMultipleResult> {
+    // SSR guard
+    if (!Platform.isDOMAvailable) {
+      return { cancelled: true };
+    }
     return await openFileBrowserAsync({
       mediaTypes,
       allowsMultipleSelection,
@@ -112,13 +121,6 @@ function openFileBrowserAsync<T extends OpenFileBrowserOptions>({
       }
       document.body.removeChild(input);
     });
-
-    document.body.onfocus = () => {
-      if (!input.value.length) {
-        resolve({ cancelled: true } as ExpandImagePickerResult<T>);
-        document.body.onfocus = null;
-      }
-    };
 
     const event = new MouseEvent('click');
     input.dispatchEvent(event);

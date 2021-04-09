@@ -23,6 +23,7 @@ const DIR_MAPPING = {
   workflow: 'Fundamentals',
   distribution: 'Distributing Your App',
   expokit: 'ExpoKit',
+  'ui-programming': 'UI Programming',
   'regulatory-compliance': 'Regulatory Compliance',
   'push-notifications': 'Push Notifications',
   preview: 'Preview',
@@ -35,6 +36,7 @@ const DIR_MAPPING = {
   clients: 'Development Clients',
   archived: 'Archived',
   faq: 'FAQ',
+  troubleshooting: 'Troubleshooting',
 };
 
 const processUrl = path => {

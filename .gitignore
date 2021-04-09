@@ -34,15 +34,10 @@ yarn-error.log
 *.xcscmblueprint
 xcuserdata
 
-# Android Studio
+# IDEA / Android Studio
 *.iml
 .gradle
-.idea/libraries
-.idea/workspace.xml
-.idea/gradle.xml
-.idea/misc.xml
-.idea/modules.xml
-.idea/vcs.xml
+.idea
 
 # Eclipse
 .project

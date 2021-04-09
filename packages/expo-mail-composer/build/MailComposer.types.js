@@ -1,3 +1,4 @@
+// @docsMissing
 export var MailComposerStatus;
 (function (MailComposerStatus) {
     MailComposerStatus["UNDETERMINED"] = "undetermined";

@@ -56,7 +56,7 @@ Android does not restrict distribution of applications &mdash; the operating sys
 
 Apple restricts distribution of applications on iPhones and iPads, so we will need to build the app with an ad-hoc provisioning profile that explicitly lists the devices that the application can run on.
 
-An alternative to ad hoc provisioning is enterprise provisioning, but this is expensive (\$299 USD per year from Apple) and not yet supported by EAS Build internal distribution (support is planned and coming soon).
+An alternative to ad hoc provisioning is enterprise provisioning, but this is expensive ($299 USD per year from Apple) and not yet supported by EAS Build internal distribution (support is planned and coming soon).
 
 <!--
 (@dsokal) this is not implemented yet

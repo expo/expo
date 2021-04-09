@@ -63,11 +63,3 @@ fun deduceExtension(type: String): String = when {
   }
   else -> ".jpg"
 }
-
-fun slashifyFilePath(path: String): String {
-  return if (!path.startsWith("file:///")) {
-    path.replace("file:/", "file:///")
-  } else {
-    path
-  }
-}

@@ -1,16 +1,9 @@
 import * as React from 'react';
-import { BarCodeScanningResult, CameraCapturedPicture, CameraMountError, CameraNativeProps, CameraPictureOptions, CameraProps, CameraRecordingOptions, FaceDetectionResult, PermissionExpiration, PermissionResponse, PermissionStatus } from './Camera.types';
+import { BarCodeScanningResult, CameraCapturedPicture, CameraMountError, CameraNativeProps, CameraPictureOptions, CameraProps, CameraRecordingOptions, ConstantsType, FaceDetectionResult, PermissionExpiration, PermissionResponse, PermissionStatus } from './Camera.types';
 export default class Camera extends React.Component<CameraProps> {
     static isAvailableAsync(): Promise<boolean>;
     static getAvailableCameraTypesAsync(): Promise<('front' | 'back')[]>;
-    static Constants: {
-        Type: any;
-        FlashMode: any;
-        AutoFocus: any;
-        WhiteBalance: any;
-        VideoQuality: any;
-        VideoStabilization: any;
-    };
+    static Constants: ConstantsType;
     static ConversionTables: {
         type: Record<"front" | "back", string | number | undefined>;
         flashMode: Record<"on" | "off" | "auto" | "torch", string | number | undefined>;
@@ -49,12 +42,5 @@ export default class Camera extends React.Component<CameraProps> {
     _setReference: (ref?: React.Component<{}, {}, any> | undefined) => void;
     render(): JSX.Element;
 }
-export declare const Constants: {
-    Type: any;
-    FlashMode: any;
-    AutoFocus: any;
-    WhiteBalance: any;
-    VideoQuality: any;
-    VideoStabilization: any;
-}, getPermissionsAsync: typeof Camera.getPermissionsAsync, requestPermissionsAsync: typeof Camera.requestPermissionsAsync;
+export declare const Constants: ConstantsType, getPermissionsAsync: typeof Camera.getPermissionsAsync, requestPermissionsAsync: typeof Camera.requestPermissionsAsync;
 export { CameraCapturedPicture, CameraNativeProps, CameraPictureOptions, CameraProps, CameraRecordingOptions, PermissionResponse, PermissionStatus, PermissionExpiration, BarCodeScanningResult, FaceDetectionResult, CameraMountError, };

@@ -9,15 +9,13 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.google.android.gms.wallet.WalletConstants;
-import com.stripe.android.SourceCallback;
+import com.stripe.android.ApiResultCallback;
 import com.stripe.android.Stripe;
-import com.stripe.android.TokenCallback;
 import com.stripe.android.model.Source;
+import com.stripe.android.model.Source.Flow;
 import com.stripe.android.model.SourceParams;
 import com.stripe.android.model.Token;
 
@@ -34,6 +32,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import abi41_0_0.expo.modules.payments.stripe.dialog.AddCardDialogFragment;
 import abi41_0_0.expo.modules.payments.stripe.util.ArgCheck;
 import abi41_0_0.expo.modules.payments.stripe.util.Converters;
@@ -44,8 +44,7 @@ import static abi41_0_0.expo.modules.payments.stripe.Errors.getErrorCode;
 import static abi41_0_0.expo.modules.payments.stripe.Errors.toErrorCode;
 import static abi41_0_0.expo.modules.payments.stripe.util.Converters.convertSourceToWritableMap;
 import static abi41_0_0.expo.modules.payments.stripe.util.Converters.convertTokenToWritableMap;
-import static abi41_0_0.expo.modules.payments.stripe.util.Converters.createBankAccount;
-import static abi41_0_0.expo.modules.payments.stripe.util.Converters.createCard;
+import static abi41_0_0.expo.modules.payments.stripe.util.Converters.createBankAccountTokenParams;
 import static abi41_0_0.expo.modules.payments.stripe.util.Converters.getStringOrNull;
 import static abi41_0_0.expo.modules.payments.stripe.util.InitializationOptions.ANDROID_PAY_MODE_KEY;
 import static abi41_0_0.expo.modules.payments.stripe.util.InitializationOptions.ANDROID_PAY_MODE_PRODUCTION;
@@ -182,13 +181,16 @@ public class StripeModule extends ExportedModule {
       ArgCheck.nonNull(mStripe);
       ArgCheck.notEmptyString(mPublicKey);
 
-      mStripe.createToken(
-        createCard(cardData),
-        mPublicKey,
-        new TokenCallback() {
-          public void onSuccess(Token token) {
+      mStripe.createCardToken(
+        Converters.createCardParams(cardData),
+        null,
+        null,
+        new ApiResultCallback<Token>() {
+          @Override
+          public void onSuccess(@NonNull Token token) {
             promise.resolve(convertTokenToWritableMap(token));
           }
+          @Override
           public void onError(Exception error) {
             error.printStackTrace();
             promise.reject(toErrorCode(error), error.getMessage());
@@ -206,13 +208,15 @@ public class StripeModule extends ExportedModule {
       ArgCheck.notEmptyString(mPublicKey);
 
       mStripe.createBankAccountToken(
-        createBankAccount(accountData),
+        createBankAccountTokenParams(accountData),
         mPublicKey,
         null,
-        new TokenCallback() {
-          public void onSuccess(Token token) {
+        new ApiResultCallback<Token>() {
+          @Override
+          public void onSuccess(@NonNull Token token) {
             promise.resolve(convertTokenToWritableMap(token));
           }
+          @Override
           public void onError(Exception error) {
             error.printStackTrace();
             promise.reject(toErrorCode(error), error.getMessage());
@@ -233,11 +237,11 @@ public class StripeModule extends ExportedModule {
       boolean createCardSource = params.get("createCardSource") instanceof Boolean ? (Boolean) params.get("createCardSource") : false;
 
       final AddCardDialogFragment cardDialog = AddCardDialogFragment.newInstance(
-        mPublicKey,
-        getErrorCode(mErrorCodes, "cancelled"),
-        getDescription(mErrorCodes, "cancelled"),
-        createCardSource,
-        mTag
+          mPublicKey,
+          getErrorCode(mErrorCodes, "cancelled"),
+          getDescription(mErrorCodes, "cancelled"),
+          createCardSource,
+          mTag
       );
       cardDialog.setPromise(promise);
       cardDialog.show(currentActivity.getFragmentManager(), "AddNewCard");
@@ -278,71 +282,71 @@ public class StripeModule extends ExportedModule {
     switch (sourceType) {
       case "alipay":
         sourceParams = SourceParams.createAlipaySingleUseParams(
-          Math.round((Double)options.get("amount")),
-          (String)options.get("currency"),
-          getStringOrNull(options, "name"),
-          getStringOrNull(options, "email"),
-          (String)options.get("returnURL"));
+            Math.round((Double)options.get("amount")),
+            (String)options.get("currency"),
+            getStringOrNull(options, "name"),
+            getStringOrNull(options, "email"),
+            (String)options.get("returnURL"));
         break;
       case "bancontact":
         sourceParams = SourceParams.createBancontactParams(
-          Math.round((Double)options.get("amount")),
-          (String)options.get("name"),
-          (String)options.get("returnURL"),
-          getStringOrNull(options, "statementDescriptor"),
-          (String)options.get("preferredLanguage"));
+            Math.round((Double)options.get("amount")),
+            (String)options.get("name"),
+            (String)options.get("returnURL"),
+            getStringOrNull(options, "statementDescriptor"),
+            (String)options.get("preferredLanguage"));
         break;
       case "giropay":
         sourceParams = SourceParams.createGiropayParams(
-          Math.round((Double)options.get("amount")),
-          (String)options.get("name"),
-          (String)options.get("returnURL"),
-          getStringOrNull(options, "statementDescriptor"));
+            Math.round((Double)options.get("amount")),
+            (String)options.get("name"),
+            (String)options.get("returnURL"),
+            getStringOrNull(options, "statementDescriptor"));
         break;
       case "ideal":
         sourceParams = SourceParams.createIdealParams(
-          Math.round((Double)options.get("amount")),
-          (String)options.get("name"),
-          (String)options.get("returnURL"),
-          getStringOrNull(options, "statementDescriptor"),
-          getStringOrNull(options, "bank"));
+            Math.round((Double)options.get("amount")),
+            (String)options.get("name"),
+            (String)options.get("returnURL"),
+            getStringOrNull(options, "statementDescriptor"),
+            getStringOrNull(options, "bank"));
         break;
       case "sepaDebit":
         sourceParams = SourceParams.createSepaDebitParams(
-          (String)options.get("name"),
-          (String)options.get("iban"),
-          getStringOrNull(options, "addressLine1"),
-          (String)options.get("city"),
-          (String)options.get("postalCode"),
-          (String)options.get("country"));
+            (String)options.get("name"),
+            (String)options.get("iban"),
+            getStringOrNull(options, "addressLine1"),
+            (String)options.get("city"),
+            (String)options.get("postalCode"),
+            (String)options.get("country"));
         break;
       case "sofort":
         sourceParams = SourceParams.createSofortParams(
-          Math.round((Double)options.get("amount")),
-          (String)options.get("returnURL"),
-          (String)options.get("country"),
-          getStringOrNull(options, "statementDescriptor"));
+            Math.round((Double)options.get("amount")),
+            (String)options.get("returnURL"),
+            (String)options.get("country"),
+            getStringOrNull(options, "statementDescriptor"));
         break;
       case "threeDSecure":
         sourceParams = SourceParams.createThreeDSecureParams(
-          Math.round(((Double)options.get("amount"))),
-          (String)options.get("currency"),
-          (String)options.get("returnURL"),
-          (String)options.get("card"));
+            Math.round(((Double)options.get("amount"))),
+            (String)options.get("currency"),
+            (String)options.get("returnURL"),
+            (String)options.get("card"));
         break;
     }
 
     ArgCheck.nonNull(sourceParams);
 
-    mStripe.createSource(sourceParams, new SourceCallback() {
+    mStripe.createSource(sourceParams, new ApiResultCallback<Source>() {
       @Override
       public void onError(Exception error) {
         promise.reject(toErrorCode(error), error);
       }
 
       @Override
-      public void onSuccess(Source source) {
-        if (Source.REDIRECT.equals(source.getFlow())) {
+      public void onSuccess(@NonNull Source source) {
+        if (Flow.Redirect.equals(source.getFlow())) {
           Activity currentActivity = getCurrentActivity();
           if (currentActivity == null) {
             promise.reject(
@@ -354,9 +358,9 @@ public class StripeModule extends ExportedModule {
             mCreatedSource = source;
             String redirectUrl = source.getRedirect().getUrl();
             Intent browserIntent = new Intent(currentActivity, OpenBrowserActivity.class)
-              .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP)
-              .putExtra(OpenBrowserActivity.EXTRA_URL, redirectUrl)
-              .putExtra("tag", mTag);
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                .putExtra(OpenBrowserActivity.EXTRA_URL, redirectUrl)
+                .putExtra("tag", mTag);
             currentActivity.startActivity(browserIntent);
           }
         } else {
@@ -434,19 +438,18 @@ public class StripeModule extends ExportedModule {
         }
 
         switch (source.getStatus()) {
-          case Source.CHARGEABLE:
-          case Source.CONSUMED:
+          case Chargeable:
+          case Consumed:
             promise.resolve(convertSourceToWritableMap(source));
             break;
-          case Source.CANCELED:
+          case Canceled:
             promise.reject(
               getErrorCode(mErrorCodes, "redirectCancelled"),
               getDescription(mErrorCodes, "redirectCancelled")
             );
             break;
-          case Source.PENDING:
-          case Source.FAILED:
-          case Source.UNKNOWN:
+          case Pending:
+          case Failed:
             promise.reject(
               getErrorCode(mErrorCodes, "redirectFailed"),
               getDescription(mErrorCodes, "redirectFailed")

@@ -1,6 +1,7 @@
 package expo.modules.updates.launcher;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 
 import org.json.JSONObject;
@@ -29,6 +30,7 @@ public class DatabaseLauncher implements Launcher {
 
   private UpdatesConfiguration mConfiguration;
   private File mUpdatesDirectory;
+  private FileDownloader mFileDownloader;
   private SelectionPolicy mSelectionPolicy;
 
   private UpdateEntity mLaunchedUpdate = null;
@@ -42,9 +44,10 @@ public class DatabaseLauncher implements Launcher {
 
   private LauncherCallback mCallback = null;
 
-  public DatabaseLauncher(UpdatesConfiguration configuration, File updatesDirectory, SelectionPolicy selectionPolicy) {
+  public DatabaseLauncher(UpdatesConfiguration configuration, File updatesDirectory, FileDownloader fileDownloader, SelectionPolicy selectionPolicy) {
     mConfiguration = configuration;
     mUpdatesDirectory = updatesDirectory;
+    mFileDownloader = fileDownloader;
     mSelectionPolicy = selectionPolicy;
   }
 
@@ -114,7 +117,7 @@ public class DatabaseLauncher implements Launcher {
         if (assetFile != null) {
           mLocalAssetFiles.put(
               asset,
-              assetFile.toURI().toString()
+              Uri.fromFile(assetFile).toString()
           );
         }
       }
@@ -184,7 +187,7 @@ public class DatabaseLauncher implements Launcher {
     if (!assetFileExists) {
       // we still don't have the asset locally, so try downloading it remotely
       mAssetsToDownload++;
-      FileDownloader.downloadAsset(asset, mUpdatesDirectory, mConfiguration, context, new FileDownloader.AssetDownloadCallback() {
+      mFileDownloader.downloadAsset(asset, mUpdatesDirectory, mConfiguration, new FileDownloader.AssetDownloadCallback() {
         @Override
         public void onFailure(Exception e, AssetEntity assetEntity) {
           Log.e(TAG, "Failed to load asset from disk or network", e);

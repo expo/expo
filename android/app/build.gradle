@@ -24,8 +24,8 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 144
-    versionName '2.18.8'
+    versionCode 145
+    versionName '2.18.9'
     // END VERSIONS
 
     multiDexEnabled true
@@ -67,7 +67,7 @@ android {
     abortOnError false
   }
   packagingOptions {
-    pickFirst "**"
+    pickFirst "lib/**"
   }
 }
 

@@ -7,7 +7,7 @@ import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
-**`expo-font`** allows loading fonts from the web and using them in React Native components. See more detailed usage information in the [Using Custom Fonts](../../../guides/using-custom-fonts.md#using-custom-fonts) guide.
+**`expo-font`** allows loading fonts from the web and using them in React Native components. See more detailed usage information in the [Fonts](../../../guides/using-custom-fonts.md) guide.
 
 <PlatformsSection android emulator ios simulator web />
 

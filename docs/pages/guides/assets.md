@@ -38,3 +38,7 @@ Note: glob patterns are always relative to the project root regardless of where 
 ### Fonts
 
 Some assets are too important to start your app without. Fonts often fall into this category. On the web the font loading problem is known by several acronyms: FOUT, FOIT, and FOFT, which stand for Flash of Unstyled Text, Flash of Invisible Text, and Flash of Faux Text ([read more here](https://css-tricks.com/fout-foit-foft/)). The default behaviour with the icon-font-powered [@expo/vector-icons](icons.md#icons) icons is a FOIT on first load, and on subsequent loads the font will be automatically cached. Users have higher standards for mobile than web, so you might want to take it a step further by preloading and caching the font and important images during the initial loading screen.
+
+### Caching
+
+Read about this in [Asset Caching](../../guides/preloading-and-caching-assets.md).

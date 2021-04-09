@@ -15,6 +15,7 @@
 #import <EXAV/EXAudioRecordingPermissionRequester.h>
 
 NSString *const EXAudioRecordingOptionsIsMeteringEnabledKey = @"isMeteringEnabled";
+NSString *const EXAudioRecordingOptionsKeepAudioActiveHintKey = @"keepAudioActiveHint";
 NSString *const EXAudioRecordingOptionsKey = @"ios";
 NSString *const EXAudioRecordingOptionExtensionKey = @"extension";
 NSString *const EXAudioRecordingOptionOutputFormatKey = @"outputFormat";
@@ -806,18 +807,22 @@ UM_EXPORT_METHOD_AS(prepareAudioRecorder,
       [self _removeAudioRecorder:YES];
       reject(@"E_AUDIO_RECORDERNOTCREATED", [NSString stringWithFormat:@"Prepare encountered an error: %@", error.description], error);
       return;
-    } else if ([_audioRecorder prepareToRecord]) {
-        if(options[EXAudioRecordingOptionsIsMeteringEnabledKey]) {
-        _audioRecorder.meteringEnabled = true;
-        }
-      resolve(@{@"uri": [[_audioRecorder url] absoluteString],
-                @"status": [self _getAudioRecorderStatus]});
-    } else {
+    } else if (![_audioRecorder prepareToRecord]) {
+      _audioRecorderIsPreparing = false;
       [self _removeAudioRecorder:YES];
       reject(@"E_AUDIO_RECORDERNOTCREATED", @"Prepare encountered an error: recorder not prepared.", nil);
+      return;
     }
+    if (options[EXAudioRecordingOptionsIsMeteringEnabledKey]) {
+      _audioRecorder.meteringEnabled = true;
+    }
+    
+    resolve(@{@"uri": [[_audioRecorder url] absoluteString],
+                @"status": [self _getAudioRecorderStatus]});
     _audioRecorderIsPreparing = false;
-    [self demoteAudioSessionIfPossible];
+    if (!options[EXAudioRecordingOptionsKeepAudioActiveHintKey]) {
+      [self demoteAudioSessionIfPossible];
+    }
   } else {
     reject(@"E_AUDIO_RECORDERNOTCREATED", [NSString stringWithFormat:@"Prepare encountered an error: %@", error.description], error);
   }
