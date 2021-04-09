@@ -94,7 +94,7 @@ function AuthSessionProviders(props: {
 
   const redirectUri = AuthSession.makeRedirectUri({
     path: 'redirect',
-    preferLocalhost: true,
+    preferLocalhost: Platform.select({ android: false, default: true }),
     useProxy,
   });
 
