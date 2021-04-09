@@ -47,7 +47,9 @@ export default class SnackEmbed extends React.Component<Props> {
     if (this.props.snackId) {
       embedProps = { 'data-snack-id': this.props.snackId };
     } else {
-      const code = React.Children.toArray(this.props.children).join('').trim();
+      const code = React.Children.toArray(this.props.children)
+        .join('')
+        .trim();
       embedProps = {
         'data-snack-code': code,
       };
@@ -78,7 +80,10 @@ export default class SnackEmbed extends React.Component<Props> {
       embedProps['data-snack-theme'] = 'light';
     }
 
-    const embedStyle = this.props.hasOwnProperty('style') ? this.props.style! : {};
+    var embedStyle = {};
+    if (this.props.hasOwnProperty('style')) {
+      embedStyle = this.props.style!;
+    }
 
     return (
       <div
