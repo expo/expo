@@ -67,7 +67,7 @@ export function usePermissions(
     return () => {
       isMounted.current = false;
     };
-  });
+  }, []);
 
   return [data, askPermissions, getPermissions];
 }

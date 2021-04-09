@@ -47,7 +47,7 @@ export function usePermissions(type, options = {}) {
         return () => {
             isMounted.current = false;
         };
-    });
+    }, []);
     return [data, askPermissions, getPermissions];
 }
 //# sourceMappingURL=PermissionsHooks.js.map
