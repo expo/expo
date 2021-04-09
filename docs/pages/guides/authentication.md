@@ -224,9 +224,8 @@ const discovery = {
 
 const redirectUri = makeRedirectUri({
   /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
-  scheme: 'your.app'
-  /* @end */
-});
+  scheme: 'your.app'  
+/* @end */});
 
 const CLIENT_ID = "CLIENT_ID";
 
