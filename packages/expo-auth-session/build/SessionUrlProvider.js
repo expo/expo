@@ -15,8 +15,7 @@ export class SessionUrlProvider {
             // The redirect URL doesn't matter for the proxy as long as it's valid, so silence warnings if needed.
             scheme: options?.scheme ?? resolveScheme({ isSilent: true }),
             queryParams,
-            // true by default for legacy purposes
-            isTripleSlashed: options?.isTripleSlashed ?? true,
+            isTripleSlashed: options?.isTripleSlashed,
         });
     }
     getStartUrl(authUrl, returnUrl) {

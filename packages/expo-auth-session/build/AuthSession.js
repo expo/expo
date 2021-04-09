@@ -83,6 +83,7 @@ export function getRedirectUrl(path) {
  * ```ts
  * const redirectUri = makeRedirectUri({
  *   scheme: 'my-scheme',
+ *   isTripleSlashed: true,
  *   path: 'redirect'
  * });
  * // Custom app: my-scheme:///redirect
@@ -92,7 +93,6 @@ export function getRedirectUrl(path) {
  *
  * const redirectUri2 = makeRedirectUri({
  *   scheme: 'scheme2',
- *   isTripleSlashed: false,
  *   preferLocalhost: true,
  * });
  * // Custom app: scheme2://
@@ -103,6 +103,7 @@ export function getRedirectUrl(path) {
  *
  * const redirectUri3 = makeRedirectUri({
  *   useProxy: true,
+ *   isTripleSlashed: true,
  * });
  * // Custom app: https://auth.expo.io/@username/slug
  * // Expo Go: https://auth.expo.io/@username/slug
@@ -119,7 +120,7 @@ export function makeRedirectUri({ native, scheme, isTripleSlashed, queryParams, 
     }
     if (!useProxy || Platform.OS === 'web') {
         const url = Linking.createURL(path || '', {
-            isTripleSlashed: isTripleSlashed ?? true,
+            isTripleSlashed,
             scheme,
             queryParams,
         });

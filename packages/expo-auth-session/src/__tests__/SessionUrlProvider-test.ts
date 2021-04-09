@@ -93,23 +93,24 @@ if (Platform.OS !== 'web') {
       });
       it(`checks return url`, () => {
         mockProperty(Constants.manifest, 'hostUri', 'exp.host/@example/abc');
-        const result = managedSessionUrlProvider.getDefaultReturnUrl();
-
-        expect(result).toEqual('exp://exp.host/@example/abc/--/expo-auth-session');
+        expect(managedSessionUrlProvider.getDefaultReturnUrl()).toEqual(
+          'exp://exp.host/@example/abc/--/expo-auth-session'
+        );
       });
       it(`checks return url with options`, () => {
         mockProperty(Constants.manifest, 'hostUri', 'exp.host/@example/abc');
         const result = managedSessionUrlProvider.getDefaultReturnUrl('/foobar', {
-          isTripleSlashed: false,
+          isTripleSlashed: true,
           scheme: 'foobar',
         });
         expect(result).toEqual('exp://exp.host/@example/abc/--/expo-auth-session/foobar');
       });
       it(`checks return url with multiple schemes and no default provided`, () => {
         mockProperty(Constants.manifest, 'scheme', ['my-app-1', 'my-app-2']);
-        const result = managedSessionUrlProvider.getDefaultReturnUrl();
         // Ensure no warning is thrown in store client
-        expect(result).toEqual('exp://exp.host/@test/test/--/expo-auth-session');
+        expect(managedSessionUrlProvider.getDefaultReturnUrl()).toEqual(
+          'exp://exp.host/@test/test/--/expo-auth-session'
+        );
       });
       it(`checks url with the release channel`, () => {
         mockProperty(
@@ -118,9 +119,7 @@ if (Platform.OS !== 'web') {
           'exp.host/@example/abc?release-channel=release-channel'
         );
 
-        const result = managedSessionUrlProvider.getDefaultReturnUrl();
-
-        expect(result).toEqual(
+        expect(managedSessionUrlProvider.getDefaultReturnUrl()).toEqual(
           'exp://exp.host/@example/abc/--/expo-auth-session?release-channel=release-channel'
         );
       });
@@ -144,7 +143,7 @@ if (Platform.OS !== 'web') {
           mockProperty(Constants.manifest, 'hostUri', 'exp.host/@example/abc');
           const result = managedSessionUrlProvider.getDefaultReturnUrl();
 
-          expect(result).toEqual('my-app:///expo-auth-session');
+          expect(result).toEqual('my-app://expo-auth-session');
         });
         it(`throws if no scheme is defined`, () => {
           mockProperty(Constants.manifest, 'scheme', undefined);
@@ -155,21 +154,21 @@ if (Platform.OS !== 'web') {
         it(`checks return url with options`, () => {
           mockProperty(Constants.manifest, 'hostUri', 'exp.host/@example/abc');
           const result = managedSessionUrlProvider.getDefaultReturnUrl('/foobar', {
-            isTripleSlashed: false,
+            isTripleSlashed: true,
             scheme: 'foobar',
           });
           // ensure we warn about the invalid config or invocation.
           expect(console.warn).toHaveBeenCalledWith(
             `The provided Linking scheme 'foobar' does not appear in the list of possible URI schemes in your Expo config. Expected one of: 'my-app'`
           );
-          expect(result).toEqual('foobar://expo-auth-session/foobar');
+          expect(result).toEqual('foobar:///expo-auth-session/foobar');
         });
         it(`checks return url with multiple schemes and no default provided`, () => {
           mockProperty(Constants.manifest, 'scheme', ['my-app-1', 'my-app-2']);
           const result = managedSessionUrlProvider.getDefaultReturnUrl();
           // Ensure we silenced the warnings when multiple schemes can be found.
           expect(console.warn).not.toHaveBeenCalled();
-          expect(result).toEqual('my-app-1:///expo-auth-session');
+          expect(result).toEqual('my-app-1://expo-auth-session');
         });
 
         it(`checks url with the release channel`, () => {
@@ -179,9 +178,9 @@ if (Platform.OS !== 'web') {
             'exp.host/@example/abc?release-channel=release-channel'
           );
 
-          const result = managedSessionUrlProvider.getDefaultReturnUrl();
-
-          expect(result).toEqual('my-app:///expo-auth-session?release-channel=release-channel');
+          expect(managedSessionUrlProvider.getDefaultReturnUrl()).toEqual(
+            'my-app://expo-auth-session?release-channel=release-channel'
+          );
         });
       });
     }

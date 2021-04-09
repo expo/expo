@@ -2280,10 +2280,10 @@ In some cases there will be anywhere between 1 to 3 slashes (`/`).
   - Custom Expo Go builds
     - `expo client:ios`
 - **Create:** Use `AuthSession.makeRedirectUri({ native: '<YOUR_URI>' })` to select native when running in the correct environment.
-  - `your.app://redirect` -> `makeRedirectUri({ scheme: 'your.app', path: 'redirect', isTripleSlashed: false })`
-  - `your.app:///` -> `makeRedirectUri({ scheme: 'your.app' })`
+  - `your.app://redirect` -> `makeRedirectUri({ scheme: 'your.app', path: 'redirect' })`
+  - `your.app:///` -> `makeRedirectUri({ scheme: 'your.app', isTripleSlashed: true })`
   - `your.app:/authorize` -> `makeRedirectUri({ native: 'your.app:/authorize' })`
-  - `your.app:///auth?foo=bar` -> `makeRedirectUri({ scheme: 'your.app', path: 'auth', queryParams: { foo: 'bar' } })`
+  - `your.app://auth?foo=bar` -> `makeRedirectUri({ scheme: 'your.app', path: 'auth', queryParams: { foo: 'bar' } })`
   - `exp://exp.host/@yourname/your-app` -> `makeRedirectUri({ useProxy: true })`
   - This link can often be created automatically but we recommend you define the `scheme` property at least. The entire URL can be overridden in custom apps by passing the `native` property. Often this will be used for providers like Google or Okta which require you to use a custom native URI redirect. You can add, list, and open URI schemes using `npx uri-scheme`.
   - If you change the `expo.scheme` after ejecting then you'll need to use the `expo apply` command to apply the changes to your native project, then rebuild them (`yarn ios`, `yarn android`).

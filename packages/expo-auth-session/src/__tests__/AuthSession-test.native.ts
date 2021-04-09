@@ -85,7 +85,7 @@ describe('Managed', () => {
         executionEnvironment: ExecutionEnvironment.Standalone,
       });
       const { makeRedirectUri } = require('../AuthSession');
-      expect(makeRedirectUri({ path: 'bacon' })).toBe('demo:///bacon');
+      expect(makeRedirectUri({ path: 'bacon' })).toBe('demo://bacon');
     });
 
     it(`uses native instead of generating a value`, () => {

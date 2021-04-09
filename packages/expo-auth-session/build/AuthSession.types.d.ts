@@ -38,7 +38,7 @@ export declare type AuthSessionRedirectUriOptions = {
     queryParams?: Record<string, string | undefined>;
     /**
      * Should the URI be triple slashed `scheme:///path` or double slashed `scheme://path`.
-     * Defaults to `true` for legacy support.
+     * Defaults to `false`.
      * Passed to `Linking.createURL()` when `useProxy` is `false`.
      */
     isTripleSlashed?: boolean;

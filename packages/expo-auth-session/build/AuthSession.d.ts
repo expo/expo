@@ -27,6 +27,7 @@ export declare function getRedirectUrl(path?: string): string;
  * ```ts
  * const redirectUri = makeRedirectUri({
  *   scheme: 'my-scheme',
+ *   isTripleSlashed: true,
  *   path: 'redirect'
  * });
  * // Custom app: my-scheme:///redirect
@@ -36,7 +37,6 @@ export declare function getRedirectUrl(path?: string): string;
  *
  * const redirectUri2 = makeRedirectUri({
  *   scheme: 'scheme2',
- *   isTripleSlashed: false,
  *   preferLocalhost: true,
  * });
  * // Custom app: scheme2://
@@ -47,6 +47,7 @@ export declare function getRedirectUrl(path?: string): string;
  *
  * const redirectUri3 = makeRedirectUri({
  *   useProxy: true,
+ *   isTripleSlashed: true,
  * });
  * // Custom app: https://auth.expo.io/@username/slug
  * // Expo Go: https://auth.expo.io/@username/slug
