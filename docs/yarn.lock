@@ -1154,6 +1154,11 @@
   resolved "https://registry.yarnpkg.com/@types/github-slugger/-/github-slugger-1.3.0.tgz#16ab393b30d8ae2a111ac748a015ac05a1fc5524"
   integrity sha512-J/rMZa7RqiH/rT29TEVZO4nBoDP9XJOjnbbIofg7GQKs4JIduEO3WLpte+6WeUz/TcrXKlY+bM7FYrp8yFB+3g==
 
+"@types/google.analytics@^0.0.41":
+  version "0.0.41"
+  resolved "https://registry.yarnpkg.com/@types/google.analytics/-/google.analytics-0.0.41.tgz#7905553890bb8651c93927c1ce4c1c4a26e41505"
+  integrity sha512-LE6AfJFJtxUl1d56oQ1PvQDEOtU+0fgqTVgmOw+T0eaz7FB4DTqKxbI6x8sq+7FDvAeIXOugZyGHJLR4CAxO4A==
+
 "@types/graceful-fs@^4.1.2":
   version "4.1.3"
   resolved "https://registry.yarnpkg.com/@types/graceful-fs/-/graceful-fs-4.1.3.tgz#039af35fe26bec35003e8d86d2ee9c586354348f"

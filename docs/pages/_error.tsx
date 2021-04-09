@@ -325,4 +325,13 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Archive unused pages
   '/guides/notification-channels/': '/archived/notification-channels/',
+
+  // Migrated FAQ pages
+  '/faq/image-background/': '/ui-programming/image-background/',
+  '/faq/react-native-styling-buttons/': '/ui-programming/react-native-styling-buttons/',
+  '/faq/react-native-version-mismatch/': '/troubleshooting/react-native-version-mismatch/',
+  '/faq/clear-cache-windows/': '/troubleshooting/clear-cache-windows/',
+  '/faq/clear-cache-macos-linux/': '/troubleshooting/clear-cache-macos-linux/',
+  '/faq/application-has-not-been-registered/':
+    '/troubleshooting/application-has-not-been-registered/',
 };

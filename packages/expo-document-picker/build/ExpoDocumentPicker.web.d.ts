@@ -1,4 +1,4 @@
-import { DocumentResult, DocumentPickerOptions } from './types';
+import { DocumentPickerOptions, DocumentResult } from './types';
 declare const _default: {
     readonly name: string;
     getDocumentAsync({ type, multiple, }: DocumentPickerOptions): Promise<DocumentResult>;

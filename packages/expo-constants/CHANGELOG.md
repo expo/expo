@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove the `xde` property from `Constants.manifest`. ([#12438](https://github.com/expo/expo/pull/12438) by [@fson](https://github.com/fson))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

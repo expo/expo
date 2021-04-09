@@ -63,6 +63,9 @@ async function action({ packageName }: ActionOptions) {
     'expo-sensors': ['Pedometer.ts', 'expo-pedometer'],
     'expo-sharing': ['Sharing.ts'],
     'expo-store-review': ['StoreReview.ts'],
+    'expo-application': ['Application.ts'],
+    'expo-keep-awake': ['index.ts'],
+    'expo-splash-screen': ['SplashScreen.ts'],
   };
 
   if (packageName) {

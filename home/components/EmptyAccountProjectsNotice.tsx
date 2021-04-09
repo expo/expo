@@ -12,31 +12,21 @@ function handleLearnMorePress() {
   WebBrowser.openBrowserAsync('https://docs.expo.io/workflow/publishing/');
 }
 
-export default function EmptyProfileProjectsNotice({ isOwnProfile }: { isOwnProfile: boolean }) {
-  if (isOwnProfile) {
-    return (
-      <StyledView style={styles.container} lightBackgroundColor={Colors.light.greyBackground}>
-        <StyledText style={[SharedStyles.noticeDescriptionText, styles.descriptionText]}>
-          Projects that you publish will appear here! Go ahead and publish one, then refresh this
-          screen.
-        </StyledText>
-
-        <PrimaryButton
-          plain
-          onPress={handleLearnMorePress}
-          fallback={TouchableOpacity}
-          style={{ marginBottom: 5 }}>
-          Learn more about publishing
-        </PrimaryButton>
-      </StyledView>
-    );
-  }
-
+export default function EmptyAccountProjectsNotice() {
   return (
     <StyledView style={styles.container} lightBackgroundColor={Colors.light.greyBackground}>
       <StyledText style={[SharedStyles.noticeDescriptionText, styles.descriptionText]}>
-        No published projects
+        Projects that you publish will appear here! Go ahead and publish one, then refresh this
+        screen.
       </StyledText>
+
+      <PrimaryButton
+        plain
+        onPress={handleLearnMorePress}
+        fallback={TouchableOpacity}
+        style={{ marginBottom: 5 }}>
+        Learn more about publishing
+      </PrimaryButton>
     </StyledView>
   );
 }
