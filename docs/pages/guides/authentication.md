@@ -141,7 +141,7 @@ export default function App() {
       clientId: 'CLIENT_ID',
       scopes: ['openid', 'profile', 'email', 'offline_access'],
       redirectUri: makeRedirectUri({
-        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]://</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -223,7 +223,7 @@ const discovery = {
 };
 
 const redirectUri = makeRedirectUri({
-  /* @info <strong>Custom apps:</strong> The URI <code>[scheme]://</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+  /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
   scheme: 'your.app'
   /* @end */
 });
@@ -401,7 +401,7 @@ export default function App() {
       usePKCE: false,
       // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
-        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]://</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
         useProxy,
@@ -471,7 +471,7 @@ export default function App() {
       // Dropbox doesn't support PKCE
       usePKCE: false,
       redirectUri: makeRedirectUri({
-        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]://</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -756,7 +756,7 @@ export default function App() {
       clientId: 'CLIENT_ID',
       scopes: ['activity', 'sleep'],
       redirectUri: makeRedirectUri({
-        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]://</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -827,7 +827,7 @@ export default function App() {
       // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
         useProxy,
-        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]://</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -914,7 +914,7 @@ export default function App() {
       clientId: 'CLIENT_ID',
       scopes: ['identity'],
       redirectUri: makeRedirectUri({
-        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]://</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -1226,7 +1226,7 @@ export default function App() {
       clientId: 'CLIENT_ID',
       clientSecret: 'CLIENT_SECRET',
       redirectUri: makeRedirectUri({
-        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]://</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app',
         /* @end */
       }),
@@ -1292,7 +1292,7 @@ export default function App() {
       /* @end */
       clientId: 'CLIENT_ID',
       redirectUri: makeRedirectUri({
-        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]://</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app',
         /* @end */
       }),
@@ -1533,7 +1533,7 @@ export default function App() {
       clientId: 'CLIENT_ID',
       scopes: ['identity'],
       redirectUri: makeRedirectUri({
-        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]://</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -1618,7 +1618,7 @@ export default function App() {
       clientId: 'CLIENT_ID',
       scopes: ['emoji:read'],
       redirectUri: makeRedirectUri({
-        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]://</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -1719,7 +1719,7 @@ export default function App() {
       // this must be set to false
       usePKCE: false,
       redirectUri: makeRedirectUri({
-        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]://</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -1788,7 +1788,7 @@ export default function App() {
       // this must be set to false
       usePKCE: false,
       redirectUri: makeRedirectUri({
-        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]://</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -1972,7 +1972,7 @@ export default function App() {
     {
       clientId: 'CLIENT_ID',
       redirectUri: makeRedirectUri({
-        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]://</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -2039,7 +2039,7 @@ export default function App() {
       /* @end */
       clientId: 'CLIENT_ID',
       redirectUri: makeRedirectUri({
-        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]://</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -2123,7 +2123,7 @@ export default function App() {
       clientId: 'CLIENT_ID',
       scopes: ['profile', 'delivery'],
       redirectUri: makeRedirectUri({
-        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]://</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -2190,7 +2190,7 @@ export default function App() {
       clientId: 'CLIENT_ID',
       scopes: ['profile', 'delivery'],
       redirectUri: makeRedirectUri({
-        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]://</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -2351,7 +2351,7 @@ function App() {
       clientId: 'CLIENT_ID',
       scopes: ['user-read-email', 'playlist-modify-public'],
       redirectUri: makeRedirectUri({
-        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]://</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
         scheme: 'your.app'
         /* @end */
       }),
