@@ -24,12 +24,12 @@ export declare type WebBrowserOpenOptions = {
     enableDefaultShareMenuItem?: boolean;
     /**
      * Whether browsed website should be shown as separate entry in Android recents/multitasking view.
-     * Requires createTask to be `true` (default).
+     * Required createTask to be `true` (default).
      * Default: `false`
      */
     showInRecents?: boolean;
     /**
-     * Whether the browser should open as a new task or open within the app.
+     * Whether to the browser should open as a new activity or open within the app.
      * Default: `true`
      */
     createTask?: boolean;
