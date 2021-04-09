@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 0.3.1 — 2021-04-09
+
+### 🐛 Bug fixes
+
 - Fix misspellings in READMEs. ([#12346](https://github.com/expo/expo/pull/12346) by [@wschurman](https://github.com/wschurman))
 
 ## 0.3.0 — 2021-03-24
