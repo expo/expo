@@ -76,9 +76,6 @@ const useProxy = true;
 /* @end */
 
 const redirectUri = AuthSession.makeRedirectUri({
-  /* @info You need to manually define the redirect URI, in Expo this should match the value of <code>scheme</code> in your app.config.js or app.json . */
-  native: 'your.app://redirect',
-  /* @end */
   useProxy,
 });
 
@@ -143,10 +140,10 @@ export default function App() {
     {
       clientId: 'CLIENT_ID',
       scopes: ['openid', 'profile', 'email', 'offline_access'],
-      // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
-        // For usage in bare and standalone
-        native: 'your.app://redirect',
+        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]:///</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        scheme: 'your.app'
+        /* @end */
       }),
     },
     discovery
@@ -215,10 +212,10 @@ export default function App() {
     {
       clientId: 'CLIENT_ID',
       scopes: ['wallet:accounts:read'],
-      // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
-        // For usage in bare and standalone
-        native: 'your.app://redirect',
+        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]:///</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        scheme: 'your.app'
+        /* @end */
       }),
     },
     discovery
@@ -315,8 +312,9 @@ export default function App() {
       usePKCE: false,
       // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
-        // For usage in bare and standalone
-        native: 'your.app://redirect',
+        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]:///</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        scheme: 'your.app'
+        /* @end */
         useProxy,
       }),
     },
@@ -383,10 +381,10 @@ export default function App() {
       scopes: [],
       // Dropbox doesn't support PKCE
       usePKCE: false,
-      // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
-        // For usage in bare and standalone
-        native: 'your.app://redirect',
+        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]:///</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        scheme: 'your.app'
+        /* @end */
       }),
     },
     discovery
@@ -668,10 +666,10 @@ export default function App() {
     {
       clientId: 'CLIENT_ID',
       scopes: ['activity', 'sleep'],
-      // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
-        // For usage in bare and standalone
-        native: 'your.app://redirect',
+        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]:///</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        scheme: 'your.app'
+        /* @end */
       }),
     },
     discovery
@@ -740,8 +738,9 @@ export default function App() {
       // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
         useProxy,
-        // For usage in bare and standalone
-        native: 'your.app://redirect',
+        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]:///</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        scheme: 'your.app'
+        /* @end */
       }),
     },
     discovery
@@ -825,10 +824,10 @@ export default function App() {
     {
       clientId: 'CLIENT_ID',
       scopes: ['identity'],
-      // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
-        // For usage in bare and standalone
-        native: 'your.app://redirect',
+        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]:///</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        scheme: 'your.app'
+        /* @end */
       }),
     },
     discovery
@@ -1138,8 +1137,9 @@ export default function App() {
       clientId: 'CLIENT_ID',
       clientSecret: 'CLIENT_SECRET',
       redirectUri: makeRedirectUri({
-        // For usage in bare and standalone
-        native: 'com.myname.myapp://redirect',
+        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]:///</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        scheme: 'your.app',
+        /* @end */
       }),
       // imgur requires an empty array
       scopes: [],
@@ -1203,8 +1203,9 @@ export default function App() {
       /* @end */
       clientId: 'CLIENT_ID',
       redirectUri: makeRedirectUri({
-        // For usage in bare and standalone
-        native: 'com.myname.myapp://redirect',
+        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]:///</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        scheme: 'your.app',
+        /* @end */
       }),
       scopes: [],
     },
@@ -1375,7 +1376,6 @@ export default function App() {
     {
       clientId: 'CLIENT_ID',
       scopes: ['identity'],
-      // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
         // For usage in bare and standalone
         native: 'your.app://redirect',
@@ -1443,10 +1443,10 @@ export default function App() {
       /* @end */
       clientId: 'CLIENT_ID',
       scopes: ['identity'],
-      // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
-        // For usage in bare and standalone
-        native: 'your.app://redirect',
+        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]:///</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        scheme: 'your.app'
+        /* @end */
       }),
     },
     discovery
@@ -1528,10 +1528,10 @@ export default function App() {
     {
       clientId: 'CLIENT_ID',
       scopes: ['emoji:read'],
-      // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
-        // For usage in bare and standalone
-        native: 'your.app://redirect',
+        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]:///</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        scheme: 'your.app'
+        /* @end */
       }),
     },
     discovery
@@ -1617,10 +1617,10 @@ export default function App() {
       // In order to follow the "Authorization Code Flow" to fetch token after authorizationEndpoint
       // this must be set to false
       usePKCE: false,
-      // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
-        // For usage in bare and standalone
-        native: 'your.app://redirect',
+        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]:///</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        scheme: 'your.app'
+        /* @end */
       }),
     },
     discovery
@@ -1686,10 +1686,10 @@ export default function App() {
       // In order to follow the "Authorization Code Flow" to fetch token after authorizationEndpoint
       // this must be set to false
       usePKCE: false,
-      // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
-        // For usage in bare and standalone
-        native: 'your.app://redirect',
+        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]:///</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        scheme: 'your.app'
+        /* @end */
       }),
     },
     discovery
@@ -1768,7 +1768,6 @@ export default function App() {
     {
       clientId: 'CLIENT_ID',
       scopes: ['activity:read_all'],
-      // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
         // For usage in bare and standalone
         // the "redirect" must match your "Authorization Callback Domain" in the Strava dev console.
@@ -1871,10 +1870,10 @@ export default function App() {
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: 'CLIENT_ID',
-      // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
-        // For usage in bare and standalone
-        native: 'your.app://redirect',
+        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]:///</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        scheme: 'your.app'
+        /* @end */
       }),
       scopes: ['openid', 'user_read', 'analytics:read:games'],
     },
@@ -1938,10 +1937,10 @@ export default function App() {
       responseType: ResponseType.Token,
       /* @end */
       clientId: 'CLIENT_ID',
-      // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
-        // For usage in bare and standalone
-        native: 'your.app://redirect',
+        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]:///</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        scheme: 'your.app'
+        /* @end */
       }),
       scopes: ['openid', 'user_read', 'analytics:read:games'],
     },
@@ -2022,10 +2021,10 @@ export default function App() {
     {
       clientId: 'CLIENT_ID',
       scopes: ['profile', 'delivery'],
-      // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
-        // For usage in bare and standalone
-        native: 'your.app://redirect',
+        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]:///</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        scheme: 'your.app'
+        /* @end */
       }),
     },
     discovery
@@ -2089,10 +2088,10 @@ export default function App() {
       /* @end */
       clientId: 'CLIENT_ID',
       scopes: ['profile', 'delivery'],
-      // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
-        // For usage in bare and standalone
-        native: 'your.app://redirect',
+        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]:///</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        scheme: 'your.app'
+        /* @end */
       }),
     },
     discovery
@@ -2143,6 +2142,7 @@ Here are a few examples of some common redirect URI patterns you may end up usin
 - **Environment:** Development or production projects in Expo Go, or in a standalone build.
 - **Create:** Use `AuthSession.makeRedirectUri({ useProxy: true })` to create this URI.
   - The link is constructed from your Expo username and the Expo app name, which are appended to the proxy website.
+  - For custom apps, you'll need to rebuild the native app if you change users or if you reassign your `slug`, or `owner` properties in the app.json. We highly recommend **not** using the proxy in custom apps (standalone, bare, custom).
 - **Usage:** `promptAsync({ useProxy: true, redirectUri })`
 
 #### Published project in the Expo Go app
@@ -2177,9 +2177,14 @@ In some cases there will be anywhere between 1 to 3 slashes (`/`).
   - Standalone builds in the App or Play Store
     - `expo build:ios` or `expo build:android`
   - Custom Expo Go builds
-    - `Expo Go:ios`
+    - `expo client:ios`
 - **Create:** Use `AuthSession.makeRedirectUri({ native: '<YOUR_URI>' })` to select native when running in the correct environment.
-  - This link must be hard coded because it cannot be inferred from the config reliably, with exception for Standalone builds using `scheme` from `app.config.js` or `app.json`. Often this will be used for providers like Google or Okta which require you to use a custom native URI redirect. You can add, list, and open URI schemes using `npx uri-scheme`.
+  - `your.app://redirect` -> `makeRedirectUri({ scheme: 'your.app', path: 'redirect', isTripleSlashed: false })`
+  - `your.app:///` -> `makeRedirectUri({ scheme: 'your.app' })`
+  - `your.app:/authorize` -> `makeRedirectUri({ native: 'your.app:/authorize' })`
+  - `your.app:///auth?foo=bar` -> `makeRedirectUri({ scheme: 'your.app', path: 'auth', queryParams: { foo: 'bar' } })`
+  - `exp://exp.host/@yourname/your-app` -> `makeRedirectUri({ useProxy: true })`
+  - This link can often be created automatically but we recommend you define the `scheme` property at least. The entire URL can be overridden in custom apps by passing the `native` property. Often this will be used for providers like Google or Okta which require you to use a custom native URI redirect. You can add, list, and open URI schemes using `npx uri-scheme`.
   - If you change the `expo.scheme` after ejecting then you'll need to use the `expo apply` command to apply the changes to your native project, then rebuild them (`yarn ios`, `yarn android`).
 - **Usage:** `promptAsync({ redirectUri })`
 
@@ -2245,7 +2250,9 @@ function App() {
       clientId: 'CLIENT_ID',
       scopes: ['user-read-email', 'playlist-modify-public'],
       redirectUri: makeRedirectUri({
-        native: 'your.app://redirect',
+        /* @info <strong>Custom apps:</strong> The URI <code>[scheme]:///</code> to be used in bare, standalone, and custom apps. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        scheme: 'your.app'
+        /* @end */
       }),
     },
     discovery
