@@ -38,11 +38,11 @@ export default function AuthSessionScreen() {
           ...Platform.select({
             default: {
               maxWidth: '100%',
-            }, 
+            },
             web: {
               maxWidth: 640,
-            }
-          })
+            },
+          }),
         }}>
         <View style={{ marginBottom: 8 }}>
           <H2>Settings</H2>
