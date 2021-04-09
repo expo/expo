@@ -27,10 +27,9 @@ export declare function getRedirectUrl(path?: string): string;
  * ```ts
  * const redirectUri = makeRedirectUri({
  *   scheme: 'my-scheme',
- *   isTripleSlashed: true,
  *   path: 'redirect'
  * });
- * // Custom app: my-scheme:///redirect
+ * // Custom app: my-scheme://redirect
  * // Expo Go: exp://127.0.0.1:19000/--/redirect
  * // Web dev: https://localhost:19006/redirect
  * // Web prod: https://yourwebsite.com/redirect
@@ -38,8 +37,9 @@ export declare function getRedirectUrl(path?: string): string;
  * const redirectUri2 = makeRedirectUri({
  *   scheme: 'scheme2',
  *   preferLocalhost: true,
+ *   isTripleSlashed: true,
  * });
- * // Custom app: scheme2://
+ * // Custom app: scheme2:///
  * // Expo Go: exp://localhost:19000
  * // Web dev: https://localhost:19006
  * // Web prod: https://yourwebsite.com
@@ -47,7 +47,6 @@ export declare function getRedirectUrl(path?: string): string;
  *
  * const redirectUri3 = makeRedirectUri({
  *   useProxy: true,
- *   isTripleSlashed: true,
  * });
  * // Custom app: https://auth.expo.io/@username/slug
  * // Expo Go: https://auth.expo.io/@username/slug

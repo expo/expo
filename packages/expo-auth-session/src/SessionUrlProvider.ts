@@ -1,9 +1,9 @@
 import { Platform } from '@unimodules/react-native-adapter';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
-import { resolveScheme } from 'expo-linking/build/Schemes';
 import * as Linking from 'expo-linking';
-import qs, { ParsedQs } from 'qs';
 import { CreateURLOptions } from 'expo-linking';
+import { resolveScheme } from 'expo-linking/build/Schemes';
+import qs, { ParsedQs } from 'qs';
 
 const { manifest } = Constants;
 
