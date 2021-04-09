@@ -56,7 +56,7 @@ export class SessionUrlProvider {
       if (__DEV__) {
         if (Constants.executionEnvironment === ExecutionEnvironment.Bare) {
           nextSteps =
-            ' Please ensure you have the latest version of expo-constants installed and rebuild your native app. You can verify that currentFullName is defined by running `expo config --type public | grep currentFullName`';
+            ' Please ensure you have the latest version of expo-constants installed and rebuild your native app. You can verify that currentFullName is defined by running `expo config --type public` and inspecting the output.';
         } else if (Constants.executionEnvironment === ExecutionEnvironment.StoreClient) {
           nextSteps =
             ' Please report this as a bug with the contents of `expo config --type public`.';
@@ -101,7 +101,7 @@ export class SessionUrlProvider {
   private static warnIfAnonymous(id, url): void {
     if (id.startsWith('@anonymous/')) {
       console.warn(
-        `You are not currently signed in to Expo on your development machine. As a result, the redirect URL for AuthSession will be "${url}". If you are using an OAuth provider that requires whitelisting redirect URLs, we recommend that you do not whitelist this URL -- instead, you should sign in to Expo to acquired a unique redirect URL. Additionally, if you do decide to publish this app using Expo, you will need to register an account to do it.`
+        `You are not currently signed in to Expo on your development machine. As a result, the redirect URL for AuthSession will be "${url}". If you are using an OAuth provider that requires adding redirect URLs to an allow list, we recommend that you do not add this URL -- instead, you should sign in to Expo to acquire a unique redirect URL. Additionally, if you do decide to publish this app using Expo, you will need to register an account to do it.`
       );
     }
   }
