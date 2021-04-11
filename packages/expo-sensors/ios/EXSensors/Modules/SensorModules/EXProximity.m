@@ -17,11 +17,6 @@ UM_EXPORT_MODULE(ExpoProximity);
   return [moduleRegistry getModuleImplementingProtocol:@protocol(UMProximityInterface)];
 }
 
-- (void)setUpdateInterval:(double)updateInterval onSensorService:(id)sensorService
-{
-  [sensorService setProximityUpdateInterval:updateInterval];
-}
-
 - (BOOL)isAvailable:(id)sensorService
 {
   return [sensorService isProximityAvailable];

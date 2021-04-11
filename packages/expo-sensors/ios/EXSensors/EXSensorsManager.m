@@ -63,6 +63,7 @@ UM_REGISTER_MODULE();
   [[self manager] stopGyroUpdates];
   [[self manager] stopMagnetometerUpdates];
   [self.altimeter stopRelativeAltitudeUpdates];
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)sensorModuleDidSubscribeForAccelerometerUpdates:(id)scopedSensorModule
@@ -288,7 +289,23 @@ UM_REGISTER_MODULE();
   return [[self manager] isMagnetometerAvailable];
 }
 
-  }];
+
+- (void)proximitySensorStateChange:(NSNotification *)notification
+{
+    BOOL proximityState = [[UIDevice currentDevice] proximityState];
+    for (void (^handler)(NSDictionary *) in strongSelf.proximityHandlers.allValues) {
+      handler(@{@"proximityState": @(proximityState)});
+    }
+}
+
+- (void)sensorModuleDidSubscribeForProximityUpdates:(id)scopedSensorModule
+                                        withHandler:(void (^)(NSDictionary *event))handlerBlock
+{
+  if ([self isProximityAvailable]) {
+    _proximityHandlers[scopedSensorModule] = handlerBlock;
+  }
+  [[UIDevice currentDevice] setProximityMonitoringEnabled:NO];
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(proximitySensorStateChange:) name:@"UIDeviceProximityStateDidChangeNotification" object:nil];
 }
 
 - (void)sensorModuleDidUnsubscribeForProximityUpdates:(id)scopedSensorModule
@@ -297,11 +314,6 @@ UM_REGISTER_MODULE();
   if (_proximityHandlers.count == 0) {
 	[[UIDevice currentDevice] setProximityMonitoringEnabled:@NO];
   }
-}
-
-- (void)setProximityUpdateInterval:(NSTimeInterval)intervalMs
-{
-  // Do nothing
 }
 
 - (BOOL)isProximityAvailable

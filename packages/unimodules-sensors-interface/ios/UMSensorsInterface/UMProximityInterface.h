@@ -4,7 +4,6 @@
 
 - (void)sensorModuleDidSubscribeForProximityUpdates:(id)scopedSensorModule withHandler:(void (^)(NSDictionary *event))handlerBlock;
 - (void)sensorModuleDidUnsubscribeForProximityUpdates:(id)scopedSensorModule;
-- (void)setProximityUpdateInterval:(NSTimeInterval)intervalMs;
 - (BOOL)isProximityAvailable;
 
 @end
