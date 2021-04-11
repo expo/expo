@@ -304,7 +304,7 @@ UM_REGISTER_MODULE();
   if ([self isProximityAvailable]) {
     _proximityHandlers[scopedSensorModule] = handlerBlock;
   }
-  [[UIDevice currentDevice] setProximityMonitoringEnabled:NO];
+  [[UIDevice currentDevice] setProximityMonitoringEnabled:YES];
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(proximitySensorStateChange:) name:@"UIDeviceProximityStateDidChangeNotification" object:nil];
 }
 
@@ -312,13 +312,13 @@ UM_REGISTER_MODULE();
 {
   [_proximityHandlers removeObjectForKey:scopedSensorModule];
   if (_proximityHandlers.count == 0) {
-	[[UIDevice currentDevice] setProximityMonitoringEnabled:@NO];
+	[[UIDevice currentDevice] setProximityMonitoringEnabled:NO];
   }
 }
 
 - (BOOL)isProximityAvailable
 {
-  return @YES;
+  return YES;
 }
 
 - (float)getGravity
