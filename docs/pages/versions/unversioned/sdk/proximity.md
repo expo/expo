@@ -48,6 +48,9 @@ export default function App() {
   };
 
   const _subscribe = () => {
+    this._subscription = Proximity.addListener(proximityData => {
+      setData(proximityData);
+    });
   };
 
   const _unsubscribe = () => {
@@ -55,9 +58,17 @@ export default function App() {
     this._subscription = null;
   };
 
+  const { proximityState = false } = data;
 
   return (
     <View style={styles.sensor}>
+      <Text>Proximity:</Text>
+      <Text>Is close?: {proximityState ? "yes" : "no"}</Text>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity onPress={_toggle} style={styles.button}>
+          <Text>Toggle</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -89,6 +100,7 @@ const styles = StyleSheet.create({
 ## API
 
 ```js
+import { Proximity } from 'expo-sensors';
 ```
 
 ## Methods
@@ -102,14 +114,26 @@ Returns a promise which resolves into a boolean denoting the availability of the
 | OS      | Availability                |
 | ------- | --------------------------- |
 | iOS     | iOS 3+                      |
+| Android | Android ?.?+ (API Level ?+) |
 | Web     | `N/A`                       |
 
 #### Returns
 
 - A promise that resolves to a `boolean` denoting the availability of the sensor.
 
+### `Proximity.addListener((data: ProximityMeasurement) => void)`
+
+Subscribe for updates to the proximity sensor.
+
+```js
+const subscription = Proximity.addListener(({ proximityState }) => {
+  console.log({ proximityState });
+});
+```
+
 #### Arguments
 
+- **listener (_function_)** -- A callback that is invoked when a proximity sensor update is available. When invoked, the listener is provided a single argument that is an object containing: `proximityState: boolean` (_`isClose?`_).
 
 #### Returns
 
@@ -139,4 +163,6 @@ type ProximityMeasurement = {
 
 | OS      | Units        | Provider                                                                                                | Description                                                                                                                         |
 | ------- | ------------ | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| iOS     | _`isClose?`_ | [`UIDevice`](https://developer.apple.com/documentation/uikit/uidevice)                                  | Proximity sensor is part of the basic device sensors.                                                                               |
+| Android | _`?`_      | [`Sensor.TYPE_PRESSURE`](https://developer.android.com/reference/android/hardware/Sensor#TYPE_PRESSURE)   | Monitoring air pressure changes.                                                                                                    |
 | Web     | `N/A`        | `N/A`                                                                                                   | This sensor is not available on the web and cannot be accessed. An `UnavailabilityError` will be thrown if you attempt to get data. |

@@ -8,7 +8,4 @@ export default {
     startObserving() { },
     stopObserving() { },
 };
-////android
-////docs
-///example?
 //# sourceMappingURL=ExpoProximity.web.js.map
