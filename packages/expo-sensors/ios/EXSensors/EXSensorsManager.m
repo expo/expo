@@ -13,6 +13,7 @@
 @property (nonatomic, strong) NSMutableDictionary *gyroscopeHandlers;
 @property (nonatomic, strong) NSMutableDictionary *magnetometerHandlers;
 @property (nonatomic, strong) NSMutableDictionary *magnetometerUncalibratedHandlers;
+@property (nonatomic, strong) NSMutableDictionary *proximityHandlers;
 
 @end
 
@@ -22,7 +23,7 @@ UM_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(UMAccelerometerInterface), @protocol(UMBarometerInterface), @protocol(UMDeviceMotionInterface), @protocol(UMGyroscopeInterface), @protocol(UMMagnetometerInterface), @protocol(UMMagnetometerUncalibratedInterface)];
+  return @[@protocol(UMAccelerometerInterface), @protocol(UMBarometerInterface), @protocol(UMDeviceMotionInterface), @protocol(UMGyroscopeInterface), @protocol(UMMagnetometerInterface), @protocol(UMMagnetometerUncalibratedInterface), @protocol(UMProximityInterface)];
 }
 
 - (instancetype)init
@@ -34,6 +35,7 @@ UM_REGISTER_MODULE();
     _gyroscopeHandlers = [[NSMutableDictionary alloc] init];
     _magnetometerHandlers = [[NSMutableDictionary alloc] init];
     _magnetometerUncalibratedHandlers = [[NSMutableDictionary alloc] init];
+    _proximityHandlers = [[NSMutableDictionary alloc] init];
   }
   return self;
 }
@@ -284,6 +286,27 @@ UM_REGISTER_MODULE();
 - (BOOL)isMagnetometerUncalibratedAvailable
 {
   return [[self manager] isMagnetometerAvailable];
+}
+
+  }];
+}
+
+- (void)sensorModuleDidUnsubscribeForProximityUpdates:(id)scopedSensorModule
+{
+  [_proximityHandlers removeObjectForKey:scopedSensorModule];
+  if (_proximityHandlers.count == 0) {
+	[[UIDevice currentDevice] setProximityMonitoringEnabled:@NO];
+  }
+}
+
+- (void)setProximityUpdateInterval:(NSTimeInterval)intervalMs
+{
+  // Do nothing
+}
+
+- (BOOL)isProximityAvailable
+{
+  return @YES;
 }
 
 - (float)getGravity
