@@ -8,6 +8,7 @@
 #import <UMSensorsInterface/UMGyroscopeInterface.h>
 #import <UMSensorsInterface/UMMagnetometerInterface.h>
 #import <UMSensorsInterface/UMMagnetometerUncalibratedInterface.h>
+#import <UMSensorsInterface/UMProximityInterface.h>
 
 @protocol EXSensorsManagerBindingDelegate
 
@@ -37,16 +38,20 @@
 - (void)sensorModuleDidUnsubscribeForBarometerUpdatesOfExperience:(NSString *)experienceId;
 - (void)setBarometerUpdateInterval:(NSTimeInterval)intervalMs;
 
+- (void)sensorModuleDidSubscribeForProximityUpdatesOfExperience:(NSString *)experienceId withHandler:(void (^)(NSDictionary *event))handlerBlock;
+- (void)sensorModuleDidUnsubscribeForProximityUpdatesOfExperience:(NSString *)experienceId;
+
 - (BOOL)isBarometerAvailable;
 - (BOOL)isAccelerometerAvailable;
 - (BOOL)isDeviceMotionAvailable;
 - (BOOL)isGyroAvailable;
 - (BOOL)isMagnetometerAvailable;
 - (BOOL)isMagnetometerUncalibratedAvailable;
+- (BOOL)isProximityAvailable;
 
 @end
 
-@interface EXSensorsManagerBinding : NSObject <UMInternalModule, UMAccelerometerInterface, UMBarometerInterface, UMDeviceMotionInterface, UMGyroscopeInterface, UMMagnetometerInterface, UMMagnetometerUncalibratedInterface>
+@interface EXSensorsManagerBinding : NSObject <UMInternalModule, UMAccelerometerInterface, UMBarometerInterface, UMDeviceMotionInterface, UMGyroscopeInterface, UMMagnetometerInterface, UMMagnetometerUncalibratedInterface, UMProximityInterface>
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId andKernelService:(id<EXSensorsManagerBindingDelegate>)kernelService;
 

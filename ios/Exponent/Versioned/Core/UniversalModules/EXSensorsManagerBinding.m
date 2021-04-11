@@ -44,6 +44,10 @@
   [_kernelService sensorModuleDidSubscribeForBarometerUpdatesOfExperience:_experienceId withHandler:handlerBlock];
 }
 
+- (void)sensorModuleDidSubscribeForProximityUpdates:(id)scopedSensorModule withHandler:(void (^)(NSDictionary *))handlerBlock {
+  [_kernelService sensorModuleDidSubscribeForProximityUpdatesOfExperience:_experienceId withHandler:handlerBlock];
+}
+
 - (void)sensorModuleDidUnsubscribeForAccelerometerUpdates:(id)scopedSensorModule {
   [_kernelService sensorModuleDidUnsubscribeForAccelerometerUpdatesOfExperience:_experienceId];
 }
@@ -66,6 +70,10 @@
 
 - (void)sensorModuleDidUnsubscribeForBarometerUpdates:(id)scopedSensorModule {
   [_kernelService sensorModuleDidUnsubscribeForBarometerUpdatesOfExperience:_experienceId];
+}
+
+- (void)sensorModuleDidUnsubscribeForProximityUpdates:(id)scopedSensorModule {
+  [_kernelService sensorModuleDidUnsubscribeForProximityUpdatesOfExperience:_experienceId];
 }
 
 - (void)setAccelerometerUpdateInterval:(NSTimeInterval)intervalMs {
@@ -120,9 +128,13 @@
   return [_kernelService isBarometerAvailable];
 }
 
+- (BOOL)isProximityAvailable {
+  return [_kernelService isProximityAvailable];
+}
+
 
 + (const NSArray<Protocol *> *)exportedInterfaces {
-  return @[@protocol(UMAccelerometerInterface), @protocol(UMBarometerInterface),  @protocol(UMDeviceMotionInterface), @protocol(UMGyroscopeInterface), @protocol(UMMagnetometerInterface), @protocol(UMMagnetometerUncalibratedInterface)];
+  return @[@protocol(UMAccelerometerInterface), @protocol(UMBarometerInterface),  @protocol(UMDeviceMotionInterface), @protocol(UMGyroscopeInterface), @protocol(UMMagnetometerInterface), @protocol(UMMagnetometerUncalibratedInterface), @protocol(UMProximityInterface)];
 }
 
 @end
