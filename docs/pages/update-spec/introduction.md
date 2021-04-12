@@ -28,7 +28,7 @@ An app running a conformant EAS Update client will load the most recent update s
 
 In order to obtain an `update`:
 1. The client makes a [request](#request). 
-2. If the response body is a new manifest (checking the manifest ID is sufficient) it proceeds to download and store the assets refenced by the manifest.
+2. If the response body is a new manifest (checking the manifest ID is sufficient) it proceeds to download and store the assets referenced by the manifest.
 3. The client updates the local state according to any metadata provided by the response [headers](#headers)
 
 We anticipate the primary user of this spec will be companies who need to manage their own update server to satisfy internal requirements.
@@ -63,7 +63,7 @@ A conformant server MUST return a body containing the [manifest](#manifest) alon
 
 The choice of manifest and headers are dependent on the values of the request headers. A conformant server MUST:
 
-* Return a manifest that describes an `update` capable of running on the platform and runtime version specifice in the `expo-platform` and `expo-runtime-version` request headers. 
+* Return a manifest that describes an `update` capable of running on the platform and runtime version specific in the `expo-platform` and `expo-runtime-version` request headers. 
 * Return a `manifest` that describes the most recent, sorted by creation time, `update` satisfying the constraints imposed by:
   * The `expo-channel-name` 
   * Server defined headers such as `expo-rollout-token`
