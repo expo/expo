@@ -41,6 +41,9 @@ export type TypeDefinitionTypesData = {
   type: string;
   name?: string;
   value?: string | null;
+  elementType?: {
+    name: string;
+  };
 };
 
 export type MethodParamData = {
