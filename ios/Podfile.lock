@@ -1079,9 +1079,6 @@ PODS:
     - DoubleConversion
     - Folly (= 2020.01.13.00)
     - glog
-  - ABI40_0_0stripe-react-native (0.1.0):
-    - ABI40_0_0React
-    - Stripe (~> 21.3.1)
   - ABI40_0_0UMAppLoader (1.4.0)
   - ABI40_0_0UMBarCodeScannerInterface (5.4.0)
   - ABI40_0_0UMCameraInterface (5.4.0)
@@ -2362,12 +2359,12 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
-  - Stripe (21.3.1):
-    - Stripe/Stripe3DS2 (= 21.3.1)
-  - stripe-react-native (0.1.0):
+  - Stripe (21.4.0):
+    - Stripe/Stripe3DS2 (= 21.4.0)
+  - stripe-react-native (0.0.1):
     - React
-    - Stripe (~> 21.3.1)
-  - Stripe/Stripe3DS2 (21.3.1)
+    - Stripe (~> 21.4.0)
+  - Stripe/Stripe3DS2 (21.4.0)
   - UMAppLoader (2.1.0)
   - UMBarCodeScannerInterface (6.1.0):
     - UMCore
@@ -2590,7 +2587,6 @@ DEPENDENCIES:
   - ABI40_0_0React-RCTText (from `./versioned-react-native/ABI40_0_0/ReactNative/Libraries/Text`)
   - ABI40_0_0React-RCTVibration (from `./versioned-react-native/ABI40_0_0/ReactNative/Libraries/Vibration`)
   - ABI40_0_0ReactCommon/turbomodule/core (from `./versioned-react-native/ABI40_0_0/ReactNative/ReactCommon`)
-  - ABI40_0_0stripe-react-native (from `./vendored/sdk40/stripe-react-native`)
   - ABI40_0_0UMAppLoader (from `./versioned-react-native/ABI40_0_0/Expo/UMAppLoader`)
   - ABI40_0_0UMBarCodeScannerInterface (from `./versioned-react-native/ABI40_0_0/Expo/UMBarCodeScannerInterface`)
   - ABI40_0_0UMCameraInterface (from `./versioned-react-native/ABI40_0_0/Expo/UMCameraInterface`)
@@ -3239,8 +3235,6 @@ EXTERNAL SOURCES:
     :path: "./versioned-react-native/ABI40_0_0/ReactNative/Libraries/Vibration"
   ABI40_0_0ReactCommon:
     :path: "./versioned-react-native/ABI40_0_0/ReactNative/ReactCommon"
-  ABI40_0_0stripe-react-native:
-    :path: "./vendored/sdk40/stripe-react-native"
   ABI40_0_0UMAppLoader:
     :path: "./versioned-react-native/ABI40_0_0/Expo/UMAppLoader"
   ABI40_0_0UMBarCodeScannerInterface:
@@ -3870,7 +3864,6 @@ SPEC CHECKSUMS:
   ABI40_0_0React-RCTText: 751f8dc0a38a065ecbb4959e34f245ded6201789
   ABI40_0_0React-RCTVibration: 0af914d4561424079b59183d2076cbfe6b2b7128
   ABI40_0_0ReactCommon: 7e3a8173b14b84ac4b394039608c65bd88d1feae
-  ABI40_0_0stripe-react-native: 8d57236c0a1351ddbc12821b898a1de04686dcee
   ABI40_0_0UMAppLoader: eeeacd3776104df35437d16de391ace93f17b8b9
   ABI40_0_0UMBarCodeScannerInterface: 2d09dae6750fed3905dfe141db7ec62f7215f90f
   ABI40_0_0UMCameraInterface: 13e29848bcf4dd9c77ebcd1117836a8781b1c4dc
@@ -4112,8 +4105,8 @@ SPEC CHECKSUMS:
   React-RCTVibration: 4d2e726957f4087449739b595f107c0d4b6c2d2d
   ReactCommon: a0a1edbebcac5e91338371b72ffc66aa822792ce
   RNReanimated: 5231286440b796e09df3bfa5c1b12b02bfe07664
-  Stripe: 326a2160ac541eeffafb8b1aa0c9712e3ce8cec7
-  stripe-react-native: 6baf1bf9563841a91c48641c085f06105d3439be
+  Stripe: 7c594b943abb65cf7bc28e37fd5124e65db3ce9e
+  stripe-react-native: 9fa058090df5fc0d3704dce40ffe5233426e834b
   UMAppLoader: fe2708bb0ac5cd70052bc207d06aa3b7e72b9e97
   UMBarCodeScannerInterface: 79f92bea5f7af39b381a4c82298105ceb537408a
   UMConstantsInterface: bb94dd46039dcde276ed50225b29e22785e604bf
