@@ -8,7 +8,6 @@ export default function usePermissions(
   React.useEffect(() => {
     async function askAsync() {
       const response = await permissionRequester();
-      console.log('PERMISSION: ', response);
       setGranted(response.granted);
     }
 

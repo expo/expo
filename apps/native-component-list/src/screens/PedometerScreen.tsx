@@ -2,9 +2,9 @@ import { H2 } from '@expo/html-elements';
 import { Pedometer } from 'expo-sensors';
 import * as React from 'react';
 import { ScrollView, Text, View } from 'react-native';
-import usePermissions from '../utilities/usePermissions';
 
 import ListButton from '../components/ListButton';
+import usePermissions from '../utilities/usePermissions';
 import { useResolvedValue } from '../utilities/useResolvedValue';
 
 function usePedometer({ isActive }: { isActive: boolean }): Pedometer.PedometerResult | null {
@@ -90,7 +90,6 @@ function StepHistoryMessage() {
   );
 }
 
-
 export default function PedometerGuard() {
   const [isPermissionsGranted] = usePermissions(Pedometer.requestPermissionsAsync);
   const [isAvailable] = useResolvedValue(Pedometer.isAvailableAsync);
@@ -110,7 +109,7 @@ export default function PedometerGuard() {
       </View>
     );
   }
-  return <PedometerScreen />
+  return <PedometerScreen />;
 }
 
 function PedometerScreen() {
