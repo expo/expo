@@ -1,5 +1,6 @@
 import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
 import invariant from 'invariant';
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 
 import ExponentPedometer from './ExponentPedometer';
 
@@ -56,5 +57,30 @@ export async function getStepCountAsync(start: Date, end: Date): Promise<Pedomet
 export async function isAvailableAsync(): Promise<boolean> {
   return await ExponentPedometer.isAvailableAsync();
 }
+
+// @docsMissing
+export async function getPermissionsAsync(): Promise<PermissionResponse> {
+  if (!ExponentPedometer.getPermissionsAsync) {
+    return defaultPermissionsResponse;
+  } else {
+    return await ExponentPedometer.getPermissionsAsync();
+  }
+}
+
+// @docsMissing
+export async function requestPermissionsAsync(): Promise<PermissionResponse> {
+  if (!ExponentPedometer.requestPermissionsAsync) {
+    return defaultPermissionsResponse;
+  } else {
+    return await ExponentPedometer.requestPermissionsAsync();
+  }
+}
+
+const defaultPermissionsResponse: PermissionResponse = {
+  granted: true,
+  expires: 'never',
+  canAskAgain: true,
+  status: PermissionStatus.GRANTED,
+};
 
 export { Subscription };

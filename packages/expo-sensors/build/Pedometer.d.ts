@@ -1,4 +1,5 @@
 import { Subscription } from '@unimodules/core';
+import { PermissionResponse } from 'unimodules-permissions-interface';
 export declare type PedometerResult = {
     /**
      * Number of steps taken between the given dates.
@@ -31,4 +32,6 @@ export declare function getStepCountAsync(start: Date, end: Date): Promise<Pedom
  * available on this device.
  */
 export declare function isAvailableAsync(): Promise<boolean>;
+export declare function getPermissionsAsync(): Promise<PermissionResponse>;
+export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
 export { Subscription };
