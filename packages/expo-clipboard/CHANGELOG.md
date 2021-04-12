@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Fix clipboard getAsyncString crash on exception.
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
