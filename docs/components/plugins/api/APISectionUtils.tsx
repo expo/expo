@@ -55,6 +55,7 @@ export const resolveTypeName = ({
   type,
   types,
   typeArguments,
+  declaration,
 }: TypeDefinitionData): string | JSX.Element => {
   if (name) {
     if (type === 'reference') {
@@ -95,6 +96,8 @@ export const resolveTypeName = ({
         t.type === 'array' ? `${t.elementType?.name}[]` : `${t.name || t.value}`
       )
       .join(' | ');
+  } else if (declaration && declaration.signatures) {
+    return `() => ${resolveTypeName(declaration.signatures[0].type)}`;
   }
   return 'undefined';
 };
