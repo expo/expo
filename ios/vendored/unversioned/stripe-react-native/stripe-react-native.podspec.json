@@ -1,25 +1,22 @@
 {
   "name": "stripe-react-native",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "summary": "Stripe SDK for React Native",
-  "homepage": "http://callstack.com#readme",
+  "homepage": "https://github.com/stripe/stripe-react-native/#readme",
   "license": "MIT",
   "authors": "Stripe",
   "platforms": {
     "ios": "11.0"
   },
   "source": {
-    "git": "http://callstack.com.git",
-    "tag": "0.1.0"
+    "git": "https://github.com/stripe/stripe-react-native.git",
+    "tag": "0.0.1"
   },
   "source_files": "ios/**/*.{h,m,mm,swift}",
-  "pod_target_xcconfig": {
-    "HEADER_SEARCH_PATHS": "\"${PODS_XCFRAMEWORKS_BUILD_DIR}/Stripe3DS2/Headers\""
-  },
-  "swift_versions": "5.0",
   "dependencies": {
     "React": [],
-    "Stripe": ["~> 21.3.1"]
-  },
-  "swift_version": "5.0"
+    "Stripe": [
+      "~> 21.4.0"
+    ]
+  }
 }
