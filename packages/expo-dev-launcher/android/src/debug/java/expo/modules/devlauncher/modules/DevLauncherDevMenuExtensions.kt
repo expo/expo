@@ -23,7 +23,7 @@ class DevLauncherDevMenuExtensions(
 
   override fun devMenuItems(settings: DevMenuExtensionSettingsInterface): DevMenuItemsContainerInterface =
     DevMenuItemsContainer.export {
-      if (instance.mode == DevLauncherController.Mode.LAUNCHER) {
+      if (!DevLauncherController.wasInitialized() || instance.mode == DevLauncherController.Mode.LAUNCHER) {
         return@export
       }
 
