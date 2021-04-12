@@ -12,7 +12,7 @@ export default {
         // @ts-ignore
         text = window.clipboardData.getData('Text');
       } catch (e) {
-        Promise.reject(new Error('Unable to retrieve item from clipboard.'));
+        return Promise.reject(new Error('Unable to retrieve item from clipboard.'));
       }
     }
     return text;
