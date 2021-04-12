@@ -13,10 +13,11 @@
     "tag": "0.0.1"
   },
   "source_files": "ios/**/*.{h,m,mm,swift}",
+  "pod_target_xcconfig": {
+    "HEADER_SEARCH_PATHS": "\"${PODS_ROOT}/Stripe/Stripe3DS2\""
+  },
   "dependencies": {
     "React": [],
-    "Stripe": [
-      "~> 21.4.0"
-    ]
+    "Stripe": ["~> 21.4.0"]
   }
 }
