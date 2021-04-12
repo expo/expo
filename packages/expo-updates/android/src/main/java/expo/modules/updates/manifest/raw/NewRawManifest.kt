@@ -4,15 +4,15 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
-class NewRawManifest(json: String) : RawManifest(json) {
+class NewRawManifest(json: JSONObject) : RawManifest(json) {
   @Throws(JSONException::class)
-  fun getRuntimeVersion(): String = getString("runtimeVersion")
+  fun getRuntimeVersion(): String = json.getString("runtimeVersion")
 
   @Throws(JSONException::class)
-  fun getLaunchAsset(): JSONObject = getJSONObject("launchAsset")
+  fun getLaunchAsset(): JSONObject = json.getJSONObject("launchAsset")
 
-  override fun getAssets(): JSONArray? = optJSONArray("assets")
+  override fun getAssets(): JSONArray? = json.optJSONArray("assets")
 
   @Throws(JSONException::class)
-  fun getCreatedAt(): String = getString("createdAt")
+  fun getCreatedAt(): String = json.getString("createdAt")
 }

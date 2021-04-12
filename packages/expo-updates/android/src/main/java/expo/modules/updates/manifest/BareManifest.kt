@@ -38,7 +38,7 @@ class BareManifest private constructor(
   override val assetEntityList: List<AssetEntity> by lazy {
     val assetList = mutableListOf<AssetEntity>()
 
-    val bundleKey = "bundle-$mId";
+    val bundleKey = "bundle-$mId"
     val bundleAssetEntity = AssetEntity(bundleKey, "js").apply {
       isLaunchAsset = true
       embeddedAssetFilename = EmbeddedLoader.BARE_BUNDLE_FILENAME
@@ -86,7 +86,7 @@ class BareManifest private constructor(
       configuration: UpdatesConfiguration
     ): BareManifest {
       val id = UUID.fromString(rawManifest.getID())
-      val commitTime = Date(rawManifest.getCommitTime())
+      val commitTime = Date(rawManifest.getCommitTimeLong())
       val runtimeVersion = UpdatesUtils.getRuntimeVersion(configuration)
       val metadata = rawManifest.getMetadata()
       val assets = rawManifest.getAssets()

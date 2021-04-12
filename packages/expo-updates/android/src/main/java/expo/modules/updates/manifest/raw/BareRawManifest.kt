@@ -1,8 +1,9 @@
 package expo.modules.updates.manifest.raw
 
 import org.json.JSONException
+import org.json.JSONObject
 
-class BareRawManifest(json: String) : BaseLegacyRawManifest(json) {
+class BareRawManifest(json: JSONObject) : BaseLegacyRawManifest(json) {
   @Throws(JSONException::class)
-  fun getCommitTime(): Long = getLong("commitTime")
+  fun getCommitTimeLong(): Long = json.getLong("commitTime")
 }

@@ -21,6 +21,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.ExponentManifest;
 import abi41_0_0.host.exp.exponent.modules.internal.ExponentAsyncStorageModule;
 import abi41_0_0.host.exp.exponent.modules.internal.ExponentIntentModule;
@@ -41,14 +42,14 @@ import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;
 public class ExpoTurboPackage extends TurboReactPackage {
   private static final String TAG = ExpoTurboPackage.class.getSimpleName();
   private final Map<String, Object> mExperienceProperties;
-  private final JSONObject mManifest;
+  private final RawManifest mManifest;
 
-  public ExpoTurboPackage(Map<String, Object> experienceProperties, JSONObject manifest) {
+  public ExpoTurboPackage(Map<String, Object> experienceProperties, RawManifest manifest) {
     mExperienceProperties = experienceProperties;
     mManifest = manifest;
   }
 
-  public static ExpoTurboPackage kernelExpoTurboPackage(JSONObject manifest, @Nullable String initialURL) {
+  public static ExpoTurboPackage kernelExpoTurboPackage(RawManifest manifest, @Nullable String initialURL) {
     Map<String, Object> kernelExperienceProperties = new HashMap<>();
     kernelExperienceProperties.put(LINKING_URI_KEY, "exp://");
     kernelExperienceProperties.put(IS_HEADLESS_KEY, false);
@@ -68,7 +69,7 @@ public class ExpoTurboPackage extends TurboReactPackage {
   public NativeModule getModule(String name, ReactApplicationContext context) {
     boolean isVerified = false;
     if (mManifest != null) {
-      isVerified = mManifest.optBoolean(ExponentManifest.MANIFEST_IS_VERIFIED_KEY);
+      isVerified = mManifest.isVerified();
     }
     switch (name) {
       case ExponentAsyncStorageModule.NAME:

@@ -32,7 +32,7 @@ class LegacyManifest private constructor(
 
   override val updateEntity: UpdateEntity by lazy {
     UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey).apply {
-      metadata = rawManifestJson
+      metadata = rawManifestJson.getRawJson()
       if (isDevelopmentMode) {
         status = UpdateStatus.DEVELOPMENT
       }
@@ -129,7 +129,7 @@ class LegacyManifest private constructor(
       )
     }
 
-    internal fun getAssetsUrlBase(manifestUrl: Uri, manifestJson: JSONObject): Uri {
+    internal fun getAssetsUrlBase(manifestUrl: Uri, rawManifest: LegacyRawManifest): Uri {
       val hostname = manifestUrl.host
       return if (hostname == null) {
         Uri.parse(EXPO_ASSETS_URL_BASE)
@@ -143,7 +143,7 @@ class LegacyManifest private constructor(
         // assetUrlOverride may be an absolute or relative URL
         // if relative, we should resolve with respect to the manifest URL
         // java.net.URI's resolve method does this for us
-        val assetsPathOrUrl = manifestJson.optString("assetUrlOverride", "assets")
+        val assetsPathOrUrl = rawManifest.getAssetUrlOverride() ?: "assets"
         try {
           val assetsURI = URI(assetsPathOrUrl)
           val manifestURI = URI(manifestUrl.toString())

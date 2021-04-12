@@ -43,7 +43,7 @@ class NewManifest private constructor(
 
   override val updateEntity: UpdateEntity by lazy {
     UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey).apply {
-      metadata = rawManifestJson
+      metadata = rawManifestJson.getRawJson()
     }
   }
 
@@ -93,8 +93,8 @@ class NewManifest private constructor(
       configuration: UpdatesConfiguration
     ): NewManifest {
       var actualRawManifest = rawManifest
-      if (actualRawManifest.has("manifest")) {
-        actualRawManifest = actualRawManifest.getJSONObject("manifest") as NewRawManifest
+      if (actualRawManifest.getRawJson().has("manifest")) {
+        actualRawManifest = NewRawManifest(actualRawManifest.getRawJson().getJSONObject("manifest"))
       }
       val id = UUID.fromString(actualRawManifest.getID())
       val runtimeVersion = actualRawManifest.getRuntimeVersion()

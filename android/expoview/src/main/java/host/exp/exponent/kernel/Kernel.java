@@ -47,6 +47,9 @@ import de.greenrobot.event.EventBus;
 import expo.modules.notifications.notifications.model.NotificationResponse;
 import expo.modules.notifications.service.NotificationsService;
 import expo.modules.notifications.service.delegates.ExpoHandlingDelegate;
+import expo.modules.updates.manifest.Manifest;
+import expo.modules.updates.manifest.ManifestFactory;
+import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.ExpoUpdatesAppLoader;
 import host.exp.exponent.LauncherActivity;
 import host.exp.exponent.ReactNativeStaticHelpers;
@@ -301,9 +304,9 @@ public class Kernel extends KernelInterface {
               .setJSIModulesPackage((reactApplicationContext, jsContext) -> new ReanimatedJSIModulePackage().getJSIModules(reactApplicationContext, jsContext))
               .setInitialLifecycleState(LifecycleState.RESUMED);
 
-            if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE && mExponentManifest.isDebugModeEnabled(mExponentManifest.getKernelManifest())) {
-              Exponent.enableDeveloperSupport("UNVERSIONED", mExponentManifest.getKernelManifestField(ExponentManifest.MANIFEST_DEBUGGER_HOST_KEY),
-                  mExponentManifest.getKernelManifestField(ExponentManifest.MANIFEST_MAIN_MODULE_NAME_KEY), RNObject.wrap(builder));
+            if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE && mExponentManifest.getKernelManifest().isDevelopmentMode()) {
+              Exponent.enableDeveloperSupport("UNVERSIONED", getKernelDebuggerHost(),
+                  getKernelMainModuleName(), RNObject.wrap(builder));
             }
 
             mReactInstanceManager = builder.build();
@@ -334,12 +337,30 @@ public class Kernel extends KernelInterface {
     };
   }
 
+  private String getKernelDebuggerHost() {
+    return mExponentManifest.getKernelManifest().getDebuggerHost();
+  }
+
+  private String getKernelMainModuleName() {
+    return mExponentManifest.getKernelManifest().getMainModuleName();
+  }
+
   private String getBundleUrl() {
-    return mExponentManifest.getKernelManifestField(ExponentManifest.MANIFEST_BUNDLE_URL_KEY);
+    try {
+      return mExponentManifest.getKernelManifest().getBundleURL();
+    } catch (JSONException e) {
+      KernelProvider.getInstance().handleError(e);
+      return null;
+    }
   }
 
   private String getKernelRevisionId() {
-    return mExponentManifest.getKernelManifestField(ExponentManifest.MANIFEST_REVISION_ID_KEY);
+    try {
+      return mExponentManifest.getKernelManifest().getRevisionId();
+    } catch (JSONException e) {
+      KernelProvider.getInstance().handleError(e);
+      return null;
+    }
   }
 
   public Boolean isRunning() {
@@ -689,12 +710,12 @@ public class Kernel extends KernelInterface {
     if (existingTask == null) {
       new ExpoUpdatesAppLoader(manifestUrl, new ExpoUpdatesAppLoader.AppLoaderCallback() {
         @Override
-        public void onOptimisticManifest(final JSONObject optimisticManifest) {
+        public void onOptimisticManifest(final RawManifest optimisticManifest) {
           Exponent.getInstance().runOnUiThread(() -> sendOptimisticManifestToExperienceActivity(optimisticManifest));
         }
 
         @Override
-        public void onManifestCompleted(final JSONObject manifest) {
+        public void onManifestCompleted(final RawManifest manifest) {
           Exponent.getInstance().runOnUiThread(() -> {
             try {
               openManifestUrlStep2(manifestUrl, manifest, finalExistingTask);
@@ -739,12 +760,13 @@ public class Kernel extends KernelInterface {
     }
   }
 
-  private void openManifestUrlStep2(String manifestUrl, JSONObject manifest, ActivityManager.AppTask existingTask) throws JSONException {
-    String bundleUrl = ExponentUrls.toHttp(manifest.getString("bundleUrl"));
+  private void openManifestUrlStep2(String manifestUrl, RawManifest manifest, ActivityManager.AppTask existingTask) throws JSONException {
+    String bundleUrl = ExponentUrls.toHttp(manifest.getBundleURL());
     Kernel.ExperienceActivityTask task = getExperienceActivityTask(manifestUrl);
     task.bundleUrl = bundleUrl;
 
-    manifest = mExponentManifest.normalizeManifest(manifestUrl, manifest);
+    JSONObject manifestJSON = mExponentManifest.normalizeManifest(manifestUrl, manifest.getRawJson());
+    manifest = ManifestFactory.INSTANCE.getRawManifestFromJson(manifestJSON);
 
     JSONObject opts = new JSONObject();
 
@@ -891,7 +913,7 @@ public class Kernel extends KernelInterface {
     AsyncCondition.notify(KernelConstants.OPEN_EXPERIENCE_ACTIVITY_KEY);
   }
 
-  public void sendOptimisticManifestToExperienceActivity(final JSONObject optimisticManifest) {
+  public void sendOptimisticManifestToExperienceActivity(final RawManifest optimisticManifest) {
     AsyncCondition.wait(KernelConstants.OPEN_OPTIMISTIC_EXPERIENCE_ACTIVITY_KEY, new AsyncCondition.AsyncConditionListener() {
       @Override
       public boolean isReady() {
@@ -906,7 +928,7 @@ public class Kernel extends KernelInterface {
   }
 
   public void sendManifestToExperienceActivity(
-      final String manifestUrl, final JSONObject manifest, final String bundleUrl, final JSONObject kernelOptions) {
+      final String manifestUrl, final RawManifest manifest, final String bundleUrl, final JSONObject kernelOptions) {
     AsyncCondition.wait(KernelConstants.OPEN_EXPERIENCE_ACTIVITY_KEY, new AsyncCondition.AsyncConditionListener() {
       @Override
       public boolean isReady() {

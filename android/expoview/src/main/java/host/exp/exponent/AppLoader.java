@@ -2,11 +2,14 @@
 
 package host.exp.exponent;
 
+import androidx.annotation.Nullable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.inject.Inject;
 
+import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
@@ -31,8 +34,8 @@ public abstract class AppLoader {
   ExpoHandler mExpoHandler;
 
   private String mManifestUrl;
-  private JSONObject mCachedManifest;
-  private JSONObject mManifest;
+  private RawManifest mCachedManifest;
+  private RawManifest mManifest;
   private String mLocalBundlePath;
   private boolean hasResolved = false;
   private final boolean mUseCacheOnly;
@@ -70,7 +73,7 @@ public abstract class AppLoader {
     if (!Constants.ARE_REMOTE_UPDATES_ENABLED && !ExpoViewBuildConfig.DEBUG) {
       mExponentManifest.fetchEmbeddedManifest(mManifestUrl, new ExponentManifest.ManifestListener() {
         @Override
-        public void onCompleted(JSONObject manifest) {
+        public void onCompleted(RawManifest manifest) {
           mManifest = manifest;
           fetchJSBundle(true, true);
         }
@@ -90,22 +93,20 @@ public abstract class AppLoader {
 
     boolean isFetchingCachedManifest = mExponentManifest.fetchCachedManifest(mManifestUrl, new ExponentManifest.ManifestListener() {
       @Override
-      public void onCompleted(JSONObject manifest) {
+      public void onCompleted(RawManifest manifest) {
         mCachedManifest = manifest;
 
         boolean shouldCheckForUpdate = true;
         int fallbackToCacheTimeout = DEFAULT_TIMEOUT_LENGTH;
-        String manifestSdkVersion = null;
 
         try {
           // another check in case dev mode check failed before
-          if (ExponentManifest.isDebugModeEnabled(mCachedManifest)) {
+          if (mCachedManifest.isDevelopmentMode()) {
             fetchRemoteManifest();
             return;
           }
-          String experienceId = mCachedManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
-          manifestSdkVersion = mCachedManifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY, null);
-          JSONObject updatesManifest = mCachedManifest.optJSONObject(ExponentManifest.MANIFEST_UPDATES_INFO_KEY);
+          String experienceId = mCachedManifest.getID();
+          @Nullable JSONObject updatesManifest = mCachedManifest.getUpdatesInfo();
           if (updatesManifest != null) {
             String checkAutomaticallyBehavior = updatesManifest.optString(ExponentManifest.MANIFEST_UPDATES_CHECK_AUTOMATICALLY_KEY, ExponentManifest.MANIFEST_UPDATES_CHECK_AUTOMATICALLY_ON_LOAD);
             if (checkAutomaticallyBehavior.equals(ExponentManifest.MANIFEST_UPDATES_CHECK_AUTOMATICALLY_ON_ERROR)) {
@@ -160,9 +161,9 @@ public abstract class AppLoader {
     }
   }
 
-  public abstract void onOptimisticManifest(JSONObject optimisticManifest);
+  public abstract void onOptimisticManifest(RawManifest optimisticManifest);
 
-  public abstract void onManifestCompleted(JSONObject manifest);
+  public abstract void onManifestCompleted(RawManifest manifest);
 
   public abstract void onBundleCompleted(String localBundlePath);
 
@@ -185,11 +186,11 @@ public abstract class AppLoader {
   public void fetchRemoteManifest() {
     mExponentManifest.fetchManifest(mManifestUrl, new ExponentManifest.ManifestListener() {
       @Override
-      public void onCompleted(JSONObject manifest) {
+      public void onCompleted(RawManifest manifest) {
         mManifest = manifest;
         // don't send manifest for loading screen in dev mode, as loading screen is handled
         // separately by RN activity in this case
-        if (!ExponentManifest.isDebugModeEnabled(manifest) && !hasResolved) {
+        if (!mManifest.isDevelopmentMode() && !hasResolved) {
           onOptimisticManifest(manifest);
         }
         fetchJSBundle(false);
@@ -226,7 +227,7 @@ public abstract class AppLoader {
 
       String bundleUrl;
       try {
-        bundleUrl = ExponentUrls.toHttp(mManifest.getString(ExponentManifest.MANIFEST_BUNDLE_URL_KEY));
+        bundleUrl = ExponentUrls.toHttp(mManifest.getBundleURL());
       } catch (JSONException ex) {
         onError(ex);
         return;
@@ -240,7 +241,7 @@ public abstract class AppLoader {
       onManifestCompleted(mManifest);
       // prevent a weird race condition in dev mode by checking here
       // we don't want to resolve the bundle anyway in dev mode because downloading is handled by the RN Activity
-      if (!ExponentManifest.isDebugModeEnabled(mManifest)) {
+      if (!mManifest.isDevelopmentMode()) {
         onBundleCompleted(mLocalBundlePath);
       }
     } else if (mCachedManifest != null) {
@@ -265,7 +266,7 @@ public abstract class AppLoader {
 
   private void fetchJSBundle(final boolean forceCache, final boolean shouldFailOnError) {
     // if in dev mode, do not fetch a JS bundle here, as that is handled entirely by internal RN
-    if (ExponentManifest.isDebugModeEnabled(mManifest)) {
+    if (mManifest.isDevelopmentMode()) {
       mLocalBundlePath = "";
       resolve();
       return;
@@ -274,20 +275,20 @@ public abstract class AppLoader {
     try {
       String oldBundleUrl = null;
       try {
-        JSONObject oldManifest = mExponentSharedPreferences.getManifest(mManifestUrl).manifest;
-        oldBundleUrl = oldManifest.getString(ExponentManifest.MANIFEST_BUNDLE_URL_KEY);
+        RawManifest oldManifest = mExponentSharedPreferences.getManifest(mManifestUrl).manifest;
+        oldBundleUrl = oldManifest.getBundleURL();
       } catch (Throwable e) {
         EXL.e(TAG, "Couldn't get old manifest from shared preferences");
       }
       final String finalOldBundleUrl = oldBundleUrl;
 
       try {
-        String bundleUrl = mManifest.getString(ExponentManifest.MANIFEST_BUNDLE_URL_KEY);
+        String bundleUrl = mManifest.getBundleURL();
         final boolean wasUpdated = !bundleUrl.equals(finalOldBundleUrl);
-        String id = mManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
-        String sdkVersion = mManifest.getString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
+        String id = mManifest.getID();
+        String sdkVersion = mManifest.getSDKVersion();
 
-        final JSONObject finalManifest = mManifest;
+        final RawManifest finalManifest = mManifest;
 
         Exponent.getInstance().loadJSBundle(mManifest, bundleUrl, Exponent.getInstance().encodeExperienceId(id), sdkVersion, new Exponent.BundleListener() {
           @Override
@@ -324,7 +325,7 @@ public abstract class AppLoader {
               try {
                 if (wasUpdated) {
                   params.put("type", UPDATE_DOWNLOAD_FINISHED_EVENT);
-                  params.put("manifestString", finalManifest.toString());
+                  params.put("manifestString", finalManifest.getRawJson().toString());
                 } else {
                   params.put("type", UPDATE_NO_UPDATE_AVAILABLE_EVENT);
                 }
