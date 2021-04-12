@@ -8,6 +8,7 @@ import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.db.enums.UpdateStatus
 import expo.modules.updates.loader.EmbeddedLoader
+import expo.modules.updates.manifest.raw.LegacyRawManifest
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -16,13 +17,12 @@ import java.text.ParseException
 import java.util.*
 
 class LegacyManifest private constructor(
-  override val rawManifestJson: JSONObject,
+  override val rawManifestJson: LegacyRawManifest,
   private val mManifestUrl: Uri,
   private val mId: UUID,
   private val mScopeKey: String,
   private val mCommitTime: Date,
   private val mRuntimeVersion: String?,
-  private val mMetadata: JSONObject,
   private val mBundleUrl: Uri,
   private val mAssets: JSONArray?
 ) : Manifest {
@@ -32,7 +32,7 @@ class LegacyManifest private constructor(
 
   override val updateEntity: UpdateEntity by lazy {
     UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey).apply {
-      metadata = mMetadata
+      metadata = rawManifestJson
       if (isDevelopmentMode) {
         status = UpdateStatus.DEVELOPMENT
       }
@@ -41,11 +41,11 @@ class LegacyManifest private constructor(
 
   override val assetEntityList: List<AssetEntity> by lazy {
     val assetList = mutableListOf<AssetEntity>()
-    val bundleKey = rawManifestJson.optString("bundleKey", null)
+    val bundleKey = rawManifestJson.getBundleKey()
     assetList.add(AssetEntity(bundleKey, "js").apply {
-        url = mBundleUrl
-        isLaunchAsset = true
-        embeddedAssetFilename = EmbeddedLoader.BUNDLE_FILENAME
+      url = mBundleUrl
+      isLaunchAsset = true
+      embeddedAssetFilename = EmbeddedLoader.BUNDLE_FILENAME
     })
 
     if (mAssets != null && mAssets.length() > 0) {
@@ -55,13 +55,13 @@ class LegacyManifest private constructor(
           val extensionIndex = bundledAsset.lastIndexOf('.')
           val prefixLength = "asset_".length
           val hash = if (extensionIndex > 0) bundledAsset.substring(
-              prefixLength,
-              extensionIndex
+            prefixLength,
+            extensionIndex
           ) else bundledAsset.substring(prefixLength)
           val type = if (extensionIndex > 0) bundledAsset.substring(extensionIndex + 1) else ""
           assetList.add(AssetEntity("$hash.$type", type).apply {
-              url = Uri.withAppendedPath(assetsUrlBase, hash)
-              embeddedAssetFilename = bundledAsset
+            url = Uri.withAppendedPath(assetsUrlBase, hash)
+            embeddedAssetFilename = bundledAsset
           })
         } catch (e: JSONException) {
           Log.e(TAG, "Could not read asset from manifest", e)
@@ -76,7 +76,7 @@ class LegacyManifest private constructor(
   }
 
   override val isDevelopmentMode: Boolean by lazy {
-    isDevelopmentMode(rawManifestJson)
+    rawManifestJson.isDevelopmentMode()
   }
 
   companion object {
@@ -86,19 +86,19 @@ class LegacyManifest private constructor(
     private val EXPO_DOMAINS = arrayOf("expo.io", "exp.host", "expo.test")
 
     @Throws(JSONException::class)
-    fun fromLegacyManifestJson(
-      manifestJson: JSONObject,
+    fun fromLegacyRawManifest(
+      rawManifest: LegacyRawManifest,
       configuration: UpdatesConfiguration
     ): LegacyManifest {
       val id: UUID
       val commitTime: Date
-      if (isUsingDeveloperTool(manifestJson)) {
+      if (rawManifest.isUsingDeveloperTool()) {
         // xdl doesn't always serve a releaseId, but we don't need one in dev mode
         id = UUID.randomUUID()
         commitTime = Date()
       } else {
-        id = UUID.fromString(manifestJson.getString("releaseId"))
-        val commitTimeString = manifestJson.getString("commitTime")
+        id = UUID.fromString(rawManifest.getReleaseId())
+        val commitTimeString = rawManifest.getCommitTime()
         commitTime = try {
           UpdatesUtils.parseDateString(commitTimeString)
         } catch (e: ParseException) {
@@ -106,8 +106,8 @@ class LegacyManifest private constructor(
           Date()
         }
       }
-      var runtimeVersion = manifestJson.getString("sdkVersion")
-      val runtimeVersionObject = manifestJson.opt("runtimeVersion")
+      var runtimeVersion = rawManifest.getSDKVersion()
+      val runtimeVersionObject = rawManifest.getRuntimeVersion()
       if (runtimeVersionObject != null) {
         if (runtimeVersionObject is String) {
           runtimeVersion = runtimeVersionObject
@@ -115,18 +115,17 @@ class LegacyManifest private constructor(
           runtimeVersion = runtimeVersionObject.optString("android", runtimeVersion)
         }
       }
-      val bundleUrl = Uri.parse(manifestJson.getString("bundleUrl"))
-      val bundledAssets = manifestJson.optJSONArray("bundledAssets")
+      val bundleUrl = Uri.parse(rawManifest.getBundleURL())
+      val bundledAssets = rawManifest.getBundledAssets()
       return LegacyManifest(
-          manifestJson,
-          configuration.updateUrl,
-          id,
-          configuration.scopeKey,
-          commitTime,
-          runtimeVersion,
-          manifestJson,
-          bundleUrl,
-          bundledAssets
+        rawManifest,
+        configuration.updateUrl,
+        id,
+        configuration.scopeKey,
+        commitTime,
+        runtimeVersion,
+        bundleUrl,
+        bundledAssets
       )
     }
 
@@ -153,25 +152,6 @@ class LegacyManifest private constructor(
           Log.e(TAG, "Failed to parse assetUrlOverride, falling back to default asset path", e)
           manifestUrl.buildUpon().appendPath("assets").build()
         }
-      }
-    }
-
-    private fun isDevelopmentMode(manifest: JSONObject): Boolean {
-      return try {
-        manifest.has("developer") &&
-            manifest.has("packagerOpts") &&
-            manifest.getJSONObject("packagerOpts").optBoolean("dev", false)
-      } catch (e: JSONException) {
-        false
-      }
-    }
-
-    private fun isUsingDeveloperTool(manifest: JSONObject): Boolean {
-      return try {
-        manifest.has("developer") &&
-            manifest.getJSONObject("developer").has("tool")
-      } catch (e: JSONException) {
-        false
       }
     }
   }
