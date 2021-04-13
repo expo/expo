@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Account for rubocop formatting in plugin. ([#12480](https://github.com/expo/expo/pull/12480) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix misspellings in READMEs. ([#12346](https://github.com/expo/expo/pull/12346) by [@wschurman](https://github.com/wschurman))
 
 ## 0.3.0 — 2021-03-24
