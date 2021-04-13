@@ -182,6 +182,7 @@ PODS:
     - UMCore
   - EXSensors (10.1.1):
     - UMCore
+    - UMPermissionsInterface
     - UMSensorsInterface
   - EXSharing (9.1.1):
     - UMCore
@@ -1278,7 +1279,7 @@ SPEC CHECKSUMS:
   EXScreenOrientation: 4d9ec57c73055c8a4dbf9dd85def4db29b690a91
   EXSecureStore: da5a255445bb6ee8b8ac54f65412bc803272bd87
   EXSegment: b63005c6acabf063a641fd0428c2f47b9822c432
-  EXSensors: aff4a5af03412704289b874fbaa40e4144be54f1
+  EXSensors: d3c0a12ee49f0b9fc9f0138d7480f70e72474e52
   EXSharing: 41bebc118494745f1dccbeb581e65262d180d7e5
   EXSMS: 737cdadf97f24768e774ccddea1fab02f652b067
   EXSpeech: 010826dbfa8287358a05bbd59b44d620266806e3

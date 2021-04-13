@@ -1,5 +1,6 @@
 import { EventEmitter, UnavailabilityError } from '@unimodules/core';
 import invariant from 'invariant';
+import { PermissionStatus } from 'unimodules-permissions-interface';
 import ExponentPedometer from './ExponentPedometer';
 const PedometerEventEmitter = new EventEmitter(ExponentPedometer);
 // @needsAudit
@@ -40,4 +41,28 @@ export async function getStepCountAsync(start, end) {
 export async function isAvailableAsync() {
     return await ExponentPedometer.isAvailableAsync();
 }
+// @docsMissing
+export async function getPermissionsAsync() {
+    if (!ExponentPedometer.getPermissionsAsync) {
+        return defaultPermissionsResponse;
+    }
+    else {
+        return await ExponentPedometer.getPermissionsAsync();
+    }
+}
+// @docsMissing
+export async function requestPermissionsAsync() {
+    if (!ExponentPedometer.requestPermissionsAsync) {
+        return defaultPermissionsResponse;
+    }
+    else {
+        return await ExponentPedometer.requestPermissionsAsync();
+    }
+}
+const defaultPermissionsResponse = {
+    granted: true,
+    expires: 'never',
+    canAskAgain: true,
+    status: PermissionStatus.GRANTED,
+};
 //# sourceMappingURL=Pedometer.js.map

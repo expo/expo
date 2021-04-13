@@ -4,6 +4,7 @@ import * as React from 'react';
 import { ScrollView, Text, View } from 'react-native';
 
 import ListButton from '../components/ListButton';
+import usePermissions from '../utilities/usePermissions';
 import { useResolvedValue } from '../utilities/useResolvedValue';
 
 function usePedometer({ isActive }: { isActive: boolean }): Pedometer.PedometerResult | null {
@@ -89,18 +90,29 @@ function StepHistoryMessage() {
   );
 }
 
-export default function PedometerScreen() {
-  const [value] = useResolvedValue(Pedometer.isAvailableAsync);
+export default function PedometerGuard() {
+  const [isPermissionsGranted] = usePermissions(Pedometer.requestPermissionsAsync);
+  const [isAvailable] = useResolvedValue(Pedometer.isAvailableAsync);
 
-  if (value === null) {
+  if (isAvailable === null) {
     return null;
-  } else if (value === false) {
+  }
+
+  if (!isPermissionsGranted || !isAvailable) {
+    // this can also occur if the device doesn't have a pedometer
+    const message = isAvailable
+      ? 'You have not granted permission to use the device motion on this device!'
+      : 'Your device does not have a pedometer';
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Pedometer is not available on this platform</Text>
+      <View style={{ flex: 1, justifyContent: 'center', padding: 24, alignItems: 'center' }}>
+        <Text>{message}</Text>
       </View>
     );
   }
+  return <PedometerScreen />;
+}
+
+function PedometerScreen() {
   return (
     <ScrollView>
       <StepTrackerView />
@@ -109,6 +121,6 @@ export default function PedometerScreen() {
   );
 }
 
-PedometerScreen.navigationOptions = {
+PedometerGuard.navigationOptions = {
   title: 'Pedometer',
 };
