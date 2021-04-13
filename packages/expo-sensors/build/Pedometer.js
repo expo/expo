@@ -7,7 +7,7 @@ const PedometerEventEmitter = new EventEmitter(ExponentPedometer);
  * Subscribe to pedometer updates.
  * @param callback A callback that is invoked when new step count data is available. The callback is
  * provided with a single argument that is [`PedometerResult`](#pedometerresult).
- * @return Returns a [`PedometerListener`](#pedometerlistener) interface that enables you to call
+ * @return Returns a [`Subscription`](#subscription) that enables you to call
  * `remove()` when you would like to unsubscribe the listener.
  */
 export function watchStepCount(callback) {
