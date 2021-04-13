@@ -15,6 +15,7 @@ if (!ExpoFirebaseAnalytics) {
 let pureJSAnalyticsTracker: FirebaseAnalyticsJS | void;
 let isUnavailabilityLoggingEnabled = true;
 let isUnavailabilityWarningLogged = false;
+let clientIdForJS: string;
 
 function callAnalyticsModule(funcName: string, ...args) {
   if (!ExpoFirebaseAnalytics[funcName]) {
@@ -47,19 +48,8 @@ function callAnalyticsModule(funcName: string, ...args) {
   // In that case we show a warning and log the analytics events to the console.
   // The user can disable these by calling `setUnavailabilityLogging(false)`.
   if (DEFAULT_APP_NAME !== '[DEFAULT]') {
-    if (DEFAULT_WEB_APP_OPTIONS && !pureJSAnalyticsTracker) {
-      pureJSAnalyticsTracker = new FirebaseAnalyticsJS(DEFAULT_WEB_APP_OPTIONS, {
-        clientId: Constants.installationId,
-        sessionId: Constants.sessionId,
-        strictNativeEmulation: true,
-        appName: Constants.manifest?.name || 'Unnamed Expo project',
-        appVersion: Constants.nativeAppVersion || undefined,
-        headers: {
-          // Google Analaytics seems to ignore certain user-agents. (e.g. "okhttp/3.12.1")
-          // Set a user-agent that clearly identifies the Expo client.
-          'user-agent': `Expo/${Constants.nativeAppVersion}`,
-        },
-      });
+    if (!pureJSAnalyticsTracker) {
+      maybeCreatePureJSAnalyticsTracker();
     }
     if (pureJSAnalyticsTracker) {
       return pureJSAnalyticsTracker[funcName].call(pureJSAnalyticsTracker, ...args);
@@ -78,6 +68,23 @@ function callAnalyticsModule(funcName: string, ...args) {
 
   // Make the call
   return ExpoFirebaseAnalytics[funcName].call(ExpoFirebaseAnalytics, ...args);
+}
+
+function maybeCreatePureJSAnalyticsTracker() {
+  if (DEFAULT_APP_NAME !== '[DEFAULT]' && DEFAULT_WEB_APP_OPTIONS) {
+    pureJSAnalyticsTracker = new FirebaseAnalyticsJS(DEFAULT_WEB_APP_OPTIONS, {
+      clientId: clientIdForJS ?? Constants.installationId,
+      sessionId: Constants.sessionId,
+      strictNativeEmulation: true,
+      appName: Constants.manifest?.name || 'Unnamed Expo project',
+      appVersion: Constants.nativeAppVersion || undefined,
+      headers: {
+        // Google Analaytics seems to ignore certain user-agents. (e.g. "okhttp/3.12.1")
+        // Set a user-agent that clearly identifies the Expo client.
+        'user-agent': `Expo/${Constants.nativeAppVersion}`,
+      },
+    });
+  }
 }
 
 export default {
@@ -110,5 +117,9 @@ export default {
   },
   async setDebugModeEnabled(isEnabled: boolean): Promise<void> {
     return callAnalyticsModule('setDebugModeEnabled', isEnabled);
+  },
+  setClientId(clientId: string): void {
+    clientIdForJS = clientId;
+    maybeCreatePureJSAnalyticsTracker();
   },
 };

@@ -301,6 +301,22 @@ on Expo Go.
 Analytics.setUnavailabilityLogging(false);
 ```
 
+### setClientId
+
+```tsx
+setClientId(clientId: string): void
+```
+
+_(Expo Go only)_ Sets the clientId to the given value.
+
+By default, the clientId is set to `Constants.installationId` in Expo Go, which is deprecated and will be removed in SDK 44. At that time, you'll need to use this method to set your own `clientId` when using Expo Go.
+
+#### Parameters
+
+| Name     | Type     | Description                                     |
+| -------- | -------- | ----------------------------------------------- |
+| clientId | `string` | value to set for the current session in Expo Go |
+
 ### setDebugModeEnabled
 
 ```tsx
