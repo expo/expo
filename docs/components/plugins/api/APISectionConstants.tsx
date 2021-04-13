@@ -3,7 +3,7 @@ import React from 'react';
 import { InlineCode } from '~/components/base/code';
 import { H2, H3Code } from '~/components/plugins/Headings';
 import { ConstantDefinitionData } from '~/components/plugins/api/APIDataTypes';
-import { CommentTextBlock, renderers } from '~/components/plugins/api/APISectionUtils';
+import { CommentTextBlock } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionConstantsProps = {
   data: ConstantDefinitionData[];
@@ -21,7 +21,7 @@ const renderConstant = (
         {name}
       </InlineCode>
     </H3Code>
-    <CommentTextBlock comment={comment} renderers={renderers} />
+    <CommentTextBlock comment={comment} />
   </div>
 );
 

@@ -23,7 +23,9 @@ export enum TypeDocKind {
   TypeAlias = 4194304,
 }
 
-export const renderers: React.ComponentProps<typeof ReactMarkdown>['renderers'] = {
+export type MDRenderers = React.ComponentProps<typeof ReactMarkdown>['renderers'];
+
+export const mdRenderers: MDRenderers = {
   blockquote: ({ children }) => (
     <Quote>
       {React.Children.map(children, child =>
@@ -42,8 +44,8 @@ export const renderers: React.ComponentProps<typeof ReactMarkdown>['renderers'] 
   text: ({ value }) => (value ? <span>{value}</span> : null),
 };
 
-export const inlineRenderers: React.ComponentProps<typeof ReactMarkdown>['renderers'] = {
-  ...renderers,
+export const mdInlineRenderers: MDRenderers = {
+  ...mdRenderers,
   paragraph: ({ children }) => (children ? <span>{children}</span> : null),
 };
 
@@ -104,19 +106,19 @@ export const renderParam = ({ comment, name, type }: MethodParamData): JSX.Eleme
     <B>
       {name} (<InlineCode>{resolveTypeName(type)}</InlineCode>)
     </B>
-    <CommentTextBlock comment={comment} renderers={inlineRenderers} withDash />
+    <CommentTextBlock comment={comment} renderers={mdInlineRenderers} withDash />
   </LI>
 );
 
-type CommentTextBlockProps = {
+export type CommentTextBlockProps = {
   comment?: CommentData;
-  renderers?: React.ComponentProps<typeof ReactMarkdown>['renderers'];
+  renderers?: MDRenderers;
   withDash?: boolean;
 };
 
 export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
   comment,
-  renderers,
+  renderers = mdRenderers,
   withDash,
 }) => {
   const shortText = comment?.shortText?.trim().length ? (
