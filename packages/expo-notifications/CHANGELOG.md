@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 0.11.5 — 2021-04-13
+
+_This version does not introduce any user-facing changes._
+
 ## 0.11.4 — 2021-04-09
 
 ### 🎉 New features

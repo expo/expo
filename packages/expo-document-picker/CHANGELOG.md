@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 9.1.2 — 2021-04-13
+
+_This version does not introduce any user-facing changes._
+
 ## 9.1.1 — 2021-04-09
 
 ### 🐛 Bug fixes
