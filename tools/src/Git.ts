@@ -3,6 +3,7 @@ import path from 'path';
 
 import { spawnAsync, SpawnResult, SpawnOptions } from './Utils';
 import { EXPO_DIR } from './Constants';
+import parseDiff from 'parse-diff';
 
 export type GitPullOptions = {
   rebase?: boolean;
@@ -55,6 +56,10 @@ export type GitFetchOptions = {
   depth?: number;
   remote?: string;
   ref?: string;
+};
+
+export type GitFileDiff = parseDiff.File & {
+  path: string;
 };
 
 /**
@@ -351,9 +356,26 @@ export class GitDirectory {
   /**
    * Finds the best common ancestor between the current ref and the given ref.
    */
-  async mergeBaseAsync(ref: string): Promise<string> {
-    const { stdout } = await this.runAsync(['merge-base', 'HEAD', ref]);
+  async mergeBaseAsync(ref: string, base: string = 'HEAD'): Promise<string> {
+    const { stdout } = await this.runAsync(['merge-base', base, ref]);
     return stdout.trim();
+  }
+
+  /**
+   * Gets the diff between two commits and parses it to the list of changed files and their chunks.
+   */
+  async getDiffAsync(commit1: string, commit2: string): Promise<GitFileDiff[]> {
+    const { stdout } = await this.runAsync(['diff', `${commit1}..${commit2}`]);
+    const diff = parseDiff(stdout);
+
+    return diff.map((entry) => {
+      const finalPath = entry.deleted ? entry.from : entry.to;
+
+      return {
+        ...entry,
+        path: path.join(this.path, finalPath!),
+      };
+    });
   }
 
   /**

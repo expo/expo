@@ -115,6 +115,8 @@ ${pr}
  */
 async function checkChangelog() {
     const modifiedPackages = lodash_1.groupBy(danger.git.modified_files.filter(file => file.startsWith('packages')), file => file.split(path.sep)[1]);
+    console.log({ modifiedPackages });
+    process.exit(0);
     console.log('🔎 Searching for packages without changelog...');
     const packagesWithoutChangelog = Object.entries(modifiedPackages)
         .filter(([packageName, files]) => !isChangelogModified(packageName, files))
