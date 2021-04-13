@@ -17,6 +17,7 @@ type Props = React.ComponentProps<typeof ListItem> & {
   username?: string;
   sdkVersion?: string;
   experienceInfo?: Pick<Experience, 'username' | 'slug'>;
+  onPressUsername?: (username: string) => void;
 };
 
 function ProjectListItem({
@@ -64,7 +65,9 @@ function ProjectListItem({
   };
 
   const handlePressUsername = () => {
-    navigation.navigate('Profile', { username });
+    if (props.onPressUsername && username) {
+      props.onPressUsername(username);
+    }
   };
 
   const renderExtraText = React.useCallback(

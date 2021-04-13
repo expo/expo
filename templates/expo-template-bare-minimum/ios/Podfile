@@ -10,15 +10,10 @@ target 'HelloWorld' do
 
   use_react_native!(:path => config["reactNativePath"])
 
-  # Uncomment the code below to enable Flipper.
-  #
-  # You should not install Flipper in CI environments when creating release
-  # builds, this will lead to significantly slower build times.
-  #
-  # Note that if you have use_frameworks! enabled, Flipper will not work.
-  #
-  #  use_flipper!
-  #  post_install do |installer|
-  #    flipper_post_install(installer)
-  #  end
+  if !ENV['CI']
+    use_flipper!({ 'Flipper' => '0.80.0' })
+    post_install do |installer|
+      flipper_post_install(installer)
+    end
+  end
 end

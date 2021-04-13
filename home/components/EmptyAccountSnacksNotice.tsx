@@ -9,32 +9,23 @@ import { StyledText } from './Text';
 import { StyledView } from './Views';
 
 function handleLearnMorePress() {
-  WebBrowser.openBrowserAsync('https://snack.expo.io');
+  WebBrowser.openBrowserAsync('https://docs.expo.io/workflow/snack');
 }
 
-export default function EmptyProfileSnacksNotice({ isOwnProfile }: { isOwnProfile: boolean }) {
-  if (isOwnProfile) {
-    return (
-      <StyledView style={styles.container} lightBackgroundColor={Colors.light.greyBackground}>
-        <StyledText style={[SharedStyles.noticeDescriptionText, styles.descriptionText]}>
-          Snacks that you save to your profile will appear here!
-        </StyledText>
-
-        <PrimaryButton
-          plain
-          onPress={handleLearnMorePress}
-          fallback={TouchableOpacity}
-          style={{ marginBottom: 5 }}>
-          Learn more about Snack
-        </PrimaryButton>
-      </StyledView>
-    );
-  }
+export default function EmptyAccountSnacksNotice() {
   return (
     <StyledView style={styles.container} lightBackgroundColor={Colors.light.greyBackground}>
       <StyledText style={[SharedStyles.noticeDescriptionText, styles.descriptionText]}>
         No saved Snacks
       </StyledText>
+
+      <PrimaryButton
+        plain
+        onPress={handleLearnMorePress}
+        fallback={TouchableOpacity}
+        style={{ marginBottom: 5 }}>
+        Learn more about Snack
+      </PrimaryButton>
     </StyledView>
   );
 }

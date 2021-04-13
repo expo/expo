@@ -8,6 +8,7 @@
   <application>
     <service
       android:name=".services.LocationTaskService"
-      android:exported="false" />
+      android:exported="false"
+      android:foregroundServiceType="location" />
   </application>
 </manifest>

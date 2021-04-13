@@ -7,7 +7,6 @@ import android.os.AsyncTask
 import android.os.Bundle
 import abi41_0_0.expo.modules.imagepicker.ImagePickerConstants
 import abi41_0_0.expo.modules.imagepicker.fileproviders.FileProvider
-import abi41_0_0.expo.modules.imagepicker.slashifyFilePath
 import abi41_0_0.org.unimodules.core.Promise
 import java.io.File
 import java.io.FileOutputStream
@@ -26,7 +25,7 @@ class VideoResultTask(private val promise: Promise,
       val outputFile = fileProvider.generateFile()
       saveVideo(outputFile)
       val response = Bundle().apply {
-        putString("uri", slashifyFilePath(outputFile.toURI().toString()))
+        putString("uri", Uri.fromFile(outputFile).toString())
         putBoolean("cancelled", false)
         putString("type", "video")
         putInt("width", mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)!!.toInt())

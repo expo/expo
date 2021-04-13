@@ -8,6 +8,7 @@ const GROUPS = {
   'The Basics': ['Conceptual Overview', 'Get Started', 'Tutorial', 'Next Steps'],
   'Managed Workflow': [
     'Fundamentals',
+    'UI Programming',
     'Assorted Guides',
     'Push Notifications',
     'Distributing Your App',
@@ -185,6 +186,10 @@ const sections = [
     ],
   },
   {
+    name: 'UI Programming',
+    reference: ['Styling a React Native Button', "Setting a component's background image"],
+  },
+  {
     name: 'Assorted Guides',
     reference: [
       'Assets',
@@ -207,6 +212,7 @@ const sections = [
       'Progressive Web Apps',
       'Web Performance',
       'Notification Channels',
+      'Delaying Your Code To Run Later',
       'Error Handling',
       'Testing with Jest',
       'Account Permissions',
@@ -377,6 +383,7 @@ const ROOT = [
   'Tutorial',
   'Conceptual Overview',
   'Fundamentals',
+  'UI Programming',
   'Assorted Guides',
   'Push Notifications',
   'Distributing Your App',
@@ -390,7 +397,7 @@ const ROOT = [
 ];
 
 // These directories will not be placed in the sidebar, but will still be searchable
-const hiddenSections = ['FAQ'];
+const hiddenSections = ['FAQ', 'Troubleshooting'];
 
 const sortAccordingToReference = (arr, reference) => {
   reference = Array.from(reference).reverse();

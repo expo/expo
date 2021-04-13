@@ -1,5 +1,5 @@
 import { PermissionResponse } from 'unimodules-permissions-interface';
-import { ImagePickerResult, MediaTypeOptions, ImagePickerMultipleResult } from './ImagePicker.types';
+import { ImagePickerMultipleResult, ImagePickerResult, MediaTypeOptions } from './ImagePicker.types';
 declare const _default: {
     readonly name: string;
     launchImageLibraryAsync({ mediaTypes, allowsMultipleSelection, }: {

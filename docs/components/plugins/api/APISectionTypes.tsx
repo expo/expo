@@ -14,8 +14,8 @@ import {
   TypeValueData,
 } from '~/components/plugins/api/APIDataTypes';
 import {
-  inlineRenderers,
-  renderers,
+  mdInlineRenderers,
+  mdRenderers,
   resolveTypeName,
   renderParam,
   CommentTextBlock,
@@ -58,7 +58,9 @@ const renderTypePropertyRow = (typeProperty: TypePropertyData): JSX.Element => (
     </td>
     <td>
       {typeProperty?.comment?.shortText ? (
-        <ReactMarkdown renderers={inlineRenderers}>{typeProperty.comment.shortText}</ReactMarkdown>
+        <ReactMarkdown renderers={mdInlineRenderers}>
+          {typeProperty.comment.shortText}
+        </ReactMarkdown>
       ) : (
         '-'
       )}
@@ -77,7 +79,7 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
             {type.declaration.signatures ? '()' : ''}
           </InlineCode>
         </H3Code>
-        <CommentTextBlock comment={comment} renderers={renderers} />
+        <CommentTextBlock comment={comment} />
         {type.declaration.children ? (
           <table>
             <thead>
@@ -109,7 +111,7 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
           <H3Code>
             <InlineCode>{name}</InlineCode>
           </H3Code>
-          <ReactMarkdown renderers={renderers}>
+          <ReactMarkdown renderers={mdRenderers}>
             {defineLiteralType(validTypes) +
               `Acceptable values are: ${validTypes.map(decorateValue).join(', ')}.`}
           </ReactMarkdown>
