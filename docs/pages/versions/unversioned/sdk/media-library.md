@@ -18,7 +18,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Configuration
 
-In managed apps, the permission to access images or videos ([`Permissions.MEDIA_LIBRARY`](permissions.md#permissionsmedia_library)) is added automatically.
+In managed apps, the permission to access images or videos is added automatically.
 
 ## API
 
@@ -30,7 +30,7 @@ import * as MediaLibrary from 'expo-media-library';
 
 ### `MediaLibrary.requestPermissionsAsync()`
 
-Asks the user to grant permissions for accessing media in user's media library. Alias for `Permissions.askAsync(Permissions.CAMERA_ROLL)`.
+Asks the user to grant permissions for accessing media in user's media library.
 
 #### Returns
 
@@ -38,7 +38,7 @@ A promise that resolves to an object of type [CameraRollPermissionResponse](#med
 
 ### `MediaLibrary.getPermissionsAsync()`
 
-Checks user's permissions for accessing media library. Alias for `Permissions.getAsync(Permissions.CAMERA_ROLL)`.
+Checks user's permissions for accessing media library.
 
 #### Returns
 

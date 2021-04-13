@@ -75,7 +75,7 @@ Async `boolean`, indicating whether the Brightness API is available on the curre
 
 ### `Brightness.requestPermissionsAsync()`
 
-Asks the user to grant permissions for accessing system brightness. Alias for `Permissions.askAsync(Permissions.BRIGHTNESS)`.
+Asks the user to grant permissions for accessing system brightness.
 
 #### Returns
 
@@ -83,7 +83,7 @@ A promise that resolves to an object of type [PermissionResponse](permissions.md
 
 ### `Brightness.getPermissionsAsync()`
 
-Checks user's permissions for accessing system brightness. Alias for `Permissions.getAsync(Permissions.BRIGHTNESS)`.
+Checks user's permissions for accessing system brightness.
 
 #### Returns
 

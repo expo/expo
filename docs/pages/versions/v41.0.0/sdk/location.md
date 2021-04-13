@@ -125,7 +125,7 @@ A promise resolving to `true` if location services are enabled on the device, or
 
 > **Deprecated.** Use [`requestForegroundPermissionsAsync`](#locationrequestforegroundpermissionsasync) or [`requestBackgroundPermissionsAsync`](#locationrequestbackgroundpermissionsasync).
 
-Asks the user to grant permissions for location. Alias for `Permissions.askAsync(Permissions.LOCATION)`.
+Asks the user to grant permissions for location.
 
 #### Returns
 
@@ -135,7 +135,7 @@ A promise that resolves to an object of type [LocationPermissionResponse](#locat
 
 > **Deprecated.** Use [`getForegroundPermissionsAsync`](#locationgetforegroundpermissionsasync) or [`getBackgroundPermissionsAsync`](#locationgetbackgroundpermissionsasync).
 
-Checks user's permissions for accessing location. Alias for `Permissions.getAsync(Permissions.LOCATION)`.
+Checks user's permissions for accessing location.
 
 #### Returns
 
