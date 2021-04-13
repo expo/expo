@@ -4,11 +4,7 @@ import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
 import { H2, H3Code } from '~/components/plugins/Headings';
 import { InterfaceDefinitionData, InterfaceValueData } from '~/components/plugins/api/APIDataTypes';
-import {
-  CommentTextBlock,
-  inlineRenderers,
-  renderers,
-} from '~/components/plugins/api/APISectionUtils';
+import { CommentTextBlock, mdInlineRenderers } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionInterfacesProps = {
   data: InterfaceDefinitionData[];
@@ -19,7 +15,7 @@ const renderInterface = ({ name, children, comment }: InterfaceDefinitionData): 
     <H3Code>
       <InlineCode>{name}</InlineCode>
     </H3Code>
-    <CommentTextBlock comment={comment} renderers={renderers} />
+    <CommentTextBlock comment={comment} />
     <UL>
       {children.map((interfaceValue: InterfaceValueData) => (
         <LI key={interfaceValue.name}>
@@ -27,7 +23,11 @@ const renderInterface = ({ name, children, comment }: InterfaceDefinitionData): 
             {name}.{interfaceValue.name}
             {interfaceValue.type.declaration?.signatures ? '()' : ''}
           </InlineCode>
-          <CommentTextBlock comment={interfaceValue.comment} renderers={inlineRenderers} withDash />
+          <CommentTextBlock
+            comment={interfaceValue.comment}
+            renderers={mdInlineRenderers}
+            withDash
+          />
         </LI>
       ))}
     </UL>
