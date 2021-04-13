@@ -4,7 +4,7 @@ import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
 import { H2, H3Code } from '~/components/plugins/Headings';
 import { EnumDefinitionData, EnumValueData } from '~/components/plugins/api/APIDataTypes';
-import { CommentTextBlock, inlineRenderers } from '~/components/plugins/api/APISectionUtils';
+import { CommentTextBlock, mdInlineRenderers } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionEnumsProps = {
   data: EnumDefinitionData[];
@@ -21,7 +21,7 @@ const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Elemen
           <InlineCode>
             {name}.{enumValue.name}
           </InlineCode>
-          <CommentTextBlock comment={comment} renderers={inlineRenderers} withDash />
+          <CommentTextBlock comment={comment} renderers={mdInlineRenderers} withDash />
         </LI>
       ))}
     </UL>

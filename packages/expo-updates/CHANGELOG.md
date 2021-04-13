@@ -4,10 +4,17 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+## 0.6.0 — 2021-04-13
+
+### 🛠 Breaking changes
+
 - remove UPDATES_CONFIGURATION_USES_LEGACY_MANIFEST_KEY constant. ([#12181](https://github.com/expo/expo/pull/12181) by [@jkhales](https://github.com/jkhales))
 - remove EXUpdatesUsesLegacyManifest Plist constant (ios). ([#12249](https://github.com/expo/expo/pull/12249) by [@jkhales](https://github.com/jkhales))
 - crash if EXUpdatesRequestHeaders is not a dictionary (ios). ([#12457](https://github.com/expo/expo/pull/12457) by [@jkhales](https://github.com/jkhales))
-
 
 ### 🎉 New features
 
@@ -18,6 +25,8 @@
 - Fixed Updates module methods in Android Expo Go by refactoring FileDownloader to have mostly instance methods rather than static methods.
 - Fixed local assets URIs on Android to be compliant with File URI specification. Now file URI takes the form of `file:///*` instead of `file:/*`. ([#12428](https://github.com/expo/expo/pull/12428) by [@tsapeta](https://github.com/tsapeta))
 - Fixed Updates module methods not rejecting properly in iOS managed workflow apps where updates are disabled.
+- Fixed uncaught exception in parseDateString on Android API 21-23. ([#12492](https://github.com/expo/expo/pull/12492) by [mrs2296](https://github.com/mrs2296))
+- Improved error message in createManifest script when there is an error getting the project's metro config.
 
 ## 0.5.3 — 2021-03-30
 

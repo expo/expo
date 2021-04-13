@@ -18,6 +18,6 @@ Pod::Spec.new do |s|
 
   s.dependency 'ABI40_0_0UMCore'
   s.dependency 'ABI40_0_0UMConstantsInterface'
-  s.dependency 'FacebookSDK/CoreKit', $FacebookSDKVersion || '9.0.1'
-  s.dependency 'FacebookSDK/LoginKit', $FacebookSDKVersion || '9.0.1'
+  s.dependency 'FacebookSDK/CoreKit', $FacebookSDKVersion || '9.2.0'
+  s.dependency 'FacebookSDK/LoginKit', $FacebookSDKVersion || '9.2.0'
 end

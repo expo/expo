@@ -5,9 +5,8 @@ import { CodeChallengeMethod, ResponseType, } from './AuthRequest.types';
 import { AuthError } from './Errors';
 import * as PKCE from './PKCE';
 import * as QueryParams from './QueryParams';
-import { getSessionUrlProvider } from './SessionUrlProvider';
+import sessionUrlProvider from './SessionUrlProvider';
 import { TokenResponse } from './TokenRequest';
-const sessionUrlProvider = getSessionUrlProvider();
 let _authLock = false;
 /**
  * Implements an authorization request.
@@ -73,7 +72,7 @@ export class AuthRequest {
      * @param discovery
      * @param promptOptions
      */
-    async promptAsync(discovery, { url, ...options } = {}) {
+    async promptAsync(discovery, { url, proxyOptions, ...options } = {}) {
         if (!url) {
             if (!this.url) {
                 // Generate a new url
@@ -90,7 +89,7 @@ export class AuthRequest {
         let startUrl = url;
         let returnUrl = this.redirectUri;
         if (options.useProxy) {
-            returnUrl = sessionUrlProvider.getDefaultReturnUrl();
+            returnUrl = sessionUrlProvider.getDefaultReturnUrl(proxyOptions?.path, proxyOptions);
             startUrl = sessionUrlProvider.getStartUrl(url, returnUrl);
         }
         // Prevent multiple sessions from running at the same time, WebBrowser doesn't

@@ -116,7 +116,7 @@ const [request, response, promptAsync] = useAuthRequest({ ... }, { ... });
 Load an authorization request for a code. Returns a loaded request, a response, and a prompt method.
 When the prompt method completes then the response will be fulfilled.
 
-> 🚨 In order to close the popup window on web, you need to invoke `WebBrowser.maybeCompleteAuthSession()`. See the [Identity example](../../../guides/authentication.md#identity-4) for more info.
+> 🚨 In order to close the popup window on web, you need to invoke `WebBrowser.maybeCompleteAuthSession()`. See the [Identity example](../../../guides/authentication.md#identityserver-4) for more info.
 
 If an Implicit grant flow was used, you can pass the `response.params` to `TokenResponse.fromQueryParams()` to get a `TokenResponse` instance which you can use to easily refresh the token.
 
@@ -365,11 +365,11 @@ Represents an OAuth authorization request as JSON.
 
 Options passed to the `promptAsync()` method of `AuthRequest`s.
 
-| Name          | Type       | Description                                                                                 | Default         |
-| ------------- | ---------- | ------------------------------------------------------------------------------------------- | --------------- |
-| useProxy      | `?boolean` | Should use `auth.expo.io` proxy for redirecting requests. Only works in managed native apps | `false`         |
-| showInRecents | `?boolean` | Should browsed website be shown as a separate entry in Android multitasker                  | `false`         |
-| url           | `?string`  | URL that'll begin the auth request, usually this should be left undefined                   | Preloaded value |
+| Name          | Type       | Description                                                                | Default         |
+| ------------- | ---------- | -------------------------------------------------------------------------- | --------------- |
+| useProxy      | `?boolean` | Should use `auth.expo.io` proxy for redirecting requests                   | `false`         |
+| showInRecents | `?boolean` | Should browsed website be shown as a separate entry in Android multitasker | `false`         |
+| url           | `?string`  | URL that'll begin the auth request, usually this should be left undefined  | Preloaded value |
 
 ### `CodeChallengeMethod`
 
@@ -593,7 +593,7 @@ An object containing the discovery URLs used for Facebook auth.
 
 ## Usage in the bare React Native app
 
-In managed apps, `AuthSession` uses Expo servers to create a proxy between your application and the auth provider. Unfortunately, we don't provide support to use these servers in bare apps. To overcome this, you can create your proxy service.
+In managed apps, `AuthSession` uses Expo servers to create a proxy between your application and the auth provider. If you'd like, you can also create your own proxy service.
 
 ### Proxy Service
 

@@ -1,4 +1,4 @@
-import { EventEmitter, UnavailabilityError } from '@unimodules/core';
+import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
 import invariant from 'invariant';
 
 import ExponentPedometer from './ExponentPedometer';
@@ -17,22 +17,14 @@ export type PedometerResult = {
 export type PedometerUpdateCallback = (result: PedometerResult) => void;
 
 // @needsAudit
-export interface PedometerListener {
-  /**
-   * A method to unsubscribe the listener.
-   */
-  remove: () => void;
-}
-
-// @needsAudit
 /**
  * Subscribe to pedometer updates.
  * @param callback A callback that is invoked when new step count data is available. The callback is
  * provided with a single argument that is [`PedometerResult`](#pedometerresult).
- * @return Returns a [`PedometerListener`](#pedometerlistener) interface that enables you to call
+ * @return Returns a [`Subscription`](#subscription) that enables you to call
  * `remove()` when you would like to unsubscribe the listener.
  */
-export function watchStepCount(callback: PedometerUpdateCallback): PedometerListener {
+export function watchStepCount(callback: PedometerUpdateCallback): Subscription {
   return PedometerEventEmitter.addListener('Exponent.pedometerUpdate', callback);
 }
 
@@ -64,3 +56,5 @@ export async function getStepCountAsync(start: Date, end: Date): Promise<Pedomet
 export async function isAvailableAsync(): Promise<boolean> {
   return await ExponentPedometer.isAvailableAsync();
 }
+
+export { Subscription };
