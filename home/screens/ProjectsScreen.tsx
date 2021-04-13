@@ -2,7 +2,7 @@ import { StackScreenProps } from '@react-navigation/stack';
 import Constants from 'expo-constants';
 import { AllStackRoutes } from 'navigation/Navigation.types';
 import * as React from 'react';
-import { Alert, AppState, Clipboard, Platform, StyleSheet, View } from 'react-native';
+import { Alert, AppState, Clipboard, Linking, Platform, StyleSheet, View } from 'react-native';
 
 import ApiV2HttpClient from '../api/ApiV2HttpClient';
 import Config from '../api/Config';
@@ -300,6 +300,7 @@ class ProjectsView extends React.Component<Props, State> {
           subtitle={username || project.manifestUrl}
           username={username}
           releaseChannel={releaseChannel}
+          onPress={() => Linking.openURL(project.url)}
           last={i === this.props.recentHistory.count() - 1}
         />
       );

@@ -19,6 +19,7 @@
     "@apollo/client": "^3.0.2",
     "@expo/react-native-action-sheet": "^2.1.0",
     "@expo/react-native-touchable-native-feedback-safe": "^1.1.2",
+    "@expo/sdk-runtime-versions": "^1.0.0",
     "@expo/vector-icons": "^12.0.4",
     "@react-native-async-storage/async-storage": "~1.15.0",
     "@react-native-community/masked-view": "0.1.10",

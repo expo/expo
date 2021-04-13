@@ -1,4 +1,5 @@
 import { StackScreenProps } from '@react-navigation/stack';
+import { Project } from 'components/ProjectList';
 import dedent from 'dedent';
 import { take, takeRight } from 'lodash';
 import React from 'react';
@@ -220,7 +221,7 @@ function ProfileProjectsSection({
     navigation.navigate('ProfileAllProjects', {});
   };
 
-  const renderApp = (app: any, i: number) => {
+  const renderApp = (app: Project, i: number) => {
     return (
       <ProjectListItem
         key={i}
@@ -230,7 +231,7 @@ function ProfileProjectsSection({
         title={app.name}
         sdkVersion={app.sdkVersion}
         subtitle={app.packageName || app.fullName}
-        experienceInfo={{ username: app.username, slug: app.packageName }}
+        experienceInfo={{ id: app.id, username: app.username, slug: app.packageName }}
       />
     );
   };
