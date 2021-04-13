@@ -335,7 +335,7 @@ function LinkedButton({
             backgroundColor,
           },
         ]}>
-        <Ionicons name={`ios-${icon}`} size={20} color={color} />
+        <Ionicons name={`ios-${icon}` as any} size={20} color={color} />
       </View>
       <Text style={[styles.linkButtonText, { color: backgroundColor }]}>{text}</Text>
     </TouchableOpacity>

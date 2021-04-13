@@ -116,7 +116,7 @@ export default class Recorder extends React.Component<
           onPress={this._togglePause}
           style={[styles.bigRoundButton, { borderColor: 'red', borderWidth: 5 }]}>
           <Ionicons
-            name={`ios-${this.state.isRecording ? 'pause' : 'mic'}`}
+            name={`ios-${this.state.isRecording ? 'pause' : 'mic'}` as any}
             style={[styles.bigIcon, { color: 'red' }]}
           />
         </TouchableOpacity>

@@ -261,10 +261,10 @@ export default class CameraScreen extends React.Component<{}, State> {
         <Ionicons name="camera-reverse" size={32} color="white" />
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={this.toggleFlash}>
-        <Ionicons name={flashIcons[this.state.flash]} size={28} color="white" />
+        <Ionicons name={flashIcons[this.state.flash] as any} size={28} color="white" />
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={this.toggleWB}>
-        <MaterialIcons name={wbIcons[this.state.whiteBalance]} size={32} color="white" />
+        <MaterialIcons name={wbIcons[this.state.whiteBalance] as any} size={32} color="white" />
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={this.toggleFocus}>
         <Text

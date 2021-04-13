@@ -3,7 +3,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIc
 import React from 'react';
 import { Text, TextStyle, View } from 'react-native';
 
-const icon = (name: string) => <MaterialCommunityIcons key={name} name={name} size={24} />;
+const icon = (name: string) => <MaterialCommunityIcons key={name} name={name as any} size={24} />;
 
 interface Props {
   title: string;

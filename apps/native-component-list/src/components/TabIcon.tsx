@@ -19,6 +19,6 @@ export default class TabIcon extends React.PureComponent<Props> {
       ios: size,
       default: size - 2,
     });
-    return <MaterialCommunityIcons name={name} size={platformSize} color={color} />;
+    return <MaterialCommunityIcons name={name as any} size={platformSize} color={color} />;
   }
 }

@@ -59,7 +59,7 @@ export default class MediaLibraryCell extends React.Component<{
         {data && data.preview}
         {data && (
           <View style={styles.cellFooter}>
-            <FontAwesome name={data.icon} size={12} color="white" />
+            <FontAwesome name={data.icon as any} size={12} color="white" />
             <Text style={styles.description}>{data.description}</Text>
           </View>
         )}
