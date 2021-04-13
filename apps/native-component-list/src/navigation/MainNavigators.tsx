@@ -2,8 +2,11 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { DrawerNavigationOptions } from '@react-navigation/drawer';
 import { PathConfig } from '@react-navigation/native';
 import { StackNavigationOptions } from '@react-navigation/stack';
+
 import ExpoApisStackNavigator, { Screens as APIScreens } from './ExpoApisStackNavigator';
-import ExpoComponentsStackNavigator, { Screens as ComponentScreens } from './ExpoComponentsStackNavigator';
+import ExpoComponentsStackNavigator, {
+  Screens as ComponentScreens,
+} from './ExpoComponentsStackNavigator';
 
 // @tsapeta: These navigators are being used by `bare-expo` app,
 // so make sure they still work there once you change something here.
@@ -21,15 +24,17 @@ const apis: ScreenConfig = {
     initialRouteName: 'ExpoApis',
     screens: {
       ExpoApis: '',
-      ...APIScreens.reduce((prev, curr) => ({
-        ...prev,
-        [curr.name]: curr.name.toLowerCase(),
-      }), {}),
+      ...APIScreens.reduce(
+        (prev, curr) => ({
+          ...prev,
+          [curr.name]: curr.name.toLowerCase(),
+        }),
+        {}
+      ),
     },
   },
   navigator: ExpoApisStackNavigator,
 };
-
 
 const components = {
   linking: {
@@ -37,10 +42,13 @@ const components = {
     initialRouteName: 'ExpoComponents',
     screens: {
       ExpoComponents: '',
-      ...ComponentScreens.reduce((prev, curr) => ({
-        ...prev,
-        [curr.name]: curr.route || curr.name.toLowerCase(),
-      }), {}),
+      ...ComponentScreens.reduce(
+        (prev, curr) => ({
+          ...prev,
+          [curr.name]: curr.route || curr.name.toLowerCase(),
+        }),
+        {}
+      ),
     },
   },
   navigator: ExpoComponentsStackNavigator,

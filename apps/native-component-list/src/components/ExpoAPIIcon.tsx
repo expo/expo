@@ -3,7 +3,10 @@ import { Image, ImageStyle, StyleProp } from 'react-native';
 
 import Icons from '../constants/Icons';
 
-export default function ExpoAPIIcon({ name, style }: {
+export default function ExpoAPIIcon({
+  name,
+  style,
+}: {
   name: string;
   style?: StyleProp<ImageStyle>;
 }) {

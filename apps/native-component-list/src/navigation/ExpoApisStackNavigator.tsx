@@ -4,8 +4,8 @@ import * as React from 'react';
 
 import TabIcon from '../components/TabIcon';
 import ExpoApis from '../screens/ExpoApisScreen';
-import { optionalRequire } from './routeBuilder';
 import getStackConfig from './StackConfig';
+import { optionalRequire } from './routeBuilder';
 
 const Stack = createStackNavigator();
 

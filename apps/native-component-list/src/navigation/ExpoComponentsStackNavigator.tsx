@@ -5,150 +5,150 @@ import * as React from 'react';
 import TabIcon from '../components/TabIcon';
 import { Layout } from '../constants';
 import ExpoComponents from '../screens/ExpoComponentsScreen';
-import { optionalRequire } from './routeBuilder';
 import getStackConfig from './StackConfig';
+import { optionalRequire } from './routeBuilder';
 
 const Stack = createStackNavigator();
 
 export const Screens = [
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/BarCodeScannerScreen'))
+      return optionalRequire(() => require('../screens/BarCodeScannerScreen'));
     },
     name: 'BarCodeScanner',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/ModalScreen'))
+      return optionalRequire(() => require('../screens/ModalScreen'));
     },
     name: 'Modal',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/ScrollViewScreen'))
+      return optionalRequire(() => require('../screens/ScrollViewScreen'));
     },
     name: 'ScrollView',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/MaskedViewScreen'))
+      return optionalRequire(() => require('../screens/MaskedViewScreen'));
     },
     name: 'MaskedView',
     options: { title: 'Basic Mask Example' },
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/BlurViewScreen'))
+      return optionalRequire(() => require('../screens/BlurViewScreen'));
     },
     name: 'BlurView',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/Camera/CameraScreen'))
+      return optionalRequire(() => require('../screens/Camera/CameraScreen'));
     },
     name: 'Camera',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/TextScreen'))
+      return optionalRequire(() => require('../screens/TextScreen'));
     },
     name: 'Text',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/TextInputScreen'))
+      return optionalRequire(() => require('../screens/TextInputScreen'));
     },
     name: 'TextInput',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/TouchablesScreen'))
+      return optionalRequire(() => require('../screens/TouchablesScreen'));
     },
     name: 'Touchables',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/ProgressViewIOSScreen'))
+      return optionalRequire(() => require('../screens/ProgressViewIOSScreen'));
     },
     name: 'ProgressViewIOS',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/ProgressBarAndroidScreen'))
+      return optionalRequire(() => require('../screens/ProgressBarAndroidScreen'));
     },
     name: 'ProgressBarAndroid',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/TouchableBounceScreen'))
+      return optionalRequire(() => require('../screens/TouchableBounceScreen'));
     },
     name: 'TouchableBounce',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/SwitchScreen'))
+      return optionalRequire(() => require('../screens/SwitchScreen'));
     },
     name: 'Switch',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/SliderScreen'))
+      return optionalRequire(() => require('../screens/SliderScreen'));
     },
     name: 'Slider',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/PressableScreen'))
+      return optionalRequire(() => require('../screens/PressableScreen'));
     },
     name: 'Pressable',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/PickerScreen'))
+      return optionalRequire(() => require('../screens/PickerScreen'));
     },
     name: 'Picker',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/CheckboxScreen'))
+      return optionalRequire(() => require('../screens/CheckboxScreen'));
     },
     name: 'Checkbox',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/ButtonScreen'))
+      return optionalRequire(() => require('../screens/ButtonScreen'));
     },
     name: 'Button',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/ActivityIndicatorScreen'))
+      return optionalRequire(() => require('../screens/ActivityIndicatorScreen'));
     },
     name: 'ActivityIndicator',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/QRCodeScreen'))
+      return optionalRequire(() => require('../screens/QRCodeScreen'));
     },
     name: 'QRCode',
     options: { title: 'QR Code' },
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/DateTimePickerScreen'))
+      return optionalRequire(() => require('../screens/DateTimePickerScreen'));
     },
     name: 'DateTimePicker',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/GL/GLScreen'))
+      return optionalRequire(() => require('../screens/GL/GLScreen'));
     },
     name: 'GL',
     options: { title: 'Examples of GL use' },
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/GL/ClearToBlueScreen'))
+      return optionalRequire(() => require('../screens/GL/ClearToBlueScreen'));
     },
     name: 'ClearToBlue',
     options: { title: 'Clear to blue' },
@@ -156,7 +156,7 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/GL/BasicTextureScreen'))
+      return optionalRequire(() => require('../screens/GL/BasicTextureScreen'));
     },
     name: 'BasicTexture',
     options: { title: 'Basic texture use' },
@@ -164,7 +164,7 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/GL/GLViewScreen'))
+      return optionalRequire(() => require('../screens/GL/GLViewScreen'));
     },
     name: 'GLViewScreen',
     options: { title: 'GLView example' },
@@ -172,7 +172,7 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/GL/GLMaskScreen'))
+      return optionalRequire(() => require('../screens/GL/GLMaskScreen'));
     },
     name: 'Mask',
     options: { title: 'MaskedView integration' },
@@ -180,7 +180,7 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/GL/GLSnapshotsScreen'))
+      return optionalRequire(() => require('../screens/GL/GLSnapshotsScreen'));
     },
     name: 'Snapshots',
     options: { title: 'Taking snapshots' },
@@ -188,7 +188,7 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/GL/GLThreeComposerScreen'))
+      return optionalRequire(() => require('../screens/GL/GLThreeComposerScreen'));
     },
     name: 'THREEComposer',
     options: { title: 'three.js glitch and film effects' },
@@ -196,7 +196,7 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/GL/GLThreeDepthStencilBufferScreen'))
+      return optionalRequire(() => require('../screens/GL/GLThreeDepthStencilBufferScreen'));
     },
     name: 'THREEDepthStencilBuffer',
     options: { title: 'three.js depth and stencil buffer' },
@@ -204,7 +204,7 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/GL/GLThreeSpriteScreen'))
+      return optionalRequire(() => require('../screens/GL/GLThreeSpriteScreen'));
     },
     name: 'THREESprite',
     options: { title: 'three.js sprite rendering' },
@@ -212,7 +212,7 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/GL/ProcessingInAndOutScreen'))
+      return optionalRequire(() => require('../screens/GL/ProcessingInAndOutScreen'));
     },
     name: 'ProcessingInAndOut',
     options: { title: "'In and out' from openprocessing.org" },
@@ -220,7 +220,7 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/GL/ProcessingNoClearScreen'))
+      return optionalRequire(() => require('../screens/GL/ProcessingNoClearScreen'));
     },
     name: 'ProcessingNoClear',
     options: { title: 'Draw without clearing screen with processing.js' },
@@ -228,7 +228,7 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/GL/PIXIBasicScreen'))
+      return optionalRequire(() => require('../screens/GL/PIXIBasicScreen'));
     },
     name: 'PIXIBasic',
     options: { title: 'Basic pixi.js use' },
@@ -236,7 +236,7 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/GL/PIXISpriteScreen'))
+      return optionalRequire(() => require('../screens/GL/PIXISpriteScreen'));
     },
     name: 'PIXISprite',
     options: { title: 'pixi.js sprite rendering' },
@@ -244,7 +244,7 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/GL/GLCameraScreen'))
+      return optionalRequire(() => require('../screens/GL/GLCameraScreen'));
     },
     name: 'GLCamera',
     options: { title: 'Expo.Camera integration' },
@@ -252,7 +252,7 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/GL/WebGL2TransformFeedbackScreen'))
+      return optionalRequire(() => require('../screens/GL/WebGL2TransformFeedbackScreen'));
     },
     name: 'WebGL2TransformFeedback',
     options: { title: 'WebGL2 - Transform feedback' },
@@ -260,7 +260,7 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/GL/CanvasScreen'))
+      return optionalRequire(() => require('../screens/GL/CanvasScreen'));
     },
     name: 'Canvas',
     options: { title: 'Canvas example - expo-2d-context' },
@@ -268,7 +268,7 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/GL/GLHeadlessRenderingScreen'))
+      return optionalRequire(() => require('../screens/GL/GLHeadlessRenderingScreen'));
     },
     name: 'HeadlessRendering',
     options: { title: 'Headless rendering' },
@@ -276,125 +276,125 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/GestureHandlerPinchScreen'))
+      return optionalRequire(() => require('../screens/GestureHandlerPinchScreen'));
     },
     name: 'GestureHandlerPinch',
     options: { title: 'Pinch and Rotate' },
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/GestureHandlerListScreen'))
+      return optionalRequire(() => require('../screens/GestureHandlerListScreen'));
     },
     name: 'GestureHandlerList',
     options: { title: 'Gesture Handler List' },
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/GestureHandlerSwipeableScreen'))
+      return optionalRequire(() => require('../screens/GestureHandlerSwipeableScreen'));
     },
     name: 'GestureHandlerSwipeable',
     options: { title: 'Swipeable Rows' },
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/HTMLElementsScreen'))
+      return optionalRequire(() => require('../screens/HTMLElementsScreen'));
     },
     name: 'HTML',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/Image/ImageScreen'))
+      return optionalRequire(() => require('../screens/Image/ImageScreen'));
     },
     name: 'Image',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/Image/ImageTestsScreen'))
+      return optionalRequire(() => require('../screens/Image/ImageTestsScreen'));
     },
     name: 'ImageTests',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/Image/ImageTestScreen'))
+      return optionalRequire(() => require('../screens/Image/ImageTestScreen'));
     },
     name: 'ImageTest',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/Reanimated/ReanimatedScreen'))
+      return optionalRequire(() => require('../screens/Reanimated/ReanimatedScreen'));
     },
     name: 'Reanimated',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/GifScreen'))
+      return optionalRequire(() => require('../screens/GifScreen'));
     },
     name: 'Gif',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/SegmentedControlScreen'))
+      return optionalRequire(() => require('../screens/SegmentedControlScreen'));
     },
     name: 'SegmentedControl',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/SVG/SVGScreen'))
+      return optionalRequire(() => require('../screens/SVG/SVGScreen'));
     },
     name: 'SVG',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/SVG/SVGExampleScreen'))
+      return optionalRequire(() => require('../screens/SVG/SVGExampleScreen'));
     },
     name: 'SVGExample',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/LinearGradientScreen'))
+      return optionalRequire(() => require('../screens/LinearGradientScreen'));
     },
     name: 'LinearGradient',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/LottieScreen'))
+      return optionalRequire(() => require('../screens/LottieScreen'));
     },
     name: 'Lottie',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/MapsScreen'))
+      return optionalRequire(() => require('../screens/MapsScreen'));
     },
     name: 'Maps',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/AV/VideoScreen'))
+      return optionalRequire(() => require('../screens/AV/VideoScreen'));
     },
     name: 'Video',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/Screens'))
+      return optionalRequire(() => require('../screens/Screens'));
     },
     name: 'Screens',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/WebViewScreen'))
+      return optionalRequire(() => require('../screens/WebViewScreen'));
     },
     name: 'WebView',
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/ViewPagerScreen'))
+      return optionalRequire(() => require('../screens/ViewPagerScreen'));
     },
     name: 'ViewPager',
     options: { gesturesEnabled: false, title: 'ViewPager Example' },
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/SharedElementScreen'))
+      return optionalRequire(() => require('../screens/SharedElementScreen'));
     },
     name: 'SharedElement',
   },

@@ -22,7 +22,6 @@ type Props = {
 const CONTACT_PAGE_SIZE = 500;
 
 export default function ContactsScreen({ navigation }: Props) {
-
   React.useLayoutEffect(() => {
     navigation.setOptions({
       title: 'Contacts',
@@ -39,8 +38,7 @@ export default function ContactsScreen({ navigation }: Props) {
         </HeaderContainerRight>
       ),
     });
-  }, [navigation])
-
+  }, [navigation]);
 
   const [isAvailable, error] = useResolvedValue(Contacts.isAvailableAsync);
   const [permission] = usePermissions(Contacts.requestPermissionsAsync);

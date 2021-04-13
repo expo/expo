@@ -20,12 +20,12 @@ interface Props {
   header?: JSX.Element;
   extraButtons?: (
     | {
-      iconName: string;
-      title: string;
-      onPress: (event: GestureResponderEvent) => void;
-      active: boolean;
-      disable?: boolean;
-    }
+        iconName: string;
+        title: string;
+        onPress: (event: GestureResponderEvent) => void;
+        active: boolean;
+        disable?: boolean;
+      }
     | (() => React.ReactNode)
   )[];
   style?: StyleProp<ViewStyle>;

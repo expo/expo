@@ -9,12 +9,11 @@ type Links = { SVGExample: { title?: string; key: string } };
 type Props = StackScreenProps<Links, 'SVGExample'>;
 
 export default function SVGExampleScreen(props: Props) {
-
   React.useLayoutEffect(() => {
     props.navigation.setOptions({
       title: props.route.params.title ?? 'An SVG Example',
     });
-  }, [props.navigation, props.route])
+  }, [props.navigation, props.route]);
 
   const renderSample = (Sample: React.ComponentType & { title: string }, index: number) => (
     <View style={styles.example} key={`sample-${index}`}>
@@ -39,7 +38,6 @@ export default function SVGExampleScreen(props: Props) {
       {renderContent()}
     </ScrollView>
   );
-
 }
 
 const styles = StyleSheet.create({

@@ -25,7 +25,6 @@ async function getPermissionAsync() {
 }
 
 export default function ContactDetailScreen(props: any) {
-
   React.useLayoutEffect(() => {
     props.navigation.setOptions({
       title: 'Contacts',
@@ -49,8 +48,7 @@ export default function ContactDetailScreen(props: any) {
         </HeaderContainerRight>
       ),
     });
-  }, [props.navigation])
-
+  }, [props.navigation]);
 
   const [permission] = usePermissions(Contacts.requestPermissionsAsync);
 
