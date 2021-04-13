@@ -8,7 +8,7 @@ import { useResolvedValue } from '../utilities/useResolvedValue';
 
 function usePedometer({ isActive }: { isActive: boolean }): Pedometer.PedometerResult | null {
   const [data, setData] = React.useState<Pedometer.PedometerResult | null>(null);
-  const listener = React.useRef<Pedometer.PedometerListener | null>(null);
+  const listener = React.useRef<Pedometer.Subscription | null>(null);
 
   React.useEffect(() => {
     return () => {
