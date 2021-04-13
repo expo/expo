@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added permissions. ([#12501](https://github.com/expo/expo/pull/12501) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 - Replaced `Pedometer.watchStepCount()` return type (`PedometerListener`) with an unified Unimodules type - `Subscription`. ([#12497](https://github.com/expo/expo/pull/12497) by [@Simek](https://github.com/simek))
