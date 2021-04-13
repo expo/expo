@@ -2,13 +2,13 @@
 title: Config Plugins
 ---
 
-> This guide applies to SDK +41 projects. The Expo Go app doesn't support custom native modules.
+> This guide applies to SDK 41+ projects. The Expo Go app doesn't support custom native modules.
 
-When adding a native module to your project, most of the setup can be done automatically by simply installing the module in your project, but some modules require more complex setup. For instance, say you installed `expo-camera` in your bare project, you need to let the native app know that camera permissions must now be enabled, this is where config plugins come in. Config plugins are a system for extending the Expo config and customizing the prebuild phase of managed builds.
+When adding a native module to your project, most of the setup can be done automatically by installing the module in your project, but some modules require more complex setup. For instance, say you installed `expo-camera` in your bare project, you now need to configure the native app to enable camera permissions — this is where config plugins come in. Config plugins are a system for extending the Expo config and customizing the prebuild phase of managed builds.
 
-Internally Expo CLI uses config plugins to generate and configure all the native code for a managed project. Plugins do things like generate app icons, set the app name, and configure the Info.plist, AndroidManifest.xml, etc.
+Internally Expo CLI uses config plugins to generate and configure all the native code for a managed project. Plugins do things like generate app icons, set the app name, and configure the `Info.plist`, `AndroidManifest.xml`, etc.
 
-Think of plugins like a bundler for native projects, and running `expo eject` as a way to bundle the projects by evaluating all the project plugins. Doing so will create generated folders `ios` and `android`, these folders can be modified manually but then the folders can no longer be safely regenerated without potentially overwriting manual modifications, we call this process the bare workflow. If the native projects are only ever modified via plugins, then the project is custom managed workflow.
+You can think of plugins like a bundler for native projects, and running `expo eject` as a way to bundle the projects by evaluating all the project plugins. Doing so will generate `ios` and `android` directories. These directories can be modified manually after being generated, but then they can no longer be safely regenerated without potentially overwriting manual modifications.
 
 > 💡 **Hands-on Learners**: Use [this sandbox][sandbox] to play with the core functionality of Expo config plugins. For more complex tests, use a local Expo project, with `expo eject --no-install` to apply changes.
 
@@ -24,17 +24,17 @@ Think of plugins like a bundler for native projects, and running `expo eject` as
 
 ## Using a plugin in your app
 
-Expo config plugins mostly come from node modules, you can install them just like other packages in your project.
+Expo config plugins mostly come from Node modules, you can install them just like other packages in your project.
 
 For instance, `expo-camera` has a plugin that adds camera permissions to the `Info.plist` and `AndroidManifest.xml`.
 
 Install it in your project:
 
 ```sh
-yarn add expo-camera
+expo install expo-camera
 ```
 
-In your app's Expo config (app.json, or app.config.js), add `expo-camera` to the list of plugins:
+In your app's Expo config (`app.json`, or `app.config.js`), add `expo-camera` to the list of plugins:
 
 ```json
 {
@@ -60,7 +60,7 @@ Some plugins can be customized by passing an array, where the second argument is
 }
 ```
 
-If you run `expo eject`, the `mods` will be compiled, and the native files be changed! The changes won't be fully shown until you rebuild the native project with `expo run:ios` and `expo run:android`, or in the cloud with `eas build`.
+If you run `expo eject`, the `mods` will be compiled, and the native files be changed! The changes won't take effect until you rebuild the native project, eg: with Xcode. If you're using config plugins in a managed app, they will be applied during the prebuild phase on `eas build`. 
 
 For instance, if you add a plugin that adds permission messages to your app, the app will need to be rebuilt.
 
@@ -87,7 +87,7 @@ Here is an example of the most basic config plugin:
 const withNothing = config => config;
 ```
 
-Say you wanted to create a plugin which added custom values to the native iOS Info.plist:
+Say you wanted to create a plugin which added custom values to `Info.plist` in an iOS project:
 
 ```ts
 const withMySDK = (config, { apiKey }) => {
@@ -205,12 +205,12 @@ export default {
 
 ## What are mods
 
-An async function which accepts a config and a data object, then manipulates and returns both as an object.
+A modifier (mod for short) is an async function which accepts a config and a data object, then manipulates and returns both as an object.
 
-Modifiers (mods for short) are added to the `mods` object of the Expo config. The `mods` object is different to the rest of the Expo config because it doesn't get serialized after the initial reading, this means you can use it to perform actions _during_ code generation. If possible, you should attempt to use basic plugins instead of mods as they're simpler to work with.
+Mods are added to the `mods` object of the Expo config. The `mods` object is different to the rest of the Expo config because it doesn't get serialized after the initial reading, this means you can use it to perform actions _during_ code generation. If possible, you should attempt to use basic plugins instead of mods as they're simpler to work with.
 
-- `mods` are omitted from the manifest and **cannot** be accessed via `Updates.manifest`. mods exist for the sole purpose of modifying native files during code generation!
-- `mods` can be used to read and write files safely during the `expo eject` command. This is how Expo CLI modifies the Info.plist, entitlements, xcproj, etc...
+- `mods` are omitted from the manifest and **cannot** be accessed via `Updates.manifest`. Mods exist for the sole purpose of modifying native project files during code generation!
+- `mods` can be used to read and write files safely during the `expo eject` command. This is how Expo CLI modifies the `Info.plist`, entitlements, xcproj, etc...
 - `mods` are platform specific and should always be added to a platform specific object:
 
 `app.config.js`
@@ -244,7 +244,7 @@ module.exports = {
 
 ### Best practices for mods
 
-- Avoid doing long tasks like making fetch requests or installing node modules in mods.
+- Avoid doing long tasks like making fetch requests or installing Node modules in mods.
 - Do not add interactive terminal prompts in mods.
 - Utilize built-in config plugins like `withXcodeProject` to minimize the amount of times a file is read and parsed.
 
@@ -271,7 +271,7 @@ For example, you can create a mod to support the `GoogleServices-Info.plist`, an
 
 ### Mod plugins
 
-Mods are responsible for a lot of things, so they can be pretty difficult to understand at first.
+Mods are responsible for a lot of tasks, so they can be pretty difficult to understand at first.
 If you're developing a feature that requires mods, it's best not to interact with them directly.
 
 Instead you should use the helper mods provided by `@expo/config-plugins`:
@@ -332,7 +332,7 @@ export default withCustomProductName(config, 'new_name');
 
 ### Experimental functionality
 
-Some parts of the mod system aren't fully flushed out, these parts use `withDangerousModifier` to read/write data without a base mod. These methods essentially act as their own base mod and cannot be extended. Icons for example, currently use the dangerous mod to perform a single generation step with no ability to customize the results.
+Some parts of the mod system aren't fully fleshed out, these parts use `withDangerousModifier` to read/write data without a base mod. These methods essentially act as their own base mod and cannot be extended. Icons, for example, currently use the dangerous mod to perform a single generation step with no ability to customize the results.
 
 ```ts
 export const withIcons: ConfigPlugin = config => {
@@ -368,8 +368,8 @@ You can quickly create a plugin in your project and use it in your config.
 
 ### app.plugin.js
 
-Sometimes you want your package to export React components and also support a plugin, to do this, multiple entry points need to be used (because the transpilation (Babel preset) may be different).
-If a `app.plugin.js` file is present in the root of a Node module's folder, it'll be used instead of the package's `main` file.
+Sometimes you want your package to export React components and also support a plugin. To do this, multiple entry points need to be used because the transpilation (Babel preset) may be different.
+If an `app.plugin.js` file is present in the root of a Node module's folder, it'll be used instead of the package's `main` file.
 
 - ✅ `'expo-splash-screen'`
 - ❌ `'expo-splash-screen/app.plugin.js'`
@@ -521,7 +521,7 @@ async function setCustomConfigAsync(
 
 ### Modifying the Info.plist
 
-Using the `withInfoPlist` is a bit safer than statically modifying the `expo.ios.infoPlist` object in the app.json because it reads the contents of the Info.plist and merges it with the `expo.ios.infoPlist`, this means you can attempt to keep your changes from being overwritten.
+Using the `withInfoPlist` is a bit safer than statically modifying the `expo.ios.infoPlist` object in the `app.json` because it reads the contents of the Info.plist and merges it with the `expo.ios.infoPlist`, this means you can attempt to keep your changes from being overwritten.
 
 Here's an example of adding a `GADApplicationIdentifier` to the `Info.plist`:
 
@@ -574,9 +574,9 @@ Expo CLI commands can be profiled using `EXPO_PROFILE=1`.
 
 ## Legacy plugins
 
-In order to make `eas build` work the same as the legacy `expo build` we added support for "legacy plugins" which are applied automatically to a project when they're installed in the project.
+In order to make `eas build` work the same as the classic `expo build` service, we added support for "legacy plugins" which are applied automatically to a project when they're installed in the project.
 
-For instance, say a project has `expo-camera` installed but doesn't have `plugins: ['expo-camera']` in their app.json. Expo CLI would automatically add `expo-camera` to the plugins so the camera and microphone permissions were always added to the project. The user can still customize the `expo-camera` plugin by adding it to the `plugins` array manually, the manually defined plugins will take precedence over the automatic plugins.
+For instance, say a project has `expo-camera` installed but doesn't have `plugins: ['expo-camera']` in their `app.json`. Expo CLI would automatically add `expo-camera` to the plugins to ensure that the required camera and microphone permissions are added to the project. The user can still customize the `expo-camera` plugin by adding it to the `plugins` array manually, and the manually defined plugins will take precedence over the automatic plugins.
 
 You can debug which plugins were added by running `expo config --type prebuild` and seeing the `_internal.pluginHistory` property.
 
@@ -605,8 +605,8 @@ Notice that `expo-location` uses `version: '11.0.0'`, and `react-native-maps` us
 };
 ```
 
-For the most _stable_ experience, you should try to have no `UNVERSIONED` plugins in your project. This is because the UNVERSIONED plugin may not support the native code in your project.
-For instance, say you have an `UNVERSIONED` facebook plugin in your project, if the facebook native code or plugin has a breaking change, that will break the way your project ejects and cause it to error on build.
+For the most _stable_ experience, you should try to have no `UNVERSIONED` plugins in your project. This is because the `UNVERSIONED` plugin may not support the native code in your project.
+For instance, say you have an `UNVERSIONED` Facebook plugin in your project, if the Facebook native code or plugin has a breaking change, that will break the way your project ejects and cause it to error on build.
 
 [config-docs]: https://docs.expo.io/versions/latest/config/app/
 [cli-eject]: https://docs.expo.io/workflow/expo-cli/#eject
