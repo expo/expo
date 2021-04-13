@@ -1,14 +1,14 @@
-import { EvilIcons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
 import { StackNavigationProp } from '@react-navigation/stack';
 import React from 'react';
 import {
-  StyleSheet,
-  View,
   FlatList,
+  ListRenderItem,
+  PixelRatio,
+  StyleSheet,
   Text,
   TouchableHighlight,
-  PixelRatio,
-  ListRenderItem,
+  View,
 } from 'react-native';
 
 import examples from './examples';
@@ -35,7 +35,7 @@ export default class SVGScreen extends React.Component<{
         <View style={styles.rowIcon}>{examples[exampleKey].icon}</View>
         <Text style={styles.rowLabel}>{exampleKey}</Text>
         <Text style={styles.rowDecorator}>
-          <EvilIcons name="chevron-right" size={24} color="#595959" />
+          <Ionicons name="chevron-forward" size={18} color="#595959" />
         </Text>
       </View>
     </TouchableHighlight>
@@ -58,6 +58,7 @@ export default class SVGScreen extends React.Component<{
 const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'white',
   },
   row: {
     flexDirection: 'row',

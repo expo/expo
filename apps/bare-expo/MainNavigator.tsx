@@ -23,7 +23,7 @@ type NativeComponentListExportsType = null | {
   };
 };
 
-function optionalRequire(requirer: () => { default: React.ComponentType }) {
+export function optionalRequire(requirer: () => { default: React.ComponentType }) {
   try {
     return requirer().default;
   } catch (e) {

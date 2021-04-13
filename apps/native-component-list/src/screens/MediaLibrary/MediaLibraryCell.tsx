@@ -1,4 +1,4 @@
-import { FontAwesome } from '@expo/vector-icons';
+import FontAwesome from '@expo/vector-icons/build/FontAwesome';
 import * as MediaLibrary from 'expo-media-library';
 import React from 'react';
 import {
