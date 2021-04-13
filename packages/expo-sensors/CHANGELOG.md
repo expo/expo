@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Pedometer `watchStepCount` returns an unified Unimodules type now - `Subscription`, instead of the custom interface type. ([#12497](https://github.com/expo/expo/pull/12497) by [@Simek](https://github.com/simek))
+- Replaced `Pedometer.watchStepCount()` return type (`PedometerListener`) with an unified Unimodules type - `Subscription`. ([#12497](https://github.com/expo/expo/pull/12497) by [@Simek](https://github.com/simek))
 
 ## 10.1.1 — 2021-04-01
 
