@@ -22,16 +22,6 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 import * as Amplitude from 'expo-analytics-amplitude';
 ```
 
-**[Methods](#methods)**
-
-- [`Amplitude.initializeAsync(apiKey)`](#amplitudeinitializeasyncapikey)
-- [`Amplitude.setUserIdAsync(userId)`](#amplitudesetuseridasyncuserid)
-- [`Amplitude.setUserPropertiesAsync(userProperties)`](#amplitudesetuserpropertiesasyncuserproperties)
-- [`Amplitude.clearUserPropertiesAsync()`](#amplitudeclearuserpropertiesasync)
-- [`Amplitude.logEventAsync(eventName)`](#amplitudelogeventasynceventname)
-- [`Amplitude.logEventWithPropertiesAsync(eventName, properties)`](#amplitudelogeventwithpropertiesasynceventname-properties)
-- [`Amplitude.setGroupAsync(groupType, groupNames)`](#amplitudesetgroupasyncgrouptype-groupnames)
-
 ## Methods
 
 ### `Amplitude.initializeAsync(apiKey)`
@@ -60,7 +50,7 @@ Set properties for the current user. See [here for details](https://amplitude.ze
 
 ### `Amplitude.clearUserPropertiesAsync()`
 
-Clear properties set by [`Amplitude.setUserProperties()`](#expoamplitudesetuserproperties 'Amplitude.setUserProperties').
+Clear properties set by [`Amplitude.setUserPropertiesAsync()`](#amplitudesetuserpropertiesasyncuserproperties).
 
 ### `Amplitude.logEventAsync(eventName)`
 
