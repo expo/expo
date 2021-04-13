@@ -2,6 +2,7 @@ import { ApolloProvider } from '@apollo/client';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { AppearanceProvider } from 'react-native-appearance';
+import { enableScreens } from 'react-native-screens';
 import { Provider as ReduxProvider } from 'react-redux';
 
 import HomeApp from './HomeApp';
@@ -10,6 +11,7 @@ import Store from './redux/Store';
 
 import './menu/DevMenuApp';
 
+enableScreens(false);
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
