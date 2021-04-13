@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Account for rubocop formatting in plugin. ([#12480](https://github.com/expo/expo/pull/12480) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.3.1 — 2021-04-09
 
 ### 🐛 Bug fixes
