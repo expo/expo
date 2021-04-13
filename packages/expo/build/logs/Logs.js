@@ -5,7 +5,7 @@ export function enableExpoCliLogging() {
             return;
         }
         _originalConsole = global.console;
-        const RemoteConsole = require('./RemoteConsole').default;
+        const RemoteConsole = require('./RemoteConsole');
         global.console = RemoteConsole.createRemoteConsole(global.console);
     }
 }
