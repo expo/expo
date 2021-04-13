@@ -69,8 +69,8 @@ PODS:
   - EXErrorRecovery (2.1.0):
     - UMCore
   - EXFacebook (11.0.4):
-    - FacebookSDK/CoreKit (= 9.0.1)
-    - FacebookSDK/LoginKit (= 9.0.1)
+    - FacebookSDK/CoreKit (= 9.2.0)
+    - FacebookSDK/LoginKit (= 9.2.0)
     - UMConstantsInterface
     - UMCore
     - UMPermissionsInterface
@@ -212,9 +212,9 @@ PODS:
     - UMFileSystemInterface
   - EXWebBrowser (9.1.0):
     - UMCore
-  - FacebookSDK/CoreKit (9.0.1):
-    - FBSDKCoreKit (~> 9.0.1)
-  - FacebookSDK/LoginKit (9.0.1):
+  - FacebookSDK/CoreKit (9.2.0):
+    - FBSDKCoreKit (~> 9.2.0)
+  - FacebookSDK/LoginKit (9.2.0):
     - FacebookSDK/CoreKit
   - FBLazyVector (0.63.2)
   - FBReactNativeSpec (0.63.2):
@@ -224,11 +224,11 @@ PODS:
     - React-Core (= 0.63.2)
     - React-jsi (= 0.63.2)
     - ReactCommon/turbomodule/core (= 0.63.2)
-  - FBSDKCoreKit (9.0.1):
-    - FBSDKCoreKit/Basics (= 9.0.1)
-    - FBSDKCoreKit/Core (= 9.0.1)
-  - FBSDKCoreKit/Basics (9.0.1)
-  - FBSDKCoreKit/Core (9.0.1):
+  - FBSDKCoreKit (9.2.0):
+    - FBSDKCoreKit/Basics (= 9.2.0)
+    - FBSDKCoreKit/Core (= 9.2.0)
+  - FBSDKCoreKit/Basics (9.2.0)
+  - FBSDKCoreKit/Core (9.2.0):
     - FBSDKCoreKit/Basics
   - Firebase/Core (7.7.0):
     - Firebase/CoreOnly
@@ -248,12 +248,12 @@ PODS:
     - FirebaseCoreDiagnostics (~> 7.4)
     - GoogleUtilities/Environment (~> 7.0)
     - GoogleUtilities/Logger (~> 7.0)
-  - FirebaseCoreDiagnostics (7.7.0):
+  - FirebaseCoreDiagnostics (7.9.0):
     - GoogleDataTransport (~> 8.0)
     - GoogleUtilities/Environment (~> 7.0)
     - GoogleUtilities/Logger (~> 7.0)
     - nanopb (~> 2.30907.0)
-  - FirebaseInstallations (7.7.0):
+  - FirebaseInstallations (7.10.0):
     - FirebaseCore (~> 7.0)
     - GoogleUtilities/Environment (~> 7.0)
     - GoogleUtilities/UserDefaults (~> 7.0)
@@ -270,7 +270,7 @@ PODS:
     - OpenSSL-Universal (= 1.1.180)
   - Flipper-Glog (0.3.6)
   - Flipper-PeerTalk (0.0.4)
-  - Flipper-RSocket (1.3.0):
+  - Flipper-RSocket (1.3.1):
     - Flipper-Folly (~> 2.5)
   - FlipperKit (0.79.0):
     - FlipperKit/Core (= 0.79.0)
@@ -320,8 +320,10 @@ PODS:
     - GoogleUtilities/Network (~> 7.0)
     - "GoogleUtilities/NSData+zlib (~> 7.0)"
     - nanopb (~> 2.30907.0)
-  - GoogleDataTransport (8.2.0):
+  - GoogleDataTransport (8.3.1):
+    - GoogleUtilities/Environment (~> 7.2)
     - nanopb (~> 2.30907.0)
+    - PromisesObjC (~> 1.2)
   - GoogleMLKit/FaceDetection (2.1.0):
     - GoogleMLKit/MLKitCore
     - MLKitFaceDetection (~> 1.2.0)
@@ -343,35 +345,31 @@ PODS:
     - GoogleToolboxForMac/Defines (= 2.3.1)
     - "GoogleToolboxForMac/NSString+URLArguments (= 2.3.1)"
   - "GoogleToolboxForMac/NSString+URLArguments (2.3.1)"
-  - GoogleUtilities/AppDelegateSwizzler (7.2.2):
+  - GoogleUtilities/AppDelegateSwizzler (7.3.1):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
     - GoogleUtilities/Network
-  - GoogleUtilities/Environment (7.2.2):
+  - GoogleUtilities/Environment (7.3.1):
     - PromisesObjC (~> 1.2)
-  - GoogleUtilities/Logger (7.2.2):
+  - GoogleUtilities/Logger (7.3.1):
     - GoogleUtilities/Environment
-  - GoogleUtilities/MethodSwizzler (7.2.2):
+  - GoogleUtilities/MethodSwizzler (7.3.1):
     - GoogleUtilities/Logger
-  - GoogleUtilities/Network (7.2.2):
+  - GoogleUtilities/Network (7.3.1):
     - GoogleUtilities/Logger
     - "GoogleUtilities/NSData+zlib"
     - GoogleUtilities/Reachability
-  - "GoogleUtilities/NSData+zlib (7.2.2)"
-  - GoogleUtilities/Reachability (7.2.2):
+  - "GoogleUtilities/NSData+zlib (7.3.1)"
+  - GoogleUtilities/Reachability (7.3.1):
     - GoogleUtilities/Logger
-  - GoogleUtilities/UserDefaults (7.2.2):
+  - GoogleUtilities/UserDefaults (7.3.1):
     - GoogleUtilities/Logger
   - GoogleUtilitiesComponents (1.0.0):
     - GoogleUtilities/Logger
-  - GTMAppAuth (1.1.0):
+  - GTMAppAuth (1.2.1):
     - AppAuth/Core (~> 1.4)
-    - GTMSessionFetcher (~> 1.4)
-  - GTMSessionFetcher (1.5.0):
-    - GTMSessionFetcher/Full (= 1.5.0)
+    - GTMSessionFetcher/Core (~> 1.5)
   - GTMSessionFetcher/Core (1.5.0)
-  - GTMSessionFetcher/Full (1.5.0):
-    - GTMSessionFetcher/Core (= 1.5.0)
   - libevent (2.1.12)
   - MLKitCommon (2.1.0):
     - GoogleDataTransport (~> 8.0)
@@ -398,7 +396,7 @@ PODS:
   - nanopb/encode (2.30907.0)
   - OpenSSL-Universal (1.1.180)
   - PromisesObjC (1.2.12)
-  - Protobuf (3.14.0)
+  - Protobuf (3.15.8)
   - RCTRequired (0.63.2)
   - RCTTypeSafety (0.63.2):
     - FBLazyVector (= 0.63.2)
@@ -686,9 +684,9 @@ PODS:
     - React
   - RNSVG (12.1.0):
     - React
-  - SDWebImage (5.10.4):
-    - SDWebImage/Core (= 5.10.4)
-  - SDWebImage/Core (5.10.4)
+  - SDWebImage (5.11.0):
+    - SDWebImage/Core (= 5.11.0)
+  - SDWebImage/Core (5.11.0)
   - UMAppLoader (2.1.0)
   - UMBarCodeScannerInterface (6.1.0):
     - UMCore
@@ -1244,7 +1242,7 @@ SPEC CHECKSUMS:
   EXDevice: e69996534618927956e80a91135b5c0dd1d7d114
   EXDocumentPicker: a7e968177fe7c291c45f1948131ba25431961369
   EXErrorRecovery: 720641265b8cf95e6cdeb1884ac38e794a352488
-  EXFacebook: 14796048a11d3dceb8f3aea7f8d3e28ddb5e4c77
+  EXFacebook: 8dca3ad2f42e919c8cb9db78bca7b9e8de18680f
   EXFaceDetector: c309852d636c773340a0a0e5dd25985ad4f39f6e
   EXFileSystem: 6a34368c091f224cb04a68fee380b11eb6a3389c
   EXFirebaseAnalytics: cf36b67695d02c4bf587dbc123cba3e0efab61c6
@@ -1290,32 +1288,32 @@ SPEC CHECKSUMS:
   EXTaskManager: b873efc04d604ac3884ce28f7264427461841bed
   EXVideoThumbnails: cd257fc6e07884a704a5674d362a6410933acb68
   EXWebBrowser: 0b466c50e5ff61c9758095d49d5081e3229d77ac
-  FacebookSDK: 3b40a3bf7c42f727126e666877860497f7dafe4c
+  FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6
   FBLazyVector: 3ef4a7f62e7db01092f9d517d2ebc0d0677c4a37
   FBReactNativeSpec: dc7fa9088f0f2a998503a352b0554d69a4391c5a
-  FBSDKCoreKit: fada1a6a0076724678993ff05a633848765ff18c
+  FBSDKCoreKit: dace5abafc2fd9272733e6d027bcf18102712117
   Firebase: cd2ab85eec8170dc260186159f21072ecb679ad5
   FirebaseAnalytics: f3f8f75de34fe04141a69bb1c4bd7e24a80178e1
   FirebaseCore: ac35d680a0bf32319a59966a1478e0741536b97b
-  FirebaseCoreDiagnostics: 179bf3831213451c8addd036aca7fcf5492ec154
-  FirebaseInstallations: 42c86e7b02ff75b7f27f85833bf5dcb5f38a9774
+  FirebaseCoreDiagnostics: 3d36e05da74cb8b7ce30e6594a8f201b982c725c
+  FirebaseInstallations: bf2ec8dbf36ff4c91af6b9a003d15855757680c1
   Flipper: b6ab74c50d17c375c0ed3f729489cd1030f7c511
   Flipper-DoubleConversion: 38631e41ef4f9b12861c67d17cb5518d06badc41
   Flipper-Folly: f7a3caafbd74bda4827954fd7a6e000e36355489
   Flipper-Glog: 1dfd6abf1e922806c52ceb8701a3599a79a200a6
   Flipper-PeerTalk: 116d8f857dc6ef55c7a5a75ea3ceaafe878aadc9
-  Flipper-RSocket: 602921fee03edacf18f5d6f3d3594ba477f456e5
+  Flipper-RSocket: 127954abe8b162fcaf68d2134d34dc2bd7076154
   FlipperKit: 6a68648b412158059f9021b5e61c36bb3086ebc3
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
   GoogleAppMeasurement: 0c3b134b2c0a90c4c24833873894bfe0e42a0384
-  GoogleDataTransport: 1024b1a4dfbd7a0e92cb20d7e0a6f1fb66b449a4
+  GoogleDataTransport: 8b0e733ea77c9218778e5a9e34ba9508b8328939
   GoogleMLKit: 6ca2a10de262ee1017b52ac045e8967884ace992
   GoogleSignIn: 7137d297ddc022a7e0aa4619c86d72c909fa7213
   GoogleToolboxForMac: 471e0c05d39506e50e6398f46fa9a12ae0efeff9
-  GoogleUtilities: 31c5b01f978a70c6cff2afc6272b3f1921614b43
+  GoogleUtilities: e1d9ed4e544fc32a93e00e721400cbc3f377200d
   GoogleUtilitiesComponents: a69c0b3b369ba443e988141e75ef49d9010b1c80
-  GTMAppAuth: 197a8dabfea5d665224aa00d17f164fc2248dab9
+  GTMAppAuth: 5b53231ef6920f149ab84b2969cb0ab572da3077
   GTMSessionFetcher: b3503b20a988c4e20cc189aa798fd18220133f52
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   MLKitCommon: 9ed187a042139d51c0d8bf6a8301bb20b375c576
@@ -1324,7 +1322,7 @@ SPEC CHECKSUMS:
   nanopb: 59221d7f958fb711001e6a449489542d92ae113e
   OpenSSL-Universal: 1aa4f6a6ee7256b83db99ec1ccdaa80d10f9af9b
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
-  Protobuf: 0cde852566359049847168e51bd1c690e0f70056
+  Protobuf: adb85cd18a15bd1a777c158af9fd6e612a0e6d69
   RCTRequired: f13f25e7b12f925f1f6a6a8c69d929a03c0129fe
   RCTTypeSafety: 44982c5c8e43ff4141eb519a8ddc88059acd1f3a
   React: e1c65dd41cb9db13b99f24608e47dd595f28ca9a
@@ -1362,7 +1360,7 @@ SPEC CHECKSUMS:
   RNScreens: e8e8dd0588b5da0ab57dcca76ab9b2d8987757e0
   RNSharedElement: 00b1a1420d213a34459bb9a5aacabb38107d7948
   RNSVG: ce9d996113475209013317e48b05c21ee988d42e
-  SDWebImage: c666b97e1fa9c64b4909816a903322018f0a9c84
+  SDWebImage: 7acbb57630ac7db4a495547fb73916ff3e432f6b
   UMAppLoader: fe2708bb0ac5cd70052bc207d06aa3b7e72b9e97
   UMBarCodeScannerInterface: 79f92bea5f7af39b381a4c82298105ceb537408a
   UMCameraInterface: 81ff46700da88435f17afedfc88915eaede7e6a6
