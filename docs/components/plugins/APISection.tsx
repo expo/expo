@@ -40,10 +40,8 @@ const renderAPI = (
       TypeDocKind.Function,
       entry => !entry.name.includes('Listener')
     );
-    const eventSubscriptions = filterDataByKind(
-      data,
-      TypeDocKind.Function,
-      entry => entry.name.includes('Listener')
+    const eventSubscriptions = filterDataByKind(data, TypeDocKind.Function, entry =>
+      entry.name.includes('Listener')
     );
     const types = filterDataByKind(
       data,
