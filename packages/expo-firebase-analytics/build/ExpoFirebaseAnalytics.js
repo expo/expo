@@ -36,7 +36,7 @@ function callAnalyticsModule(funcName, ...args) {
     // In that case we show a warning and log the analytics events to the console.
     // The user can disable these by calling `setUnavailabilityLogging(false)`.
     if (DEFAULT_APP_NAME !== '[DEFAULT]') {
-        if (!pureJSAnalyticsTracker && DEFAULT_WEB_APP_OPTIONS) {
+        if (DEFAULT_WEB_APP_OPTIONS && !pureJSAnalyticsTracker) {
             pureJSAnalyticsTracker = new FirebaseAnalyticsJS(DEFAULT_WEB_APP_OPTIONS, {
                 clientId: clientIdForJS ?? Constants.installationId,
                 sessionId: Constants.sessionId,
