@@ -13,12 +13,13 @@ import * as Themes from '../constants/Themes';
 import AccountScreen from '../screens/AccountScreen';
 import AudioDiagnosticsScreen from '../screens/AudioDiagnosticsScreen';
 import DiagnosticsScreen from '../screens/DiagnosticsScreen';
-import ExperienceScreen from '../screens/ExperienceScreen';
 import GeofencingScreen from '../screens/GeofencingScreen';
 import LocationDiagnosticsScreen from '../screens/LocationDiagnosticsScreen';
 import ProfileAllProjectsScreen from '../screens/ProfileAllProjectsScreen';
 import ProfileAllSnacksScreen from '../screens/ProfileAllSnacksScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import ProjectManifestLauncherScreen from '../screens/ProjectManifestLauncherScreen';
+import ProjectScreen from '../screens/ProjectScreen';
 import ProjectsForAccountScreen from '../screens/ProjectsForAccountScreen';
 import ProjectsScreen from '../screens/ProjectsScreen';
 import QRCodeScreen from '../screens/QRCodeScreen';
@@ -116,6 +117,7 @@ function ProfileStackScreen() {
         component={SnacksForAccountScreen}
         options={{ title: 'Snacks' }}
       />
+      <ProfileStack.Screen name="Project" component={ProjectScreen} />
     </ProfileStack.Navigator>
   );
 }
@@ -260,7 +262,10 @@ export default (props: { theme: string }) => {
           )}
         </ModalStack.Screen>
         <ModalStack.Screen name="QRCode" component={QRCodeScreen} />
-        <ModalStack.Screen name="Experience" component={ExperienceScreen} />
+        <ModalStack.Screen
+          name="ProjectManifestLauncher"
+          component={ProjectManifestLauncherScreen}
+        />
       </ModalStack.Navigator>
     </NavigationContainer>
   );

@@ -26,6 +26,7 @@ export type Project = {
   description: string;
   fullName: string;
   iconUrl: string;
+  published: boolean; // legacy publishes
   lastPublishedTime: number;
   name: string;
   packageName: string;
@@ -129,8 +130,8 @@ function ProjectList({ data, loadMoreAsync, listTitle }: Props) {
   const totalAppCount = data.appCount ?? 0;
   const canLoadMore = currentAppCount < totalAppCount;
 
-  const renderItem = ({ item: app, index }) => {
-    const experienceInfo = { username: app.username, slug: app.packageName };
+  const renderItem = ({ item: app, index }: { item: Project; index: number }) => {
+    const experienceInfo = { id: app.id, username: app.username, slug: app.packageName };
     return (
       <ProjectListItem
         key={index.toString()}
