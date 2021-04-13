@@ -20,9 +20,21 @@ const filterPlatformAssetScales = require('./filterPlatformAssetScales');
     projectRoot = path.resolve(possibleProjectRoot, '..');
   }
 
+  let metroConfig;
+  try {
+    metroConfig = await loadAsync(projectRoot);
+  } catch (e) {
+    let message = `Error loading Metro config and Expo app config: ${e.message}\n\nMake sure your project is configured properly and your app.json / app.config.js is valid.`;
+    if (process.env.EAS_BUILD) {
+      message +=
+        '\nIf you are using environment variables in app.config.js, verify that you have set them in your EAS Build profile configuration.';
+    }
+    throw new Error(message);
+  }
+
   let assets;
   try {
-    assets = await fetchAssetManifestAsync(platform, projectRoot, entryFile);
+    assets = await fetchAssetManifestAsync(platform, projectRoot, entryFile, metroConfig);
   } catch (e) {
     throw new Error(
       "Error loading assets JSON from Metro. Ensure you've followed all expo-updates installation steps correctly. " +
@@ -103,13 +115,12 @@ function getBasePath(asset) {
 }
 
 // Spawn a Metro server to get the asset manifest
-async function fetchAssetManifestAsync(platform, projectRoot, entryFile) {
+async function fetchAssetManifestAsync(platform, projectRoot, entryFile, metroConfig) {
   // Project-level babel config does not load unless we change to the
   // projectRoot before instantiating the server
   process.chdir(projectRoot);
 
-  const config = await loadAsync(projectRoot);
-  const server = new Server(config);
+  const server = new Server(metroConfig);
 
   const requestOpts = {
     entryFile,
