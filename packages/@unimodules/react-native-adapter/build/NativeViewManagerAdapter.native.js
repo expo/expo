@@ -1,5 +1,3 @@
-import omit from 'lodash/omit';
-import pick from 'lodash/pick';
 import React from 'react';
 import { NativeModules, UIManager, ViewPropTypes, requireNativeComponent } from 'react-native';
 // To make the transition from React Native's `requireNativeComponent` to Expo's
@@ -43,13 +41,26 @@ export function requireNativeViewManager(viewName) {
     ];
     // Define a component for universal-module authors to access their native view manager
     function NativeComponentAdapter(props, ref) {
-        // TODO: `omit` may incur a meaningful performance cost across many native components rendered
-        // in the same update. Profile this and write out a partition function if this is a bottleneck.
         const nativeProps = pick(props, reactNativeComponentPropNames);
         const proxiedProps = omit(props, reactNativeComponentPropNames);
         return React.createElement(ReactNativeComponent, Object.assign({}, nativeProps, { proxiedProperties: proxiedProps, ref: ref }));
     }
     NativeComponentAdapter.displayName = `Adapter<${viewName}>`;
     return React.forwardRef(NativeComponentAdapter);
+}
+function omit(props, propNames) {
+    const copied = { ...props };
+    for (const propName of propNames) {
+        delete copied[propName];
+    }
+    return copied;
+}
+function pick(props, propNames) {
+    return propNames.reduce((prev, curr) => {
+        if (curr in props) {
+            prev[curr] = props[curr];
+        }
+        return prev;
+    }, {});
 }
 //# sourceMappingURL=NativeViewManagerAdapter.native.js.map
