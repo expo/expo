@@ -90,7 +90,7 @@ import * as ImagePicker from 'expo-image-picker';
 
 ### `ImagePicker.requestCameraPermissionsAsync()`
 
-Asks the user to grant permissions for accessing camera. Alias for `Permissions.askAsync(Permissions.CAMERA)`. This does nothing on web because the browser camera is not used.
+Asks the user to grant permissions for accessing camera. This does nothing on web because the browser camera is not used.
 
 #### Returns
 
@@ -98,7 +98,7 @@ A promise that resolves to an object of type [CameraPermissionResponse](#imagepi
 
 ### `ImagePicker.requestMediaLibraryPermissionsAsync(writeOnly)`
 
-Asks the user to grant permissions for accessing user's photo. Alias for `Permissions.askAsync(Permissions.MEDIA_LIBRARY)`. This does nothing on web.
+Asks the user to grant permissions for accessing user's photo. This does nothing on web.
 
 #### Arguments
 
@@ -110,7 +110,7 @@ A promise that resolves to an object of type [MediaLibraryPermissionResponse](#i
 
 ### `ImagePicker.getCameraPermissionsAsync()`
 
-Checks user's permissions for accessing camera. Alias for `Permissions.getAsync(Permissions.CAMERA)`.
+Checks user's permissions for accessing camera.
 
 #### Returns
 
@@ -118,7 +118,7 @@ A promise that resolves to an object of type [CameraPermissionResponse](#imagepi
 
 ### `ImagePicker.getMediaLibraryPermissionsAsync()`
 
-Checks user's permissions for accessing photos. Alias for `Permissions.getAsync(Permissions.MEDIA_LIBRARY)`.
+Checks user's permissions for accessing photos.
 
 #### Arguments
 
