@@ -1,4 +1,4 @@
-import { EvilIcons } from '@expo/vector-icons';
+import EvilIcons from '@expo/vector-icons/build/EvilIcons';
 import { Link, useLinkProps } from '@react-navigation/native';
 import React from 'react';
 import {

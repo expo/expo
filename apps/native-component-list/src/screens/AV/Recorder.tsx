@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
 import { Audio } from 'expo-av';
 import React from 'react';
 import {

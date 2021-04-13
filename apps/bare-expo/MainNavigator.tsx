@@ -60,7 +60,7 @@ const Tab = createBottomTabNavigator();
 const Switch = createStackNavigator();
 
 const linking = {
-  prefixes: [Platform.select({ web: Linking.makeUrl('/'), default: 'bareexpo://' })],
+  prefixes: [Platform.select({ web: Linking.createURL('/', { scheme: 'bareexpo' }), default: 'bareexpo://' })],
   config: {
     screens: {
       main: {

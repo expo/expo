@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
 import Slider from '@react-native-community/slider';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import React from 'react';
@@ -20,12 +20,12 @@ interface Props {
   header?: JSX.Element;
   extraButtons?: (
     | {
-        iconName: string;
-        title: string;
-        onPress: (event: GestureResponderEvent) => void;
-        active: boolean;
-        disable?: boolean;
-      }
+      iconName: string;
+      title: string;
+      onPress: (event: GestureResponderEvent) => void;
+      active: boolean;
+      disable?: boolean;
+    }
     | (() => React.ReactNode)
   )[];
   style?: StyleProp<ViewStyle>;

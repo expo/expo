@@ -1,5 +1,5 @@
 import { ActionSheetOptions } from '@expo/react-native-action-sheet';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
 import React from 'react';
 import { Text, TextStyle, View } from 'react-native';
 
@@ -56,11 +56,11 @@ export default class ShowActionSheetButton extends React.PureComponent<Props> {
       : undefined;
     const titleTextStyle: TextStyle | undefined = withCustomStyles
       ? {
-          fontSize: 24,
-          textAlign: 'center',
-          fontWeight: '700',
-          color: 'orange',
-        }
+        fontSize: 24,
+        textAlign: 'center',
+        fontWeight: '700',
+        color: 'orange',
+      }
       : undefined;
     const messageTextStyle: TextStyle | undefined = withCustomStyles
       ? { fontSize: 12, color: 'purple', textAlign: 'right' }

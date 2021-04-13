@@ -1,4 +1,6 @@
-import { Entypo, Ionicons, MaterialIcons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
+import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
+import Entypo from '@expo/vector-icons/build/Entypo';
 import { Assets as StackAssets } from '@react-navigation/stack';
 import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';

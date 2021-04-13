@@ -1,4 +1,4 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
 import React from 'react';
 import { Platform, ScrollView, Text, View } from 'react-native';
 
