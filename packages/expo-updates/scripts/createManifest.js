@@ -27,7 +27,7 @@ const filterPlatformAssetScales = require('./filterPlatformAssetScales');
     let message = `Error loading Metro config and Expo app config: ${e.message}\n\nMake sure your project is configured properly and your app.json / app.config.js is valid.`;
     if (process.env.EAS_BUILD) {
       message +=
-        '\nIf you are using environment variables in app.config.js, verify that you have set them in your EAS Build profile configuration.';
+        '\nIf you are using environment variables in app.config.js, verify that you have set them in your EAS Build profile configuration or secrets.';
     }
     throw new Error(message);
   }
