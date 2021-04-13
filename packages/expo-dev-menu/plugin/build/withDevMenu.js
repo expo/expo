@@ -85,7 +85,12 @@ const withDevMenuPodfile = config => {
         async (config) => {
             await editPodfile(config, podfile => {
                 podfile = podfile.replace("platform :ios, '10.0'", "platform :ios, '11.0'");
-                podfile = addLines(podfile, 'use_react_native', 0, [`  ${DEV_MENU_POD_IMPORT}`]);
+                // Match both variations of Ruby config:
+                // unknown: pod 'expo-dev-menu', path: '../node_modules/expo-dev-menu', :configurations => :debug
+                // Rubocop: pod 'expo-dev-menu', path: '../node_modules/expo-dev-menu', configurations: :debug
+                if (!podfile.match(/pod ['"]expo-dev-menu['"],\s?path: ['"]\.\.\/node_modules\/expo-dev-menu['"],\s?:?configurations:?\s(?:=>\s)?:debug/)) {
+                    podfile = addLines(podfile, 'use_react_native', 0, [`  ${DEV_MENU_POD_IMPORT}`]);
+                }
                 return podfile;
             });
             return config;
