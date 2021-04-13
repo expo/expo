@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Pedometer `watchStepCount` returns an unified Unimodules type now - `Subscription`, instead of the custom interface type. ([#12497](https://github.com/expo/expo/pull/12497) by [@Simek](https://github.com/simek))
+
 ## 10.1.1 — 2021-04-01
 
 _This version does not introduce any user-facing changes._
