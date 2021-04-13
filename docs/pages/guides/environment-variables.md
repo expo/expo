@@ -13,6 +13,14 @@ If you have installed the [`expo-constants`](../versions/latest/sdk/constants.md
 
 > While the `.env` property can be useful during development, this property is not available when running `expo publish` or `expo build`. It should not be used for feature flagging or other app-specific configuration because of this.
 
+For example, if you are developing on Mac/Linux, create and source a file that looks like this:
+
+```
+export EXPO_HELLO=world
+export EXPO_MY_SECRET_VAR=secret
+export REACT_NATIVE_SECRET=anotherSecret
+```
+
 ### Using app manifest `.extra`
 
 In the app manifest, there is also a `.extra` property. Unlike `.env`, this property is included when you publish your project with `expo publish` or `expo build`. The contents of the `.extra` property are taken from your app manifest. By default, this does not add any environment variables, but we can make that happen with the [dynamic app manifest configuration](../workflow/configuration.md#app-config).
