@@ -6,7 +6,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-permissio
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-> **expo-permissions is deprecated.** Use permissions getters and requesters on specific modules instead, such as [MediaLibrary.getPermissionsAsync()](../media-library.md/#medialibrarygetpermissionsasync) and [MediaLibrary.requestPermissionsAsync()](../media-library.md/#medialibraryrequestpermissionsasync)..
+> **expo-permissions is deprecated.** Use permissions getters and requesters in specific modules instead, such as [MediaLibrary.getPermissionsAsync()](../media-library.md/#medialibrarygetpermissionsasync) and [MediaLibrary.requestPermissionsAsync()](../media-library.md/#medialibraryrequestpermissionsasync)..
 
 When you are creating an app that requires access to potentially sensitive information on a user's device, such as their location or contacts, you need to ask for the user's permission first. The `expo-permissions` module makes requesting these permissions easy, fast, and reliable.
 
@@ -154,7 +154,7 @@ function App() {
 
 ### `Permissions.getAsync(...types)`
 
-> **Deprecated.** Use permissions getters on specific modules instead, such as [MediaLibrary.getPermissionsAsync()](../media-library.md/#medialibrarygetpermissionsasync).
+> **Deprecated.** Use permissions getters in specific modules instead, such as [MediaLibrary.getPermissionsAsync()](../media-library.md/#medialibrarygetpermissionsasync).
 
 Determines whether your app has already been granted access to the provided permissions types.
 
@@ -189,7 +189,7 @@ async function checkMultiPermissions() {
 
 ### `Permissions.askAsync(...types)`
 
-> **Deprecated.** Use permissions requesters on specific modules instead, such as [MediaLibrary.requestPermissionsAsync()](../media-library.md/#medialibraryrequestpermissionsasync).
+> **Deprecated.** Use permissions requesters in specific modules instead, such as [MediaLibrary.requestPermissionsAsync()](../media-library.md/#medialibraryrequestpermissionsasync).
 
 Prompt the user for types of permissions. If they have already granted access, response will be success.
 
