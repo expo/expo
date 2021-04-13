@@ -19,6 +19,7 @@
 - Fixed local assets URIs on Android to be compliant with File URI specification. Now file URI takes the form of `file:///*` instead of `file:/*`. ([#12428](https://github.com/expo/expo/pull/12428) by [@tsapeta](https://github.com/tsapeta))
 - Fixed Updates module methods not rejecting properly in iOS managed workflow apps where updates are disabled.
 - Fixed uncaught exception in parseDateString on Android API 21-23. ([#12492](https://github.com/expo/expo/pull/12492) by [mrs2296](https://github.com/mrs2296))
+- Improved error message in createManifest script when there is an error getting the project's metro config.
 
 ## 0.5.3 — 2021-03-30
 
