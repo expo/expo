@@ -167,7 +167,7 @@ export function setUnavailabilityLogging(isEnabled) {
  * which is deprecated and will be removed in SDK 44. At that time, this method
  * will need to be used to set the `clientId` when using Expo Go.
  *
- * @param clientId value to set for the current session in Expo Go
+ * @param clientId UUIDv4 string value to set for the current session in Expo Go
  */
 export function setClientId(clientId) {
     if (!ExpoFirebaseAnalytics.setClientId) {

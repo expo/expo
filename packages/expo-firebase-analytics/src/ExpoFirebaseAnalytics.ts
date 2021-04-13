@@ -48,8 +48,19 @@ function callAnalyticsModule(funcName: string, ...args) {
   // In that case we show a warning and log the analytics events to the console.
   // The user can disable these by calling `setUnavailabilityLogging(false)`.
   if (DEFAULT_APP_NAME !== '[DEFAULT]') {
-    if (!pureJSAnalyticsTracker) {
-      maybeCreatePureJSAnalyticsTracker();
+    if (!pureJSAnalyticsTracker && DEFAULT_WEB_APP_OPTIONS) {
+      pureJSAnalyticsTracker = new FirebaseAnalyticsJS(DEFAULT_WEB_APP_OPTIONS, {
+        clientId: clientIdForJS ?? Constants.installationId,
+        sessionId: Constants.sessionId,
+        strictNativeEmulation: true,
+        appName: Constants.manifest?.name || 'Unnamed Expo project',
+        appVersion: Constants.nativeAppVersion || undefined,
+        headers: {
+          // Google Analaytics seems to ignore certain user-agents. (e.g. "okhttp/3.12.1")
+          // Set a user-agent that clearly identifies the Expo client.
+          'user-agent': `Expo/${Constants.nativeAppVersion}`,
+        },
+      });
     }
     if (pureJSAnalyticsTracker) {
       return pureJSAnalyticsTracker[funcName].call(pureJSAnalyticsTracker, ...args);
@@ -68,23 +79,6 @@ function callAnalyticsModule(funcName: string, ...args) {
 
   // Make the call
   return ExpoFirebaseAnalytics[funcName].call(ExpoFirebaseAnalytics, ...args);
-}
-
-function maybeCreatePureJSAnalyticsTracker() {
-  if (DEFAULT_APP_NAME !== '[DEFAULT]' && DEFAULT_WEB_APP_OPTIONS) {
-    pureJSAnalyticsTracker = new FirebaseAnalyticsJS(DEFAULT_WEB_APP_OPTIONS, {
-      clientId: clientIdForJS ?? Constants.installationId,
-      sessionId: Constants.sessionId,
-      strictNativeEmulation: true,
-      appName: Constants.manifest?.name || 'Unnamed Expo project',
-      appVersion: Constants.nativeAppVersion || undefined,
-      headers: {
-        // Google Analaytics seems to ignore certain user-agents. (e.g. "okhttp/3.12.1")
-        // Set a user-agent that clearly identifies the Expo client.
-        'user-agent': `Expo/${Constants.nativeAppVersion}`,
-      },
-    });
-  }
 }
 
 export default {
@@ -120,6 +114,8 @@ export default {
   },
   setClientId(clientId: string): void {
     clientIdForJS = clientId;
-    maybeCreatePureJSAnalyticsTracker();
+    if (pureJSAnalyticsTracker) {
+      pureJSAnalyticsTracker.setClientId(clientId);
+    }
   },
 };
