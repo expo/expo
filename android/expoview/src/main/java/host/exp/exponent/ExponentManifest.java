@@ -139,6 +139,8 @@ public class ExponentManifest {
   public static final String DEEP_LINK_SEPARATOR = "--";
   public static final String DEEP_LINK_SEPARATOR_WITH_SLASH = "--/";
   public static final String QUERY_PARAM_KEY_RELEASE_CHANNEL = "release-channel";
+  public static final String QUERY_PARAM_KEY_EXPO_UPDATES_RUNTIME_VERSION = "runtime-version";
+  public static final String QUERY_PARAM_KEY_EXPO_UPDATES_CHANNEL_NAME = "channel-name";
 
   private static final int MAX_BITMAP_SIZE = 192;
   private static final String REDIRECT_SNIPPET = "exp.host/--/to-exp/";

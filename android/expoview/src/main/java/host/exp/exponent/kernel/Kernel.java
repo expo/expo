@@ -35,6 +35,7 @@ import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -614,8 +615,8 @@ public class Kernel extends KernelInterface {
         }
       }
 
-      // ignore any query param other than the release-channel
-      // as these will cause the client to treat this as a different experience
+      // transfer the release-channel param to the built URL as this will cause the client to treat
+      // this as a different experience
       String releaseChannel = uri.getQueryParameter(ExponentManifest.QUERY_PARAM_KEY_RELEASE_CHANNEL);
       builder.query(null);
       if (releaseChannel != null) {
@@ -628,6 +629,17 @@ public class Kernel extends KernelInterface {
           releaseChannel = releaseChannel.substring(0, releaseChannelDeepLinkPosition);
         }
         builder.appendQueryParameter(ExponentManifest.QUERY_PARAM_KEY_RELEASE_CHANNEL, releaseChannel);
+      }
+
+      // transfer the expo-updates query params: runtime-version, channel-name
+      List<String> expoUpdatesQueryParameters = Arrays.asList(
+              ExponentManifest.QUERY_PARAM_KEY_EXPO_UPDATES_RUNTIME_VERSION,
+              ExponentManifest.QUERY_PARAM_KEY_EXPO_UPDATES_CHANNEL_NAME);
+      for (String queryParameter : expoUpdatesQueryParameters) {
+        String queryParameterValue = uri.getQueryParameter(queryParameter);
+        if (queryParameterValue != null) {
+          builder.appendQueryParameter(queryParameter, queryParameterValue);
+        }
       }
 
       // ignore fragments as well (e.g. those added by auth-session)
