@@ -78,7 +78,7 @@ const filterPlatformAssetScales = require('./filterPlatformAssetScales');
   fs.writeFileSync(path.join(destinationDir, 'app.manifest'), JSON.stringify(manifest));
 })().catch(e => {
   // Wrap in regex to make it easier for log parsers (like `@expo/xcpretty`) to find this error.
-  e.message = `@build-script-error-begin\n${e.message}\n@build-script-error-end\n`
+  e.message = `@build-script-error-begin\n${e.message}\n@build-script-error-end\n`;
   console.error(e);
   process.exit(1);
 });
@@ -91,7 +91,7 @@ function getAndroidResourceFolderName(asset) {
 
 // copied from react-native/Libraries/Image/assetPathUtils.js
 function getAndroidResourceIdentifier(asset) {
-  var folderPath = getBasePath(asset);
+  const folderPath = getBasePath(asset);
   return (folderPath + '/' + asset.name)
     .toLowerCase()
     .replace(/\//g, '_') // Encode folder structure in file name
@@ -107,7 +107,7 @@ function getIosDestinationDir(asset) {
 
 // copied from react-native/Libraries/Image/assetPathUtils.js
 function getBasePath(asset) {
-  var basePath = asset.httpServerLocation;
+  let basePath = asset.httpServerLocation;
   if (basePath[0] === '/') {
     basePath = basePath.substr(1);
   }
