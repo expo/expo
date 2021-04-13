@@ -63,7 +63,7 @@ export function requireNativeViewManager<P = any>(viewName: string): React.Compo
 }
 
 function omit(props: Record<string, any>, propNames: string[]) {
-  const copied = { ...props }
+  const copied = { ...props };
   for (const propName of propNames) {
     delete copied[propName];
   }
