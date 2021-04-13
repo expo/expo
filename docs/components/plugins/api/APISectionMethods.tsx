@@ -7,7 +7,7 @@ import { H2, H3Code, H4 } from '~/components/plugins/Headings';
 import { MethodDefinitionData, MethodSignatureData } from '~/components/plugins/api/APIDataTypes';
 import {
   CommentTextBlock,
-  renderers,
+  mdRenderers,
   renderParam,
   resolveTypeName,
 } from '~/components/plugins/api/APISectionUtils';
@@ -33,7 +33,7 @@ const renderMethod = (
       </H3Code>
       {parameters ? <H4>Arguments</H4> : null}
       {parameters ? <UL>{parameters?.map(renderParam)}</UL> : null}
-      <CommentTextBlock comment={comment} renderers={renderers} />
+      <CommentTextBlock comment={comment} />
       {resolveTypeName(type) !== 'undefined' ? (
         <div>
           <H4>Returns</H4>
@@ -43,7 +43,7 @@ const renderMethod = (
             </LI>
           </UL>
           {comment?.returns ? (
-            <ReactMarkdown renderers={renderers}>{comment.returns}</ReactMarkdown>
+            <ReactMarkdown renderers={mdRenderers}>{comment.returns}</ReactMarkdown>
           ) : null}
         </div>
       ) : null}
