@@ -40,12 +40,17 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-      - uses: actions/cache@v2
-        with:
-          path: ios/Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
+      # - uses: actions/cache@v2
+      #   id: pods-cache
+      #   with:
+      #     path: ios/Pods
+      #     key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-pods-
+      - name: 🥥 Install pods in ios/Pods
+        run: pod install
+        working-directory: ios
+        # if: steps.pods-cache.outputs.cache-hit != 'true' || hashFiles('ios/Podfile.lock') != hashFiles('ios/Pods/Manifest.lock')
       - name: Build iOS Expo client shell app
         timeout-minutes: 120
         run: fastlane ios create_expo_client_build
