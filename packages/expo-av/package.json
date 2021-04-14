@@ -36,8 +36,6 @@
   },
   "dependencies": {
     "@expo/config-plugins": "^1.0.18",
-    "lodash": "^4.17.15",
-    "nullthrows": "^1.1.0",
     "unimodules-permissions-interface": "~6.1.0"
   }
 }
