@@ -42,7 +42,7 @@
   "expo-face-detector": "~10.0.1",
   "expo-facebook": "~11.0.5",
   "expo-file-system": "~11.0.2",
-  "expo-firebase-analytics": "~4.0.1",
+  "expo-firebase-analytics": "~4.0.2",
   "expo-firebase-core": "~3.0.0",
   "expo-font": "~9.1.0",
   "expo-gl": "~10.2.0",
