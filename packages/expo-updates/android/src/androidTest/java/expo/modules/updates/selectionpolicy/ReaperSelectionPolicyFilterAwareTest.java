@@ -1,4 +1,6 @@
-package expo.modules.updates.launcher;
+package expo.modules.updates.selectionpolicy;
+
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -10,11 +12,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 import expo.modules.updates.db.entity.UpdateEntity;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
-public class SelectionPolicyNewestTest {
+public class ReaperSelectionPolicyFilterAwareTest {
   String runtimeVersion = "1.0";
   String scopeKey = "dummyScope";
   UpdateEntity update1 = new UpdateEntity(UUID.randomUUID(), new Date(1608667857774L), runtimeVersion, scopeKey);
@@ -22,7 +23,7 @@ public class SelectionPolicyNewestTest {
   UpdateEntity update3 = new UpdateEntity(UUID.randomUUID(), new Date(1608667857776L), runtimeVersion, scopeKey);
   UpdateEntity update4 = new UpdateEntity(UUID.randomUUID(), new Date(1608667857777L), runtimeVersion, scopeKey);
   UpdateEntity update5 = new UpdateEntity(UUID.randomUUID(), new Date(1608667857778L), runtimeVersion, scopeKey);
-  SelectionPolicy selectionPolicy = new SelectionPolicyNewest(runtimeVersion);
+  ReaperSelectionPolicy selectionPolicy = new ReaperSelectionPolicyFilterAware();
 
   @Test
   public void testSelectUpdatesToDelete_onlyOneUpdate() {
@@ -34,9 +35,9 @@ public class SelectionPolicyNewestTest {
   @Test
   public void testSelectUpdatesToDelete_olderUpdates() {
     List<UpdateEntity> updatesToDelete = selectionPolicy.selectUpdatesToDelete(
-      Arrays.asList(update1, update2, update3),
-      update3,
-      null);
+            Arrays.asList(update1, update2, update3),
+            update3,
+            null);
 
     Assert.assertEquals(1, updatesToDelete.size());
     Assert.assertTrue(updatesToDelete.contains(update1));
@@ -47,9 +48,9 @@ public class SelectionPolicyNewestTest {
   @Test
   public void testSelectUpdatesToDelete_newerUpdates() {
     List<UpdateEntity> updatesToDelete = selectionPolicy.selectUpdatesToDelete(
-      Arrays.asList(update1, update2),
-      update1,
-      null);
+            Arrays.asList(update1, update2),
+            update1,
+            null);
 
     Assert.assertEquals(0, updatesToDelete.size());
   }
@@ -57,9 +58,9 @@ public class SelectionPolicyNewestTest {
   @Test
   public void testSelectUpdatesToDelete_olderAndNewerUpdates() {
     List<UpdateEntity> updatesToDelete = selectionPolicy.selectUpdatesToDelete(
-      Arrays.asList(update1, update2, update3, update4, update5),
-      update4,
-      null);
+            Arrays.asList(update1, update2, update3, update4, update5),
+            update4,
+            null);
 
     Assert.assertEquals(2, updatesToDelete.size());
     Assert.assertTrue(updatesToDelete.contains(update1));
