@@ -6,7 +6,7 @@ import java.util.List;
 
 import expo.modules.updates.db.entity.UpdateEntity;
 
-public class SelectionPolicy implements expo.modules.updates.launcher.SelectionPolicy {
+public class SelectionPolicy {
   private LauncherSelectionPolicy mLauncherSelectionPolicy;
   private LoaderSelectionPolicy mLoaderSelectionPolicy;
   private ReaperSelectionPolicy mReaperSelectionPolicy;
