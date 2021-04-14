@@ -25,6 +25,9 @@ public abstract class UpdateDao {
   @Query("SELECT * FROM updates WHERE scope_key = :scopeKey AND status IN (:statuses);")
   public abstract List<UpdateEntity> _loadUpdatesForProjectWithStatuses(String scopeKey, List<UpdateStatus> statuses);
 
+  @Query("SELECT * FROM updates WHERE status = :status;")
+  public abstract List<UpdateEntity> _loadUpdatesWithStatus(UpdateStatus status);
+
   @Query("SELECT * FROM updates WHERE id = :id;")
   public abstract List<UpdateEntity> _loadUpdatesWithId(UUID id);
 
@@ -50,6 +53,10 @@ public abstract class UpdateDao {
 
   public List<UpdateEntity> loadLaunchableUpdatesForScope(String scopeKey) {
     return _loadUpdatesForProjectWithStatuses(scopeKey, Arrays.asList(UpdateStatus.READY, UpdateStatus.EMBEDDED, UpdateStatus.DEVELOPMENT));
+  }
+
+  public List<UpdateEntity> loadEmbeddedUpdates() {
+    return _loadUpdatesWithStatus(UpdateStatus.EMBEDDED);
   }
 
   public UpdateEntity loadUpdateWithId(UUID id) {
