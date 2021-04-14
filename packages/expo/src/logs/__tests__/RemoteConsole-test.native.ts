@@ -1,5 +1,5 @@
 // import { EXPO_CONSOLE_METHOD_NAME } from '../LogSerialization';
-import RemoteConsole from '../RemoteConsole';
+import * as RemoteConsole from '../RemoteConsole';
 import RemoteLogging from '../RemoteLogging';
 
 jest.mock('../RemoteLogging', () => {

@@ -111,6 +111,7 @@ internal class WebBrowserModuleTest {
       enableBarCollapsing = true,
       enableDefaultShareMenuItem = true,
       showInRecents = true,
+      createTask = true,
       showTitle = true
     ), promise)
 
@@ -167,6 +168,27 @@ internal class WebBrowserModuleTest {
       assertTrue((it.flags and Intent.FLAG_ACTIVITY_NEW_TASK) > 0)
       assertTrue((it.flags and Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS) > 0)
       assertTrue((it.flags and Intent.FLAG_ACTIVITY_NO_HISTORY) > 0)
+    }
+  }
+
+  @Test
+  fun testCreateTaskFalseCorrectlyPassedToIntent() {
+    // given
+    val intentSlot = slot<Intent>()
+    val mock = mockkCustomTabsActivitiesHelper(defaultCanResolveIntent = true, startIntentSlot = intentSlot)
+    initialize(mock)
+
+    // when
+    module.openBrowserAsync("http://expo.io", browserArguments(
+      toolbarColor = "#000000",
+      browserPackage = "com.browser.package",
+      createTask = false
+    ), promise)
+
+    intentSlot.captured.let {
+      assertFalse((it.flags and Intent.FLAG_ACTIVITY_NEW_TASK) > 0)
+      assertFalse((it.flags and Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS) > 0)
+      assertFalse((it.flags and Intent.FLAG_ACTIVITY_NO_HISTORY) > 0)
     }
   }
 

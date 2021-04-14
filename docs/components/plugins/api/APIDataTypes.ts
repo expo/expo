@@ -35,6 +35,7 @@ export type TypeDefinitionData = {
     name: string;
   };
   typeArguments?: TypeDefinitionData[];
+  declaration?: TypeDeclarationContentData;
 };
 
 export type TypeDefinitionTypesData = {
@@ -138,11 +139,13 @@ export type TypeGeneralData = {
   kind: TypeDocKind;
 };
 
+export type TypeDeclarationContentData = {
+  signatures: TypeSignaturesData[];
+  children: TypePropertyData[];
+};
+
 export type TypeDeclarationData = {
-  declaration?: {
-    signatures: TypeSignaturesData[];
-    children: TypePropertyData[];
-  };
+  declaration?: TypeDeclarationContentData;
   type: string;
   types: TypeValueData[];
   typeArguments?: TypeDefinitionData[];
@@ -150,6 +153,7 @@ export type TypeDeclarationData = {
 
 export type TypeSignaturesData = {
   parameters: MethodParamData[];
+  type: TypeDefinitionData;
 };
 
 export type TypePropertyData = {
