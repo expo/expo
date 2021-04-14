@@ -160,7 +160,7 @@ module.exports = function withCustomName(config, name) {
 
 ```json
 {
-  "name": "custom-app",
+  "name": "custom-my-app",
   "plugins": ["./my-plugin", "app"]
 }
 ```
