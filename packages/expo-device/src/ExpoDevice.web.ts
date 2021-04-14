@@ -31,7 +31,6 @@ export default {
   },
   get totalMemory(): number | null {
     if (Platform.isDOMAvailable && 'deviceMemory' in navigator) {
-      // @ts-ignore: untyped
       const { deviceMemory } = navigator;
       return convertGiBtoBytes(deviceMemory);
     }

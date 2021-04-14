@@ -6,7 +6,7 @@ if (Platform.isDOMAvailable) {
     const parser = new UAParser(window.navigator.userAgent);
     result = parser.getResult();
 }
-export function convertGiBtoBytes(gib) {
+function convertGiBtoBytes(gib) {
     return gib * 1024 ** 3;
 }
 export default {
@@ -27,7 +27,6 @@ export default {
     },
     get totalMemory() {
         if (Platform.isDOMAvailable && 'deviceMemory' in navigator) {
-            // @ts-ignore: untyped
             const { deviceMemory } = navigator;
             return convertGiBtoBytes(deviceMemory);
         }
