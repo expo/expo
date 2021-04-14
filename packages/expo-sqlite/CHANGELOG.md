@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Removed lodash. ([#12523](https://github.com/expo/expo/pull/12523) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ## 9.1.0 — 2021-03-10
