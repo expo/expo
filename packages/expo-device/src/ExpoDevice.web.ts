@@ -25,7 +25,15 @@ export default {
   get deviceYearClass(): null {
     return null;
   },
-  get totalMemory(): null {
+  get totalMemory(): number | null {
+    if ('deviceMemory' in navigator) {
+      // @ts-ignore
+      const { deviceMemory = 0 } = navigator;
+      const mb = deviceMemory * 1000;
+      const kb = mb * 1000;
+      const b = kb * 1000;
+      return b;
+    }
     return null;
   },
   get supportedCpuArchitectures(): string[] | null {
