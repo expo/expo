@@ -18,7 +18,7 @@ module.exports = function createMockConstants() {
   const mockId = `${mockDeveloper}/${mockSlug}`;
   const mockLinkingUri = `exp://exp.host/${mockDeveloper}/${mockSlug}/--/`;
   const mockHostUri = `exp.host/${mockDeveloper}/${mockSlug}`;
-  const mockSdkVersion = expoConfig.sdkVersion || '36';
+  const mockSdkVersion = expoConfig.sdkVersion || '41';
 
   return {
     deviceName: 'Test Phone',
