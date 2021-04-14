@@ -9,6 +9,8 @@ import { Event } from '@sentry/types';
 const ERRORS_TO_DISCARD = [
   // This error only appears in Safari
   "undefined is not an object (evaluating 'window.__pad.performLoop')",
+  // This error appears in Firefox related to local storage and flooded our Sentry bandwidth
+  'SecurityError: The operation is insecure.',
 ];
 
 const REPORTED_ERRORS_KEY = 'sentry:reportedErrors';
