@@ -7,7 +7,7 @@ if (Platform.isDOMAvailable) {
     result = parser.getResult();
 }
 function convertGiBtoBytes(gib) {
-    return gib * 1024 ** 3;
+    return Math.round(gib * 1024 ** 3);
 }
 export default {
     get isDevice() {
