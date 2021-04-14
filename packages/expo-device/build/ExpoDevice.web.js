@@ -6,6 +6,9 @@ if (Platform.isDOMAvailable) {
     const parser = new UAParser(window.navigator.userAgent);
     result = parser.getResult();
 }
+export function convertGiBtoBytes(gib) {
+    return gib * 1024 ** 3;
+}
 export default {
     get isDevice() {
         return true;
@@ -23,13 +26,10 @@ export default {
         return null;
     },
     get totalMemory() {
-        if ('deviceMemory' in navigator) {
-            // @ts-ignore
-            const { deviceMemory = 0 } = navigator;
-            const mb = deviceMemory * 1000;
-            const kb = mb * 1000;
-            const b = kb * 1000;
-            return b;
+        if (Platform.isDOMAvailable && 'deviceMemory' in navigator) {
+            // @ts-ignore: untyped
+            const { deviceMemory } = navigator;
+            return convertGiBtoBytes(deviceMemory);
         }
         return null;
     },

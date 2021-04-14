@@ -1,4 +1,5 @@
 import { DeviceType } from './Device.types';
+export declare function convertGiBtoBytes(gib: number): number;
 declare const _default: {
     readonly isDevice: boolean;
     readonly brand: null;
