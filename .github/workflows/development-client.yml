@@ -56,6 +56,12 @@ jobs:
       - name: Eject
         working-directory: ../development-client-android-test
         run: expo-cli eject
+      - name: Bump `build tools`
+        working-directory: ../development-client-android-test
+        run: sed -i -e 's/buildToolsVersion\ =\ \"29\..\..\"/buildToolsVersion\ = \"30\.0\.3\"/' ./android/build.gradle
+      - name: Bump `android build tools`
+        working-directory: ../development-client-android-test
+        run: sed -i -e 's/com\.android\.tools\.build:gradle:3\..\../com\.android\.tools\.build:gradle:3\.5\.4/' ./android/build.gradle
       - name: Build debug
         env:
           ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/
