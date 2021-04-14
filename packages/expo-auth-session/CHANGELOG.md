@@ -89,3 +89,4 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - Fix `AuthSession.getDefaultReturnUrl()` returning wrong URL while using release channels. ([#7687](https://github.com/expo/expo/pull/7687) by [@lukmccall](https://github.com/lukmccall))
+- Fixed a bug where the `useAutoDiscovery()` hook hadn't finished before a component was unmounted. There was no cleanup, so when the fetch request completed, a react state update was attempted on an unmounted component. ([#12491](https://github.com/expo/expo/pull/12491) by [@andrew1601](https://github.com/andrew1601))
