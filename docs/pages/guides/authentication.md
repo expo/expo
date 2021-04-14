@@ -1090,6 +1090,10 @@ This can only be used in Standalone, custom clients, and bare workflow apps. Thi
   3. Build a production IPA: `expo build:ios`
 - Whenever you change the values in `app.json` you'll need to rebuild the native app.
 
+**Troubleshooting**
+
+- If you get `Error 401: invalid_client` `The OAuth client was not found`: Ensure the clientId is defined correctly in your React code. Either as `11111111-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com` or without the `.apps.googleusercontent.com` extension.
+
 #### Android Native
 
 This can only be used in Standalone, and bare workflow apps. This method cannot be used in the Expo Go app.
