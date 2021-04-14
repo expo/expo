@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
 import React from 'react';
 import { Platform } from 'react-native';
 
@@ -19,6 +19,6 @@ export default class TabIcon extends React.PureComponent<Props> {
       ios: size,
       default: size - 2,
     });
-    return <MaterialCommunityIcons name={name} size={platformSize} color={color} />;
+    return <MaterialCommunityIcons name={name as any} size={platformSize} color={color} />;
   }
 }
