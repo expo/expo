@@ -524,7 +524,7 @@ export default function App() {
 
 #### Expo Go
 
-You must use the proxy service in the Expo Go app because `exp://` cannot be added to your app as a redirect.
+You must use the proxy service in the Expo Go app because `exp://` cannot be added to your Facebook app as a redirect.
 
 - Go to: (Sidebar) Products > Facebook Login > Settings > Client OAuth Settings. The URL should be: `https://developers.facebook.com/apps/<YOUR ID>/fb-login/settings/`
 
