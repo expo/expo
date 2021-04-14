@@ -4,6 +4,7 @@ import { Application, TSConfigReader, TypeDocReader } from 'typedoc';
 import fs from 'fs-extra';
 import recursiveOmitBy from 'recursive-omit-by';
 
+import { EXPO_DIR, PACKAGES_DIR } from '../Constants';
 import logger from '../Logger';
 
 type ActionOptions = {
@@ -19,7 +20,7 @@ type CommandAdditionalParams = [
   jsonFileName?: string
 ];
 
-const DATA_PATH = './docs/public/static/data/unversioned';
+const DATA_PATH = `${EXPO_DIR}/docs/public/static/data/unversioned`;
 const MINIFY_JSON = true;
 
 const executeCommand = async (
@@ -32,8 +33,8 @@ const executeCommand = async (
   app.options.addReader(new TSConfigReader());
   app.options.addReader(new TypeDocReader());
 
-  const entry = `./packages/${packageName}/src${(entryPoint === true ? '' : `/${entryPoint}`)}`;
-  const tsConfigPath = `./packages/${packageName}/tsconfig.json`;
+  const entry = `${PACKAGES_DIR}/${packageName}/src${(entryPoint === true ? '' : `/${entryPoint}`)}`;
+  const tsConfigPath = `${PACKAGES_DIR}/${packageName}/tsconfig.json`;
   const jsonOutputPath = `${DATA_PATH}/${jsonFileName}.json`;
 
   app.bootstrap({
@@ -74,22 +75,25 @@ async function action({ packageName }: ActionOptions) {
     'expo-store-review': ['StoreReview.ts'],
   };
 
-  if (packageName) {
-    if (packagesMapping[packageName]) {
-      executeCommand(packageName, ...packagesMapping[packageName]).catch(logger.error);
+  try {
+    if (packageName) {
+      const packagesEntries = Object.entries(packagesMapping)
+        .filter(([key, value]) => key == packageName || value.includes(packageName))
+        .map(([key, value]) => executeCommand(key, ...value));
+      if (packagesEntries.length) {
+        await Promise.all(packagesEntries);
+        logger.log(chalk.green(`\n🎉 Successful extraction of docs API data for the selected package!`));
+      } else {
+        logger.warn(`🚨 Package '${packageName}' API data generation is not supported yet!`);
+      }
     } else {
-      logger.warn(`🚨 Package '${packageName}' API data generation is not supported yet!`);
+      const packagesEntries = Object.entries(packagesMapping)
+        .map(([key, value]) => executeCommand(key, ...value));
+      await Promise.all(packagesEntries);
+      logger.log(chalk.green(`\n🎉 Successful extraction of docs API data for all available packages!`));
     }
-  } else {
-    try {
-      const work = Object.entries(packagesMapping).map(([key, value]) => (
-        executeCommand(key, ...value)
-      ));
-      await Promise.all(work);
-      console.log(chalk.green(`\n🎉 Successful extraction of docs API data for all available packages!`));
-    } catch (error) {
-      logger.error(error);
-    }
+  } catch (error) {
+    logger.error(error);
   }
 }
 
