@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `totalMemory` to web. ([#12526](https://github.com/expo/expo/pull/12526) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ## 3.2.0 — 2021-03-10
