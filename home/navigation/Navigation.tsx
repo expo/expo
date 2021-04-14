@@ -198,18 +198,21 @@ function TabNavigator(props: { theme: string }) {
 const ModalStack = createStackNavigator();
 
 export default (props: { theme: string }) => {
-  const linking = {
-    prefixes: ['expo-home://'],
-    config: {
-      initialRouteName: 'RootStack',
-      screens: {
-        QRCode: 'qr-scanner',
-      },
-    },
-  };
+  // Temporarily disable QR code deep linking due to Android Expo Go issue:
+  // https://linear.app/expo/issue/ENG-877/expo-home-on-android-reloads-when-resumed
+  //
+  // const linking = {
+  //   prefixes: ['expo-home://'],
+  //   config: {
+  //     initialRouteName: 'RootStack',
+  //     screens: {
+  //       QRCode: 'qr-scanner',
+  //     },
+  //   },
+  // };
 
   return (
-    <NavigationContainer theme={Themes[props.theme]} linking={linking}>
+    <NavigationContainer theme={Themes[props.theme]} /* linking={linking} */>
       <ModalStack.Navigator
         initialRouteName="RootStack"
         screenOptions={({ route, navigation }) => ({
