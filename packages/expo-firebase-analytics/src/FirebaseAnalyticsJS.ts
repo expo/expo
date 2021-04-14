@@ -335,6 +335,13 @@ class FirebaseAnalyticsJS {
   async setDebugModeEnabled(isEnabled: boolean): Promise<void> {
     this.options.debug = isEnabled;
   }
+
+  /**
+   * Sets a new value for the client ID.
+   */
+  setClientId(clientId: string) {
+    this.options.clientId = clientId;
+  }
 }
 
 function encodeQueryArgs(queryArgs: FirebaseAnalyticsJSCodedEvent, lastTime: number): string {
