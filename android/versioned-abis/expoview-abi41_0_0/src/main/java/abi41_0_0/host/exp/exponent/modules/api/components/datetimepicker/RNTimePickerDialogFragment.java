@@ -76,8 +76,8 @@ public class RNTimePickerDialogFragment extends DialogFragment {
         case CLOCK:
         case SPINNER:
           String resourceName = display == RNTimePickerDisplay.CLOCK
-                  ? "ClockTimePickerDialog"
-                  : "SpinnerTimePickerDialog";
+                  ? "ReactAndroidClockTimePickerDialog"
+                  : "ReactAndroidSpinnerTimePickerDialog";
           return new RNDismissableTimePickerDialog(
                   activityContext,
                   activityContext.getResources().getIdentifier(
