@@ -124,7 +124,6 @@ then the response body is referred to as the `manifest` and MUST be a json with 
   assets: Asset[],
   updateMetadata: {
     updateGroup: string
-    updateGroupCreatedAt: date
     branchName: string
   }
 }
