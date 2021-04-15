@@ -270,7 +270,7 @@ UM_EXPORT_METHOD_AS(getAnonymousIDAsync,
     resolve(anonymousID);
   }
   @catch (NSError *error) {
-    reject(@"E_ANONYMOUS_ID_ERROR", @"Can not get anonymousID", error);
+    reject(@"ERR_FACEBOOK_ANONYMOUS_ID", @"Can not get anonymousID", error);
   }
 }
 
@@ -283,7 +283,7 @@ UM_EXPORT_METHOD_AS(getAdvertiserIDAsync,
     resolve(advertiserID);
   }
   @catch (NSError *error) {
-    reject(@"E_ADVERTISER_ID_ERROR", @"Can not get advertiserID", error);
+    reject(@"ERR_FACEBOOK_ADVERTISER_ID", @"Can not get advertiserID", error);
   }
 }
 

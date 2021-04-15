@@ -30,7 +30,7 @@ type Params = { [key: string]: string | number };
  * See https://developers.facebook.com/docs/app-events/advanced-matching for
  * more info about the expected format of each field.
  */
-type UserData = {
+export type UserData = {
   email?: string;
   firstName?: string;
   lastName?: string;

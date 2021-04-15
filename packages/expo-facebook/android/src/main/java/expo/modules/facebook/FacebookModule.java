@@ -229,8 +229,12 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
   }
 
   @ExpoMethod
-  public void logPurchaseAsync(double purchaseAmount, String currencyCode,
-    @Nullable ReadableArguments parameters, Promise promise) {
+  public void logPurchaseAsync(
+    double purchaseAmount,
+    String currencyCode,
+    @Nullable ReadableArguments parameters,
+    Promise promise
+  ) {
       mAppEventLogger.logPurchase(
               BigDecimal.valueOf(purchaseAmount),
               Currency.getInstance(currencyCode),
@@ -242,15 +246,15 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
   public void logPushNotificationOpenAsync(String campaign, Promise promise) {
     // the Android FBSDK expects the fb_push_payload to be a JSON string
     Bundle payload = new Bundle();
-    payload.putString(PUSH_PAYLOAD_KEY, String.format("{\"%s\" : \"%s\"}",PUSH_PAYLOAD_CAMPAIGN_KEY , campaign));
+    payload.putString(PUSH_PAYLOAD_KEY, String.format("{\"%s\" : \"%s\"}", PUSH_PAYLOAD_CAMPAIGN_KEY, campaign));
     mAppEventLogger.logPushNotificationOpen(payload);
     promise.resolve(null);
   }
 
   @ExpoMethod
   public void setUserIDAsync(final String userID, Promise promise) {
-      mAppEventLogger.setUserID(userID);
-      promise.resolve(null);
+    mAppEventLogger.setUserID(userID);
+    promise.resolve(null);
   }
 
   @ExpoMethod
@@ -264,7 +268,7 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
     try {
       promise.resolve(mAppEventLogger.getAnonymousAppDeviceGUID(mContext));
     } catch (Exception e) {
-      promise.reject("E_ANONYMOUS_ID_ERROR", "Can not get anonymousID", e);
+      promise.reject("ERR_FACEBOOK_ANONYMOUS_ID", "Can not get anonymousID", e);
     }
   }
 
@@ -273,7 +277,7 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
     try {
       promise.resolve(mAttributionIdentifiers.getAndroidAdvertiserId());
     } catch (Exception e) {
-      promise.reject("E_ADVERTISER_ID_ERROR", "Can not get advertiserID", e);
+      promise.reject("ERR_FACEBOOK_ADVERTISER_ID", "Can not get advertiserID", e);
     }
   }
 
@@ -282,7 +286,7 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
     try {
       promise.resolve(mAttributionIdentifiers.getAttributionId());
     } catch (Exception e) {
-      promise.reject("E_ATTRIBUTION_ID_ERROR", "Can not get attributionID", e);
+      promise.reject("ERR_FACEBOOK_ADVERTISER_ID", "Can not get attributionID", e);
     }
   }
 
