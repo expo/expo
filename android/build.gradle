@@ -10,7 +10,6 @@ buildscript {
     buildToolsVersion = '30.0.5'
     supportLibVersion = '29.0.0'
     kotlinVersion = '1.4.21'
-    spotlessVersion =
     gradlePluginVersion = '4.1.2'
     gradleDownloadTaskVersion = '3.4.3'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
@@ -110,9 +109,9 @@ subprojects {
     kotlin {
       target '**/*.kt'
       ktlint().userData([
-              "disabled_rules": "no-wildcard-imports,import-ordering",
-              "indent_size": "2",
-              "continuation_indent_size": "4"
+        "disabled_rules": "no-wildcard-imports,import-ordering",
+        "indent_size": "2",
+        "continuation_indent_size": "4"
       ])
       trimTrailingWhitespace()
       indentWithSpaces()
