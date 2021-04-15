@@ -218,5 +218,4 @@ internal class ProgressLooperTest {
     timeMachine.triggerListeners()
     verify(exactly = 2) { timeMachine.scheduleAt(any(), any()) }
   }
-
 }

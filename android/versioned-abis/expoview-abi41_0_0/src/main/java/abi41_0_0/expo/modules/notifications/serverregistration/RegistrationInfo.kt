@@ -12,9 +12,8 @@ open class RegistrationInfo(private val context: Context) {
     get() = File(context.noBackupFilesDir, REGISTRATION_INFO_FILE_NAME)
 
   fun get(): String? = if (nonBackedUpRegistrationInfoFile.exists()) {
-    nonBackedUpRegistrationInfoFile.readText();
+    nonBackedUpRegistrationInfoFile.readText()
   } else null
-
 
   fun set(registrationInfo: String?) {
     nonBackedUpRegistrationInfoFile.delete()

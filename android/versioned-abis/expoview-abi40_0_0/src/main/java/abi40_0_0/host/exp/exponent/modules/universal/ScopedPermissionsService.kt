@@ -33,5 +33,4 @@ class ScopedPermissionsService(context: Context, val experienceId: ExperienceId)
     return mExpoKernelServiceRegistry?.permissionsKernelService?.getPermissions(globalPermissions, context.packageManager, permission, experienceId)
       ?: PackageManager.PERMISSION_DENIED
   }
-
 }
