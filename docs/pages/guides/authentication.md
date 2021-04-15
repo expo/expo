@@ -1050,8 +1050,8 @@ export default function App() {
 There are 4 different types of client IDs you can provide:
 
 - `expoClientId`: Proxy client ID for use in the **Expo Go** on iOS and Android.
-- `iosClientId`: iOS native client ID for use in standalone, bare-workflow, and custom clients.
-- `androidClientId`: Android native client ID for use in standalone, bare-workflow, and custom clients.
+- `iosClientId`: iOS native client ID for use in standalone and bare workflow.
+- `androidClientId`: Android native client ID for use in standalone, bare workflow.
 - `webClientId`: Expo web client ID for use in the browser.
 
 To create a client ID, go to the [Credentials Page][c-google]:
@@ -1074,7 +1074,7 @@ First, be sure to login to your Expo account `expo login`. This will be part of 
 
 #### iOS Native
 
-This can only be used in Standalone, custom clients, and bare workflow apps. This method cannot be used in the Expo Go app.
+This can only be used in standalone and bare workflow apps. This method cannot be used in the Expo Go app.
 
 [Create a new Google Client ID][c-google] that will be used with `iosClientId`.
 
@@ -1086,7 +1086,7 @@ This can only be used in Standalone, custom clients, and bare workflow apps. Thi
   - _Bare workflow_: Run `npx uri-scheme add <your bundle id> --ios`
 - To test this you can:
   1. Eject to bare: `expo eject` and run `yarn ios`
-  2. Create a custom client: `expo client:ios`
+  2. Build a simulator app: `expo build:ios -t simulator`
   3. Build a production IPA: `expo build:ios`
 - Whenever you change the values in `app.json` you'll need to rebuild the native app.
 
