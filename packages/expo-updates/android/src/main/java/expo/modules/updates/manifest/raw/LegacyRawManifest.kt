@@ -2,47 +2,27 @@ package expo.modules.updates.manifest.raw
 
 import org.json.JSONArray
 import org.json.JSONException
+import org.json.JSONObject
 
-class LegacyRawManifest(json: String) : BaseLegacyRawManifest(json) {
+class LegacyRawManifest(json: JSONObject) : BaseLegacyRawManifest(json) {
   @Throws(JSONException::class)
-  fun getBundleKey(): String? = if (has("bundleKey")) {
-    getString("bundleKey")
+  fun getBundleKey(): String? = if (json.has("bundleKey")) {
+    json.getString("bundleKey")
   } else {
     null
   }
 
   @Throws(JSONException::class)
-  fun getReleaseId(): String = getString("releaseId")
+  fun getReleaseId(): String = json.getString("releaseId")
+
+  fun getRuntimeVersion(): Any? = json.opt("runtimeVersion")
 
   @Throws(JSONException::class)
-  fun getCommitTime(): String = getString("commitTime")
+  fun getBundledAssets(): JSONArray? = json.optJSONArray("bundledAssets")
 
-  fun getRuntimeVersion(): Any? = opt("runtimeVersion")
-
-  @Throws(JSONException::class)
-  fun getSDKVersion(): String = getString("sdkVersion")
-
-  @Throws(JSONException::class)
-  fun getBundleURL(): String = getString("bundleUrl")
-
-  @Throws(JSONException::class)
-  fun getBundledAssets(): JSONArray? = optJSONArray("bundledAssets")
-
-  fun isDevelopmentMode(): Boolean {
-    return try {
-      has("developer") &&
-          has("packagerOpts") &&
-          getJSONObject("packagerOpts").optBoolean("dev", false)
-    } catch (e: JSONException) {
-      false
-    }
-  }
-
-  fun isUsingDeveloperTool(): Boolean {
-    return try {
-      has("developer") && getJSONObject("developer").has("tool")
-    } catch (e: JSONException) {
-      false
-    }
+  fun getAssetUrlOverride(): String? = if (json.has("assetUrlOverride")) {
+    json.optString("assetUrlOverride")
+  } else {
+    null
   }
 }

@@ -5,8 +5,9 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.SparseArray;
 
+import androidx.annotation.Nullable;
+
 import com.facebook.react.ReactPackage;
-import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.soloader.SoLoader;
 
@@ -22,7 +23,7 @@ import org.unimodules.core.interfaces.SingletonModule;
 import java.util.List;
 import java.util.Map;
 
-import host.exp.exponent.AppLoader;
+import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExpoUpdatesAppLoader;
 import host.exp.exponent.ExponentManifest;
@@ -54,9 +55,9 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
 
   private static final SparseArray<String> sActivityIdToBundleUrl = new SparseArray<>();
 
-  private JSONObject mManifest;
+  private RawManifest mManifest;
   private String mManifestUrl;
-  private String mSdkVersion;
+  @Nullable private String mSdkVersion;
   private String mDetachSdkVersion;
   private RNObject mReactInstanceManager = new RNObject("com.facebook.react.ReactInstanceManager");
   private Context mContext;
@@ -88,14 +89,14 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
 
     new ExpoUpdatesAppLoader(mManifestUrl, new ExpoUpdatesAppLoader.AppLoaderCallback() {
       @Override
-      public void onOptimisticManifest(final JSONObject optimisticManifest) {
+      public void onOptimisticManifest(final RawManifest optimisticManifest) {
       }
 
       @Override
-      public void onManifestCompleted(final JSONObject manifest) {
+      public void onManifestCompleted(final RawManifest manifest) {
         Exponent.getInstance().runOnUiThread(() -> {
           try {
-            String bundleUrl = ExponentUrls.toHttp(manifest.getString("bundleUrl"));
+            String bundleUrl = ExponentUrls.toHttp(manifest.getBundleURL());
 
             sActivityIdToBundleUrl.put(mActivityId, bundleUrl);
             setManifest(mManifestUrl, manifest, bundleUrl);
@@ -131,10 +132,10 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
     return mAppRecord;
   }
 
-  public void setManifest(String manifestUrl, final JSONObject manifest, final String bundleUrl) {
+  public void setManifest(String manifestUrl, final RawManifest manifest, final String bundleUrl) {
     mManifestUrl = manifestUrl;
     mManifest = manifest;
-    mSdkVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
+    mSdkVersion = manifest.getSDKVersionNullable();
 
     // Notifications logic uses this to determine which experience to route a notification to
     ExponentDB.saveExperience(mManifestUrl, manifest, bundleUrl);
@@ -211,7 +212,7 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
   }
 
   public boolean isDebugModeEnabled() {
-    return ExponentManifest.isDebugModeEnabled(mManifest);
+    return mManifest.isDevelopmentMode();
   }
 
   private void soloaderInit() {
@@ -314,8 +315,8 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
     }
 
     if (delegate.isDebugModeEnabled()) {
-      String debuggerHost = mManifest.optString(ExponentManifest.MANIFEST_DEBUGGER_HOST_KEY);
-      String mainModuleName = mManifest.optString(ExponentManifest.MANIFEST_MAIN_MODULE_NAME_KEY);
+      String debuggerHost = mManifest.getDebuggerHost();
+      String mainModuleName = mManifest.getMainModuleName();
       Exponent.enableDeveloperSupport(mSDKVersion, debuggerHost, mainModuleName, builder);
     }
 

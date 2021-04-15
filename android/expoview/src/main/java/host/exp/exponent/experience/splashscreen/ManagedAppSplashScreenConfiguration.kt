@@ -3,6 +3,7 @@ package host.exp.exponent.experience.splashscreen
 import android.graphics.Color
 import androidx.annotation.ColorInt
 import expo.modules.splashscreen.SplashScreenImageResizeMode
+import expo.modules.updates.manifest.raw.RawManifest
 import host.exp.exponent.ExponentManifest
 import host.exp.exponent.utils.ColorParser
 import org.json.JSONObject
@@ -19,7 +20,7 @@ class ManagedAppSplashScreenConfiguration private constructor() {
 
   companion object {
     @JvmStatic
-    fun parseManifest(manifest: JSONObject): ManagedAppSplashScreenConfiguration {
+    fun parseManifest(manifest: RawManifest): ManagedAppSplashScreenConfiguration {
       val mode: SplashScreenImageResizeMode? = parseResizeMode(manifest)
       val backgroundColor = parseBackgroundColor(manifest)
       val imageUrl = parseImageUrl(manifest)
@@ -36,9 +37,9 @@ class ManagedAppSplashScreenConfiguration private constructor() {
       return config
     }
 
-    private fun parseResizeMode(manifest: JSONObject): SplashScreenImageResizeMode? {
+    private fun parseResizeMode(manifest: RawManifest): SplashScreenImageResizeMode? {
       val resizeMode = getStringFromJSONObject(
-        manifest,
+        manifest.getRawJson(),
         arrayOf(
           ExponentManifest.MANIFEST_ANDROID_INFO_KEY,
           ExponentManifest.MANIFEST_SPLASH_INFO_KEY,
@@ -52,9 +53,9 @@ class ManagedAppSplashScreenConfiguration private constructor() {
       return SplashScreenImageResizeMode.fromString(resizeMode)
     }
 
-    private fun parseBackgroundColor(manifest: JSONObject): Int? {
+    private fun parseBackgroundColor(manifest: RawManifest): Int? {
       val backgroundColor = getStringFromJSONObject(
-        manifest,
+        manifest.getRawJson(),
         arrayOf(
           ExponentManifest.MANIFEST_ANDROID_INFO_KEY,
           ExponentManifest.MANIFEST_SPLASH_INFO_KEY,
@@ -76,8 +77,8 @@ class ManagedAppSplashScreenConfiguration private constructor() {
      * - android-scoped splash imageUrl
      * - generic splash imageUrl
      */
-    private fun parseImageUrl(manifest: JSONObject): String? {
-      val androidSplash = manifest
+    private fun parseImageUrl(manifest: RawManifest): String? {
+      val androidSplash = manifest.getRawJson()
         .optJSONObject(ExponentManifest.MANIFEST_ANDROID_INFO_KEY)
         ?.optJSONObject(ExponentManifest.MANIFEST_SPLASH_INFO_KEY)
       if (androidSplash != null) {
@@ -94,7 +95,7 @@ class ManagedAppSplashScreenConfiguration private constructor() {
       }
 
       return getStringFromJSONObject(
-        manifest,
+        manifest.getRawJson(),
         arrayOf(
           ExponentManifest.MANIFEST_ANDROID_INFO_KEY,
           ExponentManifest.MANIFEST_SPLASH_INFO_KEY,
