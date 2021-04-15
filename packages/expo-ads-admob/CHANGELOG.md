@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 10.0.4 — 2021-04-13
+
+_This version does not introduce any user-facing changes._
+
 ## 10.0.3 — 2021-03-31
 
 _This version does not introduce any user-facing changes._

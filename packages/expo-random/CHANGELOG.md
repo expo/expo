@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 11.1.2 — 2021-04-13
+
+_This version does not introduce any user-facing changes._
+
 ## 11.1.1 — 2021-04-09
 
 _This version does not introduce any user-facing changes._
