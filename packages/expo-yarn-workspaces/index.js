@@ -4,6 +4,7 @@ const debug = require('debug')('workspaces');
 const findYarnWorkspaceRoot = require('find-yarn-workspace-root');
 const fs = require('fs');
 const { getDefaultConfig } = require('@expo/metro-config');
+const createExpoWebpackConfigAsync = require('@expo/webpack-config');
 // TODO: Use the vendored metro config in a future version after SDK 41 is released
 // const { getDefaultConfig } = require('expo/metro-config');
 const blacklist = require('metro-config/src/defaults/blacklist');
@@ -78,6 +79,62 @@ exports.createMetroConfiguration = function createMetroConfiguration(projectPath
   };
 };
 
+
+
+/**
+ * Returns a webpack configuration object that:
+ * 
+ *    * transpiles symlinked workspace packages
+ *    * watches for file changes in symlinked workspace packages
+ */
+
+exports.createWebpackConfigAsync = async function createWebpackConfigAsync(env, argv) {
+  let workspacePackagesToTranspile = [];
+  let workspaceRootPath = findYarnWorkspaceRoot(env.projectRoot);
+
+  if (workspaceRootPath) {
+    debug(`Found Yarn workspace root at %s`, workspaceRootPath);
+
+    const symlinkedModules = getSymlinkedNodeModulesForDirectory(workspaceRootPath);
+    const symlinkedModulePaths = Object.values(symlinkedModules)
+    let workspacePackage = require(path.resolve(workspaceRootPath, 'package.json'));
+
+    // determine if any symlinked modules are a workspace package and include them to be transpiled
+    for (let workspaceGlob of workspacePackage.workspaces) {
+      const workspaceName = workspaceGlob.split('*')[0];
+      const workspacePath = path.resolve(workspaceRootPath, workspaceName);
+
+      for (let actualModulePath of symlinkedModulePaths) {
+        if (isSubDirectory(workspacePath, actualModulePath)) {
+          workspacePackagesToTranspile.push(actualModulePath);
+        }
+      }
+    }
+  } else {
+    debug(`Could not find Yarn workspace root`);
+  }
+
+  env.babel = env.babel || {};
+
+  const config = await createExpoWebpackConfigAsync(
+    {
+      ...env,
+      babel: {
+        dangerouslyAddModulePathsToTranspile: [
+          ...workspacePackagesToTranspile,
+          ...(env.babel.dangerouslyAddModulePathsToTranspile || []),
+        ],
+      },
+    },
+    argv
+  );
+
+  // use symlink resolution so that webpack watches package file changes
+  config.resolve.symlinks = true;
+
+  return config;
+};
+
 /**
  * Returns a mapping from the names of symlinked packages to the physical paths of each package.
  */
@@ -118,4 +175,10 @@ function listDirectoryContents(directory) {
     }
     throw e;
   }
+}
+
+function isSubDirectory(parent, child) {
+  const relative = path.relative(parent, child);
+  const isSubdir = relative && !relative.startsWith('..') && !path.isAbsolute(relative);
+  return isSubdir;
 }
