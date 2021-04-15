@@ -53,6 +53,10 @@ export type MethodParamData = {
   comment?: CommentData;
 };
 
+export type TypePropertyDataFlags = {
+  isOptional: boolean;
+};
+
 // Constants section
 
 export type ConstantDefinitionData = {
@@ -89,7 +93,8 @@ export type InterfaceDefinitionData = {
 
 export type InterfaceValueData = {
   name: string;
-  type: TypeDeclarationData;
+  type: TypeDefinitionData;
+  flags?: TypePropertyDataFlags;
   kind: TypeDocKind;
   comment?: CommentData;
 };
@@ -158,9 +163,7 @@ export type TypeSignaturesData = {
 
 export type TypePropertyData = {
   name: string;
-  flags: {
-    isOptional: boolean;
-  };
+  flags?: TypePropertyDataFlags;
   comment: CommentData;
   type: TypeDefinitionData;
   defaultValue: string;
@@ -168,5 +171,6 @@ export type TypePropertyData = {
 
 export type TypeValueData = {
   type: string;
-  value: string | boolean | null;
+  value?: string | boolean | null;
+  name?: string;
 };
