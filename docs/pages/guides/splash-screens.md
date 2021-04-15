@@ -91,7 +91,7 @@ Read more about [AppLoading](../versions/latest/sdk/app-loading.md) and [SplashS
 
 ### Differences between environments - iOS
 
-Your app can be opened from the Expo Go app or in a standalone app, and it can be either published or in development. There are slighty differences in the splash screen behavior between these environments.
+Your app can be opened from the Expo Go app or in a standalone app, and it can be either published or in development. There are slight differences in the splash screen behavior between these environments.
 
 ![](https://media.giphy.com/media/l378l98EI0VQdwRzy/giphy.gif)
 
