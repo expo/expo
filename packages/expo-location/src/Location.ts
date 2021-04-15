@@ -155,7 +155,7 @@ export async function reverseGeocodeAsync(
 
 /**
  * Gets the current state of location permissions.
- * @deprecated Use `getForegroundPermissions` or `getBackgroundPermissions` instead.
+ * @deprecated Use `getForegroundPermissionsAsync()` or `getBackgroundPermissionsAsync()` instead.
  */
 export async function getPermissionsAsync(): Promise<LocationPermissionResponse> {
   console.warn(
@@ -166,7 +166,7 @@ export async function getPermissionsAsync(): Promise<LocationPermissionResponse>
 
 /**
  * Requests the user to grant location permissions.
- * @deprecated Use `requestForegroundPermissionsAsync` or `requestBackgroundPermissionsAsync` instead.
+ * @deprecated Use `requestForegroundPermissionsAsync()` or `requestBackgroundPermissionsAsync()` instead.
  */
 export async function requestPermissionsAsync(): Promise<LocationPermissionResponse> {
   console.warn(
