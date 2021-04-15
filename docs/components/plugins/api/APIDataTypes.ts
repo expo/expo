@@ -35,6 +35,7 @@ export type TypeDefinitionData = {
     name: string;
   };
   typeArguments?: TypeDefinitionData[];
+  declaration?: TypeDeclarationContentData;
 };
 
 export type TypeDefinitionTypesData = {
@@ -50,6 +51,10 @@ export type MethodParamData = {
   name: string;
   type: TypeDefinitionData;
   comment?: CommentData;
+};
+
+export type TypePropertyDataFlags = {
+  isOptional: boolean;
 };
 
 // Constants section
@@ -88,7 +93,8 @@ export type InterfaceDefinitionData = {
 
 export type InterfaceValueData = {
   name: string;
-  type: TypeDeclarationData;
+  type: TypeDefinitionData;
+  flags?: TypePropertyDataFlags;
   kind: TypeDocKind;
   comment?: CommentData;
 };
@@ -138,11 +144,13 @@ export type TypeGeneralData = {
   kind: TypeDocKind;
 };
 
+export type TypeDeclarationContentData = {
+  signatures: TypeSignaturesData[];
+  children: TypePropertyData[];
+};
+
 export type TypeDeclarationData = {
-  declaration?: {
-    signatures: TypeSignaturesData[];
-    children: TypePropertyData[];
-  };
+  declaration?: TypeDeclarationContentData;
   type: string;
   types: TypeValueData[];
   typeArguments?: TypeDefinitionData[];
@@ -150,13 +158,12 @@ export type TypeDeclarationData = {
 
 export type TypeSignaturesData = {
   parameters: MethodParamData[];
+  type: TypeDefinitionData;
 };
 
 export type TypePropertyData = {
   name: string;
-  flags: {
-    isOptional: boolean;
-  };
+  flags?: TypePropertyDataFlags;
   comment: CommentData;
   type: TypeDefinitionData;
   defaultValue: string;
@@ -164,5 +171,6 @@ export type TypePropertyData = {
 
 export type TypeValueData = {
   type: string;
-  value: string | boolean | null;
+  value?: string | boolean | null;
+  name?: string;
 };

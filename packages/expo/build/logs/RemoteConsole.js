@@ -3,7 +3,7 @@ import RemoteLogging from './RemoteLogging';
  * Creates a console object that delegates calls to the specified underlying console and also sends
  * the messages to the development environment over a remote connection.
  */
-function createRemoteConsole(originalConsole) {
+export function createRemoteConsole(originalConsole) {
     let groupDepth = 0;
     const enhancedConsole = Object.create(originalConsole);
     // https://console.spec.whatwg.org/#debug
@@ -95,7 +95,4 @@ function createRemoteConsole(originalConsole) {
     }
     return enhancedConsole;
 }
-export default {
-    createRemoteConsole,
-};
 //# sourceMappingURL=RemoteConsole.js.map

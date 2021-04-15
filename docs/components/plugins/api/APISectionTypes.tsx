@@ -1,5 +1,3 @@
-import { css } from '@emotion/core';
-import { theme } from '@expo/styleguide';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 
@@ -19,34 +17,31 @@ import {
   resolveTypeName,
   renderParam,
   CommentTextBlock,
+  STYLES_OPTIONAL,
 } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionTypesProps = {
   data: TypeGeneralData[];
 };
 
-const STYLES_OPTIONAL = css`
-  color: ${theme.text.secondary};
-  font-size: 90%;
-  padding-top: 22px;
-`;
-
-const defineLiteralType = (types: TypeValueData[]): string | undefined => {
+const defineLiteralType = (types: TypeValueData[]): string => {
   const uniqueTypes = Array.from(new Set(types.map((t: TypeValueData) => typeof t.value)));
   if (uniqueTypes.length === 1) {
     return '`' + uniqueTypes[0] + '` - ';
   }
-  return undefined;
+  return '';
 };
 
 const decorateValue = (type: TypeValueData): string =>
-  typeof type.value === 'string' ? "`'" + type.value + "'`" : `'` + type.value + '`';
+  typeof type?.value === 'string'
+    ? "`'" + type.value + "'`"
+    : '`' + (type.value || type.name) + '`';
 
-const renderTypePropertyRow = (typeProperty: TypePropertyData): JSX.Element => (
-  <tr key={typeProperty.name}>
+const renderTypePropertyRow = ({ name, flags, type, comment }: TypePropertyData): JSX.Element => (
+  <tr key={name}>
     <td>
-      <B>{typeProperty.name}</B>
-      {typeProperty.flags?.isOptional ? (
+      <B>{name}</B>
+      {flags?.isOptional ? (
         <>
           <br />
           <span css={STYLES_OPTIONAL}>(optional)</span>
@@ -54,13 +49,11 @@ const renderTypePropertyRow = (typeProperty: TypePropertyData): JSX.Element => (
       ) : null}
     </td>
     <td>
-      <InlineCode>{resolveTypeName(typeProperty.type)}</InlineCode>
+      <InlineCode>{resolveTypeName(type)}</InlineCode>
     </td>
     <td>
-      {typeProperty?.comment?.shortText ? (
-        <ReactMarkdown renderers={mdInlineRenderers}>
-          {typeProperty.comment.shortText}
-        </ReactMarkdown>
+      {comment?.shortText ? (
+        <ReactMarkdown renderers={mdInlineRenderers}>{comment.shortText}</ReactMarkdown>
       ) : (
         '-'
       )}
@@ -104,7 +97,9 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
     );
   } else if (type.types && type.type === 'union') {
     // Literal Types
-    const validTypes = type.types.filter((t: TypeValueData) => t.type === 'literal');
+    const validTypes = type.types.filter(
+      (t: TypeValueData) => t.type === 'literal' || t.type === 'intrinsic'
+    );
     if (validTypes.length) {
       return (
         <div key={`type-definition-${name}`}>

@@ -186,7 +186,7 @@ export default function App() {
   - _Web dev_: `https://localhost:19006`
     - Run `expo start:web --https` to run with **https**, auth won't work otherwise.
     - Adding a slash to the end of the URL doesn't matter.
-  - _Custom app_: `your-scheme://`
+  - _Standalone and Bare_: `your-scheme://`
     - Scheme should be specified in app.json `expo.scheme: 'your-scheme'`, then added to the app code with `makeRedirectUri({ native: 'your-scheme://' })`)
   - _Proxy_: **Not Supported**
     - You cannot use the Expo proxy (`useProxy`) because they don't allow `@` in their redirect URIs.
@@ -512,7 +512,7 @@ export default function App() {
 
 ### Facebook
 
-<CreateAppButton name="Facebook" href="https://developers.facebook.com/" />
+<CreateAppButton name="Facebook" href="https://developers.facebook.com/apps/" />
 
 | Website                 | Provider | PKCE      | Auto Discovery |
 | ----------------------- | -------- | --------- | -------------- |
@@ -520,17 +520,99 @@ export default function App() {
 
 [c-facebook]: https://developers.facebook.com/
 
-- Native auth isn't available in the App/Play Store client because you need a custom URI scheme built into the bundle. The custom scheme provided by Facebook is `fb` followed by the **project ID** (ex: `fb145668956753819`):
-  - **Standalone:**
-    - Add `facebookScheme: 'fb<YOUR FBID>'` to your `app.config.js` or `app.json`
-    - You'll need to make a new production build to bundle these values `expo build:ios` & `expo build:android`.
-  - **Bare:**
-    - Run `npx uri-scheme add fb<YOUR FBID>`
-    - Rebuild with `yarn ios` & `yarn android`
-- The `native` redirect URI **must** be formatted like `fbYOUR_NUMERIC_ID://authorize`
-  - If the protocol/suffix is not your FBID then you will get an error like: `No redirect URI in the params: No redirect present in URI`.
-  - If the path is not `://authorize` then you will get an error like: `Can't Load URL: The domain of this URL isn't included in the app's domains. To be able to load this URL, add all domains and subdomains of your app to the App Domains field in your app settings.`
 - Learn more about [manually building a login flow](https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/).
+
+#### Expo Go
+
+You must use the proxy service in the Expo Go app because `exp://` cannot be added to your Facebook app as a redirect.
+
+- Go to: (Sidebar) Products > Facebook Login > Settings > Client OAuth Settings. The URL should be: `https://developers.facebook.com/apps/<YOUR ID>/fb-login/settings/`
+
+<img alt="Facebook Console for URIs" src="/static/images/sdk/auth-session/guide/facebook-proxy-guide.png" />
+
+- Under "Valid OAuth Redirect URIs" add `https://auth.expo.io/@username/slug` and any other web URLs you may want to add.
+- Press "Save Changes" in the footer.
+- Copy the "App ID" in the header into your `expoClientId: '<YOUR FBID>'`. Ex: `{ expoClientId: '474614477183384' }` (no `fb` prefix).
+- Now you're ready to use the demo component in the Expo Go app on iOS and Android.
+
+> ⚠️ If you forget to add the correct URL to the "Valid OAuth Redirect URIs", you will get an error like: `Can't Load URL: The domain of this URL isn't included in the app's domains. To be able to load this URL, add all domains and subdomains of your app to the App Domains field in your app settings.`
+
+#### Custom Apps
+
+Consider using the [`expo-facebook`](/versions/latest/sdk/facebook) module for native auth as it supports some nonstandard OAuth features implemented by Facebook.
+
+- The custom scheme provided by Facebook is `fb` followed by the **project ID** (ex: `fb145668956753819`):
+- Add `facebookScheme: 'fb<YOUR FBID>'` to your `app.config.js` or `app.json`. Example: `{ facebookScheme: "fb145668956753819" }` (notice the `fb` prefix).
+- You'll need to make a new native build to add this redirect URI into your app's `AndroidManifest.xml` and `Info.plist`:
+  - iOS: `eas build` or `expo build:ios`.
+  - Android: `eas build` or `expo build:android`.
+- **Bare:**
+  - Regenerate your native projects with `expo eject`, or add the redirects manually with `npx uri-scheme add fb<YOUR FBID>`
+  - Rebuild the projects with `yarn ios` & `yarn android`
+
+#### Native iOS
+
+- Go to: (Sidebar) Settings > Basic. The URL should be: `https://developers.facebook.com/apps/<YOUR ID>/settings/basic/`
+- Scroll all the way down and click **`+ Add Platform`**, then select **`iOS`**.
+
+<img alt="Facebook Console for URIs" src="/static/images/sdk/auth-session/guide/facebook-ios-guide.png" />
+
+- Under iOS > Bundle ID: Add your app's bundle identifier, this should match the value in your `app.json` - `expo.ios.bundleIdentifier`. If you don't have one set, run `expo eject` to create one (then rebuild the native app).
+- Press "Save Changes" in the footer.
+- Copy the "App ID" in the header into your `iosClientId: '<YOUR FBID>'` or `clientId`. Ex: `{ iosClientId: '474614477183384' }` (no `fb` prefix).
+- Now you're ready to use the demo component in your native iOS app.
+
+#### Native Android
+
+- Go to: (Sidebar) Settings > Basic. The URL should be: `https://developers.facebook.com/apps/<YOUR ID>/settings/basic/`
+- Scroll all the way down and click **`+ Add Platform`**, then select **`Android`**.
+
+<img alt="Facebook Console for URIs" src="/static/images/sdk/auth-session/guide/facebook-android-guide.png" />
+
+- Under Android > Google Play Package Name: Add your app's android package, this should match the value in your `app.json` - `expo.android.package`. If you don't have one set, run `expo eject` to create one (then rebuild the native app).
+- Under Android > Class Name: This should match the package name + `.MainActivity`, i.e. `com.bacon.yolo15.MainActivity`.
+- Under Android > Key Hashes: You'll need to create two different values, one for Debug and one for Release. Learn how to create the [Key Hash here](https://stackoverflow.com/questions/4388992/key-hash-for-android-facebook-app).
+  - In your app root, run: `keytool -exportcert -alias androiddebugkey -keystore android/app/debug.keystore | openssl sha1 -binary | openssl base64` you don't need a password, but it is recommended.
+  - Copy the value formatted like `XX2BBI1XXXXXXXX3XXXX44XX5XX=` into the console.
+- Press "Save Changes" in the footer.
+  - If you get a popup for the package name select "Use this package name".
+- Copy the "App ID" in the header into your `androidClientId: '<YOUR FBID>'` or `clientId`. Ex: `{ androidClientId: '474614477183384' }` (no `fb` prefix).
+- Now you're ready to use the demo component in your native Android app.
+
+If the App crashes upon authentication, then run `adb logcat` and look for any runtime Errors.
+
+If the Android app crashes with `Didn't find class "com.facebook.CustomTabActivity" on ...` then you may need to remove the native Facebook code for `expo-facebook` from the `AndroidManifest.xml`:
+
+```diff
+-    <activity android:name="com.facebook.CustomTabActivity" android:exported="true">
+-      <intent-filter>
+-        <action android:name="android.intent.action.VIEW"/>
+-        <category android:name="android.intent.category.DEFAULT"/>
+-        <category android:name="android.intent.category.BROWSABLE"/>
+-        <data android:scheme="fb<YOUR ID>"/>
+-      </intent-filter>
+-    </activity>
+```
+
+Then add `<data android:scheme="fb<YOUR ID>"/>` to the `.MainActivity` `intent-filter` or use `npx uri-scheme add fb<YOUR ID> --android`.
+
+#### Troubleshooting native
+
+> ⚠️ The `native` redirect URI **must** be formatted like `fb<YOUR FBID>://authorize`, ex: `fb474614477183384://authorize`. Using the `Facebook` provider will do this automatically.
+
+- If the protocol/suffix is not your FBID then you will get an error like: `No redirect URI in the params: No redirect present in URI`.
+- If the path is not `://authorize` then you will get an error like: `Can't Load URL: The domain of this URL isn't included in the app's domains. To be able to load this URL, add all domains and subdomains of your app to the App Domains field in your app settings.`
+
+#### Websites
+
+- Go to: (Sidebar) Products > Facebook Login > Settings > Client OAuth Settings. The URL should be: `https://developers.facebook.com/apps/<YOUR ID>/fb-login/settings/`
+
+<img alt="Facebook Console for URIs" src="/static/images/sdk/auth-session/guide/facebook-web-dev-guide.png" />
+
+- Under "Valid OAuth Redirect URIs" add `https://localhost:19006` and any other web URLs you may want to add.
+- Press "Save Changes" in the footer.
+- Copy the "App ID" in the header into your `webClientId: '<YOUR FBID>'`. Ex: `{ webClientId: '474614477183384' }` (no `fb` prefix).
+- Now start the dev server with `expo start --https`, ensure this is the only server running, otherwise the port will not be `19006`.
 
 <Tabs tabs={["Auth Code", "Implicit Flow", "Firebase"]}>
 
@@ -555,15 +637,13 @@ export default function App() {
     clientId: '<YOUR FBID>',
     /* @info Request that the server returns a <code>code</code> for server exchanges. */
     responseType: ResponseType.Code,
-    /* @end */
-  });
+  /* @end */});
 
   React.useEffect(() => {
     if (response?.type === 'success') {
       /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
       const { code } = response.params;
-      /* @end */
-    }
+    /* @end */}
   }, [response]);
 
   return (
@@ -575,8 +655,7 @@ export default function App() {
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
         promptAsync();
-        /* @end */
-      }}
+      /* @end */}}
     />
   );
 }
@@ -595,7 +674,6 @@ export default function App() {
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import * as Facebook from 'expo-auth-session/providers/facebook';
-import { ResponseType } from 'expo-auth-session';
 import { Button } from 'react-native';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
@@ -603,7 +681,7 @@ WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
 export default function App() {
-  const [request, response, promptAsync] = useAuthRequest({
+  const [request, response, promptAsync] = Facebook.useAuthRequest({
     clientId: '<YOUR FBID>',
   });
 
@@ -624,8 +702,7 @@ export default function App() {
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
         promptAsync();
-        /* @end */
-      }}
+      /* @end */}}
     />
   );
 }
@@ -664,7 +741,7 @@ WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
 export default function App() {
-  const [request, response, promptAsync] = useAuthRequest({
+  const [request, response, promptAsync] = Facebook.useAuthRequest({
     /* @info Request that the server returns an <code>access_token</code>, not all providers support this. */
     responseType: ResponseType.Token,
     /* @end */
@@ -694,8 +771,7 @@ export default function App() {
       onPress={() => {
         /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
         promptAsync();
-        /* @end */
-      }}
+      /* @end */}}
     />
   );
 }
@@ -974,8 +1050,8 @@ export default function App() {
 There are 4 different types of client IDs you can provide:
 
 - `expoClientId`: Proxy client ID for use in the **Expo Go** on iOS and Android.
-- `iosClientId`: iOS native client ID for use in standalone, bare-workflow, and custom clients.
-- `androidClientId`: Android native client ID for use in standalone, bare-workflow, and custom clients.
+- `iosClientId`: iOS native client ID for use in standalone and bare workflow.
+- `androidClientId`: Android native client ID for use in standalone, bare workflow.
 - `webClientId`: Expo web client ID for use in the browser.
 
 To create a client ID, go to the [Credentials Page][c-google]:
@@ -998,7 +1074,7 @@ First, be sure to login to your Expo account `expo login`. This will be part of 
 
 #### iOS Native
 
-This can only be used in Standalone, custom clients, and bare workflow apps. This method cannot be used in the Expo Go app.
+This can only be used in standalone and bare workflow apps. This method cannot be used in the Expo Go app.
 
 [Create a new Google Client ID][c-google] that will be used with `iosClientId`.
 
@@ -1010,9 +1086,13 @@ This can only be used in Standalone, custom clients, and bare workflow apps. Thi
   - _Bare workflow_: Run `npx uri-scheme add <your bundle id> --ios`
 - To test this you can:
   1. Eject to bare: `expo eject` and run `yarn ios`
-  2. Create a custom client: `expo client:ios`
+  2. Build a simulator app: `expo build:ios -t simulator`
   3. Build a production IPA: `expo build:ios`
 - Whenever you change the values in `app.json` you'll need to rebuild the native app.
+
+**Troubleshooting**
+
+- If you get `Error 401: invalid_client` `The OAuth client was not found`: Ensure the clientId is defined correctly in your React code. Either as `11111111-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com` or without the `.apps.googleusercontent.com` extension.
 
 #### Android Native
 
@@ -2265,19 +2345,20 @@ Here are a few examples of some common redirect URI patterns you may end up usin
   - You could also create this link with using `Linking.makeUrl()` from `expo-linking`.
 - **Usage:** `promptAsync({ redirectUri })`
 
-#### Standalone, Bare, or Custom
+#### Standalone and Bare
 
 > `yourscheme://path`
 
 In some cases there will be anywhere between 1 to 3 slashes (`/`).
 
 - **Environment:**
-  - Bare-workflow - React Native + Unimodules.
+  - Bare workflow
     - `npx create-react-native-app` or `expo eject`
   - Standalone builds in the App or Play Store
     - `expo build:ios` or `expo build:android`
-  - Custom Expo Go builds
-    - `expo client:ios`
+  - Standalone builds for local testing
+    - `expo build:ios -t simulator` or `expo build:android -t apk`
+
 - **Create:** Use `AuthSession.makeRedirectUri({ native: '<YOUR_URI>' })` to select native when running in the correct environment.
   - `your.app://redirect` -> `makeRedirectUri({ scheme: 'your.app', path: 'redirect' })`
   - `your.app:///` -> `makeRedirectUri({ scheme: 'your.app', isTripleSlashed: true })`

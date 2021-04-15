@@ -8,38 +8,36 @@ type Links = { SVGExample: { title?: string; key: string } };
 
 type Props = StackScreenProps<Links, 'SVGExample'>;
 
-export default class SVGExampleScreen extends React.Component<Props> {
-  static navigationOptions = ({ route }: Props) => {
-    return {
-      title: route.params.title ?? 'An SVG Example',
-    };
-  };
+export default function SVGExampleScreen(props: Props) {
+  React.useLayoutEffect(() => {
+    props.navigation.setOptions({
+      title: props.route.params.title ?? 'An SVG Example',
+    });
+  }, [props.navigation, props.route]);
 
-  renderSample = (Sample: React.ComponentType & { title: string }, index: number) => (
+  const renderSample = (Sample: React.ComponentType & { title: string }, index: number) => (
     <View style={styles.example} key={`sample-${index}`}>
       <Text style={styles.sampleTitle}>{Sample.title}</Text>
       <Sample />
     </View>
   );
 
-  renderNoExample = () => <Text>No example found.</Text>;
+  const renderNoExample = React.useCallback(() => <Text>No example found.</Text>, []);
 
-  renderContent = () => {
-    const example = examples[this.props.route.params.key];
+  const renderContent = () => {
+    const example = examples[props.route.params.key];
     if (!example) {
-      return this.renderNoExample();
+      return renderNoExample();
     }
     const { samples } = example;
-    return samples.map(this.renderSample);
+    return samples.map(renderSample);
   };
 
-  render() {
-    return (
-      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-        {this.renderContent()}
-      </ScrollView>
-    );
-  }
+  return (
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+      {renderContent()}
+    </ScrollView>
+  );
 }
 
 const styles = StyleSheet.create({
