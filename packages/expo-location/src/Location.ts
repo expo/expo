@@ -159,7 +159,7 @@ export async function reverseGeocodeAsync(
  */
 export async function getPermissionsAsync(): Promise<LocationPermissionResponse> {
   console.warn(
-    `"getPermissionsAsync()" is now deprecated. Please, use "getForegroundPermissionsAsync()" or "getBackgroundPermissionsAsync()" instead.`
+    `"getPermissionsAsync()" is now deprecated. Please use "getForegroundPermissionsAsync()" or "getBackgroundPermissionsAsync()" instead.`
   );
   return await ExpoLocation.getPermissionsAsync();
 }
@@ -170,7 +170,7 @@ export async function getPermissionsAsync(): Promise<LocationPermissionResponse>
  */
 export async function requestPermissionsAsync(): Promise<LocationPermissionResponse> {
   console.warn(
-    `"requestPermissionsAsync()" is now deprecated. Please, use "requestForegroundPermissionsAsync()" or "requestBackgroundPermissionsAsync()" instead.`
+    `"requestPermissionsAsync()" is now deprecated. Please use "requestForegroundPermissionsAsync()" or "requestBackgroundPermissionsAsync()" instead.`
   );
 
   return await ExpoLocation.requestPermissionsAsync();
