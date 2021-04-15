@@ -7,13 +7,14 @@ import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.db.enums.UpdateStatus
 import expo.modules.updates.loader.EmbeddedLoader
+import expo.modules.updates.manifest.raw.BareRawManifest
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
 
 class BareManifest private constructor(
-  override val rawManifestJson: JSONObject,
+  override val rawManifestJson: BareRawManifest,
   private val mId: UUID,
   private val mScopeKey: String,
   private val mCommitTime: Date,
@@ -37,8 +38,7 @@ class BareManifest private constructor(
   override val assetEntityList: List<AssetEntity> by lazy {
     val assetList = mutableListOf<AssetEntity>()
 
-    // use unsanitized id value from manifest
-    val bundleKey = "bundle-" + rawManifestJson.optString("id", mId.toString())
+    val bundleKey = "bundle-$mId";
     val bundleAssetEntity = AssetEntity(bundleKey, "js").apply {
       isLaunchAsset = true
       embeddedAssetFilename = EmbeddedLoader.BARE_BUNDLE_FILENAME
@@ -50,8 +50,8 @@ class BareManifest private constructor(
           val assetObject = mAssets.getJSONObject(i)
           val type = assetObject.getString("type")
           val assetEntity = AssetEntity(
-              assetObject.getString("packagerHash") + "." + type,
-              type
+            assetObject.getString("packagerHash") + "." + type,
+            type
           ).apply {
             resourcesFilename = assetObject.optString("resourcesFilename")
             resourcesFolder = assetObject.optString("resourcesFolder")
@@ -82,25 +82,25 @@ class BareManifest private constructor(
 
     @Throws(JSONException::class)
     fun fromManifestJson(
-      manifestJson: JSONObject,
+      rawManifest: BareRawManifest,
       configuration: UpdatesConfiguration
     ): BareManifest {
-      val id = UUID.fromString(manifestJson.getString("id"))
-      val commitTime = Date(manifestJson.getLong("commitTime"))
+      val id = UUID.fromString(rawManifest.getID())
+      val commitTime = Date(rawManifest.getCommitTime())
       val runtimeVersion = UpdatesUtils.getRuntimeVersion(configuration)
-      val metadata = manifestJson.optJSONObject("metadata")
-      val assets = manifestJson.optJSONArray("assets")
+      val metadata = rawManifest.getMetadata()
+      val assets = rawManifest.getAssets()
       if (runtimeVersion.contains(",")) {
         throw AssertionError("Should not be initializing a BareManifest in an environment with multiple runtime versions.")
       }
       return BareManifest(
-          manifestJson,
-          id,
-          configuration.scopeKey,
-          commitTime,
-          runtimeVersion,
-          metadata,
-          assets
+        rawManifest,
+        id,
+        configuration.scopeKey,
+        commitTime,
+        runtimeVersion,
+        metadata,
+        assets
       )
     }
   }
