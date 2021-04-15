@@ -26,10 +26,7 @@ Follow [Facebook's developer documentation](https://developers.facebook.com/docs
 
 Then follow these steps based on the platforms you're targeting. This will need to be done from the [Facebook developer site](https://developers.facebook.com/).
 
-Expo Go from the Android Play Store will use the Facebook App ID that you provide, however, all Facebook API calls in the **Expo Go from the iOS App Store will use Expo's own Facebook App ID**. This is due to underlying configuration limitations, but the good news is it means less setup for you! The slight downside to this is that you can't customize which permissions your app requests from Facebook (like `user_photos` or `user_friends`), or integrate Facebook login with other services like Firebase auth. If you need that functionality on iOS, you have two options:
-
-- Build a [custom Expo Go app](../../../guides/adhoc-builds.md)
-- Build a [standalone app](../../../distribution/building-standalone-apps.md)
+Expo Go from the Android Play Store will use the Facebook App ID that you provide, however, all Facebook API calls in the **Expo Go from the iOS App Store will use Expo's own Facebook App ID**. This is due to underlying configuration limitations, but the good news is it means less setup for you! The slight downside to this is that you can't customize which permissions your app requests from Facebook (like `user_photos` or `user_friends`), or integrate Facebook login with other services like Firebase auth. If you need that functionality on iOS, you can build a standalone app. An easy way to test this is to run `expo build:ios -t simulator` and install the app in your simulator.
 
 #### Configure `app.json`
 
@@ -41,13 +38,11 @@ Expo Go from the Android Play Store will use the Facebook App ID that you provid
   - `facebookAutoLogAppEventsEnabled`, defaults to Facebook's default policy (Only applies to standalone apps)
   - `facebookAdvertiserIDCollectionEnabled`, defaults to Facebook's default policy (Only applies to standalone apps)
 
-#### iOS Custom Expo Go
-
-- Add your custom client's Bundle ID (shown in the output after running `expo client:ios`) in the app settings page pictured below. It should look something like: `dev.expo.client.xxxxx`
-
 #### iOS standalone app
 
 - Add your app's Bundle ID as a _Bundle ID_ in the app settings page pictured below.
+
+> An easy way to test that this is set up correctly is to run a simulator build with `expo build:ios -t simulator`.
 
 #### Android standalone app
 
