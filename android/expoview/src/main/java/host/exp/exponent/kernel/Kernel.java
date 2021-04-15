@@ -615,8 +615,8 @@ public class Kernel extends KernelInterface {
         }
       }
 
-      // transfer the release-channel param to the built URL as this will cause the client to treat
-      // this as a different experience
+      // transfer the release-channel param to the built URL as this will cause Expo Go to treat
+      // this as a different project
       String releaseChannel = uri.getQueryParameter(ExponentManifest.QUERY_PARAM_KEY_RELEASE_CHANNEL);
       builder.query(null);
       if (releaseChannel != null) {
