@@ -156,7 +156,7 @@ const DateTimePickerScreen = () => {
         {Platform.OS === 'android' && (
           <Text style={{ padding: 8, textAlign: 'center', color: 'grey' }}>
             Please ensure that each of the displays are distinct. If not, it's likely that this
-            change must be applied: expo/expo PR #XXXXX
+            change must be applied: expo/expo PR #12563
           </Text>
         )}
         {show && (
