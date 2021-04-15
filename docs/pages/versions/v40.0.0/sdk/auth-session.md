@@ -154,7 +154,7 @@ Given an OpenID Connect issuer URL, this will fetch and return the [`DiscoveryDo
 Create a redirect url for the current platform and environment. You need to manually define the redirect that will be used in a bare workflow React Native app, or an Expo standalone app, this is because it cannot be inferred automatically.
 
 - **Web:** Generates a path based on the current `window.location`. For production web apps, you should hard code the URL as well.
-- **Managed, and Custom workflow:** Uses the `scheme` property of your `app.config.js` or `app.json`.
+- **Managed workflow:** Uses the `scheme` property of your `app.config.js` or `app.json`.
   - **Proxy:** Uses auth.expo.io as the base URL for the path. This only works in Expo Go and standalone environments.
 - **Bare workflow:** Will fallback to using the `native` option for bare workflow React Native apps.
 
@@ -515,8 +515,8 @@ An extension of the [`AuthRequestConfig`][#authrequestconfig] for use with the b
 | selectAccount          | `?boolean` | Used in favor of `prompt: Prompt.SelectAccount` to switch accounts                    |
 | expoClientId           | `?string`  | Proxy client ID for use in Expo Go on iOS and Android.                                |
 | webClientId            | `?string`  | Web client ID for use in the browser (web apps).                                      |
-| iosClientId            | `?string`  | iOS native client ID for use in standalone, bare-workflow, and custom clients.        |
-| androidClientId        | `?string`  | Android native client ID for use in standalone, bare-workflow, and custom clients.    |
+| iosClientId            | `?string`  | iOS native client ID for use in standalone, bare workflow.                            |
+| androidClientId        | `?string`  | Android native client ID for use in standalone, bare workflow.                        |
 | shouldAutoExchangeCode | `?string`  | Should the hook automatically exchange the response code for an authentication token. |
 
 ## Providers
