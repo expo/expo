@@ -34,7 +34,6 @@ internal const val ERROR_TAG = "E_PERMISSIONS"
 open class PermissionsService(val context: Context) : InternalModule, Permissions, LifecycleEventListener {
   private var mActivityProvider: ActivityProvider? = null
 
-
   // state holders for asking for writing permissions
   private var mWriteSettingsPermissionBeingAsked = false // change this directly before calling corresponding startActivity
   private var mAskAsyncListener: PermissionsResponseListener? = null
@@ -85,7 +84,6 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
       getPermissionsWithPromise(promise, *permissions)
     }, *permissions)
   }
-
 
   override fun getPermissions(responseListener: PermissionsResponseListener, vararg permissions: String) {
     responseListener.onResult(parseNativeResult(permissions, permissions.map {

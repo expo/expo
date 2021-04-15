@@ -166,9 +166,9 @@ class ScreenOrientationModule(context: Context) : ExportedModule(context), Lifec
    * Check if the device's natural orientation is portrait.
    */
   private fun isPortraitNaturalOrientation(rotation: Int, width: Int, height: Int): Boolean {
-    return (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180)
-        && height > width || (rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270)
-        && width > height
+    return (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180) &&
+        height > width || (rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270) &&
+        width > height
   }
 
   private fun exportOrientationLock(nativeOrientationLock: Int): Int {

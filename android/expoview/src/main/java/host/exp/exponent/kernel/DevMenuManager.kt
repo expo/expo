@@ -27,7 +27,6 @@ import javax.inject.Inject
 import host.exp.exponent.modules.ExponentKernelModule
 import host.exp.exponent.storage.ExponentSharedPreferences
 
-
 private const val DEV_MENU_JS_MODULE_NAME = "HomeMenu"
 
 /**

@@ -12,8 +12,8 @@ import abi39_0_0.org.unimodules.core.Promise
 import abi39_0_0.org.unimodules.core.interfaces.ActivityProvider
 import abi39_0_0.org.unimodules.core.interfaces.ExpoMethod
 
-class StoreReviewModule(private val mContext: Context)
-  : ExportedModule(mContext) {
+class StoreReviewModule(private val mContext: Context) :
+  ExportedModule(mContext) {
   companion object {
     private const val NAME = "ExpoStoreReview"
   }
