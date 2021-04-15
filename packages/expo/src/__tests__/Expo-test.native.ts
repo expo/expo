@@ -116,6 +116,13 @@ describe(`Expo APIs`, () => {
   }
 });
 
+jest.mock('react-native/Libraries/Core/Devtools/getDevServer', () => ({
+  __esModule: true,
+  default() {
+    return { bundleLoadedFromServer: true, url: 'http://localhost:8081/' };
+  },
+}));
+
 describe(`importing Expo`, () => {
   beforeAll(() => {
     jest.resetModules();
