@@ -75,7 +75,7 @@ A map of options:
 
 - `FacebookInitializationOptions` type:
 
-  - **appId (_string | undefined_)** Application ID used to specify the Facebook app. On Android and iOS if you don't provide this, the Facebook SDK will try to use `appId` from native app resources (which in standalone apps you define in `app.json`, in the app store development clients is unavailable, and in bare apps you configure yourself according to the Facebook setup documentation for [iOS][d-fbsdk-ios-config] and [Android][d-fbsdk-android-manifest]]). If the Facebook SDK fails to find a value for `appId`, the returned promise will be rejected.
+  - **appId (_string | undefined_)** Application ID used to specify the Facebook app. On Android and iOS if you don't provide this, the Facebook SDK will try to use `appId` from native app resources (which in standalone apps you define in `app.json`, in the app store development clients is unavailable, and in bare apps you configure yourself according to the Facebook setup documentation for [iOS][d-fbsdk-ios-config] and [Android][d-fbsdk-android-manifest]). If the Facebook SDK fails to find a value for `appId`, the returned promise will be rejected.
   - **version (_string | undefined_)** Selects the [version of the Facebook SDK](https://developers.facebook.com/docs/javascript/reference/FB.init/v5.0) to use.
   - **appName (_string | undefined_)** An optional Facebook App Name argument for Android and iOS.
   - **autoLogAppEvents (_boolean | undefined_)** Sets whether the Facebook SDK should log app events. App events involve e.g. app installs, app launches (more info [here](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#auto-events) and [here](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#auto-events)). In some cases, you may want to disable or delay the collection of automatically logged events, such as to obtain user consent or fulfill legal obligations. This method corresponds to [this iOS](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#disable-auto-events) and [this Android](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#disable-auto-events) native SDK method. The default value is `false`.
@@ -119,7 +119,7 @@ A map of options:
 
 If the user or Facebook cancelled the login, returns `{ type: 'cancel' }`.
 
-Otherwise, returns `{ type: 'success' } &` [`FacebookAuthenticationCredential`][#facebookauthenticationcredential].
+Otherwise, returns `{ type: 'success' } &` [`FacebookAuthenticationCredential`](#facebookauthenticationcredential).
 
 ### `Facebook.setAdvertiserTrackingEnabledAsync(enabled: boolean): Promise<boolean>`
 
