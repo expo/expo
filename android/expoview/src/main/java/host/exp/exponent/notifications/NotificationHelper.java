@@ -27,6 +27,8 @@ import java.util.TimeZone;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import de.greenrobot.event.EventBus;
+import expo.modules.updates.manifest.ManifestFactory;
+import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
@@ -65,9 +67,9 @@ public class NotificationHelper {
 
   public static int getColor(
     @Nullable String colorString,
-    JSONObject manifest,
+    RawManifest manifest,
     ExponentManifest exponentManifest) {
-    JSONObject notificationPreferences = manifest.optJSONObject(ExponentManifest.MANIFEST_NOTIFICATION_INFO_KEY);
+    @Nullable JSONObject notificationPreferences = manifest.getNotificationPreferences();
 
     if (colorString == null) {
       colorString = notificationPreferences == null ? null :
@@ -86,14 +88,14 @@ public class NotificationHelper {
   }
 
   public static void loadIcon(String url,
-                              JSONObject manifest,
+                              RawManifest manifest,
                               ExponentManifest exponentManifest,
                               ExponentManifest.BitmapListener bitmapListener) {
-    JSONObject notificationPreferences = manifest.optJSONObject(ExponentManifest.MANIFEST_NOTIFICATION_INFO_KEY);
+    @Nullable JSONObject notificationPreferences = manifest.getNotificationPreferences();
     String iconUrl;
 
     if (url == null) {
-      iconUrl = manifest.optString(ExponentManifest.MANIFEST_ICON_URL_KEY);
+      iconUrl = manifest.getIconUrl();
       if (notificationPreferences != null) {
         iconUrl = notificationPreferences.optString(ExponentManifest.MANIFEST_NOTIFICATION_ICON_URL_KEY, null);
       }
@@ -477,7 +479,7 @@ public class NotificationHelper {
           @Override
           public void run() {
             try {
-              JSONObject manifest = new JSONObject(experience.manifest);
+              RawManifest manifest = ManifestFactory.INSTANCE.getRawManifestFromJson(new JSONObject(experience.manifest));
 
               Intent intent;
 

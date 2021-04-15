@@ -66,6 +66,7 @@ import abi41_0_0.expo.modules.updates.UpdatesPackage;
 import abi41_0_0.expo.modules.videothumbnails.VideoThumbnailsPackage;
 import abi41_0_0.expo.modules.webbrowser.WebBrowserPackage;
 import abi41_0_0.expo.modules.device.DevicePackage;
+import expo.modules.updates.manifest.raw.RawManifest;
 
 public class ExperiencePackagePicker {
   private static final List<Package> EXPO_MODULES_PACKAGES = Arrays.<Package>asList(
@@ -141,7 +142,7 @@ public class ExperiencePackagePicker {
    * Returns packages filtered based on the app's manifest.
    * For now, filtering is not applied but it is on the todo list.
    */
-  static List<Package> packages(JSONObject manifest) {
+  static List<Package> packages(RawManifest manifest) {
     return EXPO_MODULES_PACKAGES;
   }
 }

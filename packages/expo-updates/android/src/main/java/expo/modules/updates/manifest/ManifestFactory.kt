@@ -4,6 +4,7 @@ import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.manifest.raw.BareRawManifest
 import expo.modules.updates.manifest.raw.LegacyRawManifest
 import expo.modules.updates.manifest.raw.NewRawManifest
+import expo.modules.updates.manifest.raw.RawManifest
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -15,10 +16,10 @@ object ManifestFactory {
         val expoProtocolVersion = httpResponse.header("expo-protocol-version", null)
         return when {
             expoProtocolVersion == null -> {
-                LegacyManifest.fromLegacyRawManifest(manifestJson as LegacyRawManifest, configuration!!)
+                LegacyManifest.fromLegacyRawManifest(LegacyRawManifest(manifestJson), configuration!!)
             }
             Integer.valueOf(expoProtocolVersion) == 0 -> {
-                NewManifest.fromRawManifest(manifestJson as NewRawManifest, httpResponse, configuration!!)
+                NewManifest.fromRawManifest(NewRawManifest(manifestJson), httpResponse, configuration!!)
             }
             else -> {
                 throw Exception("Unsupported expo-protocol-version: $expoProtocolVersion")
@@ -29,9 +30,23 @@ object ManifestFactory {
     @Throws(JSONException::class)
     fun getEmbeddedManifest(manifestJson: JSONObject, configuration: UpdatesConfiguration?): Manifest {
         return if (manifestJson.has("releaseId")) {
-            LegacyManifest.fromLegacyRawManifest(manifestJson as LegacyRawManifest, configuration!!)
+            LegacyManifest.fromLegacyRawManifest(LegacyRawManifest(manifestJson), configuration!!)
         } else {
-            BareManifest.fromManifestJson(manifestJson as BareRawManifest, configuration!!)
+            BareManifest.fromManifestJson(BareRawManifest(manifestJson), configuration!!)
+        }
+    }
+
+    fun getRawManifestFromJson(manifestJson: JSONObject): RawManifest {
+        return when {
+            manifestJson.has("releaseId") -> {
+                LegacyRawManifest(manifestJson)
+            }
+            manifestJson.has("updateMetadata") -> {
+                NewRawManifest(manifestJson)
+            }
+            else -> {
+                BareRawManifest(manifestJson)
+            }
         }
     }
 }
