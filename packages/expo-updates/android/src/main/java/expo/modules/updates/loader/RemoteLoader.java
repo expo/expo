@@ -18,6 +18,7 @@ import expo.modules.updates.manifest.ManifestMetadata;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class RemoteLoader {
 
@@ -166,7 +167,7 @@ public class RemoteLoader {
     }
   }
 
-  private void downloadAllAssets(ArrayList<AssetEntity> assetList) {
+  private void downloadAllAssets(List<AssetEntity> assetList) {
     mAssetTotal = assetList.size();
     for (AssetEntity assetEntity : assetList) {
       AssetEntity matchingDbEntry = mDatabase.assetDao().loadAssetWithKey(assetEntity.key);

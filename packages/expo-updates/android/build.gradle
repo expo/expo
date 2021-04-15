@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
@@ -92,4 +93,9 @@ dependencies {
   androidTestImplementation 'androidx.test:rules:1.1.0'
   androidTestImplementation 'org.mockito:mockito-android:3.7.7'
   androidTestImplementation "androidx.room:room-testing:$room_version"
+
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
+}
+repositories {
+  mavenCentral()
 }

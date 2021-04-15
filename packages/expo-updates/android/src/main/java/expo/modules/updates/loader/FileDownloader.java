@@ -180,7 +180,7 @@ public class FileDownloader {
     if (configuration.expectsSignedManifest()) {
       preManifest.put("isVerified", isVerified);
     }
-    Manifest manifest = ManifestFactory.getManifest(preManifest, new ManifestResponse(response), configuration);
+    Manifest manifest = ManifestFactory.INSTANCE.getManifest(preManifest, new ManifestResponse(response), configuration);
     if (!SelectionPolicyFilterAware.matchesFilters(manifest.getUpdateEntity(), manifest.getManifestFilters())) {
       String message = "Downloaded manifest is invalid; provides filters that do not match its content";
       callback.onFailure(message, new Exception(message));
