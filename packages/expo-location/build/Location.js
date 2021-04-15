@@ -107,7 +107,7 @@ export async function reverseGeocodeAsync(location, options) {
  * @deprecated Use `getForegroundPermissionsAsync()` or `getBackgroundPermissionsAsync()` instead.
  */
 export async function getPermissionsAsync() {
-    console.warn(`"getPermissionsAsync" is now deprecated. Please, use "getForegroundPermissions" or "getBackgroundPermissions" instead.`);
+    console.warn(`"getPermissionsAsync()" is now deprecated. Please, use "getForegroundPermissionsAsync()" or "getBackgroundPermissionsAsync()" instead.`);
     return await ExpoLocation.getPermissionsAsync();
 }
 /**
@@ -115,7 +115,7 @@ export async function getPermissionsAsync() {
  * @deprecated Use `requestForegroundPermissionsAsync()` or `requestBackgroundPermissionsAsync()` instead.
  */
 export async function requestPermissionsAsync() {
-    console.warn(`"requestPermissionsAsync" is now deprecated. Please, use "requestForegroundPermissionsAsync" or "requestBackgroundPermissionsAsync" instead.`);
+    console.warn(`"requestPermissionsAsync()" is now deprecated. Please, use "requestForegroundPermissionsAsync()" or "requestBackgroundPermissionsAsync()" instead.`);
     return await ExpoLocation.requestPermissionsAsync();
 }
 /**
