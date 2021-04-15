@@ -1,6 +1,7 @@
 import * as React from 'react';
 import createElement from 'react-native-web/dist/exports/createElement';
 import ExponentAV from './ExponentAV';
+import { addFullscreenListener } from './FullscreenUtils.web';
 export const FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = 0;
 export const FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = 1;
 export const FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = 2;
@@ -13,20 +14,18 @@ const Video = React.forwardRef((props, ref) => createElement('video', { ...props
 export default class ExponentVideo extends React.Component {
     constructor() {
         super(...arguments);
-        this.onFullscreenChange = event => {
+        this.onFullscreenChange = (isFullscreen) => {
             if (!this.props.onFullscreenUpdate)
                 return;
-            if (event.target === this._video) {
-                if (document.fullscreenElement) {
-                    this.props.onFullscreenUpdate({
-                        nativeEvent: { fullscreenUpdate: FULLSCREEN_UPDATE_PLAYER_DID_PRESENT },
-                    });
-                }
-                else {
-                    this.props.onFullscreenUpdate({
-                        nativeEvent: { fullscreenUpdate: FULLSCREEN_UPDATE_PLAYER_DID_DISMISS },
-                    });
-                }
+            if (isFullscreen) {
+                this.props.onFullscreenUpdate({
+                    nativeEvent: { fullscreenUpdate: FULLSCREEN_UPDATE_PLAYER_DID_PRESENT },
+                });
+            }
+            else {
+                this.props.onFullscreenUpdate({
+                    nativeEvent: { fullscreenUpdate: FULLSCREEN_UPDATE_PLAYER_DID_DISMISS },
+                });
             }
         };
         this.onStatusUpdate = async () => {
@@ -81,16 +80,13 @@ export default class ExponentVideo extends React.Component {
         };
         this.onRef = (ref) => {
             this._video = ref;
+            this._removeFullscreenListener?.();
+            this._removeFullscreenListener = addFullscreenListener(this._video, this.onFullscreenChange);
             this.onStatusUpdate();
         };
     }
-    componentDidMount() {
-        const isIE11 = !!window['MSStream'];
-        document.addEventListener(isIE11 ? 'MSFullscreenChange' : 'fullscreenchange', this.onFullscreenChange);
-    }
     componentWillUnmount() {
-        const isIE11 = !!window['MSStream'];
-        document.addEventListener(isIE11 ? 'MSFullscreenChange' : 'fullscreenchange', this.onFullscreenChange);
+        this._removeFullscreenListener?.();
     }
     render() {
         const { source, status = {}, resizeMode: objectFit, useNativeControls, style } = this.props;

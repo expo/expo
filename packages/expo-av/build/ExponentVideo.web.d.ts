@@ -45,9 +45,9 @@ export declare const IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = 2;
 export declare const IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = 3;
 export default class ExponentVideo extends React.Component<ExponentVideoProps> {
     _video?: HTMLVideoElement;
-    componentDidMount(): void;
+    _removeFullscreenListener?: () => any;
     componentWillUnmount(): void;
-    onFullscreenChange: (event: any) => void;
+    onFullscreenChange: (isFullscreen: boolean) => void;
     onStatusUpdate: () => Promise<void>;
     onLoadStart: () => void;
     onLoadedData: (event: any) => void;
