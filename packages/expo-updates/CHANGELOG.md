@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Convert manifest definitions and tests to kotlin. ([#12479](https://github.com/expo/expo/pull/12479) by [@wschurman](https://github.com/wschurman))
+
 ### 🐛 Bug fixes
 
 ## 0.6.0 — 2021-04-13

@@ -161,7 +161,7 @@ public class DatabaseLauncher implements Launcher {
       // first we check to see if a copy is embedded in the binary
       Manifest embeddedManifest = EmbeddedLoader.readEmbeddedManifest(context, mConfiguration);
       if (embeddedManifest != null) {
-        ArrayList<AssetEntity> embeddedAssets = embeddedManifest.getAssetEntityList();
+        List<AssetEntity> embeddedAssets = embeddedManifest.getAssetEntityList();
         AssetEntity matchingEmbeddedAsset = null;
         for (AssetEntity embeddedAsset : embeddedAssets) {
           if (embeddedAsset.key != null && embeddedAsset.key.equals(asset.key)) {
