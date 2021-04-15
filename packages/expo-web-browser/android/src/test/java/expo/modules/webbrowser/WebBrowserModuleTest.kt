@@ -1,7 +1,6 @@
 package expo.modules.webbrowser
 
 import android.content.Intent
-import android.os.Build
 import androidx.browser.customtabs.CustomTabsIntent
 import expo.modules.webbrowser.error.PackageManagerNotFoundException
 import io.mockk.every
@@ -16,7 +15,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
 import org.unimodules.test.core.PromiseMock
 import org.unimodules.test.core.assertListsEqual
 import org.unimodules.test.core.assertSetsEqual
@@ -304,13 +302,11 @@ internal class WebBrowserModuleTest {
     }
   }
 
-
-
   private fun initialize(
     customTabsActivitiesHelper: CustomTabsActivitiesHelper = mockkCustomTabsActivitiesHelper(),
     customTabsConnectionHelper: CustomTabsConnectionHelper? = null
   ) {
-    if(customTabsConnectionHelper != null) {
+    if (customTabsConnectionHelper != null) {
       moduleRegistry.mockInternalModule(customTabsConnectionHelper)
     }
     moduleRegistry.mockInternalModule(customTabsActivitiesHelper)

@@ -2,14 +2,8 @@ package expo.modules.notifications.service.delegates
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Base64
 import expo.modules.notifications.notifications.model.NotificationCategory
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.IOException
-import java.io.InvalidClassException
-import java.io.ObjectInputStream
-import java.io.ObjectOutputStream
 
 /**
  * A fairly straightforward [SharedPreferences] wrapper to be used by [NotificationSchedulingHelper].
@@ -31,8 +25,8 @@ class SharedPreferencesNotificationCategoriesStore(context: Context) {
    *
    * @param identifier Identifier of the category.
    * @return Category information: actions and options.
-   * @throws JSONException          Thrown if notification category could not be interpreted as a JSON object.
-   * @throws IOException            Thrown if there is an error when fetching the category from storage.
+   * @throws JSONException Thrown if notification category could not be interpreted as a JSON object.
+   * @throws IOException Thrown if there is an error when fetching the category from storage.
    * @throws ClassNotFoundException Thrown if there is an error when interpreting the category fetched from storage.
    */
   @Throws(IOException::class, ClassNotFoundException::class)

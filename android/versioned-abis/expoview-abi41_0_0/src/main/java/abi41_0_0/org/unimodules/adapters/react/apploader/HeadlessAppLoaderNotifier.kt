@@ -7,7 +7,6 @@ interface HeadlessAppLoaderListener {
   fun appLoaded(appId: String)
 
   fun appDestroyed(appId: String)
-
 }
 
 object HeadlessAppLoaderNotifier {
@@ -29,5 +28,4 @@ object HeadlessAppLoaderNotifier {
       listeners.forEach { it.get()?.appDestroyed(appId) }
     }
   }
-
 }

@@ -28,7 +28,7 @@ class ScreenCaptureModule(context: Context) : ExportedModule(context) {
   fun preventScreenCapture(promise: Promise) {
     val activity = getCurrentActivity()
 
-    activity.runOnUiThread{
+    activity.runOnUiThread {
       try {
         activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE)
       } catch (exception: Exception) {
@@ -42,7 +42,7 @@ class ScreenCaptureModule(context: Context) : ExportedModule(context) {
   fun allowScreenCapture(promise: Promise) {
     val activity = getCurrentActivity()
 
-    activity.runOnUiThread{
+    activity.runOnUiThread {
       try {
         activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
       } catch (exception: Exception) {

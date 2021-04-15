@@ -2,10 +2,8 @@ package abi39_0_0.expo.modules.screencapture
 
 import android.Manifest.permission
 import android.content.Context
-import android.content.ContentResolver
 import android.content.pm.PackageManager
 import android.database.ContentObserver
-import android.database.Cursor
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -13,7 +11,6 @@ import android.provider.MediaStore
 import android.util.Log
 
 import androidx.core.content.ContextCompat
-import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 
 import abi39_0_0.org.unimodules.core.ModuleRegistry
@@ -70,7 +67,7 @@ class ScreenshotEventEmitter(val context: Context, moduleRegistry: ModuleRegistr
 
   @Nullable private fun getFilePathFromContentResolver(context: Context, uri: Uri?): String? {
     if (uri == null) {
-      return null;
+      return null
     }
     try {
       val cursor = context.contentResolver.query(uri, arrayOf(MediaStore.Images.Media.DATA), null, null, null)
