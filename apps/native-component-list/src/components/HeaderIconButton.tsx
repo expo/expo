@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
 import * as React from 'react';
 import { TouchableOpacity, View } from 'react-native';
 
@@ -27,7 +27,7 @@ export default function HeaderIconButton({
 }: Props) {
   return (
     <TouchableOpacity disabled={disabled} style={{ paddingHorizontal: 12 }} onPress={onPress}>
-      <Ionicons size={size} color={color} name={name} />
+      <Ionicons size={size} color={color} name={name as any} />
     </TouchableOpacity>
   );
 }

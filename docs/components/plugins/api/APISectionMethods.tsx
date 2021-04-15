@@ -15,6 +15,7 @@ import {
 export type APISectionMethodsProps = {
   data: MethodDefinitionData[];
   apiName?: string;
+  header?: string;
 };
 
 const renderMethod = (
@@ -51,10 +52,14 @@ const renderMethod = (
     </div>
   ));
 
-const APISectionMethods: React.FC<APISectionMethodsProps> = ({ data, apiName }) =>
+const APISectionMethods: React.FC<APISectionMethodsProps> = ({
+  data,
+  apiName,
+  header = 'Methods',
+}) =>
   data?.length ? (
     <>
-      <H2 key="methods-header">Methods</H2>
+      <H2 key="methods-header">{header}</H2>
       {data.map((method, index) => renderMethod(method, index, data.length, apiName))}
     </>
   ) : null;

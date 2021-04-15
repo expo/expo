@@ -22,6 +22,24 @@ type Props = {
 const CONTACT_PAGE_SIZE = 500;
 
 export default function ContactsScreen({ navigation }: Props) {
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      title: 'Contacts',
+      headerRight: () => (
+        <HeaderContainerRight>
+          <HeaderIconButton
+            disabled={Platform.select({ web: true, default: false })}
+            name="md-add"
+            onPress={() => {
+              const randomContact = { note: 'Likes expo...' } as Contacts.Contact;
+              ContactUtils.presentNewContactFormAsync({ contact: randomContact });
+            }}
+          />
+        </HeaderContainerRight>
+      ),
+    });
+  }, [navigation]);
+
   const [isAvailable, error] = useResolvedValue(Contacts.isAvailableAsync);
   const [permission] = usePermissions(Contacts.requestPermissionsAsync);
 
@@ -128,21 +146,3 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
 });
-
-ContactsScreen.navigationOptions = () => {
-  return {
-    title: 'Contacts',
-    headerRight: () => (
-      <HeaderContainerRight>
-        <HeaderIconButton
-          disabled={Platform.select({ web: true, default: false })}
-          name="md-add"
-          onPress={() => {
-            const randomContact = { note: 'Likes expo...' } as Contacts.Contact;
-            ContactUtils.presentNewContactFormAsync({ contact: randomContact });
-          }}
-        />
-      </HeaderContainerRight>
-    ),
-  };
-};

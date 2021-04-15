@@ -6,17 +6,18 @@ on:
     branches: [master]
     paths:
       - .github/workflows/android-unit-tests.yml
-      - 'android/**'
-      - 'fastlane/**'
-      - 'tools/**'
+      - android/**
+      - fastlane/**
+      - packages/**/android/**
+      - tools/**
       - yarn.lock
   pull_request:
-    branches: [master]
     paths:
       - .github/workflows/android-unit-tests.yml
-      - 'android/**'
-      - 'fastlane/**'
-      - 'tools/**'
+      - android/**
+      - fastlane/**
+      - packages/**/android/**
+      - tools/**
       - yarn.lock
 
 jobs:

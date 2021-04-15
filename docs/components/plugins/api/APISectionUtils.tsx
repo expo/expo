@@ -1,3 +1,5 @@
+import { css } from '@emotion/core';
+import { theme } from '@expo/styleguide';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 
@@ -57,6 +59,7 @@ export const resolveTypeName = ({
   type,
   types,
   typeArguments,
+  declaration,
 }: TypeDefinitionData): string | JSX.Element => {
   if (name) {
     if (type === 'reference') {
@@ -97,6 +100,8 @@ export const resolveTypeName = ({
         t.type === 'array' ? `${t.elementType?.name}[]` : `${t.name || t.value}`
       )
       .join(' | ');
+  } else if (declaration?.signatures) {
+    return `() => ${resolveTypeName(declaration.signatures[0].type)}`;
   }
   return 'undefined';
 };
@@ -135,3 +140,9 @@ export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
     </>
   );
 };
+
+export const STYLES_OPTIONAL = css`
+  color: ${theme.text.secondary};
+  font-size: 90%;
+  padding-top: 22px;
+`;

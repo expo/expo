@@ -178,6 +178,22 @@ export function setUnavailabilityLogging(isEnabled: boolean): void {
 }
 
 /**
+ * In Expo Go, sets the clientId to the given value for the current session.
+ *
+ * By default, the clientId is set to `Constants.installationId` in Expo Go,
+ * which is deprecated and will be removed in SDK 44. At that time, this method
+ * will need to be used to set the `clientId` when using Expo Go.
+ *
+ * @param clientId UUIDv4 string value to set for the current session in Expo Go
+ */
+export function setClientId(clientId: string): void {
+  if (!ExpoFirebaseAnalytics.setClientId) {
+    throw new UnavailabilityError('expo-firebase-analytics', 'setClientId');
+  }
+  ExpoFirebaseAnalytics.setClientId(clientId);
+}
+
+/**
  * Enables or disabled debug mode on the Expo client, so events can
  * be tracked using the [DebugView in the Analytics dashboard](https://firebase.google.com/docs/analytics/debugview#reporting).
  *
