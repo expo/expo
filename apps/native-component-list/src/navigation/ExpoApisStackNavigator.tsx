@@ -137,6 +137,12 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/FacebookAppEventsScreen'));
+    },
+    name: 'FacebookAppEvents',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/FacebookLoginScreen'));
     },
     name: 'FacebookLogin',
