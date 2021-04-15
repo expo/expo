@@ -1,6 +1,6 @@
 import { EventEmitter, UnavailabilityError } from '@unimodules/core';
 import invariant from 'invariant';
-import { PermissionStatus } from 'unimodules-permissions-interface';
+import { PermissionStatus, } from 'unimodules-permissions-interface';
 import ExponentPedometer from './ExponentPedometer';
 const PedometerEventEmitter = new EventEmitter(ExponentPedometer);
 // @needsAudit
@@ -65,4 +65,5 @@ const defaultPermissionsResponse = {
     canAskAgain: true,
     status: PermissionStatus.GRANTED,
 };
+export { PermissionStatus };
 //# sourceMappingURL=Pedometer.js.map
