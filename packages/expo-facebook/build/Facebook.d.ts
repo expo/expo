@@ -9,7 +9,7 @@ declare type Params = {
  * See https://developers.facebook.com/docs/app-events/advanced-matching for
  * more info about the expected format of each field.
  */
-declare type UserData = {
+export declare type UserData = {
     email?: string;
     firstName?: string;
     lastName?: string;
