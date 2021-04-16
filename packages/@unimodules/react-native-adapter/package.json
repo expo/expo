@@ -34,6 +34,7 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
+    "expo-module-autolinking": "^0.0.0",
     "invariant": "^2.2.4"
   },
   "devDependencies": {
