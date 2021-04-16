@@ -87,7 +87,6 @@ exports.createMetroConfiguration = function createMetroConfiguration(projectPath
  *    * transpiles symlinked workspace packages
  *    * watches for file changes in symlinked workspace packages
  */
-
 exports.createWebpackConfigAsync = async function createWebpackConfigAsync(env, argv) {
   let workspacePackagesToTranspile = [];
   let workspaceRootPath = findYarnWorkspaceRoot(env.projectRoot);
