@@ -11,22 +11,16 @@ abstract class RawManifest(protected val json: JSONObject) {
   @Throws(JSONException::class)
   fun getID(): String = json.getString("id")
 
-  // this will need to be updated for new manifests
   @Throws(JSONException::class)
-  fun getBundleURL(): String = json.getString("bundleUrl")
+  abstract fun getBundleURL(): String
 
   @Throws(JSONException::class)
   fun getRevisionId(): String = json.getString("revisionId")
 
-  // this will need to be overridden in NewManifest once sdkVersion can be parsed from sdkVersion
-  fun getSDKVersionNullable(): String? = if (json.has("sdkVersion")) {
-    json.optString("sdkVersion")
-  } else {
-    null
-  }
+  abstract fun getSDKVersionNullable(): String?
 
   @Throws(JSONException::class)
-  fun getSDKVersion(): String = json.getString("sdkVersion")
+  abstract fun getSDKVersion(): String
 
   abstract fun getAssets(): JSONArray?
 
