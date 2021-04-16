@@ -82,6 +82,7 @@ export type OpenFileBrowserOptions = {
   mediaTypes: MediaTypeOptions;
   capture?: boolean;
   allowsMultipleSelection: boolean;
+  base64: boolean;
 };
 
 export type ExpandImagePickerResult<

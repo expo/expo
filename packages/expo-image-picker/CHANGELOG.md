@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `base64` return on web. ([#12529](https://github.com/expo/expo/pull/12529) by [@simonezuccala](https://github.com/simonezuccala) and [@misterdev](https://github.com/misterdev))
+
 ## 10.1.3 — 2021-04-13
 
 _This version does not introduce any user-facing changes._
