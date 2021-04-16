@@ -20,7 +20,7 @@ use: [
 ```
  * This plugin depends on `~/common/md-loader.js`, which adds `export const meta = ...` statement.
  */
-module.exports = function () {
+module.exports = function() {
   return tree => {
     const headings = [];
     visit(tree, 'heading', node => {
