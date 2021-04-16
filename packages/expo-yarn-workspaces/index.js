@@ -114,7 +114,7 @@ exports.createWebpackConfigAsync = async function createWebpackConfigAsync(env, 
     debug(`Could not find Yarn workspace root`);
   }
 
-  env.babel = env.babel || {};
+  env.babel = env.babel ?? {};
 
   const config = await createExpoWebpackConfigAsync(
     {
