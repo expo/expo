@@ -122,7 +122,7 @@ exports.createWebpackConfigAsync = async function createWebpackConfigAsync(env, 
       babel: {
         dangerouslyAddModulePathsToTranspile: [
           ...workspacePackagesToTranspile,
-          ...(env.babel.dangerouslyAddModulePathsToTranspile || []),
+          ...(env.babel.dangerouslyAddModulePathsToTranspile ?? []),
         ],
       },
     },
