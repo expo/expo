@@ -69,7 +69,7 @@ export default function ProjectView({ loading, error, data, navigation }: Props)
     );
   }
 
-  React.useLayoutEffect(() => {
+  React.useEffect(() => {
     if (data?.app.byId) {
       const fullName = data?.app.byId.fullName;
       navigation.setOptions({

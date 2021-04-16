@@ -6,7 +6,7 @@ import * as React from 'react';
 
 import ProjectView from '../components/ProjectView';
 
-export interface ProjectUpdateUpdate {
+export interface ProjectUpdate {
   id: string;
   group: string;
   message: string;
@@ -18,7 +18,7 @@ export interface ProjectUpdateUpdate {
 export interface ProjectUpdateBranch {
   id: string;
   name: string;
-  updates: ProjectUpdateUpdate[];
+  updates: ProjectUpdate[];
 }
 
 export interface ProjectUpdateChannel {
@@ -77,13 +77,13 @@ export const ProjectPageQuery = gql`
         icon {
           url
         }
-        updateChannels(limit: 10000, offset: 0) {
+        updateChannels(limit: 100, offset: 0) {
           id
           name
-          updateBranches(limit: 10000, offset: 0) {
+          updateBranches(limit: 100, offset: 0) {
             id
             name
-            updates(limit: 10000, offset: 0) {
+            updates(limit: 100, offset: 0) {
               id
               group
               message
