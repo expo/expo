@@ -66,7 +66,7 @@ const sections = [
       'Environment variables and secrets',
       'Build server infrastructure',
       'Caching dependencies',
-      'Application identifiers',
+      'Build webhooks',
       'Build configuration process',
       'Android build process',
       'iOS build process',
