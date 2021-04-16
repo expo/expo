@@ -131,6 +131,10 @@ on `v8.0.0` and `v7.0.0`, you'd do the following after editing the docs in
 Any changes in your `git diff` outside the `unversioned` directory are ignored
 so don't worry if you have code changes or such elsewhere.
 
+## Deployment
+
+The docs are deployed automatically via a GitHub Action each time a PR with docs changes is merged to `master`. 
+
 ## How-tos
 
 ## Internal linking
