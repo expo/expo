@@ -2,6 +2,7 @@ import { css } from '@emotion/core';
 import { theme } from '@expo/styleguide';
 import { Language, Prism } from 'prism-react-renderer';
 import * as React from 'react';
+import tippy, { roundArrow } from 'tippy.js';
 
 import { installLanguages } from './languages';
 
@@ -93,16 +94,15 @@ export class Code extends React.Component<Props> {
   }
 
   private runTippy() {
-    if (process.browser) {
-      global.tippy('.code-annotation', {
-        theme: 'expo',
-        placement: 'top',
-        arrow: true,
-        arrowType: 'round',
-        interactive: true,
-        distance: 20,
-      });
-    }
+    tippy('.code-annotation', {
+      allowHTML: true,
+      theme: 'expo',
+      placement: 'top',
+      arrow: roundArrow,
+      interactive: true,
+      offset: [0, 20],
+      appendTo: document.body,
+    });
   }
 
   private escapeHtml(text: string) {
@@ -112,7 +112,7 @@ export class Code extends React.Component<Props> {
   private replaceCommentsWithAnnotations(value: string) {
     return value
       .replace(/<span class="token comment">\/\* @info (.*?)\*\/<\/span>\s*/g, (match, content) => {
-        return `<span class="code-annotation" title="${this.escapeHtml(content)}">`;
+        return `<span class="code-annotation" data-tippy-content="${this.escapeHtml(content)}">`;
       })
       .replace(/<span class="token comment">\/\* @hide (.*?)\*\/<\/span>\s*/g, (match, content) => {
         return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${this.escapeHtml(

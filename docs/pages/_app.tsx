@@ -8,6 +8,7 @@ import React from 'react';
 import { preprocessSentryError } from '~/common/sentry-utilities';
 import 'react-diff-view/style/index.css';
 import '@expo/styleguide/dist/expo-colors.css';
+import 'tippy.js/dist/tippy.css';
 import '../public/static/libs/algolia/algolia.css';
 import '../public/static/libs/algolia/algolia-mobile.css';
 
