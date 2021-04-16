@@ -30,6 +30,8 @@ import {
 } from './LocationGoogleGeocoding';
 import { LocationSubscriber, HeadingSubscriber, _getCurrentWatchId } from './LocationSubscribers';
 
+export async function testCodeReviewing(): Promise<void> {}
+
 export async function getProviderStatusAsync(): Promise<LocationProviderStatus> {
   return ExpoLocation.getProviderStatusAsync();
 }

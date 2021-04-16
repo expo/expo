@@ -58,6 +58,8 @@ function normalizeEndingSlash(p: string | null): string | null {
   return null;
 }
 
+export async function testCodeReviewing(): Promise<void> {}
+
 export const documentDirectory = normalizeEndingSlash(ExponentFileSystem.documentDirectory);
 export const cacheDirectory = normalizeEndingSlash(ExponentFileSystem.cacheDirectory);
 
