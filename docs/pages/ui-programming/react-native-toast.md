@@ -86,7 +86,7 @@ return (
 );
 ```
 
-Then, anywhere in your app you can `import Toast from 'react-native-root-toast';` and call
+Then, anywhere in your app, you can `import Toast from 'react-native-root-toast';` and call
 `Toast.show` and `Toast.hide` to manage toasts on your screen.
 
 ```jsx
