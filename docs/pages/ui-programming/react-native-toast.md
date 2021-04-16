@@ -22,7 +22,7 @@ Toasts are a native feature of Android, but iOS doesn't have this by default. If
 toasts on Android, you can use the [`ToastAndroid`](https://reactnative.dev/docs/toastandroid) API
 provided by React Native.
 
-## Usage
+### Usage
 
 To show a basic toast with `ToastAndroid`, import `ToastAndroid` from the `'react-native'` package
 and call `ToastAndroid.show` with a message and duration option:
