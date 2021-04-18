@@ -37,6 +37,15 @@ public class CookieManagerModule extends ForwardingCookieHandler implements Inte
     return false;
   }
 
+  // `invalidate` replaces `onCatalystInstanceDestroy` in recent RN versions. We can't use
+  // @Override here since older versions won't have this method. If one of these methods is
+  // needed make sure to add the code to both as only one of the methods will be called depending
+  // on the RN version.
+  // See https://github.com/facebook/react-native/commit/18c8417290823e67e211bde241ae9dde27b72f17
+  public void invalidate() {
+    // do nothing
+  }
+
   @Override
   public void onCatalystInstanceDestroy() {
     // do nothing
