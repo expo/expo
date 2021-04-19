@@ -85,7 +85,7 @@
     "expo-device": "~3.2.0",
     "expo-document-picker": "~9.1.2",
     "expo-face-detector": "~10.0.1",
-    "expo-facebook": "~11.0.5",
+    "expo-facebook": "~11.1.0",
     "expo-file-system": "~11.0.2",
     "expo-font": "~9.1.0",
     "expo-gl": "~10.2.0",
