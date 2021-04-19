@@ -19,7 +19,7 @@ object ManifestFactory {
                 LegacyManifest.fromLegacyRawManifest(LegacyRawManifest(manifestJson), configuration!!)
             }
             Integer.valueOf(expoProtocolVersion) == 0 -> {
-                NewManifest.fromRawManifest(NewRawManifest(manifestJson), httpResponse, configuration!!)
+                NewManifest.fromRawManifest(NewRawManifest(NewRawManifest.normalizeNestedManifestJSON(manifestJson)), httpResponse, configuration!!)
             }
             else -> {
                 throw Exception("Unsupported expo-protocol-version: $expoProtocolVersion")

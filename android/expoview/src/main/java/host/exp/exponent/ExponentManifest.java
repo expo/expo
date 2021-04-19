@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import expo.modules.updates.manifest.ManifestFactory;
+import expo.modules.updates.manifest.raw.InternalJSONMutator;
 import expo.modules.updates.manifest.raw.RawManifest;
 import okhttp3.CacheControl;
 import host.exp.exponent.analytics.Analytics;
@@ -36,6 +37,7 @@ import host.exp.expoview.R;
 import okhttp3.Request;
 
 import org.apache.commons.io.IOUtils;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -498,7 +500,9 @@ public class ExponentManifest {
         }
       }
     }
-    manifest.getRawJson().put(MANIFEST_LOADED_FROM_CACHE_KEY, isCached || isUsingEmbeddedManifest);
+
+    final boolean isUsingEmbeddedManifestFinal = isUsingEmbeddedManifest;
+    manifest.mutateInternalJSONInPlace(json -> json.put(MANIFEST_LOADED_FROM_CACHE_KEY, isCached || isUsingEmbeddedManifestFinal));
 
     if (isManifestSigned) {
       final boolean isOffline = !ExponentNetwork.isNetworkAvailable(mContext);
@@ -543,7 +547,7 @@ public class ExponentManifest {
           String path = parsedManifestUrl.getPath() != null ? parsedManifestUrl.getPath() : "";
           String slug = manifest.getSlug() != null ? manifest.getSlug() : "";
           String sandboxedId = securityPrefix + parsedManifestUrl.getHost() + path + "-" + slug;
-          manifest.getRawJson().put(MANIFEST_ID_KEY, sandboxedId);
+          manifest.mutateInternalJSONInPlace(json -> json.put(MANIFEST_ID_KEY, sandboxedId));
         }
         fetchManifestStep3(manifestUrl, manifest, true, listener);
       } else {
@@ -580,7 +584,7 @@ public class ExponentManifest {
     }
 
     try {
-      manifest.getRawJson().put(MANIFEST_IS_VERIFIED_KEY, isVerified);
+      manifest.mutateInternalJSONInPlace(json -> json.put(MANIFEST_IS_VERIFIED_KEY, isVerified));
     } catch (JSONException e) {
       listener.onError(e);
       return;
@@ -589,28 +593,28 @@ public class ExponentManifest {
     listener.onCompleted(manifest);
   }
 
-  public JSONObject normalizeManifest(final String manifestUrl, final JSONObject manifest) throws JSONException {
-    if (!manifest.has(MANIFEST_ID_KEY)) {
-      manifest.put(MANIFEST_ID_KEY, manifestUrl);
-    }
+  public void normalizeManifestInPlace(final String manifestUrl, final RawManifest rawManifest) throws JSONException {
+    rawManifest.mutateInternalJSONInPlace(json -> {
+      if (!json.has(MANIFEST_ID_KEY)) {
+        json.put(MANIFEST_ID_KEY, manifestUrl);
+      }
 
-    if (!manifest.has(MANIFEST_NAME_KEY)) {
-      manifest.put(MANIFEST_NAME_KEY, "My New Experience");
-    }
+      if (!json.has(MANIFEST_NAME_KEY)) {
+        json.put(MANIFEST_NAME_KEY, "My New Experience");
+      }
 
-    if (!manifest.has(MANIFEST_PRIMARY_COLOR_KEY)) {
-      manifest.put(MANIFEST_PRIMARY_COLOR_KEY, "#023C69");
-    }
+      if (!json.has(MANIFEST_PRIMARY_COLOR_KEY)) {
+        json.put(MANIFEST_PRIMARY_COLOR_KEY, "#023C69");
+      }
 
-    if (!manifest.has(MANIFEST_ICON_URL_KEY)) {
-      manifest.put(MANIFEST_ICON_URL_KEY, "https://d3lwq5rlu14cro.cloudfront.net/ExponentEmptyManifest_192.png");
-    }
+      if (!json.has(MANIFEST_ICON_URL_KEY)) {
+        json.put(MANIFEST_ICON_URL_KEY, "https://d3lwq5rlu14cro.cloudfront.net/ExponentEmptyManifest_192.png");
+      }
 
-    if (!manifest.has(MANIFEST_ORIENTATION_KEY)) {
-      manifest.put(MANIFEST_ORIENTATION_KEY, "default");
-    }
-
-    return manifest;
+      if (!json.has(MANIFEST_ORIENTATION_KEY)) {
+        json.put(MANIFEST_ORIENTATION_KEY, "default");
+      }
+    });
   }
 
   @WorkerThread

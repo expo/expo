@@ -48,7 +48,6 @@ import de.greenrobot.event.EventBus;
 import expo.modules.notifications.notifications.model.NotificationResponse;
 import expo.modules.notifications.service.NotificationsService;
 import expo.modules.notifications.service.delegates.ExpoHandlingDelegate;
-import expo.modules.updates.manifest.Manifest;
 import expo.modules.updates.manifest.ManifestFactory;
 import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.ExpoUpdatesAppLoader;
@@ -777,8 +776,7 @@ public class Kernel extends KernelInterface {
     Kernel.ExperienceActivityTask task = getExperienceActivityTask(manifestUrl);
     task.bundleUrl = bundleUrl;
 
-    JSONObject manifestJSON = mExponentManifest.normalizeManifest(manifestUrl, manifest.getRawJson());
-    manifest = ManifestFactory.INSTANCE.getRawManifestFromJson(manifestJSON);
+    mExponentManifest.normalizeManifestInPlace(manifestUrl, manifest);
 
     JSONObject opts = new JSONObject();
 
