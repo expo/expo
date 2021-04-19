@@ -294,7 +294,7 @@ public class LocalAuthenticationModule extends ExportedModule {
   }
 
   private KeyguardManager getKeyguardManager() {
-    return (KeyguardManager) getCurrentActivity().getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE);
+    return (KeyguardManager) getContext().getSystemService(Context.KEYGUARD_SERVICE);
   }
 
   private Activity getCurrentActivity() {
