@@ -1787,7 +1787,7 @@ PODS:
     - UMFileSystemInterface
   - EXErrorRecovery (2.1.0):
     - UMCore
-  - EXFacebook (11.1.0):
+  - EXFacebook (11.0.5):
     - FacebookSDK/CoreKit (= 9.2.0)
     - FacebookSDK/LoginKit (= 9.2.0)
     - UMConstantsInterface
@@ -3987,7 +3987,7 @@ SPEC CHECKSUMS:
   EXDevice: e69996534618927956e80a91135b5c0dd1d7d114
   EXDocumentPicker: 0b67c24be54b3725e4e5a151d41481da29e32e6c
   EXErrorRecovery: 720641265b8cf95e6cdeb1884ac38e794a352488
-  EXFacebook: c29c56a52d2017caa95715e0b00e81fe12819070
+  EXFacebook: 5b0b1ccfa8b018b15c34c2de63b4de8cf5ae5d17
   EXFaceDetector: c309852d636c773340a0a0e5dd25985ad4f39f6e
   EXFileSystem: 1e06c3497f05c622751153f50342c5a993d20081
   EXFirebaseAnalytics: cf36b67695d02c4bf587dbc123cba3e0efab61c6
