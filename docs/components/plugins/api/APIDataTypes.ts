@@ -79,6 +79,7 @@ export type EnumDefinitionData = {
 
 export type EnumValueData = {
   name: string;
+  comment?: CommentData;
   kind: TypeDocKind;
 };
 

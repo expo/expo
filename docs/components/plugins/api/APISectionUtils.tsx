@@ -101,7 +101,23 @@ export const resolveTypeName = ({
       )
       .join(' | ');
   } else if (declaration?.signatures) {
-    return `() => ${resolveTypeName(declaration.signatures[0].type)}`;
+    const baseSignature = declaration.signatures[0];
+    if (baseSignature?.parameters?.length) {
+      return (
+        <>
+          (
+          {baseSignature.parameters?.map((param, index) => (
+            <span key={`param-${index}-${param.name}`}>
+              {param.name}: {resolveTypeName(param.type)}
+              {index + 1 !== baseSignature.parameters.length && ', '}
+            </span>
+          ))}
+          ) {'=>'} {resolveTypeName(baseSignature.type)}
+        </>
+      );
+    } else {
+      return `() => ${resolveTypeName(baseSignature.type)}`;
+    }
   }
   return 'undefined';
 };

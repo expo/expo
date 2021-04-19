@@ -15,13 +15,14 @@ const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Elemen
     <H3Code>
       <InlineCode>{name}</InlineCode>
     </H3Code>
+    <CommentTextBlock comment={comment} />
     <UL>
       {children.map((enumValue: EnumValueData) => (
         <LI key={enumValue.name}>
           <InlineCode>
             {name}.{enumValue.name}
           </InlineCode>
-          <CommentTextBlock comment={comment} renderers={mdInlineRenderers} withDash />
+          <CommentTextBlock comment={enumValue.comment} renderers={mdInlineRenderers} withDash />
         </LI>
       ))}
     </UL>
