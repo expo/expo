@@ -4,23 +4,24 @@
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesUpdate+Private.h>
 #import <EXUpdates/EXUpdatesUtils.h>
+#import <EXUpdates/EXUpdatesBareRawManifest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXUpdatesBareUpdate
 
-+ (EXUpdatesUpdate *)updateWithBareManifest:(NSDictionary *)manifest
-                                     config:(EXUpdatesConfig *)config
-                                   database:(EXUpdatesDatabase *)database
++ (EXUpdatesUpdate *)updateWithBareRawManifest:(EXUpdatesBareRawManifest *)manifest
+                                        config:(EXUpdatesConfig *)config
+                                      database:(EXUpdatesDatabase *)database
 {
   EXUpdatesUpdate *update = [[EXUpdatesUpdate alloc] initWithRawManifest:manifest
                                                                   config:config
                                                                 database:database];
 
-  id updateId = manifest[@"id"];
-  id commitTime = manifest[@"commitTime"];
-  id metadata = manifest[@"metadata"];
-  id assets = manifest[@"assets"];
+  id updateId = manifest.rawID;
+  id commitTime = manifest.commitTimeNumber;
+  id metadata = manifest.metadata;
+  id assets = manifest.assets;
 
   NSAssert([updateId isKindOfClass:[NSString class]], @"update ID should be a string");
   NSAssert([commitTime isKindOfClass:[NSNumber class]], @"commitTime should be a number");

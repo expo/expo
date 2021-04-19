@@ -150,12 +150,12 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   // we allow the vanilla RN dev menu in some circumstances.
   BOOL isStandardDevMenuAllowed = [EXEnvironment sharedEnvironment].isDetached;
   NSMutableDictionary *params = [NSMutableDictionary dictionaryWithDictionary:@{
-    @"manifest": _appRecord.appLoader.manifest,
+    @"manifest": _appRecord.appLoader.manifest.rawManifestJSON,
     @"constants": @{
         @"linkingUri": RCTNullIfNil([EXKernelLinkingManager linkingUriForExperienceUri:_appRecord.appLoader.manifestUrl useLegacy:[self _compareVersionTo:27] == NSOrderedAscending]),
         @"experienceUrl": RCTNullIfNil(_appRecord.appLoader.manifestUrl? _appRecord.appLoader.manifestUrl.absoluteString: nil),
         @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
-        @"manifest": _appRecord.appLoader.manifest,
+        @"manifest": _appRecord.appLoader.manifest.rawManifestJSON,
         @"executionEnvironment": [self _executionEnvironment],
         @"appOwnership": [self _appOwnership],
         @"isHeadless": @(_isHeadless),
@@ -275,13 +275,13 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 #pragma mark - EXAppFetcherDataSource
 
-- (NSString *)bundleResourceNameForAppFetcher:(EXAppFetcher *)appFetcher withManifest:(nonnull NSDictionary *)manifest
+- (NSString *)bundleResourceNameForAppFetcher:(EXAppFetcher *)appFetcher withManifest:(nonnull EXUpdatesRawManifest *)manifest
 {
   if ([EXEnvironment sharedEnvironment].isDetached) {
     NSLog(@"Standalone bundle remote url is %@", [EXEnvironment sharedEnvironment].standaloneManifestUrl);
     return kEXEmbeddedBundleResourceName;
   } else {
-    return manifest[@"id"];
+    return manifest.rawID;
   }
 }
 
@@ -569,11 +569,9 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (BOOL)enablesDeveloperTools
 {
-  NSDictionary *manifest = _appRecord.appLoader.manifest;
+  EXUpdatesRawManifest *manifest = _appRecord.appLoader.manifest;
   if (manifest) {
-    NSDictionary *manifestDeveloperConfig = manifest[@"developer"];
-    BOOL isDeployedFromTool = (manifestDeveloperConfig && manifestDeveloperConfig[@"tool"] != nil);
-    return (isDeployedFromTool);
+    return manifest.isUsingDeveloperTool;
   }
   return false;
 }
@@ -736,9 +734,9 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (NSString *)applicationKeyForRootView
 {
-  NSDictionary *manifest = _appRecord.appLoader.manifest;
-  if (manifest && manifest[@"appKey"]) {
-    return manifest[@"appKey"];
+  EXUpdatesRawManifest *manifest = _appRecord.appLoader.manifest;
+  if (manifest && manifest.appKey) {
+    return manifest.appKey;
   }
   
   NSURL *bundleUrl = [self bundleUrl];

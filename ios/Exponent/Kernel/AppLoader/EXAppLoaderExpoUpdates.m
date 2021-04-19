@@ -31,8 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) NSURL *manifestUrl;
 @property (nonatomic, strong, nullable) NSURL *httpManifestUrl;
 
-@property (nonatomic, strong, nullable) NSDictionary *confirmedManifest;
-@property (nonatomic, strong, nullable) NSDictionary *optimisticManifest;
+@property (nonatomic, strong, nullable) EXUpdatesRawManifest *confirmedManifest;
+@property (nonatomic, strong, nullable) EXUpdatesRawManifest *optimisticManifest;
 @property (nonatomic, strong, nullable) NSData *bundle;
 @property (nonatomic, assign) EXAppLoaderRemoteUpdateStatus remoteUpdateStatus;
 @property (nonatomic, assign) BOOL shouldShowRemoteUpdateStatus;
@@ -111,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
   return kEXAppLoaderStatusNew;
 }
 
-- (nullable NSDictionary *)manifest
+- (nullable EXUpdatesRawManifest *)manifest
 {
   if (_confirmedManifest) {
     return _confirmedManifest;
@@ -151,7 +151,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)supportsBundleReload
 {
   if (_optimisticManifest) {
-    return [[self class] areDevToolsEnabledWithManifest:_optimisticManifest];
+    return _optimisticManifest.isDevelopmentMode;
   }
   return NO;
 }
@@ -181,7 +181,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   [self _setShouldShowRemoteUpdateStatus:update.rawManifest];
   // if cached manifest was dev mode, or a previous run of this app failed due to a loading error, we want to make sure to check for remote updates
-  if ([[self class] areDevToolsEnabledWithManifest:update.rawManifest] || [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:[EXAppFetcher experienceIdWithManifest:update.rawManifest]]) {
+  if (update.rawManifest.isUsingDeveloperTool || [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:[EXAppFetcher experienceIdWithManifest:update.rawManifest]]) {
     return NO;
   }
   return YES;
@@ -216,7 +216,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self _setOptimisticManifest:[self _processManifest:launcher.launchedUpdate.rawManifest]];
   }
   _isUpToDate = isUpToDate;
-  if ([[self class] areDevToolsEnabledWithManifest:launcher.launchedUpdate.rawManifest]) {
+  if (launcher.launchedUpdate.rawManifest.isUsingDeveloperTool) {
     // in dev mode, we need to set an optimistic manifest but nothing else
     return;
   }
@@ -380,7 +380,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-- (void)_setOptimisticManifest:(NSDictionary *)manifest
+- (void)_setOptimisticManifest:(EXUpdatesRawManifest *)manifest
 {
   _optimisticManifest = manifest;
   if (self.delegate) {
@@ -388,7 +388,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-- (void)_setShouldShowRemoteUpdateStatus:(NSDictionary *)manifest
+- (void)_setShouldShowRemoteUpdateStatus:(EXUpdatesRawManifest *)manifest
 {
   // we don't want to show the cached experience alert when Updates.reloadAsync() is called
   if (_shouldUseCacheOnly) {
@@ -397,23 +397,19 @@ NS_ASSUME_NONNULL_BEGIN
   }
 
   if (manifest) {
-    NSDictionary *developmentClientSettings = manifest[@"developmentClient"];
-    if (developmentClientSettings && [developmentClientSettings isKindOfClass:[NSDictionary class]]) {
-      id silentLaunch = developmentClientSettings[@"silentLaunch"];
-      if (silentLaunch && [@(YES) isEqual:silentLaunch]) {
-        _shouldShowRemoteUpdateStatus = NO;
-        return;
-      }
+    if (manifest.isDevelopmentSilentLaunch) {
+      _shouldShowRemoteUpdateStatus = NO;
+      return;
     }
 
     // we want to avoid showing the status for older snack SDK versions, too
     // we make our best guess based on the manifest fields
     // TODO: remove this after SDK 38 is phased out
-    NSString *sdkVersion = manifest[@"sdkVersion"];
-    NSString *bundleUrl = manifest[@"bundleUrl"];
+    NSString *sdkVersion = manifest.sdkVersion;
+    NSString *bundleUrl = manifest.bundleUrl;
     if (![@"UNVERSIONED" isEqual:sdkVersion] &&
         sdkVersion.integerValue < 39 &&
-        [@"snack" isEqual:manifest[@"slug"]] &&
+        [@"snack" isEqual:manifest.slug] &&
         bundleUrl && [bundleUrl isKindOfClass:[NSString class]] &&
         [bundleUrl hasPrefix:@"https://d1wp6m56sqw74a.cloudfront.net/%40exponent%2Fsnack"]) {
       _shouldShowRemoteUpdateStatus = NO;
@@ -449,16 +445,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 # pragma mark - manifest processing
 
-- (NSDictionary *)_processManifest:(NSDictionary *)manifest
+- (EXUpdatesRawManifest *)_processManifest:(EXUpdatesRawManifest *)manifest
 {
-  NSMutableDictionary *mutableManifest = [manifest mutableCopy];
+  NSMutableDictionary *mutableManifest = [manifest.rawManifestJSON mutableCopy];
   if (!mutableManifest[@"isVerified"] && ![EXKernelLinkingManager isExpoHostedUrl:_httpManifestUrl] && !EXEnvironment.sharedEnvironment.isDetached){
     // the manifest id determines the namespace/experience id an app is sandboxed with
     // if manifest is hosted by third parties, we sandbox it with the hostname to avoid clobbering exp.host namespaces
     // for https urls, sandboxed id is of form quinlanj.github.io/myProj-myApp
     // for http urls, sandboxed id is of form UNVERIFIED-quinlanj.github.io/myProj-myApp
     NSString *securityPrefix = [_httpManifestUrl.scheme isEqualToString:@"https"] ? @"" : @"UNVERIFIED-";
-    NSString *slugSuffix = manifest[@"slug"] ? [@"-" stringByAppendingString:manifest[@"slug"]]: @"";
+    NSString *slugSuffix = manifest.slug ? [@"-" stringByAppendingString:manifest.slug]: @"";
     mutableManifest[@"id"] = [NSString stringWithFormat:@"%@%@%@%@", securityPrefix, _httpManifestUrl.host, _httpManifestUrl.path ?: @"", slugSuffix];
     mutableManifest[@"isVerified"] = @(YES);
   }
@@ -470,20 +466,13 @@ NS_ASSUME_NONNULL_BEGIN
     mutableManifest[@"isVerified"] = @(YES);
   }
 
-  return [mutableManifest copy];
+  return [EXUpdatesUpdate rawManifestForJSON:[mutableManifest copy]];
 }
 
-- (BOOL)_isAnonymousExperience:(NSDictionary *)manifest
+- (BOOL)_isAnonymousExperience:(EXUpdatesRawManifest *)manifest
 {
-  NSString *experienceId = manifest[@"id"];
+  NSString *experienceId = manifest.rawID;
   return experienceId != nil && [experienceId hasPrefix:@"@anonymous/"];
-}
-
-+ (BOOL)areDevToolsEnabledWithManifest:(NSDictionary *)manifest
-{
-  NSDictionary *manifestDeveloperConfig = manifest[@"developer"];
-  BOOL isDeployedFromTool = (manifestDeveloperConfig && manifestDeveloperConfig[@"tool"] != nil);
-  return (isDeployedFromTool);
 }
 
 #pragma mark - headers
