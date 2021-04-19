@@ -1,1 +1,1 @@
-export default "hello from the second package";
+export default 'hello from the second package';

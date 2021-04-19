@@ -6,9 +6,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "postinstall": "expo-yarn-workspaces check-workspace-dependencies",
-    "first-app": "yarn workspace @expo/first-app expo start",
-    "second-app": "yarn workspace @expo/second-app expo start"
+    "postinstall": "expo-yarn-workspaces check-workspace-dependencies"
   },
   "workspaces": [
     "apps/*",
