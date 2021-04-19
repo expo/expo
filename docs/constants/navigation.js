@@ -190,6 +190,7 @@ const sections = [
     reference: [
       'Styling a React Native Button',
       "Setting a component's background image",
+      'Implementing a checkbox for Expo and React Native apps',
       'Stacking overlapping views with zIndex in Expo and React Native apps',
     ],
   },
