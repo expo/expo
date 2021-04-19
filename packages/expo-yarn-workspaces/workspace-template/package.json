@@ -1,0 +1,20 @@
+{
+  "private": true,
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "eject": "expo eject",
+    "postinstall": "expo-yarn-workspaces check-workspace-dependencies",
+    "first-app": "yarn workspace @expo/first-app expo start",
+    "second-app": "yarn workspace @expo/second-app expo start"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "expo-yarn-workspaces": "~1.3.0"
+  }
+}
