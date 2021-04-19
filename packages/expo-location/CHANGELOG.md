@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `startLocationUpdatesAsync` requiring the background location permission even if was used when the app is in the foreground on iOS. ([#12594](https://github.com/expo/expo/pull/12594) by [@lukmccall](https://github.com/lukmccall))
+
 ## 12.0.4 — 2021-04-13
 
 _This version does not introduce any user-facing changes._
