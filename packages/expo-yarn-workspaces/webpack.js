@@ -41,7 +41,7 @@ exports.createWebpackConfigAsync = async function createWebpackConfigAsync(env, 
       )
     );
 
-    for (const file of new Set([].concat(...files))) {
+    for (const file of new Set(files.flat())) {
       const packageDirectory = path.join(workspaceRootPath, path.dirname(file));
       if (symlinkedModulePaths.includes(packageDirectory)) {
         workspacePackagesToTranspile.push(packageDirectory);
