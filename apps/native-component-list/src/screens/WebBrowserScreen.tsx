@@ -34,6 +34,7 @@ interface State {
   lastWarmedPackage?: string;
   barCollapsing: boolean;
   showInRecents: boolean;
+  createTask: boolean;
   readerMode: boolean;
   enableDefaultShare: boolean;
 }
@@ -51,6 +52,7 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
     authResult: null,
     shouldPrompt: false,
     showInRecents: false,
+    createTask: true,
     toolbarColor: Colors.tintColor.replace(/^#/, ''),
     controlsColorText: Colors.headerTitle.replace(/^#/, ''),
     readerMode: false,
@@ -98,7 +100,8 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
       `https://fake-auth.netlify.com?state=faker&redirect_uri=${encodeURIComponent(
         redirectUrl
       )}&prompt=${shouldPrompt ? 'consent' : 'none'}`,
-      redirectUrl
+      redirectUrl,
+      { createTask: this.state.createTask }
     );
     return result;
   };
@@ -136,6 +139,7 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
       browserPackage: this.state.selectedPackage,
       enableBarCollapsing: this.state.barCollapsing,
       showInRecents: this.state.showInRecents,
+      createTask: this.state.createTask,
       readerMode: this.state.readerMode,
       enableDefaultShareMenuItem: this.state.enableDefaultShare,
     };
@@ -163,6 +167,8 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
   handleShowTitleChanged = (showTitle: boolean) => this.setState({ showTitle });
 
   handleRecents = (showInRecents: boolean) => this.setState({ showInRecents });
+
+  handleCreateTask = (createTask: boolean) => this.setState({ createTask });
 
   renderIOSChoices = () =>
     Platform.OS === 'ios' && (
@@ -213,6 +219,14 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
             style={styles.switch}
             onValueChange={this.handleRecents}
             value={this.state.showInRecents}
+          />
+        </View>
+        <View style={styles.label}>
+          <Text>Create task</Text>
+          <Switch
+            style={styles.switch}
+            onValueChange={this.handleCreateTask}
+            value={this.state.createTask}
           />
         </View>
         <View style={styles.label}>

@@ -48,18 +48,18 @@ export default function ScreenCaptureExample() {
 
 ### Example: functions
 
-<SnackInline label="Screen Capture functions" dependencies={["expo-screen-capture", "expo-permissions"]}>
+<SnackInline label="Screen Capture functions" dependencies={["expo-screen-capture", "expo-media-library"]}>
 
 ```js
-import * as ScreenCapture from 'expo-screen-capture';
-import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { Button, View, Platform } from 'react-native';
+import * as ScreenCapture from 'expo-screen-capture';
+import * as MediaLibrary from 'expo-media-library';
 
 export default class ScreenCaptureExample extends React.Component {
   async componentDidMount() {
     // This permission is only required on Android
-    const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+    const { status } = await MediaLibrary.requestPermissionsAsync();
     if (status === 'granted') {
       ScreenCapture.addScreenshotListener(() => {
         alert('Thanks for screenshotting my beautiful app 😊');
@@ -132,7 +132,7 @@ Re-allows the user to screen record or screenshot your app. If you haven't calle
 
 ### `addScreenshotListener(listener)`
 
-Adds a listener that will fire whenever the user takes a screenshot while the app is foregrounded. On Android, this method requires the `READ_EXTERNAL_STORAGE` permission- you can request this with [`Permissions.askAsync(Permissions.MEDIA_LIBRARY)`](../sdk/permissions.md#permissionsmedia_library).
+Adds a listener that will fire whenever the user takes a screenshot while the app is foregrounded. On Android, this method requires the `READ_EXTERNAL_STORAGE` permission. You can request this with [MediaLibrary.requestPermissionsAsync()](../media-library.md/#medialibraryrequestpermissionsasync).
 
 #### Arguments
 

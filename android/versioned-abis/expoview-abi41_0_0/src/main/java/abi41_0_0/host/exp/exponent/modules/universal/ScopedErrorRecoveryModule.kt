@@ -8,8 +8,11 @@ import host.exp.exponent.ExponentManifest
 import host.exp.exponent.kernel.ExperienceId
 import org.json.JSONObject
 
-class ScopedErrorRecoveryModule(context: Context, manifest: JSONObject,
-                                val experienceId: ExperienceId) : ErrorRecoveryModule(context) {
+class ScopedErrorRecoveryModule(
+  context: Context,
+  manifest: JSONObject,
+  val experienceId: ExperienceId
+) : ErrorRecoveryModule(context) {
   override val mSharedPreferences: SharedPreferences = run {
     val currentSDKVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY)
     context.applicationContext.getSharedPreferences(

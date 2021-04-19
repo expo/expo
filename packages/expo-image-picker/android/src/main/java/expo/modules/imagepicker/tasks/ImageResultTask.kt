@@ -15,13 +15,15 @@ import org.unimodules.core.Promise
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 
-open class ImageResultTask(private val promise: Promise,
-                           private val uri: Uri,
-                           private val contentResolver: ContentResolver,
-                           private val fileProvider: FileProvider,
-                           private val withExifData: Boolean,
-                           private val imageExporter: ImageExporter)
-  : AsyncTask<Void?, Void?, Void?>() {
+open class ImageResultTask(
+  private val promise: Promise,
+  private val uri: Uri,
+  private val contentResolver: ContentResolver,
+  private val fileProvider: FileProvider,
+  private val withExifData: Boolean,
+  private val imageExporter: ImageExporter
+) :
+  AsyncTask<Void?, Void?, Void?>() {
 
   override fun doInBackground(vararg params: Void?): Void? {
     try {

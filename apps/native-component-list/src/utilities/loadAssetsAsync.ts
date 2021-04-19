@@ -1,22 +1,14 @@
-import { Entypo, Ionicons, MaterialIcons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
+import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
 import { Assets as StackAssets } from '@react-navigation/stack';
 import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
 import { Platform } from 'react-native';
 
-import Icons from '../constants/Icons';
-
 async function loadAssetsAsync() {
-  const iconRequires = Object.keys(Icons).map(key => Icons[key]);
-
   const assetPromises: Promise<any>[] = [
-    Asset.loadAsync(iconRequires),
     Asset.loadAsync(StackAssets),
-    // @ts-ignore
     Font.loadAsync(Ionicons.font),
-    // @ts-ignore
-    Font.loadAsync(Entypo.font),
-    // @ts-ignore
     Font.loadAsync(MaterialIcons.font),
     Font.loadAsync({
       'space-mono': require('../../assets/fonts/SpaceMono-Regular.ttf'),

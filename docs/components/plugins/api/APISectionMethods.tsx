@@ -7,7 +7,7 @@ import { H2, H3Code, H4 } from '~/components/plugins/Headings';
 import { MethodDefinitionData, MethodSignatureData } from '~/components/plugins/api/APIDataTypes';
 import {
   CommentTextBlock,
-  renderers,
+  mdRenderers,
   renderParam,
   resolveTypeName,
 } from '~/components/plugins/api/APISectionUtils';
@@ -15,6 +15,7 @@ import {
 export type APISectionMethodsProps = {
   data: MethodDefinitionData[];
   apiName?: string;
+  header?: string;
 };
 
 const renderMethod = (
@@ -33,7 +34,7 @@ const renderMethod = (
       </H3Code>
       {parameters ? <H4>Arguments</H4> : null}
       {parameters ? <UL>{parameters?.map(renderParam)}</UL> : null}
-      <CommentTextBlock comment={comment} renderers={renderers} />
+      <CommentTextBlock comment={comment} />
       {resolveTypeName(type) !== 'undefined' ? (
         <div>
           <H4>Returns</H4>
@@ -43,7 +44,7 @@ const renderMethod = (
             </LI>
           </UL>
           {comment?.returns ? (
-            <ReactMarkdown renderers={renderers}>{comment.returns}</ReactMarkdown>
+            <ReactMarkdown renderers={mdRenderers}>{comment.returns}</ReactMarkdown>
           ) : null}
         </div>
       ) : null}
@@ -51,10 +52,14 @@ const renderMethod = (
     </div>
   ));
 
-const APISectionMethods: React.FC<APISectionMethodsProps> = ({ data, apiName }) =>
+const APISectionMethods: React.FC<APISectionMethodsProps> = ({
+  data,
+  apiName,
+  header = 'Methods',
+}) =>
   data?.length ? (
     <>
-      <H2 key="methods-header">Methods</H2>
+      <H2 key="methods-header">{header}</H2>
       {data.map((method, index) => renderMethod(method, index, data.length, apiName))}
     </>
   ) : null;

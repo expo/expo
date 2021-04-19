@@ -38,7 +38,7 @@ fun promiseResolved(promise: PromiseMock, with: (Bundle) -> Unit) {
   with(promise.resolveValue as Bundle)
 }
 
-inline fun <reified T>promiseResolvedWithType(promise: PromiseMock, with: (T) -> Unit) {
+inline fun <reified T> promiseResolvedWithType(promise: PromiseMock, with: (T) -> Unit) {
   assertResolved(promise)
   assertTrue("Promise resolved with incorrect type", promise.resolveValue is T)
   with(promise.resolveValue as T)
@@ -64,4 +64,3 @@ fun assertStringValueNull(bundle: Bundle, key: String) {
   assertTrue(bundle.containsKey(key))
   assertEquals(null, bundle.getString(key))
 }
-

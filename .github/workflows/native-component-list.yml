@@ -3,16 +3,17 @@ name: Native Component List app
 on:
   workflow_dispatch: {}
   pull_request:
-    branches: [master]
     paths:
       - .github/workflows/native-component-list.yml
       - apps/native-component-list/**
+      - packages/**
       - yarn.lock
   push:
     branches: [master]
     paths:
       - .github/workflows/native-component-list.yml
       - apps/native-component-list/**
+      - packages/**
       - yarn.lock
 
 jobs:

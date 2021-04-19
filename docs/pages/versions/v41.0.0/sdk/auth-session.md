@@ -116,7 +116,7 @@ const [request, response, promptAsync] = useAuthRequest({ ... }, { ... });
 Load an authorization request for a code. Returns a loaded request, a response, and a prompt method.
 When the prompt method completes then the response will be fulfilled.
 
-> 🚨 In order to close the popup window on web, you need to invoke `WebBrowser.maybeCompleteAuthSession()`. See the [Identity example](../../../guides/authentication.md#identity-4) for more info.
+> 🚨 In order to close the popup window on web, you need to invoke `WebBrowser.maybeCompleteAuthSession()`. See the [Identity example](../../../guides/authentication.md#identityserver-4) for more info.
 
 If an Implicit grant flow was used, you can pass the `response.params` to `TokenResponse.fromQueryParams()` to get a `TokenResponse` instance which you can use to easily refresh the token.
 
@@ -154,7 +154,7 @@ Given an OpenID Connect issuer URL, this will fetch and return the [`DiscoveryDo
 Create a redirect url for the current platform and environment. You need to manually define the redirect that will be used in a bare workflow React Native app, or an Expo standalone app, this is because it cannot be inferred automatically.
 
 - **Web:** Generates a path based on the current `window.location`. For production web apps, you should hard code the URL as well.
-- **Managed, and Custom workflow:** Uses the `scheme` property of your `app.config.js` or `app.json`.
+- **Managed workflow:** Uses the `scheme` property of your `app.config.js` or `app.json`.
   - **Proxy:** Uses auth.expo.io as the base URL for the path. This only works in Expo Go and standalone environments.
 - **Bare workflow:** Will fallback to using the `native` option for bare workflow React Native apps.
 
@@ -365,11 +365,11 @@ Represents an OAuth authorization request as JSON.
 
 Options passed to the `promptAsync()` method of `AuthRequest`s.
 
-| Name          | Type       | Description                                                                                 | Default         |
-| ------------- | ---------- | ------------------------------------------------------------------------------------------- | --------------- |
-| useProxy      | `?boolean` | Should use `auth.expo.io` proxy for redirecting requests. Only works in managed native apps | `false`         |
-| showInRecents | `?boolean` | Should browsed website be shown as a separate entry in Android multitasker                  | `false`         |
-| url           | `?string`  | URL that'll begin the auth request, usually this should be left undefined                   | Preloaded value |
+| Name          | Type       | Description                                                                | Default         |
+| ------------- | ---------- | -------------------------------------------------------------------------- | --------------- |
+| useProxy      | `?boolean` | Should use `auth.expo.io` proxy for redirecting requests                   | `false`         |
+| showInRecents | `?boolean` | Should browsed website be shown as a separate entry in Android multitasker | `false`         |
+| url           | `?string`  | URL that'll begin the auth request, usually this should be left undefined  | Preloaded value |
 
 ### `CodeChallengeMethod`
 
@@ -515,8 +515,8 @@ An extension of the [`AuthRequestConfig`][#authrequestconfig] for use with the b
 | selectAccount          | `?boolean` | Used in favor of `prompt: Prompt.SelectAccount` to switch accounts                    |
 | expoClientId           | `?string`  | Proxy client ID for use in Expo Go on iOS and Android.                                |
 | webClientId            | `?string`  | Web client ID for use in the browser (web apps).                                      |
-| iosClientId            | `?string`  | iOS native client ID for use in standalone, bare-workflow, and custom clients.        |
-| androidClientId        | `?string`  | Android native client ID for use in standalone, bare-workflow, and custom clients.    |
+| iosClientId            | `?string`  | iOS native client ID for use in standalone, bare workflow.                            |
+| androidClientId        | `?string`  | Android native client ID for use in standalone, bare workflow.                        |
 | shouldAutoExchangeCode | `?string`  | Should the hook automatically exchange the response code for an authentication token. |
 
 ## Providers
@@ -593,7 +593,7 @@ An object containing the discovery URLs used for Facebook auth.
 
 ## Usage in the bare React Native app
 
-In managed apps, `AuthSession` uses Expo servers to create a proxy between your application and the auth provider. Unfortunately, we don't provide support to use these servers in bare apps. To overcome this, you can create your proxy service.
+In managed apps, `AuthSession` uses Expo servers to create a proxy between your application and the auth provider. If you'd like, you can also create your own proxy service.
 
 ### Proxy Service
 

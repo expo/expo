@@ -1,12 +1,9 @@
 package expo.modules.splashscreen
 
 import android.content.Context
-import android.view.View
-import android.widget.ImageView
 import androidx.core.content.ContextCompat
 
 // this needs to stay for versioning to work
-import expo.modules.splashscreen.R
 
 /**
  * Default implementation that uses native resources.

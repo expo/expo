@@ -35,7 +35,7 @@ export declare class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
      * @param discovery
      * @param promptOptions
      */
-    promptAsync(discovery: AuthDiscoveryDocument, { url, ...options }?: AuthRequestPromptOptions): Promise<AuthSessionResult>;
+    promptAsync(discovery: AuthDiscoveryDocument, { url, proxyOptions, ...options }?: AuthRequestPromptOptions): Promise<AuthSessionResult>;
     parseReturnUrl(url: string): AuthSessionResult;
     /**
      * Create the URL for authorization.

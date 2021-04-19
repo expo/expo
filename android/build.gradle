@@ -31,6 +31,10 @@ buildscript {
   }
 }
 
+plugins {
+  id "com.diffplug.spotless" version "5.12.1"
+}
+
 allprojects {
   repositories {
     // For non-detach
@@ -46,9 +50,6 @@ allprojects {
     }
     maven {
       url "$rootDir/versioned-abis/expoview-abi39_0_0/maven"
-    }
-    maven {
-      url "$rootDir/versioned-abis/expoview-abi38_0_0/maven"
     }
     maven {
       url "$rootDir/versioned-abis/maven"
@@ -102,6 +103,19 @@ allprojects {
   }
 }
 
-task clean(type: Delete) {
-  delete rootProject.buildDir
+subprojects {
+  plugins.apply("com.diffplug.spotless")
+  spotless {
+    kotlin {
+      target '**/*.kt'
+      ktlint().userData([
+        "disabled_rules": "no-wildcard-imports,import-ordering",
+        "indent_size": "2",
+        "continuation_indent_size": "4"
+      ])
+      trimTrailingWhitespace()
+      indentWithSpaces()
+      endWithNewline()
+    }
+  }
 }

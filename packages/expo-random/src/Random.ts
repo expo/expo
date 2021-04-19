@@ -16,6 +16,13 @@ function assertByteCount(value: any, methodName: string): void {
   }
 }
 
+// @needsAudit
+/**
+ * Generates completely random bytes using native implementations. The `byteCount` property
+ * is a `number` indicating the number of bytes to generate in the form of a `Uint8Array`.
+ * @param byteCount - A number within the range from `0` to `1024`. Anything else will throw a `TypeError`.
+ * @return An array of random bytes with the same length as the `byteCount`.
+ */
 export function getRandomBytes(byteCount: number): Uint8Array {
   assertByteCount(byteCount, 'getRandomBytes');
   const validByteCount = Math.floor(byteCount);
@@ -29,6 +36,13 @@ export function getRandomBytes(byteCount: number): Uint8Array {
   }
 }
 
+// @needsAudit
+/**
+ * Generates completely random bytes using native implementations. The `byteCount` property
+ * is a `number` indicating the number of bytes to generate in the form of a `Uint8Array`.
+ * @param byteCount - A number within the range from `0` to `1024`. Anything else will throw a `TypeError`.
+ * @return A promise that fulfills with an array of random bytes with the same length as the `byteCount`.
+ */
 export async function getRandomBytesAsync(byteCount: number): Promise<Uint8Array> {
   assertByteCount(byteCount, 'getRandomBytesAsync');
   const validByteCount = Math.floor(byteCount);

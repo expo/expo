@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class EmbeddedLoader {
 
@@ -83,7 +84,7 @@ public class EmbeddedLoader {
         JSONObject manifestJson = new JSONObject(manifestString);
         // automatically verify embedded manifest since it was already codesigned
         manifestJson.put("isVerified", true);
-        sEmbeddedManifest = ManifestFactory.getEmbeddedManifest(manifestJson, configuration);
+        sEmbeddedManifest = ManifestFactory.INSTANCE.getEmbeddedManifest(manifestJson, configuration);
       } catch (Exception e) {
         Log.e(TAG, "Could not read embedded manifest", e);
         throw new AssertionError("The embedded manifest is invalid or could not be read. Make sure you have configured expo-updates correctly in android/app/build.gradle. " + e.getMessage());
@@ -150,7 +151,7 @@ public class EmbeddedLoader {
     }
   }
 
-  private void copyAllAssets(ArrayList<AssetEntity> assetList) {
+  private void copyAllAssets(List<AssetEntity> assetList) {
     for (AssetEntity asset : assetList) {
       if (shouldSkipAsset(asset)) {
         mSkippedAssetList.add(asset);

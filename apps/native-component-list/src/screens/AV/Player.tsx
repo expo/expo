@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
 import Slider from '@react-native-community/slider';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import React from 'react';
@@ -98,7 +98,10 @@ export default function Player(props: Props) {
 
     return (
       <TouchableOpacity onPress={onPress} disabled={!props.isLoaded}>
-        <Ionicons name={iconName} style={[styles.icon, styles.playPauseIcon]} />
+        <Ionicons
+          name={iconName as 'ios-pause' | 'ios-play'}
+          style={[styles.icon, styles.playPauseIcon]}
+        />
       </TouchableOpacity>
     );
   };
@@ -137,7 +140,7 @@ export default function Player(props: Props) {
         disabled={!props.isLoaded}
         onPress={onPress}>
         <Ionicons
-          name={`ios-${iconName}`}
+          name={`ios-${iconName}` as any}
           size={iconName === 'refresh' ? 20 : 24}
           style={[styles.icon, styles.buttonIcon, active && styles.activeButtonText]}
         />
@@ -287,7 +290,7 @@ function SpeedSegmentedControl({ onValueChange }: { onValueChange: (value: numbe
 
   const renderIcon = (name: string) => (
     <Ionicons
-      name={`ios-${name}`}
+      name={`ios-${name}` as 'ios-hourglass' | 'ios-speedometer'}
       size={24}
       style={{ color: Colors.tintColor, paddingHorizontal: 8 }}
     />
@@ -373,7 +376,12 @@ function VolumeSlider({
         onPress={() => {
           onValueChanged({ isMuted: !isMuted, volume });
         }}>
-        <Ionicons name={`ios-${iconName}`} size={24} color={color} style={{}} />
+        <Ionicons
+          name={`ios-${iconName}` as 'ios-volume-high' | 'ios-volume-low' | 'ios-volume-off'}
+          size={24}
+          color={color}
+          style={{}}
+        />
       </TouchableOpacity>
       <Slider
         value={isMutedActive ? 0 : value}

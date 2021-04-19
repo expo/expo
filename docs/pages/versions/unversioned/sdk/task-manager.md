@@ -4,6 +4,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-task-mana
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-task-manager`** provides an API that allows you to manage long-running tasks, in particular those tasks that can run while your app is in the background.
 Some features of this module are used by other modules under the hood. Here is a list of Expo modules that use TaskManager:
@@ -15,13 +16,13 @@ Some features of this module are used by other modules under the hood. Here is a
 
 ## Installation
 
-For [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps, you'll need to run `expo install expo-task-manager`. To use it in [bare](../../../introduction/managed-vs-bare.md#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-task-manager);
+For [managed](/introduction/managed-vs-bare.md#managed-workflow) apps, you'll need to run `expo install expo-task-manager`. To use it in [bare](/introduction/managed-vs-bare.md#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-task-manager);
 
 ## Configuration for standalone apps
 
 ### Background modes on iOS
 
-`TaskManager` works out of the box in the Expo Go app on Android, but on iOS you'll need to test using [a custom Expo Go build](../../../guides/adhoc-builds.md).
+`TaskManager` works out of the box in the Expo Go app on Android, but on iOS you'll need to test using [a custom Expo Go build](/guides/adhoc-builds.md).
 
 Standalone apps need some extra configuration: on iOS, each background feature requires a special key in `UIBackgroundModes` array in your `Info.plist` file. In standalone apps this array is empty by default, so in order to use background features you will need to add appropriate keys to your `app.json` configuration.
 Here is an example of an `app.json` configuration that enables background location and background fetch:
@@ -159,6 +160,8 @@ Returns a promise that resolves as soon as all tasks are completely unregistered
 
 ## Example
 
+<SnackInline dependencies={["expo-task-manager", "expo-location"]}>
+
 ```javascript
 import React from 'react';
 import { Text, TouchableOpacity } from 'react-native';
@@ -167,24 +170,20 @@ import * as Location from 'expo-location';
 
 const LOCATION_TASK_NAME = 'background-location-task';
 
-export default class Component extends React.Component {
-  onPress = async () => {
-    const { status } = await Location.requestPermissionsAsync();
-    if (status === 'granted') {
-      await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-        accuracy: Location.Accuracy.Balanced,
-      });
-    }
-  };
-
-  render() {
-    return (
-      <TouchableOpacity onPress={this.onPress}>
-        <Text>Enable background location</Text>
-      </TouchableOpacity>
-    );
+const requestPermissions = async () => {
+  const { status } = await Location.requestPermissionsAsync();
+  if (status === 'granted') {
+    await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+      accuracy: Location.Accuracy.Balanced,
+    });
   }
-}
+};
+
+const PermissionsButton = () => (
+  <TouchableOpacity onPress={requestPermissions}>
+    <Text>Enable background location</Text>
+  </TouchableOpacity>
+);
 
 TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
   if (error) {
@@ -196,4 +195,8 @@ TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
     // do something with the locations captured in the background
   }
 });
+
+export default PermissionsButton;
 ```
+
+</SnackInline>

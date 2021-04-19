@@ -3,7 +3,6 @@ name: Danger
 on:
   workflow_dispatch: {}
   pull_request:
-    branches: [master]
     paths:
       - .github/workflows/danger.yml
       - packages/**
@@ -32,4 +31,4 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn danger ci
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}

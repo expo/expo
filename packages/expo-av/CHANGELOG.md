@@ -11,6 +11,12 @@
 
 ### 🐛 Bug fixes
 
+- Fixed the web Video Fullscreen APIs in Safari ([#12258](https://github.com/expo/expo/pull/12258) by [@elliotdickison](https://github.com/elliotdickison))
+
+## 9.1.2 — 2021-04-13
+
+_This version does not introduce any user-facing changes._
+
 ## 9.1.1 — 2021-03-31
 
 _This version does not introduce any user-facing changes._

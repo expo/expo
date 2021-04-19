@@ -30,7 +30,6 @@ fun mockkCustomTabsActivitiesHelper(
       every { it.startCustomTabs(capture(startIntentSlot)) } just Runs
     }
   }
-
 }
 
 fun mockkCustomTabsConnectionHelper(): CustomTabsConnectionHelper {
@@ -44,7 +43,8 @@ fun browserArguments(
   enableBarCollapsing: Boolean = true,
   showTitle: Boolean = true,
   enableDefaultShareMenuItem: Boolean = true,
-  showInRecents: Boolean = true
+  showInRecents: Boolean = true,
+  createTask: Boolean = true
 ): ReadableArguments {
   // Move creation of readable arguments to TestUtils
   return readableArgumentsOf(mapOf(
@@ -54,6 +54,7 @@ fun browserArguments(
     "enableBarCollapsing" to enableBarCollapsing,
     "showTitle" to showTitle,
     "enableDefaultShareMenuItem" to enableDefaultShareMenuItem,
-    "showInRecents" to showInRecents
+    "showInRecents" to showInRecents,
+    "createTask" to createTask
   ))
 }

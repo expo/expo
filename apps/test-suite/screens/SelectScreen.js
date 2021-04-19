@@ -1,11 +1,12 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import Constants from 'expo-constants';
 import React from 'react';
 import { Alert, FlatList, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 
-import { getTestModules } from '../TestModules';
 import PlatformTouchable from '../components/PlatformTouchable';
 import Colors from '../constants/Colors';
+import { getTestModules } from '../TestModules';
 
 function ListItem({ title, onPressItem, selected, id }) {
   function onPress() {
@@ -186,7 +187,7 @@ export default class SelectScreen extends React.PureComponent {
 function Footer({ buttonTitle, canRunTests, onToggle, onRun }) {
   const { bottom, left, right } = useSafeArea();
 
-  const isRunningInDetox = !!global.DETOX;
+  const isRunningInDetox = Constants.manifest.slug === 'bare-expo';
   const paddingVertical = 16;
 
   return (

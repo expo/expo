@@ -22,7 +22,7 @@ import * as Contacts from 'expo-contacts';
 import { Gyroscope } from 'expo-sensors';
 ```
 
-This allows you to write [`Contacts.getContactsAsync()`](sdk/contacts.md#getcontactsasync) and read the contacts from the device, read the gyroscope sensor to detect device movement, or render a Camera view and take photos.
+This allows you to write [`Contacts.getContactsAsync()`](sdk/contacts.md#contactsgetcontactsasynccontactquery) and read the contacts from the device, read the gyroscope sensor to detect device movement, or render a Camera view and take photos.
 
 ## These packages work in bare React Native apps too
 
@@ -34,10 +34,8 @@ Every quarter there is a new Expo SDK release that typically updates to the late
 
 | Expo SDK Version | React Native Version |
 | ---------------- | :------------------: |
+| 41.0.0           |        0.63.3        |
+| 40.0.0           |        0.63.3        |
 | 39.0.0           |        0.63.2        |
 | 38.0.0           |        0.62.2        |
 | 37.0.0           |        0.61.4        |
-| 36.0.0           |        0.61.4        |
-| 35.0.0           |        0.59.8        |
-| 34.0.0           |        0.59.8        |
-| 33.0.0           |        0.59.8        |

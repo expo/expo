@@ -36,7 +36,6 @@ export default class MyDocument extends Document<{ css?: string }> {
       <Html lang="en">
         <Head>
           <script src="/static/libs/tippy/tippy.all.min.js" />
-          <script src="/static/libs/nprogress/nprogress.js" />
 
           <Global
             styles={[
@@ -51,9 +50,10 @@ export default class MyDocument extends Document<{ css?: string }> {
           />
 
           <link
-            rel="stylesheet"
-            href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
-            integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr"
+            rel="preload"
+            href="/static/fonts/Inter-Regular.woff2?v=3.15"
+            as="font"
+            type="font/woff2"
             crossOrigin="anonymous"
           />
 
