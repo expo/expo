@@ -12,26 +12,37 @@ if [ ! -d "$target" ]; then
 fi
 
 # To keep the previous website up and running, we deploy it using these steps.
-#   1.  Sync JS/assets dependencies in \`_next/**\` and \`static/**\` folder
+#   1.  Sync Next.js static assets in \`_next/**\` folder
 #      > Uploads the new generated JS and asset files (stored in hashed folders to avoid collision with older deployments)
-#   2. Overwrite HTML dependents, not located in \`_next/**\` or \`static/**\` folder
+#   2.  Sync assets in \`static/**\` folder
+#   3. Overwrite HTML dependents, not located in \`_next/**\` or \`static/**\` folder
 #      > Force overwrite of all HTML files to make sure we use the latest one
-#   3. Sync assets and clean up outdated files from previous deployments
-#   4. Add custom redirects
+#   4. Sync assets and clean up outdated files from previous deployments
+#   5. Add custom redirects
 
-echo "::group::[1/4] Sync JS/assets dependencies in \`_next/**\` and \`static/**\` folder"
+echo "::group::[1/5] Sync Next.js static assets in \`_next/**\` folder"
 aws s3 sync \
   --no-progress \
   --exclude "*" \
   --include "_next/**" \
+  --cache-control "public, max-age=31536000, immutable" \
+  "$target" \
+  "s3://${bucket}"
+echo "::endgroup::"
+
+echo "::group::[2/5] Sync assets in \`static/**\` folder"
+aws s3 sync \
+  --no-progress \
+  --exclude "*" \
   --include "static/**" \
+  --cache-control "public, max-age=3600" \
   "$target" \
   "s3://${bucket}"
 echo "::endgroup::"
 
 # Due to a bug with `aws s3 sync` we need to copy everything first instead of syncing
 # see: https://github.com/aws/aws-cli/issues/3273#issuecomment-643436849
-echo "::group::[2/4] Overwrite HTML dependents, not located in \`_next/**\` or \`static/**\` folder"
+echo "::group::[3/5] Overwrite HTML dependents, not located in \`_next/**\` or \`static/**\` folder"
 aws s3 cp \
   --no-progress \
   --recursive \
@@ -41,7 +52,7 @@ aws s3 cp \
   "s3://${bucket}"
 echo "::endgroup::"
 
-echo "::group::[3/4] Sync assets and clean up outdated files from previous deployments"
+echo "::group::[4/5] Sync assets and clean up outdated files from previous deployments"
 aws s3 sync \
   --no-progress \
   --delete \
@@ -74,7 +85,7 @@ redirects[versions/latest/introduction/project-lifecycle/]=versions/latest/intro
 redirects[versions/latest/guides/exp-cli.html]=versions/latest/workflow/expo-cli/
 redirects[versions/latest/guides/exp-cli]=versions/latest/workflow/expo-cli/
 
-echo "::group::[4/4] Add custom redirects"
+echo "::group::[5/5] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
 do
   aws s3 cp \
