@@ -1631,6 +1631,11 @@
     "@babel/runtime" "^7.7.2"
     regenerator-runtime "^0.13.3"
 
+"@linclark/pkg@*":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@linclark/pkg/-/pkg-1.0.3.tgz#10522cbf65290707c61cb5d66ad18221c8a40db8"
+  integrity sha1-EFIsv2UpBwfGHLXWatGCIcikDbg=
+
 "@react-native-community/cli-debugger-ui@^4.13.1":
   version "4.13.1"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-debugger-ui/-/cli-debugger-ui-4.13.1.tgz#07de6d4dab80ec49231de1f1fbf658b4ad39b32c"
@@ -3408,6 +3413,13 @@ find-yarn-workspace-root@^2.0.0:
   integrity sha512-1IMnbjt4KzsQfnhnzNd8wUEgXZ44IzZaZmnLYx7D5FZlaHt2gW20Cri8Q+E/t5tIj4+epTBub+2Zxu/vNILzqQ==
   dependencies:
     micromatch "^4.0.2"
+
+first-package@*:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/first-package/-/first-package-1.0.0.tgz#dd3fe4190919069117707c76b0485dda0d427aac"
+  integrity sha1-3T/kGQkZBpEXcHx2sEhd2g1Ceqw=
+  dependencies:
+    "@linclark/pkg" "*"
 
 fontfaceobserver@^2.1.0:
   version "2.1.0"
