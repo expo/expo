@@ -39,7 +39,7 @@
   "expo-document-picker": "~9.1.2",
   "expo-error-recovery": "~2.1.0",
   "expo-face-detector": "~10.0.1",
-  "expo-facebook": "~11.1.0",
+  "expo-facebook": "~11.0.5",
   "expo-file-system": "~11.0.2",
   "expo-firebase-analytics": "~4.0.1",
   "expo-firebase-core": "~3.0.0",

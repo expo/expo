@@ -6,13 +6,9 @@
 
 ### 🎉 New features
 
-### 🐛 Bug fixes
-
-## 11.1.0 — 2021-04-19
-
-### 🎉 New features
-
 - Added AppEvents-related functionality. ([#12459](https://github.com/expo/expo/pull/12459) by [@cruzach](https://github.com/cruzach))
+
+### 🐛 Bug fixes
 
 ## 11.0.5 — 2021-04-13
 
