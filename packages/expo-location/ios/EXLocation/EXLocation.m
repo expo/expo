@@ -395,7 +395,12 @@ UM_EXPORT_METHOD_AS(startLocationUpdatesAsync,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  if (![self checkBackgroundPermissions:reject] || ![self checkTaskManagerExists:reject] || ![self checkBackgroundServices:reject]) {
+  // There are two ways of starting this service.
+  // 1. As a background location service, this requires the background location permission.
+  // 2. As a user-initiated foreground service, this does NOT require the background location permission.
+  // Unfortunately, we cannot distinguish between those cases.
+  // So we only check foreground permission which needs to be granted in both cases.
+  if (![self checkForegroundPermissions:reject] || ![self checkTaskManagerExists:reject] || ![self checkBackgroundServices:reject]) {
     return;
   }
   if (![CLLocationManager significantLocationChangeMonitoringAvailable]) {
