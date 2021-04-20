@@ -90,4 +90,9 @@ public class UpdatesService implements InternalModule, UpdatesInterface {
   public void relaunchReactApplication(Launcher.LauncherCallback callback) {
     UpdatesController.getInstance().relaunchReactApplication(mContext, callback);
   }
+
+  @Override
+  public void resetSelectionPolicy() {
+    UpdatesController.getInstance().resetSelectionPolicyToDefault();
+  }
 }
