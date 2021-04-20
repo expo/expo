@@ -3,7 +3,7 @@ import { Platform } from '@unimodules/core';
 import { getAssetByID } from './AssetRegistry';
 import * as AssetSources from './AssetSources';
 import * as AssetUris from './AssetUris';
-import { getEmbeddedAssetUri } from './EmbeddedAssets';
+import { getLocalAssetUri } from './LocalAssets';
 import * as ImageAssets from './ImageAssets';
 import { downloadAsync, IS_ENV_WITH_UPDATES_ENABLED } from './PlatformUtils';
 import resolveAssetSource from './resolveAssetSource';
@@ -53,7 +53,7 @@ export class Asset {
     }
 
     if (hash) {
-      this.localUri = getEmbeddedAssetUri(hash, type);
+      this.localUri = getLocalAssetUri(hash, type);
       if (this.localUri) {
         this.downloaded = true;
       }
