@@ -60,7 +60,7 @@ export const resolveTypeName = ({
   types,
   typeArguments,
   declaration,
-}: TypeDefinitionData): string | JSX.Element => {
+}: TypeDefinitionData): string | JSX.Element | (string | JSX.Element)[] => {
   if (name) {
     if (type === 'reference') {
       if (typeArguments) {
@@ -97,9 +97,22 @@ export const resolveTypeName = ({
   } else if (type === 'union' && types?.length) {
     return types
       .map((t: TypeDefinitionTypesData) =>
-        t.type === 'array' ? `${t.elementType?.name}[]` : `${t.name || t.value}`
+        t.type === 'reference' ? (
+          <InternalLink href={`#${t.name?.toLowerCase()}`} key={`type-link-${t.name}`}>
+            {t.name}
+          </InternalLink>
+        ) : t.type === 'array' ? (
+          `${t.elementType?.name}[]`
+        ) : (
+          `${t.name || t.value}`
+        )
       )
-      .join(' | ');
+      .map((valueToRender, index) => (
+        <>
+          {valueToRender}
+          {index + 1 !== types.length && ' | '}
+        </>
+      ));
   } else if (declaration?.signatures) {
     return `() => ${resolveTypeName(declaration.signatures[0].type)}`;
   }
