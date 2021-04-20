@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `createWebpackConfigAsync` export. ([#12566](https://github.com/expo/expo/pull/12566) by [@ajsmth](https://github.com/ajsmth))
+
 ### 🐛 Bug fixes
 
 ## 1.4.1 — 2021-03-23
@@ -13,9 +15,6 @@
 ### 🎉 New features
 
 - Updated `@expo/metro-config` with deprecated `.expo.*` extension support and improved error stack traces. ([#12252](https://github.com/expo/expo/pull/12252) by [@EvanBacon](https://github.com/EvanBacon))
-
-- Add `createWebpackConfigAsync` export. ([#12566](https://github.com/expo/expo/pull/12566) by [@ajsmth](https://github.com/ajsmth))
-
 
 ## 1.4.0 — 2021-03-10
 
