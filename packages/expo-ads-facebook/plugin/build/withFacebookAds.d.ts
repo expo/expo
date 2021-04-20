@@ -1,5 +1,5 @@
 import { ConfigPlugin } from '@expo/config-plugins';
 declare const _default: ConfigPlugin<void | {
-    userTrackingPermission?: string | undefined;
+    userTrackingPermission?: string | false | undefined;
 }>;
 export default _default;
