@@ -40,6 +40,21 @@ The `expo-yarn-workspaces` package defines a Metro configuration object that mak
 
 **Aside:** when starting the project, run `expo start --clear` so Metro uses the latest configuration instead of working with cached values.
 
+### Usage with Expo Web
+
+**Create a file named `webpack.config.js` in the app's base directory with these contents:**
+
+```js
+const { createWebpackConfigAsync } = require('expo-yarn-workspaces/webpack');
+
+module.exports = async function(env, argv) {
+  const config = await createWebpackConfigAsync(env, argv);
+  return config;
+};
+```
+
+This returns a webpack config object that can be customized further - for all available options see: https://github.com/expo/expo-cli/tree/master/packages/webpack-config
+
 ### Configuration
 
 You can configure workspaces using the `expo-yarn-workspaces` field in each workspace package's `package.json` file.
