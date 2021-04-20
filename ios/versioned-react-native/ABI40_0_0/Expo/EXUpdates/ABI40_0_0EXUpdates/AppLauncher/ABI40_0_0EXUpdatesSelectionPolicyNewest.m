@@ -58,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
   return updatesToDelete;
 }
 
-- (BOOL)shouldLoadNewUpdate:(nullable ABI40_0_0EXUpdatesUpdate *)newUpdate withLaunchedUpdate:(nullable ABI40_0_0EXUpdatesUpdate *)launchedUpdate
+- (BOOL)shouldLoadNewUpdate:(nullable ABI40_0_0EXUpdatesUpdate *)newUpdate withLaunchedUpdate:(nullable ABI40_0_0EXUpdatesUpdate *)launchedUpdate filters:(nullable NSDictionary *)filters
 {
   if (!newUpdate) {
     return false;
