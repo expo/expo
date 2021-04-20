@@ -1,6 +1,6 @@
 const fm = require('front-matter');
 
-module.exports = function(src) {
+module.exports = function (src) {
   const { body, attributes } = fm(src);
 
   return (
