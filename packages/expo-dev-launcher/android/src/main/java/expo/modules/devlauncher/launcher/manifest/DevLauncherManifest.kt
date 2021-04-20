@@ -9,6 +9,7 @@ import com.google.gson.JsonElement
 import java.io.Reader
 import java.lang.reflect.Type
 import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.jvm.isAccessible
 
 /**
  * A representation of the android specific properties such as `primaryColor` or status bar configuration.
@@ -71,6 +72,9 @@ data class DevLauncherManifest(
     private fun applyOverriddenProperties(baseManifest: DevLauncherManifest, overriddenProperties: DevLauncherOverriddenProperties) {
       for (field in DevLauncherOverriddenProperties::class.declaredMemberProperties) {
         try {
+          // It shouldn't be need, but when we try to run this code on JVM (unit test)
+          // we gets `IllegalAccessException`.
+          field.isAccessible = true
           val overriddenValue = field.get(overriddenProperties) ?: continue
           val baseField = baseManifest::class.java.getDeclaredField(field.name)
           baseField.isAccessible = true

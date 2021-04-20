@@ -1,0 +1,3 @@
+package unvendored
+
+class UnVendoredClass

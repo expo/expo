@@ -76,6 +76,12 @@ android {
       setRoot 'src/debug'
     }
   }
+
+  testOptions {
+    unitTests.all {
+      useJUnitPlatform()
+    }
+  }
 }
 
 task copyAssets(type: Copy) {
@@ -124,4 +130,9 @@ dependencies {
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5'
 
   api "androidx.browser:browser:1.2.0"
+
+  testImplementation "com.google.truth:truth:1.1.2"
+  testImplementation "org.robolectric:robolectric:4.3.1"
+  testImplementation 'com.squareup.okhttp3:mockwebserver:4.3.1'
+  testImplementation 'androidx.test:core:1.3.0'
 }
