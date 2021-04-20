@@ -4,7 +4,7 @@ title: Creating your first build
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
-In this guide, you'll learn how to build a ready-to-submit binary for the Apple App Store and Google Play Store using EAS Build. For a simple app, you should expect to have kicked off your builds for Android and iOS within a few minutes.
+In this guide, you'll learn how to build a ready-to-submit binary for the Apple App Store and Google Play Store using EAS Build. Alternatively, if you prefer to sideload the app to your Android device or emulator, or install it in the iOS simulator, this is quicker and easier and you'll learn how to do that here too. For a simple app, you should expect to have kicked off your builds for Android and iOS within a few minutes.
 
 ## Prerequisites
 
@@ -17,8 +17,8 @@ Don't have a project yet? No problem: it's quick and easy to create a "Hello wor
 
 <div style={{marginTop: -10}} />
 
-- Install Expo CLI by running `npm install -g expo-cli` (or `yarn global add expo-cli`).
-- Run `expo init PROJECT_NAME` (let's assume `PROJECT_NAME` is `abcd`) and choose a bare workflow template (either `minimal` or `minimal (TypeScript)`).
+- Install Expo CLI by running `npm install -g expo-cli`.
+- Run `expo init PROJECT_NAME`. Choose the project template that best suits you.
 - EAS Build also works well with projects created by `npx react-native`, `create-react-native-app`, `ignite-cli`, and other project bootstrapping tools.
 
 <ImageSpotlight alt="Terminal running expo init, with minimal (TypeScript) selected" src="/static/images/eas-build/walkthrough/01-init.png" />
@@ -26,7 +26,7 @@ Don't have a project yet? No problem: it's quick and easy to create a "Hello wor
 </p>
 </details>
 
-> Support for managed workflow projects is rapidly improving, but not yet ready for production, so we recommend using it with bare React Native projects for best results right now.
+> 🆕 Support for Expo managed projects is available as of SDK 41! You need to upgrade your project if you are using a lower SDK version.
 
 <details><summary><h4>💡 An Expo account with an EAS Priority Plan subscription.</h4></summary>
 <p>
@@ -37,15 +37,7 @@ Don't have a project yet? No problem: it's quick and easy to create a "Hello wor
 </p>
 </details>
 
-> While EAS Build is in preview, it is available only to EAS Priority Plan subscribers. Once it graduates from preview it will become more broadly available. The first month is free, and you can cancel any time.
-
-<details><summary><h4>🍎 If you want to build for iOS: Apple Developer Program membership.</h4></summary>
-<p>
-
-- If you are going to use EAS Build to create release builds for the Apple App Store, this requires access to an account with a \$99 USD [Apple Developer Program](https://developer.apple.com/programs) membership.
-
-</p>
-</details>
+> While EAS Build is in preview, it is available only to EAS Priority Plan subscribers. Once it graduates from preview it will become more broadly available. The first month of the Priority Plan is free, and you can cancel any time.
 
 <!-- <details><summary><h4>🤖 If you want to build for the Play Store: Google Play Developer membership.</h4></summary>
 <p>
@@ -59,7 +51,7 @@ Don't have a project yet? No problem: it's quick and easy to create a "Hello wor
 
 ## 1. Install the latest EAS CLI
 
-Install EAS CLI by running `npm install -g eas-cli` (or `yarn global add eas-cli`). It will notify you when a new version is available (we encourage you to always stay up to date with the latest version).
+Install EAS CLI by running `npm install -g eas-cli`. It will notify you when a new version is available (we encourage you to always stay up to date with the latest version).
 
 ## 2. Log in to your Expo account
 
@@ -76,6 +68,36 @@ Additional configuration may be required for some scenarios:
 - Do you use private npm packages? [Add your npm token](/build-reference/how-tos.md#how-to-use-private-package-repositories).
 
 ## 4. Run a build
+
+### Build for Android device/emulator or iOS simulator
+
+<!-- TODO: neither of these links go anywhere!!! -->
+
+The easiest way to try out EAS Build is to create a build that you can run on your Android device/emulator or iOS simulator. It's quicker than uploading it to a store, and you don't need any store developer membership accounts. If you'd like to try this, read about [creating an installable APK for Android](/build-reference/apk.md) and [creating a simulator build for iOS](/build/simulators.md).
+
+### Build for app stores
+
+<div style={{marginTop: -10}} />
+
+<details><summary><h4>🍎 Apple Developer Program membership is required to build for the App Store.</h4></summary>
+<p>
+
+- If you are going to use EAS Build to create release builds for the Apple App Store, this requires access to an account with a $99 USD [Apple Developer Program](https://developer.apple.com/programs) membership.
+
+</p>
+</details>
+
+<div style={{marginTop: -10}} />
+
+<details><summary><h4>🤖 Google Play Developer membership is required to distribute to the Play Store.</h4></summary>
+<p>
+
+- You can build and sign your app using EAS Build, but you can't upload it to the Google Play Store unless you have a membership, a one-time $25 USD fee.
+
+</p>
+</details>
+
+
 
 - Run `eas build --platform android` to build for Android.
 
@@ -107,7 +129,7 @@ By default, the `eas build` command will wait for your build to complete. Howeve
 
 ### Distribute your app
 
-- Ship your app! [Learn how to submit your app to app stores with EAS Submit](/submit/introduction.md).
+- Ship your app! If you created a build a store, [learn how to submit your app to app stores with EAS Submit](/submit/introduction.md).
 - Want to distribute your apps to internal testers? [Learn about internal distribution](internal-distribution.md).
   <!-- - Add new build profiles, such as simulator builds or build specific for certain release environments. -->
 
