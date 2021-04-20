@@ -48,8 +48,10 @@ const renderAPI = (
       TypeDocKind.TypeAlias,
       entry => !!(entry.type.declaration || entry.type.types)
     );
-    const props = filterDataByKind(data, TypeDocKind.TypeAlias, entry =>
-      entry.name.includes('Props')
+    const props = filterDataByKind(
+      data,
+      TypeDocKind.TypeAlias,
+      entry => entry.name.includes('Props') && !!entry.type.types
     );
     const defaultProps = filterDataByKind(
       data

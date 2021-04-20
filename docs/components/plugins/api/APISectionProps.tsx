@@ -48,7 +48,7 @@ const renderInheritedProp = (ip: TypeDeclarationData) => {
 };
 
 const renderInheritedProps = (data: TypeDeclarationData[]): JSX.Element | undefined => {
-  const inheritedProps = data.filter((ip: TypeDeclarationData) => ip.type === 'reference');
+  const inheritedProps = data?.filter((ip: TypeDeclarationData) => ip.type === 'reference') || [];
   if (inheritedProps.length) {
     return (
       <div>
@@ -64,7 +64,7 @@ const renderProps = (
   { name, type }: PropsDefinitionData,
   defaultValues: DefaultPropsDefinitionData
 ): JSX.Element => {
-  const propsDeclarations = type.types.filter((e: TypeDeclarationData) => e.declaration);
+  const propsDeclarations = type.types?.filter((e: TypeDeclarationData) => e.declaration);
   return (
     <div key={`props-definition-${name}`}>
       <UL>
