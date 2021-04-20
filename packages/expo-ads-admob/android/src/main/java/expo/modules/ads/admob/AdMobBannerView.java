@@ -23,19 +23,7 @@ public class AdMobBannerView extends FrameLayout {
   public AdMobBannerView(@NonNull Context context, EventEmitter eventEmitter) {
     super(context);
     this.mEventEmitter = eventEmitter;
-    init();
-  }
-
-  private void init() {
     attachNewAdView();
-
-    addOnLayoutChangeListener(new OnLayoutChangeListener() {
-      public void onLayoutChange(View view, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-        if (left != oldLeft || right != oldRight || top != oldTop || bottom != oldBottom) {
-          setBannerSize(mSizeString);
-        }
-      }
-    });
   }
 
   protected void attachNewAdView() {
@@ -63,7 +51,9 @@ public class AdMobBannerView extends FrameLayout {
         int top = adView.getTop();
         adView.measure(width, height);
         adView.layout(left, top, left + width, top + height);
-
+        sendEvent(
+          AdMobBannerViewManager.Events.EVENT_SIZE_CHANGE,
+          AdMobUtils.createEventForSizeChange(getContext(), adView.getAdSize()));
         sendEvent(AdMobBannerViewManager.Events.EVENT_RECEIVE_AD);
       }
 
