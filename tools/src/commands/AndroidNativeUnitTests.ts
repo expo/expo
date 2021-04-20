@@ -1,11 +1,14 @@
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
+import path from 'path';
 
 import * as Directories from '../Directories';
 import * as Packages from '../Packages';
 import { filterAsync } from '../Utils';
 
 const ANDROID_DIR = Directories.getAndroidDir();
+
+const BARE_EXPO_DIR = path.join(Directories.getAppsDir(), 'bare-expo', 'android');
 
 const excludedInTests = [
   'expo-module-template',
@@ -15,7 +18,18 @@ const excludedInTests = [
   'unimodules-test-core',
 ];
 
+const packagesNeedToBeTestedUsingBareExpo = [
+  'expo-dev-menu',
+  'expo-dev-launcher',
+  'expo-dev-menu-interface',
+];
+
 type TestType = 'local' | 'instrumented';
+
+function consoleErrorOutput(output: string, label: string, colorifyLine: (string) => string): void {
+  const lines = output.trim().split(/\r\n?|\n/g);
+  console.error(lines.map((line) => `${chalk.gray(label)} ${colorifyLine(line)}`).join('\n'));
+}
 
 export async function androidNativeUnitTests({
   type,
@@ -35,15 +49,6 @@ export async function androidNativeUnitTests({
 
   const allPackages = await Packages.getListOfPackagesAsync();
   const packageNamesFilter = packages ? packages.split(',') : [];
-
-  function consoleErrorOutput(
-    output: string,
-    label: string,
-    colorifyLine: (string) => string
-  ): void {
-    const lines = output.trim().split(/\r\n?|\n/g);
-    console.error(lines.map((line) => `${chalk.gray(label)} ${colorifyLine(line)}`).join('\n'));
-  }
 
   const androidPackages = await filterAsync(allPackages, async (pkg) => {
     const pkgSlug = pkg.packageSlug;
@@ -80,12 +85,36 @@ export async function androidNativeUnitTests({
   });
 
   const testCommand = type === 'instrumented' ? 'connectedAndroidTest' : 'test';
+
+  const partition = <T>(arr: T[], condition: (T) => boolean) => {
+    const trues = arr.filter((el) => condition(el));
+    const falses = arr.filter((el) => !condition(el));
+    return [trues, falses];
+  };
+
+  const [
+    androidPackagesTestedUsingBareProject,
+    androidPackagesTestedUsingExpoProject,
+  ] = partition(androidPackages, (element) =>
+    packagesNeedToBeTestedUsingBareExpo.includes(element.packageName)
+  );
+
+  await runGradlew(androidPackagesTestedUsingExpoProject, testCommand, ANDROID_DIR);
+  await runGradlew(androidPackagesTestedUsingBareProject, testCommand, BARE_EXPO_DIR);
+  console.log(chalk.green('Finished android unit tests successfully.'));
+}
+
+async function runGradlew(packages: Packages.Package[], testCommand: string, cwd: string) {
+  if (!packages.length) {
+    return;
+  }
+
   try {
     await spawnAsync(
       './gradlew',
-      androidPackages.map((pkg) => `:${pkg.packageSlug}:${testCommand}`),
+      packages.map((pkg) => `:${pkg.packageSlug}:${testCommand}`),
       {
-        cwd: ANDROID_DIR,
+        cwd,
         stdio: 'inherit',
         env: { ...process.env },
       }
@@ -96,7 +125,6 @@ export async function androidNativeUnitTests({
     consoleErrorOutput(error.stderr, 'stderr >', chalk.red);
     throw error;
   }
-  console.log(chalk.green('Finished android unit tests successfully.'));
 }
 
 export default (program: any) => {
