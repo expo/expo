@@ -1,4 +1,4 @@
-import Constants from 'expo-constants';
+import LocalAssets from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
 import { getLocalAssets } from './PlatformUtils';
 // Fast lookup check if assets are available in the local bundle in managed apps
@@ -17,14 +17,14 @@ export function getLocalAssetUri(hash, type) {
             return localAssets[localAssetsKey];
         }
         case legacyLocalAssetsKey in localAssets: {
-            // TODO: remove, after ~ a year, on May 1, 2022
+            // legacy updates store assets with an extension
             return localAssets[legacyLocalAssetsKey];
         }
         case !__DEV__: {
             // check legacy location in case we're in Expo client/managed workflow
             // TODO(eric): remove this once bundledAssets is no longer exported from FileSystem
             const assetName = `asset_${hash}${type ? `.${type}` : ''}`;
-            if (Constants.appOwnership !== 'standalone' || !bundledAssets.has(assetName)) {
+            if (LocalAssets.appOwnership !== 'standalone' || !bundledAssets.has(assetName)) {
                 return null;
             }
             return `${FileSystem.bundleDirectory}${assetName}`;
