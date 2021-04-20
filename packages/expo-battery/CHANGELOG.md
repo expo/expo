@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Simplify types by removing the `*Listener` type wrappers and inlining the type definitions in the events responses. ([#12592](https://github.com/expo/expo/pull/12592) by [@Simek](https://github.com/simek))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
@@ -16,7 +18,7 @@
 
 ### 🐛 Bug fixes
 
-- Remove peerDependencies and unimodulePeerDependencies from Expo modules. ([#11980](https://github.com/expo/expo/pull/11980) by [@brentvatne](https://github.com/brentvatne))
+- Remove `peerDependencies` and `unimodulePeerDependencies` from Expo modules. ([#11980](https://github.com/expo/expo/pull/11980) by [@brentvatne](https://github.com/brentvatne))
 
 ## 4.0.0 — 2021-01-15
 
