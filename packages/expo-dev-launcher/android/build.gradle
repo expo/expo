@@ -49,12 +49,6 @@ android {
       setRoot 'src/debug'
     }
   }
-
-  testOptions {
-    unitTests.all {
-      useJUnitPlatform()
-    }
-  }
 }
 
 repositories {

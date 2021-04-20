@@ -6,6 +6,7 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import com.facebook.react.ReactNativeHost
 import expo.interfaces.devmenu.DevMenuDelegateInterface
+import expo.interfaces.devmenu.DevMenuExpoApiClientInterface
 import expo.interfaces.devmenu.DevMenuManagerInterface
 import expo.interfaces.devmenu.DevMenuSessionInterface
 import expo.interfaces.devmenu.DevMenuSettingsInterface
@@ -13,7 +14,7 @@ import expo.interfaces.devmenu.DevMenuSettingsInterface
 private const val DEV_MENU_IS_NOT_AVAILABLE = "DevMenu isn't available in release builds"
 
 object DevMenuManager : DevMenuManagerInterface {
-  override fun openMenu(activity: Activity) {
+  override fun openMenu(activity: Activity, screen: String?) {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
@@ -45,6 +46,10 @@ object DevMenuManager : DevMenuManagerInterface {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
+  override fun serializedScreens(): List<Bundle> {
+    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
+  }
+
   override fun getSession(): DevMenuSessionInterface? {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
@@ -58,4 +63,20 @@ object DevMenuManager : DevMenuManagerInterface {
   }
 
   override fun synchronizeDelegate() = Unit
+
+  override fun setCurrentScreen(screen: String?) {
+    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
+  }
+
+  override fun getExpoApiClient(): DevMenuExpoApiClientInterface {
+    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
+  }
+
+  override fun sendEventToDelegateBridge(eventName: String, eventData: Any?) {
+    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
+  }
+
+  override fun isInitialized(): Boolean {
+    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
+  }
 }
