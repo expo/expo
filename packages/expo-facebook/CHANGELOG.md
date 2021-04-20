@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added ability to disable permissions in plugin. ([#12627](https://github.com/expo/expo/pull/12627) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ## 11.1.1 — 2021-04-20
