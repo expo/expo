@@ -47,9 +47,7 @@ export default class SnackEmbed extends React.Component<Props> {
     if (this.props.snackId) {
       embedProps = { 'data-snack-id': this.props.snackId };
     } else {
-      const code = React.Children.toArray(this.props.children)
-        .join('')
-        .trim();
+      const code = React.Children.toArray(this.props.children).join('').trim();
       embedProps = {
         'data-snack-code': code,
       };
