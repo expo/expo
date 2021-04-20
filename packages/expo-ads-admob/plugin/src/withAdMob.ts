@@ -7,7 +7,7 @@ import { withSKAdNetworkIdentifiers } from './withSKAdNetworkIdentifiers';
 const pkg = require('expo-ads-admob/package.json');
 
 const withAdMob: ConfigPlugin<{
-  userTrackingPermission?: string;
+  userTrackingPermission?: string | false;
 } | void> = (config, props) => {
   config = withAdMobAndroid(config);
   config = withAdMobIOS(config);

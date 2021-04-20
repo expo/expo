@@ -6,7 +6,7 @@ import { withSKAdNetworkIdentifiers } from './withSKAdNetworkIdentifiers';
 const pkg = require('expo-ads-facebook/package.json');
 
 const withFacebookAds: ConfigPlugin<{
-  userTrackingPermission?: string;
+  userTrackingPermission?: string | false;
 } | void> = (config, props) => {
   config = withUserTrackingPermission(config, props);
   // https://developers.facebook.com/docs/SKAdNetwork

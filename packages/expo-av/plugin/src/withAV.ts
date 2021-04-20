@@ -4,7 +4,7 @@ const pkg = require('expo-av/package.json');
 
 const MICROPHONE_USAGE = 'Allow $(PRODUCT_NAME) to access your microphone';
 
-const withAV: ConfigPlugin<{ microphonePermission?: string | boolean } | void> = (
+const withAV: ConfigPlugin<{ microphonePermission?: string | false } | void> = (
   config,
   { microphonePermission } = {}
 ) => {
