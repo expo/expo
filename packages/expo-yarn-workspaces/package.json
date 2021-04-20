@@ -10,7 +10,9 @@
   },
   "files": [
     "index.js",
-    "webpack.js"
+    "webpack.js",
+    "common/*",
+    "bin/*"
   ],
   "scripts": {
     "lint": "eslint .",
