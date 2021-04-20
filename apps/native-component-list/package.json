@@ -88,7 +88,7 @@
     "expo-facebook": "~11.1.1",
     "expo-file-system": "~11.0.2",
     "expo-font": "~9.1.0",
-    "expo-gl": "~10.2.0",
+    "expo-gl": "~10.3.0",
     "expo-google-app-auth": "~8.1.7",
     "expo-google-sign-in": "~9.1.0",
     "expo-haptics": "~10.0.0",
