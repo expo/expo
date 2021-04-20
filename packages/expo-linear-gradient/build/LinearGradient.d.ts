@@ -3,7 +3,8 @@ import { View } from 'react-native';
 import { NativeLinearGradientPoint } from './NativeLinearGradient.types';
 /**
  * An object `{ x: number; y: number }` or array `[x, y]` that represents the point
- * at which the gradient starts, as a fraction of the overall size of the gradient ranging from `0` to `1`, inclusive.
+ * at which the gradient starts or ends, as a fraction of the overall size of the gradient ranging
+ * from `0` to `1`, inclusive.
  */
 export declare type LinearGradientPoint = {
     /**
