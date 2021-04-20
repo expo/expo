@@ -1,6 +1,5 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-import os.log
 import EXDevMenuInterface
 
 class DevMenuBridgeProxyDelegate : DevMenuDelegateProtocol {
@@ -209,13 +208,13 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
         switch callable {
           case let action as DevMenuExportedAction:
             if (args != nil) {
-              os_log(.error, "[DevMenu] Action $@ was called with arguments.", id )
+              NSLog("[DevMenu] Action $@ was called with arguments.", id)
             }
             action.call()
           case let function as DevMenuExportedFunction:
             function.call(args: args)
           default:
-            os_log(.error, "[DevMenu] Callable $@ has unknown type.", id)
+            NSLog("[DevMenu] Callable $@ has unknown type.", id)
         }
         
       }
