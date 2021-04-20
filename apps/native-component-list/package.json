@@ -171,7 +171,7 @@
     "babel-jest": "~25.2.6",
     "babel-preset-expo": "~8.3.0",
     "expo-module-scripts": "^2.0.0",
-    "expo-yarn-workspaces": "^1.4.1",
+    "expo-yarn-workspaces": "^1.5.0",
     "jest": "~25.2.6",
     "react-test-renderer": "~16.13.1"
   }

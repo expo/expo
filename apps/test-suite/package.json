@@ -58,7 +58,7 @@
     "sinon": "^7.1.1"
   },
   "devDependencies": {
-    "expo-yarn-workspaces": "^1.4.1"
+    "expo-yarn-workspaces": "^1.5.0"
   },
   "browserslist": [
     ">0.2%",
