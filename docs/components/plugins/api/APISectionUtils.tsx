@@ -146,3 +146,9 @@ export const STYLES_OPTIONAL = css`
   font-size: 90%;
   padding-top: 22px;
 `;
+
+export const STYLES_SECONDARY = css`
+  color: ${theme.text.secondary};
+  font-size: 90%;
+  font-weight: 600;
+`;

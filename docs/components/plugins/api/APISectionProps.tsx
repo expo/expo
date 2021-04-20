@@ -12,7 +12,11 @@ import {
   TypeDeclarationData,
   TypePropertyData,
 } from '~/components/plugins/api/APIDataTypes';
-import { CommentTextBlock, resolveTypeName } from '~/components/plugins/api/APISectionUtils';
+import {
+  CommentTextBlock,
+  resolveTypeName,
+  STYLES_SECONDARY,
+} from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionPropsProps = {
   data: PropsDefinitionData[];
@@ -75,15 +79,17 @@ const renderProps = (
   );
 };
 
-const renderProp = ({ comment, name, type }: PropData, defaultValue?: string) => (
+const renderProp = ({ comment, name, type, flags }: PropData, defaultValue?: string) => (
   <LI key={`prop-entry-${name}`}>
     <H4>{name}</H4>
     <P>
-      Type: <InlineCode>{resolveTypeName(type)}</InlineCode>
+      {flags?.isOptional && (
+        <span css={STYLES_SECONDARY}>Optional&emsp;&bull;&emsp;</span>
+      )}
+      <span css={STYLES_SECONDARY}>Type:</span> <InlineCode>{resolveTypeName(type)}</InlineCode>
       {defaultValue && defaultValue !== UNKNOWN_VALUE ? (
         <span>
-          &emsp;
-          {'Default: '}
+          <span css={STYLES_SECONDARY}>&emsp;&bull;&emsp;Default:</span>{' '}
           <InlineCode>{defaultValue}</InlineCode>
         </span>
       ) : null}
