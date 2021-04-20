@@ -16,6 +16,7 @@ import expo.modules.updates.UpdatesUtils;
 import expo.modules.updates.db.DatabaseHolder;
 import expo.modules.updates.db.Reaper;
 import expo.modules.updates.db.UpdatesDatabase;
+import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.DatabaseLauncher;
 import expo.modules.updates.launcher.Launcher;
@@ -262,6 +263,10 @@ public class LoaderTask {
             remoteUpdateCallback.onFailure(e);
             mCallback.onBackgroundUpdateFinished(BackgroundUpdateStatus.ERROR, null, e);
             Log.e(TAG, "Failed to download remote update", e);
+          }
+
+          @Override
+          public void onAssetLoaded(AssetEntity asset, int assetsLoaded, int totalAssets) {
           }
 
           @Override

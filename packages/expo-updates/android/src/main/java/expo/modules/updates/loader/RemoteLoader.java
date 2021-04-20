@@ -41,6 +41,7 @@ public class RemoteLoader {
   public interface LoaderCallback {
     void onFailure(Exception e);
     void onSuccess(@Nullable UpdateEntity update);
+    void onAssetLoaded(AssetEntity asset, int assetsLoaded, int totalAssets);
 
     /**
      * Called when a manifest has been downloaded. The calling class should determine whether or not
@@ -213,6 +214,8 @@ public class RemoteLoader {
     } else {
       mErroredAssetList.add(assetEntity);
     }
+
+    mCallback.onAssetLoaded(assetEntity, mFinishedAssetList.size() + mExistingAssetList.size() + mErroredAssetList.size(), mAssetTotal);
 
     if (mFinishedAssetList.size() + mErroredAssetList.size() + mExistingAssetList.size() == mAssetTotal) {
       try {
