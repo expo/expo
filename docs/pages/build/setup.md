@@ -4,7 +4,11 @@ title: Creating your first build
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
-In this guide, you'll learn how to build a ready-to-submit binary for the Apple App Store and Google Play Store using EAS Build. Alternatively, if you prefer to sideload the app to your Android device or emulator, or install it in the iOS simulator, this is quicker and easier and you'll learn how to do that here too. For a simple app, you should expect to have kicked off your builds for Android and iOS within a few minutes.
+In this guide, you'll learn how to build a ready-to-submit binary for the Apple App Store and Google Play Store using EAS Build.
+
+Alternatively, if you prefer to sideload the app to your Android device / emulator or install it in the iOS simulator, we'll point you towards resources that explain how to do that.
+
+For a simple app, you should expect to have kicked off your builds for Android and iOS within a few minutes.
 
 ## Prerequisites
 
@@ -63,6 +67,7 @@ Run `eas build:configure` to configure your iOS and Android projects to run on E
 
 Additional configuration may be required for some scenarios:
 
+- Are you migrating an Expo managed app from `"expo build"`? [Learn about the differences](/build-reference/migrating.md).
 - Does your app code depend on environment variables? [Add them to your build configuration](/build-reference/variables.md).
 - Is your project inside of a monorepo? [Follow these instructions](/build-reference/how-tos.md#how-to-set-up-eas-build-with).
 - Do you use private npm packages? [Add your npm token](/build-reference/how-tos.md#how-to-use-private-package-repositories).
@@ -129,7 +134,7 @@ By default, the `eas build` command will wait for your build to complete. Howeve
 
 ### Distribute your app
 
-- Ship your app! If you created a build a store, [learn how to submit your app to app stores with EAS Submit](/submit/introduction.md).
+- Ship your app! If you created a build for a store, [learn how to submit your app to app stores with EAS Submit](/submit/introduction.md).
 - Want to distribute your apps to internal testers? [Learn about internal distribution](internal-distribution.md).
   <!-- - Add new build profiles, such as simulator builds or build specific for certain release environments. -->
 

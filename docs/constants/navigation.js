@@ -61,15 +61,16 @@ const sections = [
   {
     name: 'Reference',
     reference: [
-      'Limitations',
+      'Migrating from "expo build"',
       'Integrating with JavaScript tooling',
       'Environment variables and secrets',
       'Build server infrastructure',
-      'Caching dependencies',
       'Build webhooks',
+      'Caching dependencies',
       'Build configuration process',
       'Android build process',
       'iOS build process',
+      'Limitations',
     ],
   },
   {
