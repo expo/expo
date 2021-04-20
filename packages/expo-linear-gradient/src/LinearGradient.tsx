@@ -84,7 +84,7 @@ export class LinearGradient extends React.Component<LinearGradientProps> {
 }
 
 function _normalizePoint(
-  point: LinearGradientPoint | NativeLinearGradientPoint | null | undefined
+  point: LinearGradientPoint | null | undefined
 ): NativeLinearGradientPoint | undefined {
   if (!point) {
     return undefined;
