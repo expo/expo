@@ -18,4 +18,4 @@ jobs:
       - name: Comment on GitHub issues as github-actions bot
         run: bin/expotools commentator --payload "${{ github.event.inputs.payload }}"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
