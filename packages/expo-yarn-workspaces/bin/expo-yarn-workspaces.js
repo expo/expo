@@ -2,12 +2,12 @@
 'use strict';
 
 const minimist = require('minimist');
-const process = require('process');
 const path = require('path');
+const process = require('process');
 
 const spawnSync = require('../common/cross-spawn-sync');
 
-let argv = minimist(process.argv.slice(2));
+const argv = minimist(process.argv.slice(2));
 switch (argv._[0]) {
   case 'check-workspace-dependencies':
     _spawnSubprocess('node', [path.join(__dirname, 'check-workspace-dependencies.js')], {
@@ -26,7 +26,7 @@ switch (argv._[0]) {
 }
 
 function _spawnSubprocess(...args) {
-  let result = spawnSync(...args);
+  const result = spawnSync(...args);
 
   if (result.signal) {
     process.kill(process.pid, result.signal);

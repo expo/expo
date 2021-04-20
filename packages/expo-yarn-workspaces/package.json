@@ -8,13 +8,21 @@
   "bin": {
     "expo-yarn-workspaces": "./bin/expo-yarn-workspaces.js"
   },
+  "files": [
+    "index.js",
+    "webpack.js"
+  ],
   "scripts": {
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "pretest": "cd workspace-template && yarn",
+    "test": "jest ."
   },
   "dependencies": {
     "@expo/metro-config": "^0.1.59",
+    "@expo/webpack-config": "^0.12.66",
     "debug": "^4.1.1",
     "find-yarn-workspace-root": "^2.0.0",
+    "glob": "^7.1.6",
     "minimist": "^1.2.5",
     "mkdirp": "^0.5.1"
   }
