@@ -60,10 +60,13 @@ export type DevMenuSelectionListItem = {
   warning?: string;
   isChecked: boolean;
   tags: DevMenuSelectionListItemTag[];
+  onClickData?: object | null;
 };
 
 export type DevMenuSelectionListType = DevMenuItemBaseType<DevMenuItemEnum.SELECTION_LIST> & {
   items: DevMenuSelectionListItem[];
+  dataSourceId?: string | null;
+  functionId?: string | null;
 };
 
 export type DevMenuItemAnyType =
@@ -97,8 +100,11 @@ export enum DevMenuKeyCommandsEnum {
 
 export const doesDeviceSupportKeyCommands = DevMenu.doesDeviceSupportKeyCommands;
 
-export async function dispatchActionAsync(actionId: string): Promise<void> {
-  return await DevMenu.dispatchActionAsync(actionId);
+export async function dispatchCallableAsync(
+  callableId: string,
+  args: object | null = null
+): Promise<void> {
+  return await DevMenu.dispatchCallableAsync(callableId, args);
 }
 
 export function hideMenu(): void {
@@ -159,4 +165,8 @@ export async function getAuthSchemeAsync(): Promise<string> {
   }
 
   return await DevMenu.getAuthSchemeAsync();
+}
+
+export async function fetchDataSourceAsync(dataSourceId: string): Promise<any[]> {
+  return await DevMenu.fetchDataSourceAsync(dataSourceId);
 }

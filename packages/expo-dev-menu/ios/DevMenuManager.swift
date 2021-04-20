@@ -29,14 +29,14 @@ class Dispatch {
 }
 
 /**
- A container for dev menu screens array.
+ A container for array.
  NSMapTable requires the second generic type to be a class, so `[DevMenuScreen]` is not allowed.
  */
-class DevMenuScreensContainer {
-  fileprivate let screens: [DevMenuScreen]
+class DevMenuCacheContainer<T> {
+  fileprivate let items: [T]
 
-  fileprivate init(screens: [DevMenuScreen]) {
-    self.screens = screens
+  fileprivate init(items: [T]) {
+    self.items = items
   }
 }
 
@@ -48,7 +48,12 @@ private let extensionToDevMenuItemsMap = NSMapTable<DevMenuExtensionProtocol, De
 /**
  A hash map storing an array of dev menu screens for specific extension.
  */
-private let extensionToDevMenuScreensMap = NSMapTable<DevMenuExtensionProtocol, DevMenuScreensContainer>.weakToStrongObjects()
+private let extensionToDevMenuScreensMap = NSMapTable<DevMenuExtensionProtocol, DevMenuCacheContainer<DevMenuScreen>>.weakToStrongObjects()
+
+/**
+ A hash map storing an array of dev menu screens for specific extension.
+ */
+private let extensionToDevMenuDataSourcesMap = NSMapTable<DevMenuExtensionProtocol, DevMenuCacheContainer<DevMenuDataSourceProtocol>>.weakToStrongObjects()
 
 /**
  Manages the dev menu and provides most of the public API.
@@ -197,14 +202,21 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
 
   // MARK: internals
 
-  func dispatchAction(withId actionId: String) {
-    for action in devMenuActions {
-      if (action.actionId == actionId) {
-        if delegate?.devMenuManager?(self, willDispatchAction: action) ?? true {
-          action.action()
+  func dispatchCallable(withId id: String, args: [String : Any]?) {
+    for callable in devMenuCallable {
+      if callable.id == id {
+        switch callable {
+          case let action as DevMenuExportedAction:
+            if (args != nil) {
+              NSLog("[DevMenu] Action $@ was called with arguments.", id)
+            }
+            action.call()
+          case let function as DevMenuExportedFunction:
+            function.call(args: args)
+          default:
+            NSLog("[DevMenu] Callable $@ has unknown type.", id)
         }
         
-        return
       }
     }
   }
@@ -247,15 +259,22 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
   }
   
   /**
-   Returns an array of `DevMenuAction`s returned by the dev menu extensions.
+   Gathers `DevMenuDataSourceProtocol`s from all dev menu extensions and returns them as an array.
    */
-  var devMenuActions: [DevMenuAction] {
-    if currentScreen == nil {
-      return devMenuItems.filter { $0 is DevMenuAction } as! [DevMenuAction]
-    }
+  var devMenuDataSources: [DevMenuDataSourceProtocol] {
+    return extensions?.map { loadDevMenuDataSources(forExtension: $0) ?? [] }.flatMap {$0} ?? []
+  }
+  
+  /**
+   Returns an array of `DevMenuExportedCallable`s returned by the dev menu extensions.
+   */
+  var devMenuCallable: [DevMenuExportedCallable] {
+    let providers = currentScreen == nil ?
+      devMenuItems.filter { $0 is DevMenuCallableProvider } :
+      (devMenuScreens.first { $0.screenName == currentScreen }?.getAllItems() ?? []).filter { $0 is DevMenuCallableProvider }
     
-    return (devMenuScreens.first { $0.screenName == currentScreen }?.getAllItems() ?? [])
-      .filter { $0 is DevMenuAction } as! [DevMenuAction]
+    // We use flatMap here to remove nils
+    return (providers as! [DevMenuCallableProvider]).flatMap { $0.registerCallable?() }
   }
 
   /**
@@ -317,16 +336,30 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
   
   private func loadDevMenuScreens(forExtension ext: DevMenuExtensionProtocol) -> [DevMenuScreen]? {
     if let screenContainer = extensionToDevMenuScreensMap.object(forKey: ext) {
-      return screenContainer.screens
+      return screenContainer.items
     }
     
     if let screens = ext.devMenuScreens?(extensionSettings) {
-      let container = DevMenuScreensContainer(screens: screens)
+      let container = DevMenuCacheContainer<DevMenuScreen>(items: screens)
       extensionToDevMenuScreensMap.setObject(container, forKey: ext)
       return screens
     }
     
     return nil;
+  }
+  
+  private func loadDevMenuDataSources(forExtension ext: DevMenuExtensionProtocol) -> [DevMenuDataSourceProtocol]? {
+    if let dataSourcesContainer = extensionToDevMenuDataSourcesMap.object(forKey: ext) {
+      return dataSourcesContainer.items
+    }
+    
+    if let dataSources = ext.devMenuDataSources?(extensionSettings) {
+      let container = DevMenuCacheContainer<DevMenuDataSourceProtocol>(items: dataSources)
+      extensionToDevMenuDataSourcesMap.setObject(container, forKey: ext)
+      return dataSources
+    }
+    
+    return nil
   }
 
   private func setVisibility(_ visible: Bool, screen: String? = nil) -> Bool {
