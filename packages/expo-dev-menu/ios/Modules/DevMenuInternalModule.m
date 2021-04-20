@@ -15,7 +15,7 @@
 
 @implementation DevMenuInternalModule (RCTExternModule)
 
-RCT_EXTERN_METHOD(dispatchActionAsync:(NSString *)actionId args:(NSDictionary *)args resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
+RCT_EXTERN_METHOD(dispatchCallableAsync:(NSString *)callableId args:(NSDictionary *)args resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 RCT_EXTERN_METHOD(fetchDataSourceAsync:(NSString *)dataSourceId resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 RCT_EXTERN_METHOD(hideMenu)
 RCT_EXTERN_METHOD(setOnboardingFinished:(BOOL)finished)

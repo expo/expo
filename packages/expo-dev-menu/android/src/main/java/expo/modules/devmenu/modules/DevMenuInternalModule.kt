@@ -13,7 +13,7 @@ import expo.modules.devmenu.modules.internals.DevMenuInternalWebBrowserModule
 
 interface DevMenuInternalMenuControllerModuleInterface {
   @ReactMethod
-  fun dispatchActionAsync(actionId: String?, args: ReadableMap?, promise: Promise)
+  fun dispatchCallableAsync(callableId: String?, args: ReadableMap?, promise: Promise)
 
   @ReactMethod
   fun hideMenu()

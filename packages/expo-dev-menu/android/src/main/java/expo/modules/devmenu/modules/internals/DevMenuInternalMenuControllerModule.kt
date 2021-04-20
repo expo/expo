@@ -21,12 +21,12 @@ class DevMenuInternalMenuControllerModule(private val reactContext: ReactContext
     devMenuManger.getSettings()!!
   }
 
-  override fun dispatchActionAsync(actionId: String?, args: ReadableMap?, promise: Promise) {
-    if (actionId == null) {
-      promise.reject("ERR_DEVMENU_ACTION_FAILED", "Action ID not provided.")
+  override fun dispatchCallableAsync(callableId: String?, args: ReadableMap?, promise: Promise) {
+    if (callableId == null) {
+      promise.reject("ERR_DEVMENU_ACTION_FAILED", "Callable ID not provided.")
       return
     }
-    devMenuManger.dispatchCallable(actionId, args)
+    devMenuManger.dispatchCallable(callableId, args)
     promise.resolve(null)
   }
 

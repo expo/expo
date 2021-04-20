@@ -8,7 +8,7 @@ import {
   DevMenuSelectionListItemTag,
   DevMenuSelectionListType,
   fetchDataSourceAsync,
-  dispatchActionAsync,
+  dispatchCallableAsync,
 } from '../../DevMenuInternal';
 import Colors from '../../constants/Colors';
 import { Ionicon } from '../Icon';
@@ -203,10 +203,10 @@ class DevMenuSelectionList extends React.PureComponent<
   };
 
   onItemClick = (args: object) => {
-    const { actionId } = this.props.item;
+    const { functionId } = this.props.item;
 
-    if (actionId) {
-      dispatchActionAsync(actionId, args);
+    if (functionId) {
+      dispatchCallableAsync(functionId, args);
     }
   };
 

@@ -66,7 +66,7 @@ export type DevMenuSelectionListItem = {
 export type DevMenuSelectionListType = DevMenuItemBaseType<DevMenuItemEnum.SELECTION_LIST> & {
   items: DevMenuSelectionListItem[];
   dataSourceId?: string | null;
-  actionId?: string | null;
+  functionId?: string | null;
 };
 
 export type DevMenuItemAnyType =
@@ -100,11 +100,11 @@ export enum DevMenuKeyCommandsEnum {
 
 export const doesDeviceSupportKeyCommands = DevMenu.doesDeviceSupportKeyCommands;
 
-export async function dispatchActionAsync(
-  actionId: string,
+export async function dispatchCallableAsync(
+  callableId: string,
   args: object | null = null
 ): Promise<void> {
-  return await DevMenu.dispatchActionAsync(actionId, args);
+  return await DevMenu.dispatchCallableAsync(callableId, args);
 }
 
 export function hideMenu(): void {

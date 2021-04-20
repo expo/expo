@@ -100,11 +100,11 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
   }
   
   @objc
-  func dispatchActionAsync(_ actionId: String, args: [String : Any]?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    if actionId == nil {
-      return reject("ERR_DEVMENU_ACTION_FAILED", "Action ID not provided.", nil)
+  func dispatchCallableAsync(_ callableId: String, args: [String : Any]?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    if callableId == nil {
+      return reject("ERR_DEVMENU_ACTION_FAILED", "Callable ID not provided.", nil)
     }
-    manager.dispatchCallable(withId: actionId, args: args)
+    manager.dispatchCallable(withId: callableId, args: args)
     resolve(nil)
   }
 
