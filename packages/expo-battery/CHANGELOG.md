@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Simplify types by removing the `*Listener` type wrappers and inlining the type definitions in the events responses. ([#12592](https://github.com/expo/expo/pull/12592) by [@Simek](https://github.com/simek))
+- Removed following types: `BatteryLevelUpdateListener `, `BatteryStateUpdateListener` and `PowerModeUpdateListener` as they were only wrapping one-argument events responses. Use event types explicitly instead: `BatteryLevelEvent `, `BatteryStateEvent` and `PowerModeEvent`. ([#12592](https://github.com/expo/expo/pull/12592) by [@Simek](https://github.com/simek))
 
 ### 🎉 New features
 
