@@ -100,48 +100,48 @@ open class DevMenuExtensions: NSObject, RCTBridgeModule, DevMenuExtensionProtoco
     
     let testScreen = DevMenuScreen("testScreen")
 
-    let selectionList = DevMenuSelectionList()
-    let release10 = DevMenuSelectionList.Item()
-    release10.isChecked = { true }
-    release10.title = { "release-1.0" }
-    release10.warning = { "You are currently running an older development client version than the latest \"release-1.0\" update. To get the latest, upgrade this development client app." }
-    let release10ProductionTag = DevMenuSelectionList.Item.Tag()
-    release10ProductionTag.glyphName = { "ios-git-network" }
-    release10ProductionTag.text = { "production" }
-    
-    let release10ProgressTag = DevMenuSelectionList.Item.Tag()
-    release10ProgressTag.glyphName = { "ios-cloud" }
-    release10ProgressTag.text = { "90%" }
-    
-    release10.tags = { [release10ProductionTag, release10ProgressTag] }
-    
-    let pr134 = DevMenuSelectionList.Item()
-    pr134.title = { "pr-134" }
-    
-    let release11 = DevMenuSelectionList.Item()
-    release11.isChecked = { false }
-    release11.title = { "release-1.1" }
-    let release11ProductionTag = DevMenuSelectionList.Item.Tag()
-    release11ProductionTag.glyphName = { "ios-git-network" }
-    release11ProductionTag.text = { "production" }
-    
-    let release11ProgressTag = DevMenuSelectionList.Item.Tag()
-    release11ProgressTag.glyphName = { "ios-cloud" }
-    release11ProgressTag.text = { "10%" }
-    
-    release11.tags = { [release11ProductionTag, release11ProgressTag] }
-    
-    let pr21 = DevMenuSelectionList.Item()
-    pr21.title = { "pr-21" }
-    
-    selectionList.addItem(release10)
-    selectionList.addItem(pr134)
-    selectionList.addItem(release11)
-    selectionList.addItem(pr21)
+    let selectionList = DevMenuSelectionList(dataSourceId: "updatesList")
+    selectionList.addOnClick { data in
+      print(data?["id"])
+    }
     
     testScreen.addItem(selectionList)
     
     return [testScreen]
+  }
+  
+  @objc
+  open func devMenuDataSources(_ settings: DevMenuExtensionSettingsProtocol) -> [DevMenuDataSourceProtocol]? {
+    if (!settings.wasRunOnDevelopmentBridge()) {
+      return nil
+    }
+    
+    let updatesList = DevMenuListDataSource(id: "updatesList") { resolver in
+      let client = DevMenuManager.shared.expoApiClient
+      client.queryUpdateBranches(
+        appId: "3d4813b8-ad48-4e1e-9e8f-0f7d108bf041",
+        completionHandler: { branches, response, error in
+          guard let branches = branches else {
+            resolver([])
+            return
+          }
+          
+          let items = branches
+            .flatMap { $0.updates }
+            .filter { $0.platform == "ios" }
+            .map { update -> DevMenuSelectionList.Item  in
+              let item = DevMenuSelectionList.Item()
+              item.title = { update.message }
+              item.onClickData = { ["id": update.id] }
+              return item
+            }
+        
+          resolver(items)
+        }
+      )
+    }
+    
+    return [updatesList]
   }
 
   // MARK: static helpers
