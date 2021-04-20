@@ -83,9 +83,7 @@ const renderProp = ({ comment, name, type, flags }: PropData, defaultValue?: str
   <LI key={`prop-entry-${name}`}>
     <H4>{name}</H4>
     <P>
-      {flags?.isOptional && (
-        <span css={STYLES_SECONDARY}>Optional&emsp;&bull;&emsp;</span>
-      )}
+      {flags?.isOptional && <span css={STYLES_SECONDARY}>Optional&emsp;&bull;&emsp;</span>}
       <span css={STYLES_SECONDARY}>Type:</span> <InlineCode>{resolveTypeName(type)}</InlineCode>
       {defaultValue && defaultValue !== UNKNOWN_VALUE ? (
         <span>
