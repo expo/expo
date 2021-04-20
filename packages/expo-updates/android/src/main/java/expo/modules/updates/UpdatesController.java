@@ -61,7 +61,7 @@ public class UpdatesController {
   private UpdatesController(Context context, UpdatesConfiguration updatesConfiguration) {
     mUpdatesConfiguration = updatesConfiguration;
     mDatabaseHolder = new DatabaseHolder(UpdatesDatabase.getInstance(context));
-    mSelectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(UpdatesUtils.getRuntimeVersion(updatesConfiguration));
+    mSelectionPolicy = defaultSelectionPolicy();
     mFileDownloader = new FileDownloader(context);
     if (context instanceof ReactApplication) {
       mReactNativeHost = new WeakReference<>(((ReactApplication) context).getReactNativeHost());
@@ -73,6 +73,10 @@ public class UpdatesController {
       mUpdatesDirectoryException = e;
       mUpdatesDirectory = null;
     }
+  }
+
+  private SelectionPolicy defaultSelectionPolicy() {
+    return SelectionPolicyFactory.createFilterAwarePolicy(UpdatesUtils.getRuntimeVersion(mUpdatesConfiguration));
   }
 
   public static UpdatesController getInstance() {
@@ -218,6 +222,16 @@ public class UpdatesController {
 
   public boolean isEmergencyLaunch() {
     return mIsEmergencyLaunch;
+  }
+
+  // internal setters
+
+  /* package */ void setSelectionPolicy(SelectionPolicy selectionPolicy) {
+    mSelectionPolicy = selectionPolicy;
+  }
+
+  /* package */ void resetSelectionPolicyToDefault() {
+    mSelectionPolicy = defaultSelectionPolicy();
   }
 
   /**

@@ -28,4 +28,5 @@ public interface UpdatesInterface {
   Map<AssetEntity, String> getLocalAssetFiles();
 
   void relaunchReactApplication(Launcher.LauncherCallback callback);
+  void resetSelectionPolicy();
 }

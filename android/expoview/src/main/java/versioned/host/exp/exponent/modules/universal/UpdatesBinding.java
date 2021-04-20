@@ -103,4 +103,9 @@ public class UpdatesBinding extends UpdatesService implements UpdatesInterface {
     KernelProvider.getInstance().reloadVisibleExperience(mManifestUrl, true);
     callback.onSuccess();
   }
+
+  @Override
+  public void resetSelectionPolicy() {
+    // no-op in managed
+  }
 }
