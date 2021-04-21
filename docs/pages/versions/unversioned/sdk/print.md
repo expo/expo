@@ -51,14 +51,17 @@ Prints HTML to PDF file and saves it to [app's cache directory](filesystem.md#ex
   - **html (_string_)** -- HTML string to print into PDF file.
   - **width (_number_)** -- Width of the single page in pixels. Defaults to `612` which is a width of US Letter paper format with 72 PPI.
   - **height (_number_)** -- Height of the single page in pixels. Defaults to `792` which is a height of US Letter paper format with 72 PPI.
-  - **base64 (_boolean_)** -- Whether to include base64 encoded string of the file in the returned object.
+  - **padding (_object_)** -- Page padding.
+    - **top (_number_)**
+    - **right (_number_)**
+    - **bottom (_number_)**
+    - **left (_number_)** 
 
 #### Returns
 
 - Resolves to an object with following keys:
   - **uri (_string_)** -- A URI to the printed PDF file.
   - **numberOfPages (_number_)** -- Number of pages that were needed to render given content.
-  - **base64 (_string_)** -- Base64 encoded string containing the data of the PDF file. **Available only if `base64` option is truthy.** It doesn't include data URI prefix `data:application/pdf;base64,`.
 
 ### `Print.selectPrinterAsync()`
 
