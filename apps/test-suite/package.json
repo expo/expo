@@ -11,7 +11,7 @@
   "dependencies": {
     "@expo/html-elements": "^0.0.2",
     "async-retry": "^1.1.4",
-    "expo": "~41.0.0",
+    "expo": "~41.0.1",
     "expo-ads-admob": "~10.0.4",
     "expo-ads-facebook": "~10.0.4",
     "expo-analytics-segment": "~10.1.1",
@@ -38,7 +38,7 @@
     "expo-location": "~12.0.4",
     "expo-media-library": "~12.0.2",
     "expo-network": "~3.1.1",
-    "expo-notifications": "~0.11.5",
+    "expo-notifications": "~0.11.6",
     "expo-permissions": "~12.0.1",
     "expo-random": "~11.1.2",
     "expo-secure-store": "~10.1.0",

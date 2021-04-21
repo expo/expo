@@ -64,7 +64,7 @@
   "expo-media-library": "~12.0.2",
   "expo-module-template": "~9.0.1",
   "expo-network": "~3.1.1",
-  "expo-notifications": "~0.11.5",
+  "expo-notifications": "~0.11.6",
   "expo-payments-stripe": "~9.2.3",
   "expo-permissions": "~12.0.1",
   "expo-print": "~10.1.0",
