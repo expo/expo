@@ -93,7 +93,7 @@ export var AppleAuthenticationButtonStyle;
      */
     AppleAuthenticationButtonStyle[AppleAuthenticationButtonStyle["WHITE"] = 0] = "WHITE";
     /**
-     * White button with a black outline and black .
+     * White button with a black outline and black text.
      */
     AppleAuthenticationButtonStyle[AppleAuthenticationButtonStyle["WHITE_OUTLINE"] = 1] = "WHITE_OUTLINE";
     /**

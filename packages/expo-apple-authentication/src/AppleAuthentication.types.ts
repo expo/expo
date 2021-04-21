@@ -263,7 +263,7 @@ export enum AppleAuthenticationButtonStyle {
    */
   WHITE = 0,
   /**
-   * White button with a black outline and black .
+   * White button with a black outline and black text.
    */
   WHITE_OUTLINE = 1,
   /**
