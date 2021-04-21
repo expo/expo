@@ -5,7 +5,8 @@
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesNewUpdate.h>
-#import <EXUpdates/EXUpdatesSelectionPolicyFilterAware.h>
+#import <EXUpdates/EXUpdatesSelectionPolicyFactory.h>
+#import <EXUpdates/EXUpdatesSelectionPolicyUtils.h>
 #import <EXUpdates/EXUpdatesUpdate.h>
 
 @interface EXUpdatesSelectionPolicyFilterAwareTests : XCTestCase
@@ -17,7 +18,7 @@
 @property (nonatomic, strong) EXUpdatesUpdate *updateRollout2;
 @property (nonatomic, strong) EXUpdatesUpdate *updateMultipleFilters;
 @property (nonatomic, strong) EXUpdatesUpdate *updateNoMetadata;
-@property (nonatomic, strong) EXUpdatesSelectionPolicyFilterAware *selectionPolicy;
+@property (nonatomic, strong) EXUpdatesSelectionPolicy *selectionPolicy;
 @property (nonatomic, strong) NSDictionary *manifestFilters;
 
 @end
@@ -107,7 +108,7 @@
     @"assets": @[imageAsset]
   } response:nil config:config database:database];
 
-  _selectionPolicy = [[EXUpdatesSelectionPolicyFilterAware alloc] initWithRuntimeVersion:runtimeVersion];
+  _selectionPolicy = [EXUpdatesSelectionPolicyFactory filterAwarePolicyWithRuntimeVersion:runtimeVersion];
   _manifestFilters = @{@"branchname": @"rollout"};
 }
 
@@ -173,25 +174,25 @@
     @"firstkey": @"value1",
     @"secondkey": @"wrong-value"
   };
-  XCTAssertFalse([EXUpdatesSelectionPolicyFilterAware doesUpdate:_updateMultipleFilters matchFilters:filtersBadMatch], @"should fail unless all filters pass");
+  XCTAssertFalse([EXUpdatesSelectionPolicyUtils doesUpdate:_updateMultipleFilters matchFilters:filtersBadMatch], @"should fail unless all filters pass");
 
   NSDictionary *filtersGoodMatch = @{
     @"firstkey": @"value1",
     @"secondkey": @"value2"
   };
-  XCTAssertTrue([EXUpdatesSelectionPolicyFilterAware doesUpdate:_updateMultipleFilters matchFilters:filtersGoodMatch], @"should pass if all filters pass");
+  XCTAssertTrue([EXUpdatesSelectionPolicyUtils doesUpdate:_updateMultipleFilters matchFilters:filtersGoodMatch], @"should pass if all filters pass");
 }
 
 - (void)testDoesUpdateMatchFilters_EmptyMatchesAll
 {
-  XCTAssertTrue([EXUpdatesSelectionPolicyFilterAware doesUpdate:_updateDefault1 matchFilters:@{@"field-that-update-doesnt-have": @"value"}], @"no field counts as a match");
+  XCTAssertTrue([EXUpdatesSelectionPolicyUtils doesUpdate:_updateDefault1 matchFilters:@{@"field-that-update-doesnt-have": @"value"}], @"no field counts as a match");
 }
 
 - (void)testDoesUpdateMatchFilters_Null
 {
   // null filters or null updateMetadata (i.e. bare or legacy manifests) is counted as a match
-  XCTAssertTrue([EXUpdatesSelectionPolicyFilterAware doesUpdate:_updateDefault1 matchFilters:nil]);
-  XCTAssertTrue([EXUpdatesSelectionPolicyFilterAware doesUpdate:_updateNoMetadata matchFilters:_manifestFilters]);
+  XCTAssertTrue([EXUpdatesSelectionPolicyUtils doesUpdate:_updateDefault1 matchFilters:nil]);
+  XCTAssertTrue([EXUpdatesSelectionPolicyUtils doesUpdate:_updateNoMetadata matchFilters:_manifestFilters]);
 }
 
 @end

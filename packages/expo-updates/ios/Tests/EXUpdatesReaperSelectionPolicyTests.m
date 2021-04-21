@@ -4,21 +4,21 @@
 
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
-#import <EXUpdates/EXUpdatesSelectionPolicyNewest.h>
+#import <EXUpdates/EXUpdatesReaperSelectionPolicyFilterAware.h>
 #import <EXUpdates/EXUpdatesUpdate.h>
 
-@interface EXUpdatesSelectionPolicyNewestTests : XCTestCase
+@interface EXUpdatesReaperSelectionPolicyTests : XCTestCase
 
 @property (nonatomic, strong) EXUpdatesUpdate *update1;
 @property (nonatomic, strong) EXUpdatesUpdate *update2;
 @property (nonatomic, strong) EXUpdatesUpdate *update3;
 @property (nonatomic, strong) EXUpdatesUpdate *update4;
 @property (nonatomic, strong) EXUpdatesUpdate *update5;
-@property (nonatomic, strong) id<EXUpdatesSelectionPolicy> selectionPolicy;
+@property (nonatomic, strong) id<EXUpdatesReaperSelectionPolicy> selectionPolicy;
 
 @end
 
-@implementation EXUpdatesSelectionPolicyNewestTests
+@implementation EXUpdatesReaperSelectionPolicyTests
 
 - (void)setUp
 {
@@ -32,7 +32,7 @@
   _update3 = [EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:scopeKey commitTime:[NSDate dateWithTimeIntervalSince1970:1608667853] runtimeVersion:runtimeVersion metadata:nil status:EXUpdatesUpdateStatusReady keep:YES config:config database:database];
   _update4 = [EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:scopeKey commitTime:[NSDate dateWithTimeIntervalSince1970:1608667854] runtimeVersion:runtimeVersion metadata:nil status:EXUpdatesUpdateStatusReady keep:YES config:config database:database];
   _update5 = [EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:scopeKey commitTime:[NSDate dateWithTimeIntervalSince1970:1608667855] runtimeVersion:runtimeVersion metadata:nil status:EXUpdatesUpdateStatusReady keep:YES config:config database:database];
-  _selectionPolicy = [[EXUpdatesSelectionPolicyNewest alloc] initWithRuntimeVersion:runtimeVersion];
+  _selectionPolicy = [[EXUpdatesReaperSelectionPolicyFilterAware alloc] init];
 }
 
 - (void)tearDown
