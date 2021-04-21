@@ -14,6 +14,7 @@ export var AppleAuthenticationScope;
     AppleAuthenticationScope[AppleAuthenticationScope["FULL_NAME"] = 0] = "FULL_NAME";
     AppleAuthenticationScope[AppleAuthenticationScope["EMAIL"] = 1] = "EMAIL";
 })(AppleAuthenticationScope || (AppleAuthenticationScope = {}));
+// @needsAudit @docsMissing
 export var AppleAuthenticationOperation;
 (function (AppleAuthenticationOperation) {
     /**
@@ -88,15 +89,15 @@ export var AppleAuthenticationButtonType;
 export var AppleAuthenticationButtonStyle;
 (function (AppleAuthenticationButtonStyle) {
     /**
-     * White button with black text
+     * White button with black text.
      */
     AppleAuthenticationButtonStyle[AppleAuthenticationButtonStyle["WHITE"] = 0] = "WHITE";
     /**
-     * White button with a black outline and black text
+     * White button with a black outline and black .
      */
     AppleAuthenticationButtonStyle[AppleAuthenticationButtonStyle["WHITE_OUTLINE"] = 1] = "WHITE_OUTLINE";
     /**
-     * Black button with white text
+     * Black button with white text.
      */
     AppleAuthenticationButtonStyle[AppleAuthenticationButtonStyle["BLACK"] = 2] = "BLACK";
 })(AppleAuthenticationButtonStyle || (AppleAuthenticationButtonStyle = {}));

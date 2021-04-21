@@ -58,16 +58,19 @@ export type AppleAuthenticationRefreshOptions = {
   user: string;
 
   /**
-   * The scope of personal information to which your app is requesting access. The user can choose
-   * to deny your app access to any scope at the time of refreshing.
-   * @defaults `[]` (no scopes).
+   * Array of user information scopes to which your app is requesting access. Note that the user can
+   * choose to deny your app access to any scope at the time of logging in. You will still need to
+   * handle `null` values for any scopes you request. Additionally, note that the requested scopes
+   * will only be provided to you the first time each user signs into your app; in subsequent
+   * requests they will be `null`. Defaults to `[]` (no scopes).
    */
   requestedScopes?: AppleAuthenticationScope[];
 
   /**
-   * Data that's returned to you unmodified in the corresponding credential after a successful
-   * authentication. Used to verify that the response was from the request you made. Can be used to
-   * avoid replay attacks.
+   * An arbitrary string that is returned unmodified in the corresponding credential after a
+   * successful authentication. This can be used to verify that the response was from the request
+   * you made and avoid replay attacks. More information on this property is available in the
+   * OAuth 2.0 protocol [RFC6749](https://tools.ietf.org/html/rfc6749#section-10.12).
    */
   state?: string;
 };
@@ -85,9 +88,10 @@ export type AppleAuthenticationSignOutOptions = {
   user: string;
 
   /**
-   * Data that's returned to you unmodified in the corresponding credential after a successful
-   * authentication. Used to verify that the response was from the request you made. Can be used to
-   * avoid replay attacks.
+   * An arbitrary string that is returned unmodified in the corresponding credential after a
+   * successful authentication. This can be used to verify that the response was from the request
+   * you made and avoid replay attacks. More information on this property is available in the
+   * OAuth 2.0 protocol [RFC6749](https://tools.ietf.org/html/rfc6749#section-10.12).
    */
   state?: string;
 };
@@ -181,6 +185,7 @@ export enum AppleAuthenticationScope {
   EMAIL = 1,
 }
 
+// @needsAudit @docsMissing
 export enum AppleAuthenticationOperation {
   /**
    * An operation that depends on the particular kind of credential provider.
@@ -254,15 +259,15 @@ export enum AppleAuthenticationButtonType {
  */
 export enum AppleAuthenticationButtonStyle {
   /**
-   * White button with black text
+   * White button with black text.
    */
   WHITE = 0,
   /**
-   * White button with a black outline and black text
+   * White button with a black outline and black .
    */
   WHITE_OUTLINE = 1,
   /**
-   * Black button with white text
+   * Black button with white text.
    */
   BLACK = 2,
 }
