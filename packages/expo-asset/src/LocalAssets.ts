@@ -10,8 +10,7 @@ const bundledAssets = new Set(FileSystem.bundledAssets || []);
 const localAssets = getLocalAssets();
 
 /**
- * Returns the local URI of an embedded asset from its hash and type, or null if the asset is not
- * included in the app bundle.
+ * Returns the URI of a local asset from its hash, or null if the asset is not available locally
  */
 export function getLocalAssetUri(hash: string, type: string | null): string | null {
   const localAssetsKey = hash;
