@@ -1,7 +1,7 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesLoaderSelectionPolicyFilterAware.h>
-#import <EXUpdates/EXUpdatesSelectionPolicyUtils.h>
+#import <EXUpdates/EXUpdatesSelectionPolicies.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
   }
   // if the new update doesn't match its own filters, we shouldn't load it
-  if (![EXUpdatesSelectionPolicyUtils doesUpdate:newUpdate matchFilters:filters]) {
+  if (![EXUpdatesSelectionPolicies doesUpdate:newUpdate matchFilters:filters]) {
     return NO;
   }
   
@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
   // if the current update doesn't pass the manifest filters
   // we should load the new update no matter the commitTime
-  if (![EXUpdatesSelectionPolicyUtils doesUpdate:launchedUpdate matchFilters:filters]) {
+  if (![EXUpdatesSelectionPolicies doesUpdate:launchedUpdate matchFilters:filters]) {
     return YES;
   }
   return [launchedUpdate.commitTime compare:newUpdate.commitTime] == NSOrderedAscending;

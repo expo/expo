@@ -6,7 +6,7 @@
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesNewUpdate.h>
 #import <EXUpdates/EXUpdatesSelectionPolicyFactory.h>
-#import <EXUpdates/EXUpdatesSelectionPolicyUtils.h>
+#import <EXUpdates/EXUpdatesSelectionPolicies.h>
 #import <EXUpdates/EXUpdatesUpdate.h>
 
 @interface EXUpdatesSelectionPolicyFilterAwareTests : XCTestCase
@@ -174,25 +174,25 @@
     @"firstkey": @"value1",
     @"secondkey": @"wrong-value"
   };
-  XCTAssertFalse([EXUpdatesSelectionPolicyUtils doesUpdate:_updateMultipleFilters matchFilters:filtersBadMatch], @"should fail unless all filters pass");
+  XCTAssertFalse([EXUpdatesSelectionPolicies doesUpdate:_updateMultipleFilters matchFilters:filtersBadMatch], @"should fail unless all filters pass");
 
   NSDictionary *filtersGoodMatch = @{
     @"firstkey": @"value1",
     @"secondkey": @"value2"
   };
-  XCTAssertTrue([EXUpdatesSelectionPolicyUtils doesUpdate:_updateMultipleFilters matchFilters:filtersGoodMatch], @"should pass if all filters pass");
+  XCTAssertTrue([EXUpdatesSelectionPolicies doesUpdate:_updateMultipleFilters matchFilters:filtersGoodMatch], @"should pass if all filters pass");
 }
 
 - (void)testDoesUpdateMatchFilters_EmptyMatchesAll
 {
-  XCTAssertTrue([EXUpdatesSelectionPolicyUtils doesUpdate:_updateDefault1 matchFilters:@{@"field-that-update-doesnt-have": @"value"}], @"no field counts as a match");
+  XCTAssertTrue([EXUpdatesSelectionPolicies doesUpdate:_updateDefault1 matchFilters:@{@"field-that-update-doesnt-have": @"value"}], @"no field counts as a match");
 }
 
 - (void)testDoesUpdateMatchFilters_Null
 {
   // null filters or null updateMetadata (i.e. bare or legacy manifests) is counted as a match
-  XCTAssertTrue([EXUpdatesSelectionPolicyUtils doesUpdate:_updateDefault1 matchFilters:nil]);
-  XCTAssertTrue([EXUpdatesSelectionPolicyUtils doesUpdate:_updateNoMetadata matchFilters:_manifestFilters]);
+  XCTAssertTrue([EXUpdatesSelectionPolicies doesUpdate:_updateDefault1 matchFilters:nil]);
+  XCTAssertTrue([EXUpdatesSelectionPolicies doesUpdate:_updateNoMetadata matchFilters:_manifestFilters]);
 }
 
 @end

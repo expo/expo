@@ -3,7 +3,7 @@
 #import <EXUpdates/EXUpdatesAppLauncherNoDatabase.h>
 #import <EXUpdates/EXUpdatesCrypto.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
-#import <EXUpdates/EXUpdatesSelectionPolicyUtils.h>
+#import <EXUpdates/EXUpdatesSelectionPolicies.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -215,7 +215,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
     return;
   }
 
-  if (![EXUpdatesSelectionPolicyUtils doesUpdate:update matchFilters:update.manifestFilters]) {
+  if (![EXUpdatesSelectionPolicies doesUpdate:update matchFilters:update.manifestFilters]) {
     NSError *error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
                                          code:1021
                                      userInfo:@{NSLocalizedDescriptionKey: @"Downloaded manifest is invalid; provides filters that do not match its content"}];

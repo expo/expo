@@ -1,7 +1,7 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesLauncherSelectionPolicyFilterAware.h>
-#import <EXUpdates/EXUpdatesSelectionPolicyUtils.h>
+#import <EXUpdates/EXUpdatesSelectionPolicies.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
   EXUpdatesUpdate *runnableUpdate;
   NSDate *runnableUpdateCommitTime;
   for (EXUpdatesUpdate *update in updates) {
-    if (![_runtimeVersions containsObject:update.runtimeVersion] || ![EXUpdatesSelectionPolicyUtils doesUpdate:update matchFilters:filters]) {
+    if (![_runtimeVersions containsObject:update.runtimeVersion] || ![EXUpdatesSelectionPolicies doesUpdate:update matchFilters:filters]) {
       continue;
     }
     NSDate *commitTime = update.commitTime;

@@ -1,10 +1,10 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesSelectionPolicyUtils.h>
+#import <EXUpdates/EXUpdatesSelectionPolicies.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@implementation EXUpdatesSelectionPolicyUtils
+@implementation EXUpdatesSelectionPolicies
 
 + (BOOL)doesUpdate:(EXUpdatesUpdate *)update matchFilters:(nullable NSDictionary *)filters
 {

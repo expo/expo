@@ -1,7 +1,7 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesReaperSelectionPolicyFilterAware.h>
-#import <EXUpdates/EXUpdatesSelectionPolicyUtils.h>
+#import <EXUpdates/EXUpdatesSelectionPolicies.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
       if (!nextNewestUpdate || [update.commitTime compare:nextNewestUpdate.commitTime] == NSOrderedDescending) {
         nextNewestUpdate = update;
       }
-      if ([EXUpdatesSelectionPolicyUtils doesUpdate:update matchFilters:filters] &&
+      if ([EXUpdatesSelectionPolicies doesUpdate:update matchFilters:filters] &&
           (!nextNewestUpdateMatchingFilters || [update.commitTime compare:nextNewestUpdateMatchingFilters.commitTime] == NSOrderedDescending)) {
         nextNewestUpdateMatchingFilters = update;
       }

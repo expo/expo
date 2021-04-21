@@ -4,7 +4,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXUpdatesSelectionPolicyUtils : NSObject
+/**
+ * Utilities for EXUpdatesSelectionPolicy and related classes
+ */
+@interface EXUpdatesSelectionPolicies : NSObject
 
 + (BOOL)doesUpdate:(EXUpdatesUpdate *)update matchFilters:(nullable NSDictionary *)filters;
 
