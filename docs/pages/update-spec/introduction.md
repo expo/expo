@@ -41,7 +41,6 @@ A conformant client MUST make a GET request with the following standard headers:
 accept: application/expo+json,application/json
 expo-platform: string
 expo-runtime-version: string
-expo-channel-name: string
 ```
 Along with any headers stipulated by a previous responses' [server defined headers](#server-defined-headers):
 
@@ -49,7 +48,6 @@ Along with any headers stipulated by a previous responses' [server defined heade
     * iOS MUST be `expo-platform: ios`
     * Android MUST be `expo-platform: android`
 * `expo-runtime-version` MUST be the runtime version the client is running on.
-* `expo-channel-name` MUST be the name of the channel that the client is associated with.
 
 If the client wishes to verify the integrity of the request, it may require a signature to be included as a response header:
 ```
@@ -63,9 +61,7 @@ A conformant server MUST return a body containing a [manifest](#manifest) along 
 The choice of manifest and headers are dependent on the values of the request headers. A conformant server MUST:
 
 * Return a manifest that describes an `update` capable of running on the platform and runtime version specified in the `expo-platform` and `expo-runtime-version` request headers. 
-* Return a `manifest` that describes the most recent, sorted by creation time, `update` satisfying the constraints imposed by:
-  * The `expo-channel-name` 
-  * Server defined headers such as `expo-rollout-token`
+* Return a `manifest` that describes the most recent, sorted by creation time, `update` satisfying any constraints imposed by the headers.
 
 ### Headers
 
@@ -119,12 +115,9 @@ then the response body is referred to as the `manifest` and MUST be a JSON with 
   id: string
   createdAt: date
   runtimeVersion: string
-  launchAsset: Asset,
-  assets: Asset[],
-  updateMetadata: {
-    updateGroup: string
-    branchName: string
-  }
+  launchAsset: Asset
+  assets: Asset[]
+  updateMetadata: { [key: string]: number | string }
 }
 ```
   * `id` The ID MUST uniquely specify the manifest, however the different headers may accompany identical IDs in a response.
@@ -137,7 +130,7 @@ then the response body is referred to as the `manifest` and MUST be a JSON with 
     * `url` Location where the asset is hosted.
   * `launchAsset` The asset that is used to launch the app.
   * `assets` An array of assets used by the update bundle, such as JavaScript, pictures, and fonts.
-  * `updateMetadata` The metadata associated with an update can be used for filtering the update (branchName) and also for the creation of more helpful errors.
+  * `updateMetadata` The metadata associated with an update can be used for filtering the update (see the `branchname` example above) and also for the creation of more helpful errors.
 
 ### Error
 
