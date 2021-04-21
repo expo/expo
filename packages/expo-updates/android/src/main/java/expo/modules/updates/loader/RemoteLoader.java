@@ -211,11 +211,10 @@ public class RemoteLoader {
       } else {
         mExistingAssetList.add(assetEntity);
       }
+      mCallback.onAssetLoaded(assetEntity, mFinishedAssetList.size() + mExistingAssetList.size(), mAssetTotal);
     } else {
       mErroredAssetList.add(assetEntity);
     }
-
-    mCallback.onAssetLoaded(assetEntity, mFinishedAssetList.size() + mExistingAssetList.size() + mErroredAssetList.size(), mAssetTotal);
 
     if (mFinishedAssetList.size() + mErroredAssetList.size() + mExistingAssetList.size() == mAssetTotal) {
       try {
