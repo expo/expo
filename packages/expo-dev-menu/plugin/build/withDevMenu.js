@@ -6,17 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("@expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const withDevMenuAppDelegate_1 = require("./withDevMenuAppDelegate");
 const DEV_MENU_ANDROID_IMPORT = 'expo.modules.devmenu.react.DevMenuAwareReactActivity';
 const DEV_MENU_ACTIVITY_CLASS = 'public class MainActivity extends DevMenuAwareReactActivity {';
 const DEV_MENU_POD_IMPORT = "pod 'expo-dev-menu', path: '../node_modules/expo-dev-menu', :configurations => :debug";
-const DEV_MENU_IOS_IMPORT = `
-#if defined(EX_DEV_MENU_ENABLED)
-@import EXDevMenu;
-#endif`;
-const DEV_MENU_IOS_INIT = `
-#if defined(EX_DEV_MENU_ENABLED)
-  [DevMenuManager configureWithBridge:bridge];
-#endif`;
 async function readFileAsync(path) {
     return fs_1.default.promises.readFile(path, 'utf8');
 }
@@ -52,17 +45,7 @@ async function editPodfile(config, action) {
         return await saveFileAsync(podfilePath, podfile);
     }
     catch (e) {
-        config_plugins_1.WarningAggregator.addWarningIOS('ios-devMenu', `Couldn't modified AppDelegate.m - ${e}.`);
-    }
-}
-async function editAppDelegate(config, action) {
-    const appDelegatePath = path_1.default.join(config.modRequest.platformProjectRoot, config.modRequest.projectName, 'AppDelegate.m');
-    try {
-        const appDelegate = action(await readFileAsync(appDelegatePath));
-        return await saveFileAsync(appDelegatePath, appDelegate);
-    }
-    catch (e) {
-        config_plugins_1.WarningAggregator.addWarningIOS('ios-devMenu', `Couldn't modified AppDelegate.m - ${e}.`);
+        config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-menu', `Couldn't modified AppDelegate.m - ${e}.`);
     }
 }
 const withDevMenuActivity = config => {
@@ -74,7 +57,7 @@ const withDevMenuActivity = config => {
             config.modResults.contents = content;
         }
         else {
-            config_plugins_1.WarningAggregator.addWarningAndroid('android-devMenu', `Cannot automatically configure MainActivity if it's not java`);
+            config_plugins_1.WarningAggregator.addWarningAndroid('expo-dev-menu', `Cannot automatically configure MainActivity if it's not java`);
         }
         return config;
     });
@@ -97,33 +80,10 @@ const withDevMenuPodfile = config => {
         },
     ]);
 };
-const withDevMenuAppDelegate = config => {
-    return config_plugins_1.withDangerousMod(config, [
-        'ios',
-        async (config) => {
-            await editAppDelegate(config, appDelegate => {
-                if (!appDelegate.includes(DEV_MENU_IOS_IMPORT)) {
-                    const lines = appDelegate.split('\n');
-                    lines.splice(1, 0, DEV_MENU_IOS_IMPORT);
-                    appDelegate = lines.join('\n');
-                }
-                if (!appDelegate.includes(DEV_MENU_IOS_INIT)) {
-                    const lines = appDelegate.split('\n');
-                    const initializeReactNativeAppIndex = lines.findIndex(line => line.includes('- (RCTBridge *)initializeReactNativeApp'));
-                    const rootViewControllerIndex = lines.findIndex((line, index) => initializeReactNativeAppIndex < index && line.includes('rootViewController'));
-                    lines.splice(rootViewControllerIndex - 1, 0, DEV_MENU_IOS_INIT);
-                    appDelegate = lines.join('\n');
-                }
-                return appDelegate;
-            });
-            return config;
-        },
-    ]);
-};
 const withDevMenu = (config) => {
     config = withDevMenuActivity(config);
     config = withDevMenuPodfile(config);
-    config = withDevMenuAppDelegate(config);
+    config = withDevMenuAppDelegate_1.withDevMenuAppDelegate(config);
     return config;
 };
 exports.default = withDevMenu;

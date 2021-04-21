@@ -8,6 +8,7 @@ import {
 import { ExpoConfig } from '@expo/config-types';
 import fs from 'fs';
 import path from 'path';
+
 import { withDevLauncherAppDelegate } from './withDevLauncherAppDelegate';
 
 const DEV_LAUNCHER_ANDROID_IMPORT = 'expo.modules.devlauncher.DevLauncherController';

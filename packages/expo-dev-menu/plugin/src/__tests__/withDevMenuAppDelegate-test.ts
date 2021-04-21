@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import { modifyAppDelegate } from '../withDevLauncherAppDelegate';
+import { modifyAppDelegate } from '../withDevMenuAppDelegate';
 
 describe(modifyAppDelegate, () => {
   it(`modifies the AppDelegate file for unimodules`, () => {
