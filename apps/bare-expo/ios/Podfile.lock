@@ -102,9 +102,6 @@ PODS:
     - UMFileSystemInterface
   - EXGL_CPP (10.3.0):
     - React-jsi
-  - EXGL_CPP_LEGACY (8.4.0):
-    - EXGL_CPP_LEGACY/EXGLContext (= 8.4.0)
-  - EXGL_CPP_LEGACY/EXGLContext (8.4.0)
   - EXGoogleSignIn (9.1.0):
     - GoogleSignIn (~> 5.0.2)
     - UMCore
@@ -746,7 +743,6 @@ DEPENDENCIES:
   - EXFont (from `../../../packages/expo-font/ios`)
   - EXGL (from `../../../packages/expo-gl/ios`)
   - EXGL_CPP (from `../../../packages/expo-gl-cpp/cpp`)
-  - EXGL_CPP_LEGACY (from `../../../packages/expo-gl-cpp-legacy/cpp`)
   - EXGoogleSignIn (from `../../../packages/expo-google-sign-in/ios`)
   - EXHaptics (from `../../../packages/expo-haptics/ios`)
   - EXImageLoader (from `../../../packages/expo-image-loader/ios`)
@@ -984,9 +980,6 @@ EXTERNAL SOURCES:
   EXGL_CPP:
     inhibit_warnings: false
     :path: "../../../packages/expo-gl-cpp/cpp"
-  EXGL_CPP_LEGACY:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-gl-cpp-legacy/cpp"
   EXGoogleSignIn:
     inhibit_warnings: false
     :path: "../../../packages/expo-google-sign-in/ios"
@@ -1250,7 +1243,6 @@ SPEC CHECKSUMS:
   EXFont: d6fb79f9863120f0d0b26b0c2d1453bc9511e9df
   EXGL: d5f3e175700919b0fe4db5d96005a8f907424b45
   EXGL_CPP: 09fc9d4438705f186e17086d980740d2518fe586
-  EXGL_CPP_LEGACY: 0d65426183da75b3c263f88fc92ac27515926422
   EXGoogleSignIn: 9737eb53d327c3d5e668ea00bed490695d880893
   EXHaptics: 2de40c5f50a9e78da92c209db06db5134d8cac0b
   EXImageLoader: da941c9399e01ec28f2d5b270bdd21f2c8ca596c
