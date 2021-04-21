@@ -48,7 +48,7 @@ const renderInheritedProp = (ip: TypeDeclarationData) => {
 };
 
 const renderInheritedProps = (data: TypeDeclarationData[]): JSX.Element | undefined => {
-  const inheritedProps = data?.filter((ip: TypeDeclarationData) => ip.type === 'reference') || [];
+  const inheritedProps = data?.filter((ip: TypeDeclarationData) => ip.type === 'reference') ?? [];
   if (inheritedProps.length) {
     return (
       <div>
