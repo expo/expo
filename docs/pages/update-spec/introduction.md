@@ -159,7 +159,7 @@ cache-control: max-age=0, private
 
 ### Compression
 
-Assets SHOULD be capable being served with `zip` and `brotli` compression.
+Assets SHOULD be capable being served with [gzip](https://www.gnu.org/software/gzip/) and [brotli](https://github.com/google/brotli) compression.
 The asset hosted at a particular URL MUST NOT be changed. Clients with stale updates may still require old assets.
 
 ## Client
