@@ -1,6 +1,6 @@
 export declare type PowerState = {
     /**
-     * A number between`0` and `1`, inclusive, or `-1` if the battery level is unknown.
+     * A number between `0` and `1`, inclusive, or `-1` if the battery level is unknown.
      */
     batteryLevel: number;
     /**
@@ -14,7 +14,7 @@ export declare type PowerState = {
 };
 export declare enum BatteryState {
     /**
-     * if the battery state is unknown or unable to access.
+     * if the battery state is unknown or inaccessible.
      */
     UNKNOWN = 0,
     /**
@@ -32,7 +32,7 @@ export declare enum BatteryState {
 }
 export declare type BatteryLevelEvent = {
     /**
-     * A number between`0` and `1`, inclusive, or `-1` if the battery level is unknown.
+     * A number between `0` and `1`, inclusive, or `-1` if the battery level is unknown.
      */
     batteryLevel: number;
 };

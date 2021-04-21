@@ -2,7 +2,7 @@
 export var BatteryState;
 (function (BatteryState) {
     /**
-     * if the battery state is unknown or unable to access.
+     * if the battery state is unknown or inaccessible.
      */
     BatteryState[BatteryState["UNKNOWN"] = 0] = "UNKNOWN";
     /**
