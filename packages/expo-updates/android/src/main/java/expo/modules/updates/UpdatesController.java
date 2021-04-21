@@ -226,7 +226,7 @@ public class UpdatesController {
 
   // internal setters
 
-  /* package */ void setSelectionPolicy(SelectionPolicy selectionPolicy) {
+  /* package */ void setNextSelectionPolicy(SelectionPolicy selectionPolicy) {
     mSelectionPolicy = selectionPolicy;
   }
 
