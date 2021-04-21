@@ -35,8 +35,6 @@ export default class MyDocument extends Document<{ css?: string }> {
     return (
       <Html lang="en">
         <Head>
-          <script src="/static/libs/tippy/tippy.all.min.js" />
-
           <Global
             styles={[
               globalFonts,
