@@ -31,7 +31,7 @@ In order to obtain an `update`:
 2. If the response body is a new manifest (checking the manifest ID is sufficient) it proceeds to download and store the assets referenced by the manifest.
 3. The client updates the local state according to any metadata provided by the response [headers](#headers)
 
-We anticipate the primary user of this spec will be companies who need to manage their own update server to satisfy internal requirements.
+We anticipate the primary user of this spec will be organizations who need to manage their own update server to satisfy internal requirements.
 
 ## Request
 
@@ -100,16 +100,7 @@ content-type: application/json; charset=utf-8
 
 The body of the response MUST be a `manifest`. A `manifest` is defined as JSON conforming to the following description:
 
-Let an `Asset` be the JSON:
-```
-{
-  hash: string
-  key: string
-  contentType: string
-  url: string
-}
-```
-then the response body is referred to as the `manifest` and MUST be a JSON with format:
+The response body is referred to as the `manifest` and MUST be a JSON with format:
 ```
 {
   id: string
@@ -118,6 +109,15 @@ then the response body is referred to as the `manifest` and MUST be a JSON with 
   launchAsset: Asset
   assets: Asset[]
   updateMetadata: { [key: string]: number | string }
+}
+```
+Where an `Asset` is the JSON:
+```
+{
+  hash: string
+  key: string
+  contentType: string
+  url: string
 }
 ```
   * `id` The ID MUST uniquely specify the manifest, however the different headers may accompany identical IDs in a response.
@@ -130,7 +130,7 @@ then the response body is referred to as the `manifest` and MUST be a JSON with 
     * `url` Location where the asset is hosted.
   * `launchAsset` The asset that is used to launch the app.
   * `assets` An array of assets used by the update bundle, such as JavaScript, pictures, and fonts.
-  * `updateMetadata` The metadata associated with an update can be used for filtering the update (see the `branchname` example above) and also for the creation of more helpful errors.
+  * `updateMetadata` The metadata associated with an update. This can be used for filtering the update (see the `branchname` example above) and also for the creation of more helpful errors.
 
 ### Error
 
