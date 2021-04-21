@@ -107,5 +107,5 @@ setTimeout(function hideToast() {
 <Toast visible={this.state.visible}>Thanks for subscribing!</Toast>
 ```
 
-This library also has a lot of options for customizing appearance and behavior, so check out [their
+This library has many options for [customizing the appearance and behavior](https://github.com/crazycodeboy/react-native-easy-toast#api) of your toast.
 docs](https://github.com/magicismight/react-native-root-toast) to learn more.
