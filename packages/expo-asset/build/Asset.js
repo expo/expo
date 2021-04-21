@@ -2,8 +2,8 @@ import { Platform } from '@unimodules/core';
 import { getAssetByID } from './AssetRegistry';
 import * as AssetSources from './AssetSources';
 import * as AssetUris from './AssetUris';
-import { getLocalAssetUri } from './LocalAssets';
 import * as ImageAssets from './ImageAssets';
+import { getLocalAssetUri } from './LocalAssets';
 import { downloadAsync, IS_ENV_WITH_UPDATES_ENABLED } from './PlatformUtils';
 import resolveAssetSource from './resolveAssetSource';
 export class Asset {
