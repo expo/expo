@@ -90,6 +90,14 @@ export const resolveTypeName = ({
       return name;
     }
   } else if (elementType?.name) {
+    if (elementType.type === 'reference') {
+      return (
+        <Link href={`#${elementType.name?.toLowerCase()}`} key={`type-link-${elementType.name}`}>
+          {elementType.name}
+          {type === 'array' && '[]'}
+        </Link>
+      );
+    }
     if (type === 'array') {
       return elementType.name + '[]';
     }
