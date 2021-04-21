@@ -1,4 +1,7 @@
 import { StyleProp, ViewStyle } from 'react-native';
+/**
+ * @hidden
+ */
 export declare type AppleAuthenticationButtonProps = {
     onPress: () => void;
     buttonType: AppleAuthenticationButtonType;
@@ -7,8 +10,8 @@ export declare type AppleAuthenticationButtonProps = {
     style?: StyleProp<ViewStyle>;
 };
 /**
- * The options you can supply when making a call to `AppleAuthentication.signInAsync()`. None of
- * these options are required.
+ * The options you can supply when making a call to [`AppleAuthentication.signInAsync()`](#appleauthenticationsigninasyncoptions).
+ * None of these options are required.
  *
  * @see [Apple
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest)
@@ -17,8 +20,7 @@ export declare type AppleAuthenticationButtonProps = {
 export declare type AppleAuthenticationSignInOptions = {
     /**
      * The scope of personal information to which your app is requesting access. The user can choose
-     * to deny your app access to any scope at the time of logging in.
-     * @defaults `[]` (no scopes).
+     * to deny your app access to any scope at the time of logging in. Defaults to `[]` (no scopes).
      */
     requestedScopes?: AppleAuthenticationScope[];
     /**
@@ -33,8 +35,8 @@ export declare type AppleAuthenticationSignInOptions = {
     nonce?: string;
 };
 /**
- * The options you can supply when making a call to `AppleAuthentication.refreshAsync()`. You must
- * include the ID string of the user whose credentials you'd like to refresh.
+ * The options you can supply when making a call to [`AppleAuthentication.refreshAsync()`](#appleauthenticationrefreshasyncoptions).
+ * You must include the ID string of the user whose credentials you'd like to refresh.
  *
  * @see [Apple
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest)
@@ -56,8 +58,8 @@ export declare type AppleAuthenticationRefreshOptions = {
     state?: string;
 };
 /**
- * The options you can supply when making a call to `AppleAuthentication.signOutAsync()`. You must
- * include the ID string of the user to sign out.
+ * The options you can supply when making a call to [`AppleAuthentication.signOutAsync()`](#appleauthenticationsignoutasyncoptions).
+ * You must include the ID string of the user to sign out.
  *
  * @see [Apple
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest)
@@ -73,8 +75,9 @@ export declare type AppleAuthenticationSignOutOptions = {
     state?: string;
 };
 /**
- * The user credentials returned from a successful call to `AppleAuthentication.signInAsync()`,
- * `AppleAuthentication.refreshAsync()`, or `AppleAuthentication.signOutAsync()`.
+ * The object type returned from a successful call to [`AppleAuthentication.signInAsync()`](#appleauthenticationsigninasyncoptions),
+ * [`AppleAuthentication.refreshAsync()`](#appleauthenticationrefreshasyncoptions), or [`AppleAuthentication.signOutAsync()`](#appleauthenticationsignoutasyncoptions)
+ * which contains all of the pertinent user and credential information.
  *
  * @see [Apple
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidcredential)
@@ -91,7 +94,8 @@ export declare type AppleAuthenticationCredential = {
     /**
      * An arbitrary string that your app provided as `state` in the request that generated the
      * credential. Used to verify that the response was from the request you made. Can be used to
-     * avoid replay attacks.
+     * avoid replay attacks. If you did not provide `state` when making the sign-in request, this field
+     * will be `null`.
      */
     state: string | null;
     /**
@@ -122,7 +126,8 @@ export declare type AppleAuthenticationCredential = {
     authorizationCode: string | null;
 };
 /**
- * An object representing the tokenized portions of the user's full name.
+ * An object representing the tokenized portions of the user's full name. Any of all of the fields
+ * may be `null`. Only applicable fields that the user has allowed your app to access will be nonnull.
  */
 export declare type AppleAuthenticationFullName = {
     namePrefix: string | null;
@@ -132,12 +137,10 @@ export declare type AppleAuthenticationFullName = {
     nameSuffix: string | null;
     nickname: string | null;
 };
-export declare type AppleAuthenticationRevokeListener = () => void;
 /**
- * Scopes you can request when calling `AppleAuthentication.signInAsync()` or
- * `AppleAuthentication.refreshAsync()`.
+ * An enum whose values specify scopes you can request when calling [`AppleAuthentication.signInAsync()`](#appleauthenticationsigninasyncoptions).
  *
- * @note Note that it is possible that you will not be granted all of the scopes which you request.
+ * > Note that it is possible that you will not be granted all of the scopes which you request.
  * You will still need to handle null values for any fields you request.
  *
  * @see [Apple
@@ -158,7 +161,7 @@ export declare enum AppleAuthenticationOperation {
     LOGOUT = 3
 }
 /**
- * The state of the credential when checked with `AppleAuthentication.getCredentialStateAsync()`.
+ * An enum whose values specify state of the credential when checked with [`AppleAuthentication.getCredentialStateAsync()`](#appleauthenticationgetcredentialstateasyncuser).
  *
  * @see [Apple
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidprovidercredentialstate)
@@ -171,35 +174,57 @@ export declare enum AppleAuthenticationCredentialState {
     TRANSFERRED = 3
 }
 /**
- * A value that indicates whether the user appears to be a real person. You get this in the
- * realUserStatus property of a `Credential` object. It can be used as one metric to help prevent
- * fraud.
+ * An enum whose values specify the system's best guess for how likely the current user is a real person.
  *
  * @see [Apple
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asuserdetectionstatus)
  * for more details.
  */
 export declare enum AppleAuthenticationUserDetectionStatus {
+    /**
+     * The system does not support this determination and there is no data.
+     */
     UNSUPPORTED = 0,
+    /**
+     * The system has not determined whether the user might be a real person.
+     */
     UNKNOWN = 1,
+    /**
+     * The user appears to be a real person.
+     */
     LIKELY_REAL = 2
 }
 /**
- * Controls the predefined text shown on the authentication button.
+ * An enum whose values control which pre-defined text to use when rendering an [`AppleAuthenticationButton`](#appleauthenticationappleauthenticationbutton).
  */
 export declare enum AppleAuthenticationButtonType {
+    /**
+     * "Sign in with Apple"
+     */
     SIGN_IN = 0,
+    /**
+     * "Continue with Apple"
+     */
     CONTINUE = 1,
     /**
-     * Requires iOS 13.2 or later.
+     * "Sign up with Apple" *(requires iOS 13.2 or higher)*
      */
     SIGN_UP = 2
 }
 /**
- * Controls the predefined style of the authenticating button.
+ * An enum whose values control which pre-defined color scheme to use when rendering an [`AppleAuthenticationButton`](#appleauthenticationappleauthenticationbutton).
  */
 export declare enum AppleAuthenticationButtonStyle {
+    /**
+     * White button with black text
+     */
     WHITE = 0,
+    /**
+     * White button with a black outline and black text
+     */
     WHITE_OUTLINE = 1,
+    /**
+     * Black button with white text
+     */
     BLACK = 2
 }
