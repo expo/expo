@@ -78,10 +78,6 @@ NSTimeInterval const ABI41_0_0EXUpdatesDefaultTimeoutInterval = 60;
 - (NSURLRequest *)createManifestRequestWithURL:(NSURL *)url extraHeaders:(nullable NSDictionary *)extraHeaders
 {
   NSURLRequestCachePolicy cachePolicy = _sessionConfiguration ? _sessionConfiguration.requestCachePolicy : NSURLRequestUseProtocolCachePolicy;
-  if (_config.usesLegacyManifest) {
-    // legacy manifest loads should ignore cache-control headers from the server and always load remotely
-    cachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
-  }
 
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:cachePolicy timeoutInterval:ABI41_0_0EXUpdatesDefaultTimeoutInterval];
   [self _setManifestHTTPHeaderFields:request withExtraHeaders:extraHeaders];
