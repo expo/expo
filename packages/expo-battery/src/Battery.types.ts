@@ -17,7 +17,7 @@ export type PowerState = {
 // @needsAudit
 export enum BatteryState {
   /**
-   * if the battery state is unknown or unable to access.
+   * if the battery state is unknown or inaccessible.
    */
   UNKNOWN = 0,
   /**
