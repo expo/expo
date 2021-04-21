@@ -95,7 +95,7 @@ ofDownloadWithManifest:(NSDictionary * _Nullable)manifest
   return [self _appLoaderWithExperienceId:experienceId].config;
 }
 
-- (id<EXUpdatesSelectionPolicy>)selectionPolicyForExperienceId:(NSString *)experienceId
+- (EXUpdatesSelectionPolicy *)selectionPolicyForExperienceId:(NSString *)experienceId
 {
   return [self _appLoaderWithExperienceId:experienceId].selectionPolicy;
 }

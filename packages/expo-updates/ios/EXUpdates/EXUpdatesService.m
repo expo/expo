@@ -25,7 +25,7 @@ UM_REGISTER_MODULE();
   return EXUpdatesAppController.sharedInstance.database;
 }
 
-- (id<EXUpdatesSelectionPolicy>)selectionPolicy
+- (EXUpdatesSelectionPolicy *)selectionPolicy
 {
   return EXUpdatesAppController.sharedInstance.selectionPolicy;
 }
