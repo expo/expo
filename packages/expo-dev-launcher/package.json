@@ -27,6 +27,9 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.io",
+  "dependencies": {
+    "@expo/config-plugins": "^1.0.28"
+  },
   "devDependencies": {
     "babel-preset-expo": "~8.3.0",
     "expo-module-scripts": "^2.0.0",
