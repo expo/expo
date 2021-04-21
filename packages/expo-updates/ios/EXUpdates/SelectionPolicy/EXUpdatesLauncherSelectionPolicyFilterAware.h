@@ -4,6 +4,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * An EXUpdatesLauncherSelectionPolicy which chooses an update to launch based on the manifest filters
+ * provided by the server. If multiple updates meet the criteria, the newest one is chosen, but the
+ * manifest filters are always taken into account before the commit time.
+ */
 @interface EXUpdatesLauncherSelectionPolicyFilterAware : NSObject <EXUpdatesLauncherSelectionPolicy>
 
 - (instancetype)initWithRuntimeVersion:(NSString *)runtimeVersion;

@@ -4,6 +4,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * A trivial EXUpdatesLauncherSelectionPolicy that will choose a single predetermined update to launch.
+ */
 @interface EXUpdatesLauncherSelectionPolicySingleUpdate : NSObject <EXUpdatesLauncherSelectionPolicy>
 
 - (instancetype)initWithUpdateID:(NSUUID *)updateId;

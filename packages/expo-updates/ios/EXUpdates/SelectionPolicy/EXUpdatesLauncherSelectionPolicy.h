@@ -3,7 +3,9 @@
 #import <EXUpdates/EXUpdatesUpdate.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
+/**
+ * Given a list of updates, implementations of this protocol should be able to choose one to launch.
+ */
 @protocol EXUpdatesLauncherSelectionPolicy
 
 - (nullable EXUpdatesUpdate *)launchableUpdateWithUpdates:(NSArray<EXUpdatesUpdate *> *)updates filters:(nullable NSDictionary *)filters;
