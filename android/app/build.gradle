@@ -213,8 +213,7 @@ dependencies {
       exclude      : [
         'expo-module-template',
         'expo-in-app-purchases',
-        'expo-payments-stripe',
-        'expo-gl-cpp-legacy'
+        'expo-payments-stripe'
       ]
   ])
   implementation 'host.exp.exponent:expo-random:+'
