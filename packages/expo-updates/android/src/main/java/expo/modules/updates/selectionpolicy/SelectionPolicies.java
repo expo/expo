@@ -8,9 +8,9 @@ import java.util.Iterator;
 
 import expo.modules.updates.db.entity.UpdateEntity;
 
-public class SelectionPolicyUtils {
+public class SelectionPolicies {
 
-  public static final String TAG = SelectionPolicyUtils.class.getSimpleName();
+  public static final String TAG = SelectionPolicies.class.getSimpleName();
 
   public static boolean matchesFilters(UpdateEntity update, JSONObject manifestFilters) {
     if (manifestFilters == null || update.metadata == null || !update.metadata.has("updateMetadata")) {
@@ -40,6 +40,7 @@ public class SelectionPolicyUtils {
       Log.e(TAG, "Error filtering manifest using server data", e);
       return true;
     }
+    // as long as the update doesn't violate a filter, it passes
     return true;
   }
 }

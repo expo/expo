@@ -17,7 +17,7 @@ public class LoaderSelectionPolicyFilterAware implements LoaderSelectionPolicy {
       return false;
     }
     // if the new update doesn't pass its own manifest filters, we shouldn't load it
-    if (!SelectionPolicyUtils.matchesFilters(newUpdate, filters)) {
+    if (!SelectionPolicies.matchesFilters(newUpdate, filters)) {
       return false;
     }
 
@@ -26,7 +26,7 @@ public class LoaderSelectionPolicyFilterAware implements LoaderSelectionPolicy {
     }
     // if the current update doesn't pass the manifest filters
     // we should load the new update no matter the commitTime
-    if (!SelectionPolicyUtils.matchesFilters(launchedUpdate, filters)) {
+    if (!SelectionPolicies.matchesFilters(launchedUpdate, filters)) {
       return true;
     }
     return newUpdate.commitTime.after(launchedUpdate.commitTime);

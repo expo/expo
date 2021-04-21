@@ -116,22 +116,22 @@ class SelectionPolicyFilterAwareTest {
     @Throws(JSONException::class)
     fun testMatchesFilters_MultipleFilters() {
         // if there are multiple filters, a manifest must match them all to pass
-        Assert.assertFalse(SelectionPolicyUtils.matchesFilters(updateMultipleFilters, JSONObject("{\"firstkey\": \"value1\", \"secondkey\": \"wrong-value\"}")))
-        Assert.assertTrue(SelectionPolicyUtils.matchesFilters(updateMultipleFilters, JSONObject("{\"firstkey\": \"value1\", \"secondkey\": \"value2\"}")))
+        Assert.assertFalse(SelectionPolicies.matchesFilters(updateMultipleFilters, JSONObject("{\"firstkey\": \"value1\", \"secondkey\": \"wrong-value\"}")))
+        Assert.assertTrue(SelectionPolicies.matchesFilters(updateMultipleFilters, JSONObject("{\"firstkey\": \"value1\", \"secondkey\": \"value2\"}")))
     }
 
     @Test
     @Throws(JSONException::class)
     fun testMatchesFilters_EmptyMatchesAll() {
         // no field is counted as a match
-        Assert.assertTrue(SelectionPolicyUtils.matchesFilters(updateDefault1, JSONObject("{\"field-that-update-doesnt-have\": \"value\"}")))
+        Assert.assertTrue(SelectionPolicies.matchesFilters(updateDefault1, JSONObject("{\"field-that-update-doesnt-have\": \"value\"}")))
     }
 
     @Test
     @Throws(JSONException::class)
     fun testMatchesFilters_Null() {
         // null filters or null updateMetadata (i.e. bare or legacy manifests) is counted as a match
-        Assert.assertTrue(SelectionPolicyUtils.matchesFilters(updateDefault1, null))
-        Assert.assertTrue(SelectionPolicyUtils.matchesFilters(updateNoMetadata, manifestFilters))
+        Assert.assertTrue(SelectionPolicies.matchesFilters(updateDefault1, null))
+        Assert.assertTrue(SelectionPolicies.matchesFilters(updateNoMetadata, manifestFilters))
     }
 }

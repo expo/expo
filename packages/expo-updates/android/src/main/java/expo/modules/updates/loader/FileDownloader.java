@@ -25,7 +25,7 @@ import expo.modules.updates.launcher.NoDatabaseLauncher;
 import expo.modules.updates.manifest.Manifest;
 import expo.modules.updates.manifest.ManifestFactory;
 import expo.modules.updates.manifest.ManifestResponse;
-import expo.modules.updates.selectionpolicy.SelectionPolicyUtils;
+import expo.modules.updates.selectionpolicy.SelectionPolicies;
 import okhttp3.Cache;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -180,7 +180,7 @@ public class FileDownloader {
       preManifest.put("isVerified", isVerified);
     }
     Manifest manifest = ManifestFactory.INSTANCE.getManifest(preManifest, new ManifestResponse(response), configuration);
-    if (!SelectionPolicyUtils.matchesFilters(manifest.getUpdateEntity(), manifest.getManifestFilters())) {
+    if (!SelectionPolicies.matchesFilters(manifest.getUpdateEntity(), manifest.getManifestFilters())) {
       String message = "Downloaded manifest is invalid; provides filters that do not match its content";
       callback.onFailure(message, new Exception(message));
     } else {

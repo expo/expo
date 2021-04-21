@@ -28,7 +28,7 @@ public class LauncherSelectionPolicyFilterAware implements LauncherSelectionPoli
   public UpdateEntity selectUpdateToLaunch(List<UpdateEntity> updates, JSONObject filters) {
     UpdateEntity updateToLaunch = null;
     for (UpdateEntity update : updates) {
-      if (!mRuntimeVersions.contains(update.runtimeVersion) || !SelectionPolicyUtils.matchesFilters(update, filters)) {
+      if (!mRuntimeVersions.contains(update.runtimeVersion) || !SelectionPolicies.matchesFilters(update, filters)) {
         continue;
       }
       if (updateToLaunch == null || updateToLaunch.commitTime.before(update.commitTime)) {

@@ -33,7 +33,7 @@ public class ReaperSelectionPolicyFilterAware implements ReaperSelectionPolicy {
         if (nextNewestUpdate == null || nextNewestUpdate.commitTime.before(update.commitTime)) {
           nextNewestUpdate = update;
         }
-        if (SelectionPolicyUtils.matchesFilters(update, filters) &&
+        if (SelectionPolicies.matchesFilters(update, filters) &&
                 (nextNewestUpdateMatchingFilters == null ||  nextNewestUpdateMatchingFilters.commitTime.before(update.commitTime))) {
           nextNewestUpdateMatchingFilters = update;
         }
