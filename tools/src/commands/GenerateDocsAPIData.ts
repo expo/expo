@@ -65,6 +65,7 @@ const executeCommand = async (
 async function action({ packageName }: ActionOptions) {
   const packagesMapping: Record<string, CommandAdditionalParams> = {
     'expo-application': ['Application.ts'],
+    'expo-battery': ['Battery.ts'],
     'expo-blur': ['index.ts'],
     'expo-keep-awake': ['index.ts'],
     'expo-mail-composer': ['MailComposer.ts'],
