@@ -60,7 +60,7 @@ export const resolveTypeName = ({
   types,
   typeArguments,
   declaration,
-}: TypeDefinitionData): string | JSX.Element => {
+}: TypeDefinitionData): string | JSX.Element | (string | JSX.Element)[] => {
   if (name) {
     if (type === 'reference') {
       if (typeArguments) {
@@ -97,9 +97,22 @@ export const resolveTypeName = ({
   } else if (type === 'union' && types?.length) {
     return types
       .map((t: TypeDefinitionTypesData) =>
-        t.type === 'array' ? `${t.elementType?.name}[]` : `${t.name || t.value}`
+        t.type === 'reference' ? (
+          <InternalLink href={`#${t.name?.toLowerCase()}`} key={`type-link-${t.name}`}>
+            {t.name}
+          </InternalLink>
+        ) : t.type === 'array' ? (
+          `${t.elementType?.name}[]`
+        ) : (
+          `${t.name || t.value}`
+        )
       )
-      .join(' | ');
+      .map((valueToRender, index) => (
+        <>
+          {valueToRender}
+          {index + 1 !== types.length && ' | '}
+        </>
+      ));
   } else if (declaration?.signatures) {
     const baseSignature = declaration.signatures[0];
     if (baseSignature?.parameters?.length) {
@@ -161,4 +174,10 @@ export const STYLES_OPTIONAL = css`
   color: ${theme.text.secondary};
   font-size: 90%;
   padding-top: 22px;
+`;
+
+export const STYLES_SECONDARY = css`
+  color: ${theme.text.secondary};
+  font-size: 90%;
+  font-weight: 600;
 `;
