@@ -16,7 +16,7 @@
     "expo-ads-facebook": "~10.0.4",
     "expo-analytics-segment": "~10.1.1",
     "expo-application": "~3.1.2",
-    "expo-asset": "~8.3.1",
+    "expo-asset": "~8.3.2",
     "expo-av": "~9.1.2",
     "expo-background-fetch": "~9.1.0",
     "expo-barcode-scanner": "~10.1.2",

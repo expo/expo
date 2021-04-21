@@ -6,9 +6,13 @@
 
 ### 🎉 New features
 
-- Find local assets without extensions.  ([#12624](https://github.com/expo/expo/pull/12624) by [@jkhales](https://github.com/jkhales))
-
 ### 🐛 Bug fixes
+
+## 8.3.2 — 2021-04-21
+
+### 🎉 New features
+
+- Find local assets without extensions.  ([#12624](https://github.com/expo/expo/pull/12624) by [@jkhales](https://github.com/jkhales))
 
 ## 8.3.1 — 2021-03-23
 
