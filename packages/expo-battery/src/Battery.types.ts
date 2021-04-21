@@ -37,7 +37,7 @@ export enum BatteryState {
 // @needsAudit
 export type BatteryLevelEvent = {
   /**
-   * A number between`0` and `1`, inclusive, or `-1` if the battery level is unknown.
+   * A number between `0` and `1`, inclusive, or `-1` if the battery level is unknown.
    */
   batteryLevel: number;
 };
