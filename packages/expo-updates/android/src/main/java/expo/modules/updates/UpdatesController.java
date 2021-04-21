@@ -226,6 +226,16 @@ public class UpdatesController {
 
   // internal setters
 
+  /**
+   * For external modules that want to modify the selection policy used at runtime.
+   *
+   * This method does not provide any guarantees about how long the provided selection policy will
+   * persist; sometimes expo-updates will reset the selection policy in situations where it makes
+   * sense to have explicit control (e.g. if the developer/user has programmatically fetched an
+   * update, expo-updates will reset the selection policy so the new update is launched on th
+   * next reload).
+   * @param selectionPolicy The SelectionPolicy to use next, until overridden by expo-updates
+   */
   /* package */ void setNextSelectionPolicy(SelectionPolicy selectionPolicy) {
     mSelectionPolicy = selectionPolicy;
   }
