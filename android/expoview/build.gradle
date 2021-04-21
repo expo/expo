@@ -184,8 +184,7 @@ dependencies {
       target       : 'react-native',
       exclude      : [
         'expo-module-template',
-        'expo-in-app-purchases',
-        'expo-gl-cpp-legacy'
+        'expo-in-app-purchases'
       ]
   ])
   compileOnly project(':expo-random')
