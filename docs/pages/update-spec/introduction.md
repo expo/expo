@@ -134,7 +134,12 @@ Where an `Asset` is the JSON:
 
 ### Error
 
-A conformant server MUST return a `400` error if a manifest is not found.
+A conformant server SHOULD return 
+  * a `404` error if a manifest is not found.
+  * a `400` if the request is malformed.
+  * a `405` if the request is not a GET.
+  * a `500` if there is a server error.
+
 
 ## Server
 
