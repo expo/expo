@@ -1,4 +1,4 @@
-import LocalAssets from 'expo-constants';
+import Constants from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
 
 import { getLocalAssets } from './PlatformUtils';
@@ -28,7 +28,7 @@ export function getLocalAssetUri(hash: string, type: string | null): string | nu
       // check legacy location in case we're in Expo client/managed workflow
       // TODO(eric): remove this once bundledAssets is no longer exported from FileSystem
       const assetName = `asset_${hash}${type ? `.${type}` : ''}`;
-      if (LocalAssets.appOwnership !== 'standalone' || !bundledAssets.has(assetName)) {
+      if (Constants.appOwnership !== 'standalone' || !bundledAssets.has(assetName)) {
         return null;
       }
       return `${FileSystem.bundleDirectory}${assetName}`;
