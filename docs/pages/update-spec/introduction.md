@@ -162,20 +162,6 @@ cache-control: max-age=0, private
 Assets SHOULD be capable being served with `zip` and `brotli` compression.
 The asset hosted at a particular URL MUST NOT be changed. Clients with stale updates may still require old assets.
 
-### Channels and Branches
-
-A `branch` is a collection of `updates` stored on the server, ordered by creation time.
-
-The server MUST implement logic that maps a request to a `branch` determined by the request header `expo-channel-name` as well as any of optional server defined headers.
-
-The server MUST use the name of this branch to 
-  * define the `branchname` value of the `expo-manifest-filters` response header.
-  * define the `branchName` value of the `updateMetadata` JSON inside the [manifest](#manifest)
-
-The simplest case is to create a single branch with the same name as the requested channel.
-
-More complex use cases would be to create multiple branches for a given channel. Then, using the request header `expo-rollout-token`, divide the users into groups that are mapped to different branches. This is useful for A/B testing or for gradually rolling out a new major version of an app.
-
 ## Client
 
 See the [reference client](https://github.com/expo/expo/tree/master/packages/expo-updates)
