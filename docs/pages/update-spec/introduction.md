@@ -160,6 +160,6 @@ cache-control: max-age=0, private
 Assets SHOULD be capable being served with [gzip](https://www.gnu.org/software/gzip/) and [brotli](https://github.com/google/brotli) compression.
 The asset hosted at a particular URL MUST NOT be changed. Clients with stale updates may still require old assets.
 
-## Client
+## Client Library
 
-See the [reference client](https://github.com/expo/expo/tree/master/packages/expo-updates)
+See the [reference client library](https://github.com/expo/expo/tree/master/packages/expo-updates)
