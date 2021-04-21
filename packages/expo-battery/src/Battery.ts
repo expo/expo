@@ -13,7 +13,7 @@ const BatteryEventEmitter = new EventEmitter(ExpoBattery);
 
 // @needsAudit
 /**
- * Resolves with whether this battery API is available on the current device. The value of this
+ * Resolves with whether the battery API is available on the current device. The value of this
  * property is `true` on Android and physical iOS devices and `false` on iOS simulators. On web,
  * it depends on whether the browser supports the web battery API.
  */
