@@ -16,7 +16,9 @@ Generating your iOS credentials (distribution certificate, provisioning profile,
 
 > If you have any security concerns about EAS managing your credentials or about logging in to your Apple Developer account through EAS CLI, please refer to the ["Security"](/distribution/security.md) guide. If that does not satisfy your concerns, you can reach out to [preview@expo.io](mailto:preview@expo.io) for more information, or use [local credentials](/app-signing/local-credentials.md) instead.
 
-### iOS push notification credentials
+### Push notification credentials
+
+#### iOS
 
 Unlike classic builds, EAS Build **does not** configure your Apple push notification (APN) key by default, because not all apps need to enable push notifications.
 
@@ -31,6 +33,10 @@ If you are building a brand new project and haven't used classic builds for it b
    - No: Select `Add new Push Notifications Key`
 
 3. From there, follow the prompts, and once your key is configured you do _not_ need to rebuild your app.
+
+#### Android
+
+The Android push notification credentials set up for EAS Build is identical to the setup you might've used for classic builds. If you've already configured your app with FCM, there's nothing else you need to do. If you haven't, please follow [this guide](../push-notifications/using-fcm.md).
 
 ## Sharing credentials with your team
 
