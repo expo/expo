@@ -43,6 +43,17 @@ public class RemoteLoader {
     void onSuccess(@Nullable UpdateEntity update);
 
     /**
+     * Called when an asset has either been successfully downloaded or failed to download.
+     *
+     * @param asset Entity representing the asset that was either just downloaded or failed
+     * @param successfulAssetCount The number of assets that have so far been loaded successfully
+     *                             (including any that were found to already exist on disk)
+     * @param failedAssetCount The number of assets that have so far failed to load
+     * @param totalAssetCount The total number of assets that comprise the update
+     */
+    void onAssetLoaded(AssetEntity asset, int successfulAssetCount, int failedAssetCount, int totalAssetCount);
+
+    /**
      * Called when a manifest has been downloaded. The calling class should determine whether or not
      * the RemoteLoader should continue to download the update described by this manifest, based on
      * (for example) whether or not it already has the update downloaded locally.
@@ -213,6 +224,8 @@ public class RemoteLoader {
     } else {
       mErroredAssetList.add(assetEntity);
     }
+
+    mCallback.onAssetLoaded(assetEntity, mFinishedAssetList.size() + mExistingAssetList.size(), mErroredAssetList.size(), mAssetTotal);
 
     if (mFinishedAssetList.size() + mErroredAssetList.size() + mExistingAssetList.size() == mAssetTotal) {
       try {
