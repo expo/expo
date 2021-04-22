@@ -69,9 +69,8 @@ cache-control: *
 content-type: application/json; charset=utf-8
 ```
 
-* `expo-protocol-version` describes the version of the protocol. MUST be `0`.
-* `expo-sfv-version`  EAS Update version 0 MUST set this to `0`.
-* `expo-sfv`   [expo SFV 0](expo-sfv-0.md) version `0` is a partial implementation of Structured Field Values outlined in [IETF RFC 8941](https://tools.ietf.org/html/rfc8941)
+* `expo-protocol-version` describes the version of the protocol defined in this spec and MUST be `0`.
+* `expo-sfv-version`  MUST be `0`.
 * `expo-manifest-filters` is an [Expo SFV 0](expo-sfv-0.md) dictionary. It is used to filter updates stored by the client by the `updateMetadata` attributes found in the [manifest](#manifest).
   * For example: `expo-manifest-filters: branchname="main"` instructs the client to load the most recent update it has stored whose `updateMetadata` contains:
 
