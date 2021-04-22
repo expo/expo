@@ -1,5 +1,5 @@
 ---
-title: Update Spec
+title: Expo Update Spec
 sidebar_title: Expo Updates 0
 ---
 
