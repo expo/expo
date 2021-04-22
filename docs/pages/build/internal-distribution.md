@@ -82,9 +82,14 @@ The next step is to generate or update the provisioning profile. When you procee
 
 #### Setting up enterprise provisioning
 
-If you plan on using enterprise provisioning, please sign in to the account with [Apple Developer Enterprise Program membership](https://developer.apple.com/programs/enterprise/). You probably don't have this, and it's expensive ($299 USD per year) and takes time to acquire, so you will likely be using ad hoc provisioning &mdash; this works on any normal paid Apple developer account.
+If you have an [Apple Developer Enterprise Program membership](https://developer.apple.com/programs/enterprise/) users can install your app to their device without pre-regstering their UDID; they just need to install the profile to their device and they can then access existing builds.
 
-If you do have an Apple enterprise account, this makes internal distribution much easier for users who want to install your app for the first time. Once they install the profile to their device they can access the app right away. One limitation of using an enterprise provisioning profile is that you will need to have a distinct bundle identifier from the one that you use to publish your app to the App Store. We recommend setting your bundle identifier for internal distribution and committing that change on another branch. After that, whenever you want to create a preview branch you can check out that branch and rebase against the branch you'd like to create a build for.
+Apple Enterprise Program membership costs $299 USD per year and is only available to organizations that match certain criteria, so you will likely be using ad hoc provisioning, which works with any normal paid Apple developer account.
+
+If you distribute your app both through enterprise provisioning and the App Store, you will need to have a distinct bundle identifier for each context. We recommend either:
+
+- Setting your bundle identifier for internal distribution and committing that change on another branch. After that, whenever you want to create a preview branch you can check out that branch and rebase against the branch you'd like to create a build for. This is most useful in "generic" projects.
+- Using `app.config.js` to dynamically switch identifiers. This is most useful in "managed" projects.
 
 > **Are you using manual local credentials?** Make sure to point your `credentials.json` to an ad hoc or enterprise provisioning profile that you generate through the Apple Developer portal. Beware that EAS CLI does only a limited validation of your local credentials, and you will have to handle device UDID registration manually. Read more about [using local credentials](/app-signing/local-credentials.md).
 
