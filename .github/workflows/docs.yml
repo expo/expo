@@ -56,7 +56,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: docs/.next/cache
-          key: docs-next-${{ hashFiles('docs/yarn.lock')-next-${{ hashFiles('docs/next.config.js') }}
+          key: docs-next-${{ hashFiles('docs/yarn.lock') }}-next-${{ hashFiles('docs/next.config.js') }}
       - run: yarn export
         timeout-minutes: 20
         env:
