@@ -65,14 +65,14 @@ class NewManifestTest {
     val manifestJsonWithRootLevelKeys =
       "{\"manifest\":{\"runtimeVersion\":\"1\",\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",\"launchAsset\":{\"url\":\"https://url.to/bundle.js\",\"contentType\":\"application/javascript\"}}}"
     val manifest1: Manifest = NewManifest.fromRawManifest(
-      NewRawManifest(JSONObject(manifestJsonWithRootLevelKeys)),
+      NewRawManifest(NewRawManifest.normalizeNestedManifestJSON(JSONObject(manifestJsonWithRootLevelKeys))),
       null,
       createConfig()
     )
     val manifestJsonNoRootLevelKeys =
       "{\"runtimeVersion\":\"1\",\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",\"launchAsset\":{\"url\":\"https://url.to/bundle.js\",\"contentType\":\"application/javascript\"}}"
     val manifest2: Manifest = NewManifest.fromRawManifest(
-      NewRawManifest(JSONObject(manifestJsonNoRootLevelKeys)),
+      NewRawManifest(NewRawManifest.normalizeNestedManifestJSON(JSONObject(manifestJsonNoRootLevelKeys))),
       null,
       createConfig()
     )

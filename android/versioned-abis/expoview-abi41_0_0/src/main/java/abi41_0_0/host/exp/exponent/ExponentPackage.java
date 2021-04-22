@@ -183,7 +183,7 @@ public class ExponentPackage implements ReactPackage {
     }
     if (!mIsKernel && !Constants.isStandaloneApp()) {
       // We need DevMenuModule only in non-home and non-standalone apps.
-      nativeModules.add(new DevMenuModule(reactContext, mExperienceProperties, mManifest.getRawJson()));
+      nativeModules.add(new DevMenuModule(reactContext, mExperienceProperties, mManifest));
     }
 
     if (isVerified) {
@@ -191,7 +191,7 @@ public class ExponentPackage implements ReactPackage {
         ExperienceId experienceId = ExperienceId.create(mManifest.getID());
         ScopedContext scopedContext = new ScopedContext(reactContext, experienceId.getUrlEncoded());
 
-        nativeModules.add(new NotificationsModule(reactContext, mManifest.getRawJson(), mExperienceProperties));
+        nativeModules.add(new NotificationsModule(reactContext, mManifest, mExperienceProperties));
         nativeModules.add(new RNViewShotModule(reactContext, scopedContext));
         nativeModules.add(new RandomModule(reactContext));
         nativeModules.add(new ExponentTestNativeModule(reactContext));
@@ -225,7 +225,7 @@ public class ExponentPackage implements ReactPackage {
         // Call to create native modules has to be at the bottom --
         // -- ExpoModuleRegistryAdapter uses the list of native modules
         // to create Bindings for internal modules.
-        nativeModules.addAll(mModuleRegistryAdapter.createNativeModules(scopedContext, experienceId, mExperienceProperties, mManifest.getRawJson(), nativeModules));
+        nativeModules.addAll(mModuleRegistryAdapter.createNativeModules(scopedContext, experienceId, mExperienceProperties, mManifest, nativeModules));
       } catch (JSONException | UnsupportedEncodingException e) {
         EXL.e(TAG, e.toString());
       }
