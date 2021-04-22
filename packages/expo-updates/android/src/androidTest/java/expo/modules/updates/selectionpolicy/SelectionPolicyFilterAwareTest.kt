@@ -1,4 +1,4 @@
-package expo.modules.updates.launcher
+package expo.modules.updates.selectionpolicy
 
 import android.net.Uri
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
@@ -17,7 +17,7 @@ import java.util.*
 @RunWith(AndroidJUnit4ClassRunner::class)
 class SelectionPolicyFilterAwareTest {
     var manifestFilters: JSONObject? = null
-    var selectionPolicy: SelectionPolicyFilterAware? = null
+    var selectionPolicy: SelectionPolicy? = null
     var updateDefault1: UpdateEntity? = null
     var updateDefault2: UpdateEntity? = null
     var updateRollout0: UpdateEntity? = null
@@ -30,7 +30,7 @@ class SelectionPolicyFilterAwareTest {
     @Throws(JSONException::class)
     fun setup() {
         manifestFilters = JSONObject("{\"branchname\": \"rollout\"}")
-        selectionPolicy = SelectionPolicyFilterAware("1.0")
+        selectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy("1.0")
         val configMap = HashMap<String, Any>()
         configMap["updateUrl"] = Uri.parse("https://exp.host/@test/test")
         val config = UpdatesConfiguration().loadValuesFromMap(configMap)
@@ -116,22 +116,22 @@ class SelectionPolicyFilterAwareTest {
     @Throws(JSONException::class)
     fun testMatchesFilters_MultipleFilters() {
         // if there are multiple filters, a manifest must match them all to pass
-        Assert.assertFalse(SelectionPolicyFilterAware.matchesFilters(updateMultipleFilters, JSONObject("{\"firstkey\": \"value1\", \"secondkey\": \"wrong-value\"}")))
-        Assert.assertTrue(SelectionPolicyFilterAware.matchesFilters(updateMultipleFilters, JSONObject("{\"firstkey\": \"value1\", \"secondkey\": \"value2\"}")))
+        Assert.assertFalse(SelectionPolicies.matchesFilters(updateMultipleFilters, JSONObject("{\"firstkey\": \"value1\", \"secondkey\": \"wrong-value\"}")))
+        Assert.assertTrue(SelectionPolicies.matchesFilters(updateMultipleFilters, JSONObject("{\"firstkey\": \"value1\", \"secondkey\": \"value2\"}")))
     }
 
     @Test
     @Throws(JSONException::class)
     fun testMatchesFilters_EmptyMatchesAll() {
         // no field is counted as a match
-        Assert.assertTrue(SelectionPolicyFilterAware.matchesFilters(updateDefault1, JSONObject("{\"field-that-update-doesnt-have\": \"value\"}")))
+        Assert.assertTrue(SelectionPolicies.matchesFilters(updateDefault1, JSONObject("{\"field-that-update-doesnt-have\": \"value\"}")))
     }
 
     @Test
     @Throws(JSONException::class)
     fun testMatchesFilters_Null() {
         // null filters or null updateMetadata (i.e. bare or legacy manifests) is counted as a match
-        Assert.assertTrue(SelectionPolicyFilterAware.matchesFilters(updateDefault1, null))
-        Assert.assertTrue(SelectionPolicyFilterAware.matchesFilters(updateNoMetadata, manifestFilters))
+        Assert.assertTrue(SelectionPolicies.matchesFilters(updateDefault1, null))
+        Assert.assertTrue(SelectionPolicies.matchesFilters(updateNoMetadata, manifestFilters))
     }
 }
