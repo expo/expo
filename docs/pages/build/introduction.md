@@ -7,9 +7,7 @@ sidebar_title: Introduction
 
 It makes building your apps for distribution super easy by providing defaults that work well for Expo and React Native projects out of the box, and by handling your app signing credentials for you (if you wish). It also makes sharing builds with your team easier than ever with [internal distribution](internal-distribution.md) (using ad hoc provisioning), deeply integrates with EAS Submit for app store submissions, and has first-class support for [expo-updates](updates.md) to send over-the-air updates.
 
-It's the next generation of the [`expo build:[ios/android]`](/distribution/building-standalone-apps.md) command &mdash; designed to work for any native project, whether or not you also use the Managed workflow.
-
-> Managed workflow support on EAS Build is currently experimental and we recommend that you do not depend on it for production. You can keep using `expo build` for managed projects and use EAS Build for your bare workflow projects. Better support for managed projects on EAS Build is coming at the end of Q1 2021.
+It's the next generation of the [`expo build:[ios/android]`](/distribution/building-standalone-apps.md) command &mdash; designed to work for any native project, whether or not you also use the managed workflow.
 
 ### Get started
 
