@@ -23,11 +23,11 @@ import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.DatabaseLauncher;
 import expo.modules.updates.launcher.NoDatabaseLauncher;
 import expo.modules.updates.launcher.Launcher;
-import expo.modules.updates.launcher.SelectionPolicy;
-import expo.modules.updates.launcher.SelectionPolicyFilterAware;
+import expo.modules.updates.selectionpolicy.SelectionPolicy;
 import expo.modules.updates.loader.FileDownloader;
 import expo.modules.updates.loader.LoaderTask;
 import expo.modules.updates.manifest.Manifest;
+import expo.modules.updates.selectionpolicy.SelectionPolicyFactory;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -61,7 +61,7 @@ public class UpdatesController {
   private UpdatesController(Context context, UpdatesConfiguration updatesConfiguration) {
     mUpdatesConfiguration = updatesConfiguration;
     mDatabaseHolder = new DatabaseHolder(UpdatesDatabase.getInstance(context));
-    mSelectionPolicy = new SelectionPolicyFilterAware(UpdatesUtils.getRuntimeVersion(updatesConfiguration));
+    mSelectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(UpdatesUtils.getRuntimeVersion(updatesConfiguration));
     mFileDownloader = new FileDownloader(context);
     if (context instanceof ReactApplication) {
       mReactNativeHost = new WeakReference<>(((ReactApplication) context).getReactNativeHost());

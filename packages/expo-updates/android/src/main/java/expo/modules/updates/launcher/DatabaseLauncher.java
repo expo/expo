@@ -23,6 +23,7 @@ import expo.modules.updates.loader.EmbeddedLoader;
 import expo.modules.updates.loader.FileDownloader;
 import expo.modules.updates.manifest.Manifest;
 import expo.modules.updates.manifest.ManifestMetadata;
+import expo.modules.updates.selectionpolicy.SelectionPolicy;
 
 public class DatabaseLauncher implements Launcher {
 
