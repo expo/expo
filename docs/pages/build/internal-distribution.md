@@ -66,7 +66,7 @@ Android does not restrict distribution of applications &mdash; the operating sys
 
 Apple restricts distribution of applications on iPhones and iPads, so we will need to build the app with an ad hoc provisioning profile that explicitly lists the devices that the application can run on.
 
-An alternative to ad hoc provisioning is enterprise provisioning, but this is expensive ($299 USD per year from Apple). Enterprise provisioning allows you to run the application on any device.
+An alternative to ad hoc provisioning is enterprise provisioning, which requires a special Apple Developer membership that costs $299 USD per year. Enterprise provisioning allows you to run the application on any device.
 
 #### Setting up ad hoc provisioning
 
@@ -82,9 +82,9 @@ The next step is to generate or update the provisioning profile. When you procee
 
 #### Setting up enterprise provisioning
 
-If you have an [Apple Developer Enterprise Program membership](https://developer.apple.com/programs/enterprise/) users can install your app to their device without pre-regstering their UDID; they just need to install the profile to their device and they can then access existing builds.
-
 Apple Enterprise Program membership costs $299 USD per year and is only available to organizations that match certain criteria, so you will likely be using ad hoc provisioning, which works with any normal paid Apple developer account.
+
+If you have an [Apple Developer Enterprise Program membership](https://developer.apple.com/programs/enterprise/) users can install your app to their device without pre-regstering their UDID; they just need to install the profile to their device and they can then access existing builds. You will need to sign in using your Apple Developer Enterprise account during the `eas build` process to set up the correct provisioning.
 
 If you distribute your app both through enterprise provisioning and the App Store, you will need to have a distinct bundle identifier for each context. We recommend either:
 
