@@ -28,6 +28,7 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
     _config = config;
     _database = database;
     _scopeKey = config.scopeKey;
+    _status = EXUpdatesUpdateStatusPending;
     _isDevelopmentMode = NO;
   }
   return self;

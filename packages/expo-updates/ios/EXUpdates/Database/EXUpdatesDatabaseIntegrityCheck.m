@@ -14,56 +14,49 @@ NS_ASSUME_NONNULL_BEGIN
          embeddedUpdate:(nullable EXUpdatesUpdate *)embeddedUpdate
                   error:(NSError ** _Nullable)error
 {
-  __block NSError *errorToReturn;
-  dispatch_sync(database.databaseQueue, ^{
-    NSError *err;
-    NSArray<EXUpdatesAsset *> *assets = [database allAssetsWithError:&err];
-    if (err) {
-      errorToReturn = err;
-      return;
-    }
+  NSError *err;
+  NSArray<EXUpdatesAsset *> *assets = [database allAssetsWithError:&err];
+  if (err) {
+    *error = err;
+    return NO;
+  }
 
-    NSMutableArray<EXUpdatesAsset *> *missingAssets = [NSMutableArray new];
-    dispatch_sync([EXUpdatesFileDownloader assetFilesQueue], ^{
-      for (EXUpdatesAsset *asset in assets) {
-        if (!asset.filename || ![[self class] asset:asset existsInDirectory:directory]) {
-          [missingAssets addObject:asset];
-        }
-      }
-    });
-
-    if (missingAssets.count > 0) {
-      [database markMissingAssets:missingAssets error:&err];
-      if (err) {
-        errorToReturn = err;
-        return;
-      }
-    }
-
-    NSArray<EXUpdatesUpdate *> *updatesWithEmbeddedStatus = [database allUpdatesWithStatus:EXUpdatesUpdateStatusEmbedded config:config error:&err];
-    if (err) {
-      errorToReturn = err;
-      return;
-    }
-
-    NSMutableArray<EXUpdatesUpdate *> *updatesToDelete = [NSMutableArray new];
-    for (EXUpdatesUpdate *update in updatesWithEmbeddedStatus) {
-      if (!embeddedUpdate || ![update.updateId isEqual:embeddedUpdate.updateId]) {
-        [updatesToDelete addObject:update];
-      }
-    }
-
-    if (updatesToDelete.count > 0) {
-      [database deleteUpdates:updatesToDelete error:&err];
-      if (err) {
-        errorToReturn = err;
-        return;
+  NSMutableArray<EXUpdatesAsset *> *missingAssets = [NSMutableArray new];
+  dispatch_sync([EXUpdatesFileDownloader assetFilesQueue], ^{
+    for (EXUpdatesAsset *asset in assets) {
+      if (!asset.filename || ![[self class] asset:asset existsInDirectory:directory]) {
+        [missingAssets addObject:asset];
       }
     }
   });
-  if (error && errorToReturn) {
-    *error = errorToReturn;
+
+  if (missingAssets.count > 0) {
+    [database markMissingAssets:missingAssets error:&err];
+    if (err) {
+      *error = err;
+      return NO;
+    }
+  }
+
+  NSArray<EXUpdatesUpdate *> *updatesWithEmbeddedStatus = [database allUpdatesWithStatus:EXUpdatesUpdateStatusEmbedded config:config error:&err];
+  if (err) {
+    *error = err;
     return NO;
+  }
+
+  NSMutableArray<EXUpdatesUpdate *> *updatesToDelete = [NSMutableArray new];
+  for (EXUpdatesUpdate *update in updatesWithEmbeddedStatus) {
+    if (!embeddedUpdate || ![update.updateId isEqual:embeddedUpdate.updateId]) {
+      [updatesToDelete addObject:update];
+    }
+  }
+
+  if (updatesToDelete.count > 0) {
+    [database deleteUpdates:updatesToDelete error:&err];
+    if (err) {
+      *error = err;
+      return NO;
+    }
   }
   return YES;
 }

@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
          embeddedUpdate:(nullable EXUpdatesUpdate *)embeddedUpdate
                   error:(NSError ** _Nullable)error;
 
++ (BOOL)asset:(EXUpdatesAsset *)asset existsInDirectory:(NSURL *)directory;
+
 @end
 
 NS_ASSUME_NONNULL_END

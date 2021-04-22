@@ -66,7 +66,7 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
                       @([update.commitTime timeIntervalSince1970] * 1000),
                       update.runtimeVersion,
                       update.metadata ?: [NSNull null],
-                      @(EXUpdatesUpdateStatusPending)
+                      @(update.status)
                       ]
               error:error];
 }
@@ -212,15 +212,10 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
 {
   sqlite3_exec(_db, "BEGIN;", NULL, NULL, NULL);
 
-  NSString * const assetsSql = @"UPDATE assets SET relative_path = NULL WHERE id = ?1;";
-  NSString * const updatesSql = @"UPDATE updates SET status = :status WHERE id IN\
-    (SELECT DISTINCT update_id FROM updates_assets WHERE asset_id = ?1);";
+  NSString * const updatesSql = @"UPDATE updates SET status = ?1 WHERE id IN\
+    (SELECT DISTINCT update_id FROM updates_assets WHERE asset_id = ?2);";
   for (EXUpdatesAsset *asset in assets) {
-    if ([self _executeSql:assetsSql withArgs:@[@(asset.assetId)] error:error] == nil) {
-      sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL);
-      return;
-    }
-    if ([self _executeSql:updatesSql withArgs:@[@(asset.assetId)] error:error] == nil) {
+    if ([self _executeSql:updatesSql withArgs:@[@(EXUpdatesUpdateStatusPending), @(asset.assetId)] error:error] == nil) {
       sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL);
       return;
     }
