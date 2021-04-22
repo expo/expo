@@ -27,7 +27,8 @@
   "react-native-unimodules": {
     "android": {
       "exclude": [
-        "expo-module-template"
+        "expo-module-template",
+        "expo-dev-menu"
       ],
       "modulesPaths": [
         "../../../../packages"
