@@ -28,7 +28,7 @@ Now, to run your build run `eas build -p ios --profile preview`. Remember that y
 
 > The `distribution` field works identically in managed and generic projects.
 
-## Installing your build the simulator
+## Installing your build on the simulator
 
 > If you haven't installed or run the iOS simulator before, follow the [iOS simulator guide](/workflow/ios-simulator.md) before proceeding.
 
