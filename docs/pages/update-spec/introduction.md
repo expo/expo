@@ -37,9 +37,8 @@ We anticipate the primary user of this spec will be organizations who need to ma
 
 ### Manifest
 A conformant client-library MUST make a GET request with the following standard headers:
-
 ```
-accept: application/expo+json,application/json
+accept: application/json
 expo-platform: string
 expo-runtime-version: string
 ```
@@ -49,6 +48,11 @@ Along with any headers stipulated by a previous responses' [server defined heade
     * iOS MUST be `expo-platform: ios`
     * Android MUST be `expo-platform: android`
 * `expo-runtime-version` MUST be the runtime version the client is running on.
+
+A conformant client-library SHOULD also accept `application/expo+json` so that servers can easily tell when to send back an Expo manifest:
+```
+accept: application/expo+json, application/json
+```
 
 ### Asset
 A conformant client-library MUST make a GET request to the asset url specified by the manifest. The client library SHOULD include a header accepting the assets content type as specified in the manifest. Additionaly the client-library SHOULD specify the compression encoding the client-library is capable of handling.
