@@ -776,7 +776,7 @@ public class Kernel extends KernelInterface {
     Kernel.ExperienceActivityTask task = getExperienceActivityTask(manifestUrl);
     task.bundleUrl = bundleUrl;
 
-    mExponentManifest.normalizeManifestInPlace(manifestUrl, manifest);
+    ExponentManifest.normalizeRawManifestInPlace(manifest, manifestUrl);
 
     JSONObject opts = new JSONObject();
 

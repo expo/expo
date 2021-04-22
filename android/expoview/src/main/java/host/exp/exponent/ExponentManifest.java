@@ -593,7 +593,7 @@ public class ExponentManifest {
     listener.onCompleted(manifest);
   }
 
-  public void normalizeManifestInPlace(final String manifestUrl, final RawManifest rawManifest) throws JSONException {
+  public static void normalizeRawManifestInPlace(final RawManifest rawManifest, final String manifestUrl) throws JSONException {
     rawManifest.mutateInternalJSONInPlace(json -> {
       if (!json.has(MANIFEST_ID_KEY)) {
         json.put(MANIFEST_ID_KEY, manifestUrl);
