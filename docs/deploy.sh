@@ -107,7 +107,7 @@ do
   # S3 translates URLs with trailing slashes to `path/` -> `path/index.html`
   if [[ $i != *".html" ]] && [[ $i != *"/" ]]; then
     aws s3 cp \
-      --no-progress
+      --no-progress \
       --metadata-directive REPLACE \
       --website-redirect "/${redirects[$i]}" \
       "$target/404.html" \
