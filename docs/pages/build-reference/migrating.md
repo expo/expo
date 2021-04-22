@@ -2,9 +2,9 @@
 title: Migrating from "expo build"
 ---
 
-["Expo managed workflow in 2021"](https://blog.expo.io/expo-managed-workflow-in-2021-5b887bbf7dbb) gives a good overview of how managed apps work in classic builds (`expo build`) and with EAS Build. The purpose of this specific reference page is to call out some of the practical differences that you may need to account for when migrating to the new service. If this is your first time using EAS Build, you can use this page as a companion to ["Creating your first build"](/build/setup.md).
+The purpose of this reference page is to call out some of the practical differences that you may need to account for when migrating your Expo managed app from `expo build` ("classic build") to EAS Build. If this is your first time using EAS Build, you can use this page as a companion to ["Creating your first build"](/build/setup.md).
 
-A design goal with EAS Build is to make it as easy as possible to migrate from `expo build`; for example, your app signing credentials will be automatically re-used, and the Expo SDK and your `app.json` configuration will all work the same as before. That said, there are some differences in the build process that may require some additional configuration or small code changes.
+One of the goals with EAS Build is to make it as easy as possible to migrate from `expo build`; for example, your app signing credentials will be automatically re-used, and the Expo SDK and your `app.json` configuration will all work the same as before. That said, there are some differences in the build process that may require additional configuration or small code changes.
 
 ### SDK 41+ apps are supported
 
