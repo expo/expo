@@ -102,5 +102,16 @@ do
     --website-redirect "/${redirects[$i]}" \
     "$target/404.html" \
     "s3://${bucket}/${i}"
+
+  # Also add redirects for paths without `.html` or `/`
+  # S3 translates URLs with trailing slashes to `path/` -> `path/index.html`
+  if [[ $i != *".html" ]] && [[ $i != *"/" ]]; then
+    aws s3 cp \
+      --no-progress
+      --metadata-directive REPLACE \
+      --website-redirect "/${redirects[$i]}" \
+      "$target/404.html" \
+      "s3://${bucket}/${i}/index.html"
+  fi
 done
 echo "::endgroup::"
