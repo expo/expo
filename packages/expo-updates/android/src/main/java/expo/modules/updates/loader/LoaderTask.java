@@ -266,7 +266,7 @@ public class LoaderTask {
           }
 
           @Override
-          public void onAssetLoaded(AssetEntity asset, boolean success, int assetsLoaded, int totalAssets) {
+          public void onAssetLoaded(AssetEntity asset, int successfulAssetCount, int failedAssetCount, int totalAssetCount) {
           }
 
           @Override
