@@ -92,16 +92,12 @@ class NewManifest private constructor(
       httpResponse: ManifestResponse?,
       configuration: UpdatesConfiguration
     ): NewManifest {
-      var actualRawManifest = rawManifest
-      if (actualRawManifest.getRawJson().has("manifest")) {
-        actualRawManifest = NewRawManifest(actualRawManifest.getRawJson().getJSONObject("manifest"))
-      }
-      val id = UUID.fromString(actualRawManifest.getID())
-      val runtimeVersion = actualRawManifest.getRuntimeVersion()
-      val launchAsset = actualRawManifest.getLaunchAsset()
-      val assets = actualRawManifest.getAssets()
+      val id = UUID.fromString(rawManifest.getID())
+      val runtimeVersion = rawManifest.getRuntimeVersion()
+      val launchAsset = rawManifest.getLaunchAsset()
+      val assets = rawManifest.getAssets()
       val commitTime: Date = try {
-        UpdatesUtils.parseDateString(actualRawManifest.getCreatedAt())
+        UpdatesUtils.parseDateString(rawManifest.getCreatedAt())
       } catch (e: ParseException) {
         Log.e(TAG, "Could not parse manifest createdAt string; falling back to current time", e)
         Date()
@@ -109,7 +105,7 @@ class NewManifest private constructor(
       val serverDefinedHeaders = httpResponse?.header("expo-server-defined-headers")
       val manifestFilters = httpResponse?.header("expo-manifest-filters")
       return NewManifest(
-        actualRawManifest,
+        rawManifest,
         id,
         configuration.scopeKey,
         commitTime,

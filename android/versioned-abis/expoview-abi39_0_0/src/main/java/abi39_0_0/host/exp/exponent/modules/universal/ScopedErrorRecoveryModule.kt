@@ -4,17 +4,16 @@ import android.content.Context
 import android.content.SharedPreferences
 import abi39_0_0.expo.modules.errorrecovery.ErrorRecoveryModule
 import abi39_0_0.expo.modules.errorrecovery.RECOVERY_STORE
-import host.exp.exponent.ExponentManifest
+import expo.modules.updates.manifest.raw.RawManifest
 import host.exp.exponent.kernel.ExperienceId
-import org.json.JSONObject
 
 class ScopedErrorRecoveryModule(
   context: Context,
-  manifest: JSONObject,
+  manifest: RawManifest,
   val experienceId: ExperienceId
 ) : ErrorRecoveryModule(context) {
   override val mSharedPreferences: SharedPreferences = run {
-    val currentSDKVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY)
+    val currentSDKVersion = manifest.getSDKVersionNullable()
     context.applicationContext.getSharedPreferences(
         "$RECOVERY_STORE.$currentSDKVersion",
         Context.MODE_PRIVATE

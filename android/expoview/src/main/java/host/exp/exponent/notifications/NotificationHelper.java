@@ -558,7 +558,7 @@ public class NotificationHelper {
     final int id,
     final HashMap<String, Object> data,
     final HashMap options,
-    final JSONObject manifest,
+    final RawManifest manifest,
     final Listener listener) {
 
     HashMap<String, java.io.Serializable> details = new HashMap<>();
@@ -568,7 +568,7 @@ public class NotificationHelper {
     String experienceId;
 
     try {
-      experienceId = manifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+      experienceId = manifest.getID();
       details.put("experienceId", experienceId);
     } catch (Exception e) {
       listener.onFailure(new Exception("Requires Experience Id"));
