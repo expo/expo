@@ -41,7 +41,17 @@ public class RemoteLoader {
   public interface LoaderCallback {
     void onFailure(Exception e);
     void onSuccess(@Nullable UpdateEntity update);
-    void onAssetLoaded(AssetEntity asset, int assetsLoaded, int totalAssets);
+
+    /**
+     * Called when an asset has either been successfully downloaded or failed to download.
+     *
+     * @param asset Entity representing the asset that was either just downloaded or failed
+     * @param success Whether the asset succeeded or failed in downloading
+     * @param assetsLoaded The number of assets whose loading process has finished so far
+     *                     (either failed or successful)
+     * @param totalAssets The total number of assets that comprise the update
+     */
+    void onAssetLoaded(AssetEntity asset, boolean success, int assetsLoaded, int totalAssets);
 
     /**
      * Called when a manifest has been downloaded. The calling class should determine whether or not
@@ -215,7 +225,7 @@ public class RemoteLoader {
       mErroredAssetList.add(assetEntity);
     }
 
-    mCallback.onAssetLoaded(assetEntity, mFinishedAssetList.size() + mExistingAssetList.size() + mErroredAssetList.size(), mAssetTotal);
+    mCallback.onAssetLoaded(assetEntity, success, mFinishedAssetList.size() + mExistingAssetList.size() + mErroredAssetList.size(), mAssetTotal);
 
     if (mFinishedAssetList.size() + mErroredAssetList.size() + mExistingAssetList.size() == mAssetTotal) {
       try {
