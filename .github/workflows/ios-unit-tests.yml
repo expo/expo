@@ -73,7 +73,6 @@ jobs:
             ${{ runner.os }}-pods-
       - name: 🥥 Install CocoaPods in `ios`
         run: pod install
-        if: steps.pods-cache.outputs.cache-hit != 'true' || hashFiles('ios/Podfile.lock') != hashFiles('ios/Pods/Manifest.lock')
         working-directory: ios
       - name: Run native iOS unit tests
         run: expotools native-unit-tests --platform ios

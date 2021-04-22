@@ -72,6 +72,9 @@ jobs:
           key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-pods-
+      - name: 🥥 Install CocoaPods in `ios`
+        run: pod install
+        working-directory: ios
       - run: expotools client-build --platform ios
         timeout-minutes: 120
         env:
