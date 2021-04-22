@@ -85,7 +85,7 @@ content-type: application/json; charset=utf-8
 * `expo-server-defined-headers` is an [Expo SFV](expo-sfv.md) dictionary. It defines headers that a client MUST store and include in every subsequent [request](#request).
 
   * For example, when rolling out an update, we require a client to send back a stable token: `expo-server-defined-headers: expo-rollout-token="token"`. 
-* `cache-control` We recommend `cache-control: private, max-age=0`, but the only requirement is that it is a reasonable time frame. Please keep in mind that `updates` should be expected to be regularly created and the cache policy should not block this.
+* `cache-control` We recommend `cache-control: private, max-age=0`. This allows ensures the newest manifest is returned. Setting longer cache ages could result in stale assets for users.
 
 ### Manifest
 
