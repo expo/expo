@@ -24,12 +24,12 @@ A conforming implementation of this protocol may provide additional functionalit
 An _update_ is defined as a [_manifest_](#manifest) together with the assets referenced inside the manifest.
 Expo Updates is a protocol for delivering updates to apps running on multiple platforms.
 
-An app running a conformant Expo Update client will load the most recent update saved by the client.
+An app running a conformant Expo Update client-library will fetch the most recent update from a conformant update server. If the client-library cannot fetch an update or if it already has the most recent update, the client-library will load the update saved in the client-library's cache.
 
-In order to obtain an `update`:
-1. The client makes a [request](#request). 
-2. If the response body is a new manifest (checking the manifest ID is sufficient) it proceeds to download and store the assets referenced by the manifest.
-3. The client updates the local state according to any metadata provided by the response [headers](#headers)
+The following describes how a client will interact with a conforming updates server:
+1. The client will make a [request](#request) for the most recent manifest. 
+2. If the response body is a new manifest, the client will proceed to make requests to download and store assets referenced by the manifest.
+3. Finally, the client will update its local state according to any metadata provided by the response [headers](#headers).
 
 We anticipate the primary user of this spec will be organizations who need to manage their own update server to satisfy internal requirements.
 
