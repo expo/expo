@@ -52,6 +52,9 @@ public abstract class UpdateDao {
     return _loadUpdatesForProjectWithStatuses(scopeKey, Arrays.asList(UpdateStatus.READY, UpdateStatus.EMBEDDED, UpdateStatus.DEVELOPMENT));
   }
 
+  @Query("SELECT * FROM updates WHERE status = :status;")
+  public abstract List<UpdateEntity> loadAllUpdatesWithStatus(UpdateStatus status);
+
   public UpdateEntity loadUpdateWithId(UUID id) {
     List<UpdateEntity> updateEntities = _loadUpdatesWithId(id);
     return updateEntities.size() > 0 ? updateEntities.get(0) : null;
