@@ -74,11 +74,11 @@ redirects[versions/latest/introduction/project-lifecycle/]=versions/latest/intro
 redirects[versions/latest/guides/exp-cli.html]=versions/latest/workflow/expo-cli/
 redirects[versions/latest/guides/exp-cli]=versions/latest/workflow/expo-cli/
 # Migrated FAQ pages
-redirects[faq/image-background/]=ui-programming/image-background/
-redirects[faq/react-native-styling-buttons/]=ui-programming/react-native-styling-buttons/
-redirects[faq/react-native-version-mismatch/]=troubleshooting/react-native-version-mismatch/
-redirects[faq/clear-cache-windows/]=troubleshooting/clear-cache-windows/
-redirects[faq/clear-cache-macos-linux/]=troubleshooting/clear-cache-macos-linux/
+redirects[faq/image-background]=ui-programming/image-background/
+redirects[faq/react-native-styling-buttons]=ui-programming/react-native-styling-buttons/
+redirects[faq/react-native-version-mismatch]=troubleshooting/react-native-version-mismatch/
+redirects[faq/clear-cache-windows]=troubleshooting/clear-cache-windows/
+redirects[faq/clear-cache-macos-linux]=troubleshooting/clear-cache-macos-linux/
 redirects[faq/application-has-not-been-registered]=troubleshooting/application-has-not-been-registered/
 
 
