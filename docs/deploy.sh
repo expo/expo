@@ -80,7 +80,13 @@ redirects[faq/react-native-version-mismatch]=troubleshooting/react-native-versio
 redirects[faq/clear-cache-windows]=troubleshooting/clear-cache-windows/
 redirects[faq/clear-cache-macos-linux]=troubleshooting/clear-cache-macos-linux/
 redirects[faq/application-has-not-been-registered]=troubleshooting/application-has-not-been-registered/
-
+# Migrated FAQ pages for trailing slashes which are translated to .../index.html
+redirects[faq/image-background/index.html]=ui-programming/image-background/
+redirects[faq/react-native-styling-buttons/index.html]=ui-programming/react-native-styling-buttons/
+redirects[faq/react-native-version-mismatch/index.html]=troubleshooting/react-native-version-mismatch/
+redirects[faq/clear-cache-windows/index.html]=troubleshooting/clear-cache-windows/
+redirects[faq/clear-cache-macos-linux/index.html]=troubleshooting/clear-cache-macos-linux/
+redirects[faq/application-has-not-been-registered/index.html]=troubleshooting/application-has-not-been-registered/
 
 echo "::group::[4/4] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
