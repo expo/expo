@@ -208,6 +208,27 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
   [self _executeSql:updateSql withArgs:@[scopeKey, update.updateId] error:error];
 }
 
+- (void)markMissingAssets:(NSArray<EXUpdatesAsset *> *)assets error:(NSError ** _Nullable)error
+{
+  sqlite3_exec(_db, "BEGIN;", NULL, NULL, NULL);
+
+  NSString * const assetsSql = @"UPDATE assets SET relative_path = NULL WHERE id = ?1;";
+  NSString * const updatesSql = @"UPDATE updates SET status = :status WHERE id IN\
+    (SELECT DISTINCT update_id FROM updates_assets WHERE asset_id = ?1);";
+  for (EXUpdatesAsset *asset in assets) {
+    if ([self _executeSql:assetsSql withArgs:@[@(asset.assetId)] error:error] == nil) {
+      sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL);
+      return;
+    }
+    if ([self _executeSql:updatesSql withArgs:@[@(asset.assetId)] error:error] == nil) {
+      sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL);
+      return;
+    }
+  }
+
+  sqlite3_exec(_db, "COMMIT;", NULL, NULL, NULL);
+}
+
 # pragma mark - delete
 
 - (void)deleteUpdates:(NSArray<EXUpdatesUpdate *> *)updates error:(NSError ** _Nullable)error
@@ -291,6 +312,22 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
   return launchableUpdates;
 }
 
+- (nullable NSArray<EXUpdatesUpdate *> *)allUpdatesWithStatus:(EXUpdatesUpdateStatus)status config:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error
+{
+  NSString * const sql = @"SELECT * FROM updates WHERE status = ?1;";
+
+  NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:@[@(status)] error:error];
+  if (!rows) {
+    return nil;
+  }
+
+  NSMutableArray<EXUpdatesUpdate *> *updates = [NSMutableArray new];
+  for (NSDictionary *row in rows) {
+    [updates addObject:[self _updateWithRow:row config:config]];
+  }
+  return updates;
+}
+
 - (nullable NSArray<EXUpdatesUpdate *> *)launchableUpdatesWithConfig:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error
 {
   NSString *sql = [NSString stringWithFormat:@"SELECT *\
@@ -322,6 +359,24 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
   } else {
     return [self _updateWithRow:rows[0] config:config];
   }
+}
+
+- (nullable NSArray<EXUpdatesAsset *> *)allAssetsWithError:(NSError ** _Nullable)error
+{
+  NSString * const sql = @"SELECT * FROM assets;";
+
+  NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:nil error:error];
+  if (!rows) {
+    return nil;
+  }
+
+  NSMutableArray<EXUpdatesAsset *> *assets = [NSMutableArray arrayWithCapacity:rows.count];
+
+  for (NSDictionary *row in rows) {
+    [assets addObject:[self _assetWithRow:row]];
+  }
+
+  return assets;
 }
 
 - (nullable NSArray<EXUpdatesAsset *> *)assetsWithUpdateId:(NSUUID *)updateId error:(NSError ** _Nullable)error
@@ -510,6 +565,7 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
   }
 
   EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithKey:key type:row[@"type"]];
+  asset.assetId = [(NSNumber *)row[@"id"] unsignedIntegerValue];
   asset.url = url;
   asset.downloadTime = [NSDate dateWithTimeIntervalSince1970:([(NSNumber *)row[@"download_time"] doubleValue] / 1000)];
   asset.filename = row[@"relative_path"];
