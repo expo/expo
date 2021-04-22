@@ -5,28 +5,31 @@ package versioned.host.exp.exponent;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
+import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
+import com.facebook.react.bridge.NativeModule;
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.devsupport.HMRClient;
 import com.facebook.react.packagerconnection.NotificationOnlyHandler;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.shell.MainReactPackage;
 
 import org.json.JSONObject;
 
+import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import androidx.annotation.Nullable;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.experience.ExperienceActivity;
 import host.exp.exponent.experience.ReactNativeActivity;
@@ -176,15 +179,18 @@ public class VersionedUtils {
     ReactInstanceManagerBuilder builder = ReactInstanceManager.builder()
         .setApplication(instanceManagerBuilderProperties.application)
         .setJSIModulesPackage((reactApplicationContext, jsContext) -> {
-          Activity currentActivity = Exponent.getInstance().getCurrentActivity();
-          if (currentActivity instanceof ReactNativeActivity) {
-            ReactNativeActivity reactNativeActivity = (ReactNativeActivity) currentActivity;
-            RNObject devSettings = reactNativeActivity.getDevSupportManager().callRecursive("getDevSettings");
-            boolean isRemoteJSDebugEnabled = devSettings != null && (boolean) devSettings.call("isRemoteJSDebugEnabled");
-            if (!isRemoteJSDebugEnabled) {
-              return new ReanimatedJSIModulePackage().getJSIModules(reactApplicationContext, jsContext);
-            }
+          RNObject devSupportManager = getDevSupportManager(reactApplicationContext);
+          if (devSupportManager == null) {
+            Log.e("Exponent", "Couldn't get the `DevSupportManager`. JSI modules won't be initialized.");
+            return Collections.emptyList();
           }
+
+          RNObject devSettings = devSupportManager.callRecursive("getDevSettings");
+          boolean isRemoteJSDebugEnabled = devSettings != null && (boolean) devSettings.call("isRemoteJSDebugEnabled");
+          if (!isRemoteJSDebugEnabled) {
+            return new ReanimatedJSIModulePackage().getJSIModules(reactApplicationContext, jsContext);
+          }
+
           return Collections.emptyList();
         })
         .addPackage(new MainReactPackage())
@@ -209,4 +215,25 @@ public class VersionedUtils {
     return builder;
   }
 
+  private static RNObject getDevSupportManager(ReactApplicationContext reactApplicationContext) {
+    Activity currentActivity = Exponent.getInstance().getCurrentActivity();
+    if (currentActivity != null) {
+      if (currentActivity instanceof ReactNativeActivity) {
+        ReactNativeActivity reactNativeActivity = (ReactNativeActivity) currentActivity;
+        return reactNativeActivity.getDevSupportManager();
+      } else {
+        return null;
+      }
+    }
+
+    try {
+      NativeModule devSettingsModule = reactApplicationContext.getCatalystInstance().getNativeModule("DevSettings");
+      Field devSupportManagerField = devSettingsModule.getClass().getDeclaredField("mDevSupportManager");
+      devSupportManagerField.setAccessible(true);
+      return RNObject.wrap(devSupportManagerField.get(devSettingsModule));
+    } catch (Throwable e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
 }
