@@ -21,10 +21,10 @@ A conforming implementation of this protocol may provide additional functionalit
 
 ### Overview
 
-EAS Update is a protocol for managing over the air updates to an app running on multiple platforms. 
-In particular, this protocol is for fetching an _update_. An update is defined as a [_manifest_](#manifest) together with the assets referenced inside the manifest.
+An _update_ is defined as a [_manifest_](#manifest) together with the assets referenced inside the manifest.
+Expo Updates is a protocol for delivering updates to apps running on multiple platforms.
 
-An app running a conformant EAS Update client will load the most recent update saved by the client.
+An app running a conformant Expo Update client will load the most recent update saved by the client.
 
 In order to obtain an `update`:
 1. The client makes a [request](#request). 
