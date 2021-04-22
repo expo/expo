@@ -95,7 +95,7 @@ The response body is referred to as the `manifest` and MUST be a JSON with forma
 ```
 {
   id: string
-  createdAt: date
+  createdAt: datetime
   runtimeVersion: string
   launchAsset: Asset
   assets: Asset[]
@@ -112,7 +112,7 @@ Where an `Asset` is the JSON:
 }
 ```
   * `id` The ID MUST uniquely specify the manifest, however the different headers may accompany identical IDs in a response.
-  * `createdAt` Time created is essential as the client selects the most recent update (subject to any contraints supplied in the `expo-manifest-filters` header).
+  * `createdAt` The date and time created is essential as the client selects the most recent update (subject to any constraints supplied by the `expo-manifest-filters` header). The datetime should be formatted according to [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
   * `runtimeVersion` Can be any string defined by the developer. It stipulates what native code setup is required to run the associated JavaScript update bundle.
   * `Asset` Provides information about an asset and where to obtain it.
     * `hash` SHA256 hash of the file to guarantee integrity.
