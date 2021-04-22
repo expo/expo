@@ -49,11 +49,6 @@ Along with any headers stipulated by a previous responses' [server defined heade
     * Android MUST be `expo-platform: android`
 * `expo-runtime-version` MUST be the runtime version the client is running on.
 
-If the client wishes to verify the integrity of the request, it may require a signature to be included as a response header:
-```
-expo-accept-signature: boolean
-```
-
 ## Response
 
 A conformant server MUST return a body containing a [manifest](#manifest) along with the [headers](#headers) specified below.
@@ -67,8 +62,6 @@ The choice of manifest and headers are dependent on the values of the request he
 
 ```
 expo-protocol-version: 0
-expo-manifest-signature-version: 0
-expo-manifest-signature: string
 expo-sfv-version: 0
 expo-manifest-filters: expo-sfv
 expo-server-defined-headers: expo-sfv
@@ -77,8 +70,6 @@ content-type: application/json; charset=utf-8
 ```
 
 * `expo-protocol-version` describes the version of the protocol. MUST be `0`.
-* `expo-manifest-signature-version` MUST be included if the `expo-accept-signature` header was set to true in the request. EAS Update version 0 MUST set this to `0`.
-* `expo-manifest-signature` version `0` MUST be an RSA SHA256 signature of the response body.
 * `expo-sfv-version`  EAS Update version 0 MUST set this to `0`.
 * `expo-sfv`   [expo SFV 0](expo-sfv-0.md) version `0` is a partial implementation of Structured Field Values outlined in [IETF RFC 8941](https://tools.ietf.org/html/rfc8941)
 * `expo-manifest-filters` is an [Expo SFV 0](expo-sfv-0.md) dictionary. It is used to filter updates stored by the client by the `updateMetadata` attributes found in the [manifest](#manifest).
