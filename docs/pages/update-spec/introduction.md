@@ -130,7 +130,9 @@ Where an `Asset` is the JSON:
     * `url` Location where the asset is hosted.
   * `launchAsset` The asset that is used to launch the app.
   * `assets` An array of assets used by the update bundle, such as JavaScript, pictures, and fonts.
-  * `updateMetadata` The metadata associated with an update. This can be used for filtering the update (see the `branchname` example above) and also for the creation of more helpful errors.
+  * `updateMetadata` The metadata associated with an update. This can be used for filtering the update (see the `branchname` example above) and also for the creation of more helpful errors. In particular, the server MAY send back the string valued `updateMetadata` keys:
+    * `branchName` used to sort updates into groups called _branches_.
+    * `updateGroup` used to group updates for different platforms that come from the same publish.
 
 ### Error
 
