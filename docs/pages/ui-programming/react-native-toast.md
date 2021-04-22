@@ -7,16 +7,18 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
 ## What is a toast?
 
+Toasts are the standard technique in mobile development for notifying your users about something without interrupting what they are doing.
+
 According to the [Android Developers
 Documentation](https://developer.android.com/guide/topics/ui/notifiers/toasts): "A toast provides
 simple feedback about an operation in a small popup. It only fills the amount of space required for
 the message and the current activity remains visible and interactive. Toasts automatically disappear
 after a timeout".
 
-To present a toast, we recommend two solutions: an API from React Native (RN) itself and a library
-maintained by the RN community.
+To present a toast, we recommend two solutions: an API from React Native itself and a library
+maintained by the React Native community.
 
-## `ToastAndroid`
+## Android-only: `ToastAndroid`
 
 Toasts are a native feature of Android, but iOS doesn't have this by default. If you only need
 toasts on Android, you can use the [`ToastAndroid`](https://reactnative.dev/docs/toastandroid) API
@@ -61,12 +63,16 @@ The code above results in this on a Pixel 3a:
 There are many other ways to configure your toast position, duration, and gravity options. Read the
 [React Native `ToastAndroid`](https://reactnative.dev/docs/toastandroid) docs to learn more.
 
-## `react-native-root-toast`
+## Cross-platform: `react-native-root-toast`
 
 Since iOS doesn't have a built-in toast feature, React Native developers have to implement their own
 cross-platform toast libraries.
 [`react-native-root-toast`](https://github.com/magicismight/react-native-root-toast) is one such
-solution that the developer has shared with the RN community.
+solution that the developer has shared with the React Native community.
+
+We recommend this solution because it's one of the most used and maintained open-source libraries that
+work on iOS and Android without the need for native code. It also provides a lot of customization
+options, which means that you will be able to match the design of your toasts to the rest of your app.
 
 ### Usage
 
