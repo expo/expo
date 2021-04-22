@@ -13,7 +13,7 @@ This is the specification for Expo Updates, a protocol for delivering updates to
 
 ### Conformance
 
-Conforming servers and clients must fulfill all normative requirements. Conformance requirements are described in this document by both descriptive assertions and key words with clearly defined meanings.
+Conforming servers and client-library's must fulfill all normative requirements. Conformance requirements are described in this document by both descriptive assertions and key words with clearly defined meanings.
 
 The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “MAY”, and “OPTIONAL” in the normative portions of this document are to be interpreted as described in [IETF RFC 2119](https://tools.ietf.org/html/rfc2119). These key words may appear in lowercase and still retain their meaning unless explicitly declared as non‐normative.
 
@@ -26,10 +26,10 @@ Expo Updates is a protocol for delivering updates to apps running on multiple pl
 
 An app running a conformant Expo Update client-library will fetch the most recent update from a conformant update server. If the client-library cannot fetch an update or if it already has the most recent update, the client-library will load the update saved in the client-library's cache.
 
-The following describes how a client will interact with a conforming updates server:
-1. The client will make a [request](#request) for the most recent manifest. 
-2. If the response body is a new manifest, the client will proceed to make requests to download and store assets referenced by the manifest.
-3. Finally, the client will update its local state according to any metadata provided by the response [headers](#headers).
+The following describes how a client-library will interact with a conforming updates server:
+1. The client-library will make a [request](#request) for the most recent manifest. 
+2. If the response body is a new manifest, the client-library will proceed to make requests to download and store assets referenced by the manifest.
+3. Finally, the client-library will update its local state according to any metadata provided by the response [headers](#headers).
 
 We anticipate the primary user of this spec will be organizations who need to manage their own update server to satisfy internal requirements.
 
@@ -55,7 +55,7 @@ accept: application/expo+json, application/json
 ```
 
 ### Asset
-A conformant client-library MUST make a GET request to the asset url specified by the manifest. The client library SHOULD include a header accepting the assets content type as specified in the manifest. Additionaly the client-library SHOULD specify the compression encoding the client-library is capable of handling.
+A conformant client-library MUST make a GET request to the asset url specified by the manifest. The client-library SHOULD include a header accepting the assets content type as specified in the manifest. Additionaly the client-library SHOULD specify the compression encoding the client-library is capable of handling.
 
 Example headers:
 ```
@@ -85,8 +85,8 @@ content-type: application/json; charset=utf-8
 
 * `expo-protocol-version` describes the version of the protocol defined in this spec and MUST be `0`.
 * `expo-sfv-version`  MUST be `0`.
-* `expo-manifest-filters` is an [Expo SFV 0](expo-sfv-0.md) dictionary. It is used to filter updates stored by the client by the `updateMetadata` attributes found in the [manifest](#manifest).
-  * For example: `expo-manifest-filters: branchname="main"` instructs the client to load the most recent update it has stored whose `updateMetadata` contains:
+* `expo-manifest-filters` is an [Expo SFV 0](expo-sfv-0.md) dictionary. It is used to filter updates stored by the client-library by the `updateMetadata` attributes found in the [manifest](#manifest).
+  * For example: `expo-manifest-filters: branchname="main"` instructs the client-library to load the most recent update it has stored whose `updateMetadata` contains:
 
   ```
   updateMetadata: {
@@ -95,9 +95,9 @@ content-type: application/json; charset=utf-8
   }
   ```
   * If the `branchname` manifest filter is included, it MUST equal the `branchName` in the `manifest.updateMetadata`.
-* `expo-server-defined-headers` is an [Expo SFV](expo-sfv.md) dictionary. It defines headers that a client MUST store and include in every subsequent [request](#request).
+* `expo-server-defined-headers` is an [Expo SFV](expo-sfv.md) dictionary. It defines headers that a client-library MUST store and include in every subsequent [request](#request).
 
-  * For example, when rolling out an update, we require a client to send back a stable token: `expo-server-defined-headers: expo-rollout-token="token"`. 
+  * For example, when rolling out an update, we require a client-library to send back a stable token: `expo-server-defined-headers: expo-rollout-token="token"`. 
 * `cache-control` We recommend `cache-control: private, max-age=0`. This allows ensures the newest manifest is returned. Setting longer cache ages could result in stale assets for users.
 
 ### Manifest
@@ -125,7 +125,7 @@ Where an `Asset` is the JSON:
 }
 ```
   * `id` The ID MUST uniquely specify the manifest.
-  * `createdAt` The date and time created is essential as the client selects the most recent update (subject to any constraints supplied by the `expo-manifest-filters` header). The datetime should be formatted according to [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
+  * `createdAt` The date and time created is essential as the client-library selects the most recent update (subject to any constraints supplied by the `expo-manifest-filters` header). The datetime should be formatted according to [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
   * `runtimeVersion` Can be any string defined by the developer. It stipulates what native code setup is required to run the associated JavaScript update bundle.
   * `Asset` Provides information about an asset and where to obtain it.
     * `hash` SHA256 hash of the file to guarantee integrity.
@@ -164,7 +164,7 @@ cache-control: max-age=0, private
 ### Compression
 
 Assets SHOULD be capable being served with [gzip](https://www.gnu.org/software/gzip/) and [brotli](https://github.com/google/brotli) compression.
-The asset hosted at a particular URL MUST NOT be changed. Clients with stale updates may still require old assets.
+The asset hosted at a particular URL MUST NOT be changed. Client-library's with stale updates may still require old assets.
 
 ## Client Library
 
