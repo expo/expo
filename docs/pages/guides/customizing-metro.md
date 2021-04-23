@@ -61,6 +61,8 @@ config.transformer.minifierConfig.compress.drop_console = true;
 module.exports = config;
 ```
 
+Here are all of the [default Uglify options](https://github.com/facebook/metro/blob/b629f44239bbb3414491755185cf19b5834b4b7a/packages/metro-config/src/defaults/index.js#L94-L111) applied in Metro bundler.
+
 ### Using Terser
 
 You can use [`terser`](https://github.com/terser/terser) instead of `uglify-js` to mangle and compress your project.
