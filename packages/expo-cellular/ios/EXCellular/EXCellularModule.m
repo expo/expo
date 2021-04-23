@@ -24,7 +24,7 @@ UM_EXPORT_MODULE(ExpoCellular);
 - (NSDictionary *)constantsToExport
 {
   CTCarrier *carrier = [self carrier];
-  
+
   return @{
            @"allowsVoip": @(carrier.allowsVOIP),
            @"carrier": UMNullIfNil(carrier.carrierName),
@@ -76,14 +76,17 @@ UM_EXPORT_METHOD_AS(getCellularGenerationAsync, getCellularGenerationAsyncWithRe
   CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
   NSDictionary<NSString *, CTCarrier *> *serviceSubscriberCellularProviders;
   CTCarrier *carrier;
-  
+
   if (@available(iOS 12.0, *)) {
+    NSString *serviceCurrentRadioAccessTechnology;
+    serviceCurrentRadioAccessTechnology = netinfo.serviceCurrentRadioAccessTechnology.allKeys.firstObject;
+
     serviceSubscriberCellularProviders = netinfo.serviceSubscriberCellularProviders;
-    carrier = serviceSubscriberCellularProviders.allValues.firstObject;
+    carrier = serviceSubscriberCellularProviders[serviceCurrentRadioAccessTechnology];
   } else {
     carrier = netinfo.subscriberCellularProvider;
   }
-  
+
   return carrier;
 }
 
