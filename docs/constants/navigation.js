@@ -228,6 +228,7 @@ const sections = [
       'Progressive Web Apps',
       'Web Performance',
       'Notification Channels',
+      'Hackathons with Expo',
       'Delaying Your Code To Run Later',
       'Error Handling',
       'Testing with Jest',
