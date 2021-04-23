@@ -47,16 +47,16 @@ export function preprocessSentryError(event: Event) {
 }
 
 // https://gist.github.com/paulirish/5558557
-function isLocalStorageAvailable() {
-  if (!window.localStorage) {
-    return false;
-  }
-
+function isLocalStorageAvailable(): boolean {
   try {
+    if (!window.localStorage) {
+      return false;
+    }
+
     localStorage.setItem('localStorage:test', 'value');
     localStorage.removeItem('localStorage:test');
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
 }
