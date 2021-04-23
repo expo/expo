@@ -22,7 +22,7 @@ const GROUPS = {
   Preview: ['Preview'],
   'EAS Build': ['Start Building', 'App Signing', 'Reference'],
   'EAS Submit': ['EAS Submit'],
-  'EAS Update': ['Technical Spec'],
+  'Technical Specs': ['Technical Specs'],
   'Development Clients': ['Development Clients'],
 };
 
@@ -81,8 +81,8 @@ const sections = [
     ],
   },
   {
-    name: 'Technical Spec',
-    reference: ['Update Spec', 'Expo Structured Field Values'],
+    name: 'Technical Specs',
+    reference: ['Expo Update', 'Expo Structured Field Values'],
   },
   {
     name: 'Development Clients',

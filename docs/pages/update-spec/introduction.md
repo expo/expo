@@ -1,6 +1,6 @@
 ---
-title: Expo Update Spec
-sidebar_title: Expo Updates 0
+title: Expo Update
+sidebar_title: Expo Update
 ---
 
 version 0
@@ -22,7 +22,7 @@ A conforming implementation of this protocol may provide additional functionalit
 ### Overview
 
 An _update_ is defined as a [_manifest_](#manifest-response) together with the assets referenced inside the manifest.
-Expo Updates is a protocol for delivering updates to apps running on multiple platforms.
+Expo Update is a protocol for delivering updates to apps running on multiple platforms.
 
 An app running a conformant Expo Update client-library will fetch the most recent update from a conformant update server. If the client-library cannot fetch an update or if it already has the most recent update, the client-library will load the update saved in the client-library's cache.
 

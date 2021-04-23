@@ -1,6 +1,6 @@
 ---
 title: Expo Structured Field Values
-sidebar_title: Expo SFV 0
+sidebar_title: Expo Structured Field Values
 ---
 
 Version 0
