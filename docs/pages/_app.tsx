@@ -28,7 +28,7 @@ export function reportWebVitals({
   label: string;
   value: number;
 }) {
-  window?.ga('send', 'event', {
+  window?.ga?.('send', 'event', {
     eventCategory: label === 'web-vital' ? 'Web Vitals' : 'Next.js custom metric',
     eventAction: name,
     // The `id` value will be unique to the current page load. When sending
