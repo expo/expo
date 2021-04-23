@@ -270,9 +270,9 @@ class LauncherMainScreen extends React.Component<Props, State> {
           <MainView>
             <MainText style={styles.header}>DEVELOPMENT CLIENT</MainText>
           </MainView>
-          <SectionHeader title="Connected to a development server" />
+          <SectionHeader title="Connected to a development bundler" />
           <MainView style={styles.sectionContainer}>
-            <MainText style={styles.textMarginBottom}>Start a local server with:</MainText>
+            <MainText style={styles.textMarginBottom}>Start a local bundler with:</MainText>
             <SecondaryView style={[styles.codeBox, styles.marginBottom]}>
               <SecondaryText style={styles.codeText}>expo start --dev-client</SecondaryText>
             </SecondaryView>
