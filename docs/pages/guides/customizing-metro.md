@@ -46,7 +46,7 @@ module.exports = defaultConfig;
 
 ## Optimizations
 
-By default, Metro uses [`uglify-js`](https://github.com/mishoo/UglifyJS) to minify and compress your code. You can customize uglify by passing [options](https://github.com/mishoo/UglifyJS#compress-options) to `transformer.minifierConfig`. For example, if you wanted to remove all console logs from your app in production, you can do the following:
+By default, Metro uses [`uglify-es`](https://github.com/mishoo/UglifyJS) to minify and compress your code. You can customize uglify by passing [options](https://github.com/mishoo/UglifyJS#compress-options) to `transformer.minifierConfig`. For example, if you wanted to remove all console logs from your app in production, you can do the following:
 
 `metro.config.js`
 
@@ -65,7 +65,7 @@ Here are all of the [default Uglify options](https://github.com/facebook/metro/b
 
 ### Using Terser
 
-You can use [`terser`](https://github.com/terser/terser) instead of `uglify-js` to mangle and compress your project.
+You can use [`terser`](https://github.com/terser/terser) instead of `uglify-es` to mangle and compress your project.
 
 First, install terser in your project with `yarn add --dev metro-minify-terser`.
 
