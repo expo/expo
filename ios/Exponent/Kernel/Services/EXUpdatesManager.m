@@ -191,6 +191,8 @@ didRequestBundleWithCompletionQueue:(dispatch_queue_t)completionQueue
       startBlock();
     }
     return shouldLoad;
+  } asset:^(EXUpdatesAsset *asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
+    // do nothing for now
   } success:^(EXUpdatesUpdate * _Nullable update) {
     if (update) {
       success(update.rawManifest);

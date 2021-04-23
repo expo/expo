@@ -209,6 +209,8 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
           [self->_embeddedAppLoader loadUpdateFromEmbeddedManifestWithCallback:^BOOL(EXUpdatesUpdate * _Nonnull update) {
             // we already checked using selection policy, so we don't need to check again
             return YES;
+          } onAsset:^(EXUpdatesAsset *asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
+            // do nothing for now
           } success:^(EXUpdatesUpdate * _Nullable update) {
             completion();
           } error:^(NSError * _Nonnull error) {
@@ -245,6 +247,8 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
       self->_isUpToDate = YES;
       return NO;
     }
+  } asset:^(EXUpdatesAsset *asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
+    // do nothing for now
   } success:^(EXUpdatesUpdate * _Nullable update) {
     completion(nil, update);
   } error:^(NSError *error) {
