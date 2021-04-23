@@ -81,6 +81,11 @@ NS_ASSUME_NONNULL_BEGIN
   return [_updatesKernelService requestRelaunchForExperienceId:_experienceId withCompletion:completion];
 }
 
+- (void)resetSelectionPolicy
+{
+  // no-op in managed
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

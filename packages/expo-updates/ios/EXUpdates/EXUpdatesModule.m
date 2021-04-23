@@ -138,6 +138,7 @@ UM_EXPORT_METHOD_AS(fetchUpdateAsync,
     // do nothing for now
   } success:^(EXUpdatesUpdate * _Nullable update) {
     if (update) {
+      [self->_updatesService resetSelectionPolicy];
       resolve(@{
         @"isNew": @(YES),
         @"manifest": update.rawManifest

@@ -70,6 +70,11 @@ UM_REGISTER_MODULE();
   return [EXUpdatesAppController.sharedInstance requestRelaunchWithCompletion:completion];
 }
 
+- (void)resetSelectionPolicy
+{
+  return [EXUpdatesAppController.sharedInstance resetSelectionPolicyToDefault];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
