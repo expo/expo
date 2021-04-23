@@ -1,15 +1,18 @@
 import {
   ConfigPlugin,
+  createRunOncePlugin,
+  ExportedConfigWithProps,
+  WarningAggregator,
   withDangerousMod,
   withMainActivity,
-  WarningAggregator,
-  ExportedConfigWithProps,
 } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 import fs from 'fs';
 import path from 'path';
 
 import { withDevLauncherAppDelegate } from './withDevLauncherAppDelegate';
+
+const pkg = require('expo-dev-launcher/package.json');
 
 const DEV_LAUNCHER_ANDROID_IMPORT = 'expo.modules.devlauncher.DevLauncherController';
 const DEV_LAUNCHER_ON_NEW_INTENT = `
@@ -183,4 +186,4 @@ const withDevLauncher = (config: ExpoConfig) => {
   return config;
 };
 
-export default withDevLauncher;
+export default createRunOncePlugin(withDevLauncher, pkg.name, pkg.version);
