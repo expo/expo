@@ -9,7 +9,7 @@ version 0
 
 ## Introduction
 
-This is the specification for Expo Updates, a protocol for delivering updates to apps running on multiple platforms.
+This is the specification for Expo Update, a protocol for delivering updates to apps running on multiple platforms.
 
 ### Conformance
 
