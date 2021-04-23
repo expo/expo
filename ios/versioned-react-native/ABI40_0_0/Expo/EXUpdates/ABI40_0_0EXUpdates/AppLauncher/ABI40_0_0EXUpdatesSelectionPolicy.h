@@ -6,7 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol ABI40_0_0EXUpdatesSelectionPolicy
 
-- (nullable ABI40_0_0EXUpdatesUpdate *)launchableUpdateWithUpdates:(NSArray<ABI40_0_0EXUpdatesUpdate *> *)updates;
+- (nullable ABI40_0_0EXUpdatesUpdate *)launchableUpdateFromUpdates:(NSArray<ABI40_0_0EXUpdatesUpdate *> *)updates;
 - (NSArray<ABI40_0_0EXUpdatesUpdate *> *)updatesToDeleteWithLaunchedUpdate:(ABI40_0_0EXUpdatesUpdate *)launchedUpdate updates:(NSArray<ABI40_0_0EXUpdatesUpdate *> *)updates;
 - (BOOL)shouldLoadNewUpdate:(nullable ABI40_0_0EXUpdatesUpdate *)newUpdate withLaunchedUpdate:(nullable ABI40_0_0EXUpdatesUpdate *)launchedUpdate filters:(nullable NSDictionary *)filters;
 

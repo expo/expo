@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
   return self;
 }
 
-- (nullable EXUpdatesUpdate *)launchableUpdateWithUpdates:(NSArray<EXUpdatesUpdate *> *)updates filters:(nullable NSDictionary *)filters
+- (nullable EXUpdatesUpdate *)launchableUpdateFromUpdates:(NSArray<EXUpdatesUpdate *> *)updates filters:(nullable NSDictionary *)filters
 {
   for (EXUpdatesUpdate *update in updates) {
     if ([update.updateId isEqual:_updateId]) {

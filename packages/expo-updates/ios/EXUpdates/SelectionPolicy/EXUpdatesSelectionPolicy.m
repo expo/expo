@@ -26,9 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
   return self;
 }
 
-- (nullable EXUpdatesUpdate *)launchableUpdateWithUpdates:(NSArray<EXUpdatesUpdate *> *)updates filters:(nullable NSDictionary *)filters
+- (nullable EXUpdatesUpdate *)launchableUpdateFromUpdates:(NSArray<EXUpdatesUpdate *> *)updates filters:(nullable NSDictionary *)filters
 {
-  return [_launcherSelectionPolicy launchableUpdateWithUpdates:updates filters:filters];
+  return [_launcherSelectionPolicy launchableUpdateFromUpdates:updates filters:filters];
 }
 
 - (NSArray<EXUpdatesUpdate *> *)updatesToDeleteWithLaunchedUpdate:(EXUpdatesUpdate *)launchedUpdate updates:(NSArray<EXUpdatesUpdate *> *)updates filters:(nullable NSDictionary *)filters

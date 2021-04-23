@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @protocol EXUpdatesLauncherSelectionPolicy
 
-- (nullable EXUpdatesUpdate *)launchableUpdateWithUpdates:(NSArray<EXUpdatesUpdate *> *)updates filters:(nullable NSDictionary *)filters;
+- (nullable EXUpdatesUpdate *)launchableUpdateFromUpdates:(NSArray<EXUpdatesUpdate *> *)updates filters:(nullable NSDictionary *)filters;
 
 @end
 

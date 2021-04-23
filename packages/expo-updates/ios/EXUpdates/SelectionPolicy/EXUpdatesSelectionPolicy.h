@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
                           loaderSelectionPolicy:(id<EXUpdatesLoaderSelectionPolicy>)loaderSelectionPolicy
                           reaperSelectionPolicy:(id<EXUpdatesReaperSelectionPolicy>)reaperSelectionPolicy;
 
-- (nullable EXUpdatesUpdate *)launchableUpdateWithUpdates:(NSArray<EXUpdatesUpdate *> *)updates filters:(nullable NSDictionary *)filters;
+- (nullable EXUpdatesUpdate *)launchableUpdateFromUpdates:(NSArray<EXUpdatesUpdate *> *)updates filters:(nullable NSDictionary *)filters;
 - (NSArray<EXUpdatesUpdate *> *)updatesToDeleteWithLaunchedUpdate:(EXUpdatesUpdate *)launchedUpdate updates:(NSArray<EXUpdatesUpdate *> *)updates filters:(nullable NSDictionary *)filters;
 - (BOOL)shouldLoadNewUpdate:(nullable EXUpdatesUpdate *)newUpdate withLaunchedUpdate:(nullable EXUpdatesUpdate *)launchedUpdate filters:(nullable NSDictionary *)filters;
 

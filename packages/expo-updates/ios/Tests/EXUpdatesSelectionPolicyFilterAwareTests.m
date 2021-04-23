@@ -117,9 +117,9 @@
   [super tearDown];
 }
 
-- (void)testLaunchableUpdateWithUpdates
+- (void)testLaunchableUpdateFromUpdates
 {
-  EXUpdatesUpdate *actual = [_selectionPolicy launchableUpdateWithUpdates:@[_updateDefault1, _updateRollout1, _updateDefault2] filters:_manifestFilters];
+  EXUpdatesUpdate *actual = [_selectionPolicy launchableUpdateFromUpdates:@[_updateDefault1, _updateRollout1, _updateDefault2] filters:_manifestFilters];
   XCTAssertEqual(_updateRollout1, actual, @"should pick the newest update that matches the manifest filters");
 }
 
