@@ -21,28 +21,26 @@ A conforming implementation of this protocol may provide additional functionalit
 
 ### Overview
 
-An _update_ is defined as a [_manifest_](#manifest) together with the assets referenced inside the manifest.
+An _update_ is defined as a [_manifest_](#manifest-response) together with the assets referenced inside the manifest.
 Expo Updates is a protocol for delivering updates to apps running on multiple platforms.
 
 An app running a conformant Expo Update client-library will fetch the most recent update from a conformant update server. If the client-library cannot fetch an update or if it already has the most recent update, the client-library will load the update saved in the client-library's cache.
 
 The following describes how a client-library will interact with a conforming updates server:
 1. The client-library will make a [request](#request) for the most recent manifest. 
-2. If the response body is a new manifest, the client-library will proceed to make requests to download and store assets referenced by the manifest.
+2. If it is a new manifest, the client-library will proceed to make requests to download and store the assets specified in the manifest.
 3. Finally, the client-library will update its local state according to any metadata provided by the response [headers](#headers).
 
 We anticipate the primary user of this spec will be organizations who need to manage their own update server to satisfy internal requirements.
 
-## Request
-
-### Manifest
-A conformant client-library MUST make a GET request with the following standard headers:
+## Manifest Request
+A conformant client-library MUST make a GET request with the following headers:
 ```
 accept: application/json
 expo-platform: string
 expo-runtime-version: string
 ```
-Along with any headers stipulated by a previous responses' [server defined headers](#server-defined-headers):
+along with any headers stipulated by a previous responses' [server defined headers](#headers):
 
 * `expo-platform` MUST be platform type the client is running on: 
     * iOS MUST be `expo-platform: ios`
@@ -54,18 +52,9 @@ A conformant client-library SHOULD also accept `application/expo+json` so that s
 accept: application/expo+json, application/json
 ```
 
-### Asset
-A conformant client-library MUST make a GET request to the asset url specified by the manifest. The client-library SHOULD include a header accepting the assets content type as specified in the manifest. Additionaly the client-library SHOULD specify the compression encoding the client-library is capable of handling.
+## Manifest Response
 
-Example headers:
-```
-accept: image/jpeg
-accept-encoding: br, gzip
-```
-
-## Response
-
-A conformant server MUST return a body containing a [manifest](#manifest) along with the [headers](#headers) specified below.
+A conformant server MUST return a body containing a [manifest](#body) along with the [headers](#headers) specified below.
 
 The choice of manifest and headers are dependent on the values of the request headers. A conformant server MUST:
 
@@ -85,7 +74,7 @@ content-type: application/json; charset=utf-8
 
 * `expo-protocol-version` describes the version of the protocol defined in this spec and MUST be `0`.
 * `expo-sfv-version`  MUST be `0`.
-* `expo-manifest-filters` is an [Expo SFV 0](expo-sfv-0.md) dictionary. It is used to filter updates stored by the client-library by the `updateMetadata` attributes found in the [manifest](#manifest).
+* `expo-manifest-filters` is an [Expo SFV 0](expo-sfv-0.md) dictionary. It is used to filter updates stored by the client-library by the `updateMetadata` attributes found in the [manifest](#body).
   * For example: `expo-manifest-filters: branchname="main"` instructs the client-library to load the most recent update it has stored whose `updateMetadata` contains:
 
   ```
@@ -95,12 +84,19 @@ content-type: application/json; charset=utf-8
   }
   ```
   * If the `branchname` manifest filter is included, it MUST equal the `branchName` in the `manifest.updateMetadata`.
-* `expo-server-defined-headers` is an [Expo SFV](expo-sfv.md) dictionary. It defines headers that a client-library MUST store and include in every subsequent [request](#request).
+* `expo-server-defined-headers` is an [Expo SFV](expo-sfv.md) dictionary. It defines headers that a client-library MUST store and include in every subsequent [manifest request](#manifest-request).
 
   * For example, when rolling out an update, we require a client-library to send back a stable token: `expo-server-defined-headers: expo-rollout-token="token"`. 
 * `cache-control` We recommend `cache-control: private, max-age=0`. This allows ensures the newest manifest is returned. Setting longer cache ages could result in stale assets for users.
 
-### Manifest
+
+The manifest endpoint MUST also be served with a `cache-control` header set to an appropriately short period of time. For example:
+
+```
+cache-control: max-age=0, private
+```
+
+### Body
 
 The body of the response MUST be a `manifest`. A `manifest` is defined as JSON conforming to the following description:
 
@@ -138,7 +134,7 @@ Where an `Asset` is the JSON:
     * `branchName` used to sort updates into groups called _branches_.
     * `updateGroup` used to group updates for different platforms that come from the same publish.
 
-### Error
+### Errors
 
 A conformant server SHOULD return 
   * a `404` error if a manifest is not found.
@@ -146,16 +142,29 @@ A conformant server SHOULD return
   * a `405` if the request is not a GET.
   * a `500` if there is a server error.
 
+## Asset Request
+A conformant client-library MUST make a GET request to the asset URL specified by the manifest. The client-library SHOULD include a header accepting the assets content type as specified in the manifest. Additionaly the client-library SHOULD specify the compression encoding the client-library is capable of handling.
 
-## Server
+Example headers:
+```
+accept: image/jpeg
+accept-encoding: br, gzip
+```
 
-There are two functions for a conformant server:
-  * serve the correct [response](#response) for a given [request](#request)
-  * host assets referenced in the [manifests](#manifest)
+## Asset Response
 
-### Caching Policy
+An asset hosted at a particular URL MUST NOT be changed. Client-library's with stale updates may still require old assets.
 
-Both manifest and asset endpoints MUST be served with a `cache-control` header set to an appropriately short period of time. For example:
+### Headers
+
+The asset MUST be served with an asset compressed in compliance with the clients encoding request. The asset MUST be include a content-type header set to the mime type of the asset defined in the manifest.
+For example:
+```
+content-encoding: br
+content-type: application/javascript
+```
+
+The asset endpoints MUST be served with a `cache-control` header set to an appropriately short period of time. For example:
 
 ```
 cache-control: max-age=0, private
@@ -164,7 +173,14 @@ cache-control: max-age=0, private
 ### Compression
 
 Assets SHOULD be capable being served with [gzip](https://www.gnu.org/software/gzip/) and [brotli](https://github.com/google/brotli) compression.
-The asset hosted at a particular URL MUST NOT be changed. Client-library's with stale updates may still require old assets.
+
+### Errors
+
+A conformant server SHOULD return 
+  * a `404` error if a manifest is not found.
+  * a `400` if the request is malformed.
+  * a `405` if the request is not a GET.
+  * a `500` if there is a server error.
 
 ## Client Library
 
