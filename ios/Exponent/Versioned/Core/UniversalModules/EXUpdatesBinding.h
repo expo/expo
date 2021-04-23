@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol EXUpdatesBindingDelegate
 
 - (EXUpdatesConfig *)configForExperienceId:(NSString *)experienceId;
-- (id<EXUpdatesSelectionPolicy>)selectionPolicyForExperienceId:(NSString *)experienceId;
+- (EXUpdatesSelectionPolicy *)selectionPolicyForExperienceId:(NSString *)experienceId;
 - (nullable EXUpdatesUpdate *)launchedUpdateForExperienceId:(NSString *)experienceId;
 - (nullable NSDictionary *)assetFilesMapForExperienceId:(NSString *)experienceId;
 - (BOOL)isUsingEmbeddedAssetsForExperienceId:(NSString *)experienceId;
