@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
   NSMutableArray<EXUpdatesAsset *> *missingAssets = [NSMutableArray new];
   dispatch_sync([EXUpdatesFileDownloader assetFilesQueue], ^{
     for (EXUpdatesAsset *asset in assets) {
-      if (!asset.filename || ![[self class] asset:asset existsInDirectory:directory]) {
+      if (![[self class] asset:asset existsInDirectory:directory]) {
         [missingAssets addObject:asset];
       }
     }
