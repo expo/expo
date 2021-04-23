@@ -6,7 +6,7 @@ import { getListOfPackagesAsync, Package } from '../../Packages';
 import { filterAsync } from '../../Utils';
 import { ReviewInput, ReviewOutput, ReviewStatus } from '../types';
 
-export default async function ({ pullRequest, diff }: ReviewInput): Promise<ReviewOutput> {
+export default async function ({ pullRequest, diff }: ReviewInput): Promise<ReviewOutput | null> {
   const allPackages = await getListOfPackagesAsync();
   const modifiedPackages = allPackages.filter((pkg) => {
     return diff.some((fileDiff) => !path.relative(pkg.path, fileDiff.path).startsWith('../'));
@@ -16,6 +16,10 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
     const pkgHasChangelog = await fs.pathExists(pkg.changelogPath);
     return pkgHasChangelog && diff.every((fileDiff) => fileDiff.path !== pkg.changelogPath);
   });
+
+  if (pkgsWithoutChangelogChanges.length === 0) {
+    return null;
+  }
 
   const changelogLinks = pkgsWithoutChangelogChanges
     .map((pkg) => `- ${relativeChangelogPath(pullRequest, pkg)}`)

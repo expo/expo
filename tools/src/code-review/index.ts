@@ -46,7 +46,9 @@ export async function reviewPullRequestAsync(prNumber: number) {
 
   // Run all the checks asynchronously and collects their outputs.
   logger.info('🕵️‍♀️  Reviewing changes');
-  const outputs = (await Promise.all(REVIEWERS.map((reviewer) => reviewer(input)))).filter(Boolean);
+  const outputs = (await Promise.all(REVIEWERS.map((reviewer) => reviewer(input)))).filter(
+    Boolean
+  ) as ReviewOutput[];
 
   // Only active (non-passive) outputs will be reported in the review body.
   const activeOutputs = outputs.filter(
@@ -72,9 +74,7 @@ export async function reviewPullRequestAsync(prNumber: number) {
 
   // Reset my reviews' current state if I previously requested for changes.
   if (previousReviews[previousReviews.length - 1]?.state) {
-    logger.info('🙈 Resetting my review state');
-    console.log(pr.number, user.login);
-    // await GitHub.removeReviewersFromPullRequestAsync(pr.number, [user.login]);
+    logger.info('🙈 Resetting my review state by re-requesting');
     await GitHub.requestPullRequestReviewersAsync(pr.number, [user.login]);
   }
 
