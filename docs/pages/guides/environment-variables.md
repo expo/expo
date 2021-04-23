@@ -13,12 +13,12 @@ If you have installed the [`expo-constants`](../versions/latest/sdk/constants.md
 
 > While the `.env` property can be useful during development, this property is not available when running `expo publish` or `expo build`. It should not be used for feature flagging or other app-specific configuration because of this.
 
-For example, if you are developing on Mac/Linux, create and source a file that looks like this:
+For example, if you are developing on macOS or Linux, create and source a file that looks like this:
 
 ```
 export EXPO_HELLO=world
-export EXPO_MY_SECRET_VAR=secret
-export REACT_NATIVE_SECRET=anotherSecret
+export EXPO_MY_CONFIGURATION_OPTION=my-configuration-value
+export REACT_NATIVE_EXAMPLE_CONFIGURATION=another-configuration-value
 ```
 
 ### Using app manifest `.extra`
