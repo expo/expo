@@ -1,6 +1,6 @@
 ---
-title: Expo Update
-sidebar_title: Expo Update
+title: Expo Updates
+sidebar_title: Expo Updates
 ---
 
 version 0
@@ -9,7 +9,7 @@ version 0
 
 ## Introduction
 
-This is the specification for Expo Update, a protocol for delivering updates to apps running on multiple platforms.
+This is the specification for Expo Updates, a protocol for delivering updates to apps running on multiple platforms.
 
 ### Conformance
 
@@ -22,9 +22,9 @@ A conforming implementation of this protocol may provide additional functionalit
 ### Overview
 
 An _update_ is defined as a [_manifest_](#manifest-response) together with the assets referenced inside the manifest.
-Expo Update is a protocol for delivering updates to apps running on multiple platforms.
+Expo Updates is a protocol for delivering updates to apps running on multiple platforms.
 
-An app running a conformant Expo Update client-library will fetch the most recent update from a conformant update server. If the client-library cannot fetch an update or if it already has the most recent update, the client-library will load the update saved in the client-library's cache.
+An app running a conformant Expo Updates client-library will fetch the most recent update from a conformant update server. If the client-library cannot fetch an update or if it already has the most recent update, the client-library will load the update saved in the client-library's cache.
 
 The following describes how a client-library will interact with a conforming updates server:
 1. The client-library will make a [request](#request) for the most recent manifest. 

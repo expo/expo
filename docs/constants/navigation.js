@@ -82,7 +82,7 @@ const sections = [
   },
   {
     name: 'Technical Specs',
-    reference: ['Expo Update', 'Expo Structured Field Values'],
+    reference: ['Expo Updates', 'Expo Structured Field Values'],
   },
   {
     name: 'Development Clients',
