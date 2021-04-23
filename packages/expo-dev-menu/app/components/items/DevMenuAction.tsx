@@ -17,8 +17,8 @@ class DevMenuItemAction extends React.PureComponent<DevMenuItemProps<DevMenuItem
   };
 
   render() {
-    const { actionId, label, glyphName, keyCommand } = this.props.item;
-
+    const { actionId, label, glyphName, keyCommand, isAvailable } = this.props.item;
+    const disabled = !(isAvailable ?? true);
     return (
       <ListItemButton
         name={actionId}
@@ -26,6 +26,7 @@ class DevMenuItemAction extends React.PureComponent<DevMenuItemProps<DevMenuItem
         icon={glyphName}
         keyCommand={keyCommand}
         onPress={this.action}
+        disabled={disabled}
       />
     );
   }

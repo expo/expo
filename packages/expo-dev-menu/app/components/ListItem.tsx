@@ -17,8 +17,8 @@ class ListItem extends React.PureComponent<Props> {
     const { content: title, ...props } = this.props;
     const textColor = props.disabled
       ? {
-          lightColor: Colors.light.grayText,
-          darkColor: Colors.dark.grayText,
+          lightColor: Colors.light.disabledTest,
+          darkColor: Colors.dark.disabledTest,
         }
       : {};
 

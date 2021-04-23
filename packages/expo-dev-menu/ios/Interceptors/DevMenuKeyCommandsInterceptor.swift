@@ -52,10 +52,13 @@ extension UIResponder: DevMenuUIResponderExtensionProtocol {
   public func EXDevMenu_handleKeyCommand(_ key: UIKeyCommand) {
     tryHandleKeyCommand(key) {
       let actions = DevMenuManager.shared.devMenuCallable.filter { $0 is DevMenuExportedAction} as! [DevMenuExportedAction]
-      let action = actions.first { $0.keyCommand == key }
-
-      action?.action()
-      UIResponder.lastKeyCommandExecutionTime = CACurrentMediaTime()
+      guard let action = actions.first(where: { $0.keyCommand == key }) else {
+        return
+      }
+      
+      if action.isAvailable() {
+        action.call()
+      }
     }
   }
 

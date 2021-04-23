@@ -22,6 +22,7 @@ class DevMenuExportedAction(
   val action: () -> Unit
 ) : DevMenuExportedCallable(id) {
   var keyCommand: KeyCommand? = null
+  var isAvailable = { true }
 
   fun registerKeyCommand(keyCommand: KeyCommand?) {
     this.keyCommand = keyCommand

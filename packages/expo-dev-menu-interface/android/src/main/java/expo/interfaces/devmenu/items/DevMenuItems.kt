@@ -59,7 +59,11 @@ class DevMenuAction(
   action: () -> Unit
 ) : DevMenuScreenItem(), DevMenuCallableProvider {
   val callable = DevMenuExportedAction(actionId, action)
-  var isAvailable = { true }
+  var isAvailable: () -> Boolean
+    get() = callable.isAvailable
+    set(value) {
+      callable.isAvailable = value
+    }
   var isEnabled = { false }
   var label = { "" }
   var detail = { "" }
