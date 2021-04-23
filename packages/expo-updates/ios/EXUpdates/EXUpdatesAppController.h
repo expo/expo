@@ -71,6 +71,23 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setConfiguration:(NSDictionary *)configuration;
 
 /**
+ * For external modules that want to modify the selection policy used at runtime.
+ *
+ * This method does not provide any guarantees about how long the provided selection policy will
+ * persist; sometimes expo-updates will reset the selection policy in situations where it makes
+ * sense to have explicit control (e.g. if the developer/user has programmatically fetched an
+ * update, expo-updates will reset the selection policy so the new update is launched on the
+ * next reload).
+ */
+- (void)setNextSelectionPolicy:(EXUpdatesSelectionPolicy *)nextSelectionPolicy;
+
+/**
+ * Similar to the above method, but sets the next selection policy to whatever
+ * EXUpdatesAppController's default selection policy is.
+ */
+- (void)resetSelectionPolicyToDefault;
+
+/**
  Starts the update process to launch a previously-loaded update and (if configured to do so)
  check for a new update from the server. This method should be called as early as possible in
  the application's lifecycle.
