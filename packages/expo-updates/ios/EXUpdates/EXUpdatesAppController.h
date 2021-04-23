@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, readonly) EXUpdatesConfig *config;
 @property (nonatomic, readonly) EXUpdatesDatabase *database;
-@property (nonatomic, readonly) id<EXUpdatesSelectionPolicy> selectionPolicy;
+@property (nonatomic, readonly) EXUpdatesSelectionPolicy *selectionPolicy;
 @property (nonatomic, readonly) NSURL *updatesDirectory;
 @property (nonatomic, readonly) dispatch_queue_t assetFilesQueue;
 @property (nonatomic, readonly, assign) BOOL isStarted;

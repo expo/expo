@@ -16,7 +16,7 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
 @property (nonatomic, strong) EXUpdatesConfig *config;
 @property (nonatomic, strong) EXUpdatesDatabase *database;
 @property (nonatomic, strong) NSURL *directory;
-@property (nonatomic, strong) id<EXUpdatesSelectionPolicy> selectionPolicy;
+@property (nonatomic, strong) EXUpdatesSelectionPolicy * selectionPolicy;
 @property (nonatomic, strong) dispatch_queue_t delegateQueue;
 
 @property (nonatomic, strong) id<EXUpdatesAppLauncher> candidateLauncher;
@@ -39,7 +39,7 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
 - (instancetype)initWithConfig:(EXUpdatesConfig *)config
                       database:(EXUpdatesDatabase *)database
                      directory:(NSURL *)directory
-               selectionPolicy:(id<EXUpdatesSelectionPolicy>)selectionPolicy
+               selectionPolicy:(EXUpdatesSelectionPolicy *)selectionPolicy
                  delegateQueue:(dispatch_queue_t)delegateQueue
 {
   if (self = [super init]) {

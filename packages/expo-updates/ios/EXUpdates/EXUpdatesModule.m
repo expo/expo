@@ -102,7 +102,7 @@ UM_EXPORT_METHOD_AS(checkForUpdateAsync,
                              extraHeaders:extraHeaders
                              successBlock:^(EXUpdatesUpdate *update) {
     EXUpdatesUpdate *launchedUpdate = self->_updatesService.launchedUpdate;
-    id<EXUpdatesSelectionPolicy> selectionPolicy = self->_updatesService.selectionPolicy;
+    EXUpdatesSelectionPolicy *selectionPolicy = self->_updatesService.selectionPolicy;
     if ([selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:launchedUpdate filters:update.manifestFilters]) {
       resolve(@{
         @"isAvailable": @(YES),
