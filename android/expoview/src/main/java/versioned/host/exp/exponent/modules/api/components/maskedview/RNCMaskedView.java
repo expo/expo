@@ -14,12 +14,13 @@ public class RNCMaskedView extends ReactViewGroup {
   private static final String TAG = "RNCMaskedView";
 
   private Bitmap mBitmapMask = null;
+  private boolean mBitmapMaskInvalidated = false;
   private Paint mPaint;
   private PorterDuffXfermode mPorterDuffXferMode;
 
   public RNCMaskedView(Context context) {
     super(context);
-    setLayerType(LAYER_TYPE_SOFTWARE, null);
+    setLayerType(LAYER_TYPE_HARDWARE, null);
 
     mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     mPorterDuffXferMode = new PorterDuffXfermode(PorterDuff.Mode.DST_IN);
@@ -29,8 +30,12 @@ public class RNCMaskedView extends ReactViewGroup {
   protected void dispatchDraw(Canvas canvas) {
     super.dispatchDraw(canvas);
 
-    // redraw mask element to support animated elements
-    updateBitmapMask();
+    if (mBitmapMaskInvalidated) {
+      // redraw mask element to support animated elements
+      updateBitmapMask();
+
+      mBitmapMaskInvalidated = false;
+    }
 
     // draw the mask
     if (mBitmapMask != null) {
@@ -41,12 +46,30 @@ public class RNCMaskedView extends ReactViewGroup {
   }
 
   @Override
+  public void onDescendantInvalidated(View child, View target) {
+    super.onDescendantInvalidated(child, target);
+
+    if (!mBitmapMaskInvalidated) {
+      View maskView = getChildAt(0);
+      if (maskView.equals(child)) {
+        mBitmapMaskInvalidated = true;
+      }
+    }
+  }
+
+  @Override
   protected void onLayout(boolean changed, int l, int t, int r, int b) {
     super.onLayout(changed, l, t, r, b);
 
     if (changed) {
-      updateBitmapMask();
+      mBitmapMaskInvalidated = true;
     }
+  }
+
+  @Override
+  protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    mBitmapMaskInvalidated = true;
   }
 
   private void updateBitmapMask() {
