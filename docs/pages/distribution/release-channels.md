@@ -29,9 +29,9 @@ with the Expo CLI. The binary produced will only pull releases published under t
 
 ## Access Channel from Code
 
-You can access the channel your release is published under with the `releaseChannel` field in the [manifest object](/versions/latest/sdk/constants/#expoconstantsmanifest).
+You can access the channel your release is published under with the `Updates.releaseChannel` field from [expo-updates](/versions/latest/sdk/updates.md).
 
-> `Constants.manifest.releaseChannel` does NOT exist in dev mode. It does exist, however when you explicitly publish / build with it.
+> In development in Expo Go, `Updates.releaseChannel` is always `'default'`.
 
 ## Example Workflow
 
@@ -64,23 +64,19 @@ Say you have a workflow of releasing builds like this:
 
 You can create a function that looks for the specific release and adjust your app's behaviour accordingly:
 
-```javascript
-import Constants from 'expo-constants';
+```js
+import * as Updates from 'expo-updates';
 
 function getEnvironment() {
-  let releaseChannel = Constants.manifest.releaseChannel;
-
-  if (releaseChannel === undefined) {
-    // no releaseChannel (is undefined) in dev
-    return { envName: 'DEVELOPMENT', dbUrl: 'aaa', apiKey: 'bbb' }; // dev env settings
-  }
-  if (releaseChannel.indexOf('prod') !== -1) {
+  if (Updates.releaseChannel.startsWith('prod')) {
     // matches prod-v1, prod-v2, prod-v3
     return { envName: 'PRODUCTION', dbUrl: 'ccc', apiKey: 'ddd' }; // prod env settings
-  }
-  if (releaseChannel.indexOf('staging') !== -1) {
+  } else if (Updates.releaseChannel.startsWith('staging')) {
     // matches staging-v1, staging-v2
     return { envName: 'STAGING', dbUrl: 'eee', apiKey: 'fff' }; // stage env settings
+  } else {
+    // assume any other release channel is development
+    return { envName: 'DEVELOPMENT', dbUrl: 'aaa', apiKey: 'bbb' }; // dev env settings
   }
 }
 ```

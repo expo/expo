@@ -75,7 +75,7 @@ If you are using native libraries that aren't supported by Expo, you will either
 <details><summary><h4>What version of Android and iOS are supported by Expo apps?</h4></summary>
 <p>
 
-Expo supports Android 5+ and iOS 10+.
+Expo supports Android 5+ and iOS 11+.
 
 </p>
 </details>
