@@ -58,8 +58,8 @@ A conformant server MUST return a body containing a [manifest](#body) along with
 
 The choice of manifest and headers are dependent on the values of the request headers. A conformant server MUST:
 
-* Return a manifest that describes an `update` capable of running on the platform and runtime version specified in the `expo-platform` and `expo-runtime-version` request headers. 
-* Return a `manifest` that describes the most recent, sorted by creation time, `update` satisfying any constraints imposed by the headers.
+* Return a manifest that describes an update capable of running on the platform and runtime version specified in the `expo-platform` and `expo-runtime-version` request headers. 
+* Return a manifest that describes the most recent, sorted by creation time, update satisfying any constraints imposed by the headers.
 
 ### Headers
 
@@ -98,9 +98,9 @@ cache-control: max-age=0, private
 
 ### Body
 
-The body of the response MUST be a `manifest`. A `manifest` is defined as JSON conforming to the following description:
+The body of the response MUST be a manifest. A manifest is defined as JSON conforming to the following description:
 
-The response body is referred to as the `manifest` and MUST be a JSON with format:
+The response body is referred to as the manifest and MUST be a JSON with format:
 ```
 {
   id: string
@@ -111,7 +111,7 @@ The response body is referred to as the `manifest` and MUST be a JSON with forma
   updateMetadata: { [key: string]: number | string }
 }
 ```
-Where an `Asset` is the JSON:
+Where an _Asset_ is the JSON:
 ```
 {
   hash: string
