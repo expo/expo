@@ -63,7 +63,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)asset:(EXUpdatesAsset *)asset existsInDirectory:(NSURL *)directory
 {
-  return NO;
+  NSURL *fileURL = [directory URLByAppendingPathComponent:asset.filename];
+  return [NSFileManager.defaultManager fileExistsAtPath:fileURL.path];
 }
 
 @end
