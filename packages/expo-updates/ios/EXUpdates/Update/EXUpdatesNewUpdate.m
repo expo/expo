@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     config:(EXUpdatesConfig *)config
                                   database:(EXUpdatesDatabase *)database
 {
+  NSLog(@"EXPudatesNewUpdate");
   NSDictionary *manifest = rootManifest;
   if (manifest[@"manifest"]) {
     manifest = manifest[@"manifest"];
