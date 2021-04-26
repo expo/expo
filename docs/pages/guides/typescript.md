@@ -42,8 +42,6 @@ An Expo app's `tsconfig.json` should extend the `expo/tsconfig.base` by default.
   - List of library files to be included in the compilation.
 - `skipLibCheck`: -- `true`
   - Skip type checking of all declaration files (`*.d.ts`).
-- `allowSyntheticDefaultImports`: -- `true`
-  - Allow default imports from modules with no default export. This does not affect code emit, just typechecking.
 - `esModuleInterop`: -- `true`
   - Improves Babel ecosystem compatibility.
 
