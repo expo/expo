@@ -20,7 +20,7 @@ Now, it's time to convert our SVG to be compatible with React. [React-SVGR](http
 
 Paste the SVG contents from the exported SVG file into [React-SVGR](https://react-svgr.com/playground/?native=true) and make sure the "native" checkbox is ticked. It will provide output that we can copy and paste into our project.
 
-To automate this process, React-SVGR also [provides a CLI](https://react-svgr.com/docs/cli/) that could allow us to put regular SVGs in our project, then run a script that would convert them into React Native components automatically. If you have many icons, or a team of developers working on your project, it's definitely worth the time to set up process like this.
+To automate this process, React-SVGR also [provides a CLI](https://react-svgr.com/docs/cli/) that could allow us to put regular SVGs in our project, then run a script that would convert them into React components automatically. If you have many icons, or a team of developers working on your project, it's definitely worth the time to set up process like this.
 
 ## Including the SVG in our project
 
