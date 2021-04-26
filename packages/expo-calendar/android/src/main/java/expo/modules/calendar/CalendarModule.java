@@ -1125,7 +1125,7 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
       try{
         array.add(attendeeTypeStringMatchingConstant(Integer.parseInt(constant)));
       } catch (NumberFormatException e) {
-          Log.e(TAG, "error", e);
+          Log.e(TAG, "Couldn't convert attendee constant into an int.", e);
       }
     }
     return array;
