@@ -1,14 +1,21 @@
 buildscript {
+  // Simple helper that allows the root project to override versions declared by this library.
+  ext.safeExtGet = { prop, fallback ->
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+  }
+
   repositories {
     google()
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.4.21')}")
   }
 }
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 apply plugin: 'devicefarm'
-
-def safeExtGet(prop, fallback) {
-  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
-}
 
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 30)
@@ -94,6 +101,8 @@ dependencies {
   implementation fileTree(dir: 'libs', include: ['*.jar'])
 
   implementation 'androidx.multidex:multidex:2.0.0'
+
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
 
   // Our dependencies
   implementation 'androidx.appcompat:appcompat:1.2.0'

@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
-apply plugin: 'maven'
 apply plugin: 'kotlin-android'
+apply plugin: 'maven'
 
 group = 'host.exp.exponent'
 version = '0.4.1'
@@ -16,7 +16,7 @@ buildscript {
   }
 
   dependencies {
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet("kotlinVersion", "1.4.21")}")
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.4.21')}")
   }
 }
 
@@ -119,7 +119,7 @@ dependencies {
   api "androidx.appcompat:appcompat:1.1.0"
   api "androidx.lifecycle:lifecycle-extensions:2.2.0"
 
-  api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7'
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5'
 
