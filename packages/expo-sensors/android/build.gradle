@@ -60,4 +60,3 @@ dependencies {
   unimodule "unimodules-core"
   unimodule "unimodules-sensors-interface"
 }
-  

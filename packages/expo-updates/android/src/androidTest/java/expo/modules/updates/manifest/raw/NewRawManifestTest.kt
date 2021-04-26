@@ -35,6 +35,5 @@ class NewRawManifestTest {
       val manifest = NewRawManifest(JSONObject(manifestJson))
       Assert.assertNull(manifest.getSDKVersionNullable())
     }
-
   }
 }
