@@ -74,20 +74,19 @@ UM_EXPORT_METHOD_AS(getCellularGenerationAsync, getCellularGenerationAsyncWithRe
 - (CTCarrier *)carrier
 {
   CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
-  NSDictionary<NSString *, CTCarrier *> *serviceSubscriberCellularProviders;
-  CTCarrier *carrier;
 
   if (@available(iOS 12.0, *)) {
-    NSString *serviceCurrentRadioAccessTechnology;
-    serviceCurrentRadioAccessTechnology = netinfo.serviceCurrentRadioAccessTechnology.allKeys.firstObject;
+    for (id key in netinfo.serviceSubscriberCellularProviders) {
+      CTCarrier *carrier = netinfo.serviceSubscriberCellularProviders[key];
+      if (carrier.carrierName != nil) {
+        return carrier;
+      }
+    }
 
-    serviceSubscriberCellularProviders = netinfo.serviceSubscriberCellularProviders;
-    carrier = serviceSubscriberCellularProviders[serviceCurrentRadioAccessTechnology];
-  } else {
-    carrier = netinfo.subscriberCellularProvider;
+    return [[netinfo.serviceSubscriberCellularProviders objectEnumerator] nextObject];
   }
 
-  return carrier;
+  return netinfo.subscriberCellularProvider;
 }
 
 @end
