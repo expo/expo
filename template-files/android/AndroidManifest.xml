@@ -70,8 +70,32 @@
         <category android:name="android.intent.category.BROWSABLE"/>
       </intent-filter>
 
+      <intent-filter android:autoVerify="true">
+        <data
+          android:host="expo.io"
+          android:path="/expo-go"
+          android:scheme="https"/>
+        <data
+          android:host="expo.io"
+          android:path="/expo-go"
+          android:scheme="http"/>
+
+        <action android:name="android.intent.action.VIEW"/>
+
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+      </intent-filter>
+      
       <!-- This has to be separate from the exp[s]:// scheme filter. No idea why -->
       <intent-filter>
+        <data
+          android:host="expo.io"
+          android:pathPattern="/@.*/.*"
+          android:scheme="https"/>
+        <data
+          android:host="expo.io"
+          android:pathPattern="/@.*/.*"
+          android:scheme="http"/>
         <data
           android:host="exp.host"
           android:pathPrefix="/@"
