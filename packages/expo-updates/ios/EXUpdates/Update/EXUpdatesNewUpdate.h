@@ -7,7 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXUpdatesNewUpdate : NSObject
 
-+ (EXUpdatesUpdate *)updateWithNewManifest:(EXUpdatesNewRawManifest *)rootManifest
++ (EXUpdatesUpdate *)updateWithNewManifest:(EXUpdatesNewRawManifest *)manifest
                                   response:(nullable NSURLResponse *)response
                                     config:(EXUpdatesConfig *)config
                                   database:(EXUpdatesDatabase *)database;
