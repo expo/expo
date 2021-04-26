@@ -76,7 +76,7 @@ UM_EXPORT_METHOD_AS(getCellularGenerationAsync, getCellularGenerationAsyncWithRe
   CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
 
   if (@available(iOS 12.0, *)) {
-    for (id key in netinfo.serviceSubscriberCellularProviders) {
+    for (NSString *key in netinfo.serviceSubscriberCellularProviders) {
       CTCarrier *carrier = netinfo.serviceSubscriberCellularProviders[key];
       if (carrier.carrierName != nil) {
         return carrier;
