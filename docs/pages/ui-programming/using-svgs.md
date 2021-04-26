@@ -1,5 +1,5 @@
 ---
-title: Using SVGs with React Native
+title: Using SVGs
 sidebar_title: Using SVGs
 ---
 
