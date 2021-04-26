@@ -235,6 +235,7 @@ public class LocalAuthenticationModule extends ExportedModule {
       @Override
       public void run() {
         safeCancel();
+        promise.resolve(null);
       }
     });
   }
