@@ -14,8 +14,8 @@ import { useDispatch, useSelector } from './redux/Hooks';
 import SessionActions from './redux/SessionActions';
 import SettingsActions from './redux/SettingsActions';
 import LocalStorage from './storage/LocalStorage';
-import addListenerWithNativeCallback from './utils/addListenerWithNativeCallback';
 import * as UrlUtils from './utils/UrlUtils';
+import addListenerWithNativeCallback from './utils/addListenerWithNativeCallback';
 
 // Download and cache stack assets, don't block loading on this though
 Asset.loadAsync(StackAssets);
