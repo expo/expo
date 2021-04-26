@@ -550,9 +550,12 @@ public class Kernel extends KernelInterface {
       }
     }
 
-    if (uri != null) {
+    if (uri != null && !uri.toString().contains("expo.io/expo-go")) {
       if (Constants.INITIAL_URL == null) {
-        // We got an "exp://" link
+        // We got an Expo Go app link (could be exp://, http://, or https://)
+        if (!uri.getScheme().equals("exp")) {
+          intentUri = uri.buildUpon().scheme("exp").toString();
+        }
         openExperience(new KernelConstants.ExperienceOptions(intentUri, intentUri, null));
         return;
       } else {
