@@ -38,7 +38,7 @@ An Expo app's `tsconfig.json` should extend the `expo/tsconfig.base` by default.
   - Emulates how Metro and Webpack resolve modules.
 - `target`: -- `"esnext"`
   - The latest [TC39 proposed features](https://github.com/tc39/proposals).
-- `lib`: -- `["dom", "es6", "es2016.array.include", "es2017.object"]`
+- `lib`: -- `["dom", "esnext"]`
   - List of library files to be included in the compilation.
 - `skipLibCheck`: -- `true`
   - Skip type checking of all declaration files (`*.d.ts`).
