@@ -3,8 +3,8 @@
   "display": "Expo",
 
   "compilerOptions": {
-    "target": "esnext",
-    "lib": ["dom", "esnext"],
+    "target": "ESNext",
+    "lib": ["DOM", "ESNext"],
     "allowJs": true,
     "skipLibCheck": true,
     "noEmit": true,

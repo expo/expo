@@ -36,9 +36,9 @@ An Expo app's `tsconfig.json` should extend the `expo/tsconfig.base` by default.
   - Only typecheck, and skip generating transpiled code. Metro bundler is responsible for doing this.
 - [`moduleResolution`][tsc-moduleresolution]: -- `"node"`
   - Emulates how Metro and Webpack resolve modules.
-- `target`: -- `"esnext"`
+- `target`: -- `"ESNext"`
   - The latest [TC39 proposed features](https://github.com/tc39/proposals).
-- `lib`: -- `["dom", "esnext"]`
+- `lib`: -- `["DOM", "ESNext"]`
   - List of library files to be included in the compilation.
 - `skipLibCheck`: -- `true`
   - Skip type checking of all declaration files (`*.d.ts`).
