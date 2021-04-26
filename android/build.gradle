@@ -21,7 +21,7 @@ buildscript {
   }
   dependencies {
     classpath "com.android.tools.build:gradle:${gradlePluginVersion}"
-    classpath 'com.google.gms:google-services:3.2.1'
+    classpath 'com.google.gms:google-services:4.3.5'
     classpath "de.undercouch:gradle-download-task:$gradleDownloadTaskVersion"
 
     // https://github.com/awslabs/aws-device-farm-gradle-plugin/releases
