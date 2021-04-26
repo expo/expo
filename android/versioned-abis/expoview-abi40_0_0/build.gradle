@@ -165,5 +165,3 @@ dependencies {
   // @react-native-community/viewpager
   api 'com.github.troZee:ViewPager2:v1.0.6'
 }
-
-
