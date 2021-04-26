@@ -12,8 +12,15 @@ open class DevMenuAction: DevMenuScreenItem, DevMenuCallableProvider {
   }
   
   @objc
-  open var isAvailable: () -> Bool = { true }
-
+  open var isAvailable: () -> Bool {
+    get {
+      return self.callable.isAvailable
+    }
+    set {
+      self.callable.isAvailable = newValue
+    }
+  }
+  
   @objc
   open var isEnabled: () -> Bool = { false }
 
