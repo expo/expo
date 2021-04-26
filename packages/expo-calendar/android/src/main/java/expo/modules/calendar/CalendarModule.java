@@ -929,8 +929,10 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
   private ArrayList<String> calendarAllowedRemindersFromDBString(String dbString) {
     ArrayList<String> array = new ArrayList<>();
     for (String constant : dbString.split(",")) {
-      if(!constant.isEmpty() && constant.matches("-?\\d+")){
+      try{
       array.add(reminderStringMatchingConstant(Integer.parseInt(constant)));
+      } catch (NumberFormatException e) {
+          Log.e(TAG, "error", e);
       }
     }
     return array;
@@ -1120,8 +1122,10 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
   private ArrayList<String> calendarAllowedAttendeeTypesFromDBString(String dbString) {
     ArrayList<String> array = new ArrayList<>();
     for (String constant : dbString.split(",")) {
-      if(!constant.isEmpty() && constant.matches("-?\\d+")){
+      try{
       array.add(attendeeTypeStringMatchingConstant(Integer.parseInt(constant)));
+      } catch (NumberFormatException e) {
+          Log.e(TAG, "error", e);
       }
     }
     return array;
