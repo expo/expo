@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSNumber *)commitTimeNumber;
 - (nullable NSDictionary *)metadata;
+- (nullable NSArray *)assets;
 
 @end
 

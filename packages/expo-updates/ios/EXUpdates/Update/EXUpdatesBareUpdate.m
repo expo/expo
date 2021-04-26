@@ -18,15 +18,12 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   config:config
                                                                 database:database];
 
-  id updateId = manifest.rawID;
-  id commitTime = manifest.commitTimeNumber;
-  id metadata = manifest.metadata;
-  id assets = manifest.assets;
-
-  NSAssert([updateId isKindOfClass:[NSString class]], @"update ID should be a string");
-  NSAssert([commitTime isKindOfClass:[NSNumber class]], @"commitTime should be a number");
-  NSAssert(!metadata || [metadata isKindOfClass:[NSDictionary class]], @"metadata should be null or an object");
-  NSAssert(!assets || [assets isKindOfClass:[NSArray class]], @"assets should be null or an array");
+  NSString *updateId = manifest.rawID;
+  NSNumber *commitTime = manifest.commitTimeNumber;
+  NSDictionary *metadata = manifest.metadata;
+  NSArray *assets = manifest.assets;
+  
+  NSAssert(updateId != nil, @"update ID should not be null");
 
   NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:(NSString *)updateId];
   NSAssert(uuid, @"update ID should be a valid UUID");

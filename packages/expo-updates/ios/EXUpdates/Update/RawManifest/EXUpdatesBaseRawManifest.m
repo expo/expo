@@ -17,51 +17,51 @@
 
 # pragma mark - Field Getters
 
-- (NSString *)rawID {
-  return self.rawManifestJSON[@"id"];
+- (nullable NSString *)rawID {
+  return [self.rawManifestJSON nullableStringForKey:@"id"];
 }
 
-- (NSString *)revisionId {
-  return self.rawManifestJSON[@"revisionId"];
+- (nullable NSString *)revisionId {
+  return [self.rawManifestJSON nullableStringForKey:@"revisionId"];
 }
 
 - (nullable NSString *)slug {
-  return self.rawManifestJSON[@"slug"];
+  return [self.rawManifestJSON nullableStringForKey:@"slug"];
 }
 
 - (nullable NSString *)appKey {
-  return self.rawManifestJSON[@"appKey"];
+  return [self.rawManifestJSON nullableStringForKey:@"appKey"];
 }
 
 - (nullable NSString *)name {
-  return self.rawManifestJSON[@"name"];
+  return [self.rawManifestJSON nullableStringForKey:@"name"];
 }
 
 - (nullable NSDictionary *)notificationPreferences {
-  return self.rawManifestJSON[@"notification"];
+  return [self.rawManifestJSON nullableDictionaryForKey:@"notification"];
 }
 
 - (nullable NSDictionary *)updatesInfo {
-  return self.rawManifestJSON[@"updates"];
+  return [self.rawManifestJSON nullableDictionaryForKey:@"updates"];
 }
 
 - (nullable NSDictionary *)iosConfig {
-  return self.rawManifestJSON[@"ios"];
+  return [self.rawManifestJSON nullableDictionaryForKey:@"ios"];
 }
 
 - (nullable NSString *)hostUri {
-  return self.rawManifestJSON[@"hostUri"];
+  return [self.rawManifestJSON nullableStringForKey:@"hostUri"];
 }
 
 - (nullable NSString *)orientation {
-  return self.rawManifestJSON[@"orientation"];
+  return [self.rawManifestJSON nullableStringForKey:@"orientation"];
 }
 
 # pragma mark - Derived Methods
 
 - (BOOL)isDevelopmentMode {
-  NSDictionary *manifestPackagerOptsConfig = self.rawManifestJSON[@"packagerOpts"];
-  return (self.rawManifestJSON[@"developer"] != nil && manifestPackagerOptsConfig != nil && [@(YES) isEqualToNumber:manifestPackagerOptsConfig[@"dev"]]);
+  NSDictionary *manifestPackagerOptsConfig = [self.rawManifestJSON nullableDictionaryForKey:@"packagerOpts"];
+  return ([self.rawManifestJSON nullableDictionaryForKey:@"developer"] != nil && manifestPackagerOptsConfig != nil && [@(YES) isEqualToNumber:manifestPackagerOptsConfig[@"dev"]]);
 }
 
 - (BOOL)isDevelopmentSilentLaunch {
@@ -80,17 +80,17 @@
 }
 
 - (nullable NSString *)userInterfaceStyle {
-  if (self.iosConfig && self.iosConfig[@"userInterfaceStyle"]) {
-    return self.iosConfig[@"userInterfaceStyle"];
+  if (self.iosConfig && [self.iosConfig nullableStringForKey:@"userInterfaceStyle"]) {
+    return [self.iosConfig nullableStringForKey:@"userInterfaceStyle"];
   }
-  return self.rawManifestJSON[@"userInterfaceStyle"];
+  return [self.rawManifestJSON nullableStringForKey:@"userInterfaceStyle"];
 }
 
 - (nullable NSString *)androidOrRootBackroundColor {
-  if (self.iosConfig && self.iosConfig[@"backgroundColor"]) {
-    return self.iosConfig[@"backgroundColor"];
+  if (self.iosConfig && [self.iosConfig nullableStringForKey:@"backgroundColor"]) {
+    return [self.iosConfig nullableStringForKey:@"backgroundColor"];
   }
-  return self.rawManifestJSON[@"backgroundColor"];
+  return [self.rawManifestJSON nullableStringForKey:@"backgroundColor"];
 }
 
 - (nullable NSString *)iosSplashBackgroundColor {

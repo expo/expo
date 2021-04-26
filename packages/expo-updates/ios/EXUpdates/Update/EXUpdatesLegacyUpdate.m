@@ -29,13 +29,11 @@ static NSString * const EXUpdatesExpoTestDomain = @"expo.test";
     update.updateId = [NSUUID UUID];
     update.commitTime = [NSDate date];
   } else {
-    id updateId = manifest.releaseID;
-    NSAssert([updateId isKindOfClass:[NSString class]], @"update ID should be a string");
+    NSString *updateId = manifest.releaseID;
     update.updateId = [[NSUUID alloc] initWithUUIDString:(NSString *)updateId];
     NSAssert(update.updateId, @"update ID should be a valid UUID");
 
-    id commitTimeString = manifest.commitTime;
-    NSAssert([commitTimeString isKindOfClass:[NSString class]], @"commitTime should be a string");
+    NSString *commitTimeString = manifest.commitTime;
     update.commitTime = [RCTConvert NSDate:commitTimeString];
   }
 
@@ -46,10 +44,9 @@ static NSString * const EXUpdatesExpoTestDomain = @"expo.test";
     update.status = EXUpdatesUpdateStatusPending;
   }
 
-  id bundleUrlString = manifest.bundleUrl;
-  id assets = manifest.bundledAssets ?: @[];
+  NSString *bundleUrlString = manifest.bundleUrl;
+  NSArray *assets = manifest.bundledAssets ?: @[];
 
-  id sdkVersion = manifest.sdkVersion;
   id runtimeVersion = manifest.runtimeVersion;
   if (runtimeVersion && [runtimeVersion isKindOfClass:[NSDictionary class]]) {
     id runtimeVersionIos = ((NSDictionary *)runtimeVersion)[@"ios"];
@@ -58,12 +55,10 @@ static NSString * const EXUpdatesExpoTestDomain = @"expo.test";
   } else if (runtimeVersion && [runtimeVersion isKindOfClass:[NSString class]]) {
     update.runtimeVersion = (NSString *)runtimeVersion;
   } else {
-    NSAssert([sdkVersion isKindOfClass:[NSString class]], @"sdkVersion should be a string");
-    update.runtimeVersion = (NSString *)sdkVersion;
+    NSString *sdkVersion = manifest.sdkVersion;
+    NSAssert(sdkVersion != nil, @"sdkVersion should not be null");
+    update.runtimeVersion = sdkVersion;
   }
-
-  NSAssert([bundleUrlString isKindOfClass:[NSString class]], @"bundleUrl should be a string");
-  NSAssert([assets isKindOfClass:[NSArray class]], @"assets should be a nonnull array");
 
   NSURL *bundleUrl = [NSURL URLWithString:bundleUrlString];
   NSAssert(bundleUrl, @"bundleUrl should be a valid URL");
@@ -79,7 +74,7 @@ static NSString * const EXUpdatesExpoTestDomain = @"expo.test";
   
   NSURL *bundledAssetBaseUrl = [[self class] bundledAssetBaseUrlWithManifest:manifest config:config];
 
-  for (NSString *bundledAsset in (NSArray *)assets) {
+  for (NSString *bundledAsset in assets) {
     NSAssert([bundledAsset isKindOfClass:[NSString class]], @"bundledAssets must be an array of strings");
 
     NSRange extensionStartRange = [bundledAsset rangeOfString:@"." options:NSBackwardsSearch];

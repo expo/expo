@@ -7,7 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXUpdatesBaseLegacyRawManifest : EXUpdatesBaseRawManifest
 
 - (NSString *)bundleUrl;
-- (NSString *)sdkVersion;
+- (nullable NSString *)sdkVersion;
 - (nullable NSArray *)assets;
 
 @end

@@ -4,12 +4,16 @@
 
 @implementation EXUpdatesBareRawManifest
 
-- (nonnull NSNumber *)commitTimeNumber {
-  return self.rawManifestJSON[@"commitTime"];
+- (NSNumber *)commitTimeNumber {
+  return [self.rawManifestJSON numberForKey:@"commitTime"];
 }
 
 - (NSDictionary *)metadata {
-  return self.rawManifestJSON[@"metadata"];
+  return [self.rawManifestJSON nullableDictionaryForKey:@"metadata"];
+}
+
+- (nullable NSArray *)assets {
+  return [self.rawManifestJSON nullableArrayForKey:@"assets"];
 }
 
 @end
