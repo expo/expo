@@ -42,6 +42,9 @@ public class DevMenuExportedAction: DevMenuExportedCallable {
   public private(set) var keyCommand: UIKeyCommand? = nil
   
   @objc
+  public var isAvailable: () -> Bool = { true }
+  
+  @objc
   public init(withId id: String, withAction action: @escaping  () -> Void) {
     self.action = action
     super.init(withId: id)

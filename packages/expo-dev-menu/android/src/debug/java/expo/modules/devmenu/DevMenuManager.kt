@@ -319,7 +319,9 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       .filterIsInstance<DevMenuExportedAction>()
       .find { it.keyCommand == keyCommand }
       ?.run {
-        action()
+        if (isAvailable()) {
+          action()
+        }
         true
       } ?: false
   }

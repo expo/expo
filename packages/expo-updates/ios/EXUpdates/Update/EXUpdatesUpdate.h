@@ -2,6 +2,7 @@
 
 #import <EXUpdates/EXUpdatesAsset.h>
 #import <EXUpdates/EXUpdatesConfig.h>
+#import <EXUpdates/EXUpdatesRawManifest.h>
 
 @class EXUpdatesDatabase;
 
@@ -31,7 +32,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesUpdateStatus) {
 @property (nonatomic, strong, readonly, nullable) NSDictionary *serverDefinedHeaders;
 @property (nonatomic, strong, readonly, nullable) NSDictionary *manifestFilters;
 
-@property (nonatomic, strong, readonly) NSDictionary *rawManifest;
+@property (nonatomic, strong, readonly) EXUpdatesRawManifest *rawManifest;
 
 @property (nonatomic, assign) EXUpdatesUpdateStatus status;
 
@@ -54,6 +55,8 @@ typedef NS_ENUM(NSInteger, EXUpdatesUpdateStatus) {
 + (instancetype)updateWithEmbeddedManifest:(NSDictionary *)manifest
                                     config:(EXUpdatesConfig *)config
                                   database:(nullable EXUpdatesDatabase *)database;
+
++ (EXUpdatesRawManifest *)rawManifestForJSON:(NSDictionary *)manifestJSON;
 
 @end
 

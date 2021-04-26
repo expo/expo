@@ -45,68 +45,68 @@
   NSString *scopeKey = @"dummyScope";
   EXUpdatesConfig *config = [EXUpdatesConfig new];
   EXUpdatesDatabase *database = [EXUpdatesDatabase new];
-  
-  _updateRollout0 = [EXUpdatesNewUpdate updateWithNewManifest:@{
+
+  _updateRollout0 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e71",
     @"createdAt": @"2021-01-10T19:39:22.480Z",
     @"runtimeVersion": @"1.0",
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
     @"updateMetadata": @{@"branchName": @"rollout"}
-  } response:nil config:config database:database];
+  }] response:nil config:config database:database];
 
-  _updateDefault1 = [EXUpdatesNewUpdate updateWithNewManifest:@{
+  _updateDefault1 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e72",
     @"createdAt": @"2021-01-11T19:39:22.480Z",
     @"runtimeVersion": @"1.0",
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
     @"updateMetadata": @{@"branchName": @"default"}
-  } response:nil config:config database:database];
-  
-  _updateRollout1 = [EXUpdatesNewUpdate updateWithNewManifest:@{
+  }] response:nil config:config database:database];
+
+  _updateRollout1 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e73",
     @"createdAt": @"2021-01-12T19:39:22.480Z",
     @"runtimeVersion": @"1.0",
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
     @"updateMetadata": @{@"branchName": @"rollout"}
-  } response:nil config:config database:database];
-  
-  _updateDefault2 = [EXUpdatesNewUpdate updateWithNewManifest:@{
+  }] response:nil config:config database:database];
+
+  _updateDefault2 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e74",
     @"createdAt": @"2021-01-13T19:39:22.480Z",
     @"runtimeVersion": @"1.0",
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
     @"updateMetadata": @{@"branchName": @"default"}
-  } response:nil config:config database:database];
-  
-  _updateRollout2 = [EXUpdatesNewUpdate updateWithNewManifest:@{
+  }] response:nil config:config database:database];
+
+  _updateRollout2 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e75",
     @"createdAt": @"2021-01-14T19:39:22.480Z",
     @"runtimeVersion": @"1.0",
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
     @"updateMetadata": @{@"branchName": @"rollout"}
-  } response:nil config:config database:database];
+  }] response:nil config:config database:database];
 
-  _updateMultipleFilters = [EXUpdatesNewUpdate updateWithNewManifest:@{
+  _updateMultipleFilters = [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e72",
     @"createdAt": @"2021-01-11T19:39:22.480Z",
     @"runtimeVersion": @"1.0",
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
     @"updateMetadata": @{@"firstKey": @"value1", @"secondKey": @"value2"}
-  } response:nil config:config database:database];
+  }] response:nil config:config database:database];
 
-  _updateNoMetadata = [EXUpdatesNewUpdate updateWithNewManifest:@{
+  _updateNoMetadata = [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e72",
     @"createdAt": @"2021-01-11T19:39:22.480Z",
     @"runtimeVersion": @"1.0",
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset]
-  } response:nil config:config database:database];
+  }] response:nil config:config database:database];
 
   _selectionPolicy = [EXUpdatesSelectionPolicyFactory filterAwarePolicyWithRuntimeVersion:runtimeVersion];
   _manifestFilters = @{@"branchname": @"rollout"};

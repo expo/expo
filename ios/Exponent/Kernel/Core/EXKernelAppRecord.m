@@ -58,7 +58,7 @@ NSString *kEXKernelBridgeDidBackgroundNotification = @"EXKernelBridgeDidBackgrou
 - (NSString * _Nullable)experienceId
 {
   if (self.appLoader && self.appLoader.manifest) {
-    id experienceIdJsonValue = self.appLoader.manifest[@"id"];
+    id experienceIdJsonValue = self.appLoader.manifest.rawID;
     if (experienceIdJsonValue) {
       RCTAssert([experienceIdJsonValue isKindOfClass:[NSString class]], @"Manifest contains an id which is not a string: %@", experienceIdJsonValue);
       return experienceIdJsonValue;

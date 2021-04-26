@@ -10,7 +10,7 @@
 
 @property (nonatomic, strong) EXUpdatesDatabase *db;
 @property (nonatomic, strong) NSURL *testDatabaseDir;
-@property (nonatomic, strong) NSDictionary *manifest;
+@property (nonatomic, strong) EXUpdatesNewRawManifest *manifest;
 @property (nonatomic, strong) EXUpdatesConfig *config;
 
 @end
@@ -34,12 +34,12 @@
     XCTAssertNil(dbOpenError);
   });
 
-  _manifest = @{
+  _manifest = [[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
     @"runtimeVersion": @"1",
     @"id": @"0eef8214-4833-4089-9dff-b4138a14f196",
     @"createdAt": @"2020-11-11T00:17:54.797Z",
     @"launchAsset": @{@"url": @"https://url.to/bundle.js", @"contentType": @"application/javascript"}
-  };
+  }];
   _config = [EXUpdatesConfig configWithDictionary:@{
     @"EXUpdatesURL": @"https://exp.host/@test/test",
     @"EXUpdatesUsesLegacyManifest": @(NO)

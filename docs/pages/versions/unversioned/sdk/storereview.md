@@ -16,7 +16,9 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection packageName="expo-store-review" />
+> `expo-linking` is a peer dependency and must be installed alongside `expo-store-review`.
+
+<InstallSection packageName="expo-store-review expo-linking" />
 
 ## API
 

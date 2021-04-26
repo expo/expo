@@ -13,9 +13,9 @@ static NSString* kPublicKeyTag = @"exp.host.publickey";
 
 @implementation EXApiUtil
 
-+ (NSURL *)bundleUrlFromManifest:(NSDictionary *)manifest
++ (NSURL *)bundleUrlFromManifest:(EXUpdatesRawManifest *)manifest
 {
-  NSString *urlString = [manifest objectForKey:@"bundleUrl"];
+  NSString *urlString = manifest.bundleUrl;
   RCTAssert([urlString isKindOfClass:[NSString class]], @"Manifest contains a bundleUrl which is not a string: %@", urlString);
   return [[self class] encodedUrlFromString:urlString];
 }

@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) EXUpdatesConfig *config;
 @property (nonatomic, strong, nullable) EXUpdatesDatabase *database;
 
-- (instancetype)initWithRawManifest:(NSDictionary *)manifest
+- (instancetype)initWithRawManifest:(EXUpdatesRawManifest *)manifest
                              config:(EXUpdatesConfig *)config
                            database:(nullable EXUpdatesDatabase *)database;
 
