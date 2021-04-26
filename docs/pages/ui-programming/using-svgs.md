@@ -16,7 +16,7 @@ Once we have a vector created inside a design program, like Figma, Illustrator, 
 
 ## Converting an SVG for React Native
 
-Now, it's time to convert our SVG to be compatible with React Native. [React-SVGR](https://react-svgr.com/playground/?native=true) is a great tool to accomplish this. It takes an SVG as input then can transform it into another format, including a format that works with React Native.
+Now, it's time to convert our SVG to be compatible with React. [React-SVGR](https://react-svgr.com/playground/?native=true) is a great tool to accomplish this. It takes an SVG as input then can transform it into another format, including a format that works with React.
 
 Paste the SVG contents from the exported SVG file into [React-SVGR](https://react-svgr.com/playground/?native=true) and make sure the "native" checkbox is ticked. It will provide output that we can copy and paste into our React Native project.
 
