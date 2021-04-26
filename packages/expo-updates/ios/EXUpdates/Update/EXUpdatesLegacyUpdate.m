@@ -19,7 +19,6 @@ static NSString * const EXUpdatesExpoTestDomain = @"expo.test";
                                        config:(EXUpdatesConfig *)config
                                      database:(EXUpdatesDatabase *)database
 {
-  NSLog(@"EXUpdatesLegacyUpdate");
   EXUpdatesUpdate *update = [[EXUpdatesUpdate alloc] initWithRawManifest:manifest
                                                                   config:config
                                                                 database:database];

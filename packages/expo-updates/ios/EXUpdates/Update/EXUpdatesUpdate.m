@@ -23,7 +23,6 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
                              config:(EXUpdatesConfig *)config
                            database:(nullable EXUpdatesDatabase *)database
 {
-  NSLog(@"EXUpdatesUpdate");
   if (self = [super init]) {
     _rawManifest = manifest;
     _config = config;
@@ -65,7 +64,6 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
                           database:(EXUpdatesDatabase *)database
                              error:(NSError ** _Nullable)error
 {
-  NSLog(@"updateWithManifest");
   if (![response isKindOfClass:[NSHTTPURLResponse class]]) {
     if(error){
       *error = [NSError errorWithDomain:EXUpdatesUpdateErrorDomain
@@ -102,7 +100,6 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
                                     config:(EXUpdatesConfig *)config
                                   database:(nullable EXUpdatesDatabase *)database
 {
-  NSLog(@"updateWithEmbeddedManifest");
   if (manifest[@"releaseId"]) {
     return [EXUpdatesLegacyUpdate updateWithLegacyManifest:manifest
                                                     config:config

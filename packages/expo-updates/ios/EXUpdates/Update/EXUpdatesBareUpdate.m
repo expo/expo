@@ -13,7 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
                                      config:(EXUpdatesConfig *)config
                                    database:(EXUpdatesDatabase *)database
 {
-  NSLog(@"EXUpdatesBareUpdate");
   EXUpdatesUpdate *update = [[EXUpdatesUpdate alloc] initWithRawManifest:manifest
                                                                   config:config
                                                                 database:database];
@@ -35,7 +34,6 @@ NS_ASSUME_NONNULL_BEGIN
 
   // use unsanitized id value from manifest
   NSString *bundleKey = [NSString stringWithFormat:@"bundle-%@", updateId];
-  NSLog(@"creating asset for launch asset %@", bundleKey);
   EXUpdatesAsset *jsBundleAsset = [[EXUpdatesAsset alloc] initWithKey:bundleKey type:EXUpdatesBareEmbeddedBundleFileType];
   jsBundleAsset.isLaunchAsset = YES;
   jsBundleAsset.mainBundleFilename = EXUpdatesBareEmbeddedBundleFilename;
@@ -56,7 +54,6 @@ NS_ASSUME_NONNULL_BEGIN
       }
 
       NSString *key = packagerHash;
-      NSLog(@"creating asset for %@", key);
       EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithKey:key type:(NSString *)type];
       asset.mainBundleDir = mainBundleDir;
       asset.mainBundleFilename = mainBundleFilename;

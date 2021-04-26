@@ -11,7 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithKey:(nullable NSString *)key type:(NSString *)type
 {
-  NSLog(@"EXUpdatesAsset key: %@", key);
   if (self = [super init]) {
     _key = key;
     _type = type;

@@ -49,7 +49,6 @@ class BareManifest private constructor(
         try {
           val assetObject = mAssets.getJSONObject(i)
           val type = assetObject.getString("type")
-          //assetObject.getString("packagerHash") + "." + type,
           val assetEntity = AssetEntity(
             assetObject.getString("packagerHash"),
             type
