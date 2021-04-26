@@ -1123,7 +1123,7 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
     ArrayList<String> array = new ArrayList<>();
     for (String constant : dbString.split(",")) {
       try{
-      array.add(attendeeTypeStringMatchingConstant(Integer.parseInt(constant)));
+        array.add(attendeeTypeStringMatchingConstant(Integer.parseInt(constant)));
       } catch (NumberFormatException e) {
           Log.e(TAG, "error", e);
       }
