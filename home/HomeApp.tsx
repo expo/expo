@@ -15,6 +15,7 @@ import SessionActions from './redux/SessionActions';
 import SettingsActions from './redux/SettingsActions';
 import LocalStorage from './storage/LocalStorage';
 import addListenerWithNativeCallback from './utils/addListenerWithNativeCallback';
+import * as UrlUtils from './utils/UrlUtils';
 
 // Download and cache stack assets, don't block loading on this though
 Asset.loadAsync(StackAssets);
@@ -56,8 +57,8 @@ export default function HomeApp() {
     if (!isShowingSplashScreen && Platform.OS === 'ios') {
       // If Expo Go is opened via deep linking, we'll get the URL here
       Linking.getInitialURL().then(initialUrl => {
-        if (initialUrl) {
-          Linking.openURL(initialUrl);
+        if (initialUrl && !initialUrl.match('expo.io/expo-go')) {
+          Linking.openURL(UrlUtils.toExp(initialUrl));
         }
       });
     }
