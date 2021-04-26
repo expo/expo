@@ -3,15 +3,15 @@
   "display": "Expo",
 
   "compilerOptions": {
-    "target": "ESNext",
-    "lib": ["DOM", "ESNext"],
     "allowJs": true,
-    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "jsx": "react-native",
+    "lib": ["DOM", "ESNext"],
+    "moduleResolution": "node",
     "noEmit": true,
     "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "moduleResolution": "node",
-    "jsx": "react-native"
+    "skipLibCheck": true,
+    "target": "ESNext"
   },
 
   "exclude": ["node_modules", "babel.config.js", "metro.config.js", "jest.config.js"]

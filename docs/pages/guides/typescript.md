@@ -26,24 +26,24 @@ You can now run `yarn tsc` or `npx tsc` to typecheck the project.
 
 An Expo app's `tsconfig.json` should extend the `expo/tsconfig.base` by default. This sets the following default [compiler options][tsc-compileroptions] (which can be overwritten in your project's `tsconfig.json`):
 
-- [`jsx`][tsc-jsx]: -- `"react-native"`
-  - Preserves JSX, and converts the extension `jsx` to `js`. This is optimized for bundlers that transform the JSX internally (like Metro).
 - `allowJs`: -- `true`
   - Allow JavaScript files to be compiled. If you project requires more strictness, you can disable this.
-- `resolveJsonModule`: -- `true`
-  - Enables importing `.json` files. Metro's default behavior is to allow importing json files as JS objects.
-- `noEmit`: -- `true`
-  - Only typecheck, and skip generating transpiled code. Metro bundler is responsible for doing this.
-- [`moduleResolution`][tsc-moduleresolution]: -- `"node"`
-  - Emulates how Metro and Webpack resolve modules.
-- `target`: -- `"ESNext"`
-  - The latest [TC39 proposed features](https://github.com/tc39/proposals).
-- `lib`: -- `["DOM", "ESNext"]`
-  - List of library files to be included in the compilation.
-- `skipLibCheck`: -- `true`
-  - Skip type checking of all declaration files (`*.d.ts`).
 - `esModuleInterop`: -- `true`
   - Improves Babel ecosystem compatibility.
+- [`jsx`][tsc-jsx]: -- `"react-native"`
+  - Preserves JSX, and converts the extension `jsx` to `js`. This is optimized for bundlers that transform the JSX internally (like Metro).
+- `lib`: -- `["DOM", "ESNext"]`
+  - List of library files to be included in the compilation.
+- [`moduleResolution`][tsc-moduleresolution]: -- `"node"`
+  - Emulates how Metro and Webpack resolve modules.
+- `noEmit`: -- `true`
+  - Only typecheck, and skip generating transpiled code. Metro bundler is responsible for doing this.
+- `resolveJsonModule`: -- `true`
+  - Enables importing `.json` files. Metro's default behavior is to allow importing json files as JS objects.
+- `skipLibCheck`: -- `true`
+  - Skip type checking of all declaration files (`*.d.ts`).
+- `target`: -- `"ESNext"`
+  - The latest [TC39 proposed features](https://github.com/tc39/proposals).
 
 [tsc-jsx]: https://www.typescriptlang.org/docs/handbook/jsx.html
 [tsc-compileroptions]: https://www.typescriptlang.org/docs/handbook/compiler-options.html
