@@ -57,7 +57,7 @@ export default function HomeApp() {
     if (!isShowingSplashScreen && Platform.OS === 'ios') {
       // If Expo Go is opened via deep linking, we'll get the URL here
       Linking.getInitialURL().then(initialUrl => {
-        if (initialUrl && !initialUrl.match('expo.io/expo-go')) {
+        if (initialUrl && !initialUrl.includes('expo.io/expo-go')) {
           Linking.openURL(UrlUtils.toExp(initialUrl));
         }
       });
