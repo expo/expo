@@ -83,26 +83,6 @@
   XCTAssertThrows([EXUpdatesNewUpdate updateWithNewManifest:manifest response:nil config:_config database:_database]);
 }
 
-- (void)testUpdateWithNewManifest_StripsOptionalRootLevelKeys
-{
-  NSDictionary *rawManifestJSON = @{
-    @"runtimeVersion": @"1",
-    @"id": @"0eef8214-4833-4089-9dff-b4138a14f196",
-    @"createdAt": @"2020-11-11T00:17:54.797Z",
-    @"launchAsset": @{@"url": @"https://url.to/bundle.js", @"contentType": @"application/javascript"}
-  };
-  
-  EXUpdatesNewRawManifest *manifestNoRootLevelKeys = [[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:rawManifestJSON];
-  EXUpdatesNewRawManifest *manifestWithRootLevelKeys = [[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
-    @"manifest": rawManifestJSON
-  }];
-
-  EXUpdatesUpdate *update1 = [EXUpdatesNewUpdate updateWithNewManifest:manifestNoRootLevelKeys response:nil config:_config database:_database];
-  EXUpdatesUpdate *update2 = [EXUpdatesNewUpdate updateWithNewManifest:manifestWithRootLevelKeys response:nil config:_config database:_database];
-
-  XCTAssert([update1.updateId isEqual:update2.updateId]);
-}
-
 - (void)testDictionaryWithStructuredHeader_SupportedTypes
 {
   NSString *header = @"string=\"string-0000\", true=?1, false=?0, integer=47, decimal=47.5";
