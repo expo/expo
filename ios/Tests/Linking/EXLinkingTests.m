@@ -130,6 +130,12 @@
   }
 }
 
+#pragma mark - EAS manifests
+
+- (void)testEASManifestUrls {
+  [self _assertDeepLink:@"exps://updates.expo.dev/37700852-0840-47b7-80cb-d57746395f57?runtime-version=exposdk%3A40.0.0&channel-name=main" routesToManifest:@"exps://updates.expo.dev/37700852-0840-47b7-80cb-d57746395f57?runtime-version=exposdk%3A40.0.0&channel-name=main"];
+}
+
 #pragma mark - internal
 
 - (void)_assertDeepLink:(NSString *)deepLinkUrlString routesToManifest:(NSString *)manifestUrlString

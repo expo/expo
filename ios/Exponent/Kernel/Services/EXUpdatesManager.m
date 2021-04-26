@@ -36,7 +36,7 @@ NSString * const EXUpdatesDownloadFinishedEventType = @"downloadFinished";
 @implementation EXUpdatesManager
 
 - (void)notifyApp:(EXKernelAppRecord *)appRecord
-ofDownloadWithManifest:(NSDictionary * _Nullable)manifest
+ofDownloadWithManifest:(EXUpdatesRawManifest * _Nullable)manifest
             isNew:(BOOL)isBundleNew
             error:(NSError * _Nullable)error;
 {
@@ -48,17 +48,15 @@ ofDownloadWithManifest:(NSDictionary * _Nullable)manifest
              @"message": error.localizedDescription
              };
   } else if (isBundleNew) {
-    if (!manifest) {
-      // prevent a crash, but this shouldn't ever happen
-      manifest = @{};
-    }
+    // prevent a crash, but this shouldn't ever happen
+    NSDictionary *rawManifestJSON = manifest ? manifest.rawManifestJSON : @{};
     bodyLegacy = @{
                    @"type": EXUpdatesDownloadFinishedEventType,
-                   @"manifest": manifest
+                   @"manifest": rawManifestJSON
                    };
     body = @{
              @"type": EXUpdatesUpdateAvailableEventType,
-             @"manifest": manifest
+             @"manifest": rawManifestJSON
              };
   } else {
     body = @{
@@ -147,7 +145,7 @@ ofDownloadWithManifest:(NSDictionary * _Nullable)manifest
 
 - (void)updatesModule:(id)scopedModule
 didRequestManifestWithCacheBehavior:(EXManifestCacheBehavior)cacheBehavior
-              success:(void (^)(NSDictionary * _Nonnull))success
+              success:(void (^)(EXUpdatesRawManifest * _Nonnull))success
               failure:(void (^)(NSError * _Nonnull))failure
 {
   if ([EXEnvironment sharedEnvironment].isDetached && ![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled) {
@@ -173,7 +171,7 @@ didRequestManifestWithCacheBehavior:(EXManifestCacheBehavior)cacheBehavior
 - (void)updatesModule:(id)scopedModule
 didRequestBundleWithCompletionQueue:(dispatch_queue_t)completionQueue
                 start:(void (^)(void))startBlock
-              success:(void (^)(NSDictionary * _Nullable))success
+              success:(void (^)(EXUpdatesRawManifest * _Nullable))success
               failure:(void (^)(NSError * _Nonnull))failure
 {
   if ([EXEnvironment sharedEnvironment].isDetached && ![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled) {

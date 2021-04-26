@@ -78,17 +78,17 @@
   return @"";
 }
 
-- (NSString *)availableSdkVersionForManifest: (NSDictionary * _Nullable)manifest
+- (NSString *)availableSdkVersionForManifest: (EXUpdatesRawManifest * _Nullable)manifest
 {
   return [self _versionForManifest:manifest];
 }
 
 #pragma mark - Internal
 
-- (NSString *)_versionForManifest:(NSDictionary * _Nullable)manifest
+- (NSString *)_versionForManifest:(EXUpdatesRawManifest * _Nullable)manifest
 {
-  if (manifest && manifest[@"sdkVersion"]) {
-    NSString *sdkVersion = manifest[@"sdkVersion"];
+  if (manifest && manifest.sdkVersion) {
+    NSString *sdkVersion = manifest.sdkVersion;
     NSArray *sdkVersions = _versions[@"sdkVersions"];
     if (sdkVersion && sdkVersions) {
       for (NSString *availableVersion in sdkVersions) {
