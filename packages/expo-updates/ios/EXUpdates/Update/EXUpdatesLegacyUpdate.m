@@ -15,7 +15,7 @@ static NSString * const EXUpdatesExpoTestDomain = @"expo.test";
 
 @implementation EXUpdatesLegacyUpdate
 
-+ (EXUpdatesUpdate *)updateWithLegacyManifest:(NSDictionary *)manifest
++ (EXUpdatesUpdate *)updateWithLegacyManifest:(EXUpdatesLegacyRawManifest *)manifest
                                        config:(EXUpdatesConfig *)config
                                      database:(EXUpdatesDatabase *)database
 {
@@ -23,34 +23,34 @@ static NSString * const EXUpdatesExpoTestDomain = @"expo.test";
                                                                   config:config
                                                                 database:database];
 
-  if ([[self class] areDevToolsEnabledWithManifest:manifest]) {
+  if (manifest.isUsingDeveloperTool) {
     // XDL does not set a releaseId or commitTime for development manifests.
     // we do not need these so we just stub them out
     update.updateId = [NSUUID UUID];
     update.commitTime = [NSDate date];
   } else {
-    id updateId = manifest[@"releaseId"];
+    id updateId = manifest.releaseID;
     NSAssert([updateId isKindOfClass:[NSString class]], @"update ID should be a string");
     update.updateId = [[NSUUID alloc] initWithUUIDString:(NSString *)updateId];
     NSAssert(update.updateId, @"update ID should be a valid UUID");
 
-    id commitTimeString = manifest[@"commitTime"];
+    id commitTimeString = manifest.commitTime;
     NSAssert([commitTimeString isKindOfClass:[NSString class]], @"commitTime should be a string");
     update.commitTime = [RCTConvert NSDate:commitTimeString];
   }
 
-  if ([[self class] isDevelopmentModeManifest:manifest]) {
+  if (manifest.isDevelopmentMode) {
     update.isDevelopmentMode = YES;
     update.status = EXUpdatesUpdateStatusDevelopment;
   } else {
     update.status = EXUpdatesUpdateStatusPending;
   }
 
-  id bundleUrlString = manifest[@"bundleUrl"];
-  id assets = manifest[@"bundledAssets"] ?: @[];
+  id bundleUrlString = manifest.bundleUrl;
+  id assets = manifest.bundledAssets ?: @[];
 
-  id sdkVersion = manifest[@"sdkVersion"];
-  id runtimeVersion = manifest[@"runtimeVersion"];
+  id sdkVersion = manifest.sdkVersion;
+  id runtimeVersion = manifest.runtimeVersion;
   if (runtimeVersion && [runtimeVersion isKindOfClass:[NSDictionary class]]) {
     id runtimeVersionIos = ((NSDictionary *)runtimeVersion)[@"ios"];
     NSAssert([runtimeVersionIos isKindOfClass:[NSString class]], @"runtimeVersion['ios'] should be a string");
@@ -70,7 +70,7 @@ static NSString * const EXUpdatesExpoTestDomain = @"expo.test";
 
   NSMutableArray<EXUpdatesAsset *> *processedAssets = [NSMutableArray new];
 
-  NSString *bundleKey = manifest[@"bundleKey"] ?: nil;
+  NSString *bundleKey = manifest.bundleKey ?: nil;
   EXUpdatesAsset *jsBundleAsset = [[EXUpdatesAsset alloc] initWithKey:bundleKey type:EXUpdatesEmbeddedBundleFileType];
   jsBundleAsset.url = bundleUrl;
   jsBundleAsset.isLaunchAsset = YES;
@@ -108,7 +108,7 @@ static NSString * const EXUpdatesExpoTestDomain = @"expo.test";
     [processedAssets addObject:asset];
   }
 
-  update.metadata = manifest;
+  update.metadata = manifest.rawManifestJSON;
   update.keep = YES;
   update.bundleUrl = bundleUrl;
   update.assets = processedAssets;
@@ -116,7 +116,7 @@ static NSString * const EXUpdatesExpoTestDomain = @"expo.test";
   return update;
 }
 
-+ (NSURL *)bundledAssetBaseUrlWithManifest:(NSDictionary *)manifest config:(EXUpdatesConfig *)config
++ (NSURL *)bundledAssetBaseUrlWithManifest:(EXUpdatesLegacyRawManifest *)manifest config:(EXUpdatesConfig *)config
 {
   NSURL *manifestUrl = config.updateUrl;
   NSString *host = manifestUrl.host;
@@ -126,24 +126,11 @@ static NSString * const EXUpdatesExpoTestDomain = @"expo.test";
       [host containsString:EXUpdatesExpoTestDomain]) {
     return [NSURL URLWithString:EXUpdatesExpoAssetBaseUrl];
   } else {
-    NSString *assetsPathOrUrl = manifest[@"assetUrlOverride"] ?: @"assets";
+    NSString *assetsPathOrUrl = manifest.assetUrlOverride ?: @"assets";
     // assetUrlOverride may be an absolute or relative URL
     // if relative, we should resolve with respect to the manifest URL
     return [NSURL URLWithString:assetsPathOrUrl relativeToURL:manifestUrl].absoluteURL.standardizedURL;
   }
-}
-
-+ (BOOL)isDevelopmentModeManifest:(NSDictionary *)manifest
-{
-  NSDictionary *manifestPackagerOptsConfig = manifest[@"packagerOpts"];
-  return (manifest[@"developer"] != nil && manifestPackagerOptsConfig != nil && [@(YES) isEqualToNumber:manifestPackagerOptsConfig[@"dev"]]);
-}
-
-+ (BOOL)areDevToolsEnabledWithManifest:(NSDictionary *)manifest
-{
-  NSDictionary *manifestDeveloperConfig = manifest[@"developer"];
-  BOOL isDeployedFromTool = (manifestDeveloperConfig && manifestDeveloperConfig[@"tool"] != nil);
-  return (isDeployedFromTool);
 }
 
 @end

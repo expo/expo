@@ -15,6 +15,7 @@
 #import "EXVersions.h"
 
 #import <EXConstants/EXConstantsService.h>
+#import <EXUpdates/EXUpdatesUpdate.h>
 
 #import <React/RCTUtils.h>
 #import <React/RCTBridge.h>
@@ -34,8 +35,8 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
     @"constants": @{
         @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
         @"linkingUri": @"exp://",
-        @"experienceUrl": [@"exp://" stringByAppendingString:self.appRecord.appLoader.manifest[@"hostUri"]],
-        @"manifest": self.appRecord.appLoader.manifest,
+        @"experienceUrl": [@"exp://" stringByAppendingString:self.appRecord.appLoader.manifest.hostUri],
+        @"manifest": self.appRecord.appLoader.manifest.rawManifestJSON,
         @"executionEnvironment": EXConstantsExecutionEnvironmentStoreClient,
         @"appOwnership": @"expo",
         @"supportedExpoSdks": [EXVersions sharedInstance].versions[@"sdkVersions"],
@@ -43,7 +44,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
     @"exceptionsManagerDelegate": self.exceptionHandler,
     @"isDeveloper": @([EXBuildConstants sharedInstance].isDevKernel),
     @"isStandardDevMenuAllowed": @(YES), // kernel enables traditional RN dev menu
-    @"manifest": self.appRecord.appLoader.manifest,
+    @"manifest": self.appRecord.appLoader.manifest.rawManifestJSON,
     @"services": [EXKernel sharedInstance].serviceRegistry.allServices,
     @"singletonModules": [UMModuleRegistryProvider singletonModules],
     @"fileSystemDirectories": @{
@@ -61,9 +62,9 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
 
 #pragma mark - interfacing with home JS
 
-- (void)addHistoryItemWithUrl:(NSURL *)manifestUrl manifest:(NSDictionary *)manifest
+- (void)addHistoryItemWithUrl:(NSURL *)manifestUrl manifest:(EXUpdatesRawManifest *)manifest
 {
-  if (!manifest || !manifestUrl || [manifest[@"id"] isEqualToString:@"@exponent/home"]) {
+  if (!manifest || !manifestUrl || [manifest.rawID isEqualToString:@"@exponent/home"]) {
     return;
   }
   NSDictionary *params = @{
@@ -127,7 +128,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
   }
 }
 
-- (NSString *)bundleResourceNameForAppFetcher:(__unused EXAppFetcher *)appFetcher withManifest:(nonnull __unused NSDictionary *)manifest
+- (NSString *)bundleResourceNameForAppFetcher:(__unused EXAppFetcher *)appFetcher withManifest:(nonnull __unused EXUpdatesRawManifest *)manifest
 {
   return kEXHomeBundleResourceName;
 }
@@ -161,7 +162,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
   return initialHomeUrl;
 }
 
-+ (NSDictionary * _Nullable)bundledHomeManifest
++ (EXUpdatesRawManifest * _Nullable)bundledHomeManifest
 {
   NSString *manifestJson = nil;
   BOOL usesNSBundleManifest = NO;
@@ -190,7 +191,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
       if (usesNSBundleManifest && ![manifest[@"id"] isEqualToString:@"@exponent/home"]) {
         DDLogError(@"Bundled kernel manifest was published with an id other than @exponent/home");
       }
-      return manifest;
+      return [EXUpdatesUpdate rawManifestForJSON:manifest];
     }
   }
   return nil;
