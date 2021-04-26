@@ -1,5 +1,6 @@
 import {
   ConfigPlugin,
+  createRunOncePlugin,
   ExportedConfigWithProps,
   WarningAggregator,
   withDangerousMod,
@@ -10,6 +11,8 @@ import fs from 'fs';
 import path from 'path';
 
 import { withDevMenuAppDelegate } from './withDevMenuAppDelegate';
+
+const pkg = require('expo-dev-menu/package.json');
 
 const DEV_MENU_ANDROID_IMPORT = 'expo.modules.devmenu.react.DevMenuAwareReactActivity';
 const DEV_MENU_ACTIVITY_CLASS = 'public class MainActivity extends DevMenuAwareReactActivity {';
@@ -114,4 +117,4 @@ const withDevMenu = (config: ExpoConfig) => {
   return config;
 };
 
-export default withDevMenu;
+export default createRunOncePlugin(withDevMenu, pkg.name, pkg.version);
