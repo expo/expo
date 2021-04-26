@@ -11,6 +11,8 @@
 #import <React/RCTRootView.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTBridge+Private.h>
+#import <React/RCTLogBox.h>
+#import <React/RCTRedBox.h>
 
 // Private
 #import "RCTPerfMonitor+Private.h"
