@@ -29,21 +29,21 @@ An Expo app's `tsconfig.json` should extend the `expo/tsconfig.base` by default.
 - `allowJs`: -- `true`
   - Allow JavaScript files to be compiled. If you project requires more strictness, you can disable this.
 - `esModuleInterop`: -- `true`
-  - Improves Babel ecosystem compatibility.
+  - Improve Babel ecosystem compatibility. This also sets `allowSyntheticDefaultImports` to `true`, allowing default imports from modules with no default export.
 - [`jsx`][tsc-jsx]: -- `"react-native"`
-  - Preserves JSX, and converts the extension `jsx` to `js`. This is optimized for bundlers that transform the JSX internally (like Metro).
-- `lib`: -- `["DOM", "ESNext"]`
-  - List of library files to be included in the compilation.
+  - Preserve JSX, and converts the `jsx` extension to `js`. This is optimized for bundlers that transform the JSX internally (like Metro).
+- `lib`: -- `["ESNext"]`
+  - Allow using the latest [ECMAScript proposed features and libraries](https://github.com/tc39/proposals).
 - [`moduleResolution`][tsc-moduleresolution]: -- `"node"`
-  - Emulates how Metro and Webpack resolve modules.
+  - Emulate how Metro and Webpack resolve modules.
 - `noEmit`: -- `true`
-  - Only typecheck, and skip generating transpiled code. Metro bundler is responsible for doing this.
+  - Only use the TypeScript compiler (TSC) to check the code. The Metro bundler is responsible for compiling TypeScript to JavaScript.
 - `resolveJsonModule`: -- `true`
   - Enables importing `.json` files. Metro's default behavior is to allow importing json files as JS objects.
 - `skipLibCheck`: -- `true`
   - Skip type checking of all declaration files (`*.d.ts`).
 - `target`: -- `"ESNext"`
-  - The latest [TC39 proposed features](https://github.com/tc39/proposals).
+  - Compile to the latest version of ECMAScript.
 
 [tsc-jsx]: https://www.typescriptlang.org/docs/handbook/jsx.html
 [tsc-compileroptions]: https://www.typescriptlang.org/docs/handbook/compiler-options.html
