@@ -7,6 +7,7 @@ const config_plugins_1 = require("@expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const withDevMenuAppDelegate_1 = require("./withDevMenuAppDelegate");
+const pkg = require('expo-dev-menu/package.json');
 const DEV_MENU_ANDROID_IMPORT = 'expo.modules.devmenu.react.DevMenuAwareReactActivity';
 const DEV_MENU_ACTIVITY_CLASS = 'public class MainActivity extends DevMenuAwareReactActivity {';
 const DEV_MENU_POD_IMPORT = "pod 'expo-dev-menu', path: '../node_modules/expo-dev-menu', :configurations => :debug";
@@ -86,4 +87,4 @@ const withDevMenu = (config) => {
     config = withDevMenuAppDelegate_1.withDevMenuAppDelegate(config);
     return config;
 };
-exports.default = withDevMenu;
+exports.default = config_plugins_1.createRunOncePlugin(withDevMenu, pkg.name, pkg.version);
