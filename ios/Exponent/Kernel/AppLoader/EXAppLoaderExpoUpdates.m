@@ -342,6 +342,13 @@ NS_ASSUME_NONNULL_BEGIN
 
   NSMutableArray *sdkVersions = [[EXVersions sharedInstance].versions[@"sdkVersions"] ?: @[[EXVersions sharedInstance].temporarySdkVersion] mutableCopy];
   [sdkVersions addObject:@"UNVERSIONED"];
+
+  NSMutableArray *sdkVersionRuntimeVersions = [[NSMutableArray alloc] initWithCapacity:sdkVersions.count];
+  for (NSString *sdkVersion in sdkVersions) {
+    [sdkVersionRuntimeVersions addObject:[NSString stringWithFormat:@"exposdk:%@", sdkVersion]];
+  }
+  [sdkVersions addObjectsFromArray:sdkVersionRuntimeVersions];
+
   _selectionPolicy = [EXUpdatesSelectionPolicyFactory filterAwarePolicyWithRuntimeVersions:sdkVersions];
 
   EXUpdatesAppLoaderTask *loaderTask = [[EXUpdatesAppLoaderTask alloc] initWithConfig:_config

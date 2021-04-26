@@ -199,6 +199,9 @@ public class ExpoUpdatesAppLoader {
 
     List<String> sdkVersionsList = new ArrayList<>(Constants.SDK_VERSIONS_LIST);
     sdkVersionsList.add(RNObject.UNVERSIONED);
+    for (String sdkVersion : Constants.SDK_VERSIONS_LIST) {
+      sdkVersionsList.add("exposdk:" + sdkVersion);
+    }
     SelectionPolicy selectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(sdkVersionsList);
 
     File directory;
