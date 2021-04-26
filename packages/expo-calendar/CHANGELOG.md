@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `ExpoCalendar.getCalendarsAsync()` crashing on Android when device has unsupported calendars. ([#12724](https://github.com/expo/expo/pull/12724) by [@ibraude](https://github.com/ibraude))
+
 ## 9.1.2 — 2021-04-13
 
 _This version does not introduce any user-facing changes._
