@@ -11,18 +11,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXUpdatesNewUpdate
 
-+ (EXUpdatesUpdate *)updateWithNewManifest:(EXUpdatesNewRawManifest *)rootManifest
++ (EXUpdatesUpdate *)updateWithNewManifest:(EXUpdatesNewRawManifest *)manifest
                                   response:(nullable NSURLResponse *)response
                                     config:(EXUpdatesConfig *)config
                                   database:(EXUpdatesDatabase *)database
 {
-  NSDictionary *tempManifest = rootManifest.rawManifestJSON;
-  if (tempManifest[@"manifest"]) {
-    tempManifest = tempManifest[@"manifest"];
-  }
-  
-  EXUpdatesNewRawManifest *manifest = [[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:tempManifest];
-  
   EXUpdatesUpdate *update = [[EXUpdatesUpdate alloc] initWithRawManifest:manifest
                                                                   config:config
                                                                 database:database];
