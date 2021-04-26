@@ -6,7 +6,7 @@ sidebar_title: Using SVGs
 import SnackEmbed from '~/components/plugins/SnackEmbed';
 import TerminalBlock from '~/components/plugins/TerminalBlock';
 
-SVGs (Scalable Vector Graphics) are a great way to present icons and other visual elements in a flexible, crisp, and performant way. Using SVGs on the web is straightforward, since we can copy an SVG and place it inline in an HTML file. This works because browsers understand how to parse and present SVGs. React Native does not understand how to parse and present SVG out of the box, so we'll need to use a React Native package and an SVG converter to do so.
+SVGs (Scalable Vector Graphics) are a great way to present icons and other visual elements in a flexible, crisp, and performant way. Using SVGs on the web is straightforward, since we can copy an SVG and place it inline in an HTML file. This works because browsers understand how to parse and present SVGs. Expo does not understand how to parse and present SVG out of the box on Android and iOS, so we'll need to use a React Native package and an SVG converter to do so.
 
 Let's go over the whole process of creating an SVG to presenting it in a React Native project.
 
