@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoAmplitude.web.js","sourceRoot":"","sources":["../src/ExpoAmplitude.web.ts"],"names":[],"mappings":"AAAA,eAAe;IACb,IAAI,IAAI;QACN,OAAO,eAAe,CAAC;IACzB,CAAC;CACF,CAAC","sourcesContent":["export default {\n  get name(): string {\n    return 'ExpoAmplitude';\n  },\n};\n"]}

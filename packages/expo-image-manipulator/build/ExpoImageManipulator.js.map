@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoImageManipulator.js","sourceRoot":"","sources":["../src/ExpoImageManipulator.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,kBAAkB,CAAC;AACtD,eAAe,kBAAkB,CAAC,oBAAoB,IAAI,EAAE,CAAC","sourcesContent":["import { NativeModulesProxy } from '@unimodules/core';\nexport default NativeModulesProxy.ExpoImageManipulator || {};\n"]}

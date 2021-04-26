@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoCalendar.js","sourceRoot":"","sources":["../src/ExpoCalendar.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,kBAAkB,CAAC;AACtD,eAAe,kBAAkB,CAAC,YAAY,IAAI,EAAE,CAAC","sourcesContent":["import { NativeModulesProxy } from '@unimodules/core';\nexport default NativeModulesProxy.ExpoCalendar || {};\n"]}

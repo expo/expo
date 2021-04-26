@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoLocation.js","sourceRoot":"","sources":["../src/ExpoLocation.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,kBAAkB,CAAC;AACtD,eAAe,kBAAkB,CAAC,YAAY,CAAC","sourcesContent":["import { NativeModulesProxy } from '@unimodules/core';\nexport default NativeModulesProxy.ExpoLocation;\n"]}

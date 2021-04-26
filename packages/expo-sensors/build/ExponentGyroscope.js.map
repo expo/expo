@@ -1,0 +1,1 @@
+{"version":3,"file":"ExponentGyroscope.js","sourceRoot":"","sources":["../src/ExponentGyroscope.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,kBAAkB,CAAC;AACtD,eAAe,kBAAkB,CAAC,iBAAiB,CAAC","sourcesContent":["import { NativeModulesProxy } from '@unimodules/core';\nexport default NativeModulesProxy.ExponentGyroscope;\n"]}

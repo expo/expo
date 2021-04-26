@@ -1,0 +1,1 @@
+{"version":3,"file":"ExponentVideo.js","sourceRoot":"","sources":["../src/ExponentVideo.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAE,wBAAwB,EAAE,MAAM,kBAAkB,CAAC;AAE5D,eAAe,wBAAwB,CAAC,eAAe,CAAC,CAAC","sourcesContent":["import { requireNativeViewManager } from '@unimodules/core';\n\nexport default requireNativeViewManager('ExpoVideoView');\n"]}

@@ -1,0 +1,1 @@
+{"version":3,"file":"ExponentMediaLibrary.js","sourceRoot":"","sources":["../src/ExponentMediaLibrary.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,kBAAkB,CAAC;AAEtD,eAAe,kBAAkB,CAAC,oBAAoB,CAAC","sourcesContent":["import { NativeModulesProxy } from '@unimodules/core';\n\nexport default NativeModulesProxy.ExponentMediaLibrary;\n"]}

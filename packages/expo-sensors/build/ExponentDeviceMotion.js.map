@@ -1,0 +1,1 @@
+{"version":3,"file":"ExponentDeviceMotion.js","sourceRoot":"","sources":["../src/ExponentDeviceMotion.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,kBAAkB,CAAC;AACtD,eAAe,kBAAkB,CAAC,oBAAoB,CAAC","sourcesContent":["import { NativeModulesProxy } from '@unimodules/core';\nexport default NativeModulesProxy.ExponentDeviceMotion;\n"]}

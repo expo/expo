@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoRandom.js","sourceRoot":"","sources":["../src/ExpoRandom.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,aAAa,EAAE,MAAM,cAAc,CAAC;AAE7C,eAAe,aAAa,CAAC,UAAU,CAAC","sourcesContent":["import { NativeModules } from 'react-native';\n\nexport default NativeModules.ExpoRandom;\n"]}

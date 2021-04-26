@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoAmplitude.js","sourceRoot":"","sources":["../src/ExpoAmplitude.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,kBAAkB,CAAC;AACtD,eAAe,kBAAkB,CAAC,aAAa,IAAI,EAAE,CAAC","sourcesContent":["import { NativeModulesProxy } from '@unimodules/core';\nexport default NativeModulesProxy.ExpoAmplitude || {};\n"]}

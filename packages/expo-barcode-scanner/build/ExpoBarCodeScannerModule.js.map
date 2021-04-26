@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoBarCodeScannerModule.js","sourceRoot":"","sources":["../src/ExpoBarCodeScannerModule.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,kBAAkB,CAAC;AAEtD,eAAe,kBAAkB,CAAC,wBAAwB,CAAC","sourcesContent":["import { NativeModulesProxy } from '@unimodules/core';\n\nexport default NativeModulesProxy.ExpoBarCodeScannerModule;\n"]}
