@@ -258,6 +258,7 @@ public class LocalAuthenticationModule extends ExportedModule {
   private void safeCancel() {
     if (mBiometricPrompt != null && mIsAuthenticating) {
       mBiometricPrompt.cancelAuthentication();
+      mIsAuthenticating = false;
     }
   }
 
