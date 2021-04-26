@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix null cellular information on iOS. ([#12710](https://github.com/expo/expo/pull/12710) by [@randomhajile](https://github.com/randomhajile))
+
 ## 3.1.0 — 2021-03-10
 
 ### 🎉 New features
