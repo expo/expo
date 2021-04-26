@@ -19,11 +19,12 @@ public class DevMenuItemsContainer: NSObject, DevMenuItemsContainerProtocol {
     return result.sorted { $0.importance > $1.importance }
   }
   
+  @objc
   public func addItem(_ item: DevMenuScreenItem) {
     items.append(item)
   }
   
-  public func serializeItems() -> [[String : Any]] {
+  func serializeItems() -> [[String : Any]] {
     return getRootItems().map({ $0.serialize() })
   }
 }

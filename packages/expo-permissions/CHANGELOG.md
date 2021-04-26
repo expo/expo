@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+## 12.0.1 — 2021-04-13
+
+### 🐛 Bug fixes
+
+- Guard updating hook state on unmounted components. ([#12482](https://github.com/expo/expo/pull/12482) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 12.0.0 — 2021-03-10
 
 ### 🛠 Breaking changes

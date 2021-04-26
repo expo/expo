@@ -1,10 +1,10 @@
 ---
-title: Handling Assets
+title: Asset Caching
 ---
 
 import SnackInline from '~/components/plugins/SnackInline';
 
-This section covers all things related to handling assets with Expo here including bundling, caching, pre-loading and publishing.
+This section covers all things related to loading assets in your apps, from bundling with an app binary, to caching, pre-loading and publishing.
 
 ### Bundling Assets
 

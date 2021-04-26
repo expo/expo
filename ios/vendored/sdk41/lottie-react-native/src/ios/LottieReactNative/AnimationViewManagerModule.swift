@@ -15,11 +15,11 @@ class AnimationViewManagerModule: ABI41_0_0RCTViewManager {
     }
     
     
-    @objc(ABI41_0_0play:fromFrame:toFrame:)
-    public func play(_ ABI41_0_0ReactTag: NSNumber, startFrame: NSNumber, endFrame: NSNumber) {
+    @objc(play:fromFrame:toFrame:)
+    public func play(_ abi41_0_0ReactTag: NSNumber, startFrame: NSNumber, endFrame: NSNumber) {
         
         self.bridge.uiManager.addUIBlock { (uiManager, viewRegistry) in
-            guard let view = viewRegistry?[ABI41_0_0ReactTag] as? ContainerView else {
+            guard let view = viewRegistry?[abi41_0_0ReactTag] as? ContainerView else {
                 if (ABI41_0_0RCT_DEV == 1) {
                     print("Invalid view returned from registry, expecting ContainerView")
                 }
@@ -40,10 +40,10 @@ class AnimationViewManagerModule: ABI41_0_0RCTViewManager {
         }      
     }
     
-    @objc(ABI41_0_0reset:)
-    public func reset(_ ABI41_0_0ReactTag: NSNumber) {
+    @objc(reset:)
+    public func reset(_ abi41_0_0ReactTag: NSNumber) {
         self.bridge.uiManager.addUIBlock { uiManager, viewRegistry in
-            guard let view = viewRegistry?[ABI41_0_0ReactTag] as? ContainerView else {
+            guard let view = viewRegistry?[abi41_0_0ReactTag] as? ContainerView else {
                 if (ABI41_0_0RCT_DEV == 1) {
                     print("Invalid view returned from registry, expecting ContainerView")
                 }
@@ -54,10 +54,10 @@ class AnimationViewManagerModule: ABI41_0_0RCTViewManager {
         }
     }
     
-    @objc(ABI41_0_0pause:)
-    public func pause(_ ABI41_0_0ReactTag: NSNumber) {
+    @objc(pause:)
+    public func pause(_ abi41_0_0ReactTag: NSNumber) {
         self.bridge.uiManager.addUIBlock { uiManager, viewRegistry in
-            guard let view = viewRegistry?[ABI41_0_0ReactTag] as? ContainerView else {
+            guard let view = viewRegistry?[abi41_0_0ReactTag] as? ContainerView else {
                 if (ABI41_0_0RCT_DEV == 1) {
                     print("Invalid view returned from registry, expecting ContainerView")
                 }
@@ -68,10 +68,10 @@ class AnimationViewManagerModule: ABI41_0_0RCTViewManager {
         }
     }
 
-    @objc(ABI41_0_0resume:)
-    public func resume(_ ABI41_0_0ReactTag: NSNumber) {
+    @objc(resume:)
+    public func resume(_ abi41_0_0ReactTag: NSNumber) {
         self.bridge.uiManager.addUIBlock { uiManager, viewRegistry in
-            guard let view = viewRegistry?[ABI41_0_0ReactTag] as? ContainerView else {
+            guard let view = viewRegistry?[abi41_0_0ReactTag] as? ContainerView else {
                 if (ABI41_0_0RCT_DEV == 1) {
                     print("Invalid view returned from registry, expecting ContainerView")
                 }

@@ -8,6 +8,17 @@
 
 ### 🐛 Bug fixes
 
+## 10.1.3 — 2021-04-13
+
+_This version does not introduce any user-facing changes._
+
+## 10.1.2 — 2021-04-09
+
+### 🛠 Breaking changes
+
+- Remove the `xde` property from `Constants.manifest`. ([#12438](https://github.com/expo/expo/pull/12438) by [@fson](https://github.com/fson))
+- Update `@expo/config` to include `currentFullName` in embedded config manifest. [Related PR on expo-cli](https://github.com/expo/expo-cli/pull/3376).
+
 ## 10.1.1 — 2021-03-23
 
 ### 🎉 New features

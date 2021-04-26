@@ -60,7 +60,7 @@ import Constants from 'expo-constants';
 Constants.manifest.extra.fact === 'kittens are cool';
 ```
 
-You can access and modify incoming config values by exporting a function that returns an object. This is useful if your project also has an `app.json`. By default, Expo CLI will read the `app.json` first and send the normalized results to the `app.config.js`. This functionality is disabled when the `--config` is used to specify a custom config.
+You can access and modify incoming config values by exporting a function that returns an object. This is useful if your project also has an `app.json`. By default, Expo CLI will read the `app.json` first and send the normalized results to the `app.config.js`. This functionality is disabled when the `--config` is used to specify a custom config (also note that the [`--config` flag is deprecated](https://expo.fyi/config-flag-migration)).
 
 For example, your `app.json` could look like this:
 
@@ -82,6 +82,26 @@ export default ({ config }) => {
   };
 };
 ```
+
+### Switching configuration based on the environment
+
+It's common to want to want to have some different configuration in development, staging, and production environments, or to swap out configuration entirely in order to white label an app. To accomplish this, you can use `app.config.js` along with environment variables.
+
+```js
+module.exports = () => {
+  if (process.env.MY_ENVIRONMENT === 'production') {
+    return {
+      /* your production config */
+    };
+  } else {
+    return {
+      /* your development config */
+    };
+  }
+};
+```
+
+To use this configuration with Expo CLI commands, set the environment variable either for specific commands or in your shell profile. To set environment variables for specific commands, prefix the command with the variables and values, for example: `MY_ENVIRONMENT=production expo publish` (this is not anything unique to Expo CLI). On Windows you can approximate this with `npx cross-env MY_ENVIRONMENT=production expo publish`, or use whichever other mechanism that you are comfortable with for environment variables.
 
 ### Using TypeScript for configuration: app.config.ts instead of app.config.js
 

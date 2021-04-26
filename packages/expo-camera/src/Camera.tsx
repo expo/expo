@@ -10,6 +10,7 @@ import {
   CameraPictureOptions,
   CameraProps,
   CameraRecordingOptions,
+  ConstantsType,
   FaceDetectionResult,
   PermissionExpiration,
   PermissionResponse,
@@ -83,7 +84,7 @@ export default class Camera extends React.Component<CameraProps> {
     return await CameraManager.getAvailableCameraTypesAsync();
   }
 
-  static Constants = {
+  static Constants: ConstantsType = {
     Type: CameraManager.Type,
     FlashMode: CameraManager.FlashMode,
     AutoFocus: CameraManager.AutoFocus,

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `setClientId` method to allow managing the clientId value in Expo Go. ([#12520](https://github.com/expo/expo/pull/12520) by [@esamelson](https://github.com/esamelson))
+
 ### 🐛 Bug fixes
 
 ## 4.0.1 — 2021-03-30

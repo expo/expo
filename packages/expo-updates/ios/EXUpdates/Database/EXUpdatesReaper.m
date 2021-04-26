@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)reapUnusedUpdatesWithConfig:(EXUpdatesConfig *)config
                            database:(EXUpdatesDatabase *)database
                           directory:(NSURL *)directory
-                    selectionPolicy:(id<EXUpdatesSelectionPolicy>)selectionPolicy
+                    selectionPolicy:(EXUpdatesSelectionPolicy *)selectionPolicy
                      launchedUpdate:(EXUpdatesUpdate *)launchedUpdate
 {
   dispatch_async(database.databaseQueue, ^{

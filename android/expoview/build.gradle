@@ -184,8 +184,7 @@ dependencies {
       target       : 'react-native',
       exclude      : [
         'expo-module-template',
-        'expo-in-app-purchases',
-        'expo-gl-cpp-legacy'
+        'expo-in-app-purchases'
       ]
   ])
   compileOnly project(':expo-random')
@@ -221,9 +220,6 @@ dependencies {
   // BEGIN_SDK_39
   api 'host.exp:reactandroid-abi39_0_0:1.0.0'
   // END_SDK_39
-  // BEGIN_SDK_38
-  api 'host.exp:reactandroid-abi38_0_0:1.0.0'
-  // END_SDK_38
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_VERSIONING_REMOVE_TO_HERE
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE

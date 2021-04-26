@@ -15,7 +15,6 @@ on:
       - packages/**
       - yarn.lock
   pull_request:
-    branches: [master]
     paths:
       - .github/workflows/sdk.yml
       - tools/**

@@ -4,116 +4,9 @@ import * as React from 'react';
 
 import ProjectList, { Project } from '../components/ProjectList';
 
-interface MyProjectsData {
-  me: {
-    id: string;
-    appCount: number;
-    email: string;
-    firstName: string;
-    isLegacy: boolean;
-    lastName: string;
-    profilePhoto: string;
-    username: string;
-    apps: Project[];
-  };
-}
-
-interface MyProjectsVars {
-  limit: number;
-  offset: number;
-}
-
-const MyProjectsQuery = gql`
-  query Home_MyApps($limit: Int!, $offset: Int!) {
-    me {
-      id
-      appCount
-      email
-      firstName
-      id
-      isLegacy
-      lastName
-      profilePhoto
-      username
-      apps(limit: $limit, offset: $offset) {
-        id
-        description
-        fullName
-        iconUrl
-        lastPublishedTime
-        name
-        username
-        packageName
-        privacy
-        sdkVersion
-      }
-    }
-  }
-`;
-
-function useMyProjectsQuery() {
-  const { data, fetchMore, loading, error, refetch } = useQuery<MyProjectsData, MyProjectsVars>(
-    MyProjectsQuery,
-    {
-      variables: {
-        limit: 15,
-        offset: 0,
-      },
-      fetchPolicy: 'cache-and-network',
-    }
-  );
-
-  const apps = data?.me?.apps;
-  const appCount = data?.me?.appCount;
-
-  const loadMoreAsync = React.useCallback(() => {
-    return fetchMore({
-      variables: {
-        offset: apps?.length || 0,
-      },
-      updateQuery(previousData, { fetchMoreResult }) {
-        if (!fetchMoreResult?.me) {
-          return previousData;
-        }
-
-        const combinedData = {
-          me: {
-            ...previousData.me,
-            ...fetchMoreResult.me,
-            apps: [...previousData.me.apps, ...fetchMoreResult.me.apps],
-          },
-        };
-
-        return {
-          ...combinedData,
-          appCount: combinedData.me.appCount,
-          apps: combinedData.me.apps,
-        };
-      },
-    });
-  }, [fetchMore, apps]);
-
-  return {
-    loading,
-    error,
-    refetch,
-    data: {
-      ...data,
-      apps,
-      appCount,
-    },
-    loadMoreAsync,
-  };
-}
-
-export function MyProjectsList() {
-  const query = useMyProjectsQuery();
-  return <ProjectList belongsToCurrentUser {...query} />;
-}
-
-interface OtherProjectsData {
-  user: {
-    byUsername: {
+interface ProjectsData {
+  account: {
+    byName: {
       id: string;
       appCount: number;
       apps: Project[];
@@ -121,16 +14,16 @@ interface OtherProjectsData {
   };
 }
 
-interface OtherProjectsVars {
-  username: string;
+interface ProjectsVars {
+  accountName: string;
   limit: number;
   offset: number;
 }
 
-const OtherProjectsQuery = gql`
-  query Home_UsersApps($username: String!, $limit: Int!, $offset: Int!) {
-    user {
-      byUsername(username: $username) {
+const ProjectsQuery = gql`
+  query Home_AccountApps($accountName: String!, $limit: Int!, $offset: Int!) {
+    account {
+      byName(accountName: $accountName) {
         id
         appCount
         apps(limit: $limit, offset: $offset) {
@@ -149,21 +42,21 @@ const OtherProjectsQuery = gql`
   }
 `;
 
-function useOtherProjectsQuery({ username }: { username: string }) {
-  const { data, fetchMore, loading, error, refetch } = useQuery<
-    OtherProjectsData,
-    OtherProjectsVars
-  >(OtherProjectsQuery, {
-    variables: {
-      username: username.replace('@', ''),
-      limit: 15,
-      offset: 0,
-    },
-    fetchPolicy: 'cache-and-network',
-  });
+function useOtherProjectsQuery({ accountName }: { accountName: string }) {
+  const { data, fetchMore, loading, error, refetch } = useQuery<ProjectsData, ProjectsVars>(
+    ProjectsQuery,
+    {
+      variables: {
+        accountName,
+        limit: 15,
+        offset: 0,
+      },
+      fetchPolicy: 'cache-and-network',
+    }
+  );
 
-  const apps = data?.user?.byUsername?.apps;
-  const appCount = data?.user?.byUsername?.appCount;
+  const apps = data?.account.byName.apps;
+  const appCount = data?.account.byName.appCount;
 
   const loadMoreAsync = React.useCallback(() => {
     return fetchMore({
@@ -171,26 +64,20 @@ function useOtherProjectsQuery({ username }: { username: string }) {
         offset: apps?.length || 0,
       },
       updateQuery(previousData, { fetchMoreResult }) {
-        if (!fetchMoreResult?.user?.byUsername) {
+        if (!fetchMoreResult?.account?.byName) {
           return previousData;
         }
 
-        const combinedData = {
-          user: {
-            ...previousData.user,
-            ...fetchMoreResult.user,
-            byUsername: {
-              ...previousData.user.byUsername,
-              ...fetchMoreResult.user.byUsername,
-              apps: [...previousData.user.byUsername.apps, ...fetchMoreResult.user.byUsername.apps],
+        return {
+          account: {
+            ...previousData.account,
+            ...fetchMoreResult.account,
+            byName: {
+              ...previousData.account.byName,
+              ...fetchMoreResult.account.byName,
+              apps: [...previousData.account.byName.apps, ...fetchMoreResult.account.byName.apps],
             },
           },
-        };
-
-        return {
-          ...combinedData,
-          appCount: combinedData.user.byUsername.appCount,
-          apps: combinedData.user.byUsername.apps,
         };
       },
     });
@@ -209,7 +96,7 @@ function useOtherProjectsQuery({ username }: { username: string }) {
   };
 }
 
-export function OtherProjectsList(props: { username: string }) {
+export default function ProjectsList(props: { accountName: string }) {
   const query = useOtherProjectsQuery(props);
   return <ProjectList {...props} {...query} />;
 }

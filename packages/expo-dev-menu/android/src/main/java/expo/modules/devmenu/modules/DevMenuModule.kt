@@ -66,7 +66,6 @@ class DevMenuModule(reactContext: ReactApplicationContext)
     }
   }
 
-
   @ReactMethod
   fun openMenu() {
     openMenuOn(null)

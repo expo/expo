@@ -155,7 +155,7 @@ import { Audio } from 'expo-av';
 
 ### `Audio.requestPermissionsAsync()`
 
-Asks the user to grant permissions for audio recording. Alias for `Permissions.askAsync(Permissions.AUDIO_RECORDING)`.
+Asks the user to grant permissions for audio recording.
 
 #### Returns
 
@@ -163,7 +163,7 @@ A promise that resolves to an object of type [PermissionResponse](permissions.md
 
 ### `Audio.getPermissionsAsync()`
 
-Checks user's permissions for audio recording. Alias for `Permissions.getAsync(Permissions.AUDIO_RECORDING)`.
+Checks user's permissions for audio recording.
 
 #### Returns
 

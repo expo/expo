@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+## 10.3.0 — 2021-04-20
+
+### 🎉 New features
+
+- Implemented basic functionality of `getSupportedExtensions` and `getExtension` methods. However, some of the supported extensions are platform-specific so they may differ from what is described in WebGL extensions specification. ([#12309](https://github.com/expo/expo/pull/12309) by [@tsapeta](https://github.com/tsapeta))
+
 ## 10.2.0 — 2021-03-10
 
 ### 🎉 New features

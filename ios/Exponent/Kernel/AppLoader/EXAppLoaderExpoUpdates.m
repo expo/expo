@@ -19,7 +19,7 @@
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
 #import <EXUpdates/EXUpdatesReaper.h>
-#import <EXUpdates/EXUpdatesSelectionPolicyFilterAware.h>
+#import <EXUpdates/EXUpdatesSelectionPolicyFactory.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 #import <React/RCTUtils.h>
 #import <sys/utsname.h>
@@ -52,7 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) dispatch_queue_t appLoaderQueue;
 
 @property (nonatomic, nullable) EXUpdatesConfig *config;
-@property (nonatomic, nullable) id<EXUpdatesSelectionPolicy> selectionPolicy;
+@property (nonatomic, nullable) EXUpdatesSelectionPolicy *selectionPolicy;
 @property (nonatomic, nullable) id<EXUpdatesAppLauncher> appLauncher;
 @property (nonatomic, assign) BOOL isEmergencyLaunch;
 
@@ -342,7 +342,7 @@ NS_ASSUME_NONNULL_BEGIN
 
   NSMutableArray *sdkVersions = [[EXVersions sharedInstance].versions[@"sdkVersions"] ?: @[[EXVersions sharedInstance].temporarySdkVersion] mutableCopy];
   [sdkVersions addObject:@"UNVERSIONED"];
-  _selectionPolicy = [[EXUpdatesSelectionPolicyFilterAware alloc] initWithRuntimeVersions:sdkVersions];
+  _selectionPolicy = [EXUpdatesSelectionPolicyFactory filterAwarePolicyWithRuntimeVersions:sdkVersions];
 
   EXUpdatesAppLoaderTask *loaderTask = [[EXUpdatesAppLoaderTask alloc] initWithConfig:_config
                                                                              database:updatesDatabaseManager.database

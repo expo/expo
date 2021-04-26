@@ -153,18 +153,52 @@ export declare type MountErrorListener = (event: {
 export declare type CameraMountError = {
     message: string;
 };
-export declare type BarCodePoint = {
+declare type Point = {
     x: number;
     y: number;
 };
+export declare type BarCodePoint = Point;
 export declare type BarCodeScanningResult = {
     type: string;
     data: string;
     /** @platform web */
     cornerPoints?: BarCodePoint[];
 };
+export declare type Face = {
+    faceID: number;
+    bounds: {
+        origin: Point;
+        size: {
+            height: number;
+            width: number;
+        };
+    };
+    rollAngle: number;
+    yawAngle: number;
+    smilingProbability: number;
+    leftEarPosition: Point;
+    rightEarPosition: Point;
+    leftEyePosition: Point;
+    leftEyeOpenProbability: number;
+    rightEyePosition: Point;
+    rightEyeOpenProbability: number;
+    leftCheekPosition: Point;
+    rightCheekPosition: Point;
+    mouthPosition: Point;
+    leftMouthPosition: Point;
+    rightMouthPosition: Point;
+    noseBasePosition: Point;
+};
 export declare type FaceDetectionResult = {
-    faces: any[];
+    faces: Face[];
+};
+export declare type ConstantsType = {
+    Type: typeof CameraType;
+    FlashMode: typeof FlashMode;
+    AutoFocus: typeof AutoFocus;
+    WhiteBalance: typeof WhiteBalance;
+    VideoQuality: any;
+    VideoStabilization: any;
 };
 export declare type CameraProps = ViewProps & {
     type?: number | keyof typeof CameraType;

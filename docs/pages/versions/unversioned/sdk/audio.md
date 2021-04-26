@@ -101,10 +101,9 @@ export default function App() {
       }); /* @end */
 
       console.log('Starting recording..');
-      /* @info */ const recording = new Audio.Recording();
-      await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
-      await recording.startAsync(); /* @end */
-
+      /* @info */ const { recording } = await Audio.Recording.createAsync(
+        /* @end */ Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
+      );
       setRecording(recording);
       console.log('Recording started');
     } catch (err) {
@@ -155,7 +154,7 @@ import { Audio } from 'expo-av';
 
 ### `Audio.requestPermissionsAsync()`
 
-Asks the user to grant permissions for audio recording. Alias for `Permissions.askAsync(Permissions.AUDIO_RECORDING)`.
+Asks the user to grant permissions for audio recording.
 
 #### Returns
 
@@ -163,7 +162,7 @@ A promise that resolves to an object of type [PermissionResponse](permissions.md
 
 ### `Audio.getPermissionsAsync()`
 
-Checks user's permissions for audio recording. Alias for `Permissions.getAsync(Permissions.AUDIO_RECORDING)`.
+Checks user's permissions for audio recording.
 
 #### Returns
 
@@ -388,6 +387,55 @@ try {
 }
 ```
 
+A static convenience method to construct and start a recording is also provided:
+
+- `Audio.Recording.createAsync(options, onRecordingStatusUpdate = null, progressUpdateIntervalMillis = null)`
+
+  Creates and starts a recording using the given options, with optional `onRecordingStatusUpdate` and `progressUpdateIntervalMillis`.
+
+  ```javascript
+  const { recording, status } = await Audio.Recording.createAsync(
+    options,
+    onRecordingStatusUpdate,
+    progressUpdateIntervalMillis,
+  );
+
+  // Which is equivalent to the following:
+  const recording = new Audio.Recording();
+  await recording.prepareAsync(options);
+  recording.setOnRecordingStatusUpdate(onRecordingStatusUpdate);
+  await recording.startAsync();
+  ```
+
+  #### Parameters
+
+  - **options (_RecordingOptions_)** -- Options for the recording, including sample rate, bitrate, channels, format, encoder, and extension. If no options are passed to, the recorder will be created with options `Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY`. See below for details on `RecordingOptions`.
+
+  - **onRecordingStatusUpdate (_function_)** -- A function taking a single parameter `status` (a dictionary, described in `getStatusAsync`).
+
+  - **progressUpdateIntervalMillis (_number_)** -- The interval between calls of `onRecordingStatusUpdate`. This value defaults to 500 milliseconds.
+
+  #### Returns
+
+  A `Promise` that is rejected if creation failed, or fulfilled with the following dictionary if creation succeeded:
+
+  - `recording` : the newly created and started `Recording` object.
+  - `status` : the `RecordingStatus` of the `Recording` object. See the [AV documentation](av.md) for further information.
+
+  #### Example
+
+  ```javascript
+  try {
+    const {
+      recording: recordingObject,
+      status,
+    } = await Audio.Recording.createAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
+    // You are now recording!
+  } catch (error) {
+    // An error occurred!
+  }
+  ```
+
 - `recordingInstance.getStatusAsync()`
 
   Gets the `status` of the `Recording`.
@@ -518,6 +566,8 @@ We also provide the ability to define your own custom recording options, but **w
 In order to define your own custom recording options, you must provide a dictionary of the following key value pairs.
 
 - `isMeteringEnabled` : a boolean that determines whether audio level information will be part of the status object under the "metering" key.
+
+- `keepAudioActiveHint` : a boolean that hints to keep the audio active after `prepareAsync` completes. Setting this value can improve the speed at which the recording starts. Only set this value to `true` when you call `startAsync` immediately after `prepareAsync`. This value is automatically set when using `Audio.recording.createAsync()`.
 
 - `android` : a dictionary of key-value pairs for the Android platform. This key is required.
 

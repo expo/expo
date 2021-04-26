@@ -1,7 +1,6 @@
 package expo.modules.updates.loader;
 
 import android.content.Context;
-import android.net.Uri;
 import android.util.Log;
 
 import org.json.JSONObject;
@@ -19,6 +18,7 @@ import expo.modules.updates.manifest.ManifestMetadata;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class RemoteLoader {
 
@@ -27,6 +27,7 @@ public class RemoteLoader {
   private Context mContext;
   private UpdatesConfiguration mConfiguration;
   private UpdatesDatabase mDatabase;
+  private FileDownloader mFileDownloader;
   private File mUpdatesDirectory;
 
   private Manifest mManifest;
@@ -42,6 +43,17 @@ public class RemoteLoader {
     void onSuccess(@Nullable UpdateEntity update);
 
     /**
+     * Called when an asset has either been successfully downloaded or failed to download.
+     *
+     * @param asset Entity representing the asset that was either just downloaded or failed
+     * @param successfulAssetCount The number of assets that have so far been loaded successfully
+     *                             (including any that were found to already exist on disk)
+     * @param failedAssetCount The number of assets that have so far failed to load
+     * @param totalAssetCount The total number of assets that comprise the update
+     */
+    void onAssetLoaded(AssetEntity asset, int successfulAssetCount, int failedAssetCount, int totalAssetCount);
+
+    /**
      * Called when a manifest has been downloaded. The calling class should determine whether or not
      * the RemoteLoader should continue to download the update described by this manifest, based on
      * (for example) whether or not it already has the update downloaded locally.
@@ -53,16 +65,17 @@ public class RemoteLoader {
     boolean onManifestLoaded(Manifest manifest);
   }
 
-  public RemoteLoader(Context context, UpdatesConfiguration configuration, UpdatesDatabase database, File updatesDirectory) {
+  public RemoteLoader(Context context, UpdatesConfiguration configuration, UpdatesDatabase database, FileDownloader fileDownloader, File updatesDirectory) {
     mContext = context;
     mConfiguration = configuration;
     mDatabase = database;
+    mFileDownloader = fileDownloader;
     mUpdatesDirectory = updatesDirectory;
   }
 
   // lifecycle methods for class
 
-  public void start(Uri url, LoaderCallback callback) {
+  public void start(LoaderCallback callback) {
     if (mCallback != null) {
       callback.onFailure(new Exception("RemoteLoader has already started. Create a new instance in order to load multiple URLs in parallel."));
       return;
@@ -71,7 +84,7 @@ public class RemoteLoader {
     mCallback = callback;
     JSONObject extraHeaders = ManifestMetadata.getServerDefinedHeaders(mDatabase, mConfiguration);
 
-    FileDownloader.downloadManifest(mConfiguration, extraHeaders, mContext, new FileDownloader.ManifestDownloadCallback() {
+    mFileDownloader.downloadManifest(mConfiguration, extraHeaders, mContext, new FileDownloader.ManifestDownloadCallback() {
       @Override
       public void onFailure(String message, Exception e) {
         finishWithError(message, e);
@@ -165,7 +178,7 @@ public class RemoteLoader {
     }
   }
 
-  private void downloadAllAssets(ArrayList<AssetEntity> assetList) {
+  private void downloadAllAssets(List<AssetEntity> assetList) {
     mAssetTotal = assetList.size();
     for (AssetEntity assetEntity : assetList) {
       AssetEntity matchingDbEntry = mDatabase.assetDao().loadAssetWithKey(assetEntity.key);
@@ -186,7 +199,7 @@ public class RemoteLoader {
         continue;
       }
 
-      FileDownloader.downloadAsset(assetEntity, mUpdatesDirectory, mConfiguration, mContext, new FileDownloader.AssetDownloadCallback() {
+      mFileDownloader.downloadAsset(assetEntity, mUpdatesDirectory, mConfiguration, new FileDownloader.AssetDownloadCallback() {
         @Override
         public void onFailure(Exception e, AssetEntity assetEntity) {
           Log.e(TAG, "Failed to download asset from " + assetEntity.url, e);
@@ -211,6 +224,8 @@ public class RemoteLoader {
     } else {
       mErroredAssetList.add(assetEntity);
     }
+
+    mCallback.onAssetLoaded(assetEntity, mFinishedAssetList.size() + mExistingAssetList.size(), mErroredAssetList.size(), mAssetTotal);
 
     if (mFinishedAssetList.size() + mErroredAssetList.size() + mExistingAssetList.size() == mAssetTotal) {
       try {

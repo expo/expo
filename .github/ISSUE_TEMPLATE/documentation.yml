@@ -1,6 +1,5 @@
 name: "\U0001F4C3 Documentation Bug"
-about: 'You want to report something that is wrong or missing from the documentation.'
-issue_body: true
+description: 'You want to report something that is wrong or missing from the documentation.'
 title: '[docs] '
 labels: 'project: docs'
 body:
@@ -19,3 +18,6 @@ body:
   - type: markdown
     attributes:
       value: If this is a typo, or something you feel up to fixing, please do so! You can edit any page in our docs by scrolling to the bottom and selecting `Edit this page`.
+  - type: textarea
+    attributes:
+      label: Anything else?

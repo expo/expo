@@ -3,6 +3,7 @@ title: SplashScreen
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-41/packages/expo-splash-screen'
 ---
 
+import APISection from '~/components/plugins/APISection';
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
@@ -87,10 +88,4 @@ Refer to the [with-splash-screen example](https://github.com/expo/examples/tree/
 import * as SplashScreen from 'expo-splash-screen';
 ```
 
-### `SplashScreen.preventAutoHideAsync()`
-
-Makes the native splash screen (configured in `app.json`) remain visible until `hideAsync` is called.
-
-### `SplashScreen.hideAsync()`
-
-Hides the native splash screen immediately. Be careful to ensure that your app has content ready to display when you hide the splash screen, or you may see a blank screen briefly. See the ["Usage"](#usage) section for an example.
+<APISection packageName="expo-splash-screen" apiName="SplashScreen" />

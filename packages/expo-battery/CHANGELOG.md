@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Removed following types: `BatteryLevelUpdateListener `, `BatteryStateUpdateListener` and `PowerModeUpdateListener` as they were only wrapping one-argument events responses. Use event types explicitly instead: `BatteryLevelEvent `, `BatteryStateEvent` and `PowerModeEvent`. ([#12592](https://github.com/expo/expo/pull/12592) by [@Simek](https://github.com/simek))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

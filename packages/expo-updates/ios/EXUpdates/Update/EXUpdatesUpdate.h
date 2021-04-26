@@ -48,7 +48,8 @@ typedef NS_ENUM(NSInteger, EXUpdatesUpdateStatus) {
 + (instancetype)updateWithManifest:(NSDictionary *)manifest
                           response:(nullable NSURLResponse *)response
                             config:(EXUpdatesConfig *)config
-                          database:(EXUpdatesDatabase *)database;
+                          database:(EXUpdatesDatabase *)database
+                             error:(NSError **)error;
 
 + (instancetype)updateWithEmbeddedManifest:(NSDictionary *)manifest
                                     config:(EXUpdatesConfig *)config

@@ -24,8 +24,8 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 144
-    versionName '2.18.8'
+    versionCode 148
+    versionName '2.19.2'
     // END VERSIONS
 
     multiDexEnabled true
@@ -67,7 +67,7 @@ android {
     abortOnError false
   }
   packagingOptions {
-    pickFirst "**"
+    pickFirst "lib/**"
   }
 }
 
@@ -191,11 +191,6 @@ dependencies {
   implementation(project(':expoview-abi39_0_0'))
   // END_SDK_39
 
-
-  // BEGIN_SDK_38
-  implementation(project(':expoview-abi38_0_0'))
-  // END_SDK_38
-
   // This is not needed in shell apps, the Amplitude module will include this dep if installed
   implementation 'com.amplitude:android-sdk:2.23.2'
 
@@ -218,8 +213,7 @@ dependencies {
       exclude      : [
         'expo-module-template',
         'expo-in-app-purchases',
-        'expo-payments-stripe',
-        'expo-gl-cpp-legacy'
+        'expo-payments-stripe'
       ]
   ])
   implementation 'host.exp.exponent:expo-random:+'

@@ -122,7 +122,7 @@ public class UpdatesModule extends ExportedModule {
         return;
       }
 
-      FileDownloader.downloadManifest(updatesService.getConfiguration(), null, getContext(), new FileDownloader.ManifestDownloadCallback() {
+      updatesService.getFileDownloader().downloadManifest(updatesService.getConfiguration(), null, getContext(), new FileDownloader.ManifestDownloadCallback() {
         @Override
         public void onFailure(String message, Exception e) {
           promise.reject("ERR_UPDATES_CHECK", message, e);
@@ -171,14 +171,17 @@ public class UpdatesModule extends ExportedModule {
 
       AsyncTask.execute(() -> {
         final DatabaseHolder databaseHolder = updatesService.getDatabaseHolder();
-        new RemoteLoader(getContext(), updatesService.getConfiguration(), databaseHolder.getDatabase(), updatesService.getDirectory())
+        new RemoteLoader(getContext(), updatesService.getConfiguration(), databaseHolder.getDatabase(), updatesService.getFileDownloader(), updatesService.getDirectory())
           .start(
-            updatesService.getConfiguration().getUpdateUrl(),
             new RemoteLoader.LoaderCallback() {
               @Override
               public void onFailure(Exception e) {
                 databaseHolder.releaseDatabase();
                 promise.reject("ERR_UPDATES_FETCH", "Failed to download new update", e);
+              }
+
+              @Override
+              public void onAssetLoaded(AssetEntity asset, int successfulAssetCount, int failedAssetCount, int totalAssetCount) {
               }
 
               @Override

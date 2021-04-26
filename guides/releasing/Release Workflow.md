@@ -188,7 +188,7 @@ In the managed workflow, we use our forked `react-native` repository because we 
 
 - Do this step immediately before cutting the release branch.
 - Run `et generate-sdk-docs --sdk XX.X.X` to generate versioned docs for the new SDK. If we've upgraded React Native version in this release, we should also use `--update-react-native-docs` flag which imports the current version of React Native docs that also show up on our docs page. (If there are issues with this, talk with @byCedric.)
-- Run `yarn run schema-sync XX` (`XX` being the major version number) and then change the schema import in `pages/versions/<version>/config/app.md` from `unversioned` to the new versioned schema file.
+- Run `yarn run schema-sync XX` (`XX` being the major version number) in `docs` directory and then change the schema import in `pages/versions/<version>/config/app.md` from `unversioned` to the new versioned schema file.
 - Ensure that the `version` in package.json has NOT been updated to the new SDK version. SDK versions greater than the `version` in package.json will be hidden in production docs, and we do not want the new version to show up until the SDK has been released.
 - Commit and push changes to master.
 

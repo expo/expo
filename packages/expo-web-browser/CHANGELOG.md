@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `createTask` (Android) flag for `WebBrowser`. ([#12462](https://github.com/expo/expo/pull/12462) by [@Ackuq](https://github.com/Ackuq))
+
 ### 🐛 Bug fixes
 
 ## 9.1.0 — 2021-03-10

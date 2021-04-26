@@ -9,6 +9,10 @@ if (Platform.isDOMAvailable) {
   result = parser.getResult();
 }
 
+function convertGiBtoBytes(gib: number): number {
+  return Math.round(gib * 1024 ** 3);
+}
+
 export default {
   get isDevice(): boolean {
     return true;
@@ -25,7 +29,11 @@ export default {
   get deviceYearClass(): null {
     return null;
   },
-  get totalMemory(): null {
+  get totalMemory(): number | null {
+    if (Platform.isDOMAvailable && 'deviceMemory' in navigator) {
+      const { deviceMemory } = navigator;
+      return convertGiBtoBytes(deviceMemory);
+    }
     return null;
   },
   get supportedCpuArchitectures(): string[] | null {

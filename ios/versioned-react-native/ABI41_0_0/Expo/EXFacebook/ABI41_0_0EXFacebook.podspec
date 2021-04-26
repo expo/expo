@@ -16,8 +16,8 @@ Pod::Spec.new do |s|
   s.dependency 'ABI41_0_0UMCore'
   s.dependency 'ABI41_0_0UMConstantsInterface'
   s.dependency 'ABI41_0_0UMPermissionsInterface'
-  s.dependency 'FacebookSDK/CoreKit', $FacebookSDKVersion || '9.0.1'
-  s.dependency 'FacebookSDK/LoginKit', $FacebookSDKVersion || '9.0.1'
+  s.dependency 'FacebookSDK/CoreKit', $FacebookSDKVersion || '9.2.0'
+  s.dependency 'FacebookSDK/LoginKit', $FacebookSDKVersion || '9.2.0'
 
   # FacebookSDK is written in Swift, so must use this flag to import from it.
   s.pod_target_xcconfig = { 'CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES' => 'YES' }

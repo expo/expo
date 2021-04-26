@@ -8,6 +8,16 @@
 
 ### 🐛 Bug fixes
 
+- Updated `BannerView` on Android to not create a new ad request on every layout change. ([#12599](https://github.com/expo/expo/pull/12599) by [@cruzach](https://github.com/cruzach))
+
+## 10.0.4 — 2021-04-13
+
+_This version does not introduce any user-facing changes._
+
+## 10.0.3 — 2021-03-31
+
+_This version does not introduce any user-facing changes._
+
 ## 10.0.2 — 2021-03-30
 
 ### 🎉 New features

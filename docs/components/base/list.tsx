@@ -58,9 +58,18 @@ const STYLES_LIST_ITEM = css`
   }
 `;
 
-export const LI: React.FC = ({ children }) => {
+const STYLE_RETURN_LIST = css`
+  list-style-type: '⇒';
+  padding-left: 0.5rem;
+`;
+
+type LIProps = {
+  returnType?: boolean;
+};
+
+export const LI: React.FC<LIProps> = ({ children, returnType }) => {
   return (
-    <li css={STYLES_LIST_ITEM} className="docs-list-item">
+    <li css={[STYLES_LIST_ITEM, returnType && STYLE_RETURN_LIST]} className="docs-list-item">
       {children}
     </li>
   );

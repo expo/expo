@@ -12,6 +12,8 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.storage.AsyncStorageModule;
 import com.facebook.react.modules.storage.ReactDatabaseSupplier;
+
+import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.kernel.KernelProvider;
 
@@ -23,11 +25,11 @@ public class ExponentAsyncStorageModule extends AsyncStorageModule {
     return "RKStorage-scoped-experience-" + experienceIdEncoded;
   }
 
-  public ExponentAsyncStorageModule(ReactApplicationContext reactContext, JSONObject manifest) {
+  public ExponentAsyncStorageModule(ReactApplicationContext reactContext, RawManifest manifest) {
     super(reactContext);
 
     try {
-      String experienceId = manifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+      String experienceId = manifest.getID();
       String databaseName = experienceIdToDatabaseName(experienceId);
       mReactDatabaseSupplier = new ReactDatabaseSupplier(reactContext, databaseName);
     } catch (JSONException e) {

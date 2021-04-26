@@ -8,6 +8,14 @@
 
 ### 🐛 Bug fixes
 
+## 4.0.2 — 2021-04-13
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.1 — 2021-04-01
+
+_This version does not introduce any user-facing changes._
+
 ## 4.0.0 — 2021-03-10
 
 ### 🛠 Breaking changes

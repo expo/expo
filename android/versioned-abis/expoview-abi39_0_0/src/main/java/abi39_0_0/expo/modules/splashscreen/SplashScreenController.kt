@@ -38,8 +38,8 @@ class SplashScreenController(
   }
 
   fun preventAutoHide(
-      successCallback: (hasEffect: Boolean) -> Unit,
-      failureCallback: (reason: String) -> Unit
+    successCallback: (hasEffect: Boolean) -> Unit,
+    failureCallback: (reason: String) -> Unit
   ) {
     if (!autoHideEnabled || !splashScreenShown) {
       return successCallback(false)
@@ -50,8 +50,8 @@ class SplashScreenController(
   }
 
   fun hideSplashScreen(
-      successCallback: (hasEffect: Boolean) -> Unit = {},
-      failureCallback: (reason: String) -> Unit = {}
+    successCallback: (hasEffect: Boolean) -> Unit = {},
+    failureCallback: (reason: String) -> Unit = {}
   ) {
     if (!splashScreenShown) {
       return successCallback(false)

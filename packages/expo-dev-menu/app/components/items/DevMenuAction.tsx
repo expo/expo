@@ -4,7 +4,7 @@ import DevMenuContext from '../../DevMenuContext';
 import {
   DevMenuItemProps,
   DevMenuItemActionType,
-  dispatchActionAsync,
+  dispatchCallableAsync,
 } from '../../DevMenuInternal';
 import ListItemButton from '../../components/ListItemButton';
 
@@ -12,7 +12,7 @@ class DevMenuItemAction extends React.PureComponent<DevMenuItemProps<DevMenuItem
   static contextType = DevMenuContext;
 
   action = (...args) => {
-    dispatchActionAsync(...args);
+    dispatchCallableAsync(...args);
     this.context?.collapse?.();
   };
 

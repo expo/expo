@@ -89,7 +89,13 @@ abstract class DevLauncherAppLoader(
 
   private fun setAppUrl(url: Uri): Boolean {
     val debugServerHost = url.host + ":" + url.port
-    return injectDebugServerHost(context, appHost, debugServerHost)
+    // We need to remove "/" which is added to begin of the path by the Uri
+    // and the bundle type
+    val bundleName = url.path
+      ?.substring(1)
+      ?.replace(".bundle", "")
+      ?: "index"
+    return injectDebugServerHost(context, appHost, debugServerHost, bundleName)
   }
 
   private fun launchIntent(intent: Intent) {

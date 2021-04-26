@@ -8,6 +8,17 @@
 
 ### 🐛 Bug fixes
 
+## 11.0.2 — 2021-04-13
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.1 — 2021-04-09
+
+### 🐛 Bug fixes
+
+- Avoid LAContext#biometryType bug on iOS 11.0.0. ([#12413](https://github.com/expo/expo/pull/12413) by [@mickamy](https://github.com/mickamy/))
+- Do not require activity existence on getKeyguardManager. ([#12400](https://github.com/expo/expo/pull/12400) by [@mickamy](https://github.com/mickamy/))
+
 ## 11.0.0 — 2021-03-10
 
 ### 🛠 Breaking changes

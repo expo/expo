@@ -8,6 +8,21 @@
 
 ### 🐛 Bug fixes
 
+## 0.13.3 — 2021-04-13
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.2 — 2021-04-09
+
+### 🛠 Breaking changes
+
+- Removed exported `Permissions` object and removed `expo-permissions` from dependencies. ([#12405](https://github.com/unimodules/react-native-unimodules/pull/12405) by [@bbarthec](https://github.com/bbarthec))
+  > `expo-permissions` is now deprecated — the functionality has been moved to other expo packages that directly use these permissions (e.g. `expo-location`, `expo-camera`).
+
+### 🎉 New features
+
+- Added `tests` field to options in `use_unimodules` ruby script. ([#11972](https://github.com/expo/expo/pull/11972) by [@esamelson](https://github.com/esamelson))
+
 ## 0.13.1 — 2021-03-30
 
 _This version does not introduce any user-facing changes._

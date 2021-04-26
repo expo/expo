@@ -166,4 +166,3 @@ object ImagePickerConstants {
     arrayOf("int", ExifInterface.TAG_RW2_ISO)
   )
 }
-

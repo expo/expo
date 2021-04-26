@@ -1,17 +1,20 @@
-import * as React from 'react';
+import React from 'react';
 
-const getAnalyticsScript = (id: string) => {
+// Initialize the command queue in case analytics.js hasn't loaded yet
+const getInitGoogleAnalyticsScript = (id: string) => {
   return `
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
 ga('create', '${id}', {cookieDomain: 'auto', siteSpeedSampleRate: 100});
+ga('set', 'transport', 'beacon');
 ga('send', 'pageview');
 `.replace(/\n/g, '');
 };
 
-export const GoogleScript: React.FC<{ id: string }> = props => {
-  const markup = { __html: getAnalyticsScript(props.id) };
-  return <script dangerouslySetInnerHTML={markup} />;
-};
+export function getInitGoogleScriptTag({ id }: { id: string }) {
+  const initScript = { __html: getInitGoogleAnalyticsScript(id) };
+  return <script dangerouslySetInnerHTML={initScript} />;
+}
+
+export function getGoogleScriptTag() {
+  return <script defer src="https://www.google-analytics.com/analytics.js" />;
+}

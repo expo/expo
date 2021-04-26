@@ -8,6 +8,20 @@
 
 ### 🐛 Bug fixes
 
+## 0.11.5 — 2021-04-13
+
+_This version does not introduce any user-facing changes._
+
+## 0.11.4 — 2021-04-09
+
+### 🎉 New features
+
+- Add bare workflow support to `getExpoPushTokenAsync`. ([#12465](https://github.com/expo/expo/pull/12465) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.11.3 — 2021-03-31
+
+_This version does not introduce any user-facing changes._
+
 ## 0.11.2 — 2021-03-30
 
 ### 🐛 Bug fixes
