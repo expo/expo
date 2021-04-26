@@ -70,4 +70,3 @@ dependencies {
   api 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
   api "androidx.legacy:legacy-support-v4:1.0.0"
 }
-  
