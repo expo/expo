@@ -620,7 +620,7 @@ This does come with a couple caveats:
 2. There is currently no mechanism for detecting if a config plugin has mandatory props. Because of this, `expo install` will only add the plugin, and not attempt to add any extra props. For example, `expo-camera` has optional extra props, so `plugins: ['expo-camera']` is valid, but if it had mandatory props then `expo-camera` would throw an error.
 3. Plugins can only be automatically added when the user's project uses a static Expo config (`app.json` and `app.config.json`). If the user runs `expo install expo-camera` in a project with an `app.config.js`, they'll see a warning like:
 
-```log
+```
 Cannot automatically write to dynamic config at: app.config.js
 Please add the following to your Expo config
 
