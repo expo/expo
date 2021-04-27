@@ -88,6 +88,7 @@ async function action({ packageName }: ActionOptions) {
     'expo-keep-awake': ['index.ts'],
     'expo-linear-gradient': ['LinearGradient.tsx'],
     'expo-mail-composer': ['MailComposer.ts'],
+    'expo-print': ['Print.ts'],
     'expo-random': ['Random.ts'],
     'expo-sensors': ['Pedometer.ts', 'expo-pedometer'],
     'expo-sharing': ['Sharing.ts'],
