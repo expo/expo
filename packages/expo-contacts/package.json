@@ -1,6 +1,6 @@
 {
   "name": "expo-contacts",
-  "version": "9.1.1",
+  "version": "9.1.2",
   "description": "Provides access to the phone's system contacts.",
   "main": "build/Contacts.js",
   "types": "build/Contacts.d.ts",

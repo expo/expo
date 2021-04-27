@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+- Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
+
+## 0.10.2 — 2021-04-13
+
+_This version does not introduce any user-facing changes._
+
 ## 0.10.1 — 2021-04-09
 
 _This version does not introduce any user-facing changes._

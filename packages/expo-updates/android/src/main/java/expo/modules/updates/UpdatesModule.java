@@ -199,6 +199,10 @@ public class UpdatesModule extends ExportedModule {
               }
 
               @Override
+              public void onAssetLoaded(AssetEntity asset, int successfulAssetCount, int failedAssetCount, int totalAssetCount) {
+              }
+
+              @Override
               public boolean onManifestLoaded(Manifest manifest) {
                 return updatesService.getSelectionPolicy().shouldLoadNewUpdate(
                   manifest.getUpdateEntity(),
@@ -213,6 +217,7 @@ public class UpdatesModule extends ExportedModule {
                 if (update == null) {
                   updateInfo.putBoolean("isNew", false);
                 } else {
+                  updatesService.resetSelectionPolicy();
                   updateInfo.putBoolean("isNew", true);
                   updateInfo.putString("manifestString", update.metadata.toString());
                 }

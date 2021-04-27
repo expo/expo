@@ -76,7 +76,7 @@ static NSString * const ABI39_0_0EXUpdatesAppLauncherErrorDomain = @"AppLauncher
         [filteredLaunchableUpdates addObject:update];
       }
 
-      completion(nil, [selectionPolicy launchableUpdateWithUpdates:filteredLaunchableUpdates]);
+      completion(nil, [selectionPolicy launchableUpdateFromUpdates:filteredLaunchableUpdates]);
     });
   });
 }

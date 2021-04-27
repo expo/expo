@@ -1,5 +1,6 @@
 ---
 title: Build server infrastructure
+sidebar_title: Server infrastructure
 ---
 
 This document describes the current build infrastructure as of December 15, 2020. It is likely to change over time, and this document will be updated.

@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
+
+## 10.1.2 — 2021-04-13
+
+### 🎉 New features
+
 - Added permissions-related methods `getPermissionsAsync` and `requestPermissionsAsync` what replaces deprecated `Permissions.askAsync()` and `Permissions.getAsync()`. ([#12501](https://github.com/expo/expo/pull/12501) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes

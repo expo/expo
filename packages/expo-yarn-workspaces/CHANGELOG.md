@@ -8,6 +8,18 @@
 
 ### 🐛 Bug fixes
 
+## 1.5.1 — 2021-04-20
+
+### 🐛 Bug fixes
+
+- add package files to package.json. ([#12622](https://github.com/expo/expo/pull/12622) by [@ajsmth](https://github.com/ajsmth))
+
+## 1.5.0 — 2021-04-20
+
+### 🎉 New features
+
+- Add `createWebpackConfigAsync` export. ([#12566](https://github.com/expo/expo/pull/12566) by [@ajsmth](https://github.com/ajsmth))
+
 ## 1.4.1 — 2021-03-23
 
 ### 🎉 New features

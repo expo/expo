@@ -1,6 +1,10 @@
 import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
 import invariant from 'invariant';
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+import {
+  PermissionExpiration,
+  PermissionResponse,
+  PermissionStatus,
+} from 'unimodules-permissions-interface';
 
 import ExponentPedometer from './ExponentPedometer';
 
@@ -83,4 +87,4 @@ const defaultPermissionsResponse: PermissionResponse = {
   status: PermissionStatus.GRANTED,
 };
 
-export { Subscription, PermissionResponse };
+export { Subscription, PermissionResponse, PermissionStatus, PermissionExpiration };

@@ -5,6 +5,10 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.MotionEvent
 import com.facebook.react.ReactNativeHost
+import com.facebook.react.bridge.ReadableMap
+import expo.interfaces.devmenu.expoapi.DevMenuExpoApiClientInterface
+import expo.interfaces.devmenu.items.DevMenuDataSourceInterface
+import expo.interfaces.devmenu.items.DevMenuDataSourceItem
 
 interface DevMenuManagerInterface {
   /**
@@ -53,7 +57,7 @@ interface DevMenuManagerInterface {
    * Finds and dispatches action with provided [actionId].
    * If such action doesn't exist, ignore it.
    */
-  fun dispatchAction(actionId: String)
+  fun dispatchCallable(actionId: String, args: ReadableMap?)
 
   /**
    * @return a list of dev menu items serialized to the [Bundle].
@@ -106,4 +110,6 @@ interface DevMenuManagerInterface {
    * Whether delegate was initialized
    */
   fun isInitialized(): Boolean
+
+  suspend fun fetchDataSource(id: String): List<DevMenuDataSourceItem>
 }

@@ -19,7 +19,7 @@ class DevLauncherClientHost(
 
   init {
     if (useDeveloperSupport) {
-      injectDebugServerHost(application.applicationContext, this, launcherIp!!)
+      injectDebugServerHost(application.applicationContext, this, launcherIp!!, jsMainModuleName)
     }
   }
 

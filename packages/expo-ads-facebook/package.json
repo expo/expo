@@ -1,6 +1,6 @@
 {
   "name": "expo-ads-facebook",
-  "version": "10.0.3",
+  "version": "10.0.4",
   "description": "Facebook Audience SDK integration",
   "main": "build/index.js",
   "types": "build/index.d.ts",

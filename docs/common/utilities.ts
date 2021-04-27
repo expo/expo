@@ -24,10 +24,7 @@ export const toString = (node: React.ReactNode): string => {
 };
 
 export const generateSlug = (slugger: GithubSlugger, node: React.ReactNode, length = 7): string => {
-  const stringToSlug = toString(node)
-    .split(' ')
-    .splice(0, length)
-    .join('-');
+  const stringToSlug = toString(node).split(' ').splice(0, length).join('-');
 
   // NOTE(jim): This will strip out commas from stringToSlug
   const slug = slugger.slug(stringToSlug);

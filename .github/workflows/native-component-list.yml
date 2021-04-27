@@ -6,12 +6,14 @@ on:
     paths:
       - .github/workflows/native-component-list.yml
       - apps/native-component-list/**
+      - packages/**
       - yarn.lock
   push:
     branches: [master]
     paths:
       - .github/workflows/native-component-list.yml
       - apps/native-component-list/**
+      - packages/**
       - yarn.lock
 
 jobs:

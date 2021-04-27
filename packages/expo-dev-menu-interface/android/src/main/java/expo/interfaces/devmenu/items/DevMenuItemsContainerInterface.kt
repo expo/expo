@@ -5,9 +5,12 @@ import android.os.Bundle
 interface DevMenuItemsContainerInterface {
   fun getRootItems(): List<DevMenuScreenItem>
   fun getAllItems(): List<DevMenuScreenItem>
-  fun addItem(item: DevMenuScreenItem)
-  fun serializeItems(): Array<Bundle>
 }
+
+fun DevMenuItemsContainerInterface.serializeItems(): Array<Bundle> =
+  getRootItems()
+    .map { it.serialize() }
+    .toTypedArray()
 
 inline fun <reified T> DevMenuItemsContainerInterface.getItemsOfType(): List<T> {
   return getAllItems().filterIsInstance<T>()

@@ -1,6 +1,8 @@
 package expo.modules.updates.db.entity;
 
 import expo.modules.updates.db.enums.UpdateStatus;
+import expo.modules.updates.manifest.ManifestFactory;
+import expo.modules.updates.manifest.raw.RawManifest;
 
 import org.json.JSONObject;
 
@@ -45,6 +47,10 @@ public class UpdateEntity {
   public Long launchAssetId = null;
 
   public JSONObject metadata = null;
+
+  public RawManifest getRawManifest() {
+    return ManifestFactory.INSTANCE.getRawManifestFromJson(this.metadata);
+  }
 
   @NonNull
   public UpdateStatus status = UpdateStatus.PENDING;

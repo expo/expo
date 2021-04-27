@@ -71,8 +71,8 @@ public class RNDatePickerDialogFragment extends DialogFragment {
         case CALENDAR:
         case SPINNER:
           String resourceName = display == RNDatePickerDisplay.CALENDAR
-                  ? "CalendarDatePickerDialog"
-                  : "SpinnerDatePickerDialog";
+                  ? "ReactAndroidCalendarDatePickerDialog"
+                  : "ReactAndroidSpinnerDatePickerDialog";
           return new RNDismissableDatePickerDialog(
                   activityContext,
                   activityContext.getResources().getIdentifier(

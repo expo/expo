@@ -2,13 +2,15 @@ package expo.modules.imagepicker
 
 import org.unimodules.core.Promise
 
-data class ImagePickerOptions(val quality: Int,
-                              val isAllowsEditing: Boolean,
-                              val forceAspect: List<*>?,
-                              val isBase64: Boolean,
-                              val mediaTypes: MediaTypes,
-                              val isExif: Boolean,
-                              val videoMaxDuration: Int) {
+data class ImagePickerOptions(
+  val quality: Int,
+  val isAllowsEditing: Boolean,
+  val forceAspect: List<*>?,
+  val isBase64: Boolean,
+  val mediaTypes: MediaTypes,
+  val isExif: Boolean,
+  val videoMaxDuration: Int
+) {
   companion object {
     fun optionsFromMap(options: Map<String, Any?>, promise: Promise): ImagePickerOptions? {
       val quality = options[ImagePickerConstants.OPTION_QUALITY]?.let {
@@ -53,4 +55,3 @@ data class ImagePickerOptions(val quality: Int,
     }
   }
 }
-

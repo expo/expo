@@ -3,10 +3,10 @@ import { DrawerNavigationOptions } from '@react-navigation/drawer';
 import { PathConfig } from '@react-navigation/native';
 import { StackNavigationOptions } from '@react-navigation/stack';
 
-import { Routes as ExpoApiRoutes } from './ExpoApis';
-import ExpoApisStackNavigator from './ExpoApisStackNavigator';
-import { Routes as ExpoComponentRoutes } from './ExpoComponents';
-import ExpoComponentsStackNavigator from './ExpoComponentsStackNavigator';
+import ExpoApisStackNavigator, { Screens as APIScreens } from './ExpoApisStackNavigator';
+import ExpoComponentsStackNavigator, {
+  Screens as ComponentScreens,
+} from './ExpoComponentsStackNavigator';
 
 // @tsapeta: These navigators are being used by `bare-expo` app,
 // so make sure they still work there once you change something here.
@@ -24,7 +24,13 @@ const apis: ScreenConfig = {
     initialRouteName: 'ExpoApis',
     screens: {
       ExpoApis: '',
-      ...ExpoApiRoutes,
+      ...APIScreens.reduce(
+        (prev, curr) => ({
+          ...prev,
+          [curr.name]: curr.name.toLowerCase(),
+        }),
+        {}
+      ),
     },
   },
   navigator: ExpoApisStackNavigator,
@@ -36,10 +42,19 @@ const components = {
     initialRouteName: 'ExpoComponents',
     screens: {
       ExpoComponents: '',
-      ...ExpoComponentRoutes,
+      ...ComponentScreens.reduce(
+        (prev, curr) => ({
+          ...prev,
+          [curr.name]: curr.route || curr.name.toLowerCase(),
+        }),
+        {}
+      ),
     },
   },
   navigator: ExpoComponentsStackNavigator,
 };
 
-export default { apis, components };
+export default {
+  apis,
+  components,
+};

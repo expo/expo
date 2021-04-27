@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { HeaderStyleInterpolators } from '@react-navigation/stack';
 import * as React from 'react';
