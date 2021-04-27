@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
   [jsResource loadResourceWithBehavior:cacheBehavior progressBlock:progressBlock successBlock:successBlock errorBlock:errorBlock];
 }
 
-+ (NSString *)experienceIdWithManifest:(EXUpdatesRawManifest * _Nonnull)manifest
++ (nullable NSString *)experienceIdWithManifest:(EXUpdatesRawManifest * _Nonnull)manifest
 {
   return manifest.rawID;
 }

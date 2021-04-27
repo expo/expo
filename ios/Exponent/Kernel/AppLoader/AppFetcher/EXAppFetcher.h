@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
                           success:(void (^)(NSData *))successBlock
                             error:(void (^)(NSError *))errorBlock;
 
-+ (NSString *)experienceIdWithManifest:(EXUpdatesRawManifest *)manifest;
++ (nullable NSString *)experienceIdWithManifest:(EXUpdatesRawManifest *)manifest;
 + (EXCachedResourceBehavior)cacheBehaviorForJSWithManifest:(EXUpdatesRawManifest *)manifest;
 
 @end
