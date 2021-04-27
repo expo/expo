@@ -57,7 +57,7 @@ export default function HomeApp() {
     if (!isShowingSplashScreen && Platform.OS === 'ios') {
       // If Expo Go is opened via deep linking, we'll get the URL here
       Linking.getInitialURL().then(initialUrl => {
-        if (initialUrl && !initialUrl.includes('expo.io/expo-go')) {
+        if (initialUrl && shouldOpenUrl(initialUrl)) {
           Linking.openURL(UrlUtils.toExp(initialUrl));
         }
       });
@@ -113,6 +113,11 @@ export default function HomeApp() {
       </ActionSheetProvider>
     </View>
   );
+}
+
+// Certain links should just open the HomeScreen
+function shouldOpenUrl(url: string) {
+  return !url.includes('expo.io/expo-go');
 }
 
 const styles = StyleSheet.create({
