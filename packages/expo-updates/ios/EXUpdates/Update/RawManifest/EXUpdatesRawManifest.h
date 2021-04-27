@@ -10,11 +10,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 # pragma mark - Field getters
 
-- (NSString *)rawID;
-- (NSString *)sdkVersion;
+- (nullable NSString *)rawID;
+- (nullable NSString *)sdkVersion;
 - (NSString *)bundleUrl;
-- (NSString *)revisionId;
-- (nullable NSArray *)assets;
+- (nullable NSString *)revisionId;
 - (nullable NSString *)slug;
 - (nullable NSString *)appKey;
 - (nullable NSString *)name;

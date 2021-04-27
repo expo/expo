@@ -1,5 +1,7 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
+#import <EXUpdates/NSDictionary+EXUpdatesRawManifest.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXUpdatesBaseRawManifest : NSObject
@@ -11,8 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 # pragma mark - Common EXUpdatesRawManifestBehavior
 
-- (NSString *)rawID;
-- (NSString *)revisionId;
+- (nullable NSString *)rawID;
+- (nullable NSString *)revisionId;
 - (nullable NSString *)slug;
 - (nullable NSString *)appKey;
 - (nullable NSString *)name;

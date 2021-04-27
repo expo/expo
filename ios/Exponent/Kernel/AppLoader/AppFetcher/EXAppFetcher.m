@@ -55,14 +55,9 @@ NS_ASSUME_NONNULL_BEGIN
   [jsResource loadResourceWithBehavior:cacheBehavior progressBlock:progressBlock successBlock:successBlock errorBlock:errorBlock];
 }
 
-+ (NSString *)experienceIdWithManifest:(EXUpdatesRawManifest * _Nonnull)manifest
++ (nullable NSString *)experienceIdWithManifest:(EXUpdatesRawManifest * _Nonnull)manifest
 {
-  id experienceIdJsonValue = manifest.rawID;
-  if (experienceIdJsonValue) {
-    RCTAssert([experienceIdJsonValue isKindOfClass:[NSString class]], @"Manifest contains an id which is not a string: %@", experienceIdJsonValue);
-    return experienceIdJsonValue;
-  }
-  return nil;
+  return manifest.rawID;
 }
 
 + (EXCachedResourceBehavior)cacheBehaviorForJSWithManifest:(EXUpdatesRawManifest * _Nonnull)manifest
