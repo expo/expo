@@ -19,11 +19,11 @@ export async function getAuthenticatedUserAsync() {
 /**
  * Requests for the pull request object.
  */
-export async function getPullRequestAsync(pullRequestId: number): Promise<PullRequest> {
+export async function getPullRequestAsync(pull_number: number): Promise<PullRequest> {
   const { data } = await octokit.pulls.get({
     owner,
     repo,
-    pull_number: pullRequestId,
+    pull_number,
   });
   return data;
 }
@@ -32,12 +32,12 @@ export async function getPullRequestAsync(pullRequestId: number): Promise<PullRe
  * Gets a list of reviews left in the pull request with given ID.
  */
 export async function listPullRequestReviewsAsync(
-  pullRequestId: number
+  pull_number: number
 ): Promise<PullRequestReview[]> {
   const { data } = await octokit.pulls.listReviews({
     owner,
     repo,
-    pull_number: pullRequestId,
+    pull_number,
   });
   return data;
 }
@@ -47,13 +47,13 @@ export async function listPullRequestReviewsAsync(
  * Provide `event` option to create and submit at once.
  */
 export async function createPullRequestReviewAsync<T>(
-  pullRequestId: number,
+  pull_number: number,
   options?: T
 ): Promise<PullRequestReview> {
   const { data } = await octokit.pulls.createReview({
     owner,
     repo,
-    pull_number: pullRequestId,
+    pull_number,
     ...options,
   });
   return data;
@@ -63,15 +63,15 @@ export async function createPullRequestReviewAsync<T>(
  * Updates pull request review with a new main comment.
  */
 export async function updatePullRequestReviewAsync(
-  pullRequestId: number,
-  reviewId: number,
+  pull_number: number,
+  review_id: number,
   body: string
 ) {
   const { data } = await octokit.pulls.updateReview({
     owner,
     repo,
-    pull_number: pullRequestId,
-    review_id: reviewId,
+    pull_number,
+    review_id,
     body,
   });
   return data;
@@ -80,12 +80,12 @@ export async function updatePullRequestReviewAsync(
 /**
  * Gets a list of comments in review.
  */
-export async function listPullRequestReviewCommentsAsync(pullRequestId: number, reviewId: number) {
+export async function listPullRequestReviewCommentsAsync(pull_number: number, review_id: number) {
   const { data } = await octokit.pulls.listReviewComments({
     owner,
     repo,
-    pull_number: pullRequestId,
-    review_id: reviewId,
+    pull_number,
+    review_id,
   });
   return data;
 }
@@ -93,11 +93,11 @@ export async function listPullRequestReviewCommentsAsync(pullRequestId: number, 
 /**
  * Deletes a comment left under pull request review.
  */
-export async function deletePullRequestReviewCommentAsync(commentId: number) {
+export async function deletePullRequestReviewCommentAsync(comment_id: number) {
   const { data } = await octokit.pulls.deleteReviewComment({
     owner,
     repo,
-    comment_id: commentId,
+    comment_id,
   });
   return data;
 }
@@ -106,10 +106,10 @@ export async function deletePullRequestReviewCommentAsync(commentId: number) {
  * Deletes all comments from given review.
  */
 export async function deleteAllPullRequestReviewCommentsAsync(
-  pullRequestId: number,
-  reviewId: number
+  pull_number: number,
+  review_id: number
 ) {
-  const comments = await listPullRequestReviewCommentsAsync(pullRequestId, reviewId);
+  const comments = await listPullRequestReviewCommentsAsync(pull_number, review_id);
   for (const comment of comments) {
     await deletePullRequestReviewCommentAsync(comment.id);
   }

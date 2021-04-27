@@ -1,9 +1,9 @@
 import fs from 'fs-extra';
+import parseDiff from 'parse-diff';
 import path from 'path';
 
 import { spawnAsync, SpawnResult, SpawnOptions } from './Utils';
 import { EXPO_DIR } from './Constants';
-import parseDiff from 'parse-diff';
 
 export type GitPullOptions = {
   rebase?: boolean;
