@@ -91,7 +91,6 @@ public class DatabaseIntegrityCheckTest {
     Assert.assertEquals(1, allUpdates.size());
     Assert.assertEquals(UpdateStatus.PENDING, allUpdates.get(0).status);
     Assert.assertEquals(1, allAssets.size());
-    Assert.assertNull(allAssets.get(0).relativePath);
 
     // cleanup
     db.updateDao().deleteUpdates(allUpdates);
@@ -121,7 +120,6 @@ public class DatabaseIntegrityCheckTest {
     Assert.assertEquals(1, allUpdates.size());
     Assert.assertEquals(UpdateStatus.READY, allUpdates.get(0).status);
     Assert.assertEquals(1, allAssets.size());
-    Assert.assertEquals(asset1.relativePath, allAssets.get(0).relativePath);
 
     // cleanup
     db.updateDao().deleteUpdates(allUpdates);
