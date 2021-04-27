@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)createdAt;
 - (NSString *)runtimeVersion;
 - (NSDictionary *)launchAsset;
+- (nullable NSArray *)assets;
 
 @end
 

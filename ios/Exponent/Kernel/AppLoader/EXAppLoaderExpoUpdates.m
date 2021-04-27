@@ -417,7 +417,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (![@"UNVERSIONED" isEqual:sdkVersion] &&
         sdkVersion.integerValue < 39 &&
         [@"snack" isEqual:manifest.slug] &&
-        bundleUrl && [bundleUrl isKindOfClass:[NSString class]] &&
         [bundleUrl hasPrefix:@"https://d1wp6m56sqw74a.cloudfront.net/%40exponent%2Fsnack"]) {
       _shouldShowRemoteUpdateStatus = NO;
       return;

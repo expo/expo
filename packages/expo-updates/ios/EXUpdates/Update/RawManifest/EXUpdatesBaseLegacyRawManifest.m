@@ -1,19 +1,16 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesBaseLegacyRawManifest.h>
+#import <EXUpdates/NSDictionary+EXUpdatesRawManifest.h>
 
 @implementation EXUpdatesBaseLegacyRawManifest
 
 - (NSString *)bundleUrl {
-  return self.rawManifestJSON[@"bundleUrl"];
+  return [self.rawManifestJSON stringForKey:@"bundleUrl"];
 }
 
-- (NSString *)sdkVersion {
-  return self.rawManifestJSON[@"sdkVersion"];
-}
-
-- (nullable NSArray *)assets {
-  return self.rawManifestJSON[@"assets"];
+- (nullable NSString *)sdkVersion {
+  return [self.rawManifestJSON nullableStringForKey:@"sdkVersion"];
 }
 
 @end

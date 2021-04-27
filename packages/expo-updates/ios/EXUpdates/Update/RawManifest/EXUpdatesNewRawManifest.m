@@ -5,10 +5,10 @@
 @implementation EXUpdatesNewRawManifest
 
 - (NSString *)createdAt {
-  return self.rawManifestJSON[@"createdAt"];
+  return [self.rawManifestJSON stringForKey:@"createdAt"];
 }
 
-- (NSString *)sdkVersion {
+- (nullable NSString *)sdkVersion {
   NSString *runtimeVersion = self.runtimeVersion;
   NSRegularExpression *regex =
       [NSRegularExpression regularExpressionWithPattern:@"^exposdk:(\\d+\\.\\d+\\.\\d+)$"
@@ -26,19 +26,19 @@
 }
 
 - (NSString *)runtimeVersion {
-  return self.rawManifestJSON[@"runtimeVersion"];
+  return [self.rawManifestJSON stringForKey:@"runtimeVersion"];
 }
 
 - (NSDictionary *)launchAsset {
-  return self.rawManifestJSON[@"launchAsset"];
+  return [self.rawManifestJSON dictionaryForKey:@"launchAsset"];
 }
 
-- (NSArray *)assets {
-  return self.rawManifestJSON[@"assets"];
+- (nullable NSArray *)assets {
+  return [self.rawManifestJSON nullableArrayForKey:@"assets"];
 }
 
 - (NSString *)bundleUrl {
-  return self.launchAsset[@"url"];
+  return [self.launchAsset stringForKey:@"url"];
 }
 
 @end
