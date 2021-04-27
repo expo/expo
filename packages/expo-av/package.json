@@ -1,6 +1,6 @@
 {
   "name": "expo-av",
-  "version": "9.1.1",
+  "version": "9.1.2",
   "description": "Expo universal module for Audio and Video playback",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -36,8 +36,6 @@
   },
   "dependencies": {
     "@expo/config-plugins": "^1.0.18",
-    "lodash": "^4.17.15",
-    "nullthrows": "^1.1.0",
     "unimodules-permissions-interface": "~6.1.0"
   }
 }

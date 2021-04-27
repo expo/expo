@@ -7,8 +7,11 @@
 ### 🎉 New features
 
 - Added `totalMemory` to web. ([#12526](https://github.com/expo/expo/pull/12526) by [@EvanBacon](https://github.com/EvanBacon))
+- Add device code mappings for newer iPhones and iPads. ([#12630](https://github.com/expo/expo/pull/12630) by [@ide](https://github.com/ide))
 
 ### 🐛 Bug fixes
+
+- Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
 
 ## 3.2.0 — 2021-03-10
 

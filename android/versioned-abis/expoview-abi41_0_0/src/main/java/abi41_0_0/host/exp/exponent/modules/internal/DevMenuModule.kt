@@ -12,6 +12,7 @@ import abi41_0_0.com.facebook.react.bridge.UiThreadUtil
 import abi41_0_0.com.facebook.react.devsupport.DevInternalSettings
 import abi41_0_0.com.facebook.react.devsupport.DevSupportManagerImpl
 import abi41_0_0.com.facebook.react.devsupport.HMRClient
+import expo.modules.updates.manifest.raw.RawManifest
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.experience.ExperienceActivity
 import host.exp.exponent.experience.ReactNativeActivity
@@ -19,12 +20,10 @@ import host.exp.exponent.kernel.DevMenuManager
 import host.exp.exponent.kernel.DevMenuModuleInterface
 import host.exp.exponent.kernel.KernelConstants
 import host.exp.expoview.R
-import org.json.JSONException
-import org.json.JSONObject
 import java.util.*
 import javax.inject.Inject
 
-class DevMenuModule(reactContext: ReactApplicationContext, val experienceProperties: Map<String, Any>, val manifest: JSONObject?) : ReactContextBaseJavaModule(reactContext), LifecycleEventListener, DevMenuModuleInterface {
+class DevMenuModule(reactContext: ReactApplicationContext, val experienceProperties: Map<String, Any>, val manifest: RawManifest?) : ReactContextBaseJavaModule(reactContext), LifecycleEventListener, DevMenuModuleInterface {
 
   @Inject
   internal var devMenuManager: DevMenuManager? = null
@@ -57,7 +56,7 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
     val taskBundle = Bundle()
 
     taskBundle.putString("manifestUrl", getManifestUrl())
-    taskBundle.putString("manifestString", manifest.toString())
+    taskBundle.putString("manifestString", manifest?.getRawJson().toString())
 
     bundle.putBundle("task", taskBundle)
     bundle.putString("uuid", UUID.randomUUID().toString())
@@ -165,11 +164,7 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
    * Returns boolean value determining whether this app supports developer tools.
    */
   override fun isDevSupportEnabled(): Boolean {
-    return try {
-      manifest?.getJSONObject("developer")?.get("tool") != null
-    } catch (e: JSONException) {
-      false
-    }
+    return manifest != null && manifest.isUsingDeveloperTool()
   }
 
   //endregion DevMenuModuleInterface

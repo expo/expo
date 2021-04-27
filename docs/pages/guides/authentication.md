@@ -186,7 +186,7 @@ export default function App() {
   - _Web dev_: `https://localhost:19006`
     - Run `expo start:web --https` to run with **https**, auth won't work otherwise.
     - Adding a slash to the end of the URL doesn't matter.
-  - _Custom app_: `your-scheme://`
+  - _Standalone and Bare_: `your-scheme://`
     - Scheme should be specified in app.json `expo.scheme: 'your-scheme'`, then added to the app code with `makeRedirectUri({ native: 'your-scheme://' })`)
   - _Proxy_: **Not Supported**
     - You cannot use the Expo proxy (`useProxy`) because they don't allow `@` in their redirect URIs.
@@ -1050,8 +1050,8 @@ export default function App() {
 There are 4 different types of client IDs you can provide:
 
 - `expoClientId`: Proxy client ID for use in the **Expo Go** on iOS and Android.
-- `iosClientId`: iOS native client ID for use in standalone, bare-workflow, and custom clients.
-- `androidClientId`: Android native client ID for use in standalone, bare-workflow, and custom clients.
+- `iosClientId`: iOS native client ID for use in standalone and bare workflow.
+- `androidClientId`: Android native client ID for use in standalone, bare workflow.
 - `webClientId`: Expo web client ID for use in the browser.
 
 To create a client ID, go to the [Credentials Page][c-google]:
@@ -1074,7 +1074,7 @@ First, be sure to login to your Expo account `expo login`. This will be part of 
 
 #### iOS Native
 
-This can only be used in Standalone, custom clients, and bare workflow apps. This method cannot be used in the Expo Go app.
+This can only be used in standalone and bare workflow apps. This method cannot be used in the Expo Go app.
 
 [Create a new Google Client ID][c-google] that will be used with `iosClientId`.
 
@@ -1086,9 +1086,13 @@ This can only be used in Standalone, custom clients, and bare workflow apps. Thi
   - _Bare workflow_: Run `npx uri-scheme add <your bundle id> --ios`
 - To test this you can:
   1. Eject to bare: `expo eject` and run `yarn ios`
-  2. Create a custom client: `expo client:ios`
+  2. Build a simulator app: `expo build:ios -t simulator`
   3. Build a production IPA: `expo build:ios`
 - Whenever you change the values in `app.json` you'll need to rebuild the native app.
+
+**Troubleshooting**
+
+- If you get `Error 401: invalid_client` `The OAuth client was not found`: Ensure the clientId is defined correctly in your React code. Either as `11111111-abcdefghijklmnopqrstuvwxyz.apps.googleusercontent.com` or without the `.apps.googleusercontent.com` extension.
 
 #### Android Native
 
@@ -2341,19 +2345,20 @@ Here are a few examples of some common redirect URI patterns you may end up usin
   - You could also create this link with using `Linking.makeUrl()` from `expo-linking`.
 - **Usage:** `promptAsync({ redirectUri })`
 
-#### Standalone, Bare, or Custom
+#### Standalone and Bare
 
 > `yourscheme://path`
 
 In some cases there will be anywhere between 1 to 3 slashes (`/`).
 
 - **Environment:**
-  - Bare-workflow - React Native + Unimodules.
+  - Bare workflow
     - `npx create-react-native-app` or `expo eject`
   - Standalone builds in the App or Play Store
     - `expo build:ios` or `expo build:android`
-  - Custom Expo Go builds
-    - `expo client:ios`
+  - Standalone builds for local testing
+    - `expo build:ios -t simulator` or `expo build:android -t apk`
+
 - **Create:** Use `AuthSession.makeRedirectUri({ native: '<YOUR_URI>' })` to select native when running in the correct environment.
   - `your.app://redirect` -> `makeRedirectUri({ scheme: 'your.app', path: 'redirect' })`
   - `your.app:///` -> `makeRedirectUri({ scheme: 'your.app', isTripleSlashed: true })`

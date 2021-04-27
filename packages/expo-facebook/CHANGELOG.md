@@ -8,6 +8,22 @@
 
 ### 🐛 Bug fixes
 
+- Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
+
+## 11.1.1 — 2021-04-20
+
+_This version does not introduce any user-facing changes._
+
+## 11.1.0 — 2021-04-19
+
+### 🎉 New features
+
+- Added AppEvents-related functionality. ([#12459](https://github.com/expo/expo/pull/12459) by [@cruzach](https://github.com/cruzach))
+
+## 11.0.5 — 2021-04-13
+
+_This version does not introduce any user-facing changes._
+
 ## 11.0.4 — 2021-03-31
 
 _This version does not introduce any user-facing changes._

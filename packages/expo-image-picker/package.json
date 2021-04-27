@@ -1,6 +1,6 @@
 {
   "name": "expo-image-picker",
-  "version": "10.1.2",
+  "version": "10.1.3",
   "description": "Provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.",
   "main": "build/ImagePicker.js",
   "types": "build/ImagePicker.d.ts",
@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "@expo/config-plugins": "^1.0.18",
-    "expo-permissions": "~12.0.0",
+    "expo-permissions": "~12.0.1",
     "uuid": "7.0.2",
     "unimodules-permissions-interface": "~6.1.0"
   },

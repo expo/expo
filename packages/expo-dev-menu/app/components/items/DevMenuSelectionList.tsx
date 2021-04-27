@@ -7,6 +7,8 @@ import {
   DevMenuSelectionListItem,
   DevMenuSelectionListItemTag,
   DevMenuSelectionListType,
+  fetchDataSourceAsync,
+  dispatchCallableAsync,
 } from '../../DevMenuInternal';
 import Colors from '../../constants/Colors';
 import { Ionicon } from '../Icon';
@@ -16,6 +18,7 @@ import { StyledView } from '../Views';
 
 type State = {
   searchText: string;
+  items: DevMenuSelectionListItem[];
 };
 
 const SearchBar = ({ onChangeText }: { onChangeText: (text: string) => void }) => {
@@ -56,7 +59,14 @@ const SectionItemTag = ({ glyphName, text }: DevMenuSelectionListItemTag) => {
   );
 };
 
-const SectionItem = ({ title, isChecked, warning, tags }: DevMenuSelectionListItem) => {
+const SectionItem = ({
+  title,
+  isChecked,
+  warning,
+  tags,
+  onClick,
+  onClickData,
+}: DevMenuSelectionListItem & { onClick: (object) => void }) => {
   const tagsComponents = tags?.map(tag => <SectionItemTag key={tag.text} {...tag} />) ?? [];
 
   const element = (
@@ -88,7 +98,15 @@ const SectionItem = ({ title, isChecked, warning, tags }: DevMenuSelectionListIt
     </View>
   );
 
-  return <ListItemCheckbox content={element} initialChecked={isChecked} />;
+  return (
+    <ListItemCheckbox
+      content={element}
+      initialChecked={isChecked}
+      onChange={() => {
+        onClick(onClickData);
+      }}
+    />
+  );
 };
 
 const SectionDivider = () => {
@@ -106,9 +124,11 @@ const SectionDivider = () => {
 const SearchResults = ({
   query,
   elements,
+  onClick,
 }: {
   query: string;
   elements: DevMenuSelectionListItem[];
+  onClick: (object) => void;
 }) => {
   const fuse = new Fuse(elements, {
     keys: ['title', 'tags.text'],
@@ -125,19 +145,19 @@ const SearchResults = ({
       </StyledText>
 
       {results.map(({ item }) => (
-        <SectionItem
-          key={item.title}
-          title={item.title}
-          warning={item?.warning}
-          isChecked={item?.isChecked}
-          tags={item.tags}
-        />
+        <SectionItem key={item.title} {...item} onClick={onClick} />
       ))}
     </>
   );
 };
 
-const AllItems = ({ elements }: { elements: DevMenuSelectionListItem[] }) => {
+const AllItems = ({
+  elements,
+  onClick,
+}: {
+  elements: DevMenuSelectionListItem[];
+  onClick: (object) => void;
+}) => {
   const selectedElements = elements.filter(e => e.isChecked);
   const othersElements = elements.filter(e => !e.isChecked);
   return (
@@ -150,13 +170,7 @@ const AllItems = ({ elements }: { elements: DevMenuSelectionListItem[] }) => {
       </StyledText>
       <SectionDivider />
       {selectedElements.map(e => (
-        <SectionItem
-          key={e.title}
-          title={e.title}
-          warning={e?.warning}
-          isChecked={e.isChecked}
-          tags={e.tags}
-        />
+        <SectionItem key={e.title} {...e} onClick={onClick} />
       ))}
 
       <StyledText
@@ -167,13 +181,7 @@ const AllItems = ({ elements }: { elements: DevMenuSelectionListItem[] }) => {
       </StyledText>
       <SectionDivider />
       {othersElements.map(e => (
-        <SectionItem
-          key={e.title}
-          title={e.title}
-          warning={e?.warning}
-          isChecked={e.isChecked}
-          tags={e.tags}
-        />
+        <SectionItem key={e.title} {...e} onClick={onClick} />
       ))}
     </>
   );
@@ -185,6 +193,7 @@ class DevMenuSelectionList extends React.PureComponent<
 > {
   state = {
     searchText: '',
+    items: this.props.item.items,
   };
 
   onChangeText = (text: string) => {
@@ -193,8 +202,26 @@ class DevMenuSelectionList extends React.PureComponent<
     });
   };
 
+  onItemClick = (args: object) => {
+    const { functionId } = this.props.item;
+
+    if (functionId) {
+      dispatchCallableAsync(functionId, args);
+    }
+  };
+
+  componentDidMount() {
+    if (this.props.item.dataSourceId) {
+      fetchDataSourceAsync(this.props.item.dataSourceId).then(items => {
+        this.setState({
+          items,
+        });
+      });
+    }
+  }
+
   render() {
-    const { items } = this.props.item;
+    const { items } = this.state;
 
     const isSearchActive = this.state.searchText.length > 0;
 
@@ -202,9 +229,13 @@ class DevMenuSelectionList extends React.PureComponent<
       <StyledView>
         <SearchBar onChangeText={this.onChangeText} />
         {isSearchActive ? (
-          <SearchResults query={this.state.searchText} elements={items} />
+          <SearchResults
+            query={this.state.searchText}
+            elements={items}
+            onClick={this.onItemClick}
+          />
         ) : (
-          <AllItems elements={items} />
+          <AllItems elements={items} onClick={this.onItemClick} />
         )}
       </StyledView>
     );

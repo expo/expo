@@ -181,6 +181,10 @@ public class UpdatesModule extends ExportedModule {
               }
 
               @Override
+              public void onAssetLoaded(AssetEntity asset, int successfulAssetCount, int failedAssetCount, int totalAssetCount) {
+              }
+
+              @Override
               public boolean onManifestLoaded(Manifest manifest) {
                 return updatesService.getSelectionPolicy().shouldLoadNewUpdate(
                   manifest.getUpdateEntity(),

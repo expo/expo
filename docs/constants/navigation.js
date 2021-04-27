@@ -61,15 +61,18 @@ const sections = [
   {
     name: 'Reference',
     reference: [
-      'Limitations',
+      'Migrating from "expo build"',
       'Integrating with JavaScript tooling',
       'Environment variables and secrets',
-      'Build server infrastructure',
+      'Server infrastructure',
       'Caching dependencies',
-      'Application identifiers',
-      'Build configuration process',
+      'Build webhooks',
+      'Building APKs for Android emulators and devices',
+      'Building for iOS simulators',
+      'Configuration process',
       'Android build process',
       'iOS build process',
+      'Limitations',
     ],
   },
   {
@@ -187,7 +190,13 @@ const sections = [
   },
   {
     name: 'UI Programming',
-    reference: ['Styling a React Native Button', "Setting a component's background image"],
+    reference: [
+      'Styling a React Native Button',
+      "Setting a component's background image",
+      'Implementing a checkbox for Expo and React Native apps',
+      'Stacking overlapping views with zIndex in Expo and React Native apps',
+      'Using SVGs',
+    ],
   },
   {
     name: 'Assorted Guides',

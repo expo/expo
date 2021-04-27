@@ -1,8 +1,6 @@
 package abi41_0_0.expo.modules.splashscreen
 
 import android.content.Context
-import android.view.View
-import android.widget.ImageView
 import androidx.core.content.ContextCompat
 
 // this needs to stay for versioning to work

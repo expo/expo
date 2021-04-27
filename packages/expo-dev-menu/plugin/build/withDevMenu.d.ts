@@ -1,3 +1,3 @@
-import { ExpoConfig } from '@expo/config-types';
-declare const withDevMenu: (config: ExpoConfig) => ExpoConfig;
-export default withDevMenu;
+import { ConfigPlugin } from '@expo/config-plugins';
+declare const _default: ConfigPlugin<unknown>;
+export default _default;

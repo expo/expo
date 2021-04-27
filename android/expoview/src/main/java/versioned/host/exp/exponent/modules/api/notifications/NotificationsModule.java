@@ -24,6 +24,7 @@ import java.util.Random;
 
 import javax.inject.Inject;
 
+import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
@@ -55,10 +56,10 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   @Inject
   ExponentNetwork mExponentNetwork;
 
-  private final JSONObject mManifest;
+  private final RawManifest mManifest;
 
   public NotificationsModule(ReactApplicationContext reactContext,
-                             JSONObject manifest, Map<String, Object> experienceProperties) {
+                             RawManifest manifest, Map<String, Object> experienceProperties) {
     super(reactContext);
     NativeModuleDepsProvider.getInstance().inject(NotificationsModule.class, this);
     mManifest = manifest;
@@ -95,7 +96,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   private String getScopedIdIfNotDetached(String categoryId) {
     if (!Constants.isStandaloneApp()) {
       try {
-        String experienceId = mManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+        String experienceId = mManifest.getID();
         return experienceId + ":" + categoryId;
       } catch (JSONException e) {
         e.printStackTrace();
@@ -143,7 +144,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     }
 
     try {
-      String experienceId = mManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+      String experienceId = mManifest.getID();
       NotificationHelper.getPushNotificationToken(uuid, experienceId, mExponentNetwork, mExponentSharedPreferences, new NotificationHelper.TokenListener() {
         @Override
         public void onSuccess(String token) {
@@ -166,7 +167,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     String channelName;
 
     try {
-      experienceId = mManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+      experienceId = mManifest.getID();
     } catch (Exception e) {
       promise.reject("E_FAILED_CREATING_CHANNEL", "Requires Experience ID");
       return;
@@ -197,7 +198,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     String experienceId;
 
     try {
-      experienceId = mManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+      experienceId = mManifest.getID();
     } catch (Exception e) {
       promise.reject("E_FAILED_DELETING_CHANNEL", "Requires Experience ID");
       return;
@@ -232,7 +233,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     details.put("data", hashMap);
 
     try {
-      experienceId = mManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+      experienceId = mManifest.getID();
       details.put("experienceId", experienceId);
     } catch (Exception e) {
       promise.reject("E_FAILED_PRESENTING_NOTIFICATION", "Requires Experience ID");
@@ -278,9 +279,16 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void scheduleLocalNotificationWithChannel(final ReadableMap data, final ReadableMap options, final ReadableMap legacyChannelData, final Promise promise) {
     if (legacyChannelData != null) {
-      String experienceId = mManifest.optString(ExponentManifest.MANIFEST_ID_KEY, null);
+      String experienceId;
+      try {
+        experienceId = mManifest.getID();
+      } catch (JSONException e) {
+        promise.reject("E_FAILED_PRESENTING_NOTIFICATION", "legacyChannelData was nonnull with no channelId or no experienceId");
+        return;
+      }
+
       String channelId = data.getString("channelId");
-      if (channelId == null || experienceId == null) {
+      if (channelId == null) {
         promise.reject("E_FAILED_PRESENTING_NOTIFICATION", "legacyChannelData was nonnull with no channelId or no experienceId");
         return;
       }
@@ -320,7 +328,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     try {
       ExponentNotificationManager manager = new ExponentNotificationManager(getReactApplicationContext());
       manager.cancel(
-        mManifest.getString(ExponentManifest.MANIFEST_ID_KEY),
+        mManifest.getID(),
         notificationId
       );
       promise.resolve(true);
@@ -333,7 +341,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   public void dismissAllNotifications(final Promise promise) {
     try {
       ExponentNotificationManager manager = new ExponentNotificationManager(getReactApplicationContext());
-      manager.cancelAll(mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
+      manager.cancelAll(mManifest.getID());
       promise.resolve(true);
     } catch (JSONException e) {
       promise.reject(e);
@@ -344,7 +352,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   public void cancelScheduledNotificationAsync(final int notificationId, final Promise promise) {
     try {
       ExponentNotificationManager manager = new ExponentNotificationManager(getReactApplicationContext());
-      manager.cancelScheduled(mManifest.getString(ExponentManifest.MANIFEST_ID_KEY), notificationId);
+      manager.cancelScheduled(mManifest.getID(), notificationId);
       promise.resolve(null);
     } catch (Exception e) {
       promise.reject(e);
@@ -367,9 +375,9 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   public void cancelAllScheduledNotificationsAsync(final Promise promise) {
     try {
       ExponentNotificationManager manager = new ExponentNotificationManager(getReactApplicationContext());
-      manager.cancelAllScheduled(mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
+      manager.cancelAllScheduled(mManifest.getID());
 
-      String experienceId = mManifest.optString(ExponentManifest.MANIFEST_ID_KEY, null);
+      String experienceId = mManifest.getID();
 
       SchedulersManagerProxy
         .getInstance(getReactApplicationContext().getApplicationContext())
@@ -394,7 +402,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     String experienceId;
 
     try {
-      experienceId = mManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+      experienceId = mManifest.getID();
       details.put("experienceId", experienceId);
     } catch (Exception e) {
       promise.reject(new Exception("Requires Experience Id"));
@@ -437,7 +445,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     String experienceId;
 
     try {
-      experienceId = mManifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+      experienceId = mManifest.getID();
       details.put("experienceId", experienceId);
     } catch (Exception e) {
       promise.reject(new Exception("Requires Experience Id"));

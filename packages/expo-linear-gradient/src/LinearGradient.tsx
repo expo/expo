@@ -4,8 +4,26 @@ import { Platform, processColor, View } from 'react-native';
 import NativeLinearGradient from './NativeLinearGradient';
 import { NativeLinearGradientPoint } from './NativeLinearGradient.types';
 
-export type LinearGradientPoint = { x: number; y: number } | NativeLinearGradientPoint;
+// @needsAudit
+/**
+ * An object `{ x: number; y: number }` or array `[x, y]` that represents the point
+ * at which the gradient starts or ends, as a fraction of the overall size of the gradient ranging
+ * from `0` to `1`, inclusive.
+ */
+export type LinearGradientPoint =
+  | {
+      /**
+       * A number ranging from `0` to `1`, representing the position of gradient transformation.
+       */
+      x: number;
+      /**
+       * A number ranging from `0` to `1`, representing the position of gradient transformation.
+       */
+      y: number;
+    }
+  | NativeLinearGradientPoint;
 
+// @needsAudit
 export type LinearGradientProps = {
   /**
    * An array of colors that represent stops in the gradient. At least two colors are required
@@ -13,7 +31,7 @@ export type LinearGradientProps = {
    */
   colors: string[];
   /**
-   * An array that contains `number`s ranging from 0 to 1, inclusive, and is the same length as the `colors` property.
+   * An array that contains `number`s ranging from `0` to `1`, inclusive, and is the same length as the `colors` property.
    * Each number indicates a color-stop location where each respective color should be located.
    *
    * For example, `[0.5, 0.8]` would render:
@@ -21,22 +39,16 @@ export type LinearGradientProps = {
    * - a gradient from the first color to the second from the 50% point to the 80% point; and
    * - the second color, solid, from the 80% point to the end of the gradient view.
    *
-   * The color-stop locations must be ascending from least to greatest.
+   * > The color-stop locations must be ascending from least to greatest.
    */
   locations?: number[] | null;
   /**
-   * An object `{ x: number; y: number }` or array `[x, y]` that represents the point
-   * at which the gradient starts, as a fraction of the overall size of the gradient ranging from 0 to 1, inclusive.
-   *
    * For example, `{ x: 0.1, y: 0.2 }` means that the gradient will start `10%` from the left and `20%` from the top.
    *
    * **On web**, this only changes the angle of the gradient because CSS gradients don't support changing the starting position.
    */
   start?: LinearGradientPoint | null;
   /**
-   * An object `{ x: number; y: number }` or array `[x, y]` that represents the point
-   * at which the gradient ends, as a fraction of the overall size of the gradient ranging from 0 to 1, inclusive.
-   *
    * For example, `{ x: 0.1, y: 0.2 }` means that the gradient will end `10%` from the left and `20%` from the bottom.
    *
    * **On web**, this only changes the angle of the gradient because CSS gradients don't support changing the end position.
@@ -73,7 +85,7 @@ export class LinearGradient extends React.Component<LinearGradientProps> {
 
 function _normalizePoint(
   point: LinearGradientPoint | null | undefined
-): [number, number] | undefined {
+): NativeLinearGradientPoint | undefined {
   if (!point) {
     return undefined;
   }

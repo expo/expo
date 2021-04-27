@@ -83,7 +83,7 @@ ABI39_0_0UM_EXPORT_METHOD_AS(checkForUpdateAsync,
                              successBlock:^(ABI39_0_0EXUpdatesUpdate *update) {
     ABI39_0_0EXUpdatesUpdate *launchedUpdate = self->_updatesService.launchedUpdate;
     id<ABI39_0_0EXUpdatesSelectionPolicy> selectionPolicy = self->_updatesService.selectionPolicy;
-    if ([selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:launchedUpdate]) {
+    if ([selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:launchedUpdate filters:nil]) {
       resolve(@{
         @"isAvailable": @(YES),
         @"manifest": update.rawManifest
@@ -109,7 +109,7 @@ ABI39_0_0UM_EXPORT_METHOD_AS(fetchUpdateAsync,
 
   ABI39_0_0EXUpdatesRemoteAppLoader *remoteAppLoader = [[ABI39_0_0EXUpdatesRemoteAppLoader alloc] initWithConfig:_updatesService.config database:_updatesService.database directory:_updatesService.directory completionQueue:self.methodQueue];
   [remoteAppLoader loadUpdateFromUrl:_updatesService.config.updateUrl onManifest:^BOOL(ABI39_0_0EXUpdatesUpdate * _Nonnull update) {
-    return [self->_updatesService.selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_updatesService.launchedUpdate];
+    return [self->_updatesService.selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_updatesService.launchedUpdate filters:nil];
   } success:^(ABI39_0_0EXUpdatesUpdate * _Nullable update) {
     if (update) {
       resolve(@{

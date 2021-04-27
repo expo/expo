@@ -13,6 +13,12 @@ const Stack = createStackNavigator();
 export const Screens = [
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/AdMobScreen'));
+    },
+    name: 'Admob',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/BarCodeScannerScreen'));
     },
     name: 'BarCodeScanner',

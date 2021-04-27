@@ -66,7 +66,7 @@ For instance, if you add a plugin that adds permission messages to your app, the
 
 And that's it! Now you're using Config plugins. No more having to interact with the native projects!
 
-> 💡 Check out all the different ways you can import `plugins`: [plugin module resolution](#Plugin-module-resolution)
+> 💡 Check out all the different ways you can import `plugins`: [plugin module resolution](#plugin-module-resolution)
 
 ## What are plugins
 
@@ -160,7 +160,7 @@ module.exports = function withCustomName(config, name) {
 
 ```json
 {
-  "name": "custom-app",
+  "name": "custom-my-app",
   "plugins": ["./my-plugin", "app"]
 }
 ```

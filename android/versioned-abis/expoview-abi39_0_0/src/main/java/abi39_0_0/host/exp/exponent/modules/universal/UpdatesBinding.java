@@ -18,7 +18,7 @@ import expo.modules.updates.db.DatabaseHolder;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.Launcher;
-import expo.modules.updates.launcher.SelectionPolicy;
+import expo.modules.updates.selectionpolicy.SelectionPolicy;
 import expo.modules.updates.loader.FileDownloader;
 import host.exp.exponent.ExpoUpdatesAppLoader;
 import host.exp.exponent.di.NativeModuleDepsProvider;

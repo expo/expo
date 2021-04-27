@@ -37,7 +37,7 @@ Next, this is what happens when EAS Build picks up your request:
 3. Run `yarn install` in the project root (or `npm install` if `yarn.lock` does not exist).
 4. Additional steps for **managed** projects:
 
-   - Run `expo eject` to convert the project to a generic one.
+   - Run `expo prebuild` to convert the project to a generic one.
    - Configure the Android similarly to the step 3 from [Local Steps](#local-steps).
 
 5. Restore the keystore (if it was included in the build request).

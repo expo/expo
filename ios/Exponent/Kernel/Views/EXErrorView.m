@@ -81,8 +81,8 @@
   if (_appRecord) {
     if (_appRecord == [EXKernel sharedInstance].appRegistry.homeAppRecord) {
       appOwnerName = @"Expo";
-    } else if (_appRecord.appLoader.manifest && _appRecord.appLoader.manifest[@"name"]) {
-      appOwnerName = [NSString stringWithFormat:@"\"%@\"", _appRecord.appLoader.manifest[@"name"]];
+    } else if (_appRecord.appLoader.manifest && _appRecord.appLoader.manifest.name) {
+      appOwnerName = [NSString stringWithFormat:@"\"%@\"", _appRecord.appLoader.manifest.name];
     }
   }
 

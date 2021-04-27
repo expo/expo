@@ -30,6 +30,7 @@ export type TypeDefinitionData = {
   types?: TypeDefinitionTypesData[];
   elementType?: {
     name: string;
+    type: string;
   };
   queryType?: {
     name: string;
@@ -51,6 +52,10 @@ export type MethodParamData = {
   name: string;
   type: TypeDefinitionData;
   comment?: CommentData;
+};
+
+export type TypePropertyDataFlags = {
+  isOptional: boolean;
 };
 
 // Constants section
@@ -75,6 +80,7 @@ export type EnumDefinitionData = {
 
 export type EnumValueData = {
   name: string;
+  comment?: CommentData;
   kind: TypeDocKind;
 };
 
@@ -89,7 +95,8 @@ export type InterfaceDefinitionData = {
 
 export type InterfaceValueData = {
   name: string;
-  type: TypeDeclarationData;
+  type: TypeDefinitionData;
+  flags?: TypePropertyDataFlags;
   kind: TypeDocKind;
   comment?: CommentData;
 };
@@ -122,6 +129,7 @@ export type PropData = {
   name: string;
   comment: CommentData;
   type: TypeDefinitionData;
+  flags?: TypePropertyDataFlags;
 };
 
 export type DefaultPropsDefinitionData = {
@@ -158,9 +166,7 @@ export type TypeSignaturesData = {
 
 export type TypePropertyData = {
   name: string;
-  flags: {
-    isOptional: boolean;
-  };
+  flags?: TypePropertyDataFlags;
   comment: CommentData;
   type: TypeDefinitionData;
   defaultValue: string;
@@ -168,5 +174,7 @@ export type TypePropertyData = {
 
 export type TypeValueData = {
   type: string;
-  value: string | boolean | null;
+  value?: string | boolean | null;
+  name?: string;
+  declaration?: TypeDeclarationContentData;
 };

@@ -30,7 +30,6 @@ fun mockkCustomTabsActivitiesHelper(
       every { it.startCustomTabs(capture(startIntentSlot)) } just Runs
     }
   }
-
 }
 
 fun mockkCustomTabsConnectionHelper(): CustomTabsConnectionHelper {

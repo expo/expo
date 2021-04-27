@@ -13,15 +13,21 @@ import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactContext
+import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import expo.interfaces.devmenu.DevMenuDelegateInterface
-import expo.interfaces.devmenu.DevMenuExpoApiClientInterface
 import expo.interfaces.devmenu.DevMenuExtensionInterface
 import expo.interfaces.devmenu.DevMenuExtensionSettingsInterface
 import expo.interfaces.devmenu.DevMenuManagerInterface
 import expo.interfaces.devmenu.DevMenuSettingsInterface
-import expo.interfaces.devmenu.items.DevMenuAction
+import expo.interfaces.devmenu.expoapi.DevMenuExpoApiClientInterface
+import expo.interfaces.devmenu.items.DevMenuCallableProvider
+import expo.interfaces.devmenu.items.DevMenuDataSourceInterface
+import expo.interfaces.devmenu.items.DevMenuDataSourceItem
+import expo.interfaces.devmenu.items.DevMenuExportedAction
+import expo.interfaces.devmenu.items.DevMenuExportedCallable
+import expo.interfaces.devmenu.items.DevMenuExportedFunction
 import expo.interfaces.devmenu.items.DevMenuItemsContainerInterface
 import expo.interfaces.devmenu.items.DevMenuScreen
 import expo.interfaces.devmenu.items.DevMenuScreenItem
@@ -79,6 +85,18 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
         }
     }
 
+  private val cachedDevMenuDataSources by KeyValueCachedProperty<ReactInstanceManager, List<DevMenuDataSourceInterface>> {
+    delegateExtensions
+      .map { it.devMenuDataSources(extensionSettings) ?: emptyList() }
+      .flatten()
+  }
+
+  private val dataSources: List<DevMenuDataSourceInterface>
+    get() {
+      val delegateBridge = delegate?.reactInstanceManager() ?: return emptyList()
+      return cachedDevMenuDataSources[delegateBridge]
+    }
+
   private val cachedDevMenuScreens by KeyValueCachedProperty<ReactInstanceManager, List<DevMenuScreen>> {
     delegateExtensions
       .map { it.devMenuScreens(extensionSettings) ?: emptyList() }
@@ -109,17 +127,21 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
         .flatten()
         .sortedBy { -it.importance }
 
-  private fun getActions(): List<DevMenuAction> {
+  private fun getCallable(): List<DevMenuExportedCallable> {
     if (currentScreenName == null) {
       return delegateMenuItemsContainers
         .map {
-          it.getItemsOfType<DevMenuAction>()
+          it
+            .getItemsOfType<DevMenuCallableProvider>()
+            .mapNotNull { provider -> provider.registerCallable() }
         }
         .flatten()
     }
 
     val screen = delegateScreens.find { it.screenName == currentScreenName } ?: return emptyList()
-    return screen.getItemsOfType()
+    return screen
+      .getItemsOfType<DevMenuCallableProvider>()
+      .mapNotNull { it.registerCallable() }
   }
 
   //endregion
@@ -293,10 +315,13 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       code = keyCode,
       withShift = event.modifiers and KeyEvent.META_SHIFT_MASK > 0
     )
-    return getActions()
+    return getCallable()
+      .filterIsInstance<DevMenuExportedAction>()
       .find { it.keyCommand == keyCommand }
       ?.run {
-        action()
+        if (isAvailable()) {
+          action()
+        }
         true
       } ?: false
   }
@@ -315,10 +340,21 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     setDelegate(DevMenuDefaultDelegate(reactNativeHost))
   }
 
-  override fun dispatchAction(actionId: String) {
-    getActions()
-      .find { it.actionId == actionId }
-      ?.run { action() }
+  override fun dispatchCallable(actionId: String, args: ReadableMap?) {
+    getCallable()
+      .find { it.id == actionId }
+      ?.run {
+        when (this) {
+          is DevMenuExportedAction -> {
+            if (args != null) {
+              Log.e("DevMenu", "Action $actionId was called with arguments.")
+            }
+
+            call()
+          }
+          is DevMenuExportedFunction -> call(args)
+        }
+      }
   }
 
   override fun sendEventToDelegateBridge(eventName: String, eventData: Any?) {
@@ -329,6 +365,12 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   override fun isInitialized(): Boolean {
     return delegate !== null
+  }
+
+  override suspend fun fetchDataSource(id: String): List<DevMenuDataSourceItem> {
+    return dataSources
+      .find { it.id == id }
+      ?.run { fetchData() } ?: emptyList()
   }
 
   override fun serializedItems(): List<Bundle> = delegateRootMenuItems.map { it.serialize() }
