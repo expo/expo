@@ -1864,6 +1864,15 @@ PODS:
   - EXPermissions (12.0.1):
     - UMCore
     - UMPermissionsInterface
+  - ExpoModulesCore (0.0.1):
+    - ExpoModulesCore/Core (= 0.0.1)
+    - ExpoModulesCore/Interfaces (= 0.0.1)
+    - UMCore
+  - ExpoModulesCore/Core (0.0.1):
+    - UMCore
+  - ExpoModulesCore/Interfaces (0.0.1):
+    - ExpoModulesCore/Core
+    - UMCore
   - EXPrint (10.1.0):
     - UMCore
     - UMFileSystemInterface
@@ -2733,6 +2742,7 @@ DEPENDENCIES:
   - EXNetwork (from `../packages/expo-network/ios`)
   - EXNotifications (from `../packages/expo-notifications/ios`)
   - EXPermissions (from `../packages/expo-permissions/ios`)
+  - ExpoModulesCore (from `../packages/expo-modules-core/ios`)
   - EXPrint (from `../packages/expo-print/ios`)
   - EXRandom (from `../packages/expo-random/ios`)
   - EXScreenCapture (from `../packages/expo-screen-capture/ios`)
@@ -3531,6 +3541,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-notifications/ios"
   EXPermissions:
     :path: "../packages/expo-permissions/ios"
+  ExpoModulesCore:
+    :path: "../packages/expo-modules-core/ios"
   EXPrint:
     :path: "../packages/expo-print/ios"
   EXRandom:
@@ -4001,6 +4013,7 @@ SPEC CHECKSUMS:
   EXNetwork: 36144f5e572e6b6b218094c66a57c99e07ffbc0d
   EXNotifications: baccd843a16a2cb2db2183e2d801652f3cb43202
   EXPermissions: 8f8c1c05580c4e02d4ee2c8dd74bfe173ff6a723
+  ExpoModulesCore: efdfa6650a7b554180c1559b7be9c3510ce18e51
   EXPrint: f6d272e7729d188a05686817ce8d84683da36073
   EXRandom: cbd66cd45434a494f5ef98650eec1f8d78b90270
   EXScreenCapture: 2903dace06f2d06cc161017637cc4cbfcaa98986
