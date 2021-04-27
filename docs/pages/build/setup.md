@@ -76,7 +76,7 @@ Additional configuration may be required for some scenarios:
 
 ### Build for Android device/emulator or iOS simulator
 
-The easiest way to try out EAS Build is to create a build that you can run on your Android device/emulator or iOS simulator. It's quicker than uploading it to a store, and you don't need any store developer membership accounts. If you'd like to try this, read about [creating an installable APK for Android](/build-reference/apk.md) and [creating a simulator build for iOS](/build/simulators.md).
+The easiest way to try out EAS Build is to create a build that you can run on your Android device/emulator or iOS simulator. It's quicker than uploading it to a store, and you don't need any store developer membership accounts. If you'd like to try this, read about [creating an installable APK for Android](/build-reference/apk.md) and [creating a simulator build for iOS](/build-reference/simulators.md).
 
 ### Build for app stores
 
