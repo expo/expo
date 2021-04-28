@@ -84,6 +84,8 @@ public class DatabaseLauncher implements Launcher {
       return;
     }
 
+    database.updateDao().markUpdateAccessed(mLaunchedUpdate);
+
     if (mLaunchedUpdate.status == UpdateStatus.EMBEDDED) {
       mBundleAssetName = EmbeddedLoader.BARE_BUNDLE_FILENAME;
       if (mLocalAssetFiles != null) {
