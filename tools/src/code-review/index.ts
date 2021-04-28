@@ -20,6 +20,12 @@ import {
  */
 const REVIEWERS = [checkMissingChangelogs, reviewChangelogEntries];
 
+enum Label {
+  APPROVED = '🤖 approved',
+  WARNED = '🤖 warned',
+  REJECTED = '🤖 rejected',
+}
+
 /**
  * Goes through the changes included in given pull request and checks if they meet basic requirements.
  */
@@ -73,6 +79,7 @@ export async function reviewPullRequestAsync(prNumber: number) {
   // If it's the first review and there is nothing to complain,
   // just return early — no need to bother PR's author.
   if (!activeOutputs.length && !comments.length && !previousReviews.length) {
+    await updateLabelsAsync(pr, Label.APPROVED);
     logger.success('🥳 Everything looks good to me! There is no need to submit a review.');
     return;
   }
@@ -93,6 +100,11 @@ export async function reviewPullRequestAsync(prNumber: number) {
     comments,
   });
   logger.info('📝 Submitted new review at:', chalk.blue(review.html_url));
+
+  // As we never approve the PR by the bot (don't want to bypass the "at least one approval" requirement),
+  // adding appropriate labels instead seems to be a good compromise and makes it clear which PRs are ready to be reviewed by us.
+  const label = getLabelFromOutputs(activeOutputs);
+  await updateLabelsAsync(pr, label);
 
   // Previous reviews are no longer useful — we would delete them, but
   // unfortunately they cannot be deleted entirely so we only make them smaller.
@@ -144,4 +156,44 @@ function getReviewEventFromOutputs(outputs: ReviewOutput[]): GitHub.PullRequestR
  */
 function getReviewCommentsFromOutputs(outputs: ReviewOutput[]): ReviewComment[] {
   return ([] as ReviewComment[]).concat(...outputs.map((output) => output.comments ?? []));
+}
+
+/**
+ * Returns GitHub's label based on outputs' final status.
+ */
+function getLabelFromOutputs(outputs: ReviewOutput[]): Label {
+  const finalStatus = outputs.reduce(
+    (acc, output) => Math.max(acc, output.status),
+    ReviewStatus.PASSIVE
+  );
+  switch (finalStatus) {
+    case ReviewStatus.ERROR:
+      return Label.REJECTED;
+    case ReviewStatus.WARN:
+      return Label.WARNED;
+    default:
+      return Label.APPROVED;
+  }
+}
+
+/**
+ * Updates bot's labels of the PR so that only given label is assigned.
+ */
+async function updateLabelsAsync(pr: GitHub.PullRequest, newLabel: Label) {
+  const prLabels = pr.labels.map((label) => label.name);
+  const botLabels = Object.values(Label);
+
+  // Get an array of bot's labels that are already assigned to the PR.
+  const labelsToRemove = botLabels.filter(
+    (label) => label !== newLabel && prLabels.includes(label)
+  );
+
+  for (const labelToRemove of labelsToRemove) {
+    logger.info(`🏷  Removing ${chalk.yellow(labelToRemove)} label`);
+    await GitHub.removeIssueLabelAsync(pr.number, labelToRemove);
+  }
+  if (!prLabels.includes(newLabel)) {
+    logger.info(`🏷  Adding ${chalk.yellow(newLabel)} label`);
+    await GitHub.addIssueLabelsAsync(pr.number, [newLabel]);
+  }
 }
