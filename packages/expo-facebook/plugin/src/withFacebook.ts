@@ -7,11 +7,13 @@ import { withSKAdNetworkIdentifiers } from './withSKAdNetworkIdentifiers';
 
 const pkg = require('expo-facebook/package.json');
 
-const withFacebook: ConfigPlugin = config => {
+const withFacebook: ConfigPlugin<{
+  userTrackingPermission?: string | false;
+} | void> = (config, props) => {
   config = withFacebookAppIdString(config);
   config = withFacebookManifest(config);
   config = withFacebookIOS(config);
-  config = withUserTrackingPermission(config);
+  config = withUserTrackingPermission(config, props);
   // https://developers.facebook.com/docs/SKAdNetwork
   config = withSKAdNetworkIdentifiers(config, ['v9wttpbfk9.skadnetwork', 'n38lu8286q.skadnetwork']);
   config = withNoopSwiftFile(config);
