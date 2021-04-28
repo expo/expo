@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1020"
+   LastUpgradeVersion = "1230"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "78CEE2BF1ACD07D70095B124"
-               BuildableName = "Exponent.app"
-               BlueprintName = "Exponent"
+               BlueprintIdentifier = "F14217D8262CB68600BB97E6"
+               BuildableName = "Expo Go.app"
+               BlueprintName = "Expo Go (versioned)"
                ReferencedContainer = "container:Exponent.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -27,36 +27,7 @@
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "78CEE2BF1ACD07D70095B124"
-            BuildableName = "Exponent.app"
-            BlueprintName = "Exponent"
-            ReferencedContainer = "container:Exponent.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
       <Testables>
-         <TestableReference
-            skipped = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B513333F1CE649FE00E9FC9E"
-               BuildableName = "ExponentIntegrationTests.xctest"
-               BlueprintName = "ExponentIntegrationTests"
-               ReferencedContainer = "container:Exponent.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B505BA0D20CAF77A0046ACFB"
-               BuildableName = "Tests.xctest"
-               BlueprintName = "Tests"
-               ReferencedContainer = "container:Exponent.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
@@ -73,19 +44,12 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "78CEE2BF1ACD07D70095B124"
-            BuildableName = "Exponent.app"
-            BlueprintName = "Exponent"
+            BlueprintIdentifier = "F14217D8262CB68600BB97E6"
+            BuildableName = "Expo Go.app"
+            BlueprintName = "Expo Go (versioned)"
             ReferencedContainer = "container:Exponent.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <EnvironmentVariables>
-         <EnvironmentVariable
-            key = "CI_USE_PACKAGER"
-            value = "1"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-      </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -97,9 +61,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "78CEE2BF1ACD07D70095B124"
-            BuildableName = "Exponent.app"
-            BlueprintName = "Exponent"
+            BlueprintIdentifier = "F14217D8262CB68600BB97E6"
+            BuildableName = "Expo Go.app"
+            BlueprintName = "Expo Go (versioned)"
             ReferencedContainer = "container:Exponent.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

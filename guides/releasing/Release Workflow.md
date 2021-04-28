@@ -259,6 +259,7 @@ In the managed workflow, we use our forked `react-native` repository because we 
 
 **How:**
 
+- On iOS, by default, Expo Go builds with only unversioned code. Make sure to switch the scheme to `Expo Go (versioned)` in Xcode before building the app for versioned QA.
 - Go through another guide about [Quality Assurance](Quality%20Assurance.md).
 - Commit any fixes to `master` and cherry-pick to the `sdk-XX` branch.
 
@@ -285,7 +286,7 @@ In the managed workflow, we use our forked `react-native` repository because we 
     - Build and run.
   - To test the end-to-end standalone app build process, it's easiest to use a simulator build:
     - Delete any `shellAppWorkspaces*` directories from previous QA.
-    - Run ` et ios-shell-app --action build --type simulator --configuration Release`
+    - Run `et ios-shell-app --action build --type simulator --configuration Release`
     - Run `et ios-shell-app --url "https://exp.host/@username/project-slug/index.exp?sdkVersion=41.0.0" --action configure --type simulator -s xx.0.0 --archivePath shellAppBase-simulator/Build/Products/Release-iphonesimulator/ExpoKitApp.app --output app.tar.gz`
     - Find the simulator build in `shellAppBase-simulator/Build/Products/Release-iphonesimulator/` and drag it into your simulator to run it.
 
@@ -381,7 +382,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
   - We use `fastlane match` to sync our iOS credentials (certificates and provisioning profiles) - you will need them to properly archive and upload the distribution build to App Store Connect. Run `fastlane match appstore` from the project root folder to download them. You'll need to be authorized and have Google Cloud keys to do this, if you don't have them ask someone who has been publishing Expo Go in the past.
   - Make sure build's metadata are up to date (see files under `fastlane/metadata/en-US`).
   - Make sure that production home app is published and new JS bundles are up-to-date - they're gonna be bundled within the binary and used at the first app run (before Expo Go downloads an OTA update).
-  - Run `fastlane ios release` from the project root folder and follow the prompt. This step can take 30+ minutes, as fastlane will update (or create) the App Store Connect record, generate a signed archive, and upload it.
+  - Run `fastlane ios release` from the project root folder and follow the prompt. This step can take 30+ minutes, as fastlane will update (or create) the App Store Connect record, generate a signed archive, and upload it. If for some reason you have to archive and upload the app through Xcode (without Fastlane), make sure to use `Expo Go (versioned)` Xcode scheme.
   - Wait for Apple to finish processing your new build. This step can take another 30+ minutes (but sometimes just a few).
   - Once the processing is done, go to TestFlight section in App Store Connect, click on the new build and then click `Provide Export Compliance Information` button and select **"No"** in the dialog - we generally have not made changes to encryption.
   - Publish that build to TestFlight and ensure the external testers group is added to the build. **This will trigger a review**, and the build won't be available to external testers until the review is completed.
