@@ -89,14 +89,6 @@
       <!-- This has to be separate from the exp[s]:// scheme filter. No idea why -->
       <intent-filter>
         <data
-          android:host="expo.io"
-          android:pathPattern="/@.*/.*"
-          android:scheme="https"/>
-        <data
-          android:host="expo.io"
-          android:pathPattern="/@.*/.*"
-          android:scheme="http"/>
-        <data
           android:host="exp.host"
           android:pathPrefix="/@"
           android:scheme="http"/>
