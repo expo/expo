@@ -1,10 +1,10 @@
-import path from 'path';
 import fs from 'fs-extra';
+import path from 'path';
 import semver from 'semver';
 
-import { arrayize, spawnAsync } from '../Utils';
-import { EXPOTOOLS_DIR, IOS_DIR } from '../Constants';
 import { Podspec } from '../CocoaPods';
+import { EXPOTOOLS_DIR, IOS_DIR } from '../Constants';
+import { arrayize, spawnAsync } from '../Utils';
 import {
   ProjectSpec,
   ProjectSpecDependency,
@@ -110,7 +110,7 @@ export async function createSpecFromPodspecAsync(
               CFBundleIdentifier: bundleId,
               CFBundleName: podspec.name,
               CFBundleShortVersionString: podspec.version,
-              CFBundleVersion: semver.major(podspec.version),
+              CFBundleVersion: String(semver.major(podspec.version)),
             },
             podspec.info_plist ?? {}
           ),
