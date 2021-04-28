@@ -7,7 +7,7 @@ type ActionOptions = {
 };
 
 async function action(options: ActionOptions) {
-  if (isNaN(+options.pr)) {
+  if (isNaN(Number(options.pr))) {
     throw new Error('Flag `--pr` must be provided with a number value.');
   }
   if (!process.env.GITHUB_TOKEN) {

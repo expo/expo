@@ -9,7 +9,7 @@ export function generateReviewBodyFromOutputs(
   commitSha: string
 ): string {
   return [
-    "*Hi there! 👋 I'm a bot whose goal is to help you make your changes meet our guidelines.*",
+    "*Hi there! 👋 I'm a bot whose goal is to ensure your contributions meet our guidelines.*",
     header(outputs, hasComments),
     outputs.map(reportForOutput).join('\n'),
     footerForCommit(commitSha),
@@ -42,7 +42,7 @@ function header(outputs: ReviewOutput[], hasComments: boolean): string {
   if (hasComments) {
     return `It's pretty good 👍 I just have a few comments to consider 👇`;
   }
-  return 'Looks like I have nothing to complain about now 👏 Keep up the good work! 💪';
+  return 'Looks like I have nothing to complain about 👏 Keep up the good work! 💪';
 }
 
 /**

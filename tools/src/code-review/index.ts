@@ -52,7 +52,7 @@ export async function reviewPullRequestAsync(prNumber: number) {
 
   // Only active (non-passive) outputs will be reported in the review body.
   const activeOutputs = outputs.filter(
-    (output) => output.title && output.body && output.status > ReviewStatus.PASSIVE
+    (output) => output.title && output.body && output.status !== ReviewStatus.PASSIVE
   );
 
   // Get a list of my previous reviews. We'll invalidate them once the new one is submitted.
@@ -126,7 +126,7 @@ async function invalidatePreviousReviewsAsync(
  * There is no case where we approve the PR — we still want a human to review these changes :)
  */
 function getReviewEventFromOutputs(outputs: ReviewOutput[]): GitHub.PullRequestReviewEvent {
-  return outputs.some((output) => output.status >= ReviewStatus.ERROR)
+  return outputs.some((output) => output.status === ReviewStatus.ERROR)
     ? ReviewEvent.REQUEST_CHANGES
     : ReviewEvent.COMMENT;
 }

@@ -28,7 +28,7 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
   return {
     status: ReviewStatus.WARN,
     title: 'Missing changelog entries',
-    body: `If you made some API or behavioral changes, please add appropriate entry to the following changelogs:
+    body: `If you made some API or behavioral changes, please add an appropriate entry to the following changelogs:
 ${changelogLinks}`,
   };
 }
