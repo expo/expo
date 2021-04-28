@@ -56,17 +56,18 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
 
 - (void)addUpdate:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error
 {
-  NSString * const sql = @"INSERT INTO \"updates\" (\"id\", \"scope_key\", \"commit_time\", \"runtime_version\", \"metadata\", \"status\" , \"keep\")\
-  VALUES (?1, ?2, ?3, ?4, ?5, ?6, 1);";
+  NSString * const sql = @"INSERT INTO \"updates\" (\"id\", \"scope_key\", \"commit_time\", \"runtime_version\", \"manifest\", \"status\" , \"keep\", \"last_accessed\")\
+  VALUES (?1, ?2, ?3, ?4, ?5, ?6, 1, ?7);";
 
   [self _executeSql:sql
            withArgs:@[
                       update.updateId,
                       update.scopeKey,
-                      @([update.commitTime timeIntervalSince1970] * 1000),
+                      update.commitTime,
                       update.runtimeVersion,
                       update.metadata ?: [NSNull null],
-                      @(update.status)
+                      @(update.status),
+                      update.lastAccessed
                       ]
               error:error];
 }
@@ -89,7 +90,7 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
                           asset.headers ?: [NSNull null],
                           asset.type,
                           asset.metadata ?: [NSNull null],
-                          @(asset.downloadTime.timeIntervalSince1970 * 1000),
+                          asset.downloadTime,
                           asset.filename,
                           asset.contentHash,
                           @(EXUpdatesDatabaseHashTypeSha1)
@@ -167,7 +168,7 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
                       asset.headers ?: [NSNull null],
                       asset.type,
                       asset.metadata ?: [NSNull null],
-                      @(asset.downloadTime.timeIntervalSince1970 * 1000),
+                      asset.downloadTime,
                       asset.filename,
                       asset.contentHash,
                       asset.url ? asset.url.absoluteString : [NSNull null]
@@ -376,7 +377,7 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
 
 - (nullable NSArray<EXUpdatesAsset *> *)assetsWithUpdateId:(NSUUID *)updateId error:(NSError ** _Nullable)error
 {
-  NSString * const sql = @"SELECT assets.id, \"key\", url, type, relative_path, assets.metadata, launch_asset_id\
+  NSString * const sql = @"SELECT assets.*, launch_asset_id\
   FROM assets\
   INNER JOIN updates_assets ON updates_assets.asset_id = assets.id\
   INNER JOIN updates ON updates_assets.update_id = updates.id\
@@ -521,20 +522,21 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
 {
   NSError *error;
   id metadata = nil;
-  id rowMetadata = row[@"metadata"];
+  id rowMetadata = row[@"manifest"];
   if ([rowMetadata isKindOfClass:[NSString class]]) {
     metadata = [NSJSONSerialization JSONObjectWithData:[(NSString *)rowMetadata dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&error];
     NSAssert(!error && metadata && [metadata isKindOfClass:[NSDictionary class]], @"Update metadata should be a valid JSON object");
   }
   EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithId:row[@"id"]
                                                  scopeKey:row[@"scope_key"]
-                                               commitTime:[NSDate dateWithTimeIntervalSince1970:[(NSNumber *)row[@"commit_time"] doubleValue] / 1000]
+                                               commitTime:[EXUpdatesDatabaseUtils dateFromNumber:(NSNumber *)row[@"commit_time"]]
                                            runtimeVersion:row[@"runtime_version"]
                                                  metadata:metadata
                                                    status:(EXUpdatesUpdateStatus)[(NSNumber *)row[@"status"] integerValue]
                                                      keep:[(NSNumber *)row[@"keep"] boolValue]
                                                    config:config
                                                  database:self];
+  update.lastAccessed = [EXUpdatesDatabaseUtils dateFromNumber:(NSNumber *)row[@"last_accessed"]];
   return update;
 }
 
@@ -562,7 +564,7 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
   EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithKey:key type:row[@"type"]];
   asset.assetId = [(NSNumber *)row[@"id"] unsignedIntegerValue];
   asset.url = url;
-  asset.downloadTime = [NSDate dateWithTimeIntervalSince1970:([(NSNumber *)row[@"download_time"] doubleValue] / 1000)];
+  asset.downloadTime = [EXUpdatesDatabaseUtils dateFromNumber:(NSNumber *)row[@"download_time"]];
   asset.filename = row[@"relative_path"];
   asset.contentHash = row[@"hash"];
   asset.metadata = metadata;

@@ -35,6 +35,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesUpdateStatus) {
 @property (nonatomic, strong, readonly) EXUpdatesRawManifest *rawManifest;
 
 @property (nonatomic, assign) EXUpdatesUpdateStatus status;
+@property (nonatomic, strong) NSDate *lastAccessed;
 
 + (instancetype)updateWithId:(NSUUID *)updateId
                     scopeKey:(NSString *)scopeKey
