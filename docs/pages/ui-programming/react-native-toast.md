@@ -1,5 +1,5 @@
 ---
-title: How to display a toast in React Native
+title: How to display a popup toast
 sidebar_title: Displaying toast messages
 ---
 
