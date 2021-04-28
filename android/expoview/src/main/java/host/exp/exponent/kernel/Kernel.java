@@ -574,8 +574,8 @@ public class Kernel extends KernelInterface {
     openDefaultUrl();
   }
 
+  // Certain links should just open the HomeScreen
   private boolean shouldOpenUrl(@NonNull Uri uri) {
-    // Certain links should just open the HomeScreen
     return !uri.toString().contains("expo.io/expo-go");
   }
 
