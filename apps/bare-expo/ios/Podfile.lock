@@ -150,17 +150,18 @@ PODS:
   - EXPermissions (12.0.1):
     - UMCore
     - UMPermissionsInterface
-  - expo-dev-launcher (0.3.1):
-    - expo-dev-menu-interface
-    - React
-  - expo-dev-menu (0.4.1):
-    - expo-dev-menu-interface
-    - React
-  - expo-dev-menu-interface (0.2.0):
-    - React
   - expo-image (1.0.0-alpha.0):
     - React-Core
     - SDWebImage (~> 5.0)
+  - ExpoModulesCore (0.0.1):
+    - ExpoModulesCore/Core (= 0.0.1)
+    - ExpoModulesCore/Interfaces (= 0.0.1)
+    - UMCore
+  - ExpoModulesCore/Core (0.0.1):
+    - UMCore
+  - ExpoModulesCore/Interfaces (0.0.1):
+    - ExpoModulesCore/Core
+    - UMCore
   - EXPrint (10.1.0):
     - UMCore
     - UMFileSystemInterface
@@ -759,10 +760,8 @@ DEPENDENCIES:
   - EXNetwork (from `../../../packages/expo-network/ios`)
   - EXNotifications (from `../../../packages/expo-notifications/ios`)
   - EXPermissions (from `../../../packages/expo-permissions/ios`)
-  - expo-dev-launcher (from `../../../packages/expo-dev-launcher`)
-  - expo-dev-menu (from `../../../packages/expo-dev-menu`)
-  - expo-dev-menu-interface (from `../../../packages/expo-dev-menu-interface`)
   - expo-image (from `../../../packages/expo-image`)
+  - ExpoModulesCore (from `../../../packages/expo-modules-core/ios`)
   - EXPrint (from `../../../packages/expo-print/ios`)
   - EXRandom (from `../../../packages/expo-random/ios`)
   - EXScreenCapture (from `../../../packages/expo-screen-capture/ios`)
@@ -1028,14 +1027,11 @@ EXTERNAL SOURCES:
   EXPermissions:
     inhibit_warnings: false
     :path: "../../../packages/expo-permissions/ios"
-  expo-dev-launcher:
-    :path: "../../../packages/expo-dev-launcher"
-  expo-dev-menu:
-    :path: "../../../packages/expo-dev-menu"
-  expo-dev-menu-interface:
-    :path: "../../../packages/expo-dev-menu-interface"
   expo-image:
     :path: "../../../packages/expo-image"
+  ExpoModulesCore:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-modules-core/ios"
   EXPrint:
     inhibit_warnings: false
     :path: "../../../packages/expo-print/ios"
@@ -1259,10 +1255,8 @@ SPEC CHECKSUMS:
   EXNetwork: 36144f5e572e6b6b218094c66a57c99e07ffbc0d
   EXNotifications: baccd843a16a2cb2db2183e2d801652f3cb43202
   EXPermissions: 8f8c1c05580c4e02d4ee2c8dd74bfe173ff6a723
-  expo-dev-launcher: ba817d68d83bffae03beebb59b14341ac27f1833
-  expo-dev-menu: 9cab52a55688aef281dee77a101af83658c59b48
-  expo-dev-menu-interface: e6f313b7b0c0c79b1987cf26bc5c969bad69bb7d
   expo-image: 07527eb7a57f5ac939c5ded392bcf64c975b9c87
+  ExpoModulesCore: efdfa6650a7b554180c1559b7be9c3510ce18e51
   EXPrint: f6d272e7729d188a05686817ce8d84683da36073
   EXRandom: cbd66cd45434a494f5ef98650eec1f8d78b90270
   EXScreenCapture: 2903dace06f2d06cc161017637cc4cbfcaa98986
@@ -1370,6 +1364,6 @@ SPEC CHECKSUMS:
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 0b9a73617b946de30bc3a0edb3de938620d83dbf
+PODFILE CHECKSUM: 6647b99465c2525a46c4a71ef2693ab66bc4e78d
 
 COCOAPODS: 1.10.1
