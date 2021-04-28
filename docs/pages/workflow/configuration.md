@@ -30,7 +30,7 @@ Most configuration from `app.json` is accessible at runtime from your JavaScript
 For more customization you can use the JavaScript and TypeScript `app.config.js`, or `app.config.ts`. These configs have the following properties:
 
 - Comments, variables, and single quotes!
-- Importing/requiring other js/json files (other files are not transpiled, and can only use syntax valid in your current node version). 
+- Importing/requiring other JavaScript files. Using import/export syntax in external files is not supported. All imported files must be transpiled to support your current version of Node.js. 
 - TypeScript support with nullish coalescing and optional chaining.
 - Updated whenever Metro bundler reloads.
 - Provide environment information to your app.
