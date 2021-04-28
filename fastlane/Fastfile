@@ -120,7 +120,7 @@ platform :ios do
     FileUtils.mkdir_p(output_directory)
     Actions.lane_context[SharedValues::VERSION_NUMBER] = get_version_number(
       xcodeproj: "./ios/Exponent.xcodeproj",
-      target: "Exponent"
+      target: "Expo Go (versioned)"
     )
     save_original_info_plists
     update_bundle_versions
@@ -151,12 +151,15 @@ platform :ios do
     )
   end
 
-  lane :create_simulator_build do
+  lane :create_simulator_build do |options|
     directory = "./ios/simulator-build"
     puts "Build will be written to: " + File.expand_path(directory)
+
+    flavor = options.fetch(:flavor, "versioned")
+
     xcbuild(
       workspace: "ios/Exponent.xcworkspace",
-      scheme: "Exponent",
+      scheme: "Expo Go (#{flavor})",
       sdk: "iphonesimulator",
       configuration: "Release",
       derivedDataPath: directory,
@@ -171,9 +174,12 @@ platform :ios do
       text: "Please enter the path where we should output the build, relative to ./ios (i.e. ../my-build):",
     )
     puts "Build will be written to: " + File.expand_path(directory)
+
+    flavor = options.fetch(:flavor, "versioned")
+
     xcbuild(
       workspace: "ios/Exponent.xcworkspace",
-      scheme: "Exponent",
+      scheme: "Expo Go (#{flavor})",
       configuration: "Release",
       derivedDataPath: directory,
       sdk: "iphoneos",
@@ -204,9 +210,11 @@ platform :ios do
 
     configure_for_app_store
 
+    flavor = options.fetch(:flavor, "versioned")
+
     gym(
       workspace: "ios/Exponent.xcworkspace",
-      scheme: "Exponent",
+      scheme: "Expo Go (#{flavor})",
       configuration: "Release",
       xcargs: xcodebuild_args,
       clean: true,

@@ -31,6 +31,7 @@
 #endif
 
 #import <React/RCTAppearance.h>
+#ifdef INCLUDES_VERSIONED_CODE
 #if __has_include(<ABI41_0_0React/ABI41_0_0RCTAppearance.h>)
 #import <ABI41_0_0React/ABI41_0_0RCTAppearance.h>
 #endif
@@ -39,6 +40,7 @@
 #endif
 #if __has_include(<ABI39_0_0React/ABI39_0_0RCTAppearance.h>)
 #import <ABI39_0_0React/ABI39_0_0RCTAppearance.h>
+#endif
 #endif
 
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
@@ -642,6 +644,7 @@ NS_ASSUME_NONNULL_BEGIN
     appearancePreference = nil;
   }
   RCTOverrideAppearancePreference(appearancePreference);
+#ifdef INCLUDES_VERSIONED_CODE
 #if __has_include(<ABI41_0_0React/ABI41_0_0RCTAppearance.h>)
   ABI41_0_0RCTOverrideAppearancePreference(appearancePreference);
 #endif
@@ -650,6 +653,7 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
 #if __has_include(<ABI39_0_0React/ABI39_0_0RCTAppearance.h>)
   ABI39_0_0RCTOverrideAppearancePreference(appearancePreference);
+#endif
 #endif
 }
 
