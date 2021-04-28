@@ -75,6 +75,7 @@
     "open": "^7.1.0",
     "ora": "^3.4.0",
     "pacote": "^11.2.7",
+    "parse-diff": "^0.8.1",
     "plist": "^3.0.1",
     "qrcode-terminal": "^0.12.0",
     "recursive-omit-by": "^2.0.0",
