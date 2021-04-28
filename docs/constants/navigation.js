@@ -196,7 +196,7 @@ const sections = [
       'Implementing a checkbox for Expo and React Native apps',
       'Stacking overlapping views with zIndex in Expo and React Native apps',
       'Using SVGs',
-      'How to display a toast in React Native',
+      'How to display a popup toast',
     ],
   },
   {

@@ -1,6 +1,6 @@
 ---
 title: How to display a popup toast
-sidebar_title: Displaying toast messages
+sidebar_title: How to display a popup toast
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
