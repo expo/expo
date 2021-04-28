@@ -13,7 +13,7 @@ This is the specification for Expo Updates, a protocol for delivering updates to
 
 ### Conformance
 
-Conforming servers and client-library's must fulfill all normative requirements. Conformance requirements are described in this document by both descriptive assertions and key words with clearly defined meanings.
+Conforming servers and client-libraries must fulfill all normative requirements. Conformance requirements are described in this document by both descriptive assertions and key words with clearly defined meanings.
 
 The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “MAY”, and “OPTIONAL” in the normative portions of this document are to be interpreted as described in [IETF RFC 2119](https://tools.ietf.org/html/rfc2119). These key words may appear in lowercase and still retain their meaning unless explicitly declared as non‐normative.
 
@@ -143,7 +143,7 @@ A conformant server SHOULD return
   * a `500` if there is a server error.
 
 ## Asset Request
-A conformant client-library MUST make a GET request to the asset URL specified by the manifest. The client-library SHOULD include a header accepting the assets content type as specified in the manifest. Additionaly the client-library SHOULD specify the compression encoding the client-library is capable of handling.
+A conformant client-library MUST make a GET request to the asset URL specified by the manifest. The client-library SHOULD include a header accepting the asset's content type as specified in the manifest. Additionaly the client-library SHOULD specify the compression encoding the client-library is capable of handling.
 
 Example headers:
 ```
@@ -153,11 +153,11 @@ accept-encoding: br, gzip
 
 ## Asset Response
 
-An asset hosted at a particular URL MUST NOT be changed. Client-library's with stale updates may still require old assets.
+An asset hosted at a particular URL MUST NOT be changed. Client-libraries with stale updates may still require old assets.
 
 ### Headers
 
-The asset MUST be served with an asset compressed in compliance with the clients encoding request. The asset MUST be include a content-type header set to the mime type of the asset defined in the manifest.
+The asset MUST be served with an asset compressed in compliance with the client's encoding request. The asset MUST include a content-type header set to the mime type of the asset defined in the manifest.
 For example:
 ```
 content-encoding: br
