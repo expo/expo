@@ -5,12 +5,13 @@ import * as GitHub from '../GitHub';
 import logger from '../Logger';
 import { generateReviewBodyFromOutputs } from './reports';
 import checkMissingChangelogs from './reviewers/checkMissingChangelogs';
+import reviewChangelogEntries from './reviewers/reviewChangelogEntries';
 import { ReviewEvent, ReviewComment, ReviewInput, ReviewOutput, ReviewStatus } from './types';
 
 /**
  * An array with functions whose purpose is to check and review the diff.
  */
-const REVIEWERS = [checkMissingChangelogs];
+const REVIEWERS = [checkMissingChangelogs, reviewChangelogEntries];
 
 /**
  * Goes through the changes included in given pull request and checks if they meet basic requirements.

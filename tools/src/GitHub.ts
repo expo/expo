@@ -110,9 +110,12 @@ export async function deleteAllPullRequestReviewCommentsAsync(
   review_id: number
 ) {
   const comments = await listPullRequestReviewCommentsAsync(pull_number, review_id);
-  for (const comment of comments) {
-    await deletePullRequestReviewCommentAsync(comment.id);
-  }
+
+  await Promise.all(
+    comments
+      .filter((comment) => comment.pull_request_review_id === review_id)
+      .map((comment) => deletePullRequestReviewCommentAsync(comment.id))
+  );
 }
 
 /**
