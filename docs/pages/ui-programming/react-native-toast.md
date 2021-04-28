@@ -76,7 +76,7 @@ options, which means that you will be able to match the design of your toasts to
 
 ### Usage
 
-To use `react-native-root-toast`, you have to [install the module](https://github.com/magicismight/react-native-root-toast) from NPM with `npm install react-native-root-toast`.
+To use `react-native-root-toast`, you have to [install the module](https://github.com/magicismight/react-native-root-toast) from npm with `npm install react-native-root-toast`.
 
 Next, you must wrap the root component of your app with `<RootSiblingParent>` to allow toasts in any
 part of your app.
