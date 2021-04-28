@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "78CEE2BF1ACD07D70095B124"
-               BuildableName = "Exponent.app"
-               BlueprintName = "Exponent"
+               BuildableName = "Expo Go.app"
+               BlueprintName = "Expo Go (unversioned)"
                ReferencedContainer = "container:Exponent.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -45,8 +45,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "78CEE2BF1ACD07D70095B124"
-            BuildableName = "Exponent.app"
-            BlueprintName = "Exponent"
+            BuildableName = "Expo Go.app"
+            BlueprintName = "Expo Go (unversioned)"
             ReferencedContainer = "container:Exponent.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -62,8 +62,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "78CEE2BF1ACD07D70095B124"
-            BuildableName = "Exponent.app"
-            BlueprintName = "Exponent"
+            BuildableName = "Expo Go.app"
+            BlueprintName = "Expo Go (unversioned)"
             ReferencedContainer = "container:Exponent.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

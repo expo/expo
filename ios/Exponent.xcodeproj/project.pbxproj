@@ -4143,7 +4143,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = host.exp.Tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Exponent.app/Exponent";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Expo Go.app/Exponent";
 			};
 			name = Debug;
 		};
@@ -4170,7 +4170,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = host.exp.Tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Exponent.app/Exponent";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Expo Go.app/Exponent";
 			};
 			name = Release;
 		};
@@ -4188,7 +4188,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = host.exp.ExponentIntegrationTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Exponent.app/Exponent";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Expo Go.app/Exponent";
 			};
 			name = Debug;
 		};
@@ -4206,7 +4206,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = host.exp.ExponentIntegrationTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Exponent.app/Exponent";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Expo Go.app/Exponent";
 			};
 			name = Release;
 		};
