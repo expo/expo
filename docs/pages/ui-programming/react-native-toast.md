@@ -15,7 +15,7 @@ simple feedback about an operation in a small popup. It only fills the amount of
 the message and the current activity remains visible and interactive. Toasts automatically disappear
 after a timeout".
 
-To present a toast, we recommend two solutions: an API from React Native itself and a library
+To present a toast, we recommend two solutions: an API from the `react-native` package and a library
 maintained by the React Native community.
 
 ## Android-only: `ToastAndroid`
