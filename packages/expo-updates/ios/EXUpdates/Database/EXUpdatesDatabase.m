@@ -203,6 +203,13 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
               error:error];
 }
 
+- (void)markUpdateAccessed:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error
+{
+  update.lastAccessed = [NSDate date];
+  NSString * const updateSql = @"UPDATE updates SET last_accessed = ?1 WHERE id = ?2;";
+  [self _executeSql:updateSql withArgs:@[update.lastAccessed, update.updateId] error:error];
+}
+
 - (void)setScopeKey:(NSString *)scopeKey onUpdate:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error
 {
   NSString * const updateSql = @"UPDATE updates SET scope_key = ?1 WHERE id = ?2;";

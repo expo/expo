@@ -109,10 +109,12 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
         }
       } else {
         self->_launchedUpdate = launchableUpdate;
+        [self _markUpdateAccessed];
         [self _ensureAllAssetsExist];
       }
     } completionQueue:_launcherQueue];
   } else {
+    [self _markUpdateAccessed];
     [self _ensureAllAssetsExist];
   }
 }
@@ -120,6 +122,18 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
 - (BOOL)isUsingEmbeddedAssets
 {
   return _assetFilesMap == nil;
+}
+
+- (void)_markUpdateAccessed
+{
+  NSAssert(_launchedUpdate, @"launchedUpdate should be nonnull before calling markUpdateAccessed");
+  dispatch_async(_database.databaseQueue, ^{
+    NSError *error;
+    [self->_database markUpdateAccessed:self->_launchedUpdate error:&error];
+    if (error) {
+      NSLog(@"Failed to mark update as recently accessed: %@", error.localizedDescription);
+    }
+  });
 }
 
 - (void)_ensureAllAssetsExist
