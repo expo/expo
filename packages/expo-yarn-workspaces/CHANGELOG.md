@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add engines limitation for Node 14 and above ([#12761](https://github.com/expo/expo/pull/12761) by [@byCedric](https://github.com/bycedric))
+
 ### 💡 Others
 
 - Update `debug` and `glob` dependencies. ([#15069](https://github.com/expo/expo/pull/15069) by [@Simek](https://github.com/Simek))
