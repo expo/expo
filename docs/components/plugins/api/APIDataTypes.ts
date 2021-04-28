@@ -30,6 +30,7 @@ export type TypeDefinitionData = {
   types?: TypeDefinitionTypesData[];
   elementType?: {
     name: string;
+    type: string;
   };
   queryType?: {
     name: string;

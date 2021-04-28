@@ -5,9 +5,7 @@ import androidx.room.Update;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateAssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
-import expo.modules.updates.db.enums.UpdateStatus;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,13 +49,6 @@ public abstract class AssetDao {
 
   @Query("SELECT * FROM assets WHERE `key` = :key LIMIT 1;")
   public abstract List<AssetEntity> _loadAssetWithKey(String key);
-
-  @Query("UPDATE assets SET relative_path = NULL WHERE id IN (:missingAssetIds)")
-  public abstract void _markMissingAssets(List<Long> missingAssetIds);
-
-  @Query("UPDATE updates SET status = :status WHERE id IN (" +
-          "SELECT DISTINCT update_id FROM updates_assets WHERE asset_id IN (:missingAssetIds));")
-  public abstract void _markUpdatesWithMissingAssets(List<Long> missingAssetIds, UpdateStatus status);
 
 
   /**
@@ -135,15 +126,5 @@ public abstract class AssetDao {
     _deleteAssetsMarkedForDeletion();
 
     return deletedAssets;
-  }
-
-  @Transaction
-  public void markMissingAssets(List<AssetEntity> missingAssets) {
-    ArrayList<Long> missingAssetIds = new ArrayList<>();
-    for (AssetEntity asset : missingAssets) {
-      missingAssetIds.add(asset.id);
-    }
-    _markMissingAssets(missingAssetIds);
-    _markUpdatesWithMissingAssets(missingAssetIds, UpdateStatus.PENDING);
   }
 }

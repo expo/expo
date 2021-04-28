@@ -11,11 +11,9 @@ type ActionOptions = {
   packageName: string;
 };
 
-type EntryPoint = string | boolean;
+type EntryPoint = string | string[];
 
 type CommandAdditionalParams = [
-  // TODO: figure out why Prettier don't like this type def
-  // eslint-disable-next-line prettier/prettier
   entryPoint: EntryPoint,
   jsonFileName?: string
 ];
@@ -33,12 +31,18 @@ const executeCommand = async (
   app.options.addReader(new TSConfigReader());
   app.options.addReader(new TypeDocReader());
 
-  const entry = `${PACKAGES_DIR}/${packageName}/src${(entryPoint === true ? '' : `/${entryPoint}`)}`;
+  const entriesPath = `${PACKAGES_DIR}/${packageName}/src`;
   const tsConfigPath = `${PACKAGES_DIR}/${packageName}/tsconfig.json`;
   const jsonOutputPath = `${DATA_PATH}/${jsonFileName}.json`;
 
+  const entryPoints = Array.isArray(entryPoint) ? (
+    entryPoint.map(entry => `${entriesPath}/${entry}`)
+  ) : (
+    [`${entriesPath}/${entryPoint}`]
+  );
+
   app.bootstrap({
-    entryPoints: [entry],
+    entryPoints,
     tsconfig: tsConfigPath,
     disableSources: true,
     hideGenerator: true,
@@ -50,12 +54,25 @@ const executeCommand = async (
 
   if (project) {
     await app.generateJson(project, jsonOutputPath);
+    const output = await fs.readJson(jsonOutputPath);
+
+    if (Array.isArray(entryPoint)) {
+      const filterEntries = entryPoint.map(entry => entry.substring(0, entry.lastIndexOf('.')));
+      output.children = output.children
+        .filter(entry => filterEntries.includes(entry.name))
+        .map(entry => entry.children)
+        .flat()
+        .sort((a, b) => a.name.localeCompare(b.name));
+    }
+
     if (MINIFY_JSON) {
       const minifiedJson = recursiveOmitBy(
-        await fs.readJson(jsonOutputPath),
+        output,
         ({ key }) => key === 'id' || key === 'groups'
       );
       await fs.writeFile(jsonOutputPath, JSON.stringify(minifiedJson, null, 0));
+    } else {
+      await fs.writeFile(jsonOutputPath, JSON.stringify(output));
     }
   } else {
     throw new Error(`💥 Failed to extract API data from source code for '${packageName}' package.`);
@@ -64,6 +81,7 @@ const executeCommand = async (
 
 async function action({ packageName }: ActionOptions) {
   const packagesMapping: Record<string, CommandAdditionalParams> = {
+    'expo-apple-authentication': [['AppleAuthentication.ts', 'AppleAuthentication.types.ts']],
     'expo-application': ['Application.ts'],
     'expo-battery': ['Battery.ts'],
     'expo-blur': ['index.ts'],

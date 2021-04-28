@@ -53,6 +53,36 @@ If you use environment variables in your `app.config.js` or in your app source c
 
 Learn more about how to securely store your `NPM_TOKEN` on EAS Build: ["How to use private package repositories"](/build-reference/how-tos.md#how-to-use-private-package-repositories).
 
+### `metro.config.js` must export the entire default config from `@expo/metro-config`
+
+Previously, with classic builds, your `metro.config.js` might have looked something like:
+
+```js
+const { getDefaultConfig } = require('@expo/metro-config');
+
+const defaultConfig = getDefaultConfig(__dirname);
+
+module.exports = {
+  resolver: {
+    assetExts: [...defaultConfig.resolver.assetExts, 'db'],
+  },
+};
+```
+
+In the example above, you're only exporting _part_ of the default config, but EAS Build requires the _full_ config. To do that, you should modify `defaultConfig` directly, and then return the resulting object, like this:
+
+```js
+const { getDefaultConfig } = require('@expo/metro-config');
+
+const defaultConfig = getDefaultConfig(__dirname);
+
+defaultConfig.resolver.assetExts.push('db');
+
+module.exports = defaultConfig;
+```
+
+If you don't set up your `metro.config.js` file properly, your assets could fail to load in release builds.
+
 <hr />
 
 <div style={{ marginTop: 20 }} />

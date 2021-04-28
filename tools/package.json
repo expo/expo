@@ -28,8 +28,7 @@
     "@expo/spawn-async": "^1.5.0",
     "@expo/xcodegen": "2.18.0-patch.1",
     "@expo/xdl": "^59.1.0",
-    "@octokit/request": "^5.4.7",
-    "@octokit/types": "^5.4.0",
+    "@octokit/rest": "^18.5.3",
     "@types/base-64": "^0.1.2",
     "@types/concat-stream": "^1.6.0",
     "@types/connect": "^3.4.32",
@@ -88,10 +87,10 @@
     "tar": "^4.4.10",
     "terminal-link": "^2.1.1",
     "transformer-proxy": "^0.3.4",
+    "typedoc": "^0.20.35",
     "uuid": "^3.1.0",
     "ws": "^6.1.0",
-    "xcode": "^2.0.0",
-    "typedoc": "^0.20.35"
+    "xcode": "^2.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",

@@ -36,13 +36,4 @@ class NewRawManifest(json: JSONObject) : RawManifest(json) {
 
   @Throws(JSONException::class)
   fun getCreatedAt(): String = json.getString("createdAt")
-
-  companion object {
-    fun normalizeNestedManifestJSON(json: JSONObject): JSONObject {
-      if (json.has("manifest")) {
-        return json.getJSONObject("manifest")
-      }
-      return json
-    }
-  }
 }
