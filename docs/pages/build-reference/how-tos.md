@@ -66,6 +66,7 @@ This is an example of how your package.json might look like:
 
 <ImageSpotlight alt="Secret creation UI filled" src="/static/images/eas-build/environment-secrets/secrets-create-filled.png" />
 
+Before setting up private packages, check exisitng configuration (`.npmrc` and `yarnrc.yml`) described on [Server infrastructure page](/build-reference/infrastructure), to verify if it's not affecting your setup.
 
 ## Using npm cache with yarn v1
 
