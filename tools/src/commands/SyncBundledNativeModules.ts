@@ -145,15 +145,12 @@ async function compareAndConfirmAsync(
   logger.info('Changes:');
   let hasChanges = false;
   for (const { npmPackage, versionRange } of next) {
-    if (!(npmPackage in currentMap)) {
-      hasChanges = true;
-      logger.info(` - ${npmPackage}: ${chalk.red(`(none)`)} -> ${chalk.green(versionRange)}`);
-    } else if (versionRange !== currentMap[npmPackage].versionRange) {
+    if (versionRange !== currentMap[npmPackage]?.versionRange) {
       hasChanges = true;
       logger.info(
-        ` - ${npmPackage}: ${chalk.red(currentMap[npmPackage].versionRange)} -> ${chalk.green(
-          versionRange
-        )}`
+        ` - ${npmPackage}: ${chalk.red(
+          currentMap[npmPackage]?.versionRange ?? '(none)'
+        )} -> ${chalk.green(versionRange)}`
       );
     }
   }
