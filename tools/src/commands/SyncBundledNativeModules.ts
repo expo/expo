@@ -44,7 +44,7 @@ async function main(options: ActionOptions) {
   await compareAndConfirmAsync(currentBundledNativeModules, syncPayload.nativeModules);
 
   await syncModulesAsync({ env, secret }, sdkVersion, syncPayload);
-  logger.info(chalk.green(`Successfully synced the modules for SDK ${sdkVersion}!`));
+  logger.success(`Successfully synced the modules for SDK ${sdkVersion}!`);
 }
 
 function resolveEnv({ env }: ActionOptions): Env {
@@ -85,7 +85,7 @@ async function resolveSecretAsync(): Promise<string> {
     {
       type: 'password',
       name: 'secret',
-      message: `Secret:`,
+      message: 'Secret:',
       validate: (val) => (val ? true : 'The secret cannot be empty'),
     },
   ]);
