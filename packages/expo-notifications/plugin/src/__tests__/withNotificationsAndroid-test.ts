@@ -58,18 +58,8 @@ describe('Android notifications configuration', () => {
     vol.mkdirpSync('/app/assets');
     vol.writeFileSync('/app/assets/notificationIcon.png', icon);
 
-    const expoConfig: ExpoConfig = {
-      slug: 'testproject',
-      version: '1',
-      name: 'testproject',
-      platforms: ['ios', 'android'],
-      notification: {
-        icon: '/app/assets/notificationIcon.png',
-        color: '#00ff00',
-      },
-    };
-    await setNotificationIconAsync(expoConfig, projectRoot);
-    await setNotificationIconColorAsync(expoConfig, projectRoot);
+    await setNotificationIconAsync('/app/assets/notificationIcon.png', projectRoot);
+    await setNotificationIconColorAsync('#00ff00', projectRoot);
   });
 
   afterAll(() => {

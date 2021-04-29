@@ -1,21 +1,25 @@
 import {
   AndroidConfig,
   ConfigPlugin,
-  withAndroidManifest,
   withDangerousMod,
+  withAndroidManifest,
   XML,
 } from '@expo/config-plugins';
+
 import { ExpoConfig } from '@expo/config-types';
 import { generateImageAsync } from '@expo/image-utils';
 import fs from 'fs-extra';
 import path from 'path';
 
-type DPIString = 'mdpi' | 'hdpi' | 'xhdpi' | 'xxhdpi' | 'xxxhdpi';
-type dpiMap = Record<DPIString, { folderName: string; scale: number }>;
+import { NotificationsPluginProps } from './withNotifications';
 
 const { buildResourceItem, readResourcesXMLAsync } = AndroidConfig.Resources;
 const { writeXMLAsync } = XML;
 const { Colors } = AndroidConfig;
+
+type DPIString = 'mdpi' | 'hdpi' | 'xhdpi' | 'xxhdpi' | 'xxxhdpi';
+type dpiMap = Record<DPIString, { folderName: string; scale: number }>;
+
 export const ANDROID_RES_PATH = 'android/app/src/main/res/';
 export const dpiValues: dpiMap = {
   mdpi: { folderName: 'mipmap-mdpi', scale: 1 },
@@ -38,31 +42,54 @@ export const NOTIFICATION_ICON_RESOURCE = `@drawable/${NOTIFICATION_ICON}`;
 export const NOTIFICATION_ICON_COLOR = 'notification_icon_color';
 export const NOTIFICATION_ICON_COLOR_RESOURCE = `@color/${NOTIFICATION_ICON_COLOR}`;
 
-export const withNotificationIcons: ConfigPlugin = config => {
+export const withNotificationIcons: ConfigPlugin<{ icon: string | null }> = (config, { icon }) => {
+  // If no icon provided in the config plugin props, fallback to value from app.json
+  icon = icon || getNotificationIcon(config);
   return withDangerousMod(config, [
     'android',
     async config => {
-      await setNotificationIconAsync(config, config.modRequest.projectRoot);
+      await setNotificationIconAsync(icon, config.modRequest.projectRoot);
       return config;
     },
   ]);
 };
 
-export const withNotificationIconColor: ConfigPlugin = config => {
+export const withNotificationIconColor: ConfigPlugin<{ color: string | null }> = (
+  config,
+  { color }
+) => {
+  // If no color provided in the config plugin props, fallback to value from app.json
+  color = color || getNotificationColor(config);
   return withDangerousMod(config, [
     'android',
     async config => {
-      await setNotificationIconColorAsync(config, config.modRequest.projectRoot);
+      await setNotificationIconColorAsync(color, config.modRequest.projectRoot);
       return config;
     },
   ]);
 };
 
-export const withNotificationManifest: ConfigPlugin = config => {
+export const withNotificationManifest: ConfigPlugin<{
+  icon: string | null;
+  color: string | null;
+}> = (config, { icon, color }) => {
+  // If no icon or color provided in the config plugin props, fallback to value from app.json
+  icon = icon || getNotificationIcon(config);
+  color = color || getNotificationColor(config);
   return withAndroidManifest(config, async config => {
-    config.modResults = await setNotificationConfigAsync(config, config.modResults);
+    config.modResults = await setNotificationConfigAsync({ icon, color }, config.modResults);
     return config;
   });
+};
+
+export const withNotificationSounds: ConfigPlugin<{ sounds: string[] }> = (config, { sounds }) => {
+  return withDangerousMod(config, [
+    'android',
+    async config => {
+      await setNotificationSoundsAsync(sounds, config.modRequest.projectRoot);
+      return config;
+    },
+  ]);
 };
 
 export function getNotificationIcon(config: ExpoConfig) {
@@ -74,11 +101,9 @@ export function getNotificationColor(config: ExpoConfig) {
 }
 
 /**
- * Applies configuration for expo-notifications, including
- * the notification icon and notification color.
+ * Applies notification icon configuration for expo-notifications
  */
-export async function setNotificationIconAsync(config: ExpoConfig, projectRoot: string) {
-  const icon = getNotificationIcon(config);
+export async function setNotificationIconAsync(icon: string | null, projectRoot: string) {
   if (icon) {
     await writeNotificationIconImageFilesAsync(icon, projectRoot);
   } else {
@@ -87,13 +112,11 @@ export async function setNotificationIconAsync(config: ExpoConfig, projectRoot: 
 }
 
 export async function setNotificationConfigAsync(
-  config: ExpoConfig,
+  props: { icon: string | null; color: string | null },
   manifest: AndroidConfig.Manifest.AndroidManifest
 ) {
-  const icon = getNotificationIcon(config);
-  const color = getNotificationColor(config);
   const mainApplication = getMainApplicationOrThrow(manifest);
-  if (icon) {
+  if (props.icon) {
     addMetaDataItemToMainApplication(
       mainApplication,
       META_DATA_NOTIFICATION_ICON,
@@ -103,7 +126,7 @@ export async function setNotificationConfigAsync(
   } else {
     removeMetaDataItemFromMainApplication(mainApplication, META_DATA_NOTIFICATION_ICON);
   }
-  if (color) {
+  if (props.color) {
     addMetaDataItemToMainApplication(
       mainApplication,
       META_DATA_NOTIFICATION_ICON_COLOR,
@@ -116,8 +139,7 @@ export async function setNotificationConfigAsync(
   return manifest;
 }
 
-export async function setNotificationIconColorAsync(config: ExpoConfig, projectRoot: string) {
-  const color = getNotificationColor(config);
+export async function setNotificationIconColorAsync(color: string | null, projectRoot: string) {
   const colorsXmlPath = await Colors.getProjectColorsXMLPathAsync(projectRoot);
   let colorsJson = await readResourcesXMLAsync({ path: colorsXmlPath });
   if (color) {
@@ -168,9 +190,49 @@ async function removeNotificationIconImageFilesAsync(projectRoot: string) {
   );
 }
 
-export const withNotificationsAndroid: ConfigPlugin = config => {
-  config = withNotificationIconColor(config);
-  config = withNotificationIcons(config);
-  config = withNotificationManifest(config);
+/**
+ * Save sound files to <project-root>/android/app/src/main/res/raw
+ */
+export async function setNotificationSoundsAsync(sounds: string[], projectRoot: string) {
+  if (!Array.isArray(sounds)) {
+    throw new Error(
+      `Must provide an array of sound files in your app config, found ${typeof sounds}.`
+    );
+  }
+  await Promise.all(
+    sounds.map(async (soundFileRelativePath: string) => {
+      await writeNotificationSoundFileAsync(soundFileRelativePath, projectRoot);
+    })
+  );
+}
+
+/**
+ * Copies the input file to the <project-root>/android/app/src/main/res/raw directory if
+ * there isn't already an existing file under that name.
+ */
+async function writeNotificationSoundFileAsync(soundFileRelativePath: string, projectRoot: string) {
+  const rawResourcesPath = path.resolve(projectRoot, ANDROID_RES_PATH, 'raw');
+  const inputFilename = path.basename(soundFileRelativePath);
+
+  if (inputFilename) {
+    try {
+      const sourceFilepath = path.resolve(projectRoot, soundFileRelativePath);
+      const destinationFilepath = path.resolve(rawResourcesPath, inputFilename);
+      await fs.ensureDir(rawResourcesPath);
+      await fs.copyFile(sourceFilepath, destinationFilepath);
+    } catch (e) {
+      throw new Error('Encountered an issue copying Android notification sounds: ' + e);
+    }
+  }
+}
+
+export const withNotificationsAndroid: ConfigPlugin<NotificationsPluginProps> = (
+  config,
+  { icon = null, color = null, sounds = [] }
+) => {
+  config = withNotificationIconColor(config, { color });
+  config = withNotificationIcons(config, { icon });
+  config = withNotificationManifest(config, { icon, color });
+  config = withNotificationSounds(config, { sounds });
   return config;
 };
