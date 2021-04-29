@@ -36,27 +36,4 @@ Depending on your project, you may find that you need to customize the standard 
 Your debug builds can be shared with anyone on the team who needs to work on or review your application.  Your team can develop the JavaScript portion of your application with `expo-cli` and your custom client without waiting for your native code to build until the next time you need to upgrade, install a new module, or otherwise change the native code in your project.
 
 
-<<<<<<< HEAD
 > ⚠️ **Managed Expo projects are not yet supported**, but we are working on bringing the Development Client to the Managed Workflow! If you want to build a Managed Expo project with the Development Client, you'll have to eject it first. See the [Ejecting to Bare Workflow](../workflow/customizing.md) page to learn how.
-
-## Discover the Dev Client
-
-- [Get Started with the Dev Client](installation.md) - This step-by-step guide will take you through installing the Development Client module in your project
-- [Distributing to Android Devices](distribution-for-android.md) - Get your Development Client running on an Android device
-- [Distributing to iOS Devices](distribution-for-ios.md) - Get your Development Client running on an iOS device
-- [Troubleshooting](troubleshooting.md) - Solutions for common issues you might encounter with the Development Client
-- [Extending the Dev Menu](extending-the-dev-menu.md) - Make the Development Client your own by extending the menu with new functionality
-- [Compatibility](compatibility.md) - Check compatibly versions
-||||||| merged common ancestors
-> ⚠️ **Managed Expo projects are not yet supported**, but we are working on bringing the Development Client to the Managed Workflow! If you want to build a Managed Expo project with the Development Client, you'll have to eject it first. See the [Ejecting to Bare Workflow](../workflow/customizing.md) page to learn how.
-
-## Discover the Dev Client
-
-- [Get Started with the Dev Client](installation.md) - This step-by-step guide will take you through installing the Development Client module in your project
-- [Distributing to Android Devices](distribution-for-android.md) - Get your Development Client running on an Android device
-- [Distributing to iOS Devices](distribution-for-ios.md) - Get your Development Client running on an iOS device
-- [Troubleshooting](troubleshooting.md) - Solutions for common issues you might encounter with the Development Client
-- [Extending the Dev Menu](extending-the-dev-menu.md) Make the Development Client your own by extending the menu with new functionality
-=======
-> ⚠️ **Managed Expo projects are not yet supported**, but we are working on bringing the Development Client to the Managed Workflow! If you want to build a Managed Expo project with the Development Client, you'll have to eject it first. See the [Ejecting to Bare Workflow](../workflow/customizing.md) page to learn how.
->>>>>>> Remove pages pointing users towards how to create local builds
