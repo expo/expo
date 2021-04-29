@@ -1,16 +1,16 @@
 ---
-title: Developing In A Custom Client
+title: Getting Started
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import InstallSection from '~/components/plugins/InstallSection'
 
-## Get a custom client in your project
+## Install the Development Client module in your project
 
 If you're just starting your project, you can create a new project from our template with: 
 <InstallSection packageName="expo-development-client" cmd={["npx crna -t with-dev-client"]} hideBareInstructions />
 
-If you have an existing project, you'll need [make a few changes](installation.md) to your `AppDelegate.m`, `MainActivity.java` and `MainApplication.java`.
+If you have an existing project, you'll need to [install the package and make a few changes](installation.md) to your `AppDelegate.m`, `MainActivity.java` and `MainApplication.java`.
 
 ## Deep linking scheme
 
