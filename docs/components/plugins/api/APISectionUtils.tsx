@@ -1,4 +1,4 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/css';
 import { theme } from '@expo/styleguide';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';

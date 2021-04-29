@@ -1,4 +1,4 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
 import { Tab as ReachTab, TabList, TabPanel, TabPanels, Tabs as ReachTabs } from '@reach/tabs';
 import * as React from 'react';

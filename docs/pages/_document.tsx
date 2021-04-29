@@ -1,6 +1,5 @@
-import { Global } from '@emotion/core';
+import { Global } from '@emotion/react';
 import { BlockingSetInitialColorMode } from '@expo/styleguide';
-import { extractCritical } from 'emotion-server';
 import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/document';
 import dynamic from 'next/dynamic';
 import React from 'react';
@@ -21,16 +20,11 @@ const DynamicLoadAnalytics = dynamic<any>(() =>
 export default class MyDocument extends Document<{ css?: string }> {
   static async getInitialProps(ctx: DocumentContext) {
     const initialProps = await Document.getInitialProps(ctx);
-    const styles = extractCritical(initialProps.html);
     return {
       ...initialProps,
       styles: (
         <>
           {initialProps.styles}
-          <style
-            data-emotion-css={styles.ids.join(' ')}
-            dangerouslySetInnerHTML={{ __html: styles.css }}
-          />
         </>
       ),
     };

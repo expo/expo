@@ -1,4 +1,4 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
 import { Language, Prism } from 'prism-react-renderer';
 import * as React from 'react';
