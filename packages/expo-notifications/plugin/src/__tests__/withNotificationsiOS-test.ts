@@ -1,6 +1,6 @@
+import { IOSConfig } from '@expo/config-plugins';
 import { fs, vol } from 'memfs';
 import * as path from 'path';
-import { IOSConfig } from '@expo/config-plugins';
 
 import { setNotificationSounds } from '../withNotificationsIOS';
 import { getDirFromFS } from './withNotificationsAndroid-test';
@@ -32,7 +32,7 @@ describe('iOS notifications configuration', () => {
       fsReal.readFileSync(path.join(__dirname, 'fixtures/project.pbxproj'), 'utf-8')
     );
 
-    let project = IOSConfig.XcodeUtils.getPbxproj(projectRoot);
+    const project = IOSConfig.XcodeUtils.getPbxproj(projectRoot);
     setNotificationSounds(['/app/assets/notificationSound.wav'], { project, projectRoot });
   });
 
