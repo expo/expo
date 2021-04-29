@@ -7,6 +7,11 @@ import { withSKAdNetworkIdentifiers } from './withSKAdNetworkIdentifiers';
 const pkg = require('expo-ads-admob/package.json');
 
 const withAdMob: ConfigPlugin<{
+  /**
+   * Sets the iOS `NSUserTrackingUsageDescription` permission message in the `Info.plist`.
+   * Passing `false` will skip adding the permission.
+   * @default 'This identifier will be used to deliver personalized ads to you.'
+   */
   userTrackingPermission?: string | false;
 } | void> = (config, props) => {
   config = withAdMobAndroid(config);
