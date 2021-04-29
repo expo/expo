@@ -15,6 +15,6 @@ Pod::Spec.new do |s|
   s.header_dir     = 'EXDevClient'
 
   s.dependency 'expo-dev-launcher', :configurations => :debug
-  s.dependency 'expo-dev-dev-menu', :configurations => :debug
-  s.dependency 'expo-dev-menu-interface', :configurations => :debug
+  s.dependency 'expo-dev-menu', :configurations => :debug
+  s.dependency 'expo-dev-menu-interface'
 end
