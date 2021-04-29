@@ -88,10 +88,10 @@ UM_EXPORT_METHOD_AS(requestAd,
     }
     if(ssvOptions) {
       GADServerSideVerificationOptions *options = [[GADServerSideVerificationOptions alloc] init];
-      if(ssvOptions[@"userId"]) {
+      if(ssvOptions[@"userId"] && [ssvOptions[@"userId"] isKindOfClass:[NSString class]]) {
         options.userIdentifier = ssvOptions[@"userId"];
       }
-      if(ssvOptions[@"customData"]) {
+      if(ssvOptions[@"customData"] && [ssvOptions[@"customData"] isKindOfClass:[NSString class]]) {
         options.customRewardString = ssvOptions[@"customData"];
       }
       self.rewardedAd.serverSideVerificationOptions = options;
