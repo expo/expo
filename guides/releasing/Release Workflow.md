@@ -153,6 +153,7 @@ In the managed workflow, we use our forked `react-native` repository because we 
 **How:**
 
 - Run `et publish-packages`. Talk to @tsapeta for more details/information.
+- Run `et sync-bundled-native-modules` to sync the `bundledNativeModules.json` file with www.
 
 ## 0.8. Merge and cutoff changelogs
 
@@ -347,6 +348,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 **How:**
 
 - From the master branch, run `et publish-packages` and publish all packages with changes.
+- From the master branch, run `et sync-bundled-native-modules` to sync the `bundledNativeModules.json` file with www.
 - If there are any packages for which a patch was cherry-picked to the release branch AND a new feature (requiring a minor version bump) was added on master in the meantime, you will need to publish a patch release of that package from the release branch which does not include the new feature.
   - Note that **only** the patch version number can be bumped on the release branch; **do not** bump the minor version number of any package on the release branch.
 
