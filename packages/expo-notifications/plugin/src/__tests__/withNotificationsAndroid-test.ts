@@ -11,7 +11,7 @@ import {
   setNotificationSoundsAsync,
 } from '../withNotificationsAndroid';
 
-function getDirFromFS(fsJSON: Record<string, string | null>, rootDir: string) {
+export function getDirFromFS(fsJSON: Record<string, string | null>, rootDir: string) {
   return Object.entries(fsJSON)
     .filter(([path, value]) => value !== null && path.startsWith(rootDir))
     .reduce<Record<string, string>>(
@@ -98,9 +98,7 @@ describe('Android notifications configuration', () => {
   });
   it('writes all the asset files (sounds and images) as expected', async () => {
     const after = getDirFromFS(vol.toJSON(), projectRoot);
-    Object.keys(after).forEach(path => {
-      expect(LIST_OF_GENERATED_NOTIFICATION_FILES).toContain(path);
-    });
+    expect(Object.keys(after).sort()).toEqual(LIST_OF_GENERATED_NOTIFICATION_FILES.sort());
   });
 });
 
@@ -111,7 +109,3 @@ function setUpDrawableDirectories() {
   vol.mkdirpSync('/app/android/app/src/main/res/drawable-xxhdpi');
   vol.mkdirpSync('/app/android/app/src/main/res/drawable-xxxhdpi');
 }
-
-// test sounds
-
-// test that fallsback to app json if no args provided
