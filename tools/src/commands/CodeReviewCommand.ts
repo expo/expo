@@ -1,5 +1,6 @@
 import { Command } from '@expo/commander';
 
+import logger from '../Logger';
 import { reviewPullRequestAsync } from '../code-review';
 
 type ActionOptions = {
@@ -13,7 +14,12 @@ async function action(options: ActionOptions) {
   if (!process.env.GITHUB_TOKEN) {
     throw new Error('Environment variable `GITHUB_TOKEN` is required for this command.');
   }
-  await reviewPullRequestAsync(+options.pr);
+  try {
+    await reviewPullRequestAsync(+options.pr);
+  } catch (error) {
+    logger.error(error);
+    throw error;
+  }
 }
 
 export default (program: Command) => {
