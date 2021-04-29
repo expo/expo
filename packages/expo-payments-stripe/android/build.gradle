@@ -1,12 +1,23 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
 version = '9.2.3'
 
-// Simple helper that allows the root project to override versions declared by this library.
-def safeExtGet(prop, fallback) {
-  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+buildscript {
+  // Simple helper that allows the root project to override versions declared by this library.
+  ext.safeExtGet = { prop, fallback ->
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+  }
+
+  repositories {
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.4.21')}")
+  }
 }
 
 // Upload android library to maven with javadoc and android sources
@@ -64,4 +75,6 @@ dependencies {
   api "com.stripe:stripe-android:${safeExtGet('stripeVersion', '16.1.1')}"
   api 'com.github.tipsi:CreditCardEntry:1.5.0'
   api "com.google.android.material:material:1.1.0"
+
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
 }

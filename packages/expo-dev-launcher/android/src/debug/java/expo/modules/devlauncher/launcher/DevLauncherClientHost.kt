@@ -19,7 +19,7 @@ class DevLauncherClientHost(
 
   init {
     if (useDeveloperSupport) {
-      injectDebugServerHost(application.applicationContext, this, launcherIp!!)
+      injectDebugServerHost(application.applicationContext, this, launcherIp!!, jsMainModuleName)
     }
   }
 
@@ -32,24 +32,6 @@ class DevLauncherClientHost(
   )
 
   override fun getJSMainModuleName() = "index"
-  
-  override fun getJSBundleFile(): String? {
-    if (useDeveloperSupport) {
-      return null
-    }
-    // React Native needs an actual file path, while the embedded bundle is a 'raw resource' which
-    // doesn't have a true file path. So we write it out to a temporary file then return a path
-    // to that file.
-    val bundle = File(application.cacheDir.absolutePath + "/expo_dev_launcher_android.bundle")
-    return try {
-      // TODO(nikki): We could cache this? Biasing toward always using latest for now...
-      val output = FileOutputStream(bundle)
-      val input = application.resources.openRawResource(R.raw.expo_dev_launcher_android)
-      IOUtils.copy(input, output)
-      output.close()
-      bundle.absolutePath
-    } catch (e: IOException) {
-      null
-    }
-  }
+
+  override fun getBundleAssetName() = "expo_dev_launcher_android.bundle"
 }

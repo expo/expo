@@ -66,8 +66,6 @@ Apple will ask you a series of questions:
 - Select **Yes, we collect data from this app**. Click **Next**.
 - Select **Device ID**
   - Managed standalone apps include the Facebook, Facebook Ads, and Google AdMob SDKs, which still access the IDFA.
-- If you use `expo-notifications`, select **Device ID**
-  - Apps that send push notifications collect the device's push notification token. `expo-notifications` also generates a random ID to keep the Expo push notification token consistent even when the Apple push notification token changes.
 - If you use `expo-facebook`, select **Other Usage Data**
 - If you use `expo-updates`, select **Crash Data**
   - Errors that occur when launching an update are collected when a new update is requested.

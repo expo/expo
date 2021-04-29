@@ -21,7 +21,7 @@ buildscript {
   }
   dependencies {
     classpath "com.android.tools.build:gradle:${gradlePluginVersion}"
-    classpath 'com.google.gms:google-services:3.2.1'
+    classpath 'com.google.gms:google-services:4.3.5'
     classpath "de.undercouch:gradle-download-task:$gradleDownloadTaskVersion"
 
     // https://github.com/awslabs/aws-device-farm-gradle-plugin/releases
@@ -106,12 +106,18 @@ allprojects {
 subprojects {
   plugins.apply("com.diffplug.spotless")
   spotless {
+    format 'gradle', {
+      target '*.gradle'
+      trimTrailingWhitespace()
+      indentWithSpaces()
+      endWithNewline()
+    }
     kotlin {
       target '**/*.kt'
       ktlint().userData([
-        "disabled_rules": "no-wildcard-imports,import-ordering",
-        "indent_size": "2",
-        "continuation_indent_size": "4"
+          "disabled_rules"          : "no-wildcard-imports,import-ordering",
+          "indent_size"             : "2",
+          "continuation_indent_size": "4"
       ])
       trimTrailingWhitespace()
       indentWithSpaces()

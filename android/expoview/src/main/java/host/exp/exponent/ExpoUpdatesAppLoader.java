@@ -26,14 +26,14 @@ import expo.modules.updates.db.DatabaseHolder;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.Launcher;
 import expo.modules.updates.launcher.NoDatabaseLauncher;
-import expo.modules.updates.launcher.SelectionPolicy;
-import expo.modules.updates.launcher.SelectionPolicyFilterAware;
+import expo.modules.updates.selectionpolicy.SelectionPolicy;
 import expo.modules.updates.loader.EmbeddedLoader;
 import expo.modules.updates.loader.FileDownloader;
 import expo.modules.updates.loader.LoaderTask;
 import expo.modules.updates.manifest.Manifest;
 import expo.modules.updates.manifest.ManifestFactory;
 import expo.modules.updates.manifest.raw.RawManifest;
+import expo.modules.updates.selectionpolicy.SelectionPolicyFactory;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.exceptions.ManifestException;
 import host.exp.exponent.kernel.ExpoViewKernel;
@@ -199,7 +199,10 @@ public class ExpoUpdatesAppLoader {
 
     List<String> sdkVersionsList = new ArrayList<>(Constants.SDK_VERSIONS_LIST);
     sdkVersionsList.add(RNObject.UNVERSIONED);
-    SelectionPolicy selectionPolicy = new SelectionPolicyFilterAware(sdkVersionsList);
+    for (String sdkVersion : Constants.SDK_VERSIONS_LIST) {
+      sdkVersionsList.add("exposdk:" + sdkVersion);
+    }
+    SelectionPolicy selectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(sdkVersionsList);
 
     File directory;
     try {

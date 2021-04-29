@@ -60,13 +60,13 @@ Some plugins can be customized by passing an array, where the second argument is
 }
 ```
 
-If you run `expo eject`, the `mods` will be compiled, and the native files be changed! The changes won't take effect until you rebuild the native project, eg: with Xcode. If you're using config plugins in a managed app, they will be applied during the prebuild phase on `eas build`. 
+If you run `expo eject`, the `mods` will be compiled, and the native files be changed! The changes won't take effect until you rebuild the native project, eg: with Xcode. If you're using config plugins in a managed app, they will be applied during the prebuild phase on `eas build`.
 
 For instance, if you add a plugin that adds permission messages to your app, the app will need to be rebuilt.
 
 And that's it! Now you're using Config plugins. No more having to interact with the native projects!
 
-> 💡 Check out all the different ways you can import `plugins`: [plugin module resolution](#Plugin-module-resolution)
+> 💡 Check out all the different ways you can import `plugins`: [plugin module resolution](#plugin-module-resolution)
 
 ## What are plugins
 
@@ -607,6 +607,29 @@ Notice that `expo-location` uses `version: '11.0.0'`, and `react-native-maps` us
 
 For the most _stable_ experience, you should try to have no `UNVERSIONED` plugins in your project. This is because the `UNVERSIONED` plugin may not support the native code in your project.
 For instance, say you have an `UNVERSIONED` Facebook plugin in your project, if the Facebook native code or plugin has a breaking change, that will break the way your project ejects and cause it to error on build.
+
+## expo install
+
+Node modules with config plugins can be added to the project's Expo config automatically by using the `expo install` command. [Related PR](https://github.com/expo/expo-cli/pull/3437).
+
+This makes setup a bit easier and helps prevent users from forgetting to add a plugin.
+
+This does come with a couple caveats:
+
+1. Packages must export a plugin via `app.plugin.js`, this rule was added to prevent popular packages like `lodash` from being mistaken for a config plugin and breaking the prebuild.
+2. There is currently no mechanism for detecting if a config plugin has mandatory props. Because of this, `expo install` will only add the plugin, and not attempt to add any extra props. For example, `expo-camera` has optional extra props, so `plugins: ['expo-camera']` is valid, but if it had mandatory props then `expo-camera` would throw an error.
+3. Plugins can only be automatically added when the user's project uses a static Expo config (`app.json` and `app.config.json`). If the user runs `expo install expo-camera` in a project with an `app.config.js`, they'll see a warning like:
+
+```
+Cannot automatically write to dynamic config at: app.config.js
+Please add the following to your Expo config
+
+{
+  "plugins": [
+    "expo-camera"
+  ]
+}
+```
 
 [config-docs]: https://docs.expo.io/versions/latest/config/app/
 [cli-eject]: https://docs.expo.io/workflow/expo-cli/#eject

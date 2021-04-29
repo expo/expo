@@ -8,7 +8,7 @@ install! 'cocoapods',
 platform :ios, '11.0'
 inhibit_all_warnings!
 
-target 'Exponent' do
+abstract_target 'Expo Go' do
   # Expo Client dependencies
   pod 'Amplitude'
   pod 'CocoaLumberjack', '~> 3.5.3'
@@ -43,10 +43,6 @@ target 'Exponent' do
   # Unversioned React Native
   use_react_native! path: '../react-native-lab/react-native'
 
-  # Evaluate all files matching `versioned-react-native/ABI*/dependencies.rb` glob pattern
-  # and install ReactABIXX_0_0 pods with all versioned unimodules.
-  use_versioned_abis!
-
   # Build React Native with RCT_DEV enabled and RCT_ENABLE_INSPECTOR and
   # RCT_ENABLE_PACKAGER_CONNECTION disabled
   post_install do |installer|
@@ -56,6 +52,7 @@ target 'Exponent' do
 
     installer.target_installation_results.pod_target_installation_results
       .each do |pod_name, target_installation_result|
+
       # Run postinstalls actions for versioned dependencies.
       # These actions are specified in `versioned-react-native/ABI*/postinstalls.rb` files.
       run_versioned_postinstalls!(pod_name, target_installation_result)
@@ -81,6 +78,17 @@ target 'Exponent' do
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ENABLE_PACKAGER_CONNECTION=0'
       end
     end
+  end
+
+  # Target for development, contains only unversioned code
+  target 'Expo Go (unversioned)' do
+  end
+
+  # Release target additionally includes versioned SDKs
+  target 'Expo Go (versioned)' do
+    # Evaluate all files matching `versioned-react-native/ABI*/dependencies.rb` glob pattern
+    # and install ReactABIXX_0_0 pods with all versioned unimodules.
+    use_versioned_abis!
   end
 
   # Test targets

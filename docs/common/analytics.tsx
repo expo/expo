@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import React from 'react';
 
 // Initialize the command queue in case analytics.js hasn't loaded yet
@@ -17,4 +18,8 @@ export function getInitGoogleScriptTag({ id }: { id: string }) {
 
 export function getGoogleScriptTag() {
   return <script defer src="https://www.google-analytics.com/analytics.js" />;
+}
+
+export function LoadAnalytics() {
+  return <Head>{getGoogleScriptTag()}</Head>;
 }

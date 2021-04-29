@@ -15,6 +15,7 @@ import java.util.Map;
 import expo.modules.notifications.notifications.categories.ExpoNotificationCategoriesModule;
 import expo.modules.notifications.notifications.handling.NotificationsHandler;
 import expo.modules.notifications.notifications.scheduling.NotificationScheduler;
+import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.modules.universal.ConstantsBinding;
@@ -31,7 +32,7 @@ public class DetachedModuleRegistryAdapter extends ExpoModuleRegistryAdapter {
   }
 
   @Override
-  public List<NativeModule> createNativeModules(final ScopedContext scopedContext, ExperienceId experienceId, Map<String, Object> experienceProperties, JSONObject manifest, List<NativeModule> otherModules) {
+  public List<NativeModule> createNativeModules(final ScopedContext scopedContext, ExperienceId experienceId, Map<String, Object> experienceProperties, RawManifest manifest, List<NativeModule> otherModules) {
     ReactApplicationContext reactApplicationContext = (ReactApplicationContext) scopedContext.getContext();
 
     // We only use React application context, because we're detached -- no scopes

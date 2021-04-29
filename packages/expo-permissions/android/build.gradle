@@ -16,7 +16,7 @@ buildscript {
   }
 
   dependencies {
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet("kotlinVersion", "1.4.21")}")
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.4.21')}")
   }
 }
 
@@ -75,7 +75,7 @@ dependencies {
   unimodule 'unimodules-core'
   unimodule 'unimodules-permissions-interface'
 
-  api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet("kotlinVersion", "1.4.21")}"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
   api "androidx.appcompat:appcompat:1.2.0"
 
   compileOnly('com.facebook.react:react-native:+') {

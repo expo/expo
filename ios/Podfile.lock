@@ -226,7 +226,6 @@ PODS:
     - Branch
     - EXBranch
     - EXGL_CPP
-    - EXGL_CPP_LEGACY
     - FBAudienceNetwork
     - Folly
     - Google-Maps-iOS-Utils
@@ -763,7 +762,6 @@ PODS:
     - Branch
     - EXBranch
     - EXGL_CPP
-    - EXGL_CPP_LEGACY
     - FBAudienceNetwork
     - Folly
     - Google-Maps-iOS-Utils
@@ -1328,7 +1326,6 @@ PODS:
     - Branch
     - EXBranch
     - EXGL_CPP
-    - EXGL_CPP_LEGACY
     - FBAudienceNetwork
     - FBSDKCoreKit
     - Folly
@@ -1821,9 +1818,6 @@ PODS:
     - UMFileSystemInterface
   - EXGL_CPP (10.3.0):
     - React-jsi
-  - EXGL_CPP_LEGACY (8.4.0):
-    - EXGL_CPP_LEGACY/EXGLContext (= 8.4.0)
-  - EXGL_CPP_LEGACY/EXGLContext (8.4.0)
   - EXGoogleSignIn (9.1.0):
     - GoogleSignIn (~> 5.0.2)
     - UMCore
@@ -1870,6 +1864,15 @@ PODS:
   - EXPermissions (12.0.1):
     - UMCore
     - UMPermissionsInterface
+  - ExpoModulesCore (0.0.1):
+    - ExpoModulesCore/Core (= 0.0.1)
+    - ExpoModulesCore/Interfaces (= 0.0.1)
+    - UMCore
+  - ExpoModulesCore/Core (0.0.1):
+    - UMCore
+  - ExpoModulesCore/Interfaces (0.0.1):
+    - ExpoModulesCore/Core
+    - UMCore
   - EXPrint (10.1.0):
     - UMCore
     - UMFileSystemInterface
@@ -2724,7 +2727,6 @@ DEPENDENCIES:
   - EXFont (from `../packages/expo-font/ios`)
   - EXGL (from `../packages/expo-gl/ios`)
   - EXGL_CPP (from `../packages/expo-gl-cpp/cpp`)
-  - EXGL_CPP_LEGACY (from `../packages/expo-gl-cpp-legacy/cpp`)
   - EXGoogleSignIn (from `../packages/expo-google-sign-in/ios`)
   - EXHaptics (from `../packages/expo-haptics/ios`)
   - EXImageLoader (from `../packages/expo-image-loader/ios`)
@@ -2740,6 +2742,7 @@ DEPENDENCIES:
   - EXNetwork (from `../packages/expo-network/ios`)
   - EXNotifications (from `../packages/expo-notifications/ios`)
   - EXPermissions (from `../packages/expo-permissions/ios`)
+  - ExpoModulesCore (from `../packages/expo-modules-core/ios`)
   - EXPrint (from `../packages/expo-print/ios`)
   - EXRandom (from `../packages/expo-random/ios`)
   - EXScreenCapture (from `../packages/expo-screen-capture/ios`)
@@ -3508,8 +3511,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-gl/ios"
   EXGL_CPP:
     :path: "../packages/expo-gl-cpp/cpp"
-  EXGL_CPP_LEGACY:
-    :path: "../packages/expo-gl-cpp-legacy/cpp"
   EXGoogleSignIn:
     :path: "../packages/expo-google-sign-in/ios"
   EXHaptics:
@@ -3540,6 +3541,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-notifications/ios"
   EXPermissions:
     :path: "../packages/expo-permissions/ios"
+  ExpoModulesCore:
+    :path: "../packages/expo-modules-core/ios"
   EXPrint:
     :path: "../packages/expo-print/ios"
   EXRandom:
@@ -3704,7 +3707,7 @@ SPEC CHECKSUMS:
   ABI39_0_0EXNetwork: 2ce996e75a4d3feb933aa02bd3625fc7edc7161f
   ABI39_0_0EXNotifications: 216c39dc1d0b8f7bacb02e30b9cc18ff575bd9a8
   ABI39_0_0EXPermissions: 6291a86cd79b165eff12d0356a650e2fde6979c5
-  ABI39_0_0ExpoKit: f6ce007512806eaee6a2ceb2e6257d96f431d826
+  ABI39_0_0ExpoKit: ed0af740057292e648e06bbca617fa333d4fd495
   ABI39_0_0EXPrint: 13457af22f53cca03c76a7b37d6847ec25e8989e
   ABI39_0_0EXRandom: ba8521fce6c49e2dde2f5bb83e4b7740de0621d3
   ABI39_0_0EXScreenCapture: 97709523d41e93ae1a684d281837b43774f3e401
@@ -3803,7 +3806,7 @@ SPEC CHECKSUMS:
   ABI40_0_0EXNetwork: 3fde803c18582fb40eb74a6b7457bd2d873d71de
   ABI40_0_0EXNotifications: a768e9f838636410c2efb4f45294a25b1f67bdb5
   ABI40_0_0EXPermissions: 1f03cb4f28663d9889e7a7f4649a44b431d35bba
-  ABI40_0_0ExpoKit: 06f32b1707c1fc8072129fdda23a212f6ac6a72b
+  ABI40_0_0ExpoKit: 3fdeb7f7cacb34a6b2f2adb17c761bf91159dc28
   ABI40_0_0EXPrint: 28c0b0b1c7a5fcf7bb162402effd18bfc2609580
   ABI40_0_0EXRandom: 0a65d0035142a3f4546ec9a370f33689fea55960
   ABI40_0_0EXScreenCapture: 64f2e26f8f63d550eee5bed11a88e541a3874036
@@ -3901,7 +3904,7 @@ SPEC CHECKSUMS:
   ABI41_0_0EXNetwork: 7063020fbd68cbe249290a3ed20929874f59e3d6
   ABI41_0_0EXNotifications: c02652d5aa32c1de9f3aeff610e36a7825c46c8a
   ABI41_0_0EXPermissions: 7340fb1182368cf96296476dc7708c8f1398c656
-  ABI41_0_0ExpoKit: 64db09ac513a277ede6102ac8a878361b85ba57b
+  ABI41_0_0ExpoKit: 10ab6e912d4234dadb6d6645260dd2fa4bebe913
   ABI41_0_0EXPrint: 7401d385395553865479f30cfbaf371340d776f4
   ABI41_0_0EXRandom: 457ad8c71b497fc4fda20d70152fbce8f7dc0919
   ABI41_0_0EXScreenCapture: 96a7760db8e34a62ad5bdeaf65e265defdb7dc79
@@ -3995,7 +3998,6 @@ SPEC CHECKSUMS:
   EXFont: d6fb79f9863120f0d0b26b0c2d1453bc9511e9df
   EXGL: d5f3e175700919b0fe4db5d96005a8f907424b45
   EXGL_CPP: 09fc9d4438705f186e17086d980740d2518fe586
-  EXGL_CPP_LEGACY: 0d65426183da75b3c263f88fc92ac27515926422
   EXGoogleSignIn: 9737eb53d327c3d5e668ea00bed490695d880893
   EXHaptics: 2de40c5f50a9e78da92c209db06db5134d8cac0b
   EXImageLoader: da941c9399e01ec28f2d5b270bdd21f2c8ca596c
@@ -4011,6 +4013,7 @@ SPEC CHECKSUMS:
   EXNetwork: 36144f5e572e6b6b218094c66a57c99e07ffbc0d
   EXNotifications: baccd843a16a2cb2db2183e2d801652f3cb43202
   EXPermissions: 8f8c1c05580c4e02d4ee2c8dd74bfe173ff6a723
+  ExpoModulesCore: efdfa6650a7b554180c1559b7be9c3510ce18e51
   EXPrint: f6d272e7729d188a05686817ce8d84683da36073
   EXRandom: cbd66cd45434a494f5ef98650eec1f8d78b90270
   EXScreenCapture: 2903dace06f2d06cc161017637cc4cbfcaa98986
@@ -4026,7 +4029,7 @@ SPEC CHECKSUMS:
   EXStoreReview: b1f68ed0369b0f1c443214ac8d6881ef3b64de9a
   EXStructuredHeaders: 7e7eec19a326bc58cca2fb3edbac0afaecb89c16
   EXTaskManager: b873efc04d604ac3884ce28f7264427461841bed
-  EXUpdates: 1756cc4bacd9e1dc89691200716667d7d6f4ccf0
+  EXUpdates: 7c181d03d802ef71bd06c6229ac87de023bb1f2f
   EXVideoThumbnails: cd257fc6e07884a704a5674d362a6410933acb68
   EXWebBrowser: 0b466c50e5ff61c9758095d49d5081e3229d77ac
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6
@@ -4100,6 +4103,6 @@ SPEC CHECKSUMS:
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 22160a0337465f19e4b3472383ce1199d26c5763
+PODFILE CHECKSUM: 39673759f0efc5568732de6f461837ac44323d5f
 
 COCOAPODS: 1.10.1

@@ -1,0 +1,4 @@
+{
+  "name": "expo-modules-core",
+  "platforms": ["ios", "android"]
+}

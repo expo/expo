@@ -5,7 +5,7 @@
 #import <EXUpdates/EXUpdatesAppLauncherNoDatabase.h>
 #import <EXUpdates/EXUpdatesAppLauncherWithDatabase.h>
 #import <EXUpdates/EXUpdatesReaper.h>
-#import <EXUpdates/EXUpdatesSelectionPolicyFilterAware.h>
+#import <EXUpdates/EXUpdatesSelectionPolicyFactory.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -23,7 +23,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 @property (nonatomic, readwrite, strong) EXUpdatesConfig *config;
 @property (nonatomic, readwrite, strong) id<EXUpdatesAppLauncher> launcher;
 @property (nonatomic, readwrite, strong) EXUpdatesDatabase *database;
-@property (nonatomic, readwrite, strong) id<EXUpdatesSelectionPolicy> selectionPolicy;
+@property (nonatomic, readwrite, strong) EXUpdatesSelectionPolicy *selectionPolicy;
 @property (nonatomic, readwrite, strong) dispatch_queue_t assetFilesQueue;
 
 @property (nonatomic, readwrite, strong) NSURL *updatesDirectory;
@@ -56,7 +56,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
   if (self = [super init]) {
     _config = [self _loadConfigFromExpoPlist];
     _database = [[EXUpdatesDatabase alloc] init];
-    _selectionPolicy = [[EXUpdatesSelectionPolicyFilterAware alloc] initWithRuntimeVersion:[EXUpdatesUtils getRuntimeVersionWithConfig:_config]];
+    _selectionPolicy = [self _defaultSelectionPolicy];
     _assetFilesQueue = dispatch_queue_create("expo.controller.AssetFilesQueue", DISPATCH_QUEUE_SERIAL);
     _controllerQueue = dispatch_queue_create("expo.controller.ControllerQueue", DISPATCH_QUEUE_SERIAL);
     _isStarted = NO;
@@ -72,7 +72,17 @@ static NSString * const EXUpdatesErrorEventName = @"error";
                                  userInfo:@{}];
   }
   [_config loadConfigFromDictionary:configuration];
-  _selectionPolicy = [[EXUpdatesSelectionPolicyFilterAware alloc] initWithRuntimeVersion:[EXUpdatesUtils getRuntimeVersionWithConfig:_config]];
+  [self resetSelectionPolicyToDefault];
+}
+
+- (void)setNextSelectionPolicy:(EXUpdatesSelectionPolicy *)nextSelectionPolicy
+{
+  _selectionPolicy = nextSelectionPolicy;
+}
+
+- (void)resetSelectionPolicyToDefault
+{
+  _selectionPolicy = [self _defaultSelectionPolicy];
 }
 
 - (void)start
@@ -235,7 +245,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     [EXUpdatesUtils sendEventToBridge:_bridge withType:EXUpdatesErrorEventName body:@{@"message": error.localizedDescription}];
   } else if (status == EXUpdatesBackgroundUpdateStatusUpdateAvailable) {
     NSAssert(update != nil, @"Background update with error status must have a nonnull update object");
-    [EXUpdatesUtils sendEventToBridge:_bridge withType:EXUpdatesUpdateAvailableEventName body:@{@"manifest": update.rawManifest}];
+    [EXUpdatesUtils sendEventToBridge:_bridge withType:EXUpdatesUpdateAvailableEventName body:@{@"manifest": update.rawManifest.rawManifestJSON}];
   } else if (status == EXUpdatesBackgroundUpdateStatusNoUpdateAvailable) {
     [EXUpdatesUtils sendEventToBridge:_bridge withType:EXUpdatesNoUpdateAvailableEventName body:@{}];
   }
@@ -253,6 +263,11 @@ static NSString * const EXUpdatesErrorEventName = @"error";
   }
 
   return [EXUpdatesConfig configWithDictionary:[NSDictionary dictionaryWithContentsOfFile:configPath]];
+}
+
+- (EXUpdatesSelectionPolicy *)_defaultSelectionPolicy
+{
+  return [EXUpdatesSelectionPolicyFactory filterAwarePolicyWithRuntimeVersion:[EXUpdatesUtils getRuntimeVersionWithConfig:_config]];
 }
 
 - (void)_runReaper

@@ -9,8 +9,6 @@
 #import <React/RCTAppearance.h>
 #import <React/RCTConstants.h>
 
-#import "EXDevLauncherBundle.h"
-#import "EXDevLauncherBundleSource.h"
 #import "EXDevLauncherRCTBridge.h"
 #import "EXDevLauncherManifestParser.h"
 #import "EXDevLauncherLoadingView.h"
@@ -69,32 +67,16 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   return nil;
 }
 
-#ifdef DEV_LAUNCHER_URL
-
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
+#ifdef DEV_LAUNCHER_URL
   // LAN url for developing launcher JS
   return [NSURL URLWithString:@(DEV_LAUNCHER_URL)];
-}
-
 #else
-
-- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
-{
-  return [NSURL URLWithString:fakeLauncherBundleUrl];
-}
-
-- (void)loadSourceForBridge:(RCTBridge *)bridge withBlock:(RCTSourceLoadBlock)loadCallback
-{
-  NSData *data = [NSData dataWithBytesNoCopy:EXDevLauncherBundle
-                                      length:EXDevLauncherBundleLength
-                                freeWhenDone:NO];
-  loadCallback(nil, EXDevLauncherBundleSourceCreate([NSURL URLWithString:fakeLauncherBundleUrl],
-                                                          data,
-                                                          EXDevLauncherBundleLength));
-}
-
+  NSString *bundleURL = [[NSBundle mainBundle] URLForResource:@"EXDevLauncher" withExtension:@"bundle"];
+  return [[NSBundle bundleWithURL:bundleURL] URLForResource:@"main" withExtension:@"jsbundle"];
 #endif
+}
 
 - (NSDictionary *)recentlyOpenedApps
 {

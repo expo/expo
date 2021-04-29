@@ -4,7 +4,20 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
+interface InternalJSONMutator {
+  @Throws(JSONException::class)
+  fun updateJSON(json: JSONObject)
+}
+
 abstract class RawManifest(protected val json: JSONObject) {
+  @Deprecated(message = "Strive for manifests to be immutable")
+  @Throws(JSONException::class)
+  fun mutateInternalJSONInPlace(internalJSONMutator: InternalJSONMutator) {
+    json.apply {
+      internalJSONMutator.updateJSON(this)
+    }
+  }
+
   @Deprecated(message = "Prefer to use specific field getters")
   fun getRawJson(): JSONObject = json
 
@@ -131,4 +144,39 @@ abstract class RawManifest(protected val json: JSONObject) {
   fun getNotificationPreferences(): JSONObject? {
     return json.optJSONObject("notification")
   }
+
+  fun getAndroidSplashInfo(): JSONObject? {
+    return json.optJSONObject("android")?.optJSONObject("splash")
+  }
+
+  fun getRootSplashInfo(): JSONObject? {
+    return json.optJSONObject("splash")
+  }
+
+  fun getAndroidGoogleServicesFile(): String? {
+    val android = json.optJSONObject("android")
+    return if (android != null && android.has("googleServicesFile")) {
+      android.optString("googleServicesFile")
+    } else {
+      null
+    }
+  }
+
+  fun getAndroidPackageName(): String? {
+    val android = json.optJSONObject("android")
+    return if (android != null && android.has("packageName")) {
+      android.optString("packageName")
+    } else {
+      null
+    }
+  }
+
+  @Throws(JSONException::class)
+  fun getFacebookAppId(): String = json.getString("facebookAppId")
+
+  @Throws(JSONException::class)
+  fun getFacebookApplicationName(): String = json.getString("facebookDisplayName")
+
+  @Throws(JSONException::class)
+  fun getFacebookAutoInitEnabled(): Boolean = json.getBoolean("facebookAutoInitEnabled")
 }
