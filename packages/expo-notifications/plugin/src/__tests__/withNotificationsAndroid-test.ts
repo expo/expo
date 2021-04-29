@@ -8,6 +8,7 @@ import {
   NOTIFICATION_ICON_COLOR,
   setNotificationIconAsync,
   setNotificationIconColorAsync,
+  setNotificationSoundsAsync,
 } from '../withNotificationsAndroid';
 
 function getDirFromFS(fsJSON: Record<string, string | null>, rootDir: string) {
@@ -43,13 +44,19 @@ const LIST_OF_GENERATED_NOTIFICATION_FILES = [
   'android/app/src/main/res/drawable-xxxhdpi/notification_icon.png',
   'android/app/src/main/res/values/colors.xml',
   'assets/notificationIcon.png',
+  'assets/notificationSound.wav',
+  'android/app/src/main/res/raw/notificationSound.wav',
 ];
+
 const iconPath = path.resolve(__dirname, './fixtures/icon.png');
+const soundPath = path.resolve(__dirname, './fixtures/cat.wav');
+
 const projectRoot = '/app';
 
 describe('Android notifications configuration', () => {
   beforeAll(async () => {
     const icon = fsReal.readFileSync(iconPath);
+    const sound = fsReal.readFileSync(soundPath);
     vol.fromJSON(
       { './android/app/src/main/res/values/colors.xml': SAMPLE_COLORS_XML },
       projectRoot
@@ -57,9 +64,11 @@ describe('Android notifications configuration', () => {
     setUpDrawableDirectories();
     vol.mkdirpSync('/app/assets');
     vol.writeFileSync('/app/assets/notificationIcon.png', icon);
+    vol.writeFileSync('/app/assets/notificationSound.wav', sound);
 
     await setNotificationIconAsync('/app/assets/notificationIcon.png', projectRoot);
     await setNotificationIconColorAsync('#00ff00', projectRoot);
+    await setNotificationSoundsAsync(['/app/assets/notificationSound.wav'], projectRoot);
   });
 
   afterAll(() => {
@@ -87,7 +96,7 @@ describe('Android notifications configuration', () => {
       `<color name="${NOTIFICATION_ICON_COLOR}">#00ff00</color>`
     );
   });
-  it('writes all the image files expected', async () => {
+  it('writes all the asset files (sounds and images) as expected', async () => {
     const after = getDirFromFS(vol.toJSON(), projectRoot);
     Object.keys(after).forEach(path => {
       expect(LIST_OF_GENERATED_NOTIFICATION_FILES).toContain(path);
@@ -102,3 +111,7 @@ function setUpDrawableDirectories() {
   vol.mkdirpSync('/app/android/app/src/main/res/drawable-xxhdpi');
   vol.mkdirpSync('/app/android/app/src/main/res/drawable-xxxhdpi');
 }
+
+// test sounds
+
+// test that fallsback to app json if no args provided
