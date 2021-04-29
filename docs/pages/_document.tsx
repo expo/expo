@@ -22,11 +22,7 @@ export default class MyDocument extends Document<{ css?: string }> {
     const initialProps = await Document.getInitialProps(ctx);
     return {
       ...initialProps,
-      styles: (
-        <>
-          {initialProps.styles}
-        </>
-      ),
+      styles: <>{initialProps.styles}</>,
     };
   }
 
