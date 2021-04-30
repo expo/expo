@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSError *)errorFromSqlite:(struct sqlite3 *)db;
 
-+ (NSDate *)dateFromNumber:(NSNumber *)number;
++ (NSDate *)dateFromUnixTimeMilliseconds:(NSNumber *)number;
 
 @end
 

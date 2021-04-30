@@ -529,14 +529,14 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
   }
   EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithId:row[@"id"]
                                                  scopeKey:row[@"scope_key"]
-                                               commitTime:[EXUpdatesDatabaseUtils dateFromNumber:(NSNumber *)row[@"commit_time"]]
+                                               commitTime:[EXUpdatesDatabaseUtils dateFromUnixTimeMilliseconds:(NSNumber *)row[@"commit_time"]]
                                            runtimeVersion:row[@"runtime_version"]
                                                  metadata:metadata
                                                    status:(EXUpdatesUpdateStatus)[(NSNumber *)row[@"status"] integerValue]
                                                      keep:[(NSNumber *)row[@"keep"] boolValue]
                                                    config:config
                                                  database:self];
-  update.lastAccessed = [EXUpdatesDatabaseUtils dateFromNumber:(NSNumber *)row[@"last_accessed"]];
+  update.lastAccessed = [EXUpdatesDatabaseUtils dateFromUnixTimeMilliseconds:(NSNumber *)row[@"last_accessed"]];
   return update;
 }
 
@@ -564,7 +564,7 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
   EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithKey:key type:row[@"type"]];
   asset.assetId = [(NSNumber *)row[@"id"] unsignedIntegerValue];
   asset.url = url;
-  asset.downloadTime = [EXUpdatesDatabaseUtils dateFromNumber:(NSNumber *)row[@"download_time"]];
+  asset.downloadTime = [EXUpdatesDatabaseUtils dateFromUnixTimeMilliseconds:(NSNumber *)row[@"download_time"]];
   asset.filename = row[@"relative_path"];
   asset.contentHash = row[@"hash"];
   asset.metadata = metadata;

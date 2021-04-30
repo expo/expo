@@ -153,7 +153,7 @@ static NSString * const EXUpdatesDatabaseUtilsErrorDomain = @"EXUpdatesDatabase"
                          userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Error code %i: %@ (extended error code %i)", code, message, extendedCode]}];
 }
 
-+ (NSDate *)dateFromNumber:(NSNumber *)number
++ (NSDate *)dateFromUnixTimeMilliseconds:(NSNumber *)number
 {
   return [NSDate dateWithTimeIntervalSince1970:number.doubleValue / 1000];
 }
