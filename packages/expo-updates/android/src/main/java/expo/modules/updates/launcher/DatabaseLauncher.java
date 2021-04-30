@@ -156,7 +156,7 @@ public class DatabaseLauncher implements Launcher {
     return mSelectionPolicy.selectUpdateToLaunch(filteredLaunchableUpdates, manifestFilters);
   }
 
-  private File ensureAssetExists(AssetEntity asset, UpdatesDatabase database, Context context) {
+  /* package */ File ensureAssetExists(AssetEntity asset, UpdatesDatabase database, Context context) {
     File assetFile = new File(mUpdatesDirectory, asset.relativePath);
     boolean assetFileExists = assetFile.exists();
     if (!assetFileExists) {

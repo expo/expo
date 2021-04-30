@@ -1,6 +1,6 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesAppLauncherWithDatabase.h>
+#import <EXUpdates/EXUpdatesAppLauncherWithDatabase+Tests.h>
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
