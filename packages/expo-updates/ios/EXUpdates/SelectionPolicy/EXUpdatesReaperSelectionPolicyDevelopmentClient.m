@@ -22,6 +22,11 @@ static NSUInteger const EXUpdatesReaperSelectionPolicyDefaultMaxUpdates = 10;
 - (instancetype)initWithMaxUpdatesToKeep:(NSUInteger)maxUpdatesToKeep
 {
   if (self = [super init]) {
+    if (maxUpdatesToKeep <= 0) {
+      @throw [NSException exceptionWithName:NSInvalidArgumentException
+                                     reason:@"Cannot initiailize EXUpdatesReaperSelectionPolicy with maxUpdatesToKeep <= 0"
+                                   userInfo:nil];
+    }
     _maxUpdatesToKeep = maxUpdatesToKeep;
   }
   return self;

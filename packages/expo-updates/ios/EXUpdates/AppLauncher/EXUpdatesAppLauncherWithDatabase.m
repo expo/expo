@@ -109,19 +109,23 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
         }
       } else {
         self->_launchedUpdate = launchableUpdate;
-        [self _markUpdateAccessed];
-        [self _ensureAllAssetsExist];
+        [self _finishLaunch];
       }
     } completionQueue:_launcherQueue];
   } else {
-    [self _markUpdateAccessed];
-    [self _ensureAllAssetsExist];
+    [self _finishLaunch];
   }
 }
 
 - (BOOL)isUsingEmbeddedAssets
 {
   return _assetFilesMap == nil;
+}
+
+- (void)_finishLaunch
+{
+  [self _markUpdateAccessed];
+  [self _ensureAllAssetsExist];
 }
 
 - (void)_markUpdateAccessed

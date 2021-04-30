@@ -24,6 +24,9 @@ public class ReaperSelectionPolicyDevelopmentClient implements ReaperSelectionPo
   }
 
   public ReaperSelectionPolicyDevelopmentClient(int maxUpdatesToKeep) {
+    if (maxUpdatesToKeep <= 0) {
+      throw new AssertionError("Cannot initialize ReaperSelectionPolicyDevelopmentClient with maxUpdatesToKeep <= 0");
+    }
     mMaxUpdatesToKeep = maxUpdatesToKeep;
   }
 
