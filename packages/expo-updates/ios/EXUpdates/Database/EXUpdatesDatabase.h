@@ -37,8 +37,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesDatabaseHashType) {
  * This method ignores the scopeKey field in the config object and returns ALL updates in the database.
  * The config object is passed along to each update object, even if its scopeKey doesn't match.
  *
- * This method should only be used to introspect the state of the database, and the update objects
- * returned should not be used for any other purpose.
+ * Updates returned from this method should not be used to launch.
  */
 - (nullable NSArray<EXUpdatesUpdate *> *)allUpdatesWithConfig:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error;
 - (nullable NSArray<EXUpdatesUpdate *> *)allUpdatesWithStatus:(EXUpdatesUpdateStatus)status config:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error;
