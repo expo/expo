@@ -49,6 +49,10 @@ android {
       setRoot 'src/debug'
     }
   }
+
+  buildFeatures {
+    viewBinding true
+  }
 }
 
 repositories {
