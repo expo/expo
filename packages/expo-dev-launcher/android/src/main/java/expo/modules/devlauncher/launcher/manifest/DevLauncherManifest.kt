@@ -72,8 +72,8 @@ data class DevLauncherManifest(
     private fun applyOverriddenProperties(baseManifest: DevLauncherManifest, overriddenProperties: DevLauncherOverriddenProperties) {
       for (field in DevLauncherOverriddenProperties::class.declaredMemberProperties) {
         try {
-          // It shouldn't be need, but when we try to run this code on JVM (unit test)
-          // we gets `IllegalAccessException`.
+          // It shouldn't be needed, but when we try to run this code on JVM (unit test)
+          // we get `IllegalAccessException`.
           field.isAccessible = true
           val overriddenValue = field.get(overriddenProperties) ?: continue
           val baseField = baseManifest::class.java.getDeclaredField(field.name)

@@ -1,11 +1,11 @@
 package expo.modules.devmenu
 
 import com.google.common.truth.Truth
-import devmenu.vendored.VendoredClass
+import devmenu.expo.modules.vendored.VendoredClass
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import unvendored.UnVendoredClass
+import expo.modules.unvendored.UnvendoredClass
 
 @RunWith(RobolectricTestRunner::class)
 internal class DevMenuUtilsTest {
@@ -56,24 +56,22 @@ internal class DevMenuUtilsTest {
   @Test
   fun `checks if getVendoredClass finds vendored class`() {
     val vendoredClass = getVendoredClass<VendoredClass>(
-      "vendored.VendoredClass",
+      "expo.modules.vendored.VendoredClass",
       emptyArray(),
       emptyArray()
     )
 
-
-    Truth.assertThat(vendoredClass.javaClass.name).isEqualTo("devmenu.vendored.VendoredClass")
+    Truth.assertThat(vendoredClass.javaClass.name).isEqualTo("devmenu.expo.modules.vendored.VendoredClass")
   }
 
   @Test
   fun `checks if getVendoredClass fallbacks to not vendored class`() {
-    val unVendoredClass = getVendoredClass<UnVendoredClass>(
-      "unvendored.UnVendoredClass",
+    val unVendoredClass = getVendoredClass<UnvendoredClass>(
+      "expo.modules.unvendored.UnvendoredClass",
       emptyArray(),
       emptyArray()
     )
 
-
-    Truth.assertThat(unVendoredClass.javaClass.name).isEqualTo("unvendored.UnVendoredClass")
+    Truth.assertThat(unVendoredClass.javaClass.name).isEqualTo("expo.modules.unvendored.UnvendoredClass")
   }
 }
