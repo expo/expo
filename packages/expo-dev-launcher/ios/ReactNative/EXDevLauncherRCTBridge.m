@@ -29,8 +29,10 @@
   return [EXDevLauncherRCTCxxBridge class];
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
+// This method is still used so we need to override it even if it's deprecated
 - (void)reloadWithReason:(NSString *)reason {}
+#pragma clang diagnostic pop
 
 @end
-
-

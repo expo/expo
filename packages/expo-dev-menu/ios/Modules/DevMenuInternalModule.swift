@@ -34,7 +34,7 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
   // MARK: JavaScript API
 
   @objc
-  func constantsToExport() -> [String : Any] {
+  public func constantsToExport() -> [AnyHashable : Any] {
 #if targetEnvironment(simulator)
     let doesDeviceSupportKeyCommands = true
 #else
@@ -82,8 +82,8 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
   }
 
   @objc
-  func fetchDataSourceAsync(_ dataSourceId: String, resolve: @escaping RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    if dataSourceId == nil {
+  func fetchDataSourceAsync(_ dataSourceId: String?, resolve: @escaping RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    guard let dataSourceId = dataSourceId else {
       return reject("ERR_DEVMENU_DATA_SOURCE_FAILED", "DataSource ID not provided.", nil)
     }
     
@@ -100,8 +100,8 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
   }
   
   @objc
-  func dispatchCallableAsync(_ callableId: String, args: [String : Any]?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    if callableId == nil {
+  func dispatchCallableAsync(_ callableId: String?, args: [String : Any]?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    guard let callableId = callableId else {
       return reject("ERR_DEVMENU_ACTION_FAILED", "Callable ID not provided.", nil)
     }
     manager.dispatchCallable(withId: callableId, args: args)
