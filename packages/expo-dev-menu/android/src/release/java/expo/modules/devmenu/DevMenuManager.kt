@@ -5,11 +5,13 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.MotionEvent
 import com.facebook.react.ReactNativeHost
+import com.facebook.react.bridge.ReadableMap
 import expo.interfaces.devmenu.DevMenuDelegateInterface
-import expo.interfaces.devmenu.DevMenuExpoApiClientInterface
 import expo.interfaces.devmenu.DevMenuManagerInterface
 import expo.interfaces.devmenu.DevMenuSessionInterface
 import expo.interfaces.devmenu.DevMenuSettingsInterface
+import expo.interfaces.devmenu.expoapi.DevMenuExpoApiClientInterface
+import expo.interfaces.devmenu.items.DevMenuDataSourceItem
 
 private const val DEV_MENU_IS_NOT_AVAILABLE = "DevMenu isn't available in release builds"
 
@@ -38,7 +40,7 @@ object DevMenuManager : DevMenuManagerInterface {
 
   override fun initializeWithReactNativeHost(reactNativeHost: ReactNativeHost) = Unit
 
-  override fun dispatchAction(actionId: String) {
+  override fun dispatchCallable(actionId: String, args: ReadableMap?) {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
@@ -77,6 +79,10 @@ object DevMenuManager : DevMenuManagerInterface {
   }
 
   override fun isInitialized(): Boolean {
+    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
+  }
+
+  override suspend fun fetchDataSource(id: String): List<DevMenuDataSourceItem> {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 }
