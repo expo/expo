@@ -743,7 +743,7 @@ public class ExponentManifest {
 
     if (!hasShownKernelManifestLog) {
       hasShownKernelManifestLog = true;
-      EXL.d(TAG, log + ": " + manifest.toString());
+      EXL.d(TAG, log + ": " + manifest.getRawJson().toString());
     }
 
     return manifest;

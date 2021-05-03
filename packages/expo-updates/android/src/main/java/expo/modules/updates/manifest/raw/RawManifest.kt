@@ -21,6 +21,11 @@ abstract class RawManifest(protected val json: JSONObject) {
   @Deprecated(message = "Prefer to use specific field getters")
   fun getRawJson(): JSONObject = json
 
+  @Deprecated(message = "toString should be called on the underlying getRawJson instead")
+  override fun toString(): String {
+    throw Error("toString called on RawManifest")
+  }
+
   @Throws(JSONException::class)
   fun getID(): String = json.getString("id")
 
