@@ -24,7 +24,7 @@ First we need to setup a Firebase Account and create a new project. We will be u
 [Firebase Console](http://console.firebase.google.com/) provides you with an API key, and other identifiers for your project needed for initialization. [firebase-web-start](https://firebase.google.com/docs/database/web/start) has a detailed description of what each field means and where to find them in your console.
 
 ```javascript
-import * as firebase from 'firebase';
+import firebase from 'firebase/app'
 
 // Optionally import the services that you want to use
 //import "firebase/auth";
