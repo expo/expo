@@ -554,7 +554,7 @@ public class Kernel extends KernelInterface {
 
     if (uri != null && shouldOpenUrl(uri)) {
       if (Constants.INITIAL_URL == null) {
-        // We got an Expo Go app link (could be exp://, http://, or https://)
+        // We got an Expo Go app link (could be exp://, exps://, http://, or https://)
         if (!uri.getScheme().equals("exp")) {
           intentUri = uri.buildUpon().scheme("exp").toString();
         }
