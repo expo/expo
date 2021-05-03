@@ -47,7 +47,7 @@ public class UpdateEntity {
   public Long launchAssetId = null;
 
   @ColumnInfo(name = "manifest")
-  public JSONObject metadata = null;
+  public JSONObject manifest = null;
 
   @NonNull
   public UpdateStatus status = UpdateStatus.PENDING;
@@ -68,6 +68,6 @@ public class UpdateEntity {
   }
 
   public RawManifest getRawManifest() {
-    return ManifestFactory.INSTANCE.getRawManifestFromJson(this.metadata);
+    return ManifestFactory.INSTANCE.getRawManifestFromJson(this.manifest);
   }
 }
