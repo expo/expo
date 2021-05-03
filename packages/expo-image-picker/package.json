@@ -43,7 +43,7 @@
     "@expo/config-plugins": "^1.0.18",
     "expo-permissions": "~12.0.1",
     "uuid": "7.0.2",
-    "unimodules-permissions-interface": "~6.1.0"
+    "unimodules-permissions-interface": "~6.2.0"
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"
