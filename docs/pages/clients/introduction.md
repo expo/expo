@@ -16,4 +16,5 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 - [Distributing to Android Devices](distribution-for-android.md) - Get your Development Client running on an Android device
 - [Distributing to iOS Devices](distribution-for-ios.md) - Get your Development Client running on an iOS device
 - [Troubleshooting](troubleshooting.md) - Solutions for common issues you might encounter with the Development Client
-- [Extending the Dev Menu](extending-the-dev-menu.md) Make the Development Client your own by extending the menu with new functionality
+- [Extending the Dev Menu](extending-the-dev-menu.md) - Make the Development Client your own by extending the menu with new functionality
+- [Compatibility](compatibility.md) - Check compatibly versions

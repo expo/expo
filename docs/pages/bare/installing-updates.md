@@ -109,6 +109,20 @@ If you have `expo-splash-screen` installed in your bare workflow project, you'll
 
 <ConfigurationDiff source="/static/diffs/expo-updates-android.diff" />
 
+<details><summary><h4>💡 Are you using ProGuard?</h4></summary>
+<p>
+
+If you have ProGuard enabled, you'll need to add the following rule to `proguard-rules.pro`:
+
+```
+-keepclassmembers class com.facebook.react.ReactInstanceManager {
+    private final com.facebook.react.bridge.JSBundleLoader mBundleLoader;
+}
+```
+
+</p>
+</details>
+
 ## Usage
 
 See more information about usage in the [expo-updates README](https://github.com/expo/expo/blob/master/packages/expo-updates/README.md).

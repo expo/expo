@@ -9,8 +9,11 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationManagerCompat;
 
+import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
@@ -57,7 +60,7 @@ public class ExponentNotificationManager {
     }
   }
 
-  public void maybeCreateNotificationChannelGroup(JSONObject manifest) {
+  public void maybeCreateNotificationChannelGroup(RawManifest manifest) {
     if (Constants.isStandaloneApp()) {
       // currently we only support groups in the client, with one group per experience
       return;
@@ -65,9 +68,10 @@ public class ExponentNotificationManager {
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       try {
-        String experienceId = manifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+        String experienceId = manifest.getID();
         if (!mNotificationChannelGroupIds.contains(experienceId)) {
-          String channelName = manifest.optString(ExponentManifest.MANIFEST_NAME_KEY, experienceId);
+          @Nullable String name = manifest.getName();
+          String channelName = name != null ? name : experienceId;
           NotificationChannelGroup group = new NotificationChannelGroup(experienceId, channelName);
           mContext.getSystemService(NotificationManager.class).createNotificationChannelGroup(group);
 

@@ -18,7 +18,7 @@ import expo.modules.updates.db.DatabaseHolder;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.Launcher;
-import expo.modules.updates.launcher.SelectionPolicy;
+import expo.modules.updates.selectionpolicy.SelectionPolicy;
 import expo.modules.updates.loader.FileDownloader;
 import host.exp.exponent.ExpoUpdatesAppLoader;
 import host.exp.exponent.di.NativeModuleDepsProvider;
@@ -102,5 +102,10 @@ public class UpdatesBinding extends UpdatesService implements UpdatesInterface {
   public void relaunchReactApplication(Launcher.LauncherCallback callback) {
     KernelProvider.getInstance().reloadVisibleExperience(mManifestUrl, true);
     callback.onSuccess();
+  }
+
+  @Override
+  public void resetSelectionPolicy() {
+    // no-op in managed
   }
 }

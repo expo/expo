@@ -2,6 +2,7 @@ package expo.interfaces.devmenu.items
 
 import android.os.Bundle
 import android.view.KeyCharacterMap
+import com.facebook.react.bridge.ReadableMap
 
 val keyCharacterMap: KeyCharacterMap = KeyCharacterMap.load(KeyCharacterMap.VIRTUAL_KEYBOARD)
 
@@ -53,20 +54,31 @@ class DevMenuGroup(
   }
 }
 
-class DevMenuAction(val actionId: String, val action: () -> Unit) : DevMenuScreenItem() {
-  var isAvailable = { true }
+class DevMenuAction(
+  actionId: String,
+  action: () -> Unit
+) : DevMenuScreenItem(), DevMenuCallableProvider {
+  val callable = DevMenuExportedAction(actionId, action)
+  var isAvailable: () -> Boolean
+    get() = callable.isAvailable
+    set(value) {
+      callable.isAvailable = value
+    }
   var isEnabled = { false }
   var label = { "" }
   var detail = { "" }
   var glyphName = { "" }
 
-  var keyCommand: KeyCommand? = null
+  var keyCommand: KeyCommand?
+    get() = callable.keyCommand
+    set(value) {
+      callable.registerKeyCommand(value)
+    }
 
   override fun getExportedType() = 1
 
   override fun serialize() = super.serialize().apply {
-    putString("actionId", actionId)
-
+    putString("actionId", callable.id)
     putBoolean("isAvailable", isAvailable())
     putBoolean("isEnabled", isEnabled())
     putString("label", label())
@@ -87,6 +99,10 @@ class DevMenuAction(val actionId: String, val action: () -> Unit) : DevMenuScree
     }
     return 0
   }
+
+  override fun registerCallable(): DevMenuExportedCallable {
+    return callable
+  }
 }
 
 class DevMenuLink(private val target: String) : DevMenuScreenItem() {
@@ -102,8 +118,8 @@ class DevMenuLink(private val target: String) : DevMenuScreenItem() {
   }
 }
 
-class DevMenuSelectionList : DevMenuScreenItem() {
-  class Item {
+class DevMenuSelectionList : DevMenuScreenItem(), DevMenuCallableProvider {
+  class Item : DevMenuDataSourceItem {
     class Tag {
       var glyphName = { "" }
       var text = { "" }
@@ -118,17 +134,24 @@ class DevMenuSelectionList : DevMenuScreenItem() {
     var tags: () -> List<Tag> = { emptyList() }
     var warning: () -> String? = { null }
     var isChecked = { false }
+    var onClickData: () -> Bundle? = { null }
 
-    internal fun serialize() = Bundle().apply {
+    override fun serialize() = Bundle().apply {
       putString("title", title())
       putString("warning", warning())
       putBoolean("isChecked", isChecked())
+      putBundle("onClickData", onClickData())
       putParcelableArray("tags", tags().map { it.serialize() }.toTypedArray())
-
     }
   }
 
   private var items = ArrayList<Item>()
+  private var callable: DevMenuExportedFunction? = null
+  var dataSourceId: () -> String? = { null }
+
+  fun addOnClick(handler: (ReadableMap?) -> Unit) {
+    callable = DevMenuExportedFunction("expo-dev-menu.selection-list.#${ActionID++}", handler)
+  }
 
   fun addItem(item: Item) {
     items.add(item)
@@ -139,6 +162,18 @@ class DevMenuSelectionList : DevMenuScreenItem() {
   }
 
   override fun serialize() = super.serialize().apply {
+    callable?.let {
+      putString("actionId", it.id)
+    }
+    putString("dataSourceId", dataSourceId())
     putParcelableArray("items", items.map { it.serialize() }.toTypedArray())
+  }
+
+  companion object {
+    private var ActionID = 0
+  }
+
+  override fun registerCallable(): DevMenuExportedCallable? {
+    return callable
   }
 }

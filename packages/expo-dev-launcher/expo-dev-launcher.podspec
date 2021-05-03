@@ -18,6 +18,10 @@ Pod::Spec.new do |s|
   s.requires_arc   = true
   s.header_dir     = 'EXDevLauncher'
 
+  s.resource_bundles = {
+    'EXDevLauncher' => ['ios/assets', 'ios/main.jsbundle']
+  }
+
   s.xcconfig = { 'GCC_PREPROCESSOR_DEFINITIONS' => "EX_DEV_LAUNCHER_ENABLED=1 EX_DEV_LAUNCHER_VERSION=#{s.version}", 'OTHER_SWIFT_FLAGS' => '-DEX_DEV_LAUNCHER_ENABLED=1' }
 
   # Swift/Objective-C compatibility

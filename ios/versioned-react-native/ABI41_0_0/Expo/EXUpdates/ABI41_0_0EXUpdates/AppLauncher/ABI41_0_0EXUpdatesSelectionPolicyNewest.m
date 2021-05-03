@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
   return [self initWithRuntimeVersions:@[runtimeVersion]];
 }
 
-- (nullable ABI41_0_0EXUpdatesUpdate *)launchableUpdateWithUpdates:(NSArray<ABI41_0_0EXUpdatesUpdate *> *)updates filters:(nullable NSDictionary *)filters
+- (nullable ABI41_0_0EXUpdatesUpdate *)launchableUpdateFromUpdates:(NSArray<ABI41_0_0EXUpdatesUpdate *> *)updates filters:(nullable NSDictionary *)filters
 {
   ABI41_0_0EXUpdatesUpdate *runnableUpdate;
   NSDate *runnableUpdateCommitTime;

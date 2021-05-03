@@ -17,14 +17,14 @@ open class DevMenuItemsContainer : DevMenuDSLItemsContainerInterface {
     items.forEach {
       result.add(it)
 
-      if (it is DevMenuDSLItemsContainerInterface) {
+      if (it is DevMenuItemsContainerInterface) {
         result.addAll(it.getAllItems())
       }
     }
     return result
   }
 
-  override fun addItem(item: DevMenuScreenItem) {
+  private fun addItem(item: DevMenuScreenItem) {
     items.add(item)
   }
 
@@ -37,11 +37,6 @@ open class DevMenuItemsContainer : DevMenuDSLItemsContainerInterface {
 
   override fun selectionList(init: DevMenuSelectionList.() -> Unit) = addItem(DevMenuSelectionList(), init)
 
-  override fun serializeItems() =
-    getRootItems()
-      .map { it.serialize() }
-      .toTypedArray()
-
   private fun <T : DevMenuScreenItem> addItem(item: T, init: T.() -> Unit): T {
     item.init()
     addItem(item)
@@ -49,11 +44,11 @@ open class DevMenuItemsContainer : DevMenuDSLItemsContainerInterface {
   }
 
   companion object {
+    @JvmStatic
     fun export(init: DevMenuDSLItemsContainerInterface.() -> Unit): DevMenuItemsContainer {
       val container = DevMenuItemsContainer()
       container.init()
       return container
     }
-
   }
 }

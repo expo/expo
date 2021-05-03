@@ -1,5 +1,6 @@
 ---
 title: Build configuration process
+sidebar_title: Configuration process
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'

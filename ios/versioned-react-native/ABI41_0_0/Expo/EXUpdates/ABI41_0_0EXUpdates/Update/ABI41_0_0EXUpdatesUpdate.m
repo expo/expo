@@ -59,16 +59,9 @@ NS_ASSUME_NONNULL_BEGIN
                             config:(ABI41_0_0EXUpdatesConfig *)config
                           database:(ABI41_0_0EXUpdatesDatabase *)database
 {
-  if (config.usesLegacyManifest) {
-    return [ABI41_0_0EXUpdatesLegacyUpdate updateWithLegacyManifest:manifest
-                                                    config:config
-                                                  database:database];
-  } else {
-    return [ABI41_0_0EXUpdatesNewUpdate updateWithNewManifest:manifest
-                                            response:response
-                                              config:config
-                                            database:database];
-  }
+  return [ABI41_0_0EXUpdatesLegacyUpdate updateWithLegacyManifest:manifest
+                                                  config:config
+                                                database:database];
 }
 
 + (instancetype)updateWithEmbeddedManifest:(NSDictionary *)manifest

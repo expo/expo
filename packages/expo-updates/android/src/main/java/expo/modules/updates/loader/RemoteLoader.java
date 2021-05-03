@@ -18,6 +18,7 @@ import expo.modules.updates.manifest.ManifestMetadata;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class RemoteLoader {
 
@@ -40,6 +41,17 @@ public class RemoteLoader {
   public interface LoaderCallback {
     void onFailure(Exception e);
     void onSuccess(@Nullable UpdateEntity update);
+
+    /**
+     * Called when an asset has either been successfully downloaded or failed to download.
+     *
+     * @param asset Entity representing the asset that was either just downloaded or failed
+     * @param successfulAssetCount The number of assets that have so far been loaded successfully
+     *                             (including any that were found to already exist on disk)
+     * @param failedAssetCount The number of assets that have so far failed to load
+     * @param totalAssetCount The total number of assets that comprise the update
+     */
+    void onAssetLoaded(AssetEntity asset, int successfulAssetCount, int failedAssetCount, int totalAssetCount);
 
     /**
      * Called when a manifest has been downloaded. The calling class should determine whether or not
@@ -166,7 +178,7 @@ public class RemoteLoader {
     }
   }
 
-  private void downloadAllAssets(ArrayList<AssetEntity> assetList) {
+  private void downloadAllAssets(List<AssetEntity> assetList) {
     mAssetTotal = assetList.size();
     for (AssetEntity assetEntity : assetList) {
       AssetEntity matchingDbEntry = mDatabase.assetDao().loadAssetWithKey(assetEntity.key);
@@ -212,6 +224,8 @@ public class RemoteLoader {
     } else {
       mErroredAssetList.add(assetEntity);
     }
+
+    mCallback.onAssetLoaded(assetEntity, mFinishedAssetList.size() + mExistingAssetList.size(), mErroredAssetList.size(), mAssetTotal);
 
     if (mFinishedAssetList.size() + mErroredAssetList.size() + mExistingAssetList.size() == mAssetTotal) {
       try {

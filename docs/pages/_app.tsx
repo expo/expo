@@ -1,13 +1,12 @@
-/// <reference types="google.analytics" />
-
 import { ThemeProvider } from '@expo/styleguide';
 import * as Sentry from '@sentry/browser';
-import App from 'next/app';
+import App, { NextWebVitalsMetric } from 'next/app';
 import React from 'react';
 
 import { preprocessSentryError } from '~/common/sentry-utilities';
 import 'react-diff-view/style/index.css';
 import '@expo/styleguide/dist/expo-colors.css';
+import 'tippy.js/dist/tippy.css';
 import '../public/static/libs/algolia/algolia.css';
 import '../public/static/libs/algolia/algolia-mobile.css';
 
@@ -16,18 +15,8 @@ Sentry.init({
   beforeSend: preprocessSentryError,
 });
 
-export function reportWebVitals({
-  id,
-  name,
-  label,
-  value,
-}: {
-  id: string;
-  name: string;
-  label: string;
-  value: number;
-}) {
-  window?.ga('send', 'event', {
+export function reportWebVitals({ id, name, label, value }: NextWebVitalsMetric) {
+  window?.ga?.('send', 'event', {
     eventCategory: label === 'web-vital' ? 'Web Vitals' : 'Next.js custom metric',
     eventAction: name,
     // The `id` value will be unique to the current page load. When sending

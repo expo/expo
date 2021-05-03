@@ -33,10 +33,12 @@ static NSString * const EXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemoteA
 
 - (void)loadUpdateFromUrl:(NSURL *)url
                onManifest:(EXUpdatesAppLoaderManifestBlock)manifestBlock
+                    asset:(EXUpdatesAppLoaderAssetBlock)assetBlock
                   success:(EXUpdatesAppLoaderSuccessBlock)success
                     error:(EXUpdatesAppLoaderErrorBlock)error
 {
   self.manifestBlock = manifestBlock;
+  self.assetBlock = assetBlock;
   self.errorBlock = error;
 
   UM_WEAKIFY(self)

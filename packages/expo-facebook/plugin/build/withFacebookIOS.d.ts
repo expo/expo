@@ -320,6 +320,6 @@ export declare function setFacebookDisplayName(config: ExpoConfigFacebook, { Fac
 };
 export declare function setFacebookApplicationQuerySchemes(config: Pick<ExpoConfigFacebook, 'facebookAppId'>, infoPlist: InfoPlist): InfoPlist;
 export declare const withUserTrackingPermission: ConfigPlugin<{
-    userTrackingPermission?: string;
+    userTrackingPermission?: string | false;
 } | void>;
 export {};

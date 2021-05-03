@@ -92,7 +92,7 @@ You are free to use any native Firebase packages such as [react-native-firebase]
   ```groovy
   buildscript {
       dependencies {
-          classpath 'com.google.gms:google-services:4.2.0'
+          classpath 'com.google.gms:google-services:4.3.5'
       }
   }
   ```

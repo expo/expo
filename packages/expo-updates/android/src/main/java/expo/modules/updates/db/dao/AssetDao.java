@@ -54,6 +54,9 @@ public abstract class AssetDao {
   /**
    * for public use
    */
+  @Query("SELECT * FROM assets;")
+  public abstract List<AssetEntity> loadAllAssets();
+
   @Query("SELECT assets.id, url, `key`, headers, type, assets.metadata, download_time, relative_path, hash, hash_type, marked_for_deletion" +
           " FROM assets" +
           " INNER JOIN updates_assets ON updates_assets.asset_id = assets.id" +

@@ -1,8 +1,9 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '10.1.0'
+version = '10.3.0'
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -84,7 +85,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
     versionCode 31
-    versionName "10.1.0"
+    versionName "10.3.0"
 
     ndk {
       abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a', 'x86_64'
@@ -115,6 +116,8 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
   compileOnly 'com.facebook.soloader:soloader:0.8.2'
+
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
 }
 task createNativeDepsDirectories {
   downloadsDir.mkdirs()

@@ -194,7 +194,8 @@ static NSString * const ABI39_0_0EXUpdatesAppLoaderTaskErrorDomain = @"ABI39_0_0
   [ABI39_0_0EXUpdatesAppLauncherWithDatabase launchableUpdateWithConfig:_config database:_database selectionPolicy:_selectionPolicy completion:^(NSError * _Nullable error, ABI39_0_0EXUpdatesUpdate * _Nullable launchableUpdate) {
     if (self->_config.hasEmbeddedUpdate &&
         [self->_selectionPolicy shouldLoadNewUpdate:[ABI39_0_0EXUpdatesEmbeddedAppLoader embeddedManifestWithConfig:self->_config database:self->_database]
-                                 withLaunchedUpdate:launchableUpdate]) {
+                                 withLaunchedUpdate:launchableUpdate
+                                            filters:nil]) {
       self->_embeddedAppLoader = [[ABI39_0_0EXUpdatesEmbeddedAppLoader alloc] initWithConfig:self->_config database:self->_database directory:self->_directory completionQueue:self->_loaderTaskQueue];
       [self->_embeddedAppLoader loadUpdateFromEmbeddedManifestWithCallback:^BOOL(ABI39_0_0EXUpdatesUpdate * _Nonnull update) {
         // we already checked using selection policy, so we don't need to check again
@@ -221,7 +222,7 @@ static NSString * const ABI39_0_0EXUpdatesAppLoaderTaskErrorDomain = @"ABI39_0_0
 {
   _remoteAppLoader = [[ABI39_0_0EXUpdatesRemoteAppLoader alloc] initWithConfig:_config database:_database directory:_directory completionQueue:_loaderTaskQueue];
   [_remoteAppLoader loadUpdateFromUrl:_config.updateUrl onManifest:^BOOL(ABI39_0_0EXUpdatesUpdate * _Nonnull update) {
-    if ([self->_selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_launcher.launchedUpdate]) {
+    if ([self->_selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_launcher.launchedUpdate filters:nil]) {
       self->_isUpToDate = NO;
       if (self->_delegate) {
         dispatch_async(self->_delegateQueue, ^{

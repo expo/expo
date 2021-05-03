@@ -1,10 +1,10 @@
 import Entypo from '@expo/vector-icons/build/Entypo';
 import Ionicons from '@expo/vector-icons/build/Ionicons';
-import { NavigationContainer, useTheme } from '@react-navigation/native';
+import { NavigationContainer, useTheme, NavigationContainerRef } from '@react-navigation/native';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import Constants from 'expo-constants';
 import * as React from 'react';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, Linking } from 'react-native';
 
 import OpenProjectByURLButton from '../components/OpenProjectByURLButton.ios';
 import OptionsButton from '../components/OptionsButton';
@@ -198,21 +198,46 @@ function TabNavigator(props: { theme: string }) {
 const ModalStack = createStackNavigator();
 
 export default (props: { theme: string }) => {
-  // Temporarily disable QR code deep linking due to Android Expo Go issue:
-  // https://linear.app/expo/issue/ENG-877/expo-home-on-android-reloads-when-resumed
-  //
-  // const linking = {
-  //   prefixes: ['expo-home://'],
-  //   config: {
-  //     initialRouteName: 'RootStack',
-  //     screens: {
-  //       QRCode: 'qr-scanner',
-  //     },
-  //   },
-  // };
+  const navigationRef = React.useRef<NavigationContainerRef>(null);
+  const isNavigationReadyRef = React.useRef(false);
+  const initialURLWasConsumed = React.useRef(false);
+
+  React.useEffect(() => {
+    const handleDeepLinks = ({ url }) => {
+      if (Platform.OS === 'ios' || !url || !isNavigationReadyRef.current) {
+        return;
+      }
+      const nav = navigationRef.current;
+      if (!nav) {
+        return;
+      }
+
+      if (url.startsWith('expo-home://qr-scanner')) {
+        nav.navigate('QRCode');
+      }
+    };
+    if (!initialURLWasConsumed.current) {
+      initialURLWasConsumed.current = true;
+      Linking.getInitialURL().then(url => {
+        handleDeepLinks({ url });
+      });
+    }
+
+    Linking.addEventListener('url', handleDeepLinks);
+
+    return () => {
+      isNavigationReadyRef.current = false;
+      Linking.removeEventListener('url', handleDeepLinks);
+    };
+  }, []);
 
   return (
-    <NavigationContainer theme={Themes[props.theme]} /* linking={linking} */>
+    <NavigationContainer
+      theme={Themes[props.theme]}
+      ref={navigationRef}
+      onReady={() => {
+        isNavigationReadyRef.current = true;
+      }}>
       <ModalStack.Navigator
         initialRouteName="RootStack"
         screenOptions={({ route, navigation }) => ({

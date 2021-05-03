@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "babel-preset-expo": "~8.3.0",
-    "expo-yarn-workspaces": "^1.4.1"
+    "expo-yarn-workspaces": "^1.5.1"
   },
   "private": true
 }

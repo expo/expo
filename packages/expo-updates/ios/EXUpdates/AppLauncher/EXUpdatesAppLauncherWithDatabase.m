@@ -50,7 +50,7 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
 
 + (void)launchableUpdateWithConfig:(EXUpdatesConfig *)config
                           database:(EXUpdatesDatabase *)database
-                   selectionPolicy:(id<EXUpdatesSelectionPolicy>)selectionPolicy
+                   selectionPolicy:(EXUpdatesSelectionPolicy *)selectionPolicy
                         completion:(EXUpdatesAppLauncherUpdateCompletionBlock)completion
                    completionQueue:(dispatch_queue_t)completionQueue
 {
@@ -83,12 +83,12 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
         [filteredLaunchableUpdates addObject:update];
       }
 
-      completion(nil, [selectionPolicy launchableUpdateWithUpdates:filteredLaunchableUpdates filters:manifestFilters]);
+      completion(nil, [selectionPolicy launchableUpdateFromUpdates:filteredLaunchableUpdates filters:manifestFilters]);
     });
   });
 }
 
-- (void)launchUpdateWithSelectionPolicy:(id<EXUpdatesSelectionPolicy>)selectionPolicy
+- (void)launchUpdateWithSelectionPolicy:(EXUpdatesSelectionPolicy *)selectionPolicy
                              completion:(EXUpdatesAppLauncherCompletionBlock)completion
 {
   NSAssert(!_completion, @"EXUpdatesAppLauncher:launchUpdateWithSelectionPolicy:successBlock should not be called twice on the same instance");

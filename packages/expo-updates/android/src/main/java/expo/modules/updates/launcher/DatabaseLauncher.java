@@ -23,6 +23,7 @@ import expo.modules.updates.loader.EmbeddedLoader;
 import expo.modules.updates.loader.FileDownloader;
 import expo.modules.updates.manifest.Manifest;
 import expo.modules.updates.manifest.ManifestMetadata;
+import expo.modules.updates.selectionpolicy.SelectionPolicy;
 
 public class DatabaseLauncher implements Launcher {
 
@@ -161,7 +162,7 @@ public class DatabaseLauncher implements Launcher {
       // first we check to see if a copy is embedded in the binary
       Manifest embeddedManifest = EmbeddedLoader.readEmbeddedManifest(context, mConfiguration);
       if (embeddedManifest != null) {
-        ArrayList<AssetEntity> embeddedAssets = embeddedManifest.getAssetEntityList();
+        List<AssetEntity> embeddedAssets = embeddedManifest.getAssetEntityList();
         AssetEntity matchingEmbeddedAsset = null;
         for (AssetEntity embeddedAsset : embeddedAssets) {
           if (embeddedAsset.key != null && embeddedAsset.key.equals(asset.key)) {

@@ -150,7 +150,7 @@
     "babel-preset-expo": "~8.3.0",
     "detox": "^18.6.2",
     "expo-module-scripts": "^2.0.0",
-    "expo-yarn-workspaces": "^1.4.1",
+    "expo-yarn-workspaces": "^1.5.1",
     "jest-expo": "~41.0.0",
     "jest-expo-puppeteer": "^1.0.5",
     "puppeteer": "^2.1.1"
