@@ -65,7 +65,7 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
                       update.scopeKey,
                       update.commitTime,
                       update.runtimeVersion,
-                      update.metadata ?: [NSNull null],
+                      update.manifest ?: [NSNull null],
                       @(update.status),
                       update.lastAccessed
                       ]
@@ -528,17 +528,17 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
 - (EXUpdatesUpdate *)_updateWithRow:(NSDictionary *)row config:(EXUpdatesConfig *)config
 {
   NSError *error;
-  id metadata = nil;
-  id rowMetadata = row[@"manifest"];
-  if ([rowMetadata isKindOfClass:[NSString class]]) {
-    metadata = [NSJSONSerialization JSONObjectWithData:[(NSString *)rowMetadata dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&error];
-    NSAssert(!error && metadata && [metadata isKindOfClass:[NSDictionary class]], @"Update metadata should be a valid JSON object");
+  id manifest = nil;
+  id rowManifest = row[@"manifest"];
+  if ([rowManifest isKindOfClass:[NSString class]]) {
+    manifest = [NSJSONSerialization JSONObjectWithData:[(NSString *)rowManifest dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&error];
+    NSAssert(!error && manifest && [manifest isKindOfClass:[NSDictionary class]], @"Update manifest should be a valid JSON object");
   }
   EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithId:row[@"id"]
                                                  scopeKey:row[@"scope_key"]
                                                commitTime:[EXUpdatesDatabaseUtils dateFromUnixTimeMilliseconds:(NSNumber *)row[@"commit_time"]]
                                            runtimeVersion:row[@"runtime_version"]
-                                                 metadata:metadata
+                                                 manifest:manifest
                                                    status:(EXUpdatesUpdateStatus)[(NSNumber *)row[@"status"] integerValue]
                                                      keep:[(NSNumber *)row[@"keep"] boolValue]
                                                    config:config

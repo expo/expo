@@ -103,7 +103,7 @@ static NSString * const EXUpdatesExpoTestDomain = @"expo.test";
     [processedAssets addObject:asset];
   }
 
-  update.metadata = manifest.rawManifestJSON;
+  update.manifest = manifest.rawManifestJSON;
   update.keep = YES;
   update.bundleUrl = bundleUrl;
   update.assets = processedAssets;
