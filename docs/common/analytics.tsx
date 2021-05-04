@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import Router from 'next/router';
+import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
 
 export function LoadAnalytics({ id }: { id: string }) {
@@ -11,14 +11,21 @@ export function LoadAnalytics({ id }: { id: string }) {
 }
 
 export function TrackPageView({ id }: { id: string }) {
+  const router = useRouter();
+
   useEffect(() => {
-    Router.events.on('routeChangeComplete', (url: string) => {
+    const handlePageViewTracking = (url: string) => {
       window?.gtag?.('config', id, {
         page_path: url,
         transport_type: 'beacon',
       });
-    });
-  }, []);
+    };
+
+    router.events.on('routeChangeComplete', handlePageViewTracking);
+    return () => {
+      router.events.off('routeChangeComplete', handlePageViewTracking);
+    };
+  }, [router.events]);
 
   return <noscript />;
 }
