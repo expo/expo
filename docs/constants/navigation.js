@@ -87,10 +87,9 @@ const sections = [
     name: 'Development Clients',
     reference: [
       'Introduction',
+      'Getting Started',
       'Installation',
       'Building With EAS',
-      'Building iOS Locally',
-      'Building Android Locally',
       'Extending the Development Menu',
     ],
   },
