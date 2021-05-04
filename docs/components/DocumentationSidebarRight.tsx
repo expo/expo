@@ -1,4 +1,4 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
 import * as React from 'react';
 
 import { BASE_HEADING_LEVEL, Heading, HeadingManager } from '../common/headingManager';

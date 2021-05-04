@@ -1,4 +1,4 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
 import { palette } from '@expo/styleguide';
 import * as React from 'react';
 

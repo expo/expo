@@ -1,7 +1,7 @@
 // NOTE(jim):
 // GETTING NESTED SCROLL RIGHT IS DELICATE BUSINESS. THEREFORE THIS COMPONENT
 // IS THE ONLY PLACE WHERE SCROLL CODE SHOULD BE HANDLED. THANKS.
-import { Global, css } from '@emotion/core';
+import { Global, css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
 import * as React from 'react';
 
