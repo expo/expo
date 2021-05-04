@@ -69,7 +69,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
   }
   NSDictionary *params = @{
     @"manifestUrl": manifestUrl.absoluteString,
-    @"manifest": manifest,
+    @"manifest": manifest.rawManifestJSON,
   };
   [self _dispatchHomeJSEvent:@"addHistoryItem" body:params onSuccess:nil onFailure:nil];
 }
