@@ -43,7 +43,7 @@ class NewManifest private constructor(
 
   override val updateEntity: UpdateEntity by lazy {
     UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey).apply {
-      metadata = rawManifest.getRawJson()
+      metadata = this@NewManifest.rawManifest.getRawJson()
     }
   }
 
