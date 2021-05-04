@@ -31,6 +31,7 @@ typedef NS_ENUM(NSInteger, ABI39_0_0EXUpdatesUpdateStatus) {
 @property (nonatomic, strong, readonly) NSDictionary *rawManifest;
 
 @property (nonatomic, assign) ABI39_0_0EXUpdatesUpdateStatus status;
+@property (nonatomic, strong) NSDate *lastAccessed;
 
 + (instancetype)updateWithId:(NSUUID *)updateId
                   commitTime:(NSDate *)commitTime

@@ -46,11 +46,8 @@ public class UpdateEntity {
   @ColumnInfo(name = "launch_asset_id")
   public Long launchAssetId = null;
 
+  @ColumnInfo(name = "manifest")
   public JSONObject metadata = null;
-
-  public RawManifest getRawManifest() {
-    return ManifestFactory.INSTANCE.getRawManifestFromJson(this.metadata);
-  }
 
   @NonNull
   public UpdateStatus status = UpdateStatus.PENDING;
@@ -58,10 +55,19 @@ public class UpdateEntity {
   @NonNull
   public boolean keep = false;
 
+  @ColumnInfo(name = "last_accessed")
+  @NonNull
+  public Date lastAccessed;
+
   public UpdateEntity(UUID id, Date commitTime, String runtimeVersion, String scopeKey) {
     this.id = id;
     this.commitTime = commitTime;
     this.runtimeVersion = runtimeVersion;
     this.scopeKey = scopeKey;
+    this.lastAccessed = new Date();
+  }
+
+  public RawManifest getRawManifest() {
+    return ManifestFactory.INSTANCE.getRawManifestFromJson(this.metadata);
   }
 }
