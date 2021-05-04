@@ -1,25 +1,29 @@
 import Head from 'next/head';
-import React from 'react';
+import Router from 'next/router';
+import React, { useEffect } from 'react';
 
-// Initialize the command queue in case analytics.js hasn't loaded yet
-const getInitGoogleAnalyticsScript = (id: string) => {
-  return `
-window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
-ga('create', '${id}', {cookieDomain: 'auto', siteSpeedSampleRate: 100});
-ga('set', 'transport', 'beacon');
-ga('send', 'pageview');
-`.replace(/\n/g, '');
-};
-
-export function getInitGoogleScriptTag({ id }: { id: string }) {
-  const initScript = { __html: getInitGoogleAnalyticsScript(id) };
-  return <script dangerouslySetInnerHTML={initScript} />;
+export interface GAWindow extends Window {
+  gtag(cmd: string, event: string, props?: Record<string, any>): void;
 }
 
-export function getGoogleScriptTag() {
-  return <script defer src="https://www.google-analytics.com/analytics.js" />;
+export function LoadAnalytics({ id }: { id: string }) {
+  return (
+    <Head>
+      <script defer src={`https://www.googletagmanager.com/gtag/js?id=${id}`} />
+    </Head>
+  );
 }
 
-export function LoadAnalytics() {
-  return <Head>{getGoogleScriptTag()}</Head>;
+export function TrackPageView({ id }: { id: string }) {
+  useEffect(() => {
+    Router.events.on('routeChangeComplete', (url: string) => {
+      const gaWindow = (window as unknown) as GAWindow;
+      gaWindow?.gtag?.('config', id, {
+        page_path: url,
+        transport_type: 'beacon',
+      });
+    });
+  }, []);
+
+  return <noscript />;
 }
