@@ -295,8 +295,8 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
 
 - (nullable NSArray<EXUpdatesUpdate *> *)allUpdatesWithConfig:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error
 {
-  NSString * const sql = @"SELECT * FROM updates WHERE scope_key = ?1;";
-  NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:@[config.scopeKey] error:error];
+  NSString * const sql = @"SELECT * FROM updates;";
+  NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:nil error:error];
   if (!rows) {
     return nil;
   }

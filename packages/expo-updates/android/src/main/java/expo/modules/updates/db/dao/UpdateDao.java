@@ -50,8 +50,8 @@ public abstract class UpdateDao {
    * for public use
    */
 
-  @Query("SELECT * FROM updates WHERE scope_key = :scopeKey;")
-  public abstract List<UpdateEntity> loadAllUpdatesForScope(String scopeKey);
+  @Query("SELECT * FROM updates;")
+  public abstract List<UpdateEntity> loadAllUpdates();
 
   public List<UpdateEntity> loadLaunchableUpdatesForScope(String scopeKey) {
     return _loadUpdatesForProjectWithStatuses(scopeKey, Arrays.asList(UpdateStatus.READY, UpdateStatus.EMBEDDED, UpdateStatus.DEVELOPMENT));

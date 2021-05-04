@@ -43,7 +43,10 @@
 
   NSString *runtimeVersion = @"1.0";
   NSString *scopeKey = @"dummyScope";
-  EXUpdatesConfig *config = [EXUpdatesConfig new];
+  EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
+    @"EXUpdatesRuntimeVersion": runtimeVersion,
+    @"EXUpdatesScopeKey": scopeKey
+  }];
   EXUpdatesDatabase *database = [EXUpdatesDatabase new];
 
   _updateRollout0 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
