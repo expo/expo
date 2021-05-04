@@ -786,7 +786,7 @@ public class Kernel extends KernelInterface {
 
     WritableMap params = Arguments.createMap();
     params.putString("manifestUrl", manifestUrl);
-    params.putString("manifestString", manifest.getRawJson().toString());
+    params.putString("manifestString", manifest.toString());
     ExponentKernelModuleProvider.queueEvent("ExponentKernel.addHistoryItem", params, new ExponentKernelModuleProvider.KernelEventCallback() {
       @Override
       public void onEventSuccess(ReadableMap result) {

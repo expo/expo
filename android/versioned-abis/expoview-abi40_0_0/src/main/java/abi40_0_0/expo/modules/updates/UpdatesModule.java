@@ -137,14 +137,14 @@ public class UpdatesModule extends ExportedModule {
             // this shouldn't ever happen, but if we don't have anything to compare
             // the new manifest to, let the user know an update is available
             updateInfo.putBoolean("isAvailable", true);
-            updateInfo.putString("manifestString", manifest.getRawManifestJson().getRawJson().toString());
+            updateInfo.putString("manifestString", manifest.getRawManifestJson().toString());
             promise.resolve(updateInfo);
             return;
           }
 
           if (updatesService.getSelectionPolicy().shouldLoadNewUpdate(manifest.getUpdateEntity(), launchedUpdate, null)) {
             updateInfo.putBoolean("isAvailable", true);
-            updateInfo.putString("manifestString", manifest.getRawManifestJson().getRawJson().toString());
+            updateInfo.putString("manifestString", manifest.getRawManifestJson().toString());
             promise.resolve(updateInfo);
           } else {
             updateInfo.putBoolean("isAvailable", false);

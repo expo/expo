@@ -469,7 +469,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
     }
 
     try {
-      exponentProps.put("manifestString", mManifest.getRawJson().toString());
+      exponentProps.put("manifestString", mManifest.toString());
       exponentProps.put("shell", mIsShellApp);
       exponentProps.put("initialUri", mIntentUri == null ? null : mIntentUri.toString());
     } catch (JSONException e) {

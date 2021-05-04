@@ -4,7 +4,6 @@ import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.manifest.raw.RawManifest
 import org.json.JSONObject
-import java.util.*
 
 interface Manifest {
   val updateEntity: UpdateEntity?
