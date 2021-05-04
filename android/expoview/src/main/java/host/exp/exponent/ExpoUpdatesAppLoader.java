@@ -272,15 +272,15 @@ public class ExpoUpdatesAppLoader {
       public void onRemoteManifestLoaded(Manifest manifest) {
         // expo-cli does not always respect our SDK version headers and respond with a compatible update or an error
         // so we need to check the compatibility here
-        @Nullable String sdkVersion = manifest.getRawManifestJson().getSDKVersionNullable();
+        @Nullable String sdkVersion = manifest.getRawManifest().getSDKVersionNullable();
         if (!isValidSdkVersion(sdkVersion)) {
           mCallback.onError(formatExceptionForIncompatibleSdk(sdkVersion != null ? sdkVersion : "null"));
           didAbort = true;
           return;
         }
 
-        setShouldShowAppLoaderStatus(manifest.getRawManifestJson());
-        mCallback.onOptimisticManifest(manifest.getRawManifestJson());
+        setShouldShowAppLoaderStatus(manifest.getRawManifest());
+        mCallback.onOptimisticManifest(manifest.getRawManifest());
         updateStatus(AppLoaderStatus.DOWNLOADING_NEW_UPDATE);
       }
 
@@ -338,7 +338,7 @@ public class ExpoUpdatesAppLoader {
   private void launchWithNoDatabase(Context context, Exception e) {
     mLauncher = new NoDatabaseLauncher(context, mUpdatesConfiguration, e);
 
-    JSONObject manifestJson = EmbeddedLoader.readEmbeddedManifest(context, mUpdatesConfiguration).getRawManifestJson().getRawJson();
+    JSONObject manifestJson = EmbeddedLoader.readEmbeddedManifest(context, mUpdatesConfiguration).getRawManifest().getRawJson();
     try {
       manifestJson = processManifestJson(manifestJson);
     } catch (Exception ex) {

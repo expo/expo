@@ -19,7 +19,7 @@ import java.text.ParseException
 import java.util.*
 
 class NewManifest private constructor(
-  override val rawManifestJson: NewRawManifest,
+  override val rawManifest: NewRawManifest,
   private val mId: UUID,
   private val mScopeKey: String,
   private val mCommitTime: Date,
@@ -43,7 +43,7 @@ class NewManifest private constructor(
 
   override val updateEntity: UpdateEntity by lazy {
     UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey).apply {
-      metadata = rawManifestJson.getRawJson()
+      metadata = this@NewManifest.rawManifest.getRawJson()
     }
   }
 

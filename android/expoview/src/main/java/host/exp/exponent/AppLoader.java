@@ -325,7 +325,7 @@ public abstract class AppLoader {
               try {
                 if (wasUpdated) {
                   params.put("type", UPDATE_DOWNLOAD_FINISHED_EVENT);
-                  params.put("manifestString", finalManifest.getRawJson().toString());
+                  params.put("manifestString", finalManifest.toString());
                 } else {
                   params.put("type", UPDATE_NO_UPDATE_AVAILABLE_EVENT);
                 }

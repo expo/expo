@@ -14,7 +14,7 @@ import org.json.JSONObject
 import java.util.*
 
 class BareManifest private constructor(
-  override val rawManifestJson: BareRawManifest,
+  override val rawManifest: BareRawManifest,
   private val mId: UUID,
   private val mScopeKey: String,
   private val mCommitTime: Date,

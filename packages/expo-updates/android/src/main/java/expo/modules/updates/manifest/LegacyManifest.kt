@@ -17,7 +17,7 @@ import java.text.ParseException
 import java.util.*
 
 class LegacyManifest private constructor(
-  override val rawManifestJson: LegacyRawManifest,
+  override val rawManifest: LegacyRawManifest,
   private val mManifestUrl: Uri,
   private val mId: UUID,
   private val mScopeKey: String,
@@ -32,7 +32,7 @@ class LegacyManifest private constructor(
 
   override val updateEntity: UpdateEntity by lazy {
     UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey).apply {
-      metadata = rawManifestJson.getRawJson()
+      metadata = this@LegacyManifest.rawManifest.getRawJson()
       if (isDevelopmentMode) {
         status = UpdateStatus.DEVELOPMENT
       }
@@ -41,7 +41,7 @@ class LegacyManifest private constructor(
 
   override val assetEntityList: List<AssetEntity> by lazy {
     val assetList = mutableListOf<AssetEntity>()
-    val bundleKey = rawManifestJson.getBundleKey()
+    val bundleKey = rawManifest.getBundleKey()
     assetList.add(AssetEntity(bundleKey, "js").apply {
       url = mBundleUrl
       isLaunchAsset = true
@@ -72,11 +72,11 @@ class LegacyManifest private constructor(
   }
 
   private val assetsUrlBase: Uri? by lazy {
-    getAssetsUrlBase(mManifestUrl, rawManifestJson)
+    getAssetsUrlBase(mManifestUrl, rawManifest)
   }
 
   override val isDevelopmentMode: Boolean by lazy {
-    rawManifestJson.isDevelopmentMode()
+    rawManifest.isDevelopmentMode()
   }
 
   companion object {

@@ -781,7 +781,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   NSString *manifestString = nil;
   if (_appRecord.appLoader.manifest && [NSJSONSerialization isValidJSONObject:_appRecord.appLoader.manifest]) {
     NSError *error;
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:_appRecord.appLoader.manifest options:0 error:&error];
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:_appRecord.appLoader.manifest.rawManifestJSON options:0 error:&error];
     if (jsonData) {
       manifestString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     } else {
