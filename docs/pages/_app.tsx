@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import React, { useState, useEffect } from 'react';
 
-import { GAWindow, TrackPageView } from '~/common/analytics';
+import { TrackPageView } from '~/common/analytics';
 import { preprocessSentryError } from '~/common/sentry-utilities';
 import 'react-diff-view/style/index.css';
 import '@expo/styleguide/dist/expo-colors.css';
@@ -23,8 +23,7 @@ const DynamicLoadAnalytics = dynamic<any>(() =>
 );
 
 export function reportWebVitals({ id, name, label, value }: NextWebVitalsMetric) {
-  const gaWindow = (window as unknown) as GAWindow;
-  gaWindow?.gtag?.('event', name, {
+  window?.gtag?.('event', name, {
     event_category: label === 'web-vital' ? 'Web Vitals' : 'Next.js custom metric',
     // Google Analytics metrics must be integers, so the value is rounded.
     // For CLS the value is first multiplied by 1000 for greater precision
@@ -41,6 +40,7 @@ export function reportWebVitals({ id, name, label, value }: NextWebVitalsMetric)
 }
 
 function App({ Component, pageProps }: AppProps) {
+  const googleAnalyticsId = 'UA-107832480-3';
   const [shouldLoadAnalytics, setShouldLoadAnalytics] = useState(false);
 
   useEffect(() => {
@@ -57,16 +57,16 @@ function App({ Component, pageProps }: AppProps) {
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
-                gtag('config', 'UA-107832480-3', { 'transport_type': 'beacon' });
+                gtag('config', '${googleAnalyticsId}', { 'transport_type': 'beacon' });
               `,
           }}
         />
       </Head>
-      {shouldLoadAnalytics && <DynamicLoadAnalytics id="UA-107832480-3" />}
+      {shouldLoadAnalytics && <DynamicLoadAnalytics id={googleAnalyticsId} />}
       <ThemeProvider>
         <Component {...pageProps} />
       </ThemeProvider>
-      <TrackPageView id="UA-107832480-3" />
+      <TrackPageView id={googleAnalyticsId} />
     </>
   );
 }
