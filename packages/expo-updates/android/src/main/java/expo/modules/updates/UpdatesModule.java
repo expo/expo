@@ -25,7 +25,7 @@ import expo.modules.updates.loader.RemoteLoader;
 import expo.modules.updates.manifest.ManifestMetadata;
 
 // this unused import must stay because of versioning
-import expo.modules.updates.UpdatesConfiguration;
+
 
 public class UpdatesModule extends ExportedModule {
   private static final String NAME = "ExpoUpdates";
@@ -155,14 +155,14 @@ public class UpdatesModule extends ExportedModule {
             // this shouldn't ever happen, but if we don't have anything to compare
             // the new manifest to, let the user know an update is available
             updateInfo.putBoolean("isAvailable", true);
-            updateInfo.putString("manifestString", manifest.getRawManifestJson().toString());
+            updateInfo.putString("manifestString", manifest.getRawManifest().toString());
             promise.resolve(updateInfo);
             return;
           }
 
           if (updatesService.getSelectionPolicy().shouldLoadNewUpdate(manifest.getUpdateEntity(), launchedUpdate, manifest.getManifestFilters())) {
             updateInfo.putBoolean("isAvailable", true);
-            updateInfo.putString("manifestString", manifest.getRawManifestJson().toString());
+            updateInfo.putString("manifestString", manifest.getRawManifest().toString());
             promise.resolve(updateInfo);
           } else {
             updateInfo.putBoolean("isAvailable", false);
