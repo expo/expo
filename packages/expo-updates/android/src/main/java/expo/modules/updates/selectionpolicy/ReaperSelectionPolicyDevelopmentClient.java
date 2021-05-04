@@ -46,11 +46,17 @@ public class ReaperSelectionPolicyDevelopmentClient implements ReaperSelectionPo
     });
 
     List<UpdateEntity> updatesToDelete = new ArrayList<>();
+    boolean hasFoundLaunchedUpdate = false;
     while (updatesMutable.size() > mMaxUpdatesToKeep) {
       UpdateEntity oldest = updatesMutable.remove(0);
       if (oldest.id.equals(launchedUpdate.id)) {
+        if (hasFoundLaunchedUpdate) {
+          // avoid infinite loop
+          throw new AssertionError("Multiple updates with the same ID were passed into ReaperSelectionPolicyDevelopmentClient");
+        }
         // we don't want to delete launchedUpdate, so put it back on the end of the stack
         updatesMutable.add(oldest);
+        hasFoundLaunchedUpdate = true;
       } else {
         updatesToDelete.add(oldest);
       }

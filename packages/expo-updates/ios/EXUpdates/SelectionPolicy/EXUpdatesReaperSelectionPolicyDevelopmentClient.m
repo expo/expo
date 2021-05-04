@@ -49,12 +49,18 @@ static NSUInteger const EXUpdatesReaperSelectionPolicyDefaultMaxUpdates = 10;
   }].mutableCopy;
 
   NSMutableArray<EXUpdatesUpdate *> *updatesToDelete = [NSMutableArray new];
+  BOOL hasFoundLaunchedUpdate = NO;
   while (updatesMutable.count > _maxUpdatesToKeep) {
     EXUpdatesUpdate *oldest = updatesMutable[0];
     [updatesMutable removeObjectAtIndex:0];
     if ([launchedUpdate.updateId isEqual:oldest.updateId]) {
+      if (hasFoundLaunchedUpdate) {
+        // avoid infinite loop
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Multiple updates with the same ID were passed into EXUpdatesReaperSelectionPolicyDevelopmentClient" userInfo:nil];
+      }
       // we don't want to delete launchedUpdate, so put it back on the end of the stack
       [updatesMutable addObject:oldest];
+      hasFoundLaunchedUpdate = YES;
     } else {
       [updatesToDelete addObject:oldest];
     }
