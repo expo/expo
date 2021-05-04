@@ -18,7 +18,7 @@ Sentry.init({
   beforeSend: preprocessSentryError,
 });
 
-const DynamicLoadAnalytics = dynamic<any>(() =>
+const DynamicLoadAnalytics = dynamic<{ id: string }>(() =>
   import('~/common/analytics').then(mod => mod.LoadAnalytics)
 );
 
