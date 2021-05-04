@@ -7,6 +7,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { Linking, Platform, StyleSheet, View } from 'react-native';
 import { useColorScheme } from 'react-native-appearance';
+import url from 'url';
 
 import Navigation from './navigation/Navigation';
 import HistoryActions from './redux/HistoryActions';
@@ -117,8 +118,8 @@ export default function HomeApp() {
 
 // Certain links (i.e. 'expo.io/expo-go') should just open the HomeScreen
 function shouldOpenUrl(urlString: string) {
-  const url = new URL(urlString);
-  return !(url.hostname === 'expo.io' && url.pathname === '/expo-go');
+  const parsedUrl = url.parse(urlString);
+  return !(parsedUrl.hostname === 'expo.io' && parsedUrl.pathname === '/expo-go');
 }
 
 const styles = StyleSheet.create({
