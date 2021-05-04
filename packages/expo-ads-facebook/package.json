@@ -34,7 +34,7 @@
     "@expo/config-plugins": "^1.0.18",
     "fbemitter": "^2.1.1",
     "nullthrows": "^1.1.0",
-    "unimodules-permissions-interface": "~6.1.0"
+    "unimodules-permissions-interface": "~6.2.0"
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"

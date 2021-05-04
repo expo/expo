@@ -1,10 +1,8 @@
 import { Global } from '@emotion/react';
 import { BlockingSetInitialColorMode } from '@expo/styleguide';
 import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/document';
-import dynamic from 'next/dynamic';
 import React from 'react';
 
-import { getInitGoogleScriptTag } from '~/common/analytics';
 import { globalExtras } from '~/global-styles/extras';
 import { globalFonts } from '~/global-styles/fonts';
 import { globalNProgress } from '~/global-styles/nprogress';
@@ -12,10 +10,6 @@ import { globalPrism } from '~/global-styles/prism';
 import { globalReset } from '~/global-styles/reset';
 import { globalTables } from '~/global-styles/tables';
 import { globalTippy } from '~/global-styles/tippy';
-
-const DynamicLoadAnalytics = dynamic<any>(() =>
-  import('~/common/analytics').then(mod => mod.LoadAnalytics)
-);
 
 export default class MyDocument extends Document<{ css?: string }> {
   static async getInitialProps(ctx: DocumentContext) {
@@ -49,11 +43,8 @@ export default class MyDocument extends Document<{ css?: string }> {
             type="font/woff2"
             crossOrigin="anonymous"
           />
-
-          {getInitGoogleScriptTag({ id: 'UA-107832480-3' })}
         </Head>
         <body>
-          <DynamicLoadAnalytics />
           <BlockingSetInitialColorMode />
           <Main />
           <NextScript />

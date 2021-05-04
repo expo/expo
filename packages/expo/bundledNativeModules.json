@@ -28,7 +28,7 @@
   "expo-branch": "~4.1.0",
   "expo-brightness": "~9.1.2",
   "expo-calendar": "~9.1.2",
-  "expo-camera": "~11.0.2",
+  "expo-camera": "~11.0.3",
   "expo-cellular": "~3.1.0",
   "expo-checkbox": "~1.0.3",
   "expo-clipboard": "~1.0.2",
@@ -107,7 +107,7 @@
   "unimodules-file-system-interface": "~6.1.0",
   "unimodules-font-interface": "~6.1.0",
   "unimodules-image-loader-interface": "~6.1.0",
-  "unimodules-permissions-interface": "~6.1.0",
+  "unimodules-permissions-interface": "~6.2.0",
   "unimodules-sensors-interface": "~6.1.0",
   "unimodules-task-manager-interface": "~6.1.0"
 }

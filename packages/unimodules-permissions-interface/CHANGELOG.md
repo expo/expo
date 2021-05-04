@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 6.2.0 — 2021-05-03
+
+### 🐛 Bug fixes
+
 - Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
 
 ## 6.1.0 — 2021-03-10
