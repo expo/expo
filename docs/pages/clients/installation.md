@@ -74,10 +74,3 @@ You're now ready to start developing your project with the Development Client.
 When you start your project on iOS, the metro bundler will be started automatically. This behavior might not be ideal when you want to use `expo start`. Our recommended solution is to remove the `Start Packager` action from building scripts. To do that you need to open the XCode, go to `Project settings` > `Build Phases` and remove the `Start Packager` action.
 
 <img src="/static/images/client/remove_start_packager.png" style={{maxWidth: "100%" }}/>
-
-- [EAS Build](eas-build.md) - the easiest way to generate development builds of your application
-
-- [Building Locally for iOS](distribution-for-ios.md) - if you need to run your own builds for any reason
-- [Building Locally for Android](distribution-for-ios.md) - if you need to run your own builds for any reason
-- [Troubleshooting](troubleshooting.md) - Solutions for common issues you might encounter with the Development Client
-- [Extending the Development Menu](extending-the-dev-menu.md) - Add functionality to the Dev Menu.
