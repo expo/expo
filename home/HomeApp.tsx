@@ -115,9 +115,10 @@ export default function HomeApp() {
   );
 }
 
-// Certain links should just open the HomeScreen
-function shouldOpenUrl(url: string) {
-  return !url.includes('expo.io/expo-go');
+// Certain links (i.e. 'expo.io/expo-go') should just open the HomeScreen
+function shouldOpenUrl(urlString: string) {
+  const url = new URL(urlString);
+  return !(url.hostname === 'expo.io' && url.pathname === '/expo-go');
 }
 
 const styles = StyleSheet.create({

@@ -574,9 +574,11 @@ public class Kernel extends KernelInterface {
     openDefaultUrl();
   }
 
-  // Certain links should just open the HomeScreen
+  // Certain links (i.e. 'expo.io/expo-go') should just open the HomeScreen
   private boolean shouldOpenUrl(@NonNull Uri uri) {
-    return !uri.toString().contains("expo.io/expo-go");
+    String host = uri.getHost() != null ? uri.getHost() : "";
+    String path = uri.getPath() != null ? uri.getPath() : "";
+    return !(host.equals("expo.io") && path.equals("/expo-go"));
   }
 
   private boolean openExperienceFromNotificationIntent(Intent intent) {
