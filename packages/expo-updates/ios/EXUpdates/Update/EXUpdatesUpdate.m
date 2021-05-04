@@ -30,6 +30,7 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
     _database = database;
     _scopeKey = config.scopeKey;
     _status = EXUpdatesUpdateStatusPending;
+    _lastAccessed = [NSDate date];
     _isDevelopmentMode = NO;
   }
   return self;

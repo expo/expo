@@ -20,7 +20,7 @@ import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {UpdateEntity.class, UpdateAssetEntity.class, AssetEntity.class, JSONDataEntity.class}, exportSchema = false, version = 5)
+@Database(entities = {UpdateEntity.class, UpdateAssetEntity.class, AssetEntity.class, JSONDataEntity.class}, exportSchema = false, version = 6)
 @TypeConverters({Converters.class})
 public abstract class UpdatesDatabase extends RoomDatabase {
 
