@@ -55,11 +55,11 @@ public class DatabaseIntegrityCheckTest {
     db.updateDao().insertUpdate(embeddedUpdate1);
     db.updateDao().insertUpdate(embeddedUpdate2);
 
-    Assert.assertEquals(2, db.updateDao().loadAllUpdatesForScope(scopeKey).size());
+    Assert.assertEquals(2, db.updateDao().loadAllUpdates().size());
 
     new DatabaseIntegrityCheck().run(db, null, embeddedUpdate2);
 
-    List<UpdateEntity> allUpdates = db.updateDao().loadAllUpdatesForScope(scopeKey);
+    List<UpdateEntity> allUpdates = db.updateDao().loadAllUpdates();
     Assert.assertEquals(1, allUpdates.size());
     Assert.assertEquals(embeddedUpdate2.id, allUpdates.get(0).id);
 
@@ -79,14 +79,14 @@ public class DatabaseIntegrityCheckTest {
     db.updateDao().insertUpdate(update1);
     db.assetDao().insertAssets(Collections.singletonList(asset1), update1);
 
-    Assert.assertEquals(1, db.updateDao().loadAllUpdatesForScope(scopeKey).size());
+    Assert.assertEquals(1, db.updateDao().loadAllUpdates().size());
     Assert.assertEquals(1, db.assetDao().loadAllAssets().size());
 
     DatabaseIntegrityCheck integrityCheck = Mockito.spy(DatabaseIntegrityCheck.class);
     Mockito.doReturn(false).when(integrityCheck).assetExists(ArgumentMatchers.any(), ArgumentMatchers.any());
     integrityCheck.run(db, context.getCacheDir(), update1);
 
-    List<UpdateEntity> allUpdates = db.updateDao().loadAllUpdatesForScope(scopeKey);
+    List<UpdateEntity> allUpdates = db.updateDao().loadAllUpdates();
     List<AssetEntity> allAssets = db.assetDao().loadAllAssets();
     Assert.assertEquals(1, allUpdates.size());
     Assert.assertEquals(UpdateStatus.PENDING, allUpdates.get(0).status);
@@ -108,14 +108,14 @@ public class DatabaseIntegrityCheckTest {
     db.updateDao().insertUpdate(update1);
     db.assetDao().insertAssets(Collections.singletonList(asset1), update1);
 
-    Assert.assertEquals(1, db.updateDao().loadAllUpdatesForScope(scopeKey).size());
+    Assert.assertEquals(1, db.updateDao().loadAllUpdates().size());
     Assert.assertEquals(1, db.assetDao().loadAllAssets().size());
 
     DatabaseIntegrityCheck integrityCheck = Mockito.spy(DatabaseIntegrityCheck.class);
     Mockito.doReturn(true).when(integrityCheck).assetExists(ArgumentMatchers.any(), ArgumentMatchers.any());
     integrityCheck.run(db, context.getCacheDir(), update1);
 
-    List<UpdateEntity> allUpdates = db.updateDao().loadAllUpdatesForScope(scopeKey);
+    List<UpdateEntity> allUpdates = db.updateDao().loadAllUpdates();
     List<AssetEntity> allAssets = db.assetDao().loadAllAssets();
     Assert.assertEquals(1, allUpdates.size());
     Assert.assertEquals(UpdateStatus.READY, allUpdates.get(0).status);

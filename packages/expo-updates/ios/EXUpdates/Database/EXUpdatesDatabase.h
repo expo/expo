@@ -33,6 +33,12 @@ typedef NS_ENUM(NSInteger, EXUpdatesDatabaseHashType) {
 - (void)deleteUpdates:(NSArray<EXUpdatesUpdate *> *)updates error:(NSError ** _Nullable)error;
 - (nullable NSArray<EXUpdatesAsset *> *)deleteUnusedAssetsWithError:(NSError ** _Nullable)error;
 
+/**
+ * This method ignores the scopeKey field in the config object and returns ALL updates in the database.
+ * The config object is passed along to each update object, even if its scopeKey doesn't match.
+ *
+ * Updates returned from this method should not be used to launch.
+ */
 - (nullable NSArray<EXUpdatesUpdate *> *)allUpdatesWithConfig:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error;
 - (nullable NSArray<EXUpdatesUpdate *> *)allUpdatesWithStatus:(EXUpdatesUpdateStatus)status config:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error;
 - (nullable NSArray<EXUpdatesUpdate *> *)launchableUpdatesWithConfig:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error;
