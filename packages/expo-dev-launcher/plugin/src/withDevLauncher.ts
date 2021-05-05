@@ -28,7 +28,7 @@ const DEV_LAUNCHER_WRAPPED_ACTIVITY_DELEGATE = `DevLauncherController.wrapReactA
 const DEV_LAUNCHER_ANDROID_INIT = 'DevLauncherController.initialize(this, getReactNativeHost());';
 
 const DEV_LAUNCHER_POD_IMPORT =
-  "pod 'expo-dev-menu', path: '../node_modules/expo-dev-menu', :configurations => :debug";
+  "pod 'expo-dev-launcher', path: '../node_modules/expo-dev-launcher', :configurations => :debug";
 
 async function readFileAsync(path: string): Promise<string> {
   return fs.promises.readFile(path, 'utf8');
@@ -162,11 +162,11 @@ const withDevLauncherPodfile: ConfigPlugin = config => {
       await editPodfile(config, podfile => {
         podfile = podfile.replace("platform :ios, '10.0'", "platform :ios, '11.0'");
         // Match both variations of Ruby config:
-        // unknown: pod 'expo-dev-menu', path: '../node_modules/expo-dev-menu', :configurations => :debug
-        // Rubocop: pod 'expo-dev-menu', path: '../node_modules/expo-dev-menu', configurations: :debug
+        // unknown: pod 'expo-dev-launcher', path: '../node_modules/expo-dev-launcher', :configurations => :debug
+        // Rubocop: pod 'expo-dev-launcher', path: '../node_modules/expo-dev-launcher', configurations: :debug
         if (
           !podfile.match(
-            /pod ['"]expo-dev-menu['"],\s?path: ['"]\.\.\/node_modules\/expo-dev-menu['"],\s?:?configurations:?\s(?:=>\s)?:debug/
+            /pod ['"]expo-dev-launcher['"],\s?path: ['"]\.\.\/node_modules\/expo-dev-launcher['"],\s?:?configurations:?\s(?:=>\s)?:debug/
           )
         ) {
           podfile = addLines(podfile, 'use_react_native', 0, [`  ${DEV_LAUNCHER_POD_IMPORT}`]);
