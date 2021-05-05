@@ -130,16 +130,20 @@ const withInAppPurchases = (config, props) => {
      *	 <string>[MERCHANT_ID]</string>
      * </array>
      */
-    return config_plugins_1.withEntitlementsPlist(config, config => {
-        var _a;
-        const key = 'com.apple.developer.in-app-payments';
-        // @ts-ignore
-        const merchants = (_a = config.modResults[key]) !== null && _a !== void 0 ? _a : [];
-        if (!merchants.includes(props.merchantId)) {
-            merchants.push(props.merchantId);
-        }
-        config.modResults[key] = merchants;
-        return config;
-    });
+    // Statically setting the entitlements outside of the entitlements mod so tools like eas-cli
+    // can determine which capabilities to enable before building the app.
+    var _a;
+    if (!config.ios)
+        config.ios = {};
+    if (!config.ios.entitlements)
+        config.ios.entitlements = {};
+    const key = 'com.apple.developer.in-app-payments';
+    // @ts-ignore
+    const merchants = (_a = config.modResults[key]) !== null && _a !== void 0 ? _a : [];
+    if (!merchants.includes(props.merchantId)) {
+        merchants.push(props.merchantId);
+    }
+    config.ios.entitlements[key] = merchants;
+    return config;
 };
 exports.default = config_plugins_1.createRunOncePlugin(withStripe, pkg.name, pkg.version);

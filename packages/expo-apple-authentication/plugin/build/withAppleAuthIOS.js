@@ -1,12 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setAppleAuthEntitlements = exports.withAppleAuthIOS = void 0;
-const config_plugins_1 = require("@expo/config-plugins");
 exports.withAppleAuthIOS = config => {
-    return config_plugins_1.withEntitlementsPlist(config, config => {
-        config.modResults = setAppleAuthEntitlements(config, config.modResults);
-        return config;
-    });
+    if (!config.ios)
+        config.ios = {};
+    // Statically setting the entitlements outside of the entitlements mod so tools like eas-cli
+    // can determine which capabilities to enable before building the app.
+    config.ios.entitlements = setAppleAuthEntitlements(config, config.ios.entitlements || {});
+    return config;
 };
 function setAppleAuthEntitlements(config, entitlements) {
     var _a;

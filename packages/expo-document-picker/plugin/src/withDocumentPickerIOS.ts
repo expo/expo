@@ -1,21 +1,26 @@
-import { ConfigPlugin, WarningAggregator, withEntitlementsPlist } from '@expo/config-plugins';
+import { ConfigPlugin, WarningAggregator } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 
 export const withDocumentPickerIOS: ConfigPlugin<{ appleTeamId?: string }> = (
   config,
   { appleTeamId }
 ) => {
-  return withEntitlementsPlist(config, config => {
-    if (appleTeamId) {
-      config.modResults = setICloudEntitlments(config, appleTeamId, config.modResults);
-    } else {
-      WarningAggregator.addWarningIOS(
-        'expo-document-picker',
-        'Cannot configure iOS entitlements because neither the appleTeamId property, nor the environment variable EXPO_APPLE_TEAM_ID were defined.'
-      );
-    }
-    return config;
-  });
+  if (appleTeamId) {
+    // Statically setting the entitlements outside of the entitlements mod so tools like eas-cli
+    // can determine which capabilities to enable before building the app.
+    if (!config.ios) config.ios = {};
+    config.ios.entitlements = setICloudEntitlments(
+      config,
+      appleTeamId,
+      config.ios.entitlements || {}
+    );
+  } else {
+    WarningAggregator.addWarningIOS(
+      'expo-document-picker',
+      'Cannot configure iOS entitlements because neither the appleTeamId property, nor the environment variable EXPO_APPLE_TEAM_ID were defined.'
+    );
+  }
+  return config;
 };
 
 export function setICloudEntitlments(

@@ -1,10 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withNotificationsIOS = void 0;
-const config_plugins_1 = require("@expo/config-plugins");
 exports.withNotificationsIOS = (config, { mode }) => {
-    return config_plugins_1.withEntitlementsPlist(config, config => {
-        config.modResults['aps-environment'] = mode;
-        return config;
-    });
+    // Statically setting the entitlements outside of the entitlements mod so tools like eas-cli
+    // can determine which capabilities to enable before building the app.
+    if (!config.ios)
+        config.ios = {};
+    if (!config.ios.entitlements)
+        config.ios.entitlements = {};
+    config.ios.entitlements['aps-environment'] = mode;
+    return config;
 };

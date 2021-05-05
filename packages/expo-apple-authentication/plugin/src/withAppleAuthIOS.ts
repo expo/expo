@@ -1,12 +1,12 @@
-import { ConfigPlugin, withEntitlementsPlist } from '@expo/config-plugins';
+import { ConfigPlugin } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 
 export const withAppleAuthIOS: ConfigPlugin = config => {
-  return withEntitlementsPlist(config, config => {
-    config.modResults = setAppleAuthEntitlements(config, config.modResults);
-
-    return config;
-  });
+  if (!config.ios) config.ios = {};
+  // Statically setting the entitlements outside of the entitlements mod so tools like eas-cli
+  // can determine which capabilities to enable before building the app.
+  config.ios.entitlements = setAppleAuthEntitlements(config, config.ios.entitlements || {});
+  return config;
 };
 
 export function setAppleAuthEntitlements(

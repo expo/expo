@@ -4,7 +4,6 @@ import {
   createRunOncePlugin,
   IOSConfig,
   withAndroidManifest,
-  withEntitlementsPlist,
   withXcodeProject,
 } from '@expo/config-plugins';
 
@@ -177,20 +176,24 @@ const withInAppPurchases: ConfigPlugin<Pick<StripePluginProps, 'merchantId'>> = 
    *	 <string>[MERCHANT_ID]</string>
    * </array>
    */
-  return withEntitlementsPlist(config, config => {
-    const key = 'com.apple.developer.in-app-payments';
+  // Statically setting the entitlements outside of the entitlements mod so tools like eas-cli
+  // can determine which capabilities to enable before building the app.
 
-    // @ts-ignore
-    const merchants: string[] = config.modResults[key] ?? [];
+  if (!config.ios) config.ios = {};
+  if (!config.ios.entitlements) config.ios.entitlements = {};
 
-    if (!merchants.includes(props.merchantId)) {
-      merchants.push(props.merchantId);
-    }
+  const key = 'com.apple.developer.in-app-payments';
 
-    config.modResults[key] = merchants;
+  // @ts-ignore
+  const merchants: string[] = config.modResults[key] ?? [];
 
-    return config;
-  });
+  if (!merchants.includes(props.merchantId)) {
+    merchants.push(props.merchantId);
+  }
+
+  config.ios.entitlements[key] = merchants;
+
+  return config;
 };
 
 export default createRunOncePlugin(withStripe, pkg.name, pkg.version);
