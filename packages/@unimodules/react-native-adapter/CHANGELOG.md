@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added CocoaPods & Gradle scripts to use new autolinking implementation (opt-in feature).
+
 ### 🐛 Bug fixes
 
 ## 6.2.2 — 2021-04-13
