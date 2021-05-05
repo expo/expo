@@ -561,6 +561,14 @@ export default createRunOncePlugin(
 );
 ```
 
+### Apple Capabilities
+
+Apple requires you register "capabilities" for an iOS app's bundle identifier via an Apple endpoint before you can create a production build of your app. Capabilities are related to the native iOS plist `*.entitlements` file in a project.
+
+In Xcode, this can be done via the "Signing and Capabilities" tab, but because managed projects don't use Xcode we need some other way to register (otherwise the [production build will crash](https://github.com/expo/eas-cli/pull/384)).
+
+Tools like `eas-cli` are able to register capabilities with Apple, but only if the entitlements are defined statically i.e. not in a modifier. Because of this we recommend you modify the `ios.entitlements` object directly rather than through the `withEntitlements` mod.
+
 ## Debugging
 
 You can debug config plugins by running `EXPO_DEBUG=1 expo prebuild`. If `EXPO_DEBUG` is enabled, the plugin stack logs will be printed, these are useful for viewing which mods ran, and in what order they ran in. To view all static plugin resolution errors, enable `EXPO_CONFIG_PLUGIN_VERBOSE_ERRORS`, this should only be needed for plugin authors.
