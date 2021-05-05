@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added CocoaPods & Gradle scripts to use new autolinking implementation (opt-in feature).
+- Added CocoaPods & Gradle scripts to use new autolinking implementation (opt-in feature). ([#11593](https://github.com/expo/expo/pull/11593) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
