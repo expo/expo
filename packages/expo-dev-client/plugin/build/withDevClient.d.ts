@@ -1,2 +1,2 @@
-import { ExpoConfig } from '@expo/config-types';
-export default function withDevClient(config: ExpoConfig): ExpoConfig;
+declare const _default: import("@expo/config-plugins").ConfigPlugin<unknown>;
+export default _default;
