@@ -106,7 +106,6 @@ This command does not take any options.
 | `-a, --asset-url [url]`  | The absolute or relative url that will host the asset files. Default is './assets', which will be resolved against the public-url. |
 | `-d, --dump-assetmap`    | Dump the asset map for further processing.                                                                                         |
 | `--dev`                  | Configure static files for developing locally using a non-https server                                                             |
-| `-f, --force`            | Overwrite files in output directory without prompting for confirmation                                                             |
 | `-s, --dump-sourcemap`   | Dump the source map for debugging the JS bundle.                                                                                   |
 | `-q, --quiet`            | Suppress verbose output.                                                                                                           |
 | `-t, --target [env]`     | Target environment for which this export is intended. Options are `managed` or `bare`.                                             |

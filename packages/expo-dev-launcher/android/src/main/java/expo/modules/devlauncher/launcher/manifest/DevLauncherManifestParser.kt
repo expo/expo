@@ -23,7 +23,8 @@ class DevLauncherManifestParser(
   }
 
   suspend fun parseManifest(): DevLauncherManifest {
-    val manifestReader = downloadManifest()
-    return DevLauncherManifest.fromJson(manifestReader)
+    downloadManifest().use {
+      return DevLauncherManifest.fromJson(it)
+    }
   }
 }

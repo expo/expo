@@ -153,6 +153,7 @@ In the managed workflow, we use our forked `react-native` repository because we 
 **How:**
 
 - Run `et publish-packages`. Talk to @tsapeta for more details/information.
+- Run `et sync-bundled-native-modules` to sync the `bundledNativeModules.json` file with www.
 
 ## 0.8. Merge and cutoff changelogs
 
@@ -189,6 +190,7 @@ In the managed workflow, we use our forked `react-native` repository because we 
 - Do this step immediately before cutting the release branch.
 - Run `et generate-sdk-docs --sdk XX.X.X` to generate versioned docs for the new SDK. If we've upgraded React Native version in this release, we should also use `--update-react-native-docs` flag which imports the current version of React Native docs that also show up on our docs page. (If there are issues with this, talk with @byCedric.)
 - Run `yarn run schema-sync XX` (`XX` being the major version number) in `docs` directory and then change the schema import in `pages/versions/<version>/config/app.md` from `unversioned` to the new versioned schema file.
+- In the Expo CLI repo, inside of `packages/expo-cli`, run `yarn introspect md | pbcopy` to generate the updated Expo CLI documentation and copy it to your clipboard. Replace everything under the `<TerminalBlock ..>` in `docs/workflow/expo-cli.md` with it, and remove the junk included in your pasted output above the first heading and the "Done in .." bit at the end. Sanity check the diff.
 - Ensure that the `version` in package.json has NOT been updated to the new SDK version. SDK versions greater than the `version` in package.json will be hidden in production docs, and we do not want the new version to show up until the SDK has been released.
 - Commit and push changes to master.
 
@@ -347,6 +349,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 **How:**
 
 - From the master branch, run `et publish-packages` and publish all packages with changes.
+- From the master branch, run `et sync-bundled-native-modules` to sync the `bundledNativeModules.json` file with www.
 - If there are any packages for which a patch was cherry-picked to the release branch AND a new feature (requiring a minor version bump) was added on master in the meantime, you will need to publish a patch release of that package from the release branch which does not include the new feature.
   - Note that **only** the patch version number can be bumped on the release branch; **do not** bump the minor version number of any package on the release branch.
 
@@ -406,6 +409,9 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 - Run `et dispatch client-{ios,android}-simulator` to trigger building Expo Go for simulators, uploading the archive to S3 and updating URL in versions endpoint.
 - Once the job is finished, test if this simulator build work as expected. You can install and launch it using expotools command `et client-install -p {ios,android}`.
+- Ensure that you update the root `iosVersion`/`androidVersion` `iosUrl`/`androidUrl` properties, eg:
+  - `et update-versions-endpoint -k 'iosVersion' -v '2.19.3' --root`
+  - `et update-versions-endpoint -k 'iosUrl' -v 'https://dpq5q02fu5f55.cloudfront.net/Exponent-2.19.3.tar.gz' --root`
 
 # Stage 4 - Standalone apps
 
@@ -539,10 +545,7 @@ Publish a blog post that includes the following information:
 - If needed, refer back to [3.2. Build and submit](#32-build-and-submit) to create a new build and upload it to the App Store. Wait for it to finish processing.
 - In [App Store Connect](https://appstoreconnect.apple.com), select the build you previously uploaded and released to TestFlight, glance through the metadata to verify that it's what you want, and save the changes if any.
   - Fill in "What's New in This Version" with something like "This version contains minor improvements and adds support for SDK XX".
-- Click Submit to send the new binary to Apple. When prompted, give the following answers:
-  - “Yes”, we use the IDFA, check the boxes in this Segment guide: [https://segment.com/docs/sources/mobile/ios/quickstart/](https://segment.com/docs/sources/mobile/ios/quickstart/).
-  - “Serve advertisements within the app” should not be checked.
-  - **Note:** are you reading this for the release that drops SDK 38? If so, this step may not be needed anymore. Please follow up with James (@ide).
+- Click Submit to send the new binary to Apple.
 - If changes are required after submission, you can remove the release from review and repeat this step.
 
 ## 5.10. Start release notes document

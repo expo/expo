@@ -42,7 +42,7 @@ PODS:
   - EXCalendar (9.1.2):
     - UMCore
     - UMPermissionsInterface
-  - EXCamera (11.0.2):
+  - EXCamera (11.0.3):
     - UMBarCodeScannerInterface
     - UMCameraInterface
     - UMCore
@@ -161,6 +161,15 @@ PODS:
   - expo-image (1.0.0-alpha.0):
     - React-Core
     - SDWebImage (~> 5.0)
+  - ExpoModulesCore (0.0.1):
+    - ExpoModulesCore/Core (= 0.0.1)
+    - ExpoModulesCore/Interfaces (= 0.0.1)
+    - UMCore
+  - ExpoModulesCore/Core (0.0.1):
+    - UMCore
+  - ExpoModulesCore/Interfaces (0.0.1):
+    - ExpoModulesCore/Core
+    - UMCore
   - EXPrint (10.1.0):
     - UMCore
     - UMFileSystemInterface
@@ -696,7 +705,7 @@ PODS:
   - UMFileSystemInterface (6.1.0)
   - UMFontInterface (6.1.0)
   - UMImageLoaderInterface (6.1.0)
-  - UMPermissionsInterface (6.1.0):
+  - UMPermissionsInterface (6.2.0):
     - UMCore
   - UMReactNativeAdapter (6.2.2):
     - React-Core
@@ -763,6 +772,7 @@ DEPENDENCIES:
   - expo-dev-menu (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu-interface (from `../../../packages/expo-dev-menu-interface`)
   - expo-image (from `../../../packages/expo-image`)
+  - ExpoModulesCore (from `../../../packages/expo-modules-core/ios`)
   - EXPrint (from `../../../packages/expo-print/ios`)
   - EXRandom (from `../../../packages/expo-random/ios`)
   - EXScreenCapture (from `../../../packages/expo-screen-capture/ios`)
@@ -1036,6 +1046,9 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-dev-menu-interface"
   expo-image:
     :path: "../../../packages/expo-image"
+  ExpoModulesCore:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-modules-core/ios"
   EXPrint:
     inhibit_warnings: false
     :path: "../../../packages/expo-print/ios"
@@ -1227,7 +1240,7 @@ SPEC CHECKSUMS:
   EXBlur: 50d490040f3b14898ed8198d5125dc699189f4d9
   EXBrightness: abbccf5debb65fd894e686c7196e6a9032958251
   EXCalendar: 59290180317ea486e94dfa2e7dfc7332f675d224
-  EXCamera: 74dd7f9522ac2c43c6e31620e3722cd26cd8e52c
+  EXCamera: 22ffe45543b7446afab8e33962f9b45f230ad835
   EXCellular: 06e641f1c34e9d772da3c69cfe9ef4828791e3f8
   EXConstants: c4dd28acc12039c999612507a5f935556f2c86ce
   EXContacts: 3462ccabe981fd58cd680206187a9a7636a567a0
@@ -1263,6 +1276,7 @@ SPEC CHECKSUMS:
   expo-dev-menu: 9cab52a55688aef281dee77a101af83658c59b48
   expo-dev-menu-interface: e6f313b7b0c0c79b1987cf26bc5c969bad69bb7d
   expo-image: 07527eb7a57f5ac939c5ded392bcf64c975b9c87
+  ExpoModulesCore: efdfa6650a7b554180c1559b7be9c3510ce18e51
   EXPrint: f6d272e7729d188a05686817ce8d84683da36073
   EXRandom: cbd66cd45434a494f5ef98650eec1f8d78b90270
   EXScreenCapture: 2903dace06f2d06cc161017637cc4cbfcaa98986
@@ -1362,7 +1376,7 @@ SPEC CHECKSUMS:
   UMFileSystemInterface: f72245e90ce78fa6427180ff0b0904ead13d8161
   UMFontInterface: 5843cff7db85a42ba629aaac53d33091c35524d3
   UMImageLoaderInterface: 9ddffeb644b3f45d4eb0c2f51a2fd95fd5c8d1a4
-  UMPermissionsInterface: 40b72935a7d12a3f60dc6b7bb99ce47908380cb1
+  UMPermissionsInterface: 445acbfbdc2a675cedae79bbfb93ff7d83a96ff1
   UMReactNativeAdapter: d8e90e5addf650353d4dc2983759d57679e02ff3
   UMSensorsInterface: a5e9db661e5d9ae214762033d725989880ae6993
   UMTaskManagerInterface: 203c11259d2699b5b3a4eda4adbc466f5cb5c561

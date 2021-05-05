@@ -3,6 +3,7 @@
 #import <XCTest/XCTest.h>
 
 #import <EXUpdates/EXUpdatesDatabaseInitialization+Tests.h>
+#import <EXUpdates/EXUpdatesDatabaseMigration4To5.h>
 #import <EXUpdates/EXUpdatesDatabaseUtils.h>
 
 #import <sqlite3.h>
@@ -117,6 +118,7 @@ CREATE INDEX \"index_json_data_scope_key\" ON \"json_data\" (\"scope_key\")\
                                                        filename:@"expo-v4.db"
                                                     inDirectory:_testDatabaseDir
                                                   shouldMigrate:NO
+                                                     migrations:@[]
                                                        database:&db
                                                           error:&initializeError];
   XCTAssertNil(initializeError);
@@ -148,6 +150,7 @@ CREATE INDEX \"index_json_data_scope_key\" ON \"json_data\" (\"scope_key\")\
   NSError *migrateError;
   [EXUpdatesDatabaseInitialization initializeDatabaseWithLatestSchemaInDirectory:_testDatabaseDir
                                                                         database:&migratedDb
+                                                                      migrations:@[[EXUpdatesDatabaseMigration4To5 new]]
                                                                            error:&migrateError];
   XCTAssertNil(migrateError);
 

@@ -12,6 +12,8 @@ import expo.modules.updates.db.entity.UpdateEntity;
  * originating from the server. If an older update is available, it will choose to keep one older
  * update in addition to the one currently running, preferring updates that match the same filters
  * if available.
+ *
+ * Chooses only to delete updates whose scope matches that of `launchedUpdate`.
  */
 public class ReaperSelectionPolicyFilterAware implements ReaperSelectionPolicy {
 
@@ -28,6 +30,10 @@ public class ReaperSelectionPolicyFilterAware implements ReaperSelectionPolicy {
     UpdateEntity nextNewestUpdate = null;
     UpdateEntity nextNewestUpdateMatchingFilters = null;
     for (UpdateEntity update : updates) {
+      // ignore any updates whose scopeKey doesn't match that of the launched update
+      if (!update.scopeKey.equals(launchedUpdate.scopeKey)) {
+        continue;
+      }
       if (update.commitTime.before(launchedUpdate.commitTime)) {
         updatesToDelete.add(update);
         if (nextNewestUpdate == null || nextNewestUpdate.commitTime.before(update.commitTime)) {

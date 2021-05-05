@@ -56,7 +56,7 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
     val taskBundle = Bundle()
 
     taskBundle.putString("manifestUrl", getManifestUrl())
-    taskBundle.putString("manifestString", manifest?.getRawJson().toString())
+    taskBundle.putString("manifestString", manifest?.toString())
 
     bundle.putBundle("task", taskBundle)
     bundle.putString("uuid", UUID.randomUUID().toString())
