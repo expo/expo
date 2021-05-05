@@ -87,7 +87,7 @@ describe('Android notifications configuration', () => {
     );
   });
   it('writes to colors.xml correctly', async () => {
-    await setNotificationIconColorAsync('#00ff00', projectRoot);
+    await setNotificationIconColorAsync(projectRoot, '#00ff00');
 
     const after = getDirFromFS(vol.toJSON(), projectRoot);
     expect(after['android/app/src/main/res/values/colors.xml']).toContain(
@@ -95,8 +95,8 @@ describe('Android notifications configuration', () => {
     );
   });
   it('writes all the asset files (sounds and images) as expected', async () => {
-    await setNotificationIconAsync('/app/assets/notificationIcon.png', projectRoot);
-    setNotificationSounds(['/app/assets/notificationSound.wav'], projectRoot);
+    await setNotificationIconAsync(projectRoot, '/app/assets/notificationIcon.png');
+    setNotificationSounds(projectRoot, ['/app/assets/notificationSound.wav']);
 
     const after = getDirFromFS(vol.toJSON(), projectRoot);
     expect(Object.keys(after).sort()).toEqual(LIST_OF_GENERATED_NOTIFICATION_FILES.sort());

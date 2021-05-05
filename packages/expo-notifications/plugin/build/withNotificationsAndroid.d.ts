@@ -32,11 +32,11 @@ export declare function getNotificationColor(config: ExpoConfig): string | null;
 /**
  * Applies notification icon configuration for expo-notifications
  */
-export declare function setNotificationIconAsync(icon: string | null, projectRoot: string): Promise<void>;
-export declare function setNotificationIconColorAsync(color: string | null, projectRoot: string): Promise<void>;
+export declare function setNotificationIconAsync(projectRoot: string, icon: string | null): Promise<void>;
+export declare function setNotificationIconColorAsync(projectRoot: string, color: string | null): Promise<void>;
 /**
  * Save sound files to `<project-root>/android/app/src/main/res/raw`
  */
-export declare function setNotificationSounds(sounds: string[], projectRoot: string): void;
+export declare function setNotificationSounds(projectRoot: string, sounds: string[]): void;
 export declare const withNotificationsAndroid: ConfigPlugin<NotificationsPluginProps>;
 export {};

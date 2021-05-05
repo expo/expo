@@ -48,7 +48,7 @@ export const withNotificationIcons: ConfigPlugin<{ icon: string | null }> = (con
   return withDangerousMod(config, [
     'android',
     async config => {
-      await setNotificationIconAsync(icon, config.modRequest.projectRoot);
+      await setNotificationIconAsync(config.modRequest.projectRoot, icon);
       return config;
     },
   ]);
@@ -63,7 +63,7 @@ export const withNotificationIconColor: ConfigPlugin<{ color: string | null }> =
   return withDangerousMod(config, [
     'android',
     async config => {
-      await setNotificationIconColorAsync(color, config.modRequest.projectRoot);
+      await setNotificationIconColorAsync(config.modRequest.projectRoot, color);
       return config;
     },
   ]);
@@ -86,7 +86,7 @@ export const withNotificationSounds: ConfigPlugin<{ sounds: string[] }> = (confi
   return withDangerousMod(config, [
     'android',
     config => {
-      setNotificationSounds(sounds, config.modRequest.projectRoot);
+      setNotificationSounds(config.modRequest.projectRoot, sounds);
       return config;
     },
   ]);
@@ -103,7 +103,7 @@ export function getNotificationColor(config: ExpoConfig) {
 /**
  * Applies notification icon configuration for expo-notifications
  */
-export async function setNotificationIconAsync(icon: string | null, projectRoot: string) {
+export async function setNotificationIconAsync(projectRoot: string, icon: string | null) {
   if (icon) {
     await writeNotificationIconImageFilesAsync(icon, projectRoot);
   } else {
@@ -139,7 +139,7 @@ function setNotificationConfig(
   return manifest;
 }
 
-export async function setNotificationIconColorAsync(color: string | null, projectRoot: string) {
+export async function setNotificationIconColorAsync(projectRoot: string, color: string | null) {
   const colorsXmlPath = await Colors.getProjectColorsXMLPathAsync(projectRoot);
   let colorsJson = await readResourcesXMLAsync({ path: colorsXmlPath });
   if (color) {
@@ -193,7 +193,7 @@ function removeNotificationIconImageFiles(projectRoot: string) {
 /**
  * Save sound files to `<project-root>/android/app/src/main/res/raw`
  */
-export function setNotificationSounds(sounds: string[], projectRoot: string) {
+export function setNotificationSounds(projectRoot: string, sounds: string[]) {
   if (!Array.isArray(sounds)) {
     throw new Error(
       `Must provide an array of sound files in your app config, found ${typeof sounds}.`
