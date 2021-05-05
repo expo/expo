@@ -67,6 +67,7 @@ export type ConstantDefinitionData = {
   };
   comment?: CommentData;
   kind: TypeDocKind;
+  type: TypeDefinitionData;
 };
 
 // Enums section
