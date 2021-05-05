@@ -1,6 +1,7 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesDatabaseMigration5To6.h>
+#import <EXUpdates/EXUpdatesDatabaseUtils.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -34,8 +35,10 @@ static NSString * const EXUpdatesDatabaseV5Filename = @"expo-v5.db";
         )"]) return NO;
   // insert current time as lastAccessed date for all existing updates
   long long currentTime = [NSDate date].timeIntervalSince1970 * 1000;
-  if (![self _safeExecOrRollback:db sql:[NSString stringWithFormat:@"INSERT INTO `new_updates` (`id`, `scope_key`, `commit_time`, `runtime_version`, `launch_asset_id`, `manifest`, `status`, `keep`, `last_accessed`)\
-                                         SELECT `id`, `scope_key`, `commit_time`, `runtime_version`, `launch_asset_id`, `metadata` AS `manifest`, `status`, `keep`, %lli AS `last_accessed` FROM `updates`", currentTime]]) return NO;
+  if (![self _safeExecOrRollback:db
+                             sql:@"INSERT INTO `new_updates` (`id`, `scope_key`, `commit_time`, `runtime_version`, `launch_asset_id`, `manifest`, `status`, `keep`, `last_accessed`)\
+                                   SELECT `id`, `scope_key`, `commit_time`, `runtime_version`, `launch_asset_id`, `metadata` AS `manifest`, `status`, `keep`, ?1 AS `last_accessed` FROM `updates`"
+                            args:@[@(currentTime)]]) return NO;
   if (![self _safeExecOrRollback:db sql:@"DROP TABLE `updates`"]) return NO;
   if (![self _safeExecOrRollback:db sql:@"ALTER TABLE `new_updates` RENAME TO `updates`"]) return NO;
   if (![self _safeExecOrRollback:db sql:@"CREATE UNIQUE INDEX \"index_updates_scope_key_commit_time\" ON \"updates\" (\"scope_key\", \"commit_time\")"]) return NO;
@@ -49,6 +52,17 @@ static NSString * const EXUpdatesDatabaseV5Filename = @"expo-v5.db";
 - (BOOL)_safeExecOrRollback:(struct sqlite3 *)db sql:(NSString *)sql
 {
   if (sqlite3_exec(db, sql.UTF8String, NULL, NULL, NULL) != SQLITE_OK) {
+    sqlite3_exec(db, "ROLLBACK;", NULL, NULL, NULL);
+    return NO;
+  }
+  return YES;
+}
+
+- (BOOL)_safeExecOrRollback:(struct sqlite3 *)db sql:(NSString *)sql args:(NSArray *)args
+{
+  NSError *error;
+  NSArray<NSDictionary *> *rows = [EXUpdatesDatabaseUtils executeSql:sql withArgs:args onDatabase:db error:&error];
+  if (!rows || error) {
     sqlite3_exec(db, "ROLLBACK;", NULL, NULL, NULL);
     return NO;
   }

@@ -82,7 +82,7 @@ public abstract class UpdatesDatabase extends RoomDatabase {
           // insert current time as lastAccessed date for all existing updates
           long currentTime = new Date().getTime();
           database.execSQL("INSERT INTO `new_updates` (`id`, `scope_key`, `commit_time`, `runtime_version`, `launch_asset_id`, `manifest`, `status`, `keep`, `last_accessed`)" +
-                  " SELECT `id`, `scope_key`, `commit_time`, `runtime_version`, `launch_asset_id`, `metadata` AS `manifest`, `status`, `keep`, " + currentTime + " AS `last_accessed` FROM `updates`");
+                  " SELECT `id`, `scope_key`, `commit_time`, `runtime_version`, `launch_asset_id`, `metadata` AS `manifest`, `status`, `keep`, ?1 AS `last_accessed` FROM `updates`", new Object[]{currentTime});
           database.execSQL("DROP TABLE `updates`");
           database.execSQL("ALTER TABLE `new_updates` RENAME TO `updates`");
           database.execSQL("CREATE INDEX `index_updates_launch_asset_id` ON `updates` (`launch_asset_id`)");
