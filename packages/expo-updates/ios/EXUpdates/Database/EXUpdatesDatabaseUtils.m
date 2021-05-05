@@ -112,6 +112,12 @@ static NSString * const EXUpdatesDatabaseUtilsErrorDomain = @"EXUpdatesDatabase"
         success = NO;
         *stop = YES;
       }
+    } else if ([obj isKindOfClass:[NSDate class]]) {
+      NSTimeInterval dateValue = [(NSDate *)obj timeIntervalSince1970] * 1000;
+      if (sqlite3_bind_int64(stmt, (int)idx + 1, (long long)dateValue) != SQLITE_OK) {
+        success = NO;
+        *stop = YES;
+      }
     } else if ([obj isKindOfClass:[NSDictionary class]]) {
       NSError *error;
       NSData *jsonData = [NSJSONSerialization dataWithJSONObject:(NSDictionary *)obj options:kNilOptions error:&error];
@@ -145,6 +151,11 @@ static NSString * const EXUpdatesDatabaseUtilsErrorDomain = @"EXUpdatesDatabase"
   return [NSError errorWithDomain:EXUpdatesDatabaseUtilsErrorDomain
                              code:extendedCode
                          userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Error code %i: %@ (extended error code %i)", code, message, extendedCode]}];
+}
+
++ (NSDate *)dateFromUnixTimeMilliseconds:(NSNumber *)number
+{
+  return [NSDate dateWithTimeIntervalSince1970:number.doubleValue / 1000];
 }
 
 @end

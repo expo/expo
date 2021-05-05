@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - Save asset with a key that does not include an extension. This introduces an implicit dependency on expo-asset@8.3.2 or above. ([#12734](https://github.com/expo/expo/pull/12734) by [@jkhales](https://github.com/jkhales))
+- Add last_accessed column to updates table schema, and rename metadata -> manifest. ([#12768](https://github.com/expo/expo/pull/12768) by [@esamelson](https://github.com/esamelson))
 
 ### 🎉 New features
 
@@ -19,6 +20,8 @@
 - Convert most remaining usages of JSON manifest to RawManifest. ([#12600](https://github.com/expo/expo/pull/12600) by [@wschurman](https://github.com/wschurman))
 - Factor out raw manifest into wrapper class. ([#12631](https://github.com/expo/expo/pull/12631) by [@wschurman](https://github.com/wschurman))
 - Remove code to handle nested root level manifest key. ([#12736](https://github.com/expo/expo/pull/12736) by [@wschurman](https://github.com/wschurman))
+- Move scope check from reaper to selection policy. ([#12769](https://github.com/expo/expo/pull/12769) by [@esamelson](https://github.com/esamelson))
+- Add ReaperSelectionPolicyDevelopmentClient, implement in Expo Go. ([#12770](https://github.com/expo/expo/pull/12770) by [@esamelson](https://github.com/esamelson))
 
 ### 🐛 Bug fixes
 

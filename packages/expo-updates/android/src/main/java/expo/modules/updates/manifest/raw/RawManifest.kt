@@ -21,6 +21,11 @@ abstract class RawManifest(protected val json: JSONObject) {
   @Deprecated(message = "Prefer to use specific field getters")
   fun getRawJson(): JSONObject = json
 
+  @Deprecated(message = "Prefer to use specific field getters")
+  override fun toString(): String {
+    return getRawJson().toString()
+  }
+
   @Throws(JSONException::class)
   fun getID(): String = json.getString("id")
 
