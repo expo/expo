@@ -1,3 +1,4 @@
+import * as Linking from 'expo-linking';
 import { AuthRequest } from './AuthRequest';
 import { AuthRequestConfig, AuthRequestPromptOptions, CodeChallengeMethod, Prompt, ResponseType } from './AuthRequest.types';
 import { AuthSessionOptions, AuthSessionRedirectUriOptions, AuthSessionResult } from './AuthSession.types';
@@ -5,7 +6,7 @@ import { DiscoveryDocument, fetchDiscoveryAsync, Issuer, IssuerOrDiscovery, Prov
 import { generateHexStringAsync } from './PKCE';
 export declare function startAsync(options: AuthSessionOptions): Promise<AuthSessionResult>;
 export declare function dismiss(): void;
-export declare const getDefaultReturnUrl: (urlPath?: string | undefined, options?: Pick<any, string | number | symbol> | undefined) => string;
+export declare const getDefaultReturnUrl: (urlPath?: string | undefined, options?: Pick<Linking.CreateURLOptions, "scheme" | "isTripleSlashed"> | undefined) => string;
 /**
  * @deprecated Use `makeRedirectUri({ path, useProxy })` instead.
  *

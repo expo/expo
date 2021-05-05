@@ -8,6 +8,7 @@ import expo.modules.updates.db.entity.UpdateEntity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -93,6 +94,11 @@ public abstract class UpdateDao {
 
   public void markUpdateFinished(UpdateEntity update) {
     markUpdateFinished(update, false);
+  }
+
+  public void markUpdateAccessed(UpdateEntity update) {
+    update.lastAccessed = new Date();
+    _updateUpdate(update);
   }
 
   public void markUpdatesWithMissingAssets(List<AssetEntity> missingAssets) {
