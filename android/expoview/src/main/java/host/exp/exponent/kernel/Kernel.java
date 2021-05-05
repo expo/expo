@@ -17,6 +17,8 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import com.facebook.internal.BundleJSONConverter;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.ReactInstanceManager;
@@ -550,9 +552,9 @@ public class Kernel extends KernelInterface {
       }
     }
 
-    if (uri != null) {
+    if (uri != null && shouldOpenUrl(uri)) {
       if (Constants.INITIAL_URL == null) {
-        // We got an "exp://" link
+        // We got an "exp://", "exps://", "http://", or "https://" app link
         openExperience(new KernelConstants.ExperienceOptions(intentUri, intentUri, null));
         return;
       } else {
@@ -567,6 +569,13 @@ public class Kernel extends KernelInterface {
     }
 
     openDefaultUrl();
+  }
+
+  // Certain links (i.e. 'expo.io/expo-go') should just open the HomeScreen
+  private boolean shouldOpenUrl(@NonNull Uri uri) {
+    String host = uri.getHost() != null ? uri.getHost() : "";
+    String path = uri.getPath() != null ? uri.getPath() : "";
+    return !(host.equals("expo.io") && path.equals("/expo-go"));
   }
 
   private boolean openExperienceFromNotificationIntent(Intent intent) {
