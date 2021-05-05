@@ -27,7 +27,6 @@ export type ReviewOutput = {
  */
 export type ReviewInput = {
   pullRequest: PullRequest;
-  mergeBaseSha: string;
   diff: GitFileDiff[];
 };
 
