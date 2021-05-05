@@ -8,12 +8,13 @@ const pkg = require('expo-notifications/package.json');
 export type NotificationsPluginProps = {
   /**
    * (Android only) Local path to an image to use as the icon for push notifications.
-   * 96x96 all-white png with transparency. We recommend following Google's design guidelines.
+   * 96x96 all-white png with transparency. We recommend following
+   * [Google's design guidelines](https://material.io/design/iconography/product-icons.html#design-principles).
    */
   icon?: string;
   /**
    * (Android only) Tint color for the push notification image when it appears in the notification tray.
-   * Defaults to #ffffff
+   * @default '#ffffff'
    */
   color?: string;
   /**
@@ -22,13 +23,14 @@ export type NotificationsPluginProps = {
   sounds?: string[];
   /**
    * (iOS only) Environment of the app: either 'development' or 'production'. Defaults to 'development'.
+   * @default 'development'
    */
   mode?: 'development' | 'production';
 };
 
-const withNotifications: ConfigPlugin<NotificationsPluginProps> = (config, props) => {
-  config = withNotificationsAndroid(config, props);
-  config = withNotificationsIOS(config, props);
+const withNotifications: ConfigPlugin<NotificationsPluginProps | void> = (config, props) => {
+  config = withNotificationsAndroid(config, props || {});
+  config = withNotificationsIOS(config, props || {});
   return config;
 };
 
