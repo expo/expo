@@ -8,8 +8,8 @@ import {
 
 import { ExpoConfig } from '@expo/config-types';
 import { generateImageAsync } from '@expo/image-utils';
-import fs from 'fs-extra';
-import path from 'path';
+import { writeFileSync, unlinkSync, copyFileSync, existsSync, mkdirSync } from 'fs';
+import { basename, resolve } from 'path';
 
 import { NotificationsPluginProps } from './withNotifications';
 
@@ -76,8 +76,8 @@ export const withNotificationManifest: ConfigPlugin<{
   // If no icon or color provided in the config plugin props, fallback to value from app.json
   icon = icon || getNotificationIcon(config);
   color = color || getNotificationColor(config);
-  return withAndroidManifest(config, async config => {
-    config.modResults = await setNotificationConfigAsync({ icon, color }, config.modResults);
+  return withAndroidManifest(config, config => {
+    config.modResults = setNotificationConfig({ icon, color }, config.modResults);
     return config;
   });
 };
@@ -85,8 +85,8 @@ export const withNotificationManifest: ConfigPlugin<{
 export const withNotificationSounds: ConfigPlugin<{ sounds: string[] }> = (config, { sounds }) => {
   return withDangerousMod(config, [
     'android',
-    async config => {
-      await setNotificationSoundsAsync(sounds, config.modRequest.projectRoot);
+    config => {
+      setNotificationSounds(sounds, config.modRequest.projectRoot);
       return config;
     },
   ]);
@@ -107,11 +107,11 @@ export async function setNotificationIconAsync(icon: string | null, projectRoot:
   if (icon) {
     await writeNotificationIconImageFilesAsync(icon, projectRoot);
   } else {
-    await removeNotificationIconImageFilesAsync(projectRoot);
+    removeNotificationIconImageFiles(projectRoot);
   }
 }
 
-export async function setNotificationConfigAsync(
+function setNotificationConfig(
   props: { icon: string | null; color: string | null },
   manifest: AndroidConfig.Manifest.AndroidManifest
 ) {
@@ -155,8 +155,10 @@ async function writeNotificationIconImageFilesAsync(icon: string, projectRoot: s
   await Promise.all(
     Object.values(dpiValues).map(async ({ folderName, scale }) => {
       const drawableFolderName = folderName.replace('mipmap', 'drawable');
-      const dpiFolderPath = path.resolve(projectRoot, ANDROID_RES_PATH, drawableFolderName);
-      await fs.ensureDir(dpiFolderPath);
+      const dpiFolderPath = resolve(projectRoot, ANDROID_RES_PATH, drawableFolderName);
+      if (!existsSync(dpiFolderPath)) {
+        mkdirSync(dpiFolderPath, { recursive: true });
+      }
       const iconSizePx = BASELINE_PIXEL_SIZE * scale;
 
       try {
@@ -172,7 +174,7 @@ async function writeNotificationIconImageFilesAsync(icon: string, projectRoot: s
             }
           )
         ).source;
-        await fs.writeFile(path.resolve(dpiFolderPath, NOTIFICATION_ICON + '.png'), resizedIcon);
+        writeFileSync(resolve(dpiFolderPath, NOTIFICATION_ICON + '.png'), resizedIcon);
       } catch (e) {
         throw new Error('Encountered an issue resizing Android notification icon: ' + e);
       }
@@ -180,46 +182,44 @@ async function writeNotificationIconImageFilesAsync(icon: string, projectRoot: s
   );
 }
 
-async function removeNotificationIconImageFilesAsync(projectRoot: string) {
-  await Promise.all(
-    Object.values(dpiValues).map(async ({ folderName }) => {
-      const drawableFolderName = folderName.replace('mipmap', 'drawable');
-      const dpiFolderPath = path.resolve(projectRoot, ANDROID_RES_PATH, drawableFolderName);
-      await fs.remove(path.resolve(dpiFolderPath, NOTIFICATION_ICON + '.png'));
-    })
-  );
+function removeNotificationIconImageFiles(projectRoot: string) {
+  Object.values(dpiValues).forEach(async ({ folderName }) => {
+    const drawableFolderName = folderName.replace('mipmap', 'drawable');
+    const dpiFolderPath = resolve(projectRoot, ANDROID_RES_PATH, drawableFolderName);
+    unlinkSync(resolve(dpiFolderPath, NOTIFICATION_ICON + '.png'));
+  });
 }
 
 /**
- * Save sound files to <project-root>/android/app/src/main/res/raw
+ * Save sound files to `<project-root>/android/app/src/main/res/raw`
  */
-export async function setNotificationSoundsAsync(sounds: string[], projectRoot: string) {
+export function setNotificationSounds(sounds: string[], projectRoot: string) {
   if (!Array.isArray(sounds)) {
     throw new Error(
       `Must provide an array of sound files in your app config, found ${typeof sounds}.`
     );
   }
-  await Promise.all(
-    sounds.map(async (soundFileRelativePath: string) => {
-      await writeNotificationSoundFileAsync(soundFileRelativePath, projectRoot);
-    })
-  );
+  for (const soundFileRelativePath of sounds) {
+    writeNotificationSoundFile(soundFileRelativePath, projectRoot);
+  }
 }
 
 /**
- * Copies the input file to the <project-root>/android/app/src/main/res/raw directory if
+ * Copies the input file to the `<project-root>/android/app/src/main/res/raw` directory if
  * there isn't already an existing file under that name.
  */
-async function writeNotificationSoundFileAsync(soundFileRelativePath: string, projectRoot: string) {
-  const rawResourcesPath = path.resolve(projectRoot, ANDROID_RES_PATH, 'raw');
-  const inputFilename = path.basename(soundFileRelativePath);
+function writeNotificationSoundFile(soundFileRelativePath: string, projectRoot: string) {
+  const rawResourcesPath = resolve(projectRoot, ANDROID_RES_PATH, 'raw');
+  const inputFilename = basename(soundFileRelativePath);
 
   if (inputFilename) {
     try {
-      const sourceFilepath = path.resolve(projectRoot, soundFileRelativePath);
-      const destinationFilepath = path.resolve(rawResourcesPath, inputFilename);
-      await fs.ensureDir(rawResourcesPath);
-      await fs.copyFile(sourceFilepath, destinationFilepath);
+      const sourceFilepath = resolve(projectRoot, soundFileRelativePath);
+      const destinationFilepath = resolve(rawResourcesPath, inputFilename);
+      if (!existsSync(rawResourcesPath)) {
+        mkdirSync(rawResourcesPath, { recursive: true });
+      }
+      copyFileSync(sourceFilepath, destinationFilepath);
     } catch (e) {
       throw new Error('Encountered an issue copying Android notification sounds: ' + e);
     }

@@ -4,8 +4,8 @@ import {
   IOSConfig,
   withXcodeProject,
 } from '@expo/config-plugins';
-import fs from 'fs-extra';
-import path from 'path';
+import { copyFileSync } from 'fs';
+import { basename, resolve } from 'path';
 
 import { NotificationsPluginProps } from './withNotifications';
 
@@ -49,11 +49,11 @@ export function setNotificationSounds(
   const projectName = IOSConfig.XcodeUtils.getProjectName(projectRoot);
 
   sounds.map((soundFileRelativePath: string) => {
-    const fileName = path.basename(soundFileRelativePath);
-    const sourceFilepath = path.resolve(projectRoot, soundFileRelativePath);
-    const destinationFilepath = path.join(IOSConfig.Paths.getSourceRoot(projectRoot), fileName);
+    const fileName = basename(soundFileRelativePath);
+    const sourceFilepath = resolve(projectRoot, soundFileRelativePath);
+    const destinationFilepath = resolve(IOSConfig.Paths.getSourceRoot(projectRoot), fileName);
 
-    fs.copyFileSync(sourceFilepath, destinationFilepath);
+    copyFileSync(sourceFilepath, destinationFilepath);
     if (!project.hasFile(`${projectName}/${fileName}`)) {
       project = IOSConfig.XcodeUtils.addResourceFileToGroup({
         filepath: `${projectName}/${fileName}`,

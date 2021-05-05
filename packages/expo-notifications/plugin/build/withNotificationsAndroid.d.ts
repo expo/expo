@@ -1,4 +1,4 @@
-import { AndroidConfig, ConfigPlugin } from '@expo/config-plugins';
+import { ConfigPlugin } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 import { NotificationsPluginProps } from './withNotifications';
 declare type DPIString = 'mdpi' | 'hdpi' | 'xhdpi' | 'xxhdpi' | 'xxxhdpi';
@@ -33,14 +33,10 @@ export declare function getNotificationColor(config: ExpoConfig): string | null;
  * Applies notification icon configuration for expo-notifications
  */
 export declare function setNotificationIconAsync(icon: string | null, projectRoot: string): Promise<void>;
-export declare function setNotificationConfigAsync(props: {
-    icon: string | null;
-    color: string | null;
-}, manifest: AndroidConfig.Manifest.AndroidManifest): Promise<AndroidConfig.Manifest.AndroidManifest>;
 export declare function setNotificationIconColorAsync(color: string | null, projectRoot: string): Promise<void>;
 /**
- * Save sound files to <project-root>/android/app/src/main/res/raw
+ * Save sound files to `<project-root>/android/app/src/main/res/raw`
  */
-export declare function setNotificationSoundsAsync(sounds: string[], projectRoot: string): Promise<void>;
+export declare function setNotificationSounds(sounds: string[], projectRoot: string): void;
 export declare const withNotificationsAndroid: ConfigPlugin<NotificationsPluginProps>;
 export {};

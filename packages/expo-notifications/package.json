@@ -55,7 +55,6 @@
     "uuid": "^3.4.0"
   },
   "devDependencies": {
-    "@types/fs-extra": "^9.0.6",
     "@types/node-fetch": "^2.5.7",
     "@types/uuid": "^3.4.7",
     "expo-module-scripts": "^2.0.0",

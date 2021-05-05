@@ -8,7 +8,7 @@ import {
   NOTIFICATION_ICON_COLOR,
   setNotificationIconAsync,
   setNotificationIconColorAsync,
-  setNotificationSoundsAsync,
+  setNotificationSounds,
 } from '../withNotificationsAndroid';
 
 export function getDirFromFS(fsJSON: Record<string, string | null>, rootDir: string) {
@@ -96,7 +96,7 @@ describe('Android notifications configuration', () => {
   });
   it('writes all the asset files (sounds and images) as expected', async () => {
     await setNotificationIconAsync('/app/assets/notificationIcon.png', projectRoot);
-    await setNotificationSoundsAsync(['/app/assets/notificationSound.wav'], projectRoot);
+    setNotificationSounds(['/app/assets/notificationSound.wav'], projectRoot);
 
     const after = getDirFromFS(vol.toJSON(), projectRoot);
     expect(Object.keys(after).sort()).toEqual(LIST_OF_GENERATED_NOTIFICATION_FILES.sort());

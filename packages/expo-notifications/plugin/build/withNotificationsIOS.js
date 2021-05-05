@@ -1,12 +1,9 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setNotificationSounds = exports.withNotificationSounds = exports.withNotificationsIOS = void 0;
 const config_plugins_1 = require("@expo/config-plugins");
-const fs_extra_1 = __importDefault(require("fs-extra"));
-const path_1 = __importDefault(require("path"));
+const fs_1 = require("fs");
+const path_1 = require("path");
 exports.withNotificationsIOS = (config, { mode = 'development', sounds = [] }) => {
     config = config_plugins_1.withEntitlementsPlist(config, config => {
         config.modResults['aps-environment'] = mode;
@@ -33,10 +30,10 @@ function setNotificationSounds(sounds, { projectRoot, project }) {
     }
     const projectName = config_plugins_1.IOSConfig.XcodeUtils.getProjectName(projectRoot);
     sounds.map((soundFileRelativePath) => {
-        const fileName = path_1.default.basename(soundFileRelativePath);
-        const sourceFilepath = path_1.default.resolve(projectRoot, soundFileRelativePath);
-        const destinationFilepath = path_1.default.join(config_plugins_1.IOSConfig.Paths.getSourceRoot(projectRoot), fileName);
-        fs_extra_1.default.copyFileSync(sourceFilepath, destinationFilepath);
+        const fileName = path_1.basename(soundFileRelativePath);
+        const sourceFilepath = path_1.resolve(projectRoot, soundFileRelativePath);
+        const destinationFilepath = path_1.resolve(config_plugins_1.IOSConfig.Paths.getSourceRoot(projectRoot), fileName);
+        fs_1.copyFileSync(sourceFilepath, destinationFilepath);
         if (!project.hasFile(`${projectName}/${fileName}`)) {
             project = config_plugins_1.IOSConfig.XcodeUtils.addResourceFileToGroup({
                 filepath: `${projectName}/${fileName}`,
