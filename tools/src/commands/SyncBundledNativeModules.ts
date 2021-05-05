@@ -230,6 +230,9 @@ function prepareSyncPayload(bundledNativeModules: BundledNativeModules): SyncPay
 export default (program: Command) => {
   program
     .command('sync-bundled-native-modules')
+    .description(
+      'Sync configuration from bundledNativeModules.json to the corresponding API endpoint.'
+    )
     .alias('sbnm')
     .option('-e, --env <local|staging|production>', 'www environment', 'staging')
     .asyncAction(main);
