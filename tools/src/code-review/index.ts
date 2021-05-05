@@ -32,16 +32,11 @@ export async function reviewPullRequestAsync(prNumber: number) {
     ref: pr.head.sha,
   });
 
-  // Find the common ancestor of the base and PR's head.
-  const mergeBaseSha = await Git.mergeBaseAsync(pr.base.sha, pr.head.sha);
-  logger.info('👀 Found common ancestor:', chalk.yellow.bold(mergeBaseSha));
-
   // Gets the diff of the pull request.
-  const diff = await Git.getDiffAsync(mergeBaseSha, pr.head.sha);
+  const diff = await Git.getDiffAsync(pr.base.sha, pr.head.sha);
 
   const input: ReviewInput = {
     pullRequest: pr,
-    mergeBaseSha,
     diff,
   };
 
