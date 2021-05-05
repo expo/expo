@@ -59,7 +59,7 @@ module.exports = async function (args) {
         .option('-n, --namespace <namespace>', 'Java package name under which the package list should be placed.')
         .option('--empty', 'Whether to only generate an empty list. Might be used when the user opts-out of autolinking.', false);
     await commander_1.default
-        .version(require('expo-module-autolinking/package.json').version)
+        .version(require('expo-modules-autolinking/package.json').version)
         .description('CLI command that searches for Expo modules to autolink them.')
         .parseAsync(args, { from: 'user' });
 };
