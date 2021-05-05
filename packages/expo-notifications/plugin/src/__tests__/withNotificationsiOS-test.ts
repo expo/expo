@@ -31,9 +31,6 @@ describe('iOS notifications configuration', () => {
       '/app/ios/testproject.xcodeproj/project.pbxproj',
       fsReal.readFileSync(path.join(__dirname, 'fixtures/project.pbxproj'), 'utf-8')
     );
-
-    const project = IOSConfig.XcodeUtils.getPbxproj(projectRoot);
-    setNotificationSounds(['/app/assets/notificationSound.wav'], { project, projectRoot });
   });
 
   afterAll(() => {
@@ -42,6 +39,9 @@ describe('iOS notifications configuration', () => {
   });
 
   it('writes all the asset files (sounds and images) as expected', async () => {
+    const project = IOSConfig.XcodeUtils.getPbxproj(projectRoot);
+    setNotificationSounds(['/app/assets/notificationSound.wav'], { project, projectRoot });
+
     const after = getDirFromFS(vol.toJSON(), projectRoot);
     expect(Object.keys(after).sort()).toEqual(LIST_OF_GENERATED_FILES.sort());
   });
