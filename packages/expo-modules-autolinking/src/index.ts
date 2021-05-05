@@ -97,7 +97,7 @@ module.exports = async function(args: string[]) {
     );
 
   await commander
-    .version(require('expo-module-autolinking/package.json').version)
+    .version(require('expo-modules-autolinking/package.json').version)
     .description('CLI command that searches for Expo modules to autolink them.')
     .parseAsync(args, { from: 'user' });
 };

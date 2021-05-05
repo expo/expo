@@ -72,7 +72,7 @@ class Autolinking
     begin
       JSON.parse(json.join())
     rescue => error
-      raise "Couldn't parse JSON coming from `expo-module-autolinking` command:\n#{error}"
+      raise "Couldn't parse JSON coming from `expo-modules-autolinking` command:\n#{error}"
     end
   end
 
@@ -84,7 +84,7 @@ class Autolinking
     args = [
       'node',
       '--eval',
-      'require(\'expo-module-autolinking\')(process.argv.slice(1))',
+      'require(\'expo-modules-autolinking\')(process.argv.slice(1))',
       'resolve',
       '--json',
       '--platform',
