@@ -18,8 +18,11 @@
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
+#import <EXUpdates/EXUpdatesLauncherSelectionPolicyFilterAware.h>
+#import <EXUpdates/EXUpdatesLoaderSelectionPolicyFilterAware.h>
 #import <EXUpdates/EXUpdatesReaper.h>
-#import <EXUpdates/EXUpdatesSelectionPolicyFactory.h>
+#import <EXUpdates/EXUpdatesReaperSelectionPolicyDevelopmentClient.h>
+#import <EXUpdates/EXUpdatesSelectionPolicy.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 #import <React/RCTUtils.h>
 #import <sys/utsname.h>
@@ -349,7 +352,10 @@ NS_ASSUME_NONNULL_BEGIN
   }
   [sdkVersions addObjectsFromArray:sdkVersionRuntimeVersions];
 
-  _selectionPolicy = [EXUpdatesSelectionPolicyFactory filterAwarePolicyWithRuntimeVersions:sdkVersions];
+  _selectionPolicy = [[EXUpdatesSelectionPolicy alloc]
+                      initWithLauncherSelectionPolicy:[[EXUpdatesLauncherSelectionPolicyFilterAware alloc] initWithRuntimeVersions:sdkVersions]
+                      loaderSelectionPolicy:[EXUpdatesLoaderSelectionPolicyFilterAware new]
+                      reaperSelectionPolicy:[EXUpdatesReaperSelectionPolicyDevelopmentClient new]];
 
   EXUpdatesAppLoaderTask *loaderTask = [[EXUpdatesAppLoaderTask alloc] initWithConfig:_config
                                                                              database:updatesDatabaseManager.database

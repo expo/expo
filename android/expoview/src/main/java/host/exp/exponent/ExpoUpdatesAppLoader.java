@@ -26,6 +26,9 @@ import expo.modules.updates.db.DatabaseHolder;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.Launcher;
 import expo.modules.updates.launcher.NoDatabaseLauncher;
+import expo.modules.updates.selectionpolicy.LauncherSelectionPolicyFilterAware;
+import expo.modules.updates.selectionpolicy.LoaderSelectionPolicyFilterAware;
+import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient;
 import expo.modules.updates.selectionpolicy.SelectionPolicy;
 import expo.modules.updates.loader.EmbeddedLoader;
 import expo.modules.updates.loader.FileDownloader;
@@ -33,7 +36,6 @@ import expo.modules.updates.loader.LoaderTask;
 import expo.modules.updates.manifest.Manifest;
 import expo.modules.updates.manifest.ManifestFactory;
 import expo.modules.updates.manifest.raw.RawManifest;
-import expo.modules.updates.selectionpolicy.SelectionPolicyFactory;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.exceptions.ManifestException;
 import host.exp.exponent.kernel.ExpoViewKernel;
@@ -202,7 +204,11 @@ public class ExpoUpdatesAppLoader {
     for (String sdkVersion : Constants.SDK_VERSIONS_LIST) {
       sdkVersionsList.add("exposdk:" + sdkVersion);
     }
-    SelectionPolicy selectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(sdkVersionsList);
+    SelectionPolicy selectionPolicy = new SelectionPolicy(
+            new LauncherSelectionPolicyFilterAware(sdkVersionsList),
+            new LoaderSelectionPolicyFilterAware(),
+            new ReaperSelectionPolicyDevelopmentClient()
+    );
 
     File directory;
     try {
