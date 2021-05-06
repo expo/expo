@@ -25,7 +25,7 @@
       NSString *scopeKey = @"dummyScope";
       EXUpdatesConfig *config = [EXUpdatesConfig new];
       EXUpdatesDatabase *database = [EXUpdatesDatabase new];
-      theUpdate = [EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:scopeKey commitTime:[NSDate dateWithTimeIntervalSince1970:1608667851] runtimeVersion:runtimeVersion metadata:nil status:EXUpdatesUpdateStatusReady keep:YES config:config database:database];
+      theUpdate = [EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:scopeKey commitTime:[NSDate dateWithTimeIntervalSince1970:1608667851] runtimeVersion:runtimeVersion manifest:nil status:EXUpdatesUpdateStatusReady keep:YES config:config database:database];
     }
   });
   return theUpdate;

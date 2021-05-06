@@ -65,7 +65,7 @@ static NSString * const ABI41_0_0EXUpdatesDatabaseServerDefinedHeadersKey = @"se
                       update.scopeKey,
                       @([update.commitTime timeIntervalSince1970] * 1000),
                       update.runtimeVersion,
-                      update.metadata ?: [NSNull null],
+                      update.manifest ?: [NSNull null],
                       @(ABI41_0_0EXUpdatesUpdateStatusPending)
                       ]
               error:error];

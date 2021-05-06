@@ -32,7 +32,7 @@ class LegacyManifest private constructor(
 
   override val updateEntity: UpdateEntity by lazy {
     UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey).apply {
-      metadata = this@LegacyManifest.rawManifest.getRawJson()
+      manifest = this@LegacyManifest.rawManifest.getRawJson()
       if (isDevelopmentMode) {
         status = UpdateStatus.DEVELOPMENT
       }

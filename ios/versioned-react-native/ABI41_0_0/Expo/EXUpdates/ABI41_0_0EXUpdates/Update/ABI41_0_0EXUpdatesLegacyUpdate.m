@@ -108,7 +108,7 @@ static NSString * const ABI41_0_0EXUpdatesExpoTestDomain = @"expo.test";
     [processedAssets addObject:asset];
   }
 
-  update.metadata = manifest;
+  update.manifest = manifest;
   update.keep = YES;
   update.bundleUrl = bundleUrl;
   update.assets = processedAssets;

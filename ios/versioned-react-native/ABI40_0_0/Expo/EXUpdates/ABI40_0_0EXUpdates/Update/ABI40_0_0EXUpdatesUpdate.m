@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
   update.scopeKey = scopeKey;
   update.commitTime = commitTime;
   update.runtimeVersion = runtimeVersion;
-  update.metadata = metadata;
+  update.manifest = metadata;
   update.status = status;
   update.keep = keep;
   return update;

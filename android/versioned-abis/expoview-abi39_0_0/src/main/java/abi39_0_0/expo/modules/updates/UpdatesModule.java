@@ -58,7 +58,7 @@ public class UpdatesModule extends ExportedModule {
         UpdateEntity launchedUpdate = updatesService.getLaunchedUpdate();
         if (launchedUpdate != null) {
           constants.put("updateId", launchedUpdate.id.toString());
-          constants.put("manifestString", launchedUpdate.metadata != null ? launchedUpdate.metadata.toString() : "{}");
+          constants.put("manifestString", launchedUpdate.manifest != null ? launchedUpdate.manifest.toString() : "{}");
         }
 
         Map<AssetEntity, String> localAssetFiles = updatesService.getLocalAssetFiles();
@@ -200,7 +200,7 @@ public class UpdatesModule extends ExportedModule {
                   updateInfo.putBoolean("isNew", false);
                 } else {
                   updateInfo.putBoolean("isNew", true);
-                  updateInfo.putString("manifestString", update.metadata.toString());
+                  updateInfo.putString("manifestString", update.manifest.toString());
                 }
                 promise.resolve(updateInfo);
               }

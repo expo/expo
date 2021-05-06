@@ -13,12 +13,12 @@ public class SelectionPolicies {
   public static final String TAG = SelectionPolicies.class.getSimpleName();
 
   public static boolean matchesFilters(UpdateEntity update, JSONObject manifestFilters) {
-    if (manifestFilters == null || update.metadata == null || !update.metadata.has("updateMetadata")) {
+    if (manifestFilters == null || update.manifest == null || !update.manifest.has("updateMetadata")) {
       // empty matches all
       return true;
     }
     try {
-      JSONObject updateMetadata = update.metadata.getJSONObject("updateMetadata");
+      JSONObject updateMetadata = update.manifest.getJSONObject("updateMetadata");
 
       // create lowercase copy for case-insensitive search
       JSONObject metadataLCKeys = new JSONObject();
