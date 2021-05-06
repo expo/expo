@@ -94,6 +94,7 @@ async function action({ packageName }: ActionOptions) {
     'expo-sharing': ['Sharing.ts'],
     'expo-splash-screen': ['SplashScreen.ts'],
     'expo-store-review': ['StoreReview.ts'],
+    'expo-task-manager': ['TaskManager.ts'],
   };
 
   try {
