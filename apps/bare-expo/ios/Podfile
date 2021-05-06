@@ -18,9 +18,6 @@ abstract_target 'BareExpoMain' do
 
   use_react_native!(path: config['reactNativePath'])
 
-  pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', configurations: :debug
-  pod 'expo-dev-launcher', path: '../../../packages/expo-dev-launcher', configurations: :debug
-
   # Fix Google Sign-in and Flipper
   post_install do |installer|
     installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
