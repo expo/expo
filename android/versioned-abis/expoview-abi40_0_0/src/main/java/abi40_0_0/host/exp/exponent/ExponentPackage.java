@@ -59,7 +59,6 @@ import abi40_0_0.host.exp.exponent.modules.api.components.webview.RNCWebViewModu
 import abi40_0_0.host.exp.exponent.modules.api.components.webview.RNCWebViewPackage;
 import abi40_0_0.host.exp.exponent.modules.api.components.sharedelement.RNSharedElementModule;
 import abi40_0_0.host.exp.exponent.modules.api.components.sharedelement.RNSharedElementPackage;
-import abi40_0_0.host.exp.exponent.modules.api.components.reactnativestripesdk.StripeSdkModule;
 import abi40_0_0.host.exp.exponent.modules.api.components.reactnativestripesdk.StripeSdkPackage;
 import abi40_0_0.host.exp.exponent.modules.api.netinfo.NetInfoModule;
 import abi40_0_0.host.exp.exponent.modules.api.notifications.NotificationsModule;
@@ -199,7 +198,6 @@ public class ExponentPackage implements ReactPackage {
         nativeModules.add(new RNCWebViewModule(reactContext));
         nativeModules.add(new NetInfoModule(reactContext));
         nativeModules.add(new RNSharedElementModule(reactContext));
-        nativeModules.add(new StripeSdkModule(reactContext));
 
         // @tsapeta: Using ExpoAppearanceModule in home app causes some issues with the dev menu,
         // when home's setting is set to automatic and the system theme is different
@@ -218,6 +216,9 @@ public class ExponentPackage implements ReactPackage {
 
         RNDateTimePickerPackage dateTimePickerPackage = new RNDateTimePickerPackage();
         nativeModules.addAll(dateTimePickerPackage.createNativeModules(reactContext));
+
+        StripeSdkPackage stripePackage = new StripeSdkPackage();
+        nativeModules.addAll(stripePackage.createNativeModules(reactContext));
 
         // Call to create native modules has to be at the bottom --
         // -- ExpoModuleRegistryAdapter uses the list of native modules

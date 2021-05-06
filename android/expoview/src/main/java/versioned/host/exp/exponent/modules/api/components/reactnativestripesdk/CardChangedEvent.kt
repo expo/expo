@@ -20,12 +20,10 @@ internal class CardChangedEvent constructor(viewTag: Int, private val cardDetail
 
   private fun serializeEventData(): WritableMap {
     val eventData = Arguments.createMap()
-    eventData.putString("number", cardDetails["number"].toString())
-    val expMonth = getValOr(cardDetails, "expiryMonth", null)
-    val expYear = getValOr(cardDetails, "expiryYear", null)
-    eventData.putString("cvc", cardDetails["cvc"].toString())
-    eventData.putInt("expiryMonth", expMonth?.toInt() ?: 0)
-    eventData.putInt("expiryYear", expYear?.toInt() ?: 0)
+    eventData.putString("brand", cardDetails["brand"]?.toString())
+    eventData.putString("last4", cardDetails["last4"]?.toString())
+    eventData.putString("expiryMonth", cardDetails["expiryMonth"]?.toString())
+    eventData.putString("expiryYear", cardDetails["expiryYear"]?.toString())
     eventData.putBoolean("complete", complete)
 
     if (postalCodeEnabled) {

@@ -8,11 +8,19 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
 
 class StripeSdkPackage : ReactPackage {
+    lateinit var cardFieldManager: StripeSdkCardViewManager
+
     override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
-        return Arrays.asList<NativeModule>(StripeSdkModule(reactContext))
+        if (!this::cardFieldManager.isInitialized) {
+          cardFieldManager = StripeSdkCardViewManager()
+        }
+        return Arrays.asList<NativeModule>(StripeSdkModule(reactContext, cardFieldManager))
     }
 
     override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
-        return Arrays.asList<ViewManager<*, *>>(StripeSdkCardViewManager())
+      if (!this::cardFieldManager.isInitialized) {
+        cardFieldManager = StripeSdkCardViewManager()
+      }
+        return Arrays.asList<ViewManager<*, *>>(cardFieldManager, AuBECSDebitFormViewManager())
     }
 }

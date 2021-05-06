@@ -5,10 +5,12 @@ import Stripe
 class PaymentMethodFactory {
     var billingDetailsParams: STPPaymentMethodBillingDetails? = nil
     var params: NSDictionary? = nil
+    var cardFieldView: CardFieldView? = nil
     
-    init(params: NSDictionary) {
+    init(params: NSDictionary, cardFieldView: CardFieldView?) {
         self.billingDetailsParams = Mappers.mapToBillingDetails(billingDetails: params["billingDetails"] as? NSDictionary)
         self.params = params
+        self.cardFieldView = cardFieldView
     }
     
     func createParams(paymentMethodType: STPPaymentMethodType) throws -> STPPaymentMethodParams? {
@@ -38,6 +40,8 @@ class PaymentMethodFactory {
                 return createGrabpayPaymentMethodParams()
             case STPPaymentMethodType.przelewy24:
                 return try createP24PaymentMethodParams()
+            case STPPaymentMethodType.AUBECSDebit:
+                return try createBECSDebitPaymentMethodParams()
             case STPPaymentMethodType.afterpayClearpay:
                 return try createAfterpayClearpayPaymentMethodParams()
             default:
@@ -75,6 +79,8 @@ class PaymentMethodFactory {
                 return nil
             case STPPaymentMethodType.przelewy24:
                 return nil
+            case STPPaymentMethodType.AUBECSDebit:
+                return nil
             case STPPaymentMethodType.afterpayClearpay:
                 return nil
             default:
@@ -101,12 +107,16 @@ class PaymentMethodFactory {
     }
     
     private func createCardPaymentMethodParams() throws -> STPPaymentMethodParams {
-        guard let cardParams = self.params?["cardDetails"] as? NSDictionary else {
+        if let token = params?["token"] as? String {
+            let methodParams = STPPaymentMethodCardParams()
+            methodParams.token = RCTConvert.nsString(token)
+            return STPPaymentMethodParams(card: methodParams, billingDetails: billingDetailsParams, metadata: nil)
+        }
+        guard let cardParams = cardFieldView?.cardParams else {
             throw PaymentMethodError.cardPaymentMissingParams
         }
         
-        let card = Mappers.mapToPaymentMethodCardParams(params: cardParams)
-        return STPPaymentMethodParams(card: card, billingDetails: billingDetailsParams, metadata: nil)
+        return STPPaymentMethodParams(card: cardParams, billingDetails: billingDetailsParams, metadata: nil)
     }
     
     
@@ -217,6 +227,20 @@ class PaymentMethodFactory {
         }
         
         return STPPaymentMethodParams(eps: params, billingDetails: billingDetails, metadata: nil)
+    }
+    
+    private func createBECSDebitPaymentMethodParams() throws -> STPPaymentMethodParams {
+        let params = STPPaymentMethodAUBECSDebitParams()
+        
+        let billingDetails = STPPaymentMethodBillingDetails()
+        let formDetails = self.params?["formDetails"] as? NSDictionary
+        
+        billingDetails.name = formDetails?["name"] as? String
+        billingDetails.email = formDetails?["email"] as? String
+        params.accountNumber = formDetails?["accountNumber"] as? String
+        params.bsbNumber = formDetails?["bsbNumber"] as? String
+
+        return STPPaymentMethodParams(aubecsDebit: params, billingDetails: billingDetails, metadata: nil)
     }
     
     private func createAfterpayClearpayPaymentMethodParams() throws -> STPPaymentMethodParams {

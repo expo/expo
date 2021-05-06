@@ -2,15 +2,17 @@ import Foundation
 import UIKit
 import Stripe
 
+let CARD_FIELD_INSTANCE_ID = "CardFieldInstance"
+
 class CardFieldView: UIView, STPPaymentCardTextFieldDelegate {
     @objc var onCardChange: RCTDirectEventBlock?
     @objc var onFocusChange: RCTDirectEventBlock?
     
-    private var theme = STPTheme.defaultTheme
-    
     private var cardField = STPPaymentCardTextField()
     
-    private let cardParams = STPPaymentMethodCardParams()
+    public var cardParams: STPPaymentMethodCardParams? = nil
+    
+    public var delegate: CardFieldDelegate?
     
     @objc var postalCodeEnabled: Bool = true {
         didSet {
@@ -74,7 +76,19 @@ class CardFieldView: UIView, STPPaymentCardTextFieldDelegate {
     override init(frame: CGRect) {
         super.init(frame: frame)
         cardField.delegate = self
+        
         self.addSubview(cardField)
+    }
+    
+    convenience init(delegate: CardFieldDelegate) {
+        self.init(frame: CGRect.zero)
+        self.delegate = delegate
+        
+        self.delegate?.onDidCreateViewInstance(id: CARD_FIELD_INSTANCE_ID, reference: self)
+    }
+    
+    override func removeFromSuperview() {
+        self.delegate?.onDidDestroyViewInstance(id: CARD_FIELD_INSTANCE_ID)
     }
     
     func paymentCardTextFieldDidBeginEditingNumber(_ textField: STPPaymentCardTextField) {
@@ -97,10 +111,8 @@ class CardFieldView: UIView, STPPaymentCardTextFieldDelegate {
         if onCardChange != nil {
             let brand = STPCardValidator.brand(forNumber: textField.cardParams.number ?? "")
             var cardData: [String: Any] = [
-                "number": textField.cardParams.number ?? "",
-                "cvc": textField.cardParams.cvc ?? "",
-                "expiryMonth": textField.cardParams.expMonth ?? 0,
-                "expiryYear": textField.cardParams.expYear ?? 0,
+                "expiryMonth": textField.cardParams.expMonth?.stringValue ?? "",
+                "expiryYear": textField.cardParams.expYear?.stringValue ?? "",
                 "complete": textField.isValid,
                 "brand": Mappers.mapCardBrand(brand),
                 "last4": textField.cardParams.last4 ?? ""
@@ -109,6 +121,9 @@ class CardFieldView: UIView, STPPaymentCardTextFieldDelegate {
                 cardData["postalCode"] = textField.postalCode ?? ""
             }
             onCardChange!(cardData)
+        }
+        if (textField.isValid) {
+            self.cardParams = textField.cardParams
         }
     }
     

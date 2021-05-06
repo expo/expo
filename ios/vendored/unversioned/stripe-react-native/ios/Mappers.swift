@@ -149,21 +149,6 @@ class Mappers {
         }
         return nil
     }
-
-    class func mapToPaymentMethodCardParams(params: NSDictionary) -> STPPaymentMethodCardParams {
-        if let token = params["token"] {
-            let methodParams = STPPaymentMethodCardParams()
-            methodParams.token = RCTConvert.nsString(token)
-            return methodParams
-        }
-        let cardSourceParams = STPCardParams()
-        cardSourceParams.number = RCTConvert.nsString(params["number"])
-        cardSourceParams.cvc = RCTConvert.nsString(params["cvc"])
-        cardSourceParams.expMonth = RCTConvert.nsuInteger(params["expiryMonth"])
-        cardSourceParams.expYear = RCTConvert.nsuInteger(params["expiryYear"])
-        
-        return STPPaymentMethodCardParams(cardSourceParams: cardSourceParams)
-    }
     
     class func mapCaptureMethod(_ captureMethod: STPPaymentIntentCaptureMethod?) -> String {
         if let captureMethod = captureMethod {
@@ -296,13 +281,13 @@ class Mappers {
             return nil
         }
         let shippingAddress = STPPaymentIntentShippingDetailsAddressParams(line1: shippingDetails["addressLine1"] as? String ?? "")
-
-        shippingAddress.city = RCTConvert.nsString(shippingDetails["addressCity"])
-        shippingAddress.postalCode = RCTConvert.nsString(shippingDetails["addressPostalCode"])
-        shippingAddress.country = RCTConvert.nsString(shippingDetails["addressCountry"])
-        shippingAddress.line1 = RCTConvert.nsString(shippingDetails["addressLine1"])
-        shippingAddress.line2 = RCTConvert.nsString(shippingDetails["addressLine2"])
-        shippingAddress.state = RCTConvert.nsString(shippingDetails["addressState"])
+        
+        shippingAddress.city = shippingDetails["addressCity"] as? String
+        shippingAddress.postalCode = shippingDetails["addressPostalCode"] as? String
+        shippingAddress.country = shippingDetails["addressCountry"] as? String
+        shippingAddress.line1 = shippingDetails["addressLine1"] as? String ?? ""
+        shippingAddress.line2 = shippingDetails["addressLine2"] as? String
+        shippingAddress.state = shippingDetails["addressState"] as? String
 
         let shipping = STPPaymentIntentShippingDetailsParams(address: shippingAddress, name: shippingDetails["name"] as? String ?? "")
 
@@ -395,16 +380,6 @@ class Mappers {
             ],
         ]
         return method
-    }
-    
-    class func mapCardParams(params: NSDictionary) -> STPPaymentMethodCardParams {
-        let cardSourceParams = STPCardParams()
-        cardSourceParams.number = RCTConvert.nsString(params["number"])
-        cardSourceParams.cvc = RCTConvert.nsString(params["cvc"])
-        cardSourceParams.expMonth = RCTConvert.nsuInteger(params["expiryMonth"])
-        cardSourceParams.expYear = RCTConvert.nsuInteger(params["expiryYear"])
-        
-        return STPPaymentMethodCardParams(cardSourceParams: cardSourceParams)
     }
     
     class func mapIntentStatus(status: STPSetupIntentStatus?) -> String {

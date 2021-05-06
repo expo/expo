@@ -264,32 +264,6 @@ internal fun mapFromPaymentIntentLastErrorType(errorType: PaymentIntent.Error.Ty
   }
 }
 
-internal fun mapToPaymentMethodCreateParams(cardData: ReadableMap): PaymentMethodCreateParams {
-  val cardParams = CardParams(
-    cardData.getString("number").orEmpty(),
-    cardData.getInt("expiryMonth"),
-    cardData.getInt("expiryYear"),
-    cardData.getString("cvc"),
-    if (cardData.hasKey("name")) cardData.getString("name") else null,
-    if (cardData.hasKey("postalCode")) Address.Builder().setPostalCode(cardData.getString("postalCode").orEmpty()).build() else null,
-    if (cardData.hasKey("currency")) cardData.getString("currency") else null,
-    null)
-    return PaymentMethodCreateParams.createCard(cardParams)
-}
-
-internal fun mapToCard(card: ReadableMap): PaymentMethodCreateParams.Card {
-  if (card.hasKey("token")) {
-    return PaymentMethodCreateParams.Card.create(card.getString("token")!!)
-  } else {
-    return PaymentMethodCreateParams.Card.Builder()
-      .setCvc(card.getString("cvc"))
-      .setExpiryMonth(card.getInt("expiryMonth"))
-      .setExpiryYear(card.getInt("expiryYear"))
-      .setNumber(card.getString("number").orEmpty())
-      .build()
-  }
-}
-
 fun getValOr(map: ReadableMap, key: String, default: String? = ""): String? {
   return if (map.hasKey(key)) map.getString(key) else default
 }
@@ -436,6 +410,11 @@ fun mapToUICustomization(params: ReadableMap): PaymentAuthConfig.Stripe3ds2UiCus
     .setButtonCustomization(
       buttonCustomizationBuilder.build(),
       PaymentAuthConfig.Stripe3ds2UiCustomization.ButtonType.SUBMIT
+    )
+
+    .setButtonCustomization(
+      buttonCustomizationBuilder.build(),
+      PaymentAuthConfig.Stripe3ds2UiCustomization.ButtonType.CONTINUE
     )
 
   getStringOrNull(params, "backgroundColor")?.let {

@@ -4,8 +4,6 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.View
-import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.uimanager.ThemedReactContext
@@ -15,12 +13,14 @@ import com.stripe.android.databinding.CardInputWidgetBinding
 import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
+import com.stripe.android.model.PaymentMethodCreateParams
 import com.stripe.android.view.CardInputListener
 import com.stripe.android.view.CardInputWidget
 
 class StripeSdkCardView(private val context: ThemedReactContext) : FrameLayout(context) {
   private var mCardWidget: CardInputWidget
-  private val cardDetails: MutableMap<String, Any> = mutableMapOf("number" to "", "cvc" to "", "expiryMonth" to "", "expiryYear" to "", "postalCode" to "")
+  val cardDetails: MutableMap<String, Any> = mutableMapOf("brand" to "", "last4" to "", "expiryMonth" to "", "expiryYear" to "", "postalCode" to "")
+  var cardParams: PaymentMethodCreateParams.Card? = null
   private var mEventDispatcher: EventDispatcher?
 
   init {
@@ -36,17 +36,6 @@ class StripeSdkCardView(private val context: ThemedReactContext) : FrameLayout(c
     setListeners()
 
     viewTreeObserver.addOnGlobalLayoutListener { requestLayout() }
-  }
-
-  fun setValue(value: ReadableMap) {
-    mCardWidget.setCardNumber(getValOr(value, "number", null))
-    mCardWidget.setCvcCode(getValOr(value, "cvc", null))
-
-    if (value.hasKey("expiryMonth") && value.hasKey("expiryYear")) {
-      val month = value.getInt("expiryMonth")
-      val year = value.getInt("expiryYear")
-      mCardWidget.setExpiryDate(month, year)
-    }
   }
 
   fun setCardStyle(value: ReadableMap) {
@@ -137,39 +126,33 @@ class StripeSdkCardView(private val context: ThemedReactContext) : FrameLayout(c
   }
 
   fun onCardChanged() {
-    val complete = mCardWidget.cardParams != null
+    mCardWidget.paymentMethodCard?.let { cardParams = it }
     mEventDispatcher?.dispatchEvent(
-      CardChangedEvent(id, cardDetails, mCardWidget.postalCodeEnabled, complete))
+      CardChangedEvent(id, cardDetails, mCardWidget.postalCodeEnabled, cardParams != null))
   }
 
   private fun setListeners() {
     mCardWidget.setCardInputListener(object : CardInputListener {
-      override fun onCardComplete() {}
+      override fun onCardComplete() {
+        mCardWidget.cardParams?.let {
+          cardDetails["brand"] = mapCardBrand(it.brand)
+          cardDetails["last4"] = it.last4
+        }
+        onCardChanged()
+      }
       override fun onExpirationComplete() {}
-      override fun onCvcComplete() {}
+      override fun onCvcComplete() {
+        mCardWidget.cardParams?.let {
+          cardDetails["brand"] = mapCardBrand(it.brand)
+          cardDetails["last4"] = it.last4
+        }
+        onCardChanged()
+      }
       override fun onFocusChange(focusField: CardInputListener.FocusField) {
         if (mEventDispatcher != null) {
           mEventDispatcher?.dispatchEvent(
             CardFocusEvent(id, focusField.name))
         }
-      }
-    })
-
-    mCardWidget.setCardNumberTextWatcher(object : TextWatcher {
-      override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-      override fun afterTextChanged(p0: Editable?) {}
-      override fun onTextChanged(var1: CharSequence?, var2: Int, var3: Int, var4: Int) {
-        cardDetails["number"] = var1.toString()
-        onCardChanged()
-      }
-    })
-
-    mCardWidget.setCvcNumberTextWatcher(object : TextWatcher {
-      override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-      override fun afterTextChanged(p0: Editable?) {}
-      override fun onTextChanged(var1: CharSequence?, var2: Int, var3: Int, var4: Int) {
-        cardDetails["cvc"] = var1.toString()
-        onCardChanged()
       }
     })
 
