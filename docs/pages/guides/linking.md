@@ -177,7 +177,12 @@ To save you the trouble of inserting a bunch of conditionals based on the enviro
 - _Published app in standalone_: `myapp://`
 - _Development_: `exp://localhost:19000`
 
-You can also change the returned url by passing optional parameters into `Linking.makeUrl()`. These will be used by your app to receive data, which we will talk about in the next section.
+You can also change the returned url by passing optional parameters into `Linking.makeUrl()`. For example, the current default for the starter application is `Linking.makeUrl('/')`, which resolves to the following: (Expo-hosted applications add a `/--/` prefix)
+
+- _Published app in Expo Go_: `exp://exp.host/@community/with-webbrowser-redirect/--/`
+- _Published app in standalone_: `myapp://`
+- _Development_: `exp://localhost:19000/--/`
+
 
 ### Handling links into your app
 
