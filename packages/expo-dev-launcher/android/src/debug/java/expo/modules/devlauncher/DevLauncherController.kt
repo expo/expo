@@ -8,6 +8,7 @@ import androidx.annotation.UiThread
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactNativeHost
+import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.ReactContext
 import expo.interfaces.devmenu.DevMenuManagerProviderInterface
 import expo.modules.devlauncher.helpers.changeUrlScheme
@@ -226,6 +227,7 @@ class DevLauncherController private constructor(
   companion object {
     private var sInstance: DevLauncherController? = null
     private var sLauncherClass: Class<*>? = null
+    internal var sAdditionalPackages: List<ReactPackage>? = null
 
     @JvmStatic
     fun wasInitialized() = sInstance != null
@@ -243,8 +245,9 @@ class DevLauncherController private constructor(
     }
 
     @JvmStatic
-    fun initialize(context: Context, appHost: ReactNativeHost, launcherClass: Class<*>) {
+    fun initialize(context: Context, appHost: ReactNativeHost, additionalPackages: List<ReactPackage>?, launcherClass: Class<*>? = null) {
       initialize(context, appHost)
+      sAdditionalPackages = additionalPackages
       sLauncherClass = launcherClass
     }
 
