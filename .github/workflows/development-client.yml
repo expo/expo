@@ -95,6 +95,18 @@ jobs:
       - name: Init new expo app
         working-directory: ../
         run: expo-cli init development-client-ios-test --name development-client-ios-test --yes
+      - name: Make Yarn resolve expo-dev-client dependencies locally
+        working-directory: ../development-client-ios-test
+        run: |
+          node -e " \
+            const pkg = require('./package.json'); \
+            pkg.resolutions = { \
+              ...pkg.resolutions, \
+              'expo-dev-menu': 'file:../expo/packages/expo-dev-menu', \
+              'expo-dev-menu-interface': 'file:../expo/packages/expo-dev-menu-interface', \
+              'expo-dev-launcher': 'file:../expo/packages/expo-dev-launcher', \
+            }; \
+            fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');"
       - name: Add dependencies
         working-directory: ../development-client-ios-test
         run: yarn add file:../expo/packages/expo-dev-client
