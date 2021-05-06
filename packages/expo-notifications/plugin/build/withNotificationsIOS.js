@@ -4,6 +4,7 @@ exports.setNotificationSounds = exports.withNotificationSounds = exports.withNot
 const config_plugins_1 = require("@expo/config-plugins");
 const fs_1 = require("fs");
 const path_1 = require("path");
+const ERROR_MSG_PREFIX = 'An error occurred while configuring iOS notifications. ';
 exports.withNotificationsIOS = (config, { mode = 'development', sounds = [] }) => {
     config = config_plugins_1.withEntitlementsPlist(config, config => {
         config.modResults['aps-environment'] = mode;
@@ -14,9 +15,10 @@ exports.withNotificationsIOS = (config, { mode = 'development', sounds = [] }) =
 };
 exports.withNotificationSounds = (config, { sounds }) => {
     return config_plugins_1.withXcodeProject(config, config => {
-        setNotificationSounds(sounds, {
-            projectRoot: config.modRequest.projectRoot,
+        setNotificationSounds(config.modRequest.projectRoot, {
+            sounds: sounds,
             project: config.modResults,
+            projectName: config.modRequest.projectName,
         });
         return config;
     });
@@ -24,15 +26,21 @@ exports.withNotificationSounds = (config, { sounds }) => {
 /**
  * Save sound files to the Xcode project root and add them to the Xcode project.
  */
-function setNotificationSounds(sounds, { projectRoot, project }) {
-    if (!Array.isArray(sounds)) {
-        throw new Error(`Must provide an array of sound files in your app config, found ${typeof sounds}.`);
+function setNotificationSounds(projectRoot, { sounds, project, projectName, }) {
+    if (!projectName) {
+        throw new Error(ERROR_MSG_PREFIX + `Unable to find iOS project name.`);
     }
-    const projectName = config_plugins_1.IOSConfig.XcodeUtils.getProjectName(projectRoot);
-    sounds.map((soundFileRelativePath) => {
+    if (!Array.isArray(sounds)) {
+        throw new Error(ERROR_MSG_PREFIX +
+            `Must provide an array of sound files in your app config, found ${typeof sounds}.`);
+    }
+    const sourceRoot = config_plugins_1.IOSConfig.Paths.getSourceRoot(projectRoot);
+    for (const soundFileRelativePath of sounds) {
         const fileName = path_1.basename(soundFileRelativePath);
         const sourceFilepath = path_1.resolve(projectRoot, soundFileRelativePath);
-        const destinationFilepath = path_1.resolve(config_plugins_1.IOSConfig.Paths.getSourceRoot(projectRoot), fileName);
+        const destinationFilepath = path_1.resolve(sourceRoot, fileName);
+        // Since it's possible that the filename is the same, but the
+        // file itself id different, let's copy it regardless
         fs_1.copyFileSync(sourceFilepath, destinationFilepath);
         if (!project.hasFile(`${projectName}/${fileName}`)) {
             project = config_plugins_1.IOSConfig.XcodeUtils.addResourceFileToGroup({
@@ -42,7 +50,7 @@ function setNotificationSounds(sounds, { projectRoot, project }) {
                 isBuildFile: true,
             });
         }
-    });
+    }
     return project;
 }
 exports.setNotificationSounds = setNotificationSounds;

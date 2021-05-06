@@ -1,6 +1,5 @@
-import { ConfigPlugin } from '@expo/config-plugins';
+import { ConfigPlugin, XcodeProject } from '@expo/config-plugins';
 import { NotificationsPluginProps } from './withNotifications';
-declare type XcodeProject = any;
 export declare const withNotificationsIOS: ConfigPlugin<NotificationsPluginProps>;
 export declare const withNotificationSounds: ConfigPlugin<{
     sounds: string[];
@@ -8,8 +7,8 @@ export declare const withNotificationSounds: ConfigPlugin<{
 /**
  * Save sound files to the Xcode project root and add them to the Xcode project.
  */
-export declare function setNotificationSounds(sounds: string[], { projectRoot, project }: {
+export declare function setNotificationSounds(projectRoot: string, { sounds, project, projectName, }: {
+    sounds: string[];
     project: XcodeProject;
-    projectRoot: string;
+    projectName: string | undefined;
 }): XcodeProject;
-export {};
