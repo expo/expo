@@ -40,7 +40,7 @@ public class UpdatesDatabaseMigrationTest {
       " (3,'https://url.to/bundle-1614137308871','bundle-1614137308871',NULL,'application/javascript',NULL,1614137309513,'bundle-1614137308871',NULL,0,0),\n" +
       " (4,NULL,'bundle-1614137401950',NULL,'js',NULL,1614137406588,'bundle-1614137401950',NULL,0,0)");
     db.execSQL("INSERT INTO \"updates\" (\"id\",\"scope_key\",\"commit_time\",\"runtime_version\",\"launch_asset_id\",\"metadata\",\"status\",\"keep\") VALUES" +
-      " (X'8C263F9DE3FF48888496E3244C788661','http://192.168.4.44:3000',1614137308871,'40.0.0',3,'{\"updateMetadata\":{\"updateGroup\":\"34993d39-57e6-46cf-8fa2-eba836f40828\",\"branchName\":\"rollout\"}}',1,1),\n" +
+      " (X'8C263F9DE3FF48888496E3244C788661','http://192.168.4.44:3000',1614137308871,'40.0.0',3,'{\"metadata\":{\"updateGroup\":\"34993d39-57e6-46cf-8fa2-eba836f40828\",\"branchName\":\"rollout\"}}',1,1),\n" +
       " (X'594100ea066e4804b5c7c907c773f980','http://192.168.4.44:3000',1614137401950,'40.0.0',4,NULL,1,1)");
     db.execSQL("INSERT INTO \"updates_assets\" (\"update_id\",\"asset_id\") VALUES" +
       " (X'8C263F9DE3FF48888496E3244C788661',2),\n" +
@@ -105,7 +105,7 @@ public class UpdatesDatabaseMigrationTest {
             " (3,'https://url.to/bundle-1614137308871','bundle-1614137308871',NULL,'application/javascript',NULL,1614137309513,'bundle-1614137308871',NULL,0,0),\n" +
             " (4,NULL,NULL,NULL,'js',NULL,1614137406588,'bundle-1614137401950',NULL,0,0)");
     db.execSQL("INSERT INTO \"updates\" (\"id\",\"scope_key\",\"commit_time\",\"runtime_version\",\"launch_asset_id\",\"metadata\",\"status\",\"keep\") VALUES" +
-            " (X'8C263F9DE3FF48888496E3244C788661','http://192.168.4.44:3000',1614137308871,'40.0.0',3,'{\\\"updateMetadata\\\":{\\\"updateGroup\\\":\\\"34993d39-57e6-46cf-8fa2-eba836f40828\\\",\\\"branchName\\\":\\\"rollout\\\"}}',1,1),\n" +
+            " (X'8C263F9DE3FF48888496E3244C788661','http://192.168.4.44:3000',1614137308871,'40.0.0',3,'{\\\"metadata\\\":{\\\"updateGroup\\\":\\\"34993d39-57e6-46cf-8fa2-eba836f40828\\\",\\\"branchName\\\":\\\"rollout\\\"}}',1,1),\n" +
             " (X'594100ea066e4804b5c7c907c773f980','http://192.168.4.44:3000',1614137401950,'40.0.0',4,NULL,1,1)");
     db.execSQL("INSERT INTO \"updates_assets\" (\"update_id\",\"asset_id\") VALUES" +
             " (X'8C263F9DE3FF48888496E3244C788661',2),\n" +
@@ -142,7 +142,7 @@ public class UpdatesDatabaseMigrationTest {
     Assert.assertEquals(1, cursorUpdatesAssets3.getCount());
 
     // make sure metadata -> manifest column rename worked
-    Cursor cursorNonNullManifest = db.query("SELECT * FROM `updates` WHERE `id` = X'8C263F9DE3FF48888496E3244C788661' AND `manifest` = '{\\\"updateMetadata\\\":{\\\"updateGroup\\\":\\\"34993d39-57e6-46cf-8fa2-eba836f40828\\\",\\\"branchName\\\":\\\"rollout\\\"}}'");
+    Cursor cursorNonNullManifest = db.query("SELECT * FROM `updates` WHERE `id` = X'8C263F9DE3FF48888496E3244C788661' AND `manifest` = '{\\\"metadata\\\":{\\\"updateGroup\\\":\\\"34993d39-57e6-46cf-8fa2-eba836f40828\\\",\\\"branchName\\\":\\\"rollout\\\"}}'");
     Assert.assertEquals(1, cursorNonNullManifest.getCount());
 
     // make sure last_accessed column was filled in appropriately (all existing updates have the same last_accessed time)
