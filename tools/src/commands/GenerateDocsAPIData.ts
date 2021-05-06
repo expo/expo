@@ -85,6 +85,7 @@ async function action({ packageName }: ActionOptions) {
     'expo-application': ['Application.ts'],
     'expo-battery': ['Battery.ts'],
     'expo-blur': ['index.ts'],
+    'expo-cellular': ['Cellular.ts'],
     'expo-keep-awake': ['index.ts'],
     'expo-linear-gradient': ['LinearGradient.tsx'],
     'expo-mail-composer': ['MailComposer.ts'],
