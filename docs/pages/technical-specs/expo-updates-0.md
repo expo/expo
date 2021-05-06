@@ -87,9 +87,9 @@ content-type: <*>
   * If the `branchname` manifest filter is included, it MUST equal the `branchName` in the `manifest.metadata`.
 * `expo-server-defined-headers` is an [Expo SFV](expo-sfv.md) dictionary. It defines headers that a client library MUST store and include in every subsequent [manifest request](#manifest-request).
 
-  * For example, when rolling out an update, we require a client library to send back a stable token: `expo-server-defined-headers: expo-rollout-token="token"`. 
+  * For example, when rolling out an update, EAS requires a client library to send back a stable token: `expo-server-defined-headers: expo-rollout-token="token"`. 
 * `cache-control` - A value of `cache-control: private, max-age=0` is recommended to ensure the newest manifest is returned. Setting longer cache ages could result in stale updates.
-* `content-type` MUST be determined by _proactive negotiation_ as defined in [RFC 7231](https://tools.ietf.org/html/rfc7231#section-3.4.1). Since we require a client to send an `accept` header with each request, this will always be either `application/expo+json`, `application/json`, or a `406`.
+* `content-type` MUST be determined by _proactive negotiation_ as defined in [RFC 7231](https://tools.ietf.org/html/rfc7231#section-3.4.1). Since the client library is [required](#manifest-request) to send an `accept` header with each manifest request, this will always be either `application/expo+json`, `application/json`, or a `406`.
 
 
 The manifest endpoint MUST also be served with a `cache-control` header set to an appropriately short period of time. For example:
