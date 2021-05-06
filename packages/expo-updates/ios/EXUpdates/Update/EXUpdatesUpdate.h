@@ -24,7 +24,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesUpdateStatus) {
 @property (nonatomic, strong, readonly) NSString *scopeKey;
 @property (nonatomic, strong, readonly) NSDate *commitTime;
 @property (nonatomic, strong, readonly) NSString *runtimeVersion;
-@property (nonatomic, strong, readonly, nullable) NSDictionary * metadata;
+@property (nonatomic, strong, readonly, nullable) NSDictionary *manifest;
 @property (nonatomic, assign, readonly) BOOL keep;
 @property (nonatomic, strong, readonly) NSArray<EXUpdatesAsset *> *assets;
 @property (nonatomic, assign, readonly) BOOL isDevelopmentMode;
@@ -41,7 +41,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesUpdateStatus) {
                     scopeKey:(NSString *)scopeKey
                   commitTime:(NSDate *)commitTime
               runtimeVersion:(NSString *)runtimeVersion
-                    metadata:(nullable NSDictionary *)metadata
+                    manifest:(nullable NSDictionary *)manifest
                       status:(EXUpdatesUpdateStatus)status
                         keep:(BOOL)keep
                       config:(EXUpdatesConfig *)config

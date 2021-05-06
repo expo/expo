@@ -99,11 +99,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)doesUpdate:(ABI41_0_0EXUpdatesUpdate *)update matchFilters:(nullable NSDictionary *)filters
 {
-  if (!filters || !update.metadata) {
+  if (!filters || !update.manifest) {
     return YES;
   }
 
-  NSDictionary *updateMetadata = update.metadata[@"updateMetadata"];
+  NSDictionary *updateMetadata = update.manifest[@"updateMetadata"];
   if (!updateMetadata || ![updateMetadata isKindOfClass:[NSDictionary class]]) {
     return YES;
   }

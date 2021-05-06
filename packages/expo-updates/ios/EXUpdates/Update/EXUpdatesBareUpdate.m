@@ -20,7 +20,6 @@ NS_ASSUME_NONNULL_BEGIN
 
   NSString *updateId = manifest.rawID;
   NSNumber *commitTime = manifest.commitTimeNumber;
-  NSDictionary *metadata = manifest.metadata;
   NSArray *assets = manifest.assets;
   
   NSAssert(updateId != nil, @"update ID should not be null");
@@ -63,9 +62,6 @@ NS_ASSUME_NONNULL_BEGIN
   update.updateId = uuid;
   update.commitTime = [NSDate dateWithTimeIntervalSince1970:[(NSNumber *)commitTime doubleValue] / 1000];
   update.runtimeVersion = [EXUpdatesUtils getRuntimeVersionWithConfig:config];
-  if (metadata) {
-    update.metadata = (NSDictionary *)metadata;
-  }
   update.status = EXUpdatesUpdateStatusEmbedded;
   update.keep = YES;
   update.assets = processedAssets;

@@ -63,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
   update.commitTime = [NSDate dateWithTimeIntervalSince1970:[(NSNumber *)commitTime doubleValue] / 1000];
   update.runtimeVersion = [ABI40_0_0EXUpdatesUtils getRuntimeVersionWithConfig:config];
   if (metadata) {
-    update.metadata = (NSDictionary *)metadata;
+    update.manifest = (NSDictionary *)metadata;
   }
   update.status = ABI40_0_0EXUpdatesUpdateStatusEmbedded;
   update.keep = YES;
