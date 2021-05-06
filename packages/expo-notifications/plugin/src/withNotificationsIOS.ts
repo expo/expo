@@ -27,7 +27,7 @@ export const withNotificationsIOS: ConfigPlugin<NotificationsPluginProps> = (
 export const withNotificationSounds: ConfigPlugin<{ sounds: string[] }> = (config, { sounds }) => {
   return withXcodeProject(config, config => {
     setNotificationSounds(config.modRequest.projectRoot, {
-      sounds: sounds,
+      sounds,
       project: config.modResults,
       projectName: config.modRequest.projectName,
     });

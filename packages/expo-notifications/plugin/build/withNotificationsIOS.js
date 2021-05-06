@@ -16,7 +16,7 @@ exports.withNotificationsIOS = (config, { mode = 'development', sounds = [] }) =
 exports.withNotificationSounds = (config, { sounds }) => {
     return config_plugins_1.withXcodeProject(config, config => {
         setNotificationSounds(config.modRequest.projectRoot, {
-            sounds: sounds,
+            sounds,
             project: config.modResults,
             projectName: config.modRequest.projectName,
         });
