@@ -34,26 +34,40 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 
 <InstallSection packageName="expo-notifications" />
 
-### Optional setup
+### Config plugin setup (optional)
 
-If you're using EAS Build or the bare workflow, you can automate setting your Android notification icon and color tint, adding custom push notification sounds, and setting your iOS notification environment using the `expo-notifications` config plugin ([what's a config plugin?](/guides/config-plugins.md)). To setup, add the plugin to your `app.json` file:
+If you're using EAS Build or the bare workflow, you can set your Android notification icon and color tint, add custom push notification sounds, and set your iOS notification environment using the `expo-notifications` config plugin ([what's a config plugin?](/guides/config-plugins.md)). To setup, just add the config plugin to the `plugins` array of your `app.json` or `app.config.js`:
 
 ```json
-expo: {
-  ...
-  "plugins": [
-    [
-      "expo-notifications",
-      {
-        "icon": <Android only. Local path to an image to use as the icon for push notifications. 96x96 all-white png with transparency>,
-        "color": <Android only. Tint color for the push notification image when it appears in the notification tray. Default: #ffffff>,
-        "sounds": <Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds>,
-        "mode": <(iOS only) Environment of the app: either 'development' or 'production'. Default: 'development'>
-      }
-    ]
-  ],
+{
+  "expo": {
+    ...
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./local/path/to/myNotificationIcon.png",
+          "color": "#ffffff",
+          "sounds": ["./local/path/to/mySound.wav", "./local/path/to/myOtherSound.wav"],
+          "mode": "production"
+        }
+      ]
+    ],
+  }
 }
 ```
+
+<details><summary><strong>Expand to view property descriptions and default values</strong></summary> <p>
+
+- **icon**: Android only. Local path to an image to use as the icon for push notifications. 96x96 all-white png with transparency.
+- **color**: Android only. Tint color for the push notification image when it appears in the notification tray. Default: "#ffffff".
+- **sounds**: Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds.
+- **mode**: iOS only. Environment of the app: either 'development' or 'production'. Default: 'development'.
+
+</p>
+</details>
+
+Then rebuild the app. If you're using the bare workflow, make sure to run `expo prebuild` first (this will apply the config plugin using [prebuilding](https://expo.fyi/prebuilding)).
 
 ### Android
 
@@ -249,16 +263,17 @@ Custom notification sounds are only supported when using [EAS Build](/build/intr
 To add custom push notification sounds to your app, add the `expo-notifications` plugin to your `app.json` file:
 
 ```json
-expo: {
-  ...
-  "plugins": [
-    [
-      "expo-notifications",
-      {
-        "sounds": ["local/path/to/mySoundFile.wav"]
-      }
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "sounds": ["local/path/to/mySoundFile.wav"]
+        }
+      ]
     ]
-  ],
+  }
 }
 ```
 
@@ -327,7 +342,7 @@ await Notifications.scheduleNotificationAsync({
     sound: 'notification.wav',
   },
   trigger: {
-    ...
+    // ...
   },
 });
 ```
