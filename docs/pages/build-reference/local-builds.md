@@ -21,7 +21,7 @@ You can run the same build process as we run on the EAS Build servers directly o
 
 ## Using local builds for debugging
 
-If builds are failing for you on EAS servers and you're unable to determine the cause from inspecting the logs, it may be helpful to debug the issue locally. To simplify that process we support few environment variables to configure the local build process.
+If you encounter build failures on EAS servers and you're unable to determine the cause from inspecting the logs, you may find it helpful to debug the issue locally. To simplify that process we support few environment variables to configure the local build process.
 
 - `EAS_LOCAL_BUILD_SKIP_CLEANUP=1` - Set this to disable cleaning up the working directory after the build process is finished.
 - `EAS_LOCAL_BUILD_WORKINGDIR` - Specify the working directory for the build process, by default it's somewhere (it's platform dependent) in `/tmp` folder.
