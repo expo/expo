@@ -45,7 +45,6 @@ jobs:
             react-native-lab/react-native/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
       - name: 🧶 Install node modules in root dir
-        if: steps.node-modules-cache.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
       - run: yarn global add expo-cli
       - run: yarn test:web
@@ -94,7 +93,6 @@ jobs:
             react-native-lab/react-native/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
       - name: 🧶 Install node modules in root dir
-        if: steps.node-modules-cache.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: ♻️ Restore apps/bare-expo/ios/Pods from cache
         uses: actions/cache@v2
