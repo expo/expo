@@ -298,7 +298,7 @@ public class ExpoUpdatesAppLoader {
         mLauncher = launcher;
         mIsUpToDate = isUpToDate;
         try {
-          JSONObject manifestJson = processManifestJson(launcher.getLaunchedUpdate().metadata);
+          JSONObject manifestJson = processManifestJson(launcher.getLaunchedUpdate().manifest);
           RawManifest manifest = ManifestFactory.INSTANCE.getRawManifestFromJson(manifestJson);
           mCallback.onManifestCompleted(manifest);
 
@@ -329,7 +329,7 @@ public class ExpoUpdatesAppLoader {
               throw new AssertionError("Background update with error status must have a nonnull update object");
             }
             jsonParams.put("type", UPDATE_AVAILABLE_EVENT);
-            jsonParams.put("manifestString", update.metadata.toString());
+            jsonParams.put("manifestString", update.manifest.toString());
           } else if (status == LoaderTask.BackgroundUpdateStatus.NO_UPDATE_AVAILABLE) {
             jsonParams.put("type", UPDATE_NO_UPDATE_AVAILABLE_EVENT);
           }

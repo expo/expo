@@ -6,6 +6,11 @@ on:
     paths:
       - .github/workflows/development-client.yml
       - packages/expo-dev-*/**
+  push:
+    branches: [master]
+    paths:
+      - .github/workflows/development-client.yml
+      - packages/expo-dev-*/**
 
 jobs:
   android:
@@ -101,4 +106,4 @@ jobs:
         run: expo-cli eject
       - name: Build debug
         working-directory: ../development-client-ios-test
-        run: xcodebuild -workspace ios/developmentclientiostest.xcworkspace -scheme developmentclientiostest -configuration debug -sdk iphonesimulator -arch x86_64
+        run: xcodebuild -workspace ios/developmentclientiostest.xcworkspace -scheme developmentclientiostest -configuration debug -sdk iphonesimulator14.4 -arch x86_64

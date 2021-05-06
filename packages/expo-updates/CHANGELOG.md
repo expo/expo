@@ -6,6 +6,7 @@
 
 - Save asset with a key that does not include an extension. This introduces an implicit dependency on expo-asset@8.3.2 or above. ([#12734](https://github.com/expo/expo/pull/12734) by [@jkhales](https://github.com/jkhales))
 - Add last_accessed column to updates table schema, and rename metadata -> manifest. ([#12768](https://github.com/expo/expo/pull/12768) by [@esamelson](https://github.com/esamelson))
+- Add non-destructive database migration for the above change. ([#12820](https://github.com/expo/expo/pull/12820) by [@esamelson](https://github.com/esamelson))
 
 ### 🎉 New features
 
@@ -26,6 +27,7 @@
 ### 🐛 Bug fixes
 
 - Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
+- Rename Update.metadata -> manifest in internal module classes. ([#12818](https://github.com/expo/expo/pull/12818) by [@esamelson](https://github.com/esamelson))
 
 ## 0.6.0 — 2021-04-13
 

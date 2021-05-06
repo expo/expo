@@ -152,7 +152,7 @@ static NSString * const ABI39_0_0EXUpdatesDatabaseFilename = @"expo-v3.db";
                       update.scopeKey,
                       @([update.commitTime timeIntervalSince1970] * 1000),
                       update.runtimeVersion,
-                      update.metadata ?: [NSNull null],
+                      update.manifest ?: [NSNull null],
                       @(ABI39_0_0EXUpdatesUpdateStatusPending)
                       ]
               error:error];

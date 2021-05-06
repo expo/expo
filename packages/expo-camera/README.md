@@ -23,11 +23,13 @@ expo install expo-camera
 
 ### Configure for iOS
 
-Add `NSCameraUsageDescription` key to your `Info.plist`:
+Add `NSCameraUsageDescription` and `NSMicrophoneUsageDescription` keys to your `Info.plist`:
 
 ```xml
 <key>NSCameraUsageDescription</key>
 <string>Allow $(PRODUCT_NAME) to use the camera</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to use the microphone</string>
 ```
 
 Run `npx pod-install` after installing the npm package.
