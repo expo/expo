@@ -6,7 +6,14 @@ import logger from '../Logger';
 import { generateReviewBodyFromOutputs } from './reports';
 import checkMissingChangelogs from './reviewers/checkMissingChangelogs';
 import reviewChangelogEntries from './reviewers/reviewChangelogEntries';
-import { ReviewEvent, ReviewComment, ReviewInput, ReviewOutput, ReviewStatus } from './types';
+import {
+  ReviewEvent,
+  ReviewComment,
+  ReviewInput,
+  ReviewOutput,
+  ReviewStatus,
+  ReviewState,
+} from './types';
 
 /**
  * An array with functions whose purpose is to check and review the diff.
@@ -71,7 +78,10 @@ export async function reviewPullRequestAsync(prNumber: number) {
   }
 
   // Reset my reviews' current state if I previously requested for changes.
-  if (previousReviews[previousReviews.length - 1]?.state) {
+  if (
+    previousReviews[previousReviews.length - 1]?.state === ReviewState.CHANGES_REQUESTED &&
+    event !== ReviewEvent.REQUEST_CHANGES
+  ) {
     logger.info('🙈 Resetting my review state by re-requesting');
     await GitHub.requestPullRequestReviewersAsync(pr.number, [user.login]);
   }
