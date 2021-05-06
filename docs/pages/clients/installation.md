@@ -21,7 +21,7 @@ The easiest way to get started is to initialize a new project by executing the f
 
 Add the Expo Development Client packages to your package.json.
 
-<InstallSection packageName="expo-development-client" cmd={["npm install expo-dev-menu expo-dev-menu-interface expo-dev-launcher"]} hideBareInstructions />
+<InstallSection packageName="expo-development-client" cmd={["npm install expo-dev-client"]} hideBareInstructions />
 
 <!-- note: `/client/submodules` doesn't exists, commenting this out for now -->
 <!-- [Want to learn more about how these modules work?](/client/submodules/) -->
@@ -31,6 +31,10 @@ Add the Expo Development Client packages to your package.json.
 Change your `Podfile` to make sure that the Development Client will be removed in the release builds:
 
 <ConfigurationDiff source="/static/diffs/client/podfile.diff" />
+
+Add configuration in `react-native.config.js` to allow React Native autolinking to find the dependencies of `expo-dev-client`:
+
+<ConfigurationDiff source="/static/diffs/client/react-native.config.js.diff" />
 
 Then you can run the following command to install native code for the Dev Launcher via Cocoapods.
 
