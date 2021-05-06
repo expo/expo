@@ -88,6 +88,9 @@ export var ImageType;
     ImageType["png"] = "png";
     ImageType["jpg"] = "jpg";
 })(ImageType || (ImageType = {}));
+/**
+ * This option specifies what codec to use when recording a video.
+ */
 export var VideoCodec;
 (function (VideoCodec) {
     /**

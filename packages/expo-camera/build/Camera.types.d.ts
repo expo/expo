@@ -84,6 +84,9 @@ export declare enum ImageType {
     png = "png",
     jpg = "jpg"
 }
+/**
+ * This option specifies what codec to use when recording a video.
+ */
 export declare enum VideoCodec {
     /**
      * @platforms ios
