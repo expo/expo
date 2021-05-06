@@ -14,7 +14,7 @@
   },
   "source_files": "ios/**/*.{h,m,mm,swift}",
   "pod_target_xcconfig": {
-    "HEADER_SEARCH_PATHS": "\"${PODS_ROOT}/Stripe/Stripe3DS2\""
+    "HEADER_SEARCH_PATHS": "\"${PODS_ROOT}/Stripe/Stripe3DS2\" \"${PODS_ROOT}/Headers/Public/Stripe\""
   },
   "dependencies": {
     "React": [],

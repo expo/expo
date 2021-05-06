@@ -4106,7 +4106,7 @@ SPEC CHECKSUMS:
   ReactCommon: a0a1edbebcac5e91338371b72ffc66aa822792ce
   RNReanimated: 5231286440b796e09df3bfa5c1b12b02bfe07664
   Stripe: 7c594b943abb65cf7bc28e37fd5124e65db3ce9e
-  stripe-react-native: 9fa058090df5fc0d3704dce40ffe5233426e834b
+  stripe-react-native: 1f211194f8dd3c741e287ad1a4c478609ef614b6
   UMAppLoader: fe2708bb0ac5cd70052bc207d06aa3b7e72b9e97
   UMBarCodeScannerInterface: 79f92bea5f7af39b381a4c82298105ceb537408a
   UMConstantsInterface: bb94dd46039dcde276ed50225b29e22785e604bf
