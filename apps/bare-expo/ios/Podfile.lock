@@ -150,6 +150,10 @@ PODS:
   - EXPermissions (12.0.1):
     - UMCore
     - UMPermissionsInterface
+  - expo-dev-client (0.1.0):
+    - expo-dev-launcher
+    - expo-dev-menu
+    - expo-dev-menu-interface
   - expo-dev-launcher (0.3.1):
     - expo-dev-menu-interface
     - React
@@ -768,6 +772,7 @@ DEPENDENCIES:
   - EXNetwork (from `../../../packages/expo-network/ios`)
   - EXNotifications (from `../../../packages/expo-notifications/ios`)
   - EXPermissions (from `../../../packages/expo-permissions/ios`)
+  - expo-dev-client (from `../../../packages/expo-dev-client`)
   - expo-dev-launcher (from `../../../packages/expo-dev-launcher`)
   - expo-dev-menu (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu-interface (from `../../../packages/expo-dev-menu-interface`)
@@ -1038,6 +1043,8 @@ EXTERNAL SOURCES:
   EXPermissions:
     inhibit_warnings: false
     :path: "../../../packages/expo-permissions/ios"
+  expo-dev-client:
+    :path: "../../../packages/expo-dev-client"
   expo-dev-launcher:
     :path: "../../../packages/expo-dev-launcher"
   expo-dev-menu:
@@ -1272,6 +1279,7 @@ SPEC CHECKSUMS:
   EXNetwork: 36144f5e572e6b6b218094c66a57c99e07ffbc0d
   EXNotifications: baccd843a16a2cb2db2183e2d801652f3cb43202
   EXPermissions: 8f8c1c05580c4e02d4ee2c8dd74bfe173ff6a723
+  expo-dev-client: e7b6c924dad57d75ae7e0fd18f7dca2d8fb1118a
   expo-dev-launcher: ba817d68d83bffae03beebb59b14341ac27f1833
   expo-dev-menu: 9cab52a55688aef281dee77a101af83658c59b48
   expo-dev-menu-interface: e6f313b7b0c0c79b1987cf26bc5c969bad69bb7d
@@ -1384,6 +1392,6 @@ SPEC CHECKSUMS:
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 0b9a73617b946de30bc3a0edb3de938620d83dbf
+PODFILE CHECKSUM: 6647b99465c2525a46c4a71ef2693ab66bc4e78d
 
 COCOAPODS: 1.10.1
