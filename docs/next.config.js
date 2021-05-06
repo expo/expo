@@ -25,9 +25,9 @@ const enableEsbuild = !!process.env.USE_ESBUILD;
 console.log(enableEsbuild ? 'Using esbuild for MDX files' : 'Using babel for MDX files');
 
 module.exports = {
-  future: {
-    webpack5: true,
-  },
+  // future: {
+  //   webpack5: true,
+  // },
   trailingSlash: true,
   // Rather than use `@zeit/next-mdx`, we replicate it
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
@@ -74,7 +74,10 @@ module.exports = {
     });
 
     // Fix inline or browser MDX usage: https://mdxjs.com/getting-started/webpack#running-mdx-in-the-browser
-    config.resolve.fallback = { fs: false, path: require.resolve('path-browserify') };
+    // Webpack 4
+    config.node = { fs: 'empty' };
+    // Webpack 5
+    // config.resolve.fallback = { fs: false, path: require.resolve('path-browserify') };
 
     // Add the esbuild plugin only when using esbuild
     if (enableEsbuild) {
