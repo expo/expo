@@ -49,10 +49,10 @@ jobs:
         run: expo-cli init development-client-android-test --name development-client-android-test --yes
       - name: Add dependencies
         working-directory: ../development-client-android-test
-        run: yarn add file:../expo/packages/expo-dev-menu file:../expo/packages/expo-dev-menu-interface file:../expo/packages/expo-dev-launcher
+        run: yarn add file:../expo/packages/expo-dev-client
       - name: Setup app.config.json
         working-directory: ../development-client-android-test
-        run: echo "{\"name\":\"development-client-android-test\",\"plugins\":[\"expo-dev-menu\",\"expo-dev-launcher\"],\"android\":{\"package\":\"com.devclient.test\"},\"ios\":{\"bundleIdentifier\":\"com.devclient.test\"}}" > app.config.json
+        run: echo "{\"name\":\"development-client-android-test\",\"plugins\":[\"expo-dev-client\"],\"android\":{\"package\":\"com.devclient.test\"},\"ios\":{\"bundleIdentifier\":\"com.devclient.test\"}}" > app.config.json
       - name: Eject
         working-directory: ../development-client-android-test
         run: expo-cli eject
@@ -92,10 +92,10 @@ jobs:
         run: expo-cli init development-client-ios-test --name development-client-ios-test --yes
       - name: Add dependencies
         working-directory: ../development-client-ios-test
-        run: yarn add file:../expo/packages/expo-dev-menu file:../expo/packages/expo-dev-menu-interface file:../expo/packages/expo-dev-launcher
+        run: yarn add file:../expo/packages/expo-dev-client
       - name: Setup app.config.json
         working-directory: ../development-client-ios-test
-        run: echo "{\"name\":\"development-client-ios-test\",\"plugins\":[\"expo-dev-menu\",\"expo-dev-launcher\"],\"android\":{\"package\":\"com.devclient.test\"},\"ios\":{\"bundleIdentifier\":\"com.devclient.test\"}}" > app.config.json
+        run: echo "{\"name\":\"development-client-ios-test\",\"plugins\":[\"expo-dev-client\"],\"android\":{\"package\":\"com.devclient.test\"},\"ios\":{\"bundleIdentifier\":\"com.devclient.test\"}}" > app.config.json
       - name: Eject
         working-directory: ../development-client-ios-test
         run: expo-cli eject
