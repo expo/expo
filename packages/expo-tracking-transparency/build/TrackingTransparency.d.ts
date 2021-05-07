@@ -1,5 +1,4 @@
 import { PermissionResponse } from 'unimodules-permissions-interface';
-export * from './TrackingTransparency.types';
 /**
  * Requests the user to authorize or deny access to app-related data that
  * can be used for tracking the user or the device. Examples of data used for tracking include
@@ -8,7 +7,7 @@ export * from './TrackingTransparency.types';
  * The system remembers the user’s choice and doesn’t prompt
  * again unless a user uninstalls and then reinstalls the app on the device.
  *
- *  *
+ * On Android and web, this method always returns that the permission was granted.
  * @example
  * ```typescript
  * const { granted } = await requestTrackingPermissionsAsync();
@@ -24,7 +23,8 @@ export declare function requestTrackingPermissionsAsync(): Promise<PermissionRes
  * can be used for tracking the user or the device. See `requestPermissionsAsync` for more
  * details.
  *
- *  *
+ * On Android and web, this method always returns that the permission was granted.
+ *
  * @example
  * ```typescript
  * const { granted } = await getTrackingPermissionsAsync();
@@ -35,3 +35,4 @@ export declare function requestTrackingPermissionsAsync(): Promise<PermissionRes
  * ```
  */
 export declare function getTrackingPermissionsAsync(): Promise<PermissionResponse>;
+export { PermissionResponse };

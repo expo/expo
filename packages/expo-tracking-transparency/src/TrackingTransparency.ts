@@ -1,11 +1,15 @@
 import { UnavailabilityError } from '@unimodules/core';
 import { Platform } from 'react-native';
-import { PermissionResponse } from 'unimodules-permissions-interface';
+import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 
 import ExpoTrackingTransparency from './ExpoTrackingTransparency';
-import { androidAndWebPermissionsResponse } from './TrackingTransparency.types';
 
-export * from './TrackingTransparency.types';
+const androidAndWebPermissionsResponse: PermissionResponse = {
+  granted: true,
+  expires: 'never',
+  canAskAgain: true,
+  status: PermissionStatus.GRANTED,
+};
 
 /**
  * Requests the user to authorize or deny access to app-related data that
@@ -15,7 +19,7 @@ export * from './TrackingTransparency.types';
  * The system remembers the user’s choice and doesn’t prompt
  * again unless a user uninstalls and then reinstalls the app on the device.
  *
- *  *
+ * On Android and web, this method always returns that the permission was granted.
  * @example
  * ```typescript
  * const { granted } = await requestTrackingPermissionsAsync();
@@ -41,7 +45,8 @@ export async function requestTrackingPermissionsAsync(): Promise<PermissionRespo
  * can be used for tracking the user or the device. See `requestPermissionsAsync` for more
  * details.
  *
- *  *
+ * On Android and web, this method always returns that the permission was granted.
+ *
  * @example
  * ```typescript
  * const { granted } = await getTrackingPermissionsAsync();
@@ -61,3 +66,5 @@ export async function getTrackingPermissionsAsync(): Promise<PermissionResponse>
   }
   return await ExpoTrackingTransparency.getPermissionsAsync();
 }
+
+export { PermissionResponse };
