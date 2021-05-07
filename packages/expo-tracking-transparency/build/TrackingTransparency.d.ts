@@ -7,7 +7,7 @@ import { PermissionResponse } from 'unimodules-permissions-interface';
  * The system remembers the user’s choice and doesn’t prompt
  * again unless a user uninstalls and then reinstalls the app on the device.
  *
- * On Android and web, this method always returns that the permission was granted.
+ * On Android, web, and iOS 13 and below, this method always returns that the permission was granted.
  * @example
  * ```typescript
  * const { granted } = await requestTrackingPermissionsAsync();
@@ -23,7 +23,7 @@ export declare function requestTrackingPermissionsAsync(): Promise<PermissionRes
  * can be used for tracking the user or the device. See `requestPermissionsAsync` for more
  * details.
  *
- * On Android and web, this method always returns that the permission was granted.
+ * On Android, web, and iOS 13 and below, this method always returns that the permission was granted.
  *
  * @example
  * ```typescript

@@ -1,0 +1,54 @@
+---
+title: Tracking Transparency
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-41/packages/expo-tracking-transparency'
+---
+
+import APISection from '~/components/plugins/APISection';
+import InstallSection from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
+A library for requesting permission to track the user or their device. Examples of data used for tracking include email address, device ID, advertising ID, etc. This permission is only necessary on iOS 14.5 and higher.
+
+For more information on Apple's new App Tracking Transparency framework, please refer to their [documentation](https://developer.apple.com/app-store/user-privacy-and-data-use/).
+
+<PlatformsSection android emulator ios simulator web />
+
+## Installation
+
+<InstallSection packageName="expo-tracking-transparency" />
+
+## Usage
+
+```jsx
+import React from 'react';
+import { Text, StyleSheet, View } from 'react-native';
+import { requestTrackingPermissionsAsync } from 'expo-tracking-transparency';
+
+export default function App() {
+  useEffect(() => {
+    (async () => {
+      const { status } = await requestTrackingPermissionsAsync();
+      if (status === 'granted') {
+        console.log('Yay! I have user permission to track data');
+      }
+    })();
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      <Text>Tracking Transparency Module Example</Text>
+    </View>
+  );
+}
+```
+
+## API
+
+```js
+import {
+  requestTrackingPermissionsAsync,
+  getTrackingPermissionsAsync,
+} from 'expo-tracking-transparency';
+```
+
+<APISection packageName="expo-tracking-transparency" />

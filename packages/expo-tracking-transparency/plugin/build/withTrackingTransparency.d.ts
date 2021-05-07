@@ -4,7 +4,7 @@ export declare const withUserTrackingPermission: ConfigPlugin<{
 } | void>;
 declare const _default: ConfigPlugin<void | {
     /**
-     * Sets the iOS `NSUserTrackingUsageDescription` permission message in the `Info.plist`.
+     * Sets the iOS `NSUserTrackingUsageDescription` permission message in `Info.plist`.
      * Passing `false` will skip adding the permission.
      * @default 'This will allow the app to gather app-related data that can be used for tracking you or your device.'
      */
