@@ -11,8 +11,6 @@ import DevMenuScreen from '../components/items/DevMenuScreen';
 import DevMenuMainScreen from '../screens/DevMenuMainScreen';
 import DevMenuProfile from '../screens/DevMenuProfileScreen';
 import DevMenuSettingsScreen from '../screens/DevMenuSettingsScreen';
-import DevMenuTestScreen from '../screens/DevMenuTestScreen';
-import * as LocalStorage from '../storage/LocalStorage';
 import DevMenuBottomSheet from './DevMenuBottomSheet';
 import DevMenuOnboarding from './DevMenuOnboarding';
 
@@ -173,14 +171,6 @@ export default class DevMenuContainer extends React.PureComponent<Props, any> {
       component: DevMenuSettingsScreen,
       options: applyNavigationSettings(
         DevMenuSettingsScreen.navigationOptions,
-        this.providedContext.collapse
-      ),
-    },
-    {
-      name: 'Test',
-      component: DevMenuTestScreen,
-      options: applyNavigationSettings(
-        DevMenuTestScreen.navigationOptions,
         this.providedContext.collapse
       ),
     },
