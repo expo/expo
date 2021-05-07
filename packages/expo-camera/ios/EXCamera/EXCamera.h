@@ -56,6 +56,14 @@ typedef NS_ENUM(NSInteger, EXCameraVideoResolution) {
   EXCameraVideo4x3 = 3,
 };
 
+typedef NS_ENUM(NSInteger, EXCameraVideoCodec) {
+  EXCameraVideoCodecH264 = 0,
+  EXCameraVideoCodecHEVC = 1,
+  EXCameraVideoCodecJPEG = 2,
+  EXCameraVideoCodecAppleProRes422 = 3,
+  EXCameraVideoCodecAppleProRes4444 = 4,
+};
+
 @interface EXCamera : UIView <AVCaptureMetadataOutputObjectsDelegate, AVCaptureFileOutputRecordingDelegate, UMAppLifecycleListener, UMCameraInterface, AVCapturePhotoCaptureDelegate>
 
 @property (nonatomic, strong) dispatch_queue_t sessionQueue;
@@ -77,6 +85,7 @@ typedef NS_ENUM(NSInteger, EXCameraVideoResolution) {
 
 @property (nonatomic, assign) BOOL isScanningBarCodes;
 @property (nonatomic, assign) BOOL isDetectingFaces;
+@property (nonatomic, assign) AVVideoCodecType videoCodecType;
 
 - (id)initWithModuleRegistry:(UMModuleRegistry *)moduleRegistry;
 - (void)updateType;
@@ -98,5 +107,4 @@ typedef NS_ENUM(NSInteger, EXCameraVideoResolution) {
 - (void)onPictureSaved:(NSDictionary *)event;
 
 @end
-
 
