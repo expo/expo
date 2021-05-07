@@ -25,7 +25,7 @@ ABI40_0_0UM_REGISTER_MODULE();
   return ABI40_0_0EXUpdatesAppController.sharedInstance.database;
 }
 
-- (id<ABI40_0_0EXUpdatesSelectionPolicy>)selectionPolicy
+- (ABI40_0_0EXUpdatesSelectionPolicy *)selectionPolicy
 {
   return ABI40_0_0EXUpdatesAppController.sharedInstance.selectionPolicy;
 }
@@ -68,6 +68,11 @@ ABI40_0_0UM_REGISTER_MODULE();
 - (void)requestRelaunchWithCompletion:(ABI40_0_0EXUpdatesAppRelaunchCompletionBlock)completion
 {
   return [ABI40_0_0EXUpdatesAppController.sharedInstance requestRelaunchWithCompletion:completion];
+}
+
+- (void)resetSelectionPolicy
+{
+  return [ABI40_0_0EXUpdatesAppController.sharedInstance resetSelectionPolicyToDefault];
 }
 
 @end

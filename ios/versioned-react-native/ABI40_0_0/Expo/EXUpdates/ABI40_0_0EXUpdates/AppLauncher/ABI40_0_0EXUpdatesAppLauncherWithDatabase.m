@@ -1,6 +1,6 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesAppLauncherWithDatabase.h>
+#import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesAppLauncherWithDatabase+Tests.h>
 #import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesEmbeddedAppLoader.h>
 #import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesDatabase.h>
 #import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesFileDownloader.h>
@@ -50,16 +50,23 @@ static NSString * const ABI40_0_0EXUpdatesAppLauncherErrorDomain = @"AppLauncher
 
 + (void)launchableUpdateWithConfig:(ABI40_0_0EXUpdatesConfig *)config
                           database:(ABI40_0_0EXUpdatesDatabase *)database
-                   selectionPolicy:(id<ABI40_0_0EXUpdatesSelectionPolicy>)selectionPolicy
+                   selectionPolicy:(ABI40_0_0EXUpdatesSelectionPolicy *)selectionPolicy
                         completion:(ABI40_0_0EXUpdatesAppLauncherUpdateCompletionBlock)completion
                    completionQueue:(dispatch_queue_t)completionQueue
 {
   dispatch_async(database.databaseQueue, ^{
     NSError *error;
     NSArray<ABI40_0_0EXUpdatesUpdate *> *launchableUpdates = [database launchableUpdatesWithConfig:config error:&error];
+    NSError *manifestFiltersError;
+    NSDictionary *manifestFilters = [database manifestFiltersWithScopeKey:config.scopeKey error:&manifestFiltersError];
     dispatch_async(completionQueue, ^{
       if (!launchableUpdates) {
         completion(error, nil);
+        return;
+      }
+      if (manifestFiltersError) {
+        completion(manifestFiltersError, nil);
+        return;
       }
 
       // We can only run an update marked as embedded if it's actually the update embedded in the
@@ -76,12 +83,12 @@ static NSString * const ABI40_0_0EXUpdatesAppLauncherErrorDomain = @"AppLauncher
         [filteredLaunchableUpdates addObject:update];
       }
 
-      completion(nil, [selectionPolicy launchableUpdateFromUpdates:filteredLaunchableUpdates]);
+      completion(nil, [selectionPolicy launchableUpdateFromUpdates:filteredLaunchableUpdates filters:manifestFilters]);
     });
   });
 }
 
-- (void)launchUpdateWithSelectionPolicy:(id<ABI40_0_0EXUpdatesSelectionPolicy>)selectionPolicy
+- (void)launchUpdateWithSelectionPolicy:(ABI40_0_0EXUpdatesSelectionPolicy *)selectionPolicy
                              completion:(ABI40_0_0EXUpdatesAppLauncherCompletionBlock)completion
 {
   NSAssert(!_completion, @"ABI40_0_0EXUpdatesAppLauncher:launchUpdateWithSelectionPolicy:successBlock should not be called twice on the same instance");
@@ -102,17 +109,35 @@ static NSString * const ABI40_0_0EXUpdatesAppLauncherErrorDomain = @"AppLauncher
         }
       } else {
         self->_launchedUpdate = launchableUpdate;
-        [self _ensureAllAssetsExist];
+        [self _finishLaunch];
       }
     } completionQueue:_launcherQueue];
   } else {
-    [self _ensureAllAssetsExist];
+    [self _finishLaunch];
   }
 }
 
 - (BOOL)isUsingEmbeddedAssets
 {
   return _assetFilesMap == nil;
+}
+
+- (void)_finishLaunch
+{
+  [self _markUpdateAccessed];
+  [self _ensureAllAssetsExist];
+}
+
+- (void)_markUpdateAccessed
+{
+  NSAssert(_launchedUpdate, @"launchedUpdate should be nonnull before calling markUpdateAccessed");
+  dispatch_async(_database.databaseQueue, ^{
+    NSError *error;
+    [self->_database markUpdateAccessed:self->_launchedUpdate error:&error];
+    if (error) {
+      NSLog(@"Failed to mark update as recently accessed: %@", error.localizedDescription);
+    }
+  });
 }
 
 - (void)_ensureAllAssetsExist
@@ -228,7 +253,7 @@ static NSString * const ABI40_0_0EXUpdatesAppLauncherErrorDomain = @"AppLauncher
   if (embeddedManifest) {
     ABI40_0_0EXUpdatesAsset *matchingAsset;
     for (ABI40_0_0EXUpdatesAsset *embeddedAsset in embeddedManifest.assets) {
-      if ([embeddedAsset.key isEqualToString:asset.key]) {
+      if (embeddedAsset.key && [embeddedAsset.key isEqualToString:asset.key]) {
         matchingAsset = embeddedAsset;
         break;
       }
