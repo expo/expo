@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added CocoaPods & Gradle scripts to use new autolinking implementation (opt-in feature). ([#11593](https://github.com/expo/expo/pull/11593) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 ## 6.2.2 — 2021-04-13

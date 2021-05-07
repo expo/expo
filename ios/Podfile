@@ -1,5 +1,5 @@
 require_relative './podfile_helpers.rb'
-require_relative '../packages/react-native-unimodules/cocoapods.rb'
+require_relative '../packages/@unimodules/react-native-adapter/scripts/autolinking'
 require_relative '../react-native-lab/react-native/scripts/react_native_pods'
 
 install! 'cocoapods',
@@ -16,13 +16,12 @@ abstract_target 'Expo Go' do
   pod 'Google-Maps-iOS-Utils', '~> 2.1.0'
   pod 'JKBigInteger2', '0.0.5'
 
-  # Unimodules
-  use_unimodules!({
-    modules_paths: ['../packages'],
+  # Expo modules
+  use_expo_modules!({
     exclude: [
       'expo-module-template',
       'expo-in-app-purchases',
-      'expo-payments-stripe',
+      'expo-payments-stripe'
     ],
     # Modules for which to include Tests subspec
     tests: [
