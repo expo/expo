@@ -7,12 +7,11 @@ inhibit_all_warnings!
 
 # Import the auto-linking packages
 require_relative '../node_modules/react-native/scripts/react_native_pods'
-require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+require_relative '../../../packages/@unimodules/react-native-adapter/scripts/autolinking'
 
 abstract_target 'BareExpoMain' do
-  # Auto-linking
-  use_unimodules!
+  use_expo_modules!
 
   config = use_native_modules!
 
