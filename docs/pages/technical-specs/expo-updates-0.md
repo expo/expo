@@ -42,7 +42,7 @@ A conformant client library MUST make a GET request with the headers:
     * iOS MUST be `expo-platform: ios`.
     * Android MUST be `expo-platform: android`.
     * If it is not one of these platforms, the server SHOULD return a 400 or a 404
-2. `expo-runtime-version` MUST be the runtime version the client is running on.
+2. `expo-runtime-version` MUST be a runtime version compatible with the client. A runtime version stipulates the native code setup a client is running. It should be set when the client is built. For example, in an iOS client, the value may be set in a plist file. 
 3. Any headers stipulated by a previous responses' [server defined headers](#manifest-response-headers):
 
 A conformant client library SHOULD also send `accept: application/expo+json, application/json`. With the order following the prefence ordering for the accept header specified in [RFC 7231](https://tools.ietf.org/html/rfc7231#section-5.3.2). But MUST send at least one of them, `accept: application/expo+json` or `accept: application/json`.
