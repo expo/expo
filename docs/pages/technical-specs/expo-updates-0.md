@@ -76,18 +76,7 @@ content-type: <*>
 * `expo-protocol-version` describes the version of the protocol defined in this spec and MUST be `0`.
 * `expo-sfv-version`  MUST be `0`.
 * `expo-manifest-filters` is an [Expo SFV 0](expo-sfv-0.md) dictionary. It is used to filter updates stored by the client library by the `metadata` attributes found in the [manifest](#manifest-response-body).
-  * For example: `expo-manifest-filters: branchname="main"` instructs the client library to load the most recent update it has stored whose `metadata` contains:
-
-  ```
-  metadata: {
-    branchName: "main",
-    ...
-  }
-  ```
-  * If the `branchname` manifest filter is included, it MUST equal the `branchName` in the `manifest.metadata`.
 * `expo-server-defined-headers` is an [Expo SFV](expo-sfv.md) dictionary. It defines headers that a client library MUST store and include in every subsequent [manifest request](#manifest-request).
-
-  * For example, when rolling out an update, EAS requires a client library to send back a stable token: `expo-server-defined-headers: expo-rollout-token="token"`. 
 * `cache-control` - A value of `cache-control: private, max-age=0` is recommended to ensure the newest manifest is returned. Setting longer cache ages could result in stale updates.
 * `content-type` MUST be determined by _proactive negotiation_ as defined in [RFC 7231](https://tools.ietf.org/html/rfc7231#section-3.4.1). Since the client library is [required](#manifest-request) to send an `accept` header with each manifest request, this will always be either `application/expo+json`, `application/json`, or a `406`.
 
@@ -130,9 +119,7 @@ _Asset_ is defined as JSON with the following structure:
     * `url` Location from which the file may be fetched.
   * `launchAsset` The asset that is used to launch the app.
   * `assets` An array of assets used by the update bundle, such as JavaScript, pictures, and fonts.
-  * `metadata` The metadata associated with an update. This can be used for filtering the update (see the `branchname` example above) and also for the creation of more helpful errors. In particular, the server MAY send back the string valued `metadata` keys:
-    * `branchName` used to sort updates into groups called _branches_.
-    * `updateGroup` used to group updates for different platforms that come from the same publish.
+  * `metadata` The metadata associated with an update. This can be used for filtering the update and also for the creation of more helpful errors.
 
 ## Asset Request
 A conformant client library MUST make a GET request to the asset URL specified by the manifest. The client library SHOULD include a header accepting the asset's content type as specified in the manifest. Additionally, the client library SHOULD specify the compression encoding the client library is capable of handling.
