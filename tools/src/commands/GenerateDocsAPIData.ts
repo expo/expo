@@ -96,6 +96,7 @@ async function action({ packageName }: ActionOptions) {
     'expo-splash-screen': ['SplashScreen.ts'],
     'expo-store-review': ['StoreReview.ts'],
     'expo-task-manager': ['TaskManager.ts'],
+    'expo-tracking-transparency': ['TrackingTransparency.ts'],
   };
 
   try {
