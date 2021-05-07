@@ -176,7 +176,7 @@ CREATE INDEX \"index_json_data_scope_key\" ON \"json_data\" (\"scope_key\")\
   (3,'https://url.to/bundle-1614137308871','bundle-1614137308871',NULL,'application/javascript',NULL,1614137309513,'bundle-1614137308871','e4d658861e85e301fb89bcfc49c42738ebcc0f9d5c979e037556435f44a27aa2',0,0),\
   (4,NULL,'bundle-1614137401950',NULL,'js',NULL,1614137406588,'bundle-1614137401950','6ff4ee75b48a21c7a9ed98015ff6bfd0a47b94cd087c5e2258262e65af239952',0,0);";
   NSString * const insertUpdatesSql = @"INSERT INTO \"updates\" (\"id\",\"scope_key\",\"commit_time\",\"runtime_version\",\"launch_asset_id\",\"metadata\",\"status\",\"keep\") VALUES\
-  (X'8C263F9DE3FF48888496E3244C788661','http://192.168.4.44:3000',1614137308871,'40.0.0',3,'{\"updateMetadata\":{\"updateGroup\":\"34993d39-57e6-46cf-8fa2-eba836f40828\",\"branchName\":\"rollout\"}}',1,1),\
+  (X'8C263F9DE3FF48888496E3244C788661','http://192.168.4.44:3000',1614137308871,'40.0.0',3,'{\"metadata\":{\"updateGroup\":\"34993d39-57e6-46cf-8fa2-eba836f40828\",\"branchName\":\"rollout\"}}',1,1),\
   (X'594100ea066e4804b5c7c907c773f980','http://192.168.4.44:3000',1614137401950,'40.0.0',4,NULL,1,1);";
   NSString * const insertUpdatesAssetsSql = @"INSERT INTO \"updates_assets\" (\"update_id\",\"asset_id\") VALUES\
   (X'8C263F9DE3FF48888496E3244C788661',2),\
@@ -245,7 +245,7 @@ CREATE INDEX \"index_json_data_scope_key\" ON \"json_data\" (\"scope_key\")\
     (3,'https://url.to/bundle-1614137308871','bundle-1614137308871',NULL,'application/javascript',NULL,1614137309513,'bundle-1614137308871','e4d658861e85e301fb89bcfc49c42738ebcc0f9d5c979e037556435f44a27aa2',0,0),\
     (4,NULL,'bundle-1614137401950',NULL,'js',NULL,1614137406588,'bundle-1614137401950','6ff4ee75b48a21c7a9ed98015ff6bfd0a47b94cd087c5e2258262e65af239952',0,0);";
   NSString * const insertUpdatesSql = @"INSERT INTO \"updates\" (\"id\",\"scope_key\",\"commit_time\",\"runtime_version\",\"launch_asset_id\",\"metadata\",\"status\",\"keep\") VALUES\
-  (X'8C263F9DE3FF48888496E3244C788661','http://192.168.4.44:3000',1614137308871,'40.0.0',3,'{\"updateMetadata\":{\"updateGroup\":\"34993d39-57e6-46cf-8fa2-eba836f40828\",\"branchName\":\"rollout\"}}',1,1),\
+  (X'8C263F9DE3FF48888496E3244C788661','http://192.168.4.44:3000',1614137308871,'40.0.0',3,'{\"metadata\":{\"updateGroup\":\"34993d39-57e6-46cf-8fa2-eba836f40828\",\"branchName\":\"rollout\"}}',1,1),\
   (X'594100ea066e4804b5c7c907c773f980','http://192.168.4.44:3000',1614137401950,'40.0.0',4,NULL,1,1);";
   NSString * const insertUpdatesAssetsSql = @"INSERT INTO \"updates_assets\" (\"update_id\",\"asset_id\") VALUES\
     (X'8C263F9DE3FF48888496E3244C788661',2),\
@@ -336,7 +336,7 @@ CREATE INDEX \"index_json_data_scope_key\" ON \"json_data\" (\"scope_key\")\
   (3,'https://url.to/bundle-1614137308871','bundle-1614137308871',NULL,'application/javascript',NULL,1614137309513,'bundle-1614137308871','e4d658861e85e301fb89bcfc49c42738ebcc0f9d5c979e037556435f44a27aa2',0,0),\
   (4,NULL,NULL,NULL,'js',NULL,1614137406588,'bundle-1614137401950','6ff4ee75b48a21c7a9ed98015ff6bfd0a47b94cd087c5e2258262e65af239952',0,0);";
   NSString * const insertUpdatesSql = @"INSERT INTO \"updates\" (\"id\",\"scope_key\",\"commit_time\",\"runtime_version\",\"launch_asset_id\",\"metadata\",\"status\",\"keep\") VALUES\
-  (X'8C263F9DE3FF48888496E3244C788661','http://192.168.4.44:3000',1614137308871,'40.0.0',3,'{\\\"updateMetadata\\\":{\\\"updateGroup\\\":\\\"34993d39-57e6-46cf-8fa2-eba836f40828\\\",\\\"branchName\\\":\\\"rollout\\\"}}',1,1),\
+  (X'8C263F9DE3FF48888496E3244C788661','http://192.168.4.44:3000',1614137308871,'40.0.0',3,'{\\\"metadata\\\":{\\\"updateGroup\\\":\\\"34993d39-57e6-46cf-8fa2-eba836f40828\\\",\\\"branchName\\\":\\\"rollout\\\"}}',1,1),\
   (X'594100ea066e4804b5c7c907c773f980','http://192.168.4.44:3000',1614137401950,'40.0.0',4,NULL,1,1);";
   NSString * const insertUpdatesAssetsSql = @"INSERT INTO \"updates_assets\" (\"update_id\",\"asset_id\") VALUES\
   (X'8C263F9DE3FF48888496E3244C788661',2),\
@@ -382,7 +382,7 @@ CREATE INDEX \"index_json_data_scope_key\" ON \"json_data\" (\"scope_key\")\
   XCTAssertEqual(1, [EXUpdatesDatabaseUtils executeSql:updatesAssetsSql3 withArgs:nil onDatabase:migratedDb error:nil].count);
 
   // make sure metadata -> manifest column rename worked
-  NSString * const updatesNonNullManifestSql = @"SELECT * FROM `updates` WHERE `id` = X'8C263F9DE3FF48888496E3244C788661' AND `manifest` = '{\\\"updateMetadata\\\":{\\\"updateGroup\\\":\\\"34993d39-57e6-46cf-8fa2-eba836f40828\\\",\\\"branchName\\\":\\\"rollout\\\"}}'";
+  NSString * const updatesNonNullManifestSql = @"SELECT * FROM `updates` WHERE `id` = X'8C263F9DE3FF48888496E3244C788661' AND `manifest` = '{\\\"metadata\\\":{\\\"updateGroup\\\":\\\"34993d39-57e6-46cf-8fa2-eba836f40828\\\",\\\"branchName\\\":\\\"rollout\\\"}}'";
   XCTAssertEqual(1, [EXUpdatesDatabaseUtils executeSql:updatesNonNullManifestSql withArgs:nil onDatabase:migratedDb error:nil].count);
 
   // make sure last_accessed column was filled in appropriately (all existing updates have the same last_accessed time)

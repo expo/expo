@@ -12,14 +12,14 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
   }
   
-  NSDictionary *updateMetadata = update.manifest[@"updateMetadata"];
-  if (!updateMetadata || ![updateMetadata isKindOfClass:[NSDictionary class]]) {
+  NSDictionary *metadata = update.manifest[@"metadata"];
+  if (!metadata || ![metadata isKindOfClass:[NSDictionary class]]) {
     return YES;
   }
   
   // create lowercase copy for case-insensitive search
-  NSMutableDictionary *metadataLCKeys = [NSMutableDictionary dictionaryWithCapacity:updateMetadata.count];
-  [updateMetadata enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+  NSMutableDictionary *metadataLCKeys = [NSMutableDictionary dictionaryWithCapacity:metadata.count];
+  [metadata enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
     if ([key isKindOfClass:[NSString class]]) {
       metadataLCKeys[((NSString *)key).lowercaseString] = obj;
     }
