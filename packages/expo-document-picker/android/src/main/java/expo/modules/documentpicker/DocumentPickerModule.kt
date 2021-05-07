@@ -19,17 +19,14 @@ import org.unimodules.core.utilities.FileUtilities
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.io.OutputStream
+
+private const val TAG = "ExpoDocumentPicker"
+private const val OPEN_DOCUMENT_CODE = 4137
 
 class DocumentPickerModule(
   mContext: Context,
   private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate(),
 ) : ExportedModule(mContext), ActivityEventListener {
-  companion object {
-    private const val TAG = "ExpoDocumentPicker"
-    private const val OPEN_DOCUMENT_CODE = 4137
-  }
-
   private var mPromise: Promise? = null
   private var mCopyToCacheDirectory = true
 
@@ -51,9 +48,10 @@ class DocumentPickerModule(
       promise.reject("E_DOCUMENT_PICKER", "Different document picking in progress. Await other document picking first.")
       return
     }
-    mPromise = promise
 
     val pickerOptions = DocumentPickerOptions.optionsFromMap(options, promise) ?: return
+
+    mPromise = promise
     mCopyToCacheDirectory = pickerOptions.copyToCacheDirectory
 
     val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
@@ -69,6 +67,12 @@ class DocumentPickerModule(
       return
     }
 
+    if (mPromise == null) {
+      return
+    }
+    val promise = mPromise!!
+    mPromise = null
+
     if (resultCode == Activity.RESULT_OK) {
       val documentDetails = intent?.data?.let { uri ->
         val originalDocumentDetails = DocumentDetailsReader(context).read(uri)
@@ -77,8 +81,7 @@ class DocumentPickerModule(
         } else {
           val copyPath = copyDocumentToCacheDirectory(uri, originalDocumentDetails.name)
           if (copyPath == null) {
-            mPromise!!.reject("E_DOCUMENT_PICKER", "Failed to copy to cache directory.")
-            mPromise = null
+            promise.reject("E_DOCUMENT_PICKER", "Failed to copy to cache directory.")
             return
           } else {
             originalDocumentDetails.copy(uri = copyPath)
@@ -87,7 +90,7 @@ class DocumentPickerModule(
       }
 
       if (documentDetails == null) {
-        mPromise!!.reject("E_DOCUMENT_PICKER", "Failed to read the selected document.")
+        promise.reject("E_DOCUMENT_PICKER", "Failed to read the selected document.")
       } else {
         val result = Bundle().apply {
           putString("type", "success")
@@ -99,15 +102,14 @@ class DocumentPickerModule(
             putInt("size", documentDetails.size)
           }
         }
-        mPromise!!.resolve(result)
+        promise.resolve(result)
       }
     } else {
       val result = Bundle().apply {
         putString("type", "cancel")
       }
-      mPromise!!.resolve(result)
+      promise.resolve(result)
     }
-    mPromise = null
   }
 
   override fun onNewIntent(intent: Intent) = Unit
@@ -119,22 +121,15 @@ class DocumentPickerModule(
       FilenameUtils.getExtension(name)
     )
 
-    var outputStream: OutputStream? = null
     try {
-      val inputStream = context.contentResolver.openInputStream(documentUri)
-      outputStream = FileOutputStream(File(outputFilePath))
-      IOUtils.copy(inputStream, outputStream)
+      context.contentResolver.openInputStream(documentUri).use { inputStream ->
+        FileOutputStream(File(outputFilePath)).use { outputStream ->
+          IOUtils.copy(inputStream, outputStream)
+        }
+      }
     } catch (e: IOException) {
       e.printStackTrace()
       return null
-    } finally {
-      outputStream?.also {
-        try {
-          it.close()
-        } catch (e: IOException) {
-          e.printStackTrace()
-        }
-      }
     }
 
     return outputFilePath

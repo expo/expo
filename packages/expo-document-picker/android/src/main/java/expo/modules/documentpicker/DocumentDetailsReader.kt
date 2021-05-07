@@ -8,11 +8,10 @@ data class DocumentDetails(val name: String, val uri: String, val size: Int?)
 
 class DocumentDetailsReader(private val context: Context) {
   fun read(uri: Uri): DocumentDetails? {
-    when (val cursor = context.contentResolver.query(uri, null, null, null, null)) {
-      null -> {
-        return null
-      }
-      else -> {
+    context
+      .contentResolver
+      .query(uri, null, null, null, null)
+      ?.use { cursor ->
         cursor.moveToFirst()
         val name = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
         val uriString = uri.toString()
@@ -25,7 +24,7 @@ class DocumentDetailsReader(private val context: Context) {
         }
         return DocumentDetails(name, uriString, size)
       }
-    }
+    return null
   }
 }
 
