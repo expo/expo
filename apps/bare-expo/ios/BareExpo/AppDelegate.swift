@@ -32,7 +32,7 @@ class AppDelegate: UMAppDelegateWrapper {
 
     if (useDevClient) {
       let controller = EXDevLauncherController.sharedInstance()
-      controller?.start(with: window, delegate: self, launchOptions: launchOptions);
+      controller.start(with: window!, delegate: self, launchOptions: launchOptions);
     } else {
       initializeReactNativeBridge(launchOptions);
     }
@@ -65,7 +65,7 @@ class AppDelegate: UMAppDelegateWrapper {
   #endif
   
   override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-    if (useDevClient && EXDevLauncherController.sharedInstance()!.onDeepLink(url, options: options)) {
+    if (useDevClient && EXDevLauncherController.sharedInstance().onDeepLink(url, options: options)) {
       return true;
     }
     
@@ -92,7 +92,7 @@ extension AppDelegate: RCTBridgeDelegate {
     // DEBUG must be setup in Swift projects: https://stackoverflow.com/a/24112024/4047926
     #if DEBUG
     if (useDevClient) {
-      return EXDevLauncherController.sharedInstance()?.sourceUrl()
+      return EXDevLauncherController.sharedInstance().sourceUrl()
     } else {
       return RCTBundleURLProvider.sharedSettings()?.jsBundleURL(forBundleRoot: "index", fallbackResource: nil)
     }
@@ -123,7 +123,7 @@ extension AppDelegate: RCTBridgeDelegate {
 // MARK: - EXDevelopmentClientControllerDelegate
 
 extension AppDelegate:  EXDevLauncherControllerDelegate {
-  func devLauncherController(_ developmentClientController: EXDevLauncherController!, didStartWithSuccess success: Bool) {
+  func devLauncherController(_ developmentClientController: EXDevLauncherController, didStartWithSuccess success: Bool) {
     developmentClientController.appBridge = initializeReactNativeBridge(developmentClientController.getLaunchOptions())
   }
 }

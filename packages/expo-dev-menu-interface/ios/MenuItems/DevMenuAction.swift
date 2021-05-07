@@ -59,7 +59,7 @@ open class DevMenuAction: DevMenuScreenItem, DevMenuCallableProvider {
     var dict = super.serialize()
     dict["actionId"] = self.callable.id
     dict["keyCommand"] = self.callable.keyCommand == nil ? nil : [
-      "input": self.callable.keyCommand!.input,
+      "input": self.callable.keyCommand!.input!,
       "modifiers": exportKeyCommandModifiers()
     ]
     
