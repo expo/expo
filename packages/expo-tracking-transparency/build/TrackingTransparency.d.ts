@@ -11,14 +11,14 @@ export * from './TrackingTransparency.types';
  *  *
  * @example
  * ```typescript
- * const { granted } = await TrackingTransparency.requestPermissionsAsync();
+ * const { granted } = await requestTrackingPermissionsAsync();
  *
  * if (granted) {
  *   // Your app is authorized to track the user or their device
  * }
  * ```
  */
-export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
+export declare function requestTrackingPermissionsAsync(): Promise<PermissionResponse>;
 /**
  * Checks whether or not the user has authorized the app to access app-related data that
  * can be used for tracking the user or the device. See `requestPermissionsAsync` for more
@@ -27,11 +27,11 @@ export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
  *  *
  * @example
  * ```typescript
- * const { granted } = await TrackingTransparency.getPermissionsAsync();
+ * const { granted } = await getTrackingPermissionsAsync();
  *
  * if (granted) {
  *   // Your app is authorized to track the user or their device
  * }
  * ```
  */
-export declare function getPermissionsAsync(): Promise<PermissionResponse>;
+export declare function getTrackingPermissionsAsync(): Promise<PermissionResponse>;

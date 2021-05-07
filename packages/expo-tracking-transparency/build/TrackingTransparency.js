@@ -14,14 +14,14 @@ export * from './TrackingTransparency.types';
  *  *
  * @example
  * ```typescript
- * const { granted } = await TrackingTransparency.requestPermissionsAsync();
+ * const { granted } = await requestTrackingPermissionsAsync();
  *
  * if (granted) {
  *   // Your app is authorized to track the user or their device
  * }
  * ```
  */
-export async function requestPermissionsAsync() {
+export async function requestTrackingPermissionsAsync() {
     if (Platform.OS !== 'ios') {
         return Promise.resolve(androidAndWebPermissionsResponse);
     }
@@ -38,14 +38,14 @@ export async function requestPermissionsAsync() {
  *  *
  * @example
  * ```typescript
- * const { granted } = await TrackingTransparency.getPermissionsAsync();
+ * const { granted } = await getTrackingPermissionsAsync();
  *
  * if (granted) {
  *   // Your app is authorized to track the user or their device
  * }
  * ```
  */
-export async function getPermissionsAsync() {
+export async function getTrackingPermissionsAsync() {
     if (Platform.OS !== 'ios') {
         return Promise.resolve(androidAndWebPermissionsResponse);
     }
