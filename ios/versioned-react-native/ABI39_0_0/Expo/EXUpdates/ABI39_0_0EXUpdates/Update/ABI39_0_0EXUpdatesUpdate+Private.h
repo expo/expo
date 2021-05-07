@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface ABI39_0_0EXUpdatesUpdate ()
 
 @property (nonatomic, strong, readwrite) NSUUID *updateId;
+@property (nonatomic, strong, readwrite) NSString *scopeKey;
 @property (nonatomic, strong, readwrite) NSDate *commitTime;
 @property (nonatomic, strong, readwrite) NSString *runtimeVersion;
 @property (nonatomic, strong, readwrite, nullable) NSDictionary *manifest;
@@ -16,10 +17,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readwrite) NSArray<ABI39_0_0EXUpdatesAsset *> *assets;
 @property (nonatomic, assign, readwrite) BOOL isDevelopmentMode;
 
+@property (nonatomic, strong, readwrite, nullable) NSDictionary *serverDefinedHeaders;
+@property (nonatomic, strong, readwrite, nullable) NSDictionary *manifestFilters;
+
 @property (nonatomic, strong) ABI39_0_0EXUpdatesConfig *config;
 @property (nonatomic, strong, nullable) ABI39_0_0EXUpdatesDatabase *database;
 
-- (instancetype)initWithRawManifest:(NSDictionary *)manifest
+- (instancetype)initWithRawManifest:(ABI39_0_0EXUpdatesRawManifest *)manifest
                              config:(ABI39_0_0EXUpdatesConfig *)config
                            database:(nullable ABI39_0_0EXUpdatesDatabase *)database;
 

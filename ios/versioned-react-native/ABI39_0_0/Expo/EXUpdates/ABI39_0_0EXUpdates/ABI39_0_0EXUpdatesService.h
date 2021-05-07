@@ -14,7 +14,7 @@ typedef void (^ABI39_0_0EXUpdatesAppRelaunchCompletionBlock)(BOOL success);
 
 @property (nonatomic, readonly) ABI39_0_0EXUpdatesConfig *config;
 @property (nonatomic, readonly) ABI39_0_0EXUpdatesDatabase *database;
-@property (nonatomic, readonly) id<ABI39_0_0EXUpdatesSelectionPolicy> selectionPolicy;
+@property (nonatomic, readonly) ABI39_0_0EXUpdatesSelectionPolicy *selectionPolicy;
 @property (nonatomic, readonly) NSURL *directory;
 
 @property (nullable, nonatomic, readonly, strong) ABI39_0_0EXUpdatesUpdate *launchedUpdate;
@@ -25,6 +25,7 @@ typedef void (^ABI39_0_0EXUpdatesAppRelaunchCompletionBlock)(BOOL success);
 @property (nonatomic, readonly, assign) BOOL canRelaunch;
 
 - (void)requestRelaunchWithCompletion:(ABI39_0_0EXUpdatesAppRelaunchCompletionBlock)completion;
+- (void)resetSelectionPolicy;
 
 @end
 
