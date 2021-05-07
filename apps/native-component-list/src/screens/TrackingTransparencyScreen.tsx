@@ -1,9 +1,9 @@
-import React from 'react';
-import { View } from 'react-native';
 import {
   requestTrackingPermissionsAsync,
   getTrackingPermissionsAsync,
 } from 'expo-tracking-transparency';
+import React from 'react';
+import { View } from 'react-native';
 
 import SimpleActionDemo from '../components/SimpleActionDemo';
 
