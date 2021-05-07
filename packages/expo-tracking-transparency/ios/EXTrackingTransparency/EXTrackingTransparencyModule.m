@@ -8,7 +8,7 @@
 
 @interface EXTrackingTransparencyModule ()
 
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
 
 @end
 

@@ -1918,6 +1918,8 @@ PODS:
     - UMAppLoader
     - UMCore
     - UMTaskManagerInterface
+  - EXTrackingTransparency (1.0.0):
+    - UMCore
   - EXUpdates (0.6.0):
     - EXStructuredHeaders
     - React-Core
@@ -2756,6 +2758,7 @@ DEPENDENCIES:
   - EXStructuredHeaders (from `../packages/expo-structured-headers/ios`)
   - EXStructuredHeaders/Tests (from `../packages/expo-structured-headers/ios`)
   - EXTaskManager (from `../packages/expo-task-manager/ios`)
+  - EXTrackingTransparency (from `../packages/expo-tracking-transparency/ios`)
   - EXUpdates (from `../packages/expo-updates/ios`)
   - EXUpdates/Tests (from `../packages/expo-updates/ios`)
   - EXVideoThumbnails (from `../packages/expo-video-thumbnails/ios`)
@@ -3571,6 +3574,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-structured-headers/ios"
   EXTaskManager:
     :path: "../packages/expo-task-manager/ios"
+  EXTrackingTransparency:
+    :path: "../packages/expo-tracking-transparency/ios"
   EXUpdates:
     :path: "../packages/expo-updates/ios"
   EXVideoThumbnails:
@@ -4022,7 +4027,8 @@ SPEC CHECKSUMS:
   EXSQLite: f345a40a57f97ecf7a98e5d302d9b48b58757544
   EXStoreReview: b1f68ed0369b0f1c443214ac8d6881ef3b64de9a
   EXStructuredHeaders: 7e7eec19a326bc58cca2fb3edbac0afaecb89c16
-  EXTaskManager: d30b4a5723a5969443da644d786853923efa5f17
+  EXTaskManager: b873efc04d604ac3884ce28f7264427461841bed
+  EXTrackingTransparency: 3b6c5d660f575185a576be79e46491569362a018
   EXUpdates: 7c181d03d802ef71bd06c6229ac87de023bb1f2f
   EXVideoThumbnails: cd257fc6e07884a704a5674d362a6410933acb68
   EXWebBrowser: 0b466c50e5ff61c9758095d49d5081e3229d77ac
