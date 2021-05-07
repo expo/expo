@@ -7,7 +7,7 @@ import APISection from '~/components/plugins/APISection';
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-A library for requesting permission to track the user or their device. Examples of data used for tracking include email address, device ID, advertising ID, etc. This permission is only necessary on iOS 14.5 and higher.
+A library for requesting permission to track the user or their device. Examples of data used for tracking include email address, device ID, advertising ID, etc. This permission is only necessary on iOS 14 and higher; on iOS 13 and below this permission is always granted. If the "Allow Apps to Request to Track" device-level setting is off, this permission will be denied.
 
 For more information on Apple's new App Tracking Transparency framework, please refer to their [documentation](https://developer.apple.com/app-store/user-privacy-and-data-use/).
 
