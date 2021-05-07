@@ -64,13 +64,13 @@ class DocumentPickerModule(
     mActivityProvider.currentActivity.startActivityForResult(intent, OPEN_DOCUMENT_CODE)
   }
 
-  override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
+  override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, intent: Intent?) {
     if (requestCode != OPEN_DOCUMENT_CODE) {
       return
     }
 
     if (resultCode == Activity.RESULT_OK) {
-      val documentDetails = data?.data?.let { uri ->
+      val documentDetails = intent?.data?.let { uri ->
         val originalDocumentDetails = DocumentDetailsReader(context).read(uri)
         if (!mCopyToCacheDirectory || originalDocumentDetails == null) {
           originalDocumentDetails
@@ -81,7 +81,7 @@ class DocumentPickerModule(
             mPromise = null
             return
           } else {
-            originalDocumentDetails.copy(uri=copyPath)
+            originalDocumentDetails.copy(uri = copyPath)
           }
         }
       }
