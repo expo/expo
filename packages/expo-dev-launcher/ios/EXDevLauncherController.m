@@ -198,12 +198,12 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   }
     
 EXDevLauncherManifestParser *manifestParser = [[EXDevLauncherManifestParser alloc] initWithURL:url session:[NSURLSession sharedSession]];
-  __weak __typeof(self) weekSelf = self;
+  __weak __typeof(self) weakSelf = self;
   [manifestParser tryToParseManifest:^(EXDevLauncherManifest * _Nullable manifest) {
-    if (!weekSelf) {
+    if (!weakSelf) {
       return;
     }
-    __typeof(self) self = weekSelf;
+    __typeof(self) self = weakSelf;
     
     NSURL *bundleUrl = [NSURL URLWithString:manifest.bundleUrl];
     
@@ -232,12 +232,12 @@ EXDevLauncherManifestParser *manifestParser = [[EXDevLauncherManifestParser allo
   __block UIInterfaceOrientation orientation = manifest.orientation;
   __block UIColor *backgroundColor = manifest.backgroundColor;
   
-  __weak __typeof(self) weekSelf = self;
+  __weak __typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
-    if (!weekSelf) {
+    if (!weakSelf) {
       return;
     }
-    __typeof(self) self = weekSelf;
+    __typeof(self) self = weakSelf;
     
     self.sourceUrl = bundleUrl;
     
