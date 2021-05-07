@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
   return _databaseKernelService.database;
 }
 
-- (id<ABI40_0_0EXUpdatesSelectionPolicy>)selectionPolicy
+- (ABI40_0_0EXUpdatesSelectionPolicy *)selectionPolicy
 {
   return [_updatesKernelService selectionPolicyForExperienceId:_experienceId];
 }

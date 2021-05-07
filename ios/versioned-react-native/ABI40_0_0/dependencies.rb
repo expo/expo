@@ -191,6 +191,9 @@ pod 'ABI40_0_0EXStoreReview',
 pod 'ABI40_0_0EXTaskManager',
   :path => './versioned-react-native/ABI40_0_0/Expo/EXTaskManager',
   :project_name => 'ABI40_0_0'
+pod 'ABI40_0_0EXStructuredHeaders',
+  :path => './versioned-react-native/ABI40_0_0/Expo/EXStructuredHeaders',
+  :project_name => 'ABI40_0_0'
 pod 'ABI40_0_0EXUpdates',
   :path => './versioned-react-native/ABI40_0_0/Expo/EXUpdates',
   :project_name => 'ABI40_0_0'
