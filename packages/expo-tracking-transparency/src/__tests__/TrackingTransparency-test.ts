@@ -2,10 +2,10 @@ import * as TrackingTransparency from '../TrackingTransparency';
 
 describe('TrackingTransparency', () => {
   it('requestPermissionsAsync is defined', async () => {
-    expect(TrackingTransparency.requestPermissionsAsync).toBeDefined();
+    expect(TrackingTransparency.requestTrackingPermissionsAsync).toBeDefined();
   });
 
   it('getPermissionsAsync is defined', async () => {
-    expect(TrackingTransparency.getPermissionsAsync).toBeDefined();
+    expect(TrackingTransparency.getTrackingPermissionsAsync).toBeDefined();
   });
 });
