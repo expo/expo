@@ -26,12 +26,12 @@ Conforming servers and client libraries MUST follow the HTTP spec as described i
 An _update_ is defined as a [_manifest_](#manifest-response) together with the assets referenced inside the manifest.
 Expo Updates is a protocol for assembling and delivering updates to apps running on multiple platforms.
 
-An app running a conformant Expo Updates client library will fetch the most recent update from a conformant update server. If the client library cannot fetch an update or if it already has the most recent update, the client library will load the update saved in the client library's cache.
+An app running a conformant Expo Updates client library MUST load the most recent update saved in the client library's cache, possibly after filtering by the contents of the manifest's [_metatdata_](#body).
 
-The following describes how a client library will interact with a conforming updates server:
-1. The client library will make a [request](#request) for the most recent manifest that satisfies constraints specified in the headers. 
-2. If it is a new manifest, the client library will proceed to make requests to download and store the assets specified in the manifest.
-3. Finally, the client library will update its local state according to any metadata provided by the response [headers](#headers).
+The following describes how a conformant Expo Updates client library MUST retrieve a new update from a conformant server:
+1. The client library will make a [request](#request) for the most recent manifest, with constraints specified in the headers. 
+2. If a new manifest is downloaded, the client library will proceed to make additional requests to download and store any missing assets specified in the manifest.
+3. The client library will edit its local state to reflect that a new update has been added to the local cache. It will also update the local state with the metadata provided by the response [headers](#headers).
 
 The primary consumers of this spec are Expo Application Services and organizations that wish to manage their own update server to satisfy internal requirements.
 
@@ -156,10 +156,10 @@ content-encoding: br
 content-type: application/javascript
 ```
 
-The asset endpoints MUST be served with a `cache-control` header set to an appropriately short period of time. For example:
-
+An asset is RECOMMENDED to be served with a `cache-control` header set to a long duration as an asset located at a given URL must not change. For example:
+	
 ```
-cache-control: max-age=0, private
+cache-control: public, max-age=31536000, immutable
 ```
 
 ### Compression
