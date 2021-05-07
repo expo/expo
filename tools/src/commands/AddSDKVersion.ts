@@ -14,6 +14,7 @@ type ActionOptions = {
   vendored: string[];
   reinstall?: boolean;
   preventReinstall?: boolean;
+  package?: string;
 };
 
 async function getNextOrAskForSDKVersionAsync(platform: Platform): Promise<string | undefined> {
@@ -61,6 +62,8 @@ async function action(options: ActionOptions) {
         await IosVersioning.versionVendoredModulesAsync(sdkNumber, options.vendored);
       } else if (options.filenames) {
         await IosVersioning.versionReactNativeIOSFilesAsync(options.filenames, sdkVersion);
+      } else if (options.package) {
+        await IosVersioning.regenerateVersionedPackageAsync(sdkVersion, options.package);
       } else {
         await IosVersioning.versionVendoredModulesAsync(sdkNumber, null);
         await IosVersioning.addVersionAsync(sdkVersion);
@@ -117,6 +120,10 @@ ${chalk.gray('>')} ${chalk.italic.cyan(
     .option(
       '--prevent-reinstall',
       'Whether to force not reinstalling pods after generating a new version. iOS only.'
+    )
+    .option(
+      '-x, --package [string]',
+      'Only generate a specific package. When provided, option `--sdkVersion` is required.'
     )
     .asyncAction(action);
 };

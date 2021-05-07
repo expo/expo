@@ -324,6 +324,106 @@ async function generateReactNativePodspecsAsync(
   await generateReactPodspecAsync(versionedReactNativePath, versionName);
 }
 
+export async function regenerateVersionedPackageAsync(
+  versionNumber: string,
+  packageName: string
+): Promise<void> {
+  let { versionName, versionedPodNames } = await getConfigsFromArguments(versionNumber);
+
+  const versionedUnimodulePods = await getVersionedUnimodulePodsAsync(versionName);
+  const versionedExpoPath = getVersionedExpoPath(versionName);
+  const excludedPodNames = getExcludedPodNames();
+  const packages = await getListOfPackagesAsync();
+  const originalUnimodulePodNames = Object.keys(versionedUnimodulePods);
+  const depsToReplace = originalUnimodulePodNames.join('|');
+  const versionedReactPodName = getVersionedReactPodName(versionName);
+  const pkg = packages.find((pkgInternal) => pkgInternal.packageName === packageName);
+  if (!pkg) {
+    throw new Error(`Package not found: ${packageName}`);
+  }
+
+  const modulePath = path.join(EXPO_DIR, RELATIVE_UNIVERSAL_MODULES_PATH, pkg.packageName);
+  const podName = pkg.podspecName;
+
+  if (!(podName && pkg.isVersionableOnPlatform('ios') && !excludedPodNames.includes(podName))) {
+    throw new Error(`No versionable pod for package: ${packageName}`);
+  }
+
+  await fs.copy(path.join(modulePath, 'ios'), path.join(versionedExpoPath, podName), {
+    overwrite: true,
+  });
+  await fs.move(
+    path.join(versionedExpoPath, podName, podName),
+    path.join(versionedExpoPath, podName, versionedUnimodulePods[podName])
+  );
+  await fs.copy(
+    path.join(modulePath, 'package.json'),
+    path.join(versionedExpoPath, podName, 'package.json')
+  );
+
+  const versionedUnimodulePodName = versionedUnimodulePods[podName];
+
+  const originalPodSpecPath = path.join(versionedExpoPath, podName, `${podName}.podspec`);
+  const prefixedPodSpecPath = path.join(
+    versionedExpoPath,
+    podName,
+    `${versionedUnimodulePodName}.podspec`
+  );
+
+  console.log(`Generating podspec for ${chalk.green(podName)} ...`);
+
+  await fs.move(originalPodSpecPath, prefixedPodSpecPath);
+
+  // Replaces versioned modules in the podspec eg. 'EXCore' => 'ABI28_0_0EXCore'
+  // `E` flag is required for extended syntax which allows to use `(a|b)`
+  await spawnAsync('sed', [
+    '-Ei',
+    '--',
+    `s/'(${depsToReplace})('|\\/)/'${versionName}\\1\\2/g`,
+    prefixedPodSpecPath,
+  ]);
+  await spawnAsync('sed', ['-i', '--', `s/React/${versionedReactPodName}/g`, prefixedPodSpecPath]);
+  await spawnAsync('sed', [
+    '-i',
+    '--',
+    `s/${versionName}UM${versionedReactPodName}/${versionName}UMReact/g`,
+    prefixedPodSpecPath,
+  ]);
+  await spawnAsync('sed', [
+    '-i',
+    '--',
+    "s/'..', 'package.json'/'package.json'/g",
+    prefixedPodSpecPath,
+  ]);
+
+  const rnPath = path.join(versionedExpoPath, podName);
+  let filenameQueries = [`${rnPath}/**/*.[hmSc]`, `${rnPath}/**/*.mm`, `${rnPath}/**/*.cpp`];
+  let filenames: string[] = [];
+  await Promise.all(
+    filenameQueries.map(async (query) => {
+      let queryFilenames = (await glob(query)) as string[];
+      if (queryFilenames) {
+        filenames = filenames.concat(queryFilenames);
+      }
+    })
+  );
+
+  await namespaceReactNativeFilesAsync(filenames, versionName, versionedPodNames);
+
+  console.log('Removing any `filename--` files from the new pod ...');
+
+  try {
+    const minusMinusFiles = await glob(path.join(rnPath, '**', '*--'));
+    for (const minusMinusFile of minusMinusFiles) {
+      await fs.remove(minusMinusFile);
+    }
+  } catch (error) {
+    console.warn(
+      "The script wasn't able to remove any possible `filename--` files created by sed. Please ensure there are no such files manually."
+    );
+  }
+}
+
 /**
  * @param versionName
  * @param versionNumber format "XX.X.X"
