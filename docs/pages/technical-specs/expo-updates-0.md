@@ -31,7 +31,7 @@ An app running a conformant Expo Updates client library MUST load the most recen
 The following describes how a conformant Expo Updates client library MUST retrieve a new update from a conformant server:
 1. The client library will make a [request](#request) for the most recent manifest, with constraints specified in the headers. 
 2. If a new manifest is downloaded, the client library will proceed to make additional requests to download and store any missing assets specified in the manifest.
-3. The client library will edit its local state to reflect that a new update has been added to the local cache. It will also update the local state with the metadata provided by the response [headers](#manifest-response-headers).
+3. The client library will edit its local state to reflect that a new update has been added to the local cache. It will also update the local state with the new `expo-manifest-filters` and `expo-server-defined-headers` fround in the response [headers](#manifest-response-headers).
 
 The primary consumers of this spec are Expo Application Services and organizations that wish to manage their own update server to satisfy internal requirements.
 
@@ -67,16 +67,16 @@ The choice of manifest and headers are dependent on the values of the request he
 ```
 expo-protocol-version: 0
 expo-sfv-version: 0
-expo-manifest-filters: <expo-sfv>
-expo-server-defined-headers: <expo-sfv>
-cache-control: <*>
-content-type: <*>
+expo-manifest-filters: &lt;expo-sfv&gt;
+expo-server-defined-headers: &lt;expo-sfv&gt;
+cache-control: &lt;*&gt;
+content-type: &lt;*&gt;
 ```
 
 * `expo-protocol-version` describes the version of the protocol defined in this spec and MUST be `0`.
 * `expo-sfv-version`  MUST be `0`.
-* `expo-manifest-filters` is an [Expo SFV 0](expo-sfv-0.md) dictionary. It is used to filter updates stored by the client library by the `metadata` attributes found in the [manifest](#manifest-response-body).
-* `expo-server-defined-headers` is an [Expo SFV](expo-sfv.md) dictionary. It defines headers that a client library MUST store and include in every subsequent [manifest request](#manifest-request).
+* `expo-manifest-filters` is an [Expo SFV 0](expo-sfv-0.md) dictionary. It is used to filter updates stored by the client library by the `metadata` attributes found in the [manifest](#manifest-response-body). The client library MUST store this, until it is overwritten by a newer manifest.
+* `expo-server-defined-headers` is an [Expo SFV](expo-sfv.md) dictionary. It defines headers that a client library MUST store this, until it is overwritten by a newer response, and include it in every subsequent [manifest request](#manifest-request).
 * `cache-control` - A value of `cache-control: private, max-age=0` is recommended to ensure the newest manifest is returned. Setting longer cache ages could result in stale updates.
 * `content-type` MUST be determined by _proactive negotiation_ as defined in [RFC 7231](https://tools.ietf.org/html/rfc7231#section-3.4.1). Since the client library is [required](#manifest-request) to send an `accept` header with each manifest request, this will always be either `application/expo+json`, `application/json`, or a `406`.
 
@@ -92,21 +92,21 @@ cache-control: max-age=0, private
 The body of the response MUST be a manifest, which is defined as JSON conforming to the following structure:
 ```
 {
-  id: string
-  createdAt: datetime
-  runtimeVersion: string
+  id: &lt;string&gt;
+  createdAt: &lt;datetime&gt;
+  runtimeVersion: &lt;string&gt;
   launchAsset: Asset
   assets: Asset[]
-  metadata: { [key: string]: number | string }
+  metadata: { &lt;string&gt;:&lt;string&gt; }
 }
 ```
 _Asset_ is defined as JSON with the following structure:
 ```
 {
-  hash: string
-  key: string
-  contentType: string
-  url: string
+  hash: &lt;string&gt;
+  key: &lt;string&gt;
+  contentType: &lt;string&gt;
+  url: &lt;string&gt;
 }
 ```
   * `id` The ID MUST uniquely specify the manifest.
