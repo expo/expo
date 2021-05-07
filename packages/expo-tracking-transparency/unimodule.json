@@ -1,4 +1,4 @@
 {
   "name": "expo-tracking-transparency",
-  "platforms": ["ios", "android", "web"]
+  "platforms": ["ios"]
 }
