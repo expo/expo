@@ -26,12 +26,12 @@ Conforming servers and client libraries MUST follow the HTTP spec as described i
 An _update_ is defined as a [_manifest_](#manifest-response) together with the assets referenced inside the manifest.
 Expo Updates is a protocol for assembling and delivering updates to apps running on multiple platforms.
 
-An app running a conformant Expo Updates client library MUST load the most recent update saved in the client library's cache, possibly after filtering by the contents of the manifest's [_metatdata_](#body).
+An app running a conformant Expo Updates client library MUST load the most recent update saved in the client library's cache, possibly after filtering by the contents of the manifest's [_metatdata_](#manifest-response-body).
 
 The following describes how a conformant Expo Updates client library MUST retrieve a new update from a conformant server:
 1. The client library will make a [request](#request) for the most recent manifest, with constraints specified in the headers. 
 2. If a new manifest is downloaded, the client library will proceed to make additional requests to download and store any missing assets specified in the manifest.
-3. The client library will edit its local state to reflect that a new update has been added to the local cache. It will also update the local state with the metadata provided by the response [headers](#headers).
+3. The client library will edit its local state to reflect that a new update has been added to the local cache. It will also update the local state with the metadata provided by the response [headers](#manifest-response-headers).
 
 The primary consumers of this spec are Expo Application Services and organizations that wish to manage their own update server to satisfy internal requirements.
 
@@ -43,7 +43,7 @@ A conformant client library MUST make a GET request with the headers:
     * Android MUST be `expo-platform: android`.
     * If it is not one of these platforms, the server SHOULD return a 400 or a 404
 2. `expo-runtime-version` MUST be the runtime version the client is running on.
-3. Any headers stipulated by a previous responses' [server defined headers](#headers):
+3. Any headers stipulated by a previous responses' [server defined headers](#manifest-response-headers):
 
 A conformant client library SHOULD also send `accept: application/expo+json, application/json`. With the order following the prefence ordering for the accept header specified in [RFC 7231](https://tools.ietf.org/html/rfc7231#section-5.3.2). But MUST send at least one of them, `accept: application/expo+json` or `accept: application/json`.
 
@@ -56,13 +56,13 @@ expo-runtime-version: string
 
 ## Manifest Response
 
-A conformant server MUST return a response containing a [manifest body](#body) and [headers](#headers).
+A conformant server MUST return a response containing a [manifest body](#manifest-response-body) and [headers](#manifest-response-headers).
 
 The choice of manifest and headers are dependent on the values of the request headers. A conformant server MUST:
 
 * Return a manifest that describes the most recent update ordered by creation time satisfying all constraints imposed by the [request headers](#manifest-request).
 
-### Headers
+### Manifest Response Headers
 
 ```
 expo-protocol-version: 0
@@ -75,7 +75,7 @@ content-type: <*>
 
 * `expo-protocol-version` describes the version of the protocol defined in this spec and MUST be `0`.
 * `expo-sfv-version`  MUST be `0`.
-* `expo-manifest-filters` is an [Expo SFV 0](expo-sfv-0.md) dictionary. It is used to filter updates stored by the client library by the `metadata` attributes found in the [manifest](#body).
+* `expo-manifest-filters` is an [Expo SFV 0](expo-sfv-0.md) dictionary. It is used to filter updates stored by the client library by the `metadata` attributes found in the [manifest](#manifest-response-body).
   * For example: `expo-manifest-filters: branchname="main"` instructs the client library to load the most recent update it has stored whose `metadata` contains:
 
   ```
@@ -98,7 +98,7 @@ The manifest endpoint MUST also be served with a `cache-control` header set to a
 cache-control: max-age=0, private
 ```
 
-### Body
+### Manifest Response Body
 
 The body of the response MUST be a manifest, which is defined as JSON conforming to the following structure:
 ```
@@ -147,7 +147,7 @@ accept-encoding: br, gzip
 
 An asset located at a particular URL MUST NOT be changed or removed since client libraries may fetch assets for any update at any time.
 
-### Headers
+### Asset Headers
 
 The asset MUST be encoded using a compression format that the client supports according to the request's `accept-encoding` header. The server MAY serve uncompressed assets. The response MUST include a `content-type` header with the MIME type of the asset.
 For example:
