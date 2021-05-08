@@ -10,6 +10,10 @@
 
 ### 🐛 Bug fixes
 
+## 6.2.3 - 2021-05-08
+
+- To include missing UMPermissionsInterface dependency inside UMReactNativeAdapter.podspec
+
 ## 6.2.2 — 2021-04-13
 
 ### 🎉 New features
