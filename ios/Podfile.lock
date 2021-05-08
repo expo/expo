@@ -271,6 +271,8 @@ PODS:
     - ABI39_0_0UMFileSystemInterface
   - ABI39_0_0EXStoreReview (2.2.0):
     - ABI39_0_0UMCore
+  - ABI39_0_0EXStructuredHeaders (1.0.1):
+    - ABI39_0_0UMCore
   - ABI39_0_0EXTaskManager (8.5.0):
     - ABI39_0_0UMAppLoader
     - ABI39_0_0UMConstantsInterface
@@ -806,6 +808,8 @@ PODS:
     - ABI40_0_0UMCore
     - ABI40_0_0UMFileSystemInterface
   - ABI40_0_0EXStoreReview (2.3.0):
+    - ABI40_0_0UMCore
+  - ABI40_0_0EXStructuredHeaders (1.0.1):
     - ABI40_0_0UMCore
   - ABI40_0_0EXTaskManager (8.6.0):
     - ABI40_0_0UMAppLoader
@@ -2446,6 +2450,7 @@ DEPENDENCIES:
   - ABI39_0_0EXSplashScreen (from `./versioned-react-native/ABI39_0_0/Expo/EXSplashScreen`)
   - ABI39_0_0EXSQLite (from `./versioned-react-native/ABI39_0_0/Expo/EXSQLite`)
   - ABI39_0_0EXStoreReview (from `./versioned-react-native/ABI39_0_0/Expo/EXStoreReview`)
+  - ABI39_0_0EXStructuredHeaders (from `./versioned-react-native/ABI39_0_0/Expo/EXStructuredHeaders`)
   - ABI39_0_0EXTaskManager (from `./versioned-react-native/ABI39_0_0/Expo/EXTaskManager`)
   - ABI39_0_0EXUpdates (from `./versioned-react-native/ABI39_0_0/Expo/EXUpdates`)
   - ABI39_0_0EXVideoThumbnails (from `./versioned-react-native/ABI39_0_0/Expo/EXVideoThumbnails`)
@@ -2548,6 +2553,7 @@ DEPENDENCIES:
   - ABI40_0_0EXSplashScreen (from `./versioned-react-native/ABI40_0_0/Expo/EXSplashScreen`)
   - ABI40_0_0EXSQLite (from `./versioned-react-native/ABI40_0_0/Expo/EXSQLite`)
   - ABI40_0_0EXStoreReview (from `./versioned-react-native/ABI40_0_0/Expo/EXStoreReview`)
+  - ABI40_0_0EXStructuredHeaders (from `./versioned-react-native/ABI40_0_0/Expo/EXStructuredHeaders`)
   - ABI40_0_0EXTaskManager (from `./versioned-react-native/ABI40_0_0/Expo/EXTaskManager`)
   - ABI40_0_0EXUpdates (from `./versioned-react-native/ABI40_0_0/Expo/EXUpdates`)
   - ABI40_0_0EXVideoThumbnails (from `./versioned-react-native/ABI40_0_0/Expo/EXVideoThumbnails`)
@@ -2969,6 +2975,8 @@ EXTERNAL SOURCES:
     :path: "./versioned-react-native/ABI39_0_0/Expo/EXSQLite"
   ABI39_0_0EXStoreReview:
     :path: "./versioned-react-native/ABI39_0_0/Expo/EXStoreReview"
+  ABI39_0_0EXStructuredHeaders:
+    :path: "./versioned-react-native/ABI39_0_0/Expo/EXStructuredHeaders"
   ABI39_0_0EXTaskManager:
     :path: "./versioned-react-native/ABI39_0_0/Expo/EXTaskManager"
   ABI39_0_0EXUpdates:
@@ -3167,6 +3175,8 @@ EXTERNAL SOURCES:
     :path: "./versioned-react-native/ABI40_0_0/Expo/EXSQLite"
   ABI40_0_0EXStoreReview:
     :path: "./versioned-react-native/ABI40_0_0/Expo/EXStoreReview"
+  ABI40_0_0EXStructuredHeaders:
+    :path: "./versioned-react-native/ABI40_0_0/Expo/EXStructuredHeaders"
   ABI40_0_0EXTaskManager:
     :path: "./versioned-react-native/ABI40_0_0/Expo/EXTaskManager"
   ABI40_0_0EXUpdates:
@@ -3721,6 +3731,7 @@ SPEC CHECKSUMS:
   ABI39_0_0EXSplashScreen: dcf66aa0129dbae9aa2467c6e812449fdd03c733
   ABI39_0_0EXSQLite: 8c5404a6339652634800bede38e803df9b5a4770
   ABI39_0_0EXStoreReview: 10434c858e8ed23cf2bedb860e8746d9595e25be
+  ABI39_0_0EXStructuredHeaders: a8ee82ecd320db16e160a07b7cc13e7ebcfd695b
   ABI39_0_0EXTaskManager: 10b5e6d9311d29dd4fa739c717f13704a4217d74
   ABI39_0_0EXUpdates: f5b053b484a3c70e6e515112511faabf9d2079d4
   ABI39_0_0EXVideoThumbnails: 352a80fc860b96b1d03e4b80e9880372c2b56674
@@ -3820,6 +3831,7 @@ SPEC CHECKSUMS:
   ABI40_0_0EXSplashScreen: 7ca003a482ab301da438ac41bb19911b59a65f09
   ABI40_0_0EXSQLite: 7b41e00aee5c7d9c5e0e158599e6332344266e29
   ABI40_0_0EXStoreReview: a4f6fe4f1b67a4eeb6db075b81a3521a52997e33
+  ABI40_0_0EXStructuredHeaders: f4d8b1bd97cd76c206df7a1cb3ade9cea2c65759
   ABI40_0_0EXTaskManager: c30a8b453caa8bf3c712afdd346ae23a83e575f2
   ABI40_0_0EXUpdates: 24684f33c3a8797c040a97bedca35a8b7d0279a0
   ABI40_0_0EXVideoThumbnails: 6ebadb682fe996744d2fe531fd92e2d6b4e56132

@@ -26,11 +26,16 @@ typedef void (^ABI39_0_0EXUpdatesFileDownloaderErrorBlock)(NSError *error, NSURL
 
 - (void)downloadManifestFromURL:(NSURL *)url
                    withDatabase:(ABI39_0_0EXUpdatesDatabase *)database
-                 cacheDirectory:(NSURL *)cacheDirectory
+                   extraHeaders:(nullable NSDictionary *)extraHeaders
                    successBlock:(ABI39_0_0EXUpdatesFileDownloaderManifestSuccessBlock)successBlock
                      errorBlock:(ABI39_0_0EXUpdatesFileDownloaderErrorBlock)errorBlock;
 
 + (dispatch_queue_t)assetFilesQueue;
+
+/**
+ * For test purposes; shouldn't be needed in application code
+ */
+- (NSURLRequest *)createManifestRequestWithURL:(NSURL *)url extraHeaders:(nullable NSDictionary *)extraHeaders;
 
 @end
 
