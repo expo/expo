@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unpublished
+- Include missing `UMPermissionsInterface` dependency in the podspec. ([#12862](https://github.com/expo/expo/pull/12862) by [@budiTjendra](https://github.com/budiTjendra))
 
 ### 🛠 Breaking changes
 
