@@ -3,7 +3,7 @@
 #import <EXCamera/EXCameraManager.h>
 #import <UMCore/UMModuleRegistry.h>
 #import <UMCore/UMAppLifecycleListener.h>
-#import <UMCameraInterface/UMCameraInterface.h>
+#import <ExpoModulesCore/EXCameraInterface.h>
 
 @class EXCameraManager;
 
@@ -64,7 +64,7 @@ typedef NS_ENUM(NSInteger, EXCameraVideoCodec) {
   EXCameraVideoCodecAppleProRes4444 = 4,
 };
 
-@interface EXCamera : UIView <AVCaptureMetadataOutputObjectsDelegate, AVCaptureFileOutputRecordingDelegate, UMAppLifecycleListener, UMCameraInterface, AVCapturePhotoCaptureDelegate>
+@interface EXCamera : UIView <AVCaptureMetadataOutputObjectsDelegate, AVCaptureFileOutputRecordingDelegate, UMAppLifecycleListener, EXCameraInterface, AVCapturePhotoCaptureDelegate>
 
 @property (nonatomic, strong) dispatch_queue_t sessionQueue;
 @property (nonatomic, strong) AVCaptureSession *session;
