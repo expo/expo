@@ -1679,6 +1679,9 @@ PODS:
     - Folly
     - glog
     - Yoga
+  - ABI41_0_0stripe-react-native (0.1.0):
+    - ABI41_0_0React
+    - Stripe (~> 21.5.1)
   - ABI41_0_0UMAppLoader (2.1.0)
   - ABI41_0_0UMBarCodeScannerInterface (6.1.0):
     - ABI41_0_0UMCore
@@ -2691,6 +2694,7 @@ DEPENDENCIES:
   - ABI41_0_0React-RCTVibration (from `./versioned-react-native/ABI41_0_0/ReactNative/Libraries/Vibration`)
   - ABI41_0_0ReactCommon/turbomodule/core (from `./versioned-react-native/ABI41_0_0/ReactNative/ReactCommon`)
   - ABI41_0_0RNReanimated (from `./vendored/sdk41/react-native-reanimated`)
+  - ABI41_0_0stripe-react-native (from `./vendored/sdk41/stripe-react-native`)
   - ABI41_0_0UMAppLoader (from `./versioned-react-native/ABI41_0_0/Expo/UMAppLoader`)
   - ABI41_0_0UMBarCodeScannerInterface (from `./versioned-react-native/ABI41_0_0/Expo/UMBarCodeScannerInterface`)
   - ABI41_0_0UMCameraInterface (from `./versioned-react-native/ABI41_0_0/Expo/UMCameraInterface`)
@@ -3437,6 +3441,8 @@ EXTERNAL SOURCES:
     :path: "./versioned-react-native/ABI41_0_0/ReactNative/ReactCommon"
   ABI41_0_0RNReanimated:
     :path: "./vendored/sdk41/react-native-reanimated"
+  ABI41_0_0stripe-react-native:
+    :path: "./vendored/sdk41/stripe-react-native"
   ABI41_0_0UMAppLoader:
     :path: "./versioned-react-native/ABI41_0_0/Expo/UMAppLoader"
   ABI41_0_0UMBarCodeScannerInterface:
@@ -3965,6 +3971,7 @@ SPEC CHECKSUMS:
   ABI41_0_0React-RCTVibration: 7367d7a6b834e6e5328edaf4ad5b6e126c4a2fba
   ABI41_0_0ReactCommon: f5967299eb4c60a17a36bd309c39e9bdcb6284dd
   ABI41_0_0RNReanimated: c4322a35931e9e96adc8b4651ce9f4917c6ac7ed
+  ABI41_0_0stripe-react-native: 8ac0ff734cc2e402881614303d774a0932f7a1bf
   ABI41_0_0UMAppLoader: c44d678dc80cd36783ecf36e036690eff34a28b2
   ABI41_0_0UMBarCodeScannerInterface: 7a08c48a07b33412c5a61465f96915bb778ae789
   ABI41_0_0UMCameraInterface: be8c85a4debae7bbabb0df68720642e11d0196d1
