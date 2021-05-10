@@ -27,19 +27,19 @@ return (
 
 ## Props
 
-Inherits [Image Props](../image/#props).
+Inherits [Image Props](image.md#props).
 
 ### `style`
 
 | Type                                | Required |
 | ----------------------------------- | -------- |
-| [view styles](../view-style-props/) | No       |
+| [view styles](view-style-props.md) | No       |
 
 ### `imageStyle`
 
 | Type                                  | Required |
 | ------------------------------------- | -------- |
-| [image styles](../image-style-props/) | No       |
+| [image styles](image-style-props.md) | No       |
 
 ### `imageRef`
 

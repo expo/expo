@@ -95,6 +95,8 @@ public class Converters {
         return UpdateStatus.PENDING;
       case 5:
         return UpdateStatus.EMBEDDED;
+      case 6:
+        return UpdateStatus.DEVELOPMENT;
       case 4:
       default:
         return UpdateStatus.UNUSED;
@@ -114,6 +116,8 @@ public class Converters {
         return 3;
       case EMBEDDED:
         return 5;
+      case DEVELOPMENT:
+        return 6;
       case UNUSED:
       default:
         return 4;

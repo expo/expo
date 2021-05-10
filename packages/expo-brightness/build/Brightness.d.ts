@@ -5,6 +5,12 @@ export declare enum BrightnessMode {
     MANUAL = 2
 }
 export { PermissionResponse, PermissionStatus };
+/**
+ * Returns whether the Brightness API is enabled on the current device. This does not check the app permissions.
+ *
+ * @returns Async `boolean`, indicating whether the Brightness API is available on the current device. Currently this resolves `true` on iOS and Android only.
+ */
+export declare function isAvailableAsync(): Promise<boolean>;
 export declare function getBrightnessAsync(): Promise<number>;
 export declare function setBrightnessAsync(brightnessValue: number): Promise<void>;
 export declare function getSystemBrightnessAsync(): Promise<number>;

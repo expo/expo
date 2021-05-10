@@ -16,11 +16,38 @@ function symlinkNecessaryPackages(projectPath) {
 
   symlinkNecessaryPackage(projectPath, 'expo');
   symlinkNecessaryPackage(projectPath, 'react-native');
+  // Required for bare workflow gradle and Podfile imports which don't have access to node module resolution.
+  symlinkNecessaryPackage(projectPath, 'jsc-android');
+  symlinkNecessaryPackage(projectPath, 'hermes-engine');
+  symlinkNecessaryPackage(projectPath, 'react-native-unimodules');
+  symlinkNecessaryPackage(projectPath, '@react-native-community/cli-platform-ios');
+  symlinkNecessaryPackage(projectPath, '@react-native-community/cli-platform-android');
+
+  const packageJson = getProjectPackageJson(projectPath);
+
+  const workspace = packageJson['expo-yarn-workspaces'] || {};
+  const symlinks = workspace.symlinks || [];
+  debug(`Project defined symlinks`, symlinks);
+
+  for (const symlink of symlinks) {
+    if (typeof symlink === 'string') {
+      symlinkNecessaryPackage(projectPath, symlink);
+    }
+  }
+}
+
+function getProjectPackageJson(projectPath) {
+  try {
+    const contents = fs.readFileSync(path.join(projectPath, 'package.json'));
+    return JSON.parse(contents);
+  } catch {
+    return {};
+  }
 }
 
 function symlinkNecessaryPackage(projectPath, packageName) {
-  let nodeModulesPath = path.join(projectPath, 'node_modules');
-  let packagePath = path.join(nodeModulesPath, packageName.replace('/', path.sep));
+  const nodeModulesPath = path.join(projectPath, 'node_modules');
+  const packagePath = path.join(nodeModulesPath, packageName.replace('/', path.sep));
   debug(`Checking if %s is installed at %s`, packageName, packagePath);
 
   let stats = getFileStats(packagePath);
@@ -32,28 +59,34 @@ function symlinkNecessaryPackage(projectPath, packageName) {
     return;
   }
 
-  let workspaceRootPath = findYarnWorkspaceRoot(projectPath);
+  const workspaceRootPath = findYarnWorkspaceRoot(projectPath);
   if (!workspaceRootPath) {
     debug(`Could not find Yarn workspace root; skipping symlinking package`);
+    return;
   }
-  let workspacePackagePath = path.join(
+  const workspacePackagePath = path.join(
     workspaceRootPath,
     'node_modules',
     packageName.replace('/', path.sep)
   );
 
+  stats = getFileStats(workspacePackagePath);
+  if (!stats || !stats.isDirectory()) {
+    debug(`%s does not exist; skipping symlinking package`, workspacePackagePath);
+    return;
+  }
+
   if (packageName.startsWith('@')) {
-    let [scope, name] = packageName.split('/');
-    let scopePath = path.join(nodeModulesPath, scope);
-    let relativePackagePath = path.relative(scopePath, workspacePackagePath);
+    const [scope, name] = packageName.split('/');
+    const scopePath = path.join(nodeModulesPath, scope);
+    const relativePackagePath = path.relative(scopePath, workspacePackagePath);
 
     debug(`Ensuring %s exists`, scopePath);
     mkdirp.sync(scopePath);
     debug(`Creating symlink from %s to %s`, path.join(scopePath, name), relativePackagePath);
-    fs.symlinkSync(relativePackagePath, path.join(scopePath, name));
+    fs.symlinkSync(relativePackagePath, path.join(scopePath, name), 'junction');
   } else {
-    let relativePackagePath = path.relative(nodeModulesPath, workspacePackagePath);
-    console.log(relativePackagePath);
+    const relativePackagePath = path.relative(nodeModulesPath, workspacePackagePath);
 
     debug(`Ensuring %s exists`, nodeModulesPath);
     mkdirp.sync(nodeModulesPath);
@@ -62,7 +95,7 @@ function symlinkNecessaryPackage(projectPath, packageName) {
       path.join(nodeModulesPath, packageName),
       relativePackagePath
     );
-    fs.symlinkSync(relativePackagePath, path.join(nodeModulesPath, packageName));
+    fs.symlinkSync(relativePackagePath, path.join(nodeModulesPath, packageName), 'junction');
   }
 }
 

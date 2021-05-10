@@ -1,18 +1,16 @@
-import {
-  Foundation,
-  Ionicons,
-  MaterialCommunityIcons,
-  MaterialIcons,
-  Octicons,
-} from '@expo/vector-icons';
+import Foundation from '@expo/vector-icons/build/Foundation';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
+import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
+import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
+import Octicons from '@expo/vector-icons/build/Octicons';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import { Camera } from 'expo-camera';
+import { BarCodeScanningResult, Camera, PermissionStatus } from 'expo-camera';
+import { AutoFocus, CameraType, FlashMode, WhiteBalance } from 'expo-camera/build/Camera.types';
 import Constants from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
-import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { Alert, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import isIPhoneX from 'react-native-is-iphonex';
+import { isIphoneX } from 'react-native-iphone-x-helper';
 
 import { face, landmarks } from '../../components/Face';
 import GalleryScreen from './GalleryScreen';
@@ -25,7 +23,11 @@ interface Picture {
   exif?: any;
 }
 
-const flashModeOrder: { [key: string]: string } = {
+type FlashModeString = keyof typeof FlashMode;
+type AutoFocusString = keyof typeof AutoFocus;
+type WhiteBalanceString = keyof typeof WhiteBalance;
+
+const flashModeOrder: { [key: string]: FlashModeString } = {
   off: 'on',
   on: 'auto',
   auto: 'torch',
@@ -34,12 +36,12 @@ const flashModeOrder: { [key: string]: string } = {
 
 const flashIcons: { [key: string]: string } = {
   off: 'flash-off',
-  on: 'flash-on',
-  auto: 'flash-auto',
-  torch: 'highlight',
+  on: 'flash',
+  auto: 'flash-outline',
+  torch: 'flashlight',
 };
 
-const wbOrder: { [key: string]: string } = {
+const wbOrder: { [key: string]: WhiteBalanceString } = {
   auto: 'sunny',
   sunny: 'cloudy',
   cloudy: 'shadow',
@@ -60,12 +62,12 @@ const wbIcons: { [key: string]: string } = {
 const photos: Picture[] = [];
 
 interface State {
-  flash: string;
+  flash: FlashModeString;
   zoom: number;
-  autoFocus: string;
-  type: string;
+  autoFocus: AutoFocusString;
+  type: CameraType;
   depth: number;
-  whiteBalance: string;
+  whiteBalance: WhiteBalanceString;
   ratio: string;
   ratios: any[];
   barcodeScanning: boolean;
@@ -73,7 +75,7 @@ interface State {
   faces: any[];
   newPhotos: boolean;
   permissionsGranted: boolean;
-  permission?: Permissions.PermissionStatus;
+  permission?: PermissionStatus;
   pictureSize?: any;
   pictureSizes: any[];
   pictureSizeId: number;
@@ -81,12 +83,14 @@ interface State {
   showMoreOptions: boolean;
 }
 
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
 export default class CameraScreen extends React.Component<{}, State> {
   readonly state: State = {
     flash: 'off',
     zoom: 0,
     autoFocus: 'on',
-    type: 'back',
+    type: CameraType.back,
     depth: 0,
     whiteBalance: 'auto',
     ratio: '16:9',
@@ -104,14 +108,16 @@ export default class CameraScreen extends React.Component<{}, State> {
 
   camera?: Camera;
 
-  async componentDidMount() {
-    if (Platform.OS === 'web') {
-      return;
+  componentDidMount() {
+    if (Platform.OS !== 'web') {
+      this.ensureDirectoryExistsAsync();
     }
+    Camera.requestPermissionsAsync().then(({ status }) => {
+      this.setState({ permission: status, permissionsGranted: status === 'granted' });
+    });
+  }
 
-    const { status } = await Permissions.askAsync(Permissions.CAMERA);
-    this.setState({ permission: status, permissionsGranted: status === 'granted' });
-
+  async ensureDirectoryExistsAsync() {
     try {
       await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'photos');
     } catch (error) {
@@ -122,29 +128,35 @@ export default class CameraScreen extends React.Component<{}, State> {
 
   getRatios = async () => this.camera!.getSupportedRatiosAsync();
 
-  toggleView = () => this.setState({ showGallery: !this.state.showGallery, newPhotos: false });
+  toggleView = () =>
+    this.setState(state => ({ showGallery: !state.showGallery, newPhotos: false }));
 
-  toggleMoreOptions = () => this.setState({ showMoreOptions: !this.state.showMoreOptions });
+  toggleMoreOptions = () => this.setState(state => ({ showMoreOptions: !state.showMoreOptions }));
 
-  toggleFacing = () => this.setState({ type: this.state.type === 'back' ? 'front' : 'back' });
+  toggleFacing = () =>
+    this.setState(state => ({
+      type: state.type === CameraType.back ? CameraType.front : CameraType.back,
+    }));
 
-  toggleFlash = () => this.setState({ flash: flashModeOrder[this.state.flash] });
+  toggleFlash = () => this.setState(state => ({ flash: flashModeOrder[state.flash] }));
 
   setRatio = (ratio: string) => this.setState({ ratio });
 
-  toggleWB = () => this.setState({ whiteBalance: wbOrder[this.state.whiteBalance] });
+  toggleWB = () => this.setState(state => ({ whiteBalance: wbOrder[state.whiteBalance] }));
 
-  toggleFocus = () => this.setState({ autoFocus: this.state.autoFocus === 'on' ? 'off' : 'on' });
+  toggleFocus = () =>
+    this.setState(state => ({ autoFocus: state.autoFocus === 'on' ? 'off' : 'on' }));
 
-  zoomOut = () => this.setState({ zoom: this.state.zoom - 0.1 < 0 ? 0 : this.state.zoom - 0.1 });
+  zoomOut = () => this.setState(state => ({ zoom: state.zoom - 0.1 < 0 ? 0 : state.zoom - 0.1 }));
 
-  zoomIn = () => this.setState({ zoom: this.state.zoom + 0.1 > 1 ? 1 : this.state.zoom + 0.1 });
+  zoomIn = () => this.setState(state => ({ zoom: state.zoom + 0.1 > 1 ? 1 : state.zoom + 0.1 }));
 
   setFocusDepth = (depth: number) => this.setState({ depth });
 
-  toggleBarcodeScanning = () => this.setState({ barcodeScanning: !this.state.barcodeScanning });
+  toggleBarcodeScanning = () =>
+    this.setState(state => ({ barcodeScanning: !state.barcodeScanning }));
 
-  toggleFaceDetection = () => this.setState({ faceDetecting: !this.state.faceDetecting });
+  toggleFaceDetection = () => this.setState(state => ({ faceDetecting: !state.faceDetecting }));
 
   takePicture = () => {
     if (this.camera) {
@@ -167,9 +179,11 @@ export default class CameraScreen extends React.Component<{}, State> {
     this.setState({ newPhotos: true });
   };
 
-  onBarCodeScanned = (code: { type: string; data: string }) => {
-    this.setState({ barcodeScanning: !this.state.barcodeScanning }, () =>
-      Alert.alert(`Barcode found: ${code.data}`)
+  onBarCodeScanned = (code: BarCodeScanningResult) => {
+    console.log('Found: ', code);
+    this.setState(
+      state => ({ barcodeScanning: !state.barcodeScanning }),
+      () => Alert.alert(`Barcode found: ${code.data}`)
     );
   };
 
@@ -177,7 +191,8 @@ export default class CameraScreen extends React.Component<{}, State> {
 
   collectPictureSizes = async () => {
     if (this.camera) {
-      const pictureSizes = await this.camera.getAvailablePictureSizesAsync(this.state.ratio);
+      const { ratio } = this.state;
+      const pictureSizes = await this.camera.getAvailablePictureSizesAsync(ratio);
       let pictureSizeId = 0;
       if (Platform.OS === 'ios') {
         pictureSizeId = pictureSizes.indexOf('High');
@@ -193,18 +208,24 @@ export default class CameraScreen extends React.Component<{}, State> {
   nextPictureSize = () => this.changePictureSize(-1);
 
   changePictureSize = (direction: number) => {
-    let newId = this.state.pictureSizeId + direction;
-    const length = this.state.pictureSizes.length;
-    if (newId >= length) {
-      newId = 0;
-    } else if (newId < 0) {
-      newId = length - 1;
-    }
-    this.setState({ pictureSize: this.state.pictureSizes[newId], pictureSizeId: newId });
+    this.setState(state => {
+      let newId = state.pictureSizeId + direction;
+      const length = state.pictureSizes.length;
+      if (newId >= length) {
+        newId = 0;
+      } else if (newId < 0) {
+        newId = length - 1;
+      }
+      return {
+        pictureSize: state.pictureSizes[newId],
+        pictureSizeId: newId,
+      };
+    });
   };
 
   renderGallery() {
-    return <GalleryScreen onPress={this.toggleView} />;
+    const localPhotos = photos.map(photo => photo.uri);
+    return <GalleryScreen onPress={this.toggleView} photos={localPhotos} />;
   }
 
   renderFaces = () => (
@@ -237,13 +258,13 @@ export default class CameraScreen extends React.Component<{}, State> {
   renderTopBar = () => (
     <View style={styles.topBar}>
       <TouchableOpacity style={styles.toggleButton} onPress={this.toggleFacing}>
-        <Ionicons name="ios-reverse-camera" size={32} color="white" />
+        <Ionicons name="camera-reverse" size={32} color="white" />
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={this.toggleFlash}>
-        <MaterialIcons name={flashIcons[this.state.flash]} size={32} color="white" />
+        <Ionicons name={flashIcons[this.state.flash] as any} size={28} color="white" />
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={this.toggleWB}>
-        <MaterialIcons name={wbIcons[this.state.whiteBalance]} size={32} color="white" />
+        <MaterialIcons name={wbIcons[this.state.whiteBalance] as any} size={32} color="white" />
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={this.toggleFocus}>
         <Text
@@ -299,13 +320,13 @@ export default class CameraScreen extends React.Component<{}, State> {
         <Text style={styles.pictureQualityLabel}>Picture quality</Text>
         <View style={styles.pictureSizeChooser}>
           <TouchableOpacity onPress={this.previousPictureSize} style={{ padding: 6 }}>
-            <Ionicons name="md-arrow-dropleft" size={14} color="white" />
+            <Ionicons name="arrow-back" size={14} color="white" />
           </TouchableOpacity>
           <View style={styles.pictureSizeLabel}>
             <Text style={{ color: 'white' }}>{this.state.pictureSize}</Text>
           </View>
           <TouchableOpacity onPress={this.nextPictureSize} style={{ padding: 6 }}>
-            <Ionicons name="md-arrow-dropright" size={14} color="white" />
+            <Ionicons name="arrow-forward" size={14} color="white" />
           </TouchableOpacity>
         </View>
       </View>
@@ -372,7 +393,7 @@ const styles = StyleSheet.create({
     paddingTop: Constants.statusBarHeight / 2,
   },
   bottomBar: {
-    paddingBottom: isIPhoneX ? 25 : 5,
+    paddingBottom: isIphoneX() ? 25 : 5,
     backgroundColor: 'transparent',
     justifyContent: 'space-between',
     flexDirection: 'row',

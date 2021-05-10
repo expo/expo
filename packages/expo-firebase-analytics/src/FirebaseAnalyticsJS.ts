@@ -106,12 +106,8 @@ class FirebaseAnalyticsJS {
       cache: 'no-cache',
       headers: {
         'Content-Type': 'text/plain;charset=UTF-8',
+        ...(options.headers || {}),
       },
-      ...(options.headers
-        ? {
-            headers: options.headers,
-          }
-        : {}),
       body,
     });
   }
@@ -338,6 +334,13 @@ class FirebaseAnalyticsJS {
    */
   async setDebugModeEnabled(isEnabled: boolean): Promise<void> {
     this.options.debug = isEnabled;
+  }
+
+  /**
+   * Sets a new value for the client ID.
+   */
+  setClientId(clientId: string) {
+    this.options.clientId = clientId;
   }
 }
 

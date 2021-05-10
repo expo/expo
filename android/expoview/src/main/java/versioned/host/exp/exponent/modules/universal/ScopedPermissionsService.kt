@@ -3,10 +3,10 @@ package versioned.host.exp.exponent.modules.universal
 import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
-import expo.modules.permissions.PermissionsService
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.kernel.ExperienceId
 import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry
+import org.unimodules.adapters.react.permissions.PermissionsService
 import org.unimodules.core.ModuleRegistry
 import org.unimodules.interfaces.permissions.PermissionsResponseListener
 import javax.inject.Inject
@@ -33,5 +33,4 @@ class ScopedPermissionsService(context: Context, val experienceId: ExperienceId)
     return mExpoKernelServiceRegistry?.permissionsKernelService?.getPermissions(globalPermissions, context.packageManager, permission, experienceId)
       ?: PackageManager.PERMISSION_DENIED
   }
-
 }

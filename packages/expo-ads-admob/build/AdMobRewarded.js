@@ -3,13 +3,12 @@ import { setTestDeviceIDAsync } from './AdMob';
 import AdMobNativeModule from './ExpoAdsAdMobRewardedVideoAdManager';
 const moduleName = 'AdMobRewarded';
 const eventNames = [
-    'rewardedVideoDidRewardUser',
+    'rewardedVideoUserDidEarnReward',
     'rewardedVideoDidLoad',
     'rewardedVideoDidFailToLoad',
-    'rewardedVideoDidOpen',
-    'rewardedVideoDidStart',
-    'rewardedVideoDidClose',
-    'rewardedVideoWillLeaveApplication',
+    'rewardedVideoDidPresent',
+    'rewardedVideoDidFailToPresent',
+    'rewardedVideoDidDismiss',
 ];
 const eventEmitter = new EventEmitter(AdMobNativeModule);
 const eventHandlers = {};
@@ -23,6 +22,7 @@ export default {
         }
         await AdMobNativeModule.setAdUnitID(id);
     },
+    /** @deprecated Test device IDs are now set globally. Use `AdMob.setTestDeviceIDAsync` instead. */
     async setTestDeviceID(id) {
         console.warn('AdMobRewarded.setTestDeviceID is deprecated. Test device IDs are now set globally. Use AdMob.setTestDeviceIDAsync instead.');
         await setTestDeviceIDAsync(id);

@@ -1,6 +1,6 @@
 {
   "name": "expo-ads-facebook",
-  "version": "8.3.0",
+  "version": "10.0.4",
   "description": "Facebook Audience SDK integration",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -31,17 +31,12 @@
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/facebook-ads/",
   "dependencies": {
+    "@expo/config-plugins": "^1.0.18",
     "fbemitter": "^2.1.1",
-    "nullthrows": "^1.1.0"
-  },
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*"
-  },
-  "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
+    "nullthrows": "^1.1.0",
+    "unimodules-permissions-interface": "~6.2.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "~1.2.0"
+    "expo-module-scripts": "^2.0.0"
   }
 }

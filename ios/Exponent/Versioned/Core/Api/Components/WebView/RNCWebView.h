@@ -25,8 +25,8 @@
 @end
 
 @interface RNCWebView : RCTView
-
 @property (nonatomic, strong) NSString *experienceId;
+
 @property (nonatomic, weak) id<RNCWebViewDelegate> _Nullable delegate;
 @property (nonatomic, copy) NSDictionary * _Nullable source;
 @property (nonatomic, assign) BOOL messagingEnabled;
@@ -36,6 +36,7 @@
 @property (nonatomic, assign) BOOL injectedJavaScriptBeforeContentLoadedForMainFrameOnly;
 @property (nonatomic, assign) BOOL scrollEnabled;
 @property (nonatomic, assign) BOOL sharedCookiesEnabled;
+@property (nonatomic, assign) BOOL autoManageStatusBarEnabled;
 @property (nonatomic, assign) BOOL pagingEnabled;
 @property (nonatomic, assign) CGFloat decelerationRate;
 @property (nonatomic, assign) BOOL allowsInlineMediaPlayback;
@@ -57,12 +58,21 @@
 @property (nonatomic, assign) BOOL javaScriptEnabled;
 @property (nonatomic, assign) BOOL javaScriptCanOpenWindowsAutomatically;
 @property (nonatomic, assign) BOOL allowFileAccessFromFileURLs;
+@property (nonatomic, assign) BOOL allowUniversalAccessFromFileURLs;
 @property (nonatomic, assign) BOOL allowsLinkPreview;
 @property (nonatomic, assign) BOOL showsHorizontalScrollIndicator;
 @property (nonatomic, assign) BOOL showsVerticalScrollIndicator;
 @property (nonatomic, assign) BOOL directionalLockEnabled;
 @property (nonatomic, assign) BOOL ignoreSilentHardwareSwitch;
 @property (nonatomic, copy) NSString * _Nullable allowingReadAccessToURL;
+@property (nonatomic, assign) BOOL pullToRefreshEnabled;
+#if !TARGET_OS_OSX
+@property (nonatomic, weak) UIRefreshControl * refreshControl;
+#endif
+
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 /* iOS 13 */
+@property (nonatomic, assign) WKContentMode contentMode;
+#endif
 
 + (void)setClientAuthenticationCredential:(nullable NSURLCredential*)credential;
 + (void)setCustomCertificatesForHost:(nullable NSDictionary *)certificates;
@@ -72,5 +82,9 @@
 - (void)goBack;
 - (void)reload;
 - (void)stopLoading;
+#if !TARGET_OS_OSX
+- (void)addPullToRefreshControl;
+- (void)pullToRefresh:(UIRefreshControl *)refreshControl;
+#endif
 
 @end

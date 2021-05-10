@@ -1,1 +1,0 @@
-../../../../../versioned-react-native/ABI37_0_0/ReactNative/Libraries/TypeSafety/ABI37_0_0RCTTypedModuleConstants.h

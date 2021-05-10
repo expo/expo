@@ -21,9 +21,7 @@ export function processFontFamily(fontFamily) {
     if (!isLoaded(fontFamily)) {
         if (__DEV__) {
             if (isLoading(fontFamily)) {
-                console.error(`You started loading the font "${fontFamily}", but used it before it finished loading.\n
-- You need to wait for Font.loadAsync to complete before using the font.\n
-- We recommend loading all fonts before rendering the app, and rendering only Expo.AppLoading while waiting for loading to complete.`);
+                console.error(`You started loading the font "${fontFamily}", but used it before it finished loading. You need to wait for Font.loadAsync to complete before using the font.`);
             }
             else {
                 console.error(`fontFamily "${fontFamily}" is not a system font and has not been loaded through Font.loadAsync.\n

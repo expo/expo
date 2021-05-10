@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI37_0_0/Expo/EXStoreReview/ABI37_0_0EXStoreReview/ABI37_0_0EXStoreReviewModule.h

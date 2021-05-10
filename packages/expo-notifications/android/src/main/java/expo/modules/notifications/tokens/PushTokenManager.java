@@ -5,7 +5,8 @@ import org.unimodules.core.interfaces.SingletonModule;
 import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
 
-import expo.modules.notifications.FirebaseListenerService;
+import expo.modules.notifications.service.NotificationsService;
+import expo.modules.notifications.service.delegates.FirebaseMessagingDelegate;
 import expo.modules.notifications.tokens.interfaces.FirebaseTokenListener;
 import expo.modules.notifications.tokens.interfaces.PushTokenListener;
 
@@ -28,7 +29,7 @@ public class PushTokenManager implements SingletonModule, FirebaseTokenListener,
 
     // Registers this singleton instance in static FirebaseListenerService listeners collection.
     // Since it doesn't hold strong reference to the object this should be safe.
-    FirebaseListenerService.addTokenListener(this);
+    FirebaseMessagingDelegate.addTokenListener(this);
   }
 
   @Override
@@ -67,7 +68,7 @@ public class PushTokenManager implements SingletonModule, FirebaseTokenListener,
   }
 
   /**
-   * Used by {@link FirebaseListenerService} to notify of new tokens.
+   * Used by {@link NotificationsService} to notify of new tokens.
    * Calls {@link PushTokenListener#onNewToken(String)} on all values
    * of {@link PushTokenManager#mListenerReferenceMap}.
    *

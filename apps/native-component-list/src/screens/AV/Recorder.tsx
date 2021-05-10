@@ -1,6 +1,5 @@
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
 import { Audio } from 'expo-av';
-import * as Permissions from 'expo-permissions';
 import React from 'react';
 import {
   ScrollView,
@@ -44,7 +43,7 @@ export default class Recorder extends React.Component<
   _prepare = (options: Audio.RecordingOptions) => async () => {
     const recordingObject = new Audio.Recording();
     try {
-      await Permissions.askAsync(Permissions.AUDIO_RECORDING);
+      await Audio.requestPermissionsAsync();
       await recordingObject.prepareToRecordAsync(options);
       recordingObject.setOnRecordingStatusUpdate(this._updateStateToStatus);
       const status = await recordingObject.getStatusAsync();
@@ -117,7 +116,7 @@ export default class Recorder extends React.Component<
           onPress={this._togglePause}
           style={[styles.bigRoundButton, { borderColor: 'red', borderWidth: 5 }]}>
           <Ionicons
-            name={`ios-${this.state.isRecording ? 'pause' : 'mic'}`}
+            name={`ios-${this.state.isRecording ? 'pause' : 'mic'}` as any}
             style={[styles.bigIcon, { color: 'red' }]}
           />
         </TouchableOpacity>

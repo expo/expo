@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI36_0_0/Expo/EXFont/ABI36_0_0EXFont/Singletons/ABI36_0_0EXFontScalersManager.h

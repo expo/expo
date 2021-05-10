@@ -17,6 +17,7 @@ import javax.inject.Inject;
 
 import androidx.annotation.Nullable;
 import expo.modules.constants.ConstantsService;
+import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.Constants;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExpoViewKernel;
@@ -29,7 +30,7 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
   ExponentSharedPreferences mExponentSharedPreferences;
 
   private final Map<String, Object> mExperienceProperties;
-  private JSONObject mManifest;
+  private RawManifest mManifest;
 
   private static int convertPixelsToDp(float px, Context context) {
     Resources resources = context.getResources();
@@ -38,7 +39,7 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
     return (int) dp;
   }
 
-  public ConstantsBinding(Context context, Map<String, Object> experienceProperties, JSONObject manifest) {
+  public ConstantsBinding(Context context, Map<String, Object> experienceProperties, RawManifest manifest) {
     super(context);
     NativeModuleDepsProvider.getInstance().inject(ConstantsBinding.class, this);
 
@@ -55,8 +56,6 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
     Map<String, Object> constants = super.getConstants();
 
     constants.put("expoVersion", ExpoViewKernel.getInstance().getVersionName());
-    // Override scoped installationId from ConstantsService with unscoped
-    constants.put("installationId", mExponentSharedPreferences.getOrCreateUUID());
     constants.put("manifest", mManifest.toString());
     constants.put("nativeAppVersion", ExpoViewKernel.getInstance().getVersionName());
     constants.put("nativeBuildVersion", Constants.ANDROID_VERSION_CODE);
@@ -65,6 +64,7 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
     String appOwnership = getAppOwnership();
 
     constants.put("appOwnership", appOwnership);
+    constants.put("executionEnvironment", getExecutionEnvironment().getString());
     constants.putAll(mExperienceProperties);
 
     Map<String, Object> platform = new HashMap<>();
@@ -82,7 +82,7 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
 
   public String getAppId() {
     try {
-      return mManifest.getString("id");
+      return mManifest.getID();
     } catch (JSONException e) {
       return null;
     }
@@ -102,5 +102,19 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
     } else {
       return "expo";
     }
+  }
+
+  private ExecutionEnvironment getExecutionEnvironment() {
+    if (Constants.isStandaloneApp()) {
+      return ExecutionEnvironment.STANDALONE;
+    } else {
+      return ExecutionEnvironment.STORE_CLIENT;
+    }
+  }
+
+  @Override
+  public String getOrCreateInstallationId() {
+    // Override scoped installationId from ConstantsService with unscoped
+    return mExponentSharedPreferences.getOrCreateUUID();
   }
 }

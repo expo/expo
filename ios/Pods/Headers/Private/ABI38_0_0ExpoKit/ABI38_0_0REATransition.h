@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI38_0_0/Expo/ExpoKit/Core/Api/Reanimated/Transitioning/ABI38_0_0REATransition.h

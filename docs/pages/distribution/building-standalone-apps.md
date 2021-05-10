@@ -9,7 +9,7 @@ An Apple Developer account is needed to build an iOS standalone app, but a Googl
 account is not needed to build the Android standalone app. If you'd like to submit to either app
 store, you will need a developer account on that store.
 
-It's a good idea to read the best practices about [Deploying to App Stores](../app-stores/) to
+It's a good idea to read the best practices about [Deploying to App Stores](app-stores.md) to
 ensure your app is in good shape to get accepted into the Apple and Google marketplaces. We can
 generate builds for you, but it's up to you to make your app awesome.
 
@@ -47,23 +47,24 @@ to launch Ubuntu at least once. After that, use an Admin powershell to run:
 - The iOS `bundleIdentifier` and Android `package` fields use reverse DNS notation, but don't have to be related to a domain. Replace `"com.yourcompany.yourappname"` with whatever makes sense for your app.
 - You're probably not surprised that `name`, `icon` and `version` are required.
 - `slug` is the url name that your app's JavaScript is published to. For example: `expo.io/@community/native-component-list`, where `community` is my username and `native-component-list` is the slug.
-- The `ios.buildNumber` and `android.versionCode` distinguish different binaries of your app. Make sure to increment these for each build you upload to the App Store or Google Play store.
+- The `ios.buildNumber` and `android.versionCode` distinguish different binaries of your app. Make sure to increment these for each build you upload to the App Store or Google Play Store.
 
 There are other options you might want to add to `app.json`. We have only covered what is
 required. For example, some people like to configure their own build number, linking scheme, and
-more. We highly recommend you read through [Configuration with app.json / app.config.js](../../workflow/configuration/) for the
-full spec. This is also your last chance to double check our [recommendations](../app-stores/)
+more. We highly recommend you read through [Configuration with app.json / app.config.js](../workflow/configuration.md) for the
+full spec. This is also your last chance to double check our [recommendations](app-stores.md)
 for App Store metadata.
 
 ## 3. Start the build
 
-Run `expo build:android` or `expo build:ios`. If you don't already have a packager running for this
-project, `expo` will start one for you.
+Run `expo build:android` or `expo build:ios`. If you don't already have a packager running for this project, `expo` will start one for you.
+
+**Please note:** When you run `expo build`, Expo automatically publishes your app (with `expo publish`). In order to avoid accidentally publishing changes to your production app, you may want to use [release channels](release-channels.md).
 
 ### If you choose to build for Android
 
 When building for android you can choose to build APK (`expo build:android -t apk`) or Android App Bundle (`expo build:android -t app-bundle`).
-App bundles are recommended, but you have to make sure the [Google Play App Signing](../app-signing) is enabled for your project,
+App bundles are recommended, but you have to make sure the [Google Play App Signing](app-signing.md) is enabled for your project,
 you can read more about it [here](https://developer.android.com/guide/app-bundle).
 
 The first time you build the project you will be asked whether you'd like to upload a keystore or
@@ -85,7 +86,7 @@ If you don't know what this means, let us handle it! :)
   2) I want to upload my own keystore!
 ```
 
-> **Note:** If you choose the first option and later decide to upload your own keystore, we currently offer an option to clear your current Android keystore from our build servers by running `expo build:android --clear-credentials.` **This is irreversible, so only run this command if you know what you are doing!** You can download a backup copy of the keystore by running `expo fetch:android:keystore`. If you do not have a local copy of your keystore , you will be unable to publish new versions of your app to the Play Store. Your only option would be to generate a new keystore and re-upload your application as a new application. You can learn more about how code signing and keystores work [in the Android documentation](https://developer.android.com/studio/publish/app-signing.html).
+> **Note:** If you choose the first option and later decide to upload your own keystore, we currently offer an option to clear your current Android keystore from our build servers by running `expo build:android --clear-credentials.` **This is irreversible, so only run this command if you know what you are doing!** You can download a backup copy of the keystore by running `expo fetch:android:keystore`. **If you do not have a local copy of your keystore , you will be unable to publish new versions of your app to the Play Store**. Your only option would be to generate a new keystore and re-upload your application as a new application. You can learn more about how code signing and keystores work [in the Android documentation](https://developer.android.com/studio/publish/app-signing.html).
 
 ### If you choose to build for iOS
 
@@ -93,8 +94,8 @@ You can build standalone apps for iOS with two different types, an archive (`exp
 With the simulator build, you can test your standalone app on a simulator.
 If you want to publish your app to the store or distribute it with tools like TestFlight, you have to use the archive.
 
-When building for iOS, you are given a choice of letting the Expo client create the necessary credentials for you,
-while still having a chance to provide your own overrides. Your Apple ID and password are used locally and never saved on Expo's servers.
+When building for iOS, you are given a choice of letting Expo create the necessary credentials for you,
+while still having a chance to provide your own overrides. Your Apple ID and password are used locally and are never saved on Expo's servers.
 
 ```sh
 $ expo build:ios
@@ -119,105 +120,65 @@ Note: Expo does not keep your Apple ID or your Apple ID password.
   I will provide all the credentials and files needed, Expo does limited validation
 ```
 
-We ask you if you'd like us to handle your Distribution Certificate or
-use your own. If you have previously used `expo-cli` for building a standalone app
-for a different project, then we'll ask you if you'd like to reuse your existing
-Distribution Certificate. Similar to the Android keystore, if you don't know what
-a Distribution Certificate is, just let us handle it for you. If you do need
-to upload your own certificates, we recommend following [this excellent guide on making a P12 file](https://calvium.com/how-to-make-a-p12-file/).
-**Note:** this guide recommends leaving the P12's password blank, but a P12 password
-is required to upload your own certificate to Expo's service. Please enter a password
-when prompted. We'll also help you handle your
-Push Notifications service key. Remember that Push Notifications service keys
-are shared across all apps published under the same Apple Developer account.
+Unless you're very familiar with iOS credentials already, it's best to let Expo handle the creation & management of all your credentials for you. If you'd like to know more about iOS credentials, we've written a guide with everything you need to know [here](app-signing.md).
 
-> **Note:** The Expo build service supports both normal App Store distribution as well as enterprise
-> distribution. To use the latter, you must be a member of the ["Apple Developer Enterprise
-> Program"](https://developer.apple.com/programs/enterprise/). Only normal Apple developer accounts
-> can build apps that can be submitted to the Apple App Store, and only enterprise developer
-> accounts can build apps that can be distributed using enterprise distribution methods. When you
-> call `expo build:ios`, you just need to choose the correct team, it will be labeled `(In-House)`.
-> At this time, the standalone app builder does not support "ad hoc" distribution certificates
-> or provisioning profiles.
+If you plan on providing your own certificates, we recommend creating them in the [Apple Developer Portal](https://developer.apple.com/account/resources/certificates/list).
 
-### Switch to Push Notification Key on iOS
+#### Enterprise distribution
 
-If you are using Push Notifications Certificate and want to switch to Push Notifications Key you need
-to start build with `--clear-push-cert`. We will remove certificate from our servers and generate Push Notifications Key for you.
+The Expo build service supports both normal App Store distribution as well as enterprise distribution. To use the latter, you must be a member of the ["Apple Developer Enterprise Program"](https://developer.apple.com/programs/enterprise/). Only normal Apple developer accounts can build apps that can be submitted to the Apple App Store, and only enterprise developer accounts can build apps that can be distributed using enterprise distribution methods. When you call `expo build:ios`, you just need to choose the correct team, it will be labeled `(In-House)`.
 
-## 4. Wait for it to finish building
+#### Adhoc distribution
 
-When one of our building machines will be free, it'll start building your app. You can check how long you'll wait on [Turtle status](https://expo.io/turtle-status) site. We'll print a url you can visit (such as `expo.io/builds/some-unique-id`) to watch your build logs. Alternatively, you can check up on it by running `expo build:status`. When it's done, you'll see the url of a `.apk` (Android) or `.ipa` (iOS) file -- this is your app. Copy and paste the link into your browser to download the file.
+> Since this requires you to provide credential overrides, this feature should only be used if you're comfortable with iOS credentials.
 
-### Setting up a webhook
+It's usually easiest to test your standalone app on a simulator with the `expo build:ios -t simulator` command, and then use TestFlight for your physical device testing. But if you'd like an IPA that you can install directly onto your physical device through Xcode, you can generate one with Expo CLI:
 
-Expo can also alert you once your build has finished via a webhook. Webhooks need to be configured per-project, so if you want to be alerted about builds for both `@yourUsername/awesomeApp` and `@yourUsername/coolApp`, you need to run `expo webhooks:add --event build --url <webhook-url>` in each directory.
+- Run `expo build:ios` once to generate some preliminary certificates, namely your app identifier, and distribution certificate.
+- Now, create a new provisioning profile [here](https://developer.apple.com/account/resources/profiles/list), and under `Distribution`, select `Adhoc`. Then provide your app identifier and the distribution certificate you created in the last step. **If you don't provide those exact certificates, your build will fail.**
+- Download the provisioning profile, and then pass it to the build command like this: `expo build:ios --provisioning-profile-path ~/Path/To/provisioningProfileYouCreated.mobileprovision`, and make sure the rest of the certificates you use match those you selected when creating your adhoc provisioning profile in the previous step.
 
-After running that command, you'll be given a webhook signing secret if you have not provided your own with the `--secret` command line option. It must be at least 16 characters long and it will be used to calculate the signature of the request body which we send as the value of the `expo-signature` HTTP header. You can use the signature to verify a webhook request is genuine (example code below). We promise you that we keep your secret securely encrypted in our database.
-
-We call your webhook using an HTTP POST request and we pass data in the request body. Expo sends your webhook with JSON object with following fields:
-
-- `status` - a string specifying whether your build has finished successfully (can be either `finished` or `errored`)
-- `id` - the unique ID of your build
-- `artifactUrl` - the URL to the build artifact (we only include this field if the build is successful)
-- `platform` - 'ios' | 'android'
-
-Additionally, we send an `expo-signature` HTTP header with the hash signature of the payload. You can use this signature to verify the request is from Expo. The signature is a hex-encoded HMAC-SHA1 digest of the request body, using your webhook secret as the HMAC key.
-
-Here's an example of how you can implement your server:
-
-```javascript
-import crypto from 'crypto';
-import express from 'express';
-import bodyParser from 'body-parser';
-import safeCompare from 'safe-compare';
-
-const app = express();
-app.use(bodyParser.text({ type: '*/*' }));
-app.post('/webhook', (req, res) => {
-  const expoSignature = req.headers['expo-signature'];
-  // process.env.SECRET_WEBHOOK_KEY has to match <webhook-secret> value set with `expo webhooks:set ...` command
-  const hmac = crypto.createHmac('sha1', process.env.SECRET_WEBHOOK_KEY);
-  hmac.update(req.body);
-  const hash = `sha1=${hmac.digest('hex')}`;
-  if (!safeCompare(expoSignature, hash)) {
-    res.status(500).send("Signatures didn't match!");
-  } else {
-    // do sth here
-    res.send('OK!');
-  }
-});
-app.listen(8080, () => console.log('Listening on port 8080'));
-```
-
-> If you were to test the above webhook locally, you'd have to use a service like [ngrok](https://ngrok.com/docs) to forward `localhost:8080` via a tunnel and make it publicly accessible to anyone with the URL `ngrok` gives you.
-
-You can always change your webhook URL and/or webhook secret using the same command you used to set up the webhook for the first time. To see what your webhook is currently set to, you can use `expo webhooks:show` command. If you would like us to stop sending requests to your webhook, simply run `expo webhooks:clear` in your project.
+Once Expo finishes your build, you can install it onto your device via Xcode by opening the `Devices & Simulators` window, selecting your connected device, and under `Installed Apps`, click the `+` and then select the IPA Expo generated for you.
 
 > **Note:** We enable bitcode for iOS, so the `.ipa` files for iOS are much larger than the eventual App Store download available to your users. For more information, see [App Thinning](https://developer.apple.com/library/content/documentation/IDEs/Conceptual/AppDistributionGuide/AppThinning/AppThinning.html).
 
+### Switch to Push Notification Key on iOS
+
+If you are using Push Notifications Certificate and want to switch to a Push Notifications Key you need
+to start the build with `--clear-push-cert`. We will remove the legacy certificate from our servers and generate a Push Notifications Key for you.
+
+## 4. Wait for it to finish building
+
+When one of our building machines is free, it'll start building your app. You can check how long you'll wait on the [Turtle status](https://expo.io/turtle-status) site. We'll print a url you can visit (such as `expo.io/builds/some-unique-id`) to watch your build progress and access the build logs. Alternatively, you can check up on it by running `expo build:status`. When it's done, you'll see the url to your app file - an `.apk`, `.aab` (both Android), or `.ipa` (iOS) file. Copy and paste the link into your browser to download the file.
+
+> Want to be notified programmatically as soon as your build is done? [Here's how you can set that up with webhooks](webhooks.md).
+
 ## 5. Test it on your device or simulator
 
-- You can drag and drop the `.apk` into your Android emulator. This is the easiest way to test out that the build was successful. But it's not the most satisfying.
-- **To run it on your Android device**, make sure you have the Android platform tools installed along with `adb`, then just run `adb install app-filename.apk` with [USB debugging enabled on your device](https://developer.android.com/studio/run/device.html#device-developer-options) and the device plugged in.
-- **To run it on your iOS Simulator**, first build your expo project with the simulator flag by running `expo build:ios -t simulator`, then download the tarball with the link given upon completion when running `expo build:status`. Unpack the tar.gz by running `tar -xvzf your-app.tar.gz`. Then you can run it by starting an iOS Simulator instance, then running `xcrun simctl install booted <app path>` and `xcrun simctl launch booted <app identifier>`.
-- **To test a device build with Apple TestFlight**, download the .ipa file to your local machine. You are ready to upload your app to TestFlight. Within TestFlight, click the plus icon and create a New App. Make sure your `bundleIdentifier` matches what you've placed in `app.json`.
+### Android
 
-> **Note:** You will not see your build here just yet! You will need to use Xcode or [Transporter](https://apps.apple.com/app/transporter/id1450874784) (previously known as Application Loader) to upload your IPA first. Once you do that, you can check the status of your build under `Activity`. Processing an app can take 10-15 minutes before it shows up under available builds.
+- **To run it on your Android emulator**, first build your project with the apk flag by running `expo build:android -t apk`, and you can drag and drop the `.apk` into the emulator.
+- **To run it on your Android device**, make sure you have the Android platform tools installed along with `adb`, then just run `adb install app-filename.apk` with [USB debugging enabled on your device](https://developer.android.com/studio/run/device.html#device-developer-options) and the device plugged in.
+
+### iOS
+
+- **To run it on your iOS simulator**, first build your project with the simulator flag by running `expo build:ios -t simulator`, then download the artifact with the link printed when your build completes. To install the resulting `tar.gz` file, unzip it and drag-and-drop it into your iOS simulator. If you'd like to install it from the command line, run `tar -xvzf your-app.tar.gz` to unpack the file, open a simulator, then run `xcrun simctl install booted <path to .app>`.
+
+- **To test a device build with Apple TestFlight**, download the `.ipa` file to your local machine. Within [App Store Connect](https://appstoreconnect.apple.com/apps), click the plus icon and create a New App. Make sure your `bundleIdentifier` matches what you've placed in `app.json`. Now, you need to use Xcode or [Transporter](https://apps.apple.com/app/transporter/id1450874784) (previously known as Application Loader) to upload the `.ipa` you got from `expo build:ios`. Once you do that, you can check the status of your build under `Activity`. Processing an app can take 10-15 minutes before it shows up under available builds.
 
 ## 6. Submit it to the appropriate store
 
-Read the guide on [Uploading Apps to the Apple App Store and Google Play](../uploading-apps/).
+Read the guide on [Uploading Apps to the Apple App Store and Google Play](uploading-apps.md).
 
 ## 7. Update your app
 
-For the most part, when you want to update your app, just Publish again from Expo CLI. Your users will download the new JS the next time they open the app. To ensure your users have a seamless experience downloading JS updates, you may want to enable [background JS downloads](../../guides/offline-support/). However, there are a couple reasons why you might want to rebuild and resubmit the native binaries:
+For the most part, when you want to update your app, just Publish again from Expo CLI. Your users will download the new JS the next time they open the app. To ensure your users have a seamless experience downloading JS updates, you may want to enable [background JS downloads](../guides/offline-support.md). However, there are a couple reasons why you might want to rebuild and resubmit the native binaries:
 
 - If you want to change native metadata like the app's name or icon
 - If you upgrade to a newer SDK version of your app (which requires new native code)
 
-To keep track of this, you'll need to update your app's `versionCode` and `buildNumber` in app.json (see [here](../../distribution/app-stores/#versioning-your-app) for details).
+To keep track of this, you'll need to update your app's `versionCode` and `buildNumber` in app.json (see [here](../distribution/app-stores.md#versioning-your-app) for details).
 
-It is a good idea to glance through the [app.json documentation](../../workflow/configuration/) to get an idea of all the properties you can change, e.g. the icons, deep linking url scheme, handset/tablet support, and a lot more.
+It is a good idea to glance through the [app.json documentation](../workflow/configuration.md) to get an idea of all the properties you can change, e.g. the icons, deep linking url scheme, handset/tablet support, and a lot more.
 
 If you run into problems during this process, we're more than happy to help out! [Join our Forums](https://forums.expo.io/) and let us know if you have any questions.

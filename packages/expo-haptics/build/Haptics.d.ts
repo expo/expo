@@ -1,7 +1,4 @@
 import { NotificationFeedbackType, ImpactFeedbackStyle } from './Haptics.types';
-export declare function notification(type?: NotificationFeedbackType): Promise<void>;
-export declare function impact(style?: ImpactFeedbackStyle): Promise<void>;
-export declare function selection(): Promise<void>;
 /**
  * Triggers notification feedback.
  */

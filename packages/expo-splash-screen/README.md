@@ -198,11 +198,11 @@ const styles = StyleSheet.create({
 
 ## 💻 Installation in managed Expo projects
 
-[Managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects use the older `SplashScreen` module within the `expo` package (`import { SplashScreen } from 'expo'`).
+Refer to [the SplashScreen section of the Expo documentation](https://docs.expo.io/versions/latest/sdk/splash-screen/).
 
 ## 🖥 Installation in bare React Native projects
 
-For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
+For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/expo/expo/tree/master/packages/react-native-unimodules) before continuing.
 
 ## Add the package to your dependencies
 
@@ -216,7 +216,7 @@ Run `npx pod-install` after installing the package.
 
 ### Automatic configuration
 
-The easiest way to configure the splash screen in bare React Native projects is with the expo-splash-screen command. See the [README](https://github.com/expo/expo-cli/tree/master/packages/configure-splash-screen) for more information, or run `yarn expo-splash-screen --help` in your project.
+The easiest way to configure the splash screen in bare React Native projects is with the expo-splash-screen command. See the [README](https://github.com/expo/expo-cli/tree/master/unlinked-packages/configure-splash-screen) for more information, or run `yarn expo-splash-screen --help` in your project.
 
 ### Manual Configuration
 
@@ -466,7 +466,7 @@ To achieve fully-native splash screen behavior, `expo-splash-screen` needs to be
 
 ### Automatic configuration
 
-The easiest way to configure the splash screen in bare React Native projects is with the expo-splash-screen command. See the [README](https://github.com/expo/expo/tree/master/packages/expo-splash-screen-command) for more information, or run `yarn expo-splash-screen --help` in your project.
+The easiest way to configure the splash screen in bare React Native projects is with the expo-splash-screen command. See the [README](https://github.com/expo/expo-cli/tree/master/unlinked-packages/configure-splash-screen) for more information, or run `yarn expo-splash-screen --help` in your project.
 
 ### Manual Configuration
 
@@ -474,13 +474,13 @@ The easiest way to configure the splash screen in bare React Native projects is 
 2. [Update `MainActivity`](#-update-mainactivityjavakt)
 3. [Configure `res/drawable/splashscreen_image.png`](#-configure-resdrawablesplashscreen_imagepng)
 4. [Configure `res/values/colors.xml`](#-configure-resvaluescolorsxml)
-5. [Configure `res/drawable/spalashscreen.xml`](#-configure-resdrawablesplashscreenxml)
+5. [Configure `res/drawable/splashscreen.xml`](#-configure-resdrawablesplashscreenxml)
 6. [Configure `res/values/styles.xml`](#-configure-resvaluesstylesxml)
 7. [Configure `AndroidManifest.xml`](#-configure-androidmanifestxml)
 8. [(<em>optional</em>) Enable dark mode](#-optional-enable-dark-mode-1)
 9. [(<em>optional</em>) Customize StatusBar](#-customize-statusbar-1)
 
-#### 🛠 `SplashScreen.show(Activity activity, SplashScreenImageResizeMode mode, Boolean statusBarTranslucent)`
+#### 🛠 `SplashScreen.show(Activity activity, SplashScreenImageResizeMode resizeMode, Class<out ViewGroup> rootViewClass, Boolean statusBarTranslucent)`
 
 This native method is used to hook `SplashScreen` into the native view hierarchy that is attached to the provided activity.
 
@@ -493,7 +493,7 @@ Modify `MainActivity.{java,kt}` or any other activity that is marked in the appl
 Ensure `SplashScreen.show(...)` method is called after `super.onCreate(...)`
 
 ```diff
-+ import expo.modules.splashscreen.SplashScreen;
++ import expo.modules.splashscreen.singletons.SplashScreen;
 + import expo.modules.splashscreen.SplashScreenImageResizeMode;
 
 public class MainActivity extends ReactActivity {
@@ -504,7 +504,7 @@ public class MainActivity extends ReactActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 +   // SplashScreen.show(...) has to be called after super.onCreate(...)
-+   SplashScreen.show(this, SplashScreenImageResizeMode.CONTAIN, ReactRootView.class);
++   SplashScreen.show(this, SplashScreenImageResizeMode.CONTAIN, ReactRootView.class, false);
     ...
   }
 
@@ -516,7 +516,7 @@ If the `onCreate` method is not yet overridden in your `MainActivity`, override 
 
 ```diff
 + import android.os.Bundle;
-+ import expo.modules.splashscreen.SplashScreen;
++ import expo.modules.splashscreen.singletons.SplashScreen;
 + import expo.modules.splashscreen.SplashScreenImageResizeMode;
 
 public class MainActivity extends ReactActivity {
@@ -525,7 +525,7 @@ public class MainActivity extends ReactActivity {
 +  protected void onCreate(Bundle savedInstanceState) {
 +    super.onCreate(savedInstanceState);
 +   // SplashScreen.show(...) has to be called after super.onCreate(...)
-+   SplashScreen.show(this, SplashScreenImageResizeMode.CONTAIN, ReactRootView.class);
++   SplashScreen.show(this, SplashScreenImageResizeMode.CONTAIN, ReactRootView.class, false);
     ...
   }
 
@@ -732,8 +732,9 @@ public class MainActivity extends ReactActivity {
     super.onCreate(savedInstanceState);
     // SplashScreen.show(...) has to be called after super.onCreate(...)
     // Below line is handled by '@expo/configure-splash-screen' command and it's discouraged to modify it manually
--   SplashScreen.show(this, SplashScreenImageResizeMode.{CONTAIN, COVER, NATIVE}, false);
-+   SplashScreen.show(this, SplashScreenImageResizeMode.{CONTAIN, COVER, NATIVE}, true);
+-   SplashScreen.show(this, SplashScreenImageResizeMode.{CONTAIN, COVER, NATIVE}, ReactRootView.class, false);
++   SplashScreen.show(this, SplashScreenImageResizeMode.{CONTAIN, COVER, NATIVE}, ReactRootView.class, true);
+
   }
 
   ...

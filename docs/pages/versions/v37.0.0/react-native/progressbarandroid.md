@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
 
 ## Props
 
-Inherits [View Props](../view/#props).
+Inherits [View Props](view.md#props).
 
 ### `animating`
 
@@ -57,7 +57,7 @@ Color of the progress bar.
 
 | Type                | Required |
 | ------------------- | -------- |
-| [color](../colors/) | No       |
+| [color](colors.md) | No       |
 
 ---
 

@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as AppAuth from 'expo-app-auth';
 import React from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
@@ -42,7 +42,7 @@ async function getCachedAuthAsync() {
   }
 }
 
-async function cacheAuthAsync(authState: object) {
+async function cacheAuthAsync(authState: AppAuth.TokenResponse) {
   return AsyncStorage.setItem(StorageKey, JSON.stringify(authState));
 }
 
@@ -66,7 +66,9 @@ interface State {
   authState?: any;
 }
 
-export default class AppAuthScreen extends React.Component<object, State> {
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
+export default class AppAuthScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: 'App Auth',
   };

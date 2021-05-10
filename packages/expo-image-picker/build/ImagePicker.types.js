@@ -18,4 +18,13 @@ export var VideoExportPreset;
     VideoExportPreset[VideoExportPreset["HEVC_1920x1080"] = 9] = "HEVC_1920x1080";
     VideoExportPreset[VideoExportPreset["HEVC_3840x2160"] = 10] = "HEVC_3840x2160";
 })(VideoExportPreset || (VideoExportPreset = {}));
+export var UIImagePickerControllerQualityType;
+(function (UIImagePickerControllerQualityType) {
+    UIImagePickerControllerQualityType[UIImagePickerControllerQualityType["High"] = 0] = "High";
+    UIImagePickerControllerQualityType[UIImagePickerControllerQualityType["Medium"] = 1] = "Medium";
+    UIImagePickerControllerQualityType[UIImagePickerControllerQualityType["Low"] = 2] = "Low";
+    UIImagePickerControllerQualityType[UIImagePickerControllerQualityType["VGA640x480"] = 3] = "VGA640x480";
+    UIImagePickerControllerQualityType[UIImagePickerControllerQualityType["IFrame1280x720"] = 4] = "IFrame1280x720";
+    UIImagePickerControllerQualityType[UIImagePickerControllerQualityType["IFrame960x540"] = 5] = "IFrame960x540";
+})(UIImagePickerControllerQualityType || (UIImagePickerControllerQualityType = {}));
 //# sourceMappingURL=ImagePicker.types.js.map

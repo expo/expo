@@ -1,13 +1,11 @@
-import { Platform } from '@unimodules/core';
+// Unimplemented on web
 export default {
     get name() {
         return 'ExpoStoreReview';
     },
     async isAvailableAsync() {
-        // true on Android, false on web
-        return Platform.OS === 'android';
+        return false;
     },
-    // Unimplemented on web and Android
     requestReview: null,
 };
 //# sourceMappingURL=ExpoStoreReview.js.map

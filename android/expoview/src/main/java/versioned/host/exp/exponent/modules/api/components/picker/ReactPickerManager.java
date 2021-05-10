@@ -8,6 +8,7 @@
 package versioned.host.exp.exponent.modules.api.components.picker;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,8 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import javax.annotation.Nullable;
+import android.graphics.PorterDuff;
+import android.graphics.Color;
 
 /**
  * {@link ViewManager} for the {@link ReactPicker} view. This is abstract because the
@@ -69,6 +72,11 @@ public abstract class ReactPickerManager extends SimpleViewManager<ReactPicker> 
   @ReactProp(name = "selected")
   public void setSelected(ReactPicker view, int selected) {
     view.setStagedSelection(selected);
+  }
+
+  @ReactProp(name = "dropdownIconColor") 
+  public void setDropdownIconColor(ReactPicker view, @Nullable String color) {
+    view.getBackground().setColorFilter(Color.parseColor(color), PorterDuff.Mode.SRC_ATOP);
   }
 
   @Override
@@ -148,6 +156,12 @@ public abstract class ReactPickerManager extends SimpleViewManager<ReactPicker> 
         textView.setTextColor(mPrimaryTextColor);
       } else if (item.hasKey("color") && !item.isNull("color")) {
         textView.setTextColor(item.getInt("color"));
+      }
+
+      if (item.hasKey("fontFamily") && !item.isNull("fontFamily")) {
+        Typeface face = Typeface.create(item.getString("fontFamily"), Typeface.NORMAL);
+        // Typeface face = Typeface.create("MuseoSans-500", Typeface.NORMAL);
+        textView.setTypeface(face);
       }
 
       return convertView;

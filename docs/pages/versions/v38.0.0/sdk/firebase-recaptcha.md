@@ -32,40 +32,42 @@ Add the `<FirebaseRecaptchaVerifierModal>` component to your screen and store it
 ```tsx
 <FirebaseRecaptchaVerifierModal
   ref={/* store ref for later use */}
-  firebaseConfig={/* firebase web config */} />
+  firebaseConfig={/* firebase web config */}
+/>
 ```
 
 Pass in the `recaptchaVerifier` ref to `verifyPhoneNumber`. This will automatically show the reCAPTCHA modal when calling `verifyPhoneNumber`.
 
 ```js
 const phoneProvider = new firebase.auth.PhoneAuthProvider();
-const verificationId = await phoneProvider.verifyPhoneNumber(
-  '+0123456789',
-  recaptchaVerifierRef
-);
+const verificationId = await phoneProvider.verifyPhoneNumber('+0123456789', recaptchaVerifierRef);
 ```
 
 You should now receive an SMS message on your phone. Create a text-input field and let the user enter the verification code.
 The `verificationId` and the `verificationCode` can now be used to create a phone auth credential. Use that to sign in to firebase using `signInWithCredential`.
 
 ```js
-const credential = firebase.auth.PhoneAuthProvider.credential(
-  verificationId,
-  verificationCode
-);
+const credential = firebase.auth.PhoneAuthProvider.credential(verificationId, verificationCode);
 const authResult = await firebase.auth().signInWithCredential(credential);
 ```
-
 
 ## Example usage
 
 <SnackInline label='Firebase Phone Auth' dependencies={['expo-firebase-recaptcha', 'firebase', 'react-native-webview']}>
 
 ```js
-import * as React from "react";
-import { Text, View, TextInput, Button, StyleSheet, TouchableOpacity, Platform } from "react-native";
-import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
-import * as firebase from "firebase";
+import * as React from 'react';
+import {
+  Text,
+  View,
+  TextInput,
+  Button,
+  StyleSheet,
+  TouchableOpacity,
+  Platform,
+} from 'react-native';
+import { FirebaseRecaptchaVerifierModal } from 'expo-firebase-recaptcha';
+import * as firebase from 'firebase';
 
 // Initialize Firebase JS SDK
 // https://firebase.google.com/docs/web/setup
@@ -83,16 +85,18 @@ export default function App() {
   const [verificationId, setVerificationId] = React.useState();
   const [verificationCode, setVerificationCode] = React.useState();
   const firebaseConfig = firebase.apps.length ? firebase.app().options : undefined;
-  const [message, showMessage] = React.useState((!firebaseConfig || Platform.OS === 'web')
-    ? { text: "To get started, provide a valid firebase config in App.js and open this snack on an iOS or Android device."}
-    : undefined);
+  const [message, showMessage] = React.useState(
+    !firebaseConfig || Platform.OS === 'web'
+      ? {
+          text:
+            'To get started, provide a valid firebase config in App.js and open this snack on an iOS or Android device.',
+        }
+      : undefined
+  );
 
   return (
     <View style={{ padding: 20, marginTop: 50 }}>
-      <FirebaseRecaptchaVerifierModal
-        ref={recaptchaVerifier}
-        firebaseConfig={firebaseConfig}
-      />
+      <FirebaseRecaptchaVerifierModal ref={recaptchaVerifier} firebaseConfig={firebaseConfig} />
       <Text style={{ marginTop: 20 }}>Enter phone number</Text>
       <TextInput
         style={{ marginVertical: 10, fontSize: 17 }}
@@ -101,7 +105,7 @@ export default function App() {
         autoCompleteType="tel"
         keyboardType="phone-pad"
         textContentType="telephoneNumber"
-        onChangeText={(phoneNumber) => setPhoneNumber(phoneNumber)}
+        onChangeText={phoneNumber => setPhoneNumber(phoneNumber)}
       />
       <Button
         title="Send Verification Code"
@@ -118,10 +122,10 @@ export default function App() {
             );
             setVerificationId(verificationId);
             showMessage({
-              text: "Verification code has been sent to your phone.",
+              text: 'Verification code has been sent to your phone.',
             });
           } catch (err) {
-            showMessage({ text: `Error: ${err.message}`, color: "red" });
+            showMessage({ text: `Error: ${err.message}`, color: 'red' });
           }
         }}
       />
@@ -142,29 +146,38 @@ export default function App() {
               verificationCode
             );
             await firebase.auth().signInWithCredential(credential);
-            showMessage({ text: "Phone authentication successful 👍" });
+            showMessage({ text: 'Phone authentication successful 👍' });
           } catch (err) {
-            showMessage({ text: `Error: ${err.message}`, color: "red" });
+            showMessage({ text: `Error: ${err.message}`, color: 'red' });
           }
         }}
       />
       {message ? (
         <TouchableOpacity
-          style={[StyleSheet.absoluteFill, { backgroundColor: 0xffffffee, justifyContent: "center" }]}
+          style={[
+            StyleSheet.absoluteFill,
+            { backgroundColor: 0xffffffee, justifyContent: 'center' },
+          ]}
           onPress={() => showMessage(undefined)}>
-          <Text style={{color: message.color || "blue", fontSize: 17, textAlign: "center", margin: 20, }}>
+          <Text
+            style={{
+              color: message.color || 'blue',
+              fontSize: 17,
+              textAlign: 'center',
+              margin: 20,
+            }}>
             {message.text}
           </Text>
         </TouchableOpacity>
-      ) : undefined}
+      ) : (
+        undefined
+      )}
     </View>
   );
 }
-
 ```
 
 </SnackInline>
-
 
 Or view the [Full Phone Authentication test snack](https://snack.expo.io/@ijzerenhein/firebase-phone-full-auth-demo).
 
@@ -228,7 +241,7 @@ import {
   FirebaseRecaptcha,
   FirebaseRecaptchaVerifier,
   FirebaseRecaptchaVerifierModal,
-  FirebaseAuthApplicationVerifier
+  FirebaseAuthApplicationVerifier,
 } from 'expo-firebase-recaptcha';
 ```
 
@@ -243,7 +256,6 @@ Modal screen that is automatically shown and displays a reCAPTCHA widget. The re
 - **title (string)** -- Title that is displayed on the top of the modal. The default is "reCAPTCHA".
 - **cancelLabel (string)** -- Label of the cancel button.
 
-
 ### `<FirebaseRecaptcha>`
 
 The reCAPTCHA v3 widget displayed inside a web-view.
@@ -256,7 +268,6 @@ The reCAPTCHA v3 widget displayed inside a web-view.
 - **onError (function)** -- A callback that is invoked when the widget failed to load.
 - **onVerify (function)** -- A callback that is invoked when reCAPTCHA has verified that the user is not a bot. The callback is provided with the reCAPTCHA token string. Example `onVerify={(recaptchaToken: string) => this.setState({recaptchaToken})}`.
 
-
 ### `FirebaseAuthApplicationVerifier`
 
 Interface describing a domain verification and abuse prevention verifier.
@@ -268,7 +279,6 @@ interface FirebaseAuthApplicationVerifier {
 }
 ```
 
-
 ### `FirebaseRecaptchaVerifier`
 
 A helper class implementing the `FirebaseAuthApplicationVerifier` interface, which can be used when creating a customized reCAPTCHA workflow. The class takes a single `string` argument in the constructor which should be a valid reCAPTCHA token.
@@ -279,8 +289,5 @@ A helper class implementing the `FirebaseAuthApplicationVerifier` interface, whi
 const applicationVerifier = new FirebaseRecaptchaVerifier(recaptchaToken);
 
 const phoneProvider = new firebase.auth.PhoneAuthProvider();
-const verificationId = await phoneProvider.verifyPhoneNumber(
-  '+0123456789',
-  applicationVerifier
-);
+const verificationId = await phoneProvider.verifyPhoneNumber('+0123456789', applicationVerifier);
 ```

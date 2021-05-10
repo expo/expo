@@ -10,7 +10,9 @@ interface State {
   orientationLock?: ScreenOrientation.OrientationLock;
 }
 
-export default class ScreenOrientationScreen extends React.Component<object, State> {
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
+export default class ScreenOrientationScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: 'ScreenOrientation',
   };
@@ -101,10 +103,10 @@ export default class ScreenOrientationScreen extends React.Component<object, Sta
     alert(`Orientation.PORTRAIT_DOWN supported: ${JSON.stringify(result)}`);
   };
 
-  getScreenOrientationLockOptions(): Array<{
+  getScreenOrientationLockOptions(): {
     key: string;
     value: ScreenOrientation.OrientationLock;
-  }> {
+  }[] {
     const orientationOptions = [
       ScreenOrientation.OrientationLock.DEFAULT,
       ScreenOrientation.OrientationLock.ALL,

@@ -50,8 +50,6 @@ export function setNotificationHandler(handler: NotificationHandler | null): voi
       handleNotificationEventName,
       async ({ id, notification }) => {
         if (!NotificationsHandlerModule.handleNotificationAsync) {
-          // TODO: Remove eslint-disable once we upgrade to a version that supports ?. notation.
-          // eslint-disable-next-line
           handler.handleError?.(
             id,
             new UnavailabilityError('Notifications', 'handleNotificationAsync')
@@ -62,12 +60,8 @@ export function setNotificationHandler(handler: NotificationHandler | null): voi
         try {
           const behavior = await handler.handleNotification(notification);
           await NotificationsHandlerModule.handleNotificationAsync(id, behavior);
-          // TODO: Remove eslint-disable once we upgrade to a version that supports ?. notation.
-          // eslint-disable-next-line
           handler.handleSuccess?.(id);
         } catch (error) {
-          // TODO: Remove eslint-disable once we upgrade to a version that supports ?. notation.
-          // eslint-disable-next-line
           handler.handleError?.(id, error);
         }
       }

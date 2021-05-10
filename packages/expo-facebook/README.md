@@ -13,7 +13,7 @@ For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-
 
 # Installation in bare React Native projects
 
-For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
+For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/expo/expo/tree/master/packages/react-native-unimodules) before continuing.
 
 ### Add the package to your npm dependencies
 
@@ -24,6 +24,17 @@ expo install expo-facebook
 ### Configure for iOS
 
 Run `npx pod-install` after installing the npm package.
+
+Add `NSUserTrackingUsageDescription` key to your `Info.plist`:
+
+```xml
+<key>NSUserTrackingUsageDescription</key>
+<string>This identifier will be used to deliver personalized ads to you.</string>
+```
+
+Add the required `SKAdNetworkIdentifier` items to your `Info.plist`: [Facebook SKAdNetwork](https://developers.facebook.com/docs/SKAdNetwork).
+
+Finally, create a blank Swift file in your project (we recommend naming it `noop-file.swift`). Learn more: [FBSDK blank Swift file](https://github.com/facebook/react-native-fbsdk/issues/755).
 
 ### Configure for Android
 

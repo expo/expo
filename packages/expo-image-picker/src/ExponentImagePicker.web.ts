@@ -1,11 +1,14 @@
+import { Platform } from '@unimodules/core';
 import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 import { v4 } from 'uuid';
 
 import {
+  ExpandImagePickerResult,
+  ImageInfo,
+  ImagePickerMultipleResult,
   ImagePickerResult,
   MediaTypeOptions,
   OpenFileBrowserOptions,
-  ImagePickerOptions,
 } from './ImagePicker.types';
 
 const MediaTypeInput = {
@@ -22,21 +25,33 @@ export default {
   async launchImageLibraryAsync({
     mediaTypes = MediaTypeOptions.Images,
     allowsMultipleSelection = false,
-  }: ImagePickerOptions): Promise<ImagePickerResult> {
+    base64 = false,
+  }): Promise<ImagePickerResult | ImagePickerMultipleResult> {
+    // SSR guard
+    if (!Platform.isDOMAvailable) {
+      return { cancelled: true };
+    }
     return await openFileBrowserAsync({
       mediaTypes,
       allowsMultipleSelection,
+      base64,
     });
   },
 
   async launchCameraAsync({
     mediaTypes = MediaTypeOptions.Images,
     allowsMultipleSelection = false,
-  }: ImagePickerOptions): Promise<ImagePickerResult> {
+    base64 = false,
+  }): Promise<ImagePickerResult | ImagePickerMultipleResult> {
+    // SSR guard
+    if (!Platform.isDOMAvailable) {
+      return { cancelled: true };
+    }
     return await openFileBrowserAsync({
       mediaTypes,
       allowsMultipleSelection,
       capture: true,
+      base64,
     });
   },
 
@@ -54,10 +69,10 @@ export default {
    * Camera roll permissions don't need to be requested on web, so we always
    * respond with granted.
    */
-  async getCameraRollPermissionsAsync(): Promise<PermissionResponse> {
+  async getMediaLibraryPermissionsAsync(_writeOnly: boolean) {
     return permissionGrantedResponse();
   },
-  async requestCameraRollPermissionsAsync(): Promise<PermissionResponse> {
+  async requestMediaLibraryPermissionsAsync(_writeOnly: boolean): Promise<PermissionResponse> {
     return permissionGrantedResponse();
   },
 };
@@ -71,11 +86,12 @@ function permissionGrantedResponse(): PermissionResponse {
   };
 }
 
-function openFileBrowserAsync({
+function openFileBrowserAsync<T extends OpenFileBrowserOptions>({
   mediaTypes,
   capture = false,
   allowsMultipleSelection = false,
-}: OpenFileBrowserOptions): Promise<ImagePickerResult> {
+  base64,
+}: T): Promise<ExpandImagePickerResult<T>> {
   const mediaTypeFormat = MediaTypeInput[mediaTypes];
 
   const input = document.createElement('input');
@@ -92,52 +108,68 @@ function openFileBrowserAsync({
   document.body.appendChild(input);
 
   return new Promise((resolve, reject) => {
-    input.addEventListener('change', () => {
+    input.addEventListener('change', async () => {
       if (input.files) {
-        const targetFile = input.files[0];
-        const reader = new FileReader();
-        reader.onerror = () => {
-          reject(new Error(`Failed to read the selected media because the operation failed.`));
-        };
-        reader.onload = ({ target }) => {
-          const uri = (target as any).result;
-
-          const returnRaw = () => {
-            resolve({
-              cancelled: false,
-              uri,
-              width: 0,
-              height: 0,
-            });
-          };
-          if (typeof target?.result === 'string') {
-            const image = new Image();
-            image.src = target.result;
-            image.onload = function() {
-              resolve({
-                cancelled: false,
-                uri,
-                width: image.naturalWidth ?? image.width,
-                height: image.naturalHeight ?? image.height,
-              });
-            };
-            image.onerror = () => {
-              returnRaw();
-            };
-          } else {
-            returnRaw();
-          }
-        };
-        // Read in the image file as a binary string.
-        reader.readAsDataURL(targetFile);
-      } else {
-        resolve({ cancelled: true });
+        if (!allowsMultipleSelection) {
+          const img: ImageInfo = await readFile(input.files[0], { base64 });
+          resolve({
+            cancelled: false,
+            ...img,
+          } as ExpandImagePickerResult<T>);
+        } else {
+          const imgs: ImageInfo[] = await Promise.all(
+            Array.from(input.files).map(file => readFile(file, { base64 }))
+          );
+          resolve({
+            cancelled: false,
+            selected: imgs,
+          } as ExpandImagePickerResult<T>);
+        }
       }
-
       document.body.removeChild(input);
     });
 
     const event = new MouseEvent('click');
     input.dispatchEvent(event);
+  });
+}
+
+function readFile(targetFile: Blob, options: { base64: boolean }): Promise<ImageInfo> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => {
+      reject(new Error(`Failed to read the selected media because the operation failed.`));
+    };
+    reader.onload = ({ target }) => {
+      const uri = (target as any).result;
+      const returnRaw = () =>
+        resolve({
+          uri,
+          width: 0,
+          height: 0,
+        });
+
+      if (typeof target?.result === 'string') {
+        const image = new Image();
+        image.src = target.result;
+        image.onload = () =>
+          resolve({
+            uri,
+            width: image.naturalWidth ?? image.width,
+            height: image.naturalHeight ?? image.height,
+            // The blob's result cannot be directly decoded as Base64 without
+            // first removing the Data-URL declaration preceding the
+            // Base64-encoded data. To retrieve only the Base64 encoded string,
+            // first remove data:*/*;base64, from the result.
+            // https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsDataURL
+            ...(options.base64 && { base64: uri.substr(uri.indexOf(',') + 1) }),
+          });
+        image.onerror = () => returnRaw();
+      } else {
+        returnRaw();
+      }
+    };
+
+    reader.readAsDataURL(targetFile);
   });
 }

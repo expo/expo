@@ -3,15 +3,15 @@ title: Up and Running
 sidebar_label: Up and Running
 ---
 
-> This guide assumes that you have Xcode and/or Android Studio installed and working. It also assumes that you want to create a new project. If you have an existing app that you would like to integrate the Expo SDK in an existing app, read the [existing apps guide](/bare/existing-apps/).
+> This guide assumes that you have Xcode and/or Android Studio installed and working. It also assumes that you want to create a new project. If you have an existing app that you would like to integrate the Expo SDK in an existing app, read the [existing apps guide](../bare/existing-apps.md).
 
-To get started with a bare React Native project, run `expo init` and choose one of the bare templates. We'll use the minimum template here.
+Before you get started with a bare React Native project, make sure you set up your environment for [React Native CLI](https://reactnative.dev/docs/environment-setup).
+
+After this, let's get started with a bare project. Run `expo init` and choose one of the bare templates. We'll use the minimum template here.
 
 ```sh
 # If you don't have expo-cli yet, get it
 npm i -g expo-cli
-# If you don't have react-native-cli yet, get it
-npm i -g react-native-cli
 # This is a shortcut to skip the UI for picking the template
 expo init --template bare-minimum
 ```
@@ -20,10 +20,10 @@ Next, let's get the project running. Go into your project directory and run `rea
 
 ## Using react-native-unimodules
 
-Bare template projects come with `react-native-unimodules` installed and configured. This package gives you access to some commonly useful APIs, like `Asset`, `Constants`, `FileSystem`, and `Permissions`. You can import these from `react-native-unimodules` like so:
+Bare template projects come with `react-native-unimodules` installed and configured. This package gives you access to some commonly useful APIs, like `Asset`, `Constants` and `FileSystem`. You can import these from `react-native-unimodules` like so:
 
 ```js
-import { Asset, Constants, FileSystem, Permissions } from 'react-native-unimodules';
+import { Asset, Constants, FileSystem } from 'react-native-unimodules';
 ```
 
 ## Install an Expo SDK package
@@ -72,4 +72,4 @@ You don't have to do anything, just run the project with `npx react-native run-a
 
 ## What now?
 
-Most of the Expo SDKs APIs are available in bare React Native projects and can be installed using a process very similar to the above. You can see which are supported and which aren't in the [Supported Expo SDK Packages](../unimodules-full-list/) section, or just go ahead and browse the `API Reference` section and follow the installation instructions linked there, read the API documentation, and enjoy. Good luck building your app!
+Most of the Expo SDKs APIs are available in bare React Native projects and can be installed using a process very similar to the above. You can see which are supported and which aren't in the [Supported Expo SDK Packages](unimodules-full-list.md) section, or just go ahead and browse the `API Reference` section and follow the installation instructions linked there, read the API documentation, and enjoy. Good luck building your app!

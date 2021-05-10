@@ -1,12 +1,11 @@
 ---
 title: Speech
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-speech'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-speech'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-speech`** provides an API that allows you to utilize Text-to-speech functionality in your app.
 
@@ -18,44 +17,36 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 ## Usage
 
-<SnackInline label='Speech' dependencies={['expo-constants', 'expo-speech']}>
+<SnackInline label='Speech' dependencies={['expo-speech']}>
 
-```js
+```jsx
 import * as React from 'react';
-import { Text, View, StyleSheet, Button } from 'react-native';
-import Constants from 'expo-constants';
+import { View, StyleSheet, Button } from 'react-native';
 import * as Speech from 'expo-speech';
 
-export default class App extends React.Component {
-  speak() {
-    var thingToSay = '0';
+export default function App() {
+  const speak = () => {
+    const thingToSay = '1';
     Speech.speak(thingToSay);
-  }
+  };
 
-  render() {
-    return (
-      <View style={styles.container}>
-        <Button title="Press to hear some words" onPress={this.speak} />
-      </View>
-    );
-  }
+  return (
+    <View style={styles.container}>
+      <Button title="Press to hear some words" onPress={speak} />
+    </View>
+  );
 }
 
+/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    paddingTop: Constants.statusBarHeight,
     backgroundColor: '#ecf0f1',
     padding: 8,
   },
-  paragraph: {
-    margin: 24,
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
 });
+/* @end */
 ```
 
 </SnackInline>
@@ -65,14 +56,6 @@ const styles = StyleSheet.create({
 ```js
 import * as Speech from 'expo-speech';
 ```
-
-<TableOfContentSection title='Constants' contents={['Speech.maxSpeechInputLength']} />
-
-<TableOfContentSection title='Methods' contents={['Speech.speak(text, options)', 'Speech.stop()', 'Speech.pause()', 'Speech.resume()', 'Speech.isSpeakingAsync()', 'Speech.getAvailableVoicesAsync()']} />
-
-<TableOfContentSection title='Enum Types' contents={['Speech.VoiceQuality']} />
-
-<TableOfContentSection title='Error Codes' contents={['ERR_SPEECH_INPUT_LENGTH']} />
 
 ## Constants
 
@@ -106,18 +89,17 @@ Speak out loud the `text` given `options`. Calling this when another text is bei
 
 - [`ERR_SPEECH_INPUT_LENGTH`](#err_speech_input_length)
 
-
 ### `Speech.stop()`
 
 Interrupts current speech and deletes all in queue.
 
 ### `Speech.pause()`
 
-Pauses current speech.
+Pauses current speech. This method is not available on Android.
 
 ### `Speech.resume()`
 
-Resumes speaking previously paused speech or does nothing if there's none.
+Resumes speaking previously paused speech or does nothing if there's none. This method is not available on Android.
 
 ### `Speech.isSpeakingAsync()`
 

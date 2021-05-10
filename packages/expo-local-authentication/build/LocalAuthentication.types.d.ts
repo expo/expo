@@ -9,6 +9,11 @@ export declare enum AuthenticationType {
     FACIAL_RECOGNITION = 2,
     IRIS = 3
 }
+export declare enum SecurityLevel {
+    NONE = 0,
+    SECRET = 1,
+    BIOMETRIC = 2
+}
 export declare type LocalAuthenticationOptions = {
     promptMessage?: string;
     cancelLabel?: string;

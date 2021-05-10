@@ -39,7 +39,7 @@ export type FileSystemDownloadResult = FileSystemHttpResult & {
 };
 
 /**
- * @deprecated Use FileSystemDownloadResult instead.
+ * @deprecated Use `FileSystemDownloadResult` instead.
  */
 export type DownloadResult = FileSystemDownloadResult;
 
@@ -120,6 +120,15 @@ export type ProgressEvent = {
   };
 };
 
+export type FileSystemRequestDirectoryPermissionsResult =
+  | {
+      granted: true;
+      directoryUri: string;
+    }
+  | {
+      granted: false;
+    };
+
 type PlatformMethod = (...args: any[]) => Promise<any>;
 
 export interface ExponentFileSystemModule {
@@ -143,6 +152,10 @@ export interface ExponentFileSystemModule {
   readonly getContentUriAsync?: PlatformMethod;
   readonly getFreeDiskStorageAsync?: PlatformMethod;
   readonly getTotalDiskCapacityAsync?: PlatformMethod;
+  readonly requestDirectoryPermissionsAsync?: PlatformMethod;
+  readonly readSAFDirectoryAsync?: PlatformMethod;
+  readonly makeSAFDirectoryAsync?: PlatformMethod;
+  readonly createSAFFileAsync?: PlatformMethod;
   startObserving?: () => void;
   stopObserving?: () => void;
   addListener: (eventName: string) => void;

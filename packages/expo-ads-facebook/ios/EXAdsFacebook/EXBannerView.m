@@ -48,7 +48,7 @@
                                                     adSize:fbAdSize
                                         rootViewController:rootViewController];
   
-  adView.frame = CGRectMake(0, 20, adView.bounds.size.width, adView.bounds.size.height);
+  adView.frame = CGRectMake(0, 0, adView.bounds.size.width, adView.bounds.size.height);
   adView.delegate = self;
   
   [adView loadAd];

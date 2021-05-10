@@ -32,6 +32,8 @@ import expo.modules.notifications.notifications.triggers.ChannelAwareTrigger;
 import expo.modules.notifications.notifications.triggers.DailyTrigger;
 import expo.modules.notifications.notifications.triggers.DateTrigger;
 import expo.modules.notifications.notifications.triggers.TimeIntervalTrigger;
+import expo.modules.notifications.notifications.triggers.WeeklyTrigger;
+import expo.modules.notifications.notifications.triggers.YearlyTrigger;
 
 public class NotificationSerializer {
   public static Bundle toBundle(NotificationResponse response) {
@@ -171,6 +173,17 @@ public class NotificationSerializer {
       bundle.putString("type", "daily");
       bundle.putInt("hour", ((DailyTrigger) trigger).getHour());
       bundle.putInt("minute", ((DailyTrigger) trigger).getMinute());
+    } else if (trigger instanceof WeeklyTrigger) {
+      bundle.putString("type", "weekly");
+      bundle.putInt("weekday", ((WeeklyTrigger) trigger).getWeekday());
+      bundle.putInt("hour", ((WeeklyTrigger) trigger).getHour());
+      bundle.putInt("minute", ((WeeklyTrigger) trigger).getMinute());
+    } else if (trigger instanceof YearlyTrigger) {
+      bundle.putString("type", "yearly");
+      bundle.putInt("day", ((YearlyTrigger) trigger).getDay());
+      bundle.putInt("month", ((YearlyTrigger) trigger).getMonth());
+      bundle.putInt("hour", ((YearlyTrigger) trigger).getHour());
+      bundle.putInt("minute", ((YearlyTrigger) trigger).getMinute());
     } else {
       bundle.putString("type", "unknown");
     }
@@ -179,43 +192,6 @@ public class NotificationSerializer {
     return bundle;
   }
 
-  public static Bundle toBundle(@NonNull NotificationCategory category) {
-    Bundle serializedCategory = new Bundle();
-    serializedCategory.putString("identifier", category.getIdentifier());
-    serializedCategory.putParcelableArrayList("actions", toBundleList(category.getActions()));
-    // Android doesn't support any category options
-    serializedCategory.putBundle("options", new Bundle());
-    return serializedCategory;
-  }
-
-  public static ArrayList<Bundle> toBundleList(List<NotificationAction> actions) {
-    ArrayList<Bundle> result = new ArrayList<Bundle>();
-    for (NotificationAction action : actions) {
-      result.add(toBundle(action));
-    }
-    return result;
-  }
-
-  public static Bundle toBundle(NotificationAction action) {
-    // First we bundle up the options
-    Bundle serializedActionOptions = new Bundle();
-    serializedActionOptions.putBoolean("opensAppToForeground", action.opensAppToForeground());
-
-    Bundle serializedAction = new Bundle();
-    serializedAction.putString("identifier", action.getIdentifier());
-    serializedAction.putString("buttonTitle", action.getTitle());
-    serializedAction.putBundle("options", serializedActionOptions);
-
-    if (action instanceof TextInputNotificationAction) {
-      Bundle serializedTextInputOptions = new Bundle();
-      serializedTextInputOptions.putString("submitButtonTitle", ((TextInputNotificationAction) action).getSubmitButtonTitle());
-      serializedTextInputOptions.putString("placeholder", ((TextInputNotificationAction) action).getPlaceholder());
-      serializedAction.putBundle("textInput", serializedTextInputOptions);
-    }
-
-    return serializedAction;
-  }
-  
   @Nullable
   private static String getChannelId(NotificationTrigger trigger) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

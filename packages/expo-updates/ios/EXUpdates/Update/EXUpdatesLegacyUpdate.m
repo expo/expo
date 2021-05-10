@@ -8,14 +8,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString * const kEXUpdatesExpoAssetBaseUrl = @"https://d1wp6m56sqw74a.cloudfront.net/~assets/";
-static NSString * const kEXUpdatesExpoIoDomain = @"expo.io";
-static NSString * const kEXUpdatesExpHostDomain = @"exp.host";
-static NSString * const kEXUpdatesExpoTestDomain = @"expo.test";
+static NSString * const EXUpdatesExpoAssetBaseUrl = @"https://d1wp6m56sqw74a.cloudfront.net/~assets/";
+static NSString * const EXUpdatesExpoIoDomain = @"expo.io";
+static NSString * const EXUpdatesExpHostDomain = @"exp.host";
+static NSString * const EXUpdatesExpoTestDomain = @"expo.test";
 
 @implementation EXUpdatesLegacyUpdate
 
-+ (EXUpdatesUpdate *)updateWithLegacyManifest:(NSDictionary *)manifest
++ (EXUpdatesUpdate *)updateWithLegacyManifest:(EXUpdatesLegacyRawManifest *)manifest
                                        config:(EXUpdatesConfig *)config
                                      database:(EXUpdatesDatabase *)database
 {
@@ -23,13 +23,31 @@ static NSString * const kEXUpdatesExpoTestDomain = @"expo.test";
                                                                   config:config
                                                                 database:database];
 
-  id updateId = manifest[@"releaseId"];
-  id commitTimeString = manifest[@"commitTime"];
-  id bundleUrlString = manifest[@"bundleUrl"];
-  id assets = manifest[@"bundledAssets"] ?: @[];
+  if (manifest.isUsingDeveloperTool) {
+    // XDL does not set a releaseId or commitTime for development manifests.
+    // we do not need these so we just stub them out
+    update.updateId = [NSUUID UUID];
+    update.commitTime = [NSDate date];
+  } else {
+    NSString *updateId = manifest.releaseID;
+    update.updateId = [[NSUUID alloc] initWithUUIDString:(NSString *)updateId];
+    NSAssert(update.updateId, @"update ID should be a valid UUID");
 
-  id sdkVersion = manifest[@"sdkVersion"];
-  id runtimeVersion = manifest[@"runtimeVersion"];
+    NSString *commitTimeString = manifest.commitTime;
+    update.commitTime = [RCTConvert NSDate:commitTimeString];
+  }
+
+  if (manifest.isDevelopmentMode) {
+    update.isDevelopmentMode = YES;
+    update.status = EXUpdatesUpdateStatusDevelopment;
+  } else {
+    update.status = EXUpdatesUpdateStatusPending;
+  }
+
+  NSString *bundleUrlString = manifest.bundleUrl;
+  NSArray *assets = manifest.bundledAssets ?: @[];
+
+  id runtimeVersion = manifest.runtimeVersion;
   if (runtimeVersion && [runtimeVersion isKindOfClass:[NSDictionary class]]) {
     id runtimeVersionIos = ((NSDictionary *)runtimeVersion)[@"ios"];
     NSAssert([runtimeVersionIos isKindOfClass:[NSString class]], @"runtimeVersion['ios'] should be a string");
@@ -37,33 +55,26 @@ static NSString * const kEXUpdatesExpoTestDomain = @"expo.test";
   } else if (runtimeVersion && [runtimeVersion isKindOfClass:[NSString class]]) {
     update.runtimeVersion = (NSString *)runtimeVersion;
   } else {
-    NSAssert([sdkVersion isKindOfClass:[NSString class]], @"sdkVersion should be a string");
-    update.runtimeVersion = (NSString *)sdkVersion;
+    NSString *sdkVersion = manifest.sdkVersion;
+    NSAssert(sdkVersion != nil, @"sdkVersion should not be null");
+    update.runtimeVersion = sdkVersion;
   }
 
-  NSAssert([updateId isKindOfClass:[NSString class]], @"update ID should be a string");
-  NSAssert([commitTimeString isKindOfClass:[NSString class]], @"commitTime should be a string");
-  NSAssert([bundleUrlString isKindOfClass:[NSString class]], @"bundleUrl should be a string");
-  NSAssert([assets isKindOfClass:[NSArray class]], @"assets should be a nonnull array");
-
-  NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:(NSString *)updateId];
-  NSAssert(uuid, @"update ID should be a valid UUID");
   NSURL *bundleUrl = [NSURL URLWithString:bundleUrlString];
   NSAssert(bundleUrl, @"bundleUrl should be a valid URL");
 
   NSMutableArray<EXUpdatesAsset *> *processedAssets = [NSMutableArray new];
 
-  NSDate *commitTime = [RCTConvert NSDate:commitTimeString];
-  NSString *bundleKey = [NSString stringWithFormat:@"bundle-%f", commitTime.timeIntervalSince1970];
-  EXUpdatesAsset *jsBundleAsset = [[EXUpdatesAsset alloc] initWithKey:bundleKey type:kEXUpdatesEmbeddedBundleFileType];
+  NSString *bundleKey = manifest.bundleKey ?: nil;
+  EXUpdatesAsset *jsBundleAsset = [[EXUpdatesAsset alloc] initWithKey:bundleKey type:EXUpdatesEmbeddedBundleFileType];
   jsBundleAsset.url = bundleUrl;
   jsBundleAsset.isLaunchAsset = YES;
-  jsBundleAsset.mainBundleFilename = kEXUpdatesEmbeddedBundleFilename;
+  jsBundleAsset.mainBundleFilename = EXUpdatesEmbeddedBundleFilename;
   [processedAssets addObject:jsBundleAsset];
   
   NSURL *bundledAssetBaseUrl = [[self class] bundledAssetBaseUrlWithManifest:manifest config:config];
 
-  for (NSString *bundledAsset in (NSArray *)assets) {
+  for (NSString *bundledAsset in assets) {
     NSAssert([bundledAsset isKindOfClass:[NSString class]], @"bundledAssets must be an array of strings");
 
     NSRange extensionStartRange = [bundledAsset rangeOfString:@"." options:NSBackwardsSearch];
@@ -84,7 +95,7 @@ static NSString * const kEXUpdatesExpoTestDomain = @"expo.test";
 
     NSURL *url = [bundledAssetBaseUrl URLByAppendingPathComponent:hash];
 
-    NSString *key = [NSString stringWithFormat:@"%@.%@", hash, type];
+    NSString *key = hash;
     EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithKey:key type:(NSString *)type];
     asset.url = url;
     asset.mainBundleFilename = filename;
@@ -92,10 +103,7 @@ static NSString * const kEXUpdatesExpoTestDomain = @"expo.test";
     [processedAssets addObject:asset];
   }
 
-  update.updateId = uuid;
-  update.commitTime = commitTime;
-  update.metadata = manifest;
-  update.status = EXUpdatesUpdateStatusPending;
+  update.manifest = manifest.rawManifestJSON;
   update.keep = YES;
   update.bundleUrl = bundleUrl;
   update.assets = processedAssets;
@@ -103,18 +111,20 @@ static NSString * const kEXUpdatesExpoTestDomain = @"expo.test";
   return update;
 }
 
-+ (NSURL *)bundledAssetBaseUrlWithManifest:(NSDictionary *)manifest config:(EXUpdatesConfig *)config
++ (NSURL *)bundledAssetBaseUrlWithManifest:(EXUpdatesLegacyRawManifest *)manifest config:(EXUpdatesConfig *)config
 {
   NSURL *manifestUrl = config.updateUrl;
   NSString *host = manifestUrl.host;
   if (!host ||
-      [host containsString:kEXUpdatesExpoIoDomain] ||
-      [host containsString:kEXUpdatesExpHostDomain] ||
-      [host containsString:kEXUpdatesExpoTestDomain]) {
-    return [NSURL URLWithString:kEXUpdatesExpoAssetBaseUrl];
+      [host containsString:EXUpdatesExpoIoDomain] ||
+      [host containsString:EXUpdatesExpHostDomain] ||
+      [host containsString:EXUpdatesExpoTestDomain]) {
+    return [NSURL URLWithString:EXUpdatesExpoAssetBaseUrl];
   } else {
-    NSString *assetsPath = manifest[@"assetUrlOverride"] ?: @"assets";
-    return [manifestUrl.URLByDeletingLastPathComponent URLByAppendingPathComponent:assetsPath];
+    NSString *assetsPathOrUrl = manifest.assetUrlOverride ?: @"assets";
+    // assetUrlOverride may be an absolute or relative URL
+    // if relative, we should resolve with respect to the manifest URL
+    return [NSURL URLWithString:assetsPathOrUrl relativeToURL:manifestUrl].absoluteURL.standardizedURL;
   }
 }
 

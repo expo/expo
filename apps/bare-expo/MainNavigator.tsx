@@ -23,7 +23,7 @@ type NativeComponentListExportsType = null | {
   };
 };
 
-function optionalRequire(requirer: () => { default: React.ComponentType }) {
+export function optionalRequire(requirer: () => { default: React.ComponentType }) {
   try {
     return requirer().default;
   } catch (e) {
@@ -44,6 +44,9 @@ const NativeComponentList: NativeComponentListExportsType = optionalRequire(() =
 const Redirect = optionalRequire(() =>
   require('native-component-list/src/screens/RedirectScreen')
 ) as any;
+const Search = optionalRequire(() =>
+  require('native-component-list/src/screens/SearchScreen')
+) as any;
 
 let nclLinking: Record<string, any> = {};
 if (NativeComponentList) {
@@ -57,7 +60,7 @@ const Tab = createBottomTabNavigator();
 const Switch = createStackNavigator();
 
 const linking = {
-  prefixes: [Platform.select({ web: Linking.makeUrl('/'), default: 'bareexpo://' })],
+  prefixes: [Platform.select({ web: Linking.createURL('/', { scheme: 'bareexpo' }), default: 'bareexpo://' })],
   config: {
     screens: {
       main: {
@@ -105,6 +108,7 @@ export default () => (
   <NavigationContainer linking={linking}>
     <Switch.Navigator headerMode="none" initialRouteName="main">
       {Redirect && <Switch.Screen name="redirect" component={Redirect} />}
+      {Search && <Switch.Screen name="search" component={Search} />}
       <Switch.Screen name="main" component={TabNavigator} />
     </Switch.Navigator>
   </NavigationContainer>

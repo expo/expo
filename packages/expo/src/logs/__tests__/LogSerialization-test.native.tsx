@@ -112,6 +112,19 @@ it(`serializes React components (refs)`, async () => {
   expect(result.includesStack).toBeFalsy();
 });
 
+it(`truncates strings that are too long`, async () => {
+  const result = await LogSerialization.serializeLogDataAsync(['-'.repeat(10_001)], 'info');
+  expect(result.body[0]).toMatch(/truncated to the first [0-9]+ characters/);
+});
+
+it(`truncates the serialized output, if it's too long`, async () => {
+  const result = await LogSerialization.serializeLogDataAsync(
+    [Array(1000).fill('Hello world')],
+    'info'
+  );
+  expect(result.body[0]).toMatch(/truncated to the first [0-9]+ characters/);
+});
+
 describe('with stack trace support in Expo CLI', () => {
   it(`includes a symbolicated stack trace when logging an error`, async () => {
     const mockError = _getMockError('Test error');

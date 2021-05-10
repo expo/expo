@@ -79,7 +79,7 @@ Note that on Android performing text selection in input can change app's activit
 
 ## Props
 
-Inherits [View Props](../view/#props).
+Inherits [View Props](view.md#props).
 
 ### `allowFontScaling`
 
@@ -307,7 +307,7 @@ Padding between the inline image, if any, and the text input itself.
 
 ### `inputAccessoryViewID`
 
-An optional identifier which links a custom [InputAccessoryView](../inputaccessoryview/) to this text input. The InputAccessoryView is rendered above the keyboard when this text input is focused.
+An optional identifier which links a custom [InputAccessoryView](inputaccessoryview.md) to this text input. The InputAccessoryView is rendered above the keyboard when this text input is focused.
 
 | Type   | Required | Platform |
 | ------ | -------- | -------- |
@@ -771,7 +771,7 @@ see [Issue#7070](https://github.com/facebook/react-native/issues/7070) for more 
 
 | Type                  | Required |
 | --------------------- | -------- |
-| [Text](../text/#style) | No       |
+| [Text](text.md#style) | No       |
 
 ---
 

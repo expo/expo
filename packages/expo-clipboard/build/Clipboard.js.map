@@ -1,0 +1,1 @@
+{"version":3,"file":"Clipboard.js","sourceRoot":"","sources":["../src/Clipboard.ts"],"names":[],"mappings":"AAAA,OAAO,aAAa,MAAM,iBAAiB,CAAC;AAC5C,eAAe,aAAa,CAAC","sourcesContent":["import ExpoClipboard from './ExpoClipboard';\nexport default ExpoClipboard;\n"]}

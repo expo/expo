@@ -8,6 +8,7 @@ We're going to create our own custom button using the `TouchableOpacity` compone
 
 <SnackInline label="Simple button">
 
+<!-- prettier-ignore -->
 ```js
 import React from 'react';
 import { Image, StyleSheet, Text, /* @info Add the TouchableOpacity component to your list of imports */ TouchableOpacity,/* @end */ View } from 'react-native';
@@ -66,6 +67,7 @@ We can make our button bigger by adding some `padding` to our `TouchableOpacity`
 
 <SnackInline label="Simple button">
 
+<!-- prettier-ignore -->
 ```js
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -123,4 +125,4 @@ const styles = StyleSheet.create({
 
 > 📜 Yikes, these code snippets are getting long. For the rest of the tutorial we'll show only relevant code here, and you can click through to Snack to see the full code.
 
-- We have a button! We can now make that button do what we want it to do: open an "image picker" - a screen with a gallery of images on your device. [Continue to the next section](../../tutorial/image-picker/).
+- We have a button! We can now make that button do what we want it to do: open an "image picker" - a screen with a gallery of images on your device. [Continue to the next section](../tutorial/image-picker.md).

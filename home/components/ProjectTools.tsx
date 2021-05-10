@@ -110,7 +110,7 @@ function EnabledProjectTools({ pollForUpdates }: Props) {
   return (
     <View>
       {FeatureFlags.ENABLE_QR_CODE_BUTTON && (
-        <QRCodeButton last={!FeatureFlags.ENABLE_CLIPBOARD_BUTTON} />
+        <QRCodeButton last margins={!FeatureFlags.ENABLE_CLIPBOARD_BUTTON} />
       )}
       {FeatureFlags.ENABLE_CLIPBOARD_BUTTON && (
         <OpenFromClipboardButton

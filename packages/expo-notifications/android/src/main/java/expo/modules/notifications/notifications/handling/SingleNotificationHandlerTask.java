@@ -3,7 +3,6 @@ package expo.modules.notifications.notifications.handling;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.ResultReceiver;
 
 import org.unimodules.core.ModuleRegistry;
@@ -13,17 +12,12 @@ import org.unimodules.core.interfaces.services.EventEmitter;
 import expo.modules.notifications.notifications.NotificationSerializer;
 import expo.modules.notifications.notifications.model.Notification;
 import expo.modules.notifications.notifications.model.NotificationBehavior;
-import expo.modules.notifications.notifications.service.NotificationsHelper;
+import expo.modules.notifications.service.NotificationsService;
 
 /**
  * A "task" responsible for managing response to a single notification.
  */
 /* package */ class SingleNotificationHandlerTask {
-  /**
-   * {@link Handler} on which lifecycle events are executed.
-   */
-  private final static Handler HANDLER = new Handler(Looper.getMainLooper());
-
   /**
    * Name of the event asking the delegate for behavior.
    */
@@ -39,20 +33,20 @@ import expo.modules.notifications.notifications.service.NotificationsHelper;
    */
   private final static int SECONDS_TO_TIMEOUT = 3;
 
-  private Context mContext;
+  private Handler mHandler;
   private EventEmitter mEventEmitter;
   private Notification mNotification;
   private NotificationBehavior mBehavior;
-  private NotificationsHelper mNotificationsHelper;
+  private Context mContext;
   private NotificationsHandler mDelegate;
 
   private Runnable mTimeoutRunnable = SingleNotificationHandlerTask.this::handleTimeout;
 
-  /* package */ SingleNotificationHandlerTask(Context context, ModuleRegistry moduleRegistry, Notification notification, NotificationsHelper notificationsHelper, NotificationsHandler delegate) {
+  /* package */ SingleNotificationHandlerTask(Context context, Handler handler, ModuleRegistry moduleRegistry, Notification notification, NotificationsHandler delegate) {
     mContext = context;
+    mHandler = handler;
     mEventEmitter = moduleRegistry.getModule(EventEmitter.class);
     mNotification = notification;
-    mNotificationsHelper = notificationsHelper;
     mDelegate = delegate;
   }
 
@@ -73,7 +67,7 @@ import expo.modules.notifications.notifications.service.NotificationsHelper;
     eventBody.putBundle("notification", NotificationSerializer.toBundle(mNotification));
     mEventEmitter.emit(HANDLE_NOTIFICATION_EVENT_NAME, eventBody);
 
-    HANDLER.postDelayed(mTimeoutRunnable, SECONDS_TO_TIMEOUT * 1000);
+    mHandler.postDelayed(mTimeoutRunnable, SECONDS_TO_TIMEOUT * 1000);
   }
 
   /**
@@ -92,23 +86,17 @@ import expo.modules.notifications.notifications.service.NotificationsHelper;
    */
   /* package */ void handleResponse(NotificationBehavior behavior, final Promise promise) {
     mBehavior = behavior;
-    if (!behavior.shouldShowAlert()) {
-      promise.resolve(null);
-      finish();
-      return;
-    }
-
-    HANDLER.post(new Runnable() {
+    mHandler.post(new Runnable() {
       @Override
       public void run() {
-        mNotificationsHelper.presentNotification(mNotification, mBehavior, new ResultReceiver(HANDLER) {
+        NotificationsService.Companion.present(mContext, mNotification, mBehavior, new ResultReceiver(mHandler) {
           @Override
           protected void onReceiveResult(int resultCode, Bundle resultData) {
             super.onReceiveResult(resultCode, resultData);
-            if (resultCode == NotificationsHelper.SUCCESS_CODE) {
+            if (resultCode == NotificationsService.SUCCESS_CODE) {
               promise.resolve(null);
             } else {
-              Exception e = (Exception) resultData.getSerializable(NotificationsHelper.EXCEPTION_KEY);
+              Exception e = (Exception) resultData.getSerializable(NotificationsService.EXCEPTION_KEY);
               promise.reject("ERR_NOTIFICATION_PRESENTATION_FAILED", "Notification presentation failed.", e);
             }
           }
@@ -133,11 +121,11 @@ import expo.modules.notifications.notifications.service.NotificationsHelper;
   }
 
   /**
-   * Callback called when the task fulfills its responsibility. Clears up {@link #HANDLER}
+   * Callback called when the task fulfills its responsibility. Clears up {@link #mHandler}
    * and informs {@link #mDelegate} of the task's state.
    */
   private void finish() {
-    HANDLER.removeCallbacks(mTimeoutRunnable);
+    mHandler.removeCallbacks(mTimeoutRunnable);
     mDelegate.onTaskFinished(this);
   }
 }

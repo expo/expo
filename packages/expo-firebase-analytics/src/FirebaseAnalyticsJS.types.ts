@@ -5,7 +5,7 @@ export interface FirebaseAnalyticsJSConfig {
    * **(Required)** Measurement-Id as found in the web Firebase-config.
    * The format is G-XXXXXXXXXX.
    */
-  measurementId: string;
+  measurementId?: string;
 }
 
 export interface FirebaseAnalyticsJSOptions {

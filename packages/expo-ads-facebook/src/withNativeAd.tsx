@@ -223,7 +223,7 @@ type NativeAdViewProps = {
 } & React.ComponentProps<typeof View>;
 
 type NativeAdView = React.Component<NativeAdViewProps>;
-
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- the type and variable share a name
 const NativeAdView = requireNativeViewManager('CTKNativeAd');
 
 // React contexts for ad views that need to register with the ad container

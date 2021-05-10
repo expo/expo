@@ -14,9 +14,8 @@ import { DiscoveryDocument } from './Discovery';
 import { AuthError } from './Errors';
 import * as PKCE from './PKCE';
 import * as QueryParams from './QueryParams';
-import { getSessionUrlProvider } from './SessionUrlProvider';
-
-const sessionUrlProvider = getSessionUrlProvider();
+import sessionUrlProvider from './SessionUrlProvider';
+import { TokenResponse } from './TokenRequest';
 
 let _authLock: boolean = false;
 
@@ -31,7 +30,7 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
   /**
    * Used for protection against [Cross-Site Request Forgery](https://tools.ietf.org/html/rfc6749#section-10.12).
    */
-  public state: Promise<string> | string;
+  public state: string;
   public url: string | null = null;
   public codeVerifier?: string;
   public codeChallenge?: string;
@@ -42,7 +41,7 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
   readonly usePKCE?: boolean;
   readonly codeChallengeMethod: CodeChallengeMethod;
   readonly redirectUri: string;
-  readonly scopes: string[];
+  readonly scopes?: string[];
   readonly clientSecret?: string;
   readonly prompt?: Prompt;
 
@@ -53,7 +52,7 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
     this.scopes = request.scopes;
     this.clientSecret = request.clientSecret;
     this.prompt = request.prompt;
-    this.state = request.state ?? PKCE.generateRandomAsync(10);
+    this.state = request.state ?? PKCE.generateRandom(10);
     this.extraParams = request.extraParams ?? {};
     this.codeChallengeMethod = request.codeChallengeMethod ?? CodeChallengeMethod.S256;
     // PKCE defaults to true
@@ -106,7 +105,7 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
       codeChallenge: this.codeChallenge,
       codeChallengeMethod: this.codeChallengeMethod,
       prompt: this.prompt,
-      state: await this.getStateAsync(),
+      state: this.state,
       extraParams: this.extraParams,
       usePKCE: this.usePKCE,
     };
@@ -120,7 +119,7 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
    */
   async promptAsync(
     discovery: AuthDiscoveryDocument,
-    { url, ...options }: AuthRequestPromptOptions = {}
+    { url, proxyOptions, ...options }: AuthRequestPromptOptions = {}
   ): Promise<AuthSessionResult> {
     if (!url) {
       if (!this.url) {
@@ -143,7 +142,7 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
     let startUrl: string = url!;
     let returnUrl: string = this.redirectUri;
     if (options.useProxy) {
-      returnUrl = sessionUrlProvider.getDefaultReturnUrl();
+      returnUrl = sessionUrlProvider.getDefaultReturnUrl(proxyOptions?.path, proxyOptions);
       startUrl = sessionUrlProvider.getStartUrl(url, returnUrl);
     }
     // Prevent multiple sessions from running at the same time, WebBrowser doesn't
@@ -185,6 +184,7 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
     const { state, error = errorCode } = params;
 
     let parsedError: AuthError | null = null;
+    let authentication: TokenResponse | null = null;
     if (state !== this.state) {
       // This is a non-standard error
       parsedError = new AuthError({
@@ -195,12 +195,17 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
     } else if (error) {
       parsedError = new AuthError({ error, ...params });
     }
+    if (params.access_token) {
+      authentication = TokenResponse.fromQueryParams(params);
+    }
 
     return {
       type: parsedError ? 'error' : 'success',
       error: parsedError,
       url,
       params,
+      authentication,
+
       // Return errorCode for legacy
       errorCode,
     };
@@ -247,7 +252,7 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
     params.response_type = request.responseType!;
     params.state = request.state;
 
-    if (request.scopes.length) {
+    if (request.scopes?.length) {
       params.scope = request.scopes.join(' ');
     }
 
@@ -255,12 +260,6 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
     // Store the URL for later
     this.url = `${discovery.authorizationEndpoint}?${query}`;
     return this.url;
-  }
-
-  private async getStateAsync(): Promise<string> {
-    // Resolve any pending state.
-    if (this.state instanceof Promise) this.state = await this.state;
-    return this.state;
   }
 
   private async ensureCodeIsSetupAsync(): Promise<void> {

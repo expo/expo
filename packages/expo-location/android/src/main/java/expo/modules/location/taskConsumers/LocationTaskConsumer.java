@@ -159,6 +159,10 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
     return true;
   }
 
+  public static boolean shouldUseForegroundService(Map<String, Object> options) {
+    return options.containsKey(FOREGROUND_SERVICE_KEY);
+  }
+
   //region private
 
   private void startLocationUpdates() {
@@ -199,7 +203,7 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
 
     ReadableArguments options = new MapArguments(mTask.getOptions());
     final Context context = getContext();
-    boolean useForegroundService = options.containsKey(FOREGROUND_SERVICE_KEY);
+    boolean useForegroundService = shouldUseForegroundService(mTask.getOptions());
 
     if (context == null) {
       Log.w(TAG, "Context not found when trying to start foreground service.");

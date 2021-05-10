@@ -13,7 +13,7 @@ For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-
 
 # Installation in bare React Native projects
 
-For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
+For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/expo/expo/tree/master/packages/react-native-unimodules) before continuing.
 
 ### Add the package to your npm dependencies
 
@@ -28,6 +28,31 @@ Run `npx pod-install` after installing the npm package.
 ### Configure for Android
 
 No additional set up necessary.
+
+### Plugin
+
+In order to enable Apple iCloud storage in managed EAS builds, you'll need to define the `appleTeamId` property in the config plugin:
+
+`app.json`
+
+```json
+{
+  "ios": {
+    "usesIcloudStorage": true,
+    "bundleIdentifier": "com.yourname.yourapp"
+  },
+  "plugins": [
+    [
+      "expo-document-picker",
+      {
+        "appleTeamId": "YOUR_TEAM_ID"
+      }
+    ]
+  ]
+}
+```
+
+> Running `expo eject` will generate a the native project locally with the applied changes in your iOS Entitlements file.
 
 # Contributing
 

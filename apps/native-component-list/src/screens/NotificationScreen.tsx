@@ -1,6 +1,5 @@
 import { Subscription } from '@unimodules/core';
 import * as Notifications from 'expo-notifications';
-import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { Alert, Platform, ScrollView } from 'react-native';
 
@@ -10,7 +9,9 @@ import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
 
 export default class NotificationScreen extends React.Component<
-  object,
+  // See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  {},
   {
     lastNotifications?: Notifications.Notification;
   }
@@ -22,7 +23,9 @@ export default class NotificationScreen extends React.Component<
   private _onReceivedListener: Subscription | undefined;
   private _onResponseReceivedListener: Subscription | undefined;
 
-  constructor(props: object) {
+  // See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  constructor(props: {}) {
     super(props);
     this.state = {};
   }
@@ -35,6 +38,33 @@ export default class NotificationScreen extends React.Component<
       this._onResponseReceivedListener = Notifications.addNotificationResponseReceivedListener(
         this._handelNotificationResponseReceived
       );
+      // Using the same category as in `registerForPushNotificationsAsync`
+      Notifications.setNotificationCategoryAsync('welcome', [
+        {
+          buttonTitle: `Don't open app`,
+          identifier: 'first-button',
+          options: {
+            opensAppToForeground: false,
+          },
+        },
+        {
+          buttonTitle: 'Respond with text',
+          identifier: 'second-button-with-text',
+          textInput: {
+            submitButtonTitle: 'Submit button',
+            placeholder: 'Placeholder text',
+          },
+        },
+        {
+          buttonTitle: 'Open app',
+          identifier: 'third-button',
+          options: {
+            opensAppToForeground: true,
+          },
+        },
+      ])
+        .then(category => console.log('Notification category set', category))
+        .catch(error => console.warn('Could not have set notification category', error));
     }
   }
 
@@ -44,9 +74,8 @@ export default class NotificationScreen extends React.Component<
   }
 
   render() {
-    console.log(this.state);
     return (
-      <ScrollView style={{ padding: 10 }}>
+      <ScrollView contentContainerStyle={{ padding: 10, paddingBottom: 40 }}>
         <HeadingText>Local Notifications</HeadingText>
         <ListButton
           onPress={this._LEGACY_presentLocalNotificationAsync}
@@ -93,6 +122,41 @@ export default class NotificationScreen extends React.Component<
             {JSON.stringify(this.state.lastNotifications, null, 2)}
           </MonoText>
         )}
+
+        <HeadingText>Notification Permissions</HeadingText>
+        <ListButton onPress={this.getPermissionsAsync} title="Get permissions" />
+        <ListButton onPress={this.requestPermissionsAsync} title="Request permissions" />
+
+        <HeadingText>Notification triggers debugging</HeadingText>
+        <ListButton
+          onPress={() =>
+            Notifications.getNextTriggerDateAsync({ seconds: 10 }).then(timestamp =>
+              alert(new Date(timestamp!))
+            )
+          }
+          title="Get next date for time interval + 10 seconds"
+        />
+        <ListButton
+          onPress={() =>
+            Notifications.getNextTriggerDateAsync({
+              hour: 9,
+              minute: 0,
+              repeats: true,
+            }).then(timestamp => alert(new Date(timestamp!)))
+          }
+          title="Get next date for 9 AM"
+        />
+        <ListButton
+          onPress={() =>
+            Notifications.getNextTriggerDateAsync({
+              hour: 9,
+              minute: 0,
+              weekday: 1,
+              repeats: true,
+            }).then(timestamp => alert(new Date(timestamp!)))
+          }
+          title="Get next date for Sunday, 9 AM"
+        />
       </ScrollView>
     );
   }
@@ -114,10 +178,21 @@ export default class NotificationScreen extends React.Component<
     setTimeout(() => Alert.alert('You clicked on the notification 🥇'), 1000);
   };
 
+  private getPermissionsAsync = async () => {
+    const permission = await Notifications.getPermissionsAsync();
+    console.log('Get permission: ', permission);
+    alert(`Status: ${permission.status}`);
+  };
+
+  private requestPermissionsAsync = async () => {
+    const permission = await Notifications.requestPermissionsAsync();
+    alert(`Status: ${permission.status}`);
+  };
+
   _obtainUserFacingNotifPermissionsAsync = async () => {
-    let permission = await Permissions.getAsync(Permissions.USER_FACING_NOTIFICATIONS);
+    let permission = await Notifications.getPermissionsAsync();
     if (permission.status !== 'granted') {
-      permission = await Permissions.askAsync(Permissions.USER_FACING_NOTIFICATIONS);
+      permission = await Notifications.requestPermissionsAsync();
       if (permission.status !== 'granted') {
         Alert.alert(`We don't have permission to present notifications.`);
       }
@@ -125,10 +200,11 @@ export default class NotificationScreen extends React.Component<
     return permission;
   };
 
+  // This is the same thing as user-facing notifications in expo-notifications
   _obtainRemoteNotifPermissionsAsync = async () => {
-    let permission = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+    let permission = await Notifications.getPermissionsAsync();
     if (permission.status !== 'granted') {
-      permission = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      permission = await Notifications.requestPermissionsAsync();
       if (permission.status !== 'granted') {
         Alert.alert(`We don't have permission to receive remote notifications.`);
       }

@@ -1,6 +1,6 @@
 import qs from 'query-string';
 
-import { MailComposerOptions, MailComposerResult } from './MailComposer.types';
+import { MailComposerOptions, MailComposerResult, MailComposerStatus } from './MailComposer.types';
 
 function removeNullishValues(obj) {
   for (const propName in obj) {
@@ -39,7 +39,7 @@ export default {
 
     window.open(mailto);
 
-    return { status: 'undetermined' };
+    return { status: MailComposerStatus.UNDETERMINED };
   },
   async isAvailableAsync(): Promise<boolean> {
     return true;

@@ -6,9 +6,48 @@
 
 ### 🎉 New features
 
-- Easier to follow installation instructions by moving them to the Expo documentation ([#9145](https://github.com/expo/expo/pull/9145)).
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Migrated camera's interface from `unimodules-camera-interface` to `expo-modules-core`.
+
+## 0.13.3 — 2021-04-13
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.2 — 2021-04-09
+
+### 🛠 Breaking changes
+
+- Removed exported `Permissions` object and removed `expo-permissions` from dependencies. ([#12405](https://github.com/unimodules/react-native-unimodules/pull/12405) by [@bbarthec](https://github.com/bbarthec))
+  > `expo-permissions` is now deprecated — the functionality has been moved to other expo packages that directly use these permissions (e.g. `expo-location`, `expo-camera`).
+
+### 🎉 New features
+
+- Added `tests` field to options in `use_unimodules` ruby script. ([#11972](https://github.com/expo/expo/pull/11972) by [@esamelson](https://github.com/esamelson))
+
+## 0.13.1 — 2021-03-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.0 — 2021-03-10
+
+### 🎉 New features
+
+- Added support for statically configuring linking with `react-native-unimodules` object in the `package.json`. ([#11524](https://github.com/expo/expo/pull/11524) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.12.0 — 2020-11-17
 
 ### 🐛 Bug fixes
+
+- Fixed resolving Gradle module path when a symlink is provided. ([#10007](https://github.com/expo/expo/pull/10007) by [@barthap](https://github.com/barthap))
+
+## 0.11.0 — 2020-08-18
+
+### 🎉 New features
+
+- Easier to follow installation instructions by moving them to the Expo documentation ([#9145](https://github.com/expo/expo/pull/9145)).
 
 ## 0.10.1 — 2020-05-29
 

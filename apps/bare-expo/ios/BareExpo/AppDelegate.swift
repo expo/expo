@@ -7,33 +7,55 @@
 //
 
 import Foundation
+import EXDevMenuInterface
+#if EX_DEV_MENU_ENABLED
 import EXDevMenu
+#endif
+
+#if FB_SONARKIT_ENABLED
+import FlipperKit
+#endif
 
 @UIApplicationMain
-class AppDelegate: UMAppDelegateWrapper, DevMenuDelegateProtocol {
+class AppDelegate: UMAppDelegateWrapper {
   var moduleRegistryAdapter: UMModuleRegistryAdapter!
   var bridge: RCTBridge?
+  var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+
+  let useDevClient: Bool = false
   
   override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    initializeFlipper(with: application)
     moduleRegistryAdapter = UMModuleRegistryAdapter(moduleRegistryProvider: UMModuleRegistryProvider())
     window = UIWindow(frame: UIScreen.main.bounds)
+    self.launchOptions = launchOptions;
 
-    if let bridge = RCTBridge(delegate: self, launchOptions: launchOptions) {
-      let rootView = RCTRootView(bridge: bridge, moduleName: "BareExpo", initialProperties: nil)
-      let rootViewController = UIViewController()
-      rootView.backgroundColor = UIColor.white
-      rootViewController.view = rootView
-      
-      window?.rootViewController = rootViewController
-      window?.makeKeyAndVisible()
-      self.bridge = bridge
+    if (useDevClient) {
+      let controller = EXDevLauncherController.sharedInstance()
+      controller.start(with: window!, delegate: self, launchOptions: launchOptions);
+    } else {
+      initializeReactNativeBridge(launchOptions);
     }
-
-    DevMenuManager.shared.delegate = self
 
     super.application(application, didFinishLaunchingWithOptions: launchOptions)
     
     return true
+  }
+
+  @discardableResult
+  func initializeReactNativeBridge(_ launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> RCTBridge? {
+    if let bridge = RCTBridge(delegate: self, launchOptions: launchOptions) {
+      let rootView = RCTRootView(bridge: bridge, moduleName: "main", initialProperties: nil)
+      let rootViewController = UIViewController()
+      rootView.backgroundColor = UIColor.white
+      rootViewController.view = rootView
+
+      window?.rootViewController = rootViewController
+      window?.makeKeyAndVisible()
+      self.bridge = bridge
+      return bridge;
+    }
+    return nil;
   }
   
   #if RCT_DEV
@@ -43,13 +65,23 @@ class AppDelegate: UMAppDelegateWrapper, DevMenuDelegateProtocol {
   #endif
   
   override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+    if (useDevClient && EXDevLauncherController.sharedInstance().onDeepLink(url, options: options)) {
+      return true;
+    }
+    
     return RCTLinkingManager.application(app, open: url, options: options)
   }
-
-  // MARK: DevMenuDelegateProtocol
-
-  func appBridge(forDevMenuManager manager: DevMenuManager) -> AnyObject? {
-    return self.bridge
+  
+  private func initializeFlipper(with application: UIApplication) {
+  #if FB_SONARKIT_ENABLED
+    let client = FlipperClient.shared()
+    let layoutDescriptorMapper = SKDescriptorMapper(defaults: ())
+    client?.add(FlipperKitLayoutPlugin(rootNode: application, with: layoutDescriptorMapper!))
+    client?.add(FKUserDefaultsPlugin(suiteName: nil))
+    client?.add(FlipperKitReactPlugin())
+    client?.add(FlipperKitNetworkPlugin(networkAdapter: SKIOSNetworkAdapter()))
+    client?.start()
+  #endif
   }
 }
 
@@ -59,7 +91,11 @@ extension AppDelegate: RCTBridgeDelegate {
   func sourceURL(for bridge: RCTBridge!) -> URL! {
     // DEBUG must be setup in Swift projects: https://stackoverflow.com/a/24112024/4047926
     #if DEBUG
-    return RCTBundleURLProvider.sharedSettings()?.jsBundleURL(forBundleRoot: "index", fallbackResource: nil)
+    if (useDevClient) {
+      return EXDevLauncherController.sharedInstance().sourceUrl()
+    } else {
+      return RCTBundleURLProvider.sharedSettings()?.jsBundleURL(forBundleRoot: "index", fallbackResource: nil)
+    }
     #else
     return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
     #endif
@@ -81,5 +117,13 @@ extension AppDelegate: RCTBridgeDelegate {
     let storageDirectory = documentDirectory.appendingPathComponent("RCTAsyncLocalStorage_V1")
     extraModules?.append(RCTAsyncLocalStorage(storageDirectory: storageDirectory))
     return extraModules
+  }
+}
+
+// MARK: - EXDevelopmentClientControllerDelegate
+
+extension AppDelegate:  EXDevLauncherControllerDelegate {
+  func devLauncherController(_ developmentClientController: EXDevLauncherController, didStartWithSuccess success: Bool) {
+    developmentClientController.appBridge = initializeReactNativeBridge(developmentClientController.getLaunchOptions())
   }
 }

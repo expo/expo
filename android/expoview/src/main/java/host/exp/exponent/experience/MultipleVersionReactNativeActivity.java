@@ -7,18 +7,18 @@ public class MultipleVersionReactNativeActivity extends ReactNativeActivity impl
     // The 4-space indentation is used by android-build-aar.sh.
     // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
     // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
-    // BEGIN_SDK_36
-    abi36_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler,
-    abi36_0_0.com.facebook.react.modules.core.PermissionAwareActivity,
-    // END_SDK_36
-    // BEGIN_SDK_37
-    abi37_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler,
-    abi37_0_0.com.facebook.react.modules.core.PermissionAwareActivity,
-    // END_SDK_37
-    // BEGIN_SDK_38
-    abi38_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler,
-    abi38_0_0.com.facebook.react.modules.core.PermissionAwareActivity,
-    // END_SDK_38
+    // BEGIN_SDK_39
+    abi39_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler,
+    abi39_0_0.com.facebook.react.modules.core.PermissionAwareActivity,
+    // END_SDK_39
+    // BEGIN_SDK_40
+    abi40_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler,
+    abi40_0_0.com.facebook.react.modules.core.PermissionAwareActivity,
+    // END_SDK_40
+    // BEGIN_SDK_41
+    abi41_0_0.com.facebook.react.modules.core.DefaultHardwareBackBtnHandler,
+    abi41_0_0.com.facebook.react.modules.core.PermissionAwareActivity,
+    // END_SDK_41
     // ADD_NEW_SDKS_HERE
     // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
     // WHEN_DISTRIBUTING_REMOVE_TO_HERE
@@ -26,24 +26,24 @@ public class MultipleVersionReactNativeActivity extends ReactNativeActivity impl
 
     // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
     // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
-    // BEGIN_SDK_36
+    // BEGIN_SDK_39
     @Override
-    public void requestPermissions(String[] strings, int i, abi36_0_0.com.facebook.react.modules.core.PermissionListener permissionListener) {
+    public void requestPermissions(String[] strings, int i, abi39_0_0.com.facebook.react.modules.core.PermissionListener permissionListener) {
       super.requestPermissions(strings, i, permissionListener::onRequestPermissionsResult);
     }
-    // END_SDK_36
-    // BEGIN_SDK_37
+    // END_SDK_39
+    // BEGIN_SDK_40
     @Override
-    public void requestPermissions(String[] strings, int i, abi37_0_0.com.facebook.react.modules.core.PermissionListener permissionListener) {
+    public void requestPermissions(String[] strings, int i, abi40_0_0.com.facebook.react.modules.core.PermissionListener permissionListener) {
       super.requestPermissions(strings, i, permissionListener::onRequestPermissionsResult);
     }
-    // END_SDK_37
-    // BEGIN_SDK_38
+    // END_SDK_40
+    // BEGIN_SDK_41
     @Override
-    public void requestPermissions(String[] strings, int i, abi38_0_0.com.facebook.react.modules.core.PermissionListener permissionListener) {
+    public void requestPermissions(String[] strings, int i, abi41_0_0.com.facebook.react.modules.core.PermissionListener permissionListener) {
       super.requestPermissions(strings, i, permissionListener::onRequestPermissionsResult);
     }
-    // END_SDK_38
+    // END_SDK_41
     // ADD_NEW_PERMISSION_AWARE_ACTIVITY_IMPLEMENTATION_HERE
     // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
     // WHEN_DISTRIBUTING_REMOVE_TO_HERE

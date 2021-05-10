@@ -3,7 +3,7 @@
 @interface EXEnvironmentMocks : NSObject
 
 /**
- *  Load mock configuration for expo client. (no ExpoKit config at all)
+ *  Load mock configuration for Expo Go (no legacy ExpoKit config at all).
  */
 + (void)loadExpoClientConfig;
 

@@ -6,7 +6,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-38/packages/expo-notificat
 import SnackInline from '~/components/plugins/SnackInline';
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 The **`expo-notifications`** provides an API to fetch push notification tokens and to present, schedule, receive and respond to notifications.
 
@@ -32,7 +31,7 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 
 <InstallSection packageName="expo-notifications" />
 
-> Note: We're actively identifying and fixing bugs since this is a brand new module. Please take a look [here](https://github.com/expo/expo/issues?q=is%3Aopen+is%3Aissue+label%3ANotifications) at the open issues for `expo-notifications` before opening a new one. If you hit a blocking issue that we haven't resolved yet, please use the [`legacy Notifications module`](../legacy-notifications/) which will remain available until SDK 40.
+> Note: We're actively identifying and fixing bugs since this is a brand new module. Please take a look [here](https://github.com/expo/expo/issues?q=is%3Aopen+is%3Aissue+label%3ANotifications) at the open issues for `expo-notifications` before opening a new one. If you hit a blocking issue that we haven't resolved yet, please use the [`legacy Notifications module`](legacy-notifications.md) which will remain available until SDK 40.
 
 ### Android
 
@@ -48,6 +47,90 @@ Open your `app.json` and add the following inside of the "expo" field:
     }
   }
 }
+```
+
+## Common gotchas / known issues
+
+### Sending notifications directly through APNs and FCM
+
+If you are not using [Expo's push notification service](../../../push-notifications/sending-notifications.md) and would instead like to communicate with Apple and Firebase directly, then you should read [this guide closely](../../../push-notifications/sending-notifications-custom.md), paying **special attention to the payload formats**, since providing different formats can result in unexpected behavior on both platforms.
+
+### Fetching a push token takes a long time on iOS
+
+`getDevicePushTokenAsync` and `getExpoPushTokenAsync` can sometimes take a long time to resolve on iOS. This is outside of `expo-notifications`'s control, as stated in Apple's [“Troubleshooting Push Notifications” technical note](https://developer.apple.com/library/archive/technotes/tn2265/_index.html):
+
+> This is not necessarily an error condition. The system may not have Internet connectivity at all because it is out of range of any cell towers or Wi-Fi access points, or it may be in airplane mode. Instead of treating this as an error, your app should continue normally, disabling only that functionality that relies on push notifications.
+
+As mentioned, the most common reasons for this this are either an invalid Internet connection (fetching a push token requires an Internet connection to register the device with the service provider) or an invalid configuration of your App ID or Provisioning Profile.
+
+Here are a few ways people claim to have solved this problem, maybe one of these will help you solve it, too!
+
+<details><summary><strong>Read the Apple's <a href="https://developer.apple.com/library/archive/technotes/tn2265/_index.html">Technical Note on troubleshooting push notifications</a></strong></summary> <p>
+
+Go read the Apple's [Technical Note on troubleshooting push notifications](https://developer.apple.com/library/archive/technotes/tn2265/_index.html)! This the single most reliable source of information on this problem. To help you grasp what they're suggesting:
+
+- Make sure the device has a reliable connection to the Internet (try turning off Wi-Fi or switching to another network, and disabling firewall block on port 5223, as suggested in [this SO answer](https://stackoverflow.com/a/34332047/1123156)).
+- Make sure your app configuration is set properly for registering for push notifications (for bare workflow check out [this guide](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html#//apple_ref/doc/uid/TP40012582-CH26-SW6), for managed workflow this is done automatically for you by `expo-cli`) as also suggested by [this StackOverflow answer](https://stackoverflow.com/a/10791240/1123156).
+- If you're in bare workflow you may want to try to debug this even further by logging persistent connection debug information as outlined by [this StackOverflow answer](https://stackoverflow.com/a/8036052/1123156).
+
+</p>
+</details>
+
+<details><summary><strong>Try again in a little while</strong></summary> <p>
+
+- APNS servers near the device may be down as indicated by [this forum thread](https://developer.apple.com/forums/thread/52224). Take a walk and try again later!
+- Try again in a few days time as suggested by [this GitHub comment](https://github.com/expo/expo/issues/10369#issuecomment-717872956).
+
+</p>
+</details>
+
+<details><summary><strong>Disable network sharing on your device</strong></summary> <p>
+
+You may need to disable network sharing as this may impact the registration as suggested by [this StackOverflow answer](https://stackoverflow.com/a/59156989/1123156).
+
+</p>
+</details>
+
+<details><summary><strong>Restart your device</strong></summary> <p>
+
+If you just changed the APNS servers where the app should be registering (by installing a TestFlight build over an Xcode build on the same device) you may need to restart your device as suggested by [this StackOverflow answer](https://stackoverflow.com/a/59864028/1123156).
+
+</p>
+</details>
+
+<details><summary><strong>Setup your device with a SIM card</strong></summary> <p>
+
+If the device you're experiencing this on hasn't been setup with a SIM card it looks like configuring it may help mitigate this bug as suggested by [this StackOverflow answer](https://stackoverflow.com/a/19432504/1123156).
+
+</p>
+</details>
+
+### Setting custom notification sounds on Android
+
+On Androids 8.0+, playing a custom sound for a notification requires more than setting the `sound` property on the `NotificationContentInput`. You will _also_ need to configure the `NotificationChannel` with the appropriate `sound`, and use it when sending/scheduling the notification.
+
+```ts
+import * as Notifications from 'expo-notifications';
+
+// Prepare the notification channel
+Notifications.setNotificationChannelAsync('new-emails', {
+  name: 'E-mail notifications',
+  importance: Notifications.AndroidImportance.HIGH,
+  sound: 'email-sound.wav', // <- for Android 8.0+, see channelId property below
+});
+
+// Eg. schedule the notification
+Notifications.scheduleNotificationAsync({
+  content: {
+    title: "You've got mail! 📬",
+    body: 'Open the notification to read them all',
+    sound: 'email-sound.wav', // <- for Android below 8.0
+  },
+  trigger: {
+    seconds: 2,
+    channelId: 'new-emails', // <- for Android 8.0+, see definition above
+  },
+});
 ```
 
 ## API
@@ -97,8 +180,6 @@ The following methods are exported by the `expo-notifications` module:
   - [`getNotificationChannelGroupAsync`](#getnotificationchannelgroupasyncidentifier-string-promisenotificationchannelgroup--null) -- fetches information about a specific notification channel group
   - [`setNotificationChannelGroupAsync`](#setnotificationchannelgroupasyncidentifier-string-channel-notificationchannelgroupinput-promisenotificationchannelgroup--null) -- saves a notification channel group configuration
   - [`deleteNotificationChannelGroupAsync`](#deletenotificationchannelgroupasyncidentifier-string-promisevoid) -- deletes a notification channel group
-
-<TableOfContentSection title='Types' contents={['DevicePushToken', 'PushTokenListener', 'ExpoPushToken', 'Subscription', 'Notification', 'NotificationRequest', 'NotificationContent', 'NotificationContentInput', 'NotificationRequestInput', 'AndroidNotificationPriority', 'NotificationTrigger', 'PushNotificationTrigger', 'FirebaseRemoteMessage', 'TimeIntervalNotificationTrigger', 'DailyNotificationTrigger', 'CalendarNotificationTrigger', 'LocationNotificationTrigger', 'UnknownNotificationTrigger', 'NotificationTriggerInput', 'DateTriggerInput', 'TimeIntervalTriggerInput', 'DailyTriggerInput', 'CalendarTriggerInput', 'NotificationResponse', 'NotificationBehavior', 'NotificationChannel', 'NotificationChannelInput', 'NotificationChannelGroup', 'NotificationChannelGroupInput' ]} />
 
 Check out the Snack below to see Notifications in action, but be sure to use a physical device! Push notifications don't work on simulators/emulators.
 
@@ -158,7 +239,7 @@ export default function App() {
       <Button
         title="Press to schedule a notification"
         onPress={async () => {
-          await schedulePushNotification();
+          await sendPushNotification();
         }}
       />
     </View>
@@ -232,15 +313,15 @@ export interface FirebaseData {
 
 ### `getExpoPushTokenAsync(options: ExpoTokenOptions): ExpoPushToken`
 
-Returns an Expo token that can be used to send a push notification to this device using Expo push notifications service. [Read more in the Push Notifications guide](../../push-notifications/overview/).
+Returns an Expo token that can be used to send a push notification to this device using Expo push notifications service. [Read more in the Push Notifications guide](../../../push-notifications/overview.md).
 
-> **Note:** For Expo backend to be able to send notifications to your app, you will need to provide it with push notification keys. This can be done using `expo-cli` (`expo credentials:manager`). [Read more in the “Upload notifications credentials” guide](https://expo.fyi/upload-notifications-credentials). TODO
+> **Note:** For Expo's backend to be able to send notifications to your app, you will need to provide it with push notification keys. This can be done using `expo-cli` (`expo credentials:manager`). [Read more in the “Upload notifications credentials” guide](../../../push-notifications/push-notifications-setup.md#credentials).
 
 #### Arguments
 
 This function accepts an optional object allowing you to pass in configuration, consisting of fields (all are optional, but some may have to be defined if configuration cannot be inferred):
 
-- **experienceId (_string_)** -- The ID of the experience to which the token should be attributed. Defaults to [`Constants.manifest.id`](https://docs.expo.io/versions/latest/sdk/constants/#constantsmanifest) exposed by `expo-constants`. You may need to define it in bare workflow, where `expo-constants` doesn't expose the manifest.
+- **experienceId (_string_)** -- The ID of the experience to which the token should be attributed. Defaults to [`Constants.manifest.id`](https://docs.expo.io/versions/latest/sdk/constants/#constantsmanifest) exposed by `expo-constants`. In the bare workflow, you must provide a value which takes the shape `@username/projectSlug`, where `username` is the Expo account that the project is associated with, and `projectSlug` is your [`slug` from `app.json`](../config/app.md#slug).
 - **devicePushToken ([_DevicePushToken_](#devicepushtoken))** -- The device push token with which to register at the backend. Defaults to a token fetched with [`getDevicePushTokenAsync()`](#getdevicepushtokenasync-devicepushtoken).
 - **applicationId (_string_)** -- The ID of the application to which the token should be attributed. Defaults to [`Application.applicationId`](https://docs.expo.io/versions/latest/sdk/application/#applicationapplicationid) exposed by `expo-application`.
 - **development (_boolean_)** -- Makes sense only on iOS, where there are two push notification services: sandbox and production. This defines whether the push token is supposed to be used with the sandbox platform notification service. Defaults to [`Application.getIosPushNotificationServiceEnvironmentAsync()`](https://docs.expo.io/versions/latest/sdk/application/#applicationgetiospushnotificationserviceenvironmentasync) exposed by `expo-application` or `false`. Most probably you won't need to customize that. You may want to customize that if you don't want to install `expo-application` and still use the sandbox APNS.
@@ -410,27 +491,76 @@ A [`Subscription`](#subscription) object representing the subscription of the pr
 
 #### Examples
 
-Registering a notification listener using a React hook
+##### Registering a notification listener using a React hook
 
 ```tsx
 import React from 'react';
 import { Linking } from 'react-native';
 import * as Notifications from 'expo-notifications';
 
-export default function Container({ navigation }) {
+export default function Container() {
   React.useEffect(() => {
     const subscription = Notifications.addNotificationResponseReceivedListener(response => {
       const url = response.notification.request.content.data.url;
-      Linking.openUrl(url);
+      Linking.openURL(url);
     });
     return () => subscription.remove();
-  }, [navigation]);
+  }, []);
 
   return (
     // Your app content
   );
 }
 ```
+
+##### Handling push notifications with React Navigation
+
+If you'd like to deep link to a specific screen in your app when you receive a push notification, you can configure React Navigation's [linking](https://reactnavigation.org/docs/navigation-container#linking) prop to do that:
+
+```tsx
+import React from 'react';
+import { Linking } from 'react-native';
+import * as Notifications from 'expo-notifications';
+import { NavigationContainer } from '@react-navigation/native';
+
+export default function App() {
+  return (
+    <NavigationContainer
+      linking={{
+        config: {
+          // Configuration for linking
+        },
+        subscribe(listener) {
+          const onReceiveURL = ({ url }: { url: string }) => listener(url);
+
+          // Listen to incoming links from deep linking
+          Linking.addEventListener('url', onReceiveURL);
+
+          // Listen to expo push notifications
+          const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+            const url = response.notification.request.content.data.url;
+
+            // Any custom logic to see whether the URL needs to be handled
+            //...
+
+            // Let React Navigation handle the URL
+            listener(url);
+          });
+
+          return () => {
+            // Clean up the event listeners
+            Linking.removeEventListener('url', onReceiveURL);
+            subscription.remove();
+          };
+        },
+      }}>
+      {/* Your app content */}
+    </NavigationContainer>
+  );
+}
+```
+
+See more details on [React Navigation documentation](https://reactnavigation.org/docs/deep-linking/#third-party-integrations).
 
 ### `removeNotificationSubscription(subscription: Subscription): void`
 
@@ -818,6 +948,8 @@ A `Promise` resolving to the channel object (of type [`NotificationChannel`](#no
 ### `setNotificationChannelAsync(identifier: string, channel: NotificationChannelInput): Promise<NotificationChannel | null>`
 
 Assigns the channel configuration to a channel of a specified name (creating it if need be). This method lets you assign given notification channel to a notification channel group.
+
+> **Note:** For some settings to be applied on all Android versions, it may be necessary to duplicate the configuration across both a single notification _and_ it's respective notification channel. For example, for a notification to play a custom sound on Android versions **below** 8.0, the custom notification sound has to be set on the notification (through the [`NotificationContentInput`](#notificationcontentinput)), and for the custom sound to play on Android versions **above** 8.0, the relevant notification channel must have the custom sound configured (through the [`NotificationChannelInput`](#notificationchannelinput)). For more information, see ["Setting custom notification sounds on Android"](#setting-custom-notification-sounds-on-android).
 
 #### Arguments
 

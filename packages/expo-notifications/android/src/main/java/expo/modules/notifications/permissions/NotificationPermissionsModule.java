@@ -53,7 +53,7 @@ public class NotificationPermissionsModule extends ExportedModule {
     Bundle permissions = new Bundle();
 
     permissions.putString(EXPIRES_KEY, PERMISSION_EXPIRES_NEVER);
-    permissions.putBoolean(CAN_ASK_AGAIN_KEY, true);
+    permissions.putBoolean(CAN_ASK_AGAIN_KEY, areEnabled);
     permissions.putString(STATUS_KEY, status.getStatus());
     permissions.putBoolean(GRANTED_KEY, PermissionsStatus.GRANTED == status);
 

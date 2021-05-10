@@ -1,8 +1,21 @@
+import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
 import { useEffect } from 'react';
 
 import ExpoScreenCapture from './ExpoScreenCapture';
 
 const activeTags: Set<string> = new Set();
+const emitter = new EventEmitter(ExpoScreenCapture);
+
+const onScreenshotEventName = 'onScreenshot';
+
+/**
+ * Returns whether the Screen Capture API is available on the current device.
+ *
+ * @returns Async `boolean`, indicating whether the Screen Capture API is available on the current device. Currently this resolves `true` on iOS and Android only.
+ */
+export async function isAvailableAsync(): Promise<boolean> {
+  return !!ExpoScreenCapture.preventScreenCapture && !!ExpoScreenCapture.allowScreenCapture;
+}
 
 /**
  * Prevents screenshots and screen recordings. If you are
@@ -24,6 +37,10 @@ const activeTags: Set<string> = new Set();
  * ```
  */
 export async function preventScreenCaptureAsync(key: string = 'default'): Promise<void> {
+  if (!ExpoScreenCapture.preventScreenCapture) {
+    throw new UnavailabilityError('ScreenCapture', 'preventScreenCaptureAsync');
+  }
+
   if (!activeTags.has(key)) {
     activeTags.add(key);
     await ExpoScreenCapture.preventScreenCapture();
@@ -46,6 +63,10 @@ export async function preventScreenCaptureAsync(key: string = 'default'): Promis
  * ```
  */
 export async function allowScreenCaptureAsync(key: string = 'default'): Promise<void> {
+  if (!ExpoScreenCapture.preventScreenCapture) {
+    throw new UnavailabilityError('ScreenCapture', 'allowScreenCaptureAsync');
+  }
+
   activeTags.delete(key);
   if (activeTags.size === 0) {
     await ExpoScreenCapture.allowScreenCapture();
@@ -73,4 +94,37 @@ export function usePreventScreenCapture(key: string = 'default'): void {
       allowScreenCaptureAsync(key);
     };
   }, [key]);
+}
+
+/**
+ * Adds a listener that will fire whenever the user takes a screenshot.
+ *
+ * @param listener Callback executed when a screenshot occurs.
+ *
+ * @example
+ * ```typescript
+ * addScreenshotListener(() => {
+ *   alert('Screenshots are fun!');
+ * });
+ * ```
+ */
+export function addScreenshotListener(listener: () => void): Subscription {
+  return emitter.addListener<void>(onScreenshotEventName, listener);
+}
+
+/**
+ * Removes the listener added by addScreenshotListener
+ *
+ * @param subscription The subscription to remove (created by addScreenshotListener).
+ *
+ * @example
+ * ```typescript
+ * const subscription = addScreenshotListener(() => {
+ *   alert('Screenshots are fun!');
+ * });
+ * removeScreenshotListener(subscription);
+ * ```
+ */
+export function removeScreenshotListener(subscription: Subscription) {
+  emitter.removeSubscription(subscription);
 }

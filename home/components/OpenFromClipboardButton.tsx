@@ -1,9 +1,9 @@
+import Constants from 'expo-constants';
 import * as React from 'react';
 import { Clipboard, Keyboard, Linking, Platform } from 'react-native';
 
 import * as UrlUtils from '../utils/UrlUtils';
 import ListItem from './ListItem';
-import Constants from 'expo-constants';
 
 type Props = {
   isValid: boolean;
@@ -40,7 +40,14 @@ export default class OpenFromClipboardButton extends React.Component<Props> {
 
     // Show info for iOS/Android simulator about how to make clipboard contents available
     if (!isValid) {
-      return <ListItem onPress={this.onPress} subtitle={message} last />;
+      return (
+        <ListItem
+          onPress={this.onPress}
+          subtitle={message}
+          style={{ paddingVertical: 15, paddingHorizontal: 15 }}
+          last
+        />
+      );
     } else {
       return (
         <ListItem
@@ -48,6 +55,7 @@ export default class OpenFromClipboardButton extends React.Component<Props> {
           title="Open from Clipboard"
           subtitle={clipboardContents}
           onPress={this.handlePressAsync}
+          style={{ paddingVertical: 15 }}
           last
         />
       );

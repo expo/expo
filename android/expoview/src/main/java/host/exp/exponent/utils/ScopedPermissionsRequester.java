@@ -80,11 +80,11 @@ public class ScopedPermissionsRequester {
     }
   }
 
-  public void onRequestPermissionsResult(final String[] permissions, final int[] grantResults) {
+  public Boolean onRequestPermissionsResult(final String[] permissions, final int[] grantResults) {
     if (mPermissionListener == null) {
       // sometimes onRequestPermissionsResult is called multiple times if the first permission
       // is rejected...
-      return;
+      return true;
     }
 
     if (grantResults.length > 0) {
@@ -96,16 +96,16 @@ public class ScopedPermissionsRequester {
       }
     }
 
-    callPermissionsListener();
+    return callPermissionsListener();
   }
 
-  private void callPermissionsListener() {
+  private boolean callPermissionsListener() {
     String[] permissions = mPermissionsResult.keySet().toArray(new String[0]);
     int[] result = new int[permissions.length];
     for (int i = 0; i < permissions.length; i++) {
       result[i] = mPermissionsResult.get(permissions[i]);
     }
-    mPermissionListener.onRequestPermissionsResult(EXPONENT_PERMISSIONS_REQUEST, permissions, result);
+    return mPermissionListener.onRequestPermissionsResult(EXPONENT_PERMISSIONS_REQUEST, permissions, result);
   }
 
   private void requestExperienceAndGlobalPermissions(String permission) {
@@ -113,13 +113,18 @@ public class ScopedPermissionsRequester {
 
     AlertDialog.Builder builder = new AlertDialog.Builder(activity);
     ScopedPermissionsRequester.PermissionsDialogOnClickListener onClickListener = new ScopedPermissionsRequester.PermissionsDialogOnClickListener(permission);
-    builder.setMessage(activity.getString(
-        R.string.experience_needs_permissions,
-        mExperienceName,
-        activity.getString(permissionToResId(permission))))
-        .setPositiveButton(R.string.allow_experience_permissions, onClickListener)
-        .setNegativeButton(R.string.deny_experience_permissions, onClickListener).show();
 
+    builder
+      .setMessage(
+        activity.getString(
+          R.string.experience_needs_permissions,
+          mExperienceName,
+          activity.getString(permissionToResId(permission))
+        )
+      )
+      .setPositiveButton(R.string.allow_experience_permissions, onClickListener)
+      .setNegativeButton(R.string.deny_experience_permissions, onClickListener)
+      .show();
   }
 
   private int permissionToResId(String permission) {
@@ -146,6 +151,8 @@ public class ScopedPermissionsRequester {
         return R.string.perm_fine_location;
       case android.Manifest.permission.ACCESS_COARSE_LOCATION:
         return R.string.perm_coarse_location;
+      case android.Manifest.permission.ACCESS_BACKGROUND_LOCATION:
+        return R.string.perm_background_location;
       default:
         return -1;
     }
