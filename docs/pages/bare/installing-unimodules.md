@@ -42,7 +42,7 @@ If you need to exclude some of the unimodules that you are not using but they go
 
 <br />
 
-Save all of your changes. In xCode you need to make sure that iOS Deployment Target under `Target/BuildSettings/Deployment` is set to `iOS 11.0`.  The last step is to install the project's CocoaPods again in order to pull in unimodules that are detected by `use_unimodules!` directive that we added to the `Podfile`:
+Save all of your changes. In Xcode, update the iOS Deployment Target under `Target → Build Settings → Deployment` to `iOS 11.0`. The last step is to install the project's CocoaPods again in order to pull in unimodules that are detected by `use_unimodules!` directive that we added to the `Podfile`:
 
 <InstallSection packageName="react-native-unimodules" cmd={["npx pod-install"]} hideBareInstructions />
 
