@@ -16,7 +16,7 @@ A performant interface for rendering sectioned lists, supporting the most handy 
 - Pull to Refresh.
 - Scroll loading.
 
-If you don't need section support and want a simpler interface, use [`<FlatList>`](../flatlist/).
+If you don't need section support and want a simpler interface, use [`<FlatList>`](flatlist.md).
 
 ### Example
 
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-This is a convenience wrapper around [`<VirtualizedList>`](../virtualizedlist/), and thus inherits its props (as well as those of [`<ScrollView>`](../scrollview/) that aren't explicitly listed here, along with the following caveats:
+This is a convenience wrapper around [`<VirtualizedList>`](virtualizedlist.md), and thus inherits its props (as well as those of [`<ScrollView>`](scrollview.md) that aren't explicitly listed here, along with the following caveats:
 
 - Internal state is not preserved when content scrolls out of the render window. Make sure all your data is captured in the item data or external stores like Flux, Redux, or Relay.
 - This is a `PureComponent` which means that it will not re-render if `props` remain shallow-equal. Make sure that everything your `renderItem` function depends on is passed as a prop (e.g. `extraData`) that is not `===` after updates, otherwise your UI may not update on changes. This includes the `data` prop and parent component state.
@@ -95,44 +95,44 @@ This is a convenience wrapper around [`<VirtualizedList>`](../virtualizedlist/),
 
 ### Props
 
-- [`ScrollView` props...](../scrollview/#props)
+- [`ScrollView` props...](scrollview.md#props)
 
 Required props:
 
-- [`renderItem`](../sectionlist/#renderitem)
-- [`sections`](../sectionlist/#sections)
+- [`renderItem`](sectionlist.md#renderitem)
+- [`sections`](sectionlist.md#sections)
 
 Optional props:
 
-- [`extraData`](../sectionlist/#extradata)
-- [`initialNumToRender`](../sectionlist/#initialnumtorender)
-- [`inverted`](../sectionlist/#inverted)
-- [`ItemSeparatorComponent`](../sectionlist/#itemseparatorcomponent)
-- [`keyExtractor`](../sectionlist/#keyextractor)
-- [`legacyImplementation`](../sectionlist/#legacyimplementation)
-- [`ListEmptyComponent`](../sectionlist/#listemptycomponent)
-- [`ListFooterComponent`](../sectionlist/#listfootercomponent)
-- [`ListHeaderComponent`](../sectionlist/#listheadercomponent)
-- [`onEndReached`](../sectionlist/#onendreached)
-- [`onEndReachedThreshold`](../sectionlist/#onendreachedthreshold)
-- [`onRefresh`](../sectionlist/#onrefresh)
-- [`onViewableItemsChanged`](../sectionlist/#onviewableitemschanged)
-- [`refreshing`](../sectionlist/#refreshing)
-- [`removeClippedSubviews`](../sectionlist/#removeclippedsubviews)
-- [`renderSectionFooter`](../sectionlist/#rendersectionfooter)
-- [`renderSectionHeader`](../sectionlist/#rendersectionheader)
-- [`SectionSeparatorComponent`](../sectionlist/#sectionseparatorcomponent)
-- [`stickySectionHeadersEnabled`](../sectionlist/#stickysectionheadersenabled)
+- [`extraData`](sectionlist.md#extradata)
+- [`initialNumToRender`](sectionlist.md#initialnumtorender)
+- [`inverted`](sectionlist.md#inverted)
+- [`ItemSeparatorComponent`](sectionlist.md#itemseparatorcomponent)
+- [`keyExtractor`](sectionlist.md#keyextractor)
+- [`legacyImplementation`](sectionlist.md#legacyimplementation)
+- [`ListEmptyComponent`](sectionlist.md#listemptycomponent)
+- [`ListFooterComponent`](sectionlist.md#listfootercomponent)
+- [`ListHeaderComponent`](sectionlist.md#listheadercomponent)
+- [`onEndReached`](sectionlist.md#onendreached)
+- [`onEndReachedThreshold`](sectionlist.md#onendreachedthreshold)
+- [`onRefresh`](sectionlist.md#onrefresh)
+- [`onViewableItemsChanged`](sectionlist.md#onviewableitemschanged)
+- [`refreshing`](sectionlist.md#refreshing)
+- [`removeClippedSubviews`](sectionlist.md#removeclippedsubviews)
+- [`renderSectionFooter`](sectionlist.md#rendersectionfooter)
+- [`renderSectionHeader`](sectionlist.md#rendersectionheader)
+- [`SectionSeparatorComponent`](sectionlist.md#sectionseparatorcomponent)
+- [`stickySectionHeadersEnabled`](sectionlist.md#stickysectionheadersenabled)
 
 ### Methods
 
-- [`flashScrollIndicators`](../sectionlist/#flashscrollindicators)
-- [`recordInteraction`](../sectionlist/#recordinteraction)
-- [`scrollToLocation`](../sectionlist/#scrolltolocation)
+- [`flashScrollIndicators`](sectionlist.md#flashscrollindicators)
+- [`recordInteraction`](sectionlist.md#recordinteraction)
+- [`scrollToLocation`](sectionlist.md#scrolltolocation)
 
 ### Type Definitions
 
-- [`Section`](../sectionlist/#section)
+- [`Section`](sectionlist.md#section)
 
 ---
 
@@ -164,11 +164,11 @@ The render function will be passed an object with the following keys:
 
 ### `sections`
 
-The actual data to render, akin to the `data` prop in [`FlatList`](../flatlist/).
+The actual data to render, akin to the `data` prop in [`FlatList`](flatlist.md).
 
 | Type                                         | Required |
 | -------------------------------------------- | -------- |
-| array of [Section](../sectionlist/#section)s | Yes      |
+| array of [Section](sectionlist.md#section)s | Yes      |
 
 ---
 
@@ -441,8 +441,8 @@ An object that identifies the data to be rendered for a given section.
 
 | Name                     | Type                         | Description                                                                                                                                                             |
 | ------------------------ | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| data                     | array                        | The data for rendering items in this section. Array of objects, much like [`FlatList`'s data prop](../flatlist/#data).                                                  |
+| data                     | array                        | The data for rendering items in this section. Array of objects, much like [`FlatList`'s data prop](flatlist.md#data).                                                  |
 | [key]                    | string                       | Optional key to keep track of section re-ordering. If you don't plan on re-ordering sections, the array index will be used by default.                                  |
-| [renderItem]             | function                     | Optionally define an arbitrary item renderer for this section, overriding the default [`renderItem`](../sectionlist/#renderitem) for the list.                          |
-| [ItemSeparatorComponent] | component, function, element | Optionally define an arbitrary item separator for this section, overriding the default [`ItemSeparatorComponent`](../sectionlist/#itemseparatorcomponent) for the list. |
-| [keyExtractor]           | function                     | Optionally define an arbitrary key extractor for this section, overriding the default [`keyExtractor`](../sectionlist/#keyextractor).                                   |
+| [renderItem]             | function                     | Optionally define an arbitrary item renderer for this section, overriding the default [`renderItem`](sectionlist.md#renderitem) for the list.                          |
+| [ItemSeparatorComponent] | component, function, element | Optionally define an arbitrary item separator for this section, overriding the default [`ItemSeparatorComponent`](sectionlist.md#itemseparatorcomponent) for the list. |
+| [keyExtractor]           | function                     | Optionally define an arbitrary key extractor for this section, overriding the default [`keyExtractor`](sectionlist.md#keyextractor).                                   |

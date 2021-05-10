@@ -16,6 +16,7 @@
 #import <React/RCTDevMenu.h>
 #import <React/RCTKeyCommands.h>
 #import <React/RCTRedBox.h>
+#import <React/RCTAsyncLocalStorage.h>
 
 
 // Unimodules
@@ -29,3 +30,6 @@
 
 //#import <EXUpdates/EXUpdatesAppController.h>
 
+// Dev Client
+
+#import <EXDevLauncher/EXDevLauncherController.h>

@@ -87,6 +87,7 @@ public class SMSModule extends ExportedModule implements LifecycleEventListener 
       Map<String, String> attachment = attachments.get(0);
       smsIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(attachment.get("uri")));
       smsIntent.setType(attachment.get("mimeType"));
+      smsIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
     } else {
       smsIntent = new Intent(Intent.ACTION_SENDTO);
       smsIntent.setData(Uri.parse("smsto:" + constructRecipients(addresses)));

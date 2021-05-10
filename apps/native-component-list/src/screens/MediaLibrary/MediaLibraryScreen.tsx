@@ -1,10 +1,10 @@
 import { useFocusEffect } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
-import { usePermissions } from '@use-expo/permissions';
+import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
-import * as Permissions from 'expo-permissions';
 import React from 'react';
 import {
+  Alert,
   ActivityIndicator,
   Button as RNButton,
   Dimensions,
@@ -48,7 +48,9 @@ type Links = {
   MediaAlbums: undefined;
 };
 
-type Props = StackScreenProps<Links, 'MediaLibrary'>
+type Props = StackScreenProps<Links, 'MediaLibrary'> & {
+  accessPrivileges?: MediaLibrary.PermissionResponse['accessPrivileges'];
+};
 
 type FetchState = {
   refreshing: boolean;
@@ -81,6 +83,23 @@ function reducer(
   }
 }
 
+function useMediaLibraryPermissions(): [undefined | MediaLibrary.PermissionResponse] {
+  const [permissions, setPermissions] = React.useState<
+    undefined | MediaLibrary.PermissionResponse
+  >();
+
+  React.useEffect(() => {
+    async function askAsync() {
+      const response = await MediaLibrary.requestPermissionsAsync();
+      setPermissions(response);
+    }
+
+    askAsync();
+  }, []);
+
+  return [permissions];
+}
+
 export default function MediaLibraryScreen({ navigation, route }: Props) {
   const album = route.params?.album;
 
@@ -88,11 +107,37 @@ export default function MediaLibraryScreen({ navigation, route }: Props) {
   React.useLayoutEffect(() => {
     const goToAlbums = () => navigation.navigate('MediaAlbums');
     const clearAlbumSelection = () => navigation.setParams({ album: undefined });
+    const addImage = async () => {
+      const randomNameGenerator: (num: number) => string = num => {
+        let res = '';
+        for (let i = 0; i < num; i++) {
+          const random = Math.floor(Math.random() * 27);
+          res += String.fromCharCode(97 + random);
+        }
+        return res;
+      };
+
+      const localPath = FileSystem.cacheDirectory + randomNameGenerator(5) + '.jpg';
+      await FileSystem.downloadAsync('https://picsum.photos/200', localPath);
+      await MediaLibrary.saveToLibraryAsync(localPath);
+      await FileSystem.deleteAsync(localPath);
+    };
+
+    const removeAlbum = async () => {
+      await MediaLibrary.deleteAlbumsAsync(album);
+      clearAlbumSelection();
+    };
 
     navigation.setOptions({
       title: 'Media Library',
       headerRight: () => (
-        <View style={{ marginRight: 5 }}>
+        <View style={{ marginRight: 5, flexDirection: 'row' }}>
+          <RNButton
+            title={album ? 'Remove' : 'Add'}
+            onPress={album ? removeAlbum : addImage}
+            color={Colors.tintColor}
+          />
+          <View style={{ width: 5 }} />
           <RNButton
             title={album ? 'Show all' : 'Albums'}
             onPress={album ? clearAlbumSelection : goToAlbums}
@@ -104,7 +149,7 @@ export default function MediaLibraryScreen({ navigation, route }: Props) {
   }, [album, navigation]);
 
   // Ensure the permissions are granted.
-  const [permission] = usePermissions(Permissions.CAMERA_ROLL, { ask: true });
+  const [permission] = useMediaLibraryPermissions();
 
   if (!permission) {
     return null;
@@ -113,18 +158,24 @@ export default function MediaLibraryScreen({ navigation, route }: Props) {
     return (
       <View style={styles.permissions}>
         <Text>
-          Missing CAMERA_ROLL permission. To continue, you'll need to allow media gallery access in
-          Settings.
+          Missing MEDIA_LIBRARY permission. To continue, you'll need to allow media gallery access
+          in Settings.
         </Text>
       </View>
     );
   }
 
-  return <MediaLibraryView navigation={navigation} route={route} />;
+  return (
+    <MediaLibraryView
+      navigation={navigation}
+      route={route}
+      accessPrivileges={(permission as MediaLibrary.PermissionResponse).accessPrivileges}
+    />
+  );
 }
 
 // The fetching and sorting logic is split out from the navigation and permission logic for simplicity.
-function MediaLibraryView({ navigation, route }: Props) {
+function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
   const album = route.params?.album;
 
   const isLoadingAssets = React.useRef(false);
@@ -206,7 +257,11 @@ function MediaLibraryView({ navigation, route }: Props) {
   useFocusEffect(
     React.useCallback(() => {
       // When new media is added or removed, update the library
-      const subscription = MediaLibrary.addListener(() => {
+      const subscription = MediaLibrary.addListener(event => {
+        if (!event.hasIncrementalChanges) {
+          dispatch({ type: 'reset', refreshing: false });
+          return;
+        }
         dispatch({ type: 'update', fetching: true, endCursor: null, hasNextPage: true });
       });
       return () => {
@@ -254,6 +309,21 @@ function MediaLibraryView({ navigation, route }: Props) {
           />
           <Button style={styles.button} title={`Sort by key: ${sortBy}`} onPress={toggleSortBy} />
         </View>
+        {accessPrivileges === 'limited' && (
+          <View style={styles.headerButtons}>
+            <Button
+              style={styles.button}
+              title="Change permissions"
+              onPress={async () => {
+                try {
+                  await MediaLibrary.presentPermissionsPickerAsync();
+                } catch (e) {
+                  Alert.alert(JSON.stringify(e));
+                }
+              }}
+            />
+          </View>
+        )}
       </View>
     );
   }, [mediaType, album, sortBy, toggleMediaType, toggleSortBy]);

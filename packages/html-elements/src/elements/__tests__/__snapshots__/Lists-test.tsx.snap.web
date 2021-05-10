@@ -8,6 +8,7 @@ exports[`renders UL nested in LI 1`] = `
   <li
     className="css-reset-4rbku5 css-text-901oao"
     dir="auto"
+    onClick={[Function]}
     role="listitem"
   >
     item
@@ -19,6 +20,7 @@ exports[`renders UL nested in LI 1`] = `
     <li
       className="css-reset-4rbku5 css-text-901oao"
       dir="auto"
+      onClick={[Function]}
       role="listitem"
     >
       item

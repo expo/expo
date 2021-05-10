@@ -1,9 +1,16 @@
 import { CalendarTriggerInput as NativeCalendarTriggerInput } from './NotificationScheduler.types';
 
-export interface PushNotificationTrigger {
-  type: 'push';
-  remoteMessage?: FirebaseRemoteMessage;
-}
+/**
+ * `payload` is set only on iOS,
+ * `remoteMessage` is set only on Android,
+ * no extra entry is for Web
+ */
+export type PushNotificationTrigger = { type: 'push' } & (
+  | { payload: Record<string, unknown> }
+  | { remoteMessage: FirebaseRemoteMessage }
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  | {}
+);
 
 export interface CalendarNotificationTrigger {
   type: 'calendar';
@@ -76,6 +83,21 @@ export interface DailyNotificationTrigger {
   minute: number;
 }
 
+export interface WeeklyNotificationTrigger {
+  type: 'weekly';
+  weekday: number;
+  hour: number;
+  minute: number;
+}
+
+export interface YearlyNotificationTrigger {
+  type: 'yearly';
+  day: number;
+  month: number;
+  hour: number;
+  minute: number;
+}
+
 export interface FirebaseRemoteMessage {
   collapseKey: string | null;
   data: { [key: string]: string };
@@ -127,28 +149,61 @@ export type NotificationTrigger =
   | LocationNotificationTrigger
   | TimeIntervalNotificationTrigger
   | DailyNotificationTrigger
+  | WeeklyNotificationTrigger
+  | YearlyNotificationTrigger
   | UnknownNotificationTrigger;
 
+export type ChannelAwareTriggerInput = {
+  channelId: string;
+};
+
 export type CalendarTriggerInput = NativeCalendarTriggerInput['value'] & {
+  channelId?: string;
   repeats?: boolean;
 };
 export interface TimeIntervalTriggerInput {
+  channelId?: string;
   repeats?: boolean;
   seconds: number;
 }
 export interface DailyTriggerInput {
+  channelId?: string;
   hour: number;
   minute: number;
   repeats: true;
 }
-export type DateTriggerInput = Date | number;
 
-export type NotificationTriggerInput =
-  | null
+export interface WeeklyTriggerInput {
+  channelId?: string;
+  weekday: number;
+  hour: number;
+  minute: number;
+  repeats: true;
+}
+
+export interface YearlyTriggerInput {
+  channelId?: string;
+  day: number;
+  month: number;
+  hour: number;
+  minute: number;
+  repeats: true;
+}
+
+export type DateTriggerInput = Date | number | { channelId?: string; date: Date | number };
+
+export type SchedulableNotificationTriggerInput =
   | DateTriggerInput
   | TimeIntervalTriggerInput
   | DailyTriggerInput
+  | WeeklyTriggerInput
+  | YearlyTriggerInput
   | CalendarTriggerInput;
+
+export type NotificationTriggerInput =
+  | null
+  | ChannelAwareTriggerInput
+  | SchedulableNotificationTriggerInput;
 
 export enum AndroidNotificationPriority {
   MIN = 'min',
@@ -212,6 +267,7 @@ export interface NotificationContentInput {
    */
   color?: string;
   autoDismiss?: boolean;
+  categoryIdentifier?: string;
   sticky?: boolean;
   attachments?: {
     url: string;
@@ -246,4 +302,33 @@ export interface NotificationBehavior {
   shouldPlaySound: boolean;
   shouldSetBadge: boolean;
   priority?: AndroidNotificationPriority;
+}
+
+export interface NotificationAction {
+  identifier: string;
+  buttonTitle: string;
+  textInput?: {
+    submitButtonTitle: string;
+    placeholder: string;
+  };
+  options?: {
+    isDestructive?: boolean;
+    isAuthenticationRequired?: boolean;
+    opensAppToForeground?: boolean;
+  };
+}
+
+export interface NotificationCategory {
+  identifier: string;
+  actions: NotificationAction[];
+  options?: {
+    previewPlaceholder?: string;
+    intentIdentifiers?: string[];
+    categorySummaryFormat?: string;
+    customDismissAction?: boolean;
+    allowInCarPlay?: boolean;
+    showTitle?: boolean;
+    showSubtitle?: boolean;
+    allowAnnouncement?: boolean;
+  };
 }

@@ -1,1 +1,0 @@
-../../../../../versioned-react-native/ABI36_0_0/ReactNative/React/CxxUtils/ABI36_0_0RCTFollyConvert.h

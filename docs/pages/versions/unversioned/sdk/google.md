@@ -1,9 +1,12 @@
 ---
 title: Google
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-google-app-auth'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-google-app-auth'
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import { InlineCode } from '~/components/base/code';
+
+> ⚠️ This package is deprecated in favor of the Google [**AuthSession**](auth-session.md) provider. Check out the [Google authentication guides](../../../guides/authentication.md#google) to learn how to migrate your app today.
 
 **`expo-google-app-auth`** provides Google authentication integration for Expo apps using a secure system web browser with native [**`expo-app-auth`**][expo-app-auth]. This is better than a WebView because you can reuse credentials saved on the device. This module uses [PKCE](https://tools.ietf.org/html/rfc7636) for secure native authentication. You won't need to define a provider config because this package utilizes Open ID Connect [auto discovery](https://openid.net/specs/openid-connect-discovery-1_0.html).
 
@@ -15,7 +18,7 @@ You'll get an access token after a successful login. Once you have the token, if
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-google-app-auth`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, you will need to run `npx pod-install` and do a new build after installing the package because this library pulls in [**`expo-app-auth`**][expo-app-auth] as a dependency.
+For [managed][managed-workflow] apps, you'll need to run `expo install expo-google-app-auth`. To use it in a [bare][bare-workflow] React Native app, you will need to run `npx pod-install` and do a new build after installing the package because this library pulls in [**`expo-app-auth`**][expo-app-auth] as a dependency.
 
 ## API
 
@@ -56,20 +59,20 @@ The difference between this method and native authentication are very sparce. Go
 
 **LogInConfig**
 
-| Name                                    | Type                              | Description                                                                                                                                                         |
-| --------------------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [iosClientId][g-creds]                  | `string | undefined`              | The iOS client id registered with Google for use in the Expo client app.                                                                                            |
-| [androidClientId][g-creds]              | `string | undefined`              | The Android client id registered with Google for use in the Expo client app.                                                                                        |
-| [iosStandaloneAppClientId][g-creds]     | `string | undefined`              | The iOS client id registered with Google for use in a standalone app.                                                                                               |
-| [androidStandaloneAppClientId][g-creds] | `string | undefined`              | The Android client id registered with Google for use in a standalone app.                                                                                           |
-| [clientId][g-creds]                     | `string | undefined`              | If the platform-appropriate client ID is not provided, this will be used instead.                                                                                   |
-| [language][g-language]                  | `string | undefined`              | ISO language code ex (`fr`, `en-US`), this will choose which language is used in the Google sign-in UI. Defaults to the best estimation based on the users browser. |
-| [loginHint][g-loginhint]                | `string | undefined`              | If the user's email address is known ahead of time, it can be supplied to be the default option. This maps to the [OAuth login_hint][auth-loginhint] prop.          |
-| scopes                                  | `string[] = ['profile', 'email']` | The scopes to ask for from Google for this login ([more information here][g-using-apis])                                                                            |
-| redirectUrl                             | `string | undefined`              | Defaults to `${AppAuth.OAuthRedirect}:/oauth2redirect/google`. Optionally you can define your own redirect URL, just make sure to see the note below.               |
+| Name                                    | Type                                         | Description                                                                                                                                                         |
+| --------------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [iosClientId][g-creds]                  | <InlineCode>string \| undefined</InlineCode> | The iOS client id registered with Google for use in the Expo Go app.                                                                                                |
+| [androidClientId][g-creds]              | <InlineCode>string \| undefined</InlineCode> | The Android client id registered with Google for use in the Expo Go app.                                                                                            |
+| [iosStandaloneAppClientId][g-creds]     | <InlineCode>string \| undefined</InlineCode> | The iOS client id registered with Google for use in a standalone app.                                                                                               |
+| [androidStandaloneAppClientId][g-creds] | <InlineCode>string \| undefined</InlineCode> | The Android client id registered with Google for use in a standalone app.                                                                                           |
+| [clientId][g-creds]                     | <InlineCode>string \| undefined</InlineCode> | If the platform-appropriate client ID is not provided, this will be used instead.                                                                                   |
+| [language][g-language]                  | <InlineCode>string \| undefined</InlineCode> | ISO language code ex (`fr`, `en-US`), this will choose which language is used in the Google sign-in UI. Defaults to the best estimation based on the users browser. |
+| [loginHint][g-loginhint]                | <InlineCode>string \| undefined</InlineCode> | If the user's email address is known ahead of time, it can be supplied to be the default option. This maps to the [OAuth login_hint][auth-loginhint] prop.          |
+| scopes                                  | `string[] = ['profile', 'email']`            | The scopes to ask for from Google for this login ([more information here][g-using-apis])                                                                            |
+| redirectUrl                             | <InlineCode>string \| undefined</InlineCode> | Defaults to `${AppAuth.OAuthRedirect}:/oauth2redirect/google`. Optionally you can define your own redirect URL, just make sure to see the note below.               |
 
 **Note on `redirectUrl`**:
-If you choose to provide your own `redirectUrl`, it should start with the value returned by [`AppAuth.OAuthRedirect`](../../sdk/app-auth/#appauthoauthredirect). This way, the method will function correctly and consistently whether you are testing in the Expo Client or as a standalone app.
+If you choose to provide your own `redirectUrl`, it should start with the value returned by [`AppAuth.OAuthRedirect`](../sdk/app-auth.md#appauthoauthredirect). This way, the method will function correctly and consistently whether you are testing in Expo Go or as a standalone app.
 
 **Returns**
 
@@ -79,24 +82,24 @@ If you choose to provide your own `redirectUrl`, it should start with the value 
 
 **LogInResult**
 
-| Name         | Type                   | Description                                                  |
-| ------------ | ---------------------- | ------------------------------------------------------------ |
-| type         | `'cancel' | 'success'` | Denotes the summary of the user event.                       |
-| accessToken  | `string | undefined`   | Used for accessing data from Google, invalidate to "log out" |
-| idToken      | `string | null`        | ID token                                                     |
-| refreshToken | `string | null`        | Refresh the other tokens.                                    |
-| user         | `GoogleUser`           | An object with data regarding the authenticated user.        |
+| Name         | Type                                           | Description                                                  |
+| ------------ | ---------------------------------------------- | ------------------------------------------------------------ |
+| type         | <InlineCode>'cancel' \| 'success'</InlineCode> | Denotes the summary of the user event.                       |
+| accessToken  | <InlineCode>string \| undefined</InlineCode>   | Used for accessing data from Google, invalidate to "log out" |
+| idToken      | <InlineCode>string \| null</InlineCode>        | ID token                                                     |
+| refreshToken | <InlineCode>string \| null</InlineCode>        | Refresh the other tokens.                                    |
+| user         | `GoogleUser`                                   | An object with data regarding the authenticated user.        |
 
 **GoogleUser**
 
-| Name       | Type                 | Description                |
-| ---------- | -------------------- | -------------------------- |
-| id         | `string | undefined` | ID for the user            |
-| name       | `string | undefined` | name for the user          |
-| givenName  | `string | undefined` | first name for the user    |
-| familyName | `string | undefined` | last name for the user     |
-| photoUrl   | `string | undefined` | photo for the user         |
-| email      | `string | undefined` | email address for the user |
+| Name       | Type                                         | Description                |
+| ---------- | -------------------------------------------- | -------------------------- |
+| id         | <InlineCode>string \| undefined</InlineCode> | ID for the user            |
+| name       | <InlineCode>string \| undefined</InlineCode> | name for the user          |
+| givenName  | <InlineCode>string \| undefined</InlineCode> | first name for the user    |
+| familyName | <InlineCode>string \| undefined</InlineCode> | last name for the user     |
+| photoUrl   | <InlineCode>string \| undefined</InlineCode> | photo for the user         |
+| email      | <InlineCode>string \| undefined</InlineCode> | email address for the user |
 
 **Example**
 
@@ -132,14 +135,14 @@ Invalidates the provided `accessToken`, given the client ID used to sign-in is p
 
 **options**
 
-| Name                                    | Type                              | Description                                                                              |
-| --------------------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------- |
-| accessToken                             | `string`                          | Provided when the user authenticates with your Google application.                       |
-| [iosClientId][g-creds]                  | `string | undefined`              | The iOS client id registered with Google for use in the Expo client app.                 |
-| [androidClientId][g-creds]              | `string | undefined`              | The Android client id registered with Google for use in the Expo client app.             |
-| [iosStandaloneAppClientId][g-creds]     | `string | undefined`              | The iOS client id registered with Google for use in a standalone app.                    |
-| [androidStandaloneAppClientId][g-creds] | `string | undefined`              | The Android client id registered with Google for use in a standalone app.                |
-| scopes                                  | `string[] = ['profile', 'email']` | The scopes to ask for from Google for this login ([more information here][g-using-apis]) |
+| Name                                    | Type                                         | Description                                                                              |
+| --------------------------------------- | -------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| accessToken                             | `string`                                     | Provided when the user authenticates with your Google application.                       |
+| [iosClientId][g-creds]                  | <InlineCode>string \| undefined</InlineCode> | The iOS client id registered with Google for use in the Expo Go app.                     |
+| [androidClientId][g-creds]              | <InlineCode>string \| undefined</InlineCode> | The Android client id registered with Google for use in the Expo Go app.                 |
+| [iosStandaloneAppClientId][g-creds]     | <InlineCode>string \| undefined</InlineCode> | The iOS client id registered with Google for use in a standalone app.                    |
+| [androidStandaloneAppClientId][g-creds] | <InlineCode>string \| undefined</InlineCode> | The Android client id registered with Google for use in a standalone app.                |
+| scopes                                  | `string[] = ['profile', 'email']`            | The scopes to ask for from Google for this login ([more information here][g-using-apis]) |
 
 **Example**
 
@@ -164,7 +167,7 @@ if (type === 'success') {
 
 ## Using it inside of the Expo app
 
-In the Expo client app, you can only use browser-based login (this works very well actually because it re-uses credentials saved in your system browser).
+In the Expo Go app, you can only use browser-based login (this works very well actually because it re-uses credentials saved in your system browser).
 
 To use Google Sign In, you will need to create a project on the Google Developer Console and create an OAuth 2.0 client ID. This is, unfortunately, super annoying to do and we wish there was a way we could automate this for you, but at the moment the Google Developer Console does not expose an API. _You also need to register a separate set of Client IDs for a standalone app, the process for this is described later in this document_.
 
@@ -218,7 +221,7 @@ To use Google Sign In, you will need to create a project on the Google Developer
 
 ## Deploying to a standalone app on Android
 
-If you want to use Google Sign In for a standalone app, you can follow these steps. These steps assume that you already have it working on the Expo client app. If you have already created an API key for Google Maps, you skip steps 3 through 8, inclusive.
+If you want to use Google Sign In for a standalone app, you can follow these steps. These steps assume that you already have it working on the Expo Go app. If you have already created an API key for Google Maps, you skip steps 3 through 8, inclusive.
 
 - **Get a Google API Key for your app** : `skip this if you already have one, eg: for Google Maps`
   1.  Build a standalone app and download the apk, or find one that you have already built.
@@ -250,7 +253,7 @@ Note that if you've enabled Google Play's app signing service, you will need to 
 
 ## Deploying to a standalone app on iOS
 
-If you want to use native sign in for a standalone app, you can follow these steps. These steps assume that you already have it working on the Expo client app.
+If you want to use native sign in for a standalone app, you can follow these steps. These steps assume that you already have it working on the Expo Go app.
 
 1.  Add a `bundleIdentifier` to your `app.json` if you don't already have one.
 2.  Open your browser to [Google Developer Credentials][g-creds]
@@ -285,10 +288,10 @@ let result = await AuthSession.startAsync({
 
 [rn-fetch]: https://reactnative.dev/docs/network.html#fetch
 [google-api-explorer]: https://developers.google.com/apis-explorer/
-[managed-workflow]: ../../introduction/managed-vs-bare/#managed-workflow
-[bare-workflow]: ../../introduction/managed-vs-bare/#bare-workflow
-[expo-app-auth]: ../app-auth
-[expo-app-session]: ../auth-session
+[managed-workflow]: ../../../introduction/managed-vs-bare.md#managed-workflow
+[bare-workflow]: ../../../introduction/managed-vs-bare.md#bare-workflow
+[expo-app-auth]: app-auth.md
+[expo-app-session]: auth-session.md
 [auth-loginhint]: https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
 [g-using-apis]: https://gsuite-developers.googleblog.com/2012/01/tips-on-using-apis-discovery-service.html
 [g-creds]: https://console.developers.google.com/apis/credentials

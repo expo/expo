@@ -4,10 +4,18 @@
 
 #import "EXScopedNotificationsEmitter.h"
 #import "EXScopedNotificationsUtils.h"
+#import "EXScopedNotificationSerializer.h"
 
 @interface EXScopedNotificationsEmitter ()
 
 @property (nonatomic, strong) NSString *experienceId;
+
+@end
+
+@interface EXNotificationsEmitter (Protected)
+
+- (NSDictionary *)serializedNotification:(UNNotification *)notification;
+- (NSDictionary *)serializedNotificationResponse:(UNNotificationResponse *)notificationResponse;
 
 @end
 
@@ -26,20 +34,28 @@
 {
   if ([EXScopedNotificationsUtils shouldNotification:response.notification beHandledByExperience:_experienceId]) {
     [super userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
-    return;
+  } else {
+    completionHandler();
   }
-  
-  completionHandler();
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler
 {
   if ([EXScopedNotificationsUtils shouldNotification:notification beHandledByExperience:_experienceId]) {
     [super userNotificationCenter:center willPresentNotification:notification withCompletionHandler:completionHandler];
-    return;
+  } else {
+    completionHandler(UNNotificationPresentationOptionNone);
   }
-  
-  completionHandler(UNNotificationPresentationOptionNone);
+}
+
+- (NSDictionary *)serializedNotification:(UNNotification *)notification
+{
+  return [EXScopedNotificationSerializer serializedNotification:notification];
+}
+
+- (NSDictionary *)serializedNotificationResponse:(UNNotificationResponse *)notificationResponse
+{
+  return [EXScopedNotificationSerializer serializedNotificationResponse:notificationResponse];
 }
 
 @end

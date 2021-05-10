@@ -2,7 +2,7 @@
 title: Developing With ExpoKit
 ---
 
-> **ExpoKit is deprecated and will no longer be supported after SDK 38. If you need to make customizations to your Expo project, we recommend using the [bare workflow](../../bare/customizing/) instead.**
+> **ExpoKit is deprecated and will no longer be supported after SDK 38. If you need to make customizations to your Expo project, we recommend using the [bare workflow](../bare/customizing.md) instead.**
 
 ExpoKit is an Objective-C and Java library that allows you to use the Expo platform with a
 native iOS/Android project.
@@ -12,7 +12,7 @@ native iOS/Android project.
 To create an ExpoKit project:
 
 1.  Create a pure-JS project with Expo CLI (also projects that were created with exp, XDE or create-react-native-app will work)
-2.  Then use [`expo eject`](../eject/) to add ExpoKit (choose the "ExpoKit" option).
+2.  Then use [`expo eject`](eject.md) to add ExpoKit (choose the "ExpoKit" option).
 
 Make sure to perform these steps before continuing in this guide. The remainder of the guide will assume you have created an ExpoKit project.
 
@@ -126,7 +126,7 @@ If upgrading from SDK 32 or below:
      require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
      use_unimodules!
    ```
-   This will introduce your project to autoinstallable unimodules. More information can be found on the [`react-native-unimodules` repository](https://github.com/unimodules/react-native-unimodules).
+   This will introduce your project to autoinstallable unimodules. More information can be found on the [`react-native-unimodules` repository](https://github.com/expo/expo/tree/master/packages/react-native-unimodules).
 3. Upgrade CocoaPods to some version higher or equal 1.6. (At the moment of writing the latest version is 1.7.1, we have tested it works. You will probably need to run `gem update cocoapods`, but the exact command will depend on your setup.)
 4. Change the whole `post_install` block at the bottom of the `Podfile` to
 
@@ -151,7 +151,7 @@ If upgrading from SDK 32 or below:
    ```
 
 
-        if ['Amplitude-iOS','Analytics','AppAuth','Branch','CocoaLumberjack','FBSDKCoreKit','FBSDKLoginKit','FBSDKShareKit','GPUImage','JKBigInteger2'].include? pod_name
+        if ['Amplitude','Analytics','AppAuth','Branch','CocoaLumberjack','FBSDKCoreKit','FBSDKLoginKit','FBSDKShareKit','GPUImage','JKBigInteger2'].include? pod_name
           target_installation_result.native_target.build_configurations.each do |config|
             config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '10.0'
           end

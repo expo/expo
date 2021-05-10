@@ -1,4 +1,4 @@
-import * as Permissions from 'expo-permissions';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import { Accelerometer } from 'expo-sensors';
 import React from 'react';
 import {
@@ -16,18 +16,23 @@ import { Colors } from '../constants';
 const COUNT = 5;
 const ITEM_SIZE = Dimensions.get('window').width / COUNT;
 
-interface State {
-  items: any[];
-  error: string | null;
-  isSetup: boolean;
-}
-
 interface Props {
   numItems: number;
   perspective: number;
 }
 
+function useLockedScreenOrientation() {
+  React.useEffect(() => {
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP).catch(() => null);
+    return () => {
+      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.ALL).catch(() => null);
+    };
+  }, []);
+}
+
 export default function AccelerometerScreen({ numItems = COUNT, perspective = 200 }: Props) {
+  useLockedScreenOrientation();
+
   const [items, setItems] = React.useState<any[]>([]);
   const [error, setError] = React.useState<string | null>(null);
   const [isSetup, setSetup] = React.useState<boolean>(false);
@@ -42,7 +47,7 @@ export default function AccelerometerScreen({ numItems = COUNT, perspective = 20
 
   React.useEffect(() => {
     (async () => {
-      const { status } = await Permissions.getAsync(Permissions.MOTION);
+      const { status } = await Accelerometer.getPermissionsAsync();
       if (status === 'denied') {
         setError(`Cannot start demo!\nMotion permission is ${status}.`);
       } else if (status === 'undetermined') {
@@ -104,7 +109,7 @@ export default function AccelerometerScreen({ numItems = COUNT, perspective = 20
         <Button
           title="Ask Permission"
           onPress={async () => {
-            const { status } = await Permissions.askAsync(Permissions.MOTION);
+            const { status } = await Accelerometer.requestPermissionsAsync();
             if (status !== 'granted') {
               setError(`Cannot start demo!\nMotion permission is ${status}.`);
             }

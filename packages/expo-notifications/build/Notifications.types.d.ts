@@ -1,8 +1,16 @@
 import { CalendarTriggerInput as NativeCalendarTriggerInput } from './NotificationScheduler.types';
-export interface PushNotificationTrigger {
+/**
+ * `payload` is set only on iOS,
+ * `remoteMessage` is set only on Android,
+ * no extra entry is for Web
+ */
+export declare type PushNotificationTrigger = {
     type: 'push';
-    remoteMessage?: FirebaseRemoteMessage;
-}
+} & ({
+    payload: Record<string, unknown>;
+} | {
+    remoteMessage: FirebaseRemoteMessage;
+} | {});
 export interface CalendarNotificationTrigger {
     type: 'calendar';
     repeats: boolean;
@@ -67,6 +75,19 @@ export interface DailyNotificationTrigger {
     hour: number;
     minute: number;
 }
+export interface WeeklyNotificationTrigger {
+    type: 'weekly';
+    weekday: number;
+    hour: number;
+    minute: number;
+}
+export interface YearlyNotificationTrigger {
+    type: 'yearly';
+    day: number;
+    month: number;
+    hour: number;
+    minute: number;
+}
 export interface FirebaseRemoteMessage {
     collapseKey: string | null;
     data: {
@@ -112,21 +133,46 @@ export interface FirebaseRemoteMessage {
 export interface UnknownNotificationTrigger {
     type: 'unknown';
 }
-export declare type NotificationTrigger = PushNotificationTrigger | CalendarNotificationTrigger | LocationNotificationTrigger | TimeIntervalNotificationTrigger | DailyNotificationTrigger | UnknownNotificationTrigger;
+export declare type NotificationTrigger = PushNotificationTrigger | CalendarNotificationTrigger | LocationNotificationTrigger | TimeIntervalNotificationTrigger | DailyNotificationTrigger | WeeklyNotificationTrigger | YearlyNotificationTrigger | UnknownNotificationTrigger;
+export declare type ChannelAwareTriggerInput = {
+    channelId: string;
+};
 export declare type CalendarTriggerInput = NativeCalendarTriggerInput['value'] & {
+    channelId?: string;
     repeats?: boolean;
 };
 export interface TimeIntervalTriggerInput {
+    channelId?: string;
     repeats?: boolean;
     seconds: number;
 }
 export interface DailyTriggerInput {
+    channelId?: string;
     hour: number;
     minute: number;
     repeats: true;
 }
-export declare type DateTriggerInput = Date | number;
-export declare type NotificationTriggerInput = null | DateTriggerInput | TimeIntervalTriggerInput | DailyTriggerInput | CalendarTriggerInput;
+export interface WeeklyTriggerInput {
+    channelId?: string;
+    weekday: number;
+    hour: number;
+    minute: number;
+    repeats: true;
+}
+export interface YearlyTriggerInput {
+    channelId?: string;
+    day: number;
+    month: number;
+    hour: number;
+    minute: number;
+    repeats: true;
+}
+export declare type DateTriggerInput = Date | number | {
+    channelId?: string;
+    date: Date | number;
+};
+export declare type SchedulableNotificationTriggerInput = DateTriggerInput | TimeIntervalTriggerInput | DailyTriggerInput | WeeklyTriggerInput | YearlyTriggerInput | CalendarTriggerInput;
+export declare type NotificationTriggerInput = null | ChannelAwareTriggerInput | SchedulableNotificationTriggerInput;
 export declare enum AndroidNotificationPriority {
     MIN = "min",
     LOW = "low",
@@ -187,6 +233,7 @@ export interface NotificationContentInput {
      */
     color?: string;
     autoDismiss?: boolean;
+    categoryIdentifier?: string;
     sticky?: boolean;
     attachments?: {
         url: string;
@@ -221,5 +268,32 @@ export interface NotificationBehavior {
     shouldPlaySound: boolean;
     shouldSetBadge: boolean;
     priority?: AndroidNotificationPriority;
+}
+export interface NotificationAction {
+    identifier: string;
+    buttonTitle: string;
+    textInput?: {
+        submitButtonTitle: string;
+        placeholder: string;
+    };
+    options?: {
+        isDestructive?: boolean;
+        isAuthenticationRequired?: boolean;
+        opensAppToForeground?: boolean;
+    };
+}
+export interface NotificationCategory {
+    identifier: string;
+    actions: NotificationAction[];
+    options?: {
+        previewPlaceholder?: string;
+        intentIdentifiers?: string[];
+        categorySummaryFormat?: string;
+        customDismissAction?: boolean;
+        allowInCarPlay?: boolean;
+        showTitle?: boolean;
+        showSubtitle?: boolean;
+        allowAnnouncement?: boolean;
+    };
 }
 export {};

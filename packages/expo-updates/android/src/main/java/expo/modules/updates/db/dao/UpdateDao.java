@@ -1,11 +1,14 @@
 package expo.modules.updates.db.dao;
 
 import androidx.room.Delete;
+import androidx.room.Update;
 import expo.modules.updates.db.enums.UpdateStatus;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,17 +39,27 @@ public abstract class UpdateDao {
   @Query("UPDATE updates SET status = :status WHERE id = :id;")
   public abstract void _markUpdateWithStatus(UpdateStatus status, UUID id);
 
+  @Update
+  public abstract void _updateUpdate(UpdateEntity update);
+
+  @Query("UPDATE updates SET status = :status WHERE id IN (" +
+          "SELECT DISTINCT update_id FROM updates_assets WHERE asset_id IN (:missingAssetIds));")
+  public abstract void _markUpdatesWithMissingAssets(List<Long> missingAssetIds, UpdateStatus status);
+
 
   /**
    * for public use
    */
 
-  @Query("SELECT * FROM updates WHERE scope_key = :scopeKey;")
-  public abstract List<UpdateEntity> loadAllUpdatesForScope(String scopeKey);
+  @Query("SELECT * FROM updates;")
+  public abstract List<UpdateEntity> loadAllUpdates();
 
   public List<UpdateEntity> loadLaunchableUpdatesForScope(String scopeKey) {
-    return _loadUpdatesForProjectWithStatuses(scopeKey, Arrays.asList(UpdateStatus.READY, UpdateStatus.EMBEDDED));
+    return _loadUpdatesForProjectWithStatuses(scopeKey, Arrays.asList(UpdateStatus.READY, UpdateStatus.EMBEDDED, UpdateStatus.DEVELOPMENT));
   }
+
+  @Query("SELECT * FROM updates WHERE status = :status;")
+  public abstract List<UpdateEntity> loadAllUpdatesWithStatus(UpdateStatus status);
 
   public UpdateEntity loadUpdateWithId(UUID id) {
     List<UpdateEntity> updateEntities = _loadUpdatesWithId(id);
@@ -62,14 +75,38 @@ public abstract class UpdateDao {
   @Insert
   public abstract void insertUpdate(UpdateEntity update);
 
+  public void setUpdateScopeKey(UpdateEntity update, String newScopeKey) {
+    update.scopeKey = newScopeKey;
+    _updateUpdate(update);
+  }
+
   @Transaction
   public void markUpdateFinished(UpdateEntity update, boolean hasSkippedEmbeddedAssets) {
-    _markUpdateWithStatus(hasSkippedEmbeddedAssets ? UpdateStatus.EMBEDDED : UpdateStatus.READY, update.id);
+    UpdateStatus statusToMark = UpdateStatus.READY;
+    if (update.status == UpdateStatus.DEVELOPMENT) {
+      statusToMark = UpdateStatus.DEVELOPMENT;
+    } else if (hasSkippedEmbeddedAssets) {
+      statusToMark = UpdateStatus.EMBEDDED;
+    }
+    _markUpdateWithStatus(statusToMark, update.id);
     _keepUpdate(update.id);
   }
 
   public void markUpdateFinished(UpdateEntity update) {
     markUpdateFinished(update, false);
+  }
+
+  public void markUpdateAccessed(UpdateEntity update) {
+    update.lastAccessed = new Date();
+    _updateUpdate(update);
+  }
+
+  public void markUpdatesWithMissingAssets(List<AssetEntity> missingAssets) {
+    List<Long> missingAssetIds = new ArrayList<>();
+    for (AssetEntity asset : missingAssets) {
+      missingAssetIds.add(asset.id);
+    }
+    _markUpdatesWithMissingAssets(missingAssetIds, UpdateStatus.PENDING);
   }
 
   @Delete

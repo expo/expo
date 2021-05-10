@@ -1,10 +1,16 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
- *
+ * <p>
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ * </p>
  */
 package versioned.host.exp.exponent.modules.api.components.datetimepicker;
+
+import static versioned.host.exp.exponent.modules.api.components.datetimepicker.ReflectionHelper.findField;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -12,47 +18,48 @@ import android.content.res.TypedArray;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.widget.TimePicker;
+
 import androidx.annotation.Nullable;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-
-import static versioned.host.exp.exponent.modules.api.components.datetimepicker.ReflectionHelper.findField;
 
 /**
  * <p>
- *   Certain versions of Android (Jellybean-KitKat) have a bug where when dismissed, the
- *   {@link TimePickerDialog} still calls the OnTimeSetListener. This class works around that issue
- *   by *not* calling super.onStop on KitKat on lower, as that would erroneously call the
- *   OnTimeSetListener when the dialog is dismissed, or call it twice when "OK" is pressed.
+ * Certain versions of Android (Jellybean-KitKat) have a bug where when dismissed, the
+ * {@link TimePickerDialog} still calls the OnTimeSetListener. This class works around that issue
+ * by *not* calling super.onStop on KitKat on lower, as that would erroneously call the
+ * OnTimeSetListener when the dialog is dismissed, or call it twice when "OK" is pressed.
  * </p>
  *
  * <p>
- *   See: <a href="https://code.google.com/p/android/issues/detail?id=34833">Issue 34833</a>
+ * See: <a href="https://code.google.com/p/android/issues/detail?id=34833">Issue 34833</a>
  * </p>
  */
-public class RNDismissableTimePickerDialog extends TimePickerDialog {
+
+public class RNDismissableTimePickerDialog extends MinuteIntervalSnappableTimePickerDialog {
 
   public RNDismissableTimePickerDialog(
-      Context context,
-      @Nullable TimePickerDialog.OnTimeSetListener callback,
-      int hourOfDay,
-      int minute,
-      boolean is24HourView,
-      RNTimePickerDisplay display) {
-    super(context, callback, hourOfDay, minute, is24HourView);
+    Context context,
+    @Nullable TimePickerDialog.OnTimeSetListener callback,
+    int hourOfDay,
+    int minute,
+    int minuteInterval,
+    boolean is24HourView,
+    RNTimePickerDisplay display
+  ) {
+    super(context, callback, hourOfDay, minute, minuteInterval, is24HourView, display);
     fixSpinner(context, hourOfDay, minute, is24HourView, display);
   }
 
   public RNDismissableTimePickerDialog(
-      Context context,
-      int theme,
-      @Nullable TimePickerDialog.OnTimeSetListener callback,
-      int hourOfDay,
-      int minute,
-      boolean is24HourView,
-      RNTimePickerDisplay display) {
-    super(context, theme, callback, hourOfDay, minute, is24HourView);
+    Context context,
+    int theme,
+    @Nullable TimePickerDialog.OnTimeSetListener callback,
+    int hourOfDay,
+    int minute,
+    int minuteInterval,
+    boolean is24HourView,
+    RNTimePickerDisplay display
+  ) {
+    super(context, theme, callback, hourOfDay, minute, minuteInterval, is24HourView, display);
     fixSpinner(context, hourOfDay, minute, is24HourView, display);
   }
 

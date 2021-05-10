@@ -10,7 +10,11 @@ type NativeModule = {
   removeListeners: (count: number) => void;
 };
 
+// @needsAudit
 export type Subscription = {
+  /**
+   * A method to unsubscribe the listener.
+   */
   remove: () => void;
 };
 

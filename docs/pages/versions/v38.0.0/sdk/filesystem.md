@@ -5,7 +5,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-38/packages/expo-file-syst
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-file-system`** provides access to a file system stored locally on the device. Within the Expo client, each app has a separate file system and has no access to the file system of other Expo apps.
 
@@ -15,7 +14,7 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 <InstallSection packageName="expo-file-system" />
 
-## Example Usage
+## Usage
 
 ```javascript
 const callback = downloadProgress => {
@@ -78,12 +77,6 @@ try {
 ```js
 import * as FileSystem from 'expo-file-system';
 ```
-
-<TableOfContentSection title='Directories' contents={['FileSystem.documentDirectory', 'FileSystem.cacheDirectory']} />
-
-<TableOfContentSection title='Constants' contents={['FileSystem.EncodingType', 'FileSystem.FileSystemSessionType', 'FileSystem.FileSystemUploadOptions']} />
-
-<TableOfContentSection title='Methods' contents={['FileSystem.getInfoAsync(fileUri, options)', 'FileSystem.readAsStringAsync(fileUri, options)', 'FileSystem.writeAsStringAsync(fileUri, contents, options)', 'FileSystem.deleteAsync(fileUri, options)', 'FileSystem.moveAsync(options)', 'FileSystem.copyAsync(options)', 'FileSystem.makeDirectoryAsync(fileUri, options)', 'FileSystem.downloadAsync(uri, fileUri, options)', 'FileSystem.uploadAsync(url, fileUri, options)', 'FileSystem.createDownloadResumable(uri, fileUri, options, callback, resumeData)', 'FileSystem.DownloadResumable.downloadAsync()', 'FileSystem.DownloadResumable.pauseAsync()', 'FileSystem.DownloadResumable.resumeAsync()', 'FileSystem.DownloadResumable.savable()', 'FileSystem.getContentUriAsync(fileUri)', 'FileSystem.getFreeDiskStorageAsync()', 'FileSystem.getTotalDiskCapacityAsync()']} />
 
 ## Directories
 
@@ -325,9 +318,9 @@ Returns a Promise that resolves to an object with the following fields:
 
 - **uri (_string_)** -- A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
 
-- **status (_number_)** -- The HTTP status code for the download network request.
+- **status (_number_)** -- The HTTP response status code for the download network request.
 
-- **headers (_object_)** -- An object containing all the HTTP header fields and their values for the download network request. The keys and values of the object are the header names and values respectively.
+- **headers (_object_)** -- An object containing all the HTTP response header fields and their values for the download network request. The keys and values of the object are the header names and values respectively.
 
 - **md5 (_string_)** -- Present if the `md5` option was truthy. Contains the MD5 hash of the file.
 
@@ -343,7 +336,7 @@ Upload the contents of the file pointed by `fileUri` to the remote url.
 
 - **options (_object_)** -- A map of options:
 
-  - **headers (_object_)** -- An object containing all the HTTP header fields and their values for the download network request. The keys and values of the object are the header names and values respectively.
+  - **headers (_object_)** -- An object containing all the HTTP header fields and their values for the upload network request. The keys and values of the object are the header names and values respectively.
 
   - **httpMethod (_String_)** -- The request method. Accepts values: 'POST', 'PUT', 'PATCH. Default to 'POST'.
 
@@ -363,9 +356,9 @@ Upload the contents of the file pointed by `fileUri` to the remote url.
 
 Returns a Promise that resolves to an object with the following fields:
 
-- **status (_number_)** -- The HTTP status code for the download network request.
+- **status (_number_)** -- The HTTP response status code for the upload network request.
 
-- **headers (_object_)** -- An object containing all the HTTP header fields and their values for the download network request. The keys and values of the object are the header names and values respectively.
+- **headers (_object_)** -- An object containing all the HTTP response header fields and their values for the upload network request. The keys and values of the object are the header names and values respectively.
 
 - **body (_string_)** -- The body of the server response.
 

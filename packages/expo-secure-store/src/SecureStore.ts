@@ -23,6 +23,15 @@ export type SecureStoreOptions = {
   keychainAccessible?: KeychainAccessibilityConstant;
 };
 
+/**
+ * Returns whether the SecureStore API is enabled on the current device. This does not check the app permissions.
+ *
+ * @returns Async `boolean`, indicating whether the SecureStore API is available on the current device. Currently this resolves `true` on iOS and Android only.
+ */
+export async function isAvailableAsync(): Promise<boolean> {
+  return !!ExpoSecureStore.getValueWithKeyAsync;
+}
+
 export async function deleteItemAsync(
   key: string,
   options: SecureStoreOptions = {}

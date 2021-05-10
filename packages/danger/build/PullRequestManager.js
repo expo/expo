@@ -56,8 +56,7 @@ class PullRequestManager {
         return changelogEntries;
     }
     preprocessPR(pullRequest) {
-        var _a;
-        const changelogSection = (_a = pullRequest.body.match(/#\schangelog(([^#]*?)\s?)*/i)) === null || _a === void 0 ? void 0 : _a[0];
+        const changelogSection = pullRequest.body.match(/#\schangelog(([^#]*?)\s?)*/i)?.[0];
         if (changelogSection) {
             this.changelogSection = changelogSection
                 .split('\n')
@@ -100,12 +99,11 @@ class PullRequestManager {
         });
     }
     parseTagsFromLine(line) {
-        var _a;
         const result = {
             type: ChangelogEntryType.BUG_FIXES,
             packageName: exports.DEFAULT_CHANGELOG_ENTRY_KEY,
         };
-        const tags = (_a = line.match(/\[[^\]]*\]/g)) === null || _a === void 0 ? void 0 : _a.map(tag => tag.slice(1, tag.length - 1));
+        const tags = line.match(/\[[^\]]*\]/g)?.map(tag => tag.slice(1, tag.length - 1));
         if (!tags) {
             return result;
         }

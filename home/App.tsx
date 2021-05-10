@@ -1,6 +1,9 @@
-import React from 'react';
-import { ApolloProvider } from 'react-apollo';
-import { AppearanceProvider, useColorScheme } from 'react-native-appearance';
+import { ApolloProvider } from '@apollo/client';
+import * as SplashScreen from 'expo-splash-screen';
+import * as React from 'react';
+import { Platform } from 'react-native';
+import { AppearanceProvider } from 'react-native-appearance';
+import { enableScreens } from 'react-native-screens';
 import { Provider as ReduxProvider } from 'react-redux';
 
 import HomeApp from './HomeApp';
@@ -9,16 +12,20 @@ import Store from './redux/Store';
 
 import './menu/DevMenuApp';
 
-export default (props: any) => {
-  const colorScheme = useColorScheme();
+if (Platform.OS === 'android') {
+  enableScreens(false);
+}
+SplashScreen.preventAutoHideAsync();
 
+export default function App() {
   return (
     <AppearanceProvider>
       <ReduxProvider store={Store}>
+        {/* @ts-expect-error apollo-boost (deprecated) tsdefs are incompatible */}
         <ApolloProvider client={ApolloClient}>
-          <HomeApp {...props} colorScheme={colorScheme} />
+          <HomeApp />
         </ApolloProvider>
       </ReduxProvider>
     </AppearanceProvider>
   );
-};
+}

@@ -21,6 +21,7 @@ UM_REGISTER_MODULE();
   [content setLaunchImageName:[request objectForKey:@"launchImageName" verifyingClass:[NSString class]]];
   [content setBadge:[request objectForKey:@"badge" verifyingClass:[NSNumber class]]];
   [content setUserInfo:[request objectForKey:@"data" verifyingClass:[NSDictionary class]]];
+  [content setCategoryIdentifier:[request objectForKey:@"categoryIdentifier" verifyingClass:[NSString class]]];
   if ([request[@"sound"] isKindOfClass:[NSNumber class]]) {
     [content setSound:[request[@"sound"] boolValue] ? [UNNotificationSound defaultSound] : nil];
   } else if ([request[@"sound"] isKindOfClass:[NSString class]]) {

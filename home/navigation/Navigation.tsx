@@ -1,33 +1,31 @@
 import Entypo from '@expo/vector-icons/build/Entypo';
 import Ionicons from '@expo/vector-icons/build/Ionicons';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { NavigationContainer, useTheme } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer, useTheme, NavigationContainerRef } from '@react-navigation/native';
+import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import Constants from 'expo-constants';
 import * as React from 'react';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, Linking } from 'react-native';
 
-import CloseButton from '../components/CloseButton';
 import OpenProjectByURLButton from '../components/OpenProjectByURLButton.ios';
 import OptionsButton from '../components/OptionsButton';
 import UserSettingsButton from '../components/UserSettingsButton';
-import Colors from '../constants/Colors';
 import * as Themes from '../constants/Themes';
+import AccountScreen from '../screens/AccountScreen';
 import AudioDiagnosticsScreen from '../screens/AudioDiagnosticsScreen';
 import DiagnosticsScreen from '../screens/DiagnosticsScreen';
-import ExploreScreen from '../screens/ExploreScreen';
+import ExperienceScreen from '../screens/ExperienceScreen';
 import GeofencingScreen from '../screens/GeofencingScreen';
 import LocationDiagnosticsScreen from '../screens/LocationDiagnosticsScreen';
+import ProfileAllProjectsScreen from '../screens/ProfileAllProjectsScreen';
+import ProfileAllSnacksScreen from '../screens/ProfileAllSnacksScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import ProjectsForUserScreen from '../screens/ProjectsForUserScreen';
+import ProjectsForAccountScreen from '../screens/ProjectsForAccountScreen';
 import ProjectsScreen from '../screens/ProjectsScreen';
 import QRCodeScreen from '../screens/QRCodeScreen';
-import SignInScreen from '../screens/SignInScreen';
-import SignUpScreen from '../screens/SignUpScreen';
-import SnacksForUserScreen from '../screens/SnacksForUserScreen';
+import SnacksForAccountScreen from '../screens/SnacksForAccountScreen';
 import UserSettingsScreen from '../screens/UserSettingsScreen';
 import Environment from '../utils/Environment';
+import BottomTab, { getNavigatorProps } from './BottomTabNavigator';
 import defaultNavigationOptions from './defaultNavigationOptions';
 
 // TODO(Bacon): Do we need to create a new one each time?
@@ -38,15 +36,22 @@ function useThemeName() {
   return theme.dark ? 'dark' : 'light';
 }
 
-const profileNavigationOptions = ({ route }) => {
-  const username = route.params?.username;
+const accountNavigationOptions = ({ route }) => {
+  const accountName = route.params?.accountName;
   return {
-    title: username ?? 'Profile',
-    headerRight: () => (username ? <OptionsButton /> : <UserSettingsButton />),
+    title: `@${accountName}`,
+    headerRight: () => <OptionsButton />,
   };
 };
 
-function ProjectsStackScreen(props) {
+const profileNavigationOptions = ({ route }) => {
+  return {
+    title: 'Profile',
+    headerRight: () => <UserSettingsButton />,
+  };
+};
+
+function ProjectsStackScreen() {
   const theme = useThemeName();
   return (
     <ProjectsStack.Navigator
@@ -64,44 +69,7 @@ function ProjectsStackScreen(props) {
           }),
         }}
       />
-      <ProjectsStack.Screen
-        name="Profile"
-        component={ProfileScreen}
-        options={profileNavigationOptions}
-      />
     </ProjectsStack.Navigator>
-  );
-}
-
-const ExploreStack = createStackNavigator();
-
-function ExploreStackScreen() {
-  const theme = useThemeName();
-  return (
-    <ExploreStack.Navigator
-      initialRouteName="ExploreAndSearch"
-      screenOptions={defaultNavigationOptions(theme)}>
-      <ExploreStack.Screen
-        name="ExploreAndSearch"
-        component={ExploreScreen}
-        options={{ title: 'Explore' }}
-      />
-      <ExploreStack.Screen
-        name="Profile"
-        component={ProfileScreen}
-        options={profileNavigationOptions}
-      />
-      <ExploreStack.Screen
-        name="ProjectsForUser"
-        component={ProjectsForUserScreen}
-        options={{ title: 'Projects' }}
-      />
-      <ExploreStack.Screen
-        name="SnacksForUser"
-        component={SnacksForUserScreen}
-        options={{ title: 'Snacks' }}
-      />
-    </ExploreStack.Navigator>
   );
 }
 
@@ -119,18 +87,33 @@ function ProfileStackScreen() {
         options={profileNavigationOptions}
       />
       <ProfileStack.Screen
+        name="ProfileAllProjects"
+        component={ProfileAllProjectsScreen}
+        options={{ title: 'Projects' }}
+      />
+      <ProfileStack.Screen
+        name="ProfileAllSnacks"
+        component={ProfileAllSnacksScreen}
+        options={{ title: 'Snacks' }}
+      />
+      <ProfileStack.Screen
+        name="Account"
+        component={AccountScreen}
+        options={accountNavigationOptions}
+      />
+      <ProfileStack.Screen
         name="UserSettings"
         component={UserSettingsScreen}
         options={{ title: 'Options' }}
       />
       <ProfileStack.Screen
-        name="ProjectsForUser"
-        component={ProjectsForUserScreen}
+        name="ProjectsForAccount"
+        component={ProjectsForAccountScreen}
         options={{ title: 'Projects' }}
       />
       <ProfileStack.Screen
-        name="SnacksForUser"
-        component={SnacksForUserScreen}
+        name="SnacksForAccount"
+        component={SnacksForAccountScreen}
         options={{ title: 'Snacks' }}
       />
     </ProfileStack.Navigator>
@@ -169,144 +152,119 @@ function DiagnosticsStackScreen() {
   );
 }
 
-const BottomTab = createBottomTabNavigator();
-
-const MaterialBottomTab = createMaterialBottomTabNavigator();
-
 const RootStack = createStackNavigator();
 
-export default (props: { theme: string }) => (
-  <NavigationContainer theme={Themes[props.theme]}>
-    <RootStack.Navigator initialRouteName="Tabs" mode="modal">
-      <RootStack.Screen name="Tabs" options={{ headerShown: false }}>
-        {() => {
-          const projectsNavigationOptions = () => ({
-            tabBarIcon: props => <Entypo {...props} style={styles.icon} name="grid" size={24} />,
-            tabBarLabel: 'Projects',
-          });
-          const profileNavigationOptions = () => ({
-            tabBarIcon: props => (
-              <Ionicons {...props} style={styles.icon} name="ios-person" size={26} />
-            ),
-            tabBarLabel: 'Profile',
-          });
-          const diagnosticsNavigationOptions = () => ({
+function TabNavigator(props: { theme: string }) {
+  const initialRouteName = Environment.IsIOSRestrictedBuild
+    ? 'ProfileStackScreen'
+    : 'ProjectsStack';
+
+  return (
+    <BottomTab.Navigator {...getNavigatorProps(props)} initialRouteName={initialRouteName}>
+      <BottomTab.Screen
+        name="ProjectsStack"
+        component={ProjectsStackScreen}
+        options={{
+          tabBarIcon: props => <Entypo {...props} style={styles.icon} name="grid" size={24} />,
+          tabBarLabel: 'Projects',
+        }}
+      />
+      {Platform.OS === 'ios' && (
+        <BottomTab.Screen
+          name="DiagnosticsStack"
+          component={DiagnosticsStackScreen}
+          options={{
             tabBarIcon: props => (
               <Ionicons {...props} style={styles.icon} name="ios-git-branch" size={26} />
             ),
             tabBarLabel: 'Diagnostics',
-          });
-          const exploreNavigationOptions = () => ({
-            tabBarIcon: props => (
-              <Ionicons {...props} style={styles.icon} name="ios-search" size={24} />
-            ),
-            tabBarLabel: 'Explore',
-            tabBarOnPress: ({ navigation, defaultHandler }) => {
-              if (!navigation.isFocused()) {
-                defaultHandler();
-                return;
-              }
-
-              navigation.popToTop();
-
-              if (navigation.state.routes[0].index > 0) {
-                navigation.navigate('Explore');
-              } else {
-                navigation.emit('refocus');
-              }
-            },
-          });
-
-          if (Platform.OS === 'ios') {
-            return (
-              <BottomTab.Navigator
-                tabBarOptions={{ labelStyle: { fontWeight: '600' } }}
-                initialRouteName={
-                  Environment.IsIOSRestrictedBuild ? 'ProfileStackScreen' : 'ProjectsStack'
-                }>
-                <BottomTab.Screen
-                  name="ProjectsStack"
-                  component={ProjectsStackScreen}
-                  options={projectsNavigationOptions}
-                />
-                {!Environment.IsIOSRestrictedBuild && (
-                  <BottomTab.Screen
-                    name="ExploreStack"
-                    component={ExploreStackScreen}
-                    options={exploreNavigationOptions}
-                  />
-                )}
-                <BottomTab.Screen
-                  name="DiagnosticsStack"
-                  component={DiagnosticsStackScreen}
-                  options={diagnosticsNavigationOptions}
-                />
-                <BottomTab.Screen
-                  name="ProfileStack"
-                  component={ProfileStackScreen}
-                  options={profileNavigationOptions}
-                />
-              </BottomTab.Navigator>
-            );
-          }
-          return (
-            <MaterialBottomTab.Navigator
-              initialRouteName="ProjectsStack"
-              shifting
-              activeColor={Colors[props.theme].tabIconSelected}
-              inactiveColor={Colors[props.theme].tabIconDefault}
-              barStyle={{
-                backgroundColor: Colors[props.theme].cardBackground,
-                borderTopWidth:
-                  props.theme === 'dark' ? StyleSheet.hairlineWidth * 2 : StyleSheet.hairlineWidth,
-                borderTopColor: Colors[props.theme].cardSeparator,
-              }}>
-              <MaterialBottomTab.Screen
-                name="ProjectsStack"
-                component={ProjectsStackScreen}
-                options={projectsNavigationOptions}
-              />
-              <MaterialBottomTab.Screen
-                name="ExploreStack"
-                component={ExploreStackScreen}
-                options={exploreNavigationOptions}
-              />
-              <MaterialBottomTab.Screen
-                name="ProfileStack"
-                component={ProfileStackScreen}
-                options={profileNavigationOptions}
-              />
-            </MaterialBottomTab.Navigator>
-          );
-        }}
-      </RootStack.Screen>
-      <RootStack.Screen
-        name="SignIn"
-        component={SignInScreen}
+          }}
+        />
+      )}
+      <BottomTab.Screen
+        name="ProfileStack"
+        component={ProfileStackScreen}
         options={{
-          title: 'Sign In',
-          headerLeft: () => <CloseButton />,
+          tabBarIcon: props => (
+            <Ionicons {...props} style={styles.icon} name="ios-person" size={26} />
+          ),
+          tabBarLabel: 'Profile',
         }}
       />
-      <RootStack.Screen
-        name="SignUp"
-        component={SignUpScreen}
-        options={{
-          title: 'Sign Up',
-          headerLeft: () => <CloseButton />,
-        }}
-      />
-      <RootStack.Screen
-        name="QRCode"
-        component={QRCodeScreen}
-        options={{
+    </BottomTab.Navigator>
+  );
+}
+
+const ModalStack = createStackNavigator();
+
+export default (props: { theme: string }) => {
+  const navigationRef = React.useRef<NavigationContainerRef>(null);
+  const isNavigationReadyRef = React.useRef(false);
+  const initialURLWasConsumed = React.useRef(false);
+
+  React.useEffect(() => {
+    const handleDeepLinks = ({ url }) => {
+      if (Platform.OS === 'ios' || !url || !isNavigationReadyRef.current) {
+        return;
+      }
+      const nav = navigationRef.current;
+      if (!nav) {
+        return;
+      }
+
+      if (url.startsWith('expo-home://qr-scanner')) {
+        nav.navigate('QRCode');
+      }
+    };
+    if (!initialURLWasConsumed.current) {
+      initialURLWasConsumed.current = true;
+      Linking.getInitialURL().then(url => {
+        handleDeepLinks({ url });
+      });
+    }
+
+    Linking.addEventListener('url', handleDeepLinks);
+
+    return () => {
+      isNavigationReadyRef.current = false;
+      Linking.removeEventListener('url', handleDeepLinks);
+    };
+  }, []);
+
+  return (
+    <NavigationContainer
+      theme={Themes[props.theme]}
+      ref={navigationRef}
+      onReady={() => {
+        isNavigationReadyRef.current = true;
+      }}>
+      <ModalStack.Navigator
+        initialRouteName="RootStack"
+        screenOptions={({ route, navigation }) => ({
           headerShown: false,
-          // stackPresentation: 'modal',
-        }}
-      />
-    </RootStack.Navigator>
-  </NavigationContainer>
-);
+          gestureEnabled: true,
+          cardOverlayEnabled: true,
+          cardStyle: { backgroundColor: 'transparent' },
+          headerStatusBarHeight:
+            navigation.dangerouslyGetState().routes.indexOf(route) > 0 ? 0 : undefined,
+          ...TransitionPresets.ModalPresentationIOS,
+        })}
+        mode="modal">
+        <ModalStack.Screen name="RootStack">
+          {() => (
+            <RootStack.Navigator initialRouteName="Tabs" mode="modal">
+              <RootStack.Screen name="Tabs" options={{ headerShown: false }}>
+                {() => <TabNavigator theme={props.theme} />}
+              </RootStack.Screen>
+            </RootStack.Navigator>
+          )}
+        </ModalStack.Screen>
+        <ModalStack.Screen name="QRCode" component={QRCodeScreen} />
+        <ModalStack.Screen name="Experience" component={ExperienceScreen} />
+      </ModalStack.Navigator>
+    </NavigationContainer>
+  );
+};
 
 const styles = StyleSheet.create({
   icon: {

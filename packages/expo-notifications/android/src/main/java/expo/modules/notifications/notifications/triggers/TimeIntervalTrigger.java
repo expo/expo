@@ -15,18 +15,20 @@ import expo.modules.notifications.notifications.interfaces.SchedulableNotificati
  * * initial time, so eg. a trigger started at 11111000 time repeated every 1000 ms should always
  * * trigger around …000 timestamp.</i>
  */
-public class TimeIntervalTrigger implements SchedulableNotificationTrigger {
+public class TimeIntervalTrigger extends ChannelAwareTrigger implements SchedulableNotificationTrigger {
   private Date mTriggerDate;
   private long mTimeInterval;
   private boolean mRepeats;
 
-  public TimeIntervalTrigger(long timeInterval, boolean repeats) {
+  public TimeIntervalTrigger(long timeInterval, boolean repeats, @Nullable String channelId) {
+    super(channelId);
     mTimeInterval = timeInterval;
     mTriggerDate = new Date(new Date().getTime() + mTimeInterval * 1000);
     mRepeats = repeats;
   }
 
   private TimeIntervalTrigger(Parcel in) {
+    super(in);
     mTriggerDate = new Date(in.readLong());
     mTimeInterval = in.readLong();
     mRepeats = in.readByte() == 1;
@@ -65,6 +67,7 @@ public class TimeIntervalTrigger implements SchedulableNotificationTrigger {
 
   @Override
   public void writeToParcel(Parcel dest, int flags) {
+    super.writeToParcel(dest, flags);
     dest.writeLong(mTriggerDate.getTime());
     dest.writeLong(mTimeInterval);
     dest.writeByte((byte) (mRepeats ? 1 : 0));

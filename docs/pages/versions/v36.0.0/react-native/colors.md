@@ -3,7 +3,7 @@ id: colors
 title: Color Reference
 ---
 
-Components in React Native are [styled using JavaScript](../style/). Color properties usually match how [CSS works on the web](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value).
+Components in React Native are [styled using JavaScript](style.md). Color properties usually match how [CSS works on the web](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value).
 
 ### Red-green-blue
 

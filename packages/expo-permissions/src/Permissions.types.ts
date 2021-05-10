@@ -7,8 +7,12 @@ import {
 export type PermissionType =
   | 'camera'
   | 'cameraRoll'
+  | 'mediaLibrary'
+  | 'mediaLibraryWriteOnly'
   | 'audioRecording'
   | 'location'
+  | 'locationForeground'
+  | 'locationBackground'
   | 'userFacingNotifications'
   | 'notifications'
   | 'contacts'
@@ -26,9 +30,11 @@ export interface PermissionMap {
 }
 
 export interface PermissionInfo extends UMPermissionResponse {
-  // iOS only - Permission.CAMERA_ROLL
-  scope?: 'all' | 'limited' | 'none';
-  ios?: PermissionDetailsLocationIOS;
+  /**
+   * iOS only - Permission.MEDIA_LIBRARY/MEDIA_LIBRARY_WRITE_ONLY
+   */
+  accessPrivileges?: 'all' | 'limited' | 'none';
+  scope?: 'whenInUse' | 'always' | 'none';
   android?: PermissionDetailsLocationAndroid;
 }
 
@@ -36,10 +42,6 @@ export { PermissionStatus };
 
 export { PermissionExpiration };
 
-export type PermissionDetailsLocationIOS = {
-  scope: 'whenInUse' | 'always';
-};
-
 export type PermissionDetailsLocationAndroid = {
-  scope: 'fine' | 'coarse' | 'none';
+  accuracy: 'fine' | 'coarse' | 'none';
 };

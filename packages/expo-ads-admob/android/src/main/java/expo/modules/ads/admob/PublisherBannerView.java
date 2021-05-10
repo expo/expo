@@ -59,7 +59,9 @@ public class PublisherBannerView extends FrameLayout implements AppEventListener
         int top = adView.getTop();
         adView.measure(width, height);
         adView.layout(left, top, left + width, top + height);
-
+        sendEvent(
+          PublisherBannerViewManager.Events.EVENT_SIZE_CHANGE,
+          AdMobUtils.createEventForSizeChange(getContext(), adView.getAdSize()));
         sendEvent(PublisherBannerViewManager.Events.EVENT_RECEIVE_AD);
       }
 

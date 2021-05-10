@@ -1,13 +1,19 @@
 {
-  "extends": "expo-module-scripts/tsconfig.base",
+  "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "noImplicitAny": true,
     "experimentalDecorators": true,
     "baseUrl": ".",
     "paths": {
       "@expo/vector-icons": ["react-native-vector-icons"]
-    }
+    },
+    "types": ["jest"],
+    "typeRoots": ["./ts-declarations", "node_modules/@types"],
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "strictFunctionTypes": true,
+    "noImplicitThis": true,
+    "noImplicitReturns": true
   },
-  "include": ["App.tsx", "src/**/*", "ts-declarations/**/*"],
-  "exclude": ["node_modules"]
+  "include": ["App.tsx", "src/**/*", "ts-declarations/**/*"]
 }

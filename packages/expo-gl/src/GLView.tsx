@@ -2,6 +2,7 @@ import {
   NativeModulesProxy,
   UnavailabilityError,
   requireNativeViewManager,
+  CodedError,
 } from '@unimodules/core';
 import * as React from 'react';
 import { Platform, View, findNodeHandle } from 'react-native';
@@ -512,6 +513,12 @@ const wrapMethods = gl => {
 
 // Get the GL interface from an EXGLContextID and do JS-side setup
 const getGl = (exglCtxId: number): ExpoWebGLRenderingContext => {
+  if (!global.__EXGLContexts) {
+    throw new CodedError(
+      'ERR_GL_NOT_AVAILABLE',
+      'GL is currently not available. (Have you enabled remote debugging? GL is not available while debugging remotely.)'
+    );
+  }
   const gl = global.__EXGLContexts[exglCtxId];
   gl.__exglCtxId = exglCtxId;
   delete global.__EXGLContexts[exglCtxId];

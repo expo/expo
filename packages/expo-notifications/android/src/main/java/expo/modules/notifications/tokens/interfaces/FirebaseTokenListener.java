@@ -1,7 +1,9 @@
 package expo.modules.notifications.tokens.interfaces;
 
+import expo.modules.notifications.service.NotificationsService;
+
 /**
- * Interface used to register in {@link expo.modules.notifications.FirebaseListenerService}
+ * Interface used to register in {@link NotificationsService}
  * and be notified of new device push tokens.
  */
 public interface FirebaseTokenListener {

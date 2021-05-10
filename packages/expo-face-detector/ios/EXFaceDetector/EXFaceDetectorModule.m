@@ -13,7 +13,6 @@
 #import <UMCore/UMModuleRegistry.h>
 #import <EXFaceDetector/EXFaceEncoder.h>
 #import <EXFaceDetector/EXCSBufferOrientationCalculator.h>
-#import <Firebase/Firebase.h>
 
 @interface EXFaceDetectorModule ()
 
@@ -50,31 +49,27 @@ UM_EXPORT_MODULE(ExpoFaceDetector);
 
 UM_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)options resolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
 {
-  if (![FIRApp defaultApp]) {
-    reject(@"E_FACE_DETECTION_FAILED", @"Firebase is not configured", nil);
-    return;
-  }
   NSString *uri = options[@"uri"];
   if (uri == nil) {
     reject(@"E_FACE_DETECTION_FAILED", @"You must define a URI.", nil);
     return;
   }
-  
+
   NSURL *url = [NSURL URLWithString:uri];
   NSString *path = [url.path stringByStandardizingPath];
-  
+
   NSException *exception;
   id<UMFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
   if (!fileSystem || exception) {
     reject(@"E_MODULE_UNAVAILABLE", @"No file system module", nil);
     return;
   }
-  
+
   if (!([fileSystem permissionsForURI:url] & UMFileSystemPermissionRead)) {
     reject(@"E_FILESYSTEM_PERMISSIONS", [NSString stringWithFormat:@"File '%@' isn't readable.", uri], nil);
     return;
   }
-  
+
   @try {
     UIImage *image = [[UIImage alloc] initWithContentsOfFile:path];
     CIImage *ciImage = image.CIImage;
@@ -86,15 +81,15 @@ UM_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)options res
     UIImage *temporaryImage = [UIImage imageWithCIImage:ciImage];
     CGRect tempImageRect = CGRectMake(0, 0, temporaryImage.size.width, temporaryImage.size.height);
     CGImageRef cgImage = [context createCGImage:ciImage fromRect:tempImageRect];
-    
+
     UIImage *finalImage = [UIImage imageWithCGImage:cgImage];
     EXFaceDetector* detector = [[EXFaceDetector alloc] initWithOptions: [EXFaceDetectorUtils mapOptions:options]];
-    [detector detectFromImage:finalImage completionListener:^(NSArray<FIRVisionFace *> * _Nullable faces, NSError * _Nullable error) {
+    [detector detectFromImage:finalImage completionListener:^(NSArray<MLKFace *> * _Nullable faces, NSError * _Nullable error) {
       NSMutableArray<NSDictionary*>* reportableFaces = [NSMutableArray new];
-      
+
       if(faces.count > 0) {
         EXFaceEncoder *encoder = [[EXFaceEncoder alloc] init];
-        for(FIRVisionFace* face in faces)
+        for(MLKFace* face in faces)
       {
           [reportableFaces addObject:[encoder encode:face]];
         }

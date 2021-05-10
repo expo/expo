@@ -2,8 +2,8 @@
 
 #import "EXScopedNotificationPresentationModule.h"
 #import "EXScopedNotificationsUtils.h"
-
-#import <EXNotifications/EXNotificationSerializer.h>
+#import "EXScopedNotificationSerializer.h"
+#import "EXScopedNotificationsUtils.h"
 
 @interface EXScopedNotificationPresentationModule ()
 
@@ -27,7 +27,7 @@
   NSMutableArray *serializedNotifications = [NSMutableArray new];
   for (UNNotification *notification in notifications) {
     if ([EXScopedNotificationsUtils shouldNotification:notification beHandledByExperience:_experienceId]) {
-      [serializedNotifications addObject:[EXNotificationSerializer serializedNotification:notification]];
+      [serializedNotifications addObject:[EXScopedNotificationSerializer serializedNotification:notification]];
     }
   }
   return serializedNotifications;
@@ -38,9 +38,13 @@
   __block NSString *experienceId = _experienceId;
   [[UNUserNotificationCenter currentNotificationCenter] getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
     for (UNNotification *notification in notifications) {
-      if ([notification.request.identifier isEqual:identifier]) {
-        if ([EXScopedNotificationsUtils shouldNotification:notification beHandledByExperience:experienceId]) {
-          [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:@[identifier]];
+      if ([EXScopedNotificationsUtils shouldNotification:notification beHandledByExperience:experienceId]) {
+        // Usually we would scope the input ID and then check equality, but remote notifications do not
+        // have the scoping prefix, so instead let's remove the scope if there is one, then check for
+        // equality against the input
+        NSString *unscopedIdentifier = [EXScopedNotificationsUtils getScopeAndIdentifierFromScopedIdentifier:notification.request.identifier].identifier;
+        if ([unscopedIdentifier isEqualToString:identifier]) {
+          [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:@[notification.request.identifier]];
         }
         break;
       }

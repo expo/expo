@@ -26,6 +26,10 @@ const fakeLocalization = {
   isoCurrencyCodes: [],
   region: 'US',
   isRTL: false,
+  isMetric: false,
+  currency: 'USD',
+  decimalSeparator: '.',
+  digitGroupingSeparator: ',',
 };
 
 beforeEach(() => {
@@ -44,84 +48,85 @@ afterEach(() => {
   unmockAllProperties();
 });
 
+function validateString(result) {
+  expect(typeof result).toBe('string');
+  expect(result.length).toBeGreaterThan(0);
+}
+
+function validateStringArray(result) {
+  expect(result).toBeDefined();
+  expect(Array.isArray(result)).toBe(true);
+}
+
 describe(`Localization methods`, () => {
   it(`expect async to return locale`, async () => {
-    function validateString(result) {
-      expect(typeof result).toBe('string');
-      if (result) expect(result.length > 0).toBe(true);
-    }
-
-    function validateStringArray(result) {
-      expect(result).toBeDefined();
-      expect(Array.isArray(result)).toBe(true);
-    }
-
     const {
+      currency,
+      decimalSeparator,
+      digitGroupingSeparator,
+      isoCurrencyCodes,
+      isMetric,
+      isRTL,
       locale,
       locales,
       timezone,
-      isoCurrencyCodes,
       region,
-      isRTL,
     } = await Localization.getLocalizationAsync();
 
     validateString(locale);
     validateString(timezone);
     validateString(region);
-
     validateStringArray(isoCurrencyCodes);
     validateStringArray(locales);
     expect(locales[0]).toBe(Localization.locale);
     expect(typeof isRTL).toBe('boolean');
+    expect(typeof isMetric).toBe('boolean');
+    validateString(decimalSeparator);
+    validateString(digitGroupingSeparator);
+    validateString(currency);
   });
 });
 
 describe(`Localization defines constants`, () => {
-  it(`Gets the current device region`, async () => {
-    const result = Localization.region;
-
-    expect(typeof result).toBe('string');
-    if (result) expect(result.length > 0).toBe(true);
+  it('Gets the region', async () => {
+    validateString(Localization.region);
   });
-
-  it(`Gets the current locale`, async () => {
-    const result = Localization.locale;
-
-    expect(typeof result).toBe('string');
-    expect(result.length > 0).toBe(true);
+  it('Gets the locale', async () => {
+    validateString(Localization.locale);
   });
-
-  it(`Gets the preferred locales`, async () => {
+  it('Gets the preferred locales', async () => {
     const result = Localization.locales;
-
-    expect(Array.isArray(result)).toBe(true);
+    validateStringArray(result);
     expect(result.length > 0).toBe(true);
     expect(result[0]).toBe(Localization.locale);
   });
-
-  it(`Gets ISO currency codes`, async () => {
+  it('Gets ISO currency codes', async () => {
     const result = Localization.isoCurrencyCodes;
-
-    expect(Array.isArray(result)).toBe(true);
-    for (const iso of result) {
-      expect(typeof iso).toBe('string');
-      expect(iso.length > 0).toBe(true);
-    }
+    validateStringArray(result);
+    result.forEach(validateString);
   });
-
-  it(`Gets the current timzezone`, async () => {
-    const result = Localization.timezone;
-
-    expect(typeof result).toBe('string');
-    expect(result.length > 0).toBe(true);
-    // Format: expect something like America/Los_Angeles or America/Chihuahua
-    expect(result.split('/').length > 1).toBe(true);
+  it('Gets the timezone', async () => {
+    validateString(Localization.timezone);
   });
-
-  it(`Gets the current layout direction (LTR only)`, async () => {
+  it('Gets the layout direction (ltr only)', async () => {
     const result = Localization.isRTL;
-
+    expect(typeof result).toBe('boolean');
     expect(result).toBe(false);
+  });
+  it('Gets the measurement system (metric)', async () => {
+    const result = Localization.isMetric;
+    expect(typeof result).toBe('boolean');
+  });
+  it('Gets the decimal separator', async () => {
+    validateString(Localization.decimalSeparator);
+  });
+  it('Gets the digit grouping separator', async () => {
+    const result = Localization.digitGroupingSeparator;
+    expect(result).toBeDefined();
+    expect(typeof result).toBe('string');
+  });
+  it('Gets the currency', async () => {
+    validateString(Localization.currency);
   });
 });
 

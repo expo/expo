@@ -5,45 +5,65 @@ yarn run schema-sync 38 -> updates the schema that versions/v38.0.0/sdk/app-conf
 yarn run schema-sync unversioned -> updates the schema that versions/unversioned/sdk/app-config.md uses
 */
 
+const parser = require('@apidevtools/json-schema-ref-parser');
 const axios = require('axios');
-let fsExtra = require('fs-extra');
+const fs = require('fs-extra');
+const path = require('path');
 
-let version = process.argv[2];
+const version = process.argv[2];
 
-if (!version) {
-  console.log('Please enter a version number\n');
-  console.log('E.g., "yarn run schema-sync 38" \nor, "yarn run schema-sync unversioned"');
-  return;
+async function run() {
+  if (!version) {
+    console.log('Please enter a version number\n');
+    console.log('E.g., "yarn run schema-sync 38" \nor, "yarn run schema-sync unversioned"');
+    return;
+  }
+
+  if (version === 'unversioned') {
+    const response = await axios.get(
+      `http://exp.host/--/api/v2/project/configuration/schema/UNVERSIONED`
+    );
+    const schema = await preprocessSchema(response.data.data.schema);
+
+    await fs.writeFile(
+      `scripts/schemas/unversioned/app-config-schema.js`,
+      'export default ',
+      'utf8'
+    );
+    await fs.appendFile(
+      `scripts/schemas/unversioned/app-config-schema.js`,
+      JSON.stringify(schema.properties),
+      'utf8'
+    );
+  } else {
+    try {
+      console.log(`Fetching schema for ${version} from production...`);
+      await fetchAndWriteSchema(version, false);
+    } catch (e) {
+      console.log(`Unable to fetch schema for ${version} from production, trying staging...`);
+      await fetchAndWriteSchema(version, true);
+    }
+  }
 }
 
-if (version === 'unversioned') {
-  axios
-    .get(`http://exp.host/--/api/v2/project/configuration/schema/UNVERSIONED`)
-    .then(async ({ data }) => {
-      await fsExtra.writeFile(
-        `scripts/schemas/unversioned/app-config-schema.js`,
-        'export default ',
-        'utf8'
-      );
-      await fsExtra.appendFile(
-        `scripts/schemas/unversioned/app-config-schema.js`,
-        JSON.stringify(data.data.schema.properties),
-        'utf8'
-      );
-    });
-} else {
-  axios
-    .get(`http://exp.host/--/api/v2/project/configuration/schema/${version}.0.0`)
-    .then(async ({ data }) => {
-      await fsExtra.writeFile(
-        `scripts/schemas/v${version}.0.0/app-config-schema.js`,
-        'export default ',
-        'utf8'
-      );
-      await fsExtra.appendFile(
-        `scripts/schemas/v${version}.0.0/app-config-schema.js`,
-        JSON.stringify(data.data.schema.properties),
-        'utf8'
-      );
-    });
+async function fetchAndWriteSchema(version, staging) {
+  const schemaPath = `scripts/schemas/v${version}.0.0/app-config-schema.js`;
+  fs.ensureDirSync(path.dirname(schemaPath));
+
+  const hostname = staging ? 'staging.exp.host' : 'exp.host';
+
+  const response = await axios.get(
+    `http://${hostname}/--/api/v2/project/configuration/schema/${version}.0.0`
+  );
+  const schema = await preprocessSchema(response.data.data.schema);
+
+  await fs.writeFile(schemaPath, 'export default ', 'utf8');
+  await fs.appendFile(schemaPath, JSON.stringify(schema.properties), 'utf8');
 }
+
+async function preprocessSchema(schema) {
+  // replace all $ref references with the actual definitions
+  return await parser.dereference(schema);
+}
+
+run();

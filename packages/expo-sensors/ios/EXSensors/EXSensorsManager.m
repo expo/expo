@@ -117,7 +117,7 @@ UM_REGISTER_MODULE();
     if (strongSelf && data) {
       for (void (^handler)(NSDictionary *) in strongSelf.barometerHandlers.allValues) {
         handler(@{
-                  @"pressure": @([data.pressure intValue] * 10), // conversion from kPa to hPa
+                  @"pressure": @([data.pressure doubleValue] * 10.0), // conversion from kPa to hPa
                   @"relativeAltitude": data.relativeAltitude,
                   });
       }

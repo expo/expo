@@ -1,0 +1,12 @@
+[
+  "expo-branch",
+  "expo-dev-menu",
+  "expo-dev-menu-interface",
+  "expo-dev-launcher",
+  "expo-gl-cpp",
+  "expo-image",
+  "expo-in-app-purchases",
+  "expo-module-scripts",
+  "jest-expo",
+  "unimodules-test-core"
+]

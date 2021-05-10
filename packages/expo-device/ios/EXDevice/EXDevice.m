@@ -143,7 +143,7 @@ UM_EXPORT_METHOD_AS(isRootedExperimentalAsync,
   NSString *modelId = [NSString stringWithCString:systemInfo.machine
                                          encoding:NSUTF8StringEncoding];
 
-  if ([modelId isEqualToString:@"i386"] || [modelId isEqualToString:@"x86_64"] ) {
+  if ([modelId isEqualToString:@"i386"] || [modelId isEqualToString:@"x86_64"] || [modelId isEqualToString:@"arm64"]) {
     modelId = [NSString stringWithFormat:@"%s", getenv("SIMULATOR_MODEL_IDENTIFIER")];
   }
 

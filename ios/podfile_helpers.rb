@@ -34,3 +34,14 @@ def run_versioned_postinstalls!(pod_name, target_installation_result)
   eval_versioned_scripts! 'postinstalls.rb',
     context: binding
 end
+
+def use_pods!(pattern, project_name = nil)
+  base_directory = Pod::Config.instance.project_root
+
+  Dir.glob(pattern, base: base_directory) { |file_path|
+    podName = File.basename(file_path).split('.')[0]
+    podPath = File.dirname(file_path)
+
+    pod podName, path: "./#{podPath}", project_name: project_name
+  }
+end

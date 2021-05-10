@@ -14,17 +14,35 @@ import FadeIn from 'react-native-fade-in-image';
 
 import { StyledText } from '../components/Text';
 import { StyledButton } from '../components/Views';
-import UrlUtils from '../utils/UrlUtils';
+import Colors from '../constants/Colors';
+import * as UrlUtils from '../utils/UrlUtils';
+import { useSDKExpired } from '../utils/useSDKExpired';
+import { Experience } from './ExperienceView.types';
+
+type Props = {
+  style: any;
+  description: string;
+  iconUrl: string;
+  projectUrl: string;
+  name: string;
+  username: string;
+  id: string;
+  sdkVersion?: string;
+  experienceInfo?: Pick<Experience, 'username' | 'slug'>;
+};
 
 export default function ProjectCard({
-  onPressUsername,
   style,
   description,
   iconUrl,
   projectUrl,
-  projectName,
+  name,
   username,
-}) {
+  sdkVersion,
+  experienceInfo,
+}: Props) {
+  const [isExpired, sdkVersionNumber] = useSDKExpired(sdkVersion);
+
   const navigation = useNavigation();
   const _maybeRenderIcon = () => {
     if (iconUrl) {
@@ -35,15 +53,18 @@ export default function ProjectCard({
           </FadeIn>
         </View>
       );
-    } else {
-      return <View style={[styles.icon, { backgroundColor: '#eee' }]} />;
     }
+    return <View style={[styles.icon, { backgroundColor: '#eee' }]} />;
   };
 
   const _handleLongPressProject = () => {
+    if (experienceInfo) {
+      navigation.navigate('Experience', experienceInfo);
+      return;
+    }
     const url = UrlUtils.normalizeUrl(projectUrl);
     Share.share({
-      title: projectName,
+      title: name,
       message: url,
       url,
     });
@@ -53,19 +74,12 @@ export default function ProjectCard({
     // note(brentvatne): navigation should do this automatically
     Keyboard.dismiss();
 
+    if (isExpired && experienceInfo) {
+      navigation.navigate('Experience', experienceInfo);
+      return;
+    }
     const url = UrlUtils.normalizeUrl(projectUrl);
     Linking.openURL(url);
-  };
-
-  const _handlePressUsername = () => {
-    // note(brentvatne): navigation should do this automatically
-    Keyboard.dismiss();
-
-    if (onPressUsername) {
-      onPressUsername(username);
-    } else {
-      navigation.navigate('Profile', { username });
-    }
   };
 
   return (
@@ -76,22 +90,35 @@ export default function ProjectCard({
         onLongPress={_handleLongPressProject}
         fallback={TouchableHighlight}
         underlayColor="#b7b7b7">
-        <View style={styles.header}>
-          <View style={styles.iconContainer}>{_maybeRenderIcon()}</View>
-          <View style={styles.infoContainer}>
-            <StyledText style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
-              {projectName}
-            </StyledText>
-            <View style={styles.projectExtraInfoContainer}>
-              <StyledText
-                lightColor="rgba(36, 44, 58, 0.4)"
-                darkColor="#ccc"
-                onPress={_handlePressUsername}
-                style={styles.projectExtraInfoText}
-                ellipsizeMode="tail"
-                numberOfLines={1}>
-                {username}
+        <View style={[styles.header, { justifyContent: 'space-between' }]}>
+          <View style={styles.header}>
+            <View style={styles.iconContainer}>{_maybeRenderIcon()}</View>
+            <View style={styles.infoContainer}>
+              <StyledText style={styles.projectNameText} ellipsizeMode="tail" numberOfLines={1}>
+                {name}
               </StyledText>
+              <View style={styles.projectExtraInfoContainer}>
+                <StyledText
+                  lightColor="rgba(36, 44, 58, 0.4)"
+                  darkColor="#ccc"
+                  style={styles.projectExtraInfoText}
+                  ellipsizeMode="tail"
+                  numberOfLines={1}>
+                  {username}
+                </StyledText>
+              </View>
+              {sdkVersionNumber && (
+                <StyledText
+                  lightColor={Colors.light.greyText}
+                  darkColor={Colors.dark.greyText}
+                  style={{
+                    marginTop: 4,
+                    fontSize: 13,
+                  }}>
+                  SDK {sdkVersionNumber || sdkVersion}
+                  {isExpired ? ': Not supported' : ''}
+                </StyledText>
+              )}
             </View>
           </View>
         </View>
@@ -108,6 +135,8 @@ export default function ProjectCard({
   );
 }
 
+const imageSize = 60;
+
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
@@ -119,6 +148,11 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     flexDirection: 'row',
+  },
+  expiredIconContainer: {
+    marginRight: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   body: {
     paddingLeft: 15,
@@ -139,8 +173,8 @@ const styles = StyleSheet.create({
     lineHeight: 19,
   },
   icon: {
-    width: 40,
-    height: 40,
+    width: imageSize,
+    height: imageSize,
     borderRadius: 3,
     ...Platform.select({
       android: {

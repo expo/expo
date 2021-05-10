@@ -1,6 +1,8 @@
 package expo.modules.notifications.notifications.handling;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.HandlerThread;
 
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
@@ -38,6 +40,16 @@ public class NotificationsHandler extends ExportedModule implements Notification
   private NotificationManager mNotificationManager;
   private ModuleRegistry mModuleRegistry;
 
+  /**
+   * {@link HandlerThread} which is the host to the notifications handler.
+   */
+  private HandlerThread mNotificationsHandlerThread = null;
+
+  /**
+   * {@link Handler} on which lifecycle events are executed.
+   */
+  private Handler mHandler = null;
+
   private Map<String, SingleNotificationHandlerTask> mTasksMap = new HashMap<>();
 
   public NotificationsHandler(Context context) {
@@ -57,6 +69,10 @@ public class NotificationsHandler extends ExportedModule implements Notification
     // Deregistration happens in onDestroy callback.
     mNotificationManager = moduleRegistry.getSingletonModule("NotificationManager", NotificationManager.class);
     mNotificationManager.addListener(this);
+
+    mNotificationsHandlerThread = new HandlerThread("NotificationsHandlerThread - " + this.getClass().toString());
+    mNotificationsHandlerThread.start();
+    mHandler = new Handler(mNotificationsHandlerThread.getLooper());
   }
 
   @Override
@@ -66,6 +82,9 @@ public class NotificationsHandler extends ExportedModule implements Notification
     for (SingleNotificationHandlerTask task : tasks) {
       task.stop();
     }
+
+    // We don't have to use `quitSafely` here, cause all tasks were stopped
+    mNotificationsHandlerThread.quit();
   }
 
   /**
@@ -93,17 +112,6 @@ public class NotificationsHandler extends ExportedModule implements Notification
   }
 
   /**
-   * Callback called when {@link NotificationManager} gets notified of a new notification response.
-   * Does nothing.
-   *
-   * @param response Notification response received
-   */
-  @Override
-  public void onNotificationResponseReceived(NotificationResponse response) {
-    // do nothing, the response is received through emitter
-  }
-
-  /**
    * Callback called by {@link NotificationManager} to inform its listeners of new messages.
    * Starts up a new {@link SingleNotificationHandlerTask} which will take it on from here.
    *
@@ -111,19 +119,9 @@ public class NotificationsHandler extends ExportedModule implements Notification
    */
   @Override
   public void onNotificationReceived(Notification notification) {
-    SingleNotificationHandlerTask task = new SingleNotificationHandlerTask(getContext(), mModuleRegistry, notification, this);
+    SingleNotificationHandlerTask task = new SingleNotificationHandlerTask(getContext(), mHandler, mModuleRegistry, notification, this);
     mTasksMap.put(task.getIdentifier(), task);
     task.start();
-  }
-
-  /**
-   * Callback called by {@link NotificationManager} to inform that some push notifications
-   * haven't been delivered to the app. It doesn't make sense to react to this event in this class.
-   * Apps get notified of this event by {@link NotificationsEmitter}.
-   */
-  @Override
-  public void onNotificationsDropped() {
-    // do nothing
   }
 
   /**

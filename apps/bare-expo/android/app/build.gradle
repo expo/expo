@@ -1,5 +1,4 @@
 apply plugin: "com.android.application"
-import groovy.json.JsonSlurper
 import com.android.build.OutputFile
 
 /**
@@ -76,12 +75,11 @@ import com.android.build.OutputFile
  */
 
 project.ext.react = [
-    entryFile: "index.js",
     enableHermes: false,  // clean and rebuild if changing
 ]
 
-apply from: '../../../../node_modules/react-native-unimodules/gradle.groovy'
 apply from: "../../node_modules/react-native/react.gradle"
+apply from: "../../node_modules/expo-constants/scripts/get-app-config-android.gradle"
 
 /**
  * Set this to true to create two separate APKs instead of one:
@@ -129,11 +127,11 @@ android {
     }
 
     defaultConfig {
-        applicationId "dev.expo.payments"
+        applicationId 'dev.expo.payments'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
         manifestPlaceholders = [
             // [Custom]: Required for expo-app-auth
             appAuthRedirectScheme: "dev.expo.payments"
@@ -166,6 +164,10 @@ android {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
+        releaseWithDevMenu {
+            initWith release
+            matchingFallbacks = ['release', 'debug']
+        }
     }
     // applicationVariants are e.g. debug, release
     applicationVariants.all { variant ->
@@ -183,32 +185,30 @@ android {
     }
 }
 
+repositories {
+    jcenter()
+}
+
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
     implementation "com.facebook.react:react-native:+"  // From node_modules
 
-    implementation project(":expo-image")
-
-    def packageJsonFile = new File(rootProject.projectDir, '../package.json')
-    def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
-    def excludedUnimodules = packageJson.excludedUnimodules != null ? packageJson.excludedUnimodules : []
-
-    addUnimodulesDependencies([
-        modulesPaths : [
-            '../../../../packages'
-        ],
-        configuration: 'api',
-        target       : 'react-native',
-        exclude      : excludedUnimodules
-    ])
-
     if (enableHermes) {
-        def hermesPath = "../../../../node_modules/hermes-engine/android/";
+        def hermesPath = "../../node_modules/hermes-engine/android/";
         debugImplementation files(hermesPath + "hermes-debug.aar")
         releaseImplementation files(hermesPath + "hermes-release.aar")
     } else {
         implementation jscFlavor
+    }
+
+    // Flipper
+    implementation('com.facebook.flipper:flipper:0.62.0') {
+        exclude group:'com.facebook.fbjni'
+    }
+
+    implementation('com.facebook.flipper:flipper-network-plugin:0.62.0') {
+        exclude group:'com.facebook.flipper'
     }
 }
 
@@ -241,7 +241,7 @@ class GenerateDynamicMacrosPlugin implements Plugin<Project> {
                 it.toLowerCase().contains("release")
             } ? "release" : "debug"
 
-            workingDir '../../../../tools/expotools/bin'
+            workingDir '../../../../tools/bin'
 
             if (Os.isFamily(Os.FAMILY_WINDOWS)) {
                 commandLine 'cmd.exe', '/c', "expotools.js android-generate-dynamic-macros --configuration ${configuration}"
@@ -252,7 +252,7 @@ class GenerateDynamicMacrosPlugin implements Plugin<Project> {
     }
 }
 
-apply from: file("../../../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle");
+apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle");
 applyNativeModulesAppBuildGradle(project)
 
 // [Custom]: Add Google Services file

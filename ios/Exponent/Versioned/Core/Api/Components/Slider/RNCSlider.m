@@ -10,11 +10,25 @@
 @implementation RNCSlider
 {
   float _unclippedValue;
+  UITapGestureRecognizer * tapGesturer;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
-    return [super initWithFrame:frame];
+    self = [super initWithFrame:frame];
+    if (self) {
+        tapGesturer = [[UITapGestureRecognizer alloc] initWithTarget: self action:@selector(tapHandler:)];
+        [tapGesturer setNumberOfTapsRequired: 1];
+        [self addGestureRecognizer:tapGesturer];
+    }
+    return self;
+}
+
+- (void)tapHandler:(UITapGestureRecognizer *)gesture {
+    CGPoint touchPoint = [gesture locationInView:self];
+    float rangeWidth = self.maximumValue - self.minimumValue;
+    float sliderPercent = touchPoint.x / self.bounds.size.width;
+    [self setValue:self.minimumValue + (rangeWidth * sliderPercent) animated: YES];
 }
 
 - (void)setValue:(float)value

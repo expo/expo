@@ -3,18 +3,18 @@
 package host.exp.exponent;
 
 import android.os.Debug;
-import androidx.multidex.MultiDexApplication;
 
 import com.facebook.ads.AudienceNetworkAds;
 import com.facebook.soloader.SoLoader;
 
 import javax.inject.Inject;
 
+import androidx.multidex.MultiDexApplication;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.branch.BranchManager;
-import host.exp.exponent.kernel.DevMenuManager;
 import host.exp.exponent.di.NativeModuleDepsProvider;
+import host.exp.exponent.kernel.DevMenuManager;
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.kernel.KernelConstants;
@@ -22,16 +22,13 @@ import host.exp.exponent.kernel.KernelInterface;
 import host.exp.exponent.kernel.KernelProvider;
 import host.exp.exponent.modules.ExponentKernelModule;
 import host.exp.exponent.storage.ExponentSharedPreferences;
-import host.exp.exponent.taskManager.ExpoHeadlessAppLoader;
-import host.exp.expoview.Exponent;
 import host.exp.expoview.ExpoViewBuildConfig;
-import org.unimodules.apploader.AppLoaderProvider;
+import host.exp.expoview.Exponent;
 import me.leolin.shortcutbadger.ShortcutBadger;
 
 public abstract class ExpoApplication extends MultiDexApplication {
 
   // Override me!
-  public abstract String gcmSenderId();
   public abstract boolean isDebug();
 
   private static final String TAG = ExpoApplication.class.getSimpleName();
@@ -65,8 +62,7 @@ public abstract class ExpoApplication extends MultiDexApplication {
     Exponent.initialize(this, this);
     NativeModuleDepsProvider.getInstance().add(Kernel.class, KernelProvider.getInstance());
     NativeModuleDepsProvider.getInstance().add(DevMenuManager.class, new DevMenuManager());
-    Exponent.getInstance().setGCMSenderId(gcmSenderId());
-    
+
     NativeModuleDepsProvider.getInstance().inject(ExpoApplication.class, this);
 
     BranchManager.initialize(this);

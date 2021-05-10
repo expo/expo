@@ -10,8 +10,6 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.SystemClock;
-import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 import android.text.format.DateUtils;
 
 import org.json.JSONArray;
@@ -26,7 +24,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.TimeZone;
 
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 import de.greenrobot.event.EventBus;
+import expo.modules.updates.manifest.ManifestFactory;
+import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
@@ -64,14 +66,14 @@ public class NotificationHelper {
   }
 
   public static int getColor(
-      @Nullable String colorString,
-      JSONObject manifest,
-      ExponentManifest exponentManifest) {
-    JSONObject notificationPreferences = manifest.optJSONObject(ExponentManifest.MANIFEST_NOTIFICATION_INFO_KEY);
+    @Nullable String colorString,
+    RawManifest manifest,
+    ExponentManifest exponentManifest) {
+    @Nullable JSONObject notificationPreferences = manifest.getNotificationPreferences();
 
     if (colorString == null) {
       colorString = notificationPreferences == null ? null :
-          notificationPreferences.optString(ExponentManifest.MANIFEST_NOTIFICATION_COLOR_KEY);
+        notificationPreferences.optString(ExponentManifest.MANIFEST_NOTIFICATION_COLOR_KEY);
     }
 
     int color;
@@ -86,14 +88,14 @@ public class NotificationHelper {
   }
 
   public static void loadIcon(String url,
-                              JSONObject manifest,
+                              RawManifest manifest,
                               ExponentManifest exponentManifest,
                               ExponentManifest.BitmapListener bitmapListener) {
-    JSONObject notificationPreferences = manifest.optJSONObject(ExponentManifest.MANIFEST_NOTIFICATION_INFO_KEY);
+    @Nullable JSONObject notificationPreferences = manifest.getNotificationPreferences();
     String iconUrl;
 
     if (url == null) {
-      iconUrl = manifest.optString(ExponentManifest.MANIFEST_ICON_URL_KEY);
+      iconUrl = manifest.getIconUrl();
       if (notificationPreferences != null) {
         iconUrl = notificationPreferences.optString(ExponentManifest.MANIFEST_NOTIFICATION_ICON_URL_KEY, null);
       }
@@ -105,11 +107,11 @@ public class NotificationHelper {
   }
 
   public static void getPushNotificationToken(
-      final String deviceId,
-      final String experienceId,
-      final ExponentNetwork exponentNetwork,
-      final ExponentSharedPreferences exponentSharedPreferences,
-      final TokenListener listener) {
+    final String deviceId,
+    final String experienceId,
+    final ExponentNetwork exponentNetwork,
+    final ExponentSharedPreferences exponentSharedPreferences,
+    final TokenListener listener) {
     if (Constants.FCM_ENABLED) {
       FcmRegistrationIntentService.getTokenAndRegister(exponentSharedPreferences.getContext());
     }
@@ -117,17 +119,17 @@ public class NotificationHelper {
     AsyncCondition.wait(ExponentNotificationIntentService.DEVICE_PUSH_TOKEN_KEY, new AsyncCondition.AsyncConditionListener() {
       @Override
       public boolean isReady() {
-        return exponentSharedPreferences.getString(Constants.FCM_ENABLED ? ExponentSharedPreferences.FCM_TOKEN_KEY : ExponentSharedPreferences.GCM_TOKEN_KEY) != null
-            || ExponentNotificationIntentService.hasTokenError();
+        return exponentSharedPreferences.getString(ExponentSharedPreferences.FCM_TOKEN_KEY) != null
+          || ExponentNotificationIntentService.hasTokenError();
       }
 
       @Override
       public void execute() {
-        String sharedPreferencesToken = exponentSharedPreferences.getString(Constants.FCM_ENABLED ? ExponentSharedPreferences.FCM_TOKEN_KEY : ExponentSharedPreferences.GCM_TOKEN_KEY);
+        String sharedPreferencesToken = exponentSharedPreferences.getString(ExponentSharedPreferences.FCM_TOKEN_KEY);
         if (sharedPreferencesToken == null || sharedPreferencesToken.length() == 0) {
           String message = "No device token found.";
           if (!Constants.FCM_ENABLED) {
-            message += " Expo support for GCM is deprecated. Follow this guide to set up FCM for your standalone app: https://docs.expo.io/versions/latest/guides/using-fcm";
+            message += " You need to enable FCM in order to get a push token. Follow this guide to set up FCM for your standalone app: https://docs.expo.io/versions/latest/guides/using-fcm";
           }
           listener.onFailure(new Exception(message));
           return;
@@ -139,7 +141,7 @@ public class NotificationHelper {
           params.put("experienceId", experienceId);
           params.put("appId", exponentSharedPreferences.getContext().getApplicationContext().getPackageName());
           params.put("deviceToken", sharedPreferencesToken);
-          params.put("type", Constants.FCM_ENABLED ? "fcm" : "gcm");
+          params.put("type", "fcm");
           params.put("development", false);
         } catch (JSONException e) {
           listener.onFailure(new Exception("Error constructing request"));
@@ -148,9 +150,9 @@ public class NotificationHelper {
 
         RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), params.toString());
         Request request = ExponentUrls.addExponentHeadersToUrl("https://exp.host/--/api/v2/push/getExpoPushToken")
-            .header("Content-Type", "application/json")
-            .post(body)
-            .build();
+          .header("Content-Type", "application/json")
+          .post(body)
+          .build();
 
         exponentNetwork.getClient().call(request, new ExpoHttpCallback() {
           @Override
@@ -179,11 +181,11 @@ public class NotificationHelper {
   }
 
   public static void createChannel(
-      Context context,
-      String experienceId,
-      String channelId,
-      String channelName,
-      HashMap details) {
+    Context context,
+    String experienceId,
+    String channelId,
+    String channelName,
+    HashMap details) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       String description = null;
       String importance = null;
@@ -208,15 +210,15 @@ public class NotificationHelper {
       }
 
       createChannel(
-          context,
-          experienceId,
-          channelId,
-          channelName,
-          description,
-          importance,
-          sound,
-          vibrate,
-          badge
+        context,
+        experienceId,
+        channelId,
+        channelName,
+        description,
+        importance,
+        sound,
+        vibrate,
+        badge
       );
     } else {
       // since channels do not exist on Android 7.1 and below, we'll save the settings in shared
@@ -228,10 +230,10 @@ public class NotificationHelper {
   }
 
   public static void createChannel(
-      Context context,
-      String experienceId,
-      String channelId,
-      JSONObject details) {
+    Context context,
+    String experienceId,
+    String channelId,
+    JSONObject details) {
     try {
       // we want to throw immediately if there is no channel name
       String channelName = details.getString(NotificationConstants.NOTIFICATION_CHANNEL_NAME);
@@ -266,15 +268,15 @@ public class NotificationHelper {
       }
 
       createChannel(
-          context,
-          experienceId,
-          channelId,
-          channelName,
-          description,
-          priority,
-          sound,
-          vibrate,
-          badge
+        context,
+        experienceId,
+        channelId,
+        channelName,
+        description,
+        priority,
+        sound,
+        vibrate,
+        badge
       );
     } catch (Exception e) {
       EXL.e(TAG, "Could not create channel from stored JSON Object: " + e.getMessage());
@@ -282,15 +284,15 @@ public class NotificationHelper {
   }
 
   private static void createChannel(
-      Context context,
-      String experienceId,
-      String channelId,
-      String channelName,
-      String description,
-      String importanceString,
-      Boolean sound,
-      Object vibrate,
-      Boolean badge) {
+    Context context,
+    String experienceId,
+    String channelId,
+    String channelName,
+    String description,
+    String importanceString,
+    Boolean sound,
+    Object vibrate,
+    Boolean badge) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       int importance = NotificationManager.IMPORTANCE_DEFAULT;
 
@@ -363,16 +365,16 @@ public class NotificationHelper {
   }
 
   public static void showNotification(
-      final Context context,
-      final int id,
-      final HashMap details,
-      final ExponentManifest exponentManifest,
-      final Listener listener) {
+    final Context context,
+    final int id,
+    final HashMap details,
+    final ExponentManifest exponentManifest,
+    final Listener listener) {
     final ExponentNotificationManager manager = new ExponentNotificationManager(context);
     final String experienceId = (String) details.get("experienceId");
     final NotificationCompat.Builder builder = new NotificationCompat.Builder(
-        context,
-        ExponentNotificationManager.getScopedChannelId(experienceId, NotificationConstants.NOTIFICATION_DEFAULT_CHANNEL_ID));
+      context,
+      ExponentNotificationManager.getScopedChannelId(experienceId, NotificationConstants.NOTIFICATION_DEFAULT_CHANNEL_ID));
 
     builder.setSmallIcon(Constants.isStandaloneApp() ? R.drawable.shell_notification_icon : R.drawable.notification_icon);
     builder.setAutoCancel(true);
@@ -443,11 +445,11 @@ public class NotificationHelper {
     } else {
       // make a default channel so that people don't have to explicitly create a channel to see notifications
       createChannel(
-          context,
-          experienceId,
-          NotificationConstants.NOTIFICATION_DEFAULT_CHANNEL_ID,
-          context.getString(R.string.default_notification_channel_group),
-          new HashMap());
+        context,
+        experienceId,
+        NotificationConstants.NOTIFICATION_DEFAULT_CHANNEL_ID,
+        context.getString(R.string.default_notification_channel_group),
+        new HashMap());
     }
 
     if (data.containsKey("title")) {
@@ -459,7 +461,7 @@ public class NotificationHelper {
     if (data.containsKey("body")) {
       builder.setContentText((String) data.get("body"));
       builder.setStyle(new NotificationCompat.BigTextStyle().
-          bigText((String) data.get("body")));
+        bigText((String) data.get("body")));
     }
 
     if (data.containsKey("count")) {
@@ -477,7 +479,7 @@ public class NotificationHelper {
           @Override
           public void run() {
             try {
-              JSONObject manifest = new JSONObject(experience.manifest);
+              RawManifest manifest = ManifestFactory.INSTANCE.getRawManifestFromJson(new JSONObject(experience.manifest));
 
               Intent intent;
 
@@ -516,27 +518,27 @@ public class NotificationHelper {
               }
 
               int color = NotificationHelper.getColor(
-                  data.containsKey("color") ? (String) data.get("color") : null,
-                  manifest,
-                  exponentManifest);
+                data.containsKey("color") ? (String) data.get("color") : null,
+                manifest,
+                exponentManifest);
 
               builder.setColor(color);
 
               NotificationHelper.loadIcon(
-                  data.containsKey("icon") ? (String) data.get("icon") : null,
-                  manifest,
-                  exponentManifest,
-                  new ExponentManifest.BitmapListener() {
-                    @Override
-                    public void onLoadBitmap(Bitmap bitmap) {
-                      if (data.containsKey("icon")) {
-                        builder.setLargeIcon(bitmap);
-                      }
-                      manager.notify(experienceId, id, builder.build());
-                      EventBus.getDefault().post(notificationEvent);
-                      listener.onSuccess(id);
+                data.containsKey("icon") ? (String) data.get("icon") : null,
+                manifest,
+                exponentManifest,
+                new ExponentManifest.BitmapListener() {
+                  @Override
+                  public void onLoadBitmap(Bitmap bitmap) {
+                    if (data.containsKey("icon")) {
+                      builder.setLargeIcon(bitmap);
                     }
-                  });
+                    manager.notify(experienceId, id, builder.build());
+                    EventBus.getDefault().post(notificationEvent);
+                    listener.onSuccess(id);
+                  }
+                });
             } catch (JSONException e) {
               listener.onFailure(new Exception("Couldn't deserialize JSON for experience id " + experienceId));
             }
@@ -552,12 +554,12 @@ public class NotificationHelper {
   }
 
   public static void scheduleLocalNotification(
-      final Context context,
-      final int id,
-      final HashMap<String, Object> data,
-      final HashMap options,
-      final JSONObject manifest,
-      final Listener listener) {
+    final Context context,
+    final int id,
+    final HashMap<String, Object> data,
+    final HashMap options,
+    final RawManifest manifest,
+    final Listener listener) {
 
     HashMap<String, java.io.Serializable> details = new HashMap<>();
 
@@ -566,7 +568,7 @@ public class NotificationHelper {
     String experienceId;
 
     try {
-      experienceId = manifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+      experienceId = manifest.getID();
       details.put("experienceId", experienceId);
     } catch (Exception e) {
       listener.onFailure(new Exception("Requires Experience Id"));

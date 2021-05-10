@@ -8,7 +8,7 @@
 
 #import <EXFaceDetector/EXFaceEncoder.h>
 #import <EXFaceDetector/EXFaceDetectorUtils.h>
-#import <Firebase/Firebase.h>
+#import <GoogleMLKit/MLKit.h>
 
 #define cDefaultFloatComparisonEpsilon 0.0001
 #define cModEqualFloatsWithEpsilon(dividend, divisor, modulo, epsilon) \
@@ -53,7 +53,7 @@ cModEqualFloatsWithEpsilon(dividend, divisor, modulo, cDefaultFloatComparisonEps
 }
 
 
-- (NSDictionary *)encode:(FIRVisionFace *)face
+- (NSDictionary *)encode:(MLKFace *)face
 {
   CGRect bounds = CGRectApplyAffineTransform(face.frame, _transform);
   NSDictionary *initialDictionary = @{
@@ -71,63 +71,65 @@ cModEqualFloatsWithEpsilon(dividend, divisor, modulo, cDefaultFloatComparisonEps
   NSMutableDictionary *encodedFace = [[NSMutableDictionary alloc] initWithDictionary:initialDictionary];
   [self putAFloat:face.smilingProbability forKey:@"smilingProbability" toDictionary:encodedFace ifValueIsValid:face.hasSmilingProbability];
   [self putAnInteger:face.trackingID forKey:@"faceID" toDictionary:encodedFace ifValueIsValid:face.hasTrackingID];
-  
-  FIRVisionFaceLandmark *leftEar = [face landmarkOfType:FIRFaceLandmarkTypeLeftEar];
+
+  MLKFaceLandmark *leftEar = [face landmarkOfType:MLKFaceLandmarkTypeLeftEar];
   if(leftEar != nil) {
     [self putAPoint:leftEar.position forKey:@"leftEarPosition" toDictionary:encodedFace];
   }
-  FIRVisionFaceLandmark *rightEar = [face landmarkOfType:FIRFaceLandmarkTypeRightEar];
+  MLKFaceLandmark *rightEar = [face landmarkOfType:MLKFaceLandmarkTypeRightEar];
   if(rightEar != nil) {
     [self putAPoint:rightEar.position forKey:@"rightEarPosition" toDictionary:encodedFace];
   }
-  
-  FIRVisionFaceLandmark *leftEye = [face landmarkOfType:FIRFaceLandmarkTypeLeftEye];
+
+  MLKFaceLandmark *leftEye = [face landmarkOfType:MLKFaceLandmarkTypeLeftEye];
   if (leftEye != nil) {
     [self putAPoint:leftEye.position forKey:@"leftEyePosition" toDictionary:encodedFace];
   }
-  FIRVisionFaceLandmark *rightEye = [face landmarkOfType:FIRFaceLandmarkTypeRightEye];
+  MLKFaceLandmark *rightEye = [face landmarkOfType:MLKFaceLandmarkTypeRightEye];
   if(rightEye) {
     [self putAPoint:rightEye.position forKey:@"rightEyePosition" toDictionary:encodedFace];
   }
-  
+
   [self putAFloat:face.leftEyeOpenProbability forKey:@"leftEyeOpenProbability" toDictionary:encodedFace ifValueIsValid:face.hasLeftEyeOpenProbability];
   [self putAFloat:face.rightEyeOpenProbability forKey:@"rightEyeOpenProbability" toDictionary:encodedFace ifValueIsValid:face.hasRightEyeOpenProbability];
-  
-  FIRVisionFaceLandmark *leftCheek = [face landmarkOfType:FIRFaceLandmarkTypeLeftCheek];
+
+  MLKFaceLandmark *leftCheek = [face landmarkOfType:MLKFaceLandmarkTypeLeftCheek];
   if(leftCheek) {
     [self putAPoint:leftCheek.position forKey:@"leftCheekPosition" toDictionary:encodedFace];
   }
-  FIRVisionFaceLandmark *rightCheek = [face landmarkOfType:FIRFaceLandmarkTypeRightCheek];
+  MLKFaceLandmark *rightCheek = [face landmarkOfType:MLKFaceLandmarkTypeRightCheek];
   if(rightCheek) {
     [self putAPoint:rightCheek.position forKey:@"rightCheekPosition" toDictionary:encodedFace];
   }
-  
-  FIRVisionFaceLandmark *leftMouth = [face landmarkOfType:FIRFaceLandmarkTypeMouthLeft];
+
+  MLKFaceLandmark *leftMouth = [face landmarkOfType:MLKFaceLandmarkTypeMouthLeft];
   if(leftMouth) {
     [self putAPoint:leftMouth.position forKey:@"leftMouthPosition" toDictionary:encodedFace];
   }
-  FIRVisionFaceLandmark *rightMouth = [face landmarkOfType:FIRFaceLandmarkTypeMouthRight];
+  MLKFaceLandmark *rightMouth = [face landmarkOfType:MLKFaceLandmarkTypeMouthRight];
   if(rightMouth) {
     [self putAPoint:rightMouth.position forKey:@"rightMouthPosition" toDictionary:encodedFace];
   }
-  FIRVisionFaceLandmark *bottomMouth = [face landmarkOfType:FIRFaceLandmarkTypeMouthBottom];
+  MLKFaceLandmark *bottomMouth = [face landmarkOfType:MLKFaceLandmarkTypeMouthBottom];
   if(bottomMouth) {
     [self putAPoint:bottomMouth.position forKey:@"bottomMouthPosition" toDictionary:encodedFace];
   }
-  
-  FIRVisionFaceLandmark *noseBase = [face landmarkOfType:FIRFaceLandmarkTypeNoseBase];
+
+  MLKFaceLandmark *noseBase = [face landmarkOfType:MLKFaceLandmarkTypeNoseBase];
   if(noseBase) {
     [self putAPoint:noseBase.position forKey:@"noseBasePosition" toDictionary:encodedFace];
   }
-  
+
   [self putAFloat:face.headEulerAngleY forKey:@"yawAngle" toDictionary:encodedFace ifValueIsValid:face.hasHeadEulerAngleY];
-  
+
   [self putAFloat:self.angleTransformer(face.headEulerAngleZ) forKey:@"rollAngle" toDictionary:encodedFace ifValueIsValid:face.hasHeadEulerAngleZ];
-  
+
   return encodedFace;
 }
 
-- (void)putAPoint:(FIRVisionPoint *)point forKey:(NSString *)key toDictionary:(NSMutableDictionary *)dictionary
+- (void)putAPoint:(MLKVisionPoint *)point
+           forKey:(NSString *)key
+     toDictionary:(NSMutableDictionary *)dictionary
 {
   CGPoint transformedPoint = CGPointApplyAffineTransform([self toPoint:point], _transform);
   [dictionary setObject:@{ @"x" : @(transformedPoint.x), @"y" : @(transformedPoint.y) } forKey:key];
@@ -157,9 +159,9 @@ cModEqualFloatsWithEpsilon(dividend, divisor, modulo, cDefaultFloatComparisonEps
   return angle * (180 / M_PI);
 }
 
-- (CGPoint)toPoint:(FIRVisionPoint *)visionPoint
+- (CGPoint)toPoint:(MLKVisionPoint *)visionPoint
 {
-  return CGPointMake([[visionPoint x] floatValue], [[visionPoint y] floatValue]);
+  return CGPointMake([visionPoint x], [visionPoint y]);
 }
 
 @end

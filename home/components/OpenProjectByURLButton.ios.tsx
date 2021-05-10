@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Alert, Linking, StyleSheet, TouchableOpacity } from 'react-native';
 
 import Colors from '../constants/Colors';
-import UrlUtils from '../utils/UrlUtils';
+import * as UrlUtils from '../utils/UrlUtils';
 import { Ionicons } from './Icons';
 
 export default function OpenProjectByURLButton() {

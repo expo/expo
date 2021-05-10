@@ -32,14 +32,13 @@ export default class FancyButton extends Component<
         <TapGestureHandler
           numberOfTaps={1}
           waitFor={this.doubleTapRef}
-          onHandlerStateChange={this._onSingleTapEvent}
-        >
+          onHandlerStateChange={this._onSingleTapEvent}>
           <TapGestureHandler
             numberOfTaps={2}
             ref={this.doubleTapRef}
-            onHandlerStateChange={this._onDoubleTapEvent}
-          >
-            <View style={[styles.button, this.props.style, { opacity: this._isPressed() ? 0.5 : 1 }]}>
+            onHandlerStateChange={this._onDoubleTapEvent}>
+            <View
+              style={[styles.button, this.props.style, { opacity: this._isPressed() ? 0.5 : 1 }]}>
               {this.props.children}
             </View>
           </TapGestureHandler>
@@ -57,7 +56,7 @@ export default class FancyButton extends Component<
     } else {
       return false;
     }
-  }
+  };
 
   _onLongPressEvent = (event: LongPressGestureHandlerStateChangeEvent) => {
     const { state } = event.nativeEvent;
@@ -66,7 +65,7 @@ export default class FancyButton extends Component<
     if (state === State.ACTIVE) {
       this.props.onLongPress && this.props.onLongPress();
     }
-  }
+  };
 
   _onSingleTapEvent = (event: TapGestureHandlerStateChangeEvent) => {
     const { state } = event.nativeEvent;
@@ -75,7 +74,7 @@ export default class FancyButton extends Component<
     if (state === State.ACTIVE) {
       this.props.onSingleTap && this.props.onSingleTap();
     }
-  }
+  };
 
   _onDoubleTapEvent = (event: TapGestureHandlerStateChangeEvent) => {
     const { state } = event.nativeEvent;
@@ -83,7 +82,7 @@ export default class FancyButton extends Component<
     if (state === State.ACTIVE) {
       this.props.onDoubleTap && this.props.onDoubleTap();
     }
-  }
+  };
 }
 
 const styles = StyleSheet.create({

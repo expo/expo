@@ -6,6 +6,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+FOUNDATION_EXPORT NSString * const EXConstantsExecutionEnvironmentBare;
+FOUNDATION_EXPORT NSString * const EXConstantsExecutionEnvironmentStandalone;
+FOUNDATION_EXPORT NSString * const EXConstantsExecutionEnvironmentStoreClient;
+
 @interface EXConstantsService : NSObject <UMInternalModule, UMConstantsInterface>
 
 - (NSString *)buildVersion;
@@ -16,10 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<NSString *> *)systemFontNames;
 
 + (NSString *)devicePlatform;
-+ (NSString *)deviceModel;
++ (nullable NSString *)deviceModel;
 + (NSNumber *)deviceYear;
 + (NSString *)deviceName;
-+ (NSString *)installationId;
 
 @end
 

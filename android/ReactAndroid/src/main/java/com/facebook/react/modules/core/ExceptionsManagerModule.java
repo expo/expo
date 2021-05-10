@@ -7,10 +7,9 @@
 package com.facebook.react.modules.core;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.fbreact.specs.NativeExceptionsManagerSpec;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.JavaOnlyMap;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.JavascriptException;
@@ -21,13 +20,14 @@ import com.facebook.react.util.ExceptionDataHelper;
 import com.facebook.react.util.JSStackTrace;
 
 @ReactModule(name = ExceptionsManagerModule.NAME)
-public class ExceptionsManagerModule extends ReactContextBaseJavaModule {
+public class ExceptionsManagerModule extends NativeExceptionsManagerSpec {
 
     public static final String NAME = "ExceptionsManager";
 
     public final DevSupportManager mDevSupportManager;
 
     public ExceptionsManagerModule(DevSupportManager devSupportManager) {
+        super(null);
         mDevSupportManager = devSupportManager;
     }
 
@@ -36,10 +36,11 @@ public class ExceptionsManagerModule extends ReactContextBaseJavaModule {
         return NAME;
     }
 
-    @ReactMethod
-    public void reportFatalException(String message, ReadableArray stack, int id) {
+    @Override
+    public void reportFatalException(String message, ReadableArray stack, double idDouble) {
         if (mDevSupportManager.getDevSupportEnabled()) {
             {
+                int id = (int) idDouble;
                 JavaOnlyMap data = new JavaOnlyMap();
                 data.putString("message", message);
                 data.putArray("stack", stack);
@@ -50,7 +51,7 @@ public class ExceptionsManagerModule extends ReactContextBaseJavaModule {
         } else {
             {
                 try {
-                    Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("handleReactNativeError", String.class, Object.class, Integer.class, Boolean.class).invoke(null, message, stack, id, true);
+                    Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("handleReactNativeError", String.class, Object.class, Integer.class, Boolean.class).invoke(null, message, stack, (int) idDouble, true);
                 } catch (Exception expoHandleErrorException) {
                     expoHandleErrorException.printStackTrace();
                 }
@@ -58,10 +59,11 @@ public class ExceptionsManagerModule extends ReactContextBaseJavaModule {
         }
     }
 
-    @ReactMethod
-    public void reportSoftException(String message, ReadableArray stack, int id) {
+    @Override
+    public void reportSoftException(String message, ReadableArray stack, double idDouble) {
         if (mDevSupportManager.getDevSupportEnabled()) {
             {
+                int id = (int) idDouble;
                 JavaOnlyMap data = new JavaOnlyMap();
                 data.putString("message", message);
                 data.putArray("stack", stack);
@@ -72,7 +74,7 @@ public class ExceptionsManagerModule extends ReactContextBaseJavaModule {
         } else {
             {
                 try {
-                    Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("handleReactNativeError", String.class, Object.class, Integer.class, Boolean.class).invoke(null, message, stack, id, false);
+                    Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("handleReactNativeError", String.class, Object.class, Integer.class, Boolean.class).invoke(null, message, stack, (int) idDouble, false);
                 } catch (Exception expoHandleErrorException) {
                     expoHandleErrorException.printStackTrace();
                 }
@@ -80,7 +82,7 @@ public class ExceptionsManagerModule extends ReactContextBaseJavaModule {
         }
     }
 
-    @ReactMethod
+    @Override
     public void reportException(ReadableMap data) {
         String message = data.hasKey("message") ? data.getString("message") : "";
         ReadableArray stack = data.hasKey("stack") ? data.getArray("stack") : Arguments.createArray();
@@ -107,10 +109,11 @@ public class ExceptionsManagerModule extends ReactContextBaseJavaModule {
         }
     }
 
-    @ReactMethod
-    public void updateExceptionMessage(String title, ReadableArray details, int exceptionId) {
+    @Override
+    public void updateExceptionMessage(String title, ReadableArray details, double exceptionIdDouble) {
         if (mDevSupportManager.getDevSupportEnabled()) {
             {
+                int exceptionId = (int) exceptionIdDouble;
                 if (mDevSupportManager.getDevSupportEnabled()) {
                     mDevSupportManager.updateJSError(title, details, exceptionId);
                 }
@@ -118,7 +121,7 @@ public class ExceptionsManagerModule extends ReactContextBaseJavaModule {
         } else {
             {
                 try {
-                    Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("handleReactNativeError", String.class, Object.class, Integer.class, Boolean.class).invoke(null, title, details, exceptionId, false);
+                    Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("handleReactNativeError", String.class, Object.class, Integer.class, Boolean.class).invoke(null, title, details, (int) exceptionIdDouble, false);
                 } catch (Exception expoHandleErrorException) {
                     expoHandleErrorException.printStackTrace();
                 }
@@ -126,7 +129,7 @@ public class ExceptionsManagerModule extends ReactContextBaseJavaModule {
         }
     }
 
-    @ReactMethod
+    @Override
     public void dismissRedbox() {
         if (mDevSupportManager.getDevSupportEnabled()) {
             mDevSupportManager.hideRedboxDialog();

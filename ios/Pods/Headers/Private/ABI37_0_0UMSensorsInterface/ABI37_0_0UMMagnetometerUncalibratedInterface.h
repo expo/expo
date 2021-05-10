@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI37_0_0/Expo/UMSensorsInterface/ABI37_0_0UMSensorsInterface/ABI37_0_0UMMagnetometerUncalibratedInterface.h

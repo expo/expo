@@ -140,6 +140,9 @@
 
 - (void)experienceFinishedLoadingWithId:(NSString *)experienceId
 {
+  if (!experienceId) {
+    NSAssert(experienceId, @"Cannot mark an experience with nil id as loaded");
+  }
   EXErrorRecoveryRecord *record = [self _recordForExperienceId:experienceId];
   if (!record) {
     record = [[EXErrorRecoveryRecord alloc] init];

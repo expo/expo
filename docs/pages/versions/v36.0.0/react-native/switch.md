@@ -32,7 +32,7 @@ export default function App() {
 
 ## Props
 
-Inherits [View Props](../view/#props).
+Inherits [View Props](view.md#props).
 
 ### `disabled`
 
@@ -50,7 +50,7 @@ On iOS, custom color for the background. This background color can be seen eithe
 
 | Type                | Required |
 | ------------------- | -------- |
-| [color](../colors/) | No       |
+| [color](colors.md) | No       |
 
 ---
 
@@ -80,7 +80,7 @@ Color of the foreground switch grip. If this is set on iOS, the switch grip will
 
 | Type                | Required |
 | ------------------- | -------- |
-| [color](../colors/) | No       |
+| [color](colors.md) | No       |
 
 ---
 
@@ -88,11 +88,11 @@ Color of the foreground switch grip. If this is set on iOS, the switch grip will
 
 Custom colors for the switch track.
 
-_iOS_: When the switch value is false, the track shrinks into the border. If you want to change the color of the background exposed by the shrunken track, use [`ios_backgroundColor`](../switch/#ios_backgroundColor).
+_iOS_: When the switch value is false, the track shrinks into the border. If you want to change the color of the background exposed by the shrunken track, use [`ios_backgroundColor`](switch.md#ios_backgroundColor).
 
 | Type                                                            | Required |
 | --------------------------------------------------------------- | -------- |
-| object: {false: [color](../colors/), true: [color](../colors/)} | No       |
+| object: {false: [color](colors.md), true: [color](colors.md)} | No       |
 
 ---
 

@@ -9,4 +9,3 @@
 - (void)requestAuthorizationWithOptions:(UNAuthorizationOptions)options completionHandler:(nonnull void (^)(BOOL granted, NSError *__nullable error))completionHandler;
 
 @end
-

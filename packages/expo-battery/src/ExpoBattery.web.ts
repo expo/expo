@@ -4,7 +4,7 @@ import { BatteryState } from './Battery.types';
 
 const emitter = new EventEmitter({} as any);
 
-declare var navigator: Navigator;
+declare let navigator: Navigator;
 
 interface BatteryManager extends BatteryManagerEventTarget {
   readonly charging: boolean;

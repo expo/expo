@@ -1,1 +1,0 @@
-../../../../../packages/expo-calendar/ios/EXCalendar/EXRemindersPermissionRequester.h

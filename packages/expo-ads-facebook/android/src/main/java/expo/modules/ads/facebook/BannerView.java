@@ -80,10 +80,10 @@ public class BannerView extends LinearLayout implements AdListener, LifecycleEve
   private void createAdViewIfCan() {
     if (myAdView == null && mPlacementId != null && mSize != null) {
       myAdView = new AdView(this.getContext(), mPlacementId, mSize);
-      myAdView.setAdListener(this);
+      AdView.AdViewLoadConfig adViewLoadConfig = myAdView.buildLoadAdConfig().withAdListener(this).build();
       removeAllViews();
       addView(myAdView);
-      myAdView.loadAd();
+      myAdView.loadAd(adViewLoadConfig);
     }
   }
 

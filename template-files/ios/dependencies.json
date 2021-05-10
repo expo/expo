@@ -1,7 +1,7 @@
 [
   {
-    "name": "Amplitude-iOS",
-    "version": "~> 4.7.1"
+    "name": "Amplitude",
+    "version": "~> 6.0.0"
   },
   {
     "name": "CocoaLumberjack",
@@ -17,7 +17,7 @@
   },
   {
     "name": "lottie-ios",
-    "version": "~> 2.5.0"
+    "version": "~> 3.1.9"
   },
   {
     "name": "JKBigInteger2",

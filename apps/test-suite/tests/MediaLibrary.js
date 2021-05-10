@@ -1,6 +1,5 @@
 import { Asset } from 'expo-asset';
 import * as MediaLibrary from 'expo-media-library';
-import * as Permissions from 'expo-permissions';
 import { Platform } from 'react-native';
 
 import { waitFor } from './helpers';
@@ -57,8 +56,7 @@ const WRONG_NAME = 'wertyuiopdfghjklvbnhjnftyujn';
 const WRONG_ID = '1234567890';
 
 async function getFiles() {
-  await Promise.all(FILES.map(req => Asset.loadAsync(req)));
-  return FILES.map(file => Asset.fromModule(file));
+  return await Asset.loadAsync(FILES);
 }
 
 async function getAssets(files) {
@@ -95,9 +93,29 @@ export async function test(t) {
     let testAssets;
     let album;
     let files;
+    let permissions;
+
+    const checkIfAllPermissionsWereGranted = () => {
+      if (Platform.OS === 'ios') {
+        return permissions.accessPrivileges === 'all';
+      }
+      return permissions.granted;
+    };
+
+    const oldIt = t.it;
+    t.it = (name, fn) =>
+      oldIt(name, async () => {
+        if (checkIfAllPermissionsWereGranted()) {
+          await fn();
+        }
+      });
 
     async function initializeAsync() {
-      await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      permissions = await MediaLibrary.requestPermissionsAsync();
+      if (!checkIfAllPermissionsWereGranted()) {
+        console.warn('Tests were skipped - not enough permissions to run them.');
+        return;
+      }
       files = await getFiles();
       testAssets = await getAssets(files);
       album = await MediaLibrary.getAlbumAsync(ALBUM_NAME);
@@ -109,8 +127,10 @@ export async function test(t) {
     }
 
     async function cleanupAsync() {
-      await MediaLibrary.deleteAssetsAsync(testAssets);
-      await MediaLibrary.deleteAlbumsAsync(album);
+      if (checkIfAllPermissionsWereGranted()) {
+        await MediaLibrary.deleteAssetsAsync(testAssets);
+        await MediaLibrary.deleteAlbumsAsync(album);
+      }
     }
 
     t.beforeAll(async () => {
@@ -319,6 +339,78 @@ export async function test(t) {
           t.expect(asset.creationTime).toBeLessThanOrEqual(createdBefore);
           t.expect(asset.creationTime).toBeGreaterThanOrEqual(createdAfter);
         }
+      });
+    });
+
+    t.describe('getAssetInfoAsync', async () => {
+      t.it('shouldDownloadFromNetwork: false, for photos', async () => {
+        const mediaType = MediaLibrary.MediaType.photo;
+        const options = { mediaType, album };
+        const { assets } = await MediaLibrary.getAssetsAsync(options);
+        const value = await MediaLibrary.getAssetInfoAsync(assets[0], {
+          shouldDownloadFromNetwork: false,
+        });
+        const keys = Object.keys(value);
+
+        const expectedExtraKeys = Platform.select({
+          ios: ['isNetworkAsset'],
+          default: [],
+        });
+        expectedExtraKeys.forEach(key => t.expect(keys).toContain(key));
+        if (Platform.OS === 'ios') {
+          t.expect(value['isNetworkAsset']).toBe(false);
+        }
+      });
+
+      t.it('shouldDownloadFromNetwork: true, for photos', async () => {
+        const mediaType = MediaLibrary.MediaType.photo;
+        const options = { mediaType, album };
+        const { assets } = await MediaLibrary.getAssetsAsync(options);
+        const value = await MediaLibrary.getAssetInfoAsync(assets[0], {
+          shouldDownloadFromNetwork: true,
+        });
+        const keys = Object.keys(value);
+
+        const expectedExtraKeys = Platform.select({
+          ios: ['isNetworkAsset'],
+          default: [],
+        });
+        expectedExtraKeys.forEach(key => t.expect(keys).not.toContain(key));
+      });
+
+      t.it('shouldDownloadFromNetwork: false, for videos', async () => {
+        const mediaType = MediaLibrary.MediaType.video;
+        const options = { mediaType, album };
+        const { assets } = await MediaLibrary.getAssetsAsync(options);
+        const value = await MediaLibrary.getAssetInfoAsync(assets[0], {
+          shouldDownloadFromNetwork: false,
+        });
+        const keys = Object.keys(value);
+
+        const expectedExtraKeys = Platform.select({
+          ios: ['isNetworkAsset'],
+          default: [],
+        });
+        expectedExtraKeys.forEach(key => t.expect(keys).toContain(key));
+        if (Platform.OS === 'ios') {
+          t.expect(value['isNetworkAsset']).toBe(false);
+        }
+      });
+
+      t.it('shouldDownloadFromNetwork: true, for videos', async () => {
+        const mediaType = MediaLibrary.MediaType.video;
+        const options = { mediaType, album };
+        const { assets } = await MediaLibrary.getAssetsAsync(options);
+        const value = await MediaLibrary.getAssetInfoAsync(assets[0], {
+          shouldDownloadFromNetwork: true,
+        });
+        const keys = Object.keys(value);
+
+        const expectedExtraKeys = Platform.select({
+          ios: ['isNetworkAsset'],
+          default: [],
+        });
+        expectedExtraKeys.forEach(key => t.expect(keys).not.toContain(key));
       });
     });
 

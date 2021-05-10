@@ -1,69 +1,88 @@
 import { useNavigation } from '@react-navigation/native';
 import * as React from 'react';
-import { Linking, Share, StyleSheet, Text, View } from 'react-native';
+import { Linking, Share, StyleSheet, View } from 'react-native';
 
 import Colors from '../constants/Colors';
-import UrlUtils from '../utils/UrlUtils';
+import * as UrlUtils from '../utils/UrlUtils';
+import { useSDKExpired } from '../utils/useSDKExpired';
+import Badge from './Badge';
+import { Experience } from './ExperienceView.types';
 import ListItem from './ListItem';
+import { StyledText } from './Text';
 
 type Props = React.ComponentProps<typeof ListItem> & {
   url: string;
   unlisted?: boolean;
   releaseChannel?: string;
   username?: string;
+  sdkVersion?: string;
+  experienceInfo?: Pick<Experience, 'username' | 'slug'>;
+  onPressUsername?: (username: string) => void;
 };
 
-function ProjectListItem({ releaseChannel, unlisted, username, subtitle, url, ...props }: Props) {
+function ProjectListItem({
+  unlisted,
+  username,
+  subtitle,
+  url,
+  releaseChannel,
+  sdkVersion,
+  ...props
+}: Props) {
   const navigation = useNavigation();
-  const renderRightContent = (): React.ReactNode => {
-    return (
-      <View style={styles.rightContentContainer}>
-        {/* TODO: revisit this when we support "private" - unlisted is }
-        {/* {unlisted && this.renderUnlistedIcon()} */}
-        {releaseChannel && renderReleaseChannel(releaseChannel)}
-      </View>
-    );
-  };
+  const [isExpired, sdkVersionNumber] = useSDKExpired(sdkVersion);
 
-  /*
-  const renderUnlistedIcon = () => {
+  const renderRightContent = React.useCallback((): React.ReactNode => {
     return (
-      <View style={styles.unlistedContainer}>
-        <View style={styles.unlistedIconContainer}>
-          <Ionicons name="ios-eye-off" size={15} lightColor="rgba(36, 44, 58, 0.3)" />
+      releaseChannel && (
+        <View style={styles.rightContentContainer}>
+          <Badge text={releaseChannel} />
         </View>
-        <Text style={styles.unlistedText}>Unlisted</Text>
-      </View>
+      )
     );
-  };
-  */
-
-  const renderReleaseChannel = (releaseChannel: string) => {
-    return (
-      <View style={styles.releaseChannelContainer}>
-        <Text style={styles.releaseChannelText} numberOfLines={1} ellipsizeMode="tail">
-          {releaseChannel}
-        </Text>
-      </View>
-    );
-  };
+  }, [isExpired, releaseChannel]);
 
   const handlePress = () => {
+    // Open the project info page when it's stale.
+    if (isExpired && props.experienceInfo) {
+      handleLongPress();
+      return;
+    }
     Linking.openURL(UrlUtils.normalizeUrl(url));
   };
 
   const handleLongPress = () => {
-    const message = UrlUtils.normalizeUrl(url);
-    Share.share({
-      title: url,
-      message,
-      url: message,
-    });
+    if (props.experienceInfo) {
+      navigation.navigate('Experience', props.experienceInfo);
+    } else {
+      const message = UrlUtils.normalizeUrl(url);
+      Share.share({
+        title: url,
+        message,
+        url: message,
+      });
+    }
   };
 
   const handlePressUsername = () => {
-    navigation.navigate('Profile', { username });
+    if (props.onPressUsername && username) {
+      props.onPressUsername(username);
+    }
   };
+
+  const renderExtraText = React.useCallback(
+    () =>
+      sdkVersionNumber ? (
+        <StyledText
+          lightColor={Colors.light.greyText}
+          darkColor={Colors.dark.greyText}
+          style={styles.infoText}>
+          SDK {sdkVersionNumber}
+          {isExpired ? ': Not supported' : ''}
+        </StyledText>
+      ) : null,
+    [sdkVersionNumber, isExpired]
+  );
 
   return (
     <ListItem
@@ -71,6 +90,8 @@ function ProjectListItem({ releaseChannel, unlisted, username, subtitle, url, ..
       onLongPress={handleLongPress}
       rightContent={renderRightContent()}
       {...props}
+      imageSize={sdkVersionNumber ? 56 : 40}
+      renderExtraText={renderExtraText}
       subtitle={username || subtitle}
       onPressSubtitle={username ? handlePressUsername : undefined}
     />
@@ -78,43 +99,15 @@ function ProjectListItem({ releaseChannel, unlisted, username, subtitle, url, ..
 }
 
 const styles = StyleSheet.create({
+  infoText: {
+    marginTop: 4,
+    fontSize: 12,
+  },
   rightContentContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  unlistedContainer: {
-    marginEnd: 5,
+    marginEnd: 10,
     marginStart: 5,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  unlistedBullet: {
-    width: 3.5,
-    height: 3.5,
-    borderRadius: 3.5 / 2,
-    marginHorizontal: 6,
-  },
-  unlistedIconContainer: {
-    flexDirection: 'row',
-  },
-  unlistedText: {
-    marginLeft: 3,
-    color: Colors.light.greyText,
-    fontSize: 13,
-  },
-  releaseChannelContainer: {
-    marginEnd: 5,
-    marginStart: 5,
-    backgroundColor: 'rgba(0,0,0,0.025)',
-    borderRadius: 4,
-    paddingHorizontal: 5,
-    paddingVertical: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  releaseChannelText: {
-    color: '#888',
-    fontSize: 11,
   },
 });
 

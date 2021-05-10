@@ -6,13 +6,13 @@ defaults:
     working-directory: docs
 
 on:
+  workflow_dispatch: {}
   push:
-    branches: [ master ]
+    branches: [master]
     paths:
       - 'docs/**'
       - '.github/workflows/docs.yml'
   pull_request:
-    branches: [ master ]
     paths:
       - 'docs/**'
       - '.github/workflows/docs.yml'
@@ -21,6 +21,10 @@ jobs:
   docs:
     runs-on: ubuntu-18.04
     steps:
+      - name: Install Node 14
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
       - name: Check out repository
         uses: actions/checkout@v2
         with:
@@ -31,24 +35,35 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('docs/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: yarn install --frozen-lockfile
       - run: yarn test
+      - run: yarn lint --max-warnings 0
       - run: yarn danger ci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/cache@v2
+      - name: Check if `docs/yarn.lock` has been changed
+        uses: dorny/paths-filter@v2
+        id: changes
         with:
-          path: .next
-          key: docs-next-${{ hashFiles('yarn.lock') }}-${{ hashFiles('pages/**') }}
-          restore-keys: |
-            docs-next-${{ hashFiles('yarn.lock') }}-
-            docs-next-
+          filters: |
+            lock:
+              - 'docs/yarn.lock'
+      - name: Cache Next folder
+        if: steps.changes.outputs.lock == 'false'
+        uses: actions/cache@v2
+        with:
+          path: docs/.next/cache
+          key: docs-next-${{ hashFiles('docs/yarn.lock') }}-next-${{ hashFiles('docs/next.config.js') }}
       - run: yarn export
-        timeout-minutes: 15
-      - name: test links
+        timeout-minutes: 20
+        env:
+          USE_ESBUILD: 1
+      - name: lint links
+        run: yarn lint-links --quiet
+      - name: test links (legacy)
         run: |
           yarn export-server &
           while ! nc -z localhost 8000; do
@@ -56,13 +71,13 @@ jobs:
           done
           yarn test-links http://127.0.0.1:8000
         timeout-minutes: 1
-      - run: sudo apt-get install awscli
       - run: ./deploy.sh
         if: ${{ github.event.ref == 'refs/heads/master' }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - uses: 8398a7/action-slack@v3
+      - name: 🔔 Notify on Slack
+        uses: 8398a7/action-slack@v3
         if: failure() && github.event.ref == 'refs/heads/master'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -70,5 +85,5 @@ jobs:
         with:
           channel: '#docs'
           status: ${{ job.status }}
-          fields: author,job,message
-          author_name: docs build
+          fields: job,commit,ref,eventName,author,took
+          author_name: Docs

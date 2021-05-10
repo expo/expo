@@ -1,3 +1,4 @@
+// @ts-nocheck
 // tslint:disable max-classes-per-file
 import { createStackNavigator, StackNavigationProp } from '@react-navigation/stack';
 import React from 'react';
@@ -22,7 +23,7 @@ class MainScreen extends React.Component<Props> {
     title: '📱 React Native Screens Examples',
   };
   render() {
-    const data = Object.keys(SCREENS) as Array<keyof Links>;
+    const data = Object.keys(SCREENS) as (keyof Links)[];
     return (
       <FlatList
         style={styles.list}

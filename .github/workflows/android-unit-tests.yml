@@ -1,21 +1,23 @@
 name: Android Unit Tests
 
 on:
+  workflow_dispatch: {}
   push:
-    branches: [ master ]
+    branches: [master]
     paths:
       - .github/workflows/android-unit-tests.yml
-      - 'android/**'
-      - 'fastlane/**'
-      - 'tools/expotools/**'
+      - android/**
+      - fastlane/**
+      - packages/**/android/**
+      - tools/**
       - yarn.lock
   pull_request:
-    branches: [ master ]
     paths:
       - .github/workflows/android-unit-tests.yml
-      - 'android/**'
-      - 'fastlane/**'
-      - 'tools/expotools/**'
+      - android/**
+      - fastlane/**
+      - packages/**/android/**
+      - tools/**
       - yarn.lock
 
 jobs:
@@ -29,24 +31,43 @@ jobs:
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: yarn install --frozen-lockfile
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - run: echo "::add-path::$(pwd)/bin"
-      - run: expotools native-unit-tests --platform android
+      - uses: actions/cache@v2
+        id: cache-android-ndk
+        with:
+          path: /usr/local/lib/android/sdk/ndk/19.2.5345600/
+          key: ${{ runner.os }}-ndk-19.2.5345600
+          restore-keys: |
+            ${{ runner.os }}-ndk-
+      - name: Install NDK
+        if: steps.cache-android-ndk.outputs.cache-hit != 'true'
+        run: |
+          sudo $ANDROID_HOME/tools/bin/sdkmanager --install "ndk;19.2.5345600"
+      - run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: Run native Android unit tests
+        env:
+          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/
+        run: expotools native-unit-tests --platform android
       - name: Save test results
         if: always()
         uses: actions/upload-artifact@v2
         with:
           name: test-results
           path: packages/**/build/test-results/**/*xml
+      - name: Run Spotless lint check
+        env:
+          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/
+        working-directory: android
+        run: ./gradlew spotlessCheck || echo '::error Spotless lint failed. Run `./gradlew spotlessApply` to automatically fix formatting.'

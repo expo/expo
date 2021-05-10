@@ -5,7 +5,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-firebase-
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-firebase-core`** provides access to the Firebase configuration and performs initialisation
 of the native Firebase App.
@@ -19,8 +18,7 @@ of the native Firebase App.
 ## Configuration
 
 To use this package, Firebase needs to be configured for your app.
-[Please follow this guide on how to configure native Firebase.](../../guides/setup-native-firebase)
-
+[Please follow this guide on how to configure native Firebase.](../../../guides/setup-native-firebase.md)
 
 > No explicit calls to `expo-firebase-core` are required to initialize Firebase. This library will auto-initialize the Firebase app when a valid configuration exists.
 
@@ -28,7 +26,7 @@ To use this package, Firebase needs to be configured for your app.
 
 At the moment, only Firebase Analytics is supported natively. We are working on bringing more native Firebase packages to Expo, stay tuned :)
 
-- [expo-firebase-analytics](../firebase-analytics)
+- [expo-firebase-analytics](firebase-analytics.md)
 
 ## API
 
@@ -36,15 +34,13 @@ At the moment, only Firebase Analytics is supported natively. We are working on 
 import * as FirebaseCore from 'expo-firebase-core';
 ```
 
-<TableOfContentSection title='Constants' contents={['FirebaseCore.DEFAULT_APP_NAME', 'FirebaseCore.DEFAULT_APP_OPTIONS']} />
-
 ## Constants
 
 ### `FirebaseCore.DEFAULT_APP_NAME`
 
 Name of the default Firebase app (e.g. `[DEFAULT]`).
 
-On the Expo Client a Firebase App is created for each project that is loaded, and a unique name for each project is returned.
+On the Expo client a Firebase App is created for each project that is loaded, and a unique name for each project is returned.
 
 ### `FirebaseCore.DEFAULT_APP_OPTIONS`
 

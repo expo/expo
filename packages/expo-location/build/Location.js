@@ -1,11 +1,10 @@
-import { Platform, CodedError } from '@unimodules/core';
+import { Platform } from '@unimodules/core';
 import { PermissionStatus } from 'unimodules-permissions-interface';
 import ExpoLocation from './ExpoLocation';
 import { LocationAccuracy, LocationActivityType, LocationGeofencingEventType, LocationGeofencingRegionState, } from './Location.types';
 import { LocationEventEmitter } from './LocationEventEmitter';
+import { setGoogleApiKey, googleGeocodeAsync, googleReverseGeocodeAsync, } from './LocationGoogleGeocoding';
 import { LocationSubscriber, HeadingSubscriber, _getCurrentWatchId } from './LocationSubscribers';
-let googleApiKey;
-const googleApiUrl = 'https://maps.googleapis.com/maps/api/geocode/json';
 export async function getProviderStatusAsync() {
     return ExpoLocation.getProviderStatusAsync();
 }
@@ -79,109 +78,69 @@ export async function watchHeadingAsync(callback) {
         },
     };
 }
-export async function geocodeAsync(address) {
-    return ExpoLocation.geocodeAsync(address).catch(error => {
-        const platformUsesGoogleMaps = Platform.OS === 'android' || Platform.OS === 'web';
-        if (platformUsesGoogleMaps && error.code === 'E_NO_GEOCODER') {
-            if (!googleApiKey) {
-                throw new CodedError(error.code, `${error.message} Please set a Google API Key to use geocoding.`);
-            }
-            return _googleGeocodeAsync(address);
-        }
-        throw error;
-    });
+/**
+ * Geocodes given address to an array of latitude-longitude coordinates.
+ */
+export async function geocodeAsync(address, options) {
+    if (typeof address !== 'string') {
+        throw new TypeError(`Address to geocode must be a string. Got ${address} instead.`);
+    }
+    if (options?.useGoogleMaps || Platform.OS === 'web') {
+        return await googleGeocodeAsync(address);
+    }
+    return await ExpoLocation.geocodeAsync(address);
 }
-export async function reverseGeocodeAsync(location) {
+/**
+ * The opposite behavior of `geocodeAsync` — translates location coordinates to an array of addresses.
+ */
+export async function reverseGeocodeAsync(location, options) {
     if (typeof location.latitude !== 'number' || typeof location.longitude !== 'number') {
-        throw new TypeError('Location should be an object with number properties `latitude` and `longitude`.');
+        throw new TypeError('Location to reverse-geocode must be an object with number properties `latitude` and `longitude`.');
     }
-    return ExpoLocation.reverseGeocodeAsync(location).catch(error => {
-        const platformUsesGoogleMaps = Platform.OS === 'android' || Platform.OS === 'web';
-        if (platformUsesGoogleMaps && error.code === 'E_NO_GEOCODER') {
-            if (!googleApiKey) {
-                throw new CodedError(error.code, `${error.message} Please set a Google API Key to use geocoding.`);
-            }
-            return _googleReverseGeocodeAsync(location);
-        }
-        throw error;
-    });
-}
-export function setApiKey(apiKey) {
-    googleApiKey = apiKey;
-}
-async function _googleGeocodeAsync(address) {
-    const result = await fetch(`${googleApiUrl}?key=${googleApiKey}&address=${encodeURI(address)}`);
-    const resultObject = await result.json();
-    if (resultObject.status === 'ZERO_RESULTS') {
-        return [];
+    if (options?.useGoogleMaps || Platform.OS === 'web') {
+        return await googleReverseGeocodeAsync(location);
     }
-    assertGeocodeResults(resultObject);
-    return resultObject.results.map(result => {
-        const location = result.geometry.location;
-        // TODO: This is missing a lot of props
-        return {
-            latitude: location.lat,
-            longitude: location.lng,
-        };
-    });
-}
-async function _googleReverseGeocodeAsync(options) {
-    const result = await fetch(`${googleApiUrl}?key=${googleApiKey}&latlng=${options.latitude},${options.longitude}`);
-    const resultObject = await result.json();
-    if (resultObject.status === 'ZERO_RESULTS') {
-        return [];
-    }
-    assertGeocodeResults(resultObject);
-    return resultObject.results.map(result => {
-        const address = {};
-        result.address_components.forEach(component => {
-            if (component.types.includes('locality')) {
-                address.city = component.long_name;
-            }
-            else if (component.types.includes('street_address')) {
-                address.street = component.long_name;
-            }
-            else if (component.types.includes('administrative_area_level_1')) {
-                address.region = component.long_name;
-            }
-            else if (component.types.includes('country')) {
-                address.country = component.long_name;
-                address.isoCountryCode = component.short_name;
-            }
-            else if (component.types.includes('postal_code')) {
-                address.postalCode = component.long_name;
-            }
-            else if (component.types.includes('point_of_interest')) {
-                address.name = component.long_name;
-            }
-        });
-        return address;
-    });
-}
-// https://developers.google.com/maps/documentation/geocoding/intro
-function assertGeocodeResults(resultObject) {
-    const { status, error_message } = resultObject;
-    if (status !== 'ZERO_RESULTS' && status !== 'OK') {
-        if (error_message) {
-            throw new CodedError(status, error_message);
-        }
-        else if (status === 'UNKNOWN_ERROR') {
-            throw new CodedError(status, 'the request could not be processed due to a server error. The request may succeed if you try again.');
-        }
-        throw new CodedError(status, `An error occurred during geocoding.`);
-    }
+    return await ExpoLocation.reverseGeocodeAsync(location);
 }
 /**
  * Gets the current state of location permissions.
+ * @deprecated Use `getForegroundPermissionsAsync()` or `getBackgroundPermissionsAsync()` instead.
  */
 export async function getPermissionsAsync() {
+    console.warn(`"getPermissionsAsync()" is now deprecated. Please use "getForegroundPermissionsAsync()" or "getBackgroundPermissionsAsync()" instead.`);
     return await ExpoLocation.getPermissionsAsync();
 }
 /**
  * Requests the user to grant location permissions.
+ * @deprecated Use `requestForegroundPermissionsAsync()` or `requestBackgroundPermissionsAsync()` instead.
  */
 export async function requestPermissionsAsync() {
+    console.warn(`"requestPermissionsAsync()" is now deprecated. Please use "requestForegroundPermissionsAsync()" or "requestBackgroundPermissionsAsync()" instead.`);
     return await ExpoLocation.requestPermissionsAsync();
+}
+/**
+ * Gets the current state of foreground location permissions.
+ */
+export async function getForegroundPermissionsAsync() {
+    return await ExpoLocation.getForegroundPermissionsAsync();
+}
+/**
+ * Requests the user to grant foreground location permissions.
+ */
+export async function requestForegroundPermissionsAsync() {
+    return await ExpoLocation.requestForegroundPermissionsAsync();
+}
+/**
+ * Gets the current state of background location permissions.
+ */
+export async function getBackgroundPermissionsAsync() {
+    return await ExpoLocation.getBackgroundPermissionsAsync();
+}
+/**
+ * Requests the user to grant background location permissions.
+ */
+export async function requestBackgroundPermissionsAsync() {
+    return await ExpoLocation.requestBackgroundPermissionsAsync();
 }
 // --- Location service
 /**
@@ -242,10 +201,18 @@ export async function hasStartedGeofencingAsync(taskName) {
     _validateTaskName(taskName);
     return ExpoLocation.hasStartedGeofencingAsync(taskName);
 }
+/**
+ * @deprecated
+ * Deprecated as of SDK39 in favour of `setGoogleApiKey`.
+ */
+export function setApiKey(apiKey) {
+    console.warn("Location's method `setApiKey` is deprecated in favor of `setGoogleApiKey`.");
+    setGoogleApiKey(apiKey);
+}
 // For internal purposes
 export { LocationEventEmitter as EventEmitter, _getCurrentWatchId };
 // Export as namespaced types.
-export { LocationAccuracy as Accuracy, LocationActivityType as ActivityType, LocationGeofencingEventType as GeofencingEventType, LocationGeofencingRegionState as GeofencingRegionState, PermissionStatus, };
+export { LocationAccuracy as Accuracy, LocationActivityType as ActivityType, LocationGeofencingEventType as GeofencingEventType, LocationGeofencingRegionState as GeofencingRegionState, PermissionStatus, setGoogleApiKey, };
 export { installWebGeolocationPolyfill } from './GeolocationPolyfill';
 export * from './Location.types';
 //# sourceMappingURL=Location.js.map

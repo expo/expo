@@ -1,6 +1,7 @@
 import groovy.json.JsonSlurper
 import org.gradle.util.VersionNumber
 
+import java.nio.file.Paths
 import java.util.regex.Pattern
 
 class Unimodule {
@@ -19,6 +20,42 @@ class Unimodule {
 
   boolean supportsTarget(String target) {
     return targets.size() == 0 || targets.contains(target)
+  }
+}
+
+def getProjectPackageJson(File projectRoot) {
+  String resolveScript = """
+  const findUp = require('find-up');
+  console.log(findUp.sync('package.json'));
+  """
+  String[] nodeCommand = ["node", "-e", resolveScript]
+  String packageJsonPath = spawnProcess(nodeCommand, projectRoot)
+  def packageJsonFile = new File(packageJsonPath)
+  def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
+  return packageJson;
+}
+
+Map getAndroidConfig(File projectRoot) {
+  def packageJson = getProjectPackageJson(projectRoot)
+  if (packageJson == null || packageJson["react-native-unimodules"] == null || packageJson["react-native-unimodules"].android == null) {
+    return [:]
+  }
+  return packageJson["react-native-unimodules"].android
+}
+
+def spawnProcess(String[] cmd, File directory) {
+  try {
+    def cmdProcess = Runtime.getRuntime().exec(cmd, null, directory)
+    def bufferedReader = new BufferedReader(new InputStreamReader(cmdProcess.getInputStream()))
+    def buffered = ""
+    def results = new StringBuffer()
+    while ((buffered = bufferedReader.readLine()) != null) {
+      results.append(buffered)
+    }
+    return results.toString()
+  } catch (Exception exception) {
+    rootProject.logger.error "Spawned process '${cmd}' threw an error"
+    throw exception
   }
 }
 
@@ -128,7 +165,7 @@ def findUnimodules(String target, List exclude, List modulesPaths) {
     def moduleConfigPaths = new FileNameFinder().getFileNames(baseDir, '**/unimodule.json', '')
 
     for (moduleConfigPath in moduleConfigPaths) {
-      def unimoduleConfig = new File(moduleConfigPath)
+      def unimoduleConfig = Paths.get(moduleConfigPath).toRealPath().toFile()
       def unimoduleJson = new JsonSlurper().parseText(unimoduleConfig.text)
       def directory = unimoduleConfig.getParent()
       def buildGradle = readFromBuildGradle(new File(directory, "android/build.gradle").toString())
@@ -220,8 +257,7 @@ ext.addUnimodulesDependencies = { Map customOptions = [:] ->
       configuration: 'implementation',
       target       : 'react-native',
       exclude      : [],
-  ] << customOptions
-
+  ] << getAndroidConfig(rootProject.projectDir) << customOptions
   addUnimodulesDependencies(options.target, options.exclude, options.modulesPaths, {unimodule ->
     Object dependency = project.project(':' + unimodule.name)
     project.dependencies.add(options.configuration, dependency)
@@ -234,7 +270,7 @@ ext.addMavenUnimodulesDependencies = { Map customOptions = [:] ->
       configuration: 'implementation',
       target       : 'react-native',
       exclude      : [],
-  ] << customOptions
+  ] << getAndroidConfig(rootProject.projectDir) << customOptions
 
   addUnimodulesDependencies(options.target, options.exclude, options.modulesPaths, {unimodule ->
     project.dependencies.add(
@@ -249,7 +285,7 @@ ext.includeUnimodulesProjects = { Map customOptions = [:] ->
       modulesPaths: ['../../node_modules'],
       target      : 'react-native',
       exclude     : [],
-  ] << customOptions
+  ] << getAndroidConfig(rootProject.projectDir) << customOptions
 
   def unimodules = findUnimodules(options.target, options.exclude, options.modulesPaths).unimodules
 

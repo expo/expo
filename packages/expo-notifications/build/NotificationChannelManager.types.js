@@ -21,7 +21,7 @@ export var AndroidImportance;
     AndroidImportance[AndroidImportance["MIN"] = 3] = "MIN";
     AndroidImportance[AndroidImportance["LOW"] = 4] = "LOW";
     AndroidImportance[AndroidImportance["DEFAULT"] = 5] = "DEFAULT";
-    /** @deprecated use DEFAULT instead */
+    /** @deprecated use `DEFAULT` instead */
     AndroidImportance[AndroidImportance["DEEFAULT"] = 5] = "DEEFAULT";
     AndroidImportance[AndroidImportance["HIGH"] = 6] = "HIGH";
     AndroidImportance[AndroidImportance["MAX"] = 7] = "MAX";

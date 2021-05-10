@@ -6,7 +6,8 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-38/packages/expo-sensors'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
+import { InlineCode } from '~/components/base/code';
 
 `Barometer` from **`expo-sensors`** provides access to the device barometer sensor to respond to changes in air pressure. `pressure` is measured in _`hectopascals`_ or _`hPa`_.
 
@@ -16,13 +17,13 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 <InstallSection packageName="expo-sensors" />
 
-## Example Usage
+## Usage
 
 <SnackInline label='Basic Barometer usage' templateId='barometer' dependencies={['expo-sensors']}>
 
 ```js
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View, Platform } from 'react-native';
 import { Barometer } from 'expo-sensors';
 
 export default function App() {
@@ -57,12 +58,16 @@ export default function App() {
     this._subscription = null;
   };
 
-  const { pressure = 0 } = data;
+  const { pressure = 0, relativeAltitude = 0 } = data;
+
   return (
     <View style={styles.sensor}>
       <Text>Barometer:</Text>
-      <Text>{pressure * 100} Pa</Text>
-
+      <Text>Pressure: {pressure * 100} Pa</Text>
+      <Text>
+        Relative Altitude:{' '}
+        {Platform.OS === 'ios' ? `${relativeAltitude} m` : `Only available on iOS`}
+      </Text>
       <View style={styles.buttonContainer}>
         <TouchableOpacity onPress={_toggle} style={styles.button}>
           <Text>Toggle</Text>
@@ -80,10 +85,6 @@ export default function App() {
 ```js
 import { Barometer } from 'expo-sensors';
 ```
-
-<TableOfContentSection title='Methods' contents={['Barometer.isAvailableAsync()', 'Barometer.addListener((data: BarometerMeasurement) => void)', 'Barometer.removeAllListeners()']}/>
-
-<TableOfContentSection title='Types' contents={['BarometerMeasurement']} />
 
 ## Methods
 
@@ -139,10 +140,10 @@ type BarometerMeasurement = {
 };
 ```
 
-| Name             | Type                 | Format   | iOS | Android | Web |
-| ---------------- | -------------------- | -------- | --- | ------- | --- |
-| pressure         | `number`             | `hPa`    | ✅  | ✅      | ❌  |
-| relativeAltitude | `number | undefined` | `meters` | ✅  | ❌      | ❌  |
+| Name             | Type                                         | Format   | iOS | Android | Web |
+| ---------------- | -------------------------------------------- | -------- | --- | ------- | --- |
+| pressure         | `number`                                     | `hPa`    | ✅  | ✅      | ❌  |
+| relativeAltitude | <InlineCode>number \| undefined</InlineCode> | `meters` | ✅  | ❌      | ❌  |
 
 ## Units and Providers
 

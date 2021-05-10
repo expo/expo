@@ -15,8 +15,8 @@
     <item name="android:windowBackground">@color/colorPrimary</item>
   </style>
 
-  <style name="Theme.Exponent.Light.LightStatusBar" parent="Theme.Exponent.Light">
-    <!-- dummy theme here: see v23 styles -->
+  <style name="Theme.Exponent.HomeActivity" parent="Theme.Exponent.Light">
+    <item name="android:windowBackground">@drawable/splashscreen</item>
   </style>
 
   <style name="ExponentCheckBox">

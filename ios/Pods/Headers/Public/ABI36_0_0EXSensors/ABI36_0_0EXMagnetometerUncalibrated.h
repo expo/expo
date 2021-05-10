@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI36_0_0/Expo/EXSensors/ABI36_0_0EXSensors/Modules/SensorModules/ABI36_0_0EXMagnetometerUncalibrated.h

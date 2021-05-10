@@ -51,6 +51,7 @@
     android:icon="@mipmap/ic_launcher"
     android:label="@string/app_name"
     android:largeHeap="true"
+    android:requestLegacyExternalStorage="true"
     android:usesCleartextTraffic="true">
 
     <activity
@@ -69,6 +70,22 @@
         <category android:name="android.intent.category.BROWSABLE"/>
       </intent-filter>
 
+      <intent-filter android:autoVerify="true">
+        <data
+          android:host="expo.io"
+          android:path="/expo-go"
+          android:scheme="https"/>
+        <data
+          android:host="expo.io"
+          android:path="/expo-go"
+          android:scheme="http"/>
+
+        <action android:name="android.intent.action.VIEW"/>
+
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+      </intent-filter>
+      
       <!-- This has to be separate from the exp[s]:// scheme filter. No idea why -->
       <intent-filter>
         <data
@@ -125,13 +142,29 @@
       android:label="@string/app_name"
       android:launchMode="singleTask"
       android:screenOrientation="portrait"
-      android:theme="@style/Theme.Exponent.Light.LightStatusBar">
+      android:theme="@style/Theme.Exponent.HomeActivity">
       <!-- START HOME INTENT FILTERS -->
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
 
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+      <intent-filter>
+        <data android:scheme="expauth"/>
+
+        <action android:name="android.intent.action.VIEW"/>
+
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+      </intent-filter>
+      <intent-filter>
+        <data android:scheme="expo-home"/>
+
+        <action android:name="android.intent.action.VIEW"/>
+
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
       </intent-filter>
       <!-- END HOME INTENT FILTERS -->
     </activity>
@@ -152,15 +185,15 @@
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>
     <!-- WHEN_PREPARING_SHELL_REMOVE_FROM_HERE -->
     <!-- ADD DEV SETTINGS HERE -->
-    <!-- BEGIN_SDK_38 -->
-    <activity android:name="abi38_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
-    <!-- END_SDK_38 -->
-    <!-- BEGIN_SDK_37 -->
-    <activity android:name="abi37_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
-    <!-- END_SDK_37 -->
-    <!-- BEGIN_SDK_36 -->
-    <activity android:name="abi36_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
-    <!-- END_SDK_36 -->
+    <!-- BEGIN_SDK_41 -->
+    <activity android:name="abi41_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
+    <!-- END_SDK_41 -->
+    <!-- BEGIN_SDK_40 -->
+    <activity android:name="abi40_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
+    <!-- END_SDK_40 -->
+    <!-- BEGIN_SDK_39 -->
+    <activity android:name="abi39_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
+    <!-- END_SDK_39 -->
     <!-- WHEN_PREPARING_SHELL_REMOVE_TO_HERE -->
 
     <activity
@@ -188,60 +221,54 @@
         </intent-filter>
     </activity>
     <!-- Versioned Activity for Stripe -->
-    <!-- BEGIN_SDK_38 -->
+    <!-- BEGIN_SDK_41 -->
     <activity
       android:exported="true"
       android:launchMode="singleTask"
-      android:name="abi38_0_0.expo.modules.payments.stripe.RedirectUriReceiver"
+      android:name="abi41_0_0.expo.modules.payments.stripe.RedirectUriReceiver"
       android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
       <intent-filter>
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
-        <data android:scheme="abi38_0_0.expo.modules.payments.stripe" />
+        <data android:scheme="abi41_0_0.expo.modules.payments.stripe" />
       </intent-filter>
     </activity>
-    <!-- END_SDK_38 -->
-    <!-- BEGIN_SDK_37 -->
+    <!-- END_SDK_41 -->
+    <!-- BEGIN_SDK_40 -->
     <activity
       android:exported="true"
       android:launchMode="singleTask"
-      android:name="abi37_0_0.expo.modules.payments.stripe.RedirectUriReceiver"
+      android:name="abi40_0_0.expo.modules.payments.stripe.RedirectUriReceiver"
       android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
       <intent-filter>
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
-        <data android:scheme="abi37_0_0.expo.modules.payments.stripe" />
+        <data android:scheme="abi40_0_0.expo.modules.payments.stripe" />
       </intent-filter>
     </activity>
-    <!-- END_SDK_37 -->
-    <!-- BEGIN_SDK_36 -->
+    <!-- END_SDK_40 -->
+    <!-- BEGIN_SDK_39 -->
     <activity
       android:exported="true"
       android:launchMode="singleTask"
-      android:name="abi36_0_0.expo.modules.payments.stripe.RedirectUriReceiver"
+      android:name="abi39_0_0.expo.modules.payments.stripe.RedirectUriReceiver"
       android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
       <intent-filter>
         <action android:name="android.intent.action.VIEW" />
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
-        <data android:scheme="abi36_0_0.expo.modules.payments.stripe" />
+        <data android:scheme="abi39_0_0.expo.modules.payments.stripe" />
       </intent-filter>
     </activity>
-    <!-- END_SDK_36 -->
+    <!-- END_SDK_39 -->
     <!-- END OF STRIPE SCHEMES -->
 
     <activity
       android:name=".experience.ErrorActivity"
       android:theme="@style/Theme.Exponent.Dark"
       android:screenOrientation="portrait">
-    </activity>
-
-    <activity
-      android:name=".experience.InfoActivity"
-      android:screenOrientation="portrait"
-      android:theme="@style/Theme.Exponent.Light">
     </activity>
 
     <activity
@@ -300,38 +327,6 @@
              android:enabled="true"
              android:exported="false"/>
 
-    <!-- GCM -->
-    <receiver
-      android:name="com.google.android.gms.gcm.GcmReceiver"
-      android:exported="true"
-      android:permission="com.google.android.c2dm.permission.SEND">
-      <intent-filter>
-        <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
-        <action android:name="com.google.android.c2dm.intent.REGISTRATION"/>
-
-        <category android:name="host.exp.exponent"/>
-      </intent-filter>
-    </receiver>
-
-    <service
-      android:name=".gcm.ExponentGcmListenerService"
-      android:exported="false">
-      <intent-filter>
-        <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
-      </intent-filter>
-    </service>
-    <service
-      android:name=".gcm.ExponentInstanceIDListenerService"
-      android:exported="false">
-      <intent-filter>
-        <action android:name="com.google.android.gms.iid.InstanceID"/>
-      </intent-filter>
-    </service>
-    <service
-      android:name=".gcm.GcmRegistrationIntentService"
-      android:exported="false">
-    </service>
-
     <!-- FCM -->
     <service
       android:name=".fcm.ExpoFcmMessagingService">
@@ -339,25 +334,26 @@
         <action android:name="com.google.firebase.MESSAGING_EVENT" />
       </intent-filter>
     </service>
+    <service
+      android:name=".fcm.FcmRegistrationIntentService"
+      android:exported="false">
+    </service>
+    <!-- Applied to Firebase data messages -->
+    <meta-data
+      android:name="expo.modules.notifications.default_notification_icon"
+      android:resource="@drawable/shell_notification_icon" />
+    <meta-data
+      android:name="expo.modules.notifications.default_notification_color"
+      android:resource="@color/notification_icon_color" />
+
+    <!-- Applied to Firebase notification messages -->
     <meta-data
       android:name="com.google.firebase.messaging.default_notification_icon"
       android:resource="@drawable/shell_notification_icon" />
     <meta-data
       android:name="com.google.firebase.messaging.default_notification_color"
-      android:resource="@color/colorAccent" />
-    <service
-      android:name=".fcm.FcmRegistrationIntentService"
-      android:exported="false">
-    </service>
+      android:resource="@color/notification_icon_color" />
 
-    <service
-      android:name="host.exp.exponent.services.ScopedExpoNotificationsService"
-      android:exported="false"
-      android:permission="android.permission.BIND_JOB_SERVICE">
-      <intent-filter>
-          <action android:name="expo.modules.notifications.NOTIFICATION_EVENT" />
-      </intent-filter>
-    </service>
 
     <!-- ImagePicker native module -->
     <activity

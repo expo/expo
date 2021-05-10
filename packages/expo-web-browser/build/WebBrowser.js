@@ -64,7 +64,7 @@ export async function openBrowserAsync(url, browserParams = {}) {
         if (__DEV__) {
             console.warn('Attempted to call WebBrowser.openBrowserAsync multiple times while already active. Only one WebBrowser controller can be active at any given time.');
         }
-        return { type: 'locked' };
+        return { type: WebBrowserResultType.LOCKED };
     }
     browserLocked = true;
     let result;
@@ -160,11 +160,11 @@ async function _openBrowserAndWaitAndroidAsync(startUrl, browserParams = {}) {
         _onWebBrowserCloseAndroid = resolve;
         AppState.addEventListener('change', _onAppStateChangeAndroid);
     });
-    let result = { type: 'cancel' };
+    let result = { type: WebBrowserResultType.CANCEL };
     const { type } = await openBrowserAsync(startUrl, browserParams);
     if (type === 'opened') {
         await appStateChangedToActive;
-        result = { type: 'dismiss' };
+        result = { type: WebBrowserResultType.DISMISS };
     }
     AppState.removeEventListener('change', _onAppStateChangeAndroid);
     _onWebBrowserCloseAndroid = null;

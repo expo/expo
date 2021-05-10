@@ -148,10 +148,8 @@ public abstract class PlayerData implements AudioEventHandler {
     mProgressUpdater.stopLooping();
   }
 
-  private void progressUpdateLoop() {
-    if (!shouldContinueUpdatingProgress()) {
-      stopUpdatingProgressIfNecessary();
-    } else {
+  final void beginUpdatingProgressIfNecessary() {
+    if (shouldContinueUpdatingProgress() && !mProgressUpdater.isLooping() && (mStatusUpdateListener != null)) {
       mProgressUpdater.loop(mProgressUpdateIntervalMillis, () -> {
         this.callStatusUpdateListener();
         return null;
@@ -159,17 +157,18 @@ public abstract class PlayerData implements AudioEventHandler {
     }
   }
 
-  final void beginUpdatingProgressIfNecessary() {
-    mProgressUpdater.loop(mProgressUpdateIntervalMillis, () -> {
-      this.callStatusUpdateListener();
-      return null;
-    });
-  }
-
   public final void setStatusUpdateListener(final StatusUpdateListener listener) {
+    final StatusUpdateListener oldListener = mStatusUpdateListener;
     mStatusUpdateListener = listener;
     if (mStatusUpdateListener != null) {
       beginUpdatingProgressIfNecessary();
+
+      // Notify app about the current status upon setting the status listener
+      if (oldListener == null) {
+        callStatusUpdateListener();
+      }
+    } else {
+      stopUpdatingProgressIfNecessary();
     }
   }
 
@@ -192,7 +191,15 @@ public abstract class PlayerData implements AudioEventHandler {
 
   final void setStatusWithListener(final Bundle status, final SetStatusCompletionListener setStatusCompletionListener) {
     if (status.containsKey(STATUS_PROGRESS_UPDATE_INTERVAL_MILLIS_KEY_PATH)) {
-      mProgressUpdateIntervalMillis = (int) status.getDouble(STATUS_PROGRESS_UPDATE_INTERVAL_MILLIS_KEY_PATH);
+      if (mProgressUpdateIntervalMillis != (int) status.getDouble(STATUS_PROGRESS_UPDATE_INTERVAL_MILLIS_KEY_PATH)) {
+        mProgressUpdateIntervalMillis = (int) status.getDouble(STATUS_PROGRESS_UPDATE_INTERVAL_MILLIS_KEY_PATH);
+
+        // Restart looper when update interval is changed
+        if (mProgressUpdater.isLooping()) {
+          stopUpdatingProgressIfNecessary();
+          beginUpdatingProgressIfNecessary();
+        }
+      }
     }
 
     final Integer newPositionMillis;

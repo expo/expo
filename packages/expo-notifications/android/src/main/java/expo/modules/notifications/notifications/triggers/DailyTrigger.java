@@ -11,16 +11,18 @@ import expo.modules.notifications.notifications.interfaces.SchedulableNotificati
 /**
  * A schedulable trigger representing a notification to be scheduled once per day.
  */
-public class DailyTrigger implements SchedulableNotificationTrigger {
+public class DailyTrigger extends ChannelAwareTrigger implements SchedulableNotificationTrigger {
   private int mHour;
   private int mMinute;
 
-  public DailyTrigger(int hour, int minute) {
+  public DailyTrigger(int hour, int minute, @Nullable String channelId) {
+    super(channelId);
     mHour = hour;
     mMinute = minute;
   }
 
   private DailyTrigger(Parcel in) {
+    super(in);
     mHour = in.readInt();
     mMinute = in.readInt();
   }
@@ -55,6 +57,7 @@ public class DailyTrigger implements SchedulableNotificationTrigger {
 
   @Override
   public void writeToParcel(Parcel dest, int flags) {
+    super.writeToParcel(dest, flags);
     dest.writeInt(mHour);
     dest.writeInt(mMinute);
   }

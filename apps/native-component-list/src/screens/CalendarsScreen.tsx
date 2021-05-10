@@ -1,6 +1,5 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
-import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
@@ -17,7 +16,7 @@ type StackNavigation = StackNavigationProp<{
 
 const CalendarRow = (props: {
   navigation: StackNavigation;
-  calendar: any;
+  calendar: Calendar.Calendar;
   updateCalendar: (calendarId: string) => void;
   deleteCalendar: (calendar: any) => void;
 }) => {
@@ -52,11 +51,11 @@ CalendarRow.navigationOptions = {
 interface State {
   haveCalendarPermissions: boolean;
   haveReminderPermissions: boolean;
-  calendars: any[];
+  calendars: Calendar.Calendar[];
   activeCalendarId?: string;
-  activeCalendarEvents: any[];
+  activeCalendarEvents: Calendar.Event[];
   showAddNewEventForm: boolean;
-  editingEvent?: any;
+  editingEvent?: Calendar.Event;
 }
 
 export default class CalendarsScreen extends React.Component<
@@ -76,7 +75,7 @@ export default class CalendarsScreen extends React.Component<
   };
 
   _askForCalendarPermissions = async () => {
-    const response = await Permissions.askAsync(Permissions.CALENDAR);
+    const response = await Calendar.requestCalendarPermissionsAsync();
     const granted = response.status === 'granted';
     this.setState({
       haveCalendarPermissions: granted,
@@ -86,7 +85,7 @@ export default class CalendarsScreen extends React.Component<
 
   _askForReminderPermissions = async () => {
     if (Platform.OS === 'android') return true;
-    const response = await Permissions.askAsync(Permissions.REMINDERS);
+    const response = await Calendar.requestRemindersPermissionsAsync();
     const granted = response.status === 'granted';
     this.setState({
       haveReminderPermissions: granted,
@@ -107,30 +106,26 @@ export default class CalendarsScreen extends React.Component<
   };
 
   _addCalendar = async () => {
+    const sourceDetails = Platform.select({
+      default: () => ({}),
+      ios: () => ({
+        sourceId: this.state.calendars.find(cal => cal.source && cal.source.name === 'Default')
+          ?.source.id,
+      }),
+      android: () => {
+        const calendar = this.state.calendars.find(
+          cal => cal.accessLevel === Calendar.CalendarAccessLevel.OWNER
+        );
+        return calendar ? { source: calendar.source, ownerAccount: calendar.ownerAccount } : {};
+      },
+    })();
     const newCalendar = {
       title: 'cool new calendar',
       entityType: Calendar.EntityTypes.EVENT,
       color: '#c0ff33',
-      sourceId:
-        Platform.OS === 'ios'
-          ? this.state.calendars.find(cal => cal.source && cal.source.name === 'Default').source.id
-          : undefined,
-      source:
-        Platform.OS === 'android'
-          ? {
-              name: this.state.calendars.find(
-                cal => cal.accessLevel === Calendar.CalendarAccessLevel.OWNER
-              ).source.name,
-              isLocalAccount: true,
-            }
-          : undefined,
+      ...sourceDetails,
       name: 'coolNewCalendar',
       accessLevel: Calendar.CalendarAccessLevel.OWNER,
-      ownerAccount:
-        Platform.OS === 'android'
-          ? this.state.calendars.find(cal => cal.accessLevel === Calendar.CalendarAccessLevel.OWNER)
-              .ownerAccount
-          : undefined,
     };
     try {
       await Calendar.createCalendarAsync(newCalendar);

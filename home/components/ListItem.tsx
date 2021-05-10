@@ -21,11 +21,13 @@ type PlatformIconProps = React.ComponentProps<typeof PlatformIcon>;
 
 type Props = {
   style?: ViewStyle;
+  imageSize?: number;
   onPress?: () => any;
   onLongPress?: () => any;
   title?: string;
   subtitle?: string;
   onPressSubtitle?: () => any;
+  renderExtraText?: () => any;
   last?: boolean;
   margins?: boolean;
   icon?: IconProps['name'];
@@ -40,7 +42,16 @@ type Props = {
 
 export default class ListItem extends React.PureComponent<Props> {
   render() {
-    const { onPress, onLongPress, style, last, margins, title, subtitle } = this.props;
+    const {
+      onPress,
+      onLongPress,
+      renderExtraText,
+      style,
+      last,
+      margins,
+      title,
+      subtitle,
+    } = this.props;
     return (
       <View style={last && margins !== false ? styles.marginBottomLast : undefined}>
         <StyledButton
@@ -58,6 +69,7 @@ export default class ListItem extends React.PureComponent<Props> {
               ]}>
               {this.renderTitle()}
               {this.renderSubtitle()}
+              {renderExtraText?.()}
             </View>
             {this.renderRightContent()}
             {this.renderCheck()}
@@ -69,23 +81,29 @@ export default class ListItem extends React.PureComponent<Props> {
   }
 
   private renderImage() {
-    const { icon, iconStyle, image, imageStyle } = this.props;
+    const { icon, iconStyle, image, imageSize = 54, imageStyle } = this.props;
+
+    const imageSizeStyle = {
+      width: imageSize,
+      height: imageSize,
+    };
+
     if (image !== undefined) {
       if (image === null) {
-        return <View style={[styles.image, styles.emptyImage]} />;
+        return <View style={[styles.image, imageSizeStyle, styles.emptyImage]} />;
       } else {
         const source = typeof image === 'number' ? image : { uri: image };
         return (
-          <View style={[styles.imageContainer, imageStyle]}>
+          <View style={[styles.imageContainer, imageSizeStyle, imageStyle]}>
             <FadeIn placeholderColor="#eee">
-              <Image source={source} style={styles.image} />
+              <Image source={source} style={[styles.image, imageSizeStyle]} />
             </FadeIn>
           </View>
         );
       }
     } else if (icon) {
       return (
-        <View style={styles.iconContainer}>
+        <View style={[styles.iconContainer, imageSizeStyle]}>
           <Ionicons
             style={[styles.icon, iconStyle]}
             name={icon}
@@ -161,9 +179,6 @@ export default class ListItem extends React.PureComponent<Props> {
   }
 }
 
-const ImageWidth = 40;
-const ImageHeight = ImageWidth;
-
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
@@ -179,8 +194,6 @@ const styles = StyleSheet.create({
     marginEnd: 10,
   },
   image: {
-    width: ImageWidth,
-    height: ImageHeight,
     backgroundColor: '#fff',
     borderRadius: 3,
   },
@@ -189,8 +202,6 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     alignSelf: 'center',
-    width: ImageWidth,
-    height: ImageHeight,
     marginEnd: 10,
     alignItems: 'center',
     justifyContent: 'center',
@@ -203,7 +214,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingEnd: 5,
+    paddingBottom: 3,
   },
   contentContainerNotLast: {
     borderBottomWidth: StyleSheet.hairlineWidth * 2,

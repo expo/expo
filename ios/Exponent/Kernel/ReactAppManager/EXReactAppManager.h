@@ -15,6 +15,8 @@ typedef enum EXReactAppManagerStatus {
 - (void)reactAppManagerIsReadyForLoad:(EXReactAppManager *)appManager;
 - (void)reactAppManagerStartedLoadingJavaScript:(EXReactAppManager *)appManager;
 - (void)reactAppManagerFinishedLoadingJavaScript:(EXReactAppManager *)appManager;
+- (void)reactAppManagerAppContentDidAppear:(EXReactAppManager *)appManager;
+- (void)reactAppManagerAppContentWillReload:(EXReactAppManager *)appManager;
 - (void)reactAppManager:(EXReactAppManager *)appManager failedToLoadJavaScriptWithError:(NSError *)error;
 - (void)reactAppManagerDidInvalidate:(EXReactAppManager *)appManager;
 
@@ -38,6 +40,8 @@ typedef enum EXReactAppManagerStatus {
 @property (nonatomic, readonly) BOOL isBridgeRunning;
 @property (nonatomic, readonly) EXReactAppManagerStatus status;
 @property (nonatomic, readonly) UIView *rootView;
+@property (nonatomic, readonly) NSString *scopedDocumentDirectory;
+@property (nonatomic, readonly) NSString *scopedCachesDirectory;
 @property (nonatomic, strong) id reactBridge;
 @property (nonatomic, assign) id<EXReactAppManagerUIDelegate> delegate;
 @property (nonatomic, weak) EXKernelAppRecord *appRecord;
@@ -56,6 +60,8 @@ typedef enum EXReactAppManagerStatus {
  * Clear any executor class on the bridge and reload. Used by Cmd+N devtool key command.
  */
 - (void)disableRemoteDebugging;
+- (void)toggleRemoteDebugging;
+- (void)togglePerformanceMonitor;
 - (void)toggleElementInspector;
 - (void)showDevMenu;
 

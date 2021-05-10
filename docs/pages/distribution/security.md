@@ -40,9 +40,20 @@ None, they are available through the Apple Developer console.
 
 ## Apple Developer account credentials
 
-When creating a standalone app build you will be prompted for your Apple Developer account credentials. We do not store these or even communicate them to our servers &mdash; Expo CLI only uses them locally. Your computer alone provisions distribution certificates and auth keys that are sent to Expo; your developer credentials are not sent to Expo. An additional layer of security is enforced by Apple, as they require two-factor authentication for all Apple Developer accounts.
+When creating a standalone app build, or uploading to the App Store you will be prompted for your Apple Developer account credentials. We do not store these on our servers &mdash; Expo CLI only uses them locally. Your computer alone provisions distribution certificates and auth keys that are sent to Expo; your developer credentials are not sent to Expo. An additional layer of security is enforced by Apple, as they require two-factor authentication for all Apple Developer accounts.
 
 When creating ad-hoc builds, we temporarily store an Apple Developer session token used to create an ad-hoc provisioning profile with your development device’s UDID. Once we are done using this session token we destroy it.
+
+### Keychain
+
+By default, your Apple ID credentials are stored in the macOS Keychain.
+Your password is only ever stored locally on your computer. This feature is not available for Windows or Linux users.
+
+Disable Keychain support with the environment variable `EXPO_NO_KEYCHAIN=1`. You can also use this to change the saved password.
+
+### Changing Apple ID Password in Keychain
+
+To delete the locally stored password, open the "Keychain Access" app, switch to "All Items", and search for "deliver.[Your Apple ID]" (ex. `deliver.bacon@expo.io`). Select the item you wish to modify and delete it. Next time running an Expo command you'll be prompted for a new password.
 
 ### Consequences if compromised
 
@@ -52,7 +63,7 @@ For ad-hoc builds, if a user were to gain access to your session token it would 
 
 ### Consequences if lost
 
-Not applicable, Expo does not collect or store your Apple Developer credentials.
+None, they are available through the Apple Developer console.
 
 ## Android Push Notification credentials
 

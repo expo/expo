@@ -8,11 +8,14 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
 
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 public class ScreenFragment extends Fragment {
 
@@ -33,9 +36,10 @@ public class ScreenFragment extends Fragment {
   }
 
   protected Screen mScreenView;
+  private List<ScreenContainer> mChildScreenContainers = new ArrayList<>();
 
   public ScreenFragment() {
-    throw new IllegalStateException("Screen fragments should never be restored");
+    throw new IllegalStateException("Screen fragments should never be restored. Follow instructions from https://github.com/software-mansion/react-native-screens/issues/17#issuecomment-424704067 to properly configure your main activity.");
   }
 
   @SuppressLint("ValidFragment")
@@ -60,18 +64,136 @@ public class ScreenFragment extends Fragment {
     return mScreenView;
   }
 
-  private void dispatchOnAppear() {
+  public void onContainerUpdate() {
+    if (!hasChildScreenWithConfig(getScreen())) {
+      // if there is no child with config, we look for a parent with config to set the orientation
+      ScreenStackHeaderConfig config = findHeaderConfig();
+      if (config != null && config.getScreenFragment().getActivity() != null) {
+        config.getScreenFragment().getActivity().setRequestedOrientation(config.getScreenOrientation());
+      }
+    }
+  }
+
+  private @Nullable ScreenStackHeaderConfig findHeaderConfig() {
+    ViewParent parent = getScreen().getContainer();
+    while (parent != null) {
+      if (parent instanceof Screen) {
+        ScreenStackHeaderConfig headerConfig = ((Screen) parent).getHeaderConfig();
+        if (headerConfig != null) {
+          return headerConfig;
+        }
+      }
+      parent = parent.getParent();
+    }
+    return null;
+  }
+
+  protected boolean hasChildScreenWithConfig(Screen screen) {
+    if (screen == null) {
+      return false;
+    }
+    for (ScreenContainer sc : screen.getFragment().getChildScreenContainers()) {
+      // we check only the top screen for header config
+      Screen topScreen = sc.getTopScreen();
+      ScreenStackHeaderConfig headerConfig = topScreen != null ? topScreen.getHeaderConfig(): null;
+      if (headerConfig != null) {
+        return true;
+      }
+      if (hasChildScreenWithConfig(topScreen)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public List<ScreenContainer> getChildScreenContainers() {
+    return mChildScreenContainers;
+  }
+
+  protected void dispatchOnWillAppear() {
+    ((ReactContext) mScreenView.getContext())
+        .getNativeModule(UIManagerModule.class)
+        .getEventDispatcher()
+        .dispatchEvent(new ScreenWillAppearEvent(mScreenView.getId()));
+
+    for (ScreenContainer sc : mChildScreenContainers) {
+      if (sc.getScreenCount() > 0) {
+        Screen topScreen = sc.getScreenAt(sc.getScreenCount() - 1);
+        topScreen.getFragment().dispatchOnWillAppear();
+      }
+    }
+  }
+
+  protected void dispatchOnAppear() {
     ((ReactContext) mScreenView.getContext())
             .getNativeModule(UIManagerModule.class)
             .getEventDispatcher()
             .dispatchEvent(new ScreenAppearEvent(mScreenView.getId()));
+
+    for (ScreenContainer sc : mChildScreenContainers) {
+      if (sc.getScreenCount() > 0) {
+        Screen topScreen = sc.getScreenAt(sc.getScreenCount() - 1);
+        topScreen.getFragment().dispatchOnAppear();
+      }
+    }
+  }
+
+  protected void dispatchOnWillDisappear() {
+    ((ReactContext) mScreenView.getContext())
+        .getNativeModule(UIManagerModule.class)
+        .getEventDispatcher()
+        .dispatchEvent(new ScreenWillDisappearEvent(mScreenView.getId()));
+
+    for (ScreenContainer sc : mChildScreenContainers) {
+      if (sc.getScreenCount() > 0) {
+        Screen topScreen = sc.getScreenAt(sc.getScreenCount() - 1);
+        topScreen.getFragment().dispatchOnWillDisappear();
+      }
+    }
+  }
+
+  protected void dispatchOnDisappear() {
+    ((ReactContext) mScreenView.getContext())
+        .getNativeModule(UIManagerModule.class)
+        .getEventDispatcher()
+        .dispatchEvent(new ScreenDisappearEvent(mScreenView.getId()));
+
+    for (ScreenContainer sc : mChildScreenContainers) {
+      if (sc.getScreenCount() > 0) {
+        Screen topScreen = sc.getScreenAt(sc.getScreenCount() - 1);
+        topScreen.getFragment().dispatchOnDisappear();
+      }
+    }
+  }
+
+  public void registerChildScreenContainer(ScreenContainer screenContainer) {
+    mChildScreenContainers.add(screenContainer);
+  }
+
+  public void unregisterChildScreenContainer(ScreenContainer screenContainer) {
+    mChildScreenContainers.remove(screenContainer);
+  }
+
+  public void onViewAnimationStart() {
+    // onViewAnimationStart is triggered from View#onAnimationStart method of the fragment's root view.
+    // We override Screen#onAnimationStart and an appropriate method of the StackFragment's root view
+    // in order to achieve this.
+    if (isResumed()) {
+      dispatchOnWillAppear();
+    } else {
+      dispatchOnWillDisappear();
+    }
   }
 
   public void onViewAnimationEnd() {
     // onViewAnimationEnd is triggered from View#onAnimationEnd method of the fragment's root view.
     // We override Screen#onAnimationEnd and an appropriate method of the StackFragment's root view
     // in order to achieve this.
-    dispatchOnAppear();
+    if (isResumed()) {
+      dispatchOnAppear();
+    } else {
+      dispatchOnDisappear();
+    }
   }
 
   @Override
@@ -85,5 +207,6 @@ public class ScreenFragment extends Fragment {
               .getEventDispatcher()
               .dispatchEvent(new ScreenDismissedEvent(mScreenView.getId()));
     }
+    mChildScreenContainers.clear();
   }
 }

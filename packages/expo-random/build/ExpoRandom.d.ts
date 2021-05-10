@@ -1,2 +1,2 @@
-declare const _default: import("@unimodules/core").ProxyNativeModule;
+declare const _default: any;
 export default _default;
