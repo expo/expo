@@ -18,7 +18,7 @@
   AVAuthorizationStatus systemStatus;
   UMPermissionStatus status;
   NSString *cameraUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSCameraUsageDescription"];
-  if (!(cameraUsageDescription)) {
+  if (!cameraUsageDescription) {
     UMFatal(UMErrorWithMessage(@"This app is missing 'NSCameraUsageDescription', so video services will fail. Add this entry to your bundle's Info.plist."));
     systemStatus = AVAuthorizationStatusDenied;
   } else {
