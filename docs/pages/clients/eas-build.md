@@ -33,7 +33,7 @@ Now edit your eas.json to look like this.
       "development": {
         "workflow": "generic",
         "distribution": "internal",
-        "schemeBuildConfiguration": "Debug",
+        "buildConfiguration": "Debug",
       }
     }
   }
