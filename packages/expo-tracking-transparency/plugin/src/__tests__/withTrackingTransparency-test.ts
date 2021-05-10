@@ -1,4 +1,7 @@
-import { withUserTrackingPermission } from '../withTrackingTransparency';
+import {
+  withUserTrackingPermission,
+  DEFAULT_NSUserTrackingUsageDescription,
+} from '../withTrackingTransparency';
 
 const blankConfig = {
   slug: 'testSlug',
@@ -10,8 +13,7 @@ const configWithDefaultNSUserTrackingUsageDescription = {
   name: 'testName',
   ios: {
     infoPlist: {
-      NSUserTrackingUsageDescription:
-        'This will allow the app to gather app-related data that can be used for tracking you or your device.',
+      NSUserTrackingUsageDescription: DEFAULT_NSUserTrackingUsageDescription,
     },
   },
 };
@@ -43,8 +45,7 @@ describe('Expo Tracking Transparency', () => {
         name: 'testName',
         ios: {
           infoPlist: {
-            NSUserTrackingUsageDescription:
-              'This will allow the app to gather app-related data that can be used for tracking you or your device.',
+            NSUserTrackingUsageDescription: DEFAULT_NSUserTrackingUsageDescription,
           },
         },
       })
@@ -59,8 +60,7 @@ describe('Expo Tracking Transparency', () => {
           name: 'testName',
           ios: {
             infoPlist: {
-              NSUserTrackingUsageDescription:
-                'This will allow the app to gather app-related data that can be used for tracking you or your device.',
+              NSUserTrackingUsageDescription: DEFAULT_NSUserTrackingUsageDescription,
             },
           },
         },
@@ -94,8 +94,7 @@ describe('Expo Tracking Transparency', () => {
             name: 'testName',
             ios: {
               infoPlist: {
-                NSUserTrackingUsageDescription:
-                  'This will allow the app to gather app-related data that can be used for tracking you or your device.',
+                NSUserTrackingUsageDescription: DEFAULT_NSUserTrackingUsageDescription,
               },
             },
           },
