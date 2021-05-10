@@ -22,6 +22,7 @@ export const withUserTrackingPermission: ConfigPlugin<{
   userTrackingPermission?: string | false;
 } | void> = (config, { userTrackingPermission } = {}) => {
   if (userTrackingPermission === false) {
+    // TODO: Upgrade to optional chaining once Node 14+ is required
     if (config && config.ios && config.ios.infoPlist) {
       delete config.ios.infoPlist.NSUserTrackingUsageDescription;
     }

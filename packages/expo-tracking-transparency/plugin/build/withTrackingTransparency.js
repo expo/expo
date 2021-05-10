@@ -10,6 +10,7 @@ const withTrackingTransparency = (config, props) => {
 };
 exports.withUserTrackingPermission = (config, { userTrackingPermission } = {}) => {
     if (userTrackingPermission === false) {
+        // TODO: Upgrade to optional chaining once Node 14+ is required
         if (config && config.ios && config.ios.infoPlist) {
             delete config.ios.infoPlist.NSUserTrackingUsageDescription;
         }
