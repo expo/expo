@@ -3,7 +3,6 @@ package expo.modules.devmenu.extensions
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
-import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.KeyEvent
@@ -16,11 +15,8 @@ import expo.interfaces.devmenu.DevMenuExtensionSettingsInterface
 import expo.interfaces.devmenu.items.DevMenuDataSourceInterface
 import expo.interfaces.devmenu.items.DevMenuItemImportance
 import expo.interfaces.devmenu.items.DevMenuItemsContainer
-import expo.interfaces.devmenu.items.DevMenuListDataSource
 import expo.interfaces.devmenu.items.DevMenuScreen
-import expo.interfaces.devmenu.items.DevMenuSelectionList
 import expo.interfaces.devmenu.items.KeyCommand
-import expo.interfaces.devmenu.items.screen
 import expo.modules.devmenu.DEV_MENU_TAG
 
 class DevMenuExtension(reactContext: ReactApplicationContext)
@@ -124,60 +120,14 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
         importance = DevMenuItemImportance.LOW.value
       }
     }
-
-    group {
-      importance = DevMenuItemImportance.LOWEST.value
-
-      link("testScreen") {
-        label = { "Test screen" }
-        glyphName = { "test-tube" }
-      }
-    }
   }
 
   override fun devMenuScreens(settings: DevMenuExtensionSettingsInterface): List<DevMenuScreen>? {
-    if (!settings.wasRunOnDevelopmentBridge()) {
-      return null
-    }
-
-    return listOf(
-      screen("testScreen") {
-        group {
-          selectionList {
-            dataSourceId = { "updatesList" }
-            addOnClick {
-              print(it.toString())
-            }
-          }
-        }
-      }
-    )
+    return null
   }
 
-  override fun devMenuDataSources(settings: DevMenuExtensionSettingsInterface): List<DevMenuDataSourceInterface> {
-    return listOf(
-      DevMenuListDataSource("updatesList") {
-        val client = settings.manager.getExpoApiClient()
-        val response = client.queryUpdateBranches("3d4813b8-ad48-4e1e-9e8f-0f7d108bf041")
-        val data = response.data
-        if (response.status != 200 || data == null) {
-          return@DevMenuListDataSource emptyList()
-        }
-
-        return@DevMenuListDataSource data
-          .flatMap { it.updates.toList() }
-          .filter { it.platform == "android" }
-          .map {
-            DevMenuSelectionList.Item().apply {
-              onClickData = {
-                Bundle().apply { putString("id", it.id) }
-              }
-              title = { it.message }
-
-            }
-          }
-      }
-    )
+  override fun devMenuDataSources(settings: DevMenuExtensionSettingsInterface): List<DevMenuDataSourceInterface>? {
+    return null
   }
 
   /**

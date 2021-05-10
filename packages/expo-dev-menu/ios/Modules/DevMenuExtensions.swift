@@ -68,70 +68,18 @@ open class DevMenuExtensions: NSObject, DevMenuExtensionProtocol {
     container.addItem(reload)
     container.addItem(inspector)
     #endif
-    
-    let group = DevMenuGroup()
-    group.importance = DevMenuScreenItem.ImportanceLowest
-    
-    let link = DevMenuLink(withTarget: "testScreen")
-    link.label = { "Test Screen" }
-    link.glyphName = { "test-tube" }
-    
-    group.addItem(link)
-    container.addItem(group)
-    
+
     return container
   }
   
   @objc
   open func devMenuScreens(_ settings: DevMenuExtensionSettingsProtocol) -> [DevMenuScreen]? {
-    if (!settings.wasRunOnDevelopmentBridge()) {
-      return nil
-    }
-    
-    let testScreen = DevMenuScreen("testScreen")
-
-    let selectionList = DevMenuSelectionList(dataSourceId: "updatesList")
-    selectionList.addOnClick { data in
-      print(data!["id"]!)
-    }
-    
-    testScreen.addItem(selectionList)
-    
-    return [testScreen]
+    return nil
   }
   
   @objc
   open func devMenuDataSources(_ settings: DevMenuExtensionSettingsProtocol) -> [DevMenuDataSourceProtocol]? {
-    if (!settings.wasRunOnDevelopmentBridge()) {
-      return nil
-    }
-    
-    let updatesList = DevMenuListDataSource(id: "updatesList") { resolver in
-      let client = DevMenuManager.shared.expoApiClient
-      client.queryUpdateBranches(
-        appId: "3d4813b8-ad48-4e1e-9e8f-0f7d108bf041",
-        completionHandler: { branches, response, error in
-          guard let branches = branches else {
-            resolver([])
-            return
-          }
-          
-          let items = branches
-            .flatMap { $0.updates }
-            .filter { $0.platform == "ios" }
-            .map { update -> DevMenuSelectionList.Item  in
-              let item = DevMenuSelectionList.Item()
-              item.title = { update.message }
-              item.onClickData = { ["id": update.id] }
-              return item
-            }
-        
-          resolver(items)
-        }
-      )
-    }
-    
-    return [updatesList]
+    return nil
   }
 
   // MARK: static helpers
