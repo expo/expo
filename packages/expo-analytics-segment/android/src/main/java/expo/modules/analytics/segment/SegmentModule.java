@@ -20,7 +20,8 @@ import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.interfaces.constants.ConstantsInterface;
+
+import expo.modules.interfaces.constants.ConstantsInterface;
 
 public class SegmentModule extends ExportedModule {
   private static final String NAME = "ExponentSegment";

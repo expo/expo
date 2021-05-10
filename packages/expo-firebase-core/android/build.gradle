@@ -69,7 +69,6 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
   unimodule 'unimodules-core'
-  unimodule "unimodules-constants-interface"
 
   api platform("com.google.firebase:firebase-bom:24.1.0")
   api 'com.google.firebase:firebase-core'
