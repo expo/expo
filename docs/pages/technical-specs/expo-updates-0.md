@@ -43,9 +43,9 @@ A conformant client library MUST make a GET request with the headers:
     * Android MUST be `expo-platform: android`.
     * If it is not one of these platforms, the server SHOULD return a 400 or a 404
 2. `expo-runtime-version` MUST be a runtime version compatible with the client. A runtime version stipulates the native code setup a client is running. It should be set when the client is built. For example, in an iOS client, the value may be set in a plist file. 
-3. Any headers stipulated by a previous responses' [server defined headers](#manifest-response-headers):
+3. Any headers stipulated by a previous responses' [server defined headers](#manifest-response-headers).
 
-A conformant client library SHOULD also send `accept: application/expo+json, application/json`. With the order following the prefence ordering for the accept header specified in [RFC 7231](https://tools.ietf.org/html/rfc7231#section-5.3.2). But MUST send at least one of them, `accept: application/expo+json` or `accept: application/json`.
+A conformant client library MUST also send at least one of `accept: application/expo+json` or `accept: application/json`, though SHOULD send `accept: application/expo+json, application/json` with the order following the preference ordering for the accept header specified in [RFC 7231](https://tools.ietf.org/html/rfc7231#section-5.3.2).
 
 Example:
 ```
@@ -75,10 +75,10 @@ content-type: *
 
 * `expo-protocol-version` describes the version of the protocol defined in this spec and MUST be `0`.
 * `expo-sfv-version`  MUST be `0`.
-* `expo-manifest-filters` is an [Expo SFV 0](expo-sfv-0.md) dictionary. It is used to filter updates stored by the client library by the `metadata` attribute found in the [manifest](#manifest-response-body). If a field is mentioned in the filter, the corresponding field in the metadata must either be missing or equal for it to pass. The client library MUST store the manifest filters until it is overwritten by a newer response.
-* `expo-server-defined-headers` is an [Expo SFV](expo-sfv.md) dictionary. It defines headers that a client library MUST store this, until it is overwritten by a newer response, and include it in every subsequent [manifest request](#manifest-request).
+* `expo-manifest-filters` is an [Expo SFV 0](expo-sfv-0.md) dictionary. It is used to filter updates stored by the client library by the `metadata` attribute found in the [manifest](#manifest-response-body). If a field is mentioned in the filter, the corresponding field in the metadata must either be missing or equal for the update to be included. The client library MUST store the manifest filters until it is overwritten by a newer response.
+* `expo-server-defined-headers` is an [Expo SFV](expo-sfv.md) dictionary. It defines headers that a client library MUST store until overwritten by a newer dictionary, and they MUST be included in every subsequent [manifest request](#manifest-request).
 * `cache-control` - A value of `cache-control: private, max-age=0` is recommended to ensure the newest manifest is returned. Setting longer cache ages could result in stale updates.
-* `content-type` MUST be determined by _proactive negotiation_ as defined in [RFC 7231](https://tools.ietf.org/html/rfc7231#section-3.4.1). Since the client library is [required](#manifest-request) to send an `accept` header with each manifest request, this will always be either `application/expo+json`, `application/json`, or a `406`.
+* `content-type` MUST be determined by _proactive negotiation_ as defined in [RFC 7231](https://tools.ietf.org/html/rfc7231#section-3.4.1). Since the client library is [required](#manifest-request) to send an `accept` header with each manifest request, this will always be either `application/expo+json`, `application/json`; otherwise the request would return a `406` error.
 
 
 The manifest endpoint MUST also be served with a `cache-control` header set to an appropriately short period of time. For example:
@@ -89,7 +89,7 @@ cache-control: max-age=0, private
 
 ### Manifest Response Body
 
-The body of the response MUST be a manifest, which is defined as JSON conforming to both the `Manifest` in the following [typescript](https://www.typescriptlang.org/) and the detailed descriptions following them:
+The body of the response MUST be a manifest, which is defined as JSON conforming to both the following `Manifest` definition expressed in [typescript](https://www.typescriptlang.org/) and the detailed descriptions for each field:
 ```
 export type Manifest = {
   id: string;
@@ -111,16 +111,16 @@ type Asset = {
   * `createdAt` The date and time created is essential as the client library selects the most recent update (subject to any constraints supplied by the `expo-manifest-filters` header). The datetime should be formatted according to [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)
   * `runtimeVersion` Can be any string defined by the developer. It stipulates what native code setup is required to run the associated update.
   * `launchAsset` A special asset that is the entry point of the application code.
-  * `assets` An array of assets used by the update bundle, such as JavaScript, pictures, and fonts. All assets (including the launchAsset) should be downloaded to disk before running the update, and a mapping of asset `key`s to locations on disk should be provided to application code.
+  * `assets` An array of assets used by the update bundle, such as JavaScript, pictures, and fonts. All assets (including the `launchAsset`) should be downloaded to disk before executing the the update, and a mapping of asset `key`s to locations on disk should be provided to application code.
   * Details of the asset json:
     * `hash` SHA-256 hash of the file to guarantee integrity.
     * `key` Key used to reference this asset from the update's application code. This key, for example, may be generated by a separate build step that processes the application code, such as a bundler.
     * `contentType` The MIME type of the file as defined by [RFC 2045](https://tools.ietf.org/html/rfc2045). e.g. `application/javascript`, `image/jpeg`.
-    * `url` Location from which the file may be fetched.
+    * `url` Location at which the file may be fetched.
   * `metadata` The metadata associated with an update. It is a string valued dictionary. The server MAY send back anything it wishes to be used for filtering the updates. The metadata MUST pass the filter defined in the accompanying `expo-manifest-filters` header.
 
 ## Asset Request
-A conformant client library MUST make a GET request to the asset URL specified by the manifest. The client library SHOULD include a header accepting the asset's content type as specified in the manifest. Additionally, the client library SHOULD specify the compression encoding the client library is capable of handling.
+A conformant client library MUST make a GET request to the asset URLs specified by the manifest. The client library SHOULD include a header accepting the asset's content type as specified in the manifest. Additionally, the client library SHOULD specify the compression encoding the client library is capable of handling.
 
 Example headers:
 ```
