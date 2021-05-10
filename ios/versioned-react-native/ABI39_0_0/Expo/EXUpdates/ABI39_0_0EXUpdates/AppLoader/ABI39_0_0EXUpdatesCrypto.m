@@ -15,62 +15,56 @@ static NSString * const ABI39_0_0EXUpdatesCryptoPublicKeyFilename = @"manifestPu
 + (void)verifySignatureWithData:(NSString *)data
                       signature:(NSString *)signature
                          config:(ABI39_0_0EXUpdatesConfig *)config
-                 cacheDirectory:(NSURL *)cacheDirectory
                    successBlock:(ABI39_0_0EXUpdatesVerifySignatureSuccessBlock)successBlock
                      errorBlock:(ABI39_0_0EXUpdatesVerifySignatureErrorBlock)errorBlock
-{
-  [self fetchAndVerifySignatureWithData:data
-                              signature:signature
-                                 config:config
-                         cacheDirectory:cacheDirectory
-                               useCache:YES
-                           successBlock:successBlock
-                             errorBlock:errorBlock];
-}
-
-+ (void)fetchAndVerifySignatureWithData:(NSString *)data
-                              signature:(NSString *)signature
-                                 config:(ABI39_0_0EXUpdatesConfig *)config
-                         cacheDirectory:(NSURL *)cacheDirectory
-                               useCache:(BOOL)useCache
-                           successBlock:(ABI39_0_0EXUpdatesVerifySignatureSuccessBlock)successBlock
-                             errorBlock:(ABI39_0_0EXUpdatesVerifySignatureErrorBlock)errorBlock
 {
   if (!data || !signature) {
     errorBlock([NSError errorWithDomain:@"ABI39_0_0EXUpdatesCrypto" code:1001 userInfo:@{ NSLocalizedDescriptionKey: @"Cannot verify the manifest because it is empty or has no signature." }]);
     return;
   }
 
-  NSURL *cachedPublicKeyUrl = [cacheDirectory URLByAppendingPathComponent:ABI39_0_0EXUpdatesCryptoPublicKeyFilename];
-  if (useCache) {
-    NSData *publicKeyData = [NSData dataWithContentsOfFile:[cachedPublicKeyUrl absoluteString]];
-    [[self class] verifyWithPublicKey:publicKeyData signature:signature signedString:data callback:^(BOOL isValid) {
-      if (isValid) {
-        successBlock(isValid);
-      } else {
-        [[self class] fetchAndVerifySignatureWithData:data
-                                            signature:signature
-                                               config:config
-                                       cacheDirectory:cacheDirectory
-                                             useCache:NO
-                                         successBlock:successBlock
-                                           errorBlock:errorBlock];
-      }
-    }];
-  } else {
-    NSURLSessionConfiguration *configuration = NSURLSessionConfiguration.defaultSessionConfiguration;
-    configuration.requestCachePolicy = NSURLRequestReloadIgnoringCacheData;
-    ABI39_0_0EXUpdatesFileDownloader *fileDownloader = [[ABI39_0_0EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config URLSessionConfiguration:configuration];
-    [fileDownloader downloadFileFromURL:[NSURL URLWithString:ABI39_0_0EXUpdatesCryptoPublicKeyUrl]
-                                 toPath:[cachedPublicKeyUrl path]
-                           successBlock:^(NSData *publicKeyData, NSURLResponse *response) {
-                                          [[self class] verifyWithPublicKey:publicKeyData signature:signature signedString:data callback:successBlock];
-                                        }
-                             errorBlock:^(NSError *error, NSURLResponse *response) {
-                                          errorBlock(error);
-                                        }
-    ];
-  }
+  NSURLSessionConfiguration *configuration = NSURLSessionConfiguration.defaultSessionConfiguration;
+  configuration.requestCachePolicy = NSURLRequestReturnCacheDataDontLoad;
+
+  void (^fetchRemotelyBlock)(void) = ^{
+    [[self class] fetchAndVerifySignatureWithData:data signature:signature config:config successBlock:successBlock errorBlock:errorBlock];
+  };
+
+  ABI39_0_0EXUpdatesFileDownloader *fileDownloader = [[ABI39_0_0EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config URLSessionConfiguration:configuration];
+  [fileDownloader downloadDataFromURL:[NSURL URLWithString:ABI39_0_0EXUpdatesCryptoPublicKeyUrl]
+                         successBlock:^(NSData *publicKeyData, NSURLResponse *response) {
+                                        [[self class] verifyWithPublicKey:publicKeyData signature:signature signedString:data callback:^(BOOL isValid) {
+                                          if (isValid) {
+                                            successBlock(isValid);
+                                          } else {
+                                            fetchRemotelyBlock();
+                                          }
+                                        }];
+                                      }
+                           errorBlock:^(NSError *error, NSURLResponse *response) {
+                                        fetchRemotelyBlock();
+                                      }
+   ];
+}
+
++ (void)fetchAndVerifySignatureWithData:(NSString *)data
+                              signature:(NSString *)signature
+                                 config:(ABI39_0_0EXUpdatesConfig *)config
+                           successBlock:(ABI39_0_0EXUpdatesVerifySignatureSuccessBlock)successBlock
+                             errorBlock:(ABI39_0_0EXUpdatesVerifySignatureErrorBlock)errorBlock
+{
+  NSURLSessionConfiguration *configuration = NSURLSessionConfiguration.defaultSessionConfiguration;
+  configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
+
+  ABI39_0_0EXUpdatesFileDownloader *fileDownloader = [[ABI39_0_0EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config URLSessionConfiguration:configuration];
+  [fileDownloader downloadDataFromURL:[NSURL URLWithString:ABI39_0_0EXUpdatesCryptoPublicKeyUrl]
+                         successBlock:^(NSData *publicKeyData, NSURLResponse *response) {
+                                        [[self class] verifyWithPublicKey:publicKeyData signature:signature signedString:data callback:successBlock];
+                                      }
+                           errorBlock:^(NSError *error, NSURLResponse *response) {
+                                        errorBlock(error);
+                                      }
+  ];
 }
 
 + (void)verifyWithPublicKey:(NSData *)publicKeyData

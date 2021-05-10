@@ -17,10 +17,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readwrite) NSArray<ABI40_0_0EXUpdatesAsset *> *assets;
 @property (nonatomic, assign, readwrite) BOOL isDevelopmentMode;
 
+@property (nonatomic, strong, readwrite, nullable) NSDictionary *serverDefinedHeaders;
+@property (nonatomic, strong, readwrite, nullable) NSDictionary *manifestFilters;
+
 @property (nonatomic, strong) ABI40_0_0EXUpdatesConfig *config;
 @property (nonatomic, strong, nullable) ABI40_0_0EXUpdatesDatabase *database;
 
-- (instancetype)initWithRawManifest:(NSDictionary *)manifest
+- (instancetype)initWithRawManifest:(ABI40_0_0EXUpdatesRawManifest *)manifest
                              config:(ABI40_0_0EXUpdatesConfig *)config
                            database:(nullable ABI40_0_0EXUpdatesDatabase *)database;
 

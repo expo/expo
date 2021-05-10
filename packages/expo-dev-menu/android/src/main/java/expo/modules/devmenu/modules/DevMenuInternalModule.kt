@@ -58,7 +58,7 @@ interface DevMenuInternalWebBrowserModuleInterface {
 }
 
 class DevMenuInternalModule(
-  reactContext: ReactApplicationContext,
+  reactContext: ReactApplicationContext
 ) : ReactContextBaseJavaModule(reactContext),
   DevMenuInternalFontManagerModuleInterface by DevMenuInternalFontManagerModule(reactContext),
   DevMenuInternalWebBrowserModuleInterface by DevMenuInternalWebBrowserModule(reactContext),

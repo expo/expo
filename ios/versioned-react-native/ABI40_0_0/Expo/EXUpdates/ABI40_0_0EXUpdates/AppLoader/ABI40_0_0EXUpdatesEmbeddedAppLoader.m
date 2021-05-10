@@ -59,6 +59,7 @@ static NSString * const ABI40_0_0EXUpdatesEmbeddedAppLoaderErrorDomain = @"ABI40
 }
 
 - (void)loadUpdateFromEmbeddedManifestWithCallback:(ABI40_0_0EXUpdatesAppLoaderManifestBlock)manifestBlock
+                                           onAsset:(ABI40_0_0EXUpdatesAppLoaderAssetBlock)assetBlock
                                            success:(ABI40_0_0EXUpdatesAppLoaderSuccessBlock)success
                                              error:(ABI40_0_0EXUpdatesAppLoaderErrorBlock)error
 {
@@ -66,6 +67,7 @@ static NSString * const ABI40_0_0EXUpdatesEmbeddedAppLoaderErrorDomain = @"ABI40
                                                                       database:self.database];
   if (embeddedManifest) {
     self.manifestBlock = manifestBlock;
+    self.assetBlock = assetBlock;
     self.successBlock = success;
     self.errorBlock = error;
     [self startLoadingFromManifest:embeddedManifest];
@@ -113,6 +115,8 @@ static NSString * const ABI40_0_0EXUpdatesEmbeddedAppLoaderErrorDomain = @"ABI40
 }
 
 - (void)loadUpdateFromUrl:(NSURL *)url
+               onManifest:(ABI40_0_0EXUpdatesAppLoaderManifestBlock)manifestBlock
+                    asset:(ABI40_0_0EXUpdatesAppLoaderAssetBlock)assetBlock
                   success:(ABI40_0_0EXUpdatesAppLoaderSuccessBlock)success
                     error:(ABI40_0_0EXUpdatesAppLoaderErrorBlock)error
 {

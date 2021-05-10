@@ -5,7 +5,7 @@
 #import <ABI39_0_0EXUpdates/ABI39_0_0EXUpdatesAppLauncherNoDatabase.h>
 #import <ABI39_0_0EXUpdates/ABI39_0_0EXUpdatesAppLauncherWithDatabase.h>
 #import <ABI39_0_0EXUpdates/ABI39_0_0EXUpdatesReaper.h>
-#import <ABI39_0_0EXUpdates/ABI39_0_0EXUpdatesSelectionPolicyNewest.h>
+#import <ABI39_0_0EXUpdates/ABI39_0_0EXUpdatesSelectionPolicyFactory.h>
 #import <ABI39_0_0EXUpdates/ABI39_0_0EXUpdatesUtils.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -23,7 +23,7 @@ static NSString * const ABI39_0_0EXUpdatesErrorEventName = @"error";
 @property (nonatomic, readwrite, strong) ABI39_0_0EXUpdatesConfig *config;
 @property (nonatomic, readwrite, strong) id<ABI39_0_0EXUpdatesAppLauncher> launcher;
 @property (nonatomic, readwrite, strong) ABI39_0_0EXUpdatesDatabase *database;
-@property (nonatomic, readwrite, strong) id<ABI39_0_0EXUpdatesSelectionPolicy> selectionPolicy;
+@property (nonatomic, readwrite, strong) ABI39_0_0EXUpdatesSelectionPolicy *selectionPolicy;
 @property (nonatomic, readwrite, strong) dispatch_queue_t assetFilesQueue;
 
 @property (nonatomic, readwrite, strong) NSURL *updatesDirectory;
@@ -56,7 +56,7 @@ static NSString * const ABI39_0_0EXUpdatesErrorEventName = @"error";
   if (self = [super init]) {
     _config = [self _loadConfigFromExpoPlist];
     _database = [[ABI39_0_0EXUpdatesDatabase alloc] init];
-    _selectionPolicy = [[ABI39_0_0EXUpdatesSelectionPolicyNewest alloc] initWithRuntimeVersion:[ABI39_0_0EXUpdatesUtils getRuntimeVersionWithConfig:_config]];
+    _selectionPolicy = [self _defaultSelectionPolicy];
     _assetFilesQueue = dispatch_queue_create("expo.controller.AssetFilesQueue", DISPATCH_QUEUE_SERIAL);
     _controllerQueue = dispatch_queue_create("expo.controller.ControllerQueue", DISPATCH_QUEUE_SERIAL);
     _isStarted = NO;
@@ -72,7 +72,17 @@ static NSString * const ABI39_0_0EXUpdatesErrorEventName = @"error";
                                  userInfo:@{}];
   }
   [_config loadConfigFromDictionary:configuration];
-  _selectionPolicy = [[ABI39_0_0EXUpdatesSelectionPolicyNewest alloc] initWithRuntimeVersion:[ABI39_0_0EXUpdatesUtils getRuntimeVersionWithConfig:_config]];
+  [self resetSelectionPolicyToDefault];
+}
+
+- (void)setNextSelectionPolicy:(ABI39_0_0EXUpdatesSelectionPolicy *)nextSelectionPolicy
+{
+  _selectionPolicy = nextSelectionPolicy;
+}
+
+- (void)resetSelectionPolicyToDefault
+{
+  _selectionPolicy = [self _defaultSelectionPolicy];
 }
 
 - (void)start
@@ -139,7 +149,8 @@ static NSString * const ABI39_0_0EXUpdatesErrorEventName = @"error";
     NSArray *views = [mainBundle loadNibNamed:launchScreen owner:self options:nil];
     rootViewController.view = views.firstObject;
     rootViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-  } else if ([mainBundle pathForResource:launchScreen ofType:@"storyboard"] != nil) {
+  } else if ([mainBundle pathForResource:launchScreen ofType:@"storyboard"] != nil ||
+             [mainBundle pathForResource:launchScreen ofType:@"storyboardc"] != nil) {
     UIStoryboard *launchScreenStoryboard = [UIStoryboard storyboardWithName:launchScreen bundle:nil];
     rootViewController = [launchScreenStoryboard instantiateInitialViewController];
   } else {
@@ -227,14 +238,14 @@ static NSString * const ABI39_0_0EXUpdatesErrorEventName = @"error";
   [self _emergencyLaunchWithFatalError:error];
 }
 
-- (void)appLoaderTask:(ABI39_0_0EXUpdatesAppLoaderTask *)appLoaderTask didCompleteBackgroundUpdateWithStatus:(ABI39_0_0EXUpdatesBackgroundUpdateStatus)status update:(nullable ABI39_0_0EXUpdatesUpdate *)update error:(nullable NSError *)error
+- (void)appLoaderTask:(ABI39_0_0EXUpdatesAppLoaderTask *)appLoaderTask didFinishBackgroundUpdateWithStatus:(ABI39_0_0EXUpdatesBackgroundUpdateStatus)status update:(nullable ABI39_0_0EXUpdatesUpdate *)update error:(nullable NSError *)error
 {
   if (status == ABI39_0_0EXUpdatesBackgroundUpdateStatusError) {
     NSAssert(error != nil, @"Background update with error status must have a nonnull error object");
     [ABI39_0_0EXUpdatesUtils sendEventToBridge:_bridge withType:ABI39_0_0EXUpdatesErrorEventName body:@{@"message": error.localizedDescription}];
   } else if (status == ABI39_0_0EXUpdatesBackgroundUpdateStatusUpdateAvailable) {
     NSAssert(update != nil, @"Background update with error status must have a nonnull update object");
-    [ABI39_0_0EXUpdatesUtils sendEventToBridge:_bridge withType:ABI39_0_0EXUpdatesUpdateAvailableEventName body:@{@"manifest": update.rawManifest}];
+    [ABI39_0_0EXUpdatesUtils sendEventToBridge:_bridge withType:ABI39_0_0EXUpdatesUpdateAvailableEventName body:@{@"manifest": update.rawManifest.rawManifestJSON}];
   } else if (status == ABI39_0_0EXUpdatesBackgroundUpdateStatusNoUpdateAvailable) {
     [ABI39_0_0EXUpdatesUtils sendEventToBridge:_bridge withType:ABI39_0_0EXUpdatesNoUpdateAvailableEventName body:@{}];
   }
@@ -252,6 +263,11 @@ static NSString * const ABI39_0_0EXUpdatesErrorEventName = @"error";
   }
 
   return [ABI39_0_0EXUpdatesConfig configWithDictionary:[NSDictionary dictionaryWithContentsOfFile:configPath]];
+}
+
+- (ABI39_0_0EXUpdatesSelectionPolicy *)_defaultSelectionPolicy
+{
+  return [ABI39_0_0EXUpdatesSelectionPolicyFactory filterAwarePolicyWithRuntimeVersion:[ABI39_0_0EXUpdatesUtils getRuntimeVersionWithConfig:_config]];
 }
 
 - (void)_runReaper

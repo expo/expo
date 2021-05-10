@@ -15,7 +15,7 @@ public class DevMenuSelectionList: DevMenuScreenItem, DevMenuCallableProvider {
       fileprivate func serialize() -> [String : Any] {
         return [
           "text": text(),
-          "glyphName": glyphName(),
+          "glyphName": glyphName() ?? NSNull(),
         ]
       }
     }
@@ -38,10 +38,10 @@ public class DevMenuSelectionList: DevMenuScreenItem, DevMenuCallableProvider {
     public func serialize() -> [String : Any] {
       return [
         "title": title(),
-        "warning": warning(),
+        "warning": warning() ?? NSNull(),
         "isChecked": isChecked(),
         "tags": tags().map { $0.serialize() },
-        "onClickData": onClickData()
+        "onClickData": onClickData() ?? NSNull()
       ]
     }
   }

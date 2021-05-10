@@ -3,12 +3,16 @@
 #import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesRemoteAppLoader.h>
 #import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesCrypto.h>
 #import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesFileDownloader.h>
+#import <ABI40_0_0UMCore/ABI40_0_0UMUtilities.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ABI40_0_0EXUpdatesRemoteAppLoader ()
 
 @property (nonatomic, strong) ABI40_0_0EXUpdatesFileDownloader *downloader;
+@property (nonatomic, strong) ABI40_0_0EXUpdatesUpdate *remoteUpdate;
+
+@property (nonatomic, strong) dispatch_queue_t completionQueue;
 
 @end
 static NSString * const ABI40_0_0EXUpdatesRemoteAppLoaderErrorDomain = @"ABI40_0_0EXUpdatesRemoteAppLoader";
@@ -22,25 +26,59 @@ static NSString * const ABI40_0_0EXUpdatesRemoteAppLoaderErrorDomain = @"ABI40_0
 {
   if (self = [super initWithConfig:config database:database directory:directory completionQueue:completionQueue]) {
     _downloader = [[ABI40_0_0EXUpdatesFileDownloader alloc] initWithUpdatesConfig:self.config];
+    _completionQueue = completionQueue;
   }
   return self;
 }
 
 - (void)loadUpdateFromUrl:(NSURL *)url
                onManifest:(ABI40_0_0EXUpdatesAppLoaderManifestBlock)manifestBlock
+                    asset:(ABI40_0_0EXUpdatesAppLoaderAssetBlock)assetBlock
                   success:(ABI40_0_0EXUpdatesAppLoaderSuccessBlock)success
                     error:(ABI40_0_0EXUpdatesAppLoaderErrorBlock)error
 {
   self.manifestBlock = manifestBlock;
-  self.successBlock = success;
+  self.assetBlock = assetBlock;
   self.errorBlock = error;
-  [_downloader downloadManifestFromURL:url withDatabase:self.database cacheDirectory:self.directory successBlock:^(ABI40_0_0EXUpdatesUpdate *update) {
-    [self startLoadingFromManifest:update];
-  } errorBlock:^(NSError *error, NSURLResponse *response) {
-    if (self.errorBlock) {
-      self.errorBlock(error);
+
+  ABI40_0_0UM_WEAKIFY(self)
+  self.successBlock = ^(ABI40_0_0EXUpdatesUpdate * _Nullable update) {
+    ABI40_0_0UM_STRONGIFY(self)
+    // even if update is nil (meaning we didn't load a new update),
+    // we want to persist the header data from _remoteUpdate
+    if (self->_remoteUpdate) {
+      dispatch_async(self.database.databaseQueue, ^{
+        NSError *metadataError;
+        [self.database setMetadataWithManifest:self->_remoteUpdate error:&metadataError];
+        dispatch_async(self->_completionQueue, ^{
+          if (metadataError) {
+            NSLog(@"Error persisting header data to disk: %@", metadataError.localizedDescription);
+            error(metadataError);
+          } else {
+            success(update);
+          }
+        });
+      });
+    } else {
+      success(update);
     }
-  }];
+  };
+
+  dispatch_async(self.database.databaseQueue, ^{
+    NSError *headersError;
+    NSDictionary *extraHeaders = [self.database serverDefinedHeadersWithScopeKey:self.config.scopeKey error:&headersError];
+    if (headersError) {
+      NSLog(@"Error selecting serverDefinedHeaders from database: %@", headersError.localizedDescription);
+    }
+    [self->_downloader downloadManifestFromURL:url withDatabase:self.database extraHeaders:extraHeaders successBlock:^(ABI40_0_0EXUpdatesUpdate *update) {
+      self->_remoteUpdate = update;
+      [self startLoadingFromManifest:update];
+    } errorBlock:^(NSError *error, NSURLResponse *response) {
+      if (self.errorBlock) {
+        self.errorBlock(error);
+      }
+    }];
+  });
 }
 
 - (void)downloadAsset:(ABI40_0_0EXUpdatesAsset *)asset

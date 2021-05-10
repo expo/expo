@@ -34,7 +34,6 @@
     "babel-preset-expo": "~8.3.0",
     "expo-module-scripts": "^2.0.0",
     "react": "16.13.1",
-    "react-native": "0.63.2",
-    "react-native-url-polyfill": "^1.2.0"
+    "react-native": "0.63.2"
   }
 }

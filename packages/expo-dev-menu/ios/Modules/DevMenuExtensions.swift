@@ -3,18 +3,7 @@
 import EXDevMenuInterface
 
 @objc(DevMenuExtensions)
-open class DevMenuExtensions: NSObject, RCTBridgeModule, DevMenuExtensionProtocol {
-  // MARK: RCTBridgeModule
-
-  @objc
-  public static func moduleName() -> String! {
-    return "ExpoDevMenuExtensions"
-  }
-
-  @objc
-  public static func requiresMainQueueSetup() -> Bool {
-    return true
-  }
+open class DevMenuExtensions: NSObject, DevMenuExtensionProtocol {
 
   @objc
   open var bridge: RCTBridge?

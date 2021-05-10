@@ -5,7 +5,7 @@
 
 #import <EXDevLauncher-Swift.h>
 
-const NSString *ON_NEW_DEEP_LINK_EVENT = @"expo.modules.devlauncher.onnewdeeplink";
+NSString *ON_NEW_DEEP_LINK_EVENT = @"expo.modules.devlauncher.onnewdeeplink";
 
 @implementation EXDevLauncherInternal
 

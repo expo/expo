@@ -97,6 +97,12 @@ export default class Camera extends React.Component {
         }
         return await CameraManager.getAvailableCameraTypesAsync();
     }
+    static async getAvailableVideoCodecsAsync() {
+        if (!CameraManager.getAvailableVideoCodecsAsync) {
+            throw new UnavailabilityError('Camera', 'getAvailableVideoCodecsAsync');
+        }
+        return await CameraManager.getAvailableVideoCodecsAsync();
+    }
     static async getPermissionsAsync() {
         return CameraManager.getPermissionsAsync();
     }
@@ -160,6 +166,7 @@ Camera.Constants = {
     WhiteBalance: CameraManager.WhiteBalance,
     VideoQuality: CameraManager.VideoQuality,
     VideoStabilization: CameraManager.VideoStabilization || {},
+    VideoCodec: CameraManager.VideoCodec,
 };
 // Values under keys from this object will be transformed to native options
 Camera.ConversionTables = ConversionTables;

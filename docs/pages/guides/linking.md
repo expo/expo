@@ -171,13 +171,13 @@ If your app is ejected, note that like some other parts of `app.json`, changing 
 
 ### `Linking` module
 
-To save you the trouble of inserting a bunch of conditionals based on the environment that you're in and hardcoding urls, we provide some helper methods in our extension of the `Linking` module. When you want to provide a service with a url that it needs to redirect back into your app, you can call `Linking.makeUrl()` and it will resolve to the following:
+To save you the trouble of inserting a bunch of conditionals based on the environment that you're in and hardcoding urls, we provide some helper methods in our extension of the `Linking` module. When you want to provide a service with a url that it needs to redirect back into your app, you can call `Linking.createURL()` and it will resolve to the following:
 
 - _Published app in Expo Go_: `exp://exp.host/@community/with-webbrowser-redirect`
 - _Published app in standalone_: `myapp://`
-- _Development_: `exp://localhost:19000`
+- _Development in Expo Go_: `exp://127.0.0.1:19000`
 
-You can also change the returned url by passing optional parameters into `Linking.makeUrl()`. These will be used by your app to receive data, which we will talk about in the next section.
+You can also change the returned url by passing optional parameters into `Linking.createURL()`. These will be used by your app to receive data, which we will talk about in the next section.
 
 ### Handling links into your app
 
@@ -201,11 +201,17 @@ To pass some data into your app, you can append it as a path or query string on 
 
 ```javascript
 let redirectUrl = Linking.createURL('path/into/app', {
-  queryParams: { hello: 'world', goodbye: 'now' },
+  queryParams: { hello: 'world' },
 });
 ```
 
-This would return something like `myapp://path/into/app?hello=world&goodbye=now` for a standalone app.
+This will resolve into the following, depending on the environment:
+
+- _Published app in Expo Go_: `exp://exp.host/@community/with-webbrowser-redirect/--/path/into/app?hello=world`
+- _Published app in standalone_: `myapp://path/into/app?hello=world`
+- _Development in Expo Go_: `exp://127.0.0.1:19000/--/path/into/app?hello=world`
+
+> Notice in Expo Go that `/--/` is added to the URL when a path is specified. This indicates to Expo Go that the substring after it corresponds to the deep link path, and is not part of the path to the app itself.
 
 When your app is opened using the deep link, you can parse the link with `Linking.parse()` to get back the path and query parameters you passed in.
 
@@ -220,8 +226,8 @@ _handleUrl = url => {
 ```
 
 If you opened a URL like
-`myapp://path/into/app?hello=world&goodbye=now`, this would alert
-`Linked to app with path: path/into/app and data: {hello: 'world', goodbye: 'now'}`.
+`myapp://path/into/app?hello=world`, this would alert
+`Linked to app with path: path/into/app and data: {hello: 'world'}`.
 
 ### Example: linking back to your app from WebBrowser
 
