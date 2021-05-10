@@ -307,7 +307,7 @@ dependencies {
   api 'com.github.troZee:ViewPager2:v1.0.6'
 
   // stripe-react-native
-  implementation 'com.stripe:stripe-android:16.7.1'
+  implementation 'com.stripe:stripe-android:16.8.0'
 }
 
 
