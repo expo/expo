@@ -375,9 +375,6 @@ class Mappers {
             "Sofort": [
                 "country": paymentMethod.sofort?.country
             ],
-            "Upi": [
-                "vpa": paymentMethod.upi?.vpa
-            ],
         ]
         return method
     }
@@ -456,6 +453,15 @@ class Mappers {
         
         
         return intent
+    }
+    
+    @available(iOS 13.0, *)
+    class func mapToUserInterfaceStyle(_ style: String) -> PaymentSheet.UserInterfaceStyle {
+        switch style {
+        case "alwaysDark": return PaymentSheet.UserInterfaceStyle.alwaysDark
+        case "alwaysLight": return PaymentSheet.UserInterfaceStyle.alwaysLight
+        default: return PaymentSheet.UserInterfaceStyle.automatic
+        }
     }
     
     class func mapToReturnURL(urlScheme: String) -> String {

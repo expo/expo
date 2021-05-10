@@ -19,6 +19,10 @@ enum class RetrievePaymentIntentErrorType {
   Unknown
 }
 
+enum class PaymentSheetErrorType {
+  Failed, Canceled
+}
+
 internal fun createError(errorType: String, message: String): WritableMap {
   val map: WritableMap = WritableNativeMap()
   map.putString("message", message)

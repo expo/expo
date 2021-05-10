@@ -40,12 +40,13 @@ class StripeSdkCardViewManager : SimpleViewManager<StripeSdkCardView>() {
 
   override fun createViewInstance(reactContext: ThemedReactContext): StripeSdkCardView {
     // as it's reasonable we handle only one CardField component on the same screen
-    if (cardViewInstanceMap[CARD_FIELD_INSTANCE_NAME] != null) {
-      val exceptionManager = reactContext.getNativeModule(ExceptionsManagerModule::class.java)
-      val error: WritableMap = WritableNativeMap()
-      error.putString("message", "Only one CardField component on the same screen allowed")
-      exceptionManager?.reportException(error)
-    }
+    // TODO: temporary commented out due to android state persistence and improper behavior after app reload
+//    if (cardViewInstanceMap[CARD_FIELD_INSTANCE_NAME] != null) {
+//      val exceptionManager = reactContext.getNativeModule(ExceptionsManagerModule::class.java)
+//      val error: WritableMap = WritableNativeMap()
+//      error.putString("message", "Only one CardField component on the same screen allowed")
+//      exceptionManager?.reportException(error)
+//    }
 
     cardViewInstanceMap[CARD_FIELD_INSTANCE_NAME] = StripeSdkCardView(reactContext)
     return cardViewInstanceMap[CARD_FIELD_INSTANCE_NAME] as StripeSdkCardView

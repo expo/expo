@@ -2359,12 +2359,12 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
-  - Stripe (21.4.0):
-    - Stripe/Stripe3DS2 (= 21.4.0)
-  - stripe-react-native (0.0.1):
+  - Stripe (21.5.1):
+    - Stripe/Stripe3DS2 (= 21.5.1)
+  - stripe-react-native (0.1.0):
     - React
-    - Stripe (~> 21.4.0)
-  - Stripe/Stripe3DS2 (21.4.0)
+    - Stripe (~> 21.5.1)
+  - Stripe/Stripe3DS2 (21.5.1)
   - UMAppLoader (2.1.0)
   - UMBarCodeScannerInterface (6.1.0):
     - UMCore
@@ -4105,8 +4105,8 @@ SPEC CHECKSUMS:
   React-RCTVibration: 4d2e726957f4087449739b595f107c0d4b6c2d2d
   ReactCommon: a0a1edbebcac5e91338371b72ffc66aa822792ce
   RNReanimated: 5231286440b796e09df3bfa5c1b12b02bfe07664
-  Stripe: 7c594b943abb65cf7bc28e37fd5124e65db3ce9e
-  stripe-react-native: 1f211194f8dd3c741e287ad1a4c478609ef614b6
+  Stripe: 515db5536fd659b5d79a0898ce1b882b61ab597e
+  stripe-react-native: ac0688fd5202f8cbe3afc1eb606c8058bd66c97e
   UMAppLoader: fe2708bb0ac5cd70052bc207d06aa3b7e72b9e97
   UMBarCodeScannerInterface: 79f92bea5f7af39b381a4c82298105ceb537408a
   UMConstantsInterface: bb94dd46039dcde276ed50225b29e22785e604bf
