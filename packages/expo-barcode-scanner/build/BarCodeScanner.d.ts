@@ -30,7 +30,7 @@ export { PermissionResponse, PermissionStatus };
 export interface BarCodeScannerProps extends ViewProps {
     type?: 'front' | 'back' | number;
     barCodeTypes?: string[];
-    onBarCodeScanned: BarCodeScannedCallback;
+    onBarCodeScanned?: BarCodeScannedCallback;
 }
 export declare class BarCodeScanner extends React.Component<BarCodeScannerProps> {
     lastEvents: {
@@ -55,65 +55,7 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
     static scanFromURLAsync(url: string, barCodeTypes?: string[]): Promise<BarCodeScannerResult[]>;
     render(): JSX.Element;
     onObjectDetected: (callback?: BarCodeScannedCallback | undefined) => ({ nativeEvent, }: BarCodeEventCallbackArguments) => void;
-    convertNativeProps(props: BarCodeScannerProps): {
-        type?: any;
-        barCodeTypes?: any;
-        onBarCodeScanned: any;
-        hitSlop?: any;
-        onLayout?: any;
-        pointerEvents?: any;
-        removeClippedSubviews?: any;
-        style?: any;
-        testID?: any;
-        nativeID?: any;
-        collapsable?: any;
-        needsOffscreenAlphaCompositing?: any;
-        renderToHardwareTextureAndroid?: any;
-        shouldRasterizeIOS?: any;
-        isTVSelectable?: any;
-        hasTVPreferredFocus?: any;
-        tvParallaxProperties?: any;
-        tvParallaxShiftDistanceX?: any;
-        tvParallaxShiftDistanceY?: any;
-        tvParallaxTiltAngle?: any;
-        tvParallaxMagnification?: any;
-        onStartShouldSetResponder?: any;
-        onMoveShouldSetResponder?: any;
-        onResponderEnd?: any;
-        onResponderGrant?: any;
-        onResponderReject?: any;
-        onResponderMove?: any;
-        onResponderRelease?: any;
-        onResponderStart?: any;
-        onResponderTerminationRequest?: any;
-        onResponderTerminate?: any;
-        onStartShouldSetResponderCapture?: any;
-        onMoveShouldSetResponderCapture?: any;
-        onTouchStart?: any;
-        onTouchMove?: any;
-        onTouchEnd?: any;
-        onTouchCancel?: any;
-        onTouchEndCapture?: any;
-        accessible?: any;
-        accessibilityActions?: any;
-        accessibilityLabel?: any;
-        accessibilityRole?: any;
-        accessibilityState?: any;
-        accessibilityHint?: any;
-        accessibilityValue?: any;
-        onAccessibilityAction?: any;
-        accessibilityComponentType?: any;
-        accessibilityLiveRegion?: any;
-        importantForAccessibility?: any;
-        accessibilityElementsHidden?: any;
-        accessibilityTraits?: any;
-        accessibilityViewIsModal?: any;
-        onAccessibilityEscape?: any;
-        onAccessibilityTap?: any;
-        onMagicTap?: any;
-        accessibilityIgnoresInvertColors?: any;
-    };
-    convertProp(value: any, key: string): any;
+    convertNativeProps(props: BarCodeScannerProps): BarCodeScannerProps;
 }
 export declare const Constants: {
     BarCodeType: any;

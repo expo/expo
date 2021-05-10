@@ -1,31 +1,50 @@
 import { useQuery } from '@apollo/client';
+import { StackScreenProps } from '@react-navigation/stack';
+import { Project } from 'components/ProjectList';
+import { Snack } from 'components/SnackList';
 import gql from 'graphql-tag';
+import { AllStackRoutes } from 'navigation/Navigation.types';
 import * as React from 'react';
-import { useDispatch } from '../redux/Hooks';
 
-import ProfileView, { Profile, ProfileViewProps } from '../components/Profile';
+import ProfileView from '../components/ProfileView';
+import { useDispatch } from '../redux/Hooks';
 import SessionActions from '../redux/SessionActions';
 
-const APP_LIMIT = 7;
-const SNACK_LIMIT = 4;
+const APP_LIMIT = 3;
+const SNACK_LIMIT = 3;
 
-interface MyProfileData {
-  me: Profile;
+export interface ProfileData {
+  me: {
+    id: string;
+    username: string;
+    firstName: string | null;
+    lastName: string | null;
+    profilePhoto: string;
+    accounts: {
+      id: string;
+      name: string;
+    }[];
+    appCount: number;
+    apps: Project[];
+    snacks: Snack[];
+  };
 }
 
-interface MyProfileVars {}
+interface ProfileVars {}
 
-const MyProfileQuery = gql`
-  query Home_MyProfile {
+const ProfileDataQuery = gql`
+  query Home_ProfileData2 {
     me {
       id
-      appCount
-      email
+      username
       firstName
-      isLegacy
       lastName
       profilePhoto
-      username
+      accounts {
+        id
+        name
+      }
+      appCount
       apps(limit: ${APP_LIMIT}, offset: 0) {
         id
         description
@@ -34,6 +53,7 @@ const MyProfileQuery = gql`
         lastPublishedTime
         name
         packageName
+        username
         sdkVersion
         privacy
       }
@@ -42,101 +62,26 @@ const MyProfileQuery = gql`
         description
         fullName
         slug
+        isDraft
       }
     }
   }
 `;
 
-function useMyProfileQuery() {
-  const query = useQuery<MyProfileData, MyProfileVars>(MyProfileQuery, {
+export default function Profile(props: StackScreenProps<AllStackRoutes, 'Profile'>) {
+  const dispatch = useDispatch();
+  const query = useQuery<ProfileData, ProfileVars>(ProfileDataQuery, {
     fetchPolicy: 'cache-and-network',
   });
-
-  return {
-    ...query,
-    data: {
-      ...query.data,
-      user: query.data?.me,
-    },
-  };
-}
-
-export function MyProfile(props: ProfileViewProps) {
-  const dispatch = useDispatch();
-  const query = useMyProfileQuery();
   const { loading, error, data } = query;
 
   // We verify that the viewer is logged in when we receive data from the server; if the viewer
   // isn't logged in, we clear our locally stored credentials
   React.useEffect(() => {
-    if (!loading && !error && !data.user) {
+    if (!loading && !error && !data?.me) {
       dispatch(SessionActions.signOut());
     }
-  }, [loading, error, data.user]);
+  }, [loading, error, data?.me]);
 
-  return <ProfileView {...props} {...query} />;
-}
-
-interface OtherProfileData {
-  user: { byUsername: Profile };
-}
-
-interface OtherProfileVars {
-  username: string;
-}
-
-const OtherProfileQuery = gql`
-  query Home_UserByUsername($username: String!) {
-    user {
-      byUsername(username: $username) {
-        id
-        username
-        firstName
-        lastName
-        email
-        profilePhoto
-        isLegacy
-        appCount
-        apps(limit: ${APP_LIMIT}, offset: 0) {
-          id
-          fullName
-          name
-          iconUrl
-          packageName
-          packageUsername
-          description
-          sdkVersion
-          lastPublishedTime
-        }
-        snacks(limit: ${SNACK_LIMIT}, offset: 0) {
-          name
-          description
-          fullName
-          slug
-        }
-      }
-    }
-  }
-`;
-
-function useOtherProfileQuery({ username }: Pick<ProfileViewProps, 'username'>) {
-  const query = useQuery<OtherProfileData, OtherProfileVars>(OtherProfileQuery, {
-    fetchPolicy: 'network-only',
-    variables: {
-      username: username ? username.replace('@', '') : '',
-    },
-  });
-
-  return {
-    ...query,
-    data: {
-      ...query.data,
-      user: query.data?.user ? query.data.user?.byUsername : null,
-    },
-  };
-}
-
-export function OtherProfile(props: ProfileViewProps) {
-  const query = useOtherProfileQuery(props);
   return <ProfileView {...props} {...query} />;
 }

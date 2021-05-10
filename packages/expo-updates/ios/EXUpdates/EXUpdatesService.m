@@ -25,7 +25,7 @@ UM_REGISTER_MODULE();
   return EXUpdatesAppController.sharedInstance.database;
 }
 
-- (id<EXUpdatesSelectionPolicy>)selectionPolicy
+- (EXUpdatesSelectionPolicy *)selectionPolicy
 {
   return EXUpdatesAppController.sharedInstance.selectionPolicy;
 }
@@ -60,9 +60,19 @@ UM_REGISTER_MODULE();
   return EXUpdatesAppController.sharedInstance.isEmergencyLaunch;
 }
 
+- (BOOL)canRelaunch
+{
+  return EXUpdatesAppController.sharedInstance.isStarted;
+}
+
 - (void)requestRelaunchWithCompletion:(EXUpdatesAppRelaunchCompletionBlock)completion
 {
   return [EXUpdatesAppController.sharedInstance requestRelaunchWithCompletion:completion];
+}
+
+- (void)resetSelectionPolicy
+{
+  return [EXUpdatesAppController.sharedInstance resetSelectionPolicyToDefault];
 }
 
 @end

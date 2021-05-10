@@ -7,7 +7,7 @@ title: PanResponder
 
 By default, `PanResponder` holds an `InteractionManager` handle to block long-running JS events from interrupting active gestures.
 
-It provides a predictable wrapper of the responder handlers provided by the [gesture responder system](../gesture-responder-system/). For each handler, it provides a new `gestureState` object alongside the native event object:
+It provides a predictable wrapper of the responder handlers provided by the [gesture responder system](gesture-responder-system.md). For each handler, it provides a new `gestureState` object alongside the native event object:
 
 ```javascript
 onPanResponderMove: (event, gestureState) => {};

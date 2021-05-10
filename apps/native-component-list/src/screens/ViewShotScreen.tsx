@@ -16,7 +16,9 @@ interface State {
   screenUri?: string;
 }
 
-export default class ViewShotScreen extends React.Component<object, State> {
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
+export default class ViewShotScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: 'ViewShot',
   };
@@ -66,13 +68,13 @@ export default class ViewShotScreen extends React.Component<object, State> {
     const uri = this.state.screenUri;
 
     if (uri) {
-      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
 
       if (status === 'granted') {
         await MediaLibrary.createAssetAsync(uri);
         alert('Successfully added captured screen to media library');
       } else {
-        alert('Camera roll permissions not granted');
+        alert('Media library permissions not granted');
       }
     }
   };

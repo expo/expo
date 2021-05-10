@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSDictionary *)serializedNotification:(UNNotification *)notification;
 + (NSDictionary *)serializedNotificationRequest:(UNNotificationRequest *)notificationRequest;
 + (NSDictionary *)serializedNotificationResponse:(UNNotificationResponse *)notificationResponse;
-+ (NSDictionary *)serializedNotificationContent:(UNNotificationContent *)content isRemote:(BOOL)isRemote;
++ (NSDictionary *)serializedNotificationContent:(UNNotificationRequest *)request;
 
 @end
 

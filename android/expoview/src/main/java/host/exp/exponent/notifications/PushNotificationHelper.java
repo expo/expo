@@ -8,6 +8,8 @@ import android.graphics.Bitmap;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
@@ -21,6 +23,8 @@ import java.util.Random;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
+import expo.modules.updates.manifest.ManifestFactory;
+import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
@@ -65,7 +69,7 @@ public class PushNotificationHelper {
       @Override
       public void onSuccess(ExperienceDBObject experience) {
         try {
-          JSONObject manifest = new JSONObject(experience.manifest);
+          RawManifest manifest = ManifestFactory.INSTANCE.getRawManifestFromJson(new JSONObject(experience.manifest));
           sendNotification(context, message, experienceId, channelId, experience.manifestUrl, manifest, body, title, categoryId);
         } catch (JSONException e) {
           EXL.e(TAG, "Couldn't deserialize JSON for experience id " + experienceId);
@@ -81,15 +85,15 @@ public class PushNotificationHelper {
 
 
   private void sendNotification(final Context context, final String message, final String experienceId, final String channelId,
-                                final String manifestUrl, final JSONObject manifest, final String body, final String title, final String categoryId) {
-    final String name = manifest.optString(ExponentManifest.MANIFEST_NAME_KEY);
+                                final String manifestUrl, final RawManifest manifest, final String body, final String title, final String categoryId) {
+    final String name = manifest.getName();
     if (name == null) {
       EXL.e(TAG, "No name found for experience id " + experienceId);
       return;
     }
 
     final ExponentNotificationManager manager = new ExponentNotificationManager(context);
-    final JSONObject notificationPreferences = manifest.optJSONObject(ExponentManifest.MANIFEST_NOTIFICATION_INFO_KEY);
+    @Nullable final JSONObject notificationPreferences = manifest.getNotificationPreferences();
 
     NotificationHelper.loadIcon(null, manifest, mExponentManifest, new ExponentManifest.BitmapListener() {
       @Override

@@ -1,7 +1,8 @@
+import { A } from '@expo/html-elements';
 import * as React from 'react';
 import stringReplace from 'react-string-replace';
+
 import Colors from '../constants/Colors';
-import { A } from '@expo/html-elements';
 
 const MENTIONS_REGULAR_EXPRESSION = /@([A-Za-z0-9-_]+)/g;
 const HREF_REGULAR_EXPRESSION = /(https?:\/\/\S+)/g;

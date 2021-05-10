@@ -48,7 +48,8 @@ UM_EXPORT_METHOD_AS(openAuthSessionAsync,
     __weak typeof(self) weakSelf = self;
     void (^completionHandler)(NSURL * _Nullable, NSError *_Nullable) = ^(NSURL* _Nullable callbackURL, NSError* _Nullable error) {
       __strong typeof(weakSelf) strongSelf = weakSelf;
-      if (strongSelf) {
+      //check if flow didn't already finish
+      if (strongSelf && strongSelf->_redirectResolve) {
         if (!error) {
           NSString *url = callbackURL.absoluteString;
           strongSelf->_redirectResolve(@{

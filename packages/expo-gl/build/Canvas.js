@@ -1,3 +1,4 @@
+import { Platform } from '@unimodules/core';
 import * as React from 'react';
 import { findDOMNode } from 'react-dom';
 import { PixelRatio, StyleSheet, View } from 'react-native';
@@ -28,7 +29,8 @@ const CanvasWrapper = ({ pointerEvents, children, ...props }) => {
     const _canvasRef = React.useRef(null);
     function updateCanvasSize() {
         const canvas = _canvasRef.current;
-        if (canvas) {
+        // eslint-disable-next-line no-undef
+        if (typeof HTMLCanvasElement !== 'undefined' && canvas instanceof HTMLCanvasElement) {
             const size = getSize();
             const scale = PixelRatio.get();
             canvas.style.width = `${size.width}px`;
@@ -38,19 +40,23 @@ const CanvasWrapper = ({ pointerEvents, children, ...props }) => {
         }
     }
     function getSize() {
-        if (size)
+        if (size) {
             return size;
-        if (!ref.current)
+        }
+        else if (!ref.current || !Platform.isDOMAvailable) {
             return { width: 0, height: 0 };
+        }
         const element = getElement(ref.current);
         const { offsetWidth: width = 0, offsetHeight: height = 0 } = element;
         return { width, height };
     }
     function onLayout(event) {
         const { nativeEvent: { layout: { width, height }, }, } = event;
-        setSize({ width, height });
-        if (props.onLayout) {
-            props.onLayout(event);
+        if (width !== size?.width || height !== size.height) {
+            setSize({ width, height });
+            if (props.onLayout) {
+                props.onLayout(event);
+            }
         }
     }
     React.useEffect(() => {

@@ -141,6 +141,12 @@ export { PermissionResponse, PermissionStatus };
 declare type OptionalKeys<T> = {
     [P in keyof T]?: T[P] | null;
 };
+/**
+ * Returns whether the Calendar API is enabled on the current device. This does not check the app permissions.
+ *
+ * @returns Async `boolean`, indicating whether the Calendar API is available on the current device. Currently this resolves `true` on iOS and Android only.
+ */
+export declare function isAvailableAsync(): Promise<boolean>;
 export declare function getCalendarsAsync(entityType?: string): Promise<Calendar[]>;
 export declare function createCalendarAsync(details?: OptionalKeys<Calendar>): Promise<string>;
 export declare function updateCalendarAsync(id: string, details?: OptionalKeys<Calendar>): Promise<string>;
@@ -164,7 +170,7 @@ export declare function getSourcesAsync(): Promise<Source[]>;
 export declare function getSourceAsync(id: string): Promise<Source>;
 export declare function openEventInCalendar(id: string): void;
 /**
- * @deprecated Use requestCalendarPermissionsAsync()
+ * @deprecated Use `requestCalendarPermissionsAsync()` instead
  */
 export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
 export declare function getCalendarPermissionsAsync(): Promise<PermissionResponse>;

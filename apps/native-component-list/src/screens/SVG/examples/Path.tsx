@@ -1,6 +1,7 @@
 // tslint:disable max-classes-per-file
 import React from 'react';
 import * as Svg from 'react-native-svg';
+
 import Example from './Example';
 
 const { G, Circle, Text } = Svg;
@@ -46,7 +47,8 @@ class UnclosedPath extends React.Component {
 
 class BezierCurve extends React.Component {
   // tslint:disable-next-line max-line-length
-  static title = 'The following example creates a quadratic Bézier curve, where A and C are the start and end points, B is the control point';
+  static title =
+    'The following example creates a quadratic Bézier curve, where A and C are the start and end points, B is the control point';
   render() {
     return (
       <Svg.Svg height="200" width="225">

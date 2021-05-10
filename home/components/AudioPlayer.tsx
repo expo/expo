@@ -105,7 +105,7 @@ export default function AudioPlayer({ isAudioEnabled, source, style }: Props) {
       <View style={styles.buttonContainer}>
         <AudioSettingsButton
           title="Repeat"
-          iconName="repeat"
+          iconName="ios-repeat"
           disabled={!isPlayable}
           active={playback.isLoaded && playback.isLooping}
           onPress={() => {
@@ -116,7 +116,7 @@ export default function AudioPlayer({ isAudioEnabled, source, style }: Props) {
         />
         <AudioSettingsButton
           title="Slower"
-          iconName="hourglass"
+          iconName="ios-hourglass"
           disabled={!isPlayable}
           active={playback.isLoaded && playback.rate < 1}
           onPress={() => {
@@ -132,7 +132,7 @@ export default function AudioPlayer({ isAudioEnabled, source, style }: Props) {
         />
         <AudioSettingsButton
           title="Faster"
-          iconName="speedometer"
+          iconName="ios-speedometer"
           disabled={!isPlayable}
           active={playback.isLoaded && playback.rate > 1}
           onPress={() => {
@@ -148,7 +148,7 @@ export default function AudioPlayer({ isAudioEnabled, source, style }: Props) {
         />
         <AudioSettingsButton
           title="Correct Pitch"
-          iconName="stats"
+          iconName="ios-stats-chart"
           disabled={!isPlayable}
           active={playback.isLoaded && playback.shouldCorrectPitch}
           onPress={() => {
@@ -163,7 +163,7 @@ export default function AudioPlayer({ isAudioEnabled, source, style }: Props) {
         />
         <AudioSettingsButton
           title="Mute"
-          iconName="volume-off"
+          iconName="ios-volume-off"
           disabled={!isPlayable}
           active={playback.isLoaded && playback.isMuted}
           onPress={() => {
@@ -180,7 +180,12 @@ export default function AudioPlayer({ isAudioEnabled, source, style }: Props) {
 
 type AudioSettingsButtonProps = {
   title: string;
-  iconName: string;
+  iconName:
+    | 'ios-hourglass'
+    | 'ios-volume-off'
+    | 'ios-repeat'
+    | 'ios-speedometer'
+    | 'ios-stats-chart';
   disabled: boolean;
   active: boolean;
   onPress: () => void;
@@ -194,7 +199,7 @@ function AudioSettingsButton(props: AudioSettingsButtonProps) {
       onPress={props.onPress}
       style={[props.style, styles.button, props.active ? styles.activeButton : null]}>
       <Ionicons
-        name={`ios-${props.iconName}`}
+        name={props.iconName}
         style={[
           styles.icon,
           props.disabled ? styles.disabledButton : null,

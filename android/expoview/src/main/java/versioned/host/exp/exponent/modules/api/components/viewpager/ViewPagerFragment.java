@@ -10,21 +10,17 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 public class ViewPagerFragment extends Fragment {
+    View view;
 
-    public static String CHILD_VIEW_KEY = "CHILD_VIEW_KEY";
-
-    public static ViewPagerFragment newInstance(int id) {
-        Bundle args = new Bundle();
-        args.putInt(CHILD_VIEW_KEY, id);
-        ViewPagerFragment fragment = new ViewPagerFragment();
-        fragment.setArguments(args);
-        return fragment;
+    public ViewPagerFragment(View child) {
+        view = child;
     }
 
+    public ViewPagerFragment() {}
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return ReactViewPagerManager.reactChildrenViews.get(getArguments().getInt(CHILD_VIEW_KEY));
+        return view != null ? view : new View(getContext());
     }
 }

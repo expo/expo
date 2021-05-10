@@ -11,7 +11,7 @@ Uses `ProgressViewIOS` to render a UIProgressView on iOS.
 
 ## Props
 
-Inherits [View Props](../view/#props).
+Inherits [View Props](view.md#props).
 
 ### `progress`
 

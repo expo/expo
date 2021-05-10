@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import UIKit
+import EXDevMenuInterface
 
 class DevMenuKeyCommandsInterceptor {
   /**
@@ -31,14 +32,16 @@ class DevMenuKeyCommandsInterceptor {
 /**
  Extend `UIResponder` so we can put our key commands to all responders.
  */
-extension UIResponder {
-  // NOTE: throttle the key handler because on iOS 9 the handleKeyCommand:
+extension UIResponder: DevMenuUIResponderExtensionProtocol {
+  // NOTE: throttle the key handler because on iOS the handleKeyCommand:
   // method gets called repeatedly if the command key is held down.
   static private var lastKeyCommandExecutionTime: TimeInterval = 0
-
+  static private var lastKeyCommand: UIKeyCommand? = nil
+  
   @objc
   var EXDevMenu_keyCommands: [UIKeyCommand] {
-    let actionsWithKeyCommands = DevMenuManager.shared.devMenuActions.filter { $0.keyCommand != nil }
+    let actions = DevMenuManager.shared.devMenuCallable.filter { $0 is DevMenuExportedAction } as! [DevMenuExportedAction]
+    let actionsWithKeyCommands = actions.filter { $0.keyCommand != nil }
     var keyCommands = actionsWithKeyCommands.map { $0.keyCommand! }
     keyCommands.insert(contentsOf: DevMenuKeyCommandsInterceptor.globalKeyCommands, at: 0)
     keyCommands.append(contentsOf: self.EXDevMenu_keyCommands)
@@ -46,18 +49,35 @@ extension UIResponder {
   }
 
   @objc
-  func EXDevMenu_handleKeyCommand(_ key: UIKeyCommand) {
-    if CACurrentMediaTime() - UIResponder.lastKeyCommandExecutionTime > 0.5 {
-      let actions = DevMenuManager.shared.devMenuActions
-      let action = actions.first { $0.keyCommand == key }
-
-      action?.action()
-      UIResponder.lastKeyCommandExecutionTime = CACurrentMediaTime()
+  public func EXDevMenu_handleKeyCommand(_ key: UIKeyCommand) {
+    tryHandleKeyCommand(key) {
+      let actions = DevMenuManager.shared.devMenuCallable.filter { $0 is DevMenuExportedAction} as! [DevMenuExportedAction]
+      guard let action = actions.first(where: { $0.keyCommand == key }) else {
+        return
+      }
+      
+      if action.isAvailable() {
+        action.call()
+      }
     }
   }
 
   @objc
   func EXDevMenu_toggleDevMenu(_ key: UIKeyCommand) {
-    DevMenuManager.shared.toggleMenu()
+    tryHandleKeyCommand(key) {
+      DevMenuManager.shared.toggleMenu()
+    }
+  }
+  
+  private func shouldTriggerAction(_ key: UIKeyCommand) -> Bool {
+    return UIResponder.lastKeyCommand !== key || CACurrentMediaTime() - UIResponder.lastKeyCommandExecutionTime > 0.5
+  }
+  
+  private func tryHandleKeyCommand(_ key: UIKeyCommand, handler: () -> Void ) {
+    if shouldTriggerAction(key) {
+      handler()
+      UIResponder.lastKeyCommand = key
+      UIResponder.lastKeyCommandExecutionTime = CACurrentMediaTime()
+    }
   }
 }

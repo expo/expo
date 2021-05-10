@@ -17,23 +17,25 @@ function guardPermission() {
     }
 }
 async function _subscribeDeviceToPushNotificationsAsync() {
-    // TODO: Remove eslint-disable once we upgrade to a version that supports ?. notation.
-    // eslint-disable-next-line
+    // @ts-ignore: TODO: not on the schema
     if (!Constants.manifest.notification?.vapidPublicKey) {
         throw new CodedError('ERR_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG', 'You must provide `notification.vapidPublicKey` in `app.json` to use push notifications on web. Learn more: https://docs.expo.io/versions/latest/guides/using-vapid/.');
     }
-    // TODO: Remove eslint-disable once we upgrade to a version that supports ?. notation.
-    // eslint-disable-next-line
+    // @ts-ignore: TODO: not on the schema
     if (!Constants.manifest.notification?.serviceWorkerPath) {
         throw new CodedError('ERR_NOTIFICATIONS_PUSH_MISSING_CONFIGURATION', 'You must specify `notification.serviceWorkerPath` in `app.json` to use push notifications on the web. Please provide the path to the service worker that will handle notifications.');
     }
     guardPermission();
     let registration = null;
     try {
-        registration = await navigator.serviceWorker.register(Constants.manifest.notification.serviceWorkerPath);
+        registration = await navigator.serviceWorker.register(
+        // @ts-ignore: TODO: not on the schema
+        Constants.manifest.notification.serviceWorkerPath);
     }
     catch (error) {
-        throw new CodedError('ERR_NOTIFICATIONS_PUSH_REGISTRATION_FAILED', `Could not register this device for push notifications because the service worker (${Constants.manifest.notification.serviceWorkerPath}) could not be registered: ${error}`);
+        throw new CodedError('ERR_NOTIFICATIONS_PUSH_REGISTRATION_FAILED', 
+        // @ts-ignore: TODO: not on the schema
+        `Could not register this device for push notifications because the service worker (${Constants.manifest.notification.serviceWorkerPath}) could not be registered: ${error}`);
     }
     await navigator.serviceWorker.ready;
     if (!registration.active) {
@@ -41,6 +43,7 @@ async function _subscribeDeviceToPushNotificationsAsync() {
     }
     const subscribeOptions = {
         userVisibleOnly: true,
+        // @ts-ignore: TODO: not on the schema
         applicationServerKey: _urlBase64ToUint8Array(Constants.manifest.notification.vapidPublicKey),
     };
     let pushSubscription = null;

@@ -1,12 +1,11 @@
 ---
 title: Brightness
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-brightness'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-brightness'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 An API to get and set screen brightness.
 
@@ -20,11 +19,11 @@ On Android, there is a global system-wide brightness setting, and each app has i
 
 ## Usage
 
-<SnackInline label='Basic Brightness Usage' templateId='brightness' dependencies={['expo-brightness']}>
+<SnackInline label='Basic Brightness Usage' dependencies={['expo-brightness']}>
 
-```js
+```jsx
 import React, { useEffect } from 'react';
-import { View, Text } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import * as Brightness from 'expo-brightness';
 
 export default function App() {
@@ -38,17 +37,22 @@ export default function App() {
   }, []);
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
+    <View style={styles.container}>
       <Text>Brightness Module Example</Text>
     </View>
   );
 }
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+/* @end */
 ```
 
 </SnackInline>
@@ -59,29 +63,31 @@ export default function App() {
 import * as Brightness from 'expo-brightness';
 ```
 
-<TableOfContentSection title='Methods' contents={['Brightness.requestPermissionsAsync()', 'Brightness.getPermissionsAsync()', 'Brightness.getBrightnessAsync()', 'Brightness.setBrightnessAsync(brightnessValue)', 'Brightness.useSystemBrightnessAsync()', 'Brightness.isUsingSystemBrightnessAsync()', 'Brightness.getSystemBrightnessAsync()', 'Brightness.setSystemBrightnessAsync(brightnessValue)', 'Brightness.getSystemBrightnessModeAsync()', 'Brightness.setSystemBrightnessModeAsync(brightnessMode)' ]} />
-
-<TableOfContentSection title='Enum Types' contents={['Brightness.BrightnessMode']} />
-
-<TableOfContentSection title='Error Codes' contents={['ERR_BRIGHTNESS', 'ERR_BRIGHTNESS_MODE', 'ERR_BRIGHTNESS_PERMISSIONS_DENIED', 'ERR_BRIGHTNESS_SYSTEM', 'ERR_INVALID_ARGUMENT']} />
-
 ## Methods
+
+### `Brightness.isAvailableAsync()`
+
+Returns whether the Brightness API is enabled on the current device. This does not check the app permissions.
+
+#### Returns
+
+Async `boolean`, indicating whether the Brightness API is available on the current device. Currently this resolves `true` on iOS and Android only.
 
 ### `Brightness.requestPermissionsAsync()`
 
-Asks the user to grant permissions for accessing system brightness. Alias for `Permissions.askAsync(Permissions.BRIGHTNESS)`.
+Asks the user to grant permissions for accessing system brightness.
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ### `Brightness.getPermissionsAsync()`
 
-Checks user's permissions for accessing system brightness. Alias for `Permissions.getAsync(Permissions.BRIGHTNESS)`.
+Checks user's permissions for accessing system brightness.
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ### `Brightness.getBrightnessAsync()`
 
@@ -107,7 +113,7 @@ A `Promise` that is resolved when the brightness has been successfully set.
 
 #### Error Codes
 
-- [`ERR_BRIGHTNESS`](#errbrightness)
+- [`ERR_BRIGHTNESS`](#err_brightness)
 
 ---
 
@@ -131,7 +137,7 @@ A `Promise` that resolves with `true` when the current activity is using the sys
 
 #### Error Codes
 
-- [`ERR_BRIGHTNESS`](#errbrightness)
+- [`ERR_BRIGHTNESS`](#err_brightness)
 
 ---
 
@@ -145,7 +151,7 @@ A `Promise` that is resolved with a number between 0 and 1, inclusive, represent
 
 #### Error Codes
 
-- [`ERR_BRIGHTNESS_SYSTEM`](#errbrightnesssystem)
+- [`ERR_BRIGHTNESS_SYSTEM`](#err_brightness_system)
 
 ---
 
@@ -165,8 +171,8 @@ A `Promise` that is resolved when the brightness has been successfully set.
 
 #### Error Codes
 
-- [`ERR_BRIGHTNESS_MODE`](#errbrightnessmode)
-- [`ERR_BRIGHTNESS_PERMISSIONS_DENIED`](#errbrightnesspermissionsdenied)
+- [`ERR_BRIGHTNESS_MODE`](#err_brightness_mode)
+- [`ERR_BRIGHTNESS_PERMISSIONS_DENIED`](#err_brightness_permissions_denied)
 
 ### `Brightness.getSystemBrightnessModeAsync()`
 
@@ -178,7 +184,7 @@ A `Promise` that is resolved with a [`BrightnessMode`](#brightnessbrightnessmode
 
 #### Error Codes
 
-- [`ERR_BRIGHTNESS_MODE`](#errbrightnessmode)
+- [`ERR_BRIGHTNESS_MODE`](#err_brightness_mode)
 
 ---
 
@@ -196,9 +202,9 @@ A `Promise` that is resolved when the brightness mode has been successfully set.
 
 #### Error Codes
 
-- [`ERR_INVALID_ARGUMENT`](#errinvalidargument)
-- [`ERR_BRIGHTNESS_MODE`](#errbrightnessmode)
-- [`ERR_BRIGHTNESS_PERMISSIONS_DENIED`](#errbrightnesspermissionsdenied)
+- [`ERR_INVALID_ARGUMENT`](#err_invalid_argument)
+- [`ERR_BRIGHTNESS_MODE`](#err_brightness_mode)
+- [`ERR_BRIGHTNESS_PERMISSIONS_DENIED`](#err_brightness_permissions_denied)
 
 ## Enum Types
 

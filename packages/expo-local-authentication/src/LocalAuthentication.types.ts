@@ -7,6 +7,12 @@ export enum AuthenticationType {
   IRIS = 3,
 }
 
+export enum SecurityLevel {
+  NONE = 0,
+  SECRET = 1,
+  BIOMETRIC = 2,
+}
+
 export type LocalAuthenticationOptions = {
   promptMessage?: string;
   cancelLabel?: string;

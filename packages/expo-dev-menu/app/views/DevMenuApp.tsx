@@ -1,8 +1,8 @@
-import React from 'react';
-import { useFonts } from 'expo-font';
-import { StyleSheet, View, useColorScheme } from 'react-native';
 import { NavigationContainer, DarkTheme, DefaultTheme } from '@react-navigation/native';
+import React, { useEffect, useState, useRef } from 'react';
+import { StyleSheet, View, useColorScheme } from 'react-native';
 
+import { loadFontsAsync, onScreenChangeAsync } from '../DevMenuInternal';
 import Colors from '../constants/Colors';
 import DevMenuContainer from './DevMenuContainer';
 
@@ -32,21 +32,39 @@ const CustomDarkTheme = {
 
 function DevMenuApp(props) {
   const colorScheme = useColorScheme();
+  const [fontsWereLoaded, didFontsLoad] = useState(false);
+  const routeNameRef = useRef<string>();
+  const navigationRef = useRef();
 
-  // @tsapeta: For production bundles probably the best way to use custom fonts is to just download them from web.
-  // But maybe we should have it as an asset?
-  const [fontsLoaded] = useFonts({
-    'material-community':
-      'https://github.com/Templarian/MaterialDesign-Font/raw/master/MaterialDesignIconsDesktop.ttf',
-  });
+  useEffect(() => {
+    const loadFonts = async () => {
+      await loadFontsAsync();
+      didFontsLoad(true);
+    };
 
-  if (!fontsLoaded) {
-    return null;
+    loadFonts();
+  }, []);
+
+  if (!fontsWereLoaded) {
+    return <></>;
   }
+
   return (
     <View style={styles.rootView}>
-      <NavigationContainer theme={colorScheme === 'dark' ? CustomDarkTheme : CustomLightTheme}>
-        <DevMenuContainer {...props} />
+      <NavigationContainer
+        theme={colorScheme === 'dark' ? CustomDarkTheme : CustomLightTheme}
+        ref={navigationRef}
+        onStateChange={async () => {
+          const previousRouteName = routeNameRef.current;
+          const currentRouteName = navigationRef.current.getCurrentRoute().name;
+
+          if (previousRouteName !== currentRouteName) {
+            await onScreenChangeAsync(currentRouteName === 'Main' ? null : currentRouteName);
+          }
+
+          routeNameRef.current = currentRouteName;
+        }}>
+        <DevMenuContainer {...props} navigation={navigationRef.current} />
       </NavigationContainer>
     </View>
   );

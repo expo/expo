@@ -1,7 +1,7 @@
+import { H2 } from '@expo/html-elements';
 import * as React from 'react';
 import { ActivityIndicator, StyleSheet, View, ScrollView } from 'react-native';
 import { WebView } from 'react-native-webview';
-import { H2 } from '@expo/html-elements';
 
 interface MessageEvent {
   nativeEvent: {

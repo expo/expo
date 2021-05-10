@@ -24,7 +24,7 @@ import { PaymentsStripe } from 'expo-payments-stripe';
 
 ## Compatibility
 
-The Payments module is currently only supported the bare workflow on iOS. If you have a managed workflow project, you'll need to [move to the bare workflow](../../bare/customizing/) in order to use this module on iOS.
+The Payments module is currently only supported the bare workflow on iOS. If you have a managed workflow project, you'll need to [move to the bare workflow](../../../bare/customizing.md) in order to use this module on iOS.
 
 ## Setup
 

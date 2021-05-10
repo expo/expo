@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI37_0_0/Expo/EXCalendar/ABI37_0_0EXCalendar/ABI37_0_0EXCalendarPermissionRequester.h

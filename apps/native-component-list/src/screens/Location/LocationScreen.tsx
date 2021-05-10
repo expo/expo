@@ -3,8 +3,8 @@ import * as Location from 'expo-location';
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
-import SimpleActionDemo from '../../components/SimpleActionDemo';
 import ListButton from '../../components/ListButton';
+import SimpleActionDemo from '../../components/SimpleActionDemo';
 
 type Subscription = { remove: () => any };
 type SubscriptionDemoProps = {
@@ -30,7 +30,6 @@ function SubscriptionDemo(props: SubscriptionDemoProps) {
 
   React.useEffect(() => {
     return () => {
-      // eslint-disable-next-line no-unused-expressions
       subscription?.remove();
     };
   }, [subscription]);
@@ -45,10 +44,6 @@ export default class LocationScreen extends React.Component<{
     title: 'Location',
   };
 
-  _goToBackgroundLocationMap = () => {
-    this.props.navigation.navigate('BackgroundLocationMap');
-  };
-
   _goToGeofencingMap = () => {
     this.props.navigation.navigate('Geofencing');
   };
@@ -56,7 +51,6 @@ export default class LocationScreen extends React.Component<{
   renderLocationMapButton() {
     return (
       <View style={{ marginTop: 30, paddingHorizontal: 10 }}>
-        <ListButton onPress={this._goToBackgroundLocationMap} title="Background location map" />
         <ListButton onPress={this._goToGeofencingMap} title="Geofencing map" />
       </View>
     );
@@ -66,12 +60,28 @@ export default class LocationScreen extends React.Component<{
     return (
       <ScrollView style={styles.scrollView}>
         <SimpleActionDemo
-          title="requestPermissionsAsync"
+          title="requestPermissionsAsync (legacy)"
           action={() => Location.requestPermissionsAsync()}
         />
         <SimpleActionDemo
-          title="getPermissionsAsync"
+          title="getPermissionsAsync (legacy)"
           action={() => Location.getPermissionsAsync()}
+        />
+        <SimpleActionDemo
+          title="requestForegroundPermissionsAsync"
+          action={() => Location.requestForegroundPermissionsAsync()}
+        />
+        <SimpleActionDemo
+          title="getForegroundPermissionsAsync"
+          action={() => Location.getForegroundPermissionsAsync()}
+        />
+        <SimpleActionDemo
+          title="requestBackgroundPermissionsAsync"
+          action={async () => Location.requestBackgroundPermissionsAsync()}
+        />
+        <SimpleActionDemo
+          title="getBackgroundPermissionsAsync"
+          action={() => Location.getBackgroundPermissionsAsync()}
         />
         <SimpleActionDemo
           title="hasServicesEnabledAsync"

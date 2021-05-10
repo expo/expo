@@ -8,19 +8,18 @@ import android.app.Application;
 import android.app.RemoteInput;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
+import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 
-import androidx.core.content.pm.ShortcutInfoCompat;
-import androidx.core.content.pm.ShortcutManagerCompat;
-import androidx.core.graphics.drawable.IconCompat;
-
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
+import com.facebook.internal.BundleJSONConverter;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
@@ -38,17 +37,22 @@ import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import de.greenrobot.event.EventBus;
 import expo.modules.notifications.notifications.model.NotificationResponse;
-import expo.modules.notifications.notifications.service.NotificationResponseReceiver;
-import host.exp.exponent.AppLoader;
+import expo.modules.notifications.service.NotificationsService;
+import expo.modules.notifications.service.delegates.ExpoHandlingDelegate;
+import expo.modules.updates.manifest.ManifestFactory;
+import expo.modules.updates.manifest.raw.RawManifest;
+import host.exp.exponent.ExpoUpdatesAppLoader;
 import host.exp.exponent.LauncherActivity;
 import host.exp.exponent.ReactNativeStaticHelpers;
 import host.exp.exponent.experience.ErrorActivity;
@@ -74,12 +78,11 @@ import host.exp.exponent.exceptions.ExceptionUtils;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.AsyncCondition;
-import host.exp.exponent.utils.JSONBundleConverter;
 import okhttp3.OkHttpClient;
 import versioned.host.exp.exponent.ExpoTurboPackage;
 import versioned.host.exp.exponent.ExponentPackage;
 import versioned.host.exp.exponent.ReactUnthemedRootView;
-import versioned.host.exp.exponent.ReadableObjectUtils;
+import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedJSIModulePackage;
 
 
 // TOOD: need to figure out when we should reload the kernel js. Do we do it every time you visit
@@ -143,6 +146,7 @@ public class Kernel extends KernelInterface {
   ExponentSharedPreferences mExponentSharedPreferences;
 
   private static final Map<String, KernelConstants.ExperienceOptions> mManifestUrlToOptions = new HashMap<>();
+  private static final Map<String, ExpoUpdatesAppLoader> mManifestUrlToAppLoader = new HashMap<>();
 
   @Inject
   ExponentNetwork mExponentNetwork;
@@ -169,8 +173,30 @@ public class Kernel extends KernelInterface {
       // clientBuilder.addNetworkInterceptor(new StethoInterceptor());
     }
 
-    mExponentNetwork.addInterceptors(client);
     ReactNativeStaticHelpers.setExponentNetwork(mExponentNetwork);
+  }
+
+  @Nullable
+  private String getKernelInitialURL() {
+    Activity activity = getActivityContext();
+    if (activity == null) {
+      return null;
+    }
+
+    Intent intent = activity.getIntent();
+    if (intent == null) {
+      return null;
+    }
+
+    String action = intent.getAction();
+    Uri uri = intent.getData();
+
+    if (uri != null
+      && (Intent.ACTION_VIEW.equals(action) || NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action))) {
+      return uri.toString();
+    }
+
+    return null;
   }
 
   // Don't call this until a loading screen is up, since it has to do some work on the main thread.
@@ -268,19 +294,21 @@ public class Kernel extends KernelInterface {
         Exponent.getInstance().runOnUiThread(new Runnable() {
           @Override
           public void run() {
+            String initialURL = getKernelInitialURL();
 
             ReactInstanceManagerBuilder builder = ReactInstanceManager.builder()
-                .setApplication(mApplicationContext)
-                .setCurrentActivity(getActivityContext())
-                .setJSBundleFile(localBundlePath)
-                .addPackage(new MainReactPackage())
-                .addPackage(ExponentPackage.kernelExponentPackage(mContext, mExponentManifest.getKernelManifest(), HomeActivity.homeExpoPackages()))
-                .addPackage(ExpoTurboPackage.createWithManifest(mExponentManifest.getKernelManifest()))
-                .setInitialLifecycleState(LifecycleState.RESUMED);
+              .setApplication(mApplicationContext)
+              .setCurrentActivity(getActivityContext())
+              .setJSBundleFile(localBundlePath)
+              .addPackage(new MainReactPackage())
+              .addPackage(ExponentPackage.kernelExponentPackage(mContext, mExponentManifest.getKernelManifest(), HomeActivity.homeExpoPackages(), initialURL))
+              .addPackage(ExpoTurboPackage.kernelExpoTurboPackage(mExponentManifest.getKernelManifest(), initialURL))
+              .setJSIModulesPackage((reactApplicationContext, jsContext) -> new ReanimatedJSIModulePackage().getJSIModules(reactApplicationContext, jsContext))
+              .setInitialLifecycleState(LifecycleState.RESUMED);
 
-            if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE && mExponentManifest.isDebugModeEnabled(mExponentManifest.getKernelManifest())) {
-              Exponent.enableDeveloperSupport("UNVERSIONED", mExponentManifest.getKernelManifestField(ExponentManifest.MANIFEST_DEBUGGER_HOST_KEY),
-                  mExponentManifest.getKernelManifestField(ExponentManifest.MANIFEST_MAIN_MODULE_NAME_KEY), RNObject.wrap(builder));
+            if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE && mExponentManifest.getKernelManifest().isDevelopmentMode()) {
+              Exponent.enableDeveloperSupport("UNVERSIONED", getKernelDebuggerHost(),
+                  getKernelMainModuleName(), RNObject.wrap(builder));
             }
 
             mReactInstanceManager = builder.build();
@@ -311,12 +339,30 @@ public class Kernel extends KernelInterface {
     };
   }
 
+  private String getKernelDebuggerHost() {
+    return mExponentManifest.getKernelManifest().getDebuggerHost();
+  }
+
+  private String getKernelMainModuleName() {
+    return mExponentManifest.getKernelManifest().getMainModuleName();
+  }
+
   private String getBundleUrl() {
-    return mExponentManifest.getKernelManifestField(ExponentManifest.MANIFEST_BUNDLE_URL_KEY);
+    try {
+      return mExponentManifest.getKernelManifest().getBundleURL();
+    } catch (JSONException e) {
+      KernelProvider.getInstance().handleError(e);
+      return null;
+    }
   }
 
   private String getKernelRevisionId() {
-    return mExponentManifest.getKernelManifestField(ExponentManifest.MANIFEST_REVISION_ID_KEY);
+    try {
+      return mExponentManifest.getKernelManifest().getRevisionId();
+    } catch (JSONException e) {
+      KernelProvider.getInstance().handleError(e);
+      return null;
+    }
   }
 
   public Boolean isRunning() {
@@ -363,7 +409,11 @@ public class Kernel extends KernelInterface {
     }
 
     Bundle bundle = new Bundle();
-    bundle.putBundle("exp", JSONBundleConverter.JSONToBundle(exponentProps));
+    try {
+      bundle.putBundle("exp", BundleJSONConverter.convertToBundle(exponentProps));
+    } catch (JSONException e) {
+      throw new Error("JSONObject failed to be converted to Bundle", e);
+    }
     return bundle;
   }
 
@@ -373,6 +423,14 @@ public class Kernel extends KernelInterface {
 
   public KernelConstants.ExperienceOptions popOptionsForManifestUrl(String manifestUrl) {
     return mManifestUrlToOptions.remove(manifestUrl);
+  }
+
+  public void addAppLoaderForManifestUrl(String manifestUrl, ExpoUpdatesAppLoader appLoader) {
+    mManifestUrlToAppLoader.put(manifestUrl, appLoader);
+  }
+
+  public ExpoUpdatesAppLoader getAppLoaderForManifestUrl(String manifestUrl) {
+    return mManifestUrlToAppLoader.get(manifestUrl);
   }
 
   public ExperienceActivityTask getExperienceActivityTask(String manifestUrl) {
@@ -450,7 +508,7 @@ public class Kernel extends KernelInterface {
 
     setActivityContext(activity);
 
-    if (intent.getAction() != null && NotificationResponseReceiver.NOTIFICATION_OPEN_APP_ACTION.equals(intent.getAction())) {
+    if (intent.getAction() != null && ExpoHandlingDelegate.OPEN_APP_INTENT_ACTION.equals(intent.getAction())) {
       if (!openExperienceFromNotificationIntent(intent)) {
         openDefaultUrl();
       }
@@ -486,6 +544,7 @@ public class Kernel extends KernelInterface {
       }
 
       // Shortcut
+      // TODO: Remove once we decide to stop supporting shortcuts to experiences.
       String shortcutManifestUrl = bundle.getString(KernelConstants.SHORTCUT_MANIFEST_URL_KEY);
       if (shortcutManifestUrl != null) {
         openExperience(new KernelConstants.ExperienceOptions(shortcutManifestUrl, intentUri, null));
@@ -493,9 +552,9 @@ public class Kernel extends KernelInterface {
       }
     }
 
-    if (uri != null) {
+    if (uri != null && shouldOpenUrl(uri)) {
       if (Constants.INITIAL_URL == null) {
-        // We got an "exp://" link
+        // We got an "exp://", "exps://", "http://", or "https://" app link
         openExperience(new KernelConstants.ExperienceOptions(intentUri, intentUri, null));
         return;
       } else {
@@ -512,8 +571,15 @@ public class Kernel extends KernelInterface {
     openDefaultUrl();
   }
 
+  // Certain links (i.e. 'expo.io/expo-go') should just open the HomeScreen
+  private boolean shouldOpenUrl(@NonNull Uri uri) {
+    String host = uri.getHost() != null ? uri.getHost() : "";
+    String path = uri.getPath() != null ? uri.getPath() : "";
+    return !(host.equals("expo.io") && path.equals("/expo-go"));
+  }
+
   private boolean openExperienceFromNotificationIntent(Intent intent) {
-    NotificationResponse response = NotificationResponseReceiver.getNotificationResponse(intent);
+    NotificationResponse response = NotificationsService.Companion.getNotificationResponseFromIntent(intent);
     String experienceIdString = ScopedNotificationsUtils.getExperienceId(response);
     if (experienceIdString == null) {
       return false;
@@ -557,8 +623,8 @@ public class Kernel extends KernelInterface {
         }
       }
 
-      // ignore any query param other than the release-channel
-      // as these will cause the client to treat this as a different experience
+      // transfer the release-channel param to the built URL as this will cause Expo Go to treat
+      // this as a different project
       String releaseChannel = uri.getQueryParameter(ExponentManifest.QUERY_PARAM_KEY_RELEASE_CHANNEL);
       builder.query(null);
       if (releaseChannel != null) {
@@ -571,6 +637,17 @@ public class Kernel extends KernelInterface {
           releaseChannel = releaseChannel.substring(0, releaseChannelDeepLinkPosition);
         }
         builder.appendQueryParameter(ExponentManifest.QUERY_PARAM_KEY_RELEASE_CHANNEL, releaseChannel);
+      }
+
+      // transfer the expo-updates query params: runtime-version, channel-name
+      List<String> expoUpdatesQueryParameters = Arrays.asList(
+              ExponentManifest.QUERY_PARAM_KEY_EXPO_UPDATES_RUNTIME_VERSION,
+              ExponentManifest.QUERY_PARAM_KEY_EXPO_UPDATES_CHANNEL_NAME);
+      for (String queryParameter : expoUpdatesQueryParameters) {
+        String queryParameterValue = uri.getQueryParameter(queryParameter);
+        if (queryParameterValue != null) {
+          builder.appendQueryParameter(queryParameter, queryParameterValue);
+        }
       }
 
       // ignore fragments as well (e.g. those added by auth-session)
@@ -651,34 +728,28 @@ public class Kernel extends KernelInterface {
 
     final ActivityManager.AppTask finalExistingTask = existingTask;
     if (existingTask == null) {
-      new AppLoader(manifestUrl, forceCache) {
+      new ExpoUpdatesAppLoader(manifestUrl, new ExpoUpdatesAppLoader.AppLoaderCallback() {
         @Override
-        public void onOptimisticManifest(final JSONObject optimisticManifest) {
-          Exponent.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-              sendLoadingScreenManifestToExperienceActivity(optimisticManifest);
-            }
-          });
+        public void onOptimisticManifest(final RawManifest optimisticManifest) {
+          Exponent.getInstance().runOnUiThread(() -> sendOptimisticManifestToExperienceActivity(optimisticManifest));
         }
 
         @Override
-        public void onManifestCompleted(final JSONObject manifest) {
-          Exponent.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-              try {
-                openManifestUrlStep2(manifestUrl, manifest, finalExistingTask);
-              } catch (JSONException e) {
-                handleError(e);
-              }
+        public void onManifestCompleted(final RawManifest manifest) {
+          Exponent.getInstance().runOnUiThread(() -> {
+            try {
+              openManifestUrlStep2(manifestUrl, manifest, finalExistingTask);
+            } catch (JSONException e) {
+              handleError(e);
             }
           });
         }
 
         @Override
         public void onBundleCompleted(String localBundlePath) {
-          sendBundleToExperienceActivity(localBundlePath);
+          Exponent.getInstance().runOnUiThread(() -> {
+            sendBundleToExperienceActivity(localBundlePath);
+          });
         }
 
         @Override
@@ -693,24 +764,28 @@ public class Kernel extends KernelInterface {
         }
 
         @Override
-        public void onError(Exception e) {
-          handleError(e);
+        public void updateStatus(ExpoUpdatesAppLoader.AppLoaderStatus status) {
+          if (mOptimisticActivity != null) {
+            mOptimisticActivity.setLoadingProgressStatusIfEnabled(status);
+          }
         }
 
         @Override
-        public void onError(String e) {
-          handleError(e);
+        public void onError(Exception e) {
+          Exponent.getInstance().runOnUiThread(() -> {
+            handleError(e);
+          });
         }
-      }.start();
+      }, forceCache).start(mContext);
     }
   }
 
-  private void openManifestUrlStep2(String manifestUrl, JSONObject manifest, ActivityManager.AppTask existingTask) throws JSONException {
-    String bundleUrl = ExponentUrls.toHttp(manifest.getString("bundleUrl"));
+  private void openManifestUrlStep2(String manifestUrl, RawManifest manifest, ActivityManager.AppTask existingTask) throws JSONException {
+    String bundleUrl = ExponentUrls.toHttp(manifest.getBundleURL());
     Kernel.ExperienceActivityTask task = getExperienceActivityTask(manifestUrl);
     task.bundleUrl = bundleUrl;
 
-    manifest = mExponentManifest.normalizeManifest(manifestUrl, manifest);
+    ExponentManifest.normalizeRawManifestInPlace(manifest, manifestUrl);
 
     JSONObject opts = new JSONObject();
 
@@ -857,7 +932,7 @@ public class Kernel extends KernelInterface {
     AsyncCondition.notify(KernelConstants.OPEN_EXPERIENCE_ACTIVITY_KEY);
   }
 
-  public void sendLoadingScreenManifestToExperienceActivity(final JSONObject manifest) {
+  public void sendOptimisticManifestToExperienceActivity(final RawManifest optimisticManifest) {
     AsyncCondition.wait(KernelConstants.OPEN_OPTIMISTIC_EXPERIENCE_ACTIVITY_KEY, new AsyncCondition.AsyncConditionListener() {
       @Override
       public boolean isReady() {
@@ -866,13 +941,13 @@ public class Kernel extends KernelInterface {
 
       @Override
       public void execute() {
-        mOptimisticActivity.setLoadingScreenManifest(manifest);
+        mOptimisticActivity.setOptimisticManifest(optimisticManifest);
       }
     });
   }
 
   public void sendManifestToExperienceActivity(
-      final String manifestUrl, final JSONObject manifest, final String bundleUrl, final JSONObject kernelOptions) {
+      final String manifestUrl, final RawManifest manifest, final String bundleUrl, final JSONObject kernelOptions) {
     AsyncCondition.wait(KernelConstants.OPEN_EXPERIENCE_ACTIVITY_KEY, new AsyncCondition.AsyncConditionListener() {
       @Override
       public boolean isReady() {
@@ -1002,18 +1077,8 @@ public class Kernel extends KernelInterface {
           break;
         }
 
-        if (weakActivity.isLoading()) {
-          // Already loading. Don't need to do anything.
-          return true;
-        } else {
-          Exponent.getInstance().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-              weakActivity.showLoadingScreen(null);
-            }
-          });
-          break;
-        }
+        Exponent.getInstance().runOnUiThread(weakActivity::startLoading);
+        break;
       }
     }
 
@@ -1066,7 +1131,7 @@ public class Kernel extends KernelInterface {
       // stackTraceElements starts with a bunch of stuff we don't care about.
       for (int i = 2; i < stackTraceElements.length; i++) {
         StackTraceElement element = stackTraceElements[i];
-        if (element.getFileName().startsWith(Kernel.class.getSimpleName()) &&
+        if (element.getFileName() != null && element.getFileName().startsWith(Kernel.class.getSimpleName()) &&
             (element.getMethodName().equals("handleReactNativeError") ||
                 element.getMethodName().equals("handleError"))) {
           // Ignore these base error handling methods.
@@ -1106,43 +1171,5 @@ public class Kernel extends KernelInterface {
   // TODO: probably need to call this from other places.
   public void setHasError() {
     mHasError = true;
-  }
-
-  /*
-   *
-   * Shortcuts
-   *
-   */
-
-  public void installShortcut(final String manifestUrl, final ReadableMap manifest, final String bundleUrl) {
-    JSONObject manifestJson = ReadableObjectUtils.readableToJson(manifest);
-    mExponentSharedPreferences.updateManifest(manifestUrl, manifestJson, bundleUrl);
-    installShortcut(manifestUrl);
-  }
-
-  public void installShortcut(final String manifestUrl) {
-    ExponentSharedPreferences.ManifestAndBundleUrl manifestAndBundleUrl = mExponentSharedPreferences.getManifest(manifestUrl);
-    final JSONObject manifestJson = manifestAndBundleUrl.manifest;
-
-    // TODO: show loading indicator while fetching bitmap
-    final String iconUrl = manifestJson.optString(ExponentManifest.MANIFEST_ICON_URL_KEY);
-    mExponentManifest.loadIconBitmap(iconUrl, new ExponentManifest.BitmapListener() {
-      @Override
-      public void onLoadBitmap(Bitmap bitmap) {
-        Intent shortcutIntent = new Intent(mContext, LauncherActivity.class);
-        shortcutIntent.setAction(Intent.ACTION_MAIN);
-        shortcutIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        shortcutIntent.putExtra(KernelConstants.SHORTCUT_MANIFEST_URL_KEY, manifestUrl);
-
-        ShortcutInfoCompat pinShortcutInfo =
-          new ShortcutInfoCompat.Builder(mContext, manifestUrl)
-                 .setIcon(IconCompat.createWithBitmap(bitmap))
-              .setShortLabel(manifestJson.optString(ExponentManifest.MANIFEST_NAME_KEY))
-              .setIntent(shortcutIntent)
-              .build();
-
-        ShortcutManagerCompat.requestPinShortcut(mContext, pinShortcutInfo, null);
-      }
-    });
   }
 }

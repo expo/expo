@@ -1,8 +1,8 @@
 #import <UIKit/UIKit.h>
 
 #import "RNSScreen.h"
-#import "RNSScreenContainer.h"
 #import "RNSScreenStackHeaderConfig.h"
+#import "RNSScreenContainer.h"
 
 #import <React/RCTUIManager.h>
 #import <React/RCTShadowView.h>
@@ -15,6 +15,7 @@
   __weak RCTBridge *_bridge;
   RNSScreen *_controller;
   RCTTouchHandler *_touchHandler;
+  CGRect _reactFrame;
 }
 
 @synthesize controller = _controller;
@@ -27,6 +28,7 @@
     _stackPresentation = RNSScreenStackPresentationPush;
     _stackAnimation = RNSScreenStackAnimationDefault;
     _gestureEnabled = YES;
+    _replaceAnimation = RNSScreenReplaceAnimationPop;
     _dismissed = NO;
   }
 
@@ -35,15 +37,16 @@
 
 - (void)reactSetFrame:(CGRect)frame
 {
-  if (![self.reactViewController.parentViewController
-        isKindOfClass:[UINavigationController class]]) {
+  _reactFrame = frame;
+  UIViewController *parentVC = self.reactViewController.parentViewController;
+  if (parentVC != nil && ![parentVC isKindOfClass:[UINavigationController class]]) {
     [super reactSetFrame:frame];
   }
   // when screen is mounted under UINavigationController it's size is controller
   // by the navigation controller itself. That is, it is set to fill space of
   // the controller. In that case we ignore react layout system from managing
-  // the screen dimentions and we wait for the screen VC to update and then we
-  // pass the dimentions to ui view manager to take into account when laying out
+  // the screen dimensions and we wait for the screen VC to update and then we
+  // pass the dimensions to ui view manager to take into account when laying out
   // subviews
 }
 
@@ -57,10 +60,15 @@
   [_bridge.uiManager setSize:self.bounds.size forView:self];
 }
 
-- (void)setActive:(BOOL)active
+// Nil will be provided when activityState is set as an animated value and we change
+// it from JS to be a plain value (non animated).
+// In case when nil is received, we want to ignore such value and not make
+// any updates as the actual non-nil value will follow immediately.
+- (void)setActivityStateOrNil:(NSNumber *)activityStateOrNil
 {
-  if (active != _active) {
-    _active = active;
+  int activityState = [activityStateOrNil intValue];
+  if (activityStateOrNil != nil && activityState != _activityState) {
+    _activityState = activityState;
     [_reactSuperview markChildUpdated];
   }
 }
@@ -75,7 +83,8 @@
 {
   switch (stackPresentation) {
     case RNSScreenStackPresentationModal:
-#ifdef __IPHONE_13_0
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
       if (@available(iOS 13.0, *)) {
         _controller.modalPresentationStyle = UIModalPresentationAutomatic;
       } else {
@@ -88,9 +97,11 @@
     case RNSScreenStackPresentationFullScreenModal:
       _controller.modalPresentationStyle = UIModalPresentationFullScreen;
       break;
+#if !TARGET_OS_TV
     case RNSScreenStackPresentationFormSheet:
       _controller.modalPresentationStyle = UIModalPresentationFormSheet;
       break;
+#endif
     case RNSScreenStackPresentationTransparentModal:
       _controller.modalPresentationStyle = UIModalPresentationOverFullScreen;
       break;
@@ -127,9 +138,11 @@
     case RNSScreenStackAnimationFade:
       _controller.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
       break;
+#if !TARGET_OS_TV
     case RNSScreenStackAnimationFlip:
       _controller.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
       break;
+#endif
     case RNSScreenStackAnimationNone:
     case RNSScreenStackAnimationDefault:
       // Default
@@ -139,13 +152,19 @@
 
 - (void)setGestureEnabled:(BOOL)gestureEnabled
 {
-  #ifdef __IPHONE_13_0
-    if (@available(iOS 13.0, *)) {
-      _controller.modalInPresentation = !gestureEnabled;
-    }
-  #endif
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+  if (@available(iOS 13.0, *)) {
+    _controller.modalInPresentation = !gestureEnabled;
+  }
+#endif
 
   _gestureEnabled = gestureEnabled;
+}
+
+- (void)setReplaceAnimation:(RNSScreenReplaceAnimation)replaceAnimation
+{
+  _replaceAnimation = replaceAnimation;
 }
 
 - (UIView *)reactSuperview
@@ -179,6 +198,23 @@
   }
 }
 
+- (void)notifyWillAppear
+{
+  if (self.onWillAppear) {
+    self.onWillAppear(nil);
+  }
+  // we do it here too because at this moment the `parentViewController` is already not nil,
+  // so if the parent is not UINavCtr, the frame will be updated to the correct one.
+  [self reactSetFrame:_reactFrame];
+}
+
+- (void)notifyWillDisappear
+{
+  if (self.onWillDisappear) {
+    self.onWillDisappear(nil);
+  }
+}
+
 - (void)notifyAppear
 {
   if (self.onAppear) {
@@ -187,6 +223,13 @@
         self.onAppear(nil);
       }
     });
+  }
+}
+
+- (void)notifyDisappear
+{
+  if (self.onDisappear) {
+    self.onDisappear(nil);
   }
 }
 
@@ -231,6 +274,19 @@
   [_touchHandler reset];
 }
 
+- (RCTTouchHandler *)touchHandler
+{
+  if (_touchHandler != nil) {
+    return _touchHandler;
+  }
+  UIView *parent = [self superview];
+  while (parent != nil && ![parent respondsToSelector:@selector(touchHandler)]) parent = parent.superview;
+  if (parent != nil) {
+    return [parent performSelector:@selector(touchHandler)];
+  }
+  return nil;
+}
+
 - (BOOL)presentationControllerShouldDismiss:(UIPresentationController *)presentationController
 {
   return _gestureEnabled;
@@ -264,11 +320,116 @@
   return self;
 }
 
+#if !TARGET_OS_TV
+- (UIViewController *)childViewControllerForStatusBarStyle
+{
+  UIViewController *vc = [self findChildVCForConfigIncludingModals:NO];
+  return vc == self ? nil : vc;
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle
+{
+  RNSScreenStackHeaderConfig *config = [self findScreenConfig];
+  return [RNSScreenStackHeaderConfig statusBarStyleForRNSStatusBarStyle:config && config.statusBarStyle ? config.statusBarStyle : RNSStatusBarStyleAuto];
+}
+
+- (UIViewController *)childViewControllerForStatusBarHidden
+{
+  UIViewController *vc = [self findChildVCForConfigIncludingModals:NO];
+  return vc == self ? nil : vc;
+}
+
+- (BOOL)prefersStatusBarHidden
+{
+  RNSScreenStackHeaderConfig *config = [self findScreenConfig];
+  return config && config.statusBarHidden ? config.statusBarHidden : NO;
+}
+
+- (UIStatusBarAnimation)preferredStatusBarUpdateAnimation
+{
+  UIViewController *vc = [self findChildVCForConfigIncludingModals:NO];
+  
+  if ([vc isKindOfClass:[RNSScreen class]]) {
+    RNSScreenStackHeaderConfig *config = [(RNSScreen *)vc findScreenConfig];
+    return config && config.statusBarAnimation ? config.statusBarAnimation : UIStatusBarAnimationFade;
+  }
+  return UIStatusBarAnimationFade;
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+  UIViewController *vc = [self findChildVCForConfigIncludingModals:YES];
+
+  if ([vc isKindOfClass:[RNSScreen class]]) {
+    RNSScreenStackHeaderConfig *config = [(RNSScreen *)vc findScreenConfig];
+    return config && config.screenOrientation ? config.screenOrientation : UIInterfaceOrientationMaskAllButUpsideDown;
+  }
+  return UIInterfaceOrientationMaskAllButUpsideDown;
+}
+
+// if the returned vc is a child, it means that it can provide config;
+// if the returned vc is self, it means that there is no child for config and self has config to provide,
+// so we return self which results in asking self for preferredStatusBarStyle/Animation etc.;
+// if the returned vc is nil, it means none of children could provide config and self does not have config either,
+// so if it was asked by parent, it will fallback to parent's option, or use default option if it is the top Screen
+- (UIViewController *)findChildVCForConfigIncludingModals:(BOOL)includingModals
+{
+  UIViewController *lastViewController = [[self childViewControllers] lastObject];
+  if ([self.presentedViewController isKindOfClass:[RNSScreen class]]) {
+    lastViewController = self.presentedViewController;
+    // we don't want to allow controlling of status bar appearance when we present non-fullScreen modal
+    // and it is not possible if `modalPresentationCapturesStatusBarAppearance` is not set to YES, so even
+    // if we went into a modal here and ask it, it wouldn't take any effect. For fullScreen modals, the system
+    // asks them by itself, so we can stop traversing here.
+    // for screen orientation, we need to start the search again from that modal
+    return !includingModals ? nil : [(RNSScreen *)lastViewController findChildVCForConfigIncludingModals:includingModals] ?: lastViewController;
+  }
+
+  UIViewController *selfOrNil = [self findScreenConfig] != nil ? self : nil;
+  if (lastViewController == nil) {
+    return selfOrNil;
+  } else {
+    if ([lastViewController conformsToProtocol:@protocol(RNScreensViewControllerDelegate)]) {
+      // If there is a child (should be VC of ScreenContainer or ScreenStack), that has a child that could provide config,
+      // we recursively go into its findChildVCForConfig, and if one of the children has the config, we return it,
+      // otherwise we return self if this VC has config, and nil if it doesn't
+      // we use `childViewControllerForStatusBarStyle` for all options since the behavior is the same for all of them
+      UIViewController *childScreen = [lastViewController childViewControllerForStatusBarStyle];
+      if ([childScreen isKindOfClass:[RNSScreen class]]) {
+        return [(RNSScreen *)childScreen findChildVCForConfigIncludingModals:includingModals] ?: selfOrNil;
+      } else {
+        return selfOrNil;
+      }
+    } else {
+      // child vc is not from this library, so we don't ask it
+      return selfOrNil;
+    }
+  }
+}
+#endif
+
+- (RNSScreenStackHeaderConfig *)findScreenConfig
+{
+  for (UIView *subview in self.view.reactSubviews) {
+    if ([subview isKindOfClass:[RNSScreenStackHeaderConfig class]]) {
+      return (RNSScreenStackHeaderConfig *)subview;
+    }
+  }
+  return nil;
+}
+
 - (void)viewDidLayoutSubviews
 {
   [super viewDidLayoutSubviews];
 
-  if (!CGRectEqualToRect(_lastViewFrame, self.view.frame)) {
+  // The below code makes the screen view adapt dimensions provided by the system. We take these
+  // into account only when the view is mounted under UINavigationController in which case system
+  // provides additional padding to account for possible header, and in the case when screen is
+  // shown as a native modal, as the final dimensions of the modal on iOS 12+ are shorter than the
+  // screen size
+  BOOL isDisplayedWithinUINavController = [self.parentViewController isKindOfClass:[UINavigationController class]];
+  BOOL isPresentedAsNativeModal = self.parentViewController == nil && self.presentingViewController != nil;
+  if ((isDisplayedWithinUINavController || isPresentedAsNativeModal) && !CGRectEqualToRect(_lastViewFrame, self.view.frame)) {
     _lastViewFrame = self.view.frame;
     [((RNSScreenView *)self.viewIfLoaded) updateBounds];
   }
@@ -299,13 +460,18 @@
   }
 }
 
-- (void)viewDidDisappear:(BOOL)animated
+- (void)viewWillAppear:(BOOL)animated
 {
-  [super viewDidDisappear:animated];
-  if (self.parentViewController == nil && self.presentingViewController == nil) {
-    // screen dismissed, send event
-    [((RNSScreenView *)self.view) notifyDismissed];
-  }
+  [super viewWillAppear:animated];
+  [RNSScreenStackHeaderConfig updateWindowTraits];
+  [((RNSScreenView *)self.view) notifyWillAppear];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+  [super viewWillDisappear:animated];
+
+  [((RNSScreenView *)self.view) notifyWillDisappear];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -314,10 +480,34 @@
   [((RNSScreenView *)self.view) notifyAppear];
 }
 
+- (void)viewDidDisappear:(BOOL)animated
+{
+  [super viewDidDisappear:animated];
+
+  [((RNSScreenView *)self.view) notifyDisappear];
+  if (self.parentViewController == nil && self.presentingViewController == nil) {
+    // screen dismissed, send event
+    [((RNSScreenView *)self.view) notifyDismissed];
+  }
+  [self traverseForScrollView:self.view];
+}
+
+- (void)traverseForScrollView:(UIView*)view
+{
+  if([view isKindOfClass:[UIScrollView class]] && ([[(UIScrollView*)view delegate] respondsToSelector:@selector(scrollViewDidEndDecelerating:)]) ) {
+    [[(UIScrollView*)view delegate] scrollViewDidEndDecelerating:(id)view];
+  }
+  [view.subviews enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [self traverseForScrollView:obj];
+  }];
+}
+
 - (void)notifyFinishTransitioning
 {
   [_previousFirstResponder becomeFirstResponder];
   _previousFirstResponder = nil;
+  // the correct Screen for appearance is set after the transition, same for orientation.
+  [RNSScreenStackHeaderConfig updateWindowTraits];
 }
 
 @end
@@ -326,11 +516,16 @@
 
 RCT_EXPORT_MODULE()
 
-RCT_EXPORT_VIEW_PROPERTY(active, BOOL)
+// we want to handle the case when activityState is nil
+RCT_REMAP_VIEW_PROPERTY(activityState, activityStateOrNil, NSNumber)
 RCT_EXPORT_VIEW_PROPERTY(gestureEnabled, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(replaceAnimation, RNSScreenReplaceAnimation)
 RCT_EXPORT_VIEW_PROPERTY(stackPresentation, RNSScreenStackPresentation)
 RCT_EXPORT_VIEW_PROPERTY(stackAnimation, RNSScreenStackAnimation)
+RCT_EXPORT_VIEW_PROPERTY(onWillAppear, RCTDirectEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onWillDisappear, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onAppear, RCTDirectEventBlock);
+RCT_EXPORT_VIEW_PROPERTY(onDisappear, RCTDirectEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(onDismissed, RCTDirectEventBlock);
 
 - (UIView *)view
@@ -357,8 +552,13 @@ RCT_ENUM_CONVERTER(RNSScreenStackAnimation, (@{
                                                   @"none": @(RNSScreenStackAnimationNone),
                                                   @"fade": @(RNSScreenStackAnimationFade),
                                                   @"flip": @(RNSScreenStackAnimationFlip),
+                                                  @"slide_from_right": @(RNSScreenStackAnimationDefault),
+                                                  @"slide_from_left": @(RNSScreenStackAnimationDefault),
                                                   }), RNSScreenStackAnimationDefault, integerValue)
 
+RCT_ENUM_CONVERTER(RNSScreenReplaceAnimation, (@{
+                                                  @"push": @(RNSScreenReplaceAnimationPush),
+                                                  @"pop": @(RNSScreenReplaceAnimationPop),
+                                                  }), RNSScreenReplaceAnimationPop, integerValue)
 
 @end
-

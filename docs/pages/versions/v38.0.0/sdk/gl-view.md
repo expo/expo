@@ -5,7 +5,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-38/packages/expo-gl'
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-gl`** provides a `View` that acts as an OpenGL ES render target, useful for rendering 2D and 3D graphics. On mounting, an OpenGL ES context is created. Its drawing buffer is presented as the contents of the `View` every frame.
 
@@ -20,12 +19,6 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 ```js
 import { GLView } from 'expo-gl';
 ```
-
-<TableOfContentSection title='Props' contents={['onContextCreate', 'msaaSamples']} />
-
-<TableOfContentSection title='Methods' contents={['takeSnapshotAsync(options)']} />
-
-<TableOfContentSection title='Static Methods' contents={['GLView.createContextAsync()', 'GLView.destroyContextAsync(gl)', 'GLView.takeSnapshotAsync(gl, options)']} />
 
 ## Props
 
@@ -43,7 +36,7 @@ A function that will be called when the OpenGL ES context is created. The functi
 
 ### `takeSnapshotAsync(options)`
 
-Same as [GLView.takeSnapshotAsync](#expoglviewtakesnapshotasyncgl-options) but uses WebGL context that is associated with the view on which the method is called.
+Same as [GLView.takeSnapshotAsync](#glviewtakesnapshotasyncgl-options) but uses WebGL context that is associated with the view on which the method is called.
 
 ## Static methods
 

@@ -15,12 +15,22 @@ For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-
 
 # Installation in bare React Native projects
 
-For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
+For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/expo/expo/tree/master/packages/react-native-unimodules) before continuing.
 
 ### Add the package to your npm dependencies
 
 ```
 expo install expo-network
+```
+
+### Configure for Android
+
+This module requires permissions to access the network and Wi-Fi state. The `ACCESS_NETWORK_STATE` and `ACCESS_WIFI_STATE` permissions are added automatically.
+
+```xml
+<!-- Added permissions -->
+<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 ```
 
 # Contributing

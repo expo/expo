@@ -13,7 +13,7 @@ For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-
 
 # Installation in bare React Native projects
 
-For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
+For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/expo/expo/tree/master/packages/react-native-unimodules) before continuing.
 
 ### Add the package to your npm dependencies
 
@@ -32,6 +32,15 @@ In your app's `Info.plist` file, add a `GADApplicationIdentifier` key with a str
 <string>ca-app-pub-3940256099942544~1458002511</string>
 ```
 
+Add `NSUserTrackingUsageDescription` key to your `Info.plist`:
+
+```xml
+<key>NSUserTrackingUsageDescription</key>
+<string>This identifier will be used to deliver personalized ads to you.</string>
+```
+
+Add the required `SKAdNetworkIdentifier` items to your `Info.plist`: [Google SKAdNetwork](https://developers.google.com/admob/ios/ios14#skadnetwork).
+
 ### Configure for Android
 
 Ensure that there is a `meta-data` element inside the `application` node inside `AndroidManifest.xml` file (located typically under `/android/app/src/main/AndroidManifest.xml`) with `android:name` of `"com.google.android.gms.ads.APPLICATION_ID"` and a value of your AdMob App ID. Google's Mobile Ads SDK documentation shows precisely how to do this [here](https://developers.google.com/admob/android/quick-start#update_your_androidmanifestxml). In the end your `AndroidManifest.xml` should look more or less like this:
@@ -47,6 +56,15 @@ Ensure that there is a `meta-data` element inside the `application` node inside 
     <!-- You can find your App ID in the AdMob UI -->
     ...
   </application>
+</manifest>
+```
+
+This package automatically adds the `INTERNET` permission. It's required to interact with Google's service.
+
+```xml
+<manifest>
+  <!-- Added permissions -->
+  <uses-permission android:name="android.permission.INTERNET" />
 </manifest>
 ```
 

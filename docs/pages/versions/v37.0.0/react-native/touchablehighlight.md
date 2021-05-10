@@ -81,21 +81,21 @@ const styles = StyleSheet.create({
 
 ### Props
 
-- [TouchableWithoutFeedback props...](../touchablewithoutfeedback/#props)
+- [TouchableWithoutFeedback props...](touchablewithoutfeedback.md#props)
 
-* [`activeOpacity`](../touchablehighlight/#activeopacity)
-* [`onHideUnderlay`](../touchablehighlight/#onhideunderlay)
-* [`onShowUnderlay`](../touchablehighlight/#onshowunderlay)
-* [`style`](../touchablehighlight/#style)
-* [`underlayColor`](../touchablehighlight/#underlaycolor)
-* [`hasTVPreferredFocus`](../touchablehighlight/#hastvpreferredfocus)
-* [`tvParallaxProperties`](../touchablehighlight/#tvparallaxproperties)
-* [`nextFocusDown`](../touchablehighlight/#nextFocusDown)
-* [`nextFocusForward`](../touchablehighlight/#nextFocusForward)
-* [`nextFocusLeft`](../touchablehighlight/#nextFocusLeft)
-* [`nextFocusRight`](../touchablehighlight/#nextFocusRight)
-* [`nextFocusUp`](../touchablehighlight/#nextFocusUp)
-* [`testOnly_pressed`](../touchablehighlight/#testOnly_pressed)
+* [`activeOpacity`](touchablehighlight.md#activeopacity)
+* [`onHideUnderlay`](touchablehighlight.md#onhideunderlay)
+* [`onShowUnderlay`](touchablehighlight.md#onshowunderlay)
+* [`style`](touchablehighlight.md#style)
+* [`underlayColor`](touchablehighlight.md#underlaycolor)
+* [`hasTVPreferredFocus`](touchablehighlight.md#hastvpreferredfocus)
+* [`tvParallaxProperties`](touchablehighlight.md#tvparallaxproperties)
+* [`nextFocusDown`](touchablehighlight.md#nextFocusDown)
+* [`nextFocusForward`](touchablehighlight.md#nextFocusForward)
+* [`nextFocusLeft`](touchablehighlight.md#nextFocusLeft)
+* [`nextFocusRight`](touchablehighlight.md#nextFocusRight)
+* [`nextFocusUp`](touchablehighlight.md#nextFocusUp)
+* [`testOnly_pressed`](touchablehighlight.md#testOnly_pressed)
 
 ---
 
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
 
 ## Props
 
-Inherits [TouchableWithoutFeedback Props](../touchablewithoutfeedback/#props).
+Inherits [TouchableWithoutFeedback Props](touchablewithoutfeedback.md#props).
 
 ### `activeOpacity`
 
@@ -149,7 +149,7 @@ The color of the underlay that will show through when the touch is active.
 
 | Type                | Required |
 | ------------------- | -------- |
-| [color](../colors/) | No       |
+| [color](colors.md) | No       |
 
 ---
 

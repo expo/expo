@@ -1,7 +1,20 @@
 import { UnavailabilityError } from '@unimodules/core';
 import { Platform } from 'react-native';
 import ExponentPrint from './ExponentPrint';
+// @needsAudit @docsMissing
+/**
+ * The orientation of the printed content.
+ */
 export const Orientation = ExponentPrint.Orientation;
+// @needsAudit
+/**
+ * Prints a document or HTML, on web this prints the HTML from the page.
+ * > Note: On iOS, printing from HTML source doesn't support local asset URLs (due to `WKWebView`
+ * > limitations). As a workaround you can use inlined base64-encoded strings.
+ * > See [this comment](https://github.com/expo/expo/issues/7940#issuecomment-657111033) for more details.
+ * @param options A map defining what should be printed.
+ * @return Resolves to an empty `Promise` if printing started.
+ */
 export async function printAsync(options) {
     if (Platform.OS === 'web') {
         return await ExponentPrint.print(options);
@@ -14,12 +27,23 @@ export async function printAsync(options) {
     }
     return await ExponentPrint.print(options);
 }
+// @needsAudit
+/**
+ * **Available on iOS only.** Chooses a printer that can be later used in `printAsync`
+ * @return A promise which fulfils with an object containing `name` and `url` of the selected printer.
+ */
 export async function selectPrinterAsync() {
     if (ExponentPrint.selectPrinter) {
         return await ExponentPrint.selectPrinter();
     }
     throw new UnavailabilityError('Print', 'selectPrinterAsync');
 }
+// @needsAudit
+/**
+ * Prints HTML to PDF file and saves it to [app's cache directory](./filesystem/#filesystemcachedirectory).
+ * On Web this method opens the print dialog.
+ * @param options A map of print options.
+ */
 export async function printToFileAsync(options = {}) {
     return await ExponentPrint.printToFileAsync(options);
 }

@@ -15,6 +15,7 @@ if (!ExpoFirebaseAnalytics) {
 let pureJSAnalyticsTracker: FirebaseAnalyticsJS | void;
 let isUnavailabilityLoggingEnabled = true;
 let isUnavailabilityWarningLogged = false;
+let clientIdForJS: string;
 
 function callAnalyticsModule(funcName: string, ...args) {
   if (!ExpoFirebaseAnalytics[funcName]) {
@@ -49,7 +50,7 @@ function callAnalyticsModule(funcName: string, ...args) {
   if (DEFAULT_APP_NAME !== '[DEFAULT]') {
     if (DEFAULT_WEB_APP_OPTIONS && !pureJSAnalyticsTracker) {
       pureJSAnalyticsTracker = new FirebaseAnalyticsJS(DEFAULT_WEB_APP_OPTIONS, {
-        clientId: Constants.installationId,
+        clientId: clientIdForJS ?? Constants.installationId,
         sessionId: Constants.sessionId,
         strictNativeEmulation: true,
         appName: Constants.manifest?.name || 'Unnamed Expo project',
@@ -110,5 +111,11 @@ export default {
   },
   async setDebugModeEnabled(isEnabled: boolean): Promise<void> {
     return callAnalyticsModule('setDebugModeEnabled', isEnabled);
+  },
+  setClientId(clientId: string): void {
+    clientIdForJS = clientId;
+    if (pureJSAnalyticsTracker) {
+      pureJSAnalyticsTracker.setClientId(clientId);
+    }
   },
 };

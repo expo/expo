@@ -13,7 +13,7 @@ For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-
 
 # Installation in bare React Native projects
 
-For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
+For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/expo/expo/tree/master/packages/react-native-unimodules) before continuing.
 
 ### Add the package to your npm dependencies
 
@@ -23,11 +23,13 @@ expo install expo-camera
 
 ### Configure for iOS
 
-Add `NSCameraUsageDescription` key to your `Info.plist`:
+Add `NSCameraUsageDescription` and `NSMicrophoneUsageDescription` keys to your `Info.plist`:
 
 ```xml
 <key>NSCameraUsageDescription</key>
 <string>Allow $(PRODUCT_NAME) to use the camera</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to use the microphone</string>
 ```
 
 Run `npx pod-install` after installing the npm package.
@@ -60,6 +62,8 @@ allprojects {
     }
 }
 ```
+
+The sourcecode for `cameraview` can be found at [`expo/cameraview`](https://github.com/expo/cameraview).
 
 # Contributing
 

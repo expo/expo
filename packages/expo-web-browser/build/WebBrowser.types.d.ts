@@ -24,9 +24,15 @@ export declare type WebBrowserOpenOptions = {
     enableDefaultShareMenuItem?: boolean;
     /**
      * Whether browsed website should be shown as separate entry in Android recents/multitasking view.
+     * Requires createTask to be `true` (default).
      * Default: `false`
      */
     showInRecents?: boolean;
+    /**
+     * Whether the browser should open as a new task or open within the existing task.
+     * Default: `true`
+     */
+    createTask?: boolean;
     /** iOS only */
     controlsColor?: string;
     dismissButtonStyle?: 'done' | 'close' | 'cancel';
@@ -47,22 +53,21 @@ export declare type WebBrowserCustomTabsResults = {
     browserPackages: string[];
     servicePackages: string[];
 };
-export declare const WebBrowserResultType: {
+export declare enum WebBrowserResultType {
     /**
      * iOS only
      */
-    readonly CANCEL: "cancel";
+    CANCEL = "cancel",
     /**
      * iOS only
      */
-    readonly DISMISS: "dismiss";
+    DISMISS = "dismiss",
     /**
      * Android only
      */
-    readonly OPENED: "opened";
-    readonly LOCKED: "locked";
-};
-export declare type WebBrowserResultType = typeof WebBrowserResultType[keyof typeof WebBrowserResultType];
+    OPENED = "opened",
+    LOCKED = "locked"
+}
 export declare type WebBrowserResult = {
     type: WebBrowserResultType;
 };

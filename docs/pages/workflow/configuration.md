@@ -30,7 +30,7 @@ Most configuration from `app.json` is accessible at runtime from your JavaScript
 For more customization you can use the JavaScript and TypeScript `app.config.js`, or `app.config.ts`. These configs have the following properties:
 
 - Comments, variables, and single quotes!
-- ES module support (import/export).
+- Importing/requiring other JavaScript files. Using import/export syntax in external files is not supported. All imported files must be transpiled to support your current version of Node.js. 
 - TypeScript support with nullish coalescing and optional chaining.
 - Updated whenever Metro bundler reloads.
 - Provide environment information to your app.
@@ -60,7 +60,7 @@ import Constants from 'expo-constants';
 Constants.manifest.extra.fact === 'kittens are cool';
 ```
 
-You can access and modify incoming config values by exporting a function that returns an object. This is useful if your project also has an `app.json`. By default, Expo CLI will read the `app.json` first and send the normalized results to the `app.config.js`. This functionality is disabled when the `--config` is used to specify a custom config.
+You can access and modify incoming config values by exporting a function that returns an object. This is useful if your project also has an `app.json`. By default, Expo CLI will read the `app.json` first and send the normalized results to the `app.config.js`. This functionality is disabled when the `--config` is used to specify a custom config (also note that the [`--config` flag is deprecated](https://expo.fyi/config-flag-migration)).
 
 For example, your `app.json` could look like this:
 
@@ -83,6 +83,26 @@ export default ({ config }) => {
 };
 ```
 
+### Switching configuration based on the environment
+
+It's common to want to want to have some different configuration in development, staging, and production environments, or to swap out configuration entirely in order to white label an app. To accomplish this, you can use `app.config.js` along with environment variables.
+
+```js
+module.exports = () => {
+  if (process.env.MY_ENVIRONMENT === 'production') {
+    return {
+      /* your production config */
+    };
+  } else {
+    return {
+      /* your development config */
+    };
+  }
+};
+```
+
+To use this configuration with Expo CLI commands, set the environment variable either for specific commands or in your shell profile. To set environment variables for specific commands, prefix the command with the variables and values, for example: `MY_ENVIRONMENT=production expo publish` (this is not anything unique to Expo CLI). On Windows you can approximate this with `npx cross-env MY_ENVIRONMENT=production expo publish`, or use whichever other mechanism that you are comfortable with for environment variables.
+
 ### Using TypeScript for configuration: app.config.ts instead of app.config.js
 
 > ⚠️ This is experimental and subject to breaking changes.
@@ -101,10 +121,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 
 ### Configuration Resolution Rules
 
-There are two different types of configs static (`app.config.json`, `app.json`) and dynamic (`app.config.js`, `app.config.ts`). Static configs can be automatically updated with CLI tools, whereas dynamic configs must be manually updated by the developer.
+There are two different types of configs: static (`app.config.json`, `app.json`), and dynamic (`app.config.js`, `app.config.ts`). Static configs can be automatically updated with CLI tools, whereas dynamic configs must be manually updated by the developer.
 
-1. First the static config will be read by checking first if `app.config.json` exists, then falling back on app.json. If no static config exists then default values will be inferred from the package.json and installed node modules.
-2. The dynamic config will read by first checking if `app.config.ts` or `app.config.js` exists. If both exist then the TypeScript config will be used.
-3. If the dynamic config returns a function, then the static config will be passed to the function with `({ config }) => ({})`. This can be used to mutate the static config values.
-4. Whatever is returned from the dynamic config will be used as the final config. It cannot have any promises.
-5. All functions in the config will be evaluated and serialized before any tool in the Expo ecosystem uses it. This is because the config must be a json manifest when it's hosted.
+1. The static config is read if `app.config.json` exists (falls back to `app.json`). If no static config exists, then default values are inferred from the `package.json` and your dependencies.
+2. The dynamic config is read if either `app.config.ts` or `app.config.js` exist. If both exist, then the TypeScript config is used.
+3. If the dynamic config returns a function, then the static config is passed to the function with `({ config }) => ({})`. This function can then mutate the static config values.
+4. The return value from the dynamic config is used as the final config. It cannot have any promises.
+5. All functions in the config are evaluated and serialized before any tool in the Expo ecosystem uses it. The config must be a JSON manifest when it is hosted.

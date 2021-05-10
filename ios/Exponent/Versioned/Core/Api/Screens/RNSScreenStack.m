@@ -17,6 +17,32 @@
 
 @end
 
+@implementation RNScreensNavigationController
+
+#if !TARGET_OS_TV
+- (UIViewController *)childViewControllerForStatusBarStyle
+{
+  return [self topViewController];
+}
+
+- (UIStatusBarAnimation)preferredStatusBarUpdateAnimation
+{
+  return [self topViewController].preferredStatusBarUpdateAnimation;
+}
+
+- (UIViewController *)childViewControllerForStatusBarHidden
+{
+  return [self topViewController];
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+  return [self topViewController].supportedInterfaceOrientations;
+}
+#endif
+
+@end
+
 @interface RNSScreenStackAnimator : NSObject <UIViewControllerAnimatedTransitioning>
 - (instancetype)initWithOperation:(UINavigationControllerOperation)operation;
 @end
@@ -25,15 +51,19 @@
   UINavigationController *_controller;
   NSMutableArray<RNSScreenView *> *_reactSubviews;
   __weak RNSScreenStackManager *_manager;
+  BOOL _hasLayout;
+  BOOL _invalidated;
 }
 
 - (instancetype)initWithManager:(RNSScreenStackManager*)manager
 {
   if (self = [super init]) {
+    _hasLayout = NO;
+    _invalidated = NO;
     _manager = manager;
     _reactSubviews = [NSMutableArray new];
     _presentedModals = [NSMutableArray new];
-    _controller = [[UINavigationController alloc] init];
+    _controller = [[RNScreensNavigationController alloc] init];
     _controller.delegate = self;
 
     // we have to initialize viewControllers with a non empty array for
@@ -76,6 +106,9 @@
   // forward certain calls to the container (Stack).
   UIView *screenView = presentationController.presentedViewController.view;
   if ([screenView isKindOfClass:[RNSScreenView class]]) {
+    // we trigger the update of status bar's appearance here because there is no other lifecycle method
+    // that can handle it when dismissing a modal, the same for orientation
+    [RNSScreenStackHeaderConfig updateWindowTraits];
     [_presentedModals removeObject:presentationController.presentedViewController];
     if (self.onFinishTransitioning) {
       // instead of directly triggering onFinishTransitioning this time we enqueue the event on the
@@ -111,10 +144,13 @@
   // Without the below code the Touchable will remain active (highlighted) for the duration of back
   // gesture and onPress may fire when we release the finger.
   UIView *parent = _controller.view;
-  while (parent != nil && ![parent isKindOfClass:[RCTRootContentView class]]) parent = parent.superview;
-  RCTRootContentView *rootView = (RCTRootContentView *)parent;
-  [rootView.touchHandler cancel];
-
+  while (parent != nil && ![parent respondsToSelector:@selector(touchHandler)]) parent = parent.superview;
+  if (parent != nil) {
+    RCTTouchHandler *touchHandler = [parent performSelector:@selector(touchHandler)];
+    [touchHandler cancel];
+    [touchHandler reset];
+  }
+  
   RNSScreenView *topScreen = (RNSScreenView *)_controller.viewControllers.lastObject.view;
 
   return _controller.viewControllers.count > 1 && topScreen.gestureEnabled;
@@ -157,24 +193,48 @@
   // set yet, however the layout call is already enqueued on ui thread. Enqueuing update call on the
   // ui queue will guarantee that the update will run after layout.
   dispatch_async(dispatch_get_main_queue(), ^{
-    [self updateContainer];
+    self->_hasLayout = YES;
+    [self maybeAddToParentAndUpdateContainer];
   });
 }
 
 - (void)didMoveToWindow
 {
   [super didMoveToWindow];
-  if (self.window) {
-    // when stack is attached to a window we do two things:
-    // 1) we run updateContainer – we do this because we want push view controllers to be installed
-    // before the VC is mounted. If we do that after it is added to parent the push updates operations
-    // are going to be blocked by UIKit.
+  if (!_invalidated) {
+    // We check whether the view has been invalidated before running side-effects in didMoveToWindow
+    // This is needed because when LayoutAnimations are used it is possible for view to be re-attached
+    // to a window despite the fact it has been removed from the React Native view hierarchy.
+    [self maybeAddToParentAndUpdateContainer];
+  }
+}
+
+- (void)maybeAddToParentAndUpdateContainer
+{
+  BOOL wasScreenMounted = _controller.parentViewController != nil;
+  BOOL isScreenReadyForShowing = self.window && _hasLayout;
+  if (!isScreenReadyForShowing && !wasScreenMounted) {
+    // We wait with adding to parent controller until the stack is mounted and has its initial
+    // layout done.
+    // If we add it before layout, some of the items (specifically items from the navigation bar),
+    // won't be able to position properly. Also the position and size of such items, even if it
+    // happens to change, won't be properly updated (this is perhaps some internal issue of UIKit).
+    // If we add it when window is not attached, some of the view transitions will be bloced (i.e.
+    // modal transitions) and the internal view controler's state will get out of sync with what's
+    // on screen without us knowing.
+    return;
+  }
+  [self updateContainer];
+  if (!wasScreenMounted) {
+    // when stack hasn't been added to parent VC yet we do two things:
+    // 1) we run updateContainer (the one above) – we do this because we want push view controllers to
+    // be installed before the VC is mounted. If we do that after it is added to parent the push
+    // updates operations are going to be blocked by UIKit.
     // 2) we add navigation VS to parent – this is needed for the VC lifecycle events to be dispatched
     // properly
     // 3) we again call updateContainer – this time we do this to open modal controllers. Modals
     // won't open in (1) because they require navigator to be added to parent. We handle that case
     // gracefully in setModalViewControllers and can retry opening at any point.
-    [self updateContainer];
     [self reactAddControllerToClosestParent:_controller];
     [self updateContainer];
   }
@@ -188,7 +248,9 @@
       if (parentView.reactViewController) {
         [parentView.reactViewController addChildViewController:controller];
         [self addSubview:controller.view];
+#if !TARGET_OS_TV
         _controller.interactivePopGestureRecognizer.delegate = self;
+#endif
         [controller didMoveToParentViewController:parentView.reactViewController];
         // On iOS pre 12 we observed that `willShowViewController` delegate method does not always
         // get triggered when the navigation controller is instantiated. As the only thing we do in
@@ -264,6 +326,9 @@
       weakSelf.scheduleModalsUpdate = NO;
       [weakSelf updateContainer];
     }
+    // we trigger the update of orientation here because, when dismissing the modal from JS,
+    // neither `viewWillAppear` nor `presentationControllerDidDismiss` are called, same for status bar.
+    [RNSScreenStackHeaderConfig updateWindowTraits];
   };
 
   void (^finish)(void) = ^{
@@ -286,10 +351,11 @@
         UIViewController *next = controllers[i];
         BOOL lastModal = (i == controllers.count - 1);
 
-#ifdef __IPHONE_13_0
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
         if (@available(iOS 13.0, *)) {
           // Inherit UI style from its parent - solves an issue with incorrect style being applied to some UIKit views like date picker or segmented control.
-          next.overrideUserInterfaceStyle = _controller.overrideUserInterfaceStyle;
+          next.overrideUserInterfaceStyle = self->_controller.overrideUserInterfaceStyle;
         }
 #endif
 
@@ -364,13 +430,20 @@
     [_controller setViewControllers:controllers animated:NO];
   } else if (top != lastTop) {
     if (![controllers containsObject:lastTop]) {
-      // last top controller is no longer on stack
-      // in this case we set the controllers stack to the new list with
-      // added the last top element to it and perform (animated) pop
-      NSMutableArray *newControllers = [NSMutableArray arrayWithArray:controllers];
-      [newControllers addObject:lastTop];
-      [_controller setViewControllers:newControllers animated:NO];
-      [_controller popViewControllerAnimated:shouldAnimate];
+      // if the previous top screen does not exist anymore and the new top was not on the stack before, probably replace was called, so we check the animation
+      if ( ![_controller.viewControllers containsObject:top] && ((RNSScreenView *) top.view).replaceAnimation == RNSScreenReplaceAnimationPush) {
+        NSMutableArray *newControllers = [NSMutableArray arrayWithArray:controllers];
+        [_controller pushViewController:top animated:shouldAnimate];
+        [_controller setViewControllers:newControllers animated:NO];
+      } else {
+        // last top controller is no longer on stack
+        // in this case we set the controllers stack to the new list with
+        // added the last top element to it and perform (animated) pop
+        NSMutableArray *newControllers = [NSMutableArray arrayWithArray:controllers];
+        [newControllers addObject:lastTop];
+        [_controller setViewControllers:newControllers animated:NO];
+        [_controller popViewControllerAnimated:shouldAnimate];
+      }
     } else if (![_controller.viewControllers containsObject:top]) {
       // new top controller is not on the stack
       // in such case we update the stack except from the last element with
@@ -421,6 +494,7 @@
 
 - (void)invalidate
 {
+  _invalidated = YES;
   for (UIViewController *controller in _presentedModals) {
     [controller dismissViewControllerAnimated:NO completion:nil];
   }
@@ -499,6 +573,7 @@ RCT_EXPORT_VIEW_PROPERTY(onFinishTransitioning, RCTDirectEventBlock);
 {
   UIViewController* toViewController = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
   UIViewController* fromViewController = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
+  toViewController.view.frame = [transitionContext finalFrameForViewController:toViewController];
 
   if (_operation == UINavigationControllerOperationPush) {
     [[transitionContext containerView] addSubview:toViewController.view];

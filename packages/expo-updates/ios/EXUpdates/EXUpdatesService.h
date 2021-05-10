@@ -14,7 +14,7 @@ typedef void (^EXUpdatesAppRelaunchCompletionBlock)(BOOL success);
 
 @property (nonatomic, readonly) EXUpdatesConfig *config;
 @property (nonatomic, readonly) EXUpdatesDatabase *database;
-@property (nonatomic, readonly) id<EXUpdatesSelectionPolicy> selectionPolicy;
+@property (nonatomic, readonly) EXUpdatesSelectionPolicy *selectionPolicy;
 @property (nonatomic, readonly) NSURL *directory;
 
 @property (nullable, nonatomic, readonly, strong) EXUpdatesUpdate *launchedUpdate;
@@ -22,8 +22,10 @@ typedef void (^EXUpdatesAppRelaunchCompletionBlock)(BOOL success);
 @property (nonatomic, readonly, assign) BOOL isUsingEmbeddedAssets;
 @property (nonatomic, readonly, assign) BOOL isStarted;
 @property (nonatomic, readonly, assign) BOOL isEmergencyLaunch;
+@property (nonatomic, readonly, assign) BOOL canRelaunch;
 
 - (void)requestRelaunchWithCompletion:(EXUpdatesAppRelaunchCompletionBlock)completion;
+- (void)resetSelectionPolicy;
 
 @end
 

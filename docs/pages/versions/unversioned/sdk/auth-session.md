@@ -1,33 +1,25 @@
 ---
 title: AuthSession
-sourceCodeUrl: 'https://github.com/expo/expo/sdk-38/master/packages/expo-auth-session'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-auth-session'
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import InstallSection from '~/components/plugins/InstallSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 import { SocialGrid, SocialGridItem, CreateAppButton } from '~/components/plugins/AuthSessionElements';
 import TerminalBlock from '~/components/plugins/TerminalBlock';
 import SnackInline from '~/components/plugins/SnackInline';
+import { InlineCode } from '~/components/base/code';
 
-`AuthSession` is the easiest way to add web browser based authentication (for example, browser-based OAuth flows) to your app, built on top of [WebBrowser](../webbrowser/), [Crypto](../crypto/), and [Random](../random/). If you would like to understand how it does this, read this document from top to bottom. If you just want to use it, jump to the [Authentication Guide](/guides/authentication).
+`AuthSession` is the easiest way to add web browser based authentication (for example, browser-based OAuth flows) to your app, built on top of [WebBrowser](webbrowser.md), [Crypto](crypto.md), and [Random](random.md). If you would like to understand how it does this, read this document from top to bottom. If you just want to use it, jump to the [Authentication Guide](../../../guides/authentication.md).
 
 <PlatformsSection android emulator ios simulator web />
 
-<TableOfContentSection title="Table of contents" contents={[
-"Installation",
-"Guides",
-"API",
-"Hooks",
-"Methods",
-"Classes",
-"Types",
-"Advanced usage"
-]} />
-
 ## Installation
 
-<InstallSection packageName="expo-auth-session" />
+> `expo-random` is a peer dependency and must be installed alongside `expo-auth-session`.
+
+<InstallSection packageName="expo-auth-session expo-random" />
 
 In **bare-workflow** you can use the [`uri-scheme` package][n-uri-scheme] to easily add, remove, list, and open your URIs.
 
@@ -72,15 +64,15 @@ In order to be able to deep link back into your app, you will need to set a `sch
 
 ## Guides
 
-The guides have moved: [Authentication Guide](/guides/authentication).
+The guides have moved: [Authentication Guide](../../../guides/authentication.md).
 
 ## How web browser based authentication flows work
 
 The typical flow for browser-based authentication in mobile apps is as follows:
 
 - **Initiation**: the user presses a sign in button
-- **Open web browser**: the app opens up a web browser to the authentication provider sign in page. The url that is opened for the sign in page usually includes information to identify the app, and a URL to redirect to on success. _Note: the web browser should share cookies with your system web browser so that users do not need to sign in again if they are already authenticated on the system browser -- Expo's [WebBrowser](../webbrowser/) API takes care of this._
-- **Authentication provider redirects**: upon successful authentication, the authentication provider should redirect back to the application by redirecting to URL provided by the app in the query parameters on the sign in page ([read more about how linking works in mobile apps](../../workflow/linking/)), _provided that the URL is in the allowlist of allowed redirect URLs_. Allowlisting redirect URLs is important to prevent malicious actors from pretending to be your application. The redirect includes data in the URL (such as user id and token), either in the location hash, query parameters, or both.
+- **Open web browser**: the app opens up a web browser to the authentication provider sign in page. The url that is opened for the sign in page usually includes information to identify the app, and a URL to redirect to on success. _Note: the web browser should share cookies with your system web browser so that users do not need to sign in again if they are already authenticated on the system browser -- Expo's [WebBrowser](webbrowser.md) API takes care of this._
+- **Authentication provider redirects**: upon successful authentication, the authentication provider should redirect back to the application by redirecting to URL provided by the app in the query parameters on the sign in page ([read more about how linking works in mobile apps](../../../guides/linking.md)), _provided that the URL is in the allowlist of allowed redirect URLs_. Allowlisting redirect URLs is important to prevent malicious actors from pretending to be your application. The redirect includes data in the URL (such as user id and token), either in the location hash, query parameters, or both.
 - **App handles redirect**: the redirect is handled by the app and data is parsed from the redirect URL.
 
 ## What `auth.expo.io` does for you
@@ -124,7 +116,7 @@ const [request, response, promptAsync] = useAuthRequest({ ... }, { ... });
 Load an authorization request for a code. Returns a loaded request, a response, and a prompt method.
 When the prompt method completes then the response will be fulfilled.
 
-> 🚨 In order to close the popup window on web, you need to invoke `WebBrowser.maybeCompleteAuthSession()`. See the [Identity example](/guides/authentication#identity-4) for more info.
+> 🚨 In order to close the popup window on web, you need to invoke `WebBrowser.maybeCompleteAuthSession()`. See the [Identity example](../../../guides/authentication.md#identityserver-4) for more info.
 
 If an Implicit grant flow was used, you can pass the `response.params` to `TokenResponse.fromQueryParams()` to get a `TokenResponse` instance which you can use to easily refresh the token.
 
@@ -162,8 +154,8 @@ Given an OpenID Connect issuer URL, this will fetch and return the [`DiscoveryDo
 Create a redirect url for the current platform and environment. You need to manually define the redirect that will be used in a bare workflow React Native app, or an Expo standalone app, this is because it cannot be inferred automatically.
 
 - **Web:** Generates a path based on the current `window.location`. For production web apps, you should hard code the URL as well.
-- **Managed, and Custom workflow:** Uses the `scheme` property of your `app.config.js` or `app.json`.
-  - **Proxy:** Uses auth.expo.io as the base URL for the path. This only works in Expo client and standalone environments.
+- **Managed workflow:** Uses the `scheme` property of your `app.config.js` or `app.json`.
+  - **Proxy:** Uses auth.expo.io as the base URL for the path. This only works in Expo Go and standalone environments.
 - **Bare workflow:** Will fallback to using the `native` option for bare workflow React Native apps.
 
 #### Arguments
@@ -325,13 +317,14 @@ This error method will add the missing description for more context on what went
 
 Object returned after an auth request has completed.
 
-| Name      | Type                     | Description                                                                | Default |
-| --------- | ------------------------ | -------------------------------------------------------------------------- | ------- |
-| type      | `string`                 | How the auth completed `'cancel', 'dismiss', 'locked', 'error', 'success'` | `.Code` |
-| url       | `string`                 | Auth URL that was opened                                                   |         |
-| error     | `AuthError | null`       | Possible error if the auth failed with type `error`                        |         |
-| params    | `Record<string, string>` | Query params from the `url` as an object                                   |         |
-| errorCode | `string | null`          | Legacy error code query param, use `error` instead                         |         |
+| Name           | Type                                           | Description                                                                | Default |
+| -------------- | ---------------------------------------------- | -------------------------------------------------------------------------- | ------- |
+| type           | `string`                                       | How the auth completed `'cancel', 'dismiss', 'locked', 'error', 'success'` | `.Code` |
+| url            | `string`                                       | Auth URL that was opened                                                   |         |
+| error          | <InlineCode>AuthError \| null</InlineCode>     | Possible error if the auth failed with type `error`                        |         |
+| params         | `Record<string, string>`                       | Query params from the `url` as an object                                   |         |
+| authentication | <InlineCode>TokenResponse \| null</InlineCode> | Returned when the auth finishes with an `access_token` property            |         |
+| errorCode      | <InlineCode>string \| null</InlineCode>        | Legacy error code query param, use `error` instead                         |         |
 
 - If the user cancelled the auth session by closing the browser or popup, the result is `{ type: 'cancel' }`.
 - If the auth is dismissed manually with `AuthSession.dismiss()`, the result is `{ type: 'dismiss' }`.
@@ -354,29 +347,29 @@ desired grant type by using the a response type: [Section 3.1.1][s311].
 
 Represents an OAuth authorization request as JSON.
 
-| Name                | Type                      | Description                                                    | Default | Spec                            |
-| ------------------- | ------------------------- | -------------------------------------------------------------- | ------- | ------------------------------- |
-| responseType        | `ResponseType | string`   | Specifies what is returned from the authorization server       | `.Code` | [Section 3.1.1][s311]           |
-| clientId            | `string`                  | Unique ID representing the info provided by the client         |         | [Section 2.2][s22]              |
-| redirectUri         | `string`                  | The server will redirect to this URI when complete             |         | [Section 3.1.2][s312]           |
-| prompt              | `Prompt`                  | Should the user be prompted to login or consent again.         |         | [Section 3.1.2.1][oidc-authreq] |
-| scopes              | `string[]`                | List of strings to request access to                           |         | [Section 3.3][s33]              |
-| clientSecret        | `?string`                 | Client secret supplied by an auth provider                     |         | [Section 2.3.1][s231]           |
-| codeChallengeMethod | `CodeChallengeMethod`     | Method used to generate the code challenge                     | `.S256` | [Section 6.2][s62]              |
-| codeChallenge       | `?string`                 | Derived from the code verifier using the `CodeChallengeMethod` |         | [Section 4.2][s42]              |
-| state               | `?string`                 | Used for protection against Cross-Site Request Forgery         |         | [Section 10.12][s1012]          |
-| usePKCE             | `?boolean`                | Should use Proof Key for Code Exchange                         | `true`  | [PKCE][pkce]                    |
-| extraParams         | `?Record<string, string>` | Extra query params that'll be added to the query string        |         | `N/A`                           |
+| Name                | Type                                            | Description                                                    | Default | Spec                            |
+| ------------------- | ----------------------------------------------- | -------------------------------------------------------------- | ------- | ------------------------------- |
+| responseType        | <InlineCode>ResponseType \| string</InlineCode> | Specifies what is returned from the authorization server       | `.Code` | [Section 3.1.1][s311]           |
+| clientId            | `string`                                        | Unique ID representing the info provided by the client         |         | [Section 2.2][s22]              |
+| redirectUri         | `string`                                        | The server will redirect to this URI when complete             |         | [Section 3.1.2][s312]           |
+| prompt              | `Prompt`                                        | Should the user be prompted to login or consent again.         |         | [Section 3.1.2.1][oidc-authreq] |
+| scopes              | `string[]`                                      | List of strings to request access to                           |         | [Section 3.3][s33]              |
+| clientSecret        | `?string`                                       | Client secret supplied by an auth provider                     |         | [Section 2.3.1][s231]           |
+| codeChallengeMethod | `CodeChallengeMethod`                           | Method used to generate the code challenge                     | `.S256` | [Section 6.2][s62]              |
+| codeChallenge       | `?string`                                       | Derived from the code verifier using the `CodeChallengeMethod` |         | [Section 4.2][s42]              |
+| state               | `?string`                                       | Used for protection against Cross-Site Request Forgery         |         | [Section 10.12][s1012]          |
+| usePKCE             | `?boolean`                                      | Should use Proof Key for Code Exchange                         | `true`  | [PKCE][pkce]                    |
+| extraParams         | `?Record<string, string>`                       | Extra query params that'll be added to the query string        |         | `N/A`                           |
 
 ### `AuthRequestPromptOptions`
 
 Options passed to the `promptAsync()` method of `AuthRequest`s.
 
-| Name          | Type       | Description                                                                                 | Default         |
-| ------------- | ---------- | ------------------------------------------------------------------------------------------- | --------------- |
-| useProxy      | `?boolean` | Should use `auth.expo.io` proxy for redirecting requests. Only works in managed native apps | `false`         |
-| showInRecents | `?boolean` | Should browsed website be shown as a separate entry in Android multitasker                  | `false`         |
-| url           | `?string`  | URL that'll begin the auth request, usually this should be left undefined                   | Preloaded value |
+| Name          | Type       | Description                                                                | Default         |
+| ------------- | ---------- | -------------------------------------------------------------------------- | --------------- |
+| useProxy      | `?boolean` | Should use `auth.expo.io` proxy for redirecting requests                   | `false`         |
+| showInRecents | `?boolean` | Should browsed website be shown as a separate entry in Android multitasker | `false`         |
+| url           | `?string`  | URL that'll begin the auth request, usually this should be left undefined  | Preloaded value |
 
 ### `CodeChallengeMethod`
 
@@ -511,9 +504,96 @@ Access token type [Section 7.1](https://tools.ietf.org/html/rfc6749#section-7.1)
 
 `'bearer' | 'mac'`
 
+### `GoogleAuthRequestConfig`
+
+An extension of the [`AuthRequestConfig`][#authrequestconfig] for use with the built-in Google provider.
+
+| Name                   | Type       | Description                                                                           |
+| ---------------------- | ---------- | ------------------------------------------------------------------------------------- |
+| language               | `?string`  | Language code ISO 3166-1 alpha-2 region code, such as 'it' or 'pt-PT'                 |
+| loginHint              | `?string`  | User email to use as the default option                                               |
+| selectAccount          | `?boolean` | Used in favor of `prompt: Prompt.SelectAccount` to switch accounts                    |
+| expoClientId           | `?string`  | Proxy client ID for use in Expo Go on iOS and Android.                                |
+| webClientId            | `?string`  | Web client ID for use in the browser (web apps).                                      |
+| iosClientId            | `?string`  | iOS native client ID for use in standalone, bare workflow.                            |
+| androidClientId        | `?string`  | Android native client ID for use in standalone, bare workflow.                        |
+| shouldAutoExchangeCode | `?string`  | Should the hook automatically exchange the response code for an authentication token. |
+
+## Providers
+
+AuthSession has built-in support for some popular providers to make usage as easy as possible. These allow you to skip repetitive things like defining endpoints and abstract common features like `language`.
+
+## Google
+
+```tsx
+import * as Google from 'expo-auth-session/providers/google';
+```
+
+- See the guide for more info on usage: [Google Authentication](../../../guides/authentication.md#google).
+- Provides an extra `loginHint` parameter. If the user's email address is known ahead of time, it can be supplied to be the default option.
+- Enforces minimum scopes to `['openid', 'https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email']` for optimal usage with services like Firebase and Auth0.
+- By default, the authorization `code` will be automatically exchanged for an access token. This can be overridden with `shouldAutoExchangeCode`.
+- Automatically uses the proxy in Expo Go because native auth is not supported due to custom build time configuration. This can be overridden with `redirectUriOptions.useProxy`.
+- Defaults to using the bundle ID and package name for the native URI redirect instead of the reverse client ID.
+- Disables PKCE for implicit and id-token based auth responses.
+- On web, the popup is presented with the dimensions that are optimized for the Google login UI (`{ width: 515, height: 680 }`).
+
+### useAuthRequest()
+
+A hook used for opinionated Google authentication that works across platforms.
+
+#### Arguments
+
+- **config (_GoogleAuthRequestConfig_)** -- An object with client IDs for each platform that should be supported.
+- **redirectUriOptions (_AuthSessionRedirectUriOptions_)** -- Optional properties used to construct the redirect URI (passed to `makeRedirectUriAsync()`).
+
+#### Returns
+
+- **request (_GoogleAuthRequest | null_)** -- An instance of [`GoogleAuthRequest`](#googleauthrequest) that can be used to prompt the user for authorization. This will be `null` until the auth request has finished loading.
+- **response (_AuthSessionResult | null_)** -- This is `null` until `promptAsync` has been invoked. Once fulfilled it will return information about the authorization.
+- **promptAsync (_function_)** -- When invoked, a web browser will open up and prompt the user for authentication. Accepts an [`AuthRequestPromptOptions`](#authrequestpromptoptions) object with options about how the prompt will execute. This **should not** be used to enable the Expo proxy service `auth.expo.io`, as the proxy will be automatically enabled based on the platform.
+
+### discovery
+
+An object containing the discovery URLs used for Google auth.
+
+## Facebook
+
+```tsx
+import * as Facebook from 'expo-auth-session/providers/facebook';
+```
+
+- Uses implicit auth (`ResponseType.Token`) by default.
+- See the guide for more info on usage: [Facebook Authentication](../../../guides/authentication.md#facebook).
+- Enforces minimum scopes to `['public_profile', 'email']` for optimal usage with services like Firebase and Auth0.
+- Uses `display=popup` for better UI results.
+- Automatically uses the proxy in Expo Go because native auth is not supported due to custom build time configuration.
+- The URI redirect must be added to your `app.config.js` or `app.json` as `facebookScheme: 'fb<YOUR FBID>'`.
+- Disables PKCE for implicit auth response.
+- On web, the popup is presented with the dimensions `{ width: 700, height: 600 }`
+
+### useAuthRequest()
+
+A hook used for opinionated Facebook authentication that works across platforms.
+
+#### Arguments
+
+- **config (_FacebookAuthRequestConfig_)** -- An object with client IDs for each platform that should be supported.
+- **redirectUriOptions (_AuthSessionRedirectUriOptions_)** -- Optional properties used to construct the redirect URI (passed to `makeRedirectUriAsync()`).
+
+#### Returns
+
+- **request (_FacebookAuthRequest | null_)** -- An instance of [`FacebookAuthRequest`](#facebookauthrequest) that can be used to prompt the user for authorization. This will be `null` until the auth request has finished loading.
+- **response (_AuthSessionResult | null_)** -- This is `null` until `promptAsync` has been invoked. Once fulfilled it will return information about the authorization.
+- **promptAsync (_function_)** -- When invoked, a web browser will open up and prompt the user for authentication. Accepts an [`AuthRequestPromptOptions`](#authrequestpromptoptions) object with options about how the prompt will execute.
+
+### discovery
+
+An object containing the discovery URLs used for Facebook auth.
+
 ## Usage in the bare React Native app
 
-In managed apps, `AuthSession` uses Expo servers to create a proxy between your application and the auth provider. Unfortunately, we don't provide support to use these servers in bare apps. To overcome this, you can create your proxy service.
+In managed apps, `AuthSession` uses Expo servers to create a proxy between your application and the auth provider. If you'd like, you can also create your own proxy service.
 
 ### Proxy Service
 
@@ -560,7 +640,7 @@ Client code which works with this service:
 
 ```js
 const authServiceUrl = encodeURIComponent(YOUR_AUTH_URL); // we encode this, because it will be send as a query parameter
-const authServiceUrlParameter = `authServiceUrl=${authUrl}`;
+const authServiceUrlParameter = `authServiceUrl=${authServiceUrl}`;
 const authUrl = `YOUR_PROXY_SERVICE_URL?${authServiceUrlParameter}`;
 const result = await AuthSession.startAsync({
   authUrl,
@@ -572,7 +652,7 @@ const result = await AuthSession.startAsync({
 
 ### Filtering out AuthSession events in Linking handlers
 
-There are many reasons why you might want to handle inbound links into your app, such as push notifications or just regular deep linking (you can read more about this in the [Linking guide](../../workflow/linking/)); authentication redirects are only one type of deep link, and `AuthSession` handles these particular links for you. In your own `Linking.addEventListener` handlers, you can filter out deep links that are handled by `AuthSession` by checking if the URL includes the `+expo-auth-session` string -- if it does, you can ignore it. This works because `AuthSession` adds `+expo-auth-session` to the default `returnUrl`; however, if you provide your own `returnUrl`, you may want to consider adding a similar identifier to enable you to filter out `AuthSession` events from other handlers.
+There are many reasons why you might want to handle inbound links into your app, such as push notifications or just regular deep linking (you can read more about this in the [Linking guide](../../../guides/linking.md)); authentication redirects are only one type of deep link, and `AuthSession` handles these particular links for you. In your own `Linking.addEventListener` handlers, you can filter out deep links that are handled by `AuthSession` by checking if the URL includes the `+expo-auth-session` string -- if it does, you can ignore it. This works because `AuthSession` adds `+expo-auth-session` to the default `returnUrl`; however, if you provide your own `returnUrl`, you may want to consider adding a similar identifier to enable you to filter out `AuthSession` events from other handlers.
 
 #### With React Navigation v5
 

@@ -41,7 +41,6 @@ class PromiseMock : Promise {
       field = value
     }
 
-
   override fun resolve(value: Any?) {
     assertNotResolvedNorRejected()
     state = PromiseState.RESOLVED

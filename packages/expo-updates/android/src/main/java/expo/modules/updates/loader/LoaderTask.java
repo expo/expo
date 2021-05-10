@@ -6,8 +6,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
 
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.WritableMap;
+import org.json.JSONObject;
 
 import java.io.File;
 
@@ -15,36 +14,37 @@ import androidx.annotation.Nullable;
 import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.UpdatesUtils;
 import expo.modules.updates.db.DatabaseHolder;
+import expo.modules.updates.db.Reaper;
 import expo.modules.updates.db.UpdatesDatabase;
+import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.DatabaseLauncher;
 import expo.modules.updates.launcher.Launcher;
-import expo.modules.updates.launcher.SelectionPolicy;
+import expo.modules.updates.selectionpolicy.SelectionPolicy;
 import expo.modules.updates.manifest.Manifest;
+import expo.modules.updates.manifest.ManifestMetadata;
 
 public class LoaderTask {
 
   private static final String TAG = LoaderTask.class.getSimpleName();
 
-  private static final String UPDATE_AVAILABLE_EVENT = "updateAvailable";
-  private static final String UPDATE_NO_UPDATE_AVAILABLE_EVENT = "noUpdateAvailable";
-  private static final String UPDATE_ERROR_EVENT = "error";
+  public enum BackgroundUpdateStatus {
+    ERROR, NO_UPDATE_AVAILABLE, UPDATE_AVAILABLE
+  }
 
   public interface LoaderTaskCallback {
     void onFailure(Exception e);
     /**
-     * This method gives the calling class an opportunity to abort the LoaderTask early if, for
-     * example, we need to restart with a different configuration after getting the initial
-     * manifest.
-     *
-     * Return value should indicate whether to continue loading this app. `true` will continue
-     * loading with the provided configuration, `false` will abort the task and no other callback
-     * methods will be fired.
+     * This method gives the calling class a backdoor option to ignore the cached update and force
+     * a remote load if it decides the cached update is not runnable. Returning false from this
+     * callback will force a remote load, overriding the timeout and configuration settings for
+     * whether or not to check for a remote update. Returning true from this callback will make
+     * LoaderTask proceed as usual.
      */
     boolean onCachedUpdateLoaded(UpdateEntity update);
     void onRemoteManifestLoaded(Manifest manifest);
-    void onSuccess(Launcher launcher);
-    void onEvent(String eventName, WritableMap params);
+    void onSuccess(Launcher launcher, boolean isUpToDate);
+    void onBackgroundUpdateFinished(BackgroundUpdateStatus status, @Nullable UpdateEntity update, @Nullable Exception exception);
   }
 
   private interface Callback {
@@ -55,6 +55,7 @@ public class LoaderTask {
   private UpdatesConfiguration mConfiguration;
   private DatabaseHolder mDatabaseHolder;
   private File mDirectory;
+  private FileDownloader mFileDownloader;
   private SelectionPolicy mSelectionPolicy;
   private LoaderTaskCallback mCallback;
 
@@ -62,17 +63,21 @@ public class LoaderTask {
   private boolean mIsReadyToLaunch = false;
   private boolean mTimeoutFinished = false;
   private boolean mHasLaunched = false;
+  private boolean mIsUpToDate = false;
   private HandlerThread mHandlerThread;
-  private Launcher mLauncher;
+  private Launcher mCandidateLauncher;
+  private Launcher mFinalizedLauncher;
 
   public LoaderTask(UpdatesConfiguration configuration,
                     DatabaseHolder databaseHolder,
                     File directory,
+                    FileDownloader fileDownloader,
                     SelectionPolicy selectionPolicy,
                     LoaderTaskCallback callback) {
     mConfiguration = configuration;
     mDatabaseHolder = databaseHolder;
     mDirectory = directory;
+    mFileDownloader = fileDownloader;
     mSelectionPolicy = selectionPolicy;
     mCallback = callback;
 
@@ -109,11 +114,16 @@ public class LoaderTask {
           @Override
           public void onFailure(Exception e) {
             finish(e);
+            runReaper();
           }
 
           @Override
           public void onSuccess() {
+            synchronized (LoaderTask.this) {
+              mIsReadyToLaunch = true;
+            }
             finish(null);
+            runReaper();
           }
         });
       }
@@ -134,15 +144,23 @@ public class LoaderTask {
 
       @Override
       public void onSuccess() {
-        synchronized (LoaderTask.this) {
-          mIsReadyToLaunch = true;
-          maybeFinish();
-        }
-
-        if (shouldCheckForUpdate &&
-            (mLauncher.getLaunchedUpdate() == null ||
-            mCallback.onCachedUpdateLoaded(mLauncher.getLaunchedUpdate()))) {
+        if (mCandidateLauncher.getLaunchedUpdate() != null &&
+          !mCallback.onCachedUpdateLoaded(mCandidateLauncher.getLaunchedUpdate())) {
+          // ignore timer and other settings and force launch a remote update
+          stopTimer();
+          mCandidateLauncher = null;
           launchRemoteUpdate();
+        } else {
+          synchronized (LoaderTask.this) {
+            mIsReadyToLaunch = true;
+            maybeFinish();
+          }
+
+          if (shouldCheckForUpdate) {
+            launchRemoteUpdate();
+          } else {
+            runReaper();
+          }
         }
       }
     });
@@ -156,17 +174,23 @@ public class LoaderTask {
   private synchronized void finish(@Nullable Exception e) {
     if (mHasLaunched) {
       // we've already fired once, don't do it again
+      return;
     }
     mHasLaunched = true;
+    mFinalizedLauncher = mCandidateLauncher;
 
-    if (!mIsReadyToLaunch || mLauncher == null) {
+    if (!mIsReadyToLaunch || mFinalizedLauncher == null || mFinalizedLauncher.getLaunchedUpdate() == null) {
       mCallback.onFailure(e != null ? e : new Exception("LoaderTask encountered an unexpected error and could not launch an update."));
     } else {
-      mCallback.onSuccess(mLauncher);
+      mCallback.onSuccess(mFinalizedLauncher, mIsUpToDate);
     }
 
     if (!mTimeoutFinished) {
       stopTimer();
+    }
+
+    if (e != null) {
+      Log.e(TAG, "Unexpected error encountered while loading this app", e);
     }
   }
 
@@ -175,7 +199,7 @@ public class LoaderTask {
    * loaded an update to launch and the timer isn't still running, the appropriate callback function
    * will be fired. If not, no callback will be fired.
    */
-  private void maybeFinish() {
+  private synchronized void maybeFinish() {
     if (!mIsReadyToLaunch || !mTimeoutFinished) {
       // too early, bail out
       return;
@@ -198,8 +222,8 @@ public class LoaderTask {
 
   private void launchFallbackUpdateFromDisk(Context context, Callback diskUpdateCallback) {
     UpdatesDatabase database = mDatabaseHolder.getDatabase();
-    DatabaseLauncher launcher = new DatabaseLauncher(mConfiguration, mDirectory, mSelectionPolicy);
-    mLauncher = launcher;
+    DatabaseLauncher launcher = new DatabaseLauncher(mConfiguration, mDirectory, mFileDownloader, mSelectionPolicy);
+    mCandidateLauncher = launcher;
 
     if (mConfiguration.hasEmbeddedUpdate()) {
       // if the embedded update should be launched (e.g. if it's newer than any other update we have
@@ -207,7 +231,8 @@ public class LoaderTask {
       // so we can launch it
       UpdateEntity embeddedUpdate = EmbeddedLoader.readEmbeddedManifest(context, mConfiguration).getUpdateEntity();
       UpdateEntity launchableUpdate = launcher.getLaunchableUpdate(database, context);
-      if (mSelectionPolicy.shouldLoadNewUpdate(embeddedUpdate, launchableUpdate)) {
+      JSONObject manifestFilters = ManifestMetadata.getManifestFilters(database, mConfiguration);
+      if (mSelectionPolicy.shouldLoadNewUpdate(embeddedUpdate, launchableUpdate, manifestFilters)) {
         new EmbeddedLoader(context, mConfiguration, database, mDirectory).loadEmbeddedUpdate();
       }
     }
@@ -230,33 +255,40 @@ public class LoaderTask {
   private void launchRemoteUpdateInBackground(Context context, Callback remoteUpdateCallback) {
     AsyncTask.execute(() -> {
       UpdatesDatabase database = mDatabaseHolder.getDatabase();
-      new RemoteLoader(context, mConfiguration, database, mDirectory)
-        .start(mConfiguration.getUpdateUrl(), new RemoteLoader.LoaderCallback() {
+      new RemoteLoader(context, mConfiguration, database, mFileDownloader, mDirectory)
+        .start(new RemoteLoader.LoaderCallback() {
           @Override
           public void onFailure(Exception e) {
             mDatabaseHolder.releaseDatabase();
             remoteUpdateCallback.onFailure(e);
-
-            WritableMap params = Arguments.createMap();
-            params.putString("message", e.getMessage());
-            mCallback.onEvent(UPDATE_ERROR_EVENT, params);
-
+            mCallback.onBackgroundUpdateFinished(BackgroundUpdateStatus.ERROR, null, e);
             Log.e(TAG, "Failed to download remote update", e);
           }
 
           @Override
+          public void onAssetLoaded(AssetEntity asset, int successfulAssetCount, int failedAssetCount, int totalAssetCount) {
+          }
+
+          @Override
           public boolean onManifestLoaded(Manifest manifest) {
-            return mSelectionPolicy.shouldLoadNewUpdate(
-              manifest.getUpdateEntity(),
-              mLauncher.getLaunchedUpdate()
-            );
+            if (mSelectionPolicy.shouldLoadNewUpdate(
+                  manifest.getUpdateEntity(),
+                  mCandidateLauncher == null ? null : mCandidateLauncher.getLaunchedUpdate(),
+                  manifest.getManifestFilters())) {
+              mIsUpToDate = false;
+              mCallback.onRemoteManifestLoaded(manifest);
+              return true;
+            } else {
+              mIsUpToDate = true;
+              return false;
+            }
           }
 
           @Override
           public void onSuccess(@Nullable UpdateEntity update) {
             // a new update has loaded successfully; we need to launch it with a new Launcher and
             // replace the old Launcher so that the callback fires with the new one
-            final DatabaseLauncher newLauncher = new DatabaseLauncher(mConfiguration, mDirectory, mSelectionPolicy);
+            final DatabaseLauncher newLauncher = new DatabaseLauncher(mConfiguration, mDirectory, mFileDownloader, mSelectionPolicy);
             newLauncher.launch(database, context, new Launcher.LauncherCallback() {
               @Override
               public void onFailure(Exception e) {
@@ -269,26 +301,40 @@ public class LoaderTask {
               public void onSuccess() {
                 mDatabaseHolder.releaseDatabase();
 
-                boolean hasLaunched = mHasLaunched;
-                if (!hasLaunched) {
-                  mLauncher = newLauncher;
+                boolean hasLaunched;
+                synchronized (LoaderTask.this) {
+                  hasLaunched = mHasLaunched;
+                  if (!hasLaunched) {
+                    mCandidateLauncher = newLauncher;
+                    mIsUpToDate = true;
+                  }
                 }
 
                 remoteUpdateCallback.onSuccess();
 
                 if (hasLaunched) {
                   if (update == null) {
-                    mCallback.onEvent(UPDATE_NO_UPDATE_AVAILABLE_EVENT, null);
+                    mCallback.onBackgroundUpdateFinished(BackgroundUpdateStatus.NO_UPDATE_AVAILABLE, null, null);
                   } else {
-                    WritableMap params = Arguments.createMap();
-                    params.putString("manifestString", update.metadata.toString());
-                    mCallback.onEvent(UPDATE_AVAILABLE_EVENT, params);
+                    mCallback.onBackgroundUpdateFinished(BackgroundUpdateStatus.UPDATE_AVAILABLE, update, null);
                   }
                 }
               }
             });
           }
         });
+    });
+  }
+
+  private void runReaper() {
+    AsyncTask.execute(() -> {
+      synchronized (LoaderTask.this) {
+        if (mFinalizedLauncher != null && mFinalizedLauncher.getLaunchedUpdate() != null) {
+          UpdatesDatabase database = mDatabaseHolder.getDatabase();
+          Reaper.reapUnusedUpdates(mConfiguration, database, mDirectory, mFinalizedLauncher.getLaunchedUpdate(), mSelectionPolicy);
+          mDatabaseHolder.releaseDatabase();
+        }
+      }
     });
   }
 }

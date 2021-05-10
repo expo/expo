@@ -12,6 +12,7 @@
 #import "RNBranchEventEmitter.h"
 
 // Notification/Event Names
+NSString * const kRNBranchInitSessionStart = @"RNBranch.initSessionStart";
 NSString * const kRNBranchInitSessionSuccess = @"RNBranch.initSessionSuccess";
 NSString * const kRNBranchInitSessionError = @"RNBranch.initSessionError";
 
@@ -31,15 +32,17 @@ RCT_EXPORT_MODULE();
     }
     return self;
 }
-    
+
 + (BOOL)requiresMainQueueSetup {
     return YES;
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[kRNBranchInitSessionSuccess,
-             kRNBranchInitSessionError
-             ];
+    return @[
+        kRNBranchInitSessionStart,
+        kRNBranchInitSessionSuccess,
+        kRNBranchInitSessionError
+    ];
 }
 
 - (void)startObserving {
@@ -58,6 +61,26 @@ RCT_EXPORT_MODULE();
 }
 
 # pragma mark - Public
+
++ (void)initSessionWillStartWithURI:(NSURL *)uri
+{
+    /*
+     * Transmits an Object to JS with a member named uri. This member
+     * will be null if the uri argument here is nil (e.g. Spotlight item).
+     *
+     * branch.subscribe({
+     *   onOpenStart: ({ uri }) => {
+     *     console.log('Opening URI ' + uri)
+     *   },
+     * })
+     *
+     * Note that deferred deep link checks will not trigger an onOpenStart call in JS
+     * (RNBranch.INIT_SESSION_START).
+     */
+    [self postNotificationName:kRNBranchInitSessionStart withPayload:@{
+        RNBranchLinkOpenedNotificationUriKey: uri.absoluteString ?: NSNull.null
+    }];
+}
 
 + (void)initSessionDidSucceedWithPayload:(NSDictionary *)payload
 {

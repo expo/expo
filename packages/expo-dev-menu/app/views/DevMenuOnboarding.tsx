@@ -1,7 +1,7 @@
-import Constants from 'expo-constants';
 import React from 'react';
 import { Dimensions, Platform, StyleSheet, Text, View } from 'react-native';
 
+import { doesDeviceSupportKeyCommands } from '../DevMenuInternal';
 import * as DevMenuInternal from '../DevMenuInternal';
 import { StyledText } from '../components/Text';
 import { TouchableOpacity } from '../components/Touchables';
@@ -24,15 +24,13 @@ const KEYBOARD_CODES = {
 const MENU_NARROW_SCREEN = Dimensions.get('window').width < 375;
 const ONBOARDING_MESSAGE = (() => {
   let fragment;
-  if (Constants.isDevice) {
+  if (doesDeviceSupportKeyCommands) {
+    fragment = `in a simulator you can press ${KEYBOARD_CODES[Platform.OS]}`;
     if (Platform.OS === 'ios') {
-      fragment =
-        'you can shake your device or long press anywhere on the screen with three fingers';
-    } else {
-      fragment = 'you can shake your device';
+      fragment += ` (make sure that 'I/O -> Send Keyboard Input to Device' is enabled on your simulator)`;
     }
   } else {
-    fragment = `in a simulator you can press ${KEYBOARD_CODES[Platform.OS]}`;
+    fragment = 'you can shake your device or long press anywhere on the screen with three fingers';
   }
   return `Since this is your first time opening the Expo client, we wanted to show you this menu and let you know that ${fragment} to get back to it at any time.`;
 })();
@@ -101,7 +99,6 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     left: 0,
-    opacity: 0.9,
   },
   onboardingContent: {
     marginTop: Dimensions.get('window').height * 0.12,

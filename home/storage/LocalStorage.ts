@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import mapValues from 'lodash/mapValues';
 
 import * as Kernel from '../kernel/Kernel';

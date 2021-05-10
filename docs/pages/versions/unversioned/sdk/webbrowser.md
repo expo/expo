@@ -1,14 +1,13 @@
 ---
 title: WebBrowser
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-web-browser'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-web-browser'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
-**`expo-web-browser`** provides access to the system's web browser and supports handling redirects. On iOS, it uses `SFSafariViewController` or `SFAuthenticationSession`, depending on the method you call, and on Android it uses `ChromeCustomTabs`. As of iOS 11, `SFSafariViewController` no longer shares cookies with the Safari, so if you are using `WebBrowser` for authentication you will want to use `WebBrowser.openAuthSessionAsync`, and if you just want to open a webpage (such as your app privacy policy), then use `WebBrowser.openBrowserAsync`.
+**`expo-web-browser`** provides access to the system's web browser and supports handling redirects. On iOS, it uses `SFSafariViewController` or `SFAuthenticationSession`, depending on the method you call, and on Android it uses `ChromeCustomTabs`. As of iOS 11, `SFSafariViewController` no longer shares cookies with Safari, so if you are using `WebBrowser` for authentication you will want to use `WebBrowser.openAuthSessionAsync`, and if you just want to open a webpage (such as your app privacy policy), then use `WebBrowser.openBrowserAsync`.
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -18,47 +17,55 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 ## Usage
 
-<SnackInline label="Basic WebBrowser usage" templateId="web-browser" dependencies={["expo-web-browser"]}>
+<SnackInline label="Basic WebBrowser usage" dependencies={["expo-web-browser", "expo-constants"]}>
 
-```js
-import React, { Component } from 'react';
-import { Button, Text, View } from 'react-native';
+```jsx
+import React, { useState } from 'react';
+import { Button, Text, View, StyleSheet } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
+/* @hide */
+import Constants from 'expo-constants';
+/* @end */
 
-export default class App extends Component {
-  state = {
-    result: null,
-  };
+export default function App() {
+  const [result, setResult] = useState(null);
 
-  render() {
-    return (
-      <View>
-        <Button title="Open WebBrowser" onPress={this._handlePressButtonAsync} />
-        <Text>{this.state.result && JSON.stringify(this.state.result)}</Text>
-      </View>
-    );
-  }
-
-  _handlePressButtonAsync = async () => {
+  const _handlePressButtonAsync = async () => {
     let result = await WebBrowser.openBrowserAsync('https://expo.io');
-    this.setState({ result });
+    setResult(result);
   };
+  return (
+    <View style={styles.container}>
+      <Button title="Open WebBrowser" onPress={_handlePressButtonAsync} />
+      <Text>{result && JSON.stringify(result)}</Text>
+    </View>
+  );
 }
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: Constants.statusBarHeight,
+    backgroundColor: '#ecf0f1',
+  },
+});
+/* @end */
 ```
 
 </SnackInline>
 
 ### Handling deep links from the WebBrowser
 
-If you are using the `WebBrowser` window for authentication or another use case where you would like to pass information back into your app through a deep link, be sure to add a handler with `Linking.addEventListener` before opening the browser. When the listener fires, you should call [dismissBrowser](#webbrowserdismissbrowser) -- it will not automatically dismiss when a deep link is handled. Aside from that, redirects from `WebBrowser` work the same as other deep links. [Read more about it in the Linking guide](../../workflow/linking/#handling-links-into-your-app).
+If you are using the `WebBrowser` window for authentication or another use case where you would like to pass information back into your app through a deep link, be sure to add a handler with `Linking.addEventListener` before opening the browser. When the listener fires, you should call [dismissBrowser](#webbrowserdismissbrowser) -- it will not automatically dismiss when a deep link is handled. Aside from that, redirects from `WebBrowser` work the same as other deep links. [Read more about it in the Linking guide](../../../guides/linking.md#handling-links-into-your-app).
 
 ## API
 
 ```js
 import * as WebBrowser from 'expo-web-browser';
 ```
-
-<TableOfContentSection title="Error Codes" contents={['ERR_WEB_BROWSER_REDIRECT', 'ERR_WEB_BROWSER_BLOCKED', 'ERR_WEB_BROWSER_CRYPTO']} />
 
 ### `WebBrowser.openBrowserAsync(url)`
 
@@ -78,6 +85,7 @@ Opens the url with Safari in a modal on iOS using [`SFSafariViewController`](htt
   - **readerMode (_optional_) (_boolean_)** -- (_iOS only_) a boolean determining whether Safari should enter Reader mode, if it is available.
   - **secondaryToolbarColor (_optional_) (_string_)** -- (_Android only_) color of the secondary toolbar in either `#AARRGGBB` or `#RRGGBB` format.
   - **showInRecents (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether browsed website should be shown as separate entry in Android recents/multitasking view. Default: `false`
+  - **createTask (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether the browser should open in a new task or in the same task as your app. Default: `true`
   - **showTitle (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether the browser should show the title of website on the toolbar.
   - **toolbarColor (_optional_) (_string_)** -- color of the toolbar in either `#AARRGGBB` or `#RRGGBB` format.
 
@@ -129,7 +137,7 @@ How this works on web:
 #### Arguments
 
 - **url (_string_)** -- The url to open in the web browser. This should be a login page.
-- **redirectUrl (_string_)** -- **optional**: the url to deep link back into your app. By default, this will be [Constants.linkingUrl](../constants/#expoconstantslinkinguri)
+- **redirectUrl (_string_)** -- **optional**: the url to deep link back into your app. By default, this will be [Constants.linkingUrl](constants.md#expoconstantslinkinguri)
 - **browserParams (_object_)** -- **optional**: an object with the same keys as [`openBrowserAsync`'s `browserParams` object](#webbrowseropenbrowserasyncurl). If there is no native AuthSession implementation available (which is the case on Android) these params will be used in the browser polyfill. If there is a native AuthSession implementation, these params will be ignored.
 
 Returns a Promise:
@@ -186,7 +194,7 @@ This method initiates (if needed) [CustomTabsSession](https://developer.android.
 
 #### Arguments
 
-- **url (_string_)** -- url of page that is likely to be loaded firts when opening browser
+- **url (_string_)** -- url of page that is likely to be loaded first when opening browser
 - **package (_string_)** -- **optional** -- package of browser to be informed. If not set, preferred browser will be used.
 
 #### Returns
@@ -221,7 +229,7 @@ The promise resolves with `{ type: 'dismiss' }`.
 
 _Android only_
 
-Returns a list of applications package names supporting Custom Tabs, Custom Tabs service, user chosen and preferred one. This may not be fully reliable, since it uses `PackageManager.getResolvingActivities` under the hood. (For example, some browsers might not be present in `browserPackages` list once another browser is set to defult.)
+Returns a list of applications package names supporting Custom Tabs, Custom Tabs service, user chosen and preferred one. This may not be fully reliable, since it uses `PackageManager.getResolvingActivities` under the hood. (For example, some browsers might not be present in `browserPackages` list once another browser is set to default.)
 
 #### Returns
 

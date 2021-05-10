@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import de.greenrobot.event.EventBus;
+import host.exp.exponent.ExpoUpdatesAppLoader;
 
 public abstract class KernelInterface {
 
@@ -15,6 +16,7 @@ public abstract class KernelInterface {
   public abstract void handleError(Exception exception);
   public abstract void openExperience(final KernelConstants.ExperienceOptions options);
   public abstract boolean reloadVisibleExperience(String manifestUrl, boolean forceCache);
+  public abstract ExpoUpdatesAppLoader getAppLoaderForManifestUrl(String manifestUrl);
 
   public boolean reloadVisibleExperience(String manifestUrl) {
     return reloadVisibleExperience(manifestUrl, false);

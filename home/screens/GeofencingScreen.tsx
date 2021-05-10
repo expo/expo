@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import { Notifications } from 'expo';
 import * as Location from 'expo-location';
+import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
 import * as TaskManager from 'expo-task-manager';
 import * as React from 'react';
@@ -243,22 +243,29 @@ if (Platform.OS !== 'android') {
   TaskManager.defineTask(GEOFENCING_TASK, async ({ data: { region } }: any) => {
     const stateString = Location.GeofencingRegionState[region.state].toLowerCase();
     const body = `You're ${stateString} a region with latitude: ${region.latitude}, longitude: ${region.longitude} and radius: ${region.radius}m`;
-
-    await Notifications.presentLocalNotificationAsync({
-      title: 'Expo Geofencing',
-      body,
-      data: {
-        ...region,
-        notificationBody: body,
-        notificationType: GEOFENCING_TASK,
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: 'Expo Geofencing',
+        body,
+        data: {
+          ...region,
+          notificationBody: body,
+          notificationType: GEOFENCING_TASK,
+        },
       },
+      trigger: null,
     });
   });
 }
 
-Notifications.addListener(({ data, remote }) => {
-  if (!remote && data.notificationType === GEOFENCING_TASK) {
-    alert(data.notificationBody);
+Notifications.addNotificationResponseReceivedListener(response => {
+  if (response.notification.request.content.data?.notificationType === GEOFENCING_TASK) {
+    alert(response.notification.request.content.data.notificationBody);
+  }
+});
+Notifications.addNotificationReceivedListener(notification => {
+  if (notification.request.content.data?.notificationType === GEOFENCING_TASK) {
+    alert(notification.request.content.data.notificationBody);
   }
 });
 

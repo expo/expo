@@ -1,14 +1,17 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
+#import <React/RCTLog.h>
 
 @interface EXVersionManager : NSObject
 
-- (instancetype)initWithFatalHandler: (void (^)(NSError *))fatalHandler
-                         logFunction: (void (^)(NSInteger level, NSInteger source, NSString *fileName, NSNumber *lineNumber, NSString *message))logFunction
-                        logThreshold: (NSInteger)threshold;
+// Uses a params dict since the internal workings may change over time, but we want to keep the interface the same.
+- (instancetype)initWithParams: (NSDictionary *)params
+                  fatalHandler: (void (^)(NSError *))fatalHandler
+                   logFunction: (RCTLogFunction)logFunction
+                  logThreshold: (NSInteger)threshold;
 - (void)bridgeWillStartLoading: (id)bridge;
-- (void)bridgeFinishedLoading;
+- (void)bridgeFinishedLoading:(id)bridge;
 - (void)invalidate;
 
 /**
@@ -16,15 +19,21 @@
  */
 - (void)showDevMenuForBridge:(id)bridge;
 - (void)disableRemoteDebuggingForBridge:(id)bridge;
+- (void)toggleRemoteDebuggingForBridge:(id)bridge;
+- (void)togglePerformanceMonitorForBridge:(id)bridge;
 - (void)toggleElementInspectorForBridge:(id)bridge;
+- (uint32_t)addWebSocketNotificationHandler:(void (^)(NSDictionary<NSString *, id> *))handler
+                         queue:(dispatch_queue_t)queue
+                     forMethod:(NSString *)method;
 
 - (NSDictionary<NSString *, NSString *> *)devMenuItemsForBridge:(id)bridge;
 - (void)selectDevMenuItemWithKey:(NSString *)key onBridge:(id)bridge;
 
 /**
  *  Provides the extra native modules required to set up a bridge with this version.
- *  Uses a params dict since the internal workings may change over time, but we want to keep the interface the same.
  */
-- (NSArray *)extraModulesWithParams:(NSDictionary *)params;
+- (NSArray *)extraModulesForBridge:(id)bridge;
+
+- (void *)versionedJsExecutorFactoryForBridge:(id)bridge;
 
 @end

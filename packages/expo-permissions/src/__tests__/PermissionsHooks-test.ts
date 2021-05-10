@@ -20,7 +20,10 @@ it('returns data, ask and get callbacks when mounted', async () => {
 it('accepts multiple permission types', async () => {
   const asker = jest.spyOn(Permissions, 'askAsync').mockResolvedValue(response);
 
-  const permissions = [Permissions.CAMERA, Permissions.CAMERA_ROLL] as Permissions.PermissionType[];
+  const permissions = [
+    Permissions.CAMERA,
+    Permissions.MEDIA_LIBRARY,
+  ] as Permissions.PermissionType[];
   const hook = renderHook(() => usePermissions(permissions, { get: false }));
   await act(() => hook.result.current[ASK]());
 
@@ -48,7 +51,7 @@ describe('ask callback', () => {
   it('uses the same ask callback for multiple permissions when rerendered', async () => {
     const permissions = [
       Permissions.CAMERA,
-      Permissions.CAMERA_ROLL,
+      Permissions.MEDIA_LIBRARY,
     ] as Permissions.PermissionType[];
 
     const hook = renderHook(() => usePermissions(permissions, { get: false }));
@@ -77,10 +80,10 @@ describe('ask option', () => {
       permissions => usePermissions(permissions, { get: false, ask: false }),
       { initialProps: [Permissions.CAMERA] as Permissions.PermissionType[] }
     );
-    hook.rerender([Permissions.CAMERA, Permissions.CAMERA_ROLL]);
+    hook.rerender([Permissions.CAMERA, Permissions.MEDIA_LIBRARY]);
     await act(() => hook.result.current[ASK]());
 
-    expect(asker).toBeCalledWith(Permissions.CAMERA, Permissions.CAMERA_ROLL);
+    expect(asker).toBeCalledWith(Permissions.CAMERA, Permissions.MEDIA_LIBRARY);
     expect(hook.result.current[DATA]).toMatchObject(response);
   });
 });
@@ -106,7 +109,7 @@ describe('get callback', () => {
   it('uses the same get callback for multiple permissions when rerendered', async () => {
     const permissions = [
       Permissions.CAMERA,
-      Permissions.CAMERA_ROLL,
+      Permissions.MEDIA_LIBRARY,
     ] as Permissions.PermissionType[];
     const hook = renderHook(() => usePermissions(permissions, { get: false }));
     const getter = hook.result.current[GET];
@@ -133,10 +136,10 @@ describe('get option', () => {
     const hook = renderHook(permissions => usePermissions(permissions, { get: false }), {
       initialProps: [Permissions.CAMERA] as Permissions.PermissionType[],
     });
-    hook.rerender([Permissions.CAMERA, Permissions.CAMERA_ROLL]);
+    hook.rerender([Permissions.CAMERA, Permissions.MEDIA_LIBRARY]);
     await act(() => hook.result.current[GET]());
 
-    expect(getter).toBeCalledWith(Permissions.CAMERA, Permissions.CAMERA_ROLL);
+    expect(getter).toBeCalledWith(Permissions.CAMERA, Permissions.MEDIA_LIBRARY);
     expect(hook.result.current[DATA]).toMatchObject(response);
   });
 });

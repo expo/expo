@@ -1,10 +1,10 @@
 import React from 'react';
 import { Image, StyleSheet, View, PixelRatio } from 'react-native';
 
+import { DevMenuAppInfoType } from '../DevMenuInternal';
 import { StyledText } from '../components/Text';
 import { StyledView } from '../components/Views';
 import Colors from '../constants/Colors';
-import { DevMenuAppInfoType } from '../DevMenuInternal';
 
 type Props = {
   appInfo: DevMenuAppInfoType;

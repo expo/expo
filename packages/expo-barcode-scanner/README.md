@@ -13,7 +13,7 @@ For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-
 
 # Installation in bare React Native projects
 
-For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
+For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/expo/expo/tree/master/packages/react-native-unimodules) before continuing.
 
 ### Add the package to your npm dependencies
 
@@ -22,6 +22,15 @@ expo install expo-barcode-scanner
 ```
 
 ### Configure for iOS
+
+Add `NSCameraUsageDescription` and `NSMicrophoneUsageDescription` key to your `Info.plist`:
+
+```xml
+<key>NSCameraUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to use the camera</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to use the microphone</string>
+```
 
 Run `npx pod-install` after installing the npm package.
 

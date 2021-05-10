@@ -107,7 +107,7 @@ class SvgNativeMethods extends React.Component {
         base64,
       });
     });
-  }
+  };
 
   render() {
     return (
@@ -117,8 +117,7 @@ class SvgNativeMethods extends React.Component {
           width="150"
           ref={ele => {
             this.root = ele;
-          }}
-        >
+          }}>
           <G x="40" onPress={this.alert}>
             <Circle cx="32" cy="32" r="4.167" fill="blue" />
             <Path

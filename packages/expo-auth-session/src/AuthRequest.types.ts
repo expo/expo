@@ -1,3 +1,4 @@
+import { CreateURLOptions } from 'expo-linking';
 import { WebBrowserOpenOptions, WebBrowserWindowFeatures } from 'expo-web-browser';
 
 export enum CodeChallengeMethod {
@@ -81,6 +82,10 @@ export type AuthRequestPromptOptions = Omit<WebBrowserOpenOptions, 'windowFeatur
    */
   useProxy?: boolean;
   /**
+   * URL options to be used when creating the redirect URL for the auth proxy.
+   */
+  proxyOptions?: Omit<CreateURLOptions, 'queryParams'> & { path?: string };
+  /**
    * **Web:** features to use with `window.open()`
    */
   windowFeatures?: WebBrowserWindowFeatures;
@@ -120,7 +125,7 @@ export interface AuthRequestConfig {
    *
    * [Section 3.3](https://tools.ietf.org/html/rfc6749#section-3.3)
    */
-  scopes: string[];
+  scopes?: string[];
   /**
    * Client secret supplied by an auth provider.
    * There is no secure way to store this on the client.

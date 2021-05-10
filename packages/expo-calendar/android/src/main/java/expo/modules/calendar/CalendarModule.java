@@ -929,7 +929,11 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
   private ArrayList<String> calendarAllowedRemindersFromDBString(String dbString) {
     ArrayList<String> array = new ArrayList<>();
     for (String constant : dbString.split(",")) {
-      array.add(reminderStringMatchingConstant(Integer.parseInt(constant)));
+      try{
+      	array.add(reminderStringMatchingConstant(Integer.parseInt(constant)));
+      } catch (NumberFormatException e) {
+          Log.e(TAG, "Couldn't convert reminder constant into an int.", e);
+      }
     }
     return array;
   }
@@ -1118,7 +1122,11 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
   private ArrayList<String> calendarAllowedAttendeeTypesFromDBString(String dbString) {
     ArrayList<String> array = new ArrayList<>();
     for (String constant : dbString.split(",")) {
-      array.add(attendeeTypeStringMatchingConstant(Integer.parseInt(constant)));
+      try{
+        array.add(attendeeTypeStringMatchingConstant(Integer.parseInt(constant)));
+      } catch (NumberFormatException e) {
+          Log.e(TAG, "Couldn't convert attendee constant into an int.", e);
+      }
     }
     return array;
   }

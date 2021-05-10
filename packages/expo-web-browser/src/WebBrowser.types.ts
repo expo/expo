@@ -28,9 +28,15 @@ export type WebBrowserOpenOptions = {
   enableDefaultShareMenuItem?: boolean;
   /**
    * Whether browsed website should be shown as separate entry in Android recents/multitasking view.
+   * Requires createTask to be `true` (default).
    * Default: `false`
    */
   showInRecents?: boolean;
+  /**
+   * Whether the browser should open as a new task or open within the existing task.
+   * Default: `true`
+   */
+  createTask?: boolean;
 
   /** iOS only */
   controlsColor?: string;
@@ -56,23 +62,21 @@ export type WebBrowserCustomTabsResults = {
   servicePackages: string[];
 };
 
-export const WebBrowserResultType = {
+export enum WebBrowserResultType {
   /**
    * iOS only
    */
-  CANCEL: 'cancel',
+  CANCEL = 'cancel',
   /**
    * iOS only
    */
-  DISMISS: 'dismiss',
+  DISMISS = 'dismiss',
   /**
    * Android only
    */
-  OPENED: 'opened',
-  LOCKED: 'locked',
-} as const;
-
-export type WebBrowserResultType = typeof WebBrowserResultType[keyof typeof WebBrowserResultType];
+  OPENED = 'opened',
+  LOCKED = 'locked',
+}
 
 export type WebBrowserResult = {
   // cancel and dismiss are iOS only, opened is Android only

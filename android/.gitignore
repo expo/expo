@@ -333,6 +333,7 @@ cmake-build-*/
 
 # Package Files #
 *.jar
+!maven/**/*.jar
 *.nar
 *.zip
 *.tar.gz

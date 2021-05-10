@@ -1,21 +1,17 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
- * <p>
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 package versioned.host.exp.exponent.modules.api.components.viewpager;
 
-import android.util.SparseArray;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReadableArray;
@@ -27,18 +23,16 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
-import com.reactnative.community.viewpager2.widget.ViewPager2;
 import versioned.host.exp.exponent.modules.api.components.viewpager.event.PageScrollEvent;
 import versioned.host.exp.exponent.modules.api.components.viewpager.event.PageScrollStateChangedEvent;
 import versioned.host.exp.exponent.modules.api.components.viewpager.event.PageSelectedEvent;
 
 import java.util.Map;
 
-import static com.reactnative.community.viewpager2.widget.ViewPager2.ORIENTATION_HORIZONTAL;
-import static com.reactnative.community.viewpager2.widget.ViewPager2.SCROLL_STATE_DRAGGING;
-import static com.reactnative.community.viewpager2.widget.ViewPager2.SCROLL_STATE_IDLE;
-import static com.reactnative.community.viewpager2.widget.ViewPager2.SCROLL_STATE_SETTLING;
-import static versioned.host.exp.exponent.modules.api.components.viewpager.ViewPagerFragment.CHILD_VIEW_KEY;
+import static androidx.viewpager2.widget.ViewPager2.ORIENTATION_HORIZONTAL;
+import static androidx.viewpager2.widget.ViewPager2.SCROLL_STATE_DRAGGING;
+import static androidx.viewpager2.widget.ViewPager2.SCROLL_STATE_IDLE;
+import static androidx.viewpager2.widget.ViewPager2.SCROLL_STATE_SETTLING;
 
 public class ReactViewPagerManager extends ViewGroupManager<ViewPager2> {
 
@@ -47,7 +41,6 @@ public class ReactViewPagerManager extends ViewGroupManager<ViewPager2> {
     private static final int COMMAND_SET_PAGE_WITHOUT_ANIMATION = 2;
     private static final int COMMAND_SET_SCROLL_ENABLED = 3;
     private EventDispatcher eventDispatcher;
-    static SparseArray<View> reactChildrenViews = new SparseArray<>();
 
     @NonNull
     @Override
@@ -59,8 +52,10 @@ public class ReactViewPagerManager extends ViewGroupManager<ViewPager2> {
     @Override
     protected ViewPager2 createViewInstance(@NonNull ThemedReactContext reactContext) {
         final ViewPager2 vp = new ViewPager2(reactContext);
-        FragmentAdapter adapter = new FragmentAdapter((FragmentActivity) reactContext.getCurrentActivity());
+        final FragmentAdapter adapter = new FragmentAdapter((FragmentActivity) reactContext.getCurrentActivity());
         vp.setAdapter(adapter);
+        //https://github.com/callstack/react-native-viewpager/issues/183
+        vp.setSaveEnabled(false);
         eventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
         vp.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
@@ -101,12 +96,25 @@ public class ReactViewPagerManager extends ViewGroupManager<ViewPager2> {
         return vp;
     }
 
+    private void setCurrentItem(final ViewPager2 view, int selectedTab, boolean scrollSmooth) {
+        view.post(new Runnable() {
+            @Override
+            public void run() {
+                view.measure(
+                        View.MeasureSpec.makeMeasureSpec(view.getWidth(), View.MeasureSpec.EXACTLY),
+                        View.MeasureSpec.makeMeasureSpec(view.getHeight(), View.MeasureSpec.EXACTLY));
+                view.layout(view.getLeft(), view.getTop(), view.getRight(), view.getBottom());
+            }
+        });
+        view.setCurrentItem(selectedTab, scrollSmooth);
+    }
+
+
     @Override
     public void addView(ViewPager2 parent, View child, int index) {
         if (child == null) {
             return;
         }
-        reactChildrenViews.put(child.getId(), child);
         ((FragmentAdapter) parent.getAdapter()).addFragment(child, index);
     }
 
@@ -118,32 +126,24 @@ public class ReactViewPagerManager extends ViewGroupManager<ViewPager2> {
 
     @Override
     public View getChildAt(ViewPager2 parent, int index) {
-        return ((FragmentAdapter) parent.getAdapter()).getChildAt(index);
+        return ((FragmentAdapter) parent.getAdapter()).getChildViewAt(index);
     }
 
     @Override
     public void removeView(ViewPager2 parent, View view) {
-        reactChildrenViews.remove(view.getId());
         ((FragmentAdapter) parent.getAdapter()).removeFragment(view);
     }
 
 
     public void removeAllViews(ViewPager2 parent) {
+        parent.setUserInputEnabled(false);
         FragmentAdapter adapter = ((FragmentAdapter) parent.getAdapter());
-        for (Fragment fragment : adapter.getChildren()) {
-            int viewID = fragment.getArguments().getInt(CHILD_VIEW_KEY);
-            reactChildrenViews.remove(viewID);
-        }
         adapter.removeAll();
-        parent.setAdapter(null);
     }
 
     @Override
     public void removeViewAt(ViewPager2 parent, int index) {
         FragmentAdapter adapter = ((FragmentAdapter) parent.getAdapter());
-        Fragment fragment = adapter.getChildren().get(index);
-        int viewID = fragment.getArguments().getInt(CHILD_VIEW_KEY);
-        reactChildrenViews.remove(viewID);
         adapter.removeFragmentAt(index);
     }
 
@@ -161,6 +161,11 @@ public class ReactViewPagerManager extends ViewGroupManager<ViewPager2> {
     @ReactProp(name = "orientation")
     public void setOrientation(ViewPager2 viewPager, String value) {
         viewPager.setOrientation(value.equals("vertical") ? ViewPager2.ORIENTATION_VERTICAL : ORIENTATION_HORIZONTAL);
+    }
+
+    @ReactProp(name = "offscreenPageLimit", defaultInt = ViewPager2.OFFSCREEN_PAGE_LIMIT_DEFAULT)
+    public void set(ViewPager2 viewPager, int value) {
+        viewPager.setOffscreenPageLimit(value);
     }
 
     @ReactProp(name = "overScrollMode")
@@ -202,13 +207,13 @@ public class ReactViewPagerManager extends ViewGroupManager<ViewPager2> {
         Assertions.assertNotNull(args);
         switch (commandId) {
             case COMMAND_SET_PAGE: {
-                root.setCurrentItem(args.getInt(0), true);
+                setCurrentItem(root, args.getInt(0), true);
                 eventDispatcher.dispatchEvent(new PageSelectedEvent(root.getId(), args.getInt(0)));
                 return;
 
             }
             case COMMAND_SET_PAGE_WITHOUT_ANIMATION: {
-                root.setCurrentItem(args.getInt(0), false);
+                setCurrentItem(root, args.getInt(0), false);
                 eventDispatcher.dispatchEvent(new PageSelectedEvent(root.getId(), args.getInt(0)));
                 return;
             }
@@ -227,8 +232,25 @@ public class ReactViewPagerManager extends ViewGroupManager<ViewPager2> {
 
     @ReactProp(name = "pageMargin", defaultFloat = 0)
     public void setPageMargin(ViewPager2 pager, float margin) {
-        int pageMargin = (int) PixelUtil.toPixelFromDIP(margin);
-        pager.setPadding(pageMargin, pageMargin, pageMargin, pageMargin);
-    }
+        final int pageMargin = (int) PixelUtil.toPixelFromDIP(margin);
+        final ViewPager2 vp = pager;
 
+        /**
+         * Don't use MarginPageTransformer to be able to support negative margins
+         */
+        pager.setPageTransformer(new ViewPager2.PageTransformer() {
+            @Override
+            public void transformPage(@NonNull View page, float position) {
+                float offset = pageMargin * position;
+
+                if (vp.getOrientation() == ViewPager2.ORIENTATION_HORIZONTAL) {
+                    boolean isRTL = vp.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+
+                    page.setTranslationX(isRTL ? -offset : offset);
+                } else {
+                    page.setTranslationY(offset);
+                }
+            }
+        });
+    }
 }

@@ -6,9 +6,42 @@
 
 ### 🎉 New features
 
+- Added `createTask` (Android) flag for `WebBrowser`. ([#12462](https://github.com/expo/expo/pull/12462) by [@Ackuq](https://github.com/Ackuq))
+
+### 🐛 Bug fixes
+
+- Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
+
+## 9.1.0 — 2021-03-10
+
+### 🎉 New features
+
+- Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
+
+### 🐛 Bug fixes
+
+- Remove peerDependencies and unimodulePeerDependencies from Expo modules. ([#11980](https://github.com/expo/expo/pull/11980) by [@brentvatne](https://github.com/brentvatne))
+
+## 9.0.0 — 2021-01-15
+
+### 🛠 Breaking changes
+
+- Dropped support for iOS 10.0 ([#11344](https://github.com/expo/expo/pull/11344) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Removed `fbjs` dependency ([#11396](https://github.com/expo/expo/pull/11396) by [@cruzach](https://github.com/cruzach))
+
+## 8.6.0 — 2020-11-17
+
+_This version does not introduce any user-facing changes._
+
+## 8.5.0 — 2020-08-18
+
 ### 🐛 Bug fixes
 
 - Removed unncecessary Android dependencies. ([#9538](https://github.com/expo/expo/pull/9538) by [@barthap](https://github.com/barthap))
+- Fixed `openAuthSessionAsync` crashing when cancelled on iOS. ([#9722](https://github.com/expo/expo/pull/9722) by [@barthap](https://github.com/barthap))
 
 ## 8.4.0 — 2020-07-29
 

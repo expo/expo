@@ -174,9 +174,9 @@ async function manipulateWithActionAsync(uri, action, options) {
         originX = clamp(originX, canvas.width);
         originY = clamp(originY, canvas.height);
         // lock sum of crop.
-        width = Math.min(originX + width, canvas.width);
-        height = Math.min(originY + height, canvas.height);
-        if (originX - width === 0 || originY - height === 0) {
+        width = Math.min(originX + width, canvas.width) - originX;
+        height = Math.min(originY + height, canvas.height) - originY;
+        if (width === 0 || height === 0) {
             throw new CodedError('ERR_IMAGE_MANIPULATOR_CROP', 'Crop size must be greater than 0: ' + JSON.stringify(crop, null, 2));
         }
         // change size of canvas.

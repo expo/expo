@@ -1,12 +1,13 @@
 ---
 title: Random
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-random'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-random'
 ---
 
+import APISection from '~/components/plugins/APISection';
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-**`expo-random`** provides a native interface for creating strong random bytes. With `Random` you can create values equivalent to `Node.js` core `crypto.randomBytes` API.
+**`expo-random`** provides a native interface for creating strong random bytes. With `Random` you can create values equivalent to `Node.js` core `crypto.randomBytes` API. `expo-random` also works with `expo-standard-web-crypto`, which implements the W3C Crypto API for generating random bytes.
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -14,55 +15,10 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 <InstallSection packageName="expo-random" />
 
-## Usage
-
-```javascript
-import React from 'react';
-import { View } from 'react-native';
-import * as Random from 'expo-random';
-
-export default class DemoView extends React.Component {
-  async componentDidMount() {
-    const randomBytes = await Random.getRandomBytesAsync(16);
-
-    /* Some crypto operation... */
-  }
-  render() {
-    return <View />;
-  }
-}
-```
-
 ## API
 
 ```js
 import * as Random from 'expo-random';
 ```
 
-## Methods
-
-### `Random.getRandomBytesAsync(byteCount)`
-
-```js
-getRandomBytesAsync(byteCount: number): Promise<Uint8Array>
-```
-
-Generates completely random bytes using native implementations. The `byteCount` property is a `number` indicating the number of bytes to generate in the form of a `Uint8Array`.
-
-**Parameters**
-
-| Name      | Type     | Description                                                                     |
-| --------- | -------- | ------------------------------------------------------------------------------- |
-| byteCount | `number` | A number within the range: **0...1024**. Anything else will throw a `TypeError` |
-
-**Returns**
-
-| Name        | Type                  | Description                                                      |
-| ----------- | --------------------- | ---------------------------------------------------------------- |
-| randomBytes | `Promise<Uint8Array>` | An array of random bytes with the same length as the `byteCount` |
-
-**Example**
-
-```js
-const randomBytes = await Random.getRandomBytesAsync(3);
-```
+<APISection packageName="expo-random" apiName="Random" />
