@@ -22,7 +22,6 @@ import org.unimodules.interfaces.barcodescanner.BarCodeScanner;
 import org.unimodules.interfaces.barcodescanner.BarCodeScannerProvider;
 import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
 import org.unimodules.interfaces.barcodescanner.BarCodeScannerSettings;
-import org.unimodules.interfaces.camera.CameraViewInterface;
 import org.unimodules.interfaces.facedetector.FaceDetector;
 import org.unimodules.interfaces.facedetector.FaceDetectorProvider;
 import org.unimodules.interfaces.permissions.Permissions;
@@ -44,6 +43,7 @@ import expo.modules.camera.tasks.PictureSavedDelegate;
 import expo.modules.camera.tasks.ResolveTakenPictureAsyncTask;
 import expo.modules.camera.utils.FileSystemUtils;
 import expo.modules.camera.utils.ImageDimensions;
+import expo.modules.interfaces.camera.CameraViewInterface;
 
 public class ExpoCameraView extends CameraView implements LifecycleEventListener, BarCodeScannerAsyncTaskDelegate, FaceDetectorAsyncTaskDelegate, PictureSavedDelegate, CameraViewInterface {
   private static final String MUTE_KEY = "mute";

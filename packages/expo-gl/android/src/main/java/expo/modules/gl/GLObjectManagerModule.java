@@ -13,7 +13,8 @@ import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.services.UIManager;
-import org.unimodules.interfaces.camera.CameraViewInterface;
+
+import expo.modules.interfaces.camera.CameraViewInterface;
 
 public class GLObjectManagerModule extends ExportedModule {
   private SparseArray<GLObject> mGLObjects = new SparseArray<>();

@@ -74,12 +74,13 @@ apply from: project(":unimodules-core").file("../unimodules-core.gradle")
 
 dependencies {
   unimodule 'unimodules-core'
+  unimodule 'expo-modules-core'
   unimodule 'unimodules-barcode-scanner-interface'
   unimodule 'unimodules-face-detector-interface'
   unimodule 'unimodules-permissions-interface'
   unimodule 'unimodules-file-system-interface'
   unimodule 'unimodules-image-loader-interface'
-  unimodule 'unimodules-camera-interface'
+
   api "androidx.exifinterface:exifinterface:1.0.0"
   api 'com.google.android:cameraview:1.0.0'
 
