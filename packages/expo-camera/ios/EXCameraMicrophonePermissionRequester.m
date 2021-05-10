@@ -10,7 +10,7 @@
 @implementation EXCameraMicrophonePermissionRequester
 
 + (NSString *)permissionType {
-  return @"camera";
+  return @"microphone";
 }
 
 - (NSDictionary *)getPermissions
