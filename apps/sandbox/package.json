@@ -11,7 +11,6 @@
   },
   "dependencies": {
     "expo": "~41.0.0",
-    "expo-barcode-scanner": "~10.1.2",
     "react": "16.13.1",
     "react-native": "0.63.2"
   },
