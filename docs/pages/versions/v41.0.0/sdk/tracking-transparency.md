@@ -11,7 +11,7 @@ A library for requesting permission to track the user or their device. Examples 
 
 For more information on Apple's new App Tracking Transparency framework, please refer to their [documentation](https://developer.apple.com/app-store/user-privacy-and-data-use/).
 
-<PlatformsSection android emulator ios simulator web />
+<PlatformsSection ios simulator />
 
 ## Installation
 

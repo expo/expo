@@ -37,4 +37,12 @@ export declare function requestTrackingPermissionsAsync(): Promise<PermissionRes
  * ```
  */
 export declare function getTrackingPermissionsAsync(): Promise<PermissionResponse>;
+/**
+ * Returns whether the TrackingTransparency API is available on the current device.
+ *
+ * @returns `boolean`. Currently this is `true` on iOS 14 and above only. On devices where the
+ * Tracking Transparency API is unavailable, the get and request permissions methods will always
+ * resolve to `granted`.
+ */
+export declare function isAvailable(): boolean;
 export { PermissionResponse };

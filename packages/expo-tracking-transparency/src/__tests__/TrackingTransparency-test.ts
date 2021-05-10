@@ -8,4 +8,8 @@ describe('TrackingTransparency', () => {
   it('getPermissionsAsync is defined', async () => {
     expect(TrackingTransparency.getTrackingPermissionsAsync).toBeDefined();
   });
+
+  it('isAvailable is defined', async () => {
+    expect(TrackingTransparency.isAvailable).toBeDefined();
+  });
 });
