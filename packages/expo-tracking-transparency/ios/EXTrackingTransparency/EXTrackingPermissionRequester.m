@@ -1,7 +1,9 @@
-// Copyright 2017-present 650 Industries. All rights reserved.
+// Copyright 2021-present 650 Industries. All rights reserved.
 
 #import <EXTrackingTransparency/EXTrackingPermissionRequester.h>
 #import <AppTrackingTransparency/ATTrackingManager.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXTrackingPermissionRequester
 
@@ -51,3 +53,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END
