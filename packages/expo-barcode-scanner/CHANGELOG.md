@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
+- On iOS removed the requirement for the presence of `NSMicrophoneUsageDescription' key in Info.plist ([#12860](https://github.com/expo/expo/pull/12772) by [@ajsmth](https://github.com/ajsmth))
 
 ## 10.1.2 — 2021-04-13
 
