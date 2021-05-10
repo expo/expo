@@ -1,13 +1,13 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <EXBarCodeScanner/EXBarCodeCameraRequester.h>
+#import <EXCamera/EXCameraMicrophonePermissionRequester.h>
 #import <UMCore/UMDefines.h>
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
 
 #import <AVFoundation/AVFoundation.h>
 
 
-@implementation EXBareCodeCameraRequester
+@implementation EXCameraMicrophonePermissionRequester
 
 + (NSString *)permissionType {
   return @"camera";
@@ -17,12 +17,13 @@
 {
   AVAuthorizationStatus systemStatus;
   UMPermissionStatus status;
-  NSString *cameraUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSCameraUsageDescription"];
-  if (!(cameraUsageDescription)) {
-    UMFatal(UMErrorWithMessage(@"This app is missing 'NSCameraUsageDescription', so video services will fail. Add this entry to your bundle's Info.plist."));
+  NSString *microphoneUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSMicrophoneUsageDescription"];
+    
+  if (!microphoneUsageDescription) {
+    UMFatal(UMErrorWithMessage(@"This app is missing NSMicrophoneUsageDescription, so audio services will fail. Add this entry to your bundle's Info.plist."));
     systemStatus = AVAuthorizationStatusDenied;
   } else {
-    systemStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+    systemStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio];
   }
   switch (systemStatus) {
     case AVAuthorizationStatusAuthorized:
@@ -51,3 +52,5 @@
 }
 
 @end
+
+

@@ -2,6 +2,8 @@
 #import <EXCamera/EXCameraManager.h>
 #import <EXCamera/EXCameraUtils.h>
 #import <EXCamera/EXCameraPermissionRequester.h>
+#import <EXCamera/EXCameraCameraPermissionRequester.h>
+#import <EXCamera/EXCameraMicrophonePermissionRequester.h>
 
 #import <UMCore/UMUIManager.h>
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
@@ -32,6 +34,8 @@ UM_EXPORT_MODULE(ExponentCameraManager);
   _uiManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMUIManager)];
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
   [UMPermissionsMethodsDelegate registerRequesters:@[[EXCameraPermissionRequester new]] withPermissionsManager:_permissionsManager];
+  [UMPermissionsMethodsDelegate registerRequesters:@[[EXCameraCameraPermissionRequester new]] withPermissionsManager:_permissionsManager];
+  [UMPermissionsMethodsDelegate registerRequesters:@[[EXCameraMicrophonePermissionRequester new]] withPermissionsManager:_permissionsManager];
 }
 
 - (UIView *)view
@@ -379,6 +383,51 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
 {
   [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[EXCameraPermissionRequester class]
+                                                               resolve:resolve
+                                                                reject:reject];
+}
+
+
+UM_EXPORT_METHOD_AS(getCameraPermissionsAsync,
+                    getCameraPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+                                                      withRequester:[EXCameraCameraPermissionRequester class]
+                                                            resolve:resolve
+                                                             reject:reject];
+}
+
+
+UM_EXPORT_METHOD_AS(requestCameraPermissionsAsync,
+                    requestCameraPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+                                                         withRequester:[EXCameraCameraPermissionRequester class]
+                                                               resolve:resolve
+                                                                reject:reject];
+}
+
+
+
+UM_EXPORT_METHOD_AS(getMicrophonePermissionsAsync,
+                    getMicrophonePermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+                                                      withRequester:[EXCameraMicrophonePermissionRequester class]
+                                                            resolve:resolve
+                                                             reject:reject];
+}
+
+
+UM_EXPORT_METHOD_AS(requestMicrophonePermissionsAsync,
+                    requestMicrophonePermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+                                                         withRequester:[EXCameraMicrophonePermissionRequester class]
                                                                resolve:resolve
                                                                 reject:reject];
 }
