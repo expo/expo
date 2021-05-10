@@ -60,7 +60,7 @@ A conformant server MUST return a response containing a [manifest body](#manifes
 
 The choice of manifest and headers are dependent on the values of the request headers. A conformant server MUST:
 
-* Return a manifest that describes the most recent update ordered by creation time satisfying all constraints imposed by the [request headers](#manifest-request).
+* Respond with a manifest for the most recent update, ordered by creation time, satisfying all parameters and constraints imposed by the [request headers](#manifest-request). The server MAY use any properties of the request like its headers and source IP address to choose amongst several updates that all satisfy the request's constraints.
 
 ### Manifest Response Headers
 
