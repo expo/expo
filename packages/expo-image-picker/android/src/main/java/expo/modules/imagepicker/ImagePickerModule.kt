@@ -22,6 +22,7 @@ import expo.modules.imagepicker.tasks.ImageResultTask
 import expo.modules.imagepicker.tasks.VideoResultTask
 import org.unimodules.core.ExportedModule
 import org.unimodules.core.ModuleRegistry
+import org.unimodules.core.ModuleRegistryDelegate
 import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ActivityEventListener
 import org.unimodules.core.interfaces.ActivityProvider
@@ -39,7 +40,7 @@ import java.lang.ref.WeakReference
 
 class ImagePickerModule(
   private val mContext: Context,
-  val moduleRegistryPropertyDelegate: ModuleRegistryPropertyDelegate = ModuleRegistryPropertyDelegate(),
+  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate(),
   private val pickerResultStore: PickerResultsStore = PickerResultsStore(mContext)
 ) : ExportedModule(mContext), ActivityEventListener, LifecycleEventListener {
 
@@ -70,8 +71,10 @@ class ImagePickerModule(
       return _experienceActivity.get()
     }
 
+  private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
+
   override fun onCreate(moduleRegistry: ModuleRegistry) {
-    moduleRegistryPropertyDelegate.onCreate(moduleRegistry)
+    moduleRegistryDelegate.onCreate(moduleRegistry)
     mUIManager.registerLifecycleEventListener(this)
   }
 

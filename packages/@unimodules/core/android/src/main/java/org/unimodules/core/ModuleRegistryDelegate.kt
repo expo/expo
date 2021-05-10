@@ -1,10 +1,6 @@
-package expo.modules.imagepicker
+package org.unimodules.core
 
-import org.unimodules.core.ModuleRegistry
-
-inline fun <reified T> ImagePickerModule.moduleRegistry() = moduleRegistryPropertyDelegate.getFromModuleRegistry<T>()
-
-class ModuleRegistryPropertyDelegate {
+class ModuleRegistryDelegate {
   var moduleRegistry: ModuleRegistry? = null
     private set
 
