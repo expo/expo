@@ -5,7 +5,8 @@
     <activity
       android:name="expo.modules.devlauncher.launcher.DevLauncherActivity"
       android:screenOrientation="portrait"
-      android:theme="@style/Theme.DevelopmentClient" />
+      android:theme="@style/Theme.DevelopmentClient"
+      android:launchMode="singleTask" />
   </application>
 
   <queries>

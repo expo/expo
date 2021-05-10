@@ -24,8 +24,8 @@ import expo.modules.devlauncher.launcher.DevLauncherReactActivityDelegateSupplie
 import expo.modules.devlauncher.launcher.DevLauncherRecentlyOpenedAppsRegistry
 import expo.modules.devlauncher.launcher.loaders.DevLauncherExpoAppLoader
 import expo.modules.devlauncher.launcher.loaders.DevLauncherReactNativeAppLoader
-import expo.modules.devlauncher.launcher.manifest.DevLauncherManifestParser
 import expo.modules.devlauncher.launcher.manifest.DevLauncherManifest
+import expo.modules.devlauncher.launcher.manifest.DevLauncherManifestParser
 import expo.modules.devlauncher.launcher.menu.DevLauncherMenuDelegate
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityNOPDelegate
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityRedirectDelegate
@@ -37,8 +37,9 @@ import okhttp3.OkHttpClient
 //  private final String DEV_LAUNCHER_HOST = "10.0.0.175:8090";
 private val DEV_LAUNCHER_HOST: String? = null
 
-private const val NEW_ACTIVITY_FLAGS =
-  Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION
+private const val NEW_ACTIVITY_FLAGS = Intent.FLAG_ACTIVITY_NEW_TASK or
+  Intent.FLAG_ACTIVITY_CLEAR_TASK or
+  Intent.FLAG_ACTIVITY_NO_ANIMATION
 
 private var MenuDelegateWasInitialized = false
 
@@ -54,7 +55,7 @@ class DevLauncherController private constructor(
     private set
   val pendingIntentRegistry = DevLauncherIntentRegistry()
 
-  internal  enum class Mode {
+  internal enum class Mode {
     LAUNCHER, APP
   }
 
