@@ -7,8 +7,9 @@ export const DEFAULT_NSUserTrackingUsageDescription =
 
 const withTrackingTransparency: ConfigPlugin<{
   /**
-   * Sets the iOS `NSUserTrackingUsageDescription` permission message in `Info.plist`. Passing
-   * `false` will skip adding the permission.
+   * Sets the iOS `NSUserTrackingUsageDescription` permission message in `Info.plist`. Omitting a
+   * description will result in using the default permission message; passing in `false` will omit
+   * the `NSUserTrackingUsageDescription` permission from your `Info.plist` entirely.
    * @default 'Allow this app to collect app-related data that can be used for tracking you or your
    * device.'
    */
