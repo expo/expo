@@ -4,7 +4,7 @@ export declare enum UpdateEventType {
     NO_UPDATE_AVAILABLE = "noUpdateAvailable",
     ERROR = "error"
 }
-export declare type Manifest = typeof Constants.manifest;
+export declare type Manifest = typeof Constants.manifest | typeof Constants.manifest2;
 export declare type UpdateCheckResult = {
     isAvailable: false;
 } | {

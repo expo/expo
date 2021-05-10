@@ -36,6 +36,28 @@ export interface WebManifest {
   [key: string]: any;
 }
 
+export interface ManifestAsset {
+  url: string;
+}
+
+/**
+ * A modern manifest.
+ */
+export interface Manifest {
+  id: string;
+  createdAt: string;
+  extras?: {
+    [k: string]: any;
+  };
+  runtimeVersion: string;
+  launchAsset: ManifestAsset;
+  assets: ManifestAsset[];
+  updateMetadata: object;
+}
+
+/**
+ * A classic manifest https://docs.expo.io/guides/how-expo-works/#expo-manifest
+ */
 export interface AppManifest extends ExpoConfig {
   /** Published Apps Only */
   releaseId?: string;
@@ -104,7 +126,8 @@ export interface NativeConstants {
   linkingUri: string;
   nativeAppVersion: string | null;
   nativeBuildVersion: string | null;
-  manifest: AppManifest;
+  manifest: AppManifest | null;
+  manifest2: Manifest | null;
   sessionId: string;
   statusBarHeight: number;
   systemFonts: string[];
@@ -132,5 +155,5 @@ export interface Constants extends NativeConstants {
    * In certain cases accessing manifest via this property
    * suppresses important warning about missing manifest.
    */
-  __unsafeNoWarnManifest: AppManifest;
+  __unsafeNoWarnManifest?: AppManifest;
 }
