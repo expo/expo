@@ -10,7 +10,6 @@ on:
         description: 'type "release-google-play" to confirm release to Google Play'
         required: false
   pull_request:
-    branches: [master]
     paths:
       - .github/workflows/client-android.yml
       - secrets/**

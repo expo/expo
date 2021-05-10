@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import inquirer from 'inquirer';
-import semver from 'semver';
+import semver, { ReleaseType } from 'semver';
 
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
@@ -108,7 +108,7 @@ async function selectPackageToPublishAsync(parcel: Parcel): Promise<boolean> {
  * Creates an object with possible incrementations of given version.
  */
 function incrementVersion(version: string): Record<string, string> {
-  const releaseTypes = ['major', 'minor', 'patch'];
+  const releaseTypes: ReleaseType[] = ['major', 'minor', 'patch'];
   return releaseTypes.reduce((acc, type) => {
     acc[type] = semver.inc(version, type);
     return acc;

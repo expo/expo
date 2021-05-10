@@ -11,7 +11,6 @@ on:
       - packages/**
       - yarn.lock
   pull_request:
-    branches: [master]
     paths:
       - .github/workflows/test-suite.yml
       - apps/bare-expo/**
@@ -46,7 +45,6 @@ jobs:
             react-native-lab/react-native/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
       - name: 🧶 Install node modules in root dir
-        if: steps.node-modules-cache.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
       - run: yarn global add expo-cli
       - run: yarn test:web
@@ -95,7 +93,6 @@ jobs:
             react-native-lab/react-native/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
       - name: 🧶 Install node modules in root dir
-        if: steps.node-modules-cache.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: ♻️ Restore apps/bare-expo/ios/Pods from cache
         uses: actions/cache@v2
@@ -109,6 +106,12 @@ jobs:
         run: git diff Podfile.lock Pods/Manifest.lock
         working-directory: apps/bare-expo/ios
         continue-on-error: true
+      - name: ⚛️ Display React Native config
+        run: yarn react-native config
+        working-directory: apps/bare-expo
+      - name: 🌳 Display pod environment
+        run: pod env
+        working-directory: apps/bare-expo/ios
       - name: 🥥 Install pods in apps/bare-expo/ios
         run: pod install
         if: steps.pods-cache.outputs.cache-hit != 'true' || hashFiles('apps/bare-expo/ios/Podfile.lock') != hashFiles('apps/bare-expo/ios/Pods/Manifest.lock')

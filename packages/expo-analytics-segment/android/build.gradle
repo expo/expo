@@ -1,12 +1,23 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
 version = '10.1.1'
 
-// Simple helper that allows the root project to override versions declared by this library.
-def safeExtGet(prop, fallback) {
-  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+buildscript {
+  // Simple helper that allows the root project to override versions declared by this library.
+  ext.safeExtGet = { prop, fallback ->
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+  }
+
+  repositories {
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.4.21')}")
+  }
 }
 
 // Upload android library to maven with javadoc and android sources
@@ -61,4 +72,6 @@ dependencies {
   unimodule "unimodules-constants-interface"
   api 'com.segment.analytics.android:analytics:4.8.2'
   api 'com.segment.analytics.android.integrations:firebase:1.2.0'
+
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
 }

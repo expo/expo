@@ -1,4 +1,4 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
 import * as React from 'react';
 
@@ -29,7 +29,12 @@ const STYLES_BUTTON = css`
 `;
 
 export const CreateAppButton: React.FC<{ href: string; name: string }> = ({ href, name }) => (
-  <a css={STYLES_BUTTON} className="snack-inline-example-button" href={href}>
+  <a
+    css={STYLES_BUTTON}
+    className="snack-inline-example-button"
+    href={href}
+    target="_blank"
+    rel="noreferrer">
     Create {name} App
   </a>
 );

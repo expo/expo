@@ -6,6 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("@expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const withDevLauncherAppDelegate_1 = require("./withDevLauncherAppDelegate");
+const pkg = require('expo-dev-launcher/package.json');
 const DEV_LAUNCHER_ANDROID_IMPORT = 'expo.modules.devlauncher.DevLauncherController';
 const DEV_LAUNCHER_ON_NEW_INTENT = `
   @Override
@@ -19,49 +21,6 @@ const DEV_LAUNCHER_ON_NEW_INTENT = `
 const DEV_LAUNCHER_WRAPPED_ACTIVITY_DELEGATE = `DevLauncherController.wrapReactActivityDelegate(this, () -> $1);`;
 const DEV_LAUNCHER_ANDROID_INIT = 'DevLauncherController.initialize(this, getReactNativeHost());';
 const DEV_LAUNCHER_POD_IMPORT = "pod 'expo-dev-menu', path: '../node_modules/expo-dev-menu', :configurations => :debug";
-const DEV_LAUNCHER_APP_DELEGATE_SOURCE_FOR_URL = `  #if defined(EX_DEV_LAUNCHER_ENABLED)
-return [[EXDevLauncherController sharedInstance] sourceUrl];
-#else
-return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
-#endif`;
-const DEV_LAUNCHER_APP_DELEGATE_ON_DEEP_LINK = `#if defined(EX_DEV_LAUNCHER_ENABLED)
-if ([EXDevLauncherController.sharedInstance onDeepLink:url options:options]) {
-return true;
-}
-#endif
-return [RCTLinkingManager application:application openURL:url options:options];`;
-const DEV_LAUNCHER_APP_DELEGATE_IOS_IMPORT = `
-#if defined(EX_DEV_LAUNCHER_ENABLED)
-#include <EXDevLauncher/EXDevLauncherController.h>
-#endif`;
-const DEV_LAUNCHER_APP_DELEGATE_CONTROLLER_DELEGATE = `
-#if defined(EX_DEV_LAUNCHER_ENABLED)
-@implementation AppDelegate (EXDevLauncherControllerDelegate)
-
-- (void)devLauncherController:(EXDevLauncherController *)developmentClientController
-      didStartWithSuccess:(BOOL)success
-{
-developmentClientController.appBridge = [self initializeReactNativeApp];
-EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
-[splashScreenService showSplashScreenFor:self.window.rootViewController];
-}
-
-@end
-#endif
-`;
-const DEV_LAUNCHER_APP_DELEGATE_INIT = `#if defined(EX_DEV_LAUNCHER_ENABLED)
-      EXDevLauncherController *contoller = [EXDevLauncherController sharedInstance];
-      [contoller startWithWindow:self.window delegate:self launchOptions:launchOptions];
-    #else
-      [self initializeReactNativeApp];
-    #endif`;
-const DEV_LAUNCHER_APP_DELEGATE_BRIDGE = `#if defined(EX_DEV_LAUNCHER_ENABLED)
-  NSDictionary *launchOptions = [EXDevLauncherController.sharedInstance getLaunchOptions];
-#else
-  NSDictionary *launchOptions = self.launchOptions;
-#endif
-
-  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];`;
 async function readFileAsync(path) {
     return fs_1.default.promises.readFile(path, 'utf8');
 }
@@ -97,7 +56,7 @@ async function editMainApplication(config, action) {
         return await saveFileAsync(mainApplicationPath, mainApplication);
     }
     catch (e) {
-        config_plugins_1.WarningAggregator.addWarningIOS('ios-devMenu', `Couldn't modified MainApplication.java - ${e}.`);
+        config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', `Couldn't modified MainApplication.java - ${e}.`);
     }
 }
 async function editPodfile(config, action) {
@@ -107,17 +66,7 @@ async function editPodfile(config, action) {
         return await saveFileAsync(podfilePath, podfile);
     }
     catch (e) {
-        config_plugins_1.WarningAggregator.addWarningIOS('ios-devMenu', `Couldn't modified AppDelegate.m - ${e}.`);
-    }
-}
-async function editAppDelegate(config, action) {
-    const appDelegatePath = path_1.default.join(config.modRequest.platformProjectRoot, config.modRequest.projectName, 'AppDelegate.m');
-    try {
-        const appDelegate = action(await readFileAsync(appDelegatePath));
-        return await saveFileAsync(appDelegatePath, appDelegate);
-    }
-    catch (e) {
-        config_plugins_1.WarningAggregator.addWarningIOS('ios-devMenu', `Couldn't modified AppDelegate.m - ${e}.`);
+        config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', `Couldn't modified AppDelegate.m - ${e}.`);
     }
 }
 const withDevLauncherApplication = config => {
@@ -154,7 +103,7 @@ const withDevLauncherActivity = config => {
             config.modResults.contents = content;
         }
         else {
-            config_plugins_1.WarningAggregator.addWarningAndroid('android-devLauncher', `Cannot automatically configure MainActivity if it's not java`);
+            config_plugins_1.WarningAggregator.addWarningAndroid('expo-dev-launcher', `Cannot automatically configure MainActivity if it's not java`);
         }
         return config;
     });
@@ -165,39 +114,13 @@ const withDevLauncherPodfile = config => {
         async (config) => {
             await editPodfile(config, podfile => {
                 podfile = podfile.replace("platform :ios, '10.0'", "platform :ios, '11.0'");
-                podfile = addLines(podfile, 'use_react_native', 0, [`  ${DEV_LAUNCHER_POD_IMPORT}`]);
+                // Match both variations of Ruby config:
+                // unknown: pod 'expo-dev-menu', path: '../node_modules/expo-dev-menu', :configurations => :debug
+                // Rubocop: pod 'expo-dev-menu', path: '../node_modules/expo-dev-menu', configurations: :debug
+                if (!podfile.match(/pod ['"]expo-dev-menu['"],\s?path: ['"]\.\.\/node_modules\/expo-dev-menu['"],\s?:?configurations:?\s(?:=>\s)?:debug/)) {
+                    podfile = addLines(podfile, 'use_react_native', 0, [`  ${DEV_LAUNCHER_POD_IMPORT}`]);
+                }
                 return podfile;
-            });
-            return config;
-        },
-    ]);
-};
-const withDevLauncherAppDelegate = config => {
-    return config_plugins_1.withDangerousMod(config, [
-        'ios',
-        async (config) => {
-            await editAppDelegate(config, appDelegate => {
-                if (!appDelegate.includes(DEV_LAUNCHER_APP_DELEGATE_IOS_IMPORT)) {
-                    const lines = appDelegate.split('\n');
-                    lines.splice(1, 0, DEV_LAUNCHER_APP_DELEGATE_IOS_IMPORT);
-                    appDelegate = lines.join('\n');
-                }
-                if (!appDelegate.includes(DEV_LAUNCHER_APP_DELEGATE_INIT)) {
-                    appDelegate = appDelegate.replace(/(didFinishLaunchingWithOptions([^}])*)\[self initializeReactNativeApp\];(([^}])*})/, `$1${DEV_LAUNCHER_APP_DELEGATE_INIT}$3`);
-                }
-                if (!appDelegate.includes(DEV_LAUNCHER_APP_DELEGATE_BRIDGE)) {
-                    appDelegate = appDelegate.replace('RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:self.launchOptions];', DEV_LAUNCHER_APP_DELEGATE_BRIDGE);
-                }
-                if (!appDelegate.includes(DEV_LAUNCHER_APP_DELEGATE_SOURCE_FOR_URL)) {
-                    appDelegate = appDelegate.replace('return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];', DEV_LAUNCHER_APP_DELEGATE_SOURCE_FOR_URL);
-                }
-                if (!appDelegate.includes(DEV_LAUNCHER_APP_DELEGATE_ON_DEEP_LINK)) {
-                    appDelegate = appDelegate.replace('return [RCTLinkingManager application:application openURL:url options:options];', DEV_LAUNCHER_APP_DELEGATE_ON_DEEP_LINK);
-                }
-                if (!appDelegate.includes(DEV_LAUNCHER_APP_DELEGATE_CONTROLLER_DELEGATE)) {
-                    appDelegate += DEV_LAUNCHER_APP_DELEGATE_CONTROLLER_DELEGATE;
-                }
-                return appDelegate;
             });
             return config;
         },
@@ -207,7 +130,7 @@ const withDevLauncher = (config) => {
     config = withDevLauncherActivity(config);
     config = withDevLauncherApplication(config);
     config = withDevLauncherPodfile(config);
-    config = withDevLauncherAppDelegate(config);
+    config = withDevLauncherAppDelegate_1.withDevLauncherAppDelegate(config);
     return config;
 };
-exports.default = withDevLauncher;
+exports.default = config_plugins_1.createRunOncePlugin(withDevLauncher, pkg.name, pkg.version);

@@ -97,8 +97,16 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
         },
       },
       {
+        // Objective-C only, see the comment in the rule below.
+        paths: '*.{h,m,mm}',
         find: /r(eactTag|eactSubviews|eactSuperview|eactViewController|eactSetFrame|eactAddControllerToClosestParent|eactZIndex)/gi,
         replaceWith: `${prefix}R$1`,
+      },
+      {
+        // Swift translates uppercased letters at the beginning of the method name to lowercased letters, we must comply with it.
+        paths: '*.swift',
+        find: /r(eactTag|eactSubviews|eactSuperview|eactViewController|eactSetFrame|eactAddControllerToClosestParent|eactZIndex)/gi,
+        replaceWith: (_, p1) => `${prefix.toLowerCase()}R${p1}`,
       },
       {
         find: /<jsi\/(.*)\.h>/,
@@ -117,8 +125,9 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
         replaceWith: `is${prefix}ReactRootView`,
       },
       {
+        // Prefix only unindented `@objc` (notice `^` and `m` flag in the pattern). Method names shouldn't get prefixed.
         paths: '*.swift',
-        find: /@objc\(([^)]+)\)/g,
+        find: /^@objc\(([^)]+)\)/gm,
         replaceWith: `@objc(${prefix}$1)`,
       },
       {

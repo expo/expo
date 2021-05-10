@@ -31,9 +31,8 @@
   EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
 
   NSURLRequest *actual = [downloader createManifestRequestWithURL:[NSURL URLWithString:@"https://exp.host/@test/test"] extraHeaders:nil];
-  XCTAssertEqual(NSURLRequestReloadIgnoringCacheData, actual.cachePolicy);
-  // this fails, seems like this header isn't actually set on the object until later
-  // XCTAssertEqualObjects(@"no-cache", [actual valueForHTTPHeaderField:@"Cache-Control"]);
+  XCTAssertEqual(NSURLRequestUseProtocolCachePolicy, actual.cachePolicy);
+  XCTAssertEqualObjects(nil, [actual valueForHTTPHeaderField:@"Cache-Control"]);
 }
 
 - (void)testCacheControl_NewManifest

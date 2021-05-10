@@ -8,6 +8,16 @@
 
 ### 🐛 Bug fixes
 
+## 2.2.3 — 2021-04-13
+
+_This version does not introduce any user-facing changes._
+
+## 2.2.2 — 2021-04-09
+
+### 🎉 New features
+
+- Add internal ability to skip warnings for scheme resolution. ([#12464](https://github.com/expo/expo/pull/12464) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 2.2.1 — 2021-03-30
 
 ### 🐛 Bug fixes

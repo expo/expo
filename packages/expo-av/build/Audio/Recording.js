@@ -151,7 +151,6 @@ export class Recording {
                 }
             }
         };
-        // Note that all calls automatically call onRecordingStatusUpdate as a side effect.
         // Get status API
         this.getStatusAsync = async () => {
             // Automatically calls onRecordingStatusUpdate.
@@ -295,4 +294,24 @@ export class Recording {
         { uri: this._uri }, initialStatus, onPlaybackStatusUpdate, false);
     }
 }
+// Note that all calls automatically call onRecordingStatusUpdate as a side effect.
+Recording.createAsync = async (options = RECORDING_OPTIONS_PRESET_LOW_QUALITY, onRecordingStatusUpdate = null, progressUpdateIntervalMillis = null) => {
+    const recording = new Recording();
+    if (progressUpdateIntervalMillis) {
+        recording._progressUpdateIntervalMillis = progressUpdateIntervalMillis;
+    }
+    recording.setOnRecordingStatusUpdate(onRecordingStatusUpdate);
+    await recording.prepareToRecordAsync({
+        ...options,
+        keepAudioActiveHint: true,
+    });
+    try {
+        const status = await recording.startAsync();
+        return { recording, status };
+    }
+    catch (err) {
+        recording.stopAndUnloadAsync();
+        throw err;
+    }
+};
 //# sourceMappingURL=Recording.js.map

@@ -13,7 +13,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Installation
 
-<InstallSection packageName="react-native-maps" href="https://github.com/react-native-community/react-native-maps" />
+<InstallSection packageName="react-native-maps" href="https://github.com/react-native-maps/react-native-maps/blob/master/docs/installation.md" />
 
 ## Usage
 
@@ -52,73 +52,66 @@ const styles = StyleSheet.create({
 
 ## Configuration
 
-### Deploying to a standalone app on Android
+No additional configuration is necessary to use `react-native-maps` in Expo Go. However, once you want to deploy your standalone app you should follow instructions below.
 
-If you have already integrated Google Sign In into your standalone app, this is very easy. Otherwise, there are some additional steps.
+## Deploying Google Maps to an Android standalone app
 
-- **If you already have Google Sign In configured**
-  1.  Open your browser to the [Google API Manager](https://console.developers.google.com/apis).
-  2.  Select your project and enable the **Google Maps SDK for Android**
-  3.  In `app.json`, copy the API key from `android.config.googleSignIn` to `android.config.googleMaps.apiKey`.
-  4.  Rebuild your standalone app.
-- **If you have not configured Google Sign In**
-  1.  Build your app, take note of your Android package name (eg: in _app.json_, the value of `android.package`)
-  2.  Open your browser to the [Google API Manager](https://console.developers.google.com/apis) and create a project.
-  3.  Once it's created, go to the project and enable the **Maps SDK for Android**
-  4.  Go to [Google's credential manager](https://console.developers.google.com/apis/credentials) and click **Create Credentials**, then **API Key**.
-  5.  In the modal that popped up, click **RESTRICT KEY**.
-  6.  Under **Key restrictions** → **Application restrictions**, choose the **Android apps** radio button.
-  7.  Click the **+ Add package name and fingerprint** button.
-  8.  Add your `android.package` value from step #1 to the Package name field.
-  9.  Run `expo fetch:android:hashes`.
-  10. Copy `Google Certificate Fingerprint` from the output from step 9 and insert it in the "SHA-1 certificate fingerprint" field and click **Done**.
-  11. Copy the **API Key** value from the Credentials page into your `app.json` under the `android.config.googleMaps.apiKey` field. [See an example diff](https://github.com/brentvatne/growler-prowler/commit/3496e69b14adb21eb2025ef9e0719c2edbef2aa2).
-  12. Press `Save` and then rebuild the app like in step 1.
+> If you've already registered a project for another Google service on Android, such as Google Sign In, you enable the **Maps SDK for Android** on your project and jump to step 4.
 
-#### Deploying to the Google Play Store
+#### 1. Register a Google Cloud API project and enable the Maps SDK for Android
 
-Since your app is most likely using App Signing by Google Play, you will need to grab their app signing certificate in production rather than the upload certificate returned by `expo fetch:android:hashes`. To do this:
+- Open your browser to the [Google API Manager](https://console.developers.google.com/apis) and create a project.
+- Once it's created, go to the project and enable the **Maps SDK for Android**
 
-1. Go to [Play Console](https://play.google.com/console) → (your app) → Release management → App Signing <sup>[\*\*](#beta-console)</sup>
-2. Copy the value of _SHA-1 Certificate Fingerprint_
-3. Go to [Google API Dashboard](https://console.developers.google.com/apis/) → (your project) → Credentials
-4. Select the appropriate "API keys" entry
-5. Under **Key restrictions** → **Application restrictions**, ensure that the **Android apps** radio button is chosen.
-6. Add or replace the **SHA-1 Certificate Fingerprint** with the value copied in step #2
-7. Click **Done** and then click **Save**
+#### 2. Have your app's SHA-1 certificate fingerprint ready
 
-<a name="beta-console"><sup>\*\*</sup></a> : _In the new Play Console (currently in Beta), you would go to Play Console → (your app) → App Signing_
+- **If you are deploying your app to the Google Play Store**, you will need to have [created a standalone app](../../../distribution/building-standalone-apps.md) and [uploaded it to Google Play](../../../distribution/app-stores.md) at least once in order to have Google generate your app signing credentials.
+  - Go to the [Google Play Console](https://play.google.com/console) → (your app) → Setup → App Integrity
+  - Copy the value of _SHA-1 certificate fingerprint_
+- **If you are sideloading your APK or deploying it to another store**, you will need to have [created a standalone app](../../../distribution/building-standalone-apps.md), then run `expo fetch:android:hashes` and copy the _Google Certificate Fingerprint_.
 
-### Deploying Google Maps to a standalone app on iOS
+#### 3. Create an API key
 
-Apple Maps will work with no extra configuration. For Google Maps:
+- Go to [Google Cloud Credential manager](https://console.cloud.google.com/apis/credentials) and click **Create Credentials**, then **API Key**.
+- In the modal, click **Restrict Key**.
+- Under **Key restrictions** → **Application restrictions**, ensure that the **Android apps** radio button is chosen.
+- Click the **+ Add package name and fingerprint** button.
+- Add your Android package name from `app.json` to the package name field.
+- Add or replace the **SHA-1 certificate fingerprint** with the value from step 2.
+- Click **Done** and then click **Save**
 
-1.  Open your browser to the [Google API Manager](https://console.developers.google.com/apis) and create a project, or select your existing project if you've already made one for this app.
-2.  Go to the project and enable the **Google Maps SDK for iOS**
-3.  Go back to <https://console.developers.google.com/apis/credentials> and click **Create Credentials**, then **API Key**.
-4.  In the modal that popped up, click **RESTRICT KEY**.
-5.  Choose the **iOS apps** radio button under **Key restriction**.
-6.  Under **Accept requests from an iOS application with one of these bundle identifiers**, click the **Add an item** button.
-7.  Add your `ios.bundleIdentifier` from `app.json` (eg: `ca.brentvatne.growlerprowler`) to the bundle ID field.
-8.  Copy the API key (the first text input on the page) into `app.json` under the `ios.config.googleMapsApiKey` field.
-9.  Press `Save` and then rebuild the app.
-10. In your code, import `{ PROVIDER_GOOGLE }` from `react-native-maps` and add the property `provider=PROVIDER_GOOGLE` to your `<MapView>`. This property works on both iOS and Android.
+#### 4. Add the API key to your project
 
-**Note:** This can also be accessed through your app's [Constants](../sdk/constants.md#constantsmanifest) (via `Constants.manifest.ios.config.googleMapsApiKey`) if you'd prefer not to have the API key in your code.
+- Copy your **API Key** into your `app.json` under the `android.config.googleMaps.apiKey` field.
+- Rebuild the app binary and re-submit to Google Play or sideload it (depending on how you configured your API key) to test that the configuration was successful.
 
-### Deploying Google Maps to bare for iOS
+## Deploying Google Maps to an iOS standalone app
 
-If you want to add MapView with Google Maps to a bare (ejected) project on iOS, you may need to manually provide a key by calling:
+> If you've already registered a project for another Google service on iOS, such as Google Sign In, you enable the **Maps SDK for iOS** on your project and jump to step 3.
 
-```
-[GMSServices provideApiKey:@"your api key"]
-```
+#### 1. Register a Google Cloud API project and enable the Maps SDK for Android
 
-Alternatively, you can provide the `GMSApiKey` key in your app's `Info.plist`. If you ejected after already configuring Google Maps, the `eject` command may have already provided this for you.
+- Open your browser to the [Google API Manager](https://console.developers.google.com/apis) and create a project.
+- Once it's created, go to the project and enable the **Maps SDK for iOS**
 
-### Web Setup
+#### 2. Create an API key
 
-> Web is experimental! You may need to add the web target to your Expo app.
+- Go to [Google Cloud Credential manager](https://console.cloud.google.com/apis/credentials) and click **Create Credentials**, then **API Key**.
+- In the modal, click **Restrict Key**.
+- Choose the **iOS apps** radio button under **Key restriction**.
+- Under **Accept requests from an iOS application with one of these bundle identifiers**, click the **Add an item** button.
+- Add your `ios.bundleIdentifier` from `app.json` eg: `com.company.myapp`) to the bundle ID field.
+- Click **Done** and then click **Save**
+
+#### 3. Add the API key to your project
+
+- Copy your API key into `app.json` under the `ios.config.googleMapsApiKey` field.
+- In your code, import `{ PROVIDER_GOOGLE }` from `react-native-maps` and add the property `provider=PROVIDER_GOOGLE` to your `<MapView>`. This property works on both iOS and Android.
+- Rebuild the app binary. An easy way to test that the configuration was successful is to do a simulator build.
+
+## Configuring for web
+
+> Web is experimental! We do not recommend using this library on web yet.
 
 To use this in web, add the following script to your `web/index.html`. This script may already be present, if this is the case, just replace the `API_KEY` with your Google Maps API key which you can obtain here: [Google Maps: Get API key](https://developers.google.com/maps/documentation/javascript/get-api-key)
 

@@ -14,10 +14,8 @@ import { DiscoveryDocument } from './Discovery';
 import { AuthError } from './Errors';
 import * as PKCE from './PKCE';
 import * as QueryParams from './QueryParams';
-import { getSessionUrlProvider } from './SessionUrlProvider';
+import sessionUrlProvider from './SessionUrlProvider';
 import { TokenResponse } from './TokenRequest';
-
-const sessionUrlProvider = getSessionUrlProvider();
 
 let _authLock: boolean = false;
 
@@ -121,7 +119,7 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
    */
   async promptAsync(
     discovery: AuthDiscoveryDocument,
-    { url, ...options }: AuthRequestPromptOptions = {}
+    { url, proxyOptions, ...options }: AuthRequestPromptOptions = {}
   ): Promise<AuthSessionResult> {
     if (!url) {
       if (!this.url) {
@@ -144,7 +142,7 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
     let startUrl: string = url!;
     let returnUrl: string = this.redirectUri;
     if (options.useProxy) {
-      returnUrl = sessionUrlProvider.getDefaultReturnUrl();
+      returnUrl = sessionUrlProvider.getDefaultReturnUrl(proxyOptions?.path, proxyOptions);
       startUrl = sessionUrlProvider.getStartUrl(url, returnUrl);
     }
     // Prevent multiple sessions from running at the same time, WebBrowser doesn't

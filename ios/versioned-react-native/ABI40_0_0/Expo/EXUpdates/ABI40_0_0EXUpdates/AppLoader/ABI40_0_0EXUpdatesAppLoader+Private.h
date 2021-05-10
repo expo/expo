@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSURL *directory;
 @property (nonatomic, strong) ABI40_0_0EXUpdatesUpdate *updateManifest;
 @property (nonatomic, copy) ABI40_0_0EXUpdatesAppLoaderManifestBlock manifestBlock;
+@property (nonatomic, copy) ABI40_0_0EXUpdatesAppLoaderAssetBlock assetBlock;
 @property (nonatomic, copy) ABI40_0_0EXUpdatesAppLoaderSuccessBlock successBlock;
 @property (nonatomic, copy) ABI40_0_0EXUpdatesAppLoaderErrorBlock errorBlock;
 

@@ -9,8 +9,6 @@
 #import <React/RCTAppearance.h>
 #import <React/RCTConstants.h>
 
-#import "EXDevLauncherBundle.h"
-#import "EXDevLauncherBundleSource.h"
 #import "EXDevLauncherRCTBridge.h"
 #import "EXDevLauncherManifestParser.h"
 #import "EXDevLauncherLoadingView.h"
@@ -56,7 +54,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
 {
   return @[
-    [[RCTDevMenu alloc] init],
+    (id<RCTBridgeModule>)[[RCTDevMenu alloc] init],
     [[RCTAsyncLocalStorage alloc] init],
     [[EXDevLauncherLoadingView alloc] init]
   ];
@@ -69,32 +67,16 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   return nil;
 }
 
-#ifdef DEV_LAUNCHER_URL
-
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
+#ifdef DEV_LAUNCHER_URL
   // LAN url for developing launcher JS
   return [NSURL URLWithString:@(DEV_LAUNCHER_URL)];
-}
-
 #else
-
-- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
-{
-  return [NSURL URLWithString:fakeLauncherBundleUrl];
-}
-
-- (void)loadSourceForBridge:(RCTBridge *)bridge withBlock:(RCTSourceLoadBlock)loadCallback
-{
-  NSData *data = [NSData dataWithBytesNoCopy:EXDevLauncherBundle
-                                      length:EXDevLauncherBundleLength
-                                freeWhenDone:NO];
-  loadCallback(nil, EXDevLauncherBundleSourceCreate([NSURL URLWithString:fakeLauncherBundleUrl],
-                                                          data,
-                                                          EXDevLauncherBundleLength));
-}
-
+  NSURL *bundleURL = [[NSBundle mainBundle] URLForResource:@"EXDevLauncher" withExtension:@"bundle"];
+  return [[NSBundle bundleWithURL:bundleURL] URLForResource:@"main" withExtension:@"jsbundle"];
 #endif
+}
 
 - (NSDictionary *)recentlyOpenedApps
 {
@@ -152,7 +134,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
                                                               #endif
                                             }];
 
-  [self _ensureUserInterfaceStyleIsInSyncWithViewController:rootView];
+  [self _ensureUserInterfaceStyleIsInSyncWithTraitEnv:rootView];
   
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(onAppContentDidAppear)
@@ -176,7 +158,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   NSURL *appUrl = [EXDevLauncherURLHelper getAppURLFromDevLauncherURL:url];
   if (appUrl) {
     [self loadApp:appUrl onSuccess:nil onError:^(NSError *error) {
-      NSLog(error.description);
+      NSLog(@"%@", error.description);
     }];
     return true;
   }
@@ -195,7 +177,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   return true;
 }
 
-- (void)loadApp:(NSURL *)expoUrl onSuccess:(void (^)())onSuccess onError:(void (^)(NSError *error))onError
+- (void)loadApp:(NSURL *)expoUrl onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError
 {
   NSURL *url = [EXDevLauncherURLHelper changeURLScheme:expoUrl to:@"http"];
   
@@ -215,17 +197,23 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     }
   }
     
-  EXDevLauncherManifestParser *manifestParser = [[EXDevLauncherManifestParser alloc] initWithURL:url session:[NSURLSession sharedSession]];
+EXDevLauncherManifestParser *manifestParser = [[EXDevLauncherManifestParser alloc] initWithURL:url session:[NSURLSession sharedSession]];
+  __weak __typeof(self) weakSelf = self;
   [manifestParser tryToParseManifest:^(EXDevLauncherManifest * _Nullable manifest) {
+    if (!weakSelf) {
+      return;
+    }
+    __typeof(self) self = weakSelf;
+    
     NSURL *bundleUrl = [NSURL URLWithString:manifest.bundleUrl];
     
-    [_recentlyOpenedAppsRegistry appWasOpened:[expoUrl absoluteString] name:manifest.name];
+    [self.recentlyOpenedAppsRegistry appWasOpened:[expoUrl absoluteString] name:manifest.name];
     [self _initApp:bundleUrl manifest:manifest];
     if (onSuccess) {
       onSuccess();
     }
   } onInvalidManifestURL:^{
-    [_recentlyOpenedAppsRegistry appWasOpened:[expoUrl absoluteString] name:nil];
+    [self.recentlyOpenedAppsRegistry appWasOpened:[expoUrl absoluteString] name:nil];
     if ([url.path isEqual:@"/"] || [url.path isEqual:@""]) {
       [self _initApp:[NSURL URLWithString:@"index.bundle?platform=ios&dev=true&minify=false" relativeToURL:url] manifest:nil];
     } else {
@@ -244,7 +232,13 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   __block UIInterfaceOrientation orientation = manifest.orientation;
   __block UIColor *backgroundColor = manifest.backgroundColor;
   
+  __weak __typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
+    if (!weakSelf) {
+      return;
+    }
+    __typeof(self) self = weakSelf;
+    
     self.sourceUrl = bundleUrl;
     
     if (@available(iOS 12, *)) {
@@ -254,22 +248,24 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
       // RNC appearance checks the global trait collection and doesn't have another way to override the user interface.
       // So we swap `currentTraitCollection` with one from the root view controller.
       // Note that the root view controller will have the correct value of `userInterfaceStyle`.
-      if (manifest.userInterfaceStyle != UIUserInterfaceStyleUnspecified) {
-        UITraitCollection.currentTraitCollection = [_window.rootViewController.traitCollection copy];
+      if (@available(iOS 13.0, *)) {
+        if (manifest.userInterfaceStyle != UIUserInterfaceStyleUnspecified) {
+          UITraitCollection.currentTraitCollection = [self.window.rootViewController.traitCollection copy];
+        }
       }
     }
     
     [self.delegate devLauncherController:self didStartWithSuccess:YES];
-    [self _maybeInitDevMenuDelegate:_appBridge];
+    [self _maybeInitDevMenuDelegate:self.appBridge];
 
-    [self _ensureUserInterfaceStyleIsInSyncWithViewController:_window.rootViewController];
+    [self _ensureUserInterfaceStyleIsInSyncWithTraitEnv:self.window.rootViewController];
 
     [[UIDevice currentDevice] setValue:@(orientation) forKey:@"orientation"];
     [UIViewController attemptRotationToDeviceOrientation];
     
     if (backgroundColor) {
-      _window.rootViewController.view.backgroundColor = backgroundColor;
-      _window.backgroundColor = backgroundColor;
+      self.window.rootViewController.view.backgroundColor = backgroundColor;
+      self.window.backgroundColor = backgroundColor;
     }
   });
 }
@@ -302,12 +298,12 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 /**
  * We need that function to sync the dev-menu user interface with the main application.
  */
-- (void)_ensureUserInterfaceStyleIsInSyncWithViewController:(UIViewController *)controller
+- (void)_ensureUserInterfaceStyleIsInSyncWithTraitEnv:(id<UITraitEnvironment>)env
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTUserInterfaceStyleDidChangeNotification
-                                                      object:controller
+                                                      object:env
                                                     userInfo:@{
-                                                      RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey : controller.traitCollection
+                                                      RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey : env.traitCollection
                                                     }];
 }
 

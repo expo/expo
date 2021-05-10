@@ -1,5 +1,6 @@
 package abi40_0_0.expo.modules.payments.stripe;
 import android.app.Activity;
+import android.util.Log;
 import android.content.Intent;
 import androidx.annotation.NonNull;
 
@@ -22,12 +23,14 @@ import com.google.android.gms.wallet.ShippingAddressRequirements;
 import com.google.android.gms.wallet.TransactionInfo;
 import com.google.android.gms.wallet.Wallet;
 import com.google.android.gms.wallet.WalletConstants;
-import com.stripe.android.BuildConfig;
 import com.stripe.android.model.Token;
+import com.stripe.android.Stripe;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+import org.json.JSONObject;
+import org.json.JSONException;
 
 import static abi40_0_0.expo.modules.payments.stripe.Errors.toErrorCode;
 import static abi40_0_0.expo.modules.payments.stripe.util.Converters.convertTokenToWritableMap;
@@ -93,7 +96,7 @@ public final class GoogleApiPayFlowImpl extends PayFlow {
       .setPaymentMethodTokenizationType(WalletConstants.PAYMENT_METHOD_TOKENIZATION_TYPE_PAYMENT_GATEWAY)
       .addParameter("gateway", "stripe")
       .addParameter("stripe:publishableKey", getPublishableKey())
-      .addParameter("stripe:version", BuildConfig.VERSION_NAME)
+      .addParameter("stripe:version", Stripe.VERSION_NAME)
       .build();
   }
 
@@ -225,7 +228,12 @@ public final class GoogleApiPayFlowImpl extends PayFlow {
             PaymentData paymentData = PaymentData.getFromIntent(data);
             ArgCheck.nonNull(paymentData);
             String tokenJson = paymentData.getPaymentMethodToken().getToken();
-            Token token = Token.fromString(tokenJson);
+            Token token = null;
+            try {
+              token = Token.fromJson(new JSONObject(tokenJson));
+            } catch (JSONException e) {
+              Log.e(TAG, "Unable to create token from JSON string '" + tokenJson + "'.\n" + e);
+            }
             if (token == null) {
               payPromise.reject(
                 getErrorCode("parseResponse"),

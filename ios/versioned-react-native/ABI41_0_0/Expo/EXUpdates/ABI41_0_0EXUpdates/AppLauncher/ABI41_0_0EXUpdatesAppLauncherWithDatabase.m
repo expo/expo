@@ -1,6 +1,6 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesAppLauncherWithDatabase.h>
+#import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesAppLauncherWithDatabase+Tests.h>
 #import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesEmbeddedAppLoader.h>
 #import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesDatabase.h>
 #import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesFileDownloader.h>
@@ -50,7 +50,7 @@ static NSString * const ABI41_0_0EXUpdatesAppLauncherErrorDomain = @"AppLauncher
 
 + (void)launchableUpdateWithConfig:(ABI41_0_0EXUpdatesConfig *)config
                           database:(ABI41_0_0EXUpdatesDatabase *)database
-                   selectionPolicy:(id<ABI41_0_0EXUpdatesSelectionPolicy>)selectionPolicy
+                   selectionPolicy:(ABI41_0_0EXUpdatesSelectionPolicy *)selectionPolicy
                         completion:(ABI41_0_0EXUpdatesAppLauncherUpdateCompletionBlock)completion
                    completionQueue:(dispatch_queue_t)completionQueue
 {
@@ -83,12 +83,12 @@ static NSString * const ABI41_0_0EXUpdatesAppLauncherErrorDomain = @"AppLauncher
         [filteredLaunchableUpdates addObject:update];
       }
 
-      completion(nil, [selectionPolicy launchableUpdateWithUpdates:filteredLaunchableUpdates filters:manifestFilters]);
+      completion(nil, [selectionPolicy launchableUpdateFromUpdates:filteredLaunchableUpdates filters:manifestFilters]);
     });
   });
 }
 
-- (void)launchUpdateWithSelectionPolicy:(id<ABI41_0_0EXUpdatesSelectionPolicy>)selectionPolicy
+- (void)launchUpdateWithSelectionPolicy:(ABI41_0_0EXUpdatesSelectionPolicy *)selectionPolicy
                              completion:(ABI41_0_0EXUpdatesAppLauncherCompletionBlock)completion
 {
   NSAssert(!_completion, @"ABI41_0_0EXUpdatesAppLauncher:launchUpdateWithSelectionPolicy:successBlock should not be called twice on the same instance");
@@ -109,17 +109,35 @@ static NSString * const ABI41_0_0EXUpdatesAppLauncherErrorDomain = @"AppLauncher
         }
       } else {
         self->_launchedUpdate = launchableUpdate;
-        [self _ensureAllAssetsExist];
+        [self _finishLaunch];
       }
     } completionQueue:_launcherQueue];
   } else {
-    [self _ensureAllAssetsExist];
+    [self _finishLaunch];
   }
 }
 
 - (BOOL)isUsingEmbeddedAssets
 {
   return _assetFilesMap == nil;
+}
+
+- (void)_finishLaunch
+{
+  [self _markUpdateAccessed];
+  [self _ensureAllAssetsExist];
+}
+
+- (void)_markUpdateAccessed
+{
+  NSAssert(_launchedUpdate, @"launchedUpdate should be nonnull before calling markUpdateAccessed");
+  dispatch_async(_database.databaseQueue, ^{
+    NSError *error;
+    [self->_database markUpdateAccessed:self->_launchedUpdate error:&error];
+    if (error) {
+      NSLog(@"Failed to mark update as recently accessed: %@", error.localizedDescription);
+    }
+  });
 }
 
 - (void)_ensureAllAssetsExist

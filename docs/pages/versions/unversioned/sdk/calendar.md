@@ -124,7 +124,7 @@ A promise resolving to [calendar object](#calendar) that is the user's default c
 
 ### `Calendar.requestCalendarPermissionsAsync()`
 
-Asks the user to grant permissions for accessing user's calendars. Alias for `Permissions.askAsync(Permissions.CALENDAR)`.
+Asks the user to grant permissions for accessing user's calendars.
 
 #### Returns
 
@@ -132,7 +132,7 @@ A promise that resolves to an object of type [PermissionResponse](permissions.md
 
 ### `Calendar.requestRemindersPermissionsAsync()`
 
-**iOS only**. Asks the user to grant permissions for accessing user's reminders. Alias for `Permissions.askAsync(Permissions.REMINDERS)`.
+**iOS only**. Asks the user to grant permissions for accessing user's reminders.
 
 #### Returns
 
@@ -140,7 +140,7 @@ A promise that resolves to an object of type [PermissionResponse](permissions.md
 
 ### `Calendar.getCalendarPermissionsAsync()`
 
-Checks user's permissions for accessing user's calendars. Alias for `Permissions.getAsync(Permissions.CALENDAR)`.
+Checks user's permissions for accessing user's calendars.
 
 #### Returns
 
@@ -148,7 +148,7 @@ A promise that resolves to an object of type [PermissionResponse](permissions.md
 
 ### `Calendar.getRemindersPermissionsAsync()`
 
-**iOS only**. Checks user's permissions for accessing user's reminders. Alias for `Permissions.getAsync(Permissions.REMINDERS)`.
+**iOS only**. Checks user's permissions for accessing user's reminders.
 
 #### Returns
 

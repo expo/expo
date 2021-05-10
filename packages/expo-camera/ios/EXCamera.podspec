@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
   s.source         = { :git => "https://github.com/expo/expo.git" }
 
   s.dependency 'UMCore'
-  s.dependency 'UMCameraInterface'
+  s.dependency 'ExpoModulesCore'
   s.dependency 'UMFileSystemInterface'
   s.dependency 'UMImageLoaderInterface'
   s.dependency 'UMPermissionsInterface'

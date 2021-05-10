@@ -101,18 +101,19 @@ This command does not take any options.
 | Option                   | Description                                                                                                                        |
 | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
 | `-p, --public-url [url]` | The public url that will host the static files. (Required)                                                                         |
+| `-c, --clear`            | Clear the Metro bundler cache                                                                                                      |
 | `--output-dir [dir]`     | The directory to export the static files to. Default directory is `dist`                                                           |
 | `-a, --asset-url [url]`  | The absolute or relative url that will host the asset files. Default is './assets', which will be resolved against the public-url. |
 | `-d, --dump-assetmap`    | Dump the asset map for further processing.                                                                                         |
 | `--dev`                  | Configure static files for developing locally using a non-https server                                                             |
-| `-f, --force`            | Overwrite files in output directory without prompting for confirmation                                                             |
 | `-s, --dump-sourcemap`   | Dump the source map for debugging the JS bundle.                                                                                   |
 | `-q, --quiet`            | Suppress verbose output.                                                                                                           |
 | `-t, --target [env]`     | Target environment for which this export is intended. Options are `managed` or `bare`.                                             |
 | `--merge-src-dir [dir]`  | A repeatable source dir to merge in.                                                                                               |
 | `--merge-src-url [url]`  | A repeatable source tar.gz file URL to merge in.                                                                                   |
 | `--max-workers [num]`    | Maximum number of tasks to allow Metro to spawn.                                                                                   |
-| `--config [file]`        | Specify a path to app.json or app.config.js                                                                                        |
+| `--experimental-bundle`  | export bundles for use with EAS updates.                                                                                           |
+| `--config [file]`        | Deprecated: Use app.config.js to switch config files instead.                                                                      |
 
 </p>
 </details>
@@ -172,7 +173,7 @@ Alias: `expo p`
 | `-t, --target [env]`                  | Target environment for which this publish is intended. Options are `managed` or `bare`. |
 | `--max-workers [num]`                 | Maximum number of tasks to allow Metro to spawn.                                        |
 | `--release-channel [release channel]` | The release channel to publish to. Default is 'default'.                                |
-| `--config [file]`                     | Specify a path to app.json or app.config.js                                             |
+| `--config [file]`                     | Deprecated: Use app.config.js to switch config files instead.                           |
 
 </p>
 </details>
@@ -189,14 +190,14 @@ Alias: `expo p`
 | `-s, --send-to [dest]` | Email address to send the URL to                                                                               |
 | `--dev-client`         | Experimental: Starts the bundler for use with the expo-development-client                                      |
 | `--scheme [scheme]`    | Custom URI protocol to use with a dev client                                                                   |
-| `-a, --android`        | Opens your app in Expo Go on a connected Android device                                                    |
-| `-i, --ios`            | Opens your app in Expo Go in a currently running iOS simulator on your computer                            |
+| `-a, --android`        | Opens your app in Expo Go on a connected Android device                                                        |
+| `-i, --ios`            | Opens your app in Expo Go in a currently running iOS simulator on your computer                                |
 | `-w, --web`            | Opens your app in a web browser                                                                                |
 | `-m, --host [mode]`    | lan (default), tunnel, localhost. Type of host to use. "tunnel" allows you to view your link on other networks |
 | `--tunnel`             | Same as --host tunnel                                                                                          |
 | `--lan`                | Same as --host lan                                                                                             |
 | `--localhost`          | Same as --host localhost                                                                                       |
-| `--config [file]`      | Specify a path to app.json or app.config.js                                                                    |
+| `--config [file]`      | Deprecated: Use app.config.js to switch config files instead.                                                  |
 
 </p>
 </details>
@@ -223,15 +224,15 @@ Alias: `expo r`
 | `--no-https`           | To start webpack with http protocol                                                                            |
 | `--dev-client`         | Experimental: Starts the bundler for use with the expo-development-client                                      |
 | `--scheme [scheme]`    | Custom URI protocol to use with a dev client                                                                   |
-| `-a, --android`        | Opens your app in Expo Go on a connected Android device                                                    |
-| `-i, --ios`            | Opens your app in Expo Go in a currently running iOS simulator on your computer                            |
+| `-a, --android`        | Opens your app in Expo Go on a connected Android device                                                        |
+| `-i, --ios`            | Opens your app in Expo Go in a currently running iOS simulator on your computer                                |
 | `-w, --web`            | Opens your app in a web browser                                                                                |
 | `-m, --host [mode]`    | lan (default), tunnel, localhost. Type of host to use. "tunnel" allows you to view your link on other networks |
 | `--tunnel`             | Same as --host tunnel                                                                                          |
 | `--lan`                | Same as --host lan                                                                                             |
 | `--localhost`          | Same as --host localhost                                                                                       |
 | `--offline`            | Allows this command to run while offline                                                                       |
-| `--config [file]`      | Specify a path to app.json or app.config.js                                                                    |
+| `--config [file]`      | Deprecated: Use app.config.js to switch config files instead.                                                  |
 
 </p>
 </details>
@@ -245,25 +246,26 @@ Alias: `expo r`
 
 Alias: `expo web`
 
-| Option              | Description                                                                                                    |
-| ------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `--dev`             | Turn development mode on                                                                                       |
-| `--no-dev`          | Turn development mode off                                                                                      |
-| `--minify`          | Minify code                                                                                                    |
-| `--no-minify`       | Do not minify code                                                                                             |
-| `--https`           | To start webpack with https protocol                                                                           |
-| `--no-https`        | To start webpack with http protocol                                                                            |
-| `--dev-client`      | Experimental: Starts the bundler for use with the expo-development-client                                      |
-| `--scheme [scheme]` | Custom URI protocol to use with a dev client                                                                   |
-| `-a, --android`     | Opens your app in Expo Go on a connected Android device                                                    |
-| `-i, --ios`         | Opens your app in Expo Go in a currently running iOS simulator on your computer                            |
-| `-w, --web`         | Opens your app in a web browser                                                                                |
-| `-m, --host [mode]` | lan (default), tunnel, localhost. Type of host to use. "tunnel" allows you to view your link on other networks |
-| `--tunnel`          | Same as --host tunnel                                                                                          |
-| `--lan`             | Same as --host lan                                                                                             |
-| `--localhost`       | Same as --host localhost                                                                                       |
-| `--offline`         | Allows this command to run while offline                                                                       |
-| `--config [file]`   | Specify a path to app.json or app.config.js                                                                    |
+| Option                 | Description                                                                                                    |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `--dev`                | Turn development mode on                                                                                       |
+| `--no-dev`             | Turn development mode off                                                                                      |
+| `--minify`             | Minify code                                                                                                    |
+| `--no-minify`          | Do not minify code                                                                                             |
+| `--https`              | To start webpack with https protocol                                                                           |
+| `--no-https`           | To start webpack with http protocol                                                                            |
+| `-s, --send-to [dest]` | An email address to send a link to                                                                             |
+| `--dev-client`         | Experimental: Starts the bundler for use with the expo-development-client                                      |
+| `--scheme [scheme]`    | Custom URI protocol to use with a dev client                                                                   |
+| `-a, --android`        | Opens your app in Expo Go on a connected Android device                                                        |
+| `-i, --ios`            | Opens your app in Expo Go in a currently running iOS simulator on your computer                                |
+| `-w, --web`            | Opens your app in a web browser                                                                                |
+| `-m, --host [mode]`    | lan (default), tunnel, localhost. Type of host to use. "tunnel" allows you to view your link on other networks |
+| `--tunnel`             | Same as --host tunnel                                                                                          |
+| `--lan`                | Same as --host lan                                                                                             |
+| `--localhost`          | Same as --host localhost                                                                                       |
+| `--offline`            | Allows this command to run while offline                                                                       |
+| `--config [file]`      | Deprecated: Use app.config.js to switch config files instead.                                                  |
 
 </p>
 </details>
@@ -275,12 +277,12 @@ Alias: `expo web`
 <details>
 <summary>
 <h4>expo client:install:ios</h4>
-<p>Install the Expo Go app for iOS on the simulator</p>
+<p>Install Expo Go for iOS on the simulator</p>
 </summary>
 <p>
 
-| Option     | Description                                                                      |
-| ---------- | -------------------------------------------------------------------------------- |
+| Option     | Description                                                                  |
+| ---------- | ---------------------------------------------------------------------------- |
 | `--latest` | Install the latest version of Expo Go, ignoring the current project version. |
 
 </p>
@@ -289,12 +291,12 @@ Alias: `expo web`
 <details>
 <summary>
 <h4>expo client:install:android</h4>
-<p>Install the Expo Go app for Android on a connected device or emulator</p>
+<p>Install Expo Go for Android on a connected device or emulator</p>
 </summary>
 <p>
 
-| Option     | Description                                                                    |
-| ---------- | ------------------------------------------------------------------------------ |
+| Option     | Description                                                                |
+| ---------- | -------------------------------------------------------------------------- |
 | `--latest` | Install the latest version of Expo Go, ignore the current project version. |
 
 </p>
@@ -303,6 +305,22 @@ Alias: `expo web`
 ---
 
 ### Info
+
+<details>
+<summary>
+<h4>expo config</h4>
+<p>Show the project config</p>
+</summary>
+<p>
+
+| Option              | Description                                                   |
+| ------------------- | ------------------------------------------------------------- |
+| `-t, --type [type]` | Type of config to show. Options: public, prebuild             |
+| `--full`            | Include all project config data                               |
+| `--config [file]`   | Deprecated: Use app.config.js to switch config files instead. |
+
+</p>
+</details>
 
 <details>
 <summary>
@@ -323,9 +341,9 @@ This command does not take any options.
 </summary>
 <p>
 
-| Option            | Description                                 |
-| ----------------- | ------------------------------------------- |
-| `--config [file]` | Specify a path to app.json or app.config.js |
+| Option            | Description                                                   |
+| ----------------- | ------------------------------------------------------------- |
+| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
 
 </p>
 </details>
@@ -367,7 +385,7 @@ Alias: `expo ph`
 | `-p, --platform [ios|android]`         | Filter by platform, android or ios. Defaults to both platforms.                                      |
 | `-s, --sdk-version [version]`          | Filter by SDK version e.g. 35.0.0                                                                    |
 | `-r, --raw`                            | Produce some raw output.                                                                             |
-| `--config [file]`                      | Specify a path to app.json or app.config.js                                                          |
+| `--config [file]`                      | Deprecated: Use app.config.js to switch config files instead.                                        |
 
 </p>
 </details>
@@ -381,11 +399,11 @@ Alias: `expo ph`
 
 Alias: `expo pd`
 
-| Option                      | Description                                 |
-| --------------------------- | ------------------------------------------- |
-| `--publish-id [publish-id]` | Publication id. (Required)                  |
-| `-r, --raw`                 | Produce some raw output.                    |
-| `--config [file]`           | Specify a path to app.json or app.config.js |
+| Option                      | Description                                                   |
+| --------------------------- | ------------------------------------------------------------- |
+| `--publish-id [publish-id]` | Publication id. (Required)                                    |
+| `-r, --raw`                 | Produce some raw output.                                      |
+| `--config [file]`           | Deprecated: Use app.config.js to switch config files instead. |
 
 </p>
 </details>
@@ -403,7 +421,7 @@ Alias: `expo ps`
 | -------------------------------------- | --------------------------------------------------------------------- |
 | `-c, --release-channel [channel-name]` | The channel to set the published release. (Required)                  |
 | `-p, --publish-id [publish-id]`        | The id of the published release to serve from the channel. (Required) |
-| `--config [file]`                      | Specify a path to app.json or app.config.js                           |
+| `--config [file]`                      | Deprecated: Use app.config.js to switch config files instead.         |
 
 </p>
 </details>
@@ -417,13 +435,13 @@ Alias: `expo ps`
 
 Alias: `expo pr`
 
-| Option                                 | Description                                 |
-| -------------------------------------- | ------------------------------------------- |
-| `--channel-id [channel-id]`            | This flag is deprecated.                    |
-| `-c, --release-channel [channel-name]` | The channel to rollback from. (Required)    |
-| `-s, --sdk-version [version]`          | The sdk version to rollback. (Required)     |
-| `-p, --platform [ios|android]`         | The platform to rollback.                   |
-| `--config [file]`                      | Specify a path to app.json or app.config.js |
+| Option                                 | Description                                                   |
+| -------------------------------------- | ------------------------------------------------------------- |
+| `--channel-id [channel-id]`            | This flag is deprecated.                                      |
+| `-c, --release-channel [channel-name]` | The channel to rollback from. (Required)                      |
+| `-s, --sdk-version [version]`          | The sdk version to rollback. (Required)                       |
+| `-p, --platform [ios|android]`         | The platform to rollback.                                     |
+| `--config [file]`                      | Deprecated: Use app.config.js to switch config files instead. |
 
 </p>
 </details>
@@ -462,7 +480,7 @@ Alias: `expo bi`
 | `--public-url [url]`                             | The URL of an externally hosted manifest (for self-hosted apps).                                                    |
 | `--skip-credentials-check`                       | Skip checking credentials.                                                                                          |
 | `--skip-workflow-check`                          | Skip warning about build service bare workflow limitations.                                                         |
-| `--config [file]`                                | Specify a path to app.json or app.config.js                                                                         |
+| `--config [file]`                                | Deprecated: Use app.config.js to switch config files instead.                                                       |
 
 </p>
 </details>
@@ -488,7 +506,7 @@ Alias: `expo ba`
 | `--public-url [url]`               | The URL of an externally hosted manifest (for self-hosted apps) |
 | `--skip-workflow-check`            | Skip warning about build service bare workflow limitations.     |
 | `-t --type [build]`                | Type of build: [app-bundle                                      | apk]. |
-| `--config [file]`                  | Specify a path to app.json or app.config.js                     |
+| `--config [file]`                  | Deprecated: Use app.config.js to switch config files instead.   |
 
 </p>
 </details>
@@ -505,7 +523,7 @@ Alias: `expo ba`
 | `-c, --clear`     | Clear all cached build files and assets.                                                       |
 | `--no-pwa`        | Prevent webpack from generating the manifest.json and injecting meta into the index.html head. |
 | `-d, --dev`       | Turns dev flag on before bundling                                                              |
-| `--config [file]` | Specify a path to app.json or app.config.js                                                    |
+| `--config [file]` | Deprecated: Use app.config.js to switch config files instead.                                  |
 
 </p>
 </details>
@@ -522,7 +540,7 @@ Alias: `expo bs`
 | Option               | Description                                                      |
 | -------------------- | ---------------------------------------------------------------- |
 | `--public-url [url]` | The URL of an externally hosted manifest (for self-hosted apps). |
-| `--config [file]`    | Specify a path to app.json or app.config.js                      |
+| `--config [file]`    | Deprecated: Use app.config.js to switch config files instead.    |
 
 </p>
 </details>
@@ -538,10 +556,10 @@ Alias: `expo bs`
 </summary>
 <p>
 
-| Option                     | Description                                 |
-| -------------------------- | ------------------------------------------- |
-| `-p --platform [platform]` | Platform: [android                          | ios] |
-| `--config [file]`          | Specify a path to app.json or app.config.js |
+| Option                     | Description                                                   |
+| -------------------------- | ------------------------------------------------------------- |
+| `-p --platform [platform]` | Platform: [android                                            | ios] |
+| `--config [file]`          | Deprecated: Use app.config.js to switch config files instead. |
 
 </p>
 </details>
@@ -553,9 +571,9 @@ Alias: `expo bs`
 </summary>
 <p>
 
-| Option            | Description                                 |
-| ----------------- | ------------------------------------------- |
-| `--config [file]` | Specify a path to app.json or app.config.js |
+| Option            | Description                                                   |
+| ----------------- | ------------------------------------------------------------- |
+| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
 
 </p>
 </details>
@@ -567,9 +585,9 @@ Alias: `expo bs`
 </summary>
 <p>
 
-| Option            | Description                                 |
-| ----------------- | ------------------------------------------- |
-| `--config [file]` | Specify a path to app.json or app.config.js |
+| Option            | Description                                                   |
+| ----------------- | ------------------------------------------------------------- |
+| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
 
 </p>
 </details>
@@ -581,9 +599,9 @@ Alias: `expo bs`
 </summary>
 <p>
 
-| Option            | Description                                 |
-| ----------------- | ------------------------------------------- |
-| `--config [file]` | Specify a path to app.json or app.config.js |
+| Option            | Description                                                   |
+| ----------------- | ------------------------------------------------------------- |
+| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
 
 </p>
 </details>
@@ -595,9 +613,9 @@ Alias: `expo bs`
 </summary>
 <p>
 
-| Option            | Description                                 |
-| ----------------- | ------------------------------------------- |
-| `--config [file]` | Specify a path to app.json or app.config.js |
+| Option            | Description                                                   |
+| ----------------- | ------------------------------------------------------------- |
+| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
 
 </p>
 </details>
@@ -613,10 +631,10 @@ Alias: `expo bs`
 </summary>
 <p>
 
-| Option                | Description                                 |
-| --------------------- | ------------------------------------------- |
-| `--api-key [api-key]` | Server API key for FCM.                     |
-| `--config [file]`     | Specify a path to app.json or app.config.js |
+| Option                | Description                                                   |
+| --------------------- | ------------------------------------------------------------- |
+| `--api-key [api-key]` | Server API key for FCM.                                       |
+| `--config [file]`     | Deprecated: Use app.config.js to switch config files instead. |
 
 </p>
 </details>
@@ -628,9 +646,9 @@ Alias: `expo bs`
 </summary>
 <p>
 
-| Option            | Description                                 |
-| ----------------- | ------------------------------------------- |
-| `--config [file]` | Specify a path to app.json or app.config.js |
+| Option            | Description                                                   |
+| ----------------- | ------------------------------------------------------------- |
+| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
 
 </p>
 </details>
@@ -642,9 +660,9 @@ Alias: `expo bs`
 </summary>
 <p>
 
-| Option            | Description                                 |
-| ----------------- | ------------------------------------------- |
-| `--config [file]` | Specify a path to app.json or app.config.js |
+| Option            | Description                                                   |
+| ----------------- | ------------------------------------------------------------- |
+| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
 
 </p>
 </details>
@@ -656,7 +674,7 @@ Alias: `expo bs`
 <details>
 <summary>
 <h4>expo url</h4>
-<p>Log a URL for opening the project in the Expo Go app</p>
+<p>Log a URL for opening the project in Expo Go</p>
 </summary>
 <p>
 
@@ -667,15 +685,15 @@ Alias: `expo u`
 | `-w, --web`         | Return the URL of the web app                                                                                  |
 | `--dev-client`      | Experimental: Starts the bundler for use with the expo-development-client                                      |
 | `--scheme [scheme]` | Custom URI protocol to use with a dev client                                                                   |
-| `-a, --android`     | Opens your app in Expo Go on a connected Android device                                                    |
-| `-i, --ios`         | Opens your app in Expo Go in a currently running iOS simulator on your computer                            |
+| `-a, --android`     | Opens your app in Expo Go on a connected Android device                                                        |
+| `-i, --ios`         | Opens your app in Expo Go in a currently running iOS simulator on your computer                                |
 | `-w, --web`         | Opens your app in a web browser                                                                                |
 | `-m, --host [mode]` | lan (default), tunnel, localhost. Type of host to use. "tunnel" allows you to view your link on other networks |
 | `--tunnel`          | Same as --host tunnel                                                                                          |
 | `--lan`             | Same as --host lan                                                                                             |
 | `--localhost`       | Same as --host localhost                                                                                       |
 | `--offline`         | Allows this command to run while offline                                                                       |
-| `--config [file]`   | Specify a path to app.json or app.config.js                                                                    |
+| `--config [file]`   | Deprecated: Use app.config.js to switch config files instead.                                                  |
 
 </p>
 </details>
@@ -690,7 +708,7 @@ Alias: `expo u`
 | Option               | Description                                                     |
 | -------------------- | --------------------------------------------------------------- |
 | `--public-url [url]` | The URL of an externally hosted manifest (for self-hosted apps) |
-| `--config [file]`    | Specify a path to app.json or app.config.js                     |
+| `--config [file]`    | Deprecated: Use app.config.js to switch config files instead.   |
 
 </p>
 </details>
@@ -705,7 +723,7 @@ Alias: `expo u`
 | Option               | Description                                                     |
 | -------------------- | --------------------------------------------------------------- |
 | `--public-url [url]` | The URL of an externally hosted manifest (for self-hosted apps) |
-| `--config [file]`    | Specify a path to app.json or app.config.js                     |
+| `--config [file]`    | Deprecated: Use app.config.js to switch config files instead.   |
 
 </p>
 </details>
@@ -721,9 +739,9 @@ Alias: `expo u`
 </summary>
 <p>
 
-| Option            | Description                                 |
-| ----------------- | ------------------------------------------- |
-| `--config [file]` | Specify a path to app.json or app.config.js |
+| Option            | Description                                                   |
+| ----------------- | ------------------------------------------------------------- |
+| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
 
 </p>
 </details>
@@ -740,7 +758,7 @@ Alias: `expo u`
 | `--url [url]`          | URL to request. (Required)                                                                              |
 | `--event [event-type]` | Event type that triggers the webhook. [build](Required)                                                 |
 | `--secret [secret]`    | Secret used to create a hash signature of the request payload, provided in the 'Expo-Signature' header. |
-| `--config [file]`      | Specify a path to app.json or app.config.js                                                             |
+| `--config [file]`      | Deprecated: Use app.config.js to switch config files instead.                                           |
 
 </p>
 </details>
@@ -752,10 +770,10 @@ Alias: `expo u`
 </summary>
 <p>
 
-| Option            | Description                                 |
-| ----------------- | ------------------------------------------- |
-| `--id [id]`       | ID of the webhook to remove.                |
-| `--config [file]` | Specify a path to app.json or app.config.js |
+| Option            | Description                                                   |
+| ----------------- | ------------------------------------------------------------- |
+| `--id [id]`       | ID of the webhook to remove.                                  |
+| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
 
 </p>
 </details>
@@ -773,7 +791,7 @@ Alias: `expo u`
 | `--url [url]`          | URL the webhook will request.                                                                           |
 | `--event [event-type]` | Event type that triggers the webhook. [build]                                                           |
 | `--secret [secret]`    | Secret used to create a hash signature of the request payload, provided in the 'Expo-Signature' header. |
-| `--config [file]`      | Specify a path to app.json or app.config.js                                                             |
+| `--config [file]`      | Deprecated: Use app.config.js to switch config files instead.                                           |
 
 </p>
 </details>
@@ -804,7 +822,7 @@ Alias: `expo ua`
 | `--release-status [release-status]`   | release status (used when uploading new apks/aabs), choose from: completed, draft, halted, inProgress        |
 | `--use-submission-service`            | Experimental: Use Submission Service for uploading your app. The upload process will happen on Expo servers. |
 | `--verbose`                           | Always print logs from Submission Service                                                                    |
-| `--config [file]`                     | Specify a path to app.json or app.config.js                                                                  |
+| `--config [file]`                     | Deprecated: Use app.config.js to switch config files instead.                                                |
 
 </p>
 </details>
@@ -812,7 +830,7 @@ Alias: `expo ua`
 <details>
 <summary>
 <h4>expo upload:ios</h4>
-<p>macOS only: Upload an iOS binary to Apple. An alternative to Transporter.app</p>
+<p>Unsupported: Use eas submit or Transporter app instead.</p>
 </summary>
 <p>
 
@@ -832,7 +850,7 @@ Alias: `expo ui`
 | `--sku [sku]`                             | a unique ID for your app that is not visible on the App Store, will be generated unless provided                                    |
 | `--language [language]`                   | primary language (e.g. English, German; run `expo upload:ios --help` to see the list of available languages)                        |
 | `--public-url [url]`                      | The URL of an externally hosted manifest (for self-hosted apps)                                                                     |
-| `--config [file]`                         | Specify a path to app.json or app.config.js                                                                                         |
+| `--config [file]`                         | Deprecated: Use app.config.js to switch config files instead.                                                                       |
 
 </p>
 </details>
@@ -863,12 +881,31 @@ Alias: `expo ui`
 </summary>
 <p>
 
-| Option            | Description                                                           |
-| ----------------- | --------------------------------------------------------------------- |
-| `--force`         | Skip legacy eject warnings.                                           |
-| `--no-install`    | Skip installing npm packages and CocoaPods.                           |
-| `--npm`           | Use npm to install dependencies. (default when Yarn is not installed) |
-| `--config [file]` | Specify a path to app.json or app.config.js                           |
+| Option                      | Description                                                           |
+| --------------------------- | --------------------------------------------------------------------- |
+| `--no-install`              | Skip installing npm packages and CocoaPods.                           |
+| `--npm`                     | Use npm to install dependencies. (default when Yarn is not installed) |
+| `-p, --platform [platform]` | Platforms to sync: ios, android, all. Default: all                    |
+| `--config [file]`           | Deprecated: Use app.config.js to switch config files instead.         |
+
+</p>
+</details>
+
+<details>
+<summary>
+<h4>expo prebuild</h4>
+<p>Experimental: Create native iOS and Android project files before building natively. Learn more: https://docs.expo.io/bare/customizing/</p>
+</summary>
+<p>
+
+| Option                                    | Description                                                                  |
+| ----------------------------------------- | ---------------------------------------------------------------------------- |
+| `--no-install`                            | Skip installing npm packages and CocoaPods.                                  |
+| `--clean`                                 | Delete the native folders and regenerate them before applying changes        |
+| `--npm`                                   | Use npm to install dependencies. (default when Yarn is not installed)        |
+| `-p, --platform [platform]`               | Platforms to sync: ios, android, all. Default: all                           |
+| `--skip-dependency-update [dependencies]` | Preserves versions of listed packages in package.json (comma separated list) |
+| `--config [file]`                         | Deprecated: Use app.config.js to switch config files instead.                |
 
 </p>
 </details>
@@ -880,24 +917,14 @@ Alias: `expo ui`
 <details>
 <summary>
 <h4>expo client:ios</h4>
-<p>Experimental: build a custom version of the Expo Go app for iOS using your own Apple credentials</p>
+<p>Experimental: build a custom version of Expo Go for iOS using your own Apple credentials</p>
 </summary>
 <p>
 
 | Option               | Description                                                                                            |
 | -------------------- | ------------------------------------------------------------------------------------------------------ |
 | `--apple-id [login]` | Apple ID username (please also set the Apple ID password as EXPO_APPLE_PASSWORD environment variable). |
-| `--config [file]`    | Specify a path to app.json or app.config.js                                                            |
+| `--config [file]`    | Deprecated: Use app.config.js to switch config files instead.                                          |
 
 </p>
 </details>
-
-## Global command flags
-
-These options will work with any command, eg: `expo build:ios --help` will provide help information relevant to the `expo build:ios` command.
-
-| Option                    | Description                                                                                                         |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `--help`, `-h`            | Reveals usage information.                                                                                          |
-| `-o`, `--output` [format] | The output format [pretty or raw]. The default is pretty.                                                           |
-| `--non-interactive`       | Fails the command if an interactive prompt would be required to continue. Enabled by default if stdin is not a TTY. |

@@ -97,6 +97,25 @@
    }
 }
 
++ (AVVideoCodecType)videoCodecForType:(EXCameraVideoCodec)videoCodecType
+{
+  switch (videoCodecType) {
+    case EXCameraVideoCodecH264:
+      return AVVideoCodecTypeH264;
+    case EXCameraVideoCodecHEVC:
+      return AVVideoCodecTypeHEVC;
+    case EXCameraVideoCodecJPEG:
+      return AVVideoCodecTypeJPEG;
+    case EXCameraVideoCodecAppleProRes422:
+      return AVVideoCodecTypeAppleProRes422;
+    case EXCameraVideoCodecAppleProRes4444:
+      return AVVideoCodecTypeAppleProRes4444;
+    default:
+      return @"VIDEO_CODEC_UNKNOWN";
+  }
+}
+
+
 # pragma mark - Image utilities
 
 + (UIImage *)generatePhotoOfSize:(CGSize)size
@@ -187,4 +206,3 @@
 }
 
 @end
-

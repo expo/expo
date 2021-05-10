@@ -1,14 +1,15 @@
 'use strict';
 
+const { getDefaultConfig } = require('@expo/metro-config');
 const debug = require('debug')('workspaces');
 const findYarnWorkspaceRoot = require('find-yarn-workspace-root');
-const fs = require('fs');
-const { getDefaultConfig } = require('@expo/metro-config');
 // TODO: Use the vendored metro config in a future version after SDK 41 is released
 // const { getDefaultConfig } = require('expo/metro-config');
 const blacklist = require('metro-config/src/defaults/blacklist');
 const { assetExts } = require('metro-config/src/defaults/defaults');
 const path = require('path');
+
+const getSymlinkedNodeModulesForDirectory = require('./common/get-symlinked-modules');
 
 /**
  * Returns a configuration object in the format expected for "metro.config.js" files. The
@@ -31,7 +32,7 @@ exports.createMetroConfiguration = function createMetroConfiguration(projectPath
   let watchFolders;
   let extraNodeModules;
 
-  let workspaceRootPath = findYarnWorkspaceRoot(projectPath);
+  const workspaceRootPath = findYarnWorkspaceRoot(projectPath);
   if (workspaceRootPath) {
     debug(`Found Yarn workspace root at %s`, workspaceRootPath);
     watchFolders = [workspaceRootPath];
@@ -77,45 +78,3 @@ exports.createMetroConfiguration = function createMetroConfiguration(projectPath
     },
   };
 };
-
-/**
- * Returns a mapping from the names of symlinked packages to the physical paths of each package.
- */
-function getSymlinkedNodeModulesForDirectory(packagePath) {
-  let nodeModulesPath = path.join(packagePath, 'node_modules');
-  let directories = listDirectoryContents(nodeModulesPath);
-
-  let modules = {};
-  for (let directory of directories) {
-    // The directory is either a scope or a package
-    if (directory.startsWith('@')) {
-      let scopePath = path.join(nodeModulesPath, directory);
-      let scopedPackageDirectories = fs.readdirSync(scopePath);
-      for (let subdirectory of scopedPackageDirectories) {
-        let dependencyName = `${directory}/${subdirectory}`;
-        let dependencyPath = path.join(scopePath, subdirectory);
-        if (fs.lstatSync(dependencyPath).isSymbolicLink()) {
-          modules[dependencyName] = fs.realpathSync(dependencyPath);
-        }
-      }
-    } else {
-      let dependencyName = directory;
-      let dependencyPath = path.join(nodeModulesPath, directory);
-      if (fs.lstatSync(dependencyPath).isSymbolicLink()) {
-        modules[dependencyName] = fs.realpathSync(dependencyPath);
-      }
-    }
-  }
-  return modules;
-}
-
-function listDirectoryContents(directory) {
-  try {
-    return fs.readdirSync(directory);
-  } catch (e) {
-    if (e.code === 'ENOENT') {
-      return [];
-    }
-    throw e;
-  }
-}

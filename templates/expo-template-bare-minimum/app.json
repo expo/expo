@@ -1,6 +1,4 @@
 {
-  "name": "HelloWorld",
-  "displayName": "Hello App Display Name",
   "expo": {
     "name": "HelloWorld",
     "slug": "expo-template-bare",

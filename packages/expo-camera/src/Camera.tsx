@@ -10,10 +10,12 @@ import {
   CameraPictureOptions,
   CameraProps,
   CameraRecordingOptions,
+  ConstantsType,
   FaceDetectionResult,
   PermissionExpiration,
   PermissionResponse,
   PermissionStatus,
+  VideoCodec,
 } from './Camera.types';
 import ExponentCamera from './ExponentCamera';
 import CameraManager from './ExponentCameraManager';
@@ -83,13 +85,22 @@ export default class Camera extends React.Component<CameraProps> {
     return await CameraManager.getAvailableCameraTypesAsync();
   }
 
-  static Constants = {
+  static async getAvailableVideoCodecsAsync(): Promise<string[]> {
+    if (!CameraManager.getAvailableVideoCodecsAsync) {
+      throw new UnavailabilityError('Camera', 'getAvailableVideoCodecsAsync');
+    }
+
+    return await CameraManager.getAvailableVideoCodecsAsync();
+  }
+
+  static Constants: ConstantsType = {
     Type: CameraManager.Type,
     FlashMode: CameraManager.FlashMode,
     AutoFocus: CameraManager.AutoFocus,
     WhiteBalance: CameraManager.WhiteBalance,
     VideoQuality: CameraManager.VideoQuality,
     VideoStabilization: CameraManager.VideoStabilization || {},
+    VideoCodec: CameraManager.VideoCodec,
   };
 
   // Values under keys from this object will be transformed to native options
@@ -140,13 +151,14 @@ export default class Camera extends React.Component<CameraProps> {
     return await CameraManager.getAvailablePictureSizes(ratio, this._cameraHandle);
   }
 
-  async recordAsync(options?: CameraRecordingOptions): Promise<{ uri: string }> {
+  async recordAsync(
+    options?: CameraRecordingOptions
+  ): Promise<{ uri: string; codec?: VideoCodec }> {
     if (!CameraManager.record) {
       throw new UnavailabilityError('Camera', 'recordAsync');
     }
 
     const recordingOptions = ensureRecordingOptions(options);
-
     return await CameraManager.record(recordingOptions, this._cameraHandle);
   }
 

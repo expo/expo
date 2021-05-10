@@ -1,4 +1,4 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
 import * as React from 'react';
 
@@ -60,10 +60,12 @@ const VersionSelector: React.FC<Props> = ({ version, style, onSetVersion }) => (
       <div>{Utilities.getUserFacingVersionString(version, LATEST_VERSION, BETA_VERSION)}</div>
       <ChevronDownIcon style={{ height: '16px', width: '16px' }} />
     </label>
-    {// hidden links to help test-links spidering
-    VERSIONS.map(v => (
-      <a key={v} style={{ display: 'none' }} href={`/versions/${v}/`} />
-    ))}
+    {
+      // hidden links to help test-links spidering
+      VERSIONS.map(v => (
+        <a key={v} style={{ display: 'none' }} href={`/versions/${v}/`} />
+      ))
+    }
     <select
       id="version-menu"
       css={STYLES_SELECT_ELEMENT}

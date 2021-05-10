@@ -22,6 +22,7 @@ import expo.modules.imagepicker.tasks.ImageResultTask
 import expo.modules.imagepicker.tasks.VideoResultTask
 import org.unimodules.core.ExportedModule
 import org.unimodules.core.ModuleRegistry
+import org.unimodules.core.ModuleRegistryDelegate
 import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ActivityEventListener
 import org.unimodules.core.interfaces.ActivityProvider
@@ -39,7 +40,7 @@ import java.lang.ref.WeakReference
 
 class ImagePickerModule(
   private val mContext: Context,
-  val moduleRegistryPropertyDelegate: ModuleRegistryPropertyDelegate = ModuleRegistryPropertyDelegate(),
+  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate(),
   private val pickerResultStore: PickerResultsStore = PickerResultsStore(mContext)
 ) : ExportedModule(mContext), ActivityEventListener, LifecycleEventListener {
 
@@ -70,8 +71,10 @@ class ImagePickerModule(
       return _experienceActivity.get()
     }
 
+  private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
+
   override fun onCreate(moduleRegistry: ModuleRegistry) {
-    moduleRegistryPropertyDelegate.onCreate(moduleRegistry)
+    moduleRegistryDelegate.onCreate(moduleRegistry)
     mUIManager.registerLifecycleEventListener(this)
   }
 
@@ -122,8 +125,8 @@ class ImagePickerModule(
     }
 
     val permissionsResponseHandler = PermissionsResponseListener { permissionsResponse: Map<String, PermissionsResponse> ->
-      if (permissionsResponse[Manifest.permission.WRITE_EXTERNAL_STORAGE]?.status == PermissionsStatus.GRANTED
-        && permissionsResponse[Manifest.permission.CAMERA]?.status == PermissionsStatus.GRANTED) {
+      if (permissionsResponse[Manifest.permission.WRITE_EXTERNAL_STORAGE]?.status == PermissionsStatus.GRANTED &&
+        permissionsResponse[Manifest.permission.CAMERA]?.status == PermissionsStatus.GRANTED) {
         launchCameraWithPermissionsGranted(promise, cameraIntent, pickerOptions)
       } else {
         promise.reject(SecurityException("User rejected permissions"))
@@ -280,7 +283,7 @@ class ImagePickerModule(
             pickerOptions.isExif,
             pickerOptions.videoMaxDuration
           )
-          //...but we need to remember to add it later.
+          // ...but we need to remember to add it later.
           PendingPromise(pickerResultStore, isBase64 = true)
         } else {
           PendingPromise(pickerResultStore)
@@ -315,12 +318,12 @@ class ImagePickerModule(
   }
 
   private fun shouldHandleOnActivityResult(activity: Activity, requestCode: Int): Boolean {
-    return experienceActivity != null
-      && mPromise != null
-      && mPickerOptions != null
+    return experienceActivity != null &&
+      mPromise != null &&
+      mPickerOptions != null &&
       // When we launched the crop tool and the android kills current activity, the references can be different.
       // So, we fallback to the requestCode in this case.
-      && (activity === experienceActivity || mWasDestroyed && requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE)
+      (activity === experienceActivity || mWasDestroyed && requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE)
   }
 
   private fun handleOnActivityResult(promise: Promise, activity: Activity, requestCode: Int, resultCode: Int, intent: Intent?, pickerOptions: ImagePickerOptions) {

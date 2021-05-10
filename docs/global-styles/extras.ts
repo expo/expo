@@ -1,4 +1,4 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
 import { theme, palette } from '@expo/styleguide';
 
 import * as Constants from '~/constants/theme';
@@ -8,7 +8,8 @@ export const globalExtras = css`
     max-width: 900px;
   }
 
-  img[src*="https://placehold.it/15"] {
+  img[src*="https://placehold.it/15"]
+  {
     width: 15px !important;
     height: 15px !important;
   }

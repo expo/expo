@@ -94,6 +94,32 @@ export enum ImageType {
   jpg = 'jpg',
 }
 
+/**
+ * This option specifies what codec to use when recording a video.
+ */
+export enum VideoCodec {
+  /**
+   * @platforms ios
+   */
+  H264 = 'avc1',
+  /**
+   * @platforms ios
+   */
+  HEVC = 'hvc1',
+  /**
+   * @platforms ios
+   */
+  JPEG = 'jpeg',
+  /**
+   * @platforms ios
+   */
+  AppleProRes422 = 'apcn',
+  /**
+   * @platforms ios
+   */
+  AppleProRes4444 = 'ap4h',
+}
+
 export type ImageParameters = {
   imageType: ImageType;
   quality: number | null;
@@ -152,6 +178,8 @@ export type CameraRecordingOptions = {
   mirror?: boolean;
   // Android
   videoBitrate?: number;
+  // iOS
+  codec?: VideoCodec;
 };
 
 export type CameraCapturedPicture = {
@@ -172,10 +200,12 @@ export type MountErrorListener = (event: { nativeEvent: CameraMountError }) => v
 
 export type CameraMountError = { message: string };
 
-export type BarCodePoint = {
+type Point = {
   x: number;
   y: number;
 };
+
+export type BarCodePoint = Point;
 
 export type BarCodeScanningResult = {
   type: string;
@@ -184,7 +214,43 @@ export type BarCodeScanningResult = {
   cornerPoints?: BarCodePoint[];
 };
 
-export type FaceDetectionResult = { faces: any[] };
+export type Face = {
+  faceID: number;
+  bounds: {
+    origin: Point;
+    size: {
+      height: number;
+      width: number;
+    };
+  };
+  rollAngle: number;
+  yawAngle: number;
+  smilingProbability: number;
+  leftEarPosition: Point;
+  rightEarPosition: Point;
+  leftEyePosition: Point;
+  leftEyeOpenProbability: number;
+  rightEyePosition: Point;
+  rightEyeOpenProbability: number;
+  leftCheekPosition: Point;
+  rightCheekPosition: Point;
+  mouthPosition: Point;
+  leftMouthPosition: Point;
+  rightMouthPosition: Point;
+  noseBasePosition: Point;
+};
+
+export type FaceDetectionResult = { faces: Face[] };
+
+export type ConstantsType = {
+  Type: typeof CameraType;
+  FlashMode: typeof FlashMode;
+  AutoFocus: typeof AutoFocus;
+  WhiteBalance: typeof WhiteBalance;
+  VideoQuality: any;
+  VideoStabilization: any;
+  VideoCodec: typeof VideoCodec;
+};
 
 export type CameraProps = ViewProps & {
   type?: number | keyof typeof CameraType;

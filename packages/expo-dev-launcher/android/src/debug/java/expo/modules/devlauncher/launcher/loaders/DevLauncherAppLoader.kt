@@ -40,6 +40,8 @@ abstract class DevLauncherAppLoader(
   private val context: Context
 ) {
   private var continuation: Continuation<Boolean>? = null
+  private var reactContextWasInitialized = false
+
   fun createOnDelegateWillBeCreatedListener(): (ReactActivity) -> Unit {
     return { activity ->
       onDelegateWillBeCreated(activity)
@@ -47,11 +49,16 @@ abstract class DevLauncherAppLoader(
       require(appHost.reactInstanceManager.currentReactContext == null) { "App react context shouldn't be created before." }
       appHost.reactInstanceManager.addReactInstanceEventListener(object : ReactInstanceManager.ReactInstanceEventListener {
         override fun onReactContextInitialized(context: ReactContext) {
+          if (reactContextWasInitialized) {
+            return
+          }
+
           // App can be started from deep link.
           // That's why, we maybe need to initialized dev menu here.
           DevLauncherController.instance.maybeInitDevMenuDelegate(context)
           onReactContext(context)
           appHost.reactInstanceManager.removeReactInstanceEventListener(this)
+          reactContextWasInitialized = true
           continuation!!.resume(true)
         }
       })
@@ -89,7 +96,13 @@ abstract class DevLauncherAppLoader(
 
   private fun setAppUrl(url: Uri): Boolean {
     val debugServerHost = url.host + ":" + url.port
-    return injectDebugServerHost(context, appHost, debugServerHost)
+    // We need to remove "/" which is added to begin of the path by the Uri
+    // and the bundle type
+    val bundleName = url.path
+      ?.substring(1)
+      ?.replace(".bundle", "")
+      ?: "index"
+    return injectDebugServerHost(context, appHost, debugServerHost, bundleName)
   }
 
   private fun launchIntent(intent: Intent) {

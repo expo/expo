@@ -17,7 +17,7 @@ For bare React Native projects, this package is included in [`react-native-unimo
 
 ## Installation in bare iOS React Native project
 
-Apart from following [those steps](#installation-in-bare-react-native-projects), make sure your `AppDelegate` extends `UMAppDelegateWrapper` as shown [here](https://gist.github.com/lukmccall/d2b97b2dde0d1aa04a245a369ffdd153).
+No additional set up necessary.
 
 ## Installation in bare Android React Native project
 

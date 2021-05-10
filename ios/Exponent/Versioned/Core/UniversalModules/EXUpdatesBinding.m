@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
   return _databaseKernelService.database;
 }
 
-- (id<EXUpdatesSelectionPolicy>)selectionPolicy
+- (EXUpdatesSelectionPolicy *)selectionPolicy
 {
   return [_updatesKernelService selectionPolicyForExperienceId:_experienceId];
 }
@@ -79,6 +79,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)requestRelaunchWithCompletion:(EXUpdatesAppRelaunchCompletionBlock)completion
 {
   return [_updatesKernelService requestRelaunchForExperienceId:_experienceId withCompletion:completion];
+}
+
+- (void)resetSelectionPolicy
+{
+  // no-op in managed
 }
 
 @end

@@ -8,6 +8,14 @@
 
 ### 🐛 Bug fixes
 
+- Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
+
+## 12.0.1 — 2021-04-13
+
+### 🐛 Bug fixes
+
+- Guard updating hook state on unmounted components. ([#12482](https://github.com/expo/expo/pull/12482) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 12.0.0 — 2021-03-10
 
 ### 🛠 Breaking changes

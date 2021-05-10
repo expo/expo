@@ -1,7 +1,6 @@
 import * as React from 'react';
 
 import ExpoAPIIcon from '../components/ExpoAPIIcon';
-import { Screens } from '../navigation/ExpoComponents';
 import ComponentListScreen from './ComponentListScreen';
 
 const screens = [
@@ -52,7 +51,8 @@ const screens = [
 export const ScreenItems = screens.map(name => ({
   name,
   route: `/components/${name.toLowerCase()}`,
-  isAvailable: !!Screens[name],
+  // isAvailable: !!Screens[name],
+  isAvailable: true,
 }));
 
 export default function ExpoComponentsScreen() {

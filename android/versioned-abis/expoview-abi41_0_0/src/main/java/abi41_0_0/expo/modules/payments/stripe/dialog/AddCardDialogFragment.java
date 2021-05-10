@@ -6,7 +6,6 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import androidx.core.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -19,21 +18,21 @@ import android.widget.Toast;
 import com.devmarvel.creditcardentry.fields.SecurityCodeText;
 import com.devmarvel.creditcardentry.library.CreditCard;
 import com.devmarvel.creditcardentry.library.CreditCardForm;
+import com.stripe.android.ApiResultCallback;
+import com.stripe.android.model.Card;
+import com.stripe.android.model.Source;
+import com.stripe.android.model.SourceParams;
+import com.stripe.android.model.Token;
 
 import abi41_0_0.org.unimodules.core.Promise;
 
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import abi41_0_0.host.exp.expoview.R;
 import abi41_0_0.expo.modules.payments.stripe.StripeModule;
 import abi41_0_0.expo.modules.payments.stripe.util.CardFlipAnimator;
 import abi41_0_0.expo.modules.payments.stripe.util.Converters;
 import abi41_0_0.expo.modules.payments.stripe.util.Utils;
-
-import com.stripe.android.SourceCallback;
-import com.stripe.android.TokenCallback;
-import com.stripe.android.model.Card;
-import com.stripe.android.model.Source;
-import com.stripe.android.model.SourceParams;
-import com.stripe.android.model.Token;
 
 
 /**
@@ -194,11 +193,12 @@ public class AddCardDialogFragment extends DialogFragment {
     doneButton.setEnabled(false);
     progressBar.setVisibility(View.VISIBLE);
     final CreditCard fromCard = from.getCreditCard();
-    final Card card = new Card(
+    final Card card = Card.create(
       fromCard.getCardNumber(),
       fromCard.getExpMonth(),
       fromCard.getExpYear(),
-      fromCard.getSecurityCode());
+      fromCard.getSecurityCode()
+    );
 
     String errorMessage = Utils.validateCard(card);
     if (errorMessage == null) {
@@ -206,9 +206,9 @@ public class AddCardDialogFragment extends DialogFragment {
         SourceParams cardSourceParams = SourceParams.createCardParams(card);
         StripeModule.getInstance(tag).getStripe().createSource(
           cardSourceParams,
-          new SourceCallback() {
+          new ApiResultCallback<Source>() {
             @Override
-            public void onSuccess(Source source) {
+            public void onSuccess(@NonNull Source source) {
               // Normalize data with iOS SDK
               final Bundle sourceMap = Converters.convertSourceToWritableMap(source);
               sourceMap.putBundle("card", Converters.mapToWritableMap(source.getSourceTypeData()));
@@ -231,11 +231,13 @@ public class AddCardDialogFragment extends DialogFragment {
           }
         );
       } else {
-        StripeModule.getInstance(tag).getStripe().createToken(
+        StripeModule.getInstance(tag).getStripe().createCardToken(
             card,
-          PUBLISHABLE_KEY,
-          new TokenCallback() {
-            public void onSuccess(Token token) {
+            null,
+            null,
+            new ApiResultCallback<Token>() {
+              @Override
+              public void onSuccess(@NonNull Token token) {
                 if (promise != null) {
                   promise.resolve(Converters.convertTokenToWritableMap(token));
                   promise = null;
@@ -244,6 +246,7 @@ public class AddCardDialogFragment extends DialogFragment {
                 dismiss();
               }
 
+              @Override
               public void onError(Exception error) {
                 doneButton.setEnabled(true);
                 progressBar.setVisibility(View.GONE);

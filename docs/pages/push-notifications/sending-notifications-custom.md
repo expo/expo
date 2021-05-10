@@ -1,5 +1,6 @@
 ---
 title: Sending Notifications with APNs & FCM
+hideFromSearch: true
 ---
 
 Communicating directly with APNs and FCM is much more complicated than sending notifications through [Expo's push notification service](sending-notifications.md), so you should only use this feature if you're prepared to undertake that complexity. Here are a few things you'll have to handle yourself if you choose to write your own server for FCM and APNs:

@@ -85,6 +85,7 @@ Opens the url with Safari in a modal on iOS using [`SFSafariViewController`](htt
   - **readerMode (_optional_) (_boolean_)** -- (_iOS only_) a boolean determining whether Safari should enter Reader mode, if it is available.
   - **secondaryToolbarColor (_optional_) (_string_)** -- (_Android only_) color of the secondary toolbar in either `#AARRGGBB` or `#RRGGBB` format.
   - **showInRecents (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether browsed website should be shown as separate entry in Android recents/multitasking view. Default: `false`
+  - **createTask (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether the browser should open in a new task or in the same task as your app. Default: `true`
   - **showTitle (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether the browser should show the title of website on the toolbar.
   - **toolbarColor (_optional_) (_string_)** -- color of the toolbar in either `#AARRGGBB` or `#RRGGBB` format.
 

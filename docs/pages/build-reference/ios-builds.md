@@ -31,7 +31,7 @@ In this next phase, this is what happens when EAS Build picks up your request:
 
 2. Download the project tarball from a private AWS S3 bucket and unpack it.
 3. Run `yarn install` in the project root (or `npm install` if `yarn.lock` does not exist).
-4. **Managed** projects require an additional step: Run `expo eject` to convert the project to a generic one.
+4. **Managed** projects require an additional step: Run `expo prebuild` to convert the project to a generic one.
 5. Run `pod install` in the `ios` directory inside your project.
 6. Restore the credentials:
 

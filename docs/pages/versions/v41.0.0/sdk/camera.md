@@ -132,6 +132,22 @@ import { Camera } from 'expo-camera';
 const types = await Camera.getAvailableCameraTypesAsync();
 ```
 
+### `Camera.requestPermissionsAsync()`
+
+Asks the user to grant permissions for accessing camera.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+### `Camera.getPermissionsAsync()`
+
+Checks user's permissions for accessing camera.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
 ## Props
 
 ### `type`
@@ -243,7 +259,7 @@ snap = async () => {
 
 Takes a picture and saves it to app's cache directory. Photos are rotated to match device's orientation (if **options.skipProcessing** flag is not enabled) and scaled to match the preview. Anyway on Android it is essential to set `ratio` prop to get a picture with correct dimensions.
 
-> **Note**: Make sure to wait for the [`onCameraReady`](./#oncameraready) callback before calling this method.
+> **Note**: Make sure to wait for the [`onCameraReady`](#oncameraready) callback before calling this method.
 
 #### Arguments
 
@@ -262,7 +278,7 @@ Takes a picture and saves it to app's cache directory. Photos are rotated to mat
 
 Returns a Promise that resolves to an object: `{ uri, width, height, exif, base64 }` where `uri` is a URI to the local image file on iOS, Android, and a base64 string on web (usable as the source for an `Image` element). The `width, height` properties specify the dimensions of the image. `base64` is included if the `base64` option was truthy, and is a string containing the JPEG data of the image in Base64--prepend that with `'data:image/jpg;base64,'` to get a data URI, which you can use as the source for an `Image` element for example. `exif` is included if the `exif` option was truthy, and is an object containing EXIF data for the image--the names of its properties are EXIF tags and their values are the values for those tags.
 
-On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem.md#expofilesystemcopyasyncoptions) to make a permanent copy of the image.
+On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem.md#filesystemcopyasyncoptions) to make a permanent copy of the image.
 
 On web, the `uri` is a base64 representation of the image because file system URLs are not supported in the browser. The `exif` data returned on web is a partial representation of the [`MediaTrackSettings`](https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings), if available.
 
@@ -319,21 +335,6 @@ Pauses the camera preview. It is not recommended to use `takePictureAsync` when 
 
 Resumes the camera preview.
 
-### `requestPermissionsAsync()`
-
-Asks the user to grant permissions for accessing camera. Alias for `Permissions.askAsync(Permissions.CAMERA)`.
-
-#### Returns
-
-A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
-
-### `getPermissionsAsync()`
-
-Checks user's permissions for accessing camera. Alias for `Permissions.getAsync(Permissions.CAMERA)`.
-
-#### Returns
-
-A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ## Web Support
 

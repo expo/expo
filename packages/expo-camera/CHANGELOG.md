@@ -6,7 +6,30 @@
 
 ### 🎉 New features
 
+- On iOS added new `codec` parameter in `recordAsync()` method and new method `getAvailableVideoCodecsAsync()` that queries the device for available video codecs. ([#12772](https://github.com/expo/expo/pull/12772) by [@ajsmth](https://github.com/ajsmth))
+
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+- Migrated module interface from `unimodules-camera-interface` to `expo-modules-core`.
+
+## 11.0.3 — 2021-05-03
+
+### 🐛 Bug fixes
+
+- Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
+- Add `unimodules-permissions-interface` dependency. ([#12739](https://github.com/expo/expo/pull/12739) by [@ajsmth](https://github.com/ajsmth))
+
+## 11.0.2 — 2021-04-13
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.1 — 2021-04-01
+
+### 🐛 Bug fixes
+
+- Fix typing on `Camera.Constants`. ([#12343](https://github.com/expo/expo/pull/12343) by [@HBiede](https://github.com/HBiede))
 
 ## 11.0.0 — 2021-03-10
 

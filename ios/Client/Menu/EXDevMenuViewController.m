@@ -97,7 +97,7 @@
   NSString *manifestString = nil;
   if (visibleApp.appLoader.manifest && [NSJSONSerialization isValidJSONObject:visibleApp.appLoader.manifest]) {
     NSError *error;
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:visibleApp.appLoader.manifest options:0 error:&error];
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:visibleApp.appLoader.manifest.rawManifestJSON options:0 error:&error];
     if (jsonData) {
       manifestString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     } else {

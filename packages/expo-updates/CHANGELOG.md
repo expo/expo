@@ -4,9 +4,51 @@
 
 ### 🛠 Breaking changes
 
+- Rename new manifest field updateMetadata to metadata ([#12831](https://github.com/expo/expo/pull/12831) by [@jkhales](https://github.com/jkhales))
+- Save asset with a key that does not include an extension. This introduces an implicit dependency on expo-asset@8.3.2 or above. ([#12734](https://github.com/expo/expo/pull/12734) by [@jkhales](https://github.com/jkhales))
+- Add last_accessed column to updates table schema, and rename metadata -> manifest. ([#12768](https://github.com/expo/expo/pull/12768) by [@esamelson](https://github.com/esamelson))
+- Add non-destructive database migration for the above change. ([#12820](https://github.com/expo/expo/pull/12820) by [@esamelson](https://github.com/esamelson))
+
 ### 🎉 New features
 
+- Convert manifest definitions and tests to kotlin. ([#12479](https://github.com/expo/expo/pull/12479) by [@wschurman](https://github.com/wschurman))
+- Start converting untyped manifest JSON objects into well-specified classes. ([#12506](https://github.com/expo/expo/pull/12506) by [@wschurman](https://github.com/wschurman))
+- Finish conversion to an interface for raw manifests. ([#12509](https://github.com/expo/expo/pull/12509) by [@wschurman](https://github.com/wschurman))
+- Add support for loading new manifests in Expo Go. ([#12521](https://github.com/expo/expo/pull/12521) by [@wschurman](https://github.com/wschurman))
+- Split SelectionPolicy into 3 separate interfaces. (Android: [#12606](https://github.com/expo/expo/pull/12606) and iOS: [#12682](https://github.com/expo/expo/pull/12682) by [@esamelson](https://github.com/esamelson))
+- Add DatabaseIntegrityCheck and tests. (Android: [#12607](https://github.com/expo/expo/pull/12607) and [#12754](https://github.com/expo/expo/pull/12754), and iOS: [#12683](https://github.com/expo/expo/pull/12683) by [@esamelson](https://github.com/esamelson))
+- Add onAssetLoaded progress callback to remote loader. (Android: [#12608](https://github.com/expo/expo/pull/12608) and iOS: [#12684](https://github.com/expo/expo/pull/12684) by [@esamelson](https://github.com/esamelson))
+- Add setter and resetter for SelectionPolicy. (Android: [#12609](https://github.com/expo/expo/pull/12609) and iOS: [#12685](https://github.com/expo/expo/pull/12685) by [@esamelson](https://github.com/esamelson))
+- Convert most remaining usages of JSON manifest to RawManifest. ([#12600](https://github.com/expo/expo/pull/12600) by [@wschurman](https://github.com/wschurman))
+- Factor out raw manifest into wrapper class. ([#12631](https://github.com/expo/expo/pull/12631) by [@wschurman](https://github.com/wschurman))
+- Remove code to handle nested root level manifest key. ([#12736](https://github.com/expo/expo/pull/12736) by [@wschurman](https://github.com/wschurman))
+- Move scope check from reaper to selection policy. ([#12769](https://github.com/expo/expo/pull/12769) by [@esamelson](https://github.com/esamelson))
+- Add ReaperSelectionPolicyDevelopmentClient, implement in Expo Go. ([#12770](https://github.com/expo/expo/pull/12770) by [@esamelson](https://github.com/esamelson))
+
 ### 🐛 Bug fixes
+
+- Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
+- Rename Update.metadata -> manifest in internal module classes. ([#12818](https://github.com/expo/expo/pull/12818) by [@esamelson](https://github.com/esamelson))
+
+## 0.6.0 — 2021-04-13
+
+### 🛠 Breaking changes
+
+- remove UPDATES_CONFIGURATION_USES_LEGACY_MANIFEST_KEY constant. ([#12181](https://github.com/expo/expo/pull/12181) by [@jkhales](https://github.com/jkhales))
+- remove EXUpdatesUsesLegacyManifest Plist constant (ios). ([#12249](https://github.com/expo/expo/pull/12249) by [@jkhales](https://github.com/jkhales))
+- crash if EXUpdatesRequestHeaders is not a dictionary (ios). ([#12457](https://github.com/expo/expo/pull/12457) by [@jkhales](https://github.com/jkhales))
+
+### 🎉 New features
+
+- add method to read stringified requestHeaders. ([#12229](https://github.com/expo/expo/pull/12229) by [@jkhales](https://github.com/jkhales))
+
+### 🐛 Bug fixes
+
+- Fixed Updates module methods in Android Expo Go by refactoring FileDownloader to have mostly instance methods rather than static methods.
+- Fixed local assets URIs on Android to be compliant with File URI specification. Now file URI takes the form of `file:///*` instead of `file:/*`. ([#12428](https://github.com/expo/expo/pull/12428) by [@tsapeta](https://github.com/tsapeta))
+- Fixed Updates module methods not rejecting properly in iOS managed workflow apps where updates are disabled.
+- Fixed uncaught exception in parseDateString on Android API 21-23. ([#12492](https://github.com/expo/expo/pull/12492) by [mrs2296](https://github.com/mrs2296))
+- Improved error message in createManifest script when there is an error getting the project's metro config.
 
 ## 0.5.3 — 2021-03-30
 
@@ -78,8 +120,8 @@ _This version does not introduce any user-facing changes._
 ### 🛠 Breaking changes
 
 - This version adds an internal database migration, which means that when a user's device upgrades from an app with `expo-updates@0.3.x` to an app with `expo-updates@0.4.x`, any updates they had previously downloaded will no longer be accessible.
-  -   For **managed workflow apps**, this is inconsequential as this upgrade will be part of a major SDK version upgrade. You do not need to do anything if your app is made using the managed workflow.
-  -   For **bare workflow apps**, this means updates downloaded on clients running `expo-updates@0.3.x` will need to be redownloaded in order to run after those clients are upgraded to `expo-updates@0.4.x`. We recommend incrementing your runtime/SDK version after updating to `expo-updates@0.4.x`, and republishing any OTA updates that you do not intend to distribute embedded in your application binary.
+  - For **managed workflow apps**, this is inconsequential as this upgrade will be part of a major SDK version upgrade. You do not need to do anything if your app is made using the managed workflow.
+  - For **bare workflow apps**, this means updates downloaded on clients running `expo-updates@0.3.x` will need to be redownloaded in order to run after those clients are upgraded to `expo-updates@0.4.x`. We recommend incrementing your runtime/SDK version after updating to `expo-updates@0.4.x`, and republishing any OTA updates that you do not intend to distribute embedded in your application binary.
 
 ## 0.4.0 — 2020-11-17
 

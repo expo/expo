@@ -10,7 +10,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { H3 } from '~/components/plugins/Headings';
 import { InlineCode } from '~/components/base/code';
 
-> ⚠️ For web support and more authentication methods, use the new [**AuthSession**](auth-session.md) API
+> ⚠️ This package is deprecated in favor of [**AuthSession**](auth-session.md). Check out the [authentication guides](../../../guides/authentication.md) to learn how to migrate your existing authentication today.
 
 **`expo-app-auth`** allows you to authenticate and authorize your users through the native OAuth library AppAuth by [OpenID](https://github.com/openid).
 

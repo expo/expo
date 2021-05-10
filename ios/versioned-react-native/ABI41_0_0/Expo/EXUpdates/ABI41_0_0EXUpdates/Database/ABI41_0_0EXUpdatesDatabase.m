@@ -56,17 +56,18 @@ static NSString * const ABI41_0_0EXUpdatesDatabaseServerDefinedHeadersKey = @"se
 
 - (void)addUpdate:(ABI41_0_0EXUpdatesUpdate *)update error:(NSError ** _Nullable)error
 {
-  NSString * const sql = @"INSERT INTO \"updates\" (\"id\", \"scope_key\", \"commit_time\", \"runtime_version\", \"metadata\", \"status\" , \"keep\")\
-  VALUES (?1, ?2, ?3, ?4, ?5, ?6, 1);";
+  NSString * const sql = @"INSERT INTO \"updates\" (\"id\", \"scope_key\", \"commit_time\", \"runtime_version\", \"manifest\", \"status\" , \"keep\", \"last_accessed\")\
+  VALUES (?1, ?2, ?3, ?4, ?5, ?6, 1, ?7);";
 
   [self _executeSql:sql
            withArgs:@[
                       update.updateId,
                       update.scopeKey,
-                      @([update.commitTime timeIntervalSince1970] * 1000),
+                      update.commitTime,
                       update.runtimeVersion,
-                      update.metadata ?: [NSNull null],
-                      @(ABI41_0_0EXUpdatesUpdateStatusPending)
+                      update.manifest ?: [NSNull null],
+                      @(update.status),
+                      update.lastAccessed
                       ]
               error:error];
 }
@@ -89,7 +90,7 @@ static NSString * const ABI41_0_0EXUpdatesDatabaseServerDefinedHeadersKey = @"se
                           asset.headers ?: [NSNull null],
                           asset.type,
                           asset.metadata ?: [NSNull null],
-                          @(asset.downloadTime.timeIntervalSince1970 * 1000),
+                          asset.downloadTime,
                           asset.filename,
                           asset.contentHash,
                           @(ABI41_0_0EXUpdatesDatabaseHashTypeSha1)
@@ -167,7 +168,7 @@ static NSString * const ABI41_0_0EXUpdatesDatabaseServerDefinedHeadersKey = @"se
                       asset.headers ?: [NSNull null],
                       asset.type,
                       asset.metadata ?: [NSNull null],
-                      @(asset.downloadTime.timeIntervalSince1970 * 1000),
+                      asset.downloadTime,
                       asset.filename,
                       asset.contentHash,
                       asset.url ? asset.url.absoluteString : [NSNull null]
@@ -202,10 +203,33 @@ static NSString * const ABI41_0_0EXUpdatesDatabaseServerDefinedHeadersKey = @"se
               error:error];
 }
 
+- (void)markUpdateAccessed:(ABI41_0_0EXUpdatesUpdate *)update error:(NSError ** _Nullable)error
+{
+  update.lastAccessed = [NSDate date];
+  NSString * const updateSql = @"UPDATE updates SET last_accessed = ?1 WHERE id = ?2;";
+  [self _executeSql:updateSql withArgs:@[update.lastAccessed, update.updateId] error:error];
+}
+
 - (void)setScopeKey:(NSString *)scopeKey onUpdate:(ABI41_0_0EXUpdatesUpdate *)update error:(NSError ** _Nullable)error
 {
   NSString * const updateSql = @"UPDATE updates SET scope_key = ?1 WHERE id = ?2;";
   [self _executeSql:updateSql withArgs:@[scopeKey, update.updateId] error:error];
+}
+
+- (void)markMissingAssets:(NSArray<ABI41_0_0EXUpdatesAsset *> *)assets error:(NSError ** _Nullable)error
+{
+  sqlite3_exec(_db, "BEGIN;", NULL, NULL, NULL);
+
+  NSString * const updatesSql = @"UPDATE updates SET status = ?1 WHERE id IN\
+    (SELECT DISTINCT update_id FROM updates_assets WHERE asset_id = ?2);";
+  for (ABI41_0_0EXUpdatesAsset *asset in assets) {
+    if ([self _executeSql:updatesSql withArgs:@[@(ABI41_0_0EXUpdatesUpdateStatusPending), @(asset.assetId)] error:error] == nil) {
+      sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL);
+      return;
+    }
+  }
+
+  sqlite3_exec(_db, "COMMIT;", NULL, NULL, NULL);
 }
 
 # pragma mark - delete
@@ -278,8 +302,8 @@ static NSString * const ABI41_0_0EXUpdatesDatabaseServerDefinedHeadersKey = @"se
 
 - (nullable NSArray<ABI41_0_0EXUpdatesUpdate *> *)allUpdatesWithConfig:(ABI41_0_0EXUpdatesConfig *)config error:(NSError ** _Nullable)error
 {
-  NSString * const sql = @"SELECT * FROM updates WHERE scope_key = ?1;";
-  NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:@[config.scopeKey] error:error];
+  NSString * const sql = @"SELECT * FROM updates;";
+  NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:nil error:error];
   if (!rows) {
     return nil;
   }
@@ -289,6 +313,22 @@ static NSString * const ABI41_0_0EXUpdatesDatabaseServerDefinedHeadersKey = @"se
     [launchableUpdates addObject:[self _updateWithRow:row config:config]];
   }
   return launchableUpdates;
+}
+
+- (nullable NSArray<ABI41_0_0EXUpdatesUpdate *> *)allUpdatesWithStatus:(ABI41_0_0EXUpdatesUpdateStatus)status config:(ABI41_0_0EXUpdatesConfig *)config error:(NSError ** _Nullable)error
+{
+  NSString * const sql = @"SELECT * FROM updates WHERE status = ?1;";
+
+  NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:@[@(status)] error:error];
+  if (!rows) {
+    return nil;
+  }
+
+  NSMutableArray<ABI41_0_0EXUpdatesUpdate *> *updates = [NSMutableArray new];
+  for (NSDictionary *row in rows) {
+    [updates addObject:[self _updateWithRow:row config:config]];
+  }
+  return updates;
 }
 
 - (nullable NSArray<ABI41_0_0EXUpdatesUpdate *> *)launchableUpdatesWithConfig:(ABI41_0_0EXUpdatesConfig *)config error:(NSError ** _Nullable)error
@@ -324,9 +364,27 @@ static NSString * const ABI41_0_0EXUpdatesDatabaseServerDefinedHeadersKey = @"se
   }
 }
 
+- (nullable NSArray<ABI41_0_0EXUpdatesAsset *> *)allAssetsWithError:(NSError ** _Nullable)error
+{
+  NSString * const sql = @"SELECT * FROM assets;";
+
+  NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:nil error:error];
+  if (!rows) {
+    return nil;
+  }
+
+  NSMutableArray<ABI41_0_0EXUpdatesAsset *> *assets = [NSMutableArray arrayWithCapacity:rows.count];
+
+  for (NSDictionary *row in rows) {
+    [assets addObject:[self _assetWithRow:row]];
+  }
+
+  return assets;
+}
+
 - (nullable NSArray<ABI41_0_0EXUpdatesAsset *> *)assetsWithUpdateId:(NSUUID *)updateId error:(NSError ** _Nullable)error
 {
-  NSString * const sql = @"SELECT assets.id, \"key\", url, type, relative_path, assets.metadata, launch_asset_id\
+  NSString * const sql = @"SELECT assets.*, launch_asset_id\
   FROM assets\
   INNER JOIN updates_assets ON updates_assets.asset_id = assets.id\
   INNER JOIN updates ON updates_assets.update_id = updates.id\
@@ -470,21 +528,22 @@ static NSString * const ABI41_0_0EXUpdatesDatabaseServerDefinedHeadersKey = @"se
 - (ABI41_0_0EXUpdatesUpdate *)_updateWithRow:(NSDictionary *)row config:(ABI41_0_0EXUpdatesConfig *)config
 {
   NSError *error;
-  id metadata = nil;
-  id rowMetadata = row[@"metadata"];
-  if ([rowMetadata isKindOfClass:[NSString class]]) {
-    metadata = [NSJSONSerialization JSONObjectWithData:[(NSString *)rowMetadata dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&error];
-    NSAssert(!error && metadata && [metadata isKindOfClass:[NSDictionary class]], @"Update metadata should be a valid JSON object");
+  id manifest = nil;
+  id rowManifest = row[@"manifest"];
+  if ([rowManifest isKindOfClass:[NSString class]]) {
+    manifest = [NSJSONSerialization JSONObjectWithData:[(NSString *)rowManifest dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&error];
+    NSAssert(!error && manifest && [manifest isKindOfClass:[NSDictionary class]], @"Update manifest should be a valid JSON object");
   }
   ABI41_0_0EXUpdatesUpdate *update = [ABI41_0_0EXUpdatesUpdate updateWithId:row[@"id"]
                                                  scopeKey:row[@"scope_key"]
-                                               commitTime:[NSDate dateWithTimeIntervalSince1970:[(NSNumber *)row[@"commit_time"] doubleValue] / 1000]
+                                               commitTime:[ABI41_0_0EXUpdatesDatabaseUtils dateFromUnixTimeMilliseconds:(NSNumber *)row[@"commit_time"]]
                                            runtimeVersion:row[@"runtime_version"]
-                                                 metadata:metadata
+                                                 manifest:manifest
                                                    status:(ABI41_0_0EXUpdatesUpdateStatus)[(NSNumber *)row[@"status"] integerValue]
                                                      keep:[(NSNumber *)row[@"keep"] boolValue]
                                                    config:config
                                                  database:self];
+  update.lastAccessed = [ABI41_0_0EXUpdatesDatabaseUtils dateFromUnixTimeMilliseconds:(NSNumber *)row[@"last_accessed"]];
   return update;
 }
 
@@ -510,8 +569,9 @@ static NSString * const ABI41_0_0EXUpdatesDatabaseServerDefinedHeadersKey = @"se
   }
 
   ABI41_0_0EXUpdatesAsset *asset = [[ABI41_0_0EXUpdatesAsset alloc] initWithKey:key type:row[@"type"]];
+  asset.assetId = [(NSNumber *)row[@"id"] unsignedIntegerValue];
   asset.url = url;
-  asset.downloadTime = [NSDate dateWithTimeIntervalSince1970:([(NSNumber *)row[@"download_time"] doubleValue] / 1000)];
+  asset.downloadTime = [ABI41_0_0EXUpdatesDatabaseUtils dateFromUnixTimeMilliseconds:(NSNumber *)row[@"download_time"]];
   asset.filename = row[@"relative_path"];
   asset.contentHash = row[@"hash"];
   asset.metadata = metadata;

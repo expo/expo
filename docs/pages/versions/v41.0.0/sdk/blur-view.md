@@ -3,6 +3,7 @@ title: BlurView
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-41/packages/expo-blur'
 ---
 
+import APISection from '~/components/plugins/APISection';
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
@@ -68,7 +69,4 @@ const styles = StyleSheet.create({
 import { BlurView } from 'expo-blur';
 ```
 
-## Props
-
-- **tint (string)** -- `light`, `default` or `dark`.
-- **intensity (number)** -- A number from `1` to `100` to control the intensity of the blur effect.
+<APISection packageName="expo-blur" />

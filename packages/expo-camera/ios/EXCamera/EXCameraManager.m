@@ -73,7 +73,15 @@ UM_EXPORT_MODULE(ExponentCameraManager);
                @"cinematic": @(EXCameraVideoStabilizationModeCinematic),
                @"auto": @(EXCameraAVCaptureVideoStabilizationModeAuto)
                },
+           @"VideoCodec": @{
+               @"H264": @(EXCameraVideoCodecH264),
+               @"HEVC": @(EXCameraVideoCodecHEVC),
+               @"JPEG": @(EXCameraVideoCodecJPEG),
+               @"AppleProRes422": @(EXCameraVideoCodecAppleProRes422),
+               @"AppleProRes4444": @(EXCameraVideoCodecAppleProRes4444),
+              },
            };
+         
 }
 
 - (NSArray<NSString *> *)supportedEvents
@@ -328,6 +336,31 @@ UM_EXPORT_METHOD_AS(getAvailablePictureSizes,
                                               rejecter:(UMPromiseRejectBlock)reject)
 {
   resolve([[[self class] pictureSizes] allKeys]);
+}
+
+UM_EXPORT_METHOD_AS(getAvailableVideoCodecsAsync,
+                    resolver:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  AVCaptureSession *session = [AVCaptureSession new];   
+  [session beginConfiguration];
+
+  NSError *error = nil;
+  AVCaptureDevice *captureDevice = [EXCameraUtils deviceWithMediaType:AVMediaTypeVideo preferringPosition: AVCaptureDevicePositionFront];
+  AVCaptureDeviceInput *captureDeviceInput = [AVCaptureDeviceInput deviceInputWithDevice:captureDevice error:&error];   
+ 
+  if ([session canAddInput:captureDeviceInput]) {
+     [session addInput:captureDeviceInput];
+  }
+
+  [session commitConfiguration];
+
+  AVCaptureMovieFileOutput *movieFileOutput = [AVCaptureMovieFileOutput new];
+  if ([session canAddOutput:movieFileOutput]) {
+    [session addOutput:movieFileOutput];
+  }
+  
+  resolve([movieFileOutput availableVideoCodecTypes]);
 }
 
 UM_EXPORT_METHOD_AS(getPermissionsAsync,

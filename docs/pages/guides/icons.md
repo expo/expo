@@ -12,6 +12,7 @@ This library is installed by default on the template project that get through `e
 
 <SnackInline label='Vector icons' dependencies={['@expo/vector-icons']}>
 
+<!-- prettier-ignore -->
 ```jsx
 import * as React from 'react';
 import { View, StyleSheet } from 'react-native';
@@ -21,8 +22,8 @@ export default function App() {
   return (
     <View style={styles.container}>
       /* @info */
-      <Ionicons name="md-checkmark-circle" size={32} color="green" />
-      /* @end */
+      <Ionicons name="md-checkmark-circle" size={32} color="green" />/* @end */
+
     </View>
   );
 }
@@ -93,6 +94,7 @@ files={{
   }}
 dependencies={['@expo/vector-icons', 'expo-font', 'expo-app-loading']}>
 
+<!-- prettier-ignore -->
 ```jsx
 import React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
@@ -118,8 +120,8 @@ export default function App() {
   return (
     <View style={styles.container}>
       /* @info */
-      <Icon name="pacman" size={50} color="red" />
-      /* @end */
+      <Icon name="pacman" size={50} color="red" />/* @end */
+
     </View>
   );
 }
@@ -186,6 +188,7 @@ A convenience component for creating buttons with an icon on the left side.
 
 <SnackInline label='Icon Button Component' dependencies={['@expo/vector-icons']}>
 
+<!-- prettier-ignore -->
 ```jsx
 import * as React from 'react';
 import { View, StyleSheet } from 'react-native';
@@ -201,10 +204,11 @@ export default function App() {
   return (
     <View style={styles.container}>
       /* @info */
-      <FontAwesome.Button name="facebook" backgroundColor="#3b5998" onPress={loginWithFacebook}>
-        /* @end */ Login with Facebook /* @info */
-      </FontAwesome.Button>
-      /* @end */
+      <FontAwesome.Button name="facebook" backgroundColor="#3b5998" onPress={loginWithFacebook}>/* @end */
+      
+        Login with Facebook
+      /* @info */</FontAwesome.Button>/* @end */
+
     </View>
   );
 }

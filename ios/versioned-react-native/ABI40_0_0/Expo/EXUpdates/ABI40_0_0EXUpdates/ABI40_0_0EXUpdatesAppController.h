@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, readonly) ABI40_0_0EXUpdatesConfig *config;
 @property (nonatomic, readonly) ABI40_0_0EXUpdatesDatabase *database;
-@property (nonatomic, readonly) id<ABI40_0_0EXUpdatesSelectionPolicy> selectionPolicy;
+@property (nonatomic, readonly) ABI40_0_0EXUpdatesSelectionPolicy *selectionPolicy;
 @property (nonatomic, readonly) NSURL *updatesDirectory;
 @property (nonatomic, readonly) dispatch_queue_t assetFilesQueue;
 @property (nonatomic, readonly, assign) BOOL isStarted;
@@ -69,6 +69,23 @@ NS_ASSUME_NONNULL_BEGIN
  shared instance of ABI40_0_0EXUpdatesAppController.
  */
 - (void)setConfiguration:(NSDictionary *)configuration;
+
+/**
+ * For external modules that want to modify the selection policy used at runtime.
+ *
+ * This method does not provide any guarantees about how long the provided selection policy will
+ * persist; sometimes expo-updates will reset the selection policy in situations where it makes
+ * sense to have explicit control (e.g. if the developer/user has programmatically fetched an
+ * update, expo-updates will reset the selection policy so the new update is launched on the
+ * next reload).
+ */
+- (void)setNextSelectionPolicy:(ABI40_0_0EXUpdatesSelectionPolicy *)nextSelectionPolicy;
+
+/**
+ * Similar to the above method, but sets the next selection policy to whatever
+ * ABI40_0_0EXUpdatesAppController's default selection policy is.
+ */
+- (void)resetSelectionPolicyToDefault;
 
 /**
  Starts the update process to launch a previously-loaded update and (if configured to do so)

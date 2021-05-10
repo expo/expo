@@ -1,13 +1,12 @@
-apply from: '../node_modules/react-native-unimodules/gradle.groovy'
-
 apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle");
 applyNativeModulesSettingsGradle(settings)
 
 include(":unimodules-test-core")
 project(":unimodules-test-core").projectDir = new File("../../../packages/unimodules-test-core/android")
 
-// Include unimodules.
-includeUnimodulesProjects()
+// Include Expo modules
+apply from: '../../../packages/@unimodules/react-native-adapter/scripts/autolinking.gradle'
+useExpoModules()
 
 rootProject.name = 'BareExpo'
 

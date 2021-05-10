@@ -4,7 +4,7 @@ import android.app.Application
 import android.os.Build
 import android.view.Gravity
 import android.widget.Toast
-import host.exp.exponent.ExponentManifest
+import expo.modules.updates.manifest.ManifestFactory
 import host.exp.exponent.di.NativeModuleDepsProvider
 import org.json.JSONObject
 import javax.inject.Inject
@@ -19,10 +19,15 @@ object ToastHelper {
     NativeModuleDepsProvider.getInstance().inject(ToastHelper::class.java, this)
   }
 
-  fun functionMayNotWorkOnAndroidRWarning(featureName: String, manifest: JSONObject?) {
+  fun functionMayNotWorkOnAndroidRWarning(featureName: String, manifestJson: JSONObject?) {
     try {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        if (!ExponentManifest.isDebugModeEnabled(manifest)) {
+        if (manifestJson == null) {
+          return
+        }
+
+        val manifest = ManifestFactory.getRawManifestFromJson(manifestJson)
+        if (!manifest.isDevelopmentMode()) {
           return
         }
 
