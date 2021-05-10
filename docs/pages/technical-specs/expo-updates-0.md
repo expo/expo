@@ -50,8 +50,8 @@ A conformant client library SHOULD also send `accept: application/expo+json, app
 Example:
 ```
 accept: application/expo+json, application/json
-expo-platform: string
-expo-runtime-version: string
+expo-platform: *
+expo-runtime-version: *
 ```
 
 ## Manifest Response
@@ -69,8 +69,8 @@ expo-protocol-version: 0
 expo-sfv-version: 0
 expo-manifest-filters: &lt;expo-sfv&gt;
 expo-server-defined-headers: &lt;expo-sfv&gt;
-cache-control: &lt;*&gt;
-content-type: &lt;*&gt;
+cache-control: *
+content-type: *
 ```
 
 * `expo-protocol-version` describes the version of the protocol defined in this spec and MUST be `0`.
@@ -89,24 +89,22 @@ cache-control: max-age=0, private
 
 ### Manifest Response Body
 
-The body of the response MUST be a manifest, which is defined as JSON conforming to the following structure:
+The body of the response MUST be a manifest, which is defined as JSON conforming to both the `Manifest` in the following [typescript](https://www.typescriptlang.org/) and the detailed descriptions following them:
 ```
-{
-  id: &lt;string&gt;
-  createdAt: &lt;datetime&gt;
-  runtimeVersion: &lt;string&gt;
-  launchAsset: Asset
-  assets: Asset[]
-  metadata: { &lt;string&gt;:&lt;string&gt; }
+export type Manifest = {
+  id: string;
+  createdAt: string;
+  runtimeVersion: string;
+  launchAsset: Asset;
+  assets: Asset[];
+  metadata: { [key: string]: string};
 }
-```
-_Asset_ is defined as JSON with the following structure:
-```
-{
-  hash: &lt;string&gt;
-  key: &lt;string&gt;
-  contentType: &lt;string&gt;
-  url: &lt;string&gt;
+
+type Asset = {
+  hash: string;
+  key: string;
+  contentType: string;
+  url: string;
 }
 ```
   * `id` The ID MUST uniquely specify the manifest.
