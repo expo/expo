@@ -6,6 +6,8 @@ import * as SplashScreen from '../';
 // also ensure that no errors are thrown.
 const works = Platform.OS !== 'web';
 
+jest.mock('../ExpoSplashScreen');
+
 it(`preventAutoHideAsync doesn't throw`, async () => {
   expect(await SplashScreen.preventAutoHideAsync()).toBe(works);
 });

@@ -1,3 +1,3 @@
-import { NativeModulesProxy } from '@unimodules/core';
+import { NativeModules } from 'react-native';
 
-export default NativeModulesProxy.ExpoRandom;
+export default NativeModules.ExpoRandom;

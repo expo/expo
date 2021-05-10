@@ -1,21 +1,17 @@
 ---
 title: Camera
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-camera'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-camera'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
-**`expo-camera`** provides a React component that renders a preview for the device's front or back camera. The camera's parameters like zoom, auto focus, white balance and flash mode are adjustable. With the use of `Camera`, one can also take photos and record videos that are then saved to the app's cache. Morever, the component is also capable of detecting faces and bar codes appearing in the preview. Run the [snack below](##example-usage) on your device to see all these features working together!
+**`expo-camera`** provides a React component that renders a preview for the device's front or back camera. The camera's parameters like zoom, auto focus, white balance and flash mode are adjustable. With the use of `Camera`, one can also take photos and record videos that are then saved to the app's cache. Morever, the component is also capable of detecting faces and bar codes appearing in the preview. Run the [example](#usage) on your device to see all these features working together!
 
 <PlatformsSection android ios web />
 
-> **Notes:**
->
-> - Only one active Camera preview is supported currently. When using navigation, the best practice is to unmount any previously rendered `Camera` component so the following screens can use `<Camera />` without issues.
-> - Android devices can use one of two available Camera apis underneath. This was previously chosen automatically, based on the device's Android system version and camera hardware capabilities. As we experienced some issues with Android's Camera2 API, we decided to choose the older API as a default. However, using the newer one is still possible through setting `useCamera2Api` prop to true. The change we made should be barely visible - the only thing that is not supported using the old Android's API is setting focus depth.
+> 💡 Android devices can use one of two available Camera APIs: you can opt-in to using [`Camera2`](https://developer.android.com/reference/android/hardware/camera2/package-summary) with the `useCamera2Api` prop.
 
 ## Installation
 
@@ -25,13 +21,15 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 In managed apps, `Camera` requires `Permissions.CAMERA`. Video recording requires `Permissions.AUDIO_RECORDING`.
 
-## Example Usage
+## Usage
 
-<SnackInline label='Basic Camera usage' templateId='camera' dependencies={['expo-camera']}>
+> ⚠️ Only one Camera preview can be active at any given time. If you have multiple screens in your app, you should unmount `Camera` components whenever a screen is unfocused.
 
-```js
+<SnackInline label='Basic Camera usage' dependencies={['expo-camera']}>
+
+```jsx
 import React, { useState, useEffect } from 'react';
-import { Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Camera } from 'expo-camera';
 
 export default function App() {
@@ -52,20 +50,11 @@ export default function App() {
     return <Text>No access to camera</Text>;
   }
   return (
-    <View style={{ flex: 1 }}>
-      <Camera style={{ flex: 1 }} type={type}>
-        <View
-          style={{
-            flex: 1,
-            backgroundColor: 'transparent',
-            flexDirection: 'row',
-          }}>
+    <View style={styles.container}>
+      <Camera style={styles.camera} type={type}>
+        <View style={styles.buttonContainer}>
           <TouchableOpacity
-            style={{
-              flex: 0.1,
-              alignSelf: 'flex-end',
-              alignItems: 'center',
-            }}
+            style={styles.button}
             onPress={() => {
               setType(
                 type === Camera.Constants.Type.back
@@ -73,13 +62,39 @@ export default function App() {
                   : Camera.Constants.Type.back
               );
             }}>
-            <Text style={{ fontSize: 18, marginBottom: 10, color: 'white' }}> Flip </Text>
+            <Text style={styles.text}> Flip </Text>
           </TouchableOpacity>
         </View>
       </Camera>
     </View>
   );
 }
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  camera: {
+    flex: 1,
+  },
+  buttonContainer: {
+    flex: 1,
+    backgroundColor: 'transparent',
+    flexDirection: 'row',
+    margin: 20,
+  },
+  button: {
+    flex: 0.1,
+    alignSelf: 'flex-end',
+    alignItems: 'center',
+  },
+  text: {
+    fontSize: 18,
+    color: 'white',
+  },
+});
+/* @end */
 ```
 
 </SnackInline>
@@ -89,12 +104,6 @@ export default function App() {
 ```js
 import { Camera } from 'expo-camera';
 ```
-
-<TableOfContentSection title='Static Methods' contents={['Camera.isAvailableAsync()', 'Camera.getAvailableCameraTypesAsync(): string[]']} />
-
-<TableOfContentSection title='Props' contents={['type', 'flashMode', 'autoFocus', 'zoom', 'whiteBalance', 'focusDepth', 'ratio', 'pictureSize', 'onCameraReady', 'onFacesDetected', 'faceDetectorSettings', 'onMountError', 'onBarCodeScanned', 'barCodeScannerSettings', 'useCamera2Api', 'videoStablizationMode']} />
-
-<TableOfContentSection title='Methods' contents={['takePictureAsync()', 'recordAsync()', 'stopRecording()', 'getSupportedRatiosAsync()', 'getAvailablePictureSizesAsync()', 'pausePreview()', 'resumePreview()', 'requestPermissionsAsync()', 'getPermissionsAsync()']} />
 
 ## Static Methods
 
@@ -123,6 +132,30 @@ import { Camera } from 'expo-camera';
 const types = await Camera.getAvailableCameraTypesAsync();
 ```
 
+### `Camera.requestPermissionsAsync()`
+
+Asks the user to grant permissions for accessing camera.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+### `Camera.getPermissionsAsync()`
+
+Checks user's permissions for accessing camera.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+
+### `Camera.getAvailableVideoCodecsAsync()`
+
+(iOS only). Queries the device for the available video codecs that can be used in video recording.
+
+#### Returns
+
+A promise that resolves to a list of strings that represents available codecs.
 ## Props
 
 ### `type`
@@ -135,7 +168,7 @@ Camera flash mode. Use one of `Camera.Constants.FlashMode`. When `on`, the flash
 
 ### `autoFocus`
 
-State of camera auto focus. Use one of `Camera.Constants.AutoFocus`. When `on`, auto focus will be enabled, when `off`, it wont't and focus will lock as it was in the moment of change but it can be adjusted on some devices via `focusDepth` prop.
+State of camera auto focus. Use one of `Camera.Constants.AutoFocus`. When `on`, auto focus will be enabled, when `off`, it won't and focus will lock as it was in the moment of change but it can be adjusted on some devices via `focusDepth` prop.
 
 ### `zoom`
 
@@ -163,11 +196,11 @@ Camera white balance. Use one of `Camera.Constants.WhiteBalance`: `auto`, `sunny
 
 ### `onFacesDetected`
 
-**(_function_)** Callback invoked with results of face detection on the preview. See [FaceDetector documentation](../facedetector/#event-shape) for details.
+**(_function_)** Callback invoked with results of face detection on the preview. See [FaceDetector documentation](facedetector.md#event-shape) for details.
 
 ### `faceDetectorSettings`
 
-**(_Object_)** A settings object passed directly to an underlying module providing face detection features. See [FaceDetector documentation](../facedetector/#settings) for details.
+**(_Object_)** A settings object passed directly to an underlying module providing face detection features. See [FaceDetector documentation](facedetector.md#settings) for details.
 
 ### `onMountError`
 
@@ -179,7 +212,7 @@ Camera white balance. Use one of `Camera.Constants.WhiteBalance`: `auto`, `sunny
 
 ### `onBarCodeScanned`
 
-**(_function_)** Callback that is invoked when a bar code has been successfully scanned. The callback is provided with an object of the shape `{ type: BarCodeScanner.Constants.BarCodeType, data: string }`, where the type refers to the bar code type that was scanned and the data is the information encoded in the bar code (in this case of QR codes, this is often a URL). See [`BarCodeScanner.Constants.BarCodeType`](../bar-code-scanner/#supported-formats) for supported values.
+**(_function_)** Callback that is invoked when a bar code has been successfully scanned. The callback is provided with an object of the shape `{ type: BarCodeScanner.Constants.BarCodeType, data: string }`, where the type refers to the bar code type that was scanned and the data is the information encoded in the bar code (in this case of QR codes, this is often a URL). See [`BarCodeScanner.Constants.BarCodeType`](bar-code-scanner.md#supported-formats) for supported values.
 
 ### `barCodeTypes`
 
@@ -187,7 +220,7 @@ Camera white balance. Use one of `Camera.Constants.WhiteBalance`: `auto`, `sunny
 
 ### `barCodeScannerSettings`
 
-**(_object_)** Settings exposed by [`BarCodeScanner`](../bar-code-scanner/) module. Supported settings: [**barCodeTypes**].
+**(_object_)** Settings exposed by [`BarCodeScanner`](bar-code-scanner.md) module. Supported settings: [**barCodeTypes**].
 
 ```javascript
 <Camera
@@ -206,6 +239,10 @@ Camera white balance. Use one of `Camera.Constants.WhiteBalance`: `auto`, `sunny
 **iOS only**. **(_Camera.Constants.VideoStabilization_)** The video stabilization mode used for a video recording. Use one of `Camera.Constants.VideoStabilization.{off, standard, cinematic, auto}`.
 
 You can read more about each stabilization type [here](https://developer.apple.com/documentation/avfoundation/avcapturevideostabilizationmode).
+
+### `poster`
+
+**Web only** **(_string_)** A URL for an image to be shown while the camera is loading.
 
 ## Methods
 
@@ -230,7 +267,7 @@ snap = async () => {
 
 Takes a picture and saves it to app's cache directory. Photos are rotated to match device's orientation (if **options.skipProcessing** flag is not enabled) and scaled to match the preview. Anyway on Android it is essential to set `ratio` prop to get a picture with correct dimensions.
 
-> **Note**: Make sure to wait for the [`onCameraReady`](./#oncameraready) callback before calling this method.
+> **Note**: Make sure to wait for the [`onCameraReady`](#oncameraready) callback before calling this method.
 
 #### Arguments
 
@@ -247,9 +284,9 @@ Takes a picture and saves it to app's cache directory. Photos are rotated to mat
 
 #### Returns
 
-Returns a Promise that resolves to an object: `{ uri, width, height, exif, base64 }` where `uri` is a URI to the local image file on iOS, Android, and a base64 string on web (useable as the source for an `Image` element). The `width, height` properties specify the dimensions of the image. `base64` is included if the `base64` option was truthy, and is a string containing the JPEG data of the image in Base64--prepend that with `'data:image/jpg;base64,'` to get a data URI, which you can use as the source for an `Image` element for example. `exif` is included if the `exif` option was truthy, and is an object containing EXIF data for the image--the names of its properties are EXIF tags and their values are the values for those tags.
+Returns a Promise that resolves to an object: `{ uri, width, height, exif, base64 }` where `uri` is a URI to the local image file on iOS, Android, and a base64 string on web (usable as the source for an `Image` element). The `width, height` properties specify the dimensions of the image. `base64` is included if the `base64` option was truthy, and is a string containing the JPEG data of the image in Base64--prepend that with `'data:image/jpg;base64,'` to get a data URI, which you can use as the source for an `Image` element for example. `exif` is included if the `exif` option was truthy, and is an object containing EXIF data for the image--the names of its properties are EXIF tags and their values are the values for those tags.
 
-On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](../filesystem/#expofilesystemcopyasyncoptions) to make a permanent copy of the image.
+On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem.md#filesystemcopyasyncoptions) to make a permanent copy of the image.
 
 On web, the `uri` is a base64 representation of the image because file system URLs are not supported in the browser. The `exif` data returned on web is a partial representation of the [`MediaTrackSettings`](https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings), if available.
 
@@ -268,10 +305,12 @@ Starts recording a video that will be saved to cache directory. Videos are rotat
   - **maxFileSize (_number_)** -- Maximum video file size in bytes.
   - **mute (_boolean_)** -- If present, video will be recorded with no sound.
   - **mirror (_boolean_)** -- (iOS only; on Android, this is handled in the user's device settings) If `true`, the recorded video will be flipped along the vertical axis. iOS flips videos recorded with the front camera by default, but you can reverse that back by setting this to `true`.
+  - **videoBitrate (_number_)** -- Android only and works if `useCamera2Api` is set to `true`. (int greater than 0) This option specifies a desired video bitrate. For example, 5\*1000\*1000 would be 5Mbps.
+  - **codec (_VideoCodec_)** -- (iOS only) This option specifies what codec to use when recording the video. Usage: `Camera.Constants.VideoCodec['<value>']`
 
 #### Returns
 
-Returns a Promise that resolves to an object containing video file `uri` property. The Promise is returned if `stopRecording` was invoked, one of `maxDuration` and `maxFileSize` is reached or camera preview is stopped.
+Returns a Promise that resolves to an object containing video file `uri` property and a `codec` property on iOS. The Promise is returned if `stopRecording` was invoked, one of `maxDuration` and `maxFileSize` is reached or camera preview is stopped.
 
 ### `stopRecording()`
 
@@ -304,22 +343,6 @@ Pauses the camera preview. It is not recommended to use `takePictureAsync` when 
 ### `resumePreview()`
 
 Resumes the camera preview.
-
-### `requestPermissionsAsync()`
-
-Asks the user to grant permissions for accessing camera. Alias for `Permissions.askAsync(Permissions.CAMERA)`.
-
-#### Returns
-
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
-
-### `getPermissionsAsync()`
-
-Checks user's permissions for accessing camera. Alias for `Permissions.getAsync(Permissions.CAMERA)`.
-
-#### Returns
-
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
 
 ## Web Support
 

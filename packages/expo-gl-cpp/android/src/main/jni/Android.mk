@@ -14,7 +14,8 @@ LOCAL_SRC_FILES := \
   ../../../../cpp/TypedArrayApi.cpp \
   EXGL.cpp
 
-LOCAL_CFLAGS := -fexceptions -frtti -O3
+LOCAL_CFLAGS := -fexceptions -frtti -Wall -Wextra -Wno-unused-parameter -Wshorten-64-to-32 -Wstrict-prototypes
+
 LOCAL_STATIC_LIBRARIES := libjsi
 LOCAL_SHARED_LIBRARIES := libfolly_json glog
 

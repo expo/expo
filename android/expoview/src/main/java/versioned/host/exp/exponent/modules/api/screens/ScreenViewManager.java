@@ -26,9 +26,22 @@ public class ScreenViewManager extends ViewGroupManager<Screen> {
     return new Screen(reactContext);
   }
 
-  @ReactProp(name = "active", defaultFloat = 0)
-  public void setActive(Screen view, float active) {
-    view.setActive(active != 0);
+  @ReactProp(name = "activityState")
+  public void setActivityState(Screen view, Integer activityState) {
+    if (activityState == null) {
+      // Null will be provided when activityState is set as an animated value and we change
+      // it from JS to be a plain value (non animated).
+      // In case when null is received, we want to ignore such value and not make
+      // any updates as the actual non-null value will follow immediately.
+      return;
+    }
+    if (activityState == 0) {
+      view.setActivityState(Screen.ActivityState.INACTIVE);
+    } else if (activityState == 1) {
+      view.setActivityState(Screen.ActivityState.TRANSITIONING_OR_BELOW_TOP);
+    } else if (activityState == 2) {
+      view.setActivityState(Screen.ActivityState.ON_TOP);
+    }
   }
 
   @ReactProp(name = "stackPresentation")
@@ -54,6 +67,10 @@ public class ScreenViewManager extends ViewGroupManager<Screen> {
       view.setStackAnimation(Screen.StackAnimation.NONE);
     } else if ("fade".equals(animation)) {
       view.setStackAnimation(Screen.StackAnimation.FADE);
+    } else if ("slide_from_right".equals(animation)) {
+      view.setStackAnimation(Screen.StackAnimation.SLIDE_FROM_RIGHT);
+    } else if ("slide_from_left".equals(animation)) {
+      view.setStackAnimation(Screen.StackAnimation.SLIDE_FROM_LEFT);
     }
   }
 
@@ -62,14 +79,29 @@ public class ScreenViewManager extends ViewGroupManager<Screen> {
     view.setGestureEnabled(gestureEnabled);
   }
 
+  @ReactProp(name = "replaceAnimation")
+  public void setReplaceAnimation(Screen view, String animation) {
+    if (animation == null || "pop".equals(animation)) {
+      view.setReplaceAnimation(Screen.ReplaceAnimation.POP);
+    } else if ("push".equals(animation)) {
+      view.setReplaceAnimation(Screen.ReplaceAnimation.PUSH);
+    }
+  }
+
   @Nullable
   @Override
   public Map getExportedCustomDirectEventTypeConstants() {
     return MapBuilder.of(
             ScreenDismissedEvent.EVENT_NAME,
             MapBuilder.of("registrationName", "onDismissed"),
+            ScreenWillAppearEvent.EVENT_NAME,
+            MapBuilder.of("registrationName", "onWillAppear"),
             ScreenAppearEvent.EVENT_NAME,
             MapBuilder.of("registrationName", "onAppear"),
+            ScreenWillDisappearEvent.EVENT_NAME,
+            MapBuilder.of("registrationName", "onWillDisappear"),
+            ScreenDisappearEvent.EVENT_NAME,
+            MapBuilder.of("registrationName", "onDisappear"),
             StackFinishTransitioningEvent.EVENT_NAME,
             MapBuilder.of("registrationName", "onFinishTransitioning"));
   }

@@ -1,0 +1,26 @@
+{
+  "name": "ABI41_0_0lottie-react-native",
+  "version": "3.4.0",
+  "summary": "Lottie component for ABI41_0_0React Native (iOS and Android)",
+  "authors": {
+    "intelligibabble": "leland.m.richardson@gmail.com"
+  },
+  "homepage": "https://github.com/airbnb/lottie-react-native#readme",
+  "license": "Apache-2.0",
+  "platforms": {
+    "ios": "9.0"
+  },
+  "source": {
+    "git": "https://github.com/react-community/lottie-react-native.git",
+    "tag": "v3.4.0"
+  },
+  "source_files": "src/ios/**/*.{h,m,swift}",
+  "swift_versions": "5.0",
+  "dependencies": {
+    "ABI41_0_0React": [],
+    "lottie-ios": [
+      "~> 3.1.8"
+    ]
+  },
+  "swift_version": "5.0"
+}

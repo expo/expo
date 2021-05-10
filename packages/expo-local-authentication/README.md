@@ -25,9 +25,24 @@ expo install expo-local-authentication
 
 Run `npx pod-install` after installing the npm package.
 
+Add `NSFaceIDUsageDescription` to your `Info.plist`:
+
+```xml
+<key>NSFaceIDUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to use FaceID</string>
+```
+
 ### Configure for Android
 
 No additional set up necessary.
+
+This module requires permissions to access the biometric data for authentication purposes. The `USE_BIOMETRIC` and `USE_FINGERPRINT` permissions are automatically added.
+
+```xml
+<!-- Added permissions -->
+<uses-permission android:name="android.permission.USE_BIOMETRIC" />
+<uses-permission android:name="android.permission.USE_FINGERPRINT" />
+```
 
 # Contributing
 

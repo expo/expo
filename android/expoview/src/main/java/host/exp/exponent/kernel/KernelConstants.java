@@ -14,6 +14,7 @@ public class KernelConstants {
   public static final String MANIFEST_URL_KEY = "experienceUrl";
   public static final String NOTIFICATION_MANIFEST_URL_KEY = "notificationExperienceUrl";
   public static final String NOTIFICATION_ACTION_TYPE_KEY = "actionType";
+  // TODO: Remove once we decide to stop supporting shortcuts to experiences.
   public static final String SHORTCUT_MANIFEST_URL_KEY = "shortcutExperienceUrl";
   public static final String HOME_MANIFEST_URL = "";
   public static final String LINKING_URI_KEY = "linkingUri";

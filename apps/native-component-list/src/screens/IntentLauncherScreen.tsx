@@ -10,13 +10,6 @@ export default class IntentLauncherScreen extends React.Component {
   };
 
   renderSettingsLink(title: string, activityAction: string, intentParams = {}) {
-    if (Platform.OS !== 'android') {
-      return (
-        <View>
-          <Text>IntentLauncherAndroid is only available on Android.</Text>
-        </View>
-      );
-    }
     return (
       <View>
         <Button
@@ -36,6 +29,14 @@ export default class IntentLauncherScreen extends React.Component {
   }
 
   render() {
+    if (Platform.OS !== 'android') {
+      return (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+          <Text>IntentLauncherAndroid is only available on Android.</Text>
+        </View>
+      );
+    }
+
     return (
       <ScrollView style={{ padding: 10 }}>
         {this.renderSettingsLink(
@@ -46,7 +47,7 @@ export default class IntentLauncherScreen extends React.Component {
         {this.renderSettingsLink('Wireless Settings', IntentLauncher.ACTION_WIRELESS_SETTINGS)}
 
         {this.renderSettingsLink(
-          'Application Details for Expo Client',
+          'Application Details for Expo Go',
           IntentLauncher.ACTION_APPLICATION_DETAILS_SETTINGS,
           {
             data: 'package:host.exp.exponent',

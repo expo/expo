@@ -10,7 +10,6 @@
 @interface UMReactNativeAdapter ()
 
 @property (nonatomic, weak) RCTBridge *bridge;
-@property (nonatomic, weak) UMNativeModulesProxy *modulesProxy;
 @property (nonatomic, assign) BOOL isForegrounded;
 @property (nonatomic, strong) NSPointerArray *lifecycleListeners;
 

@@ -1,0 +1,79 @@
+// Gradle script for generating serialized public app config (from app.config.js/ts or app.json) and bundling it into the APK 
+
+import org.apache.tools.ant.taskdefs.condition.Os
+import org.gradle.util.GradleVersion
+
+void runBefore(String dependentTaskName, Task task) {
+  Task dependentTask = tasks.findByPath(dependentTaskName);
+  if (dependentTask != null) {
+    dependentTask.dependsOn task
+  }
+}
+
+def expoConstantsDir = ["node", "-e", "console.log(require('path').dirname(require.resolve('expo-constants/package.json')));"].execute([], projectDir).text.trim()
+
+def config = project.hasProperty("react") ? project.react : [];
+def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
+
+afterEvaluate {
+  def projectRoot = file("../../")
+  def inputExcludes = ["android/**", "ios/**"]
+
+  android.applicationVariants.each { variant ->
+    def targetName = variant.name.capitalize()
+    def targetPath = variant.dirName
+
+    def assetsDir = file("$buildDir/generated/assets/expo-constants/${targetPath}")
+
+    def currentBundleTask = tasks.create(
+        name: "create${targetName}ExpoConfig",
+        type: Exec) {
+      description = "expo-constants: Create config for ${targetName}."
+
+      doFirst {
+        assetsDir.deleteDir()
+        assetsDir.mkdirs()
+      }
+
+      // Set up inputs and outputs so gradle can cache the result
+      inputs.files fileTree(dir: projectRoot, excludes: inputExcludes)
+      outputs.dir assetsDir
+
+      // Switch to project root and generate the app config
+      workingDir projectRoot
+
+      if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        commandLine("cmd", "/c", *nodeExecutableAndArgs, "$expoConstantsDir/scripts/getAppConfig.js", projectRoot, assetsDir)
+      } else {
+        commandLine(*nodeExecutableAndArgs, "$expoConstantsDir/scripts/getAppConfig.js", projectRoot, assetsDir)
+      }
+    }
+
+    def currentAssetsCopyTask = tasks.create(
+        name: "copy${targetName}ExpoConfig",
+        type: Copy) {
+      description = "expo-constants: Copy config into ${targetName}."
+
+      into ("$buildDir/intermediates")
+      into ("assets/${targetPath}") {
+        from(assetsDir)
+      }
+
+      // Workaround for Android Gradle Plugin 3.2+ new asset directory
+      into ("merged_assets/${variant.name}/merge${targetName}Assets/out") {
+        from(assetsDir)
+      }
+
+      // Workaround for Android Gradle Plugin 3.4+ new asset directory
+      into ("merged_assets/${variant.name}/out") {
+        from(assetsDir)
+      }
+
+      // mergeAssets must run first, as it clears the intermediates directory
+      dependsOn(variant.mergeAssetsProvider.get())
+      dependsOn(currentBundleTask)
+    }
+
+    runBefore("process${targetName}Resources", currentAssetsCopyTask)
+  }
+}

@@ -225,7 +225,13 @@ async function onCapabilitiesReady(cameraType, track, settings = {}) {
     if (capabilities.whiteBalanceMode && settings.whiteBalance !== undefined) {
         constraints.whiteBalanceMode = validatedInternalConstrainedValue('whiteBalanceMode', 'whiteBalance', CapabilityUtils.convertWhiteBalanceJSONToNative);
     }
-    await track.applyConstraints({ advanced: [constraints] });
+    try {
+        await track.applyConstraints({ advanced: [constraints] });
+    }
+    catch (error) {
+        if (__DEV__)
+            console.warn('Failed to apply constraints', error);
+    }
 }
 export function stopMediaStream(stream) {
     if (!stream) {

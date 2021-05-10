@@ -1,14 +1,16 @@
 ---
 title: Permissions
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-permissions'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-permissions'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-When it comes to adding functionality that can access potentially sensitive information on a user's device, such as their location, or possibly send them possibly unwanted push notifications, you will need to ask the user for their permission first. Unless you've already asked their permission, then no need. And so we have the **`expo-permissions`** module.
+> **expo-permissions is deprecated.** Use permissions getters and requesters in specific modules instead, such as [MediaLibrary.getPermissionsAsync()](../media-library.md/#medialibrarygetpermissionsasync) and [MediaLibrary.requestPermissionsAsync()](../media-library.md/#medialibraryrequestpermissionsasync)..
 
-If you are deploying your app to the Apple iTunes Store, you must add additional metadata to your app in order to customize the system permissions dialog, and more importantly, explain why your app requires permissions. **Without this explanation, your app may be rejected from the App Store.** See more info in the [App Store Deployment Guide](../../distribution/app-stores/#system-permissions-dialogs-on-ios).
+When you are creating an app that requires access to potentially sensitive information on a user's device, such as their location or contacts, you need to ask for the user's permission first. The `expo-permissions` module makes requesting these permissions easy, fast, and reliable.
+
+Please read the [permissions on iOS](#permissions-on-ios) and [permissions on Android](#permissions-on-android) sections carefully before deploying your app to the stores. If you don't configure or explain the permissions properly **it may result in your app getting rejected or pulled from the stores**. Read more about deploying to the stores in the [App Store Deployment Guide](../../../distribution/app-stores.md#system-permissions-dialogs-on-ios).
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -16,31 +18,87 @@ If you are deploying your app to the Apple iTunes Store, you must add additional
 
 <InstallSection packageName="expo-permissions" />
 
-### Usage in bare workflow
+## Permissions on iOS
 
-`expo-permissions` includes the shared infrastructure for handling system permissions, it does not include the code specific to particular permissions. For example, if you want to use the `CAMERA_ROLL` permission, you need to install `expo-image-picker` or `expo-media-library`.
+### Managed workflow
 
-The following table shows you which permissions correspond to which packages.
+To request permissions on iOS, you have to describe why the permissions are requested and [install the library](#permissions-and-required-packages-on-ios) that can request this permission. In the managed workflow, you can do that by customizing the `ios.infoPlist` property in your [`app.json` file](../../../workflow/configuration.md#ios). When using the bare workflow, you have to edit the `info.plist` file directly.
 
-| Permission type             | Packages                                  |
-| --------------------------- | ----------------------------------------- |
-| `NOTIFICATIONS`             | `expo-notifications`                      |
-| `USER_FACING_NOTIFICATIONS` | `expo-notifications`                      |
-| `LOCATION`                  | `expo-location`                           |
-| `CAMERA`                    | `expo-camera`, `expo-barcode-scanner`     |
-| `AUDIO_RECORDING`           | `expo-av`                                 |
-| `CONTACTS`                  | `expo-contacts`                           |
-| `CAMERA_ROLL`               | `expo-image-picker`, `expo-media-library` |
-| `CALENDAR`                  | `expo-calendar`                           |
-| `REMINDERS`                 | `expo-calendar`                           |
-| `SYSTEM_BRIGHTNESS`         | `expo-brightness`                         |
-| `MOTION`                    | `expo-sensors`                            |
+See the [`Permission types`](#permission-types) below to learn about what `infoPlist` property you need for each permission. You can find the full list of available properties in [Apple's InfoPlistKeyReference](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW1). Apple also documents the basic guidelines for the structure of the message in the [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/ios/app-architecture/requesting-permission/).
+
+> **Note:** apps using permissions without descriptions _may be rejected from the App Store_. (see the [App Store Deployment Guide](../../../distribution/app-stores.md#system-permissions-dialogs-on-ios))
+
+### Bare workflow
+
+To request permissions on iOS, you have to describe why the permissions are requested and [install the library](#permissions-and-required-packages-on-ios) that can request this permission. When using the bare workflow, you have to edit the project `Info.plist`.
+
+See the [`Permission types`](#permission-types) below to learn about what `Info.plist` property you need for each permission. You can find the full list of available properties in [Apple's InfoPlistKeyReference](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW1). Apple also documents the basic guidelines for the structure of the message in the [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/ios/app-architecture/requesting-permission/).
+
+## Permissions on Android
+
+### Managed workflow
+
+On Android, permissions are little bit simpler than iOS. In the managed workflow, permissions are controlled via the `android.permissions` property in your [`app.json` file](../../../workflow/configuration.md#android). In the bare workflow, they have to be defined in your `AndroidManifest.xml`.
+
+Some Expo and React Native modules include permissions by default. If you use `expo-location`, for example, both the `ACCESS_COARSE_LOCATION` and `ACCESS_FINE_LOCATION` are implied and added to your app's permissions automatically.
+
+To limit the permissions your managed workflow app requires, set the `android.permissions` property in your [`app.json` file](../../../workflow/configuration.md#android) to list only the permissions you need, and Expo will also include the minimum permissions it requires to run. See the [`Permission types`](#permission-types) below to learn about which Android permissions are added. You can find a full list of all available permissions in the [Android Manifest.permissions reference](https://developer.android.com/reference/android/Manifest.permission).
+
+- [See the `android.permissions` documentation](../config/app.md#permissions) to learn about which permissions are always included.
+- Apps using dangerous or signature permissions without valid reasons _may be rejected by Google_. Make sure you follow the [Android permissions best practices](https://developer.android.com/training/permissions/usage-notes) when submitting your app.
+- By default, the permissions implied by the modules you installed are added to the `AndroidManifest.xml` at build time. To exclude permissions, you have to define the `android.permissions` manifest property.
+
+### Bare workflow
+
+In the bare workflow, permissions are controlled in your project `AndroidManifest.xml`.
+
+Some Expo and React Native modules include permissions by default. If you use `expo-location`, for example, both the `ACCESS_COARSE_LOCATION` and `ACCESS_FINE_LOCATION` are implied and added to your app's permissions automatically. To limit the permissions your managed workflow app requires, add them them to a [list of explicitly excluded permissions](#excluding-android-permissions-in-bare-workflow).
+
+Apps using dangerous or signature permissions without valid reasons _may be rejected by Google_. Make sure you follow the [Android permissions best practices](https://developer.android.com/training/permissions/usage-notes) when submitting your app.
+
+## Permissions on Web
+
+On web permissions like the `Camera` and `Location` can only be requested from a [secure context](https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts#When_is_a_context_considered_secure), e.g. using `https://` or `http://localhost`. This limitation is similar to Android's manifest permissions and iOS's infoPlist usage messages and enforced to increase privacy.
 
 ## Usage
 
 ### Manually testing permissions
 
-Often you want to be able to test what happens when you reject a permission to ensure that it has the desired behavior. An operating-system level restriction on both iOS and Android prohibits an app from asking for the same permission more than once (you can imagine how this could be annoying for the user to be repeatedly prompted for permissions). So in order to test different flows involving permissions, you may need to uninstall and reinstall the Expo app. In the simulator this is as easy as deleting the app and expo-cli will automatically install it again next time you launch the project from it.
+Often you want to be able to test what happens when a user rejects a permission, to ensure that it has the desired behavior. An operating-system level restriction on both iOS and Android prohibits an app from asking for the same permission more than once (you can imagine how this could be annoying for the user to be repeatedly prompted for permissions). So in order to test different flows involving permissions in development, you may need to uninstall and reinstall the Expo Go app. In the simulator this is as easy as deleting the app, and `expo-cli` will automatically install it again next time you launch the project.
+
+### Permissions and required packages on iOS
+
+`expo-permissions` includes the shared infrastructure for handling system permissions. On iOS, it does not include the code specific to particular permissions. For example, if you want to use the `MEDIA_LIBRARY` permission, you need to install `expo-image-picker` or `expo-media-library`.
+
+The following table shows you which permissions correspond to which packages.
+
+| Permission type                                  | Packages                                                                                                                       |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| `NOTIFICATIONS`                                  | `expo-notifications`                                                                                                           |
+| `USER_FACING_NOTIFICATIONS`                      | `expo-notifications`                                                                                                           |
+| `LOCATION`                                       | `expo-location`                                                                                                                |
+| `CAMERA`                                         | `expo-barcode-scanner` <br /> `expo-camera` <br /> `expo-face-detector` <br /> `expo-image-picker` <br /> `expo-media-library` |
+| `AUDIO_RECORDING`                                | `expo-av`                                                                                                                      |
+| `CONTACTS`                                       | `expo-contacts`                                                                                                                |
+| `MEDIA_LIBRARY`<br /> `MEDIA_LIBRARY_WRITE_ONLY` | `expo-image-picker`<br /> `expo-media-library`                                                                                 |
+| `CALENDAR`                                       | `expo-calendar`                                                                                                                |
+| `REMINDERS`                                      | `expo-calendar`                                                                                                                |
+| `SYSTEM_BRIGHTNESS`                              | `expo-brightness`                                                                                                              |
+| `MOTION`                                         | `expo-sensors`                                                                                                                 |
+
+### Excluding Android permissions in bare workflow
+
+When adding Expo and other React Native modules to your project, certain Android permissions might be implied automatically. The modules should only add relevant permissions **required** to use the module, however, sometimes you may want to remove some of these permissions.
+
+Since the `android.permissions` manifest property doesn't work in the bare workflow- when you want to exclude specific permissions from the build, you have to "blacklist" them in your `AndroidManifest.xml`. You can do that with the `tools:node="remove"` attribute on the `<use-permission>` tag.
+
+```xml
+<manifest xmlns:tools="http://schemas.android.com/tools">
+  <uses-permission tools:node="remove" android:name="android.permission.ACCESS_FINE_LOCATION" />
+</manifest>
+```
+
+> **Note:** you have to define the `xmlns:tools` attribute on `<manifest>` before you can use the `tools:node` attribute on permissions.
 
 # API
 
@@ -67,7 +125,7 @@ Get or ask permission for protected functionality within the app. This returns t
 
 #### Returns
 
-- **permission (_[PermissionsResponse](#permissions-response)|undefined_)** -- An object with information about the permissions, including status, expiration, and scope (if applicable).
+- **permission (_[PermissionsResponse](#permissionresponse)|undefined_)** -- An object with information about the permissions, including status, expiration, and scope (if applicable).
 - **askPermission (_() => void_)** -- A callback to ask the user for permission.
 - **getPermission (_() => void_)** -- A callback to get the permission status without interacting with the user.
 
@@ -96,6 +154,8 @@ function App() {
 
 ### `Permissions.getAsync(...types)`
 
+> **Deprecated.** Use permissions getters in specific modules instead, such as [MediaLibrary.getPermissionsAsync()](../media-library.md/#medialibrarygetpermissionsasync).
+
 Determines whether your app has already been granted access to the provided permissions types.
 
 #### Arguments
@@ -104,7 +164,7 @@ Determines whether your app has already been granted access to the provided perm
 
 #### Returns
 
-A `Promise` with a [`PermissionResponse`](#permissions-response) object.
+A `Promise` resolving to a [`PermissionResponse`](#permissionresponse) object -- an object describing the current state of the permissions.
 
 #### Example
 
@@ -129,6 +189,8 @@ async function checkMultiPermissions() {
 
 ### `Permissions.askAsync(...types)`
 
+> **Deprecated.** Use permissions requesters in specific modules instead, such as [MediaLibrary.requestPermissionsAsync()](../media-library.md/#medialibraryrequestpermissionsasync).
+
 Prompt the user for types of permissions. If they have already granted access, response will be success.
 
 #### Arguments
@@ -137,7 +199,7 @@ Prompt the user for types of permissions. If they have already granted access, r
 
 #### Returns
 
-A `Promise` with a [`PermissionResponse`](#permissions-response) object.
+A `Promise` resolving to a [`PermissionResponse`](#permissionresponse) -- an object describing the new state of the permissions, after asking the user.
 
 #### Example
 
@@ -153,117 +215,218 @@ async function getLocationAsync() {
 }
 ```
 
-## Permissions response
+## Types
 
-An object with information about the permissions, including status, expiration, and scope (if applicable).
+### `PermissionResponse`
 
-```javascript
-{
-  status, // combined status of all component permissions being asked for
-  expires, // combined expires of all permissions being asked for, same as status
-  canAskAgain,
-  granted,
-  permissions: { // an object with an entry for each permission requested
-    [Permissions.TYPE]: {
-      status,
-      expires,
-      canAskAgain,
-      granted,
-      ... // any additional permission-specific fields
-    },
-    ...
-  },
+The permission response is an object describing the current state of the requested permission(s). This response contains the top-level `status`, `granted`, `expires` and `canAskAgain` properties representing the outcome for all individual permissions.
+
+```ts
+interface PermissionResponse {
+  status: 'granted' | 'undetermined' | 'denied';
+  granted: boolean;
+  expires: 'never' | number;
+  canAskAgain: boolean;
+  permissions: {
+    // an object with an entry for each permission requested
+    [permissionType: string /* PermissionType */]: PermissionInfo;
+  };
 }
 ```
 
-The top-level `status`, `expires`, `granted` and `canAskAgain` keys depend on the values returned for each of the individual permission requests:
+#### PermissionResponse.status
 
-### `status`
+This property is either `granted`, `undetermined` or `denied`, based on the requested permissions. It's reducted using the following rules.
 
-The status represents a combined status of all combined permissions, using the following rules:
+- When one or more permissions are `undetermined`, the status is `undetermined`
+- When one or more permissions are `denied`, but none of them are `undetermined`, the status is `denied`
+- When all permissions are `granted`, the status is `granted`.
 
-- If **one or more permissions** have a `status` of _undetermined_, the top level `status` is _undetermined_.
-- If **one or more permissions** have a `status` of _denied_ and none _undetermined_, then the top level `status` is _denied_.
-- If **all permissions** have a `status` of _granted_, then the top level `status` is _granted_.
+Here are some examples of permission statuses and the top-level status.
 
-Examples for the `status` top level property:
+```
+[granted, granted, granted] => granted
+[granted, granted, denied] => denied
+[denied, denied, denied] => denied
+[granted, granted, undetermined] => undetermined
+[granted, denied, undetermined] => undetermined
+```
 
-- `[granted, undetermined, undetermined] => undetermined`
-- `[granted, denied, undetermined] => undetermined`
-- `[granted, denied, granted] => denied`
-- `[granted, granted, granted] => granted`
+#### PermissionResponse.granted
 
-### `expires`
+This property is set to `true` when all requested permission are granted. If one or more are `denied` or `undetermined`, this is set to `false`.
 
-The top-level `expires` field matches the value of the earliest expiring permission.
+#### PermissionResponse.expires
 
-### `granted`
+This property coincides with the expiration time of the permission that expires the earliest. When none of the requested permissions expires, it's set to `never`.
 
-If every single permission has a `status` of _granted_, then the top level `granted` field is `true`. Otherwise, it is `false`.
+#### PermissionResponse.canAskAgain
 
-### `canAskAgain`
+This property is set to `true` when the app can request the user to grant all requested permissions.
 
-If every single permission can be asked again, then the top level is `true`. Otherwise, it is `false`.
+#### PermissionResponse.permissions
 
-## Permissions types
+This object contains information, per requested permission, using the [`PermissionInfo`](#permissioninfo) type.
+
+### `PermissionInfo`
+
+This object contains information about a single requested permission, it's returned within the `PermissionResponse` using the `permissions` property. It also may include additional platform-specific info, like the scope of the permission.
+
+```ts
+interface PermissionInfo {
+  status: 'granted' | 'undetermined' | 'denied';
+  granted: boolean;
+  expires: 'never' | number;
+  canAskAgain: boolean;
+  ios?: {
+    scope: 'whenInUse' | 'always';
+  };
+  android?: {
+    scope: 'fine' | 'coarse' | 'none';
+  };
+}
+```
+
+## Permission types
+
+- [`Permissions.NOTIFICATIONS`](#permissionsnotifications) -- user-facing notifications **and** remote push notifications
+- [`Permissions.USER_FACING_NOTIFICATIONS`](#permissionsuser_facing_notifications) -- only user-facing notifications
+- [`Permissions.LOCATION`](#permissionslocation) -- accessing the location of the user
+- [`Permissions.CAMERA`](#permissionscamera) -- using the camera to capture images or videos
+- [`Permissions.AUDIO_RECORDING`](#permissionsaudio_recording) -- using the microphone to capture audio
+- [`Permissions.CONTACTS`](#permissionscontacts) -- reading or writing to contacts
+- [`Permissions.MEDIA_LIBRARY_WRITE_ONLY`](#permissionsmedia_library_write_only) -- writing to media library
+- [`Permissions.MEDIA_LIBRARY`](#permissionsmedia_library) -- accessing the images or videos from the user
+- [`Permissions.CALENDAR`](#permissionscalendar) -- reading or writing calendar items
+- [`Permissions.REMINDERS`](#permissionsreminders) -- reading or writing calendar reminders (_iOS-only_)
+- [`Permissions.SYSTEM_BRIGHTNESS`](#permissionssystem_brightness) -- changing brightness of the screen system-wide
+- [`Permissions.MOTION`](#permissionsmotion) -- device orientation and device motion (_web-only_)
 
 ### `Permissions.NOTIFICATIONS`
 
 The permission type for user-facing notifications **and** remote push notifications.
 
-> **Note:** On iOS, asking for this permission asks the user not only for permission to register for push/remote notifications, but also for showing notifications as such. At the moment remote notifications will only be received when notifications are permitted to play a sound, change the app badge or be displayed as an alert. As iOS is more detailed when it comes to notifications permissions, this permission status will contain not only `status` and `expires`, but also Boolean values for `allowsSound`, `allowsAlert` and `allowsBadge`.
+- **Android:** it doesn't require any permissions in your manifest.
+- **iOS:** it requires the `expo-notifications` module and doesn't require a message.
 
-> **Note:** On iOS, this does not disambiguate `undetermined` from `denied` and so will only ever return `granted` or `undetermined`. This is due to the way the underlying native API is implemented.
+> **Note (iOS):** Asking for this permission asks the user not only for permission to register for push/remote notifications, but also for showing notifications as such. At the moment remote notifications will only be received when notifications are permitted to play a sound, change the app badge or be displayed as an alert. As iOS is more detailed when it comes to notifications permissions, this permission status will contain not only `status` and `expires`, but also Boolean values for `allowsSound`, `allowsAlert` and `allowsBadge`.
 
-> **Note:** Android does not differentiate between permissions for local and remote notifications, so status of permission for `NOTIFICATIONS` should always be the same as the status for `USER_FACING_NOTIFICATIONS`.
+> **Note (iOS):** This does not disambiguate `undetermined` from `denied` and so will only ever return `granted` or `undetermined`. This is due to the way the underlying native API is implemented. On iOS simulators, since they don't support registering for push notifications, you will always get `undetermined` result.
+
+> **Note (Android):** Android does not differentiate between permissions for local and remote notifications, so status of permission for `NOTIFICATIONS` should always be the same as the status for `USER_FACING_NOTIFICATIONS`.
 
 ### `Permissions.USER_FACING_NOTIFICATIONS`
 
 The permission type for user-facing notifications. This does **not** register your app to receive remote push notifications; see the `NOTIFICATIONS` permission.
 
-> **Note:** iOS provides more detailed permissions, so the permission status will contain not only `status` and `expires`, but also Boolean values for `allowsSound`, `allowsAlert` and `allowsBadge`.
+- **Android:** _this permission is the same as `NOTIFICATIONS` and returns the status from that permission._
+- **iOS:** it requires the `expo-notifications` module and doesn't require a message.
 
-> **Note:** Android does not differentiate between permissions for local and remote notifications, so status of permission for `USER_FACING_NOTIFICATIONS` should always be the same as the status for `NOTIFICATIONS`.
+> **Note (iOS):** It provides more detailed permissions, so the permission status will contain not only `status` and `expires`, but also Boolean values for `allowsSound`, `allowsAlert` and `allowsBadge`.
 
 ### `Permissions.LOCATION`
 
 The permission type for location access. It contains additional field when returning:
 
-### `scope`
+- **Android:** it requires the [`ACCESS_COARSE_LOCATION`][location-android-coarse] and [`ACCESS_FINE_LOCATION`][location-android-fine] permissions in your manifest.
+- **iOS:** it requires the `expo-location` module and one of the messages below.
+
+[location-android-coarse]: https://developer.android.com/reference/android/Manifest.permission#ACCESS_COARSE_LOCATION
+[location-android-fine]: https://developer.android.com/reference/android/Manifest.permission#ACCESS_FINE_LOCATION
+
+<!-- TODO: Permissions.LOCATION issue (search by this phrase) -->
+
+> **Note (iOS):** This is not working with this permission being not individually, `Permissions.askAsync(Permissions.SOME_PERMISSIONS, Permissions.LOCATION, Permissions.CAMERA, ...)` would throw.
+> On iOS ask for this permission type individually.
+
+> **Note (iOS):** In Expo Go on iOS this permission will always ask the user for permission to access location data while the app is in use.
+
+> If you would like to access location data in a standalone app, note that you'll need to provide location usage descriptions in `app.json`. For more information see [Deploying to App Stores guide](../../../distribution/app-stores.md#system-permissions-dialogs-on-ios).
+
+#### `scope`
 
 Returns whether permission is granted only for location updates when app is in use (`whenInUse`), even when app is backgrounded (`always`) or when permission is not granted (`none`).
 On devices running Android in versions lower than 10, scope value is either `always` or `none` depending on permission being granted. There is no special background location permission on Android 9 and below.
 
-<!-- TODO: Permissions.LOCATION issue (search by this phrase) -->
+#### What location usage descriptions should I provide on iOS?
 
-> **Note:** iOS is not working with this permission being not individually, `Permissions.askAsync(Permissions.SOME_PERMISSIONS, Permissions.LOCATION, Permissions.CAMERA, ...)` would throw.
-> On iOS ask for this permission type individually.
+Due to the design of the location permission API on iOS we aren't able to provide you with methods for asking for `whenInUse` or `always` location usage permission specifically. However, you can customize the behavior by providing the following sets of usage descriptions:
 
-> **Note (iOS):** In Expo client on iOS this permission will always ask the user for permission to access location data while the app is in use.
+- if you provide only `NSLocationWhenInUseUsageDescription`, your application will only ever ask for location access permission "when in use",
+- if you provide both `NSLocationWhenInUseUsageDescription` and `NSLocationAlwaysAndWhenInUseUsageDescription`, your application will only ask for "when in use" permission on iOS 10, whereas on iOS 11+ it will show a dialog to the user where he'll be able to pick whether he'd like to give your app permission to access location always or only when the app is in use,
+- if you provide all three: `NSLocationWhenInUseUsageDescription`, `NSLocationAlwaysAndWhenInUseUsageDescription` and `NSLocationAlwaysUsageDescription`, your application on iOS 11+ will still show a dialog described above and on iOS 10 it will only ask for "always" location permission.
 
-> If you would like to access location data in a standalone app, note that you'll need to provide location usage descriptions in `app.json`. For more information see [Deploying to App Stores guide](../../distribution/app-stores/#system-permissions-dialogs-on-ios).
->
-> **What location usage descriptions should I provide?** Due to the design of the location permission API on iOS we aren't able to provide you with methods for asking for `whenInUse` or `always` location usage permission specifically. However, you can customize the behavior by providing the following sets of usage descriptions:
->
-> - if you provide only `NSLocationWhenInUseUsageDescription`, your application will only ever ask for location access permission "when in use",
-> - if you provide both `NSLocationWhenInUseUsageDescription` and `NSLocationAlwaysAndWhenInUseUsageDescription`, your application will only ask for "when in use" permission on iOS 10, whereas on iOS 11+ it will show a dialog to the user where he'll be able to pick whether he'd like to give your app permission to access location always or only when the app is in use,
-> - if you provide all three: `NSLocationWhenInUseUsageDescription`, `NSLocationAlwaysAndWhenInUseUsageDescription` and `NSLocationAlwaysUsageDescription`, your application on iOS 11+ will still show a dialog described above and on iOS 10 it will only ask for "always" location permission.
+### `Permissions.LOCATION_FOREGROUND`
+
+The permission type for location access while the app is in the foreground.
+
+- **Android:** it requires the [`ACCESS_COARSE_LOCATION`][location-android-coarse] and [`ACCESS_FINE_LOCATION`][location-android-fine] permissions in your manifest.
+- **iOS:** it requires the `expo-location` module and [`NSLocationWhenInUseUsageDescription`][location-foreground-ios-plist] message.
+
+[location-foreground-ios-plist]: https://developer.apple.com/documentation/bundleresources/information_property_list/nslocationwheninuseusagedescription
+
+> If you would like to access location data in a standalone app, note that you'll need to provide location usage descriptions in `app.json`. For more information see [Deploying to App Stores guide](../../../distribution/app-stores.md#system-permissions-dialogs-on-ios).
+
+### `Permissions.LOCATION_BACKGROUND`
+
+The permission type for location access while the app is in the background.
+
+- **Android:** it requires the [`ACCESS_BACKGROUND_LOCATION`][location-android-background] permission in your manifest.
+- **iOS:** it requires the `expo-location` module and [`NSLocationAlwaysAndWhenInUseUsageDescription`][location-background-ios-plist] message.
+
+[location-android-background]: https://developer.android.com/reference/android/Manifest.permission#ACCESS_BACKGROUND_LOCATION
+[location-background-ios-plist]: https://developer.apple.com/documentation/bundleresources/information_property_list/nslocationalwaysandwheninuseusagedescription
+
+> **Note**: Foreground permissions should be granted before asking for the background permissions (your app can't obtain background permission without foreground permission).
+
+> If you would like to access location data in a standalone app, note that you'll need to provide location usage descriptions in `app.json`. For more information see [Deploying to App Stores guide](../../../distribution/app-stores.md#system-permissions-dialogs-on-ios).
 
 ### `Permissions.CAMERA`
 
 The permission type for photo and video taking.
 
+- **Android:** it requires the [`CAMERA`][camera-android] permission in your manifest.
+- **iOS:** it requires any of the modules listed below and [`NSCameraUsageDescription`][camera-ios-plist] message
+
+> **Note (iOS):** You can request this permission with the `expo-barcode-scanner`, `expo-camera`, `expo-face-detector`, `expo-image-picker`, or `expo-media-library` module.
+
+[camera-android]: https://developer.android.com/reference/android/Manifest.permission#CAMERA
+[camera-ios-plist]: https://developer.apple.com/documentation/avfoundation/cameras_and_media_capture/requesting_authorization_for_media_capture_on_ios#2962313
+
 ### `Permissions.AUDIO_RECORDING`
 
 The permission type for audio recording.
 
+- **Android:** it requires the [`RECORD_AUDIO`][audiorec-android] permission in your manifest.
+- **iOS:** it requires the `expo-av` module and [`NSMicrophoneUsageDescription`][audiorec-ios-plist] message.
+
+[audiorec-android]: https://developer.android.com/reference/android/Manifest.permission#RECORD_AUDIO
+[audiorec-ios-plist]: https://developer.apple.com/documentation/avfoundation/cameras_and_media_capture/requesting_authorization_for_media_capture_on_ios#2962313
+
 ### `Permissions.CONTACTS`
 
-The permission type for reading contacts.
+The permission type for reading or writing contacts.
 
-### `Permissions.CAMERA_ROLL`
+- **Android:** it requires the [`READ_CONTACTS`][contacts-android-read] and (optionally) [`WRITE_CONTACTS`][contacts-android-write] in your manifest.
+- **iOS:** it requires the `expo-contacts` module and [`NSContactsUsageDescription`][contacts-ios-plist] message.
 
-The permission type for reading or writing to the camera roll.
+[contacts-android-read]: https://developer.android.com/reference/android/Manifest.permission#READ_CALENDAR
+[contacts-android-write]: https://developer.android.com/reference/android/Manifest.permission#WRITE_CONTACTS
+[contacts-ios-plist]: https://developer.apple.com/documentation/eventkit/accessing_the_event_store#2975207
+
+### `Permissions.MEDIA_LIBRARY_WRITE_ONLY`
+
+The permission type for writing to the media library.
+
+- **Android:** it requires the [`WRITE_EXTERNAL_STORAGE`][medialibrary-android-write] permissions in your manifest.
+- **iOS** it requires the `expo-image-picker` or `expo-media-library` module and [`NSPhotoLibraryAddUsageDescription`][medialibrary-ios-plist] message.
+
+### `Permissions.MEDIA_LIBRARY`
+
+The permission type for reading or writing to the media library.
+
+- **Android:** it requires the [`READ_EXTERNAL_STORAGE`][medialibrary-android-read] and [`WRITE_EXTERNAL_STORAGE`][medialibrary-android-write] permissions in your manifest.
+- **iOS** it requires the `expo-image-picker` or `expo-media-library` module and [`NSPhotoLibraryUsageDescription`][medialibrary-ios-plist] message.
 
 > **Note (iOS):** iOS provides more detailed permissions, returning `{ status, permissions: { cameraRoll: { accessPrivileges } } }` where `accessPrivileges` can be:
 >
@@ -271,48 +434,41 @@ The permission type for reading or writing to the camera roll.
 > - `limited` if the user granted your app access only to selected photos (only available on **iOS 14.0+**)
 > - `none` if user denied or hasn't yet granted the permission
 
+[medialibrary-android-read]: https://developer.android.com/reference/android/Manifest.permission#READ_EXTERNAL_STORAGE
+[medialibrary-android-write]: https://developer.android.com/reference/android/Manifest.permission#WRITE_EXTERNAL_STORAGE
+[medialibrary-ios-plist]: https://developer.apple.com/documentation/photokit/requesting_authorization_to_access_photos#3030690
+
 ### `Permissions.CALENDAR`
 
 The permission type for reading or writing to the calendar.
 
+- **Android:** it requires the [`READ_CALENDAR`][calendar-android-read] and [`WRITE_CALENDAR`][calendar-android-write] permissions in your manifest.
+- **iOS:** it requires the `expo-calendar` module and [`NSCalendarsUsageDescription`][calendar-ios-plist] message.
+
+[calendar-android-read]: https://developer.android.com/reference/android/Manifest.permission#READ_CALENDAR
+[calendar-android-write]: https://developer.android.com/reference/android/Manifest.permission#WRITE_CALENDAR
+[calendar-ios-plist]: https://developer.apple.com/documentation/eventkit/accessing_the_event_store#2975207
+
 ### `Permissions.REMINDERS`
 
 The permission type for reading or writing reminders.
-(iOS only, on Android would return `granted` immediately)
+
+- **Android:** _this permission has no effect on Android and is resolved as `granted` immediately._
+- **iOS:** it requires the `expo-calendar` module and [`NSRemindersUsageDescription`][calendar-ios-plist] message.
 
 ### `Permissions.SYSTEM_BRIGHTNESS`
 
-The permissions type for changing brightness of the screen
+A permission to change the brightness of the screen, system wide.
+
+- **Android:** it requires the [`WRITE_SETTINGS`][settings-android-write] permission in your manifest.
+- **iOS:** _this permission has no effect on iOS and is resolved as `granted` immediately._
+
+[settings-android-write]: https://developer.android.com/reference/android/Manifest.permission#WRITE_SETTINGS
 
 ### `Permissions.MOTION`
 
+<!-- TODO: add behavior on Android and iOS -->
+<!-- TODO: https://github.com/expo/expo/issues/9150 -->
+<!-- TODO: https://github.com/expo/expo/issues/9151 -->
+
 The permission for accessing `DeviceMotion` and `DeviceOrientation` in the web browser. This can only be requested from a website using HTTPS (`expo web --https`). This permission cannot be silently retrieved, you can only request it. This permission can only be requested with a user interaction i.e. a button press.
-
-## Android: permissions equivalents inside `app.json`
-
-In order to request permissions in a standalone Android app (Managed Workflow only), you need to specify the corresponding native permission types in the `android.permissions` key inside `app.json` ([read more about configuration](../../workflow/configuration/#android)). The mapping between `Permissions` values and native permission types is as follows:
-
-| Expo            | Android                                       |
-| --------------- | --------------------------------------------- |
-| LOCATION        | ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION  |
-| CAMERA          | CAMERA                                        |
-| AUDIO_RECORDING | RECORD_AUDIO                                  |
-| CONTACTS        | READ_CONTACTS                                 |
-| CAMERA_ROLL     | READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE |
-| CALENDAR        | READ_CALENDAR, WRITE_CALENDAR                 |
-
-For example, if your app asks for `AUDIO_RECORDING` permission at runtime but no other permissions, you should set `android.permissions` to `["RECORD_AUDIO"]` in `app.json`.
-
-> **Note:** If you don't specify `android.permissions` inside your `app.json`, by default your standalone Android app will require all of the permissions listed above.
-
-## Types
-
-### `PermissionResponse`
-
-| Field name  | Type                       | Description                                                                                                                                                                                    |
-| ----------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| status      | _string_                   | Permission status with possible values: `granted`, `denied`, `undetermined`.                                                                                                                   |
-| granted     | _boolean_                  | Boolean value meaning whether the permission is granted or not.                                                                                                                                |
-| canAskAgain | _boolean_                  | Boolean value determining if it's possible to request permission again. It's `false` if the user selected `don't ask again` option on Android or `don't allow` on iOS. Otherwise, it's `true`. |
-| ios         | depends on permission type | Additional detail on iOS (**optional**)                                                                                                                                                        |
-| android     | depends on permission type | Additional detail on Android (**optional**)                                                                                                                                                    |

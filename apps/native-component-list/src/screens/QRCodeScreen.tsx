@@ -1,11 +1,10 @@
 import Ionicons from '@expo/vector-icons/build/Ionicons';
-import { usePermissions } from '@use-expo/permissions';
+import Slider from '@react-native-community/slider';
 import * as BarCodeScanner from 'expo-barcode-scanner';
 import { BlurView } from 'expo-blur';
 import { Camera } from 'expo-camera';
 import { CameraType } from 'expo-camera/build/Camera.types';
 import * as Haptics from 'expo-haptics';
-import * as Permissions from 'expo-permissions';
 import * as React from 'react';
 import {
   Animated,
@@ -19,23 +18,26 @@ import {
   ViewStyle,
   Pressable,
 } from 'react-native';
-import { Path, Svg } from 'react-native-svg';
-import Slider from '@react-native-community/slider';
+import { Path, Svg, SvgProps } from 'react-native-svg';
 
 import Colors from '../constants/Colors';
+import usePermissions from '../utilities/usePermissions';
 
 function useCameraTypes(): CameraType[] | null {
-  if (Platform.OS !== 'web') return [CameraType.front, CameraType.back];
   const [types, setTypes] = React.useState<CameraType[] | null>(null);
 
   React.useEffect(() => {
     let isMounted = true;
-    // TODO: This method isn't supported on native
-    Camera.getAvailableCameraTypesAsync().then(types => {
-      if (isMounted) {
-        setTypes(types as CameraType[]);
-      }
-    });
+    if (Platform.OS !== 'web') {
+      setTypes([CameraType.front, CameraType.back]);
+    } else {
+      // TODO: This method isn't supported on native
+      Camera.getAvailableCameraTypesAsync().then(types => {
+        if (isMounted) {
+          setTypes(types as CameraType[]);
+        }
+      });
+    }
     return () => {
       isMounted = false;
     };
@@ -79,17 +81,20 @@ function useToggleCameraType(
 }
 
 function useCameraAvailable(): boolean {
-  if (Platform.OS !== 'web') return true;
   const [isAvailable, setAvailable] = React.useState(false);
 
   React.useEffect(() => {
     let isMounted = true;
-    // TODO: This method isn't supported on native
-    Camera.isAvailableAsync().then(isAvailable => {
-      if (isMounted) {
-        setAvailable(isAvailable);
-      }
-    });
+    if (Platform.OS !== 'web') {
+      setAvailable(true);
+    } else {
+      // TODO: This method isn't supported on native
+      Camera.isAvailableAsync().then(isAvailable => {
+        if (isMounted) {
+          setAvailable(isAvailable);
+        }
+      });
+    }
     return () => {
       isMounted = false;
     };
@@ -98,7 +103,7 @@ function useCameraAvailable(): boolean {
 }
 
 export default function QRCodeScreen() {
-  const [isPermissionsGranted] = usePermissions(Permissions.CAMERA, { ask: true });
+  const [isPermissionsGranted] = usePermissions(Camera.requestPermissionsAsync);
   const isAvailable = useCameraAvailable();
 
   if (!isPermissionsGranted || !isAvailable) {
@@ -190,7 +195,7 @@ function QRCodeView() {
 
       {showFooter && (
         <View pointerEvents="box-none" style={[styles.footer, { bottom: 30 }]}>
-          <QRFooterButton disabled={!toggle} onPress={toggle} iconName="ios-reverse-camera" />
+          <QRFooterButton disabled={!toggle} onPress={toggle} iconName="camera-reverse" />
           <QRFooterButton
             disabled={type !== CameraType.back}
             onPress={onFlashToggle}
@@ -226,6 +231,7 @@ function OverlayView({
   const onPress = () => {
     clearTimeout(timer.current);
     setOverlayActive(true);
+    // @ts-expect-error: TS resolves node types first
     timer.current = setTimeout(() => {
       setOverlayActive(() => false);
     }, 5000);
@@ -297,7 +303,7 @@ function QRIndicator() {
   );
 }
 
-class SvgComponent extends React.Component<React.SVGProps<SVGSVGElement>> {
+class SvgComponent extends React.Component<SvgProps> {
   render() {
     const props = { ...this.props };
     if (Platform.OS === 'web') {
@@ -335,7 +341,7 @@ function QRFooterButton({
   style?: StyleProp<ViewStyle>;
   onPress?: (() => void) | null;
   isActive?: boolean;
-  iconName: string;
+  iconName: React.ComponentProps<typeof Ionicons>['name'];
   iconSize?: number;
   disabled?: boolean;
 }) {
@@ -370,6 +376,7 @@ const styles = StyleSheet.create({
     width: size,
     height: size,
     borderRadius: size / 2,
+    overflow: 'hidden',
     justifyContent: 'center',
     alignItems: 'center',
   },

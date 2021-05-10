@@ -1,71 +1,72 @@
 package versioned.host.exp.exponent.modules.api.components.viewpager;
 
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-
-import com.reactnative.community.viewpager2.adapter.FragmentStateAdapter;
 
 import java.util.ArrayList;
-
-import static versioned.host.exp.exponent.modules.api.components.viewpager.ViewPagerFragment.CHILD_VIEW_KEY;
+import java.util.Collections;
+import java.util.List;
 
 public class FragmentAdapter extends FragmentStateAdapter {
-
+    private List<View> childrenViews = new ArrayList<>();
     public FragmentAdapter(@NonNull FragmentActivity fragmentActivity) {
         super(fragmentActivity);
     }
 
-    private ArrayList<ViewPagerFragment> children = new ArrayList<>();
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        return children.get(position);
+        return new ViewPagerFragment(childrenViews.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return children.size();
+        return childrenViews.size();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return childrenViews.get(position).getId();
+    }
+
+    @Override
+    public boolean containsItem(long itemId) {
+        for(View child: childrenViews) {
+            if((int) itemId == child.getId()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void addFragment(View child, int index) {
-        children.add(ViewPagerFragment.newInstance(child.getId()));
-        notifyItemChanged(index);
+        childrenViews.add(index, child);
+        notifyItemInserted(index);
     }
 
-
     public void removeFragment(View child) {
-        for (int i = 0; i < children.size(); i++) {
-            Fragment fragment = children.get(i);
-            int viewID = fragment.getArguments().getInt(CHILD_VIEW_KEY);
-            if (viewID == child.getId()) {
-                children.remove(i);
-                notifyItemRemoved(i);
-                return;
-            }
-        }
+        int index = childrenViews.indexOf(child);
+        removeFragmentAt(index);
     }
 
     public void removeFragmentAt(int index) {
-        children.remove(index);
+        childrenViews.remove(index);
         notifyItemRemoved(index);
     }
 
-
     public void removeAll() {
-        children.clear();
+        childrenViews.clear();
         notifyDataSetChanged();
     }
 
-    public ArrayList<ViewPagerFragment> getChildren() {
-        return children;
-    }
-
-    public View getChildAt(int index) {
-        return children.get(index).getView();
+    public View getChildViewAt(int index) {
+        return childrenViews.get(index);
     }
 }

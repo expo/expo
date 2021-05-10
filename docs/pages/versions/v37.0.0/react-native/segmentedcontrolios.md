@@ -29,7 +29,7 @@ The selected index can be changed on the fly by assigning the selectedIndex prop
 
 ## Props
 
-Inherits [View Props](../view/#props).
+Inherits [View Props](view.md#props).
 
 ### `enabled`
 

@@ -1,0 +1,39 @@
+{
+  "name": "expo-dev-launcher",
+  "title": "Expo Development Launcher",
+  "version": "0.3.1",
+  "description": "Pre-release version of the Expo development launcher package for testing.",
+  "main": "build/DevelopementClient.js",
+  "types": "build/DevelopementClient.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module",
+    "start": "react-native start --port 8090",
+    "bundle": "./write_embedded_bundle.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-dev-launcher"
+  },
+  "keywords": [
+    "react-native"
+  ],
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://docs.expo.io",
+  "dependencies": {
+    "@expo/config-plugins": "^1.0.28"
+  },
+  "devDependencies": {
+    "babel-preset-expo": "~8.3.0",
+    "expo-module-scripts": "^2.0.0",
+    "react": "16.13.1",
+    "react-native": "0.63.2"
+  }
+}

@@ -1,5 +1,5 @@
-import { Picker } from '@react-native-community/picker';
 import Slider from '@react-native-community/slider';
+import { Picker } from '@react-native-picker/picker';
 import Animation from 'lottie-react-native';
 import React from 'react';
 import {
@@ -15,6 +15,7 @@ import {
 
 const makeExample = (name: string, getJson: () => any) => ({ name, getJson });
 const EXAMPLES = [
+  makeExample('Science', () => require('../../assets/animations/Science.json')),
   makeExample('Hamburger Arrow', () => require('../../assets/animations/HamburgerArrow.json')),
   makeExample('Line Animation', () => require('../../assets/animations/LineAnimation.json')),
   makeExample('Lottie Logo 1', () => require('../../assets/animations/LottieLogo1.json')),
@@ -110,6 +111,8 @@ interface State {
   config: Config;
 }
 
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
 export default class LottieScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: '<Lottie />',
@@ -133,6 +136,7 @@ export default class LottieScreen extends React.Component<{}, State> {
       this.state.progress.setValue(0);
       Animated.timing(this.state.progress, {
         toValue: 1,
+        useNativeDriver: false,
         duration: this.state.config.duration,
       }).start(({ finished }) => {
         if (finished) this.forceUpdate();
@@ -147,6 +151,7 @@ export default class LottieScreen extends React.Component<{}, State> {
       this.state.progress.setValue(1);
       Animated.timing(this.state.progress, {
         toValue: 0,
+        useNativeDriver: false,
         duration: this.state.config.duration,
       }).start(({ finished }) => {
         if (finished) {

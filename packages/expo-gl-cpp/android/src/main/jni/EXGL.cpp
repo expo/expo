@@ -58,7 +58,7 @@ Java_expo_modules_gl_cpp_EXGL_EXGLContextSetFlushMethod
   jobject glContextRef = env->NewGlobalRef(glContext);
   jmethodID flushMethodRef = env->GetMethodID(GLContextClass, "flush", "()V");
 
-  std::function<void(void)> flushMethod = [env, glContextRef, flushMethodRef, exglCtxId] {
+  std::function<void(void)> flushMethod = [env, glContextRef, flushMethodRef] {
     env->CallVoidMethod(glContextRef, flushMethodRef);
   };
   UEXGLContextSetFlushMethod(exglCtxId, flushMethod);

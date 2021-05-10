@@ -13,7 +13,7 @@ For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-
 
 # Installation in bare React Native projects
 
-For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
+For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/expo/expo/tree/master/packages/react-native-unimodules) before continuing.
 
 ### Add the package to your npm dependencies
 
@@ -23,10 +23,12 @@ expo install expo-media-library
 
 ### Configure for iOS
 
-Add `NSPhotoLibraryUsageDescription` key to your `Info.plist`:
+Add `NSPhotoLibraryUsageDescription`, and `NSPhotoLibraryAddUsageDescription` keys to your `Info.plist`:
 
 ```xml
 <key>NSPhotoLibraryUsageDescription</key>
+<string>Give $(PRODUCT_NAME) permission to access your photos</string>
+<key>NSPhotoLibraryAddUsageDescription</key>
 <string>Give $(PRODUCT_NAME) permission to save photos</string>
 ```
 
@@ -40,6 +42,16 @@ This package automatically adds the `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_
 <!-- Added permissions -->
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+```
+
+Starting with Android 10, the concept of [scoped storage](https://developer.android.com/training/data-storage#scoped-storage) is introduced. Currently, to make `expo-media-library` working with that change, you have to add `android:requestLegacyExternalStorage="true"` to `AndroidManifest.xml`:
+
+```xml
+<manifest ... >
+  <application android:requestLegacyExternalStorage="true" ... >
+    ...
+  </application>
+</manifest>
 ```
 
 # Contributing

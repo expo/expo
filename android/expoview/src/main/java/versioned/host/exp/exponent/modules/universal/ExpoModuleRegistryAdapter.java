@@ -13,12 +13,15 @@ import org.unimodules.core.interfaces.RegistryLifecycleListener;
 import java.util.List;
 import java.util.Map;
 
+import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.kernel.ExperienceId;
-import host.exp.exponent.notifications.channels.ScopedNotificationsChannelsProvider;
+import versioned.host.exp.exponent.modules.api.notifications.channels.ScopedNotificationsChannelsProvider;
 import host.exp.exponent.utils.ScopedContext;
+import versioned.host.exp.exponent.modules.api.notifications.ScopedNotificationsCategoriesSerializer;
 import versioned.host.exp.exponent.modules.universal.av.SharedCookiesDataSourceFactoryProvider;
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedExpoNotificationCategoriesModule;
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedExpoNotificationPresentationModule;
+import versioned.host.exp.exponent.modules.universal.notifications.ScopedServerRegistrationModule;
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotificationScheduler;
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotificationsEmitter;
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedNotificationsHandler;
@@ -35,7 +38,7 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     super(moduleRegistryProvider);
   }
 
-  public List<NativeModule> createNativeModules(ScopedContext scopedContext, ExperienceId experienceId, Map<String, Object> experienceProperties, JSONObject manifest, List<NativeModule> otherModules) {
+  public List<NativeModule> createNativeModules(ScopedContext scopedContext, ExperienceId experienceId, Map<String, Object> experienceProperties, RawManifest manifest, List<NativeModule> otherModules) {
     ModuleRegistry moduleRegistry = mModuleRegistryProvider.get(scopedContext);
 
     // Overriding sensor services from expo-sensors for scoped implementations using kernel services
@@ -63,8 +66,11 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     // Overriding expo-permissions ScopedPermissionsService
     moduleRegistry.registerInternalModule(new ScopedPermissionsService(scopedContext, experienceId));
 
+    // Overriding expo-updates UpdatesService
+    moduleRegistry.registerInternalModule(new UpdatesBinding(scopedContext, experienceProperties));
+
     // Overriding expo-facebook
-    moduleRegistry.registerExportedModule(new ScopedFacebookModule(scopedContext, manifest));
+    moduleRegistry.registerExportedModule(new ScopedFacebookModule(scopedContext));
 
     // Scoping Amplitude
     moduleRegistry.registerExportedModule(new ScopedAmplitudeModule(scopedContext, experienceId));
@@ -78,7 +84,12 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     moduleRegistry.registerExportedModule(new ScopedNotificationScheduler(scopedContext, experienceId));
     moduleRegistry.registerExportedModule(new ScopedExpoNotificationCategoriesModule(scopedContext, experienceId));
     moduleRegistry.registerExportedModule(new ScopedExpoNotificationPresentationModule(scopedContext, experienceId));
+    moduleRegistry.registerExportedModule(new ScopedServerRegistrationModule(scopedContext));
     moduleRegistry.registerInternalModule(new ScopedNotificationsChannelsProvider(scopedContext, experienceId));
+    moduleRegistry.registerInternalModule(new ScopedNotificationsCategoriesSerializer());
+
+    // Overriding expo-secure-stoore
+    moduleRegistry.registerExportedModule(new ScopedSecureStoreModule(scopedContext));
 
     // ReactAdapterPackage requires ReactContext
     ReactApplicationContext reactContext = (ReactApplicationContext) scopedContext.getContext();

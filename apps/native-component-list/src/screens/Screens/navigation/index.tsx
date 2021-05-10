@@ -24,11 +24,11 @@ const Background: React.FunctionComponent<{ index: number }> = ({ index }) => (
   />
 );
 
-type Links = { Details: { index?: number } };
+type Links = { Details: undefined | { index?: number } };
 
 type Props = StackScreenProps<Links, 'Details'>;
 
-class DetailsScreen extends React.Component<Props> {
+class DetailsScreen extends React.Component<Props, { count: number; text: string }> {
   animvalue = new Animated.Value(0);
   rotation = this.animvalue.interpolate({
     inputRange: [0, 1],
@@ -43,10 +43,10 @@ class DetailsScreen extends React.Component<Props> {
         useNativeDriver: false,
       })
     ).start();
-    setInterval(() => this.setState({ count: this.state.count + 1 }), 500);
+    setInterval(() => this.setState(({ count }) => ({ count: count + 1 })), 500);
   }
   render() {
-    const index = this.props.route.params.index ?? 0;
+    const index = this.props.route.params?.index ?? 0;
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <Background index={index} />

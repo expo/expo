@@ -3,9 +3,9 @@ import * as AppAuth from 'expo-app-auth';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 const isInExpo = Constants.appOwnership === 'expo';
-function getPlatformGUID(config) {
+export function getPlatformGUID(config) {
     const { clientId } = config;
-    const iosClientId = Constants.appOwnership === 'standalone' ? config.iosStandaloneAppClientId : config.iosClientId;
+    const iosClientId = isInExpo ? config.iosClientId : config.iosStandaloneAppClientId;
     const androidClientId = isInExpo ? config.androidClientId : config.androidStandaloneAppClientId;
     const platformClientId = Platform.select({
         ios: iosClientId,

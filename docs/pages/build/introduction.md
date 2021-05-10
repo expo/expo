@@ -1,9 +1,15 @@
 ---
-title: Introduction
+title: EAS Build
+sidebar_title: Introduction
 ---
 
-**EAS Builds** is a service for building app binaries for your React Native project. You can take advantage of it for both managed and bare Expo projects. This service is going to replace the existing build service entirely.
+**EAS Build** is a hosted service for building app binaries for your Expo and React Native projects.
 
-## Managed Expo Projects Are Not Supported Yet
+It makes building your apps for distribution super easy by providing defaults that work well for Expo and React Native projects out of the box, and by handling your app signing credentials for you (if you wish). It also makes sharing builds with your team easier than ever with [internal distribution](internal-distribution.md) (using ad hoc and/or enterprise "universal" provisioning), deeply integrates with EAS Submit for app store submissions, and has first-class support for [expo-updates](updates.md) to send over-the-air updates.
 
-Building managed Expo projects is not supported yet but we are working on bringing it to EAS Builds! If you wish to build a managed Expo project, you'll have to eject it first. See the [Ejecting to Bare Workflow](https://docs.expo.io/workflow/customizing/) page to learn how to do it.
+It's the next generation of the [`expo build:[ios/android]`](/distribution/building-standalone-apps.md) command &mdash; designed to work for any native project, whether or not you also use the managed workflow.
+
+### Get started
+
+- [Creating your first build](setup.md): it should only take a few minutes in total to get up and running for iOS and/or Android.
+- [Learning about the limitations](/build-reference/limitations.md): EAS Build is a brand new and rapidly evolving service. It can't do everything yet, so we recommend getting familiar with the current limitations and checking back occasionally.

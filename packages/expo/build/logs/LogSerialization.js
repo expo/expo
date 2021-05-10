@@ -59,37 +59,24 @@ async function serializeLogDataAsync(data, level) {
 }
 function _stringifyLogData(data) {
     return data.map(item => {
-        if (typeof item === 'string') {
-            return item;
+        // define the max length for log msg to be first 10000 characters
+        const LOG_MESSAGE_MAX_LENGTH = 10000;
+        const result = typeof item === 'string' ? item : prettyFormat(item, { plugins: [ReactNodeFormatter] });
+        // check the size of string returned
+        if (result.length > LOG_MESSAGE_MAX_LENGTH) {
+            let truncatedResult = result.substring(0, LOG_MESSAGE_MAX_LENGTH);
+            // truncate the result string to the max length
+            truncatedResult += `...(truncated to the first ${LOG_MESSAGE_MAX_LENGTH} characters)`;
+            return truncatedResult;
         }
         else {
-            // define the max length for log msg to be first 10000 characters
-            const LOG_MESSAGE_MAX_LENGTH = 10000;
-            const result = prettyFormat(item, { plugins: [ReactNodeFormatter] });
-            // check the size of string returned
-            if (result.length > LOG_MESSAGE_MAX_LENGTH) {
-                let truncatedResult = result.substring(0, LOG_MESSAGE_MAX_LENGTH);
-                // truncate the result string to the max length
-                truncatedResult += `...(truncated to the first ${LOG_MESSAGE_MAX_LENGTH} characters)`;
-                return truncatedResult;
-            }
-            else {
-                return result;
-            }
+            return result;
         }
     });
 }
 async function _serializeErrorAsync(error, message) {
     if (message == null) {
         message = error.message;
-    }
-    // note(brentvatne): React Native currently appends part of the stack inside of
-    // the error message itself for some reason. This is just confusing and we don't
-    // want to include it in the expo-cli output
-    const messageParts = message.split('\n');
-    const firstUselessLine = messageParts.indexOf('This error is located at:');
-    if (firstUselessLine > 0) {
-        message = messageParts.slice(0, firstUselessLine - 1).join('\n');
     }
     if (!error.stack || !error.stack.length) {
         return prettyFormat(error);
@@ -178,9 +165,7 @@ function _captureConsoleStackTrace() {
     }
 }
 function _getProjectRoot() {
-    return Constants.manifest && Constants.manifest.developer
-        ? Constants.manifest.developer.projectRoot
-        : null;
+    return Constants.manifest?.developer?.projectRoot ?? null;
 }
 export default {
     serializeLogDataAsync,

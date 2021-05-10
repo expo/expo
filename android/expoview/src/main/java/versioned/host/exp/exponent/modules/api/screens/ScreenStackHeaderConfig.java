@@ -1,6 +1,7 @@
 package versioned.host.exp.exponent.modules.api.screens;
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -13,11 +14,14 @@ import android.view.ViewParent;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import host.exp.expoview.ExpoViewBuildConfig;
 
+import com.facebook.react.ReactApplication;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.views.text.ReactFontManager;
 
@@ -29,21 +33,37 @@ public class ScreenStackHeaderConfig extends ViewGroup {
   private String mTitle;
   private int mTitleColor;
   private String mTitleFontFamily;
+  private String mDirection;
   private float mTitleFontSize;
-  private int mBackgroundColor;
+  private Integer mBackgroundColor;
   private boolean mIsHidden;
   private boolean mIsBackButtonHidden;
   private boolean mIsShadowHidden;
   private boolean mDestroyed;
   private boolean mBackButtonInCustomView;
   private boolean mIsTopInsetEnabled = true;
+  private boolean mIsTranslucent;
   private int mTintColor;
   private final Toolbar mToolbar;
+  private int mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
 
   private boolean mIsAttachedToWindow = false;
 
   private int mDefaultStartInset;
   private int mDefaultStartInsetWithNavigation;
+
+  private static class DebugMenuToolbar extends Toolbar {
+
+    public DebugMenuToolbar(Context context) {
+      super(context);
+    }
+
+    @Override
+    public boolean showOverflowMenu() {
+      ((ReactApplication) getContext().getApplicationContext()).getReactNativeHost().getReactInstanceManager().showDevOptionsDialog();
+      return true;
+    }
+  }
 
   private OnClickListener mBackClickListener = new OnClickListener() {
     @Override
@@ -67,7 +87,7 @@ public class ScreenStackHeaderConfig extends ViewGroup {
     super(context);
     setVisibility(View.GONE);
 
-    mToolbar = new Toolbar(context);
+    mToolbar = ExpoViewBuildConfig.DEBUG ? new DebugMenuToolbar(context) : new Toolbar(context);
     mDefaultStartInset = mToolbar.getContentInsetStart();
     mDefaultStartInsetWithNavigation = mToolbar.getContentInsetStartWithNavigation();
 
@@ -76,6 +96,7 @@ public class ScreenStackHeaderConfig extends ViewGroup {
     if (context.getTheme().resolveAttribute(android.R.attr.colorPrimary, tv, true)) {
       mToolbar.setBackgroundColor(tv.data);
     }
+    mToolbar.setClipChildren(false);
   }
 
   @Override
@@ -119,7 +140,7 @@ public class ScreenStackHeaderConfig extends ViewGroup {
     return null;
   }
 
-  private ScreenStackFragment getScreenFragment() {
+  protected @Nullable ScreenStackFragment getScreenFragment() {
     ViewParent screen = getParent();
     if (screen instanceof Screen) {
       Fragment fragment = ((Screen) screen).getFragment();
@@ -142,6 +163,20 @@ public class ScreenStackHeaderConfig extends ViewGroup {
     AppCompatActivity activity = (AppCompatActivity) getScreenFragment().getActivity();
     if (activity == null) {
       return;
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && mDirection != null) {
+      if (mDirection.equals("rtl")) {
+        mToolbar.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+      } else if (mDirection.equals("ltr")) {
+        mToolbar.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
+      }
+    }
+
+    // orientation
+    if (getScreenFragment() == null || !getScreenFragment().hasChildScreenWithConfig(getScreen())) {
+      // we check if there is no child that provides config, since then we shouldn't change orientation here
+      activity.setRequestedOrientation(mScreenOrientation);
     }
 
     if (mIsHidden) {
@@ -191,6 +226,9 @@ public class ScreenStackHeaderConfig extends ViewGroup {
     // shadow
     getScreenFragment().setToolbarShadowHidden(mIsShadowHidden);
 
+    // translucent
+    getScreenFragment().setToolbarTranslucent(mIsTranslucent);
+
     // title
     actionBar.setTitle(mTitle);
     if (TextUtils.isEmpty(mTitle)) {
@@ -206,7 +244,7 @@ public class ScreenStackHeaderConfig extends ViewGroup {
     if (titleTextView != null) {
       if (mTitleFontFamily != null) {
         titleTextView.setTypeface(ReactFontManager.getInstance().getTypeface(
-          mTitleFontFamily, 0, getContext().getAssets()));
+                mTitleFontFamily, 0, getContext().getAssets()));
       }
       if (mTitleFontSize > 0) {
         titleTextView.setTextSize(mTitleFontSize);
@@ -214,7 +252,7 @@ public class ScreenStackHeaderConfig extends ViewGroup {
     }
 
     // background
-    if (mBackgroundColor != 0) {
+    if (mBackgroundColor != null) {
       mToolbar.setBackgroundColor(mBackgroundColor);
     }
 
@@ -248,7 +286,7 @@ public class ScreenStackHeaderConfig extends ViewGroup {
       }
 
       Toolbar.LayoutParams params =
-        new Toolbar.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
+              new Toolbar.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
 
       switch (type) {
         case LEFT:
@@ -258,10 +296,10 @@ public class ScreenStackHeaderConfig extends ViewGroup {
             mToolbar.setNavigationIcon(null);
           }
           mToolbar.setTitle(null);
-          params.gravity = Gravity.LEFT;
+          params.gravity = Gravity.START;
           break;
         case RIGHT:
-          params.gravity = Gravity.RIGHT;
+          params.gravity = Gravity.END;
           break;
         case CENTER:
           params.width = LayoutParams.MATCH_PARENT;
@@ -279,6 +317,10 @@ public class ScreenStackHeaderConfig extends ViewGroup {
     if (getParent() != null && !mDestroyed) {
       onUpdate();
     }
+  }
+
+  public Toolbar getToolbar() {
+    return mToolbar;
   }
 
   public ScreenStackHeaderSubview getConfigSubview(int index) {
@@ -317,6 +359,10 @@ public class ScreenStackHeaderConfig extends ViewGroup {
     return null;
   }
 
+  public int getScreenOrientation() {
+    return mScreenOrientation;
+  }
+
   public void setTitle(String title) {
     mTitle = title;
   }
@@ -339,7 +385,7 @@ public class ScreenStackHeaderConfig extends ViewGroup {
 
   public void setTopInsetEnabled(boolean topInsetEnabled) { mIsTopInsetEnabled = topInsetEnabled; }
 
-  public void setBackgroundColor(int color) {
+  public void setBackgroundColor(Integer color) {
     mBackgroundColor = color;
   }
 
@@ -355,5 +401,47 @@ public class ScreenStackHeaderConfig extends ViewGroup {
     mIsHidden = hidden;
   }
 
+  public void setTranslucent(boolean translucent) {
+    mIsTranslucent = translucent;
+  }
+
   public void setBackButtonInCustomView(boolean backButtonInCustomView) { mBackButtonInCustomView = backButtonInCustomView; }
+
+  public void setDirection(String direction) {
+    mDirection = direction;
+  }
+
+  public void setScreenOrientation(String screenOrientation) {
+    if (screenOrientation == null) {
+      mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+      return;
+    }
+
+    switch (screenOrientation) {
+      case "all":
+        mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR;
+        break;
+      case "portrait":
+        mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
+        break;
+      case "portrait_up":
+        mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+        break;
+      case "portrait_down":
+        mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+        break;
+      case "landscape":
+        mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
+        break;
+      case "landscape_left":
+        mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+        break;
+      case "landscape_right":
+        mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+        break;
+      default:
+        mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+        break;
+    }
+  }
 }

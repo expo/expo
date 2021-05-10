@@ -1,19 +1,41 @@
 import React from 'react';
-import { PixelRatio, StyleSheet, TouchableHighlight } from 'react-native';
+import { PixelRatio, StyleSheet } from 'react-native';
 
-import Colors from '../constants/Colors';
 import { StyledText } from '../components/Text';
 import { StyledView } from '../components/Views';
-import { TouchableOpacity } from './Touchables';
+import Colors from '../constants/Colors';
+import { TouchableHighlight } from './Touchables';
 
 type Props = {
-  title?: string;
+  content?: string | React.ReactNode;
   onPress?: () => void;
+  disabled?: boolean;
 };
 
 class ListItem extends React.PureComponent<Props> {
   render() {
-    const { title, ...props } = this.props;
+    const { content: title, ...props } = this.props;
+    const textColor = props.disabled
+      ? {
+          lightColor: Colors.light.disabledTest,
+          darkColor: Colors.dark.disabledTest,
+        }
+      : {};
+
+    let titleComponent;
+    if (typeof title === 'string') {
+      titleComponent = (
+        <StyledText
+          lightColor={Colors.light.menuItemText}
+          darkColor={Colors.dark.menuItemText}
+          style={styles.title}
+          {...textColor}>
+          {title}
+        </StyledText>
+      );
+    } else {
+      titleComponent = title;
+    }
 
     return (
       <TouchableHighlight {...props}>
@@ -23,7 +45,7 @@ class ListItem extends React.PureComponent<Props> {
           lightBorderColor={Colors.light.border}
           darkBackgroundColor={Colors.dark.secondaryBackground}
           darkBorderColor={Colors.dark.border}>
-          <StyledText style={styles.title}>{title}</StyledText>
+          {titleComponent}
           {this.props.children}
         </StyledView>
       </TouchableHighlight>

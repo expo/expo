@@ -1,12 +1,13 @@
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { Assets as StackAssets } from '@react-navigation/stack';
-import { AppLoading } from 'expo';
 import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { Linking, Platform, StyleSheet, View } from 'react-native';
 import { useColorScheme } from 'react-native-appearance';
+import url from 'url';
 
 import Navigation from './navigation/Navigation';
 import HistoryActions from './redux/HistoryActions';
@@ -14,33 +15,55 @@ import { useDispatch, useSelector } from './redux/Hooks';
 import SessionActions from './redux/SessionActions';
 import SettingsActions from './redux/SettingsActions';
 import LocalStorage from './storage/LocalStorage';
+import * as UrlUtils from './utils/UrlUtils';
 import addListenerWithNativeCallback from './utils/addListenerWithNativeCallback';
 
 // Download and cache stack assets, don't block loading on this though
 Asset.loadAsync(StackAssets);
+
+function useSplashScreenWhileLoadingResources(loadResources: () => Promise<void>) {
+  const [isSplashScreenShown, setSplashScreenShown] = React.useState(true);
+  React.useEffect(() => {
+    (async () => {
+      // await SplashScreen.preventAutoHideAsync(); // this is called in App (main component of the application)
+      await loadResources();
+      setSplashScreenShown(false);
+    })();
+  }, []);
+  React.useEffect(() => {
+    (async () => {
+      if (!isSplashScreenShown) {
+        await SplashScreen.hideAsync();
+      }
+    })();
+  }, [isSplashScreenShown]);
+
+  return isSplashScreenShown;
+}
 
 export default function HomeApp() {
   const colorScheme = useColorScheme();
   const preferredAppearance = useSelector(data => data.settings.preferredAppearance);
   const dispatch = useDispatch();
 
-  const [isReady, setReady] = React.useState(false);
+  const isShowingSplashScreen = useSplashScreenWhileLoadingResources(async () => {
+    await initStateAsync();
+  });
 
   React.useEffect(() => {
-    initStateAsync();
     addProjectHistoryListener();
   }, []);
 
   React.useEffect(() => {
-    if (isReady && Platform.OS === 'ios') {
-      // if expo client is opened via deep linking, we'll get the url here
+    if (!isShowingSplashScreen && Platform.OS === 'ios') {
+      // If Expo Go is opened via deep linking, we'll get the URL here
       Linking.getInitialURL().then(initialUrl => {
-        if (initialUrl) {
-          Linking.openURL(initialUrl);
+        if (initialUrl && shouldOpenUrl(initialUrl)) {
+          Linking.openURL(UrlUtils.toExp(initialUrl));
         }
       });
     }
-  }, [isReady]);
+  }, [isShowingSplashScreen]);
 
   const addProjectHistoryListener = () => {
     addListenerWithNativeCallback('ExponentKernel.addHistoryItem', async event => {
@@ -69,12 +92,12 @@ export default function HomeApp() {
         await Promise.all([Font.loadAsync(Ionicons.font), Font.loadAsync(MaterialIcons.font)]);
       }
     } finally {
-      setReady(true);
+      return;
     }
   };
 
-  if (!isReady) {
-    return <AppLoading />;
+  if (isShowingSplashScreen) {
+    return null;
   }
 
   let theme = preferredAppearance === 'no-preference' ? colorScheme : preferredAppearance;
@@ -91,6 +114,12 @@ export default function HomeApp() {
       </ActionSheetProvider>
     </View>
   );
+}
+
+// Certain links (i.e. 'expo.io/expo-go') should just open the HomeScreen
+function shouldOpenUrl(urlString: string) {
+  const parsedUrl = url.parse(urlString);
+  return !(parsedUrl.hostname === 'expo.io' && parsedUrl.pathname === '/expo-go');
 }
 
 const styles = StyleSheet.create({

@@ -1,16 +1,18 @@
 ---
 title: FileSystem
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-file-system'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-file-system'
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+
 import SnackInline from '~/components/plugins/SnackInline';
 
-**`expo-file-system`** provides access to a file system stored locally on the device. Within the Expo client, each app has a separate file system and has no access to the file system of other Expo apps. However, it can save content shared by other apps to local filesystem, as well as share local files to other apps. It is also capable of uploading and downloading files from network URLs.
+**`expo-file-system`** provides access to a file system stored locally on the device. Within Expo Go, each project has a separate file system and has no access to the file system of other Expo projects. However, it can save content shared by other projects to the local filesystem, as well as share local files with other projects. It is also capable of uploading and downloading files from network URLs.
 
-<img src="/static/images/sdk/file-system/file-system-diagram.png" style={{maxWidth: 850, maxHeight: 600, marginBottom:"5em", display: "block", marginLeft: "auto", marginRight: "auto"}} />
+<!-- TODO: update this image so we don't have to force a white background on it -->
+<ImageSpotlight alt="Diagram of the various pieces of expo-file-system and how they interact with different resources" src="/static/images/sdk/file-system/file-system-diagram.png" style={{ maxWidth: 850, maxHeight: 600 }} containerStyle={{ backgroundColor: "#fff" }} />
 
 <PlatformsSection android emulator ios simulator />
 
@@ -22,7 +24,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 On Android, this module requires permissions to interact with the filesystem and create resumable downloads. The `READ_EXTERNAL_STORAGE`, `WRITE_EXTERNAL_STORAGE` and `INTERNET` permissions are automatically added.
 
-## Example Usage
+## Usage
 
 #### Downloading files
 
@@ -85,11 +87,12 @@ try {
 #### Managing Giphy's
 
 <SnackInline
-  label="Managing Giphy's"
-  templateId="filesystem/App"
-  files={{
-    'GifFetching.ts': 'filesystem/GifFetching.ts',
-    'GifManagement.ts': 'filesystem/GifManagement.ts'
+label="Managing Giphy's"
+templateId="filesystem/App"
+dependencies={['expo-file-system']}
+files={{
+    'GifFetching.ts': 'filesystem/gifFetching.ts',
+    'GifManagement.ts': 'filesystem/gifManagement.ts'
   }}>
 
 ```typescript
@@ -101,21 +104,21 @@ const gifUrl = (gifId: string) => `https://media1.giphy.com/media/${gifId}/200.g
 
 // Checks if gif directory exists. If not, creates it
 async function ensureDirExists() {
-  const dirInfo = await FileSystem.getInfoAsync(gifDir)
+  const dirInfo = await FileSystem.getInfoAsync(gifDir);
   if (!dirInfo.exists) {
-    console.log('Gif directory doesn\'t exist, creating...');
+    console.log("Gif directory doesn't exist, creating...");
     await FileSystem.makeDirectoryAsync(gifDir, { intermediates: true });
   }
 }
 
-// Downloads all gifs specified as array of IDs 
+// Downloads all gifs specified as array of IDs
 export async function addMultipleGifs(gifIds: string[]) {
   try {
     await ensureDirExists();
 
     console.log('Downloading', gifIds.length, 'gif files...');
     await Promise.all(gifIds.map(id => FileSystem.downloadAsync(gifUrl(id), gifFileUri(id))));
-  } catch(e) {
+  } catch (e) {
     console.error("Couldn't download gif files:", e);
   }
 }
@@ -124,7 +127,7 @@ export async function addMultipleGifs(gifIds: string[]) {
 // If our gif doesn't exist locally, it downloads it
 export async function getSingleGif(gifId: string) {
   await ensureDirExists();
-  
+
   const fileUri = gifFileUri(gifId);
   const fileInfo = await FileSystem.getInfoAsync(fileUri);
 
@@ -146,7 +149,6 @@ export async function deleteAllGifs() {
   console.log('Deleting all GIF files...');
   await FileSystem.deleteAsync(gifDir);
 }
-
 ```
 
 </SnackInline>
@@ -156,12 +158,6 @@ export async function deleteAllGifs() {
 ```js
 import * as FileSystem from 'expo-file-system';
 ```
-
-<TableOfContentSection title='Directories' contents={['FileSystem.documentDirectory', 'FileSystem.cacheDirectory']} />
-
-<TableOfContentSection title='Constants' contents={['FileSystem.EncodingType', 'FileSystem.FileSystemSessionType', 'FileSystem.FileSystemUploadOptions']} />
-
-<TableOfContentSection title='Methods' contents={['FileSystem.getInfoAsync(fileUri, options)', 'FileSystem.readAsStringAsync(fileUri, options)', 'FileSystem.writeAsStringAsync(fileUri, contents, options)', 'FileSystem.deleteAsync(fileUri, options)', 'FileSystem.moveAsync(options)', 'FileSystem.copyAsync(options)', 'FileSystem.makeDirectoryAsync(fileUri, options)', 'FileSystem.readDirectoryAsync(fileUri)', 'FileSystem.downloadAsync(uri, fileUri, options)', 'FileSystem.uploadAsync(url, fileUri, options)', 'FileSystem.createDownloadResumable(uri, fileUri, options, callback, resumeData)', 'FileSystem.DownloadResumable.downloadAsync()', 'FileSystem.DownloadResumable.pauseAsync()', 'FileSystem.DownloadResumable.resumeAsync()', 'FileSystem.DownloadResumable.savable()', 'FileSystem.getContentUriAsync(fileUri)', 'FileSystem.getFreeDiskStorageAsync()', 'FileSystem.getTotalDiskCapacityAsync()']} />
 
 ### [Supported URI schemes](#supported-uri-schemes-1)
 
@@ -278,7 +274,7 @@ Read the entire contents of a file as a string. Binary will be returned in raw f
 
 #### Arguments
 
-- **fileUri (_string_)** -- `file://` URI to the file or directory.
+- **fileUri (_string_)** -- `file://` or [SAF](#saf-uri) URI to the file or directory.
 
 - **options (_object_)** -- Optional props that define how a file must be read.
 
@@ -298,7 +294,7 @@ Write the entire contents of a file as a string.
 
 #### Arguments
 
-- **fileUri (_string_)** -- `file://` URI to the file or directory.
+- **fileUri (_string_)** -- `file://` or [SAF](#saf-uri) URI to the file or directory. Note: when you're using SAF URI the file needs to exist. You can't create a new file.
 
 - **contents (_string_)** -- The string to replace the contents of the file with.
 
@@ -312,7 +308,7 @@ Delete a file or directory. If the URI points to a directory, the directory and 
 
 #### Arguments
 
-- **fileUri (_string_)** -- `file://` URI to the file or directory.
+- **fileUri (_string_)** -- `file://` or [SAF](#saf-uri) URI to the file or directory.
 
 - **options (_object_)** -- A map of options:
 
@@ -326,7 +322,7 @@ Move a file or directory to a new location.
 
 - **options (_object_)** -- A map of options:
 
-  - **from (_string_)** -- `file://` URI to the file or directory at its original location.
+  - **from (_string_)** -- `file://` or [SAF](#saf-uri) URI to the file or directory at its original location.
 
   - **to (_string_)** -- `file://` URI to the file or directory at what should be its new location.
 
@@ -338,7 +334,7 @@ Create a copy of a file or directory. Directories are recursively copied with al
 
 - **options (_object_)** -- A map of options:
 
-  - **from (_string_)** -- URI to the asset, file or directory to copy. It can be e.g. URI returned by [`CameraRoll.getPhotos()`](https://reactnative.dev/docs/cameraroll.html#getphotos). See [supported URI schemes](#supported-uri-schemes-1).
+  - **from (_string_)** -- URI or [SAF](#saf-uri) URI to the asset, file, or directory to copy. It can be e.g. the URI returned by [`CameraRoll.getPhotos()`](https://reactnative.dev/docs/cameraroll.html#getphotos). See [supported URI schemes](#supported-uri-schemes-1).
 
   - **to (_string_)** -- The `file://` URI to the new copy to create.
 
@@ -405,9 +401,9 @@ Returns a Promise that resolves to an object with the following fields:
 
 - **uri (_string_)** -- A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
 
-- **status (_number_)** -- The HTTP status code for the download network request.
+- **status (_number_)** -- The HTTP response status code for the download network request.
 
-- **headers (_object_)** -- An object containing all the HTTP header fields and their values for the download network request. The keys and values of the object are the header names and values respectively.
+- **headers (_object_)** -- An object containing all the HTTP response header fields and their values for the download network request. The keys and values of the object are the header names and values respectively.
 
 - **md5 (_string_)** -- Present if the `md5` option was truthy. Contains the MD5 hash of the file.
 
@@ -423,7 +419,7 @@ Upload the contents of the file pointed by `fileUri` to the remote url.
 
 - **options (_object_)** -- A map of options:
 
-  - **headers (_object_)** -- An object containing all the HTTP header fields and their values for the download network request. The keys and values of the object are the header names and values respectively.
+  - **headers (_object_)** -- An object containing all the HTTP header fields and their values for the upload network request. The keys and values of the object are the header names and values respectively.
 
   - **httpMethod (_String_)** -- The request method. Accepts values: 'POST', 'PUT', 'PATCH. Default to 'POST'.
 
@@ -443,9 +439,9 @@ Upload the contents of the file pointed by `fileUri` to the remote url.
 
 Returns a Promise that resolves to an object with the following fields:
 
-- **status (_number_)** -- The HTTP status code for the download network request.
+- **status (_number_)** -- The HTTP response status code for the upload network request.
 
-- **headers (_object_)** -- An object containing all the HTTP header fields and their values for the download network request. The keys and values of the object are the header names and values respectively.
+- **headers (_object_)** -- An object containing all the HTTP response header fields and their values for the upload network request. The keys and values of the object are the header names and values respectively.
 
 - **body (_string_)** -- The body of the server response.
 
@@ -601,24 +597,203 @@ FileSystem.getTotalDiskCapacityAsync().then(totalDiskCapacity => {
 
 Returns a Promise that resolves to a number that specifies the total internal disk storage capacity in bytes, or JavaScript's [`MAX_SAFE_INTEGER`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER) if the capacity is greater than 2<sup>53</sup> - 1 bytes.
 
+## Storage Access Framework (**Android only**)
+
+The `StorageAccessFramework` is a namespace inside of the `expo-file-system` module, which encapsulates all functions which can be used with [SAF URIs](#saf-uri). You can read more about SAF in the [Android documentation](https://developer.android.com/guide/topics/providers/document-provider).
+
+## SAF URI
+
+A SAF URI is a URI that is compatible with the Storage Access Framework. It should look like this `content://com.android.externalstorage.*`. The easiest way to obtain such URI is by `requestDirectoryPermissionsAsync` method.
+
+## API
+
+```js
+import { StorageAccessFramework } from 'expo-file-system';
+```
+
+### Example Usage
+
+```ts
+import { StorageAccessFramework } from 'expo-file-system';
+
+// Requests permissions for external directory
+const permissions = await StorageAccessFramework.requestDirectoryPermissionsAsync();
+
+if (permissions.granted) {
+  // Gets SAF URI from response
+  const uri = permissions.directoryUri;
+
+  // Gets all files inside of selected directory
+  const files = await StorageAccessFramework.readDirectoryAsync(uri);
+  alert(`Files inside ${uri}:\n\n${JSON.stringify(files)}`);
+}
+```
+
+### Migrating an album
+
+```ts
+import * as MediaLibrary from 'expo-media-library';
+import * as FileSystem from 'expo-file-system';
+const { StorageAccessFramework } = FileSystem;
+
+async function migrateAlbum(albumName: string) {
+  // Gets SAF URI to the album
+  const albumUri = StorageAccessFramework.getUriForDirectoryInRoot(albumName);
+
+  // Requests permissions
+  const permissions = await StorageAccessFramework.requestDirectoryPermissionsAsync(albumUri);
+  if (!permissions.granted) {
+    return;
+  }
+
+  const permittedUri = permissions.directoryUri;
+  // Checks if users selected the correct folder
+  if (!permittedUri.includes(albumName)) {
+    return;
+  }
+
+  const mediaLibraryPermissions = await MediaLibrary.requestPermissionsAsync();
+  if (!mediaLibraryPermissions.granted) {
+    return;
+  }
+
+  // Moves files from external storage to internal storage
+  await StorageAccessFramework.moveAsync({
+    from: permittedUri,
+    to: FileSystem.documentDirectory!,
+  });
+
+  const outputDir = FileSystem.documentDirectory! + albumName;
+  const migratedFiles = await FileSystem.readDirectoryAsync(outputDir);
+
+  // Creates assets from local files
+  const [newAlbumCreator, ...assets] = await Promise.all(
+    migratedFiles.map<Promise<MediaLibrary.Asset>>(
+      async fileName => await MediaLibrary.createAssetAsync(outputDir + '/' + fileName)
+    )
+  );
+
+  // Album was empty
+  if (!newAlbumCreator) {
+    return;
+  }
+
+  // Creates a new album in the scoped directory
+  const newAlbum = await MediaLibrary.createAlbumAsync(albumName, newAlbumCreator, false);
+  if (assets.length) {
+    await MediaLibrary.addAssetsToAlbumAsync(assets, newAlbum, false);
+  }
+}
+```
+
+### `StorageAccessFramework.getUriForDirectoryInRoot(folderName)`
+
+Gets a [SAF URI](#saf-uri) pointing to a folder in the Android root directory. You can use this function to get URI for `StorageAccessFramework.requestDirectoryPermissionsAsync` when you trying to migrate an album. In that case, the name of the album is the folder name.
+
+#### Arguments
+
+- **folderName (_string_)** -- The name of the folder which is located in the Android root directory.
+
+#### Returns
+
+Returns a [SAF URI](#saf-uri) to a folder.
+
+### `StorageAccessFramework.requestDirectoryPermissionsAsync(initialFileUrl)`
+
+**Android only**. Allows users to select a specific directory, granting your app access to all of the files and sub-directories within that directory.
+
+#### Arguments
+
+- **initialFileUrl (_string_)** -- **Optional**. The [SAF URI](#saf-uri) of the directory that the file picker should display when it first loads. If URI is incorrect or points to a non-existing folder, it's ignored. **Available only on Android R or higher**.
+
+#### Returns
+
+Returns a Promise that resolves to an object with the following fields:
+
+- **granted (_boolean_)** -- Whether the permissions were granted.
+
+- **directoryUri (_string_)** -- The [SAF URI](#saf-uri) to the user's selected directory. Available only if permissions were granted.
+
+### `StorageAccessFramework.readDirectoryAsync(dirUri)`
+
+Enumerate the contents of a directory.
+
+#### Arguments
+
+- **dirUri (_string_)** -- [SAF](#saf-uri) URI to the directory.
+
+#### Returns
+
+A Promise that resolves to an array of strings, each containing the full [SAF URI](#saf-uri) of a file or directory contained in the directory at `fileUri`.
+
+### `StorageAccessFramework.makeDirectoryAsync(parentUri: string, dirName: string)`
+
+Creates a new empty directory.
+
+#### Arguments
+
+- **parentUri (_string_)** -- The [SAF](#saf-uri) URI to the parent directory.
+
+- **dirName (_string_)** -- The name of new directory.
+
+#### Returns
+
+A Promise that resolves to a [SAF URI](#saf-uri) to the created directory.
+
+### `StorageAccessFramework.createFileAsync(parentUri: string, fileName: string, mimeType: string)`
+
+Creates a new empty file.
+
+#### Arguments
+
+- **parentUri (_string_)** -- The [SAF](#saf-uri) URI to the parent directory.
+
+- **fileName (_string_)** -- The name of new file **without the extension**.
+
+- **mimeType (_string_)** -- The MIME of new file.
+
+#### Returns
+
+A Promise that resolves to a [SAF URI](#saf-uri) to the created file.
+
+### `StorageAccessFramework.writeAsStringAsync(fileUri, contents, options)`
+
+Alias to [FileSystem.writeAsStringAsync(fileUri, contents, options)](#filesystemwriteasstringasyncfileuri-contents-options).
+
+### `StorageAccessFramework.readAsStringAsync(fileUri, options)`
+
+Alias to [FileSystem.readAsStringAsync(fileUri, options)](#filesystemreadasstringasyncfileuri-options)
+
+### `StorageAccessFramework.deleteAsync(fileUri, options)`
+
+Alias to [FileSystem.deleteAsync(fileUri, options)](#filesystemdeleteasyncfileuri-options)
+
+### `StorageAccessFramework.moveAsync(options)`
+
+Alias to [FileSystem.moveAsync(options)](#filesystemmoveasyncoptions)
+
+### `StorageAccessFramework.copyAsync(options)`
+
+Alias to [FileSystem.copyAsync(options)](#filesystemcopyasyncoptions)
+
 #
 
 ## Supported URI schemes
 
 In this table, you can see what type of URI can be handled by each method. For example, if you have an URI, which begins with `content://`, you cannot use `FileSystem.readAsStringAsync()`, but you can use `FileSystem.copyAsync()` which supports this scheme.
 
-| Method name               | Android                                                                                                          | iOS                                                                                             |
-| ------------------------- | ---------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `getInfoAsync`            | `file://`,<br/>`content://`,<br/>`asset://`,<br/>no scheme**\***                                                 | `file://`,<br/>`ph://`,<br/>`assets-library://`                                                 |
-| `readAsStringAsync`       | `file://`,<br/>`asset://`                                                                                        | `file://`                                                                                       |
-| `writeAsStringAsync`      | `file://`                                                                                                        | `file://`                                                                                       |
-| `deleteAsync`             | `file://`                                                                                                        | `file://`                                                                                       |
-| `moveAsync`               | Source:<br/>`file://`<br/><br/>Destination:<br/>`file://`                                                        | Source:<br/>`file://`<br/><br/>Destination:<br/>`file://`                                       |
-| `copyAsync`               | Source:<br/>`file://`,<br/>`content://`,<br/>`asset://`,<br/>no scheme**\***<br/><br/>Destination:<br/>`file://` | Source:<br/>`file://`,<br/>`ph://`,<br/>`assets-library://`<br/><br/>Destination:<br/>`file://` |
-| `makeDirectoryAsync`      | `file://`                                                                                                        | `file://`                                                                                       |
-| `readDirectoryAsync`      | `file://`                                                                                                        | `file://`                                                                                       |
-| `downloadAsync`           | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                                        | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                       |
-| `uploadAsync`             | Source:<br/>`file://`<br/><br/>Destination:<br/>`http://`<br/>`https://`                                         | Source:<br/>`file://`<br/><br/>Destination:<br/>`http://`<br/>`https://`                        |
-| `createDownloadResumable` | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                                        | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                       |  |
+| Method name               | Android                                                                                                                                   | iOS                                                                                             |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `getInfoAsync`            | `file://`,<br/>`content://`,<br/>`asset://`,<br/>no scheme**\***                                                                          | `file://`,<br/>`ph://`,<br/>`assets-library://`                                                 |
+| `readAsStringAsync`       | `file://`,<br/>`asset://`,<br/>[SAF URI](#saf-uri)                                                                                        | `file://`                                                                                       |
+| `writeAsStringAsync`      | `file://`,<br/>[SAF URI](#saf-uri)                                                                                                        | `file://`                                                                                       |
+| `deleteAsync`             | `file://`,<br/>[SAF URI](#saf-uri)                                                                                                        | `file://`                                                                                       |
+| `moveAsync`               | Source:<br/>`file://`,<br/>[SAF URI](#saf-uri)<br/><br/>Destination:<br/>`file://`                                                        | Source:<br/>`file://`<br/><br/>Destination:<br/>`file://`                                       |
+| `copyAsync`               | Source:<br/>`file://`,<br/>`content://`,<br/>`asset://`,<br/>[SAF URI](#saf-uri),<br/>no scheme**\***<br/><br/>Destination:<br/>`file://` | Source:<br/>`file://`,<br/>`ph://`,<br/>`assets-library://`<br/><br/>Destination:<br/>`file://` |
+| `makeDirectoryAsync`      | `file://`                                                                                                                                 | `file://`                                                                                       |
+| `readDirectoryAsync`      | `file://`                                                                                                                                 | `file://`                                                                                       |
+| `downloadAsync`           | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                                                                 | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                       |
+| `uploadAsync`             | Source:<br/>`file://`<br/><br/>Destination:<br/>`http://`<br/>`https://`                                                                  | Source:<br/>`file://`<br/><br/>Destination:<br/>`http://`<br/>`https://`                        |
+| `createDownloadResumable` | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                                                                 | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                       |  |
 
 **\***On Android _no scheme_ defaults to a bundled resource.

@@ -15,13 +15,15 @@ import org.unimodules.core.Promise
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 
-open class ImageResultTask(private val promise: Promise,
-                           private val uri: Uri,
-                           private val contentResolver: ContentResolver,
-                           private val fileProvider: FileProvider,
-                           private val withExifData: Boolean,
-                           private val imageExporter: ImageExporter)
-  : AsyncTask<Void?, Void?, Void?>() {
+open class ImageResultTask(
+  private val promise: Promise,
+  private val uri: Uri,
+  private val contentResolver: ContentResolver,
+  private val fileProvider: FileProvider,
+  private val withExifData: Boolean,
+  private val imageExporter: ImageExporter
+) :
+  AsyncTask<Void?, Void?, Void?>() {
 
   override fun doInBackground(vararg params: Void?): Void? {
     try {
@@ -31,7 +33,7 @@ open class ImageResultTask(private val promise: Promise,
       val imageExporterHandler = object : Listener {
         override fun onResult(out: ByteArrayOutputStream?, width: Int, height: Int) {
           val response = Bundle().apply {
-            putString("uri", outputFile.toURI().toString())
+            putString("uri", Uri.fromFile(outputFile).toString())
             putInt("width", width)
             putInt("height", height)
             putBoolean("cancelled", false)

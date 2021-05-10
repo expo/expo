@@ -1,5 +1,5 @@
-import * as React from 'react';
 import { useTheme } from '@react-navigation/native';
+import * as React from 'react';
 import { View, ScrollView } from 'react-native';
 
 import Colors from '../constants/Colors';
@@ -20,7 +20,7 @@ interface StyledScrollViewProps extends ScrollViewProps {
 
 type ThemedColors = keyof typeof Colors.light & keyof typeof Colors.dark;
 
-function useThemeName(): string {
+export function useThemeName(): string {
   const theme = useTheme();
   return theme.dark ? 'dark' : 'light';
 }
@@ -48,7 +48,7 @@ function useThemeBorderColor(props: Props, colorName: ThemedColors) {
 }
 
 export const StyledView = (props: Props) => {
-  let {
+  const {
     style,
     lightBackgroundColor: _lightBackgroundColor,
     darkBackgroundColor: _darkBackgroundColor,
@@ -57,8 +57,8 @@ export const StyledView = (props: Props) => {
     ...otherProps
   } = props;
 
-  let backgroundColor = useThemeBackgroundColor(props, 'background');
-  let borderColor = useThemeBorderColor(props, 'border');
+  const backgroundColor = useThemeBackgroundColor(props, 'background');
+  const borderColor = useThemeBorderColor(props, 'border');
 
   return (
     <View

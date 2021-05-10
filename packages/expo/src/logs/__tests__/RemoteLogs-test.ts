@@ -1,4 +1,4 @@
-import RemoteConsole from '../RemoteConsole';
+import * as RemoteConsole from '../RemoteConsole';
 import { __waitForEmptyLogQueueAsync } from '../RemoteLogging';
 
 jest.mock('react-native/Libraries/Core/Devtools/symbolicateStackTrace', () =>
@@ -6,6 +6,11 @@ jest.mock('react-native/Libraries/Core/Devtools/symbolicateStackTrace', () =>
 );
 
 jest.mock('expo-constants', () => require('../../__mocks__/Constants-development'));
+jest.mock('expo-application', () => ({
+  androidId: 'i-am-unique',
+  applicationId: 'me-too',
+  getIosIdForVendorAsync: async () => 'me-too!',
+}));
 
 let originalFetch;
 

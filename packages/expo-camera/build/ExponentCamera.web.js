@@ -8,7 +8,7 @@ import { capture } from './WebCameraUtils';
 import { PictureSizes } from './WebConstants';
 import { useWebCameraStream } from './useWebCameraStream';
 import { useWebQRScanner } from './useWebQRScanner';
-const ExponentCamera = React.forwardRef(({ type, pictureSize, ...props }, ref) => {
+const ExponentCamera = React.forwardRef(({ type, pictureSize, poster, ...props }, ref) => {
     const video = React.useRef(null);
     const native = useWebCameraStream(video, type, props, {
         onCameraReady() {
@@ -83,7 +83,7 @@ const ExponentCamera = React.forwardRef(({ type, pictureSize, ...props }, ref) =
         ];
     }, [native.type]);
     return (React.createElement(View, { pointerEvents: "box-none", style: [styles.videoWrapper, props.style] },
-        React.createElement(Video, { autoPlay: true, playsInline: true, muted: isMuted, 
+        React.createElement(Video, { autoPlay: true, playsInline: true, muted: isMuted, poster: poster, 
             // webkitPlaysinline
             pointerEvents: props.pointerEvents, ref: video, style: style }),
         props.children));

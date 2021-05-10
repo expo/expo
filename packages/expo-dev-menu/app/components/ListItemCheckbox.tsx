@@ -1,14 +1,14 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 
+import { Ionicon } from '../components/Icon';
 import ListItem from './ListItem';
-import { StyledIcon } from './Views';
 
 type Props = {
-  title: string;
+  content: string | React.ReactNode;
   initialChecked?: boolean;
   onChange?: (checked: boolean) => void;
+  disabled?: boolean;
 };
 
 type State = {
@@ -32,7 +32,7 @@ class ListItemCheckbox extends React.PureComponent<Props, State> {
     }
     return (
       <View style={styles.checkContainer}>
-        <StyledIcon component={Ionicons} name="ios-checkmark" size={30} color="tint" />
+        <Ionicon name="ios-checkmark" size={30} color="tint" />
       </View>
     );
   }
@@ -54,7 +54,10 @@ class ListItemCheckbox extends React.PureComponent<Props, State> {
 }
 
 const styles = StyleSheet.create({
-  checkContainer: {},
+  checkContainer: {
+    alignSelf: 'flex-start',
+    marginTop: 5,
+  },
 });
 
 export default ListItemCheckbox;

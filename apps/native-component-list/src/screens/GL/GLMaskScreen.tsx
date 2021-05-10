@@ -1,7 +1,7 @@
-import React from 'react';
-import { Text, View } from 'react-native';
 import MaskedView from '@react-native-community/masked-view';
 import * as GL from 'expo-gl';
+import React from 'react';
+import { Text, View } from 'react-native';
 
 const vertSrc = `
 attribute vec2 position;
@@ -39,8 +39,7 @@ export default class GLMaskScreen extends React.Component<Props> {
               flex: 1,
               backgroundColor: 'transparent',
               justifyContent: 'center',
-            }}
-          >
+            }}>
             <Text
               style={{
                 color: 'black',
@@ -48,13 +47,11 @@ export default class GLMaskScreen extends React.Component<Props> {
                 fontWeight: 'bold',
                 alignSelf: 'center',
                 backgroundColor: 'transparent',
-              }}
-            >
+              }}>
               GL IS COOL
             </Text>
           </View>
-        }
-      >
+        }>
         <GL.GLView style={{ flex: 1 }} onContextCreate={this._onContextCreate} />
       </MaskedView>
     );
@@ -102,11 +99,12 @@ export default class GLMaskScreen extends React.Component<Props> {
         // Buffer data and draw!
         const speed = this.props.speed || 1;
         const a = 0.48 * Math.sin(0.001 * speed * Date.now()) + 0.5;
+        // prettier-ignore
         const verts = new Float32Array([
-          -a, -a, a, -a,
-          -a, a, -a, a,
-          a, -a, a, a,
-        ]);
+          -a, -a,  a, -a,
+          -a,  a, -a,  a,
+           a, -a,  a,  a,
+         ]);
         gl.bufferData(gl.ARRAY_BUFFER, verts, gl.STATIC_DRAW);
         gl.drawArrays(gl.TRIANGLES, 0, verts.length / 2);
 
@@ -119,5 +117,5 @@ export default class GLMaskScreen extends React.Component<Props> {
       }
     };
     animate();
-  }
+  };
 }

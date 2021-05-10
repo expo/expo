@@ -1,0 +1,36 @@
+[
+    {
+        "name": "parameterised inner list",
+        "raw": ["(abc_123);a=1;b=2, cdef_456"],
+        "header_type": "list",
+        "expected": [
+            [
+                [[{"__type": "token", "value": "abc_123"}, []]],
+                [["a", 1], ["b", 2]]
+            ],
+            [{"__type": "token", "value": "cdef_456"}, []]
+        ]
+    },
+    {
+        "name": "parameterised inner list item",
+        "raw": ["(abc_123;a=1;b=2;cdef_456)"],
+        "header_type": "list",
+        "expected": [
+            [
+                [[{"__type": "token", "value": "abc_123"}, [["a", 1], ["b", 2], ["cdef_456", true]]]],
+                []
+            ]
+        ]
+    },
+    {
+        "name": "parameterised inner list with parameterised item",
+        "raw": ["(abc_123;a=1;b=2);cdef_456"],
+        "header_type": "list",
+        "expected": [
+            [
+                [[{"__type": "token", "value": "abc_123"}, [["a", 1], ["b", 2]]]],
+                [["cdef_456", true]]
+            ]
+        ]
+    }
+]

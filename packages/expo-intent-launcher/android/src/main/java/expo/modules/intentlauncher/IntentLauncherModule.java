@@ -1,6 +1,7 @@
 package expo.modules.intentlauncher;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -102,7 +103,14 @@ public class IntentLauncherModule extends ExportedModule implements ActivityEven
 
     mUIManager.registerActivityEventListener(this);
     mPendingPromise = promise;
-    activity.startActivityForResult(intent, REQUEST_CODE);
+
+    try {
+      activity.startActivityForResult(intent, REQUEST_CODE);
+    }
+    catch (ActivityNotFoundException e) {
+      mPendingPromise.reject(e);
+      mPendingPromise = null;
+    }
   }
 
   //region ActivityEventListener

@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI38_0_0/Expo/EXGoogleSignIn/ABI38_0_0EXGoogleSignIn/ABI38_0_0EXGoogleSignInAppDelegate.h

@@ -2,48 +2,39 @@
 
 import UIKit
 
-class DevMenuGestureRecognizer: UILongPressGestureRecognizer {
-  init() {
-    super.init(target: nil, action: nil)
-
-    numberOfTouchesRequired = 3
-    minimumPressDuration = 0.5
-    allowableMovement = 30
-  }
-
-  // MARK: UIGestureRecognizer
-
+class DevMenuGestureRecognizerDelegate {
   /**
-   Handler for three-finger long press gesture.
-   */
-  override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
-    super.touchesEnded(touches, with: event)
-    if state == .ended {
-      generateImpactFeedback()
-    }
-  }
-
-  // MARK: private
-
-  /**
-   Generates light impact feedback to informing the user that the gesture has been completed.
-   */
-  private func generateImpactFeedback() {
-    if state == .began {
+    Handler for three-finger long press gesture.
+  */
+  @objc
+  public func handleLongPress(_ gestureReconizer: UILongPressGestureRecognizer) {
+    if gestureReconizer.state == UIGestureRecognizer.State.began {
       if DevMenuManager.shared.toggleMenu() {
         let feedback = UIImpactFeedbackGenerator(style: .light)
         feedback.prepare()
         feedback.impactOccurred()
       }
-      cancelGesture()
+      cancelGesture(gestureReconizer)
     }
   }
-
+  
   /**
    Use a trick that cancels a gesture.
-   */
-  private func cancelGesture() {
-    isEnabled = false
-    isEnabled = true
+  */
+  private func cancelGesture(_ gestureReconizer: UILongPressGestureRecognizer) {
+    gestureReconizer.isEnabled = false
+    gestureReconizer.isEnabled = true
+  }
+}
+
+class DevMenuGestureRecognizer: UILongPressGestureRecognizer {
+  static fileprivate let gestureDelegate = DevMenuGestureRecognizerDelegate()
+  
+  init() {
+    super.init(target: DevMenuGestureRecognizer.gestureDelegate, action: #selector(DevMenuGestureRecognizer.gestureDelegate.handleLongPress(_:)))
+
+    numberOfTouchesRequired = 3
+    minimumPressDuration = 0.5
+    allowableMovement = 30
   }
 }

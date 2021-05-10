@@ -14,7 +14,7 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
@@ -50,9 +50,8 @@ function isChangelogModified(packageName, modifiedFiles) {
 function getSuggestedChangelogEntries(packageNames) {
     const { [PullRequestManager_1.DEFAULT_CHANGELOG_ENTRY_KEY]: defaultEntry, ...suggestedEntries } = pullRequestManager.parseChangelogSuggestionFromDescription();
     return packageNames.map(packageName => {
-        var _a, _b, _c, _d;
-        const message = (_b = (_a = suggestedEntries[packageName]) === null || _a === void 0 ? void 0 : _a.message) !== null && _b !== void 0 ? _b : defaultEntry.message;
-        const type = (_d = (_c = suggestedEntries[packageName]) === null || _c === void 0 ? void 0 : _c.type) !== null && _d !== void 0 ? _d : defaultEntry.type;
+        const message = suggestedEntries[packageName]?.message ?? defaultEntry.message;
+        const type = suggestedEntries[packageName]?.type ?? defaultEntry.type;
         return {
             packageName,
             message,
@@ -91,7 +90,7 @@ function generateReport(missingEntries, url) {
         .join('\n');
     const diff = '```diff\n' + missingEntries.map(entry => entry.diff).join('\n') + '```\n';
     const pr = url ? `#### or merge this pull request: ${url}` : '';
-    fail(`📋 **Missing Changelog**
+    warn(`📋 **Missing Changelog**
 ------
 🛠 Add missing entries to:
 ${message}`);
@@ -102,7 +101,7 @@ ${message}`);
 
   #### Apply suggested changes:
 ${diff}
-${pr} 
+${pr}
 </details>`);
 }
 /**

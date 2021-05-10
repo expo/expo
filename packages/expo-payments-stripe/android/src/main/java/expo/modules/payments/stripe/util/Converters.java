@@ -1,8 +1,6 @@
 package expo.modules.payments.stripe.util;
 
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.google.android.gms.identity.intents.model.CountrySpecification;
@@ -10,18 +8,24 @@ import com.google.android.gms.identity.intents.model.UserAddress;
 import com.google.android.gms.wallet.PaymentData;
 import com.stripe.android.model.Address;
 import com.stripe.android.model.BankAccount;
+import com.stripe.android.model.BankAccountTokenParams;
 import com.stripe.android.model.Card;
+import com.stripe.android.model.CardParams;
 import com.stripe.android.model.Source;
-import com.stripe.android.model.SourceCodeVerification;
-import com.stripe.android.model.SourceOwner;
-import com.stripe.android.model.SourceReceiver;
-import com.stripe.android.model.SourceRedirect;
+import com.stripe.android.model.Source.CodeVerification;
+import com.stripe.android.model.Source.Owner;
+import com.stripe.android.model.Source.Receiver;
+import com.stripe.android.model.Source.Redirect;
 import com.stripe.android.model.Token;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Created by ngoriachev on 13/03/2018.
@@ -68,7 +72,7 @@ public class Converters {
 
     result.putString("cardId", card.getId());
     result.putString("number", card.getNumber());
-    result.putString("cvc", card.getCVC() );
+    result.putString("cvc", card.getCvc() );
     result.putInt("expMonth", card.getExpMonth() );
     result.putInt("expYear", card.getExpYear() );
     result.putString("name", card.getName() );
@@ -79,8 +83,8 @@ public class Converters {
     result.putString("addressZip", card.getAddressZip() );
     result.putString("addressCountry", card.getAddressCountry() );
     result.putString("last4", card.getLast4() );
-    result.putString("brand", card.getBrand() );
-    result.putString("funding", card.getFunding() );
+    result.putString("brand", card.getBrand().getDisplayName() );
+    result.putString("funding", card.getFunding().name() );
     result.putString("fingerprint", card.getFingerprint() );
     result.putString("country", card.getCountry() );
     result.putString("currency", card.getCurrency() );
@@ -94,11 +98,10 @@ public class Converters {
     if (account == null) return result;
 
     result.putString("routingNumber", account.getRoutingNumber());
-    result.putString("accountNumber", account.getAccountNumber());
     result.putString("countryCode", account.getCountryCode());
     result.putString("currency", account.getCurrency());
     result.putString("accountHolderName", account.getAccountHolderName());
-    result.putString("accountHolderType", account.getAccountHolderType());
+    result.putString("accountHolderType", account.getAccountHolderType().name());
     result.putString("fingerprint", account.getFingerprint());
     result.putString("bankName", account.getBankName());
     result.putString("last4", account.getLast4());
@@ -165,32 +168,33 @@ public class Converters {
     return allowedCountriesForShipping;
   }
 
-  public static Card createCard(final Map<String, Object> cardData) {
-    return new Card(
-      // required fields
+  public static CardParams createCardParams(final Map<String, Object> cardData) {
+    Address address = new Address(
+      getValue(cardData, "addressCity"),
+      getValue(cardData, "country"),
+      getValue(cardData, "addressLine1"),
+      getValue(cardData, "addressLine2"),
+      getValue(cardData, "addressZip"),
+      getValue(cardData, "addressState")
+    );
+    Map <String, String> metaData = new HashMap<String, String>();
+    metaData.put("brand", getValue(cardData, "brand"));
+    metaData.put("last4", getValue(cardData, "last4"));
+    metaData.put("fingerprint", getValue(cardData, "fingerprint"));
+    metaData.put("funding", getValue(cardData, "funding"));
+    metaData.put("id", getValue(cardData, "id"));
+    return 
+      new CardParams(
         (String)cardData.get("number"),
         new Integer((int)Math.round((Double)cardData.get("expMonth"))),
         new Integer((int)Math.round((Double)cardData.get("expYear"))),
-      // additional fields
-      getValue(cardData, "cvc"),
-      getValue(cardData, "name"),
-      getValue(cardData, "addressLine1"),
-      getValue(cardData, "addressLine2"),
-      getValue(cardData, "addressCity"),
-      getValue(cardData, "addressState"),
-      getValue(cardData, "addressZip"),
-      getValue(cardData, "addressCountry"),
-      getValue(cardData, "brand"),
-      getValue(cardData, "last4"),
-      getValue(cardData, "fingerprint"),
-      getValue(cardData, "funding"),
-      getValue(cardData, "country"),
-      getValue(cardData, "currency"),
-      getValue(cardData, "id")
-    );
+        getValue(cardData, "cvc"),
+        getValue(cardData, "name"),
+        address,
+        getValue(cardData, "currency"),
+        metaData
+      );
   }
-
-
 
   @NonNull
   public static Bundle convertSourceToWritableMap(@Nullable Source source) {
@@ -205,17 +209,16 @@ public class Converters {
     newSource.putInt("created", source.getCreated().intValue());
     newSource.putBundle("codeVerification", convertCodeVerificationToWritableMap(source.getCodeVerification()));
     newSource.putString("currency", source.getCurrency());
-    newSource.putString("flow", source.getFlow());
+    newSource.putString("flow", source.getFlow().name());
     newSource.putBoolean("livemode", source.isLiveMode());
-    newSource.putBundle("metadata", stringMapToWritableMap(source.getMetaData()));
     newSource.putBundle("owner", convertOwnerToWritableMap(source.getOwner()));
     newSource.putBundle("receiver", convertReceiverToWritableMap(source.getReceiver()));
     newSource.putBundle("redirect", convertRedirectToWritableMap(source.getRedirect()));
     newSource.putBundle("sourceTypeData", mapToWritableMap(source.getSourceTypeData()));
-    newSource.putString("status", source.getStatus());
+    newSource.putString("status", source.getStatus().name());
     newSource.putString("type", source.getType());
     newSource.putString("typeRaw", source.getTypeRaw());
-    newSource.putString("usage", source.getUsage());
+    newSource.putString("usage", source.getUsage().name());
 
     return newSource;
   }
@@ -236,7 +239,7 @@ public class Converters {
   }
 
   @NonNull
-  public static Bundle convertOwnerToWritableMap(@Nullable final SourceOwner owner) {
+  public static Bundle convertOwnerToWritableMap(@Nullable final Owner owner) {
     Bundle map = new Bundle();
 
     if (owner == null) {
@@ -274,7 +277,7 @@ public class Converters {
   }
 
   @NonNull
-  public static Bundle convertReceiverToWritableMap(@Nullable final SourceReceiver receiver) {
+  public static Bundle convertReceiverToWritableMap(@Nullable final Receiver receiver) {
     Bundle map = new Bundle();
 
     if (receiver == null) {
@@ -290,7 +293,7 @@ public class Converters {
   }
 
   @NonNull
-  public static Bundle convertRedirectToWritableMap(@Nullable SourceRedirect redirect) {
+  public static Bundle convertRedirectToWritableMap(@Nullable Redirect redirect) {
     Bundle map = new Bundle();
 
     if (redirect == null) {
@@ -298,14 +301,14 @@ public class Converters {
     }
 
     map.putString("returnUrl", redirect.getReturnUrl());
-    map.putString("status", redirect.getStatus());
+    map.putString("status", redirect.getStatus().name());
     map.putString("url", redirect.getUrl());
 
     return map;
   }
 
   @NonNull
-  public static Bundle convertCodeVerificationToWritableMap(@Nullable SourceCodeVerification codeVerification) {
+  public static Bundle convertCodeVerificationToWritableMap(@Nullable CodeVerification codeVerification) {
     Bundle map = new Bundle();
 
     if (codeVerification == null) {
@@ -313,7 +316,7 @@ public class Converters {
     }
 
     map.putInt("attemptsRemaining", codeVerification.getAttemptsRemaining());
-    map.putString("status", codeVerification.getStatus());
+    map.putString("status", codeVerification.getStatus().name());
 
     return map;
   }
@@ -376,18 +379,18 @@ public class Converters {
     return result;
   }
 
-  public static BankAccount createBankAccount(Map<String, Object> accountData) {
-    BankAccount account = new BankAccount(
-      // required fields only
-        (String)accountData.get("accountNumber"),
+  public static BankAccountTokenParams createBankAccountTokenParams(Map<String, Object> accountData) {
+    BankAccountTokenParams accountTokenParams = new BankAccountTokenParams(
+        // required fields
         (String)accountData.get("countryCode"),
         (String)accountData.get("currency"),
-      getValue(accountData, "routingNumber", "")
+        (String)accountData.get("accountNumber"),
+      null,
+      getValue(accountData, "accountHolderName"),
+      getValue(accountData, "routingNumber")
     );
-    account.setAccountHolderName(getValue(accountData, "accountHolderName"));
-    account.setAccountHolderType(getValue(accountData, "accountHolderType"));
 
-    return account;
+    return accountTokenParams;
   }
 
   public static String getStringOrNull(@NonNull Map<String, Object> map, @NonNull String key) {

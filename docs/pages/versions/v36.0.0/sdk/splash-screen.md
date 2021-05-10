@@ -7,13 +7,13 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 The `SplashScreen` module tells Expo to keep the splash screen visible until you choose to hide it. This is useful to do some work behind the scenes before displaying your app and to create transitions for your splash screen, so you can have it fade out or slide away, for example.
 
-This is useful to let you create an impression of a pure React component splash screen. You can combine it with [AppLoading](../app-loading/). Read more about [creating a splash screen.](../../guides/splash-screens/)
+This is useful to let you create an impression of a pure React component splash screen. You can combine it with [AppLoading](app-loading.md). Read more about [creating a splash screen.](../../../guides/splash-screens.md)
 
 <PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-This API is pre-installed in [managed](../../introduction/managed-vs-bare/#managed-workflow) apps. It is not available for [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native apps.
+This API is pre-installed in [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps. It is not available for [bare](../../../introduction/managed-vs-bare.md#bare-workflow) React Native apps.
 
 ## API
 

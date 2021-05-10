@@ -1,6 +1,7 @@
 package versioned.host.exp.exponent.modules.api.components.datetimepicker;
 
 import java.util.Calendar;
+import java.util.TimeZone;
 import android.os.Bundle;
 
 public class RNDate {
@@ -8,6 +9,11 @@ public class RNDate {
 
   public RNDate(Bundle args) {
     now = Calendar.getInstance();
+    if (args != null && args.containsKey(RNConstants.ARG_TZOFFSET_MIN)) {
+      now.setTimeZone(TimeZone.getTimeZone("GMT"));
+      Integer timeZoneOffsetInMinutes = args.getInt(RNConstants.ARG_TZOFFSET_MIN);
+      now.add(Calendar.MILLISECOND, timeZoneOffsetInMinutes * 60000);
+    }
 
     if (args != null && args.containsKey(RNConstants.ARG_VALUE)) {
       set(args.getLong(RNConstants.ARG_VALUE));

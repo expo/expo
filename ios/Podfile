@@ -1,43 +1,46 @@
 require_relative './podfile_helpers.rb'
-require_relative '../packages/react-native-unimodules/cocoapods.rb'
+require_relative '../packages/@unimodules/react-native-adapter/scripts/autolinking'
 require_relative '../react-native-lab/react-native/scripts/react_native_pods'
 
 install! 'cocoapods',
          :generate_multiple_pod_projects => true,
          :incremental_installation => true
-platform :ios, '10.0'
+platform :ios, '11.0'
 inhibit_all_warnings!
 
-target 'Exponent' do
+abstract_target 'Expo Go' do
   # Expo Client dependencies
-  pod 'Amplitude-iOS'
+  pod 'Amplitude'
   pod 'CocoaLumberjack', '~> 3.5.3'
   pod 'GoogleMaps', '~> 3.6'
   pod 'Google-Maps-iOS-Utils', '~> 2.1.0'
-  pod 'lottie-ios', '~> 2.5.0'
   pod 'JKBigInteger2', '0.0.5'
 
-  # Unimodules
-  use_unimodules!({
-    modules_paths: ['../packages'],
+  # Expo modules
+  use_expo_modules!({
     exclude: [
       'expo-module-template',
-      'expo-bluetooth',
       'expo-in-app-purchases',
-      'expo-payments-stripe',
-      'expo-splash-screen',
+      'expo-payments-stripe'
+    ],
+    # Modules for which to include Tests subspec
+    tests: [
+      'expo-updates',
+      'expo-structured-headers',
     ],
     flags: {
       :inhibit_warnings => false
     }
   })
 
+  # Expo modules that are not unimodules
+  pod 'EXRandom', path: '../packages/expo-random/ios'
+
+  # Install vendored pods.
+  use_pods! 'vendored/unversioned/**/*.podspec.json'
+
   # Unversioned React Native
   use_react_native! path: '../react-native-lab/react-native'
-
-  # Evaluate all files matching `versioned-react-native/ABI*/dependencies.rb` glob pattern
-  # and install ReactABIXX_0_0 pods with all versioned unimodules.
-  use_versioned_abis!
 
   # Build React Native with RCT_DEV enabled and RCT_ENABLE_INSPECTOR and
   # RCT_ENABLE_PACKAGER_CONNECTION disabled
@@ -48,12 +51,20 @@ target 'Exponent' do
 
     installer.target_installation_results.pod_target_installation_results
       .each do |pod_name, target_installation_result|
+
       # Run postinstalls actions for versioned dependencies.
       # These actions are specified in `versioned-react-native/ABI*/postinstalls.rb` files.
       run_versioned_postinstalls!(pod_name, target_installation_result)
 
       target_installation_result.native_target.build_configurations.each do |config|
-        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '10.0'
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
+      end
+
+      if pod_name == 'Branch'
+        target_installation_result.native_target.build_configurations.each do |config|
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'BRANCH_EXCLUDE_IDFA_CODE=1'
+        end
       end
 
       # Build React Native with RCT_DEV enabled and RCT_ENABLE_INSPECTOR and
@@ -66,6 +77,17 @@ target 'Exponent' do
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ENABLE_PACKAGER_CONNECTION=0'
       end
     end
+  end
+
+  # Target for development, contains only unversioned code
+  target 'Expo Go (unversioned)' do
+  end
+
+  # Release target additionally includes versioned SDKs
+  target 'Expo Go (versioned)' do
+    # Evaluate all files matching `versioned-react-native/ABI*/dependencies.rb` glob pattern
+    # and install ReactABIXX_0_0 pods with all versioned unimodules.
+    use_versioned_abis!
   end
 
   # Test targets

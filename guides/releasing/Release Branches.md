@@ -11,9 +11,9 @@
   - [Prelease Versions](#prelease-versions)
   - [Shortcomings](#shortcomings)
 
-The release process begins when we decide that the clients and libraries on the master branch are ready for the next release. This happens after we have created versioned code for the next SDK. We try to keep the tests always passing on master so that we can release at any time but we don’t release from master. Instead, we create a release branch.
+The release process begins when we decide that Expo Go and the libraries on the master branch are ready for the next release. This happens after we have created versioned code for the next SDK. We try to keep the tests always passing on master so that we can release at any time but we don’t release from master. Instead, we create a release branch.
 
-The release branch is named `sdk-XX` and is based on master. The main purpose of the release branch is to release new versions of the clients and libraries; we use the release branch to build the clients we submit to the app stores and to publish our JS libraries to npm.
+The release branch is named `sdk-XX` and is based on master. The main purpose of the release branch is to release new versions of Expo Go and the SDK libraries; we use the release branch to build the Expo Go apps we submit to the app stores and to publish our JS libraries to npm.
 
 After creating the release branch, we usually will need to fix bugs. These bug fixes usually will be applicable to both the release branch and master and we want to ensure that both branches receive the fix. We maintain one invariant: **commits flow in one direction from master to the release branch.**
 
@@ -27,7 +27,7 @@ In addition to preserving the invariant, these guidelines help set expectations 
 
 ## Example
 
-Here’s what a typical bug fix would look like. If we find that there is a bug with the release that we want to fix, we’d check out master and look to fix the bug there. Assuming that we can reproduce and fix the bug on master, we commit the fix and then cherry-pick it to the release branch. If we need to publish a new patch or minor version, we make a commit to increment the relevant versions on the release branch and publish the new clients or libraries.
+Here’s what a typical bug fix would look like. If we find that there is a bug with the release that we want to fix, we’d check out master and look to fix the bug there. Assuming that we can reproduce and fix the bug on master, we commit the fix and then cherry-pick it to the release branch. If we need to publish a new patch or minor version, we make a commit to increment the relevant versions on the release branch and publish the new Expo Go apps or libraries.
 
 This way, the bug-fix commit is on both master and the release branch, and the version-incrementing commit is only on the release branch. The next time we publish another release, the release branch will show us the exact code and version used for the prior release.
 
@@ -61,9 +61,9 @@ This section is intended for people responsible for the release in particular. D
 
 These are some general guidelines to achieve this:
 
-When the new version of a library is compatible with a client we have already released (or plan to release), increment the version on the release branch and publish from there. For our JS packages, these will typically be patch versions because we use the minor version number to communicate that the JS API doesn't have breaking changes but the native-to-JS API does.
+When the new version of a library is compatible with a version of Expo Go we have already released (or plan to release), increment the version on the release branch and publish from there. For our JS packages, these will typically be patch versions because we use the minor version number to communicate that the JS API doesn't have breaking changes but the native-to-JS API does.
 
-Otherwise, when the new version is not compatible with an already released client, we sometimes want to increment the version on master and other times on the next, future release branch. Commit major-version changes to master so the versions on master stay up to date over time; create the next release branch after incrementing the major versions. For minor-version changes, we can commit them either to master or, if we haven't released a client yet, to the release branch since the native-to-JS API for the next SDK version has not yet been frozen. The branch to choose depends on the code we want to publish; if we want to publish the code on the release branch, we should increment the version on the release branch, and if we want to publish the code on master, we should increment the version on master.
+Otherwise, when the new version is not compatible with an already released version of Expo Go, we sometimes want to increment the version on master and other times on the next, future release branch. Commit major-version changes to master so the versions on master stay up to date over time; create the next release branch after incrementing the major versions. For minor-version changes, we can commit them either to master or, if we haven't released a version of Expo Go yet, to the release branch since the native-to-JS API for the next SDK version has not yet been frozen. The branch to choose depends on the code we want to publish; if we want to publish the code on the release branch, we should increment the version on the release branch, and if we want to publish the code on master, we should increment the version on master.
 
 ## Prelease Versions
 

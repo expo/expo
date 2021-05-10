@@ -1,12 +1,14 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
 
-import { DevMenuKeyCommandsEnum } from '../DevMenuInternal';
+import { DevMenuKeyCommandsEnum, doesDeviceSupportKeyCommands } from '../DevMenuInternal';
+import Colors from '../constants/Colors';
 import { StyledText } from './Text';
 
 type Props = {
   input: string;
   modifiers: DevMenuKeyCommandsEnum;
+  disabled?: boolean;
 };
 
 function keyCommandToString(input: string, modifiers: DevMenuKeyCommandsEnum): string {
@@ -29,11 +31,19 @@ function keyCommandToString(input: string, modifiers: DevMenuKeyCommandsEnum): s
 
 export default class DevMenuKeyCommandLabel extends React.PureComponent<Props> {
   render() {
+    if (!doesDeviceSupportKeyCommands) {
+      return <View />;
+    }
     const { input, modifiers } = this.props;
     const label = keyCommandToString(input, modifiers);
-
+    const textColor = this.props.disabled
+      ? {
+          lightColor: Colors.light.disabledTest,
+          darkColor: Colors.dark.disabledTest,
+        }
+      : {};
     const characters = label.split('').map(symbol => (
-      <StyledText key={symbol} style={styles.character}>
+      <StyledText key={symbol} style={styles.character} {...textColor}>
         {symbol}
       </StyledText>
     ));
@@ -52,5 +62,9 @@ const styles = StyleSheet.create({
     width: CHARACTER_WIDTH,
     fontSize: CHARACTER_WIDTH,
     textAlign: 'center',
+    fontFamily: Platform.select({
+      android: 'monospace',
+      ios: 'Courier',
+    }),
   },
 });

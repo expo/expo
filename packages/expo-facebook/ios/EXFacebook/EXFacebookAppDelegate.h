@@ -1,5 +1,6 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
+#import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 #import <UMCore/UMSingletonModule.h>
 

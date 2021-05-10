@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI38_0_0/Expo/EXScreenCapture/ABI38_0_0EXScreenCapture/ABI38_0_0EXScreenCaptureModule.h

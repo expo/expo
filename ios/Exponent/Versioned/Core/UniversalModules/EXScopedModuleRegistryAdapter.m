@@ -29,6 +29,7 @@
 #import "EXScopedNotificationSchedulerModule.h"
 #import "EXScopedNotificationPresentationModule.h"
 #import "EXScopedNotificationCategoriesModule.h"
+#import "EXScopedServerRegistrationModule.h"
 
 #if __has_include(<EXTaskManager/EXTaskManager.h>)
 #import <EXTaskManager/EXTaskManager.h>
@@ -41,7 +42,7 @@
   UMModuleRegistry *moduleRegistry = [self.moduleRegistryProvider moduleRegistry];
 
 #if __has_include(<EXUpdates/EXUpdatesService.h>)
-  EXUpdatesBinding *updatesBinding = [[EXUpdatesBinding alloc] init];
+  EXUpdatesBinding *updatesBinding = [[EXUpdatesBinding alloc] initWithExperienceId:experienceId updatesKernelService:kernelServices[EX_UNVERSIONED(@"EXUpdatesManager")] databaseKernelService:kernelServices[EX_UNVERSIONED(@"EXUpdatesDatabaseManager")]];
   [moduleRegistry registerInternalModule:updatesBinding];
 #endif
 
@@ -51,7 +52,7 @@
 #endif
 
 #if __has_include(<EXFacebook/EXFacebook.h>)
-  // only override in Expo client
+  // only override in Expo Go
   if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
     EXScopedFacebook *scopedFacebook = [[EXScopedFacebook alloc] initWithExperienceId:experienceId andParams:params];
     [moduleRegistry registerExportedModule:scopedFacebook];
@@ -59,7 +60,16 @@
 #endif
 
 #if __has_include(<EXFileSystem/EXFileSystem.h>)
-  EXScopedFileSystemModule *fileSystemModule = [[EXScopedFileSystemModule alloc] initWithExperienceId:experienceId andConstantsBinding:constantsBinding];
+  EXScopedFileSystemModule *fileSystemModule;
+  if (params[@"fileSystemDirectories"]) {
+    NSString *documentDirectory = params[@"fileSystemDirectories"][@"documentDirectory"];
+    NSString *cachesDirectory = params[@"fileSystemDirectories"][@"cachesDirectory"];
+    fileSystemModule = [[EXScopedFileSystemModule alloc] initWithDocumentDirectory:documentDirectory
+                                                                   cachesDirectory:cachesDirectory
+                                                                   bundleDirectory:nil];
+  } else {
+    fileSystemModule = [EXScopedFileSystemModule new];
+  }
   [moduleRegistry registerExportedModule:fileSystemModule];
   [moduleRegistry registerInternalModule:fileSystemModule];
 #endif
@@ -86,7 +96,7 @@
 #endif
 
 #if __has_include(<EXSecureStore/EXSecureStore.h>)
-  EXScopedSecureStore *secureStoreModule = [[EXScopedSecureStore alloc] initWithExperienceId:experienceId];
+  EXScopedSecureStore *secureStoreModule = [[EXScopedSecureStore alloc] initWithExperienceId:experienceId andConstantsBinding:constantsBinding];
   [moduleRegistry registerExportedModule:secureStoreModule];
 #endif
 
@@ -95,7 +105,7 @@
   [moduleRegistry registerExportedModule:amplitudeModule];
 #endif
 
-#if __has_include(<EXPermissions/EXPermissions.h>)
+#if __has_include(<UMReactNativeAdapter/EXPermissionsService.h>)
   EXScopedPermissions *permissionsModule = [[EXScopedPermissions alloc] initWithExperienceId:experienceId andConstantsBinding:constantsBinding];
   [moduleRegistry registerExportedModule:permissionsModule];
   [moduleRegistry registerInternalModule:permissionsModule];
@@ -135,34 +145,57 @@
 #endif
 
 #if __has_include(<EXNotifications/EXNotificationsEmitter.h>)
-  EXScopedNotificationsEmitter *notificationsEmmitter = [[EXScopedNotificationsEmitter alloc] initWithExperienceId:experienceId];
-  [moduleRegistry registerExportedModule:notificationsEmmitter];
+  // only override in Expo Go
+  if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
+    EXScopedNotificationsEmitter *notificationsEmmitter = [[EXScopedNotificationsEmitter alloc] initWithExperienceId:experienceId];
+    [moduleRegistry registerExportedModule:notificationsEmmitter];
+  }
 #endif
   
 #if __has_include(<EXNotifications/EXNotificationsHandlerModule.h>)
-  EXScopedNotificationsHandlerModule *notificationsHandler = [[EXScopedNotificationsHandlerModule alloc] initWithExperienceId:experienceId];
-  [moduleRegistry registerExportedModule:notificationsHandler];
+  // only override in Expo Go
+  if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
+    EXScopedNotificationsHandlerModule *notificationsHandler = [[EXScopedNotificationsHandlerModule alloc] initWithExperienceId:experienceId];
+    [moduleRegistry registerExportedModule:notificationsHandler];
+  }
 #endif
   
 #if __has_include(<EXNotifications/EXNotificationsHandlerModule.h>)
-  EXScopedNotificationBuilder *notificationsBuilder = [[EXScopedNotificationBuilder alloc] initWithExperienceId:experienceId];
+  EXScopedNotificationBuilder *notificationsBuilder = [[EXScopedNotificationBuilder alloc] initWithExperienceId:experienceId andConstantsBinding:constantsBinding];
   [moduleRegistry registerInternalModule:notificationsBuilder];
 #endif
   
 #if __has_include(<EXNotifications/EXNotificationSchedulerModule.h>)
-  EXScopedNotificationSchedulerModule *schedulerModule = [[EXScopedNotificationSchedulerModule alloc] initWithExperienceId:experienceId];
-  [moduleRegistry registerExportedModule:schedulerModule];
+  // only override in Expo Go
+  if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
+    EXScopedNotificationSchedulerModule *schedulerModule = [[EXScopedNotificationSchedulerModule alloc] initWithExperienceId:experienceId];
+    [moduleRegistry registerExportedModule:schedulerModule];
+  }
 #endif
     
 #if __has_include(<EXNotifications/EXNotificationPresentationModule.h>)
-  EXScopedNotificationPresentationModule *notificationPresentationModule = [[EXScopedNotificationPresentationModule alloc] initWithExperienceId:experienceId];
-  [moduleRegistry registerExportedModule:notificationPresentationModule];
+  // only override in Expo Go
+  if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
+    EXScopedNotificationPresentationModule *notificationPresentationModule = [[EXScopedNotificationPresentationModule alloc] initWithExperienceId:experienceId];
+    [moduleRegistry registerExportedModule:notificationPresentationModule];
+  }
 #endif
   
 #if __has_include(<EXNotifications/EXNotificationCategoriesModule.h>)
-  EXScopedNotificationCategoriesModule *categoriesModule = [[EXScopedNotificationCategoriesModule alloc] initWithExperienceId:experienceId];
-  [moduleRegistry registerExportedModule:categoriesModule];
+  // only override in Expo Go
+  if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
+    EXScopedNotificationCategoriesModule *scopedCategoriesModule = [[EXScopedNotificationCategoriesModule alloc] initWithExperienceId:experienceId andConstantsBinding:constantsBinding];
+    [moduleRegistry registerExportedModule:scopedCategoriesModule];
+  }
+  [EXScopedNotificationCategoriesModule maybeMigrateLegacyCategoryIdentifiersForProject:experienceId
+                                                                             isInExpoGo:[params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]];
 #endif
+  
+#if __has_include(<EXNotifications/EXServerRegistrationModule.h>)
+  EXScopedServerRegistrationModule *serverRegistrationModule = [[EXScopedServerRegistrationModule alloc] initWithExperienceId:experienceId];
+  [moduleRegistry registerExportedModule:serverRegistrationModule];
+#endif
+
   return moduleRegistry;
 }
 

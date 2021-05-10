@@ -1,5 +1,5 @@
-import { EvilIcons } from '@expo/vector-icons';
-import { Link, useLinkProps, useNavigation } from '@react-navigation/native';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
+import { Link, useLinkProps } from '@react-navigation/native';
 import React from 'react';
 import {
   FlatList,
@@ -12,6 +12,7 @@ import {
   View,
   Platform,
   Pressable,
+  useWindowDimensions,
 } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 
@@ -46,12 +47,11 @@ function LinkButton({
         pointerEvents={rest.disabled === true ? 'none' : 'auto'}
         onPressIn={() => setIsPressed(true)}
         onPressOut={() => setIsPressed(false)}
-        onClick={onPress}
+        onPress={onPress}
         {...props}
         {...rest}
         style={[
           {
-            transitionDuration: '150ms',
             backgroundColor: isPressed ? '#dddddd' : undefined,
           },
           rest.style,
@@ -68,15 +68,18 @@ function LinkButton({
   );
 }
 
-function ComponentListScreen(props: Props) {
+export default function ComponentListScreen(props: Props) {
   React.useEffect(() => {
     StatusBar.setHidden(false);
   }, []);
 
+  const { width } = useWindowDimensions();
+  const isMobile = width <= 640;
+
   // adjust the right padding for safe area -- we don't need the left because that's where the drawer is.
   const { bottom, right } = useSafeArea();
 
-  const _renderExampleSection: ListRenderItem<ListElement> = ({ item }) => {
+  const renderExampleSection: ListRenderItem<ListElement> = ({ item }) => {
     const { route, name: exampleName, isAvailable } = item;
     return (
       <LinkButton disabled={!isAvailable} to={route ?? exampleName} style={[styles.rowTouchable]}>
@@ -86,14 +89,26 @@ function ComponentListScreen(props: Props) {
           {props.renderItemRight && props.renderItemRight(item)}
           <Text style={styles.rowLabel}>{exampleName}</Text>
           <Text style={styles.rowDecorator}>
-            <EvilIcons name="chevron-right" size={24} color="#595959" />
+            <Ionicons name="chevron-forward" size={18} color="#595959" />
           </Text>
         </View>
       </LinkButton>
     );
   };
 
-  const _keyExtractor = React.useCallback((item: ListElement) => item.name, []);
+  const keyExtractor = React.useCallback((item: ListElement) => item.name, []);
+
+  const sortedApis = React.useMemo(() => {
+    return props.apis.sort((a, b) => {
+      if (a.isAvailable !== b.isAvailable) {
+        if (a.isAvailable) {
+          return -1;
+        }
+        return 1;
+      }
+      return 0;
+    });
+  }, [props.apis]);
 
   return (
     <FlatList<ListElement>
@@ -101,10 +116,10 @@ function ComponentListScreen(props: Props) {
       removeClippedSubviews={false}
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
-      contentContainerStyle={{ backgroundColor: '#fff', paddingBottom: bottom }}
-      data={props.apis}
-      keyExtractor={_keyExtractor}
-      renderItem={_renderExampleSection}
+      contentContainerStyle={{ backgroundColor: '#fff', paddingBottom: isMobile ? 0 : bottom }}
+      data={sortedApis}
+      keyExtractor={keyExtractor}
+      renderItem={renderExampleSection}
     />
   );
 }
@@ -141,5 +156,3 @@ const styles = StyleSheet.create({
     marginLeft: 6,
   },
 });
-
-export default ComponentListScreen;

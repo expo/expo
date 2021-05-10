@@ -1,9 +1,17 @@
 {
-  "name": "BareExpo",
-  "displayName": "bare-expo",
   "expo": {
     "name": "BareExpo",
     "slug": "bare-expo",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#000020"
+    },
+    "scheme": "bareexpo",
+    "facebookScheme": "fb629712900716487",
+    "facebookAppId": "629712900716487",
+    "facebookDisplayName": "Expo APIs",
     "privacy": "unlisted",
     "version": "1.0.0",
     "platforms": ["ios", "android", "web"],
@@ -16,10 +24,24 @@
       }
     },
     "android": {
+      "scheme": [
+        "com.googleusercontent.apps.29635966244-knmlpr1upnv6rs4bumqea7hpit4o7kg2"
+      ],
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#000020"
+      },
       "package": "dev.expo.payments"
     },
     "ios": {
-      "bundleIdentifier": "dev.expo.Payments"
+      "scheme": [
+        "msauth.dev.expo.Payments",
+        "com.googleusercontent.apps.29635966244-v8mbqt2mtno71thelt7f2i6pob104f6e"
+      ],
+      "bundleIdentifier": "dev.expo.Payments",
+      "supportsTablet": true,
+      "requireFullScreen": false
+
     },
     "notification": {
       "serviceWorkerPath": "/expo-service-worker.js",

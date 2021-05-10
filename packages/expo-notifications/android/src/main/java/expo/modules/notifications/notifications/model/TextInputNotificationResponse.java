@@ -8,8 +8,8 @@ import android.os.Parcel;
 public class TextInputNotificationResponse extends NotificationResponse {
   private String mUserText;
 
-  public TextInputNotificationResponse(String actionIdentifier, Notification notification, String userText) {
-    super(actionIdentifier, notification);
+  public TextInputNotificationResponse(NotificationAction action, Notification notification, String userText) {
+    super(action, notification);
     mUserText = userText;
   }
 
@@ -17,27 +17,23 @@ public class TextInputNotificationResponse extends NotificationResponse {
     return mUserText;
   }
 
-  public void setUserText(String userText) {
-    mUserText = userText;
-  }
-
   public static final Creator<TextInputNotificationResponse> CREATOR = new Creator<TextInputNotificationResponse>() {
     @Override
     public TextInputNotificationResponse createFromParcel(Parcel in) {
       return new TextInputNotificationResponse(in);
     }
-    
+
     @Override
     public TextInputNotificationResponse[] newArray(int size) {
       return new TextInputNotificationResponse[size];
     }
   };
-    
+
   protected TextInputNotificationResponse(Parcel in) {
     super(in);
     mUserText = in.readString();
   }
-    
+
   @Override
   public void writeToParcel(Parcel dest, int flags) {
     super.writeToParcel(dest, flags);

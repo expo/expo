@@ -94,12 +94,8 @@ class FirebaseAnalyticsJS {
             cache: 'no-cache',
             headers: {
                 'Content-Type': 'text/plain;charset=UTF-8',
+                ...(options.headers || {}),
             },
-            ...(options.headers
-                ? {
-                    headers: options.headers,
-                }
-                : {}),
             body,
         });
     }
@@ -286,6 +282,12 @@ class FirebaseAnalyticsJS {
      */
     async setDebugModeEnabled(isEnabled) {
         this.options.debug = isEnabled;
+    }
+    /**
+     * Sets a new value for the client ID.
+     */
+    setClientId(clientId) {
+        this.options.clientId = clientId;
     }
 }
 function encodeQueryArgs(queryArgs, lastTime) {

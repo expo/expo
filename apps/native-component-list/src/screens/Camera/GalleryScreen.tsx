@@ -1,4 +1,4 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
 import * as Permissions from 'expo-permissions';
@@ -54,23 +54,24 @@ class LoadedGalleryScreen extends React.Component<
   };
 
   toggleSelection = (uri: string, isSelected: boolean) => {
-    let selected = this.state.selected;
-    if (isSelected) {
-      selected.push(uri);
-    } else {
-      selected = selected.filter(item => item !== uri);
-    }
-    this.setState({ selected });
+    this.setState(({ selected }) => {
+      if (isSelected) {
+        selected.push(uri);
+      } else {
+        selected = selected.filter(item => item !== uri);
+      }
+      return { selected };
+    });
   };
 
   saveToGallery = async () => {
     const photos = this.state.selected;
 
     if (photos.length > 0) {
-      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
 
       if (status !== 'granted') {
-        throw new Error('Denied CAMERA_ROLL permissions!');
+        throw new Error('Denied MEDIA_LIBRARY permissions!');
       }
 
       const promises = photos.map(photoUri => {
@@ -114,7 +115,6 @@ class LoadedGalleryScreen extends React.Component<
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 20,
     backgroundColor: 'white',
   },
   navbar: {

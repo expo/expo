@@ -1,12 +1,20 @@
 import * as FacebookAds from 'expo-ads-facebook';
 import React from 'react';
-import { ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
+import SimpleActionDemo from '../components/SimpleActionDemo';
 import Colors from '../constants/Colors';
 
 const {
   NativeAdsManager,
-  AdSettings,
   InterstitialAdManager,
   BannerAd,
   withNativeAd,
@@ -16,17 +24,17 @@ const {
   AdOptionsView,
 } = FacebookAds;
 
+const DEMO_NATIVE_AD_ID = 'VID_HD_16_9_15S_APP_INSTALL#YOUR_PLACEMENT_ID';
+const DEMO_INTERSTITIAL_AD_ID = 'VID_HD_16_9_15S_APP_INSTALL#YOUR_PLACEMENT_ID';
+const DEMO_BANNER_AD_ID = 'IMG_16_9_APP_INSTALL#YOUR_PLACEMENT_ID';
+
 let adsManager: FacebookAds.NativeAdsManager | null = null;
 
 try {
-  AdSettings.addTestDevice(AdSettings.currentDeviceHash);
+  adsManager = new NativeAdsManager(DEMO_NATIVE_AD_ID);
 } catch (e) {
-  // AdSettings may not be available, shrug
-}
-
-try {
-  adsManager = new NativeAdsManager('629712900716487_629713604049750');
-} catch (e) {
+  console.warn('NativeAdsManager not available');
+  console.log(e);
   // CTKNativeAdManager may be undefined too
 }
 
@@ -62,11 +70,10 @@ class ChangingFullAd extends React.Component<
           </Text>
           <Switch
             value={this.state.expanded}
-            onValueChange={() => this.setState({ expanded: !this.state.expanded })}
+            onValueChange={() => this.setState(state => ({ expanded: !state.expanded }))}
           />
         </View>
         <AdOptionsView
-          iconSize={40}
           iconColor="#ff0000"
           style={{
             backgroundColor: 'white',
@@ -114,13 +121,17 @@ class ChangingFullAd extends React.Component<
 
 const FullNativeAd = withNativeAd(ChangingFullAd);
 
-export default class App extends React.Component {
+export default class App extends React.Component<any, { showNativeAd: boolean }> {
   static navigationOptions = {
     title: 'FacebookAds',
   };
 
+  state = {
+    showNativeAd: false,
+  };
+
   showFullScreenAd = () => {
-    InterstitialAdManager.showAd('629712900716487_662948944059549')
+    InterstitialAdManager.showAd(DEMO_INTERSTITIAL_AD_ID)
       .then(didClick => {
         console.log(didClick);
       })
@@ -136,12 +147,45 @@ export default class App extends React.Component {
   render() {
     return (
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+        {Platform.OS === 'ios' && (
+          <SimpleActionDemo
+            title="enable ad tracking (necessary on ios 14.5+)"
+            action={async () => await FacebookAds.AdSettings.setAdvertiserTrackingEnabled(true)}
+          />
+        )}
+        {/* note(brentvatne): this appears to do nothing, so I commented it out to avoid confusion */}
+        {/* <SimpleActionDemo
+          title="disable ad tracking"
+          action={async () => await FacebookAds.AdSettings.setAdvertiserTrackingEnabled(false)}
+        /> */}
+        <SimpleActionDemo
+          title="get app tracking permissions"
+          action={async () => await FacebookAds.AdSettings.getPermissionsAsync()}
+        />
+        <SimpleActionDemo
+          title="request app tracking permissions"
+          action={async () => await FacebookAds.AdSettings.requestPermissionsAsync()}
+        />
         <Text style={styles.header}>Native Ad</Text>
-        {adsManager && <FullNativeAd adsManager={adsManager} />}
+        <View style={[styles.nativeRow, { paddingVertical: 10 }]}>
+          <Text style={[styles.description, { flex: 1 }]}>Show native ad</Text>
+          <Switch
+            value={this.state.showNativeAd}
+            onValueChange={() => this.setState(state => ({ showNativeAd: !state.showNativeAd }))}
+          />
+        </View>
+        {this.state.showNativeAd && adsManager && (
+          <View>
+            <Text style={styles.description}>
+              Note: if you can't see the native ad below, restart the app.
+            </Text>
+            <FullNativeAd adsManager={adsManager} />
+          </View>
+        )}
         <Text style={styles.header}>Banner Ad</Text>
         <BannerAd
           type="large"
-          placementId="629712900716487_662949307392846"
+          placementId={DEMO_BANNER_AD_ID}
           onPress={this.onBannerAdPress}
           onError={this.onBannerAdError}
         />

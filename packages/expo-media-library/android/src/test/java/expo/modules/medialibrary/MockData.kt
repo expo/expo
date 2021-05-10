@@ -31,18 +31,20 @@ internal data class MockAsset(
 }
 
 internal object MockData {
+  const val MOCK_ALBUM_ID = "album12"
+
   val mockImage = MockAsset(
     id = 1L,
     name = "img1.jpg",
     path = "images/img1.jpg",
     mediaType = MEDIA_TYPE_IMAGE,
-    width = 100, 
+    width = 100,
     height = 200,
     createdDate = 12345678,
     modifiedDate = 23456789,
     orientation = 0,
     duration = null,
-    albumId = "album12"
+    albumId = MOCK_ALBUM_ID
   )
 
   val mockVideo = MockAsset(
@@ -56,7 +58,7 @@ internal object MockData {
     modifiedDate = 23456789,
     orientation = 0,
     duration = 3000,
-    albumId = "album23"
+    albumId = MOCK_ALBUM_ID
   )
 
   val mockAudio = MockAsset(
@@ -64,7 +66,7 @@ internal object MockData {
     name = "song3.mp3",
     path = "audio/song3.mp3",
     mediaType = MEDIA_TYPE_AUDIO,
-    width = 0, 
+    width = 0,
     height = 0,
     createdDate = 12345678,
     modifiedDate = 23456789,

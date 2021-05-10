@@ -13,6 +13,9 @@ import com.raizlabs.android.dbflow.structure.database.transaction.QueryTransacti
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import androidx.annotation.WorkerThread;
+
+import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
 
@@ -30,10 +33,10 @@ public class ExponentDB {
   public static final String NAME = "ExponentKernel";
   public static final int VERSION = 1;
 
-  public static void saveExperience(String manifestUrl, JSONObject manifest, String bundleUrl) {
+  public static void saveExperience(String manifestUrl, RawManifest manifest, String bundleUrl) {
     try {
       ExperienceDBObject experience = new ExperienceDBObject();
-      experience.id = manifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+      experience.id = manifest.getID();
       experience.manifestUrl = manifestUrl;
       experience.bundleUrl = bundleUrl;
       experience.manifest = manifest.toString();
@@ -60,6 +63,7 @@ public class ExponentDB {
         }).execute();
   }
 
+  @WorkerThread
   public static ExperienceDBObject experienceIdToExperienceSync(String experienceId) {
     return SQLite.select()
       .from(ExperienceDBObject.class)

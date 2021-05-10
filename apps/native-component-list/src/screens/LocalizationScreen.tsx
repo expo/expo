@@ -1,4 +1,4 @@
-import { Picker } from '@react-native-community/picker';
+import { Picker } from '@react-native-picker/picker';
 import * as Localization from 'expo-localization';
 import i18n from 'i18n-js';
 import chunk from 'lodash/chunk';
@@ -28,7 +28,9 @@ interface State {
   locale?: string;
 }
 
-export default class LocalizationScreen extends React.Component<object, State> {
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
+export default class LocalizationScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: 'Localization',
   };
@@ -103,7 +105,7 @@ export default class LocalizationScreen extends React.Component<object, State> {
           <Picker
             style={styles.picker}
             selectedValue={this.state.locale}
-            onValueChange={this.changeLocale}>
+            onValueChange={value => this.changeLocale(`${value}`)}>
             <Picker.Item label="🇺🇸 English" value="en" />
             <Picker.Item label="🇷🇺 Russian" value="ru" />
           </Picker>

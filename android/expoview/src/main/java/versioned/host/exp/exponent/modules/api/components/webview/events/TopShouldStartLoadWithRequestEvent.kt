@@ -14,6 +14,8 @@ class TopShouldStartLoadWithRequestEvent(viewId: Int, private val mData: Writabl
 
   init {
     mData.putString("navigationType", "other")
+    // Android does not raise shouldOverrideUrlLoading for inner frames
+    mData.putBoolean("isTopFrame", true)
   }
 
   override fun getEventName(): String = EVENT_NAME

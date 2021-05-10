@@ -17,11 +17,13 @@
 #include <sstream>
 #include <unordered_map>
 #include <vector>
+#include <set>
 
 #include <jsi/jsi.h>
 
 #include "EXGLNativeMethodsUtils.h"
 #include "EXJSIUtils.h"
+#include "TypedArrayApi.h"
 
 // Constants in WebGL that aren't in OpenGL ES
 // https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Constants
@@ -39,6 +41,21 @@
 
 namespace expo {
 namespace gl_cpp {
+
+class InvalidateOnDestroyHostObject : public jsi::HostObject {
+ public:
+  InvalidateOnDestroyHostObject() {}
+  virtual ~InvalidateOnDestroyHostObject() {
+    invalidateJsiPropNameIDCache();
+  }
+  virtual jsi::Value get(jsi::Runtime &, const jsi::PropNameID &name) {
+    return jsi::Value::null();
+  }
+  virtual void set(jsi::Runtime &, const jsi::PropNameID &name, const jsi::Value &value) {}
+  virtual std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime &rt) {
+    return {};
+  }
+};
 
 // --- EXGLContext -------------------------------------------------------------
 
@@ -167,6 +184,7 @@ class EXGLContext {
 
   // --- Init/destroy and JS object binding ------------------------------------
  private:
+  std::set<const std::string> supportedExtensions;
   bool supportsWebGL2 = false;
 
  public:
@@ -181,6 +199,14 @@ class EXGLContext {
     jsi::Value jsContextMap = runtime.global().getProperty(runtime, "__EXGLContexts");
     if (jsContextMap.isNull() || jsContextMap.isUndefined()) {
       runtime.global().setProperty(runtime, "__EXGLContexts", jsi::Object(runtime));
+
+      // Property `__EXGLOnDestroyHostObject` of the global object will be released when entire `jsi::Runtime`
+      // is being destroyed and that will trigger destructor of `InvalidateOnDestroyHostObject` class which
+      // will invalidate JSI PropNameID cache.
+      runtime.global().setProperty(
+          runtime,
+          "__EXGLOnDestroyHostObject",
+          jsi::Object::createFromHostObject(runtime, std::make_shared<InvalidateOnDestroyHostObject>()));
     }
     runtime.global()
         .getProperty(runtime, "__EXGLContexts")
@@ -260,6 +286,8 @@ class EXGLContext {
   jsi::Value exglDeleteObject(UEXGLObjectId, std::function<void(GLsizei, const UEXGLObjectId *)>);
 
   jsi::Value exglUnimplemented(std::string name);
+
+  void maybeReadAndCacheSupportedExtensions();
 
   // implementation of webgl methods (glNativeMethod_#name)
   // called on JS Thread

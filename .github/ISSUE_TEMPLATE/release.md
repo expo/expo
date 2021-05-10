@@ -61,11 +61,9 @@ assignees: ''
   - [ ] Android
   - [ ] iOS
 
-### [Stage 5 - ExpoKit and standalone apps](https://git.io/JeKCx#stage-5---expokit-and-standalone-apps)
+### [Stage 5 - Standalone apps](https://git.io/JeKCx#stage-5---standalone-apps)
 
-- [ ] [5.1. Updating ExpoKit](https://git.io/JeKCx#51-updating-expokit)
-  - [ ] Android
-  - [ ] iOS
+- [ ] [5.1. Updating JS dependencies required for build](https://git.io/JeKCx#51-updating-js-dependencies-required-for-build)
 - [ ] [5.2. Make shell app build](https://git.io/JeKCx#52-make-shell-app-build)
   - [ ] Android
   - [ ] iOS
@@ -77,7 +75,7 @@ assignees: ''
 ### [Stage 6 - Final release](https://git.io/JeKCx#stage-6---final-release)
 
 - [ ] [6.1. Release iOS/Android clients](https://git.io/JeKCx#61-release-iosandroid-clients)
-- [ ] [6.2. Deploy Turtle/ExpoKit to production](https://git.io/JeKCx#62-deploy-turtleexpokit-to-production)
+- [ ] [6.2. Deploy Turtle to production](https://git.io/JeKCx#62-deploy-turtle-to-production)
 - [ ] [6.3. Generate and deploy new docs](https://git.io/JeKCx#63-generate-and-deploy-new-docs)
 - [ ] [6.4. Add related packages to versions endpoint](https://git.io/JeKCx#64-add-related-packages-to-versions-endpoint)
 - [ ] [6.5. Promote versions to production](https://git.io/JeKCx#65-promote-versions-to-production)

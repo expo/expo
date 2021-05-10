@@ -5,6 +5,7 @@ import * as React from 'react';
 import { Alert, AppState, Clipboard, Platform, StyleSheet, View } from 'react-native';
 
 import ApiV2HttpClient from '../api/ApiV2HttpClient';
+import Config from '../api/Config';
 import Connectivity from '../api/Connectivity';
 import DevIndicator from '../components/DevIndicator';
 import ListItem from '../components/ListItem';
@@ -19,8 +20,8 @@ import ThemedStatusBar from '../components/ThemedStatusBar';
 import HistoryActions from '../redux/HistoryActions';
 import { useDispatch, useSelector } from '../redux/Hooks';
 import { DevSession, HistoryList } from '../types';
-import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
 import Environment from '../utils/Environment';
+import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
 import getSnackId from '../utils/getSnackId';
 
 const PROJECT_UPDATE_INTERVAL = 10000;
@@ -93,7 +94,11 @@ class ProjectsView extends React.Component<Props, State> {
   componentDidMount() {
     AppState.addEventListener('change', this._maybeResumePollingFromAppState);
     Connectivity.addListener(this._updateConnectivity);
-    this._startPollingForProjects();
+
+    // @evanbacon: Without this setTimeout, the state doesn't update correctly and the "Recently in Development" items don't load for 10 seconds.
+    setTimeout(() => {
+      this._startPollingForProjects();
+    }, 1);
 
     // NOTE(brentvatne): if we add QR code button to the menu again, we'll need to
     // find a way to move this listener up to the root of the app in order to ensure
@@ -169,6 +174,8 @@ class ProjectsView extends React.Component<Props, State> {
 
     if (prevProps.isAuthenticated && !this.props.isAuthenticated) {
       // Remove all projects except Snack, because they are tied to device id
+      // Fix this lint warning when converting to hooks
+      // eslint-disable-next-line
       this.setState(({ projects }) => ({
         projects: projects.filter(p => p.source === 'snack'),
       }));
@@ -190,7 +197,7 @@ class ProjectsView extends React.Component<Props, State> {
   };
 
   private _startPollingForProjects = async () => {
-    this._handleRefreshAsync();
+    this._fetchProjectsAsync();
     this._projectPolling = setInterval(this._fetchProjectsAsync, PROJECT_UPDATE_INTERVAL);
   };
 
@@ -279,7 +286,7 @@ class ProjectsView extends React.Component<Props, State> {
 
     return this.props.recentHistory.map((project, i) => {
       if (!project) return null;
-      const username = project.manifestUrl.includes('exp://exp.host')
+      const username = project.manifestUrl.includes(`exp://${Config.api.host}`)
         ? extractUsername(project.manifestUrl)
         : undefined;
       let releaseChannel = project.manifest?.releaseChannel;
@@ -336,10 +343,10 @@ class ProjectsView extends React.Component<Props, State> {
   private _copyClientVersionToClipboard = () => {
     if (Constants.expoVersion) {
       Clipboard.setString(Constants.expoVersion);
-      alert('The client version has been copied to your clipboard.');
+      alert(`The app's version has been copied to your clipboard.`);
     } else {
       // this should not ever happen
-      alert('Something went wrong - the Expo client version is not available.');
+      alert(`Something went wrong - the app's version is not available.`);
     }
   };
 

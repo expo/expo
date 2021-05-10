@@ -31,8 +31,6 @@ enum class Prop {
 
 class PropNameIDCache {
  public:
-  std::unordered_map<Prop, std::unique_ptr<jsi::PropNameID>> props;
-
   const jsi::PropNameID &get(jsi::Runtime &runtime, Prop prop) {
     if (!this->props[prop]) {
       this->props[prop] = std::make_unique<jsi::PropNameID>(createProp(runtime, prop));
@@ -42,12 +40,23 @@ class PropNameIDCache {
 
   const jsi::PropNameID &getConstructorNameProp(jsi::Runtime &runtime, TypedArrayKind kind);
 
+  void invalidate() {
+    props.erase(props.begin(), props.end());
+  }
+
  private:
+  std::unordered_map<Prop, std::unique_ptr<jsi::PropNameID>> props;
+
   jsi::PropNameID createProp(jsi::Runtime &runtime, Prop prop);
 };
-TypedArrayKind getTypedArrayKindForName(const std::string &name);
 
 PropNameIDCache propNameIDCache;
+
+void invalidateJsiPropNameIDCache() {
+  propNameIDCache.invalidate();
+}
+
+TypedArrayKind getTypedArrayKindForName(const std::string &name);
 
 TypedArrayBase::TypedArrayBase(jsi::Runtime &runtime, size_t size, TypedArrayKind kind)
     : TypedArrayBase(
@@ -90,6 +99,13 @@ size_t TypedArrayBase::byteOffset(jsi::Runtime &runtime) const {
 bool TypedArrayBase::hasBuffer(jsi::Runtime &runtime) const {
   auto buffer = getProperty(runtime, propNameIDCache.get(runtime, Prop::Buffer));
   return buffer.isObject() && buffer.asObject(runtime).isArrayBuffer(runtime);
+}
+
+std::vector<uint8_t> TypedArrayBase::toVector(jsi::Runtime &runtime) {
+  auto start =
+      reinterpret_cast<uint8_t *>(getBuffer(runtime).data(runtime) + byteOffset(runtime));
+  auto end = start + byteLength(runtime);
+  return std::vector<uint8_t>(start, end);
 }
 
 jsi::ArrayBuffer TypedArrayBase::getBuffer(jsi::Runtime &runtime) const {

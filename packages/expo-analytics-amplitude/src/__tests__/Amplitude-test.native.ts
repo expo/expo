@@ -5,44 +5,44 @@ import * as Amplitude from '../Amplitude';
 const { ExpoAmplitude } = NativeModulesProxy;
 
 describe('all Amplitude methods available', () => {
-  it(`initializes`, () => {
-    expect(Amplitude.initialize('test-api-key')).not.toBeUndefined();
-    expect(ExpoAmplitude.initialize).toHaveBeenCalledTimes(1);
+  it(`initializes`, async () => {
+    expect(Amplitude.initializeAsync('test-api-key')).resolves.not.toThrow();
+    expect(ExpoAmplitude.initializeAsync).toHaveBeenCalledTimes(1);
   });
 
-  it(`can setUserId`, () => {
-    expect(Amplitude.setUserId('user-id')).not.toBeUndefined();
-    expect(ExpoAmplitude.setUserId).toHaveBeenCalledWith('user-id');
+  it(`can setUserId`, async () => {
+    expect(Amplitude.setUserIdAsync('user-id')).resolves.not.toThrow();
+    expect(ExpoAmplitude.setUserIdAsync).toHaveBeenCalledWith('user-id');
   });
 
-  it(`can setUserProperties`, () => {
-    expect(Amplitude.setUserProperties({ some: 'property' })).not.toBeUndefined();
-    expect(ExpoAmplitude.setUserProperties).toHaveBeenCalledWith({
+  it(`can setUserProperties`, async () => {
+    expect(Amplitude.setUserPropertiesAsync({ some: 'property' })).resolves.not.toThrow();
+    expect(ExpoAmplitude.setUserPropertiesAsync).toHaveBeenCalledWith({
       some: 'property',
     });
   });
 
-  it(`can clearUserProperties`, () => {
-    expect(Amplitude.clearUserProperties()).not.toBeUndefined();
-    expect(ExpoAmplitude.clearUserProperties).toHaveBeenCalledTimes(1);
+  it(`can clearUserProperties`, async () => {
+    expect(Amplitude.clearUserPropertiesAsync()).resolves.not.toThrow();
+    expect(ExpoAmplitude.clearUserPropertiesAsync).toHaveBeenCalledTimes(1);
   });
 
-  it(`can logEvent`, () => {
-    expect(Amplitude.logEvent('event-name')).not.toBeUndefined();
-    expect(ExpoAmplitude.logEvent).toHaveBeenCalledWith('event-name');
+  it(`can logEvent`, async () => {
+    expect(Amplitude.logEventAsync('event-name')).resolves.not.toThrow();
+    expect(ExpoAmplitude.logEventAsync).toHaveBeenCalledWith('event-name');
   });
 
-  it(`can logEventWithProperties`, () => {
+  it(`can logEventWithProperties`, async () => {
     expect(
-      Amplitude.logEventWithProperties('event-name', { some: 'property' })
-    ).not.toBeUndefined();
-    expect(ExpoAmplitude.logEventWithProperties).toHaveBeenCalledWith('event-name', {
+      Amplitude.logEventWithPropertiesAsync('event-name', { some: 'property' })
+    ).resolves.not.toThrow();
+    expect(ExpoAmplitude.logEventWithPropertiesAsync).toHaveBeenCalledWith('event-name', {
       some: 'property',
     });
   });
 
-  it(`can setGroup`, () => {
-    expect(Amplitude.setGroup('group', ['group', 'names', 'array'])).not.toBeUndefined();
-    expect(ExpoAmplitude.setGroup).toHaveBeenCalledWith('group', ['group', 'names', 'array']);
+  it(`can setGroup`, async () => {
+    expect(Amplitude.setGroupAsync('group', ['group', 'names', 'array'])).resolves.not.toThrow();
+    expect(ExpoAmplitude.setGroupAsync).toHaveBeenCalledWith('group', ['group', 'names', 'array']);
   });
 });

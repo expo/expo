@@ -1,6 +1,59 @@
 # Changelog
 
 ## Unpublished
+- Include missing `UMPermissionsInterface` dependency in the podspec. ([#12862](https://github.com/expo/expo/pull/12862) by [@budiTjendra](https://github.com/budiTjendra))
+
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+- Added CocoaPods & Gradle scripts to use new autolinking implementation (opt-in feature). ([#11593](https://github.com/expo/expo/pull/11593) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+## 6.2.2 — 2021-04-13
+
+### 🎉 New features
+
+- Removed `lodash` ([#12507](https://github.com/expo/expo/pull/12507) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 6.2.1 — 2021-03-30
+
+_This version does not introduce any user-facing changes._
+
+## 6.2.0 — 2021-03-10
+
+### 🎉 New features
+
+- Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
+
+## 6.1.0 — 2021-01-15
+
+### 🎉 New features
+
+- Added `Platform.canUseEventListeners` and `Platform.canUseViewport` methods. ([#11398](https://github.com/expo/expo/pull/11398) by [@cruzach](https://github.com/cruzach))
+
+## 6.0.0 — 2020-12-15
+
+### ⚠️ Notices
+
+- The package is now shipped with prebuilt binaries on iOS. You can read more about it on [expo.fyi/prebuilt-modules](https://expo.fyi/prebuilt-modules). ([#11224](https://github.com/expo/expo/pull/11224) by [@tsapeta](https://github.com/tsapeta))
+
+### 🛠 Breaking changes
+
+- Dropped support for iOS 10.0 ([#11344](https://github.com/expo/expo/pull/11344) by [@tsapeta](https://github.com/tsapeta))
+
+## 5.7.0 — 2020-11-17
+
+### 🐛 Bug fixes
+
+- Fixed invalid numbers of listeners being considered unregistered on iOS, resulting in _Attempted to remove more '{ModuleName}' listeners than added._ errors. ([#10771](https://github.com/expo/expo/pull/10771) by [@sjchmiela](https://github.com/sjchmiela))
+
+## 5.6.0 — 2020-08-18
+
+_This version does not introduce any user-facing changes._
+
+## 5.5.0 — 2020-08-11
 
 ### 🛠 Breaking changes
 
@@ -12,8 +65,6 @@
 - Add `Platform.isDOMAvailable` to detect web browser environments. ([#8645](https://github.com/expo/expo/pull/8645) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `Platform.select()` method to switch values between platforms. ([#8645](https://github.com/expo/expo/pull/8645) by [@EvanBacon](https://github.com/EvanBacon))
 - Upgrade to `react-native-web@~0.12`. ([#9023](https://github.com/expo/expo/pull/9023) by [@EvanBacon](https://github.com/EvanBacon))
-
-### 🐛 Bug fixes
 
 ## 5.4.0 — 2020-05-29
 

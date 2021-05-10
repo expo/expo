@@ -1,6 +1,6 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesAppLauncherWithDatabase.h>
+#import <EXUpdates/EXUpdatesAppLauncherWithDatabase+Tests.h>
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
+static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
 
 @implementation EXUpdatesAppLauncherWithDatabase
 
@@ -50,16 +50,23 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
 
 + (void)launchableUpdateWithConfig:(EXUpdatesConfig *)config
                           database:(EXUpdatesDatabase *)database
-                   selectionPolicy:(id<EXUpdatesSelectionPolicy>)selectionPolicy
+                   selectionPolicy:(EXUpdatesSelectionPolicy *)selectionPolicy
                         completion:(EXUpdatesAppLauncherUpdateCompletionBlock)completion
                    completionQueue:(dispatch_queue_t)completionQueue
 {
   dispatch_async(database.databaseQueue, ^{
     NSError *error;
     NSArray<EXUpdatesUpdate *> *launchableUpdates = [database launchableUpdatesWithConfig:config error:&error];
+    NSError *manifestFiltersError;
+    NSDictionary *manifestFilters = [database manifestFiltersWithScopeKey:config.scopeKey error:&manifestFiltersError];
     dispatch_async(completionQueue, ^{
       if (!launchableUpdates) {
         completion(error, nil);
+        return;
+      }
+      if (manifestFiltersError) {
+        completion(manifestFiltersError, nil);
+        return;
       }
 
       // We can only run an update marked as embedded if it's actually the update embedded in the
@@ -76,12 +83,12 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
         [filteredLaunchableUpdates addObject:update];
       }
 
-      completion(nil, [selectionPolicy launchableUpdateWithUpdates:filteredLaunchableUpdates]);
+      completion(nil, [selectionPolicy launchableUpdateFromUpdates:filteredLaunchableUpdates filters:manifestFilters]);
     });
   });
 }
 
-- (void)launchUpdateWithSelectionPolicy:(id<EXUpdatesSelectionPolicy>)selectionPolicy
+- (void)launchUpdateWithSelectionPolicy:(EXUpdatesSelectionPolicy *)selectionPolicy
                              completion:(EXUpdatesAppLauncherCompletionBlock)completion
 {
   NSAssert(!_completion, @"EXUpdatesAppLauncher:launchUpdateWithSelectionPolicy:successBlock should not be called twice on the same instance");
@@ -97,16 +104,16 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
             if (error) {
               userInfo[NSUnderlyingErrorKey] = error;
             }
-            self->_completion([NSError errorWithDomain:kEXUpdatesAppLauncherErrorDomain code:1011 userInfo:userInfo], NO);
+            self->_completion([NSError errorWithDomain:EXUpdatesAppLauncherErrorDomain code:1011 userInfo:userInfo], NO);
           });
         }
       } else {
         self->_launchedUpdate = launchableUpdate;
-        [self _ensureAllAssetsExist];
+        [self _finishLaunch];
       }
     } completionQueue:_launcherQueue];
   } else {
-    [self _ensureAllAssetsExist];
+    [self _finishLaunch];
   }
 }
 
@@ -115,14 +122,38 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
   return _assetFilesMap == nil;
 }
 
+- (void)_finishLaunch
+{
+  [self _markUpdateAccessed];
+  [self _ensureAllAssetsExist];
+}
+
+- (void)_markUpdateAccessed
+{
+  NSAssert(_launchedUpdate, @"launchedUpdate should be nonnull before calling markUpdateAccessed");
+  dispatch_async(_database.databaseQueue, ^{
+    NSError *error;
+    [self->_database markUpdateAccessed:self->_launchedUpdate error:&error];
+    if (error) {
+      NSLog(@"Failed to mark update as recently accessed: %@", error.localizedDescription);
+    }
+  });
+}
+
 - (void)_ensureAllAssetsExist
 {
   if (_launchedUpdate.status == EXUpdatesUpdateStatusEmbedded) {
     NSAssert(_assetFilesMap == nil, @"assetFilesMap should be null for embedded updates");
-    _launchAssetUrl = [[NSBundle mainBundle] URLForResource:kEXUpdatesBareEmbeddedBundleFilename withExtension:kEXUpdatesBareEmbeddedBundleFileType];
+    _launchAssetUrl = [[NSBundle mainBundle] URLForResource:EXUpdatesBareEmbeddedBundleFilename withExtension:EXUpdatesBareEmbeddedBundleFileType];
 
     dispatch_async(self->_completionQueue, ^{
       self->_completion(self->_launchAssetError, self->_launchAssetUrl != nil);
+      self->_completion = nil;
+    });
+    return;
+  } else if (_launchedUpdate.status == EXUpdatesUpdateStatusDevelopment) {
+    dispatch_async(self->_completionQueue, ^{
+      self->_completion(nil, YES);
       self->_completion = nil;
     });
     return;
@@ -222,7 +253,7 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
   if (embeddedManifest) {
     EXUpdatesAsset *matchingAsset;
     for (EXUpdatesAsset *embeddedAsset in embeddedManifest.assets) {
-      if ([embeddedAsset.key isEqualToString:asset.key]) {
+      if (embeddedAsset.key && [embeddedAsset.key isEqualToString:asset.key]) {
         matchingAsset = embeddedAsset;
         break;
       }
@@ -249,7 +280,7 @@ static NSString * const kEXUpdatesAppLauncherErrorDomain = @"AppLauncher";
             completion:(void (^)(NSError * _Nullable error, EXUpdatesAsset *asset, NSURL *assetLocalUrl))completion
 {
   if (!asset.url) {
-    completion([NSError errorWithDomain:kEXUpdatesAppLauncherErrorDomain code:1007 userInfo:@{NSLocalizedDescriptionKey: @"Failed to download asset with no URL provided"}], asset, assetLocalUrl);
+    completion([NSError errorWithDomain:EXUpdatesAppLauncherErrorDomain code:1007 userInfo:@{NSLocalizedDescriptionKey: @"Failed to download asset with no URL provided"}], asset, assetLocalUrl);
   }
   dispatch_async([EXUpdatesFileDownloader assetFilesQueue], ^{
     [self.downloader downloadFileFromURL:asset.url toPath:[assetLocalUrl path] successBlock:^(NSData *data, NSURLResponse *response) {

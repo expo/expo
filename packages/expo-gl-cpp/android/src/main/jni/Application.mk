@@ -8,7 +8,7 @@ APP_MK_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 NDK_MODULE_PATH := $(THIRD_PARTY_NDK_DIR)
 
 APP_STL := c++_shared
-APP_CPPFLAGS := -std=c++1z -fexceptions -pthread
+APP_CPPFLAGS := -std=c++1z -fexceptions -pthread -O3
 # Make sure every shared lib includes a .note.gnu.build-id header
 APP_LDFLAGS := -Wl,--build-id
 APP_LDFLAGS += -llog

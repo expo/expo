@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+FOUNDATION_EXPORT NSString*_Nonnull const RNBNC_PLUGIN_VERSION;
+
 extern NSString * _Nonnull const RNBranchConfigDebugModeOption;
 extern NSString * _Nonnull const RNBranchConfigBranchKeyOption;
 extern NSString * _Nonnull const RNBranchConfigLiveKeyOption;
@@ -16,6 +18,7 @@ extern NSString * _Nonnull const RNBranchConfigUseTestInstanceOption;
 extern NSString * _Nonnull const RNBranchConfigDelayInitToCheckForSearchAdsOption;
 extern NSString * _Nonnull const RNBranchConfigAppleSearchAdsDebugModeOption;
 extern NSString * _Nonnull const RNBranchConfigDeferInitializationForJSLoadOption;
+extern NSString * _Nonnull const RNBranchConfigEnableFacebookLinkCheck;
 
 @interface RNBranchConfig : NSObject
 
@@ -29,6 +32,7 @@ extern NSString * _Nonnull const RNBranchConfigDeferInitializationForJSLoadOptio
 @property (nonatomic, readonly) BOOL delayInitToCheckForSearchAds;
 @property (nonatomic, readonly) BOOL appleSearchAdsDebugMode;
 @property (nonatomic, readonly) BOOL deferInitializationForJSLoad;
+@property (nonatomic, readonly) BOOL enableFacebookLinkCheck;
 
 - (nullable id)objectForKey:(NSString * _Nonnull)key;
 - (nullable id)objectForKeyedSubscript:(NSString * _Nonnull)key;
