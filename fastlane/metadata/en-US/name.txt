@@ -1,1 +1,1 @@
-Expo Client
+Expo Go

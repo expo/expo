@@ -23,10 +23,12 @@ expo install expo-media-library
 
 ### Configure for iOS
 
-Add `NSPhotoLibraryUsageDescription` key to your `Info.plist`:
+Add `NSPhotoLibraryUsageDescription`, and `NSPhotoLibraryAddUsageDescription` keys to your `Info.plist`:
 
 ```xml
 <key>NSPhotoLibraryUsageDescription</key>
+<string>Give $(PRODUCT_NAME) permission to access your photos</string>
+<key>NSPhotoLibraryAddUsageDescription</key>
 <string>Give $(PRODUCT_NAME) permission to save photos</string>
 ```
 

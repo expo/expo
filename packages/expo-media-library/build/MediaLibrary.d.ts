@@ -44,7 +44,10 @@ export declare type AssetInfo = Asset & {
 export declare type MediaLibraryAssetInfoQueryOptions = {
     shouldDownloadFromNetwork?: boolean;
 };
-export declare type MediaLibraryAssetChangeEvent = {
+export declare type MediaLibraryAssetsChangeEvent = {
+    hasIncrementalChanges: false;
+} | {
+    hasIncrementalChanges: true;
     insertedAssets: Asset[];
     deletedAssets: Asset[];
     updatedAssets: Asset[];
@@ -88,6 +91,11 @@ export declare const MediaType: MediaTypeObject;
 export declare const SortBy: SortByObject;
 export declare function requestPermissionsAsync(writeOnly?: boolean): Promise<PermissionResponse>;
 export declare function getPermissionsAsync(writeOnly?: boolean): Promise<PermissionResponse>;
+/**
+ * @iOS-only
+ * @throws Will throw an error if called on platform that doesn't support this functionality (eg. iOS < 14, Android, etc.).
+ */
+export declare function presentPermissionsPickerAsync(): Promise<void>;
 export declare function createAssetAsync(localUri: string): Promise<Asset>;
 export declare function saveToLibraryAsync(localUri: string): Promise<void>;
 export declare function addAssetsToAlbumAsync(assets: AssetRef[] | AssetRef, album: AlbumRef, copy?: boolean): Promise<any>;
@@ -99,7 +107,31 @@ export declare function getAlbumAsync(title: string): Promise<Album>;
 export declare function createAlbumAsync(albumName: string, asset?: AssetRef, copyAsset?: boolean): Promise<Album>;
 export declare function deleteAlbumsAsync(albums: AlbumRef[] | AlbumRef, assetRemove?: boolean): Promise<any>;
 export declare function getAssetsAsync(assetsOptions?: AssetsOptions): Promise<PagedInfo<Asset>>;
-export declare function addListener(listener: (event: MediaLibraryAssetChangeEvent) => void): Subscription;
+export declare function addListener(listener: (event: MediaLibraryAssetsChangeEvent) => void): Subscription;
 export declare function removeSubscription(subscription: Subscription): void;
 export declare function removeAllListeners(): void;
 export declare function getMomentsAsync(): Promise<any>;
+/**
+ * Moves content of provided album to the special media directories on **Android R** or **above** if needed.
+ *
+ * This method won't do anything if:
+ * - app is running on **iOS**, **web** or **Android below R**
+ * - app has **write permission** to the album folder
+ *
+ * The migration is possible when the album contains only compatible files types.
+ * For instance, movies and pictures are compatible with each other, but music and pictures are not.
+ * If automatic migration isn't possible, the function will be rejected.
+ * In that case, you can use methods from the `expo-file-system` to migrate all your files manually.
+ *
+ * @param album
+ */
+export declare function migrateAlbumIfNeededAsync(album: AlbumRef): Promise<void>;
+/**
+ * Checks if provided album should be migrated.
+ * In other words, it checks if the application has the write permission to the album folder.
+ *
+ * This method always returns **false** for all android versions **below Android R**, **iOS** or **web**.
+ *
+ * @param album
+ */
+export declare function albumNeedsMigrationAsync(album: AlbumRef): Promise<boolean>;

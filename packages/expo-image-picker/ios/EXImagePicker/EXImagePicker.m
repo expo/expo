@@ -85,7 +85,7 @@ UM_EXPORT_METHOD_AS(getCameraPermissionsAsync,
                                                              reject:reject];
 }
 
-UM_EXPORT_METHOD_AS(getMediaLibaryPermissionsAsync,
+UM_EXPORT_METHOD_AS(getMediaLibraryPermissionsAsync,
                     getPermissionsAsync:(BOOL)writeOnly
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
@@ -106,7 +106,7 @@ UM_EXPORT_METHOD_AS(requestCameraPermissionsAsync,
                                                                 reject:reject];
 }
 
-UM_EXPORT_METHOD_AS(requestMediaLibaryPermissionsAsync,
+UM_EXPORT_METHOD_AS(requestMediaLibraryPermissionsAsync,
                     requestCameraRollPermissionsAsync:(BOOL)writeOnly
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)

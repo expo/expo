@@ -1,22 +1,15 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
+import { theme } from '@expo/styleguide';
 import * as React from 'react';
 
 import { H4 } from '~/components/base/headings';
 import { CheckCircle } from '~/components/icons/CheckCircle';
 import { PendingCircle } from '~/components/icons/PendingCircle';
 import { XCircle } from '~/components/icons/XCircle';
-import * as Constants from '~/constants/theme';
 import { ElementType } from '~/types/common';
 
 const STYLES_TITLE = css`
   margin-bottom: 1rem;
-`;
-
-const STYLES_CELL = css`
-  transition-duration: 0.2s;
-  :hover {
-    background-color: ${Constants.colors.grey};
-  }
 `;
 
 const STYLES_LINK = css`
@@ -25,6 +18,7 @@ const STYLES_LINK = css`
   grid-template-columns: 20px auto;
   text-align: left;
   grid-gap: 8px;
+  color: ${theme.link.default};
 `;
 
 const platforms = [
@@ -90,7 +84,6 @@ export default class PlatformsSection extends React.Component<Props> {
               {platforms.map(platform => (
                 <td
                   key={platform.title}
-                  css={STYLES_CELL}
                   {...getInfo(this.props[platform.propName as keyof PlatformProps], platform)}
                 />
               ))}

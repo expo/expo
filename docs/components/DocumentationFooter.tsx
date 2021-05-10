@@ -1,18 +1,20 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
+import { theme } from '@expo/styleguide';
 import * as React from 'react';
 
-import * as Constants from '~/constants/theme';
+import { UL, LI } from '~/components/base/list';
 import { Url } from '~/types/common';
 
 const STYLES_FOOTER = css`
-  border-top: 1px solid ${Constants.expoColors.gray[250]};
+  border-top: 1px solid ${theme.border.default};
   padding: 24px 0 24px 0;
 `;
 
 const STYLES_FOOTER_LINK = css`
+  font-size: 16px;
   display: block;
   text-decoration: none;
-  margin-bottom: 12px;
+  color: ${theme.link.default};
 `;
 
 // Remove trailing slash and append .md
@@ -39,8 +41,8 @@ function githubUrl(path: string) {
   return `https://github.com/expo/expo/edit/master/docs/pages${pathAsMarkdown}`;
 }
 
-// Add any page in the /sdk/ section that should not have an issues link to this
-const ISSUES_BLACKLIST = ['Overview'];
+// Add any page in the /sdk/ section that is not an actual Expo API
+const SDK_BLACKLIST = ['Overview'];
 
 type Props = {
   asPath: string;
@@ -53,42 +55,70 @@ export default class DocumentationFooter extends React.PureComponent<Props> {
   render() {
     return (
       <footer css={STYLES_FOOTER}>
-        <a css={STYLES_FOOTER_LINK} target="_blank" rel="noopener" href="https://forums.expo.io/">
-          Ask a question on the forums
-        </a>
-        {this.maybeRenderIssuesLink()}
-        {this.maybeRenderSourceCodeLink()}
-        {this.maybeRenderGithubUrl()}
+        <UL>
+          {this.renderForumsLink()}
+          {this.maybeRenderIssuesLink()}
+          {this.maybeRenderSourceCodeLink()}
+          {this.maybeRenderGithubUrl()}
+        </UL>
       </footer>
+    );
+  }
+
+  private renderForumsLink() {
+    if (!this.props.asPath.includes('/sdk/') || SDK_BLACKLIST.includes(this.props.title)) {
+      return (
+        <LI>
+          <a css={STYLES_FOOTER_LINK} target="_blank" rel="noopener" href="https://forums.expo.io/">
+            Ask a question on the forums
+          </a>
+        </LI>
+      );
+    }
+
+    return (
+      <LI>
+        <a
+          css={STYLES_FOOTER_LINK}
+          target="_blank"
+          rel="noopener"
+          href={'https://forums.expo.io/tag/' + this.props.title}>
+          Get help from the community and ask questions about {this.props.title}
+        </a>
+      </LI>
     );
   }
 
   private maybeRenderGithubUrl() {
     if (this.props.url) {
       return (
-        <a
-          css={STYLES_FOOTER_LINK}
-          target="_blank"
-          rel="noopener"
-          href={githubUrl(this.props.url.pathname)}>
-          Edit this page
-        </a>
+        <LI>
+          <a
+            css={STYLES_FOOTER_LINK}
+            target="_blank"
+            rel="noopener"
+            href={githubUrl(this.props.url.pathname)}>
+            Edit this page
+          </a>
+        </LI>
       );
     }
   }
 
   private maybeRenderIssuesLink = () => {
-    if (!this.props.asPath.includes('/sdk/') || ISSUES_BLACKLIST.includes(this.props.title)) {
+    if (!this.props.asPath.includes('/sdk/') || SDK_BLACKLIST.includes(this.props.title)) {
       return;
     }
 
     return (
-      <a
-        css={STYLES_FOOTER_LINK}
-        target="_blank"
-        href={`https://github.com/expo/expo/labels/${this.props.title}`}>
-        View open issues for {this.props.title}
-      </a>
+      <LI>
+        <a
+          css={STYLES_FOOTER_LINK}
+          target="_blank"
+          href={`https://github.com/expo/expo/labels/${this.props.title}`}>
+          View open bug reports for {this.props.title}
+        </a>
+      </LI>
     );
   };
 
@@ -98,9 +128,11 @@ export default class DocumentationFooter extends React.PureComponent<Props> {
     }
 
     return (
-      <a css={STYLES_FOOTER_LINK} target="_blank" href={`${this.props.sourceCodeUrl}`}>
-        View source code for {this.props.title}
-      </a>
+      <LI>
+        <a css={STYLES_FOOTER_LINK} target="_blank" href={`${this.props.sourceCodeUrl}`}>
+          View source code for {this.props.title}
+        </a>
+      </LI>
     );
   };
 }

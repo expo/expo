@@ -9,6 +9,8 @@ pod 'ABI39_0_0ExpoKit',
   :project_name => 'ABI39_0_0',
   :subspecs => ['Expo', 'ExpoOptional']
 
+use_pods! 'vendored/sdk39/*/*.podspec.json', 'ABI39_0_0'
+
 pod 'ABI39_0_0UMCore',
   :path => './versioned-react-native/ABI39_0_0/Expo/UMCore',
   :project_name => 'ABI39_0_0'
@@ -191,6 +193,9 @@ pod 'ABI39_0_0EXStoreReview',
   :project_name => 'ABI39_0_0'
 pod 'ABI39_0_0EXTaskManager',
   :path => './versioned-react-native/ABI39_0_0/Expo/EXTaskManager',
+  :project_name => 'ABI39_0_0'
+pod 'ABI39_0_0EXStructuredHeaders',
+  :path => './versioned-react-native/ABI39_0_0/Expo/EXStructuredHeaders',
   :project_name => 'ABI39_0_0'
 pod 'ABI39_0_0EXUpdates',
   :path => './versioned-react-native/ABI39_0_0/Expo/EXUpdates',

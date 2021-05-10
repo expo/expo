@@ -28,7 +28,7 @@ Check out a full example at [expo/camerja](https://github.com/expo/camerja). You
 
 ### Intermodule interface
 
-Other modules, like eg. [Camera](../camera/) are able to use this `FaceDetector`.
+Other modules, like eg. [Camera](camera.md) are able to use this `FaceDetector`.
 
 ## API
 
@@ -95,7 +95,7 @@ Positions of face landmarks are returned only if `faceDetectionLandmarks` proper
 
 ## Methods
 
-To use methods that `FaceDetector` exposes one just has to import the module. (In ejected apps on iOS face detection will be supported only if you add the `FaceDetector` subspec to your project. Refer to [Adding the Payments Module on iOS](../payments/#adding-the-payments-module-on-ios) for an example of adding a subspec to your ejected project.)
+To use methods that `FaceDetector` exposes one just has to import the module. (In ejected apps on iOS face detection will be supported only if you add the `FaceDetector` subspec to your project. Refer to [Adding the Payments Module on iOS](payments.md#adding-the-payments-module-on-ios) for an example of adding a subspec to your ejected project.)
 
 ```javascript
 import * as FaceDetector from 'expo-face-detector';

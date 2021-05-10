@@ -2,19 +2,6 @@
 title: Publishing Websites
 ---
 
-## Table of contents
-
-- [Building](#creating-a-build)
-  - [Serving](#serving-locally)
-- [AWS Amplify Console](#aws-amplify-console)
-- [Netlify](#netlify)
-  - [Manual deployment with the Netlify CDN](#manual-deployment-with-the-netlify-cdn)
-  - [Continuous delivery](#continuous-delivery)
-- [GitHub Pages](#github-pages)
-- [Vercel](#vercel)
-- [Firebase Hosting](#firebase-hosting)
-- [Surge](#surge)
-
 ## Creating a Build
 
 - Optimize the assets for speed - `npx expo-optimize` (formerly `expo optimize`)
@@ -35,7 +22,7 @@ title: Publishing Websites
 {
     "homepage": "/webapp"
 }
-``` 
+```
 
 [webpack-optimize]: https://webpack.js.org/configuration/optimization/
 
@@ -65,7 +52,7 @@ The AWS Amplify Console provides a Git-based workflow for continuously deploying
 
 ## [Vercel](https://vercel.com/)
 
-Vercel has a single-command zero-config deployment flow. You can use `vercel` to deploy your app for free! 💯
+Vercel has a single-command zero-config deployment flow. You can use `vercel` to deploy your app for free!
 
 > For more information on unlimited hosting, check out their [pricing](https://vercel.com/pricing).
 
@@ -203,7 +190,7 @@ Here are the formal instructions for deploying to GitHub Pages:
    $ yarn deploy
    ```
 
-   - !! Your app is now available at the URL you set as `homepage` in your `package.json` (call your parents and show them! 😜)
+   - Your web app is now available at the URL you set as `homepage` in your `package.json`.
 
    > When you publish code to `gh-pages`, it will create and push the code to a branch in your repo called `gh-pages`. This branch will have your built code but not your development source code.
 

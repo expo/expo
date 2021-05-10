@@ -41,15 +41,13 @@ export function installGroovy(Prism: any) {
   });
 
   // Handle string interpolation
-  Prism.hooks.add('wrap', function(env: any) {
+  Prism.hooks.add('wrap', (env: any) => {
     if (env.language === 'groovy' && env.type === 'string') {
-      var delimiter = env.content[0];
+      const delimiter = env.content[0];
 
       if (delimiter !== "'") {
-        var pattern = /([^\\])(?:\$(?:\{.*?\}|[\w.]+))/;
-        if (delimiter === '$') {
-          pattern = /([^$])(?:\$(?:\{.*?\}|[\w.]+))/;
-        }
+        const pattern =
+          delimiter === '$' ? /([^$])(?:\$(?:\{.*?\}|[\w.]+))/ : /([^\\])(?:\$(?:\{.*?\}|[\w.]+))/;
 
         // To prevent double HTML-encoding we have to decode env.content first
         env.content = env.content.replace(/&lt;/g, '<').replace(/&amp;/g, '&');

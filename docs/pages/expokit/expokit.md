@@ -2,7 +2,7 @@
 title: Developing With ExpoKit
 ---
 
-> **ExpoKit is deprecated and will no longer be supported after SDK 38. If you need to make customizations to your Expo project, we recommend using the [bare workflow](../../bare/customizing/) instead.**
+> **ExpoKit is deprecated and will no longer be supported after SDK 38. If you need to make customizations to your Expo project, we recommend using the [bare workflow](../bare/customizing.md) instead.**
 
 ExpoKit is an Objective-C and Java library that allows you to use the Expo platform with a
 native iOS/Android project.
@@ -12,7 +12,7 @@ native iOS/Android project.
 To create an ExpoKit project:
 
 1.  Create a pure-JS project with Expo CLI (also projects that were created with exp, XDE or create-react-native-app will work)
-2.  Then use [`expo eject`](../eject/) to add ExpoKit (choose the "ExpoKit" option).
+2.  Then use [`expo eject`](eject.md) to add ExpoKit (choose the "ExpoKit" option).
 
 Make sure to perform these steps before continuing in this guide. The remainder of the guide will assume you have created an ExpoKit project.
 

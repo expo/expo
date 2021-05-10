@@ -18,11 +18,13 @@
 @property(nonatomic, weak) UIView *currentView;
 
 @property(nonatomic, strong) NSHashTable<UIViewController *> *cachedControllers;
+@property (nonatomic, assign) CGPoint lastContentOffset;
 
 - (void)goTo:(NSInteger)index animated:(BOOL)animated;
 - (void)shouldScroll:(BOOL)scrollEnabled;
 - (void)shouldShowPageIndicator:(BOOL)showPageIndicator;
 - (void)shouldDismissKeyboard:(NSString *)dismissKeyboard;
+
 
 @end
 
@@ -41,6 +43,7 @@
         _coalescingKey = 0;
         _eventDispatcher = eventDispatcher;
         _cachedControllers = [NSHashTable weakObjectsHashTable];
+        _overdrag = YES;
     }
     return self;
 }
@@ -55,11 +58,27 @@
 }
 
 - (void)didUpdateReactSubviews {
-    if (!self.reactPageViewController) {
+    if (!self.reactPageViewController && self.reactViewController != nil) {
         [self embed];
         [self setupInitialController];
     } else {
         [self updateDataSource];
+    }
+}
+
+- (void)didMoveToSuperview {
+    [super didMoveToSuperview];
+    if (!self.reactPageViewController && self.reactViewController != nil) {
+        [self embed];
+        [self setupInitialController];
+    }
+}
+
+- (void)didMoveToWindow {
+    [super didMoveToWindow];
+    if (!self.reactPageViewController && self.reactViewController != nil) {
+        [self embed];
+        [self setupInitialController];
     }
 }
 
@@ -79,9 +98,9 @@
             self.scrollView = (UIScrollView *)subview;
         }
     }
-        
+    
     self.reactPageViewController = pageViewController;
-        
+    
     UIPageControl *pageIndicatorView = [self createPageIndicator];
     
     pageIndicatorView.numberOfPages = self.reactSubviews.count;
@@ -139,6 +158,9 @@
                            with:(UIViewController *)controller
                       direction:(UIPageViewControllerNavigationDirection)direction
                        animated:(BOOL)animated {
+    if (self.reactPageViewController == nil) {
+        return;
+    }
     __weak ReactNativePageView *weakSelf = self;
     uint16_t coalescingKey = _coalescingKey++;
     
@@ -191,17 +213,17 @@
     if (numberOfPages == 0 || index < 0) {
         return;
     }
-        
+    
     UIPageViewControllerNavigationDirection direction = (index > self.currentIndex) ? UIPageViewControllerNavigationDirectionForward : UIPageViewControllerNavigationDirectionReverse;
     
     NSInteger indexToDisplay = index < numberOfPages ? index : numberOfPages - 1;
     
     UIView *viewToDisplay = self.reactSubviews[indexToDisplay];
     UIViewController *controllerToDisplay = [self findAndCacheControllerForView:viewToDisplay];
-
+    
     self.reactPageIndicatorView.numberOfPages = numberOfPages;
     self.reactPageIndicatorView.currentPage = indexToDisplay;
-        
+    
     [self setReactViewControllers:indexToDisplay
                              with:controllerToDisplay
                         direction:direction
@@ -214,12 +236,12 @@
     
     UIViewController *controllerToDisplay = [self findCachedControllerForView:viewToDisplay];
     UIViewController *current = [self currentlyDisplayed];
-
+    
     if (!controllerToDisplay && current.view.reactTag == viewToDisplay.reactTag) {
         controllerToDisplay = current;
     }
     if (!controllerToDisplay) {
-         controllerToDisplay = [[UIViewController alloc] initWithView:viewToDisplay];
+        controllerToDisplay = [[UIViewController alloc] initWithView:viewToDisplay];
     }
     [self.cachedControllers addObject:controllerToDisplay];
     
@@ -236,7 +258,7 @@
     }
     
     direction == UIPageViewControllerNavigationDirectionForward ? index++ : index--;
-
+    
     if (index < 0 || (index > (numberOfPages - 1))) {
         return nil;
     }
@@ -315,16 +337,38 @@
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
     [self.eventDispatcher sendEvent:[[RCTOnPageScrollStateChanged alloc] initWithReactTag:self.reactTag state:@"settling" coalescingKey:_coalescingKey++]];
+    
+    if (!_overdrag) {
+        if (_currentIndex == 0 && scrollView.contentOffset.x <= scrollView.bounds.size.width) {
+            *targetContentOffset = CGPointMake(scrollView.bounds.size.width, 0);
+        } else if (_currentIndex == _reactPageIndicatorView.numberOfPages -1 && scrollView.contentOffset.x >= scrollView.bounds.size.width) {
+            *targetContentOffset = CGPointMake(scrollView.bounds.size.width, 0);
+        }
+    }
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
     [self.eventDispatcher sendEvent:[[RCTOnPageScrollStateChanged alloc] initWithReactTag:self.reactTag state:@"idle" coalescingKey:_coalescingKey++]];
 }
 
+- (BOOL)isHorizontal {
+    return self.orientation == UIPageViewControllerNavigationOrientationHorizontal;
+}
+
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     CGPoint point = scrollView.contentOffset;
+
     float offset = 0;
-    if (self.orientation == UIPageViewControllerNavigationOrientationHorizontal) {
+    
+    if (!_overdrag) {
+        if (_currentIndex == 0 && scrollView.contentOffset.x < scrollView.bounds.size.width) {
+            scrollView.contentOffset = CGPointMake(scrollView.bounds.size.width, 0);
+        } else if (_currentIndex == _reactPageIndicatorView.numberOfPages - 1 && scrollView.contentOffset.x > scrollView.bounds.size.width) {
+            scrollView.contentOffset = CGPointMake(scrollView.bounds.size.width, 0);
+        }
+    }
+    
+    if (self.isHorizontal) {
         if (self.frame.size.width != 0) {
             offset = (point.x - self.frame.size.width)/self.frame.size.width;
         }
@@ -333,10 +377,41 @@
             offset = (point.y - self.frame.size.height)/self.frame.size.height;
         }
     }
-    if(fabs(offset) > 1) {
-        offset = offset > 0 ? 1.0 : -1.0;
+
+    float absoluteOffset = fabs(offset);
+    if(absoluteOffset > 1) {
+        absoluteOffset = 1.0;
     }
-    [self.eventDispatcher sendEvent:[[RCTOnPageScrollEvent alloc] initWithReactTag:self.reactTag position:@(self.currentIndex) offset:@(offset)]];
+    
+    NSString *scrollDirection = [self determineScrollDirection:scrollView];
+    NSString *oppositeDirection = self.isHorizontal ? @"left" : @"up";
+    NSInteger position = self.currentIndex;
+
+    if(absoluteOffset > 0) {
+        position = [scrollDirection  isEqual: oppositeDirection] ? self.currentIndex - 1 : self.currentIndex;
+        absoluteOffset =  [scrollDirection  isEqual: oppositeDirection] ? 1 - absoluteOffset : absoluteOffset;
+    }
+   
+    
+    self.lastContentOffset = scrollView.contentOffset;
+    [self.eventDispatcher sendEvent:[[RCTOnPageScrollEvent alloc] initWithReactTag:self.reactTag position:@(position) offset:@(absoluteOffset)]];
 }
 
+- (NSString *)determineScrollDirection:(UIScrollView *)scrollView {
+    NSString *scrollDirection;
+    if (self.isHorizontal) {
+        if (self.lastContentOffset.x > scrollView.contentOffset.x) {
+            scrollDirection = @"left";
+        } else if (self.lastContentOffset.x < scrollView.contentOffset.x) {
+            scrollDirection = @"right";
+        }
+    } else {
+        if (self.lastContentOffset.y > scrollView.contentOffset.y) {
+            scrollDirection = @"up";
+        } else if (self.lastContentOffset.y < scrollView.contentOffset.y) {
+            scrollDirection = @"down";
+        }
+    }
+    return scrollDirection;
+}
 @end

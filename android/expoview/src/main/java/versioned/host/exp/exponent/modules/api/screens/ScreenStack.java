@@ -3,9 +3,11 @@ package versioned.host.exp.exponent.modules.api.screens;
 import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import host.exp.expoview.R;
 
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -54,7 +56,8 @@ public class ScreenStack extends ScreenContainer<ScreenStackFragment> {
     markUpdated();
   }
 
-  public Screen getTopScreen() {
+  @Override
+  public @Nullable Screen getTopScreen() {
     return mTopScreen != null ? mTopScreen.getScreen() : null;
   }
 
@@ -78,7 +81,7 @@ public class ScreenStack extends ScreenContainer<ScreenStackFragment> {
     if (mFragmentManager != null) {
       mFragmentManager.removeOnBackStackChangedListener(mBackStackListener);
       mFragmentManager.unregisterFragmentLifecycleCallbacks(mLifecycleCallbacks);
-      if (!mFragmentManager.isStateSaved()) {
+      if (!mFragmentManager.isStateSaved() && !mFragmentManager.isDestroyed()) {
         // state save means that the container where fragment manager was installed has been unmounted.
         // This could happen as a result of dismissing nested stack. In such a case we don't need to
         // reset back stack as it'd result in a crash caused by the fact the fragment manager is no
@@ -143,12 +146,6 @@ public class ScreenStack extends ScreenContainer<ScreenStackFragment> {
 
   @Override
   protected void performUpdate() {
-    // remove all screens previously on stack
-    for (ScreenStackFragment screen : mStack) {
-      if (!mScreenFragments.contains(screen) || mDismissed.contains(screen)) {
-        getOrCreateTransaction().remove(screen);
-      }
-    }
 
     // When going back from a nested stack with a single screen on it, we may hit an edge case
     // when all screens are dismissed and no screen is to be displayed on top. We need to gracefully
@@ -171,26 +168,7 @@ public class ScreenStack extends ScreenContainer<ScreenStackFragment> {
       }
     }
 
-    for (ScreenStackFragment screen : mScreenFragments) {
-      // detach all screens that should not be visible
-      if (screen != newTop && screen != belowTop && !mDismissed.contains(screen)) {
-        getOrCreateTransaction().remove(screen);
-      }
-    }
-    // attach "below top" screen if set
-    if (belowTop != null && !belowTop.isAdded()) {
-      final ScreenStackFragment top = newTop;
-      getOrCreateTransaction().add(getId(), belowTop).runOnCommit(new Runnable() {
-        @Override
-        public void run() {
-          top.getScreen().bringToFront();
-        }
-      });
-    }
-
-    if (newTop != null && !newTop.isAdded()) {
-      getOrCreateTransaction().add(getId(), newTop);
-    }
+    boolean customAnimation = false;
 
     if (!mStack.contains(newTop)) {
       // if new top screen wasn't on stack we do "open animation" so long it is not the very first screen on stack
@@ -209,12 +187,24 @@ public class ScreenStack extends ScreenContainer<ScreenStackFragment> {
           case FADE:
             transition = FragmentTransaction.TRANSIT_FRAGMENT_FADE;
             break;
+          case SLIDE_FROM_RIGHT:
+            customAnimation = true;
+            getOrCreateTransaction().setCustomAnimations(R.anim.rns_slide_in_from_right, R.anim.rns_slide_out_to_left);
+            break;
+          case SLIDE_FROM_LEFT:
+            customAnimation = true;
+            getOrCreateTransaction().setCustomAnimations(R.anim.rns_slide_in_from_left, R.anim.rns_slide_out_to_right);
+            break;
         }
-        getOrCreateTransaction().setTransition(transition);
+
+        if (!customAnimation) {
+          getOrCreateTransaction().setTransition(transition);
+        }
       }
     } else if (mTopScreen != null && !mTopScreen.equals(newTop)) {
       // otherwise if we are performing top screen change we do "back animation"
       int transition = FragmentTransaction.TRANSIT_FRAGMENT_CLOSE;
+
       switch (mTopScreen.getScreen().getStackAnimation()) {
         case NONE:
           transition = FragmentTransaction.TRANSIT_NONE;
@@ -222,8 +212,46 @@ public class ScreenStack extends ScreenContainer<ScreenStackFragment> {
         case FADE:
           transition = FragmentTransaction.TRANSIT_FRAGMENT_FADE;
           break;
+        case SLIDE_FROM_RIGHT:
+          customAnimation = true;
+          getOrCreateTransaction().setCustomAnimations(R.anim.rns_slide_in_from_left, R.anim.rns_slide_out_to_right);
+          break;
+        case SLIDE_FROM_LEFT:
+          customAnimation = true;
+          getOrCreateTransaction().setCustomAnimations(R.anim.rns_slide_in_from_right, R.anim.rns_slide_out_to_left);
+          break;
       }
-      getOrCreateTransaction().setTransition(transition);
+
+      if (!customAnimation) {
+        getOrCreateTransaction().setTransition(transition);
+      }
+    }
+
+    // remove all screens previously on stack
+    for (ScreenStackFragment screen : mStack) {
+      if (!mScreenFragments.contains(screen) || mDismissed.contains(screen)) {
+        getOrCreateTransaction().remove(screen);
+      }
+    }
+
+    for (ScreenStackFragment screen : mScreenFragments) {
+      // detach all screens that should not be visible
+      if (screen != newTop && screen != belowTop && !mDismissed.contains(screen)) {
+        getOrCreateTransaction().remove(screen);
+      }
+    }
+    // attach "below top" screen if set
+    if (belowTop != null && !belowTop.isAdded()) {
+      final ScreenStackFragment top = newTop;
+      getOrCreateTransaction().add(getId(), belowTop).runOnCommit(new Runnable() {
+        @Override
+        public void run() {
+          top.getScreen().bringToFront();
+        }
+      });
+    }
+    if (newTop != null && !newTop.isAdded()) {
+      getOrCreateTransaction().add(getId(), newTop);
     }
 
     mTopScreen = newTop;
@@ -236,9 +264,12 @@ public class ScreenStack extends ScreenContainer<ScreenStackFragment> {
     if (mTopScreen != null) {
       setupBackHandlerIfNeeded(mTopScreen);
     }
+  }
 
+  @Override
+  protected void notifyContainerUpdate() {
     for (ScreenStackFragment screen : mStack) {
-      screen.onStackUpdate();
+      screen.onContainerUpdate();
     }
   }
 

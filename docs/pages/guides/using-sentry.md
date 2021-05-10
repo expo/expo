@@ -39,7 +39,8 @@ Once you have each of these: organization name, project name, DSN, and auth toke
 
 ### Install and configure Sentry
 
-- In your project, install the Expo integration: `yarn add sentry-expo` or `npm i sentry-expo`
+- In your project, install the Expo integration: `expo install sentry-expo`
+  > If you're using SDK 39 or lower, run `npm install sentry-expo@~3.0.0`
 - Add the following in your app's main file (usually `App.js`):
 
 ```javascript
@@ -144,13 +145,45 @@ Skipping or misconfiguring either of these will result in sourcemaps not working
 
 ### Publish your app with sourcemaps
 
-With the `postPublish` hook in place, now all you need to do is run `expo publish` and the sourcemaps will be uploaded automatically. We automatically assign a unique release version for Sentry each time you hit publish, based on the version you specify in `app.json` and a release id on our backend -- this means that if you forget to update the version but hit publish, you will still get a unique Sentry release. If you're not familiar with publishing on Expo, you can [read more about it here](../../workflow/publishing/).
+With the `postPublish` hook in place, now all you need to do is run `expo publish` and the sourcemaps will be uploaded automatically. We automatically assign a unique release version for Sentry each time you hit publish, based on the version you specify in `app.json` and a release id on our backend -- this means that if you forget to update the version but hit publish, you will still get a unique Sentry release. If you're not familiar with publishing on Expo, you can [read more about it here](../workflow/publishing.md).
 
-> This hook can also be used as a `postExport` hook if you're [self-hosting your OTA Updates](/distribution/hosting-your-app/).
+> This hook can also be used as a `postExport` hook if you're [self-hosting your OTA Updates](../distribution/hosting-your-app.md).
+
+### Self-hosting OTA?
+
+If you're self-hosting your Over the Air Updates (this means you run `expo export` instead of `expo publish`), you need to:
+
+- replace `hooks.postPublish` in your `app.json` file with `hooks.postExport` (everything else stays the same)
+- add the `RewriteFrames` integration to your `Sentry.init` call like so:
+
+```js
+Sentry.init({
+  dsn: SENTRY_DSN,
+  enableInExpoDevelopment: true,
+  integrations: [
+    new RewriteFrames({
+      iteratee: frame => {
+        if (frame.filename) {
+          // the values depend on what names you give the bundle files you are uploading to Sentry
+          frame.filename =
+            Platform.OS === 'android' ? 'app:///index.android.bundle' : 'app:///main.jsbundle';
+        }
+        return frame;
+      },
+    }),
+  ],
+});
+```
 
 ### Testing Sentry
 
-If you're using `Jest`, make sure to add `@sentry/.*` and `sentry-expo` to your `transformIgnorePatterns`.
+When building tests for your application, you want to assert that the right flow-tracking or error is being sent to Sentry, but without really sending it to Sentry servers. This way you won't swamp Sentry with false reports during test running and other CI operations.
+
+[`sentry-testkit`](https://wix.github.io/sentry-testkit) enables Sentry to work natively in your application, and by overriding the default Sentry transport mechanism, the report is not really sent but rather logged locally into memory. In this way, the logged reports can be fetched later for your own usage, verification, or any other use you may have in your local developing/testing environment.
+
+See how to get started with `sentry-testkit` in their [documentation site here](https://wix.github.io/sentry-testkit/)
+
+> If you're using `Jest`, make sure to add `@sentry/.*` and `sentry-expo` to your `transformIgnorePatterns`.
 
 ## Error reporting semantics
 

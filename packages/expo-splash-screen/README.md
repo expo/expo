@@ -216,7 +216,7 @@ Run `npx pod-install` after installing the package.
 
 ### Automatic configuration
 
-The easiest way to configure the splash screen in bare React Native projects is with the expo-splash-screen command. See the [README](https://github.com/expo/expo-cli/tree/master/packages/configure-splash-screen) for more information, or run `yarn expo-splash-screen --help` in your project.
+The easiest way to configure the splash screen in bare React Native projects is with the expo-splash-screen command. See the [README](https://github.com/expo/expo-cli/tree/master/unlinked-packages/configure-splash-screen) for more information, or run `yarn expo-splash-screen --help` in your project.
 
 ### Manual Configuration
 
@@ -466,7 +466,7 @@ To achieve fully-native splash screen behavior, `expo-splash-screen` needs to be
 
 ### Automatic configuration
 
-The easiest way to configure the splash screen in bare React Native projects is with the expo-splash-screen command. See the [README](https://github.com/expo/expo-cli/tree/master/packages/configure-splash-screen) for more information, or run `yarn expo-splash-screen --help` in your project.
+The easiest way to configure the splash screen in bare React Native projects is with the expo-splash-screen command. See the [README](https://github.com/expo/expo-cli/tree/master/unlinked-packages/configure-splash-screen) for more information, or run `yarn expo-splash-screen --help` in your project.
 
 ### Manual Configuration
 
@@ -474,7 +474,7 @@ The easiest way to configure the splash screen in bare React Native projects is 
 2. [Update `MainActivity`](#-update-mainactivityjavakt)
 3. [Configure `res/drawable/splashscreen_image.png`](#-configure-resdrawablesplashscreen_imagepng)
 4. [Configure `res/values/colors.xml`](#-configure-resvaluescolorsxml)
-5. [Configure `res/drawable/spalashscreen.xml`](#-configure-resdrawablesplashscreenxml)
+5. [Configure `res/drawable/splashscreen.xml`](#-configure-resdrawablesplashscreenxml)
 6. [Configure `res/values/styles.xml`](#-configure-resvaluesstylesxml)
 7. [Configure `AndroidManifest.xml`](#-configure-androidmanifestxml)
 8. [(<em>optional</em>) Enable dark mode](#-optional-enable-dark-mode-1)

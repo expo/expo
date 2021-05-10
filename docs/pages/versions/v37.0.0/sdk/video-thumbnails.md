@@ -30,7 +30,7 @@ Create an image thumbnail from video provided via `uri`.
 
 - **options (_object_)** -- A map defining how modified thumbnail should be created:
 
-  - **compress (_number_)** -- A value in range `0.0` - `1.0` specifying compression level of the result image. `1` means no compression (highest quality) and `0` the highest compression (lowest quality).
+  - **quality (_number_)** -- A value in range `0.0` - `1.0` specifying quality level of the result image. `1` means no compression (highest quality) and `0` the highest compression (lowest quality).
   - **time (_number_)** -- The time position where the image will be retrieved in ms.
   - **headers (_object_)** -- In case `uri` is a remote `uri`, headers object passed in a network request.
 

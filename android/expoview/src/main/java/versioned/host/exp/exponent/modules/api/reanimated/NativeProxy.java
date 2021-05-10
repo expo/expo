@@ -1,5 +1,6 @@
 package versioned.host.exp.exponent.modules.api.reanimated;
 
+import android.os.SystemClock;
 import androidx.annotation.Nullable;
 
 import com.facebook.jni.HybridData;
@@ -83,6 +84,8 @@ public class NativeProxy {
   private native HybridData initHybrid(long jsContext, CallInvokerHolderImpl jsCallInvokerHolder, Scheduler scheduler);
   private native void installJSIBindings();
 
+  public native boolean isAnyHandlerWaitingForEvent(String eventName);
+
   @DoNotStrip
   private void requestRender(AnimationFrameCallback callback) {
     mNodesManager.postOnAnimation(callback);
@@ -101,6 +104,11 @@ public class NativeProxy {
   @DoNotStrip
   private void scrollTo(int viewTag, double x, double y, boolean animated) {
     mNodesManager.scrollTo(viewTag, x, y, animated);
+  }
+
+  @DoNotStrip
+  private String getUpTime() {
+    return Long.toString(SystemClock.uptimeMillis());
   }
 
   @DoNotStrip

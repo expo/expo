@@ -1,2 +1,2 @@
-declare const _default: () => null;
-export default _default;
+/// <reference types="react" />
+export default function DevLoadingView(): JSX.Element | null;

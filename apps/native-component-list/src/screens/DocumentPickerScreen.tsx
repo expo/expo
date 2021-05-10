@@ -1,6 +1,6 @@
 import * as DocumentPicker from 'expo-document-picker';
 import React from 'react';
-import { Alert, Image, Text, View } from 'react-native';
+import { Alert, Image, Platform, Text, View } from 'react-native';
 
 import Button from '../components/Button';
 import TitleSwitch from '../components/TitledSwitch';
@@ -10,14 +10,21 @@ export default function DocumentPickerScreen() {
   const [document, setDocument] = React.useState<DocumentPicker.DocumentResult | null>(null);
 
   const openPicker = async () => {
+    const time = Date.now();
     const result = await DocumentPicker.getDocumentAsync({
       copyToCacheDirectory: copyToCache,
     });
+    console.log(`Duration: ${Date.now() - time}ms`);
+    console.log(`Results:`, result);
     if (result.type === 'success') {
       setDocument(result);
     } else {
       setTimeout(() => {
-        Alert.alert('Document picked', JSON.stringify(result, null, 2));
+        if (Platform.OS === 'web') {
+          alert('Cancelled');
+        } else {
+          Alert.alert('Cancelled');
+        }
       }, 100);
     }
   };

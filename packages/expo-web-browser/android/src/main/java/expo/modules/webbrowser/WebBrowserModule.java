@@ -30,6 +30,7 @@ public class WebBrowserModule extends ExportedModule {
   private final static String PREFERRED_BROWSER_PACKAGE = "preferredBrowserPackage";
   private final static String DEFAULT_BROWSER_PACKAGE = "defaultBrowserPackage";
   private final static String SHOW_IN_RECENTS = "showInRecents";
+  private final static String CREATE_TASK = "createTask";
   private final static String DEFAULT_SHARE_MENU_ITEM = "enableDefaultShareMenuItem";
   private final static String TOOLBAR_COLOR_KEY = "toolbarColor";
   private final static String SECONDARY_TOOLBAR_COLOR_KEY = "secondaryToolbarColor";
@@ -189,10 +190,12 @@ public class WebBrowserModule extends ExportedModule {
       intent.setPackage(packageName);
     }
 
-    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    if (!arguments.getBoolean(SHOW_IN_RECENTS, false)) {
-      intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-      intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+    if (arguments.getBoolean(CREATE_TASK, true)) {
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      if (!arguments.getBoolean(SHOW_IN_RECENTS, false)) {
+        intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+      }
     }
 
     return intent;

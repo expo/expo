@@ -36,7 +36,7 @@ NSString * const EXUpdatesDownloadFinishedEventType = @"downloadFinished";
 @implementation EXUpdatesManager
 
 - (void)notifyApp:(EXKernelAppRecord *)appRecord
-ofDownloadWithManifest:(NSDictionary * _Nullable)manifest
+ofDownloadWithManifest:(EXUpdatesRawManifest * _Nullable)manifest
             isNew:(BOOL)isBundleNew
             error:(NSError * _Nullable)error;
 {
@@ -48,17 +48,15 @@ ofDownloadWithManifest:(NSDictionary * _Nullable)manifest
              @"message": error.localizedDescription
              };
   } else if (isBundleNew) {
-    if (!manifest) {
-      // prevent a crash, but this shouldn't ever happen
-      manifest = @{};
-    }
+    // prevent a crash, but this shouldn't ever happen
+    NSDictionary *rawManifestJSON = manifest ? manifest.rawManifestJSON : @{};
     bodyLegacy = @{
                    @"type": EXUpdatesDownloadFinishedEventType,
-                   @"manifest": manifest
+                   @"manifest": rawManifestJSON
                    };
     body = @{
              @"type": EXUpdatesUpdateAvailableEventType,
-             @"manifest": manifest
+             @"manifest": rawManifestJSON
              };
   } else {
     body = @{
@@ -95,7 +93,7 @@ ofDownloadWithManifest:(NSDictionary * _Nullable)manifest
   return [self _appLoaderWithExperienceId:experienceId].config;
 }
 
-- (id<EXUpdatesSelectionPolicy>)selectionPolicyForExperienceId:(NSString *)experienceId
+- (EXUpdatesSelectionPolicy *)selectionPolicyForExperienceId:(NSString *)experienceId
 {
   return [self _appLoaderWithExperienceId:experienceId].selectionPolicy;
 }
@@ -147,7 +145,7 @@ ofDownloadWithManifest:(NSDictionary * _Nullable)manifest
 
 - (void)updatesModule:(id)scopedModule
 didRequestManifestWithCacheBehavior:(EXManifestCacheBehavior)cacheBehavior
-              success:(void (^)(NSDictionary * _Nonnull))success
+              success:(void (^)(EXUpdatesRawManifest * _Nonnull))success
               failure:(void (^)(NSError * _Nonnull))failure
 {
   if ([EXEnvironment sharedEnvironment].isDetached && ![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled) {
@@ -161,7 +159,7 @@ didRequestManifestWithCacheBehavior:(EXManifestCacheBehavior)cacheBehavior
   EXUpdatesFileDownloader *fileDownloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:appLoader.config];
   [fileDownloader downloadManifestFromURL:appLoader.config.updateUrl
                              withDatabase:databaseKernelService.database
-                           cacheDirectory:databaseKernelService.updatesDirectory
+                             extraHeaders:nil
                              successBlock:^(EXUpdatesUpdate *update) {
     success(update.rawManifest);
   } errorBlock:^(NSError *error, NSURLResponse *response) {
@@ -173,7 +171,7 @@ didRequestManifestWithCacheBehavior:(EXManifestCacheBehavior)cacheBehavior
 - (void)updatesModule:(id)scopedModule
 didRequestBundleWithCompletionQueue:(dispatch_queue_t)completionQueue
                 start:(void (^)(void))startBlock
-              success:(void (^)(NSDictionary * _Nullable))success
+              success:(void (^)(EXUpdatesRawManifest * _Nullable))success
               failure:(void (^)(NSError * _Nonnull))failure
 {
   if ([EXEnvironment sharedEnvironment].isDetached && ![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled) {
@@ -186,11 +184,13 @@ didRequestBundleWithCompletionQueue:(dispatch_queue_t)completionQueue
 
   EXUpdatesRemoteAppLoader *remoteAppLoader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:appLoader.config database:databaseKernelService.database directory:databaseKernelService.updatesDirectory completionQueue:completionQueue];
   [remoteAppLoader loadUpdateFromUrl:appLoader.config.updateUrl onManifest:^BOOL(EXUpdatesUpdate * _Nonnull update) {
-    BOOL shouldLoad = [appLoader.selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:appLoader.appLauncher.launchedUpdate];
+    BOOL shouldLoad = [appLoader.selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:appLoader.appLauncher.launchedUpdate filters:update.manifestFilters];
     if (shouldLoad) {
       startBlock();
     }
     return shouldLoad;
+  } asset:^(EXUpdatesAsset *asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
+    // do nothing for now
   } success:^(EXUpdatesUpdate * _Nullable update) {
     if (update) {
       success(update.rawManifest);

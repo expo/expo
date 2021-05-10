@@ -1,5 +1,11 @@
 import { Subscription } from '@unimodules/core';
 /**
+ * Returns whether the Screen Capture API is available on the current device.
+ *
+ * @returns Async `boolean`, indicating whether the Screen Capture API is available on the current device. Currently this resolves `true` on iOS and Android only.
+ */
+export declare function isAvailableAsync(): Promise<boolean>;
+/**
  * Prevents screenshots and screen recordings. If you are
  * already preventing screen capture, this method does nothing.
  *

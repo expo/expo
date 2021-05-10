@@ -30,6 +30,18 @@
 #import <EXScreenOrientation/EXScreenOrientationRegistry.h>
 #endif
 
+#import <React/RCTAppearance.h>
+#ifdef INCLUDES_VERSIONED_CODE
+#if __has_include(<ABI41_0_0React/ABI41_0_0RCTAppearance.h>)
+#import <ABI41_0_0React/ABI41_0_0RCTAppearance.h>
+#endif
+#if __has_include(<ABI40_0_0React/ABI40_0_0RCTAppearance.h>)
+#import <ABI40_0_0React/ABI40_0_0RCTAppearance.h>
+#endif
+#if __has_include(<ABI39_0_0React/ABI39_0_0RCTAppearance.h>)
+#import <ABI39_0_0React/ABI39_0_0RCTAppearance.h>
+#endif
+#endif
 
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
 
@@ -75,7 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) EXManagedAppSplashScreenViewProvider *managedAppSplashScreenViewProvider;
 
 /*
- * This view is available in managed apps run in Expo Client only.
+ * This view is available in managed apps run in Expo Go only.
  * It is shown only before any managed app manifest is delivered by the app loader.
  */
 @property (nonatomic, strong, nullable) EXAppLoadingCancelView *appLoadingCancelView;
@@ -215,7 +227,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
 
   NSString *domain = (error && error.domain) ? error.domain : @"";
-  BOOL isNetworkError = ([domain isEqualToString:(NSString *)kCFErrorDomainCFNetwork] || [domain isEqualToString:EXNetworkErrorDomain]);
+  BOOL isNetworkError = ([domain isEqualToString:(NSString *)kCFErrorDomainCFNetwork] || [domain isEqualToString:NSURLErrorDomain] || [domain isEqualToString:EXNetworkErrorDomain]);
 
   if (isNetworkError) {
     // show a human-readable reachability error
@@ -271,6 +283,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.isBridgeAlreadyLoading = YES;
     dispatch_async(dispatch_get_main_queue(), ^{
       [self _overrideUserInterfaceStyleOf:self];
+      [self _overrideAppearanceModuleBehaviour];
       [self _enforceDesiredDeviceOrientation];
       [self _invalidateRecoveryTimer];
       [[EXKernel sharedInstance] logAnalyticsEvent:@"LOAD_EXPERIENCE" forAppRecord:self.appRecord];
@@ -317,7 +330,7 @@ NS_ASSUME_NONNULL_BEGIN
  * therefore for any consecutive SplashScreen.show call we just reconfigure what's already visible.
  * In HomeApp or standalone apps this function is no-op as SplashScreen is managed differently.
  */
-- (void)_showOrReconfigureManagedAppSplashScreen:(NSDictionary *)manifest
+- (void)_showOrReconfigureManagedAppSplashScreen:(EXUpdatesRawManifest *)manifest
 {
   if (_isStandalone || _isHomeApp) {
     return;
@@ -370,7 +383,7 @@ NS_ASSUME_NONNULL_BEGIN
   // 2. hide the splash screen of root view controller
   // Disclaimer:
   //  there's only one root view controller, but possibly many EXAppViewControllers
-  //  (in Expo Client: one Experience -> one EXAppViewController)
+  //  (in Expo Go: one project -> one EXAppViewController)
   //  and we want to hide SplashScreen only once for the root view controller, hence the "once"
   static dispatch_once_t once;
   void (^hideRootViewControllerSplashScreen)(void) = ^void() {
@@ -401,7 +414,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - EXAppLoaderDelegate
 
-- (void)appLoader:(EXAppLoader *)appLoader didLoadOptimisticManifest:(NSDictionary *)manifest
+- (void)appLoader:(EXAppLoader *)appLoader didLoadOptimisticManifest:(EXUpdatesRawManifest *)manifest
 {
   if (_appLoadingCancelView) {
     UM_WEAKIFY(self);
@@ -421,10 +434,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appLoader:(EXAppLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress
 {
-  [self.appLoadingProgressWindowController updateStatusWithProgress:progress];
+  if (self->_appRecord.appManager.status != kEXReactAppManagerStatusRunning) {
+    [self.appLoadingProgressWindowController updateStatusWithProgress:progress];
+  }
 }
 
-- (void)appLoader:(EXAppLoader *)appLoader didFinishLoadingManifest:(NSDictionary *)manifest bundle:(NSData *)data
+- (void)appLoader:(EXAppLoader *)appLoader didFinishLoadingManifest:(EXUpdatesRawManifest *)manifest bundle:(NSData *)data
 {
   [self _showOrReconfigureManagedAppSplashScreen:manifest];
   [self _rebuildBridge];
@@ -445,7 +460,7 @@ NS_ASSUME_NONNULL_BEGIN
   [self maybeShowError:error];
 }
 
-- (void)appLoader:(EXAppLoader *)appLoader didResolveUpdatedBundleWithManifest:(NSDictionary * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error
+- (void)appLoader:(EXAppLoader *)appLoader didResolveUpdatedBundleWithManifest:(EXUpdatesRawManifest * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error
 {
   [[EXKernel sharedInstance].serviceRegistry.updatesManager notifyApp:_appRecord ofDownloadWithManifest:manifest isNew:!isFromCache error:error];
 }
@@ -531,7 +546,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIInterfaceOrientationMask)orientationMaskFromManifestOrDefault {
   if (_appRecord.appLoader.manifest) {
-    NSString *orientationConfig = _appRecord.appLoader.manifest[@"orientation"];
+    NSString *orientationConfig = _appRecord.appLoader.manifest.orientation;
     if ([orientationConfig isEqualToString:@"portrait"]) {
       // lock to portrait
       return UIInterfaceOrientationMaskPortrait;
@@ -610,6 +625,38 @@ NS_ASSUME_NONNULL_BEGIN
   [UIViewController attemptRotationToDeviceOrientation];
 }
 
+#pragma mark - RCTAppearanceModule
+
+/**
+ * This function overrides behaviour of RCTAppearanceModule
+ * basing on 'userInterfaceStyle' option from the app manifest.
+ * It also defaults the RCTAppearanceModule to 'light'.
+ */
+- (void)_overrideAppearanceModuleBehaviour
+{
+  NSString *userInterfaceStyle = [self _readUserInterfaceStyleFromManifest:_appRecord.appLoader.manifest];
+  NSString *appearancePreference = nil;
+  if (!userInterfaceStyle || [userInterfaceStyle isEqualToString:@"light"]) {
+    appearancePreference = @"light";
+  } else if ([userInterfaceStyle isEqualToString:@"dark"]) {
+    appearancePreference = @"dark";
+  } else if ([userInterfaceStyle isEqualToString:@"automatic"]) {
+    appearancePreference = nil;
+  }
+  RCTOverrideAppearancePreference(appearancePreference);
+#ifdef INCLUDES_VERSIONED_CODE
+#if __has_include(<ABI41_0_0React/ABI41_0_0RCTAppearance.h>)
+  ABI41_0_0RCTOverrideAppearancePreference(appearancePreference);
+#endif
+#if __has_include(<ABI40_0_0React/ABI40_0_0RCTAppearance.h>)
+  ABI40_0_0RCTOverrideAppearancePreference(appearancePreference);
+#endif
+#if __has_include(<ABI39_0_0React/ABI39_0_0RCTAppearance.h>)
+  ABI39_0_0RCTOverrideAppearancePreference(appearancePreference);
+#endif
+#endif
+}
+
 #pragma mark - user interface style
 
 - (void)_overrideUserInterfaceStyleOf:(UIViewController *)viewController
@@ -620,12 +667,9 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-- (NSString * _Nullable)_readUserInterfaceStyleFromManifest:(NSDictionary *)manifest
+- (NSString * _Nullable)_readUserInterfaceStyleFromManifest:(EXUpdatesRawManifest *)manifest
 {
-  if (manifest[@"ios"] && manifest[@"ios"][@"userInterfaceStyle"]) {
-    return manifest[@"ios"][@"userInterfaceStyle"];
-  }
-  return manifest[@"userInterfaceStyle"];
+  return manifest.userInterfaceStyle;
 }
 
 - (UIUserInterfaceStyle)_userInterfaceStyleForString:(NSString *)userInterfaceStyleString API_AVAILABLE(ios(12.0)) {
@@ -669,12 +713,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (NSString * _Nullable)_readBackgroundColorFromManifest:(NSDictionary *)manifest
+- (NSString * _Nullable)_readBackgroundColorFromManifest:(EXUpdatesRawManifest *)manifest
 {
-  if (manifest[@"ios"] && manifest[@"ios"][@"backgroundColor"]) {
-    return manifest[@"ios"][@"backgroundColor"];
-  }
-  return manifest[@"backgroundColor"];
+  return manifest.androidOrRootBackroundColor;
 }
 
 

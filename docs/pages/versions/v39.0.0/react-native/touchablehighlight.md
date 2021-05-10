@@ -3,7 +3,7 @@ id: touchablehighlight
 title: TouchableHighlight
 ---
 
-> If you're looking for a more extensive and future-proof way to handle touch-based input, check out the [Pressable](../pressable/) API.
+> If you're looking for a more extensive and future-proof way to handle touch-based input, check out the [Pressable](pressable.md) API.
 
 A wrapper for making views respond properly to touches. On press down, the opacity of the wrapped view is decreased, which allows the underlay color to show through, darkening or tinting the view.
 
@@ -78,7 +78,7 @@ export default TouchableHighlightExample;
 
 ## Props
 
-Inherits [TouchableWithoutFeedback Props](../touchablewithoutfeedback/#props).
+Inherits [TouchableWithoutFeedback Props](touchablewithoutfeedback.md#props).
 
 ### `activeOpacity`
 

@@ -5,4 +5,4 @@ export declare function addNotificationReceivedListener(listener: (event: Notifi
 export declare function addNotificationsDroppedListener(listener: () => void): Subscription;
 export declare function addNotificationResponseReceivedListener(listener: (event: NotificationResponse) => void): Subscription;
 export declare function removeNotificationSubscription(subscription: Subscription): void;
-export declare function removeAllNotificationListeners(): void;
+export declare function getLastNotificationResponseAsync(): Promise<NotificationResponse | null>;

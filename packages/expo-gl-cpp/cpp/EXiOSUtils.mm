@@ -1,3 +1,5 @@
+#import <Foundation/Foundation.h>
+
 #include <EXGL_CPP/EXPlatformUtils.h>
 
 namespace expo {

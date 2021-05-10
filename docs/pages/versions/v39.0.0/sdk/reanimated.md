@@ -48,19 +48,21 @@ module.exports = function(api) {
   api.cache(true);
   return {
     presets: ['babel-preset-expo'],
-    plugins: ['react-native-reanimated/plugin']
+    plugins: ['react-native-reanimated/plugin'],
   };
 };
 ```
 
-Note that when you run the project you will get a warning about an incompatible version:
+Note: If you load other babel plugins, the Reanimated plugin has to be listed last in the plugins array.
+
+When you run the project you will get a warning about an incompatible version:
 
 ```
 Some of your project's dependencies are not compatible with currently installed expo package version:
  - react-native-reanimated - expected version range: ~1.13.0 - actual version installed: 2.0.0-alpha.6.1
- ```
+```
 
- You can ignore this, as you are intentionally opting in to an experimental feature.
+You can ignore this, as you are intentionally opting in to an experimental feature.
 
 ## API Usage
 

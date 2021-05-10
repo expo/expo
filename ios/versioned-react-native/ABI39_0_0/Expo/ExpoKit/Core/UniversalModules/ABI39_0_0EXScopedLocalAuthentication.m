@@ -32,7 +32,7 @@ ABI39_0_0UM_EXPORT_METHOD_AS(authenticateAsync,
 
       if (!usageDescription) {
         NSMutableDictionary *scopedResult = [[NSMutableDictionary alloc] initWithDictionary:result];
-        scopedResult[@"warning"] = @"FaceID is not available in Expo Client. You can use it in a standalone Expo app by providing `NSFaceIDUsageDescription`.";
+        scopedResult[@"warning"] = @"Face ID is not available in Expo Go. You can use it in a standalone Expo app by providing `NSFaceIDUsageDescription`.";
         resolve(scopedResult);
         return;
       }

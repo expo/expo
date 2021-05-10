@@ -46,12 +46,12 @@
 #endif
 
 #if __has_include(<ABI39_0_0EXConstants/ABI39_0_0EXConstantsService.h>)
-  ABI39_0_0EXConstantsBinding *constantsBinding = [[ABI39_0_0EXConstantsBinding alloc] initWithExperienceId:experienceId andParams:params];
+  ABI39_0_0EXConstantsBinding *constantsBinding = [[ABI39_0_0EXConstantsBinding alloc] initWithExperienceId:experienceId andParams:params deviceInstallationUUIDManager:kernelServices[@"EXDeviceInstallationUUIDService"]];
   [moduleRegistry registerInternalModule:constantsBinding];
 #endif
 
 #if __has_include(<ABI39_0_0EXFacebook/ABI39_0_0EXFacebook.h>)
-  // only override in Expo client
+  // only override in Expo Go
   if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
     ABI39_0_0EXScopedFacebook *scopedFacebook = [[ABI39_0_0EXScopedFacebook alloc] initWithExperienceId:experienceId andParams:params];
     [moduleRegistry registerExportedModule:scopedFacebook];

@@ -5,6 +5,8 @@ import android.os.Bundle;
 
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.services.EventEmitter;
 
 import expo.modules.notifications.notifications.NotificationSerializer;
@@ -21,6 +23,7 @@ public class NotificationsEmitter extends ExportedModule implements Notification
   private final static String MESSAGES_DELETED_EVENT_NAME = "onNotificationsDeleted";
 
   private NotificationManager mNotificationManager;
+  private NotificationResponse mLastNotificationResponse;
   private EventEmitter mEventEmitter;
 
   public NotificationsEmitter(Context context) {
@@ -47,6 +50,11 @@ public class NotificationsEmitter extends ExportedModule implements Notification
     mNotificationManager.removeListener(this);
   }
 
+  @ExpoMethod
+  public void getLastNotificationResponseAsync(Promise promise) {
+    promise.resolve(mLastNotificationResponse != null ? NotificationSerializer.toBundle(mLastNotificationResponse) : null);
+  }
+
   /**
    * Callback called when {@link NotificationManager} gets notified of a new notification.
    * Emits a {@link NotificationsEmitter#NEW_MESSAGE_EVENT_NAME} event.
@@ -69,6 +77,7 @@ public class NotificationsEmitter extends ExportedModule implements Notification
    */
   @Override
   public boolean onNotificationResponseReceived(NotificationResponse response) {
+    mLastNotificationResponse = response;
     if (mEventEmitter != null) {
       mEventEmitter.emit(NEW_RESPONSE_EVENT_NAME, NotificationSerializer.toBundle(response));
       return true;

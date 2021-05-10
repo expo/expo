@@ -1,5 +1,6 @@
 package versioned.host.exp.exponent.modules.api.components.gesturehandler.react;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -11,6 +12,7 @@ import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
 import android.util.TypedValue;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.facebook.react.bridge.SoftAssertions;
@@ -27,6 +29,10 @@ public class RNGestureHandlerButtonViewManager extends
 
     static TypedValue sResolveOutValue = new TypedValue();
     static ButtonViewGroup sResponder;
+    static OnClickListener sDummyClickListener = new OnClickListener() {
+      @Override
+      public void onClick(View v) { }
+    };
 
     int mBackgroundColor = Color.TRANSPARENT;
     // Using object because of handling null representing no value set.
@@ -36,6 +42,7 @@ public class RNGestureHandlerButtonViewManager extends
     boolean mUseBorderless = false;
     float mBorderRadius = 0;
     boolean mNeedBackgroundUpdate = false;
+    long mLastEventTime = 0;
     public static final String SELECTABLE_ITEM_BACKGROUND = "selectableItemBackground";
     public static final String SELECTABLE_ITEM_BACKGROUND_BORDERLESS = "selectableItemBackgroundBorderless";
 
@@ -43,6 +50,8 @@ public class RNGestureHandlerButtonViewManager extends
     public ButtonViewGroup(Context context) {
       super(context);
 
+      // we attach empty click listener to trigger tap sounds (see View#performClick())
+      setOnClickListener(sDummyClickListener);
       setClickable(true);
       setFocusable(true);
 
@@ -93,10 +102,36 @@ public class RNGestureHandlerButtonViewManager extends
       if (super.onInterceptTouchEvent(ev)) {
         return true;
       }
-      // We call `onTouchEvent` to and wait until button changes state to `pressed`, if it's pressed
-      // we return true so that the gesture handler can activate
+      // We call `onTouchEvent` and wait until button changes state to `pressed`, if it's pressed
+      // we return true so that the gesture handler can activate.
       onTouchEvent(ev);
       return isPressed();
+    }
+
+    /**
+     * Buttons in RN are wrapped in NativeViewGestureHandler which manages
+     * calling onTouchEvent after activation of the handler. Problem is, in order to verify that
+     * underlying button implementation is interested in receiving touches we have to call onTouchEvent
+     * and check if button is pressed.
+     *
+     * This leads to invoking onTouchEvent twice which isn't idempotent in View - it calls OnClickListener
+     * and plays sound effect if OnClickListener was set.
+     *
+     * To mitigate this behavior we use mLastEventTime variable to check that we already handled
+     * the event in {@link #onInterceptTouchEvent(MotionEvent)}. We assume here that different events
+     * will have different event times.
+     *
+     * Reference:
+     * {@link versioned.host.exp.exponent.modules.api.components.gesturehandler.NativeViewGestureHandler#onHandle(MotionEvent)} */
+    @SuppressLint("ClickableViewAccessibility")
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+      long eventTime = event.getEventTime();
+      if (mLastEventTime != eventTime || mLastEventTime == 0) {
+        mLastEventTime = eventTime;
+        return super.onTouchEvent(event);
+      }
+      return false;
     }
 
     private void updateBackground() {

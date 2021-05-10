@@ -1,7 +1,11 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as React from 'react';
 import { Button, Platform, ScrollView, Text, View } from 'react-native';
-import { SafeAreaConsumer, SafeAreaView, useSafeArea } from 'react-native-safe-area-context';
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+  SafeAreaInsetsContext,
+} from 'react-native-safe-area-context';
 
 import HeadingText from '../components/HeadingText';
 
@@ -18,11 +22,11 @@ export default function SafeAreaContextScreen({
   }, [navigation]);
 
   const [focused, setFocused] = React.useState<'hook' | 'view'>('hook');
-  const insets = useSafeArea();
+  const insets = useSafeAreaInsets();
 
   if (focused === 'hook') {
     return (
-      <SafeAreaConsumer>
+      <SafeAreaInsetsContext.Consumer>
         {consumerInsets => (
           <ScrollView
             style={{ flex: 1 }}
@@ -40,7 +44,7 @@ export default function SafeAreaContextScreen({
             <Button title="Go back to APIs" onPress={() => navigation.goBack()} />
           </ScrollView>
         )}
-      </SafeAreaConsumer>
+      </SafeAreaInsetsContext.Consumer>
     );
   } else {
     return (

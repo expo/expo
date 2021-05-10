@@ -9,7 +9,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-barcode-scanner`** provides a React component that renders a viewfinder for the device's camera (either front or back) and will scan bar codes that show up in the frame.
 
-<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/pull/4166' }} />
+<PlatformsSection android emulator ios simulator web />
 
 > **Note:** Only one active BarCodeScanner preview is supported currently. When using navigation, the best practice is to unmount any previously rendered BarCodeScanner component so the following screens can use `<BarCodeScanner />` without issues.
 
@@ -19,7 +19,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Configuration
 
-In managed apps, scanning barcodes with the camera requires the [`Permission.CAMERA`](../permissions/#permissionscamera) permission. See the [usage example](#usage) below.
+In managed apps, scanning barcodes with the camera requires the [`Permission.CAMERA`](permissions.md#permissionscamera) permission. See the [usage example](#usage) below.
 
 ## Supported formats
 
@@ -49,15 +49,15 @@ In managed apps, scanning barcodes with the camera requires the [`Permission.CAM
 >
 > - When an ITF-14 barcode is recognized, it's type can sometimes be set to `interleaved2of5`.
 
-> - Scanning for either `PDF417` and/or `Code39` formats can result in a noticable increase in battery consumption on iOS. It is recommended to provide only the bar code formats you expect to scan to the `barCodeTypes` prop.
+> - Scanning for either `PDF417` and/or `Code39` formats can result in a noticeable increase in battery consumption on iOS. It is recommended to provide only the bar code formats you expect to scan to the `barCodeTypes` prop.
 
 ## Usage
 
-You must request permission to access the user's camera before attempting to get it. To do this, you will want to use the [Permissions](../permissions/) API. You can see this in practice in the following example.
+You must request permission to access the user's camera before attempting to get it. To do this, you will want to use the [Permissions](permissions.md) API. You can see this in practice in the following example.
 
-<SnackInline label="Basic BarCodeScanner usage" templateId="bar-code-scanner" dependencies={['expo-barcode-scanner']}>
+<SnackInline label="Basic BarCodeScanner usage" dependencies={['expo-barcode-scanner']}>
 
-```js
+```jsx
 import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Button } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
@@ -86,21 +86,25 @@ export default function App() {
   }
 
   return (
-    <View
-      style={{
-        flex: 1,
-        flexDirection: 'column',
-        justifyContent: 'flex-end',
-      }}>
+    <View style={styles.container}>
       <BarCodeScanner
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
         style={StyleSheet.absoluteFillObject}
       />
-
       {scanned && <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} />}
     </View>
   );
 }
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
+});
+/* @end */
 ```
 
 </SnackInline>
@@ -155,7 +159,7 @@ Object of type `BarCodeSize` contains following keys:
 - **height (_number_)** -- The height value.
 - **width (_number_)** -- The width value.
 
-### `BarCodeBounds`
+### `BarCodeScanner.BarCodeBounds`
 
 Object of type `BarCodeBounds` contains following keys:
 

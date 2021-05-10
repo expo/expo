@@ -15,7 +15,7 @@ export interface NotificationCategoriesModule extends ProxyNativeModule {
       allowInCarPlay?: boolean;
       showTitle?: boolean;
       showSubtitle?: boolean;
-      allowAnnouncment?: boolean;
+      allowAnnouncement?: boolean;
     }
   ) => Promise<NotificationCategory>;
   deleteNotificationCategoryAsync: (identifier: string) => Promise<boolean>;

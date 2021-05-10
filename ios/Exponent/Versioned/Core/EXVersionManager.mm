@@ -5,7 +5,6 @@
 #import "EXDisabledDevLoadingView.h"
 #import "EXDisabledDevMenu.h"
 #import "EXDisabledRedBox.h"
-#import "EXFileSystem.h"
 #import "EXVersionManager.h"
 #import "EXScopedBridgeModule.h"
 #import "EXStatusBarManager.h"
@@ -41,12 +40,14 @@
 #import <UMCore/UMModuleRegistryDelegate.h>
 #import <UMReactNativeAdapter/UMNativeModulesProxy.h>
 #import <EXMediaLibrary/EXMediaLibraryImageLoader.h>
+#import <EXFileSystem/EXFileSystem.h>
 #import "EXScopedModuleRegistry.h"
 #import "EXScopedModuleRegistryAdapter.h"
 #import "EXScopedModuleRegistryDelegate.h"
 
-#import "REATurboModuleProvider.h"
-#import "REAModule.h"
+#import <RNReanimated/REAModule.h>
+#import <RNReanimated/REAEventDispatcher.h>
+#import <RNReanimated/NativeProxy.h>
 
 #import <React/RCTCxxBridgeDelegate.h>
 #import <React/CoreModulesPlugins.h>
@@ -54,7 +55,17 @@
 #import <React/JSCExecutorFactory.h>
 #import <strings.h>
 
+// Import 3rd party modules that need to be scoped.
+#import "RNCWebViewManager.h"
+
 RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(void);
+RCT_EXTERN void EXRegisterScopedModule(Class, ...);
+
+@interface RCTEventDispatcher (REAnimated)
+
+- (void)setBridge:(RCTBridge*)bridge;
+
+@end
 
 // this is needed because RCTPerfMonitor does not declare a public interface
 // anywhere that we can import.
@@ -107,6 +118,13 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
     [self configureABIWithFatalHandler:fatalHandler logFunction:logFunction logThreshold:threshold];
   }
   return self;
+}
+
++ (void)load
+{
+  // Register scoped 3rd party modules. Some of them are separate pods that
+  // don't have access to EXScopedModuleRegistry and so they can't register themselves.
+  EXRegisterScopedModule([RNCWebViewManager class], EX_KERNEL_SERVICE_NONE, nil);
 }
 
 - (void)bridgeWillStartLoading:(id)bridge
@@ -244,12 +262,41 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
   devSettings.isDebuggingRemotely = NO;
 }
 
+- (void)toggleRemoteDebuggingForBridge:(id)bridge
+{
+  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForBridge:bridge named:@"DevSettings"];
+  devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
+}
+
+- (void)togglePerformanceMonitorForBridge:(id)bridge
+{
+  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForBridge:bridge named:@"DevSettings"];
+  id perfMonitor = [self _moduleInstanceForBridge:bridge named:@"PerfMonitor"];
+  if (perfMonitor) {
+    if (devSettings.isPerfMonitorShown) {
+      [perfMonitor hide];
+      devSettings.isPerfMonitorShown = NO;
+    } else {
+      [perfMonitor show];
+      devSettings.isPerfMonitorShown = YES;
+    }
+  }
+}
+
 - (void)toggleElementInspectorForBridge:(id)bridge
 {
   RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForBridge:bridge named:@"DevSettings"];
   [devSettings toggleElementInspector];
 }
 
+#if DEBUG || RCT_DEV
+- (uint32_t)addWebSocketNotificationHandler:(void (^)(NSDictionary<NSString *, id> *))handler
+                                    queue:(dispatch_queue_t)queue
+                                forMethod:(NSString *)method
+{
+  return [[RCTPackagerConnection sharedPackagerConnection] addNotificationHandler:handler queue:queue forMethod:method];
+}
+#endif
 
 #pragma mark - internal
 
@@ -275,7 +322,6 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
 
 - (NSArray *)extraModulesForBridge:(id)bridge
 {
-  _bridge_reanimated = bridge;
   NSDictionary *params = _params;
   NSDictionary *manifest = params[@"manifest"];
   NSString *experienceId = manifest[@"id"];
@@ -394,7 +440,7 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                       jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
 {
-  return facebook::react::REATurboModuleProvider(name, jsInvoker);
+  return nullptr;
 }
 
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
@@ -465,6 +511,12 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
 
 - (void *)versionedJsExecutorFactoryForBridge:(RCTBridge *)bridge
 {
+  [bridge moduleForClass:[RCTEventDispatcher class]];
+  RCTEventDispatcher *eventDispatcher = [REAEventDispatcher new];
+  [eventDispatcher setBridge:bridge];
+  [bridge updateModuleWithInstance:eventDispatcher];
+  _bridge_reanimated = bridge;
+
   UM_WEAKIFY(self);
   return new facebook::react::JSCExecutorFactory([UMWeak_self, bridge](facebook::jsi::Runtime &runtime) {
     if (!bridge) {
@@ -475,6 +527,12 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
                                                                      delegate:self
                                                                     jsInvoker:bridge.jsCallInvoker];
     [self->_turboModuleManager installJSBindingWithRuntime:&runtime];
+    
+    auto reanimatedModule = reanimated::createReanimatedModule(bridge.jsCallInvoker);
+    runtime.global().setProperty(runtime,
+                                 jsi::PropNameID::forAscii(runtime, "__reanimatedModuleProxy"),
+                                 jsi::Object::createFromHostObject(runtime, reanimatedModule)
+    );
   });
 }
 

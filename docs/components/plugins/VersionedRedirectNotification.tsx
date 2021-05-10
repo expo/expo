@@ -1,13 +1,13 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
+import { theme } from '@expo/styleguide';
 import { useRouter } from 'next/router';
 import * as React from 'react';
 
 import { P } from '~/components/base/paragraph';
-import * as Constants from '~/constants/theme';
 
 const CONTAINER_STYLE = css`
-  background-color: ${Constants.expoColors.yellow[100]};
-  border: 1px solid ${Constants.expoColors.yellow[200]};
+  background-color: ${theme.background.warning};
+  border: 1px solid ${theme.border.error};
   padding: 16px;
   margin-bottom: 1rem;
   border-radius: 4px;

@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI37_0_0/Expo/EXImagePicker/ABI37_0_0EXImagePicker/ABI37_0_0EXImagePickerCameraPermissionRequester.h

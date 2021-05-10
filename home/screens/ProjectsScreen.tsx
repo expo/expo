@@ -94,7 +94,11 @@ class ProjectsView extends React.Component<Props, State> {
   componentDidMount() {
     AppState.addEventListener('change', this._maybeResumePollingFromAppState);
     Connectivity.addListener(this._updateConnectivity);
-    this._startPollingForProjects();
+
+    // @evanbacon: Without this setTimeout, the state doesn't update correctly and the "Recently in Development" items don't load for 10 seconds.
+    setTimeout(() => {
+      this._startPollingForProjects();
+    }, 1);
 
     // NOTE(brentvatne): if we add QR code button to the menu again, we'll need to
     // find a way to move this listener up to the root of the app in order to ensure
@@ -193,7 +197,7 @@ class ProjectsView extends React.Component<Props, State> {
   };
 
   private _startPollingForProjects = async () => {
-    this._handleRefreshAsync();
+    this._fetchProjectsAsync();
     this._projectPolling = setInterval(this._fetchProjectsAsync, PROJECT_UPDATE_INTERVAL);
   };
 
@@ -339,10 +343,10 @@ class ProjectsView extends React.Component<Props, State> {
   private _copyClientVersionToClipboard = () => {
     if (Constants.expoVersion) {
       Clipboard.setString(Constants.expoVersion);
-      alert('The client version has been copied to your clipboard.');
+      alert(`The app's version has been copied to your clipboard.`);
     } else {
       // this should not ever happen
-      alert('Something went wrong - the Expo client version is not available.');
+      alert(`Something went wrong - the app's version is not available.`);
     }
   };
 

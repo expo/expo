@@ -1,8 +1,9 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '9.1.2'
+version = '10.3.0'
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -78,13 +79,13 @@ uploadArchives {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 29)
+  compileSdkVersion safeExtGet("compileSdkVersion", 30)
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 29)
-    versionCode 29
-    versionName "9.1.2"
+    targetSdkVersion safeExtGet("targetSdkVersion", 30)
+    versionCode 31
+    versionName "10.3.0"
 
     ndk {
       abiFilters 'armeabi-v7a', 'x86', 'arm64-v8a', 'x86_64'
@@ -115,6 +116,8 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
   compileOnly 'com.facebook.soloader:soloader:0.8.2'
+
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
 }
 task createNativeDepsDirectories {
   downloadsDir.mkdirs()
@@ -295,16 +298,24 @@ def findNdkBuildFullPath() {
     return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
   }
 
+  // Left for the legacy reasons, use the previous one.
   if (System.getenv("ANDROID_NDK") != null) {
     def ndkDir = System.getenv("ANDROID_NDK")
     return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
   }
 
-  def ndkDir = android.ndkDirectory ? android.ndkDirectory.absolutePath : null
-
-  if (ndkDir) {
-    return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
+  try {
+    def ndkDir = android.ndkDirectory.absolutePath
+    if (ndkDir) {
+      return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
+    }
+  } catch (InvalidUserDataException e) {
+    throw new GradleScriptException(
+        "Default side-by-side NDK installation is not found.\n" +
+        "Set \$ANDROID_NDK_HOME environment variable correctly or setup ndk.dir in local.properties.", e
+    )
   }
+
   return null
 }
 
@@ -313,14 +324,14 @@ def getNdkBuildFullPath() {
   if (ndkBuildFullPath == null) {
     throw new GradleScriptException(
         "ndk-build binary cannot be found, check if you've set " +
-            "\$ANDROID_NDK environment variable correctly or if ndk.dir is " +
+            "\$ANDROID_NDK_HOME environment variable correctly or if ndk.dir is " +
             "setup in local.properties",
         null)
   }
   if (!new File(ndkBuildFullPath).canExecute()) {
     throw new GradleScriptException(
         "ndk-build binary " + ndkBuildFullPath + " doesn't exist or isn't executable.\n" +
-            "Check that the \$ANDROID_NDK environment variable, or ndk.dir in local.properties, is set correctly.\n" +
+            "Check that the \$ANDROID_NDK_HOME environment variable, or ndk.dir in local.properties, is set correctly.\n" +
             "(On Windows, make sure you escape backslashes in local.properties or use forward slashes, e.g. C:\\\\ndk or C:/ndk rather than C:\\ndk)",
         null)
   }

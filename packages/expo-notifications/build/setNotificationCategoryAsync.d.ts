@@ -7,5 +7,5 @@ export default function setNotificationCategoryAsync(identifier: string, actions
     allowInCarPlay?: boolean;
     showTitle?: boolean;
     showSubtitle?: boolean;
-    allowAnnouncment?: boolean;
+    allowAnnouncement?: boolean;
 }): Promise<NotificationCategory>;

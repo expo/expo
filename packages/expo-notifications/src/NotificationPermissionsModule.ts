@@ -1,4 +1,4 @@
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import { Platform } from '@unimodules/core';
 import { PermissionStatus } from 'unimodules-permissions-interface';
 
 import {
@@ -40,7 +40,7 @@ async function resolvePermissionAsync({
 }: {
   shouldAsk: boolean;
 }): Promise<NotificationPermissionsStatus> {
-  if (!canUseDOM) {
+  if (!Platform.isDOMAvailable) {
     return convertPermissionStatus('denied');
   }
 

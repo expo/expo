@@ -10,7 +10,7 @@ To get the client-side ready for push notifications, the 2 main things we need a
 - The user's permission to send them push notifications
 - The user's ExpoPushToken- if push notifications are mail, then the ExpoPushToken is the user's address.
 
-Getting the permissions is easy- just use the [`expo-permissions` module](../../versions/latest/sdk/permissions/)! As for the push token, the `expo-notifications` module provides a method exactly for that: [`getExpoPushTokenAsync`](../../versions/latest/sdk/notifications/#getexpopushtokenasyncoptions-expotokenoptions-expopushtoken).
+We can easily grab both of these using the `expo-notifications` library. For permissions, use [`requestPermissionsAsync`](../versions/latest/sdk/notifications.md#requestpermissionsasyncrequest-notificationpermissionsrequest-promisenotificationpermissionsstatus), and for the ExpoPushToken, use [`getExpoPushTokenAsync`](../versions/latest/sdk/notifications.md#getexpopushtokenasyncoptions-expotokenoptions-expopushtoken).
 
 > Note: in the managed workflow, you don't need to pass any additional options to `getExpoPushTokenAsync`. In the bare workflow, you'll need to pass your `experienceId`. Make sure you read the documentation for more information.
 
@@ -19,15 +19,16 @@ The following method takes care of all this for you, so feel free to copy/paste 
 <Tabs>
 <Tab label="New notifications">
 
+<!-- prettier-ignore -->
 ```javascript
 registerForPushNotificationsAsync = async () => {
   /* @info We should also make sure the app is running on a physical device, since push notifications won't work on a simulator. */
   if (Constants.isDevice) {
     /* @end */
-    const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
     if (existingStatus !== 'granted') {
-      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      const { status } = await Notifications.requestPermissionsAsync();
       finalStatus = status;
     }
     if (finalStatus !== 'granted') {
@@ -35,7 +36,7 @@ registerForPushNotificationsAsync = async () => {
       return;
     }
     /* @info Alright, we got our token! */
-    const token = await Notifications.getExpoPushTokenAsync();
+    const token = (await Notifications.getExpoPushTokenAsync()).data;
     /* @end */
     console.log(token);
     this.setState({ expoPushToken: token });
@@ -59,6 +60,7 @@ registerForPushNotificationsAsync = async () => {
 </Tab>
 <Tab label="Legacy notifications">
 
+<!-- prettier-ignore -->
 ```javascript
 registerForPushNotificationsAsync = async () => {
   /* @info We should also make sure the app is running on a physical device, since push notifications won't work on a simulator. */
@@ -103,7 +105,7 @@ registerForPushNotificationsAsync = async () => {
 
 If you're using the bare workflow, or building a standalone app with `expo build:ios` or `expo build:android`, you'll also need to configure the necessary push credentials.
 
-For Android, both managed and bare workflow users need to follow our [FCM setup guide](../using-fcm/), it should only take about 5 minutes.
+For Android, both managed and bare workflow users need to follow our [FCM setup guide](using-fcm.md), it should only take about 5 minutes.
 
 For iOS, the managed workflow takes care of push notification credentials automatically when you run `expo build:ios`. In the bare workflow, you'll need to use the `expo credentials:manager` command to upload your push notification credentials to Expo's servers. Follow these steps:
 

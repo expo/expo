@@ -5,7 +5,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-39/packages/expo-localizat
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-localization`** allows you to Localize your app, customizing the experience for specific regions, languages, or cultures. It also provides access to the locale data on the native device.
 Using the popular library [`i18n-js`](https://github.com/fnando/i18n-js) with `expo-localization` will enable you to create a very accessible experience for users.
@@ -45,7 +44,7 @@ Let's make our app support English and Japanese.
 - You may want to refrain from localizing text for certain things, like names. In this case you can define them _once_ in your default language and reuse them with `i18n.fallbacks = true;`.
 - When a user changes the device's language, your app will reset. This means you can set the language once, and don't need to update any of your React components to account for the language changes.
 - On iOS, you can add `"CFBundleAllowMixedLocalizations": true` to your `ios.infoPlist` property [in your app.json](https://docs.expo.io/workflow/configuration/#ios) so that your app supports the retrieval of localized strings from frameworks.
-  - This will allow you to translate app metadata, including the homescreen display name! Read [here](../../distribution/app-stores#localizing-your-ios-app) for details.
+  - This will allow you to translate app metadata, including the homescreen display name! Read [here](../../../distribution/app-stores.md#localizing-your-ios-app) for details.
 
 ### Full Demo
 
@@ -79,10 +78,6 @@ function App() {
 ```ts
 import * as Localization from 'expo-localization';
 ```
-
-<TableOfContentSection title='Constants' contents={['Localization.locale', 'Localization.locales', 'Localization.region', 'Localization.isoCurrencyCodes', 'Localization.timezone', 'Localization.isRTL']} />
-
-<TableOfContentSection title='Methods' contents={['Localization.getLocalizationAsync()']} />
 
 ## Constants
 

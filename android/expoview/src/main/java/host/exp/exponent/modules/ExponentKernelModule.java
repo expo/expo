@@ -4,6 +4,7 @@ package host.exp.exponent.modules;
 
 import androidx.annotation.Nullable;
 
+import com.facebook.internal.BundleJSONConverter;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -32,7 +33,6 @@ import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
-import host.exp.exponent.utils.JSONBundleConverter;
 
 public class ExponentKernelModule extends ReactContextBaseJavaModule implements ExponentKernelModuleInterface {
 
@@ -120,7 +120,7 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
     String sessionString = mExponentSharedPreferences.getString(ExponentSharedPreferences.EXPO_AUTH_SESSION);
     try {
       JSONObject sessionJsonObject = new JSONObject(sessionString);
-      WritableMap session = Arguments.fromBundle(JSONBundleConverter.JSONToBundle(sessionJsonObject));
+      WritableMap session = Arguments.fromBundle(BundleJSONConverter.convertToBundle(sessionJsonObject));
       promise.resolve(session);
     } catch (Exception e) {
       promise.resolve(null);

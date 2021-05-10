@@ -1,11 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
-import { AppLoading } from 'expo';
+import AppLoading from 'expo-app-loading';
 import { Asset } from 'expo-asset';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { connect } from 'react-redux';
 
-@connect()
 class App extends React.Component {
   state = { assetsAreLoaded: false };
 
@@ -41,7 +40,7 @@ class App extends React.Component {
   };
 }
 
-export default App;
+export default connect()(App);
 
 const styles = StyleSheet.create({
   container: {

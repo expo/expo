@@ -10,7 +10,6 @@ on:
         description: 'type "release-google-play" to confirm release to Google Play'
         required: false
   pull_request:
-    branches: [ master ]
     paths:
       - .github/workflows/client-android.yml
       - secrets/**
@@ -20,7 +19,7 @@ on:
       - .ruby-version
       - yarn.lock
   push:
-    branches: [ master, sdk-* ]
+    branches: [master, sdk-*]
     paths:
       - .github/workflows/client-android.yml
       - secrets/**
@@ -40,7 +39,7 @@ jobs:
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
@@ -48,19 +47,8 @@ jobs:
             ${{ runner.os }}-yarn-
       - run: yarn install --frozen-lockfile
       - uses: ruby/setup-ruby@v1
-      - name: bundler cache
-        uses: actions/cache@v1
         with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('.ruby-version') }}-${{ hashFiles('Gemfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-gems-
-      - run: echo "::set-env name=BUNDLE_BIN::$(pwd)/.direnv/bin"
-      - name: install fastlane
-        run: |
-          bundle config path vendor/bundle
-          bundle install --jobs 4 --retry 3
-      - run: echo "::add-path::$BUNDLE_BIN"
+          bundler-cache: true
       - run: sudo apt-get install git-crypt
       - name: decrypt secrets if possible
         env:
@@ -71,7 +59,7 @@ jobs:
           else
             git crypt unlock <(echo $GIT_CRYPT_KEY_BASE64 | base64 --decode)
           fi
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
@@ -88,6 +76,7 @@ jobs:
         if: steps.cache-android-ndk.outputs.cache-hit != 'true'
         run: |
           sudo $ANDROID_HOME/tools/bin/sdkmanager --install "ndk;19.2.5345600"
+      - run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: Build APK
         env:
           ANDROID_KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
@@ -120,12 +109,14 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: AKIAJ3SWUQ4QLNQC7FXA
           AWS_SECRET_ACCESS_KEY: ${{ secrets.android_client_build_aws_secret_key }}
+          EXPO_VERSIONS_SECRET: ${{ secrets.expo_versions_secret }}
       - name: Upload APK to Google Play and release to production
         if: ${{ github.event.inputs.releaseGooglePlay == 'release-google-play' }}
         run: fastlane android prod_release
         env:
           SUPPLY_JSON_KEY_DATA: ${{ secrets.SUPPLY_JSON_KEY_DATA }}
-      - uses: 8398a7/action-slack@v3
+      - name: 🔔 Notify on Slack
+        uses: 8398a7/action-slack@v3
         if: failure() && (github.event.ref == 'refs/heads/master' || startsWith(github.event.ref, 'refs/heads/sdk-'))
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -133,5 +124,5 @@ jobs:
         with:
           channel: '#platform-android'
           status: ${{ job.status }}
-          fields: author,job,message,ref
-          author_name: client android build
+          fields: job,commit,ref,eventName,author,took
+          author_name: Expo Go (Android)

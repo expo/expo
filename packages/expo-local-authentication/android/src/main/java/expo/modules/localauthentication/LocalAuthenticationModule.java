@@ -39,6 +39,10 @@ public class LocalAuthenticationModule extends ExportedModule {
   private static final int AUTHENTICATION_TYPE_FACIAL_RECOGNITION = 2;
   private static final int AUTHENTICATION_TYPE_IRIS = 3;
 
+  private static final int SECURITY_LEVEL_NONE = 0;
+  private static final int SECURITY_LEVEL_SECRET = 1;
+  private static final int SECURITY_LEVEL_BIOMETRIC = 2;
+
   private final BiometricPrompt.AuthenticationCallback mAuthenticationCallback =
           new BiometricPrompt.AuthenticationCallback () {
             @Override
@@ -82,7 +86,7 @@ public class LocalAuthenticationModule extends ExportedModule {
 
   @ExpoMethod
   public void supportedAuthenticationTypesAsync(final Promise promise) {
-    int result = mBiometricManager.canAuthenticate();
+    int result = mBiometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK);
     List<Integer> results = new ArrayList<>();
     if (result == BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE) {
       promise.resolve(results);
@@ -113,14 +117,29 @@ public class LocalAuthenticationModule extends ExportedModule {
 
   @ExpoMethod
   public void hasHardwareAsync(final Promise promise) {
-    int result = mBiometricManager.canAuthenticate();
+    int result = mBiometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK);
     promise.resolve(result != BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE);
   }
 
   @ExpoMethod
   public void isEnrolledAsync(final Promise promise) {
-    int result = mBiometricManager.canAuthenticate();
+    int result = mBiometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK);
     promise.resolve(result == BiometricManager.BIOMETRIC_SUCCESS);
+  }
+
+  @ExpoMethod
+  public void getEnrolledLevelAsync(final Promise promise) {
+    int level = SECURITY_LEVEL_NONE;
+
+    if (isDeviceSecure()) {
+      level = SECURITY_LEVEL_SECRET;
+    }
+
+    int result = mBiometricManager.canAuthenticate();
+    if (result == BiometricManager.BIOMETRIC_SUCCESS) {
+      level = SECURITY_LEVEL_BIOMETRIC;
+    }
+    promise.resolve(level);
   }
 
   @ExpoMethod
@@ -191,13 +210,21 @@ public class LocalAuthenticationModule extends ExportedModule {
         mBiometricPrompt = new BiometricPrompt(fragmentActivity, executor, mAuthenticationCallback);
 
         BiometricPrompt.PromptInfo.Builder promptInfoBuilder = new BiometricPrompt.PromptInfo.Builder()
-                .setDeviceCredentialAllowed(!disableDeviceFallback)
                 .setTitle(promptMessage);
-        if (cancelLabel != null && disableDeviceFallback) {
+        if (disableDeviceFallback) {
           promptInfoBuilder.setNegativeButtonText(cancelLabel);
+        } else {
+          promptInfoBuilder.setAllowedAuthenticators(
+                  BiometricManager.Authenticators.BIOMETRIC_WEAK
+                | BiometricManager.Authenticators.DEVICE_CREDENTIAL
+          );
         }
         BiometricPrompt.PromptInfo promptInfo = promptInfoBuilder.build();
-        mBiometricPrompt.authenticate(promptInfo);
+        try {
+          mBiometricPrompt.authenticate(promptInfo);
+        } catch (NullPointerException ex) {
+          promise.reject("E_INTERNAL_ERRROR", "Canceled authentication due to an internal error");
+        }
       }
     });
   }
@@ -208,13 +235,31 @@ public class LocalAuthenticationModule extends ExportedModule {
       @Override
       public void run() {
         safeCancel();
+        promise.resolve(null);
       }
     });
+  }
+
+  private boolean isDeviceSecure() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      return getKeyguardManager().isDeviceSecure();
+    } else {
+      // NOTE: `KeyguardManager#isKeyguardSecure()` considers SIM locked state,
+      // but it will be ignored on falling-back to device credential on biometric authentication.
+      // That means, setting level to `SECURITY_LEVEL_SECRET` might be misleading for some users.
+      // But there is no equivalent APIs prior to M.
+      // `andriodx.biometric.BiometricManager#canAuthenticate(int)` looks like an alternative,
+      // but specifying `BiometricManager.Authenticators.DEVICE_CREDENTIAL` alone is not
+      // supported prior to API 30.
+      // https://developer.android.com/reference/androidx/biometric/BiometricManager#canAuthenticate(int)
+      return getKeyguardManager().isKeyguardSecure();
+    }
   }
 
   private void safeCancel() {
     if (mBiometricPrompt != null && mIsAuthenticating) {
       mBiometricPrompt.cancelAuthentication();
+      mIsAuthenticating = false;
     }
   }
 
@@ -251,7 +296,7 @@ public class LocalAuthenticationModule extends ExportedModule {
   }
 
   private KeyguardManager getKeyguardManager() {
-    return (KeyguardManager) getCurrentActivity().getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE);
+    return (KeyguardManager) getContext().getSystemService(Context.KEYGUARD_SERVICE);
   }
 
   private Activity getCurrentActivity() {

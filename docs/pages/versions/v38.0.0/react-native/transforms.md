@@ -157,4 +157,4 @@ transform([{ skewX: '45deg' }]);
 
 ### `decomposedMatrix`, `rotation`, `scaleX`, `scaleY`, `transformMatrix`, `translateX`, `translateY`
 
-> **Deprecated.** Use the [`transform`](../transforms/#transform) prop instead.
+> **Deprecated.** Use the [`transform`](transforms.md#transform) prop instead.

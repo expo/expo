@@ -5,7 +5,6 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-cellular'
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 **`expo-cellular`** provides information about the user’s cellular service provider, such as its unique identifier, cellular connection type, and whether it allows VoIP calls on its network.
 
@@ -20,14 +19,6 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 ```js
 import * as Cellular from 'expo-cellular';
 ```
-
-<TableOfContentSection title='Constants' contents={['Cellular.allowsVoip', 'Cellular.carrier', 'Cellular.isoCountryCode', 'Cellular.mobileCountryCode', 'Cellular.mobileNetworkCode']} />
-
-<TableOfContentSection title='Methods' contents={['Cellular.getCellularGenerationAsync()']} />
-
-<TableOfContentSection title='Enum Types' contents={['Cellular.CellularGeneration']} />
-
-<TableOfContentSection title='Error Codes' contents={[]} />
 
 ## Constants
 

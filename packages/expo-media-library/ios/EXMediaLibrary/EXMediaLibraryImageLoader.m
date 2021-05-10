@@ -7,7 +7,9 @@
 #if __has_include(<React/RCTImageURLLoader.h>)
 
 #import <Photos/Photos.h>
+#import <React/RCTDefines.h>
 #import <React/RCTUtils.h>
+#import <React/RCTBridgeModule.h>
 #import <EXMediaLibrary/EXMediaLibraryImageLoader.h>
 
 @implementation EXMediaLibraryImageLoader

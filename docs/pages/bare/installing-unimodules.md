@@ -40,6 +40,12 @@ If you need to exclude some of the unimodules that you are not using but they go
 </p>
 </details>
 
+<br />
+
+Save all of your changes. In Xcode, update the iOS Deployment Target under `Target → Build Settings → Deployment` to `iOS 11.0`. The last step is to install the project's CocoaPods again in order to pull in unimodules that are detected by `use_unimodules!` directive that we added to the `Podfile`:
+
+<InstallSection packageName="react-native-unimodules" cmd={["npx pod-install"]} hideBareInstructions />
+
 <div style={{marginTop: 50}} />
 
 ## Configuration for Android
@@ -85,8 +91,8 @@ import { Constants } from 'react-native-unimodules';
 console.log(Constants.systemFonts);
 ```
 
-It's possible that you will not have to use any of the code provided by this package directly, it may be used only by other Expo modules that you install. You will likely want to use something like [FileSystem](/versions/latest/sdk/filesystem/) or [Permissions](/versions/latest/sdk/permissions/), and to do that you can import the following modules like so:
+It's possible that you will not have to use any of the code provided by this package directly, it may be used only by other Expo modules that you install. You will likely want to use something like [FileSystem](/versions/latest/sdk/filesystem/), and to do that you can import the following modules like so:
 
 ```js
-import { Asset, Constants, FileSystem, Permissions } from 'react-native-unimodules';
+import { Asset, Constants, FileSystem } from 'react-native-unimodules';
 ```

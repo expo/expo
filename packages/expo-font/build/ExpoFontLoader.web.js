@@ -1,9 +1,8 @@
-import { CodedError } from '@unimodules/core';
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import { CodedError, Platform } from '@unimodules/core';
 import FontObserver from 'fontfaceobserver';
 import { FontDisplay } from './Font.types';
 function getFontFaceStyleSheet() {
-    if (!canUseDOM) {
+    if (!Platform.isDOMAvailable) {
         return null;
     }
     const styleSheet = getStyleElement();
@@ -37,7 +36,7 @@ export default {
         return 'ExpoFontLoader';
     },
     async unloadAllAsync() {
-        if (!canUseDOM)
+        if (!Platform.isDOMAvailable)
             return;
         const element = document.getElementById(ID);
         if (element && element instanceof HTMLStyleElement) {
@@ -54,7 +53,7 @@ export default {
         }
     },
     async loadAsync(fontFamilyName, resource) {
-        if (!canUseDOM) {
+        if (!Platform.isDOMAvailable) {
             return;
         }
         const canInjectStyle = document.head && typeof document.head.appendChild === 'function';

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import FilePlayer from 'react-player/lib/players/FilePlayer';
 import VisibilitySensor from 'react-visibility-sensor';
 
@@ -9,7 +9,7 @@ function mobileAndTabletCheck() {
   }
 
   let check = false;
-  (function(a) {
+  (function (a) {
     if (
       /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(
         a
@@ -25,6 +25,17 @@ function mobileAndTabletCheck() {
 
 const isMobileOrTablet = mobileAndTabletCheck();
 
+const getInitialMarginBottom = (spaceAfter: Props['spaceAfter']) => {
+  if (typeof spaceAfter === 'undefined') {
+    return 30;
+  } else if (typeof spaceAfter === 'number') {
+    return spaceAfter;
+  } else if (spaceAfter) {
+    return 50;
+  }
+  return 0;
+};
+
 type Props = {
   controls?: any;
   spaceAfter?: boolean | number;
@@ -33,108 +44,69 @@ type Props = {
   loop?: boolean;
 };
 
-type State = {
-  forceShowControls: boolean;
-  hover: boolean;
+const Video: React.FC<Props> = ({ controls, spaceAfter, url, file, loop = true }: Props) => {
+  const [hover, setHover] = useState(false);
+  const [forceShowControls, setForceShowControls] = useState(false);
+  const marginBottom = getInitialMarginBottom(spaceAfter);
+
+  return (
+    <div
+      onClick={() => {
+        if (typeof controls === 'undefined' && !forceShowControls) {
+          setForceShowControls(true);
+        }
+      }}
+      style={hover ? { cursor: 'pointer' } : undefined}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}>
+      <VisibilitySensor partialVisibility={isMobileOrTablet}>
+        {({ isVisible }) => (
+          <div
+            style={{
+              position: 'relative',
+              width: '100%',
+              height: 400,
+              backgroundColor: '#000',
+              marginBottom,
+            }}>
+            <FilePlayer
+              url={isVisible || !isMobileOrTablet ? url || `/static/videos/${file}` : null}
+              className="react-player"
+              width="100%"
+              height="400px"
+              style={{
+                outline: 'none',
+                backgroundColor: '#000',
+                borderRadius: 5,
+              }}
+              muted
+              playing={isVisible}
+              controls={typeof controls === 'undefined' ? forceShowControls : controls}
+              playsinline
+              loop={loop}
+            />
+            {isMobileOrTablet ? null : (
+              <div
+                style={{
+                  pointerEvents: 'none',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  bottom: 0,
+                  right: 0,
+                  backgroundColor: '#000',
+                  width: '100%',
+                  height: 400,
+                  opacity: isVisible ? 0 : 0.7,
+                  transition: 'opacity 0.5s ease-out',
+                }}
+              />
+            )}
+          </div>
+        )}
+      </VisibilitySensor>
+    </div>
+  );
 };
 
-export default class Video extends React.Component<Props, State> {
-  static defaultProps = {
-    loop: true,
-  };
-
-  state = {
-    forceShowControls: false,
-    hover: false,
-  };
-
-  private handleClick = () => {
-    if (typeof this.props.controls === 'undefined' && !this.state.forceShowControls) {
-      this.setState({ forceShowControls: true });
-    }
-  };
-
-  private handleMouseEnter = () => {
-    this.setState({ hover: true });
-  };
-
-  private handleMouseLeave = () => {
-    this.setState({ hover: false });
-  };
-
-  render() {
-    const { spaceAfter } = this.props;
-    let marginBottom = 0;
-
-    if (typeof spaceAfter === 'undefined') {
-      marginBottom = 30;
-    } else if (typeof spaceAfter === 'number') {
-      marginBottom = spaceAfter;
-    } else if (spaceAfter) {
-      marginBottom = 50;
-    }
-
-    return (
-      <div
-        onClick={this.handleClick}
-        style={this.state.hover ? { cursor: 'pointer' } : undefined}
-        onMouseEnter={this.handleMouseEnter}
-        onMouseLeave={this.handleMouseLeave}>
-        <VisibilitySensor partialVisibility={isMobileOrTablet}>
-          {({ isVisible }) => (
-            <div
-              style={{
-                position: 'relative',
-                width: '100%',
-                height: 400,
-                backgroundColor: 'black',
-                marginBottom,
-              }}>
-              <FilePlayer
-                url={
-                  isVisible || !isMobileOrTablet
-                    ? this.props.url || `/static/videos/${this.props.file}`
-                    : null
-                }
-                className="react-player"
-                width="100%"
-                height="400px"
-                style={{
-                  outline: 'none',
-                  backgroundColor: '#000',
-                  borderRadius: 5,
-                }}
-                muted
-                playing={isVisible}
-                controls={
-                  typeof this.props.controls === 'undefined'
-                    ? this.state.forceShowControls
-                    : this.props.controls
-                }
-                playsinline
-                loop={this.props.loop}
-              />
-              {isMobileOrTablet ? null : (
-                <div
-                  style={{
-                    pointerEvents: 'none',
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    bottom: 0,
-                    right: 0,
-                    backgroundColor: 'black',
-                    width: '100%',
-                    height: 400,
-                    opacity: isVisible ? 0 : 0.7,
-                    transition: 'opacity 0.5s ease-out',
-                  }}
-                />
-              )}
-            </div>
-          )}
-        </VisibilitySensor>
-      </div>
-    );
-  }
-}
+export default Video;

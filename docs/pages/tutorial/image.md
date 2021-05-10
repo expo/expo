@@ -2,23 +2,23 @@
 title: Adding an image
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import SnackInline from '~/components/plugins/SnackInline';
 
 Let's imagine that our designer has provided us with a beautiful logo:
 
-<img src="/static/images/tutorial/logo.png" style={{maxWidth: 305, maxHeight: 159}} />
 
-<br />
-<br />
+<ImageSpotlight alt="A pretty bad logo with the text 'Image Share' and the emoji of the sun behind mountains" src="/static/images/tutorial/logo.png" style={{maxWidth: 305, maxHeight: 159}} />
 
 Save this image to the `assets` directory inside of your project and call it `logo.png`.
 
-> 💡 An "asset" is any file that your project uses that is not code. Images, videos, sounds, and fonts are all considered to be assets. 
+> 💡 An "asset" is any file that your project uses that is not code. Images, videos, sounds, and fonts are all considered to be assets.
 
 ## Displaying the image in the app
 
 We have displayed text using the `Text` component from React Native, and we can display the image using the `Image` component. When creating an `Image` component, you will need to explicitly specify a width and height, or the image won't be visible.
 
+<!-- prettier-ignore -->
 ```js
 import React from 'react';
 import { /* @info Add the Image component to your list of imports */ Image, /* @end */ StyleSheet, Text, View } from 'react-native';
@@ -56,6 +56,7 @@ Sometimes you will want to load images from the web rather than from your projec
 
 <SnackInline>
 
+<!-- prettier-ignore -->
 ```js
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
@@ -96,6 +97,7 @@ Let's organize our code a bit by moving our styles into one place so our code is
 
 <SnackInline>
 
+<!-- prettier-ignore -->
 ```js
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
@@ -140,4 +142,4 @@ const styles = StyleSheet.create({
 
 You might notice that we also added some new styles here to make things look a bit prettier. We used `marginBottom` on the logo to space things out between the logo and the instructions, and we added `marginHorizontal` to give our instructions some spacing around the edges of the screen.
 
-Time to make things interactive. [Let's move on to creating a button](../../tutorial/button/).
+Time to make things interactive. [Let's move on to creating a button](../tutorial/button.md).

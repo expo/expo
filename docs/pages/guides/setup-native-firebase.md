@@ -3,9 +3,7 @@ title: Using the native Firebase SDK
 sidebar_title: Native Firebase
 ---
 
-
-It's possible to use Firebase through the web SDK, built only in JavaScript, or the native SDK, which is built in native code for iOS and Android. The web SDK only provides access to some Firebase features and the most notable limitation is the lack of support for browser features used in Firebase Analytics or the redirect URI scheme used for phone authentication. If this is important for you, it may make sense to install the native SDK in your app. 
-
+It's possible to use Firebase through the web SDK, built only in JavaScript, or the native SDK, which is built in native code for iOS and Android. The web SDK only provides access to some Firebase features and the most notable limitation is the lack of support for browser features used in Firebase Analytics or the redirect URI scheme used for phone authentication. If this is important for you, it may make sense to install the native SDK in your app.
 
 ## Create Firebase project
 
@@ -13,12 +11,10 @@ If you have not done so already, create a Firebase project for your app by click
 
 This will guide you through a series of steps to create your own Firebase project.
 
-
 ## Managed Workflow Setup
 
 Some (but not all) native Firebase features can be used with the Managed Workflow. The most notable native feature is Firebase Analytics,
 which is otherwise unavailable in react-native using the Firebase JavaScript SDK.
-
 
 ### Android
 
@@ -69,6 +65,7 @@ which is otherwise unavailable in react-native using the Firebase JavaScript SDK
         "firebase": {
           "appId": "xxxxxxxxxxxxx:web:xxxxxxxxxxxxxxxx",
           "apiKey": "AIzaXXXXXXXX-xxxxxxxxxxxxxxxxxxx",
+          "projectId": "my-awesome-project-id",
           ...
           "measurementId": "G-XXXXXXXXXXXX"
         }
@@ -84,18 +81,18 @@ In the bare workflow, the firebase configuration needs to be added according to 
 for [iOS](https://firebase.google.com/docs/ios/setup) and [Android](https://firebase.google.com/docs/android/setup).
 Below you will find a tailored instruction for use with react-native and the Expo Bare Workflow.
 
-You are free to use any native Firebase packages such as [react-native-firebase](https://invertase.io/oss/react-native-firebase/) in the bare workflow.
+You are free to use any native Firebase packages such as [react-native-firebase](https://rnfirebase.io/) in the bare workflow.
 
 ### Android
 
 - Open **Project overview** in the Firebase console and click on the Android icon or + button to **Add Firebase to your Android app**.
-- **Make sure that the Android package name is the same as the value of `applicationId` in your `android/app/build.gradle `.**
+- **Make sure that the Android package name is the same as the value of `applicationId` in your `android/app/build.gradle`.**
 - Register the app & download the config file by clicking **"Download google-services.json"** to this location `/android/app/google-services.json`.
 - Import the `google-services` plugin inside of your `android/build.gradle` file:
   ```groovy
   buildscript {
       dependencies {
-          classpath 'com.google.gms:google-services:4.2.0'
+          classpath 'com.google.gms:google-services:4.3.5'
       }
   }
   ```
@@ -145,7 +142,8 @@ After following the iOS and Android setup, you can optionally configure your pro
 
   # The community version of use_unimodules (used for react-native-firebase)
   use_native_modules!
-  ```
+```
+
 - Install the pods on iOS
 
-Continue further on the [react-native-firebase](https://invertase.io/oss/react-native-firebase/) website.
+Continue further on the [react-native-firebase](https://rnfirebase.io/) website.

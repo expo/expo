@@ -22,7 +22,6 @@ import org.unimodules.interfaces.barcodescanner.BarCodeScanner;
 import org.unimodules.interfaces.barcodescanner.BarCodeScannerProvider;
 import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
 import org.unimodules.interfaces.barcodescanner.BarCodeScannerSettings;
-import org.unimodules.interfaces.camera.CameraViewInterface;
 import org.unimodules.interfaces.facedetector.FaceDetector;
 import org.unimodules.interfaces.facedetector.FaceDetectorProvider;
 import org.unimodules.interfaces.permissions.Permissions;
@@ -44,6 +43,7 @@ import expo.modules.camera.tasks.PictureSavedDelegate;
 import expo.modules.camera.tasks.ResolveTakenPictureAsyncTask;
 import expo.modules.camera.utils.FileSystemUtils;
 import expo.modules.camera.utils.ImageDimensions;
+import expo.modules.interfaces.camera.CameraViewInterface;
 
 public class ExpoCameraView extends CameraView implements LifecycleEventListener, BarCodeScannerAsyncTaskDelegate, FaceDetectorAsyncTaskDelegate, PictureSavedDelegate, CameraViewInterface {
   private static final String MUTE_KEY = "mute";
@@ -51,6 +51,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
   private static final String FAST_MODE_KEY = "fastMode";
   private static final String MAX_DURATION_KEY = "maxDuration";
   private static final String MAX_FILE_SIZE_KEY = "maxFileSize";
+  private static final String VIDEO_BITRATE_KEY = "videoBitrate";
 
   private Queue<Promise> mPictureTakenPromises = new ConcurrentLinkedQueue<>();
   private Map<Promise, Map<String, Object>> mPictureTakenOptions = new ConcurrentHashMap<>();
@@ -229,6 +230,10 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
       CamcorderProfile profile = CamcorderProfile.get(getCameraId(), CamcorderProfile.QUALITY_HIGH);
       if (options.get(QUALITY_KEY) != null) {
         profile = CameraViewHelper.getCamcorderProfile(getCameraId(), ((Double) options.get(QUALITY_KEY)).intValue());
+      }
+
+      if (options.get(VIDEO_BITRATE_KEY) != null) {
+        profile.videoBitRate = ((Double) options.get(VIDEO_BITRATE_KEY)).intValue();
       }
 
       Boolean muteValue = (Boolean) options.get(MUTE_KEY);

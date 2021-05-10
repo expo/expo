@@ -1,7 +1,6 @@
 import * as React from 'react';
 
 import ExpoAPIIcon from '../components/ExpoAPIIcon';
-import { Screens } from '../navigation/ExpoComponents';
 import ComponentListScreen from './ComponentListScreen';
 
 const screens = [
@@ -11,7 +10,7 @@ const screens = [
   'BlurView',
   'Button',
   'Camera',
-  'CheckBox',
+  'Checkbox',
   'DateTimePicker',
   'DrawerLayoutAndroid',
   'FacebookAds',
@@ -32,8 +31,7 @@ const screens = [
   'ProgressBarAndroid',
   'ProgressViewIOS',
   'QRCode',
-  'ReanimatedImagePreview',
-  'ReanimatedProgress',
+  'Reanimated',
   'SVG',
   'Screens',
   'ScrollView',
@@ -53,7 +51,8 @@ const screens = [
 export const ScreenItems = screens.map(name => ({
   name,
   route: `/components/${name.toLowerCase()}`,
-  isAvailable: !!Screens[name],
+  // isAvailable: !!Screens[name],
+  isAvailable: true,
 }));
 
 export default function ExpoComponentsScreen() {

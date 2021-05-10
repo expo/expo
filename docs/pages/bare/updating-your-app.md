@@ -13,7 +13,7 @@ If possible, we highly recommend starting with a boilerplate project that has `e
 
 To install the `expo-updates` module in an existing bare workflow app, follow the [installation instructions in the package README](https://github.com/expo/expo/blob/master/packages/expo-updates/README.md#installation).
 
-Additionally, you'll need to host your updates and their respective assets (JavaScript bundles, images, fonts, etc.) on a server somewhere that deployed client apps can access. `expo-cli` provides a couple of easy options for this: (1) `expo export` creates prebuilt update packages that you can upload to any static hosting site (e.g. GitHub Pages), and (2) `expo publish` packages and deploys your updates to Expo's updates service, which is part of the Developer Services we offer.
+Additionally, you'll need to host your updates and their respective assets (JavaScript bundles, images, fonts, etc.) on a server somewhere that deployed client apps can access. `expo-cli` provides a couple of easy options for this: (1) `expo export` creates prebuilt update packages that you can upload to any static hosting site (e.g. GitHub Pages), and (2) `expo publish` packages and deploys your updates to Expo's updates service, which is part of the services we offer.
 
 You can also run your own server to host your updates, provided it conforms to the protocol `expo-updates` expects. You can read more about these requirements below.
 
@@ -21,7 +21,7 @@ You can also run your own server to host your updates, provided it conforms to t
 
 > If you're using `expo export` or `expo publish`, you're welcome to skip this section as it will be taken care of for you!
 
-The `expo-updates` implementation requires a single URL (provided at build-time) to which it will make requests for new updates. These requests may happen when users launch your app in production (depending on your app's configuration settings) and when your app calls [`Updates.fetchUpdateAsync()`](/versions/latest/sdk/updates/#updatesfetchupdateasync). Requests will be sent with the following headers:
+The `expo-updates` implementation requires a single URL (provided at build-time) to which it will make requests for new updates. These requests may happen when users launch your app in production (depending on your app's configuration settings) and when your app calls [`Updates.fetchUpdateAsync()`](../versions/latest/sdk/updates.md#updatesfetchupdateasync). Requests will be sent with the following headers:
 
 ```
 'Accept': 'application/expo+json,application/json',
@@ -33,15 +33,15 @@ The `expo-updates` implementation requires a single URL (provided at build-time)
 
 The response to these requests should be a manifest JSON object with metadata about the latest update that's compatible with the requesting app binary. (More on compatibility below.) The manifest should have at least the following fields:
 
-| Key | Type | Description |
-| --- | --- | --- |
-| `releaseId` | string | A UUID uniquely identifying this update. |
-| `commitTime` | string | A JavaScript Date string representing the time this update was committed/published. This is used to compare two updates to determine which is newest. |
-| `runtimeVersion` | object | An object with keys `ios` and `android` whose corresponding values are the [Runtime Version](#runtime-version) this update is compatible with. Required only if `sdkVersion` is not provided. |
-| `sdkVersion` | string | The Expo SDK version this update uses. Required only if `runtimeVersion` is not provided. |
-| `bundleUrl` | string | A URL pointing to the JavaScript bundle this metadata represents. |
-| `bundledAssets` | array | An array of asset filenames to download as part of this update. |
-| `assetUrlOverride` | string | Base URL from which to resolve all of the filenames listed in `bundledAssets`. |
+| Key                | Type   | Description                                                                                                                                                                                   |
+| ------------------ | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `releaseId`        | string | A UUID uniquely identifying this update.                                                                                                                                                      |
+| `commitTime`       | string | A JavaScript Date string representing the time this update was committed/published. This is used to compare two updates to determine which is newest.                                         |
+| `runtimeVersion`   | object | An object with keys `ios` and `android` whose corresponding values are the [Runtime Version](#runtime-version) this update is compatible with. Required only if `sdkVersion` is not provided. |
+| `sdkVersion`       | string | The Expo SDK version this update uses. Required only if `runtimeVersion` is not provided.                                                                                                     |
+| `bundleUrl`        | string | A URL pointing to the JavaScript bundle this metadata represents.                                                                                                                             |
+| `bundledAssets`    | array  | An array of asset filenames to download as part of this update.                                                                                                                               |
+| `assetUrlOverride` | string | Base URL from which to resolve all of the filenames listed in `bundledAssets`.                                                                                                                |
 
 `expo-updates` assumes that URLs for assets and JavaScript bundles are immutable; that is, if it has already downloaded an asset or bundle at a given URL, it will not attempt to re-download. Therefore, if you change any assets in your updates, you **must** host them at a different URL.
 
@@ -67,7 +67,7 @@ The Runtime Version expected by a given update must also be provided as a field 
 
 ### Release Channels
 
-Because the current implementation of the Expo updates service relies heavily on SDK version (a managed-workflow concept), if you're using `expo publish` you cannot yet use Runtime Version to manage compatibility of your updates and binaries. Instead, you can use [release channels](../../distribution/release-channels/). A typical workflow would be to create a new release channel for each new binary you build (or at least every new binary with an incompatible change in the native-JavaScript interface) by publishing to that new channel with `expo publish --release-channel <channel-name>`. After creating a build with this release channel name configured, you can continue to publish future updates to this same release channel as long as they remain compatible with that build. Only builds that were configured to use that release channel will receive those updates.
+Because the current implementation of the Expo updates service relies heavily on SDK version (a managed-workflow concept), if you're using `expo publish` you cannot yet use Runtime Version to manage compatibility of your updates and binaries. Instead, you can use [release channels](../distribution/release-channels.md). A typical workflow would be to create a new release channel for each new binary you build (or at least every new binary with an incompatible change in the native-JavaScript interface) by publishing to that new channel with `expo publish --release-channel <channel-name>`. After creating a build with this release channel name configured, you can continue to publish future updates to this same release channel as long as they remain compatible with that build. Only builds that were configured to use that release channel will receive those updates.
 
 ### Statically Hosted Updates
 
@@ -83,7 +83,7 @@ When you make a release build of your app, the build process will bundle your Ja
 
 Assets that you import in your JavaScript source can also be atomically downloaded as part of a published update. `expo-updates` will not consider an update "ready" and will not launch the update unless it has downloaded all required assets.
 
-If you use `expo-asset` in your project (included by default if you have the `expo` package installed), you can control which imported assets will be included as part of this atomic update by using the [assetBundlePatterns](../../workflow/configuration/) key in `app.json` to provide a list of paths in your project directory:
+If you use `expo-asset` in your project (included by default if you have the `expo` package installed), you can control which imported assets will be included as part of this atomic update by using the [assetBundlePatterns](../workflow/configuration.md) key in `app.json` to provide a list of paths in your project directory:
 
 ```
 "assetBundlePatterns": [
@@ -103,45 +103,45 @@ On iOS, these properties are set as keys in `Expo.plist` and on Android as `meta
 
 On Android, you may also define these properties at runtime by passing a `Map` as the second parameter of `UpdatesController.initialize()`. If provided, the values in this Map will override any values specified in `AndroidManifest.xml`. On iOS, you may set these properties at runtime by calling `[UpdatesController.sharedInstance setConfiguration:]` at any point _before_ calling `start` or `startAndShowLaunchScreen`, and the values in this dictionary will override Expo.plist.
 
-| iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
-| --- | --- | --- | --- | --- |
-| `EXUpdatesEnabled` | `enabled` | `expo.modules.updates.ENABLED` | `true` | ❌ |
+| iOS plist/dictionary key | Android Map key | Android meta-data name         | Default | Required? |
+| ------------------------ | --------------- | ------------------------------ | ------- | --------- |
+| `EXUpdatesEnabled`       | `enabled`       | `expo.modules.updates.ENABLED` | `true`  | ❌        |
 
 Whether updates are enabled. Setting this to `false` disables all update functionality, all module methods, and forces the app to load with the manifest and assets bundled into the app binary.
 
-| iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
-| --- | --- | --- | --- | --- |
-| `EXUpdatesURL` | `updateUrl` | `expo.modules.updates.EXPO_UPDATE_URL` | (none) | ✅ |
+| iOS plist/dictionary key | Android Map key | Android meta-data name                 | Default | Required? |
+| ------------------------ | --------------- | -------------------------------------- | ------- | --------- |
+| `EXUpdatesURL`           | `updateUrl`     | `expo.modules.updates.EXPO_UPDATE_URL` | (none)  | ✅        |
 
 The URL to the remote server where the app should check for updates. A request to this URL should return a valid manifest object for the latest available update that tells expo-updates how to fetch the JS bundle and other assets that comprise an update. (Example: for apps published with `expo publish`, this URL would be `https://exp.host/@username/slug`.)
 
-| iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
-| --- | --- | --- | --- | --- |
-| `EXUpdatesSDKVersion` | `sdkVersion` | `expo.modules.updates.EXPO_SDK_VERSION` | (none) | (exactly one of `sdkVersion` or `runtimeVersion` is required) |
+| iOS plist/dictionary key | Android Map key | Android meta-data name                  | Default | Required?                                                     |
+| ------------------------ | --------------- | --------------------------------------- | ------- | ------------------------------------------------------------- |
+| `EXUpdatesSDKVersion`    | `sdkVersion`    | `expo.modules.updates.EXPO_SDK_VERSION` | (none)  | (exactly one of `sdkVersion` or `runtimeVersion` is required) |
 
 The SDK version string to send under the `Expo-SDK-Version` header in the manifest request. Required for apps hosted on Expo's server.
 
-| iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
-| --- | --- | --- | --- | --- |
-| `EXUpdatesRuntimeVersion` | `runtimeVersion` | `expo.modules.updates.EXPO_RUNTIME_VERSION` | (none) | (exactly one of `sdkVersion` or `runtimeVersion` is required) |
+| iOS plist/dictionary key  | Android Map key  | Android meta-data name                      | Default | Required?                                                     |
+| ------------------------- | ---------------- | ------------------------------------------- | ------- | ------------------------------------------------------------- |
+| `EXUpdatesRuntimeVersion` | `runtimeVersion` | `expo.modules.updates.EXPO_RUNTIME_VERSION` | (none)  | (exactly one of `sdkVersion` or `runtimeVersion` is required) |
 
 The Runtime Version string to send under the `Expo-Runtime-Version` header in the manifest request.
 
-| iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
-| --- | --- | --- | --- | --- |
-| `EXUpdatesReleaseChannel` | `releaseChannel` | `expo.modules.updates.EXPO_RELEASE_CHANNEL` | `default` | ❌ |
+| iOS plist/dictionary key  | Android Map key  | Android meta-data name                      | Default   | Required? |
+| ------------------------- | ---------------- | ------------------------------------------- | --------- | --------- |
+| `EXUpdatesReleaseChannel` | `releaseChannel` | `expo.modules.updates.EXPO_RELEASE_CHANNEL` | `default` | ❌        |
 
 The release channel string to send under the `Expo-Release-Channel` header in the manifest request.
 
-| iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
-| --- | --- | --- | --- | --- |
-| `EXUpdatesCheckOnLaunch` | `checkOnLaunch` | `expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH` | `ALWAYS` | ❌ |
+| iOS plist/dictionary key | Android Map key | Android meta-data name                              | Default  | Required? |
+| ------------------------ | --------------- | --------------------------------------------------- | -------- | --------- |
+| `EXUpdatesCheckOnLaunch` | `checkOnLaunch` | `expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH` | `ALWAYS` | ❌        |
 
 The condition under which `expo-updates` should automatically check for (and download, if one exists) an update upon app launch. Possible values are `ALWAYS`, `NEVER` (if you want to exclusively control updates via this module's JS API), or `WIFI_ONLY` (if you want the app to automatically download updates only if the device is on an unmetered Wi-Fi connection when it launches).
 
-| iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
-| --- | --- | --- | --- | --- |
-| `EXUpdatesLaunchWaitMs` | `launchWaitMs` | `expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS` | `0` | ❌ |
+| iOS plist/dictionary key | Android Map key | Android meta-data name                             | Default | Required? |
+| ------------------------ | --------------- | -------------------------------------------------- | ------- | --------- |
+| `EXUpdatesLaunchWaitMs`  | `launchWaitMs`  | `expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS` | `0`     | ❌        |
 
 The number of milliseconds `expo-updates` should delay the app launch and stay on the splash screen while trying to download an update, before falling back to a previously downloaded version. Setting this to `0` will cause the app to always launch with a previously downloaded update and will result in the fastest app launch possible.
 
@@ -149,7 +149,7 @@ Some common configuration patterns are explained below:
 
 ### Automatic Updates
 
-By default, `expo-updates` will immediately launch your app with a previously downloaded (or embedded) update when a user opens your app from being closed. It will additionally check for updates asynchronously in the background, and will try to fetch the latest published version. If a new update is available, `expo-updates` will try to download it and notify the running JavaScript of its success or failure using [events](/versions/latest/sdk/updates/#updatesaddlistenereventlistener). A newly fetched update will be launched next time the user swipes closed and reopens the app; if you want to run it sooner, you can call [`Updates.reloadAsync`](/versions/latest/sdk/updates/#updatesreloadasync) in your application code at an appropriate time.
+By default, `expo-updates` will immediately launch your app with a previously downloaded (or embedded) update when a user opens your app from being closed. It will additionally check for updates asynchronously in the background, and will try to fetch the latest published version. If a new update is available, `expo-updates` will try to download it and notify the running JavaScript of its success or failure using [events](../versions/latest/sdk/updates.md#updatesaddlistenereventlistener). A newly fetched update will be launched next time the user swipes closed and reopens the app; if you want to run it sooner, you can call [`Updates.reloadAsync`](../versions/latest/sdk/updates.md#updatesreloadasync) in your application code at an appropriate time.
 
 You may also configure `expo-updates` to wait a specific amount of time to launch when a user opens the app by using the `launchWaitMs` setting. If a new update can be downloaded within this time, the new update will be launched right away, rather than waiting for the user to swipe closed and reopen the app. (Note, however, that if users have a slow network connection, your app can be delayed on the launch screen for as many milliseconds as `launchWaitMs`, so we recommend being conservative with this setting unless it's critically important for users to have the most recent update on each launch.) If no update is available, a previously downloaded update will be launched as soon as `expo-updates` is able to determine this.
 
@@ -161,7 +161,7 @@ It's also possible to turn off these automatic updates, and to instead control u
 
 Setting `checkOnLaunch` to `NEVER` will prevent `expo-updates` from automatically fetching the latest update every time your app is launched. Only the most recent cached version of your bundle will be loaded.
 
-You can then use the [`Updates`](/versions/latest/sdk/updates/) module included with this library to download new updates and, if appropriate, notify the user and reload the experience.
+You can then use the [`Updates`](../versions/latest/sdk/updates.md) module included with this library to download new updates and, if appropriate, notify the user and reload the experience.
 
 ```javascript
 try {

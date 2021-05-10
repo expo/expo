@@ -37,7 +37,6 @@ Generates completely random bytes using native implementations. The `byteCount` 
 
 - **randomBytes (_Uint8Array_)** -- An array of random bytes with the same length as the `byteCount`.
 
-
 ### `Random.getRandomBytesAsync(byteCount)`
 
 Generates completely random bytes using native implementations. The `byteCount` property is a `number` indicating the number of bytes to generate in the form of a `Uint8Array`.
@@ -49,4 +48,3 @@ Generates completely random bytes using native implementations. The `byteCount` 
 ## Returns
 
 - **randomBytes (_Promise&lt;Uint8Array&gt;_)** -- An array of random bytes with the same length as the `byteCount`.
-

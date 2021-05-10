@@ -10,7 +10,7 @@ The event subscriptions are called in reverse order (i.e. the last registered su
 - **If one subscription returns true,** then subscriptions registered earlier will not be called.
 - **If no subscription returns true or none are registered,** it programmatically invokes the default back button functionality to exit the app.
 
-> **Warning for modal users:** If your app shows an opened `Modal`, `BackHandler` will not publish any events ([see `Modal` docs](../modal/#onrequestclose)).
+> **Warning for modal users:** If your app shows an opened `Modal`, `BackHandler` will not publish any events ([see `Modal` docs](modal.md#onrequestclose)).
 
 ## Pattern
 

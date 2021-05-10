@@ -7,11 +7,10 @@ on:
         description: 'type "release-simulator" to confirm upload'
         required: false
   pull_request:
-    branches: [master]
     paths:
       - .github/workflows/client-ios.yml
       - ios/**
-      - tools/expotools/**
+      - tools/**
       - secrets/**
       - fastlane/**
       - Gemfile.lock
@@ -21,7 +20,7 @@ on:
     paths:
       - .github/workflows/client-ios.yml
       - ios/**
-      - tools/expotools/**
+      - tools/**
       - secrets/**
       - fastlane/**
       - Gemfile.lock
@@ -34,7 +33,6 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
-          lfs: true
       - run: brew install git-crypt
       - name: decrypt secrets if possible
         env:
@@ -45,23 +43,48 @@ jobs:
           else
             git crypt unlock <(echo $GIT_CRYPT_KEY_BASE64 | base64 --decode)
           fi
-      - run: echo "::add-path::$(pwd)/bin"
+      - run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: ♻️ Restore yarn cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: 🧶 Yarn install
+        run: yarn install --frozen-lockfile
+      - name: ♻️ Restore tools/node_modules from cache
+        uses: actions/cache@v2
+        with:
+          path: 'tools/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('tools/yarn.lock') }}
       - run: expotools ios-generate-dynamic-macros
       - uses: ruby/setup-ruby@v1
-      - name: bundler cache
-        uses: actions/cache@v1
         with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('.ruby-version') }}-${{ hashFiles('Gemfile.lock') }}
+          bundler-cache: true
+      - name: Restore ios/Pods from cache
+        uses: actions/cache@v2
+        with:
+          path: 'ios/Pods'
+          key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
           restore-keys: |
-            ${{ runner.os }}-gems-
-      - run: echo "::set-env name=BUNDLE_BIN::$(pwd)/.direnv/bin"
-      - run: echo "::add-path::$BUNDLE_BIN"
-      - name: install fastlane
-        run: |
-          bundle config path vendor/bundle
-          bundle install --jobs 4 --retry 3
-      - run: expotools client-build --platform ios
+            ${{ runner.os }}-pods-
+      - name: 🥥 Install CocoaPods in `ios`
+        run: pod install
+        working-directory: ios
+      - name: 🔎 Check which flavor to build
+        id: flavor
+        uses: dorny/paths-filter@v2
+        with:
+          filters: |
+            versioned:
+              - ios/versioned-react-native/**
+              - ios/Exponent/Versioned/**
+      - name: 🏗 Build Expo Go for simulator
+        run: expotools client-build --platform ios --flavor ${{ steps.flavor.outputs.versioned == 'true' && 'versioned' || 'unversioned' }}
         timeout-minutes: 120
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -78,7 +101,8 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           EXPO_VERSIONS_SECRET: ${{ secrets.EXPO_VERSIONS_SECRET }}
-      - uses: 8398a7/action-slack@v3
+      - name: 🔔 Notify on Slack
+        uses: 8398a7/action-slack@v3
         if: failure() && (github.event.ref == 'refs/heads/master' || startsWith(github.event.ref, 'refs/heads/sdk-'))
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -86,5 +110,5 @@ jobs:
         with:
           channel: '#platform-ios'
           status: ${{ job.status }}
-          fields: author,job,message,ref
-          author_name: client ios build
+          fields: job,commit,ref,eventName,author,took
+          author_name: Expo Go (iOS)

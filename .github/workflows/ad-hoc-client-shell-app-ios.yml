@@ -8,6 +8,10 @@ on:
         required: false
   schedule:
     - cron: '20 5 * * 2,4,6'
+  pull_request:
+    paths:
+      - .github/workflows/ad-hoc-client-shell-app-ios.yml
+      - .ruby-version
 
 jobs:
   build:
@@ -16,6 +20,8 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
+      - name: Switch to Xcode 12.1
+        run: sudo xcode-select --switch /Applications/Xcode_12.1.app
       - name: Get cache key of git lfs files
         id: git-lfs
         run: echo "::set-output name=sha256::$(git lfs ls-files | openssl dgst -sha256)"
@@ -24,27 +30,16 @@ jobs:
           path: .git/lfs
           key: ${{ steps.git-lfs.outputs.sha256 }}
       - run: git lfs pull
-      - run: echo "::add-path::$(pwd)/bin"
-      - run: echo "::set-env name=EXPO_ROOT_DIR::$(pwd)"
+      - run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - run: echo "EXPO_ROOT_DIR=$(pwd)" >> $GITHUB_ENV
       - name: Generate dynamic macros
         # Remove GoogleServices-Info because it has been stripped of all our secret keys
         # Will be generated later in the build process if the user provides their own ios.googleServicesFile
         run: expotools ios-generate-dynamic-macros --skip-template=GoogleService-Info.plist
       - uses: ruby/setup-ruby@v1
-      - run: echo "::set-env name=BUNDLE_BIN::$(pwd)/.direnv/bin"
-      - name: bundler cache
-        uses: actions/cache@v1
         with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('.ruby-version') }}-${{ hashFiles('Gemfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-gems-
-      - name: install fastlane
-        run: |
-          bundle config path vendor/bundle
-          bundle install --jobs 4 --retry 3
-      - run: echo "::add-path::$BUNDLE_BIN"
-      - uses: actions/cache@v1
+          bundler-cache: true
+      - uses: actions/cache@v2
         with:
           path: ios/Pods
           key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
@@ -72,7 +67,6 @@ jobs:
         with:
           name: fastlane-logs
           path: ~/Logs/fastlane
-      - run: brew install awscli
       - name: Upload shell app tarball to S3
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -84,16 +78,9 @@ jobs:
           echo "Release tarball uploaded to s3://exp-artifacts/${{ steps.tarball.outputs.filename }}"
           echo "You can deploy this by updating https://github.com/expo/turtle/tree/master/shellTarballs/ios/client"
           echo "Then follow the deployment instructions: https://github.com/expo/turtle-deploy"
-      - name: Set the description for slack message
-        if: ${{ github.event_name != 'push' }}
-        run: |
-          if [ ${{ github.event_name }} == 'schedule' ]; then
-            echo "::set-env name=SLACK_MESSAGE_DESCRIPTION::scheduled"
-          else
-            echo "::set-env name=SLACK_MESSAGE_DESCRIPTION::triggered by ${{ github.actor }}"
-          fi
-      - uses: 8398a7/action-slack@v3
-        if: always()
+      - name: 🔔 Notify on Slack
+        uses: 8398a7/action-slack@v3
+        if: always() && (github.event.ref == 'refs/heads/master')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_ios }}
@@ -101,4 +88,4 @@ jobs:
           channel: '#platform-ios'
           status: ${{ job.status }}
           fields: job,commit,ref,eventName,author,took
-          author_name: Ad-hoc iOS Client Shell App (${{ env.SLACK_MESSAGE_DESCRIPTION }})
+          author_name: Ad-hoc Client Shell App (iOS)

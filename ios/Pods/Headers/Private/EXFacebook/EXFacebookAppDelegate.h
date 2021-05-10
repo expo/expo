@@ -1,1 +1,0 @@
-../../../../../packages/expo-facebook/ios/EXFacebook/EXFacebookAppDelegate.h

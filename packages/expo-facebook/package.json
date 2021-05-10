@@ -1,6 +1,6 @@
 {
   "name": "expo-facebook",
-  "version": "9.0.0",
+  "version": "11.1.1",
   "description": "Expo universal module for Facebook SDK",
   "main": "build/Facebook.js",
   "types": "build/Facebook.d.ts",
@@ -37,6 +37,10 @@
     "@unimodules/core": "*"
   },
   "devDependencies": {
-    "expo-module-scripts": "~1.2.0"
+    "expo-module-scripts": "^2.0.0"
+  },
+  "dependencies": {
+    "@expo/config-plugins": "^1.0.22",
+    "unimodules-permissions-interface": "~6.2.0"
   }
 }

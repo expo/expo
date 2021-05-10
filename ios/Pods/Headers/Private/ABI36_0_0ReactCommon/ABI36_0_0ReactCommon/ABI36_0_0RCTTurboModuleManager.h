@@ -1,1 +1,0 @@
-../../../../../versioned-react-native/ABI36_0_0/ReactNative/ReactCommon/turbomodule/core/platform/ios/ABI36_0_0RCTTurboModuleManager.h

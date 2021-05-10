@@ -62,7 +62,14 @@ export async function getCameraRollPermissionsAsync(): Promise<MediaLibraryPermi
 export async function getMediaLibraryPermissionsAsync(
   writeOnly: boolean = false
 ): Promise<MediaLibraryPermissionResponse> {
-  return ExponentImagePicker.getMediaLibraryPermissionsAsync(writeOnly);
+  // due to a typo in iOS, we need to check on the typo too
+  // todo: remove this workaround for SDK 41
+  const imagePickerMethod =
+    typeof ExponentImagePicker.getMediaLibaryPermissionsAsync === 'function'
+      ? ExponentImagePicker.getMediaLibaryPermissionsAsync
+      : ExponentImagePicker.getMediaLibraryPermissionsAsync;
+
+  return imagePickerMethod(writeOnly);
 }
 
 export async function requestCameraPermissionsAsync(): Promise<CameraPermissionResponse> {
@@ -76,13 +83,20 @@ export async function requestCameraRollPermissionsAsync(): Promise<MediaLibraryP
   console.warn(
     'ImagePicker.requestCameraRollPermissionsAsync() is deprecated in favour of ImagePicker.requestMediaLibraryPermissionsAsync()'
   );
-  return ExponentImagePicker.requestMediaLibraryPermissionsAsync();
+  return requestMediaLibraryPermissionsAsync();
 }
 
 export async function requestMediaLibraryPermissionsAsync(
   writeOnly: boolean = false
 ): Promise<MediaLibraryPermissionResponse> {
-  return ExponentImagePicker.requestMediaLibraryPermissionsAsync(writeOnly);
+  // due to a typo in iOS, we need to check on the typo too
+  // todo: remove this workaround for SDK 41
+  const imagePickerMethod =
+    typeof ExponentImagePicker.requestMediaLibaryPermissionsAsync === 'function'
+      ? ExponentImagePicker.requestMediaLibaryPermissionsAsync
+      : ExponentImagePicker.requestMediaLibraryPermissionsAsync;
+
+  return imagePickerMethod(writeOnly);
 }
 
 export async function getPendingResultAsync(): Promise<

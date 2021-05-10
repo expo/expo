@@ -12,6 +12,9 @@ import android.provider.MediaStore;
 import android.provider.MediaStore.Files;
 import android.provider.MediaStore.Images.Media;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +25,9 @@ import abi39_0_0.org.unimodules.core.ModuleRegistry;
 import abi39_0_0.org.unimodules.core.Promise;
 import abi39_0_0.org.unimodules.core.interfaces.ExpoMethod;
 import abi39_0_0.org.unimodules.core.interfaces.services.EventEmitter;
+import abi39_0_0.org.unimodules.interfaces.constants.ConstantsInterface;
 import abi39_0_0.org.unimodules.interfaces.permissions.Permissions;
+import host.exp.exponent.utils.ToastHelper;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -51,6 +56,7 @@ public class MediaLibraryModule extends ExportedModule {
   private MediaStoreContentObserver mVideosObserver = null;
   private Context mContext;
   private ModuleRegistry mModuleRegistry;
+  private JSONObject mManifest;
 
   public MediaLibraryModule(Context context) {
     super(context);
@@ -94,6 +100,15 @@ public class MediaLibraryModule extends ExportedModule {
   @Override
   public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
+
+    ConstantsInterface constants = moduleRegistry.getModule(ConstantsInterface.class);
+    if (constants != null && constants.getConstants().containsKey("manifest")) {
+      try {
+        mManifest = new JSONObject((String) constants.getConstants().get("manifest"));
+      } catch (ClassCastException | JSONException exception) {
+        exception.printStackTrace();
+      }
+    }
   }
 
   @ExpoMethod
@@ -108,6 +123,8 @@ public class MediaLibraryModule extends ExportedModule {
 
   @ExpoMethod
   public void saveToLibraryAsync(String localUri, Promise promise) {
+    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("Saving assets to albums with expo-media-library", mManifest);
+
     if (isMissingWritePermission()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_WRITE_PERMISSION_MESSAGE);
       return;
@@ -119,6 +136,8 @@ public class MediaLibraryModule extends ExportedModule {
 
   @ExpoMethod
   public void createAssetAsync(String localUri, Promise promise) {
+    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("Creating assets with expo-media-library", mManifest);
+
     if (isMissingPermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
       return;
@@ -130,6 +149,8 @@ public class MediaLibraryModule extends ExportedModule {
 
   @ExpoMethod
   public void addAssetsToAlbumAsync(List<String> assetsId, String albumId, boolean copyToAlbum, Promise promise) {
+    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("Adding assets to albums with expo-media-library", mManifest);
+
     if (isMissingPermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
       return;
@@ -142,6 +163,8 @@ public class MediaLibraryModule extends ExportedModule {
 
   @ExpoMethod
   public void removeAssetsFromAlbumAsync(List<String> assetsId, String albumId, Promise promise) {
+    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("Removing assets from albums with expo-media-library", mManifest);
+
     if (isMissingPermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
       return;
@@ -153,6 +176,8 @@ public class MediaLibraryModule extends ExportedModule {
 
   @ExpoMethod
   public void deleteAssetsAsync(List<String> assetsId, Promise promise) {
+    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("Removing assets with expo-media-library", mManifest);
+
     if (isMissingPermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
       return;
@@ -198,6 +223,8 @@ public class MediaLibraryModule extends ExportedModule {
 
   @ExpoMethod
   public void createAlbumAsync(String albumName, String assetId, boolean copyAsset, Promise promise) {
+    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("Creating albums with expo-media-library", mManifest);
+
     if (isMissingPermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
       return;
@@ -209,6 +236,8 @@ public class MediaLibraryModule extends ExportedModule {
 
   @ExpoMethod
   public void deleteAlbumsAsync(List<String> albumIds, Promise promise) {
+    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("Deleting albums with expo-media-library", mManifest);
+
     if (isMissingPermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
       return;

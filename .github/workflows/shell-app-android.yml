@@ -21,21 +21,19 @@ jobs:
           path: .git/lfs
           key: ${{ steps.git-lfs.outputs.sha256 }}
       - run: git lfs pull
-      - name: Set up bin paths and env
-        run: |
-          echo "::add-path::$(pwd)/bin"
-          echo "::set-env name=EXPO_ROOT_DIR::$(pwd)"
+      - run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - run: echo "EXPO_ROOT_DIR=$(pwd)" >> $GITHUB_ENV
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: yarn install --frozen-lockfile
-      - uses: actions/cache@v1
+      - uses: actions/cache@v2
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
@@ -56,6 +54,11 @@ jobs:
         env:
           ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/
         run: expotools android-build-packages --packages all
+      - name: Clean Android build artifacts that would needlessly bloat the shell app
+        env:
+          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/
+        run: ./gradlew clean
+        working-directory: android
       - name: Build shell app tarball
         run: ./buildAndroidTarballLocally.sh
       - name: Make an artifact
@@ -79,9 +82,9 @@ jobs:
         if: ${{ github.event_name != 'push' }}
         run: |
           if [ ${{ github.event_name }} == 'schedule' ]; then
-            echo "::set-env name=SLACK_MESSAGE_DESCRIPTION::scheduled"
+            echo "SLACK_MESSAGE_DESCRIPTION=scheduled" >> $GITHUB_ENV
           else
-            echo "::set-env name=SLACK_MESSAGE_DESCRIPTION::triggered by ${{ github.actor }}"
+            echo "SLACK_MESSAGE_DESCRIPTION=triggered by ${{ github.actor }}" >> $GITHUB_ENV
           fi
       - uses: 8398a7/action-slack@v3
         if: ${{ github.event_name != 'push' }}

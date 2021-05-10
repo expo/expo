@@ -8,6 +8,11 @@ on:
         required: false
   schedule:
     - cron: '20 5 * * 2,4,6'
+  pull_request:
+    paths:
+      - .github/workflows/shell-app-ios.yml
+      - .ruby-version
+      - exponent-view-template
 
 jobs:
   build:
@@ -16,51 +21,34 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
-      - name: Get cache key of git lfs files
-        id: git-lfs
-        run: echo "::set-output name=sha256::$(git lfs ls-files | openssl dgst -sha256)"
-      - uses: actions/cache@v2
-        with:
-          path: .git/lfs
-          key: ${{ steps.git-lfs.outputs.sha256 }}
-      - run: git lfs pull
-      - run: echo "::add-path::$(pwd)/bin"
-      - run: echo "::set-env name=EXPO_ROOT_DIR::$(pwd)"
-      - run: expotools ios-generate-dynamic-macros
-      - uses: ruby/setup-ruby@v1
-      - run: echo "::set-env name=BUNDLE_BIN::$(pwd)/.direnv/bin"
-      - name: bundler cache
-        uses: actions/cache@v1
-        with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('.ruby-version') }}-${{ hashFiles('Gemfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-gems-
-      - name: install fastlane
+      - name: 🔨 Switch to Xcode 12.1
+        run: sudo xcode-select --switch /Applications/Xcode_12.1.app
+      - name: 🍺 Setup
         run: |
-          bundle config path vendor/bundle
-          bundle install --jobs 4 --retry 3
-      - run: echo "::add-path::$BUNDLE_BIN"
-      - uses: actions/cache@v1
+          echo "$(pwd)/bin" >> $GITHUB_PATH
+          echo "EXPO_ROOT_DIR=$(pwd)" >> $GITHUB_ENV
+      - name: 💎 Setup Ruby and install gems
+        uses: ruby/setup-ruby@v1
         with:
-          path: ios/Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
-      - name: Build iOS shell app for real devices
+          bundler-cache: true
+      - name: ♻️ Restore tools/node_modules from cache
+        uses: actions/cache@v2
+        with:
+          path: 'tools/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('tools/yarn.lock') }}
+      - name: 🍏 Generate dynamic macros
+        run: expotools ios-generate-dynamic-macros
+      - name: 📦 Build iOS shell app for real devices
         timeout-minutes: 30
         run: expotools ios-shell-app --action build --type archive --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
-      - name: Build iOS shell app for simulators
+      - name: 📦 Build iOS shell app for simulators
         timeout-minutes: 30
         run: expotools ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
-      - run: brew install awscli
-      - name: Set tarball name
+      - name: ✏️ Set tarball name
         id: tarball
         run: echo "::set-output name=filename::ios-shell-builder-sdk-latest-${{ github.sha }}.tar.gz"
-      - name: Package release tarball
+      - name: 🤐 Package release tarball
         run: |
-          # Hotfix for until https://github.com/expo/expo-cli/pull/2608 lands
-          mv ../shellAppBase-builds .
           tar \
             -zcf ${{ steps.tarball.outputs.filename }} \
             package.json \
@@ -68,7 +56,7 @@ jobs:
             shellAppBase-builds \
             shellAppWorkspaces \
             ios
-      - name: Upload shell app tarball to S3
+      - name: 🚀 Upload shell app tarball to S3
         if: ${{ github.event.inputs.upload == 'upload' }}
         timeout-minutes: 40
         env:
@@ -79,13 +67,14 @@ jobs:
           echo "Release tarball uploaded to s3://exp-artifacts/${{ steps.tarball.outputs.filename }}"
           echo "You can deploy this by updating or creating a new file in https://github.com/expo/turtle/tree/master/shellTarballs/ios"
           echo "Then follow the deployment instructions: https://github.com/expo/turtle-deploy"
-      - uses: 8398a7/action-slack@v3
-        if: failure() && (github.event.ref == 'refs/heads/master' || startsWith(github.event.ref, 'refs/heads/sdk-'))
+      - name: 🔔 Notify on Slack
+        uses: 8398a7/action-slack@v3
+        if: failure() && (github.event.ref == 'refs/heads/master' || startsWith(github.event.ref, 'refs/heads/sdk-') || github.event_name == 'schedule')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_ios }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_IOS }}
         with:
           channel: '#platform-ios'
           status: ${{ job.status }}
-          fields: author,job,message,eventName,ref
-          author_name: iOS Shell App build
+          fields: job,message,ref,eventName,author,took
+          author_name: Shell App (iOS)

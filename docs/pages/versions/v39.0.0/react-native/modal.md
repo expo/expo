@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
 
 ### `animated`
 
-> **Deprecated.** Use the [`animationType`](../modal/#animationtype) prop instead.
+> **Deprecated.** Use the [`animationType`](modal.md#animationtype) prop instead.
 
 ---
 

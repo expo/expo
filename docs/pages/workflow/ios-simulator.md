@@ -2,6 +2,7 @@
 title: iOS Simulator
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import Video from '~/components/plugins/Video'
 
 It's often convenient to develop your app directly on your computer rather than having to physically interact with an iPhone and iPad and load your app over the network, which may be slow under some conditions such as if you need to use a tunnel connection because LAN isn't possible on your network.
@@ -16,7 +17,7 @@ This step is very easy but it takes a while. Open up the Mac App Store, search f
 
 Open Xcode, then choose "Preferences..." from the Xcode menu (or press ⌘+,). Go to the Locations panel and install the tools by selecting the most recent version in the Command Line Tools dropdown.
 
-![Xcode Preferences](/static/images/xcode-command-line.png)
+<ImageSpotlight alt="Xcode preferences" src="/static/images/xcode-command-line.png" containerStyle={{ paddingBottom: 0 }} />
 
 ## Step 3: Try it out
 
@@ -43,18 +44,18 @@ It should also be noted that Simulator suspends background apps and processes on
 
 Sometimes the iOS simulator doesn't respond to commands to open. If it seems to be stuck on this prompt, you can open the iOS simulator manually (`open -a Simulator`) and then in the macOS toolbar choose Hardware &rarr; Device and select an iOS version and device that you'd like to open.
 
-![Xcode Preferences](/static/images/open-simulator-manually.png)
+<ImageSpotlight alt="Hardware > Device toolbar in Xcode" src="/static/images/open-simulator-manually.png" />
 
 You can also use this menu to open any version of the simulator that you like. You can open multiple simulators at the same time but `expo-cli` will always act on the most recently opened on.
 
-### The simulator opened but the Expo client app isn't opening inside of it
+### The simulator opened but the Expo Go app isn't opening inside of it
 
-The first time you install the app in the simulator, iOS will ask if you'd like to open the Expo client app. You may need to interact with the simulator (click around, drag something) for this prompt to show up, then press `OK`.
+The first time you install the app in the simulator, iOS will ask if you'd like to open the Expo Go app. You may need to interact with the simulator (click around, drag something) for this prompt to show up, then press `OK`.
 
 ### How do I force an update to the latest version?
 
-Run `expo client:install:ios` to download and install the latest Expo client version in the simulator.
+Run `expo client:install:ios` to download and install the latest Expo Go version in the simulator.
 
 ### expo-cli is printing an error message about xcrun, what do I do?
 
-Run `expo client:install:ios` again to uninstall and reinstall the Expo client app. If that doesn't help, focus the simulator window and in the Mac toolbar choose Hardware &rarr; Erase All Content and Settings... This will reinitialize your simulator from a blank image. Good to go!
+Run `expo client:install:ios` again to uninstall and reinstall the Expo Go app. If that doesn't help, focus the simulator window and in the Mac toolbar choose Hardware &rarr; Erase All Content and Settings... This will reinitialize your simulator from a blank image. Good to go!

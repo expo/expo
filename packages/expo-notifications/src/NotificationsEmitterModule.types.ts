@@ -1,3 +1,7 @@
 import { ProxyNativeModule } from '@unimodules/core';
 
-export interface NotificationsEmitterModule extends ProxyNativeModule {}
+import { NotificationResponse } from './Notifications.types';
+
+export interface NotificationsEmitterModule extends ProxyNativeModule {
+  getLastNotificationResponseAsync?: () => Promise<NotificationResponse | null>;
+}

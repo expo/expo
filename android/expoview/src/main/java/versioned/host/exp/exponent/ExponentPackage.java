@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
+import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
@@ -69,6 +72,7 @@ import versioned.host.exp.exponent.modules.universal.ScopedModuleRegistryAdapter
 // This is an Expo module but not a unimodule
 import expo.modules.random.RandomModule;
 
+import static host.exp.exponent.kernel.KernelConstants.INTENT_URI_KEY;
 import static host.exp.exponent.kernel.KernelConstants.IS_HEADLESS_KEY;
 import static host.exp.exponent.kernel.KernelConstants.LINKING_URI_KEY;
 
@@ -79,18 +83,18 @@ public class ExponentPackage implements ReactPackage {
 
   private final boolean mIsKernel;
   private final Map<String, Object> mExperienceProperties;
-  private final JSONObject mManifest;
+  private final RawManifest mManifest;
 
   private final ScopedModuleRegistryAdapter mModuleRegistryAdapter;
 
-  private ExponentPackage(boolean isKernel, Map<String, Object> experienceProperties, JSONObject manifest, List<Package> expoPackages, List<SingletonModule> singletonModules) {
+  private ExponentPackage(boolean isKernel, Map<String, Object> experienceProperties, RawManifest manifest, List<Package> expoPackages, List<SingletonModule> singletonModules) {
     mIsKernel = isKernel;
     mExperienceProperties = experienceProperties;
     mManifest = manifest;
     mModuleRegistryAdapter = createDefaultModuleRegistryAdapterForPackages(expoPackages, singletonModules);
   }
 
-  public ExponentPackage(Map<String, Object> experienceProperties, JSONObject manifest, List<Package> expoPackages, ExponentPackageDelegate delegate, List<SingletonModule> singletonModules) {
+  public ExponentPackage(Map<String, Object> experienceProperties, RawManifest manifest, List<Package> expoPackages, ExponentPackageDelegate delegate, List<SingletonModule> singletonModules) {
     mIsKernel = false;
     mExperienceProperties = experienceProperties;
     mManifest = manifest;
@@ -115,15 +119,18 @@ public class ExponentPackage implements ReactPackage {
   }
 
 
-  public static ExponentPackage kernelExponentPackage(Context context, JSONObject manifest, List<Package> expoPackages) {
+  public static ExponentPackage kernelExponentPackage(Context context, RawManifest manifest, List<Package> expoPackages, @Nullable String initialURL) {
     Map<String, Object> kernelExperienceProperties = new HashMap<>();
     List<SingletonModule> singletonModules = ExponentPackage.getOrCreateSingletonModules(context, manifest, expoPackages);
     kernelExperienceProperties.put(LINKING_URI_KEY, "exp://");
     kernelExperienceProperties.put(IS_HEADLESS_KEY, false);
+    if (initialURL != null) {
+      kernelExperienceProperties.put(INTENT_URI_KEY, initialURL);
+    }
     return new ExponentPackage(true, kernelExperienceProperties, manifest, expoPackages, singletonModules);
   }
 
-  public static List<SingletonModule> getOrCreateSingletonModules(Context context, JSONObject manifest, List<Package> providedExpoPackages) {
+  public static List<SingletonModule> getOrCreateSingletonModules(Context context, RawManifest manifest, List<Package> providedExpoPackages) {
     if (Looper.getMainLooper() != Looper.myLooper()) {
       throw new RuntimeException("Singleton modules must be created on the main thread.");
     }
@@ -160,7 +167,7 @@ public class ExponentPackage implements ReactPackage {
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
     boolean isVerified = false;
     if (mManifest != null) {
-      isVerified = mManifest.optBoolean(ExponentManifest.MANIFEST_IS_VERIFIED_KEY);
+      isVerified = mManifest.isVerified();
     }
 
     List<NativeModule> nativeModules = new ArrayList<>(Arrays.<NativeModule>asList(
@@ -181,7 +188,7 @@ public class ExponentPackage implements ReactPackage {
 
     if (isVerified) {
       try {
-        ExperienceId experienceId = ExperienceId.create(mManifest.getString(ExponentManifest.MANIFEST_ID_KEY));
+        ExperienceId experienceId = ExperienceId.create(mManifest.getID());
         ScopedContext scopedContext = new ScopedContext(reactContext, experienceId.getUrlEncoded());
 
         nativeModules.add(new NotificationsModule(reactContext, mManifest, mExperienceProperties));

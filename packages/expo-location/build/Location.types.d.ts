@@ -186,7 +186,11 @@ export declare type PermissionDetailsLocationIOS = {
     scope: 'whenInUse' | 'always' | 'none';
 };
 export declare type PermissionDetailsLocationAndroid = {
+    /**
+     * @deprecated use `accuracy` instead
+     */
     scope: 'fine' | 'coarse' | 'none';
+    accuracy: 'fine' | 'coarse' | 'none';
 };
 export interface LocationPermissionResponse extends UMPermissionResponse {
     ios?: PermissionDetailsLocationIOS;

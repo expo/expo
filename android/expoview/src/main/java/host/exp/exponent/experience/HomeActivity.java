@@ -14,6 +14,7 @@ import com.facebook.react.ReactRootView;
 import com.facebook.soloader.SoLoader;
 import com.squareup.leakcanary.LeakCanary;
 
+import org.json.JSONException;
 import org.unimodules.core.interfaces.Package;
 
 import java.util.Arrays;
@@ -39,6 +40,7 @@ import expo.modules.splashscreen.singletons.SplashScreen;
 import expo.modules.splashscreen.SplashScreenImageResizeMode;
 import expo.modules.splashscreen.SplashScreenPackage;
 import expo.modules.taskManager.TaskManagerPackage;
+import expo.modules.webbrowser.WebBrowserPackage;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.RNObject;
@@ -63,9 +65,21 @@ public class HomeActivity extends BaseExperienceActivity {
 
     mSDKVersion = RNObject.UNVERSIONED;
     mManifest = mExponentManifest.getKernelManifest();
-    mExperienceId = ExperienceId.create(mManifest.optString(ExponentManifest.MANIFEST_ID_KEY));
 
-    ExperienceActivityUtils.overrideUserInterfaceStyle(mExponentManifest.getKernelManifest(), this);
+    String id;
+    try {
+      id = mManifest.getID();
+    } catch (JSONException e) {
+      id = "";
+    }
+    mExperienceId = ExperienceId.create(id);
+
+    // @sjchmiela, @lukmccall: We are consciously not overriding UI mode in Home, because it has no effect.
+    // `ExpoAppearanceModule` with which `ExperienceActivityUtils#overrideUiMode` is compatible
+    // is disabled in Home as of end of 2020, to fix some issues with dev menu, see:
+    // https://github.com/expo/expo/blob/eb9bd274472e646a730fd535a4bcf360039cbd49/android/expoview/src/main/java/versioned/host/exp/exponent/ExponentPackage.java#L200-L207
+    // ExperienceActivityUtils.overrideUiMode(mExponentManifest.getKernelManifest(), this);
+
     ExperienceActivityUtils.configureStatusBar(mExponentManifest.getKernelManifest(), this);
 
     EventBus.getDefault().registerSticky(this);
@@ -159,7 +173,8 @@ public class HomeActivity extends BaseExperienceActivity {
       new NotificationsPackage(), // home doesn't use notifications, but we want the singleton modules created
       new TaskManagerPackage(), // load expo-task-manager to restore tasks once the client is opened
       new DevicePackage(),
-      new SplashScreenPackage()
+      new SplashScreenPackage(),
+      new WebBrowserPackage()
     );
   }
 }

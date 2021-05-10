@@ -16,6 +16,7 @@
 #import "EXVersions.h"
 #import "EXAppViewController.h"
 #import <UMCore/UMModuleRegistryProvider.h>
+#import <EXConstants/EXConstantsService.h>
 #import <EXSplashScreen/EXSplashScreenService.h>
 
 #import <React/RCTBridge.h>
@@ -136,6 +137,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
                                            initialProperties:[self initialPropertiesForRootView]];
     }
 
+    [self setupWebSocketControls];
     [_delegate reactAppManagerIsReadyForLoad:self];
     
     NSAssert([_reactBridge isLoading], @"React bridge should be loading once initialized");
@@ -148,12 +150,13 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   // we allow the vanilla RN dev menu in some circumstances.
   BOOL isStandardDevMenuAllowed = [EXEnvironment sharedEnvironment].isDetached;
   NSMutableDictionary *params = [NSMutableDictionary dictionaryWithDictionary:@{
-    @"manifest": _appRecord.appLoader.manifest,
+    @"manifest": _appRecord.appLoader.manifest.rawManifestJSON,
     @"constants": @{
         @"linkingUri": RCTNullIfNil([EXKernelLinkingManager linkingUriForExperienceUri:_appRecord.appLoader.manifestUrl useLegacy:[self _compareVersionTo:27] == NSOrderedAscending]),
         @"experienceUrl": RCTNullIfNil(_appRecord.appLoader.manifestUrl? _appRecord.appLoader.manifestUrl.absoluteString: nil),
         @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
-        @"manifest": _appRecord.appLoader.manifest,
+        @"manifest": _appRecord.appLoader.manifest.rawManifestJSON,
+        @"executionEnvironment": [self _executionEnvironment],
         @"appOwnership": [self _appOwnership],
         @"isHeadless": @(_isHeadless),
         @"supportedExpoSdks": [EXVersions sharedInstance].versions[@"sdkVersions"],
@@ -272,13 +275,13 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 #pragma mark - EXAppFetcherDataSource
 
-- (NSString *)bundleResourceNameForAppFetcher:(EXAppFetcher *)appFetcher withManifest:(nonnull NSDictionary *)manifest
+- (NSString *)bundleResourceNameForAppFetcher:(EXAppFetcher *)appFetcher withManifest:(nonnull EXUpdatesRawManifest *)manifest
 {
   if ([EXEnvironment sharedEnvironment].isDetached) {
     NSLog(@"Standalone bundle remote url is %@", [EXEnvironment sharedEnvironment].standaloneManifestUrl);
     return kEXEmbeddedBundleResourceName;
   } else {
-    return manifest[@"id"];
+    return manifest.rawID;
   }
 }
 
@@ -297,7 +300,9 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 - (void)loadSourceForBridge:(RCTBridge *)bridge withBlock:(RCTSourceLoadBlock)loadCallback
 {
   // clear any potentially old loading state
-  [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:nil forExperienceId:_appRecord.experienceId];
+  if (_appRecord.experienceId) {
+    [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:nil forExperienceId:_appRecord.experienceId];
+  }
   [self _stopObservingBridgeNotifications];
   [self _startObservingBridgeNotificationsForBridge:bridge];
   
@@ -305,6 +310,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     if ([_appRecord.appLoader supportsBundleReload]) {
       [_appRecord.appLoader forceBundleReload];
     } else {
+      NSAssert(_appRecord.experienceId, @"EXKernelAppRecord.experienceId should be nonnull if we have a manifest with developer tools enabled");
       [[EXKernel sharedInstance] reloadAppWithExperienceId:_appRecord.experienceId];
     }
   }
@@ -427,7 +433,9 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     }
   } else if ([notification.name isEqualToString:[self versionedString:RCTJavaScriptDidFailToLoadNotification]]) {
     NSError *error = (notification.userInfo) ? notification.userInfo[@"error"] : nil;
-    [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:error forExperienceId:_appRecord.experienceId];
+    if (_appRecord.experienceId) {
+      [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:error forExperienceId:_appRecord.experienceId];
+    }
 
     UM_WEAKIFY(self);
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -540,7 +548,9 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   UM_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
     UM_ENSURE_STRONGIFY(self);
-    [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceFinishedLoadingWithId:self.appRecord.experienceId];
+    if (self.appRecord.experienceId) {
+      [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceFinishedLoadingWithId:self.appRecord.experienceId];
+    }
     [self.delegate reactAppManagerFinishedLoadingJavaScript:self];
   });
 }
@@ -559,11 +569,9 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (BOOL)enablesDeveloperTools
 {
-  NSDictionary *manifest = _appRecord.appLoader.manifest;
+  EXUpdatesRawManifest *manifest = _appRecord.appLoader.manifest;
   if (manifest) {
-    NSDictionary *manifestDeveloperConfig = manifest[@"developer"];
-    BOOL isDeployedFromTool = (manifestDeveloperConfig && manifestDeveloperConfig[@"tool"] != nil);
-    return (isDeployedFromTool);
+    return manifest.isUsingDeveloperTool;
   }
   return false;
 }
@@ -596,11 +604,87 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   }
 }
 
+- (void)toggleRemoteDebugging
+{
+  if ([self enablesDeveloperTools]) {
+    [self.versionManager toggleRemoteDebuggingForBridge:self.reactBridge];
+  }
+}
+
+- (void)togglePerformanceMonitor
+{
+  if ([self enablesDeveloperTools]) {
+    [self.versionManager togglePerformanceMonitorForBridge:self.reactBridge];
+  }
+}
+
 - (void)toggleElementInspector
 {
   if ([self enablesDeveloperTools]) {
     [self.versionManager toggleElementInspectorForBridge:self.reactBridge];
   }
+}
+
+- (void)toggleDevMenu
+{
+  if ([EXEnvironment sharedEnvironment].isDetached) {
+    [[EXKernel sharedInstance].visibleApp.appManager showDevMenu];
+  } else {
+    [[EXKernel sharedInstance] switchTasks];
+  }
+}
+
+- (void)setupWebSocketControls
+{
+#if DEBUG || RCT_DEV
+  if ([self enablesDeveloperTools]) {
+    if ([_versionManager respondsToSelector:@selector(addWebSocketNotificationHandler:queue:forMethod:)]) {
+      __weak typeof(self) weakSelf = self;
+
+      // Attach listeners to the bundler's dev server web socket connection.
+      // This enables tools to automatically reload the client remotely (i.e. in expo-cli).
+
+      // Enable a lot of tools under the same command namespace
+      [_versionManager addWebSocketNotificationHandler:^(id params) {
+        if (params != [NSNull null] && (NSDictionary *)params) {
+          NSDictionary *_params = (NSDictionary *)params;
+          if (_params[@"name"] != nil && (NSString *)_params[@"name"]) {
+            NSString *name = _params[@"name"];
+            if ([name isEqualToString:@"reload"]) {
+              [[EXKernel sharedInstance] reloadVisibleApp];
+            } else if ([name isEqualToString:@"toggleDevMenu"]) {
+              [weakSelf toggleDevMenu];
+            } else if ([name isEqualToString:@"toggleRemoteDebugging"]) {
+              [weakSelf toggleRemoteDebugging];
+            } else if ([name isEqualToString:@"toggleElementInspector"]) {
+              [weakSelf toggleElementInspector];
+            } else if ([name isEqualToString:@"togglePerformanceMonitor"]) {
+              [weakSelf togglePerformanceMonitor];
+            }
+          }
+        }
+      }
+                                                 queue:dispatch_get_main_queue()
+                                             forMethod:@"sendDevCommand"];
+
+      // These (reload and devMenu) are here to match RN dev tooling.
+
+      // Reload the app on "reload"
+      [_versionManager addWebSocketNotificationHandler:^(id params) {
+        [[EXKernel sharedInstance] reloadVisibleApp];
+      }
+                                                 queue:dispatch_get_main_queue()
+                                             forMethod:@"reload"];
+
+      // Open the dev menu on "devMenu"
+      [_versionManager addWebSocketNotificationHandler:^(id params) {
+        [weakSelf toggleDevMenu];
+      }
+                                                 queue:dispatch_get_main_queue()
+                                             forMethod:@"devMenu"];
+    }
+  }
+#endif
 }
 
 - (NSDictionary<NSString *, NSString *> *)devMenuItems
@@ -650,9 +734,9 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (NSString *)applicationKeyForRootView
 {
-  NSDictionary *manifest = _appRecord.appLoader.manifest;
-  if (manifest && manifest[@"appKey"]) {
-    return manifest[@"appKey"];
+  EXUpdatesRawManifest *manifest = _appRecord.appLoader.manifest;
+  if (manifest && manifest.appKey) {
+    return manifest.appKey;
   }
   
   NSURL *bundleUrl = [self bundleUrl];
@@ -674,6 +758,8 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   NSMutableDictionary *props = [NSMutableDictionary dictionary];
   NSMutableDictionary *expProps = [NSMutableDictionary dictionary];
 
+  NSAssert(_appRecord.experienceId, @"Experience id should be nonnull when getting initial properties for root view");
+
   NSDictionary *errorRecoveryProps = [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager developerInfoForExperienceId:_appRecord.experienceId];
   if ([[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:_appRecord.experienceId]) {
     [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager increaseAutoReloadBuffer];
@@ -692,7 +778,18 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     expProps[@"notification"] = initialNotification.properties;
   }
 
-  expProps[@"manifest"] = _appRecord.appLoader.manifest;
+  NSString *manifestString = nil;
+  if (_appRecord.appLoader.manifest && [NSJSONSerialization isValidJSONObject:_appRecord.appLoader.manifest]) {
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:_appRecord.appLoader.manifest.rawManifestJSON options:0 error:&error];
+    if (jsonData) {
+      manifestString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    } else {
+      DDLogWarn(@"Failed to serialize JSON manifest: %@", error);
+    }
+  }
+
+  expProps[@"manifestString"] = manifestString;
   if (_appRecord.appLoader.manifestUrl) {
     expProps[@"initialUri"] = [_appRecord.appLoader.manifestUrl absoluteString];
   }
@@ -706,6 +803,15 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     return @"standalone";
   }
   return @"expo";
+}
+
+- (NSString *)_executionEnvironment
+{
+  if ([EXEnvironment sharedEnvironment].isDetached) {
+    return EXConstantsExecutionEnvironmentStandalone;
+  } else {
+    return EXConstantsExecutionEnvironmentStoreClient;
+  }
 }
 
 - (NSString *)scopedDocumentDirectory

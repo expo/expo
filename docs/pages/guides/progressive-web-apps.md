@@ -19,7 +19,7 @@ The following properties can be used to customize your PWA:
 | `app.config.js`                                             | `manifest.json`               | `index.html`                                            |
 | ----------------------------------------------------------- | ----------------------------- | ------------------------------------------------------- |
 | `web.backgroundColor`                                       | `background_color`            |                                                         |
-| <InlineCode>web.description \| description</InlineCode>      | `description`                 | `<meta name="description" />`                           |
+| <InlineCode>web.description \| description</InlineCode>     | `description`                 | `<meta name="description" />`                           |
 | `web.dir`                                                   | `dir`                         |                                                         |
 | `web.display`                                               | `display`                     |                                                         |
 | `web.lang`                                                  | `lang`                        | `<html lang="">`                                        |

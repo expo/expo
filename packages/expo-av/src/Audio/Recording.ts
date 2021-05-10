@@ -11,6 +11,8 @@ import { isAudioEnabled, throwIfAudioIsDisabled } from './AudioAvailability';
 import { Sound } from './Sound';
 
 export type RecordingOptions = {
+  isMeteringEnabled?: boolean;
+  keepAudioActiveHint?: boolean;
   android: {
     extension: string;
     outputFormat: number;
@@ -103,6 +105,7 @@ export const RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_VARIABLE = 3;
 // TODO : maybe make presets for music and speech, or lossy / lossless.
 
 export const RECORDING_OPTIONS_PRESET_HIGH_QUALITY: RecordingOptions = {
+  isMeteringEnabled: true,
   android: {
     extension: '.m4a',
     outputFormat: RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4,
@@ -124,6 +127,7 @@ export const RECORDING_OPTIONS_PRESET_HIGH_QUALITY: RecordingOptions = {
 };
 
 export const RECORDING_OPTIONS_PRESET_LOW_QUALITY: RecordingOptions = {
+  isMeteringEnabled: true,
   android: {
     extension: '.3gp',
     outputFormat: RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_THREE_GPP,
@@ -151,6 +155,7 @@ export type RecordingStatus = {
   isRecording: boolean;
   isDoneRecording: boolean;
   durationMillis: number;
+  metering?: number;
 };
 
 export { PermissionResponse, PermissionStatus };
@@ -241,6 +246,29 @@ export class Recording {
 
   // Note that all calls automatically call onRecordingStatusUpdate as a side effect.
 
+  static createAsync = async (
+    options: RecordingOptions = RECORDING_OPTIONS_PRESET_LOW_QUALITY,
+    onRecordingStatusUpdate: ((status: RecordingStatus) => void) | null = null,
+    progressUpdateIntervalMillis: number | null = null
+  ): Promise<{ recording: Recording; status: RecordingStatus }> => {
+    const recording: Recording = new Recording();
+    if (progressUpdateIntervalMillis) {
+      recording._progressUpdateIntervalMillis = progressUpdateIntervalMillis;
+    }
+    recording.setOnRecordingStatusUpdate(onRecordingStatusUpdate);
+    await recording.prepareToRecordAsync({
+      ...options,
+      keepAudioActiveHint: true,
+    });
+    try {
+      const status = await recording.startAsync();
+      return { recording, status };
+    } catch (err) {
+      recording.stopAndUnloadAsync();
+      throw err;
+    }
+  };
+
   // Get status API
 
   getStatusAsync = async (): Promise<RecordingStatus> => {
@@ -320,7 +348,6 @@ export class Recording {
         // status is of type RecordingStatus, but without the canRecord field populated
         status: Pick<RecordingStatus, Exclude<keyof RecordingStatus, 'canRecord'>>;
       } = await ExponentAV.prepareAudioRecorder(options);
-
       _recorderExists = true;
       this._uri = uri;
       this._options = options;

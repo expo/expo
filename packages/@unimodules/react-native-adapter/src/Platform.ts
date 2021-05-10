@@ -1,6 +1,6 @@
 import { Platform as ReactNativePlatform, PlatformOSType } from 'react-native';
 
-import { isDOMAvailable } from './environment/browser';
+import { isDOMAvailable, canUseEventListeners, canUseViewport } from './environment/browser';
 
 export type PlatformSelectOSType = PlatformOSType | 'native' | 'electron' | 'default';
 
@@ -26,6 +26,18 @@ const Platform = {
    * The DOM is not available in native React runtimes and Node.js.
    */
   isDOMAvailable,
+  /**
+   * Denotes if the current environment can attach event listeners
+   * to the window. This will return false in native React
+   * runtimes and Node.js.
+   */
+  canUseEventListeners,
+  /**
+   * Denotes if the current environment can inspect properties of the
+   * screen on which the current window is being rendered. This will
+   * return false in native React runtimes and Node.js.
+   */
+  canUseViewport,
 };
 
 export default Platform;
