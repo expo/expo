@@ -17,7 +17,7 @@ Provides an API for interacting with the device's system calendars, events, remi
 
 ## Configuration
 
-In managed apps, `Calendar` requires `Permissions.CALENDAR`. Interacting with reminders on iOS requires `Permissions.REMINDERS`.
+In managed apps you must add the following permissions to your app.json to use `Calendar`. Android requires [Permissions.CALENDAR](permissions#permissionscalendar) and iOS requires [Permissions.REMINDERS](permissions#permissionsreminders).
 
 ## Usage
 
