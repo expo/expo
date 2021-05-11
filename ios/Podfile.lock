@@ -1890,9 +1890,9 @@ PODS:
     - Analytics (= 4.0.4)
     - UMCore
   - EXSensors (10.1.2):
+    - ExpoModulesCore
     - UMCore
     - UMPermissionsInterface
-    - UMSensorsInterface
   - EXSharing (9.1.2):
     - UMCore
     - UMFileSystemInterface
@@ -2370,8 +2370,6 @@ PODS:
     - UMCore
     - UMFontInterface
     - UMPermissionsInterface
-  - UMSensorsInterface (6.1.0):
-    - UMCore
   - UMTaskManagerInterface (6.1.0):
     - UMCore
   - Yoga (1.14.0)
@@ -2802,7 +2800,6 @@ DEPENDENCIES:
   - UMImageLoaderInterface (from `../packages/unimodules-image-loader-interface/ios`)
   - UMPermissionsInterface (from `../packages/unimodules-permissions-interface/ios`)
   - "UMReactNativeAdapter (from `../packages/@unimodules/react-native-adapter/ios`)"
-  - UMSensorsInterface (from `../packages/unimodules-sensors-interface/ios`)
   - UMTaskManagerInterface (from `../packages/unimodules-task-manager-interface/ios`)
   - Yoga (from `../react-native-lab/react-native/ReactCommon/yoga`)
 
@@ -3650,8 +3647,6 @@ EXTERNAL SOURCES:
     :path: "../packages/unimodules-permissions-interface/ios"
   UMReactNativeAdapter:
     :path: "../packages/@unimodules/react-native-adapter/ios"
-  UMSensorsInterface:
-    :path: "../packages/unimodules-sensors-interface/ios"
   UMTaskManagerInterface:
     :path: "../packages/unimodules-task-manager-interface/ios"
   Yoga:
@@ -4019,7 +4014,7 @@ SPEC CHECKSUMS:
   EXScreenOrientation: 4d9ec57c73055c8a4dbf9dd85def4db29b690a91
   EXSecureStore: da5a255445bb6ee8b8ac54f65412bc803272bd87
   EXSegment: cf911dde2fda91013f96b44d04eaec5dc838cc58
-  EXSensors: 86df18e0d51fff301974c626085adad6db0c08f9
+  EXSensors: ddf60793d08916e2a89026e6dd8d6b2f3c9901d5
   EXSharing: 8e02f95f0b258480a5d5d8a0e3fd70a87f91512b
   EXSMS: 4fec9c48a87eb503852c7fd800c9b97ebb257777
   EXSpeech: 010826dbfa8287358a05bbd59b44d620266806e3
@@ -4095,7 +4090,6 @@ SPEC CHECKSUMS:
   UMImageLoaderInterface: 9ddffeb644b3f45d4eb0c2f51a2fd95fd5c8d1a4
   UMPermissionsInterface: 445acbfbdc2a675cedae79bbfb93ff7d83a96ff1
   UMReactNativeAdapter: 9982db2ff57b88e37cdfb814d078b9616e99f855
-  UMSensorsInterface: a5e9db661e5d9ae214762033d725989880ae6993
   UMTaskManagerInterface: 203c11259d2699b5b3a4eda4adbc466f5cb5c561
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb

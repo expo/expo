@@ -1,6 +1,6 @@
 package expo.modules.interfaces.sensors;
 
-public interface SensorServiceSubscription {
+public interface SensorServiceSubscriptionInterface {
   void start();
   boolean isEnabled();
   Long getUpdateInterval();

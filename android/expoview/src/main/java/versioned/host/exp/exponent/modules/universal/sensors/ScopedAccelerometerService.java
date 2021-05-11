@@ -4,11 +4,12 @@ import java.util.Collections;
 import java.util.List;
 
 import org.unimodules.core.interfaces.InternalModule;
-import org.unimodules.interfaces.sensors.services.AccelerometerService;
+
+import expo.modules.interfaces.sensors.services.AccelerometerServiceInterface;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.services.sensors.SubscribableSensorKernelService;
 
-public class ScopedAccelerometerService extends BaseSensorService implements InternalModule, AccelerometerService {
+public class ScopedAccelerometerService extends BaseSensorService implements InternalModule, AccelerometerServiceInterface {
   public ScopedAccelerometerService(ExperienceId experienceId) {
     super(experienceId);
   }
@@ -20,6 +21,6 @@ public class ScopedAccelerometerService extends BaseSensorService implements Int
 
   @Override
   public List<Class> getExportedInterfaces() {
-    return Collections.<Class>singletonList(AccelerometerService.class);
+    return Collections.<Class>singletonList(AccelerometerServiceInterface.class);
   }
 }

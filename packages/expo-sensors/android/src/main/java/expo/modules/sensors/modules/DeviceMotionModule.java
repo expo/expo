@@ -24,13 +24,14 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.core.interfaces.services.UIManager;
-import org.unimodules.interfaces.sensors.SensorService;
-import org.unimodules.interfaces.sensors.SensorServiceSubscription;
-import org.unimodules.interfaces.sensors.services.AccelerometerService;
-import org.unimodules.interfaces.sensors.services.GravitySensorService;
-import org.unimodules.interfaces.sensors.services.GyroscopeService;
-import org.unimodules.interfaces.sensors.services.LinearAccelerationSensorService;
-import org.unimodules.interfaces.sensors.services.RotationVectorSensorService;
+
+import expo.modules.interfaces.sensors.SensorService;
+import expo.modules.interfaces.sensors.SensorServiceSubscription;
+import expo.modules.interfaces.sensors.services.AccelerometerService;
+import expo.modules.interfaces.sensors.services.GravitySensorService;
+import expo.modules.interfaces.sensors.services.GyroscopeService;
+import expo.modules.interfaces.sensors.services.LinearAccelerationSensorService;
+import expo.modules.interfaces.sensors.services.RotationVectorSensorService;
 
 public class DeviceMotionModule extends ExportedModule implements SensorEventListener2 {
   private long mLastUpdate = 0;
