@@ -35,3 +35,11 @@ fun <T> Class<out T>.setProtectedDeclaredField(obj: T, filedName: String, newVal
 
   field.set(obj, newValue)
 }
+
+fun <T, U> Class<out T>.getProtectedFieldValue(obj: T, filedName: String): U {
+  val field = getDeclaredField(filedName)
+  field.isAccessible = true
+
+  @Suppress("UNCHECKED_CAST")
+  return field.get(obj) as U
+}

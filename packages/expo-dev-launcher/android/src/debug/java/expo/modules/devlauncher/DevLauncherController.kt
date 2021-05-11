@@ -54,6 +54,7 @@ class DevLauncherController private constructor(
   var manifest: DevLauncherManifest? = null
     private set
   val pendingIntentRegistry = DevLauncherIntentRegistry()
+  var latestLoadedApp: Uri? = null
 
   internal enum class Mode {
     LAUNCHER, APP
@@ -84,6 +85,7 @@ class DevLauncherController private constructor(
     // Note that `launch` method is a suspend one. So the execution will be stopped here until the method doesn't finish.
     if (appLoader.launch(appIntent)) {
       recentlyOpedAppsRegistry.appWasOpened(url, appLoader.getAppName())
+      latestLoadedApp = url
       // Here the app will be loaded - we can remove listener here.
       lifecycle.removeListener(appLoaderListener)
     } else {
