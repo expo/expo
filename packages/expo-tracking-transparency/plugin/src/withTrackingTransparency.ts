@@ -8,32 +8,25 @@ export const DEFAULT_NSUserTrackingUsageDescription =
 const withTrackingTransparency: ConfigPlugin<{
   /**
    * Sets the iOS `NSUserTrackingUsageDescription` permission message in `Info.plist`. Omitting a
-   * description will result in using the default permission message; passing in `false` will omit
-   * the `NSUserTrackingUsageDescription` permission from your `Info.plist` entirely.
+   * description will result in using the default permission message.
    * @default 'Allow this app to collect app-related data that can be used for tracking you or your
    * device.'
    */
-  userTrackingPermission?: string | false;
+  userTrackingPermission?: string;
 } | void> = (config, props) => {
   config = withUserTrackingPermission(config, props);
   return config;
 };
 
 export const withUserTrackingPermission: ConfigPlugin<{
-  userTrackingPermission?: string | false;
+  userTrackingPermission?: string;
 } | void> = (config, { userTrackingPermission } = {}) => {
-  if (userTrackingPermission === false || userTrackingPermission === 'false') {
-    if (config?.ios?.infoPlist) {
-      delete config.ios.infoPlist.NSUserTrackingUsageDescription;
-    }
-  } else {
-    if (!config.ios) config.ios = {};
-    if (!config.ios.infoPlist) config.ios.infoPlist = {};
-    config.ios.infoPlist.NSUserTrackingUsageDescription =
-      userTrackingPermission ||
-      config.ios.infoPlist.NSUserTrackingUsageDescription ||
-      DEFAULT_NSUserTrackingUsageDescription;
-  }
+  if (!config.ios) config.ios = {};
+  if (!config.ios.infoPlist) config.ios.infoPlist = {};
+  config.ios.infoPlist.NSUserTrackingUsageDescription =
+    userTrackingPermission ||
+    config.ios.infoPlist.NSUserTrackingUsageDescription ||
+    DEFAULT_NSUserTrackingUsageDescription;
 
   return config;
 };

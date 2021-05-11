@@ -3,11 +3,6 @@ import {
   DEFAULT_NSUserTrackingUsageDescription,
 } from '../withTrackingTransparency';
 
-const blankConfig = {
-  slug: 'testSlug',
-  name: 'testName',
-};
-
 const configWithDefaultNSUserTrackingUsageDescription = {
   slug: 'testSlug',
   name: 'testName',
@@ -29,7 +24,7 @@ const configWithCustomNSUserTrackingUsageDescription = {
 };
 
 describe('Expo Tracking Transparency', () => {
-  it('sets `NSUserTrackingUsageDescription` permission message in the config', () => {
+  it('sets default `NSUserTrackingUsageDescription` permission message in the config', () => {
     expect(
       withUserTrackingPermission({
         slug: 'testSlug',
@@ -69,40 +64,5 @@ describe('Expo Tracking Transparency', () => {
         }
       )
     ).toMatchObject(configWithCustomNSUserTrackingUsageDescription);
-  });
-
-  it('setting prop to false does not add NSUserTrackingUsageDescription to config', () => {
-    expect(
-      withUserTrackingPermission(
-        {
-          slug: 'testSlug',
-          name: 'testName',
-        },
-        {
-          userTrackingPermission: false,
-        }
-      )
-    ).toMatchObject(blankConfig);
-  });
-
-  it('setting prop to "false" (String) removes existing NSUserTrackingUsageDescription', () => {
-    expect(
-      Object.keys(
-        withUserTrackingPermission(
-          {
-            slug: 'testSlug',
-            name: 'testName',
-            ios: {
-              infoPlist: {
-                NSUserTrackingUsageDescription: DEFAULT_NSUserTrackingUsageDescription,
-              },
-            },
-          },
-          {
-            userTrackingPermission: 'false',
-          }
-        ).ios.infoPlist
-      )
-    ).not.toContain('NSUserTrackingUsageDescription');
   });
 });
