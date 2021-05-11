@@ -17,7 +17,7 @@ class DevLauncherController private constructor() {
     LAUNCHER, APP
   }
 
-  val latestLoadedApp: Any? = null
+  val latestLoadedApp: String? = null
 
   internal val mode: Mode
     get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
