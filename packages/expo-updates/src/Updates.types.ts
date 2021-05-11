@@ -7,7 +7,9 @@ export enum UpdateEventType {
 }
 
 // TODO(eric): move source of truth for manifest type to this module
-export type Manifest = typeof Constants.manifest | typeof Constants.manifest2;
+export type ClassicManifest = typeof Constants.manifest;
+export type Manifest = ClassicManifest | typeof Constants.manifest2;
+// modern manifest type is intentionally not exported, since the plan is to call it just "Manifest" in the future
 
 export type UpdateCheckResult = { isAvailable: false } | { isAvailable: true; manifest: Manifest };
 

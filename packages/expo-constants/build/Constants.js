@@ -103,7 +103,7 @@ function isAppManifest(manifest) {
     return !isManifest(manifest);
 }
 function isManifest(manifest) {
-    return 'updateMetadata' in manifest;
+    return 'metadata' in manifest;
 }
 function getManifest(suppressWarning = false) {
     if (!rawManifest) {

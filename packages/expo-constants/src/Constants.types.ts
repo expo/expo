@@ -46,13 +46,10 @@ export interface ManifestAsset {
 export interface Manifest {
   id: string;
   createdAt: string;
-  extras?: {
-    [k: string]: any;
-  };
   runtimeVersion: string;
   launchAsset: ManifestAsset;
   assets: ManifestAsset[];
-  updateMetadata: object;
+  metadata: object;
 }
 
 /**
@@ -111,7 +108,7 @@ export interface NativeConstants {
   expoRuntimeVersion: string | null;
   /**
    * The version string of the Expo client currently running.
-   * Returns `null` on and bare workflow and web.
+   * Returns `null` in bare workflow and web.
    */
   expoVersion: string | null;
   isDetached?: boolean;
@@ -126,7 +123,15 @@ export interface NativeConstants {
   linkingUri: string;
   nativeAppVersion: string | null;
   nativeBuildVersion: string | null;
+  /**
+   * Classic manifest for Expo apps.
+   * Returns `null` in bare workflow and when `manifest2` is non-null.
+   */
   manifest: AppManifest | null;
+  /**
+   * New manifest for Expo apps using expo-updates.
+   * Returns `null` in bare workflow and when `manifest` is non-null.
+   */
   manifest2: Manifest | null;
   sessionId: string;
   statusBarHeight: number;

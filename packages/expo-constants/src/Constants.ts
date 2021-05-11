@@ -144,7 +144,7 @@ function isAppManifest(manifest: AppManifest | Manifest): manifest is AppManifes
 }
 
 function isManifest(manifest: AppManifest | Manifest): manifest is Manifest {
-  return 'updateMetadata' in manifest;
+  return 'metadata' in manifest;
 }
 
 function getManifest(suppressWarning = false): AppManifest | Manifest | null {
