@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `Updates.releaseChannel` not always having the correct value in Expo Go. ([#12895](https://github.com/expo/expo/pull/12895) by [@esamelson](https://github.com/esamelson))
+
 ## 0.5.4 — 2021-04-13
 
 ### 🐛 Bug fixes
