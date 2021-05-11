@@ -5,7 +5,6 @@ export * from './Updates.types';
 export const updateId = ExpoUpdates.updateId && typeof ExpoUpdates.updateId === 'string'
     ? ExpoUpdates.updateId.toLowerCase()
     : null;
-export const releaseChannel = ExpoUpdates.releaseChannel ?? 'default';
 export const localAssets = ExpoUpdates.localAssets ?? {};
 export const isEmergencyLaunch = ExpoUpdates.isEmergencyLaunch || false;
 export const isUsingEmbeddedAssets = ExpoUpdates.isUsingEmbeddedAssets || false;
@@ -14,6 +13,7 @@ if (ExpoUpdates.manifestString) {
     _manifest = JSON.parse(ExpoUpdates.manifestString);
 }
 export const manifest = _manifest ?? {};
+export const releaseChannel = _manifest?.releaseChannel ?? ExpoUpdates.releaseChannel ?? 'default';
 const isUsingDeveloperTool = !!manifest.developer?.tool;
 const isUsingExpoDevelopmentClient = NativeModulesProxy.ExponentConstants?.appOwnership === 'expo';
 const manualUpdatesInstructions = isUsingExpoDevelopmentClient

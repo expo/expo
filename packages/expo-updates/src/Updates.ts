@@ -22,7 +22,6 @@ export const updateId: string | null =
   ExpoUpdates.updateId && typeof ExpoUpdates.updateId === 'string'
     ? ExpoUpdates.updateId.toLowerCase()
     : null;
-export const releaseChannel: string = ExpoUpdates.releaseChannel ?? 'default';
 export const localAssets: LocalAssets = ExpoUpdates.localAssets ?? {};
 export const isEmergencyLaunch: boolean = ExpoUpdates.isEmergencyLaunch || false;
 export const isUsingEmbeddedAssets: boolean = ExpoUpdates.isUsingEmbeddedAssets || false;
@@ -32,6 +31,8 @@ if (ExpoUpdates.manifestString) {
   _manifest = JSON.parse(ExpoUpdates.manifestString);
 }
 export const manifest: Manifest | object = _manifest ?? {};
+export const releaseChannel: string =
+  _manifest?.releaseChannel ?? ExpoUpdates.releaseChannel ?? 'default';
 
 const isUsingDeveloperTool = !!(manifest as any).developer?.tool;
 const isUsingExpoDevelopmentClient = NativeModulesProxy.ExponentConstants?.appOwnership === 'expo';
