@@ -4,10 +4,9 @@
   "main": "index.js",
   "scripts": {
     "postinstall": "expo-yarn-workspaces postinstall",
-    "android": "react-native run-android",
-    "ios": "react-native run-ios",
-    "web": "expo start --web",
-    "start": "react-native start"
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "start": "expo start --dev-client"
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",

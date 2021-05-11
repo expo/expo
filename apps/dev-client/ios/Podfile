@@ -10,7 +10,6 @@ target 'devclient' do
   config = use_native_modules!
 
   pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', :configurations => :debug
-  pod 'expo-dev-menu-interface', path: '../../../packages/expo-dev-menu-interface', :configurations => :debug
   pod 'expo-dev-launcher', path: '../../../packages/expo-dev-launcher', :configurations => :debug
 
   use_react_native!(:path => config["reactNativePath"])
