@@ -7,5 +7,5 @@ class DevLauncherAppError(
   val error: Throwable,
 ) {
   val timestamp: Date = Calendar.getInstance().time
-  val message = errorMessage?.replace("\\e\\[(.*?)m".toRegex(), "")
+  val message = errorMessage?.replace("\\x1b\\[[0-9;]*m".toRegex(), "")
 }

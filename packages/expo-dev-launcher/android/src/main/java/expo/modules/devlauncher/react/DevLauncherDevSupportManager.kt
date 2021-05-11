@@ -44,9 +44,4 @@ class DevLauncherDevSupportManager(
     }
     DevLauncherErrorActivity.showError(activity, DevLauncherAppError(message, e))
   }
-
-
-  override fun updateJSError(message: String, details: ReadableArray, errorCookie: Int) {
-    super.updateJSError(message + "Wolololo", details, errorCookie)
-  }
 }

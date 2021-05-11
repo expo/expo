@@ -17,6 +17,8 @@ class DevLauncherController private constructor() {
     LAUNCHER, APP
   }
 
+  val latestLoadedApp: Any? = null
+
   internal val mode: Mode
     get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
 
@@ -33,6 +35,13 @@ class DevLauncherController private constructor() {
     throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
   }
 
+  fun navigateToLauncher() {
+    throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
+  }
+
+  suspend fun loadApp(appUrl: String, reactActivity: ReactActivity?) {
+    throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
+  }
 
   companion object {
     private var sInstance: DevLauncherController? = null
@@ -61,5 +70,8 @@ class DevLauncherController private constructor() {
 
     @JvmStatic
     fun tryToHandleIntent(reactActivity: ReactActivity, intent: Intent): Boolean = false
+
+    @JvmStatic
+    fun wasInitialized(): Boolean = false
   }
 }
