@@ -13,6 +13,10 @@
 
 - Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
 
+### 💡 Others
+
+- Removed unnecessary dependency on `unimodules-constants-interface`.
+
 ## 3.2.0 — 2021-03-10
 
 ### 🎉 New features

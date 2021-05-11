@@ -10,6 +10,10 @@
 
 - Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
 
+### 💡 Others
+
+- Migrated constants interface from `unimodules-constants-interface` to `expo-modules-core`.
+
 ## 10.1.1 — 2021-03-30
 
 _This version does not introduce any user-facing changes._
@@ -64,4 +68,4 @@ _This version does not introduce any user-facing changes._
 ## 8.2.0 — 2020-05-27
 
 _This version does not introduce any user-facing changes._
-```
+````
