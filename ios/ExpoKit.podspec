@@ -44,8 +44,6 @@ Pod::Spec.new do |s|
     ss.dependency 'UMSensorsInterface'
     ss.dependency 'UMFileSystemInterface'
     ss.dependency 'UMPermissionsInterface'
-    ss.dependency 'UMCameraInterface'
-    ss.dependency 'UMConstantsInterface'
   end
 
   s.subspec "Payments" do |ss|
