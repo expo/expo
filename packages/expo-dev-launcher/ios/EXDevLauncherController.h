@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class EXDevLauncherPendingDeepLinkRegistry;
 @class EXDevLauncherController;
 @class EXDevLauncherManifest;
+@class EXDevLauncherErrorManager;
 
 @protocol EXDevLauncherControllerDelegate <NSObject>
 
@@ -19,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXDevLauncherController : NSObject <RCTBridgeDelegate>
 
 @property (nonatomic, weak) RCTBridge * _Nullable appBridge;
+@property (nonatomic, strong) RCTBridge *launcherBridge;
 @property (nonatomic, strong) EXDevLauncherPendingDeepLinkRegistry *pendingDeepLinkRegistry;
 
 + (instancetype)sharedInstance;
@@ -40,6 +42,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (EXDevLauncherManifest * _Nullable)appManifest;
 
 - (BOOL)isAppRunning;
+
+- (UIWindow * _Nullable)currentWindow;
+
+- (EXDevLauncherErrorManager *)errorManager;
 
 + (NSString * _Nullable)version;
 
