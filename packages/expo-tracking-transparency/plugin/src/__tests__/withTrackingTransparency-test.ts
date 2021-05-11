@@ -85,7 +85,7 @@ describe('Expo Tracking Transparency', () => {
     ).toMatchObject(blankConfig);
   });
 
-  it('setting prop to false removes existing NSUserTrackingUsageDescription', () => {
+  it('setting prop to "false" (String) removes existing NSUserTrackingUsageDescription', () => {
     expect(
       Object.keys(
         withUserTrackingPermission(
@@ -99,7 +99,7 @@ describe('Expo Tracking Transparency', () => {
             },
           },
           {
-            userTrackingPermission: false,
+            userTrackingPermission: 'false',
           }
         ).ios.infoPlist
       )

@@ -9,21 +9,22 @@ const withTrackingTransparency = (config, props) => {
     return config;
 };
 exports.withUserTrackingPermission = (config, { userTrackingPermission } = {}) => {
-    if (userTrackingPermission === false) {
-        // TODO: Upgrade to optional chaining once Node 14+ is required
-        if (config && config.ios && config.ios.infoPlist) {
+    var _a;
+    if (userTrackingPermission === false || userTrackingPermission === 'false') {
+        if ((_a = config === null || config === void 0 ? void 0 : config.ios) === null || _a === void 0 ? void 0 : _a.infoPlist) {
             delete config.ios.infoPlist.NSUserTrackingUsageDescription;
         }
-        return config;
     }
-    if (!config.ios)
-        config.ios = {};
-    if (!config.ios.infoPlist)
-        config.ios.infoPlist = {};
-    config.ios.infoPlist.NSUserTrackingUsageDescription =
-        userTrackingPermission ||
-            config.ios.infoPlist.NSUserTrackingUsageDescription ||
-            exports.DEFAULT_NSUserTrackingUsageDescription;
+    else {
+        if (!config.ios)
+            config.ios = {};
+        if (!config.ios.infoPlist)
+            config.ios.infoPlist = {};
+        config.ios.infoPlist.NSUserTrackingUsageDescription =
+            userTrackingPermission ||
+                config.ios.infoPlist.NSUserTrackingUsageDescription ||
+                exports.DEFAULT_NSUserTrackingUsageDescription;
+    }
     return config;
 };
 exports.default = config_plugins_1.createRunOncePlugin(withTrackingTransparency, pkg.name, pkg.version);

@@ -22,19 +22,18 @@ const withTrackingTransparency: ConfigPlugin<{
 export const withUserTrackingPermission: ConfigPlugin<{
   userTrackingPermission?: string | false;
 } | void> = (config, { userTrackingPermission } = {}) => {
-  if (userTrackingPermission === false) {
-    // TODO: Upgrade to optional chaining once Node 14+ is required
-    if (config && config.ios && config.ios.infoPlist) {
+  if (userTrackingPermission === false || userTrackingPermission === 'false') {
+    if (config?.ios?.infoPlist) {
       delete config.ios.infoPlist.NSUserTrackingUsageDescription;
     }
-    return config;
+  } else {
+    if (!config.ios) config.ios = {};
+    if (!config.ios.infoPlist) config.ios.infoPlist = {};
+    config.ios.infoPlist.NSUserTrackingUsageDescription =
+      userTrackingPermission ||
+      config.ios.infoPlist.NSUserTrackingUsageDescription ||
+      DEFAULT_NSUserTrackingUsageDescription;
   }
-  if (!config.ios) config.ios = {};
-  if (!config.ios.infoPlist) config.ios.infoPlist = {};
-  config.ios.infoPlist.NSUserTrackingUsageDescription =
-    userTrackingPermission ||
-    config.ios.infoPlist.NSUserTrackingUsageDescription ||
-    DEFAULT_NSUserTrackingUsageDescription;
 
   return config;
 };
