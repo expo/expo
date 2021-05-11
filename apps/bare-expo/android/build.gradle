@@ -15,6 +15,7 @@ buildscript {
     }
     repositories {
         google()
+        mavenCentral()
         jcenter()
     }
     dependencies {
@@ -61,7 +62,13 @@ allprojects {
             url "$rootDir/../node_modules/expo-camera/android/maven"
         }
 
+       maven {
+           // Detox is installed from workspace root npm
+           url "$rootDir/../../../node_modules/detox/Detox-android"
+       }
+
         google()
+        mavenCentral()
         jcenter()
         maven { url 'https://jitpack.io' }
     }

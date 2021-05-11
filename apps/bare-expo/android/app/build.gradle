@@ -136,6 +136,9 @@ android {
             // [Custom]: Required for expo-app-auth
             appAuthRedirectScheme: "dev.expo.payments"
         ]
+
+        testBuildType System.getProperty('testBuildType', 'debug')
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     splits {
         abi {
@@ -185,10 +188,6 @@ android {
     }
 }
 
-repositories {
-    jcenter()
-}
-
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"
@@ -210,6 +209,8 @@ dependencies {
     implementation('com.facebook.flipper:flipper-network-plugin:0.62.0') {
         exclude group:'com.facebook.flipper'
     }
+
+    androidTestImplementation('com.wix:detox:+')
 }
 
 // Run this once to be able to run the application with BUCK
