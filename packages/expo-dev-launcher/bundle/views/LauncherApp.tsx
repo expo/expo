@@ -2,8 +2,7 @@ import React from 'react';
 import { StyleSheet, SafeAreaView, StatusBar } from 'react-native';
 
 import { StyledView } from '../components/Views';
-import { useThemeName } from '../hooks/useThemeName';
-import Colors from '../constants/Colors';
+import { useTheme } from '../hooks/useThemeName';
 import LauncherMainScreen from '../screens/LauncherMainScreen';
 import {
   isDevMenuAvailable,
@@ -14,7 +13,7 @@ import {
 
 function LauncherApp(props) {
   const [isUserLoggedIn, setIsUserLoggedIn] = React.useState(false);
-  const theme = useThemeName();
+  const [colors, isDark] = useTheme();
 
   React.useEffect(() => {
     let onLogin;
@@ -34,8 +33,8 @@ function LauncherApp(props) {
     };
   });
 
-  const backgroundColor = theme === 'dark' ? Colors.dark.background : Colors.light.background;
-  const statusBarContent = theme === 'dark' ? 'light-content' : 'dark-content';
+  const backgroundColor = colors.background;
+  const statusBarContent = isDark ? 'light-content' : 'dark-content';
 
   return (
     <SafeAreaView style={[styles.rootView, { backgroundColor }]}>
