@@ -32,7 +32,7 @@ type Props = {
 
 export default function ProjectView({ loading, error, data, navigation }: Props) {
   let contents;
-  if (error && !data?.app.byId) {
+  if (error && !data?.app?.byId) {
     console.log(error);
     contents = (
       <StyledText
@@ -42,7 +42,7 @@ export default function ProjectView({ loading, error, data, navigation }: Props)
         {ERROR_TEXT}
       </StyledText>
     );
-  } else if (loading || !data?.app.byId) {
+  } else if (loading || !data?.app?.byId) {
     contents = (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" />
@@ -57,7 +57,7 @@ export default function ProjectView({ loading, error, data, navigation }: Props)
   }
 
   React.useEffect(() => {
-    if (data?.app.byId) {
+    if (data?.app?.byId) {
       const fullName = data?.app.byId.fullName;
       const title = data?.app.byId.name ?? fullName;
       navigation.setOptions({
@@ -65,7 +65,7 @@ export default function ProjectView({ loading, error, data, navigation }: Props)
         headerRight: () => <ShareProjectButton fullName={fullName} />,
       });
     }
-  }, [navigation, data?.app.byId]);
+  }, [navigation, data?.app?.byId]);
 
   return <View style={{ flex: 1 }}>{contents}</View>;
 }

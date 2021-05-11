@@ -198,7 +198,7 @@ class ProjectsView extends React.Component<Props, State> {
 
   private _startPollingForProjects = async () => {
     this._fetchProjectsAsync();
-    this._projectPolling = setInterval(this._fetchProjectsAsync, PROJECT_UPDATE_INTERVAL);
+    this._projectPolling = setInterval(this._fetchProjectsAsync, PROJECT_UPDATE_INTERVAL) as any;
   };
 
   private _stopPollingForProjects = async () => {

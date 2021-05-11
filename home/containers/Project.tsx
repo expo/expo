@@ -1,21 +1,21 @@
-import { useQuery } from '@apollo/client';
 import { getRuntimeVersionForSDKVersion } from '@expo/sdk-runtime-versions';
 import { StackScreenProps } from '@react-navigation/stack';
-import gql from 'graphql-tag';
-import { AllStackRoutes } from 'navigation/Navigation.types';
 import * as React from 'react';
 import { Platform } from 'react-native';
 
 import ProjectView from '../components/ProjectView';
+import { useWebContainerProjectPage_QueryQuery } from '../graphql/queries/ProjectQuery.query.generated';
+import { AppPlatform } from '../graphql/types';
 import * as Kernel from '../kernel/Kernel';
+import { AllStackRoutes } from '../navigation/Navigation.types';
 
 export interface ProjectUpdate {
   id: string;
   group: string;
-  message: string;
+  message?: string | null;
   createdAt: Date;
   runtimeVersion: string;
-  platform: 'android' | 'ios';
+  platform: string;
   manifestPermalink: string;
 }
 
@@ -33,84 +33,32 @@ export type ProjectDataProject = {
   username: string;
   published: boolean;
   description: string;
-  githubUrl?: string;
-  playStoreUrl?: string;
-  appStoreUrl?: string;
+  githubUrl?: string | null;
+  playStoreUrl?: string | null;
+  appStoreUrl?: string | null;
   sdkVersion: string;
-  iconUrl?: string;
+  iconUrl?: string | null;
   privacy: string;
   icon?: {
     url: string;
     primaryColor?: string;
     colorPalette?: object;
-  };
+  } | null;
   updateBranches: ProjectUpdateBranch[];
 };
 
 export interface ProjectData {
-  app: { byId: ProjectDataProject };
+  app?: { byId: ProjectDataProject } | null;
 }
-
-interface ProjectVars {
-  appId: string;
-  platform: 'ANDROID' | 'IOS';
-  runtimeVersions: string[];
-}
-
-export const ProjectPageQuery = gql`
-  query WebContainerProjectPage_Query(
-    $appId: String!
-    $platform: AppPlatform!
-    $runtimeVersions: [String!]!
-  ) {
-    app {
-      byId(appId: $appId) {
-        id
-        name
-        slug
-        fullName
-        username
-        published
-        description
-        githubUrl
-        playStoreUrl
-        appStoreUrl
-        sdkVersion
-        iconUrl
-        privacy
-        icon {
-          url
-        }
-        updateBranches(limit: 100, offset: 0) {
-          id
-          name
-          updates(
-            limit: 1
-            offset: 0
-            filter: { platform: $platform, runtimeVersions: $runtimeVersions }
-          ) {
-            id
-            group
-            message
-            createdAt
-            runtimeVersion
-            platform
-            manifestPermalink
-          }
-        }
-      }
-    }
-  }
-`;
 
 export function ProjectContainer(
   props: { appId: string } & StackScreenProps<AllStackRoutes, 'Project'>
 ) {
-  const query = useQuery<ProjectData, ProjectVars>(ProjectPageQuery, {
+  const query = useWebContainerProjectPage_QueryQuery({
     fetchPolicy: 'cache-and-network',
     variables: {
       appId: props.appId,
-      platform: Platform.OS === 'ios' ? 'IOS' : 'ANDROID',
+      platform: Platform.OS === 'ios' ? AppPlatform.Ios : AppPlatform.Android,
       runtimeVersions: Kernel.sdkVersions
         .split(',')
         .map(kernelSDKVersion => getRuntimeVersionForSDKVersion(kernelSDKVersion)),

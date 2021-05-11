@@ -1,0 +1,15 @@
+query Home_AccountSnacks($accountName: String!, $limit: Int!, $offset: Int!) {
+  account {
+    byName(accountName: $accountName) {
+      id
+      name
+      snacks(limit: $limit, offset: $offset) {
+        name
+        description
+        fullName
+        slug
+        isDraft
+      }
+    }
+  }
+}

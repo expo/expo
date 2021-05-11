@@ -110,10 +110,10 @@ export default function ProfileView({ navigation, loading, error, refetch, data 
       style={styles.container}>
       {data?.me && (
         <>
-          <ProfileHeader data={data} />
-          <ProfileAccountsSection data={data} navigation={navigation} />
-          <ProfileProjectsSection data={data} navigation={navigation} />
-          <ProfileSnacksSection data={data} navigation={navigation} />
+          <ProfileHeader me={data.me} />
+          <ProfileAccountsSection accounts={data.me.accounts} navigation={navigation} />
+          <ProfileProjectsSection me={data.me} navigation={navigation} />
+          <ProfileSnacksSection snacks={data.me.snacks} navigation={navigation} />
         </>
       )}
     </ScrollView>
@@ -156,8 +156,8 @@ function ProfileErrorView({
   );
 }
 
-function ProfileHeader({ data }: { data: NonNullable<Props['data']> }) {
-  const { firstName, lastName, profilePhoto } = data.me;
+function ProfileHeader({ me }: { me: NonNullable<NonNullable<Props['data']>['me']> }) {
+  const { firstName, lastName, profilePhoto } = me;
   return (
     <StyledView style={styles.header} darkBackgroundColor="#000" darkBorderColor="#000">
       <View style={styles.headerAvatarContainer}>
@@ -170,7 +170,7 @@ function ProfileHeader({ data }: { data: NonNullable<Props['data']> }) {
       </StyledText>
       <View style={styles.headerAccountName}>
         <StyledText style={styles.headerAccountText} lightColor="#232B3A" darkColor="#ccc">
-          @{data.me.username}
+          @{me.username}
         </StyledText>
       </View>
     </StyledView>
@@ -178,16 +178,15 @@ function ProfileHeader({ data }: { data: NonNullable<Props['data']> }) {
 }
 
 function ProfileAccountsSection({
-  data,
+  accounts,
   navigation,
 }: Pick<Props, 'navigation'> & {
-  data: NonNullable<Props['data']>;
+  accounts: NonNullable<NonNullable<Props['data']>['me']>['accounts'];
 }) {
   const onPressAccount = (accountName: string) => {
     navigation.navigate('Account', { accountName });
   };
 
-  const accounts = data.me.accounts;
   if (accounts.length === 1) {
     return null;
   }
@@ -212,10 +211,10 @@ function ProfileAccountsSection({
 }
 
 function ProfileProjectsSection({
-  data,
+  me,
   navigation,
 }: Pick<Props, 'navigation'> & {
-  data: NonNullable<Props['data']>;
+  me: NonNullable<NonNullable<Props['data']>['me']>;
 }) {
   const onPressProjectList = () => {
     navigation.navigate('ProfileAllProjects', {});
@@ -237,7 +236,7 @@ function ProfileProjectsSection({
   };
 
   const renderContents = () => {
-    const apps = data.me.apps;
+    const apps = me.apps;
     if (!apps.length) {
       return <EmptyAccountProjectsNotice />;
     }
@@ -247,7 +246,7 @@ function ProfileProjectsSection({
         {take(apps, MAX_APPS_TO_DISPLAY).map(renderApp)}
         <SeeAllProjectsButton
           apps={otherApps}
-          appCount={data.me.appCount - MAX_APPS_TO_DISPLAY}
+          appCount={me.appCount - MAX_APPS_TO_DISPLAY}
           onPress={onPressProjectList}
         />
       </>
@@ -263,16 +262,14 @@ function ProfileProjectsSection({
 }
 
 function ProfileSnacksSection({
-  data,
+  snacks,
   navigation,
 }: Pick<Props, 'navigation'> & {
-  data: NonNullable<Props['data']>;
+  snacks: NonNullable<NonNullable<Props['data']>['me']>['snacks'];
 }) {
   const onPressSnackList = () => {
     navigation.navigate('ProfileAllSnacks', {});
   };
-
-  const snacks = data.me.snacks;
 
   const renderSnack = (snack: any, i: number) => {
     return (

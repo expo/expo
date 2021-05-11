@@ -1,0 +1,6 @@
+query Home_ViewerUsername {
+  me {
+    id
+    username
+  }
+}
