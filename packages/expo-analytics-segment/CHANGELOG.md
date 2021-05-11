@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- Migrated constants interface from `unimodules-constants-interface` to `expo-modules-core`.
+- Migrated constants interface from `unimodules-constants-interface` to `expo-modules-core`. ([#12876](https://github.com/expo/expo/pull/12876) by [@tsapeta](https://github.com/tsapeta))
 
 ## 10.1.1 — 2021-03-30
 
@@ -68,4 +68,4 @@ _This version does not introduce any user-facing changes._
 ## 8.2.0 — 2020-05-27
 
 _This version does not introduce any user-facing changes._
-````
+```

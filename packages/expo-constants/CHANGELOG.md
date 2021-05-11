@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- Migrated module interface from `unimodules-constants-interface` to `expo-modules-core`.
+- Migrated module interface from `unimodules-constants-interface` to `expo-modules-core`. ([#12876](https://github.com/expo/expo/pull/12876) by [@tsapeta](https://github.com/tsapeta))
 
 ## 10.1.3 — 2021-04-13
 

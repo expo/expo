@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- Removed unnecessary dependency on `unimodules-constants-interface`.
+- Removed unnecessary dependency on `unimodules-constants-interface`. ([#12876](https://github.com/expo/expo/pull/12876) by [@tsapeta](https://github.com/tsapeta))
 
 ## 11.0.2 — 2021-04-13
 

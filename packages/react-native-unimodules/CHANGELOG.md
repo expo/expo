@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Migrated camera and constants interfaces from their own packages to `expo-modules-core`.
+- Migrated camera and constants interfaces from their own packages to `expo-modules-core`. ([#12876](https://github.com/expo/expo/pull/12876) by [@tsapeta](https://github.com/tsapeta))
 
 ## 0.13.3 — 2021-04-13
 
