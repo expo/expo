@@ -3,11 +3,11 @@
 
 #if __has_include(<EXConstants/EXConstantsService.h>)
 #import <EXConstants/EXConstantsService.h>
-#import <UMConstantsInterface/UMConstantsInterface.h>
+#import <ExpoModulesCore/EXConstantsInterface.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXConstantsBinding : EXConstantsService <UMInternalModule, UMConstantsInterface>
+@interface EXConstantsBinding : EXConstantsService <UMInternalModule, EXConstantsInterface>
 
 @property (nonatomic, readonly) NSString *appOwnership;
 

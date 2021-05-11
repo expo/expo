@@ -7,9 +7,10 @@ import java.io.IOException;
 import java.util.EnumSet;
 
 import org.unimodules.core.ModuleRegistry;
-import org.unimodules.interfaces.constants.ConstantsInterface;
 import expo.modules.filesystem.FilePermissionModule;
 import org.unimodules.interfaces.filesystem.Permission;
+
+import expo.modules.interfaces.constants.ConstantsInterface;
 import host.exp.exponent.utils.ScopedContext;
 
 public class ScopedFilePermissionModule extends FilePermissionModule {

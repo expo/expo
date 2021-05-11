@@ -103,7 +103,6 @@
   "sentry-expo": "^3.1.0",
   "unimodules-app-loader": "~2.1.0",
   "unimodules-barcode-scanner-interface": "~6.1.0",
-  "unimodules-constants-interface": "~6.1.0",
   "unimodules-face-detector-interface": "~6.1.0",
   "unimodules-file-system-interface": "~6.1.0",
   "unimodules-font-interface": "~6.1.0",

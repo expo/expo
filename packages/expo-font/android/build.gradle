@@ -70,7 +70,7 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 dependencies {
   unimodule "unimodules-core"
   unimodule "unimodules-font-interface"
-  unimodule "unimodules-constants-interface"
+  unimodule "expo-modules-core"
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
 }

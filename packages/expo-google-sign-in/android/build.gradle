@@ -69,7 +69,7 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
   unimodule "unimodules-core"
-  unimodule "unimodules-constants-interface"
+  unimodule 'expo-modules-core'
 
   api 'com.google.android.gms:play-services-auth:17.0.0'
 

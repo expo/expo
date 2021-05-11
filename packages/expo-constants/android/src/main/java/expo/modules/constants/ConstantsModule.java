@@ -10,7 +10,8 @@ import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.interfaces.constants.ConstantsInterface;
+
+import expo.modules.interfaces.constants.ConstantsInterface;
 
 public class ConstantsModule extends ExportedModule {
   private ModuleRegistry mModuleRegistry;

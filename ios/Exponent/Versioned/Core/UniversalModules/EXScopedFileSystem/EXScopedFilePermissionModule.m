@@ -3,7 +3,6 @@
 #if __has_include(<EXFileSystem/EXFilePermissionModule.h>)
 #import "EXScopedFilePermissionModule.h"
 #import <UMFileSystemInterface/UMFileSystemInterface.h>
-#import <UMConstantsInterface/UMConstantsInterface.h>
 
 @interface EXFilePermissionModule (Protected)
 

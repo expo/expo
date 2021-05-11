@@ -39,7 +39,8 @@ import org.unimodules.core.interfaces.ActivityEventListener;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.services.UIManager;
-import org.unimodules.interfaces.constants.ConstantsInterface;
+
+import expo.modules.interfaces.constants.ConstantsInterface;
 
 import static expo.modules.google.signin.Serialization.getExceptionCode;
 import static expo.modules.google.signin.Serialization.getSignInOptions;

@@ -3,8 +3,6 @@
 #import <EXFacebook/EXFacebook.h>
 #import <EXFacebook/EXFacebookAppTrackingPermissionRequester.h>
 
-#import <UMConstantsInterface/UMConstantsInterface.h>
-
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
 #import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
 
