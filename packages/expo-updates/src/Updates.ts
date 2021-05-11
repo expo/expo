@@ -31,6 +31,11 @@ if (ExpoUpdates.manifestString) {
   _manifest = JSON.parse(ExpoUpdates.manifestString);
 }
 export const manifest: Manifest | object = _manifest ?? {};
+
+// In Expo Go 2.19.x, the exported value ExpoUpdates.releaseChannel is always `default`, even if a
+// query parameter was used to load a published update from a non-default release channel. To fix
+// this for SDK 41 apps without patching native code, we can rely on the manifest.releaseChannel
+// property here if it exists, since all SDK 41 apps still use classic updates.
 export const releaseChannel: string =
   _manifest?.releaseChannel ?? ExpoUpdates.releaseChannel ?? 'default';
 
