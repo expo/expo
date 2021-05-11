@@ -25,7 +25,9 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
 }
 
 
-- (void)tryToParseManifest:(OnManifestParsed)onParsed onInvalidManifestURL:(OnInvalidManifestURL)onInalidURL onError:(OnManifestError)onError
+- (void)tryToParseManifest:(OnManifestParsed)onParsed
+      onInvalidManifestURL:(OnInvalidManifestURL)onInalidURL
+                   onError:(OnManifestError)onError
 {
   [self _fetch:@"HEAD" onError:onError completionHandler:^(NSData *data, NSURLResponse *response) {
     NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
@@ -39,7 +41,9 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
     [self _fetch:@"GET" onError:onError completionHandler:^(NSData *data, NSURLResponse *response) {
       EXDevLauncherManifest *manifest = [EXDevLauncherManifest fromJsonData:data];
       if (!manifest) {
-        onError([[NSError alloc] initWithDomain:@"DevelopemntClient" code:@1 userInfo:@"Couldn't parse the manifest."]);
+        NSMutableDictionary* details = [NSMutableDictionary dictionary];
+        [details setValue:@"Couldn't parse the manifest." forKey:NSLocalizedDescriptionKey];
+        onError([[NSError alloc] initWithDomain:@"DevelopemntClient" code:1 userInfo:details]);
         return;
       }
       onParsed(manifest);

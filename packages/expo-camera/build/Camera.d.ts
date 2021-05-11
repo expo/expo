@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { BarCodeScanningResult, CameraCapturedPicture, CameraMountError, CameraNativeProps, CameraPictureOptions, CameraProps, CameraRecordingOptions, ConstantsType, FaceDetectionResult, PermissionExpiration, PermissionResponse, PermissionStatus } from './Camera.types';
+import { BarCodeScanningResult, CameraCapturedPicture, CameraMountError, CameraNativeProps, CameraPictureOptions, CameraProps, CameraRecordingOptions, ConstantsType, FaceDetectionResult, PermissionExpiration, PermissionResponse, PermissionStatus, VideoCodec } from './Camera.types';
 export default class Camera extends React.Component<CameraProps> {
     static isAvailableAsync(): Promise<boolean>;
     static getAvailableCameraTypesAsync(): Promise<('front' | 'back')[]>;
+    static getAvailableVideoCodecsAsync(): Promise<string[]>;
     static Constants: ConstantsType;
     static ConversionTables: {
         type: Record<"front" | "back", string | number | undefined>;
@@ -26,6 +27,7 @@ export default class Camera extends React.Component<CameraProps> {
     getAvailablePictureSizesAsync(ratio?: string): Promise<string[]>;
     recordAsync(options?: CameraRecordingOptions): Promise<{
         uri: string;
+        codec?: VideoCodec;
     }>;
     stopRecording(): void;
     pausePreview(): void;

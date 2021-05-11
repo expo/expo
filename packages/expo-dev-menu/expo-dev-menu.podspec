@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
   s.platform       = :ios, '11.0'
   s.swift_version  = '5.2'
   s.source         = { git: 'https://github.com/expo/expo.git' }
-  s.source_files   = 'ios/**/*.{h,m,swift}', 'vendored/**/*.{h,m}'
+  s.source_files   = 'ios/**/*.{h,m,swift}'
   s.preserve_paths = 'ios/**/*.{h,m,swift}'
   s.requires_arc   = true
   s.header_dir     = 'EXDevMenu'
@@ -25,17 +25,22 @@ Pod::Spec.new do |s|
   ]}
 
   s.xcconfig = { 'GCC_PREPROCESSOR_DEFINITIONS' => 'EX_DEV_MENU_ENABLED=1', 'OTHER_SWIFT_FLAGS' => '-DEX_DEV_MENU_ENABLED=1' }
-  
-  # EXDevMenu
+
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }
-  # s.script_phase = {
-  #   :name => 'Copy Swift Header',
-  #   :script => 'ditto "${BUILT_PRODUCTS_DIR}/Swift Compatibility Header/${PRODUCT_MODULE_NAME}-Swift.h" "${PODS_ROOT}/Headers/Public/${PRODUCT_MODULE_NAME}/${PRODUCT_MODULE_NAME}-Swift.h"',
-  #   :execution_position => :after_compile,
-  #   :input_files => ['${BUILT_PRODUCTS_DIR}/Swift Compatibility Header/${PRODUCT_MODULE_NAME}-Swift.h']
-  # }
 
   s.dependency 'React'
   s.dependency 'expo-dev-menu-interface'
+  
+  s.subspec 'Vendored' do |vendored|
+    vendored.source_files = 'vendored/**/*.{h,m}'
+    vendored.private_header_files = 'vendored/**/*.h'
+    vendored.compiler_flags = '-w -Xanalyzer -analyzer-disable-all-checks'
+  end
+  
+  s.subspec 'Main' do |main|
+    main.dependency "expo-dev-menu/Vendored"
+  end
+  
+  s.default_subspec = 'Main'
 end

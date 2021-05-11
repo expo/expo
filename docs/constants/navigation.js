@@ -66,6 +66,7 @@ const sections = [
       'Environment variables and secrets',
       'Server infrastructure',
       'Caching dependencies',
+      'Running builds on your own infrastructure',
       'Build webhooks',
       'Building APKs for Android emulators and devices',
       'Building for iOS simulators',
@@ -87,10 +88,9 @@ const sections = [
     name: 'Development Clients',
     reference: [
       'Introduction',
+      'Getting Started',
       'Installation',
       'Building With EAS',
-      'Building iOS Locally',
-      'Building Android Locally',
       'Extending the Development Menu',
     ],
   },
@@ -196,6 +196,7 @@ const sections = [
       'Implementing a checkbox for Expo and React Native apps',
       'Stacking overlapping views with zIndex in Expo and React Native apps',
       'Using SVGs',
+      'How to display a popup toast',
     ],
   },
   {

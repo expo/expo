@@ -246,6 +246,8 @@ If you don't want to expose the password in the login script, set the `EXPO_CLI_
 $ npx expo login --non-interactive -u <EXPO USERNAME>
 ```
 
+Alternatively, you can [generate an access token under your Expo account settings](/accounts/programmatic-access.md) and configure it as an environment variable named `EXPO_TOKEN`. 
+
 ### Publish new builds
 
 After having the CLI library and authentication in place, we can finally create the build step.

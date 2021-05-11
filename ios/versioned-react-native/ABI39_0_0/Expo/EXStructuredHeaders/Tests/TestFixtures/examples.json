@@ -1,0 +1,208 @@
+[
+    {
+        "name": "Foo-Example",
+        "raw": ["2; foourl=\"https://foo.example.com/\""],
+        "header_type": "item",
+        "expected": [2, [["foourl", "https://foo.example.com/"]]],
+        "canonical": ["2;foourl=\"https://foo.example.com/\""]
+    },
+    {
+        "name": "Example-StrListHeader",
+        "raw": ["\"foo\", \"bar\", \"It was the best of times.\""],
+        "header_type": "list",
+        "expected": [
+            ["foo", []],
+            ["bar", []],
+            ["It was the best of times.", []]
+        ]
+    },
+    {
+        "name": "Example-Hdr (list on one line)",
+        "raw": ["foo, bar"],
+        "header_type": "list",
+        "expected": [
+            [{"__type":"token", "value":"foo"}, []],
+            [{"__type":"token", "value":"bar"}, []]
+        ]
+    },
+    {
+        "name": "Example-Hdr (list on two lines)",
+        "raw": ["foo", "bar"],
+        "header_type": "list",
+        "expected": [
+            [{"__type":"token", "value":"foo"}, []],
+            [{"__type":"token", "value":"bar"}, []]
+        ],
+        "canonical": ["foo, bar"]
+    },
+    {
+        "name": "Example-StrListListHeader",
+        "raw": ["(\"foo\" \"bar\"), (\"baz\"), (\"bat\" \"one\"), ()"],
+        "header_type": "list",
+        "expected": [
+            [[
+                ["foo", []],
+                ["bar", []]
+            ], []],
+            [[
+                ["baz", []]
+            ], []],
+            [[
+                ["bat", []],
+                ["one", []]
+            ], []],
+            [[], []]
+        ]
+    },
+    {
+        "name": "Example-ListListParam",
+        "raw": ["(\"foo\"; a=1;b=2);lvl=5, (\"bar\" \"baz\");lvl=1"],
+        "header_type": "list",
+        "expected": [
+            [[
+                ["foo", [["a", 1], ["b", 2]]]
+            ], [["lvl", 5]]],
+            [[
+                ["bar", []], ["baz", []]
+            ], [["lvl", 1]]]
+        ],
+        "canonical": ["(\"foo\";a=1;b=2);lvl=5, (\"bar\" \"baz\");lvl=1"]
+    },
+
+    {
+        "name": "Example-ParamListHeader",
+        "raw": ["abc;a=1;b=2; cde_456, (ghi;jk=4 l);q=\"9\";r=w"],
+        "header_type": "list",
+        "expected": [
+            [{"__type": "token", "value": "abc"}, [["a", 1], ["b", 2], ["cde_456", true]]],
+            [
+            [
+                [{"__type": "token", "value": "ghi"}, [["jk", 4]]],
+                [{"__type": "token", "value": "l"}, []]
+            ],
+            [["q", "9"], ["r", {"__type": "token", "value": "w"}]]
+            ]
+        ],
+        "canonical": ["abc;a=1;b=2;cde_456, (ghi;jk=4 l);q=\"9\";r=w"]
+    },
+    {
+        "name": "Example-IntHeader",
+        "raw": ["1; a; b=?0"],
+        "header_type": "item",
+        "expected": [1, [["a", true], ["b", false]]],
+        "canonical": ["1;a;b=?0"]
+    },
+    {
+        "name": "Example-DictHeader",
+        "raw": ["en=\"Applepie\", da=:w4ZibGV0w6ZydGU=:"],
+        "header_type": "dictionary",
+        "expected": [
+            ["en", ["Applepie", []]],
+            ["da", [{"__type": "binary", "value": "YODGE3DFOTB2M4TUMU======"}, []]]
+        ]
+    },
+    {
+        "name": "Example-DictHeader",
+        "raw": ["a=?0, b, c; foo=bar"],
+        "header_type": "dictionary",
+        "expected": [
+            ["a", [false, []]],
+            ["b", [true, []]],
+            ["c", [true, [["foo", {"__type": "token", "value": "bar"}]]]]
+        ],
+        "canonical": ["a=?0, b, c;foo=bar"]
+    },
+    {
+        "name": "Example-DictListHeader",
+        "raw": ["rating=1.5, feelings=(joy sadness)"],
+        "header_type": "dictionary",
+        "expected": [
+            ["rating", [1.5, []]],
+            ["feelings", [[
+                [{"__type": "token", "value": "joy"}, []],
+                [{"__type": "token", "value": "sadness"}, []]
+            ], []]]
+        ]
+    },
+    {
+        "name": "Example-MixDict",
+        "raw": ["a=(1 2), b=3, c=4;aa=bb, d=(5 6);valid"],
+        "header_type": "dictionary",
+        "expected": [
+            ["a", [[
+                [1, []],
+                [2, []]
+            ], []]],
+            ["b", [3, []]],
+            ["c", [4, [["aa", {"__type": "token", "value": "bb"}]]]],
+            ["d", [[
+                [5, []],
+                [6, []]
+            ], [["valid", true]]]]
+        ],
+        "canonical": ["a=(1 2), b=3, c=4;aa=bb, d=(5 6);valid"]
+    },
+    {
+        "name": "Example-Hdr (dictionary on one line)",
+        "raw": ["foo=1, bar=2"],
+        "header_type": "dictionary",
+        "expected": [
+            ["foo", [1, []]],
+            ["bar", [2, []]]
+        ]
+    },
+    {
+        "name": "Example-Hdr (dictionary on two lines)",
+        "raw": ["foo=1", "bar=2"],
+        "header_type": "dictionary",
+        "expected": [
+            ["foo", [1, []]],
+            ["bar", [2, []]]
+        ],
+        "canonical": ["foo=1, bar=2"]
+    },
+
+    {
+        "name": "Example-IntItemHeader",
+        "raw": ["5"],
+        "header_type": "item",
+        "expected": [5, []]
+    },
+    {
+        "name": "Example-IntItemHeader (params)",
+        "raw": ["5; foo=bar"],
+        "header_type": "item",
+        "expected": [5, [["foo", {"__type": "token", "value": "bar"}]]],
+        "canonical": ["5;foo=bar"]
+    },
+    {
+        "name": "Example-IntegerHeader",
+        "raw": ["42"],
+        "header_type": "item",
+        "expected": [42, []]
+    },
+    {
+        "name": "Example-FloatHeader",
+        "raw": ["4.5"],
+        "header_type": "item",
+        "expected": [4.5, []]
+    },
+    {
+        "name": "Example-StringHeader",
+        "raw": ["\"hello world\""],
+        "header_type": "item",
+        "expected": ["hello world", []]
+    },
+    {
+        "name": "Example-BinaryHdr",
+        "raw": [":cHJldGVuZCB0aGlzIGlzIGJpbmFyeSBjb250ZW50Lg==:"],
+        "header_type": "item",
+        "expected": [{"__type": "binary", "value": "OBZGK5DFNZSCA5DINFZSA2LTEBRGS3TBOJ4SAY3PNZ2GK3TUFY======"}, []]
+    },
+    {
+        "name": "Example-BoolHdr",
+        "raw": ["?1"],
+        "header_type": "item",
+        "expected": [true, []]
+    }
+]

@@ -5,14 +5,34 @@ import android.content.Intent
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactNativeHost
+import com.facebook.react.bridge.ReactContext
 import expo.modules.devlauncher.launcher.DevLauncherClientHost
 import expo.modules.devlauncher.launcher.DevLauncherReactActivityDelegateSupplier
+import expo.modules.devlauncher.launcher.manifest.DevLauncherManifest
 
 const val DEV_LAUNCHER_IS_NOT_AVAILABLE = "DevLauncher isn't available in release builds"
 
 class DevLauncherController private constructor() {
+  internal enum class Mode {
+    LAUNCHER, APP
+  }
+
+  internal val mode: Mode
+    get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
+
   val devClientHost: DevLauncherClientHost
     get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
+
+  val manifest: DevLauncherManifest
+    get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
+
+  val appHost: ReactNativeHost
+    get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
+
+  fun maybeInitDevMenuDelegate(context: ReactContext) {
+    throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
+  }
+
 
   companion object {
     private var sInstance: DevLauncherController? = null

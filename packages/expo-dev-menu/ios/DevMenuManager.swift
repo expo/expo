@@ -197,7 +197,8 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
       return;
     }
     
-    bridge.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [eventName, data])
+    let args = data == nil ? [eventName] : [eventName, data!];
+    bridge.enqueueJSCall("RCTDeviceEventEmitter.emit", args: args)
   }
 
   // MARK: internals
@@ -230,7 +231,7 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
       return nil
     }
     let allExtensions = bridge.modulesConforming(to: DevMenuExtensionProtocol.self) as! [DevMenuExtensionProtocol]
-    let uniqueExtensionNames: [String] = Array(Set(allExtensions.map({ type(of: $0).moduleName() })))
+    let uniqueExtensionNames: [String] = Array(Set(allExtensions.map({ type(of: $0).moduleName!() })))
 
     return uniqueExtensionNames
       .map({ bridge.module(forName: DevMenuUtils.stripRCT($0)) })
@@ -273,8 +274,8 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
       devMenuItems.filter { $0 is DevMenuCallableProvider } :
       (devMenuScreens.first { $0.screenName == currentScreen }?.getAllItems() ?? []).filter { $0 is DevMenuCallableProvider }
     
-    // We use flatMap here to remove nils
-    return (providers as! [DevMenuCallableProvider]).flatMap { $0.registerCallable?() }
+    // We use compactMap here to remove nils
+    return (providers as! [DevMenuCallableProvider]).compactMap { $0.registerCallable?() }
   }
 
   /**

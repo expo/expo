@@ -76,7 +76,7 @@ Additional configuration may be required for some scenarios:
 
 ### Build for Android device/emulator or iOS simulator
 
-The easiest way to try out EAS Build is to create a build that you can run on your Android device/emulator or iOS simulator. It's quicker than uploading it to a store, and you don't need any store developer membership accounts. If you'd like to try this, read about [creating an installable APK for Android](/build-reference/apk.md) and [creating a simulator build for iOS](/build/simulators.md).
+The easiest way to try out EAS Build is to create a build that you can run on your Android device/emulator or iOS simulator. It's quicker than uploading it to a store, and you don't need any store developer membership accounts. If you'd like to try this, read about [creating an installable APK for Android](/build-reference/apk.md) and [creating a simulator build for iOS](/build-reference/simulators.md).
 
 ### Build for app stores
 
@@ -126,7 +126,7 @@ Before the build can start, we'll need to generate or provide app signing creden
 
 ## 5. Wait for the build to complete
 
-By default, the `eas build` command will wait for your build to complete. However, if you interrupt this command and monitor the progress of your builds by either visiting [the EAS Build dashboard](https://expo.io/builds?type=eas) or running the `eas build:show` command.
+By default, the `eas build` command will wait for your build to complete. However, if you interrupt this command and monitor the progress of your builds by either visiting [the EAS Build dashboard](https://expo.io/builds?type=eas) or running the `eas build:list` command.
 
 ## 6. Next steps
 

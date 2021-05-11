@@ -40,6 +40,8 @@ abstract class DevLauncherAppLoader(
   private val context: Context
 ) {
   private var continuation: Continuation<Boolean>? = null
+  private var reactContextWasInitialized = false
+
   fun createOnDelegateWillBeCreatedListener(): (ReactActivity) -> Unit {
     return { activity ->
       onDelegateWillBeCreated(activity)
@@ -47,11 +49,16 @@ abstract class DevLauncherAppLoader(
       require(appHost.reactInstanceManager.currentReactContext == null) { "App react context shouldn't be created before." }
       appHost.reactInstanceManager.addReactInstanceEventListener(object : ReactInstanceManager.ReactInstanceEventListener {
         override fun onReactContextInitialized(context: ReactContext) {
+          if (reactContextWasInitialized) {
+            return
+          }
+
           // App can be started from deep link.
           // That's why, we maybe need to initialized dev menu here.
           DevLauncherController.instance.maybeInitDevMenuDelegate(context)
           onReactContext(context)
           appHost.reactInstanceManager.removeReactInstanceEventListener(this)
+          reactContextWasInitialized = true
           continuation!!.resume(true)
         }
       })

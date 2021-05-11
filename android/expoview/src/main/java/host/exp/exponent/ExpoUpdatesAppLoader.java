@@ -26,6 +26,9 @@ import expo.modules.updates.db.DatabaseHolder;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.Launcher;
 import expo.modules.updates.launcher.NoDatabaseLauncher;
+import expo.modules.updates.selectionpolicy.LauncherSelectionPolicyFilterAware;
+import expo.modules.updates.selectionpolicy.LoaderSelectionPolicyFilterAware;
+import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient;
 import expo.modules.updates.selectionpolicy.SelectionPolicy;
 import expo.modules.updates.loader.EmbeddedLoader;
 import expo.modules.updates.loader.FileDownloader;
@@ -33,7 +36,6 @@ import expo.modules.updates.loader.LoaderTask;
 import expo.modules.updates.manifest.Manifest;
 import expo.modules.updates.manifest.ManifestFactory;
 import expo.modules.updates.manifest.raw.RawManifest;
-import expo.modules.updates.selectionpolicy.SelectionPolicyFactory;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.exceptions.ManifestException;
 import host.exp.exponent.kernel.ExpoViewKernel;
@@ -202,7 +204,11 @@ public class ExpoUpdatesAppLoader {
     for (String sdkVersion : Constants.SDK_VERSIONS_LIST) {
       sdkVersionsList.add("exposdk:" + sdkVersion);
     }
-    SelectionPolicy selectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(sdkVersionsList);
+    SelectionPolicy selectionPolicy = new SelectionPolicy(
+            new LauncherSelectionPolicyFilterAware(sdkVersionsList),
+            new LoaderSelectionPolicyFilterAware(),
+            new ReaperSelectionPolicyDevelopmentClient()
+    );
 
     File directory;
     try {
@@ -272,15 +278,15 @@ public class ExpoUpdatesAppLoader {
       public void onRemoteManifestLoaded(Manifest manifest) {
         // expo-cli does not always respect our SDK version headers and respond with a compatible update or an error
         // so we need to check the compatibility here
-        @Nullable String sdkVersion = manifest.getRawManifestJson().getSDKVersionNullable();
+        @Nullable String sdkVersion = manifest.getRawManifest().getSDKVersionNullable();
         if (!isValidSdkVersion(sdkVersion)) {
           mCallback.onError(formatExceptionForIncompatibleSdk(sdkVersion != null ? sdkVersion : "null"));
           didAbort = true;
           return;
         }
 
-        setShouldShowAppLoaderStatus(manifest.getRawManifestJson());
-        mCallback.onOptimisticManifest(manifest.getRawManifestJson());
+        setShouldShowAppLoaderStatus(manifest.getRawManifest());
+        mCallback.onOptimisticManifest(manifest.getRawManifest());
         updateStatus(AppLoaderStatus.DOWNLOADING_NEW_UPDATE);
       }
 
@@ -292,7 +298,7 @@ public class ExpoUpdatesAppLoader {
         mLauncher = launcher;
         mIsUpToDate = isUpToDate;
         try {
-          JSONObject manifestJson = processManifestJson(launcher.getLaunchedUpdate().metadata);
+          JSONObject manifestJson = processManifestJson(launcher.getLaunchedUpdate().manifest);
           RawManifest manifest = ManifestFactory.INSTANCE.getRawManifestFromJson(manifestJson);
           mCallback.onManifestCompleted(manifest);
 
@@ -323,7 +329,7 @@ public class ExpoUpdatesAppLoader {
               throw new AssertionError("Background update with error status must have a nonnull update object");
             }
             jsonParams.put("type", UPDATE_AVAILABLE_EVENT);
-            jsonParams.put("manifestString", update.metadata.toString());
+            jsonParams.put("manifestString", update.manifest.toString());
           } else if (status == LoaderTask.BackgroundUpdateStatus.NO_UPDATE_AVAILABLE) {
             jsonParams.put("type", UPDATE_NO_UPDATE_AVAILABLE_EVENT);
           }
@@ -338,7 +344,7 @@ public class ExpoUpdatesAppLoader {
   private void launchWithNoDatabase(Context context, Exception e) {
     mLauncher = new NoDatabaseLauncher(context, mUpdatesConfiguration, e);
 
-    JSONObject manifestJson = EmbeddedLoader.readEmbeddedManifest(context, mUpdatesConfiguration).getRawManifestJson().getRawJson();
+    JSONObject manifestJson = EmbeddedLoader.readEmbeddedManifest(context, mUpdatesConfiguration).getRawManifest().getRawJson();
     try {
       manifestJson = processManifestJson(manifestJson);
     } catch (Exception ex) {

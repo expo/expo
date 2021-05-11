@@ -39,7 +39,7 @@ public class ExponentDB {
       experience.id = manifest.getID();
       experience.manifestUrl = manifestUrl;
       experience.bundleUrl = bundleUrl;
-      experience.manifest = manifest.getRawJson().toString();
+      experience.manifest = manifest.toString();
       FlowManager.getDatabase(ExponentDB.class).getTransactionManager().getSaveQueue().add(experience);
     } catch (JSONException e) {
       EXL.e(TAG, e.getMessage());

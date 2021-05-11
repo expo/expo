@@ -75,7 +75,7 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 dependencies {
   unimodule 'expo-gl-cpp'
   unimodule 'unimodules-core'
-  unimodule 'unimodules-camera-interface'
+  unimodule 'expo-modules-core'
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
 }

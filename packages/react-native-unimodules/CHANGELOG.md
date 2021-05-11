@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+- Migrated camera's interface from `unimodules-camera-interface` to `expo-modules-core`.
+
 ## 0.13.3 — 2021-04-13
 
 _This version does not introduce any user-facing changes._

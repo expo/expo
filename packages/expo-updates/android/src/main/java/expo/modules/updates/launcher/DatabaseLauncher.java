@@ -84,6 +84,8 @@ public class DatabaseLauncher implements Launcher {
       return;
     }
 
+    database.updateDao().markUpdateAccessed(mLaunchedUpdate);
+
     if (mLaunchedUpdate.status == UpdateStatus.EMBEDDED) {
       mBundleAssetName = EmbeddedLoader.BARE_BUNDLE_FILENAME;
       if (mLocalAssetFiles != null) {
@@ -154,7 +156,7 @@ public class DatabaseLauncher implements Launcher {
     return mSelectionPolicy.selectUpdateToLaunch(filteredLaunchableUpdates, manifestFilters);
   }
 
-  private File ensureAssetExists(AssetEntity asset, UpdatesDatabase database, Context context) {
+  /* package */ File ensureAssetExists(AssetEntity asset, UpdatesDatabase database, Context context) {
     File assetFile = new File(mUpdatesDirectory, asset.relativePath);
     boolean assetFileExists = assetFile.exists();
     if (!assetFileExists) {

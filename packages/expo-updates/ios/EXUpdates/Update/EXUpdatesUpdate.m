@@ -30,6 +30,7 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
     _database = database;
     _scopeKey = config.scopeKey;
     _status = EXUpdatesUpdateStatusPending;
+    _lastAccessed = [NSDate date];
     _isDevelopmentMode = NO;
   }
   return self;
@@ -39,21 +40,20 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
                     scopeKey:(NSString *)scopeKey
                   commitTime:(NSDate *)commitTime
               runtimeVersion:(NSString *)runtimeVersion
-                    metadata:(nullable NSDictionary *)metadata
+                    manifest:(nullable NSDictionary *)manifest
                       status:(EXUpdatesUpdateStatus)status
                         keep:(BOOL)keep
                       config:(EXUpdatesConfig *)config
                     database:(EXUpdatesDatabase *)database
-{  
-  // for now, we store the entire managed manifest in the metadata field
-  EXUpdatesUpdate *update = [[self alloc] initWithRawManifest:[self rawManifestForJSON:(metadata ?: @{})]
+{
+  EXUpdatesUpdate *update = [[self alloc] initWithRawManifest:[self rawManifestForJSON:(manifest ?: @{})]
                                                        config:config
                                                      database:database];
   update.updateId = updateId;
   update.scopeKey = scopeKey;
   update.commitTime = commitTime;
   update.runtimeVersion = runtimeVersion;
-  update.metadata = metadata;
+  update.manifest = manifest;
   update.status = status;
   update.keep = keep;
   return update;
@@ -128,7 +128,7 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
   EXUpdatesRawManifest *rawManifest;
   if (manifestJSON[@"releaseId"]) {
     rawManifest = [[EXUpdatesLegacyRawManifest alloc] initWithRawManifestJSON:manifestJSON];
-  } else if (manifestJSON[@"updateMetadata"]) {
+  } else if (manifestJSON[@"metadata"]) {
     rawManifest = [[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:manifestJSON];
   } else {
     rawManifest = [[EXUpdatesBareRawManifest alloc] initWithRawManifestJSON:manifestJSON];

@@ -295,7 +295,7 @@ public class UpdatesController {
             throw new AssertionError("Background update with error status must have a nonnull update object");
           }
           WritableMap params = Arguments.createMap();
-          params.putString("manifestString", update.metadata.toString());
+          params.putString("manifestString", update.manifest.toString());
           UpdatesUtils.sendEventToReactNative(mReactNativeHost, UPDATE_AVAILABLE_EVENT, params);
         } else if (status == LoaderTask.BackgroundUpdateStatus.NO_UPDATE_AVAILABLE) {
           UpdatesUtils.sendEventToReactNative(mReactNativeHost, UPDATE_NO_UPDATE_AVAILABLE_EVENT, null);

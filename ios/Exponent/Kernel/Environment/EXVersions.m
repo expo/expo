@@ -56,6 +56,7 @@
 
 - (NSString *)symbolPrefixForSdkVersion:(NSString *)version isKernel:(BOOL)isKernel
 {
+#ifdef INCLUDES_VERSIONED_CODE
   NSDictionary *detachedVersions = _versions[@"detachedNativeVersions"];
   if (detachedVersions) {
     if (!isKernel && detachedVersions[@"shell"]) {
@@ -75,10 +76,11 @@
   if (version && version.length && ![version isEqualToString:@"UNVERSIONED"]) {
     return [[@"ABI" stringByAppendingString:version] stringByReplacingOccurrencesOfString:@"." withString:@"_"];
   }
+#endif
   return @"";
 }
 
-- (NSString *)availableSdkVersionForManifest: (EXUpdatesRawManifest * _Nullable)manifest
+- (NSString *)availableSdkVersionForManifest:(EXUpdatesRawManifest * _Nullable)manifest
 {
   return [self _versionForManifest:manifest];
 }
@@ -140,7 +142,11 @@
 }
 
 - (BOOL)supportsVersion:(NSString *)sdkVersion {
+#ifdef INCLUDES_VERSIONED_CODE
   return [_versions[@"sdkVersions"] containsObject:(NSString *) sdkVersion];
+#else
+  return YES;
+#endif
 }
 
 @end

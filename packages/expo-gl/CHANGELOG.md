@@ -10,6 +10,10 @@
 
 - Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
 
+### 💡 Others
+
+- Migrated camera's interface from `unimodules-camera-interface` to `expo-modules-core`.
+
 ## 10.3.0 — 2021-04-20
 
 ### 🎉 New features

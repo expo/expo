@@ -28,8 +28,17 @@ const statusPage = 'status';
 const portsToCheck = [8081, 8082, 19000, 19001, 19002, 19003, 19004, 19005];
 
 type State = {
-  openedProjects: { name?: string; url: string; hideImage?: boolean }[];
-  onlineProjects: { description: string; source: 'snack' | 'desktop'; url: string }[];
+  openedProjects: {
+    name?: string;
+    url: string;
+    hideImage?: boolean;
+  }[];
+  onlineProjects: {
+    description: string;
+    source: 'snack' | 'desktop';
+    url: string;
+    hideImage?: boolean;
+  }[];
   loadingApp: boolean;
   isRefreshing: boolean;
   pendingDeepLink: string | null;
@@ -40,7 +49,7 @@ type Props = { isUserLoggedIn: boolean; isSimulator: boolean };
 const bottomContainerHeight = isDevMenuAvailable() ? 40 : 0;
 
 class LauncherMainScreen extends React.Component<Props, State> {
-  state = {
+  state: State = {
     openedProjects: [],
     onlineProjects: [],
     loadingApp: false,
@@ -199,6 +208,7 @@ class LauncherMainScreen extends React.Component<Props, State> {
             key={url}
             title={description}
             subtitle={url}
+            image={require('../assets/cli.png')}
             onPress={() => this.loadApp(url)}
             onLongPress={() => {
               const message = url;

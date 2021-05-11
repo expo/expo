@@ -13,19 +13,19 @@ public class SelectionPolicies {
   public static final String TAG = SelectionPolicies.class.getSimpleName();
 
   public static boolean matchesFilters(UpdateEntity update, JSONObject manifestFilters) {
-    if (manifestFilters == null || update.metadata == null || !update.metadata.has("updateMetadata")) {
+    if (manifestFilters == null || update.manifest == null || !update.manifest.has("metadata")) {
       // empty matches all
       return true;
     }
     try {
-      JSONObject updateMetadata = update.metadata.getJSONObject("updateMetadata");
+      JSONObject metadata = update.manifest.getJSONObject("metadata");
 
       // create lowercase copy for case-insensitive search
       JSONObject metadataLCKeys = new JSONObject();
-      Iterator<String> metadataKeySet = updateMetadata.keys();
+      Iterator<String> metadataKeySet = metadata.keys();
       while (metadataKeySet.hasNext()) {
         String key = metadataKeySet.next();
-        metadataLCKeys.put(key.toLowerCase(), updateMetadata.get(key));
+        metadataLCKeys.put(key.toLowerCase(), metadata.get(key));
       }
 
       Iterator<String> filterKeySet = manifestFilters.keys();

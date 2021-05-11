@@ -20,17 +20,13 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   config:config
                                                                 database:database];
   
-  id updateId = manifest.rawID;
-  id commitTime = manifest.createdAt;
-  id runtimeVersion = manifest.runtimeVersion;
-  id launchAsset = manifest.launchAsset;
-  id assets = manifest.assets;
+  NSString *updateId = manifest.rawID;
+  NSString *commitTime = manifest.createdAt;
+  NSString *runtimeVersion = manifest.runtimeVersion;
+  NSDictionary *launchAsset = manifest.launchAsset;
+  NSArray *assets = manifest.assets;
   
-  NSAssert([updateId isKindOfClass:[NSString class]], @"update ID should be a string");
-  NSAssert([commitTime isKindOfClass:[NSString class]], @"createdAt should be a string");
-  NSAssert([runtimeVersion isKindOfClass:[NSString class]], @"runtimeVersion should be a string");
-  NSAssert([launchAsset isKindOfClass:[NSDictionary class]], @"launchAsset should be a dictionary");
-  NSAssert(!assets || [assets isKindOfClass:[NSArray class]], @"assets should be null or an array");
+  NSAssert(updateId != nil, @"update ID should not be null");
   
   NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:(NSString *)updateId];
   NSAssert(uuid, @"update ID should be a valid UUID");
@@ -87,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
   update.keep = YES;
   update.bundleUrl = bundleUrl;
   update.assets = processedAssets;
-  update.metadata = manifest.rawManifestJSON;
+  update.manifest = manifest.rawManifestJSON;
   
   if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
     NSDictionary *headersDictionary = ((NSHTTPURLResponse *)response).allHeaderFields;

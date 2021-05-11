@@ -112,7 +112,7 @@ async function setFacebookAppIdString(config, projectRoot) {
     try {
         await XML_1.writeXMLAsync({ path: stringsPath, xml: stringsJSON });
     }
-    catch (_a) {
+    catch {
         throw new Error(`Error setting facebookAppId. Cannot write strings.xml to "${stringsPath}"`);
     }
     return true;

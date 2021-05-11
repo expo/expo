@@ -160,6 +160,9 @@ function setFacebookApplicationQuerySchemes(config, infoPlist) {
 }
 exports.setFacebookApplicationQuerySchemes = setFacebookApplicationQuerySchemes;
 exports.withUserTrackingPermission = (config, { userTrackingPermission } = {}) => {
+    if (userTrackingPermission === false) {
+        return config;
+    }
     if (!config.ios)
         config.ios = {};
     if (!config.ios.infoPlist)

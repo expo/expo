@@ -43,7 +43,10 @@
 
   NSString *runtimeVersion = @"1.0";
   NSString *scopeKey = @"dummyScope";
-  EXUpdatesConfig *config = [EXUpdatesConfig new];
+  EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
+    @"EXUpdatesRuntimeVersion": runtimeVersion,
+    @"EXUpdatesScopeKey": scopeKey
+  }];
   EXUpdatesDatabase *database = [EXUpdatesDatabase new];
 
   _updateRollout0 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
@@ -52,7 +55,7 @@
     @"runtimeVersion": @"1.0",
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
-    @"updateMetadata": @{@"branchName": @"rollout"}
+    @"metadata": @{@"branchName": @"rollout"}
   }] response:nil config:config database:database];
 
   _updateDefault1 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
@@ -61,7 +64,7 @@
     @"runtimeVersion": @"1.0",
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
-    @"updateMetadata": @{@"branchName": @"default"}
+    @"metadata": @{@"branchName": @"default"}
   }] response:nil config:config database:database];
 
   _updateRollout1 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
@@ -70,7 +73,7 @@
     @"runtimeVersion": @"1.0",
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
-    @"updateMetadata": @{@"branchName": @"rollout"}
+    @"metadata": @{@"branchName": @"rollout"}
   }] response:nil config:config database:database];
 
   _updateDefault2 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
@@ -79,7 +82,7 @@
     @"runtimeVersion": @"1.0",
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
-    @"updateMetadata": @{@"branchName": @"default"}
+    @"metadata": @{@"branchName": @"default"}
   }] response:nil config:config database:database];
 
   _updateRollout2 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
@@ -88,7 +91,7 @@
     @"runtimeVersion": @"1.0",
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
-    @"updateMetadata": @{@"branchName": @"rollout"}
+    @"metadata": @{@"branchName": @"rollout"}
   }] response:nil config:config database:database];
 
   _updateMultipleFilters = [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
@@ -97,7 +100,7 @@
     @"runtimeVersion": @"1.0",
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
-    @"updateMetadata": @{@"firstKey": @"value1", @"secondKey": @"value2"}
+    @"metadata": @{@"firstKey": @"value1", @"secondKey": @"value2"}
   }] response:nil config:config database:database];
 
   _updateNoMetadata = [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
@@ -190,7 +193,7 @@
 
 - (void)testDoesUpdateMatchFilters_Null
 {
-  // null filters or null updateMetadata (i.e. bare or legacy manifests) is counted as a match
+  // null filters or null metadata (i.e. bare or legacy manifests) is counted as a match
   XCTAssertTrue([EXUpdatesSelectionPolicies doesUpdate:_updateDefault1 matchFilters:nil]);
   XCTAssertTrue([EXUpdatesSelectionPolicies doesUpdate:_updateNoMetadata matchFilters:_manifestFilters]);
 }

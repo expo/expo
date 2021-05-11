@@ -14,12 +14,11 @@ import org.json.JSONObject
 import java.util.*
 
 class BareManifest private constructor(
-  override val rawManifestJson: BareRawManifest,
+  override val rawManifest: BareRawManifest,
   private val mId: UUID,
   private val mScopeKey: String,
   private val mCommitTime: Date,
   private val mRuntimeVersion: String,
-  private val mMetadata: JSONObject?,
   private val mAssets: JSONArray?
 ) : Manifest {
   override val serverDefinedHeaders: JSONObject? = null
@@ -28,9 +27,6 @@ class BareManifest private constructor(
 
   override val updateEntity: UpdateEntity by lazy {
     UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey).apply {
-      if (mMetadata != null) {
-        metadata = mMetadata
-      }
       status = UpdateStatus.EMBEDDED
     }
   }
@@ -50,7 +46,7 @@ class BareManifest private constructor(
           val assetObject = mAssets.getJSONObject(i)
           val type = assetObject.getString("type")
           val assetEntity = AssetEntity(
-            assetObject.getString("packagerHash") + "." + type,
+            assetObject.getString("packagerHash"),
             type
           ).apply {
             resourcesFilename = assetObject.optString("resourcesFilename")
@@ -88,7 +84,6 @@ class BareManifest private constructor(
       val id = UUID.fromString(rawManifest.getID())
       val commitTime = Date(rawManifest.getCommitTimeLong())
       val runtimeVersion = UpdatesUtils.getRuntimeVersion(configuration)
-      val metadata = rawManifest.getMetadata()
       val assets = rawManifest.getAssets()
       if (runtimeVersion.contains(",")) {
         throw AssertionError("Should not be initializing a BareManifest in an environment with multiple runtime versions.")
@@ -99,7 +94,6 @@ class BareManifest private constructor(
         configuration.scopeKey,
         commitTime,
         runtimeVersion,
-        metadata,
         assets
       )
     }

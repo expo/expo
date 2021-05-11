@@ -41,7 +41,7 @@ object ManifestFactory {
             manifestJson.has("releaseId") -> {
                 LegacyRawManifest(manifestJson)
             }
-            manifestJson.has("updateMetadata") -> {
+            manifestJson.has("metadata") -> {
                 NewRawManifest(manifestJson)
             }
             else -> {

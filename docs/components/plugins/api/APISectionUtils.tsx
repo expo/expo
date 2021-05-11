@@ -1,4 +1,4 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
@@ -51,7 +51,7 @@ export const mdInlineRenderers: MDRenderers = {
   paragraph: ({ children }) => (children ? <span>{children}</span> : null),
 };
 
-const nonLinkableTypes = ['Date', 'Uint8Array'];
+const nonLinkableTypes = ['Date', 'T', 'TaskOptions', 'Uint8Array'];
 
 export const resolveTypeName = ({
   elementType,
@@ -111,6 +111,8 @@ export const resolveTypeName = ({
           </Link>
         ) : t.type === 'array' ? (
           `${t.elementType?.name}[]`
+        ) : t.type === 'literal' && typeof t.value === 'string' ? (
+          `'${t.name || t.value}'`
         ) : (
           `${t.name || t.value}`
         )

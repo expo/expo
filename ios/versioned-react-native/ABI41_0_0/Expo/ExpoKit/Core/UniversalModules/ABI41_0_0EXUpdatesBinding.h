@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol ABI41_0_0EXUpdatesBindingDelegate
 
 - (ABI41_0_0EXUpdatesConfig *)configForExperienceId:(NSString *)experienceId;
-- (id<ABI41_0_0EXUpdatesSelectionPolicy>)selectionPolicyForExperienceId:(NSString *)experienceId;
+- (ABI41_0_0EXUpdatesSelectionPolicy *)selectionPolicyForExperienceId:(NSString *)experienceId;
 - (nullable ABI41_0_0EXUpdatesUpdate *)launchedUpdateForExperienceId:(NSString *)experienceId;
 - (nullable NSDictionary *)assetFilesMapForExperienceId:(NSString *)experienceId;
 - (BOOL)isUsingEmbeddedAssetsForExperienceId:(NSString *)experienceId;
