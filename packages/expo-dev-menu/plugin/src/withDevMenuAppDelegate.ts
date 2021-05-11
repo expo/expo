@@ -10,6 +10,7 @@ const DEV_MENU_IOS_INIT = `
   [DevMenuManager configureWithBridge:bridge];
 #endif`;
 
+const DEV_LAUNCHER_IMPORT = `#include <EXDevLauncher/EXDevLauncherController.h>`;
 export function modifyAppDelegate(appDelegate: string) {
   if (!appDelegate.includes(DEV_MENU_IOS_IMPORT)) {
     const lines = appDelegate.split('\n');
@@ -18,21 +19,29 @@ export function modifyAppDelegate(appDelegate: string) {
     appDelegate = lines.join('\n');
   }
 
-  if (!appDelegate.includes(DEV_MENU_IOS_INIT)) {
-    const lines = appDelegate.split('\n');
+  if (!appDelegate.includes(DEV_LAUNCHER_IMPORT)) {
+    // expo-dev-launcher isn't present - we need to init expo-dev-menu
+    if (!appDelegate.includes(DEV_MENU_IOS_INIT)) {
+      const lines = appDelegate.split('\n');
 
-    const initializeReactNativeAppIndex = lines.findIndex(line =>
-      line.includes('- (RCTBridge *)initializeReactNativeApp')
-    );
+      const initializeReactNativeAppIndex = lines.findIndex(line =>
+        line.includes('- (RCTBridge *)initializeReactNativeApp')
+      );
 
-    const rootViewControllerIndex = lines.findIndex(
-      (line, index) => initializeReactNativeAppIndex < index && line.includes('rootViewController')
-    );
+      const rootViewControllerIndex = lines.findIndex(
+        (line, index) =>
+          initializeReactNativeAppIndex < index && line.includes('rootViewController')
+      );
 
-    lines.splice(rootViewControllerIndex - 1, 0, DEV_MENU_IOS_INIT);
+      lines.splice(rootViewControllerIndex - 1, 0, DEV_MENU_IOS_INIT);
 
-    appDelegate = lines.join('\n');
+      appDelegate = lines.join('\n');
+    }
+  } else {
+    // expo-dev-launcher is present - we need to remove expo-dev-menu init block
+    appDelegate = appDelegate.replace(DEV_MENU_IOS_INIT, '');
   }
+
   return appDelegate;
 }
 
