@@ -28,7 +28,7 @@ exports.createWebpackConfigAsync = async function createWebpackConfigAsync(env, 
 
     // discover workspace package directories via glob - source yarn:
     // https://github.com/yarnpkg/yarn/blob/a4708b29ac74df97bac45365cba4f1d62537ceb7/src/config.js#L812-L826
-    const patterns = workspacePackage.workspaces ?? [];
+    const patterns = workspacePackage.workspaces || [];
     const registryFilenames = 'package.json';
     const trailingPattern = `/+(${registryFilenames})`;
 
@@ -51,7 +51,7 @@ exports.createWebpackConfigAsync = async function createWebpackConfigAsync(env, 
     debug(`Could not find Yarn workspace root`);
   }
 
-  env.babel = env.babel ?? {};
+  env.babel = env.babel || {};
 
   const config = await createExpoWebpackConfigAsync(
     {
@@ -59,7 +59,7 @@ exports.createWebpackConfigAsync = async function createWebpackConfigAsync(env, 
       babel: {
         dangerouslyAddModulePathsToTranspile: [
           ...workspacePackagesToTranspile,
-          ...(env.babel.dangerouslyAddModulePathsToTranspile ?? []),
+          ...(env.babel.dangerouslyAddModulePathsToTranspile || []),
         ],
       },
     },
