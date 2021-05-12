@@ -147,24 +147,24 @@ PODS:
   - EXPermissions (12.0.1):
     - UMCore
     - UMPermissionsInterface
-  - expo-dev-client (0.1.0):
+  - expo-dev-client (0.1.1):
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
-  - expo-dev-launcher (0.3.1):
+  - expo-dev-launcher (0.3.2):
     - expo-dev-menu-interface
     - React
-  - expo-dev-menu (0.5.0):
+  - expo-dev-menu (0.5.1):
     - expo-dev-menu-interface
-    - expo-dev-menu/Main (= 0.5.0)
+    - expo-dev-menu/Main (= 0.5.1)
     - React
   - expo-dev-menu-interface (0.3.0):
     - React
-  - expo-dev-menu/Main (0.5.0):
+  - expo-dev-menu/Main (0.5.1):
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - React
-  - expo-dev-menu/Vendored (0.5.0):
+  - expo-dev-menu/Vendored (0.5.1):
     - expo-dev-menu-interface
     - React
   - expo-image (1.0.0-alpha.0):
@@ -1272,9 +1272,9 @@ SPEC CHECKSUMS:
   EXNetwork: 36144f5e572e6b6b218094c66a57c99e07ffbc0d
   EXNotifications: baccd843a16a2cb2db2183e2d801652f3cb43202
   EXPermissions: 8f8c1c05580c4e02d4ee2c8dd74bfe173ff6a723
-  expo-dev-client: e7b6c924dad57d75ae7e0fd18f7dca2d8fb1118a
-  expo-dev-launcher: 376a9eb204ac817b4ccc67e80ffa65ceb53cd0e4
-  expo-dev-menu: b19010122456fed28f8198b7b845671c3ac88dd5
+  expo-dev-client: 9ebde0c4ece976fc0658a6a5a870be1515490ff6
+  expo-dev-launcher: 7982cc2eea84f06ede94c5db1fc05fb4bbfd5eab
+  expo-dev-menu: b87ccce5cbe35b5b3a59d62be5414a4454f59e61
   expo-dev-menu-interface: 3ed7da6749d50a969a36d93ae39b4e4a748af849
   expo-image: 07527eb7a57f5ac939c5ded392bcf64c975b9c87
   ExpoModulesCore: efdfa6650a7b554180c1559b7be9c3510ce18e51
