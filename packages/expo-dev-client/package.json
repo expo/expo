@@ -31,8 +31,8 @@
   "homepage": "https://docs.expo.io/versions/latest/sdk/module-template",
   "dependencies": {
     "@expo/config-plugins": "^1.0.28",
-    "expo-dev-launcher": "~0.3.1",
-    "expo-dev-menu": "~0.5.0",
+    "expo-dev-launcher": "~0.3.2",
+    "expo-dev-menu": "~0.5.1",
     "expo-dev-menu-interface": "~0.3.0"
   },
   "devDependencies": {
