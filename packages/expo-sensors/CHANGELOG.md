@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- Migrated module interfaces from `unimodules-sensors-interface` to `expo-modules-core`.
+- Migrated module interfaces from `unimodules-sensors-interface` to `expo-modules-core`. ([#12888](https://github.com/expo/expo/pull/12888) by [@tsapeta](https://github.com/tsapeta))
 
 ## 10.1.2 — 2021-04-13
 
