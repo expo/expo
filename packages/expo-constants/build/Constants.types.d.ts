@@ -112,12 +112,12 @@ export interface NativeConstants {
     nativeAppVersion: string | null;
     nativeBuildVersion: string | null;
     /**
-     * Classic manifest for Expo apps.
+     * Classic manifest for Expo apps using classic updates.
      * Returns `null` in bare workflow and when `manifest2` is non-null.
      */
     manifest: AppManifest | null;
     /**
-     * New manifest for Expo apps using expo-updates.
+     * New manifest for Expo apps using modern Expo Updates.
      * Returns `null` in bare workflow and when `manifest` is non-null.
      */
     manifest2: Manifest | null;
