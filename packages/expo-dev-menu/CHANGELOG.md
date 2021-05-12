@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed compatibility with React Native 0.64.X. ([#12909](https://github.com/expo/expo/pull/12909) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 0.5.0 — 2021-05-11
