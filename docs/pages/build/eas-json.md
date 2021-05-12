@@ -195,7 +195,7 @@ The schema of a build profile for a generic iOS project looks like this:
   "extends": string,
   "credentialsSource": "local" | "remote", // default: "remote"
   "scheme": string,
-  "schemeBuildConfiguration": "Release" | "Debug" | "Auto", // default: "Release",
+  "buildConfiguration": string,
   "artifactPath": string, // default: "ios/build/App.ipa"
   "releaseChannel": string, // default: "default"
   "distribution": "store" | "internal" | "simulator", // default: "store"
@@ -221,7 +221,7 @@ The schema of a build profile for a generic iOS project looks like this:
 - `extends` specifies name of build profile that current profile inherits values from.
 - `credentialsSource` defines the source of credentials for this build profile. If you want to provide your own `credentials.json` file, set this to `local` ([learn more on this here](/app-signing/local-credentials.md)). If you want to use the credentials managed by EAS, choose `remote` (this is the default option).
 - `scheme` defines the Xcode project's scheme to build. You should set it if your project has multiple schemes. Please note that if the project has only one scheme, it will automatically be detected. However, if multiple schemes exist and this value is **not** set, EAS CLI will prompt you to select one of them.
-- `schemeBuildConfiguration` is the configuration to use when building the app. When set to `Release` or `Debug`, the native project configuration is overridden with the corresponding value. When set to `Auto`, the value set in the scheme is used. Defaults to `Release`, overriding the native project configuration.
+- `schemeBuildConfiguration` is the configuration to use when building the app. When set, the native project configuration is overridden with the corresponding value. If left unset, the value set in the scheme is used.
 - `artifactPath` is the path (or pattern) where EAS Build is going to look for the build artifacts. EAS Build uses the `fast-glob` npm package for pattern matching, ([see their README to learn more about the syntax you can use](https://github.com/mrmlnc/fast-glob#pattern-syntax)). You should modify that path only if you are using a custom `Gymfile`. The default is `ios/build/App.ipa`.
 - `releaseChannel` is the release channel for the `expo-updates` package ([Learn more about this](../distribution/release-channels.md)). If you do not specify a channel, your binary will pull releases from the `default` channel. If you do not use `expo-updates` in your project then this property will have no effect.
 - `distribution` is the flow of distributing your app. If you choose `internal` you'll be able to share your build URLs with anyone, and they will be able to install the builds to their devices straight from the Expo website. Choose `simulator` to run the app on an iOS simulator on your computer. The default is `store` which means your build URLs won't be sharable. [Learn more about internal distribution](internal-distribution.md).
