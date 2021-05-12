@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed cases where Picker & Camera would be transparent on iOS 14.5. ([#12897](https://github.com/expo/expo/pull/12897) by [@cruzach](https://github.com/cruzach))
+
 ## 10.1.4 — 2021-04-16
 
 _This version does not introduce any user-facing changes._
