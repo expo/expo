@@ -827,11 +827,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     }
   }
 
-  @Override
-  protected void onError(final ExponentError error) {
-
-  }
-
   public String getExperienceId() {
     return mExperienceIdString;
   }
