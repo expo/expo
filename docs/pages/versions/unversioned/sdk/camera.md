@@ -134,7 +134,29 @@ const types = await Camera.getAvailableCameraTypesAsync();
 
 ### `Camera.requestPermissionsAsync()`
 
+Asks the user to grant permissions for accessing camera. 
+
+On iOS this will require apps to specify both `NSCameraUsageDescription` and `NSMicrophoneUsageDescription` entries in the `Info.plist`
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+### `Camera.requestCameraPermissionsAsync()`
+
 Asks the user to grant permissions for accessing camera.
+
+On iOS this will require apps to specify an `NSCameraUsageDescription` entry in the `Info.plist`
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+### `Camera.requestMicrophonePermissionsAsync()`
+
+Asks the user to grant permissions for accessing the microphone.
+
+On iOS this will require apps to specify an `NSMicrophoneUsageDescription` entry in the `Info.plist`
 
 #### Returns
 
@@ -144,10 +166,17 @@ A promise that resolves to an object of type [PermissionResponse](permissions.md
 
 Checks user's permissions for accessing camera.
 
+### `Camera.getCameraPermissionsAsync()`
+
+Checks user's permissions for accessing camera.
+
+### `Camera.getMicrophonePermissionsAsync()`
+
+Checks user's permissions for accessing microphone.
+
 #### Returns
 
 A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
-
 
 ### `Camera.getAvailableVideoCodecsAsync()`
 
@@ -156,6 +185,7 @@ A promise that resolves to an object of type [PermissionResponse](permissions.md
 #### Returns
 
 A promise that resolves to a list of strings that represents available codecs.
+
 ## Props
 
 ### `type`
