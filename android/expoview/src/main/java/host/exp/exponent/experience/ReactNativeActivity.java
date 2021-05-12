@@ -484,8 +484,6 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
       if (metadata.has(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS)) {
         try {
           JSONArray unreadNotifications = metadata.getJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS);
-          exponentProps.put(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS, unreadNotifications.toString());
-
           delegate.handleUnreadNotifications(unreadNotifications);
         } catch (JSONException e) {
           e.printStackTrace();
