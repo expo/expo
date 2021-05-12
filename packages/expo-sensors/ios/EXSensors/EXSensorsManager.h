@@ -7,10 +7,11 @@
 #import <UMSensorsInterface/UMGyroscopeInterface.h>
 #import <UMSensorsInterface/UMMagnetometerInterface.h>
 #import <UMSensorsInterface/UMMagnetometerUncalibratedInterface.h>
+#import <UMSensorsInterface/UMProximityInterface.h>
 
 // Gravity on the planet this module supports (currently just Earth) represented as m/s^2.
 static const float EXGravity = 9.80665;
 
-@interface EXSensorsManager : NSObject <UMInternalModule, UMAccelerometerInterface, UMBarometerInterface, UMDeviceMotionInterface, UMGyroscopeInterface, UMMagnetometerInterface, UMMagnetometerUncalibratedInterface>
+@interface EXSensorsManager : NSObject <UMInternalModule, UMAccelerometerInterface, UMBarometerInterface, UMDeviceMotionInterface, UMGyroscopeInterface, UMMagnetometerInterface, UMMagnetometerUncalibratedInterface, UMProximityInterface>
 
 @end

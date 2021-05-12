@@ -13,6 +13,7 @@
 @property (nonatomic, strong) NSMutableDictionary *gyroscopeHandlers;
 @property (nonatomic, strong) NSMutableDictionary *magnetometerHandlers;
 @property (nonatomic, strong) NSMutableDictionary *magnetometerUncalibratedHandlers;
+@property (nonatomic, strong) NSMutableDictionary *proximityHandlers;
 
 @end
 
@@ -22,7 +23,7 @@ UM_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(UMAccelerometerInterface), @protocol(UMBarometerInterface), @protocol(UMDeviceMotionInterface), @protocol(UMGyroscopeInterface), @protocol(UMMagnetometerInterface), @protocol(UMMagnetometerUncalibratedInterface)];
+  return @[@protocol(UMAccelerometerInterface), @protocol(UMBarometerInterface), @protocol(UMDeviceMotionInterface), @protocol(UMGyroscopeInterface), @protocol(UMMagnetometerInterface), @protocol(UMMagnetometerUncalibratedInterface), @protocol(UMProximityInterface)];
 }
 
 - (instancetype)init
@@ -34,6 +35,7 @@ UM_REGISTER_MODULE();
     _gyroscopeHandlers = [[NSMutableDictionary alloc] init];
     _magnetometerHandlers = [[NSMutableDictionary alloc] init];
     _magnetometerUncalibratedHandlers = [[NSMutableDictionary alloc] init];
+    _proximityHandlers = [[NSMutableDictionary alloc] init];
   }
   return self;
 }
@@ -61,6 +63,7 @@ UM_REGISTER_MODULE();
   [[self manager] stopGyroUpdates];
   [[self manager] stopMagnetometerUpdates];
   [self.altimeter stopRelativeAltitudeUpdates];
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)sensorModuleDidSubscribeForAccelerometerUpdates:(id)scopedSensorModule
@@ -284,6 +287,38 @@ UM_REGISTER_MODULE();
 - (BOOL)isMagnetometerUncalibratedAvailable
 {
   return [[self manager] isMagnetometerAvailable];
+}
+
+
+- (void)proximitySensorStateChange:(NSNotification *)notification
+{
+    BOOL proximityState = [[UIDevice currentDevice] proximityState];
+    for (void (^handler)(NSDictionary *) in strongSelf.proximityHandlers.allValues) {
+      handler(@{@"proximityState": @(proximityState)});
+    }
+}
+
+- (void)sensorModuleDidSubscribeForProximityUpdates:(id)scopedSensorModule
+                                        withHandler:(void (^)(NSDictionary *event))handlerBlock
+{
+  if ([self isProximityAvailable]) {
+    _proximityHandlers[scopedSensorModule] = handlerBlock;
+  }
+  [[UIDevice currentDevice] setProximityMonitoringEnabled:YES];
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(proximitySensorStateChange:) name:@"UIDeviceProximityStateDidChangeNotification" object:nil];
+}
+
+- (void)sensorModuleDidUnsubscribeForProximityUpdates:(id)scopedSensorModule
+{
+  [_proximityHandlers removeObjectForKey:scopedSensorModule];
+  if (_proximityHandlers.count == 0) {
+	[[UIDevice currentDevice] setProximityMonitoringEnabled:NO];
+  }
+}
+
+- (BOOL)isProximityAvailable
+{
+  return YES;
 }
 
 - (float)getGravity

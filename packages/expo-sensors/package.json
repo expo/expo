@@ -23,6 +23,7 @@
     "gyroscope",
     "magnetometer",
     "pedometer",
+    "proximity",
     "barometer"
   ],
   "repository": {
