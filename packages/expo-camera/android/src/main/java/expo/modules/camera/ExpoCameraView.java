@@ -2,7 +2,6 @@ package expo.modules.camera;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.media.CamcorderProfile;
 import android.net.Uri;
@@ -18,10 +17,6 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.LifecycleEventListener;
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.core.interfaces.services.UIManager;
-import org.unimodules.interfaces.barcodescanner.BarCodeScanner;
-import org.unimodules.interfaces.barcodescanner.BarCodeScannerProvider;
-import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
-import org.unimodules.interfaces.barcodescanner.BarCodeScannerSettings;
 import org.unimodules.interfaces.facedetector.FaceDetector;
 import org.unimodules.interfaces.facedetector.FaceDetectorProvider;
 import org.unimodules.interfaces.permissions.Permissions;
@@ -43,6 +38,10 @@ import expo.modules.camera.tasks.PictureSavedDelegate;
 import expo.modules.camera.tasks.ResolveTakenPictureAsyncTask;
 import expo.modules.camera.utils.FileSystemUtils;
 import expo.modules.camera.utils.ImageDimensions;
+import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface;
+import expo.modules.interfaces.barcodescanner.BarCodeScannerProviderInterface;
+import expo.modules.interfaces.barcodescanner.BarCodeScannerResult;
+import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings;
 import expo.modules.interfaces.camera.CameraViewInterface;
 
 public class ExpoCameraView extends CameraView implements LifecycleEventListener, BarCodeScannerAsyncTaskDelegate, FaceDetectorAsyncTaskDelegate, PictureSavedDelegate, CameraViewInterface {
@@ -66,7 +65,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
   public volatile boolean faceDetectorTaskLock = false;
 
   // Scanning-related properties
-  private BarCodeScanner mBarCodeScanner;
+  private BarCodeScannerInterface mBarCodeScanner;
   private FaceDetector mFaceDetector;
   private Map<String, Object> mPendingFaceDetectorSettings;
   private boolean mShouldDetectFaces = false;
@@ -255,7 +254,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
    * Additionally supports [codabar, code128, maxicode, rss14, rssexpanded, upc_a, upc_ean]
    */
   private void initBarCodeScanner() {
-    BarCodeScannerProvider barCodeScannerProvider = mModuleRegistry.getModule(BarCodeScannerProvider.class);
+    BarCodeScannerProviderInterface barCodeScannerProvider = mModuleRegistry.getModule(BarCodeScannerProviderInterface.class);
     if (barCodeScannerProvider != null) {
       mBarCodeScanner = barCodeScannerProvider.createBarCodeDetectorWithContext(getContext());
     }

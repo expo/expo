@@ -1741,7 +1741,7 @@ PODS:
     - UMCore
     - UMTaskManagerInterface
   - EXBarCodeScanner (10.1.2):
-    - UMBarCodeScannerInterface
+    - ExpoModulesCore
     - UMCore
     - UMImageLoaderInterface
     - UMPermissionsInterface
@@ -1763,7 +1763,6 @@ PODS:
     - UMPermissionsInterface
   - EXCamera (11.0.3):
     - ExpoModulesCore
-    - UMBarCodeScannerInterface
     - UMCore
     - UMFaceDetectorInterface
     - UMFileSystemInterface
@@ -2356,8 +2355,6 @@ PODS:
     - ReactCommon/turbomodule/core
     - Yoga
   - UMAppLoader (2.1.0)
-  - UMBarCodeScannerInterface (6.1.0):
-    - UMCore
   - UMCore (7.1.0)
   - UMFaceDetectorInterface (6.1.0)
   - UMFileSystemInterface (6.1.0)
@@ -2792,7 +2789,6 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../react-native-lab/react-native/ReactCommon`)
   - RNReanimated (from `./vendored/unversioned/react-native-reanimated`)
   - UMAppLoader (from `../packages/unimodules-app-loader/ios`)
-  - UMBarCodeScannerInterface (from `../packages/unimodules-barcode-scanner-interface/ios`)
   - "UMCore (from `../packages/@unimodules/core/ios`)"
   - UMFaceDetectorInterface (from `../packages/unimodules-face-detector-interface/ios`)
   - UMFileSystemInterface (from `../packages/unimodules-file-system-interface/ios`)
@@ -3631,8 +3627,6 @@ EXTERNAL SOURCES:
     :path: "./vendored/unversioned/react-native-reanimated"
   UMAppLoader:
     :path: "../packages/unimodules-app-loader/ios"
-  UMBarCodeScannerInterface:
-    :path: "../packages/unimodules-barcode-scanner-interface/ios"
   UMCore:
     :path: "../packages/@unimodules/core/ios"
   UMFaceDetectorInterface:
@@ -3970,13 +3964,13 @@ SPEC CHECKSUMS:
   EXApplication: 4797b8b37f0b0470f587fdccf6407f44b50d18b5
   EXAV: 4fee7cb7728822721a9d83f7c813d2b8a0765947
   EXBackgroundFetch: 5348a5e4eaf3cc5d993425823d9d01de2866ec4e
-  EXBarCodeScanner: 38e025a8d508f40a96c44dc87bd4f8765f8002cd
+  EXBarCodeScanner: b82be32e40d28c00b0369bea8b3d3c5a32bd91f4
   EXBattery: 03199bf4db5edb0978f658ab0f3ee931c8bc819a
   EXBlur: 50d490040f3b14898ed8198d5125dc699189f4d9
   EXBranch: eeda02bb7e9545fa28d56d57810116cd6de5a426
   EXBrightness: abbccf5debb65fd894e686c7196e6a9032958251
   EXCalendar: 59290180317ea486e94dfa2e7dfc7332f675d224
-  EXCamera: 2252adcb31cc133577f2dda6d670119162cf1a3f
+  EXCamera: 9413ff27bc9d873e4a4208d77c48de215b258544
   EXCellular: 06e641f1c34e9d772da3c69cfe9ef4828791e3f8
   EXConstants: 5ea0cedcacca6f27f0ec54f185e01e0970ee1286
   EXContacts: 3462ccabe981fd58cd680206187a9a7636a567a0
@@ -4082,7 +4076,6 @@ SPEC CHECKSUMS:
   ReactCommon: a0a1edbebcac5e91338371b72ffc66aa822792ce
   RNReanimated: 5231286440b796e09df3bfa5c1b12b02bfe07664
   UMAppLoader: fe2708bb0ac5cd70052bc207d06aa3b7e72b9e97
-  UMBarCodeScannerInterface: 79f92bea5f7af39b381a4c82298105ceb537408a
   UMCore: 88855c8d26663540ae9e0b9036a8b0253b4b31df
   UMFaceDetectorInterface: 791eec55ffca1171992976b7eceb73e69e391c58
   UMFileSystemInterface: f72245e90ce78fa6427180ff0b0904ead13d8161
