@@ -10,6 +10,10 @@
 
 - Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
 
+### 💡 Others
+
+- Migrated module interfaces from `unimodules-sensors-interface` to `expo-modules-core`.
+
 ## 10.1.2 — 2021-04-13
 
 ### 🎉 New features
