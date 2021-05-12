@@ -18,6 +18,10 @@ on:
       - 'tools/**'
       - yarn.lock
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: macos-latest

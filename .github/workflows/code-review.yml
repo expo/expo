@@ -11,6 +11,10 @@ on:
     paths:
       - packages/**
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   code_review:
     runs-on: ubuntu-18.04
