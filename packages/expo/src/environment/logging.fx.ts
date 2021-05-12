@@ -20,7 +20,9 @@ if (__DEV__) {
 
       const logUrl = url + 'logs';
       Constants.__unsafeNoWarnManifest.logUrl = logUrl;
-      Constants.manifest.logUrl = logUrl;
+      if (Constants.manifest) {
+        Constants.manifest.logUrl = logUrl;
+      }
     }
   }
   // TODO: Maybe warn that console logging will not be enabled.

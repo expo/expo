@@ -79,7 +79,8 @@ function getNativeAppIdScheme() {
 }
 export function hasConstantsManifest() {
     // Ensure the user has linked the expo-constants manifest in bare workflow.
-    return !!Object.keys(Constants.manifest ?? {}).length;
+    return (!!Object.keys(Constants.manifest ?? {}).length ||
+        !!Object.keys(Constants.manifest2 ?? {}).length);
 }
 export function resolveScheme(props) {
     if (Constants.executionEnvironment !== ExecutionEnvironment.StoreClient &&

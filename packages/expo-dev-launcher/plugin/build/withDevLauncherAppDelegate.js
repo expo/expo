@@ -33,8 +33,8 @@ const DEV_LAUNCHER_APP_DELEGATE_CONTROLLER_DELEGATE = `
 #endif
 `;
 const DEV_LAUNCHER_APP_DELEGATE_INIT = `#if defined(EX_DEV_LAUNCHER_ENABLED)
-        EXDevLauncherController *contoller = [EXDevLauncherController sharedInstance];
-        [contoller startWithWindow:self.window delegate:self launchOptions:launchOptions];
+        EXDevLauncherController *controller = [EXDevLauncherController sharedInstance];
+        [controller startWithWindow:self.window delegate:(id<EXDevLauncherControllerDelegate>)self launchOptions:launchOptions];
       #else
         [self initializeReactNativeApp];
       #endif`;

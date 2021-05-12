@@ -49,7 +49,7 @@ export class SessionUrlProvider {
       }
     }
 
-    const legacyExpoProjectId = manifest.currentFullName || manifest.id;
+    const legacyExpoProjectId = manifest?.currentFullName || manifest?.id;
 
     if (!legacyExpoProjectId) {
       let nextSteps = '';
