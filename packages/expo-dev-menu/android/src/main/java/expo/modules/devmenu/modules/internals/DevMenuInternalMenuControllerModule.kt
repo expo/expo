@@ -13,7 +13,7 @@ class DevMenuInternalMenuControllerModule(private val reactContext: ReactContext
   : DevMenuInternalMenuControllerModuleInterface {
   private val devMenuManger by lazy {
     reactContext
-      .getNativeModule(DevMenuManagerProvider::class.java)
+      .getNativeModule(DevMenuManagerProvider::class.java)!!
       .getDevMenuManager()
   }
 

@@ -98,10 +98,14 @@ abstract class DevLauncherAppLoader(
     val debugServerHost = url.host + ":" + url.port
     // We need to remove "/" which is added to begin of the path by the Uri
     // and the bundle type
-    val bundleName = url.path
-      ?.substring(1)
-      ?.replace(".bundle", "")
-      ?: "index"
+    val bundleName = if (url.path.isNullOrEmpty()) {
+      "index"
+    } else {
+      url.path
+        ?.substring(1)
+        ?.replace(".bundle", "")
+        ?: "index"
+    }
 
     return injectReactInterceptor(
       context,
