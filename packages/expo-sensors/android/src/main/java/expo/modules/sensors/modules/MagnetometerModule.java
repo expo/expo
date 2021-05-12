@@ -11,8 +11,8 @@ import android.os.Bundle;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
 
-import expo.modules.interfaces.sensors.SensorService;
-import expo.modules.interfaces.sensors.services.MagnetometerService;
+import expo.modules.interfaces.sensors.SensorServiceInterface;
+import expo.modules.interfaces.sensors.services.MagnetometerServiceInterface;
 
 public class MagnetometerModule extends BaseSensorModule {
   public MagnetometerModule(Context reactContext) {
@@ -30,8 +30,8 @@ public class MagnetometerModule extends BaseSensorModule {
   }
 
   @Override
-  protected SensorService getSensorService() {
-    return getModuleRegistry().getModule(MagnetometerService.class);
+  protected SensorServiceInterface getSensorService() {
+    return getModuleRegistry().getModule(MagnetometerServiceInterface.class);
   }
 
   protected Bundle eventToMap(SensorEvent sensorEvent) {

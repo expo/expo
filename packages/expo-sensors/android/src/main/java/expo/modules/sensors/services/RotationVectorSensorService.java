@@ -24,6 +24,6 @@ public class RotationVectorSensorService extends SubscribableSensorService imple
 
   @Override
   public List<Class> getExportedInterfaces() {
-    return Collections.singletonList(RotationVectorSensorServiceInterface.class);
+    return Collections.<Class>singletonList(RotationVectorSensorServiceInterface.class);
   }
 }
