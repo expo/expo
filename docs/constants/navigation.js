@@ -23,6 +23,7 @@ const GROUPS = {
   Preview: ['Preview'],
   'EAS Build': ['Start Building', 'App Signing', 'Reference'],
   'EAS Submit': ['EAS Submit'],
+  'Technical Specs': ['Technical Specs'],
   'Development Clients': ['Development Clients'],
 };
 
@@ -83,6 +84,10 @@ const sections = [
       'Submitting to the Google Play Store',
       'Submitting to the Apple App Store',
     ],
+  },
+  {
+    name: 'Technical Specs',
+    reference: ['Expo Updates', 'Expo Structured Field Values'],
   },
   {
     name: 'Development Clients',
