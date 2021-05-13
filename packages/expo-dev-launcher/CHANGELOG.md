@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix flash of dev launcher screen during launch and incorrect dev menu shown on the 1st launch. ([#12765](https://github.com/expo/expo/pull/12765) by [@fson](https://github.com/fson))
-
 ### 💡 Others
+
+## 0.3.3 — 2021-05-13
+
+### 🐛 Bug fixes
+
+- Fix flash of dev launcher screen during launch and incorrect dev menu shown on the 1st launch. ([#12765](https://github.com/expo/expo/pull/12765) by [@fson](https://github.com/fson))
 
 ## 0.3.2 — 2021-05-12
 
