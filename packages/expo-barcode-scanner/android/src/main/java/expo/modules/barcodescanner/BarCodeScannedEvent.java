@@ -3,10 +3,10 @@ package expo.modules.barcodescanner;
 import android.os.Bundle;
 
 import org.unimodules.core.interfaces.services.EventEmitter;
-import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
 
 import androidx.core.util.Pools;
 import expo.modules.barcodescanner.utils.BarCodeScannerResultSerializer;
+import expo.modules.interfaces.barcodescanner.BarCodeScannerResult;
 
 public class BarCodeScannedEvent extends EventEmitter.BaseEvent {
   private static final Pools.SynchronizedPool<BarCodeScannedEvent> EVENTS_POOL =

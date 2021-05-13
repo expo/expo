@@ -1,6 +1,6 @@
 #import <AVFoundation/AVFoundation.h>
 
-#import <UMBarCodeScannerInterface/UMBarCodeScannerProviderInterface.h>
+#import <ExpoModulesCore/EXBarCodeScannerProviderInterface.h>
 #import <EXCamera/EXCamera.h>
 #import <EXCamera/EXCameraUtils.h>
 #import <EXCamera/EXCameraManager.h>
@@ -16,7 +16,7 @@
 @property (nonatomic, weak) id<UMFileSystemInterface> fileSystem;
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, strong) id<UMFaceDetectorManager> faceDetectorManager;
-@property (nonatomic, strong) id<UMBarCodeScannerInterface> barCodeScanner;
+@property (nonatomic, strong) id<EXBarCodeScannerInterface> barCodeScanner;
 @property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
 @property (nonatomic, weak) id<UMAppLifecycleService> lifecycleManager;
 
@@ -952,9 +952,9 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
 
 - (id)createBarCodeScanner
 {
-  id<UMBarCodeScannerProviderInterface> barCodeScannerProvider = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMBarCodeScannerProviderInterface)];
+  id<EXBarCodeScannerProviderInterface> barCodeScannerProvider = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXBarCodeScannerProviderInterface)];
   if (barCodeScannerProvider) {
-    id<UMBarCodeScannerInterface> barCodeScanner = [barCodeScannerProvider createBarCodeScanner];
+    id<EXBarCodeScannerInterface> barCodeScanner = [barCodeScannerProvider createBarCodeScanner];
     if (barCodeScanner) {
       UM_WEAKIFY(self);
       [barCodeScanner setSession:_session];
