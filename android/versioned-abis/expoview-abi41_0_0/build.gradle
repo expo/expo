@@ -33,7 +33,11 @@ repositories {
   mavenCentral()
 }
 
+apply from: "${rootProject.projectDir}/flavors.gradle"
+
 android {
+  with flavorConfig
+
   compileSdkVersion safeExtGet("compileSdkVersion", 30)
 
   compileOptions {
