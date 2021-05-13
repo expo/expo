@@ -239,9 +239,6 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
       while (!sErrorQueue.isEmpty()) {
         ExponentError error = sErrorQueue.remove();
         ErrorActivity.addError(error);
-        if (sVisibleActivity != null) {
-          sVisibleActivity.onError(error);
-        }
 
         // Just use the last error message for now, is there a better way to do this?
         errorMessage = error.errorMessage;
@@ -262,10 +259,5 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   // Override
   protected void onError(final Intent intent) {
     // Modify intent used to start ErrorActivity
-  }
-
-  // Override
-  protected void onError(final ExponentError error) {
-    // Called for each JS error
   }
 }
