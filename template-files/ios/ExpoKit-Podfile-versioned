@@ -8,7 +8,7 @@ ${PODFILE_VERSIONED_RN_DEPENDENCIES}
 
   # Install vendored pods.
   require_relative '../../../ios/podfile_helpers.rb'
-  excluded_pods = ['../../../ios/vendored/unversioned/stripe-react-native/stripe-react-native.podspec.json']
+  excluded_pods = ['stripe-react-native']
   use_pods!('../../../ios/vendored/unversioned/**/*.podspec.json', nil, excluded_pods)
 
   post_install do |installer|

@@ -35,14 +35,13 @@ def run_versioned_postinstalls!(pod_name, target_installation_result)
     context: binding
 end
 
-def use_pods!(pattern, project_name = nil, files_to_exclude = [])
+def use_pods!(pattern, project_name = nil, pods_to_exclude = [])
   base_directory = Pod::Config.instance.project_root
 
   Dir.glob(pattern, base: base_directory) { |file_path|
-    unless files_to_exclude.include? file_path
-      podName = File.basename(file_path).split('.')[0]
+    podName = File.basename(file_path).split('.')[0]
+    unless pods_to_exclude.include? podName
       podPath = File.dirname(file_path)
-
       pod podName, path: "./#{podPath}", project_name: project_name
     end
   }
