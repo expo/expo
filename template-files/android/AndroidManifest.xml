@@ -49,7 +49,7 @@
     android:name=".MainApplication"
     android:allowBackup="true"
     android:icon="@mipmap/ic_launcher"
-    android:label="@string/app_name"
+    android:label="${appLabel}"
     android:largeHeap="true"
     android:requestLegacyExternalStorage="true"
     android:usesCleartextTraffic="true">
@@ -139,7 +139,7 @@
 
     <activity
       android:name=".experience.HomeActivity"
-      android:label="@string/app_name"
+      android:label="${appLabel}"
       android:launchMode="singleTask"
       android:screenOrientation="portrait"
       android:theme="@style/Theme.Exponent.HomeActivity">
@@ -171,7 +171,7 @@
 
     <activity
       android:name=".experience.TvActivity"
-      android:label="@string/app_name"
+      android:label="${appLabel}"
       android:theme="@style/Theme.Exponent.Light"
       android:screenOrientation="landscape">
      <intent-filter>
@@ -274,7 +274,7 @@
     <activity
       android:name="com.facebook.FacebookActivity"
       android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-      android:label="@string/app_name"
+      android:label="${appLabel}"
       android:theme="@android:style/Theme.Translucent.NoTitleBar"
       tools:replace="android:theme" />
 
@@ -292,7 +292,7 @@
     <activity
       android:name="com.facebook.ads.InterstitialAdActivity"
       android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-      android:label="@string/app_name"
+      android:label="${appLabel}"
       android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
     <service
