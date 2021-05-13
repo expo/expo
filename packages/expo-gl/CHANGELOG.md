@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- Migrated camera's interface from `unimodules-camera-interface` to `expo-modules-core`.
+- Migrated from `unimodules-camera-interface`, `unimodules-file-system-interface` to `expo-modules-core`.
 
 ## 10.3.0 — 2021-04-20
 
