@@ -17,7 +17,9 @@ Provides an API for interacting with the device's system calendars, events, remi
 
 ## Configuration
 
-In managed apps, `Calendar` requires `Permissions.CALENDAR`. Interacting with reminders on iOS requires `Permissions.REMINDERS`.
+In managed apps you must add following permissions to your `app.json`.
+- Android requires `READ_CALENDAR` & `WRITE_CALENDAR` inside the `expo.android.permissions` array.
+- IOS requires `NSRemindersUsageDescription` key added to `expo.ios.infoPlist` with a string value describing the permission request to end users.
 
 ## Usage
 
