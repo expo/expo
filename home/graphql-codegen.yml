@@ -1,5 +1,5 @@
 overwrite: true
-schema: 'http://localhost:3000/--/graphql'
+schema: 'https://exp.host/--/graphql'
 documents:
   - '**/*.graphql'
   - '!node_modules/**/*'

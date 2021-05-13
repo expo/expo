@@ -51,7 +51,7 @@ function EnabledProjectTools({ pollForUpdates }: Props) {
     (props: State, state: Partial<State>): State => ({ ...props, ...state }),
     initialState
   );
-  const clipboardUpdateInterval = React.useRef<null | number>(null);
+  const clipboardUpdateInterval = React.useRef<null | any>(null);
 
   const appState = useAppState();
 
@@ -78,7 +78,7 @@ function EnabledProjectTools({ pollForUpdates }: Props) {
     clipboardUpdateInterval.current = setInterval(
       fetchClipboardContentsAsync,
       CLIPBOARD_POLL_INTERVAL
-    ) as any;
+    );
   }, [clipboardUpdateInterval.current]);
 
   const stopPolling = React.useCallback((): void => {
