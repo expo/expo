@@ -1,23 +1,20 @@
 import { getSDKVersionFromRuntimeVersion } from '@expo/sdk-runtime-versions';
-import { useNavigation, useTheme } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
 import dedent from 'dedent';
-import * as WebBrowser from 'expo-web-browser';
 import * as React from 'react';
-import { ActivityIndicator, Image, Linking, Platform, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, Linking, StyleSheet, Text, View } from 'react-native';
 import FadeIn from 'react-native-fade-in-image';
-import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
 import semver from 'semver';
 
+import ListItem from '../components/ListItem';
+import SectionHeader from '../components/SectionHeader';
 import ShareProjectButton from '../components/ShareProjectButton';
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
-import { ProjectData, ProjectDataProject } from '../containers/Project';
+import { ProjectData, ProjectDataProject, ProjectUpdateBranch } from '../containers/Project';
 import { AllStackRoutes } from '../navigation/Navigation.types';
 import Environment from '../utils/Environment';
-import * as Strings from '../utils/Strings';
 import * as UrlUtils from '../utils/UrlUtils';
-import * as Icons from './Icons';
 import ScrollView from './NavigationScrollView';
 import { StyledText } from './Text';
 import { StyledView } from './Views';
@@ -62,8 +59,9 @@ export default function ProjectView({ loading, error, data, navigation }: Props)
   React.useEffect(() => {
     if (data?.app.byId) {
       const fullName = data?.app.byId.fullName;
+      const title = data?.app.byId.name ?? fullName;
       navigation.setOptions({
-        title: fullName,
+        title,
         headerRight: () => <ShareProjectButton fullName={fullName} />,
       });
     }
@@ -76,160 +74,49 @@ function truthy<TValue>(value: TValue | null | undefined): value is TValue {
   return !!value;
 }
 
-function getSDKMajorVersionsForLegacyUpdates(app: ProjectDataProject): number[] {
+function getSDKMajorVersionsForLegacyUpdates(app: ProjectDataProject): number | null {
   const majorVersionString = app.sdkVersion ? semver.major(app.sdkVersion) : null;
-  return majorVersionString ? [parseInt(majorVersionString, 10)] : [];
+  return majorVersionString ? parseInt(majorVersionString, 10) : null;
 }
 
-function getSDKMajorVersionsForEASUpdates(app: ProjectDataProject): number[] {
-  const updates = app.updateBranches.map(branch => branch.updates).flat(1);
+function getSDKMajorVersionForEASUpdateBranch(branch: ProjectUpdateBranch): number | null {
+  const updates = branch.updates;
   if (updates.length === 0) {
-    return [];
+    return null;
   }
 
-  return updates
-    .map(update => {
-      const potentialSDKVersion = getSDKVersionFromRuntimeVersion(update.runtimeVersion);
-      const majorVersion = potentialSDKVersion ? semver.major(potentialSDKVersion) : null;
-      return majorVersion ? parseInt(majorVersion, 10) : undefined;
-    })
-    .filter(truthy);
+  return (
+    updates
+      .map(update => {
+        const potentialSDKVersion = getSDKVersionFromRuntimeVersion(update.runtimeVersion);
+        const majorVersion = potentialSDKVersion ? semver.major(potentialSDKVersion) : null;
+        return majorVersion ? parseInt(majorVersion, 10) : undefined;
+      })
+      .filter(truthy)
+      .sort((a, b) => b - a)[0] ?? null
+  );
 }
 
-function getLatestSDKMajorVersionForApp(app: ProjectDataProject): number | null {
-  const sortedVersions = [
-    ...getSDKMajorVersionsForLegacyUpdates(app),
-    ...getSDKMajorVersionsForEASUpdates(app),
-  ].sort((a, b) => b - a);
-  return sortedVersions[0] ?? null;
+function appHasLegacyUpdate(app: ProjectDataProject): boolean {
+  return app.published;
+}
+
+function appHasEASUpdates(app: ProjectDataProject): boolean {
+  return app.updateBranches.some(branch => branch.updates.length > 0);
 }
 
 function ProjectContents({ app }: { app: ProjectDataProject }) {
-  const navigation = useNavigation();
-
-  const isLatestLegacyPublishDeprecated = React.useMemo<boolean>(() => {
-    const latestMajorVersion = getLatestSDKMajorVersionForApp(app);
-    if (latestMajorVersion !== null) {
-      return latestMajorVersion < Environment.lowestSupportedSdkVersion;
-    }
-    return false;
-  }, [app.sdkVersion]);
-
-  const hasEASUpdates = app.updateBranches.some(branch => branch.updates.length > 0);
-
   return (
     <>
       <ProjectHeader app={app} />
-      {isLatestLegacyPublishDeprecated && <ExpoSDKOutdated sdkVersion={app.sdkVersion} />}
-      <StartButton
-        title="Launch Project"
-        disabled={isLatestLegacyPublishDeprecated}
-        onPress={() => {
-          if (hasEASUpdates) {
-            navigation.navigate('ProjectManifestLauncher', {
-              legacyManifestFullName: app.fullName,
-              branchManifests: app.updateBranches.map(branch => ({
-                branchName: branch.name,
-                manifestUrl: branch.updates[0].manifestPermalink,
-              })),
-            });
-          } else {
-            Linking.openURL(UrlUtils.normalizeUrl(app.fullName!));
-          }
-        }}
-      />
+      <LegacyLaunchSection app={app} />
+      <NewLaunchSection app={app} />
     </>
-  );
-}
-
-function StartButton({
-  title,
-  onPress,
-  disabled,
-}: {
-  title: string;
-  onPress: () => void;
-  disabled: boolean;
-}) {
-  const theme = useTheme();
-  const themeName = theme.dark ? 'dark' : 'light';
-
-  return (
-    <TouchableHighlight
-      onPress={onPress}
-      disabled={disabled}
-      style={{
-        marginHorizontal: 16,
-        marginTop: 8,
-        marginBottom: 16,
-        backgroundColor: disabled ? '#43474A' : Colors[themeName].tintColor,
-        borderRadius: 12,
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingVertical: 12,
-        flex: 1,
-      }}
-      underlayColor={disabled ? '#5F6871' : '#81B7E7'}>
-      <Text
-        style={{
-          fontWeight: 'bold',
-          color: 'white',
-        }}>
-        {title}
-      </Text>
-    </TouchableHighlight>
-  );
-}
-
-function ExperienceActionItem({
-  title,
-  children,
-  onPress,
-}: {
-  title: string;
-  children?: any;
-  onPress?: () => void;
-}) {
-  return (
-    <TouchableOpacity
-      style={{
-        justifyContent: 'space-between',
-        flex: 1,
-        minWidth: '33%',
-        alignItems: 'center',
-        paddingVertical: 12,
-      }}
-      disabled={!onPress}
-      onPress={onPress}>
-      {children}
-      <StyledText
-        style={{
-          opacity: 0.6,
-          fontSize: 14,
-          textAlign: 'center',
-          marginTop: 4,
-        }}>
-        {title}
-      </StyledText>
-    </TouchableOpacity>
   );
 }
 
 function ProjectHeader(props: { app: ProjectDataProject }) {
   const source = props.app.icon ? props.app.icon.url : props.app.iconUrl;
-  const storeUrl = Platform.select({
-    android: props.app.playStoreUrl,
-    ios: props.app.appStoreUrl,
-  });
-
-  const githubUrl = props.app.githubUrl;
-
-  const descriptionComponent = props.app.description ? (
-    <StyledText style={styles.descriptionText}>
-      {Strings.mutateStringWithLinkComponents(props.app.description)}
-    </StyledText>
-  ) : null;
-
   return (
     <StyledView style={styles.header} darkBackgroundColor="#000" darkBorderColor="#000">
       <View style={styles.headerAvatarContainer}>
@@ -243,70 +130,91 @@ function ProjectHeader(props: { app: ProjectDataProject }) {
           />
         </FadeIn>
       </View>
-      <StyledText style={styles.headerFullNameText}>{props.app.name}</StyledText>
-      <View style={styles.headerAccountName}>
+      <View style={styles.headerInfoContainer}>
+        <StyledText style={styles.headerNameText}>{props.app.name}</StyledText>
         <StyledText style={styles.headerAccountText} lightColor="#232B3A" darkColor="#ccc">
           @{props.app.username}
         </StyledText>
-      </View>
-      {descriptionComponent}
-      <View
-        style={{
-          justifyContent: 'space-around',
-          flexDirection: 'row',
-          flex: 1,
-          height: 72,
-          marginTop: 0,
-          marginBottom: 12,
-          alignItems: 'stretch',
-        }}>
-        {storeUrl && (
-          <ExperienceActionItem
-            title="Published"
-            onPress={() => {
-              // TODO(bacon): app-preview API?
-              Linking.openURL(storeUrl!);
-            }}>
-            <Icons.Store size={28} />
-          </ExperienceActionItem>
-        )}
-
-        <ExperienceActionItem title="SDK version">
-          <StyledText style={{ fontSize: 30, lineHeight: 30 }}>
-            {getLatestSDKMajorVersionForApp(props.app)}
-          </StyledText>
-        </ExperienceActionItem>
-
-        {githubUrl && (
-          <ExperienceActionItem
-            title="Repo"
-            onPress={() => {
-              WebBrowser.openBrowserAsync(githubUrl);
-            }}>
-            <Icons.Github size={30} />
-          </ExperienceActionItem>
-        )}
       </View>
     </StyledView>
   );
 }
 
-function ExpoSDKOutdated(props: { sdkVersion: string }) {
+function LegacyLaunchSection({ app }: { app: ProjectDataProject }) {
+  if (!appHasLegacyUpdate(app)) {
+    return null;
+  }
+
+  const legacyUpdatesSDKMajorVersion = getSDKMajorVersionsForLegacyUpdates(app);
+  const isLatestLegacyPublishDeprecated =
+    legacyUpdatesSDKMajorVersion !== null &&
+    legacyUpdatesSDKMajorVersion < Environment.lowestSupportedSdkVersion;
+
   return (
-    <View style={styles.itemMargins}>
-      <StyledView
-        darkBackgroundColor={Platform.select({
-          android: Colors.dark.absolute,
-          default: Colors.dark.cardBackground,
-        })}
-        style={styles.containerShape}>
-        <StyledText>
-          This project uses SDK{' '}
-          <Text style={{ fontWeight: 'bold', color: Colors.light.error }}>v{props.sdkVersion}</Text>
-          . Your client supports {Environment.supportedSdksString}. If you want to open this
-          project, the you will need to update the project's SDK version.
-        </StyledText>
-      </StyledView>
+    <View>
+      <SectionHeader title="Classic update branches" />
+      <ListItem
+        title="default"
+        onPress={() => {
+          if (isLatestLegacyPublishDeprecated) {
+            Alert.alert(
+              `This project's SDK version (${legacyUpdatesSDKMajorVersion}) is no longer supported.`
+            );
+          } else {
+            Linking.openURL(UrlUtils.normalizeUrl(app.fullName));
+          }
+        }}
+        last
+      />
+      <Text style={styles.moreLegacyBranchesText}>
+        To launch a update from another classic updates release channel, scan the QR code on project
+        webpage.
+      </Text>
+    </View>
+  );
+}
+
+function NewLaunchSection({ app }: { app: ProjectDataProject }) {
+  if (!appHasEASUpdates(app)) {
+    return null;
+  }
+
+  const branchManifests = app.updateBranches.map(branch => ({
+    branchName: branch.name,
+    manifestUrl: branch.updates[0].manifestPermalink,
+    sdkVersion: getSDKMajorVersionForEASUpdateBranch(branch),
+  }));
+
+  const renderBranchManifest = (
+    branchManifest: { branchName: string; manifestUrl: string; sdkVersion: number | null },
+    index: number
+  ) => {
+    const isLatestLegacyPublishDeprecated =
+      branchManifest.sdkVersion !== null &&
+      branchManifest.sdkVersion < Environment.lowestSupportedSdkVersion;
+
+    return (
+      <ListItem
+        key={`branch-${branchManifest.branchName}`}
+        title={branchManifest.branchName}
+        onPress={() => {
+          if (isLatestLegacyPublishDeprecated) {
+            Alert.alert(
+              `This branch's SDK version (${branchManifest.sdkVersion}) is no longer supported.`
+            );
+          } else {
+            Linking.openURL(UrlUtils.toExps(branchManifest.manifestUrl));
+          }
+        }}
+        last={index === branchManifests.length - 1}
+      />
+    );
+  };
+
+  return (
+    <View>
+      <SectionHeader title="EAS Update branches" />
+      {branchManifests.map(renderBranchManifest)}
     </View>
   );
 }
@@ -332,14 +240,13 @@ const styles = StyleSheet.create({
     marginTop: -1,
   },
   header: {
-    alignItems: 'center',
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    marginBottom: 12,
+    padding: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   headerAvatarContainer: {
-    marginTop: 20,
-    marginBottom: 12,
     overflow: 'hidden',
     borderRadius: 5,
   },
@@ -351,14 +258,20 @@ const styles = StyleSheet.create({
   legacyHeaderAvatar: {
     backgroundColor: '#eee',
   },
-  headerAccountName: {
-    paddingBottom: 20,
+  headerInfoContainer: {
+    marginLeft: 15,
   },
   headerAccountText: {
     fontSize: 14,
   },
-  headerFullNameText: {
+  headerNameText: {
     fontSize: 20,
     fontWeight: '500',
+  },
+  moreLegacyBranchesText: {
+    fontSize: 12,
+    color: Colors.light.greyText,
+    marginBottom: 20,
+    marginHorizontal: 16,
   },
 });

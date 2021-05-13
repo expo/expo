@@ -18,7 +18,6 @@ import LocationDiagnosticsScreen from '../screens/LocationDiagnosticsScreen';
 import ProfileAllProjectsScreen from '../screens/ProfileAllProjectsScreen';
 import ProfileAllSnacksScreen from '../screens/ProfileAllSnacksScreen';
 import ProfileScreen from '../screens/ProfileScreen';
-import ProjectManifestLauncherScreen from '../screens/ProjectManifestLauncherScreen';
 import ProjectScreen from '../screens/ProjectScreen';
 import ProjectsForAccountScreen from '../screens/ProjectsForAccountScreen';
 import ProjectsScreen from '../screens/ProjectsScreen';
@@ -262,10 +261,6 @@ export default (props: { theme: string }) => {
           )}
         </ModalStack.Screen>
         <ModalStack.Screen name="QRCode" component={QRCodeScreen} />
-        <ModalStack.Screen
-          name="ProjectManifestLauncher"
-          component={ProjectManifestLauncherScreen}
-        />
       </ModalStack.Navigator>
     </NavigationContainer>
   );

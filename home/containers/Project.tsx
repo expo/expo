@@ -31,7 +31,7 @@ export type ProjectDataProject = {
   slug: string;
   fullName: string;
   username: string;
-  published: string;
+  published: boolean;
   description: string;
   githubUrl?: string;
   playStoreUrl?: string;

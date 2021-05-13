@@ -11,9 +11,5 @@ export type AllStackRoutes = {
   UserSettings: object;
   ProjectsForAccount: { accountName: string };
   SnacksForAccount: { accountName: string };
-  ProjectManifestLauncher: {
-    legacyManifestFullName?: string;
-    branchManifests?: { branchName: string; manifestUrl: string }[];
-  };
   Project: { id: string };
 } & ModalStackRoutes;
