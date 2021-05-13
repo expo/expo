@@ -195,7 +195,7 @@ The schema of a build profile for a generic iOS project looks like this:
   "extends": string,
   "credentialsSource": "local" | "remote", // default: "remote"
   "scheme": string,
-  "buildConfiguration": string,
+  "schemeBuildConfiguration": string,
   "artifactPath": string, // default: "ios/build/App.ipa"
   "releaseChannel": string, // default: "default"
   "distribution": "store" | "internal" | "simulator", // default: "store"
