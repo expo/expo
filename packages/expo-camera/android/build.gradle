@@ -77,7 +77,6 @@ dependencies {
   unimodule 'expo-modules-core'
   unimodule 'unimodules-face-detector-interface'
   unimodule 'unimodules-permissions-interface'
-  unimodule 'unimodules-file-system-interface'
   unimodule 'unimodules-image-loader-interface'
 
   api "androidx.exifinterface:exifinterface:1.0.0"

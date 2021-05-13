@@ -14,8 +14,8 @@ Pod::Spec.new do |s|
   s.source         = { git: 'https://github.com/expo/expo.git' }
 
   s.dependency 'UMCore'
+  s.dependency 'ExpoModulesCore'
   s.dependency 'UMFaceDetectorInterface'
-  s.dependency 'UMFileSystemInterface'
 
   # even though `GoogleMLKit/FaceDetection` depends on all `MLKit*` references below
   # framework generation code (prebuilds) cannot locate them properly, so these are defined explicitly

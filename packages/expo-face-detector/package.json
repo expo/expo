@@ -40,6 +40,9 @@
     "unimodules-face-detector-interface": "*",
     "unimodules-permissions-interface": "*"
   },
+  "dependencies": {
+    "expo-modules-core": "~0.0.1"
+  },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"
   }

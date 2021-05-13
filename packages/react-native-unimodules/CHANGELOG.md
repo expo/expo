@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- Migrated camera, constants, sensors and barcode scanner interfaces from their own packages to `expo-modules-core`. ([#12868](https://github.com/expo/expo/pull/12868), [#12876](https://github.com/expo/expo/pull/12876), [#12888](https://github.com/expo/expo/pull/12888), [#12912](https://github.com/expo/expo/pull/12912) by [@tsapeta](https://github.com/tsapeta))
+- Migrated interfaces from their own packages to `expo-modules-core`. ([#12868](https://github.com/expo/expo/pull/12868), [#12876](https://github.com/expo/expo/pull/12876), [#12888](https://github.com/expo/expo/pull/12888), [#12918](https://github.com/expo/expo/pull/12918) by [@tsapeta](https://github.com/tsapeta))
 
 ## 0.13.3 — 2021-04-13
 
@@ -152,4 +152,4 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - Automatically generated list of Android packages ([#28](https://github.com/unimodules/react-native-unimodules/pull/28))
-As of this version, you no longer need to add new packages to your `MainApplication.java` file. Just use `new BasePackageList().getPackageList()` instead 🎉. `BasePackageList` is auto-generated with a list of installed unimodules found in your `node_modules` folder during Gradle's Sync operation.
+  As of this version, you no longer need to add new packages to your `MainApplication.java` file. Just use `new BasePackageList().getPackageList()` instead 🎉. `BasePackageList` is auto-generated with a list of installed unimodules found in your `node_modules` folder during Gradle's Sync operation.
