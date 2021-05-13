@@ -259,3 +259,17 @@ applyNativeModulesAppBuildGradle(project)
 // [Custom]: Add Google Services file
 apply plugin: GenerateDynamicMacrosPlugin
 apply plugin: 'com.google.gms.google-services'
+
+// Make sure JS bundle to be merged for gradle android plugin 4.1.0+
+// react native 0.64 should fix this already
+// See https://github.com/facebook/react-native/pull/30177
+afterEvaluate {
+    android.applicationVariants.all { def variant ->
+        def targetName = variant.name.capitalize()
+        def mergeResourcesTask = tasks.findByName("merge${targetName}Resources")
+        def copyBundledJsTask = tasks.findByName("copy${targetName}BundledJs")
+        if (mergeResourcesTask && copyBundledJsTask) {
+            mergeResourcesTask.dependsOn(copyBundledJsTask)
+        }
+    }
+}
