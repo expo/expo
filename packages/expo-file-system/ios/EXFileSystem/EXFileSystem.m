@@ -10,8 +10,8 @@
 #import <EXFileSystem/EXFileSystemLocalFileHandler.h>
 #import <EXFileSystem/EXFileSystemAssetLibraryHandler.h>
 
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
-#import <UMFileSystemInterface/UMFilePermissionModuleInterface.h>
+#import <ExpoModulesCore/EXFileSystemInterface.h>
+#import <ExpoModulesCore/EXFilePermissionModuleInterface.h>
 
 #import <UMCore/UMEventEmitterService.h>
 
@@ -59,7 +59,7 @@ UM_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(UMFileSystemInterface)];
+  return @[@protocol(EXFileSystemInterface)];
 }
 
 - (instancetype)initWithDocumentDirectory:(NSString *)documentDirectory cachesDirectory:(NSString *)cachesDirectory bundleDirectory:(NSString *)bundleDirectory
@@ -182,7 +182,7 @@ UM_EXPORT_METHOD_AS(getInfoAsync,
   if (!uri.scheme) {
     uri = [NSURL fileURLWithPath:uriString isDirectory:false];
   }
-  if (!([self permissionsForURI:uri] & UMFileSystemPermissionRead)) {
+  if (!([self permissionsForURI:uri] & EXFileSystemPermissionRead)) {
     reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't readable.", uri],
            nil);
@@ -211,7 +211,7 @@ UM_EXPORT_METHOD_AS(readAsStringAsync,
   if (!uri.scheme) {
     uri = [NSURL fileURLWithPath:uriString isDirectory:false];
   }
-  if (!([self permissionsForURI:uri] & UMFileSystemPermissionRead)) {
+  if (!([self permissionsForURI:uri] & EXFileSystemPermissionRead)) {
     reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't readable.", uri],
            nil);
@@ -274,7 +274,7 @@ UM_EXPORT_METHOD_AS(writeAsStringAsync,
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   NSURL *uri = [NSURL URLWithString:uriString];
-  if (!([self permissionsForURI:uri] & UMFileSystemPermissionWrite)) {
+  if (!([self permissionsForURI:uri] & EXFileSystemPermissionWrite)) {
     reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't writable.", uri],
            nil);
@@ -334,7 +334,7 @@ UM_EXPORT_METHOD_AS(deleteAsync,
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   NSURL *uri = [NSURL URLWithString:uriString];
-  if (!([self permissionsForURI:[uri URLByAppendingPathComponent:@".."]] & UMFileSystemPermissionWrite)) {
+  if (!([self permissionsForURI:[uri URLByAppendingPathComponent:@".."]] & EXFileSystemPermissionWrite)) {
     reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"Location '%@' isn't deletable.", uri],
            nil);
@@ -378,7 +378,7 @@ UM_EXPORT_METHOD_AS(moveAsync,
     reject(@"ERR_FILESYSTEM_MISSING_PARAMETER", @"Need a `from` location.", nil);
     return;
   }
-  if (!([self permissionsForURI:[from URLByAppendingPathComponent:@".."]] & UMFileSystemPermissionWrite)) {
+  if (!([self permissionsForURI:[from URLByAppendingPathComponent:@".."]] & EXFileSystemPermissionWrite)) {
     reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"Location '%@' isn't movable.", from],
            nil);
@@ -389,7 +389,7 @@ UM_EXPORT_METHOD_AS(moveAsync,
     reject(@"ERR_FILESYSTEM_MISSING_PARAMETER", @"Need a `to` location.", nil);
     return;
   }
-  if (!([self permissionsForURI:to] & UMFileSystemPermissionWrite)) {
+  if (!([self permissionsForURI:to] & EXFileSystemPermissionWrite)) {
     reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't writable.", to],
            nil);
@@ -434,7 +434,7 @@ UM_EXPORT_METHOD_AS(copyAsync,
     reject(@"ERR_FILESYSTEM_MISSING_PARAMETER", @"Need a `from` location.", nil);
     return;
   }
-  if (!([self permissionsForURI:from] & UMFileSystemPermissionRead)) {
+  if (!([self permissionsForURI:from] & EXFileSystemPermissionRead)) {
     reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't readable.", from],
            nil);
@@ -445,7 +445,7 @@ UM_EXPORT_METHOD_AS(copyAsync,
     reject(@"ERR_FILESYSTEM_MISSING_PARAMETER", @"Need a `to` location.", nil);
     return;
   }
-  if (!([self permissionsForURI:to] & UMFileSystemPermissionWrite)) {
+  if (!([self permissionsForURI:to] & EXFileSystemPermissionWrite)) {
     reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't writable.", to],
            nil);
@@ -471,7 +471,7 @@ UM_EXPORT_METHOD_AS(makeDirectoryAsync,
 {
   
   NSURL *uri = [NSURL URLWithString:uriString];
-  if (!([self permissionsForURI:uri] & UMFileSystemPermissionWrite)) {
+  if (!([self permissionsForURI:uri] & EXFileSystemPermissionWrite)) {
     reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"Directory '%@' could not be created because the location isn't writable.", uri],
            nil);
@@ -504,7 +504,7 @@ UM_EXPORT_METHOD_AS(readDirectoryAsync,
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   NSURL *uri = [NSURL URLWithString:uriString];
-  if (!([self permissionsForURI:uri] & UMFileSystemPermissionRead)) {
+  if (!([self permissionsForURI:uri] & EXFileSystemPermissionRead)) {
     reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"Location '%@' isn't readable.", uri],
            nil);
@@ -543,7 +543,7 @@ UM_EXPORT_METHOD_AS(downloadAsync,
            nil);
     return;
   }
-  if (!([self permissionsForURI:localUri] & UMFileSystemPermissionWrite)) {
+  if (!([self permissionsForURI:localUri] & EXFileSystemPermissionWrite)) {
     reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't writable.", localUri],
            nil);
@@ -667,7 +667,7 @@ UM_EXPORT_METHOD_AS(downloadResumableStartAsync,
   }
   
   NSString *path = localUrl.path;
-  if (!([self _permissionsForPath:path] & UMFileSystemPermissionWrite)) {
+  if (!([self _permissionsForPath:path] & EXFileSystemPermissionWrite)) {
     reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't writable.", fileUri],
            nil);
@@ -887,9 +887,9 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
   [downloadTask resume];
 }
 
-- (UMFileSystemPermissionFlags)_permissionsForPath:(NSString *)path
+- (EXFileSystemPermissionFlags)_permissionsForPath:(NSString *)path
 {
-  return [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMFilePermissionModuleInterface)] getPathPermissions:(NSString *)path];
+  return [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXFilePermissionModuleInterface)] getPathPermissions:(NSString *)path];
 }
 
 - (void)sendEventWithName:(NSString *)eventName body:(id)body
@@ -905,7 +905,7 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
 
 #pragma mark - Public utils
 
-- (UMFileSystemPermissionFlags)permissionsForURI:(NSURL *)uri
+- (EXFileSystemPermissionFlags)permissionsForURI:(NSURL *)uri
 {
   NSArray *validSchemas = @[
                             @"assets-library",
@@ -914,12 +914,12 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
                             @"ph",
                             ];
   if ([validSchemas containsObject:uri.scheme]) {
-    return UMFileSystemPermissionRead;
+    return EXFileSystemPermissionRead;
   }
   if ([uri.scheme isEqualToString:@"file"]) {
     return [self _permissionsForPath:uri.path];
   }
-  return UMFileSystemPermissionNone;
+  return EXFileSystemPermissionNone;
 }
 
 - (BOOL)checkIfFileDirExists:(NSString *)path

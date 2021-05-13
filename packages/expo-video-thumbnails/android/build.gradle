@@ -69,7 +69,7 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
   unimodule 'unimodules-core'
-  unimodule 'unimodules-file-system-interface'
+  unimodule 'expo-modules-core'
 
   api "androidx.annotation:annotation:1.0.0"
 

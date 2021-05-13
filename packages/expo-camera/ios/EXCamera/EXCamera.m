@@ -8,12 +8,12 @@
 #import <UMCore/UMAppLifecycleService.h>
 #import <UMCore/UMUtilities.h>
 #import <UMFaceDetectorInterface/UMFaceDetectorManagerProvider.h>
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
+#import <ExpoModulesCore/EXFileSystemInterface.h>
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
 
 @interface EXCamera ()
 
-@property (nonatomic, weak) id<UMFileSystemInterface> fileSystem;
+@property (nonatomic, weak) id<EXFileSystemInterface> fileSystem;
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, strong) id<UMFaceDetectorManager> faceDetectorManager;
 @property (nonatomic, strong) id<EXBarCodeScannerInterface> barCodeScanner;
@@ -51,7 +51,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     _faceDetectorManager = [self createFaceDetectorManager];
     _barCodeScanner = [self createBarCodeScanner];
     _lifecycleManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)];
-    _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
+    _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
     _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
 #if !(TARGET_IPHONE_SIMULATOR)
     _previewLayer = [AVCaptureVideoPreviewLayer layerWithSession:_session];

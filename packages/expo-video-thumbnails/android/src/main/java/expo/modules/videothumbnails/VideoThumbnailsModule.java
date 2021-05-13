@@ -14,14 +14,15 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.arguments.ReadableArguments;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.utilities.FileUtilities;
-import org.unimodules.interfaces.filesystem.FilePermissionModuleInterface;
-import org.unimodules.interfaces.filesystem.Permission;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
+
+import expo.modules.interfaces.filesystem.FilePermissionModuleInterface;
+import expo.modules.interfaces.filesystem.Permission;
 
 public class VideoThumbnailsModule extends ExportedModule {
   private static final String TAG = "ExpoVideoThumbnails";
