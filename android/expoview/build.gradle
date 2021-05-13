@@ -13,6 +13,7 @@ version = '41.0.0'
 //Upload android library to maven with javadoc and android sources
 configurations {
   deployerJars
+  versioned
 }
 
 //Creating sources with comments
@@ -67,7 +68,11 @@ repositories {
   mavenCentral()
 }
 
+apply from: "${rootProject.projectDir}/flavors.gradle"
+
 android {
+  with flavorConfig
+
   compileSdkVersion safeExtGet("compileSdkVersion", 30)
 
   compileOptions {
@@ -111,6 +116,7 @@ android {
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
   }
+
   compileOptions {
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
@@ -214,13 +220,13 @@ dependencies {
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
   // BEGIN_SDK_41
-  api 'host.exp:reactandroid-abi41_0_0:1.0.0'
+  versionedApi 'host.exp:reactandroid-abi41_0_0:1.0.0'
   // END_SDK_41
   // BEGIN_SDK_40
-  api 'host.exp:reactandroid-abi40_0_0:1.0.0'
+  versionedApi 'host.exp:reactandroid-abi40_0_0:1.0.0'
   // END_SDK_40
   // BEGIN_SDK_39
-  api 'host.exp:reactandroid-abi39_0_0:1.0.0'
+  versionedApi 'host.exp:reactandroid-abi39_0_0:1.0.0'
   // END_SDK_39
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_VERSIONING_REMOVE_TO_HERE

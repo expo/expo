@@ -1,0 +1,21 @@
+ext.flavorConfig = {
+
+    flavorDimensions "versioning"
+    productFlavors {
+        versioned {
+            dimension "versioning"
+            manifestPlaceholders = [appLabel:"@string/versioned_app_name"]
+        }
+        unversioned {
+            dimension "versioning"
+            manifestPlaceholders = [appLabel:"@string/unversioned_app_name"]
+
+        }
+    }
+}
+
+def isApplicationProject() { // 4
+    return project.android.class.simpleName.startsWith('BaseAppModuleExtension')
+    // in AGP 3.1.x with library modules instead of feature modules:
+    // return project.android instanceof com.android.build.gradle.AppExtension
+}
