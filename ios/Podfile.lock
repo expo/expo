@@ -1383,6 +1383,8 @@ PODS:
     - ABI41_0_0UMConstantsInterface
     - ABI41_0_0UMCore
     - ABI41_0_0UMTaskManagerInterface
+  - ABI41_0_0EXTrackingTransparency (1.0.0):
+    - ABI41_0_0UMCore
   - ABI41_0_0EXUpdates (0.5.1):
     - ABI41_0_0EXStructuredHeaders
     - ABI41_0_0React-Core
@@ -2650,6 +2652,7 @@ DEPENDENCIES:
   - ABI41_0_0EXStoreReview (from `./versioned-react-native/ABI41_0_0/Expo/EXStoreReview`)
   - ABI41_0_0EXStructuredHeaders (from `./versioned-react-native/ABI41_0_0/Expo/EXStructuredHeaders`)
   - ABI41_0_0EXTaskManager (from `./versioned-react-native/ABI41_0_0/Expo/EXTaskManager`)
+  - ABI41_0_0EXTrackingTransparency (from `./versioned-react-native/ABI41_0_0/Expo/EXTrackingTransparency`)
   - ABI41_0_0EXUpdates (from `./versioned-react-native/ABI41_0_0/Expo/EXUpdates`)
   - ABI41_0_0EXVideoThumbnails (from `./versioned-react-native/ABI41_0_0/Expo/EXVideoThumbnails`)
   - ABI41_0_0EXWebBrowser (from `./versioned-react-native/ABI41_0_0/Expo/EXWebBrowser`)
@@ -3368,6 +3371,8 @@ EXTERNAL SOURCES:
     :path: "./versioned-react-native/ABI41_0_0/Expo/EXStructuredHeaders"
   ABI41_0_0EXTaskManager:
     :path: "./versioned-react-native/ABI41_0_0/Expo/EXTaskManager"
+  ABI41_0_0EXTrackingTransparency:
+    :path: "./versioned-react-native/ABI41_0_0/Expo/EXTrackingTransparency"
   ABI41_0_0EXUpdates:
     :path: "./versioned-react-native/ABI41_0_0/Expo/EXUpdates"
   ABI41_0_0EXVideoThumbnails:
@@ -3919,6 +3924,7 @@ SPEC CHECKSUMS:
   ABI41_0_0EXStoreReview: ee3dae40adda49228f3eac24a4eeb754c4d07218
   ABI41_0_0EXStructuredHeaders: 5c315846591f143a5b24b19d05094aed1acb41cd
   ABI41_0_0EXTaskManager: 6be1098cb568807194a7d425fbc33092c9fe158f
+  ABI41_0_0EXTrackingTransparency: 82452df66df448b5eaeca97f639019f109d6165f
   ABI41_0_0EXUpdates: cac3153bd44716866280bf0e645eed060f3e2533
   ABI41_0_0EXVideoThumbnails: f3b4634744998652e114c0cae3a202b8a935c3e8
   ABI41_0_0EXWebBrowser: 5125cd0d9eba1f87301b784d1fbfb602a16d7fa1
