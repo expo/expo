@@ -2,12 +2,12 @@
 
 #import <Foundation/Foundation.h>
 #import <UMCore/UMInternalModule.h>
-#import <UMSensorsInterface/UMAccelerometerInterface.h>
-#import <UMSensorsInterface/UMBarometerInterface.h>
-#import <UMSensorsInterface/UMDeviceMotionInterface.h>
-#import <UMSensorsInterface/UMGyroscopeInterface.h>
-#import <UMSensorsInterface/UMMagnetometerInterface.h>
-#import <UMSensorsInterface/UMMagnetometerUncalibratedInterface.h>
+#import <ExpoModulesCore/EXAccelerometerInterface.h>
+#import <ExpoModulesCore/EXBarometerInterface.h>
+#import <ExpoModulesCore/EXDeviceMotionInterface.h>
+#import <ExpoModulesCore/EXGyroscopeInterface.h>
+#import <ExpoModulesCore/EXMagnetometerInterface.h>
+#import <ExpoModulesCore/EXMagnetometerUncalibratedInterface.h>
 
 @protocol EXSensorsManagerBindingDelegate
 
@@ -46,7 +46,7 @@
 
 @end
 
-@interface EXSensorsManagerBinding : NSObject <UMInternalModule, UMAccelerometerInterface, UMBarometerInterface, UMDeviceMotionInterface, UMGyroscopeInterface, UMMagnetometerInterface, UMMagnetometerUncalibratedInterface>
+@interface EXSensorsManagerBinding : NSObject <UMInternalModule, EXAccelerometerInterface, EXBarometerInterface, EXDeviceMotionInterface, EXGyroscopeInterface, EXMagnetometerInterface, EXMagnetometerUncalibratedInterface>
 
 - (instancetype)initWithExperienceId:(NSString *)experienceId andKernelService:(id<EXSensorsManagerBindingDelegate>)kernelService;
 

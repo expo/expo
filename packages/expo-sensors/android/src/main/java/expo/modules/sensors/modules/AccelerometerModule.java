@@ -10,8 +10,9 @@ import android.os.Bundle;
 
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.interfaces.sensors.SensorService;
-import org.unimodules.interfaces.sensors.services.AccelerometerService;
+
+import expo.modules.interfaces.sensors.SensorServiceInterface;
+import expo.modules.interfaces.sensors.services.AccelerometerServiceInterface;
 
 public class AccelerometerModule extends BaseSensorModule {
   public AccelerometerModule(Context reactContext) {
@@ -29,8 +30,8 @@ public class AccelerometerModule extends BaseSensorModule {
   }
 
   @Override
-  protected SensorService getSensorService() {
-    return getModuleRegistry().getModule(AccelerometerService.class);
+  protected SensorServiceInterface getSensorService() {
+    return getModuleRegistry().getModule(AccelerometerServiceInterface.class);
   }
 
   protected Bundle eventToMap(SensorEvent sensorEvent) {
