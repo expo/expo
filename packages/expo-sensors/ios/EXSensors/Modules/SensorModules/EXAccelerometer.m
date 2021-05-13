@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <EXSensors/EXAccelerometer.h>
-#import <UMSensorsInterface/UMAccelerometerInterface.h>
+#import <ExpoModulesCore/EXAccelerometerInterface.h>
 
 @implementation EXAccelerometer
 
@@ -14,7 +14,7 @@ UM_EXPORT_MODULE(ExponentAccelerometer);
 
 - (id)getSensorServiceFromModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
-  return [moduleRegistry getModuleImplementingProtocol:@protocol(UMAccelerometerInterface)];
+  return [moduleRegistry getModuleImplementingProtocol:@protocol(EXAccelerometerInterface)];
 }
 
 - (void)setUpdateInterval:(double)updateInterval onSensorService:(id)sensorService

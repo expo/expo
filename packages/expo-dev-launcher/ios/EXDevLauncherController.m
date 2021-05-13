@@ -1,5 +1,3 @@
-#import "EXDevLauncherController+Private.h"
-
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 #import <React/RCTDevMenu.h>
@@ -9,6 +7,7 @@
 #import <React/RCTAppearance.h>
 #import <React/RCTConstants.h>
 
+#import "EXDevLauncherController.h"
 #import "EXDevLauncherRCTBridge.h"
 #import "EXDevLauncherManifestParser.h"
 #import "EXDevLauncherLoadingView.h"
@@ -29,6 +28,19 @@
 
 NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 
+@interface EXDevLauncherController ()
+
+@property (nonatomic, weak) UIWindow *window;
+@property (nonatomic, weak) id<EXDevLauncherControllerDelegate> delegate;
+@property (nonatomic, strong) NSDictionary *launchOptions;
+@property (nonatomic, strong) NSURL *sourceUrl;
+@property (nonatomic, strong) EXDevLauncherRecentlyOpenedAppsRegistry *recentlyOpenedAppsRegistry;
+@property (nonatomic, strong) EXDevLauncherManifest *manifest;
+@property (nonatomic, strong) EXDevLauncherErrorManager *errorManager;
+
+@end
+
+
 @implementation EXDevLauncherController
 
 + (instancetype)sharedInstance
@@ -47,6 +59,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   if (self = [super init]) {
     self.recentlyOpenedAppsRegistry = [EXDevLauncherRecentlyOpenedAppsRegistry new];
     self.pendingDeepLinkRegistry = [EXDevLauncherPendingDeepLinkRegistry new];
+    self.errorManager = [[EXDevLauncherErrorManager alloc] initWithController:self];
   }
   return self;
 }
@@ -100,13 +113,25 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   return self.manifest;
 }
 
+- (UIWindow *)currentWindow
+{
+  return _window;
+}
+
+- (EXDevLauncherErrorManager *)errorManage
+{
+  return _errorManager;
+}
+
 - (void)startWithWindow:(UIWindow *)window delegate:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
 {
   _delegate = delegate;
   _launchOptions = launchOptions;
   _window = window;
 
-  [self navigateToLauncher];
+  if (!launchOptions[UIApplicationLaunchOptionsURLKey]) {
+    [self navigateToLauncher];
+  }
 }
 
 - (void)navigateToLauncher
@@ -117,12 +142,12 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   if (@available(iOS 12, *)) {
     [self _applyUserInterfaceStyle:UIUserInterfaceStyleUnspecified];
   }
-  
+
   _launcherBridge = [[EXDevLauncherRCTBridge alloc] initWithDelegate:self launchOptions:_launchOptions];
-  
+
   // Set up the `expo-dev-menu` delegate if menu is available
   [self _maybeInitDevMenuDelegate:_launcherBridge];
-  
+
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:_launcherBridge
                                                    moduleName:@"main"
                                             initialProperties:@{
@@ -150,7 +175,8 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   [_window makeKeyAndVisible];
 }
 
-- (BOOL)onDeepLink:(NSURL *)url options:(NSDictionary *)options {
+- (BOOL)onDeepLink:(NSURL *)url options:(NSDictionary *)options
+{
   if (![EXDevLauncherURLHelper isDevLauncherURL:url]) {
     return [self _handleExternalDeepLink:url options:options];
   }

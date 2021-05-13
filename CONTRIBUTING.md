@@ -28,7 +28,7 @@ Manual smoke tests are included in `apps/native-component-list`, this is a good 
 
 ## 📦 Download and Setup
 
-1. [Fork](https://help.github.com/articles/fork-a-repo/) this repository to your own GitHub account and then [clone](https://help.github.com/articles/cloning-a-repository/) it to your local device. (`git remote add upstream git@github.com:expo/expo.git` 😉)
+1. [Fork](https://help.github.com/articles/fork-a-repo/) this repository to your own GitHub account and then [clone](https://help.github.com/articles/cloning-a-repository/) it to your local device. (`git remote add upstream git@github.com:expo/expo.git` 😉). You can use `git clone --depth 1 --single-branch --branch master git@github.com:expo/expo.git`, discarding most of branches and history to clone it faster.
 2. Ensure [direnv](https://direnv.net/) is installed on your computer.
 3. If you will be working with the iOS project, ensure **ruby 2.7** is installed on your machine. macOS comes with ruby 2.6, which will give you issues; if you use homebrew you can just run `brew install ruby@2.7`.
 4. Run the setup script with: `npm run setup:native` (if you just want to contribute to the docs, you can run `npm run setup:docs`). This command does the following for you:

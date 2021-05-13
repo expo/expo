@@ -38,6 +38,11 @@
  */
 + (BOOL)isExpoHostedUrl: (NSURL *)url;
 
+/**
+ *  Grab the release channel from the query parameters of a uri
+ */
++ (NSString *)releaseChannelWithUrlComponents:(NSURLComponents *)urlComponents;
+
 # pragma mark - app-wide linking handlers
 
 + (BOOL)application:(UIApplication *)application

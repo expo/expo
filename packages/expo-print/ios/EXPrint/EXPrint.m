@@ -3,7 +3,7 @@
 #import <EXPrint/EXPrint.h>
 #import <EXPrint/EXWKPDFRenderer.h>
 #import <UMCore/UMUtilitiesInterface.h>
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
+#import <ExpoModulesCore/EXFileSystemInterface.h>
 
 NSString *const EXPrintOrientationPortrait = @"portrait";
 NSString *const EXPrintOrientationLandscape = @"landscape";
@@ -351,7 +351,7 @@ UM_EXPORT_METHOD_AS(printToFileAsync,
 
 - (NSString *)_generatePath
 {
-  id<UMFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
+  id<EXFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   if (!fileSystem) {
     return nil;
   }

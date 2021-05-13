@@ -24,7 +24,7 @@ function toQueryString(params: object) {
  */
 export default function LegacyAuthSession() {
   const [result, setResult] = React.useState<any | null>(null);
-  const id = (Constants.manifest || {}).id;
+  const id = Constants.manifest?.id;
   const isInvalid = id !== '@community/native-component-list';
 
   if (isInvalid) {

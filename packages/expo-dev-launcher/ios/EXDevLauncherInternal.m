@@ -1,6 +1,6 @@
 #import "EXDevLauncherInternal.h"
 
-#import "EXDevLauncherController+Private.h"
+#import "EXDevLauncherController.h"
 #import <React/RCTBridge.h>
 
 #import <EXDevLauncher-Swift.h>

@@ -173,11 +173,20 @@ public class ExpoUpdatesAppLoader {
 
     Uri httpManifestUrl = mExponentManifest.httpManifestUrl(mManifestUrl);
 
+    String releaseChannel = Constants.RELEASE_CHANNEL;
+    if (!Constants.isStandaloneApp()) {
+      // in Expo Go, the release channel can change at runtime depending on the URL we load
+      String releaseChannelQueryParam = httpManifestUrl.getQueryParameter(ExponentManifest.QUERY_PARAM_KEY_RELEASE_CHANNEL);
+      if (releaseChannelQueryParam != null) {
+        releaseChannel = releaseChannelQueryParam;
+      }
+    }
+
     HashMap<String, Object> configMap = new HashMap<>();
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY, httpManifestUrl);
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_SCOPE_KEY_KEY, httpManifestUrl.toString());
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_SDK_VERSION_KEY, Constants.SDK_VERSIONS);
-    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_RELEASE_CHANNEL_KEY, Constants.RELEASE_CHANNEL);
+    configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_RELEASE_CHANNEL_KEY, releaseChannel);
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY, Constants.isStandaloneApp());
     configMap.put(UpdatesConfiguration.UPDATES_CONFIGURATION_ENABLED_KEY, Constants.ARE_REMOTE_UPDATES_ENABLED);
     if (mUseCacheOnly) {

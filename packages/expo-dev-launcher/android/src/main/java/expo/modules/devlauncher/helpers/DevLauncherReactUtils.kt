@@ -5,7 +5,31 @@ import android.util.Log
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import expo.interfaces.devmenu.annotations.ContainsDevMenuExtension
+import expo.modules.devlauncher.react.DevLauncherDevSupportManagerSwapper
 import expo.modules.devlauncher.react.DevLauncherInternalSettings
+
+fun injectReactInterceptor(
+  context: Context,
+  reactNativeHost: ReactNativeHost,
+  debugServerHost: String,
+  appBundleName: String
+): Boolean {
+  injectDevSupportManager(reactNativeHost)
+
+  return injectDebugServerHost(
+    context,
+    reactNativeHost,
+    debugServerHost,
+    appBundleName
+  )
+}
+
+fun injectDevSupportManager(
+  reactNativeHost: ReactNativeHost
+) {
+  DevLauncherDevSupportManagerSwapper()
+    .swapDevSupportManagerImpl(reactNativeHost.reactInstanceManager)
+}
 
 fun injectDebugServerHost(
   context: Context,

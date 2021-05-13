@@ -1,6 +1,6 @@
 #import <AVFoundation/AVFoundation.h>
 
-#import <UMBarCodeScannerInterface/UMBarCodeScannerProviderInterface.h>
+#import <ExpoModulesCore/EXBarCodeScannerProviderInterface.h>
 #import <EXCamera/EXCamera.h>
 #import <EXCamera/EXCameraUtils.h>
 #import <EXCamera/EXCameraManager.h>
@@ -8,15 +8,15 @@
 #import <UMCore/UMAppLifecycleService.h>
 #import <UMCore/UMUtilities.h>
 #import <UMFaceDetectorInterface/UMFaceDetectorManagerProvider.h>
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
+#import <ExpoModulesCore/EXFileSystemInterface.h>
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
 
 @interface EXCamera ()
 
-@property (nonatomic, weak) id<UMFileSystemInterface> fileSystem;
+@property (nonatomic, weak) id<EXFileSystemInterface> fileSystem;
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, strong) id<UMFaceDetectorManager> faceDetectorManager;
-@property (nonatomic, strong) id<UMBarCodeScannerInterface> barCodeScanner;
+@property (nonatomic, strong) id<EXBarCodeScannerInterface> barCodeScanner;
 @property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
 @property (nonatomic, weak) id<UMAppLifecycleService> lifecycleManager;
 
@@ -51,7 +51,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     _faceDetectorManager = [self createFaceDetectorManager];
     _barCodeScanner = [self createBarCodeScanner];
     _lifecycleManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)];
-    _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
+    _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
     _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
 #if !(TARGET_IPHONE_SIMULATOR)
     _previewLayer = [AVCaptureVideoPreviewLayer layerWithSession:_session];
@@ -952,9 +952,9 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
 
 - (id)createBarCodeScanner
 {
-  id<UMBarCodeScannerProviderInterface> barCodeScannerProvider = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMBarCodeScannerProviderInterface)];
+  id<EXBarCodeScannerProviderInterface> barCodeScannerProvider = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXBarCodeScannerProviderInterface)];
   if (barCodeScannerProvider) {
-    id<UMBarCodeScannerInterface> barCodeScanner = [barCodeScannerProvider createBarCodeScanner];
+    id<EXBarCodeScannerInterface> barCodeScanner = [barCodeScannerProvider createBarCodeScanner];
     if (barCodeScanner) {
       UM_WEAKIFY(self);
       [barCodeScanner setSession:_session];

@@ -1377,6 +1377,7 @@ export type NotificationTrigger =
   | LocationNotificationTrigger
   | TimeIntervalNotificationTrigger
   | DailyNotificationTrigger
+  | WeeklyNotificationTrigger
   | UnknownNotificationTrigger;
 ```
 
@@ -1460,6 +1461,19 @@ A trigger related to a daily notification. This is an Android-only type, the sam
 ```ts
 export interface DailyNotificationTrigger {
   type: 'daily';
+  hour: number;
+  minute: number;
+}
+```
+
+### `WeeklyNotificationTrigger`
+
+A trigger related to a weekly notification. This is an Android-only type, the same functionality will be achieved on iOS with a `CalendarNotificationTrigger`.
+
+```ts
+export interface WeeklyNotificationTrigger {
+  type: 'weekly';
+  weekday: number;
   hour: number;
   minute: number;
 }

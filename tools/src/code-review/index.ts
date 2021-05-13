@@ -48,7 +48,7 @@ export async function reviewPullRequestAsync(prNumber: number) {
   });
 
   // Get the diff of the pull request.
-  const diff = await Git.getDiffAsync(pr.head.sha, `${pr.head.sha}~${pr.commits}`);
+  const diff = await Git.getDiffAsync(`${pr.head.sha}~${pr.commits}`, pr.head.sha);
 
   const input: ReviewInput = {
     pullRequest: pr,

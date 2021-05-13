@@ -45,24 +45,29 @@ const renderInterfacePropertyRow = ({
   </tr>
 );
 
-const renderInterface = ({ name, children, comment }: InterfaceDefinitionData): JSX.Element => (
-  <div key={`interface-definition-${name}`}>
-    <H3Code>
-      <InlineCode>{name}</InlineCode>
-    </H3Code>
-    <CommentTextBlock comment={comment} />
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>{children.map(renderInterfacePropertyRow)}</tbody>
-    </table>
-  </div>
-);
+const renderInterface = ({
+  name,
+  children,
+  comment,
+}: InterfaceDefinitionData): JSX.Element | null =>
+  children ? (
+    <div key={`interface-definition-${name}`}>
+      <H3Code>
+        <InlineCode>{name}</InlineCode>
+      </H3Code>
+      <CommentTextBlock comment={comment} />
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>{children.map(renderInterfacePropertyRow)}</tbody>
+      </table>
+    </div>
+  ) : null;
 
 const APISectionInterfaces: React.FC<APISectionInterfacesProps> = ({ data }) =>
   data?.length ? (

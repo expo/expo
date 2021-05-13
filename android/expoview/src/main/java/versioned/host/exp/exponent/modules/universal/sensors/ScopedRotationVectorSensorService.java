@@ -4,11 +4,12 @@ import java.util.Collections;
 import java.util.List;
 
 import org.unimodules.core.interfaces.InternalModule;
-import org.unimodules.interfaces.sensors.services.RotationVectorSensorService;
+
+import expo.modules.interfaces.sensors.services.RotationVectorSensorServiceInterface;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.services.sensors.SubscribableSensorKernelService;
 
-public class ScopedRotationVectorSensorService extends BaseSensorService implements InternalModule, RotationVectorSensorService {
+public class ScopedRotationVectorSensorService extends BaseSensorService implements InternalModule, RotationVectorSensorServiceInterface {
   public ScopedRotationVectorSensorService(ExperienceId experienceId) {
     super(experienceId);
   }
@@ -20,7 +21,7 @@ public class ScopedRotationVectorSensorService extends BaseSensorService impleme
 
   @Override
   public List<Class> getExportedInterfaces() {
-    return Collections.<Class>singletonList(RotationVectorSensorService.class);
+    return Collections.<Class>singletonList(RotationVectorSensorServiceInterface.class);
   }
 }
 

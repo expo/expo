@@ -17,7 +17,9 @@ if (__DEV__) {
             // The standard Expo logUrl is `http://localhost:19000/logs`, this code assumes that the `logs` endpoint doesn't change.
             const logUrl = url + 'logs';
             Constants.__unsafeNoWarnManifest.logUrl = logUrl;
-            Constants.manifest.logUrl = logUrl;
+            if (Constants.manifest) {
+                Constants.manifest.logUrl = logUrl;
+            }
         }
     }
     // TODO: Maybe warn that console logging will not be enabled.

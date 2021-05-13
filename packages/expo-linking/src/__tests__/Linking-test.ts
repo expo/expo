@@ -29,14 +29,14 @@ describe('parse', () => {
 
 describe(Linking.createURL, () => {
   const consoleWarn = console.warn;
-  const manifest = Constants.manifest;
+  const manifest = Constants.__rawManifest_TEST;
   const executionEnvironment = Constants.executionEnvironment;
   describe('queries', () => {
     beforeEach(() => {
       console.warn = jest.fn();
       Constants.executionEnvironment = ExecutionEnvironment.StoreClient;
-      Constants.manifest = {
-        ...Constants.manifest,
+      Constants.__rawManifest_TEST = {
+        ...Constants.__rawManifest_TEST,
         scheme: 'demo',
       };
     });
@@ -44,7 +44,7 @@ describe(Linking.createURL, () => {
     afterEach(() => {
       console.warn = consoleWarn;
       Constants.executionEnvironment = executionEnvironment;
-      Constants.manifest = manifest;
+      Constants.__rawManifest_TEST = manifest;
     });
 
     test.each<QueryParams>([
@@ -65,8 +65,8 @@ describe(Linking.createURL, () => {
     beforeEach(() => {
       console.warn = jest.fn();
       Constants.executionEnvironment = ExecutionEnvironment.Bare;
-      Constants.manifest = {
-        ...Constants.manifest,
+      Constants.__rawManifest_TEST = {
+        ...Constants.__rawManifest_TEST,
         hostUri: null,
         scheme: 'demo',
       };
@@ -75,7 +75,7 @@ describe(Linking.createURL, () => {
     afterEach(() => {
       console.warn = consoleWarn;
       Constants.executionEnvironment = executionEnvironment;
-      Constants.manifest = manifest;
+      Constants.__rawManifest_TEST = manifest;
     });
 
     test.each<QueryParams>([
