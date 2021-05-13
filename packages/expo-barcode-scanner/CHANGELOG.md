@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- Migrated module interface from `unimodules-barcode-scanner-interface` to `expo-modules-core`.
+- Migrated module interface from `unimodules-barcode-scanner-interface` to `expo-modules-core`. ([#12912](https://github.com/expo/expo/pull/12912) by [@tsapeta](https://github.com/tsapeta))
 
 ## 10.1.2 — 2021-04-13
 

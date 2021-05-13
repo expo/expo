@@ -13,7 +13,7 @@
 ### 💡 Others
 
 - Migrated module interface from `unimodules-camera-interface` to `expo-modules-core`.
-- Migrated barcode scanner interface from `unimodules-barcode-scanner-interface` to `expo-modules-core`.
+- Migrated barcode scanner interface from `unimodules-barcode-scanner-interface` to `expo-modules-core`. ([#12912](https://github.com/expo/expo/pull/12912) by [@tsapeta](https://github.com/tsapeta))
 
 ## 11.0.3 — 2021-05-03
 
