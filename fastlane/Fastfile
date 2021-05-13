@@ -272,6 +272,7 @@ platform :android do
       project_dir: "android",
       task: "install",
       build_type: "Debug",
+      flavor: "versioned",
     )
     adb(command: "shell am start -n host.exp.exponent/host.exp.exponent.LauncherActivity")
   end
@@ -312,11 +313,12 @@ platform :android do
     devicefarm_follow_run("arn:aws:devicefarm:us-west-2:274251141632:run:#{result_info[:project_id]}/#{result_info[:run_id]}")
   end
 
-  lane :build do |build_type: "Debug", sign: true|
+  lane :build do |build_type: "Debug", flavor: "versioned", sign: true|
     ENV['ANDROID_UNSIGNED'] = '1' unless sign
     gradle(
       project_dir: "android",
       task: "app:assemble",
+      flavor: flavor,
       build_type: build_type,
     )
   end
