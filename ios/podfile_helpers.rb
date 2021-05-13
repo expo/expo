@@ -35,9 +35,8 @@ def run_versioned_postinstalls!(pod_name, target_installation_result)
     context: binding
 end
 
-def use_pods!(pattern, project_name = nil, excludePattern = "")
+def use_pods!(pattern, project_name = nil, files_to_exclude = [])
   base_directory = Pod::Config.instance.project_root
-  files_to_exclude = Dir.glob(excludePattern, base: base_directory)
 
   Dir.glob(pattern, base: base_directory) { |file_path|
     unless files_to_exclude.include? file_path
