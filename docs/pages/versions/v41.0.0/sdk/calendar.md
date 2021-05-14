@@ -17,9 +17,9 @@ Provides an API for interacting with the device's system calendars, events, remi
 
 ## Configuration
 
-In managed apps you must add following permissions to your `app.json`.
+You must add following permissions to your `app.json`.
 - Android requires `READ_CALENDAR` & `WRITE_CALENDAR` inside the `expo.android.permissions` array.
-- IOS requires `NSRemindersUsageDescription` key added to `expo.ios.infoPlist` with a string value describing the permission request to end users.
+- iOS requires the `NSRemindersUsageDescription` key be added to `expo.ios.infoPlist` with a string value describing the reason for the permission request.
 
 ## Usage
 
