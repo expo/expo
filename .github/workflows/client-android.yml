@@ -77,6 +77,16 @@ jobs:
         run: |
           sudo $ANDROID_HOME/tools/bin/sdkmanager --install "ndk;19.2.5345600"
       - run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 🔎 Check which flavor to build
+        id: flavor
+        uses: dorny/paths-filter@v2
+        with:
+          filters: |
+            versioned:
+              - android/versioned-abis/**
+              - android/versioned-react-native/**
+              - android/expoview/src/versioned/**
+              - android/expoview/src/main/java/versioned/**
       - name: Build APK
         env:
           ANDROID_KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
@@ -87,11 +97,14 @@ jobs:
         run: |
           if [ -z "$ANDROID_KEYSTORE_B64" ]; then
             echo "External build detected, APK will not be signed"
-            fastlane android build build_type:Release sign:false
+            fastlane android build build_type:Release \
+              flavor:${{ steps.flavor.outputs.versioned == 'true' && 'Versioned' || 'Unversioned' }} \
+              sign:false
           else
             echo "Internal build detected, APK will be signed"
             echo $ANDROID_KEYSTORE_B64 | base64 -d > android/app/release-key.jks
-            fastlane android build build_type:Release
+            fastlane android build build_type:Release \
+              flavor:${{ steps.flavor.outputs.versioned == 'true' && 'Versioned' || 'Unversioned' }}
           fi
       - uses: actions/upload-artifact@v2
         with:
