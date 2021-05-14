@@ -17,8 +17,6 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.LifecycleEventListener;
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.core.interfaces.services.UIManager;
-import org.unimodules.interfaces.facedetector.FaceDetector;
-import org.unimodules.interfaces.facedetector.FaceDetectorProvider;
 import org.unimodules.interfaces.permissions.Permissions;
 
 import java.io.File;
@@ -43,6 +41,8 @@ import expo.modules.interfaces.barcodescanner.BarCodeScannerProviderInterface;
 import expo.modules.interfaces.barcodescanner.BarCodeScannerResult;
 import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings;
 import expo.modules.interfaces.camera.CameraViewInterface;
+import expo.modules.interfaces.facedetector.FaceDetectorInterface;
+import expo.modules.interfaces.facedetector.FaceDetectorProviderInterface;
 
 public class ExpoCameraView extends CameraView implements LifecycleEventListener, BarCodeScannerAsyncTaskDelegate, FaceDetectorAsyncTaskDelegate, PictureSavedDelegate, CameraViewInterface {
   private static final String MUTE_KEY = "mute";
@@ -66,7 +66,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
 
   // Scanning-related properties
   private BarCodeScannerInterface mBarCodeScanner;
-  private FaceDetector mFaceDetector;
+  private FaceDetectorInterface mFaceDetector;
   private Map<String, Object> mPendingFaceDetectorSettings;
   private boolean mShouldDetectFaces = false;
   private boolean mShouldScanBarCodes = false;
@@ -298,7 +298,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
         if (!Build.FINGERPRINT.contains("generic")) {
           start();
 
-          FaceDetectorProvider faceDetectorProvider = mModuleRegistry.getModule(FaceDetectorProvider.class);
+          FaceDetectorProviderInterface faceDetectorProvider = mModuleRegistry.getModule(FaceDetectorProviderInterface.class);
           if (faceDetectorProvider != null) {
             mFaceDetector = faceDetectorProvider.createFaceDetectorWithContext(getContext());
             if (mPendingFaceDetectorSettings != null) {
@@ -360,7 +360,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
   }
 
   @Override
-  public void onFaceDetectionError(FaceDetector faceDetector) {
+  public void onFaceDetectionError(FaceDetectorInterface faceDetector) {
     faceDetectorTaskLock = false;
     if (!mShouldDetectFaces) {
       return;

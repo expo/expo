@@ -78,7 +78,6 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 dependencies {
   unimodule 'unimodules-core'
   unimodule 'expo-modules-core'
-  unimodule 'unimodules-face-detector-interface'
 
   api "androidx.exifinterface:exifinterface:1.0.0"
   api 'com.google.firebase:firebase-ml-vision:24.0.1'

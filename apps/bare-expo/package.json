@@ -121,8 +121,7 @@
     "react-native-unimodules": "~0.13.3",
     "react-native-view-shot": "3.1.2",
     "react-native-webview": "11.2.3",
-    "test-suite": "*",
-    "unimodules-face-detector-interface": "~6.1.0"
+    "test-suite": "*"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
