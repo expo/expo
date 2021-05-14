@@ -152,7 +152,7 @@ function LegacyLaunchSection({ app }: { app: ProjectDataProject }) {
 
   return (
     <View>
-      <SectionHeader title="Classic update branches" />
+      <SectionHeader title="Classic update release channels" />
       <ListItem
         title="default"
         onPress={() => {
