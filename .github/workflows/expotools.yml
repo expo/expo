@@ -12,6 +12,10 @@ on:
       - .github/workflows/expotools.yml
       - tools/**
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-18.04
