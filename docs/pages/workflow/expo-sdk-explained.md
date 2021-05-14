@@ -1,6 +1,6 @@
 ---
-title: How does the Expo SDK relate to my app?
-sidebarTitle: Expo SDK explained
+title: The Expo SDK explained
+sidebar_title: Expo SDK explained
 ---
 
 ## What is the Expo SDK?
@@ -9,9 +9,9 @@ The simplest way to look at Expo's SDK is to think of it as a toolbox that Expo 
 
 ### Versions of the SDK and release schedule
 
-Expo operates on a quarterly SDK release schedule, which allows for meaningful changes that have been thoroughly tested to be included in each SDK, and also provides some predictability for Expo developers. Since we want you to be able to easily work on apps running older SDK versions, the Expo Go app supports usually the last 4 SDK versions. If you're further behind than that, you can always install older versions of Expo Go via `expo-cli` by running `expo client:install:[ios | android]` from your project directory (for iOS, this command only works for simulators, not physical devices).
+Expo operates on a quarterly SDK release schedule, which allows for meaningful changes that have been thoroughly tested to be included in each SDK, and also provides some predictability for Expo developers.
 
-To upgrade your Expo SDK version, just run `expo upgrade` in your project directory, and `expo-cli` will take care of the rest.
+> [How do I upgrade my SDK version?](/workflow/upgrading-expo-sdk-walkthrough.md)
 
 ### React Native version
 
@@ -21,7 +21,7 @@ In the bare workflow, you are [not as tied to the Expo SDK](#significance-of-the
 
 ### What is `expo install`?
 
-Because projects running in Expo Go rely on the native code that is bundled into the SDK, it is important that the version of a package you have in your `package.json` is compatible with the native code it's using. To simplify this, you can use `expo install <some-expo-package>` and the proper version of that package, based on your SDK version, will be installed. In other words- `expo install` installs the appropriate JavaScript for a package based on the native code your project is using (which is indicated by your Expo SDK version).
+`expo install` ensures your app is using the appropriate version of a package, based on your SDK version. Please refer to ["Using Expo SDK libraries"](/workflow/using-libraries/#using-expo-sdk-libraries) for information.
 
 ## Significance of the Expo SDK in:
 
@@ -31,7 +31,7 @@ Expo Go is where your Expo SDK version is most important. Whether you are in the
 
 We version the native code in Expo Go so that you can run projects on different SDK versions easily, but this means you need to tell Expo Go which version of native code to run. This is usually done via the `expo` package in your `package.json` (unless you override it with the `sdkVersion` property in `app.json`), which points to a particular SDK version (e.g. "^41.0.0").
 
-### Non-Expo development
+### Vanilla React Native development
 
 If you are developing with `react-native cli` and without Expo Go, then the Expo SDK version has very little impact on your development workflow. We recommend keeping up with our SDK releases just so you're aware of new features and changes, but you can install packages normally without `expo install`, and the native code for your project is defined by the packages you have installed themselves, rather than by the Expo SDK version. This also means you can edit the native code files and see those changes in your project.
 
@@ -49,7 +49,7 @@ but also comes with some caveats:
 - The entire SDK is **no longer included by default**, so you'll need to ship a new binary when you add in a new Expo package. For example, if you'd like to add camera functionality to your app, but didn't have `expo-camera` as a dependency during your last build, you cannot add in `expo-camera` via an OTA Update like you could previously when using Classic `expo build`. Instead, you'll need to install `expo-camera`, and rebuild with `eas build`.
 - Similar to the point above, it is easier to ship an incompatible OTA Update to your app, so you'll need to be aware of that.
 
-### Classic expo build
+### Classic Build (`expo build`)
 
 The [classic `expo build` infrastructure](/distribution/building-standalone-apps.md) (including `turtle-cli`) functions similar to Expo Go: your app is relying on the native code included in the Expo SDK, not in the individual packages you have installed in your `package.json`. This also means the native code for every package in the Expo SDK is included in your app, and you cannot add in any custom native code or 3rd party libraries that rely on their own native code.
 
