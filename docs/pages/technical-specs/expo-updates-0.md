@@ -90,7 +90,7 @@ cache-control: max-age=0, private
 ### Manifest Response Body
 
 The body of the response MUST be a manifest, which is defined as JSON conforming to both the following `Manifest` definition expressed in [TypeScript](https://www.typescriptlang.org/) and the detailed descriptions for each field:
-```
+```typescript
 export type Manifest = {
   id: string;
   createdAt: string;
