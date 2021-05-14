@@ -10,9 +10,9 @@ OTA updates are controlled by the [`updates` settings in app.json](../workflow/c
 
 ## Automatic Updates
 
-By default, Expo will check for updates automatically when your app is launched and will try to fetch the latest published version. If a new bundle is available, Expo will attempt to download it before launching the experience. If there is no network connection available, or it has not finished downloading in 30 seconds, Expo will fall back to loading a cached version of your app, and continue trying to fetch the update in the background (at which point it will be saved into the cache for the next app load).
+By default, `Expo Go` will check for updates automatically when your app is launched and will try to fetch the latest published version. If a new bundle is available, `Expo Go` will attempt to download it before launching the experience. If there is no network connection available, or it has not finished downloading in 30 seconds, `Expo Go` will fall back to loading a cached version of your app, and continue trying to fetch the update in the background (at which point it will be saved into the cache for the next app load).
 
-With this automatic configuration, calling [`Updates.reloadAsync()`](../versions/latest/sdk/updates.md#updatesreloadasync) will also result in Expo attempting to fetch the most up-to-date version of your app, so there is no need to use any of the other methods in the Updates module.
+With this automatic configuration, calling [`Updates.reloadAsync()`](../versions/latest/sdk/updates.md#updatesreloadasync) will also result in `Expo Go` attempting to fetch the most up-to-date version of your app, so there is no need to use any of the other methods in the Updates module.
 
 The timeout length is configurable by setting `updates.fallbackToCacheTimeout` (ms) in app.json. For example, a common pattern is to set `updates.fallbackToCacheTimeout` to `0`. This will allow your app to start immediately with a cached bundle while downloading a newer one in the background for future use. [`Updates.addListener`](../versions/latest/sdk/updates.md#expoupdatesaddlistenereventlistener) provides a hook to let you respond when the new bundle is finished downloading.
 
@@ -20,7 +20,7 @@ The timeout length is configurable by setting `updates.fallbackToCacheTimeout` (
 
 In standalone apps, it is also possible to turn off automatic updates, and to instead control updates entirely within your JS code. This is desirable if you want some custom logic around fetching updates (e.g. only over Wi-Fi).
 
-Setting `updates.checkAutomatically` to `"ON_ERROR_RECOVERY"` in app.json will prevent Expo from automatically fetching the latest update every time your app is launched. Only the most recent cached version of your bundle will be loaded. It will only automatically fetch an update if the last run of the cached bundle produced a fatal JS error.
+Setting `updates.checkAutomatically` to `"ON_ERROR_RECOVERY"` in app.json will prevent `Expo Go` from automatically fetching the latest update every time your app is launched. Only the most recent cached version of your bundle will be loaded. It will only automatically fetch an update if the last run of the cached bundle produced a fatal JS error.
 
 You can then use the [`Updates`](../versions/latest/sdk/updates.md) module to download new updates and, if appropriate, notify the user and reload the experience.
 
