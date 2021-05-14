@@ -190,7 +190,7 @@ jobs:
       - name: Build Android project for Detox
         run: yarn android:detox:build:release
         working-directory: apps/bare-expo
-        timeout-minutes: 30
+        timeout-minutes: 35
       - name: Run tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
