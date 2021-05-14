@@ -81,7 +81,9 @@ const TaskManager = optionalRequire(() => require('../screens/TaskManagerScreen'
 const TextToSpeech = optionalRequire(() => require('../screens/TextToSpeechScreen'));
 const ViewShot = optionalRequire(() => require('../screens/ViewShotScreen'));
 const WebBrowser = optionalRequire(() => require('../screens/WebBrowserScreen'));
-
+const TrackingTransparency = optionalRequire(() =>
+  require('../screens/TrackingTransparencyScreen')
+);
 // @ts-ignore
 const optionalScreens: {
   [key: string]: React.ComponentType | null;
@@ -152,6 +154,7 @@ const optionalScreens: {
   TextToSpeech,
   WebBrowser,
   ViewShot,
+  TrackingTransparency,
 };
 
 type ScreensObjectType = Record<string, React.ComponentType>;

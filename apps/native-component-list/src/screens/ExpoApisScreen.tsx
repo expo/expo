@@ -87,6 +87,7 @@ const screens = [
   'StoreReview',
   'TaskManager',
   'TextToSpeech',
+  'TrackingTransparency',
   'ViewShot',
   'WebBrowser',
 ];
