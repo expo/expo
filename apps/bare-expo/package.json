@@ -85,7 +85,8 @@
     "symlinks": [
       "expo-constants",
       "expo-camera",
-      "expo-updates"
+      "expo-updates",
+      "detox"
     ]
   },
   "dependencies": {

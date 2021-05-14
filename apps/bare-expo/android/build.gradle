@@ -63,8 +63,8 @@ allprojects {
         }
 
        maven {
-           // Detox is installed from workspace root npm
-           url "$rootDir/../../../node_modules/detox/Detox-android"
+           // Detox is installed from npm
+           url "$rootDir/../node_modules/detox/Detox-android"
        }
 
         google()
