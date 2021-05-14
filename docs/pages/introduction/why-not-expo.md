@@ -80,14 +80,14 @@ You also can use the [bare workflow](../bare/exploring-bare-workflow.md) with th
 </p>
 </details>
 
-<details><summary><h4>Your app cannot target only children under 13 years old unless you use EAS Build.</h4></summary>
+<details><summary><h4>Your app cannot target only children under 13 years old without customizing native dependencies.</h4></summary>
 <p>
 
 Both [Apple](https://developer.apple.com/app-store/review/guidelines/#kids) and [Google](https://support.google.com/googleplay/android-developer/answer/9285070?hl=en) provide strict guidelines for any apps that specifically target children under a particular age. One of these guidelines states that certain ad libraries, such as Facebook's Audience Network, cannot be used in the app.
 
-Apps built with `expo build:ios|android` [contain code for the entire Expo SDK](https://expo.fyi/managed-app-size), including Facebook's Audience Network library, so if you build your app this way you cannot designated it as "designed primarily for children under 13" in the App Store or Play Store, _even though this code is never run unless you explicitly call it_.
+Apps built with `expo build:ios|android` [contain code for the entire Expo SDK](https://expo.fyi/managed-app-size), you cannot customize the native dependencies, including Facebook's Audience Network library, so if you build your app this way you cannot designated it as "designed primarily for children under 13" in the App Store or Play Store, _even though this code is never run unless you explicitly call it_.
 
-Apps built with `eas build -p ios|android` [include only your app's explicit dependencies](https://blog.expo.io/expo-managed-workflow-in-2021-d1c9b68aa10), and so this limitation does not apply if you use EAS Build. [Learn about how to use it](https://docs.expo.io/build/introduction/).
+Apps built with `eas build -p ios|android` [include only your app's explicit native dependencies](https://blog.expo.io/expo-managed-workflow-in-2021-d1c9b68aa10), and so this limitation does not apply if you use EAS Build. [Learn about how to use it](https://docs.expo.io/build/introduction/).
 
 </p>
 </details>
