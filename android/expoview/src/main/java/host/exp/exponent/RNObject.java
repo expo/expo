@@ -47,6 +47,7 @@ public class RNObject {
     return mInstance != null;
   }
 
+  // this is unmenaingful change to test CI
   @SuppressWarnings("ConstantConditions")   // required for "unversioned" flavor check
   public RNObject loadVersion(String version) {
     try {
