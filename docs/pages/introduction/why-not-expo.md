@@ -87,7 +87,7 @@ Both [Apple](https://developer.apple.com/app-store/review/guidelines/#kids) and 
 
 Apps built with `expo build:ios|android` [contain code for the entire Expo SDK](https://expo.fyi/managed-app-size), including Facebook's Audience Network library, so if you build your app this way you cannot designated it as "designed primarily for children under 13" in the App Store or Play Store, _even though this code is never run unless you explicitly call it_.
 
-Apps built with `eas build -p ios|android` [only include the code included in your app](https://blog.expo.io/expo-managed-workflow-in-2021-d1c9b68aa10), and so this limitation does not apply if you use EAS Build. [Learn about how to use it](https://docs.expo.io/build/introduction/).
+Apps built with `eas build -p ios|android` [include only your app's explicit dependencies](https://blog.expo.io/expo-managed-workflow-in-2021-d1c9b68aa10), and so this limitation does not apply if you use EAS Build. [Learn about how to use it](https://docs.expo.io/build/introduction/).
 
 </p>
 </details>
