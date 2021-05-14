@@ -32,11 +32,7 @@ repositories {
   mavenCentral()
 }
 
-apply from: "${rootProject.projectDir}/flavors.gradle"
-
 android {
-  with flavorConfig
-
   compileSdkVersion safeExtGet("compileSdkVersion", 30)
 
   compileOptions {
@@ -49,6 +45,8 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
     versionCode 1
     versionName "1.0"
+
+    missingDimensionStrategy('versioning', 'versioned')
 
     ndk {
       moduleName("reanimated")

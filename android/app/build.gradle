@@ -17,10 +17,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'devicefarm'
 
-apply from: "${rootProject.projectDir}/flavors.gradle"
-
 android {
-  with flavorConfig
 
   compileSdkVersion safeExtGet("compileSdkVersion", 30)
 
@@ -74,6 +71,18 @@ android {
       }
     }
   }
+  flavorDimensions "versioning"
+  productFlavors {
+    versioned {
+      dimension "versioning"
+      manifestPlaceholders = [appLabel:"@string/versioned_app_name"]
+    }
+    unversioned {
+      dimension "versioning"
+      manifestPlaceholders = [appLabel: "@string/unversioned_app_name"]
+    }
+  }
+
   lintOptions {
     abortOnError false
   }
