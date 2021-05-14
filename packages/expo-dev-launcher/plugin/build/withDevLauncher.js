@@ -21,6 +21,8 @@ const DEV_LAUNCHER_ON_NEW_INTENT = `
 const DEV_LAUNCHER_WRAPPED_ACTIVITY_DELEGATE = `DevLauncherController.wrapReactActivityDelegate(this, () -> $1);`;
 const DEV_LAUNCHER_ANDROID_INIT = 'DevLauncherController.initialize(this, getReactNativeHost());';
 const DEV_LAUNCHER_POD_IMPORT = "pod 'expo-dev-launcher', path: '../node_modules/expo-dev-launcher', :configurations => :debug";
+const DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS = `import { registerErrorHandlers } from 'expo-dev-launcher';
+registerErrorHandlers();`;
 async function readFileAsync(path) {
     return fs_1.default.promises.readFile(path, 'utf8');
 }
@@ -67,6 +69,16 @@ async function editPodfile(config, action) {
     }
     catch (e) {
         config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', `Couldn't modified AppDelegate.m - ${e}.`);
+    }
+}
+async function editIndex(config, action) {
+    const indexPath = path_1.default.join(config.modRequest.projectRoot, 'index.js');
+    try {
+        const index = action(await readFileAsync(indexPath));
+        return await saveFileAsync(indexPath, index);
+    }
+    catch (e) {
+        config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', `Couldn't modified index.js - ${e}.`);
     }
 }
 const withDevLauncherApplication = config => {
@@ -126,11 +138,27 @@ const withDevLauncherPodfile = config => {
         },
     ]);
 };
+const withErrorHandling = config => {
+    return config_plugins_1.withDangerousMod(config, [
+        // We want to edit js file, but for the `DangerousMod` we need to select a platform.
+        'android',
+        async (config) => {
+            await editIndex(config, index => {
+                if (!index.includes(DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS)) {
+                    index = DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS + '\n\n' + index;
+                }
+                return index;
+            });
+            return config;
+        },
+    ]);
+};
 const withDevLauncher = (config) => {
     config = withDevLauncherActivity(config);
     config = withDevLauncherApplication(config);
     config = withDevLauncherPodfile(config);
     config = withDevLauncherAppDelegate_1.withDevLauncherAppDelegate(config);
+    config = withErrorHandling(config);
     return config;
 };
 exports.default = config_plugins_1.createRunOncePlugin(withDevLauncher, pkg.name, pkg.version);
