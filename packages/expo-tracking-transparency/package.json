@@ -32,7 +32,7 @@
   "dependencies": {
     "@expo/config-plugins": "^1.0.22",
     "expo-module-scripts": "^2.0.0",
-    "unimodules-permissions-interface": "~6.2.0"
+    "unimodules-permissions-interface": "~6.1.0"
   },
   "jest": {
     "preset": "expo-module-scripts/ios"
