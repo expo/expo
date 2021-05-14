@@ -26,12 +26,12 @@ Conforming servers and client libraries MUST follow the HTTP spec as described i
 An _update_ is defined as a [_manifest_](#manifest-response) together with the assets referenced inside the manifest.
 Expo Updates is a protocol for assembling and delivering updates to apps running on multiple platforms.
 
-An app running a conformant Expo Updates client library MUST load the most recent update saved in the client library's cache, possibly after filtering by the contents of the manifest's [_metatdata_](#manifest-response-body).
+An app running a conformant Expo Updates client library MUST load the most recent update saved in the client library's cache, possibly after filtering by the contents of the manifest's [_metadata_](#manifest-response-body).
 
 The following describes how a conformant Expo Updates client library MUST retrieve a new update from a conformant server:
 1. The client library will make a [request](#request) for the most recent manifest, with constraints specified in the headers. 
 2. If a new manifest is downloaded, the client library will proceed to make additional requests to download and store any missing assets specified in the manifest.
-3. The client library will edit its local state to reflect that a new update has been added to the local cache. It will also update the local state with the new `expo-manifest-filters` and `expo-server-defined-headers` fround in the response [headers](#manifest-response-headers).
+3. The client library will edit its local state to reflect that a new update has been added to the local cache. It will also update the local state with the new `expo-manifest-filters` and `expo-server-defined-headers` found in the response [headers](#manifest-response-headers).
 
 The primary consumers of this spec are Expo Application Services and organizations that wish to manage their own update server to satisfy internal requirements.
 
@@ -149,7 +149,7 @@ cache-control: public, max-age=31536000, immutable
 
 ### Compression
 
-Assets SHOULD be capable being served with [Gzip](https://www.gnu.org/software/gzip/) and [Brotli](https://github.com/google/brotli) compression.
+Assets SHOULD be capable of being served with [Gzip](https://www.gnu.org/software/gzip/) and [Brotli](https://github.com/google/brotli) compression.
 
 ## Client Library
 
