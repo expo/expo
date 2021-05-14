@@ -43,7 +43,7 @@ public class MainActivity extends DevMenuAwareReactActivity {
         SplashScreen.show(activity, SplashScreenImageResizeMode.COVER, ReactRootView.class, false);
 
         // Hacky way to prevent onboarding DevMenuActivity breaks detox testing,
-        // which to setup the dev-menu internal setting.
+        // we do this by setting the dev-menu internal setting.
         final Intent intent = getIntent();
         final String action = intent.getAction();
         final Uri initialUri = intent.getData();
