@@ -18,6 +18,11 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
           find: /RCT_EXTERN_MODULE\(/,
           replaceWith: `RCT_EXTERN_REMAP_MODULE(CardFieldManager, ${prefix}`,
         },
+        {
+          paths: 'AuBECSDebitFormManager.m',
+          find: /RCT_EXTERN_MODULE\(/,
+          replaceWith: `RCT_EXTERN_REMAP_MODULE(AuBECSDebitFormManager, ${prefix}`,
+        },
       ],
     },
     'lottie-react-native': {
