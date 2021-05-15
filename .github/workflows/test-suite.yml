@@ -79,14 +79,14 @@ jobs:
         with:
           name: bare-expo-artifacts
           path: apps/bare-expo/artifacts
-      - name: 🔔 Notify on Slack
-        uses: 8398a7/action-slack@v3
-        if: failure() && (github.event.ref == 'refs/heads/master' || startsWith(github.event.ref, 'refs/heads/sdk-'))
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_android }}
-        with:
-          channel: '#platform-android'
-          status: ${{ job.status }}
-          fields: job,commit,ref,eventName,author,took
-          author_name: Test Suite (Android)
+      # - name: 🔔 Notify on Slack
+      #   uses: 8398a7/action-slack@v3
+      #   if: failure() && (github.event.ref == 'refs/heads/master' || startsWith(github.event.ref, 'refs/heads/sdk-'))
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_android }}
+      #   with:
+      #     channel: '#platform-android'
+      #     status: ${{ job.status }}
+      #     fields: job,commit,ref,eventName,author,took
+      #     author_name: Test Suite (Android)
