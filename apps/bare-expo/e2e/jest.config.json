@@ -4,5 +4,5 @@
   "reporters": ["detox/runners/jest/streamlineReporter"],
   "testMatch": ["**/*-test.native.js"],
   "verbose": true,
-  "testRunner": 360000
+  "testTimeout": 360000
 }
