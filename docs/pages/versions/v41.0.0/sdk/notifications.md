@@ -318,7 +318,7 @@ Returns a `Promise` that resolves to an object with the following fields:
 
 #### Examples
 
-##### Fetching the Expo push token and uploading it to a server
+#### Fetching the Expo push token and uploading it to a server
 
 ```ts
 import Constants from 'expo-constants';
@@ -525,7 +525,7 @@ A [`Subscription`](#subscription) object representing the subscription of the pr
 
 #### Examples
 
-##### Registering a notification listener using a React hook
+#### Registering a notification listener using a React hook
 
 ```tsx
 import React from 'react';
@@ -547,7 +547,7 @@ export default function Container() {
 }
 ```
 
-##### Handling push notifications with React Navigation
+#### Handling push notifications with React Navigation
 
 If you'd like to deep link to a specific screen in your app when you receive a push notification, you can configure React Navigation's [linking](https://reactnavigation.org/docs/navigation-container#linking) prop to do that:
 
@@ -774,7 +774,7 @@ It returns a `Promise` resolving with the notification's identifier once the not
 
 #### Examples
 
-##### Presenting the notification to the user (deprecated way)
+#### Presenting the notification to the user (deprecated way)
 
 ```ts
 import * as Notifications from 'expo-notifications';
@@ -785,7 +785,7 @@ Notifications.presentNotificationAsync({
 });
 ```
 
-##### Presenting the notification to the user (recommended way)
+#### Presenting the notification to the user (recommended way)
 
 ```ts
 import * as Notifications from 'expo-notifications';
@@ -828,7 +828,7 @@ It returns a `Promise` resolving to a string --- a notification identifier you c
 
 #### Examples
 
-##### Scheduling the notification that will trigger once, in one minute from now
+#### Scheduling the notification that will trigger once, in one minute from now
 
 ```ts
 import * as Notifications from 'expo-notifications';
@@ -844,7 +844,7 @@ Notifications.scheduleNotificationAsync({
 });
 ```
 
-##### Scheduling the notification that will trigger repeatedly, every 20 minutes
+#### Scheduling the notification that will trigger repeatedly, every 20 minutes
 
 ```ts
 import * as Notifications from 'expo-notifications';
@@ -860,7 +860,7 @@ Notifications.scheduleNotificationAsync({
 });
 ```
 
-##### Scheduling the notification that will trigger once, at the beginning of next hour
+#### Scheduling the notification that will trigger once, at the beginning of next hour
 
 ```ts
 import * as Notifications from 'expo-notifications';
@@ -891,7 +891,7 @@ A `Promise` resolving once the scheduled notification is successfully cancelled 
 
 #### Examples
 
-##### Scheduling and then canceling the notification
+#### Scheduling and then canceling the notification
 
 ```ts
 import * as Notifications from 'expo-notifications';
@@ -929,7 +929,7 @@ If the return value is `null`, the notification won't be triggered. Otherwise, t
 
 #### Examples
 
-##### Calculating next trigger date for a notification trigger
+#### Calculating next trigger date for a notification trigger
 
 ```ts
 import * as Notifications from 'expo-notifications';
