@@ -826,7 +826,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   [self _tryPlayPlayerWithRateAndMuteIfNecessary];
 }
 
-- (void)appDidBackground
+- (void)appDidBackgroundStayActive:(BOOL)stayActive
 {
   // EXAudio already forced pause.
 }
