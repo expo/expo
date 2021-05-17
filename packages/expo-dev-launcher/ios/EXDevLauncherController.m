@@ -185,6 +185,9 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   if (appUrl) {
     [self loadApp:appUrl onSuccess:nil onError:^(NSError *error) {
       NSLog(@"%@", error.description);
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [self navigateToLauncher];
+      });
     }];
     return true;
   }
@@ -203,27 +206,14 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   return true;
 }
 
-- (void)loadApp:(NSURL *)expoUrl onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError
+- (void)loadApp:(NSURL *)expoUrl
+      onSuccess:(void (^ _Nullable)(void))onSuccess
+        onError:(void (^ _Nullable)(NSError *error))onError
 {
   NSURL *url = [EXDevLauncherURLHelper changeURLScheme:expoUrl to:@"http"];
-  
-  if (@available(iOS 14, *)) {
-    // Try to detect if we're trying to open a local network URL so we can preemptively show the
-    // Local Network permission prompt -- otherwise the network request will fail before the user
-    // has time to accept or reject the permission.
-    NSString *host = url.host;
-    if ([host hasPrefix:@"192.168."] || [host hasPrefix:@"172."] || [host hasPrefix:@"10."]) {
-      // We want to trigger the local network permission dialog. However, the iOS API doesn't expose a way to do it.
-      // But we can use system functionality that needs this permission to trigger prompt.
-      // See https://stackoverflow.com/questions/63940427/ios-14-how-to-trigger-local-network-dialog-and-check-user-answer
-      static dispatch_once_t once;
-      dispatch_once(&once, ^{
-        [[NSProcessInfo processInfo] hostName];
-      });
-    }
-  }
     
-EXDevLauncherManifestParser *manifestParser = [[EXDevLauncherManifestParser alloc] initWithURL:url session:[NSURLSession sharedSession]];
+  EXDevLauncherManifestParser *manifestParser = [[EXDevLauncherManifestParser alloc] initWithURL:url
+                                                                                         session:[NSURLSession sharedSession]];
   __weak __typeof(self) weakSelf = self;
   [manifestParser tryToParseManifest:^(EXDevLauncherManifest * _Nullable manifest) {
     if (!weakSelf) {

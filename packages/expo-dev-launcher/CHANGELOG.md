@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed the application hanging on the splash screen on iOS.
+
 ### 💡 Others
 
 ## 0.3.3 — 2021-05-13
