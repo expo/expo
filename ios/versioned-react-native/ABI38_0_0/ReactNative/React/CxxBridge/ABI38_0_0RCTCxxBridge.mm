@@ -768,7 +768,7 @@ struct ABI38_0_0RCTInstanceCallback : public InstanceCallback {
 #endif
 }
 
-- (NSArray<ABI38_0_0RCTModuleData *> *)_initializeModules:(NSArray<id<ABI38_0_0RCTBridgeModule>> *)modules
+- (NSArray<ABI38_0_0RCTModuleData *> *)_initializeModules:(NSArray<Class> *)modules
                                withDispatchGroup:(dispatch_group_t)dispatchGroup
                                 lazilyDiscovered:(BOOL)lazilyDiscovered
 {
