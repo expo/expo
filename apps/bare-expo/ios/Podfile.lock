@@ -87,8 +87,8 @@ PODS:
     - Firebase/Core (= 7.7.0)
     - UMCore
   - EXFont (9.1.0):
+    - ExpoModulesCore
     - UMCore
-    - UMFontInterface
   - EXGL (10.3.0):
     - EXGL_CPP
     - ExpoModulesCore
@@ -700,14 +700,13 @@ PODS:
   - SDWebImage/Core (5.11.0)
   - UMAppLoader (2.1.0)
   - UMCore (7.1.0)
-  - UMFontInterface (6.1.0)
   - UMImageLoaderInterface (6.1.0)
   - UMPermissionsInterface (6.2.0):
     - UMCore
   - UMReactNativeAdapter (6.2.2):
+    - ExpoModulesCore
     - React-Core
     - UMCore
-    - UMFontInterface
     - UMPermissionsInterface
   - UMTaskManagerInterface (6.1.0):
     - UMCore
@@ -852,7 +851,6 @@ DEPENDENCIES:
   - RNSVG (from `../../../node_modules/react-native-svg`)
   - UMAppLoader (from `../../../packages/unimodules-app-loader/ios`)
   - "UMCore (from `../../../packages/@unimodules/core/ios`)"
-  - UMFontInterface (from `../../../packages/unimodules-font-interface/ios`)
   - UMImageLoaderInterface (from `../../../packages/unimodules-image-loader-interface/ios`)
   - UMPermissionsInterface (from `../../../packages/unimodules-permissions-interface/ios`)
   - "UMReactNativeAdapter (from `../../../packages/@unimodules/react-native-adapter/ios`)"
@@ -1184,9 +1182,6 @@ EXTERNAL SOURCES:
   UMCore:
     inhibit_warnings: false
     :path: "../../../packages/@unimodules/core/ios"
-  UMFontInterface:
-    inhibit_warnings: false
-    :path: "../../../packages/unimodules-font-interface/ios"
   UMImageLoaderInterface:
     inhibit_warnings: false
     :path: "../../../packages/unimodules-image-loader-interface/ios"
@@ -1232,7 +1227,7 @@ SPEC CHECKSUMS:
   EXFileSystem: 403cded06e98fe853480da173c7c170d7723126e
   EXFirebaseAnalytics: cf36b67695d02c4bf587dbc123cba3e0efab61c6
   EXFirebaseCore: 7865e37021ddcff5c575a4598686a2939d6c4183
-  EXFont: d6fb79f9863120f0d0b26b0c2d1453bc9511e9df
+  EXFont: 3da1e6eb78623df17554da8292090a5ec9b6b23b
   EXGL: b76633ed826259528aed61e98603287c8f05a05e
   EXGL_CPP: 09fc9d4438705f186e17086d980740d2518fe586
   EXGoogleSignIn: 9737eb53d327c3d5e668ea00bed490695d880893
@@ -1350,10 +1345,9 @@ SPEC CHECKSUMS:
   SDWebImage: 7acbb57630ac7db4a495547fb73916ff3e432f6b
   UMAppLoader: fe2708bb0ac5cd70052bc207d06aa3b7e72b9e97
   UMCore: 88855c8d26663540ae9e0b9036a8b0253b4b31df
-  UMFontInterface: 5843cff7db85a42ba629aaac53d33091c35524d3
   UMImageLoaderInterface: 9ddffeb644b3f45d4eb0c2f51a2fd95fd5c8d1a4
   UMPermissionsInterface: 445acbfbdc2a675cedae79bbfb93ff7d83a96ff1
-  UMReactNativeAdapter: 9982db2ff57b88e37cdfb814d078b9616e99f855
+  UMReactNativeAdapter: 5f16c55cc90f6c8b9820d98ccd77ee5743345499
   UMTaskManagerInterface: 203c11259d2699b5b3a4eda4adbc466f5cb5c561
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
