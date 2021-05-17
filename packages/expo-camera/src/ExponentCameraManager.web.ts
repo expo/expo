@@ -1,6 +1,6 @@
 import { UnavailabilityError } from '@unimodules/core';
 
-import { getPermissionsAsync, requestPermissionsAsync } from './Camera';
+import { requestPermissionsAsync } from './Camera';
 import {
   CameraCapturedPicture,
   CameraPictureOptions,
