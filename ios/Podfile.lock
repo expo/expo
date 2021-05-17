@@ -1766,7 +1766,6 @@ PODS:
   - EXCamera (11.0.3):
     - ExpoModulesCore
     - UMCore
-    - UMFaceDetectorInterface
     - UMImageLoaderInterface
     - UMPermissionsInterface
   - EXCellular (3.1.0):
@@ -1799,7 +1798,6 @@ PODS:
     - MLKitFaceDetection (= 1.2.0)
     - MLKitVision (= 1.2.0)
     - UMCore
-    - UMFaceDetectorInterface
   - EXFileSystem (11.0.2):
     - ExpoModulesCore
     - UMCore
@@ -2358,7 +2356,6 @@ PODS:
     - Yoga
   - UMAppLoader (2.1.0)
   - UMCore (7.1.0)
-  - UMFaceDetectorInterface (6.1.0)
   - UMFontInterface (6.1.0)
   - UMImageLoaderInterface (6.1.0)
   - UMPermissionsInterface (6.2.0):
@@ -2793,7 +2790,6 @@ DEPENDENCIES:
   - RNReanimated (from `./vendored/unversioned/react-native-reanimated`)
   - UMAppLoader (from `../packages/unimodules-app-loader/ios`)
   - "UMCore (from `../packages/@unimodules/core/ios`)"
-  - UMFaceDetectorInterface (from `../packages/unimodules-face-detector-interface/ios`)
   - UMFontInterface (from `../packages/unimodules-font-interface/ios`)
   - UMImageLoaderInterface (from `../packages/unimodules-image-loader-interface/ios`)
   - UMPermissionsInterface (from `../packages/unimodules-permissions-interface/ios`)
@@ -3635,8 +3631,6 @@ EXTERNAL SOURCES:
     :path: "../packages/unimodules-app-loader/ios"
   UMCore:
     :path: "../packages/@unimodules/core/ios"
-  UMFaceDetectorInterface:
-    :path: "../packages/unimodules-face-detector-interface/ios"
   UMFontInterface:
     :path: "../packages/unimodules-font-interface/ios"
   UMImageLoaderInterface:
@@ -3975,7 +3969,7 @@ SPEC CHECKSUMS:
   EXBranch: eeda02bb7e9545fa28d56d57810116cd6de5a426
   EXBrightness: abbccf5debb65fd894e686c7196e6a9032958251
   EXCalendar: 59290180317ea486e94dfa2e7dfc7332f675d224
-  EXCamera: f9b3598ffd32b7f1f000cd15b7cd79f37b9c2a3f
+  EXCamera: 520e553e01aaefc793f75f4e951596254684c6bb
   EXCellular: 06e641f1c34e9d772da3c69cfe9ef4828791e3f8
   EXConstants: 5ea0cedcacca6f27f0ec54f185e01e0970ee1286
   EXContacts: 9d9d2de992f50d79296914efb8a9ee5b41620e1b
@@ -3984,7 +3978,7 @@ SPEC CHECKSUMS:
   EXDocumentPicker: 6603d48650746d7f7f13aee990847d955c2faf8d
   EXErrorRecovery: 720641265b8cf95e6cdeb1884ac38e794a352488
   EXFacebook: 9bd74ebcd3b3387164369e02b53bf9cefc2be62b
-  EXFaceDetector: 9137b7f1ec5241a5fc201a094e20b16a10de8983
+  EXFaceDetector: 22c66f3834c0f0e298f43d3fae4a2550cbca2d97
   EXFileSystem: 403cded06e98fe853480da173c7c170d7723126e
   EXFirebaseAnalytics: cf36b67695d02c4bf587dbc123cba3e0efab61c6
   EXFirebaseCore: 7865e37021ddcff5c575a4598686a2939d6c4183
@@ -4083,7 +4077,6 @@ SPEC CHECKSUMS:
   RNReanimated: 5231286440b796e09df3bfa5c1b12b02bfe07664
   UMAppLoader: fe2708bb0ac5cd70052bc207d06aa3b7e72b9e97
   UMCore: 88855c8d26663540ae9e0b9036a8b0253b4b31df
-  UMFaceDetectorInterface: 791eec55ffca1171992976b7eceb73e69e391c58
   UMFontInterface: 5843cff7db85a42ba629aaac53d33091c35524d3
   UMImageLoaderInterface: 9ddffeb644b3f45d4eb0c2f51a2fd95fd5c8d1a4
   UMPermissionsInterface: 445acbfbdc2a675cedae79bbfb93ff7d83a96ff1

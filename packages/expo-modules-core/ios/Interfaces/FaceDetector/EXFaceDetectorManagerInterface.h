@@ -4,7 +4,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
 
-@protocol UMFaceDetectorManager
+@protocol EXFaceDetectorManagerInterface
 
 - (void)setSessionQueue:(dispatch_queue_t)sessionQueue;
 - (void)setIsEnabled:(BOOL)enabled;

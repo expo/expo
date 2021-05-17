@@ -37,7 +37,6 @@
   },
   "unimodulePeerDependencies": {
     "@unimodules/core": "*",
-    "unimodules-face-detector-interface": "*",
     "unimodules-permissions-interface": "*"
   },
   "dependencies": {

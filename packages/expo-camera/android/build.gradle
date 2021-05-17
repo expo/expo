@@ -75,7 +75,6 @@ apply from: project(":unimodules-core").file("../unimodules-core.gradle")
 dependencies {
   unimodule 'unimodules-core'
   unimodule 'expo-modules-core'
-  unimodule 'unimodules-face-detector-interface'
   unimodule 'unimodules-permissions-interface'
   unimodule 'unimodules-image-loader-interface'
 

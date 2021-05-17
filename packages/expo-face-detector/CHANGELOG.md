@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- Migrated from `unimodules-file-system-interface` to `expo-modules-core`.
+- Migrated from `unimodules-face-detector-interface` and `unimodules-file-system-interface` to `expo-modules-core`. ([#12936](https://github.com/expo/expo/pull/12936) by [@tsapeta](https://github.com/tsapeta))
 
 ## 10.0.1 — 2021-03-23
 

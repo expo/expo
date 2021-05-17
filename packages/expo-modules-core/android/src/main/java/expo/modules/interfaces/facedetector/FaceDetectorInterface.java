@@ -1,11 +1,11 @@
-package org.unimodules.interfaces.facedetector;
+package expo.modules.interfaces.facedetector;
 
 import android.net.Uri;
 
 import java.io.IOException;
 import java.util.Map;
 
-public interface FaceDetector {
+public interface FaceDetectorInterface {
 
   void detectFaces(Uri filePath, FacesDetectionCompleted listener, FaceDetectionError error) throws IOException;
 

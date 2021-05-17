@@ -7,7 +7,8 @@
 #import <EXCamera/EXCameraPermissionRequester.h>
 #import <UMCore/UMAppLifecycleService.h>
 #import <UMCore/UMUtilities.h>
-#import <UMFaceDetectorInterface/UMFaceDetectorManagerProvider.h>
+#import <ExpoModulesCore/EXFaceDetectorManagerInterface.h>
+#import <ExpoModulesCore/EXFaceDetectorManagerProviderInterface.h>
 #import <ExpoModulesCore/EXFileSystemInterface.h>
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
 
@@ -15,7 +16,7 @@
 
 @property (nonatomic, weak) id<EXFileSystemInterface> fileSystem;
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
-@property (nonatomic, strong) id<UMFaceDetectorManager> faceDetectorManager;
+@property (nonatomic, strong) id<EXFaceDetectorManagerInterface> faceDetectorManager;
 @property (nonatomic, strong) id<EXBarCodeScannerInterface> barCodeScanner;
 @property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
 @property (nonatomic, weak) id<UMAppLifecycleService> lifecycleManager;
@@ -926,10 +927,10 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
 
 - (id)createFaceDetectorManager
 {
-  id <UMFaceDetectorManagerProvider> faceDetectorProvider = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMFaceDetectorManagerProvider)];
+  id<EXFaceDetectorManagerProviderInterface> faceDetectorProvider = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFaceDetectorManagerProviderInterface)];
 
   if (faceDetectorProvider) {
-    id <UMFaceDetectorManager> faceDetector = [faceDetectorProvider createFaceDetectorManager];
+    id<EXFaceDetectorManagerInterface> faceDetector = [faceDetectorProvider createFaceDetectorManager];
     if (faceDetector) {
       UM_WEAKIFY(self);
       [faceDetector setOnFacesDetected:^(NSArray<NSDictionary *> *faces) {
