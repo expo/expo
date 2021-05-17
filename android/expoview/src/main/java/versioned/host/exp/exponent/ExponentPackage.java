@@ -61,6 +61,7 @@ import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewModu
 import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewPackage;
 import versioned.host.exp.exponent.modules.api.components.sharedelement.RNSharedElementModule;
 import versioned.host.exp.exponent.modules.api.components.sharedelement.RNSharedElementPackage;
+import versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.StripeSdkPackage;
 import versioned.host.exp.exponent.modules.api.netinfo.NetInfoModule;
 import versioned.host.exp.exponent.modules.api.notifications.NotificationsModule;
 import versioned.host.exp.exponent.modules.api.safeareacontext.SafeAreaContextPackage;
@@ -222,6 +223,9 @@ public class ExponentPackage implements ReactPackage {
         RNDateTimePickerPackage dateTimePickerPackage = new RNDateTimePickerPackage();
         nativeModules.addAll(dateTimePickerPackage.createNativeModules(reactContext));
 
+        StripeSdkPackage stripePackage = new StripeSdkPackage();
+        nativeModules.addAll(stripePackage.createNativeModules(reactContext));
+
         // Call to create native modules has to be at the bottom --
         // -- ExpoModuleRegistryAdapter uses the list of native modules
         // to create Bindings for internal modules.
@@ -253,7 +257,8 @@ public class ExponentPackage implements ReactPackage {
         new RNCPickerPackage(),
         new ReactSliderPackage(),
         new RNCViewPagerPackage(),
-        new ExpoAppearancePackage()
+        new ExpoAppearancePackage(),
+        new StripeSdkPackage()
     ));
 
     viewManagers.addAll(mModuleRegistryAdapter.createViewManagers(reactContext));
