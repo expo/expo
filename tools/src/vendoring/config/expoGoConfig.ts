@@ -12,6 +12,14 @@ const config: VendoringTargetConfig = {
     },
   },
   modules: {
+    'stripe-react-native': {
+      source: 'https://github.com/stripe/stripe-react-native.git',
+      ios: {},
+      // android: {
+      //   includeFiles: 'android/**',
+      //   excludeFiles: ['android/gradle.properties', 'android/.settings', 'android/.project'],
+      // },
+    },
     'lottie-react-native': {
       source: 'https://github.com/lottie-react-native/lottie-react-native.git',
       ios: {},
