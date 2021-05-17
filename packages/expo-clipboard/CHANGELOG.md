@@ -2,13 +2,14 @@
 
 ## Unpublished
 
-- Fixed `getStringAsync ` causing crashes on Web when an exception is thrown. ([#12494](https://github.com/expo/expo/pull/12494) by [@robertherber](https://github.com/robertherber))
-
 ### 🛠 Breaking changes
 
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+- Fixed `getStringAsync` causing crashes on Web when an exception is thrown. ([#12494](https://github.com/expo/expo/pull/12494) by [@robertherber](https://github.com/robertherber))
+- Fixed newlines not being copied on web.
 
 ## 1.0.2 — 2021-03-23
 
