@@ -69,6 +69,33 @@ export interface AppManifest extends ExpoConfig {
     debuggerHost?: string;
     mainModuleName?: string;
     logUrl?: string;
+    /**
+     * The Expo account name and slug for this project.
+     * @deprecated - Prefer `projectId` or `originalFullName` instead for scoping due to immutability.
+     */
+    id?: string;
+    /**
+     * The original Expo account name and slug for this project. Formatted like `@username/slug`.
+     * When unauthenticated, the username is `@anonymous`. For published projects, this value
+     * will not change when a project is transferred between accounts or renamed.
+     */
+    originalFullName?: string;
+    /**
+     * The Expo account name and slug used for display purposes. Formatted like `@username/slug`.
+     * When unauthenticated, the username is `@anonymous`. For published projects, this value
+     * may change when a project is transferred between accounts or renamed.
+     */
+    currentFullName?: string;
+    /**
+     * An opaque unique string for scoping client-side data to this project. This value
+     * will not change when a project is transferred between accounts or renamed.
+     */
+    scopeKey?: string;
+    /**
+     * The ID for this project. UUID. This value will not change when a project is transferred
+     * between accounts or renamed.
+     */
+    projectId?: string;
     [key: string]: any;
 }
 export interface PlatformManifest {
