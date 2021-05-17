@@ -3,10 +3,8 @@ import { View } from 'react-native';
 import normalizeColor from 'react-native-web/src/modules/normalizeColor';
 export default function NativeLinearGradient({ colors, locations, startPoint, endPoint, ...props }) {
     const [layout, setLayout] = React.useState(null);
-    const [gradientColors, setGradientColors] = React.useState([]);
-    const [pseudoAngle, setPseudoAngle] = React.useState(0);
     const { width = 1, height = 1 } = layout ?? {};
-    React.useEffect(() => {
+    const pseudoAngle = React.useMemo(() => {
         const getControlPoints = () => {
             let correctedStartPoint = [0, 0];
             if (Array.isArray(startPoint)) {
@@ -31,10 +29,10 @@ export default function NativeLinearGradient({ colors, locations, startPoint, en
         end[1] *= height;
         const py = end[1] - start[1];
         const px = end[0] - start[0];
-        setPseudoAngle(90 + (Math.atan2(py, px) * 180) / Math.PI);
+        return 90 + (Math.atan2(py, px) * 180) / Math.PI;
     }, [width, height, startPoint, endPoint]);
-    React.useEffect(() => {
-        const nextGradientColors = colors.map((color, index) => {
+    const gradientColors = React.useMemo(() => {
+        return colors.map((color, index) => {
             const hexColor = normalizeColor(color);
             let output = hexColor;
             if (locations && locations[index]) {
@@ -45,7 +43,6 @@ export default function NativeLinearGradient({ colors, locations, startPoint, en
             }
             return output;
         });
-        setGradientColors(nextGradientColors);
     }, [colors, locations]);
     const colorStyle = gradientColors.join(',');
     const backgroundImage = `linear-gradient(${pseudoAngle}deg, ${colorStyle})`;
