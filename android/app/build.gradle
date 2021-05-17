@@ -82,6 +82,7 @@ android {
     }
     unversioned {
       dimension "versioning"
+      getIsDefault().set(true)
       manifestPlaceholders = [appLabel: "@string/unversioned_app_name"]
     }
   }

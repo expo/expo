@@ -189,6 +189,7 @@ android {
       dimension "versioning"
     }
     unversioned {
+      getIsDefault().set(true)
       dimension "versioning"
     }
   }
