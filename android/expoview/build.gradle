@@ -118,6 +118,10 @@ android {
     versionCode 1
     versionName "1.0"
 
+    /* WHEN_VERSIONING_UNCOMMENT_FROM_HERE
+    missingDimensionStrategy('versioning', 'versioned')
+    WHEN_VERSIONING_UNCOMMENT_TO_HERE */
+
     // WHEN_VERSIONING_REMOVE_FROM_HERE
     manifestPlaceholders = [
         'appAuthRedirectScheme': 'host.exp.exponent'
@@ -183,6 +187,8 @@ android {
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
   }
+
+  // WHEN_VERSIONING_REMOVE_FROM_HERE
   flavorDimensions "versioning"
   productFlavors {
     versioned {
@@ -193,6 +199,7 @@ android {
       dimension "versioning"
     }
   }
+  // WHEN_VERSIONING_REMOVE_TO_HERE
 
   compileOptions {
     sourceCompatibility = '1.8'
