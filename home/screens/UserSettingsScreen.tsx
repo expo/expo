@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import * as Tracking from 'expo-tracking-transparency';
 import * as WebBrowser from 'expo-web-browser';
 import * as React from 'react';
-import { Platform, StyleSheet, View, TouchableNativeFeedback, Text } from 'react-native';
+import { Platform, StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 import { ColorSchemeName } from 'react-native-appearance';
 
 import ListItem from '../components/ListItem';
@@ -129,14 +129,14 @@ function TrackingItem() {
           setShowTrackingItem(status === 'undetermined');
         }}
       />
-      <TouchableNativeFeedback onPress={handleLearnMorePress}>
+      <TouchableOpacity onPress={handleLearnMorePress}>
         <View style={[SharedStyles.genericCardDescriptionContainer]}>
           <Text
             style={[SharedStyles.genericCardDescriptionText, { color: Colors.light.tintColor }]}>
             Learn more about what data Expo collects and why.
           </Text>
         </View>
-      </TouchableNativeFeedback>
+      </TouchableOpacity>
     </View>
   ) : null;
 }
