@@ -109,7 +109,7 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
   @Override
   public String getAppId() {
     if (mConstants != null) {
-      return mConstants.getAppId();
+      return mConstants.getStableLegacyAppId();
     }
     return null;
   }

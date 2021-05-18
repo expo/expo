@@ -26,8 +26,24 @@ abstract class RawManifest(protected val json: JSONObject) {
     return getRawJson().toString()
   }
 
+  /**
+   * A best-effort immutable legacy ID for this experience. Formatted the same as getLegacyID.
+   * Stable through project transfers.
+   */
   @Throws(JSONException::class)
-  fun getID(): String = json.getString("id")
+  abstract fun getStableLegacyID(): String
+
+  /**
+   * The legacy ID of this experience.
+   * - For Bare manifests, formatted as a UUID.
+   * - For Legacy manifests, formatted as @owner/slug. Not stable through project transfers.
+   * - For New manifests, currently incorrect value is UUID.
+   *
+   * Use this in cases where an identifier of the current manifest is needed (experience loading for example).
+   * Prefer getStableLegacyID for cases where a stable identifier of the experience is needed (experience scoping for example).
+   */
+  @Throws(JSONException::class)
+  fun getLegacyID(): String = json.getString("id")
 
   @Throws(JSONException::class)
   abstract fun getBundleURL(): String

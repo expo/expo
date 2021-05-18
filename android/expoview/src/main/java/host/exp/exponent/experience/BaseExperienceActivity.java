@@ -106,19 +106,19 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
     AsyncCondition.wait(KernelConstants.EXPERIENCE_ID_SET_FOR_ACTIVITY_KEY, new AsyncCondition.AsyncConditionListener() {
       @Override
       public boolean isReady() {
-        return mExperienceId != null || BaseExperienceActivity.this instanceof HomeActivity;
+        return mLegacyExperienceId != null || BaseExperienceActivity.this instanceof HomeActivity;
       }
 
       @Override
       public void execute() {
-        EventBus.getDefault().post(new ExperienceForegroundedEvent(mExperienceId));
+        EventBus.getDefault().post(new ExperienceForegroundedEvent(mLegacyExperienceId));
       }
     });
   }
 
   @Override
   protected void onPause() {
-    EventBus.getDefault().post(new ExperienceBackgroundedEvent(mExperienceId));
+    EventBus.getDefault().post(new ExperienceBackgroundedEvent(mLegacyExperienceId));
     super.onPause();
 
     // For some reason onPause sometimes gets called soon after onResume.

@@ -270,7 +270,8 @@ public class ExpoUpdatesAppLoader {
           return false;
         } else {
           try {
-            String experienceId = update.getRawManifest().getID();
+            // TODO(wschurman): audit ID usage for new manifests
+            String experienceId = update.getRawManifest().getLegacyID();
             // if previous run of this app failed due to a loading error, we want to make sure to check for remote updates
             JSONObject experienceMetadata = mExponentSharedPreferences.getExperienceMetadata(experienceId);
             if (experienceMetadata != null && experienceMetadata.optBoolean(ExponentSharedPreferences.EXPERIENCE_METADATA_LOADING_ERROR)) {

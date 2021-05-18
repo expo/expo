@@ -79,9 +79,9 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
     return constants;
   }
 
-  public String getAppId() {
+  public String getStableLegacyAppId() {
     try {
-      return mManifest.getID();
+      return mManifest.getStableLegacyID();
     } catch (JSONException e) {
       return null;
     }

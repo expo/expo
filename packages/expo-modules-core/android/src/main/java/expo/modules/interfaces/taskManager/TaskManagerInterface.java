@@ -20,5 +20,4 @@ public interface TaskManagerInterface {
   void flushQueuedEvents();
 
   String getAppId();
-
 }

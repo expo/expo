@@ -5,6 +5,12 @@ import org.json.JSONException
 import org.json.JSONObject
 
 abstract class BaseLegacyRawManifest(json: JSONObject) : RawManifest(json) {
+  override fun getStableLegacyID(): String = if (json.has("originalFullName")) {
+    json.getString("originalFullName")
+  } else {
+    getLegacyID()
+  }
+
   fun getMetadata(): JSONObject? = json.optJSONObject("metadata")
   override fun getAssets(): JSONArray? = json.optJSONArray("assets")
 

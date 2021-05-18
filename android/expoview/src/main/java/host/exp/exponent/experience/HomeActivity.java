@@ -66,13 +66,19 @@ public class HomeActivity extends BaseExperienceActivity {
     mSDKVersion = RNObject.UNVERSIONED;
     mManifest = mExponentManifest.getKernelManifest();
 
-    String id;
+    String legacyId;
+    String stableLegacyId;
     try {
-      id = mManifest.getID();
+      legacyId = mManifest.getLegacyID();
+      stableLegacyId = mManifest.getStableLegacyID();
     } catch (JSONException e) {
-      id = "";
+      legacyId = "";
+      stableLegacyId = "";
     }
-    mExperienceId = ExperienceId.create(id);
+    mLegacyExperienceIdString = legacyId;
+    mLegacyExperienceId = ExperienceId.create(legacyId);
+    mStableLegacyExperienceIdString = stableLegacyId;
+    mStableLegacyExperienceId = ExperienceId.create(stableLegacyId);
 
     // @sjchmiela, @lukmccall: We are consciously not overriding UI mode in Home, because it has no effect.
     // `ExpoAppearanceModule` with which `ExperienceActivityUtils#overrideUiMode` is compatible

@@ -218,7 +218,7 @@ public class PedometerModule extends ReactContextBaseJavaModule implements Lifec
   private String getExperienceId() {
     try {
       ExperienceActivity activity = (ExperienceActivity) getCurrentActivity();
-      return activity != null ? activity.getExperienceId() : null;
+      return activity != null ? activity.getLegacyExperienceId() : null;
     } catch (ClassCastException e) {
       return null;
     }

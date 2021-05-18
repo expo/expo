@@ -518,8 +518,10 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     soloaderInit();
 
     try {
-      mExperienceIdString = manifest.getID();
-      mExperienceId = ExperienceId.create(mExperienceIdString);
+      mLegacyExperienceIdString = manifest.getLegacyID();
+      mStableLegacyExperienceIdString = manifest.getStableLegacyID();
+      mLegacyExperienceId = ExperienceId.create(mLegacyExperienceIdString);
+      mStableLegacyExperienceId = ExperienceId.create(mStableLegacyExperienceIdString);
       AsyncCondition.notify(KernelConstants.EXPERIENCE_ID_SET_FOR_ACTIVITY_KEY);
     } catch (JSONException e) {
       KernelProvider.getInstance().handleError("No ID found in manifest.");
@@ -579,9 +581,9 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       mReactRootView.loadVersion(mDetachSdkVersion).construct(ExperienceActivity.this);
       setReactRootView((View) mReactRootView.get());
 
-      String id;
       try {
-        id = Exponent.getInstance().encodeExperienceId(mExperienceIdString);
+        Exponent.encodeExperienceId(mLegacyExperienceIdString);
+        Exponent.encodeExperienceId(mStableLegacyExperienceIdString);
       } catch (UnsupportedEncodingException e) {
         KernelProvider.getInstance().handleError("Can't URL encode manifest ID");
         return;
@@ -631,7 +633,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   }
 
   public void onEventMainThread(ReceivedNotificationEvent event) {
-    if (event.experienceId.equals(mExperienceIdString)) {
+    // TODO(wschurman): investigate removal, this probably is no longer used
+    if (event.experienceId.equals(mLegacyExperienceIdString)) {
       try {
         RNObject rctDeviceEventEmitter = new RNObject("com.facebook.react.modules.core.DeviceEventManagerModule$RCTDeviceEventEmitter");
         rctDeviceEventEmitter.loadVersion(mDetachSdkVersion);
@@ -827,8 +830,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     }
   }
 
-  public String getExperienceId() {
-    return mExperienceIdString;
+  public String getLegacyExperienceId() {
+    return mLegacyExperienceIdString;
   }
 
   /**

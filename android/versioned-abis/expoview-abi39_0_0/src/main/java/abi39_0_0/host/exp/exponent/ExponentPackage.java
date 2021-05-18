@@ -182,7 +182,7 @@ public class ExponentPackage implements ReactPackage {
 
     if (isVerified) {
       try {
-        ExperienceId experienceId = ExperienceId.create(mManifest.getID());
+        ExperienceId experienceId = ExperienceId.create(mManifest.getStableLegacyID());
         ScopedContext scopedContext = new ScopedContext(reactContext, experienceId.getUrlEncoded());
 
         nativeModules.add(new NotificationsModule(reactContext, mManifest, mExperienceProperties));

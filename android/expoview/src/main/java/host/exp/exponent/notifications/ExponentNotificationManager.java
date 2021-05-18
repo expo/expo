@@ -68,7 +68,7 @@ public class ExponentNotificationManager {
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       try {
-        String experienceId = manifest.getID();
+        String experienceId = manifest.getStableLegacyID();
         if (!mNotificationChannelGroupIds.contains(experienceId)) {
           @Nullable String name = manifest.getName();
           String channelName = name != null ? name : experienceId;

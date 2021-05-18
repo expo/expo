@@ -29,7 +29,7 @@ public class ExponentAsyncStorageModule extends AsyncStorageModule {
     super(reactContext);
 
     try {
-      String experienceId = manifest.getID();
+      String experienceId = manifest.getStableLegacyID();
       String databaseName = experienceIdToDatabaseName(experienceId);
       mReactDatabaseSupplier = new ReactDatabaseSupplier(reactContext, databaseName);
     } catch (JSONException e) {
