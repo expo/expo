@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'unimodules-permissions-interface';
+import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'expo-modules-core';
 import { FacebookAuthenticationCredential, FacebookLoginResult, FacebookOptions, FacebookInitializationOptions } from './Facebook.types';
 export { FacebookLoginResult, FacebookOptions, FacebookAuthenticationCredential, PermissionResponse, PermissionStatus, PermissionExpiration, };
 declare type Params = {

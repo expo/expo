@@ -1,6 +1,6 @@
 import { Subscription } from '@unimodules/core';
-import { PermissionResponse as UMPermissionResponse, PermissionStatus, PermissionExpiration } from 'unimodules-permissions-interface';
-export declare type PermissionResponse = UMPermissionResponse & {
+import { PermissionResponse as EXPermissionResponse, PermissionStatus, PermissionExpiration } from 'expo-modules-core';
+export declare type PermissionResponse = EXPermissionResponse & {
     accessPrivileges?: 'all' | 'limited' | 'none';
 };
 export declare type MediaTypeValue = 'audio' | 'photo' | 'video' | 'unknown';

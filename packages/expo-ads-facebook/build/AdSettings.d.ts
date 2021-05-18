@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'unimodules-permissions-interface';
+import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'expo-modules-core';
 export declare type AdLogLevel = 'none' | 'debug' | 'verbose' | 'warning' | 'error' | 'notification';
 export { PermissionResponse, PermissionStatus, PermissionExpiration };
 declare const _default: {
