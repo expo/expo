@@ -10,7 +10,7 @@ UM_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(UMUserNotificationCenterProxyInterface)];
+  return @[@protocol(EXUserNotificationCenterProxyInterface)];
 }
 
 - (void)getNotificationSettingsWithCompletionHandler:(void(^)(UNNotificationSettings *settings))completionHandler

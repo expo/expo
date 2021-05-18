@@ -2,13 +2,13 @@
 
 #import <UMCore/UMExportedModule.h>
 #import <UMCore/UMModuleRegistryConsumer.h>
-#import <UMPermissionsInterface/UMPermissionsInterface.h>
+#import <ExpoModulesCore/EXPermissionsInterface.h>
 
-@interface EXPermissionsService : UMExportedModule <UMPermissionsInterface, UMModuleRegistryConsumer>
+@interface EXPermissionsService : UMExportedModule <EXPermissionsInterface, UMModuleRegistryConsumer>
 
-+ (UMPermissionStatus)statusForPermission:(NSDictionary *)permission;
++ (EXPermissionStatus)statusForPermission:(NSDictionary *)permission;
 
-+ (NSString *)permissionStringForStatus:(UMPermissionStatus)status;
++ (NSString *)permissionStringForStatus:(EXPermissionStatus)status;
 
 - (void)askForGlobalPermissionUsingRequesterClass:(Class)requesterClass
                                     withResolver:(UMPromiseResolveBlock)resolver

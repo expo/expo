@@ -15,7 +15,7 @@
 - (NSDictionary *)getPermissions
 {
   AVAudioSessionRecordPermission systemStatus;
-  UMPermissionStatus status;
+  EXPermissionStatus status;
 
   NSString *microphoneUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSMicrophoneUsageDescription"];
   if (!microphoneUsageDescription) {
@@ -26,13 +26,13 @@
   }
   switch (systemStatus) {
     case AVAudioSessionRecordPermissionGranted:
-      status = UMPermissionStatusGranted;
+      status = EXPermissionStatusGranted;
       break;
     case AVAudioSessionRecordPermissionDenied:
-      status = UMPermissionStatusDenied;
+      status = EXPermissionStatusDenied;
       break;
     case AVAudioSessionRecordPermissionUndetermined:
-      status = UMPermissionStatusUndetermined;
+      status = EXPermissionStatusUndetermined;
       break;
   }
 

@@ -14,7 +14,7 @@
 
 - (NSDictionary *)getPermissions
 {
-  UMPermissionStatus status;
+  EXPermissionStatus status;
 
   if (@available(iOS 11, *)) {
     NSString *motionUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSMotionUsageDescription"];
@@ -22,23 +22,23 @@
     if (!(motionUsageDescription)) {
       // TODO: Make aware of plugins, FYI link.
       UMFatal(UMErrorWithMessage(@"This app is missing the 'NSMotionUsageDescription' so CMPedometer services will fail. Ensure this key exist in the app's Info.plist."));
-      status = UMPermissionStatusDenied;
+      status = EXPermissionStatusDenied;
     } else {
       switch ([CMPedometer authorizationStatus]) {
         case CMAuthorizationStatusAuthorized:
-          status = UMPermissionStatusGranted;
+          status = EXPermissionStatusGranted;
           break;
         case CMAuthorizationStatusDenied:
         case CMAuthorizationStatusRestricted:
-          status = UMPermissionStatusDenied;
+          status = EXPermissionStatusDenied;
           break;
         case CMAuthorizationStatusNotDetermined:
-          status = UMPermissionStatusUndetermined;
+          status = EXPermissionStatusUndetermined;
           break;
       }
     }
   } else {
-    status = UMPermissionStatusUndetermined;
+    status = EXPermissionStatusUndetermined;
   }
  
   return @{

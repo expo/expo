@@ -1,9 +1,10 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <UMPermissionsInterface/UMPermissionsInterface.h>
 #import <CoreLocation/CLLocationManager.h>
 
-@interface EXBaseLocationRequester : NSObject<UMPermissionsRequester>
+#import <ExpoModulesCore/EXPermissionsInterface.h>
+
+@interface EXBaseLocationRequester : NSObject<EXPermissionsRequester>
 
 @property (nonatomic, strong) CLLocationManager *locationManager;
 @property (nonatomic, strong) UMPromiseResolveBlock resolve;
