@@ -17,7 +17,7 @@
 
 ### 💡 Others
 
-- Migrated from `unimodules-file-system-interface` to `expo-modules-core`.
+- Migrated from `unimodules-file-system-interface` and `unimodules-permissions-interface` to `expo-modules-core`.
 
 ## 9.1.2 — 2021-04-13
 

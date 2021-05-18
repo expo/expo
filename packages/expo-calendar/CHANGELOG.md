@@ -11,6 +11,10 @@
 - Fixed `ExpoCalendar.getCalendarsAsync()` crashing on Android when device has unsupported calendars. ([#12724](https://github.com/expo/expo/pull/12724) by [@ibraude](https://github.com/ibraude))
 - Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
 
+### 💡 Others
+
+- Migrated from `unimodules-permissions-interface` to `expo-modules-core`.
+
 ## 9.1.2 — 2021-04-13
 
 _This version does not introduce any user-facing changes._
