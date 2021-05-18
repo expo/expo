@@ -26,8 +26,38 @@ abstract class RawManifest(protected val json: JSONObject) {
     return getRawJson().toString()
   }
 
+  /**
+   * A best-effort immutable legacy ID for this experience. Formatted the same as getLegacyID.
+   * Stable through project transfers.
+   */
   @Throws(JSONException::class)
-  fun getID(): String = json.getString("id")
+  abstract fun getStableLegacyID(): String
+
+  /**
+   * A stable immutable scoping key for this experience. Should be used for scoping data that
+   * does not need to make calls externally with the legacy ID.
+   */
+  @Throws(JSONException::class)
+  abstract fun getScopeKey(): String
+
+  /**
+   * A stable UUID for this Expo project. Should be used to call Expo APIs where possible.
+   */
+  abstract fun getProjectID(): String?
+
+  /**
+   * The legacy ID of this experience.
+   * - For Bare manifests, formatted as a UUID.
+   * - For Legacy manifests, formatted as @owner/slug. Not stable through project transfers.
+   * - For New manifests, currently incorrect value is UUID.
+   *
+   * Use this in cases where an identifier of the current manifest is needed (experience loading for example).
+   * Use getScopeKey for cases where a stable key is needed to scope data to this experience.
+   * Use getProjectID for cases where a stable UUID identifier of the experience is needed to identify over APIs.
+   * Use getStableLegacyID for cases where a stable legacy format identifier of the experience is needed (experience scoping for example).
+   */
+  @Throws(JSONException::class)
+  fun getLegacyID(): String = json.getString("id")
 
   @Throws(JSONException::class)
   abstract fun getBundleURL(): String

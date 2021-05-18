@@ -13,7 +13,7 @@ import org.unimodules.core.arguments.ReadableArguments;
 import org.unimodules.core.interfaces.LifecycleEventListener;
 
 import expo.modules.facebook.FacebookModule;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 
 public class ScopedFacebookModule extends FacebookModule implements LifecycleEventListener {
   private final static String ERR_FACEBOOK_UNINITIALIZED = "ERR_FACEBOOK_UNINITIALIZED";

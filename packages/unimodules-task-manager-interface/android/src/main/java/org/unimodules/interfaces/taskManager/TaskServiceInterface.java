@@ -13,55 +13,55 @@ import org.unimodules.core.interfaces.SingletonModule;
 public interface TaskServiceInterface extends SingletonModule {
 
   /**
-   *  Returns boolean value whether the task with given name is already registered for given appId.
+   *  Returns boolean value whether the task with given name is already registered for given appScopeKey.
    */
-  boolean hasRegisteredTask(String taskName, String appId);
+  boolean hasRegisteredTask(String taskName, String appScopeKey);
 
   /**
    *  Registers task in any kind of persistent storage, so it could be restored in future sessions.
    */
-  void registerTask(String taskName, String appId, String appUrl, Class consumerClass, Map<String, Object> options) throws Exception;
+  void registerTask(String taskName, String appScopeKey, String appUrl, Class consumerClass, Map<String, Object> options) throws Exception;
 
   /**
-   *  Unregisters task with given name and for given appId. If consumer class is provided,
+   *  Unregisters task with given name and for given appScopeKey. If consumer class is provided,
    *  it can throw an exception if task's consumer is not a member of that class.
    */
-  void unregisterTask(String taskName, String appId, Class consumerClass) throws Exception;
+  void unregisterTask(String taskName, String appScopeKey, Class consumerClass) throws Exception;
 
   /**
-   *  Unregisters all tasks registered for the app with given appId.
+   *  Unregisters all tasks registered for the app with given appScopeKey.
    */
-  void unregisterAllTasksForAppId(String appId);
+  void unregisterAllTasksForAppScopeKey(String appScopeKey);
 
   /**
    *  Returns boolean value whether or not the task's consumer is a member of given class.
    */
-  boolean taskHasConsumerOfClass(String taskName, String appId, Class consumerClass);
+  boolean taskHasConsumerOfClass(String taskName, String appScopeKey, Class consumerClass);
 
   /**
-   *  Returns options associated with the task with given name and appId or nil if task not found.
+   *  Returns options associated with the task with given name and appScopeKey or nil if task not found.
    */
-  Bundle getTaskOptions(String taskName, String appId);
+  Bundle getTaskOptions(String taskName, String appScopeKey);
 
   /**
-   *  Returns a list of task bundles for given appId.
+   *  Returns a list of task bundles for given appScopeKey.
    */
-  List<Bundle> getTasksForAppId(String appId);
+  List<Bundle> getTasksForAppScopeKey(String appScopeKey);
 
   /**
-   *  Returns a list of task consumer for given appId.
+   *  Returns a list of task consumer for given appScopeKey.
    */
-  List<TaskConsumerInterface> getTaskConsumers(String appId);
+  List<TaskConsumerInterface> getTaskConsumers(String appScopeKey);
 
   /**
    *  Notifies the service that a task has just finished.
    */
-  void notifyTaskFinished(String taskName, String appId, Map<String, Object> response);
+  void notifyTaskFinished(String taskName, String appScopeKey, Map<String, Object> response);
 
   /**
-   *  Passes a reference of task manager for given appId and appUrl to the service.
+   *  Passes a reference of task manager for given appScopeKey and appUrl to the service.
    */
-  void setTaskManager(TaskManagerInterface taskManager, String appId, String appUrl);
+  void setTaskManager(TaskManagerInterface taskManager, String appScopeKey, String appUrl);
 
   /**
    *  Handles intent that just woke up.
@@ -84,8 +84,8 @@ public interface TaskServiceInterface extends SingletonModule {
   void executeTask(TaskInterface task, Bundle data, Error error, TaskExecutionCallback callback);
 
   /**
-   *  Checks whether the app with given appId is currently being run in headless mode.
+   *  Checks whether the app with given appScopeKey is currently being run in headless mode.
    */
-  boolean isStartedByHeadlessLoader(String appId);
+  boolean isStartedByHeadlessLoader(String appScopeKey);
 
 }

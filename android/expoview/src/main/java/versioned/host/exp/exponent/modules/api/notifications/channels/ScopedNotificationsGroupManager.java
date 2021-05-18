@@ -13,22 +13,22 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import expo.modules.notifications.notifications.channels.managers.AndroidXNotificationsChannelGroupManager;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 import versioned.host.exp.exponent.modules.api.notifications.ScopedNotificationsIdUtils;
 
 public class ScopedNotificationsGroupManager extends AndroidXNotificationsChannelGroupManager {
-  private ExperienceId mExperienceId;
+  private ExperienceKey mExperienceKey;
 
-  public ScopedNotificationsGroupManager(Context context, ExperienceId experienceId) {
+  public ScopedNotificationsGroupManager(Context context, ExperienceKey experienceKey) {
     super(context);
-    mExperienceId = experienceId;
+    mExperienceKey = experienceKey;
   }
 
   @Nullable
   @Override
   @RequiresApi(api = Build.VERSION_CODES.O)
   public NotificationChannelGroup getNotificationChannelGroup(@NonNull String channelGroupId) {
-    NotificationChannelGroup scopedGroup = super.getNotificationChannelGroup(ScopedNotificationsIdUtils.getScopedGroupId(mExperienceId, channelGroupId));
+    NotificationChannelGroup scopedGroup = super.getNotificationChannelGroup(ScopedNotificationsIdUtils.getScopedGroupId(mExperienceKey, channelGroupId));
     if (scopedGroup != null) {
       return scopedGroup;
     }
@@ -44,7 +44,7 @@ public class ScopedNotificationsGroupManager extends AndroidXNotificationsChanne
     ArrayList<NotificationChannelGroup> result = new ArrayList<>();
     List<NotificationChannelGroup> channelGroups = super.getNotificationChannelGroups();
     for (NotificationChannelGroup group : channelGroups) {
-      if (ScopedNotificationsIdUtils.checkIfGroupBelongsToExperience(mExperienceId, group)) {
+      if (ScopedNotificationsIdUtils.checkIfGroupBelongsToExperience(mExperienceKey, group)) {
         result.add(group);
       }
     }
@@ -55,7 +55,7 @@ public class ScopedNotificationsGroupManager extends AndroidXNotificationsChanne
   @Override
   @RequiresApi(api = Build.VERSION_CODES.O)
   public NotificationChannelGroup createNotificationChannelGroup(@NonNull String groupId, @NonNull CharSequence name, ReadableArguments groupOptions) {
-    return super.createNotificationChannelGroup(ScopedNotificationsIdUtils.getScopedGroupId(mExperienceId, groupId), name, groupOptions);
+    return super.createNotificationChannelGroup(ScopedNotificationsIdUtils.getScopedGroupId(mExperienceKey, groupId), name, groupOptions);
   }
 
   @Override

@@ -3,7 +3,6 @@ package host.exp.exponent.experience;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 
-import org.json.JSONObject;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.interfaces.InternalModule;
@@ -16,7 +15,7 @@ import expo.modules.notifications.notifications.categories.ExpoNotificationCateg
 import expo.modules.notifications.notifications.handling.NotificationsHandler;
 import expo.modules.notifications.notifications.scheduling.NotificationScheduler;
 import expo.modules.updates.manifest.raw.RawManifest;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.modules.universal.ConstantsBinding;
 import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter;
@@ -32,7 +31,7 @@ public class DetachedModuleRegistryAdapter extends ExpoModuleRegistryAdapter {
   }
 
   @Override
-  public List<NativeModule> createNativeModules(final ScopedContext scopedContext, ExperienceId experienceId, Map<String, Object> experienceProperties, RawManifest manifest, List<NativeModule> otherModules) {
+  public List<NativeModule> createNativeModules(final ScopedContext scopedContext, ExperienceKey experienceKey, Map<String, Object> experienceProperties, RawManifest manifest, String experienceStableLegacyId, List<NativeModule> otherModules) {
     ReactApplicationContext reactApplicationContext = (ReactApplicationContext) scopedContext.getContext();
 
     // We only use React application context, because we're detached -- no scopes

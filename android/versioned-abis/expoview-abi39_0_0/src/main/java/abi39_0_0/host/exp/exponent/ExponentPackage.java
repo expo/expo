@@ -32,7 +32,7 @@ import host.exp.exponent.analytics.EXL;
 import abi39_0_0.host.exp.exponent.modules.api.appearance.rncappearance.RNCAppearanceModule;
 import abi39_0_0.host.exp.exponent.modules.api.reanimated.ReanimatedModule;
 import abi39_0_0.host.exp.exponent.modules.internal.DevMenuModule;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 /* WHEN_VERSIONING_REMOVE_FROM_HERE
 import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 WHEN_VERSIONING_REMOVE_TO_HERE */
@@ -182,10 +182,10 @@ public class ExponentPackage implements ReactPackage {
 
     if (isVerified) {
       try {
-        ExperienceId experienceId = ExperienceId.create(mManifest.getID());
-        ScopedContext scopedContext = new ScopedContext(reactContext, experienceId.getUrlEncoded());
+        ExperienceKey experienceKey = ExperienceKey.fromRawManifest(mManifest);
+        ScopedContext scopedContext = new ScopedContext(reactContext, experienceKey);
 
-        nativeModules.add(new NotificationsModule(reactContext, mManifest, mExperienceProperties));
+        nativeModules.add(new NotificationsModule(reactContext, experienceKey, mManifest.getStableLegacyID(), mExperienceProperties));
         nativeModules.add(new RNViewShotModule(reactContext, scopedContext));
         nativeModules.add(new RandomModule(reactContext));
         nativeModules.add(new ExponentTestNativeModule(reactContext));
@@ -219,7 +219,7 @@ public class ExponentPackage implements ReactPackage {
         // Call to create native modules has to be at the bottom --
         // -- ExpoModuleRegistryAdapter uses the list of native modules
         // to create Bindings for internal modules.
-        nativeModules.addAll(mModuleRegistryAdapter.createNativeModules(scopedContext, experienceId, mExperienceProperties, mManifest, nativeModules));
+        nativeModules.addAll(mModuleRegistryAdapter.createNativeModules(scopedContext, experienceKey, mExperienceProperties, mManifest, mManifest.getStableLegacyID(), nativeModules));
       } catch (JSONException | UnsupportedEncodingException e) {
         EXL.e(TAG, e.toString());
       }

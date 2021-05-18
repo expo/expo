@@ -4,6 +4,7 @@ import android.content.Context;
 
 import java.util.HashMap;
 
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.notifications.ExponentNotificationManager;
 import host.exp.exponent.notifications.exceptions.UnableToScheduleException;
 
@@ -30,12 +31,12 @@ public class SchedulerImpl implements Scheduler {
       throw new UnableToScheduleException();
     }
 
-    String experienceId = mSchedulerModel.getOwnerExperienceId();
+    ExperienceKey experienceKey = mSchedulerModel.getOwnerExperienceKey();
     int notificationId = mSchedulerModel.getNotificationId();
     HashMap<String, Object> details = mSchedulerModel.getDetails();
 
     try {
-      getManager().schedule(experienceId, notificationId, details, nextAppearanceTime, null);
+      getManager().schedule(experienceKey, notificationId, details, nextAppearanceTime, null);
     } catch (ClassNotFoundException e) {
       e.printStackTrace();
     }
@@ -47,15 +48,15 @@ public class SchedulerImpl implements Scheduler {
   }
 
   @Override
-  public String getOwnerExperienceId() {
-    return mSchedulerModel.getOwnerExperienceId();
+  public ExperienceKey getOwnerExperienceKey() {
+    return mSchedulerModel.getOwnerExperienceKey();
   }
 
   @Override
   public void cancel() {
-    String experienceId = mSchedulerModel.getOwnerExperienceId();
+    ExperienceKey experienceKey = mSchedulerModel.getOwnerExperienceKey();
     int notificationId = mSchedulerModel.getNotificationId();
-    getManager().cancel(experienceId, notificationId);
+    getManager().cancel(experienceKey, notificationId);
   }
 
   @Override

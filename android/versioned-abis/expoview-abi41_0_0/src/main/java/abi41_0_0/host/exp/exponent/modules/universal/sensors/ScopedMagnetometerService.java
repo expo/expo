@@ -5,12 +5,12 @@ import java.util.List;
 
 import abi41_0_0.org.unimodules.core.interfaces.InternalModule;
 import abi41_0_0.org.unimodules.interfaces.sensors.services.MagnetometerService;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.kernel.services.sensors.SubscribableSensorKernelService;
 
 public class ScopedMagnetometerService extends BaseSensorService implements InternalModule, MagnetometerService {
-  public ScopedMagnetometerService(ExperienceId experienceId) {
-    super(experienceId);
+  public ScopedMagnetometerService(ExperienceKey experienceKey) {
+    super(experienceKey);
   }
 
   @Override

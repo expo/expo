@@ -16,31 +16,31 @@ import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.presentation.ExpoNotificationPresentationModule;
 import expo.modules.notifications.service.NotificationsService;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.notifications.ScopedNotificationsUtils;
 import host.exp.exponent.notifications.model.ScopedNotificationRequest;
 
 public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPresentationModule {
-  private final ExperienceId mExperienceId;
+  private final ExperienceKey mExperienceKey;
   private final ScopedNotificationsUtils mScopedNotificationsUtils;
 
-  public ScopedExpoNotificationPresentationModule(Context context, ExperienceId experienceId) {
+  public ScopedExpoNotificationPresentationModule(Context context, ExperienceKey experienceKey) {
     super(context);
-    mExperienceId = experienceId;
+    mExperienceKey = experienceKey;
     mScopedNotificationsUtils = new ScopedNotificationsUtils(context);
   }
 
   @Override
   protected NotificationRequest createNotificationRequest(String identifier, NotificationContent content, NotificationTrigger trigger) {
-    String experienceIdString = mExperienceId == null ? null : mExperienceId.get();
-    return new ScopedNotificationRequest(identifier, content, trigger, experienceIdString);
+    String experienceScopeKey = mExperienceKey == null ? null : mExperienceKey.getScopeKey();
+    return new ScopedNotificationRequest(identifier, content, trigger, experienceScopeKey);
   }
 
   @Override
   protected ArrayList<Bundle> serializeNotifications(Collection<Notification> notifications) {
     ArrayList<Bundle> serializedNotifications = new ArrayList<>();
     for (Notification notification : notifications) {
-      if (mScopedNotificationsUtils.shouldHandleNotification(notification, mExperienceId)) {
+      if (mScopedNotificationsUtils.shouldHandleNotification(notification, mExperienceKey)) {
         serializedNotifications.add(NotificationSerializer.toBundle(notification));
       }
     }
@@ -57,7 +57,7 @@ public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPr
         Collection<Notification> notifications = resultData.getParcelableArrayList(NotificationsService.NOTIFICATIONS_KEY);
         if (resultCode == NotificationsService.SUCCESS_CODE && notifications != null) {
           Notification notification = findNotification(notifications, identifier);
-          if (notification == null || !mScopedNotificationsUtils.shouldHandleNotification(notification, mExperienceId)) {
+          if (notification == null || !mScopedNotificationsUtils.shouldHandleNotification(notification, mExperienceKey)) {
             promise.resolve(null);
             return;
           }
@@ -81,7 +81,7 @@ public class ScopedExpoNotificationPresentationModule extends ExpoNotificationPr
         if (resultCode == NotificationsService.SUCCESS_CODE && notifications != null) {
           ArrayList<String> toDismiss = new ArrayList<>();
           for (Notification notification : notifications) {
-            if (mScopedNotificationsUtils.shouldHandleNotification(notification, mExperienceId)) {
+            if (mScopedNotificationsUtils.shouldHandleNotification(notification, mExperienceKey)) {
               toDismiss.add(notification.getNotificationRequest().getIdentifier());
             }
           }
