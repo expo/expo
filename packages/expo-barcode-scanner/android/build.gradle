@@ -76,7 +76,7 @@ dependencies {
   unimodule "unimodules-core"
   unimodule 'expo-modules-core'
   unimodule "unimodules-image-loader-interface"
-  unimodule 'unimodules-permissions-interface'
+
   api 'com.google.android.gms:play-services-vision:19.0.0'
   api 'com.google.zxing:core:3.3.3'
 

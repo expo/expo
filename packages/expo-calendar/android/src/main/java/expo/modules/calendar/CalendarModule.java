@@ -21,7 +21,6 @@ import org.unimodules.core.arguments.ReadableArguments;
 import org.unimodules.core.errors.InvalidArgumentException;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.RegistryLifecycleListener;
-import org.unimodules.interfaces.permissions.Permissions;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,6 +29,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+
+import expo.modules.interfaces.permissions.Permissions;
 
 public class CalendarModule extends ExportedModule implements RegistryLifecycleListener {
   private static final String TAG = CalendarModule.class.getSimpleName();
