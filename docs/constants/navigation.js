@@ -409,6 +409,7 @@ const ROOT = [
   'Configuration Files',
   'Expo SDK',
   'React Native',
+  'Technical Specs',
   'ExpoKit',
 ];
 
