@@ -70,6 +70,8 @@ export async function getTrackingPermissionsAsync() {
  * resolve to `granted`.
  */
 export function isAvailable() {
-    return Platform.OS === 'ios' && parseInt(Platform.Version.toString(), 10) >= 14;
+    return (Platform.OS === 'ios' &&
+        parseInt(Platform.Version.toString(), 10) >= 14 &&
+        ExpoTrackingTransparency);
 }
 //# sourceMappingURL=TrackingTransparency.js.map
