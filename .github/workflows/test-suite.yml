@@ -62,7 +62,7 @@ jobs:
         with:
           channel: '#platform-web'
           status: ${{ job.status }}
-          fields: job,commit,ref,eventName,author,took
+          fields: job,message,ref,eventName,author,took
           author_name: Test Suite (Web)
 
   ios:
@@ -145,7 +145,7 @@ jobs:
         with:
           channel: '#platform-ios'
           status: ${{ job.status }}
-          fields: job,commit,ref,eventName,author,took
+          fields: job,message,ref,eventName,author,took
           author_name: Test Suite (iOS)
 
   android:
@@ -213,5 +213,5 @@ jobs:
         with:
           channel: '#platform-android'
           status: ${{ job.status }}
-          fields: job,commit,ref,eventName,author,took
+          fields: job,message,ref,eventName,author,took
           author_name: Test Suite (Android)
