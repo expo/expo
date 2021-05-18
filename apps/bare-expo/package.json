@@ -67,13 +67,13 @@
       },
       "android.emu.debug": {
         "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk",
-        "build": "cd android && ./gradlew assembleDebug assembleAndroidTest -DtestBuildType=debug && cd ..",
+        "build": "cd android && ./gradlew :app:assembleDebug :app:assembleAndroidTest -DtestBuildType=debug && cd ..",
         "type": "android.emulator",
         "name": "bare-expo"
       },
       "android.emu.release": {
         "binaryPath": "android/app/build/outputs/apk/release/app-release.apk",
-        "build": "cd android && ./gradlew assembleRelease assembleAndroidTest -DtestBuildType=release && cd ..",
+        "build": "cd android && ./gradlew :app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release && cd ..",
         "type": "android.emulator",
         "name": "bare-expo"
       }
@@ -85,7 +85,8 @@
     "symlinks": [
       "expo-constants",
       "expo-camera",
-      "expo-updates"
+      "expo-updates",
+      "detox"
     ]
   },
   "dependencies": {
@@ -129,7 +130,7 @@
     "@types/react-native": "~0.63.2",
     "babel-plugin-module-resolver": "^4.0.0",
     "babel-preset-expo": "~8.3.0",
-    "detox": "^18.6.2",
+    "detox": "^18.13.0",
     "expo-module-scripts": "^2.0.0",
     "expo-yarn-workspaces": "^1.5.1",
     "jest-expo": "~41.0.0",

@@ -147,3 +147,71 @@ jobs:
           status: ${{ job.status }}
           fields: job,commit,ref,eventName,author,took
           author_name: Test Suite (iOS)
+
+  android:
+    runs-on: macos-latest
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: 🍺 Install required tools
+        run: |
+          brew install watchman
+          echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: ♻️ Restore workspace node modules
+        uses: actions/cache@v2
+        id: node-modules-cache
+        with:
+          path: |
+            # See "workspaces" → "packages" in the root package.json for the source of truth of
+            # which node_modules are affected by the root yarn.lock
+            node_modules
+            apps/*/node_modules
+            home/node_modules
+            packages/*/node_modules
+            packages/@unimodules/*/node_modules
+            react-native-lab/react-native/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
+      - name: 🧶 Install node modules in root dir
+        run: yarn install --frozen-lockfile
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: ⚛️ Display React Native config
+        run: yarn react-native config
+        working-directory: apps/bare-expo
+      - name: Clean Detox
+        run: yarn detox:clean
+        working-directory: apps/bare-expo
+      - name: Build Android project for Detox
+        run: yarn android:detox:build:release
+        working-directory: apps/bare-expo
+        timeout-minutes: 35
+      - name: Run tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          avd-name: bare-expo
+          script: yarn android:detox:test:release
+          working-directory: ./apps/bare-expo
+      - name: Store images of build failures
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: bare-expo-artifacts
+          path: apps/bare-expo/artifacts
+      - name: 🔔 Notify on Slack
+        uses: 8398a7/action-slack@v3
+        if: failure() && (github.event.ref == 'refs/heads/master' || startsWith(github.event.ref, 'refs/heads/sdk-'))
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_android }}
+        with:
+          channel: '#platform-android'
+          status: ${{ job.status }}
+          fields: job,commit,ref,eventName,author,took
+          author_name: Test Suite (Android)
