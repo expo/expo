@@ -77,7 +77,11 @@ export async function getTrackingPermissionsAsync(): Promise<PermissionResponse>
  * resolve to `granted`.
  */
 export function isAvailable(): boolean {
-  return Platform.OS === 'ios' && parseInt(Platform.Version.toString(), 10) >= 14;
+  return (
+    Platform.OS === 'ios' &&
+    parseInt(Platform.Version.toString(), 10) >= 14 &&
+    ExpoTrackingTransparency
+  );
 }
 
 export { PermissionResponse };
