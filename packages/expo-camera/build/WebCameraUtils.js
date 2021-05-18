@@ -248,7 +248,7 @@ export function stopMediaStream(stream) {
     }
 }
 export function setVideoSource(video, stream) {
-    const createObjectURL = window.URL.createObjectURL ?? window.webkitURL.createObjectURL;
+    const createObjectURL = window?.URL.createObjectURL ?? window.webkitURL.createObjectURL;
     if (typeof video.srcObject !== 'undefined') {
         video.srcObject = stream;
     }

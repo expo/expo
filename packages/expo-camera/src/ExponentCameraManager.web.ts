@@ -1,6 +1,5 @@
 import { UnavailabilityError } from '@unimodules/core';
 
-import { requestPermissionsAsync } from './Camera';
 import {
   CameraCapturedPicture,
   CameraPictureOptions,
@@ -60,6 +59,22 @@ function handleGetUserMediaError({ message }: { message: string }): PermissionRe
       canAskAgain: true,
       granted: false,
     };
+  }
+}
+
+async function handleRequestPermissionsAsync(): Promise<PermissionResponse> {
+  try {
+    await getUserMedia({
+      video: true,
+    });
+    return {
+      status: PermissionStatus.GRANTED,
+      expires: 'never',
+      canAskAgain: true,
+      granted: true,
+    };
+  } catch ({ message }) {
+    return handleGetUserMediaError({ message });
   }
 }
 
@@ -181,25 +196,13 @@ export default {
     return handlePermissionsQueryAsync('camera');
   },
   async requestPermissionsAsync(): Promise<PermissionResponse> {
-    try {
-      await getUserMedia({
-        video: true,
-      });
-      return {
-        status: PermissionStatus.GRANTED,
-        expires: 'never',
-        canAskAgain: true,
-        granted: true,
-      };
-    } catch ({ message }) {
-      return handleGetUserMediaError({ message });
-    }
+    return handleRequestPermissionsAsync();
   },
   async getCameraPermissionsAsync(): Promise<PermissionResponse> {
     return handlePermissionsQueryAsync('camera');
   },
   async requestCameraPermissionsAsync(): Promise<PermissionResponse> {
-    return requestPermissionsAsync();
+    return handleRequestPermissionsAsync();
   },
   async getMicrophonePermissionsAsync(): Promise<PermissionResponse> {
     return handlePermissionsQueryAsync('microphone');

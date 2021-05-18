@@ -377,7 +377,7 @@ export function setVideoSource(
   video: HTMLVideoElement,
   stream: MediaStream | MediaSource | Blob | null
 ): void {
-  const createObjectURL = window.URL.createObjectURL ?? window.webkitURL.createObjectURL;
+  const createObjectURL = window?.URL.createObjectURL ?? window.webkitURL.createObjectURL;
 
   if (typeof video.srcObject !== 'undefined') {
     video.srcObject = stream;

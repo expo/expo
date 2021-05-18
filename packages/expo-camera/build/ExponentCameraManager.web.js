@@ -1,5 +1,4 @@
 import { UnavailabilityError } from '@unimodules/core';
-import { requestPermissionsAsync } from './Camera';
 import { CameraType, PermissionStatus, } from './Camera.types';
 import { canGetUserMedia, isBackCameraAvailableAsync, isFrontCameraAvailableAsync, } from './WebUserMediaManager';
 function getUserMedia(constraints) {
@@ -43,6 +42,22 @@ function handleGetUserMediaError({ message }) {
             canAskAgain: true,
             granted: false,
         };
+    }
+}
+async function handleRequestPermissionsAsync() {
+    try {
+        await getUserMedia({
+            video: true,
+        });
+        return {
+            status: PermissionStatus.GRANTED,
+            expires: 'never',
+            canAskAgain: true,
+            granted: true,
+        };
+    }
+    catch ({ message }) {
+        return handleGetUserMediaError({ message });
     }
 }
 async function handlePermissionsQueryAsync(query) {
@@ -154,26 +169,13 @@ export default {
         return handlePermissionsQueryAsync('camera');
     },
     async requestPermissionsAsync() {
-        try {
-            await getUserMedia({
-                video: true,
-            });
-            return {
-                status: PermissionStatus.GRANTED,
-                expires: 'never',
-                canAskAgain: true,
-                granted: true,
-            };
-        }
-        catch ({ message }) {
-            return handleGetUserMediaError({ message });
-        }
+        return handleRequestPermissionsAsync();
     },
     async getCameraPermissionsAsync() {
         return handlePermissionsQueryAsync('camera');
     },
     async requestCameraPermissionsAsync() {
-        return requestPermissionsAsync();
+        return handleRequestPermissionsAsync();
     },
     async getMicrophonePermissionsAsync() {
         return handlePermissionsQueryAsync('microphone');
