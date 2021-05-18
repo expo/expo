@@ -123,7 +123,7 @@ function TrackingItem() {
       <SectionHeader title="Tracking" />
       <ListItem
         last
-        title="Allow projects to track device data"
+        title="Allow projects to track app-related data"
         onPress={async () => {
           const { status } = await Tracking.requestTrackingPermissionsAsync();
           setShowTrackingItem(status === 'undetermined');
