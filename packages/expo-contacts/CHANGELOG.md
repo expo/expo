@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [plugin] Added `enableIosContactNotes` property to add support for the contact notes entitlement. ([#12965](https://github.com/expo/expo/pull/12965) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 - Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
