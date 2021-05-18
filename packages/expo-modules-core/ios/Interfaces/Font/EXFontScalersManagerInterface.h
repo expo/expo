@@ -1,9 +1,9 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <UMFontInterface/UMFontScalerInterface.h>
+#import <ExpoModulesCore/EXFontScalerInterface.h>
 
-@protocol UMFontScalersManagerInterface
+@protocol EXFontScalersManagerInterface
 
-- (void)registerFontScaler:(id<UMFontScalerInterface>)scaler;
+- (void)registerFontScaler:(id<EXFontScalerInterface>)scaler;
 
 @end
