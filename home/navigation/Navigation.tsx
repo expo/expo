@@ -44,7 +44,7 @@ const accountNavigationOptions = ({ route }) => {
   };
 };
 
-const profileNavigationOptions = ({ route }) => {
+const profileNavigationOptions = () => {
   return {
     title: 'Profile',
     headerRight: () => <UserSettingsButton />,

@@ -1,6 +1,5 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import Constants from 'expo-constants';
-import { AllStackRoutes } from 'navigation/Navigation.types';
 import * as React from 'react';
 import { Alert, AppState, Clipboard, Linking, Platform, StyleSheet, View } from 'react-native';
 
@@ -17,6 +16,7 @@ import RefreshControl from '../components/RefreshControl';
 import SectionHeader from '../components/SectionHeader';
 import { StyledText } from '../components/Text';
 import ThemedStatusBar from '../components/ThemedStatusBar';
+import { AllStackRoutes } from '../navigation/Navigation.types';
 import HistoryActions from '../redux/HistoryActions';
 import { useDispatch, useSelector } from '../redux/Hooks';
 import { DevSession, HistoryList } from '../types';
@@ -83,7 +83,7 @@ export default function ProjectsScreen(props: NavigationProps) {
 }
 
 class ProjectsView extends React.Component<Props, State> {
-  private _projectPolling?: any;
+  private _projectPolling?: ReturnType<typeof setInterval>;
 
   state: State = {
     projects: [],
@@ -104,7 +104,7 @@ class ProjectsView extends React.Component<Props, State> {
     // find a way to move this listener up to the root of the app in order to ensure
     // that it has been registered regardless of whether we have been on the project
     // screen in the home app
-    addListenerWithNativeCallback('ExponentKernel.showQRReader', async event => {
+    addListenerWithNativeCallback('ExponentKernel.showQRReader', async () => {
       // @ts-ignore
       this.props.navigation.navigate('QRCode');
       return { success: true };
@@ -202,7 +202,9 @@ class ProjectsView extends React.Component<Props, State> {
   };
 
   private _stopPollingForProjects = async () => {
-    clearInterval(this._projectPolling);
+    if (this._projectPolling) {
+      clearInterval(this._projectPolling);
+    }
     this._projectPolling = undefined;
   };
 

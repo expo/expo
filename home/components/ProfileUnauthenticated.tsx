@@ -1,6 +1,6 @@
 import * as WebBrowser from 'expo-web-browser';
 import * as React from 'react';
-import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import url from 'url';
 
 import Analytics from '../api/Analytics';
@@ -99,13 +99,11 @@ export default function ProfileUnauthenticated() {
         {description}
       </StyledText>
 
-      <PrimaryButton onPress={_handleSignInPress} fallback={TouchableOpacity}>
-        Sign in to your account
-      </PrimaryButton>
+      <PrimaryButton onPress={_handleSignInPress}>Sign in to your account</PrimaryButton>
 
       <View style={{ marginBottom: 20 }} />
 
-      <PrimaryButton plain onPress={_handleSignUpPress} fallback={TouchableOpacity}>
+      <PrimaryButton plain onPress={_handleSignUpPress}>
         Sign up for Expo
       </PrimaryButton>
 

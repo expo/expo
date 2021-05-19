@@ -1,14 +1,14 @@
 import { StackScreenProps } from '@react-navigation/stack';
-import { Project } from 'components/ProjectList';
-import { Snack } from 'components/SnackList';
-import { AccountData } from 'containers/Account';
 import dedent from 'dedent';
 import { take, takeRight } from 'lodash';
 import React from 'react';
-import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
+import { Project } from '../components/ProjectList';
+import { Snack } from '../components/SnackList';
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
+import { AccountData } from '../containers/Account';
 import { AllStackRoutes } from '../navigation/Navigation.types';
 import EmptyAccountProjectsNotice from './EmptyAccountProjectsNotice';
 import EmptyAccountSnacksNotice from './EmptyAccountSnacksNotice';
@@ -149,7 +149,7 @@ function AccountErrorView({
         {isConnectionError ? NETWORK_ERROR_TEXT : SERVER_ERROR_TEXT}
       </StyledText>
 
-      <PrimaryButton plain onPress={onRefresh} fallback={TouchableOpacity}>
+      <PrimaryButton plain onPress={onRefresh}>
         Try again
       </PrimaryButton>
 
