@@ -25,7 +25,7 @@ export type Project = {
   id: string;
   description: string;
   fullName: string;
-  iconUrl: string;
+  iconUrl?: string | null;
   published: boolean; // legacy publishes
   lastPublishedTime: number;
   name: string;

@@ -83,7 +83,7 @@ export default function ProjectsScreen(props: NavigationProps) {
 }
 
 class ProjectsView extends React.Component<Props, State> {
-  private _projectPolling?: number;
+  private _projectPolling?: any;
 
   state: State = {
     projects: [],

@@ -1,45 +1,10 @@
-import { useQuery } from '@apollo/client';
-import gql from 'graphql-tag';
 import * as React from 'react';
 
-import SnackList, { Snack } from '../components/SnackList';
-
-const SnacksQuery = gql`
-  query Home_AccountSnacks($accountName: String!, $limit: Int!, $offset: Int!) {
-    account {
-      byName(accountName: $accountName) {
-        id
-        name
-        snacks(limit: $limit, offset: $offset) {
-          name
-          description
-          fullName
-          slug
-          isDraft
-        }
-      }
-    }
-  }
-`;
-
-interface SnacksData {
-  account: {
-    byName: {
-      id: string;
-      name: string;
-      snacks: Snack[];
-    };
-  };
-}
-
-interface SnacksVars {
-  accountName: string;
-  limit: number;
-  offset: number;
-}
+import SnackList from '../components/SnackList';
+import { useHome_AccountSnacksQuery } from '../graphql/queries/SnacksListQuery.query.generated';
 
 function useSnacksQuery({ accountName }: { accountName: string }) {
-  const { data, fetchMore } = useQuery<SnacksData, SnacksVars>(SnacksQuery, {
+  const { data, fetchMore } = useHome_AccountSnacksQuery({
     variables: {
       accountName,
       limit: 15,

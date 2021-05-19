@@ -51,7 +51,7 @@ function EnabledProjectTools({ pollForUpdates }: Props) {
     (props: State, state: Partial<State>): State => ({ ...props, ...state }),
     initialState
   );
-  const clipboardUpdateInterval = React.useRef<null | number>(null);
+  const clipboardUpdateInterval = React.useRef<null | any>(null);
 
   const appState = useAppState();
 
