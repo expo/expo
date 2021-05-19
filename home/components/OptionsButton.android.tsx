@@ -18,7 +18,7 @@ export default function OptionsButton() {
       handle,
       ['Report this user'],
       () => {},
-      (action, selectedIndex) => {
+      (_action, selectedIndex) => {
         if (selectedIndex === 0) {
           // TODO(Bacon): Anything...
           Alert.alert(

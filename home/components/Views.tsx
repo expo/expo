@@ -1,8 +1,7 @@
-import TouchableNativeFeedbackSafe from '@expo/react-native-touchable-native-feedback-safe';
 import { useTheme } from '@react-navigation/native';
 import { BlurView } from 'expo-blur';
 import * as React from 'react';
-import { Platform, ScrollView, StyleSheet, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, TouchableNativeFeedback, View } from 'react-native';
 
 import Colors from '../constants/Colors';
 
@@ -159,7 +158,7 @@ function ThemedBlurView(props: React.ComponentProps<typeof View> & { children?: 
   return <BlurView intensity={100} tint={theme.dark ? 'dark' : 'light'} {...props} />;
 }
 
-type ButtonProps = Props & TouchableNativeFeedbackSafe['props'];
+type ButtonProps = Props & React.ComponentProps<typeof TouchableNativeFeedback>;
 
 // Extend this if you ever need to customize ripple color
 function useRippleColor(_props: any) {
@@ -174,6 +173,7 @@ export const StyledButton = (props: ButtonProps) => {
     darkBackgroundColor: _darkBackgroundColor,
     lightBorderColor: _lightBorderColor,
     darkBorderColor: _darkBorderColor,
+    children,
     ...otherProps
   } = props;
 
@@ -182,17 +182,20 @@ export const StyledButton = (props: ButtonProps) => {
   const rippleColor = useRippleColor(props);
 
   return (
-    <TouchableNativeFeedbackSafe
-      background={TouchableNativeFeedbackSafe.Ripple(rippleColor, false)}
-      style={[
-        {
-          backgroundColor,
-          borderColor,
-        },
-        style,
-      ]}
-      {...otherProps}
-    />
+    <TouchableNativeFeedback
+      background={TouchableNativeFeedback.Ripple(rippleColor, false)}
+      {...otherProps}>
+      <View
+        style={[
+          {
+            backgroundColor,
+            borderColor,
+          },
+          style,
+        ]}>
+        {children}
+      </View>
+    </TouchableNativeFeedback>
   );
 };
 

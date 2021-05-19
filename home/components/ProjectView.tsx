@@ -75,8 +75,7 @@ function truthy<TValue>(value: TValue | null | undefined): value is TValue {
 }
 
 function getSDKMajorVersionsForLegacyUpdates(app: ProjectDataProject): number | null {
-  const majorVersionString = app.sdkVersion ? semver.major(app.sdkVersion) : null;
-  return majorVersionString ? parseInt(majorVersionString, 10) : null;
+  return app.sdkVersion ? semver.major(app.sdkVersion) : null;
 }
 
 function getSDKMajorVersionForEASUpdateBranch(branch: ProjectUpdateBranch): number | null {
@@ -89,8 +88,7 @@ function getSDKMajorVersionForEASUpdateBranch(branch: ProjectUpdateBranch): numb
     updates
       .map(update => {
         const potentialSDKVersion = getSDKVersionFromRuntimeVersion(update.runtimeVersion);
-        const majorVersion = potentialSDKVersion ? semver.major(potentialSDKVersion) : null;
-        return majorVersion ? parseInt(majorVersion, 10) : undefined;
+        return potentialSDKVersion ? semver.major(potentialSDKVersion) : null;
       })
       .filter(truthy)
       .sort((a, b) => b - a)[0] ?? null

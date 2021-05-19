@@ -19,7 +19,6 @@
   "dependencies": {
     "@apollo/client": "^3.2.0",
     "@expo/react-native-action-sheet": "^2.1.0",
-    "@expo/react-native-touchable-native-feedback-safe": "^1.1.2",
     "@expo/sdk-runtime-versions": "^1.0.0",
     "@expo/vector-icons": "^12.0.4",
     "@react-native-async-storage/async-storage": "~1.15.0",
@@ -68,7 +67,7 @@
     "reanimated-bottom-sheet": "^1.0.0-alpha.18",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
-    "semver": "^6.1.1",
+    "semver": "^7.3.5",
     "sha1": "^1.1.1",
     "url": "^0.11.0"
   },
@@ -78,7 +77,10 @@
     "@graphql-codegen/typescript": "1.22.0",
     "@graphql-codegen/typescript-operations": "1.17.16",
     "@graphql-codegen/typescript-react-apollo": "2.2.4",
+    "@types/dedent": "^0.7.0",
     "@types/jest": "^26.0.20",
+    "@types/semver": "^7.3.6",
+    "@types/sha1": "^1.1.2",
     "jest-expo": "~41.0.0",
     "react-native-bundle-visualizer": "^2.2.1",
     "uuid": "^3.3.2"

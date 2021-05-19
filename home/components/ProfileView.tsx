@@ -3,7 +3,7 @@ import { Project } from 'components/ProjectList';
 import dedent from 'dedent';
 import { take, takeRight } from 'lodash';
 import React from 'react';
-import { ActivityIndicator, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, StyleSheet, View } from 'react-native';
 import FadeIn from 'react-native-fade-in-image';
 
 import Colors from '../constants/Colors';
@@ -143,7 +143,7 @@ function ProfileErrorView({
         {isConnectionError ? NETWORK_ERROR_TEXT : SERVER_ERROR_TEXT}
       </StyledText>
 
-      <PrimaryButton plain onPress={onRefresh} fallback={TouchableOpacity}>
+      <PrimaryButton plain onPress={onRefresh}>
         Try again
       </PrimaryButton>
 

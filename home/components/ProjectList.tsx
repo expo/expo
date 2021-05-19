@@ -1,7 +1,7 @@
 import { useTheme } from '@react-navigation/native';
 import dedent from 'dedent';
 import * as React from 'react';
-import { ActivityIndicator, FlatList, ScrollView, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, ScrollView, View } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
 import Colors from '../constants/Colors';
@@ -94,7 +94,7 @@ export default function LoadingProjectList(props: Props) {
             {isConnectionError ? NETWORK_ERROR_TEXT : SERVER_ERROR_TEXT}
           </StyledText>
 
-          <PrimaryButton plain onPress={refetchDataAsync} fallback={TouchableOpacity}>
+          <PrimaryButton plain onPress={refetchDataAsync}>
             Try again
           </PrimaryButton>
         </View>
