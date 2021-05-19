@@ -76,14 +76,17 @@ function MenuGestureItem() {
     dispatch(
       SettingsActions.setDevMenuSetting(
         'motionGestureEnabled',
-        !devMenuSettings.motionGestureEnabled
+        !devMenuSettings?.motionGestureEnabled
       )
     );
   }, [dispatch, devMenuSettings]);
 
   const onToggleTouchGesture = React.useCallback(() => {
     dispatch(
-      SettingsActions.setDevMenuSetting('touchGestureEnabled', !devMenuSettings.touchGestureEnabled)
+      SettingsActions.setDevMenuSetting(
+        'touchGestureEnabled',
+        !devMenuSettings?.touchGestureEnabled
+      )
     );
   }, [dispatch, devMenuSettings]);
 
