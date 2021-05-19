@@ -277,8 +277,12 @@ class ProjectsView extends React.Component<Props, State> {
   };
 
   private _renderRecentHistoryItems = () => {
-    const extractUsername = manifestUrl => {
-      const username = manifestUrl.match(/@.*?\//)[0];
+    const extractUsername = (manifestUrl: string) => {
+      const usernameMatches = manifestUrl.match(/@.*?\//);
+      if (!usernameMatches) {
+        return null;
+      }
+      const username = usernameMatches[0];
       if (!username) {
         return null;
       } else {
@@ -291,17 +295,26 @@ class ProjectsView extends React.Component<Props, State> {
       const username = project.manifestUrl.includes(`exp://${Config.api.host}`)
         ? extractUsername(project.manifestUrl)
         : undefined;
-      let releaseChannel = project.manifest?.releaseChannel;
+      let releaseChannel =
+        project.manifest && 'releaseChannel' in project.manifest
+          ? project.manifest.releaseChannel
+          : null;
       releaseChannel = releaseChannel === 'default' ? undefined : releaseChannel;
       return (
         <ProjectListItem
           key={project.manifestUrl}
           url={project.manifestUrl}
-          image={project.manifest?.iconUrl}
-          title={project.manifest?.name}
+          image={
+            // TODO(wschurman): audit for new manifests
+            project.manifest && 'iconUrl' in project.manifest ? project.manifest.iconUrl : undefined
+          }
+          title={
+            // TODO(wschurman): audit for new manifests
+            project.manifest && 'name' in project.manifest ? project.manifest.name : undefined
+          }
           subtitle={username || project.manifestUrl}
-          username={username}
-          releaseChannel={releaseChannel}
+          username={username ?? undefined}
+          releaseChannel={releaseChannel ?? undefined}
           onPress={() => Linking.openURL(project.url)}
           last={i === this.props.recentHistory.count() - 1}
         />
