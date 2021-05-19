@@ -147,6 +147,14 @@ PODS:
     - expo-dev-menu
     - expo-dev-menu-interface
   - expo-dev-launcher (0.3.3):
+    - expo-dev-launcher/Main (= 0.3.3)
+    - expo-dev-menu-interface
+    - React
+  - expo-dev-launcher/Main (0.3.3):
+    - expo-dev-launcher/Unsafe
+    - expo-dev-menu-interface
+    - React
+  - expo-dev-launcher/Unsafe (0.3.3):
     - expo-dev-menu-interface
     - React
   - expo-dev-menu (0.5.1):
@@ -216,8 +224,6 @@ PODS:
     - UMAppLoader
     - UMCore
     - UMTaskManagerInterface
-  - EXTrackingTransparency (1.0.0):
-    - UMCore
   - EXVideoThumbnails (5.1.0):
     - ExpoModulesCore
     - UMCore
@@ -784,7 +790,6 @@ DEPENDENCIES:
   - EXStoreReview (from `../../../packages/expo-store-review/ios`)
   - EXStructuredHeaders (from `../../../packages/expo-structured-headers/ios`)
   - EXTaskManager (from `../../../packages/expo-task-manager/ios`)
-  - EXTrackingTransparency (from `../../../packages/expo-tracking-transparency/ios`)
   - EXVideoThumbnails (from `../../../packages/expo-video-thumbnails/ios`)
   - EXWebBrowser (from `../../../packages/expo-web-browser/ios`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
@@ -1085,9 +1090,6 @@ EXTERNAL SOURCES:
   EXTaskManager:
     inhibit_warnings: false
     :path: "../../../packages/expo-task-manager/ios"
-  EXTrackingTransparency:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-tracking-transparency/ios"
   EXVideoThumbnails:
     inhibit_warnings: false
     :path: "../../../packages/expo-video-thumbnails/ios"
@@ -1247,7 +1249,7 @@ SPEC CHECKSUMS:
   EXNotifications: baccd843a16a2cb2db2183e2d801652f3cb43202
   EXPermissions: 8f8c1c05580c4e02d4ee2c8dd74bfe173ff6a723
   expo-dev-client: 04477b92d022d9d00ef25c53afa11a6bf2a439b1
-  expo-dev-launcher: cc7e3e8a334751290066d889ad96c8712f444f28
+  expo-dev-launcher: beb5f958da17fc6d80eac78fd927e635b66f1e8d
   expo-dev-menu: b87ccce5cbe35b5b3a59d62be5414a4454f59e61
   expo-dev-menu-interface: 3ed7da6749d50a969a36d93ae39b4e4a748af849
   expo-image: 07527eb7a57f5ac939c5ded392bcf64c975b9c87
@@ -1267,7 +1269,6 @@ SPEC CHECKSUMS:
   EXStoreReview: b1f68ed0369b0f1c443214ac8d6881ef3b64de9a
   EXStructuredHeaders: 7e7eec19a326bc58cca2fb3edbac0afaecb89c16
   EXTaskManager: d30b4a5723a5969443da644d786853923efa5f17
-  EXTrackingTransparency: 73ed1d57435ae6a2d30d67c815f41d2170186405
   EXVideoThumbnails: 6d5a5d7c2c5f631b1950b1e8b2a0305ab741b9b4
   EXWebBrowser: 0b466c50e5ff61c9758095d49d5081e3229d77ac
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6
