@@ -20,7 +20,7 @@ generates:
       addDocBlocks: false
       reactApolloVersion: 3
       preResolveTypes: true
+      dedupeOperationSuffix: true
     plugins:
-      - "typescript"
-      - "typescript-operations"
-      - "typescript-react-apollo"
+      - typescript-operations
+      - typescript-react-apollo

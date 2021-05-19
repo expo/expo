@@ -18,6 +18,7 @@ query Home_AccountData($accountName: String!, $appLimit: Int!, $snackLimit: Int!
         privacy
       }
       snacks(limit: $snackLimit, offset: 0) {
+        id
         name
         description
         fullName

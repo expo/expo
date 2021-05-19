@@ -38,6 +38,18 @@ const cache = new InMemoryCache({
     Project: ['App', 'Snack'],
   },
   addTypename: true,
+  typePolicies: {
+    Query: {
+      fields: {
+        account: {
+          merge: false,
+        },
+        app: {
+          merge: false,
+        },
+      },
+    },
+  },
 });
 
 export default new ApolloClient({

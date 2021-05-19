@@ -4,7 +4,7 @@ import * as React from 'react';
 import { Platform } from 'react-native';
 
 import ProjectView from '../components/ProjectView';
-import { useWebContainerProjectPage_QueryQuery } from '../graphql/queries/ProjectQuery.query.generated';
+import { useWebContainerProjectPage_Query } from '../graphql/queries/ProjectQuery.query.generated';
 import { AppPlatform } from '../graphql/types';
 import * as Kernel from '../kernel/Kernel';
 import { AllStackRoutes } from '../navigation/Navigation.types';
@@ -54,7 +54,7 @@ export interface ProjectData {
 export function ProjectContainer(
   props: { appId: string } & StackScreenProps<AllStackRoutes, 'Project'>
 ) {
-  const query = useWebContainerProjectPage_QueryQuery({
+  const query = useWebContainerProjectPage_Query({
     fetchPolicy: 'cache-and-network',
     variables: {
       appId: props.appId,

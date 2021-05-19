@@ -103,6 +103,7 @@ export type Account = {
   applePushKeys: Array<ApplePushKey>;
   appleProvisioningProfiles: Array<AppleProvisioningProfile>;
   appleDevices: Array<AppleDevice>;
+  appleAppSpecificPasswords: Array<AppleAppSpecificPassword>;
   /** Environment secrets for an account */
   environmentSecrets: Array<EnvironmentSecret>;
   /** @deprecated Legacy access tokens are deprecated */
@@ -485,7 +486,7 @@ export type AndroidAppCredentialsFilter = {
 };
 
 export type AndroidAppCredentialsInput = {
-  fcmId: Scalars['ID'];
+  fcmId?: Maybe<Scalars['ID']>;
 };
 
 export type AndroidAppCredentialsMutation = {
@@ -983,6 +984,16 @@ export type AppleAppIdentifierMutation = {
 export type AppleAppIdentifierMutationCreateAppleAppIdentifierArgs = {
   appleAppIdentifierInput: AppleAppIdentifierInput;
   accountId: Scalars['ID'];
+};
+
+export type AppleAppSpecificPassword = {
+  __typename?: 'AppleAppSpecificPassword';
+  id: Scalars['ID'];
+  account: Account;
+  appleIdUsername: Scalars['String'];
+  passwordLabel?: Maybe<Scalars['String']>;
+  createdAt: Scalars['DateTime'];
+  updatedAt: Scalars['DateTime'];
 };
 
 export type AppleDevice = {
@@ -1898,6 +1909,7 @@ export type IosAppCredentials = {
   appleAppIdentifier: AppleAppIdentifier;
   iosAppBuildCredentialsList: Array<IosAppBuildCredentials>;
   pushKey?: Maybe<ApplePushKey>;
+  appSpecificPassword?: Maybe<AppleAppSpecificPassword>;
   /** @deprecated use iosAppBuildCredentialsList instead */
   iosAppBuildCredentialsArray: Array<IosAppBuildCredentials>;
 };

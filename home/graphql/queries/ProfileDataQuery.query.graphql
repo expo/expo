@@ -24,6 +24,7 @@ query Home_ProfileData2($appLimit: Int!, $snackLimit: Int!) {
       published
     }
     snacks(limit: $snackLimit, offset: 0) {
+      id
       name
       description
       fullName
