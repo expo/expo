@@ -55,10 +55,18 @@ NSString *kEXKernelBridgeDidBackgroundNotification = @"EXKernelBridgeDidBackgrou
   return kEXKernelAppRecordStatusNew;
 }
 
-- (NSString * _Nullable)experienceId
+- (nullable NSString *)legacyExperienceId
 {
   if (self.appLoader && self.appLoader.manifest) {
-    return self.appLoader.manifest.rawID;
+    return self.appLoader.manifest.legacyId;
+  }
+  return nil;
+}
+
+- (nullable NSString *)stableLegacyExperienceId
+{
+  if (self.appLoader && self.appLoader.manifest) {
+    return self.appLoader.manifest.stableLegacyId;
   }
   return nil;
 }
@@ -68,7 +76,7 @@ NSString *kEXKernelBridgeDidBackgroundNotification = @"EXKernelBridgeDidBackgrou
   return [NSString stringWithFormat:@"EXKernelAppRecord %p:\n  url: %@\n  experience id: %@",
           self,
           self.appLoader.manifestUrl,
-          (self.experienceId) ? self.experienceId : @"(none)"];
+          (self.legacyExperienceId) ? self.legacyExperienceId : @"(none)"];
 }
 
 @end

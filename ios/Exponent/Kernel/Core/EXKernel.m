@@ -178,7 +178,7 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
   EXKernelAppRecord *destinationApp = [_appRegistry standaloneAppRecord] ?: [_appRegistry newestRecordWithExperienceId:notification.experienceId];
 
   // This allows home app record to receive notification events as well.
-  if (!destinationApp && [_appRegistry.homeAppRecord.experienceId isEqualToString:notification.experienceId]) {
+  if (!destinationApp && [_appRegistry.homeAppRecord.stableLegacyExperienceId isEqualToString:notification.experienceId]) {
     destinationApp = _appRegistry.homeAppRecord;
   }
 

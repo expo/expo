@@ -4,6 +4,20 @@
 
 @implementation EXUpdatesNewRawManifest
 
+/**
+ * An ID representing this manifest, not the ID for the experience.
+ */
+- (nullable NSString *)rawId {
+  return [self.rawManifestJSON stringForKey:@"id"];
+}
+
+/**
+ * Incorrect for now until we figure out how to get this in the new manifest format.
+ */
+- (nullable NSString *)stableLegacyId {
+  return [self rawId];
+}
+
 - (NSString *)createdAt {
   return [self.rawManifestJSON stringForKey:@"createdAt"];
 }

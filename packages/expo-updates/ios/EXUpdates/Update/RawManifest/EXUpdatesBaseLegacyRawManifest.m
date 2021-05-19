@@ -5,12 +5,25 @@
 
 @implementation EXUpdatesBaseLegacyRawManifest
 
+- (nullable NSString *)stableLegacyId {
+  NSString *originalFullName = [self.rawManifestJSON nullableStringForKey:@"originalFullName"];
+  if (originalFullName) {
+    return originalFullName;
+  } else {
+    return [self legacyId];
+  }
+}
+
 - (NSString *)bundleUrl {
   return [self.rawManifestJSON stringForKey:@"bundleUrl"];
 }
 
 - (nullable NSString *)sdkVersion {
   return [self.rawManifestJSON nullableStringForKey:@"sdkVersion"];
+}
+
+- (nullable NSArray *)assets {
+  return [self.rawManifestJSON nullableArrayForKey:@"assets"];
 }
 
 @end

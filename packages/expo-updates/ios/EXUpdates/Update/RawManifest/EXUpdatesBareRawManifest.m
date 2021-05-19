@@ -4,6 +4,10 @@
 
 @implementation EXUpdatesBareRawManifest
 
+- (nullable NSString *)rawId {
+  return [self.rawManifestJSON nullableStringForKey:@"id"];
+}
+
 - (NSNumber *)commitTimeNumber {
   return [self.rawManifestJSON numberForKey:@"commitTime"];
 }

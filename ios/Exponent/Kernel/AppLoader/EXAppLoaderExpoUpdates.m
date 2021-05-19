@@ -184,7 +184,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   [self _setShouldShowRemoteUpdateStatus:update.rawManifest];
   // if cached manifest was dev mode, or a previous run of this app failed due to a loading error, we want to make sure to check for remote updates
-  if (update.rawManifest.isUsingDeveloperTool || [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:[EXAppFetcher experienceIdWithManifest:update.rawManifest]]) {
+  if (update.rawManifest.isUsingDeveloperTool || [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:[EXAppFetcher experienceIdForManifest:update.rawManifest]]) {
     return NO;
   }
   return YES;
@@ -490,7 +490,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)_isAnonymousExperience:(EXUpdatesRawManifest *)manifest
 {
-  NSString *experienceId = manifest.rawID;
+  NSString *experienceId = manifest.legacyId;
   return experienceId != nil && [experienceId hasPrefix:@"@anonymous/"];
 }
 

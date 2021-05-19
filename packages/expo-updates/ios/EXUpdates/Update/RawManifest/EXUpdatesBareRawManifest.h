@@ -7,6 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXUpdatesBareRawManifest : EXUpdatesBaseLegacyRawManifest<EXUpdatesRawManifestBehavior>
 
+- (nullable NSString *)rawId;
 - (NSNumber *)commitTimeNumber;
 - (nullable NSDictionary *)metadata;
 - (nullable NSArray *)assets;

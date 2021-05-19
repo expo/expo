@@ -86,6 +86,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 // is this the first time this ABI has been touched at runtime?
 @property (nonatomic, assign) BOOL isFirstLoad;
 @property (nonatomic, strong) NSDictionary *params;
+@property (nonatomic, strong) EXUpdatesRawManifest *manifest;
 @property (nonatomic, strong) RCTTurboModuleManager *turboModuleManager;
 
 @end
@@ -94,7 +95,6 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
 /**
  *  Expected params:
- *    NSDictionary *manifest
  *    NSDictionary *constants
  *    NSURL *initialUri
  *    @BOOL isDeveloper
@@ -108,12 +108,14 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
  *    id exceptionsManagerDelegate
  */
 - (instancetype)initWithParams:(NSDictionary *)params
+                      manifest:(EXUpdatesRawManifest *)manifest
                   fatalHandler:(void (^)(NSError *))fatalHandler
                    logFunction:(RCTLogFunction)logFunction
                   logThreshold:(NSInteger)threshold
 {
   if (self = [super init]) {
     _params = params;
+    _manifest = manifest;
     [self configureABIWithFatalHandler:fatalHandler logFunction:logFunction logThreshold:threshold];
   }
   return self;
@@ -313,7 +315,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
                          logFunction:(RCTLogFunction)logFunction
                         logThreshold:(NSInteger)threshold
 {
-  RCTEnableTurboModule([self.params[@"manifest"][@"experiments"][@"turboModules"] boolValue]);
+  RCTEnableTurboModule([_manifest.experiments[@"turboModules"] boolValue]);
   RCTSetFatalHandler(fatalHandler);
   RCTSetLogThreshold((RCTLogLevel) threshold);
   RCTSetLogFunction(logFunction);
@@ -322,8 +324,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 - (NSArray *)extraModulesForBridge:(id)bridge
 {
   NSDictionary *params = _params;
-  NSDictionary *manifest = params[@"manifest"];
-  NSString *experienceId = manifest[@"id"];
+  NSString *experienceId = _manifest.stableLegacyId;
   NSDictionary *services = params[@"services"];
 
   NSMutableArray *extraModules = [NSMutableArray arrayWithArray:
@@ -464,7 +465,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   // Expo-specific
   if (moduleClass == EXDevSettings.class) {
     BOOL isDevelopment = ![self _isOpeningHomeInProductionMode] && [_params[@"isDeveloper"] boolValue];
-    return [[moduleClass alloc] initWithExperienceId:[self _experienceId] isDevelopment:isDevelopment];
+    return [[moduleClass alloc] initWithExperienceId:_manifest.legacyId isDevelopment:isDevelopment];
   } else if (moduleClass == RCTExceptionsManagerCls()) {
     id exceptionsManagerDelegate = _params[@"exceptionsManagerDelegate"];
     if (exceptionsManagerDelegate) {
@@ -497,15 +498,9 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   return nullptr;
 }
 
-
-- (NSString *)_experienceId
-{
-  return _params[@"manifest"][@"id"];
-}
-
 - (BOOL)_isOpeningHomeInProductionMode
 {
-  return _params[@"browserModuleClass"] && !_params[@"manifest"][@"developer"];
+  return _params[@"browserModuleClass"] && !_manifest.developer;
 }
 
 - (void *)versionedJsExecutorFactoryForBridge:(RCTBridge *)bridge

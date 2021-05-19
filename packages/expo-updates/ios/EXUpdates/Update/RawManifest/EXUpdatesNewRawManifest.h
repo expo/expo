@@ -7,6 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXUpdatesNewRawManifest : EXUpdatesBaseRawManifest<EXUpdatesRawManifestBehavior>
 
+- (nullable NSString *)rawId;
 - (NSString *)createdAt;
 - (NSString *)runtimeVersion;
 - (NSDictionary *)launchAsset;

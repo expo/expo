@@ -64,7 +64,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
 
 - (void)addHistoryItemWithUrl:(NSURL *)manifestUrl manifest:(EXUpdatesRawManifest *)manifest
 {
-  if (!manifest || !manifestUrl || [manifest.rawID isEqualToString:@"@exponent/home"]) {
+  if (!manifest || !manifestUrl || [manifest.legacyId isEqualToString:@"@exponent/home"]) {
     return;
   }
   NSDictionary *params = @{

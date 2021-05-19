@@ -769,7 +769,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)_willAutoRecoverFromError:(NSError *)error
 {
   if (![_appRecord.appManager enablesDeveloperTools]) {
-    BOOL shouldRecover = [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdShouldReloadOnError:_appRecord.experienceId];
+    BOOL shouldRecover = [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdShouldReloadOnError:_appRecord.legacyExperienceId];
     if (shouldRecover) {
       [self _invalidateRecoveryTimer];
       _tmrAutoReloadDebounce = [NSTimer scheduledTimerWithTimeInterval:kEXAutoReloadDebounceSeconds

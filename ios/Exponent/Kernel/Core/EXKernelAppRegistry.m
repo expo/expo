@@ -100,7 +100,7 @@
   EXKernelAppRecord *recordToReturn;
   for (NSString *recordId in self.appEnumerator) {
     EXKernelAppRecord *record = [self recordForId:recordId];
-    if (record && record.experienceId && [record.experienceId isEqualToString:experienceId]) {
+    if (record && record.legacyExperienceId && [record.legacyExperienceId isEqualToString:experienceId]) {
       if (recordToReturn && [recordToReturn.timeCreated compare:record.timeCreated] == NSOrderedDescending) {
         continue;
       }
@@ -134,7 +134,7 @@
   int count = 0;
   for (NSString *recordId in self.appEnumerator) {
     EXKernelAppRecord *appRecord = [self recordForId:recordId];
-    if (appRecord.experienceId && [appRecord.experienceId isEqualToString:experienceId]) {
+    if (appRecord.legacyExperienceId && [appRecord.legacyExperienceId isEqualToString:experienceId]) {
       count++;
       if (count > 1) {
         return NO;
