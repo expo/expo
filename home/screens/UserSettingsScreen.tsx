@@ -122,7 +122,6 @@ function TrackingItem() {
     <View style={styles.marginTop}>
       <SectionHeader title="Tracking" />
       <ListItem
-        last
         title="Allow access to app-related data for tracking"
         onPress={async () => {
           const { status } = await Tracking.requestTrackingPermissionsAsync();
