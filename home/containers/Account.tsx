@@ -43,6 +43,7 @@ const AccountDataQuery = gql`
           username
           description
           sdkVersion
+          published
           lastPublishedTime
         }
         snacks(limit: ${SNACK_LIMIT}, offset: 0) {

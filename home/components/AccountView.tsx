@@ -118,7 +118,7 @@ export default function AccountView({
       style={styles.container}>
       {data?.account.byName && (
         <>
-          <AccountProjectsSection data={data} navigation={navigation} accountName={accountName} />
+          <AccountAppsSection data={data} navigation={navigation} accountName={accountName} />
           <AccountSnacksSection data={data} navigation={navigation} accountName={accountName} />
         </>
       )}
@@ -162,7 +162,7 @@ function AccountErrorView({
   );
 }
 
-function AccountProjectsSection({
+function AccountAppsSection({
   data,
   navigation,
   accountName,
@@ -187,7 +187,7 @@ function AccountProjectsSection({
         title={app.name}
         sdkVersion={app.sdkVersion}
         subtitle={app.packageName || app.fullName}
-        experienceInfo={{ username: app.username, slug: app.packageName }}
+        experienceInfo={{ id: app.id, username: app.username, slug: app.packageName }}
         last={i === apps.length - 1}
       />
     );
