@@ -93,4 +93,4 @@ Now that you're able to send & receive notifications, read through all of [`expo
 
 ## See also
 
-- Having trouble? Visit [Expo's notification FAQ page](./faq.md)
+Having trouble? Visit [Expo's notifications FAQ page](./faq.md)

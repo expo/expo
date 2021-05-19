@@ -122,4 +122,4 @@ Try out [sending a notification with Expo](./sending-notifications.md)!
 
 ## See also
 
-- Having trouble? Visit [Expo's notification FAQ page](./faq.md)
+Having trouble? Visit [Expo's notifications FAQ page](./faq.md)

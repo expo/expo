@@ -150,4 +150,4 @@ Read through the [notification setup guide](./push-notifications-setup.md) to ge
 
 ## See also
 
-- Having trouble? Visit [Expo's notification FAQ page](./faq.md)
+Having trouble? Visit [Expo's notifications FAQ page](./faq.md)
