@@ -83,7 +83,7 @@ export default function ProjectsScreen(props: NavigationProps) {
 }
 
 class ProjectsView extends React.Component<Props, State> {
-  private _projectPolling?: any;
+  private _projectPolling?: ReturnType<typeof setInterval>;
 
   state: State = {
     projects: [],
@@ -202,7 +202,9 @@ class ProjectsView extends React.Component<Props, State> {
   };
 
   private _stopPollingForProjects = async () => {
-    clearInterval(this._projectPolling);
+    if (this._projectPolling) {
+      clearInterval(this._projectPolling);
+    }
     this._projectPolling = undefined;
   };
 
