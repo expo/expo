@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed the application hanging on the splash screen on iOS.
+- Fixed the application hanging on the splash screen on iOS. ([#12971](https://github.com/expo/expo/pull/12971) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
