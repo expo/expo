@@ -11,6 +11,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { withDevLauncherAppDelegate } from './withDevLauncherAppDelegate';
+import { withDevLauncherXcodeProject } from './withDevLauncherXcodeProject';
 
 const pkg = require('expo-dev-launcher/package.json');
 
@@ -183,6 +184,7 @@ const withDevLauncher = (config: ExpoConfig) => {
   config = withDevLauncherApplication(config);
   config = withDevLauncherPodfile(config);
   config = withDevLauncherAppDelegate(config);
+  config = withDevLauncherXcodeProject(config);
   return config;
 };
 

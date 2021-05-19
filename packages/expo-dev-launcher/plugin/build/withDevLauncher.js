@@ -7,6 +7,7 @@ const config_plugins_1 = require("@expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const withDevLauncherAppDelegate_1 = require("./withDevLauncherAppDelegate");
+const withDevLauncherXcodeProject_1 = require("./withDevLauncherXcodeProject");
 const pkg = require('expo-dev-launcher/package.json');
 const DEV_LAUNCHER_ANDROID_IMPORT = 'expo.modules.devlauncher.DevLauncherController';
 const DEV_LAUNCHER_ON_NEW_INTENT = `
@@ -131,6 +132,7 @@ const withDevLauncher = (config) => {
     config = withDevLauncherApplication(config);
     config = withDevLauncherPodfile(config);
     config = withDevLauncherAppDelegate_1.withDevLauncherAppDelegate(config);
+    config = withDevLauncherXcodeProject_1.withDevLauncherXcodeProject(config);
     return config;
 };
 exports.default = config_plugins_1.createRunOncePlugin(withDevLauncher, pkg.name, pkg.version);

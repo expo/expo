@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -x
+DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
+rm "$DEST/ip.txt"
