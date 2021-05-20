@@ -14,7 +14,7 @@ If your `app.json` does not contain an `updates.fallbackToCacheTimeout` field it
 
 You can also set a nonzero timeout, in which case Expo will attempt to download a new update before launching the app. If there is no network connection available, or it has not finished downloading in the allotted time, Expo will fall back to loading a cached version of your app, and continue trying to fetch the update in the background (at which point it will be saved into the cache for the next app load). We strongly advise against blocking app loading on fetching an update because it can leave users with the perception that the app is not working if it takes a while to download the update, and every launch will be slower because a network request has to be made to check for an update before proceeding to the app.
 
-In Expo Go, the latest published bundle of your app will always be launched, regardless of the `updates` settings in your app config.
+In Expo Go, the latest published bundle of your app will always be launched (unless the request times out or network connection is unavailable), regardless of the `updates` settings in your app config.
 
 ## Manual Updates
 
