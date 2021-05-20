@@ -109,6 +109,18 @@ export default class Camera extends React.Component {
     static async requestPermissionsAsync() {
         return CameraManager.requestPermissionsAsync();
     }
+    static async getCameraPermissionsAsync() {
+        return CameraManager.getCameraPermissionsAsync();
+    }
+    static async requestCameraPermissionsAsync() {
+        return CameraManager.requestCameraPermissionsAsync();
+    }
+    static async getMicrophonePermissionsAsync() {
+        return CameraManager.getMicrophonePermissionsAsync();
+    }
+    static async requestMicrophonePermissionsAsync() {
+        return CameraManager.requestMicrophonePermissionsAsync();
+    }
     async takePictureAsync(options) {
         const pictureOptions = ensurePictureOptions(options);
         return await CameraManager.takePicture(pictureOptions, this._cameraHandle);
