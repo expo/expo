@@ -13,7 +13,6 @@ version = '42.0.0'
 //Upload android library to maven with javadoc and android sources
 configurations {
   deployerJars
-  versioned
 }
 
 //Creating sources with comments
