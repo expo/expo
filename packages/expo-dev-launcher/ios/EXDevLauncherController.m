@@ -11,7 +11,7 @@
 #import "EXDevLauncherRCTBridge.h"
 #import "EXDevLauncherManifestParser.h"
 #import "EXDevLauncherLoadingView.h"
-#import "RCTPackagerConnection+EXDevLauncherPackagerConnectionInerceptor.h"
+#import "RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h"
 
 #import <EXDevLauncher-Swift.h>
 

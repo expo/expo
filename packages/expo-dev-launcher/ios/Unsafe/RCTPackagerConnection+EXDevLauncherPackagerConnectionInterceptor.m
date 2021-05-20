@@ -4,7 +4,7 @@
  * This file is compiled without ARC - the memory needs to be managed by hand.
  */
 
-#import "RCTPackagerConnection+EXDevLauncherPackagerConnectionInerceptor.h"
+#import "RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h"
 
 #import <React/RCTReconnectingWebSocket.h>
 
@@ -32,15 +32,15 @@ static RCTReconnectingWebSocket *createSocketForURL(NSURL * url)
   return [webSocket autorelease]; // adds to ARC
 }
 
-@implementation RCTPackagerConnection (EXDevLauncherPackagerConnectionInerceptor)
+@implementation RCTPackagerConnection (EXDevLauncherPackagerConnectionInterceptor)
 
 /**
  * Sets the WebSocket URL.
  */
 - (void)setSocketConnectionURL:(NSURL *)url
 {
-  // Mutex isn't the objective-c object - [self valueForKey:@"_mutex"] will fail.
-  // The other solution requieres `object_getInstanceVariable` which doesn't work with ARC.
+  // Mutex isn't an objective-c object - [self valueForKey:@"_mutex"] will fail.
+  // The other solution requires `object_getInstanceVariable` which doesn't work with ARC.
   // That's the only solution to get private variables that comes from cpp.
   Ivar mutexVar = object_getInstanceVariable(self, "_mutex", NULL);
   ptrdiff_t mutexOffset = ivar_getOffset(mutexVar);
