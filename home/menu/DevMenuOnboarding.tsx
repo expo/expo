@@ -20,7 +20,7 @@ type Props = {
 // When rendered inside bottom sheet, touchables from RN don't work on Android, but the ones from GH don't work on iOS.
 const TouchableOpacity = Platform.OS === 'android' ? TouchableOpacityGH : TouchableOpacityRN;
 
-const KEYBOARD_CODES = {
+const KEYBOARD_CODES: { [key: string]: string } = {
   ios: '^\u2318Z',
   android: '\u2318M on macOS or Ctrl+M on other platforms',
 };

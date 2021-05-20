@@ -3,7 +3,7 @@ import { BlurView } from 'expo-blur';
 import * as React from 'react';
 import { Platform, ScrollView, StyleSheet, TouchableNativeFeedback, View } from 'react-native';
 
-import Colors from '../constants/Colors';
+import Colors, { ColorTheme } from '../constants/Colors';
 
 type ViewProps = View['props'];
 interface Props extends ViewProps {
@@ -21,13 +21,14 @@ interface StyledScrollViewProps extends ScrollViewProps {
 
 type ThemedColors = keyof typeof Colors.light & keyof typeof Colors.dark;
 
-function useThemeName(): string {
+function useThemeName(): ColorTheme {
   const theme = useTheme();
-  return theme.dark ? 'dark' : 'light';
+  return theme.dark ? ColorTheme.DARK : ColorTheme.LIGHT;
 }
 function useThemeBackgroundColor(props: Props | StyledScrollViewProps, colorName: ThemedColors) {
   const themeName = useThemeName();
-  const colorFromProps = props[`${themeName}BackgroundColor`];
+  const colorFromProps =
+    themeName === ColorTheme.DARK ? props.darkBackgroundColor : props.lightBackgroundColor;
 
   if (colorFromProps) {
     return colorFromProps;
@@ -38,8 +39,8 @@ function useThemeBackgroundColor(props: Props | StyledScrollViewProps, colorName
 
 function useThemeBorderColor(props: Props, colorName: ThemedColors) {
   const themeName = useThemeName();
-
-  const colorFromProps = props[`${themeName}BorderColor`];
+  const colorFromProps =
+    themeName === ColorTheme.DARK ? props.darkBorderColor : props.lightBorderColor;
 
   if (colorFromProps) {
     return colorFromProps;

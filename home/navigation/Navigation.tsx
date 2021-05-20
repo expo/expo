@@ -1,6 +1,11 @@
 import Entypo from '@expo/vector-icons/build/Entypo';
 import Ionicons from '@expo/vector-icons/build/Ionicons';
-import { NavigationContainer, useTheme, NavigationContainerRef } from '@react-navigation/native';
+import {
+  NavigationContainer,
+  useTheme,
+  NavigationContainerRef,
+  RouteProp,
+} from '@react-navigation/native';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import Constants from 'expo-constants';
 import * as React from 'react';
@@ -9,7 +14,8 @@ import { Platform, StyleSheet, Linking } from 'react-native';
 import OpenProjectByURLButton from '../components/OpenProjectByURLButton.ios';
 import OptionsButton from '../components/OptionsButton';
 import UserSettingsButton from '../components/UserSettingsButton';
-import * as Themes from '../constants/Themes';
+import { ColorTheme } from '../constants/Colors';
+import Themes from '../constants/Themes';
 import AccountScreen from '../screens/AccountScreen';
 import AudioDiagnosticsScreen from '../screens/AudioDiagnosticsScreen';
 import DiagnosticsScreen from '../screens/DiagnosticsScreen';
@@ -26,17 +32,26 @@ import SnacksForAccountScreen from '../screens/SnacksForAccountScreen';
 import UserSettingsScreen from '../screens/UserSettingsScreen';
 import Environment from '../utils/Environment';
 import BottomTab, { getNavigatorProps } from './BottomTabNavigator';
+import {
+  DiagnosticsStackRoutes,
+  ProfileStackRoutes,
+  ProjectsStackRoutes,
+} from './Navigation.types';
 import defaultNavigationOptions from './defaultNavigationOptions';
 
 // TODO(Bacon): Do we need to create a new one each time?
-const ProjectsStack = createStackNavigator();
+const ProjectsStack = createStackNavigator<ProjectsStackRoutes>();
 
 function useThemeName() {
   const theme = useTheme();
-  return theme.dark ? 'dark' : 'light';
+  return theme.dark ? ColorTheme.DARK : ColorTheme.LIGHT;
 }
 
-const accountNavigationOptions = ({ route }) => {
+const accountNavigationOptions = ({
+  route,
+}: {
+  route: RouteProp<ProfileStackRoutes, 'Account'>;
+}) => {
   const accountName = route.params?.accountName;
   return {
     title: `@${accountName}`,
@@ -73,7 +88,7 @@ function ProjectsStackScreen() {
   );
 }
 
-const ProfileStack = createStackNavigator();
+const ProfileStack = createStackNavigator<ProfileStackRoutes>();
 
 function ProfileStackScreen() {
   const theme = useThemeName();
@@ -121,7 +136,7 @@ function ProfileStackScreen() {
   );
 }
 
-const DiagnosticsStack = createStackNavigator();
+const DiagnosticsStack = createStackNavigator<DiagnosticsStackRoutes>();
 
 function DiagnosticsStackScreen() {
   const theme = useThemeName();
@@ -198,13 +213,13 @@ function TabNavigator(props: { theme: string }) {
 
 const ModalStack = createStackNavigator();
 
-export default (props: { theme: string }) => {
+export default (props: { theme: ColorTheme }) => {
   const navigationRef = React.useRef<NavigationContainerRef>(null);
   const isNavigationReadyRef = React.useRef(false);
   const initialURLWasConsumed = React.useRef(false);
 
   React.useEffect(() => {
-    const handleDeepLinks = ({ url }) => {
+    const handleDeepLinks = ({ url }: { url: string | null }) => {
       if (Platform.OS === 'ios' || !url || !isNavigationReadyRef.current) {
         return;
       }
