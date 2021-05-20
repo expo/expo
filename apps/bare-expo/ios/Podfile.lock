@@ -142,32 +142,32 @@ PODS:
   - EXPermissions (12.0.1):
     - UMCore
     - UMPermissionsInterface
-  - expo-dev-client (0.1.2):
+  - expo-dev-client (0.1.3):
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
-  - expo-dev-launcher (0.3.3):
-    - expo-dev-launcher/Main (= 0.3.3)
+  - expo-dev-launcher (0.3.4):
+    - expo-dev-launcher/Main (= 0.3.4)
     - expo-dev-menu-interface
     - React
-  - expo-dev-launcher/Main (0.3.3):
+  - expo-dev-launcher/Main (0.3.4):
     - expo-dev-launcher/Unsafe
     - expo-dev-menu-interface
     - React
-  - expo-dev-launcher/Unsafe (0.3.3):
+  - expo-dev-launcher/Unsafe (0.3.4):
     - expo-dev-menu-interface
     - React
-  - expo-dev-menu (0.5.1):
+  - expo-dev-menu (0.5.2):
     - expo-dev-menu-interface
-    - expo-dev-menu/Main (= 0.5.1)
+    - expo-dev-menu/Main (= 0.5.2)
     - React
-  - expo-dev-menu-interface (0.3.0):
+  - expo-dev-menu-interface (0.3.1):
     - React
-  - expo-dev-menu/Main (0.5.1):
+  - expo-dev-menu/Main (0.5.2):
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - React
-  - expo-dev-menu/Vendored (0.5.1):
+  - expo-dev-menu/Vendored (0.5.2):
     - expo-dev-menu-interface
     - React
   - expo-image (1.0.0-alpha.0):
@@ -1248,10 +1248,10 @@ SPEC CHECKSUMS:
   EXNetwork: 36144f5e572e6b6b218094c66a57c99e07ffbc0d
   EXNotifications: baccd843a16a2cb2db2183e2d801652f3cb43202
   EXPermissions: 8f8c1c05580c4e02d4ee2c8dd74bfe173ff6a723
-  expo-dev-client: 04477b92d022d9d00ef25c53afa11a6bf2a439b1
-  expo-dev-launcher: beb5f958da17fc6d80eac78fd927e635b66f1e8d
-  expo-dev-menu: b87ccce5cbe35b5b3a59d62be5414a4454f59e61
-  expo-dev-menu-interface: 3ed7da6749d50a969a36d93ae39b4e4a748af849
+  expo-dev-client: 296d3325042cedc1d2044c0f5379f20fce2cc78d
+  expo-dev-launcher: b41e94b29714dc550b7cf08300d7fe3dc60b9732
+  expo-dev-menu: 7ad848104f908589ee1d8ce2023b632207408c5d
+  expo-dev-menu-interface: 4fda2fa6d974a518e546ca1193340513b0a8b0e8
   expo-image: 07527eb7a57f5ac939c5ded392bcf64c975b9c87
   ExpoModulesCore: efdfa6650a7b554180c1559b7be9c3510ce18e51
   EXPrint: 81e7a9f136a34559c5f6558805213bc055bcc490
