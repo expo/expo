@@ -49,4 +49,4 @@ The easiest way to simulate how your project will run on end users' devices is w
 expo start --no-dev --minify
 ```
 
-Besides running in production mode (which tells the React Native packager to set the `__DEV__` environment variable to `false`, among a few other things) the `--minify` flag will minify your app, meaning it will get rid of any unnecessary data (comments, formatting, unused code). If you're getting an error or crash in your standalone app, running your project with this command can save you a lot of time in finding the root cause.
+Besides running in production mode (which tells the Metro bundler to set the `__DEV__` environment variable to `false`, among a few other things) the `--minify` flag will minify your app, meaning it will get rid of any unnecessary data (comments, formatting, unused code). If you're getting an error or crash in your standalone app, running your project with this command can save you a lot of time in finding the root cause.

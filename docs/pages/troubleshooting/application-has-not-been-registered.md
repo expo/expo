@@ -22,8 +22,8 @@ Where "main" can be any string.
 
 The most common cause of this error is that there is an exception thrown in your application before it's able to regsiter itself. When a React Native application loads, there are two steps:
 
-1) Load the JavaScript code, and if everything is successful, then your application will be registered. If there is any exception when loading the bundle then execution will be aborted and it will never reach the part where your application is registered.
-2) Run the registered application. If loading the code failed, then the application won't be registered and you will see the error that is the subject of this page.
+1. Load the JavaScript code, and if everything is successful, then your application will be registered. If there is any exception when loading the bundle then execution will be aborted and it will never reach the part where your application is registered.
+2. Run the registered application. If loading the code failed, then the application won't be registered and you will see the error that is the subject of this page.
 
 If you're in this situation, the error message you're seeing is a [red herring](https://en.wikipedia.org/wiki/Red_herring), it's distracting you from the real error that led to the application not being registered.
 
@@ -72,5 +72,5 @@ By default, "main" is consistently used throughout the project. If you're runnin
 
 This error can also occur in a few other scenarios, but it's less predictable and the fixes would be more specific to your project. For example, some other cases are:
 
-- You're connecting to the wrong project's local packager. Try closing out other Expo CLI or React Native CLI processes (find them with `ps -A | grep "expo\|react-native"`).
+- You're connecting to the wrong project's local development server. Try closing out other Expo CLI or React Native community CLI processes (find them with `ps -A | grep "expo\|react-native"`).
 - If this error is only occuring in your production app, then try running the app locally in production mode with `expo start --no-dev --minify` to find the source of the error.
