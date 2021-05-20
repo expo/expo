@@ -5,7 +5,6 @@ import { VERSIONS } from '~/constants/versions';
 
 const REDIRECT_SUFFIX = '?redirected';
 
-
 type State = {
   notFound: boolean;
   redirectPath?: string;
