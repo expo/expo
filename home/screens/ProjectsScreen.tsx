@@ -23,6 +23,7 @@ import { DevSession, HistoryList } from '../types';
 import Environment from '../utils/Environment';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
 import getSnackId from '../utils/getSnackId';
+import isUserAuthenticated from '../utils/isUserAuthenticated';
 
 const PROJECT_UPDATE_INTERVAL = 10000;
 
@@ -64,9 +65,9 @@ export default function ProjectsScreen(props: NavigationProps) {
       const { history } = data.history;
 
       return {
-        recentHistory: history.take(10),
-        allHistory: history,
-        isAuthenticated: data.session?.sessionSecret,
+        recentHistory: history.take(10) as HistoryList,
+        allHistory: history as HistoryList,
+        isAuthenticated: isUserAuthenticated(data.session),
       };
     }, [])
   );
