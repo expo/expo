@@ -48,7 +48,7 @@ To clear the various caches, run:
    watchman watch-del-all
    rm -fr $TMPDIR/haste-map-*
    rm -rf $TMPDIR/metro-cache
-   yarn start -- --reset-cache
+   npm start -- --reset-cache
    ```
 
 ## What these commands are doing
