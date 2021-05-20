@@ -29,7 +29,7 @@ By this point you should have a JS app which additionally contains `ios` and `an
 
 Run `expo start` from the project directory.
 
-This step ensures that the React Native packager is running and serving your app's JS bundle for development. Leave this running and continue with the following steps.
+This step ensures that the Metro bundler is running and serving your app's JS bundle for development. Leave this running and continue with the following steps.
 
 > Note: Before building for release, you **must** run `expo publish` to serve your app's JS bundle in TestFlight and production.
 

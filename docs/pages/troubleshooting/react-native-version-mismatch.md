@@ -15,11 +15,11 @@ Make sure you have rebuilt the native code...
 
 ## What this error means
 
-The bundler that you're running in your terminal (typically Metro bundler via `expo start`) is using a different version of `react-native` than the app on your device or emulator. This can happen after upgrading your React Native or Expo SDK version, _or_ when connecting to the wrong local packager instance.
+The bundler that you're running in your terminal (via `expo start`) is using a different JavaScript version of `react-native` than the native app on your device or emulator. This can happen after upgrading your React Native or Expo SDK version, _or_ when connecting to the wrong local development server.
 
 ## How to fix it
 
-- Close out any packagers you have running (you can list all terminal processes with the `ps` command, and search for Expo CLI or React Native CLI processes with `ps -A | grep "expo\|react-native"`).
+- Close out any development servers that you have running (you can list all terminal processes with the `ps` command, and search for Expo CLI or React Native community CLI processes with `ps -A | grep "expo\|react-native"`).
 
 - If this is a managed workflow project, either remove the `sdkVersion` field from your `app.json` file, or make sure it matches the value of the `expo` dependency in your `package.json` file.
 
