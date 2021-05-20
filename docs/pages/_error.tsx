@@ -98,11 +98,6 @@ export default class Error extends React.Component<object, State> {
       redirectPath = `/versions/${getVersionFromPath(redirectPath)}/`;
     }
 
-    // Consolidate workflow page
-    if (redirectPath.startsWith('/bare/customizing')) {
-      redirectPath = redirectPath.replace('/bare/customizing', '/workflow/customizing');
-    }
-
     if (redirectPath !== pathname) {
       this.setState({ redirectPath });
       return;
@@ -289,6 +284,8 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/logging/': '/workflow/logging/',
   '/introduction/troubleshooting-proxies/': '/guides/troubleshooting-proxies/',
   '/introduction/running-in-the-browser/': '/guides/running-in-the-browser/',
+  // Consolidate workflow page
+  '/bare/customizing/': '/workflow/customizing/',
 
   // Changes from redoing the getting started workflow, SDK35+
   '/workflow/up-and-running/': '/get-started/installation/',
