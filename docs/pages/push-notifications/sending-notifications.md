@@ -300,4 +300,4 @@ Now that you can send notifications to your app, set your app up for [receiving 
 
 ## See also
 
-Having trouble? Visit [Expo's notifications FAQ page](./faq.md)
+- Having trouble? Visit [Expo's notification FAQ page](./faq.md)

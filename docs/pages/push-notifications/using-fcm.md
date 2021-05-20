@@ -71,4 +71,4 @@ That's it -- users who run this new version of the app will now receive notifica
 
 ## See also
 
-Having trouble? Visit [Expo's notifications FAQ page](./faq.md)
+- Having trouble? Visit [Expo's notification FAQ page](./faq.md)
