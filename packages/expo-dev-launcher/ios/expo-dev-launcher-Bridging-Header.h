@@ -5,9 +5,11 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTRedBox.h>
+#import <React/RCTBundleURLProvider.h>
 
 #pragma clang diagnostic pop
 
 #import "EXDevLauncherPendingDeepLinkListener.h"
 #import "EXDevLauncherRedBoxProtocol.h"
 #import "EXDevLauncherRedBox.h"
+#import "RCTBundleURLProvider+Private.h"

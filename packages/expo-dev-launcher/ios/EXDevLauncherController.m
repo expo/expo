@@ -11,6 +11,7 @@
 #import "EXDevLauncherRCTBridge.h"
 #import "EXDevLauncherManifestParser.h"
 #import "EXDevLauncherLoadingView.h"
+#import "RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h"
 
 #import <EXDevLauncher-Swift.h>
 
@@ -60,6 +61,8 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     self.recentlyOpenedAppsRegistry = [EXDevLauncherRecentlyOpenedAppsRegistry new];
     self.pendingDeepLinkRegistry = [EXDevLauncherPendingDeepLinkRegistry new];
     self.errorManager = [[EXDevLauncherErrorManager alloc] initWithController:self];
+
+    EXDevLauncherBundleURLProviderInterceptor.isInstalled = true;
   }
   return self;
 }
@@ -266,6 +269,11 @@ EXDevLauncherManifestParser *manifestParser = [[EXDevLauncherManifestParser allo
     __typeof(self) self = weakSelf;
     
     self.sourceUrl = bundleUrl;
+    
+#if RCT_DEV
+    // Connect to the websocket
+    [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:bundleUrl];
+#endif
     
     if (@available(iOS 12, *)) {
       [self _applyUserInterfaceStyle:manifest.userInterfaceStyle];
