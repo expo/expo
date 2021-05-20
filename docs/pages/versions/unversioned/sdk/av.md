@@ -33,6 +33,8 @@ In this page, we reference operations on `playbackObject`s. Here is an example o
 #### Example: `Audio.Sound`
 
 ```javascript
+await Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
+  
 const playbackObject = new Audio.Sound();
 // OR
 const { sound: playbackObject } = await Audio.Sound.createAsync(

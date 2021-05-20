@@ -56,10 +56,6 @@
     return successCallback(NO);
   }
 
-  if (!_splashScreenShown) {
-    return failureCallback(@"Native splash screen is already hidden. Call this method before rendering any view.");
-  }
-
   _autoHideEnabled = NO;
   successCallback(YES);
 }

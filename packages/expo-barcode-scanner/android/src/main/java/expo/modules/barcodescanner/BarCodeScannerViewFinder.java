@@ -11,10 +11,11 @@ import android.view.TextureView;
 import java.util.List;
 
 import org.unimodules.core.ModuleRegistry;
-import org.unimodules.interfaces.barcodescanner.BarCodeScanner;
-import org.unimodules.interfaces.barcodescanner.BarCodeScannerProvider;
-import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
-import org.unimodules.interfaces.barcodescanner.BarCodeScannerSettings;
+
+import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface;
+import expo.modules.interfaces.barcodescanner.BarCodeScannerProviderInterface;
+import expo.modules.interfaces.barcodescanner.BarCodeScannerResult;
+import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings;
 
 class BarCodeScannerViewFinder extends TextureView implements TextureView.SurfaceTextureListener, Camera.PreviewCallback {
   private final ModuleRegistry mModuleRegistry;
@@ -30,7 +31,7 @@ class BarCodeScannerViewFinder extends TextureView implements TextureView.Surfac
   public static volatile boolean barCodeScannerTaskLock = false;
 
   // Scanner instance for the barcode scanning
-  private BarCodeScanner mBarCodeScanner;
+  private BarCodeScannerInterface mBarCodeScanner;
 
   public BarCodeScannerViewFinder(Context context, int type, BarCodeScannerView barCodeScannerView, ModuleRegistry moduleRegistry) {
     super(context);
@@ -159,7 +160,7 @@ class BarCodeScannerViewFinder extends TextureView implements TextureView.Surfac
    * Additionally supports [codabar, code128, upc_a]
    */
   private void initBarCodeScanner() {
-    BarCodeScannerProvider barCodeScannerProvider = mModuleRegistry.getModule(BarCodeScannerProvider.class);
+    BarCodeScannerProviderInterface barCodeScannerProvider = mModuleRegistry.getModule(BarCodeScannerProviderInterface.class);
     if (barCodeScannerProvider != null) {
       mBarCodeScanner = barCodeScannerProvider.createBarCodeDetectorWithContext(getContext());
     }

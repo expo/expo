@@ -7,8 +7,6 @@ import android.content.res.Resources;
 import android.util.DisplayMetrics;
 
 import org.json.JSONException;
-import org.json.JSONObject;
-import org.unimodules.interfaces.constants.ConstantsInterface;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +15,7 @@ import javax.inject.Inject;
 
 import androidx.annotation.Nullable;
 import expo.modules.constants.ConstantsService;
+import expo.modules.interfaces.constants.ConstantsInterface;
 import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.Constants;
 import host.exp.exponent.di.NativeModuleDepsProvider;

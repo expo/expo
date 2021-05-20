@@ -38,7 +38,7 @@ UM_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(UMConstantsInterface)];
+  return @[@protocol(EXConstantsInterface)];
 }
 
 - (NSDictionary *)constants

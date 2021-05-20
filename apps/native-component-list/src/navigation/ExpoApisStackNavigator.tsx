@@ -434,6 +434,13 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/TrackingTransparencyScreen'));
+    },
+    name: 'TrackingTransparency',
+    options: { title: 'TrackingTransparency' },
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/WebBrowserScreen'));
     },
     name: 'WebBrowser',

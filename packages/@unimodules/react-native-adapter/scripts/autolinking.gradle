@@ -74,7 +74,7 @@ class ExpoAutolinkingManager {
       generatedFilePath.toString()
     ]
 
-    if (!options) {
+    if (options == null) {
       // Options are provided only when settings.gradle was configured.
       // If not, the generated list should be empty.
       args += '--empty'
@@ -188,7 +188,7 @@ if (rootProject instanceof ProjectDescriptor) {
     // Get options used in `settings.gradle` or null if it wasn't set up.
     Map options = gradle.ext.has('expoAutolinkingManager') ? gradle.ext.expoAutolinkingManager.options : null
 
-    if (!options) {
+    if (options == null) {
       // Maybe should only log an error and don't throw?
       logger.error('Autolinking is not set up in `settings.gradle`: generated package list with expo modules will be empty.')
     }

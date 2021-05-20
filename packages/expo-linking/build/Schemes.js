@@ -1,5 +1,6 @@
 import { Platform } from '@unimodules/core';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
+const LINKING_GUIDE_URL = `https://docs.expo.io/guides/linking/`;
 export function hasCustomScheme() {
     if (Constants.executionEnvironment === ExecutionEnvironment.Bare) {
         // Bare always uses a custom scheme.
@@ -79,7 +80,8 @@ function getNativeAppIdScheme() {
 }
 export function hasConstantsManifest() {
     // Ensure the user has linked the expo-constants manifest in bare workflow.
-    return !!Object.keys(Constants.manifest ?? {}).length;
+    return (!!Object.keys(Constants.manifest ?? {}).length ||
+        !!Object.keys(Constants.manifest2 ?? {}).length);
 }
 export function resolveScheme(props) {
     if (Constants.executionEnvironment !== ExecutionEnvironment.StoreClient &&
@@ -90,11 +92,11 @@ export function resolveScheme(props) {
     const nativeAppId = getNativeAppIdScheme();
     if (!manifestSchemes.length) {
         if (__DEV__ && !props.isSilent) {
-            // Assert a config warning if no scheme is setup yet.
-            console.warn(`Linking requires a build-time setting \`scheme\` in the project's Expo config (app.config.js or app.json) for production apps, if it's left blank, your app may crash. The scheme does not apply to development in the Expo client but you should add it as soon as you start working with Linking to avoid creating a broken build. Learn more: https://docs.expo.io/versions/latest/workflow/linking/`);
+            // Assert a config warning if no scheme is setup yet. `isSilent` is used for warnings, but we'll ignore it for exceptions.
+            console.warn(`Linking requires a build-time setting \`scheme\` in the project's Expo config (app.config.js or app.json) for production apps, if it's left blank, your app may crash. The scheme does not apply to development in the Expo client but you should add it as soon as you start working with Linking to avoid creating a broken build. Learn more: ${LINKING_GUIDE_URL}`);
         }
-        else {
-            // Throw in production, use the __DEV__ flag so users can test this functionality with `expo start --no-dev`
+        else if (!__DEV__ || Constants.executionEnvironment !== ExecutionEnvironment.StoreClient) {
+            // Throw in production or when not in store client. Use the __DEV__ flag so users can test this functionality with `expo start --no-dev`,
             throw new Error('Cannot make a deep link into a standalone app with no custom scheme defined');
         }
     }
@@ -133,7 +135,7 @@ export function resolveScheme(props) {
     if (!!nativeAppId && !manifestSchemes.length && !props.isSilent) {
         // Assert a config warning if no scheme is setup yet.
         // This warning only applies to managed workflow EAS apps, as bare workflow
-        console.warn(`Linking requires a build-time setting \`scheme\` in the project's Expo config (app.config.js or app.json) for bare or production apps. Manually providing a \`scheme\` property can circumvent this warning. Using native app identifier as the scheme '${nativeAppId}'. Learn more: https://docs.expo.io/versions/latest/workflow/linking/`);
+        console.warn(`Linking requires a build-time setting \`scheme\` in the project's Expo config (app.config.js or app.json) for bare or production apps. Manually providing a \`scheme\` property can circumvent this warning. Using native app identifier as the scheme '${nativeAppId}'. Learn more: ${LINKING_GUIDE_URL}`);
         return nativeAppId;
     }
     // When the native app id is defined, it'll be added to the list of schemes, for most
@@ -143,7 +145,7 @@ export function resolveScheme(props) {
     // i.e. `scheme: ['foo', 'bar']` (unimplemented functionality).
     const [scheme, ...extraSchemes] = manifestSchemes;
     if (!scheme) {
-        const errorMessage = `Linking requires a build-time setting \`scheme\` in the project's Expo config (app.config.js or app.json) for bare or production apps. Manually providing a \`scheme\` property can circumvent this error. Learn more: https://docs.expo.io/versions/latest/workflow/linking/`;
+        const errorMessage = `Linking requires a build-time setting \`scheme\` in the project's Expo config (app.config.js or app.json) for bare or production apps. Manually providing a \`scheme\` property can circumvent this error. Learn more: ${LINKING_GUIDE_URL}`;
         // Throw in production, use the __DEV__ flag so users can test this functionality with `expo start --no-dev`
         throw new Error(errorMessage);
     }

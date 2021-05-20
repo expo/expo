@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <color name="colorPrimary">#1b73b4</color>
+  <color name="colorPrimaryDark">#011A2D</color>
+  <color name="colorAccentLight">#1b73b4</color>
+  <color name="colorAccentDark">#FFFFFF</color>
+  <color name="white">#FFFFFF</color>
+  <color name="errorLogButton">#66FFFFFF</color>
+  <color name="errorMessage">#FF0000</color>
+</resources>

@@ -45,15 +45,15 @@
   "dependencies": {
     "@expo/config-plugins": "^1.0.18",
     "@expo/image-utils": "^0.3.10",
-    "fs-extra": "^9.0.1",
     "@ide/backoff": "^1.0.0",
     "abort-controller": "^3.0.0",
     "assert": "^2.0.0",
     "badgin": "^1.1.5",
     "expo-application": "~3.1.2",
     "expo-constants": "10.1.3",
-    "uuid": "^3.4.0",
-    "unimodules-permissions-interface": "~6.2.0"
+    "fs-extra": "^9.0.1",
+    "unimodules-permissions-interface": "~6.2.0",
+    "uuid": "^3.4.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^9.0.6",

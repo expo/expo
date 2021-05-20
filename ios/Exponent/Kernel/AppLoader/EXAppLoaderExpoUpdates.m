@@ -323,11 +323,18 @@ NS_ASSUME_NONNULL_BEGIN
 
   NSURL *httpManifestUrl = [[self class] _httpUrlFromManifestUrl:_manifestUrl];
 
+  NSString *releaseChannel = [EXEnvironment sharedEnvironment].releaseChannel;
+  if (![EXEnvironment sharedEnvironment].isDetached) {
+    // in Expo Go, the release channel can change at runtime depending on the URL we load
+    NSURLComponents *manifestUrlComponents = [NSURLComponents componentsWithURL:httpManifestUrl resolvingAgainstBaseURL:YES];
+    releaseChannel = [EXKernelLinkingManager releaseChannelWithUrlComponents:manifestUrlComponents];
+  }
+
   _config = [EXUpdatesConfig configWithDictionary:@{
     @"EXUpdatesURL": httpManifestUrl.absoluteString,
     @"EXUpdatesSDKVersion": [self _sdkVersions],
     @"EXUpdatesScopeKey": httpManifestUrl.absoluteString,
-    @"EXUpdatesReleaseChannel": [EXEnvironment sharedEnvironment].releaseChannel,
+    @"EXUpdatesReleaseChannel": releaseChannel,
     @"EXUpdatesHasEmbeddedUpdate": @([EXEnvironment sharedEnvironment].isDetached),
     @"EXUpdatesEnabled": @([EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled),
     @"EXUpdatesLaunchWaitMs": launchWaitMs,

@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
   s.source         = { git: 'https://github.com/expo/expo-task-manager.git' }
 
   s.dependency 'UMCore'
-  s.dependency 'UMConstantsInterface'
+  s.dependency 'ExpoModulesCore'
   s.dependency 'UMTaskManagerInterface'
   s.dependency 'UMAppLoader'
 

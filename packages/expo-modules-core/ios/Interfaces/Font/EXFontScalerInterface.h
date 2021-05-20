@@ -2,7 +2,7 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol UMFontScalerInterface
+@protocol EXFontScalerInterface
 
 - (UIFont *)scaledFont:(UIFont *)font toSize:(CGFloat)fontSize;
 

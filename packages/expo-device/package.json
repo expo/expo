@@ -33,8 +33,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/device/",
   "unimodulePeerDependencies": {
-    "@unimodules/core": "*",
-    "unimodules-constants-interface": "*"
+    "@unimodules/core": "*"
   },
   "dependencies": {
     "ua-parser-js": "^0.7.19"

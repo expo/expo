@@ -112,6 +112,9 @@ export default {
         // If your site is bundled with a different config then you may not have access to the app.json automatically.
         return process.env.APP_MANIFEST || {};
     },
+    get manifest2() {
+        return null;
+    },
     get experienceUrl() {
         if (Platform.isDOMAvailable) {
             return location.origin;

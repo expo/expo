@@ -35,7 +35,6 @@
 #import <objc/message.h>
 
 #import <UMCore/UMDefines.h>
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
 #import <UMCore/UMModuleRegistry.h>
 #import <UMCore/UMModuleRegistryDelegate.h>
 #import <UMReactNativeAdapter/UMNativeModulesProxy.h>

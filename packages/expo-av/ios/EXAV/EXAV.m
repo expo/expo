@@ -5,7 +5,7 @@
 #import <UMCore/UMUIManager.h>
 #import <UMCore/UMEventEmitterService.h>
 #import <UMCore/UMAppLifecycleService.h>
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
+#import <ExpoModulesCore/EXFileSystemInterface.h>
 #import <UMPermissionsInterface/UMPermissionsInterface.h>
 #import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
 
@@ -499,7 +499,7 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
     return UMErrorWithMessage(@"Recorder is already prepared.");
   }
   
-  id<UMFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
+  id<EXFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   
   if (!fileSystem) {
     return UMErrorWithMessage(@"No FileSystem module.");

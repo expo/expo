@@ -4,11 +4,12 @@ import java.util.Collections;
 import java.util.List;
 
 import org.unimodules.core.interfaces.InternalModule;
-import org.unimodules.interfaces.sensors.services.GravitySensorService;
+
+import expo.modules.interfaces.sensors.services.GravitySensorServiceInterface;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.services.sensors.SubscribableSensorKernelService;
 
-public class ScopedGravitySensorService extends BaseSensorService implements InternalModule, GravitySensorService {
+public class ScopedGravitySensorService extends BaseSensorService implements InternalModule, GravitySensorServiceInterface {
   public ScopedGravitySensorService(ExperienceId experienceId) {
     super(experienceId);
   }
@@ -20,7 +21,7 @@ public class ScopedGravitySensorService extends BaseSensorService implements Int
 
   @Override
   public List<Class> getExportedInterfaces() {
-    return Collections.<Class>singletonList(GravitySensorService.class);
+    return Collections.<Class>singletonList(GravitySensorServiceInterface.class);
   }
 }
 

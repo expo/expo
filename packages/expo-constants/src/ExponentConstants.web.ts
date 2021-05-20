@@ -81,7 +81,7 @@ export default {
     return true;
   },
   get expoVersion(): string | null {
-    return this.manifest.sdkVersion || null;
+    return this.manifest!.sdkVersion || null;
   },
   get linkingUri(): string {
     if (Platform.isDOMAvailable) {
@@ -119,6 +119,9 @@ export default {
     // This is defined by @expo/webpack-config.
     // If your site is bundled with a different config then you may not have access to the app.json automatically.
     return process.env.APP_MANIFEST || {};
+  },
+  get manifest2(): null {
+    return null;
   },
   get experienceUrl(): string {
     if (Platform.isDOMAvailable) {

@@ -469,6 +469,10 @@ To make plugin development easier, we've added plugin support to [`expo-module-s
 
 Plugins will generally have `@expo/config-plugins` installed as a dependency, and `expo-module-scripts`, `@expo/config-types` installed as a devDependencies.
 
+### Tooling
+
+We highly recommend installing the [Expo config VSCode plugin](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo) as this will perform automatic validation on the plugins and surface error information along with other quality of life improvements for Config Plugin development.
+
 ### Setting up a playground environment
 
 You can develop plugins easily using JS, but if you want to setup Jest tests and use TypeScript, you're gonna want a monorepo.

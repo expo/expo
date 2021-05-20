@@ -10,7 +10,9 @@ import java.util.List;
 
 import org.unimodules.core.interfaces.InternalModule;
 
-public class BarometerService extends SubscribableSensorService implements InternalModule, org.unimodules.interfaces.sensors.services.BarometerService {
+import expo.modules.interfaces.sensors.services.BarometerServiceInterface;
+
+public class BarometerService extends SubscribableSensorService implements InternalModule, BarometerServiceInterface {
   public BarometerService(Context reactContext) {
     super(reactContext);
   }
@@ -22,6 +24,6 @@ public class BarometerService extends SubscribableSensorService implements Inter
 
   @Override
   public List<Class> getExportedInterfaces() {
-    return Collections.<Class>singletonList(org.unimodules.interfaces.sensors.services.BarometerService.class);
+    return Collections.<Class>singletonList(BarometerServiceInterface.class);
   }
 }

@@ -22,7 +22,7 @@ export default {
     setString(text) {
         let success = false;
         const textField = document.createElement('textarea');
-        textField.innerText = text;
+        textField.textContent = text;
         document.body.appendChild(textField);
         textField.select();
         try {

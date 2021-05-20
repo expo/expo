@@ -8,7 +8,7 @@
 
 #import <EXFaceDetector/EXFaceDetectorModule.h>
 #import <EXFaceDetector/EXFaceDetector.h>
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
+#import <ExpoModulesCore/EXFileSystemInterface.h>
 #import <EXFaceDetector/EXFaceDetectorUtils.h>
 #import <UMCore/UMModuleRegistry.h>
 #import <EXFaceDetector/EXFaceEncoder.h>
@@ -59,13 +59,13 @@ UM_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)options res
   NSString *path = [url.path stringByStandardizingPath];
 
   NSException *exception;
-  id<UMFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
+  id<EXFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   if (!fileSystem || exception) {
     reject(@"E_MODULE_UNAVAILABLE", @"No file system module", nil);
     return;
   }
 
-  if (!([fileSystem permissionsForURI:url] & UMFileSystemPermissionRead)) {
+  if (!([fileSystem permissionsForURI:url] & EXFileSystemPermissionRead)) {
     reject(@"E_FILESYSTEM_PERMISSIONS", [NSString stringWithFormat:@"File '%@' isn't readable.", uri], nil);
     return;
   }

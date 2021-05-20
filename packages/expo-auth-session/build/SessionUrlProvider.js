@@ -39,7 +39,7 @@ export class SessionUrlProvider {
                 return '';
             }
         }
-        const legacyExpoProjectId = manifest.currentFullName || manifest.id;
+        const legacyExpoProjectId = manifest?.currentFullName || manifest?.id;
         if (!legacyExpoProjectId) {
             let nextSteps = '';
             if (__DEV__) {

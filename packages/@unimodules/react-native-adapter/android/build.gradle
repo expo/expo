@@ -61,6 +61,11 @@ preBuild.dependsOn generateExpoModulesPackageList
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 30)
 
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
@@ -83,7 +88,7 @@ apply from: project(":unimodules-core").file("../unimodules-core.gradle")
 
 dependencies {
   unimodule 'unimodules-core'
-  unimodule 'unimodules-font-interface'
+  unimodule 'expo-modules-core'
   unimodule 'unimodules-permissions-interface'
   unimodule 'unimodules-image-loader-interface'
   unimodule 'unimodules-app-loader'

@@ -187,7 +187,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     maybeStartDetectors(devMenuHost.getContext())
 
     settings = if (reactContext.hasNativeModule(DevMenuSettings::class.java)) {
-      reactContext.getNativeModule(DevMenuSettings::class.java)
+      reactContext.getNativeModule(DevMenuSettings::class.java)!!
     } else {
       DevMenuDefaultSettings()
     }.also {

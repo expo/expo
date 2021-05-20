@@ -291,8 +291,8 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
 
       if ([urlToRouteBasePath isEqualToString:manifestUrlBasePath]) {
         // release-channel is a special query parameter that we treat as a separate app, so we need to check that here
-        NSString *manifestUrlReleaseChannel = [[self class] _releaseChannelWithUrlComponents:manifestUrlComponents];
-        NSString *urlToRouteReleaseChannel = [[self class] _releaseChannelWithUrlComponents:urlToRouteComponents];
+        NSString *manifestUrlReleaseChannel = [[self class] releaseChannelWithUrlComponents:manifestUrlComponents];
+        NSString *urlToRouteReleaseChannel = [[self class] releaseChannelWithUrlComponents:urlToRouteComponents];
         if ([manifestUrlReleaseChannel isEqualToString:urlToRouteReleaseChannel]) {
           return YES;
         }
@@ -315,7 +315,7 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
   return mutablePath;
 }
 
-+ (NSString *)_releaseChannelWithUrlComponents:(NSURLComponents *)urlComponents
++ (NSString *)releaseChannelWithUrlComponents:(NSURLComponents *)urlComponents
 {
   NSString *releaseChannel = @"default";
   NSArray<NSURLQueryItem *> *queryItems = urlComponents.queryItems;

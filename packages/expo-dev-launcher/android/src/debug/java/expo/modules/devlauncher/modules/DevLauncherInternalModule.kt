@@ -2,7 +2,6 @@ package expo.modules.devlauncher.modules
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
@@ -51,6 +50,7 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) : ReactC
         instance.loadApp(appUrl)
       } catch (e: Exception) {
         promise.reject("ERR_DEV_LAUNCHER_CANNOT_LOAD_APP", e.message, e)
+        return@launch
       }
       promise.resolve(null)
     }
@@ -109,7 +109,7 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) : ReactC
       return
     }
 
-    reactApplicationContext.startActivity(fallback);
+    reactApplicationContext.startActivity(fallback)
   }
 
   private fun openLink(uri: Uri): Boolean {

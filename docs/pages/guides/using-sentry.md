@@ -33,7 +33,7 @@ Before getting real-time updates on errors and making your app generally incredi
    - **project name** is available in your project's `Settings` > `General Settings` tab
    - **`DSN`** is avalable in your project's `Settings` > `Client Keys` tab
 
-2. Go to the [Sentry API section](https://sentry.io/settings/account/api/auth-tokens/), and create an **auth token** (Ensure you have `project:write` selected under scopes). Save this, too.
+2. Go to the [Sentry API section](https://sentry.io/settings/account/api/auth-tokens/), and create an **auth token**. The token requires the scopes: `org:read`, `project:releases`, and `project:write`. Save this, too.
 
 Once you have each of these: organization name, project name, DSN, and auth token, you're all set!
 

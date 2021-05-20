@@ -11,7 +11,7 @@ import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReactContext
 import expo.modules.devlauncher.DevLauncherController
-import expo.modules.devlauncher.helpers.injectDebugServerHost
+import expo.modules.devlauncher.helpers.injectReactInterceptor
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -75,7 +75,7 @@ abstract class DevLauncherAppLoader(
 
   open suspend fun launch(intent: Intent): Boolean {
     return suspendCoroutine { callback ->
-      if (setAppUrl(getBundleUrl())) {
+      if (injectReactInterceptor(getBundleUrl())) {
         continuation = callback
         launchIntent(intent)
         return@suspendCoroutine
@@ -94,15 +94,25 @@ abstract class DevLauncherAppLoader(
     return null
   }
 
-  private fun setAppUrl(url: Uri): Boolean {
+  private fun injectReactInterceptor(url: Uri): Boolean {
     val debugServerHost = url.host + ":" + url.port
     // We need to remove "/" which is added to begin of the path by the Uri
     // and the bundle type
-    val bundleName = url.path
-      ?.substring(1)
-      ?.replace(".bundle", "")
-      ?: "index"
-    return injectDebugServerHost(context, appHost, debugServerHost, bundleName)
+    val bundleName = if (url.path.isNullOrEmpty()) {
+      "index"
+    } else {
+      url.path
+        ?.substring(1)
+        ?.replace(".bundle", "")
+        ?: "index"
+    }
+
+    return injectReactInterceptor(
+      context,
+      appHost,
+      debugServerHost,
+      bundleName
+    )
   }
 
   private fun launchIntent(intent: Intent) {

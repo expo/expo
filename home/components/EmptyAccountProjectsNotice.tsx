@@ -1,6 +1,6 @@
 import * as WebBrowser from 'expo-web-browser';
 import * as React from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
@@ -20,11 +20,7 @@ export default function EmptyAccountProjectsNotice() {
         screen.
       </StyledText>
 
-      <PrimaryButton
-        plain
-        onPress={handleLearnMorePress}
-        fallback={TouchableOpacity}
-        style={{ marginBottom: 5 }}>
+      <PrimaryButton plain onPress={handleLearnMorePress} style={{ marginBottom: 5 }}>
         Learn more about publishing
       </PrimaryButton>
     </StyledView>

@@ -10,7 +10,9 @@ import java.util.List;
 
 import org.unimodules.core.interfaces.InternalModule;
 
-public class MagnetometerService extends SubscribableSensorService implements InternalModule, org.unimodules.interfaces.sensors.services.MagnetometerService {
+import expo.modules.interfaces.sensors.services.MagnetometerServiceInterface;
+
+public class MagnetometerService extends SubscribableSensorService implements InternalModule, MagnetometerServiceInterface {
   public MagnetometerService(Context reactContext) {
     super(reactContext);
   }
@@ -22,6 +24,6 @@ public class MagnetometerService extends SubscribableSensorService implements In
 
   @Override
   public List<Class> getExportedInterfaces() {
-    return Collections.<Class>singletonList(org.unimodules.interfaces.sensors.services.MagnetometerService.class);
+    return Collections.<Class>singletonList(MagnetometerServiceInterface.class);
   }
 }
