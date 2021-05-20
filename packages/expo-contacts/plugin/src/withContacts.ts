@@ -4,6 +4,7 @@ import {
   createRunOncePlugin,
   withEntitlementsPlist,
   withInfoPlist,
+  WarningAggregator,
 } from '@expo/config-plugins';
 
 const pkg = require('expo-contacts/package.json');
@@ -25,6 +26,13 @@ const withContacts: ConfigPlugin<{
    */
   enableIosContactNotes?: boolean;
 } | void> = (config, { contactsPermission, enableIosContactNotes } = {}) => {
+  if (config.ios?.accessesContactNotes != null) {
+    WarningAggregator.addWarningIOS(
+      'expo-contacts',
+      '`ios.accessesContactNotes` is deprecated in favor of the expo-contacts config plugin property `enableIosContactNotes`'
+    );
+  }
+
   // Append iOS contacts permission
   config = withInfoPlist(config, config => {
     // @ts-ignore: untyped

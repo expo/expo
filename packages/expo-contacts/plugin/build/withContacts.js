@@ -4,6 +4,10 @@ const config_plugins_1 = require("@expo/config-plugins");
 const pkg = require('expo-contacts/package.json');
 const CONTACTS_USAGE = 'Allow $(PRODUCT_NAME) to access your contacts';
 const withContacts = (config, { contactsPermission, enableIosContactNotes } = {}) => {
+    var _a;
+    if (((_a = config.ios) === null || _a === void 0 ? void 0 : _a.accessesContactNotes) != null) {
+        config_plugins_1.WarningAggregator.addWarningIOS('expo-contacts', '`ios.accessesContactNotes` is deprecated in favor of the expo-contacts config plugin property `enableIosContactNotes`');
+    }
     // Append iOS contacts permission
     config = config_plugins_1.withInfoPlist(config, config => {
         // @ts-ignore: untyped
