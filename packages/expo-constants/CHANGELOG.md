@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - Add new manifest2 field and make existing field optional. ([#12817](https://github.com/expo/expo/pull/12817) by [@wschurman](https://github.com/wschurman))
+- Update `@expo/config` to include `originalFullName` in embedded config manifest. [Related PR on expo-cli](https://github.com/expo/expo-cli/pull/3494).
 
 ### 🎉 New features
 
