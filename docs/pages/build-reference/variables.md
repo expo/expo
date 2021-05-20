@@ -138,10 +138,10 @@ After creating a secret, you can access the value via EAS Build hooks in Node.js
 {
   "scripts": {
     "eas-build-pre-install": "echo $VARIABLE_NAME",
-    "android": "react-native run-android",
-    "ios": "react-native run-ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
-    "start": "react-native start",
+    "start": "expo start --dev-client",
     "test": "jest"
   },
  ...

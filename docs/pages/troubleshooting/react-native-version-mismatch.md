@@ -15,7 +15,7 @@ Make sure you have rebuilt the native code...
 
 ## What this error means
 
-The packager that you're running in your terminal (either with `expo start` or `react-native start`) is using a different version of `react-native` than the app on your device or emulator. This can happen after upgrading your React Native or Expo SDK version, _or_ when connecting to the wrong local packager instance.
+The bundler that you're running in your terminal (typically Metro bundler via `expo start`) is using a different version of `react-native` than the app on your device or emulator. This can happen after upgrading your React Native or Expo SDK version, _or_ when connecting to the wrong local packager instance.
 
 ## How to fix it
 
@@ -29,6 +29,6 @@ The packager that you're running in your terminal (either with `expo start` or `
 
 - Finally:
   - Clear your bundler caches by running `rm -rf node_modules && npm cache clean --force && npm install && watchman watch-del-all && rm -rf $TMPDIR/haste-map-* && rm -rf $TMPDIR/metro-cache && expo start --clear`
-     - Commands if you are using npm can be found [here.](clear-cache-macos-linux)
-     - Commands if you are using Windows can be found [here.](clear-cache-windows)
+    - Commands if you are using npm can be found [here.](clear-cache-macos-linux)
+    - Commands if you are using Windows can be found [here.](clear-cache-windows)
   - If this is a bare workflow project, run `npx pod-install`, then rebuild your native projects (run `yarn android` to rebuild for Android, and `yarn ios` to rebuild iOS)
