@@ -5,6 +5,7 @@ import { VERSIONS } from '~/constants/versions';
 
 const REDIRECT_SUFFIX = '?redirected';
 
+
 type State = {
   notFound: boolean;
   redirectPath?: string;
@@ -96,6 +97,11 @@ export default class Error extends React.Component<object, State> {
     // Remove version from path if the version is still supported, to redirect to the root
     if (isVersionedPath(redirectPath) && isVersionDocumented(redirectPath)) {
       redirectPath = `/versions/${getVersionFromPath(redirectPath)}/`;
+    }
+
+    // Consolidate workflow page
+    if (redirectPath.startsWith('/bare/customizing')) {
+      redirectPath = redirectPath.replace('/bare/customizing', '/workflow/customizing');
     }
 
     if (redirectPath !== pathname) {
