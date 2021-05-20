@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.5.2 — 2021-05-20
+
+### 💡 Others
+
 - Build Android code using Java 8 to fix Android instrumented test build error. ([#12939](https://github.com/expo/expo/pull/12939) by [@kudo](https://github.com/kudo))
 
 ## 0.5.1 — 2021-05-12
