@@ -47,7 +47,7 @@ class DevMenuView extends React.PureComponent<Props, State> {
 
   context!: Context;
 
-  constructor(props: Props, context?: any) {
+  constructor(props: Props, context?: unknown) {
     super(props, context);
 
     this.state = {

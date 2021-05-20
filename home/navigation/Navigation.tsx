@@ -1,6 +1,11 @@
 import Entypo from '@expo/vector-icons/build/Entypo';
 import Ionicons from '@expo/vector-icons/build/Ionicons';
-import { NavigationContainer, useTheme, NavigationContainerRef } from '@react-navigation/native';
+import {
+  NavigationContainer,
+  useTheme,
+  NavigationContainerRef,
+  RouteProp,
+} from '@react-navigation/native';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import Constants from 'expo-constants';
 import * as React from 'react';
@@ -42,6 +47,25 @@ function useThemeName() {
   return theme.dark ? ColorTheme.DARK : ColorTheme.LIGHT;
 }
 
+const accountNavigationOptions = ({
+  route,
+}: {
+  route: RouteProp<ProfileStackRoutes, 'Account'>;
+}) => {
+  const accountName = route.params?.accountName;
+  return {
+    title: `@${accountName}`,
+    headerRight: () => <OptionsButton />,
+  };
+};
+
+const profileNavigationOptions = () => {
+  return {
+    title: 'Profile',
+    headerRight: () => <UserSettingsButton />,
+  };
+};
+
 function ProjectsStackScreen() {
   const theme = useThemeName();
   return (
@@ -75,12 +99,7 @@ function ProfileStackScreen() {
       <ProfileStack.Screen
         name="Profile"
         component={ProfileScreen}
-        options={() => {
-          return {
-            title: 'Profile',
-            headerRight: () => <UserSettingsButton />,
-          };
-        }}
+        options={profileNavigationOptions}
       />
       <ProfileStack.Screen
         name="ProfileAllProjects"
@@ -95,13 +114,7 @@ function ProfileStackScreen() {
       <ProfileStack.Screen
         name="Account"
         component={AccountScreen}
-        options={({ route }) => {
-          const accountName = route.params?.accountName;
-          return {
-            title: `@${accountName}`,
-            headerRight: () => <OptionsButton />,
-          };
-        }}
+        options={accountNavigationOptions}
       />
       <ProfileStack.Screen
         name="UserSettings"
