@@ -71,7 +71,8 @@ export interface AppManifest extends ExpoConfig {
     logUrl?: string;
     /**
      * The Expo account name and slug for this project.
-     * @deprecated - Prefer `projectId` or `originalFullName` instead for scoping due to immutability.
+     * @deprecated - Prefer `projectId` or `originalFullName` instead for identification and `scopeKey` for
+     * scoping due to immutability.
      */
     id?: string;
     /**
