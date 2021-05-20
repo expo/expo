@@ -231,11 +231,16 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
       return nil
     }
     let allExtensions = bridge.modulesConforming(to: DevMenuExtensionProtocol.self) as! [DevMenuExtensionProtocol]
-    let uniqueExtensionNames: [String] = Array(Set(allExtensions.map({ type(of: $0).moduleName!() })))
 
+    let uniqueExtensionNames = Set(
+      allExtensions
+        .map { type(of: $0).moduleName!() }
+        .compactMap { $0 } // removes nils
+    ).sorted()
+    
     return uniqueExtensionNames
       .map({ bridge.module(forName: DevMenuUtils.stripRCT($0)) })
-      .filter({ $0 is DevMenuExtensionProtocol }) as! [DevMenuExtensionProtocol]
+      .filter({ $0 is DevMenuExtensionProtocol }) as? [DevMenuExtensionProtocol]
   }
 
   /**
