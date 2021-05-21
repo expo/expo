@@ -1,6 +1,6 @@
 ---
 title: TrackingTransparency
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-tracking-transparency'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-41/packages/expo-tracking-transparency'
 ---
 
 import APISection from '~/components/plugins/APISection';
