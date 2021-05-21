@@ -1,8 +1,10 @@
 ---
-title: Sharing your app before you ship
+title: Sharing before release
 ---
 
-Ultimately, you will want to publish your application to the App Store and Play Store to access the opportunities for wider distribution and to provide a familiar installation process for your users.  While you are developing though, you'll want to let other members of your team and your potential users see the work in progress to gather feedback and make sure you're building a quality product.
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+
+Ultimately, you will want to publish your application to the App Store and Play Store to access the opportunities for wider distribution and to provide a familiar installation process for your users.  While you are developing though, you'll want to let other members of your team and others with a vested interet in the project see the work in progress to gather feedback and make sure you're building a quality product.
 
 ## Expo Go
 
@@ -10,9 +12,10 @@ If you are using the Expo Managed workflow, you can share your application with 
 
 1. Publish the latest version of your project to Expo's servers by running `expo publish`.
 2. [Invite your teammate](https://expo.io/[account]/[project]/settings/members) to the Expo account that owns the project.
-3. Have them [download the Expo Go app](https://expo.io/client) onto their device.
+3. Have them [download the Expo Go app](https://expo.io/expo-go) onto their device.
 4. They'll be able to open your application from the Profile tab of their Expo Go app.
 
+<ImageSpotlight alt="Terminal running expo init, with minimal (TypeScript) selected" src="/static/images/qr-code.gif" style={{height: '300px', width: 'auto'}} />
 
 ## Internal Distribution
 
@@ -20,7 +23,7 @@ If you want to share outside of Expo Go, Android and iOS both offer ways to inst
 
 ### on Android
 
-To share your application to Android devices, you must build an APK of your project (rather than an AAB that is optimized for distribution through the Play Store), but that APK can be downloaded (from the browser, email or chat app) and installed on any Android device once the user accepts the security risk of installing an app that has not gone through Play Store review.
+To share your application to Android devices, you must build an APK of your project rather than an AAB that is optimized for distribution through the Play Store. APKs can be downloaded (from a browser, email, or chat app) and installed on any Android device once the user accepts the security risk of installing an app that has not gone through Play Store review.
 
 ### Ad Hoc Distribution on iOS
 
@@ -32,7 +35,7 @@ Setting up Ad Hoc certificates correctly can be intimidating if you haven't done
 
 ### Enterprise Distribution on iOS
 
-If your app is only intended to be used internally and will not be distributed through the App Store, you should use Enterprise distribution.  Unlike Ad Hoc Distribution, there is no limit to the number of devices that can install your application, and you will not need manage the UDIDs of each device.  Enterprise Distribution requires membership in the more expensive Apple Developer Enterprise Program, which requires your organization to be a legal entity and go through Apple's verification process. 
+If your app is only intended to be used internally and will not be distributed through the App Store, you should use Enterprise distribution.  Unlike Ad Hoc Distribution, there is no limit to the number of devices that can install your application, and you will not need to manage the UDIDs of each device.  Enterprise Distribution requires membership in the more expensive [Apple Developer Enterprise Program](https://developer.apple.com/programs/enterprise/), which requires your organization to be a legal entity and go through Apple's verification process. 
 
 
 ## TestFlight
