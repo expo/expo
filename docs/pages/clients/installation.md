@@ -36,7 +36,7 @@ Add configuration in `react-native.config.js` to allow React Native autolinking 
 
 <ConfigurationDiff source="/static/diffs/client/react-native.config.js.diff" />
 
-Then you can run the following command to install native code for the Dev Launcher via Cocoapods.
+Then you can run the following command to install native code for the Dev Launcher via CocoaPods.
 
 <InstallSection packageName="expo-development-client" cmd={["npx pod-install"]} hideBareInstructions />
 
