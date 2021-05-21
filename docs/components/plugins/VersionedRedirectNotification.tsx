@@ -5,14 +5,15 @@ import * as React from 'react';
 
 import { P } from '~/components/base/paragraph';
 
-const CONTAINER_STYLE = css`
+export const CONTAINER_STYLE = css`
   background-color: ${theme.background.warning};
-  border: 1px solid ${theme.border.error};
+  border: 1px solid ${theme.border.warning};
   padding: 16px;
   margin-bottom: 1rem;
   border-radius: 4px;
 
-  div {
+  div,
+  p {
     margin-bottom: 0;
   }
 `;
