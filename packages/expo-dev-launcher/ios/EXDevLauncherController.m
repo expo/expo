@@ -175,6 +175,11 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   rootViewController.view = rootView;
   _window.rootViewController = rootViewController;
 
+#if RCT_DEV && defined(DEV_LAUNCHER_URL)
+    // Connect to the websocket
+    [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:[NSURL URLWithString:@DEV_LAUNCHER_URL]];
+#endif
+  
   [_window makeKeyAndVisible];
 }
 
