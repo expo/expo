@@ -26,29 +26,66 @@ import * as Battery from 'expo-battery';
 import { StyleSheet, Text, View } from 'react-native';
 
 export default function App() {
+  let [isAvailable, setIsAvailable] = useState(null);
   let [batteryLevel, setBatteryLevel] = useState(null);
+  let [batteryState, setBatteryState] = useState(null);
+  let [powerMode, setPowerMode] = useState(null);
 
   useEffect(() => {
-    let listener;
+    let levelListener;
+    let stateListener;
+    let powerModeListener;
 
     (async () => {
+      setIsAvailable(await Battery.isAvailableAsync());
       setBatteryLevel(await Battery.getBatteryLevelAsync());
+      setBatteryState(await Battery.getBatteryStateAsync());
+      setPowerMode((await Battery.getPowerStateAsync()).lowPowerMode);
+
       function batteryLevelListener({ batteryLevel }) {
         console.log(`Battery level changed to ${batteryLevel}`);
         setBatteryLevel(batteryLevel);
       }
-      listener = Battery.addBatteryLevelListener(batteryLevelListener);
+
+      function batteryStateListener({ batteryState }) {
+        console.log(`Battery state changed to ${batteryState}`);
+        setBatteryState(batteryState);
+      }
+
+      function lowPowerModeListener({ lowPowerMode }) {
+        console.log(`Battery low power mode changed to ${lowPowerMode}`);
+        setPowerMode(lowPowerMode);
+      }
+
+      levelListener = Battery.addBatteryLevelListener(batteryLevelListener);
+      stateListener = Battery.addBatteryStateListener(stateListener);
+      powerModeListener = Battery.addLowPowerModeListener(lowPowerModeListener);
     })();
 
     return function cleanup() {
-      listener && listener.remove();
+      levelListener && levelListener.remove();
+      stateListener && stateListener.remove();
+      powerModeListener && powerModeListener.remove();
     };
   }, []);
+
+  if (isAvailable === null) {
+    return <View />;
+  } else if (isAvailable === false) {
+    return (
+      <View style={styles.container}>
+        <Text>Battery APIs not available on this device</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <Text>Current Battery Level: {batteryLevel}</Text>
-      <BatteryView level={batteryLevel} />
+      <Text>Current Battery State: {batteryState}</Text>
+      <Text>Current Low Power Mode: {JSON.stringify(powerMode)}</Text>
+      <BatteryView level={batteryLevel} lowPowerMode={powerMode} />
+      <BatteryStateIndicator batteryState={batteryState} />
     </View>
   );
 }
@@ -63,7 +100,45 @@ const styles = StyleSheet.create({
   },
 });
 
+function BatteryStateIndicator(props, context) {
+  let description = 'Unknown';
+  switch (props.batteryState) {
+    case Battery.BatteryState.UNPLUGGED:
+      description = '🔌 Unplugged';
+      break;
+    case Battery.BatteryState.CHARGING:
+      description = '⚡ Charging';
+      break;
+    case Battery.BatteryState.FULL:
+      description = '💯 Full';
+      break;
+    case Battery.BatteryState.UNKNOWN:
+    default:
+      description = '❓ Unknown';
+      break;
+  }
+  return (
+    <View
+      style={{
+        alignContent: 'center',
+        marginTop: 8,
+      }}>
+      <Text
+        style={{
+          fontSize: 22,
+          alignContent: 'center',
+        }}>
+        {description}
+      </Text>
+    </View>
+  );
+}
+
 function BatteryView(props, context) {
+  let fillColor = '#53d769';
+  if (props.lowPowerMode) {
+    fillColor = '#fecb2e';
+  }
   return (
     <View
       style={{
@@ -78,7 +153,7 @@ function BatteryView(props, context) {
       <View
         style={{
           width: Math.floor(92 * props.level),
-          backgroundColor: '#53d769',
+          backgroundColor: fillColor,
           height: 54,
         }}
       />
