@@ -37,7 +37,7 @@
     "@unimodules/core": "*"
   },
   "dependencies": {
-    "@expo/configure-splash-screen": "0.3.4"
+    "@expo/configure-splash-screen": "0.4.0"
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"
