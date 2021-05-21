@@ -5,9 +5,9 @@ import * as React from 'react';
 import stripVersionFromPath from '~/common/stripVersionFromPath';
 import { paragraph } from '~/components/base/typography';
 import ChevronDown from '~/components/icons/ChevronDown';
+import { unexpandedSections } from '~/constants/navigation';
 import * as Constants from '~/constants/theme';
 import { NavigationRoute, Url } from '~/types/common';
-import { unexpandedSections } from '~/constants/navigation';
 
 const STYLES_TITLE = css`
   ${paragraph}
