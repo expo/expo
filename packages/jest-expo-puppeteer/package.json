@@ -25,8 +25,8 @@
     "Evan Bacon <bacon@expo.io> (https://github.com/evanbacon)"
   ],
   "dependencies": {
-    "@expo/config": "^3.3.32",
-    "xdl": "^59.0.26",
+    "@expo/config": "^3.3.42",
+    "xdl": "^59.0.38",
     "getenv": "^1.0.0",
     "jest": "^25.2.0",
     "jest-puppeteer": "^4.4.0",
