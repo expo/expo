@@ -293,3 +293,11 @@ Expo makes a best effort to deliver notifications to the push notification servi
 After a notification has been handed off to an underlying push notification service, Expo creates a "push receipt" that records whether the handoff was successful; a push receipt denotes whether the underlying push notification service received the notification.
 
 Finally, the push notification services from Apple, Google, etc... make a best effort to deliver the notification to the device according to their own policies.
+
+## Next steps
+
+Now that you can send notifications to your app, set your app up for [receiving notifications and taking action based on those events](./receiving-notifications.md)!
+
+## See also
+
+- Having trouble? Visit [Expo's notification FAQ page](./faq.md)
