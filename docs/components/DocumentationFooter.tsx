@@ -3,9 +3,9 @@ import { theme } from '@expo/styleguide';
 import * as React from 'react';
 
 import { UL, LI } from '~/components/base/list';
-import Pencil from '~/components/icons/Pencil';
-import ChatBoxes from '~/components/icons/ChatBoxes';
 import Bug from '~/components/icons/Bug';
+import ChatBoxes from '~/components/icons/ChatBoxes';
+import Pencil from '~/components/icons/Pencil';
 import Spectacles from '~/components/icons/Spectacles';
 import { Url } from '~/types/common';
 
