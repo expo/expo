@@ -1,4 +1,4 @@
-package dev.expo.devclient;
+package dev.expo.baresandbox;
 
 import android.app.Application;
 

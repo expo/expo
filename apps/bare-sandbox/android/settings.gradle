@@ -1,4 +1,4 @@
-rootProject.name = 'dev-client'
+rootProject.name = 'bare-sandbox'
 
 apply from: '../node_modules/@unimodules/react-native-adapter/scripts/autolinking.gradle'
 useExpoModules([:])
