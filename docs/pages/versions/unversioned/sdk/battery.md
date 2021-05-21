@@ -21,44 +21,36 @@ import SnackInline from '~/components/plugins/SnackInline';
 <SnackInline label='Basic Battery Usage' dependencies={['expo-battery']}>
 
 ```jsx
-import * as React from 'react';
+import React, { useState, useEffect } from 'react';
 import * as Battery from 'expo-battery';
 import { StyleSheet, Text, View } from 'react-native';
 
-export default class App extends React.Component {
-  state = {
-    batteryLevel: null,
-  };
+export default function App() {
+  let [batteryLevel, setBatteryLevel] = useState(null);
 
-  componentDidMount() {
-    this._subscribe();
-  }
+  useEffect(() => {
+    let listener;
 
-  componentWillUnmount() {
-    this._unsubscribe();
-  }
+    (async () => {
+      setBatteryLevel(await Battery.getBatteryLevelAsync());
+      function batteryLevelListener({ batteryLevel }) {
+        console.log(`Battery level changed to {batteryLevel}`);
+        setBatteryLevel(batteryLevel);
+      }
+      listener = Battery.addBatteryLevelListener(batteryLevelListener);
+    })();
 
-  async _subscribe() {
-    const batteryLevel = await Battery.getBatteryLevelAsync();
-    this.setState({ batteryLevel });
-    this._subscription = Battery.addBatteryLevelListener(({ batteryLevel }) => {
-      this.setState({ batteryLevel });
-      console.log('batteryLevel changed!', batteryLevel);
-    });
-  }
+    return function cleanup() {
+      listener && listener.remove();
+    };
+  }, []);
 
-  _unsubscribe() {
-    this._subscription && this._subscription.remove();
-    this._subscription = null;
-  }
-
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text>Current Battery Level: {this.state.batteryLevel}</Text>
-      </View>
-    );
-  }
+  return (
+    <View style={styles.container}>
+      <Text>Current Battery Level: {batteryLevel}</Text>
+      <BatteryView level={batteryLevel} />
+    </View>
+  );
 }
 
 /* @hide const styles = StyleSheet.create({ ... }); */
@@ -70,6 +62,31 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+function BatteryView(props, context) {
+  return (
+    <View
+      style={{
+        marginTop: 10,
+        borderRadius: 4,
+        borderStyle: 'solid',
+        borderColor: 'black',
+        borderWidth: 4,
+        width: 100,
+        height: 62,
+        alignContent: 'flexStart',
+        alignItems: 'flexStart',
+      }}>
+      <View
+        style={{
+          width: 92 * props.level,
+          backgroundColor: '#53d769',
+          height: 54,
+        }}
+      />
+    </View>
+  );
+}
 /* @end */
 ```
 
