@@ -2,9 +2,9 @@
 title: Sharing before release
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+import Video from '~/components/plugins/Video'
 
-Ultimately, you will want to publish your application to the App Store and Play Store to access the opportunities for wider distribution and to provide a familiar installation process for your users.  While you are developing though, you'll want to let other members of your team and others with a vested interet in the project see the work in progress to gather feedback and make sure you're building a quality product.
+Ultimately, you will want to publish your application to the App Store and Play Store to access the opportunities for wider distribution and to provide a familiar installation process for your users.  While you are developing though, you'll want to let other members of your team and others with a vested interest in the project see the work in progress to gather feedback and make sure you're building a quality product.
 
 ## Expo Go
 
@@ -15,15 +15,16 @@ If you are using the Expo Managed workflow, you can share your application with 
 3. Have them [download the Expo Go app](https://expo.io/expo-go) onto their device.
 4. They'll be able to open your application from the Profile tab of their Expo Go app.
 
-<ImageSpotlight alt="Terminal running expo init, with minimal (TypeScript) selected" src="/static/images/qr-code.gif" style={{height: '300px', width: 'auto'}} />
+
+<Video alt="Terminal running expo init, with minimal (TypeScript) selected" file="guides/load-project.mp4" style={{height: '300px', width: 'auto'}} />
 
 ## Internal Distribution
 
 If you want to share outside of Expo Go, Android and iOS both offer ways to install a build of your application directly on devices.
 
-### on Android
+### Android
 
-To share your application to Android devices, you must build an APK of your project rather than an AAB that is optimized for distribution through the Play Store. APKs can be downloaded (from a browser, email, or chat app) and installed on any Android device once the user accepts the security risk of installing an app that has not gone through Play Store review.
+To share your application to Android devices, you must build an APK of your project rather than an AAB, which is optimized for distribution through the Play Store. APKs can be downloaded (from a browser, email, or chat app) and installed on any Android device once the user accepts the security risk of installing an app that has not gone through Play Store review.
 
 ### Ad Hoc Distribution on iOS
 
