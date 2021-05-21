@@ -14,8 +14,8 @@ import {
   createStringsXmlPlugin,
 } from '@expo/config-plugins/build/plugins/android-plugins';
 import { writeXMLAsync } from '@expo/config-plugins/build/utils/XML';
-import { assert } from '@expo/config-plugins/build/utils/errors';
 import { ExpoConfig } from '@expo/config-types';
+import assert from 'assert';
 
 const {
   addMetaDataItemToMainApplication,
