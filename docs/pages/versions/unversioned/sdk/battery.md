@@ -34,7 +34,7 @@ export default function App() {
     (async () => {
       setBatteryLevel(await Battery.getBatteryLevelAsync());
       function batteryLevelListener({ batteryLevel }) {
-        console.log(`Battery level changed to {batteryLevel}`);
+        console.log(`Battery level changed to ${batteryLevel}`);
         setBatteryLevel(batteryLevel);
       }
       listener = Battery.addBatteryLevelListener(batteryLevelListener);
@@ -74,12 +74,10 @@ function BatteryView(props, context) {
         borderWidth: 4,
         width: 100,
         height: 62,
-        alignContent: 'flexStart',
-        alignItems: 'flexStart',
       }}>
       <View
         style={{
-          width: 92 * props.level,
+          width: Math.floor(92 * props.level),
           backgroundColor: '#53d769',
           height: 54,
         }}
