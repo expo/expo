@@ -23,6 +23,13 @@ export async function isAvailableAsync(): Promise<boolean> {
  * that will then be applied to the App Store, without leaving the app. If the device is running
  * a version of iOS lower than 10.3, or a version of Android lower than 5.0, this will attempt
  * to get the store URL and link the user to it.
+ * 
+ * Google and Apple both rate limit the frequency of requests for reviews
+ * using this method, so you'll want to be thoughtful before calling this. See 
+ * [Rate Limits](#rate-limits) below for more. The most common way to avoid 
+ * hitting these rate limits is to ask the user if they'd like to review your 
+ * app with your own dialog before calling the `requestReview` method.
+ * 
  */
 export async function requestReview(): Promise<void> {
   if (StoreReview?.requestReview) {

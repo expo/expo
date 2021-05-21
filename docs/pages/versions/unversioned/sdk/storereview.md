@@ -47,6 +47,13 @@ It is important that you follow the [Human Interface Guidelines](https://develop
 - Don't request a review when the user is doing something time sensitive like navigating.
 - Don't ask the user any questions before or while presenting the rating button or card.
 
+### Rate Limits
+
+Both Apple and Google limit the amount that you can call the `requestReview` method, so you'll generally want to ask the user for permission to request a review before calling `StoreReview.requestReview()`
+
+- On iOS, you can prompt for ratings up to three times in a 365-day period.
+- On Android, the limits are not specified and may change at any time. But Google Play enforces a time-bound quota on how often a user can be shown the review dialog. And calling the `requestReview` method more than once during a short period of time (for example, less than a month) might not always display a dialog.
+
 ### Write Reviews
 
 #### iOS
