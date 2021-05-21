@@ -26,7 +26,7 @@ export default function VersionedRedirectNotification({ showForQuery = 'redirect
     if (router.query) {
       setVisible(router.query.hasOwnProperty(showForQuery));
     }
-  }, []);
+  }, [router.query]);
 
   if (visible) {
     return (
