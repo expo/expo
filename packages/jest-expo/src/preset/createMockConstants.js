@@ -26,7 +26,8 @@ module.exports = function createMockConstants() {
     linkingUri: mockLinkingUri,
     manifest: {
       id: mockId,
-      originalFullName: mockId,
+      originalFullName: '@test/originaltest',
+      currentFullName: mockId,
       slug: mockSlug,
       extra: expoConfig.extra,
       hostUri: mockHostUri,
