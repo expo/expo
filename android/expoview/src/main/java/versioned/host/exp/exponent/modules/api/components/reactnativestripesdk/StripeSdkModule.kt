@@ -42,86 +42,88 @@ class StripeSdkModule(reactContext: ReactApplicationContext, cardFieldManager: S
 
   private val mActivityEventListener = object : BaseActivityEventListener() {
     override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent) {
-      stripe.onSetupResult(requestCode, data, object : ApiResultCallback<SetupIntentResult> {
-        override fun onSuccess(result: SetupIntentResult) {
-          val setupIntent = result.intent
-          when (setupIntent.status) {
-            StripeIntent.Status.Succeeded -> {
-              confirmSetupIntentPromise?.resolve(mapFromSetupIntentResult(setupIntent))
-            }
-            StripeIntent.Status.Canceled -> {
-              val errorMessage = setupIntent.lastSetupError?.message.orEmpty()
-              confirmSetupIntentPromise?.reject(ConfirmSetupIntentErrorType.Canceled.toString(), errorMessage)
-            }
-            else -> {
-              val errorMessage = "unhandled error: ${setupIntent.status}"
-              confirmSetupIntentPromise?.reject(ConfirmSetupIntentErrorType.Unknown.toString(), errorMessage)
+      if (::stripe.isInitialized) {
+        stripe.onSetupResult(requestCode, data, object : ApiResultCallback<SetupIntentResult> {
+          override fun onSuccess(result: SetupIntentResult) {
+            val setupIntent = result.intent
+            when (setupIntent.status) {
+              StripeIntent.Status.Succeeded -> {
+                confirmSetupIntentPromise?.resolve(mapFromSetupIntentResult(setupIntent))
+              }
+              StripeIntent.Status.Canceled -> {
+                val errorMessage = setupIntent.lastSetupError?.message.orEmpty()
+                confirmSetupIntentPromise?.reject(ConfirmSetupIntentErrorType.Canceled.toString(), errorMessage)
+              }
+              else -> {
+                val errorMessage = "unhandled error: ${setupIntent.status}"
+                confirmSetupIntentPromise?.reject(ConfirmSetupIntentErrorType.Unknown.toString(), errorMessage)
+              }
             }
           }
-        }
 
-        override fun onError(e: Exception) {
-          confirmSetupIntentPromise?.reject(ConfirmSetupIntentErrorType.Failed.toString(), e.message.orEmpty())
-        }
-      })
+          override fun onError(e: Exception) {
+            confirmSetupIntentPromise?.reject(ConfirmSetupIntentErrorType.Failed.toString(), e.message.orEmpty())
+          }
+        })
 
-      stripe.onPaymentResult(requestCode, data, object : ApiResultCallback<PaymentIntentResult> {
-        override fun onSuccess(result: PaymentIntentResult) {
-          val paymentIntent = result.intent
+        stripe.onPaymentResult(requestCode, data, object : ApiResultCallback<PaymentIntentResult> {
+          override fun onSuccess(result: PaymentIntentResult) {
+            val paymentIntent = result.intent
 
-          when (paymentIntent.status) {
-            StripeIntent.Status.Succeeded,
-            StripeIntent.Status.Processing,
-            StripeIntent.Status.RequiresCapture -> {
-              confirmPromise?.resolve(mapFromPaymentIntentResult(paymentIntent))
-              handleCardActionPromise?.resolve(mapFromPaymentIntentResult(paymentIntent))
-            }
-            StripeIntent.Status.RequiresAction -> {
-              if (isPaymentIntentNextActionVoucherBased(paymentIntent.nextActionType)) {
+            when (paymentIntent.status) {
+              StripeIntent.Status.Succeeded,
+              StripeIntent.Status.Processing,
+              StripeIntent.Status.RequiresCapture -> {
                 confirmPromise?.resolve(mapFromPaymentIntentResult(paymentIntent))
                 handleCardActionPromise?.resolve(mapFromPaymentIntentResult(paymentIntent))
-              } else {
+              }
+              StripeIntent.Status.RequiresAction -> {
+                if (isPaymentIntentNextActionVoucherBased(paymentIntent.nextActionType)) {
+                  confirmPromise?.resolve(mapFromPaymentIntentResult(paymentIntent))
+                  handleCardActionPromise?.resolve(mapFromPaymentIntentResult(paymentIntent))
+                } else {
+                  val errorMessage = paymentIntent.lastPaymentError?.message.orEmpty()
+                  confirmPromise?.reject(ConfirmPaymentErrorType.Canceled.toString(), errorMessage)
+                  handleCardActionPromise?.reject(NextPaymentActionErrorType.Canceled.toString(), errorMessage)
+                }
+              }
+              StripeIntent.Status.RequiresPaymentMethod -> {
+                val errorMessage = paymentIntent.lastPaymentError?.message.orEmpty()
+                confirmPromise?.reject(ConfirmPaymentErrorType.Failed.toString(), errorMessage)
+                handleCardActionPromise?.reject(NextPaymentActionErrorType.Failed.toString(), errorMessage)
+              }
+              StripeIntent.Status.RequiresConfirmation -> {
+                handleCardActionPromise?.resolve(mapFromPaymentIntentResult(paymentIntent))
+              }
+              StripeIntent.Status.Canceled -> {
                 val errorMessage = paymentIntent.lastPaymentError?.message.orEmpty()
                 confirmPromise?.reject(ConfirmPaymentErrorType.Canceled.toString(), errorMessage)
                 handleCardActionPromise?.reject(NextPaymentActionErrorType.Canceled.toString(), errorMessage)
               }
-            }
-            StripeIntent.Status.RequiresPaymentMethod -> {
-              val errorMessage = paymentIntent.lastPaymentError?.message.orEmpty()
-              confirmPromise?.reject(ConfirmPaymentErrorType.Failed.toString(), errorMessage)
-              handleCardActionPromise?.reject(NextPaymentActionErrorType.Failed.toString(), errorMessage)
-            }
-            StripeIntent.Status.RequiresConfirmation -> {
-              handleCardActionPromise?.resolve(mapFromPaymentIntentResult(paymentIntent))
-            }
-            StripeIntent.Status.Canceled -> {
-              val errorMessage = paymentIntent.lastPaymentError?.message.orEmpty()
-              confirmPromise?.reject(ConfirmPaymentErrorType.Canceled.toString(), errorMessage)
-              handleCardActionPromise?.reject(NextPaymentActionErrorType.Canceled.toString(), errorMessage)
-            }
-            else -> {
-              val errorMessage = "unhandled error: ${paymentIntent.status}"
-              confirmPromise?.reject(ConfirmPaymentErrorType.Unknown.toString(), errorMessage)
-              handleCardActionPromise?.reject(NextPaymentActionErrorType.Unknown.toString(), errorMessage)
+              else -> {
+                val errorMessage = "unhandled error: ${paymentIntent.status}"
+                confirmPromise?.reject(ConfirmPaymentErrorType.Unknown.toString(), errorMessage)
+                handleCardActionPromise?.reject(NextPaymentActionErrorType.Unknown.toString(), errorMessage)
+              }
             }
           }
-        }
 
-        override fun onError(e: Exception) {
-          confirmPromise?.reject(ConfirmPaymentErrorType.Failed.toString(), e.toString())
-          handleCardActionPromise?.reject(NextPaymentActionErrorType.Failed.toString(), e.toString())
-        }
-      })
+          override fun onError(e: Exception) {
+            confirmPromise?.reject(ConfirmPaymentErrorType.Failed.toString(), e.toString())
+            handleCardActionPromise?.reject(NextPaymentActionErrorType.Failed.toString(), e.toString())
+          }
+        })
 
-      paymentSheetFragment?.activity?.activityResultRegistry?.dispatchResult(requestCode, resultCode, data)
+        paymentSheetFragment?.activity?.activityResultRegistry?.dispatchResult(requestCode, resultCode, data)
 
-      try {
-        val result = AddPaymentMethodActivityStarter.Result.fromIntent(data)
-        if (data?.getParcelableExtra<Parcelable>("extra_activity_result") != null) {
-          onFpxPaymentMethodResult(result)
+        try {
+          val result = AddPaymentMethodActivityStarter.Result.fromIntent(data)
+          if (data?.getParcelableExtra<Parcelable>("extra_activity_result") != null) {
+            onFpxPaymentMethodResult(result)
+          }
+        } catch (e: java.lang.Exception) {
+          Log.d("Error", e.localizedMessage)
         }
-      } catch (e: java.lang.Exception) {
-        Log.d("Error", e.localizedMessage)
       }
     }
   }
