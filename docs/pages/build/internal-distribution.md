@@ -88,7 +88,7 @@ You can register new devices at any time, but builds that were created before th
 
 The next step is to generate or update the provisioning profile. When you proceed to running a build, you will be guided through this process.
 
-> **Are you using manual local credentials?** Make sure to point your `credentials.json` to an ad hoc <!-- or enterprise -->provisioning profile that you generate through the Apple Developer portal. You need to replace the path of the provisioning profile or swap `credentials.json` with one that refers to the provisioning profile when building for internal distribution. Beware that EAS CLI does only a limited validation of your local credentials, and you will have to handle device UDID registration manually. Read more about [using local credentials](/app-signing/local-credentials.md).
+> **Are you using manual local credentials?** Make sure to point your `credentials.json` to an ad hoc or enterprise provisioning profile that you generate through the Apple Developer portal (either update an existing credentials.json used for another type of distribution or replace it with a new one that points to the appropriate provisioning profile). Beware that EAS CLI does only a limited validation of your local credentials, and you will have to handle device UDID registration manually. Read more about [using local credentials](/app-signing/local-credentials.md).
 
 ## 3. Run a build with the internal build profile
 
