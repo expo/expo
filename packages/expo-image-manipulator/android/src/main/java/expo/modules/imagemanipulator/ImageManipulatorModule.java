@@ -20,18 +20,18 @@ import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.arguments.ReadableArguments;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.interfaces.imageloader.ImageLoader;
 
 import expo.modules.imagemanipulator.arguments.Action;
 import expo.modules.imagemanipulator.arguments.ActionCrop;
 import expo.modules.imagemanipulator.arguments.ActionFlip;
 import expo.modules.imagemanipulator.arguments.ActionResize;
 import expo.modules.imagemanipulator.arguments.SaveOptions;
+import expo.modules.interfaces.imageloader.ImageLoaderInterface;
 
 public class ImageManipulatorModule extends ExportedModule {
   private static final String TAG = "ExpoImageManipulator";
   private static final String ERROR_TAG = "E_IMAGE_MANIPULATOR";
-  private ImageLoader mImageLoader;
+  private ImageLoaderInterface mImageLoader;
 
   public ImageManipulatorModule(Context context) {
     super(context);
@@ -44,7 +44,7 @@ public class ImageManipulatorModule extends ExportedModule {
 
   @Override
   public void onCreate(ModuleRegistry moduleRegistry) {
-    mImageLoader = moduleRegistry.getModule(ImageLoader.class);
+    mImageLoader = moduleRegistry.getModule(ImageLoaderInterface.class);
   }
 
   @ExpoMethod
@@ -66,7 +66,7 @@ public class ImageManipulatorModule extends ExportedModule {
       return;
     }
 
-    mImageLoader.loadImageForManipulationFromURL(uri, new ImageLoader.ResultListener() {
+    mImageLoader.loadImageForManipulationFromURL(uri, new ImageLoaderInterface.ResultListener() {
           @Override
           public void onSuccess(@NonNull Bitmap bitmap) {
             processBitmapWithActions(bitmap, manipulatorActions, manipulatorSaveOptions, promise);

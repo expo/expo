@@ -2,14 +2,14 @@
 
 #import <EXImageManipulator/EXImageManipulatorModule.h>
 #import <ExpoModulesCore/EXFileSystemInterface.h>
-#import <UMImageLoaderInterface/UMImageLoaderInterface.h>
+#import <ExpoModulesCore/EXImageLoaderInterface.h>
 #import <Photos/Photos.h>
 
 @interface EXImageManipulatorModule ()
 
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) id<EXFileSystemInterface> fileSystem;
-@property (nonatomic, weak) id<UMImageLoaderInterface> imageLoader;
+@property (nonatomic, weak) id<EXImageLoaderInterface> imageLoader;
 
 @end
 
@@ -30,7 +30,7 @@ UM_EXPORT_MODULE(ExpoImageManipulator);
 {
   _moduleRegistry = moduleRegistry;
   _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
-  _imageLoader = [moduleRegistry getModuleImplementingProtocol:@protocol(UMImageLoaderInterface)];
+  _imageLoader = [moduleRegistry getModuleImplementingProtocol:@protocol(EXImageLoaderInterface)];
 }
 
 UM_EXPORT_METHOD_AS(manipulateAsync,
