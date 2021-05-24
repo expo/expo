@@ -205,10 +205,8 @@ const sections = [
   {
     name: 'Assorted Guides',
     reference: [
-      'Assets',
       'Fonts',
       'Icons',
-      'Routing & Navigation',
       'Permissions',
       'App Icons',
       'Create a Splash Screen',
@@ -398,11 +396,11 @@ const ROOT = [
   'Conceptual Overview',
   'Fundamentals',
   'Distributing Your App',
+  'Assorted Guides',
   'Expo Accounts',
   'Bare Workflow',
   'Push Notifications',
   'UI Programming',
-  'Assorted Guides',
   'Regulatory Compliance',
   'Configuration Files',
   'Expo SDK',
@@ -415,7 +413,7 @@ const ROOT = [
 const hiddenSections = ['FAQ', 'Troubleshooting'];
 
 //These sections will NOT be expanded by default in the sidebar
-const unexpandedSections = ['Deprecated', 'Regulatory Compliance', 'Assorted Guides'];
+const unexpandedSections = ['Deprecated', 'Regulatory Compliance', 'UI Programming'];
 
 const sortAccordingToReference = (arr, reference) => {
   reference = Array.from(reference).reverse();
