@@ -119,7 +119,6 @@ class DevLauncherController private constructor(
         mode = Mode.LAUNCHER
         manifest = null
       }
-
     } catch (e: Exception) {
       synchronized(this) {
         appIsLoading = false
