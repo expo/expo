@@ -40,7 +40,7 @@
 {
     RNGestureHandlerRegistry *_registry;
     RCTUIManager *_uiManager;
-    NSMutableSet<UIView*> *_rootViews;
+    NSHashTable<UIView *> *_rootViews;
     RCTEventDispatcher *_eventDispatcher;
 }
 
@@ -51,7 +51,7 @@
         _uiManager = uiManager;
         _eventDispatcher = eventDispatcher;
         _registry = [RNGestureHandlerRegistry new];
-        _rootViews = [NSMutableSet new];
+        _rootViews = [NSHashTable hashTableWithOptions:NSPointerFunctionsWeakMemory];
     }
     return self;
 }

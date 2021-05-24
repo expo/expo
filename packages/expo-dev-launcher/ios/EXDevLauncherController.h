@@ -3,9 +3,12 @@
 
 #import <UIKit/UIKit.h>
 
-@class EXDevLauncherPendingDeepLinkRegistry;
+NS_ASSUME_NONNULL_BEGIN
 
+@class EXDevLauncherPendingDeepLinkRegistry;
 @class EXDevLauncherController;
+@class EXDevLauncherManifest;
+@class EXDevLauncherErrorManager;
 
 @protocol EXDevLauncherControllerDelegate <NSObject>
 
@@ -16,12 +19,13 @@
 
 @interface EXDevLauncherController : NSObject <RCTBridgeDelegate>
 
-@property (nonatomic, weak) RCTBridge *appBridge;
+@property (nonatomic, weak) RCTBridge * _Nullable appBridge;
+@property (nonatomic, strong) RCTBridge *launcherBridge;
 @property (nonatomic, strong) EXDevLauncherPendingDeepLinkRegistry *pendingDeepLinkRegistry;
 
 + (instancetype)sharedInstance;
 
-- (void)startWithWindow:(UIWindow *)window delegate:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary *)launchOptions;
+- (void)startWithWindow:(UIWindow *)window delegate:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions;
 
 - (NSURL *)sourceUrl;
 
@@ -29,10 +33,22 @@
 
 - (BOOL)onDeepLink:(NSURL *)url options:(NSDictionary *)options;
 
-- (void)loadApp:(NSString *)url onSuccess:(void (^)())onSuccess onError:(void (^)(NSError *error))onError;
+- (void)loadApp:(NSURL *)url onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError;
 
 - (NSDictionary *)recentlyOpenedApps;
 
 - (NSDictionary<UIApplicationLaunchOptionsKey, NSObject*> *)getLaunchOptions;
 
+- (EXDevLauncherManifest * _Nullable)appManifest;
+
+- (BOOL)isAppRunning;
+
+- (UIWindow * _Nullable)currentWindow;
+
+- (EXDevLauncherErrorManager *)errorManager;
+
++ (NSString * _Nullable)version;
+
 @end
+
+NS_ASSUME_NONNULL_END

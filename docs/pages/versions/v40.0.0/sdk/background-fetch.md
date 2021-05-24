@@ -102,7 +102,7 @@ Sets the minimum number of seconds that must elapse before another background fe
 
 _This method doesn't take any effect on Android._
 
-_It is a global value which means that it can overwrite settings from another application opened through Expo client._
+_It is a global value which means that it can overwrite settings from another application opened through Expo Go._
 
 #### Arguments
 

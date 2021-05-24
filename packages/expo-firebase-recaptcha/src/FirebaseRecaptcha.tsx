@@ -8,6 +8,7 @@ interface Props extends React.ComponentProps<typeof WebView> {
   firebaseConfig?: IFirebaseOptions;
   firebaseVersion?: string;
   appVerificationDisabledForTesting?: boolean;
+  languageCode?: string;
   onLoad?: () => any;
   onError?: () => any;
   onVerify: (token: string) => any;
@@ -20,6 +21,7 @@ function getWebviewSource(
   firebaseConfig: IFirebaseOptions,
   firebaseVersion?: string,
   appVerificationDisabledForTesting: boolean = false,
+  languageCode?: string,
   invisible?: boolean
 ) {
   firebaseVersion = firebaseVersion || '8.0.0';
@@ -73,6 +75,7 @@ function getWebviewSource(
         type: 'load'
       }));
       firebase.auth().settings.appVerificationDisabledForTesting = ${appVerificationDisabledForTesting};
+      ${languageCode ? `firebase.auth().languageCode = '${languageCode}';` : ''}
       window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier("${
         invisible ? 'recaptcha-btn' : 'recaptcha-cont'
       }", {
@@ -115,7 +118,8 @@ function getWebviewSource(
       }
     });
   </script>
-  <script src="https://www.google.com/recaptcha/api.js?onload=onLoad&render=explicit" onerror="onError()"></script>
+  <script src="https://www.google.com/recaptcha/api.js?onload=onLoad&render=explicit&hl=${languageCode ??
+    ''}" onerror="onError()"></script>
 </body></html>`,
   };
 }
@@ -141,6 +145,7 @@ export default function FirebaseRecaptcha(props: Props) {
     firebaseConfig,
     firebaseVersion,
     appVerificationDisabledForTesting,
+    languageCode,
     onVerify,
     onLoad,
     onError,
@@ -181,6 +186,7 @@ export default function FirebaseRecaptcha(props: Props) {
         firebaseConfig,
         firebaseVersion,
         appVerificationDisabledForTesting,
+        languageCode,
         invisible
       )}
       onError={onError}

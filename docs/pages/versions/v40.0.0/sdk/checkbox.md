@@ -7,7 +7,7 @@ import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
-**`expo-checkbox`** provides an component to provide a `boolean` input element on Android and Web.
+**`expo-checkbox`** provides a component to provide a `boolean` input element on Android and Web.
 
 <PlatformsSection android emulator web />
 

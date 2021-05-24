@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI38_0_0/Expo/EXErrorRecovery/ABI38_0_0EXErrorRecovery/ABI38_0_0EXErrorRecoveryModule.h

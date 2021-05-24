@@ -4,11 +4,55 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+- Build Android code using Java 8 to fix Android instrumented test build error. ([#12939](https://github.com/expo/expo/pull/12939) by [@kudo](https://github.com/kudo))
+
+## 9.2.3 — 2021-04-13
+
+_This version does not introduce any user-facing changes._
+
+## 9.2.2 — 2021-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 9.2.1 — 2021-03-30
+
+### 🛠 Breaking changes
+
+- Downgraded underlying native library on Android from v16 to v8.
+
+## 9.2.0 — 2021-03-23
+
+### 🐛 Bug fixes
+
+- Updated underlying native library on Android from v8 to v16. ([#12250](https://github.com/expo/expo/pull/12250) by [@cruzach](https://github.com/cruzach))
+
+## 9.1.0 — 2021-03-10
+
+### 🎉 New features
+
+- Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
+
+### 🐛 Bug fixes
+
+- Remove peerDependencies and unimodulePeerDependencies from Expo modules. ([#11980](https://github.com/expo/expo/pull/11980) by [@brentvatne](https://github.com/brentvatne))
+
+## 9.0.0 — 2021-01-15
+
+### 🛠 Breaking changes
+
 - Dropped support for iOS 10.0 ([#11344](https://github.com/expo/expo/pull/11344) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
 
-### 🐛 Bug fixes
+- Created config plugin ([#11574](https://github.com/expo/expo/pull/11574) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 8.4.0 — 2020-11-17
 

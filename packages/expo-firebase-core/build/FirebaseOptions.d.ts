@@ -1,4 +1,4 @@
-export interface IFirebaseOptions {
+export declare type IFirebaseOptions = Partial<{
     appId: string;
     apiKey: string;
     databaseURL: string;
@@ -8,5 +8,5 @@ export interface IFirebaseOptions {
     projectId: string;
     authDomain: string;
     measurementId: string;
-}
+}>;
 export declare function getDefaultWebOptions(): IFirebaseOptions | void;

@@ -107,4 +107,4 @@ A list of the system font names available on the current device.
 
 ### `Constants.manifest`
 
-The [manifest](../../../workflow/how-expo-works.md#expo-manifest) object for the app.
+The [manifest](../../../guides/how-expo-works.md#expo-manifest) object for the app.

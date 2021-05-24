@@ -1,5 +1,5 @@
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
-import { PermissionStatus } from 'unimodules-permissions-interface';
+import { Platform } from '@unimodules/core';
+import { PermissionStatus } from 'expo-modules-core';
 
 import {
   NativeNotificationPermissionsRequest,
@@ -40,7 +40,7 @@ async function resolvePermissionAsync({
 }: {
   shouldAsk: boolean;
 }): Promise<NotificationPermissionsStatus> {
-  if (!canUseDOM) {
+  if (!Platform.isDOMAvailable) {
     return convertPermissionStatus('denied');
   }
 

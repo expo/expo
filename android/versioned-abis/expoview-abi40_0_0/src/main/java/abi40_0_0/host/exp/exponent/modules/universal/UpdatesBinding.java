@@ -18,7 +18,8 @@ import expo.modules.updates.db.DatabaseHolder;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.Launcher;
-import expo.modules.updates.launcher.SelectionPolicy;
+import expo.modules.updates.selectionpolicy.SelectionPolicy;
+import expo.modules.updates.loader.FileDownloader;
 import host.exp.exponent.ExpoUpdatesAppLoader;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.KernelConstants;
@@ -60,6 +61,11 @@ public class UpdatesBinding extends UpdatesService implements UpdatesInterface {
   @Override
   public File getDirectory() {
     return mAppLoader.getUpdatesDirectory();
+  }
+
+  @Override
+  public FileDownloader getFileDownloader() {
+    return mAppLoader.getFileDownloader();
   }
 
   @Override

@@ -4,17 +4,18 @@ import groovy.json.JsonSlurper
 
 buildscript {
     ext {
-        buildToolsVersion = "29.0.2"
-        gradlePluginVersion = '4.0.0'
+        buildToolsVersion = "30.0.5"
+        gradlePluginVersion = '4.1.2'
         minSdkVersion = 21
-        compileSdkVersion = 29
-        targetSdkVersion = 29
+        compileSdkVersion = 30
+        targetSdkVersion = 30
         // Some dependencies still expect supportLibVersion to be defined
         supportLibVersion = "29.0.0"
-        kotlinVersion = '1.3.50'
+        kotlinVersion = '1.4.21'
     }
     repositories {
         google()
+        mavenCentral()
         jcenter()
     }
     dependencies {
@@ -24,7 +25,7 @@ buildscript {
         // Newer versions suffer either from "play-services-basement was supposed to be 15.0.1,
         // but has been resolved to 17.0.0"
         // or https://github.com/segment-integrations/analytics-android-integration-firebase/issues/23
-        classpath 'com.google.gms:google-services:3.2.1'  // Google Services plugin
+        classpath 'com.google.gms:google-services:4.3.5'  // Google Services plugin
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -54,15 +55,20 @@ allprojects {
         }
         maven {
             // Android JSC is installed from npm
-            url("$rootDir/../../../node_modules/jsc-android/dist")
+            url("$rootDir/../node_modules/jsc-android/dist")
         }
-        // maven {
-        //     // expo-camera bundles a custom com.google.android:cameraview
-        //     url "$rootDir/../../../packages/expo-camera/android/maven"
-        //     // [Custom]: This would normally be imported from `url "$rootDir/../node_modules/expo-camera/android/maven"`
-        // }
+        maven {
+            // expo-camera bundles a custom com.google.android:cameraview
+            url "$rootDir/../node_modules/expo-camera/android/maven"
+        }
+
+       maven {
+           // Detox is installed from npm
+           url "$rootDir/../node_modules/detox/Detox-android"
+       }
 
         google()
+        mavenCentral()
         jcenter()
         maven { url 'https://jitpack.io' }
     }

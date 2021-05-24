@@ -6,7 +6,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo/src/Updat
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-The `Updates` API from **`expo`** allows you to programatically control and respond to over-the-air updates to your app.
+The `Updates` API from **`expo`** allows you to programmatically control and respond to over-the-air updates to your app.
 
 <PlatformsSection android emulator ios simulator />
 
@@ -16,7 +16,7 @@ The `Updates` API from **`expo`** allows you to programatically control and resp
 
 Since extra setup is required to use this module in bare React Native apps, for easiest use we recommend using a template project with `expo-updates` already installed. You can use `expo init --template=expo-template-bare-minimum` to initialize a new project from such a template.
 
-> Most of the methods and constants in this module can only be used or tested in release mode; they do not make sense in debug builds where you always load the latest JS from your computer while developing. To test manual updates in the Expo client, run `expo publish` and then open the published version of your app with the Expo client. To test manual updates in Bare workflow apps, make a release build with `npm run ios --configuration Release` or `npm run android --variant Release` (you don't need to submit this build to the App/Play Store to test).
+> Most of the methods and constants in this module can only be used or tested in release mode; they do not make sense in debug builds where you always load the latest JS from your computer while developing. To test manual updates in the Expo Go app, run `expo publish` and then open the published version of your app with Expo Go. To test manual updates in Bare workflow apps, make a release build with `npm run ios --configuration Release` or `npm run android --variant Release` (you don't need to submit this build to the App/Play Store to test).
 
 ## API
 
@@ -32,7 +32,7 @@ import * as Updates from 'expo-updates';
 
 ### `Updates.manifest`
 
-(_object_) If `expo-updates` is enabled, this is the [manifest](../../../workflow/how-expo-works.md#expo-development-server) object for the update that's currently running.
+(_object_) If `expo-updates` is enabled, this is the [manifest](../../../guides/how-expo-works.md#expo-development-server) object for the update that's currently running.
 
 In development mode, or any other environment in which `expo-updates` is disabled, this object is empty.
 

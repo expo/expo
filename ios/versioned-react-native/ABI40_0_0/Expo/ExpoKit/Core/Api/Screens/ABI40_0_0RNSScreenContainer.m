@@ -190,13 +190,13 @@
   if (screenRemoved || screenAdded) {
     // we disable interaction for the duration of the transition until one of the screens changes its state to "onTop"
     self.userInteractionEnabled = NO;
+  }
     
-    for (ABI40_0_0RNSScreenView *screen in _ABI40_0_0ReactSubviews) {
-      if (screen.activityState == ABI40_0_0RNSActivityStateOnTop) {
-        // if there is an "onTop" screen it means the transition has ended so we restore interactions
-        self.userInteractionEnabled = YES;
-        [screen notifyFinishTransitioning];
-      }
+  for (ABI40_0_0RNSScreenView *screen in _ABI40_0_0ReactSubviews) {
+    if (screen.activityState == ABI40_0_0RNSActivityStateOnTop) {
+      // if there is an "onTop" screen it means the transition has ended so we restore interactions
+      self.userInteractionEnabled = YES;
+      [screen notifyFinishTransitioning];
     }
   }
 

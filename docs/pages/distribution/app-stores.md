@@ -4,7 +4,7 @@ title: Deploying to App Stores
 
 This guide offers best practices around submitting your Expo app to the Apple iTunes Store and Google Play Store. To learn how to generate native binaries for submission, see [Building Standalone Apps](building-standalone-apps.md).
 
-Although you can share your published project through the Expo client and on your [expo.io](https://expo.io) profile, submitting a standalone app to the Apple and Google stores is necessary to have a dedicated piece of real estate on your users' devices. Submitting to these stores carries stronger requirements and quality standards than sharing a toy project with a few friends, because it makes your app available through a much wider distribution platform.
+Although you can share your published project through the Expo Go app and on your [expo.io](https://expo.io) profile, submitting a standalone app to the Apple and Google stores is necessary to have a dedicated piece of real estate on your users' devices. Submitting to these stores carries stronger requirements and quality standards than sharing a toy project with a few friends, because it makes your app available through a much wider distribution platform.
 
 **Disclaimer:** Especially in the case of Apple, review guidelines and rules change all the time, and Apple's enforcement of various rules tends to be finicky and inconsistent. We can't guarantee that your particular project will be accepted by either platform, and you are ultimately responsible for your app's behavior. However, Expo apps are native apps and behave just like any other apps, so if you've created something awesome, you should have nothing to worry about!
 
@@ -66,8 +66,6 @@ Apple will ask you a series of questions:
 - Select **Yes, we collect data from this app**. Click **Next**.
 - Select **Device ID**
   - Managed standalone apps include the Facebook, Facebook Ads, and Google AdMob SDKs, which still access the IDFA.
-- If you use `expo-notifications`, select **Device ID**
-  - Apps that send push notifications collect the device's push notification token. `expo-notifications` also generates a random ID to keep the Expo push notification token consistent even when the Apple push notification token changes.
 - If you use `expo-facebook`, select **Other Usage Data**
 - If you use `expo-updates`, select **Crash Data**
   - Errors that occur when launching an update are collected when a new update is requested.
@@ -78,7 +76,7 @@ Apple will ask you a series of questions:
 ## Android Permissions
 
 - Permissions are configured via the [`android.permissions` key in your `app.json` file](../workflow/configuration.md#android)
-- By default, your app will include **all** permissions supported by Expo. This is so that your standalone app will match its behavior in the Expo client and simply "work out of the box" no matter what permissions you ask for, with hardly any configuration needed on your part.
+- By default, your app will include **all** permissions supported by Expo. This is so that your standalone app will match its behavior in the Expo Go app and simply "work out of the box" no matter what permissions you ask for, with hardly any configuration needed on your part.
 - There are some drawbacks to this. For example, let's say your To-do list app requests `CAMERA` permission upon installation. Your users may be wary of installing since nothing in the app seems to use the camera, so why would it need that permission?
 - To remedy this, simply add the `android.permissions` key in your `app.json` file, and specify which permissions your app will use. A list of all Android permissions and configuration options can be found [here](../workflow/configuration.md#android).
 - To use _only_ the minimum necessary permissions that Expo requires to run, set `"permissions" : []`. To use those in addition to `CAMERA` permission, for example, you'd set `"permissions" : ["CAMERA"]`.

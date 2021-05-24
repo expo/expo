@@ -1,5 +1,5 @@
 ---
-title: Common Development Errors
+title: Common development errors
 ---
 
 Here you will find a list of errors that are commonly encountered by developers using Expo. For each error, the first bullet provides an explanation for why the error occurs and the second bullet contains debugging suggestions. If there is an error you think belongs here, we welcome and encourage you to [create a PR!](https://github.com/expo/expo/pulls)
@@ -32,4 +32,22 @@ Here you will find a list of errors that are commonly encountered by developers 
 
 - The SDK version you are running has been deprecated and is no longer supported.
 
-- [Upgrade your project](../workflow/upgrading-expo-sdk-walkthrough.md) to a supported SDK version. If you are using a supported version and see this message, you'll need to update your Expo client app. If you experience this error in a standalone app, make sure you have published a JS bundle for the specific SDK version and release channel for the given binary via `expo publish`.
+- [Upgrade your project](../workflow/upgrading-expo-sdk-walkthrough.md) to a supported SDK version. If you are using a supported version and see this message, you'll need to update your Expo Go app. If you experience this error in a standalone app, make sure you have published a JS bundle for the specific SDK version and release channel for the given binary via `expo publish`.
+
+### React Native version mismatch
+
+- The development server running in your terminal is bundling a different version of React Native than the app in your device or simulator.
+
+- [Align your versions of react-native](../troubleshooting/react-native-version-mismatch) by checking the versions in your `app.json` and `package.json`
+
+### Application has not been registered
+
+- There is a mismatch between the AppKey registered in the native and JS portion of your app.
+
+- [Align your AppKey](../troubleshooting/application-has-not-been-registered) with the native side of your project.
+
+### Application not behaving as expected
+
+- It is possible caches may be preventing you from seeing the current state of your application.
+
+- Clear all caches associated with your project in [Unix-like](../troubleshooting/clear-cache-macos-linux/) or [Windows](../troubleshooting/clear-cache-windows/) systems.

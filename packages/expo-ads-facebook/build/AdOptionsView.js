@@ -1,7 +1,7 @@
 import { requireNativeViewManager } from '@unimodules/core';
 import nullthrows from 'nullthrows';
 import React from 'react';
-import { findNodeHandle } from 'react-native';
+import { Platform, findNodeHandle } from 'react-native';
 import { AdOptionsViewContext } from './withNativeAd';
 var NativeOrientation;
 (function (NativeOrientation) {
@@ -23,11 +23,18 @@ export default class AdOptionsView extends React.Component {
                 width: this.props.iconSize,
                 height: this.props.iconSize * 2,
             };
+        const { iconSize, orientation, ...props } = this.props;
+        const platformSpecificProps = Platform.OS === 'android'
+            ? {
+                iconSize,
+                orientation: this.shouldAlignHorizontal()
+                    ? NativeOrientation.Horizontal
+                    : NativeOrientation.Vertical,
+            }
+            : null;
         return (React.createElement(AdOptionsViewContext.Consumer, null, (contextValue) => {
             const adViewRef = nullthrows(contextValue && contextValue.nativeAdViewRef);
-            return (React.createElement(NativeAdOptionsView, Object.assign({}, this.props, { style: [this.props.style, style], nativeAdViewTag: findNodeHandle(adViewRef.current), orientation: this.shouldAlignHorizontal()
-                    ? NativeOrientation.Horizontal
-                    : NativeOrientation.Vertical })));
+            return (React.createElement(NativeAdOptionsView, Object.assign({}, props, platformSpecificProps, { style: [this.props.style, style], nativeAdViewTag: findNodeHandle(adViewRef.current) })));
         }));
     }
 }

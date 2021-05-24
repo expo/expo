@@ -12,7 +12,6 @@ typedef void (^ABI39_0_0EXUpdatesVerifySignatureErrorBlock)(NSError *error);
 + (void)verifySignatureWithData:(NSString *)data
                       signature:(NSString *)signature
                          config:(ABI39_0_0EXUpdatesConfig *)config
-                 cacheDirectory:(NSURL *)cacheDirectory
                    successBlock:(ABI39_0_0EXUpdatesVerifySignatureSuccessBlock)successBlock
                      errorBlock:(ABI39_0_0EXUpdatesVerifySignatureErrorBlock)errorBlock;
 

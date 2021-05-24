@@ -1,1 +1,0 @@
-../../../FBSDKCoreKit/FBSDKCoreKit/FBSDKCoreKit/Internal/ServerConfiguration/FBSDKGateKeeperManager.h

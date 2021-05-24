@@ -4,18 +4,18 @@ import android.os.Bundle;
 import androidx.core.util.Pools;
 
 import org.unimodules.core.interfaces.services.EventEmitter;
-import org.unimodules.interfaces.facedetector.FaceDetector;
 
 import expo.modules.camera.CameraViewManager;
+import expo.modules.interfaces.facedetector.FaceDetectorInterface;
 
 public class FaceDetectionErrorEvent extends EventEmitter.BaseEvent {
   private static final Pools.SynchronizedPool<FaceDetectionErrorEvent> EVENTS_POOL = new Pools.SynchronizedPool<>(3);
-  private FaceDetector mFaceDetector;
+  private FaceDetectorInterface mFaceDetector;
 
   private FaceDetectionErrorEvent() {
   }
 
-  public static FaceDetectionErrorEvent obtain(FaceDetector faceDetector) {
+  public static FaceDetectionErrorEvent obtain(FaceDetectorInterface faceDetector) {
     FaceDetectionErrorEvent event = EVENTS_POOL.acquire();
     if (event == null) {
       event = new FaceDetectionErrorEvent();
@@ -24,7 +24,7 @@ public class FaceDetectionErrorEvent extends EventEmitter.BaseEvent {
     return event;
   }
 
-  private void init(FaceDetector faceDetector) {
+  private void init(FaceDetectorInterface faceDetector) {
     mFaceDetector = faceDetector;
   }
 

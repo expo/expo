@@ -36,6 +36,14 @@ public class iOSSection: NSObject, Decodable {}
 @objc
 public class EXDevLauncherManifest: NSObject, Decodable {
   @objc
+  var _rawData: String? = nil
+  
+  @objc
+  public var rawData: String? {
+    return _rawData
+  }
+  
+  @objc
   public var name: String
   
   @objc
@@ -85,7 +93,10 @@ public class EXDevLauncherManifest: NSObject, Decodable {
   public static func fromJsonData(_ jsonData: Data) -> EXDevLauncherManifest? {
     let decoder = JSONDecoder()
     do {
-        return try decoder.decode(EXDevLauncherManifest.self, from: jsonData)
+      let rawManifest = String(decoding: jsonData, as: UTF8.self)
+      let decodedManifest = try decoder.decode(EXDevLauncherManifest.self, from: jsonData)
+      decodedManifest._rawData = rawManifest
+      return decodedManifest
     } catch {
       return nil
     }

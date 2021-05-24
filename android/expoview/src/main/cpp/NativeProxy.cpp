@@ -60,10 +60,16 @@ void NativeProxy::installJSIBindings()
   };
 
   auto requestRender = [this, getCurrentTime](std::function<void(double)> onRender, jsi::Runtime &rt) {
-    double frameTimestamp = getCurrentTime();
-    rt.global().setProperty(rt, "_frameTimestamp", frameTimestamp);
-    this->requestRender(std::move(onRender));
-    rt.global().setProperty(rt, "_frameTimestamp", jsi::Value::undefined());
+    //doNoUse -> NodesManager passes here a timestamp from choreographer which is useless for us 
+    //as we use diffrent timer to better handle events. The lambda is translated to NodeManager.OnAnimationFrame
+    //and treated just like reanimated 1 frame callbacks which make use of the timestamp.
+    auto wrappedOnRender = [getCurrentTime, &rt, onRender](double doNotUse) { 
+       double frameTimestamp = getCurrentTime();
+       rt.global().setProperty(rt, "_frameTimestamp", frameTimestamp);
+       onRender(frameTimestamp);
+       rt.global().setProperty(rt, "_frameTimestamp", jsi::Value::undefined());
+    };
+    this->requestRender(std::move(wrappedOnRender));
   };
 
   auto propObtainer = [this](jsi::Runtime &rt, const int viewTag, const jsi::String &propName) -> jsi::Value {

@@ -1,10 +1,6 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
+import { theme } from '@expo/styleguide';
 
-/**
- * prism.js Coy theme for JavaScript, CoffeeScript, CSS and HTML
- * Based on https://github.com/tshedor/workshop-wp-theme (Example: http://workshop.kansan.com/category/sessions/basics or http://workshop.timshedor.com/category/sessions/basics);
- * @author Tim  Shedor
- */
 export const globalPrism = css`
   :not(pre) > code[class*='language-'],
   pre[class*='language-'] {
@@ -18,8 +14,8 @@ export const globalPrism = css`
     position: relative;
     padding: 0.2em;
     border-radius: 0.3em;
-    color: #c92c2c;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: color: ${theme.code.property};
+    border: 1px solid ${theme.border.default};
     display: inline;
     white-space: normal;
   }
@@ -53,11 +49,11 @@ export const globalPrism = css`
   .token.prolog,
   .token.doctype,
   .token.cdata {
-    color: #7d8b99;
+    color: ${theme.code.comment}
   }
 
   .token.punctuation {
-    color: #5f6364;
+    color: ${theme.code.punctuation}
   }
 
   .token.property,
@@ -68,7 +64,7 @@ export const globalPrism = css`
   .token.constant,
   .token.symbol,
   .token.deleted {
-    color: #c92c2c;
+    color: ${theme.code.property}
   }
 
   .token.selector,
@@ -78,31 +74,31 @@ export const globalPrism = css`
   .token.function,
   .token.builtin,
   .token.inserted {
-    color: #2f9c0a;
+    color: ${theme.code.builtin}
   }
 
   .token.operator,
   .token.entity,
   .token.url,
   .token.variable {
-    color: #a67f59;
+    color: ${theme.code.operator}
   }
 
   .token.atrule,
   .token.attr-value,
   .token.keyword,
   .token.class-name {
-    color: #1990b8;
+    color: ${theme.code.keyword}
   }
 
   .token.regex,
   .token.important {
-    color: #e90;
+    color: ${theme.code.regex}
   }
 
   .language-css .token.string,
   .style .token.string {
-    color: #a67f59;
+    color: ${theme.code.string}
   }
 
   .token.important {
@@ -135,7 +131,7 @@ export const globalPrism = css`
   .token.tab:not(:empty):before,
   .token.cr:before,
   .token.lf:before {
-    color: #e0d7d1;
+    color: ${theme.code.before}
   }
 
   pre[class*='language-'].line-numbers {

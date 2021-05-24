@@ -3,7 +3,7 @@
 #if __has_include(<EXSegment/EXSegment.h>)
 #import "EXScopedSegment.h"
 #import "EXConstantsBinding.h"
-#import <UMConstantsInterface/UMConstantsInterface.h>
+#import <ExpoModulesCore/EXConstantsInterface.h>
 
 @interface EXScopedSegment ()
 
@@ -15,7 +15,7 @@
 
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
-  _isInExpoClient = [((EXConstantsBinding *)[moduleRegistry getModuleImplementingProtocol:@protocol(UMConstantsInterface)]).appOwnership isEqualToString:@"expo"];
+  _isInExpoClient = [((EXConstantsBinding *)[moduleRegistry getModuleImplementingProtocol:@protocol(EXConstantsInterface)]).appOwnership isEqualToString:@"expo"];
 }
 
 UM_EXPORT_METHOD_AS(setEnabledAsync,

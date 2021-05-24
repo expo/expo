@@ -474,7 +474,7 @@ The easiest way to configure the splash screen in bare React Native projects is 
 2. [Update `MainActivity`](#-update-mainactivityjavakt)
 3. [Configure `res/drawable/splashscreen_image.png`](#-configure-resdrawablesplashscreen_imagepng)
 4. [Configure `res/values/colors.xml`](#-configure-resvaluescolorsxml)
-5. [Configure `res/drawable/spalashscreen.xml`](#-configure-resdrawablesplashscreenxml)
+5. [Configure `res/drawable/splashscreen.xml`](#-configure-resdrawablesplashscreenxml)
 6. [Configure `res/values/styles.xml`](#-configure-resvaluesstylesxml)
 7. [Configure `AndroidManifest.xml`](#-configure-androidmanifestxml)
 8. [(<em>optional</em>) Enable dark mode](#-optional-enable-dark-mode-1)

@@ -1,5 +1,5 @@
 ---
-title: Using Libraries
+title: Using libraries
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
@@ -82,7 +82,7 @@ After React Native Directory, the [npm registry](https://www.npmjs.com/) is the 
 
 ### Determining Third-Party Library Compatibility
 
-**Check React Native Directory**: find the library on the website (if it's there) and verify that it has a "✔️ Expo client" tag. You can also enable the [filter by Expo client](https://reactnative.directory/?expo=true) option to only show libraries that are compatible with the Expo managed workflow.
+**Check React Native Directory**: find the library on the website (if it's there) and verify that it has a "✔️ Expo Go" tag. You can also enable the [filter by Expo Go](https://reactnative.directory/?expo=true) option to only show libraries that are compatible with the Expo managed workflow.
 
 **Not listed on the directory?** find the project on GitHub, an easy way to do this is with `npx npm-home --github <package-name>`. For example, to open the GitHub page for react-native-localize you would run:
 

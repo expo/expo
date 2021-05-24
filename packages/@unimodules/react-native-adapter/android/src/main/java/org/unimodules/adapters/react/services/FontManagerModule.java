@@ -8,12 +8,13 @@ import java.util.Collections;
 import java.util.List;
 
 import org.unimodules.core.interfaces.InternalModule;
-import org.unimodules.interfaces.font.FontManager;
 
-public class FontManagerModule implements FontManager, InternalModule {
+import expo.modules.interfaces.font.FontManagerInterface;
+
+public class FontManagerModule implements FontManagerInterface, InternalModule {
   @Override
   public List<Class> getExportedInterfaces() {
-    return Collections.<Class>singletonList(FontManager.class);
+    return Collections.<Class>singletonList(FontManagerInterface.class);
   }
 
   @Override

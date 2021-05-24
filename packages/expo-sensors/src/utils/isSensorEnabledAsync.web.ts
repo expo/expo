@@ -1,8 +1,57 @@
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import { Platform } from '@unimodules/core';
+import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
 
 type SensorEventName = 'deviceorientation' | 'devicemotion';
 
+export async function getPermissionsAsync(): Promise<PermissionResponse> {
+  // We can infer from the requestor if this is an older browser.
+  const status = getRequestPermission()
+    ? PermissionStatus.UNDETERMINED
+    : isIOS()
+    ? PermissionStatus.DENIED
+    : PermissionStatus.GRANTED;
+  return {
+    status,
+    expires: 'never',
+    canAskAgain: true,
+    granted: status === PermissionStatus.GRANTED,
+  };
+}
+
+export async function requestPermissionsAsync(): Promise<PermissionResponse> {
+  const status = await askSensorPermissionAsync();
+  return {
+    status,
+    expires: 'never',
+    granted: status === PermissionStatus.GRANTED,
+    canAskAgain: false,
+  };
+}
+
+async function askSensorPermissionAsync(): Promise<PermissionStatus> {
+  const requestPermission = getRequestPermission();
+  // Technically this is incorrect because it doesn't account for iOS 12.2 Safari.
+  // But unfortunately we can only abstract so much.
+  if (!requestPermission) return PermissionStatus.GRANTED;
+
+  // If this isn't invoked in a touch-event then it never resolves.
+  // Safari probably should throw an error but because it doesn't we have no way of informing the developer.
+  const status = await requestPermission();
+  switch (status) {
+    case 'granted':
+      return PermissionStatus.GRANTED;
+    case 'denied':
+      return PermissionStatus.DENIED;
+    default:
+      return PermissionStatus.UNDETERMINED;
+  }
+}
+
 export function getRequestPermission(): (() => Promise<PermissionState>) | null {
+  if (!Platform.isDOMAvailable) {
+    return null;
+  }
+
   if (typeof DeviceMotionEvent !== 'undefined' && !!DeviceMotionEvent?.requestPermission) {
     return DeviceMotionEvent.requestPermission;
   } else if (
@@ -41,7 +90,7 @@ export async function assertSensorEventEnabledAsync(
   eventName: SensorEventName,
   timeout?: number
 ): Promise<boolean> {
-  if (!canUseDOM) {
+  if (!Platform.isDOMAvailable) {
     return false;
   }
 
@@ -72,7 +121,7 @@ export async function isSensorEnabledAsync(
   //
   timeout: number = 250
 ): Promise<boolean> {
-  if (!canUseDOM) {
+  if (!Platform.isDOMAvailable) {
     return false;
   }
 

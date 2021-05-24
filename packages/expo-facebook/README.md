@@ -25,6 +25,17 @@ expo install expo-facebook
 
 Run `npx pod-install` after installing the npm package.
 
+Add `NSUserTrackingUsageDescription` key to your `Info.plist`:
+
+```xml
+<key>NSUserTrackingUsageDescription</key>
+<string>This identifier will be used to deliver personalized ads to you.</string>
+```
+
+Add the required `SKAdNetworkIdentifier` items to your `Info.plist`: [Facebook SKAdNetwork](https://developers.facebook.com/docs/SKAdNetwork).
+
+Finally, create a blank Swift file in your project (we recommend naming it `noop-file.swift`). Learn more: [FBSDK blank Swift file](https://github.com/facebook/react-native-fbsdk/issues/755).
+
 ### Configure for Android
 
 No additional set up necessary.

@@ -8,7 +8,13 @@ import androidx.annotation.UiThread
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactNativeHost
+import com.facebook.react.ReactPackage
+import com.facebook.react.bridge.ReactContext
+import expo.interfaces.devmenu.DevMenuManagerProviderInterface
+import expo.modules.devlauncher.helpers.changeUrlScheme
+import expo.modules.devlauncher.helpers.getAppUrlFromDevLauncherUrl
 import expo.modules.devlauncher.helpers.getFieldInClassHierarchy
+import expo.modules.devlauncher.helpers.isDevLauncherUrl
 import expo.modules.devlauncher.helpers.runBlockingOnMainThread
 import expo.modules.devlauncher.launcher.DevLauncherActivity
 import expo.modules.devlauncher.launcher.DevLauncherClientHost
@@ -18,53 +24,58 @@ import expo.modules.devlauncher.launcher.DevLauncherReactActivityDelegateSupplie
 import expo.modules.devlauncher.launcher.DevLauncherRecentlyOpenedAppsRegistry
 import expo.modules.devlauncher.launcher.loaders.DevLauncherExpoAppLoader
 import expo.modules.devlauncher.launcher.loaders.DevLauncherReactNativeAppLoader
+import expo.modules.devlauncher.launcher.manifest.DevLauncherManifest
 import expo.modules.devlauncher.launcher.manifest.DevLauncherManifestParser
+import expo.modules.devlauncher.launcher.menu.DevLauncherMenuDelegate
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityNOPDelegate
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityRedirectDelegate
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
-import java.net.URLDecoder
 
 // Use this to load from a development server for the development client launcher UI
 //  private final String DEV_LAUNCHER_HOST = "10.0.0.175:8090";
 private val DEV_LAUNCHER_HOST: String? = null
 
-private const val NEW_ACTIVITY_FLAGS =
-  Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION
+private const val NEW_ACTIVITY_FLAGS = Intent.FLAG_ACTIVITY_NEW_TASK or
+  Intent.FLAG_ACTIVITY_CLEAR_TASK or
+  Intent.FLAG_ACTIVITY_NO_ANIMATION
+
+private var MenuDelegateWasInitialized = false
 
 class DevLauncherController private constructor(
-  private val mContext: Context,
-  private val mAppHost: ReactNativeHost
+  private val context: Context,
+  internal val appHost: ReactNativeHost
 ) {
-  val devClientHost = DevLauncherClientHost((mContext as Application), DEV_LAUNCHER_HOST)
+  val devClientHost = DevLauncherClientHost((context as Application), DEV_LAUNCHER_HOST)
   private val httpClient = OkHttpClient()
   private val lifecycle = DevLauncherLifecycle()
-  private val recentlyOpedAppsRegistry = DevLauncherRecentlyOpenedAppsRegistry(mContext)
+  private val recentlyOpedAppsRegistry = DevLauncherRecentlyOpenedAppsRegistry(context)
+  var manifest: DevLauncherManifest? = null
+    private set
   val pendingIntentRegistry = DevLauncherIntentRegistry()
+  var latestLoadedApp: Uri? = null
 
-  enum class Mode {
+  internal enum class Mode {
     LAUNCHER, APP
   }
 
-  var mode = Mode.LAUNCHER
+  internal var mode = Mode.LAUNCHER
 
-  suspend fun loadApp(url: String, mainActivity: ReactActivity? = null) {
-    ensureHostWasCleared(mAppHost, activityToBeInvalidated = mainActivity)
+  suspend fun loadApp(url: Uri, mainActivity: ReactActivity? = null) {
+    ensureHostWasCleared(appHost, activityToBeInvalidated = mainActivity)
 
-    val parsedUrl = Uri.parse(url.trim())
-      .buildUpon()
-      .scheme("http")
-      .build()
-      .toString()
+    val parsedUrl = changeUrlScheme(url, "http")
+
     val manifestParser = DevLauncherManifestParser(httpClient, parsedUrl)
     val appIntent = createAppIntent()
 
     val appLoader = if (!manifestParser.isManifestUrl()) {
       // It's (maybe) a raw React Native bundle
-      DevLauncherReactNativeAppLoader(url, mAppHost, mContext)
+      DevLauncherReactNativeAppLoader(url, appHost, context)
     } else {
-      DevLauncherExpoAppLoader(manifestParser.parseManifest(), mAppHost, mContext)
+      manifest = manifestParser.parseManifest()
+      DevLauncherExpoAppLoader(manifest!!, appHost, context)
     }
 
     val appLoaderListener = appLoader.createOnDelegateWillBeCreatedListener()
@@ -74,37 +85,40 @@ class DevLauncherController private constructor(
     // Note that `launch` method is a suspend one. So the execution will be stopped here until the method doesn't finish.
     if (appLoader.launch(appIntent)) {
       recentlyOpedAppsRegistry.appWasOpened(url, appLoader.getAppName())
+      latestLoadedApp = url
       // Here the app will be loaded - we can remove listener here.
       lifecycle.removeListener(appLoaderListener)
     } else {
       // The app couldn't be loaded. For now, we just return to the launcher.
       mode = Mode.LAUNCHER
+      manifest = null
     }
   }
 
   fun getRecentlyOpenedApps(): Map<String, String?> = recentlyOpedAppsRegistry.getRecentlyOpenedApps()
 
   fun navigateToLauncher() {
-    ensureHostWasCleared(mAppHost)
+    ensureHostWasCleared(appHost)
 
     mode = Mode.LAUNCHER
-    mContext.applicationContext.startActivity(createLauncherIntent())
+    manifest = null
+    context.applicationContext.startActivity(createLauncherIntent())
   }
 
   private fun handleIntent(intent: Intent?, activityToBeInvalidated: ReactActivity?): Boolean {
     intent
       ?.data
       ?.let { uri ->
-        if ("expo-development-client" != uri.host) {
+        if (!isDevLauncherUrl(uri)) {
           return handleExternalIntent(intent)
         }
 
-        if (uri.getQueryParameter("url") == null) {
+        val appUrl = getAppUrlFromDevLauncherUrl(uri)
+        if (appUrl == null) {
           navigateToLauncher()
           return true
         }
 
-        val appUrl = URLDecoder.decode(uri.getQueryParameter("url"), "UTF-8")
         GlobalScope.launch {
           loadApp(appUrl, activityToBeInvalidated)
         }
@@ -128,6 +142,23 @@ class DevLauncherController private constructor(
         clearHost(host, activityToBeInvalidated)
       }
     }
+  }
+
+  fun maybeInitDevMenuDelegate(context: ReactContext) {
+    if (MenuDelegateWasInitialized) {
+      return
+    }
+    MenuDelegateWasInitialized = true
+
+    val devMenuManagerProvider = context
+      .catalystInstance
+      .nativeModules
+      .find { nativeModule ->
+        nativeModule is DevMenuManagerProviderInterface
+      } as? DevMenuManagerProviderInterface
+
+    val devMenuManager = devMenuManagerProvider?.getDevMenuManager() ?: return
+    devMenuManager.setDelegate(DevLauncherMenuDelegate(instance))
   }
 
   @UiThread
@@ -166,7 +197,7 @@ class DevLauncherController private constructor(
   }
 
   private fun createLauncherIntent() =
-    Intent(mContext, DevLauncherActivity::class.java)
+    Intent(context, DevLauncherActivity::class.java)
       .apply { addFlags(NEW_ACTIVITY_FLAGS) }
 
   private fun createAppIntent() =
@@ -188,17 +219,18 @@ class DevLauncherController private constructor(
   private fun createBasicAppIntent() =
     if (sLauncherClass == null) {
       checkNotNull(
-        mContext
+        context
           .packageManager
-          .getLaunchIntentForPackage(mContext.packageName)
+          .getLaunchIntentForPackage(context.packageName)
       ) { "Couldn't find the launcher class." }
     } else {
-      Intent(mContext, sLauncherClass!!)
+      Intent(context, sLauncherClass!!)
     }.apply { addFlags(NEW_ACTIVITY_FLAGS) }
 
   companion object {
     private var sInstance: DevLauncherController? = null
     private var sLauncherClass: Class<*>? = null
+    internal var sAdditionalPackages: List<ReactPackage>? = null
 
     @JvmStatic
     fun wasInitialized() = sInstance != null
@@ -216,8 +248,9 @@ class DevLauncherController private constructor(
     }
 
     @JvmStatic
-    fun initialize(context: Context, appHost: ReactNativeHost, launcherClass: Class<*>) {
+    fun initialize(context: Context, appHost: ReactNativeHost, additionalPackages: List<ReactPackage>?, launcherClass: Class<*>? = null) {
       initialize(context, appHost)
+      sAdditionalPackages = additionalPackages
       sLauncherClass = launcherClass
     }
 

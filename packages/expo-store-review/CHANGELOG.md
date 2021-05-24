@@ -4,11 +4,39 @@
 
 ### 🛠 Breaking changes
 
-- Dropped support for iOS 10.0 ([#11344](https://github.com/expo/expo/pull/11344) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+- Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
+
+## 4.0.2 — 2021-04-13
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.1 — 2021-04-01
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.0 — 2021-03-10
+
+### 🛠 Breaking changes
+
+- Removed `StoreReview.isSupported()` in favor of `StoreReview.isAvailableAsync()`. ([#11905](https://github.com/expo/expo/pull/11905) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🎉 New features
+
+- Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
+
+### 🐛 Bug fixes
+
+- Remove peerDependencies and unimodulePeerDependencies from Expo modules. ([#11980](https://github.com/expo/expo/pull/11980) by [@brentvatne](https://github.com/brentvatne))
+
+## 3.0.0 — 2021-01-15
+
+### 🛠 Breaking changes
+
+- Dropped support for iOS 10.0 ([#11344](https://github.com/expo/expo/pull/11344) by [@tsapeta](https://github.com/tsapeta))
 
 ## 2.3.0 — 2020-11-17
 

@@ -50,6 +50,15 @@ Determine whether the device has saved fingerprints or facial data to use for au
 
 Returns a promise resolving to boolean value indicating whether the device has saved fingerprints or facial data for authentication.
 
+### `LocalAuthentication.getEnrolledLevelAsync()`
+
+Determine what kind of authentication is enrolled on the device.
+
+#### Returns
+
+Returns a promise resolving to value `LocalAuthentication.SecurityLevel.{NONE, SECRET, BIOMETRIC}`. A value of `NONE` indicates no enrolled authentication, `SECRET` indicates non-biometric authentication (e.g. PIN, Pattern), `BIOMETRIC` indicates biometric authentication.
+Note that on Android devices prior to M, `SECRET` can be returned if only the SIM lock has been enrolled, which is not the method that `LocalAuthentication.authenticateAsync` prompts.
+
 ### `LocalAuthentication.authenticateAsync(options)`
 
 Attempts to authenticate via Fingerprint/TouchID (or FaceID if available on the device).

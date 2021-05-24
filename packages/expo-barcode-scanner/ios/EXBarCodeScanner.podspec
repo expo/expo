@@ -14,9 +14,8 @@ Pod::Spec.new do |s|
   s.source         = { git: 'https://github.com/expo/expo.git' }
 
   s.dependency 'UMCore'
-  s.dependency 'UMBarCodeScannerInterface'
+  s.dependency 'ExpoModulesCore'
   s.dependency 'UMImageLoaderInterface'
-  s.dependency 'UMPermissionsInterface'
   s.dependency 'ZXingObjC/PDF417'
   s.dependency 'ZXingObjC/OneD'
 

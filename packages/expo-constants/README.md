@@ -38,6 +38,23 @@ To set up the script on Android, apply the following diff to `android/app/build.
 +apply from: "../../node_modules/expo-constants/scripts/get-app-config-android.gradle"
 ```
 
+#### Monorepo Support
+
+In a monorepo, the `expo-constants` package might be in a different folder than the native scripts are expecting. You can easily symlink the node module to your app's local `node_modules` folder by doing the following:
+ 
+- Follow the setup instructions for [`expo-yarn-workspaces`](https://github.com/expo/expo/tree/master/packages/expo-yarn-workspaces). 
+- Add the following configuration to your app's `package.json`:
+
+```json
+{
+  "expo-yarn-workspaces": {
+    "symlinks": ["expo-constants"]
+  }
+}
+```
+
+- Finally, run `yarn` in the app folder to create symlinks to `expo-constants` in your app's local `node_modules` folder.
+
 # Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).

@@ -8,6 +8,7 @@
 package versioned.host.exp.exponent.modules.api.components.picker;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -155,6 +156,12 @@ public abstract class ReactPickerManager extends SimpleViewManager<ReactPicker> 
         textView.setTextColor(mPrimaryTextColor);
       } else if (item.hasKey("color") && !item.isNull("color")) {
         textView.setTextColor(item.getInt("color"));
+      }
+
+      if (item.hasKey("fontFamily") && !item.isNull("fontFamily")) {
+        Typeface face = Typeface.create(item.getString("fontFamily"), Typeface.NORMAL);
+        // Typeface face = Typeface.create("MuseoSans-500", Typeface.NORMAL);
+        textView.setTypeface(face);
       }
 
       return convertView;

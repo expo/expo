@@ -31,12 +31,14 @@ function guardPermission() {
 }
 
 async function _subscribeDeviceToPushNotificationsAsync(): Promise<DevicePushToken['data']> {
+  // @ts-ignore: TODO: not on the schema
   if (!Constants.manifest.notification?.vapidPublicKey) {
     throw new CodedError(
       'ERR_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG',
       'You must provide `notification.vapidPublicKey` in `app.json` to use push notifications on web. Learn more: https://docs.expo.io/versions/latest/guides/using-vapid/.'
     );
   }
+  // @ts-ignore: TODO: not on the schema
   if (!Constants.manifest.notification?.serviceWorkerPath) {
     throw new CodedError(
       'ERR_NOTIFICATIONS_PUSH_MISSING_CONFIGURATION',
@@ -48,11 +50,13 @@ async function _subscribeDeviceToPushNotificationsAsync(): Promise<DevicePushTok
   let registration: ServiceWorkerRegistration | null = null;
   try {
     registration = await navigator.serviceWorker.register(
+      // @ts-ignore: TODO: not on the schema
       Constants.manifest.notification.serviceWorkerPath
     );
   } catch (error) {
     throw new CodedError(
       'ERR_NOTIFICATIONS_PUSH_REGISTRATION_FAILED',
+      // @ts-ignore: TODO: not on the schema
       `Could not register this device for push notifications because the service worker (${Constants.manifest.notification.serviceWorkerPath}) could not be registered: ${error}`
     );
   }
@@ -67,6 +71,7 @@ async function _subscribeDeviceToPushNotificationsAsync(): Promise<DevicePushTok
 
   const subscribeOptions = {
     userVisibleOnly: true,
+    // @ts-ignore: TODO: not on the schema
     applicationServerKey: _urlBase64ToUint8Array(Constants.manifest.notification.vapidPublicKey),
   };
   let pushSubscription: PushSubscription | null = null;
@@ -95,7 +100,7 @@ async function _subscribeDeviceToPushNotificationsAsync(): Promise<DevicePushTok
   // We wrap it with `fromExpoWebClient` to make sure other message
   // will not override content such as `notificationIcon`.
   // https://stackoverflow.com/a/35729334/2603230
-  const notificationIcon = (Constants.manifest.notification || {}).icon;
+  const notificationIcon = (Constants.manifest?.notification || {}).icon;
   await registration.active.postMessage(
     JSON.stringify({ fromExpoWebClient: { notificationIcon } })
   );

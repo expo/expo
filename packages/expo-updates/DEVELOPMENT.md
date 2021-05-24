@@ -19,7 +19,7 @@ Feel free to add other options here!
 Configuration for iOS should be done in Expo.plist. On Android, most options can be configured in AndroidManifest.xml.
 
 - Make sure that the URL (`EXUpdatesURL`, `expo.modules.updates.EXPO_UPDATE_URL`) is properly set.
-- Make sure that one of either the SDK version (`EXUpdatesSDKVersion`, `expo.modules.updates.EXPO_SDK_VERSION`) or runtime version (`EXUpdatesRuntimeVersion`, `expo.modules.updates.EXPO_SDK_VERSION`) is also properly set.
+- Make sure that one of either the SDK version (`EXUpdatesSDKVersion`, `expo.modules.updates.EXPO_SDK_VERSION`) or runtime version (`EXUpdatesRuntimeVersion`, `expo.modules.updates.EXPO_RUNTIME_VERSION`) is also properly set.
 
 ### Ignore Embedded Update
 
@@ -49,6 +49,8 @@ Sometimes you may want to enable expo-updates in a debug build -- for example, i
 
 To do this, first follow the directions above to [Ignore Embedded Update](#ignore-embedded-update).
 
+In Xcode's Bundle React Native code and images Build Phase, add the line `export FORCE_BUNDLING=true` to the top, and in android/app/build.gradle, add `bundleInDebug: true` to `project.ext.react`.
+
 Then, in AppDelegate.m, find both instances of `#ifdef DEBUG` and delete or comment out the following lines:
 ```objective-c
 // #ifdef DEBUG
@@ -60,6 +62,11 @@ Then, in AppDelegate.m, find both instances of `#ifdef DEBUG` and delete or comm
 
 Similarly, in MainApplication.java, find the instances of `BuildConfig.DEBUG` and delete or comment out all paths where `BuildConfig.DEBUG` evaluates to `true`, like so:
 ```java
+public boolean getUseDeveloperSupport() {
+//   return BuildConfig.DEBUG;
+  return false;
+}
+
 // if (BuildConfig.DEBUG) {
 //   return something;          <- delete or comment out these lines
 // } else {

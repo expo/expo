@@ -1,6 +1,6 @@
 {
   "name": "expo-analytics-segment",
-  "version": "9.1.0",
+  "version": "10.1.1",
   "description": "Expo module that provides access to Segment mobile analytics",
   "main": "build/Segment.js",
   "types": "build/Segment.d.ts",
@@ -34,15 +34,10 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*",
-    "unimodules-constants-interface": "*"
-  },
-  "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
+  "dependencies": {
+    "expo-modules-core": "~0.0.1"
   },
   "devDependencies": {
-    "expo-module-scripts": "~1.2.0"
+    "expo-module-scripts": "^2.0.0"
   }
 }

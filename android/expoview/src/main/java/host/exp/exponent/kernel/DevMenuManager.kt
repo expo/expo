@@ -27,7 +27,6 @@ import javax.inject.Inject
 import host.exp.exponent.modules.ExponentKernelModule
 import host.exp.exponent.storage.ExponentSharedPreferences
 
-
 private const val DEV_MENU_JS_MODULE_NAME = "HomeMenu"
 
 /**
@@ -93,7 +92,7 @@ class DevMenuManager {
         // Otherwise, touches and other gestures may not work correctly.
         kernel?.reactInstanceManager?.onHostResume(activity)
       } catch (exception: Exception) {
-        Log.e("ExpoDevMenu", exception.message)
+        Log.e("ExpoDevMenu", exception.message ?: "No error message.")
       }
     }
   }

@@ -1,13 +1,15 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
+import { theme } from '@expo/styleguide';
 import React, { useEffect, useState } from 'react';
 import { parseDiff, Diff, Hunk } from 'react-diff-view';
 
 const TITLE_CONTAINER = css`
   padding: 15px;
-  background-color: rgba(246, 246, 246, 0.8);
-  border-bottom: 1px solid #e3e3e3;
+  background-color: ${theme.background.secondary};
+  border-bottom: 1px solid ${theme.border.default};
   font-family: monospace;
   font-size: 0.9rem;
+  color: ${theme.text.default};
 `;
 
 const Title: React.FC = ({ children }) => (

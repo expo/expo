@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI40_0_0/Expo/EXHaptics/ABI40_0_0EXHaptics/ABI40_0_0EXHapticsModule.h

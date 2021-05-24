@@ -38,7 +38,7 @@ npm install --save-dev eas-cli
 
 Next, we need to ensure that we can authenticate ourselves on CI as the owner of the app. This is possible by storing a personal access token in the `EXPO_TOKEN` environment variable in the CI settings.
 
-See [the guide for personal access tokens](https://docs.expo.io/accounts/personal/#personal-access-tokens) to learn how to create access tokens.
+See [the guide for personal access tokens](/accounts/programmatic-access.md#personal-account-personal-access-tokens) to learn how to create access tokens.
 
 ### Trigger new builds
 
@@ -69,7 +69,7 @@ before_script:
 
 jobs:
   include:
-    - stage: deploy
+    - stage: build
       node_js: lts/*
       script:
         - npm ci

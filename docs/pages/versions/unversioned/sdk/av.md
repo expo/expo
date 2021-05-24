@@ -33,6 +33,8 @@ In this page, we reference operations on `playbackObject`s. Here is an example o
 #### Example: `Audio.Sound`
 
 ```javascript
+await Audio.setAudioModeAsync({ playsInSilentModeIOS: true });
+  
 const playbackObject = new Audio.Sound();
 // OR
 const { sound: playbackObject } = await Audio.Sound.createAsync(
@@ -131,7 +133,7 @@ On the `playbackObject` reference, the following API is provided:
 
   #### Parameters
 
-  - **statusToSet (_AVPlaybackStatusToSet_)** -- The new `AVPlaybackStatusToSet` of the `playbackObject`, whose values will override the current playback status. See below for details on `AVPlaybackStatusToSet`. `positionMillis` and `shouldPlay` properties will be overriden with respectively `0` and `true`.
+  - **statusToSet (_AVPlaybackStatusToSet_)** -- The new `AVPlaybackStatusToSet` of the `playbackObject`, whose values will override the current playback status. See below for details on `AVPlaybackStatusToSet`. `positionMillis` and `shouldPlay` properties will be overridden with respectively `0` and `true`.
 
   #### Returns
 

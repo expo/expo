@@ -87,6 +87,8 @@ await Network.getIpAddressAsync();
 
 ### `Network.getMacAddressAsync(interfaceName?)`
 
+> **This method is deprecated and will be removed in a future SDK version.** In Expo Go version 2.19.x and above, this method will always return the string `'02:00:00:00:00:00'`. Your standalone apps built with SDK 39 will continue to work as before.
+
 Gets the specified network interface's Mac address. On Android, it requires [`android.permission.ACCESS_WIFI_STATE`](https://developer.android.com/reference/android/Manifest.permission#ACCESS_WIFI_STATE) permission to access available network interfaces.
 
 #### Arguments (Android Only)

@@ -20,26 +20,18 @@ afterEvaluate {
   def inputExcludes = ["android/**", "ios/**"]
 
   android.applicationVariants.each { variant ->
-    def folderName = variant.name
-    def targetName = folderName.capitalize()
+    def targetName = variant.name.capitalize()
+    def targetPath = variant.dirName
 
-    def assetsDir = file("$buildDir/intermediates/merged_assets/${folderName}/out")
-
-    GradleVersion gradleVersion = GradleVersion.current()
-    if (gradleVersion < GradleVersion.version('5.0')) {
-      assetsDir = file("$buildDir/intermediates/merged_assets/${folderName}/merge${targetName}Assets/out")
-    }
-
-    // Bundle task name for variant
-    def bundleAppConfigTaskName = "bundle${targetName}ExpoConfig"
+    def assetsDir = file("$buildDir/generated/assets/expo-constants/${targetPath}")
 
     def currentBundleTask = tasks.create(
-        name: bundleAppConfigTaskName,
+        name: "create${targetName}ExpoConfig",
         type: Exec) {
-      description = "expo-constants: Bundle app config for ${targetName}."
+      description = "expo-constants: Create config for ${targetName}."
 
-      // Create dirs if they are not there (e.g. the "clean" task just ran)
       doFirst {
+        assetsDir.deleteDir()
         assetsDir.mkdirs()
       }
 
@@ -57,9 +49,31 @@ afterEvaluate {
       }
     }
 
-    currentBundleTask.dependsOn("merge${targetName}Resources")
-    currentBundleTask.dependsOn("merge${targetName}Assets")
+    def currentAssetsCopyTask = tasks.create(
+        name: "copy${targetName}ExpoConfig",
+        type: Copy) {
+      description = "expo-constants: Copy config into ${targetName}."
 
-    runBefore("process${targetName}Resources", currentBundleTask)
+      into ("$buildDir/intermediates")
+      into ("assets/${targetPath}") {
+        from(assetsDir)
+      }
+
+      // Workaround for Android Gradle Plugin 3.2+ new asset directory
+      into ("merged_assets/${variant.name}/merge${targetName}Assets/out") {
+        from(assetsDir)
+      }
+
+      // Workaround for Android Gradle Plugin 3.4+ new asset directory
+      into ("merged_assets/${variant.name}/out") {
+        from(assetsDir)
+      }
+
+      // mergeAssets must run first, as it clears the intermediates directory
+      dependsOn(variant.mergeAssetsProvider.get())
+      dependsOn(currentBundleTask)
+    }
+
+    runBefore("process${targetName}Resources", currentAssetsCopyTask)
   }
 }

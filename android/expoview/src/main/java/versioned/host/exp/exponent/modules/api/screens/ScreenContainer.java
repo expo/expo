@@ -136,8 +136,8 @@ public class ScreenContainer<T extends ScreenFragment> extends ViewGroup {
   }
 
   protected void removeAllScreens() {
-    for (int i = 0, size = mScreenFragments.size(); i < size; i++) {
-      mScreenFragments.get(i).getScreen().setContainer(null);
+    for (ScreenFragment screenFragment: mScreenFragments) {
+      screenFragment.getScreen().setContainer(null);
     }
     mScreenFragments.clear();
     markUpdated();
@@ -149,6 +149,15 @@ public class ScreenContainer<T extends ScreenFragment> extends ViewGroup {
 
   protected Screen getScreenAt(int index) {
     return mScreenFragments.get(index).getScreen();
+  }
+
+  public @Nullable Screen getTopScreen() {
+    for (ScreenFragment screenFragment: mScreenFragments) {
+      if (getActivityState(screenFragment) == Screen.ActivityState.ON_TOP) {
+        return screenFragment.getScreen();
+      }
+    }
+    return null;
   }
 
   private void setFragmentManager(FragmentManager fm) {
@@ -328,13 +337,13 @@ public class ScreenContainer<T extends ScreenFragment> extends ViewGroup {
     mFragmentManager.executePendingTransactions();
 
     performUpdate();
+    notifyContainerUpdate();
   }
 
   protected void performUpdate() {
     // detach screens that are no longer active
     Set<Fragment> orphaned = new HashSet<>(mFragmentManager.getFragments());
-    for (int i = 0, size = mScreenFragments.size(); i < size; i++) {
-      ScreenFragment screenFragment = mScreenFragments.get(i);
+    for (ScreenFragment screenFragment: mScreenFragments) {
       if (getActivityState(screenFragment) == Screen.ActivityState.INACTIVE && screenFragment.isAdded()) {
         detachScreen(screenFragment);
       }
@@ -353,18 +362,16 @@ public class ScreenContainer<T extends ScreenFragment> extends ViewGroup {
 
     boolean transitioning = true;
 
-    for (int i = 0, size = mScreenFragments.size(); i < size; i++) {
-      ScreenFragment screenFragment = mScreenFragments.get(i);
-      if (getActivityState(screenFragment) == Screen.ActivityState.ON_TOP) {
-        // if there is an "onTop" screen it means the transition has ended
-        transitioning = false;
-      }
+
+    Screen topScreen = getTopScreen();
+    if (topScreen != null) {
+      // if there is an "onTop" screen it means the transition has ended
+      transitioning = false;
     }
 
     // attach newly activated screens
     boolean addedBefore = false;
-    for (int i = 0, size = mScreenFragments.size(); i < size; i++) {
-      ScreenFragment screenFragment = mScreenFragments.get(i);
+    for (ScreenFragment screenFragment: mScreenFragments) {
       Screen.ActivityState activityState = getActivityState(screenFragment);
       if (activityState != Screen.ActivityState.INACTIVE && !screenFragment.isAdded()) {
         addedBefore = true;
@@ -376,5 +383,12 @@ public class ScreenContainer<T extends ScreenFragment> extends ViewGroup {
     }
 
     tryCommitTransaction();
+  }
+
+  protected void notifyContainerUpdate() {
+    Screen topScreen = getTopScreen();
+    if (topScreen != null) {
+      topScreen.getFragment().onContainerUpdate();
+    }
   }
 }

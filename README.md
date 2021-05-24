@@ -1,23 +1,28 @@
 <!-- Banner Image -->
 
-[![Expo](/style/header.png)](https://expo.io)
+<p align="center">
+  <a href="https://expo.io/">
+    <img alt="expo sdk" height="128" src="./style/banner.png">
+    <h1 align="center">Expo</h1>
+  </a>
+</p>
 
 <p align="center">
- 
    <a aria-label="SDK version" href="https://www.npmjs.com/package/expo" target="_blank">
-    <img alt="Expo SDK version" src="https://img.shields.io/npm/v/expo.svg?style=flat-square&label=SDK&labelColor=000000&color=4630EB">
+    <img alt="Expo SDK version" src="https://img.shields.io/npm/v/expo.svg?style=flat-square&label=SDK&labelColor=000000&color=4630EB" />
   </a>
-    
   <a aria-label="Join our forums" href="https://forums.expo.io" target="_blank">
-    <img alt="" src="https://img.shields.io/badge/Ask%20Questions%20-blue.svg?style=flat-square&logo=discourse&logoWidth=15&labelColor=000000&color=4630EB">
+    <img alt="Forums" src="https://img.shields.io/badge/Ask%20Questions%20-blue.svg?style=flat-square&logo=discourse&logoWidth=15&labelColor=000000&color=4630EB" />
+  </a>
+  <a aria-label="Join our Discord" href="https://discord.gg/4gtbPAdpaE" target="_blank">
+    <img alt="Discord" src="https://img.shields.io/discord/695411232856997968.svg?style=flat-square&labelColor=000000&color=4630EB&logo=discord&logoColor=FFFFFF&label=" />
   </a>
   <a aria-label="Expo is free to use" href="https://github.com/expo/expo/blob/master/LICENSE" target="_blank">
     <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-success.svg?style=flat-square&color=33CC12" target="_blank" />
   </a>
-<a aria-label="expo downloads" href="http://www.npmtrends.com/expo" target="_blank">
+  <a aria-label="expo downloads" href="http://www.npmtrends.com/expo" target="_blank">
     <img alt="Downloads" src="https://img.shields.io/npm/dm/expo.svg?style=flat-square&labelColor=gray&color=33CC12&label=Downloads" />
-</a>
-  
+  </a>
 </p>
 
 <p align="center">
@@ -69,23 +74,23 @@ Expo is an open-source platform for making universal native apps that run on And
 - [`home`](/home) contains the JavaScript source code of the app.
 - [`ios`](/ios) contains the iOS project.
 - [`ios/Exponent.xcworkspace`](/ios) is the Xcode workspace. Always open this instead of `Exponent.xcodeproj` because the workspace also loads the CocoaPods dependencies.
-- [`tools/expotools`](/tools/expotools) contains build and configuration tools.
+- [`tools`](/tools) contains build and configuration tools.
 - [`template-files`](/template-files) contains templates for files that require private keys. They are populated using the keys in `template-files/keys.json`.
 - [`template-files/ios/dependencies.json`](/template-files/ios/dependencies.json) specifies the CocoaPods dependencies of the app.
 
 ## 🏅 Badges
 
-Let everyone know your app is universal with _Expo_!
+Let everyone know your app can be run instantly in the _Expo Go_ app!
 <br/>
 
-[![runs with expo](https://img.shields.io/badge/Runs%20with%20Expo-000.svg?style=flat-square&logo=EXPO&labelColor=f3f3f3&logoColor=000)](https://expo.io/)
+[![runs with Expo Go](https://img.shields.io/badge/Runs%20with%20Expo%20Go-000.svg?style=flat-square&logo=EXPO&labelColor=f3f3f3&logoColor=000)](https://expo.io/client)
 
-[![runs with expo](https://img.shields.io/badge/Runs%20with%20Expo-4630EB.svg?style=flat-square&logo=EXPO&labelColor=f3f3f3&logoColor=000)](https://expo.io/)
+[![runs with Expo Go](https://img.shields.io/badge/Runs%20with%20Expo%20Go-4630EB.svg?style=flat-square&logo=EXPO&labelColor=f3f3f3&logoColor=000)](https://expo.io/client)
 
 ```md
-[![runs with expo](https://img.shields.io/badge/Runs%20with%20Expo-000.svg?style=flat-square&logo=EXPO&labelColor=f3f3f3&logoColor=000)](https://expo.io/)
+[![runs with Expo Go](https://img.shields.io/badge/Runs%20with%20Expo%20Go-000.svg?style=flat-square&logo=EXPO&labelColor=f3f3f3&logoColor=000)](https://expo.io/client)
 
-[![runs with expo](https://img.shields.io/badge/Runs%20with%20Expo-4630EB.svg?style=flat-square&logo=EXPO&labelColor=f3f3f3&logoColor=000)](https://expo.io/)
+[![runs with Expo Go](https://img.shields.io/badge/Runs%20with%20Expo%20Go-4630EB.svg?style=flat-square&logo=EXPO&labelColor=f3f3f3&logoColor=000)](https://expo.io/client)
 ```
 
 ## 👏 Contributing

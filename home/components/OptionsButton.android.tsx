@@ -1,24 +1,17 @@
 import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
 import * as React from 'react';
-import {
-  Alert,
-  findNodeHandle,
-  NativeModules,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Alert, findNodeHandle, UIManager, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function OptionsButton() {
   const _anchor = React.useRef<View>(null);
 
   const _handlePress = React.useCallback(() => {
-    const handle = findNodeHandle(_anchor.current);
-    NativeModules.UIManager.showPopupMenu(
+    const handle = findNodeHandle(_anchor.current)!;
+    UIManager.showPopupMenu(
       handle,
       ['Report this user'],
       () => {},
-      (action, selectedIndex) => {
+      (_action, selectedIndex) => {
         if (selectedIndex === 0) {
           // TODO(Bacon): Anything...
           Alert.alert(

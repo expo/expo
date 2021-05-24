@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI39_0_0/Expo/ExpoKit/Core/Api/Components/Slider/ABI39_0_0RNCSlider.h

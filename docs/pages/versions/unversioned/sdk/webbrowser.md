@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
 
 ### Handling deep links from the WebBrowser
 
-If you are using the `WebBrowser` window for authentication or another use case where you would like to pass information back into your app through a deep link, be sure to add a handler with `Linking.addEventListener` before opening the browser. When the listener fires, you should call [dismissBrowser](#webbrowserdismissbrowser) -- it will not automatically dismiss when a deep link is handled. Aside from that, redirects from `WebBrowser` work the same as other deep links. [Read more about it in the Linking guide](../../../workflow/linking.md#handling-links-into-your-app).
+If you are using the `WebBrowser` window for authentication or another use case where you would like to pass information back into your app through a deep link, be sure to add a handler with `Linking.addEventListener` before opening the browser. When the listener fires, you should call [dismissBrowser](#webbrowserdismissbrowser) -- it will not automatically dismiss when a deep link is handled. Aside from that, redirects from `WebBrowser` work the same as other deep links. [Read more about it in the Linking guide](../../../guides/linking.md#handling-links-into-your-app).
 
 ## API
 
@@ -85,6 +85,7 @@ Opens the url with Safari in a modal on iOS using [`SFSafariViewController`](htt
   - **readerMode (_optional_) (_boolean_)** -- (_iOS only_) a boolean determining whether Safari should enter Reader mode, if it is available.
   - **secondaryToolbarColor (_optional_) (_string_)** -- (_Android only_) color of the secondary toolbar in either `#AARRGGBB` or `#RRGGBB` format.
   - **showInRecents (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether browsed website should be shown as separate entry in Android recents/multitasking view. Default: `false`
+  - **createTask (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether the browser should open in a new task or in the same task as your app. Default: `true`
   - **showTitle (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether the browser should show the title of website on the toolbar.
   - **toolbarColor (_optional_) (_string_)** -- color of the toolbar in either `#AARRGGBB` or `#RRGGBB` format.
 
@@ -193,7 +194,7 @@ This method initiates (if needed) [CustomTabsSession](https://developer.android.
 
 #### Arguments
 
-- **url (_string_)** -- url of page that is likely to be loaded firts when opening browser
+- **url (_string_)** -- url of page that is likely to be loaded first when opening browser
 - **package (_string_)** -- **optional** -- package of browser to be informed. If not set, preferred browser will be used.
 
 #### Returns
@@ -228,7 +229,7 @@ The promise resolves with `{ type: 'dismiss' }`.
 
 _Android only_
 
-Returns a list of applications package names supporting Custom Tabs, Custom Tabs service, user chosen and preferred one. This may not be fully reliable, since it uses `PackageManager.getResolvingActivities` under the hood. (For example, some browsers might not be present in `browserPackages` list once another browser is set to defult.)
+Returns a list of applications package names supporting Custom Tabs, Custom Tabs service, user chosen and preferred one. This may not be fully reliable, since it uses `PackageManager.getResolvingActivities` under the hood. (For example, some browsers might not be present in `browserPackages` list once another browser is set to default.)
 
 #### Returns
 

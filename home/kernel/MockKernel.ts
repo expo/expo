@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const STORAGE_PREFIX = '@@expo@@';
 
@@ -16,7 +16,7 @@ export default {
     return null;
   },
 
-  async setDevMenuSettingAsync(key: string, value: any): Promise<void> {},
+  async setDevMenuSettingAsync(_key: string, _value: any): Promise<void> {},
 
   async doesCurrentTaskEnableDevtoolsAsync(): Promise<boolean> {
     return false;

@@ -1,5 +1,4 @@
 import Constants, { ExecutionEnvironment } from 'expo-constants';
-import { Platform } from 'react-native';
 
 import * as Linking from '../Linking';
 import { QueryParams } from '../Linking.types';
@@ -28,49 +27,73 @@ describe('parse', () => {
   });
 });
 
-describe('makeUrl queries', () => {
+describe(Linking.createURL, () => {
   const consoleWarn = console.warn;
-  beforeEach(() => {
-    console.warn = jest.fn();
-  });
-
-  afterEach(() => {
-    console.warn = consoleWarn;
-  });
-
-  test.each<QueryParams>([
-    { shouldEscape: '%2b%20' },
-    { escapePluses: 'email+with+plus@whatever.com' },
-    { emptyParam: '' },
-    { undefinedParam: undefined },
-    { lotsOfSlashes: '/////' },
-  ])(`makes url %p`, queryParams => {
-    expect(Linking.makeUrl('some/path', queryParams)).toMatchSnapshot();
-  });
-
-  test.each<string>(['path/into/app', ''])(`makes url %p`, path => {
-    expect(Linking.makeUrl(path)).toMatchSnapshot();
-  });
-});
-
-if (Platform.OS !== 'web') {
-  describe('makeUrl in bare workflow', () => {
-    const consoleWarn = console.warn;
-    const executionEnvironment = Constants.executionEnvironment;
-
+  const manifest = Constants.__rawManifest_TEST;
+  const executionEnvironment = Constants.executionEnvironment;
+  describe('queries', () => {
     beforeEach(() => {
       console.warn = jest.fn();
-      Constants.executionEnvironment = ExecutionEnvironment.Bare;
+      Constants.executionEnvironment = ExecutionEnvironment.StoreClient;
+      Constants.__rawManifest_TEST = {
+        ...Constants.__rawManifest_TEST,
+        scheme: 'demo',
+      };
     });
 
     afterEach(() => {
       console.warn = consoleWarn;
       Constants.executionEnvironment = executionEnvironment;
+      Constants.__rawManifest_TEST = manifest;
     });
 
-    it('should return empty string and warn', () => {
-      expect(Linking.makeUrl('/')).toEqual('');
-      expect(console.warn).toHaveBeenCalledWith(expect.stringMatching('not supported in bare'));
+    test.each<QueryParams>([
+      { shouldEscape: '%2b%20' },
+      { escapePluses: 'email+with+plus@whatever.com' },
+      { emptyParam: '' },
+      { undefinedParam: undefined },
+      { lotsOfSlashes: '/////' },
+    ])(`makes url %p`, queryParams => {
+      expect(Linking.createURL('some/path', { queryParams })).toMatchSnapshot();
+    });
+
+    test.each<string>(['path/into/app', ''])(`makes url %p`, path => {
+      expect(Linking.createURL(path)).toMatchSnapshot();
     });
   });
-}
+  describe('bare', () => {
+    beforeEach(() => {
+      console.warn = jest.fn();
+      Constants.executionEnvironment = ExecutionEnvironment.Bare;
+      Constants.__rawManifest_TEST = {
+        ...Constants.__rawManifest_TEST,
+        hostUri: null,
+        scheme: 'demo',
+      };
+    });
+
+    afterEach(() => {
+      console.warn = consoleWarn;
+      Constants.executionEnvironment = executionEnvironment;
+      Constants.__rawManifest_TEST = manifest;
+    });
+
+    test.each<QueryParams>([
+      { shouldEscape: '%2b%20' },
+      { escapePluses: 'email+with+plus@whatever.com' },
+      { emptyParam: '' },
+      { undefinedParam: undefined },
+      { lotsOfSlashes: '/////' },
+    ])(`makes url %p`, queryParams => {
+      expect(Linking.createURL('some/path', { queryParams })).toMatchSnapshot();
+    });
+
+    test.each<string>(['path/into/app', ''])(`makes url %p`, path => {
+      expect(Linking.createURL(path)).toMatchSnapshot();
+    });
+
+    it(`uses triple slashes`, () => {
+      expect(Linking.createURL('some/path', { isTripleSlashed: true })).toMatchSnapshot();
+    });
+  });
+});

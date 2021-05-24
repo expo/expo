@@ -12,10 +12,18 @@ test('displays default links', () => {
   expect(container).toHaveTextContent('Edit this page');
 });
 
+test('displays forums link with tag', () => {
+  const { container } = render(<DocumentationFooter asPath="/sdk/" title="test-title" />);
+
+  expect(container).toHaveTextContent(
+    'Get help from the community and ask questions about test-title'
+  );
+});
+
 test('displays issues link', () => {
   const { container } = render(<DocumentationFooter asPath="/sdk/" title="test-title" />);
 
-  expect(container).toHaveTextContent('View open issues for test-title');
+  expect(container).toHaveTextContent('View open bug reports for test-title');
 });
 
 test('displays source code link', () => {

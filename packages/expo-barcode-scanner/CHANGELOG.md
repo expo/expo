@@ -2,6 +2,41 @@
 
 ## Unpublished
 
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
+- On iOS removed the requirement for the presence of `NSMicrophoneUsageDescription` key in `Info.plist` ([#12860](https://github.com/expo/expo/pull/12772) by [@ajsmth](https://github.com/ajsmth))
+
+### 💡 Others
+
+- Migrated interfaces from their own packages to `expo-modules-core`. ([#12912](https://github.com/expo/expo/pull/12912) by [@tsapeta](https://github.com/tsapeta))
+
+## 10.1.2 — 2021-04-13
+
+_This version does not introduce any user-facing changes._
+
+## 10.1.1 — 2021-03-31
+
+_This version does not introduce any user-facing changes._
+
+## 10.1.0 — 2021-03-10
+
+### 🎉 New features
+
+- Remove lodash. ([#11900](https://github.com/expo/expo/pull/11900) by [@EvanBacon](https://github.com/EvanBacon))
+- Converted plugin to TypeScript. ([#11715](https://github.com/expo/expo/pull/11715) by [@EvanBacon](https://github.com/EvanBacon))
+- Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
+
+### 🐛 Bug fixes
+
+- Remove peerDependencies and unimodulePeerDependencies from Expo modules. ([#11980](https://github.com/expo/expo/pull/11980) by [@brentvatne](https://github.com/brentvatne))
+
+## 10.0.0 — 2021-01-15
+
 ### ⚠️ Notices
 
 - The package is now shipped with prebuilt binaries on iOS. You can read more about it on [expo.fyi/prebuilt-modules](https://expo.fyi/prebuilt-modules). ([#11224](https://github.com/expo/expo/pull/11224) by [@tsapeta](https://github.com/tsapeta))
@@ -12,7 +47,7 @@
 
 ### 🎉 New features
 
-### 🐛 Bug fixes
+- Created config plugins ([#11538](https://github.com/expo/expo/pull/11538) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 9.1.0 — 2020-11-17
 

@@ -8,7 +8,7 @@
 
 import Foundation
 import EXDevMenuInterface
-#if canImport(EXDevMenu)
+#if EX_DEV_MENU_ENABLED
 import EXDevMenu
 #endif
 
@@ -32,7 +32,7 @@ class AppDelegate: UMAppDelegateWrapper {
 
     if (useDevClient) {
       let controller = EXDevLauncherController.sharedInstance()
-      controller?.start(with: window, delegate: self, launchOptions: launchOptions);
+      controller.start(with: window!, delegate: self, launchOptions: launchOptions);
     } else {
       initializeReactNativeBridge(launchOptions);
     }
@@ -45,7 +45,7 @@ class AppDelegate: UMAppDelegateWrapper {
   @discardableResult
   func initializeReactNativeBridge(_ launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> RCTBridge? {
     if let bridge = RCTBridge(delegate: self, launchOptions: launchOptions) {
-      let rootView = RCTRootView(bridge: bridge, moduleName: "BareExpo", initialProperties: nil)
+      let rootView = RCTRootView(bridge: bridge, moduleName: "main", initialProperties: nil)
       let rootViewController = UIViewController()
       rootView.backgroundColor = UIColor.white
       rootViewController.view = rootView
@@ -53,10 +53,6 @@ class AppDelegate: UMAppDelegateWrapper {
       window?.rootViewController = rootViewController
       window?.makeKeyAndVisible()
       self.bridge = bridge
-
-      #if canImport(EXDevMenu)
-      DevMenuManager.configure(withBridge: bridge)
-      #endif
       return bridge;
     }
     return nil;
@@ -69,7 +65,7 @@ class AppDelegate: UMAppDelegateWrapper {
   #endif
   
   override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-    if (useDevClient && EXDevLauncherController.sharedInstance()!.onDeepLink(url, options: options)) {
+    if (useDevClient && EXDevLauncherController.sharedInstance().onDeepLink(url, options: options)) {
       return true;
     }
     
@@ -96,7 +92,7 @@ extension AppDelegate: RCTBridgeDelegate {
     // DEBUG must be setup in Swift projects: https://stackoverflow.com/a/24112024/4047926
     #if DEBUG
     if (useDevClient) {
-      return EXDevLauncherController.sharedInstance()?.sourceUrl()
+      return EXDevLauncherController.sharedInstance().sourceUrl()
     } else {
       return RCTBundleURLProvider.sharedSettings()?.jsBundleURL(forBundleRoot: "index", fallbackResource: nil)
     }
@@ -127,7 +123,7 @@ extension AppDelegate: RCTBridgeDelegate {
 // MARK: - EXDevelopmentClientControllerDelegate
 
 extension AppDelegate:  EXDevLauncherControllerDelegate {
-  func devLauncherController(_ developmentClientController: EXDevLauncherController!, didStartWithSuccess success: Bool) {
+  func devLauncherController(_ developmentClientController: EXDevLauncherController, didStartWithSuccess success: Bool) {
     developmentClientController.appBridge = initializeReactNativeBridge(developmentClientController.getLaunchOptions())
   }
 }

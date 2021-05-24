@@ -6,23 +6,15 @@ import AdMobNativeModule from './ExpoAdsAdMobRewardedVideoAdManager';
 const moduleName = 'AdMobRewarded';
 
 const eventNames = [
-  'rewardedVideoDidRewardUser',
+  'rewardedVideoUserDidEarnReward',
   'rewardedVideoDidLoad',
   'rewardedVideoDidFailToLoad',
-  'rewardedVideoDidOpen',
-  'rewardedVideoDidStart',
-  'rewardedVideoDidClose',
-  'rewardedVideoWillLeaveApplication',
-];
+  'rewardedVideoDidPresent',
+  'rewardedVideoDidFailToPresent',
+  'rewardedVideoDidDismiss',
+] as const;
 
-type EventNameType =
-  | 'rewardedVideoDidRewardUser'
-  | 'rewardedVideoDidLoad'
-  | 'rewardedVideoDidFailToLoad'
-  | 'rewardedVideoDidOpen'
-  | 'rewardedVideoDidStart'
-  | 'rewardedVideoDidClose'
-  | 'rewardedVideoWillLeaveApplication';
+type EventNameType = typeof eventNames[number];
 
 const eventEmitter = new EventEmitter(AdMobNativeModule);
 

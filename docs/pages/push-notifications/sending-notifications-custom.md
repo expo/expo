@@ -1,5 +1,6 @@
 ---
 title: Sending Notifications with APNs & FCM
+hideFromSearch: true
 ---
 
 Communicating directly with APNs and FCM is much more complicated than sending notifications through [Expo's push notification service](sending-notifications.md), so you should only use this feature if you're prepared to undertake that complexity. Here are a few things you'll have to handle yourself if you choose to write your own server for FCM and APNs:
@@ -120,7 +121,7 @@ request.write(
         body: 'Hello world! \uD83C\uDF10',
       },
     },
-    experienceId: '@yourExpoUsername/yourProjectSlug', // Required when testing in the Expo client app
+    experienceId: '@yourExpoUsername/yourProjectSlug', // Required when testing in the Expo Go app
   })
 );
 request.end();
@@ -227,11 +228,14 @@ admin.messaging().sendToDevice(
       // here is a "message". For more info see:
       // https://docs.expo.io/versions/latest/sdk/notifications/#android-push-notification-payload-specification
 
-      body: {        // ⚠️ As per Android payload format specified above, the
-        photoId: 42, // additional "data" should be placed under "body" key.
-      }
+      body:                              // ⚠️ As per Android payload format specified above, the
+        JSON.stringify({ photoId: 42 }), // additional "data" should be placed under "body" key.
     },
   },
   options
 );
 ```
+
+## Next steps
+
+Now that you can send notifications to your app, set your app up for [receiving notifications and taking action based on those events](./receiving-notifications.md)!

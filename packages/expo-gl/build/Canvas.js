@@ -1,4 +1,4 @@
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import { Platform } from '@unimodules/core';
 import * as React from 'react';
 import { findDOMNode } from 'react-dom';
 import { PixelRatio, StyleSheet, View } from 'react-native';
@@ -43,7 +43,7 @@ const CanvasWrapper = ({ pointerEvents, children, ...props }) => {
         if (size) {
             return size;
         }
-        else if (!ref.current || !canUseDOM) {
+        else if (!ref.current || !Platform.isDOMAvailable) {
             return { width: 0, height: 0 };
         }
         const element = getElement(ref.current);

@@ -70,6 +70,22 @@
         <category android:name="android.intent.category.BROWSABLE"/>
       </intent-filter>
 
+      <intent-filter android:autoVerify="true">
+        <data
+          android:host="expo.io"
+          android:path="/expo-go"
+          android:scheme="https"/>
+        <data
+          android:host="expo.io"
+          android:path="/expo-go"
+          android:scheme="http"/>
+
+        <action android:name="android.intent.action.VIEW"/>
+
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+      </intent-filter>
+      
       <!-- This has to be separate from the exp[s]:// scheme filter. No idea why -->
       <intent-filter>
         <data
@@ -134,6 +150,22 @@
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
+      <intent-filter>
+        <data android:scheme="expauth"/>
+
+        <action android:name="android.intent.action.VIEW"/>
+
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+      </intent-filter>
+      <intent-filter>
+        <data android:scheme="expo-home"/>
+
+        <action android:name="android.intent.action.VIEW"/>
+
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+      </intent-filter>
       <!-- END HOME INTENT FILTERS -->
     </activity>
 
@@ -153,18 +185,15 @@
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>
     <!-- WHEN_PREPARING_SHELL_REMOVE_FROM_HERE -->
     <!-- ADD DEV SETTINGS HERE -->
+    <!-- BEGIN_SDK_41 -->
+    <activity android:name="abi41_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
+    <!-- END_SDK_41 -->
     <!-- BEGIN_SDK_40 -->
     <activity android:name="abi40_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
     <!-- END_SDK_40 -->
     <!-- BEGIN_SDK_39 -->
     <activity android:name="abi39_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
     <!-- END_SDK_39 -->
-    <!-- BEGIN_SDK_38 -->
-    <activity android:name="abi38_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
-    <!-- END_SDK_38 -->
-    <!-- BEGIN_SDK_37 -->
-    <activity android:name="abi37_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
-    <!-- END_SDK_37 -->
     <!-- WHEN_PREPARING_SHELL_REMOVE_TO_HERE -->
 
     <activity
@@ -192,6 +221,20 @@
         </intent-filter>
     </activity>
     <!-- Versioned Activity for Stripe -->
+    <!-- BEGIN_SDK_41 -->
+    <activity
+      android:exported="true"
+      android:launchMode="singleTask"
+      android:name="abi41_0_0.expo.modules.payments.stripe.RedirectUriReceiver"
+      android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="abi41_0_0.expo.modules.payments.stripe" />
+      </intent-filter>
+    </activity>
+    <!-- END_SDK_41 -->
     <!-- BEGIN_SDK_40 -->
     <activity
       android:exported="true"
@@ -220,34 +263,6 @@
       </intent-filter>
     </activity>
     <!-- END_SDK_39 -->
-    <!-- BEGIN_SDK_38 -->
-    <activity
-      android:exported="true"
-      android:launchMode="singleTask"
-      android:name="abi38_0_0.expo.modules.payments.stripe.RedirectUriReceiver"
-      android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
-      <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
-        <data android:scheme="abi38_0_0.expo.modules.payments.stripe" />
-      </intent-filter>
-    </activity>
-    <!-- END_SDK_38 -->
-    <!-- BEGIN_SDK_37 -->
-    <activity
-      android:exported="true"
-      android:launchMode="singleTask"
-      android:name="abi37_0_0.expo.modules.payments.stripe.RedirectUriReceiver"
-      android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
-      <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
-        <data android:scheme="abi37_0_0.expo.modules.payments.stripe" />
-      </intent-filter>
-    </activity>
-    <!-- END_SDK_37 -->
     <!-- END OF STRIPE SCHEMES -->
 
     <activity
@@ -330,7 +345,7 @@
     <meta-data
       android:name="expo.modules.notifications.default_notification_color"
       android:resource="@color/notification_icon_color" />
-      
+
     <!-- Applied to Firebase notification messages -->
     <meta-data
       android:name="com.google.firebase.messaging.default_notification_icon"

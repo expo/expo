@@ -20,6 +20,8 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import expo.modules.updates.manifest.ManifestFactory;
+import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.expoview.ExpoViewBuildConfig;
 import host.exp.expoview.R;
 import host.exp.exponent.analytics.EXL;
@@ -33,10 +35,10 @@ public class ExponentSharedPreferences {
   private static final String TAG = ExponentSharedPreferences.class.getSimpleName();
 
   public static class ManifestAndBundleUrl {
-    public final JSONObject manifest;
+    public final RawManifest manifest;
     public final String bundleUrl;
 
-    ManifestAndBundleUrl(JSONObject manifest, String bundleUrl) {
+    ManifestAndBundleUrl(RawManifest manifest, String bundleUrl) {
       this.manifest = manifest;
       this.bundleUrl = bundleUrl;
     }
@@ -56,10 +58,10 @@ public class ExponentSharedPreferences {
   public static final String SAFE_MANIFEST_KEY = "safe_manifest";
   public static final String EXPO_AUTH_SESSION = "expo_auth_session";
   public static final String EXPO_AUTH_SESSION_SECRET_KEY = "sessionSecret";
+  public static final String OKHTTP_CACHE_VERSION_KEY = "okhttp_cache_version";
 
   // Metadata
   public static final String EXPERIENCE_METADATA_PREFIX = "experience_metadata_";
-  public static final String EXPERIENCE_METADATA_LAST_ERRORS = "lastErrors";
   public static final String EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS = "unreadNotifications";
   public static final String EXPERIENCE_METADATA_ALL_NOTIFICATION_IDS = "allNotificationIds";
   public static final String EXPERIENCE_METADATA_ALL_SCHEDULED_NOTIFICATION_IDS = "allScheduledNotificationIds";
@@ -108,6 +110,18 @@ public class ExponentSharedPreferences {
 
   public void setBoolean(String key, boolean value) {
     mSharedPreferences.edit().putBoolean(key, value).apply();
+  }
+
+  public int getInteger(String key) {
+    return getInteger(key, 0);
+  }
+
+  public int getInteger(String key, int defaultValue) {
+    return mSharedPreferences.getInt(key, defaultValue);
+  }
+
+  public void setInteger(String key, int value) {
+    mSharedPreferences.edit().putInt(key, value).apply();
   }
 
   public String getString(String key) {
@@ -160,12 +174,12 @@ public class ExponentSharedPreferences {
     }
   }
 
-  public void updateManifest(String manifestUrl, JSONObject manifest, String bundleUrl) {
+  public void updateManifest(String manifestUrl, RawManifest manifest, String bundleUrl) {
     try {
       JSONObject parentObject = new JSONObject();
       parentObject.put(MANIFEST_KEY, manifest);
       parentObject.put(BUNDLE_URL_KEY, bundleUrl);
-      parentObject.put(SAFE_MANIFEST_KEY, manifest);
+      parentObject.put(SAFE_MANIFEST_KEY, manifest.getRawJson());
 
       mSharedPreferences.edit().putString(manifestUrl, parentObject.toString()).apply();
     } catch (JSONException e) {
@@ -181,17 +195,17 @@ public class ExponentSharedPreferences {
 
     try {
       JSONObject json = new JSONObject(jsonString);
-      JSONObject manifest = json.getJSONObject(MANIFEST_KEY);
+      JSONObject manifestJson = json.getJSONObject(MANIFEST_KEY);
       String bundleUrl = json.getString(BUNDLE_URL_KEY);
 
-      return new ManifestAndBundleUrl(manifest, bundleUrl);
+      return new ManifestAndBundleUrl(ManifestFactory.INSTANCE.getRawManifestFromJson(manifestJson), bundleUrl);
     } catch (JSONException e) {
       EXL.e(TAG, e);
       return null;
     }
   }
 
-  public void updateSafeManifest(String manifestUrl, JSONObject manifest) {
+  public void updateSafeManifest(String manifestUrl, RawManifest manifest) {
     try {
       JSONObject parentObject;
       String jsonString = mSharedPreferences.getString(manifestUrl, null);
@@ -200,7 +214,7 @@ public class ExponentSharedPreferences {
       } else {
         parentObject = new JSONObject();
       }
-      parentObject.put(SAFE_MANIFEST_KEY, manifest);
+      parentObject.put(SAFE_MANIFEST_KEY, manifest.getRawJson());
 
       mSharedPreferences.edit().putString(manifestUrl, parentObject.toString()).apply();
     } catch (JSONException e) {

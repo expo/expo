@@ -1,1 +1,0 @@
-../../../../../versioned-react-native/ABI38_0_0/ReactNative/Libraries/Settings/ABI38_0_0RCTSettingsPlugins.h

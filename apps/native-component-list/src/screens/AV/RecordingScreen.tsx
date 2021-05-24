@@ -14,7 +14,7 @@ interface State {
 // eslint-disable-next-line @typescript-eslint/ban-types
 export default class RecordingScreen extends React.Component<{}, State> {
   static navigationOptions = {
-    title: 'Audio',
+    title: 'Audio Recording',
   };
 
   readonly state: State = {};

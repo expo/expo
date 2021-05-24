@@ -3,14 +3,16 @@ title: FileSystem
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-40/packages/expo-file-system'
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 import SnackInline from '~/components/plugins/SnackInline';
 
-**`expo-file-system`** provides access to a file system stored locally on the device. Within the Expo client, each app has a separate file system and has no access to the file system of other Expo apps. However, it can save content shared by other apps to local filesystem, as well as share local files to other apps. It is also capable of uploading and downloading files from network URLs.
+**`expo-file-system`** provides access to a file system stored locally on the device. Within Expo Go, each app has a separate file system and has no access to the file system of other Expo apps. However, it can save content shared by other apps to local filesystem, as well as share local files to other apps. It is also capable of uploading and downloading files from network URLs.
 
-<img src="/static/images/sdk/file-system/file-system-diagram.png" style={{maxWidth: 850, maxHeight: 600, marginBottom:"5em", display: "block", marginLeft: "auto", marginRight: "auto"}} />
+<!-- TODO: update this image so we don't have to force a white background on it -->
+<ImageSpotlight alt="Diagram of the various pieces of expo-file-system and how they interact with different resources"  src="/static/images/sdk/file-system/file-system-diagram.png" style={{ maxWidth: 850, maxHeight: 600 }} containerStyle={{ backgroundColor: "#fff" }} />
 
 <PlatformsSection android emulator ios simulator />
 
@@ -87,9 +89,10 @@ try {
 <SnackInline
 label="Managing Giphy's"
 templateId="filesystem/App"
+dependencies={['expo-file-system']}
 files={{
-    'GifFetching.ts': 'filesystem/GifFetching.ts',
-    'GifManagement.ts': 'filesystem/GifManagement.ts'
+    'GifFetching.ts': 'filesystem/gifFetching.ts',
+    'GifManagement.ts': 'filesystem/gifManagement.ts'
   }}>
 
 ```typescript

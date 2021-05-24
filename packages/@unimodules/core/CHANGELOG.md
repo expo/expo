@@ -8,6 +8,16 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+- Replaced clang's `typeof` with `__typeof` that works with both C++ and GNU++. (by [@tsapeta](https://github.com/tsapeta))
+
+## 7.1.0 — 2021-03-10
+
+### 🎉 New features
+
+- Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
+
 ## 7.0.0 — 2020-12-15
 
 ### ⚠️ Notices

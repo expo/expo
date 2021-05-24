@@ -13,6 +13,7 @@ import abi39_0_0.org.unimodules.core.arguments.ReadableArguments;
 import abi39_0_0.org.unimodules.core.interfaces.LifecycleEventListener;
 
 import abi39_0_0.expo.modules.facebook.FacebookModule;
+import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.kernel.ExperienceId;
 
 public class ScopedFacebookModule extends FacebookModule implements LifecycleEventListener {
@@ -22,7 +23,7 @@ public class ScopedFacebookModule extends FacebookModule implements LifecycleEve
   private boolean mIsInitialized = false;
   private SharedPreferences mSharedPreferences;
 
-  public ScopedFacebookModule(Context context, JSONObject manifest) {
+  public ScopedFacebookModule(Context context, RawManifest manifest) {
     super(context);
 
     mSharedPreferences = context.getSharedPreferences(getClass().getCanonicalName(), Context.MODE_PRIVATE);
@@ -31,9 +32,9 @@ public class ScopedFacebookModule extends FacebookModule implements LifecycleEve
     String facebookAppId = null;
     String facebookApplicationName = null;
     try {
-      facebookAppId = manifest.getString("facebookAppId");
-      facebookApplicationName = manifest.getString("facebookDisplayName");
-      manifestDefinesAutoInitEnabled = manifest.getBoolean("facebookAutoInitEnabled");
+      facebookAppId = manifest.getFacebookAppId();
+      facebookApplicationName = manifest.getFacebookApplicationName();
+      manifestDefinesAutoInitEnabled = manifest.getFacebookAutoInitEnabled();
     } catch (JSONException e) {
       // do nothing
     }

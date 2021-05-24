@@ -4,11 +4,31 @@
 
 ### 🛠 Breaking changes
 
-- Dropped support for iOS 10.0 ([#11344](https://github.com/expo/expo/pull/11344) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+## 9.0.3 — 2021-03-30
+
+_This version does not introduce any user-facing changes._
+
+## 9.0.2 — 2021-03-23
+
+### 🐛 Bug fixes
+
+- Fix types - tint now a string union `'dark' | 'light' | 'default'` rather than any string. ([#12264](https://github.com/expo/expo/pull/12264) by [@brentvatne](https://github.com/brentvatne))
+
+## 9.0.1 — 2021-03-10
+
+### 🐛 Bug fixes
+
+- Remove peerDependencies and unimodulePeerDependencies from Expo modules. ([#11980](https://github.com/expo/expo/pull/11980) by [@brentvatne](https://github.com/brentvatne))
+
+## 9.0.0 — 2021-01-15
+
+### 🛠 Breaking changes
+
+- Dropped support for iOS 10.0 ([#11344](https://github.com/expo/expo/pull/11344) by [@tsapeta](https://github.com/tsapeta))
 
 ## 8.2.2 — 2020-12-04
 

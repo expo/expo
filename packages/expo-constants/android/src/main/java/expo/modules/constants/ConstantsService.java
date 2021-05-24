@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.content.SharedPreferences;
 import android.os.Build;
 import androidx.annotation.Nullable;
 import android.util.DisplayMetrics;
@@ -24,7 +23,8 @@ import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
 import org.unimodules.core.interfaces.InternalModule;
-import org.unimodules.interfaces.constants.ConstantsInterface;
+
+import expo.modules.interfaces.constants.ConstantsInterface;
 
 public class ConstantsService implements InternalModule, ConstantsInterface {
   private static final String TAG = ConstantsService.class.getSimpleName();

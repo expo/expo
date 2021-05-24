@@ -7,7 +7,7 @@ import {
 } from '@react-navigation/drawer';
 import * as React from 'react';
 import { Platform, ScrollViewProps, StyleSheet, useWindowDimensions } from 'react-native';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Colors } from '../constants';
 import Screens from './MainNavigators';
@@ -33,7 +33,7 @@ function CustomDrawerContent({
 
 export default function MainTabbedNavigator(props: any) {
   const { width } = useWindowDimensions();
-  const { left } = useSafeArea();
+  const { left } = useSafeAreaInsets();
   const isMobile = width <= 640;
   const isTablet = !isMobile && width <= 960;
   const isLargeScreen = !isTablet && !isMobile;

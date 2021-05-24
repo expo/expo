@@ -1,4 +1,5 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
+import { theme } from '@expo/styleguide';
 import * as React from 'react';
 
 import TerminalBlock from './TerminalBlock';
@@ -9,18 +10,21 @@ const STYLES_P = css`
   line-height: 1.8rem;
   margin-top: 1.4rem;
   margin-bottom: 1.4rem;
+  color: ${theme.text.default};
 `;
 
 const STYLES_BOLD = css`
   font-family: ${Constants.fonts.demi};
   font-weight: 400;
   text-decoration: none;
+  color: ${theme.link.default};
   :hover {
     text-decoration: underline;
   }
 `;
 const STYLES_LINK = css`
   text-decoration: none;
+  color: ${theme.link.default};
   :hover {
     text-decoration: underline;
   }

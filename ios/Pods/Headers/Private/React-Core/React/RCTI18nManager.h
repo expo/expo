@@ -1,1 +1,0 @@
-../../../../../../react-native-lab/react-native/React/CoreModules/RCTI18nManager.h

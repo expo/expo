@@ -9,21 +9,11 @@ import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
 
 import expo.modules.devlauncher.DevLauncherController;
-import expo.modules.random.RandomPackage;
-
-import org.unimodules.adapters.react.ModuleRegistryAdapter;
-import org.unimodules.adapters.react.ReactModuleRegistryProvider;
 
 import java.util.List;
 
-import dev.expo.payments.generated.BasePackageList;
-
 public class MainApplication extends Application implements ReactApplication {
   static final boolean USE_DEV_CLIENT = false;
-
-  private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(
-    new BasePackageList().getPackageList()
-  );
 
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
     @Override
@@ -33,10 +23,7 @@ public class MainApplication extends Application implements ReactApplication {
 
     @Override
     protected List<ReactPackage> getPackages() {
-      List<ReactPackage> packages = new PackageList(this).getPackages();
-      packages.add(new RandomPackage());
-      packages.add(new ModuleRegistryAdapter(mModuleRegistryProvider));
-      return packages;
+      return new PackageList(this).getPackages();
     }
 
     @Override

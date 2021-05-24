@@ -33,9 +33,13 @@ A synonym for app that usually implies something more single-use and smaller in 
 
 The command-line tool for working with Expo. [Read more](expo-cli.md).
 
+### Expo Go
+
+The iOS and Android app that runs Expo apps. When you want to run your app outside of the Expo Go app and deploy it to the App and/or Play stores, you can build a [Standalone App](#standalone-app).
+
 ### Expo client
 
-The iOS and Android app that runs Expo apps. When you want to run your app outside of the Expo client and deploy it to the App and/or Play stores, you can build a [Standalone App](#standalone-app).
+The former name for the [Expo Go](#expo-go) app.
 
 ### Expo Dev Tools
 
@@ -81,7 +85,7 @@ Automates the process of installing, upgrading, configuring, and removing librar
 
 ### Publish
 
-We use the word "publish" as a synonym for "deploy". When you publish an app, it becomes available at a persistent URL from the Expo client, or in the case of [Standalone apps](#standalone-app), it updates the app [over the air](#over-the-air-updates).
+We use the word "publish" as a synonym for "deploy". When you publish an app, it becomes available at a persistent URL from Expo Go, or in the case of [Standalone apps](#standalone-app), it updates the app [over the air](#over-the-air-updates).
 
 ### React Native
 

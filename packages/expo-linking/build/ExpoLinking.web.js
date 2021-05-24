@@ -1,5 +1,5 @@
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
-import invariant from 'fbjs/lib/invariant';
+import { Platform } from '@unimodules/core';
+import invariant from 'invariant';
 const EventTypes = ['url'];
 const listeners = [];
 export default {
@@ -22,12 +22,12 @@ export default {
         return true;
     },
     async getInitialURL() {
-        if (!canUseDOM)
+        if (!Platform.isDOMAvailable)
             return '';
         return window.location.href;
     },
     async openURL(url) {
-        if (canUseDOM) {
+        if (Platform.isDOMAvailable) {
             // @ts-ignore
             window.location = new URL(url, window.location).toString();
         }

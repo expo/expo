@@ -734,8 +734,25 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
           }
 
           mVideoView.setBackgroundColor(Color.BLACK);
-          getRootView().addView(mVideoView, FULLSCREEN_LAYOUT_PARAMS);
-          mWebView.setVisibility(View.GONE);
+
+          // since RN's Modals interfere with the View hierarchy
+          // we will decide which View to Hide if the hierarchy
+          // does not match (i.e., the webview is within a Modal)
+          // NOTE: We could use mWebView.getRootView() instead of getRootView()
+          // but that breaks the Modal's styles and layout, so we need this to render
+          // in the main View hierarchy regardless.
+          ViewGroup rootView = getRootView();
+          rootView.addView(mVideoView, FULLSCREEN_LAYOUT_PARAMS);
+
+          // Different root views, we are in a Modal
+          if(rootView.getRootView() != mWebView.getRootView()){
+            mWebView.getRootView().setVisibility(View.GONE);
+          }
+
+          // Same view hierarchy (no Modal), just hide the webview then
+          else{
+            mWebView.setVisibility(View.GONE);
+          }
 
           mReactContext.addLifecycleEventListener(this);
         }
@@ -746,18 +763,28 @@ public class RNCWebViewManager extends SimpleViewManager<WebView> {
             return;
           }
 
-          mVideoView.setVisibility(View.GONE);
-          getRootView().removeView(mVideoView);
+          // same logic as above
+          ViewGroup rootView = getRootView();
+
+          if(rootView.getRootView() !=  mWebView.getRootView()){
+            mWebView.getRootView().setVisibility(View.VISIBLE);
+          }
+
+          // Same view hierarchy (no Modal)
+          else{
+            mWebView.setVisibility(View.VISIBLE);
+          }
+
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            mReactContext.getCurrentActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+          }
+
+          rootView.removeView(mVideoView);
           mCustomViewCallback.onCustomViewHidden();
 
           mVideoView = null;
           mCustomViewCallback = null;
 
-          mWebView.setVisibility(View.VISIBLE);
-
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            mReactContext.getCurrentActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-          }
           mReactContext.getCurrentActivity().setRequestedOrientation(initialRequestedOrientation);
 
           mReactContext.removeLifecycleEventListener(this);

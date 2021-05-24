@@ -1,8 +1,8 @@
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import { Platform } from '@unimodules/core';
 const LOCAL_STORAGE_KEY = 'EXPO_ERROR_RECOVERY_STORAGE';
 
 function _consumeRecoveryProps(): string | null {
-  if (!canUseDOM) return null;
+  if (!Platform.isDOMAvailable) return null;
   try {
     const props = localStorage.getItem(LOCAL_STORAGE_KEY);
     localStorage.removeItem(LOCAL_STORAGE_KEY);
@@ -19,7 +19,7 @@ export default {
   },
 
   saveRecoveryProps(props: string): void {
-    if (!canUseDOM) return;
+    if (!Platform.isDOMAvailable) return;
     try {
       localStorage.setItem(LOCAL_STORAGE_KEY, props);
     } catch (e) {

@@ -4,6 +4,7 @@ import { BlurView } from 'expo-blur';
 import * as Haptics from 'expo-haptics';
 import React from 'react';
 import { Platform, StyleSheet } from 'react-native';
+// @ts-expect-error
 import TouchableBounce from 'react-native/Libraries/Components/Touchable/TouchableBounce';
 
 import Colors from '../constants/Colors';
@@ -23,7 +24,7 @@ export default function QRFooterButton({
 }: {
   onPress: () => void;
   isActive?: boolean;
-  iconName: string;
+  iconName: React.ComponentProps<typeof Ionicons>['name'];
   iconSize?: number;
 }) {
   const tint = isActive ? 'default' : 'dark';
@@ -51,6 +52,7 @@ const styles = StyleSheet.create({
   container: {
     width: size,
     height: size,
+    overflow: 'hidden',
     borderRadius: size / 2,
     justifyContent: 'center',
     alignItems: 'center',

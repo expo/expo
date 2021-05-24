@@ -1,5 +1,6 @@
 package expo.modules.devlauncher.helpers
 
+import android.net.Uri
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Call
 import okhttp3.Callback
@@ -30,5 +31,5 @@ suspend inline fun Request.await(okHttpClient: OkHttpClient): Response {
   }
 }
 
-fun fetch(url: String, method: String) =
-  Request.Builder().method(method, null).url(url).build()
+fun fetch(url: Uri, method: String) =
+  Request.Builder().method(method, null).url(url.toString()).build()

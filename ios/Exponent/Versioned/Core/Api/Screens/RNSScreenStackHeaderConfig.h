@@ -17,6 +17,7 @@ typedef NS_ENUM(NSInteger, RNSStatusBarStyle) {
 @property (nonatomic, retain) NSString *title;
 @property (nonatomic, retain) NSString *titleFontFamily;
 @property (nonatomic, retain) NSNumber *titleFontSize;
+@property (nonatomic, retain) NSString *titleFontWeight;
 @property (nonatomic, retain) UIColor *titleColor;
 @property (nonatomic, retain) NSString *backTitle;
 @property (nonatomic, retain) NSString *backTitleFontFamily;
@@ -28,6 +29,7 @@ typedef NS_ENUM(NSInteger, RNSStatusBarStyle) {
 @property (nonatomic) BOOL largeTitle;
 @property (nonatomic, retain) NSString *largeTitleFontFamily;
 @property (nonatomic, retain) NSNumber *largeTitleFontSize;
+@property (nonatomic, retain) NSString *largeTitleFontWeight;
 @property (nonatomic, retain) UIColor *largeTitleBackgroundColor;
 @property (nonatomic) BOOL largeTitleHideShadow;
 @property (nonatomic, retain) UIColor *largeTitleColor;
@@ -36,13 +38,23 @@ typedef NS_ENUM(NSInteger, RNSStatusBarStyle) {
 @property (nonatomic) BOOL hideShadow;
 @property (nonatomic) BOOL translucent;
 @property (nonatomic) UISemanticContentAttribute direction;
+
+#if !TARGET_OS_TV
 @property (nonatomic) RNSStatusBarStyle statusBarStyle;
 @property (nonatomic) UIStatusBarAnimation statusBarAnimation;
 @property (nonatomic) BOOL statusBarHidden;
+@property (nonatomic) UIInterfaceOrientationMask screenOrientation;
+#endif
 
 + (void)willShowViewController:(UIViewController *)vc animated:(BOOL)animated withConfig:(RNSScreenStackHeaderConfig*)config;
-+ (void)updateStatusBarAppearance;
++ (void)updateWindowTraits;
+
+#if !TARGET_OS_TV
 + (UIStatusBarStyle)statusBarStyleForRNSStatusBarStyle:(RNSStatusBarStyle)statusBarStyle;
++ (UIInterfaceOrientation)defaultOrientationForOrientationMask:(UIInterfaceOrientationMask)orientationMask;
++ (UIInterfaceOrientation)interfaceOrientationFromDeviceOrientation:(UIDeviceOrientation)deviceOrientation;
++ (UIInterfaceOrientationMask)maskFromOrientation:(UIInterfaceOrientation)orientation;
+#endif
 
 @end
 
@@ -63,7 +75,11 @@ typedef NS_ENUM(NSInteger, RNSScreenStackHeaderSubviewType) {
 + (RNSScreenStackHeaderSubviewType)RNSScreenStackHeaderSubviewType:(id)json;
 + (UIBlurEffectStyle)UIBlurEffectStyle:(id)json;
 + (UISemanticContentAttribute)UISemanticContentAttribute:(id)json;
+
+#if !TARGET_OS_TV
 + (RNSStatusBarStyle)RNSStatusBarStyle:(id)json;
++ (UIInterfaceOrientationMask)UIInterfaceOrientationMask:(id)json;
+#endif
 
 @end
 

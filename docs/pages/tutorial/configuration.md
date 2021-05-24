@@ -2,7 +2,9 @@
 title: Configuring a splash screen and app icon
 ---
 
+import { theme } from '@expo/styleguide'
 import Video from '~/components/plugins/Video'
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
 Before we can consider our app truly complete we need to add a splash screen and app icon. A splash screen is what users see when the app is launched, before it has loaded. The icon will be visible on the users' home screen when the app is installed, or inside of the Expo app when in development.
 
@@ -10,9 +12,7 @@ Before we can consider our app truly complete we need to add a splash screen and
 
 After telling our designer that we need a 1242px width by 2436px height splash screen image (more about this in [the splash screen guide](../guides/splash-screens.md)), she gave us the following file:
 
-<div style={{textAlign: 'center', backgroundColor: '#f5f5f5', paddingTop: 10, paddingBottom: 10}}>
-<img src="/static/images/tutorial/splash.png" style={{maxWidth: 150}} />
-</div>
+<ImageSpotlight src="/static/images/tutorial/splash.png" style={{ maxWidth: 150 }} containerStyle={{ marginBottom: 0 }} />
 
 <br />
 
@@ -28,13 +28,17 @@ Save this image to the `assets` directory inside of your project and call it `sp
 
 <p>
 
-We can make the splash screen stick around for longer by manually controlling when it is hidden, rather than the default of automatically hiding it as soon as the app is ready. In the following code, we delay hiding the splash screen for five seconds.
+We can make the splash screen stick around for longer by manually controlling when it is hidden, rather than the default of automatically hiding it as soon as the app is ready.
+
+First, run `expo install expo-splash-screen`.
+
+Next, add the following code to delay hiding the splash screen for five seconds.
 
 ```js
-import { SplashScreen } from 'expo';
+import * as SplashScreen from 'expo-splash-screen';
 
-SplashScreen.preventAutoHide();
-setTimeout(SplashScreen.hide, 5000);
+SplashScreen.preventAutoHideAsync();
+setTimeout(SplashScreen.hideAsync, 5000);
 ```
 
 🚨 _Don't forget to remove this code when you are done testing your splash screen!_
@@ -69,14 +73,9 @@ This solves our problem!
 
 Our designer provided us with this 1024px width x 1024px height app icon:
 
-<div style={{textAlign: 'center', backgroundColor: '#f5f5f5', paddingTop: 10, paddingBottom: 10}}>
-<img src="/static/images/tutorial/icon.png" style={{maxWidth: 150}} />
-</div>
+<ImageSpotlight src="/static/images/tutorial/icon.png" style={{ maxWidth: 150 }} />
 
-<br />
-<br />
-
-Save this image to the `assets` directory inside of your project and call it `icon.png` &mdash; replace the existing file. Reload the app. That's all you need to do! You will see the icon in various places in the Expo client, and when you do a standalone app build for submission to the stores it will be used as the icon on the users' home screens.
+Save this image to the `assets` directory inside of your project and call it `icon.png` &mdash; replace the existing file. Reload the app. That's all you need to do! You will see the icon in various places in Expo Go, and when you do a standalone app build for submission to the stores it will be used as the icon on the users' home screens.
 
 ## We have completed our app!
 

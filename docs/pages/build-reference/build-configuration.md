@@ -1,6 +1,9 @@
 ---
 title: Build configuration process
+sidebar_title: Configuration process
 ---
+
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
 In this guide you will learn what happens when EAS CLI configures your project with `eas build:configure` (or `eas build` - which runs this same process if the project is not yet configured).
 
@@ -10,7 +13,7 @@ EAS CLI performs the following steps when configuring your project:
 
 If you only want to use EAS Build for a single platform, that's fine. If you change your mind, you can come back and the other later.
 
-<center><img src="/static/images/eas-build/walkthrough/04-configure-platform.png" /></center>
+<ImageSpotlight alt="Terminal running eas build command with platform iOS and Android options available" src="/static/images/eas-build/walkthrough/04-configure-platform.png" containerStyle={{ paddingBottom: 0 }} />
 
 #### 2. Create eas.json
 
@@ -49,7 +52,7 @@ EAS CLI performs two steps:
 
   > This step also patches `build.gradle` by including there our custom signing configuration. The configuration itself is saved to a separate file: `eas-build.gradle`.
 
-<center><img src="/static/images/eas-build/walkthrough/05-configure-android.png" /></center>
+<ImageSpotlight alt="Android configuration prompt in eas build:configure" src="/static/images/eas-build/walkthrough/05-configure-android.png" containerStyle={{ paddingBottom: 0 }} />
 
 #### 4. Configure the iOS project
 
@@ -57,6 +60,6 @@ Similar configuration step is performed for the iOS project. EAS Build resolved 
 
 Make sure to choose the bundle identifier defined in app.json because it'll be used to identify you app on the Apple App Store.
 
-<center><img src="/static/images/eas-build/walkthrough/06-configure-xcode.png" /></center>
+<ImageSpotlight alt="Xcode configuration prompt in eas build:configure" src="/static/images/eas-build/walkthrough/06-configure-xcode.png" containerStyle={{ paddingBottom: 0 }} />
 
 That's all there is to configuring a project to be compatible with EAS Build.

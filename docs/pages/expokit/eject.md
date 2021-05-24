@@ -16,7 +16,7 @@ However, there are some cases where advanced developers need native capabilities
 
 In this case, Expo allows you to _eject_ your pure-JS project from the Expo iOS/Android clients, providing you with native projects that can be opened and built with Xcode and Android Studio. Those projects will have dependencies on ExpoKit, so everything you already built will keep working as it did before.
 
-We call this "ejecting" because you still depend on the Expo SDK, but your project no longer lives inside the standard Expo client. You control the native projects, including configuring and building them yourself.
+We call this "ejecting" because you still depend on the Expo SDK, but your project no longer lives inside Expo Go. You control the native projects, including configuring and building them yourself.
 
 ## Should I eject to ExpoKit?
 

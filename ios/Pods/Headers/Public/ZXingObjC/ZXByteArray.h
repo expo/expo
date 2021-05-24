@@ -1,1 +1,0 @@
-../../../ZXingObjC/ZXingObjC/common/ZXByteArray.h

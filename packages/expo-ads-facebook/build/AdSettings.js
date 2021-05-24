@@ -1,5 +1,14 @@
-import { NativeModulesProxy } from '@unimodules/core';
+import { NativeModulesProxy, UnavailabilityError } from '@unimodules/core';
+import { PermissionStatus } from 'expo-modules-core';
+import { Platform } from 'react-native';
 const { CTKAdSettingsManager } = NativeModulesProxy;
+export { PermissionStatus };
+const androidPermissionsResponse = {
+    granted: true,
+    expires: 'never',
+    canAskAgain: true,
+    status: PermissionStatus.GRANTED,
+};
 // TODO: rewrite the docblocks
 export default {
     /**
@@ -7,6 +16,37 @@ export default {
      */
     get currentDeviceHash() {
         return CTKAdSettingsManager.currentDeviceHash;
+    },
+    async requestPermissionsAsync() {
+        if (Platform.OS === 'android') {
+            return Promise.resolve(androidPermissionsResponse);
+        }
+        if (!CTKAdSettingsManager.requestPermissionsAsync) {
+            throw new UnavailabilityError('expo-ads-facebook', 'requestPermissionsAsync');
+        }
+        return await CTKAdSettingsManager.requestPermissionsAsync();
+    },
+    async getPermissionsAsync() {
+        if (Platform.OS === 'android') {
+            return Promise.resolve(androidPermissionsResponse);
+        }
+        if (!CTKAdSettingsManager.getPermissionsAsync) {
+            throw new UnavailabilityError('expo-ads-facebook', 'getPermissionsAsync');
+        }
+        return await CTKAdSettingsManager.getPermissionsAsync();
+    },
+    /**
+     * Sets whether Facebook SDK should enable advertising tracking.
+     */
+    setAdvertiserTrackingEnabled(enabled) {
+        // noop outside of iOS
+        if (Platform.OS !== 'ios') {
+            return;
+        }
+        if (!CTKAdSettingsManager.setAdvertiserTrackingEnabled) {
+            throw new UnavailabilityError('expo-ads-facebook', 'setAdvertiserTrackingEnabled');
+        }
+        CTKAdSettingsManager.setAdvertiserTrackingEnabled(enabled);
     },
     /**
      * Registers given device with `deviceHash` to receive test Facebook ads.

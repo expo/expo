@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI40_0_0/Expo/UMCore/ABI40_0_0UMCore/UMModuleRegistry/ABI40_0_0UMModuleRegistry.h

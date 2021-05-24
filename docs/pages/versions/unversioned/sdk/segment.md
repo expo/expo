@@ -24,7 +24,7 @@ import * as Segment from 'expo-analytics-segment';
 
 ### `Segment.initialize({ androidWriteKey, iosWriteKey })`
 
-Segment requires separate write keys for iOS and Android. You will need to log in to Segment to recieve these <https://segment.com/docs/guides/setup/how-do-i-find-my-write-key/>
+Segment requires separate write keys for iOS and Android. You will need to log in to Segment to receive these <https://segment.com/docs/guides/setup/how-do-i-find-my-write-key/>
 
 #### Arguments
 
@@ -151,6 +151,6 @@ Segment.setEnabledAsync(true);
 
 > **Note:** disabling the Segment SDK ensures that all data collection method invocations (eg. `track`, `identify`, etc) are ignored.
 
-This method is only supported in standalone and detached apps. In Expo client the promise will reject.
+This method is only supported in standalone and detached apps. In Expo Go the promise will reject.
 
 The setting value will be persisted across restarts, so once you call `setEnabledAsync(false)`, Segment won't track the users even when the app restarts. To check whether tracking is enabled, use `Segment.getEnabledAsync()` which returns a promise which should resolve to a boolean.

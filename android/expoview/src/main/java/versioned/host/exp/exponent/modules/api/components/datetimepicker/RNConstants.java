@@ -9,6 +9,7 @@ public final class RNConstants {
   public static final String ARG_IS24HOUR = "is24Hour";
   public static final String ARG_DISPLAY = "display";
   public static final String ARG_NEUTRAL_BUTTON_LABEL = "neutralButtonLabel";
+  public static final String ARG_TZOFFSET_MIN = "timeZoneOffsetInMinutes";
   public static final String ACTION_DATE_SET = "dateSetAction";
   public static final String ACTION_TIME_SET = "timeSetAction";
   public static final String ACTION_DISMISSED = "dismissedAction";

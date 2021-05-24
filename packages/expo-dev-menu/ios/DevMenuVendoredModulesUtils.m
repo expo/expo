@@ -2,6 +2,9 @@
 
 #import "DevMenuVendoredModulesUtils.h"
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Weverything"
+
 #if __has_include("DevMenuREAModule.h")
 #import "DevMenuREAModule.h"
 #endif
@@ -9,6 +12,8 @@
 #if __has_include("DevMenuRNGestureHandlerModule.h")
 #import "DevMenuRNGestureHandlerModule.h"
 #endif
+
+#pragma clang diagnostic pop
 
 @implementation DevMenuVendoredModulesUtils
 

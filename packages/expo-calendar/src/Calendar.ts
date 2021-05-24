@@ -1,6 +1,6 @@
 import { UnavailabilityError } from '@unimodules/core';
+import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 
 import ExpoCalendar from './ExpoCalendar';
 

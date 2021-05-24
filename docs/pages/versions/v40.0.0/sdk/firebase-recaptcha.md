@@ -103,7 +103,7 @@ export default function App() {
 
   return (
     <View style={{ padding: 20, marginTop: 50 }}>
-      <FirebaseRecaptchaModalVerifier
+      <FirebaseRecaptchaVerifierModal
         ref={recaptchaVerifier}
         firebaseConfig={firebaseConfig}
         attemptInvisibleVerification={attemptInvisibleVerification}

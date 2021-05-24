@@ -21,7 +21,9 @@
 + (AVCaptureVideoOrientation)videoOrientationForDeviceOrientation:(UIDeviceOrientation)orientation;
 + (AVCaptureVideoOrientation)videoOrientationForInterfaceOrientation:(UIInterfaceOrientation)orientation;
 + (int)exportImageOrientation:(UIImageOrientation)orientation;
++ (AVVideoCodecType)videoCodecForType:(EXCameraVideoCodec)videoCodecType;
 
+// Image utilities
 + (UIImage *)generatePhotoOfSize:(CGSize)size;
 + (UIImage *)cropImage:(UIImage *)image toRect:(CGRect)rect;
 + (NSString *)writeImage:(NSData *)image toPath:(NSString *)path;
@@ -29,4 +31,3 @@
 + (NSData *)dataFromImage:(UIImage *)image withMetadata:(NSDictionary *)exif imageQuality:(float)quality;
 
 @end
-

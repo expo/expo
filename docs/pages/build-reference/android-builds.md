@@ -22,7 +22,7 @@ The first phase happens on your computer. EAS CLI is in charge of completing the
    > In this step, EAS CLI checks whether `android/app/build.gradle` contains `apply from: "./eas-build.gradle"`.
    > If the project is not configured, EAS CLI runs auto-configuration steps ([learn more below](#project-auto-configuration)).
 
-4. Create the tarball containing your project sources - run `git archive --format=tar.gz --prefix project/ -o project.tar.gz HEAD`.
+4. Create the tarball containing shallow clone of your local repository (`git clone --depth 1 ...`).
 5. Upload the project tarball to a private AWS S3 bucket and send the build request to EAS Build.
 
 ### Remote Steps
@@ -37,7 +37,7 @@ Next, this is what happens when EAS Build picks up your request:
 3. Run `yarn install` in the project root (or `npm install` if `yarn.lock` does not exist).
 4. Additional steps for **managed** projects:
 
-   - Run `expo eject` to convert the project to a generic one.
+   - Run `expo prebuild` to convert the project to a generic one.
    - Configure the Android similarly to the step 3 from [Local Steps](#local-steps).
 
 5. Restore the keystore (if it was included in the build request).
@@ -137,6 +137,7 @@ tasks.whenTaskAdded {
   android.buildTypes.release {
     signingConfig android.signingConfigs.release
   } /* @end */
+
 }
 ```
 

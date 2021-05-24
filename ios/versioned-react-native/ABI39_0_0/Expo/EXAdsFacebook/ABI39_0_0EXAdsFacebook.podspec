@@ -17,5 +17,5 @@ Pod::Spec.new do |s|
   s.requires_arc   = true
 
   s.dependency 'ABI39_0_0UMCore'
-  s.dependency 'FBAudienceNetwork'
+  s.dependency 'FBAudienceNetwork', $FBAudienceNetworkVersion || '6.3.0'
 end

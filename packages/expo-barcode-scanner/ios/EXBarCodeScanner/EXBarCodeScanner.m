@@ -2,7 +2,6 @@
 
 #import <EXBarCodeScanner/EXBarCodeScanner.h>
 #import <EXBarCodeScanner/EXBarCodeScannerUtils.h>
-#import <UMBarCodeScannerInterface/UMBarCodeScannerInterface.h>
 #import <UMCore/UMDefines.h>
 #import <ZXingObjC/ZXingObjCCore.h>
 #import <ZXingObjC/ZXingObjCPDF417.h>

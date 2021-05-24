@@ -27,7 +27,14 @@ public class ScreenViewManager extends ViewGroupManager<Screen> {
   }
 
   @ReactProp(name = "activityState")
-  public void setActivityState(Screen view, int activityState) {
+  public void setActivityState(Screen view, Integer activityState) {
+    if (activityState == null) {
+      // Null will be provided when activityState is set as an animated value and we change
+      // it from JS to be a plain value (non animated).
+      // In case when null is received, we want to ignore such value and not make
+      // any updates as the actual non-null value will follow immediately.
+      return;
+    }
     if (activityState == 0) {
       view.setActivityState(Screen.ActivityState.INACTIVE);
     } else if (activityState == 1) {

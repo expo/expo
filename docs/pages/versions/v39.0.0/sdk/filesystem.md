@@ -87,9 +87,10 @@ try {
 <SnackInline
 label="Managing Giphy's"
 templateId="filesystem/App"
+dependencies={['expo-file-system']}
 files={{
-    'GifFetching.ts': 'filesystem/GifFetching.ts',
-    'GifManagement.ts': 'filesystem/GifManagement.ts'
+    'GifFetching.ts': 'filesystem/gifFetching.ts',
+    'GifManagement.ts': 'filesystem/gifManagement.ts'
   }}>
 
 ```typescript

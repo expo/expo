@@ -4,7 +4,7 @@ import android.hardware.SensorEventListener2;
 
 import javax.inject.Inject;
 
-import org.unimodules.interfaces.sensors.SensorServiceSubscription;
+import expo.modules.interfaces.sensors.SensorServiceSubscriptionInterface;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry;
@@ -32,7 +32,7 @@ public abstract class BaseSensorService {
 
   protected abstract SubscribableSensorKernelService getSensorKernelService();
 
-  public SensorServiceSubscription createSubscriptionForListener(SensorEventListener2 sensorEventListener) {
+  public SensorServiceSubscriptionInterface createSubscriptionForListener(SensorEventListener2 sensorEventListener) {
     ScopedSensorEventListener scopedSensorEventListener = new ScopedSensorEventListener(sensorEventListener);
     SensorKernelServiceSubscription sensorKernelServiceSubscription = getSensorKernelService().createSubscriptionForListener(getExperienceId(), scopedSensorEventListener);
     return new SensorSubscription(sensorKernelServiceSubscription);

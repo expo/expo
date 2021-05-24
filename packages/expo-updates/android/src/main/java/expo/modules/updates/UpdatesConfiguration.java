@@ -11,6 +11,8 @@ import java.util.Map;
 
 import androidx.annotation.Nullable;
 
+import static expo.modules.updates.UpdatesUtils.getHeadersMapFromJSONString;
+
 public class UpdatesConfiguration {
 
   private static final String TAG = UpdatesConfiguration.class.getSimpleName();
@@ -25,7 +27,6 @@ public class UpdatesConfiguration {
   public static final String UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY = "checkOnLaunch";
   public static final String UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY = "launchWaitMs";
   public static final String UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY = "hasEmbeddedUpdate";
-  public static final String UPDATES_CONFIGURATION_USES_LEGACY_MANIFEST_KEY = "usesLegacyManifest";
 
   private static final String UPDATES_CONFIGURATION_RELEASE_CHANNEL_DEFAULT_VALUE = "default";
   private static final int UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_DEFAULT_VALUE = 0;
@@ -37,6 +38,7 @@ public class UpdatesConfiguration {
   }
 
   private boolean mIsEnabled;
+  private boolean mExpectsSignedManifest = false;
   private String mScopeKey;
   private Uri mUpdateUrl;
   private Map<String, String> mRequestHeaders = new HashMap<>();
@@ -46,10 +48,12 @@ public class UpdatesConfiguration {
   private int mLaunchWaitMs = UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_DEFAULT_VALUE;
   private CheckAutomaticallyConfiguration mCheckOnLaunch = CheckAutomaticallyConfiguration.ALWAYS;
   private boolean mHasEmbeddedUpdate = true;
-  private boolean mUsesLegacyManifest = true;
 
   public boolean isEnabled() {
     return mIsEnabled;
+  }
+  public boolean expectsSignedManifest() {
+    return mExpectsSignedManifest;
   }
 
   public String getScopeKey() {
@@ -79,6 +83,11 @@ public class UpdatesConfiguration {
     return mRuntimeVersion;
   }
 
+  public boolean isMissingRuntimeVersion() {
+    return (mRuntimeVersion == null || mRuntimeVersion.length() == 0) &&
+      (mSdkVersion == null || mSdkVersion.length() == 0);
+  }
+
   public CheckAutomaticallyConfiguration getCheckOnLaunch() {
     return mCheckOnLaunch;
   }
@@ -89,10 +98,6 @@ public class UpdatesConfiguration {
 
   public boolean hasEmbeddedUpdate() {
     return mHasEmbeddedUpdate;
-  }
-
-  public boolean usesLegacyManifest() {
-    return mUsesLegacyManifest;
   }
 
   public UpdatesConfiguration loadValuesFromMetadata(Context context) {
@@ -108,7 +113,6 @@ public class UpdatesConfiguration {
       mSdkVersion = ai.metaData.getString("expo.modules.updates.EXPO_SDK_VERSION");
       mReleaseChannel = ai.metaData.getString("expo.modules.updates.EXPO_RELEASE_CHANNEL", "default");
       mLaunchWaitMs = ai.metaData.getInt("expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS", 0);
-      mUsesLegacyManifest = ai.metaData.getBoolean("expo.modules.updates.EXPO_LEGACY_MANIFEST", true);
 
       Object runtimeVersion = ai.metaData.get("expo.modules.updates.EXPO_RUNTIME_VERSION");
       mRuntimeVersion = runtimeVersion == null ? null : String.valueOf(runtimeVersion);
@@ -120,6 +124,9 @@ public class UpdatesConfiguration {
         Log.e(TAG, "Invalid value " + checkOnLaunchString + " for expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH in AndroidManifest; defaulting to ALWAYS");
         mCheckOnLaunch = CheckAutomaticallyConfiguration.ALWAYS;
       }
+
+      String headerString = ai.metaData.getString("expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY", "{}");
+      mRequestHeaders = getHeadersMapFromJSONString(headerString);
 
       // used only for expo-updates development
       mHasEmbeddedUpdate = ai.metaData.getBoolean("expo.modules.updates.HAS_EMBEDDED_UPDATE", true);
@@ -133,6 +140,13 @@ public class UpdatesConfiguration {
     Boolean isEnabledFromMap = readValueCheckingType(map, UPDATES_CONFIGURATION_ENABLED_KEY, Boolean.class);
     if (isEnabledFromMap != null) {
       mIsEnabled = isEnabledFromMap;
+    }
+
+    Boolean expectsSignedManifest = readValueCheckingType(map, "expectsSignedManifest", Boolean.class);
+    if (expectsSignedManifest != null) {
+      mExpectsSignedManifest = expectsSignedManifest;
+    } else {
+      mExpectsSignedManifest = false;
     }
 
     Uri updateUrlFromMap = readValueCheckingType(map, UPDATES_CONFIGURATION_UPDATE_URL_KEY, Uri.class);
@@ -183,11 +197,6 @@ public class UpdatesConfiguration {
     Boolean hasEmbeddedUpdateFromMap = readValueCheckingType(map, UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY, Boolean.class);
     if (hasEmbeddedUpdateFromMap != null) {
       mHasEmbeddedUpdate = hasEmbeddedUpdateFromMap;
-    }
-
-    Boolean usesLegacyManifestFromMap = readValueCheckingType(map, UPDATES_CONFIGURATION_USES_LEGACY_MANIFEST_KEY, Boolean.class);
-    if (usesLegacyManifestFromMap != null) {
-      mUsesLegacyManifest = usesLegacyManifestFromMap;
     }
 
     return this;

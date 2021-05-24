@@ -3,6 +3,7 @@ title: Sending Notifications with Expo's Push API
 sidebar_title: Sending Notifications with Expo's Push API
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import { InlineCode } from '~/components/base/code';
 
 > If you're just getting started and want to focus on the front-end for now, you can skip this step and just use [Expo's push notification tool](https://expo.io/notifications) to send notifications with the click of a button.
@@ -11,7 +12,7 @@ Along with the [`expo-notifications`](../versions/latest/sdk/notifications.md) m
 
 > If you'd rather build a server that communicates with APNs and FCM directly, check out [this guide](sending-notifications-custom.md) (this is more complicated than using Expo's push notification service).
 
-![Diagram explaining sending a push from your server to device](/static/images/sending-notification.png)
+<ImageSpotlight alt="Diagram explaining sending a push from your server to device" src="/static/images/sending-notification.png" containerStyle={{ backgroundColor: "#fff" }} />
 
 When you're ready to send a push notification, take the Expo push token from your user record and send it to the Expo API using a plain old HTTPS POST request. You'll probably do this from your server (you could write a command line tool to send them if you wanted, or send them straight from your app, it's all the same), and the Expo team and community have taken care of wrapping that for you in a few languages:
 
@@ -30,7 +31,7 @@ Check out the source if you would like to implement it in another language.
 
 > **Note:**
 >
-> If you're **not** testing in the Expo client app, make sure you've [generated the proper push credentials](push-notifications-setup.md#credentials) before proceeding! If you haven't, push notifications will not work.
+> If you're **not** testing in the Expo Go app, make sure you've [generated the proper push credentials](push-notifications-setup.md#credentials) before proceeding! If you haven't, push notifications will not work.
 
 ## HTTP/2 API
 
@@ -179,6 +180,8 @@ Inside both push tickets and push receipts, look for a `details` object with an 
 
 - `MessageRateExceeded`: you are sending messages too frequently to the given device. Implement exponential backoff and slowly retry sending messages.
 
+- `MismatchSenderId`: There is an issue with your FCM push credentials. There are two pieces to FCM push credentials: your FCM server key, and your `google-services.json` file. Both must be associated with the same sender ID. You can find your sender ID in the [same place you find your server key](/push-notifications/using-fcm.md#uploading-server-credentials). Check that the server key is the same as the one returned from running `expo push:android:show`, and that the sender ID is the same as the one in your project's `google-services.json` file (under `project_number`).
+
 - `InvalidCredentials`: your push notification credentials for your standalone app are invalid (ex: you may have revoked them). Run `expo build:ios -c` to regenerate new push notification credentials for iOS. If you revoke an APN key, all apps that rely on that key will no longer be able to send or receive push notifications until you upload a new key to replace it. Uploading a new APN key will **not** change your users' Expo Push Tokens.
   - Sometimes, these errors will contain further details claiming an `InvalidProviderToken` error. This is actually tied to both your APN key **and** your provisioning profile. To resolve this error, you should rebuild the app and regenerate a new push key and provisioning profile.
 
@@ -194,25 +197,37 @@ If there's an error with the entire request for either push tickets or push rece
 
 - `PUSH_TOO_MANY_RECEIPTS`: you are trying to get more than 1000 push receipts in one request. Make sure you are only sending an array of 1000 (or less) ticket ID strings to get your push receipts.
 
+## Additional Security
+
+You can require any push requests to be sent with a valid [access token](/accounts/programmatic-access.md) before we will deliver them to your users. You can enable this enhanced push security from your [Expo Dashboard](https://expo.io/settings/access-tokens).
+
+By default, you can send a notification to your users by sending their Expo Push Token and any text or additional data needed for the message. This is easy to set up, but **if the tokens are leaked, a malicious user would be able to impersonate your app and send their own message to your users.** We have never had an instance of this reported; however, to follow best security practices, we offer the use of an access token alongside the push token as an additional layer of security.
+
+If you're using the [`expo-server-sdk-node`](https://github.com/expo/expo-server-sdk-node#usage), upgrade to at least v3.6.0 and pass your `accessToken` as an option in the constructor. Otherwise, pass in the header `'Authorization': 'Bearer ${accessToken}'` with any requests to our push API.
+
+Any requests sent _without_ a valid access token _after_ you enable push security will result in an error with code: `UNAUTHORIZED`.
+
 ## Formats
 
 ### Message request format
 
 Each message must be a JSON object with the given fields (only the `to` field is required):
 
-| Field        | Platform?     | Type                                                     | Description                                                                                                                                                                                                                                                           |
-| ------------ | ------------- | -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `to`         | iOS & Android | <InlineCode>string \| string[]</InlineCode>              | An Expo push token or an array of Expo push tokens specifying the recipient(s) of this message.                                                                                                                                                                       |
-| `data`       | iOS & Android | `Object`                                                 | A JSON object delivered to your app. It may be up to about 4KiB; the total notification payload sent to Apple and Google must be at most 4KiB or else you will get a "Message Too Big" error.                                                                         |
-| `title`      | iOS & Android | `string`                                                 | The title to display in the notification. Often displayed above the notification body                                                                                                                                                                                 |
-| `body`       | iOS & Android | `string`                                                 | The message to display in the notification.                                                                                                                                                                                                                           |
-| `ttl`        | iOS & Android | `number`                                                 | Time to Live: the number of seconds for which the message may be kept around for redelivery if it hasn't been delivered yet. Defaults to `undefined` in order to use the respective defaults of each provider (0 for iOS/APNs and 2419200 (4 weeks) for Android/FCM). |
-| `expiration` | iOS & Android | `number`                                                 | Timestamp since the UNIX epoch specifying when the message expires. Same effect as `ttl` (`ttl` takes precedence over `expiration`).                                                                                                                                  |
-| `priority`   | iOS & Android | <InlineCode>'default' \| 'normal' \| 'high'</InlineCode> | The delivery priority of the message. Specify "default" or omit this field to use the default priority on each platform ("normal" on Android and "high" on iOS).                                                                                                      |
-| `subtitle`   | iOS Only      | `string`                                                 | The subtitle to display in the notification below the title.                                                                                                                                                                                                          |
-| `sound`      | iOS Only      | <InlineCode>'default' \| null</InlineCode>               | Play a sound when the recipient receives this notification. Specify `"default"` to play the device's default notification sound, or omit this field to play no sound.                                                                                                 |
-| `badge`      | iOS Only      | `number`                                                 | Number to display in the badge on the app icon. Specify zero to clear the badge.                                                                                                                                                                                      |
-| `channelId`  | Android Only  | `string`                                                 | ID of the Notification Channel through which to display this notification. If an ID is specified but the corresponding channel does not exist on the device (i.e. has not yet been created by your app), the notification will not be displayed to the user.          |
+| Field            | Platform?     | Type                                                     | Description                                                                                                                                                                                                                                                                                                                                                       |
+| ---------------- | ------------- | -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `to`             | iOS & Android | <InlineCode>string \| string[]</InlineCode>              | An Expo push token or an array of Expo push tokens specifying the recipient(s) of this message.                                                                                                                                                                                                                                                                   |
+| `data`           | iOS & Android | `Object`                                                 | A JSON object delivered to your app. It may be up to about 4KiB; the total notification payload sent to Apple and Google must be at most 4KiB or else you will get a "Message Too Big" error.                                                                                                                                                                     |
+| `title`          | iOS & Android | `string`                                                 | The title to display in the notification. Often displayed above the notification body                                                                                                                                                                                                                                                                             |
+| `body`           | iOS & Android | `string`                                                 | The message to display in the notification.                                                                                                                                                                                                                                                                                                                       |
+| `ttl`            | iOS & Android | `number`                                                 | Time to Live: the number of seconds for which the message may be kept around for redelivery if it hasn't been delivered yet. Defaults to `undefined` in order to use the respective defaults of each provider (0 for iOS/APNs and 2419200 (4 weeks) for Android/FCM).                                                                                             |
+| `expiration`     | iOS & Android | `number`                                                 | Timestamp since the UNIX epoch specifying when the message expires. Same effect as `ttl` (`ttl` takes precedence over `expiration`).                                                                                                                                                                                                                              |
+| `priority`       | iOS & Android | <InlineCode>'default' \| 'normal' \| 'high'</InlineCode> | The delivery priority of the message. Specify "default" or omit this field to use the default priority on each platform ("normal" on Android and "high" on iOS).                                                                                                                                                                                                  |
+| `subtitle`       | iOS Only      | `string`                                                 | The subtitle to display in the notification below the title.                                                                                                                                                                                                                                                                                                      |
+| `sound`          | iOS Only      | <InlineCode>'default' \| null</InlineCode>               | Play a sound when the recipient receives this notification. Specify `"default"` to play the device's default notification sound, or omit this field to play no sound.                                                                                                                                                                                             |
+| `badge`          | iOS Only      | `number`                                                 | Number to display in the badge on the app icon. Specify zero to clear the badge.                                                                                                                                                                                                                                                                                  |
+| `channelId`      | Android Only  | `string`                                                 | ID of the Notification Channel through which to display this notification. If an ID is specified but the corresponding channel does not exist on the device (i.e. has not yet been created by your app), the notification will not be displayed to the user.                                                                                                      |
+| `categoryId`     | iOS & Android | `string`                                                 | ID of the notification category that this notification is associated with. [Find out more about notification categories here](/versions/latest/sdk/notifications.md#managing-notification-categories-interactive-notifications). Must be on at least SDK 41 or bare workflow.                                                                                     |
+| `mutableContent` | iOS Only      | `boolean`                                                | Specifies whether this notification can be [intercepted by the client app](https://developer.apple.com/documentation/usernotifications/modifying_content_in_newly_delivered_notifications?language=objc). In Expo Go, this defaults to `true`, and if you change that to false, you may experience issues. In standalone and bare apps, this defaults to `false`. |
 
 **Note on `ttl`**: On Android, we make a best effort to deliver messages with zero TTL immediately and do not throttle them. However, setting TTL to a low value (e.g. zero) can prevent normal-priority notifications from ever reaching Android devices that are in doze mode. In order to guarantee that a notification will be delivered, TTL must be long enough for the device to wake from doze mode. This field takes precedence over `expiration` when both are specified.
 
@@ -278,3 +293,11 @@ Expo makes a best effort to deliver notifications to the push notification servi
 After a notification has been handed off to an underlying push notification service, Expo creates a "push receipt" that records whether the handoff was successful; a push receipt denotes whether the underlying push notification service received the notification.
 
 Finally, the push notification services from Apple, Google, etc... make a best effort to deliver the notification to the device according to their own policies.
+
+## Next steps
+
+Now that you can send notifications to your app, set your app up for [receiving notifications and taking action based on those events](./receiving-notifications.md)!
+
+## See also
+
+- Having trouble? Visit [Expo's notification FAQ page](./faq.md)

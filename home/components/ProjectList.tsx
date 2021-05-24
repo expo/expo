@@ -1,20 +1,12 @@
-import { useNavigation, useTheme } from '@react-navigation/native';
+import { useTheme } from '@react-navigation/native';
 import dedent from 'dedent';
 import * as React from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ActivityIndicator, FlatList, ScrollView, View } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
 import PrimaryButton from './PrimaryButton';
-import ProjectCard from './ProjectCard';
 import ProjectListItem from './ProjectListItem';
 import SectionHeader from './SectionHeader';
 import { StyledText } from './Text';
@@ -31,21 +23,21 @@ const SERVER_ERROR_TEXT = dedent`
 
 export type Project = {
   id: string;
-  description?: string;
+  description: string;
   fullName: string;
-  iconUrl: string;
+  iconUrl?: string | null;
+  published: boolean; // legacy publishes
   lastPublishedTime: number;
   name: string;
   packageName: string;
   privacy: string;
   sdkVersion: string;
-  packageUsername?: string;
+  username: string;
 };
 
 type Props = {
   data: { apps?: Project[]; appCount?: number };
   loadMoreAsync: () => Promise<any>;
-  belongsToCurrentUser?: true;
   listTitle?: string;
 
   loading: boolean;
@@ -102,7 +94,7 @@ export default function LoadingProjectList(props: Props) {
             {isConnectionError ? NETWORK_ERROR_TEXT : SERVER_ERROR_TEXT}
           </StyledText>
 
-          <PrimaryButton plain onPress={refetchDataAsync} fallback={TouchableOpacity}>
+          <PrimaryButton plain onPress={refetchDataAsync}>
             Try again
           </PrimaryButton>
         </View>
@@ -115,9 +107,8 @@ export default function LoadingProjectList(props: Props) {
   return <ProjectList {...props} />;
 }
 
-function ProjectList({ data, loadMoreAsync, belongsToCurrentUser, listTitle }: Props) {
+function ProjectList({ data, loadMoreAsync, listTitle }: Props) {
   const theme = useTheme();
-  const navigation = useNavigation();
   const isLoading = React.useRef<null | boolean>(false);
 
   const extractKey = React.useCallback(item => item.id, []);
@@ -139,42 +130,20 @@ function ProjectList({ data, loadMoreAsync, belongsToCurrentUser, listTitle }: P
   const totalAppCount = data.appCount ?? 0;
   const canLoadMore = currentAppCount < totalAppCount;
 
-  const handlePressUsername = (username: string) => {
-    navigation.navigate('Profile', { username });
-  };
-
-  const renderItem = ({ item: app, index }) => {
-    const experienceInfo = { username: app.username || app.packageUsername, slug: app.packageName };
-    if (belongsToCurrentUser) {
-      return (
-        <ProjectListItem
-          key={index.toString()}
-          url={app.fullName}
-          image={app.iconUrl || require('../assets/placeholder-app-icon.png')}
-          title={app.name}
-          subtitle={app.packageName || app.fullName}
-          last={index === currentAppCount - 1}
-          experienceInfo={experienceInfo}
-          sdkVersion={app.sdkVersion}
-        />
-      );
-    } else {
-      return (
-        <ProjectCard
-          key={index}
-          style={styles.largeProjectCard}
-          id={app.id}
-          iconUrl={app.iconUrl}
-          name={app.name}
-          projectUrl={app.fullName}
-          username={app.packageUsername}
-          description={app.description}
-          onPressUsername={handlePressUsername}
-          experienceInfo={experienceInfo}
-          sdkVersion={app.sdkVersion}
-        />
-      );
-    }
+  const renderItem = ({ item: app, index }: { item: Project; index: number }) => {
+    const experienceInfo = { id: app.id, username: app.username, slug: app.packageName };
+    return (
+      <ProjectListItem
+        key={index.toString()}
+        url={app.fullName}
+        image={app.iconUrl || require('../assets/placeholder-app-icon.png')}
+        title={app.name}
+        subtitle={app.packageName || app.fullName}
+        last={index === currentAppCount - 1}
+        experienceInfo={experienceInfo}
+        sdkVersion={app.sdkVersion}
+      />
+    );
   };
 
   const renderHeader = () => {
@@ -182,12 +151,8 @@ function ProjectList({ data, loadMoreAsync, belongsToCurrentUser, listTitle }: P
   };
 
   const style = React.useMemo(
-    () => [
-      { flex: 1 },
-      !belongsToCurrentUser && styles.largeProjectCardList,
-      { backgroundColor: theme.dark ? '#000' : Colors.light.greyBackground },
-    ],
-    [belongsToCurrentUser, theme]
+    () => [{ flex: 1 }, { backgroundColor: theme.dark ? '#000' : Colors.light.greyBackground }],
+    [theme]
   );
 
   return (
@@ -213,20 +178,10 @@ function ProjectList({ data, loadMoreAsync, belongsToCurrentUser, listTitle }: P
             return <InfiniteScrollView {...props} />;
           }
         }}
+        // @ts-expect-error typescript cannot infer that props should include infinite-scroll-view props
         canLoadMore={canLoadMore}
         onLoadMoreAsync={handleLoadMoreAsync}
       />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  largeProjectCardList: {
-    paddingTop: 10,
-    paddingBottom: 10,
-    backgroundColor: Colors.light.greyBackground,
-  },
-  largeProjectCard: {
-    marginBottom: 10,
-  },
-});

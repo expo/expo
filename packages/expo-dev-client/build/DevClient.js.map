@@ -1,0 +1,1 @@
+{"version":3,"file":"DevClient.js","sourceRoot":"","sources":["../src/DevClient.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,OAAO,MAAM,eAAe,CAAC;AACzC,OAAO,EAAE,OAAO,EAAE,CAAC","sourcesContent":["import * as DevMenu from 'expo-dev-menu';\nexport { DevMenu };\n"]}

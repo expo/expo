@@ -8,6 +8,44 @@
 
 ### 🐛 Bug fixes
 
+- Fix accidental condition that caused AuthSession Google Provider to error when no scheme in Expo Go. ([#12846](https://github.com/expo/expo/pull/12846) by [@brentvatne](https://github.com/brentvatne))
+- Add new manifest2 field and make existing field optional. ([#12817](https://github.com/expo/expo/pull/12817) by [@wschurman](https://github.com/wschurman))
+
+## 2.2.3 — 2021-04-13
+
+_This version does not introduce any user-facing changes._
+
+## 2.2.2 — 2021-04-09
+
+### 🎉 New features
+
+- Add internal ability to skip warnings for scheme resolution. ([#12464](https://github.com/expo/expo/pull/12464) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 2.2.1 — 2021-03-30
+
+### 🐛 Bug fixes
+
+- Replace useUrl with useURL and update documentation. ([#12310](https://github.com/expo/expo/pull/12310) by [@brentvatne](https://github.com/brentvatne))
+
+## 2.2.0 — 2021-03-10
+
+### 🐛 Bug fixes
+
+- Remove peerDependencies and unimodulePeerDependencies from Expo modules. ([#11980](https://github.com/expo/expo/pull/11980) by [@brentvatne](https://github.com/brentvatne))
+
+## 2.1.1 — 2021-01-21
+
+### 🎉 New features
+
+- Added bare workflow support. ([#11560](https://github.com/expo/expo/pull/11560) by [@EvanBacon](https://github.com/EvanBacon))
+- `Linking.createURL` creates URLs with two slashes in bare workflow. ([#11702](https://github.com/expo/expo/pull/11702) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 2.1.0 — 2021-01-15
+
+### 🐛 Bug fixes
+
+- Removed `fbjs` dependency ([#11396](https://github.com/expo/expo/pull/11396) by [@cruzach](https://github.com/cruzach))
+
 ## 2.0.0 — 2020-12-08
 
 _This version does not introduce any user-facing changes._

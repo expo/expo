@@ -130,7 +130,7 @@ If you would like to send notifications with Expo servers, the servers will need
 
 ### Fetching a push token takes a long time on iOS
 
-`getDevicePushTokenAsync` and  `getExpoPushTokenAsync` can sometimes take a long time to resolve on iOS. This is outside of `expo-notifications`'s control, as stated in Apple's [“Troubleshooting Push Notifications” technical note](https://developer.apple.com/library/archive/technotes/tn2265/_index.html):
+`getDevicePushTokenAsync` and `getExpoPushTokenAsync` can sometimes take a long time to resolve on iOS. This is outside of `expo-notifications`'s control, as stated in Apple's [“Troubleshooting Push Notifications” technical note](https://developer.apple.com/library/archive/technotes/tn2265/_index.html):
 
 > This is not necessarily an error condition. The system may not have Internet connectivity at all because it is out of range of any cell towers or Wi-Fi access points, or it may be in airplane mode. Instead of treating this as an error, your app should continue normally, disabling only that functionality that relies on push notifications.
 
@@ -141,6 +141,7 @@ Here are a few ways people claim to have solved this problem, maybe one of these
 <details><summary><strong>Read the Apple's <a href="https://developer.apple.com/library/archive/technotes/tn2265/_index.html">Technical Note on troubleshooting push notifications</a></strong></summary> <p>
 
 Go read the Apple's [Technical Note on troubleshooting push notifications](https://developer.apple.com/library/archive/technotes/tn2265/_index.html)! This the single most reliable source of information on this problem. To help you grasp what they're suggesting:
+
 - Make sure the device has a reliable connection to the Internet (try turning off Wi-Fi or switching to another network, and disabling firewall block on port 5223, as suggested in [this SO answer](https://stackoverflow.com/a/34332047/1123156)).
 - Make sure your app configuration is set properly for registering for push notifications (for bare workflow check out [this guide](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html#//apple_ref/doc/uid/TP40012582-CH26-SW6), for managed workflow this is done automatically for you by `expo-cli`) as also suggested by [this StackOverflow answer](https://stackoverflow.com/a/10791240/1123156).
 - If you're in bare workflow you may want to try to debug this even further by logging persistent connection debug information as outlined by [this StackOverflow answer](https://stackoverflow.com/a/8036052/1123156).
@@ -409,13 +410,15 @@ A single and required argument is a subscription returned by `addPushTokenListen
 
 A React hook always returning the notification response that was received most recently (a notification response designates an interaction with a notification, such as tapping on it).
 
+> If you don't want to use a hook, you can use `Notifications.getLastNotificationResponseAsync()` instead.
+
 #### Returns
 
 The hook may return one of these three types/values:
 
 - `undefined` -- until we're sure of what to return
 - `null` -- if no notification response has been received yet
-- a [`NotificationResponse`](#notificationresponse) object -- if a notification response was received 
+- a [`NotificationResponse`](#notificationresponse) object -- if a notification response was received
 
 #### Examples
 
@@ -551,17 +554,15 @@ export default function App() {
           Linking.addEventListener('url', onReceiveURL);
 
           // Listen to expo push notifications
-          const subscription = Notifications.addNotificationResponseReceivedListener (
-            (response) => {
-              const url = response.notification.request.content.data.url;
+          const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+            const url = response.notification.request.content.data.url;
 
-              // Any custom logic to see whether the URL needs to be handled
-              //...
+            // Any custom logic to see whether the URL needs to be handled
+            //...
 
-              // Let React Navigation handle the URL
-              listener(url);
-            }
-          );
+            // Let React Navigation handle the URL
+            listener(url);
+          });
 
           return () => {
             // Clean up the event listeners
@@ -569,8 +570,7 @@ export default function App() {
             subscription.remove();
           };
         },
-      }}
-    >
+      }}>
       {/* Your app content */}
     </NavigationContainer>
   );
@@ -648,7 +648,7 @@ export async function allowsNotificationsAsync() {
 
 ### `requestPermissionsAsync(request?: NotificationPermissionsRequest): Promise<NotificationPermissionsStatus>`
 
-Prompts the user for notification permissions according to request. Request defaults to asking the user to allow displaying alerts, setting badge count and playing sounds.
+Prompts the user for notification permissions according to request. **Request defaults to asking the user to allow displaying alerts, setting badge count and playing sounds**.
 
 #### Arguments
 
@@ -1084,7 +1084,7 @@ Calling one of the following methods is a no-op on Web.
     - `submitButtonTitle`: (**iOS only**) A string which will be used as the title for the button used for submitting the text response.
     - `placeholder`: A string that serves as a placeholder until the user begins typing. Defaults to no placeholder string.
   - `options`: **Optional** object of additional configuration options.
-    - `opensAppToForeground`: Boolean indicating whether triggering this action foregrounds the app (defaults to `true`).
+    - `opensAppToForeground`: Boolean indicating whether triggering this action foregrounds the app (defaults to `true`). If `false` and your app is killed (not just backgrounded), [`NotificationResponseReceived` listeners](#addnotificationresponsereceivedlistenerlistener-event-notificationresponse--void-void) will not be triggered when a user selects this action.
     - `isAuthenticationRequired`: (**iOS only**) Boolean indicating whether triggering the action will require authentication from the user.
     - `isDestructive`: (**iOS only**) Boolean indicating whether the button title will be highlighted a different color (usually red). This usually signifies a destructive action such as deleting data.
 - `options`: An optional object of additional configuration options for your category (**these are all iOS only**):
@@ -1327,6 +1327,7 @@ export type NotificationTrigger =
   | TimeIntervalNotificationTrigger
   | DailyNotificationTrigger
   | WeeklyNotificationTrigger
+  | YearlyNotificationTrigger
   | UnknownNotificationTrigger;
 ```
 
@@ -1423,6 +1424,20 @@ A trigger related to a weekly notification. This is an Android-only type, the sa
 export interface WeeklyNotificationTrigger {
   type: 'weekly';
   weekday: number;
+  hour: number;
+  minute: number;
+}
+```
+
+### `YearlyNotificationTrigger`
+
+A trigger related to a yearly notification. This is an Android-only type, the same functionality will be achieved on iOS with a `CalendarNotificationTrigger`.
+
+```ts
+export interface YearlyNotificationTrigger {
+  type: 'yearly';
+  day: number;
+  month: number;
   hour: number;
   minute: number;
 }
@@ -1530,6 +1545,7 @@ export type SchedulableNotificationTriggerInput =
   | TimeIntervalTriggerInput
   | DailyTriggerInput
   | WeeklyTriggerInput
+  | YearlyTriggerInput
   | CalendarTriggerInput;
 ```
 
@@ -1586,6 +1602,23 @@ A trigger that will cause the notification to be delivered once every week.
 export interface WeeklyTriggerInput {
   channelId?: string;
   weekday: number;
+  hour: number;
+  minute: number;
+  repeats: true;
+}
+```
+
+### `YearlyTriggerInput`
+
+A trigger that will cause the notification to be delivered once every year.
+
+> **Note:** all properties are specified in JavaScript Date's ranges.
+
+```ts
+export interface YearlyTriggerInput {
+  channelId?: string;
+  day: number;
+  month: number;
   hour: number;
   minute: number;
   repeats: true;

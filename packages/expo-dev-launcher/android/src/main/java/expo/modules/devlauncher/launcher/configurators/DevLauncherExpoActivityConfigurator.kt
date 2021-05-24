@@ -11,18 +11,16 @@ import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager
 import androidx.annotation.UiThread
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
 import com.facebook.react.ReactActivity
 import expo.modules.devlauncher.helpers.RGBAtoARGB
 import expo.modules.devlauncher.helpers.isValidColor
 import expo.modules.devlauncher.launcher.manifest.DevLauncherOrientation
-import expo.modules.devlauncher.launcher.manifest.DevelopmentClientManifest
+import expo.modules.devlauncher.launcher.manifest.DevLauncherManifest
 import expo.modules.devlauncher.launcher.manifest.DevLauncherStatusBarStyle
-import expo.modules.devlauncher.launcher.manifest.DevLauncherUserInterface
 
 class DevLauncherExpoActivityConfigurator(
-  private var manifest: DevelopmentClientManifest,
+  private var manifest: DevLauncherManifest,
   private val context: Context
 ) {
   fun applyTaskDescription(activity: Activity) {

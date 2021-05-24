@@ -6,7 +6,7 @@
 #import <UMCore/UMUtilities.h>
 #import <UMCore/UMUIManager.h>
 #import <UMCore/UMJavaScriptContextProvider.h>
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
+#import <ExpoModulesCore/EXFileSystemInterface.h>
 
 #include <OpenGLES/ES3/gl.h>
 #include <OpenGLES/ES3/glext.h>
@@ -284,7 +284,7 @@
 
 - (NSString *)generateSnapshotPathWithExtension:(NSString *)extension
 {
-  id<UMFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
+  id<EXFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   NSString *directory = [fileSystem.cachesDirectory stringByAppendingPathComponent:@"GLView"];
   NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:extension];
 

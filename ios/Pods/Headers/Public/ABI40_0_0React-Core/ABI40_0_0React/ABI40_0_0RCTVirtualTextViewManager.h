@@ -1,1 +1,0 @@
-../../../../../versioned-react-native/ABI40_0_0/ReactNative/Libraries/Text/VirtualText/ABI40_0_0RCTVirtualTextViewManager.h

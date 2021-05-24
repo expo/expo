@@ -89,7 +89,7 @@ open class NotificationsService : BroadcastReceiver() {
     /**
      * A helper function for dispatching a "fetch all displayed notifications" command to the service.
      *
-     * @param context  Context where to start the service.
+     * @param context Context where to start the service.
      * @param receiver A receiver to which send the notifications
      */
     fun getAllPresented(context: Context, receiver: ResultReceiver? = null) {
@@ -102,10 +102,10 @@ open class NotificationsService : BroadcastReceiver() {
     /**
      * A helper function for dispatching a "present notification" command to the service.
      *
-     * @param context      Context where to start the service.
+     * @param context Context where to start the service.
      * @param notification Notification to present
-     * @param behavior     Allowed notification behavior
-     * @param receiver     A receiver to which send the result of presenting the notification
+     * @param behavior Allowed notification behavior
+     * @param receiver A receiver to which send the result of presenting the notification
      */
     fun present(context: Context, notification: Notification, behavior: NotificationBehavior? = null, receiver: ResultReceiver? = null) {
       val data = getUriBuilderForIdentifier(notification.notificationRequest.identifier).appendPath("present").build()
@@ -120,9 +120,9 @@ open class NotificationsService : BroadcastReceiver() {
     /**
      * A helper function for dispatching a "notification received" command to the service.
      *
-     * @param context      Context where to start the service.
+     * @param context Context where to start the service.
      * @param notification Notification received
-     * @param receiver     Result receiver
+     * @param receiver Result receiver
      */
     fun receive(context: Context, notification: Notification, receiver: ResultReceiver? = null) {
       val data = getUriBuilderForIdentifier(notification.notificationRequest.identifier).appendPath("receive").build()
@@ -136,9 +136,9 @@ open class NotificationsService : BroadcastReceiver() {
     /**
      * A helper function for dispatching a "dismiss notification" command to the service.
      *
-     * @param context    Context where to start the service.
+     * @param context Context where to start the service.
      * @param identifier Notification identifier
-     * @param receiver   A receiver to which send the result of the action
+     * @param receiver A receiver to which send the result of the action
      */
     fun dismiss(context: Context, identifiers: Array<String>, receiver: ResultReceiver? = null) {
       val data = getUriBuilder().appendPath("dismiss").build()
@@ -152,8 +152,8 @@ open class NotificationsService : BroadcastReceiver() {
     /**
      * A helper function for dispatching a "dismiss notification" command to the service.
      *
-     * @param context    Context where to start the service.
-     * @param receiver   A receiver to which send the result of the action
+     * @param context Context where to start the service.
+     * @param receiver A receiver to which send the result of the action
      */
     fun dismissAll(context: Context, receiver: ResultReceiver? = null) {
       val data = getUriBuilder().appendPath("dismiss").build()
@@ -197,7 +197,7 @@ open class NotificationsService : BroadcastReceiver() {
     /**
      * A helper function for dispatching a "set notification category" command to the service.
      *
-     * @param context  Context where to start the service.
+     * @param context Context where to start the service.
      * @param category Notification category to be set
      */
     fun setCategory(context: Context, category: NotificationCategory, receiver: ResultReceiver? = null) {
@@ -220,7 +220,7 @@ open class NotificationsService : BroadcastReceiver() {
     /**
      * A helper function for dispatching a "delete notification category" command to the service.
      *
-     * @param context    Context where to start the service.
+     * @param context Context where to start the service.
      * @param identifier Category Identifier
      */
     fun deleteCategory(context: Context, identifier: String, receiver: ResultReceiver? = null) {
@@ -243,7 +243,7 @@ open class NotificationsService : BroadcastReceiver() {
     /**
      * Fetches all scheduled notifications asynchronously.
      *
-     * @param context        Context this is being called from
+     * @param context Context this is being called from
      * @param resultReceiver Receiver to be called with the results
      */
     fun getAllScheduledNotifications(context: Context, resultReceiver: ResultReceiver? = null) {
@@ -256,8 +256,8 @@ open class NotificationsService : BroadcastReceiver() {
     /**
      * Fetches scheduled notification asynchronously.
      *
-     * @param context        Context this is being called from
-     * @param identifier     Identifier of the notification to be fetched
+     * @param context Context this is being called from
+     * @param identifier Identifier of the notification to be fetched
      * @param resultReceiver Receiver to be called with the results
      */
     fun getScheduledNotification(context: Context, identifier: String, resultReceiver: ResultReceiver? = null) {
@@ -280,9 +280,9 @@ open class NotificationsService : BroadcastReceiver() {
     /**
      * Schedule notification asynchronously.
      *
-     * @param context             Context this is being called from
+     * @param context Context this is being called from
      * @param notificationRequest Notification request to schedule
-     * @param resultReceiver      Receiver to be called with the result
+     * @param resultReceiver Receiver to be called with the result
      */
     fun schedule(context: Context, notificationRequest: NotificationRequest, resultReceiver: ResultReceiver? = null) {
       doWork(
@@ -304,8 +304,8 @@ open class NotificationsService : BroadcastReceiver() {
     /**
      * Cancel selected scheduled notification and remove it from the storage asynchronously.
      *
-     * @param context        Context this is being called from
-     * @param identifier     Identifier of the notification to be removed
+     * @param context Context this is being called from
+     * @param identifier Identifier of the notification to be removed
      * @param resultReceiver Receiver to be called with the result
      */
     fun removeScheduledNotification(context: Context, identifier: String, resultReceiver: ResultReceiver? = null) =
@@ -314,8 +314,8 @@ open class NotificationsService : BroadcastReceiver() {
     /**
      * Cancel selected scheduled notifications and remove them from the storage asynchronously.
      *
-     * @param context        Context this is being called from
-     * @param identifiers    Identifiers of selected notifications to be removed
+     * @param context Context this is being called from
+     * @param identifiers Identifiers of selected notifications to be removed
      * @param resultReceiver Receiver to be called with the result
      */
     fun removeScheduledNotifications(context: Context, identifiers: Collection<String>, resultReceiver: ResultReceiver? = null) {
@@ -337,7 +337,7 @@ open class NotificationsService : BroadcastReceiver() {
     /**
      * Cancel all scheduled notifications and remove them from the storage asynchronously.
      *
-     * @param context        Context this is being called from
+     * @param context Context this is being called from
      * @param resultReceiver Receiver to be called with the result
      */
     fun removeAllScheduledNotifications(context: Context, resultReceiver: ResultReceiver? = null) {
@@ -355,7 +355,7 @@ open class NotificationsService : BroadcastReceiver() {
      * or handles the intent immediately if the service is already up.
      *
      * @param context Context where to start the service
-     * @param intent  Intent to dispatch
+     * @param intent Intent to dispatch
      */
     fun doWork(context: Context, intent: Intent) {
       findDesignatedBroadcastReceiver(context, intent)?.let {
@@ -383,7 +383,7 @@ open class NotificationsService : BroadcastReceiver() {
      * Creates and returns a pending intent that will trigger [NotificationsService],
      * which hands off the work to this class. The intent triggers notification of the given identifier.
      *
-     * @param context    Context this is being called from
+     * @param context Context this is being called from
      * @param identifier Notification identifier
      * @return [PendingIntent] triggering [NotificationsService], triggering notification of given ID.
      */
@@ -415,7 +415,7 @@ open class NotificationsService : BroadcastReceiver() {
      * Creates and returns a pending intent that will trigger [NotificationsService]'s "response received"
      * event.
      *
-     * @param context    Context this is being called from
+     * @param context Context this is being called from
      * @param notification Notification being responded to
      * @param action Notification action being undertaken
      * @return [PendingIntent] triggering [NotificationsService], triggering "response received" event

@@ -1,38 +1,32 @@
 {
   "name": "expo-template-bare-typescript",
   "description": "This bare project template includes TypeScript",
-  "version": "40.0.0",
+  "version": "41.0.6",
   "main": "index.js",
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "web": "expo start --web",
-    "start": "react-native start",
-    "test": "jest"
+    "start": "react-native start"
   },
   "dependencies": {
-    "expo": "~40.0.0-beta.0",
-    "expo-updates": "~0.4.0",
-    "expo-splash-screen": "~0.8.0",
+    "expo": "~41.0.0-beta.3",
+    "expo-updates": "~0.5.3",
+    "expo-splash-screen": "~0.10.1",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "react-native": "~0.63.3",
-    "react-native-gesture-handler": "~1.8.0",
-    "react-native-reanimated": "~1.13.0",
-    "react-native-screens": "~2.15.0",
-    "react-native-unimodules": "~0.11.0",
+    "react-native": "~0.63.4",
+    "react-native-gesture-handler": "~1.10.2",
+    "react-native-reanimated": "~2.1.0",
+    "react-native-screens": "~3.0.0",
+    "react-native-unimodules": "~0.13.2",
     "react-native-web": "~0.13.12"
   },
   "devDependencies": {
-    "@babel/core": "~7.9.0",
+    "@babel/core": "^7.9.0",
     "@types/react": "~16.9.35",
-    "@types/react-dom": "~16.9.8",
     "@types/react-native": "~0.63.2",
     "babel-preset-expo": "~8.3.0",
-    "jest-expo": "~39.0.0",
-    "typescript": "~3.9.5"
-  },
-  "jest": {
-    "preset": "react-native"
+    "typescript": "~4.0.0"
   }
 }

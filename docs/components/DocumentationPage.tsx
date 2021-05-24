@@ -1,6 +1,8 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
+import { theme } from '@expo/styleguide';
 import some from 'lodash/some';
 import Router from 'next/router';
+import NProgress from 'nprogress';
 import * as React from 'react';
 
 import * as Utilities from '~/common/utilities';
@@ -21,12 +23,12 @@ import { VERSIONS } from '~/constants/versions';
 import { NavigationRoute, Url } from '~/types/common';
 
 const STYLES_DOCUMENT = css`
-  background: #fff;
+  background: ${theme.background.default};
   margin: 0 auto;
   padding: 40px 56px;
 
   hr {
-    border-top: 1px solid ${Constants.expoColors.semantic.border};
+    border-top: 1px solid ${theme.border.default};
     border-bottom: 0px;
   }
 
@@ -53,6 +55,8 @@ type Props = {
   asPath: string;
   sourceCodeUrl?: string;
   tocVisible: boolean;
+  /* If the page should not show up in the Algolia Docsearch results */
+  hideFromSearch?: boolean;
 };
 
 type State = {
@@ -74,15 +78,15 @@ export default class DocumentationPage extends React.Component<Props, State> {
       if (this.layoutRef.current) {
         window.__sidebarScroll = this.layoutRef.current.getSidebarScrollTop();
       }
-      window.NProgress.start();
+      NProgress.start();
     });
 
     Router.events.on('routeChangeComplete', () => {
-      window.NProgress.done();
+      NProgress.done();
     });
 
     Router.events.on('routeChangeError', () => {
-      window.NProgress.done();
+      NProgress.done();
     });
 
     window.addEventListener('resize', this.handleResize);
@@ -173,6 +177,14 @@ export default class DocumentationPage extends React.Component<Props, State> {
     }
   };
 
+  private getAlgoliaTag = () => {
+    if (this.props.hideFromSearch === true) {
+      return null;
+    }
+
+    return this.isReferencePath() ? this.getVersion() : 'none';
+  };
+
   private getVersion = () => {
     let version = (this.props.asPath || this.props.url.pathname).split(`/`)[2];
     if (!version || !VERSIONS.includes(version)) {
@@ -248,6 +260,8 @@ export default class DocumentationPage extends React.Component<Props, State> {
 
     const sidebarRight = <DocumentationSidebarRight ref={this.sidebarRightRef} />;
 
+    const algoliaTag = this.getAlgoliaTag();
+
     return (
       <DocumentationNestedScrollLayout
         ref={this.layoutRef}
@@ -260,7 +274,7 @@ export default class DocumentationPage extends React.Component<Props, State> {
         onContentScroll={handleContentScroll}
         sidebarScrollPosition={sidebarScrollPosition}>
         <Head title={`${this.props.title} - Expo Documentation`}>
-          <meta name="docsearch:version" content={isReferencePath ? version : 'none'} />
+          {algoliaTag !== null && <meta name="docsearch:version" content={algoliaTag} />}
           <meta property="og:title" content={`${this.props.title} - Expo Documentation`} />
           <meta property="og:type" content="website" />
           <meta property="og:image" content="https://docs.expo.io/static/images/og.png" />
