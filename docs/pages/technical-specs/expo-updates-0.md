@@ -97,7 +97,7 @@ export type Manifest = {
   runtimeVersion: string;
   launchAsset: Asset;
   assets: Asset[];
-  metadata: { [key: string]: string};
+  metadata: { [key: string]: string };
   extra: { [key: string]: any };
 }
 
