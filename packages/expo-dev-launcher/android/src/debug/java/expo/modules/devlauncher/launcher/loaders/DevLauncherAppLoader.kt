@@ -51,9 +51,7 @@ abstract class DevLauncherAppLoader(
             return
           }
 
-          // App can be started from deep link.
-          // That's why, we maybe need to initialized dev menu here.
-          DevLauncherController.instance.maybeInitDevMenuDelegate(context)
+          DevLauncherController.instance.onAppLoaded(context)
           onReactContext(context)
           appHost.reactInstanceManager.removeReactInstanceEventListener(this)
           reactContextWasInitialized = true
