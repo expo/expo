@@ -19,36 +19,7 @@ export declare function getFacebookAdvertiserIDCollection(config: ExpoConfigFace
 export declare function setFacebookConfig(config: ExpoConfigFacebook, infoPlist: InfoPlist): IOSConfig.InfoPlist;
 export declare function setFacebookScheme(config: ExpoConfigFacebook, infoPlist: InfoPlist): IOSConfig.InfoPlist;
 export declare function setFacebookAutoInitEnabled(config: ExpoConfigFacebook, { FacebookAutoInitEnabled, ...infoPlist }: InfoPlist): {
-    UIStatusBarHidden?: boolean | undefined;
-    UIStatusBarStyle?: string | undefined;
-    UILaunchStoryboardName?: string | undefined;
-    CFBundleShortVersionString?: string | undefined;
-    CFBundleVersion?: string | undefined;
-    CFBundleDisplayName?: string | undefined;
-    CFBundleIdentifier?: string | undefined;
-    CFBundleName?: string | undefined;
-    CFBundleURLTypes?: import("@expo/config-plugins/build/ios/IosConfig.types").URLScheme[] | undefined;
-    CFBundleDevelopmentRegion?: string | undefined;
-    ITSAppUsesNonExemptEncryption?: boolean | undefined;
-    LSApplicationQueriesSchemes?: string[] | undefined;
-    FacebookAppID?: string | undefined;
-    FacebookDisplayName?: string | undefined;
-    FacebookAutoLogAppEventsEnabled?: boolean | undefined;
-    FacebookAdvertiserIDCollectionEnabled?: boolean | undefined;
-    UIBackgroundModes?: string[] | undefined;
-    UISupportedInterfaceOrientations?: import("@expo/config-plugins/build/ios/IosConfig.types").InterfaceOrientation[] | undefined;
-    GMSApiKey?: string | undefined;
-    GADApplicationIdentifier?: string | undefined;
-    UIUserInterfaceStyle?: "Light" | "Dark" | "Automatic" | undefined;
-    UIRequiresFullScreen?: boolean | undefined;
-    SKAdNetworkItems?: {
-        SKAdNetworkIdentifier: string;
-    }[] | undefined;
-    branch_key?: {
-        live?: string | undefined;
-    } | undefined;
-} | {
-    FacebookAutoInitEnabled: boolean;
+    [x: string]: string | number | boolean | import("@expo/json-file").JSONArray | import("@expo/json-file").JSONObject | null | undefined;
     UIStatusBarHidden?: boolean | undefined;
     UIStatusBarStyle?: string | undefined;
     UILaunchStoryboardName?: string | undefined;
@@ -79,36 +50,7 @@ export declare function setFacebookAutoInitEnabled(config: ExpoConfigFacebook, {
     } | undefined;
 };
 export declare function setFacebookAutoLogAppEventsEnabled(config: ExpoConfigFacebook, { FacebookAutoLogAppEventsEnabled, ...infoPlist }: InfoPlist): {
-    UIStatusBarHidden?: boolean | undefined;
-    UIStatusBarStyle?: string | undefined;
-    UILaunchStoryboardName?: string | undefined;
-    CFBundleShortVersionString?: string | undefined;
-    CFBundleVersion?: string | undefined;
-    CFBundleDisplayName?: string | undefined;
-    CFBundleIdentifier?: string | undefined;
-    CFBundleName?: string | undefined;
-    CFBundleURLTypes?: import("@expo/config-plugins/build/ios/IosConfig.types").URLScheme[] | undefined;
-    CFBundleDevelopmentRegion?: string | undefined;
-    ITSAppUsesNonExemptEncryption?: boolean | undefined;
-    LSApplicationQueriesSchemes?: string[] | undefined;
-    FacebookAppID?: string | undefined;
-    FacebookDisplayName?: string | undefined;
-    FacebookAutoInitEnabled?: boolean | undefined;
-    FacebookAdvertiserIDCollectionEnabled?: boolean | undefined;
-    UIBackgroundModes?: string[] | undefined;
-    UISupportedInterfaceOrientations?: import("@expo/config-plugins/build/ios/IosConfig.types").InterfaceOrientation[] | undefined;
-    GMSApiKey?: string | undefined;
-    GADApplicationIdentifier?: string | undefined;
-    UIUserInterfaceStyle?: "Light" | "Dark" | "Automatic" | undefined;
-    UIRequiresFullScreen?: boolean | undefined;
-    SKAdNetworkItems?: {
-        SKAdNetworkIdentifier: string;
-    }[] | undefined;
-    branch_key?: {
-        live?: string | undefined;
-    } | undefined;
-} | {
-    FacebookAutoLogAppEventsEnabled: boolean;
+    [x: string]: string | number | boolean | import("@expo/json-file").JSONArray | import("@expo/json-file").JSONObject | null | undefined;
     UIStatusBarHidden?: boolean | undefined;
     UIStatusBarStyle?: string | undefined;
     UILaunchStoryboardName?: string | undefined;
@@ -139,36 +81,7 @@ export declare function setFacebookAutoLogAppEventsEnabled(config: ExpoConfigFac
     } | undefined;
 };
 export declare function setFacebookAdvertiserIDCollectionEnabled(config: ExpoConfigFacebook, { FacebookAdvertiserIDCollectionEnabled, ...infoPlist }: InfoPlist): {
-    UIStatusBarHidden?: boolean | undefined;
-    UIStatusBarStyle?: string | undefined;
-    UILaunchStoryboardName?: string | undefined;
-    CFBundleShortVersionString?: string | undefined;
-    CFBundleVersion?: string | undefined;
-    CFBundleDisplayName?: string | undefined;
-    CFBundleIdentifier?: string | undefined;
-    CFBundleName?: string | undefined;
-    CFBundleURLTypes?: import("@expo/config-plugins/build/ios/IosConfig.types").URLScheme[] | undefined;
-    CFBundleDevelopmentRegion?: string | undefined;
-    ITSAppUsesNonExemptEncryption?: boolean | undefined;
-    LSApplicationQueriesSchemes?: string[] | undefined;
-    FacebookAppID?: string | undefined;
-    FacebookDisplayName?: string | undefined;
-    FacebookAutoInitEnabled?: boolean | undefined;
-    FacebookAutoLogAppEventsEnabled?: boolean | undefined;
-    UIBackgroundModes?: string[] | undefined;
-    UISupportedInterfaceOrientations?: import("@expo/config-plugins/build/ios/IosConfig.types").InterfaceOrientation[] | undefined;
-    GMSApiKey?: string | undefined;
-    GADApplicationIdentifier?: string | undefined;
-    UIUserInterfaceStyle?: "Light" | "Dark" | "Automatic" | undefined;
-    UIRequiresFullScreen?: boolean | undefined;
-    SKAdNetworkItems?: {
-        SKAdNetworkIdentifier: string;
-    }[] | undefined;
-    branch_key?: {
-        live?: string | undefined;
-    } | undefined;
-} | {
-    FacebookAdvertiserIDCollectionEnabled: boolean;
+    [x: string]: string | number | boolean | import("@expo/json-file").JSONArray | import("@expo/json-file").JSONObject | null | undefined;
     UIStatusBarHidden?: boolean | undefined;
     UIStatusBarStyle?: string | undefined;
     UILaunchStoryboardName?: string | undefined;
@@ -199,36 +112,7 @@ export declare function setFacebookAdvertiserIDCollectionEnabled(config: ExpoCon
     } | undefined;
 };
 export declare function setFacebookAppId(config: Pick<ExpoConfigFacebook, 'facebookAppId'>, { FacebookAppID, ...infoPlist }: InfoPlist): {
-    UIStatusBarHidden?: boolean | undefined;
-    UIStatusBarStyle?: string | undefined;
-    UILaunchStoryboardName?: string | undefined;
-    CFBundleShortVersionString?: string | undefined;
-    CFBundleVersion?: string | undefined;
-    CFBundleDisplayName?: string | undefined;
-    CFBundleIdentifier?: string | undefined;
-    CFBundleName?: string | undefined;
-    CFBundleURLTypes?: import("@expo/config-plugins/build/ios/IosConfig.types").URLScheme[] | undefined;
-    CFBundleDevelopmentRegion?: string | undefined;
-    ITSAppUsesNonExemptEncryption?: boolean | undefined;
-    LSApplicationQueriesSchemes?: string[] | undefined;
-    FacebookDisplayName?: string | undefined;
-    FacebookAutoInitEnabled?: boolean | undefined;
-    FacebookAutoLogAppEventsEnabled?: boolean | undefined;
-    FacebookAdvertiserIDCollectionEnabled?: boolean | undefined;
-    UIBackgroundModes?: string[] | undefined;
-    UISupportedInterfaceOrientations?: import("@expo/config-plugins/build/ios/IosConfig.types").InterfaceOrientation[] | undefined;
-    GMSApiKey?: string | undefined;
-    GADApplicationIdentifier?: string | undefined;
-    UIUserInterfaceStyle?: "Light" | "Dark" | "Automatic" | undefined;
-    UIRequiresFullScreen?: boolean | undefined;
-    SKAdNetworkItems?: {
-        SKAdNetworkIdentifier: string;
-    }[] | undefined;
-    branch_key?: {
-        live?: string | undefined;
-    } | undefined;
-} | {
-    FacebookAppID: string;
+    [x: string]: string | number | boolean | import("@expo/json-file").JSONArray | import("@expo/json-file").JSONObject | null | undefined;
     UIStatusBarHidden?: boolean | undefined;
     UIStatusBarStyle?: string | undefined;
     UILaunchStoryboardName?: string | undefined;
@@ -259,36 +143,7 @@ export declare function setFacebookAppId(config: Pick<ExpoConfigFacebook, 'faceb
     } | undefined;
 };
 export declare function setFacebookDisplayName(config: ExpoConfigFacebook, { FacebookDisplayName, ...infoPlist }: InfoPlist): {
-    UIStatusBarHidden?: boolean | undefined;
-    UIStatusBarStyle?: string | undefined;
-    UILaunchStoryboardName?: string | undefined;
-    CFBundleShortVersionString?: string | undefined;
-    CFBundleVersion?: string | undefined;
-    CFBundleDisplayName?: string | undefined;
-    CFBundleIdentifier?: string | undefined;
-    CFBundleName?: string | undefined;
-    CFBundleURLTypes?: import("@expo/config-plugins/build/ios/IosConfig.types").URLScheme[] | undefined;
-    CFBundleDevelopmentRegion?: string | undefined;
-    ITSAppUsesNonExemptEncryption?: boolean | undefined;
-    LSApplicationQueriesSchemes?: string[] | undefined;
-    FacebookAppID?: string | undefined;
-    FacebookAutoInitEnabled?: boolean | undefined;
-    FacebookAutoLogAppEventsEnabled?: boolean | undefined;
-    FacebookAdvertiserIDCollectionEnabled?: boolean | undefined;
-    UIBackgroundModes?: string[] | undefined;
-    UISupportedInterfaceOrientations?: import("@expo/config-plugins/build/ios/IosConfig.types").InterfaceOrientation[] | undefined;
-    GMSApiKey?: string | undefined;
-    GADApplicationIdentifier?: string | undefined;
-    UIUserInterfaceStyle?: "Light" | "Dark" | "Automatic" | undefined;
-    UIRequiresFullScreen?: boolean | undefined;
-    SKAdNetworkItems?: {
-        SKAdNetworkIdentifier: string;
-    }[] | undefined;
-    branch_key?: {
-        live?: string | undefined;
-    } | undefined;
-} | {
-    FacebookDisplayName: string;
+    [x: string]: string | number | boolean | import("@expo/json-file").JSONArray | import("@expo/json-file").JSONObject | null | undefined;
     UIStatusBarHidden?: boolean | undefined;
     UIStatusBarStyle?: string | undefined;
     UILaunchStoryboardName?: string | undefined;

@@ -33,7 +33,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/payments/",
   "dependencies": {
-    "@expo/config-plugins": "^1.0.18",
+    "@expo/config-plugins": "^1.0.32",
     "prop-types": "^15.6.0"
   },
   "devDependencies": {

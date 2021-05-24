@@ -30,7 +30,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/module-template",
   "dependencies": {
-    "@expo/config-plugins": "^1.0.28",
+    "@expo/config-plugins": "^1.0.32",
     "expo-dev-launcher": "~0.3.4",
     "expo-dev-menu": "~0.5.2",
     "expo-dev-menu-interface": "~0.3.1"
