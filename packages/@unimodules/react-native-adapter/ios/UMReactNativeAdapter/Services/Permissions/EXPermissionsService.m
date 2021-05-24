@@ -14,8 +14,8 @@ NSString * const EXPermissionExpiresNever = @"never";
 
 @interface EXPermissionsService ()
 
-@property (nonatomic, strong) NSMutableDictionary<NSString *, id<UMPermissionsRequester>> *requesters;
-@property (nonatomic, strong) NSMapTable<Class, id<UMPermissionsRequester>> *requestersByClass;
+@property (nonatomic, strong) NSMutableDictionary<NSString *, id<EXPermissionsRequester>> *requesters;
+@property (nonatomic, strong) NSMapTable<Class, id<EXPermissionsRequester>> *requestersByClass;
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 
 @end
@@ -27,19 +27,19 @@ UM_EXPORT_MODULE();
 - (instancetype)init
 {
   if (self = [super init]) {
-    _requesters = [NSMutableDictionary<NSString *, id<UMPermissionsRequester>> new];
-    _requestersByClass = [NSMapTable<Class, id<UMPermissionsRequester>> new];
+    _requesters = [NSMutableDictionary<NSString *, id<EXPermissionsRequester>> new];
+    _requestersByClass = [NSMapTable<Class, id<EXPermissionsRequester>> new];
   }
   return self;
 }
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(UMPermissionsInterface)];
+  return @[@protocol(EXPermissionsInterface)];
 }
 
-- (void)registerRequesters:(NSArray<id<UMPermissionsRequester>> *)newRequesters {
-  for (id<UMPermissionsRequester> requester in newRequesters) {
+- (void)registerRequesters:(NSArray<id<EXPermissionsRequester>> *)newRequesters {
+  for (id<EXPermissionsRequester> requester in newRequesters) {
     [_requesters setObject:requester forKey:[[requester class] permissionType]];
     [_requestersByClass setObject:requester forKey:[requester class]];
   }
@@ -75,7 +75,7 @@ UM_EXPORT_MODULE();
   return [self getPermissionUsingRequester:[self getPermissionRequesterForType:type]];
 }
 
-- (NSDictionary *)getPermissionUsingRequester:(id<UMPermissionsRequester>)requester
+- (NSDictionary *)getPermissionUsingRequester:(id<EXPermissionsRequester>)requester
 {
   if (requester) {
     return [EXPermissionsService parsePermissionFromRequester:[requester getPermissions]];
@@ -106,7 +106,7 @@ UM_EXPORT_MODULE();
     return reject(@"E_PERMISSIONS_UNKNOWN", [NSString stringWithFormat:@"Unrecognized requester: %@", NSStringFromClass(requesterClass)], nil);
   }
   
-  BOOL isGranted = [EXPermissionsService statusForPermission:permission] == UMPermissionStatusGranted;
+  BOOL isGranted = [EXPermissionsService statusForPermission:permission] == EXPermissionStatusGranted;
   permission[@"granted"] = @(isGranted);
   
   if (isGranted) {
@@ -120,7 +120,7 @@ UM_EXPORT_MODULE();
                                      withResolver:(UMPromiseResolveBlock)resolver
                                      withRejecter:(UMPromiseRejectBlock)reject
 {
-  id<UMPermissionsRequester> requester = [self getPermissionRequesterForClass:requesterClass];
+  id<EXPermissionsRequester> requester = [self getPermissionRequesterForClass:requesterClass];
   if (requester == nil) {
     return reject(@"E_PERMISSIONS_UNSUPPORTED", @"Cannot find requester", nil);
   }
@@ -138,9 +138,9 @@ UM_EXPORT_MODULE();
 + (NSDictionary *)parsePermissionFromRequester:(NSDictionary *)permission
 {
   NSMutableDictionary *parsedPermission = [permission mutableCopy];
-  UMPermissionStatus status = (UMPermissionStatus)[permission[EXStatusKey] intValue];
-  BOOL isGranted = status == UMPermissionStatusGranted;
-  BOOL canAskAgain = status != UMPermissionStatusDenied;
+  EXPermissionStatus status = (EXPermissionStatus)[permission[EXStatusKey] intValue];
+  BOOL isGranted = status == EXPermissionStatusGranted;
+  BOOL canAskAgain = status != EXPermissionStatusDenied;
   
   [parsedPermission setValue:[[self class] permissionStringForStatus:status] forKey:EXStatusKey];
   [parsedPermission setValue:EXPermissionExpiresNever forKey:EXExpiresKey];
@@ -149,36 +149,36 @@ UM_EXPORT_MODULE();
   return parsedPermission;
 }
 
-+ (NSString *)permissionStringForStatus:(UMPermissionStatus)status
++ (NSString *)permissionStringForStatus:(EXPermissionStatus)status
 {
   switch (status) {
-    case UMPermissionStatusGranted:
+    case EXPermissionStatusGranted:
       return @"granted";
-    case UMPermissionStatusDenied:
+    case EXPermissionStatusDenied:
       return @"denied";
     default:
       return @"undetermined";
   }
 }
 
-+ (UMPermissionStatus)statusForPermission:(NSDictionary *)permission
++ (EXPermissionStatus)statusForPermission:(NSDictionary *)permission
 {
   NSString *status = permission[EXStatusKey];
   if ([status isEqualToString:@"granted"]) {
-    return UMPermissionStatusGranted;
+    return EXPermissionStatusGranted;
   } else if ([status isEqualToString:@"denied"]) {
-    return UMPermissionStatusDenied;
+    return EXPermissionStatusDenied;
   } else {
-    return UMPermissionStatusUndetermined;
+    return EXPermissionStatusUndetermined;
   }
 }
 
-- (id<UMPermissionsRequester>)getPermissionRequesterForType:(NSString *)type
+- (id<EXPermissionsRequester>)getPermissionRequesterForType:(NSString *)type
 {
   return _requesters[type];
 }
 
-- (id<UMPermissionsRequester>)getPermissionRequesterForClass:(Class)requesterClass
+- (id<EXPermissionsRequester>)getPermissionRequesterForClass:(Class)requesterClass
 {
   return [_requestersByClass objectForKey:requesterClass];
 }

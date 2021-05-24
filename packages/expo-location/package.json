@@ -43,6 +43,6 @@
   },
   "dependencies": {
     "@expo/config-plugins": "^1.0.18",
-    "unimodules-permissions-interface": "~6.2.0"
+    "expo-modules-core": "~0.0.1"
   }
 }

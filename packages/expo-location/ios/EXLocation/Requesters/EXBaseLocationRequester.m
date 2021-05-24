@@ -48,7 +48,7 @@
 
 - (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject {
   NSDictionary *existingPermissions = [self getPermissions];
-  if (existingPermissions && [existingPermissions[@"status"] intValue] != UMPermissionStatusUndetermined) {
+  if (existingPermissions && [existingPermissions[@"status"] intValue] != EXPermissionStatusUndetermined) {
     // since permissions are already determined, the iOS request methods will be no-ops.
     // just resolve with whatever existing permissions.
     resolve(existingPermissions);

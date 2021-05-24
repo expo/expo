@@ -42,7 +42,6 @@ Pod::Spec.new do |s|
     ss.dependency 'UMCore'
     ss.dependency 'ExpoModulesCore'
     ss.dependency 'UMReactNativeAdapter'
-    ss.dependency 'UMPermissionsInterface'
   end
 
   s.subspec "Payments" do |ss|

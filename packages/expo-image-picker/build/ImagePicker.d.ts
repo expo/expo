@@ -1,4 +1,4 @@
-import { PermissionStatus, PermissionExpiration } from 'unimodules-permissions-interface';
+import { PermissionStatus, PermissionExpiration } from 'expo-modules-core';
 import { CameraPermissionResponse, CameraRollPermissionResponse, MediaLibraryPermissionResponse, ImagePickerResult, ImagePickerErrorResult, MediaTypeOptions, ImagePickerOptions, VideoExportPreset, ExpandImagePickerResult } from './ImagePicker.types';
 export declare function getCameraPermissionsAsync(): Promise<CameraPermissionResponse>;
 /**

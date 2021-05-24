@@ -13,18 +13,18 @@
 
 - (NSDictionary *)getPermissions
 {
-  UMPermissionStatus status;
+  EXPermissionStatus status;
   CNAuthorizationStatus permissions = [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
   switch (permissions) {
     case CNAuthorizationStatusAuthorized:
-      status = UMPermissionStatusGranted;
+      status = EXPermissionStatusGranted;
       break;
     case CNAuthorizationStatusDenied:
     case CNAuthorizationStatusRestricted:
-      status = UMPermissionStatusDenied;
+      status = EXPermissionStatusDenied;
       break;
     case CNAuthorizationStatusNotDetermined:
-      status = UMPermissionStatusUndetermined;
+      status = EXPermissionStatusUndetermined;
       break;
   }
   return @{

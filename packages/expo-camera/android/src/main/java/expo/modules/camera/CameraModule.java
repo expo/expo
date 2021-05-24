@@ -14,7 +14,6 @@ import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.services.UIManager;
-import org.unimodules.interfaces.permissions.Permissions;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -26,6 +25,7 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import expo.modules.camera.tasks.ResolveTakenPictureAsyncTask;
+import expo.modules.interfaces.permissions.Permissions;
 
 public class CameraModule extends ExportedModule {
   private static final String TAG = "ExponentCameraModule";
