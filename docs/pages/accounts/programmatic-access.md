@@ -21,7 +21,7 @@ Organizations can create Bot Users to take actions to take actions on resources 
 
 You can use any tokens you have created to perform actions with the Expo CLI (other than signing in and out). To use tokens, you need to define an environment variable, like `EXPO_TOKEN="token"`, before running commands.
 
-If you are using Github Actions, you can configure the `expo-token` property to include this environment variable in all of the job steps ([https://github.com/expo/expo-github-action#configuration-options](https://github.com/expo/expo-github-action#configuration-options)).
+If you are using Github Actions, [you can configure the `expo-token` property](https://github.com/expo/expo-github-action#configuration-options) to include this environment variable in all of the job steps.
 
 Common situations where access tokens are useful:
 

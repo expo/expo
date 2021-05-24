@@ -111,7 +111,7 @@ function generateReport(
 
   const diff = '```diff\n' + missingEntries.map(entry => entry.diff).join('\n') + '```\n';
   const pr = url ? `#### or merge this pull request: ${url}` : '';
-  fail(`📋 **Missing Changelog**
+  warn(`📋 **Missing Changelog**
 ------
 🛠 Add missing entries to:
 ${message}`);

@@ -14,9 +14,11 @@ Expo CLI is a command line app that is the main interface between a developer an
 
 ### Requirements
 
-- [Node.js LTS release](https://nodejs.org/en/) or greater
+- [Node.js LTS release](https://nodejs.org/en/)
 - [Git](https://git-scm.com)
 - [Watchman](https://facebook.github.io/watchman/docs/install#buildinstall) for macOS users
+
+> Only Node.js LTS releases (even-numbered) are recommended. As Node.js [officially states](https://nodejs.org/en/about/releases/), "Production applications should only use Active LTS or Maintenance LTS releases."
 
 ### Recommended Tools
 
@@ -37,7 +39,7 @@ Verify that the installation was successful by running `expo whoami`. You're not
 The fastest way to get up and running is to use the Expo Go app on your iOS or Android device. Expo Go allows you to open up apps that are being served through Expo CLI.
 
 - 🤖 [Android Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent) - Android Lollipop (5) and greater.
-- 🍎 [iOS App Store](https://itunes.com/apps/exponent) - iOS 10 and greater.
+- 🍎 [iOS App Store](https://itunes.com/apps/exponent) - iOS 11 and greater.
 
 When the Expo Go app is finished installing, open it up. If you created an account with `expo-cli` then you can sign in here on the "Profile" tab. This will make it easier for you to open projects in the client when you have them open in development &mdash; they will appear automatically in the "Projects" tab of the client app.
 

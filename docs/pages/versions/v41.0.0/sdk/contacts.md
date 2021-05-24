@@ -84,7 +84,7 @@ Async `boolean`, indicating whether the Contacts API is available on the current
 
 ### `Contacts.requestPermissionsAsync()`
 
-Asks the user to grant permissions for accessing contacts data. Alias for `Permissions.askAsync(Permissions.CONTACTS)`.
+Asks the user to grant permissions for accessing contacts data.
 
 #### Returns
 
@@ -92,7 +92,7 @@ A promise that resolves to an object of type [PermissionResponse](permissions.md
 
 ### `Contacts.getPermissionsAsync()`
 
-Checks user's permissions for accessing contacts data. Alias for `Permissions.getAsync(Permissions.CONTACTS)`.
+Checks user's permissions for accessing contacts data.
 
 #### Returns
 

@@ -2,6 +2,7 @@
 
 #import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesAsset.h>
 #import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesConfig.h>
+#import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesRawManifest.h>
 
 @class ABI41_0_0EXUpdatesDatabase;
 
@@ -23,7 +24,7 @@ typedef NS_ENUM(NSInteger, ABI41_0_0EXUpdatesUpdateStatus) {
 @property (nonatomic, strong, readonly) NSString *scopeKey;
 @property (nonatomic, strong, readonly) NSDate *commitTime;
 @property (nonatomic, strong, readonly) NSString *runtimeVersion;
-@property (nonatomic, strong, readonly, nullable) NSDictionary * metadata;
+@property (nonatomic, strong, readonly, nullable) NSDictionary *manifest;
 @property (nonatomic, assign, readonly) BOOL keep;
 @property (nonatomic, strong, readonly) NSArray<ABI41_0_0EXUpdatesAsset *> *assets;
 @property (nonatomic, assign, readonly) BOOL isDevelopmentMode;
@@ -31,15 +32,16 @@ typedef NS_ENUM(NSInteger, ABI41_0_0EXUpdatesUpdateStatus) {
 @property (nonatomic, strong, readonly, nullable) NSDictionary *serverDefinedHeaders;
 @property (nonatomic, strong, readonly, nullable) NSDictionary *manifestFilters;
 
-@property (nonatomic, strong, readonly) NSDictionary *rawManifest;
+@property (nonatomic, strong, readonly) ABI41_0_0EXUpdatesRawManifest *rawManifest;
 
 @property (nonatomic, assign) ABI41_0_0EXUpdatesUpdateStatus status;
+@property (nonatomic, strong) NSDate *lastAccessed;
 
 + (instancetype)updateWithId:(NSUUID *)updateId
                     scopeKey:(NSString *)scopeKey
                   commitTime:(NSDate *)commitTime
               runtimeVersion:(NSString *)runtimeVersion
-                    metadata:(nullable NSDictionary *)metadata
+                    manifest:(nullable NSDictionary *)manifest
                       status:(ABI41_0_0EXUpdatesUpdateStatus)status
                         keep:(BOOL)keep
                       config:(ABI41_0_0EXUpdatesConfig *)config
@@ -48,11 +50,14 @@ typedef NS_ENUM(NSInteger, ABI41_0_0EXUpdatesUpdateStatus) {
 + (instancetype)updateWithManifest:(NSDictionary *)manifest
                           response:(nullable NSURLResponse *)response
                             config:(ABI41_0_0EXUpdatesConfig *)config
-                          database:(ABI41_0_0EXUpdatesDatabase *)database;
+                          database:(ABI41_0_0EXUpdatesDatabase *)database
+                             error:(NSError **)error;
 
 + (instancetype)updateWithEmbeddedManifest:(NSDictionary *)manifest
                                     config:(ABI41_0_0EXUpdatesConfig *)config
                                   database:(nullable ABI41_0_0EXUpdatesDatabase *)database;
+
++ (ABI41_0_0EXUpdatesRawManifest *)rawManifestForJSON:(NSDictionary *)manifestJSON;
 
 @end
 

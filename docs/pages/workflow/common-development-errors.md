@@ -36,6 +36,18 @@ Here you will find a list of errors that are commonly encountered by developers 
 
 ### React Native version mismatch
 
-- The packager running in your terminal is using a different version of React Native than the app in your device or simulator.
+- The development server running in your terminal is bundling a different version of React Native than the app in your device or simulator.
 
-- [Align your versions of react-native](../faq/react-native-version-mismatch) by checking the versions in your `app.json` and `package.json` 
+- [Align your versions of react-native](../troubleshooting/react-native-version-mismatch) by checking the versions in your `app.json` and `package.json`
+
+### Application has not been registered
+
+- There is a mismatch between the AppKey registered in the native and JS portion of your app.
+
+- [Align your AppKey](../troubleshooting/application-has-not-been-registered) with the native side of your project.
+
+### Application not behaving as expected
+
+- It is possible caches may be preventing you from seeing the current state of your application.
+
+- Clear all caches associated with your project in [Unix-like](../troubleshooting/clear-cache-macos-linux/) or [Windows](../troubleshooting/clear-cache-windows/) systems.

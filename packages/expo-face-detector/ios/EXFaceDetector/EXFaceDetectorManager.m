@@ -11,7 +11,6 @@
 #import <EXFaceDetector/EXFaceDetectorManager.h>
 #import <EXFaceDetector/EXFaceDetector.h>
 #import <EXFaceDetector/EXCSBufferOrientationCalculator.h>
-#import <UMFaceDetectorInterface/UMFaceDetectorManager.h>
 
 static const NSString *kMinDetectionInterval = @"minDetectionInterval";
 

@@ -37,7 +37,7 @@ export async function purchaseItemAsync(itemId, oldItem) {
     }
     await ExpoInAppPurchases.purchaseItemAsync(itemId, oldItem);
 }
-export async function setPurchaseListener(callback) {
+export function setPurchaseListener(callback) {
     if (purchaseUpdatedSubscription) {
         purchaseUpdatedSubscription.remove();
     }

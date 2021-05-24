@@ -11,7 +11,7 @@ import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReactContext
 import expo.modules.devlauncher.DevLauncherController
-import expo.modules.devlauncher.helpers.injectDebugServerHost
+import expo.modules.devlauncher.helpers.injectReactInterceptor
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -40,6 +40,8 @@ abstract class DevLauncherAppLoader(
   private val context: Context
 ) {
   private var continuation: Continuation<Boolean>? = null
+  private var reactContextWasInitialized = false
+
   fun createOnDelegateWillBeCreatedListener(): (ReactActivity) -> Unit {
     return { activity ->
       onDelegateWillBeCreated(activity)
@@ -47,11 +49,16 @@ abstract class DevLauncherAppLoader(
       require(appHost.reactInstanceManager.currentReactContext == null) { "App react context shouldn't be created before." }
       appHost.reactInstanceManager.addReactInstanceEventListener(object : ReactInstanceManager.ReactInstanceEventListener {
         override fun onReactContextInitialized(context: ReactContext) {
+          if (reactContextWasInitialized) {
+            return
+          }
+
           // App can be started from deep link.
           // That's why, we maybe need to initialized dev menu here.
           DevLauncherController.instance.maybeInitDevMenuDelegate(context)
           onReactContext(context)
           appHost.reactInstanceManager.removeReactInstanceEventListener(this)
+          reactContextWasInitialized = true
           continuation!!.resume(true)
         }
       })
@@ -68,7 +75,7 @@ abstract class DevLauncherAppLoader(
 
   open suspend fun launch(intent: Intent): Boolean {
     return suspendCoroutine { callback ->
-      if (setAppUrl(getBundleUrl())) {
+      if (injectReactInterceptor(getBundleUrl())) {
         continuation = callback
         launchIntent(intent)
         return@suspendCoroutine
@@ -87,9 +94,25 @@ abstract class DevLauncherAppLoader(
     return null
   }
 
-  private fun setAppUrl(url: Uri): Boolean {
+  private fun injectReactInterceptor(url: Uri): Boolean {
     val debugServerHost = url.host + ":" + url.port
-    return injectDebugServerHost(context, appHost, debugServerHost)
+    // We need to remove "/" which is added to begin of the path by the Uri
+    // and the bundle type
+    val bundleName = if (url.path.isNullOrEmpty()) {
+      "index"
+    } else {
+      url.path
+        ?.substring(1)
+        ?.replace(".bundle", "")
+        ?: "index"
+    }
+
+    return injectReactInterceptor(
+      context,
+      appHost,
+      debugServerHost,
+      bundleName
+    )
   }
 
   private fun launchIntent(intent: Intent) {

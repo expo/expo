@@ -1,7 +1,6 @@
 package expo.modules.updates.loader;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.security.keystore.KeyProperties;
 import android.util.Base64;
 
@@ -30,14 +29,25 @@ public class Crypto {
 
   private static String PUBLIC_KEY_URL = "https://exp.host/--/manifest-public-key";
 
-  public static void verifyPublicRSASignature(final String plainText, final String cipherText, final Context context, final RSASignatureListener listener) {
-    fetchPublicKeyAndVerifyPublicRSASignature(true, plainText, cipherText, context, listener);
+  public static void verifyPublicRSASignature(
+    final String plainText,
+    final String cipherText,
+    final FileDownloader fileDownloader,
+    final RSASignatureListener listener
+  ) {
+    fetchPublicKeyAndVerifyPublicRSASignature(true, plainText, cipherText, fileDownloader, listener);
   }
 
   // On first attempt use cache. If verification fails try a second attempt without
   // cache in case the keys were actually rotated.
   // On second attempt reject promise if it fails.
-  private static void fetchPublicKeyAndVerifyPublicRSASignature(final boolean isFirstAttempt, final String plainText, final String cipherText, final Context context, final RSASignatureListener listener) {
+  private static void fetchPublicKeyAndVerifyPublicRSASignature(
+    final boolean isFirstAttempt,
+    final String plainText,
+    final String cipherText,
+    final FileDownloader fileDownloader,
+    final RSASignatureListener listener
+  ) {
     final CacheControl cacheControl = isFirstAttempt ? CacheControl.FORCE_CACHE : CacheControl.FORCE_NETWORK;
 
     final Request request = new Request.Builder()
@@ -45,7 +55,7 @@ public class Crypto {
             .cacheControl(cacheControl)
             .build();
 
-    FileDownloader.downloadData(request, context, new Callback() {
+    fileDownloader.downloadData(request, new Callback() {
       @Override
       public void onFailure(Call call, IOException e) {
         listener.onError(e, true);
@@ -64,7 +74,7 @@ public class Crypto {
         }
 
         if (isFirstAttempt) {
-          fetchPublicKeyAndVerifyPublicRSASignature(false, plainText, cipherText, context, listener);
+          fetchPublicKeyAndVerifyPublicRSASignature(false, plainText, cipherText, fileDownloader, listener);
         } else {
           listener.onError(exception, false);
         }

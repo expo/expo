@@ -200,8 +200,11 @@ export function setFacebookApplicationQuerySchemes(
 }
 
 export const withUserTrackingPermission: ConfigPlugin<{
-  userTrackingPermission?: string;
+  userTrackingPermission?: string | false;
 } | void> = (config, { userTrackingPermission } = {}) => {
+  if (userTrackingPermission === false) {
+    return config;
+  }
   if (!config.ios) config.ios = {};
   if (!config.ios.infoPlist) config.ios.infoPlist = {};
   config.ios.infoPlist.NSUserTrackingUsageDescription =

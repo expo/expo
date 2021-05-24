@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <EXSensors/EXMagnetometer.h>
-#import <UMSensorsInterface/UMMagnetometerInterface.h>
+#import <ExpoModulesCore/EXMagnetometerInterface.h>
 
 @implementation EXMagnetometer
 
@@ -14,7 +14,7 @@ UM_EXPORT_MODULE(ExponentMagnetometer);
 
 - (id)getSensorServiceFromModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
-  return [moduleRegistry getModuleImplementingProtocol:@protocol(UMMagnetometerInterface)];
+  return [moduleRegistry getModuleImplementingProtocol:@protocol(EXMagnetometerInterface)];
 }
 
 - (void)setUpdateInterval:(double)updateInterval onSensorService:(id)sensorService

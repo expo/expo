@@ -45,6 +45,12 @@ export function toExp(httpUrl: string): string {
   return url.format(components);
 }
 
+export function toExps(httpUrl: string): string {
+  const components = url.parse(httpUrl);
+  components.protocol = 'exps:';
+  return url.format(components);
+}
+
 export function conformsToExpoProtocol(str: string): boolean {
   if (!str) {
     return false;

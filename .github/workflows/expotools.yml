@@ -8,10 +8,13 @@ on:
       - .github/workflows/expotools.yml
       - tools/**
   pull_request:
-    branches: [master]
     paths:
       - .github/workflows/expotools.yml
       - tools/**
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:

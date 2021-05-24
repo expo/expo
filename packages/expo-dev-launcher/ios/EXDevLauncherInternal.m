@@ -1,11 +1,11 @@
 #import "EXDevLauncherInternal.h"
 
-#import "EXDevLauncherController+Private.h"
+#import "EXDevLauncherController.h"
 #import <React/RCTBridge.h>
 
 #import <EXDevLauncher-Swift.h>
 
-const NSString *ON_NEW_DEEP_LINK_EVENT = @"expo.modules.devlauncher.onnewdeeplink";
+NSString *ON_NEW_DEEP_LINK_EVENT = @"expo.modules.devlauncher.onnewdeeplink";
 
 @implementation EXDevLauncherInternal
 

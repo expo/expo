@@ -4,12 +4,12 @@ apply plugin: 'maven'
 apply plugin: 'com.jakewharton.butterknife'
 apply plugin: 'de.undercouch.download'
 
-
-def safeExtGet(prop, fallback) {
-  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
-}
-
 buildscript {
+  // Simple helper that allows the root project to override versions declared by this library.
+  ext.safeExtGet = { prop, fallback ->
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+  }
+
   repositories {
     // If you have maven { url "https://jitpack.io" } as your resolving url,
     // then Jitpack will only return the POM for the Android dependency causing the Gradle sync to fail.
@@ -23,6 +23,7 @@ buildscript {
   }
   dependencies {
     classpath 'com.jakewharton:butterknife-gradle-plugin:10.2.1'
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.4.21')}")
   }
 }
 
@@ -164,6 +165,7 @@ dependencies {
 
   // @react-native-community/viewpager
   api 'com.github.troZee:ViewPager2:v1.0.6'
+
+  // expo-payments-stripe
+  implementation 'com.stripe:stripe-android:16.8.0'
 }
-
-

@@ -18,9 +18,8 @@
   AVAuthorizationStatus systemStatus;
   UMPermissionStatus status;
   NSString *cameraUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSCameraUsageDescription"];
-  NSString *microphoneUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSMicrophoneUsageDescription"];
-  if (!(cameraUsageDescription && microphoneUsageDescription)) {
-    UMFatal(UMErrorWithMessage(@"This app is missing either 'NSCameraUsageDescription' or 'NSMicrophoneUsageDescription', so audio/video services will fail. Add both of these entries to your bundle's Info.plist."));
+  if (!cameraUsageDescription) {
+    UMFatal(UMErrorWithMessage(@"This app is missing 'NSCameraUsageDescription', so video services will fail. Add this entry to your bundle's Info.plist."));
     systemStatus = AVAuthorizationStatusDenied;
   } else {
     systemStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];

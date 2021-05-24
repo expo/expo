@@ -8,6 +8,19 @@
 
 ### 🐛 Bug fixes
 
+- Add new manifest2 field and make existing field optional. ([#12817](https://github.com/expo/expo/pull/12817) by [@wschurman](https://github.com/wschurman))
+- Use originalFullName instead of currentFullName ([#12953](https://github.com/expo/expo/pull/12953)) by [@wschurman](https://github.com/wschurman))
+
+## 3.2.3 — 2021-04-13
+
+_This version does not introduce any user-facing changes._
+
+## 3.2.2 — 2021-04-09
+
+### 🎉 New features
+
+- Add support for useProxy in bare workflow. ([#12464](https://github.com/expo/expo/pull/12464) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 3.2.1 — 2021-03-30
 
 _This version does not introduce any user-facing changes._
@@ -83,3 +96,4 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - Fix `AuthSession.getDefaultReturnUrl()` returning wrong URL while using release channels. ([#7687](https://github.com/expo/expo/pull/7687) by [@lukmccall](https://github.com/lukmccall))
+- Fixed a bug where the `useAutoDiscovery()` hook hadn't finished before a component was unmounted. There was no cleanup, so when the fetch request completed, a react state update was attempted on an unmounted component. ([#12491](https://github.com/expo/expo/pull/12491) by [@andrew1601](https://github.com/andrew1601))

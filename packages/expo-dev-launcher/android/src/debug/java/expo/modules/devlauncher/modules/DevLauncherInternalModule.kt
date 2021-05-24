@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 
 private const val ON_NEW_DEEP_LINK_EVENT = "expo.modules.devlauncher.onnewdeeplink"
 private const val CLIENT_PACKAGE_NAME = "host.exp.exponent"
+private val CLIENT_HOME_QR_SCANNER_DEEP_LINK = Uri.parse("expo-home://qr-scanner")
 
 class DevLauncherInternalModule(reactContext: ReactApplicationContext?) : ReactContextBaseJavaModule(reactContext) {
   override fun initialize() {
@@ -49,6 +50,7 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) : ReactC
         instance.loadApp(appUrl)
       } catch (e: Exception) {
         promise.reject("ERR_DEV_LAUNCHER_CANNOT_LOAD_APP", e.message, e)
+        return@launch
       }
       promise.resolve(null)
     }
@@ -71,7 +73,7 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) : ReactC
 
     packageManager.getLaunchIntentForPackage(CLIENT_PACKAGE_NAME)
       ?.let {
-        reactApplicationContext.startActivity(it)
+        tryToDeepLinkIntoQRScannerDirectly(it)
         promise.resolve(null)
         return
       }
@@ -100,6 +102,14 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) : ReactC
         .getJSModule(RCTDeviceEventEmitter::class.java)
         .emit(ON_NEW_DEEP_LINK_EVENT, it)
     }
+  }
+
+  private fun tryToDeepLinkIntoQRScannerDirectly(fallback: Intent) {
+    if (openLink(CLIENT_HOME_QR_SCANNER_DEEP_LINK)) {
+      return
+    }
+
+    reactApplicationContext.startActivity(fallback)
   }
 
   private fun openLink(uri: Uri): Boolean {

@@ -235,6 +235,7 @@ public class LocalAuthenticationModule extends ExportedModule {
       @Override
       public void run() {
         safeCancel();
+        promise.resolve(null);
       }
     });
   }
@@ -258,6 +259,7 @@ public class LocalAuthenticationModule extends ExportedModule {
   private void safeCancel() {
     if (mBiometricPrompt != null && mIsAuthenticating) {
       mBiometricPrompt.cancelAuthentication();
+      mIsAuthenticating = false;
     }
   }
 
@@ -294,7 +296,7 @@ public class LocalAuthenticationModule extends ExportedModule {
   }
 
   private KeyguardManager getKeyguardManager() {
-    return (KeyguardManager) getCurrentActivity().getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE);
+    return (KeyguardManager) getContext().getSystemService(Context.KEYGUARD_SERVICE);
   }
 
   private Activity getCurrentActivity() {

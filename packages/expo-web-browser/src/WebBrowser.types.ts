@@ -28,9 +28,15 @@ export type WebBrowserOpenOptions = {
   enableDefaultShareMenuItem?: boolean;
   /**
    * Whether browsed website should be shown as separate entry in Android recents/multitasking view.
+   * Requires createTask to be `true` (default).
    * Default: `false`
    */
   showInRecents?: boolean;
+  /**
+   * Whether the browser should open as a new task or open within the existing task.
+   * Default: `true`
+   */
+  createTask?: boolean;
 
   /** iOS only */
   controlsColor?: string;

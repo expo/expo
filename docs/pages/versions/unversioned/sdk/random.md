@@ -3,6 +3,7 @@ title: Random
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-random'
 ---
 
+import APISection from '~/components/plugins/APISection';
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
@@ -20,31 +21,4 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 import * as Random from 'expo-random';
 ```
 
-## Methods
-
-- [`Random.getRandomBytes(byteCount)`](#randomgetrandombytesbytecount)
-- [`Random.getRandomBytesAsync(byteCount)`](#networkgetipaddressasync)
-
-### `Random.getRandomBytes(byteCount)`
-
-Generates completely random bytes using native implementations. The `byteCount` property is a `number` indicating the number of bytes to generate in the form of a `Uint8Array`.
-
-## Arguments
-
-- **byteCount (_number_)** -- A number within the range: **0...1024**. Anything else will throw a `TypeError`.
-
-## Returns
-
-- **randomBytes (_Uint8Array_)** -- An array of random bytes with the same length as the `byteCount`.
-
-### `Random.getRandomBytesAsync(byteCount)`
-
-Generates completely random bytes using native implementations. The `byteCount` property is a `number` indicating the number of bytes to generate in the form of a `Uint8Array`.
-
-## Arguments
-
-- **byteCount (_number_)** -- A number within the range: **0...1024**. Anything else will throw a `TypeError`.
-
-## Returns
-
-- **randomBytes (_Promise&lt;Uint8Array&gt;_)** -- An array of random bytes with the same length as the `byteCount`.
+<APISection packageName="expo-random" apiName="Random" />

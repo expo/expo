@@ -1,4 +1,4 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
 import React from 'react';
 import { Platform, ScrollView, Text, View } from 'react-native';
 
@@ -18,12 +18,12 @@ export default class FontScreen extends React.Component {
             justifyContent: 'space-between',
             flex: 1,
           }}>
-          <MaterialIcons name="airplay" size={25} />
-          <MaterialIcons name="airport-shuttle" size={25} />
-          <MaterialIcons name="alarm" size={25} />
-          <MaterialIcons name="alarm-add" size={25} />
-          <MaterialIcons name="alarm-off" size={25} />
-          <MaterialIcons name="all-inclusive" size={25} />
+          <Ionicons name="logo-facebook" size={25} />
+          <Ionicons name="logo-apple" size={25} />
+          <Ionicons name="logo-amazon" size={25} />
+          <Ionicons name="logo-npm" size={25} />
+          <Ionicons name="logo-google" size={25} />
+          <Ionicons name="alarm" size={25} />
         </View>
 
         <View style={{ paddingVertical: 10, paddingHorizontal: 15, flex: 1 }}>

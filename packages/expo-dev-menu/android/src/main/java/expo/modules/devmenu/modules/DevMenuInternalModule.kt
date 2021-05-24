@@ -13,7 +13,7 @@ import expo.modules.devmenu.modules.internals.DevMenuInternalWebBrowserModule
 
 interface DevMenuInternalMenuControllerModuleInterface {
   @ReactMethod
-  fun dispatchActionAsync(actionId: String?, promise: Promise)
+  fun dispatchCallableAsync(callableId: String?, args: ReadableMap?, promise: Promise)
 
   @ReactMethod
   fun hideMenu()
@@ -32,6 +32,9 @@ interface DevMenuInternalMenuControllerModuleInterface {
 
   @ReactMethod
   fun onScreenChangeAsync(currentScreen: String?, promise: Promise)
+
+  @ReactMethod
+  fun fetchDataSourceAsync(id: String?, promise: Promise)
 }
 
 interface DevMenuInternalSessionManagerModuleInterface {
@@ -55,7 +58,7 @@ interface DevMenuInternalWebBrowserModuleInterface {
 }
 
 class DevMenuInternalModule(
-  reactContext: ReactApplicationContext,
+  reactContext: ReactApplicationContext
 ) : ReactContextBaseJavaModule(reactContext),
   DevMenuInternalFontManagerModuleInterface by DevMenuInternalFontManagerModule(reactContext),
   DevMenuInternalWebBrowserModuleInterface by DevMenuInternalWebBrowserModule(reactContext),

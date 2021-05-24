@@ -6,9 +6,28 @@
 
 ### 🎉 New features
 
-- Added `tests` field to options in `use_unimodules` ruby script. ([#11972](https://github.com/expo/expo/pull/11972) by [@esamelson](https://github.com/esamelson))
-
 ### 🐛 Bug fixes
+
+- Remove expo-permissions (again). ([#12900](https://github.com/expo/expo/pull/12900) by [@brentvatne](https://github.com/brentvatne))
+
+### 💡 Others
+
+- Migrated interfaces from their own packages to `expo-modules-core`. ([#12868](https://github.com/expo/expo/pull/12868), [#12876](https://github.com/expo/expo/pull/12876), [#12888](https://github.com/expo/expo/pull/12888), [#12918](https://github.com/expo/expo/pull/12918), [#12949](https://github.com/expo/expo/pull/12949) by [@tsapeta](https://github.com/tsapeta))
+
+## 0.13.3 — 2021-04-13
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.2 — 2021-04-09
+
+### 🛠 Breaking changes
+
+- Removed exported `Permissions` object and removed `expo-permissions` from dependencies. ([#12405](https://github.com/unimodules/react-native-unimodules/pull/12405) by [@bbarthec](https://github.com/bbarthec))
+  > `expo-permissions` is now deprecated — the functionality has been moved to other expo packages that directly use these permissions (e.g. `expo-location`, `expo-camera`).
+
+### 🎉 New features
+
+- Added `tests` field to options in `use_unimodules` ruby script. ([#11972](https://github.com/expo/expo/pull/11972) by [@esamelson](https://github.com/esamelson))
 
 ## 0.13.1 — 2021-03-30
 
@@ -133,4 +152,4 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - Automatically generated list of Android packages ([#28](https://github.com/unimodules/react-native-unimodules/pull/28))
-As of this version, you no longer need to add new packages to your `MainApplication.java` file. Just use `new BasePackageList().getPackageList()` instead 🎉. `BasePackageList` is auto-generated with a list of installed unimodules found in your `node_modules` folder during Gradle's Sync operation.
+  As of this version, you no longer need to add new packages to your `MainApplication.java` file. Just use `new BasePackageList().getPackageList()` instead 🎉. `BasePackageList` is auto-generated with a list of installed unimodules found in your `node_modules` folder during Gradle's Sync operation.

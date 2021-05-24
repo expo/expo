@@ -33,9 +33,9 @@ class ContainerView: ABI41_0_0RCTView {
         animationView?.currentProgress = progress
     }
 
-  override func abi41_0_0ReactSetFrame(_ frame: CGRect) {
-    super.abi41_0_0ReactSetFrame(frame)
-    animationView?.abi41_0_0ReactSetFrame(frame)
+    override func abi41_0_0ReactSetFrame(_ frame: CGRect) {
+        super.abi41_0_0ReactSetFrame(frame)
+        animationView?.abi41_0_0ReactSetFrame(frame)
     }
 
     @objc func setLoop(_ isLooping: Bool) {
@@ -144,7 +144,7 @@ class ContainerView: ABI41_0_0RCTView {
         animationView = next
         addSubview(next)
         animationView?.contentMode = contentMode
-      animationView?.abi41_0_0ReactSetFrame(frame)
+        animationView?.abi41_0_0ReactSetFrame(frame)
         applyProperties()
     }
 

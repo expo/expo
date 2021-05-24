@@ -5,7 +5,8 @@
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesNewUpdate.h>
-#import <EXUpdates/EXUpdatesSelectionPolicyFilterAware.h>
+#import <EXUpdates/EXUpdatesSelectionPolicyFactory.h>
+#import <EXUpdates/EXUpdatesSelectionPolicies.h>
 #import <EXUpdates/EXUpdatesUpdate.h>
 
 @interface EXUpdatesSelectionPolicyFilterAwareTests : XCTestCase
@@ -17,7 +18,7 @@
 @property (nonatomic, strong) EXUpdatesUpdate *updateRollout2;
 @property (nonatomic, strong) EXUpdatesUpdate *updateMultipleFilters;
 @property (nonatomic, strong) EXUpdatesUpdate *updateNoMetadata;
-@property (nonatomic, strong) EXUpdatesSelectionPolicyFilterAware *selectionPolicy;
+@property (nonatomic, strong) EXUpdatesSelectionPolicy *selectionPolicy;
 @property (nonatomic, strong) NSDictionary *manifestFilters;
 
 @end
@@ -42,72 +43,75 @@
 
   NSString *runtimeVersion = @"1.0";
   NSString *scopeKey = @"dummyScope";
-  EXUpdatesConfig *config = [EXUpdatesConfig new];
+  EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
+    @"EXUpdatesRuntimeVersion": runtimeVersion,
+    @"EXUpdatesScopeKey": scopeKey
+  }];
   EXUpdatesDatabase *database = [EXUpdatesDatabase new];
-  
-  _updateRollout0 = [EXUpdatesNewUpdate updateWithNewManifest:@{
+
+  _updateRollout0 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e71",
     @"createdAt": @"2021-01-10T19:39:22.480Z",
     @"runtimeVersion": @"1.0",
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
-    @"updateMetadata": @{@"branchName": @"rollout"}
-  } response:nil config:config database:database];
+    @"metadata": @{@"branchName": @"rollout"}
+  }] response:nil config:config database:database];
 
-  _updateDefault1 = [EXUpdatesNewUpdate updateWithNewManifest:@{
+  _updateDefault1 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e72",
     @"createdAt": @"2021-01-11T19:39:22.480Z",
     @"runtimeVersion": @"1.0",
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
-    @"updateMetadata": @{@"branchName": @"default"}
-  } response:nil config:config database:database];
-  
-  _updateRollout1 = [EXUpdatesNewUpdate updateWithNewManifest:@{
+    @"metadata": @{@"branchName": @"default"}
+  }] response:nil config:config database:database];
+
+  _updateRollout1 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e73",
     @"createdAt": @"2021-01-12T19:39:22.480Z",
     @"runtimeVersion": @"1.0",
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
-    @"updateMetadata": @{@"branchName": @"rollout"}
-  } response:nil config:config database:database];
-  
-  _updateDefault2 = [EXUpdatesNewUpdate updateWithNewManifest:@{
+    @"metadata": @{@"branchName": @"rollout"}
+  }] response:nil config:config database:database];
+
+  _updateDefault2 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e74",
     @"createdAt": @"2021-01-13T19:39:22.480Z",
     @"runtimeVersion": @"1.0",
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
-    @"updateMetadata": @{@"branchName": @"default"}
-  } response:nil config:config database:database];
-  
-  _updateRollout2 = [EXUpdatesNewUpdate updateWithNewManifest:@{
+    @"metadata": @{@"branchName": @"default"}
+  }] response:nil config:config database:database];
+
+  _updateRollout2 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e75",
     @"createdAt": @"2021-01-14T19:39:22.480Z",
     @"runtimeVersion": @"1.0",
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
-    @"updateMetadata": @{@"branchName": @"rollout"}
-  } response:nil config:config database:database];
+    @"metadata": @{@"branchName": @"rollout"}
+  }] response:nil config:config database:database];
 
-  _updateMultipleFilters = [EXUpdatesNewUpdate updateWithNewManifest:@{
+  _updateMultipleFilters = [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e72",
     @"createdAt": @"2021-01-11T19:39:22.480Z",
     @"runtimeVersion": @"1.0",
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
-    @"updateMetadata": @{@"firstKey": @"value1", @"secondKey": @"value2"}
-  } response:nil config:config database:database];
+    @"metadata": @{@"firstKey": @"value1", @"secondKey": @"value2"}
+  }] response:nil config:config database:database];
 
-  _updateNoMetadata = [EXUpdatesNewUpdate updateWithNewManifest:@{
+  _updateNoMetadata = [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e72",
     @"createdAt": @"2021-01-11T19:39:22.480Z",
     @"runtimeVersion": @"1.0",
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset]
-  } response:nil config:config database:database];
+  }] response:nil config:config database:database];
 
-  _selectionPolicy = [[EXUpdatesSelectionPolicyFilterAware alloc] initWithRuntimeVersion:runtimeVersion];
+  _selectionPolicy = [EXUpdatesSelectionPolicyFactory filterAwarePolicyWithRuntimeVersion:runtimeVersion];
   _manifestFilters = @{@"branchname": @"rollout"};
 }
 
@@ -116,9 +120,9 @@
   [super tearDown];
 }
 
-- (void)testLaunchableUpdateWithUpdates
+- (void)testLaunchableUpdateFromUpdates
 {
-  EXUpdatesUpdate *actual = [_selectionPolicy launchableUpdateWithUpdates:@[_updateDefault1, _updateRollout1, _updateDefault2] filters:_manifestFilters];
+  EXUpdatesUpdate *actual = [_selectionPolicy launchableUpdateFromUpdates:@[_updateDefault1, _updateRollout1, _updateDefault2] filters:_manifestFilters];
   XCTAssertEqual(_updateRollout1, actual, @"should pick the newest update that matches the manifest filters");
 }
 
@@ -173,25 +177,25 @@
     @"firstkey": @"value1",
     @"secondkey": @"wrong-value"
   };
-  XCTAssertFalse([EXUpdatesSelectionPolicyFilterAware doesUpdate:_updateMultipleFilters matchFilters:filtersBadMatch], @"should fail unless all filters pass");
+  XCTAssertFalse([EXUpdatesSelectionPolicies doesUpdate:_updateMultipleFilters matchFilters:filtersBadMatch], @"should fail unless all filters pass");
 
   NSDictionary *filtersGoodMatch = @{
     @"firstkey": @"value1",
     @"secondkey": @"value2"
   };
-  XCTAssertTrue([EXUpdatesSelectionPolicyFilterAware doesUpdate:_updateMultipleFilters matchFilters:filtersGoodMatch], @"should pass if all filters pass");
+  XCTAssertTrue([EXUpdatesSelectionPolicies doesUpdate:_updateMultipleFilters matchFilters:filtersGoodMatch], @"should pass if all filters pass");
 }
 
 - (void)testDoesUpdateMatchFilters_EmptyMatchesAll
 {
-  XCTAssertTrue([EXUpdatesSelectionPolicyFilterAware doesUpdate:_updateDefault1 matchFilters:@{@"field-that-update-doesnt-have": @"value"}], @"no field counts as a match");
+  XCTAssertTrue([EXUpdatesSelectionPolicies doesUpdate:_updateDefault1 matchFilters:@{@"field-that-update-doesnt-have": @"value"}], @"no field counts as a match");
 }
 
 - (void)testDoesUpdateMatchFilters_Null
 {
-  // null filters or null updateMetadata (i.e. bare or legacy manifests) is counted as a match
-  XCTAssertTrue([EXUpdatesSelectionPolicyFilterAware doesUpdate:_updateDefault1 matchFilters:nil]);
-  XCTAssertTrue([EXUpdatesSelectionPolicyFilterAware doesUpdate:_updateNoMetadata matchFilters:_manifestFilters]);
+  // null filters or null metadata (i.e. bare or legacy manifests) is counted as a match
+  XCTAssertTrue([EXUpdatesSelectionPolicies doesUpdate:_updateDefault1 matchFilters:nil]);
+  XCTAssertTrue([EXUpdatesSelectionPolicies doesUpdate:_updateNoMetadata matchFilters:_manifestFilters]);
 }
 
 @end

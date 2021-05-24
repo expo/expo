@@ -15,6 +15,8 @@ import expo.modules.notifications.notifications.interfaces.NotificationBuilder;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.presentation.builders.CategoryAwareNotificationBuilder;
 import expo.modules.notifications.service.delegates.SharedPreferencesNotificationCategoriesStore;
+import expo.modules.updates.manifest.ManifestFactory;
+import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.di.NativeModuleDepsProvider;
@@ -30,7 +32,7 @@ public class ScopedExpoNotificationBuilder extends CategoryAwareNotificationBuil
   @Inject
   ExponentManifest mExponentManifest;
   @Nullable
-  JSONObject manifest;
+  RawManifest manifest;
 
   @Nullable
   ExperienceId mExperienceId;
@@ -50,7 +52,7 @@ public class ScopedExpoNotificationBuilder extends CategoryAwareNotificationBuil
       mExperienceId = ExperienceId.create(((ScopedNotificationRequest) requester).getExperienceIdString());
       ExperienceDBObject experience = ExponentDB.experienceIdToExperienceSync(mExperienceId.get());
       try {
-        manifest = new JSONObject(experience.manifest);
+        manifest = ManifestFactory.INSTANCE.getRawManifestFromJson(new JSONObject(experience.manifest));
       } catch (JSONException e) {
         Log.e("notifications", "Couldn't parse manifest.", e);
         e.printStackTrace();

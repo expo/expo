@@ -29,6 +29,23 @@ export interface AndroidManifest {
 export interface WebManifest {
     [key: string]: any;
 }
+export interface ManifestAsset {
+    url: string;
+}
+/**
+ * A modern manifest.
+ */
+export interface Manifest {
+    id: string;
+    createdAt: string;
+    runtimeVersion: string;
+    launchAsset: ManifestAsset;
+    assets: ManifestAsset[];
+    metadata: object;
+}
+/**
+ * A classic manifest https://docs.expo.io/guides/how-expo-works/#expo-manifest
+ */
 export interface AppManifest extends ExpoConfig {
     /** Published Apps Only */
     releaseId?: string;
@@ -44,7 +61,6 @@ export interface AppManifest extends ExpoConfig {
         lanType?: string;
         [key: string]: any;
     };
-    xde?: boolean;
     developer?: {
         tool?: string;
         [key: string]: any;
@@ -53,6 +69,34 @@ export interface AppManifest extends ExpoConfig {
     debuggerHost?: string;
     mainModuleName?: string;
     logUrl?: string;
+    /**
+     * The Expo account name and slug for this project.
+     * @deprecated - Prefer `projectId` or `originalFullName` instead for identification and `scopeKey` for
+     * scoping due to immutability.
+     */
+    id?: string;
+    /**
+     * The original Expo account name and slug for this project. Formatted like `@username/slug`.
+     * When unauthenticated, the username is `@anonymous`. For published projects, this value
+     * will not change when a project is transferred between accounts or renamed.
+     */
+    originalFullName?: string;
+    /**
+     * The Expo account name and slug used for display purposes. Formatted like `@username/slug`.
+     * When unauthenticated, the username is `@anonymous`. For published projects, this value
+     * may change when a project is transferred between accounts or renamed.
+     */
+    currentFullName?: string;
+    /**
+     * An opaque unique string for scoping client-side data to this project. This value
+     * will not change when a project is transferred between accounts or renamed.
+     */
+    scopeKey?: string;
+    /**
+     * The ID for this project. UUID. This value will not change when a project is transferred
+     * between accounts or renamed.
+     */
+    projectId?: string;
     [key: string]: any;
 }
 export interface PlatformManifest {
@@ -80,7 +124,7 @@ export interface NativeConstants {
     expoRuntimeVersion: string | null;
     /**
      * The version string of the Expo client currently running.
-     * Returns `null` on and bare workflow and web.
+     * Returns `null` in bare workflow and web.
      */
     expoVersion: string | null;
     isDetached?: boolean;
@@ -95,7 +139,16 @@ export interface NativeConstants {
     linkingUri: string;
     nativeAppVersion: string | null;
     nativeBuildVersion: string | null;
-    manifest: AppManifest;
+    /**
+     * Classic manifest for Expo apps using classic updates.
+     * Returns `null` in bare workflow and when `manifest2` is non-null.
+     */
+    manifest: AppManifest | null;
+    /**
+     * New manifest for Expo apps using modern Expo Updates.
+     * Returns `null` in bare workflow and when `manifest` is non-null.
+     */
+    manifest2: Manifest | null;
     sessionId: string;
     statusBarHeight: number;
     systemFonts: string[];
@@ -121,5 +174,5 @@ export interface Constants extends NativeConstants {
      * In certain cases accessing manifest via this property
      * suppresses important warning about missing manifest.
      */
-    __unsafeNoWarnManifest: AppManifest;
+    __unsafeNoWarnManifest?: AppManifest;
 }

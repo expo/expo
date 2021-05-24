@@ -1,5 +1,6 @@
 package expo.interfaces.devmenu
 
+import expo.interfaces.devmenu.items.DevMenuDataSourceInterface
 import expo.interfaces.devmenu.items.DevMenuItemsContainerInterface
 import expo.interfaces.devmenu.items.DevMenuScreen
 
@@ -21,4 +22,6 @@ interface DevMenuExtensionInterface {
   fun devMenuItems(settings: DevMenuExtensionSettingsInterface): DevMenuItemsContainerInterface?
 
   fun devMenuScreens(settings: DevMenuExtensionSettingsInterface): List<DevMenuScreen>? = null
+
+  fun devMenuDataSources(settings: DevMenuExtensionSettingsInterface): List<DevMenuDataSourceInterface>? = null
 }

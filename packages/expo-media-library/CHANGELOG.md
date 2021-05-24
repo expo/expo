@@ -8,6 +8,16 @@
 
 ### 🐛 Bug fixes
 
+- Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+- Migrated from `unimodules-file-system-interface` to `expo-modules-core`.
+
+## 12.0.2 — 2021-04-13
+
+_This version does not introduce any user-facing changes._
+
 ## 12.0.1 — 2021-03-31
 
 _This version does not introduce any user-facing changes._

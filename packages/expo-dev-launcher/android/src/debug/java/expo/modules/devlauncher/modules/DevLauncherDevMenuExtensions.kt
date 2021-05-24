@@ -8,7 +8,6 @@ import expo.interfaces.devmenu.DevMenuExtensionSettingsInterface
 import expo.interfaces.devmenu.items.DevMenuItemImportance
 import expo.interfaces.devmenu.items.DevMenuItemsContainer
 import expo.interfaces.devmenu.items.DevMenuItemsContainerInterface
-import expo.interfaces.devmenu.items.DevMenuScreen
 import expo.interfaces.devmenu.items.KeyCommand
 import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.DevLauncherController.Companion.instance
@@ -23,7 +22,7 @@ class DevLauncherDevMenuExtensions(
 
   override fun devMenuItems(settings: DevMenuExtensionSettingsInterface): DevMenuItemsContainerInterface =
     DevMenuItemsContainer.export {
-      if (instance.mode == DevLauncherController.Mode.LAUNCHER) {
+      if (!DevLauncherController.wasInitialized() || instance.mode == DevLauncherController.Mode.LAUNCHER) {
         return@export
       }
 
@@ -37,6 +36,4 @@ class DevLauncherDevMenuExtensions(
         keyCommand = KeyCommand(KeyEvent.KEYCODE_L, false)
       }
     }
-
-  override fun devMenuScreens(settings: DevMenuExtensionSettingsInterface): List<DevMenuScreen>? = null
 }

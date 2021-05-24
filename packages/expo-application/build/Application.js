@@ -110,14 +110,24 @@ export var ApplicationReleaseType;
     ApplicationReleaseType[ApplicationReleaseType["AD_HOC"] = 4] = "AD_HOC";
     ApplicationReleaseType[ApplicationReleaseType["APP_STORE"] = 5] = "APP_STORE";
 })(ApplicationReleaseType || (ApplicationReleaseType = {}));
-// @docsMissing
+// @needsAudit
+/**
+ * **iOS only.** Gets the iOS application release type.
+ * @return Returns a promise which fulfills with an [`ApplicationReleaseType`](#applicationreleasetype).
+ */
 export async function getIosApplicationReleaseTypeAsync() {
     if (!ExpoApplication.getApplicationReleaseTypeAsync) {
         throw new UnavailabilityError('expo-application', 'getApplicationReleaseTypeAsync');
     }
     return await ExpoApplication.getApplicationReleaseTypeAsync();
 }
-// @docsMissing
+// @needsAudit
+/**
+ * **iOS only.** Gets the current [Apple Push Notification (APN)](https://developer.apple.com/documentation/bundleresources/entitlements/aps-environment?language=objc)
+ * service environment.
+ * @return Returns a promise fulfilled with the string, either `'development'` or `'production'`,
+ * based on the current APN environment.
+ */
 export async function getIosPushNotificationServiceEnvironmentAsync() {
     if (!ExpoApplication.getPushNotificationServiceEnvironmentAsync) {
         throw new UnavailabilityError('expo-application', 'getPushNotificationServiceEnvironmentAsync');

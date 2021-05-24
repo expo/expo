@@ -8,6 +8,20 @@
 
 ### 🐛 Bug fixes
 
+- Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
+- Add new manifest2 field and make existing field optional. ([#12817](https://github.com/expo/expo/pull/12817) by [@wschurman](https://github.com/wschurman))
+- Use originalFullName instead of currentFullName ([#12953](https://github.com/expo/expo/pull/12953)) by [@wschurman](https://github.com/wschurman))
+
+## 0.11.5 — 2021-04-13
+
+_This version does not introduce any user-facing changes._
+
+## 0.11.4 — 2021-04-09
+
+### 🎉 New features
+
+- Add bare workflow support to `getExpoPushTokenAsync`. ([#12465](https://github.com/expo/expo/pull/12465) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.11.3 — 2021-03-31
 
 _This version does not introduce any user-facing changes._

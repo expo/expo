@@ -41,7 +41,7 @@ To associate projects with an Organization, you will need to add the [Owner key]
 
 If you have projects under a Personal Account that you would rather have as an Organization, it is simple and safe to convert to any project created under your Personal Account to an Organization. Simply visit [expo.io/settings](https://expo.io/settings) and follow the prompts under **Convert your account into an Organization**. 
 
-You will need to assign a Personal Account to manage the Organization as part of this process (You can to create a new one if you don't already have another account). 
+You will need to assign a Personal Account to manage the Organization as part of this process (You can create a new one if you don't already have another account). 
 
 We have taken a lot of care to make sure that all of the functionality that you and your users rely on will continue work as expected, meaning:
 - You can continue to deliver OTA updates and push notifications to your users.

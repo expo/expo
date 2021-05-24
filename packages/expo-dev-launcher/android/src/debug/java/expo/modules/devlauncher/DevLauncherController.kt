@@ -8,6 +8,7 @@ import androidx.annotation.UiThread
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactNativeHost
+import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.ReactContext
 import expo.interfaces.devmenu.DevMenuManagerProviderInterface
 import expo.modules.devlauncher.helpers.changeUrlScheme
@@ -23,8 +24,8 @@ import expo.modules.devlauncher.launcher.DevLauncherReactActivityDelegateSupplie
 import expo.modules.devlauncher.launcher.DevLauncherRecentlyOpenedAppsRegistry
 import expo.modules.devlauncher.launcher.loaders.DevLauncherExpoAppLoader
 import expo.modules.devlauncher.launcher.loaders.DevLauncherReactNativeAppLoader
-import expo.modules.devlauncher.launcher.manifest.DevLauncherManifestParser
 import expo.modules.devlauncher.launcher.manifest.DevLauncherManifest
+import expo.modules.devlauncher.launcher.manifest.DevLauncherManifestParser
 import expo.modules.devlauncher.launcher.menu.DevLauncherMenuDelegate
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityNOPDelegate
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityRedirectDelegate
@@ -36,8 +37,9 @@ import okhttp3.OkHttpClient
 //  private final String DEV_LAUNCHER_HOST = "10.0.0.175:8090";
 private val DEV_LAUNCHER_HOST: String? = null
 
-private const val NEW_ACTIVITY_FLAGS =
-  Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION
+private const val NEW_ACTIVITY_FLAGS = Intent.FLAG_ACTIVITY_NEW_TASK or
+  Intent.FLAG_ACTIVITY_CLEAR_TASK or
+  Intent.FLAG_ACTIVITY_NO_ANIMATION
 
 private var MenuDelegateWasInitialized = false
 
@@ -52,8 +54,9 @@ class DevLauncherController private constructor(
   var manifest: DevLauncherManifest? = null
     private set
   val pendingIntentRegistry = DevLauncherIntentRegistry()
+  var latestLoadedApp: Uri? = null
 
-  internal  enum class Mode {
+  internal enum class Mode {
     LAUNCHER, APP
   }
 
@@ -82,6 +85,7 @@ class DevLauncherController private constructor(
     // Note that `launch` method is a suspend one. So the execution will be stopped here until the method doesn't finish.
     if (appLoader.launch(appIntent)) {
       recentlyOpedAppsRegistry.appWasOpened(url, appLoader.getAppName())
+      latestLoadedApp = url
       // Here the app will be loaded - we can remove listener here.
       lifecycle.removeListener(appLoaderListener)
     } else {
@@ -226,6 +230,7 @@ class DevLauncherController private constructor(
   companion object {
     private var sInstance: DevLauncherController? = null
     private var sLauncherClass: Class<*>? = null
+    internal var sAdditionalPackages: List<ReactPackage>? = null
 
     @JvmStatic
     fun wasInitialized() = sInstance != null
@@ -243,8 +248,9 @@ class DevLauncherController private constructor(
     }
 
     @JvmStatic
-    fun initialize(context: Context, appHost: ReactNativeHost, launcherClass: Class<*>) {
+    fun initialize(context: Context, appHost: ReactNativeHost, additionalPackages: List<ReactPackage>?, launcherClass: Class<*>? = null) {
       initialize(context, appHost)
+      sAdditionalPackages = additionalPackages
       sLauncherClass = launcherClass
     }
 

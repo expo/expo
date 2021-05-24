@@ -3,10 +3,10 @@ package expo.modules.barcodescanner.utils;
 import android.os.Bundle;
 import android.util.Pair;
 
-import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import expo.modules.interfaces.barcodescanner.BarCodeScannerResult;
 
 public class BarCodeScannerResultSerializer {
 

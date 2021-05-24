@@ -31,6 +31,7 @@
 #endif
 
 #import <React/RCTAppearance.h>
+#ifdef INCLUDES_VERSIONED_CODE
 #if __has_include(<ABI41_0_0React/ABI41_0_0RCTAppearance.h>)
 #import <ABI41_0_0React/ABI41_0_0RCTAppearance.h>
 #endif
@@ -39,6 +40,7 @@
 #endif
 #if __has_include(<ABI39_0_0React/ABI39_0_0RCTAppearance.h>)
 #import <ABI39_0_0React/ABI39_0_0RCTAppearance.h>
+#endif
 #endif
 
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
@@ -328,7 +330,7 @@ NS_ASSUME_NONNULL_BEGIN
  * therefore for any consecutive SplashScreen.show call we just reconfigure what's already visible.
  * In HomeApp or standalone apps this function is no-op as SplashScreen is managed differently.
  */
-- (void)_showOrReconfigureManagedAppSplashScreen:(NSDictionary *)manifest
+- (void)_showOrReconfigureManagedAppSplashScreen:(EXUpdatesRawManifest *)manifest
 {
   if (_isStandalone || _isHomeApp) {
     return;
@@ -412,7 +414,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - EXAppLoaderDelegate
 
-- (void)appLoader:(EXAppLoader *)appLoader didLoadOptimisticManifest:(NSDictionary *)manifest
+- (void)appLoader:(EXAppLoader *)appLoader didLoadOptimisticManifest:(EXUpdatesRawManifest *)manifest
 {
   if (_appLoadingCancelView) {
     UM_WEAKIFY(self);
@@ -437,7 +439,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-- (void)appLoader:(EXAppLoader *)appLoader didFinishLoadingManifest:(NSDictionary *)manifest bundle:(NSData *)data
+- (void)appLoader:(EXAppLoader *)appLoader didFinishLoadingManifest:(EXUpdatesRawManifest *)manifest bundle:(NSData *)data
 {
   [self _showOrReconfigureManagedAppSplashScreen:manifest];
   [self _rebuildBridge];
@@ -458,7 +460,7 @@ NS_ASSUME_NONNULL_BEGIN
   [self maybeShowError:error];
 }
 
-- (void)appLoader:(EXAppLoader *)appLoader didResolveUpdatedBundleWithManifest:(NSDictionary * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error
+- (void)appLoader:(EXAppLoader *)appLoader didResolveUpdatedBundleWithManifest:(EXUpdatesRawManifest * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error
 {
   [[EXKernel sharedInstance].serviceRegistry.updatesManager notifyApp:_appRecord ofDownloadWithManifest:manifest isNew:!isFromCache error:error];
 }
@@ -544,7 +546,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIInterfaceOrientationMask)orientationMaskFromManifestOrDefault {
   if (_appRecord.appLoader.manifest) {
-    NSString *orientationConfig = _appRecord.appLoader.manifest[@"orientation"];
+    NSString *orientationConfig = _appRecord.appLoader.manifest.orientation;
     if ([orientationConfig isEqualToString:@"portrait"]) {
       // lock to portrait
       return UIInterfaceOrientationMaskPortrait;
@@ -642,6 +644,7 @@ NS_ASSUME_NONNULL_BEGIN
     appearancePreference = nil;
   }
   RCTOverrideAppearancePreference(appearancePreference);
+#ifdef INCLUDES_VERSIONED_CODE
 #if __has_include(<ABI41_0_0React/ABI41_0_0RCTAppearance.h>)
   ABI41_0_0RCTOverrideAppearancePreference(appearancePreference);
 #endif
@@ -650,6 +653,7 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
 #if __has_include(<ABI39_0_0React/ABI39_0_0RCTAppearance.h>)
   ABI39_0_0RCTOverrideAppearancePreference(appearancePreference);
+#endif
 #endif
 }
 
@@ -663,12 +667,9 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-- (NSString * _Nullable)_readUserInterfaceStyleFromManifest:(NSDictionary *)manifest
+- (NSString * _Nullable)_readUserInterfaceStyleFromManifest:(EXUpdatesRawManifest *)manifest
 {
-  if (manifest[@"ios"] && manifest[@"ios"][@"userInterfaceStyle"]) {
-    return manifest[@"ios"][@"userInterfaceStyle"];
-  }
-  return manifest[@"userInterfaceStyle"];
+  return manifest.userInterfaceStyle;
 }
 
 - (UIUserInterfaceStyle)_userInterfaceStyleForString:(NSString *)userInterfaceStyleString API_AVAILABLE(ios(12.0)) {
@@ -712,12 +713,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (NSString * _Nullable)_readBackgroundColorFromManifest:(NSDictionary *)manifest
+- (NSString * _Nullable)_readBackgroundColorFromManifest:(EXUpdatesRawManifest *)manifest
 {
-  if (manifest[@"ios"] && manifest[@"ios"][@"backgroundColor"]) {
-    return manifest[@"ios"][@"backgroundColor"];
-  }
-  return manifest[@"backgroundColor"];
+  return manifest.androidOrRootBackroundColor;
 }
 
 

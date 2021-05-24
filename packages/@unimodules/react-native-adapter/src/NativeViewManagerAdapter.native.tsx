@@ -1,5 +1,3 @@
-import omit from 'lodash/omit';
-import pick from 'lodash/pick';
 import React from 'react';
 import { NativeModules, UIManager, ViewPropTypes, requireNativeComponent } from 'react-native';
 
@@ -56,12 +54,27 @@ export function requireNativeViewManager<P = any>(viewName: string): React.Compo
 
   // Define a component for universal-module authors to access their native view manager
   function NativeComponentAdapter(props, ref) {
-    // TODO: `omit` may incur a meaningful performance cost across many native components rendered
-    // in the same update. Profile this and write out a partition function if this is a bottleneck.
     const nativeProps = pick(props, reactNativeComponentPropNames);
     const proxiedProps = omit(props, reactNativeComponentPropNames);
     return <ReactNativeComponent {...nativeProps} proxiedProperties={proxiedProps} ref={ref} />;
   }
   NativeComponentAdapter.displayName = `Adapter<${viewName}>`;
   return React.forwardRef(NativeComponentAdapter);
+}
+
+function omit(props: Record<string, any>, propNames: string[]) {
+  const copied = { ...props };
+  for (const propName of propNames) {
+    delete copied[propName];
+  }
+  return copied;
+}
+
+function pick(props: Record<string, any>, propNames: string[]) {
+  return propNames.reduce((prev, curr) => {
+    if (curr in props) {
+      prev[curr] = props[curr];
+    }
+    return prev;
+  }, {});
 }

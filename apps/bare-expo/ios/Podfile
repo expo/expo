@@ -7,19 +7,15 @@ inhibit_all_warnings!
 
 # Import the auto-linking packages
 require_relative '../node_modules/react-native/scripts/react_native_pods'
-require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+require_relative '../../../packages/@unimodules/react-native-adapter/scripts/autolinking'
 
 abstract_target 'BareExpoMain' do
-  # Auto-linking
-  use_unimodules!
+  use_expo_modules!
 
   config = use_native_modules!
 
   use_react_native!(path: config['reactNativePath'])
-
-  pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', configurations: :debug
-  pod 'expo-dev-launcher', path: '../../../packages/expo-dev-launcher', configurations: :debug
 
   # Fix Google Sign-in and Flipper
   post_install do |installer|

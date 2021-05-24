@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <EXSegment/EXSegment.h>
-#import <UMConstantsInterface/UMConstantsInterface.h>
 #import <Analytics/SEGAnalytics.h>
 
 static NSString *const EXSegmentEnabledKey = @"EXSegmentEnabledKey";

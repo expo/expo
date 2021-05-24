@@ -86,7 +86,7 @@ class PermissionsModule(context: Context) : ExportedModule(context) {
     if (androidPermissions.isEmpty()) {
       // We pass an empty map here cause those permissions don't depend on the system result.
       promise.resolve(parsePermissionsResponse(permissionTypes, emptyMap()))
-      return;
+      return
     }
 
     permissionsServiceDelegate(createPermissionsResponseListener(permissionTypes, promise), androidPermissions)

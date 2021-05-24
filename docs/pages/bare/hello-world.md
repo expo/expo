@@ -20,10 +20,10 @@ Next, let's get the project running. Go into your project directory and run `rea
 
 ## Using react-native-unimodules
 
-Bare template projects come with `react-native-unimodules` installed and configured. This package gives you access to some commonly useful APIs, like `Asset`, `Constants`, `FileSystem`, and `Permissions`. You can import these from `react-native-unimodules` like so:
+Bare template projects come with `react-native-unimodules` installed and configured. This package gives you access to some commonly useful APIs, like `Asset`, `Constants` and `FileSystem`. You can import these from `react-native-unimodules` like so:
 
 ```js
-import { Asset, Constants, FileSystem, Permissions } from 'react-native-unimodules';
+import { Asset, Constants, FileSystem } from 'react-native-unimodules';
 ```
 
 ## Install an Expo SDK package

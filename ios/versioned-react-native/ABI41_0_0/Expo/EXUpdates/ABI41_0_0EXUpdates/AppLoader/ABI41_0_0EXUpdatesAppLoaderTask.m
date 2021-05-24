@@ -16,7 +16,7 @@ static NSString * const ABI41_0_0EXUpdatesAppLoaderTaskErrorDomain = @"ABI41_0_0
 @property (nonatomic, strong) ABI41_0_0EXUpdatesConfig *config;
 @property (nonatomic, strong) ABI41_0_0EXUpdatesDatabase *database;
 @property (nonatomic, strong) NSURL *directory;
-@property (nonatomic, strong) id<ABI41_0_0EXUpdatesSelectionPolicy> selectionPolicy;
+@property (nonatomic, strong) ABI41_0_0EXUpdatesSelectionPolicy * selectionPolicy;
 @property (nonatomic, strong) dispatch_queue_t delegateQueue;
 
 @property (nonatomic, strong) id<ABI41_0_0EXUpdatesAppLauncher> candidateLauncher;
@@ -39,7 +39,7 @@ static NSString * const ABI41_0_0EXUpdatesAppLoaderTaskErrorDomain = @"ABI41_0_0
 - (instancetype)initWithConfig:(ABI41_0_0EXUpdatesConfig *)config
                       database:(ABI41_0_0EXUpdatesDatabase *)database
                      directory:(NSURL *)directory
-               selectionPolicy:(id<ABI41_0_0EXUpdatesSelectionPolicy>)selectionPolicy
+               selectionPolicy:(ABI41_0_0EXUpdatesSelectionPolicy *)selectionPolicy
                  delegateQueue:(dispatch_queue_t)delegateQueue
 {
   if (self = [super init]) {
@@ -209,6 +209,8 @@ static NSString * const ABI41_0_0EXUpdatesAppLoaderTaskErrorDomain = @"ABI41_0_0
           [self->_embeddedAppLoader loadUpdateFromEmbeddedManifestWithCallback:^BOOL(ABI41_0_0EXUpdatesUpdate * _Nonnull update) {
             // we already checked using selection policy, so we don't need to check again
             return YES;
+          } onAsset:^(ABI41_0_0EXUpdatesAsset *asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
+            // do nothing for now
           } success:^(ABI41_0_0EXUpdatesUpdate * _Nullable update) {
             completion();
           } error:^(NSError * _Nonnull error) {
@@ -245,6 +247,8 @@ static NSString * const ABI41_0_0EXUpdatesAppLoaderTaskErrorDomain = @"ABI41_0_0
       self->_isUpToDate = YES;
       return NO;
     }
+  } asset:^(ABI41_0_0EXUpdatesAsset *asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
+    // do nothing for now
   } success:^(ABI41_0_0EXUpdatesUpdate * _Nullable update) {
     completion(nil, update);
   } error:^(NSError *error) {

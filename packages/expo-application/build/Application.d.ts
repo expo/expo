@@ -81,7 +81,17 @@ export declare enum ApplicationReleaseType {
     AD_HOC = 4,
     APP_STORE = 5
 }
+/**
+ * **iOS only.** Gets the iOS application release type.
+ * @return Returns a promise which fulfills with an [`ApplicationReleaseType`](#applicationreleasetype).
+ */
 export declare function getIosApplicationReleaseTypeAsync(): Promise<ApplicationReleaseType>;
+/**
+ * **iOS only.** Gets the current [Apple Push Notification (APN)](https://developer.apple.com/documentation/bundleresources/entitlements/aps-environment?language=objc)
+ * service environment.
+ * @return Returns a promise fulfilled with the string, either `'development'` or `'production'`,
+ * based on the current APN environment.
+ */
 export declare function getIosPushNotificationServiceEnvironmentAsync(): Promise<string>;
 /**
  * Gets the time the app was installed onto the device, not counting subsequent updates. If the app

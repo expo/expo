@@ -182,8 +182,10 @@ fetchCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandl
         [EXKernelLinkingManager application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
         return YES;
       } else {
-        [application openURL:webpageURL options:@{} completionHandler:nil];
-        return YES;
+        if (![path isEqualToString:@"/expo-go"]) {
+          [application openURL:webpageURL options:@{} completionHandler:nil];
+          return YES;
+        }
       }
     }
   }

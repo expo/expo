@@ -20,7 +20,7 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 - 📲 fetch a native device push token so you can send push notifications with FCM and APNS,
 - 😎 fetch an Expo push token so you can send push notifications with Expo,
 - 📬 listen to incoming notifications,
-- 👆 listen to interactions with notifications (tapping or dismissing),
+- 👆 listen to interactions with notifications,
 - 🎛 handle notifications when the app is in foreground,
 - 🔕 imperatively dismiss notifications from Notification Center/tray,
 - 🗂 create, update, delete Android notification channels,
@@ -195,8 +195,8 @@ export default function App() {
     });
 
     return () => {
-      Notifications.removeNotificationSubscription(notificationListener);
-      Notifications.removeNotificationSubscription(responseListener);
+      Notifications.removeNotificationSubscription(notificationListener.current);
+      Notifications.removeNotificationSubscription(responseListener.current);
     };
   }, []);
 
@@ -304,7 +304,7 @@ Returns an Expo token that can be used to send a push notification to this devic
 
 This function accepts an optional object allowing you to pass in configuration, consisting of fields (all are optional, but some may have to be defined if configuration cannot be inferred):
 
-- **experienceId (_string_)** -- The ID of the experience to which the token should be attributed. Defaults to [`Constants.manifest.id`](https://docs.expo.io/versions/latest/sdk/constants/#constantsmanifest) exposed by `expo-constants`. In the bare workflow, you must provide a value which takes the shape `@username/projectSlug`, where `username` is the Expo account that the project is associated with, and `projectSlug` is your [`slug` from `app.json`](../config/app.md#slug).
+- **experienceId (_string_)** -- The ID of the experience to which the token should be attributed. Defaults to [`Constants.manifest.id`](https://docs.expo.io/versions/latest/sdk/constants/#constantsmanifest) exposed by `expo-constants`. In the bare workflow, you may need to provide a value which takes the shape `@username/projectSlug`, where `username` is the Expo account that the project is associated with, and `projectSlug` is your [`slug` from `app.json`](../config/app.md#slug).
 - **devicePushToken ([_DevicePushToken_](#devicepushtoken))** -- The device push token with which to register at the backend. Defaults to a token fetched with [`getDevicePushTokenAsync()`](#getdevicepushtokenasync-devicepushtoken).
 - **applicationId (_string_)** -- The ID of the application to which the token should be attributed. Defaults to [`Application.applicationId`](https://docs.expo.io/versions/latest/sdk/application/#applicationapplicationid) exposed by `expo-application`.
 - **development (_boolean_)** -- Makes sense only on iOS, where there are two push notification services: sandbox and production. This defines whether the push token is supposed to be used with the sandbox platform notification service. Defaults to [`Application.getIosPushNotificationServiceEnvironmentAsync()`](https://docs.expo.io/versions/latest/sdk/application/#applicationgetiospushnotificationserviceenvironmentasync) exposed by `expo-application` or `false`. Most probably you won't need to customize that. You may want to customize that if you don't want to install `expo-application` and still use the sandbox APNS.
@@ -318,7 +318,7 @@ Returns a `Promise` that resolves to an object with the following fields:
 
 #### Examples
 
-##### Fetching the Expo push token and uploading it to a server
+#### Fetching the Expo push token and uploading it to a server
 
 ```ts
 import Constants from 'expo-constants';
@@ -525,7 +525,7 @@ A [`Subscription`](#subscription) object representing the subscription of the pr
 
 #### Examples
 
-##### Registering a notification listener using a React hook
+#### Registering a notification listener using a React hook
 
 ```tsx
 import React from 'react';
@@ -547,7 +547,7 @@ export default function Container() {
 }
 ```
 
-##### Handling push notifications with React Navigation
+#### Handling push notifications with React Navigation
 
 If you'd like to deep link to a specific screen in your app when you receive a push notification, you can configure React Navigation's [linking](https://reactnavigation.org/docs/navigation-container#linking) prop to do that:
 
@@ -774,7 +774,7 @@ It returns a `Promise` resolving with the notification's identifier once the not
 
 #### Examples
 
-##### Presenting the notification to the user (deprecated way)
+#### Presenting the notification to the user (deprecated way)
 
 ```ts
 import * as Notifications from 'expo-notifications';
@@ -785,7 +785,7 @@ Notifications.presentNotificationAsync({
 });
 ```
 
-##### Presenting the notification to the user (recommended way)
+#### Presenting the notification to the user (recommended way)
 
 ```ts
 import * as Notifications from 'expo-notifications';
@@ -828,7 +828,7 @@ It returns a `Promise` resolving to a string --- a notification identifier you c
 
 #### Examples
 
-##### Scheduling the notification that will trigger once, in one minute from now
+#### Scheduling the notification that will trigger once, in one minute from now
 
 ```ts
 import * as Notifications from 'expo-notifications';
@@ -844,7 +844,7 @@ Notifications.scheduleNotificationAsync({
 });
 ```
 
-##### Scheduling the notification that will trigger repeatedly, every 20 minutes
+#### Scheduling the notification that will trigger repeatedly, every 20 minutes
 
 ```ts
 import * as Notifications from 'expo-notifications';
@@ -860,7 +860,7 @@ Notifications.scheduleNotificationAsync({
 });
 ```
 
-##### Scheduling the notification that will trigger once, at the beginning of next hour
+#### Scheduling the notification that will trigger once, at the beginning of next hour
 
 ```ts
 import * as Notifications from 'expo-notifications';
@@ -891,7 +891,7 @@ A `Promise` resolving once the scheduled notification is successfully cancelled 
 
 #### Examples
 
-##### Scheduling and then canceling the notification
+#### Scheduling and then canceling the notification
 
 ```ts
 import * as Notifications from 'expo-notifications';
@@ -929,7 +929,7 @@ If the return value is `null`, the notification won't be triggered. Otherwise, t
 
 #### Examples
 
-##### Calculating next trigger date for a notification trigger
+#### Calculating next trigger date for a notification trigger
 
 ```ts
 import * as Notifications from 'expo-notifications';
@@ -1465,6 +1465,7 @@ export interface YearlyNotificationTrigger {
   minute: number;
 }
 ```
+
 #### `CalendarNotificationTrigger`
 
 A trigger related to a [`UNCalendarNotificationTrigger`](https://developer.apple.com/documentation/usernotifications/uncalendarnotificationtrigger?language=objc), available only on iOS.

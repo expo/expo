@@ -72,7 +72,7 @@ export async function test(t) {
       const itWithExpoPushToken = ['ios', 'android'].includes(Platform.OS) ? t.it : t.xit;
       itWithExpoPushToken('fetches Expo push token', async () => {
         let experienceId = undefined;
-        if (!Constants.manifest) {
+        if (!Constants.manifest && !Constants.manifest2) {
           // Absence of manifest means we're running out of managed workflow
           // in bare-expo. @exponent/bare-expo "experience" has been configured
           // to use Apple Push Notification key that will work in bare-expo.
@@ -87,7 +87,7 @@ export async function test(t) {
 
       itWithExpoPushToken('resolves when mixed multiple calls are issued', async () => {
         let experienceId = undefined;
-        if (!Constants.manifest) {
+        if (!Constants.manifest && !Constants.manifest2) {
           // Absence of manifest means we're running out of managed workflow
           // in bare-expo. @exponent/bare-expo "experience" has been configured
           // to use Apple Push Notification key that will work in bare-expo.
@@ -119,7 +119,7 @@ export async function test(t) {
 
       t.beforeAll(async () => {
         let experienceId = undefined;
-        if (!Constants.manifest) {
+        if (!Constants.manifest && !Constants.manifest2) {
           // Absence of manifest means we're running out of managed workflow
           // in bare-expo. @exponent/bare-expo "experience" has been configured
           // to use Apple Push Notification key that will work in bare-expo.

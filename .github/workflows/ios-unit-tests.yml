@@ -3,7 +3,6 @@ name: iOS Unit Tests
 on:
   workflow_dispatch: {}
   pull_request:
-    branches: [master]
     paths:
       - .github/workflows/ios-unit-tests.yml
       - ios/**
@@ -24,6 +23,10 @@ on:
       - fastlane/**
       - Gemfile.lock
       - .ruby-version
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -72,9 +75,8 @@ jobs:
           key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
           restore-keys: |
             ${{ runner.os }}-pods-
-      - name: 🥥 Install pods in ios
+      - name: 🥥 Install CocoaPods in `ios`
         run: pod install
-        if: steps.pods-cache.outputs.cache-hit != 'true' || hashFiles('ios/Podfile.lock') != hashFiles('ios/Pods/Manifest.lock')
         working-directory: ios
       - name: Run native iOS unit tests
         run: expotools native-unit-tests --platform ios

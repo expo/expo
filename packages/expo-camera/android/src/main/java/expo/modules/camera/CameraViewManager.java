@@ -13,7 +13,8 @@ import org.unimodules.core.ViewManager;
 import org.unimodules.core.interfaces.ExpoProp;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.interfaces.services.UIManager;
-import org.unimodules.interfaces.barcodescanner.BarCodeScannerSettings;
+
+import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings;
 
 public class CameraViewManager extends ViewManager<ExpoCameraView> {
   public enum Events {

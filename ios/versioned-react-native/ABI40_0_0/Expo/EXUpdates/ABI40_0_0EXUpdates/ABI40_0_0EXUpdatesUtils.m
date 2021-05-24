@@ -98,7 +98,10 @@ static NSString * const ABI40_0_0EXUpdatesUtilsErrorDomain = @"ABI40_0_0EXUpdate
 
 + (NSString *)getRuntimeVersionWithConfig:(ABI40_0_0EXUpdatesConfig *)config
 {
-  return config.runtimeVersion ?: config.sdkVersion;
+  // various places in the code assume that we have a nonnull runtimeVersion, so if the developer
+  // hasn't configured either runtimeVersion or sdkVersion, we'll use a dummy value of "1" but warn
+  // the developer in JS that they need to configure one of these values
+  return config.runtimeVersion ?: config.sdkVersion ?: @"1";
 }
 
 @end

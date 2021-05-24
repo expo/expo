@@ -25,12 +25,12 @@ fun mockContentResolver(cursor: Cursor?): ContentResolver {
   return contentResolver
 }
 
-fun mockContentResolverForResult(cursorResults: CursorResults)
-  = mockContentResolver(mockCursor(cursorResults))
+fun mockContentResolverForResult(cursorResults: CursorResults) =
+  mockContentResolver(mockCursor(cursorResults))
 
 fun throwableContentResolver(throwable: Throwable): ContentResolver {
   val contentResolver = mockk<ContentResolver>()
-  every { contentResolver.query(any(), any(), any(), any(),any()) } throws throwable
+  every { contentResolver.query(any(), any(), any(), any(), any()) } throws throwable
   return contentResolver
 }
 

@@ -8,6 +8,7 @@ const GROUPS = {
   'The Basics': ['Conceptual Overview', 'Get Started', 'Tutorial', 'Next Steps'],
   'Managed Workflow': [
     'Fundamentals',
+    'UI Programming',
     'Assorted Guides',
     'Push Notifications',
     'Distributing Your App',
@@ -22,6 +23,7 @@ const GROUPS = {
   Preview: ['Preview'],
   'EAS Build': ['Start Building', 'App Signing', 'Reference'],
   'EAS Submit': ['EAS Submit'],
+  'Technical Specs': ['Technical Specs'],
   'Development Clients': ['Development Clients'],
 };
 
@@ -60,15 +62,19 @@ const sections = [
   {
     name: 'Reference',
     reference: [
-      'Limitations',
+      'Migrating from "expo build"',
       'Integrating with JavaScript tooling',
       'Environment variables and secrets',
-      'Build server infrastructure',
+      'Server infrastructure',
       'Caching dependencies',
-      'Application identifiers',
-      'Build configuration process',
+      'Running builds on your own infrastructure',
+      'Build webhooks',
+      'Building APKs for Android emulators and devices',
+      'Building for iOS simulators',
+      'Configuration process',
       'Android build process',
       'iOS build process',
+      'Limitations',
     ],
   },
   {
@@ -80,13 +86,16 @@ const sections = [
     ],
   },
   {
+    name: 'Technical Specs',
+    reference: ['Expo Updates', 'Expo Structured Field Values'],
+  },
+  {
     name: 'Development Clients',
     reference: [
       'Introduction',
+      'Getting Started',
       'Installation',
       'Building With EAS',
-      'Building iOS Locally',
-      'Building Android Locally',
       'Extending the Development Menu',
     ],
   },
@@ -167,8 +176,6 @@ const sections = [
   {
     name: 'Fundamentals',
     reference: [
-      'Managed Workflow Walkthrough',
-      'Up and Running',
       'Expo CLI',
       'Using libraries',
       'Viewing logs',
@@ -181,25 +188,38 @@ const sections = [
       'Publishing updates',
       'Upgrading Expo SDK',
       'Developing for Web',
+      'Snack: a playground in your browser',
       'Ejecting to Bare Workflow',
       'Glossary of terms',
+    ],
+  },
+  {
+    name: 'UI Programming',
+    reference: [
+      'Styling a React Native Button',
+      "Setting a component's background image",
+      'Implementing a checkbox for Expo and React Native apps',
+      'Stacking overlapping views with zIndex in Expo and React Native apps',
+      'Using SVGs',
+      'How to display a popup toast',
     ],
   },
   {
     name: 'Assorted Guides',
     reference: [
       'Assets',
-      'Custom Fonts',
+      'Fonts',
       'Icons',
       'Routing & Navigation',
-      'TypeScript',
+      'Permissions',
       'App Icons',
       'Create a Splash Screen',
       'Configuring the Status Bar',
       'Light and Dark modes',
+      'TypeScript',
       'Authentication',
       'User Interface Component Libraries',
-      'Preloading & Caching Assets',
+      'Asset Caching',
       'Environment variables in Expo',
       'Configuring OTA Updates',
       'Customizing Metro',
@@ -208,13 +228,13 @@ const sections = [
       'Progressive Web Apps',
       'Web Performance',
       'Notification Channels',
+      'Delaying Your Code To Run Later',
       'Error Handling',
       'Testing with Jest',
       'Account Permissions',
       'Crafting Educational Materials',
       'How Expo Works',
       'Linking',
-      'Handling Assets',
       'Running in the Browser',
       'Setting up Continuous Integration',
       'Native Firebase',
@@ -379,6 +399,7 @@ const ROOT = [
   'Tutorial',
   'Conceptual Overview',
   'Fundamentals',
+  'UI Programming',
   'Assorted Guides',
   'Push Notifications',
   'Distributing Your App',
@@ -388,11 +409,12 @@ const ROOT = [
   'Configuration Files',
   'Expo SDK',
   'React Native',
+  'Technical Specs',
   'ExpoKit',
 ];
 
 // These directories will not be placed in the sidebar, but will still be searchable
-const hiddenSections = ['FAQ'];
+const hiddenSections = ['FAQ', 'Troubleshooting'];
 
 const sortAccordingToReference = (arr, reference) => {
   reference = Array.from(reference).reverse();

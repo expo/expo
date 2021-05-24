@@ -3,6 +3,7 @@
 #import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesDatabaseMigrationRegistry.h>
 
 #import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesDatabaseMigration4To5.h>
+#import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesDatabaseMigration5To6.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -11,7 +12,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSArray<id<ABI41_0_0EXUpdatesDatabaseMigration>> *)migrations
 {
   // migrations should be added here in the order they should be performed (e.g. oldest first)
-  return @[[ABI41_0_0EXUpdatesDatabaseMigration4To5 new]];
+  return @[
+    [ABI41_0_0EXUpdatesDatabaseMigration4To5 new],
+    [ABI41_0_0EXUpdatesDatabaseMigration5To6 new]
+  ];
 }
 
 @end

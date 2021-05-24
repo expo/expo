@@ -4,11 +4,12 @@ import java.util.Collections;
 import java.util.List;
 
 import org.unimodules.core.interfaces.InternalModule;
-import org.unimodules.interfaces.sensors.services.MagnetometerService;
+
+import expo.modules.interfaces.sensors.services.MagnetometerServiceInterface;
 import host.exp.exponent.kernel.ExperienceId;
 import host.exp.exponent.kernel.services.sensors.SubscribableSensorKernelService;
 
-public class ScopedMagnetometerService extends BaseSensorService implements InternalModule, MagnetometerService {
+public class ScopedMagnetometerService extends BaseSensorService implements InternalModule, MagnetometerServiceInterface {
   public ScopedMagnetometerService(ExperienceId experienceId) {
     super(experienceId);
   }
@@ -20,7 +21,7 @@ public class ScopedMagnetometerService extends BaseSensorService implements Inte
 
   @Override
   public List<Class> getExportedInterfaces() {
-    return Collections.<Class>singletonList(MagnetometerService.class);
+    return Collections.<Class>singletonList(MagnetometerServiceInterface.class);
   }
 }
 

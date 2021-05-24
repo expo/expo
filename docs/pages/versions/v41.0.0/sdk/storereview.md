@@ -3,6 +3,7 @@ title: StoreReview
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-41/packages/expo-store-review'
 ---
 
+import APISection from '~/components/plugins/APISection';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
@@ -15,7 +16,9 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection packageName="expo-store-review" />
+> `expo-linking` is a peer dependency and must be installed alongside `expo-store-review`.
+
+<InstallSection packageName="expo-store-review expo-linking" />
 
 ## API
 
@@ -23,54 +26,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 import * as StoreReview from 'expo-store-review';
 ```
 
-### `StoreReview.requestReview()`
-
-In the ideal circumstance this will open a native modal and allow the user to select a star rating that will then be applied to the App Store without leaving the app.
-If the users device is running a version of iOS lower than 10.3, or the user is on an Android version lower than 5.0, this will attempt to get the store URL and link the user to it.
-
-#### Error Codes
-
-- [`ERR_STORE_REVIEW_UNSUPPORTED`](#err_store_review_unsupported)
-
-#### Example
-
-```js
-StoreReview.requestReview();
-```
-
-### `StoreReview.isAvailableAsync()`
-
-Determines if the platform has the capabilities to use `StoreReview.requestReview()`. On iOS, this will return `true` if the device is running iOS 10.3+. On Android, this will return `true` if the device is running Android 5.0+. On Web, this will return `false`.
-
-#### Example
-
-```js
-StoreReview.isAvailableAsync();
-```
-
-### `StoreReview.storeUrl()`
-
-This uses the `Constants` API to get the `Constants.manifest.ios.appStoreUrl` on iOS, or the `Constants.manifest.android.playStoreUrl` on Android.
-
-In the bare workflow, this will return `null`.
-
-#### Example
-
-```js
-const url = StoreReview.storeUrl();
-```
-
-### `StoreReview.hasAction()`
-
-This returns a promise that fulfills to is `true` if `StoreReview.requestReview()` is capable directing the user to some kind of store review flow. If the app config (`app.json`) does not contain store URLs and native store review capabilities are not available then the promise will fulfill to `false`.
-
-#### Example
-
-```js
-if (await StoreReview.hasAction()) {
-  // you can call StoreReview.requestReview()
-}
-```
+<APISection packageName="expo-store-review" apiName="StoreReview" />
 
 ## Error Codes
 

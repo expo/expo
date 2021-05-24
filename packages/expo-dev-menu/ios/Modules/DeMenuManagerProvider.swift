@@ -3,16 +3,7 @@
 import EXDevMenuInterface
 
 @objc(DevMenuManagerProvider)
-class DevMenuManagerProvider : NSObject, RCTBridgeModule, DevMenuManagerProviderProtocol {
-  @objc
-  static func moduleName() -> String! {
-    return "ExpoDevMenuManagerProvider"
-  }
-  
-  @objc
-  public static func requiresMainQueueSetup() -> Bool {
-    return true
-  }
+class DevMenuManagerProvider : NSObject, DevMenuManagerProviderProtocol {
   
   @objc
   open func getDevMenuManager() -> DevMenuManagerProtocol {

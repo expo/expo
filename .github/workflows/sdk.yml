@@ -15,7 +15,6 @@ on:
       - packages/**
       - yarn.lock
   pull_request:
-    branches: [master]
     paths:
       - .github/workflows/sdk.yml
       - tools/**
@@ -23,6 +22,10 @@ on:
       - yarn.lock
   schedule:
     - cron: 0 14 * * *
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   check-packages:
@@ -77,5 +80,5 @@ jobs:
         with:
           channel: '#api'
           status: ${{ job.status }}
-          fields: job,commit,ref,eventName,author,took
+          fields: job,message,ref,eventName,author,took
           author_name: Check packages

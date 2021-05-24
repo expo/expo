@@ -90,7 +90,9 @@ class DevMenuActivity : ReactActivity() {
         return rootView
       }
 
-      rootView = getVendoredClass(
+      // This type hint is needed for the older kotlin version.
+      @Suppress("RemoveExplicitTypeArguments")
+      rootView = getVendoredClass<ReactRootView>(
         "com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView",
         arrayOf(Context::class.java),
         arrayOf(activity)
