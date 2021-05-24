@@ -1,4 +1,4 @@
-import { PermissionResponse } from 'unimodules-permissions-interface';
+import { PermissionResponse } from 'expo-modules-core';
 declare const _default: {
     readonly name: string;
     requestCalendarPermissionsAsync(): Promise<PermissionResponse>;

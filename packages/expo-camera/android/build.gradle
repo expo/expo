@@ -76,7 +76,6 @@ apply from: project(":unimodules-core").file("../unimodules-core.gradle")
 dependencies {
   unimodule 'unimodules-core'
   unimodule 'expo-modules-core'
-  unimodule 'unimodules-permissions-interface'
   unimodule 'unimodules-image-loader-interface'
 
   api "androidx.exifinterface:exifinterface:1.0.0"

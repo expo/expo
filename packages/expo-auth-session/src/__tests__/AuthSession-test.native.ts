@@ -186,7 +186,7 @@ describe('Managed', () => {
 
       // Should create a proxy URL and omit the extra path component
       expect(makeRedirectUri({ path: 'bacon', useProxy: true })).toBe(
-        'https://auth.expo.io/@test/test'
+        'https://auth.expo.io/@test/originaltest'
       );
     });
   });

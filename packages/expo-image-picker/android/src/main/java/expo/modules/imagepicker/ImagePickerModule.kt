@@ -20,6 +20,10 @@ import expo.modules.imagepicker.fileproviders.CacheFileProvider
 import expo.modules.imagepicker.fileproviders.CropFileProvider
 import expo.modules.imagepicker.tasks.ImageResultTask
 import expo.modules.imagepicker.tasks.VideoResultTask
+import expo.modules.interfaces.permissions.Permissions
+import expo.modules.interfaces.permissions.PermissionsResponse
+import expo.modules.interfaces.permissions.PermissionsResponseListener
+import expo.modules.interfaces.permissions.PermissionsStatus
 import org.unimodules.core.ExportedModule
 import org.unimodules.core.ModuleRegistry
 import org.unimodules.core.ModuleRegistryDelegate
@@ -31,10 +35,6 @@ import org.unimodules.core.interfaces.LifecycleEventListener
 import org.unimodules.core.interfaces.services.UIManager
 import org.unimodules.core.utilities.FileUtilities.generateOutputPath
 import org.unimodules.interfaces.imageloader.ImageLoader
-import org.unimodules.interfaces.permissions.Permissions
-import org.unimodules.interfaces.permissions.PermissionsResponse
-import org.unimodules.interfaces.permissions.PermissionsResponseListener
-import org.unimodules.interfaces.permissions.PermissionsStatus
 import java.io.IOException
 import java.lang.ref.WeakReference
 

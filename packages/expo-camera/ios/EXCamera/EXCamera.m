@@ -10,7 +10,7 @@
 #import <ExpoModulesCore/EXFaceDetectorManagerInterface.h>
 #import <ExpoModulesCore/EXFaceDetectorManagerProviderInterface.h>
 #import <ExpoModulesCore/EXFileSystemInterface.h>
-#import <UMPermissionsInterface/UMPermissionsInterface.h>
+#import <ExpoModulesCore/EXPermissionsInterface.h>
 
 @interface EXCamera ()
 
@@ -18,7 +18,7 @@
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, strong) id<EXFaceDetectorManagerInterface> faceDetectorManager;
 @property (nonatomic, strong) id<EXBarCodeScannerInterface> barCodeScanner;
-@property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
+@property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
 @property (nonatomic, weak) id<UMAppLifecycleService> lifecycleManager;
 
 @property (nonatomic, assign, getter=isSessionPaused) BOOL paused;
@@ -53,7 +53,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     _barCodeScanner = [self createBarCodeScanner];
     _lifecycleManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)];
     _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
-    _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
+    _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
 #if !(TARGET_IPHONE_SIMULATOR)
     _previewLayer = [AVCaptureVideoPreviewLayer layerWithSession:_session];
     _previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;

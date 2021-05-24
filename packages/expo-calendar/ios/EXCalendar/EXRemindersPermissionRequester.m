@@ -11,7 +11,7 @@
 
 - (NSDictionary *)getPermissions
 {
-  UMPermissionStatus status;
+  EXPermissionStatus status;
   EKAuthorizationStatus permissions;
   
   NSString *remindersUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSRemindersUsageDescription"];
@@ -23,14 +23,14 @@
   }
   switch (permissions) {
     case EKAuthorizationStatusAuthorized:
-      status = UMPermissionStatusGranted;
+      status = EXPermissionStatusGranted;
       break;
     case EKAuthorizationStatusRestricted:
     case EKAuthorizationStatusDenied:
-      status = UMPermissionStatusDenied;
+      status = EXPermissionStatusDenied;
       break;
     case EKAuthorizationStatusNotDetermined:
-      status = UMPermissionStatusUndetermined;
+      status = EXPermissionStatusUndetermined;
       break;
   }
   return @{

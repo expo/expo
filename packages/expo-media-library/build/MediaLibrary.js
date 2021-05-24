@@ -1,6 +1,6 @@
 import { EventEmitter, UnavailabilityError } from '@unimodules/core';
+import { PermissionStatus, } from 'expo-modules-core';
 import { Platform } from 'react-native';
-import { PermissionStatus, } from 'unimodules-permissions-interface';
 import MediaLibrary from './ExponentMediaLibrary';
 const eventEmitter = new EventEmitter(MediaLibrary);
 export { PermissionStatus };

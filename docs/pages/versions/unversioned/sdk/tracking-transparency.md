@@ -1,5 +1,5 @@
 ---
-title: Tracking Transparency
+title: TrackingTransparency
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-tracking-transparency'
 ---
 

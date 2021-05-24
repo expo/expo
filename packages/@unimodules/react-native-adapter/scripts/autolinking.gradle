@@ -146,7 +146,8 @@ if (rootProject instanceof ProjectDescriptor) {
   def addDependencies = { Project project, Closure<Object> projectNameResolver ->
     // Return early if `useExpoModules` was not called in `settings.gradle`
     if (!gradle.ext.has('expoAutolinkingManager')) {
-      logger.error('Autolinking is not set up in `settings.gradle`: expo modules won\'t be autolinked.')
+      // TODO(@tsapeta): Temporarily muted this error — uncomment it once we start migrating from autolinking v1 to v2
+      // logger.error('Autolinking is not set up in `settings.gradle`: expo modules won\'t be autolinked.')
       return
     }
 
@@ -189,8 +190,8 @@ if (rootProject instanceof ProjectDescriptor) {
     Map options = gradle.ext.has('expoAutolinkingManager') ? gradle.ext.expoAutolinkingManager.options : null
 
     if (options == null) {
-      // Maybe should only log an error and don't throw?
-      logger.error('Autolinking is not set up in `settings.gradle`: generated package list with expo modules will be empty.')
+      // TODO(@tsapeta): Temporarily muted this error — uncomment it once we start migrating from autolinking v1 to v2
+      // logger.error('Autolinking is not set up in `settings.gradle`: generated package list with expo modules will be empty.')
     }
     ExpoAutolinkingManager.generatePackageList(project, options)
   }

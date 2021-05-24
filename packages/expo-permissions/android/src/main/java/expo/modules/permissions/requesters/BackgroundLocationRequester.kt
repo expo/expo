@@ -4,8 +4,8 @@ import android.Manifest
 import android.os.Build
 import android.os.Bundle
 import androidx.annotation.RequiresApi
-import org.unimodules.interfaces.permissions.PermissionsResponse
-import org.unimodules.interfaces.permissions.PermissionsStatus
+import expo.modules.interfaces.permissions.PermissionsResponse
+import expo.modules.interfaces.permissions.PermissionsStatus
 
 class BackgroundLocationRequester : PermissionRequester {
   override fun parseAndroidPermissions(permissionsResponse: Map<String, PermissionsResponse>) = when {

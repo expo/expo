@@ -1,10 +1,10 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
-#import <UMPermissionsInterface/UMPermissionsInterface.h>
+#import <ExpoModulesCore/EXPermissionsInterface.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXTrackingPermissionRequester : NSObject<UMPermissionsRequester>
+@interface EXTrackingPermissionRequester : NSObject<EXPermissionsRequester>
 
 @end
 
