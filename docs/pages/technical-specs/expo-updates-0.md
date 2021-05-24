@@ -98,6 +98,7 @@ export type Manifest = {
   launchAsset: Asset;
   assets: Asset[];
   metadata: { [key: string]: string};
+  extra: { [key: string]: any};
 }
 
 type Asset = {
@@ -118,6 +119,15 @@ type Asset = {
     * `contentType`: The MIME type of the file as defined by [RFC 2045](https://tools.ietf.org/html/rfc2045). e.g. `application/javascript`, `image/jpeg`.
     * `url`: Location at which the file may be fetched.
   * `metadata`: The metadata associated with an update. It is a string-valued dictionary. The server MAY send back anything it wishes to be used for filtering the updates. The metadata MUST pass the filter defined in the accompanying `expo-manifest-filters` header.
+  * `extra`: For storage of optional "extra" information, such as 3rd party configuration. For example, if the update is hosted on EAS, the EAS project ID will be included:
+  ```typescript
+  extra: {
+    eas: {
+      projectId: '00000000-0000-0000-0000-000000000000'
+    }
+    ...
+  }
+  ```
 
 ## Asset Request
 A conformant client library MUST make a GET request to the asset URLs specified by the manifest. The client library SHOULD include a header accepting the asset's content type as specified in the manifest. Additionally, the client library SHOULD specify the compression encoding the client library is capable of handling.
