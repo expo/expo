@@ -9,15 +9,14 @@ import android.util.SparseArray;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
-import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
-import org.unimodules.interfaces.barcodescanner.BarCodeScannerSettings;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import expo.modules.barcodescanner.utils.FrameFactory;
+import expo.modules.interfaces.barcodescanner.BarCodeScannerResult;
+import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings;
 
 public class GMVBarCodeScanner extends ExpoBarCodeScanner {
 

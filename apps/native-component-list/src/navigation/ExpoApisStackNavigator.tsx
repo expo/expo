@@ -137,6 +137,12 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/FacebookAppEventsScreen'));
+    },
+    name: 'FacebookAppEvents',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/FacebookLoginScreen'));
     },
     name: 'FacebookLogin',
@@ -425,6 +431,13 @@ export const Screens = [
     },
     name: 'TextToSpeech',
     options: { title: 'Speech' },
+  },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/TrackingTransparencyScreen'));
+    },
+    name: 'TrackingTransparency',
+    options: { title: 'TrackingTransparency' },
   },
   {
     getComponent() {

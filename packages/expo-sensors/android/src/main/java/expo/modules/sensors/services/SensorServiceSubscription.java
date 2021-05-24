@@ -4,7 +4,9 @@ package expo.modules.sensors.services;
 
 import android.hardware.SensorEventListener2;
 
-public class SensorServiceSubscription implements org.unimodules.interfaces.sensors.SensorServiceSubscription {
+import expo.modules.interfaces.sensors.SensorServiceSubscriptionInterface;
+
+public class SensorServiceSubscription implements SensorServiceSubscriptionInterface {
   private boolean mIsEnabled = false;
   private Long mUpdateInterval = null;
   private boolean mHasBeenReleased = false;

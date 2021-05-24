@@ -13,7 +13,7 @@
 - Try loading an older project with an unsupported SDK version; should see a helpful error message about SDK versions.
 - Add some buttons to your UI that test the `Updates` module methods and publish a new update.
 - Test `checkForUpdateAsync`, `fetchUpdateAsync`, and `reloadAsync`; publish another new update and use these methods to download the update and reload with it.
-- If any changes were made to the ABIXX `expo-updates` files, test the module methods in all supported SDK versions.
+- Publish a similar project for each supported SDK version in Expo Go; test the production module methods in all supported SDK versions.
 - Try launching a self-hosted update like https://esamelson.github.io/self-hosting-test/ios-index.json / android-index.json.
 - Finally, try opening a saved snack and an unsaved snack.
 

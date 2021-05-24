@@ -49,6 +49,7 @@ const screens = [
   'Device',
   'DocumentPicker',
   'FaceDetector',
+  'FacebookAppEvents',
   'FacebookLogin',
   'FileSystem',
   'FirebaseRecaptcha',
@@ -87,6 +88,7 @@ const screens = [
   'StoreReview',
   'TaskManager',
   'TextToSpeech',
+  'TrackingTransparency',
   'ViewShot',
   'WebBrowser',
 ];

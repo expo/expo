@@ -30,6 +30,7 @@ export type TypeDefinitionData = {
   types?: TypeDefinitionTypesData[];
   elementType?: {
     name: string;
+    type: string;
   };
   queryType?: {
     name: string;
@@ -66,6 +67,7 @@ export type ConstantDefinitionData = {
   };
   comment?: CommentData;
   kind: TypeDocKind;
+  type: TypeDefinitionData;
 };
 
 // Enums section
@@ -79,6 +81,7 @@ export type EnumDefinitionData = {
 
 export type EnumValueData = {
   name: string;
+  comment?: CommentData;
   kind: TypeDocKind;
 };
 
@@ -127,6 +130,7 @@ export type PropData = {
   name: string;
   comment: CommentData;
   type: TypeDefinitionData;
+  flags?: TypePropertyDataFlags;
 };
 
 export type DefaultPropsDefinitionData = {
@@ -173,4 +177,5 @@ export type TypeValueData = {
   type: string;
   value?: string | boolean | null;
   name?: string;
+  declaration?: TypeDeclarationContentData;
 };

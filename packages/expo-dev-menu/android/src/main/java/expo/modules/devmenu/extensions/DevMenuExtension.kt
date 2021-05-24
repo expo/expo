@@ -12,12 +12,11 @@ import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.devsupport.DevInternalSettings
 import expo.interfaces.devmenu.DevMenuExtensionInterface
 import expo.interfaces.devmenu.DevMenuExtensionSettingsInterface
+import expo.interfaces.devmenu.items.DevMenuDataSourceInterface
 import expo.interfaces.devmenu.items.DevMenuItemImportance
 import expo.interfaces.devmenu.items.DevMenuItemsContainer
 import expo.interfaces.devmenu.items.DevMenuScreen
-import expo.interfaces.devmenu.items.DevMenuSelectionList
 import expo.interfaces.devmenu.items.KeyCommand
-import expo.interfaces.devmenu.items.screen
 import expo.modules.devmenu.DEV_MENU_TAG
 
 class DevMenuExtension(reactContext: ReactApplicationContext)
@@ -121,72 +120,14 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
         importance = DevMenuItemImportance.LOW.value
       }
     }
-
-    group {
-      importance = DevMenuItemImportance.LOWEST.value
-
-      link("testScreen") {
-        label = { "Test screen" }
-        glyphName = { "test-tube" }
-      }
-    }
   }
 
   override fun devMenuScreens(settings: DevMenuExtensionSettingsInterface): List<DevMenuScreen>? {
-    if (!settings.wasRunOnDevelopmentBridge()) {
-      return null
-    }
+    return null
+  }
 
-    return listOf(
-      screen("testScreen") {
-        group {
-          selectionList {
-            addItem(DevMenuSelectionList.Item().apply {
-              isChecked = { true }
-              title = { "release-1.0" }
-              warning = { "You are currently running an older development client version than the latest \"release-1.0\" update. To get the latest, upgrade this development client app." }
-              tags = {
-                listOf(
-                  DevMenuSelectionList.Item.Tag().apply {
-                    glyphName = { "ios-git-network" }
-                    text = { "production" }
-                  },
-                  DevMenuSelectionList.Item.Tag().apply {
-                    glyphName = { "ios-cloud" }
-                    text = { "90%" }
-                  }
-                )
-              }
-            })
-
-            addItem(DevMenuSelectionList.Item().apply {
-              title = { "pr-134" }
-            })
-
-            addItem(DevMenuSelectionList.Item().apply {
-              title = { "release-1.1" }
-              warning = { "You are currently running an older development client version than the latest \"release-1.0\" update. To get the latest, upgrade this development client app." }
-              tags = {
-                listOf(
-                  DevMenuSelectionList.Item.Tag().apply {
-                    glyphName = { "ios-git-network" }
-                    text = { "production" }
-                  },
-                  DevMenuSelectionList.Item.Tag().apply {
-                    glyphName = { "ios-cloud" }
-                    text = { "10%" }
-                  }
-                )
-              }
-            })
-
-            addItem(DevMenuSelectionList.Item().apply {
-              title = { "pr-21" }
-            })
-          }
-        }
-      }
-    )
+  override fun devMenuDataSources(settings: DevMenuExtensionSettingsInterface): List<DevMenuDataSourceInterface>? {
+    return null
   }
 
   /**

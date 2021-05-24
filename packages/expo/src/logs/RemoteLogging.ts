@@ -83,7 +83,7 @@ async function _sendRemoteLogsAsync(): Promise<void> {
   // for another policy (ex: throttling) this is where to to implement it.
   const batch = _logQueue.splice(0);
 
-  const { logUrl } = Constants.manifest;
+  const logUrl = Constants.manifest?.logUrl;
   if (typeof logUrl !== 'string') {
     throw new Error('The Expo project manifest must specify `logUrl`');
   }

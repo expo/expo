@@ -10,8 +10,9 @@ import android.os.Bundle;
 
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.interfaces.sensors.SensorService;
-import org.unimodules.interfaces.sensors.services.BarometerService;
+
+import expo.modules.interfaces.sensors.SensorServiceInterface;
+import expo.modules.interfaces.sensors.services.BarometerServiceInterface;
 
 public class BarometerModule extends BaseSensorModule {
   public BarometerModule(Context reactContext) {
@@ -29,8 +30,8 @@ public class BarometerModule extends BaseSensorModule {
   }
 
   @Override
-  protected SensorService getSensorService() {
-    return getModuleRegistry().getModule(BarometerService.class);
+  protected SensorServiceInterface getSensorService() {
+    return getModuleRegistry().getModule(BarometerServiceInterface.class);
   }
 
   protected Bundle eventToMap(SensorEvent sensorEvent) {

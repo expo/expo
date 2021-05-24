@@ -4,6 +4,7 @@ import { BlurView } from 'expo-blur';
 import * as Haptics from 'expo-haptics';
 import React from 'react';
 import { Platform, StyleSheet } from 'react-native';
+// @ts-expect-error
 import TouchableBounce from 'react-native/Libraries/Components/Touchable/TouchableBounce';
 
 import Colors from '../constants/Colors';

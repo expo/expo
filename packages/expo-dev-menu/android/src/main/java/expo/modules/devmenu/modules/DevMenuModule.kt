@@ -13,7 +13,7 @@ class DevMenuModule(reactContext: ReactApplicationContext)
 
   private val devMenuManager by lazy {
     reactContext
-      .getNativeModule(DevMenuManagerProvider::class.java)
+      .getNativeModule(DevMenuManagerProvider::class.java)!!
       .getDevMenuManager()
   }
 
@@ -65,7 +65,6 @@ class DevMenuModule(reactContext: ReactApplicationContext)
       }
     }
   }
-
 
   @ReactMethod
   fun openMenu() {

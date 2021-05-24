@@ -34,7 +34,7 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
   // MARK: JavaScript API
 
   @objc
-  func constantsToExport() -> [String : Any] {
+  public func constantsToExport() -> [AnyHashable : Any] {
 #if targetEnvironment(simulator)
     let doesDeviceSupportKeyCommands = true
 #else
@@ -80,13 +80,31 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
     DevMenuInternalModule.fontsWereLoaded = true
     resolve(nil)
   }
+
+  @objc
+  func fetchDataSourceAsync(_ dataSourceId: String?, resolve: @escaping RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    guard let dataSourceId = dataSourceId else {
+      return reject("ERR_DEVMENU_DATA_SOURCE_FAILED", "DataSource ID not provided.", nil)
+    }
+    
+    for dataSource in manager.devMenuDataSources {
+      if (dataSource.id == dataSourceId) {
+        dataSource.fetchData { data in
+          resolve(data.map { $0.serialize() })
+        }
+        return;
+      }
+    }
+
+    return reject("ERR_DEVMENU_DATA_SOURCE_FAILED", "DataSource \(dataSourceId) not founded.", nil)
+  }
   
   @objc
-  func dispatchActionAsync(_ actionId: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    if actionId == nil {
-      return reject("ERR_DEVMENU_ACTION_FAILED", "Action ID not provided.", nil)
+  func dispatchCallableAsync(_ callableId: String?, args: [String : Any]?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    guard let callableId = callableId else {
+      return reject("ERR_DEVMENU_ACTION_FAILED", "Callable ID not provided.", nil)
     }
-    manager.dispatchAction(withId: actionId)
+    manager.dispatchCallable(withId: callableId, args: args)
     resolve(nil)
   }
 

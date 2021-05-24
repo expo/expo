@@ -2,8 +2,8 @@
 
 #import <EXSharing/EXSharingModule.h>
 #import <UMCore/UMUtilitiesInterface.h>
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
-#import <UMFileSystemInterface/UMFilePermissionModuleInterface.h>
+#import <ExpoModulesCore/EXFileSystemInterface.h>
+#import <ExpoModulesCore/EXFilePermissionModuleInterface.h>
 
 @interface EXSharingModule ()
 
@@ -37,8 +37,8 @@ UM_EXPORT_METHOD_AS(shareAsync,
 
   NSURL *url = [NSURL URLWithString:fileUrl];
 
-  id<UMFilePermissionModuleInterface> filePermissionsModule = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMFilePermissionModuleInterface)];
-  if (filePermissionsModule && !([filePermissionsModule getPathPermissions:url.path] & UMFileSystemPermissionRead)) {
+  id<EXFilePermissionModuleInterface> filePermissionsModule = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFilePermissionModuleInterface)];
+  if (filePermissionsModule && !([filePermissionsModule getPathPermissions:url.path] & EXFileSystemPermissionRead)) {
     NSString *errorMessage = @"You don't have access to provided file.";
     reject(@"E_SHARING_PERM", errorMessage, UMErrorWithMessage(errorMessage));
     return;

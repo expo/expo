@@ -6,7 +6,15 @@
 
 ### 🎉 New features
 
+- Bump `@expo/configure-splash-screen@0.4.0`. ([#12940](https://github.com/expo/expo/pull/12940) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
+
+- Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+- Build Android code using Java 8 to fix Android instrumented test build error. ([#12939](https://github.com/expo/expo/pull/12939) by [@kudo](https://github.com/kudo))
 
 ## 0.10.2 — 2021-04-13
 
@@ -54,8 +62,8 @@ _This version does not introduce any user-facing changes._
 
 - On Android fixed `SplashScreen` methods not working in managed workflow. Scoped the `SplashScreen` native object to the separate `singletons` sub-package to work with versioned code. ([#10294](https://github.com/expo/expo/pull/10294) by [@bbarthec](https://github.com/bbarthec))
 - Updated `@expo/configure-splash-screen` to `v0.2.0`.
-  -   This version fixes the problem with the wrong `SplashScreen.show` method signature on Android. It properly adds the `ReactRootView` parameter now.
-  -   Additionally it properly imports the `SplashScreen` object from the `singletons` sub-packagae on Android.
+  - This version fixes the problem with the wrong `SplashScreen.show` method signature on Android. It properly adds the `ReactRootView` parameter now.
+  - Additionally it properly imports the `SplashScreen` object from the `singletons` sub-packagae on Android.
 - `yarn run expo-splash-screen` changed its parameters layout. Run `yarn run expo-splash-screen --help` to see the new options layout. Every parameter has to provided via the `--[option name]` syntax now.
 
 ## 0.6.1 - 2020-09-17

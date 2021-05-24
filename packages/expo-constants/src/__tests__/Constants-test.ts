@@ -15,6 +15,7 @@ it(`defines a linking URI and URL`, () => {
 describe(`manifest`, () => {
   const fakeManifest = { id: '@jester/manifest' };
   const fakeManifest2 = { id: '@jester/manifest2' };
+  const fakeManifestNew = { id: 'fakeid', metadata: {} };
 
   beforeEach(() => {
     jest.resetModules();
@@ -142,6 +143,24 @@ describe(`manifest`, () => {
     mockExpoUpdates({ manifest: {} });
     const ConstantsWithMock = require('../Constants').default;
     expect(ConstantsWithMock.manifest).toEqual(fakeManifest);
+    expect(console.warn).not.toHaveBeenCalled();
+  });
+
+  it(`does not have manifest2 when manifest is a classic manifest`, () => {
+    mockExponentConstants({ manifest: fakeManifest });
+    mockExpoUpdates({ manifest: fakeManifest });
+    const ConstantsWithMock = require('../Constants').default;
+    expect(ConstantsWithMock.manifest).toEqual(fakeManifest);
+    expect(ConstantsWithMock.manifest2).toBeNull();
+    expect(console.warn).not.toHaveBeenCalled();
+  });
+
+  it(`has manifest2 when manifest is a new manifest`, () => {
+    mockExponentConstants({ manifest: fakeManifestNew });
+    mockExpoUpdates({ manifest: fakeManifestNew });
+    const ConstantsWithMock = require('../Constants').default;
+    expect(ConstantsWithMock.manifest).toBeNull();
+    expect(ConstantsWithMock.manifest2).toEqual(fakeManifestNew);
     expect(console.warn).not.toHaveBeenCalled();
   });
 

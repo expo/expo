@@ -1,0 +1,24 @@
+{
+  "name": "expo-modules-core",
+  "version": "0.0.1",
+  "description": "The core of Expo Modules architecture",
+  "main": "index.js",
+  "keywords": [
+    "expo",
+    "modules",
+    "expo-modules",
+    "unimodules",
+    "react-native"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-modules-core"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo-modules-core"
+}

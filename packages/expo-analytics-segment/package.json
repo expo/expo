@@ -34,6 +34,9 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
+  "dependencies": {
+    "expo-modules-core": "~0.0.1"
+  },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"
   }

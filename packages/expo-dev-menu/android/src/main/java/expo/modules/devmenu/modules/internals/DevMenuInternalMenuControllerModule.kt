@@ -1,16 +1,19 @@
 package expo.modules.devmenu.modules.internals
 
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableMap
 import expo.modules.devmenu.modules.DevMenuInternalMenuControllerModuleInterface
 import expo.modules.devmenu.modules.DevMenuManagerProvider
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class DevMenuInternalMenuControllerModule(private val reactContext: ReactContext)
   : DevMenuInternalMenuControllerModuleInterface {
   private val devMenuManger by lazy {
     reactContext
-      .getNativeModule(DevMenuManagerProvider::class.java)
+      .getNativeModule(DevMenuManagerProvider::class.java)!!
       .getDevMenuManager()
   }
 
@@ -18,12 +21,12 @@ class DevMenuInternalMenuControllerModule(private val reactContext: ReactContext
     devMenuManger.getSettings()!!
   }
 
-  override fun dispatchActionAsync(actionId: String?, promise: Promise) {
-    if (actionId == null) {
-      promise.reject("ERR_DEVMENU_ACTION_FAILED", "Action ID not provided.")
+  override fun dispatchCallableAsync(callableId: String?, args: ReadableMap?, promise: Promise) {
+    if (callableId == null) {
+      promise.reject("ERR_DEVMENU_ACTION_FAILED", "Callable ID not provided.")
       return
     }
-    devMenuManger.dispatchAction(actionId)
+    devMenuManger.dispatchCallable(callableId, args)
     promise.resolve(null)
   }
 
@@ -68,5 +71,18 @@ class DevMenuInternalMenuControllerModule(private val reactContext: ReactContext
   override fun onScreenChangeAsync(currentScreen: String?, promise: Promise) {
     devMenuManger.setCurrentScreen(currentScreen)
     promise.resolve(null)
+  }
+
+  override fun fetchDataSourceAsync(id: String?, promise: Promise) {
+    if (id == null) {
+      promise.reject("ERR_DEVMENU_FETCH_FAILED", "DataSource ID not provided.")
+      return
+    }
+
+    GlobalScope.launch {
+      val data = devMenuManger.fetchDataSource(id)
+      val result = Arguments.fromList(data.map { it.serialize() })
+      promise.resolve(result)
+    }
   }
 }

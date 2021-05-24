@@ -25,6 +25,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, strong) NSString *contentHash;
 @property (nullable, nonatomic, strong) NSDictionary *headers;
 
+/**
+ * properties determined by updates database
+ */
+@property (nonatomic, assign) NSUInteger assetId;
+
 - (instancetype)initWithKey:(nullable NSString *)key type:(NSString *)type;
 
 @end

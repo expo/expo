@@ -308,6 +308,26 @@ public class CameraModule extends ExportedModule {
   }
 
   @ExpoMethod
+  public void requestCameraPermissionsAsync(final Promise promise) {
+    Permissions permissionsManager = mModuleRegistry.getModule(Permissions.class);
+    if (permissionsManager == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+    permissionsManager.askForPermissionsWithPromise(promise, Manifest.permission.CAMERA);
+  }
+
+  @ExpoMethod
+  public void requestMicrophonePermissionsAsync(final Promise promise) {
+    Permissions permissionsManager = mModuleRegistry.getModule(Permissions.class);
+    if (permissionsManager == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+    permissionsManager.askForPermissionsWithPromise(promise, Manifest.permission.RECORD_AUDIO);
+  }
+
+  @ExpoMethod
   public void getPermissionsAsync(final Promise promise) {
     Permissions permissionsManager = mModuleRegistry.getModule(Permissions.class);
     if (permissionsManager == null) {
@@ -315,5 +335,25 @@ public class CameraModule extends ExportedModule {
       return;
     }
     permissionsManager.getPermissionsWithPromise(promise, Manifest.permission.CAMERA);
+  }
+
+  @ExpoMethod
+  public void getCameraPermissionsAsync(final Promise promise) {
+    Permissions permissionsManager = mModuleRegistry.getModule(Permissions.class);
+    if (permissionsManager == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+    permissionsManager.getPermissionsWithPromise(promise, Manifest.permission.CAMERA);
+  }
+
+  @ExpoMethod
+  public void getMicrophonePermissionsAsync(final Promise promise) {
+    Permissions permissionsManager = mModuleRegistry.getModule(Permissions.class);
+    if (permissionsManager == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+    permissionsManager.getPermissionsWithPromise(promise, Manifest.permission.RECORD_AUDIO);
   }
 }

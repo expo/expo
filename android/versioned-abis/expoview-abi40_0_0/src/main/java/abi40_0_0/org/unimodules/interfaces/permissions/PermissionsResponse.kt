@@ -1,7 +1,9 @@
 package abi40_0_0.org.unimodules.interfaces.permissions
 
-data class PermissionsResponse(val status: PermissionsStatus,
-                               val canAskAgain: Boolean = true) {
+data class PermissionsResponse(
+  val status: PermissionsStatus,
+  val canAskAgain: Boolean = true
+) {
   companion object {
     const val STATUS_KEY = "status"
     const val GRANTED_KEY = "granted"

@@ -18,12 +18,13 @@ import org.unimodules.core.interfaces.ActivityEventListener;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.services.UIManager;
-import org.unimodules.interfaces.filesystem.FilePermissionModuleInterface;
-import org.unimodules.interfaces.filesystem.Permission;
 
 import java.io.File;
 import java.net.URLConnection;
 import java.util.List;
+
+import expo.modules.interfaces.filesystem.FilePermissionModuleInterface;
+import expo.modules.interfaces.filesystem.Permission;
 
 public class SharingModule extends ExportedModule implements ActivityEventListener {
   private static final int REQUEST_CODE = 8524;

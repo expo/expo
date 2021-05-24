@@ -10,6 +10,11 @@ export interface ClientBuilder {
   getAppPath: () => string;
   getClientUrl: (appVersion: string) => string;
   getAppVersionAsync: () => Promise<string>;
-  buildAsync: () => Promise<void>;
+  buildAsync: (flavor?: ClientBuildFlavor) => Promise<void>;
   uploadBuildAsync: (s3Client: S3Client, appVersion: string) => Promise<void>;
+}
+
+export enum ClientBuildFlavor {
+  VERSIONED = 'versioned',
+  UNVERSIONED = 'unversioned',
 }

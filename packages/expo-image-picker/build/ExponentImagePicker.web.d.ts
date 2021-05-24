@@ -2,13 +2,15 @@ import { PermissionResponse } from 'unimodules-permissions-interface';
 import { ImagePickerMultipleResult, ImagePickerResult, MediaTypeOptions } from './ImagePicker.types';
 declare const _default: {
     readonly name: string;
-    launchImageLibraryAsync({ mediaTypes, allowsMultipleSelection, }: {
+    launchImageLibraryAsync({ mediaTypes, allowsMultipleSelection, base64, }: {
         mediaTypes?: MediaTypeOptions | undefined;
         allowsMultipleSelection?: boolean | undefined;
+        base64?: boolean | undefined;
     }): Promise<ImagePickerResult | ImagePickerMultipleResult>;
-    launchCameraAsync({ mediaTypes, allowsMultipleSelection, }: {
+    launchCameraAsync({ mediaTypes, allowsMultipleSelection, base64, }: {
         mediaTypes?: MediaTypeOptions | undefined;
         allowsMultipleSelection?: boolean | undefined;
+        base64?: boolean | undefined;
     }): Promise<ImagePickerResult | ImagePickerMultipleResult>;
     getCameraPermissionsAsync(): Promise<PermissionResponse>;
     requestCameraPermissionsAsync(): Promise<PermissionResponse>;

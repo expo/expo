@@ -24,6 +24,10 @@ on:
       - Gemfile.lock
       - .ruby-version
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: macos-10.15
@@ -73,7 +77,6 @@ jobs:
             ${{ runner.os }}-pods-
       - name: 🥥 Install CocoaPods in `ios`
         run: pod install
-        if: steps.pods-cache.outputs.cache-hit != 'true' || hashFiles('ios/Podfile.lock') != hashFiles('ios/Pods/Manifest.lock')
         working-directory: ios
       - name: Run native iOS unit tests
         run: expotools native-unit-tests --platform ios

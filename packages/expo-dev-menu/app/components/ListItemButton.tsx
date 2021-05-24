@@ -14,6 +14,7 @@ export type ListItemButtonProps = {
   icon?: string | null;
   keyCommand?: DevMenuKeyCommand | null;
   onPress?: (key: string) => any;
+  disabled?: boolean;
 };
 
 class ListItemButton extends React.PureComponent<ListItemButtonProps> {
@@ -25,19 +26,28 @@ class ListItemButton extends React.PureComponent<ListItemButtonProps> {
     if (!icon) {
       return null;
     }
+    const textColor = this.props.disabled ?? false ? 'disabledTest' : 'menuItemText';
     return (
       <View style={styles.buttonIcon}>
-        <MaterialCommunityIcon name={icon} size={22} color="menuItemText" />
+        <MaterialCommunityIcon name={icon} size={22} color={textColor} />
       </View>
     );
   }
 
   renderLabel(label: string) {
+    const textColor = this.props.disabled
+      ? {
+          lightColor: Colors.light.disabledTest,
+          darkColor: Colors.dark.disabledTest,
+        }
+      : {};
+
     return (
       <StyledText
         style={styles.label}
         lightColor={Colors.light.menuItemText}
-        darkColor={Colors.dark.menuItemText}>
+        darkColor={Colors.dark.menuItemText}
+        {...textColor}>
         {label}
       </StyledText>
     );
@@ -49,7 +59,7 @@ class ListItemButton extends React.PureComponent<ListItemButtonProps> {
     }
     return (
       <View style={styles.keyCommand}>
-        <DevMenuKeyCommandLabel {...keyCommand} />
+        <DevMenuKeyCommandLabel {...keyCommand} disabled={this.props.disabled} />
       </View>
     );
   }

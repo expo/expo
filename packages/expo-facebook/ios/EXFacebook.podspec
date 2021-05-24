@@ -14,7 +14,6 @@ Pod::Spec.new do |s|
   s.source         = { git: 'https://github.com/expo/expo.git' }
 
   s.dependency 'UMCore'
-  s.dependency 'UMConstantsInterface'
   s.dependency 'UMPermissionsInterface'
   s.dependency 'FacebookSDK/CoreKit', $FacebookSDKVersion || '9.2.0'
   s.dependency 'FacebookSDK/LoginKit', $FacebookSDKVersion || '9.2.0'

@@ -40,6 +40,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import de.greenrobot.event.EventBus;
 import expo.modules.splashscreen.singletons.SplashScreen;
+import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExpoUpdatesAppLoader;
@@ -204,15 +205,15 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       boolean forceCache = getIntent().getBooleanExtra(KernelConstants.LOAD_FROM_CACHE_KEY, false);
       new ExpoUpdatesAppLoader(mManifestUrl, new ExpoUpdatesAppLoader.AppLoaderCallback() {
         @Override
-        public void onOptimisticManifest(final JSONObject optimisticManifest) {
+        public void onOptimisticManifest(final RawManifest optimisticManifest) {
           Exponent.getInstance().runOnUiThread(() -> setOptimisticManifest(optimisticManifest));
         }
 
         @Override
-        public void onManifestCompleted(final JSONObject manifest) {
+        public void onManifestCompleted(final RawManifest manifest) {
           Exponent.getInstance().runOnUiThread(() -> {
             try {
-              String bundleUrl = ExponentUrls.toHttp(manifest.getString("bundleUrl"));
+              String bundleUrl = ExponentUrls.toHttp(manifest.getBundleURL());
 
               setManifest(mManifestUrl, manifest, bundleUrl, null);
             } catch (JSONException e) {
@@ -400,7 +401,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
    * - first time for optimistic manifest
    * - seconds time for real manifest
    */
-  protected void showOrReconfigureManagedAppSplashScreen(final JSONObject manifest) {
+  protected void showOrReconfigureManagedAppSplashScreen(final RawManifest manifest) {
     if (!this.shouldCreateLoadingView()) {
       return;
     }
@@ -437,7 +438,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     }
   }
 
-  public void setOptimisticManifest(final JSONObject optimisticManifest) {
+  public void setOptimisticManifest(final RawManifest optimisticManifest) {
     runOnUiThread(() -> {
       if (!isInForeground()) {
         return;
@@ -455,7 +456,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     });
   }
 
-  public void setManifest(String manifestUrl, final JSONObject manifest, final String bundleUrl, final JSONObject kernelOptions) {
+  public void setManifest(String manifestUrl, final RawManifest manifest, final String bundleUrl, final JSONObject kernelOptions) {
     if (!isInForeground()) {
       return;
     }
@@ -487,7 +488,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     task.activityId = mActivityId;
     task.bundleUrl = bundleUrl;
 
-    mSDKVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
+    mSDKVersion = manifest.getSDKVersionNullable();
     mIsShellApp = manifestUrl.equals(Constants.INITIAL_URL);
 
     // Sometime we want to release a new version without adding a new .aar. Use TEMPORARY_ABI_VERSION
@@ -517,7 +518,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     soloaderInit();
 
     try {
-      mExperienceIdString = manifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+      mExperienceIdString = manifest.getID();
       mExperienceId = ExperienceId.create(mExperienceIdString);
       AsyncCondition.notify(KernelConstants.EXPERIENCE_ID_SET_FOR_ACTIVITY_KEY);
     } catch (JSONException e) {
@@ -687,7 +688,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
   @Override
   public boolean isDebugModeEnabled() {
-    return ExponentManifest.isDebugModeEnabled(mManifest);
+    return mManifest.isDevelopmentMode();
   }
 
   @Override
@@ -724,7 +725,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       return;
     }
 
-    String name = mManifest.optString(ExponentManifest.MANIFEST_NAME_KEY, null);
+    String name = mManifest.getName();
     if (name == null) {
       return;
     }
@@ -823,42 +824,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   protected void onError(final Intent intent) {
     if (mManifestUrl != null) {
       intent.putExtra(ErrorActivity.MANIFEST_URL_KEY, mManifestUrl);
-    }
-  }
-
-  @Override
-  protected void onError(final ExponentError error) {
-    if (mManifest == null) {
-      return;
-    }
-
-    JSONObject errorJson = error.toJSONObject();
-    if (errorJson == null) {
-      return;
-    }
-
-    String experienceId = mManifest.optString(ExponentManifest.MANIFEST_ID_KEY);
-    if (experienceId == null) {
-      return;
-    }
-
-    JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(experienceId);
-    if (metadata == null) {
-      metadata = new JSONObject();
-    }
-
-    JSONArray errors = metadata.optJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS);
-    if (errors == null) {
-      errors = new JSONArray();
-    }
-
-    errors.put(errorJson);
-
-    try {
-      metadata.put(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS, errors);
-      mExponentSharedPreferences.updateExperienceMetadata(experienceId, metadata);
-    } catch (JSONException e) {
-      e.printStackTrace();
     }
   }
 

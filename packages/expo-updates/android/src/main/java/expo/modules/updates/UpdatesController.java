@@ -23,11 +23,11 @@ import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.DatabaseLauncher;
 import expo.modules.updates.launcher.NoDatabaseLauncher;
 import expo.modules.updates.launcher.Launcher;
-import expo.modules.updates.launcher.SelectionPolicy;
-import expo.modules.updates.launcher.SelectionPolicyFilterAware;
+import expo.modules.updates.selectionpolicy.SelectionPolicy;
 import expo.modules.updates.loader.FileDownloader;
 import expo.modules.updates.loader.LoaderTask;
 import expo.modules.updates.manifest.Manifest;
+import expo.modules.updates.selectionpolicy.SelectionPolicyFactory;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -61,7 +61,7 @@ public class UpdatesController {
   private UpdatesController(Context context, UpdatesConfiguration updatesConfiguration) {
     mUpdatesConfiguration = updatesConfiguration;
     mDatabaseHolder = new DatabaseHolder(UpdatesDatabase.getInstance(context));
-    mSelectionPolicy = new SelectionPolicyFilterAware(UpdatesUtils.getRuntimeVersion(updatesConfiguration));
+    mSelectionPolicy = defaultSelectionPolicy();
     mFileDownloader = new FileDownloader(context);
     if (context instanceof ReactApplication) {
       mReactNativeHost = new WeakReference<>(((ReactApplication) context).getReactNativeHost());
@@ -73,6 +73,10 @@ public class UpdatesController {
       mUpdatesDirectoryException = e;
       mUpdatesDirectory = null;
     }
+  }
+
+  private SelectionPolicy defaultSelectionPolicy() {
+    return SelectionPolicyFactory.createFilterAwarePolicy(UpdatesUtils.getRuntimeVersion(mUpdatesConfiguration));
   }
 
   public static UpdatesController getInstance() {
@@ -220,6 +224,26 @@ public class UpdatesController {
     return mIsEmergencyLaunch;
   }
 
+  // internal setters
+
+  /**
+   * For external modules that want to modify the selection policy used at runtime.
+   *
+   * This method does not provide any guarantees about how long the provided selection policy will
+   * persist; sometimes expo-updates will reset the selection policy in situations where it makes
+   * sense to have explicit control (e.g. if the developer/user has programmatically fetched an
+   * update, expo-updates will reset the selection policy so the new update is launched on th
+   * next reload).
+   * @param selectionPolicy The SelectionPolicy to use next, until overridden by expo-updates
+   */
+  /* package */ void setNextSelectionPolicy(SelectionPolicy selectionPolicy) {
+    mSelectionPolicy = selectionPolicy;
+  }
+
+  /* package */ void resetSelectionPolicyToDefault() {
+    mSelectionPolicy = defaultSelectionPolicy();
+  }
+
   /**
    * Starts the update process to launch a previously-loaded update and (if configured to do so)
    * check for a new update from the server. This method should be called as early as possible in
@@ -271,7 +295,7 @@ public class UpdatesController {
             throw new AssertionError("Background update with error status must have a nonnull update object");
           }
           WritableMap params = Arguments.createMap();
-          params.putString("manifestString", update.metadata.toString());
+          params.putString("manifestString", update.manifest.toString());
           UpdatesUtils.sendEventToReactNative(mReactNativeHost, UPDATE_AVAILABLE_EVENT, params);
         } else if (status == LoaderTask.BackgroundUpdateStatus.NO_UPDATE_AVAILABLE) {
           UpdatesUtils.sendEventToReactNative(mReactNativeHost, UPDATE_NO_UPDATE_AVAILABLE_EVENT, null);

@@ -3,7 +3,7 @@
 #import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesAppLauncherNoDatabase.h>
 #import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesCrypto.h>
 #import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesFileDownloader.h>
-#import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesSelectionPolicyFilterAware.h>
+#import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesSelectionPolicies.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -78,10 +78,6 @@ NSTimeInterval const ABI41_0_0EXUpdatesDefaultTimeoutInterval = 60;
 - (NSURLRequest *)createManifestRequestWithURL:(NSURL *)url extraHeaders:(nullable NSDictionary *)extraHeaders
 {
   NSURLRequestCachePolicy cachePolicy = _sessionConfiguration ? _sessionConfiguration.requestCachePolicy : NSURLRequestUseProtocolCachePolicy;
-  if (_config.usesLegacyManifest) {
-    // legacy manifest loads should ignore cache-control headers from the server and always load remotely
-    cachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
-  }
 
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url cachePolicy:cachePolicy timeoutInterval:ABI41_0_0EXUpdatesDefaultTimeoutInterval];
   [self _setManifestHTTPHeaderFields:request withExtraHeaders:extraHeaders];
@@ -207,11 +203,19 @@ NSTimeInterval const ABI41_0_0EXUpdatesDefaultTimeoutInterval = 60;
     // There are a few cases in Expo Go where we still want to use the unsigned manifest anyway, so don't mark it as unverified.
     mutableManifest[@"isVerified"] = @(isVerified);
   }
+
+  NSError *error;
   ABI41_0_0EXUpdatesUpdate *update = [ABI41_0_0EXUpdatesUpdate updateWithManifest:mutableManifest.copy
                                                        response:response
                                                          config:_config
-                                                       database:database];
-  if (![ABI41_0_0EXUpdatesSelectionPolicyFilterAware doesUpdate:update matchFilters:update.manifestFilters]) {
+                                                       database:database
+                                                          error:&error];
+  if (error) {
+    errorBlock(error, response);
+    return;
+  }
+
+  if (![ABI41_0_0EXUpdatesSelectionPolicies doesUpdate:update matchFilters:update.manifestFilters]) {
     NSError *error = [NSError errorWithDomain:ABI41_0_0EXUpdatesFileDownloaderErrorDomain
                                          code:1021
                                      userInfo:@{NSLocalizedDescriptionKey: @"Downloaded manifest is invalid; provides filters that do not match its content"}];

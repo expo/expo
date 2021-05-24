@@ -16,7 +16,7 @@ buildscript {
   }
 
   dependencies {
-    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet("kotlinVersion", "1.4.21")}")
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.4.21')}")
   }
 }
 
@@ -49,6 +49,11 @@ uploadArchives {
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 30)
 
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
@@ -57,10 +62,6 @@ android {
   }
   lintOptions {
     abortOnError false
-  }
-  compileOptions {
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
   }
   kotlinOptions {
     jvmTarget = '1.8'
@@ -80,7 +81,7 @@ dependencies {
   unimodule "unimodules-permissions-interface"
   unimodule 'unimodules-image-loader-interface'
 
-  api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet("kotlinVersion", "1.4.21")}"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
   api 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
   api "androidx.legacy:legacy-support-v4:1.0.0"
   api 'commons-codec:commons-codec:1.10'

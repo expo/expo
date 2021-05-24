@@ -1,3 +1,4 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React from 'react';
 import { Clipboard, PixelRatio, StyleSheet } from 'react-native';
 
@@ -32,7 +33,9 @@ const DEV_MENU_ORDER = [
   'dev-inspector',
 ];
 
-const MENU_ITEMS_ICON_MAPPINGS = {
+const MENU_ITEMS_ICON_MAPPINGS: {
+  [key: string]: React.ComponentProps<typeof MaterialCommunityIcons>['name'];
+} = {
   'dev-hmr': 'run-fast',
   'dev-remote-debug': 'remote-desktop',
   'dev-perf-monitor': 'speedometer',
@@ -44,7 +47,7 @@ class DevMenuView extends React.PureComponent<Props, State> {
 
   context!: Context;
 
-  constructor(props, context) {
+  constructor(props: Props, context?: unknown) {
     super(props, context);
 
     this.state = {
@@ -111,7 +114,7 @@ class DevMenuView extends React.PureComponent<Props, State> {
     DevMenu.goToHomeAsync();
   };
 
-  onPressDevMenuButton = key => {
+  onPressDevMenuButton = (key: string) => {
     DevMenu.selectItemWithKeyAsync(key);
   };
 
@@ -138,7 +141,7 @@ class DevMenuView extends React.PureComponent<Props, State> {
     return null;
   }
 
-  renderDevMenuItem(key, item) {
+  renderDevMenuItem(key: string, item: any) {
     const { label, isEnabled, detail } = item;
 
     return (

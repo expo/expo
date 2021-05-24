@@ -8,8 +8,8 @@ import android.provider.MediaStore
 import android.provider.MediaStore.Images.Media
 import abi41_0_0.org.unimodules.core.Promise
 
-internal open class GetAlbums(private val mContext: Context, private val mPromise: Promise)
-  : AsyncTask<Void?, Void?, Void?>() {
+internal open class GetAlbums(private val mContext: Context, private val mPromise: Promise) :
+  AsyncTask<Void?, Void?, Void?>() {
 
   override fun doInBackground(vararg params: Void?): Void? {
     val projection = arrayOf(Media.BUCKET_ID, Media.BUCKET_DISPLAY_NAME)

@@ -20,6 +20,10 @@ on:
       - tools/**
       - yarn.lock
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: ubuntu-18.04
@@ -66,3 +70,8 @@ jobs:
         with:
           name: test-results
           path: packages/**/build/test-results/**/*xml
+      - name: Run Spotless lint check
+        env:
+          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/
+        working-directory: android
+        run: ./gradlew spotlessCheck || echo '::error Spotless lint failed. Run `./gradlew spotlessApply` to automatically fix formatting.'

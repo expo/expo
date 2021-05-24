@@ -1,11 +1,11 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 
 import { Code, InlineCode } from '~/components/base/code';
 import { H4 } from '~/components/base/headings';
-import { InternalLink } from '~/components/base/link';
+import Link from '~/components/base/link';
 import { LI, UL } from '~/components/base/list';
 import { B, P, Quote } from '~/components/base/paragraph';
 import {
@@ -40,7 +40,7 @@ export const mdRenderers: MDRenderers = {
   inlineCode: ({ value }) => <InlineCode>{value}</InlineCode>,
   list: ({ children }) => <UL>{children}</UL>,
   listItem: ({ children }) => <LI>{children}</LI>,
-  link: ({ href, children }) => <InternalLink href={href}>{children}</InternalLink>,
+  link: ({ href, children }) => <Link href={href}>{children}</Link>,
   paragraph: ({ children }) => (children ? <P>{children}</P> : null),
   strong: ({ children }) => <B>{children}</B>,
   text: ({ value }) => (value ? <span>{value}</span> : null),
@@ -51,7 +51,7 @@ export const mdInlineRenderers: MDRenderers = {
   paragraph: ({ children }) => (children ? <span>{children}</span> : null),
 };
 
-const nonLinkableTypes = ['Date', 'Uint8Array'];
+const nonLinkableTypes = ['Date', 'T', 'TaskOptions', 'Uint8Array'];
 
 export const resolveTypeName = ({
   elementType,
@@ -60,7 +60,7 @@ export const resolveTypeName = ({
   types,
   typeArguments,
   declaration,
-}: TypeDefinitionData): string | JSX.Element => {
+}: TypeDefinitionData): string | JSX.Element | (string | JSX.Element)[] => {
   if (name) {
     if (type === 'reference') {
       if (typeArguments) {
@@ -80,9 +80,9 @@ export const resolveTypeName = ({
           return name;
         } else {
           return (
-            <InternalLink href={`#${name.toLowerCase()}`} key={`type-link-${name}`}>
+            <Link href={`#${name.toLowerCase()}`} key={`type-link-${name}`}>
               {name}
-            </InternalLink>
+            </Link>
           );
         }
       }
@@ -90,6 +90,14 @@ export const resolveTypeName = ({
       return name;
     }
   } else if (elementType?.name) {
+    if (elementType.type === 'reference') {
+      return (
+        <Link href={`#${elementType.name?.toLowerCase()}`} key={`type-link-${elementType.name}`}>
+          {elementType.name}
+          {type === 'array' && '[]'}
+        </Link>
+      );
+    }
     if (type === 'array') {
       return elementType.name + '[]';
     }
@@ -97,11 +105,42 @@ export const resolveTypeName = ({
   } else if (type === 'union' && types?.length) {
     return types
       .map((t: TypeDefinitionTypesData) =>
-        t.type === 'array' ? `${t.elementType?.name}[]` : `${t.name || t.value}`
+        t.type === 'reference' ? (
+          <Link href={`#${t.name?.toLowerCase()}`} key={`type-link-${t.name}`}>
+            {t.name}
+          </Link>
+        ) : t.type === 'array' ? (
+          `${t.elementType?.name}[]`
+        ) : t.type === 'literal' && typeof t.value === 'string' ? (
+          `'${t.name || t.value}'`
+        ) : (
+          `${t.name || t.value}`
+        )
       )
-      .join(' | ');
+      .map((valueToRender, index) => (
+        <span key={`union-type-${index}`}>
+          {valueToRender}
+          {index + 1 !== types.length && ' | '}
+        </span>
+      ));
   } else if (declaration?.signatures) {
-    return `() => ${resolveTypeName(declaration.signatures[0].type)}`;
+    const baseSignature = declaration.signatures[0];
+    if (baseSignature?.parameters?.length) {
+      return (
+        <>
+          (
+          {baseSignature.parameters?.map((param, index) => (
+            <span key={`param-${index}-${param.name}`}>
+              {param.name}: {resolveTypeName(param.type)}
+              {index + 1 !== baseSignature.parameters.length && ', '}
+            </span>
+          ))}
+          ) {'=>'} {resolveTypeName(baseSignature.type)}
+        </>
+      );
+    } else {
+      return `() => ${resolveTypeName(baseSignature.type)}`;
+    }
   }
   return 'undefined';
 };
@@ -145,4 +184,10 @@ export const STYLES_OPTIONAL = css`
   color: ${theme.text.secondary};
   font-size: 90%;
   padding-top: 22px;
+`;
+
+export const STYLES_SECONDARY = css`
+  color: ${theme.text.secondary};
+  font-size: 90%;
+  font-weight: 600;
 `;

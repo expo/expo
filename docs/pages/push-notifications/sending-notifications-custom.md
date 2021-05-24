@@ -235,3 +235,7 @@ admin.messaging().sendToDevice(
   options
 );
 ```
+
+## Next steps
+
+Now that you can send notifications to your app, set your app up for [receiving notifications and taking action based on those events](./receiving-notifications.md)!

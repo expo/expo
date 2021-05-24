@@ -1,4 +1,4 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
 import * as React from 'react';
 
@@ -19,8 +19,17 @@ const STYLES_UNORDERED_LIST = css`
   }
 `;
 
-export const UL: React.FC = ({ children }) => (
-  <ul {...attributes} css={STYLES_UNORDERED_LIST}>
+const STYLES_NO_LIST_STYLE = css`
+  list-style: none;
+  margin-left: 0;
+`;
+
+type ULProps = {
+  hideBullets?: boolean;
+};
+
+export const UL: React.FC<ULProps> = ({ children, hideBullets }) => (
+  <ul {...attributes} css={[STYLES_UNORDERED_LIST, hideBullets && STYLES_NO_LIST_STYLE]}>
     {children}
   </ul>
 );

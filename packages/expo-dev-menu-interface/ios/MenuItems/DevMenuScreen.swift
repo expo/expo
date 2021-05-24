@@ -17,7 +17,7 @@ public class DevMenuScreen : DevMenuItem, DevMenuItemsContainerProtocol {
     container.addItem(item)
   }
   
-  public func serializeItems() -> [[String : Any]] {
+  func serializeItems() -> [[String : Any]] {
     return container.serializeItems()
   }
   

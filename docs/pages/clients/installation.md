@@ -5,7 +5,7 @@ title: Installation
 import InstallSection from '~/components/plugins/InstallSection';
 import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
 
-**Expo Development Client** is an open source project to improve your development experience while working on your Expo and React Native projects. It allows your team to focus on the JavaScript portion of your project, only needing to interact with XCode or Android Studio when you need to make changes to the native code used in your project.
+**Expo Development Client** is an open source project to improve your development experience while working on your Expo and React Native projects. It allows your team to focus on the JavaScript portion of your project, only needing to interact with Xcode or Android Studio when you need to make changes to the native code used in your project.
 
 > ⚠️ **Managed Expo projects are not yet supported**, but we are working on bringing the Development Client to the Managed Workflow! If you want to build a managed Expo project with the Development Client, you'll have to eject it first. See the [Ejecting to Bare Workflow](../workflow/customizing.md) page to learn how.
 
@@ -21,7 +21,7 @@ The easiest way to get started is to initialize a new project by executing the f
 
 Add the Expo Development Client packages to your package.json.
 
-<InstallSection packageName="expo-development-client" cmd={["npm install expo-dev-menu expo-dev-menu-interface expo-dev-launcher"]} hideBareInstructions />
+<InstallSection packageName="expo-development-client" cmd={["npm install expo-dev-client"]} hideBareInstructions />
 
 <!-- note: `/client/submodules` doesn't exists, commenting this out for now -->
 <!-- [Want to learn more about how these modules work?](/client/submodules/) -->
@@ -32,12 +32,16 @@ Change your `Podfile` to make sure that the Development Client will be removed i
 
 <ConfigurationDiff source="/static/diffs/client/podfile.diff" />
 
-Then you can run the following command to install native code for the Dev Launcher via Cocoapods.
+Add configuration in `react-native.config.js` to allow React Native autolinking to find the dependencies of `expo-dev-client`:
+
+<ConfigurationDiff source="/static/diffs/client/react-native.config.js.diff" />
+
+Then you can run the following command to install native code for the Dev Launcher via CocoaPods.
 
 <InstallSection packageName="expo-development-client" cmd={["npx pod-install"]} hideBareInstructions />
 
 Also, make sure that your project is configured to deploy on iOS **above 10**.
-To do that you need open the XCode, go to `Project settings` > `General` > `Deployment info` and select iOS version is at least 11.
+To do that you need open the Xcode, go to `Project settings` > `General` > `Deployment info` and select iOS version is at least 11.
 
 <img src="/static/images/client/check_ios_version.png" style={{maxWidth: "100%" }}/>
 
@@ -71,13 +75,6 @@ You're now ready to start developing your project with the Development Client.
 
 ### 🍏 iOS
 
-When you start your project on iOS, the metro bundler will be started automatically. This behavior might not be ideal when you want to use `expo start`. Our recommended solution is to remove the `Start Packager` action from building scripts. To do that you need to open the XCode, go to `Project settings` > `Build Phases` and remove the `Start Packager` action.
+When you start your project on iOS, the metro bundler will be started automatically. This behavior might not be ideal when you want to use `expo start`. Our recommended solution is to remove the `Start Packager` action from building scripts. To do that you need to open the Xcode, go to `Project settings` > `Build Phases` and remove the `Start Packager` action.
 
 <img src="/static/images/client/remove_start_packager.png" style={{maxWidth: "100%" }}/>
-
-- [EAS Build](eas-build.md) - the easiest way to generate development builds of your application
-
-- [Building Locally for iOS](distribution-for-ios.md) - if you need to run your own builds for any reason
-- [Building Locally for Android](distribution-for-ios.md) - if you need to run your own builds for any reason
-- [Troubleshooting](troubleshooting.md) - Solutions for common issues you might encounter with the Development Client
-- [Extending the Development Menu](extending-the-dev-menu.md) - Add functionality to the Dev Menu.

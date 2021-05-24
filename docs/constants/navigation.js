@@ -23,6 +23,7 @@ const GROUPS = {
   Preview: ['Preview'],
   'EAS Build': ['Start Building', 'App Signing', 'Reference'],
   'EAS Submit': ['EAS Submit'],
+  'Technical Specs': ['Technical Specs'],
   'Development Clients': ['Development Clients'],
 };
 
@@ -61,15 +62,19 @@ const sections = [
   {
     name: 'Reference',
     reference: [
-      'Limitations',
+      'Migrating from "expo build"',
       'Integrating with JavaScript tooling',
       'Environment variables and secrets',
-      'Build server infrastructure',
+      'Server infrastructure',
       'Caching dependencies',
-      'Application identifiers',
-      'Build configuration process',
+      'Running builds on your own infrastructure',
+      'Build webhooks',
+      'Building APKs for Android emulators and devices',
+      'Building for iOS simulators',
+      'Configuration process',
       'Android build process',
       'iOS build process',
+      'Limitations',
     ],
   },
   {
@@ -81,13 +86,16 @@ const sections = [
     ],
   },
   {
+    name: 'Technical Specs',
+    reference: ['Expo Updates', 'Expo Structured Field Values'],
+  },
+  {
     name: 'Development Clients',
     reference: [
       'Introduction',
+      'Getting Started',
       'Installation',
       'Building With EAS',
-      'Building iOS Locally',
-      'Building Android Locally',
       'Extending the Development Menu',
     ],
   },
@@ -187,7 +195,14 @@ const sections = [
   },
   {
     name: 'UI Programming',
-    reference: ['Styling a React Native Button', "Setting a component's background image"],
+    reference: [
+      'Styling a React Native Button',
+      "Setting a component's background image",
+      'Implementing a checkbox for Expo and React Native apps',
+      'Stacking overlapping views with zIndex in Expo and React Native apps',
+      'Using SVGs',
+      'How to display a popup toast',
+    ],
   },
   {
     name: 'Assorted Guides',
@@ -394,6 +409,7 @@ const ROOT = [
   'Configuration Files',
   'Expo SDK',
   'React Native',
+  'Technical Specs',
   'ExpoKit',
 ];
 

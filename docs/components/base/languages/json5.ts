@@ -1,5 +1,5 @@
 export function installJson5(Prism: any) {
-  var string = /("|')(?:\\(?:\r\n?|\n|.)|(?!\1)[^\\\r\n])*\1/;
+  const string = /("|')(?:\\(?:\r\n?|\n|.)|(?!\1)[^\\\r\n])*\1/;
 
   Prism.languages.json5 = Prism.languages.extend('json', {
     property: [

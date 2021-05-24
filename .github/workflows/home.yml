@@ -49,5 +49,5 @@ jobs:
         with:
           channel: '#api'
           status: ${{ job.status }}
-          fields: job,commit,ref,eventName,author,took
+          fields: job,message,ref,eventName,author,took
           author_name: Home app

@@ -16,7 +16,7 @@ export default {
     return null;
   },
 
-  async setDevMenuSettingAsync(key: string, value: any): Promise<void> {},
+  async setDevMenuSettingAsync(_key: string, _value: any): Promise<void> {},
 
   async doesCurrentTaskEnableDevtoolsAsync(): Promise<boolean> {
     return false;

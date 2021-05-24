@@ -40,7 +40,7 @@ typedef NS_ENUM(NSInteger, ABI39_0_0EXUpdatesBackgroundUpdateStatus) {
 - (instancetype)initWithConfig:(ABI39_0_0EXUpdatesConfig *)config
                       database:(ABI39_0_0EXUpdatesDatabase *)database
                      directory:(NSURL *)directory
-               selectionPolicy:(id<ABI39_0_0EXUpdatesSelectionPolicy>)selectionPolicy
+               selectionPolicy:(ABI39_0_0EXUpdatesSelectionPolicy *)selectionPolicy
                  delegateQueue:(dispatch_queue_t)delegateQueue;
 
 - (void)start;

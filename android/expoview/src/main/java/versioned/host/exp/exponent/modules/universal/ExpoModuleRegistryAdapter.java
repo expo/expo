@@ -13,6 +13,7 @@ import org.unimodules.core.interfaces.RegistryLifecycleListener;
 import java.util.List;
 import java.util.Map;
 
+import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.kernel.ExperienceId;
 import versioned.host.exp.exponent.modules.api.notifications.channels.ScopedNotificationsChannelsProvider;
 import host.exp.exponent.utils.ScopedContext;
@@ -37,7 +38,7 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     super(moduleRegistryProvider);
   }
 
-  public List<NativeModule> createNativeModules(ScopedContext scopedContext, ExperienceId experienceId, Map<String, Object> experienceProperties, JSONObject manifest, List<NativeModule> otherModules) {
+  public List<NativeModule> createNativeModules(ScopedContext scopedContext, ExperienceId experienceId, Map<String, Object> experienceProperties, RawManifest manifest, List<NativeModule> otherModules) {
     ModuleRegistry moduleRegistry = mModuleRegistryProvider.get(scopedContext);
 
     // Overriding sensor services from expo-sensors for scoped implementations using kernel services

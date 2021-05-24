@@ -34,14 +34,14 @@
     "preset": "expo-module-scripts"
   },
   "unimodulePeerDependencies": {
-    "@unimodules/core": "*",
-    "unimodules-constants-interface": "*"
+    "@unimodules/core": "*"
+  },
+  "dependencies": {
+    "@expo/config": "^3.3.42",
+    "expo-modules-core": "~0.0.1",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"
-  },
-  "dependencies": {
-    "@expo/config": "^3.3.35",
-    "uuid": "^3.3.2"
   }
 }

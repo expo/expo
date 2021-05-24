@@ -103,7 +103,7 @@ open class ExpoPresentationDelegate(
   }
 
   protected open fun getNotifyId(request: NotificationRequest): Int {
-    return ANDROID_NOTIFICATION_ID;
+    return ANDROID_NOTIFICATION_ID
   }
 
   /**

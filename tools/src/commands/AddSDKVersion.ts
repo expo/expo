@@ -1,11 +1,11 @@
-import chalk from 'chalk';
-import semver from 'semver';
-import inquirer from 'inquirer';
 import { Command } from '@expo/commander';
+import chalk from 'chalk';
+import inquirer from 'inquirer';
+import semver from 'semver';
 
+import { Platform, getNextSDKVersionAsync } from '../ProjectVersions';
 import * as AndroidVersioning from '../versioning/android';
 import * as IosVersioning from '../versioning/ios';
-import { Platform, getNextSDKVersionAsync } from '../ProjectVersions';
 
 type ActionOptions = {
   platform: Platform;
@@ -13,6 +13,8 @@ type ActionOptions = {
   filenames?: string;
   vendored: string[];
   reinstall?: boolean;
+  preventReinstall?: boolean;
+  package?: string;
 };
 
 async function getNextOrAskForSDKVersionAsync(platform: Platform): Promise<string | undefined> {
@@ -60,11 +62,13 @@ async function action(options: ActionOptions) {
         await IosVersioning.versionVendoredModulesAsync(sdkNumber, options.vendored);
       } else if (options.filenames) {
         await IosVersioning.versionReactNativeIOSFilesAsync(options.filenames, sdkVersion);
+      } else if (options.package) {
+        await IosVersioning.regenerateVersionedPackageAsync(sdkVersion, options.package);
       } else {
         await IosVersioning.versionVendoredModulesAsync(sdkNumber, null);
         await IosVersioning.addVersionAsync(sdkVersion);
       }
-      await IosVersioning.reinstallPodsAsync(options.reinstall);
+      await IosVersioning.reinstallPodsAsync(options.reinstall, options.preventReinstall);
       return;
     case 'android':
       return AndroidVersioning.addVersionAsync(sdkVersion);
@@ -112,6 +116,14 @@ ${chalk.gray('>')} ${chalk.italic.cyan(
     .option(
       '-r, --reinstall',
       'Whether to force reinstalling pods after generating a new version. iOS only.'
+    )
+    .option(
+      '--prevent-reinstall',
+      'Whether to force not reinstalling pods after generating a new version. iOS only.'
+    )
+    .option(
+      '-x, --package [string]',
+      'Only generate a specific package. When provided, option `--sdkVersion` is required.'
     )
     .asyncAction(action);
 };
