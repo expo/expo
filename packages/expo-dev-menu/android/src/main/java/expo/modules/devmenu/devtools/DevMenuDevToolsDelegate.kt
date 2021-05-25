@@ -7,7 +7,11 @@ import android.os.Build
 import android.provider.Settings
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.bridge.UiThreadUtil
+import com.facebook.react.devsupport.DevInternalSettings
 import expo.interfaces.devmenu.DevMenuManagerInterface
+import expo.modules.devmenu.DevMenuManager
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 
 class DevMenuDevToolsDelegate(
@@ -17,11 +21,18 @@ class DevMenuDevToolsDelegate(
   private val _reactDevManager = WeakReference(
     reactInstanceManager.devSupportManager
   )
+  private val _reactContext = WeakReference(
+    reactInstanceManager.currentReactContext
+  )
+
   val reactDevManager
     get() = _reactDevManager.get()
 
   val devSettings
     get() = reactDevManager?.devSettings
+
+  val reactContext
+    get() = _reactContext.get()
 
   fun reload() {
     val reactDevManager = reactDevManager ?: return
@@ -52,6 +63,16 @@ class DevMenuDevToolsDelegate(
     requestOverlaysPermission(context)
     runWithDevSupportEnabled {
       reactDevManager.setFpsDebugEnabled(!devSettings.isFpsDebugEnabled)
+    }
+  }
+
+  fun openJsInspector() = runWithDevSupportEnabled {
+    val devSettings = (devSettings as? DevInternalSettings) ?: return
+    val reactContext = reactContext ?: return
+    val metroHost = "http://${devSettings.packagerConnectionSettings.debugServerHost}"
+
+    GlobalScope.launch {
+      DevMenuManager.metroClient.openJSInspector(metroHost, reactContext.packageName)
     }
   }
 
