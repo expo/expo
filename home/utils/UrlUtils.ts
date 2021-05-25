@@ -63,6 +63,7 @@ export function conformsToExpoProtocol(str: string): boolean {
     return true;
   } else if (
     str.startsWith(`${Config.website.origin}/`) ||
+    str.startsWith(`${Config.website.originOld}/`) ||
     str.startsWith(`${Config.api.origin}/`)
   ) {
     return true;
