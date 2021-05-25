@@ -2,7 +2,7 @@ const { loadAsync } = require('@expo/metro-config');
 const fs = require('fs');
 const Server = require('metro/src/Server');
 const path = require('path');
-const uuid = require('uuid/v4');
+const { v4: uuidv4 } = require('uuid');
 
 const filterPlatformAssetScales = require('./filterPlatformAssetScales');
 
@@ -43,7 +43,7 @@ const filterPlatformAssetScales = require('./filterPlatformAssetScales');
   }
 
   const manifest = {
-    id: uuid(),
+    id: uuidv4(),
     commitTime: new Date().getTime(),
     assets: [],
   };

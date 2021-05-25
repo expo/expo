@@ -6,7 +6,7 @@ import ip from 'ip';
 import os from 'os';
 import path from 'path';
 import request from 'request-promise-native';
-import uuidv4 from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 
 import { getExpoRepositoryRootDir } from '../Directories';
 import { getHomeSDKVersionAsync } from '../ProjectVersions';
