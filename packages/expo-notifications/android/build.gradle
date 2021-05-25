@@ -80,7 +80,6 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 dependencies {
   unimodule 'unimodules-core'
   unimodule 'expo-modules-core'
-  unimodule 'unimodules-image-loader-interface'
 
   api 'androidx.core:core:1.2.0'
   api 'androidx.lifecycle:lifecycle-runtime:2.2.0'
