@@ -23,7 +23,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 ```jsx
 import * as React from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
-import Clipboard from 'expo-clipboard';
+import * as Clipboard from 'expo-clipboard';
 
 export default function App() {
   const [copiedText, setCopiedText] = React.useState('');
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
 ## API
 
 ```js
-import Clipboard from 'expo-clipboard';
+import * as Clipboard from 'expo-clipboard';
 ```
 
 <APISection packageName="expo-clipboard" />
