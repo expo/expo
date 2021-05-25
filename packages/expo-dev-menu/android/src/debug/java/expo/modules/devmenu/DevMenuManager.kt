@@ -321,6 +321,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       ?.run {
         if (isAvailable()) {
           action()
+          closeMenu()
         }
         true
       } ?: false
