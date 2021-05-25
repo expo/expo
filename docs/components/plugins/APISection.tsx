@@ -33,6 +33,7 @@ const renderAPI = (
   apiName?: string
 ): JSX.Element => {
   try {
+    console.log(`~/public/static/data/${version}/${packageName}.json`);
     const data = require(`~/public/static/data/${version}/${packageName}.json`).children;
 
     const methods = filterDataByKind(
