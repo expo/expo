@@ -15,7 +15,6 @@
 ### 💡 Others
 
 - Migrated from `unimodules-file-system-interface` and `unimodules-permissions-interface` to `expo-modules-core`. ([#12961](https://github.com/expo/expo/pull/12961) by [@tsapeta](https://github.com/tsapeta))
-- Updated `uuid` dependency to `^8.3.2`. ([#13043](https://github.com/expo/expo/pull/13043) by [@tsapeta](https://github.com/tsapeta))
 
 ## 10.1.3 — 2021-04-13
 

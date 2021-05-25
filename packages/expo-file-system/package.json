@@ -37,10 +37,9 @@
   "dependencies": {
     "@expo/config-plugins": "^1.0.32",
     "expo-modules-core": "~0.0.2",
-    "uuid": "^8.3.2"
+    "uuid": "^3.4.0"
   },
   "devDependencies": {
-    "@types/uuid": "^8.3.0",
     "expo-module-scripts": "^2.0.0",
     "jest-expo": "~41.0.0"
   }

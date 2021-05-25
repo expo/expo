@@ -42,10 +42,9 @@
     "@expo/config-plugins": "^1.0.32",
     "expo-modules-core": "~0.0.2",
     "expo-permissions": "~12.0.1",
-    "uuid": "^8.3.2"
+    "uuid": "7.0.2"
   },
   "devDependencies": {
-    "@types/uuid": "^8.3.0",
     "expo-module-scripts": "^2.0.0"
   }
 }

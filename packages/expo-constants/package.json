@@ -39,10 +39,9 @@
   "dependencies": {
     "@expo/config": "^3.3.42",
     "expo-modules-core": "~0.0.2",
-    "uuid": "^8.3.2"
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
-    "@types/uuid": "^8.3.0",
     "expo-module-scripts": "^2.0.0"
   }
 }
