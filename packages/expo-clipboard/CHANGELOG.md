@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added Clipboard event listener
+- Added Clipboard event listener ([#13050](https://github.com/expo/expo/pull/13050) by [@cruzach](https://github.com/cruzach))
 
 ### 🐛 Bug fixes
 
