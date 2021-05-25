@@ -15,7 +15,7 @@
 - Migrated from `unimodules-file-system-interface` to `expo-modules-core`.
 - Build Android code using Java 8 to fix Android instrumented test build error. ([#12939](https://github.com/expo/expo/pull/12939) by [@kudo](https://github.com/kudo))
 - Refactored uuid imports to v7 style. ([#13037](https://github.com/expo/expo/pull/13037) by [@giautm](https://github.com/giautm))
-- Updated `uuid` dependency to `^8.3.2`.
+- Updated `uuid` dependency to `^8.3.2`. ([#13043](https://github.com/expo/expo/pull/13043) by [@tsapeta](https://github.com/tsapeta))
 
 ## 9.1.2 — 2021-04-13
 
