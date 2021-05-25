@@ -274,6 +274,9 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/detach/': '/expokit/eject/',
   '/expokit/detach/': '/expokit/eject/',
 
+  // Consolidate workflow page
+  '/bare/customizing/': '/workflow/customizing/',
+
   // Lots of old links pointing to guides when they have moved elsewhere
   '/guides/configuration/': '/workflow/configuration/',
   '/guides/expokit/': '/expokit/overview/',
