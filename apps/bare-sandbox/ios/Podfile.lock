@@ -12,33 +12,41 @@ PODS:
     - UMCore
   - EXKeepAwake (9.1.2):
     - UMCore
-  - expo-dev-client (0.1.0):
+  - expo-dev-client (0.1.3):
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
-  - expo-dev-launcher (0.3.1):
+  - expo-dev-launcher (0.3.4):
+    - expo-dev-launcher/Main (= 0.3.4)
     - expo-dev-menu-interface
     - React
-  - expo-dev-menu (0.4.1):
+  - expo-dev-launcher/Main (0.3.4):
+    - expo-dev-launcher/Unsafe
     - expo-dev-menu-interface
-    - expo-dev-menu/Main (= 0.4.1)
     - React
-  - expo-dev-menu-interface (0.2.0):
+  - expo-dev-launcher/Unsafe (0.3.4):
+    - expo-dev-menu-interface
     - React
-  - expo-dev-menu/Main (0.4.1):
+  - expo-dev-menu (0.5.2):
+    - expo-dev-menu-interface
+    - expo-dev-menu/Main (= 0.5.2)
+    - React
+  - expo-dev-menu-interface (0.3.1):
+    - React
+  - expo-dev-menu/Main (0.5.2):
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - React
-  - expo-dev-menu/Vendored (0.4.1):
+  - expo-dev-menu/Vendored (0.5.2):
     - expo-dev-menu-interface
     - React
-  - ExpoModulesCore (0.0.1):
-    - ExpoModulesCore/Core (= 0.0.1)
-    - ExpoModulesCore/Interfaces (= 0.0.1)
+  - ExpoModulesCore (0.0.2):
+    - ExpoModulesCore/Core (= 0.0.2)
+    - ExpoModulesCore/Interfaces (= 0.0.2)
     - UMCore
-  - ExpoModulesCore/Core (0.0.1):
+  - ExpoModulesCore/Core (0.0.2):
     - UMCore
-  - ExpoModulesCore/Interfaces (0.0.1):
+  - ExpoModulesCore/Interfaces (0.0.2):
     - ExpoModulesCore/Core
     - UMCore
   - EXSplashScreen (0.10.2):
@@ -322,21 +330,10 @@ PODS:
   - RNScreens (3.0.0):
     - React-Core
   - UMAppLoader (2.1.0)
-  - UMBarCodeScannerInterface (6.1.0):
-    - UMCore
   - UMCore (7.1.0)
-  - UMFaceDetectorInterface (6.1.0)
-  - UMFileSystemInterface (6.1.0)
-  - UMFontInterface (6.1.0)
-  - UMImageLoaderInterface (6.1.0)
-  - UMPermissionsInterface (6.2.0):
-    - UMCore
   - UMReactNativeAdapter (6.2.2):
+    - ExpoModulesCore
     - React-Core
-    - UMCore
-    - UMFontInterface
-    - UMPermissionsInterface
-  - UMSensorsInterface (6.1.0):
     - UMCore
   - UMTaskManagerInterface (6.1.0):
     - UMCore
@@ -385,15 +382,8 @@ DEPENDENCIES:
   - RNReanimated (from `../../../node_modules/react-native-reanimated`)
   - RNScreens (from `../../../node_modules/react-native-screens`)
   - UMAppLoader (from `../../../packages/unimodules-app-loader/ios`)
-  - UMBarCodeScannerInterface (from `../../../packages/unimodules-barcode-scanner-interface/ios`)
   - "UMCore (from `../../../packages/@unimodules/core/ios`)"
-  - UMFaceDetectorInterface (from `../../../packages/unimodules-face-detector-interface/ios`)
-  - UMFileSystemInterface (from `../../../packages/unimodules-file-system-interface/ios`)
-  - UMFontInterface (from `../../../packages/unimodules-font-interface/ios`)
-  - UMImageLoaderInterface (from `../../../packages/unimodules-image-loader-interface/ios`)
-  - UMPermissionsInterface (from `../../../packages/unimodules-permissions-interface/ios`)
   - "UMReactNativeAdapter (from `../../../packages/@unimodules/react-native-adapter/ios`)"
-  - UMSensorsInterface (from `../../../packages/unimodules-sensors-interface/ios`)
   - UMTaskManagerInterface (from `../../../packages/unimodules-task-manager-interface/ios`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -490,33 +480,12 @@ EXTERNAL SOURCES:
   UMAppLoader:
     inhibit_warnings: false
     :path: "../../../packages/unimodules-app-loader/ios"
-  UMBarCodeScannerInterface:
-    inhibit_warnings: false
-    :path: "../../../packages/unimodules-barcode-scanner-interface/ios"
   UMCore:
     inhibit_warnings: false
     :path: "../../../packages/@unimodules/core/ios"
-  UMFaceDetectorInterface:
-    inhibit_warnings: false
-    :path: "../../../packages/unimodules-face-detector-interface/ios"
-  UMFileSystemInterface:
-    inhibit_warnings: false
-    :path: "../../../packages/unimodules-file-system-interface/ios"
-  UMFontInterface:
-    inhibit_warnings: false
-    :path: "../../../packages/unimodules-font-interface/ios"
-  UMImageLoaderInterface:
-    inhibit_warnings: false
-    :path: "../../../packages/unimodules-image-loader-interface/ios"
-  UMPermissionsInterface:
-    inhibit_warnings: false
-    :path: "../../../packages/unimodules-permissions-interface/ios"
   UMReactNativeAdapter:
     inhibit_warnings: false
     :path: "../../../packages/@unimodules/react-native-adapter/ios"
-  UMSensorsInterface:
-    inhibit_warnings: false
-    :path: "../../../packages/unimodules-sensors-interface/ios"
   UMTaskManagerInterface:
     inhibit_warnings: false
     :path: "../../../packages/unimodules-task-manager-interface/ios"
@@ -531,11 +500,11 @@ SPEC CHECKSUMS:
   EXBlur: 50d490040f3b14898ed8198d5125dc699189f4d9
   EXConstants: 5ea0cedcacca6f27f0ec54f185e01e0970ee1286
   EXKeepAwake: d4e4a3ed8c1c4fd940dd62fc5a8be2a190371fd4
-  expo-dev-client: e7b6c924dad57d75ae7e0fd18f7dca2d8fb1118a
-  expo-dev-launcher: ba817d68d83bffae03beebb59b14341ac27f1833
-  expo-dev-menu: 491591fff3e5578a3f9ac9914c9b5f92e91ae1de
-  expo-dev-menu-interface: e6f313b7b0c0c79b1987cf26bc5c969bad69bb7d
-  ExpoModulesCore: efdfa6650a7b554180c1559b7be9c3510ce18e51
+  expo-dev-client: 296d3325042cedc1d2044c0f5379f20fce2cc78d
+  expo-dev-launcher: b41e94b29714dc550b7cf08300d7fe3dc60b9732
+  expo-dev-menu: 7ad848104f908589ee1d8ce2023b632207408c5d
+  expo-dev-menu-interface: 4fda2fa6d974a518e546ca1193340513b0a8b0e8
+  ExpoModulesCore: 456da7683ce872553ceb6d5b82b4264bbd04d5e1
   EXSplashScreen: 7bca6748b2ebf21b1fed6c91d4c4db689f95a9a6
   FBLazyVector: 3ef4a7f62e7db01092f9d517d2ebc0d0677c4a37
   FBReactNativeSpec: dc7fa9088f0f2a998503a352b0554d69a4391c5a
@@ -565,15 +534,8 @@ SPEC CHECKSUMS:
   RNReanimated: 70f662b5232dd5d19ccff581e919a54ea73df51c
   RNScreens: e8e8dd0588b5da0ab57dcca76ab9b2d8987757e0
   UMAppLoader: fe2708bb0ac5cd70052bc207d06aa3b7e72b9e97
-  UMBarCodeScannerInterface: 79f92bea5f7af39b381a4c82298105ceb537408a
   UMCore: 88855c8d26663540ae9e0b9036a8b0253b4b31df
-  UMFaceDetectorInterface: 791eec55ffca1171992976b7eceb73e69e391c58
-  UMFileSystemInterface: f72245e90ce78fa6427180ff0b0904ead13d8161
-  UMFontInterface: 5843cff7db85a42ba629aaac53d33091c35524d3
-  UMImageLoaderInterface: 9ddffeb644b3f45d4eb0c2f51a2fd95fd5c8d1a4
-  UMPermissionsInterface: 445acbfbdc2a675cedae79bbfb93ff7d83a96ff1
-  UMReactNativeAdapter: 9982db2ff57b88e37cdfb814d078b9616e99f855
-  UMSensorsInterface: a5e9db661e5d9ae214762033d725989880ae6993
+  UMReactNativeAdapter: 154bfe3d4c042994e0b4ad40b2e97373f1cefbc5
   UMTaskManagerInterface: 203c11259d2699b5b3a4eda4adbc466f5cb5c561
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
 
