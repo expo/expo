@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed actions doesn't dismiss menu. ([#13021](https://github.com/expo/expo/pull/13021) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 0.5.2 — 2021-05-20
