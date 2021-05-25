@@ -26,6 +26,10 @@ data class DevLauncherStatusBarSection(
   val translucent: Boolean?
 )
 
+data class DevLauncherManifestDeveloperSection(
+  val tool: String?
+)
+
 data class DevLauncherManifest(
   val name: String,
   val slug: String,
@@ -38,6 +42,8 @@ data class DevLauncherManifest(
 
   val android: DevLauncherAndroidManifestSection?,
 
+  val developer: DevLauncherManifestDeveloperSection?,
+
   val userInterfaceStyle: DevLauncherUserInterface?,
   val backgroundColor: String?,
   val primaryColor: String?,
@@ -46,6 +52,10 @@ data class DevLauncherManifest(
 ) {
   var rawData: String? = null
     private set
+
+  fun isUsingDeveloperTool(): Boolean {
+    return this.developer?.tool != null
+  }
 
   /**
    * Class which contains all fields that the user can override in the android section.

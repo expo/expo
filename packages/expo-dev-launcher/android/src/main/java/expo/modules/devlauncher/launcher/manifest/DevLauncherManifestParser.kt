@@ -12,8 +12,8 @@ class DevLauncherManifestParser(
 ) {
   suspend fun isManifestUrl(): Boolean {
     val response = fetch(url, "HEAD").await(httpClient)
-    require(response.isSuccessful) { "Make sure that the metro bundler is running." }
-    return response.header("Exponent-Server", null) != null
+    // published projects should respond unsuccessfully to HEAD requests sent with no headers
+    return !response.isSuccessful || response.header("Exponent-Server", null) != null
   }
 
   private suspend fun downloadManifest(): Reader {

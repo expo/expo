@@ -28,7 +28,14 @@
   "license": "MIT",
   "homepage": "https://docs.expo.io",
   "dependencies": {
+<<<<<<< HEAD
     "@expo/config-plugins": "^2.0.0"
+||||||| parent of fcaea5fb36... [expo-dev-launcher][android] add ability to load published projects via expo-updates-interface
+    "@expo/config-plugins": "^1.0.32"
+=======
+    "@expo/config-plugins": "^1.0.32",
+    "expo-updates-interface": "~1.0.0"
+>>>>>>> fcaea5fb36... [expo-dev-launcher][android] add ability to load published projects via expo-updates-interface
   },
   "devDependencies": {
     "babel-preset-expo": "~8.3.0",
