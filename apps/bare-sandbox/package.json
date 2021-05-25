@@ -20,9 +20,9 @@
     "react-native-gesture-handler": "~1.10.2",
     "react-native-reanimated": "~2.1.0",
     "react-native-screens": "~3.0.0",
-    "react-native-unimodules": "~0.13.3",
+    "react-native-unimodules": "~0.14.0",
     "react-native-web": "~0.13.7",
-    "@unimodules/react-native-adapter": "^6.2.2"
+    "@unimodules/react-native-adapter": "^6.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
