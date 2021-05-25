@@ -8,7 +8,7 @@ The typical means of distribution for a mobile app is through the Apple App Stor
 
 ## Expo Go
 
-If you are using the Expo Managed workflow, you can share your application with your team through the Expo Go app.
+If you are using the Expo Managed workflow, you can share your application with your team through the Expo Go app. Expo Go is the easiest option to set up, doesn't require a paid Apple Developer account, and works the same on both platforms.  Your users will launch the application through Expo Go rather than from an app icon though, so if that experience is important to you, consider [Interal Distribution](#internal-distribution) or [TestFlight for iOS](#testflight) instead.
 
 1. Publish the latest version of your project to Expo's servers by running `expo publish`.
 2. [Invite your teammate](https://expo.io/[account]/[project]/settings/members) to the Expo account that owns the project.
@@ -20,7 +20,7 @@ If you are using the Expo Managed workflow, you can share your application with 
 
 ## Internal Distribution
 
-If you want to share outside of Expo Go, Android and iOS both offer ways to install a build of your application directly on devices.
+If you want to share outside of Expo Go, Android and iOS both offer ways to install a build of your application directly on devices. This gives you full control of putting specific builds on devices, allowing you to iterate quickly and have multiple builds of your application available for review at the same time.
 
 ### Android
 
@@ -41,4 +41,4 @@ If your app is only intended to be used internally and will not be distributed t
 
 ## TestFlight
 
-TestFlight is another option to distribute your application to iOS devices. TestFlight also requires a paid Apple Developer account, but allows you to share your application with up to 10,000 users that can be invited with their email or a public link.  This method requires you to [upload your application](/submit/ios.md) to App Store Connect and wait for the automated review before you can share a build. If you intend to ship new builds frequently, investing the time to set up Ad Hoc distribution will be worthwhile.
+TestFlight is another option to distribute your application to iOS devices. TestFlight also requires a paid Apple Developer account, but allows you to share your application with up to 10,000 users that can be invited with their email or a public link. This method requires you to [upload your application](/submit/ios.md) to App Store Connect and wait for the automated review before you can share a build. If you intend to ship new builds frequently, investing the time to set up Ad Hoc distribution will be worthwhile.
