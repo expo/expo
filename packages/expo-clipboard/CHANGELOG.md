@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added Clipboard event listener
+
 ### 🐛 Bug fixes
 
 - Fixed `getStringAsync` causing crashes on Web when an exception is thrown. ([#12494](https://github.com/expo/expo/pull/12494) by [@robertherber](https://github.com/robertherber))
