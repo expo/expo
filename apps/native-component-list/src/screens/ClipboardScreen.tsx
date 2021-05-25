@@ -65,7 +65,7 @@ function SetStringExample() {
 }
 
 function ListenerExample() {
-  const clipboardListener = React.useRef();
+  const clipboardListener = React.useRef<Clipboard.Subscription | null>(null);
   const [value, setValue] = React.useState('');
 
   React.useEffect(() => {
@@ -76,7 +76,9 @@ function ListenerExample() {
     );
 
     return () => {
-      Clipboard.removeClipboardListener(clipboardListener.current);
+      if (clipboardListener.current) {
+        Clipboard.removeClipboardListener(clipboardListener.current);
+      }
     };
   }, []);
 
