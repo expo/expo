@@ -7,14 +7,14 @@ import InstallSection from '~/components/plugins/InstallSection'
 
 ## Install the Development Client module in your project
 
-If you're just starting your project, you can create a new project from our template with: 
+If you're just starting your project, you can create a new project from our template with:
 <InstallSection packageName="expo-dev-client" cmd={["npx crna -t with-dev-client"]} hideBareInstructions />
 
 If you have an existing project, you'll need to [install the package and make a few changes](installation.md) to your `AppDelegate.m`, `MainActivity.java` and `MainApplication.java`.
 
 ## Deep linking scheme
 
-The Development Client uses deep links to open projects from the QR code. If you had added a custom deep link schema to your project, the Development Client will use it. However, if this isn't the case, you need to configure the deep link support for your application. The `uri-scheme` pakage will do this for you once you have chosen a scheme.
+The Development Client uses deep links to open projects from the QR code. If you had added a custom deep link schema to your project, the Development Client will use it. However, if this isn't the case, you need to configure the deep link support for your application. The `uri-scheme` package will do this for you once you have chosen a scheme.
 
 <InstallSection packageName="expo-dev-client" cmd={["npx uri-scheme add <your scheme>"]} hideBareInstructions />
 
@@ -28,11 +28,9 @@ or your Android emulator
 
 <InstallSection packageName="expo-dev-client" cmd={["expo run:android"]} hideBareInstructions />
 
-
 If you are eager to install your project on a physical device, we recommend using [EAS Build](eas-build.md) for the smoothest experience, but you can build and distribute the same as any other React Native application. Once its installed, you're ready to start developing by running:
 
 <InstallSection packageName="expo-dev-client" cmd={["expo start --dev-client"]} hideBareInstructions />
-
 
 ## Loading your application
 
@@ -45,5 +43,4 @@ Otherwise, you can connect by scanning the QR code displayed by Expo CLI.
 
 ## Debugging your application
 
-When you need to, you can access the menu by pressing Cmd-d in Expo CLI.  Here you'll be able to access all of the functions of your Development Client, access any debugging functionality you need, switch to a different version of your application, or [any capabilities you have added yourself](extending-the-dev-menu.md).
-
+When you need to, you can access the menu by pressing Cmd-d in Expo CLI. Here you'll be able to access all of the functions of your Development Client, access any debugging functionality you need, switch to a different version of your application, or [any capabilities you have added yourself](extending-the-dev-menu.md).

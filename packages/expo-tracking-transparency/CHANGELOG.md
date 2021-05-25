@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+- Migrated from `unimodules-permissions-interface` to `expo-modules-core`. ([#12961](https://github.com/expo/expo/pull/12961) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.0.1 — 2021-05-21
+
+_This version does not introduce any user-facing changes._
+
 ## 1.0.0 — 2021-05-18
 
 ### 🐛 Bug fixes

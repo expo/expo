@@ -50,12 +50,13 @@ import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.LifecycleEventListener;
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.core.interfaces.services.UIManager;
-import org.unimodules.interfaces.permissions.Permissions;
-import org.unimodules.interfaces.permissions.PermissionsResponse;
-import org.unimodules.interfaces.permissions.PermissionsStatus;
 import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 
 import androidx.annotation.RequiresApi;
+
+import expo.modules.interfaces.permissions.Permissions;
+import expo.modules.interfaces.permissions.PermissionsResponse;
+import expo.modules.interfaces.permissions.PermissionsStatus;
 import expo.modules.location.exceptions.LocationBackgroundUnauthorizedException;
 import expo.modules.location.exceptions.LocationRequestRejectedException;
 import expo.modules.location.exceptions.LocationSettingsUnsatisfiedException;

@@ -4,7 +4,7 @@ title: Integrating with JavaScript tooling
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
-This document outlines how to configure EAS Build for some common scenarios, such as monorepos and repositories with private dependencies. The examples described here do not provide step-by-step instructions to set up EAS Build from scratch. Instead, they explain the changes from the standard process that are necessary to acommodate the given scenario.
+This document outlines how to configure EAS Build for some common scenarios, such as monorepos and repositories with private dependencies. The examples described here do not provide step-by-step instructions to set up EAS Build from scratch. Instead, they explain the changes from the standard process that are necessary to accommodate the given scenario.
 
 ## EAS Build-specific npm hooks
 
@@ -49,7 +49,7 @@ This is an example of how your package.json might look like:
 
 - Run all EAS CLI commands from the root of the app directory. For example: if your project exists inside of your git repository at `apps/my-app`, then run `eas build` from there.
 - All files related to EAS Build, such as `eas.json` and `credentials.json`, should be in the root of the app directory. If you have multiple apps that use EAS Build in your monorepo, each app directory will have its own copy of these files.
-- If your project needs additional setup beyond what is provided, add a `postinstall` step to `package.json` in your project that builds all necessary dependecies in other workspaces. For example:
+- If your project needs additional setup beyond what is provided, add a `postinstall` step to `package.json` in your project that builds all necessary dependencies in other workspaces. For example:
 
 ```json
 {

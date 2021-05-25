@@ -2,7 +2,7 @@
 
 #import <EXCamera/EXCameraMicrophonePermissionRequester.h>
 #import <UMCore/UMDefines.h>
-#import <UMPermissionsInterface/UMPermissionsInterface.h>
+#import <ExpoModulesCore/EXPermissionsInterface.h>
 
 #import <AVFoundation/AVFoundation.h>
 
@@ -16,7 +16,7 @@
 - (NSDictionary *)getPermissions
 {
   AVAuthorizationStatus systemStatus;
-  UMPermissionStatus status;
+  EXPermissionStatus status;
   NSString *microphoneUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSMicrophoneUsageDescription"];
     
   if (!microphoneUsageDescription) {
@@ -27,14 +27,14 @@
   }
   switch (systemStatus) {
     case AVAuthorizationStatusAuthorized:
-      status = UMPermissionStatusGranted;
+      status = EXPermissionStatusGranted;
       break;
     case AVAuthorizationStatusDenied:
     case AVAuthorizationStatusRestricted:
-      status = UMPermissionStatusDenied;
+      status = EXPermissionStatusDenied;
       break;
     case AVAuthorizationStatusNotDetermined:
-      status = UMPermissionStatusUndetermined;
+      status = EXPermissionStatusUndetermined;
       break;
   }
   return @{
@@ -52,5 +52,3 @@
 }
 
 @end
-
-

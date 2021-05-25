@@ -1,6 +1,6 @@
 import { EventEmitter, UnavailabilityError } from '@unimodules/core';
+import { PermissionStatus } from 'expo-modules-core';
 import invariant from 'invariant';
-import { PermissionStatus, } from 'unimodules-permissions-interface';
 import ExponentPedometer from './ExponentPedometer';
 const PedometerEventEmitter = new EventEmitter(ExponentPedometer);
 // @needsAudit

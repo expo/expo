@@ -10,6 +10,7 @@ import expo.modules.barcodescanner.utils.BarCodeScannerResultSerializer;
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface;
 import expo.modules.interfaces.barcodescanner.BarCodeScannerResult;
 import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings;
+import expo.modules.interfaces.permissions.Permissions;
 
 import com.google.android.gms.vision.barcode.Barcode;
 
@@ -24,7 +25,6 @@ import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.interfaces.imageloader.ImageLoader;
-import org.unimodules.interfaces.permissions.Permissions;
 
 import static expo.modules.barcodescanner.ExpoBarCodeScanner.CAMERA_TYPE_BACK;
 import static expo.modules.barcodescanner.ExpoBarCodeScanner.CAMERA_TYPE_FRONT;

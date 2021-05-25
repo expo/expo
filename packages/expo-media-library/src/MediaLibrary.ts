@@ -1,16 +1,16 @@
 import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
-import { Platform } from 'react-native';
 import {
-  PermissionResponse as UMPermissionResponse,
+  PermissionResponse as EXPermissionResponse,
   PermissionStatus,
   PermissionExpiration,
-} from 'unimodules-permissions-interface';
+} from 'expo-modules-core';
+import { Platform } from 'react-native';
 
 import MediaLibrary from './ExponentMediaLibrary';
 
 const eventEmitter = new EventEmitter(MediaLibrary);
 
-export type PermissionResponse = UMPermissionResponse & {
+export type PermissionResponse = EXPermissionResponse & {
   // iOS only
   accessPrivileges?: 'all' | 'limited' | 'none';
 };

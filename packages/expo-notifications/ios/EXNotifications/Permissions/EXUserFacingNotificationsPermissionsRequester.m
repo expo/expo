@@ -33,13 +33,13 @@ static NSDictionary *_requestedPermissions;
   dispatch_semaphore_t sem = dispatch_semaphore_create(0);
 
   __block NSMutableDictionary *status = [NSMutableDictionary dictionary];
-  __block UMPermissionStatus generalStatus = UMPermissionStatusUndetermined;
+  __block EXPermissionStatus generalStatus = EXPermissionStatusUndetermined;
 
   [[UNUserNotificationCenter currentNotificationCenter] getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *settings) {
     if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
-      generalStatus = UMPermissionStatusGranted;
+      generalStatus = EXPermissionStatusGranted;
     } else if (settings.authorizationStatus == UNAuthorizationStatusDenied) {
-      generalStatus = UMPermissionStatusDenied;
+      generalStatus = EXPermissionStatusDenied;
     }
 
     status[@"status"] = [self authorizationStatusToEnum:settings.authorizationStatus];

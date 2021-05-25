@@ -1,4 +1,7 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setFacebookConfig = exports.setFacebookAppIdString = exports.getFacebookAdvertiserIDCollection = exports.getFacebookAutoLogAppEvents = exports.getFacebookAutoInitEnabled = exports.getFacebookDisplayName = exports.getFacebookAppId = exports.getFacebookScheme = exports.withFacebookManifest = exports.withFacebookAppIdString = void 0;
 const config_plugins_1 = require("@expo/config-plugins");
@@ -6,7 +9,7 @@ const Resources_1 = require("@expo/config-plugins/build/android/Resources");
 const Strings_1 = require("@expo/config-plugins/build/android/Strings");
 const android_plugins_1 = require("@expo/config-plugins/build/plugins/android-plugins");
 const XML_1 = require("@expo/config-plugins/build/utils/XML");
-const errors_1 = require("@expo/config-plugins/build/utils/errors");
+const assert_1 = __importDefault(require("assert"));
 const { addMetaDataItemToMainApplication, getMainApplicationOrThrow, prefixAndroidKeys, removeMetaDataItemFromMainApplication, } = config_plugins_1.AndroidConfig.Manifest;
 const CUSTOM_TAB_ACTIVITY = 'com.facebook.CustomTabActivity';
 const STRING_FACEBOOK_APP_ID = 'facebook_app_id';
@@ -106,7 +109,7 @@ function ensureFacebookActivity({ mainApplication, scheme, }) {
 }
 async function setFacebookAppIdString(config, projectRoot) {
     const stringsPath = await Strings_1.getProjectStringsXMLPathAsync(projectRoot);
-    errors_1.assert(stringsPath, `There was a problem setting your Facebook App ID in "${stringsPath}"`);
+    assert_1.default(stringsPath, `There was a problem setting your Facebook App ID in "${stringsPath}"`);
     let stringsJSON = await Resources_1.readResourcesXMLAsync({ path: stringsPath });
     stringsJSON = applyFacebookAppIdString(config, stringsJSON);
     try {

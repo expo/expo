@@ -1,5 +1,5 @@
 import { EventEmitter, Subscription } from '@unimodules/core';
-import { PermissionResponse } from 'unimodules-permissions-interface';
+import { PermissionResponse } from 'expo-modules-core';
 declare type Listener<E> = (event: E) => void;
 declare type NativeSensorModule = any;
 /**

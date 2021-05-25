@@ -5,6 +5,9 @@ package expo.modules.permissions
 import android.Manifest
 import android.content.Context
 import android.os.Bundle
+import expo.modules.interfaces.permissions.Permissions
+import expo.modules.interfaces.permissions.PermissionsResponse
+import expo.modules.interfaces.permissions.PermissionsResponseListener
 import expo.modules.permissions.requesters.BackgroundLocationRequester
 import expo.modules.permissions.requesters.ForegroundLocationRequester
 import expo.modules.permissions.requesters.LegacyLocationRequester
@@ -16,9 +19,6 @@ import org.unimodules.core.ExportedModule
 import org.unimodules.core.ModuleRegistry
 import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ExpoMethod
-import org.unimodules.interfaces.permissions.Permissions
-import org.unimodules.interfaces.permissions.PermissionsResponse
-import org.unimodules.interfaces.permissions.PermissionsResponseListener
 
 internal const val ERROR_TAG = "ERR_PERMISSIONS"
 

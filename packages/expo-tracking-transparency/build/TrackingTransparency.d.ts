@@ -1,4 +1,4 @@
-import { PermissionResponse } from 'unimodules-permissions-interface';
+import { PermissionResponse } from 'expo-modules-core';
 /**
  * Requests the user to authorize or deny access to app-related data that can be used for tracking
  * the user or the device. Examples of data used for tracking include email address, device ID,

@@ -74,7 +74,7 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
   unimodule "unimodules-core"
-  unimodule "unimodules-permissions-interface"
+  unimodule 'expo-modules-core'
   unimodule "unimodules-task-manager-interface"
 
   api 'com.google.android.gms:play-services-location:16.0.0'

@@ -75,7 +75,7 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
   unimodule "unimodules-core"
-  unimodule "unimodules-permissions-interface"
+  unimodule 'expo-modules-core'
 
   testImplementation "org.robolectric:robolectric:4.3.1"
 

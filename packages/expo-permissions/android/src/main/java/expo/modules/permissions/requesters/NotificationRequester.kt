@@ -3,13 +3,13 @@ package expo.modules.permissions.requesters
 import android.content.Context
 import android.os.Bundle
 import androidx.core.app.NotificationManagerCompat
-import org.unimodules.interfaces.permissions.PermissionsResponse
-import org.unimodules.interfaces.permissions.PermissionsResponse.Companion.EXPIRES_KEY
-import org.unimodules.interfaces.permissions.PermissionsResponse.Companion.CAN_ASK_AGAIN_KEY
-import org.unimodules.interfaces.permissions.PermissionsResponse.Companion.GRANTED_KEY
-import org.unimodules.interfaces.permissions.PermissionsResponse.Companion.PERMISSION_EXPIRES_NEVER
-import org.unimodules.interfaces.permissions.PermissionsResponse.Companion.STATUS_KEY
-import org.unimodules.interfaces.permissions.PermissionsStatus
+import expo.modules.interfaces.permissions.PermissionsResponse
+import expo.modules.interfaces.permissions.PermissionsResponse.Companion.CAN_ASK_AGAIN_KEY
+import expo.modules.interfaces.permissions.PermissionsResponse.Companion.EXPIRES_KEY
+import expo.modules.interfaces.permissions.PermissionsResponse.Companion.GRANTED_KEY
+import expo.modules.interfaces.permissions.PermissionsResponse.Companion.PERMISSION_EXPIRES_NEVER
+import expo.modules.interfaces.permissions.PermissionsResponse.Companion.STATUS_KEY
+import expo.modules.interfaces.permissions.PermissionsStatus
 
 class NotificationRequester(private val context: Context) : PermissionRequester {
   override fun getAndroidPermissions(): List<String> = listOf()

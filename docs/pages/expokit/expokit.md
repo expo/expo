@@ -197,7 +197,7 @@ If upgrading from SDK 30 or below, you'll also need to change `platform :ios, '9
 - If upgrading to SDK 31 or below, go to `MainActivity.java` and replace `Arrays.asList("[OLD SDK VERSION]")` with `Arrays.asList("[NEW SDK VERSION]")`. If upgrading to SDK 32 or above, simply remove the entire `public List<String> sdkVersions()` method from `MainActivity.java`.
 - Go to `android/app/build.gradle` and replace `compile('host.exp.exponent:expoview:[OLD SDK VERSION]@aar') {` with `compile('host.exp.exponent:expoview:[NEW SDK VERSION]@aar') {`.
 - Go to `android/app/build.gradle` (same file) and replace `api 'com.facebook.react:react-native:[OLD SDK VERSION]'` with `api 'com.facebook.react:react-native:[NEW SDK VERSION]'`.
-- Go to `android/app/build.gradle` (same file) and upgrade JSC version by replcaing `api 'org.webkit:android-jsc:[OLD JSC VERSION]'` with `api 'org.webkit:android-jsc:r245459'` and `force 'org.webkit:android-jsc:[OLD JSC VERSION]'` with `force 'org.webkit:android-jsc:r245459'`.
+- Go to `android/app/build.gradle` (same file) and upgrade JSC version by replacing `api 'org.webkit:android-jsc:[OLD JSC VERSION]'` with `api 'org.webkit:android-jsc:r245459'` and `force 'org.webkit:android-jsc:[OLD JSC VERSION]'` with `force 'org.webkit:android-jsc:r245459'`.
 
 If upgrading from SDK34:
 

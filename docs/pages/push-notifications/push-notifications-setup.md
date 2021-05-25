@@ -115,3 +115,11 @@ For iOS, the managed workflow takes care of push notification credentials automa
 4. Select `Add new Push Notifications Key` (or `Use existing Push Notifications Key in current project` if you already have one)
 
 > Note: A paid Apple Developer Account is **required** to generate credentials.
+
+## Next steps
+
+Try out [sending a notification with Expo](./sending-notifications.md)!
+
+## See also
+
+- Having trouble? Visit [Expo's notification FAQ page](./faq.md)

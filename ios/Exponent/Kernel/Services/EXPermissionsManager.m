@@ -25,26 +25,26 @@ NSString * const EXPermissionsKey = @"ExpoPermissions";
 
 UM_REGISTER_SINGLETON_MODULE(Permissions)
 
-- (UMPermissionStatus)getPermission:(NSString *)permissionType forExperience:(NSString *)experienceId
+- (EXPermissionStatus)getPermission:(NSString *)permissionType forExperience:(NSString *)experienceId
 {
   permissionType = [EXPermissionsManager mapPermissionType:permissionType];
 
   NSString *experienceIdKey = [EXPermissionsManager escapedResourceName:experienceId];
   NSDictionary *experiencePermissions = _permissionsCache[experienceIdKey];
   if (!experiencePermissions) {
-    return UMPermissionStatusUndetermined;
+    return EXPermissionStatusUndetermined;
   }
 
   NSDictionary *permissionData = experiencePermissions[permissionType];
   if (!permissionData) {
-    return UMPermissionStatusUndetermined;
+    return EXPermissionStatusUndetermined;
   }
 
-  if ([permissionData[@"status"] isEqualToString:[EXPermissionsService permissionStringForStatus:UMPermissionStatusGranted]]) {
-    return UMPermissionStatusGranted;
+  if ([permissionData[@"status"] isEqualToString:[EXPermissionsService permissionStringForStatus:EXPermissionStatusGranted]]) {
+    return EXPermissionStatusGranted;
   }
 
-  return UMPermissionStatusDenied;
+  return EXPermissionStatusDenied;
 }
 
 - (BOOL)hasGrantedPermission:(NSString *)permission forExperience:(NSString *)experienceId
@@ -53,7 +53,7 @@ UM_REGISTER_SINGLETON_MODULE(Permissions)
     return YES;
   }
   
-  return [self getPermission:[EXPermissionsManager mapPermissionType:permission] forExperience:experienceId] == UMPermissionStatusGranted;
+  return [self getPermission:[EXPermissionsManager mapPermissionType:permission] forExperience:experienceId] == EXPermissionStatusGranted;
 }
 
 - (BOOL)savePermission:(NSDictionary *)permission ofType:(NSString *)type forExperience:(NSString *)experienceId

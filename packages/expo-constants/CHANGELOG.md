@@ -12,6 +12,7 @@
 ### 🐛 Bug fixes
 
 - Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
+- Ensure classic manifest originalFullName is used over id. ([#12955](https://github.com/expo/expo/pull/12955) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 

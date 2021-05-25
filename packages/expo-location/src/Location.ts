@@ -1,5 +1,5 @@
 import { Platform } from '@unimodules/core';
-import { PermissionStatus, PermissionResponse } from 'unimodules-permissions-interface';
+import { PermissionStatus, PermissionResponse } from 'expo-modules-core';
 
 import ExpoLocation from './ExpoLocation';
 import {

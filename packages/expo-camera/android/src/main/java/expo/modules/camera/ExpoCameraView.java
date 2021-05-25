@@ -17,7 +17,6 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.LifecycleEventListener;
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.core.interfaces.services.UIManager;
-import org.unimodules.interfaces.permissions.Permissions;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,6 +42,7 @@ import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings;
 import expo.modules.interfaces.camera.CameraViewInterface;
 import expo.modules.interfaces.facedetector.FaceDetectorInterface;
 import expo.modules.interfaces.facedetector.FaceDetectorProviderInterface;
+import expo.modules.interfaces.permissions.Permissions;
 
 public class ExpoCameraView extends CameraView implements LifecycleEventListener, BarCodeScannerAsyncTaskDelegate, FaceDetectorAsyncTaskDelegate, PictureSavedDelegate, CameraViewInterface {
   private static final String MUTE_KEY = "mute";

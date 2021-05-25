@@ -14,24 +14,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSDictionary *)getPermissions
 {
-  UMPermissionStatus status;
+  EXPermissionStatus status;
   
   if (@available(iOS 14, *)) {
     ATTrackingManagerAuthorizationStatus systemStatus = [ATTrackingManager trackingAuthorizationStatus];
     switch (systemStatus) {
       case ATTrackingManagerAuthorizationStatusAuthorized:
-        status = UMPermissionStatusGranted;
+        status = EXPermissionStatusGranted;
         break;
       case ATTrackingManagerAuthorizationStatusNotDetermined:
-        status = UMPermissionStatusUndetermined;
+        status = EXPermissionStatusUndetermined;
         break;
       case ATTrackingManagerAuthorizationStatusRestricted:
       case ATTrackingManagerAuthorizationStatusDenied:
-        status = UMPermissionStatusDenied;
+        status = EXPermissionStatusDenied;
         break;
     }
   } else {
-    status = UMPermissionStatusGranted;
+    status = EXPermissionStatusGranted;
   }
   
   return @{
