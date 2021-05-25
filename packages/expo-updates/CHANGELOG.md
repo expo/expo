@@ -34,6 +34,7 @@
 ### 💡 Others
 
 - Refactored uuid imports to v7 style. ([#13037](https://github.com/expo/expo/pull/13037) by [@giautm](https://github.com/giautm))
+- Updated `uuid` dependency to `^8.3.2`.
 
 ## 0.6.0 — 2021-04-13
 
