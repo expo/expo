@@ -89,6 +89,7 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 dependencies {
   unimodule 'unimodules-core'
   unimodule 'expo-structured-headers'
+  unimodule 'expo-updates-interface'
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
 

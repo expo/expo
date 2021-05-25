@@ -15,6 +15,7 @@ import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.WritableMap;
 
 import androidx.annotation.Nullable;
+
 import expo.modules.updates.db.DatabaseHolder;
 import expo.modules.updates.db.Reaper;
 import expo.modules.updates.db.UpdatesDatabase;
@@ -54,6 +55,8 @@ public class UpdatesController {
   private SelectionPolicy mSelectionPolicy;
   private FileDownloader mFileDownloader;
 
+  private SelectionPolicy mDefaultSelectionPolicy;
+
   // launch conditions
   private boolean mIsLoaderTaskFinished = false;
   private boolean mIsEmergencyLaunch = false;
@@ -61,7 +64,8 @@ public class UpdatesController {
   private UpdatesController(Context context, UpdatesConfiguration updatesConfiguration) {
     mUpdatesConfiguration = updatesConfiguration;
     mDatabaseHolder = new DatabaseHolder(UpdatesDatabase.getInstance(context));
-    mSelectionPolicy = defaultSelectionPolicy();
+    mDefaultSelectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(UpdatesUtils.getRuntimeVersion(mUpdatesConfiguration));
+    mSelectionPolicy = mDefaultSelectionPolicy;
     mFileDownloader = new FileDownloader(context);
     if (context instanceof ReactApplication) {
       mReactNativeHost = new WeakReference<>(((ReactApplication) context).getReactNativeHost());
@@ -75,15 +79,18 @@ public class UpdatesController {
     }
   }
 
-  private SelectionPolicy defaultSelectionPolicy() {
-    return SelectionPolicyFactory.createFilterAwarePolicy(UpdatesUtils.getRuntimeVersion(mUpdatesConfiguration));
-  }
-
   public static UpdatesController getInstance() {
     if (sInstance == null) {
       throw new IllegalStateException("UpdatesController.getInstance() was called before the module was initialized");
     }
     return sInstance;
+  }
+
+  /* package */ static void initializeInternal(Context context) {
+    if (sInstance == null) {
+      UpdatesConfiguration updatesConfiguration = new UpdatesConfiguration().loadValuesFromMetadata(context);
+      sInstance = new UpdatesController(context, updatesConfiguration);
+    }
   }
 
   /**
@@ -92,11 +99,8 @@ public class UpdatesController {
    * @param context the base context of the application, ideally a {@link ReactApplication}
    */
   public static void initialize(Context context) {
-    if (sInstance == null) {
-      UpdatesConfiguration updatesConfiguration = new UpdatesConfiguration().loadValuesFromMetadata(context);
-      sInstance = new UpdatesController(context, updatesConfiguration);
-      sInstance.start(context);
-    }
+    initializeInternal(context);
+    sInstance.start(context);
   }
 
   /**
@@ -208,6 +212,10 @@ public class UpdatesController {
     return mUpdatesDirectory;
   }
 
+  /* package */ Exception getUpdatesDirectoryException() {
+    return mUpdatesDirectoryException;
+  }
+
   public UpdateEntity getLaunchedUpdate() {
     return mLauncher.getLaunchedUpdate();
   }
@@ -241,7 +249,20 @@ public class UpdatesController {
   }
 
   /* package */ void resetSelectionPolicyToDefault() {
-    mSelectionPolicy = defaultSelectionPolicy();
+    mSelectionPolicy = mDefaultSelectionPolicy;
+  }
+
+  /* package */ void setDefaultSelectionPolicy(SelectionPolicy selectionPolicy) {
+    mDefaultSelectionPolicy = selectionPolicy;
+    resetSelectionPolicyToDefault();
+  }
+
+  /* package */ void setLauncher(Launcher launcher) {
+    mLauncher = launcher;
+  }
+
+  /* package */ void setUpdatesConfiguration(UpdatesConfiguration updatesConfiguration) {
+    mUpdatesConfiguration = updatesConfiguration;
   }
 
   /**
