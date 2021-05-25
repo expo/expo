@@ -4,7 +4,7 @@ title: Deploying to App Stores
 
 This guide offers best practices around submitting your Expo app to the Apple iTunes Store and Google Play Store. To learn how to generate native binaries for submission, see [Building Standalone Apps](building-standalone-apps.md).
 
-Although you can share your published project through the Expo Go app and on your [expo.io](https://expo.io) profile, submitting a standalone app to the Apple and Google stores is necessary to have a dedicated piece of real estate on your users' devices. Submitting to these stores carries stronger requirements and quality standards than sharing a toy project with a few friends, because it makes your app available through a much wider distribution platform.
+Although you can share your published project through the Expo Go app and on your [expo.io](https://expo.dev) profile, submitting a standalone app to the Apple and Google stores is necessary to have a dedicated piece of real estate on your users' devices. Submitting to these stores carries stronger requirements and quality standards than sharing a toy project with a few friends, because it makes your app available through a much wider distribution platform.
 
 **Disclaimer:** Especially in the case of Apple, review guidelines and rules change all the time, and Apple's enforcement of various rules tends to be finicky and inconsistent. We can't guarantee that your particular project will be accepted by either platform, and you are ultimately responsible for your app's behavior. However, Expo apps are native apps and behave just like any other apps, so if you've created something awesome, you should have nothing to worry about!
 
@@ -55,7 +55,7 @@ To access these values at runtime, you can use the [Expo Constants API](../versi
 - All apps in the App Store must abide by the [App Store Review Guidelines](https://developer.apple.com/app-store/review/guidelines/).
 - Apple will ask you whether your app uses the IDFA: the answer is "yes." This is because Expo contains the Facebook and Branch SDKs, which contain code for collecting the IDFA, and you'll need to check a couple boxes on the Apple submission form. See [Branch's Guide](https://blog.branch.io/how-to-submit-an-app-that-uses-an-idfa-to-the-app-store/) for which specific boxes to fill in.
 
-> **Note**: No data is sent to Branch, Facebook, Segment, or Amplitude from your app unless you explicitly do so using the APIs. For more information on how Expo handles your data, and your end users' data, take a look at our [Privacy Explained page](https://expo.io/privacy-explained).
+> **Note**: No data is sent to Branch, Facebook, Segment, or Amplitude from your app unless you explicitly do so using the APIs. For more information on how Expo handles your data, and your end users' data, take a look at our [Privacy Explained page](https://expo.dev/privacy-explained).
 
 ### App privacy questions
 

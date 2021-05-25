@@ -11,7 +11,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 Note that audio automatically stops if headphones / bluetooth audio devices are disconnected.
 
-Try the [playlist example app](https://expo.io/@documentation/playlist-example) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the media playback API, and the [recording example app](https://expo.io/@documentation/record) (source code is [on GitHub](https://github.com/expo/audio-recording-example)) to see an example usage of the recording API.
+Try the [playlist example app](https://expo.dev/@documentation/playlist-example) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the media playback API, and the [recording example app](https://expo.dev/@documentation/record) (source code is [on GitHub](https://github.com/expo/audio-recording-example)) to see an example usage of the recording API.
 
 <PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/8721' }} />
 
@@ -397,7 +397,7 @@ A static convenience method to construct and start a recording is also provided:
   const { recording, status } = await Audio.Recording.createAsync(
     options,
     onRecordingStatusUpdate,
-    progressUpdateIntervalMillis,
+    progressUpdateIntervalMillis
   );
 
   // Which is equivalent to the following:
@@ -426,10 +426,9 @@ A static convenience method to construct and start a recording is also provided:
 
   ```javascript
   try {
-    const {
-      recording: recordingObject,
-      status,
-    } = await Audio.Recording.createAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
+    const { recording: recordingObject, status } = await Audio.Recording.createAsync(
+      Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
+    );
     // You are now recording!
   } catch (error) {
     // An error occurred!

@@ -51,4 +51,4 @@ If your build takes longer than 60 minutes to run, it will be cancelled. This li
 
 ## Get notified about changes
 
-To be notified as progress is made on these items, you can subscribe to the changelog on the ["Feature Preview"](https://expo.io/eas) page.
+To be notified as progress is made on these items, you can subscribe to the changelog on the ["Feature Preview"](https://expo.dev/eas) page.

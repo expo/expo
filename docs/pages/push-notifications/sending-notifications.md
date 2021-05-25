@@ -6,7 +6,7 @@ sidebar_title: Sending Notifications with Expo's Push API
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import { InlineCode } from '~/components/base/code';
 
-> If you're just getting started and want to focus on the front-end for now, you can skip this step and just use [Expo's push notification tool](https://expo.io/notifications) to send notifications with the click of a button.
+> If you're just getting started and want to focus on the front-end for now, you can skip this step and just use [Expo's push notification tool](https://expo.dev/notifications) to send notifications with the click of a button.
 
 Along with the [`expo-notifications`](../versions/latest/sdk/notifications.md) module, which provides all the client-side functionality for push notifications, Expo can also handle sending these notifications off to APNs and FCM for you! All you need to do is send the request to our servers with the ExpoPushToken you grabbed in the last step.
 
@@ -199,7 +199,7 @@ If there's an error with the entire request for either push tickets or push rece
 
 ## Additional Security
 
-You can require any push requests to be sent with a valid [access token](/accounts/programmatic-access.md) before we will deliver them to your users. You can enable this enhanced push security from your [Expo Dashboard](https://expo.io/settings/access-tokens).
+You can require any push requests to be sent with a valid [access token](/accounts/programmatic-access.md) before we will deliver them to your users. You can enable this enhanced push security from your [Expo Dashboard](https://expo.dev/settings/access-tokens).
 
 By default, you can send a notification to your users by sending their Expo Push Token and any text or additional data needed for the message. This is easy to set up, but **if the tokens are leaked, a malicious user would be able to impersonate your app and send their own message to your users.** We have never had an instance of this reported; however, to follow best security practices, we offer the use of an access token alongside the push token as an additional layer of security.
 

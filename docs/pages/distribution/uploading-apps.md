@@ -2,7 +2,7 @@
 title: Uploading Apps to the Apple App Store and Google Play
 ---
 
-> Automated submissions through EAS CLI currently require [a paid EAS subscription](https://expo.io/pricing). This only impacts submissions through `eas submit` — you can upload your app to stores manually using the information provided on this page without an EAS subscription.
+> Automated submissions through EAS CLI currently require [a paid EAS subscription](https://expo.dev/pricing). This only impacts submissions through `eas submit` — you can upload your app to stores manually using the information provided on this page without an EAS subscription.
 
 This guide will help you upload your Expo standalone apps to Apple TestFlight and to Google Play.
 You'll need a paid developer account for each platform for which you wish to upload and publish an app. You can create an Apple Developer account on [Apple's developer site](https://developer.apple.com/account/) and a Google Play Developer account on the [Google Play Console sign-up page](https://play.google.com/apps/publish/signup/).
@@ -43,7 +43,6 @@ After these steps, you can make use of EAS CLI to upload your further app builds
 To upload your Android app to Google Play, run `eas submit -p android`. [Learn more about this command](/submit/android.md), and [how to use it with `expo build:android](/submit/classic-builds.md) if you are not using [EAS Build](/build/introduction.md) yet.
 
 ## 2.2. If you choose to upload your iOS app to TestFlight
-
 
 ### Using EAS CLI
 

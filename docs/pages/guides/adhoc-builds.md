@@ -115,7 +115,7 @@ If you would like to install the Expo Go app on an iOS device that is not listed
 
 Open the following link on your iOS device (or scan the QR code) and follow the instructions to install the development profile:
 
-https://expo.io/udid/XXXXXXXXXXXXX
+https://expo.dev/udid/XXXXXXXXXXXXX
 
 
 After you register your device, we'll start building your client, and you'll receive an email when it's ready to install.
@@ -135,7 +135,7 @@ On iOS versions 12.2 or later, a window will popup saying `Profile Downloaded`. 
 
 ### 2. Wait for it to finish building
 
-You can monitor the status of your Expo Go build by visiting the link. You will also be notified via email when there are updates to your build. More details can be found on your build dashboard [here](https://expo.io/builds).
+You can monitor the status of your Expo Go build by visiting the link. You will also be notified via email when there are updates to your build. More details can be found on your build dashboard [here](https://expo.dev/builds).
 
 ```sh
 ==================
@@ -145,7 +145,7 @@ You can monitor the status of your Expo Go build by visiting the link. You will 
 Your custom Expo Go is being built! 🛠
 Open this link on your iOS device (or scan the QR code) to view build logs and install the client:
 
-https://expo.io/client/XXXXXXXXXX
+https://expo.dev/client/XXXXXXXXXX
 ```
 
 ### 3. Install the Custom Expo Go on your iOS device

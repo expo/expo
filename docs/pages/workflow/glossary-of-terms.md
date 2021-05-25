@@ -101,7 +101,7 @@ An emulator for iOS devices that you can run on macOS (or in [Snack](#snack)) to
 
 ### Slug
 
-We use the word "slug" in [app.json](#appjson) to refer to the name to use for your app in its url. For example, the [Native Component List](https://expo.io/@community/native-component-list) app lives at https://expo.io/@community/native-component-list and the slug is native-component-list.
+We use the word "slug" in [app.json](#appjson) to refer to the name to use for your app in its url. For example, the [Native Component List](https://expo.dev/@community/native-component-list) app lives at https://expo.dev/@community/native-component-list and the slug is native-component-list.
 
 ### Snack
 

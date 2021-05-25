@@ -40,7 +40,7 @@ The Android push notification credentials set up for EAS Build is identical to t
 
 ## Sharing credentials with your team
 
-If you collaborate on your project with other developers, it is often useful to give them access to perform builds on their own. [Ensure that your project is configured for collaboration](/accounts/working-together.md) and any teammates that you have added through your [Expo dashboard](https://expo.io/) will be able to run `eas build` seamlessly, provided that they have sufficient permissions.
+If you collaborate on your project with other developers, it is often useful to give them access to perform builds on their own. [Ensure that your project is configured for collaboration](/accounts/working-together.md) and any teammates that you have added through your [Expo dashboard](https://expo.dev/) will be able to run `eas build` seamlessly, provided that they have sufficient permissions.
 
 After you have generated your iOS credentials, it's no longer necessary to have access to the Apple Developer team in order to start a build. This means that your collaborators can start new iOS builds with only their Expo accounts. To start a build using existing credentials and without signing in to Apple, run `eas build --skip-credentials-check`. There is no equivalent validation necessary for Android, and so this flag is not needed for Android builds.
 

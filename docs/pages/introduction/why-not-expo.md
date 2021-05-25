@@ -65,7 +65,7 @@ If you need to support older versions, you will not be able to use the managed w
 <details><summary><h4>Free builds can sometimes be queued</h4></summary>
 <p>
 
-You can easily build your app for submission to stores without even installing Xcode or Android Studio by using the free [standalone build service](../distribution/building-standalone-apps.md), but it occasionally has a queue depending on how many other folks are building a binary at that time. You can have access to dedicated build infrastructure with a ["Priority" plan](https://expo.io/developer-services), or you can [run the builds on your own CI](../distribution/turtle-cli.md) if you prefer.
+You can easily build your app for submission to stores without even installing Xcode or Android Studio by using the free [standalone build service](../distribution/building-standalone-apps.md), but it occasionally has a queue depending on how many other folks are building a binary at that time. You can have access to dedicated build infrastructure with a ["Priority" plan](https://expo.dev/developer-services), or you can [run the builds on your own CI](../distribution/turtle-cli.md) if you prefer.
 
 </p>
 </details>

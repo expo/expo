@@ -11,6 +11,6 @@ Becuase we are Privacy Shield certified, all of our users have the right to obta
 
 > If requested to alter, remove, or limit the use or disclosure of data, we will respond within forty-five (45) days of receipt
 
-You can find a thorough explanation of all the topics that are relevant to Privacy Shield (such as what data we collect, why, and how) in our [privacy policy](https://expo.io/privacy).
+You can find a thorough explanation of all the topics that are relevant to Privacy Shield (such as what data we collect, why, and how) in our [privacy policy](https://expo.dev/privacy).
 
 For more information about Privacy Shield, please visit [www.privacyshield.gov](https://www.privacyshield.gov/welcome).

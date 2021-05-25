@@ -39,12 +39,12 @@ The command will perform the following steps:
 - Prompt for the Android package name unless `android.package` is set in app configuration or the `--android-package` param is provided.
 - Ask for which binary to submit. You can select one of the following:
 
-   - The latest finished Android build for the project on EAS servers
-   - Specific build ID. The ID can be found on the [builds dashboard](https://expo.io/builds?type=eas)
-   - Path to an APK or AAB archive on your local filesystem
-   - URL to the app archive
+  - The latest finished Android build for the project on EAS servers
+  - Specific build ID. The ID can be found on the [builds dashboard](https://expo.dev/builds?type=eas)
+  - Path to an APK or AAB archive on your local filesystem
+  - URL to the app archive
 
-   > This step can be skipped if one of the following parameters is provided: `--latest`, `--id`, `--path` or `--url`.
+  > This step can be skipped if one of the following parameters is provided: `--latest`, `--id`, `--path` or `--url`.
 
 - When you chose local path or URL as your binary location, the command will try to autodetect the archive type based on the file extension. If it's unable to do so, it may prompt you to specify whether it's an APK or AAB archive. You can also use a `--type` parameter.
 - Unless a `--key` param is provided, you will be prompted for the path to your Google Services JSON key.

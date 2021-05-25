@@ -48,7 +48,7 @@ export default class App extends React.Component {
         <Button
           title="Open a web browser"
           onPress={() => {
-            WebBrowser.openBrowserAsync('https://expo.io');
+            WebBrowser.openBrowserAsync('https://expo.dev');
           }}
         />
       </View>
