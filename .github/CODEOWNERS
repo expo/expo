@@ -87,15 +87,6 @@
 /packages/jest-expo-puppeteer                   @ide @EvanBacon
 /packages/jest-expo                             @brentvatne
 /packages/react-native-unimodules               @tsapeta @bbarthec
-/packages/unimodules-barcode-scanner-interface  @bbarthec @lukmccall
-/packages/unimodules-camera-interface           @bbarthec @lukmccall
-/packages/unimodules-constants-interface        @bbarthec
-/packages/unimodules-face-detector-interface    @tsapeta
-/packages/unimodules-file-system-interface      @bbarthec
-/packages/unimodules-font-interface             @tsapeta
-/packages/unimodules-image-loader-interface     @bbarthec
-/packages/unimodules-permissions-interface      @bbarthec @lukmccall
-/packages/unimodules-sensors-interface          @bbarthec
 /packages/unimodules-task-manager-interface     @tsapeta @bycedric
 /tools                                          @tsapeta
 /.github/workflows                              @tsapeta
