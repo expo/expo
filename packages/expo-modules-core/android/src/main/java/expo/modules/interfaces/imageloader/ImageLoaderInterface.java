@@ -1,4 +1,4 @@
-package org.unimodules.interfaces.imageloader;
+package expo.modules.interfaces.imageloader;
 
 import android.graphics.Bitmap;
 
@@ -7,7 +7,7 @@ import java.util.concurrent.Future;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-public interface ImageLoader {
+public interface ImageLoaderInterface {
   interface ResultListener {
     void onSuccess(@NonNull Bitmap bitmap);
 

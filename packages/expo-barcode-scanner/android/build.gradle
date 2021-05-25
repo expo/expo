@@ -75,7 +75,6 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 dependencies {
   unimodule "unimodules-core"
   unimodule 'expo-modules-core'
-  unimodule "unimodules-image-loader-interface"
 
   api 'com.google.android.gms:play-services-vision:19.0.0'
   api 'com.google.zxing:core:3.3.3'

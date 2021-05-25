@@ -20,6 +20,7 @@ import expo.modules.imagepicker.fileproviders.CacheFileProvider
 import expo.modules.imagepicker.fileproviders.CropFileProvider
 import expo.modules.imagepicker.tasks.ImageResultTask
 import expo.modules.imagepicker.tasks.VideoResultTask
+import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.permissions.PermissionsResponse
 import expo.modules.interfaces.permissions.PermissionsResponseListener
@@ -34,7 +35,6 @@ import org.unimodules.core.interfaces.ExpoMethod
 import org.unimodules.core.interfaces.LifecycleEventListener
 import org.unimodules.core.interfaces.services.UIManager
 import org.unimodules.core.utilities.FileUtilities.generateOutputPath
-import org.unimodules.interfaces.imageloader.ImageLoader
 import java.io.IOException
 import java.lang.ref.WeakReference
 
@@ -55,7 +55,7 @@ class ImagePickerModule(
    */
   private var mWasDestroyed = false
 
-  private val mImageLoader: ImageLoader by moduleRegistry()
+  private val mImageLoader: ImageLoaderInterface by moduleRegistry()
   private val mUIManager: UIManager by moduleRegistry()
   private val mPermissions: Permissions by moduleRegistry()
   private val mActivityProvider: ActivityProvider by moduleRegistry()
