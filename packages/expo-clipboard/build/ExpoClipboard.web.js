@@ -33,5 +33,7 @@ export default {
         document.body.removeChild(textField);
         return success;
     },
+    addClipboardListener() { },
+    removeClipboardListener() { },
 };
 //# sourceMappingURL=ExpoClipboard.web.js.map
