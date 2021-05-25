@@ -37,13 +37,12 @@
   "dependencies": {
     "@expo/config-plugins": "^1.0.32",
     "expo-modules-core": "~0.0.2",
-    "uuid": "^8.3.2"
+    "uuid": "^3.3.2"
   },
   "unimodulePeerDependencies": {
     "@unimodules/core": "*"
   },
   "devDependencies": {
-    "@types/uuid": "^8.3.0",
     "expo-module-scripts": "^2.0.0"
   }
 }
