@@ -32,7 +32,7 @@
   "homepage": "https://docs.expo.io/versions/latest/sdk/facebook-ads/",
   "dependencies": {
     "@expo/config-plugins": "^1.0.32",
-    "expo-modules-core": "~0.0.1",
+    "expo-modules-core": "~0.0.2",
     "fbemitter": "^2.1.1",
     "nullthrows": "^1.1.0"
   },

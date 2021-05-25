@@ -1856,13 +1856,13 @@ PODS:
   - EXPermissions (12.0.1):
     - ExpoModulesCore
     - UMCore
-  - ExpoModulesCore (0.0.1):
-    - ExpoModulesCore/Core (= 0.0.1)
-    - ExpoModulesCore/Interfaces (= 0.0.1)
+  - ExpoModulesCore (0.0.2):
+    - ExpoModulesCore/Core (= 0.0.2)
+    - ExpoModulesCore/Interfaces (= 0.0.2)
     - UMCore
-  - ExpoModulesCore/Core (0.0.1):
+  - ExpoModulesCore/Core (0.0.2):
     - UMCore
-  - ExpoModulesCore/Interfaces (0.0.1):
+  - ExpoModulesCore/Interfaces (0.0.2):
     - ExpoModulesCore/Core
     - UMCore
   - EXPrint (10.1.0):
@@ -3992,7 +3992,7 @@ SPEC CHECKSUMS:
   EXNetwork: 36144f5e572e6b6b218094c66a57c99e07ffbc0d
   EXNotifications: edf7b33cc7aea511ea141337029cf3d4c007acdf
   EXPermissions: 96bccdc1c2e234651b8d759fdacaf244824fe3ab
-  ExpoModulesCore: efdfa6650a7b554180c1559b7be9c3510ce18e51
+  ExpoModulesCore: 456da7683ce872553ceb6d5b82b4264bbd04d5e1
   EXPrint: 81e7a9f136a34559c5f6558805213bc055bcc490
   EXRandom: cbd66cd45434a494f5ef98650eec1f8d78b90270
   EXScreenCapture: 2903dace06f2d06cc161017637cc4cbfcaa98986

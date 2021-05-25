@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@expo/config-plugins": "^1.0.32",
-    "expo-modules-core": "~0.0.1",
+    "expo-modules-core": "~0.0.2",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
