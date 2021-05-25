@@ -40,7 +40,7 @@
     "@types/node": "^10.12.9",
     "@types/server-destroy": "^1.0.0",
     "@types/source-map-support": "^0.4.1",
-    "@types/uuid": "^3.4.4",
+    "@types/uuid": "^8.3.0",
     "@types/ws": "^6.0.1",
     "aws-sdk": "^2.357.0",
     "base-64": "^0.1.0",
@@ -90,7 +90,7 @@
     "terminal-link": "^2.1.1",
     "transformer-proxy": "^0.3.4",
     "typedoc": "^0.20.35",
-    "uuid": "^3.1.0",
+    "uuid": "^8.3.2",
     "ws": "^6.1.0",
     "xcode": "^2.0.0"
   },
