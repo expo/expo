@@ -16,7 +16,7 @@ npm i -g expo-cli
 expo init --template bare-minimum
 ```
 
-Next, let's get the project running. Go into your project directory and run `react-native run-ios` or `react-native run-android` &mdash; hurray! Your project is working.
+Next, let's get the project running. Go into your project directory and run `expo run:ios` or `expo run:android` &mdash; hurray! Your project is working.
 
 ## Using react-native-unimodules
 
@@ -64,11 +64,11 @@ This will not yet work because we haven't linked the native code that powers it.
 Bare projects are initialized using [CocoaPods](https://cocoapods.org/), a dependency manager for iOS projects.
 
 - Run `npx pod-install` to link the native iOS packages using CocoaPods.
-- Run `npx react-native run-ios` to rebuild your project with the native code linked.
+- Run `expo run:ios` to rebuild your project with the native code linked.
 
 ### Android configuration
 
-You don't have to do anything, just run the project with `npx react-native run-android`. Once the app is built, press the "Open a web browser" button and watch the browser open. Success! Happy times.
+You don't have to do anything, just run the project with `expo run:android`. Once the app is built, press the "Open a web browser" button and watch the browser open. Success! Happy times.
 
 ## What now?
 
