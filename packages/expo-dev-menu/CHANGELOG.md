@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add JavaScript runtime information. ([#13041](https://github.com/expo/expo/pull/13041) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 - Fixed actions don't dismiss the dev-menu. ([#13021](https://github.com/expo/expo/pull/13021) by [@lukmccall](https://github.com/lukmccall))
