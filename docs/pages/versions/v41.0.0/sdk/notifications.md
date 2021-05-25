@@ -325,14 +325,10 @@ import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
 
 export async function registerForPushNotificationsAsync(userId: string) {
-  let experienceId = undefined;
-  if (!Constants.manifest) {
-    // Absence of the manifest means we're in bare workflow
-    experienceId = '@username/example';
-  }
   const expoPushToken = await Notifications.getExpoPushTokenAsync({
-    experienceId,
+    experienceId: '@username/example',
   });
+
   await fetch('https://example.com/', {
     method: 'POST',
     headers: {
