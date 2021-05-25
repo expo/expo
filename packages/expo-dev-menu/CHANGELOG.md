@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed actions doesn't dismiss menu. ([#13021](https://github.com/expo/expo/pull/13021) by [@lukmccall](https://github.com/lukmccall))
+- Fixed actions don't dismiss the dev-menu. ([#13021](https://github.com/expo/expo/pull/13021) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
