@@ -2,15 +2,21 @@
 
 ## Unpublished
 
-- Include missing `UMPermissionsInterface` dependency in the podspec. ([#12862](https://github.com/expo/expo/pull/12862) by [@budiTjendra](https://github.com/budiTjendra))
-
 ### 🛠 Breaking changes
 
 ### 🎉 New features
 
-- Added CocoaPods & Gradle scripts to use new autolinking implementation (opt-in feature). ([#11593](https://github.com/expo/expo/pull/11593) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 6.3.0 — 2021-05-25
+
+- Include missing `UMPermissionsInterface` dependency in the podspec. ([#12862](https://github.com/expo/expo/pull/12862) by [@budiTjendra](https://github.com/budiTjendra))
+
+### 🎉 New features
+
+- Added CocoaPods & Gradle scripts to use new autolinking implementation (opt-in feature). ([#11593](https://github.com/expo/expo/pull/11593) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
