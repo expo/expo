@@ -32,7 +32,7 @@ describe('User Authentication Flow', () => {
   });
 
   it(`logs in and stores session tokens correctly`, async () => {
-    const { sessionSecret } = { sessionSecret: uuid.v4() };
+    const { sessionSecret } = { sessionSecret: uuidv4() };
 
     // store session token
     await Store.dispatch(SessionActions.setSession({ sessionSecret }));
