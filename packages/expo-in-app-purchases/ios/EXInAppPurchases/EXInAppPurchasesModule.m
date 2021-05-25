@@ -354,11 +354,9 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   NSNumber *originalTransactionTime = originalTransaction ?
   @(originalTransaction.transactionDate.timeIntervalSince1970 * 1000) : @(0);
 
-  NSArray *productIds = @[transaction.payment.productIdentifier];
-
   return @{
            @"acknowledged": @(acknowledged),
-           @"productIds": productIds,
+           @"productId": transaction.payment.productIdentifier,
            @"orderId": transaction.transactionIdentifier,
            @"purchaseState": @(transaction.transactionState),
            @"purchaseTime": @(transaction.transactionDate.timeIntervalSince1970 * 1000),
