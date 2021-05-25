@@ -164,13 +164,13 @@ PODS:
   - expo-image (1.0.0-alpha.0):
     - React-Core
     - SDWebImage (~> 5.0)
-  - ExpoModulesCore (0.0.1):
-    - ExpoModulesCore/Core (= 0.0.1)
-    - ExpoModulesCore/Interfaces (= 0.0.1)
+  - ExpoModulesCore (0.0.2):
+    - ExpoModulesCore/Core (= 0.0.2)
+    - ExpoModulesCore/Interfaces (= 0.0.2)
     - UMCore
-  - ExpoModulesCore/Core (0.0.1):
+  - ExpoModulesCore/Core (0.0.2):
     - UMCore
-  - ExpoModulesCore/Interfaces (0.0.1):
+  - ExpoModulesCore/Interfaces (0.0.2):
     - ExpoModulesCore/Core
     - UMCore
   - EXPrint (10.1.0):
@@ -1236,7 +1236,7 @@ SPEC CHECKSUMS:
   expo-dev-menu: 7ad848104f908589ee1d8ce2023b632207408c5d
   expo-dev-menu-interface: 4fda2fa6d974a518e546ca1193340513b0a8b0e8
   expo-image: 07527eb7a57f5ac939c5ded392bcf64c975b9c87
-  ExpoModulesCore: efdfa6650a7b554180c1559b7be9c3510ce18e51
+  ExpoModulesCore: 456da7683ce872553ceb6d5b82b4264bbd04d5e1
   EXPrint: 81e7a9f136a34559c5f6558805213bc055bcc490
   EXRandom: cbd66cd45434a494f5ef98650eec1f8d78b90270
   EXScreenCapture: 2903dace06f2d06cc161017637cc4cbfcaa98986

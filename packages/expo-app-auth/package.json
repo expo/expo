@@ -45,7 +45,7 @@
   },
   "dependencies": {
     "@expo/config-plugins": "^1.0.32",
-    "expo-modules-core": "~0.0.1",
+    "expo-modules-core": "~0.0.2",
     "invariant": "^2.2.4"
   },
   "devDependencies": {

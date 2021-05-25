@@ -33,7 +33,7 @@
   "homepage": "https://docs.expo.io/versions/latest/sdk/av/",
   "dependencies": {
     "@expo/config-plugins": "^1.0.32",
-    "expo-modules-core": "~0.0.1"
+    "expo-modules-core": "~0.0.2"
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"
