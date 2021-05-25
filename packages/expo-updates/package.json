@@ -34,16 +34,17 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/metro-config": "^0.1.68",
     "@expo/config-plugins": "^1.0.32",
+    "@expo/metro-config": "^0.1.68",
     "expo-structured-headers": "~1.0.1",
     "fbemitter": "^2.1.1",
-    "uuid": "^3.4.0",
-    "resolve-from": "^5.0.0"
+    "resolve-from": "^5.0.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@types/uuid": "^8.3.0",
     "expo-module-scripts": "^2.0.0",
-    "memfs": "^3.2.0",
-    "fs-extra": "^9.1.0"
+    "fs-extra": "^9.1.0",
+    "memfs": "^3.2.0"
   }
 }
