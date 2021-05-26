@@ -25,8 +25,8 @@ This is an example of how your package.json might look like:
     "eas-build-pre-install": "echo 123",
     "eas-build-post-install": "echo 456",
     "eas-build-pre-upload-artifacts": "echo 789",
-    "android": "react-native run-android",
-    "ios": "react-native run-ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "start": "react-native start",
     "test": "jest"
