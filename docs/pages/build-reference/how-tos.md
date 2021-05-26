@@ -28,7 +28,7 @@ This is an example of how your package.json might look like:
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "start": "expo start --dev-client",
+    "start": "react-native start",
     "test": "jest"
   },
   "dependencies": {
