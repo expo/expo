@@ -21,8 +21,6 @@ import expo.modules.updatesinterface.UpdatesInterface;
 
 public class UpdatesDevLauncherController implements UpdatesInterface {
 
-  private JSONObject mRawManifest;
-
   public UpdatesDevLauncherController(Context context) {
     UpdatesController.initializeInternal(context);
     setDevelopmentSelectionPolicy();
@@ -38,13 +36,9 @@ public class UpdatesDevLauncherController implements UpdatesInterface {
     ));
   }
 
-  private void reset() {
-    mRawManifest = null;
-  }
-
   @Override
   public void fetchUpdateWithConfiguration(HashMap<String, Object> configuration, Context context, UpdateCallback callback) {
-    reset();
+    // TODO: call reaper
 
     UpdatesController controller = UpdatesController.getInstance();
     UpdatesConfiguration updatesConfiguration = new UpdatesConfiguration()
@@ -88,7 +82,7 @@ public class UpdatesDevLauncherController implements UpdatesInterface {
               callback.onSuccess(new Update() {
                 @Override
                 public JSONObject getManifest() {
-                  return mRawManifest;
+                  return launcher.getLaunchedUpdate().getRawManifest().getRawJson();
                 }
 
                 @Override
@@ -108,8 +102,7 @@ public class UpdatesDevLauncherController implements UpdatesInterface {
 
       @Override
       public boolean onManifestLoaded(Manifest manifest) {
-        mRawManifest = manifest.getRawManifest().getRawJson();
-        return callback.onManifestLoaded(mRawManifest);
+        return callback.onManifestLoaded(manifest.getRawManifest().getRawJson());
       }
     });
   }
