@@ -75,7 +75,7 @@ import com.android.build.OutputFile
  */
 
 project.ext.react = [
-    enableHermes: false,  // clean and rebuild if changing
+    enableHermes: JS_RUNTIME == "hermes",  // clean and rebuild if changing
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
