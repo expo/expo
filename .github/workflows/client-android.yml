@@ -37,24 +37,38 @@ jobs:
   build:
     runs-on: ubuntu-18.04
     steps:
-      - uses: actions/checkout@v2
+      - name: 👀 Checkout
+        uses: actions/checkout@v2
         with:
           submodules: true
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - uses: actions/cache@v2
+      - name: ♻️ Restore workspace node modules
+        uses: actions/cache@v2
+        id: node-modules-cache
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-      - run: yarn install --frozen-lockfile
-      - uses: ruby/setup-ruby@v1
+          path: |
+            # See "workspaces" → "packages" in the root package.json for the source of truth of
+            # which node_modules are affected by the root yarn.lock
+            node_modules
+            apps/*/node_modules
+            home/node_modules
+            packages/*/node_modules
+            packages/@unimodules/*/node_modules
+            react-native-lab/react-native/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
+      - name: ♻️ Restore node modules in tools
+        uses: actions/cache@v2
+        with:
+          path: tools/node_modules
+          key: ${{ runner.os }}-tools-modules-${{ hashFiles('tools/yarn.lock') }}
+      - name: 🧶 Yarn install
+        run: yarn install --frozen-lockfile
+      - name: 💎 Setup Ruby and install gems
+        uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-      - run: sudo apt-get install git-crypt
-      - name: decrypt secrets if possible
+      - name: 🐙 Install git-crypt
+        run: sudo apt-get install git-crypt
+      - name: 🔓 Decrypt secrets if possible
         env:
           GIT_CRYPT_KEY_BASE64: ${{ secrets.GIT_CRYPT_KEY_BASE64 }}
         run: |
@@ -63,25 +77,26 @@ jobs:
           else
             git crypt unlock <(echo $GIT_CRYPT_KEY_BASE64 | base64 --decode)
           fi
-      - uses: actions/cache@v2
+      - name: ♻️ Restore Gradle caches
+        uses: actions/cache@v2
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - uses: actions/cache@v2
+      - name: ♻️ Restore Android NDK from cache
+        uses: actions/cache@v2
         id: cache-android-ndk
         with:
           path: /usr/local/lib/android/sdk/ndk/19.2.5345600/
           key: ${{ runner.os }}-ndk-19.2.5345600
           restore-keys: |
             ${{ runner.os }}-ndk-
-      - name: Install NDK
+      - name: 🛠 Install NDK
         if: steps.cache-android-ndk.outputs.cache-hit != 'true'
         run: |
           sudo $ANDROID_HOME/tools/bin/sdkmanager --install "ndk;19.2.5345600"
-      - run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - name: Build APK
+      - name: 🏭 Build APK
         env:
           ANDROID_KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -91,23 +106,24 @@ jobs:
         run: |
           if [ -z "$ANDROID_KEYSTORE_B64" ]; then
             echo "External build detected, APK will not be signed"
-            fastlane android build build_type:Release sign:false
+            bin/fastlane android build build_type:Release sign:false
           else
             echo "Internal build detected, APK will be signed"
             echo $ANDROID_KEYSTORE_B64 | base64 -d > android/app/release-key.jks
-            fastlane android build build_type:Release
+            bin/fastlane android build build_type:Release
           fi
-      - uses: actions/upload-artifact@v2
+      - name: 💾 Upload APK artifact
+        uses: actions/upload-artifact@v2
         with:
           name: android-apk
           path: android/app/build/outputs/apk
-      - name: Store daemon logs for debugging crashes
+      - name: 💾 Store daemon logs for debugging crashes
         if: failure()
         uses: actions/upload-artifact@v2
         with:
           name: gradle-daemon-logs
           path: ~/.gradle/daemon
-      - name: Upload APK to S3 and update staging versions endpoint
+      - name: 📤 Upload APK to S3 and update staging versions endpoint
         if: ${{ github.event.inputs.releaseAPK == 'release-apk' }}
         run: bin/expotools client-build --platform android --release
         env:
@@ -116,7 +132,7 @@ jobs:
           EXPO_VERSIONS_SECRET: ${{ secrets.expo_versions_secret }}
       - name: Upload APK to Google Play and release to production
         if: ${{ github.event.inputs.releaseGooglePlay == 'release-google-play' }}
-        run: fastlane android prod_release
+        run: bin/fastlane android prod_release
         env:
           SUPPLY_JSON_KEY_DATA: ${{ secrets.SUPPLY_JSON_KEY_DATA }}
       - name: 🔔 Notify on Slack
