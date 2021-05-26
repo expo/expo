@@ -966,5 +966,3 @@ Alias: `expo ui`
 
 </p>
 </details>
-
-Done in 5.59s.
