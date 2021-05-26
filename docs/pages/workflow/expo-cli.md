@@ -29,6 +29,9 @@ The commands listed below are derived from the latest version of Expo CLI. You c
 
 <TerminalBlock cmd={[`# Usage: expo [command] [options]`]} />
 
+yarn run v1.22.10
+$ ts-node ./scripts/introspect.ts md
+
 ### Auth
 
 <details>
@@ -416,10 +419,10 @@ Alias: `expo update`
 Alias: `expo ph`
 
 | Option                                 | Description                                                                                          |
-| -------------------------------------- | ---------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | `-c, --release-channel [channel-name]` | Filter by release channel. If this flag is not included, the most recent publications will be shown. |
 | `--count [number-of-logs]`             | Number of logs to view, maximum 100, default 5.                                                      |
-| `-p, --platform [ios                   | android]`                                                                                            | Filter by platform, android or ios. Defaults to both platforms. |
+| `-p, --platform [ios⎮android]`         | Filter by platform, android or ios. Defaults to both platforms.                                      |
 | `-s, --sdk-version [version]`          | Filter by SDK version e.g. 35.0.0                                                                    |
 | `-r, --raw`                            | Produce some raw output.                                                                             |
 | `--config [file]`                      | Deprecated: Use app.config.js to switch config files instead.                                        |
@@ -473,11 +476,11 @@ Alias: `expo ps`
 Alias: `expo pr`
 
 | Option                                 | Description                                                   |
-| -------------------------------------- | ------------------------------------------------------------- | ------------------------- |
+| -------------------------------------- | ------------------------------------------------------------- |
 | `--channel-id [channel-id]`            | This flag is deprecated.                                      |
 | `-c, --release-channel [channel-name]` | The channel to rollback from. (Required)                      |
 | `-s, --sdk-version [version]`          | The sdk version to rollback. (Required)                       |
-| `-p, --platform [ios                   | android]`                                                     | The platform to rollback. |
+| `-p, --platform [ios⎮android]`         | The platform to rollback.                                     |
 | `--config [file]`                      | Deprecated: Use app.config.js to switch config files instead. |
 
 </p>
@@ -966,3 +969,5 @@ Alias: `expo ui`
 
 </p>
 </details>
+
+Done in 5.59s.
