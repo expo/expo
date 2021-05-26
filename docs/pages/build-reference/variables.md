@@ -143,8 +143,7 @@ After creating a secret, you can access the value via EAS Build hooks in Node.js
     "web": "expo start --web",
     "start": "expo start --dev-client",
     "test": "jest"
-  },
- ...
+  }
 }
 ```
 

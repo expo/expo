@@ -23,7 +23,7 @@ Don't have a project yet? No problem: it's quick and easy to create a "Hello wor
 
 - Install Expo CLI by running `npm install -g expo-cli`.
 - Run `expo init PROJECT_NAME`. Choose the project template that best suits you.
-- EAS Build also works well with projects created by `npx react-native`, `create-react-native-app`, `ignite-cli`, and other project bootstrapping tools.
+- EAS Build also works well with projects created by `npx create-react-native-app`, `npx react-native`, `ignite-cli`, and other project bootstrapping tools.
 
 <ImageSpotlight alt="Terminal running expo init, with minimal (TypeScript) selected" src="/static/images/eas-build/walkthrough/01-init.png" />
 
@@ -99,8 +99,6 @@ The easiest way to try out EAS Build is to create a build that you can run on yo
 
 </p>
 </details>
-
-
 
 - Run `eas build --platform android` to build for Android.
 
