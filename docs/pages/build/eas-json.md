@@ -47,7 +47,7 @@ where `PLATFORM_NAME` is one of `android` or `ios`.
 
 There are two types of build profiles: generic and managed.
 
-**Generic projects** make almost no assumptions about your project's structure. The only requirement is that your project follows the general structure of React Native projects. This means there are `android` and `ios` directories in the root directory with the Gradle and Xcode projects, respectively. Whether you've intialized your project with `expo init --template bare-minimum` or with `npx create-react-native-app`, you can build it with EAS Build.
+**Generic projects** make almost no assumptions about your project's structure. The only requirement is that your project follows the general structure of React Native projects. This means there are `android` and `ios` directories in the root directory with the Gradle and Xcode projects, respectively. Whether you've initialized your project with `expo init --template bare-minimum` or with `npx react-native init`, you can build it with EAS Build.
 
 **Managed projects** are much simpler in terms of the project's structure and the knowledge needed to start developing your application. Those projects don't have the native code in the repository and they are tightly coupled with Expo. Basically, by managed projects, we mean projects initialized with `expo init` using a managed workflow template (like `blank`, `blank-typescript`, or `tabs`).
 
