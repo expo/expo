@@ -1,8 +1,7 @@
-import { ConfigPlugin, IOSConfig } from '@expo/config-plugins';
-import { InfoPlist } from '@expo/config-plugins/build/ios/IosConfig.types';
+import { ConfigPlugin, InfoPlist } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 declare type ExpoConfigFacebook = Pick<ExpoConfig, 'facebookScheme' | 'facebookAdvertiserIDCollectionEnabled' | 'facebookAppId' | 'facebookAutoInitEnabled' | 'facebookAutoLogAppEventsEnabled' | 'facebookDisplayName'>;
-export declare const withFacebookIOS: ConfigPlugin<void>;
+export declare const withFacebookIOS: ConfigPlugin;
 /**
  * Getters
  * TODO: these getters are the same between ios/android, we could reuse them
@@ -16,8 +15,8 @@ export declare function getFacebookAdvertiserIDCollection(config: ExpoConfigFace
 /**
  * Setters
  */
-export declare function setFacebookConfig(config: ExpoConfigFacebook, infoPlist: InfoPlist): IOSConfig.InfoPlist;
-export declare function setFacebookScheme(config: ExpoConfigFacebook, infoPlist: InfoPlist): IOSConfig.InfoPlist;
+export declare function setFacebookConfig(config: ExpoConfigFacebook, infoPlist: InfoPlist): InfoPlist;
+export declare function setFacebookScheme(config: ExpoConfigFacebook, infoPlist: InfoPlist): InfoPlist;
 export declare function setFacebookAutoInitEnabled(config: ExpoConfigFacebook, { FacebookAutoInitEnabled, ...infoPlist }: InfoPlist): {
     [x: string]: string | number | boolean | import("@expo/json-file").JSONArray | import("@expo/json-file").JSONObject | null | undefined;
     UIStatusBarHidden?: boolean | undefined;
