@@ -1,32 +1,37 @@
 package expo.modules.clipboard
 
-import io.mockk.mockk
-import org.junit.Assert.assertTrue
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
+
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.unimodules.test.core.PromiseMock
-import org.unimodules.test.core.moduleRegistryMock
+import org.unimodules.test.core.assertResolved
 
 @RunWith(RobolectricTestRunner::class)
 class ClipboardModuleTest {
-
-  private var moduleRegistry = moduleRegistryMock()
-
-  private lateinit var promise: PromiseMock
 
   private lateinit var module: ClipboardModule
 
   @Before
   fun initializeMock() {
-    promise = PromiseMock()
-    module = ClipboardModule(mockk())
+    module = ClipboardModule(ApplicationProvider.getApplicationContext())
   }
 
   @Test
-  fun testSomeGreatMethodAsync() {
-    assertTrue(true)
-  }
+  fun setAndGetString() {
+    var promise1 = PromiseMock()
+    module.setString("albus dumbledore", promise1)
+    assertResolved(promise1)
+    assertNull(promise1.resolveValue)
 
+    var promise2 = PromiseMock()
+    module.getStringAsync(promise2)
+    assertResolved(promise2)
+    assertEquals("albus dumbledore", promise2.resolveValue)
+  }
 }

@@ -31,10 +31,11 @@ class ClipboardModule(context: Context) : ExportedModule(context) {
   }
 
   @ExpoMethod
-  fun setString(promise: Promise, content: String) {
+  fun setString(content: String, promise: Promise) {
     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     val clip = ClipData.newPlainText(null, content)
     clipboard.setPrimaryClip(clip)
+    promise.resolve(null);
   }
 
   companion object {
