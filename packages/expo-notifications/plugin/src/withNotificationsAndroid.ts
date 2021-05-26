@@ -10,10 +10,20 @@ import { generateImageAsync } from '@expo/image-utils';
 import fs from 'fs-extra';
 import path from 'path';
 
+type DPIString = 'mdpi' | 'hdpi' | 'xhdpi' | 'xxhdpi' | 'xxxhdpi';
+type dpiMap = Record<DPIString, { folderName: string; scale: number }>;
+
 const { buildResourceItem, readResourcesXMLAsync } = AndroidConfig.Resources;
 const { writeXMLAsync } = XML;
 const { Colors } = AndroidConfig;
-const { ANDROID_RES_PATH, dpiValues } = AndroidConfig.Icon;
+export const ANDROID_RES_PATH = 'android/app/src/main/res/';
+export const dpiValues: dpiMap = {
+  mdpi: { folderName: 'mipmap-mdpi', scale: 1 },
+  hdpi: { folderName: 'mipmap-hdpi', scale: 1.5 },
+  xhdpi: { folderName: 'mipmap-xhdpi', scale: 2 },
+  xxhdpi: { folderName: 'mipmap-xxhdpi', scale: 3 },
+  xxxhdpi: { folderName: 'mipmap-xxxhdpi', scale: 4 },
+};
 const {
   addMetaDataItemToMainApplication,
   getMainApplicationOrThrow,
