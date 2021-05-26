@@ -4,7 +4,7 @@ title: Sharing before release
 
 import Video from '~/components/plugins/Video'
 
-The typical means of distribution for a mobile app is through the Apple App Store and/or Google Play Store, but this isn't the best way to share pre-production build. During the development process you'll want share your progress with both technical and non-technical stakeholders in the project to gather feedback and test it, and there are several approaches you can take for doing this.
+The typical means of distribution for a mobile app is through the Apple App Store and/or Google Play Store, but this isn't the best way to share pre-production builds. During the development process you'll want share your progress with both technical and non-technical stakeholders of the project to gather feedback and test it, and there are several approaches you can take for doing this.
 
 ## Expo Go
 
