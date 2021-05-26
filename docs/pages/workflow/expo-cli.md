@@ -29,6 +29,9 @@ The commands listed below are derived from the latest version of Expo CLI. You c
 
 <TerminalBlock cmd={[`# Usage: expo [command] [options]`]} />
 
+yarn run v1.22.10
+$ ts-node ./scripts/introspect.ts md
+
 ### Auth
 
 <details>
@@ -174,6 +177,43 @@ Alias: `expo p`
 | `--max-workers [num]`                 | Maximum number of tasks to allow Metro to spawn.                                        |
 | `--release-channel [release channel]` | The release channel to publish to. Default is 'default'.                                |
 | `--config [file]`                     | Deprecated: Use app.config.js to switch config files instead.                           |
+
+</p>
+</details>
+
+<details>
+<summary>
+<h4>expo run:android</h4>
+<p>Run the Android app binary locally</p>
+</summary>
+<p>
+
+| Option                  | Description                                                   |
+| ----------------------- | ------------------------------------------------------------- |
+| `--no-bundler`          | Skip starting the Metro bundler                               |
+| `-d, --device [device]` | Device name to build the app on                               |
+| `-p, --port [port]`     | Port to start the Metro bundler on. Default: 8081             |
+| `--variant [name]`      | (Android) build variant                                       |
+| `--config [file]`       | Deprecated: Use app.config.js to switch config files instead. |
+
+</p>
+</details>
+
+<details>
+<summary>
+<h4>expo run:ios</h4>
+<p>Run the iOS app binary locally</p>
+</summary>
+<p>
+
+| Option                            | Description                                                   |
+| --------------------------------- | ------------------------------------------------------------- |
+| `--no-bundler`                    | Skip starting the Metro bundler                               |
+| `-d, --device [device]`           | Device name or UDID to build the app on                       |
+| `-p, --port [port]`               | Port to start the Metro bundler on. Default: 8081             |
+| `--scheme [scheme]`               | Scheme to build                                               |
+| `--configuration [configuration]` | Xcode configuration to use. Debug or Release. Default: Debug  |
+| `--config [file]`                 | Deprecated: Use app.config.js to switch config files instead. |
 
 </p>
 </details>
@@ -379,10 +419,10 @@ Alias: `expo update`
 Alias: `expo ph`
 
 | Option                                 | Description                                                                                          |
-| -------------------------------------- | ---------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | `-c, --release-channel [channel-name]` | Filter by release channel. If this flag is not included, the most recent publications will be shown. |
 | `--count [number-of-logs]`             | Number of logs to view, maximum 100, default 5.                                                      |
-| `-p, --platform [ios                   | android]`                                                                                            | Filter by platform, android or ios. Defaults to both platforms. |
+| `-p, --platform [ios⎮android]`         | Filter by platform, android or ios. Defaults to both platforms.                                      |
 | `-s, --sdk-version [version]`          | Filter by SDK version e.g. 35.0.0                                                                    |
 | `-r, --raw`                            | Produce some raw output.                                                                             |
 | `--config [file]`                      | Deprecated: Use app.config.js to switch config files instead.                                        |
@@ -436,11 +476,11 @@ Alias: `expo ps`
 Alias: `expo pr`
 
 | Option                                 | Description                                                   |
-| -------------------------------------- | ------------------------------------------------------------- | ------------------------- |
+| -------------------------------------- | ------------------------------------------------------------- |
 | `--channel-id [channel-id]`            | This flag is deprecated.                                      |
 | `-c, --release-channel [channel-name]` | The channel to rollback from. (Required)                      |
 | `-s, --sdk-version [version]`          | The sdk version to rollback. (Required)                       |
-| `-p, --platform [ios                   | android]`                                                     | The platform to rollback. |
+| `-p, --platform [ios⎮android]`         | The platform to rollback.                                     |
 | `--config [file]`                      | Deprecated: Use app.config.js to switch config files instead. |
 
 </p>
@@ -929,3 +969,5 @@ Alias: `expo ui`
 
 </p>
 </details>
+
+Done in 5.59s.
