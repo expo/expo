@@ -8,7 +8,7 @@ export declare const NOTIFICATION_ICON_COLOR = "notification_icon_color";
 export declare const NOTIFICATION_ICON_COLOR_RESOURCE: string;
 export declare const withNotificationIcons: ConfigPlugin;
 export declare const withNotificationIconColor: ConfigPlugin;
-export declare const withNotificationManifest: ConfigPlugin<void>;
+export declare const withNotificationManifest: ConfigPlugin;
 export declare function getNotificationIcon(config: ExpoConfig): string | null;
 export declare function getNotificationColor(config: ExpoConfig): string | null;
 /**

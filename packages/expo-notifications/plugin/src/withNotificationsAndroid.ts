@@ -1,15 +1,17 @@
-import { AndroidConfig, ConfigPlugin, withDangerousMod } from '@expo/config-plugins';
 import {
-  buildResourceItem,
-  readResourcesXMLAsync,
-} from '@expo/config-plugins/build/android/Resources';
-import { createAndroidManifestPlugin } from '@expo/config-plugins/build/plugins/android-plugins';
-import { writeXMLAsync } from '@expo/config-plugins/build/utils/XML';
+  AndroidConfig,
+  ConfigPlugin,
+  withAndroidManifest,
+  withDangerousMod,
+  XML,
+} from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 import { generateImageAsync } from '@expo/image-utils';
 import fs from 'fs-extra';
 import path from 'path';
 
+const { buildResourceItem, readResourcesXMLAsync } = AndroidConfig.Resources;
+const { writeXMLAsync } = XML;
 const { Colors } = AndroidConfig;
 const { ANDROID_RES_PATH, dpiValues } = AndroidConfig.Icon;
 const {
@@ -46,10 +48,12 @@ export const withNotificationIconColor: ConfigPlugin = config => {
   ]);
 };
 
-export const withNotificationManifest = createAndroidManifestPlugin(
-  setNotificationConfigAsync,
-  'withNotificationManifest'
-);
+export const withNotificationManifest: ConfigPlugin = config => {
+  return withAndroidManifest(config, async config => {
+    config.modResults = await setNotificationConfigAsync(config, config.modResults);
+    return config;
+  });
+};
 
 export function getNotificationIcon(config: ExpoConfig) {
   return config.notification?.icon || null;
