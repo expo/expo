@@ -42,7 +42,7 @@ class DevMenuAppInfo extends React.PureComponent<Props, any> {
           <AppInfoRow name="Version" value={appVersion} />
           <AppInfoRow name="Host" value={hostUrl?.replace(/^\w+:\/\//, '').replace(/\/.*$/, '')} />
           <AppInfoRow name="SDK" value={expoSdkVersion} />
-          <AppInfoRow name="JS Runtime" value={jsRuntime} />
+          <AppInfoRow name="JS Engine" value={jsRuntime} />
         </View>
       </StyledView>
     );
@@ -93,7 +93,7 @@ function createJSRuntimeInfo(): string {
     let result = 'Hermes';
     const bytecodeVersion = global['HermesInternal'].getRuntimeProperties()['Bytecode Version'];
     if (bytecodeVersion) {
-      result += ` (bytecode ver: ${bytecodeVersion})`;
+      result += ` (bytecode v${bytecodeVersion})`;
     }
     return result;
   }
