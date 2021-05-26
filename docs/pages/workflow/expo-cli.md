@@ -29,9 +29,6 @@ The commands listed below are derived from the latest version of Expo CLI. You c
 
 <TerminalBlock cmd={[`# Usage: expo [command] [options]`]} />
 
-yarn run v1.22.10
-$ ts-node ./scripts/introspect.ts md
-
 ### Auth
 
 <details>
