@@ -18,11 +18,9 @@ suspend fun UpdatesInterface.loadUpdate(
     this.fetchUpdateWithConfiguration(configuration, context, object : UpdatesInterface.UpdateCallback {
       override fun onSuccess(update: UpdatesInterface.Update) = cont.resume(update)
       override fun onFailure(e: Exception?) {
-        e?.let { cont.resumeWithException(it) }
+        cont.resumeWithException(e ?: Exception("There was an unexpected error loading the update."))
       }
-      override fun onProgress(successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int) {
-        // do nothing for now
-      }
+      override fun onProgress(successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int) = Unit
       override fun onManifestLoaded(manifest: JSONObject): Boolean {
         return if (shouldContinue(manifest)) {
           true
@@ -40,11 +38,11 @@ suspend fun UpdatesInterface.loadUpdate(
   }
 
 fun createUpdatesConfigurationWithUrl(url: Uri): HashMap<String, Any> {
-  val configuration: HashMap<String, Any> = HashMap()
-  configuration["updateUrl"] = url
-  configuration["hasEmbeddedUpdate"] = false
-  configuration["launchWaitMs"] = 60000
-  configuration["checkOnLaunch"] = "ALWAYS"
-  configuration["enabled"] = true
-  return configuration
+  return hashMapOf(
+    "updateUrl" to url,
+    "hasEmbeddedUpdate" to false,
+    "launchWaitMs" to 60000,
+    "checkOnLaunch" to "ALWAYS",
+    "enabled" to true
+  )
 }

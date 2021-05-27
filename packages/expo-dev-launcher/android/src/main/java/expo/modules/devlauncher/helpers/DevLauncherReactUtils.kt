@@ -103,7 +103,6 @@ fun injectLocalBundleLoader(
   }
 }
 
-
 fun findDevMenuPackage(): ReactPackage? {
   return try {
     val clazz = Class.forName("expo.modules.devmenu.DevMenuPackage")

@@ -54,7 +54,7 @@ data class DevLauncherManifest(
     private set
 
   fun isUsingDeveloperTool(): Boolean {
-    return this.developer?.tool != null
+    return developer?.tool != null
   }
 
   /**
