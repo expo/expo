@@ -287,8 +287,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/logging/': '/workflow/logging/',
   '/introduction/troubleshooting-proxies/': '/guides/troubleshooting-proxies/',
   '/introduction/running-in-the-browser/': '/guides/running-in-the-browser/',
-  // Consolidate workflow page
-  '/bare/customizing/': '/workflow/customizing/',
 
   // Changes from redoing the getting started workflow, SDK35+
   '/workflow/up-and-running/': '/get-started/installation/',

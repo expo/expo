@@ -7,7 +7,7 @@ If you want to use parts of the Expo SDK in your existing React Native app, you 
 
 **Most packages in the Expo SDK depend on a React Native module dependency injection and utility library called [react-native-unimodules](https://github.com/expo/expo/tree/master/packages/react-native-unimodules). Once it is installed and configured in your app, you can install other packages from the Expo SDK just as you would any other React Native library.**
 
-The reason `react-native-unimodules` exists is so that we can reuse native code across Expo modules to reduce code duplication, improve reliability, and provide a consistent API across modules. For example, `Camera` can use native code from `FileSystem` and `Permissions` rather than `Camera` reimplementing the functionality those modules provide.
+The reason react-native-unimodules exists is so that we can reuse native code across Expo modules to reduce code duplication, improve reliability, and provide a consistent API across modules. For example, `Camera` can use native code from `FileSystem` and `Permissions` rather than `Camera` reimplementing the functionality those modules provide.
 
 ## Setting up react-native-unimodules
 

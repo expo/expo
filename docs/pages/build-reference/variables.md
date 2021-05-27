@@ -141,7 +141,7 @@ After creating a secret, you can access the value via EAS Build hooks in Node.js
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "start": "expo start --dev-client",
+    "start": "react-native start",
     "test": "jest"
   }
 }
