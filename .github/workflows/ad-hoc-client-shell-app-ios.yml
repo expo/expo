@@ -13,6 +13,10 @@ on:
       - .github/workflows/ad-hoc-client-shell-app-ios.yml
       - .ruby-version
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: macos-10.15

@@ -17,6 +17,10 @@ on:
       - 'docs/**'
       - '.github/workflows/docs.yml'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   docs:
     runs-on: ubuntu-18.04
