@@ -62,6 +62,14 @@ export type GitFileDiff = parseDiff.File & {
   path: string;
 };
 
+export type GitListTree = {
+  mode: string;
+  type: string;
+  object: string;
+  size: number;
+  path: string;
+};
+
 /**
  * Helper class that stores the directory inside the repository so we don't have to pass it many times.
  * This directory path doesn't have to be the repo's root path,
@@ -376,6 +384,28 @@ export class GitDirectory {
         path: path.join(this.path, finalPath!),
       };
     });
+  }
+
+  /**
+   * Lists the contents of a given tree object, like what "ls -a" does in the current working directory.
+   */
+  async listTreeAsync(ref: string, paths: string[]): Promise<GitListTree[]> {
+    const { stdout } = await this.runAsync(['ls-tree', '-l', ref, '--', ...paths]);
+
+    return stdout
+      .trim()
+      .split(/\n+/g)
+      .map((line) => {
+        const columns = line.split(/\b(?=\s+)/g);
+
+        return {
+          mode: columns[0].trim(),
+          type: columns[1].trim(),
+          object: columns[2].trim(),
+          size: Number(columns[3].trim()),
+          path: columns.slice(4).join('').trim(),
+        };
+      });
   }
 
   /**

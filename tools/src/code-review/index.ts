@@ -6,6 +6,7 @@ import logger from '../Logger';
 import { generateReviewBodyFromOutputs } from './reports';
 import checkMissingChangelogs from './reviewers/checkMissingChangelogs';
 import reviewChangelogEntries from './reviewers/reviewChangelogEntries';
+import reviewForbiddenFiles from './reviewers/reviewForbiddenFiles';
 import {
   ReviewEvent,
   ReviewComment,
@@ -18,7 +19,7 @@ import {
 /**
  * An array with functions whose purpose is to check and review the diff.
  */
-const REVIEWERS = [checkMissingChangelogs, reviewChangelogEntries];
+const REVIEWERS = [checkMissingChangelogs, reviewChangelogEntries, reviewForbiddenFiles];
 
 enum Label {
   APPROVED = '🤖 approved',

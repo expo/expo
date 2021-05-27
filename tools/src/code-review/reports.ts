@@ -25,7 +25,7 @@ function reportForOutput(output: ReviewOutput): string {
   return `<details>
   <summary><strong>${prefixForStatus(output.status)}</strong>: ${output.title}</summary>
 
-\\
+&NewLine;
 ${output.body}
 </details>
 
