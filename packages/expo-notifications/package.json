@@ -38,6 +38,7 @@
   },
   "unimodulePeerDependencies": {
     "@unimodules/core": "*",
+    "unimodules-task-manager-interface": "*",
     "expo-application": "^2.1.0",
     "expo-constants": ">=9.3.3 <11.0.0"
   },
