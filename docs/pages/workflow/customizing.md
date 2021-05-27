@@ -37,7 +37,7 @@ If you want to make static changes to your native project files like the iOS `In
 
 # Production
 
-When you're ready to ship your app, you can build it with EAS Build!
+When you're ready to ship your app, you can build it with EAS Build! [Learn more](/build/introduction.md).
 
 <TerminalBlock cmd={['# Install the CLI', 'npm i -g eas-cli', '# Build your app!', 'eas build']} />
 
