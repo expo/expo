@@ -18,7 +18,7 @@ You can do this in a single command:
 <!-- TODO: Add a doctor command bootstrap easier -->
 <!-- TODO: Don't link outside of Expo docs -->
 
-- `expo run:android` requires Android Studio setup on your computer. See the [setup guide](https://reactnative.dev/docs/environment-setup)
+- `expo run:android` requires Android Studio and the Android SDK to be installed. See the [setup guide](https://reactnative.dev/docs/environment-setup)
 
 > Run commands were introduced in SDK 41, prebuilding and running in earlier SDKs may not work as well.
 
