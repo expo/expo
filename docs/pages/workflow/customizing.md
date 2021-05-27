@@ -34,3 +34,11 @@ If you install a package with a Expo [**config plugin**](../guides/config-plugin
 You may need to run `expo prebuild --clean` depending on how complex the plugin is. If you've made manual modifications to your `ios/` or `android/` folder, you'll need to manually setup new packages as running `expo prebuild` may not work as expected (think of this like running `yarn` after manually modifying your `node_modules/` folder).
 
 If you want to make static changes to your native project files like the iOS `Info.plist`, or `AndroidManifest.xml` and still have access to prebuilding, check out the [config plugins guide](../guides/config-plugins/#creating-a-plugin)
+
+# Production
+
+When you're ready to ship your app, you can build it with EAS Build!
+
+<TerminalBlock cmd={['# Install the CLI', 'npm i -g eas-cli', '# Build your app!', 'eas build']} />
+
+> The legacy `expo build` command does not support custom native code.
