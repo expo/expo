@@ -132,7 +132,6 @@ export async function test({
 
           await Promise.all(
             contacts.map(async contact => {
-              console.log({ contact });
               const id = await createContact(contact);
               expect(typeof id).toBe('string');
             })
