@@ -21,12 +21,25 @@ import expo.modules.updatesinterface.UpdatesInterface;
 
 public class UpdatesDevLauncherController implements UpdatesInterface {
 
-  public UpdatesDevLauncherController(Context context) {
-    UpdatesController.initializeWithoutStarting(context);
-    setDevelopmentSelectionPolicy();
+  private static UpdatesDevLauncherController sInstance;
+
+  public static UpdatesDevLauncherController getInstance() {
+    if (sInstance == null) {
+      throw new IllegalStateException("UpdatesDevLauncherController.getInstance() was called before the module was initialized");
+    }
+    return sInstance;
   }
 
-  private void setDevelopmentSelectionPolicy() {
+  public static UpdatesDevLauncherController initialize(Context context) {
+    if (sInstance == null) {
+      sInstance = new UpdatesDevLauncherController();
+    }
+    UpdatesController.initializeWithoutStarting(context);
+    setDevelopmentSelectionPolicy();
+    return getInstance();
+  }
+
+  private static void setDevelopmentSelectionPolicy() {
     UpdatesController controller = UpdatesController.getInstance();
     SelectionPolicy currentSelectionPolicy = controller.getSelectionPolicy();
     controller.setDefaultSelectionPolicy(new SelectionPolicy(
