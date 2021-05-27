@@ -1,18 +1,18 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <EXNotifications/EXNotificationsBackgroundModule.h>
-#import <EXNotifications/EXNotificationCenterDelegate.h>
+#import <EXNotifications/EXBackgroundNotificationsModule.h>
+#import <EXNotifications/EXBackgroundRemoteNotificationConsumer.h>
 #import <UMTaskManagerInterface/UMTaskManagerInterface.h>
 
-@interface EXNotificationsBackgroundModule ()
+@interface EXBackgroundNotificationsModule ()
 
 @property (nonatomic, weak) id<UMTaskManagerInterface> taskManager;
 
 @end
 
-@implementation EXNotificationsBackgroundModule
+@implementation EXBackgroundNotificationsModule
 
-UM_EXPORT_MODULE(EXNotificationsBackgroundModule);
+UM_EXPORT_MODULE(ExpoBackgroundNotificationsModule);
 
 # pragma mark - UMModuleRegistryConsumer
 
@@ -24,7 +24,6 @@ UM_EXPORT_MODULE(EXNotificationsBackgroundModule);
 
 UM_EXPORT_METHOD_AS(registerTaskAsync,
                     registerTaskWithName:(nonnull NSString *)taskName
-                    options:(nullable NSDictionary *)options
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
@@ -38,8 +37,8 @@ UM_EXPORT_METHOD_AS(registerTaskAsync,
 
   @try {
     [_taskManager registerTaskWithName:taskName
-                              consumer:EXBackgroundRemoteNotificationTaskConsumer.class
-                               options:options];
+                              consumer:EXBackgroundRemoteNotificationConsumer.class
+                               options:@{}];
   }
   @catch (NSException *e) {
     return reject(e.name, e.reason, nil);
@@ -53,7 +52,7 @@ UM_EXPORT_METHOD_AS(unregisterTaskAsync,
                     reject:(UMPromiseRejectBlock)reject)
 {
   @try {
-    [_taskManager unregisterTaskWithName:taskName consumerClass:[EXBackgroundRemoteNotificationTaskConsumer class]];
+    [_taskManager unregisterTaskWithName:taskName consumerClass:[EXBackgroundRemoteNotificationConsumer class]];
   } @catch (NSException *e) {
     return reject(e.name, e.reason, nil);
   }
