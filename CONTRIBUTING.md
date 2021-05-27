@@ -75,6 +75,7 @@ All modules should adhere to the style guides which can be found here:
 
 - [Guide to Unimodule Development](guides/Expo%20Universal%20Module%20Infrastructure.md)
 - [Expo JS Style Guide](guides/Expo%20JavaScript%20Style%20Guide.md) (also mostly applies to TypeScript)
+- [Updating Changelogs](guides/contributing/Updating%20Changelogs.md)
 
 ### Extra Credit
 
