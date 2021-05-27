@@ -51,7 +51,7 @@ To upload your iOS app to TestFlight, run `eas submit -p ios`. [Learn more about
 
 ### Manually uploading your app
 
-> This approach only works on macOS. If you don't have access to a macOS device, use EAS Submiy.
+> This approach only works on macOS. If you don't have access to a macOS device, use EAS Submit.
 
 In order to see your app on Testflight, you will first need to submit your .IPA file to Apple using **Transporter** (previously known as Application Loader), available on the App Store ([link](https://apps.apple.com/app/transporter/id1450874784)). In order to do this:
 
