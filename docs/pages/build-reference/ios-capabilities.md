@@ -2,7 +2,7 @@
 title: iOS Capabilities
 ---
 
-When you make a change to your iOS entitlements, this change needs to be updated remotely on Apple's servers before making a production build. EAS Build automatically synchronizes your changes with Apple Developer Portal when you run `eas build`!
+When you make a change to your iOS entitlements, this change needs to be updated remotely on Apple's servers before making a production build. EAS Build automatically synchronizes capabilities on the Apple Developer Portal with your local entitlements configuration when you run `eas build`.
 
 > This feature can be disabled with `EXPO_NO_CAPABILITY_SYNC=1 eas build`
 
@@ -14,11 +14,11 @@ In managed workflow, the entitlements are read from the introspected Expo config
 
 ## Enabling
 
-If a supported entitlement is present in the entitlements file, then EAS Build will enable it on Apple Developer Portal. If the capability is already enabled, then EAS Build will skip it.
+If a supported entitlement is present in the entitlements file, then running `eas build` will enable it on Apple Developer Portal. If the capability is already enabled, then EAS Build will skip it.
 
 ## Disabling
 
-If a capability is enabled for your app remotely, but not present in the native entitlements file, then EAS Build will automatically disable it.
+If a capability is enabled for your app remotely, but not present in the native entitlements file, then running `eas build` will automatically disable it.
 
 ## Supported Capabilities
 
