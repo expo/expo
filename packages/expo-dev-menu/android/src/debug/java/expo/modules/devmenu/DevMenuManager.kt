@@ -37,6 +37,8 @@ import expo.modules.devmenu.api.DevMenuExpoApiClient
 import expo.modules.devmenu.detectors.ShakeDetector
 import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
 import expo.modules.devmenu.modules.DevMenuSettings
+import expo.modules.devmenu.react.DevMenuPackagerCommandHandlersSwapper
+import expo.modules.devmenu.websockets.DevMenuCommandHandlersProvider
 import java.lang.ref.WeakReference
 
 object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
@@ -160,6 +162,16 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   private fun setUpReactInstanceManager(reactInstanceManager: ReactInstanceManager) {
     currentReactInstanceManager = WeakReference(reactInstanceManager)
+
+    val handlers = DevMenuCommandHandlersProvider(this, reactInstanceManager)
+      .createCommandHandlers()
+
+    DevMenuPackagerCommandHandlersSwapper()
+      .swapPackagerCommandHandlers(
+        reactInstanceManager,
+        handlers
+      )
+
     if (reactInstanceManager.currentReactContext == null) {
       reactInstanceManager.addReactInstanceEventListener(object : ReactInstanceManager.ReactInstanceEventListener {
         override fun onReactContextInitialized(context: ReactContext) {

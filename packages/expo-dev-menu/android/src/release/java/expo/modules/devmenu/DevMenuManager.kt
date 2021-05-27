@@ -16,6 +16,8 @@ import expo.interfaces.devmenu.items.DevMenuDataSourceItem
 private const val DEV_MENU_IS_NOT_AVAILABLE = "DevMenu isn't available in release builds"
 
 object DevMenuManager : DevMenuManagerInterface {
+  internal var delegate: DevMenuDelegateInterface? = null
+
   override fun openMenu(activity: Activity, screen: String?) {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
