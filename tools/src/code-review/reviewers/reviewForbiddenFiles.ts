@@ -24,13 +24,17 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
       if (IGNORED_PATHS.some((pattern) => minimatch(file.path, pattern))) {
         return null;
       }
-      if (path.extname(file.path).substr(1) === 'gif') {
-        logs.push(`**GIF** format is forbidden, please consider using **MP4** format`);
+
+      const extname = path.extname(file.path).substr(1).toLowerCase();
+      if (extname === 'gif') {
+        logs.push(`**GIF** files are forbidden, please consider using **MP4** instead`);
       }
+
       if (file.size > FILE_SIZE_LIMIT) {
         const prettySize = prettyBytes(file.size);
         logs.push(`File size **${prettySize}** exceeds the limit of **${PRETTY_FILE_SIZE_LIMIT}**`);
       }
+
       if (logs.length === 0) {
         return null;
       }
