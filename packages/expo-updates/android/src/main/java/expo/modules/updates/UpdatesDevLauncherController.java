@@ -38,8 +38,6 @@ public class UpdatesDevLauncherController implements UpdatesInterface {
 
   @Override
   public void fetchUpdateWithConfiguration(HashMap<String, Object> configuration, Context context, UpdateCallback callback) {
-    // TODO: call reaper
-
     UpdatesController controller = UpdatesController.getInstance();
     UpdatesConfiguration updatesConfiguration = new UpdatesConfiguration()
             .loadValuesFromMetadata(context)
@@ -110,6 +108,7 @@ public class UpdatesDevLauncherController implements UpdatesInterface {
             return launcher.getLaunchAssetFile();
           }
         });
+        controller.runReaper();
       }
     });
   }

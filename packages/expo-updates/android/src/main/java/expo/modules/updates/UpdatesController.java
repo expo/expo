@@ -331,7 +331,7 @@ public class UpdatesController {
     notify();
   }
 
-  private void runReaper() {
+  /* package */ void runReaper() {
     AsyncTask.execute(() -> {
       UpdatesDatabase database = getDatabase();
       Reaper.reapUnusedUpdates(mUpdatesConfiguration, database, mUpdatesDirectory, getLaunchedUpdate(), getSelectionPolicy());
