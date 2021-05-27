@@ -13,7 +13,7 @@ const linkStyle = {
 };
 
 const matchHashtagToLinkComponents = (match: string, key: number) => {
-  const url = `https://expo.io/tags/${match}`;
+  const url = `https://expo.dev/tags/${match}`;
   return (
     <A style={linkStyle} key={match + key} href={url}>
       #{match}
@@ -31,7 +31,7 @@ const matchTwitterToLinkComponents = (match: string, key: number) => {
 };
 
 const matchExpoToLinkComponents = (match: string, key: number) => {
-  const url = `https://expo.io/@${match}`;
+  const url = `https://expo.dev/@${match}`;
   return (
     <A style={linkStyle} key={match + key} href={url}>
       @{match}
