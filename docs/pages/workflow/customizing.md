@@ -25,7 +25,7 @@ You can do this in a single command:
 <!-- TODO: Link to run commands doc -->
 <!-- TODO: Link to prebuild commands doc -->
 
-Using the run commands will initially [prebuild](https://expo.fyi/prebuilding) your project to generate all of the native code. If you manually modify the `ios/` or `android/` folders, you won't be able to safely re-run `expo prebuild`, this is known as the [bare workflow](../introduction/managed-vs-bare.md#bare-workflow).
+Using the run commands will initially [prebuild](https://expo.fyi/prebuilding) your project to generate all of the native code within your project directory. If you manually modify the `ios/` or `android/` folders, you won't be able to safely re-run `expo prebuild`, this is known as the [bare workflow](../introduction/managed-vs-bare.md#bare-workflow).
 
 Your app can still run in Expo Go, but any custom native code won't be accessible if it's not already present in the Expo Go app. [Learn more](./using-expo-client).
 
