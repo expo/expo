@@ -13,7 +13,7 @@ You can do this in a single command:
 <!-- TODO: Add a doctor command bootstrap easier -->
 <!-- TODO: Don't link outside of Expo docs -->
 
-- `expo run:ios` requires Xcode (Macos only) installed on your computer. See the [setup guide](https://reactnative.dev/docs/environment-setup)
+- `expo run:ios` requires Xcode (macOS only) installed on your computer. See the [setup guide](https://reactnative.dev/docs/environment-setup)
 
 <!-- TODO: Add a doctor command bootstrap easier -->
 <!-- TODO: Don't link outside of Expo docs -->
