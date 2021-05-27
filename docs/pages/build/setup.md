@@ -25,7 +25,7 @@ Don't have a project yet? No problem: it's quick and easy to create a "Hello wor
 - Run `expo init PROJECT_NAME`. Choose the project template that best suits you.
 - EAS Build also works well with projects created by `npx create-react-native-app`, `npx react-native`, `ignite-cli`, and other project bootstrapping tools.
 
-<ImageSpotlight alt="Terminal running expo init, with minimal (TypeScript) selected" src="/static/images/eas-build/walkthrough/01-init.png" />
+<ImageSpotlight alt="Terminal running expo init, with minimal (TypeScript) selected" src="/static/images/eas-build/expo-init.png" />
 
 </p>
 </details>
