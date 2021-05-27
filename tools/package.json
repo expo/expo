@@ -27,7 +27,7 @@
     "@expo/json-file": "^8.2.6",
     "@expo/spawn-async": "^1.5.0",
     "@expo/xcodegen": "2.18.0-patch.1",
-    "@expo/xdl": "^59.1.0",
+    "@expo/xdl": "^59.1.1",
     "@octokit/rest": "^18.5.3",
     "@types/base-64": "^0.1.2",
     "@types/concat-stream": "^1.6.0",
