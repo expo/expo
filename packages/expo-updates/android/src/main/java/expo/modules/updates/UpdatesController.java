@@ -52,7 +52,7 @@ public class UpdatesController {
   private Exception mUpdatesDirectoryException;
   private Launcher mLauncher;
   private DatabaseHolder mDatabaseHolder;
-  private SelectionPolicy mSelectionPolicy;
+  private SelectionPolicy mSelectionPolicy = null;
   private FileDownloader mFileDownloader;
 
   private SelectionPolicy mDefaultSelectionPolicy;
@@ -65,7 +65,6 @@ public class UpdatesController {
     mUpdatesConfiguration = updatesConfiguration;
     mDatabaseHolder = new DatabaseHolder(UpdatesDatabase.getInstance(context));
     mDefaultSelectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(UpdatesUtils.getRuntimeVersion(mUpdatesConfiguration));
-    mSelectionPolicy = mDefaultSelectionPolicy;
     mFileDownloader = new FileDownloader(context);
     if (context instanceof ReactApplication) {
       mReactNativeHost = new WeakReference<>(((ReactApplication) context).getReactNativeHost());
@@ -86,7 +85,7 @@ public class UpdatesController {
     return sInstance;
   }
 
-  /* package */ static void initializeInternal(Context context) {
+  /* package */ static void initializeWithoutStarting(Context context) {
     if (sInstance == null) {
       UpdatesConfiguration updatesConfiguration = new UpdatesConfiguration().loadValuesFromMetadata(context);
       sInstance = new UpdatesController(context, updatesConfiguration);
@@ -99,7 +98,7 @@ public class UpdatesController {
    * @param context the base context of the application, ideally a {@link ReactApplication}
    */
   public static void initialize(Context context) {
-    initializeInternal(context);
+    initializeWithoutStarting(context);
     sInstance.start(context);
   }
 
@@ -221,6 +220,9 @@ public class UpdatesController {
   }
 
   public SelectionPolicy getSelectionPolicy() {
+    if (mSelectionPolicy == null) {
+      mSelectionPolicy = mDefaultSelectionPolicy;
+    }
     return mSelectionPolicy;
   }
 
@@ -254,7 +256,6 @@ public class UpdatesController {
 
   /* package */ void setDefaultSelectionPolicy(SelectionPolicy selectionPolicy) {
     mDefaultSelectionPolicy = selectionPolicy;
-    resetSelectionPolicyToDefault();
   }
 
   /* package */ void setLauncher(Launcher launcher) {
@@ -280,7 +281,7 @@ public class UpdatesController {
       mIsEmergencyLaunch = true;
     }
 
-    new LoaderTask(mUpdatesConfiguration, mDatabaseHolder, mUpdatesDirectory, mFileDownloader, mSelectionPolicy, new LoaderTask.LoaderTaskCallback() {
+    new LoaderTask(mUpdatesConfiguration, mDatabaseHolder, mUpdatesDirectory, mFileDownloader, getSelectionPolicy(), new LoaderTask.LoaderTaskCallback() {
       @Override
       public void onFailure(Exception e) {
         mLauncher = new NoDatabaseLauncher(context, mUpdatesConfiguration, e);
@@ -333,7 +334,7 @@ public class UpdatesController {
   private void runReaper() {
     AsyncTask.execute(() -> {
       UpdatesDatabase database = getDatabase();
-      Reaper.reapUnusedUpdates(mUpdatesConfiguration, database, mUpdatesDirectory, getLaunchedUpdate(), mSelectionPolicy);
+      Reaper.reapUnusedUpdates(mUpdatesConfiguration, database, mUpdatesDirectory, getLaunchedUpdate(), getSelectionPolicy());
       releaseDatabase();
     });
   }
@@ -348,7 +349,7 @@ public class UpdatesController {
     final String oldLaunchAssetFile = mLauncher.getLaunchAssetFile();
 
     UpdatesDatabase database = getDatabase();
-    final DatabaseLauncher newLauncher = new DatabaseLauncher(mUpdatesConfiguration, mUpdatesDirectory, mFileDownloader, mSelectionPolicy);
+    final DatabaseLauncher newLauncher = new DatabaseLauncher(mUpdatesConfiguration, mUpdatesDirectory, mFileDownloader, getSelectionPolicy());
     newLauncher.launch(database, context, new Launcher.LauncherCallback() {
       @Override
       public void onFailure(Exception e) {

@@ -22,7 +22,7 @@ import expo.modules.updatesinterface.UpdatesInterface;
 public class UpdatesDevLauncherController implements UpdatesInterface {
 
   public UpdatesDevLauncherController(Context context) {
-    UpdatesController.initializeInternal(context);
+    UpdatesController.initializeWithoutStarting(context);
     setDevelopmentSelectionPolicy();
   }
 
@@ -65,34 +65,10 @@ public class UpdatesDevLauncherController implements UpdatesInterface {
       @Override
       public void onSuccess(@Nullable UpdateEntity update) {
         databaseHolder.releaseDatabase();
-        if (update != null) {
-          DatabaseLauncher launcher = new DatabaseLauncher(updatesConfiguration, controller.getUpdatesDirectory(), controller.getFileDownloader(), controller.getSelectionPolicy());
-          launcher.launch(databaseHolder.getDatabase(), context, new Launcher.LauncherCallback() {
-            @Override
-            public void onFailure(Exception e) {
-              databaseHolder.releaseDatabase();
-              callback.onFailure(e);
-            }
-
-            @Override
-            public void onSuccess() {
-              databaseHolder.releaseDatabase();
-              controller.setLauncher(launcher);
-              controller.setUpdatesConfiguration(updatesConfiguration);
-              callback.onSuccess(new Update() {
-                @Override
-                public JSONObject getManifest() {
-                  return launcher.getLaunchedUpdate().getRawManifest().getRawJson();
-                }
-
-                @Override
-                public String getLaunchAssetPath() {
-                  return launcher.getLaunchAssetFile();
-                }
-              });
-            }
-          });
+        if (update == null) {
+          return;
         }
+        launchNewestUpdate(updatesConfiguration, context, callback);
       }
 
       @Override
@@ -103,6 +79,37 @@ public class UpdatesDevLauncherController implements UpdatesInterface {
       @Override
       public boolean onManifestLoaded(Manifest manifest) {
         return callback.onManifestLoaded(manifest.getRawManifest().getRawJson());
+      }
+    });
+  }
+
+  private void launchNewestUpdate(UpdatesConfiguration configuration, Context context, UpdateCallback callback) {
+    UpdatesController controller = UpdatesController.getInstance();
+    DatabaseHolder databaseHolder = controller.getDatabaseHolder();
+    DatabaseLauncher launcher = new DatabaseLauncher(configuration, controller.getUpdatesDirectory(), controller.getFileDownloader(), controller.getSelectionPolicy());
+    launcher.launch(databaseHolder.getDatabase(), context, new Launcher.LauncherCallback() {
+      @Override
+      public void onFailure(Exception e) {
+        databaseHolder.releaseDatabase();
+        callback.onFailure(e);
+      }
+
+      @Override
+      public void onSuccess() {
+        databaseHolder.releaseDatabase();
+        controller.setLauncher(launcher);
+        controller.setUpdatesConfiguration(configuration);
+        callback.onSuccess(new Update() {
+          @Override
+          public JSONObject getManifest() {
+            return launcher.getLaunchedUpdate().getRawManifest().getRawJson();
+          }
+
+          @Override
+          public String getLaunchAssetPath() {
+            return launcher.getLaunchAssetFile();
+          }
+        });
       }
     });
   }
