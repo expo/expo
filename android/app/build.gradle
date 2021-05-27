@@ -88,6 +88,15 @@ android {
     }
   }
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
+
+  // `productFlavors` must be defined before this block
+  defaultConfig {
+    if (android.productFlavors.empty) {
+      // when preparing shell app, the above flavor declarations  are removed
+      // this falls back :expoview to versioned flavor
+      missingDimensionStrategy 'versioning', 'versioned'
+    }
+  }
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   lintOptions {
