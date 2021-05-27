@@ -1,6 +1,6 @@
 # expo-updates-interface
 
-Describe your module and why it's important in a few sentences.
+Native interface for modules that optionally depend on expo-updates, e.g. expo-dev-launcher.
 
 ## API documentation
 

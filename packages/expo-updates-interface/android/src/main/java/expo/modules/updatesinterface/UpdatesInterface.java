@@ -7,8 +7,8 @@ import org.json.JSONObject;
 import java.util.HashMap;
 
 /**
- * Interface for other modules that depend on expo-updates for loading production updates but do not
- * want to depend on expo-updates or delegate control to the singleton UpdatesController.
+ * Interface for modules that depend on expo-updates for loading production updates but do not want
+ * to depend on expo-updates or delegate control to the singleton UpdatesController.
  */
 public interface UpdatesInterface {
 
@@ -19,7 +19,7 @@ public interface UpdatesInterface {
 
     /**
      * Called when a manifest has been downloaded. The return value indicates whether or not to
-     * continue to download the update described by this manifest. Returning `false` will abort the
+     * continue downloading the update described by this manifest. Returning `false` will abort the
      * load and no other callback methods will be called.
      */
     boolean onManifestLoaded(JSONObject manifest);
