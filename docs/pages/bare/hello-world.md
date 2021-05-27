@@ -61,13 +61,13 @@ This will not yet work because we haven't linked the native code that powers it.
 
 ### iOS configuration
 
-<TerminalBlock cmd={['# Build your native iOS project', 'expo run:ios']} />
+<TerminalBlock cmd={['# Build and run your native iOS project', 'expo run:ios']} />
 
 You may need to run `npx pod-install` to link the native iOS packages using [CocoaPods](https://cocoapods.org/), this is like running `yarn` or `npm install` in an Expo project. `expo run:ios` does this automatically when the `package.json` changes.
 
 ### Android configuration
 
-<TerminalBlock cmd={['# Build your native Android project', 'expo run:android']} />
+<TerminalBlock cmd={['# Build and run your native Android project', 'expo run:android']} />
 
 Once the app is built, press the "Open a web browser" button and watch the browser open. Success! Happy times.
 

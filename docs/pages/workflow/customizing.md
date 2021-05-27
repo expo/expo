@@ -8,7 +8,7 @@ The Expo Go app enables us to move quickly by shipping a reusable native runtime
 
 You can do this in a single command:
 
-<TerminalBlock cmd={['# Build your native iOS project', 'expo run:ios', '# Build your native Android project', 'expo run:android']} />
+<TerminalBlock cmd={['# Build and run your native iOS project', 'expo run:ios', '# Build and run your native Android project', 'expo run:android']} />
 
 <!-- TODO: Add a doctor command bootstrap easier -->
 <!-- TODO: Don't link outside of Expo docs -->
