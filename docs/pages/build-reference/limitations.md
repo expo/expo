@@ -18,17 +18,6 @@ The goal for managed projects with EAS Build is to remove the limitations common
 </p>
 </details>
 
-<details><summary><h4>Building multi-target iOS apps is only supported via credentials.json (local credentials).</h4></summary>
-<p>
-
-There are many cases where your iOS project might have multiple targets, and each target has its own bundle identifier and provisioning profile.
-Currently, building such projects is only supported via credentials.json (local credentials). [Read more on this here](../app-signing/local-credentials.md#multi-target-project).
-
-This means you can't use automatically managed credentials if your project has multiple targets. Support for this is planned but not currently available.
-
-</p>
-</details>
-
 <details><summary><h4>Limited dependency caching.</h4></summary>
 <p>
 
