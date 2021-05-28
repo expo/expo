@@ -37,6 +37,7 @@ Pod::Spec.new do |s|
   
   s.dependency "React"
   s.dependency "expo-dev-menu-interface"
+  s.dependency "EXUpdatesInterface"
   
   s.subspec 'Unsafe' do |unsafe|
     unsafe.source_files = 'ios/Unsafe/**/*.{h,m,mm,swift,cpp}'
