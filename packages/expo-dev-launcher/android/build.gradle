@@ -72,6 +72,7 @@ repositories {
 
 dependencies {
   implementation project(":expo-dev-menu-interface")
+  implementation project(":expo-updates-interface")
 
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'  // From node_modules

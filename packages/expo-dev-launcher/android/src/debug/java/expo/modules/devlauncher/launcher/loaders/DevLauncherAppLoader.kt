@@ -2,7 +2,6 @@ package expo.modules.devlauncher.launcher.loaders
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
@@ -11,7 +10,6 @@ import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReactContext
 import expo.modules.devlauncher.DevLauncherController
-import expo.modules.devlauncher.helpers.injectReactInterceptor
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -75,7 +73,7 @@ abstract class DevLauncherAppLoader(
 
   open suspend fun launch(intent: Intent): Boolean {
     return suspendCoroutine { callback ->
-      if (injectReactInterceptor(getBundleUrl())) {
+      if (injectBundleLoader()) {
         continuation = callback
         launchIntent(intent)
         return@suspendCoroutine
@@ -83,8 +81,6 @@ abstract class DevLauncherAppLoader(
       callback.resume(false)
     }
   }
-
-  abstract fun getBundleUrl(): Uri
 
   protected open fun onDelegateWillBeCreated(activity: ReactActivity) = Unit
   protected open fun onCreate(activity: ReactActivity) = Unit
@@ -94,26 +90,7 @@ abstract class DevLauncherAppLoader(
     return null
   }
 
-  private fun injectReactInterceptor(url: Uri): Boolean {
-    val debugServerHost = url.host + ":" + url.port
-    // We need to remove "/" which is added to begin of the path by the Uri
-    // and the bundle type
-    val bundleName = if (url.path.isNullOrEmpty()) {
-      "index"
-    } else {
-      url.path
-        ?.substring(1)
-        ?.replace(".bundle", "")
-        ?: "index"
-    }
-
-    return injectReactInterceptor(
-      context,
-      appHost,
-      debugServerHost,
-      bundleName
-    )
-  }
+  abstract fun injectBundleLoader(): Boolean
 
   private fun launchIntent(intent: Intent) {
     context.applicationContext.startActivity(intent)
