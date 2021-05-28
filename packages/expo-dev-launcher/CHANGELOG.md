@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added ability to load published projects via expo-updates on Android. ([#13031](https://github.com/expo/expo/pull/13031) by [@esamelson](https://github.com/esamelson))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
