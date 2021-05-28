@@ -200,6 +200,9 @@ android {
   }
   // WHEN_VERSIONING_REMOVE_TO_HERE
 
+  // use `versionedRelease` configuration when publishing to maven
+  defaultPublishConfig "versionedRelease"
+
   compileOptions {
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
