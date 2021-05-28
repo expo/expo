@@ -46,8 +46,8 @@ This step varies depending on the project type you have.
 
 #### 3.1. Generic project
 
-If you choose to configure the Android project, EAS CLI will update your Gradle project so we could build it on our servers.
-This step patches `build.gradle` by including there our custom signing configuration. The configuration itself is saved to a separate file: `eas-build.gradle`.
+If you choose to configure the Android project, EAS CLI will update your Gradle project so we can build it on our servers.
+This step patches `build.gradle` and includes our custom signing configuration. The configuration itself is saved to a separate file: `eas-build.gradle`.
 
 If you also choose to configure the iOS project, there are no additional steps.
 
@@ -65,6 +65,6 @@ In the example above, we defined exactly the same Android application id and iOS
 #### 5. Next steps
 
 That's all there is to configuring a project to be compatible with EAS Build.
-However, there's one final step. You'll be prompted to commit all the changes we made for you. You can choose to review them before committing. Also, specify the git commit message or use the default one.
+There is one final step — you'll be prompted to commit all the changes we made for you. You can choose to review them before committing, and you can either specify the git commit message or use a default message.
 
 <ImageSpotlight alt="Application identifier prompts in eas build:configure" src="/static/images/eas-build/configure/03-next-steps.png" containerStyle={{ paddingBottom: 0 }} />

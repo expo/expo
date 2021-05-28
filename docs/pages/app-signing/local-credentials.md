@@ -169,7 +169,7 @@ For example, maybe you want to use local credentials when deploying to the Amazo
 }
 ```
 
-If you do not set any option, "credentialsSource" will default to "remote".
+If you do not set any option, `"credentialsSource"` will default to `"remote"`.
 
 ## Using local credentials on builds triggered from CI
 
