@@ -1,5 +1,6 @@
 ---
-title: Sharing before release
+title: Sharing pre-release versions of your app
+sidebar_title: Sharing preview releases
 ---
 
 import Video from '~/components/plugins/Video'
@@ -32,7 +33,7 @@ Apple offers [Ad Hoc provisioning profiles](https://help.apple.com/xcode/mac/cur
 
 You will need to know the UDID (Unique Device Identifier) of each device that will install your application, which may be challenging if you are trying to share with someone who is not a developer. Adding a new device will require a rebuild of your application. 
 
-Setting up Ad Hoc certificates correctly can be intimidating if you haven't done it before. If you're using [EAS Build](/build/internal-distribution.md), which is optimized for Expo and React Native projects, we'll handle the time-consuming parts of setting up Ad Hoc credentials for you.
+Setting up Ad Hoc certificates correctly can be intimidating if you haven't done it before, and tedious even if you have. If you're using [EAS Build](/build/internal-distribution.md), which is optimized for Expo and React Native projects, we'll handle the time-consuming parts of setting up Ad Hoc credentials for you.
 
 ### Enterprise Distribution on iOS
 
