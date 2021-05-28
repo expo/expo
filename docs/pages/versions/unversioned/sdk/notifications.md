@@ -859,7 +859,7 @@ import * as Notifications from 'expo-notifications';
 
 Notifications.scheduleNotificationAsync({
   content: {
-    title: 'Remember to drink water!,
+    title: 'Remember to drink water!',
   },
   trigger: {
     seconds: 60 * 20,
