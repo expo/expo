@@ -25,6 +25,7 @@
 - Remove code to handle nested root level manifest key. ([#12736](https://github.com/expo/expo/pull/12736) by [@wschurman](https://github.com/wschurman))
 - Move scope check from reaper to selection policy. ([#12769](https://github.com/expo/expo/pull/12769) by [@esamelson](https://github.com/esamelson))
 - Add ReaperSelectionPolicyDevelopmentClient, implement in Expo Go. ([#12770](https://github.com/expo/expo/pull/12770) by [@esamelson](https://github.com/esamelson))
+- Add UpdatesDevLauncherController for development client integration. ([#13032](https://github.com/expo/expo/pull/13032) by [@esamelson](https://github.com/esamelson))
 
 ### 🐛 Bug fixes
 
