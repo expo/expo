@@ -15,6 +15,7 @@ import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.WritableMap;
 
 import androidx.annotation.Nullable;
+
 import expo.modules.updates.db.DatabaseHolder;
 import expo.modules.updates.db.Reaper;
 import expo.modules.updates.db.UpdatesDatabase;
@@ -51,8 +52,10 @@ public class UpdatesController {
   private Exception mUpdatesDirectoryException;
   private Launcher mLauncher;
   private DatabaseHolder mDatabaseHolder;
-  private SelectionPolicy mSelectionPolicy;
+  private SelectionPolicy mSelectionPolicy = null;
   private FileDownloader mFileDownloader;
+
+  private SelectionPolicy mDefaultSelectionPolicy;
 
   // launch conditions
   private boolean mIsLoaderTaskFinished = false;
@@ -61,7 +64,7 @@ public class UpdatesController {
   private UpdatesController(Context context, UpdatesConfiguration updatesConfiguration) {
     mUpdatesConfiguration = updatesConfiguration;
     mDatabaseHolder = new DatabaseHolder(UpdatesDatabase.getInstance(context));
-    mSelectionPolicy = defaultSelectionPolicy();
+    mDefaultSelectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(UpdatesUtils.getRuntimeVersion(mUpdatesConfiguration));
     mFileDownloader = new FileDownloader(context);
     if (context instanceof ReactApplication) {
       mReactNativeHost = new WeakReference<>(((ReactApplication) context).getReactNativeHost());
@@ -75,15 +78,18 @@ public class UpdatesController {
     }
   }
 
-  private SelectionPolicy defaultSelectionPolicy() {
-    return SelectionPolicyFactory.createFilterAwarePolicy(UpdatesUtils.getRuntimeVersion(mUpdatesConfiguration));
-  }
-
   public static UpdatesController getInstance() {
     if (sInstance == null) {
       throw new IllegalStateException("UpdatesController.getInstance() was called before the module was initialized");
     }
     return sInstance;
+  }
+
+  /* package */ static void initializeWithoutStarting(Context context) {
+    if (sInstance == null) {
+      UpdatesConfiguration updatesConfiguration = new UpdatesConfiguration().loadValuesFromMetadata(context);
+      sInstance = new UpdatesController(context, updatesConfiguration);
+    }
   }
 
   /**
@@ -92,11 +98,8 @@ public class UpdatesController {
    * @param context the base context of the application, ideally a {@link ReactApplication}
    */
   public static void initialize(Context context) {
-    if (sInstance == null) {
-      UpdatesConfiguration updatesConfiguration = new UpdatesConfiguration().loadValuesFromMetadata(context);
-      sInstance = new UpdatesController(context, updatesConfiguration);
-      sInstance.start(context);
-    }
+    initializeWithoutStarting(context);
+    sInstance.start(context);
   }
 
   /**
@@ -208,11 +211,18 @@ public class UpdatesController {
     return mUpdatesDirectory;
   }
 
+  /* package */ Exception getUpdatesDirectoryException() {
+    return mUpdatesDirectoryException;
+  }
+
   public UpdateEntity getLaunchedUpdate() {
     return mLauncher.getLaunchedUpdate();
   }
 
   public SelectionPolicy getSelectionPolicy() {
+    if (mSelectionPolicy == null) {
+      mSelectionPolicy = mDefaultSelectionPolicy;
+    }
     return mSelectionPolicy;
   }
 
@@ -241,7 +251,19 @@ public class UpdatesController {
   }
 
   /* package */ void resetSelectionPolicyToDefault() {
-    mSelectionPolicy = defaultSelectionPolicy();
+    mSelectionPolicy = mDefaultSelectionPolicy;
+  }
+
+  /* package */ void setDefaultSelectionPolicy(SelectionPolicy selectionPolicy) {
+    mDefaultSelectionPolicy = selectionPolicy;
+  }
+
+  /* package */ void setLauncher(Launcher launcher) {
+    mLauncher = launcher;
+  }
+
+  /* package */ void setUpdatesConfiguration(UpdatesConfiguration updatesConfiguration) {
+    mUpdatesConfiguration = updatesConfiguration;
   }
 
   /**
@@ -259,7 +281,7 @@ public class UpdatesController {
       mIsEmergencyLaunch = true;
     }
 
-    new LoaderTask(mUpdatesConfiguration, mDatabaseHolder, mUpdatesDirectory, mFileDownloader, mSelectionPolicy, new LoaderTask.LoaderTaskCallback() {
+    new LoaderTask(mUpdatesConfiguration, mDatabaseHolder, mUpdatesDirectory, mFileDownloader, getSelectionPolicy(), new LoaderTask.LoaderTaskCallback() {
       @Override
       public void onFailure(Exception e) {
         mLauncher = new NoDatabaseLauncher(context, mUpdatesConfiguration, e);
@@ -309,10 +331,10 @@ public class UpdatesController {
     notify();
   }
 
-  private void runReaper() {
+  /* package */ void runReaper() {
     AsyncTask.execute(() -> {
       UpdatesDatabase database = getDatabase();
-      Reaper.reapUnusedUpdates(mUpdatesConfiguration, database, mUpdatesDirectory, getLaunchedUpdate(), mSelectionPolicy);
+      Reaper.reapUnusedUpdates(mUpdatesConfiguration, database, mUpdatesDirectory, getLaunchedUpdate(), getSelectionPolicy());
       releaseDatabase();
     });
   }
@@ -327,7 +349,7 @@ public class UpdatesController {
     final String oldLaunchAssetFile = mLauncher.getLaunchAssetFile();
 
     UpdatesDatabase database = getDatabase();
-    final DatabaseLauncher newLauncher = new DatabaseLauncher(mUpdatesConfiguration, mUpdatesDirectory, mFileDownloader, mSelectionPolicy);
+    final DatabaseLauncher newLauncher = new DatabaseLauncher(mUpdatesConfiguration, mUpdatesDirectory, mFileDownloader, getSelectionPolicy());
     newLauncher.launch(database, context, new Launcher.LauncherCallback() {
       @Override
       public void onFailure(Exception e) {
