@@ -142,6 +142,17 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
     promise.resolve(isLowPowerModeEnabled());
   }
 
+  @ExpoMethod
+  public void isBatteryOptimizationEnabled(Promise promise) {
+    String packageName = mContext.getApplicationContext().getPackageName();
+    PowerManager powerManager = (PowerManager) mContext.getApplicationContext().getSystemService(Context.POWER_SERVICE);
+    if (powerManager && !powerManager.isIgnoringBatteryOptimizations(packageName)) {
+      promise.resolve(true);
+      return;
+    }
+    promise.resolve(false);
+  }
+
   private boolean isLowPowerModeEnabled() {
     PowerManager powerManager = (PowerManager) mContext.getApplicationContext().getSystemService(Context.POWER_SERVICE);
     if (powerManager == null) {
