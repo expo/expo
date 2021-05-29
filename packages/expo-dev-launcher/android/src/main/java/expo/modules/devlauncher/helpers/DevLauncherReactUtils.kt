@@ -29,12 +29,19 @@ fun injectReactInterceptor(
 
   injectDevSupportManager(reactNativeHost)
 
-  return injectDebugServerHost(
+  val result = injectDebugServerHost(
     context,
     reactNativeHost,
     debugServerHost,
     appBundleName
   )
+
+  // inspector connection will create right after ReactInstanceManager construction,
+  // we should reconnect here to use intercepted inspector server host.
+  reactNativeHost.reactInstanceManager.devSupportManager.stopInspector()
+  reactNativeHost.reactInstanceManager.devSupportManager.startInspector()
+
+  return result
 }
 
 fun injectDevSupportManager(
