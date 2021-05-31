@@ -47,6 +47,7 @@ public class UpdatesDevLauncherController implements UpdatesInterface {
             currentSelectionPolicy.getLoaderSelectionPolicy(),
             new ReaperSelectionPolicyDevelopmentClient()
     ));
+    controller.resetSelectionPolicyToDefault();
   }
 
   @Override
