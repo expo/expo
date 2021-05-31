@@ -81,7 +81,7 @@ class DevLauncherController private constructor(
       } else {
         val configuration = createUpdatesConfigurationWithUrl(url)
         val update = updatesInterface!!.loadUpdate(configuration, context) {
-          manifest = DevLauncherManifest.fromJson(it.toString().reader())
+          manifest = DevLauncherManifest.fromJson(it.getRawJson().toString().reader())
           return@loadUpdate !manifest!!.isUsingDeveloperTool()
         }
         if (manifest!!.isUsingDeveloperTool()) {

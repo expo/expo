@@ -18,6 +18,7 @@ import expo.modules.updates.manifest.Manifest;
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient;
 import expo.modules.updates.selectionpolicy.SelectionPolicy;
 import expo.modules.updatesinterface.UpdatesInterface;
+import expo.modules.updatesinterface.manifest.RawManifest;
 
 public class UpdatesDevLauncherController implements UpdatesInterface {
 
@@ -89,7 +90,7 @@ public class UpdatesDevLauncherController implements UpdatesInterface {
 
       @Override
       public boolean onManifestLoaded(Manifest manifest) {
-        return callback.onManifestLoaded(manifest.getRawManifest().getRawJson());
+        return callback.onManifestLoaded(manifest.getRawManifest());
       }
     });
   }
@@ -112,8 +113,8 @@ public class UpdatesDevLauncherController implements UpdatesInterface {
         controller.setUpdatesConfiguration(configuration);
         callback.onSuccess(new Update() {
           @Override
-          public JSONObject getManifest() {
-            return launcher.getLaunchedUpdate().getRawManifest().getRawJson();
+          public RawManifest getManifest() {
+            return launcher.getLaunchedUpdate().getRawManifest();
           }
 
           @Override

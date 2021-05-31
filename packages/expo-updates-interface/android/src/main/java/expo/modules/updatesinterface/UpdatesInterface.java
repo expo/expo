@@ -6,6 +6,8 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 
+import expo.modules.updatesinterface.manifest.RawManifest;
+
 /**
  * Interface for modules that depend on expo-updates for loading production updates but do not want
  * to depend on expo-updates or delegate control to the singleton UpdatesController.
@@ -22,11 +24,11 @@ public interface UpdatesInterface {
      * continue downloading the update described by this manifest. Returning `false` will abort the
      * load and no other callback methods will be called.
      */
-    boolean onManifestLoaded(JSONObject manifest);
+    boolean onManifestLoaded(RawManifest manifest);
   }
 
   interface Update {
-    JSONObject getManifest();
+    RawManifest getManifest();
     String getLaunchAssetPath();
   }
 

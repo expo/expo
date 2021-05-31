@@ -3,6 +3,7 @@ package expo.modules.devlauncher.helpers
 import android.content.Context
 import android.net.Uri
 import expo.modules.updatesinterface.UpdatesInterface
+import expo.modules.updatesinterface.manifest.RawManifest
 import org.json.JSONObject
 import java.lang.Exception
 import kotlin.coroutines.resume
@@ -12,7 +13,7 @@ import kotlin.coroutines.suspendCoroutine
 suspend fun UpdatesInterface.loadUpdate(
   configuration: HashMap<String, Any>,
   context: Context,
-  shouldContinue: (manifest: JSONObject) -> Boolean
+  shouldContinue: (manifest: RawManifest) -> Boolean
 ): UpdatesInterface.Update =
   suspendCoroutine { cont ->
     this.fetchUpdateWithConfiguration(configuration, context, object : UpdatesInterface.UpdateCallback {
@@ -21,7 +22,7 @@ suspend fun UpdatesInterface.loadUpdate(
         cont.resumeWithException(e ?: Exception("There was an unexpected error loading the update."))
       }
       override fun onProgress(successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int) = Unit
-      override fun onManifestLoaded(manifest: JSONObject): Boolean {
+      override fun onManifestLoaded(manifest: RawManifest): Boolean {
         return if (shouldContinue(manifest)) {
           true
         } else {
@@ -29,7 +30,7 @@ suspend fun UpdatesInterface.loadUpdate(
             override fun getLaunchAssetPath(): String {
               throw Exception("Tried to access launch asset path for a manifest that was not loaded")
             }
-            override fun getManifest(): JSONObject = manifest
+            override fun getManifest(): RawManifest = manifest
           })
           false
         }
