@@ -187,7 +187,15 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   NSURL *appUrl = [EXDevLauncherURLHelper getAppURLFromDevLauncherURL:url];
   if (appUrl) {
     [self loadApp:appUrl onSuccess:nil onError:^(NSError *error) {
-      NSLog(@"%@", error.description);
+      __weak typeof(self) weakSelf = self;
+      dispatch_async(dispatch_get_main_queue(), ^{
+        typeof(self) self = weakSelf;
+        if (!self) {
+          return;
+        }
+        
+        [self.errorManager showErrorWithMessage:error.description stack:nil];
+      });
     }];
     return true;
   }
