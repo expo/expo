@@ -12,7 +12,7 @@ UM_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(EXUpdatesInterface)];
+  return @[@protocol(EXUpdatesModuleInterface)];
 }
 
 - (EXUpdatesConfig *)config
