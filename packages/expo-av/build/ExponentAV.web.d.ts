@@ -1,3 +1,4 @@
+import { PermissionResponse } from 'expo-modules-core';
 import { AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV';
 declare const _default: {
     readonly name: string;
@@ -22,5 +23,7 @@ declare const _default: {
     pauseAudioRecording(): Promise<void>;
     stopAudioRecording(): Promise<void>;
     unloadAudioRecorder(): Promise<void>;
+    getPermissionsAsync(): Promise<PermissionResponse>;
+    requestPermissionsAsync(): Promise<PermissionResponse>;
 };
 export default _default;
