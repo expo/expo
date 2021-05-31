@@ -41,12 +41,15 @@ Manual smoke tests are included in `apps/native-component-list`, this is a good 
    - Ensures your computer is set up for React Native (will install the Android NDK if it's not present)
    - Downloads the Node packages (`yarn install`)
 
+   Make sure that you're using Java 8 (e.g. OpenJDK 1.8.0_292). ANDROID_SDK_ROOT, ANDROID_NDK_HOME environmental variables should be set or configured via `local.properties` file in `android/`.
+
 5. Navigate to the bare sandbox project `cd apps/bare-expo`
 6. Run the project on any platform (maybe start with web; it's the fastest! 😁)
 
    - Web: `yarn web`
    - iOS: `yarn ios`
    - Android: `yarn android`
+
 7. You are now running the `test-suite` app via the `bare-expo` project. The next section explains how you can begin to make changes to SDK packages.
 
 > If this didn't work for you as described, please [open an issue.](https://github.com/expo/expo/issues/new/choose)
@@ -56,6 +59,7 @@ Manual smoke tests are included in `apps/native-component-list`, this is a good 
 All Expo SDK packages can be found in the `packages/` directory. These packages are automatically linked to the projects in the `apps/` directory, so you can edit them in-place and see the changes in the running app.
 
  <!-- (meaning any iOS, Android, web, or API changes can be tested from `apps/bare-expo/`). -->
+
 1. Navigate to a package you want to edit. Ex: `cd packages/expo-constants`
 2. Start the TypeScript build in watch mode: `yarn build`
 3. Edit code in that package's `src/` directory
