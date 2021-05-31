@@ -12,11 +12,15 @@ import expo.interfaces.devmenu.DevMenuSessionInterface
 import expo.interfaces.devmenu.DevMenuSettingsInterface
 import expo.interfaces.devmenu.expoapi.DevMenuExpoApiClientInterface
 import expo.interfaces.devmenu.items.DevMenuDataSourceItem
+import expo.modules.devmenu.api.DevMenuMetroClient
 
 private const val DEV_MENU_IS_NOT_AVAILABLE = "DevMenu isn't available in release builds"
 
 object DevMenuManager : DevMenuManagerInterface {
   internal var delegate: DevMenuDelegateInterface? = null
+  val metroClient: DevMenuMetroClient by lazy {
+    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
+  }
 
   override fun openMenu(activity: Activity, screen: String?) {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)

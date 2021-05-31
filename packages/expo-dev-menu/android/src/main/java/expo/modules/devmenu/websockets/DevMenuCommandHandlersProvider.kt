@@ -53,6 +53,7 @@ class DevMenuCommandHandlersProvider(
             val activity = instanceManager.currentReactContext?.currentActivity ?: return
             devDelegate.togglePerformanceMonitor(activity)
           }
+          "openJsInspector" -> devDelegate.openJsInspector()
           else -> Log.w("DevMenu", "Unknown command: $command")
         }
       }

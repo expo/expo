@@ -34,6 +34,7 @@ import expo.interfaces.devmenu.items.DevMenuScreenItem
 import expo.interfaces.devmenu.items.KeyCommand
 import expo.interfaces.devmenu.items.getItemsOfType
 import expo.modules.devmenu.api.DevMenuExpoApiClient
+import expo.modules.devmenu.api.DevMenuMetroClient
 import expo.modules.devmenu.detectors.ShakeDetector
 import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
 import expo.modules.devmenu.modules.DevMenuSettings
@@ -42,6 +43,8 @@ import expo.modules.devmenu.websockets.DevMenuCommandHandlersProvider
 import java.lang.ref.WeakReference
 
 object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
+  val metroClient: DevMenuMetroClient by lazy { DevMenuMetroClient() }
+
   private var shakeDetector: ShakeDetector? = null
   private var threeFingerLongPressDetector: ThreeFingerLongPressDetector? = null
   private var session: DevMenuSession? = null
@@ -156,6 +159,12 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       devMenuHost = DevMenuHost(application)
       UiThreadUtil.runOnUiThread {
         devMenuHost.reactInstanceManager.createReactContextInBackground()
+
+        // Hermes inspector will use latest executed script for Chrome DevTools Protocol.
+        // It will be EXDevMenuApp.android.js in our case.
+        // To let Hermes aware target bundle, we try to reload here as a workaround solution.
+        // @see <a href="https://github.com/facebook/react-native/blob/0.63-stable/ReactCommon/hermes/inspector/Inspector.cpp#L231>code here</a>
+        currentReactInstanceManager.get()?.devSupportManager?.handleReloadJS()
       }
     }
   }

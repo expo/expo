@@ -6,7 +6,8 @@
 
 ### 🎉 New features
 
-- Add JavaScript runtime information. ([#13041](https://github.com/expo/expo/pull/13041) by [@kudo](https://github.com/kudo))
+- Add JavaScript runtime information. ([#13042](https://github.com/expo/expo/pull/13042) by [@kudo](https://github.com/kudo))
+- Add JavaScript inspector menu item. ([#13041](https://github.com/expo/expo/pull/13041) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 

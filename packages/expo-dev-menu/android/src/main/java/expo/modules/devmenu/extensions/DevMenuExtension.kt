@@ -13,7 +13,9 @@ import expo.interfaces.devmenu.items.DevMenuItemsContainer
 import expo.interfaces.devmenu.items.DevMenuScreen
 import expo.interfaces.devmenu.items.KeyCommand
 import expo.modules.devmenu.DEV_MENU_TAG
+import expo.modules.devmenu.DevMenuManager
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
+import kotlinx.coroutines.runBlocking
 
 class DevMenuExtension(reactContext: ReactApplicationContext)
   : ReactContextBaseJavaModule(reactContext), DevMenuExtensionInterface {
@@ -79,6 +81,21 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
     }
 
     if (devSettings is DevInternalSettings) {
+      action("js-inspector", devDelegate::openJsInspector) {
+        isAvailable = {
+          val metroHost = "http://${devSettings.packagerConnectionSettings.debugServerHost}"
+          var result: Boolean
+          runBlocking {
+            result = DevMenuManager.metroClient
+              .queryJSInspectorAvailability(metroHost, reactApplicationContext.packageName)
+          }
+          result
+        }
+        label = { "Open JavaScript Inspector" }
+        glyphName = { "language-javascript" }
+        importance = DevMenuItemImportance.LOW.value
+      }
+
       val fastRefreshAction = {
         devSettings.isHotModuleReplacementEnabled = !devSettings.isHotModuleReplacementEnabled
       }
