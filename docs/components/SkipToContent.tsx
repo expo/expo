@@ -19,9 +19,9 @@ const SKIP_TO_CONTENT_STYLES = css`
   }
 `;
 
-export interface SkipToContentProps {
+export type SkipToContentProps = {
   children: React.ReactNode;
-}
+};
 
 export const SkipToContent = ({ children }: SkipToContentProps) => {
   return (
@@ -31,9 +31,9 @@ export const SkipToContent = ({ children }: SkipToContentProps) => {
   );
 };
 
-export interface MainProps {
+export type MainProps = {
   children: React.ReactNode;
-}
+};
 
 export const Main = ({ children, ...props }: MainProps) => {
   return (
