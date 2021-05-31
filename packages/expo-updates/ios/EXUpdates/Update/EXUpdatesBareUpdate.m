@@ -4,7 +4,7 @@
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesUpdate+Private.h>
 #import <EXUpdates/EXUpdatesUtils.h>
-#import <EXUpdates/EXUpdatesBareRawManifest.h>
+#import <EXUpdatesInterface/EXUpdatesBareRawManifest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

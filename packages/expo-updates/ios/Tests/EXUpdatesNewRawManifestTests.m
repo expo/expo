@@ -2,7 +2,7 @@
 
 #import <XCTest/XCTest.h>
 
-#import <EXUpdates/EXUpdatesNewRawManifest.h>
+#import <EXUpdatesInterface/EXUpdatesNewRawManifest.h>
 
 @interface EXUpdatesNewRawManifestTests : XCTestCase
 

@@ -1,7 +1,7 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesBaseLegacyRawManifest.h>
-#import <EXUpdates/NSDictionary+EXUpdatesRawManifest.h>
+#import <EXUpdatesInterface/EXUpdatesBaseLegacyRawManifest.h>
+#import <EXUpdatesInterface/NSDictionary+EXUpdatesRawManifest.h>
 
 @implementation EXUpdatesBaseLegacyRawManifest
 

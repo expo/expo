@@ -1,6 +1,6 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesBareRawManifest.h>
+#import <EXUpdatesInterface/EXUpdatesBareRawManifest.h>
 
 @implementation EXUpdatesBareRawManifest
 

@@ -2,7 +2,7 @@
 
 #import <EXUpdates/EXUpdatesAsset.h>
 #import <EXUpdates/EXUpdatesConfig.h>
-#import <EXUpdates/EXUpdatesRawManifest.h>
+#import <EXUpdatesInterface/EXUpdatesRawManifest.h>
 
 @class EXUpdatesDatabase;
 
