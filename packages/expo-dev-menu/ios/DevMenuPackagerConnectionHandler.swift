@@ -10,6 +10,7 @@ class DevMenuPackagerConnectionHandler {
   }
   
   func setup() {
+#if RCT_DEV
     RCTPackagerConnection
       .shared()
       .addNotificationHandler(
@@ -25,6 +26,7 @@ class DevMenuPackagerConnectionHandler {
         queue: DispatchQueue.main,
         forMethod: "devMenu"
       )
+#endif
   }
   
   @objc
