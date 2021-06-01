@@ -64,8 +64,8 @@ export default class Error extends React.Component<object, State> {
     }
 
     // Catch any unversioned paths which are also renamed
-    if (redirectPath.startsWith('/versions/latest/')) {
-      const unversionedPath = redirectPath.replace('/versions/latest', '');
+    if (isVersionedPath(redirectPath)) {
+      const unversionedPath = removeVersionFromPath(redirectPath);
       if (RENAMED_PAGES[unversionedPath]) {
         redirectPath = RENAMED_PAGES[unversionedPath];
       }
