@@ -73,7 +73,7 @@ static NSString * const EXUpdatesDevLauncherControllerErrorDomain = @"EXUpdatesD
 
   EXUpdatesRemoteAppLoader *loader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:updatesConfiguration database:controller.database directory:controller.updatesDirectory completionQueue:controller.controllerQueue];
   [loader loadUpdateFromUrl:updatesConfiguration.updateUrl onManifest:^BOOL(EXUpdatesUpdate * _Nonnull update) {
-    return manifestBlock(update.rawManifest.rawManifestJSON);
+    return manifestBlock(update.rawManifest);
   } asset:^(EXUpdatesAsset * _Nonnull asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
     progressBlock(successfulAssetCount, failedAssetCount, totalAssetCount);
   } success:^(EXUpdatesUpdate * _Nullable update) {
@@ -109,7 +109,7 @@ static NSString * const EXUpdatesDevLauncherControllerErrorDomain = @"EXUpdatesD
 
     [controller setConfigurationInternal:configuration];
     [controller setLauncher:launcher];
-    successBlock(launcher.launchedUpdate.rawManifest.rawManifestJSON);
+    successBlock(launcher.launchedUpdate.rawManifest);
     [controller runReaper];
   }];
 }

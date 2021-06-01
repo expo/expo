@@ -16,6 +16,8 @@
 
 #import <EXDevLauncher-Swift.h>
 
+#import <EXUpdatesInterface/EXUpdatesRawManifest.h>
+
 @import EXDevMenuInterface;
 
 #ifdef EX_DEV_LAUNCHER_VERSION
@@ -294,8 +296,8 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
       return;
     }
 
-    [self->_updatesInterface fetchUpdateWithConfiguration:updatesConfiguration onManifest:^BOOL(NSDictionary *manifest) {
-      EXDevLauncherManifest *devLauncherManifest = [EXDevLauncherManifest fromJsonObject:manifest];
+    [self->_updatesInterface fetchUpdateWithConfiguration:updatesConfiguration onManifest:^BOOL(EXUpdatesRawManifest *manifest) {
+      EXDevLauncherManifest *devLauncherManifest = [EXDevLauncherManifest fromJsonObject:manifest.rawManifestJSON];
       if (devLauncherManifest.isUsingDeveloperTool) {
         // launch right away rather than continuing to load through EXUpdates
         launchExpoApp([NSURL URLWithString:devLauncherManifest.bundleUrl], devLauncherManifest);
@@ -304,8 +306,8 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
       return YES;
     } progress:^(NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
       // do nothing for now
-    } success:^(NSDictionary *manifest) {
-      launchExpoApp(self->_updatesInterface.launchAssetURL, [EXDevLauncherManifest fromJsonObject:manifest]);
+    } success:^(EXUpdatesRawManifest *manifest) {
+      launchExpoApp(self->_updatesInterface.launchAssetURL, [EXDevLauncherManifest fromJsonObject:manifest.rawManifestJSON]);
     } error:onError];
   } onError:onError];
 }
