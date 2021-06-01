@@ -50,7 +50,7 @@ class DevMenuPackagerConnectionHandler {
     case "togglePerformanceMonitor":
       devDelegate.togglePerformanceMonitor()
     default:
-      NSLog("Unknow command: %@", command);
+      NSLog("Unknown command from packager: %@", command);
     }
   }
   
