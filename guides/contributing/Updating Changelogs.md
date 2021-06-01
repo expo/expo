@@ -5,30 +5,30 @@
 - [Tools](#tools)
 
 A changelog is a file which contains a curated, chronologically ordered list of notable changes for each version of a package.
-The main purpose of changelogs (in general) is to inform users and contributors about changes that have been made in subsequent versions. However, in [`expo/expo`](https://github.com/expo/expo) repository, they have one more purpose — to help us decide how to bump the package version when we publish it (see [categories'](#categories) descriptions for more).
+The main purpose of changelogs (in general) is to inform users and contributors about changes that have been made in subsequent versions. However, in the [`expo/expo`](https://github.com/expo/expo) repository, they have one more purpose — to help us decide how to bump the package version when we publish it (see [categories'](#categories) descriptions for more).
 
-Most of the packages inside [`packages`](https://github.com/expo/expo/tree/master/packages) directory have their own changelogs, that should get updated on every change we made in the package.
+Most of the packages inside [`packages`](https://github.com/expo/expo/tree/master/packages) directory have their own changelogs, and these changelogs should be updated each time a change is made to their package.
 
 ## Changelog entries
 
-Each bullet point in the changelog is called an entry. It describes the change that has been introduced in the package. Here is what defines a good changelog entry:
+Each bullet point in the changelog is called an entry. It describes the change that has been introduced in the package in a pull request / commit. Here is what defines a good changelog entry:
 
 - It is descriptive and concise — explains well the change to a reader who has _zero context_ about the change. If you have trouble making it both concise and descriptive, err on the side of descriptive.
 - It is placed under `Unpublished` version and the appropriate category ([follow rules described here](#categories)).
-- It has links to PR's author and PR itself (`expo-ci` bot can suggest them for you, read more below in this section).
-- It may contain only text and links. Any other markdown elements (such as lists, headers, blockquotes, tables, images, inline HTML) are not permitted — if you need them to provide important tips for the users to adapt to the (breaking) change, you should put this in the PR's description or link to a separate document on [`expo/fyi`](https://github.com/expo/fyi).
+- It has links to the associated PR and the GitHub profile of the author (`expo-ci` bot can suggest them for you, read more below in this section).
+- It may contain only text and links. Any other markdown elements (such as lists, headers, blockquotes, tables, images, inline HTML) are not permitted — if you need them to provide important tips for the users to adapt to the (breaking) change, you should put this in the PR description or link to a separate document on [`expo/fyi`](https://github.com/expo/fyi).
 
 An example of the correct entry:
 
 > \- Added a guide about updating changelogs in the packages. ([#13075](https://github.com/expo/expo/pull/13075) by [@tsapeta](https://github.com/tsapeta))
 
-We would like each entry to contain links to the PR and author's profile, so that everyone can find out more details about that change by opening the PR's page or, as a last resort, contact the author.
-Moreover, when the package is about to be published, our automated script runs through these PRs to find closed issues and then comments on such issues to let subscribed users know that the fix is available to the public (usually as `next` tag on NPM).
-At first it might sound annoying to create the PR first (to get PR's number), update changelog and then push once again. However, in thanks to our code reviewing bot, you can skip the links at the end — it'll post code review suggestions to add them.
+We would like each entry to contain links to the PR and author's profile, so that everyone can find out more details about that change by opening the PR page or, as a last resort, contacting the author.
+When a changed package is about to be published, our automated script runs through PRs referenced in the changelog to find closed issues and then comments on such issues to let subscribed users know that the fix is available to the public (usually as `next` tag on npm).
+At first it might sound tedious and annoying to create a PR before the changelog entry (to get the PR number), then go back and update changelog and push once again; but, thanks to our code reviewing bot, you can skip adding links in your changelog entries manually — the bot will post code review suggestions to add them.
 
 ## Categories
 
-We're sticking with a few types of changes which are grouped together within the category (Markdown section with a third-level heading). It's important to put the entries under correct category - the categories are also used in the publish script to help decide how to bump the package version. Here is a list of predefined categories used across all changelogs in the repository 👇
+Changes can be grouped within several predefined categories (Markdown sections with a third-level heading). It's important to put the entries under correct category because the categories are also used in the publish script to help decide how to bump the package version. Here is a list of predefined categories used across all changelogs in the repository 👇
 
 - **🛠 Breaking changes**
 
@@ -44,7 +44,7 @@ We're sticking with a few types of changes which are grouped together within the
 
 - **⚠️ Notices**
 
-  For changes that don't fit into the above sections, but users should be aware of as they deprecate existing API while still keeping backwards compatibility or cause behavior changes in some corner cases.
+  For changes that don't fit into the above sections, but that users should be aware of, because they deprecate existing an API while still keeping backwards compatibility or cause behavior changes in some corner cases.
 
 - **💡 Others**
 
