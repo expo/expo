@@ -58,18 +58,9 @@ export default class Error extends React.Component<object, State> {
       redirectPath = `${redirectPath}/`;
     }
 
-    // A list of pages we know are renamed and can redirect
-    if (RENAMED_PAGES[redirectPath]) {
-      redirectPath = RENAMED_PAGES[redirectPath];
-    }
 
-    // Catch any unversioned paths which are also renamed
-    if (isVersionedPath(redirectPath)) {
-      const unversionedPath = removeVersionFromPath(redirectPath);
-      if (RENAMED_PAGES[unversionedPath]) {
-        redirectPath = RENAMED_PAGES[unversionedPath];
-      }
-    }
+    // Catch any redirects to renamed paths
+    redirectPath = getRenamedPath(redirectPath);
 
     // Check if the version is documented, replace it with latest if not
     if (!isVersionDocumented(redirectPath)) {
@@ -259,9 +250,23 @@ function endsInNull(path: string) {
   return !!path.match(/\/null$/);
 }
 
+// Maps paths that were renamed to correct paths
+export function getRenamedPath(path: string): string {
+  if (RENAMED_PAGES[path]) {
+    path = RENAMED_PAGES[path];
+  }
+  if (isVersionedPath(path)) {
+    const unversionedPath = removeVersionFromPath(path);
+    if (RENAMED_PAGES[unversionedPath]) {
+      path = RENAMED_PAGES[unversionedPath];
+    }
+  }
+  return path;
+}
+
 // Simple remapping of renamed pages, similar to in deploy.sh but in some cases,
 // for reasons I'm not totally clear on, those redirects do not work
-const RENAMED_PAGES: Record<string, string> = {
+export const RENAMED_PAGES: Record<string, string> = {
   '/introduction/project-lifecycle/': '/introduction/managed-vs-bare/',
   '/guides/': '/workflow/exploring-managed-workflow/',
   '/versions/latest/sdk/': '/versions/latest/',
