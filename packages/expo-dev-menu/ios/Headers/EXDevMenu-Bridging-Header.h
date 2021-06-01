@@ -16,6 +16,7 @@
 #import <React/RCTBridge+Private.h>
 #import <React/RCTLogBox.h>
 #import <React/RCTRedBox.h>
+#import <React/RCTPackagerConnection.h>
 
 #pragma clang diagnostic pop
 

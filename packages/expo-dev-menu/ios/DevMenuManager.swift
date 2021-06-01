@@ -60,6 +60,7 @@ private let extensionToDevMenuDataSourcesMap = NSMapTable<DevMenuExtensionProtoc
  */
 @objc
 open class DevMenuManager: NSObject, DevMenuManagerProtocol {
+  var packagerConnectionHandler: DevMenuPackagerConnectionHandler?
   lazy var expoSessionDelegate: DevMenuExpoSessionDelegate = DevMenuExpoSessionDelegate(manager: self)
   lazy var extensionSettings: DevMenuExtensionSettingsProtocol = DevMenuExtensionDefaultSettings(manager: self)
   
@@ -126,7 +127,8 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
   override init() {
     super.init()
     self.window = DevMenuWindow(manager: self)
-    
+    self.packagerConnectionHandler = DevMenuPackagerConnectionHandler(manager: self)
+    self.packagerConnectionHandler?.setup()
     DevMenuSettings.setup()
     self.expoSessionDelegate.restoreSession()
   }
