@@ -205,8 +205,10 @@ const sections = [
   {
     name: 'Assorted Guides',
     reference: [
+      'Assets',
       'Fonts',
       'Icons',
+      'Routing & Navigation',
       'Permissions',
       'App Icons',
       'Create a Splash Screen',
