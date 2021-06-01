@@ -80,6 +80,24 @@ export async function isLowPowerModeEnabledAsync(): Promise<boolean> {
   return await ExpoBattery.isLowPowerModeEnabledAsync();
 }
 
+// @needsAudit
+ /**
+  * Checks whether the battery optimization is on for the application.
+  * @return Returns a `Promise` which fulfills with a `boolean` value of either `true` or `false`,
+  * indicating whether the battery optimization is enabled or disabled, respectively. (Android only)
+  * # Example
+  * ```ts
+  * await Battery.isBatteryOptimizationEnabledAsync();
+  * // true
+  * ```
+  */
+  export async function isBatteryOptimizationEnabledAsync(): Promise<boolean> {
+    if (!ExpoBattery.isBatteryOptimizationEnabledAsync) {
+        return false;
+    }
+    return await ExpoBattery.isBatteryOptimizationEnabledAsync();
+}
+
 /**
  * Gets the power state of the device including the battery level, whether it is plugged in, and if
  * the system is currently operating in Low Power Mode (iOS) or Power Saver Mode (Android). This
