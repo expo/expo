@@ -10,7 +10,7 @@ typedef NS_ENUM(NSUInteger, EXBackgroundNotificationResult) {
   EXBackgroundNotificationResultFailed = 3,
 };
 
-@interface EXBackgroundNotificationsModule : UMExportedModule <UMModuleRegistryConsumer>
+@interface EXBackgroundNotificationTasksModule : UMExportedModule <UMModuleRegistryConsumer>
 
 
 @end

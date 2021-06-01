@@ -1,18 +1,18 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <EXNotifications/EXBackgroundNotificationsModule.h>
+#import <EXNotifications/EXBackgroundNotificationTasksModule.h>
 #import <EXNotifications/EXBackgroundRemoteNotificationConsumer.h>
 #import <UMTaskManagerInterface/UMTaskManagerInterface.h>
 
-@interface EXBackgroundNotificationsModule ()
+@interface EXBackgroundNotificationTasksModule ()
 
 @property (nonatomic, weak) id<UMTaskManagerInterface> taskManager;
 
 @end
 
-@implementation EXBackgroundNotificationsModule
+@implementation EXBackgroundNotificationTasksModule
 
-UM_EXPORT_MODULE(ExpoBackgroundNotificationsModule);
+UM_EXPORT_MODULE(ExpoBackgroundNotificationTasksModule);
 
 # pragma mark - UMModuleRegistryConsumer
 

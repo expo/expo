@@ -1,6 +1,6 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
-#import <EXNotifications/EXBackgroundNotificationsModule.h>
+#import <EXNotifications/EXBackgroundNotificationTasksModule.h>
 #import <EXNotifications/EXBackgroundRemoteNotificationConsumer.h>
 #import <UMTaskManagerInterface/UMTaskInterface.h>
 
