@@ -6,6 +6,8 @@ import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ProcessLifecycleOwner
 import expo.modules.notifications.notifications.NotificationManager
+import expo.modules.notifications.notifications.NotificationSerializer;
+import expo.modules.notifications.notifications.background.BackgroundRemoteNotificationTaskConsumer;
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationResponse
 import expo.modules.notifications.service.NotificationsService
@@ -50,11 +52,33 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
         }
       }
     }
+
+    /**
+     * A weak map of task consumers -> reference. Used to check quickly whether given task
+     * is already registered and to iterate over when notifying of new notification received
+     * while the app is not in the foreground.
+     */
+    protected var sBackgroundTaskConsumerReferences = WeakHashMap<BackgroundRemoteNotificationTaskConsumer, WeakReference<BackgroundRemoteNotificationTaskConsumer>>()
+
+
+    /**
+     * Background tasks are registered in [BackgroundRemoteNotificationTaskConsumer] instances.
+     *
+     * @param taskConsumer A task instance to be executed when a notification is received while the * app is not in the foreground
+     */
+    fun addBackgroundTaskConsumer(taskConsumer: BackgroundRemoteNotificationTaskConsumer) {
+      if (sBackgroundTaskConsumerReferences.containsKey(taskConsumer)) {
+        return
+      }
+      sBackgroundTaskConsumerReferences[taskConsumer] = WeakReference(taskConsumer)
+    }
   }
 
   fun isAppInForeground() = ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
 
   fun getListeners() = sListenersReferences.values.mapNotNull { it.get() }
+
+  fun getBackgroundTasks() = sBackgroundTaskConsumerReferences.values.mapNotNull { it.get() }
 
   override fun handleNotification(notification: Notification) {
     if (isAppInForeground()) {
@@ -63,6 +87,9 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
       }
     } else {
       NotificationsService.present(context, notification)
+      getBackgroundTasks().forEach {
+        it.scheduleJob(NotificationSerializer.toBundle(notification))
+      }
     }
   }
 

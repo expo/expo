@@ -100,7 +100,7 @@ public class NotificationSerializer {
     return serializedContent;
   }
 
-  private static Bundle toBundle(@Nullable JSONObject notification) {
+  public static Bundle toBundle(@Nullable JSONObject notification) {
     if (notification == null) {
       return null;
     }
