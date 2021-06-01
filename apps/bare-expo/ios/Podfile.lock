@@ -137,16 +137,20 @@ PODS:
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
+    - EXUpdatesInterface
   - expo-dev-launcher (0.3.4):
     - expo-dev-launcher/Main (= 0.3.4)
     - expo-dev-menu-interface
+    - EXUpdatesInterface
     - React
   - expo-dev-launcher/Main (0.3.4):
     - expo-dev-launcher/Unsafe
     - expo-dev-menu-interface
+    - EXUpdatesInterface
     - React
   - expo-dev-launcher/Unsafe (0.3.4):
     - expo-dev-menu-interface
+    - EXUpdatesInterface
     - React
   - expo-dev-menu (0.5.2):
     - expo-dev-menu-interface
@@ -1236,8 +1240,8 @@ SPEC CHECKSUMS:
   EXNetwork: 36144f5e572e6b6b218094c66a57c99e07ffbc0d
   EXNotifications: edf7b33cc7aea511ea141337029cf3d4c007acdf
   EXPermissions: 96bccdc1c2e234651b8d759fdacaf244824fe3ab
-  expo-dev-client: 296d3325042cedc1d2044c0f5379f20fce2cc78d
-  expo-dev-launcher: b41e94b29714dc550b7cf08300d7fe3dc60b9732
+  expo-dev-client: 8e3581286be3b484d5c376a12d29d17eecfa0b0f
+  expo-dev-launcher: 4d113c16c0ccebfbf5c73fd5937aff2ee818fde8
   expo-dev-menu: 7ad848104f908589ee1d8ce2023b632207408c5d
   expo-dev-menu-interface: 4fda2fa6d974a518e546ca1193340513b0a8b0e8
   expo-image: 07527eb7a57f5ac939c5ded392bcf64c975b9c87
