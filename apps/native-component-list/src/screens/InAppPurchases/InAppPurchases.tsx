@@ -66,7 +66,7 @@ export default class InAppPurchases extends React.Component<any, any> {
     // Set purchase listener
     setPurchaseListener(({ responseCode, results, errorCode }) => {
       if (responseCode === IAPResponseCode.OK) {
-        for (const purchase of results || []) {
+        for (const purchase of results!) {
           console.log(`Successfully purchased ${purchase.productId}`);
           if (!purchase.acknowledged) {
             finishTransactionAsync(purchase, true);
