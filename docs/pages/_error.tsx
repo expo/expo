@@ -57,8 +57,6 @@ export default class Error extends React.Component<object, State> {
     if (redirectPath[redirectPath.length - 1] !== '/') {
       redirectPath = `${redirectPath}/`;
     }
-
-
     // Catch any redirects to renamed paths
     redirectPath = getRenamedPath(redirectPath);
 
