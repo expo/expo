@@ -131,7 +131,7 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 
 Asks the user to grant permissions for accessing camera.
 
-On iOS this will require apps to specify both `NSCameraUsageDescription` and `NSMicrophoneUsageDescription` entries in the `Info.plist`
+On iOS this will require apps to specify the `NSCameraUsageDescription` entry in the `Info.plist`
 
 #### Returns
 
