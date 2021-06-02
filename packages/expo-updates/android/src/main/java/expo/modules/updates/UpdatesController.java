@@ -251,7 +251,7 @@ public class UpdatesController {
   }
 
   /* package */ void resetSelectionPolicyToDefault() {
-    mSelectionPolicy = mDefaultSelectionPolicy;
+    mSelectionPolicy = null;
   }
 
   /* package */ void setDefaultSelectionPolicy(SelectionPolicy selectionPolicy) {
