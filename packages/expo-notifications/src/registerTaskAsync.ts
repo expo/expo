@@ -1,11 +1,11 @@
 import { UnavailabilityError } from '@unimodules/core';
 
-import BackgroundNotificationsModule from './BackgroundNotificationsModule.native';
+import BackgroundNotificationTasksModule from './BackgroundNotificationTasksModule.native';
 
 export default async function registerTaskAsync(taskName: string): Promise<null> {
-  if (!BackgroundNotificationsModule.registerTaskAsync) {
+  if (!BackgroundNotificationTasksModule.registerTaskAsync) {
     throw new UnavailabilityError('Notifications', 'registerTaskAsync');
   }
 
-  return await BackgroundNotificationsModule.registerTaskAsync(taskName);
+  return await BackgroundNotificationTasksModule.registerTaskAsync(taskName);
 }

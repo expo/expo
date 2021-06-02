@@ -1,9 +1,9 @@
 import { UnavailabilityError } from '@unimodules/core';
-import BackgroundNotificationsModule from './BackgroundNotificationsModule.native';
+import BackgroundNotificationTasksModule from './BackgroundNotificationTasksModule.native';
 export default async function unregisterTaskAsync(taskName) {
-    if (!BackgroundNotificationsModule.unregisterTaskAsync) {
+    if (!BackgroundNotificationTasksModule.unregisterTaskAsync) {
         throw new UnavailabilityError('Notifications', 'unregisterTaskAsync');
     }
-    return await BackgroundNotificationsModule.unregisterTaskAsync(taskName);
+    return await BackgroundNotificationTasksModule.unregisterTaskAsync(taskName);
 }
 //# sourceMappingURL=unregisterTaskAsync.js.map
