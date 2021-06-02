@@ -84,9 +84,11 @@ typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
   } asset:^(EXUpdatesAsset * _Nonnull asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
     progressBlock(successfulAssetCount, failedAssetCount, totalAssetCount);
   } success:^(EXUpdatesUpdate * _Nullable update) {
-    if (update) {
-      [self _launchUpdate:update withConfiguration:updatesConfiguration success:successBlock error:errorBlock];
+    if (!update) {
+      successBlock(nil);
+      return;
     }
+    [self _launchUpdate:update withConfiguration:updatesConfiguration success:successBlock error:errorBlock];
   } error:errorBlock];
 }
 

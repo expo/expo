@@ -5,7 +5,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^EXUpdatesErrorBlock) (NSError *error);
-typedef void (^EXUpdatesSuccessBlock) (NSDictionary *manifest);
+typedef void (^EXUpdatesSuccessBlock) (NSDictionary * _Nullable manifest);
 typedef void (^EXUpdatesProgressBlock) (NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount);
 typedef BOOL (^EXUpdatesManifestBlock) (NSDictionary *manifest);
 
