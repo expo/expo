@@ -8,10 +8,10 @@ import * as TestUtils from '../TestUtils';
 
 export const name = 'Contacts';
 
-async function sortContacts(contacts, expect) {
+async function sortContacts(contacts, sortField, expect) {
   for (let i = 1; i < contacts.length; i++) {
-    const [propA] = Object.values(contacts[i - 1]);
-    const [propB] = Object.values(contacts[i]);
+    const { [sortField]: propA } = contacts[i - 1];
+    const { [sortField]: propB } = contacts[i];
     if (propA && propB) {
       const order = propA.toLowerCase().localeCompare(propB.toLowerCase());
       expect(Math.max(order, 0)).toBe(0);
@@ -314,7 +314,7 @@ export async function test({
           pageSize: 5,
         });
 
-        await sortContacts(contacts, expect);
+        await sortContacts(contacts, Contacts.SortTypes.FirstName, expect);
       });
       it('Contacts.getContactsAsync()sorts contacts by last name', async () => {
         const { data: contacts } = await Contacts.getContactsAsync({
@@ -324,7 +324,7 @@ export async function test({
           pageSize: 5,
         });
 
-        await sortContacts(contacts, expect);
+        await sortContacts(contacts, Contacts.SortTypes.LastName, expect);
       });
     }
 
