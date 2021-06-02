@@ -21,7 +21,7 @@ type DevMenuPodOptions = {
   nodeModulesPath?: string
 }
 
-const getDevMenuPodImport = ({ nodeModulesPath = '../node_modules '}: DevMenuPodOptions = {}) => {
+const getDevMenuPodImport = ({ nodeModulesPath = '../node_modules' }: DevMenuPodOptions = {}) => {
   return `pod 'expo-dev-menu', path: '${nodeModulesPath}/expo-dev-menu', :configurations => :debug`;
 }
 
