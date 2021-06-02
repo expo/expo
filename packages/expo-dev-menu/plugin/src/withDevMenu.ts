@@ -92,7 +92,7 @@ const withDevMenuActivity: ConfigPlugin = config => {
   });
 };
 
-const withDevMenuPodfile: ConfigPlugin<DevMenuPodOptions | undefined> = (config, options) => {
+const withDevMenuPodfile: ConfigPlugin<DevMenuPodOptions> = (config, options) => {
   return withDangerousMod(config, [
     'ios',
     async config => {
@@ -115,7 +115,7 @@ const withDevMenuPodfile: ConfigPlugin<DevMenuPodOptions | undefined> = (config,
   ]);
 };
 
-const withDevMenu = (config: ExpoConfig, devMenuPodfileOptions?: DevMenuPodOptions) => {
+const withDevMenu = (config: ExpoConfig, devMenuPodfileOptions: DevMenuPodOptions = {}) => {
   config = withDevMenuActivity(config);
   config = withDevMenuPodfile(config, devMenuPodfileOptions);
   config = withDevMenuAppDelegate(config);
