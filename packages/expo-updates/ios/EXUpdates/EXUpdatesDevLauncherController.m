@@ -15,6 +15,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 static NSString * const EXUpdatesDevLauncherControllerErrorDomain = @"EXUpdatesDevLauncherController";
 
+typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
+  EXUpdatesDevLauncherErrorCodeInvalidUpdateURL = 1,
+  EXUpdatesDevLauncherErrorCodeDirectoryInitializationFailed,
+  EXUpdatesDevLauncherErrorCodeDatabaseInitializationFailed,
+  EXUpdatesDevLauncherErrorCodeUpdateLaunchFailed,
+};
+
 @implementation EXUpdatesDevLauncherController
 
 @synthesize bridge = _bridge;
@@ -54,17 +61,17 @@ static NSString * const EXUpdatesDevLauncherControllerErrorDomain = @"EXUpdatesD
   EXUpdatesConfig *updatesConfiguration = [EXUpdatesConfig configWithExpoPlist];
   [updatesConfiguration loadConfigFromDictionary:configuration];
   if (!updatesConfiguration.updateUrl) {
-    errorBlock([NSError errorWithDomain:EXUpdatesDevLauncherControllerErrorDomain code:1 userInfo:@{NSLocalizedDescriptionKey: @"Failed to load update: configuration object must include a valid update URL"}]);
+    errorBlock([NSError errorWithDomain:EXUpdatesDevLauncherControllerErrorDomain code:EXUpdatesDevLauncherErrorCodeInvalidUpdateURL userInfo:@{NSLocalizedDescriptionKey: @"Failed to load update: configuration object must include a valid update URL"}]);
     return;
   }
   NSError *fsError;
   if (![controller initializeUpdatesDirectoryWithError:&fsError]) {
-    errorBlock(fsError ?: [NSError errorWithDomain:EXUpdatesDevLauncherControllerErrorDomain code:2 userInfo:@{NSLocalizedDescriptionKey: @"Failed to initialize updates directory with an unknown error"}]);
+    errorBlock(fsError ?: [NSError errorWithDomain:EXUpdatesDevLauncherControllerErrorDomain code:EXUpdatesDevLauncherErrorCodeDirectoryInitializationFailed userInfo:@{NSLocalizedDescriptionKey: @"Failed to initialize updates directory with an unknown error"}]);
     return;
   }
   NSError *dbError;
   if (![controller initializeUpdatesDatabaseWithError:&dbError]) {
-    errorBlock(dbError ?: [NSError errorWithDomain:EXUpdatesDevLauncherControllerErrorDomain code:3 userInfo:@{NSLocalizedDescriptionKey: @"Failed to initialize updates database with an unknown error"}]);
+    errorBlock(dbError ?: [NSError errorWithDomain:EXUpdatesDevLauncherControllerErrorDomain code:EXUpdatesDevLauncherErrorCodeDatabaseInitializationFailed userInfo:@{NSLocalizedDescriptionKey: @"Failed to initialize updates database with an unknown error"}]);
     return;
   }
 
@@ -103,7 +110,7 @@ static NSString * const EXUpdatesDevLauncherControllerErrorDomain = @"EXUpdatesD
   EXUpdatesAppLauncherWithDatabase *launcher = [[EXUpdatesAppLauncherWithDatabase alloc] initWithConfig:configuration database:controller.database directory:controller.updatesDirectory completionQueue:controller.controllerQueue];
   [launcher launchUpdateWithSelectionPolicy:controller.selectionPolicy completion:^(NSError * _Nullable error, BOOL success) {
     if (!success) {
-      errorBlock(error ?: [NSError errorWithDomain:EXUpdatesDevLauncherControllerErrorDomain code:4 userInfo:@{NSLocalizedDescriptionKey: @"Failed to launch update with an unknown error"}]);
+      errorBlock(error ?: [NSError errorWithDomain:EXUpdatesDevLauncherControllerErrorDomain code:EXUpdatesDevLauncherErrorCodeUpdateLaunchFailed userInfo:@{NSLocalizedDescriptionKey: @"Failed to launch update with an unknown error"}]);
       return;
     }
 

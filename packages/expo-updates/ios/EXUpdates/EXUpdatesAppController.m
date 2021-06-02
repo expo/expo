@@ -89,7 +89,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 
 - (void)resetSelectionPolicyToDefault
 {
-  _selectionPolicy = _defaultSelectionPolicy;
+  _selectionPolicy = nil;
 }
 
 - (void)start
@@ -254,21 +254,16 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 
 - (BOOL)initializeUpdatesDirectoryWithError:(NSError ** _Nullable)error
 {
-  NSError *err;
-  _updatesDirectory = [EXUpdatesUtils initializeUpdatesDirectoryWithError:&err];
-  if (err && error) {
-    *error = err;
-  }
+  _updatesDirectory = [EXUpdatesUtils initializeUpdatesDirectoryWithError:error];
   return _updatesDirectory != nil;
 }
 
 - (BOOL)initializeUpdatesDatabaseWithError:(NSError ** _Nullable)error
 {
-  __block BOOL dbSuccess;
   __block NSError *dbError;
   dispatch_semaphore_t dbSemaphore = dispatch_semaphore_create(0);
   dispatch_async(_database.databaseQueue, ^{
-    dbSuccess = [self->_database openDatabaseInDirectory:self->_updatesDirectory withError:&dbError];
+    [self->_database openDatabaseInDirectory:self->_updatesDirectory withError:&dbError];
     dispatch_semaphore_signal(dbSemaphore);
   });
 
@@ -276,7 +271,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
   if (dbError && error) {
     *error = dbError;
   }
-  return dbSuccess;
+  return dbError == nil;
 }
 
 - (void)setDefaultSelectionPolicy:(EXUpdatesSelectionPolicy *)selectionPolicy
