@@ -2,13 +2,13 @@ package expo.modules.notifications.notifications.background;
 
 import android.content.Context;
 
-import java.util.Collections;
-
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.interfaces.taskManager.TaskManagerInterface;
+
+import java.util.Collections;
 
 public class ExpoBackgroundNotificationTasksModule extends ExportedModule {
   private TaskManagerInterface mTaskManager;

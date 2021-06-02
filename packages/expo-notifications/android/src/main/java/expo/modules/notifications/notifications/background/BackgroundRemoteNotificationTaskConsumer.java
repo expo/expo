@@ -3,16 +3,15 @@ package expo.modules.notifications.notifications.background;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.content.Context;
-import android.os.Build;
-import android.os.PersistableBundle;
 import android.os.Bundle;
-import android.os.BaseBundle;
+import android.os.PersistableBundle;
 import android.util.Log;
 
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.ProcessLifecycleOwner;
 
-import expo.modules.notifications.notifications.NotificationSerializer;
-import expo.modules.notifications.service.delegates.ExpoHandlingDelegate;
-import expo.modules.notifications.notifications.model.Notification;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.unimodules.interfaces.taskManager.TaskConsumer;
 import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
 import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
@@ -20,21 +19,25 @@ import org.unimodules.interfaces.taskManager.TaskInterface;
 import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.List;
-import java.util.Iterator;
-import org.json.JSONObject;
-import org.json.JSONException;
+import java.util.Map;
 
+import expo.modules.notifications.notifications.NotificationSerializer;
+import expo.modules.notifications.service.delegates.FirebaseMessagingDelegate;
+
+/**
+ * Represents a task to be run when the app is backgrounded and receives a remote push
+ * notification. Map of current tasks is maintained in {@link FirebaseMessagingDelegate}.
+ */
 public class BackgroundRemoteNotificationTaskConsumer extends TaskConsumer implements TaskConsumerInterface {
   private static final String TAG = BackgroundRemoteNotificationTaskConsumer.class.getSimpleName();
-  private static final String NOTIFICATION_KEY = NOTIFICATION_KEY;
+  private static final String NOTIFICATION_KEY = "notification";
 
   private TaskInterface mTask;
 
   public BackgroundRemoteNotificationTaskConsumer(Context context, TaskManagerUtilsInterface taskManagerUtils) {
     super(context, taskManagerUtils);
-    ExpoHandlingDelegate.Companion.addBackgroundTaskConsumer(this);
+    FirebaseMessagingDelegate.Companion.addBackgroundTaskConsumer(this);
   }
 
   //region TaskConsumerInterface
@@ -56,12 +59,13 @@ public class BackgroundRemoteNotificationTaskConsumer extends TaskConsumer imple
 
   public void scheduleJob(Bundle bundle) {
     Context context = getContext();
-    TaskManagerUtilsInterface taskManagerUtils = getTaskManagerUtils();
+    boolean isInForeground = ProcessLifecycleOwner.get().getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED);
 
-    if (context != null && mTask != null) {
+    if (context != null && mTask != null && !isInForeground) {
       PersistableBundle data = new PersistableBundle();
+      // Bundles are not persistable, so let's convert to a JSON string
       data.putString(NOTIFICATION_KEY, bundleToJson(bundle).toString());
-      taskManagerUtils.scheduleJob(context, mTask, Collections.singletonList(data));
+      getTaskManagerUtils().scheduleJob(context, mTask, Collections.singletonList(data));
     }
   }
 
@@ -75,7 +79,7 @@ public class BackgroundRemoteNotificationTaskConsumer extends TaskConsumer imple
 
     for (PersistableBundle item : data) {
       Bundle bundle = new Bundle();
-      bundle.putBundle(NOTIFICATION_KEY, JsonStringToBundle(item.getString(NOTIFICATION_KEY)));
+      bundle.putBundle(NOTIFICATION_KEY, jsonStringToBundle(item.getString(NOTIFICATION_KEY)));
       mTask.execute(bundle, null, new TaskExecutionCallback() {
         @Override
         public void onFinished(Map<String, Object> response) {
@@ -108,11 +112,11 @@ public class BackgroundRemoteNotificationTaskConsumer extends TaskConsumer imple
     return json;
   }
 
-  private static Bundle JsonStringToBundle(String jsonString) {
+  private static Bundle jsonStringToBundle(String jsonString) {
     Bundle bundle = new Bundle();
     try {
       JSONObject jsonObject = new JSONObject(jsonString);
-      return NotificationSerializer.toBundle(jsonObject);
+      bundle = NotificationSerializer.toBundle(jsonObject);
     } catch (JSONException e) {
       Log.e("expo-notifications", "Could not parse notification from JSON string. " + e.getMessage());
     }
