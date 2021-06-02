@@ -1,0 +1,64 @@
+import { getRedirectPath } from './error-utilities';
+
+test('redirects version vX.0.0 renamed path', () => {
+  const redirectPath = '/versions/v32.0.0/guides/push-notifications/';
+  const newPath = getRedirectPath(redirectPath);
+
+  expect(newPath).toEqual('/push-notifications/overview/');
+});
+
+test('redirects version latest renamed path', () => {
+  const redirectPath = '/versions/latest/guides/push-notifications/';
+  const newPath = getRedirectPath(redirectPath);
+
+  expect(newPath).toEqual('/push-notifications/overview/');
+});
+
+test('redirects versionless renamed path', () => {
+  const redirectPath = '/guides/push-notifications/';
+  const newPath = getRedirectPath(redirectPath);
+
+  expect(newPath).toEqual('/push-notifications/overview/');
+});
+
+test('redirects versioned non-renamed path', () => {
+  const redirectPath = '/versions/latest/workflow/expo-cli/';
+  const newPath = getRedirectPath(redirectPath);
+
+  expect(newPath).toEqual('/workflow/expo-cli/');
+});
+
+test('does not redirect non-renamed path', () => {
+  const redirectPath = '/workflow/expo-cli/';
+  const newPath = getRedirectPath(redirectPath);
+
+  expect(newPath).toEqual('/workflow/expo-cli/');
+});
+
+test('adds forward slash to end of path', () => {
+  const redirectPath = '/workflow/expo-cli';
+  const newPath = getRedirectPath(redirectPath);
+
+  expect(newPath).toEqual('/workflow/expo-cli/');
+});
+
+test('redirects old versions to latest', () => {
+  const redirectPath = '/versions/v32.0.0/sdk/admob/';
+  const newPath = getRedirectPath(redirectPath);
+
+  expect(newPath).toEqual('/versions/latest/sdk/admob/');
+});
+
+test('redirects versionless SDK paths to new version', () => {
+  const redirectPath = '/sdk/admob/';
+  const newPath = getRedirectPath(redirectPath);
+
+  expect(newPath).toEqual('/versions/latest/sdk/admob/');
+});
+
+test('removes null from end of paths', () => {
+  const redirectPath = '/get-started/errors/null';
+  const newPath = getRedirectPath(redirectPath);
+
+  expect(newPath).toEqual('/get-started/errors/');
+});
