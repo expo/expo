@@ -3,13 +3,15 @@
 set -euo pipefail
 
 scriptdir=$(dirname "${BASH_SOURCE[0]}")
-bucket="docs.expo.io"
+declare -a buckets=("docs.expo.io" "docs.expo.dev")
 target="${1-$scriptdir/out}"
 
 if [ ! -d "$target" ]; then
   echo "target $target not found"
   exit 1
 fi
+
+for bucket in ${buckets[@]}; do
 
 # To keep the previous website up and running, we deploy it using these steps.
 #   1.  Sync Next.js static assets in \`_next/**\` folder
@@ -22,7 +24,7 @@ fi
 
 echo "::group::[1/6] Sync Next.js static assets in \`_next/**\` folder"
 aws s3 sync \
-  --no-progress \
+  --no-progress \ 
   --exclude "*" \
   --include "_next/**" \
   --cache-control "public, max-age=31536000, immutable" \
@@ -116,5 +118,7 @@ done
 echo "::endgroup::"
 
 echo "::group::[6/6] Notify Google of sitemap changes"
-curl -m 15 http://www.google.com/ping\?sitemap\=https%3A%2F%2Fdocs.expo.io%2Fsitemap.xml
+curl -m 15 "http://www.google.com/ping\?sitemap\=https%3A%2F%2F${bucket}%2Fsitemap.xml"
 echo "\n::endgroup::"
+  
+done
