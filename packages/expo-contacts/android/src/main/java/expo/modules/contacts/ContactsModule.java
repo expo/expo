@@ -155,7 +155,6 @@ public class ContactsModule extends ExportedModule {
           }
           output.putBoolean("hasNextPage", false);
           output.putBoolean("hasPreviousPage", false);
-          output.putInt("total", 1);
           promise.resolve(output);
         } else if (options.containsKey("name") && options.get("name") instanceof String) {
           String predicateMatchingName = "%" + (String) options.get("name") + "%";

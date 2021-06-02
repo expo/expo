@@ -141,10 +141,7 @@ export async function test({
         describe('creates contact with image', () => {
           let contactId;
           it('creates contact', async () => {
-            const image = Asset.fromModule(
-              require('../assets/icons/app.png')
-              // require('@react-navigation/stack/src/views/assets/back-icon.png')
-            );
+            const image = Asset.fromModule(require('../assets/icons/app.png'));
             await image.downloadAsync();
 
             const fields = {
@@ -248,12 +245,10 @@ export async function test({
 
           expect(typeof hasNextPage).toBe('boolean');
           expect(typeof hasPreviousPage).toBe('boolean');
-          expect(typeof total).toBe('number');
 
           expect(data.length).toBe(1);
           expect(hasPreviousPage).toBe(false);
           expect(hasNextPage).toBe(false);
-          expect(total).toEqual(1);
 
           // Nothing else.
           expect(Object.keys(props).length).toBe(0);
@@ -351,7 +346,7 @@ export async function test({
 
       describe('Contacts.getContactByIdAsync()', () => {
         it('gets a result of right shape', async () => {
-          const fakeContact = {
+          const fields = {
             [Contacts.Fields.FirstName]: 'Tommy',
             [Contacts.Fields.LastName]: 'Wiseau',
             [Contacts.Fields.JobTitle]: 'Director',
@@ -369,7 +364,7 @@ export async function test({
             ],
           };
 
-          const fakeContactId = await createContact(fakeContact);
+          const fakeContactId = await createContact(fields);
 
           const contact = await Contacts.getContactByIdAsync(fakeContactId, [
             Contacts.Fields.PhoneNumbers,
