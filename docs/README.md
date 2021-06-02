@@ -90,7 +90,7 @@ This method is not great for accessibility and should be avoided where possible.
 
 Use these for more complex rules than one-to-one path-to-path redirect mapping. For example, we use client-side redirects to strip the `.html` extension off, and to identify if the request is for a version of the documentation that we no longer support.
 
-You can add your own client-side redirect rules in `pages/_error.js`.
+You can add your own client-side redirect rules in `common/error-utilities.ts`.
 
 ## Algolia Docsearch
 
