@@ -7,7 +7,7 @@
 ### 🎉 New features
 
 - [plugin] Refactor imports ([#13029](https://github.com/expo/expo/pull/13029) by [@EvanBacon](https://github.com/EvanBacon))
-- Added ability to respond to remote notifications received while the app is backgrounded.
+- Added ability to respond to remote notifications received while the app is backgrounded. ([#13130](https://github.com/expo/expo/pull/13130) by [@cruzach](https://github.com/cruzach))
 
 ### 🐛 Bug fixes
 
