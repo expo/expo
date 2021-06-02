@@ -25,10 +25,12 @@
 // Method that is being called when the JS app just finished launching,
 // after the native app was launched with the launch reason supported by the consumer.
 // For background notifications, `application:didReceiveRemoteNotification:fetchCompletionHandler:` is the entry point of this method,
-// so the task can be executed immediately here.
+// so the task can be executed immediately here if the app is not foregrounded.
 - (void)didBecomeReadyToExecuteWithData:(NSDictionary *)data
 {
-  [_task executeWithData:[self serializeTaskData:data] withError:nil];
+  if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateActive) {
+    [_task executeWithData:data withError:nil];
+  }
 }
 
 // Translate result received from JS to another (native) type that is then used for example as an argument in completion callbacks.
@@ -46,11 +48,6 @@
     default:
       return UIBackgroundFetchResultNoData;
   }
-}
-
-- (NSDictionary *)serializeTaskData:(NSDictionary *)data
-{
-  return [data objectForKey:@"data"] ?: @{};
 }
 
 @end
