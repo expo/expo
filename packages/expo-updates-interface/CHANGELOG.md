@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- - Added initial iOS protocol. ([#13088](https://github.com/expo/expo/pull/13088) by [@esamelson](https://github.com/esamelson))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
@@ -14,4 +16,4 @@
 
 ### 🎉 New features
 
-- Added package and initial interface. (Android: [#13030](https://github.com/expo/expo/pull/13030) and iOS: [#13088](https://github.com/expo/expo/pull/13088) by [@esamelson](https://github.com/esamelson))
+- Added package and initial Android interface. ([#13030](https://github.com/expo/expo/pull/13030) by [@esamelson](https://github.com/esamelson))
