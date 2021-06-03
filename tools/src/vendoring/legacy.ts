@@ -270,7 +270,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     steps: [
       {
         recursive: true,
-        sourceIosPath: 'ios',
+        sourceIosPath: 'apple',
         targetIosPath: 'Api/Components/Svg',
         sourceAndroidPath: 'android/src/main/java/com/horcrux/svg',
         targetAndroidPath: 'modules/api/components/svg',
