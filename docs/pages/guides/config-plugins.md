@@ -244,6 +244,7 @@ module.exports = {
 
 ### Best practices for mods
 
+- [Static modification][#static-modification] is key. If you want to modify a value in an Android gradle file, consider using `gradle.properties`. If you want to modify some code in the pod file, consider writing to json and having the pod file read the static values.
 - Avoid doing long tasks like making fetch requests or installing Node modules in mods.
 - Do not add interactive terminal prompts in mods.
 - Utilize built-in config plugins like `withXcodeProject` to minimize the amount of times a file is read and parsed.
@@ -612,6 +613,85 @@ Notice that `expo-location` uses `version: '11.0.0'`, and `react-native-maps` us
 For the most _stable_ experience, you should try to have no `UNVERSIONED` plugins in your project. This is because the `UNVERSIONED` plugin may not support the native code in your project.
 For instance, say you have an `UNVERSIONED` Facebook plugin in your project, if the Facebook native code or plugin has a breaking change, that will break the way your project prebuilds and cause it to error on build.
 
+## Static Modification
+
+Plugins can technically be used to regex file changes into application code, but these modifications are dangerous, if the template changes over time then the regex becomes hard to predict (similarly, if the user modifies a file manually or uses a custom template). Here are some examples of files you shouldn't modify manually, and alternatives.
+
+### Android Gradle Files
+
+Gradle files are written in either groovy or kotlin, they are used to manage dependencies, versioning, and other settings in the Android app. Instead of modifying them directly with `withProjectBuildGradle`, `withAppBuildGradle`, or `withSettingsGradle`, utilize the static `gradle.properties` file.
+
+The `gradle.properties` is a static key/value pair that groovy files can read from. For example, say you wanted to control some toggle in groovy:
+
+`gradle.properties`
+
+```
+/* @info Safely modified using the <code>withGradleProperties()</code> mod. */
+expo.react.jsEngine=hermes
+/* @end */
+```
+
+Then later in a gradle file:
+
+`app/build.gradle`
+
+```groovy
+project.ext.react = [
+  /* @info This code would be added to the template ahead of time, but it could be regexed in using <code>withAppBuildGradle()</code> */
+  enableHermes: findProperty('expo.react.jsEngine') ?: 'jsc'
+  /* @end */
+]
+```
+
+- For keys in the `gradle.properties`, we use camel case separated by `.`s, and usually starting with the `expo` prefix to denote that the property is managed by prebuild.
+- To access the property, use one of two global methods:
+  - `property`: Get a property, throw an error if the property is not defined.
+  - `findProperty`: Get a property without throwing an error if the property is missing. This can often be used with the `?:` operator to provide a default value.
+
+Generally, you should only interact with the Gradle file via Expo [Autolinking][autolinking], this provides a programmatic interface with the project files.
+
+### iOS App Delegate
+
+Some modules may need to add delegate methods to the project AppDelegate, this can done dangerously via the `withAppDelegate` mod, or it can be done safely by adding support for unimodules AppDelegate proxy to the native module. The unimodules AppDelegate proxy can swizzle function calls to native modules in a safe and reliable way. If the language of the project AppDelegate changes from Objective-c to Swift, the swizzler will continue to work, whereas a regex would possibly fail.
+
+Here are some examples of the AppDelegate proxy in action:
+
+- `expo-app-auth` -- [`EXAppAuthAppDelegate.m`](https://github.com/expo/expo/blob/bd7bc03ee10d89487eac25351a455bd9db155b8c/packages/expo-app-auth/ios/EXAppAuth/EXAppAuthAppDelegate.m) (openURL)
+- `expo-branch` -- [`EXBranchManager.m`](https://github.com/expo/expo/blob/636b55ab767f502f29c922a34821434efff04034/packages/expo-branch/ios/EXBranch/EXBranchManager.m) (didFinishLaunchingWithOptions, continueUserActivity, openURL)
+- `expo-notifications` -- [`EXPushTokenManager.m`](https://github.com/expo/expo/blob/bd469e421856f348d539b1b57325890147935dbc/packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenManager.m) (didRegisterForRemoteNotificationsWithDeviceToken, didFailToRegisterForRemoteNotificationsWithError)
+- `expo-facebook` -- [`EXFacebookAppDelegate.m`](https://github.com/expo/expo/blob/e0bb254c889734f2ec6c7b688167f013587ed201/packages/expo-facebook/ios/EXFacebook/EXFacebookAppDelegate.m) (openURL)
+- `expo-file-system` -- [`EXSessionHandler.m`](https://github.com/expo/expo/blob/e0bb254c889734f2ec6c7b688167f013587ed201/packages/expo-file-system/ios/EXFileSystem/EXSessionTasks/EXSessionHandler.m) (handleEventsForBackgroundURLSession)
+
+Currently, the only known way to add support for the AppDelegate proxy to a native module, without converting that module to a unimodule, is to create a wrapper package: [example](https://github.com/expo/expo/pull/5165).
+
+We plan to improve this in the future.
+
+### iOS CocoaPods Podfile
+
+The `ios/Podfile` can be customized dangerously with regex, or statically via JSON:
+
+`Podfile`
+
+```rb
+require 'json'
+
+/* @info Import a JSON file and parse it in Ruby */
+podfileConfig = JSON.parse(File.read(File.join(__dir__, 'podfile.config.json')))
+/* @end */
+
+platform :ios, '11.0'
+
+target 'yolo27' do
+  use_unimodules!
+  config = use_native_modules!
+  use_react_native!(:path => config["reactNativePath"])
+
+  # podfileConfig['version']
+end
+```
+
+Generally, you should only interact with the Podfile via Expo [Autolinking][autolinking], this provides a programmatic interface with the project files.
+
 ## expo install
 
 Node modules with config plugins can be added to the project's Expo config automatically by using the `expo install` command. [Related PR](https://github.com/expo/expo-cli/pull/3437).
@@ -639,3 +719,7 @@ Please add the following to your Expo config
 [cli-prebuild]: https://docs.expo.io/workflow/expo-cli/#eject
 [sandbox]: https://codesandbox.io/s/expo-config-plugins-8qhof?file=/src/project/app.config.js
 [configplugin]: ./src/Plugin.types.ts
+
+<!-- TODO: Better link for Expo autolinking docs -->
+
+[autolinking]: https://docs.expo.io/bare/installing-unimodules/
