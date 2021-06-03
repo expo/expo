@@ -37,7 +37,7 @@ unzip expoview/libs/ReactAndroid-temp.aar -d expoview/libs/ReactAndroid-temp
 set +e
 UNRENAMED_LIBS=`unzip -l expoview/libs/ReactAndroid-temp.aar | grep 'lib.*\.so' | grep -v "$ABI_VERSION" | grep -v 'libc++_shared.so' | grep -v 'libfbjni.so'`
 if [ "x$UNRENAMED_LIBS" != "x" ]; then
-  echo -e "\n\n👀 These libraries are still not be renamed. Please make sure to update \`tools/src/versioning/android/libraries.ts\`."
+  echo -e "\n\n👀 The following libraries have not been renamed. Please make sure to update \`tools/src/versioning/android/libraries.ts\`."
   echo "$UNRENAMED_LIBS"
   exit 1
 fi
