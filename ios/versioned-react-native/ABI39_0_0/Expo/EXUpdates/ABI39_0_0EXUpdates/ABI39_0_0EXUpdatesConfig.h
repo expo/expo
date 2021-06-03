@@ -27,6 +27,7 @@ typedef NS_ENUM(NSInteger, ABI39_0_0EXUpdatesCheckAutomaticallyConfig) {
 
 @property (nonatomic, readonly) BOOL hasEmbeddedUpdate;
 
++ (instancetype)configWithExpoPlist;
 + (instancetype)configWithDictionary:(NSDictionary *)config;
 - (void)loadConfigFromDictionary:(NSDictionary *)config;
 

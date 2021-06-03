@@ -281,6 +281,7 @@ PODS:
   - ABI39_0_0EXUpdates (0.3.1):
     - ABI39_0_0React
     - ABI39_0_0UMCore
+  - ABI39_0_0EXUpdatesInterface (0.0.1)
   - ABI39_0_0EXVideoThumbnails (4.3.0):
     - ABI39_0_0UMCore
     - ABI39_0_0UMFileSystemInterface
@@ -819,6 +820,7 @@ PODS:
   - ABI40_0_0EXUpdates (0.4.1):
     - ABI40_0_0React-Core
     - ABI40_0_0UMCore
+  - ABI40_0_0EXUpdatesInterface (0.0.1)
   - ABI40_0_0EXVideoThumbnails (4.4.0):
     - ABI40_0_0UMCore
     - ABI40_0_0UMFileSystemInterface
@@ -1389,6 +1391,7 @@ PODS:
     - ABI41_0_0EXStructuredHeaders
     - ABI41_0_0React-Core
     - ABI41_0_0UMCore
+  - ABI41_0_0EXUpdatesInterface (0.0.1)
   - ABI41_0_0EXVideoThumbnails (5.1.0):
     - ABI41_0_0UMCore
     - ABI41_0_0UMFileSystemInterface
@@ -2437,6 +2440,7 @@ DEPENDENCIES:
   - ABI39_0_0EXStructuredHeaders (from `./versioned-react-native/ABI39_0_0/Expo/EXStructuredHeaders`)
   - ABI39_0_0EXTaskManager (from `./versioned-react-native/ABI39_0_0/Expo/EXTaskManager`)
   - ABI39_0_0EXUpdates (from `./versioned-react-native/ABI39_0_0/Expo/EXUpdates`)
+  - ABI39_0_0EXUpdatesInterface (from `./versioned-react-native/ABI39_0_0/Expo/EXUpdatesInterface`)
   - ABI39_0_0EXVideoThumbnails (from `./versioned-react-native/ABI39_0_0/Expo/EXVideoThumbnails`)
   - ABI39_0_0EXWebBrowser (from `./versioned-react-native/ABI39_0_0/Expo/EXWebBrowser`)
   - ABI39_0_0FBLazyVector (from `./versioned-react-native/ABI39_0_0/ReactNative/Libraries/FBLazyVector`)
@@ -2540,6 +2544,7 @@ DEPENDENCIES:
   - ABI40_0_0EXStructuredHeaders (from `./versioned-react-native/ABI40_0_0/Expo/EXStructuredHeaders`)
   - ABI40_0_0EXTaskManager (from `./versioned-react-native/ABI40_0_0/Expo/EXTaskManager`)
   - ABI40_0_0EXUpdates (from `./versioned-react-native/ABI40_0_0/Expo/EXUpdates`)
+  - ABI40_0_0EXUpdatesInterface (from `./versioned-react-native/ABI40_0_0/Expo/EXUpdatesInterface`)
   - ABI40_0_0EXVideoThumbnails (from `./versioned-react-native/ABI40_0_0/Expo/EXVideoThumbnails`)
   - ABI40_0_0EXWebBrowser (from `./versioned-react-native/ABI40_0_0/Expo/EXWebBrowser`)
   - ABI40_0_0FBLazyVector (from `./versioned-react-native/ABI40_0_0/ReactNative/Libraries/FBLazyVector`)
@@ -2643,6 +2648,7 @@ DEPENDENCIES:
   - ABI41_0_0EXTaskManager (from `./versioned-react-native/ABI41_0_0/Expo/EXTaskManager`)
   - ABI41_0_0EXTrackingTransparency (from `./versioned-react-native/ABI41_0_0/Expo/EXTrackingTransparency`)
   - ABI41_0_0EXUpdates (from `./versioned-react-native/ABI41_0_0/Expo/EXUpdates`)
+  - ABI41_0_0EXUpdatesInterface (from `./versioned-react-native/ABI41_0_0/Expo/EXUpdatesInterface`)
   - ABI41_0_0EXVideoThumbnails (from `./versioned-react-native/ABI41_0_0/Expo/EXVideoThumbnails`)
   - ABI41_0_0EXWebBrowser (from `./versioned-react-native/ABI41_0_0/Expo/EXWebBrowser`)
   - ABI41_0_0FBLazyVector (from `./versioned-react-native/ABI41_0_0/ReactNative/Libraries/FBLazyVector`)
@@ -2963,6 +2969,8 @@ EXTERNAL SOURCES:
     :path: "./versioned-react-native/ABI39_0_0/Expo/EXTaskManager"
   ABI39_0_0EXUpdates:
     :path: "./versioned-react-native/ABI39_0_0/Expo/EXUpdates"
+  ABI39_0_0EXUpdatesInterface:
+    :path: "./versioned-react-native/ABI39_0_0/Expo/EXUpdatesInterface"
   ABI39_0_0EXVideoThumbnails:
     :path: "./versioned-react-native/ABI39_0_0/Expo/EXVideoThumbnails"
   ABI39_0_0EXWebBrowser:
@@ -3163,6 +3171,8 @@ EXTERNAL SOURCES:
     :path: "./versioned-react-native/ABI40_0_0/Expo/EXTaskManager"
   ABI40_0_0EXUpdates:
     :path: "./versioned-react-native/ABI40_0_0/Expo/EXUpdates"
+  ABI40_0_0EXUpdatesInterface:
+    :path: "./versioned-react-native/ABI40_0_0/Expo/EXUpdatesInterface"
   ABI40_0_0EXVideoThumbnails:
     :path: "./versioned-react-native/ABI40_0_0/Expo/EXVideoThumbnails"
   ABI40_0_0EXWebBrowser:
@@ -3363,6 +3373,8 @@ EXTERNAL SOURCES:
     :path: "./versioned-react-native/ABI41_0_0/Expo/EXTrackingTransparency"
   ABI41_0_0EXUpdates:
     :path: "./versioned-react-native/ABI41_0_0/Expo/EXUpdates"
+  ABI41_0_0EXUpdatesInterface:
+    :path: "./versioned-react-native/ABI41_0_0/Expo/EXUpdatesInterface"
   ABI41_0_0EXVideoThumbnails:
     :path: "./versioned-react-native/ABI41_0_0/Expo/EXVideoThumbnails"
   ABI41_0_0EXWebBrowser:
@@ -3710,6 +3722,7 @@ SPEC CHECKSUMS:
   ABI39_0_0EXStructuredHeaders: a8ee82ecd320db16e160a07b7cc13e7ebcfd695b
   ABI39_0_0EXTaskManager: 10b5e6d9311d29dd4fa739c717f13704a4217d74
   ABI39_0_0EXUpdates: f5b053b484a3c70e6e515112511faabf9d2079d4
+  ABI39_0_0EXUpdatesInterface: 32a87fc28cd3aea2857a37ae9113dba1e60c1e76
   ABI39_0_0EXVideoThumbnails: 352a80fc860b96b1d03e4b80e9880372c2b56674
   ABI39_0_0EXWebBrowser: 46208491d2133e4de89a4bcb62c0a5493b2c9c78
   ABI39_0_0FBLazyVector: 08aa5c8e5e118af21306f8515b97f2f0b1dd0b69
@@ -3810,6 +3823,7 @@ SPEC CHECKSUMS:
   ABI40_0_0EXStructuredHeaders: f4d8b1bd97cd76c206df7a1cb3ade9cea2c65759
   ABI40_0_0EXTaskManager: c30a8b453caa8bf3c712afdd346ae23a83e575f2
   ABI40_0_0EXUpdates: 24684f33c3a8797c040a97bedca35a8b7d0279a0
+  ABI40_0_0EXUpdatesInterface: fb7b6c4e56f9b587e7a55fcba8c7f9a5284333a4
   ABI40_0_0EXVideoThumbnails: 6ebadb682fe996744d2fe531fd92e2d6b4e56132
   ABI40_0_0EXWebBrowser: c70ff6aae05c64a0ba25aab9571a1c0e51ab49e5
   ABI40_0_0FBLazyVector: aacc9a03c2b7415a9a19e11a6fcf8758f42f5320
@@ -3910,6 +3924,7 @@ SPEC CHECKSUMS:
   ABI41_0_0EXTaskManager: 6be1098cb568807194a7d425fbc33092c9fe158f
   ABI41_0_0EXTrackingTransparency: 82452df66df448b5eaeca97f639019f109d6165f
   ABI41_0_0EXUpdates: cac3153bd44716866280bf0e645eed060f3e2533
+  ABI41_0_0EXUpdatesInterface: b7df6394ea5690a62e87539cba2b5bf3713c10ee
   ABI41_0_0EXVideoThumbnails: f3b4634744998652e114c0cae3a202b8a935c3e8
   ABI41_0_0EXWebBrowser: 5125cd0d9eba1f87301b784d1fbfb602a16d7fa1
   ABI41_0_0FBLazyVector: 6d79f50b57819134875729057a6709a7bdc2e2bb

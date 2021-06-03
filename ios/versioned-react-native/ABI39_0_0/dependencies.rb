@@ -200,6 +200,9 @@ pod 'ABI39_0_0EXStructuredHeaders',
 pod 'ABI39_0_0EXUpdates',
   :path => './versioned-react-native/ABI39_0_0/Expo/EXUpdates',
   :project_name => 'ABI39_0_0'
+pod 'ABI39_0_0EXUpdatesInterface',
+  :path => './versioned-react-native/ABI39_0_0/Expo/EXUpdatesInterface',
+  :project_name => 'ABI39_0_0'
 pod 'ABI39_0_0EXVideoThumbnails',
   :path => './versioned-react-native/ABI39_0_0/Expo/EXVideoThumbnails',
   :project_name => 'ABI39_0_0'
