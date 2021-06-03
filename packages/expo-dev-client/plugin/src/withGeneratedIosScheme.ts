@@ -1,4 +1,4 @@
-import { IOSConfig, InfoPlist, withInfoPlist } from '@expo/config-plugins';
+import { IOSConfig, InfoPlist } from '@expo/config-plugins';
 import { createInfoPlistPlugin } from '@expo/config-plugins/build/plugins/ios-plugins';
 import { ExpoConfig } from '@expo/config-types';
 
