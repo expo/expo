@@ -15,6 +15,7 @@ import org.unimodules.core.interfaces.services.EventEmitter;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 
@@ -144,11 +145,13 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
 
   @ExpoMethod
   public void isBatteryOptimizationEnabledAsync(Promise promise) {
-    String packageName = mContext.getApplicationContext().getPackageName();
-    PowerManager powerManager = (PowerManager) mContext.getApplicationContext().getSystemService(Context.POWER_SERVICE);
-    if (powerManager && !powerManager.isIgnoringBatteryOptimizations(packageName)) {
-      promise.resolve(true);
-      return;
+    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      String packageName = mContext.getApplicationContext().getPackageName();
+      PowerManager powerManager = (PowerManager) mContext.getApplicationContext().getSystemService(Context.POWER_SERVICE);
+      if (powerManager && !powerManager.isIgnoringBatteryOptimizations(packageName)) {
+        promise.resolve(true);
+        return;
+      }
     }
     promise.resolve(false);
   }
