@@ -86,7 +86,7 @@
   "expo-video-thumbnails": "~5.1.0",
   "expo-web-browser": "~9.1.0",
   "firebase": "8.2.3",
-  "lottie-react-native": "3.5.0",
+  "lottie-react-native": "4.0.2",
   "react-native-appearance": "~0.3.3",
   "react-native-branch": "5.0.0",
   "react-native-gesture-handler": "~1.10.2",

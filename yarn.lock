@@ -14301,20 +14301,14 @@ loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.3.1, loose-envify@^1.4
   dependencies:
     js-tokens "^3.0.0 || ^4.0.0"
 
-lottie-ios@^3.1.8:
-  version "3.1.9"
-  resolved "https://registry.yarnpkg.com/lottie-ios/-/lottie-ios-3.1.9.tgz#592a8978cd679945c66a2b5fc087146c33e9d475"
-  integrity sha512-iB/jtMQiZnhNvPiQOkyRU3h8y+SKsIL8bqo8aAC9wTv2YStXSInmCPLw3JbIFy0HqW6YPwEFbqgFjtgo9vAHUg==
-
-lottie-react-native@3.5.0:
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/lottie-react-native/-/lottie-react-native-3.5.0.tgz#749fed964bdc9fabfae24ef81696f90f4d758f59"
-  integrity sha512-yKYj58xynDAG/BqJUhg9LTATBqwD4ATGXJKL2Ho6g4BTmPexOjDBNnPSeRBwjlpBxQ1nP4Qw//0zbuFsTFD1TA==
+lottie-react-native@4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/lottie-react-native/-/lottie-react-native-4.0.2.tgz#d0b7a479995b4bfdf5402671e096f15b7ef2a7d8"
+  integrity sha512-8X5SV8X+es5dJwUGYcSyRIbHIPeWIcUH6PiRaReUEy+6s1d+NLBp3rj4+9I75F1ZN0nbFGNkrgypnGsXOAXBTw==
   dependencies:
     invariant "^2.2.2"
-    lottie-ios "^3.1.8"
     prop-types "^15.5.10"
-    react-native-safe-modules "^1.0.0"
+    react-native-safe-modules "^1.0.3"
 
 lower-case-first@^2.0.2:
   version "2.0.2"
@@ -17475,10 +17469,10 @@ react-native-safe-area-view@^0.14.8, react-native-safe-area-view@^0.14.9:
   dependencies:
     hoist-non-react-statics "^2.3.1"
 
-react-native-safe-modules@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/react-native-safe-modules/-/react-native-safe-modules-1.0.0.tgz#10a918adf97da920adb1e33e0c852b1e80123b65"
-  integrity sha512-ShT8duWBT30W4OFcltZl+UvpPDikZFURvLDQqAsrvbyy6HzWPGJDCpdqM+6GqzPPs4DPEW31YfMNmdJcZ6zI2w==
+react-native-safe-modules@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/react-native-safe-modules/-/react-native-safe-modules-1.0.3.tgz#f5f29bb9d09d17581193843d4173ad3054f74890"
+  integrity sha512-DUxti4Z+AgJ/ZsO5U7p3uSCUBko8JT8GvFlCeOXk9bMd+4qjpoDvMYpfbixXKgL88M+HwmU/KI1YFN6gsQZyBA==
   dependencies:
     dedent "^0.6.0"
 

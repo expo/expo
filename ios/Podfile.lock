@@ -2068,9 +2068,9 @@ PODS:
   - GTMSessionFetcher/Core (1.5.0)
   - JKBigInteger2 (0.0.5)
   - lottie-ios (3.1.9)
-  - lottie-react-native (3.4.0):
+  - lottie-react-native (4.0.2):
     - lottie-ios (~> 3.1.8)
-    - React
+    - React-Core
   - MLKitCommon (2.1.0):
     - GoogleDataTransport (~> 8.0)
     - GoogleToolboxForMac/Logger (~> 2.1)
@@ -4052,7 +4052,7 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: b3503b20a988c4e20cc189aa798fd18220133f52
   JKBigInteger2: e91672035c42328c48b7dd015b66812ddf40ca9b
   lottie-ios: 3a3758ef5a008e762faec9c9d50a39842f26d124
-  lottie-react-native: 55abec29d1a068cd43fdd2e7353e409fdaee8389
+  lottie-react-native: 4dff8fe8d10ddef9e7880e770080f4a56121397e
   MLKitCommon: 9ed187a042139d51c0d8bf6a8301bb20b375c576
   MLKitFaceDetection: 5b92261dd6e4205e3dab0df62537ac3f4e90e5db
   MLKitVision: 51385878c9100024478971856510f9271ff555b5
@@ -4063,7 +4063,7 @@ SPEC CHECKSUMS:
   RCTTypeSafety: 44982c5c8e43ff4141eb519a8ddc88059acd1f3a
   React: e1c65dd41cb9db13b99f24608e47dd595f28ca9a
   React-callinvoker: 552a6a6bc8b3bb794cf108ad59e5a9e2e3b4fc98
-  React-Core: 9d341e725dc9cd2f49e4c49ad1fc4e8776aa2639
+  React-Core: a42b4deaadbde5a2d8e2dab7a2b874303f733cf4
   React-CoreModules: 5335e168165da7f7083ce7147768d36d3e292318
   React-cxxreact: d3261ec5f7d11743fbf21e263a34ea51d1f13ebc
   React-jsi: 54245e1d5f4b690dec614a73a3795964eeef13a8
