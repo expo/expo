@@ -12,7 +12,7 @@ ABI41_0_0UM_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(ABI41_0_0EXUpdatesInterface)];
+  return @[@protocol(ABI41_0_0EXUpdatesModuleInterface)];
 }
 
 - (ABI41_0_0EXUpdatesConfig *)config
