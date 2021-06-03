@@ -1,11 +1,11 @@
 ---
-title: The Expo SDK explained
-sidebar_title: Expo SDK explained
+title: Expo SDK
+sidebar_title: Expo SDK
 ---
 
 ## What is the Expo SDK?
 
-The simplest way to look at Expo's SDK is to think of it as a toolbox that Expo provides. Included in that toolbox are some of the most essential and widely usable tools for building extraordinary and powerful apps. You can find a list of all the libraries included in Expo's SDK [here](/versions/latest/). Thanks to some new features, including [EAS Build](/build/introduction.md), Expo apps are no longer limited to _only_ using libraries in the SDK, but there are still some limitations, specifically when [developing your app in Expo Go](#expo-go).
+You can think of the Expo SDK as a toolbox that you can pull from as needed while building your app, except instead of hammers and screwdrivers you get cameras, haptics, push notifications, and other operating system features that are native to the platform you're building for. You can find a list of all the libraries (tools in this stretched metaphor) included in the SDK in the [API Reference](/versions/latest/). These aren't the only libraries you can use when developing your app, they are the libraries that Expo provides and provides support for.
 
 ### Versions of the SDK and release schedule
 

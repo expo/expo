@@ -176,7 +176,7 @@ const sections = [
   {
     name: 'Fundamentals',
     reference: [
-      'The Expo SDK explained',
+      'Expo SDK',
       'Expo CLI',
       'Using libraries',
       'Viewing logs',
