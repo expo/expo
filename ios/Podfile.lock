@@ -1913,12 +1913,15 @@ PODS:
     - UMCore
   - EXUpdates (0.6.0):
     - EXStructuredHeaders
+    - EXUpdatesInterface
     - React-Core
     - UMCore
   - EXUpdates/Tests (0.6.0):
     - EXStructuredHeaders
+    - EXUpdatesInterface
     - React-Core
     - UMCore
+  - EXUpdatesInterface (0.0.1)
   - EXVideoThumbnails (5.1.0):
     - ExpoModulesCore
     - UMCore
@@ -2752,6 +2755,7 @@ DEPENDENCIES:
   - EXTrackingTransparency (from `../packages/expo-tracking-transparency/ios`)
   - EXUpdates (from `../packages/expo-updates/ios`)
   - EXUpdates/Tests (from `../packages/expo-updates/ios`)
+  - EXUpdatesInterface (from `../packages/expo-updates-interface/ios`)
   - EXVideoThumbnails (from `../packages/expo-video-thumbnails/ios`)
   - EXWebBrowser (from `../packages/expo-web-browser/ios`)
   - FBLazyVector (from `../react-native-lab/react-native/Libraries/FBLazyVector`)
@@ -3571,6 +3575,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-tracking-transparency/ios"
   EXUpdates:
     :path: "../packages/expo-updates/ios"
+  EXUpdatesInterface:
+    :path: "../packages/expo-updates-interface/ios"
   EXVideoThumbnails:
     :path: "../packages/expo-video-thumbnails/ios"
   EXWebBrowser:
@@ -4015,7 +4021,8 @@ SPEC CHECKSUMS:
   EXStructuredHeaders: 7e7eec19a326bc58cca2fb3edbac0afaecb89c16
   EXTaskManager: d30b4a5723a5969443da644d786853923efa5f17
   EXTrackingTransparency: ea1f4c054b2e0908d2a781faca6f4a5402278220
-  EXUpdates: 7c181d03d802ef71bd06c6229ac87de023bb1f2f
+  EXUpdates: dec9d211e99630e109c20b1dc626fd17e6ec3cf9
+  EXUpdatesInterface: 8649cedc0dd767fa3c1807129b92b1cd6045ebf7
   EXVideoThumbnails: 6d5a5d7c2c5f631b1950b1e8b2a0305ab741b9b4
   EXWebBrowser: 0b466c50e5ff61c9758095d49d5081e3229d77ac
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6

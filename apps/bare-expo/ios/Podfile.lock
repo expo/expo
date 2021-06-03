@@ -43,6 +43,8 @@ PODS:
     - UMCore
   - EXCellular (3.1.0):
     - UMCore
+  - EXClipboard (1.0.2):
+    - UMCore
   - EXConstants (10.1.3):
     - ExpoModulesCore
     - UMCore
@@ -731,6 +733,7 @@ DEPENDENCIES:
   - EXCalendar (from `../../../packages/expo-calendar/ios`)
   - EXCamera (from `../../../packages/expo-camera/ios`)
   - EXCellular (from `../../../packages/expo-cellular/ios`)
+  - EXClipboard (from `../../../packages/expo-clipboard/ios`)
   - EXConstants (from `../../../packages/expo-constants/ios`)
   - EXContacts (from `../../../packages/expo-contacts/ios`)
   - EXCrypto (from `../../../packages/expo-crypto/ios`)
@@ -935,6 +938,9 @@ EXTERNAL SOURCES:
   EXCellular:
     inhibit_warnings: false
     :path: "../../../packages/expo-cellular/ios"
+  EXClipboard:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-clipboard/ios"
   EXConstants:
     inhibit_warnings: false
     :path: "../../../packages/expo-constants/ios"
@@ -1210,6 +1216,7 @@ SPEC CHECKSUMS:
   EXCalendar: 93dcc0f5288066f65d53b730abfb2a5fd69ccc87
   EXCamera: 51dec14df2128718c3a43c09a085a105be15cafb
   EXCellular: 06e641f1c34e9d772da3c69cfe9ef4828791e3f8
+  EXClipboard: 2f4ac26d2d1fb3b40346fd4a93d5303c04608b07
   EXConstants: 5ea0cedcacca6f27f0ec54f185e01e0970ee1286
   EXContacts: c4168e6fba1b2b075e30f7504b79de42afdfd0d8
   EXCrypto: 9cbeb90f6c60a8ae9f26242fd2db916b21c55700
