@@ -2354,6 +2354,9 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
+  - RNScreens (3.3.0):
+    - React-Core
+    - React-RCTImage
   - Stripe (21.5.1):
     - Stripe/Stripe3DS2 (= 21.5.1)
   - stripe-react-native (0.1.0):
@@ -2795,6 +2798,7 @@ DEPENDENCIES:
   - React-RCTVibration (from `../react-native-lab/react-native/Libraries/Vibration`)
   - ReactCommon/turbomodule/core (from `../react-native-lab/react-native/ReactCommon`)
   - RNReanimated (from `./vendored/unversioned/react-native-reanimated`)
+  - RNScreens (from `./vendored/unversioned/react-native-screens`)
   - stripe-react-native (from `./vendored/unversioned/stripe-react-native`)
   - UMAppLoader (from `../packages/unimodules-app-loader/ios`)
   - "UMCore (from `../packages/@unimodules/core/ios`)"
@@ -3645,6 +3649,8 @@ EXTERNAL SOURCES:
     :path: "../react-native-lab/react-native/ReactCommon"
   RNReanimated:
     :path: "./vendored/unversioned/react-native-reanimated"
+  RNScreens:
+    :path: "./vendored/unversioned/react-native-screens"
   stripe-react-native:
     :path: "./vendored/unversioned/stripe-react-native"
   UMAppLoader:
@@ -4095,6 +4101,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: 4d2e726957f4087449739b595f107c0d4b6c2d2d
   ReactCommon: a0a1edbebcac5e91338371b72ffc66aa822792ce
   RNReanimated: 5231286440b796e09df3bfa5c1b12b02bfe07664
+  RNScreens: bf59f17fbf001f1025243eeed5f19419d3c11ef2
   Stripe: 515db5536fd659b5d79a0898ce1b882b61ab597e
   stripe-react-native: ac0688fd5202f8cbe3afc1eb606c8058bd66c97e
   UMAppLoader: fe2708bb0ac5cd70052bc207d06aa3b7e72b9e97
