@@ -309,8 +309,10 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
       return YES;
     } progress:^(NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
       // do nothing for now
-    } success:^(NSDictionary *manifest) {
-      launchExpoApp(self->_updatesInterface.launchAssetURL, [EXDevLauncherManifest fromJsonObject:manifest]);
+    } success:^(NSDictionary * _Nullable manifest) {
+      if (manifest) {
+        launchExpoApp(self->_updatesInterface.launchAssetURL, [EXDevLauncherManifest fromJsonObject:manifest]);
+      }
     } error:onError];
   } onError:onError];
 }

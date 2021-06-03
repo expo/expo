@@ -5,10 +5,19 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^EXUpdatesErrorBlock) (NSError *error);
-typedef void (^EXUpdatesSuccessBlock) (NSDictionary *manifest);
+typedef void (^EXUpdatesSuccessBlock) (NSDictionary * _Nullable manifest);
 typedef void (^EXUpdatesProgressBlock) (NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount);
+/**
+ * Called when a manifest has been downloaded. The return value indicates whether or not to
+ * continue downloading the update described by this manifest. Returning `NO` will abort the
+ * load, and the success block will be immediately called with a nil `manifest`.
+ */
 typedef BOOL (^EXUpdatesManifestBlock) (NSDictionary *manifest);
 
+/**
+ * Protocol for modules that depend on expo-updates for loading production updates but do not want
+ * to depend on expo-updates or delegate control to the singleton EXUpdatesAppController.
+ */
 @protocol EXUpdatesInterface
 
 @property (nonatomic, weak) id bridge;

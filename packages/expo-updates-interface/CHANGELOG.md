@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Make Update nullable in onSuccess callback ([#13136](https://github.com/expo/expo/pull/13136) by [@esamelson](https://github.com/esamelson))
+
 ### 💡 Others
 
 ## 0.0.1 — 2021-05-28

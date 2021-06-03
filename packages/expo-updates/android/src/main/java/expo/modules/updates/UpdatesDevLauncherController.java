@@ -78,6 +78,7 @@ public class UpdatesDevLauncherController implements UpdatesInterface {
       public void onSuccess(@Nullable UpdateEntity update) {
         databaseHolder.releaseDatabase();
         if (update == null) {
+          callback.onSuccess(null);
           return;
         }
         launchNewestUpdate(updatesConfiguration, context, callback);
