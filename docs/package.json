@@ -72,8 +72,6 @@
     "axios": "^0.19.2",
     "danger": "^9.2.10",
     "esbuild-loader": "^2.9.2",
-    "eslint": "^7.9.0",
-    "eslint-config-universe": "^4.0.0",
     "eslint": "^7.23.0",
     "eslint-config-universe": "^7.0.1",
     "eslint-plugin-lodash": "^7.2.0",
