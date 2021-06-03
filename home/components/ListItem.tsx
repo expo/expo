@@ -85,7 +85,7 @@ export default class ListItem extends React.PureComponent<Props> {
         const source = typeof image === 'number' ? image : { uri: image };
         return (
           <View style={[styles.imageContainer, imageSizeStyle, imageStyle]}>
-            <FadeIn placeholderColor="#eee">
+            <FadeIn>
               <Image source={source} style={[styles.image, imageSizeStyle]} />
             </FadeIn>
           </View>
