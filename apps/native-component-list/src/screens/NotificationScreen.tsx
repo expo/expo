@@ -335,7 +335,7 @@ function BackgroundNotificationHandlingSection() {
         <ListButton
           onPress={() => {
             setShowInstructions(true);
-            getPermissionsAndLogToken;
+            getPermissionsAndLogToken();
           }}
           title="Show background notification handling instructions"
         />
