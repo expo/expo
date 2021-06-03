@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^ABI40_0_0EXUpdatesAppRelaunchCompletionBlock)(BOOL success);
 
-@protocol ABI40_0_0EXUpdatesInterface
+@protocol ABI40_0_0EXUpdatesModuleInterface
 
 @property (nonatomic, readonly) ABI40_0_0EXUpdatesConfig *config;
 @property (nonatomic, readonly) ABI40_0_0EXUpdatesDatabase *database;
@@ -29,7 +29,7 @@ typedef void (^ABI40_0_0EXUpdatesAppRelaunchCompletionBlock)(BOOL success);
 
 @end
 
-@interface ABI40_0_0EXUpdatesService : NSObject <ABI40_0_0UMInternalModule, ABI40_0_0EXUpdatesInterface>
+@interface ABI40_0_0EXUpdatesService : NSObject <ABI40_0_0UMInternalModule, ABI40_0_0EXUpdatesModuleInterface>
 
 @end
 
