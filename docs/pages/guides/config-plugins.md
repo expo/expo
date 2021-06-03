@@ -8,14 +8,14 @@ When adding a native module to your project, most of the setup can be done autom
 
 Internally Expo CLI uses config plugins to generate and configure all the native code for a managed project. Plugins do things like generate app icons, set the app name, and configure the `Info.plist`, `AndroidManifest.xml`, etc.
 
-You can think of plugins like a bundler for native projects, and running `expo eject` as a way to bundle the projects by evaluating all the project plugins. Doing so will generate `ios` and `android` directories. These directories can be modified manually after being generated, but then they can no longer be safely regenerated without potentially overwriting manual modifications.
+You can think of plugins like a bundler for native projects, and running `expo prebuild` as a way to bundle the projects by evaluating all the project plugins. Doing so will generate `ios` and `android` directories. These directories can be modified manually after being generated, but then they can no longer be safely regenerated without potentially overwriting manual modifications.
 
-> 💡 **Hands-on Learners**: Use [this sandbox][sandbox] to play with the core functionality of Expo config plugins. For more complex tests, use a local Expo project, with `expo eject --no-install` to apply changes.
+> 💡 **Hands-on Learners**: Use [this sandbox][sandbox] to play with the core functionality of Expo config plugins. For more complex tests, use a local Expo project, with `expo prebuild --no-install` to apply changes.
 
 **Quick facts**
 
 - Plugins are functions that can change values on your Expo config.
-- Plugins are mostly meant to be used with [`expo eject`][cli-eject] or `eas build` commands.
+- Plugins are mostly meant to be used with [`expo prebuild`][cli-prebuild] or `eas build` commands.
 - We recommend you use plugins with `app.config.json` or `app.config.js` instead of `app.json` (no top-level `expo` object is required).
 - `mods` are async functions that modify native project files, such as source code or configuration (plist, xml) files.
 - Changes performed with `mods` will require rebuilding the affected native projects.
@@ -60,7 +60,7 @@ Some plugins can be customized by passing an array, where the second argument is
 }
 ```
 
-If you run `expo eject`, the `mods` will be compiled, and the native files be changed! The changes won't take effect until you rebuild the native project, eg: with Xcode. If you're using config plugins in a managed app, they will be applied during the prebuild phase on `eas build`.
+If you run `expo prebuild`, the `mods` will be compiled, and the native files be changed! The changes won't take effect until you rebuild the native project, eg: with Xcode. If you're using config plugins in a managed app, they will be applied during the prebuild phase on `eas build`.
 
 For instance, if you add a plugin that adds permission messages to your app, the app will need to be rebuilt.
 
@@ -75,7 +75,7 @@ Plugins are **synchronous** functions that accept an [`ExpoConfig`][config-docs]
 - Plugins should be named using the following convention: `with<Plugin Functionality>` i.e. `withFacebook`.
 - Plugins should be synchronous and their return value should be serializable, except for any `mods` that are added.
 - Optionally, a second argument can be passed to the plugin to configure it.
-- `plugins` are always invoked when the config is read by `@expo/config`s `getConfig` method. However, the `mods` are only invoked during the "syncing" phase of `expo eject`.
+- `plugins` are always invoked when the config is read by `@expo/config`s `getConfig` method. However, the `mods` are only invoked during the "syncing" phase of `expo prebuild`.
 
 ## Creating a plugin
 
@@ -210,7 +210,7 @@ A modifier (mod for short) is an async function which accepts a config and a dat
 Mods are added to the `mods` object of the Expo config. The `mods` object is different to the rest of the Expo config because it doesn't get serialized after the initial reading, this means you can use it to perform actions _during_ code generation. If possible, you should attempt to use basic plugins instead of mods as they're simpler to work with.
 
 - `mods` are omitted from the manifest and **cannot** be accessed via `Updates.manifest`. Mods exist for the sole purpose of modifying native project files during code generation!
-- `mods` can be used to read and write files safely during the `expo eject` command. This is how Expo CLI modifies the `Info.plist`, entitlements, xcproj, etc...
+- `mods` can be used to read and write files safely during the `expo prebuild` command. This is how Expo CLI modifies the `Info.plist`, entitlements, xcproj, etc...
 - `mods` are platform specific and should always be added to a platform specific object:
 
 `app.config.js`
@@ -610,7 +610,7 @@ Notice that `expo-location` uses `version: '11.0.0'`, and `react-native-maps` us
 ```
 
 For the most _stable_ experience, you should try to have no `UNVERSIONED` plugins in your project. This is because the `UNVERSIONED` plugin may not support the native code in your project.
-For instance, say you have an `UNVERSIONED` Facebook plugin in your project, if the Facebook native code or plugin has a breaking change, that will break the way your project ejects and cause it to error on build.
+For instance, say you have an `UNVERSIONED` Facebook plugin in your project, if the Facebook native code or plugin has a breaking change, that will break the way your project prebuilds and cause it to error on build.
 
 ## expo install
 
@@ -636,6 +636,6 @@ Please add the following to your Expo config
 ```
 
 [config-docs]: https://docs.expo.io/versions/latest/config/app/
-[cli-eject]: https://docs.expo.io/workflow/expo-cli/#eject
+[cli-prebuild]: https://docs.expo.io/workflow/expo-cli/#eject
 [sandbox]: https://codesandbox.io/s/expo-config-plugins-8qhof?file=/src/project/app.config.js
 [configplugin]: ./src/Plugin.types.ts
