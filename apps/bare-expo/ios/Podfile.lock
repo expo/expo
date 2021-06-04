@@ -660,11 +660,11 @@ PODS:
     - React
   - RNCPicker (1.16.1):
     - React-Core
-  - RNDateTimePicker (3.2.0):
+  - RNDateTimePicker (3.5.2):
     - React-Core
   - RNGestureHandler (1.10.2):
     - React-Core
-  - RNReanimated (2.1.0):
+  - RNReanimated (2.2.0):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -693,8 +693,9 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (3.0.0):
+  - RNScreens (3.3.0):
     - React-Core
+    - React-RCTImage
   - RNSharedElement (0.7.0):
     - React
   - RNSVG (12.1.1):
@@ -1311,7 +1312,7 @@ SPEC CHECKSUMS:
   RCTTypeSafety: 44982c5c8e43ff4141eb519a8ddc88059acd1f3a
   React: e1c65dd41cb9db13b99f24608e47dd595f28ca9a
   React-callinvoker: 552a6a6bc8b3bb794cf108ad59e5a9e2e3b4fc98
-  React-Core: 9d341e725dc9cd2f49e4c49ad1fc4e8776aa2639
+  React-Core: a42b4deaadbde5a2d8e2dab7a2b874303f733cf4
   React-CoreModules: 5335e168165da7f7083ce7147768d36d3e292318
   React-cxxreact: d3261ec5f7d11743fbf21e263a34ea51d1f13ebc
   React-jsi: 54245e1d5f4b690dec614a73a3795964eeef13a8
@@ -1338,10 +1339,10 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: 2a692bcb9b69b76a2f1a95f33db057129700af64
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
   RNCPicker: 61c7a0645b9e4ac67960aa7f22a3effcecfdfb8d
-  RNDateTimePicker: 17593e41b6b1585aeb8ecbe1c1cbc30cba3d0b4b
+  RNDateTimePicker: 7658208086d86d09e1627b5c34ba0cf237c60140
   RNGestureHandler: e66feb0fda7da74ea6a3094656b3c1efe05f5c07
-  RNReanimated: 70f662b5232dd5d19ccff581e919a54ea73df51c
-  RNScreens: e8e8dd0588b5da0ab57dcca76ab9b2d8987757e0
+  RNReanimated: d9da990fc90123f4ffbfdda93d00fc15174863a8
+  RNScreens: bf59f17fbf001f1025243eeed5f19419d3c11ef2
   RNSharedElement: 00b1a1420d213a34459bb9a5aacabb38107d7948
   RNSVG: 551acb6562324b1d52a4e0758f7ca0ec234e278f
   SDWebImage: 7acbb57630ac7db4a495547fb73916ff3e432f6b
