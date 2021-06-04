@@ -697,7 +697,7 @@ PODS:
     - React-Core
   - RNSharedElement (0.7.0):
     - React
-  - RNSVG (12.1.0):
+  - RNSVG (12.1.1):
     - React
   - SDWebImage (5.11.0):
     - SDWebImage/Core (= 5.11.0)
@@ -1343,7 +1343,7 @@ SPEC CHECKSUMS:
   RNReanimated: 70f662b5232dd5d19ccff581e919a54ea73df51c
   RNScreens: e8e8dd0588b5da0ab57dcca76ab9b2d8987757e0
   RNSharedElement: 00b1a1420d213a34459bb9a5aacabb38107d7948
-  RNSVG: ce9d996113475209013317e48b05c21ee988d42e
+  RNSVG: 551acb6562324b1d52a4e0758f7ca0ec234e278f
   SDWebImage: 7acbb57630ac7db4a495547fb73916ff3e432f6b
   UMAppLoader: fe2708bb0ac5cd70052bc207d06aa3b7e72b9e97
   UMCore: 912510bbff567298d738590f17788a8516f9d7f3

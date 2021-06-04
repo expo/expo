@@ -40,6 +40,29 @@ interface VendoredModuleConfig {
 const IOS_DIR = Directories.getIosDir();
 const ANDROID_DIR = Directories.getAndroidDir();
 
+const SvgModifier: ModuleModifier = async function (
+  moduleConfig: VendoredModuleConfig,
+  clonedProjectPath: string
+): Promise<void> {
+  const removeMacFiles = async () => {
+    const macPattern = path.join(clonedProjectPath, 'apple', '**', '*.macos.@(h|m)');
+    const macFiles = await glob(macPattern);
+    for (const file of macFiles) {
+      await fs.remove(file);
+    }
+  };
+
+  const addHeaderImport = async () => {
+    const targetPath = path.join(clonedProjectPath, 'apple', 'Text', 'RNSVGTopAlignedLabel.h');
+    const content = await fs.readFile(targetPath, 'utf8');
+    const transformedContent = `#import "RNSVGUIKit.h"\n${content}`;
+    await fs.writeFile(targetPath, transformedContent, 'utf8');
+  };
+
+  await removeMacFiles();
+  await addHeaderImport();
+};
+
 const ReanimatedModifier: ModuleModifier = async function (
   moduleConfig: VendoredModuleConfig,
   clonedProjectPath: string
@@ -267,10 +290,11 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
   'react-native-svg': {
     repoUrl: 'https://github.com/react-native-community/react-native-svg.git',
     installableInManagedApps: true,
+    moduleModifier: SvgModifier,
     steps: [
       {
         recursive: true,
-        sourceIosPath: 'ios',
+        sourceIosPath: 'apple',
         targetIosPath: 'Api/Components/Svg',
         sourceAndroidPath: 'android/src/main/java/com/horcrux/svg',
         targetAndroidPath: 'modules/api/components/svg',
