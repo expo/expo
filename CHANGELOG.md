@@ -7,8 +7,11 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
+
 - Updated `lottie-react-native` from `3.5.0` to `4.0.2`. ([#13151](https://github.com/expo/expo/pull/13151) by [@tsapeta](https://github.com/tsapeta))
+- Updated `@react-native-community/picker@1.9.11` to `@react-native-picker/picker@1.16.1`. ([#13152](https://github.com/expo/expo/pull/13152) by [@ajsmth](https://github.com/ajsmth))
 - Updated `@react-native-community/datetimepicker` from `3.2.0` to `3.5.2`. ([#13162](https://github.com/expo/expo/pull/13162) by [@cruzach](https://github.com/13162))
+
 
 ### 🛠 Breaking changes
 
