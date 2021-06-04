@@ -1686,7 +1686,7 @@ PODS:
     - Yoga
   - ABI41_0_0stripe-react-native (0.1.0):
     - ABI41_0_0React
-    - Stripe (~> 21.5.1)
+    - Stripe (~> 21.6.0)
   - ABI41_0_0UMAppLoader (2.1.0)
   - ABI41_0_0UMBarCodeScannerInterface (6.1.0):
     - ABI41_0_0UMCore
@@ -2354,12 +2354,12 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
-  - Stripe (21.5.1):
-    - Stripe/Stripe3DS2 (= 21.5.1)
-  - stripe-react-native (0.1.0):
+  - Stripe (21.6.0):
+    - Stripe/Stripe3DS2 (= 21.6.0)
+  - stripe-react-native (0.1.4):
     - React
-    - Stripe (~> 21.5.1)
-  - Stripe/Stripe3DS2 (21.5.1)
+    - Stripe (~> 21.6.0)
+  - Stripe/Stripe3DS2 (21.6.0)
   - UMAppLoader (2.1.0)
   - UMCore (7.1.1)
   - UMReactNativeAdapter (6.3.0):
@@ -3951,7 +3951,7 @@ SPEC CHECKSUMS:
   ABI41_0_0React-RCTVibration: 7367d7a6b834e6e5328edaf4ad5b6e126c4a2fba
   ABI41_0_0ReactCommon: f5967299eb4c60a17a36bd309c39e9bdcb6284dd
   ABI41_0_0RNReanimated: c4322a35931e9e96adc8b4651ce9f4917c6ac7ed
-  ABI41_0_0stripe-react-native: 8ac0ff734cc2e402881614303d774a0932f7a1bf
+  ABI41_0_0stripe-react-native: e1b0af5c90922f4180a678d6303a1afa7310b8f4
   ABI41_0_0UMAppLoader: c44d678dc80cd36783ecf36e036690eff34a28b2
   ABI41_0_0UMBarCodeScannerInterface: 7a08c48a07b33412c5a61465f96915bb778ae789
   ABI41_0_0UMCameraInterface: be8c85a4debae7bbabb0df68720642e11d0196d1
@@ -4095,8 +4095,8 @@ SPEC CHECKSUMS:
   React-RCTVibration: 4d2e726957f4087449739b595f107c0d4b6c2d2d
   ReactCommon: a0a1edbebcac5e91338371b72ffc66aa822792ce
   RNReanimated: 5231286440b796e09df3bfa5c1b12b02bfe07664
-  Stripe: 515db5536fd659b5d79a0898ce1b882b61ab597e
-  stripe-react-native: ac0688fd5202f8cbe3afc1eb606c8058bd66c97e
+  Stripe: 6cc7bb348f4b1fad111129f6ee40eb6682deaefb
+  stripe-react-native: 2598d45be4bad95f0c11a1dde7af185e8829bc67
   UMAppLoader: fe2708bb0ac5cd70052bc207d06aa3b7e72b9e97
   UMCore: 912510bbff567298d738590f17788a8516f9d7f3
   UMReactNativeAdapter: ee750f3cf40e149643f9191de3ce8c02202f198f
