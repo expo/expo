@@ -133,7 +133,11 @@ aws s3 cp \
 echo "::endgroup::"
 
 echo "::group::[7/7] Notify Google of sitemap changes"
-curl -m 15 "http://www.google.com/ping\?sitemap\=https%3A%2F%2F${bucket}%2Fsitemap.xml"
-echo "\n::endgroup::"
-  
+if [ "$bucket" == "docs.expo.io" ]; then
+  echo "Strings are equal"
+  curl -m 15 "http://www.google.com/ping\?sitemap\=https%3A%2F%2F${bucket}%2Fsitemap.xml"
+  echo "\n::endgroup::"
+else
+  echo "Skipping Gooogle sitemap ping for $bucket"
+fi
 done
