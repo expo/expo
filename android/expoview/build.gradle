@@ -71,7 +71,7 @@ def RN_SO_DIR = "$reactNative/ReactAndroid/build/react-ndk/exported"
 def FBJNI_HEADERS_DIR = "$reactNative/ReactAndroid/src/main/jni/first-party/fbjni/headers"
 def FOR_HERMES = false
 def CMAKE_TOOLCHAIN_FILE = "-DCMAKE_TOOLCHAIN_FILE=${getNdkBuildFullPath()}/../build/cmake/android.toolchain.cmake"
-
+def ABI_FILTERS = System.getenv("NDK_ABI_FILTERS") ?: 'arm64-v8a, armeabi-v7a, x86, x86_64'
 // WHEN_PREPARING_REANIMATED_REMOVE_TO_HERE
 
 
@@ -127,7 +127,6 @@ android {
     externalNativeBuild {
       cmake {
         arguments "-DANDROID_STL=c++_shared",
-            "-DNATIVE_DEBUG=${debugNativeLibraries}",
             "-DREACT_NATIVE_TARGET_VERSION=${REACT_VERSION}",
             "-DANDROID_TOOLCHAIN=clang",
             "${CMAKE_TOOLCHAIN_FILE}",
@@ -137,7 +136,8 @@ android {
             "-DRN_SO_DIR=${RN_SO_DIR}",
             "-DFBJNI_HEADERS_DIR=${FBJNI_HEADERS_DIR}",
             "-DCMAKE_OUTPUT_DIR=${CMAKE_OUTPUT_DIR}"
-        abiFilters 'arm64-v8a', 'armeabi-v7a', 'x86', 'x86_64'
+        abiFilters = []
+        abiFilters.addAll(ABI_FILTERS.split(',').collect{ (it as String).trim() })
       }
     }
 
@@ -703,8 +703,6 @@ task extractSOFiles {
 
 project.afterEvaluate {
   def nativeBuildTask = tasks.findByName("externalNativeBuildRelease")
-  println "after evalution"
-  println nativeBuildTask
   if (nativeBuildTask) {
     packageNdkLibs.dependsOn nativeBuildTask
   }
