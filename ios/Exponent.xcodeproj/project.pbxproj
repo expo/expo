@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		0726F0592007E438004992E7 /* EXKernelAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F0582007E438004992E7 /* EXKernelAppRecord.m */; };
 		0726F05C2007E446004992E7 /* EXKernelAppRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F05B2007E446004992E7 /* EXKernelAppRegistry.m */; };
@@ -659,6 +658,7 @@
 		FCB4099525C6207C00326AC8 /* EXScopedNotificationsUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B2F7C02D246B09AE0060EE06 /* EXScopedNotificationsUtils.m */; };
 		FCF6D37025B34BC200808BF5 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF6D36F25B34BC200808BF5 /* NotificationService.swift */; };
 		FCF6D37425B34BC200808BF5 /* ExpoNotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FCF6D36D25B34BC200808BF5 /* ExpoNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		6782D340A0024AF58B3805D0 /* RNSVGTopAlignedLabel.ios.m in Sources */ = {isa = PBXBuildFile; fileRef = F4B751B511314328B86D13C6 /* RNSVGTopAlignedLabel.ios.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1402,6 +1402,9 @@
 		FCF6D36D25B34BC200808BF5 /* ExpoNotificationServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ExpoNotificationServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		FCF6D36F25B34BC200808BF5 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		FCF6D37125B34BC200808BF5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		17D40143FCE844F89ABD4B05 /* RNSVGUIKit.h */ = {isa = PBXFileReference; name = "RNSVGUIKit.h"; path = "RNSVGUIKit.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		BBB57E7DED5040A38593385D /* RNSVGTopAlignedLabel.h */ = {isa = PBXFileReference; name = "RNSVGTopAlignedLabel.h"; path = "RNSVGTopAlignedLabel.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		F4B751B511314328B86D13C6 /* RNSVGTopAlignedLabel.ios.m */ = {isa = PBXFileReference; name = "RNSVGTopAlignedLabel.ios.m"; path = "RNSVGTopAlignedLabel.ios.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1745,6 +1748,7 @@
 				7043DF652283303800272D74 /* Text */,
 				7043DF742283303800272D74 /* RNSVGNode.m */,
 				7043DF752283303800272D74 /* RNSVGContainer.h */,
+				17D40143FCE844F89ABD4B05 /* RNSVGUIKit.h */,
 			);
 			path = Svg;
 			sourceTree = "<group>";
@@ -1914,6 +1918,8 @@
 				7043DF712283303800272D74 /* RNSVGTSpan.m */,
 				7043DF722283303800272D74 /* RNSVGFontData.h */,
 				7043DF732283303800272D74 /* RNSVGGlyphContext.m */,
+				BBB57E7DED5040A38593385D /* RNSVGTopAlignedLabel.h */,
+				F4B751B511314328B86D13C6 /* RNSVGTopAlignedLabel.ios.m */,
 			);
 			path = Text;
 			sourceTree = "<group>";
@@ -3502,6 +3508,7 @@
 				BCB61D782B4944E89A1F0371 /* RNCSliderManager.m in Sources */,
 				07CB4E1A26045B620057443E /* RCTOnPageSelected.m in Sources */,
 				8B1448C54DEB4CFDB79D7E45 /* RNCSafeAreaViewMode.m in Sources */,
+				6782D340A0024AF58B3805D0 /* RNSVGTopAlignedLabel.ios.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
