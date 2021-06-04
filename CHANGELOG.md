@@ -7,6 +7,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
+- Updated `@react-native-community/picker@1.9.11` to `@react-native-picker/picker@1.16.1`. ([#11029](https://github.com/expo/expo/pull/13152) by [@ajsmth](https://github.com/ajsmth))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
