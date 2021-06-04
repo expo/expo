@@ -1,0 +1,20 @@
+diff --git a/ios/DevClientTest/AppDelegate.m b/ios/DevClientTest/AppDelegate.m
+index 3a55de0..efb70e1 100644
+--- a/ios/DevClientTest/AppDelegate.m
++++ b/ios/DevClientTest/AppDelegate.m
+@@ -17,6 +17,7 @@
+
+ #if defined(EX_DEV_LAUNCHER_ENABLED)
+ #include <EXDevLauncher/EXDevLauncherController.h>
++#import <EXUpdatesDevLauncherController.h>
+ #endif
+
+ #ifdef FB_SONARKIT_ENABLED
+@@ -60,6 +61,7 @@ static void InitializeFlipper(UIApplication *application) {
+   #ifdef DEBUG
+     #if defined(EX_DEV_LAUNCHER_ENABLED)
+       EXDevLauncherController *contoller = [EXDevLauncherController sharedInstance];
++      contoller.updatesInterface = [EXUpdatesDevLauncherController sharedInstance];
+       [contoller startWithWindow:self.window delegate:self launchOptions:launchOptions];
+     #else
+       [self initializeReactNativeApp];

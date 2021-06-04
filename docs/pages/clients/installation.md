@@ -78,3 +78,15 @@ You're now ready to start developing your project with the Development Client.
 When you start your project on iOS, the metro bundler will be started automatically. This behavior might not be ideal when you want to use `expo start`. Our recommended solution is to remove the `Start Packager` action from building scripts. To do that you need to open the Xcode, go to `Project settings` > `Build Phases` and remove the `Start Packager` action.
 
 <img src="/static/images/client/remove_start_packager.png" style={{maxWidth: "100%" }}/>
+
+### Loading published updates
+
+The Development Client can also be used to open and preview published updates to your app. To add this feature, you need to add `expo-updates` to your app if it isn't already installed, and add a small additional integration in your `AppDelegate.m` and `MainApplication.java` files.
+
+1. [Install and set up `react-native-unimodules` in your project](../bare/installing-unimodules.md), if you have not already done so.
+2. [Install and set up `expo-updates` in your project](../bare/installing-updates.md), if you have not already done so.
+3. Make the following changes to complete the integration with `expo-updates`:
+
+<ConfigurationDiff source="/static/diffs/client/app-delegate-updates.diff" />
+
+<ConfigurationDiff source="/static/diffs/client/main-application-updates.diff" />
