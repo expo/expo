@@ -45,6 +45,10 @@ cp -r expoview/src/main/Common $VERSIONED_ABI_PATH/src/main/Common
 cp -r expoview/src/main/java/versioned/ $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION
 cp -r expoview/src/main/java/com/ $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION/com
 
+# Copy cmake files 
+cp expoview/CMakeLists.txt $VERSIONED_ABI_PATH
+cp expoview/empty.cpp $VERSIONED_ABI_PATH
+
 while read PACKAGE
 do
   find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION \( -iname '*.java' -or -iname '*.kt' \) -type f -print0 | xargs -0 sed -i '' "s/\([, ^\(<]\)$PACKAGE/\1temporarydonotversion.$PACKAGE/g"
