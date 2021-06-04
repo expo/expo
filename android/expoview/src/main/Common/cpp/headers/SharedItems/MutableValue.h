@@ -6,15 +6,16 @@
 #include <jsi/jsi.h>
 #include <map>
 #include "JSIStoreValueUser.h"
+#include "RuntimeManager.h"
 
 using namespace facebook;
 
 namespace reanimated {
 
 class MutableValue : public jsi::HostObject, public std::enable_shared_from_this<MutableValue>, public StoreUser {
-  private:
+private:
   friend MutableValueSetterProxy;
-  NativeReanimatedModule *module;
+  RuntimeManager *runtimeManager;
   std::mutex readWriteMutex;
   std::shared_ptr<ShareableValue> value;
   std::weak_ptr<jsi::Value> animation;
@@ -23,10 +24,10 @@ class MutableValue : public jsi::HostObject, public std::enable_shared_from_this
   void setValue(jsi::Runtime &rt, const jsi::Value &newValue);
   jsi::Value getValue(jsi::Runtime &rt);
 
-  public:
-  MutableValue(jsi::Runtime &rt, const jsi::Value &initial, NativeReanimatedModule *module, std::shared_ptr<Scheduler> s);
+public:
+  MutableValue(jsi::Runtime &rt, const jsi::Value &initial, RuntimeManager *runtimeManager, std::shared_ptr<Scheduler> s);
 
-  public:
+public:
   void set(jsi::Runtime &rt, const jsi::PropNameID &name, const jsi::Value &value);
   jsi::Value get(jsi::Runtime &rt, const jsi::PropNameID &name);
   std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime &rt);
