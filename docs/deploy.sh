@@ -25,7 +25,7 @@ for bucket in ${buckets[@]}; do
 
 echo "::group::[1/7] Sync Next.js static assets in \`_next/**\` folder"
 aws s3 sync \
-  --no-progress \ 
+  --no-progress \
   --exclude "*" \
   --include "_next/**" \
   --cache-control "public, max-age=31536000, immutable" \
