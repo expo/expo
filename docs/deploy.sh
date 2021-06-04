@@ -52,6 +52,7 @@ aws s3 cp \
   --exclude "_next/**" \
   --exclude "static/**" \
   --exclude "*-sitemap.xml" \
+  --exclude "*-robots.txt" \
   "$target" \
   "s3://${bucket}"
 echo "::endgroup::"
@@ -119,11 +120,16 @@ do
 done
 echo "::endgroup::"
 
-echo "::group::[6/7] Copy over domain-specific sitemap.xml"
+echo "::group::[6/7] Copy over domain-specific sitemap.xml and robots.txt"
 aws s3 cp \
   --no-progress \
-  "$target/$bucket-sitemap.xml" \
+  "$target/${bucket}-sitemap.xml" \
   "s3://${bucket}/sitemap.xml"
+
+aws s3 cp \
+  --no-progress \
+  "$target/${bucket}-robots.txt" \
+  "s3://${bucket}/robots.txt"
 echo "::endgroup::"
 
 echo "::group::[7/7] Notify Google of sitemap changes"
