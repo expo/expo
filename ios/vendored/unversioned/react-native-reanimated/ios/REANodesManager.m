@@ -481,6 +481,9 @@
       if (strongSelf == nil) {
         return;
       }
+      if (eventHandler == nil) {
+        return;
+      }
       eventHandler(eventHash, event);
       if ([strongSelf isDirectEvent:event]) {
         [strongSelf performOperations];

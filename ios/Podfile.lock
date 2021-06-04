@@ -2325,7 +2325,7 @@ PODS:
     - React-Core (= 0.63.2)
     - React-cxxreact (= 0.63.2)
     - React-jsi (= 0.63.2)
-  - RNReanimated (2.0.0):
+  - RNReanimated (2.2.0):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -4100,7 +4100,7 @@ SPEC CHECKSUMS:
   React-RCTText: 1b6773e776e4b33f90468c20fe3b16ca3e224bb8
   React-RCTVibration: 4d2e726957f4087449739b595f107c0d4b6c2d2d
   ReactCommon: a0a1edbebcac5e91338371b72ffc66aa822792ce
-  RNReanimated: 5231286440b796e09df3bfa5c1b12b02bfe07664
+  RNReanimated: d9da990fc90123f4ffbfdda93d00fc15174863a8
   RNScreens: bf59f17fbf001f1025243eeed5f19419d3c11ef2
   Stripe: 515db5536fd659b5d79a0898ce1b882b61ab597e
   stripe-react-native: ac0688fd5202f8cbe3afc1eb606c8058bd66c97e
