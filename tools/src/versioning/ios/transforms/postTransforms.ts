@@ -84,9 +84,12 @@ export function postTransforms(versionName: string): TransformPipeline {
         with: `${versionName}NSData+EXFileSystem.h`,
       },
       {
-        paths: `${versionName}EXNotifications`,
-        replace: new RegExp(`NSDictionary\\+${versionName}EXNotificationsVerifyingClass\\.h`, 'g'),
-        with: `${versionName}NSDictionary+EXNotificationsVerifyingClass.h`,
+        paths: [`${versionName}EXNotifications`, `${versionName}EXUpdates`],
+        replace: new RegExp(
+          `NSDictionary\\+${versionName}(EXNotificationsVerifyingClass|EXUpdatesRawManifest)\\.h`,
+          'g'
+        ),
+        with: `${versionName}NSDictionary+$1.h`,
       },
 
       // react-native-maps
