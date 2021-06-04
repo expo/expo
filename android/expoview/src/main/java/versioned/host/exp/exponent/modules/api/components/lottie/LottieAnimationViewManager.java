@@ -118,11 +118,16 @@ class LottieAnimationViewManager extends SimpleViewManager<LottieAnimationView> 
             int startFrame = args.getInt(0);
             int endFrame = args.getInt(1);
             if (startFrame != -1 && endFrame != -1) {
-               if(startFrame > endFrame){
+               if (startFrame > endFrame) {
                 view.setMinAndMaxFrame(endFrame, startFrame);
-                view.reverseAnimationSpeed();
+                if (view.getSpeed() > 0) {
+                  view.reverseAnimationSpeed();
+                }
               } else {
                 view.setMinAndMaxFrame(startFrame, endFrame);
+                if (view.getSpeed() < 0) {
+                  view.reverseAnimationSpeed();
+                }
               }
             }
             if (ViewCompat.isAttachedToWindow(view)) {
@@ -200,6 +205,11 @@ class LottieAnimationViewManager extends SimpleViewManager<LottieAnimationView> 
   @ReactProp(name = "sourceJson")
   public void setSourceJson(LottieAnimationView view, String json) {
     getOrCreatePropertyManager(view).setAnimationJson(json);
+  }
+
+  @ReactProp(name = "cacheComposition")
+  public void setCacheComposition(LottieAnimationView view, boolean cacheComposition) {
+    view.setCacheComposition(cacheComposition);
   }
 
   @ReactProp(name = "resizeMode")

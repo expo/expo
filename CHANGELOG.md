@@ -7,6 +7,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
+- Updated `lottie-react-native` from `3.5.0` to `4.0.2`. ([#13151](https://github.com/expo/expo/pull/13151) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
