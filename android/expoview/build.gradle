@@ -159,11 +159,6 @@ android {
     excludes = ["**/libc++_shared.so"]
   }
 
-  tasks.withType(JavaCompile) {
-    compileTask ->
-      compileTask.dependsOn(packageNdkLibs)
-  }
-
   configurations {
     extractHeaders
     extractSO
@@ -730,6 +725,7 @@ tasks.whenTaskAdded { task ->
     extractSOFiles.dependsOn(prepareThirdPartyNdkHeaders)
     task.dependsOn(extractAARHeaders)
     task.dependsOn(extractSOFiles)
+    task.dependsOn(":ReactAndroid:packageReactNdkLibs")
   }
 }
 
