@@ -23,6 +23,16 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
           find: /RCT_EXTERN_MODULE\(/,
           replaceWith: `RCT_EXTERN_REMAP_MODULE(AuBECSDebitFormManager, ${prefix}`,
         },
+        {
+          paths: 'StripeSdk.m',
+          find: /RCT_EXTERN_MODULE\(/,
+          replaceWith: `RCT_EXTERN_REMAP_MODULE(StripeSdk, ${prefix}`,
+        },
+        {
+          paths: 'StripeContainerManager.m',
+          find: /RCT_EXTERN_MODULE\(/,
+          replaceWith: `RCT_EXTERN_REMAP_MODULE(StripeContainerManager, ${prefix}`,
+        },
       ],
     },
     'lottie-react-native': {
