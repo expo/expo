@@ -10,11 +10,13 @@ import { ExpoConfig } from '@expo/config-types';
 import fs from 'fs';
 import path from 'path';
 
+import { resolvePackageRootFolder } from './resolvePackageRootFolder';
 import { withDevLauncherAppDelegate } from './withDevLauncherAppDelegate';
 
 const pkg = require('expo-dev-launcher/package.json');
 
 const DEV_LAUNCHER_ANDROID_IMPORT = 'expo.modules.devlauncher.DevLauncherController';
+const DEV_LAUNCHER_UPDATES_ANDROID_IMPORT = 'expo.modules.updates.UpdatesDevLauncherController';
 const DEV_LAUNCHER_ON_NEW_INTENT = `
   @Override
   public void onNewIntent(Intent intent) {
@@ -26,6 +28,10 @@ const DEV_LAUNCHER_ON_NEW_INTENT = `
 `;
 const DEV_LAUNCHER_WRAPPED_ACTIVITY_DELEGATE = `DevLauncherController.wrapReactActivityDelegate(this, () -> $1);`;
 const DEV_LAUNCHER_ANDROID_INIT = 'DevLauncherController.initialize(this, getReactNativeHost());';
+const DEV_LAUNCHER_UPDATES_ANDROID_INIT =
+  'DevLauncherController.getInstance().setUpdatesInterface(UpdatesDevLauncherController.initialize(this));';
+const DEV_LAUNCHER_UPDATES_DEVELOPER_SUPPORT =
+  'return DevLauncherController.getInstance().getUseDeveloperSupport();';
 
 const DEV_LAUNCHER_POD_IMPORT =
   "pod 'expo-dev-launcher', path: '../node_modules/expo-dev-launcher', :configurations => :debug";
@@ -51,6 +57,17 @@ function addLines(content: string, find: string | RegExp, offset: number, toAdd:
       lines.splice(lineIndex + offset, 0, newLine);
       lineIndex++;
     }
+  }
+
+  return lines.join('\n');
+}
+
+function replaceLine(content: string, find: string | RegExp, replace: string) {
+  const lines = content.split('\n');
+
+  if (!content.includes(replace)) {
+    const lineIndex = lines.findIndex(line => line.match(find));
+    lines.splice(lineIndex, 1, replace);
   }
 
   return lines.join('\n');
@@ -120,9 +137,21 @@ const withDevLauncherApplication: ConfigPlugin = config => {
       await editMainApplication(config, mainApplication => {
         mainApplication = addJavaImports(mainApplication, [DEV_LAUNCHER_ANDROID_IMPORT]);
 
-        mainApplication = addLines(mainApplication, 'super.onCreate()', 1, [
+        mainApplication = addLines(mainApplication, 'initializeFlipper\\(this', 0, [
           `    ${DEV_LAUNCHER_ANDROID_INIT}`,
         ]);
+
+        if (resolvePackageRootFolder(config.modRequest.projectRoot, 'expo-updates')) {
+          mainApplication = addJavaImports(mainApplication, [DEV_LAUNCHER_UPDATES_ANDROID_IMPORT]);
+          mainApplication = addLines(mainApplication, 'initializeFlipper\\(this', 0, [
+            `    ${DEV_LAUNCHER_UPDATES_ANDROID_INIT}`,
+          ]);
+          mainApplication = replaceLine(
+            mainApplication,
+            'return BuildConfig.DEBUG;',
+            `      ${DEV_LAUNCHER_UPDATES_DEVELOPER_SUPPORT}`
+          );
+        }
 
         return mainApplication;
       });
