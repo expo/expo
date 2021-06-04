@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		0726F0592007E438004992E7 /* EXKernelAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F0582007E438004992E7 /* EXKernelAppRecord.m */; };
 		0726F05C2007E446004992E7 /* EXKernelAppRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F05B2007E446004992E7 /* EXKernelAppRegistry.m */; };
@@ -146,6 +147,7 @@
 		50620A8F1BBC4330AF4B4E26 /* AIRGoogleMapHeatmapManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A5B705024D7B4371B0EB68EC /* AIRGoogleMapHeatmapManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		50659F05B6314F5192BC2215 /* RNSharedElementStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = 391920741A374C4AB61BDB48 /* RNSharedElementStyle.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		65945A8A5EFCAD9BB688728F /* libPods-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EB9A99C3D4234AE6ED00CE1B /* libPods-Tests.a */; };
+		6782D340A0024AF58B3805D0 /* RNSVGTopAlignedLabel.ios.m in Sources */ = {isa = PBXBuildFile; fileRef = F4B751B511314328B86D13C6 /* RNSVGTopAlignedLabel.ios.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		7043DF762283303800272D74 /* RNSVGPainterBrush.m in Sources */ = {isa = PBXBuildFile; fileRef = 7043DEFF2283303800272D74 /* RNSVGPainterBrush.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		7043DF772283303800272D74 /* RNSVGBrush.m in Sources */ = {isa = PBXBuildFile; fileRef = 7043DF012283303800272D74 /* RNSVGBrush.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		7043DF782283303800272D74 /* RNSVGPainter.m in Sources */ = {isa = PBXBuildFile; fileRef = 7043DF022283303800272D74 /* RNSVGPainter.m */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -304,6 +306,7 @@
 		B5FB74F11FF6DADC001C764B /* EXScopedEventEmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB74281FF6DADB001C764B /* EXScopedEventEmitter.m */; };
 		B75F881E8F9641B785F76CB0 /* RNSVGForeignObject.m in Sources */ = {isa = PBXBuildFile; fileRef = A0DCD2EBCF2B4FDC80E8EBE3 /* RNSVGForeignObject.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		B7FE7D4B1CE74F38AAA8941D /* RNSVGMarkerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D93FFB9A64504D3E92FE8931 /* RNSVGMarkerManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		BB55C7102669C97000EC1EDE /* RNSVGTopAlignedLabel.ios.m in Sources */ = {isa = PBXBuildFile; fileRef = F4B751B511314328B86D13C6 /* RNSVGTopAlignedLabel.ios.m */; };
 		BBB83C632479C3B50004FF8E /* RNCSafeAreaViewEdges.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB83C552479C3B50004FF8E /* RNCSafeAreaViewEdges.m */; };
 		BBB83C642479C3B50004FF8E /* RNCSafeAreaProviderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB83C562479C3B50004FF8E /* RNCSafeAreaProviderManager.m */; };
 		BBB83C652479C3B50004FF8E /* RNCSafeAreaView.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB83C572479C3B50004FF8E /* RNCSafeAreaView.m */; };
@@ -658,7 +661,6 @@
 		FCB4099525C6207C00326AC8 /* EXScopedNotificationsUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B2F7C02D246B09AE0060EE06 /* EXScopedNotificationsUtils.m */; };
 		FCF6D37025B34BC200808BF5 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF6D36F25B34BC200808BF5 /* NotificationService.swift */; };
 		FCF6D37425B34BC200808BF5 /* ExpoNotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FCF6D36D25B34BC200808BF5 /* ExpoNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		6782D340A0024AF58B3805D0 /* RNSVGTopAlignedLabel.ios.m in Sources */ = {isa = PBXBuildFile; fileRef = F4B751B511314328B86D13C6 /* RNSVGTopAlignedLabel.ios.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -819,6 +821,7 @@
 		10B9AA823F57466698858869 /* RNDateTimePicker.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNDateTimePicker.h; sourceTree = "<group>"; };
 		12869A47946248B094FFB1C0 /* RNDateTimePickerManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNDateTimePickerManager.h; sourceTree = "<group>"; };
 		143A7129A6DA415F8B51B71E /* RNSharedElementTransitionManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementTransitionManager.h; sourceTree = "<group>"; };
+		17D40143FCE844F89ABD4B05 /* RNSVGUIKit.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSVGUIKit.h; sourceTree = "<group>"; };
 		19382BA71EC2EACC001ED4A1 /* EXScopedBranchManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedBranchManager.h; sourceTree = "<group>"; };
 		19382BA81EC2EACC001ED4A1 /* EXScopedBranchManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedBranchManager.m; sourceTree = "<group>"; };
 		19B2EF731FB25A1A003F2E1B /* EXCachedResourceManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXCachedResourceManager.h; sourceTree = "<group>"; };
@@ -1322,6 +1325,7 @@
 		B5FB74271FF6DADB001C764B /* EXScopedEventEmitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedEventEmitter.h; sourceTree = "<group>"; };
 		B5FB74281FF6DADB001C764B /* EXScopedEventEmitter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedEventEmitter.m; sourceTree = "<group>"; };
 		B683FEF12A9E4E4D9CFCC5A1 /* AIRGoogleMapHeatmap.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = AIRGoogleMapHeatmap.h; sourceTree = "<group>"; };
+		BBB57E7DED5040A38593385D /* RNSVGTopAlignedLabel.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSVGTopAlignedLabel.h; sourceTree = "<group>"; };
 		BBB83C532479C3B50004FF8E /* RNCSafeAreaShadowView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCSafeAreaShadowView.h; sourceTree = "<group>"; };
 		BBB83C542479C3B50004FF8E /* RNCSafeAreaViewLocalData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNCSafeAreaViewLocalData.h; sourceTree = "<group>"; };
 		BBB83C552479C3B50004FF8E /* RNCSafeAreaViewEdges.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNCSafeAreaViewEdges.m; sourceTree = "<group>"; };
@@ -1390,6 +1394,7 @@
 		F1E9894638084CB4956C637C /* RNCSlider.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCSlider.h; sourceTree = "<group>"; };
 		F1F7433C24ABECD400EA5023 /* Exponent-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Exponent-Bridging-Header.h"; sourceTree = "<group>"; };
 		F1F7433D24ABECD500EA5023 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		F4B751B511314328B86D13C6 /* RNSVGTopAlignedLabel.ios.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSVGTopAlignedLabel.ios.m; sourceTree = "<group>"; };
 		F77DDB921E04AC1100624CA2 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
 		F908C1B7DB88249B6ADE8937 /* libPods-Expo Go-Expo Go (unversioned).a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Expo Go-Expo Go (unversioned).a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FC756CC824CB537400665AE6 /* EXScopedNotificationSerializer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationSerializer.m; sourceTree = "<group>"; };
@@ -1402,9 +1407,6 @@
 		FCF6D36D25B34BC200808BF5 /* ExpoNotificationServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ExpoNotificationServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		FCF6D36F25B34BC200808BF5 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		FCF6D37125B34BC200808BF5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		17D40143FCE844F89ABD4B05 /* RNSVGUIKit.h */ = {isa = PBXFileReference; name = "RNSVGUIKit.h"; path = "RNSVGUIKit.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		BBB57E7DED5040A38593385D /* RNSVGTopAlignedLabel.h */ = {isa = PBXFileReference; name = "RNSVGTopAlignedLabel.h"; path = "RNSVGTopAlignedLabel.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		F4B751B511314328B86D13C6 /* RNSVGTopAlignedLabel.ios.m */ = {isa = PBXFileReference; name = "RNSVGTopAlignedLabel.ios.m"; path = "RNSVGTopAlignedLabel.ios.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -3724,6 +3726,7 @@
 				F142188F262CB68600BB97E6 /* EXScopedBridgeModule.m in Sources */,
 				F1421890262CB68600BB97E6 /* AIRDummyView.m in Sources */,
 				F1421891262CB68600BB97E6 /* AIRWeakMapReference.m in Sources */,
+				BB55C7102669C97000EC1EDE /* RNSVGTopAlignedLabel.ios.m in Sources */,
 				F1421892262CB68600BB97E6 /* EXPermissionsManager.m in Sources */,
 				F1421893262CB68600BB97E6 /* RNSVGRenderableManager.m in Sources */,
 				F1421894262CB68600BB97E6 /* AIRMapCircleManager.m in Sources */,
