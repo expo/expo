@@ -603,7 +603,7 @@ async function exportReactNdksIfNeeded() {
   }
 
   const exportedSO = await glob(path.join(ndksPath, '**/*.so'));
-  if (!exportedSO) {
+  if (exportedSO.length === 0) {
     await exportReactNdks();
   }
 }
