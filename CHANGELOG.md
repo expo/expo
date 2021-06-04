@@ -9,6 +9,7 @@ Package-specific changes not released in any SDK will be added here just before 
 
 - Updated `lottie-react-native` from `3.5.0` to `4.0.2`. ([#13151](https://github.com/expo/expo/pull/13151) by [@tsapeta](https://github.com/tsapeta))
 - Updated `@react-native-community/datetimepicker` from `3.2.0` to `3.5.2`. ([#13162](https://github.com/expo/expo/pull/13162) by [@cruzach](https://github.com/13162))
+- Updated `react-native-screens` from `3.0.0` to `3.3.0`.
 
 ### 🛠 Breaking changes
 
