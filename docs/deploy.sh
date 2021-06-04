@@ -122,7 +122,7 @@ echo "::endgroup::"
 echo "::group::[6/7] Copy over domain-specific sitemap.xml"
 aws s3 cp \
   --no-progress \
-  "$target/$domain-sitemap.xml" \
+  "$target/$bucket-sitemap.xml" \
   "s3://${bucket}/sitemap.xml"
 echo "::endgroup::"
 
