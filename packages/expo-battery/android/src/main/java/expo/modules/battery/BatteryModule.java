@@ -145,7 +145,7 @@ public class BatteryModule extends ExportedModule implements RegistryLifecycleLi
 
   @ExpoMethod
   public void isBatteryOptimizationEnabledAsync(Promise promise) {
-    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       String packageName = mContext.getApplicationContext().getPackageName();
       PowerManager powerManager = (PowerManager) mContext.getApplicationContext().getSystemService(Context.POWER_SERVICE);
       if (powerManager && !powerManager.isIgnoringBatteryOptimizations(packageName)) {
