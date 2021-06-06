@@ -92,10 +92,10 @@ export async function isLowPowerModeEnabledAsync(): Promise<boolean> {
   * ```
   */
   export async function isBatteryOptimizationEnabledAsync(): Promise<boolean> {
-    if (!ExpoBattery.isBatteryOptimizationEnabledAsync) {
-        return false;
-    }
-    return await ExpoBattery.isBatteryOptimizationEnabledAsync();
+  if (!ExpoBattery.isBatteryOptimizationEnabledAsync) {
+    return false;
+  }
+  return await ExpoBattery.isBatteryOptimizationEnabledAsync();
 }
 
 /**
