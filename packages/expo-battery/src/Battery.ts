@@ -81,17 +81,19 @@ export async function isLowPowerModeEnabledAsync(): Promise<boolean> {
 }
 
 // @needsAudit
- /**
-  * Checks whether the battery optimization is on for the application.
-  * @return Returns a `Promise` which fulfills with a `boolean` value of either `true` or `false`,
-  * indicating whether the battery optimization is enabled or disabled, respectively. (Android only)
-  * # Example
-  * ```ts
-  * await Battery.isBatteryOptimizationEnabledAsync();
-  * // true
-  * ```
-  */
-  export async function isBatteryOptimizationEnabledAsync(): Promise<boolean> {
+/**
+ * Checks whether battery optimization is enabled for your application.
+ * If battery optimization is enabled for your app, background tasks might be affected
+ * when your app goes into doze mode state. (only on Android 6.0 or later)
+ * @return Returns a `Promise` which fulfills with a `boolean` value of either `true` or `false`,
+ * indicating whether the battery optimization is enabled or disabled, respectively. (Android only)
+ * # Example
+ * ```ts
+ * await Battery.isBatteryOptimizationEnabledAsync();
+ * // true
+ * ```
+ */
+export async function isBatteryOptimizationEnabledAsync(): Promise<boolean> {
   if (!ExpoBattery.isBatteryOptimizationEnabledAsync) {
     return false;
   }
