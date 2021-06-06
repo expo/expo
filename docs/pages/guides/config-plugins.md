@@ -246,8 +246,10 @@ The following default mods are provided by the mod compiler for common file mani
 - `mods.ios.expoPlist` -- Modify the `ios/<name>/Expo.plist` as JSON (Expo updates config for iOS) (parsed with [`@expo/plist`](https://www.npmjs.com/package/@expo/plist)).
 - `mods.ios.xcodeproj` -- Modify the `ios/<name>.xcodeproj` as an `XcodeProject` object (parsed with [`xcode`](https://www.npmjs.com/package/xcode)).
 
-- `mods.android.manifest` -- Modify the `android/app/src/main/AndroidManifest.xml` as JSON (parsed with [`xml2js`](https://www.npmjs.com/package/xml2js)).
-- `mods.android.strings` -- Modify the `android/app/src/main/res/values/strings.xml` as JSON (parsed with [`xml2js`](https://www.npmjs.com/package/xml2js)).
+- `mods.android.manifest` -- Modify the `android/app/src/main/AndroidManifest.xml` as JSON (parsed with [`xml2js`][xml2js]).
+- `mods.android.strings` -- Modify the `android/app/src/main/res/values/strings.xml` as JSON (parsed with [`xml2js`][xml2js]).
+- `mods.android.colors` -- Modify the `android/app/src/main/res/values/colors.xml` as JSON (parsed with [`xml2js`][xml2js]).
+- `mods.android.styles` -- Modify the `android/app/src/main/res/values/styles.xml` as JSON (parsed with [`xml2js`][xml2js]).
 - `mods.android.mainActivity` -- Modify the `android/app/src/main/<package>/MainActivity.java` as a string.
 - `mods.android.appBuildGradle` -- Modify the `android/app/build.gradle` as a string.
 - `mods.android.projectBuildGradle` -- Modify the `android/build.gradle` as a string.
@@ -273,6 +275,8 @@ Instead you should use the helper mods provided by `@expo/config-plugins`:
 - Android
   - `withAndroidManifest`
   - `withStringsXml`
+  - `withAndroidColors`
+  - `withAndroidStyles`
   - `withMainActivity`
   - `withProjectBuildGradle`
   - `withAppBuildGradle`
@@ -287,7 +291,7 @@ A mod plugin gets passed a `config` object with additional properties `modResult
   - `platformProjectRoot: string`: Project root for the specific platform.
   - `modName: string`: Name of the mod.
   - `platform: ModPlatform`: Name of the platform used in the mods config.
-  - `projectName?: string`: iOS only: The path component used for querying project files. ex. `projectRoot/ios/[projectName]/`
+  - `projectName?: string`: (iOS only) The path component used for querying project files. ex. `projectRoot/ios/[projectName]/`
 
 ## Creating a mod
 
@@ -487,9 +491,7 @@ In your monorepo's `packages/` folder, create a module, and [bootstrap a config 
 If you aren't comfortable with setting up a monorepo, you can try manually running a plugin:
 
 - Run `npm pack` in the package with the config plugin
-- Copy the resulting file into your project (this file should look something like `react-native-my-package-1.0.0.tgz`)
-- Then add the package to your project in the `package.json` dependencies object: `"react-native-my-package": "./react-native-my-package-1.0.0.tgz"`
-- Run `yarn` or `npm install` to install from the local package.
+- In your test project, run `npm install path/to/react-native-my-package-1.0.0.tgz`, this will add the package to your `package.json` `dependencies` object.
 - Add the package to the `plugins` array in your `app.json`: `{ "plugins": ["react-native-my-package"] }`
   - If you have [vscode expo][vscode-expo] installed, autocomplete should work for the plugin.
 - If you need to update the package, change the `version` in the package's `package.json` and repeat the process.
@@ -579,13 +581,14 @@ export default createRunOncePlugin(
 
 ### Plugin development best practices
 
-- If the plugin is tied to a React Native module, then you should absolutely document manual setup instructions for the package. If anything goes wrong with the plugin, users should still be able to manually add the package to their project. Doing this often helps you to find ways to reduce the setup, which can lead to a simpler plugin.
+- **Instructions in your README**: If the plugin is tied to a React Native module, then you should document manual setup instructions for the package. If anything goes wrong with the plugin, users should still be able to manually add the package to their project. Doing this often helps you to find ways to reduce the setup, which can lead to a simpler plugin.
+  - Document the available properties for the plugin, and specify if the plugin works without props.
+  - If you can make your plugin work after running prebuild multiple times, that’s a big plus! It can improve the developer experience to be able to run `expo prebuild` without the `--clean` flag to sync changes.
 - **Naming conventions**: Use `withFeatureName` if cross-platform. If the plugin is platform specific, use a camel case naming with the platform right after “with”. Ex; `withIosSplash`, `withAndroidSplash`. There is no universally agreed upon casing for `iOS` in camel cased identifiers, we prefer this style and suggest using it for your config plugins too.
 - **Leverage built-in plugins**: Account for built-in plugins from the [prebuild config](https://github.com/expo/expo-cli/blob/master/packages/prebuild-config/src/plugins/withDefaultPlugins.ts). Some features are included for historical reasons, like the ability to automatically copy and link [Google services files](https://github.com/expo/expo-cli/blob/3a0ef962a27525a0fe4b7e5567fb7b3fb18ec786/packages/config-plugins/src/ios/Google.ts#L15) defined in the Expo config. If there is overlap, then maybe recommend the user uses the built-in types to keep your plugin as simple as possible.
 - **Split up plugins by platform**: For example — `withIosSplash`, `withAndroidSplash`. This makes using the `--platform` flag in `expo prebuild` a bit easier to follow in `EXPO_DEBUG` mode.
-- Document the available properties for the plugin, and specify if the plugin works without props.
-- If you can make your plugin work after running prebuild multiple times, that’s a big plus! It can improve the developer experience to be able to run `expo prebuild` without the `--clean` flag to sync changes.
-- **Unit test your plugin**: Write Jest tests for complex modifications. If your plugin requires access to the filesystem, use a mock system (we strongly recommend [`memfs`](https://www.npmjs.com/package/memfs)), you can see examples of this in the [`expo-notifications`](https://github.com/expo/expo/blob/fc3fb2e81ad3a62332fa1ba6956c1df1c3186464/packages/expo-notifications/plugin/src/__tests__/withNotificationsAndroid-test.ts#L34) plugin tests. Notice the root [`/__mocks__`](https://github.com/expo/expo/tree/master/packages/expo-notifications/plugin/__mocks__) folder and [`plugin/jest.config.js`](https://github.com/expo/expo/blob/master/packages/expo-notifications/plugin/jest.config.js).
+- **Unit test your plugin**: Write Jest tests for complex modifications. If your plugin requires access to the filesystem, use a mock system (we strongly recommend [`memfs`][memfs]), you can see examples of this in the [`expo-notifications`](https://github.com/expo/expo/blob/fc3fb2e81ad3a62332fa1ba6956c1df1c3186464/packages/expo-notifications/plugin/src/__tests__/withNotificationsAndroid-test.ts#L34) plugin tests.
+  - Notice the root [`/__mocks__`](https://github.com/expo/expo/tree/master/packages/expo-notifications/plugin/__mocks__) folder and [`plugin/jest.config.js`](https://github.com/expo/expo/blob/master/packages/expo-notifications/plugin/jest.config.js).
 - A TypeScript plugin is always better than a JavaScript plugin. Check out the [`expo-module-script` plugin][ems-plugin] tooling for more info.
 
 ### Versioning
@@ -797,6 +800,8 @@ Please add the following to your Expo config
 [expo-beta-docs]: https://github.com/expo/expo/blob/master/guides/releasing/Release%20Workflow.md#stage-5---beta-release
 [vscode-expo]: https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo
 [ems-plugin]: https://github.com/expo/expo/tree/master/packages/expo-module-scripts#-config-plugin
+[xml2js]: https://www.npmjs.com/package/xml2js
+[memfs]: https://www.npmjs.com/package/memfs
 
 <!-- TODO: Better link for Expo autolinking docs -->
 
