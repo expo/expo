@@ -462,8 +462,8 @@ Plugins will generally have `@expo/config-plugins` installed as a dependency, an
 
 ### Best practices for mods
 
-- Avoid regex: [static modification][#static-modification] is key. If you want to modify a value in an Android gradle file, consider using `gradle.properties`. If you want to modify some code in the pod file, consider writing to json and having the pod file read the static values.
-- Avoid doing long tasks like making network requests or installing Node modules in mods.
+- Avoid regex: [static modification][#static-modification] is key. If you want to modify a value in an Android gradle file, consider using `gradle.properties`. If you want to modify some code in the Podfile, consider writing to JSON and having the Podfile read the static values.
+- Avoid performing long-running tasks like making network requests or installing Node modules in mods.
 - Do not add interactive terminal prompts in mods.
 - Generate, move, and delete new files in dangerous mods only. Failing to do so will break [introspection](#introspection).
 - Utilize built-in config plugins like `withXcodeProject` to minimize the amount of times a file is read and parsed.
@@ -484,7 +484,7 @@ In your monorepo's `packages/` folder, create a module, and [bootstrap a config 
 
 ### Manually running a plugin
 
-If you aren't comfortable with setting up a monorepo, you can try manually running a plugin, to do this:
+If you aren't comfortable with setting up a monorepo, you can try manually running a plugin:
 
 - Run `npm pack` in the package with the config plugin
 - Copy the resulting file into your project (this file should look something like `react-native-my-package-1.0.0.tgz`)
@@ -580,21 +580,21 @@ export default createRunOncePlugin(
 ### Plugin development best practices
 
 - If the plugin is tied to a React Native module, then you should absolutely document manual setup instructions for the package. If anything goes wrong with the plugin, users should still be able to manually add the package to their project. Doing this often helps you to find ways to reduce the setup, which can lead to a simpler plugin.
-- Name plugins `withFeatureName`, if the plugin is platform specific, use a camel case naming with the platform right after “with”. Ex; `withIosSplash`, `withAndroidSplash`. There’s no easy way to format iOS, so we’ve landed on the camel case solution for now.
-- Account for built-in plugins from the [prebuild config](https://github.com/expo/expo-cli/blob/master/packages/prebuild-config/src/plugins/withDefaultPlugins.ts). Some features have been grandfathered in, like the ability to automatically copy and link [Google services files](https://github.com/expo/expo-cli/blob/3a0ef962a27525a0fe4b7e5567fb7b3fb18ec786/packages/config-plugins/src/ios/Google.ts#L15) defined in the Expo config. If there is overlap, then maybe recommend the user uses the built-in types to keep your plugin as simple as possible.
-- Split up plugins by platform, ex: `withIosSplash`, `withAndroidSplash`. This makes using the `--platform` flag in `expo prebuild` a bit easier to follow in `EXPO_DEBUG` mode.
+- **Naming conventions**: Use `withFeatureName` if cross-platform. If the plugin is platform specific, use a camel case naming with the platform right after “with”. Ex; `withIosSplash`, `withAndroidSplash`. There is no universally agreed upon casing for `iOS` in camel cased identifiers, we prefer this style and suggest using it for your config plugins too.
+- **Leverage built-in plugins**: Account for built-in plugins from the [prebuild config](https://github.com/expo/expo-cli/blob/master/packages/prebuild-config/src/plugins/withDefaultPlugins.ts). Some features are included for historical reasons, like the ability to automatically copy and link [Google services files](https://github.com/expo/expo-cli/blob/3a0ef962a27525a0fe4b7e5567fb7b3fb18ec786/packages/config-plugins/src/ios/Google.ts#L15) defined in the Expo config. If there is overlap, then maybe recommend the user uses the built-in types to keep your plugin as simple as possible.
+- **Split up plugins by platform**: For example — `withIosSplash`, `withAndroidSplash`. This makes using the `--platform` flag in `expo prebuild` a bit easier to follow in `EXPO_DEBUG` mode.
 - Document the available properties for the plugin, and specify if the plugin works without props.
-- If you can make your plugin work after running prebuild multiple times, that’s a big plus! This isn’t strictly required as we only officially support running prebuild once (ejecting) or running it multiple times (native code can always be fully replaced). But it does make DX nicer and native builds faster if you don’t have to clear out all of the code each time you want to sync changes.
-- Write Jest tests for complex modifications. If your plugin requires access to the filesystem, use a mock system (we strongly recommend [`memfs`](https://www.npmjs.com/package/memfs)), you can see examples of this in the [`expo-notifications`](https://github.com/expo/expo/blob/fc3fb2e81ad3a62332fa1ba6956c1df1c3186464/packages/expo-notifications/plugin/src/__tests__/withNotificationsAndroid-test.ts#L34) plugin tests. Notice the root [`/__mocks__`](https://github.com/expo/expo/tree/master/packages/expo-notifications/plugin/__mocks__) folder and [`plugin/jest.config.js`](https://github.com/expo/expo/blob/master/packages/expo-notifications/plugin/jest.config.js).
+- If you can make your plugin work after running prebuild multiple times, that’s a big plus! It can improve the developer experience to be able to run `expo prebuild` without the `--clean` flag to sync changes.
+- **Unit test your plugin**: Write Jest tests for complex modifications. If your plugin requires access to the filesystem, use a mock system (we strongly recommend [`memfs`](https://www.npmjs.com/package/memfs)), you can see examples of this in the [`expo-notifications`](https://github.com/expo/expo/blob/fc3fb2e81ad3a62332fa1ba6956c1df1c3186464/packages/expo-notifications/plugin/src/__tests__/withNotificationsAndroid-test.ts#L34) plugin tests. Notice the root [`/__mocks__`](https://github.com/expo/expo/tree/master/packages/expo-notifications/plugin/__mocks__) folder and [`plugin/jest.config.js`](https://github.com/expo/expo/blob/master/packages/expo-notifications/plugin/jest.config.js).
 - A TypeScript plugin is always better than a JavaScript plugin. Check out the [`expo-module-script` plugin][ems-plugin] tooling for more info.
 
 ### Versioning
 
-The most important thing to version against is the [source template][source-template]. By default, `expo prebuild` uses a template associated with the Expo SDK version that a project is using. The SDK version is defined in the `app.json` or inferred from the installed version of `expo` that the project has.
+By default, `expo prebuild` runs transformations on a [source template][source-template] associated with the Expo SDK version that a project is using. The SDK version is defined in the `app.json` or inferred from the installed version of `expo` that the project has.
 
-When Expo SDK upgrades to a new version of React Native for instance, the template will often change a lot, as React Native tends to change a lot each version.
+When Expo SDK upgrades to a new version of React Native for instance, the template may change significantly to account for changes in React Native or new releases of iOS or Android.
 
-If your plugin is mostly using [static modifications][#static-modifications] then it will work well across versions. If it's using regex, then you'll definitely want to document which Expo SDK version your plugin is intended for. Expo releases a new version quarterly (every 4 months), and we have a [beta period][expo-beta-docs] where you can test if your plugin works with the new version before it's released.
+If your plugin is mostly using [static modifications][#static-modifications] then it will work well across versions. If it's using a regular expression to transform application code, then you'll definitely want to document which Expo SDK version your plugin is intended for. Expo releases a new version quarterly (every 3 months), and there is a [beta period][expo-beta-docs] where you can test if your plugin works with the new version before it's released.
 
 <!-- TODO: versioned plugin wrapper -->
 
@@ -602,7 +602,7 @@ If your plugin is mostly using [static modifications][#static-modifications] the
 
 Properties are used to customize the way a plugin works during prebuild.
 
-Properties MUST always be static values (no functions, or promises), consider the following types:
+Properties MUST always be static values (no functions, or promises). Consider the following types:
 
 ```ts
 type StaticValue = boolean | number | string | null | StaticArray | StaticObject;
@@ -614,9 +614,9 @@ interface StaticObject {
 }
 ```
 
-Static properties are required because the Expo config must be serializable to JSON for use as the app manifest. Static properties can also enable us to provide tooling in the future which generates JSON schema type checking for autocomplete and intellisense.
+Static properties are required because the Expo config must be serializable to JSON for use as the app manifest. Static properties can also enable tooling that generates JSON schema type checking for autocomplete and IntelliSense.
 
-If possible, attempt to make your plugin work without props, this will help resolution tooling like [`expo install`][#expo-install] or [vscode expo][vscode-expo] work better. Remember that every property you add increases complexity, making it harder to change in the future and increase the amount of features you'll need to test.
+If possible, attempt to make your plugin work without props, this will help resolution tooling like [`expo install`][#expo-install] or [vscode expo][vscode-expo] work better. Remember that every property you add increases complexity, making it harder to change in the future and increase the amount of features you'll need to test. Good default values are preferred over mandatory configuration when feasible.
 
 ## Debugging
 
@@ -690,13 +690,13 @@ For instance, say you have an `UNVERSIONED` Facebook plugin in your project, if 
 
 ## Static Modification
 
-Plugins can technically be used to regex file changes into application code, but these modifications are dangerous, if the template changes over time then the regex becomes hard to predict (similarly, if the user modifies a file manually or uses a custom template). Here are some examples of files you shouldn't modify manually, and alternatives.
+Plugins can transform application code with regular expressions, but these modifications are dangerous, if the template changes over time then the regex becomes hard to predict (similarly, if the user modifies a file manually or uses a custom template). Here are some examples of files you shouldn't modify manually, and alternatives.
 
 ### Android Gradle Files
 
-Gradle files are written in either groovy or kotlin, they are used to manage dependencies, versioning, and other settings in the Android app. Instead of modifying them directly with `withProjectBuildGradle`, `withAppBuildGradle`, or `withSettingsGradle`, utilize the static `gradle.properties` file.
+Gradle files are written in either Groovy or Kotlin. They are used to manage dependencies, versioning, and other settings in the Android app. Instead of modifying them directly with the `withProjectBuildGradle`, `withAppBuildGradle`, or `withSettingsGradle` mods, utilize the static `gradle.properties` file.
 
-The `gradle.properties` is a static key/value pair that groovy files can read from. For example, say you wanted to control some toggle in groovy:
+The `gradle.properties` is a static key/value pair that groovy files can read from. For example, say you wanted to control some toggle in Groovy:
 
 `gradle.properties`
 
@@ -706,7 +706,7 @@ expo.react.jsEngine=hermes
 /* @end */
 ```
 
-Then later in a gradle file:
+Then later in a Gradle file:
 
 `app/build.gradle`
 
@@ -718,7 +718,7 @@ project.ext.react = [
 ]
 ```
 
-- For keys in the `gradle.properties`, we use camel case separated by `.`s, and usually starting with the `expo` prefix to denote that the property is managed by prebuild.
+- For keys in the `gradle.properties`, use camel case separated by `.`s, and usually starting with the `expo` prefix to denote that the property is managed by prebuild.
 - To access the property, use one of two global methods:
   - `property`: Get a property, throw an error if the property is not defined.
   - `findProperty`: Get a property without throwing an error if the property is missing. This can often be used with the `?:` operator to provide a default value.
@@ -727,7 +727,7 @@ Generally, you should only interact with the Gradle file via Expo [Autolinking][
 
 ### iOS App Delegate
 
-Some modules may need to add delegate methods to the project AppDelegate, this can done dangerously via the `withAppDelegate` mod, or it can be done safely by adding support for unimodules AppDelegate proxy to the native module. The unimodules AppDelegate proxy can swizzle function calls to native modules in a safe and reliable way. If the language of the project AppDelegate changes from Objective-c to Swift, the swizzler will continue to work, whereas a regex would possibly fail.
+Some modules may need to add delegate methods to the project AppDelegate, this can done dangerously via the `withAppDelegate` mod, or it can be done safely by adding support for unimodules AppDelegate proxy to the native module. The unimodules AppDelegate proxy can swizzle function calls to native modules in a safe and reliable way. If the language of the project AppDelegate changes from Objective-C to Swift, the swizzler will continue to work, whereas a regex would possibly fail.
 
 Here are some examples of the AppDelegate proxy in action:
 
