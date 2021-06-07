@@ -1766,7 +1766,7 @@ PODS:
   - EXCalendar (9.1.2):
     - ExpoModulesCore
     - UMCore
-  - EXCamera (11.0.3):
+  - EXCamera (11.1.0):
     - ExpoModulesCore
     - UMCore
   - EXCellular (3.1.0):
@@ -3993,7 +3993,7 @@ SPEC CHECKSUMS:
   EXBranch: eeda02bb7e9545fa28d56d57810116cd6de5a426
   EXBrightness: d3b7c97082f22d07baec9442c65be185f85929fd
   EXCalendar: 93dcc0f5288066f65d53b730abfb2a5fd69ccc87
-  EXCamera: 51dec14df2128718c3a43c09a085a105be15cafb
+  EXCamera: 749802944176f32cce72cfc99d53e6d9ecfd7311
   EXCellular: 06e641f1c34e9d772da3c69cfe9ef4828791e3f8
   EXClipboard: 2f4ac26d2d1fb3b40346fd4a93d5303c04608b07
   EXConstants: 5ea0cedcacca6f27f0ec54f185e01e0970ee1286
