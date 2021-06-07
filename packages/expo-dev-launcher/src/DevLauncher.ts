@@ -1,24 +1,31 @@
 import { ErrorUtils } from 'react-native';
 
 // Similar interface to the one used in expo modules.
-type CodeError = Error & { code?: string };
+type CodedError = Error & { code?: string };
 
 let errorHandlerWasRegistered = false;
 
-function customizeModuleIsMissingMessage(error: Error) {
-  error.message += `
-      
-  Possible solutions:
-  - Make sure that you're using the newest version of your native shell app.
-  - Make sure that you're not trying to load the old version of your js code.`;
+const possibleSolutions = `Some possible solutions:
+- Make sure you're using the newest available version of this development client.
+- Make sure you're running a compatible version of your JavaScript code.
+- If you've installed a new library recently, you may need to make a new development client build.`;
+
+function customizeUnavailableMessage(error: CodedError) {
+  error.message += '\n\n' + possibleSolutions;
 }
 
-function customizeError(error: Error | CodeError) {
+function customizeModuleIsMissingMessage(error: Error) {
+  error.message = `Your JavaScript code tried to access a native module that doesn't exist in this development client. 
+
+${possibleSolutions}`;
+}
+
+function customizeError(error: Error | CodedError) {
   if ('code' in error) {
     // It's a CodeError from expo modules
     switch (error.code) {
       case 'ERR_UNAVAILABLE': {
-        customizeModuleIsMissingMessage(error);
+        customizeUnavailableMessage(error);
         break;
       }
     }

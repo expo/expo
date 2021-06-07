@@ -79,10 +79,10 @@ When you start your project on iOS, the metro bundler will be started automatica
 
 ### Add better error handlers
 
-We want to improve your experience with developing React Native apps. The one way to accomplish this goal is to enhance error handling and make exception messages more self-explanatory. To turn this feature on, you need to add following lines to your `index.js`:
+Sometimes, for certain types of errors, we can provide more helpful error messages than the ones that ship by default with React Native. To turn this feature on, you need to add following lines to your `index.js`:
 
 ```js
-import { registerErrorHandlers } from 'expo-dev-client;
+import { registerErrorHandlers } from 'expo-dev-client';
 registerErrorHandlers();
 ```
 
