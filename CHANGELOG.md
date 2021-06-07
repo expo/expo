@@ -13,6 +13,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `react-native-screens` from `3.0.0` to `3.3.0`. ([#13159](https://github.com/expo/expo/pull/13159) by [@tsapeta](https://github.com/tsapeta))
 - Updated `react-native-reanimated` from `2.1.0` to `2.2.0`. ([#13161](https://github.com/expo/expo/pull/13161) by [@lukmccall](https://github.com/lukmccall))
 - Updated `react-native-svg` from `12.1.0` to `12.1.1`. ([#13154](https://github.com/expo/expo/pull/13154) by [@brentvatne](https://github.com/brentvatne))
+- Updated `react-native-webview` from `11.2.3` to `11.6.2`. ([#13188](https://github.com/expo/expo/pull/13188) by [@kudo](https://github.com/kudo))
 
 ### 🛠 Breaking changes
 
