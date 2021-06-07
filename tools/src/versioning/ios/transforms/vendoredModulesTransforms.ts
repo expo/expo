@@ -9,29 +9,9 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
     'stripe-react-native': {
       content: [
         {
-          paths: 'ApplePayButtonManager.m',
-          find: /RCT_EXTERN_MODULE\(/,
-          replaceWith: `RCT_EXTERN_REMAP_MODULE(ApplePayButtonManager, ${prefix}`,
-        },
-        {
-          paths: 'CardFieldManager.m',
-          find: /RCT_EXTERN_MODULE\(/,
-          replaceWith: `RCT_EXTERN_REMAP_MODULE(CardFieldManager, ${prefix}`,
-        },
-        {
-          paths: 'AuBECSDebitFormManager.m',
-          find: /RCT_EXTERN_MODULE\(/,
-          replaceWith: `RCT_EXTERN_REMAP_MODULE(AuBECSDebitFormManager, ${prefix}`,
-        },
-        {
-          paths: 'StripeSdk.m',
-          find: /RCT_EXTERN_MODULE\(/,
-          replaceWith: `RCT_EXTERN_REMAP_MODULE(StripeSdk, ${prefix}`,
-        },
-        {
-          paths: 'StripeContainerManager.m',
-          find: /RCT_EXTERN_MODULE\(/,
-          replaceWith: `RCT_EXTERN_REMAP_MODULE(StripeContainerManager, ${prefix}`,
+          paths: '*.m',
+          find: /RCT_EXTERN_MODULE\((ApplePayButtonManager|CardFieldManager|AuBECSDebitFormManager|StripeSdk|StripeContainerManager)/,
+          replaceWith: `RCT_EXTERN_REMAP_MODULE($1, ${prefix}$1`,
         },
       ],
     },
