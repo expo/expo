@@ -10,7 +10,7 @@
 
 @interface EXUpdatesModule ()
 
-@property (nonatomic, weak) id<EXUpdatesInterface> updatesService;
+@property (nonatomic, weak) id<EXUpdatesModuleInterface> updatesService;
 
 @end
 
@@ -20,7 +20,7 @@ UM_EXPORT_MODULE(ExpoUpdates);
 
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
-  _updatesService = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUpdatesInterface)];
+  _updatesService = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUpdatesModuleInterface)];
 }
 
 - (NSDictionary *)constantsToExport

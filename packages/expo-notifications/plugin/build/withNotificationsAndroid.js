@@ -3,16 +3,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.withNotificationsAndroid = exports.setNotificationIconColorAsync = exports.setNotificationConfigAsync = exports.setNotificationIconAsync = exports.getNotificationColor = exports.getNotificationIcon = exports.withNotificationManifest = exports.withNotificationIconColor = exports.withNotificationIcons = exports.NOTIFICATION_ICON_COLOR_RESOURCE = exports.NOTIFICATION_ICON_COLOR = exports.NOTIFICATION_ICON_RESOURCE = exports.NOTIFICATION_ICON = exports.META_DATA_NOTIFICATION_ICON_COLOR = exports.META_DATA_NOTIFICATION_ICON = void 0;
+exports.withNotificationsAndroid = exports.setNotificationIconColorAsync = exports.setNotificationConfigAsync = exports.setNotificationIconAsync = exports.getNotificationColor = exports.getNotificationIcon = exports.withNotificationManifest = exports.withNotificationIconColor = exports.withNotificationIcons = exports.NOTIFICATION_ICON_COLOR_RESOURCE = exports.NOTIFICATION_ICON_COLOR = exports.NOTIFICATION_ICON_RESOURCE = exports.NOTIFICATION_ICON = exports.META_DATA_NOTIFICATION_ICON_COLOR = exports.META_DATA_NOTIFICATION_ICON = exports.dpiValues = exports.ANDROID_RES_PATH = void 0;
 const config_plugins_1 = require("@expo/config-plugins");
-const Resources_1 = require("@expo/config-plugins/build/android/Resources");
-const android_plugins_1 = require("@expo/config-plugins/build/plugins/android-plugins");
-const XML_1 = require("@expo/config-plugins/build/utils/XML");
 const image_utils_1 = require("@expo/image-utils");
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
+const { buildResourceItem, readResourcesXMLAsync } = config_plugins_1.AndroidConfig.Resources;
+const { writeXMLAsync } = config_plugins_1.XML;
 const { Colors } = config_plugins_1.AndroidConfig;
-const { ANDROID_RES_PATH, dpiValues } = config_plugins_1.AndroidConfig.Icon;
+exports.ANDROID_RES_PATH = 'android/app/src/main/res/';
+exports.dpiValues = {
+    mdpi: { folderName: 'mipmap-mdpi', scale: 1 },
+    hdpi: { folderName: 'mipmap-hdpi', scale: 1.5 },
+    xhdpi: { folderName: 'mipmap-xhdpi', scale: 2 },
+    xxhdpi: { folderName: 'mipmap-xxhdpi', scale: 3 },
+    xxxhdpi: { folderName: 'mipmap-xxxhdpi', scale: 4 },
+};
 const { addMetaDataItemToMainApplication, getMainApplicationOrThrow, removeMetaDataItemFromMainApplication, } = config_plugins_1.AndroidConfig.Manifest;
 const BASELINE_PIXEL_SIZE = 24;
 exports.META_DATA_NOTIFICATION_ICON = 'expo.modules.notifications.default_notification_icon';
@@ -39,7 +45,12 @@ exports.withNotificationIconColor = config => {
         },
     ]);
 };
-exports.withNotificationManifest = android_plugins_1.createAndroidManifestPlugin(setNotificationConfigAsync, 'withNotificationManifest');
+exports.withNotificationManifest = config => {
+    return config_plugins_1.withAndroidManifest(config, async (config) => {
+        config.modResults = await setNotificationConfigAsync(config, config.modResults);
+        return config;
+    });
+};
 function getNotificationIcon(config) {
     var _a;
     return ((_a = config.notification) === null || _a === void 0 ? void 0 : _a.icon) || null;
@@ -86,21 +97,21 @@ exports.setNotificationConfigAsync = setNotificationConfigAsync;
 async function setNotificationIconColorAsync(config, projectRoot) {
     const color = getNotificationColor(config);
     const colorsXmlPath = await Colors.getProjectColorsXMLPathAsync(projectRoot);
-    let colorsJson = await Resources_1.readResourcesXMLAsync({ path: colorsXmlPath });
+    let colorsJson = await readResourcesXMLAsync({ path: colorsXmlPath });
     if (color) {
-        const colorItemToAdd = Resources_1.buildResourceItem({ name: exports.NOTIFICATION_ICON_COLOR, value: color });
+        const colorItemToAdd = buildResourceItem({ name: exports.NOTIFICATION_ICON_COLOR, value: color });
         colorsJson = Colors.setColorItem(colorItemToAdd, colorsJson);
     }
     else {
         colorsJson = Colors.removeColorItem(exports.NOTIFICATION_ICON_COLOR, colorsJson);
     }
-    await XML_1.writeXMLAsync({ path: colorsXmlPath, xml: colorsJson });
+    await writeXMLAsync({ path: colorsXmlPath, xml: colorsJson });
 }
 exports.setNotificationIconColorAsync = setNotificationIconColorAsync;
 async function writeNotificationIconImageFilesAsync(icon, projectRoot) {
-    await Promise.all(Object.values(dpiValues).map(async ({ folderName, scale }) => {
+    await Promise.all(Object.values(exports.dpiValues).map(async ({ folderName, scale }) => {
         const drawableFolderName = folderName.replace('mipmap', 'drawable');
-        const dpiFolderPath = path_1.default.resolve(projectRoot, ANDROID_RES_PATH, drawableFolderName);
+        const dpiFolderPath = path_1.default.resolve(projectRoot, exports.ANDROID_RES_PATH, drawableFolderName);
         await fs_extra_1.default.ensureDir(dpiFolderPath);
         const iconSizePx = BASELINE_PIXEL_SIZE * scale;
         try {
@@ -119,9 +130,9 @@ async function writeNotificationIconImageFilesAsync(icon, projectRoot) {
     }));
 }
 async function removeNotificationIconImageFilesAsync(projectRoot) {
-    await Promise.all(Object.values(dpiValues).map(async ({ folderName }) => {
+    await Promise.all(Object.values(exports.dpiValues).map(async ({ folderName }) => {
         const drawableFolderName = folderName.replace('mipmap', 'drawable');
-        const dpiFolderPath = path_1.default.resolve(projectRoot, ANDROID_RES_PATH, drawableFolderName);
+        const dpiFolderPath = path_1.default.resolve(projectRoot, exports.ANDROID_RES_PATH, drawableFolderName);
         await fs_extra_1.default.remove(path_1.default.resolve(dpiFolderPath, exports.NOTIFICATION_ICON + '.png'));
     }));
 }

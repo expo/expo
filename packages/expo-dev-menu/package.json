@@ -41,7 +41,7 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/config-plugins": "^1.0.32",
+    "@expo/config-plugins": "^2.0.0",
     "expo-dev-menu-interface": "0.3.1"
   },
   "devDependencies": {

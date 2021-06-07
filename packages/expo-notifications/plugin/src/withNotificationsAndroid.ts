@@ -1,17 +1,29 @@
-import { AndroidConfig, ConfigPlugin, withDangerousMod } from '@expo/config-plugins';
 import {
-  buildResourceItem,
-  readResourcesXMLAsync,
-} from '@expo/config-plugins/build/android/Resources';
-import { createAndroidManifestPlugin } from '@expo/config-plugins/build/plugins/android-plugins';
-import { writeXMLAsync } from '@expo/config-plugins/build/utils/XML';
+  AndroidConfig,
+  ConfigPlugin,
+  withAndroidManifest,
+  withDangerousMod,
+  XML,
+} from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 import { generateImageAsync } from '@expo/image-utils';
 import fs from 'fs-extra';
 import path from 'path';
 
+type DPIString = 'mdpi' | 'hdpi' | 'xhdpi' | 'xxhdpi' | 'xxxhdpi';
+type dpiMap = Record<DPIString, { folderName: string; scale: number }>;
+
+const { buildResourceItem, readResourcesXMLAsync } = AndroidConfig.Resources;
+const { writeXMLAsync } = XML;
 const { Colors } = AndroidConfig;
-const { ANDROID_RES_PATH, dpiValues } = AndroidConfig.Icon;
+export const ANDROID_RES_PATH = 'android/app/src/main/res/';
+export const dpiValues: dpiMap = {
+  mdpi: { folderName: 'mipmap-mdpi', scale: 1 },
+  hdpi: { folderName: 'mipmap-hdpi', scale: 1.5 },
+  xhdpi: { folderName: 'mipmap-xhdpi', scale: 2 },
+  xxhdpi: { folderName: 'mipmap-xxhdpi', scale: 3 },
+  xxxhdpi: { folderName: 'mipmap-xxxhdpi', scale: 4 },
+};
 const {
   addMetaDataItemToMainApplication,
   getMainApplicationOrThrow,
@@ -46,10 +58,12 @@ export const withNotificationIconColor: ConfigPlugin = config => {
   ]);
 };
 
-export const withNotificationManifest = createAndroidManifestPlugin(
-  setNotificationConfigAsync,
-  'withNotificationManifest'
-);
+export const withNotificationManifest: ConfigPlugin = config => {
+  return withAndroidManifest(config, async config => {
+    config.modResults = await setNotificationConfigAsync(config, config.modResults);
+    return config;
+  });
+};
 
 export function getNotificationIcon(config: ExpoConfig) {
   return config.notification?.icon || null;

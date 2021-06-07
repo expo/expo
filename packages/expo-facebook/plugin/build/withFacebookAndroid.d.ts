@@ -1,7 +1,7 @@
-import { AndroidConfig } from '@expo/config-plugins';
+import { AndroidConfig, ConfigPlugin } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
-export declare const withFacebookAppIdString: import("@expo/config-plugins").ConfigPlugin<void>;
-export declare const withFacebookManifest: import("@expo/config-plugins").ConfigPlugin<void>;
+export declare const withFacebookAppIdString: ConfigPlugin;
+export declare const withFacebookManifest: ConfigPlugin;
 declare type ExpoConfigFacebook = Pick<ExpoConfig, 'facebookScheme' | 'facebookAdvertiserIDCollectionEnabled' | 'facebookAppId' | 'facebookAutoInitEnabled' | 'facebookAutoLogAppEventsEnabled' | 'facebookDisplayName'>;
 export declare function getFacebookScheme(config: ExpoConfigFacebook): string | null;
 export declare function getFacebookAppId(config: ExpoConfigFacebook): string | null;

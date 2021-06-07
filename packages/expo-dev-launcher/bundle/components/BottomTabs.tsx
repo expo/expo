@@ -1,43 +1,51 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
 
-import { openProfile, openMenu, openSettings } from '../DevMenu';
+import { openProfile, openSettings } from '../DevMenu';
 import { MainText } from '../components/Text';
 import { MainView } from '../components/Views';
+import { useTheme } from '../hooks/useThemeName';
 
 type Props = {
   height: number;
 };
 
-export default class BottomTabs extends React.Component<Props, object> {
-  render() {
-    return (
-      <MainView style={[styles.bottomTabsAbsoluteContainer, { height: this.props.height }]}>
-        <View style={styles.bottomTabsContainer}>
-          <TouchableOpacity style={styles.bottomTabsItem} onPress={openProfile}>
-            <MainText style={styles.bottomTabsItemContent}>Profile</MainText>
-          </TouchableOpacity>
+export default (props: Props) => {
+  const [colors] = useTheme();
+  const imageColor = { tintColor: colors.text };
+  return (
+    <MainView style={[styles.bottomTabsAbsoluteContainer, { height: props.height }]}>
+      <View style={styles.bottomTabsContainer}>
+        <TouchableOpacity style={styles.bottomTabsItemContainer} onPress={openProfile}>
+          <View style={styles.bottomTabsItem}>
+            <Image
+              style={[styles.icon, imageColor]}
+              source={require('../assets/user-filled-icon.png')}
+            />
+            <MainText style={styles.bottomTabsItemText}>Profile</MainText>
+          </View>
+        </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.bottomTabsItem, { borderLeftWidth: 0.5, borderRightWidth: 0.5 }]}
-            onPress={openMenu}>
-            <MainText style={styles.bottomTabsItemContent}>Menu</MainText>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.bottomTabsItem} onPress={openSettings}>
-            <MainText style={styles.bottomTabsItemContent}>Settings</MainText>
-          </TouchableOpacity>
-        </View>
-      </MainView>
-    );
-  }
-}
+        <TouchableOpacity style={styles.bottomTabsItemContainer} onPress={openSettings}>
+          <View style={styles.bottomTabsItem}>
+            <Image
+              style={[styles.icon, imageColor]}
+              source={require('../assets/settings-filled-icon.png')}
+            />
+            <MainText style={styles.bottomTabsItemText}>Settings</MainText>
+          </View>
+        </TouchableOpacity>
+      </View>
+    </MainView>
+  );
+};
 
 const styles = StyleSheet.create({
   bottomTabsAbsoluteContainer: {
     position: 'absolute',
     width: '100%',
     bottom: 0,
+    borderTopWidth: 1,
   },
   bottomTabsContainer: {
     width: '100%',
@@ -45,13 +53,22 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
   },
-  bottomTabsItem: {
+  bottomTabsItemContainer: {
     flexGrow: 1,
-    borderTopWidth: 0.5,
+  },
+  bottomTabsItem: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
     justifyContent: 'center',
   },
-  bottomTabsItemContent: {
-    alignSelf: 'center',
+  bottomTabsItemText: {
     fontSize: 12,
+    marginTop: 5,
+  },
+  icon: {
+    width: 18,
+    height: 18,
+    resizeMode: 'contain',
   },
 });

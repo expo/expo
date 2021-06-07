@@ -25,8 +25,8 @@ This is an example of how your package.json might look like:
     "eas-build-pre-install": "echo 123",
     "eas-build-post-install": "echo 456",
     "eas-build-pre-upload-artifacts": "echo 789",
-    "android": "react-native run-android",
-    "ios": "react-native run-ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "start": "react-native start",
     "test": "jest"
@@ -78,62 +78,6 @@ e.g.
 {
  "scripts": {
     "eas-build-pre-install": "bash -c \"[ ! -z \\\"EAS_BUILD_NPM_CACHE_URL\\\" ] && sed -i -e \\\"s#https://registry.yarnpkg.com#$EAS_BUILD_NPM_CACHE_URL#g\\\" yarn.lock\""
-  }
-}
-```
-
-## Maintaining generic projects with multiple bundle identifiers
-
-It's common to have multiple schemes with unique bundle identifiers in iOS projects in order to have development and production versions of your app on one phone at the same time. The current implementations of `eas build` and `eas build:configure` assume that the native project can only have one bundle identifier, so as a temporary workaround we added `experimental.disableIosBundleIdentifierValidation`, to disable that validation in both commands. With that flag enabled, the value of the bundle identifier from `app.json`/`app.config.js` will take precedence, and you can use the `scheme` property in your `eas.json` to switch between build schemes.
-
-```bash
-# to build staging
-APP_ENV=staging eas build --platform ios --profile staging
-
-# to build production
-APP_ENV=production eas build --platform ios --profile production
-```
-
-```js
-// example app.config.js
-
-const isStaging = process.env.APP_ENV === 'staging';
-const bundleIdentifier = isStaging ? 'xyz.easbuildapp.staging' : 'xyz.easbuildapp';
-
-export default ({ config }) => ({
-  expo: {
-    ...config,
-    ios: {
-      bundleIdentifier,
-    },
-  },
-});
-```
-
-```json
-// example eas.json
-
-{
-  "experimental": {
-    "disableIosBundleIdentifierValidation": true
-  },
-  "build": {
-    "ios": {
-      "staging": {
-        "workflow": "generic",
-        "scheme": "myapp-staging",
-        "env": {
-          "APP_ENV": "staging"
-        }
-      },
-      "production": {
-        "workflow": "generic",
-        "scheme": "myapp",
-        "env": {
-          "APP_ENV": "production"
-        }
-      }
-    }
   }
 }
 ```

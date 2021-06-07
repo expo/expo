@@ -253,6 +253,12 @@ module.exports = {
           { key: 18, argumentsCount: 1, name: 'getSourceByIdAsync' },
         ],
         ExpoCellular: [{ key: 0, argumentsCount: 0, name: 'getCellularGenerationAsync' }],
+        ExpoClipboard: [
+          { key: 0, argumentsCount: 0, name: 'getStringAsync' },
+          { key: 1, argumentsCount: 1, name: 'setString' },
+          { key: 2, argumentsCount: 1, name: 'addClipboardListener' },
+          { key: 3, argumentsCount: 0, name: 'removeClipboardListener' },
+        ],
         ExpoContacts: [
           { key: 0, argumentsCount: 0, name: 'getDefaultContainerIdentifierAsync' },
           { key: 1, argumentsCount: 2, name: 'addExistingGroupToContainerAsync' },

@@ -4,16 +4,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class EXDevLauncherManifest;
 
+typedef void (^IsManifestURL)(BOOL isManifestURL);
 typedef void (^OnManifestParsed)(EXDevLauncherManifest *manifest);
-typedef void (^OnInvalidManifestURL)(void);
 typedef void (^OnManifestError)(NSError *error);
 
 @interface EXDevLauncherManifestParser : NSObject
 
 - (instancetype)initWithURL:(NSURL *)url session:(NSURLSession *)session;
 
+- (void)isManifestURLWithCompletion:(IsManifestURL)completion
+                            onError:(OnManifestError)onError;
+
 - (void)tryToParseManifest:(OnManifestParsed)onParsed
-      onInvalidManifestURL:(OnInvalidManifestURL)onInalidURL
                    onError:(OnManifestError)onError;
 
 @end

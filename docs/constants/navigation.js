@@ -189,7 +189,7 @@ const sections = [
       'Upgrading Expo SDK',
       'Developing for Web',
       'Snack: a playground in your browser',
-      'Ejecting to Bare Workflow',
+      'Adding custom native code',
       'Glossary of terms',
     ],
   },

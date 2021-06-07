@@ -14,6 +14,10 @@ on:
       - .ruby-version
       - exponent-view-template
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: macos-10.15

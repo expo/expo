@@ -30,4 +30,6 @@ export default {
     document.body.removeChild(textField);
     return success;
   },
+  addClipboardListener(): void {},
+  removeClipboardListener(): void {},
 };

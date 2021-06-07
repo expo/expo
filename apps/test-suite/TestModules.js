@@ -76,6 +76,7 @@ export function getTestModules() {
 
   if (Platform.OS === 'android') {
     modules.push(require('./tests/JSC'));
+    modules.push(require('./tests/Hermes'));
   }
 
   if (global.DETOX) {

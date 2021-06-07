@@ -28,6 +28,8 @@ Manual smoke tests are included in `apps/native-component-list`, this is a good 
 
 ## 📦 Download and Setup
 
+> 💽 The development environment for this repository does not support Windows. To contribute from Windows you must use WSL.
+
 1. [Fork](https://help.github.com/articles/fork-a-repo/) this repository to your own GitHub account and then [clone](https://help.github.com/articles/cloning-a-repository/) it to your local device. (`git remote add upstream git@github.com:expo/expo.git` 😉). You can use `git clone --depth 1 --single-branch --branch master git@github.com:expo/expo.git`, discarding most of branches and history to clone it faster.
 2. Ensure [direnv](https://direnv.net/) is installed on your computer.
 3. If you will be working with the iOS project, ensure **ruby 2.7** is installed on your machine. macOS comes with ruby 2.6, which will give you issues; if you use homebrew you can just run `brew install ruby@2.7`.
@@ -75,6 +77,7 @@ All modules should adhere to the style guides which can be found here:
 
 - [Guide to Unimodule Development](guides/Expo%20Universal%20Module%20Infrastructure.md)
 - [Expo JS Style Guide](guides/Expo%20JavaScript%20Style%20Guide.md) (also mostly applies to TypeScript)
+- [Updating Changelogs](guides/contributing/Updating%20Changelogs.md)
 
 ### Extra Credit
 

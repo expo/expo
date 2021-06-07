@@ -859,11 +859,11 @@ import * as Notifications from 'expo-notifications';
 
 Notifications.scheduleNotificationAsync({
   content: {
-    title: 'Remember to drink water!,
+    title: 'Remember to drink water!',
   },
   trigger: {
     seconds: 60 * 20,
-    repeats: true
+    repeats: true,
   },
 });
 ```
@@ -1242,6 +1242,7 @@ export type NotificationContent = {
   // Application badge number associated with the notification
   badge: number | null;
   sound: 'default' | 'defaultCritical' | 'custom' | null;
+  categoryIdentifier: string | null;
 } & (
   | {
       // iOS-specific additions
@@ -1255,7 +1256,6 @@ export type NotificationContent = {
       }[];
       summaryArgument?: string | null;
       summaryArgumentCount?: number;
-      categoryIdentifier: string | null;
       threadIdentifier: string | null;
       targetContentIdentifier?: string;
     }
