@@ -43,27 +43,12 @@ function setNotificationSounds(projectRoot, { sounds, project, projectName, }) {
         // file itself id different, let's copy it regardless
         fs_1.copyFileSync(sourceFilepath, destinationFilepath);
         if (!project.hasFile(`${projectName}/${fileName}`)) {
-<<<<<<< HEAD
-            project = config_plugins_1.IOSConfig.XcodeUtils.addResourceFileToGroup({
-                filepath: `${projectName}/${fileName}`,
-                groupName: projectName,
-                project: project,
-                isBuildFile: true,
-            });
-||||||| constructed merge base
-            // Need to add the sound file to project.pbxproj so that
-            // Xcode recognizes it and includes it in builds
-            project = config_plugins_1.IOSConfig.XcodeUtils.addResourceFileToGroup(`${projectName}/${fileName}`, projectName, project);
-=======
-            // Need to add the sound file to project.pbxproj so that
-            // Xcode recognizes it and includes it in builds
             project = config_plugins_1.IOSConfig.XcodeUtils.addResourceFileToGroup({
                 filepath: `${projectName}/${fileName}`,
                 groupName: projectName,
                 isBuildFile: true,
                 project,
             });
->>>>>>> account for breaking change in @expo/config-plugins
         }
     }
     return project;
