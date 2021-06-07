@@ -17396,10 +17396,10 @@ react-native-bundle-visualizer@^2.2.1:
     rimraf "^3.0.2"
     source-map-explorer "^2.4.2"
 
-react-native-fade-in-image@^1.5.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/react-native-fade-in-image/-/react-native-fade-in-image-1.5.0.tgz#efface43f9846b1d1ffd6c6894576cede710617d"
-  integrity sha512-I03XZzr9flUnGO9XqMsv1rWAcpvHR6bhPamKsM6S8kjgYeYFUAVT7qNmyB3bN+qfRFPMFEkSlXE1TqUG2pZ8vw==
+react-native-fade-in-image@^1.6.1:
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/react-native-fade-in-image/-/react-native-fade-in-image-1.6.1.tgz#4645a57a505558a1d22da5c304a903aaa8ed2772"
+  integrity sha512-tGERKpO01Iu6D1eLFu9HC7NcPJRWQGeUofXrOC3sznSnbLDNZM6jKURWuAZmxKaE5YZIHi/zecu0TqEyjgMOTA==
   dependencies:
     react-clone-referenced-element "^1.0.1"
     react-mixin "^3.0.5"
