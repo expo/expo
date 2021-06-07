@@ -151,7 +151,13 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
         <H3Code>
           <InlineCode>{name}</InlineCode>
         </H3Code>
-        <UL><LI><InlineCode>Record&lt;{type.typeArguments[0].name}, {resolveTypeName(type.typeArguments[1])}&gt;</InlineCode></LI></UL>
+        <UL>
+          <LI>
+            <InlineCode>
+              Record&lt;{type.typeArguments[0].name}, {resolveTypeName(type.typeArguments[1])}&gt;
+            </InlineCode>
+          </LI>
+        </UL>
         <CommentTextBlock comment={comment} />
       </div>
     );
