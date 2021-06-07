@@ -5,7 +5,6 @@ import {
   withAndroidManifest,
   XML,
 } from '@expo/config-plugins';
-
 import { ExpoConfig } from '@expo/config-types';
 import { generateImageAsync } from '@expo/image-utils';
 import { writeFileSync, unlinkSync, copyFileSync, existsSync, mkdirSync } from 'fs';
