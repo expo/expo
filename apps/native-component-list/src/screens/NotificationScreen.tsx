@@ -90,6 +90,10 @@ export default class NotificationScreen extends React.Component<
           title="Schedule notification for 10 seconds from now"
         />
         <ListButton
+          onPress={this._scheduleLocalNotificationWithCustomSoundAsync}
+          title="Schedule notification with custom sound in 1 second (not supported in Expo Go)"
+        />
+        <ListButton
           onPress={this._scheduleLocalNotificationAndCancelAsync}
           title="Schedule notification for 10 seconds from now and then cancel it immediately"
         />
@@ -254,6 +258,31 @@ export default class NotificationScreen extends React.Component<
       },
       trigger: {
         seconds: 10,
+      },
+    });
+  };
+
+  _scheduleLocalNotificationWithCustomSoundAsync = async () => {
+    await this._obtainUserFacingNotifPermissionsAsync();
+    // Prepare the notification channel
+    await Notifications.setNotificationChannelAsync('custom-sound', {
+      name: 'Notification with custom sound',
+      importance: Notifications.AndroidImportance.HIGH,
+      sound: 'cat.wav', // <- for Android 8.0+
+    });
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: 'Here is a local notification!',
+        body: 'This is the body',
+        data: {
+          hello: 'there',
+          future: 'self',
+        },
+        sound: 'cat.wav',
+      },
+      trigger: {
+        channelId: 'custom-sound',
+        seconds: 1,
       },
     });
   };
