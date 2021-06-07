@@ -67,9 +67,13 @@ export const resolveTypeName = ({
         if (name === 'Promise') {
           return (
             <span>
-              {'Promise<'}
-              {typeArguments.map(resolveTypeName)}
-              {'>'}
+              {name}&lt;{typeArguments.map(resolveTypeName)}&gt;
+            </span>
+          );
+        } else if (name === 'Record') {
+          return (
+            <span>
+              {name}&lt;{typeArguments.map(resolveTypeName).join(',')}&gt;
             </span>
           );
         } else {
