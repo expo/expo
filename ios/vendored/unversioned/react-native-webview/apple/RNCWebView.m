@@ -146,7 +146,7 @@ static NSDictionary* customCertificatesForHost;
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 /* __IPHONE_13_0 */
     _savedAutomaticallyAdjustsScrollIndicatorInsets = NO;
 #endif
-      
+    _enableApplePay = NO;
   }
 
 #if !TARGET_OS_OSX
@@ -245,6 +245,16 @@ static NSDictionary* customCertificatesForHost;
   }
 #endif
 
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000 /* iOS 14 */
+  if (@available(iOS 14.0, *)) {
+    if ([wkWebViewConfig respondsToSelector:@selector(limitsNavigationsToAppBoundDomains)]) {
+      if (_limitsNavigationsToAppBoundDomains) {
+        wkWebViewConfig.limitsNavigationsToAppBoundDomains = YES;
+      }
+    }
+  }
+#endif
+
   // Shim the HTML5 history API:
   [wkWebViewConfig.userContentController addScriptMessageHandler:[[RNCWeakScriptMessageDelegate alloc] initWithDelegate:self]
                                                             name:HistoryShimName];
@@ -331,6 +341,7 @@ static NSDictionary* customCertificatesForHost;
 - (void)removeFromSuperview
 {
     if (_webView) {
+        [_webView.configuration.userContentController removeScriptMessageHandlerForName:HistoryShimName];
         [_webView.configuration.userContentController removeScriptMessageHandlerForName:MessageHandlerName];
         [_webView removeObserver:self forKeyPath:@"estimatedProgress"];
         [_webView removeFromSuperview];
@@ -543,6 +554,16 @@ static NSDictionary* customCertificatesForHost;
         }
         [_webView loadHTMLString:html baseURL:baseURL];
         return;
+    } 
+    //Add cookie for subsequent resource requests sent by page itself, if cookie was set in headers on WebView
+    NSString *headerCookie = [RCTConvert NSString:_source[@"headers"][@"cookie"]]; 
+    if(headerCookie) {
+      NSDictionary *headers = [NSDictionary dictionaryWithObjectsAndKeys:headerCookie,@"Set-Cookie",nil];
+      NSURL *urlString = [NSURL URLWithString:_source[@"uri"]];
+      NSArray *httpCookies = [NSHTTPCookie cookiesWithResponseHeaderFields:headers forURL:urlString];
+      for (NSHTTPCookie *httpCookie in httpCookies) {
+          [_webView.configuration.websiteDataStore.httpCookieStore setCookie:httpCookie completionHandler:nil];
+      }
     }
 
     NSURLRequest *request = [self requestForSource:_source];
@@ -1053,7 +1074,8 @@ static NSDictionary* customCertificatesForHost;
       return;
     }
 
-    if ([error.domain isEqualToString:@"WebKitErrorDomain"] && error.code == 102 || [error.domain isEqualToString:@"WebKitErrorDomain"] && error.code == 101) {
+    if ([error.domain isEqualToString:@"WebKitErrorDomain"] &&
+        (error.code == 102 || error.code == 101)) {
       // Error code 102 "Frame load interrupted" is raised by the WKWebView
       // when the URL is from an http redirect. This is a common pattern when
       // implementing OAuth with a WebView.
@@ -1074,6 +1096,10 @@ static NSDictionary* customCertificatesForHost;
 - (void)evaluateJS:(NSString *)js
           thenCall: (void (^)(NSString*)) callback
 {
+  if (self.enableApplePay) {
+    RCTLogWarn(@"Cannot run javascript when apple pay is enabled");
+    return;
+  }
   [self.webView evaluateJavaScript: js completionHandler: ^(id result, NSError *error) {
     if (callback != nil) {
       callback([NSString stringWithFormat:@"%@", result]);
@@ -1270,6 +1296,13 @@ static NSDictionary* customCertificatesForHost;
 - (void)resetupScripts:(WKWebViewConfiguration *)wkWebViewConfig {
   [wkWebViewConfig.userContentController removeAllUserScripts];
   [wkWebViewConfig.userContentController removeScriptMessageHandlerForName:MessageHandlerName];
+  if(self.enableApplePay){
+    if (self.postMessageScript){
+      [wkWebViewConfig.userContentController addScriptMessageHandler:[[RNCWeakScriptMessageDelegate alloc] initWithDelegate:self]
+                                                                       name:MessageHandlerName];
+    }
+    return;
+  }
 
   NSString *html5HistoryAPIShimSource = [NSString stringWithFormat:
     @"(function(history) {\n"
