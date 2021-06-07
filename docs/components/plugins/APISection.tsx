@@ -46,7 +46,7 @@ const renderAPI = (
     const types = filterDataByKind(
       data,
       TypeDocKind.TypeAlias,
-      entry => !!(entry.type.declaration || entry.type.types)
+      entry => !!(entry.type.declaration || entry.type.types || entry.type.typeArguments)
     );
     const props = filterDataByKind(
       data,

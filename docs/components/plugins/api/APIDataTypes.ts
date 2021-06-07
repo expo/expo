@@ -37,6 +37,7 @@ export type TypeDefinitionData = {
   };
   typeArguments?: TypeDefinitionData[];
   declaration?: TypeDeclarationContentData;
+  value?: string;
 };
 
 export type TypeDefinitionTypesData = {
@@ -154,6 +155,7 @@ export type TypeDeclarationContentData = {
 };
 
 export type TypeDeclarationData = {
+  name: string;
   declaration?: TypeDeclarationContentData;
   type: string;
   types: TypeValueData[];
