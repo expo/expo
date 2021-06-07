@@ -1,6 +1,7 @@
 package versioned.host.exp.exponent.modules.api.screens;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
@@ -25,6 +26,9 @@ public class ScreenDismissedEvent extends Event<ScreenDismissedEvent> {
 
   @Override
   public void dispatch(RCTEventEmitter rctEventEmitter) {
-    rctEventEmitter.receiveEvent(getViewTag(), getEventName(), Arguments.createMap());
+    WritableMap args = Arguments.createMap();
+    // on Android we always dismiss one screen at a time
+    args.putInt("dismissCount", 1);
+    rctEventEmitter.receiveEvent(getViewTag(), getEventName(), args);
   }
 }

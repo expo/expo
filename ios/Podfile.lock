@@ -1766,7 +1766,7 @@ PODS:
   - EXCalendar (9.1.2):
     - ExpoModulesCore
     - UMCore
-  - EXCamera (11.0.3):
+  - EXCamera (11.1.0):
     - ExpoModulesCore
     - UMCore
   - EXCellular (3.1.0):
@@ -2325,7 +2325,7 @@ PODS:
     - React-Core (= 0.63.2)
     - React-cxxreact (= 0.63.2)
     - React-jsi (= 0.63.2)
-  - RNReanimated (2.0.0):
+  - RNReanimated (2.2.0):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -2354,6 +2354,9 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
+  - RNScreens (3.3.0):
+    - React-Core
+    - React-RCTImage
   - Stripe (21.6.0):
     - Stripe/Stripe3DS2 (= 21.6.0)
   - stripe-react-native (0.1.4):
@@ -2795,6 +2798,7 @@ DEPENDENCIES:
   - React-RCTVibration (from `../react-native-lab/react-native/Libraries/Vibration`)
   - ReactCommon/turbomodule/core (from `../react-native-lab/react-native/ReactCommon`)
   - RNReanimated (from `./vendored/unversioned/react-native-reanimated`)
+  - RNScreens (from `./vendored/unversioned/react-native-screens`)
   - stripe-react-native (from `./vendored/unversioned/stripe-react-native`)
   - UMAppLoader (from `../packages/unimodules-app-loader/ios`)
   - "UMCore (from `../packages/@unimodules/core/ios`)"
@@ -3645,6 +3649,8 @@ EXTERNAL SOURCES:
     :path: "../react-native-lab/react-native/ReactCommon"
   RNReanimated:
     :path: "./vendored/unversioned/react-native-reanimated"
+  RNScreens:
+    :path: "./vendored/unversioned/react-native-screens"
   stripe-react-native:
     :path: "./vendored/unversioned/stripe-react-native"
   UMAppLoader:
@@ -3987,7 +3993,7 @@ SPEC CHECKSUMS:
   EXBranch: eeda02bb7e9545fa28d56d57810116cd6de5a426
   EXBrightness: d3b7c97082f22d07baec9442c65be185f85929fd
   EXCalendar: 93dcc0f5288066f65d53b730abfb2a5fd69ccc87
-  EXCamera: 51dec14df2128718c3a43c09a085a105be15cafb
+  EXCamera: 749802944176f32cce72cfc99d53e6d9ecfd7311
   EXCellular: 06e641f1c34e9d772da3c69cfe9ef4828791e3f8
   EXClipboard: 2f4ac26d2d1fb3b40346fd4a93d5303c04608b07
   EXConstants: 5ea0cedcacca6f27f0ec54f185e01e0970ee1286
@@ -4094,7 +4100,8 @@ SPEC CHECKSUMS:
   React-RCTText: 1b6773e776e4b33f90468c20fe3b16ca3e224bb8
   React-RCTVibration: 4d2e726957f4087449739b595f107c0d4b6c2d2d
   ReactCommon: a0a1edbebcac5e91338371b72ffc66aa822792ce
-  RNReanimated: 5231286440b796e09df3bfa5c1b12b02bfe07664
+  RNReanimated: d9da990fc90123f4ffbfdda93d00fc15174863a8
+  RNScreens: bf59f17fbf001f1025243eeed5f19419d3c11ef2
   Stripe: 6cc7bb348f4b1fad111129f6ee40eb6682deaefb
   stripe-react-native: 2598d45be4bad95f0c11a1dde7af185e8829bc67
   UMAppLoader: fe2708bb0ac5cd70052bc207d06aa3b7e72b9e97
