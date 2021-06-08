@@ -3,13 +3,16 @@
     <item name="colorPrimary">@color/colorPrimary</item>
     <item name="android:windowTranslucentStatus">true</item>
     <item name="android:editTextStyle">@style/ResetEditText</item>
-    <item name="android:windowBackground">@drawable/splashscreen</item>
     <item name="android:textColor">@android:color/black</item>
   </style>
-  
   <style name="ResetEditText" parent="@android:style/Widget.EditText">
     <item name="android:padding">0dp</item>
     <item name="android:textColorHint">#c8c8c8</item>
     <item name="android:textColor">@android:color/black</item>
+  </style>
+  <style name="Theme.App.SplashScreen" parent="AppTheme">
+    <!-- Below line is handled by '@expo/configure-splash-screen' command and it's discouraged to modify it manually -->
+    <item name="android:windowBackground">@drawable/splashscreen</item>
+    <!-- Customize your splash screen theme here -->
   </style>
 </resources>
