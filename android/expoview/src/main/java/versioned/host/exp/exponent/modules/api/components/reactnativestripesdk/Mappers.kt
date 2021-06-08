@@ -4,6 +4,11 @@ import com.facebook.react.bridge.*
 import com.stripe.android.PaymentAuthConfig
 import com.stripe.android.model.*
 
+internal fun createResult(key: String, value: WritableMap): WritableMap {
+  val map = WritableNativeMap()
+  map.putMap(key, value)
+  return map
+}
 
 internal fun mapIntentStatus(status: StripeIntent.Status?): String {
   return when (status) {
@@ -142,6 +147,110 @@ internal fun mapFromBillingDetails(billingDatails: PaymentMethod.BillingDetails?
   return details
 }
 
+internal fun mapTokenType(type: Token.Type): String {
+  return when (type) {
+    Token.Type.Account -> "Account"
+    Token.Type.BankAccount -> "BankAccount"
+    Token.Type.Card -> "Card"
+    Token.Type.CvcUpdate -> "CvcUpdate"
+    Token.Type.Person -> "Person"
+    Token.Type.Pii -> "Pii"
+    else -> "Unknown"
+  }
+}
+
+internal fun mapFromBankAccountType(type: BankAccount.Type?): String {
+  return when (type) {
+    BankAccount.Type.Company -> "Company"
+    BankAccount.Type.Individual -> "Individual"
+    else -> "Unknown"
+  }
+}
+
+internal fun mapFromBankAccountStatus(status: BankAccount.Status?): String {
+  return when (status) {
+    BankAccount.Status.Errored -> "Errored"
+    BankAccount.Status.New -> "New"
+    BankAccount.Status.Validated -> "Validated"
+    BankAccount.Status.VerificationFailed -> "VerificationFailed"
+    BankAccount.Status.Verified -> "Verified"
+    else -> "Unknown"
+  }
+}
+
+internal fun mapFromBankAccount(bankAccount: BankAccount?): WritableMap? {
+  val bankAccountMap: WritableMap = WritableNativeMap()
+
+  if (bankAccount == null) {
+    return null
+  }
+
+  bankAccountMap.putString("bankName", bankAccount.bankName)
+  bankAccountMap.putString("accountHolderName", bankAccount.accountHolderName)
+  bankAccountMap.putString("accountHolderType", mapFromBankAccountType(bankAccount.accountHolderType))
+  bankAccountMap.putString("currency", bankAccount.currency)
+  bankAccountMap.putString("country", bankAccount.countryCode)
+  bankAccountMap.putString("routingNumber", bankAccount.routingNumber)
+  bankAccountMap.putString("status", mapFromBankAccountStatus(bankAccount.status))
+
+  return bankAccountMap
+}
+
+internal fun mapFromCard(card: Card?): WritableMap? {
+  val cardMap: WritableMap = WritableNativeMap()
+
+  if (card == null) {
+    return null
+  }
+
+  val address: WritableMap = WritableNativeMap()
+
+  cardMap.putString("country", card.country)
+  cardMap.putString("brand", mapCardBrand(card.brand))
+  cardMap.putString("currency", card.currency)
+
+  (card.expMonth)?.let {
+    cardMap.putInt("expMonth", it)
+  } ?: run {
+    cardMap.putNull("expMonth")
+  }
+
+  (card.expYear)?.let {
+    cardMap.putInt("expYear", it)
+  } ?: run {
+    cardMap.putNull("expYear")
+  }
+
+  cardMap.putString("last4", card.last4)
+  cardMap.putString("funding", card.funding?.name)
+  cardMap.putString("name", card.name)
+
+  address.putString("city", card.addressCity)
+  address.putString("country", card.addressCountry)
+  address.putString("line1", card.addressLine1)
+  address.putString("line2", card.addressLine2)
+  address.putString("state", card.addressState)
+  address.putString("postalCode", card.addressZip)
+
+  cardMap.putMap("address", address)
+
+  return cardMap
+}
+
+
+internal fun mapFromToken(token: Token): WritableMap {
+  val tokenMap: WritableMap = WritableNativeMap()
+
+  tokenMap.putString("id", token.id)
+  tokenMap.putString("created", token.created.time.toString())
+  tokenMap.putString("type", mapTokenType(token.type))
+  tokenMap.putBoolean("livemode", token.livemode)
+  tokenMap.putMap("bankAccount", mapFromBankAccount(token.bankAccount))
+  tokenMap.putMap("card", mapFromCard(token.card))
+
+  return tokenMap
+}
+
 internal fun mapFromPaymentMethod(paymentMethod: PaymentMethod): WritableMap {
   val pm: WritableMap = WritableNativeMap()
   val card: WritableMap = WritableNativeMap()
@@ -253,19 +362,46 @@ internal fun mapFromPaymentIntentResult(paymentIntent: PaymentIntent): WritableM
 
 internal fun mapFromPaymentIntentLastErrorType(errorType: PaymentIntent.Error.Type?): String? {
   return when (errorType) {
-    PaymentIntent.Error.Type.ApiConnectionError -> "ApiConnection"
-    PaymentIntent.Error.Type.AuthenticationError -> "Authentication"
-    PaymentIntent.Error.Type.ApiError -> "Api"
-    PaymentIntent.Error.Type.CardError -> "Card"
-    PaymentIntent.Error.Type.IdempotencyError -> "Idempotency"
-    PaymentIntent.Error.Type.InvalidRequestError -> "InvalidRequest"
-    PaymentIntent.Error.Type.RateLimitError -> "RateLimit"
-    else -> "Unknown"
+    PaymentIntent.Error.Type.ApiConnectionError -> "api_connection_error"
+    PaymentIntent.Error.Type.AuthenticationError -> "authentication_error"
+    PaymentIntent.Error.Type.ApiError -> "api_error"
+    PaymentIntent.Error.Type.CardError -> "card_error"
+    PaymentIntent.Error.Type.IdempotencyError -> "idempotency_error"
+    PaymentIntent.Error.Type.InvalidRequestError -> "invalid_request_error"
+    PaymentIntent.Error.Type.RateLimitError -> "rate_limit_error"
+    else -> null
+  }
+}
+
+internal fun mapFromSetupIntentLastErrorType(errorType: SetupIntent.Error.Type?): String? {
+  return when (errorType) {
+    SetupIntent.Error.Type.ApiConnectionError -> "api_connection_error"
+    SetupIntent.Error.Type.AuthenticationError -> "authentication_error"
+    SetupIntent.Error.Type.ApiError -> "api_error"
+    SetupIntent.Error.Type.CardError -> "card_error"
+    SetupIntent.Error.Type.IdempotencyError -> "idempotency_error"
+    SetupIntent.Error.Type.InvalidRequestError -> "invalid_request_error"
+    SetupIntent.Error.Type.RateLimitError -> "rate_limit_error"
+    else -> null
   }
 }
 
 fun getValOr(map: ReadableMap, key: String, default: String? = ""): String? {
   return if (map.hasKey(key)) map.getString(key) else default
+}
+
+internal fun mapToAddress(addressMap: ReadableMap?): Address? {
+  if (addressMap == null) {
+    return null
+  }
+  return Address.Builder()
+    .setPostalCode(getValOr(addressMap, "postalCode"))
+    .setCity(getValOr(addressMap, "city"))
+    .setCountry(getValOr(addressMap, "country"))
+    .setLine1(getValOr(addressMap, "line1"))
+    .setLine2(getValOr(addressMap, "line2"))
+    .setState(getValOr(addressMap, "state"))
+    .build()
 }
 
 internal fun mapToBillingDetails(billingDetails: ReadableMap?): PaymentMethod.BillingDetails? {
@@ -335,12 +471,21 @@ fun mapToUICustomization(params: ReadableMap): PaymentAuthConfig.Stripe3ds2UiCus
   val labelCustomization = getMapOrNull(params, "label")
   val navigationBarCustomization = params.getMap("navigationBar")
   val textBoxCustomization = getMapOrNull(params, "textField")
-  val buttonCustomization = getMapOrNull(params, "submitButton")
+  val submitButtonCustomization = getMapOrNull(params, "submitButton")
+  val cancelButtonCustomization = getMapOrNull(params, "cancelButton")
+  val nextButtonCustomization = getMapOrNull(params, "nextButton")
+  val continueButtonCustomization = getMapOrNull(params, "continueButton")
+  val resendButtonCustomization = getMapOrNull(params, "resendButton")
 
   val labelCustomizationBuilder = PaymentAuthConfig.Stripe3ds2LabelCustomization.Builder()
   val toolbarCustomizationBuilder = PaymentAuthConfig.Stripe3ds2ToolbarCustomization.Builder()
   val textBoxCustomizationBuilder = PaymentAuthConfig.Stripe3ds2TextBoxCustomization.Builder()
-  val buttonCustomizationBuilder = PaymentAuthConfig.Stripe3ds2ButtonCustomization.Builder()
+
+  val submitButtonCustomizationBuilder = PaymentAuthConfig.Stripe3ds2ButtonCustomization.Builder()
+  val cancelButtonCustomizationBuilder = PaymentAuthConfig.Stripe3ds2ButtonCustomization.Builder()
+  val nextButtonCustomizationBuilder = PaymentAuthConfig.Stripe3ds2ButtonCustomization.Builder()
+  val continueButtonCustomizationBuilder = PaymentAuthConfig.Stripe3ds2ButtonCustomization.Builder()
+  val resendButtonCustomizationBuilder = PaymentAuthConfig.Stripe3ds2ButtonCustomization.Builder()
 
   getStringOrNull(labelCustomization,"headingTextColor")?.let {
     labelCustomizationBuilder.setHeadingTextColor(it)
@@ -390,18 +535,76 @@ fun mapToUICustomization(params: ReadableMap): PaymentAuthConfig.Stripe3ds2UiCus
     textBoxCustomizationBuilder.setTextFontSize(it)
   }
 
-  getStringOrNull(buttonCustomization, "backgroundColor")?.let {
-    buttonCustomizationBuilder.setBackgroundColor(it)
+  // Submit button
+  getStringOrNull(submitButtonCustomization, "backgroundColor")?.let {
+    submitButtonCustomizationBuilder.setBackgroundColor(it)
   }
-  getIntOrNull(buttonCustomization, "borderRadius")?.let {
-    buttonCustomizationBuilder.setCornerRadius(it)
+  getIntOrNull(submitButtonCustomization, "borderRadius")?.let {
+    submitButtonCustomizationBuilder.setCornerRadius(it)
   }
-  getStringOrNull(buttonCustomization, "textColor")?.let {
-    buttonCustomizationBuilder.setTextColor(it)
+  getStringOrNull(submitButtonCustomization, "textColor")?.let {
+    submitButtonCustomizationBuilder.setTextColor(it)
   }
-  getIntOrNull(buttonCustomization, "textFontSize")?.let {
-    buttonCustomizationBuilder.setTextFontSize(it)
+  getIntOrNull(submitButtonCustomization, "textFontSize")?.let {
+    submitButtonCustomizationBuilder.setTextFontSize(it)
   }
+
+  // Cancel button
+  getStringOrNull(cancelButtonCustomization, "backgroundColor")?.let {
+    cancelButtonCustomizationBuilder.setBackgroundColor(it)
+  }
+  getIntOrNull(cancelButtonCustomization, "borderRadius")?.let {
+    cancelButtonCustomizationBuilder.setCornerRadius(it)
+  }
+  getStringOrNull(cancelButtonCustomization, "textColor")?.let {
+    cancelButtonCustomizationBuilder.setTextColor(it)
+  }
+  getIntOrNull(cancelButtonCustomization, "textFontSize")?.let {
+    cancelButtonCustomizationBuilder.setTextFontSize(it)
+  }
+
+  // Continue button
+  getStringOrNull(continueButtonCustomization, "backgroundColor")?.let {
+    continueButtonCustomizationBuilder.setBackgroundColor(it)
+  }
+  getIntOrNull(continueButtonCustomization, "borderRadius")?.let {
+    continueButtonCustomizationBuilder.setCornerRadius(it)
+  }
+  getStringOrNull(continueButtonCustomization, "textColor")?.let {
+    continueButtonCustomizationBuilder.setTextColor(it)
+  }
+  getIntOrNull(continueButtonCustomization, "textFontSize")?.let {
+    continueButtonCustomizationBuilder.setTextFontSize(it)
+  }
+
+  // Next button
+  getStringOrNull(nextButtonCustomization, "backgroundColor")?.let {
+    nextButtonCustomizationBuilder.setBackgroundColor(it)
+  }
+  getIntOrNull(nextButtonCustomization, "borderRadius")?.let {
+    nextButtonCustomizationBuilder.setCornerRadius(it)
+  }
+  getStringOrNull(nextButtonCustomization, "textColor")?.let {
+    nextButtonCustomizationBuilder.setTextColor(it)
+  }
+  getIntOrNull(nextButtonCustomization, "textFontSize")?.let {
+    nextButtonCustomizationBuilder.setTextFontSize(it)
+  }
+
+  // Resend button
+  getStringOrNull(resendButtonCustomization, "backgroundColor")?.let {
+    resendButtonCustomizationBuilder.setBackgroundColor(it)
+  }
+  getIntOrNull(resendButtonCustomization, "borderRadius")?.let {
+    resendButtonCustomizationBuilder.setCornerRadius(it)
+  }
+  getStringOrNull(resendButtonCustomization, "textColor")?.let {
+    resendButtonCustomizationBuilder.setTextColor(it)
+  }
+  getIntOrNull(resendButtonCustomization, "textFontSize")?.let {
+    resendButtonCustomizationBuilder.setTextFontSize(it)
+  }
+
 
 
   val uiCustomization = PaymentAuthConfig.Stripe3ds2UiCustomization.Builder()
@@ -412,16 +615,27 @@ fun mapToUICustomization(params: ReadableMap): PaymentAuthConfig.Stripe3ds2UiCus
       toolbarCustomizationBuilder.build()
     )
     .setButtonCustomization(
-      buttonCustomizationBuilder.build(),
+      submitButtonCustomizationBuilder.build(),
       PaymentAuthConfig.Stripe3ds2UiCustomization.ButtonType.SUBMIT
     )
-
     .setButtonCustomization(
-      buttonCustomizationBuilder.build(),
+      continueButtonCustomizationBuilder.build(),
       PaymentAuthConfig.Stripe3ds2UiCustomization.ButtonType.CONTINUE
     )
+    .setButtonCustomization(
+      nextButtonCustomizationBuilder.build(),
+      PaymentAuthConfig.Stripe3ds2UiCustomization.ButtonType.SELECT
+    )
+    .setButtonCustomization(
+      cancelButtonCustomizationBuilder.build(),
+      PaymentAuthConfig.Stripe3ds2UiCustomization.ButtonType.CANCEL
+    )
+    .setButtonCustomization(
+      resendButtonCustomizationBuilder.build(),
+      PaymentAuthConfig.Stripe3ds2UiCustomization.ButtonType.RESEND
+    )
 
-  getStringOrNull(params, "backgroundColor")?.let {
+  getStringOrNull(params, "accentColor")?.let {
     uiCustomization.setAccentColor(it)
   }
 
@@ -447,6 +661,11 @@ internal fun mapFromSetupIntentResult(setupIntent: SetupIntent): WritableMap {
     val setupError: WritableMap = WritableNativeMap()
     setupError.putString("code", it.code)
     setupError.putString("message", it.message)
+    setupError.putString("type", mapFromSetupIntentLastErrorType(it.type))
+
+    setupIntent.lastSetupError?.paymentMethod?.let { paymentMethod ->
+      setupError.putMap("paymentMethod", mapFromPaymentMethod(paymentMethod))
+    }
 
     map.putMap("lastSetupError", setupError)
   }
