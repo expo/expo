@@ -1924,7 +1924,7 @@ PODS:
     - EXUpdatesInterface
     - React-Core
     - UMCore
-  - EXUpdatesInterface (0.0.1)
+  - EXUpdatesInterface (0.0.2)
   - EXVideoThumbnails (5.1.0):
     - ExpoModulesCore
     - UMCore
@@ -4048,7 +4048,7 @@ SPEC CHECKSUMS:
   EXTaskManager: d30b4a5723a5969443da644d786853923efa5f17
   EXTrackingTransparency: ea1f4c054b2e0908d2a781faca6f4a5402278220
   EXUpdates: dec9d211e99630e109c20b1dc626fd17e6ec3cf9
-  EXUpdatesInterface: 8649cedc0dd767fa3c1807129b92b1cd6045ebf7
+  EXUpdatesInterface: 80261336f9c3509981ce81f6c067a422f55d31e0
   EXVideoThumbnails: 6d5a5d7c2c5f631b1950b1e8b2a0305ab741b9b4
   EXWebBrowser: 0b466c50e5ff61c9758095d49d5081e3229d77ac
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6

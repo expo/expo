@@ -38,7 +38,7 @@ PODS:
   - EXCalendar (9.1.2):
     - ExpoModulesCore
     - UMCore
-  - EXCamera (11.0.3):
+  - EXCamera (11.1.0):
     - ExpoModulesCore
     - UMCore
   - EXCellular (3.1.0):
@@ -135,36 +135,36 @@ PODS:
   - EXPermissions (12.0.1):
     - ExpoModulesCore
     - UMCore
-  - expo-dev-client (0.1.3):
+  - expo-dev-client (0.2.0):
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (0.3.4):
-    - expo-dev-launcher/Main (= 0.3.4)
+  - expo-dev-launcher (0.4.0):
+    - expo-dev-launcher/Main (= 0.4.0)
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React
-  - expo-dev-launcher/Main (0.3.4):
+  - expo-dev-launcher/Main (0.4.0):
     - expo-dev-launcher/Unsafe
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React
-  - expo-dev-launcher/Unsafe (0.3.4):
+  - expo-dev-launcher/Unsafe (0.4.0):
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React
-  - expo-dev-menu (0.5.2):
+  - expo-dev-menu (0.6.0):
     - expo-dev-menu-interface
-    - expo-dev-menu/Main (= 0.5.2)
+    - expo-dev-menu/Main (= 0.6.0)
     - React
   - expo-dev-menu-interface (0.3.1):
     - React
-  - expo-dev-menu/Main (0.5.2):
+  - expo-dev-menu/Main (0.6.0):
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - React
-  - expo-dev-menu/Vendored (0.5.2):
+  - expo-dev-menu/Vendored (0.6.0):
     - expo-dev-menu-interface
     - React
   - expo-image (1.0.0-alpha.0):
@@ -221,7 +221,7 @@ PODS:
     - UMTaskManagerInterface
   - EXTrackingTransparency (1.0.1):
     - UMCore
-  - EXUpdatesInterface (0.0.1)
+  - EXUpdatesInterface (0.0.2)
   - EXVideoThumbnails (5.1.0):
     - ExpoModulesCore
     - UMCore
@@ -592,7 +592,7 @@ PODS:
     - React
   - react-native-viewpager (5.0.11):
     - React-Core
-  - react-native-webview (11.6.2):
+  - react-native-webview (11.2.3):
     - React-Core
   - React-RCTActionSheet (0.63.2):
     - React-Core/RCTActionSheetHeaders (= 0.63.2)
@@ -658,9 +658,9 @@ PODS:
     - React
   - RNCMaskedView (0.1.10):
     - React
-  - RNCPicker (1.16.1):
+  - RNCPicker (1.9.11):
     - React-Core
-  - RNDateTimePicker (3.5.2):
+  - RNDateTimePicker (3.2.0):
     - React-Core
   - RNGestureHandler (1.10.2):
     - React-Core
@@ -693,12 +693,11 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (3.3.0):
+  - RNScreens (3.0.0):
     - React-Core
-    - React-RCTImage
   - RNSharedElement (0.7.0):
     - React
-  - RNSVG (12.1.1):
+  - RNSVG (12.1.0):
     - React
   - SDWebImage (5.11.0):
     - SDWebImage/Core (= 5.11.0)
@@ -1215,7 +1214,7 @@ SPEC CHECKSUMS:
   EXBlur: 50d490040f3b14898ed8198d5125dc699189f4d9
   EXBrightness: d3b7c97082f22d07baec9442c65be185f85929fd
   EXCalendar: 93dcc0f5288066f65d53b730abfb2a5fd69ccc87
-  EXCamera: 51dec14df2128718c3a43c09a085a105be15cafb
+  EXCamera: 749802944176f32cce72cfc99d53e6d9ecfd7311
   EXCellular: 06e641f1c34e9d772da3c69cfe9ef4828791e3f8
   EXClipboard: 2f4ac26d2d1fb3b40346fd4a93d5303c04608b07
   EXConstants: 5ea0cedcacca6f27f0ec54f185e01e0970ee1286
@@ -1248,9 +1247,9 @@ SPEC CHECKSUMS:
   EXNetwork: 36144f5e572e6b6b218094c66a57c99e07ffbc0d
   EXNotifications: edf7b33cc7aea511ea141337029cf3d4c007acdf
   EXPermissions: 96bccdc1c2e234651b8d759fdacaf244824fe3ab
-  expo-dev-client: 8e3581286be3b484d5c376a12d29d17eecfa0b0f
-  expo-dev-launcher: 4d113c16c0ccebfbf5c73fd5937aff2ee818fde8
-  expo-dev-menu: 7ad848104f908589ee1d8ce2023b632207408c5d
+  expo-dev-client: 2c404b261f01037e3d449e1eb99fd852060b849c
+  expo-dev-launcher: 9fc874968172c230a13744a7b77dceaec02db684
+  expo-dev-menu: 22fbacb7294644164b2e381dafd56b225ebb54f1
   expo-dev-menu-interface: 4fda2fa6d974a518e546ca1193340513b0a8b0e8
   expo-image: 07527eb7a57f5ac939c5ded392bcf64c975b9c87
   ExpoModulesCore: 456da7683ce872553ceb6d5b82b4264bbd04d5e1
@@ -1270,7 +1269,7 @@ SPEC CHECKSUMS:
   EXStructuredHeaders: 7e7eec19a326bc58cca2fb3edbac0afaecb89c16
   EXTaskManager: d30b4a5723a5969443da644d786853923efa5f17
   EXTrackingTransparency: ea1f4c054b2e0908d2a781faca6f4a5402278220
-  EXUpdatesInterface: 8649cedc0dd767fa3c1807129b92b1cd6045ebf7
+  EXUpdatesInterface: 80261336f9c3509981ce81f6c067a422f55d31e0
   EXVideoThumbnails: 6d5a5d7c2c5f631b1950b1e8b2a0305ab741b9b4
   EXWebBrowser: 0b466c50e5ff61c9758095d49d5081e3229d77ac
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6
@@ -1325,7 +1324,7 @@ SPEC CHECKSUMS:
   react-native-slider: e99fc201cefe81270fc9d81714a7a0f5e566b168
   react-native-view-shot: 4475fde003fe8a210053d1f98fb9e06c1d834e1c
   react-native-viewpager: b99b53127d830885917ef84809c5065edd614a78
-  react-native-webview: 193d233c29eacce1f42ca2637dab7ba79c25a6de
+  react-native-webview: 6520e3e7b4933de76b95ef542c8d7115cf45b68e
   React-RCTActionSheet: 910163b6b09685a35c4ebbc52b66d1bfbbe39fc5
   React-RCTAnimation: 9a883bbe1e9d2e158d4fb53765ed64c8dc2200c6
   React-RCTBlob: 39cf0ece1927996c4466510e25d2105f67010e13
@@ -1338,13 +1337,13 @@ SPEC CHECKSUMS:
   ReactCommon: a0a1edbebcac5e91338371b72ffc66aa822792ce
   RNCAsyncStorage: 2a692bcb9b69b76a2f1a95f33db057129700af64
   RNCMaskedView: 5a8ec07677aa885546a0d98da336457e2bea557f
-  RNCPicker: 61c7a0645b9e4ac67960aa7f22a3effcecfdfb8d
-  RNDateTimePicker: 7658208086d86d09e1627b5c34ba0cf237c60140
+  RNCPicker: 6780c753e9e674065db90d9c965920516402579d
+  RNDateTimePicker: 17593e41b6b1585aeb8ecbe1c1cbc30cba3d0b4b
   RNGestureHandler: e66feb0fda7da74ea6a3094656b3c1efe05f5c07
   RNReanimated: d9da990fc90123f4ffbfdda93d00fc15174863a8
-  RNScreens: bf59f17fbf001f1025243eeed5f19419d3c11ef2
+  RNScreens: e8e8dd0588b5da0ab57dcca76ab9b2d8987757e0
   RNSharedElement: 00b1a1420d213a34459bb9a5aacabb38107d7948
-  RNSVG: 551acb6562324b1d52a4e0758f7ca0ec234e278f
+  RNSVG: ce9d996113475209013317e48b05c21ee988d42e
   SDWebImage: 7acbb57630ac7db4a495547fb73916ff3e432f6b
   UMAppLoader: fe2708bb0ac5cd70052bc207d06aa3b7e72b9e97
   UMCore: 912510bbff567298d738590f17788a8516f9d7f3
