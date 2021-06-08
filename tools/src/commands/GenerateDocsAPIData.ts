@@ -98,6 +98,7 @@ async function action({ packageName }: ActionOptions) {
     'expo-store-review': ['StoreReview.ts'],
     'expo-task-manager': ['TaskManager.ts'],
     'expo-tracking-transparency': ['TrackingTransparency.ts'],
+    'expo-video-thumbnails': ['VideoThumbnails.ts'],
   };
 
   try {
