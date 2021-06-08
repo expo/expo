@@ -175,11 +175,18 @@ export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
   const text = comment?.text?.trim().length ? (
     <ReactMarkdown renderers={renderers}>{comment.text}</ReactMarkdown>
   ) : null;
+
+  const example = comment?.tags?.filter(tag => tag.tag === 'example')[0];
+  const exampleText = example ? (
+    <ReactMarkdown renderers={renderers}>{`__Example:__ ${example.text}`}</ReactMarkdown>
+  ) : null;
+
   return (
     <>
       {withDash && (shortText || text) ? ' - ' : null}
       {shortText}
       {text}
+      {exampleText}
     </>
   );
 };
