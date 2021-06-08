@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [plugin] Refactor imports ([#13029](https://github.com/expo/expo/pull/13029) by [@EvanBacon](https://github.com/EvanBacon))
+- Add support for custom notification sounds when using EAS Build. ([#12782](https://github.com/expo/expo/pull/12782) by [@cruzach](https://github.com/cruzach))
 
 ### 🐛 Bug fixes
 

@@ -20,8 +20,11 @@
 @end
 
 @interface RNCWeakScriptMessageDelegate : NSObject<WKScriptMessageHandler>
-@property (nonatomic, weak) id<WKScriptMessageHandler> scriptDelegate;
-- (instancetype)initWithDelegate:(id<WKScriptMessageHandler>)scriptDelegate;
+
+@property (nonatomic, weak, nullable) id<WKScriptMessageHandler> scriptDelegate;
+
+- (nullable instancetype)initWithDelegate:(id<WKScriptMessageHandler> _Nullable)scriptDelegate;
+
 @end
 
 @interface RNCWebView : RCTView
@@ -66,12 +69,17 @@
 @property (nonatomic, assign) BOOL ignoreSilentHardwareSwitch;
 @property (nonatomic, copy) NSString * _Nullable allowingReadAccessToURL;
 @property (nonatomic, assign) BOOL pullToRefreshEnabled;
+@property (nonatomic, assign) BOOL enableApplePay;
 #if !TARGET_OS_OSX
-@property (nonatomic, weak) UIRefreshControl * refreshControl;
+@property (nonatomic, weak) UIRefreshControl * _Nullable refreshControl;
 #endif
 
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 /* iOS 13 */
 @property (nonatomic, assign) WKContentMode contentMode;
+#endif
+
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000 /* iOS 14 */
+@property (nonatomic, assign) BOOL limitsNavigationsToAppBoundDomains;
 #endif
 
 + (void)setClientAuthenticationCredential:(nullable NSURLCredential*)credential;
@@ -84,7 +92,7 @@
 - (void)stopLoading;
 #if !TARGET_OS_OSX
 - (void)addPullToRefreshControl;
-- (void)pullToRefresh:(UIRefreshControl *)refreshControl;
+- (void)pullToRefresh:(UIRefreshControl *_Nonnull)refreshControl;
 #endif
 
 @end

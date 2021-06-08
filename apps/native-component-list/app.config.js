@@ -56,5 +56,14 @@ export default ({ config }) => {
     },
   ]);
 
+  config.plugins.push([
+    'expo-notifications',
+    {
+      icon: './assets/icons/notificationIcon.png',
+      color: '#5539cc',
+      sounds: ['./assets/sounds/cat.wav'],
+    },
+  ]);
+
   return config;
 };

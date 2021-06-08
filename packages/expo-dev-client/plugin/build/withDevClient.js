@@ -20,29 +20,29 @@ module.exports = {
 };
 `;
 function withReactNativeConfigJs(config) {
-    return config_plugins_1.withDangerousMod(config, [
-        'ios',
-        async (config) => {
-            const filename = path_1.default.join(config.modRequest.projectRoot, 'react-native.config.js');
-            try {
-                const config = fs_1.default.readFileSync(filename, 'utf8');
-                if (!config.includes('expo-dev-client/dependencies')) {
-                    throw new Error(`Could not add expo-dev-client dependencies to existing file ${filename}. See expo-dev-client installation instructions to add them manually.`);
-                }
-            }
-            catch (error) {
-                if (error.code === 'ENOENT') {
-                    // The file doesn't exist, so we create it.
-                    fs_1.default.writeFileSync(filename, REACT_NATIVE_CONFIG_JS);
-                }
-                else {
-                    throw error;
-                }
-            }
-            return config;
-        },
-    ]);
+    config = config_plugins_1.withDangerousMod(config, ['android', addReactNativeConfigAsync]);
+    config = config_plugins_1.withDangerousMod(config, ['ios', addReactNativeConfigAsync]);
+    return config;
 }
+const addReactNativeConfigAsync = async (config) => {
+    const filename = path_1.default.join(config.modRequest.projectRoot, 'react-native.config.js');
+    try {
+        const config = fs_1.default.readFileSync(filename, 'utf8');
+        if (!config.includes('expo-dev-client/dependencies')) {
+            throw new Error(`Could not add expo-dev-client dependencies to existing file ${filename}. See expo-dev-client installation instructions to add them manually.`);
+        }
+    }
+    catch (error) {
+        if (error.code === 'ENOENT') {
+            // The file doesn't exist, so we create it.
+            fs_1.default.writeFileSync(filename, REACT_NATIVE_CONFIG_JS);
+        }
+        else {
+            throw error;
+        }
+    }
+    return config;
+};
 function withDevClient(config) {
     config = app_plugin_2.default(config);
     config = app_plugin_1.default(config);

@@ -1766,7 +1766,7 @@ PODS:
   - EXCalendar (9.1.2):
     - ExpoModulesCore
     - UMCore
-  - EXCamera (11.0.3):
+  - EXCamera (11.1.0):
     - ExpoModulesCore
     - UMCore
   - EXCellular (3.1.0):
@@ -2265,6 +2265,8 @@ PODS:
     - React-cxxreact (= 0.63.2)
     - React-jsi (= 0.63.2)
   - React-jsinspector (0.63.2)
+  - react-native-webview (11.6.2):
+    - React-Core
   - React-RCTActionSheet (0.63.2):
     - React-Core/RCTActionSheetHeaders (= 0.63.2)
   - React-RCTAnimation (0.63.2):
@@ -2787,6 +2789,7 @@ DEPENDENCIES:
   - React-jsi (from `../react-native-lab/react-native/ReactCommon/jsi`)
   - React-jsiexecutor (from `../react-native-lab/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../react-native-lab/react-native/ReactCommon/jsinspector`)
+  - react-native-webview (from `./vendored/unversioned/react-native-webview`)
   - React-RCTActionSheet (from `../react-native-lab/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../react-native-lab/react-native/Libraries/NativeAnimation`)
   - React-RCTBlob (from `../react-native-lab/react-native/Libraries/Blob`)
@@ -3627,6 +3630,8 @@ EXTERNAL SOURCES:
     :path: "../react-native-lab/react-native/ReactCommon/jsiexecutor"
   React-jsinspector:
     :path: "../react-native-lab/react-native/ReactCommon/jsinspector"
+  react-native-webview:
+    :path: "./vendored/unversioned/react-native-webview"
   React-RCTActionSheet:
     :path: "../react-native-lab/react-native/Libraries/ActionSheetIOS"
   React-RCTAnimation:
@@ -3993,7 +3998,7 @@ SPEC CHECKSUMS:
   EXBranch: eeda02bb7e9545fa28d56d57810116cd6de5a426
   EXBrightness: d3b7c97082f22d07baec9442c65be185f85929fd
   EXCalendar: 93dcc0f5288066f65d53b730abfb2a5fd69ccc87
-  EXCamera: 51dec14df2128718c3a43c09a085a105be15cafb
+  EXCamera: 749802944176f32cce72cfc99d53e6d9ecfd7311
   EXCellular: 06e641f1c34e9d772da3c69cfe9ef4828791e3f8
   EXClipboard: 2f4ac26d2d1fb3b40346fd4a93d5303c04608b07
   EXConstants: 5ea0cedcacca6f27f0ec54f185e01e0970ee1286
@@ -4090,6 +4095,7 @@ SPEC CHECKSUMS:
   React-jsi: 54245e1d5f4b690dec614a73a3795964eeef13a8
   React-jsiexecutor: 8ca588cc921e70590820ce72b8789b02c67cce38
   React-jsinspector: b14e62ebe7a66e9231e9581279909f2fc3db6606
+  react-native-webview: 193d233c29eacce1f42ca2637dab7ba79c25a6de
   React-RCTActionSheet: 910163b6b09685a35c4ebbc52b66d1bfbbe39fc5
   React-RCTAnimation: 9a883bbe1e9d2e158d4fb53765ed64c8dc2200c6
   React-RCTBlob: 39cf0ece1927996c4466510e25d2105f67010e13

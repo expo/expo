@@ -14,7 +14,7 @@ import InstallSection from '~/components/plugins/InstallSection';
 
 <InstallSection packageName="expo-facebook" />
 
-For bare apps, here are links to the [iOS Installation Walkthrough](https://developers.facebook.com/docs/ios/getting-started/) and the [Android Installation Walkthrough](https://developers.facebook.com/docs/android/getting-started).
+For bare apps, here are links to the [iOS Installation Walkthrough](https://developers.facebook.com/docs/ios/getting-started/#step-3---configure-your-project) and the [Android Installation Walkthrough](https://developers.facebook.com/docs/android/getting-started#app_id).
 
 ## Configuration
 

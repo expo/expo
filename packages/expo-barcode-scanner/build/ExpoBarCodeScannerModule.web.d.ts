@@ -1,3 +1,4 @@
+import { PermissionResponse } from 'expo-modules-core';
 declare const _default: {
     readonly name: string;
     readonly BarCodeType: {
@@ -22,5 +23,7 @@ declare const _default: {
         front: string;
         back: string;
     };
+    requestPermissionsAsync(): Promise<PermissionResponse>;
+    getPermissionsAsync(): Promise<PermissionResponse>;
 };
 export default _default;

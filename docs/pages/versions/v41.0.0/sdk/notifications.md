@@ -34,6 +34,41 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 
 <InstallSection packageName="expo-notifications" />
 
+### Config plugin setup (optional)
+
+If you're using EAS Build or the bare workflow, you can set your Android notification icon and color tint, add custom push notification sounds, and set your iOS notification environment using the `expo-notifications` config plugin ([what's a config plugin?](/guides/config-plugins.md)). To setup, just add the config plugin to the `plugins` array of your `app.json` or `app.config.js`:
+
+```json
+{
+  "expo": {
+    ...
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./local/path/to/myNotificationIcon.png",
+          "color": "#ffffff",
+          "sounds": ["./local/path/to/mySound.wav", "./local/path/to/myOtherSound.wav"],
+          "mode": "production"
+        }
+      ]
+    ],
+  }
+}
+```
+
+<details><summary><strong>Expand to view property descriptions and default values</strong></summary> <p>
+
+- **icon**: Android only. Local path to an image to use as the icon for push notifications. 96x96 all-white png with transparency.
+- **color**: Android only. Tint color for the push notification image when it appears in the notification tray. Default: "#ffffff".
+- **sounds**: Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds.
+- **mode**: iOS only. Environment of the app: either 'development' or 'production'. Default: 'development'.
+
+</p>
+</details>
+
+Then rebuild the app. If you're using the bare workflow, make sure to run `expo prebuild` first (this will apply the config plugin using [prebuilding](https://expo.fyi/prebuilding)).
+
 ### Android
 
 On Android, this module requires permission to subscribe to device boot. It's used to setup the scheduled notifications right after the device (re)starts. The `RECEIVE_BOOT_COMPLETED` permission is added automatically.
@@ -92,63 +127,6 @@ If you just changed the APNS servers where the app should be registering (by ins
 <details><summary><strong>Setup your device with a SIM card</strong></summary> <p>
 
 If the device you're experiencing this on hasn't been setup with a SIM card it looks like configuring it may help mitigate this bug as suggested by [this StackOverflow answer](https://stackoverflow.com/a/19432504/1123156).
-
-</p>
-</details>
-
-### Setting custom notification sounds
-
-Custom notification sounds are currently only supported in the bare workflow, where you have access to both your `ios/` and `android/` directories.
-
-<details><summary><strong>Custom notification sounds on Android</strong></summary> <p>
-
-On Androids 8.0+, playing a custom sound for a notification requires more than setting the `sound` property on the `NotificationContentInput`. You will _also_ need to configure the `NotificationChannel` with the appropriate `sound`, and use it when sending/scheduling the notification.
-
-For the example below to work, you would place your `email-sound.wav` file in `android/app/src/main/res/raw/`.
-
-```ts
-// Prepare the notification channel
-await Notifications.setNotificationChannelAsync('new-emails', {
-  name: 'E-mail notifications',
-  importance: Notifications.AndroidImportance.HIGH,
-  sound: 'email-sound.wav', // <- for Android 8.0+, see channelId property below
-});
-
-// Eg. schedule the notification
-await Notifications.scheduleNotificationAsync({
-  content: {
-    title: "You've got mail! 📬",
-    body: 'Open the notification to read them all',
-    sound: 'email-sound.wav', // <- for Android below 8.0
-  },
-  trigger: {
-    seconds: 2,
-    channelId: 'new-emails', // <- for Android 8.0+, see definition above
-  },
-});
-```
-
-</p>
-</details>
-
-<details><summary><strong>Custom notification sounds on iOS</strong></summary> <p>
-
-On iOS, all that's needed is to place your sound file in your Xcode project (see the screenshot below), and then specify the sound file in your `NotificationContentInput`, like this:
-
-```ts
-await Notifications.scheduleNotificationAsync({
-  content: {
-    title: "You've got mail! 📬",
-    body: 'Open the notification to read them all',
-    sound: 'notification.wav',
-  },
-  trigger: {
-    ...
-  },
-});
-```
-
-<ImageSpotlight alt="notification.wav inside of app resources in Xcode project organizer" src="/static/images/notification-sound-ios.jpeg" style={{maxWidth: 305}} />
 
 </p>
 </details>
@@ -270,11 +248,109 @@ async function registerForPushNotificationsAsync() {
 
 ## Custom notification icon and colors (Android only)
 
-Setting a default icon and color for all of your app's notifications is almost too easy. In the managed workflow, just set your [`notification.icon`](../config/app.md#notification) and [`notification.color`](../config/app.md#notification) keys in `app.json`, and rebuild your app! In the bare workflow, you'll need to follow [these instructions](https://github.com/expo/expo/tree/master/packages/expo-notifications#configure-for-android).
+In the managed workflow, set your [`notification.icon`](../config/app.md#notification) and [`notification.color`](../config/app.md#notification) keys in `app.json`, rebuild your app, and you're good to go!
+
+For bare workflow **and EAS Build users**, the configuration is also done in `app.json`, but you'll use the [`expo-notifications` config plugin instead](#optional-setup).
 
 For your notification icon, make sure you follow [Google's design guidelines](https://material.io/design/iconography/product-icons.html#design-principles) (the icon must be all white with a transparent background) or else it may not be displayed as intended.
 
 In both the managed and bare workflow, you can also set a custom notification color _per-notification_ directly in your [`NotificationContentInput`](#notificationcontentinput) under the `color` attribute.
+
+## Setting custom notification sounds
+
+Custom notification sounds are only supported when using [EAS Build](/build/introduction.md), or in the bare workflow.
+
+To add custom push notification sounds to your app, add the `expo-notifications` plugin to your `app.json` file:
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "sounds": ["local/path/to/mySoundFile.wav"]
+        }
+      ]
+    ]
+  }
+}
+```
+
+After building your app, the array of files will be available for use in both [`NotificationContentInput`](#notificationcontentinput) and [`NotificationChannelInput`](#notificationchannelinput). You _only_ need to provide the base filename- here's an example using the config above:
+
+```ts
+await Notifications.setNotificationChannelAsync('new-emails', {
+  name: 'E-mail notifications',
+  sound: 'mySoundFile.wav', // Provide ONLY the base filename
+});
+
+await Notifications.scheduleNotificationAsync({
+  content: {
+    title: "You've got mail! 📬",
+    sound: 'mySoundFile.wav', // Provide ONLY the base filename
+  },
+  trigger: {
+    seconds: 2,
+    channelId: 'new-emails',
+  },
+});
+```
+
+You can also manually add notification files to your Android and iOS projects if you prefer:
+
+<details><summary><strong>Manually adding notification sounds on Android</strong></summary> <p>
+
+On Androids 8.0+, playing a custom sound for a notification requires more than setting the `sound` property on the `NotificationContentInput`. You will _also_ need to configure the `NotificationChannel` with the appropriate `sound`, and use it when sending/scheduling the notification.
+
+For the example below to work, you would place your `email-sound.wav` file in `android/app/src/main/res/raw/`.
+
+```ts
+// Prepare the notification channel
+await Notifications.setNotificationChannelAsync('new-emails', {
+  name: 'E-mail notifications',
+  importance: Notifications.AndroidImportance.HIGH,
+  sound: 'email-sound.wav', // <- for Android 8.0+, see channelId property below
+});
+
+// Eg. schedule the notification
+await Notifications.scheduleNotificationAsync({
+  content: {
+    title: "You've got mail! 📬",
+    body: 'Open the notification to read them all',
+    sound: 'email-sound.wav', // <- for Android below 8.0
+  },
+  trigger: {
+    seconds: 2,
+    channelId: 'new-emails', // <- for Android 8.0+, see definition above
+  },
+});
+```
+
+</p>
+</details>
+
+<details><summary><strong>Manually adding notification sounds on iOS</strong></summary> <p>
+
+On iOS, all that's needed is to place your sound file in your Xcode project (see the screenshot below), and then specify the sound file in your `NotificationContentInput`, like this:
+
+```ts
+await Notifications.scheduleNotificationAsync({
+  content: {
+    title: "You've got mail! 📬",
+    body: 'Open the notification to read them all',
+    sound: 'notification.wav',
+  },
+  trigger: {
+    // ...
+  },
+});
+```
+
+<ImageSpotlight alt="notification.wav inside of app resources in Xcode project organizer" src="/static/images/notification-sound-ios.jpeg" style={{maxWidth: 305}} />
+
+</p>
+</details>
 
 ## Android push notification payload specification
 
@@ -1230,6 +1306,7 @@ export type NotificationContent = {
   // Application badge number associated with the notification
   badge: number | null;
   sound: 'default' | 'defaultCritical' | 'custom' | null;
+  categoryIdentifier: string | null;
 } & (
   | {
       // iOS-specific additions
@@ -1243,7 +1320,6 @@ export type NotificationContent = {
       }[];
       summaryArgument?: string | null;
       summaryArgumentCount?: number;
-      categoryIdentifier: string | null;
       threadIdentifier: string | null;
       targetContentIdentifier?: string;
     }

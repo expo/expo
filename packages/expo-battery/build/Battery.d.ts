@@ -45,6 +45,19 @@ export declare function getBatteryStateAsync(): Promise<BatteryState>;
  */
 export declare function isLowPowerModeEnabledAsync(): Promise<boolean>;
 /**
+ * Checks whether battery optimization is enabled for your application.
+ * If battery optimization is enabled for your app, background tasks might be affected
+ * when your app goes into doze mode state. (only on Android 6.0 or later)
+ * @return Returns a `Promise` which fulfills with a `boolean` value of either `true` or `false`,
+ * indicating whether the battery optimization is enabled or disabled, respectively. (Android only)
+ * # Example
+ * ```ts
+ * await Battery.isBatteryOptimizationEnabledAsync();
+ * // true
+ * ```
+ */
+export declare function isBatteryOptimizationEnabledAsync(): Promise<boolean>;
+/**
  * Gets the power state of the device including the battery level, whether it is plugged in, and if
  * the system is currently operating in Low Power Mode (iOS) or Power Saver Mode (Android). This
  * method re-throws any errors that occur when retrieving any of the power-state information.

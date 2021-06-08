@@ -4782,13 +4782,6 @@
   resolved "https://registry.yarnpkg.com/@types/fbemitter/-/fbemitter-2.0.32.tgz#8ed204da0f54e9c8eaec31b1eec91e25132d082c"
   integrity sha1-jtIE2g9U6cjq7DGx7skeJRMtCCw=
 
-"@types/fs-extra@^9.0.6":
-  version "9.0.6"
-  resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-9.0.6.tgz#488e56b77299899a608b8269719c1d133027a6ab"
-  integrity sha512-ecNRHw4clCkowNOBJH1e77nvbPxHYnWIXMv1IAoG/9+MYGkgoyr3Ppxr7XYFNL41V422EDhyV4/4SSK8L2mlig==
-  dependencies:
-    "@types/node" "*"
-
 "@types/getenv@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@types/getenv/-/getenv-1.0.0.tgz#fa5e6901e9fb84bfb40205d4952fd06c8afcf006"
@@ -10566,7 +10559,7 @@ fs-extra@^8.1.0:
     jsonfile "^4.0.0"
     universalify "^0.1.0"
 
-fs-extra@^9.0.0, fs-extra@^9.0.1:
+fs-extra@^9.0.0:
   version "9.0.1"
   resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-9.0.1.tgz#910da0062437ba4c39fedd863f1675ccfefcb9fc"
   integrity sha512-h2iAoN838FqAFJY2/qVpzFXy+EBxfVE220PalAqQLDVsFOHLJrZvut5puAbCdNv6WJk+B8ihI+k0c7JK5erwqQ==
@@ -10576,7 +10569,7 @@ fs-extra@^9.0.0, fs-extra@^9.0.1:
     jsonfile "^6.0.1"
     universalify "^1.0.0"
 
-fs-extra@^9.1.0:
+fs-extra@^9.0.1, fs-extra@^9.1.0:
   version "9.1.0"
   resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-9.1.0.tgz#5954460c764a8da2094ba3554bf839e6b9a7c86d"
   integrity sha512-hcg3ZmepS30/7BSFqRvoo3DOMQu7IjqxO5nCDt+zM9XWjb33Wg7ziNT+Qvqbuc3+gWpzO02JubVyk2G4Zvo1OQ==
@@ -17390,10 +17383,10 @@ react-native-bundle-visualizer@^2.2.1:
     rimraf "^3.0.2"
     source-map-explorer "^2.4.2"
 
-react-native-fade-in-image@^1.5.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/react-native-fade-in-image/-/react-native-fade-in-image-1.5.0.tgz#efface43f9846b1d1ffd6c6894576cede710617d"
-  integrity sha512-I03XZzr9flUnGO9XqMsv1rWAcpvHR6bhPamKsM6S8kjgYeYFUAVT7qNmyB3bN+qfRFPMFEkSlXE1TqUG2pZ8vw==
+react-native-fade-in-image@^1.6.1:
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/react-native-fade-in-image/-/react-native-fade-in-image-1.6.1.tgz#4645a57a505558a1d22da5c304a903aaa8ed2772"
+  integrity sha512-tGERKpO01Iu6D1eLFu9HC7NcPJRWQGeUofXrOC3sznSnbLDNZM6jKURWuAZmxKaE5YZIHi/zecu0TqEyjgMOTA==
   dependencies:
     react-clone-referenced-element "^1.0.1"
     react-mixin "^3.0.5"
@@ -17519,10 +17512,10 @@ react-native-web@~0.13.7:
     prop-types "^15.6.0"
     react-timer-mixin "^0.13.4"
 
-react-native-webview@11.2.3:
-  version "11.2.3"
-  resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-11.2.3.tgz#1b82685ab60645d4161f2e25e98286493cdffa5d"
-  integrity sha512-r/K+Lf/O5aij72gRndMX2qsyQ/WLtDPiO75SS57y6JjqSKxedGASVL9Jwl1TM7fCXqUq8dgiwik/LuBHbJXAEg==
+react-native-webview@11.6.2:
+  version "11.6.2"
+  resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-11.6.2.tgz#e19b3325d6777caee29d04eb2edf9b70f0b29915"
+  integrity sha512-7e5ltLBgqt1mX0gdTTS2nFPIjfS6y300wqJ4rLWqU71lDO+8ZeayfsF5qo83qxo2Go74CtLnSeWae4pdGwUqYw==
   dependencies:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"
