@@ -178,4 +178,5 @@ export type TypeValueData = {
   value?: string | boolean | null;
   name?: string;
   declaration?: TypeDeclarationContentData;
+  typeArguments?: TypeDefinitionData[];
 };
