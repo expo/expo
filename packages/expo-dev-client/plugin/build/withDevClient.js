@@ -10,6 +10,8 @@ const app_plugin_1 = __importDefault(require("expo-dev-launcher/app.plugin"));
 const app_plugin_2 = __importDefault(require("expo-dev-menu/app.plugin"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const withGeneratedAndroidScheme_1 = __importDefault(require("./withGeneratedAndroidScheme"));
+const withGeneratedIosScheme_1 = __importDefault(require("./withGeneratedIosScheme"));
 const pkg = require('expo-dev-client/package.json');
 const REACT_NATIVE_CONFIG_JS = `// File created by expo-dev-client/app.plugin.js
 
@@ -47,6 +49,8 @@ function withDevClient(config) {
     config = app_plugin_2.default(config);
     config = app_plugin_1.default(config);
     config = withReactNativeConfigJs(config);
+    config = withGeneratedAndroidScheme_1.default(config);
+    config = withGeneratedIosScheme_1.default(config);
     return config;
 }
 exports.default = config_plugins_1.createRunOncePlugin(withDevClient, pkg.name, pkg.version);

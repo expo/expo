@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [plugin] Autogenerate a common URI scheme for iOS/Android if one doesn't exist. ([#13147](https://github.com/expo/expo/pull/13147) by [@fson](https://github.com/fson))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
