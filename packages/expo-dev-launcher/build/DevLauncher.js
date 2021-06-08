@@ -13,7 +13,7 @@ ${possibleSolutions}`;
 }
 function customizeError(error) {
     if ('code' in error) {
-        // It's a CodeError from expo modules
+        // It's a CodedError from expo modules
         switch (error.code) {
             case 'ERR_UNAVAILABLE': {
                 customizeUnavailableMessage(error);
