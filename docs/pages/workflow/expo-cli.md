@@ -180,6 +180,43 @@ Alias: `expo p`
 
 <details>
 <summary>
+<h4>expo run:android</h4>
+<p>Run the Android app binary locally</p>
+</summary>
+<p>
+
+| Option                  | Description                                                   |
+| ----------------------- | ------------------------------------------------------------- |
+| `--no-bundler`          | Skip starting the Metro bundler                               |
+| `-d, --device [device]` | Device name to build the app on                               |
+| `-p, --port [port]`     | Port to start the Metro bundler on. Default: 8081             |
+| `--variant [name]`      | (Android) build variant                                       |
+| `--config [file]`       | Deprecated: Use app.config.js to switch config files instead. |
+
+</p>
+</details>
+
+<details>
+<summary>
+<h4>expo run:ios</h4>
+<p>Run the iOS app binary locally</p>
+</summary>
+<p>
+
+| Option                            | Description                                                   |
+| --------------------------------- | ------------------------------------------------------------- |
+| `--no-bundler`                    | Skip starting the Metro bundler                               |
+| `-d, --device [device]`           | Device name or UDID to build the app on                       |
+| `-p, --port [port]`               | Port to start the Metro bundler on. Default: 8081             |
+| `--scheme [scheme]`               | Scheme to build                                               |
+| `--configuration [configuration]` | Xcode configuration to use. Debug or Release. Default: Debug  |
+| `--config [file]`                 | Deprecated: Use app.config.js to switch config files instead. |
+
+</p>
+</details>
+
+<details>
+<summary>
 <h4>expo send</h4>
 <p>Share the project's URL to an email address</p>
 </summary>
@@ -315,7 +352,7 @@ Alias: `expo web`
 
 | Option              | Description                                                   |
 | ------------------- | ------------------------------------------------------------- |
-| `-t, --type [type]` | Type of config to show. Options: public, prebuild             |
+| `-t, --type [type]` | Type of config to show. Options: public, prebuild, introspect |
 | `--full`            | Include all project config data                               |
 | `--config [file]`   | Deprecated: Use app.config.js to switch config files instead. |
 
@@ -382,7 +419,7 @@ Alias: `expo ph`
 | -------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | `-c, --release-channel [channel-name]` | Filter by release channel. If this flag is not included, the most recent publications will be shown. |
 | `--count [number-of-logs]`             | Number of logs to view, maximum 100, default 5.                                                      |
-| `-p, --platform [ios|android]`         | Filter by platform, android or ios. Defaults to both platforms.                                      |
+| `-p, --platform [ios⎮android]`         | Filter by platform, android or ios. Defaults to both platforms.                                      |
 | `-s, --sdk-version [version]`          | Filter by SDK version e.g. 35.0.0                                                                    |
 | `-r, --raw`                            | Produce some raw output.                                                                             |
 | `--config [file]`                      | Deprecated: Use app.config.js to switch config files instead.                                        |
@@ -440,7 +477,7 @@ Alias: `expo pr`
 | `--channel-id [channel-id]`            | This flag is deprecated.                                      |
 | `-c, --release-channel [channel-name]` | The channel to rollback from. (Required)                      |
 | `-s, --sdk-version [version]`          | The sdk version to rollback. (Required)                       |
-| `-p, --platform [ios|android]`         | The platform to rollback.                                     |
+| `-p, --platform [ios⎮android]`         | The platform to rollback.                                     |
 | `--config [file]`                      | Deprecated: Use app.config.js to switch config files instead. |
 
 </p>
@@ -460,7 +497,7 @@ Alias: `expo pr`
 Alias: `expo bi`
 
 | Option                                           | Description                                                                                                         |
-| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- | ----------- |
 | `-c, --clear-credentials`                        | Clear all credentials stored on Expo servers.                                                                       |
 | `--clear-dist-cert`                              | Remove Distribution Certificate stored on Expo servers.                                                             |
 | `--clear-push-key`                               | Remove Push Notifications Key stored on Expo servers.                                                               |
@@ -495,7 +532,7 @@ Alias: `expo bi`
 Alias: `expo ba`
 
 | Option                             | Description                                                     |
-| ---------------------------------- | --------------------------------------------------------------- |
+| ---------------------------------- | --------------------------------------------------------------- | ----- |
 | `-c, --clear-credentials`          | Clear stored credentials.                                       |
 | `--release-channel [channel-name]` | Pull from specified release channel.                            |
 | `--no-publish`                     | Disable automatic publishing before building.                   |
@@ -557,7 +594,7 @@ Alias: `expo bs`
 <p>
 
 | Option                     | Description                                                   |
-| -------------------------- | ------------------------------------------------------------- |
+| -------------------------- | ------------------------------------------------------------- | ---- |
 | `-p --platform [platform]` | Platform: [android                                            | ios] |
 | `--config [file]`          | Deprecated: Use app.config.js to switch config files instead. |
 
@@ -756,7 +793,7 @@ Alias: `expo u`
 | Option                 | Description                                                                                             |
 | ---------------------- | ------------------------------------------------------------------------------------------------------- |
 | `--url [url]`          | URL to request. (Required)                                                                              |
-| `--event [event-type]` | Event type that triggers the webhook. [build](Required)                                                 |
+| `--event [event-type]` | Event type that triggers the webhook. [build] (Required)                                                |
 | `--secret [secret]`    | Secret used to create a hash signature of the request payload, provided in the 'Expo-Signature' header. |
 | `--config [file]`      | Deprecated: Use app.config.js to switch config files instead.                                           |
 
@@ -877,7 +914,7 @@ Alias: `expo ui`
 <details>
 <summary>
 <h4>expo eject</h4>
-<p>Create native iOS and Android project files. Learn more: https://docs.expo.io/bare/customizing/</p>
+<p>Create native iOS and Android project files. Learn more: https://docs.expo.io/workflow/customizing/</p>
 </summary>
 <p>
 
@@ -894,18 +931,19 @@ Alias: `expo ui`
 <details>
 <summary>
 <h4>expo prebuild</h4>
-<p>Experimental: Create native iOS and Android project files before building natively. Learn more: https://docs.expo.io/bare/customizing/</p>
+<p>Experimental: Create native iOS and Android project files before building natively. Learn more: https://docs.expo.io/workflow/customizing/</p>
 </summary>
 <p>
 
-| Option                                    | Description                                                                  |
-| ----------------------------------------- | ---------------------------------------------------------------------------- |
-| `--no-install`                            | Skip installing npm packages and CocoaPods.                                  |
-| `--clean`                                 | Delete the native folders and regenerate them before applying changes        |
-| `--npm`                                   | Use npm to install dependencies. (default when Yarn is not installed)        |
-| `-p, --platform [platform]`               | Platforms to sync: ios, android, all. Default: all                           |
-| `--skip-dependency-update [dependencies]` | Preserves versions of listed packages in package.json (comma separated list) |
-| `--config [file]`                         | Deprecated: Use app.config.js to switch config files instead.                |
+| Option                                    | Description                                                                             |
+| ----------------------------------------- | --------------------------------------------------------------------------------------- |
+| `--no-install`                            | Skip installing npm packages and CocoaPods.                                             |
+| `--clean`                                 | Delete the native folders and regenerate them before applying changes                   |
+| `--npm`                                   | Use npm to install dependencies. (default when Yarn is not installed)                   |
+| `--template [template]`                   | Project template to clone from. File path pointing to a local tar file or a github repo |
+| `-p, --platform [platform]`               | Platforms to sync: ios, android, all. Default: all                                      |
+| `--skip-dependency-update [dependencies]` | Preserves versions of listed packages in package.json (comma separated list)            |
+| `--config [file]`                         | Deprecated: Use app.config.js to switch config files instead.                           |
 
 </p>
 </details>

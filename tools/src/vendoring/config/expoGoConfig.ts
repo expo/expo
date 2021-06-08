@@ -12,6 +12,14 @@ const config: VendoringTargetConfig = {
     },
   },
   modules: {
+    'stripe-react-native': {
+      source: 'https://github.com/stripe/stripe-react-native.git',
+      ios: {},
+      // android: {
+      //   includeFiles: 'android/**',
+      //   excludeFiles: ['android/gradle.properties', 'android/.settings', 'android/.project'],
+      // },
+    },
     'lottie-react-native': {
       source: 'https://github.com/lottie-react-native/lottie-react-native.git',
       ios: {},
@@ -167,6 +175,33 @@ const config: VendoringTargetConfig = {
     },
     '@react-native-community/datetimepicker': {
       source: 'https://github.com/react-native-community/react-native-datetimepicker.git',
+      // TODO: Uncomment the following once the new vendoring scripts support Android
+      // android: {
+      //   transforms: {
+      //     content: [
+      //       {
+      //         paths: 'RNTimePickerDialogFragment.java',
+      //         find: /"ClockTimePickerDialog"/,
+      //         replaceWith: '"ReactAndroidClockTimePickerDialog"',
+      //       },
+      //       {
+      //         paths: 'RNTimePickerDialogFragment.java',
+      //         find: /"SpinnerTimePickerDialog"/,
+      //         replaceWith: '"ReactAndroidSpinnerTimePickerDialog"',
+      //       },
+      //       {
+      //         paths: 'RNDatePickerDialogFragment.java',
+      //         find: /"CalendarDatePickerDialog"/,
+      //         replaceWith: '"ReactAndroidCalendarDatePickerDialog"',
+      //       },
+      //       {
+      //         paths: 'RNDatePickerDialogFragment.java',
+      //         find: /"SpinnerDatePickerDialog"/,
+      //         replaceWith: '"ReactAndroidSpinnerDatePickerDialog"',
+      //       },
+      //     ],
+      //   },
+      // },
     },
     // NOTE(brentvatne): masked-view has been renamed to
     // @react-native-masked-view/masked-view but we should synchronize moving
@@ -187,7 +222,6 @@ const config: VendoringTargetConfig = {
     },
     '@react-native-picker/picker': {
       source: 'https://github.com/react-native-picker/picker',
-      ios: {},
     },
     '@react-native-community/slider': {
       source: 'https://github.com/callstack/react-native-slider',

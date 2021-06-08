@@ -15,8 +15,6 @@ Pod::Spec.new do |s|
 
   s.dependency 'UMCore'
   s.dependency 'ExpoModulesCore'
-  s.dependency 'UMImageLoaderInterface'
-  s.dependency 'UMPermissionsInterface'
   s.dependency 'ZXingObjC/PDF417'
   s.dependency 'ZXingObjC/OneD'
 

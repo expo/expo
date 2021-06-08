@@ -16,20 +16,20 @@ import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber
 import com.facebook.imagepipeline.image.CloseableImage
 import com.facebook.imagepipeline.request.ImageRequest
+import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import org.unimodules.core.interfaces.InternalModule
-import org.unimodules.interfaces.imageloader.ImageLoader
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Future
 
-class ImageLoaderModule(val context: Context) : InternalModule, ImageLoader {
+class ImageLoaderModule(val context: Context) : InternalModule, ImageLoaderInterface {
 
   override fun getExportedInterfaces(): List<Class<*>>? {
-    return listOf(ImageLoader::class.java)
+    return listOf(ImageLoaderInterface::class.java)
   }
 
   override fun loadImageForDisplayFromURL(url: String): Future<Bitmap> {
     val future = SimpleSettableFuture<Bitmap>()
-    loadImageForDisplayFromURL(url, object : ImageLoader.ResultListener {
+    loadImageForDisplayFromURL(url, object : ImageLoaderInterface.ResultListener {
       override fun onSuccess(bitmap: Bitmap) = future.set(bitmap)
 
       override fun onFailure(@Nullable cause: Throwable?) = future.setException(ExecutionException(cause))
@@ -37,7 +37,7 @@ class ImageLoaderModule(val context: Context) : InternalModule, ImageLoader {
     return future
   }
 
-  override fun loadImageForDisplayFromURL(url: String, resultListener: ImageLoader.ResultListener) {
+  override fun loadImageForDisplayFromURL(url: String, resultListener: ImageLoaderInterface.ResultListener) {
     val imageRequest = ImageRequest.fromUri(url)
     val imagePipeline = Fresco.getImagePipeline()
     val dataSource = imagePipeline.fetchDecodedImage(imageRequest, context)
@@ -63,7 +63,7 @@ class ImageLoaderModule(val context: Context) : InternalModule, ImageLoader {
 
   override fun loadImageForManipulationFromURL(@NonNull url: String): Future<Bitmap> {
     val future = SimpleSettableFuture<Bitmap>()
-    loadImageForManipulationFromURL(url, object : ImageLoader.ResultListener {
+    loadImageForManipulationFromURL(url, object : ImageLoaderInterface.ResultListener {
       override fun onSuccess(bitmap: Bitmap) = future.set(bitmap)
 
       override fun onFailure(@NonNull cause: Throwable?) = future.setException(ExecutionException(cause))
@@ -71,7 +71,7 @@ class ImageLoaderModule(val context: Context) : InternalModule, ImageLoader {
     return future
   }
 
-  override fun loadImageForManipulationFromURL(url: String, resultListener: ImageLoader.ResultListener) {
+  override fun loadImageForManipulationFromURL(url: String, resultListener: ImageLoaderInterface.ResultListener) {
     val normalizedUrl = normalizeAssetsUrl(url)
 
     Glide.with(context)

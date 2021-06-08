@@ -1,7 +1,7 @@
 import { UnavailabilityError } from '@unimodules/core';
+import { PermissionStatus } from 'expo-modules-core';
 import * as React from 'react';
 import { Platform } from 'react-native';
-import { PermissionStatus } from 'unimodules-permissions-interface';
 import ExpoBarCodeScannerModule from './ExpoBarCodeScannerModule';
 import ExpoBarCodeScannerView from './ExpoBarCodeScannerView';
 const { BarCodeType, Type } = ExpoBarCodeScannerModule;

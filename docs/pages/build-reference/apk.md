@@ -26,7 +26,7 @@ Build profiles where your `workflow` is `managed` have a field called `buildType
 }
 ```
 
-Now, to run your build run `eas build -p android --profile preview`. Remember that you can name the profile whatever you like; we named the profile "preview", but you could call it "local" or "simulador", whatever makes most sense for you.
+Now, to run your build run `eas build -p android --profile preview`. Remember that you can name the profile whatever you like; we named the profile "preview", but you could call it "local" or "simulator", whatever makes most sense for you.
 
 > `buildType` will default to `apk` if you set `distribution` to `internal`. Learn more in ["Internal distribution"](/build/internal-distribution.md).
 

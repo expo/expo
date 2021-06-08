@@ -17,6 +17,10 @@ on:
       - 'docs/**'
       - '.github/workflows/docs.yml'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   docs:
     runs-on: ubuntu-18.04
@@ -85,5 +89,5 @@ jobs:
         with:
           channel: '#docs'
           status: ${{ job.status }}
-          fields: job,commit,ref,eventName,author,took
+          fields: job,message,ref,eventName,author,took
           author_name: Docs

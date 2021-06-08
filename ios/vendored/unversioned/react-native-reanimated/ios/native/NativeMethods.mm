@@ -10,7 +10,7 @@ std::vector<std::pair<std::string,double>> measure(int viewTag, RCTUIManager *ui
   UIView *rootView = view;
 
   if (view == nil) {
-    return std::vector<std::pair<std::string, double>>(0, std::make_pair("x", -1234567.0));
+    return std::vector<std::pair<std::string, double>>(1, std::make_pair("x", -1234567.0));
   }
 
   while (rootView.superview && ![rootView isReactRootView]) {
@@ -18,7 +18,7 @@ std::vector<std::pair<std::string,double>> measure(int viewTag, RCTUIManager *ui
   }
 
   if (rootView == nil || (![rootView isReactRootView])) {
-    return std::vector<std::pair<std::string, double>>(0, std::make_pair("x", -1234567.0));
+    return std::vector<std::pair<std::string, double>>(1, std::make_pair("x", -1234567.0));
   }
 
   CGRect frame = view.frame;

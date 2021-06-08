@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^EXUpdatesAppRelaunchCompletionBlock)(BOOL success);
 
-@protocol EXUpdatesInterface
+@protocol EXUpdatesModuleInterface
 
 @property (nonatomic, readonly) EXUpdatesConfig *config;
 @property (nonatomic, readonly) EXUpdatesDatabase *database;
@@ -29,7 +29,7 @@ typedef void (^EXUpdatesAppRelaunchCompletionBlock)(BOOL success);
 
 @end
 
-@interface EXUpdatesService : NSObject <UMInternalModule, EXUpdatesInterface>
+@interface EXUpdatesService : NSObject <UMInternalModule, EXUpdatesModuleInterface>
 
 @end
 

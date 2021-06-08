@@ -1,0 +1,13 @@
+query Home_ProfileSnacks($limit: Int!, $offset: Int!) {
+  me {
+    id
+    snacks(limit: $limit, offset: $offset) {
+      id
+      name
+      description
+      fullName
+      slug
+      isDraft
+    }
+  }
+}

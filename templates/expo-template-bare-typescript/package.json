@@ -10,16 +10,16 @@
     "start": "react-native start"
   },
   "dependencies": {
-    "expo": "~41.0.0-beta.3",
-    "expo-updates": "~0.5.3",
-    "expo-splash-screen": "~0.10.1",
+    "expo": "~41.0.0",
+    "expo-updates": "~0.6.0",
+    "expo-splash-screen": "~0.10.2",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-native": "~0.63.4",
     "react-native-gesture-handler": "~1.10.2",
     "react-native-reanimated": "~2.1.0",
     "react-native-screens": "~3.0.0",
-    "react-native-unimodules": "~0.13.2",
+    "react-native-unimodules": "~0.14.0",
     "react-native-web": "~0.13.12"
   },
   "devDependencies": {

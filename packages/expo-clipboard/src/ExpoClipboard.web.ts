@@ -20,7 +20,7 @@ export default {
   setString(text: string): boolean {
     let success = false;
     const textField = document.createElement('textarea');
-    textField.innerText = text;
+    textField.textContent = text;
     document.body.appendChild(textField);
     textField.select();
     try {
@@ -30,4 +30,6 @@ export default {
     document.body.removeChild(textField);
     return success;
   },
+  addClipboardListener(): void {},
+  removeClipboardListener(): void {},
 };

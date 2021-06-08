@@ -2,7 +2,7 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol UMFontProcessorInterface
+@protocol EXFontProcessorInterface
 
 - (UIFont *)updateFont:(UIFont *)uiFont
               withFamily:(NSString *)family

@@ -82,6 +82,15 @@ When you run this example and pick an image, you will see the image that you pic
 }
 ```
 
+## Using ImagePicker with AWS S3
+
+Please refer to the [with-aws-storage-upload example](https://github.com/expo/examples/tree/master/with-aws-storage-upload). Follow [Amplify docs](https://docs.amplify.aws/) to set your project up correctly.
+
+
+## Using ImagePicker with Firebase
+
+Please refer to the [with-firebase-storage-upload example](https://github.com/expo/examples/tree/master/with-firebase-storage-upload). Make sure you follow the ["Using Firebase"](/guides/guides/using-firebase.md) docs to set your project up correctly.
+
 ## API
 
 ```js

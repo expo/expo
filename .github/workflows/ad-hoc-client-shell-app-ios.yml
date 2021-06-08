@@ -13,6 +13,10 @@ on:
       - .github/workflows/ad-hoc-client-shell-app-ios.yml
       - .ruby-version
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: macos-10.15
@@ -87,5 +91,5 @@ jobs:
         with:
           channel: '#platform-ios'
           status: ${{ job.status }}
-          fields: job,commit,ref,eventName,author,took
+          fields: job,message,ref,eventName,author,took
           author_name: Ad-hoc Client Shell App (iOS)

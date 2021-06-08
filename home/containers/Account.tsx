@@ -1,12 +1,11 @@
-import { useQuery } from '@apollo/client';
 import { StackScreenProps } from '@react-navigation/stack';
-import gql from 'graphql-tag';
-import { AllStackRoutes } from 'navigation/Navigation.types';
 import * as React from 'react';
 
 import AccountView from '../components/AccountView';
 import { Project } from '../components/ProjectList';
 import { Snack } from '../components/SnackList';
+import { useHome_AccountDataQuery } from '../graphql/queries/AccountDataQuery.query.generated';
+import { AllStackRoutes } from '../navigation/Navigation.types';
 
 const APP_LIMIT = 7;
 const SNACK_LIMIT = 4;
@@ -23,49 +22,17 @@ export interface AccountData {
   };
 }
 
-interface AccountVars {
-  accountName: string;
-}
-
-const AccountDataQuery = gql`
-  query Home_AccountData($accountName: String!) {
-    account {
-      byName(accountName: $accountName) {
-        id
-        name
-        appCount
-        apps(limit: ${APP_LIMIT}, offset: 0) {
-          id
-          fullName
-          name
-          iconUrl
-          packageName
-          username
-          description
-          sdkVersion
-          lastPublishedTime
-        }
-        snacks(limit: ${SNACK_LIMIT}, offset: 0) {
-          name
-          description
-          fullName
-          slug
-          isDraft
-        }
-      }
-    }
-  }
-`;
-
 export default function Account(
   props: {
     accountName: string;
   } & StackScreenProps<AllStackRoutes, 'Account'>
 ) {
-  const query = useQuery<AccountData, AccountVars>(AccountDataQuery, {
+  const query = useHome_AccountDataQuery({
     fetchPolicy: 'cache-and-network',
     variables: {
       accountName: props.accountName,
+      appLimit: APP_LIMIT,
+      snackLimit: SNACK_LIMIT,
     },
   });
   return <AccountView {...props} {...query} />;

@@ -28,12 +28,12 @@ Now edit your eas.json to look like this.
     },
     "ios": {
       "release": {
-        "workflow": "generic",
+        "workflow": "generic"
       },
       "development": {
         "workflow": "generic",
         "distribution": "internal",
-        "schemeBuildConfiguration": "Debug",
+        "schemeBuildConfiguration": "Debug"
       }
     }
   }

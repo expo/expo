@@ -9,6 +9,7 @@ import { Linking, Platform, StyleSheet, View } from 'react-native';
 import { useColorScheme } from 'react-native-appearance';
 import url from 'url';
 
+import { ColorTheme } from './constants/Colors';
 import Navigation from './navigation/Navigation';
 import HistoryActions from './redux/HistoryActions';
 import { useDispatch, useSelector } from './redux/Hooks';
@@ -110,7 +111,7 @@ export default function HomeApp() {
   return (
     <View style={[styles.container, { backgroundColor }]}>
       <ActionSheetProvider>
-        <Navigation theme={theme} />
+        <Navigation theme={theme === 'light' ? ColorTheme.LIGHT : ColorTheme.DARK} />
       </ActionSheetProvider>
     </View>
   );

@@ -3,7 +3,7 @@ import React, { PropsWithChildren, useRef } from 'react';
 import { ScrollViewProps } from 'react-native';
 import { NativeViewGestureHandlerProps, ScrollView } from 'react-native-gesture-handler';
 
-import Colors from '../constants/Colors';
+import Colors, { ColorTheme } from '../constants/Colors';
 
 type ThemedColors = keyof typeof Colors.light & keyof typeof Colors.dark;
 
@@ -17,8 +17,9 @@ type StyledScrollViewProps = PropsWithChildren<
 
 function useThemeBackgroundColor(props: StyledScrollViewProps, colorName: ThemedColors) {
   const theme = useTheme();
-  const themeName = theme.dark ? 'dark' : 'light';
-  const colorFromProps = props[`${themeName}BackgroundColor`];
+  const themeName = theme.dark ? ColorTheme.DARK : ColorTheme.LIGHT;
+  const colorFromProps =
+    themeName === ColorTheme.DARK ? props.darkBackgroundColor : props.lightBackgroundColor;
 
   if (colorFromProps) {
     return colorFromProps;

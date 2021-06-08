@@ -50,10 +50,10 @@
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.1.2",
-    "@expo/metro-config": "^0.1.59",
+    "@expo/metro-config": "^0.1.70",
     "@expo/vector-icons": "^12.0.4",
-    "@unimodules/core": "~7.1.0",
-    "@unimodules/react-native-adapter": "~6.2.2",
+    "@unimodules/core": "~7.1.1",
+    "@unimodules/react-native-adapter": "~6.3.0",
     "babel-preset-expo": "~8.3.0",
     "cross-spawn": "^6.0.5",
     "expo-application": "~3.1.2",
@@ -78,8 +78,8 @@
     "@types/react-native": "~0.63.2",
     "@types/react-test-renderer": "16.9.0",
     "@types/uuid": "^3.4.7",
-    "expo-module-scripts": "^2.0.0",
     "expo-location": "^12.0.4",
+    "expo-module-scripts": "^2.0.0",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-native": "0.63.2"

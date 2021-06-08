@@ -1,13 +1,5 @@
 import * as React from 'react';
-import {
-  View,
-  StyleSheet,
-  TouchableHighlight,
-  Platform,
-  Text,
-  ViewStyle,
-  Image,
-} from 'react-native';
+import { View, StyleSheet, Platform, Text, ViewStyle, Image } from 'react-native';
 import FadeIn from 'react-native-fade-in-image';
 
 import Colors from '../constants/Colors';
@@ -57,8 +49,6 @@ export default class ListItem extends React.PureComponent<Props> {
         <StyledButton
           onPress={onPress}
           onLongPress={onLongPress}
-          fallback={TouchableHighlight}
-          underlayColor="#b7b7b7"
           style={[styles.container, last && styles.containerLast, style]}>
           {this.renderImage()}
           <StyledView style={[styles.contentContainer, !last && styles.contentContainerNotLast]}>
@@ -95,7 +85,7 @@ export default class ListItem extends React.PureComponent<Props> {
         const source = typeof image === 'number' ? image : { uri: image };
         return (
           <View style={[styles.imageContainer, imageSizeStyle, imageStyle]}>
-            <FadeIn placeholderColor="#eee">
+            <FadeIn>
               <Image source={source} style={[styles.image, imageSizeStyle]} />
             </FadeIn>
           </View>

@@ -7,7 +7,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import host.exp.expoview.R;
 
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
@@ -15,6 +14,8 @@ import com.facebook.react.uimanager.UIManagerModule;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+
+import host.exp.expoview.R;
 
 public class ScreenStack extends ScreenContainer<ScreenStackFragment> {
 
@@ -151,81 +152,95 @@ public class ScreenStack extends ScreenContainer<ScreenStackFragment> {
     // when all screens are dismissed and no screen is to be displayed on top. We need to gracefully
     // handle the case of newTop being NULL, which happens in several places below
     ScreenStackFragment newTop = null; // newTop is nullable, see the above comment ^
-    ScreenStackFragment belowTop = null; // this is only set if newTop has TRANSPARENT_MODAL presentation mode
+    ScreenStackFragment visibleBottom = null; // this is only set if newTop has TRANSPARENT_MODAL presentation mode
 
     for (int i = mScreenFragments.size() - 1; i >= 0; i--) {
       ScreenStackFragment screen = mScreenFragments.get(i);
       if (!mDismissed.contains(screen)) {
         if (newTop == null) {
           newTop = screen;
-          if (newTop.getScreen().getStackPresentation() != Screen.StackPresentation.TRANSPARENT_MODAL) {
+          if (!isTransparent(newTop)) {
             break;
           }
         } else {
-          belowTop = screen;
-          break;
+          visibleBottom = screen;
+          if(!isTransparent(screen)){
+            break;
+          }
         }
       }
     }
 
-    boolean customAnimation = false;
+    boolean shouldUseOpenAnimation = true;
+    int transition = FragmentTransaction.TRANSIT_FRAGMENT_OPEN;
+    Screen.StackAnimation stackAnimation = null;
 
     if (!mStack.contains(newTop)) {
       // if new top screen wasn't on stack we do "open animation" so long it is not the very first screen on stack
       if (mTopScreen != null && newTop != null) {
         // there was some other screen attached before
-        int transition = FragmentTransaction.TRANSIT_FRAGMENT_OPEN;
-        if (!mScreenFragments.contains(mTopScreen) && newTop.getScreen().getReplaceAnimation() == Screen.ReplaceAnimation.POP) {
-          // if the previous top screen does not exist anymore and the new top was not on the stack before,
-          // probably replace was called, so we check the animation
-          transition = FragmentTransaction.TRANSIT_FRAGMENT_CLOSE;
-        }
-        switch (newTop.getScreen().getStackAnimation()) {
-          case NONE:
-            transition = FragmentTransaction.TRANSIT_NONE;
-            break;
-          case FADE:
-            transition = FragmentTransaction.TRANSIT_FRAGMENT_FADE;
-            break;
-          case SLIDE_FROM_RIGHT:
-            customAnimation = true;
-            getOrCreateTransaction().setCustomAnimations(R.anim.rns_slide_in_from_right, R.anim.rns_slide_out_to_left);
-            break;
-          case SLIDE_FROM_LEFT:
-            customAnimation = true;
-            getOrCreateTransaction().setCustomAnimations(R.anim.rns_slide_in_from_left, R.anim.rns_slide_out_to_right);
-            break;
-        }
-
-        if (!customAnimation) {
-          getOrCreateTransaction().setTransition(transition);
+        // if the previous top screen does not exist anymore and the new top was not on the stack before,
+        // probably replace or reset was called, so we play the "close animation"
+        // otherwise it's open animation
+        shouldUseOpenAnimation = mScreenFragments.contains(mTopScreen) || newTop.getScreen().getReplaceAnimation() != Screen.ReplaceAnimation.POP;
+        stackAnimation = newTop.getScreen().getStackAnimation();
+      } else if (mTopScreen == null && newTop != null) {
+        // mTopScreen was not present before so newTop is the first screen added to a stack
+        // and we don't want the animation when it is entering, but we want to send the
+        // willAppear and Appear events to the user, which won't be sent by default if Screen's
+        // stack animation is not NONE (see check for stackAnimation in onCreateAnimation in ScreenStackFragment)
+        // We don't do it if the stack is nested since the parent will trigger these events in child
+        stackAnimation = Screen.StackAnimation.NONE;
+        if (newTop.getScreen().getStackAnimation() != Screen.StackAnimation.NONE
+                && !isNested()) {
+          newTop.dispatchOnWillAppear();
+          newTop.dispatchOnAppear();
         }
       }
     } else if (mTopScreen != null && !mTopScreen.equals(newTop)) {
-      // otherwise if we are performing top screen change we do "back animation"
-      int transition = FragmentTransaction.TRANSIT_FRAGMENT_CLOSE;
+      // otherwise if we are performing top screen change we do "close animation"
+      shouldUseOpenAnimation = false;
+      stackAnimation = mTopScreen.getScreen().getStackAnimation();
+    }
 
-      switch (mTopScreen.getScreen().getStackAnimation()) {
-        case NONE:
-          transition = FragmentTransaction.TRANSIT_NONE;
-          break;
-        case FADE:
-          transition = FragmentTransaction.TRANSIT_FRAGMENT_FADE;
-          break;
-        case SLIDE_FROM_RIGHT:
-          customAnimation = true;
-          getOrCreateTransaction().setCustomAnimations(R.anim.rns_slide_in_from_left, R.anim.rns_slide_out_to_right);
-          break;
-        case SLIDE_FROM_LEFT:
-          customAnimation = true;
-          getOrCreateTransaction().setCustomAnimations(R.anim.rns_slide_in_from_right, R.anim.rns_slide_out_to_left);
-          break;
-      }
+    // animation logic start
+    if (stackAnimation != null) {
+      if (shouldUseOpenAnimation) {
+        transition = FragmentTransaction.TRANSIT_FRAGMENT_OPEN;
 
-      if (!customAnimation) {
-        getOrCreateTransaction().setTransition(transition);
+        switch (stackAnimation) {
+          case SLIDE_FROM_RIGHT:
+            getOrCreateTransaction().setCustomAnimations(R.anim.rns_slide_in_from_right, R.anim.rns_slide_out_to_left);
+            break;
+          case SLIDE_FROM_LEFT:
+            getOrCreateTransaction().setCustomAnimations(R.anim.rns_slide_in_from_left, R.anim.rns_slide_out_to_right);
+            break;
+        }
+      } else {
+        transition = FragmentTransaction.TRANSIT_FRAGMENT_CLOSE;
+
+        switch (stackAnimation) {
+          case SLIDE_FROM_RIGHT:
+            getOrCreateTransaction().setCustomAnimations(R.anim.rns_slide_in_from_left, R.anim.rns_slide_out_to_right);
+            break;
+          case SLIDE_FROM_LEFT:
+            getOrCreateTransaction().setCustomAnimations(R.anim.rns_slide_in_from_right, R.anim.rns_slide_out_to_left);
+            break;
+        }
       }
     }
+
+    if (stackAnimation == Screen.StackAnimation.NONE) {
+      transition = FragmentTransaction.TRANSIT_NONE;
+    }
+    if (stackAnimation == Screen.StackAnimation.FADE) {
+      transition = FragmentTransaction.TRANSIT_FRAGMENT_FADE;
+    }
+
+    if (stackAnimation != null && !isCustomAnimation(stackAnimation)) {
+      getOrCreateTransaction().setTransition(transition);
+    }
+    // animation logic end
 
     // remove all screens previously on stack
     for (ScreenStackFragment screen : mStack) {
@@ -236,21 +251,40 @@ public class ScreenStack extends ScreenContainer<ScreenStackFragment> {
 
     for (ScreenStackFragment screen : mScreenFragments) {
       // detach all screens that should not be visible
-      if (screen != newTop && screen != belowTop && !mDismissed.contains(screen)) {
+      if (screen != newTop && screen != visibleBottom && !mDismissed.contains(screen)) {
         getOrCreateTransaction().remove(screen);
       }
+      // Stop detaching screens when reaching visible bottom. All screens above bottom should be
+      // visible.
+      if(screen == visibleBottom) {
+        break;
+      }
     }
-    // attach "below top" screen if set
-    if (belowTop != null && !belowTop.isAdded()) {
+
+    // attach screens that just became visible
+    if (visibleBottom != null && !visibleBottom.isAdded()) {
       final ScreenStackFragment top = newTop;
-      getOrCreateTransaction().add(getId(), belowTop).runOnCommit(new Runnable() {
-        @Override
-        public void run() {
-          top.getScreen().bringToFront();
+      boolean beneathVisibleBottom = true;
+
+      for (ScreenStackFragment screen : mScreenFragments) {
+        // ignore all screens beneath the visible bottom
+        if(beneathVisibleBottom){
+          if(screen == visibleBottom){
+            beneathVisibleBottom = false;
+          }
+          else continue;
         }
-      });
+        // when founding first visible screen, make all screens after that visible
+        getOrCreateTransaction().add(getId(), screen).runOnCommit(new Runnable() {
+          @Override
+          public void run() {
+            top.getScreen().bringToFront();
+          }
+        });
+      }
     }
-    if (newTop != null && !newTop.isAdded()) {
+
+    else if (newTop != null && !newTop.isAdded()) {
       getOrCreateTransaction().add(getId(), newTop);
     }
 
@@ -318,5 +352,13 @@ public class ScreenStack extends ScreenContainer<ScreenStackFragment> {
               .commitAllowingStateLoss();
       mFragmentManager.addOnBackStackChangedListener(mBackStackListener);
     }
+  }
+
+  private static boolean isCustomAnimation(Screen.StackAnimation stackAnimation) {
+    return stackAnimation == Screen.StackAnimation.SLIDE_FROM_RIGHT || stackAnimation == Screen.StackAnimation.SLIDE_FROM_LEFT;
+  }
+
+  private static boolean isTransparent(ScreenStackFragment fragment){
+    return fragment.getScreen().getStackPresentation() == Screen.StackPresentation.TRANSPARENT_MODAL;
   }
 }

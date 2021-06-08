@@ -11,24 +11,22 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.ReactContext
 import expo.interfaces.devmenu.DevMenuManagerProviderInterface
-import expo.modules.devlauncher.helpers.changeUrlScheme
-import expo.modules.devlauncher.helpers.getAppUrlFromDevLauncherUrl
-import expo.modules.devlauncher.helpers.getFieldInClassHierarchy
-import expo.modules.devlauncher.helpers.isDevLauncherUrl
-import expo.modules.devlauncher.helpers.runBlockingOnMainThread
+import expo.modules.devlauncher.helpers.*
 import expo.modules.devlauncher.launcher.DevLauncherActivity
 import expo.modules.devlauncher.launcher.DevLauncherClientHost
 import expo.modules.devlauncher.launcher.DevLauncherIntentRegistry
 import expo.modules.devlauncher.launcher.DevLauncherLifecycle
 import expo.modules.devlauncher.launcher.DevLauncherReactActivityDelegateSupplier
 import expo.modules.devlauncher.launcher.DevLauncherRecentlyOpenedAppsRegistry
-import expo.modules.devlauncher.launcher.loaders.DevLauncherExpoAppLoader
+import expo.modules.devlauncher.launcher.loaders.DevLauncherLocalAppLoader
+import expo.modules.devlauncher.launcher.loaders.DevLauncherPublishedAppLoader
 import expo.modules.devlauncher.launcher.loaders.DevLauncherReactNativeAppLoader
 import expo.modules.devlauncher.launcher.manifest.DevLauncherManifest
 import expo.modules.devlauncher.launcher.manifest.DevLauncherManifestParser
 import expo.modules.devlauncher.launcher.menu.DevLauncherMenuDelegate
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityNOPDelegate
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityRedirectDelegate
+import expo.modules.updatesinterface.UpdatesInterface
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
@@ -53,8 +51,10 @@ class DevLauncherController private constructor(
   private val recentlyOpedAppsRegistry = DevLauncherRecentlyOpenedAppsRegistry(context)
   var manifest: DevLauncherManifest? = null
     private set
+  var updatesInterface: UpdatesInterface? = null
   val pendingIntentRegistry = DevLauncherIntentRegistry()
   var latestLoadedApp: Uri? = null
+  var useDeveloperSupport = true
 
   internal enum class Mode {
     LAUNCHER, APP
@@ -62,36 +62,77 @@ class DevLauncherController private constructor(
 
   internal var mode = Mode.LAUNCHER
 
+  private var appIsLoading = false
+
   suspend fun loadApp(url: Uri, mainActivity: ReactActivity? = null) {
-    ensureHostWasCleared(appHost, activityToBeInvalidated = mainActivity)
-
-    val parsedUrl = changeUrlScheme(url, "http")
-
-    val manifestParser = DevLauncherManifestParser(httpClient, parsedUrl)
-    val appIntent = createAppIntent()
-
-    val appLoader = if (!manifestParser.isManifestUrl()) {
-      // It's (maybe) a raw React Native bundle
-      DevLauncherReactNativeAppLoader(url, appHost, context)
-    } else {
-      manifest = manifestParser.parseManifest()
-      DevLauncherExpoAppLoader(manifest!!, appHost, context)
+    synchronized(this) {
+      if (appIsLoading) {
+        return
+      }
+      appIsLoading = true
     }
 
-    val appLoaderListener = appLoader.createOnDelegateWillBeCreatedListener()
-    lifecycle.addListener(appLoaderListener)
-    mode = Mode.APP
+    try {
+      ensureHostWasCleared(appHost, activityToBeInvalidated = mainActivity)
 
-    // Note that `launch` method is a suspend one. So the execution will be stopped here until the method doesn't finish.
-    if (appLoader.launch(appIntent)) {
-      recentlyOpedAppsRegistry.appWasOpened(url, appLoader.getAppName())
-      latestLoadedApp = url
-      // Here the app will be loaded - we can remove listener here.
-      lifecycle.removeListener(appLoaderListener)
-    } else {
-      // The app couldn't be loaded. For now, we just return to the launcher.
-      mode = Mode.LAUNCHER
-      manifest = null
+      val manifestParser = DevLauncherManifestParser(httpClient, url)
+      val appIntent = createAppIntent()
+
+      val appLoader = if (!manifestParser.isManifestUrl()) {
+        // It's (maybe) a raw React Native bundle
+        DevLauncherReactNativeAppLoader(url, appHost, context)
+      } else {
+        if (updatesInterface == null) {
+          manifest = manifestParser.parseManifest()
+          if (!manifest!!.isUsingDeveloperTool()) {
+            throw Exception("expo-updates is not properly installed or integrated. In order to load published projects with this development client, follow all installation and setup instructions for both the expo-dev-client and expo-updates packages.")
+          }
+          DevLauncherLocalAppLoader(manifest!!, appHost, context)
+        } else {
+          val configuration = createUpdatesConfigurationWithUrl(url)
+          val update = updatesInterface!!.loadUpdate(configuration, context) {
+            manifest = DevLauncherManifest.fromJson(it.toString().reader())
+            return@loadUpdate !manifest!!.isUsingDeveloperTool()
+          }
+          if (manifest!!.isUsingDeveloperTool()) {
+            DevLauncherLocalAppLoader(manifest!!, appHost, context)
+          } else {
+            useDeveloperSupport = false
+            val localBundlePath = update.launchAssetPath
+            DevLauncherPublishedAppLoader(manifest!!, localBundlePath, appHost, context)
+          }
+        }
+      }
+
+      val appLoaderListener = appLoader.createOnDelegateWillBeCreatedListener()
+      lifecycle.addListener(appLoaderListener)
+      mode = Mode.APP
+
+      // Note that `launch` method is a suspend one. So the execution will be stopped here until the method doesn't finish.
+      if (appLoader.launch(appIntent)) {
+        recentlyOpedAppsRegistry.appWasOpened(url, appLoader.getAppName())
+        latestLoadedApp = url
+        // Here the app will be loaded - we can remove listener here.
+        lifecycle.removeListener(appLoaderListener)
+      } else {
+        // The app couldn't be loaded. For now, we just return to the launcher.
+        mode = Mode.LAUNCHER
+        manifest = null
+      }
+    } catch (e: Exception) {
+      synchronized(this) {
+        appIsLoading = false
+      }
+      throw e
+    }
+  }
+
+  fun onAppLoaded(context: ReactContext) {
+    // App can be started from deep link.
+    // That's why, we maybe need to initialized dev menu here.
+    maybeInitDevMenuDelegate(context)
+    synchronized(this) {
+      appIsLoading = false
     }
   }
 
@@ -99,6 +140,9 @@ class DevLauncherController private constructor(
 
   fun navigateToLauncher() {
     ensureHostWasCleared(appHost)
+    synchronized(this) {
+      appIsLoading = false
+    }
 
     mode = Mode.LAUNCHER
     manifest = null

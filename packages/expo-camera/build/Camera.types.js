@@ -1,4 +1,4 @@
-import { PermissionStatus, } from 'unimodules-permissions-interface';
+import { PermissionStatus } from 'expo-modules-core';
 export var CameraType;
 (function (CameraType) {
     /**

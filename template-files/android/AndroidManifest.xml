@@ -139,6 +139,7 @@
 
     <activity
       android:name=".experience.HomeActivity"
+      android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
       android:label="@string/app_name"
       android:launchMode="singleTask"
       android:screenOrientation="portrait"

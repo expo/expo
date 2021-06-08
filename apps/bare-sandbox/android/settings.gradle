@@ -1,0 +1,12 @@
+rootProject.name = 'bare-sandbox'
+
+apply from: '../node_modules/@unimodules/react-native-adapter/scripts/autolinking.gradle'
+useExpoModules([:])
+
+apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle");
+applyNativeModulesSettingsGradle(settings)
+
+include(":unimodules-test-core")
+project(":unimodules-test-core").projectDir = new File("../../../packages/unimodules-test-core/android")
+
+include ':app'

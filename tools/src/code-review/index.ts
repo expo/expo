@@ -6,6 +6,7 @@ import logger from '../Logger';
 import { generateReviewBodyFromOutputs } from './reports';
 import checkMissingChangelogs from './reviewers/checkMissingChangelogs';
 import reviewChangelogEntries from './reviewers/reviewChangelogEntries';
+import reviewForbiddenFiles from './reviewers/reviewForbiddenFiles';
 import {
   ReviewEvent,
   ReviewComment,
@@ -18,12 +19,12 @@ import {
 /**
  * An array with functions whose purpose is to check and review the diff.
  */
-const REVIEWERS = [checkMissingChangelogs, reviewChangelogEntries];
+const REVIEWERS = [checkMissingChangelogs, reviewChangelogEntries, reviewForbiddenFiles];
 
 enum Label {
-  APPROVED = '🤖 approved',
-  WARNED = '🤖 warned',
-  REJECTED = '🤖 rejected',
+  PASSED_CHECKS = 'bot: passed checks',
+  SUGGESTIONS = 'bot: suggestions',
+  NEEDS_CHANGES = 'bot: needs changes',
 }
 
 /**
@@ -79,7 +80,7 @@ export async function reviewPullRequestAsync(prNumber: number) {
   // If it's the first review and there is nothing to complain,
   // just return early — no need to bother PR's author.
   if (!activeOutputs.length && !comments.length && !previousReviews.length) {
-    await updateLabelsAsync(pr, Label.APPROVED);
+    await updateLabelsAsync(pr, Label.PASSED_CHECKS);
     logger.success('🥳 Everything looks good to me! There is no need to submit a review.');
     return;
   }
@@ -168,11 +169,11 @@ function getLabelFromOutputs(outputs: ReviewOutput[]): Label {
   );
   switch (finalStatus) {
     case ReviewStatus.ERROR:
-      return Label.REJECTED;
+      return Label.NEEDS_CHANGES;
     case ReviewStatus.WARN:
-      return Label.WARNED;
+      return Label.SUGGESTIONS;
     default:
-      return Label.APPROVED;
+      return Label.PASSED_CHECKS;
   }
 }
 

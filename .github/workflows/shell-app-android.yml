@@ -8,6 +8,10 @@ on:
     paths:
       - .github/workflows/shell-app-android.yml
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-18.04
@@ -66,7 +70,6 @@ jobs:
         with:
           name: android-shell-app
           path: artifacts/android-shell-builder.tar.gz
-      - run: sudo apt-get install awscli
       - name: Upload shell app tarball to S3
         if: ${{ github.event_name == 'workflow_dispatch' }}
         env:
@@ -94,5 +97,5 @@ jobs:
         with:
           channel: '#platform-android'
           status: ${{ job.status }}
-          fields: job,commit,ref,eventName,author,took
+          fields: job,message,ref,eventName,author,took
           author_name: Android Shell App (${{ env.SLACK_MESSAGE_DESCRIPTION }})

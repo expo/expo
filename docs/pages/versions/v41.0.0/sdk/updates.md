@@ -73,7 +73,7 @@ A `Promise` that resolves to an object with the following keys:
 - **isAvailable (_boolean_)** -- `true` if an update is available, `false` if you're already running the most up-to-date JS bundle.
 - **manifest (_object_)** -- If `isAvailable` is true, the manifest of the available update. Undefined otherwise.
 
-The `Promise` rejects if the app is in development mode, or if there is an unexpected error communicating with the server.
+The `Promise` rejects if the app is in development mode, or if there is an unexpected error or timeout communicating with the server.
 
 ### `Updates.fetchUpdateAsync()`
 
@@ -88,7 +88,7 @@ A `Promise` that resolves to an object with the following keys:
 - **isNew (_boolean_)** -- `true` if the fetched bundle is new (i.e. a different version than what's currently running), `false` otherwise.
 - **manifest (_object_)** -- If `isNew` is true, the manifest of the newly downloaded update. Undefined otherwise.
 
-The `Promise` rejects if the app is in development mode, or if there is an unexpected error communicating with the server.
+The `Promise` rejects if the app is in development mode, or if there is an unexpected error or timeout communicating with the server.
 
 ### `Updates.addListener(eventListener)`
 

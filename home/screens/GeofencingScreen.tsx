@@ -4,8 +4,8 @@ import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
 import * as TaskManager from 'expo-task-manager';
 import * as React from 'react';
-import { AppState, Platform, StyleSheet, Text, View } from 'react-native';
-import MapView, { Circle } from 'react-native-maps';
+import { AppState, AppStateStatus, Platform, StyleSheet, Text, View } from 'react-native';
+import MapView, { Circle, MapEvent } from 'react-native-maps';
 
 import NavigationEvents from '../components/NavigationEvents';
 import Button from '../components/PrimaryButton';
@@ -82,7 +82,7 @@ export default class GeofencingScreen extends React.Component<Props, State> {
     });
   };
 
-  handleAppStateChange = nextAppState => {
+  handleAppStateChange = (nextAppState: AppStateStatus) => {
     if (nextAppState !== 'active') {
       return;
     }
@@ -137,7 +137,7 @@ export default class GeofencingScreen extends React.Component<Props, State> {
     }
   };
 
-  onMapPress = ({ nativeEvent: { coordinate } }) => {
+  onMapPress = ({ nativeEvent: { coordinate } }: MapEvent) => {
     this.setState(
       state => ({
         geofencingRegions: [

@@ -6,9 +6,20 @@
 
 ### 🎉 New features
 
+- Added ability to load published projects via expo-updates. (Android: [#13031](https://github.com/expo/expo/pull/13031) and iOS: [#13087](https://github.com/expo/expo/pull/13087) by [@esamelson](https://github.com/esamelson))
+- Support remote JavaScript inspecting. ([#13041](https://github.com/expo/expo/pull/13041) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
+- Updates integration: make Update nullable in onSuccess callback ([#13136](https://github.com/expo/expo/pull/13136) by [@esamelson](https://github.com/esamelson))
+
 ### 💡 Others
+
+## 0.3.4 — 2021-05-20
+
+### 🐛 Bug fixes
+
+- Fixed the application hanging on the splash screen on iOS. ([#12971](https://github.com/expo/expo/pull/12971) by [@lukmccall](https://github.com/lukmccall))
 
 ## 0.3.3 — 2021-05-13
 

@@ -16,49 +16,34 @@ open class DevMenuExtensions: NSObject, DevMenuExtensionProtocol {
       return nil
     }
     
-    guard let devSettings = bridge?.module(forName: "DevSettings") as? RCTDevSettings else {
+    guard let bridge = bridge else {
+      return nil
+    }
+    
+    let devDelegate = DevMenuDevOptionsDelegate(forBridge: bridge)
+    guard let devSettings = devDelegate.devSettings else {
       return nil
     }
     
     let container = DevMenuItemsContainer()
     
-    let reload = DevMenuExtensions.reloadAction {
-      // Without this the `expo-splash-screen` will reject
-      // No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.
-      DevMenuManager.shared.hideMenu();
-      self.bridge?.requestReload()
-    }
+    let reload = DevMenuExtensions.reloadAction(devDelegate.reload)
     reload.isAvailable = { !DevMenuExtensions.checkIfLogBoxIsOpened() }
 
-    let inspector = DevMenuExtensions.elementInspectorAction {
-      devSettings.toggleElementInspector()
-    }
+    let inspector = DevMenuExtensions.elementInspectorAction(devDelegate.toggleElementInsector)
     inspector.isEnabled = { devSettings.isElementInspectorShown }
 
     #if DEBUG
-    let remoteDebug = DevMenuExtensions.remoteDebugAction {
-      DispatchQueue.main.async {
-        devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely
-      }
-    }
+    let remoteDebug = DevMenuExtensions.remoteDebugAction(devDelegate.toggleRemoteDebugging)
     remoteDebug.isAvailable = { devSettings.isRemoteDebuggingAvailable }
     remoteDebug.isEnabled = { devSettings.isDebuggingRemotely }
 
-    let fastRefresh = DevMenuExtensions.fastRefreshAction {
-      devSettings.isHotLoadingEnabled = !devSettings.isHotLoadingEnabled
-    }
+    let fastRefresh = DevMenuExtensions.fastRefreshAction(devDelegate.toggleFastRefresh)
     fastRefresh.isAvailable = { devSettings.isHotLoadingAvailable }
     fastRefresh.isEnabled = { devSettings.isHotLoadingEnabled }
 
-    let perfMonitor = DevMenuExtensions.performanceMonitorAction {
-      if let perfMonitorModule = self.bridge?.module(forName: "PerfMonitor") as? RCTPerfMonitor {
-        DispatchQueue.main.async {
-          devSettings.isPerfMonitorShown ? perfMonitorModule.hide() : perfMonitorModule.show()
-          devSettings.isPerfMonitorShown = !devSettings.isPerfMonitorShown
-        }
-      }
-    }
-    perfMonitor.isAvailable = { self.bridge?.module(forName: "PerfMonitor") != nil }
+    let perfMonitor = DevMenuExtensions.performanceMonitorAction(devDelegate.togglePerformanceMonitor)
+    perfMonitor.isAvailable = { devDelegate.perfMonitor != nil }
     perfMonitor.isEnabled = { devSettings.isPerfMonitorShown }
 
     container.addItem(remoteDebug)
@@ -84,7 +69,7 @@ open class DevMenuExtensions: NSObject, DevMenuExtensionProtocol {
 
   // MARK: static helpers
 
-  private static func reloadAction(action: @escaping () -> ()) -> DevMenuAction {
+  private static func reloadAction(_ action: @escaping () -> ()) -> DevMenuAction {
     let reload = DevMenuAction(withId: "reload", action: action)
     reload.label = { "Reload" }
     reload.glyphName = { "reload" }

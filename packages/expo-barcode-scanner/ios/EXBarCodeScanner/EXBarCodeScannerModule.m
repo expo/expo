@@ -3,15 +3,15 @@
 #import <EXBarCodeScanner/EXBarCodeScannerModule.h>
 #import <EXBarCodeScanner/EXBarCodeScannerUtils.h>
 #import <EXBarCodeScanner/EXBarCodeCameraRequester.h>
-#import <UMImageLoaderInterface/UMImageLoaderInterface.h>
-#import <UMPermissionsInterface/UMPermissionsInterface.h>
-#import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
+#import <ExpoModulesCore/EXImageLoaderInterface.h>
+#import <ExpoModulesCore/EXPermissionsInterface.h>
+#import <ExpoModulesCore/EXPermissionsMethodsDelegate.h>
 
 @interface EXBarCodeScannerModule ()
 
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
-@property (nonatomic, weak) id<UMImageLoaderInterface> imageLoader;
-@property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
+@property (nonatomic, weak) id<EXImageLoaderInterface> imageLoader;
+@property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
 
 @end
 
@@ -22,9 +22,9 @@ UM_EXPORT_MODULE(ExpoBarCodeScannerModule);
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  _imageLoader = [moduleRegistry getModuleImplementingProtocol:@protocol(UMImageLoaderInterface)];
-  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
-  [UMPermissionsMethodsDelegate registerRequesters:@[[EXBareCodeCameraRequester new]] withPermissionsManager:_permissionsManager];
+  _imageLoader = [moduleRegistry getModuleImplementingProtocol:@protocol(EXImageLoaderInterface)];
+  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
+  [EXPermissionsMethodsDelegate registerRequesters:@[[EXBareCodeCameraRequester new]] withPermissionsManager:_permissionsManager];
 }
 
 - (NSDictionary *)constantsToExport
@@ -42,7 +42,7 @@ UM_EXPORT_METHOD_AS(getPermissionsAsync,
                     getPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                       withRequester:[EXBareCodeCameraRequester class]
                                                             resolve:resolve
                                                              reject:reject];
@@ -52,7 +52,7 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                     requestPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[EXBareCodeCameraRequester class]
                                                                resolve:resolve
                                                                 reject:reject];

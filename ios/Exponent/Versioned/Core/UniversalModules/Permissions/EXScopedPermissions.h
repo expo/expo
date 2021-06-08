@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol EXPermissionsScopedModuleDelegate
 
-- (UMPermissionStatus)getPermission:(NSString *)permissionType forExperience:(NSString *)experienceId;
+- (EXPermissionStatus)getPermission:(NSString *)permissionType forExperience:(NSString *)experienceId;
 - (BOOL)savePermission:(NSDictionary *)permission ofType:(NSString *)type forExperience:(NSString *)experienceId;
 
 @end

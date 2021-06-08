@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Locale;
 
 import org.unimodules.core.interfaces.services.EventEmitter;
-import org.unimodules.interfaces.facedetector.FaceDetector;
 import expo.modules.camera.events.BarCodeScannedEvent;
 import expo.modules.camera.events.CameraMountErrorEvent;
 import expo.modules.camera.events.CameraReadyEvent;
@@ -26,6 +25,7 @@ import expo.modules.camera.events.FaceDetectionErrorEvent;
 import expo.modules.camera.events.FacesDetectedEvent;
 import expo.modules.camera.events.PictureSavedEvent;
 import expo.modules.interfaces.barcodescanner.BarCodeScannerResult;
+import expo.modules.interfaces.facedetector.FaceDetectorInterface;
 
 public class CameraViewHelper {
   // Mount error event
@@ -56,7 +56,7 @@ public class CameraViewHelper {
     emitter.emit(view.getId(), event);
   }
 
-  public static void emitFaceDetectionErrorEvent(EventEmitter emitter, ViewGroup view, FaceDetector faceDetector) {
+  public static void emitFaceDetectionErrorEvent(EventEmitter emitter, ViewGroup view, FaceDetectorInterface faceDetector) {
     FaceDetectionErrorEvent event = FaceDetectionErrorEvent.obtain(faceDetector);
     emitter.emit(view.getId(), event);
   }

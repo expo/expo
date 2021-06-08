@@ -1,7 +1,7 @@
 import { useTheme } from '@react-navigation/native';
 import dedent from 'dedent';
 import * as React from 'react';
-import { ActivityIndicator, FlatList, ScrollView, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, ScrollView, View } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
 import Colors from '../constants/Colors';
@@ -25,7 +25,8 @@ export type Project = {
   id: string;
   description: string;
   fullName: string;
-  iconUrl: string;
+  iconUrl?: string | null;
+  published: boolean; // legacy publishes
   lastPublishedTime: number;
   name: string;
   packageName: string;
@@ -93,7 +94,7 @@ export default function LoadingProjectList(props: Props) {
             {isConnectionError ? NETWORK_ERROR_TEXT : SERVER_ERROR_TEXT}
           </StyledText>
 
-          <PrimaryButton plain onPress={refetchDataAsync} fallback={TouchableOpacity}>
+          <PrimaryButton plain onPress={refetchDataAsync}>
             Try again
           </PrimaryButton>
         </View>
@@ -129,8 +130,8 @@ function ProjectList({ data, loadMoreAsync, listTitle }: Props) {
   const totalAppCount = data.appCount ?? 0;
   const canLoadMore = currentAppCount < totalAppCount;
 
-  const renderItem = ({ item: app, index }) => {
-    const experienceInfo = { username: app.username, slug: app.packageName };
+  const renderItem = ({ item: app, index }: { item: Project; index: number }) => {
+    const experienceInfo = { id: app.id, username: app.username, slug: app.packageName };
     return (
       <ProjectListItem
         key={index.toString()}

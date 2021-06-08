@@ -17,4 +17,5 @@ Pod::Spec.new do |s|
   s.dependency 'expo-dev-launcher', :configurations => :debug
   s.dependency 'expo-dev-menu', :configurations => :debug
   s.dependency 'expo-dev-menu-interface'
+  s.dependency 'EXUpdatesInterface'
 end

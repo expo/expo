@@ -47,7 +47,7 @@ where `PLATFORM_NAME` is one of `android` or `ios`.
 
 There are two types of build profiles: generic and managed.
 
-**Generic projects** make almost no assumptions about your project's structure. The only requirement is that your project follows the general structure of React Native projects. This means there are `android` and `ios` directories in the root directory with the Gradle and Xcode projects, respectively. Whether you've intialized your project with `expo init --template bare-minimum` or with `npx react-native init`, you can build it with EAS Build.
+**Generic projects** make almost no assumptions about your project's structure. The only requirement is that your project follows the general structure of React Native projects. This means there are `android` and `ios` directories in the root directory with the Gradle and Xcode projects, respectively. Whether you've initialized your project with `expo init --template bare-minimum` or with `npx react-native init`, you can build it with EAS Build.
 
 **Managed projects** are much simpler in terms of the project's structure and the knowledge needed to start developing your application. Those projects don't have the native code in the repository and they are tightly coupled with Expo. Basically, by managed projects, we mean projects initialized with `expo init` using a managed workflow template (like `blank`, `blank-typescript`, or `tabs`).
 
@@ -81,7 +81,7 @@ The schema of a build profile for a generic Android project looks like this:
 ```
 
 - `"workflow": "generic"` indicates that your project is a generic one.
-- `extends` specifies name of build profile that current profile inherits values from.
+- `extends` allows extending values from another build profile.
 - `credentialsSource` defines the source of credentials for this build profile. If you want to provide your own `credentials.json` file, set this to `local` ([learn more on this here](/app-signing/local-credentials.md)). If you want to use the credentials managed by EAS, choose `remote` (this is the default option).
 - `withoutCredentials`: when set to `true`, EAS CLI won't require you to configure credentials when building the app using this profile. This comes in handy when you want to build debug binaries and the debug keystore is checked in to the repository. The default is `false`.
 - `gradleCommand` defines the Gradle task to be run on EAS servers to build your project. You can set it to any valid Gradle task, e.g. `:app:assembleDebug` to build a debug binary. The default Gradle command is `:app:bundleRelease`.
@@ -141,6 +141,7 @@ The schema of a build profile for a managed Android project looks like this:
   "image": string, // default: "default"
   "node": string,
   "yarn": string,
+  "expoCli": string,
   "ndk": string,
   "env": Record<string, string>,
   "cache": {
@@ -152,7 +153,7 @@ The schema of a build profile for a managed Android project looks like this:
 ```
 
 - `"workflow": "managed"` indicates that your project is a managed one.
-- `extends` specifies name of build profile that current profile inherits values from.
+- `extends` allows extending values from another build profile.
 - `credentialsSource` defines the source of credentials for this build profile. If you want to provide your own `credentials.json` file, set this to `local` ([learn more on this here](/app-signing/local-credentials.md)). If you want to use the credentials managed by EAS, choose `remote` (this is the default option).
 - `buildType` when set to `app-bundle` produces an AAB archive but when set to `apk` produces an APK instead.
 - `releaseChannel` is the release channel for the `expo-updates` package ([Learn more about this](../distribution/release-channels.md)). If you do not specify a channel, your binary will pull releases from the `default` channel. If you do not use `expo-updates` in your project then this property will have no effect.
@@ -160,6 +161,7 @@ The schema of a build profile for a managed Android project looks like this:
 - `image` - image with build environment. [Learn more about it here](../build-reference/infrastructure).
 - `node` - version of Node.js
 - `yarn` - version of Yarn
+- `expoCli` - version of [expo-cli](https://www.npmjs.com/package/expo-cli) used to [prebuild](../workflow/expo-cli/#expo-prebuild) your app
 - `ndk` - version of Android NDK
 - `env` - environment variables that should be set during the build process (should only be used for values that you would commit to your git repository, i.e. not passwords or secrets).
 - `cache` configures paths that will be saved and restored in the next build. The cache can be explicitly invalidated by updating the value of the `key` field. Values in `customPaths` support both absolute and relative paths, where relative paths are resolved from the directory with `eas.json`. This feature is intended for caching values that require a lot of computation, e.g. compilation results (both final binaries and any intermediate files), but it wouldn't work well for `node_modules` because the cache is not local to the machine, so a download speed is similar to downloading from the npm registry. Set `"disabled": true` to disable caching.
@@ -218,10 +220,10 @@ The schema of a build profile for a generic iOS project looks like this:
 ```
 
 - `"workflow": "generic"` indicates that your project is a generic one.
-- `extends` specifies name of build profile that current profile inherits values from.
+- `extends` allows extending values from another build profile.
 - `credentialsSource` defines the source of credentials for this build profile. If you want to provide your own `credentials.json` file, set this to `local` ([learn more on this here](/app-signing/local-credentials.md)). If you want to use the credentials managed by EAS, choose `remote` (this is the default option).
 - `scheme` defines the Xcode project's scheme to build. You should set it if your project has multiple schemes. Please note that if the project has only one scheme, it will automatically be detected. However, if multiple schemes exist and this value is **not** set, EAS CLI will prompt you to select one of them.
-- `schemeBuildConfiguration` is the configuration to use when building the app. When set, the native project configuration is overridden with the corresponding value. If left unset, the value set in the scheme is used.
+- `schemeBuildConfiguration` is the configuration to use when building the app. When set, the native project configuration is overridden with the corresponding value. If left unset, the value set in the scheme is used. For example, `"Debug"` or `"Release"` are common values.
 - `artifactPath` is the path (or pattern) where EAS Build is going to look for the build artifacts. EAS Build uses the `fast-glob` npm package for pattern matching, ([see their README to learn more about the syntax you can use](https://github.com/mrmlnc/fast-glob#pattern-syntax)). You should modify that path only if you are using a custom `Gymfile`. The default is `ios/build/App.ipa`.
 - `releaseChannel` is the release channel for the `expo-updates` package ([Learn more about this](../distribution/release-channels.md)). If you do not specify a channel, your binary will pull releases from the `default` channel. If you do not use `expo-updates` in your project then this property will have no effect.
 - `distribution` is the flow of distributing your app. If you choose `internal` you'll be able to share your build URLs with anyone, and they will be able to install the builds to their devices straight from the Expo website. Choose `simulator` to run the app on an iOS simulator on your computer. The default is `store` which means your build URLs won't be sharable. [Learn more about internal distribution](internal-distribution.md).
@@ -273,6 +275,7 @@ The schema of a build profile for a managed iOS project looks like this:
   "image": string, // default: "default"
   "node": string,
   "yarn": string,
+  "expoCli": string,
   "bundler": string,
   "fastlane": string,
   "cocoapods": string,
@@ -287,7 +290,7 @@ The schema of a build profile for a managed iOS project looks like this:
 ```
 
 - `"workflow": "managed"` indicates that your project is a managed one.
-- `extends` specifies name of build profile that current profile inherits values from.
+- `extends` allows extending values from another build profile.
 - `credentialsSource` defines the source of credentials for this build profile. If you want to provide your own `credentials.json` file, set this to `local` ([learn more on this here](/app-signing/local-credentials.md)). If you want to use the credentials managed by EAS, choose `remote` (this is the default option).
 - `releaseChannel` is the release channel for the `expo-updates` package ([Learn more about this](../distribution/release-channels.md)). If you do not specify a channel, your binary will pull releases from the `default` channel. If you do not use `expo-updates` in your project then this property will have no effect.
 - `distribution` is the flow of distributing your app. If you choose `internal` you'll be able to share your build URLs with anyone, and they will be able to install the builds to their devices straight from the Expo website. Choose `simulator` to run the app on an iOS simulator on your computer. The default is `store` which means your build URLs won't be sharable. [Learn more Internal Distribution](internal-distribution.md).
@@ -296,6 +299,7 @@ The schema of a build profile for a managed iOS project looks like this:
 - `image` - image with build environment. [Learn more about it here](../build-reference/infrastructure).
 - `node` - version of Node.js
 - `yarn` - version of Yarn
+- `expoCli` - version of [expo-cli](https://www.npmjs.com/package/expo-cli) used to [prebuild](../workflow/expo-cli/#expo-prebuild) your app
 - `bundler` - version of [bundler](https://bundler.io/)
 - `fastlane` - version of fastlane
 - `cocoapods` - version of CocoaPods

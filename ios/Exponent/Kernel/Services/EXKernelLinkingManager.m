@@ -215,9 +215,10 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
   if ([EXEnvironment sharedEnvironment].isDetached) {
     NSDictionary *launchOptions = [ExpoKit sharedInstance].launchOptions;
     NSURL *launchOptionsUrl = [[self class] initialUrlFromLaunchOptions:launchOptions];
-    if (launchOptionsUrl) {
-      urlToTransform = launchOptionsUrl;
+    if (!launchOptionsUrl) {
+      return nil;
     }
+    urlToTransform = launchOptionsUrl;
   }
 
   NSURLComponents *urlComponents = [NSURLComponents componentsWithURL:urlToTransform resolvingAgainstBaseURL:YES];

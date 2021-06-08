@@ -26,12 +26,12 @@ Conforming servers and client libraries MUST follow the HTTP spec as described i
 An _update_ is defined as a [_manifest_](#manifest-response) together with the assets referenced inside the manifest.
 Expo Updates is a protocol for assembling and delivering updates to apps running on multiple platforms.
 
-An app running a conformant Expo Updates client library MUST load the most recent update saved in the client library's cache, possibly after filtering by the contents of the manifest's [_metatdata_](#manifest-response-body).
+An app running a conformant Expo Updates client library MUST load the most recent update saved in the client library's cache, possibly after filtering by the contents of the manifest's [_metadata_](#manifest-response-body).
 
 The following describes how a conformant Expo Updates client library MUST retrieve a new update from a conformant server:
 1. The client library will make a [request](#request) for the most recent manifest, with constraints specified in the headers. 
 2. If a new manifest is downloaded, the client library will proceed to make additional requests to download and store any missing assets specified in the manifest.
-3. The client library will edit its local state to reflect that a new update has been added to the local cache. It will also update the local state with the new `expo-manifest-filters` and `expo-server-defined-headers` fround in the response [headers](#manifest-response-headers).
+3. The client library will edit its local state to reflect that a new update has been added to the local cache. It will also update the local state with the new `expo-manifest-filters` and `expo-server-defined-headers` found in the response [headers](#manifest-response-headers).
 
 The primary consumers of this spec are Expo Application Services and organizations that wish to manage their own update server to satisfy internal requirements.
 
@@ -90,14 +90,15 @@ cache-control: max-age=0, private
 ### Manifest Response Body
 
 The body of the response MUST be a manifest, which is defined as JSON conforming to both the following `Manifest` definition expressed in [TypeScript](https://www.typescriptlang.org/) and the detailed descriptions for each field:
-```
+```typescript
 export type Manifest = {
   id: string;
   createdAt: string;
   runtimeVersion: string;
   launchAsset: Asset;
   assets: Asset[];
-  metadata: { [key: string]: string};
+  metadata: { [key: string]: string };
+  extra: { [key: string]: any };
 }
 
 type Asset = {
@@ -118,6 +119,15 @@ type Asset = {
     * `contentType`: The MIME type of the file as defined by [RFC 2045](https://tools.ietf.org/html/rfc2045). e.g. `application/javascript`, `image/jpeg`.
     * `url`: Location at which the file may be fetched.
   * `metadata`: The metadata associated with an update. It is a string-valued dictionary. The server MAY send back anything it wishes to be used for filtering the updates. The metadata MUST pass the filter defined in the accompanying `expo-manifest-filters` header.
+  * `extra`: For storage of optional "extra" information such as third-party configuration. For example, if the update is hosted on Expo Application Services (EAS), the EAS project ID may be included:
+  ```typescript
+  extra: {
+    eas: {
+      projectId: '00000000-0000-0000-0000-000000000000'
+    }
+    ...
+  }
+  ```
 
 ## Asset Request
 A conformant client library MUST make a GET request to the asset URLs specified by the manifest. The client library SHOULD include a header accepting the asset's content type as specified in the manifest. Additionally, the client library SHOULD specify the compression encoding the client library is capable of handling.
@@ -149,7 +159,7 @@ cache-control: public, max-age=31536000, immutable
 
 ### Compression
 
-Assets SHOULD be capable being served with [Gzip](https://www.gnu.org/software/gzip/) and [Brotli](https://github.com/google/brotli) compression.
+Assets SHOULD be capable of being served with [Gzip](https://www.gnu.org/software/gzip/) and [Brotli](https://github.com/google/brotli) compression.
 
 ## Client Library
 

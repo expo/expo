@@ -6,8 +6,8 @@
 #import <UMCore/UMModuleRegistry.h>
 #import <UMCore/UMAppLifecycleService.h>
 #import <UMCore/UMEventEmitterService.h>
-#import <UMPermissionsInterface/UMPermissionsInterface.h>
-#import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
+#import <ExpoModulesCore/EXPermissionsInterface.h>
+#import <ExpoModulesCore/EXPermissionsMethodsDelegate.h>
 
 NSString * const EXPedometerUpdateEventName = @"Exponent.pedometerUpdate";
 NSString * const EXPedometerModuleName = @"ExponentPedometer";
@@ -21,7 +21,7 @@ NSString * const EXPedometerModuleName = @"ExponentPedometer";
 
 @property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
 @property (nonatomic, weak) id<UMAppLifecycleService> lifecycleManager;
-@property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
+@property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
 
 @end
 
@@ -68,10 +68,10 @@ NSString * const EXPedometerModuleName = @"ExponentPedometer";
   if (moduleRegistry) {
     _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
     _lifecycleManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)];
-    _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
+    _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
   }
 
-  [UMPermissionsMethodsDelegate registerRequesters:@[[EXMotionPermissionRequester new]] withPermissionsManager:_permissionsManager];
+  [EXPermissionsMethodsDelegate registerRequesters:@[[EXMotionPermissionRequester new]] withPermissionsManager:_permissionsManager];
   
   if (_lifecycleManager) {
     [_lifecycleManager registerAppLifecycleListener:self];
@@ -159,7 +159,7 @@ UM_EXPORT_METHOD_AS(getPermissionsAsync,
                     getPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                       withRequester:[EXMotionPermissionRequester class]
                                                             resolve:resolve
                                                              reject:reject];
@@ -169,7 +169,7 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                     requestPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[EXMotionPermissionRequester class]
                                                                resolve:resolve
                                                                 reject:reject];
