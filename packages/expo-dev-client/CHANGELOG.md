@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [plugin] Fix `react-native.config.js` not being added in `expo prebuild --platform android`.
+- [plugin] Fix `react-native.config.js` not being added in `expo prebuild --platform android`. ([#13204](https://github.com/expo/expo/pull/13204) by [@fson](https://github.com/fson))
 
 ### 💡 Others
 
