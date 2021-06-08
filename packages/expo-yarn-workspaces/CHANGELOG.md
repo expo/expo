@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Use `index.js` as entry point. ([#13203](https://github.com/expo/expo/pull/13203) by [@axeldelafosse](https://github.com/axeldelafosse))
+
 ## 1.5.1 — 2021-04-20
 
 ### 🐛 Bug fixes
