@@ -10,12 +10,8 @@ export function setGeneratedIosScheme(
   config: Pick<ExpoConfig, 'scheme' | 'slug'>,
   infoPlist: InfoPlist
 ): IOSConfig.InfoPlist {
-  if (!config.scheme) {
-    // No cross-platform scheme specified in configuration,
-    // generate one to be used for launching the dev client.
-    const scheme = generateScheme(config);
-    const result = IOSConfig.Scheme.appendScheme(scheme, infoPlist);
-    return result;
-  }
-  return infoPlist;
+  // Generate a cross-platform scheme used to launch the dev client.
+  const scheme = generateScheme(config);
+  const result = IOSConfig.Scheme.appendScheme(scheme, infoPlist);
+  return result;
 }

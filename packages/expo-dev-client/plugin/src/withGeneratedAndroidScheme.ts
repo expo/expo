@@ -10,11 +10,7 @@ export function setGeneratedAndroidScheme(
   config: Pick<ExpoConfig, 'scheme' | 'slug'>,
   androidManifest: AndroidManifest
 ): AndroidManifest {
-  if (!config.scheme) {
-    // No cross-platform scheme specified in configuration,
-    // generate one to be used for launching the dev client.
-    const scheme = generateScheme(config);
-    return AndroidConfig.Scheme.appendScheme(scheme, androidManifest);
-  }
-  return androidManifest;
+  // Generate a cross-platform scheme used to launch the dev client.
+  const scheme = generateScheme(config);
+  return AndroidConfig.Scheme.appendScheme(scheme, androidManifest);
 }

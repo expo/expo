@@ -9,13 +9,9 @@ const ios_plugins_1 = require("@expo/config-plugins/build/plugins/ios-plugins");
 const generateScheme_1 = __importDefault(require("./generateScheme"));
 exports.default = ios_plugins_1.createInfoPlistPlugin(setGeneratedIosScheme, 'withGeneratedIosScheme');
 function setGeneratedIosScheme(config, infoPlist) {
-    if (!config.scheme) {
-        // No cross-platform scheme specified in configuration,
-        // generate one to be used for launching the dev client.
-        const scheme = generateScheme_1.default(config);
-        const result = config_plugins_1.IOSConfig.Scheme.appendScheme(scheme, infoPlist);
-        return result;
-    }
-    return infoPlist;
+    // Generate a cross-platform scheme used to launch the dev client.
+    const scheme = generateScheme_1.default(config);
+    const result = config_plugins_1.IOSConfig.Scheme.appendScheme(scheme, infoPlist);
+    return result;
 }
 exports.setGeneratedIosScheme = setGeneratedIosScheme;

@@ -9,12 +9,8 @@ const android_plugins_1 = require("@expo/config-plugins/build/plugins/android-pl
 const generateScheme_1 = __importDefault(require("./generateScheme"));
 exports.default = android_plugins_1.createAndroidManifestPlugin(setGeneratedAndroidScheme, 'withGeneratedAndroidScheme');
 function setGeneratedAndroidScheme(config, androidManifest) {
-    if (!config.scheme) {
-        // No cross-platform scheme specified in configuration,
-        // generate one to be used for launching the dev client.
-        const scheme = generateScheme_1.default(config);
-        return config_plugins_1.AndroidConfig.Scheme.appendScheme(scheme, androidManifest);
-    }
-    return androidManifest;
+    // Generate a cross-platform scheme used to launch the dev client.
+    const scheme = generateScheme_1.default(config);
+    return config_plugins_1.AndroidConfig.Scheme.appendScheme(scheme, androidManifest);
 }
 exports.setGeneratedAndroidScheme = setGeneratedAndroidScheme;

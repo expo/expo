@@ -1,6 +1,6 @@
 import { setGeneratedIosScheme } from '../withGeneratedIosScheme';
 
-it(`adds a scheme, if not specified in the config`, () => {
+it(`adds a scheme generated from slug`, () => {
   const config = { slug: 'cello' };
   const infoPlist = {};
   expect(setGeneratedIosScheme(config, infoPlist)).toMatchInlineSnapshot(`
@@ -14,10 +14,4 @@ it(`adds a scheme, if not specified in the config`, () => {
       ],
     }
   `);
-});
-
-it(`doesn't add anything, if scheme is defined in config`, () => {
-  const config = { scheme: 'play', slug: 'cello' };
-  const infoPlist = {};
-  expect(setGeneratedIosScheme(config, infoPlist)).toEqual(infoPlist);
 });
