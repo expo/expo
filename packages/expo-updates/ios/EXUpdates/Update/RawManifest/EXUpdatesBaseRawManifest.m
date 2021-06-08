@@ -2,6 +2,8 @@
 
 #import <EXUpdates/EXUpdatesBaseRawManifest.h>
 
+#import <UIKit/UIKit.h>
+
 @implementation EXUpdatesBaseRawManifest
 
 - (instancetype)initWithRawManifestJSON:(NSDictionary *)rawManifestJSON {

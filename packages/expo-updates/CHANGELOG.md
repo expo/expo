@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed prebuild issues with missing imports.
+
 ### 💡 Others
 
 ## 0.7.0-rc.0 — 2021-06-08
