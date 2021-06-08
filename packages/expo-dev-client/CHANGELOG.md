@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [plugin] Fix `react-native.config.js` not being added in `expo prebuild --platform android`.
+
 ### 💡 Others
 
 ## 0.1.3 — 2021-05-20
