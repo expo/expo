@@ -206,7 +206,7 @@ const config: VendoringTargetConfig = {
     // NOTE(brentvatne): masked-view has been renamed to
     // @react-native-masked-view/masked-view but we should synchronize moving
     // over to the new package name along with React Navigation
-    '@react-native-community/masked-view': {
+    '@react-native-masked-view/masked-view': {
       source: 'https://github.com/react-native-masked-view/masked-view',
     },
     '@react-native-community/viewpager': {
