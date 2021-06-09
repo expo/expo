@@ -11,7 +11,7 @@ You can set up your project to use EAS by running `eas build:configure`.  If you
 
 ## Modifying your EAS.json
 
-Now edit your eas.json to look like this.
+Now edit your eas.json to look like this:
 
 <Tabs tabs={["With config plugins", "If you are directly managing your native projects"]}>
 
@@ -23,12 +23,11 @@ Now edit your eas.json to look like this.
     "android": {
       "release": {
         "workflow": "managed",
-        "gradleCommand": ":app:bundleRelease"
       },
       "development": {
         "workflow": "managed",
         "distribution": "internal",
-        "gradleCommand": ":app:assembleDebug"
+        "buildType": "development-client",
       }
     },
     "ios": {
@@ -38,7 +37,7 @@ Now edit your eas.json to look like this.
       "development": {
         "workflow": "managed",
         "distribution": "internal",
-        "schemeBuildConfiguration": "Debug"
+        "buildType": "development-client",
       }
     }
   }
