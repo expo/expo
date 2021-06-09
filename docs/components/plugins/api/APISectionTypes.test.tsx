@@ -5,11 +5,12 @@ describe('APISectionTypes.decorateValue', () => {
     expect(decorateValue({ type: 'literal', value: null })).toBe('`null`');
   });
 
-  test('number', () => {
+  test('generic types', () => {
     expect(decorateValue({ type: 'intrinsic', name: 'number' })).toBe('`number`');
+    expect(decorateValue({ type: 'intrinsic', name: 'string' })).toBe('`string`');
   });
 
-  test('string', () => {
+  test('string value', () => {
     expect(decorateValue({ type: 'literal', value: 'never' })).toBe("`'never'`");
   });
 
