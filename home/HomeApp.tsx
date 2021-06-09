@@ -120,7 +120,10 @@ export default function HomeApp() {
 // Certain links (i.e. 'expo.io/expo-go') should just open the HomeScreen
 function shouldOpenUrl(urlString: string) {
   const parsedUrl = url.parse(urlString);
-  return !(parsedUrl.hostname === 'expo.io' && parsedUrl.pathname === '/expo-go');
+  return !(
+    (parsedUrl.hostname === 'expo.io' || parsedUrl.hostname === 'expo.dev') &&
+    parsedUrl.pathname === '/expo-go'
+  );
 }
 
 const styles = StyleSheet.create({
