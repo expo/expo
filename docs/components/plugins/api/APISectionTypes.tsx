@@ -136,9 +136,7 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
           <InlineCode>{name}</InlineCode>
         </H3Code>
         <CommentTextBlock comment={comment} />
-        <ReactMarkdown renderers={mdRenderers}>
-          {'__Type:__ `' + type.name + '`'}
-        </ReactMarkdown>
+        <ReactMarkdown renderers={mdRenderers}>{'__Type:__ `' + type.name + '`'}</ReactMarkdown>
       </div>
     );
   }
