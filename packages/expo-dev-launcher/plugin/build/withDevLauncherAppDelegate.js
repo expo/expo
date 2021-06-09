@@ -103,7 +103,14 @@ exports.modifyAppDelegate = modifyAppDelegate;
 exports.withDevLauncherAppDelegate = config => {
     return config_plugins_1.withAppDelegate(config, config => {
         if (config.modResults.language === 'objc') {
-            config.modResults.contents = modifyAppDelegate(config.modResults.contents, resolveExpoUpdatesVersion_1.resolveExpoUpdatesVersion(config.modRequest.projectRoot));
+            let expoUpdatesVersion;
+            try {
+                expoUpdatesVersion = resolveExpoUpdatesVersion_1.resolveExpoUpdatesVersion(config.modRequest.projectRoot);
+            }
+            catch (e) {
+                config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', `Failed to check compatibility with expo-updates - ${e}`);
+            }
+            config.modResults.contents = modifyAppDelegate(config.modResults.contents, expoUpdatesVersion);
         }
         else {
             config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', 'Swift AppDelegate files are not supported yet.');

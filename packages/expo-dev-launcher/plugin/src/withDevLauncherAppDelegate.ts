@@ -136,9 +136,18 @@ export function modifyAppDelegate(appDelegate: string, expoUpdatesVersion: strin
 export const withDevLauncherAppDelegate: ConfigPlugin = config => {
   return withAppDelegate(config, config => {
     if (config.modResults.language === 'objc') {
+      let expoUpdatesVersion;
+      try {
+        expoUpdatesVersion = resolveExpoUpdatesVersion(config.modRequest.projectRoot);
+      } catch (e) {
+        WarningAggregator.addWarningIOS(
+          'expo-dev-launcher',
+          `Failed to check compatibility with expo-updates - ${e}`
+        );
+      }
       config.modResults.contents = modifyAppDelegate(
         config.modResults.contents,
-        resolveExpoUpdatesVersion(config.modRequest.projectRoot)
+        expoUpdatesVersion
       );
     } else {
       WarningAggregator.addWarningIOS(

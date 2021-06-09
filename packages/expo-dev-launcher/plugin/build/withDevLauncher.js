@@ -103,7 +103,13 @@ const withDevLauncherApplication = config => {
                 mainApplication = addLines(mainApplication, 'initializeFlipper\\(this', 0, [
                     `    ${DEV_LAUNCHER_ANDROID_INIT}`,
                 ]);
-                const expoUpdatesVersion = resolveExpoUpdatesVersion_1.resolveExpoUpdatesVersion(config.modRequest.projectRoot);
+                let expoUpdatesVersion;
+                try {
+                    expoUpdatesVersion = resolveExpoUpdatesVersion_1.resolveExpoUpdatesVersion(config.modRequest.projectRoot);
+                }
+                catch (e) {
+                    config_plugins_1.WarningAggregator.addWarningAndroid('expo-dev-launcher', `Failed to check compatibility with expo-updates - ${e}`);
+                }
                 if (expoUpdatesVersion && semver_1.default.gt(expoUpdatesVersion, '0.6.0')) {
                     mainApplication = addJavaImports(mainApplication, [DEV_LAUNCHER_UPDATES_ANDROID_IMPORT]);
                     mainApplication = addLines(mainApplication, 'initializeFlipper\\(this', 0, [
