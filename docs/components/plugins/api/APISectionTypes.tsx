@@ -33,7 +33,7 @@ const defineLiteralType = (types: TypeValueData[]): string => {
   return '';
 };
 
-const decorateValue = (type: TypeValueData): string => {
+export const decorateValue = (type: TypeValueData): string => {
   if (type?.value === null) {
     return '`null`';
   } else if (type?.name === 'Record' && type?.typeArguments?.length) {
