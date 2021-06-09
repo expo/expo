@@ -6,7 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("@expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const resolvePackageRootFolder_1 = require("./resolvePackageRootFolder");
+const semver_1 = __importDefault(require("semver"));
+const resolveExpoUpdatesVersion_1 = require("./resolveExpoUpdatesVersion");
 const withDevLauncherAppDelegate_1 = require("./withDevLauncherAppDelegate");
 const pkg = require('expo-dev-launcher/package.json');
 const DEV_LAUNCHER_ANDROID_IMPORT = 'expo.modules.devlauncher.DevLauncherController';
@@ -102,7 +103,8 @@ const withDevLauncherApplication = config => {
                 mainApplication = addLines(mainApplication, 'initializeFlipper\\(this', 0, [
                     `    ${DEV_LAUNCHER_ANDROID_INIT}`,
                 ]);
-                if (resolvePackageRootFolder_1.resolvePackageRootFolder(config.modRequest.projectRoot, 'expo-updates')) {
+                const expoUpdatesVersion = resolveExpoUpdatesVersion_1.resolveExpoUpdatesVersion(config.modRequest.projectRoot);
+                if (expoUpdatesVersion && semver_1.default.gt(expoUpdatesVersion, '0.6.0')) {
                     mainApplication = addJavaImports(mainApplication, [DEV_LAUNCHER_UPDATES_ANDROID_IMPORT]);
                     mainApplication = addLines(mainApplication, 'initializeFlipper\\(this', 0, [
                         `    ${DEV_LAUNCHER_UPDATES_ANDROID_INIT}`,

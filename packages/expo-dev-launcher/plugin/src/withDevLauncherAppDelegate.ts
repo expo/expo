@@ -1,6 +1,7 @@
 import { ConfigPlugin, WarningAggregator, withAppDelegate } from '@expo/config-plugins';
+import semver from 'semver';
 
-import { resolvePackageRootFolder } from './resolvePackageRootFolder';
+import { resolveExpoUpdatesVersion } from './resolveExpoUpdatesVersion';
 
 const DEV_LAUNCHER_APP_DELEGATE_SOURCE_FOR_URL = `  #if defined(EX_DEV_LAUNCHER_ENABLED)
   return [[EXDevLauncherController sharedInstance] sourceUrl];
@@ -61,7 +62,10 @@ const DEV_MENU_IOS_INIT = `
   [DevMenuManager configureWithBridge:bridge];
 #endif`;
 
-export function modifyAppDelegate(appDelegate: string, projectIncludesUpdates: boolean = false) {
+export function modifyAppDelegate(appDelegate: string, expoUpdatesVersion: string | null = null) {
+  const shouldAddUpdatesIntegration =
+    expoUpdatesVersion != null && semver.gt(expoUpdatesVersion, '0.6.0');
+
   if (
     !appDelegate.includes(DEV_LAUNCHER_APP_DELEGATE_IOS_IMPORT) &&
     !appDelegate.includes(DEV_LAUNCHER_UPDATES_APP_DELEGATE_IOS_IMPORT)
@@ -70,7 +74,7 @@ export function modifyAppDelegate(appDelegate: string, projectIncludesUpdates: b
     lines.splice(
       1,
       0,
-      projectIncludesUpdates
+      shouldAddUpdatesIntegration
         ? DEV_LAUNCHER_UPDATES_APP_DELEGATE_IOS_IMPORT
         : DEV_LAUNCHER_APP_DELEGATE_IOS_IMPORT
     );
@@ -85,7 +89,10 @@ export function modifyAppDelegate(appDelegate: string, projectIncludesUpdates: b
     );
   }
 
-  if (projectIncludesUpdates && !appDelegate.includes(DEV_LAUNCHER_UPDATES_APP_DELEGATE_INIT)) {
+  if (
+    shouldAddUpdatesIntegration &&
+    !appDelegate.includes(DEV_LAUNCHER_UPDATES_APP_DELEGATE_INIT)
+  ) {
     appDelegate = appDelegate.replace(
       'EXDevLauncherController *controller = [EXDevLauncherController sharedInstance];',
       DEV_LAUNCHER_UPDATES_APP_DELEGATE_INIT
@@ -131,7 +138,7 @@ export const withDevLauncherAppDelegate: ConfigPlugin = config => {
     if (config.modResults.language === 'objc') {
       config.modResults.contents = modifyAppDelegate(
         config.modResults.contents,
-        !!resolvePackageRootFolder(config.modRequest.projectRoot, 'expo-updates')
+        resolveExpoUpdatesVersion(config.modRequest.projectRoot)
       );
     } else {
       WarningAggregator.addWarningIOS(

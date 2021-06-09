@@ -9,16 +9,26 @@ describe(modifyAppDelegate, () => {
       path.join(__dirname, 'fixtures', 'AppDelegate-unimodules.m'),
       'utf8'
     );
-    expect(modifyAppDelegate(fixture, false)).toMatchSnapshot();
+    expect(modifyAppDelegate(fixture, null)).toMatchSnapshot();
   });
 });
 
 describe(modifyAppDelegate, () => {
-  it(`modifies the AppDelegate file for dev-launcher with updates`, () => {
+  it(`modifies the AppDelegate file for dev-launcher with incompatible updates`, () => {
     const fixture = fs.readFileSync(
       path.join(__dirname, 'fixtures', 'AppDelegate-unimodules.m'),
       'utf8'
     );
-    expect(modifyAppDelegate(fixture, true)).toMatchSnapshot();
+    expect(modifyAppDelegate(fixture, '0.5.4')).toMatchSnapshot();
+  });
+});
+
+describe(modifyAppDelegate, () => {
+  it(`modifies the AppDelegate file for dev-launcher with compatible updates`, () => {
+    const fixture = fs.readFileSync(
+      path.join(__dirname, 'fixtures', 'AppDelegate-unimodules.m'),
+      'utf8'
+    );
+    expect(modifyAppDelegate(fixture, '0.7.0')).toMatchSnapshot();
   });
 });

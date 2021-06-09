@@ -9,8 +9,9 @@ import {
 import { ExpoConfig } from '@expo/config-types';
 import fs from 'fs';
 import path from 'path';
+import semver from 'semver';
 
-import { resolvePackageRootFolder } from './resolvePackageRootFolder';
+import { resolveExpoUpdatesVersion } from './resolveExpoUpdatesVersion';
 import { withDevLauncherAppDelegate } from './withDevLauncherAppDelegate';
 
 const pkg = require('expo-dev-launcher/package.json');
@@ -141,7 +142,8 @@ const withDevLauncherApplication: ConfigPlugin = config => {
           `    ${DEV_LAUNCHER_ANDROID_INIT}`,
         ]);
 
-        if (resolvePackageRootFolder(config.modRequest.projectRoot, 'expo-updates')) {
+        const expoUpdatesVersion = resolveExpoUpdatesVersion(config.modRequest.projectRoot);
+        if (expoUpdatesVersion && semver.gt(expoUpdatesVersion, '0.6.0')) {
           mainApplication = addJavaImports(mainApplication, [DEV_LAUNCHER_UPDATES_ANDROID_IMPORT]);
           mainApplication = addLines(mainApplication, 'initializeFlipper\\(this', 0, [
             `    ${DEV_LAUNCHER_UPDATES_ANDROID_INIT}`,
