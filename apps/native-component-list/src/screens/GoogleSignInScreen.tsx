@@ -1,3 +1,4 @@
+import Constants from 'expo-constants';
 import * as GoogleSignIn from 'expo-google-sign-in';
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
@@ -70,10 +71,20 @@ export default class GoogleSignInScreen extends React.Component<{}, State> {
 
   render() {
     const { user } = this.state;
+    const isInExpoGo = Constants.executionEnvironment === 'storeClient';
+
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        {isInExpoGo && (
+          <Text style={{ padding: 12 }}>
+            This library cannot be used in Expo Go as the native GoogleSignIn library expects your
+            REVERSED_CLIENT_ID in the info.plist at build-time.
+          </Text>
+        )}
         {user && <GoogleProfile {...user} />}
-        <GoogleSignInButton onPress={this._toggleAuth}>{this.buttonTitle}</GoogleSignInButton>
+        <GoogleSignInButton disabled={isInExpoGo} onPress={this._toggleAuth}>
+          {this.buttonTitle}
+        </GoogleSignInButton>
       </View>
     );
   }
@@ -88,7 +99,7 @@ export default class GoogleSignInScreen extends React.Component<{}, State> {
 
   _signOutAsync = async () => {
     try {
-      // await GoogleSignIn.disconnectAsync();
+      await GoogleSignIn.disconnectAsync();
       await GoogleSignIn.signOutAsync();
       console.log('Log out successful');
     } catch ({ message }) {
@@ -100,8 +111,12 @@ export default class GoogleSignInScreen extends React.Component<{}, State> {
 
   _signInAsync = async () => {
     try {
+      console.log('1');
       await GoogleSignIn.askForPlayServicesAsync();
+      console.log('2');
+      await GoogleSignIn.disconnectAsync();
       const { type, user } = await GoogleSignIn.signInAsync();
+      console.log('3');
       console.log({ type, user });
       if (type === 'success') {
         this._syncUserWithStateAsync();
