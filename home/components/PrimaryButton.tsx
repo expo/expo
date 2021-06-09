@@ -24,13 +24,15 @@ export default function PrimaryButton({
   plain?: boolean;
 }) {
   return Platform.OS === 'android' ? (
-    <TouchableNativeFeedback {...props} style={[plain ? styles.plainButton : styles.button, style]}>
-      <Text style={plain ? styles.plainButtonText : styles.buttonText}>{children}</Text>
-      {isLoading && (
-        <View style={styles.activityIndicatorContainer}>
-          <ActivityIndicator color="#fff" />
-        </View>
-      )}
+    <TouchableNativeFeedback {...props}>
+      <View style={[plain ? styles.plainButton : styles.button, style]}>
+        <Text style={plain ? styles.plainButtonText : styles.buttonText}>{children}</Text>
+        {isLoading && (
+          <View style={styles.activityIndicatorContainer}>
+            <ActivityIndicator color="#fff" />
+          </View>
+        )}
+      </View>
     </TouchableNativeFeedback>
   ) : (
     <TouchableOpacity {...props} style={[plain ? styles.plainButton : styles.button, style]}>
