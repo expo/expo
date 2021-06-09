@@ -1,35 +1,31 @@
 package expo.modules.imagemanipulator.arguments
 
 import org.unimodules.core.arguments.ReadableArguments
+import android.graphics.Bitmap.CompressFormat
 
-class SaveOptions private constructor(
-  private val mBase64: Boolean,
+private const val KEY_BASE64 = "base64"
+private const val KEY_COMPRESS = "compress"
+private const val KEY_FORMAT = "format"
+
+data class SaveOptions(
+  val base64: Boolean,
   val compress: Double,
-  val format: SaveOptionsFormat
+  val format: CompressFormat
 ) {
-  fun hasBase64(): Boolean {
-    return mBase64
-  }
-
   companion object {
-    private const val TAG = "saveOptions"
-    private const val KEY_BASE64 = "base64"
-    private const val KEY_COMPRESS = "compress"
-    private const val KEY_FORMAT = "format"
-    @Throws(IllegalArgumentException::class)
-    fun fromArguments(options: ReadableArguments): SaveOptions {
-      var base64 = false
-      if (options.containsKey(KEY_BASE64)) {
-        require(options[KEY_BASE64] is Boolean) { "'$TAG.$KEY_BASE64' must be a Boolean value" }
-        base64 = options.getBoolean(KEY_BASE64)
-      }
-      var compress = 1.0
-      if (options.containsKey(KEY_COMPRESS)) {
-        require(options[KEY_COMPRESS] is Double) { "'$TAG.$KEY_COMPRESS' must be a Number value" }
-        compress = options.getDouble(KEY_COMPRESS)
-      }
-      val mediaTypes: SaveOptionsFormat = SaveOptionsFormat.Companion.fromObject(options[KEY_FORMAT])
-      return SaveOptions(base64, compress, mediaTypes)
+    fun fromArguments(arguments: ReadableArguments): SaveOptions {
+      val base64 = arguments.getBoolean(KEY_BASE64, false)
+      val compress = arguments.getDouble(KEY_COMPRESS, 1.0)
+      val format = toCompressFormat(arguments.getString(KEY_FORMAT, "jpeg"))
+      return SaveOptions(base64, compress, format)
     }
+  }
+}
+
+fun toCompressFormat(format: String): CompressFormat {
+  return when (format) {
+    "jpeg" -> CompressFormat.JPEG
+    "png" -> CompressFormat.PNG
+    else -> CompressFormat.JPEG
   }
 }
