@@ -3,10 +3,7 @@ package expo.modules.splashscreen.singletons
 import android.app.Activity
 import android.util.Log
 import android.view.ViewGroup
-import expo.modules.splashscreen.NativeResourcesBasedSplashScreenViewProvider
-import expo.modules.splashscreen.SplashScreenController
-import expo.modules.splashscreen.SplashScreenImageResizeMode
-import expo.modules.splashscreen.SplashScreenViewProvider
+import expo.modules.splashscreen.*
 import org.unimodules.core.interfaces.SingletonModule
 import java.util.*
 
@@ -49,7 +46,7 @@ object SplashScreen : SingletonModule {
 
     SplashScreenStatusBar.configureTranslucent(activity, statusBarTranslucent)
 
-    val controller = SplashScreenController(activity, rootViewClass, splashScreenViewProvider)
+    val controller = splashScreenViewProvider.createSplashScreenController(activity, rootViewClass)
     controllers[activity] = controller
     controller.showSplashScreen(successCallback)
   }

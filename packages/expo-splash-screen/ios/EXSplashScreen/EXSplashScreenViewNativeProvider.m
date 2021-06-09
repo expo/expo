@@ -48,4 +48,13 @@
                                userInfo:nil];
 }
 
+
+-(EXSplashScreenController *)createSplashScreenControllerWithView:(UIView *)rootView
+{
+  UIView *splashScreenView = [self createSplashScreenView];
+  EXSplashScreenController *splashController = [[EXSplashScreenController alloc] initWithRootView:rootView
+                                                                                 splashScreenView:splashScreenView];
+  return splashController;
+}
+
 @end

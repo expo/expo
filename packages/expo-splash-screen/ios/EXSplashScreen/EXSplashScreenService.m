@@ -31,6 +31,7 @@ UM_REGISTER_SINGLETON_MODULE(SplashScreen);
                    failureCallback:^(NSString *message){ UMLogWarn(@"%@", message); }];
 }
 
+
 - (void)showSplashScreenFor:(UIViewController *)viewController
    splashScreenViewProvider:(id<EXSplashScreenViewProvider>)splashScreenViewProvider
             successCallback:(void (^)(void))successCallback
@@ -40,8 +41,7 @@ UM_REGISTER_SINGLETON_MODULE(SplashScreen);
     return failureCallback(@"'SplashScreen.show' has already been called for given view controller.");
   }
   
-  EXSplashScreenController *splashScreenController = [[EXSplashScreenController alloc] initWithViewController:viewController
-                                                                                     splashScreenViewProvider:splashScreenViewProvider];
+  EXSplashScreenController *splashScreenController = [splashScreenViewProvider createSplashScreenControllerWithView: viewController.view];
   [self.splashScreenControllers setObject:splashScreenController forKey:viewController];
   [[self.splashScreenControllers objectForKey:viewController] showWithCallback:successCallback
                                                                failureCallback:failureCallback];
@@ -66,6 +66,7 @@ UM_REGISTER_SINGLETON_MODULE(SplashScreen);
   if (![self.splashScreenControllers objectForKey:viewController]) {
     return failureCallback(@"No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.");
   }
+  
   return [[self.splashScreenControllers objectForKey:viewController] hideWithCallback:successCallback
                                                                       failureCallback:failureCallback];
 }

@@ -415,7 +415,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       mManagedAppSplashScreenViewProvider.updateSplashScreenViewWithManifest(this, manifest);
     }
   }
-
   public void setLoadingProgressStatusIfEnabled() {
     ExpoUpdatesAppLoader appLoader = mKernel.getAppLoaderForManifestUrl(mManifestUrl);
     if (appLoader != null) {

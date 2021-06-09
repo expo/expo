@@ -2117,6 +2117,7 @@ PODS:
   - lottie-react-native (4.0.2):
     - lottie-ios (~> 3.1.8)
     - React-Core
+  - MBProgressHUD (1.2.0)
   - MLKitCommon (2.1.0):
     - GoogleDataTransport (~> 8.0)
     - GoogleToolboxForMac/Logger (~> 2.1)
@@ -2816,6 +2817,7 @@ DEPENDENCIES:
   - GoogleMaps (~> 3.6)
   - JKBigInteger2 (= 0.0.5)
   - lottie-react-native (from `./vendored/unversioned/lottie-react-native`)
+  - MBProgressHUD (~> 1.2.0)
   - RCTRequired (from `../react-native-lab/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../react-native-lab/react-native/Libraries/TypeSafety`)
   - React (from `../react-native-lab/react-native/`)
@@ -2879,6 +2881,7 @@ SPEC REPOS:
     - GTMSessionFetcher
     - JKBigInteger2
     - lottie-ios
+    - MBProgressHUD
     - MLKitCommon
     - MLKitFaceDetection
     - MLKitVision
@@ -4109,6 +4112,7 @@ SPEC CHECKSUMS:
   JKBigInteger2: e91672035c42328c48b7dd015b66812ddf40ca9b
   lottie-ios: 3a3758ef5a008e762faec9c9d50a39842f26d124
   lottie-react-native: 4dff8fe8d10ddef9e7880e770080f4a56121397e
+  MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   MLKitCommon: 9ed187a042139d51c0d8bf6a8301bb20b375c576
   MLKitFaceDetection: 5b92261dd6e4205e3dab0df62537ac3f4e90e5db
   MLKitVision: 51385878c9100024478971856510f9271ff555b5
@@ -4147,6 +4151,6 @@ SPEC CHECKSUMS:
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: df6314bbbe7085a685e1076e977acf7799b0bcf4
+PODFILE CHECKSUM: 3a9793cb2e3cb8be49958563e27a94eb9ae37af6
 
 COCOAPODS: 1.10.1

@@ -9,15 +9,15 @@ import java.lang.ref.WeakReference
 
 const val SEARCH_FOR_ROOT_VIEW_INTERVAL = 20L
 
-class SplashScreenController(
+open class SplashScreenController(
   activity: Activity,
   private val rootViewClass: Class<out ViewGroup>,
-  splashScreenViewProvider: SplashScreenViewProvider
+  splashView: View
 ) {
   private val weakActivity = WeakReference(activity)
   private val contentView: ViewGroup = activity.findViewById(android.R.id.content)
       ?: throw NoContentViewException()
-  private var splashScreenView: View = splashScreenViewProvider.createSplashScreenView(activity)
+  private var splashScreenView = splashView
   private val handler = Handler()
 
   private var autoHideEnabled = true
@@ -27,7 +27,7 @@ class SplashScreenController(
 
   // region public lifecycle
 
-  fun showSplashScreen(successCallback: () -> Unit = {}) {
+  open fun showSplashScreen(successCallback: () -> Unit = {}) {
     weakActivity.get()?.runOnUiThread {
       (splashScreenView.parent as? ViewGroup)?.removeView(splashScreenView)
       contentView.addView(splashScreenView)
@@ -49,7 +49,7 @@ class SplashScreenController(
     successCallback(true)
   }
 
-  fun hideSplashScreen(
+  open fun hideSplashScreen(
     successCallback: (hasEffect: Boolean) -> Unit = {},
     failureCallback: (reason: String) -> Unit = {}
   ) {
@@ -123,4 +123,5 @@ class SplashScreenController(
       }
     })
   }
+
 }

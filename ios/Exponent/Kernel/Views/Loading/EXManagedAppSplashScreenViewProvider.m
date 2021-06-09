@@ -7,6 +7,7 @@
 #import "EXManagedAppSplashScreenConfigurationBuilder.h"
 #import "EXManagedAppSplashScreenViewProvider.h"
 #import "EXReactAppManager.h"
+#import "EXManagedAppSplashScreenController.h"
 
 @interface EXManagedAppSplashScreenViewProvider ()
 
@@ -73,6 +74,15 @@
       }
     }
   });
+}
+
+- (EXSplashScreenController *)createSplashScreenControllerWithView:(UIView *)rootView
+{
+  UIView *splashScreenView = [self createSplashScreenView];
+  EXManagedAppSplashScreenController *controller = [[EXManagedAppSplashScreenController alloc]
+                                                    initWithRootView:rootView
+                                                    splashScreenView:splashScreenView];
+  return controller;
 }
 
 @end

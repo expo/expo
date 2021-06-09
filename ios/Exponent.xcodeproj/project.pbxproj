@@ -212,6 +212,9 @@
 		8AE8C43E07B60303CDB3320D /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 04BB1D66346BAA6372234C83 /* libPods-ExponentIntegrationTests.a */; };
 		8B1448C54DEB4CFDB79D7E45 /* RNCSafeAreaViewMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C6465732E5D4486AB56AD4E /* RNCSafeAreaViewMode.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		9B83C7319E6A42FDBFAD2E58 /* RNSVGMarker.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B5470F008B04F93A7E19D7B /* RNSVGMarker.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		A12E8B64266E8E51003ADA8F /* EXManagedAppSplashScreenController.m in Sources */ = {isa = PBXBuildFile; fileRef = A12E8B63266E8E51003ADA8F /* EXManagedAppSplashScreenController.m */; };
+		A1C33FE42667F6E70091644A /* EXSplashScreenHUDButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A1C33FDB2667F6E70091644A /* EXSplashScreenHUDButton.m */; };
+		A1C33FE52667F6E70091644A /* EXSplashScreenHUDButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A1C33FDB2667F6E70091644A /* EXSplashScreenHUDButton.m */; };
 		ABC18CFCC0224BF0B95B691A /* RNCSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = EC7E234A4A564DFE84B2B1D0 /* RNCSlider.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		B0D21CC221E6488D8EDA79EA /* RNSharedElementTransitionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9033E268A74098A882CCEB /* RNSharedElementTransitionManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		B21115F8246C1B47005BA616 /* EXScopedNotificationBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = B21115F7246C1B47005BA616 /* EXScopedNotificationBuilder.m */; };
@@ -1124,6 +1127,10 @@
 		993696B522A54FE2B8DC27D4 /* RNSVGMarkerPosition.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSVGMarkerPosition.h; sourceTree = "<group>"; };
 		A04202C13B6B252B56C2AD40 /* Pods-Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests.debug.xcconfig"; path = "Target Support Files/Pods-Tests/Pods-Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		A0DCD2EBCF2B4FDC80E8EBE3 /* RNSVGForeignObject.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSVGForeignObject.m; sourceTree = "<group>"; };
+		A12E8B62266E8E51003ADA8F /* EXManagedAppSplashScreenController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXManagedAppSplashScreenController.h; sourceTree = "<group>"; };
+		A12E8B63266E8E51003ADA8F /* EXManagedAppSplashScreenController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXManagedAppSplashScreenController.m; sourceTree = "<group>"; };
+		A1C33FDB2667F6E70091644A /* EXSplashScreenHUDButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXSplashScreenHUDButton.m; sourceTree = "<group>"; };
+		A1C33FE32667F6E70091644A /* EXSplashScreenHUDButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXSplashScreenHUDButton.h; sourceTree = "<group>"; };
 		A52338486C178CE51F30C355 /* Pods-Expo Go-Expo Go (unversioned).debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go-Expo Go (unversioned).debug.xcconfig"; path = "Target Support Files/Pods-Expo Go-Expo Go (unversioned)/Pods-Expo Go-Expo Go (unversioned).debug.xcconfig"; sourceTree = "<group>"; };
 		A5B705024D7B4371B0EB68EC /* AIRGoogleMapHeatmapManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = AIRGoogleMapHeatmapManager.m; sourceTree = "<group>"; };
 		ADD76EDEE539AF37E367653E /* Pods-Expo Go-Expo Go (unversioned).release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go-Expo Go (unversioned).release.xcconfig"; path = "Target Support Files/Pods-Expo Go-Expo Go (unversioned)/Pods-Expo Go-Expo Go (unversioned).release.xcconfig"; sourceTree = "<group>"; };
@@ -2146,6 +2153,10 @@
 				8767F97224D17CB2009F9372 /* EXManagedAppSplashScreenViewProvider.m */,
 				8767F97424D19FA7009F9372 /* EXHomeAppSplashScreenViewProvider.h */,
 				8767F97524D19FA7009F9372 /* EXHomeAppSplashScreenViewProvider.m */,
+				A1C33FE32667F6E70091644A /* EXSplashScreenHUDButton.h */,
+				A1C33FDB2667F6E70091644A /* EXSplashScreenHUDButton.m */,
+				A12E8B62266E8E51003ADA8F /* EXManagedAppSplashScreenController.h */,
+				A12E8B63266E8E51003ADA8F /* EXManagedAppSplashScreenController.m */,
 			);
 			path = Loading;
 			sourceTree = "<group>";
@@ -3267,12 +3278,14 @@
 				F1D6AF64244720E100AC1C74 /* EXDevMenuManager.m in Sources */,
 				B56C65CC204769F9002B2424 /* EXDevMenuViewController.m in Sources */,
 				B5AC39A71E95A90B00540AA7 /* EXKernel.m in Sources */,
+				A1C33FE42667F6E70091644A /* EXSplashScreenHUDButton.m in Sources */,
 				7043DF762283303800272D74 /* RNSVGPainterBrush.m in Sources */,
 				B5FB74E91FF6DADC001C764B /* EXNativeModuleIntrospection.m in Sources */,
 				7043DF952283303800272D74 /* RNSVGPathParser.m in Sources */,
 				B5FB74EF1FF6DADC001C764B /* EXTest.m in Sources */,
 				31AD99E72285B51100F19090 /* AIRGoogleMapCircle.m in Sources */,
 				31571B2A2265DC9700358D65 /* EXScopedSegment.m in Sources */,
+				A12E8B64266E8E51003ADA8F /* EXManagedAppSplashScreenController.m in Sources */,
 				87750C4D24EADFDC00CEF3DE /* EXManagedAppSplashScreenConfiguration.m in Sources */,
 				31AD99DE2285B51100F19090 /* AIRGoogleMapPolygonManager.m in Sources */,
 				07CB4E2126045B620057443E /* RCTOnPageScrollEvent.m in Sources */,
@@ -3597,6 +3610,7 @@
 				F1421863262CB68600BB97E6 /* EXDevMenuManager.m in Sources */,
 				F1421864262CB68600BB97E6 /* EXDevMenuViewController.m in Sources */,
 				F1421865262CB68600BB97E6 /* EXKernel.m in Sources */,
+				A1C33FE52667F6E70091644A /* EXSplashScreenHUDButton.m in Sources */,
 				F1421866262CB68600BB97E6 /* RNSVGPainterBrush.m in Sources */,
 				F1421867262CB68600BB97E6 /* EXNativeModuleIntrospection.m in Sources */,
 				F1421868262CB68600BB97E6 /* RNSVGPathParser.m in Sources */,
