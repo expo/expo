@@ -39,7 +39,6 @@ class ManagedAppSplashScreenController(activity: Activity,
         }
     }
 
-
     override fun hideSplashScreen(successCallback: (hasEffect: Boolean) -> Unit, failureCallback: (reason: String) -> Unit) {
         super.hideSplashScreen({
             mRunnable?.let { it1 -> mWarningHandler.removeCallbacks(it1) }
