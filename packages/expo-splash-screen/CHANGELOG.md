@@ -5,8 +5,8 @@
 ### 🛠 Breaking changes
 
 ### 🎉 New features
-- Add warning for splash screen if visible for too long ([#12882](https://github.com/expo/expo/pull/12882) by [@ajsmth](https://github.com/ajsmth))
 
+- Add warning for splash screen if visible for too long ([#12882](https://github.com/expo/expo/pull/12882) by [@ajsmth](https://github.com/ajsmth))
 ### 🐛 Bug fixes
 
 ### 💡 Others

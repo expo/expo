@@ -69,7 +69,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL isStandalone;
 @property (nonatomic, assign) BOOL isHomeApp;
 
-
 /*
  * Controller for handling all messages from bundler/fetcher.
  * It shows another UIWindow with text and percentage progress.
@@ -336,6 +335,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
   if (!_managedAppSplashScreenViewProvider) {
     _managedAppSplashScreenViewProvider = [[EXManagedAppSplashScreenViewProvider alloc] initWithManifest:manifest];
+
     [self _showSplashScreenWithProvider:_managedAppSplashScreenViewProvider];
   } else {
     [_managedAppSplashScreenViewProvider updateSplashScreenViewWithManifest:manifest];
