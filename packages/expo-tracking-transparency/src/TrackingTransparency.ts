@@ -1,5 +1,5 @@
 import { UnavailabilityError } from '@unimodules/core';
-import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import ExpoTrackingTransparency from './ExpoTrackingTransparency';
@@ -72,7 +72,7 @@ export async function getTrackingPermissionsAsync(): Promise<PermissionResponse>
 /**
  * Returns whether the TrackingTransparency API is available on the current device.
  *
- * @returns `boolean`. Currently this is `true` on iOS 14 and above only. On devices where the
+ * @returns Currently this is `true` on iOS 14 and above only. On devices where the
  * Tracking Transparency API is unavailable, the get and request permissions methods will always
  * resolve to `granted`.
  */
@@ -84,4 +84,4 @@ export function isAvailable(): boolean {
   );
 }
 
-export { PermissionResponse };
+export { PermissionResponse, PermissionStatus, PermissionExpiration };
