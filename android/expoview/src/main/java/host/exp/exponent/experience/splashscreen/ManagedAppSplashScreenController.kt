@@ -47,6 +47,4 @@ class ManagedAppSplashScreenController(activity: Activity,
             successCallback(it)
         }, failureCallback)
     }
-
-
 }
