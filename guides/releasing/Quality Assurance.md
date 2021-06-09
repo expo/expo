@@ -43,6 +43,16 @@
 - Update versions of the dependencies in `package.json`.
 - Run `expo start` and check every example, including React Native components.
 
-## 5. Smoke test Expo Go against all supported SDK versions
+### 5. Smoke test Expo Home
+
+- Run against the local version of home.
+- Tap everything in Home in both logged in and logged out states.
+- Try switching between a few apps, both local ones and published ones.
+- Open random links and do weird stuff and make sure the error messages make sense. Be creative.
+- Check the logged in "settings" screen.
+
+## 6. Smoke test Expo Go against all supported SDK versions
+
+> Make sure to use the "Expo Go (versioned)" target on iOS.
 
 - Run `expo init -t blank@sdk-x` for each supported SDK version and ensure the project loads without crashing.
