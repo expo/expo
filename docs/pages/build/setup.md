@@ -12,7 +12,7 @@ For a simple app, you should expect to have kicked off your builds for Android a
 
 ## Prerequisites
 
-EAS Build is a brand new and rapidly evolving service. It can't do everything yet, so before you set out to create a build for your project we recommend consulting the [limitations](/build-reference/limitations.md) page and the other prequisites below.
+EAS Build is a brand new and rapidly evolving service. It can't do everything yet, so before you set out to create a build for your project we recommend consulting the [limitations](/build-reference/limitations.md) page and the other prerequisites below.
 
 <details><summary><h4>📦 A React Native iOS and/or Android project that you want to build.</h4></summary>
 <p>
@@ -23,9 +23,9 @@ Don't have a project yet? No problem: it's quick and easy to create a "Hello wor
 
 - Install Expo CLI by running `npm install -g expo-cli`.
 - Run `expo init PROJECT_NAME`. Choose the project template that best suits you.
-- EAS Build also works well with projects created by `npx react-native`, `create-react-native-app`, `ignite-cli`, and other project bootstrapping tools.
+- EAS Build also works well with projects created by `npx create-react-native-app`, `npx react-native`, `ignite-cli`, and other project bootstrapping tools.
 
-<ImageSpotlight alt="Terminal running expo init, with minimal (TypeScript) selected" src="/static/images/eas-build/walkthrough/01-init.png" />
+<ImageSpotlight alt="Terminal running expo init, with minimal (TypeScript) selected" src="/static/images/eas-build/expo-init.png" />
 
 </p>
 </details>
@@ -100,8 +100,6 @@ The easiest way to try out EAS Build is to create a build that you can run on yo
 </p>
 </details>
 
-
-
 - Run `eas build --platform android` to build for Android.
 
 - Run `eas build --platform ios` to build for iOS.
@@ -126,7 +124,7 @@ Before the build can start, we'll need to generate or provide app signing creden
 
 ## 5. Wait for the build to complete
 
-By default, the `eas build` command will wait for your build to complete. However, if you interrupt this command and monitor the progress of your builds by either visiting [the EAS Build dashboard](https://expo.io/builds?type=eas) or running the `eas build:show` command.
+By default, the `eas build` command will wait for your build to complete. However, if you interrupt this command and monitor the progress of your builds by either visiting [the EAS Build dashboard](https://expo.io/builds?type=eas) or running the `eas build:list` command.
 
 ## 6. Next steps
 

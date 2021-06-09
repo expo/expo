@@ -48,6 +48,11 @@ uploadArchives {
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 30)
 
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
@@ -56,10 +61,6 @@ android {
   }
   lintOptions {
     abortOnError false
-  }
-  compileOptions {
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
   }
 }
 
@@ -77,8 +78,7 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
   unimodule 'unimodules-core'
-  unimodule 'unimodules-face-detector-interface'
-  unimodule 'unimodules-file-system-interface'
+  unimodule 'expo-modules-core'
 
   api "androidx.exifinterface:exifinterface:1.0.0"
   api 'com.google.firebase:firebase-ml-vision:24.0.1'

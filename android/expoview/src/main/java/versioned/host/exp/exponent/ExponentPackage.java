@@ -61,6 +61,7 @@ import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewModu
 import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewPackage;
 import versioned.host.exp.exponent.modules.api.components.sharedelement.RNSharedElementModule;
 import versioned.host.exp.exponent.modules.api.components.sharedelement.RNSharedElementPackage;
+import versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.StripeSdkPackage;
 import versioned.host.exp.exponent.modules.api.netinfo.NetInfoModule;
 import versioned.host.exp.exponent.modules.api.notifications.NotificationsModule;
 import versioned.host.exp.exponent.modules.api.safeareacontext.SafeAreaContextPackage;
@@ -80,6 +81,8 @@ public class ExponentPackage implements ReactPackage {
   private static final String TAG = ExponentPackage.class.getSimpleName();
   private static List<SingletonModule> sSingletonModules;
   private static Set<Class> sSingletonModulesClasses;
+  // Need to avoid initializing 2 StripeSdkPackages
+  private static final StripeSdkPackage stripePackage = new StripeSdkPackage();
 
   private final boolean mIsKernel;
   private final Map<String, Object> mExperienceProperties;
@@ -222,6 +225,8 @@ public class ExponentPackage implements ReactPackage {
         RNDateTimePickerPackage dateTimePickerPackage = new RNDateTimePickerPackage();
         nativeModules.addAll(dateTimePickerPackage.createNativeModules(reactContext));
 
+        nativeModules.addAll(stripePackage.createNativeModules(reactContext));
+
         // Call to create native modules has to be at the bottom --
         // -- ExpoModuleRegistryAdapter uses the list of native modules
         // to create Bindings for internal modules.
@@ -253,7 +258,8 @@ public class ExponentPackage implements ReactPackage {
         new RNCPickerPackage(),
         new ReactSliderPackage(),
         new RNCViewPagerPackage(),
-        new ExpoAppearancePackage()
+        new ExpoAppearancePackage(),
+        stripePackage
     ));
 
     viewManagers.addAll(mModuleRegistryAdapter.createViewManagers(reactContext));

@@ -28,12 +28,12 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
   return {
     status: ReviewStatus.WARN,
     title: 'Missing changelog entries',
-    body: `If you made some API or behavioral changes, please add an appropriate entry to the following changelogs:
+    body: `Your changes should be noted in the changelog. Read [this guide](https://github.com/expo/expo/blob/master/guides/contributing/Updating%20Changelogs.md) and consider adding an appropriate entry to the following changelogs:
 ${changelogLinks}`,
   };
 }
 
 function relativeChangelogPath(pr: ReviewInput['pullRequest'], pkg: Package): string {
   const relativePath = path.relative(EXPO_DIR, pkg.changelogPath);
-  return `[${relativePath}](${pr.head.repo.html_url}/blob/${pr.head.ref}/${relativePath})`;
+  return `[\`${relativePath}\`](${pr.head.repo.html_url}/blob/${pr.head.ref}/${relativePath})`;
 }

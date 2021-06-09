@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 #import <EXFileSystem/EXFilePermissionModule.h>
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
+#import <ExpoModulesCore/EXFileSystemInterface.h>
 
 @interface EXFilePermissionModule ()
 
@@ -14,48 +14,48 @@ UM_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(UMFilePermissionModuleInterface)];
+  return @[@protocol(EXFilePermissionModuleInterface)];
 }
 
-- (UMFileSystemPermissionFlags)getPathPermissions:(NSString *)path
+- (EXFileSystemPermissionFlags)getPathPermissions:(NSString *)path
 {
-  UMFileSystemPermissionFlags permissionsForInternalDirectories = [self getInternalPathPermissions:path];
-  if (permissionsForInternalDirectories != UMFileSystemPermissionNone) {
+  EXFileSystemPermissionFlags permissionsForInternalDirectories = [self getInternalPathPermissions:path];
+  if (permissionsForInternalDirectories != EXFileSystemPermissionNone) {
     return permissionsForInternalDirectories;
   } else {
     return [self getExternalPathPermissions:path];
   }
 }
 
-- (UMFileSystemPermissionFlags)getInternalPathPermissions:(NSString *)path
+- (EXFileSystemPermissionFlags)getInternalPathPermissions:(NSString *)path
 {
-  id<UMFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
+  id<EXFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   NSArray<NSString *> *scopedDirs = @[fileSystem.cachesDirectory, fileSystem.documentDirectory];
   NSString *standardizedPath = [path stringByStandardizingPath];
   for (NSString *scopedDirectory in scopedDirs) {
     if ([standardizedPath hasPrefix:[scopedDirectory stringByAppendingString:@"/"]] ||
         [standardizedPath isEqualToString:scopedDirectory]) {
-      return UMFileSystemPermissionRead | UMFileSystemPermissionWrite;
+      return EXFileSystemPermissionRead | EXFileSystemPermissionWrite;
     }
   }
 
   NSString *bundleDirectory = fileSystem.bundleDirectory;
   if (bundleDirectory != nil && [path hasPrefix:[bundleDirectory stringByAppendingString:@"/"]]) {
-    return UMFileSystemPermissionRead;
+    return EXFileSystemPermissionRead;
   }
 
-  return UMFileSystemPermissionNone;
+  return EXFileSystemPermissionNone;
 }
 
-- (UMFileSystemPermissionFlags)getExternalPathPermissions:(NSString *)path
+- (EXFileSystemPermissionFlags)getExternalPathPermissions:(NSString *)path
 {
-  UMFileSystemPermissionFlags filePermissions = UMFileSystemPermissionNone;
+  EXFileSystemPermissionFlags filePermissions = EXFileSystemPermissionNone;
   if ([[NSFileManager defaultManager] isReadableFileAtPath:path]) {
-    filePermissions |= UMFileSystemPermissionRead;
+    filePermissions |= EXFileSystemPermissionRead;
   }
 
   if ([[NSFileManager defaultManager] isWritableFileAtPath:path]) {
-    filePermissions |= UMFileSystemPermissionWrite;
+    filePermissions |= EXFileSystemPermissionWrite;
   }
 
   return filePermissions;

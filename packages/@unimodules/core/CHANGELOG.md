@@ -8,6 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 7.1.1 — 2021-05-25
+
+### 💡 Others
+
+- Replaced clang's `typeof` with `__typeof` that works with both C++ and GNU++. (by [@tsapeta](https://github.com/tsapeta))
+
 ## 7.1.0 — 2021-03-10
 
 ### 🎉 New features

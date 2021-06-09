@@ -3,7 +3,7 @@
 
 #import <EXDocumentPicker/EXDocumentPickerModule.h>
 #import <UMCore/UMUtilitiesInterface.h>
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
+#import <ExpoModulesCore/EXFileSystemInterface.h>
 
 #import <UIKit/UIKit.h>
 #import <MobileCoreServices/MobileCoreServices.h>
@@ -63,7 +63,7 @@ static NSString * EXConvertMimeTypeToUTI(NSString *mimeType)
 @interface EXDocumentPickerModule () <UIDocumentPickerDelegate, UIAdaptivePresentationControllerDelegate>
 
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
-@property (nonatomic, weak) id<UMFileSystemInterface> fileSystem;
+@property (nonatomic, weak) id<EXFileSystemInterface> fileSystem;
 @property (nonatomic, weak) id<UMUtilitiesInterface> utilities;
 
 @property (nonatomic, strong) UMPromiseResolveBlock resolve;
@@ -82,7 +82,7 @@ UM_EXPORT_MODULE(ExpoDocumentPicker);
   _moduleRegistry = moduleRegistry;
   
   if (_moduleRegistry != nil) {
-    _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
+    _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
     _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
   }
 }

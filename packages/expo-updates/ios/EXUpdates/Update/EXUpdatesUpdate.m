@@ -128,7 +128,7 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
   EXUpdatesRawManifest *rawManifest;
   if (manifestJSON[@"releaseId"]) {
     rawManifest = [[EXUpdatesLegacyRawManifest alloc] initWithRawManifestJSON:manifestJSON];
-  } else if (manifestJSON[@"updateMetadata"]) {
+  } else if (manifestJSON[@"metadata"]) {
     rawManifest = [[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:manifestJSON];
   } else {
     rawManifest = [[EXUpdatesBareRawManifest alloc] initWithRawManifestJSON:manifestJSON];

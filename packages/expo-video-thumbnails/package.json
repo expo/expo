@@ -29,6 +29,9 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/video-thumbnails/",
+  "dependencies": {
+    "expo-modules-core": "~0.0.2"
+  },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"
   }

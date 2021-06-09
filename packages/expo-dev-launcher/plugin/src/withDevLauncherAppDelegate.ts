@@ -31,8 +31,8 @@ const DEV_LAUNCHER_APP_DELEGATE_CONTROLLER_DELEGATE = `
 #endif
 `;
 const DEV_LAUNCHER_APP_DELEGATE_INIT = `#if defined(EX_DEV_LAUNCHER_ENABLED)
-        EXDevLauncherController *contoller = [EXDevLauncherController sharedInstance];
-        [contoller startWithWindow:self.window delegate:self launchOptions:launchOptions];
+        EXDevLauncherController *controller = [EXDevLauncherController sharedInstance];
+        [controller startWithWindow:self.window delegate:(id<EXDevLauncherControllerDelegate>)self launchOptions:launchOptions];
       #else
         [self initializeReactNativeApp];
       #endif`;
@@ -44,6 +44,12 @@ const DEV_LAUNCHER_APP_DELEGATE_BRIDGE = `#if defined(EX_DEV_LAUNCHER_ENABLED)
   #endif
   
     RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];`;
+
+const DEV_MENU_IMPORT = `@import EXDevMenu;`;
+const DEV_MENU_IOS_INIT = `
+#if defined(EX_DEV_MENU_ENABLED)
+  [DevMenuManager configureWithBridge:bridge];
+#endif`;
 
 export function modifyAppDelegate(appDelegate: string) {
   if (!appDelegate.includes(DEV_LAUNCHER_APP_DELEGATE_IOS_IMPORT)) {
@@ -83,6 +89,12 @@ export function modifyAppDelegate(appDelegate: string) {
 
   if (!appDelegate.includes(DEV_LAUNCHER_APP_DELEGATE_CONTROLLER_DELEGATE)) {
     appDelegate += DEV_LAUNCHER_APP_DELEGATE_CONTROLLER_DELEGATE;
+  }
+
+  if (!appDelegate.includes(DEV_MENU_IMPORT)) {
+    // expo-dev-launcher is responsible for initializing the expo-dev-menu.
+    // We need to remove init block from AppDelegate.
+    appDelegate = appDelegate.replace(DEV_MENU_IOS_INIT, '');
   }
 
   return appDelegate;

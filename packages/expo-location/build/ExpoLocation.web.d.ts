@@ -1,4 +1,4 @@
-import { PermissionResponse } from 'unimodules-permissions-interface';
+import { PermissionResponse } from 'expo-modules-core';
 import { LocationLastKnownOptions, LocationObject, LocationOptions } from './Location.types';
 /**
  * Gets the permission details. The implementation is not very good as it actually requests

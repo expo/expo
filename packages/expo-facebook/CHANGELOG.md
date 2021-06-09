@@ -6,12 +6,19 @@
 
 ### 🎉 New features
 
+- [plugin] Refactor imports ([#13029](https://github.com/expo/expo/pull/13029) by [@EvanBacon](https://github.com/EvanBacon))
 - [plugin] Ability to disable `NSUserTrackingUsageDescription` by passing `userTrackingPermission: false`. ([#12767](https://github.com/expo/expo/pull/12767) by [@EvanBacon](https://github.com/EvanBacon))
 - [plugin] Bump min target to node 12. ([#12743](https://github.com/expo/expo/pull/12743) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
 - Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+- Removed unnecessary dependency on `unimodules-constants-interface`. ([#12876](https://github.com/expo/expo/pull/12876) by [@tsapeta](https://github.com/tsapeta))
+- Migrated from `unimodules-permissions-interface` to `expo-modules-core`. ([#12961](https://github.com/expo/expo/pull/12961) by [@tsapeta](https://github.com/tsapeta))
+- Build Android code using Java 8 to fix Android instrumented test build error. ([#12939](https://github.com/expo/expo/pull/12939) by [@kudo](https://github.com/kudo))
 
 ## 11.1.1 — 2021-04-20
 

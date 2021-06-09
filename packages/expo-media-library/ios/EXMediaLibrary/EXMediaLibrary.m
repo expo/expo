@@ -14,10 +14,9 @@
 #import <UMCore/UMUtilities.h>
 #import <UMCore/UMEventEmitterService.h>
 
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
-
-#import <UMPermissionsInterface/UMPermissionsInterface.h>
-#import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
+#import <ExpoModulesCore/EXFileSystemInterface.h>
+#import <ExpoModulesCore/EXPermissionsInterface.h>
+#import <ExpoModulesCore/EXPermissionsMethodsDelegate.h>
 
 NSString *const EXAssetMediaTypeAudio = @"audio";
 NSString *const EXAssetMediaTypePhoto = @"photo";
@@ -34,8 +33,8 @@ NSString *const EXMediaLibraryShouldDownloadFromNetworkKey = @"shouldDownloadFro
 @interface EXMediaLibrary ()
 
 @property (nonatomic, strong) PHFetchResult *allAssetsFetchResult;
-@property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
-@property (nonatomic, weak) id<UMFileSystemInterface> fileSystem;
+@property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
+@property (nonatomic, weak) id<EXFileSystemInterface> fileSystem;
 @property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
 @property (nonatomic, strong) NSMutableSet *saveToLibraryDelegates;
 
@@ -55,10 +54,10 @@ UM_EXPORT_MODULE(ExponentMediaLibrary);
 
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
-  _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
+  _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
-  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
-  [UMPermissionsMethodsDelegate registerRequesters:@[[EXMediaLibraryMediaLibraryPermissionRequester new], [EXMediaLibraryMediaLibraryWriteOnlyPermissionRequester new]] withPermissionsManager:_permissionsManager];
+  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
+  [EXPermissionsMethodsDelegate registerRequesters:@[[EXMediaLibraryMediaLibraryPermissionRequester new], [EXMediaLibraryMediaLibraryWriteOnlyPermissionRequester new]] withPermissionsManager:_permissionsManager];
 }
 
 - (dispatch_queue_t)methodQueue
@@ -113,7 +112,7 @@ UM_EXPORT_METHOD_AS(getPermissionsAsync,
                     resolve:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                       withRequester:[self requesterClass:writeOnly]
                                                             resolve:resolve
                                                              reject:reject];
@@ -124,7 +123,7 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                     resolve:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[self requesterClass:writeOnly]
                                                                resolve:resolve
                                                                 reject:reject];
@@ -174,7 +173,7 @@ UM_EXPORT_METHOD_AS(createAssetAsync,
     return;
   }
   
-  if (!([_fileSystem permissionsForURI:assetUrl] & UMFileSystemPermissionRead)) {
+  if (!([_fileSystem permissionsForURI:assetUrl] & EXFileSystemPermissionRead)) {
     reject(@"E_FILESYSTEM_PERMISSIONS", [NSString stringWithFormat:@"File '%@' isn't readable.", assetUrl], nil);
     return;
   }

@@ -6,12 +6,26 @@ import logger from '../Logger';
 import { generateReviewBodyFromOutputs } from './reports';
 import checkMissingChangelogs from './reviewers/checkMissingChangelogs';
 import reviewChangelogEntries from './reviewers/reviewChangelogEntries';
-import { ReviewEvent, ReviewComment, ReviewInput, ReviewOutput, ReviewStatus } from './types';
+import reviewForbiddenFiles from './reviewers/reviewForbiddenFiles';
+import {
+  ReviewEvent,
+  ReviewComment,
+  ReviewInput,
+  ReviewOutput,
+  ReviewStatus,
+  ReviewState,
+} from './types';
 
 /**
  * An array with functions whose purpose is to check and review the diff.
  */
-const REVIEWERS = [checkMissingChangelogs, reviewChangelogEntries];
+const REVIEWERS = [checkMissingChangelogs, reviewChangelogEntries, reviewForbiddenFiles];
+
+enum Label {
+  PASSED_CHECKS = 'bot: passed checks',
+  SUGGESTIONS = 'bot: suggestions',
+  NEEDS_CHANGES = 'bot: needs changes',
+}
 
 /**
  * Goes through the changes included in given pull request and checks if they meet basic requirements.
@@ -20,20 +34,22 @@ export async function reviewPullRequestAsync(prNumber: number) {
   const pr = await GitHub.getPullRequestAsync(prNumber);
   const user = await GitHub.getAuthenticatedUserAsync();
 
-  logger.info('👾 Fetching base commit:', chalk.yellow.bold(pr.base.sha));
-  await Git.fetchAsync({
-    remote: 'origin',
-    ref: pr.base.sha,
-  });
-
-  logger.info('👾 Fetching head commit:', chalk.yellow.bold(pr.head.sha));
+  // Fetch the base commit with a depth that is equal to the number of commits in the PR increased by one.
+  // The last one is a merge base.
+  logger.info(
+    '👾 Fetching base commit',
+    chalk.yellow.bold(pr.head.sha),
+    'with depth',
+    chalk.yellow((pr.commits + 1).toString())
+  );
   await Git.fetchAsync({
     remote: 'origin',
     ref: pr.head.sha,
+    depth: pr.commits + 1,
   });
 
-  // Gets the diff of the pull request.
-  const diff = await Git.getDiffAsync(pr.base.sha, pr.head.sha);
+  // Get the diff of the pull request.
+  const diff = await Git.getDiffAsync(`${pr.head.sha}~${pr.commits}`, pr.head.sha);
 
   const input: ReviewInput = {
     pullRequest: pr,
@@ -64,12 +80,16 @@ export async function reviewPullRequestAsync(prNumber: number) {
   // If it's the first review and there is nothing to complain,
   // just return early — no need to bother PR's author.
   if (!activeOutputs.length && !comments.length && !previousReviews.length) {
+    await updateLabelsAsync(pr, Label.PASSED_CHECKS);
     logger.success('🥳 Everything looks good to me! There is no need to submit a review.');
     return;
   }
 
   // Reset my reviews' current state if I previously requested for changes.
-  if (previousReviews[previousReviews.length - 1]?.state) {
+  if (
+    previousReviews[previousReviews.length - 1]?.state === ReviewState.CHANGES_REQUESTED &&
+    event !== ReviewEvent.REQUEST_CHANGES
+  ) {
     logger.info('🙈 Resetting my review state by re-requesting');
     await GitHub.requestPullRequestReviewersAsync(pr.number, [user.login]);
   }
@@ -81,6 +101,11 @@ export async function reviewPullRequestAsync(prNumber: number) {
     comments,
   });
   logger.info('📝 Submitted new review at:', chalk.blue(review.html_url));
+
+  // As we never approve the PR by the bot (don't want to bypass the "at least one approval" requirement),
+  // adding appropriate labels instead seems to be a good compromise and makes it clear which PRs are ready to be reviewed by us.
+  const label = getLabelFromOutputs(activeOutputs);
+  await updateLabelsAsync(pr, label);
 
   // Previous reviews are no longer useful — we would delete them, but
   // unfortunately they cannot be deleted entirely so we only make them smaller.
@@ -132,4 +157,44 @@ function getReviewEventFromOutputs(outputs: ReviewOutput[]): GitHub.PullRequestR
  */
 function getReviewCommentsFromOutputs(outputs: ReviewOutput[]): ReviewComment[] {
   return ([] as ReviewComment[]).concat(...outputs.map((output) => output.comments ?? []));
+}
+
+/**
+ * Returns GitHub's label based on outputs' final status.
+ */
+function getLabelFromOutputs(outputs: ReviewOutput[]): Label {
+  const finalStatus = outputs.reduce(
+    (acc, output) => Math.max(acc, output.status),
+    ReviewStatus.PASSIVE
+  );
+  switch (finalStatus) {
+    case ReviewStatus.ERROR:
+      return Label.NEEDS_CHANGES;
+    case ReviewStatus.WARN:
+      return Label.SUGGESTIONS;
+    default:
+      return Label.PASSED_CHECKS;
+  }
+}
+
+/**
+ * Updates bot's labels of the PR so that only given label is assigned.
+ */
+async function updateLabelsAsync(pr: GitHub.PullRequest, newLabel: Label) {
+  const prLabels = pr.labels.map((label) => label.name);
+  const botLabels = Object.values(Label);
+
+  // Get an array of bot's labels that are already assigned to the PR.
+  const labelsToRemove = botLabels.filter(
+    (label) => label !== newLabel && prLabels.includes(label)
+  );
+
+  for (const labelToRemove of labelsToRemove) {
+    logger.info(`🏷  Removing ${chalk.yellow(labelToRemove)} label`);
+    await GitHub.removeIssueLabelAsync(pr.number, labelToRemove);
+  }
+  if (!prLabels.includes(newLabel)) {
+    logger.info(`🏷  Adding ${chalk.yellow(newLabel)} label`);
+    await GitHub.addIssueLabelsAsync(pr.number, [newLabel]);
+  }
 }

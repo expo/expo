@@ -1,4 +1,5 @@
 import { SyntheticPlatformEmitter } from '@unimodules/core';
+import { PermissionStatus } from 'expo-modules-core';
 function getStatusFromMedia(media) {
     if (!media) {
         return {
@@ -133,5 +134,18 @@ export default {
     async pauseAudioRecording() { },
     async stopAudioRecording() { },
     async unloadAudioRecorder() { },
+    // Recording isn't available on the web
+    async getPermissionsAsync() {
+        return {
+            status: PermissionStatus.DENIED,
+            expires: 'never',
+            canAskAgain: false,
+            granted: false,
+        };
+    },
+    // Recording isn't available on the web
+    async requestPermissionsAsync() {
+        return this.getPermissionsAsync();
+    },
 };
 //# sourceMappingURL=ExponentAV.web.js.map

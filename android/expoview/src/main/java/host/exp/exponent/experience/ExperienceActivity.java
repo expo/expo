@@ -549,18 +549,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       notificationObject = options.notificationObject;
     }
 
-    // if we have an embedded initial url, we never need any part of this in the initial url
-    // passed to the JS, so we check for that and filter it out here.
-    // this can happen in dev mode on a detached app, for example, because the intent will have
-    // a url like customscheme://localhost:19000 but we don't care about the localhost:19000 part.
-    if (mIntentUri == null || mIntentUri.equals(Constants.INITIAL_URL)) {
-      if (Constants.SHELL_APP_SCHEME != null) {
-        mIntentUri = Constants.SHELL_APP_SCHEME + "://";
-      } else {
-        mIntentUri = mManifestUrl;
-      }
-    }
-
     final ExponentNotification finalNotificationObject = notificationObject;
 
     BranchManager.handleLink(this, mIntentUri, mDetachSdkVersion);
@@ -824,44 +812,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   protected void onError(final Intent intent) {
     if (mManifestUrl != null) {
       intent.putExtra(ErrorActivity.MANIFEST_URL_KEY, mManifestUrl);
-    }
-  }
-
-  @Override
-  protected void onError(final ExponentError error) {
-    if (mManifest == null) {
-      return;
-    }
-
-    JSONObject errorJson = error.toJSONObject();
-    if (errorJson == null) {
-      return;
-    }
-
-    String experienceId;
-    try {
-      experienceId = mManifest.getID();
-    } catch (JSONException e) {
-      return;
-    }
-
-    JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(experienceId);
-    if (metadata == null) {
-      metadata = new JSONObject();
-    }
-
-    JSONArray errors = metadata.optJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS);
-    if (errors == null) {
-      errors = new JSONArray();
-    }
-
-    errors.put(errorJson);
-
-    try {
-      metadata.put(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS, errors);
-      mExponentSharedPreferences.updateExperienceMetadata(experienceId, metadata);
-    } catch (JSONException e) {
-      e.printStackTrace();
     }
   }
 

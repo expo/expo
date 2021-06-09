@@ -80,7 +80,7 @@ class DevMenuViewController: UIViewController {
       "devMenuScreens": manager.serializedDevMenuScreens(),
       "appInfo": manager.session?.appInfo ?? [:],
       "uuid": UUID.init().uuidString,
-      "openScreen": manager.session?.openScreen
+      "openScreen": manager.session?.openScreen ?? NSNull()
     ]
   }
 

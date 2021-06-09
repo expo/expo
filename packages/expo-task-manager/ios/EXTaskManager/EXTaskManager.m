@@ -4,7 +4,7 @@
 #import <UMCore/UMUtilities.h>
 #import <UMCore/UMEventEmitterService.h>
 
-#import <UMConstantsInterface/UMConstantsInterface.h>
+#import <ExpoModulesCore/EXConstantsInterface.h>
 
 #import <EXTaskManager/EXTaskManager.h>
 #import <EXTaskManager/EXTaskService.h>
@@ -17,7 +17,7 @@ NSString * const EXTaskManagerEventName = @"TaskManager.executeTask";
 @property (nonatomic, strong) NSString *appId;
 @property (nonatomic, strong) NSMutableArray<NSDictionary *> *eventsQueue;
 @property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
-@property (nonatomic, weak) id<UMConstantsInterface> constantsService;
+@property (nonatomic, weak) id<EXConstantsInterface> constantsService;
 @property (nonatomic, weak) id<UMTaskServiceInterface> taskService;
 
 @end
@@ -49,7 +49,7 @@ UM_EXPORT_MODULE(ExpoTaskManager);
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
-  _constantsService = [moduleRegistry getModuleImplementingProtocol:@protocol(UMConstantsInterface)];
+  _constantsService = [moduleRegistry getModuleImplementingProtocol:@protocol(EXConstantsInterface)];
   _taskService = [moduleRegistry getSingletonModuleForName:@"TaskService"];
 
   // Register task manager in task service.

@@ -6,6 +6,41 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.6.0 — 2021-06-08
+
+### 🎉 New features
+
+- Add JavaScript runtime information. ([#13042](https://github.com/expo/expo/pull/13042) by [@kudo](https://github.com/kudo))
+- Add JavaScript inspector menu item. ([#13041](https://github.com/expo/expo/pull/13041) by [@kudo](https://github.com/kudo))
+- Added WebSocket support. ([#12979](https://github.com/expo/expo/pull/12979) & [#12983](https://github.com/expo/expo/pull/12983) by [@lukmccall](https://github.com/lukmccall))
+
+### 🐛 Bug fixes
+
+- Fixed actions don't dismiss the dev-menu. ([#13021](https://github.com/expo/expo/pull/13021) by [@lukmccall](https://github.com/lukmccall))
+- Fixed spamming profile or settings pushes multiple screens. ([#12935](https://github.com/expo/expo/pull/12935) by [@lukmccall](https://github.com/lukmccall))
+- Fixed spamming profile or settings pushes multiple screens. ([#12935](https://github.com/expo/expo/pull/12935) by [@lukmccall](https://github.com/lukmccall))
+- Fixed `dev-menu` items rearranging on iOS. ([#12980](https://github.com/expo/expo/pull/12980) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.5.2 — 2021-05-20
+
+### 💡 Others
+
+- Build Android code using Java 8 to fix Android instrumented test build error. ([#12939](https://github.com/expo/expo/pull/12939) by [@kudo](https://github.com/kudo))
+
+## 0.5.1 — 2021-05-12
+
+### 🐛 Bug fixes
+
+- Fixed compatibility with React Native 0.64.X. ([#12909](https://github.com/expo/expo/pull/12909) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.5.0 — 2021-05-11
+
+### 🎉 New features
+
 - [plugin] Prevent plugin from running multiple times in a single process. ([#12715](https://github.com/expo/expo/pull/12715) by [@EvanBacon](https://github.com/EvanBacon))
 - [plugin] Added AppDelegate tests. ([#12651](https://github.com/expo/expo/pull/12651) by [@EvanBacon](https://github.com/EvanBacon))
 - Float dev menu above RedBox on iOS. ([#12632](https://github.com/expo/expo/pull/12632) by [@EvanBacon](https://github.com/EvanBacon))
@@ -15,6 +50,11 @@
 - Account for rubocop formatting in plugin. ([#12480](https://github.com/expo/expo/pull/12480) by [@EvanBacon](https://github.com/EvanBacon))
 - Fixed `isAvailable` option in `DevMenuAction` having no effect. ([#12703](https://github.com/expo/expo/pull/12703) by [@lukmccall](https://github.com/lukmccall))
 - Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
+- Remove test screens. ([#12850](https://github.com/expo/expo/pull/12850) by [@lukmccall](https://github.com/lukmccall))
+- Fixed compilation error on older versions of the Kotlin compiler. ([#12853](https://github.com/expo/expo/pull/12853) by [@lukmccall](https://github.com/lukmccall))
+- Fixed XCode warnings. ([#12798](https://github.com/expo/expo/pull/12798) by [@lukmccall](https://github.com/lukmccall))
+- Fixed the `SafeAreaView` color wasn't applied correctly while using the dark mode. ([#12851](https://github.com/expo/expo/pull/12851) by [@lukmccall](https://github.com/lukmccall))
+- [plugin] Removed unused menu initialization if expo-dev-launcher is installed on iOS. ([#12875](https://github.com/expo/expo/pull/12875) by [@lukmccall](https://github.com/lukmccall))
 
 ## 0.4.1 — 2021-03-30
 

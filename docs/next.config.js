@@ -25,9 +25,9 @@ const enableEsbuild = !!process.env.USE_ESBUILD;
 console.log(enableEsbuild ? 'Using esbuild for MDX files' : 'Using babel for MDX files');
 
 module.exports = {
-  future: {
-    webpack5: true,
-  },
+  // future: {
+  //   webpack5: true,
+  // },
   trailingSlash: true,
   // Rather than use `@zeit/next-mdx`, we replicate it
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
@@ -74,7 +74,10 @@ module.exports = {
     });
 
     // Fix inline or browser MDX usage: https://mdxjs.com/getting-started/webpack#running-mdx-in-the-browser
-    config.resolve.fallback = { fs: false, path: require.resolve('path-browserify') };
+    // Webpack 4
+    config.node = { fs: 'empty' };
+    // Webpack 5
+    // config.resolve.fallback = { fs: false, path: require.resolve('path-browserify') };
 
     // Add the esbuild plugin only when using esbuild
     if (enableEsbuild) {
@@ -110,21 +113,27 @@ module.exports = {
         }
       })
     );
-    // Create a sitemap for crawlers like Google and Algolia
-    createSitemap({
-      pathMap,
-      domain: 'https://docs.expo.io',
-      output: join(outDir, 'sitemap.xml'),
-      // Some of the search engines only track the first N items from the sitemap,
-      // this makes sure our starting and general guides are first, and API index last (in order from new to old)
-      pathsPriority: [
-        ...navigation.startingDirectories,
-        ...navigation.generalDirectories,
-        ...versions.VERSIONS.map(version => `versions/${version}`),
-      ],
-      // Some of our pages are "hidden" and should not be added to the sitemap
-      pathsHidden: navigation.previewDirectories,
-    });
+
+    const domains = ['docs.expo.io', 'docs.expo.dev'];
+
+    for (const domain of domains) {
+      // Create a sitemap for crawlers like Google and Algolia
+      createSitemap({
+        pathMap,
+        domain: `https://${domain}`,
+        output: join(outDir, `${domain}-sitemap.xml`),
+        // Some of the search engines only track the first N items from the sitemap,
+        // this makes sure our starting and general guides are first, and API index last (in order from new to old)
+        pathsPriority: [
+          ...navigation.startingDirectories,
+          ...navigation.generalDirectories,
+          ...versions.VERSIONS.map(version => `versions/${version}`),
+        ],
+        // Some of our pages are "hidden" and should not be added to the sitemap
+        pathsHidden: navigation.previewDirectories,
+      });
+    }
+
     return pathMap;
   },
   async headers() {

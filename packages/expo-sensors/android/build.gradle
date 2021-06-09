@@ -48,6 +48,11 @@ uploadArchives {
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 30)
 
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
@@ -69,7 +74,7 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
   unimodule "unimodules-core"
-  unimodule "unimodules-sensors-interface"
+  unimodule 'expo-modules-core'
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
 }

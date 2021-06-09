@@ -2,9 +2,11 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 
-group = 'org.unimodules'
-version = '6.2.2'
+// Import autolinking script
+apply from: "../scripts/autolinking.gradle"
 
+group = 'org.unimodules'
+version = '6.3.0'
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -46,17 +48,39 @@ uploadArchives {
   }
 }
 
+// A task generating a package list of expo modules.
+task generateExpoModulesPackageList {
+  doLast {
+    generateExpoModulesPackageList()
+  }
+}
+
+// Run that task during prebuilding phase.
+preBuild.dependsOn generateExpoModulesPackageList
+
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 30)
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
     versionCode 23
-    versionName "6.2.2"
+    versionName "6.3.0"
   }
   lintOptions {
     abortOnError false
+  }
+  sourceSets {
+    main {
+      java {
+        srcDirs += new File(project.buildDir, generatedFilesSrcDir)
+      }
+    }
   }
 }
 
@@ -64,9 +88,7 @@ apply from: project(":unimodules-core").file("../unimodules-core.gradle")
 
 dependencies {
   unimodule 'unimodules-core'
-  unimodule 'unimodules-font-interface'
-  unimodule 'unimodules-permissions-interface'
-  unimodule 'unimodules-image-loader-interface'
+  unimodule 'expo-modules-core'
   unimodule 'unimodules-app-loader'
 
   //noinspection GradleDynamicVersion
@@ -74,3 +96,7 @@ dependencies {
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
 }
+
+// Link expo modules as dependencies of the adapter. It uses `api` configuration so they all will be visible for the app as well.
+// A collection of the dependencies depends on the options passed to `useExpoModules` in your project's `settings.gradle`.
+addExpoModulesDependencies(project)

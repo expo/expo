@@ -1,9 +1,13 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXDevLauncherRCTBridge.h"
+#import "RCTCxxBridge+Private.h"
+
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTDevSettings.h>
 #import <React/RCTDevMenu.h>
+
+@import EXDevMenuInterface;
 
 @implementation EXDevLauncherRCTCxxBridge
 
@@ -16,10 +20,34 @@
 {
   return nil;
 }
+
 - (RCTDevMenu *)devMenu
 {
   return nil;
 }
+
+- (NSArray<RCTModuleData *> *)_initializeModules:(NSArray<Class> *)modules
+                               withDispatchGroup:(dispatch_group_t)dispatchGroup
+                                lazilyDiscovered:(BOOL)lazilyDiscovered
+{
+  NSArray<NSString *> *allowedModules = @[@"RCT", @"DevMenu"];
+  NSArray<Class> *filtredModuleList = [modules filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable clazz, NSDictionary<NSString *,id> * _Nullable bindings) {
+    if ([clazz conformsToProtocol:@protocol(DevMenuExtensionProtocol)]) {
+      return true;
+    }
+    
+    NSString* clazzName = NSStringFromClass(clazz);
+    for (NSString *allowedModule in allowedModules) {
+      if ([clazzName hasPrefix:allowedModule]) {
+        return true;
+      }
+    }
+    return false;
+  }]];
+  
+  return [super _initializeModules:filtredModuleList withDispatchGroup:dispatchGroup lazilyDiscovered:lazilyDiscovered];
+}
+
 @end
 
 @implementation EXDevLauncherRCTBridge
@@ -29,8 +57,10 @@
   return [EXDevLauncherRCTCxxBridge class];
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
+// This method is still used so we need to override it even if it's deprecated
 - (void)reloadWithReason:(NSString *)reason {}
+#pragma clang diagnostic pop
 
 @end
-
-

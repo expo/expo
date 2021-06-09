@@ -14,4 +14,6 @@ class DevMenuPackagerConnectionSettings(
   override fun getDebugServerHost(): String = serverIp
 
   override fun setDebugServerHost(host: String) = Unit
+
+  override fun getInspectorServerHost() = serverIp
 }

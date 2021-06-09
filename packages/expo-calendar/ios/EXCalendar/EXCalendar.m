@@ -10,14 +10,14 @@
 #import <EXCalendar/EXCalendarPermissionRequester.h>
 #import <EXCalendar/EXRemindersPermissionRequester.h>
 
-#import <UMPermissionsInterface/UMPermissionsInterface.h>
-#import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
+#import <ExpoModulesCore/EXPermissionsInterface.h>
+#import <ExpoModulesCore/EXPermissionsMethodsDelegate.h>
 
 @interface EXCalendar ()
 
 @property (nonatomic, strong) EKEventStore *eventStore;
 @property (nonatomic) BOOL isAccessToEventStoreGranted;
-@property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
+@property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
 @property (nonatomic) EKEntityMask permittedEntities;
 
 @end
@@ -37,8 +37,8 @@ UM_EXPORT_MODULE(ExpoCalendar);
 
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
-  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
-  [UMPermissionsMethodsDelegate registerRequesters:@[
+  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
+  [EXPermissionsMethodsDelegate registerRequesters:@[
                                                     [EXCalendarPermissionRequester new],
                                                     [EXRemindersPermissionRequester new]
                                                     ]
@@ -760,7 +760,7 @@ UM_EXPORT_METHOD_AS(getCalendarPermissionsAsync,
                     getCalendarPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                       withRequester:[EXCalendarPermissionRequester class]
                                                             resolve:resolve
                                                              reject:reject];
@@ -770,7 +770,7 @@ UM_EXPORT_METHOD_AS(requestCalendarPermissionsAsync,
                     requestCalendarPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[EXCalendarPermissionRequester class]
                                                                resolve:resolve
                                                                 reject:reject];
@@ -780,7 +780,7 @@ UM_EXPORT_METHOD_AS(getRemindersPermissionsAsync,
                     getRemindersPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                       withRequester:[EXRemindersPermissionRequester class]
                                                             resolve:resolve
                                                              reject:reject];
@@ -790,7 +790,7 @@ UM_EXPORT_METHOD_AS(requestRemindersPermissionsAsync,
                     requestRemindersPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[EXRemindersPermissionRequester class]
                                                                resolve:resolve
                                                                 reject:reject];

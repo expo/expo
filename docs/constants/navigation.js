@@ -23,6 +23,7 @@ const GROUPS = {
   Preview: ['Preview'],
   'EAS Build': ['Start Building', 'App Signing', 'Reference'],
   'EAS Submit': ['EAS Submit'],
+  'Technical Specs': ['Technical Specs'],
   'Development Clients': ['Development Clients'],
 };
 
@@ -66,6 +67,7 @@ const sections = [
       'Environment variables and secrets',
       'Server infrastructure',
       'Caching dependencies',
+      'Running builds on your own infrastructure',
       'Build webhooks',
       'Building APKs for Android emulators and devices',
       'Building for iOS simulators',
@@ -82,6 +84,10 @@ const sections = [
       'Submitting to the Google Play Store',
       'Submitting to the Apple App Store',
     ],
+  },
+  {
+    name: 'Technical Specs',
+    reference: ['Expo Updates', 'Expo Structured Field Values'],
   },
   {
     name: 'Development Clients',
@@ -183,7 +189,7 @@ const sections = [
       'Upgrading Expo SDK',
       'Developing for Web',
       'Snack: a playground in your browser',
-      'Ejecting to Bare Workflow',
+      'Adding custom native code',
       'Glossary of terms',
     ],
   },
@@ -403,6 +409,7 @@ const ROOT = [
   'Configuration Files',
   'Expo SDK',
   'React Native',
+  'Technical Specs',
   'ExpoKit',
 ];
 

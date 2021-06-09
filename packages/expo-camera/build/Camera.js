@@ -97,11 +97,29 @@ export default class Camera extends React.Component {
         }
         return await CameraManager.getAvailableCameraTypesAsync();
     }
+    static async getAvailableVideoCodecsAsync() {
+        if (!CameraManager.getAvailableVideoCodecsAsync) {
+            throw new UnavailabilityError('Camera', 'getAvailableVideoCodecsAsync');
+        }
+        return await CameraManager.getAvailableVideoCodecsAsync();
+    }
     static async getPermissionsAsync() {
         return CameraManager.getPermissionsAsync();
     }
     static async requestPermissionsAsync() {
         return CameraManager.requestPermissionsAsync();
+    }
+    static async getCameraPermissionsAsync() {
+        return CameraManager.getCameraPermissionsAsync();
+    }
+    static async requestCameraPermissionsAsync() {
+        return CameraManager.requestCameraPermissionsAsync();
+    }
+    static async getMicrophonePermissionsAsync() {
+        return CameraManager.getMicrophonePermissionsAsync();
+    }
+    static async requestMicrophonePermissionsAsync() {
+        return CameraManager.requestMicrophonePermissionsAsync();
     }
     async takePictureAsync(options) {
         const pictureOptions = ensurePictureOptions(options);
@@ -160,6 +178,7 @@ Camera.Constants = {
     WhiteBalance: CameraManager.WhiteBalance,
     VideoQuality: CameraManager.VideoQuality,
     VideoStabilization: CameraManager.VideoStabilization || {},
+    VideoCodec: CameraManager.VideoCodec,
 };
 // Values under keys from this object will be transformed to native options
 Camera.ConversionTables = ConversionTables;

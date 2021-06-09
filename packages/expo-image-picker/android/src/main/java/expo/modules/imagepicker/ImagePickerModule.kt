@@ -20,8 +20,14 @@ import expo.modules.imagepicker.fileproviders.CacheFileProvider
 import expo.modules.imagepicker.fileproviders.CropFileProvider
 import expo.modules.imagepicker.tasks.ImageResultTask
 import expo.modules.imagepicker.tasks.VideoResultTask
+import expo.modules.interfaces.imageloader.ImageLoaderInterface
+import expo.modules.interfaces.permissions.Permissions
+import expo.modules.interfaces.permissions.PermissionsResponse
+import expo.modules.interfaces.permissions.PermissionsResponseListener
+import expo.modules.interfaces.permissions.PermissionsStatus
 import org.unimodules.core.ExportedModule
 import org.unimodules.core.ModuleRegistry
+import org.unimodules.core.ModuleRegistryDelegate
 import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ActivityEventListener
 import org.unimodules.core.interfaces.ActivityProvider
@@ -29,17 +35,12 @@ import org.unimodules.core.interfaces.ExpoMethod
 import org.unimodules.core.interfaces.LifecycleEventListener
 import org.unimodules.core.interfaces.services.UIManager
 import org.unimodules.core.utilities.FileUtilities.generateOutputPath
-import org.unimodules.interfaces.imageloader.ImageLoader
-import org.unimodules.interfaces.permissions.Permissions
-import org.unimodules.interfaces.permissions.PermissionsResponse
-import org.unimodules.interfaces.permissions.PermissionsResponseListener
-import org.unimodules.interfaces.permissions.PermissionsStatus
 import java.io.IOException
 import java.lang.ref.WeakReference
 
 class ImagePickerModule(
   private val mContext: Context,
-  val moduleRegistryPropertyDelegate: ModuleRegistryPropertyDelegate = ModuleRegistryPropertyDelegate(),
+  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate(),
   private val pickerResultStore: PickerResultsStore = PickerResultsStore(mContext)
 ) : ExportedModule(mContext), ActivityEventListener, LifecycleEventListener {
 
@@ -54,7 +55,7 @@ class ImagePickerModule(
    */
   private var mWasDestroyed = false
 
-  private val mImageLoader: ImageLoader by moduleRegistry()
+  private val mImageLoader: ImageLoaderInterface by moduleRegistry()
   private val mUIManager: UIManager by moduleRegistry()
   private val mPermissions: Permissions by moduleRegistry()
   private val mActivityProvider: ActivityProvider by moduleRegistry()
@@ -70,8 +71,10 @@ class ImagePickerModule(
       return _experienceActivity.get()
     }
 
+  private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
+
   override fun onCreate(moduleRegistry: ModuleRegistry) {
-    moduleRegistryPropertyDelegate.onCreate(moduleRegistry)
+    moduleRegistryDelegate.onCreate(moduleRegistry)
     mUIManager.registerLifecycleEventListener(this)
   }
 

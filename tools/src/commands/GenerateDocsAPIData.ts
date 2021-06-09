@@ -85,8 +85,11 @@ async function action({ packageName }: ActionOptions) {
     'expo-application': ['Application.ts'],
     'expo-battery': ['Battery.ts'],
     'expo-blur': ['index.ts'],
+    'expo-cellular': ['Cellular.ts'],
+    'expo-clipboard': ['Clipboard.ts'],
     'expo-keep-awake': ['index.ts'],
     'expo-linear-gradient': ['LinearGradient.tsx'],
+    'expo-localization': ['Localization.ts'],
     'expo-mail-composer': ['MailComposer.ts'],
     'expo-print': ['Print.ts'],
     'expo-random': ['Random.ts'],
@@ -95,6 +98,8 @@ async function action({ packageName }: ActionOptions) {
     'expo-splash-screen': ['SplashScreen.ts'],
     'expo-store-review': ['StoreReview.ts'],
     'expo-task-manager': ['TaskManager.ts'],
+    'expo-tracking-transparency': ['TrackingTransparency.ts'],
+    'expo-video-thumbnails': ['VideoThumbnails.ts'],
   };
 
   try {

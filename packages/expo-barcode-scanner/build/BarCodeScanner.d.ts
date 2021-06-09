@@ -1,6 +1,6 @@
+import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
 import * as React from 'react';
 import { ViewProps } from 'react-native';
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 export declare type BarCodePoint = {
     x: number;
     y: number;

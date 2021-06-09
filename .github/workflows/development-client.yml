@@ -12,6 +12,10 @@ on:
       - .github/workflows/development-client.yml
       - packages/expo-dev-*/**
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   android:
     runs-on: ubuntu-18.04
@@ -52,12 +56,24 @@ jobs:
       - name: Init new expo app
         working-directory: ../
         run: expo-cli init development-client-android-test --name development-client-android-test --yes
+      - name: Make Yarn resolve expo-dev-client dependencies locally
+        working-directory: ../development-client-android-test
+        run: |
+          node -e " \
+            const pkg = require('./package.json'); \
+            pkg.resolutions = { \
+              ...pkg.resolutions, \
+              'expo-dev-menu': 'file:../expo/packages/expo-dev-menu', \
+              'expo-dev-menu-interface': 'file:../expo/packages/expo-dev-menu-interface', \
+              'expo-dev-launcher': 'file:../expo/packages/expo-dev-launcher', \
+            }; \
+            fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');"
       - name: Add dependencies
         working-directory: ../development-client-android-test
-        run: yarn add file:../expo/packages/expo-dev-menu file:../expo/packages/expo-dev-menu-interface file:../expo/packages/expo-dev-launcher
+        run: yarn add file:../expo/packages/expo-dev-client
       - name: Setup app.config.json
         working-directory: ../development-client-android-test
-        run: echo "{\"name\":\"development-client-android-test\",\"plugins\":[\"expo-dev-menu\",\"expo-dev-launcher\"],\"android\":{\"package\":\"com.devclient.test\"},\"ios\":{\"bundleIdentifier\":\"com.devclient.test\"}}" > app.config.json
+        run: echo "{\"name\":\"development-client-android-test\",\"plugins\":[\"expo-dev-client\"],\"android\":{\"package\":\"com.devclient.test\"},\"ios\":{\"bundleIdentifier\":\"com.devclient.test\"}}" > app.config.json
       - name: Eject
         working-directory: ../development-client-android-test
         run: expo-cli eject
@@ -95,12 +111,25 @@ jobs:
       - name: Init new expo app
         working-directory: ../
         run: expo-cli init development-client-ios-test --name development-client-ios-test --yes
+      - name: Make Yarn resolve expo-dev-client dependencies locally
+        working-directory: ../development-client-ios-test
+        run: |
+          node -e " \
+            const pkg = require('./package.json'); \
+            pkg.resolutions = { \
+              ...pkg.resolutions, \
+              'expo-dev-menu': 'file:../expo/packages/expo-dev-menu', \
+              'expo-dev-menu-interface': 'file:../expo/packages/expo-dev-menu-interface', \
+              'expo-dev-launcher': 'file:../expo/packages/expo-dev-launcher', \
+              'expo-updates-interface': 'file:../expo/packages/expo-updates-interface', \
+            }; \
+            fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');"
       - name: Add dependencies
         working-directory: ../development-client-ios-test
-        run: yarn add file:../expo/packages/expo-dev-menu file:../expo/packages/expo-dev-menu-interface file:../expo/packages/expo-dev-launcher
+        run: yarn add file:../expo/packages/expo-dev-client
       - name: Setup app.config.json
         working-directory: ../development-client-ios-test
-        run: echo "{\"name\":\"development-client-ios-test\",\"plugins\":[\"expo-dev-menu\",\"expo-dev-launcher\"],\"android\":{\"package\":\"com.devclient.test\"},\"ios\":{\"bundleIdentifier\":\"com.devclient.test\"}}" > app.config.json
+        run: echo "{\"name\":\"development-client-ios-test\",\"plugins\":[\"expo-dev-client\"],\"android\":{\"package\":\"com.devclient.test\"},\"ios\":{\"bundleIdentifier\":\"com.devclient.test\"}}" > app.config.json
       - name: Eject
         working-directory: ../development-client-ios-test
         run: expo-cli eject

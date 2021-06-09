@@ -26,6 +26,6 @@ done
 
 if [ ${#pathsToUpdate[@]} -ne 0 ]; then
   dirs=$(printf " or $($green)%s$($yellow)" "${pathsToUpdate[@]}")
-  printf "\\n⚠️  $($yellow)Update your local CocoaPods with $($blue)pod install$($yellow) if you're working in "
+  printf "\\n⚠️  $($yellow)Update your local CocoaPods with $($blue)et pod-install$($yellow) if you're working in "
   printf "${dirs:4}$($reset)\\n"
 fi

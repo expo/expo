@@ -7,6 +7,11 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import expo.modules.barcodescanner.utils.BarCodeScannerResultSerializer;
+import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface;
+import expo.modules.interfaces.barcodescanner.BarCodeScannerResult;
+import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings;
+import expo.modules.interfaces.imageloader.ImageLoaderInterface;
+import expo.modules.interfaces.permissions.Permissions;
 
 import com.google.android.gms.vision.barcode.Barcode;
 
@@ -20,11 +25,6 @@ import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.interfaces.barcodescanner.BarCodeScanner;
-import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
-import org.unimodules.interfaces.barcodescanner.BarCodeScannerSettings;
-import org.unimodules.interfaces.imageloader.ImageLoader;
-import org.unimodules.interfaces.permissions.Permissions;
 
 import static expo.modules.barcodescanner.ExpoBarCodeScanner.CAMERA_TYPE_BACK;
 import static expo.modules.barcodescanner.ExpoBarCodeScanner.CAMERA_TYPE_FRONT;
@@ -111,11 +111,11 @@ public class BarCodeScannerModule extends ExportedModule {
       }
     }
 
-    final ImageLoader imageLoader = mModuleRegistry.getModule(ImageLoader.class);
-    imageLoader.loadImageForManipulationFromURL(url, new ImageLoader.ResultListener() {
+    final ImageLoaderInterface imageLoader = mModuleRegistry.getModule(ImageLoaderInterface.class);
+    imageLoader.loadImageForManipulationFromURL(url, new ImageLoaderInterface.ResultListener() {
       @Override
       public void onSuccess(@NonNull Bitmap bitmap) {
-        BarCodeScanner scanner = mBarCodeScannerProvider.createBarCodeDetectorWithContext(getContext());
+        BarCodeScannerInterface scanner = mBarCodeScannerProvider.createBarCodeDetectorWithContext(getContext());
         scanner.setSettings(new BarCodeScannerSettings() {{
           putTypes(types);
         }});

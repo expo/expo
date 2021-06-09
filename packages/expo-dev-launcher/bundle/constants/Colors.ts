@@ -8,6 +8,7 @@ export default {
     mainBackground: '#fff',
     secondaryBackground: '#f5f5f7',
     border: '#ebebed',
+    error: '#dc3545',
   },
   dark: {
     tint: '#1a74b3',
@@ -18,5 +19,6 @@ export default {
     mainBackground: '#1c1c1e',
     secondaryBackground: '#2a2a2a',
     border: '#303033',
+    error: '#dc3545',
   },
 };

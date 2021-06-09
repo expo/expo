@@ -80,11 +80,13 @@ You can register new devices at any time, but builds that were created before th
 
 The next step is to generate or update the provisioning profile. When you proceed to running a build, you will be guided through this process.
 
+> **Are you using manual local credentials?** Make sure to point your `credentials.json` to an ad hoc or enterprise provisioning profile that you generate through the Apple Developer portal (either update an existing credentials.json used for another type of distribution or replace it with a new one that points to the appropriate provisioning profile). Beware that EAS CLI does only a limited validation of your local credentials, and you will have to handle device UDID registration manually. Read more about [using local credentials](/app-signing/local-credentials.md).
+
 #### Setting up enterprise provisioning
 
 Apple Enterprise Program membership costs $299 USD per year and is only available to organizations that match certain criteria, so you will likely be using ad hoc provisioning, which works with any normal paid Apple developer account.
 
-If you have an [Apple Developer Enterprise Program membership](https://developer.apple.com/programs/enterprise/) users can install your app to their device without pre-regstering their UDID; they just need to install the profile to their device and they can then access existing builds. You will need to sign in using your Apple Developer Enterprise account during the `eas build` process to set up the correct provisioning.
+If you have an [Apple Developer Enterprise Program membership](https://developer.apple.com/programs/enterprise/) users can install your app to their device without pre-registering their UDID; they just need to install the profile to their device and they can then access existing builds. You will need to sign in using your Apple Developer Enterprise account during the `eas build` process to set up the correct provisioning.
 
 If you distribute your app both through enterprise provisioning and the App Store, you will need to have a distinct bundle identifier for each context. We recommend either:
 

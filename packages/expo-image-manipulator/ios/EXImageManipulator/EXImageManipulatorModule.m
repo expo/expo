@@ -1,15 +1,15 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <EXImageManipulator/EXImageManipulatorModule.h>
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
-#import <UMImageLoaderInterface/UMImageLoaderInterface.h>
+#import <ExpoModulesCore/EXFileSystemInterface.h>
+#import <ExpoModulesCore/EXImageLoaderInterface.h>
 #import <Photos/Photos.h>
 
 @interface EXImageManipulatorModule ()
 
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
-@property (nonatomic, weak) id<UMFileSystemInterface> fileSystem;
-@property (nonatomic, weak) id<UMImageLoaderInterface> imageLoader;
+@property (nonatomic, weak) id<EXFileSystemInterface> fileSystem;
+@property (nonatomic, weak) id<EXImageLoaderInterface> imageLoader;
 
 @end
 
@@ -29,8 +29,8 @@ UM_EXPORT_MODULE(ExpoImageManipulator);
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
-  _imageLoader = [moduleRegistry getModuleImplementingProtocol:@protocol(UMImageLoaderInterface)];
+  _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
+  _imageLoader = [moduleRegistry getModuleImplementingProtocol:@protocol(EXImageLoaderInterface)];
 }
 
 UM_EXPORT_METHOD_AS(manipulateAsync,
@@ -50,7 +50,7 @@ UM_EXPORT_METHOD_AS(manipulateAsync,
   if (!_fileSystem) {
     return reject(@"E_MISSING_MODULE", @"No FileSystem module.", nil);
   }
-  if (!([_fileSystem permissionsForURI:url] & UMFileSystemPermissionRead)) {
+  if (!([_fileSystem permissionsForURI:url] & EXFileSystemPermissionRead)) {
     return reject(@"E_FILESYSTEM_PERMISSIONS", [NSString stringWithFormat:@"File '%@' isn't readable.", uri], nil);
   }
 

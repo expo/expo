@@ -1,5 +1,7 @@
 import { List, Record } from 'immutable';
 
+import { HistoryItem as HistoryItemInput } from '../types';
+
 type HistoryItemObject = {
   url: null | string;
   bundleUrl: null | string;
@@ -10,7 +12,7 @@ type HistoryItemObject = {
 
 type HistoryItemType = Record<HistoryItemObject> & Readonly<HistoryItemObject>;
 
-const HistoryItem = Record({
+const HistoryItem = Record<HistoryItemObject>({
   url: null,
   bundleUrl: null,
   manifestUrl: null,
@@ -31,7 +33,7 @@ const HistoryState = Record<HistoryObject>({
 type HistoryActions =
   | {
       type: 'loadHistory';
-      payload: { history: HistoryItemType[] };
+      payload: { history: HistoryItemInput[] };
     }
   | { type: 'clearHistory' };
 

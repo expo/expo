@@ -10,7 +10,7 @@
 
 @interface ABI41_0_0EXUpdatesModule ()
 
-@property (nonatomic, weak) id<ABI41_0_0EXUpdatesInterface> updatesService;
+@property (nonatomic, weak) id<ABI41_0_0EXUpdatesModuleInterface> updatesService;
 
 @end
 
@@ -20,7 +20,7 @@ ABI41_0_0UM_EXPORT_MODULE(ExpoUpdates);
 
 - (void)setModuleRegistry:(ABI41_0_0UMModuleRegistry *)moduleRegistry
 {
-  _updatesService = [moduleRegistry getModuleImplementingProtocol:@protocol(ABI41_0_0EXUpdatesInterface)];
+  _updatesService = [moduleRegistry getModuleImplementingProtocol:@protocol(ABI41_0_0EXUpdatesModuleInterface)];
 }
 
 - (NSDictionary *)constantsToExport
@@ -42,7 +42,7 @@ ABI41_0_0UM_EXPORT_MODULE(ExpoUpdates);
       @"isEnabled": @(YES),
       @"isUsingEmbeddedAssets": @(_updatesService.isUsingEmbeddedAssets),
       @"updateId": launchedUpdate.updateId.UUIDString ?: @"",
-      @"manifest": launchedUpdate.rawManifest ?: @{},
+      @"manifest": launchedUpdate.rawManifest.rawManifestJSON ?: @{},
       @"releaseChannel": _updatesService.config.releaseChannel,
       @"localAssets": _updatesService.assetFilesMap ?: @{},
       @"isEmergencyLaunch": @(_updatesService.isEmergencyLaunch),
@@ -102,11 +102,11 @@ ABI41_0_0UM_EXPORT_METHOD_AS(checkForUpdateAsync,
                              extraHeaders:extraHeaders
                              successBlock:^(ABI41_0_0EXUpdatesUpdate *update) {
     ABI41_0_0EXUpdatesUpdate *launchedUpdate = self->_updatesService.launchedUpdate;
-    id<ABI41_0_0EXUpdatesSelectionPolicy> selectionPolicy = self->_updatesService.selectionPolicy;
+    ABI41_0_0EXUpdatesSelectionPolicy *selectionPolicy = self->_updatesService.selectionPolicy;
     if ([selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:launchedUpdate filters:update.manifestFilters]) {
       resolve(@{
         @"isAvailable": @(YES),
-        @"manifest": update.rawManifest
+        @"manifest": update.rawManifest.rawManifestJSON
       });
     } else {
       resolve(@{
@@ -134,11 +134,14 @@ ABI41_0_0UM_EXPORT_METHOD_AS(fetchUpdateAsync,
   ABI41_0_0EXUpdatesRemoteAppLoader *remoteAppLoader = [[ABI41_0_0EXUpdatesRemoteAppLoader alloc] initWithConfig:_updatesService.config database:_updatesService.database directory:_updatesService.directory completionQueue:self.methodQueue];
   [remoteAppLoader loadUpdateFromUrl:_updatesService.config.updateUrl onManifest:^BOOL(ABI41_0_0EXUpdatesUpdate * _Nonnull update) {
     return [self->_updatesService.selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_updatesService.launchedUpdate filters:update.manifestFilters];
+  } asset:^(ABI41_0_0EXUpdatesAsset *asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
+    // do nothing for now
   } success:^(ABI41_0_0EXUpdatesUpdate * _Nullable update) {
     if (update) {
+      [self->_updatesService resetSelectionPolicy];
       resolve(@{
         @"isNew": @(YES),
-        @"manifest": update.rawManifest
+        @"manifest": update.rawManifest.rawManifestJSON
       });
     } else {
       resolve(@{

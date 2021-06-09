@@ -8,6 +8,18 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.14.0 — 2021-05-25
+
+### 🐛 Bug fixes
+
+- Remove expo-permissions (again). ([#12900](https://github.com/expo/expo/pull/12900) by [@brentvatne](https://github.com/brentvatne))
+
+### 💡 Others
+
+- Migrated interfaces from their own packages to `expo-modules-core`. ([#12868](https://github.com/expo/expo/pull/12868), [#12876](https://github.com/expo/expo/pull/12876), [#12888](https://github.com/expo/expo/pull/12888), [#12918](https://github.com/expo/expo/pull/12918), [#12949](https://github.com/expo/expo/pull/12949) by [@tsapeta](https://github.com/tsapeta))
+
 ## 0.13.3 — 2021-04-13
 
 _This version does not introduce any user-facing changes._

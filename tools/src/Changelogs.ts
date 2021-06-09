@@ -47,11 +47,35 @@ export type InsertOptions = Partial<{
  * Enum with changelog sections that are commonly used by us.
  */
 export enum ChangeType {
+  /**
+   * Upgrading vendored libs.
+   */
   LIBRARY_UPGRADES = '📚 3rd party library updates',
+
+  /**
+   * Changes in the API that may require users to change their code.
+   */
   BREAKING_CHANGES = '🛠 Breaking changes',
+
+  /**
+   * New features and non-breaking changes in the API.
+   */
   NEW_FEATURES = '🎉 New features',
+
+  /**
+   * Bug fixes and inconsistencies with the documentation.
+   */
   BUG_FIXES = '🐛 Bug fixes',
+
+  /**
+   * Changes that users should be aware of as they cause behavior changes in corner cases.
+   */
   NOTICES = '⚠️ Notices',
+
+  /**
+   * Anything that doesn't apply to other types.
+   */
+  OTHERS = '💡 Others',
 }
 
 /**
@@ -313,7 +337,12 @@ export class Changelog {
    */
   async cutOffAsync(
     version: string,
-    types: string[] = [ChangeType.BREAKING_CHANGES, ChangeType.NEW_FEATURES, ChangeType.BUG_FIXES]
+    types: string[] = [
+      ChangeType.BREAKING_CHANGES,
+      ChangeType.NEW_FEATURES,
+      ChangeType.BUG_FIXES,
+      ChangeType.OTHERS,
+    ]
   ): Promise<void> {
     const tokens = await this.getTokensAsync();
     const firstVersionHeadingIndex = tokens.findIndex((token) => isVersionToken(token));

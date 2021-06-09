@@ -23,7 +23,7 @@ class DevMenuInternalSessionManagerModule(
 ) : DevMenuInternalSessionManagerModuleInterface {
   private val devMenuManger by lazy {
     reactContext
-      .getNativeModule(DevMenuManagerProvider::class.java)
+      .getNativeModule(DevMenuManagerProvider::class.java)!!
       .getDevMenuManager()
   }
 
