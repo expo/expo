@@ -32,7 +32,6 @@ class ManagedAppSplashScreenController(activity: Activity,
         mWarningHandler.postDelayed(mRunnable!!, 20000)
     }
 
-
     override fun showSplashScreen(successCallback: () -> Unit) {
         super.showSplashScreen {
             startSplashScreenWarningTimer()
