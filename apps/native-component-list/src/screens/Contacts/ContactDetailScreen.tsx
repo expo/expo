@@ -1,5 +1,5 @@
 // tslint:disable max-classes-per-file
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
 import * as Contacts from 'expo-contacts';
 import * as ImagePicker from 'expo-image-picker';
 import * as Linking from 'expo-linking';
@@ -25,6 +25,31 @@ async function getPermissionAsync() {
 }
 
 export default function ContactDetailScreen(props: any) {
+  React.useLayoutEffect(() => {
+    props.navigation.setOptions({
+      title: 'Contacts',
+      headerRight: () => (
+        <HeaderContainerRight>
+          <HeaderIconButton
+            name="md-share"
+            onPress={async () => {
+              Contacts.shareContactAsync(props.route.params.id, 'Call me :]');
+            }}
+          />
+          {isIos && (
+            <HeaderIconButton
+              name="md-copy"
+              onPress={async () => {
+                await ContactUtils.cloneAsync(props.route.params.id);
+                props.navigation.goBack();
+              }}
+            />
+          )}
+        </HeaderContainerRight>
+      ),
+    });
+  }, [props.navigation]);
+
   const [permission] = usePermissions(Contacts.requestPermissionsAsync);
 
   if (!permission) {
@@ -37,34 +62,6 @@ export default function ContactDetailScreen(props: any) {
 
   return <ContactDetailView navigation={props.navigation} route={props.route} />;
 }
-
-ContactDetailScreen.navigationOptions = ({
-  navigation,
-  route: {
-    params: { id },
-  },
-}: any) => ({
-  title: 'Contacts',
-  headerRight: () => (
-    <HeaderContainerRight>
-      <HeaderIconButton
-        name="md-share"
-        onPress={async () => {
-          Contacts.shareContactAsync(id, 'Call me :]');
-        }}
-      />
-      {isIos && (
-        <HeaderIconButton
-          name="md-copy"
-          onPress={async () => {
-            await ContactUtils.cloneAsync(id);
-            navigation.goBack();
-          }}
-        />
-      )}
-    </HeaderContainerRight>
-  ),
-});
 
 function ContactDetailView({
   navigation,
@@ -338,7 +335,7 @@ function LinkedButton({
             backgroundColor,
           },
         ]}>
-        <Ionicons name={`ios-${icon}`} size={20} color={color} />
+        <Ionicons name={`ios-${icon}` as any} size={20} color={color} />
       </View>
       <Text style={[styles.linkButtonText, { color: backgroundColor }]}>{text}</Text>
     </TouchableOpacity>

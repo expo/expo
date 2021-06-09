@@ -1,10 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 @objc
-public class DevMenuSelectionList: DevMenuScreenItem {
-
+public class DevMenuSelectionList: DevMenuScreenItem, DevMenuCallableProvider {
   @objc
-  public class Item: NSObject {
+  public class Item: NSObject, DevMenuDataSourceItem {
     @objc
     public class Tag : NSObject {
       @objc
@@ -16,10 +15,13 @@ public class DevMenuSelectionList: DevMenuScreenItem {
       fileprivate func serialize() -> [String : Any] {
         return [
           "text": text(),
-          "glyphName": glyphName(),
+          "glyphName": glyphName() ?? NSNull(),
         ]
       }
     }
+    
+    @objc
+    public var onClickData: () -> [String : Any]? =  { nil }
     
     @objc
     public var title: () -> String = { "" }
@@ -33,17 +35,21 @@ public class DevMenuSelectionList: DevMenuScreenItem {
     @objc
     public var tags: () -> [Tag] = { [] }
     
-    fileprivate func serialize() -> [String : Any] {
+    public func serialize() -> [String : Any] {
       return [
         "title": title(),
-        "warning": warning(),
+        "warning": warning() ?? NSNull(),
         "isChecked": isChecked(),
-        "tags": tags().map { $0.serialize() }
+        "tags": tags().map { $0.serialize() },
+        "onClickData": onClickData() ?? NSNull()
       ]
     }
   }
   
+  public static var ActionID = 1
+  private let callable: DevMenuExportedFunction
   private var items: [Item] = []
+  private let dataSourceId: String?
   
   @objc
   public func addItem(_ item: Item) {
@@ -51,7 +57,15 @@ public class DevMenuSelectionList: DevMenuScreenItem {
   }
   
   @objc
-  public init() {
+  public convenience init() {
+    self.init(dataSourceId: nil)
+  }
+  
+  @objc
+  public init(dataSourceId: String?) {
+    self.dataSourceId = dataSourceId
+    self.callable = DevMenuExportedFunction(withId: "expo-dev-menu.selection-list.#\(DevMenuSelectionList.ActionID)", withFunction: { _ in })
+    DevMenuSelectionList.ActionID += 1
     super.init(type: .SelectionList)
   }
   
@@ -59,7 +73,17 @@ public class DevMenuSelectionList: DevMenuScreenItem {
   public override func serialize() -> [String : Any] {
     var dict = super.serialize()
     dict["items"] = items.map { $0.serialize() }
+    dict["dataSourceId"] = dataSourceId ?? NSNull()
+    dict["actionId"] = self.callable.id
     return dict
   }
   
+  @objc
+  public func addOnClick(hander: @escaping ([String: Any]?) -> Void) {
+    self.callable.function = hander
+  }
+  
+  public func registerCallable() -> DevMenuExportedCallable? {
+    return self.callable
+  }
 }

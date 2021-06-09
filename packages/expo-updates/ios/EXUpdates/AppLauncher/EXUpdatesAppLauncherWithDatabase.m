@@ -1,6 +1,6 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesAppLauncherWithDatabase.h>
+#import <EXUpdates/EXUpdatesAppLauncherWithDatabase+Tests.h>
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
@@ -50,7 +50,7 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
 
 + (void)launchableUpdateWithConfig:(EXUpdatesConfig *)config
                           database:(EXUpdatesDatabase *)database
-                   selectionPolicy:(id<EXUpdatesSelectionPolicy>)selectionPolicy
+                   selectionPolicy:(EXUpdatesSelectionPolicy *)selectionPolicy
                         completion:(EXUpdatesAppLauncherUpdateCompletionBlock)completion
                    completionQueue:(dispatch_queue_t)completionQueue
 {
@@ -83,12 +83,12 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
         [filteredLaunchableUpdates addObject:update];
       }
 
-      completion(nil, [selectionPolicy launchableUpdateWithUpdates:filteredLaunchableUpdates filters:manifestFilters]);
+      completion(nil, [selectionPolicy launchableUpdateFromUpdates:filteredLaunchableUpdates filters:manifestFilters]);
     });
   });
 }
 
-- (void)launchUpdateWithSelectionPolicy:(id<EXUpdatesSelectionPolicy>)selectionPolicy
+- (void)launchUpdateWithSelectionPolicy:(EXUpdatesSelectionPolicy *)selectionPolicy
                              completion:(EXUpdatesAppLauncherCompletionBlock)completion
 {
   NSAssert(!_completion, @"EXUpdatesAppLauncher:launchUpdateWithSelectionPolicy:successBlock should not be called twice on the same instance");
@@ -109,17 +109,35 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
         }
       } else {
         self->_launchedUpdate = launchableUpdate;
-        [self _ensureAllAssetsExist];
+        [self _finishLaunch];
       }
     } completionQueue:_launcherQueue];
   } else {
-    [self _ensureAllAssetsExist];
+    [self _finishLaunch];
   }
 }
 
 - (BOOL)isUsingEmbeddedAssets
 {
   return _assetFilesMap == nil;
+}
+
+- (void)_finishLaunch
+{
+  [self _markUpdateAccessed];
+  [self _ensureAllAssetsExist];
+}
+
+- (void)_markUpdateAccessed
+{
+  NSAssert(_launchedUpdate, @"launchedUpdate should be nonnull before calling markUpdateAccessed");
+  dispatch_async(_database.databaseQueue, ^{
+    NSError *error;
+    [self->_database markUpdateAccessed:self->_launchedUpdate error:&error];
+    if (error) {
+      NSLog(@"Failed to mark update as recently accessed: %@", error.localizedDescription);
+    }
+  });
 }
 
 - (void)_ensureAllAssetsExist

@@ -1,12 +1,13 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
+#import <ExpoModulesCore/EXUserNotificationCenterProxyInterface.h>
+
 #import "EXNotifications.h"
-#import <UMPermissionsInterface/UMUserNotificationCenterProxyInterface.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXUserNotificationCenter : NSObject <EXUserNotificationCenterService, UMUserNotificationCenterProxyInterface>
+@interface EXUserNotificationCenter : NSObject <EXUserNotificationCenterService, EXUserNotificationCenterProxyInterface>
 
 @end
 

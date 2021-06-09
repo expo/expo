@@ -50,12 +50,13 @@ import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.LifecycleEventListener;
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.core.interfaces.services.UIManager;
-import org.unimodules.interfaces.permissions.Permissions;
-import org.unimodules.interfaces.permissions.PermissionsResponse;
-import org.unimodules.interfaces.permissions.PermissionsStatus;
 import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 
 import androidx.annotation.RequiresApi;
+
+import expo.modules.interfaces.permissions.Permissions;
+import expo.modules.interfaces.permissions.PermissionsResponse;
+import expo.modules.interfaces.permissions.PermissionsStatus;
 import expo.modules.location.exceptions.LocationBackgroundUnauthorizedException;
 import expo.modules.location.exceptions.LocationRequestRejectedException;
 import expo.modules.location.exceptions.LocationSettingsUnsatisfiedException;
@@ -113,7 +114,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   private float[] mGravity;
   private float[] mGeomagnetic;
   private int mHeadingId;
-  private float mLastAzimut = 0;
+  private float mLastAzimuth = 0;
   private int mAccuracy = 0;
   private long mLastUpdate = 0;
   private boolean mGeocoderPaused = false;
@@ -463,7 +464,12 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void startLocationUpdatesAsync(String taskName, Map<String, Object> options, final Promise promise) {
-    if (isMissingBackgroundPermissions()) {
+    boolean shouldUseForegroundService = LocationTaskConsumer.shouldUseForegroundService(options);
+
+    // There are two ways of starting this service.
+    // 1. As a background location service, this requires the background location permission.
+    // 2. As a user-initiated foreground service with notification, this does NOT require the background location permission.
+    if (!shouldUseForegroundService && isMissingBackgroundPermissions()) {
       promise.reject(new LocationBackgroundUnauthorizedException());
       return;
     }
@@ -478,11 +484,6 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void stopLocationUpdatesAsync(String taskName, final Promise promise) {
-    if (isMissingBackgroundPermissions()) {
-      promise.reject(new LocationBackgroundUnauthorizedException());
-      return;
-    }
-
     try {
       mTaskManager.unregisterTask(taskName, LocationTaskConsumer.class);
       promise.resolve(null);
@@ -493,11 +494,6 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void hasStartedLocationUpdatesAsync(String taskName, final Promise promise) {
-    if (isMissingBackgroundPermissions()) {
-      promise.reject(new LocationBackgroundUnauthorizedException());
-      return;
-    }
-
     promise.resolve(mTaskManager.taskHasConsumerOfClass(taskName, LocationTaskConsumer.class));
   }
 
@@ -757,8 +753,8 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
       // Make sure Delta is big enough to warrant an update
       // Currently: 50ms and ~2 degrees of change (android has a lot of useless updates block up the sending)
-      if ((Math.abs(orientation[0] - mLastAzimut)) > DEGREE_DELTA && (System.currentTimeMillis() - mLastUpdate) > TIME_DELTA) {
-        mLastAzimut = orientation[0];
+      if ((Math.abs(orientation[0] - mLastAzimuth)) > DEGREE_DELTA && (System.currentTimeMillis() - mLastUpdate) > TIME_DELTA) {
+        mLastAzimuth = orientation[0];
         mLastUpdate = System.currentTimeMillis();
         float magneticNorth = calcMagNorth(orientation[0]);
         float trueNorth = calcTrueNorth(magneticNorth);
@@ -775,9 +771,9 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     }
   }
 
-  private float calcMagNorth(float azimut) {
-    float azimutDeg = (float) Math.toDegrees(azimut);
-    return (azimutDeg + 360) % 360;
+  private float calcMagNorth(float azimuth) {
+    float azimuthDeg = (float) Math.toDegrees(azimuth);
+    return (azimuthDeg + 360) % 360;
   }
 
   private float calcTrueNorth(float magNorth) {
@@ -802,7 +798,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     mGeomagnetic = null;
     mGeofield = null;
     mHeadingId = 0;
-    mLastAzimut = 0;
+    mLastAzimuth = 0;
     mAccuracy = 0;
   }
 

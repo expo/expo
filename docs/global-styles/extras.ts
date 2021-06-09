@@ -1,4 +1,4 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
 import { theme, palette } from '@expo/styleguide';
 
 import * as Constants from '~/constants/theme';
@@ -8,7 +8,8 @@ export const globalExtras = css`
     max-width: 900px;
   }
 
-  img[src*="https://placehold.it/15"] {
+  img[src*="https://placehold.it/15"]
+  {
     width: 15px !important;
     height: 15px !important;
   }
@@ -77,7 +78,7 @@ export const globalExtras = css`
     margin: 0;
     margin-bottom: 0.5rem;
     text-decoration: none;
-    background: ${theme.button.primary};
+    background: ${theme.button.primary.background};
     color: ${palette.dark.white};
     font-family: ${Constants.fontFamilies.book};
     font-size: 1rem;

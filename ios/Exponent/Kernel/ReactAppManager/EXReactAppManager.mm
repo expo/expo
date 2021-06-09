@@ -150,12 +150,12 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   // we allow the vanilla RN dev menu in some circumstances.
   BOOL isStandardDevMenuAllowed = [EXEnvironment sharedEnvironment].isDetached;
   NSMutableDictionary *params = [NSMutableDictionary dictionaryWithDictionary:@{
-    @"manifest": _appRecord.appLoader.manifest,
+    @"manifest": _appRecord.appLoader.manifest.rawManifestJSON,
     @"constants": @{
         @"linkingUri": RCTNullIfNil([EXKernelLinkingManager linkingUriForExperienceUri:_appRecord.appLoader.manifestUrl useLegacy:[self _compareVersionTo:27] == NSOrderedAscending]),
         @"experienceUrl": RCTNullIfNil(_appRecord.appLoader.manifestUrl? _appRecord.appLoader.manifestUrl.absoluteString: nil),
         @"expoRuntimeVersion": [EXBuildConstants sharedInstance].expoRuntimeVersion,
-        @"manifest": _appRecord.appLoader.manifest,
+        @"manifest": _appRecord.appLoader.manifest.rawManifestJSON,
         @"executionEnvironment": [self _executionEnvironment],
         @"appOwnership": [self _appOwnership],
         @"isHeadless": @(_isHeadless),
@@ -275,13 +275,13 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 #pragma mark - EXAppFetcherDataSource
 
-- (NSString *)bundleResourceNameForAppFetcher:(EXAppFetcher *)appFetcher withManifest:(nonnull NSDictionary *)manifest
+- (NSString *)bundleResourceNameForAppFetcher:(EXAppFetcher *)appFetcher withManifest:(nonnull EXUpdatesRawManifest *)manifest
 {
   if ([EXEnvironment sharedEnvironment].isDetached) {
     NSLog(@"Standalone bundle remote url is %@", [EXEnvironment sharedEnvironment].standaloneManifestUrl);
     return kEXEmbeddedBundleResourceName;
   } else {
-    return manifest[@"id"];
+    return manifest.rawID;
   }
 }
 
@@ -404,9 +404,9 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (void)_handleJavaScriptStartLoadingEvent:(NSNotification *)notification
 {
-  __weak typeof(self) weakSelf = self;
+  __weak __typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
-    __strong typeof(self) strongSelf = weakSelf;
+    __strong __typeof(self) strongSelf = weakSelf;
     if (strongSelf) {
       [strongSelf.delegate reactAppManagerStartedLoadingJavaScript:strongSelf];
     }
@@ -569,11 +569,9 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (BOOL)enablesDeveloperTools
 {
-  NSDictionary *manifest = _appRecord.appLoader.manifest;
+  EXUpdatesRawManifest *manifest = _appRecord.appLoader.manifest;
   if (manifest) {
-    NSDictionary *manifestDeveloperConfig = manifest[@"developer"];
-    BOOL isDeployedFromTool = (manifestDeveloperConfig && manifestDeveloperConfig[@"tool"] != nil);
-    return (isDeployedFromTool);
+    return manifest.isUsingDeveloperTool;
   }
   return false;
 }
@@ -641,7 +639,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 #if DEBUG || RCT_DEV
   if ([self enablesDeveloperTools]) {
     if ([_versionManager respondsToSelector:@selector(addWebSocketNotificationHandler:queue:forMethod:)]) {
-      __weak typeof(self) weakSelf = self;
+      __weak __typeof(self) weakSelf = self;
 
       // Attach listeners to the bundler's dev server web socket connection.
       // This enables tools to automatically reload the client remotely (i.e. in expo-cli).
@@ -736,9 +734,9 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (NSString *)applicationKeyForRootView
 {
-  NSDictionary *manifest = _appRecord.appLoader.manifest;
-  if (manifest && manifest[@"appKey"]) {
-    return manifest[@"appKey"];
+  EXUpdatesRawManifest *manifest = _appRecord.appLoader.manifest;
+  if (manifest && manifest.appKey) {
+    return manifest.appKey;
   }
   
   NSURL *bundleUrl = [self bundleUrl];
@@ -783,7 +781,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   NSString *manifestString = nil;
   if (_appRecord.appLoader.manifest && [NSJSONSerialization isValidJSONObject:_appRecord.appLoader.manifest]) {
     NSError *error;
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:_appRecord.appLoader.manifest options:0 error:&error];
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:_appRecord.appLoader.manifest.rawManifestJSON options:0 error:&error];
     if (jsonData) {
       manifestString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     } else {

@@ -5,12 +5,14 @@ package expo.modules.localauthentication;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import java.util.ArrayList;
@@ -22,11 +24,12 @@ import java.util.concurrent.Executors;
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ActivityEventListener;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.services.UIManager;
 
-public class LocalAuthenticationModule extends ExportedModule {
+public class LocalAuthenticationModule extends ExportedModule implements ActivityEventListener {
   private final BiometricManager mBiometricManager;
   private final PackageManager mPackageManager;
   private BiometricPrompt mBiometricPrompt;
@@ -82,6 +85,7 @@ public class LocalAuthenticationModule extends ExportedModule {
   public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
     mUIManager = moduleRegistry.getModule(UIManager.class);
+    mUIManager.registerActivityEventListener(this);
   }
 
   @ExpoMethod
@@ -235,8 +239,28 @@ public class LocalAuthenticationModule extends ExportedModule {
       @Override
       public void run() {
         safeCancel();
+        promise.resolve(null);
       }
     });
+  }
+
+  @Override
+  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+    // If the user uses PIN as an authentication method, the result will be passed to the `onActivityResult`.
+    // Unfortunately, react-native doesn't pass this value to the underlying fragment - we won't resolve the promise.
+    // So we need to do it manually.
+    if (activity instanceof FragmentActivity) {
+      FragmentActivity fragmentActivity = (FragmentActivity) activity;
+      Fragment fragment = fragmentActivity.getSupportFragmentManager().findFragmentByTag("androidx.biometric.BiometricFragment");
+      if (fragment != null) {
+        fragment.onActivityResult(requestCode & 0xffff, resultCode, data);
+      }
+    }
+  }
+
+  @Override
+  public void onNewIntent(Intent intent) {
+    // noop
   }
 
   private boolean isDeviceSecure() {
@@ -258,6 +282,7 @@ public class LocalAuthenticationModule extends ExportedModule {
   private void safeCancel() {
     if (mBiometricPrompt != null && mIsAuthenticating) {
       mBiometricPrompt.cancelAuthentication();
+      mIsAuthenticating = false;
     }
   }
 
@@ -294,7 +319,7 @@ public class LocalAuthenticationModule extends ExportedModule {
   }
 
   private KeyguardManager getKeyguardManager() {
-    return (KeyguardManager) getCurrentActivity().getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE);
+    return (KeyguardManager) getContext().getSystemService(Context.KEYGUARD_SERVICE);
   }
 
   private Activity getCurrentActivity() {

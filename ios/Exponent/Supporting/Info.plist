@@ -17,7 +17,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.18.6</string>
+	<string>2.19.1</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -55,7 +55,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>2.18.6</string>
+	<string>2.19.1</string>
 	<key>FacebookAdvertiserIDCollectionEnabled</key>
 	<false/>
 	<key>FacebookAppID</key>
@@ -110,7 +110,7 @@
 	<key>NSRemindersUsageDescription</key>
 	<string>Allow Expo projects to access your reminders</string>
 	<key>NSUserTrackingUsageDescription</key>
-	<string>Allow Expo projects to use data for tracking the user or the device</string>
+	<string>This identifier will be used to deliver personalized ads to you</string>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>

@@ -24,13 +24,12 @@ In managed apps, the permissions to pick images, from camera ([`Permissions.CAME
 
 ## Usage
 
-<SnackInline label='Image Picker' dependencies={['expo-constants', 'expo-permissions', 'expo-image-picker']}>
+<SnackInline label='Image Picker' dependencies={['expo-image-picker']}>
 
 ```js
 import React, { useState, useEffect } from 'react';
 import { Button, Image, View, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import Constants from 'expo-constants';
 
 export default function ImagePickerExample() {
   const [image, setImage] = useState(null);
@@ -83,6 +82,15 @@ When you run this example and pick an image, you will see the image that you pic
 }
 ```
 
+## Using ImagePicker with AWS S3
+
+Please refer to the [with-aws-storage-upload example](https://github.com/expo/examples/tree/master/with-aws-storage-upload). Follow [Amplify docs](https://docs.amplify.aws/) to set your project up correctly.
+
+
+## Using ImagePicker with Firebase
+
+Please refer to the [with-firebase-storage-upload example](https://github.com/expo/examples/tree/master/with-firebase-storage-upload). Make sure you follow the ["Using Firebase"](/guides/guides/using-firebase.md) docs to set your project up correctly.
+
 ## API
 
 ```js
@@ -91,7 +99,7 @@ import * as ImagePicker from 'expo-image-picker';
 
 ### `ImagePicker.requestCameraPermissionsAsync()`
 
-Asks the user to grant permissions for accessing camera. Alias for `Permissions.askAsync(Permissions.CAMERA)`. This does nothing on web because the browser camera is not used.
+Asks the user to grant permissions for accessing camera. This does nothing on web because the browser camera is not used.
 
 #### Returns
 
@@ -99,7 +107,7 @@ A promise that resolves to an object of type [CameraPermissionResponse](#imagepi
 
 ### `ImagePicker.requestMediaLibraryPermissionsAsync(writeOnly)`
 
-Asks the user to grant permissions for accessing user's photo. Alias for `Permissions.askAsync(Permissions.MEDIA_LIBRARY)`. This does nothing on web.
+Asks the user to grant permissions for accessing user's photo. This does nothing on web.
 
 #### Arguments
 
@@ -111,7 +119,7 @@ A promise that resolves to an object of type [MediaLibraryPermissionResponse](#i
 
 ### `ImagePicker.getCameraPermissionsAsync()`
 
-Checks user's permissions for accessing camera. Alias for `Permissions.getAsync(Permissions.CAMERA)`.
+Checks user's permissions for accessing camera.
 
 #### Returns
 
@@ -119,7 +127,7 @@ A promise that resolves to an object of type [CameraPermissionResponse](#imagepi
 
 ### `ImagePicker.getMediaLibraryPermissionsAsync()`
 
-Checks user's permissions for accessing photos. Alias for `Permissions.getAsync(Permissions.MEDIA_LIBRARY)`.
+Checks user's permissions for accessing photos.
 
 #### Arguments
 

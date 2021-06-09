@@ -1,4 +1,5 @@
 import fs from 'fs-extra';
+import parseDiff from 'parse-diff';
 import path from 'path';
 
 import { spawnAsync, SpawnResult, SpawnOptions } from './Utils';
@@ -55,6 +56,18 @@ export type GitFetchOptions = {
   depth?: number;
   remote?: string;
   ref?: string;
+};
+
+export type GitFileDiff = parseDiff.File & {
+  path: string;
+};
+
+export type GitListTree = {
+  mode: string;
+  type: string;
+  object: string;
+  size: number;
+  path: string;
 };
 
 /**
@@ -351,9 +364,48 @@ export class GitDirectory {
   /**
    * Finds the best common ancestor between the current ref and the given ref.
    */
-  async mergeBaseAsync(ref: string): Promise<string> {
-    const { stdout } = await this.runAsync(['merge-base', 'HEAD', ref]);
+  async mergeBaseAsync(ref: string, base: string = 'HEAD'): Promise<string> {
+    const { stdout } = await this.runAsync(['merge-base', base, ref]);
     return stdout.trim();
+  }
+
+  /**
+   * Gets the diff between two commits and parses it to the list of changed files and their chunks.
+   */
+  async getDiffAsync(commit1: string, commit2: string): Promise<GitFileDiff[]> {
+    const { stdout } = await this.runAsync(['diff', `${commit1}..${commit2}`]);
+    const diff = parseDiff(stdout);
+
+    return diff.map((entry) => {
+      const finalPath = entry.deleted ? entry.from : entry.to;
+
+      return {
+        ...entry,
+        path: path.join(this.path, finalPath!),
+      };
+    });
+  }
+
+  /**
+   * Lists the contents of a given tree object, like what "ls -a" does in the current working directory.
+   */
+  async listTreeAsync(ref: string, paths: string[]): Promise<GitListTree[]> {
+    const { stdout } = await this.runAsync(['ls-tree', '-l', ref, '--', ...paths]);
+
+    return stdout
+      .trim()
+      .split(/\n+/g)
+      .map((line) => {
+        const columns = line.split(/\b(?=\s+)/g);
+
+        return {
+          mode: columns[0].trim(),
+          type: columns[1].trim(),
+          object: columns[2].trim(),
+          size: Number(columns[3].trim()),
+          path: columns.slice(4).join('').trim(),
+        };
+      });
   }
 
   /**

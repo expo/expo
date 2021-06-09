@@ -32,9 +32,9 @@ fileprivate func guessAppInfo(forBridge bridge: RCTBridge) -> [String : Any] {
     return [:]
   }
   return [
-    "appName": infoDictionary["CFBundleDisplayName"] ?? infoDictionary["CFBundleExecutable"],
-    "appVersion": infoDictionary["CFBundleVersion"],
-    "appIcon": findAppIconPath(),
+    "appName": infoDictionary["CFBundleDisplayName"] ?? infoDictionary["CFBundleExecutable"] ?? NSNull(),
+    "appVersion": infoDictionary["CFBundleVersion"] ?? NSNull(),
+    "appIcon": findAppIconPath() ?? NSNull(),
     "hostUrl": bridge.bundleURL?.absoluteString ?? NSNull(),
   ]
 }

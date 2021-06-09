@@ -1,6 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <EXDevMenu/DevMenuRCTBridge.h>
+#import <RCTCxxBridge+Private.h>
+
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTDevSettings.h>
 #import <React/RCTBridge+Private.h>
@@ -17,10 +19,30 @@
 {
   return nil;
 }
+
 - (RCTDevMenu *)devMenu
 {
   return nil;
 }
+
+- (NSArray<RCTModuleData *> *)_initializeModules:(NSArray<Class> *)modules
+                               withDispatchGroup:(dispatch_group_t)dispatchGroup
+                                lazilyDiscovered:(BOOL)lazilyDiscovered
+{
+  NSArray<NSString *> *allowedModules = @[@"RCT"];
+  NSArray<Class> *filtredModuleList = [modules filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable clazz, NSDictionary<NSString *,id> * _Nullable bindings) {
+    NSString* clazzName = NSStringFromClass(clazz);
+    for (NSString *allowedModule in allowedModules) {
+      if ([clazzName hasPrefix:allowedModule]) {
+        return true;
+      }
+    }
+    return false;
+  }]];
+  
+  return [super _initializeModules:filtredModuleList withDispatchGroup:dispatchGroup lazilyDiscovered:lazilyDiscovered];
+}
+
 @end
 
 @implementation DevMenuRCTBridge
@@ -30,6 +52,10 @@
   return [DevMenuRCTCxxBridge class];
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
+// This method is still used so we need to override it even if it's deprecated
 - (void)reloadWithReason:(NSString *)reason {}
+#pragma clang diagnostic pop
 
 @end

@@ -4,8 +4,8 @@
 #import <FBAudienceNetwork/FBAudienceNetwork.h>
 
 #import <UMCore/UMAppLifecycleService.h>
-#import <UMPermissionsInterface/UMPermissionsInterface.h>
-#import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
+#import <ExpoModulesCore/EXPermissionsInterface.h>
+#import <ExpoModulesCore/EXPermissionsMethodsDelegate.h>
 
 @interface EXAdSettingsManager ()
 
@@ -13,7 +13,7 @@
 @property (nonatomic, strong) NSString *mediationService;
 @property (nonatomic, strong, nullable) NSString *urlPrefix;
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
-@property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
+@property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
 @property (nonatomic) FBAdLogLevel logLevel;
 @property (nonatomic, strong) NSMutableArray<NSString*> *testDevices;
 
@@ -36,15 +36,15 @@ UM_EXPORT_MODULE(CTKAdSettingsManager)
   _moduleRegistry = moduleRegistry;
   [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)] registerAppLifecycleListener:self];
   
-  _permissionsManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
-  [UMPermissionsMethodsDelegate registerRequesters:@[[EXFacebookAdsAppTrackingPermissionRequester new]] withPermissionsManager:_permissionsManager];
+  _permissionsManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
+  [EXPermissionsMethodsDelegate registerRequesters:@[[EXFacebookAdsAppTrackingPermissionRequester new]] withPermissionsManager:_permissionsManager];
 }
 
 UM_EXPORT_METHOD_AS(getPermissionsAsync,
                     getPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                       withRequester:[EXFacebookAdsAppTrackingPermissionRequester class]
                                                             resolve:resolve
                                                              reject:reject];
@@ -54,7 +54,7 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                     requestPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[EXFacebookAdsAppTrackingPermissionRequester class]
                                                                resolve:resolve
                                                                 reject:reject];

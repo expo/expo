@@ -4,7 +4,7 @@ import DevMenuContext from '../../DevMenuContext';
 import {
   DevMenuItemProps,
   DevMenuItemActionType,
-  dispatchActionAsync,
+  dispatchCallableAsync,
 } from '../../DevMenuInternal';
 import ListItemButton from '../../components/ListItemButton';
 
@@ -12,13 +12,13 @@ class DevMenuItemAction extends React.PureComponent<DevMenuItemProps<DevMenuItem
   static contextType = DevMenuContext;
 
   action = (...args) => {
-    dispatchActionAsync(...args);
+    dispatchCallableAsync(...args);
     this.context?.collapse?.();
   };
 
   render() {
-    const { actionId, label, glyphName, keyCommand } = this.props.item;
-
+    const { actionId, label, glyphName, keyCommand, isAvailable } = this.props.item;
+    const disabled = !(isAvailable ?? true);
     return (
       <ListItemButton
         name={actionId}
@@ -26,6 +26,7 @@ class DevMenuItemAction extends React.PureComponent<DevMenuItemProps<DevMenuItem
         icon={glyphName}
         keyCommand={keyCommand}
         onPress={this.action}
+        disabled={disabled}
       />
     );
   }

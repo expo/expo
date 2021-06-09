@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'unimodules-permissions-interface';
+import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'expo-modules-core';
 export { PermissionResponse, PermissionStatus, PermissionExpiration };
 export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
 export declare function getPermissionsAsync(): Promise<PermissionResponse>;

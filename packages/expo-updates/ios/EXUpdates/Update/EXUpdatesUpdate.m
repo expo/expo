@@ -5,6 +5,7 @@
 #import <EXUpdates/EXUpdatesLegacyUpdate.h>
 #import <EXUpdates/EXUpdatesNewUpdate.h>
 #import <EXUpdates/EXUpdatesUpdate+Private.h>
+#import <EXUpdates/EXUpdatesBareRawManifest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -13,13 +14,13 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
 
 @interface EXUpdatesUpdate ()
 
-@property (nonatomic, strong, readwrite) NSDictionary *rawManifest;
+@property (nonatomic, strong, readwrite) EXUpdatesRawManifest* rawManifest;
 
 @end
 
 @implementation EXUpdatesUpdate
 
-- (instancetype)initWithRawManifest:(NSDictionary *)manifest
+- (instancetype)initWithRawManifest:(EXUpdatesRawManifest *)manifest
                              config:(EXUpdatesConfig *)config
                            database:(nullable EXUpdatesDatabase *)database
 {
@@ -28,6 +29,8 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
     _config = config;
     _database = database;
     _scopeKey = config.scopeKey;
+    _status = EXUpdatesUpdateStatusPending;
+    _lastAccessed = [NSDate date];
     _isDevelopmentMode = NO;
   }
   return self;
@@ -37,21 +40,20 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
                     scopeKey:(NSString *)scopeKey
                   commitTime:(NSDate *)commitTime
               runtimeVersion:(NSString *)runtimeVersion
-                    metadata:(nullable NSDictionary *)metadata
+                    manifest:(nullable NSDictionary *)manifest
                       status:(EXUpdatesUpdateStatus)status
                         keep:(BOOL)keep
                       config:(EXUpdatesConfig *)config
                     database:(EXUpdatesDatabase *)database
 {
-  // for now, we store the entire managed manifest in the metadata field
-  EXUpdatesUpdate *update = [[self alloc] initWithRawManifest:metadata ?: @{}
+  EXUpdatesUpdate *update = [[self alloc] initWithRawManifest:[self rawManifestForJSON:(manifest ?: @{})]
                                                        config:config
                                                      database:database];
   update.updateId = updateId;
   update.scopeKey = scopeKey;
   update.commitTime = commitTime;
   update.runtimeVersion = runtimeVersion;
-  update.metadata = metadata;
+  update.manifest = manifest;
   update.status = status;
   update.keep = keep;
   return update;
@@ -66,8 +68,8 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
   if (![response isKindOfClass:[NSHTTPURLResponse class]]) {
     if(error){
       *error = [NSError errorWithDomain:EXUpdatesUpdateErrorDomain
-                                  code:1001
-                              userInfo:@{NSLocalizedDescriptionKey:@"response must be a NSHTTPURLResponse"}];
+                                   code:1001
+                               userInfo:@{NSLocalizedDescriptionKey:@"response must be a NSHTTPURLResponse"}];
     }
     return nil;
   }
@@ -75,21 +77,21 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
   NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
   NSDictionary *headerDictionary = [httpResponse allHeaderFields];
   NSString *expoProtocolVersion = headerDictionary[@"expo-protocol-version"];
-
+  
   if (expoProtocolVersion == nil) {
-    return [EXUpdatesLegacyUpdate updateWithLegacyManifest:manifest
+    return [EXUpdatesLegacyUpdate updateWithLegacyManifest:[[EXUpdatesLegacyRawManifest alloc] initWithRawManifestJSON:manifest]
                                                     config:config
                                                   database:database];
   } else if (expoProtocolVersion.integerValue == 0) {
-    return [EXUpdatesNewUpdate updateWithNewManifest:manifest
+    return [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:manifest]
                                             response:response
                                               config:config
                                             database:database];
   } else {
     if(error){
       *error = [NSError errorWithDomain:EXUpdatesUpdateErrorDomain
-                                  code:1000
-                              userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"expo-protocol-version '%@' is invalid", expoProtocolVersion]}];
+                                   code:1000
+                               userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"expo-protocol-version '%@' is invalid", expoProtocolVersion]}];
     }
     return nil;
   }
@@ -100,13 +102,13 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
                                   database:(nullable EXUpdatesDatabase *)database
 {
   if (manifest[@"releaseId"]) {
-    return [EXUpdatesLegacyUpdate updateWithLegacyManifest:manifest
+    return [EXUpdatesLegacyUpdate updateWithLegacyManifest:[[EXUpdatesLegacyRawManifest alloc] initWithRawManifestJSON:manifest]
                                                     config:config
                                                   database:database];
   } else {
-    return [EXUpdatesBareUpdate updateWithBareManifest:manifest
-                                                config:config
-                                              database:database];
+    return [EXUpdatesBareUpdate updateWithBareRawManifest:[[EXUpdatesBareRawManifest alloc] initWithRawManifestJSON:manifest]
+                                                   config:config
+                                                 database:database];
   }
 }
 
@@ -120,6 +122,18 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
     });
   }
   return _assets;
+}
+
++ (nonnull EXUpdatesRawManifest *)rawManifestForJSON:(nonnull NSDictionary *)manifestJSON { 
+  EXUpdatesRawManifest *rawManifest;
+  if (manifestJSON[@"releaseId"]) {
+    rawManifest = [[EXUpdatesLegacyRawManifest alloc] initWithRawManifestJSON:manifestJSON];
+  } else if (manifestJSON[@"metadata"]) {
+    rawManifest = [[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:manifestJSON];
+  } else {
+    rawManifest = [[EXUpdatesBareRawManifest alloc] initWithRawManifestJSON:manifestJSON];
+  }
+  return rawManifest;
 }
 
 @end

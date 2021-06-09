@@ -75,8 +75,9 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
         replaceWith: `"name": "${prefix}$1"`,
       },
       {
-        find: /\b(React)/g,
-        replaceWith: `${prefix}$1`,
+        // Prefixes `React` with word-boundary and also in `insertReactSubview`, `removeReactSubview`.
+        find: /(\b|insert|remove)(React)/g,
+        replaceWith: `$1${prefix}$2`,
       },
       {
         find: /\b(RCT|RNC|RNG|RNR|REA|RNS)(\w+)\b/g,

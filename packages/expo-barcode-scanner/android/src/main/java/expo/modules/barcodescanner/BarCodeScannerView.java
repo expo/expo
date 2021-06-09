@@ -11,8 +11,9 @@ import java.util.List;
 
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.interfaces.services.EventEmitter;
-import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
-import org.unimodules.interfaces.barcodescanner.BarCodeScannerSettings;
+
+import expo.modules.interfaces.barcodescanner.BarCodeScannerResult;
+import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings;
 
 public class BarCodeScannerView extends ViewGroup {
   private final OrientationEventListener mOrientationListener;

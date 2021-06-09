@@ -13,7 +13,7 @@ Note that audio automatically stops if headphones / bluetooth audio devices are 
 
 Try the [playlist example app](https://expo.io/@documentation/playlist-example) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the media playback API, and the [recording example app](https://expo.io/@documentation/record) (source code is [on GitHub](https://github.com/expo/audio-recording-example)) to see an example usage of the recording API.
 
-<PlatformsSection android emulator ios simulator web />
+<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/8721' }} />
 
 ## Installation
 
@@ -154,7 +154,7 @@ import { Audio } from 'expo-av';
 
 ### `Audio.requestPermissionsAsync()`
 
-Asks the user to grant permissions for audio recording. Alias for `Permissions.askAsync(Permissions.AUDIO_RECORDING)`.
+Asks the user to grant permissions for audio recording.
 
 #### Returns
 
@@ -162,7 +162,7 @@ A promise that resolves to an object of type [PermissionResponse](permissions.md
 
 ### `Audio.getPermissionsAsync()`
 
-Checks user's permissions for audio recording. Alias for `Permissions.getAsync(Permissions.AUDIO_RECORDING)`.
+Checks user's permissions for audio recording.
 
 #### Returns
 

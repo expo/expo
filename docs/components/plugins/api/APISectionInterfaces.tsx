@@ -1,38 +1,73 @@
 import React from 'react';
+import ReactMarkdown from 'react-markdown';
 
 import { InlineCode } from '~/components/base/code';
-import { LI, UL } from '~/components/base/list';
+import { B } from '~/components/base/paragraph';
 import { H2, H3Code } from '~/components/plugins/Headings';
 import { InterfaceDefinitionData, InterfaceValueData } from '~/components/plugins/api/APIDataTypes';
 import {
   CommentTextBlock,
-  inlineRenderers,
-  renderers,
+  mdInlineRenderers,
+  resolveTypeName,
+  STYLES_OPTIONAL,
 } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionInterfacesProps = {
   data: InterfaceDefinitionData[];
 };
 
-const renderInterface = ({ name, children, comment }: InterfaceDefinitionData): JSX.Element => (
-  <div key={`interface-definition-${name}`}>
-    <H3Code>
-      <InlineCode>{name}</InlineCode>
-    </H3Code>
-    <CommentTextBlock comment={comment} renderers={renderers} />
-    <UL>
-      {children.map((interfaceValue: InterfaceValueData) => (
-        <LI key={interfaceValue.name}>
-          <InlineCode>
-            {name}.{interfaceValue.name}
-            {interfaceValue.type.declaration?.signatures ? '()' : ''}
-          </InlineCode>
-          <CommentTextBlock comment={interfaceValue.comment} renderers={inlineRenderers} withDash />
-        </LI>
-      ))}
-    </UL>
-  </div>
+const renderInterfacePropertyRow = ({
+  name,
+  flags,
+  type,
+  comment,
+}: InterfaceValueData): JSX.Element => (
+  <tr key={name}>
+    <td>
+      <B>{name}</B>
+      {flags?.isOptional ? (
+        <>
+          <br />
+          <span css={STYLES_OPTIONAL}>(optional)</span>
+        </>
+      ) : null}
+    </td>
+    <td>
+      <InlineCode>{resolveTypeName(type)}</InlineCode>
+    </td>
+    <td>
+      {comment?.shortText ? (
+        <ReactMarkdown renderers={mdInlineRenderers}>{comment.shortText}</ReactMarkdown>
+      ) : (
+        '-'
+      )}
+    </td>
+  </tr>
 );
+
+const renderInterface = ({
+  name,
+  children,
+  comment,
+}: InterfaceDefinitionData): JSX.Element | null =>
+  children ? (
+    <div key={`interface-definition-${name}`}>
+      <H3Code>
+        <InlineCode>{name}</InlineCode>
+      </H3Code>
+      <CommentTextBlock comment={comment} />
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>{children.map(renderInterfacePropertyRow)}</tbody>
+      </table>
+    </div>
+  ) : null;
 
 const APISectionInterfaces: React.FC<APISectionInterfacesProps> = ({ data }) =>
   data?.length ? (

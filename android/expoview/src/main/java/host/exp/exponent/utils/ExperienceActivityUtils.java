@@ -21,10 +21,10 @@ import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.view.ViewCompat;
-import host.exp.exponent.ABIVersion;
+
+import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
-import host.exp.expoview.R;
 
 public class ExperienceActivityUtils {
 
@@ -32,12 +32,12 @@ public class ExperienceActivityUtils {
   private static final String STATUS_BAR_STYLE_DARK_CONTENT = "dark-content";
   private static final String STATUS_BAR_STYLE_LIGHT_CONTENT = "light-content";
 
-  public static void updateOrientation(JSONObject manifest, Activity activity) {
+  public static void updateOrientation(RawManifest manifest, Activity activity) {
     if (manifest == null) {
       return;
     }
 
-    String orientation = manifest.optString(ExponentManifest.MANIFEST_ORIENTATION_KEY, null);
+    @Nullable String orientation = manifest.getOrientation();
     if (orientation == null) {
       activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
       return;
@@ -56,7 +56,7 @@ public class ExperienceActivityUtils {
     }
   }
 
-  public static void updateSoftwareKeyboardLayoutMode(JSONObject manifest, Activity activity) {
+  public static void updateSoftwareKeyboardLayoutMode(RawManifest manifest, Activity activity) {
     if (manifest == null) {
       return;
     }
@@ -70,11 +70,9 @@ public class ExperienceActivityUtils {
   }
 
   @Nullable
-  private static String readSoftwareKeyboardLayoutModeFromManifest(JSONObject manifest) {
-    if (manifest.has(ExponentManifest.MANIFEST_ANDROID_INFO_KEY) && manifest.optJSONObject(ExponentManifest.MANIFEST_ANDROID_INFO_KEY).has(ExponentManifest.MANIFEST_KEYBOARD_LAYOUT_MODE_KEY)) {
-      return manifest.optJSONObject(ExponentManifest.MANIFEST_ANDROID_INFO_KEY).optString(ExponentManifest.MANIFEST_KEYBOARD_LAYOUT_MODE_KEY, "resize");
-    }
-    return "resize";
+  private static String readSoftwareKeyboardLayoutModeFromManifest(RawManifest manifest) {
+    @Nullable String androidKeyboardLayoutMode = manifest.getAndroidKeyboardLayoutMode();
+    return androidKeyboardLayoutMode != null ? androidKeyboardLayoutMode : "resize";
   }
 
   // region user interface style - light/dark/automatic mode
@@ -82,7 +80,7 @@ public class ExperienceActivityUtils {
   /**
    * Sets uiMode to according to what is being set in manifest.
    **/
-  public static void overrideUiMode(JSONObject manifest, AppCompatActivity activity) {
+  public static void overrideUiMode(RawManifest manifest, AppCompatActivity activity) {
     String userInterfaceStyle = readUserInterfaceStyleFromManifest(manifest);
     activity.getDelegate().setLocalNightMode(nightModeFromString(userInterfaceStyle));
   }
@@ -106,11 +104,9 @@ public class ExperienceActivityUtils {
   }
 
   @Nullable
-  private static String readUserInterfaceStyleFromManifest(JSONObject manifest) {
-    if (manifest.has("android") && manifest.optJSONObject("android").has("userInterfaceStyle")) {
-      return manifest.optJSONObject("android").optString("userInterfaceStyle");
-    }
-    return manifest.optString("userInterfaceStyle", "light");
+  private static String readUserInterfaceStyleFromManifest(RawManifest manifest) {
+    @Nullable String userInterfaceStyle = manifest.getAndroidUserInterfaceStyle();
+    return userInterfaceStyle != null ? userInterfaceStyle : "light";
   }
 
   // endregion
@@ -130,12 +126,11 @@ public class ExperienceActivityUtils {
    * https://chris.banes.dev/talks/2017/becoming-a-master-window-fitter-lon/
    * https://www.youtube.com/watch?v=_mGDMVRO3iE
    */
-  public static void configureStatusBar(@NonNull JSONObject manifest, final Activity activity) {
-    @Nullable JSONObject statusBarOptions = manifest.optJSONObject(ExponentManifest.MANIFEST_STATUS_BAR_KEY);
+  public static void configureStatusBar(@NonNull RawManifest manifest, final Activity activity) {
+    @Nullable JSONObject statusBarOptions = manifest.getAndroidStatusBarOptions();
     @Nullable String statusBarStyle = statusBarOptions != null ? statusBarOptions.optString(ExponentManifest.MANIFEST_STATUS_BAR_APPEARANCE) : null;
     @Nullable String statusBarBackgroundColor = statusBarOptions != null ? statusBarOptions.optString(ExponentManifest.MANIFEST_STATUS_BAR_BACKGROUND_COLOR, null) : null;
 
-    String sdkVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
     boolean statusBarHidden = statusBarOptions != null && statusBarOptions.optBoolean(ExponentManifest.MANIFEST_STATUS_BAR_HIDDEN, false);
     boolean statusBarTranslucent = statusBarOptions == null || statusBarOptions.optBoolean(ExponentManifest.MANIFEST_STATUS_BAR_TRANSLUCENT, true);
 
@@ -147,7 +142,7 @@ public class ExperienceActivityUtils {
 
       setTranslucent(statusBarTranslucent, activity);
 
-      String appliedStatusBarStyle = setStyle(statusBarStyle, activity, sdkVersion);
+      String appliedStatusBarStyle = setStyle(statusBarStyle, activity);
 
       // Color passed from manifest is in format '#RRGGBB(AA)' and Android uses '#AARRGGBB'
       String normalizedStatusBarBackgroundColor = RGBAtoARGB(statusBarBackgroundColor);
@@ -217,7 +212,7 @@ public class ExperienceActivityUtils {
    * @return Effective style that is actually applied to the status bar.
    */
   @UiThread
-  private static String setStyle(@Nullable final String style, final Activity activity, String sdkVersion) {
+  private static String setStyle(@Nullable final String style, final Activity activity) {
     String appliedStatusBarStyle = STATUS_BAR_STYLE_LIGHT_CONTENT;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       View decorView = activity.getWindow().getDecorView();
@@ -255,8 +250,8 @@ public class ExperienceActivityUtils {
   // endregion
 
   public static void setTaskDescription(final ExponentManifest exponentManifest,
-                                        final JSONObject manifest, final Activity activity) {
-    final String iconUrl = manifest.optString(ExponentManifest.MANIFEST_ICON_URL_KEY);
+                                        final RawManifest manifest, final Activity activity) {
+    @Nullable final String iconUrl = manifest.getIconUrl();
     final int color = exponentManifest.getColorFromManifest(manifest);
 
     exponentManifest.loadIconBitmap(iconUrl, new ExponentManifest.BitmapListener() {
@@ -265,7 +260,7 @@ public class ExperienceActivityUtils {
         // This if statement is only needed so the compiler doesn't show an error.
         try {
           activity.setTaskDescription(new ActivityManager.TaskDescription(
-            manifest.optString(ExponentManifest.MANIFEST_NAME_KEY),
+            manifest.getName() != null ? manifest.getName() : "",
             bitmap,
             color
           ));
@@ -276,8 +271,8 @@ public class ExperienceActivityUtils {
     });
   }
 
-  public static void setNavigationBar(final JSONObject manifest, final Activity activity) {
-    JSONObject navBarOptions = manifest.optJSONObject(ExponentManifest.MANIFEST_NAVIGATION_BAR_KEY);
+  public static void setNavigationBar(final RawManifest manifest, final Activity activity) {
+    @Nullable JSONObject navBarOptions = manifest.getAndroidNavigationBarOptions();
     if (navBarOptions == null) {
       return;
     }
@@ -337,17 +332,8 @@ public class ExperienceActivityUtils {
   }
 
 
-  public static void setRootViewBackgroundColor(final JSONObject manifest, final View rootView) {
-    String colorString;
-
-    try {
-      colorString = manifest.
-        getJSONObject(ExponentManifest.MANIFEST_ANDROID_INFO_KEY).
-        getString(ExponentManifest.MANIFEST_BACKGROUND_COLOR_KEY);
-    } catch (JSONException e) {
-      colorString = manifest.optString(ExponentManifest.MANIFEST_BACKGROUND_COLOR_KEY);
-    }
-
+  public static void setRootViewBackgroundColor(final RawManifest manifest, final View rootView) {
+    @Nullable String colorString = manifest.getAndroidBackgroundColor();
     if (colorString == null || !ColorParser.isValid(colorString)) {
       colorString = "#ffffff";
     }

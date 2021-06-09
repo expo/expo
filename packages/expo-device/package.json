@@ -18,6 +18,9 @@
     "expo",
     "expo-device"
   ],
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
@@ -30,8 +33,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/device/",
   "unimodulePeerDependencies": {
-    "@unimodules/core": "*",
-    "unimodules-constants-interface": "*"
+    "@unimodules/core": "*"
   },
   "dependencies": {
     "ua-parser-js": "^0.7.19"

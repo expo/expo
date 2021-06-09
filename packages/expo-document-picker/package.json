@@ -1,6 +1,6 @@
 {
   "name": "expo-document-picker",
-  "version": "9.1.0",
+  "version": "9.1.2",
   "description": "Provides access to the system's UI for selecting documents from the available providers on the user's device.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -35,7 +35,8 @@
     "preset": "expo-module-scripts/ios"
   },
   "dependencies": {
-    "@expo/config-plugins": "^1.0.18",
+    "@expo/config-plugins": "^2.0.0",
+    "expo-modules-core": "~0.0.2",
     "uuid": "^3.3.2"
   },
   "unimodulePeerDependencies": {

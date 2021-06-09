@@ -153,6 +153,12 @@ const DateTimePickerScreen = () => {
           </ThemedText>
           <Button testID="hidePicker" onPress={() => setShow(false)} title="hide picker" />
         </View>
+        {Platform.OS === 'android' && (
+          <Text style={{ padding: 8, textAlign: 'center', color: 'grey' }}>
+            Please ensure that each of the displays are distinct. If not, it's likely that this
+            change must be applied: expo/expo PR #12563
+          </Text>
+        )}
         {show && (
           <DateTimePicker
             testID="dateTimePicker"

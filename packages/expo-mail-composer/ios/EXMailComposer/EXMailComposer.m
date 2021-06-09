@@ -4,7 +4,7 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 
 #import <UMCore/UMUtilitiesInterface.h>
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
+#import <ExpoModulesCore/EXFileSystemInterface.h>
 
 @interface EXMailComposer ()
 
@@ -84,12 +84,12 @@ UM_EXPORT_METHOD_AS(composeAsync,
     for (NSString *uri in options[@"attachments"]) {
       NSURL *url = [NSURL URLWithString:uri];
       NSString *path = [url.path stringByStandardizingPath];
-      id<UMFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
+      id<EXFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
       if (!fileSystem) {
         reject(@"E_MISSING_MODULE", @"No FileSystem module.", nil);
         return;
       }
-      if (!([fileSystem permissionsForURI:url] & UMFileSystemPermissionRead)) {
+      if (!([fileSystem permissionsForURI:url] & EXFileSystemPermissionRead)) {
         reject(@"E_FILESYSTEM_PERMISSIONS", [NSString stringWithFormat:@"File '%@' isn't readable.", uri], nil);
         return;
       }

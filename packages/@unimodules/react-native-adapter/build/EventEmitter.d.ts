@@ -6,6 +6,9 @@ declare type NativeModule = {
     removeListeners: (count: number) => void;
 };
 export declare type Subscription = {
+    /**
+     * A method to unsubscribe the listener.
+     */
     remove: () => void;
 };
 export declare class EventEmitter {

@@ -4,12 +4,12 @@
 #import <UMCore/UMModuleRegistryConsumer.h>
 
 #import <UMCore/UMUIManager.h>
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
+#import <ExpoModulesCore/EXFileSystemInterface.h>
 
 @interface EXGLObjectManager : UMExportedModule <UMModuleRegistryConsumer>
 
 @property (nonatomic, weak, nullable) id<UMUIManager> uiManager;
-@property (nonatomic, weak, nullable) id<UMFileSystemInterface> fileSystem;
+@property (nonatomic, weak, nullable) id<EXFileSystemInterface> fileSystem;
 
 - (void)saveContext:(nonnull id)glContext;
 - (void)deleteContextWithId:(nonnull NSNumber *)contextId;

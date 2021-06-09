@@ -1,10 +1,8 @@
-import { Global } from '@emotion/core';
+import { Global } from '@emotion/react';
 import { BlockingSetInitialColorMode } from '@expo/styleguide';
-import { extractCritical } from 'emotion-server';
 import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/document';
-import * as React from 'react';
+import React from 'react';
 
-import { getInitGoogleScriptTag, getGoogleScriptTag } from '~/common/analytics';
 import { globalExtras } from '~/global-styles/extras';
 import { globalFonts } from '~/global-styles/fonts';
 import { globalNProgress } from '~/global-styles/nprogress';
@@ -16,18 +14,9 @@ import { globalTippy } from '~/global-styles/tippy';
 export default class MyDocument extends Document<{ css?: string }> {
   static async getInitialProps(ctx: DocumentContext) {
     const initialProps = await Document.getInitialProps(ctx);
-    const styles = extractCritical(initialProps.html);
     return {
       ...initialProps,
-      styles: (
-        <>
-          {initialProps.styles}
-          <style
-            data-emotion-css={styles.ids.join(' ')}
-            dangerouslySetInnerHTML={{ __html: styles.css }}
-          />
-        </>
-      ),
+      styles: <>{initialProps.styles}</>,
     };
   }
 
@@ -35,9 +24,6 @@ export default class MyDocument extends Document<{ css?: string }> {
     return (
       <Html lang="en">
         <Head>
-          <script src="/static/libs/tippy/tippy.all.min.js" />
-          <script src="/static/libs/nprogress/nprogress.js" />
-
           <Global
             styles={[
               globalFonts,
@@ -51,14 +37,12 @@ export default class MyDocument extends Document<{ css?: string }> {
           />
 
           <link
-            rel="stylesheet"
-            href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
-            integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr"
+            rel="preload"
+            href="/static/fonts/Inter-Regular.woff2?v=3.15"
+            as="font"
+            type="font/woff2"
             crossOrigin="anonymous"
           />
-
-          {getInitGoogleScriptTag({ id: 'UA-107832480-3' })}
-          {getGoogleScriptTag()}
         </Head>
         <body>
           <BlockingSetInitialColorMode />

@@ -2,8 +2,8 @@ package expo.modules.permissions.requesters
 
 import android.Manifest
 import android.os.Bundle
-import org.unimodules.interfaces.permissions.PermissionsResponse
-import org.unimodules.interfaces.permissions.PermissionsStatus
+import expo.modules.interfaces.permissions.PermissionsResponse
+import expo.modules.interfaces.permissions.PermissionsStatus
 
 fun parseBasicLocationPermissions(permissionsResponse: Map<String, PermissionsResponse>): Bundle {
   return Bundle().apply {

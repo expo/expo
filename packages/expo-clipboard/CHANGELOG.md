@@ -6,7 +6,12 @@
 
 ### 🎉 New features
 
+- Added Clipboard event listener ([#13050](https://github.com/expo/expo/pull/13050) by [@cruzach](https://github.com/cruzach))
+
 ### 🐛 Bug fixes
+
+- Fixed `getStringAsync` causing crashes on Web when an exception is thrown. ([#12494](https://github.com/expo/expo/pull/12494) by [@robertherber](https://github.com/robertherber))
+- Fixed newlines not being copied on web. ([#12951](https://github.com/expo/expo/pull/12951) by [@cruzach](https://github.com/cruzach))
 
 ## 1.0.2 — 2021-03-23
 

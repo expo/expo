@@ -1,9 +1,10 @@
 import React from 'react';
 
 import { InlineCode } from '~/components/base/code';
+import { B, P } from '~/components/base/paragraph';
 import { H2, H3Code } from '~/components/plugins/Headings';
 import { ConstantDefinitionData } from '~/components/plugins/api/APIDataTypes';
-import { CommentTextBlock, renderers } from '~/components/plugins/api/APISectionUtils';
+import { CommentTextBlock, resolveTypeName } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionConstantsProps = {
   data: ConstantDefinitionData[];
@@ -11,7 +12,7 @@ export type APISectionConstantsProps = {
 };
 
 const renderConstant = (
-  { name, comment }: ConstantDefinitionData,
+  { name, comment, type }: ConstantDefinitionData,
   apiName?: string
 ): JSX.Element => (
   <div key={`constant-definition-${name}`}>
@@ -21,7 +22,10 @@ const renderConstant = (
         {name}
       </InlineCode>
     </H3Code>
-    <CommentTextBlock comment={comment} renderers={renderers} />
+    <P>
+      <B>Type:</B> <InlineCode>{resolveTypeName(type)}</InlineCode>
+    </P>
+    <CommentTextBlock comment={comment} />
   </div>
 );
 

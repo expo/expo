@@ -3,7 +3,6 @@
 #import <LocalAuthentication/LocalAuthentication.h>
 
 #import <UMCore/UMUtilities.h>
-#import <UMConstantsInterface/UMConstantsInterface.h>
 #import <EXLocalAuthentication/EXLocalAuthentication.h>
 
 typedef NS_ENUM(NSInteger, EXAuthenticationType) {

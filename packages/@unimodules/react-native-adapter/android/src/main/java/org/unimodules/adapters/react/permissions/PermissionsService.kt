@@ -14,16 +14,16 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.facebook.react.modules.core.PermissionAwareActivity
 import com.facebook.react.modules.core.PermissionListener
+import expo.modules.interfaces.permissions.Permissions
+import expo.modules.interfaces.permissions.PermissionsResponse
+import expo.modules.interfaces.permissions.PermissionsResponseListener
+import expo.modules.interfaces.permissions.PermissionsStatus
 import org.unimodules.core.ModuleRegistry
 import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ActivityProvider
 import org.unimodules.core.interfaces.InternalModule
 import org.unimodules.core.interfaces.LifecycleEventListener
 import org.unimodules.core.interfaces.services.UIManager
-import org.unimodules.interfaces.permissions.Permissions
-import org.unimodules.interfaces.permissions.PermissionsResponse
-import org.unimodules.interfaces.permissions.PermissionsResponseListener
-import org.unimodules.interfaces.permissions.PermissionsStatus
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -32,7 +32,6 @@ private const val PREFERENCE_FILENAME = "expo.modules.permissions.asked"
 
 open class PermissionsService(val context: Context) : InternalModule, Permissions, LifecycleEventListener {
   private var mActivityProvider: ActivityProvider? = null
-
 
   // state holders for asking for writing permissions
   private var mWriteSettingsPermissionBeingAsked = false // change this directly before calling corresponding startActivity
@@ -87,7 +86,6 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
       getPermissionsWithPromise(promise, *permissions)
     }, *permissions)
   }
-
 
   override fun getPermissions(responseListener: PermissionsResponseListener, vararg permissions: String) {
     responseListener.onResult(parseNativeResult(permissions, permissions.map {

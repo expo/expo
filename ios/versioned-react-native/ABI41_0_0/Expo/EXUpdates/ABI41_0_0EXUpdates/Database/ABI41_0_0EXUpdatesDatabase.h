@@ -27,14 +27,24 @@ typedef NS_ENUM(NSInteger, ABI41_0_0EXUpdatesDatabaseHashType) {
 - (void)updateAsset:(ABI41_0_0EXUpdatesAsset *)asset error:(NSError ** _Nullable)error;
 - (void)mergeAsset:(ABI41_0_0EXUpdatesAsset *)asset withExistingEntry:(ABI41_0_0EXUpdatesAsset *)existingAsset error:(NSError ** _Nullable)error;
 - (void)markUpdateFinished:(ABI41_0_0EXUpdatesUpdate *)update error:(NSError ** _Nullable)error;
+- (void)markUpdateAccessed:(ABI41_0_0EXUpdatesUpdate *)update error:(NSError ** _Nullable)error;
 - (void)setScopeKey:(NSString *)scopeKey onUpdate:(ABI41_0_0EXUpdatesUpdate *)update error:(NSError ** _Nullable)error;
+- (void)markMissingAssets:(NSArray<ABI41_0_0EXUpdatesAsset *> *)assets error:(NSError ** _Nullable)error;
 
 - (void)deleteUpdates:(NSArray<ABI41_0_0EXUpdatesUpdate *> *)updates error:(NSError ** _Nullable)error;
 - (nullable NSArray<ABI41_0_0EXUpdatesAsset *> *)deleteUnusedAssetsWithError:(NSError ** _Nullable)error;
 
+/**
+ * This method ignores the scopeKey field in the config object and returns ALL updates in the database.
+ * The config object is passed along to each update object, even if its scopeKey doesn't match.
+ *
+ * Updates returned from this method should not be used to launch.
+ */
 - (nullable NSArray<ABI41_0_0EXUpdatesUpdate *> *)allUpdatesWithConfig:(ABI41_0_0EXUpdatesConfig *)config error:(NSError ** _Nullable)error;
+- (nullable NSArray<ABI41_0_0EXUpdatesUpdate *> *)allUpdatesWithStatus:(ABI41_0_0EXUpdatesUpdateStatus)status config:(ABI41_0_0EXUpdatesConfig *)config error:(NSError ** _Nullable)error;
 - (nullable NSArray<ABI41_0_0EXUpdatesUpdate *> *)launchableUpdatesWithConfig:(ABI41_0_0EXUpdatesConfig *)config error:(NSError ** _Nullable)error;
 - (nullable ABI41_0_0EXUpdatesUpdate *)updateWithId:(NSUUID *)updateId config:(ABI41_0_0EXUpdatesConfig *)config error:(NSError ** _Nullable)error;
+- (nullable NSArray<ABI41_0_0EXUpdatesAsset *> *)allAssetsWithError:(NSError ** _Nullable)error;
 - (nullable NSArray<ABI41_0_0EXUpdatesAsset *> *)assetsWithUpdateId:(NSUUID *)updateId error:(NSError ** _Nullable)error;
 - (nullable ABI41_0_0EXUpdatesAsset *)assetWithKey:(nullable NSString *)key error:(NSError ** _Nullable)error;
 

@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)reapUnusedUpdatesWithConfig:(ABI39_0_0EXUpdatesConfig *)config
                            database:(ABI39_0_0EXUpdatesDatabase *)database
                           directory:(NSURL *)directory
-                    selectionPolicy:(id<ABI39_0_0EXUpdatesSelectionPolicy>)selectionPolicy
+                    selectionPolicy:(ABI39_0_0EXUpdatesSelectionPolicy *)selectionPolicy
                      launchedUpdate:(ABI39_0_0EXUpdatesUpdate *)launchedUpdate
 {
   dispatch_async(database.databaseQueue, ^{
@@ -28,7 +28,15 @@ NS_ASSUME_NONNULL_BEGIN
       NSLog(@"Error reaping updates: %@", error.localizedDescription);
       return;
     }
-    NSArray<ABI39_0_0EXUpdatesUpdate *> *updatesToDelete = [selectionPolicy updatesToDeleteWithLaunchedUpdate:launchedUpdate updates:allUpdates];
+
+    NSError *manifestFiltersError;
+    NSDictionary *manifestFilters = [database manifestFiltersWithScopeKey:config.scopeKey error:&manifestFiltersError];
+    if (manifestFiltersError) {
+      NSLog(@"Error selecting manifest filters while reaping updates: %@", error.localizedDescription);
+      return;
+    }
+
+    NSArray<ABI39_0_0EXUpdatesUpdate *> *updatesToDelete = [selectionPolicy updatesToDeleteWithLaunchedUpdate:launchedUpdate updates:allUpdates filters:manifestFilters];
     [database deleteUpdates:updatesToDelete error:&error];
     if (error) {
       NSLog(@"Error reaping updates: %@", error.localizedDescription);

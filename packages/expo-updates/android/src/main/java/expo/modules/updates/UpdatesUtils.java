@@ -221,7 +221,7 @@ public class UpdatesUtils {
     try {
       DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.US);
       return formatter.parse(dateString);
-    } catch (ParseException e) {
+    } catch (ParseException | IllegalArgumentException e) {
       Log.e(TAG, "Failed to parse date string on first try: " + dateString, e);
       // some old Android versions don't support the 'X' character in SimpleDateFormat, so try without this
       DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);

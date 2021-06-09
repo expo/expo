@@ -74,7 +74,7 @@ To enable the AdSupport framework:
 import * as Analytics from 'expo-firebase-analytics';
 ```
 
-To use web analytics, you'll also need to install the peer dependency **firebase** with `yarn add firebase`.
+To use web analytics, you'll also need to install the peer dependency **firebase** with `expo install firebase`.
 
 ## Methods
 
@@ -300,6 +300,22 @@ on Expo Go.
 // Disable the warning & log messages on Expo Go
 Analytics.setUnavailabilityLogging(false);
 ```
+
+### setClientId
+
+```tsx
+setClientId(clientId: string): void
+```
+
+_(Expo Go only)_ Sets the clientId to the given value. For best results, set this value before calling any other functions on this module.
+
+By default, the clientId is set to `Constants.installationId` in Expo Go, which is deprecated and will be removed in SDK 44. At that time, you'll need to use this method to set your own `clientId` when using Expo Go.
+
+#### Parameters
+
+| Name     | Type     | Description                                                   |
+| -------- | -------- | ------------------------------------------------------------- |
+| clientId | `string` | UUIDv4 string value to set for the current session in Expo Go |
 
 ### setDebugModeEnabled
 

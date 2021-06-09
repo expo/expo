@@ -103,19 +103,19 @@ A secret needs a name and a value. The name can only contain alphanumeric charac
 
 ### Adding secrets with EAS CLI
 
-To create a new secret, run `eas secrets:create`
+To create a new secret, run `eas secret:create`
 
 ```
-> eas secrets:create project SECRET_NAME secretvalue
+> eas secret:create project SECRET_NAME secretvalue
 ✔ Linked to project @fiberjw/goodweebs
 ✔ You're inside the project directory. Would you like to use fiberjw account? … yes
 ✔ ️Created a new secret SECRET_NAME on project @fiberjw/goodweebs.
 ```
 
-To view any existing secrets for this project, run `eas secrets:list`:
+To view any existing secrets for this project, run `eas secret:list`:
 
 ```
-> eas secrets:list
+> eas secret:list
 ✔ Linked to project @fiberjw/goodweebs
 Secrets for this account and project:
 ┌─────────────────┬─────────┬─────────────────┬──────────────────────────────────────┐
@@ -138,13 +138,12 @@ After creating a secret, you can access the value via EAS Build hooks in Node.js
 {
   "scripts": {
     "eas-build-pre-install": "echo $VARIABLE_NAME",
-    "android": "react-native run-android",
-    "ios": "react-native run-ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "start": "react-native start",
     "test": "jest"
-  },
- ...
+  }
 }
 ```
 
@@ -159,3 +158,4 @@ The following environment variables are exposed to each build job:
 - `EAS_BUILD_PROFILE` - the name of the build profile from `eas.json`, e.g. `release`
 - `EAS_BUILD_GIT_COMMIT_HASH` - the hash of the Git commit, e.g. `88f28ab5ea39108ade978de2d0d1adeedf0ece76`
 - `EAS_BUILD_NPM_CACHE_URL` - the URL of the npm cache ([learn more](how-tos.md#using-npm-cache-with-yarn-v1))
+- `EAS_BUILD_USERNAME` - the username of the user initiating the build (it's undefined for bot users)

@@ -42,7 +42,7 @@ export function installKotlin(Prism: any) {
     },
   });
 
-  var interpolation = [
+  const interpolation = [
     {
       pattern: /\$\{[^}]+\}/,
       inside: {

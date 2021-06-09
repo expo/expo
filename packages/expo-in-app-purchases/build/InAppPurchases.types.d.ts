@@ -1,6 +1,7 @@
-export interface IAPQueryResponse {
+declare type QueryResult = InAppPurchase | IAPItemDetails;
+export interface IAPQueryResponse<TResult extends QueryResult = QueryResult> {
     responseCode: IAPResponseCode;
-    results?: (InAppPurchase | IAPItemDetails)[];
+    results?: TResult[];
     errorCode?: IAPErrorCode;
 }
 export declare enum IAPResponseCode {
@@ -59,3 +60,4 @@ export interface IAPItemDetails {
     type: IAPItemType;
     subscriptionPeriod?: string;
 }
+export {};

@@ -7,6 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface ABI39_0_0EXUpdatesConfig ()
 
 @property (nonatomic, readwrite, assign) BOOL isEnabled;
+@property (nonatomic, readwrite, assign) BOOL expectsSignedManifest;
 @property (nonatomic, readwrite, strong) NSString *scopeKey;
 @property (nonatomic, readwrite, strong) NSURL *updateUrl;
 @property (nonatomic, readwrite, strong) NSDictionary *requestHeaders;
@@ -19,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+static NSString * const ABI39_0_0EXUpdatesConfigPlistName = @"Expo";
+
 static NSString * const ABI39_0_0EXUpdatesDefaultReleaseChannelName = @"default";
 
 static NSString * const ABI39_0_0EXUpdatesConfigEnabledKey = @"ABI39_0_0EXUpdatesEnabled";
@@ -30,7 +33,6 @@ static NSString * const ABI39_0_0EXUpdatesConfigLaunchWaitMsKey = @"ABI39_0_0EXU
 static NSString * const ABI39_0_0EXUpdatesConfigCheckOnLaunchKey = @"ABI39_0_0EXUpdatesCheckOnLaunch";
 static NSString * const ABI39_0_0EXUpdatesConfigSDKVersionKey = @"ABI39_0_0EXUpdatesSDKVersion";
 static NSString * const ABI39_0_0EXUpdatesConfigRuntimeVersionKey = @"ABI39_0_0EXUpdatesRuntimeVersion";
-static NSString * const ABI39_0_0EXUpdatesConfigUsesLegacyManifestKey = @"ABI39_0_0EXUpdatesUsesLegacyManifest";
 static NSString * const ABI39_0_0EXUpdatesConfigHasEmbeddedUpdateKey = @"ABI39_0_0EXUpdatesHasEmbeddedUpdate";
 
 static NSString * const ABI39_0_0EXUpdatesConfigAlwaysString = @"ALWAYS";
@@ -43,11 +45,11 @@ static NSString * const ABI39_0_0EXUpdatesConfigNeverString = @"NEVER";
 {
   if (self = [super init]) {
     _isEnabled = YES;
+    _expectsSignedManifest = NO;
     _requestHeaders = @{};
     _releaseChannel = ABI39_0_0EXUpdatesDefaultReleaseChannelName;
     _launchWaitMs = @(0);
     _checkOnLaunch = ABI39_0_0EXUpdatesCheckAutomaticallyConfigAlways;
-    _usesLegacyManifest = YES;
     _hasEmbeddedUpdate = YES;
   }
   return self;
@@ -60,13 +62,29 @@ static NSString * const ABI39_0_0EXUpdatesConfigNeverString = @"NEVER";
   return updatesConfig;
 }
 
++ (instancetype)configWithExpoPlist
+{
+  NSString *configPath = [[NSBundle mainBundle] pathForResource:ABI39_0_0EXUpdatesConfigPlistName ofType:@"plist"];
+  if (!configPath) {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:@"Cannot load configuration from Expo.plist. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project."
+                                 userInfo:@{}];
+  }
+  return [[self class] configWithDictionary:[NSDictionary dictionaryWithContentsOfFile:configPath]];
+}
+
 - (void)loadConfigFromDictionary:(NSDictionary *)config
 {
   id isEnabled = config[ABI39_0_0EXUpdatesConfigEnabledKey];
   if (isEnabled && [isEnabled isKindOfClass:[NSNumber class]]) {
     _isEnabled = [(NSNumber *)isEnabled boolValue];
   }
-
+  
+  id expectsSignedManifest = config[@"ABI39_0_0EXUpdatesExpectsSignedManifest"];
+  if (expectsSignedManifest && [expectsSignedManifest isKindOfClass:[NSNumber class]]) {
+    _expectsSignedManifest = [(NSNumber *)expectsSignedManifest boolValue];
+  }
+  
   id updateUrl = config[ABI39_0_0EXUpdatesConfigUpdateUrlKey];
   if (updateUrl && [updateUrl isKindOfClass:[NSString class]]) {
     NSURL *url = [NSURL URLWithString:(NSString *)updateUrl];
@@ -90,8 +108,21 @@ static NSString * const ABI39_0_0EXUpdatesConfigNeverString = @"NEVER";
   }
 
   id requestHeaders = config[ABI39_0_0EXUpdatesConfigRequestHeadersKey];
-  if (requestHeaders && [requestHeaders isKindOfClass:[NSDictionary class]]) {
+  if (requestHeaders) {
+    if(![requestHeaders isKindOfClass:[NSDictionary class]]){
+      @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                     reason:[NSString stringWithFormat:@"PList key '%@' must be a string valued Dictionary.", ABI39_0_0EXUpdatesConfigRequestHeadersKey]
+                                   userInfo:@{}];
+    }
     _requestHeaders = (NSDictionary *)requestHeaders;
+    
+    for (id key in _requestHeaders){
+      if (![_requestHeaders[key] isKindOfClass:[NSString class]]){
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                       reason:[NSString stringWithFormat:@"PList key '%@' must be a string valued Dictionary.", ABI39_0_0EXUpdatesConfigRequestHeadersKey]
+                                     userInfo:@{}];
+      }
+    }
   }
 
   id releaseChannel = config[ABI39_0_0EXUpdatesConfigReleaseChannelKey];
@@ -129,17 +160,15 @@ static NSString * const ABI39_0_0EXUpdatesConfigNeverString = @"NEVER";
     _runtimeVersion = (NSString *)runtimeVersion;
   }
 
-  NSAssert(_sdkVersion || _runtimeVersion, @"One of ABI39_0_0EXUpdatesSDKVersion or ABI39_0_0EXUpdatesRuntimeVersion must be configured in expo-updates");
-  
-  id usesLegacyManifest = config[ABI39_0_0EXUpdatesConfigUsesLegacyManifestKey];
-  if (usesLegacyManifest && [usesLegacyManifest isKindOfClass:[NSNumber class]]) {
-    _usesLegacyManifest = [(NSNumber *)usesLegacyManifest boolValue];
-  }
-
   id hasEmbeddedUpdate = config[ABI39_0_0EXUpdatesConfigHasEmbeddedUpdateKey];
   if (hasEmbeddedUpdate && [hasEmbeddedUpdate isKindOfClass:[NSNumber class]]) {
     _hasEmbeddedUpdate = [(NSNumber *)hasEmbeddedUpdate boolValue];
   }
+}
+
+- (BOOL)isMissingRuntimeVersion
+{
+  return (!_runtimeVersion || !_runtimeVersion.length) && (!_sdkVersion || !_sdkVersion.length);
 }
 
 + (NSString *)normalizedURLOrigin:(NSURL *)url

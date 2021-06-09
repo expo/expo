@@ -35,14 +35,23 @@ const renderAPI = (
   try {
     const data = require(`~/public/static/data/${version}/${packageName}.json`).children;
 
-    const methods = filterDataByKind(data, TypeDocKind.Function);
+    const methods = filterDataByKind(
+      data,
+      TypeDocKind.Function,
+      entry => !entry.name.includes('Listener')
+    );
+    const eventSubscriptions = filterDataByKind(data, TypeDocKind.Function, entry =>
+      entry.name.includes('Listener')
+    );
     const types = filterDataByKind(
       data,
       TypeDocKind.TypeAlias,
       entry => !!(entry.type.declaration || entry.type.types)
     );
-    const props = filterDataByKind(data, TypeDocKind.TypeAlias, entry =>
-      entry.name.includes('Props')
+    const props = filterDataByKind(
+      data,
+      TypeDocKind.TypeAlias,
+      entry => entry.name.includes('Props') && !!entry.type.types
     );
     const defaultProps = filterDataByKind(
       data
@@ -60,6 +69,11 @@ const renderAPI = (
       <>
         <APISectionConstants data={constants} apiName={apiName} />
         <APISectionMethods data={methods} apiName={apiName} />
+        <APISectionMethods
+          data={eventSubscriptions}
+          apiName={apiName}
+          header="Event Subscriptions"
+        />
         <APISectionProps data={props} defaultProps={defaultProps} />
         <APISectionTypes data={types} />
         <APISectionInterfaces data={interfaces} />

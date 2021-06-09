@@ -1,4 +1,4 @@
-import RemoteConsole from '../RemoteConsole';
+import * as RemoteConsole from '../RemoteConsole';
 import { __waitForEmptyLogQueueAsync } from '../RemoteLogging';
 
 jest.mock('react-native/Libraries/Core/Devtools/symbolicateStackTrace', () =>

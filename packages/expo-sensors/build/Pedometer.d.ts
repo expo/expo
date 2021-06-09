@@ -1,3 +1,5 @@
+import { Subscription } from '@unimodules/core';
+import { PermissionExpiration, PermissionResponse, PermissionStatus } from 'expo-modules-core';
 export declare type PedometerResult = {
     /**
      * Number of steps taken between the given dates.
@@ -5,20 +7,14 @@ export declare type PedometerResult = {
     steps: number;
 };
 export declare type PedometerUpdateCallback = (result: PedometerResult) => void;
-export interface PedometerListener {
-    /**
-     * A method to unsubscribe the listener.
-     */
-    remove: () => void;
-}
 /**
  * Subscribe to pedometer updates.
  * @param callback A callback that is invoked when new step count data is available. The callback is
  * provided with a single argument that is [`PedometerResult`](#pedometerresult).
- * @return Returns a [`PedometerListener`](#pedometerlistener) interface that enables you to call
+ * @return Returns a [`Subscription`](#subscription) that enables you to call
  * `remove()` when you would like to unsubscribe the listener.
  */
-export declare function watchStepCount(callback: PedometerUpdateCallback): PedometerListener;
+export declare function watchStepCount(callback: PedometerUpdateCallback): Subscription;
 /**
  * Get the step count between two dates.
  * @param start A date indicating the start of the range over which to measure steps.
@@ -36,3 +32,6 @@ export declare function getStepCountAsync(start: Date, end: Date): Promise<Pedom
  * available on this device.
  */
 export declare function isAvailableAsync(): Promise<boolean>;
+export declare function getPermissionsAsync(): Promise<PermissionResponse>;
+export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
+export { Subscription, PermissionResponse, PermissionStatus, PermissionExpiration };

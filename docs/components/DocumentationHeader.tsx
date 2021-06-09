@@ -1,4 +1,4 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
 import {
   theme,
   palette,
@@ -279,7 +279,7 @@ function SelectTheme() {
     setLoaded(true);
   }, []);
 
-  if (!loaded) return <div />;
+  if (!loaded) return <div css={SELECT_THEME_CONTAINER} />;
 
   return (
     <div css={SELECT_THEME_CONTAINER}>

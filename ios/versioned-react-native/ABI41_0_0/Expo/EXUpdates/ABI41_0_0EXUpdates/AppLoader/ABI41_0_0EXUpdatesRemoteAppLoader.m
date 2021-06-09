@@ -33,10 +33,12 @@ static NSString * const ABI41_0_0EXUpdatesRemoteAppLoaderErrorDomain = @"ABI41_0
 
 - (void)loadUpdateFromUrl:(NSURL *)url
                onManifest:(ABI41_0_0EXUpdatesAppLoaderManifestBlock)manifestBlock
+                    asset:(ABI41_0_0EXUpdatesAppLoaderAssetBlock)assetBlock
                   success:(ABI41_0_0EXUpdatesAppLoaderSuccessBlock)success
                     error:(ABI41_0_0EXUpdatesAppLoaderErrorBlock)error
 {
   self.manifestBlock = manifestBlock;
+  self.assetBlock = assetBlock;
   self.errorBlock = error;
 
   ABI41_0_0UM_WEAKIFY(self)

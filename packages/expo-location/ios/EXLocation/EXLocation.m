@@ -18,8 +18,8 @@
 
 #import <UMCore/UMEventEmitterService.h>
 
-#import <UMPermissionsInterface/UMPermissionsInterface.h>
-#import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
+#import <ExpoModulesCore/EXPermissionsInterface.h>
+#import <ExpoModulesCore/EXPermissionsMethodsDelegate.h>
 
 #import <UMTaskManagerInterface/UMTaskManagerInterface.h>
 
@@ -33,7 +33,7 @@ NSString * const EXHeadingChangedEventName = @"Expo.headingChanged";
 @property (nonatomic, strong) NSMutableDictionary<NSNumber *, EXLocationDelegate*> *delegates;
 @property (nonatomic, strong) NSMutableSet<EXLocationDelegate *> *retainedDelegates;
 @property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
-@property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
+@property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
 @property (nonatomic, weak) id<UMTaskManagerInterface> tasksManager;
 
 @end
@@ -56,8 +56,8 @@ UM_EXPORT_MODULE(ExpoLocation);
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
   _tasksManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMTaskManagerInterface)];
 
-  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
-  [UMPermissionsMethodsDelegate registerRequesters:@[
+  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
+  [EXPermissionsMethodsDelegate registerRequesters:@[
     [EXLocationPermissionRequester new],
     [EXForegroundPermissionRequester new],
     [EXBackgroundLocationPermissionRequester new]
@@ -323,7 +323,7 @@ UM_EXPORT_METHOD_AS(getPermissionsAsync,
                     getPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                       withRequester:[EXLocationPermissionRequester class]
                                                             resolve:resolve
                                                              reject:reject];
@@ -333,7 +333,7 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                     requestPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[EXLocationPermissionRequester class]
                                                                resolve:resolve
                                                                 reject:reject];
@@ -343,7 +343,7 @@ UM_EXPORT_METHOD_AS(getForegroundPermissionsAsync,
                     getForegroundPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                       withRequester:[EXForegroundPermissionRequester class]
                                                             resolve:resolve
                                                              reject:reject];
@@ -353,7 +353,7 @@ UM_EXPORT_METHOD_AS(requestForegroundPermissionsAsync,
                     requestForegroundPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[EXForegroundPermissionRequester class]
                                                                resolve:resolve
                                                                 reject:reject];
@@ -363,7 +363,7 @@ UM_EXPORT_METHOD_AS(getBackgroundPermissionsAsync,
                     getBackgroundPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                       withRequester:[EXBackgroundLocationPermissionRequester class]
                                                             resolve:resolve
                                                              reject:reject];
@@ -373,7 +373,7 @@ UM_EXPORT_METHOD_AS(requestBackgroundPermissionsAsync,
                     requestBackgroundPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[EXBackgroundLocationPermissionRequester class]
                                                                resolve:resolve
                                                                 reject:reject];
@@ -395,7 +395,12 @@ UM_EXPORT_METHOD_AS(startLocationUpdatesAsync,
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
-  if (![self checkBackgroundPermissions:reject] || ![self checkTaskManagerExists:reject] || ![self checkBackgroundServices:reject]) {
+  // There are two ways of starting this service.
+  // 1. As a background location service, this requires the background location permission.
+  // 2. As a user-initiated foreground service, this does NOT require the background location permission.
+  // Unfortunately, we cannot distinguish between those cases.
+  // So we only check foreground permission which needs to be granted in both cases.
+  if (![self checkForegroundPermissions:reject] || ![self checkTaskManagerExists:reject] || ![self checkBackgroundServices:reject]) {
     return;
   }
   if (![CLLocationManager significantLocationChangeMonitoringAvailable]) {

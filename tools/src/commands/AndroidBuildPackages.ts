@@ -222,11 +222,11 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
 
   // hacky workaround for weird issue where some packages need to be built twice after cleaning
   // in order to have .so libs included in the aar
-  const reactAndroidIndex = packages.findIndex(pkg => pkg.name === REACT_ANDROID_PKG.name);
+  const reactAndroidIndex = packages.findIndex((pkg) => pkg.name === REACT_ANDROID_PKG.name);
   if (reactAndroidIndex > -1) {
     packages.splice(reactAndroidIndex, 0, REACT_ANDROID_PKG);
   }
-  const expoviewIndex = packages.findIndex(pkg => pkg.name === EXPOVIEW_PKG.name);
+  const expoviewIndex = packages.findIndex((pkg) => pkg.name === EXPOVIEW_PKG.name);
   if (expoviewIndex > -1) {
     packages.splice(expoviewIndex, 0, EXPOVIEW_PKG);
   }
@@ -364,7 +364,7 @@ async function action(options: ActionOptions) {
         {
           type: 'checkbox',
           name: 'packagesToBuild',
-          message: 'Choose which packages to build',
+          message: 'Choose which packages to build\n  ● selected ○ unselected\n',
           choices: packages.map((pkg) => pkg.name),
           default: packagesToBuild,
           pageSize: Math.min(packages.length, (process.stdout.rows || 100) - 2),

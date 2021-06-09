@@ -1,4 +1,4 @@
-import { PermissionResponse } from 'unimodules-permissions-interface';
+import { PermissionResponse } from 'expo-modules-core';
 
 export { PermissionResponse as CameraPermissionResponse };
 
@@ -82,6 +82,7 @@ export type OpenFileBrowserOptions = {
   mediaTypes: MediaTypeOptions;
   capture?: boolean;
   allowsMultipleSelection: boolean;
+  base64: boolean;
 };
 
 export type ExpandImagePickerResult<

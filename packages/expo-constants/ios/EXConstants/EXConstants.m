@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <EXConstants/EXConstants.h>
-#import <UMConstantsInterface/UMConstantsInterface.h>
+#import <ExpoModulesCore/EXConstantsInterface.h>
 
 #import <WebKit/WKWebView.h>
 
@@ -10,7 +10,7 @@
 }
 
 @property (nonatomic, strong) NSString *webViewUserAgent;
-@property (nonatomic, weak) id<UMConstantsInterface> constantsService;
+@property (nonatomic, weak) id<EXConstantsInterface> constantsService;
 
 @end
 
@@ -25,7 +25,7 @@ UM_REGISTER_MODULE();
 
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
-  _constantsService = [moduleRegistry getModuleImplementingProtocol:@protocol(UMConstantsInterface)];
+  _constantsService = [moduleRegistry getModuleImplementingProtocol:@protocol(EXConstantsInterface)];
 }
 
 - (NSDictionary *)constantsToExport

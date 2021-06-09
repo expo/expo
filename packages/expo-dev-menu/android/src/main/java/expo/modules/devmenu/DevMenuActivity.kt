@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactDelegate
+import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactRootView
+import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.devmenu.helpers.getPrivateDeclaredFiledValue
 import expo.modules.devmenu.helpers.setPrivateDeclaredFiledValue
 import java.util.*
@@ -81,6 +83,21 @@ class DevMenuActivity : ReactActivity() {
     overridePendingTransition(0, 0)
   }
 
+  override fun onStart() {
+    super.onStart()
+    val instanceManager = DevMenuManager.delegate?.reactInstanceManager() ?: return
+    val supportsDevelopment = DevMenuManager.delegate?.supportsDevelopment() ?: false
+
+    if (supportsDevelopment) {
+      val devSupportManager: DevSupportManager =
+        ReactInstanceManager::class.java.getPrivateDeclaredFiledValue(
+          "mDevSupportManager", instanceManager
+        )
+
+      devSupportManager.devSupportEnabled = true
+    }
+  }
+
   companion object {
     var appWasLoaded = false
     private lateinit var rootView: ReactRootView
@@ -90,7 +107,9 @@ class DevMenuActivity : ReactActivity() {
         return rootView
       }
 
-      rootView = getVendoredClass(
+      // This type hint is needed for the older kotlin version.
+      @Suppress("RemoveExplicitTypeArguments")
+      rootView = getVendoredClass<ReactRootView>(
         "com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView",
         arrayOf(Context::class.java),
         arrayOf(activity)

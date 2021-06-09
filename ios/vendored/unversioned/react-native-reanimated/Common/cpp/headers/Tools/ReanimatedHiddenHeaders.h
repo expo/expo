@@ -7,9 +7,9 @@
     #include "LoggerInterface.h"
     #include "SpeedChecker.h"
 #else
-    #include "../../hidden_headers/Logger.h"
-    #include "../../hidden_headers/LoggerInterface.h"
-    #include "../../hidden_headers/SpeedChecker.h"
+    #include "Common/cpp/hidden_headers/Logger.h"
+    #include "Common/cpp/hidden_headers/LoggerInterface.h"
+    #include "Common/cpp/hidden_headers/SpeedChecker.h"
 #endif
 
 #endif //REANIMATEDEXAMPLE_REANIMATEDHIDDEN_H

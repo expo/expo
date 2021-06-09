@@ -1,48 +1,10 @@
-import { useQuery } from '@apollo/client';
-import gql from 'graphql-tag';
 import * as React from 'react';
 
-import ProjectList, { Project } from '../components/ProjectList';
-
-interface ProfileProjectsData {
-  me: {
-    id: string;
-    appCount: number;
-    apps: Project[];
-  };
-}
-
-interface ProfileProjectsVars {
-  limit: number;
-  offset: number;
-}
-
-const ProfileProjectsQuery = gql`
-  query Home_MyApps($limit: Int!, $offset: Int!) {
-    me {
-      id
-      appCount
-      apps(limit: $limit, offset: $offset) {
-        id
-        description
-        fullName
-        iconUrl
-        lastPublishedTime
-        name
-        username
-        packageName
-        privacy
-        sdkVersion
-      }
-    }
-  }
-`;
+import ProjectList from '../components/ProjectList';
+import { useHome_MyAppsQuery } from '../graphql/queries/ProfileProjectsQuery.query.generated';
 
 function useProfileProjectsQuery() {
-  const { data, fetchMore, loading, error, refetch } = useQuery<
-    ProfileProjectsData,
-    ProfileProjectsVars
-  >(ProfileProjectsQuery, {
+  const { data, fetchMore, loading, error, refetch } = useHome_MyAppsQuery({
     variables: {
       limit: 15,
       offset: 0,
@@ -67,7 +29,7 @@ function useProfileProjectsQuery() {
           me: {
             ...previousData.me,
             ...fetchMoreResult.me,
-            apps: [...previousData.me.apps, ...fetchMoreResult.me.apps],
+            apps: [...(previousData.me?.apps ?? []), ...fetchMoreResult.me.apps],
           },
         };
 

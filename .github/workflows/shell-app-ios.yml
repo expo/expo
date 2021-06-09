@@ -9,11 +9,14 @@ on:
   schedule:
     - cron: '20 5 * * 2,4,6'
   pull_request:
-    branches: [master]
     paths:
       - .github/workflows/shell-app-ios.yml
       - .ruby-version
       - exponent-view-template
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:

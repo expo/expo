@@ -58,7 +58,7 @@ public class UpdatesModule extends ExportedModule {
         UpdateEntity launchedUpdate = updatesService.getLaunchedUpdate();
         if (launchedUpdate != null) {
           constants.put("updateId", launchedUpdate.id.toString());
-          constants.put("manifestString", launchedUpdate.metadata != null ? launchedUpdate.metadata.toString() : "{}");
+          constants.put("manifestString", launchedUpdate.manifest != null ? launchedUpdate.manifest.toString() : "{}");
         }
 
         Map<AssetEntity, String> localAssetFiles = updatesService.getLocalAssetFiles();
@@ -137,14 +137,14 @@ public class UpdatesModule extends ExportedModule {
             // this shouldn't ever happen, but if we don't have anything to compare
             // the new manifest to, let the user know an update is available
             updateInfo.putBoolean("isAvailable", true);
-            updateInfo.putString("manifestString", manifest.getRawManifestJson().toString());
+            updateInfo.putString("manifestString", manifest.getRawManifest().toString());
             promise.resolve(updateInfo);
             return;
           }
 
           if (updatesService.getSelectionPolicy().shouldLoadNewUpdate(manifest.getUpdateEntity(), launchedUpdate, null)) {
             updateInfo.putBoolean("isAvailable", true);
-            updateInfo.putString("manifestString", manifest.getRawManifestJson().toString());
+            updateInfo.putString("manifestString", manifest.getRawManifest().toString());
             promise.resolve(updateInfo);
           } else {
             updateInfo.putBoolean("isAvailable", false);
@@ -181,6 +181,10 @@ public class UpdatesModule extends ExportedModule {
               }
 
               @Override
+              public void onAssetLoaded(AssetEntity asset, int successfulAssetCount, int failedAssetCount, int totalAssetCount) {
+              }
+
+              @Override
               public boolean onManifestLoaded(Manifest manifest) {
                 return updatesService.getSelectionPolicy().shouldLoadNewUpdate(
                   manifest.getUpdateEntity(),
@@ -196,7 +200,7 @@ public class UpdatesModule extends ExportedModule {
                   updateInfo.putBoolean("isNew", false);
                 } else {
                   updateInfo.putBoolean("isNew", true);
-                  updateInfo.putString("manifestString", update.metadata.toString());
+                  updateInfo.putString("manifestString", update.manifest.toString());
                 }
                 promise.resolve(updateInfo);
               }

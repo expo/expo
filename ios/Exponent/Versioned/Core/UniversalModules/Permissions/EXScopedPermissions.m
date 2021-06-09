@@ -43,7 +43,7 @@
 
 - (NSString *)getScopedPermissionStatus:(NSString *)permissionType {
   if (!_permissionsService) {
-    return [[self class] permissionStringForStatus:UMPermissionStatusGranted];
+    return [[self class] permissionStringForStatus:EXPermissionStatusGranted];
   }
   
   return [[self class] permissionStringForStatus:[_permissionsService getPermission:permissionType forExperience:_experienceId]];
@@ -55,7 +55,7 @@
     return YES;
   }
   
-  return [_permissionsService getPermission:permissionType forExperience:_experienceId] == UMPermissionStatusGranted;
+  return [_permissionsService getPermission:permissionType forExperience:_experienceId] == EXPermissionStatusGranted;
 }
 
 - (void)askForPermissionUsingRequesterClass:(Class)requesterClass
@@ -87,7 +87,7 @@
       NSMutableDictionary *permission = [globalPermissions mutableCopy];
       // try to save scoped permissions - if fails than permission is denied
       if (![self.permissionsService savePermission:permission ofType:permissionType forExperience:self.experienceId]) {
-        permission[@"status"] = [[self class] permissionStringForStatus:UMPermissionStatusDenied];
+        permission[@"status"] = [[self class] permissionStringForStatus:EXPermissionStatusDenied];
         permission[@"granted"] = @(NO);
       }
       resolve(permission);
@@ -96,7 +96,7 @@
     UIAlertAction *denyAction = [UIAlertAction actionWithTitle:@"Deny" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
       UM_ENSURE_STRONGIFY(self);
       NSMutableDictionary *permission = [globalPermissions mutableCopy];
-      permission[@"status"] = [[self class] permissionStringForStatus:UMPermissionStatusDenied];
+      permission[@"status"] = [[self class] permissionStringForStatus:EXPermissionStatusDenied];
       permission[@"granted"] = @(NO);
       resolve([NSDictionary dictionaryWithDictionary:permission]);
     }];
@@ -118,7 +118,7 @@
   
   if ([_constantsBinding.appOwnership isEqualToString:@"expo"]
       && [self shouldVerifyScopedPermission:permissionType]
-      && [EXPermissionsService statusForPermission:permission] == UMPermissionStatusGranted) {
+      && [EXPermissionsService statusForPermission:permission] == EXPermissionStatusGranted) {
     permission[@"status"] = [self getScopedPermissionStatus:permissionType];
     permission[@"granted"] = [permission[@"status"] isEqual:@"granted"] ? @YES : @NO;
   }

@@ -132,6 +132,60 @@ import { Camera } from 'expo-camera';
 const types = await Camera.getAvailableCameraTypesAsync();
 ```
 
+### `Camera.requestPermissionsAsync()`
+
+Asks the user to grant permissions for accessing camera. 
+
+On iOS this will require apps to specify both `NSCameraUsageDescription` and `NSMicrophoneUsageDescription` entries in the `Info.plist`
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+### `Camera.requestCameraPermissionsAsync()`
+
+Asks the user to grant permissions for accessing camera.
+
+On iOS this will require apps to specify an `NSCameraUsageDescription` entry in the `Info.plist`
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+### `Camera.requestMicrophonePermissionsAsync()`
+
+Asks the user to grant permissions for accessing the microphone.
+
+On iOS this will require apps to specify an `NSMicrophoneUsageDescription` entry in the `Info.plist`
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+### `Camera.getPermissionsAsync()`
+
+Checks user's permissions for accessing camera.
+
+### `Camera.getCameraPermissionsAsync()`
+
+Checks user's permissions for accessing camera.
+
+### `Camera.getMicrophonePermissionsAsync()`
+
+Checks user's permissions for accessing microphone.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+### `Camera.getAvailableVideoCodecsAsync()`
+
+(iOS only). Queries the device for the available video codecs that can be used in video recording.
+
+#### Returns
+
+A promise that resolves to a list of strings that represents available codecs.
+
 ## Props
 
 ### `type`
@@ -243,7 +297,7 @@ snap = async () => {
 
 Takes a picture and saves it to app's cache directory. Photos are rotated to match device's orientation (if **options.skipProcessing** flag is not enabled) and scaled to match the preview. Anyway on Android it is essential to set `ratio` prop to get a picture with correct dimensions.
 
-> **Note**: Make sure to wait for the [`onCameraReady`](./#oncameraready) callback before calling this method.
+> **Note**: Make sure to wait for the [`onCameraReady`](#oncameraready) callback before calling this method.
 
 #### Arguments
 
@@ -262,7 +316,7 @@ Takes a picture and saves it to app's cache directory. Photos are rotated to mat
 
 Returns a Promise that resolves to an object: `{ uri, width, height, exif, base64 }` where `uri` is a URI to the local image file on iOS, Android, and a base64 string on web (usable as the source for an `Image` element). The `width, height` properties specify the dimensions of the image. `base64` is included if the `base64` option was truthy, and is a string containing the JPEG data of the image in Base64--prepend that with `'data:image/jpg;base64,'` to get a data URI, which you can use as the source for an `Image` element for example. `exif` is included if the `exif` option was truthy, and is an object containing EXIF data for the image--the names of its properties are EXIF tags and their values are the values for those tags.
 
-On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem.md#expofilesystemcopyasyncoptions) to make a permanent copy of the image.
+On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem.md#filesystemcopyasyncoptions) to make a permanent copy of the image.
 
 On web, the `uri` is a base64 representation of the image because file system URLs are not supported in the browser. The `exif` data returned on web is a partial representation of the [`MediaTrackSettings`](https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings), if available.
 
@@ -281,11 +335,12 @@ Starts recording a video that will be saved to cache directory. Videos are rotat
   - **maxFileSize (_number_)** -- Maximum video file size in bytes.
   - **mute (_boolean_)** -- If present, video will be recorded with no sound.
   - **mirror (_boolean_)** -- (iOS only; on Android, this is handled in the user's device settings) If `true`, the recorded video will be flipped along the vertical axis. iOS flips videos recorded with the front camera by default, but you can reverse that back by setting this to `true`.
-  - **videoBitrate (_number_)** -- Android only and works if `useCamera2Api` is set to `true`. (int greater than 0) This option specifies a desired video bitrate.  For example, 5\*1000\*1000 would be 5Mbps.
+  - **videoBitrate (_number_)** -- Android only and works if `useCamera2Api` is set to `true`. (int greater than 0) This option specifies a desired video bitrate. For example, 5\*1000\*1000 would be 5Mbps.
+  - **codec (_VideoCodec_)** -- (iOS only) This option specifies what codec to use when recording the video. Usage: `Camera.Constants.VideoCodec['<value>']`
 
 #### Returns
 
-Returns a Promise that resolves to an object containing video file `uri` property. The Promise is returned if `stopRecording` was invoked, one of `maxDuration` and `maxFileSize` is reached or camera preview is stopped.
+Returns a Promise that resolves to an object containing video file `uri` property and a `codec` property on iOS. The Promise is returned if `stopRecording` was invoked, one of `maxDuration` and `maxFileSize` is reached or camera preview is stopped.
 
 ### `stopRecording()`
 
@@ -318,22 +373,6 @@ Pauses the camera preview. It is not recommended to use `takePictureAsync` when 
 ### `resumePreview()`
 
 Resumes the camera preview.
-
-### `requestPermissionsAsync()`
-
-Asks the user to grant permissions for accessing camera. Alias for `Permissions.askAsync(Permissions.CAMERA)`.
-
-#### Returns
-
-A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
-
-### `getPermissionsAsync()`
-
-Checks user's permissions for accessing camera. Alias for `Permissions.getAsync(Permissions.CAMERA)`.
-
-#### Returns
-
-A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ## Web Support
 

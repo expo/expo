@@ -1,4 +1,4 @@
-import { PermissionStatus, PermissionResponse } from 'unimodules-permissions-interface';
+import { PermissionStatus, PermissionResponse } from 'expo-modules-core';
 import { LocationAccuracy, LocationCallback, LocationGeocodedAddress, LocationGeocodedLocation, LocationHeadingCallback, LocationHeadingObject, LocationLastKnownOptions, LocationObject, LocationOptions, LocationPermissionResponse, LocationProviderStatus, LocationRegion, LocationSubscription, LocationTaskOptions, LocationActivityType, LocationGeofencingEventType, LocationGeofencingRegionState, LocationGeocodingOptions } from './Location.types';
 import { LocationEventEmitter } from './LocationEventEmitter';
 import { setGoogleApiKey } from './LocationGoogleGeocoding';
@@ -45,12 +45,12 @@ export declare function geocodeAsync(address: string, options?: LocationGeocodin
 export declare function reverseGeocodeAsync(location: Pick<LocationGeocodedLocation, 'latitude' | 'longitude'>, options?: LocationGeocodingOptions): Promise<LocationGeocodedAddress[]>;
 /**
  * Gets the current state of location permissions.
- * @deprecated Use `getForegroundPermissions` or `getBackgroundPermissions` instead.
+ * @deprecated Use `getForegroundPermissionsAsync()` or `getBackgroundPermissionsAsync()` instead.
  */
 export declare function getPermissionsAsync(): Promise<LocationPermissionResponse>;
 /**
  * Requests the user to grant location permissions.
- * @deprecated Use `requestForegroundPermissionsAsync` or `requestBackgroundPermissionsAsync` instead.
+ * @deprecated Use `requestForegroundPermissionsAsync()` or `requestBackgroundPermissionsAsync()` instead.
  */
 export declare function requestPermissionsAsync(): Promise<LocationPermissionResponse>;
 /**

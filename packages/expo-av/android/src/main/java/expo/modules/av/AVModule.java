@@ -8,7 +8,8 @@ import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.arguments.ReadableArguments;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.interfaces.permissions.Permissions;
+
+import expo.modules.interfaces.permissions.Permissions;
 
 public class AVModule extends ExportedModule {
   private AVManagerInterface mAVManager;

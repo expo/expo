@@ -3,17 +3,22 @@ name: Native Component List app
 on:
   workflow_dispatch: {}
   pull_request:
-    branches: [master]
     paths:
       - .github/workflows/native-component-list.yml
       - apps/native-component-list/**
+      - packages/**
       - yarn.lock
   push:
     branches: [master]
     paths:
       - .github/workflows/native-component-list.yml
       - apps/native-component-list/**
+      - packages/**
       - yarn.lock
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -48,5 +53,5 @@ jobs:
         with:
           channel: '#api'
           status: ${{ job.status }}
-          fields: job,commit,ref,eventName,author,took
+          fields: job,message,ref,eventName,author,took
           author_name: Build Native Component List

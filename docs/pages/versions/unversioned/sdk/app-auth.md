@@ -18,7 +18,7 @@ Many services that let you authenticate with them or login with them, like GitHu
 
 If you are trying to implement sign in with [Google](google-sign-in.md) or [Facebook](facebook.md), there are special modules in the Expo SDK for those (though this module will work).
 
-<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6883' }} />
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
@@ -56,11 +56,15 @@ For more info on [Linking in Expo](../../../guides/linking.md).
 
 ## Bare Workflow
 
+> ⚠️ This module may not work as expected in managed EAS build, migrate to AuthSession for a seamless experience.
+
 Carefully follow our in-depth **Bare Workflow** guide for [deep linking](https://reactnavigation.org/docs/deep-linking/#set-up-with-react-native-init-projects).
 
 For more customization (like https redirects) please refer to the native docs: [capturing the authorization redirect](https://github.com/openid/AppAuth-android#capturing-the-authorization-redirect).
 
 ## Usage
+
+> ⚠️ Use the dedicated [Authentication guides](../../../guides/authentication.md) instead.
 
 Below is a set of example functions that demonstrate how to use `expo-app-auth` with the Google OAuth sign in provider.
 
@@ -197,6 +201,8 @@ import * as AppAuth from 'expo-app-auth';
 
 ### `AppAuth.authAsync()`
 
+> ⚠️ Use [`AuthSession.useAuthRequest`](auth-session.md#useauthrequest) instead.
+
 ```js
 AppAuth.authAsync(props: OAuthProps): Promise<TokenResponse>
 ```
@@ -228,6 +234,8 @@ const tokenResponse = await AppAuth.authAsync(config);
 ```
 
 ### `AppAuth.refreshAsync()`
+
+> ⚠️ Use [`AuthSession.refreshAsync()`](auth-session.md#authsessionrefreshasync) instead.
 
 ```js
 AppAuth.refreshAsync(props: OAuthProps, refreshToken: string): Promise<TokenResponse>
@@ -261,6 +269,8 @@ const tokenResponse = await AppAuth.refreshAsync(config, refreshToken);
 ```
 
 ### `AppAuth.revokeAsync()`
+
+> ⚠️ Use [`AuthSession.revokeAsync()`](auth-session.md#authsessionrevokeasync) instead.
 
 ```js
 AppAuth.revokeAsync(props: OAuthBaseProps, options: OAuthRevokeOptions): Promise<any>
@@ -296,6 +306,8 @@ await AppAuth.revokeAsync(config, options);
 ## Constants
 
 ### `AppAuth.OAuthRedirect`
+
+> ⚠️ Use [`Application.applicationId`](application.md##applicationapplicationid) instead.
 
 Redirect scheme used to assemble the `redirectUrl` prop. In standalone apps, this is either the `android.package` (for Android) or `ios.bundleIdentifier` (for iOS) value from your `app.json`. However, for apps running in Expo Go, `AppAuth.OAuthRedirect` is `host.exp.exponent`.
 

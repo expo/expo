@@ -47,7 +47,7 @@ class DevMenuBottomSheet extends React.PureComponent<Props, any> {
     });
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: Props) {
     // Make sure it gets expanded once we receive new identifier.
     if (prevProps.uuid !== this.props.uuid) {
       this.expand();

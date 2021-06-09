@@ -232,7 +232,7 @@ describe(`without stack trace support in Expo CLI`, () => {
   let originalProjectRoot;
 
   beforeAll(() => {
-    if (!Constants.manifest.developer) {
+    if (!Constants.manifest?.developer) {
       throw new Error('Constants.manifest.developer is not defined');
     }
     originalProjectRoot = Constants.manifest.developer.projectRoot;
@@ -240,7 +240,7 @@ describe(`without stack trace support in Expo CLI`, () => {
   });
 
   afterAll(() => {
-    if (!Constants.manifest.developer) {
+    if (!Constants.manifest?.developer) {
       throw new Error('Constants.manifest.developer is not defined');
     }
     Constants.manifest.developer.projectRoot = originalProjectRoot;

@@ -20,7 +20,7 @@
 
 - (NSDictionary *)getPermissions
 {
-  UMPermissionStatus status;
+  EXPermissionStatus status;
   NSString *scope;
   
   PHAuthorizationStatus permissions;
@@ -36,22 +36,22 @@
 
   switch (permissions) {
     case PHAuthorizationStatusAuthorized:
-      status = UMPermissionStatusGranted;
+      status = EXPermissionStatusGranted;
       scope = @"all";
       break;
 #ifdef __IPHONE_14_0
     case PHAuthorizationStatusLimited:
-      status = UMPermissionStatusGranted;
+      status = EXPermissionStatusGranted;
       scope = @"limited";
       break;
 #endif
     case PHAuthorizationStatusDenied:
     case PHAuthorizationStatusRestricted:
-      status = UMPermissionStatusDenied;
+      status = EXPermissionStatusDenied;
       scope = @"none";
       break;
     case PHAuthorizationStatusNotDetermined:
-      status = UMPermissionStatusUndetermined;
+      status = EXPermissionStatusUndetermined;
       scope = @"none";
       break;
   }
@@ -59,7 +59,7 @@
   return @{
     @"status": @(status),
     @"accessPrivileges": scope,
-    @"granted": @(status == UMPermissionStatusGranted)
+    @"granted": @(status == EXPermissionStatusGranted)
   };
 }
 

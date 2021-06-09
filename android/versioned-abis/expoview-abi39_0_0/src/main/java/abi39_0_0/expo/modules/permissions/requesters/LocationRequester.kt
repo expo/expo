@@ -35,7 +35,7 @@ class LocationRequester : PermissionRequester {
       val accessFineLocation = permissionsResponse.getValue(Manifest.permission.ACCESS_FINE_LOCATION)
       val accessCoarseLocation = permissionsResponse.getValue(Manifest.permission.ACCESS_COARSE_LOCATION)
       val canAskAgain = accessCoarseLocation.canAskAgain && accessCoarseLocation.canAskAgain
-      val isGranted = accessCoarseLocation.status == PermissionsStatus.GRANTED || accessFineLocation.status == PermissionsStatus.GRANTED;
+      val isGranted = accessCoarseLocation.status == PermissionsStatus.GRANTED || accessFineLocation.status == PermissionsStatus.GRANTED
 
       putString(STATUS_KEY, when {
         accessFineLocation.status == PermissionsStatus.GRANTED -> {

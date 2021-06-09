@@ -12,6 +12,8 @@ import android.os.Looper;
 import android.os.StrictMode;
 import android.os.UserManager;
 
+import androidx.annotation.Nullable;
+
 import com.facebook.common.internal.ByteStreams;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.stetho.Stetho;
@@ -24,7 +26,6 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.io.output.TeeOutputStream;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.unimodules.core.interfaces.Package;
 import org.unimodules.core.interfaces.SingletonModule;
 
@@ -46,6 +47,7 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
+import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.ActivityResultListener;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExpoHandler;
@@ -216,7 +218,7 @@ public class Exponent {
     public Map<String, Object> experienceProperties;
     public List<Package> expoPackages;
     public ExponentPackageDelegate exponentPackageDelegate;
-    public JSONObject manifest;
+    public RawManifest manifest;
     public List<SingletonModule> singletonModules;
   }
 
@@ -264,24 +266,20 @@ public class Exponent {
   }
 
   // `id` must be URL encoded. Returns true if found cached bundle.
-  public boolean loadJSBundle(final JSONObject manifest, final String urlString, final String id, String abiVersion, final BundleListener bundleListener) {
+  public boolean loadJSBundle(final RawManifest manifest, final String urlString, final String id, String abiVersion, final BundleListener bundleListener) {
     return loadJSBundle(manifest, urlString, id, abiVersion, bundleListener, false);
   }
 
-  public boolean loadJSBundle(JSONObject manifest, final String urlString, final String id, String abiVersion, final BundleListener bundleListener, boolean shouldForceNetwork) {
+  public boolean loadJSBundle(RawManifest manifest, final String urlString, final String id, String abiVersion, final BundleListener bundleListener, boolean shouldForceNetwork) {
     return loadJSBundle(manifest, urlString, id, abiVersion, bundleListener, shouldForceNetwork, false);
   }
 
-  public boolean loadJSBundle(JSONObject manifest, final String urlString, final String id, String abiVersion, final BundleListener bundleListener, boolean shouldForceNetwork, boolean shouldForceCache) {
+  public boolean loadJSBundle(@Nullable RawManifest manifest, final String urlString, final String id, String abiVersion, final BundleListener bundleListener, boolean shouldForceNetwork, boolean shouldForceCache) {
     if (!id.equals(KernelConstants.KERNEL_BUNDLE_ID)) {
       Analytics.markEvent(Analytics.TimedEvent.STARTED_FETCHING_BUNDLE);
     }
 
-    if (manifest == null) {
-      manifest = new JSONObject();
-    }
-
-    boolean isDeveloping = manifest.has("developer");
+    boolean isDeveloping = manifest != null && manifest.isDevelopmentMode();
     if (isDeveloping) {
       // This is important for running locally with no-dev
       shouldForceNetwork = true;
@@ -542,13 +540,13 @@ public class Exponent {
     void onFailure(String errorMessage);
   }
 
-  public void testPackagerStatus(final boolean isDebug, final JSONObject mManifest, final PackagerStatusCallback callback) {
+  public void testPackagerStatus(final boolean isDebug, final RawManifest mManifest, final PackagerStatusCallback callback) {
     if (!isDebug) {
       callback.onSuccess();
       return;
     }
 
-    final String debuggerHost = mManifest.optString(ExponentManifest.MANIFEST_DEBUGGER_HOST_KEY);
+    final String debuggerHost = mManifest.getDebuggerHost();
     mExponentNetwork.getNoCacheClient().newCall(new Request.Builder().url("http://" + debuggerHost + "/status").build()).enqueue(new Callback() {
       @Override
       public void onFailure(Call call, IOException e) {
@@ -585,16 +583,15 @@ public class Exponent {
     try {
       mExponentManifest.fetchManifest(manifestUrl, new ExponentManifest.ManifestListener() {
         @Override
-        public void onCompleted(JSONObject manifest) {
+        public void onCompleted(RawManifest manifest) {
           try {
-            String bundleUrl = manifest.getString(ExponentManifest.MANIFEST_BUNDLE_URL_KEY);
-
+            String bundleUrl = manifest.getBundleURL();
             preloadBundle(
                 manifest,
                 manifestUrl,
                 bundleUrl,
-                manifest.getString(ExponentManifest.MANIFEST_ID_KEY),
-                manifest.getString(ExponentManifest.MANIFEST_SDK_VERSION_KEY));
+                manifest.getID(),
+                manifest.getSDKVersion());
           } catch (JSONException e) {
             EXL.e(TAG, e);
           } catch (Exception e) {
@@ -618,7 +615,7 @@ public class Exponent {
     }
   }
 
-  private void preloadBundle(final JSONObject manifest, final String manifestUrl, final String bundleUrl, final String id, final String sdkVersion) {
+  private void preloadBundle(final RawManifest manifest, final String manifestUrl, final String bundleUrl, final String id, final String sdkVersion) {
     try {
       Exponent.getInstance().loadJSBundle(manifest, bundleUrl, Exponent.getInstance().encodeExperienceId(id), sdkVersion, new Exponent.BundleListener() {
         @Override

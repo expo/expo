@@ -1,5 +1,6 @@
 ---
 title: Build server infrastructure
+sidebar_title: Server infrastructure
 ---
 
 This document describes the current build infrastructure as of December 15, 2020. It is likely to change over time, and this document will be updated.
@@ -28,6 +29,23 @@ When selecting an image for the build you can use the full name provided below o
   org.gradle.configureondemand=true
   org.gradle.daemon=false
   ```
+- `~/.npmrc`
+
+  ```
+  user=0
+  unsafe-perm=true
+  registry=http://npm-cache-service.worker-infra-production.svc.cluster.local:4873
+  ```
+
+- `~/.yarnrc.yml`
+
+  ```
+  unsafeHttpWhitelist:
+    - "*"
+  npmRegistryServer: "http://npm-cache-service.worker-infra-production.svc.cluster.local:4873"
+  ```
+
+
 
 #### Image `ubuntu-18.04-android-30-ndk-r19c` (alias `default`, `latest`)
 
@@ -43,6 +61,19 @@ When selecting an image for the build you can use the full name provided below o
   - Hardware: Intel(R) Xeon(R) CPU E5-2697 (12 core/24 threads), 64 GB RAM
   - Build resource limits: 6 cores, 8 GB RAM
 - npm cache. [Learn more](caching/#javascript-dependencies)
+- `~/.npmrc`
+
+  ```
+  registry=http://10.254.24.8:4873
+  ```
+
+- `~/.yarnrc.yml`
+
+  ```
+  unsafeHttpWhitelist:
+    - "*"
+  npmRegistryServer: "registry=http://10.254.24.8:4873"
+  ```
 
 #### Image `macos-catalina-11.15-xcode-12.1`
 
