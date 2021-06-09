@@ -66,7 +66,7 @@
                                                       repeats:NO];
 }
 
--(void)showSplashScreenVisibleWarning
+- (void)showSplashScreenVisibleWarning
 {
 #if DEBUG
   _warningHud = [MBProgressHUD showHUDAddedTo: self.splashScreenView animated:YES];
