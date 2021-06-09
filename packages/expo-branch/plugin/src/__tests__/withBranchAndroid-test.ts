@@ -24,20 +24,14 @@ describe(getBranchApiKey, () => {
 describe(setBranchApiKey, () => {
   it('sets branch api key in AndroidManifest.xml if given', async () => {
     let androidManifestJson = await readAndroidManifestAsync(sampleManifestPath);
-    androidManifestJson = await setBranchApiKey(
-      { android: { config: { branch: { apiKey: 'MY-API-KEY' } } } } as any,
-      androidManifestJson
-    );
+    androidManifestJson = await setBranchApiKey('MY-API-KEY', androidManifestJson);
     let mainApplication = getMainApplication(androidManifestJson);
 
     expect(findMetaDataItem(mainApplication, 'io.branch.sdk.BranchKey')).toBeGreaterThan(-1);
 
     // Unset the item
 
-    androidManifestJson = await setBranchApiKey(
-      { android: { config: { branch: { apiKey: null } } } } as any,
-      androidManifestJson
-    );
+    androidManifestJson = await setBranchApiKey(null, androidManifestJson);
     mainApplication = getMainApplication(androidManifestJson);
 
     expect(findMetaDataItem(mainApplication, 'io.branch.sdk.BranchKey')).toBe(-1);

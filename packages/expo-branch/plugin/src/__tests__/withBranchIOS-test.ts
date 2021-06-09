@@ -12,7 +12,7 @@ describe(getBranchApiKey, () => {
 
 describe(setBranchApiKey, () => {
   it(`sets branch_key.live if the api key is given`, () => {
-    expect(setBranchApiKey({ ios: { config: { branch: { apiKey: '123' } } } }, {})).toMatchObject({
+    expect(setBranchApiKey('123', {})).toMatchObject({
       branch_key: {
         live: '123',
       },
@@ -20,6 +20,6 @@ describe(setBranchApiKey, () => {
   });
 
   it(`makes no changes to the infoPlist no api key is provided`, () => {
-    expect(setBranchApiKey({}, {})).toMatchObject({});
+    expect(setBranchApiKey(null, {})).toMatchObject({});
   });
 });
