@@ -244,6 +244,14 @@ function processLine(line: string, abiVersion: string) {
     line = splitLine.join('=');
   }
 
+  // Special versioning for prebuilt libraries
+  // ReactAndroid/src/main/jni/first-party/hermes/Android.mk
+  if (line === 'LOCAL_SRC_FILES := jni/$(TARGET_ARCH_ABI)/libhermes.so') {
+    const splitIndex = line.lastIndexOf('/');
+    const prefix = line.slice(0, splitIndex);
+    line = `${prefix}/libhermes_abi${abiVersion}.so`;
+  }
+
   return line;
 }
 
@@ -608,6 +616,15 @@ async function exportReactNdksIfNeeded() {
   }
 }
 
+async function addBuildGradleRenameTaskForPrebuiltLibs(version: string) {
+  const abiVersion = version.replace(/\./g, '_');
+  const filePath = path.join(versionedReactAndroidPath, 'build.gradle');
+  let content = await fs.readFile(filePath, 'utf8');
+  const renameTask = `        rename '(.+).so', '$$1_abi${abiVersion}.so'\n`;
+  content = content.replace(/(into "\$thirdPartyNdkDir\/hermes"\n)(\s+?\})/gm, `$1${renameTask}$2`);
+  await fs.writeFile(filePath, content);
+}
+
 export async function addVersionAsync(version: string) {
   console.log(' 🛠   1/10: Updating android/versioned-react-native...');
   await updateVersionedReactNativeAsync();
@@ -625,35 +642,41 @@ export async function addVersionAsync(version: string) {
   await renameJniLibsAsync(version);
   console.log(' ✅  3/10: Finished\n\n');
 
-  console.log(' 🛠   4/10: Building versioned ReactAndroid AAR...');
+  console.log(
+    ' 🛠   4/10: Add renaming task in android/versioned-react-native/ReactAndroid/build.gradle...'
+  );
+  await addBuildGradleRenameTaskForPrebuiltLibs(version);
+  console.log(' ✅  4/10: Finished\n\n');
+
+  console.log(' 🛠   5/11: Building versioned ReactAndroid AAR...');
   await spawnAsync('./android-build-aar.sh', [version], {
     shell: true,
     cwd: SCRIPT_DIR,
     stdio: 'inherit',
   });
-  console.log(' ✅  4/10: Finished\n\n');
+  console.log(' ✅  5/11: Finished\n\n');
 
-  console.log(' 🛠   5/10: Exporting react ndks if needed...');
+  console.log(' 🛠   6/11: Exporting react ndks if needed...');
   await exportReactNdksIfNeeded();
-  console.log(' ✅  5/10: Finished\n\n');
+  console.log(' ✅  6/11: Finished\n\n');
 
-  console.log(' 🛠   6/10: prepare versioned Reanimated...');
+  console.log(' 🛠   7/11: prepare versioned Reanimated...');
   await prepareReanimatedAsync(version);
-  console.log(' ✅  6/10: Finished\n\n');
+  console.log(' ✅  7/11: Finished\n\n');
 
-  console.log(' 🛠   7/10: Creating versioned unimodule packages...');
+  console.log(' 🛠   8/11: Creating versioned unimodule packages...');
   await copyUnimodulesAsync(version);
-  console.log(' ✅  7/10: Finished\n\n');
+  console.log(' ✅  8/11: Finished\n\n');
 
-  console.log(' 🛠   8/10: Adding extra versioned activites to AndroidManifest...');
+  console.log(' 🛠   9/11: Adding extra versioned activites to AndroidManifest...');
   await addVersionedActivitesToManifests(version);
-  console.log(' ✅  8/10: Finished\n\n');
+  console.log(' ✅  9/11: Finished\n\n');
 
-  console.log(' 🛠   9/10: Registering new version under sdkVersions config...');
+  console.log(' 🛠   10/11: Registering new version under sdkVersions config...');
   await registerNewVersionUnderSdkVersions(version);
-  console.log(' ✅  9/10: Finished\n\n');
+  console.log(' ✅  10/11: Finished\n\n');
 
-  console.log(' 🛠   10/10: Misc cleanup...');
+  console.log(' 🛠   11/11: Misc cleanup...');
   await cleanUpAsync(version);
-  console.log(' ✅  10/10: Finished');
+  console.log(' ✅  11/11: Finished');
 }
