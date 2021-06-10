@@ -271,7 +271,6 @@ NSString *kEXExpoLegacyDeepLinkSeparator = @"+";
   if (components.host) {
     return [components.host isEqualToString:@"exp.host"] ||
       [components.host isEqualToString:@"expo.io"] ||
-      [components.host isEqualToString:@"expo.dev"] ||
       [components.host isEqualToString:@"exp.direct"] ||
       [components.host isEqualToString:@"expo.test"] ||
       [components.host hasSuffix:@".exp.host"] ||
