@@ -16,14 +16,16 @@ const googleIcon = {
 
 export default class GoogleSignInButton extends React.PureComponent<{
   style?: StyleProp<ViewStyle>;
+  disabled?: boolean;
 }> {
   static defaultProps = {
     onPress() {},
   };
   render() {
-    const { children, style, ...props } = this.props;
+    const { children, style, disabled, ...props } = this.props;
     return (
       <TouchableOpacity
+        disabled={disabled}
         activeOpacity={0.6}
         style={StyleSheet.flatten([styles.touchable, style])}
         {...props}>

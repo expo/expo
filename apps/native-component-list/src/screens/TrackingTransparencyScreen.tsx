@@ -18,7 +18,7 @@ export default class TrackingTransparencyScreen extends React.Component {
       <View style={{ padding: 10 }}>
         <SimpleActionDemo
           title="is Tracking Transparency available?"
-          action={() => isAvailable()}
+          action={() => !!isAvailable()}
         />
         <SimpleActionDemo
           title="get tracking permissions"
