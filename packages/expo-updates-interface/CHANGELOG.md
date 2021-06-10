@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Renamed the iOS protocol to EXUpdatesExternalInterface. ([#13214](https://github.com/expo/expo/pull/13214) by [@esamelson](https://github.com/esamelson))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
