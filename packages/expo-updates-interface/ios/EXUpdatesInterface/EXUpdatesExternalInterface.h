@@ -18,7 +18,7 @@ typedef BOOL (^EXUpdatesManifestBlock) (NSDictionary *manifest);
  * Protocol for modules that depend on expo-updates for loading production updates but do not want
  * to depend on expo-updates or delegate control to the singleton EXUpdatesAppController.
  */
-@protocol EXUpdatesInterface
+@protocol EXUpdatesExternalInterface
 
 @property (nonatomic, weak) id bridge;
 
