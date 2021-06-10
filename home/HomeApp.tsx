@@ -117,7 +117,7 @@ export default function HomeApp() {
   );
 }
 
-// Certain links (i.e. 'expo.io/expo-go') should just open the HomeScreen
+// Certain links (i.e. 'expo.dev/expo-go') should just open the HomeScreen
 function shouldOpenUrl(urlString: string) {
   const parsedUrl = url.parse(urlString);
   return !(
