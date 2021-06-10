@@ -213,7 +213,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   NSTimeInterval fallbackToCacheTimeout = kEXAppLoaderDefaultTimeout;
 
   // in case check for dev mode failed before, check again
-  if (manifest.isDevelopmentMode) {
+  if (manifest.isUsingDeveloperTool) {
     [self _startAppFetcher:[[EXAppFetcherDevelopmentMode alloc] initWithAppLoader:self]];
     return;
   }

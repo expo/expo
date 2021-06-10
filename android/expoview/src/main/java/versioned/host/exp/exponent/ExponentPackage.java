@@ -81,6 +81,8 @@ public class ExponentPackage implements ReactPackage {
   private static final String TAG = ExponentPackage.class.getSimpleName();
   private static List<SingletonModule> sSingletonModules;
   private static Set<Class> sSingletonModulesClasses;
+  // Need to avoid initializing 2 StripeSdkPackages
+  private static final StripeSdkPackage stripePackage = new StripeSdkPackage();
 
   private final boolean mIsKernel;
   private final Map<String, Object> mExperienceProperties;
@@ -223,7 +225,6 @@ public class ExponentPackage implements ReactPackage {
         RNDateTimePickerPackage dateTimePickerPackage = new RNDateTimePickerPackage();
         nativeModules.addAll(dateTimePickerPackage.createNativeModules(reactContext));
 
-        StripeSdkPackage stripePackage = new StripeSdkPackage();
         nativeModules.addAll(stripePackage.createNativeModules(reactContext));
 
         // Call to create native modules has to be at the bottom --
@@ -258,7 +259,7 @@ public class ExponentPackage implements ReactPackage {
         new ReactSliderPackage(),
         new RNCViewPagerPackage(),
         new ExpoAppearancePackage(),
-        new StripeSdkPackage()
+        stripePackage
     ));
 
     viewManagers.addAll(mModuleRegistryAdapter.createViewManagers(reactContext));

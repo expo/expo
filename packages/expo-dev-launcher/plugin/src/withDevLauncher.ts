@@ -30,6 +30,9 @@ const DEV_LAUNCHER_ANDROID_INIT = 'DevLauncherController.initialize(this, getRea
 const DEV_LAUNCHER_POD_IMPORT =
   "pod 'expo-dev-launcher', path: '../node_modules/expo-dev-launcher', :configurations => :debug";
 
+const DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS = `import { registerErrorHandlers } from 'expo-dev-launcher';
+registerErrorHandlers();`;
+
 async function readFileAsync(path: string): Promise<string> {
   return fs.promises.readFile(path, 'utf8');
 }
@@ -85,7 +88,7 @@ async function editMainApplication(
   } catch (e) {
     WarningAggregator.addWarningIOS(
       'expo-dev-launcher',
-      `Couldn't modified MainApplication.java - ${e}.`
+      `Couldn't modify MainApplication.java - ${e}.`
     );
   }
 }
@@ -94,10 +97,19 @@ async function editPodfile(config: ExportedConfigWithProps, action: (podfile: st
   const podfilePath = path.join(config.modRequest.platformProjectRoot, 'Podfile');
   try {
     const podfile = action(await readFileAsync(podfilePath));
-
     return await saveFileAsync(podfilePath, podfile);
   } catch (e) {
-    WarningAggregator.addWarningIOS('expo-dev-launcher', `Couldn't modified AppDelegate.m - ${e}.`);
+    WarningAggregator.addWarningIOS('expo-dev-launcher', `Couldn't modify AppDelegate.m - ${e}.`);
+  }
+}
+
+async function editIndex(config: ExportedConfigWithProps, action: (index: string) => string) {
+  const indexPath = path.join(config.modRequest.projectRoot, 'index.js');
+  try {
+    const index = action(await readFileAsync(indexPath));
+    return await saveFileAsync(indexPath, index);
+  } catch (e) {
+    WarningAggregator.addWarningIOS('expo-dev-launcher', `Couldn't modify index.js - ${e}.`);
   }
 }
 
@@ -178,11 +190,28 @@ const withDevLauncherPodfile: ConfigPlugin = config => {
   ]);
 };
 
+const withErrorHandling: ConfigPlugin = config => {
+  return withDangerousMod(config, [
+    // We want to edit js file, but for the `DangerousMod` we need to select a platform.
+    'android',
+    async config => {
+      await editIndex(config, index => {
+        if (!index.includes(DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS)) {
+          index = DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS + '\n\n' + index;
+        }
+        return index;
+      });
+      return config;
+    },
+  ]);
+};
+
 const withDevLauncher = (config: ExpoConfig) => {
   config = withDevLauncherActivity(config);
   config = withDevLauncherApplication(config);
   config = withDevLauncherPodfile(config);
   config = withDevLauncherAppDelegate(config);
+  config = withErrorHandling(config);
   return config;
 };
 

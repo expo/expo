@@ -82,7 +82,7 @@
   "expo-store-review": "~4.0.2",
   "expo-task-manager": "~9.1.0",
   "expo-tracking-transparency": "~1.0.1",
-  "expo-updates": "~0.6.0",
+  "expo-updates": "~0.7.0-rc.2",
   "expo-video-thumbnails": "~5.1.0",
   "expo-web-browser": "~9.1.0",
   "firebase": "8.2.3",
@@ -105,5 +105,5 @@
   "unimodules-app-loader": "~2.1.0",
   "unimodules-image-loader-interface": "~6.1.0",
   "unimodules-task-manager-interface": "~6.1.0",
-  "stripe-react-native": "0.1.0"
+  "stripe-react-native": "0.1.4"
 }

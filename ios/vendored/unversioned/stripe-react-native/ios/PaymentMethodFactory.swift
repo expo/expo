@@ -272,7 +272,7 @@ extension PaymentMethodError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .cardPaymentMissingParams:
-            return NSLocalizedString("You must provide card details", comment: "Create payment error")
+            return NSLocalizedString("Card details not complete", comment: "Create payment error")
         case .giropayPaymentMissingParams:
             return NSLocalizedString("You must provide billing details", comment: "Create payment error")
         case .idealPaymentMissingParams:

@@ -4,6 +4,28 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.7.0-rc.2 — 2021-06-10
+
+### 🛠 Breaking changes
+
+- Renamed the iOS protocol in expo-updates-interface to EXUpdatesExternalInterface. ([#13214](https://github.com/expo/expo/pull/13214) by [@esamelson](https://github.com/esamelson))
+
+## 0.7.0-rc.1 — 2021-06-08
+
+### 🐛 Bug fixes
+
+- Fixed prebuild issues with missing imports.
+
+## 0.7.0-rc.0 — 2021-06-08
+
+### 🛠 Breaking changes
+
 - Rename new manifest field updateMetadata to metadata ([#12831](https://github.com/expo/expo/pull/12831) by [@jkhales](https://github.com/jkhales))
 - Save asset with a key that does not include an extension. This introduces an implicit dependency on expo-asset@8.3.2 or above. ([#12734](https://github.com/expo/expo/pull/12734) by [@jkhales](https://github.com/jkhales))
 - Add last_accessed column to updates table schema, and rename metadata -> manifest. ([#12768](https://github.com/expo/expo/pull/12768) by [@esamelson](https://github.com/esamelson))

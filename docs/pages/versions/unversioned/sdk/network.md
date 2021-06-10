@@ -24,21 +24,6 @@ On Android, this module requires permissions to access the network and Wi-Fi sta
 import * as Network from 'expo-network';
 ```
 
-### Methods
-
-- [`Network.getNetworkStateAsync()`](#networkgetnetworkstateasync)
-- [`Network.getIpAddressAsync()`](#networkgetipaddressasync)
-- [`Network.getMacAddressAsync(interfaceName?)`](#networkgetmacaddressasyncinterfacename)
-- [`Network.isAirplaneModeEnabledAsync()`](#networkisairplanemodeenabledasync) (Android only)
-
-### Enum Types
-
-- [`Network.NetworkStateType`](#networknetworkstatetype)
-
-### Errors
-
-- [Error Codes](#error-codes)
-
 ## Methods
 
 ### `Network.getNetworkStateAsync()`

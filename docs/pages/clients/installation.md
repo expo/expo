@@ -73,8 +73,17 @@ You're now ready to start developing your project with the Development Client.
 
 ## 4. Optional configuration
 
-### 🍏 iOS
+### Disable packager autostart when building for iOS
 
 When you start your project on iOS, the metro bundler will be started automatically. This behavior might not be ideal when you want to use `expo start`. Our recommended solution is to remove the `Start Packager` action from building scripts. To do that you need to open the Xcode, go to `Project settings` > `Build Phases` and remove the `Start Packager` action.
+
+### Add better error handlers
+
+Sometimes, for certain types of errors, we can provide more helpful error messages than the ones that ship by default with React Native. To turn this feature on, you need to add following lines to your `index.js`:
+
+```js
+import { registerErrorHandlers } from 'expo-dev-client';
+registerErrorHandlers();
+```
 
 <img src="/static/images/client/remove_start_packager.png" style={{maxWidth: "100%" }}/>

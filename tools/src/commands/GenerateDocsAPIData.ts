@@ -89,6 +89,7 @@ async function action({ packageName }: ActionOptions) {
     'expo-clipboard': ['Clipboard.ts'],
     'expo-keep-awake': ['index.ts'],
     'expo-linear-gradient': ['LinearGradient.tsx'],
+    'expo-localization': ['Localization.ts'],
     'expo-mail-composer': ['MailComposer.ts'],
     'expo-print': ['Print.ts'],
     'expo-random': ['Random.ts'],
@@ -98,6 +99,7 @@ async function action({ packageName }: ActionOptions) {
     'expo-store-review': ['StoreReview.ts'],
     'expo-task-manager': ['TaskManager.ts'],
     'expo-tracking-transparency': ['TrackingTransparency.ts'],
+    'expo-video-thumbnails': ['VideoThumbnails.ts'],
     'expo-web-browser': ['WebBrowser.ts'],
   };
 
