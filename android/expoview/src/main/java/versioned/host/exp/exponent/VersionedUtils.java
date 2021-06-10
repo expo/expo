@@ -10,26 +10,36 @@ import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.hermes.reactexecutor.HermesExecutorFactory;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
+import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.jscexecutor.JSCExecutorFactory;
+import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 import com.facebook.react.packagerconnection.NotificationOnlyHandler;
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.shell.MainReactPackage;
 
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import host.exp.exponent.Constants;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.experience.ExperienceActivity;
 import host.exp.exponent.experience.ReactNativeActivity;
@@ -37,6 +47,10 @@ import host.exp.expoview.Exponent;
 import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedJSIModulePackage;
 
 public class VersionedUtils {
+  // Update this value when hermes-engine getting updated.
+  // Currently there is no way to retrieve Hermes bytecode version from Java,
+  // as an alternative, we maintain the version by hand.
+  private static final int HERMES_BYTECODE_VERSION = 74;
 
   private static void toggleExpoDevMenu() {
     Activity currentActivity = Exponent.getInstance().getCurrentActivity();
@@ -206,7 +220,8 @@ public class VersionedUtils {
           instanceManagerBuilderProperties.experienceProperties,
           instanceManagerBuilderProperties.manifest))
         .setInitialLifecycleState(LifecycleState.BEFORE_CREATE)
-        .setCustomPackagerCommandHandlers(createPackagerCommandHelpers());
+        .setCustomPackagerCommandHandlers(createPackagerCommandHelpers())
+        .setJavaScriptExecutorFactory(createJSExecutorFactory(instanceManagerBuilderProperties));
 
     if (instanceManagerBuilderProperties.jsBundlePath != null && instanceManagerBuilderProperties.jsBundlePath.length() > 0) {
       builder = builder.setJSBundleFile(instanceManagerBuilderProperties.jsBundlePath);
@@ -235,5 +250,51 @@ public class VersionedUtils {
       e.printStackTrace();
       return null;
     }
+  }
+
+  private static JavaScriptExecutorFactory createJSExecutorFactory(
+          @NonNull final Exponent.InstanceManagerBuilderProperties instanceManagerBuilderProperties) {
+    String appName = instanceManagerBuilderProperties.manifest.getName();
+    if (appName == null) {
+      appName = "";
+    }
+    final String deviceName = AndroidInfoHelpers.getFriendlyDeviceName();
+
+    if (!Constants.isStandaloneApp() && isSupportedHermesBundle(instanceManagerBuilderProperties.jsBundlePath)) {
+      return new HermesExecutorFactory();
+    }
+    return new JSCExecutorFactory(appName, deviceName);
+  }
+
+  /* package */ static boolean isSupportedHermesBundle(@Nullable final String jsBundlePath) {
+    if (jsBundlePath == null || jsBundlePath.length() == 0) {
+      return false;
+    }
+
+    // https://github.com/facebook/hermes/blob/release-v0.5/include/hermes/BCGen/HBC/BytecodeFileFormat.h#L24-L25
+    final byte[] HERMES_MAGIC_HEADER = {
+            (byte) 0xc6, (byte) 0x1f, (byte) 0xbc, (byte) 0x03,
+            (byte) 0xc1, (byte) 0x03, (byte) 0x19, (byte) 0x1f };
+
+    final File file = new File(jsBundlePath);
+    try (final FileInputStream in = new FileInputStream(file)) {
+      final byte[] bytes = new byte[12];
+      in.read(bytes, 0, bytes.length);
+
+      // Check magic header
+      for (int i = 0; i < HERMES_MAGIC_HEADER.length; ++i) {
+        if (bytes[i] != HERMES_MAGIC_HEADER[i]) {
+          return false;
+        }
+      }
+
+      // Check bytecode version
+      final int bundleBytecodeVersion = (bytes[11] << 24) | (bytes[10] << 16) | (bytes[9] << 8) | bytes[8];
+      return bundleBytecodeVersion == HERMES_BYTECODE_VERSION;
+    } catch (FileNotFoundException e) {
+    } catch (IOException e) {
+    }
+
+    return false;
   }
 }
