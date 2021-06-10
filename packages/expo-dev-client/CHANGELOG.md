@@ -7,7 +7,7 @@
 ### 🎉 New features
 
 - [plugin] Autogenerate a common URI scheme for iOS/Android if one doesn't exist. ([#13147](https://github.com/expo/expo/pull/13147) by [@fson](https://github.com/fson))
-- [plugin] Add `getDefaultScheme` function for Expo CLI.
+- [plugin] Add `getDefaultScheme` function for Expo CLI. ([#13230](https://github.com/expo/expo/pull/13230) by [@fson](https://github.com/fson))
 
 ### 🐛 Bug fixes
 
