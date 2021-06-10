@@ -7,6 +7,21 @@ import {
 } from '@expo/configure-splash-screen';
 
 export const withSplashScreenAndroid: ConfigPlugin = config => {
+  // Update the android status bar to match the splash screen
+  // androidStatusBar applies info to the app activity style.
+  const backgroundColor = getSplashBackgroundColor(config);
+
+  if (config.androidStatusBar?.backgroundColor) {
+    if (backgroundColor.toLowerCase() !== config.androidStatusBar?.backgroundColor.toLowerCase()) {
+      WarningAggregator.addWarningAndroid(
+        'androidStatusBar.backgroundColor',
+        'The androidStatusBar.backgroundColor color conflicts with the splash backgroundColor on Android'
+      );
+    }
+  } else {
+    if (!config.androidStatusBar) config.androidStatusBar = {};
+    config.androidStatusBar.backgroundColor = backgroundColor;
+  }
   return withDangerousMod(config, [
     'android',
     async config => {
@@ -16,18 +31,25 @@ export const withSplashScreenAndroid: ConfigPlugin = config => {
   ]);
 };
 
+function getSplashBackgroundColor(config: ExpoConfig) {
+  const backgroundColor =
+    config.android?.splash?.backgroundColor ?? config.splash?.backgroundColor ?? '#FFFFFF'; // white
+  return backgroundColor;
+}
+
 export function getSplashScreenConfig(config: ExpoConfig): AndroidSplashScreenConfig | undefined {
   if (!config.splash && !config.android?.splash) {
     return;
   }
+
+  const backgroundColor = getSplashBackgroundColor(config);
 
   const result: AndroidSplashScreenConfig = {
     imageResizeMode:
       config.android?.splash?.resizeMode ??
       config.splash?.resizeMode ??
       SplashScreenImageResizeMode.CONTAIN,
-    backgroundColor:
-      config.android?.splash?.backgroundColor ?? config.splash?.backgroundColor ?? '#FFFFFF', // white
+    backgroundColor,
     image:
       config.android?.splash?.xxxhdpi ??
       config.android?.splash?.xxhdpi ??
@@ -35,6 +57,13 @@ export function getSplashScreenConfig(config: ExpoConfig): AndroidSplashScreenCo
       config.android?.splash?.hdpi ??
       config.android?.splash?.mdpi ??
       config.splash?.image,
+    statusBar: {
+      backgroundColor,
+      // Use the settings from androidStatusBar to keep the transition as smooth as possible.
+      hidden: config.androidStatusBar?.hidden,
+      translucent: config.androidStatusBar?.translucent,
+      style: config.androidStatusBar?.barStyle,
+    },
   };
 
   return result;

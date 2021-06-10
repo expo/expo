@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- [plugin] Match status bar color on android. ([#13227](https://github.com/expo/expo/pull/13227) by [@EvanBacon](https://github.com/EvanBacon))
 - Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
