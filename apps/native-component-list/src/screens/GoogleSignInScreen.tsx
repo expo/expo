@@ -99,7 +99,7 @@ export default class GoogleSignInScreen extends React.Component<{}, State> {
 
   _signOutAsync = async () => {
     try {
-      await GoogleSignIn.disconnectAsync();
+      // await GoogleSignIn.disconnectAsync();
       await GoogleSignIn.signOutAsync();
       console.log('Log out successful');
     } catch ({ message }) {
@@ -111,12 +111,8 @@ export default class GoogleSignInScreen extends React.Component<{}, State> {
 
   _signInAsync = async () => {
     try {
-      console.log('1');
       await GoogleSignIn.askForPlayServicesAsync();
-      console.log('2');
-      await GoogleSignIn.disconnectAsync();
       const { type, user } = await GoogleSignIn.signInAsync();
-      console.log('3');
       console.log({ type, user });
       if (type === 'success') {
         this._syncUserWithStateAsync();
