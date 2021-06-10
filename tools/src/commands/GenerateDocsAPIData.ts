@@ -96,6 +96,7 @@ async function action({ packageName }: ActionOptions) {
     'expo-sensors': ['Pedometer.ts', 'expo-pedometer'],
     'expo-sharing': ['Sharing.ts'],
     'expo-splash-screen': ['SplashScreen.ts'],
+    'expo-sms': ['SMS.ts'],
     'expo-store-review': ['StoreReview.ts'],
     'expo-task-manager': ['TaskManager.ts'],
     'expo-tracking-transparency': ['TrackingTransparency.ts'],
