@@ -154,7 +154,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)supportsBundleReload
 {
   if (_optimisticManifest) {
-    return _optimisticManifest.isDevelopmentMode;
+    return _optimisticManifest.isUsingDeveloperTool;
   }
   return NO;
 }
