@@ -339,6 +339,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     switch (interruptionModeInt) {
       case 1:
         mAudioInterruptionMode = AudioInterruptionMode.DO_NOT_MIX;
+        break;
       case 2:
       default:
         mAudioInterruptionMode = AudioInterruptionMode.DUCK_OTHERS;
