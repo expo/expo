@@ -96,6 +96,10 @@ jobs:
         if: steps.cache-android-ndk.outputs.cache-hit != 'true'
         run: |
           sudo $ANDROID_HOME/tools/bin/sdkmanager --install "ndk;19.2.5345600"
+      - name: Dump files
+        run: |
+          find . -name 'libreactnativejni.so'
+          find . -name '*.aar'
       - name: 🏭 Build APK
         env:
           ANDROID_KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
