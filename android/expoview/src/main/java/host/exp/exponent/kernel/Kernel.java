@@ -575,7 +575,7 @@ public class Kernel extends KernelInterface {
   private boolean shouldOpenUrl(@NonNull Uri uri) {
     String host = uri.getHost() != null ? uri.getHost() : "";
     String path = uri.getPath() != null ? uri.getPath() : "";
-    return !(host.equals("expo.io") && path.equals("/expo-go"));
+    return !((host.equals("expo.io") || host.equals("expo.dev")) && path.equals("/expo-go"));
   }
 
   private boolean openExperienceFromNotificationIntent(Intent intent) {
