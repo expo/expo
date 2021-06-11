@@ -4,6 +4,7 @@ import { Platform } from 'react-native';
 
 import * as TestUtils from '../TestUtils';
 import { isDeviceFarm } from '../utils/Environment';
+import { waitFor } from './helpers'
 
 export const name = 'MediaLibrary';
 
