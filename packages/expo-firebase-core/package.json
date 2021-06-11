@@ -32,9 +32,11 @@
   "homepage": "https://docs.expo.io/versions/latest/sdk/firebase-core",
   "unimodulePeerDependencies": {
     "@unimodules/core": "*",
-    "expo-constants": "*"
+    "expo-constants": "*",
+    "fs-extra": "^9.0.1"
   },
   "devDependencies": {
+    "@types/fs-extra": "^9.0.11",
     "expo-module-scripts": "^2.0.0"
   },
   "jest": {
