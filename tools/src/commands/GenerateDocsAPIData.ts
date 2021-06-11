@@ -81,6 +81,7 @@ const executeCommand = async (
 
 async function action({ packageName }: ActionOptions) {
   const packagesMapping: Record<string, CommandAdditionalParams> = {
+    'expo-analytics-segment': ['Segment.ts'],
     'expo-apple-authentication': [['AppleAuthentication.ts', 'AppleAuthentication.types.ts']],
     'expo-application': ['Application.ts'],
     'expo-battery': ['Battery.ts'],
