@@ -7,7 +7,7 @@ PODS:
     - Google-Mobile-Ads-SDK (= 7.69.0)
   - ABI39_0_0EXAdsFacebook (8.4.0):
     - ABI39_0_0UMCore
-    - FBAudienceNetwork (= 6.3.0)
+    - FBAudienceNetwork (= 6.5.0)
   - ABI39_0_0EXAmplitude (8.3.1):
     - ABI39_0_0UMConstantsInterface
     - ABI39_0_0UMCore
@@ -547,7 +547,7 @@ PODS:
     - Google-Mobile-Ads-SDK (= 7.69.0)
   - ABI40_0_0EXAdsFacebook (8.4.1):
     - ABI40_0_0UMCore
-    - FBAudienceNetwork (= 6.3.0)
+    - FBAudienceNetwork (= 6.5.0)
   - ABI40_0_0EXAmplitude (9.0.0):
     - ABI40_0_0UMConstantsInterface
     - ABI40_0_0UMCore
@@ -1106,7 +1106,7 @@ PODS:
   - ABI41_0_0EXAdsFacebook (10.0.0):
     - ABI41_0_0UMCore
     - ABI41_0_0UMPermissionsInterface
-    - FBAudienceNetwork (= 6.3.0)
+    - FBAudienceNetwork (= 6.5.0)
   - ABI41_0_0EXAmplitude (10.1.0):
     - ABI41_0_0UMConstantsInterface
     - ABI41_0_0UMCore
@@ -1729,7 +1729,7 @@ PODS:
     - UMCore
   - EXAdsFacebook (10.0.4):
     - ExpoModulesCore
-    - FBAudienceNetwork (= 6.3.0)
+    - FBAudienceNetwork (= 6.5.0)
     - UMCore
   - EXAmplitude (10.1.0):
     - Amplitude (~> 6.0.0)
@@ -1934,7 +1934,7 @@ PODS:
     - FBSDKCoreKit (~> 9.2.0)
   - FacebookSDK/LoginKit (9.2.0):
     - FacebookSDK/CoreKit
-  - FBAudienceNetwork (6.3.0):
+  - FBAudienceNetwork (6.5.0):
     - FBSDKCoreKit/Basics (>= 7.0.1)
   - FBLazyVector (0.63.2)
   - FBReactNativeSpec (0.63.2):
@@ -3672,7 +3672,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   ABI39_0_0-lottie-react-native: f67bc5229cd919107137b81045e1a72e18afc597
   ABI39_0_0EXAdsAdMob: 409abe0403cc5b02e6240c5a0aa4d79112e4ced1
-  ABI39_0_0EXAdsFacebook: ba961283c441792855ddc67ff13715fbac9be4d3
+  ABI39_0_0EXAdsFacebook: 45b09dadc3c7f63d84b92be7705c7bcefa09b18b
   ABI39_0_0EXAmplitude: 75a77f8459efe03dd46fd79e1ebf5525599dcda6
   ABI39_0_0EXAppAuth: da5325b3b2fece50f55a8562ff3a15df5df318c1
   ABI39_0_0EXAppleAuthentication: 2f97cbd679c6ada55f480c559b89ff9d8151d66d
@@ -3774,7 +3774,7 @@ SPEC CHECKSUMS:
   ABI39_0_0Yoga: 341913ed0ab0e924b93cd1bd4200267d74013d8b
   ABI40_0_0-lottie-react-native: 26e0e92bec37b7d428d850d6d33c0327df520bf7
   ABI40_0_0EXAdsAdMob: 8778f0ee1aac15a7f590c26609d9812142366935
-  ABI40_0_0EXAdsFacebook: ff83a8c50cd306885da97b4b4c71f14f7ef927b2
+  ABI40_0_0EXAdsFacebook: 2806ff4ba9bec16e3b3586af16a18db59802ee44
   ABI40_0_0EXAmplitude: fb7793f57385650c460819f1b83ab58ca99ac376
   ABI40_0_0EXAppAuth: 0bc2ff698131a99c3fa6fef0ec97ecfabb45a8ae
   ABI40_0_0EXAppleAuthentication: 10cb5a2248faa299df924b386569b2003456b2a8
@@ -3874,7 +3874,7 @@ SPEC CHECKSUMS:
   ABI40_0_0UMTaskManagerInterface: 917e9f9d1b08c15036451761a053689a798101bb
   ABI40_0_0Yoga: dc519b656d9f26f0e4b824dc71349a8e2ce7d183
   ABI41_0_0EXAdsAdMob: ec981aa80fb068429204ba72b8841c34e8883649
-  ABI41_0_0EXAdsFacebook: 65e044024c4708662391398c7a331f000237ccf4
+  ABI41_0_0EXAdsFacebook: dd45611db9fd3c1f8f73554daf39685c97c647b6
   ABI41_0_0EXAmplitude: ef0e7cc62eb3cdab3bb438cb04ce1b9ea9732cd6
   ABI41_0_0EXAppAuth: de2f21f6133535a77039a21235dc0525ddafb16d
   ABI41_0_0EXAppleAuthentication: 5ced2cc582ba5f0f26d8e4c5247bd2b021f7a1ca
@@ -3985,7 +3985,7 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   EXAdsAdMob: ce6bd5c87317b12cbf9743e95c9e82dd21b7994c
-  EXAdsFacebook: 66287787c175c7d3eb5f7af9b8705163b4b44ee6
+  EXAdsFacebook: f1bede7a3e30b397e518a9cf60538795f41ca8d0
   EXAmplitude: bb4870721d97deeee4afa42bba2deb179d180f2e
   EXAppAuth: aadce7faa2cf26e33e8123eeaacd73fd9655138c
   EXAppleAuthentication: e6bb6f9ffe84e52b04a36f00220456da07694c3d
@@ -4052,7 +4052,7 @@ SPEC CHECKSUMS:
   EXVideoThumbnails: 6d5a5d7c2c5f631b1950b1e8b2a0305ab741b9b4
   EXWebBrowser: 0b466c50e5ff61c9758095d49d5081e3229d77ac
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6
-  FBAudienceNetwork: 58b4d0f2359783e5bc9ee59f138b4fda43173ac4
+  FBAudienceNetwork: cfe55330dcc4e9a1df083c34a346ca7f8e32951e
   FBLazyVector: 3ef4a7f62e7db01092f9d517d2ebc0d0677c4a37
   FBReactNativeSpec: dc7fa9088f0f2a998503a352b0554d69a4391c5a
   FBSDKCoreKit: dace5abafc2fd9272733e6d027bcf18102712117
