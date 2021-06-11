@@ -461,7 +461,7 @@ export async function test({ describe, expect, it, ...t }) {
       await FS.deleteAsync(localUri, { idempotent: true });
       await assertExists(false);
 
-      const { status } = await FS.downloadAsync('https://expo.io/404', localUri, {
+      const { status } = await FS.downloadAsync('https://github.com/omg1231sdfaljs', localUri, {
         md5: true,
       });
       await assertExists(true);

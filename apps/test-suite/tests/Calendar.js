@@ -348,7 +348,7 @@ export async function test(t) {
     t.describe('getEventsAsync()', () => {
       let calendarId, eventId;
 
-      t.beforeAll(async () => {
+      t.beforeEach(async () => {
         calendarId = await createTestCalendarAsync();
         eventId = await createTestEventAsync(calendarId);
       });
@@ -366,7 +366,7 @@ export async function test(t) {
         testEventShape(events[0]);
       });
 
-      t.afterAll(async () => {
+      t.afterEach(async () => {
         await Calendar.deleteCalendarAsync(calendarId);
       });
     });
@@ -538,9 +538,7 @@ export async function test(t) {
         });
       });
     } else {
-      expectMethodsToReject([
-        'getSourcesAsync',
-      ]);
+      expectMethodsToReject(['getSourcesAsync']);
     }
   });
 }
