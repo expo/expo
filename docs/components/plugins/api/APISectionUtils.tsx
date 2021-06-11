@@ -52,15 +52,14 @@ export const mdInlineRenderers: MDRenderers = {
 
 const nonLinkableTypes = ['Date', 'T', 'TaskOptions', 'Uint8Array'];
 
-export const resolveTypeName = (d: TypeDefinitionData): string | JSX.Element | (string | JSX.Element)[] => {
-  const {
-    elementType,
-    name,
-    type,
-    types,
-    typeArguments,
-    declaration,
-  } = d;
+export const resolveTypeName = ({
+  elementType,
+  name,
+  type,
+  types,
+  typeArguments,
+  declaration,
+}: TypeDefinitionData): string | JSX.Element | (string | JSX.Element)[] => {
   if (name) {
     if (type === 'reference') {
       if (typeArguments) {
