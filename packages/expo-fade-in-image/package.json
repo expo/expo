@@ -1,0 +1,25 @@
+{
+  "name": "react-native-fade-in-image",
+  "version": "1.6.1",
+  "description": "Wrap Image components in <FadeIn> to have them fade in pleasantly when they finish loading",
+  "main": "index.js",
+  "types": "./index.d.ts",
+  "author": "Brent Vatne <brent@expo.io>",
+  "license": "MIT",
+  "files": [
+    "FadeIn.android.js",
+    "FadeIn.js",
+    "index.js",
+    "index.d.ts",
+    "README.md"
+  ],
+  "scripts": {
+    "postinstall": "expo-yarn-workspaces postinstall"
+  },
+  "dependencies": {
+    "expo-yarn-workspaces": "^1.5.1",
+    "react-clone-referenced-element": "^1.0.1",
+    "react-mixin": "^3.0.5",
+    "react-timer-mixin": "^0.13.3"
+  }
+}

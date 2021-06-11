@@ -1,0 +1,4 @@
+{
+    "name": "expo-fade-in-image",
+    "platforms": ["ios", "android", "web"]
+}
