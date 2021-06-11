@@ -3,14 +3,14 @@ import ReactMarkdown from 'react-markdown';
 
 import { InlineCode } from '~/components/base/code';
 import { UL } from '~/components/base/list';
-import { B } from '~/components/base/paragraph';
+import { B, P } from '~/components/base/paragraph';
 import { H2, H3Code, H4 } from '~/components/plugins/Headings';
 import {
   TypeDeclarationContentData,
+  TypeDefinitionData,
   TypeGeneralData,
   TypePropertyData,
   TypeSignaturesData,
-  TypeValueData,
 } from '~/components/plugins/api/APIDataTypes';
 import {
   mdInlineRenderers,
@@ -25,15 +25,15 @@ export type APISectionTypesProps = {
   data: TypeGeneralData[];
 };
 
-const defineLiteralType = (types: TypeValueData[]): string => {
-  const uniqueTypes = Array.from(new Set(types.map((t: TypeValueData) => typeof t.value)));
+const defineLiteralType = (types: TypeDefinitionData[]): string => {
+  const uniqueTypes = Array.from(new Set(types.map((t: TypeDefinitionData) => typeof t.value)));
   if (uniqueTypes.length === 1) {
     return '`' + uniqueTypes[0] + '` - ';
   }
   return '';
 };
 
-export const decorateValue = (type: TypeValueData): string => {
+export const decorateValue = (type: TypeDefinitionData): string => {
   if (type?.value === null) {
     return '`null`';
   } else if (type?.name === 'Record' && type?.typeArguments?.length) {
@@ -45,7 +45,7 @@ export const decorateValue = (type: TypeValueData): string => {
 };
 
 const renderTypeDeclarationTable = ({ children }: TypeDeclarationContentData): JSX.Element => (
-  <table key={`type-declaration-table-${children.map(child => child.name).join('-')}`}>
+  <table key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}>
     <thead>
       <tr>
         <th>Name</th>
@@ -53,7 +53,7 @@ const renderTypeDeclarationTable = ({ children }: TypeDeclarationContentData): J
         <th>Description</th>
       </tr>
     </thead>
-    <tbody>{children.map(renderTypePropertyRow)}</tbody>
+    <tbody>{children?.map(renderTypePropertyRow)}</tbody>
   </table>
 );
 
@@ -104,14 +104,14 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
           : null}
       </div>
     );
-  } else if (type.types && type.type === 'union') {
+  } else if (type.types && (type.type === 'union' || 'intersection')) {
     const literalTypes = type.types.filter(
-      (t: TypeValueData) =>
+      (t: TypeDefinitionData) =>
         t.type === 'literal' ||
         t.type === 'intrinsic' ||
         (t.type === 'reference' && t.name === 'Record')
     );
-    const propTypes = type.types.filter((t: TypeValueData) => t.type === 'reflection');
+    const propTypes = type.types.filter((t: TypeDefinitionData) => t.type === 'reflection');
     if (literalTypes.length) {
       return (
         <div key={`type-definition-${name}`}>
@@ -130,6 +130,14 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
           <H3Code>
             <InlineCode>{name}</InlineCode>
           </H3Code>
+          {type.type === 'intersection' ? (
+            <P>
+              <InlineCode>
+                {type.types.filter(type => type.type === 'reference').map(resolveTypeName)}
+              </InlineCode>{' '}
+              extended by:
+            </P>
+          ) : null}
           <CommentTextBlock comment={comment} />
           {propTypes.map(
             propType =>

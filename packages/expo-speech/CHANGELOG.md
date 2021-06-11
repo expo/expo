@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - Build Android code using Java 8 to fix Android instrumented test build error. ([#12939](https://github.com/expo/expo/pull/12939) by [@kudo](https://github.com/kudo))
+- Export missing `WebVoice` type.
 
 ## 9.1.0 — 2021-03-10
 
