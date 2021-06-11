@@ -4,12 +4,13 @@
 
 ### 🛠 Breaking changes
 
+- Deprecated `expo-payments-stripe` in favor of `@stripe/stripe-react-native`. ([#13259](https://github.com/expo/expo/pull/13259) by [@cruzach](https://github.com/cruzach))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 - Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
-- Deprecated `expo-payments-stripe` in favor of `@stripe/stripe-react-native`. ([#13259](https://github.com/expo/expo/pull/13259) by [@cruzach](https://github.com/cruzach))
 
 ### 💡 Others
 
