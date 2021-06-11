@@ -4,12 +4,11 @@ import { StyleSheet, View } from 'react-native';
 const onlyChild = React.Children.only;
 
 export default class FadeIn extends React.Component {
-
   render() {
-    let image = onlyChild(this.props.children);
+    const image = onlyChild(this.props.children);
 
     // Get rid of any unused styles to avoid warnings
-    let safeImageStyle = {...StyleSheet.flatten(image.props.style)};
+    const safeImageStyle = { ...StyleSheet.flatten(image.props.style) };
     delete safeImageStyle.tintColor;
     delete safeImageStyle.resizeMode;
 

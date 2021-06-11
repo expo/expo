@@ -1,20 +1,35 @@
 {
-  "name": "react-native-fade-in-image",
-  "version": "1.6.1",
+  "name": "expo-fade-in-image",
+  "version": "1.7.0",
   "description": "Wrap Image components in <FadeIn> to have them fade in pleasantly when they finish loading",
-  "main": "index.js",
-  "types": "./index.d.ts",
-  "author": "Brent Vatne <brent@expo.io>",
-  "license": "MIT",
-  "files": [
-    "FadeIn.android.js",
-    "FadeIn.js",
-    "index.js",
-    "index.d.ts",
-    "README.md"
-  ],
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
   "scripts": {
-    "postinstall": "expo-yarn-workspaces postinstall"
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-fade-in-image"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "expo-fade-in-image"
+  ],
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
   },
   "dependencies": {
     "expo-yarn-workspaces": "^1.5.1",

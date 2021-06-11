@@ -7,7 +7,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "react-native-fade-in-image": "^1.5.0",
+    "expo-fade-in-image": "1.7.0",
     "expo": "~41.0.1",
     "expo-status-bar": "~1.0.4",
     "react": "16.13.1",

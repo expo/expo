@@ -1,9 +1,8 @@
 import React from 'react';
+import cloneReferencedElement from 'react-clone-referenced-element';
+import reactMixin from 'react-mixin';
 import { Animated, StyleSheet, View } from 'react-native';
 import TimerMixin from 'react-timer-mixin';
-
-import reactMixin from 'react-mixin';
-import cloneReferencedElement from 'react-clone-referenced-element';
 
 const onlyChild = React.Children.only;
 
@@ -17,14 +16,14 @@ export default class FadeIn extends React.Component {
   };
 
   render() {
-    let image = cloneReferencedElement(onlyChild(this.props.children), {
+    const image = cloneReferencedElement(onlyChild(this.props.children), {
       ref: component => {
         this._image = component;
       },
       onLoadEnd: this._onLoadEnd,
     });
 
-    let safeImageProps = { ...StyleSheet.flatten(image.props.style) };
+    const safeImageProps = { ...StyleSheet.flatten(image.props.style) };
     delete safeImageProps.tintColor;
     delete safeImageProps.resizeMode;
 
@@ -36,15 +35,8 @@ export default class FadeIn extends React.Component {
           style={[
             styles.placeholderContainer,
             { opacity: this.state.placeholderContainerOpacity },
-          ]}
-        >
-          <View
-            style={[
-              safeImageProps,
-              styles.placeholder,
-              this.props.placeholderStyle,
-            ]}
-          >
+          ]}>
+          <View style={[safeImageProps, styles.placeholder, this.props.placeholderStyle]}>
             {this.props.renderPlaceholderContent}
           </View>
         </Animated.View>
