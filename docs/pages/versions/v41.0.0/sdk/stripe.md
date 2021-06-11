@@ -9,6 +9,8 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 Expo includes support for [`@stripe/stripe-react-native`](https://github.com/stripe/stripe-react-native), which allows you to build delightful payment experiences in your native Android and iOS apps using React Native & Expo. This library provides powerful and customizable UI screens and elements that can be used out-of-the-box to collect your users' payment details.
 
+If you're looking for a quick example, check out [this Snack](https://snack.expo.io/@charliecruzan/stripe-react-native-example?platform=mydevice)!
+
 > Migrating from Expo's `expo-payments-stripe` module? [Here's a guide to help make the transition as easy as possible](https://github.com/expo/fyi/blob/master/payments-migration-guide.md#how-to-migrate-from-expo-payments-stripe-to-the-new-stripestripe-react-native-library).
 
 <PlatformsSection android emulator ios simulator />
@@ -42,6 +44,12 @@ If you're using EAS Build or the bare workflow, you can do most of your Stripe s
 - **enableGooglePay**: Android only. Boolean indicating whether or not Google Pay is enabled. Defaults to `false`.
 
 Then rebuild the app. If you're using the bare workflow, make sure to run `expo prebuild` first (this will apply the config plugin using [prebuilding](https://expo.fyi/prebuilding)).
+
+## Example
+
+Trying out Stripe takes just a few seconds. First, connect to [this Snack](https://snack.expo.io/@charliecruzan/stripe-react-native-example?platform=mydevice) on your device.
+
+Under the hood, that example connects to [this Glitch server code](https://glitch.com/edit/#!/expo-stripe-server-example), so you'll need to open that page to spin up the server. Feel free to run your own Glitch server and copy that code!
 
 ## Usage
 
