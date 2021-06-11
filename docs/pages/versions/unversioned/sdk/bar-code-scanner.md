@@ -129,7 +129,7 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 
 ### `BarCodeScanner.requestPermissionsAsync()`
 
-Asks the user to grant permissions for accessing camera.
+Asks the user to grant permissions for accessing the camera.
 
 On iOS this will require apps to specify the `NSCameraUsageDescription` entry in the `Info.plist`
 
@@ -139,7 +139,7 @@ A promise that resolves to an object of type [PermissionResponse](permissions.md
 
 ### `BarCodeScanner.getPermissionsAsync()`
 
-Checks user's permissions for accessing camera.
+Checks user's permissions for accessing the camera.
 
 #### Returns
 
