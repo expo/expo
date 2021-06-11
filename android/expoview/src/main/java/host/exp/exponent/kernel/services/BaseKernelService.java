@@ -4,6 +4,8 @@ package host.exp.exponent.kernel.services;
 
 import android.content.Context;
 
+import androidx.annotation.Nullable;
+
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.experience.BaseExperienceActivity;
 import host.exp.exponent.kernel.ExperienceKey;
@@ -11,7 +13,7 @@ import host.exp.exponent.kernel.ExperienceKey;
 
 public abstract class BaseKernelService {
   private Context mContext;
-  private ExperienceKey mCurrentExperienceKey = null;
+  private @Nullable ExperienceKey mCurrentExperienceKey = null;
 
   public BaseKernelService(Context context) {
     mContext = context;
@@ -22,7 +24,7 @@ public abstract class BaseKernelService {
     return mContext;
   }
 
-  protected ExperienceKey getCurrentExperienceKey() {
+  protected @Nullable ExperienceKey getCurrentExperienceKey() {
     return mCurrentExperienceKey;
   }
 

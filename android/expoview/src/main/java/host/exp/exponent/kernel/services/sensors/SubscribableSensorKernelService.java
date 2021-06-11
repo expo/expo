@@ -5,6 +5,8 @@ package host.exp.exponent.kernel.services.sensors;
 import android.content.Context;
 import android.hardware.SensorEvent;
 
+import androidx.annotation.Nullable;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -128,16 +130,22 @@ public abstract class SubscribableSensorKernelService extends BaseSensorKernelSe
 
   // Private helpers
 
-  private int getEnabledListenersForExperienceKey(ExperienceKey experienceKey) {
-    if (mExperienceScopeKeyListenersCountMap.containsKey(experienceKey.getScopeKey())) {
-      return mExperienceScopeKeyListenersCountMap.get(experienceKey.getScopeKey());
+  private int getEnabledListenersForExperienceKey(@Nullable ExperienceKey experienceKey) {
+    // null is an expected key, or at least that's how the code was written. may be a bug.
+    String mapKey = experienceKey != null ? experienceKey.getScopeKey() : null;
+
+    if (mExperienceScopeKeyListenersCountMap.containsKey(mapKey)) {
+      return mExperienceScopeKeyListenersCountMap.get(mapKey);
     }
 
     return 0;
   }
 
-  private void cleanWeakSubscriptionsList(ExperienceKey experienceKey) {
-    List<WeakReference<SensorKernelServiceSubscription>> listeners = mExperienceScopeKeySubscriptionsMap.get(experienceKey.getScopeKey());
+  private void cleanWeakSubscriptionsList(@Nullable ExperienceKey experienceKey) {
+    // null is an expected key, or at least that's how the code was written. may be a bug.
+    String mapKey = experienceKey != null ? experienceKey.getScopeKey() : null;
+
+    List<WeakReference<SensorKernelServiceSubscription>> listeners = mExperienceScopeKeySubscriptionsMap.get(mapKey);
     List<WeakReference<SensorKernelServiceSubscription>> realListeners = new ArrayList<>();
     if (listeners != null) {
       for (WeakReference<SensorKernelServiceSubscription> subscriptionWeakReference : listeners) {
@@ -148,9 +156,9 @@ public abstract class SubscribableSensorKernelService extends BaseSensorKernelSe
     }
 
     if (realListeners.size() > 0) {
-      mExperienceScopeKeySubscriptionsMap.put(experienceKey.getScopeKey(), realListeners);
+      mExperienceScopeKeySubscriptionsMap.put(mapKey, realListeners);
     } else {
-      mExperienceScopeKeySubscriptionsMap.remove(experienceKey.getScopeKey());
+      mExperienceScopeKeySubscriptionsMap.remove(mapKey);
     }
   }
 
