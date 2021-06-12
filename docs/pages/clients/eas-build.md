@@ -22,12 +22,12 @@ Now edit your eas.json to look like this:
   "builds": {
     "android": {
       "release": {
-        "workflow": "managed",
+        "workflow": "managed"
       },
       "development": {
         "workflow": "managed",
         "distribution": "internal",
-        "buildType": "development-client",
+        "buildType": "development-client"
       }
     },
     "ios": {
@@ -37,7 +37,7 @@ Now edit your eas.json to look like this:
       "development": {
         "workflow": "managed",
         "distribution": "internal",
-        "buildType": "development-client",
+        "buildType": "development-client"
       }
     }
   }
