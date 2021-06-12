@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
+- Export missing `BackgroundFetchOptions` type, remove exported enums aliases. ([#12716](https://github.com/expo/expo/pull/13267) by [@Simek](https://github.com/Simek))
 
 ### 💡 Others
 
