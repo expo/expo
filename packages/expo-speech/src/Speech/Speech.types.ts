@@ -44,17 +44,35 @@ export type SpeechOptions = {
   onResume?: SpeechEventCallback | null;
 };
 
-// @docsMissing
+// @needsAudit
+/**
+ * Enum representing the voice quality.
+ */
 export enum VoiceQuality {
   Default = 'Default',
   Enhanced = 'Enhanced',
 }
 
-// @docsMissing
+// @needsAudit
+/**
+ * Object describing the available voices on the device.
+ */
 export type Voice = {
+  /**
+   * Voice unique identifier.
+   */
   identifier: string;
+  /**
+   * Voice name.
+   */
   name: string;
+  /**
+   * Voice quality.
+   */
   quality: VoiceQuality;
+  /**
+   * Voice language.
+   */
   language: string;
 };
 

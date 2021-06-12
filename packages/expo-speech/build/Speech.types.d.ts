@@ -41,14 +41,32 @@ export declare type SpeechOptions = {
     onPause?: SpeechEventCallback | null;
     onResume?: SpeechEventCallback | null;
 };
+/**
+ * Enum representing the voice quality.
+ */
 export declare enum VoiceQuality {
     Default = "Default",
     Enhanced = "Enhanced"
 }
+/**
+ * Object describing the available voices on the device.
+ */
 export declare type Voice = {
+    /**
+     * Voice unique identifier.
+     */
     identifier: string;
+    /**
+     * Voice name.
+     */
     name: string;
+    /**
+     * Voice quality.
+     */
     quality: VoiceQuality;
+    /**
+     * Voice language.
+     */
     language: string;
 };
 export declare type WebVoice = Voice & {
