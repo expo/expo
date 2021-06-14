@@ -244,14 +244,6 @@ function processLine(line: string, abiVersion: string) {
     line = splitLine.join('=');
   }
 
-  // Special versioning for prebuilt libraries
-  // ReactAndroid/src/main/jni/first-party/hermes/Android.mk
-  if (line === 'LOCAL_SRC_FILES := jni/$(TARGET_ARCH_ABI)/libhermes.so') {
-    const splitIndex = line.lastIndexOf('/');
-    const prefix = line.slice(0, splitIndex);
-    line = `${prefix}/libhermes_abi${abiVersion}.so`;
-  }
-
   return line;
 }
 
@@ -616,13 +608,31 @@ async function exportReactNdksIfNeeded() {
   }
 }
 
-async function addBuildGradleRenameTaskForPrebuiltLibs(version: string) {
+async function renameHermesEngine(version: string) {
   const abiVersion = version.replace(/\./g, '_');
-  const filePath = path.join(versionedReactAndroidPath, 'build.gradle');
-  let content = await fs.readFile(filePath, 'utf8');
+  const abiName = `abi${abiVersion}`;
+  const prebuiltHermesMkPath = path.join(
+    versionedReactAndroidPath,
+    'src',
+    'main',
+    'jni',
+    'first-party',
+    'hermes',
+    'Android.mk'
+  );
+  await transformFileAsync(
+    prebuiltHermesMkPath,
+    /^(LOCAL_SRC_FILES\s+:=\s+jni\/\$\(TARGET_ARCH_ABI\))\/libhermes.so$/gm,
+    `$1/libhermes_${abiName}.so`
+  );
+
+  const buildGradlePath = path.join(versionedReactAndroidPath, 'build.gradle');
   const renameTask = `        rename '(.+).so', '$$1_abi${abiVersion}.so'\n`;
-  content = content.replace(/(into "\$thirdPartyNdkDir\/hermes"\n)(\s+?\})/gm, `$1${renameTask}$2`);
-  await fs.writeFile(filePath, content);
+  await transformFileAsync(
+    buildGradlePath,
+    /(into "\$thirdPartyNdkDir\/hermes"\n)(\s+?\})/gm,
+    `$1${renameTask}$2`
+  );
 }
 
 export async function addVersionAsync(version: string) {
@@ -642,10 +652,8 @@ export async function addVersionAsync(version: string) {
   await renameJniLibsAsync(version);
   console.log(' ✅  3/10: Finished\n\n');
 
-  console.log(
-    ' 🛠   4/10: Add renaming task in android/versioned-react-native/ReactAndroid/build.gradle...'
-  );
-  await addBuildGradleRenameTaskForPrebuiltLibs(version);
+  console.log(' 🛠   4/10: Renaming libhermes.so...');
+  await renameHermesEngine(version);
   console.log(' ✅  4/10: Finished\n\n');
 
   console.log(' 🛠   5/11: Building versioned ReactAndroid AAR...');
