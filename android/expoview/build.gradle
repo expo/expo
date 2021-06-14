@@ -738,6 +738,8 @@ tasks.whenTaskAdded { task ->
     task.dependsOn(extractAARHeaders)
     task.dependsOn(extractSOFiles)
     task.dependsOn(":ReactAndroid:packageReactNdkLibs")
+  } else if (task.name.startsWith('generateJsonModel')) {
+    task.dependsOn(":ReactAndroid:packageReactNdkLibs")
   }
 }
 
