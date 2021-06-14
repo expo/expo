@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
+import android.util.Pair;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -260,15 +261,26 @@ public class VersionedUtils {
     }
     final String deviceName = AndroidInfoHelpers.getFriendlyDeviceName();
 
-    if (!Constants.isStandaloneApp() && isSupportedHermesBundle(instanceManagerBuilderProperties.jsBundlePath)) {
+    if (Constants.isStandaloneApp()) {
+      return new JSCExecutorFactory(appName, deviceName);
+    }
+
+    final Pair<Boolean, Integer> hermesBundlePair = parseHermesBundleHeader(instanceManagerBuilderProperties.jsBundlePath);
+    if (hermesBundlePair.first) {
+      if (hermesBundlePair.second != HERMES_BYTECODE_VERSION) {
+        // returns null to use react native default js executor factory
+        return null;
+      }
       return new HermesExecutorFactory();
     }
+
     return new JSCExecutorFactory(appName, deviceName);
   }
 
-  /* package */ static boolean isSupportedHermesBundle(@Nullable final String jsBundlePath) {
+  @NonNull
+  private static Pair<Boolean, Integer> parseHermesBundleHeader(@Nullable final String jsBundlePath) {
     if (jsBundlePath == null || jsBundlePath.length() == 0) {
-      return false;
+      return Pair.create(false, 0);
     }
 
     // https://github.com/facebook/hermes/blob/release-v0.5/include/hermes/BCGen/HBC/BytecodeFileFormat.h#L24-L25
@@ -281,20 +293,28 @@ public class VersionedUtils {
       final byte[] bytes = new byte[12];
       in.read(bytes, 0, bytes.length);
 
-      // Check magic header
+      // Magic header
       for (int i = 0; i < HERMES_MAGIC_HEADER.length; ++i) {
         if (bytes[i] != HERMES_MAGIC_HEADER[i]) {
-          return false;
+          return Pair.create(false, 0);
         }
       }
 
-      // Check bytecode version
+      // Bytecode version
       final int bundleBytecodeVersion = (bytes[11] << 24) | (bytes[10] << 16) | (bytes[9] << 8) | bytes[8];
-      return bundleBytecodeVersion == HERMES_BYTECODE_VERSION;
+      return Pair.create(true, bundleBytecodeVersion);
     } catch (FileNotFoundException e) {
     } catch (IOException e) {
     }
 
-    return false;
+    return Pair.create(false, 0);
+  }
+
+  /* package */ static boolean isHermesBundle(@Nullable final String jsBundlePath) {
+    return parseHermesBundleHeader(jsBundlePath).first;
+  }
+
+  /* package */ static int getHermesBundleBytecodeVersion(@Nullable final String jsBundlePath) {
+    return parseHermesBundleHeader(jsBundlePath).second;
   }
 }
