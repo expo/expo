@@ -135,6 +135,7 @@ public class SegmentModule extends ExportedModule {
   @ExpoMethod
   public void initialize(final String writeKey, Promise promise) {
     Analytics.Builder builder = new Analytics.Builder(mContext, writeKey);
+    builder.experimentalUseNewLifecycleMethods(false);
     builder.tag(Integer.toString(sCurrentTag++));
     builder.use(FirebaseIntegration.FACTORY);
     mClient = builder.build();
