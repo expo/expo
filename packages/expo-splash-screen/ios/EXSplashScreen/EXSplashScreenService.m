@@ -45,7 +45,7 @@ UM_REGISTER_SINGLETON_MODULE(SplashScreen);
   UIView *rootView = viewController.view;
   UIView *splashScreenView = [splashScreenViewProvider createSplashScreenView];
   EXSplashScreenViewController *splashScreenController = [[EXSplashScreenViewController alloc] initWithRootView:rootView
-                                                                                       splashScreenView:splashScreenView];
+                                                                                               splashScreenView:splashScreenView];
   
   [self showSplashScreenFor:viewController
      splashScreenController:splashScreenController
@@ -86,7 +86,6 @@ UM_REGISTER_SINGLETON_MODULE(SplashScreen);
   if (![self.splashScreenControllers objectForKey:viewController]) {
     return failureCallback(@"No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.");
   }
-  
   return [[self.splashScreenControllers objectForKey:viewController] hideWithCallback:successCallback
                                                                       failureCallback:failureCallback];
 }

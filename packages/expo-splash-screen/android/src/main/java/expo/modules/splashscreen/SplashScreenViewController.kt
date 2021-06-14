@@ -122,5 +122,4 @@ open class SplashScreenViewController(
       }
     })
   }
-
 }
