@@ -38,12 +38,14 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import host.exp.exponent.Constants;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.experience.ExperienceActivity;
 import host.exp.exponent.experience.ReactNativeActivity;
+import host.exp.exponent.kernel.KernelProvider;
 import host.exp.expoview.Exponent;
 import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedJSIModulePackage;
 
@@ -268,7 +270,10 @@ public class VersionedUtils {
     final Pair<Boolean, Integer> hermesBundlePair = parseHermesBundleHeader(instanceManagerBuilderProperties.jsBundlePath);
     if (hermesBundlePair.first) {
       if (hermesBundlePair.second != HERMES_BYTECODE_VERSION) {
-        // returns null to use react native default js executor factory
+        final String message = String.format(Locale.US,
+                "Unable to load unsupported Hermes bundle.\n\tsupportedBytecodeVersion: %d\n\ttargetBytecodeVersion: %d",
+                HERMES_BYTECODE_VERSION, hermesBundlePair.second);
+        KernelProvider.getInstance().handleError(new RuntimeException(message));
         return null;
       }
       return new HermesExecutorFactory();
