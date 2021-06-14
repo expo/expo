@@ -1,2 +1,6 @@
+import * as DevLauncher from 'expo-dev-launcher';
 import * as DevMenu from 'expo-dev-menu';
-export { DevMenu };
+
+export { DevMenu, DevLauncher };
+
+export const registerErrorHandlers = DevLauncher.registerErrorHandlers;

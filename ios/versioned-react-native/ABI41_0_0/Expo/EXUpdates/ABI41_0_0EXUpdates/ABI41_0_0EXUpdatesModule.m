@@ -10,7 +10,7 @@
 
 @interface ABI41_0_0EXUpdatesModule ()
 
-@property (nonatomic, weak) id<ABI41_0_0EXUpdatesInterface> updatesService;
+@property (nonatomic, weak) id<ABI41_0_0EXUpdatesModuleInterface> updatesService;
 
 @end
 
@@ -20,7 +20,7 @@ ABI41_0_0UM_EXPORT_MODULE(ExpoUpdates);
 
 - (void)setModuleRegistry:(ABI41_0_0UMModuleRegistry *)moduleRegistry
 {
-  _updatesService = [moduleRegistry getModuleImplementingProtocol:@protocol(ABI41_0_0EXUpdatesInterface)];
+  _updatesService = [moduleRegistry getModuleImplementingProtocol:@protocol(ABI41_0_0EXUpdatesModuleInterface)];
 }
 
 - (NSDictionary *)constantsToExport

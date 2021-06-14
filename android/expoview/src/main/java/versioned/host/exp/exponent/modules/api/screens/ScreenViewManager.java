@@ -61,7 +61,8 @@ public class ScreenViewManager extends ViewGroupManager<Screen> {
 
   @ReactProp(name = "stackAnimation")
   public void setStackAnimation(Screen view, String animation) {
-    if (animation == null || "default".equals(animation)) {
+    if (animation == null || "default".equals(animation) 
+      || "slide_from_bottom".equals(animation) || "simple_push".equals(animation)) {
       view.setStackAnimation(Screen.StackAnimation.DEFAULT);
     } else if ("none".equals(animation)) {
       view.setStackAnimation(Screen.StackAnimation.NONE);
@@ -87,6 +88,38 @@ public class ScreenViewManager extends ViewGroupManager<Screen> {
       view.setReplaceAnimation(Screen.ReplaceAnimation.PUSH);
     }
   }
+
+  @ReactProp(name = "screenOrientation")
+  public void setScreenOrientation(Screen view, String screenOrientation) {
+    view.setScreenOrientation(screenOrientation);
+  }
+
+  @ReactProp(name = "statusBarAnimation")
+  public void setStatusBarAnimation(Screen view, String statusBarAnimation) {
+    Boolean animated = statusBarAnimation != null && !"none".equals(statusBarAnimation);
+    view.setStatusBarAnimated(animated);
+  }
+
+  @ReactProp(name = "statusBarColor")
+  public void setStatusBarColor(Screen view, Integer statusBarColor) {
+    view.setStatusBarColor(statusBarColor);
+  }
+
+  @ReactProp(name = "statusBarStyle")
+  public void setStatusBarStyle(Screen view, String statusBarStyle) {
+    view.setStatusBarStyle(statusBarStyle);
+  }
+
+  @ReactProp(name = "statusBarTranslucent")
+  public void setStatusBarTranslucent(Screen view, Boolean statusBarTranslucent) {
+    view.setStatusBarTranslucent(statusBarTranslucent);
+  }
+
+  @ReactProp(name = "statusBarHidden")
+  public void setStatusBarHidden(Screen view, Boolean statusBarHidden) {
+    view.setStatusBarHidden(statusBarHidden);
+  }
+
 
   @Nullable
   @Override

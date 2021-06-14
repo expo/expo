@@ -6,7 +6,7 @@
 namespace reanimated
 {
 
-std::unique_ptr<LoggerInterface> Logger::instance = std::unique_ptr<AndroidLogger>(new AndroidLogger());
+std::unique_ptr<LoggerInterface> Logger::instance = std::make_unique<AndroidLogger>();
 
 void AndroidLogger::log(const char* str) {
     __android_log_print(ANDROID_LOG_VERBOSE, APPNAME, "%s", str);

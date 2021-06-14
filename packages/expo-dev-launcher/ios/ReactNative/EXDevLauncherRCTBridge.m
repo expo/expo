@@ -1,9 +1,13 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXDevLauncherRCTBridge.h"
+#import "RCTCxxBridge+Private.h"
+
 #import <React/RCTPerformanceLogger.h>
 #import <React/RCTDevSettings.h>
 #import <React/RCTDevMenu.h>
+
+@import EXDevMenuInterface;
 
 @implementation EXDevLauncherRCTCxxBridge
 
@@ -20,6 +24,28 @@
 - (RCTDevMenu *)devMenu
 {
   return nil;
+}
+
+- (NSArray<RCTModuleData *> *)_initializeModules:(NSArray<Class> *)modules
+                               withDispatchGroup:(dispatch_group_t)dispatchGroup
+                                lazilyDiscovered:(BOOL)lazilyDiscovered
+{
+  NSArray<NSString *> *allowedModules = @[@"RCT", @"DevMenu"];
+  NSArray<Class> *filtredModuleList = [modules filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable clazz, NSDictionary<NSString *,id> * _Nullable bindings) {
+    if ([clazz conformsToProtocol:@protocol(DevMenuExtensionProtocol)]) {
+      return true;
+    }
+    
+    NSString* clazzName = NSStringFromClass(clazz);
+    for (NSString *allowedModule in allowedModules) {
+      if ([clazzName hasPrefix:allowedModule]) {
+        return true;
+      }
+    }
+    return false;
+  }]];
+  
+  return [super _initializeModules:filtredModuleList withDispatchGroup:dispatchGroup lazilyDiscovered:lazilyDiscovered];
 }
 
 @end

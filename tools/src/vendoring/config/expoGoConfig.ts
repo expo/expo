@@ -175,11 +175,38 @@ const config: VendoringTargetConfig = {
     },
     '@react-native-community/datetimepicker': {
       source: 'https://github.com/react-native-community/react-native-datetimepicker.git',
+      // TODO: Uncomment the following once the new vendoring scripts support Android
+      // android: {
+      //   transforms: {
+      //     content: [
+      //       {
+      //         paths: 'RNTimePickerDialogFragment.java',
+      //         find: /"ClockTimePickerDialog"/,
+      //         replaceWith: '"ReactAndroidClockTimePickerDialog"',
+      //       },
+      //       {
+      //         paths: 'RNTimePickerDialogFragment.java',
+      //         find: /"SpinnerTimePickerDialog"/,
+      //         replaceWith: '"ReactAndroidSpinnerTimePickerDialog"',
+      //       },
+      //       {
+      //         paths: 'RNDatePickerDialogFragment.java',
+      //         find: /"CalendarDatePickerDialog"/,
+      //         replaceWith: '"ReactAndroidCalendarDatePickerDialog"',
+      //       },
+      //       {
+      //         paths: 'RNDatePickerDialogFragment.java',
+      //         find: /"SpinnerDatePickerDialog"/,
+      //         replaceWith: '"ReactAndroidSpinnerDatePickerDialog"',
+      //       },
+      //     ],
+      //   },
+      // },
     },
     // NOTE(brentvatne): masked-view has been renamed to
     // @react-native-masked-view/masked-view but we should synchronize moving
     // over to the new package name along with React Navigation
-    '@react-native-community/masked-view': {
+    '@react-native-masked-view/masked-view': {
       source: 'https://github.com/react-native-masked-view/masked-view',
     },
     '@react-native-community/viewpager': {
@@ -195,7 +222,6 @@ const config: VendoringTargetConfig = {
     },
     '@react-native-picker/picker': {
       source: 'https://github.com/react-native-picker/picker',
-      ios: {},
     },
     '@react-native-community/slider': {
       source: 'https://github.com/callstack/react-native-slider',

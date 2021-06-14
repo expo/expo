@@ -231,7 +231,7 @@ Sometimes it's useful to show multiple ways of doing something, for instance may
 import { Tab, Tabs } from '~/components/plugins/Tabs';
 
 <Tabs>
-    <Tab label="Add 1 One Way">
+<Tab label="Add 1 One Way">
 
     addOne = async x => {
     /* @info This text will be shown onHover */
@@ -240,8 +240,8 @@ import { Tab, Tabs } from '~/components/plugins/Tabs';
     };
 
 
-    </Tab>
-    <Tab label="Add 1 Another Way">
+</Tab>
+<Tab label="Add 1 Another Way">
 
 
     addOne = async x => {
@@ -250,9 +250,10 @@ import { Tab, Tabs } from '~/components/plugins/Tabs';
     /* @end */
     };
 
-    </Tab>
+</Tab>
 </Tabs>
 ```
+n.b. The components should not be indented or they will not be parsed correctly.
 
 ### Excluding pages from Docsearch
 

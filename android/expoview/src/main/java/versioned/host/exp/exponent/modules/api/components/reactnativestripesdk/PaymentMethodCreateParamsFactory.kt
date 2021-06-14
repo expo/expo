@@ -92,7 +92,7 @@ class PaymentMethodCreateParamsFactory(private val clientSecret: String, private
     val token = getValOr(params, "token", null)
 
     if (cardParams == null && paymentMethodId == null && token == null) {
-      throw PaymentMethodCreateParamsException("You must provide cardDetails, token or paymentMethodId")
+      throw PaymentMethodCreateParamsException("Card details not complete")
     }
 
     val setupFutureUsage = mapToPaymentIntentFutureUsage(getValOr(params, "setupFutureUsage"))

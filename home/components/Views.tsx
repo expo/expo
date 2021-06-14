@@ -1,7 +1,14 @@
 import { useTheme } from '@react-navigation/native';
 import { BlurView } from 'expo-blur';
 import * as React from 'react';
-import { Platform, ScrollView, StyleSheet, TouchableNativeFeedback, View } from 'react-native';
+import {
+  Platform,
+  ScrollView,
+  StyleSheet,
+  TouchableNativeFeedback,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import Colors, { ColorTheme } from '../constants/Colors';
 
@@ -182,7 +189,7 @@ export const StyledButton = (props: ButtonProps) => {
   const borderColor = useThemeBorderColor(props, 'cardSeparator');
   const rippleColor = useRippleColor(props);
 
-  return (
+  return Platform.OS === 'android' ? (
     <TouchableNativeFeedback
       background={TouchableNativeFeedback.Ripple(rippleColor, false)}
       {...otherProps}>
@@ -197,6 +204,19 @@ export const StyledButton = (props: ButtonProps) => {
         {children}
       </View>
     </TouchableNativeFeedback>
+  ) : (
+    <TouchableOpacity background={rippleColor} {...otherProps}>
+      <View
+        style={[
+          {
+            backgroundColor,
+            borderColor,
+          },
+          style,
+        ]}>
+        {children}
+      </View>
+    </TouchableOpacity>
   );
 };
 

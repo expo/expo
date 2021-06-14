@@ -16,7 +16,7 @@ function UserSettingsButton() {
     <TouchableOpacity style={styles.buttonContainer} onPress={onPress}>
       {Platform.select({
         ios: <Text style={{ fontSize: 17, color: theme.colors.primary }}>Options</Text>,
-        android: <Ionicons name="md-settings" size={27} color={theme.colors.text} />,
+        android: <Ionicons name="md-settings-sharp" size={24} color={theme.colors.text} />,
       })}
     </TouchableOpacity>
   );

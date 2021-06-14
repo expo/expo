@@ -1,7 +1,9 @@
 package versioned.host.exp.exponent.modules.api.screens;
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.graphics.Paint;
+import android.os.Build;
 import android.os.Parcelable;
 import android.util.SparseArray;
 import android.view.View;
@@ -12,6 +14,7 @@ import android.webkit.WebView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.ReactContext;
@@ -29,6 +32,7 @@ public class Screen extends ViewGroup {
     DEFAULT,
     NONE,
     FADE,
+    SIMPLE_FROM_BOTTOM,
     SLIDE_FROM_RIGHT,
     SLIDE_FROM_LEFT
   }
@@ -42,6 +46,15 @@ public class Screen extends ViewGroup {
     INACTIVE,
     TRANSITIONING_OR_BELOW_TOP,
     ON_TOP
+  }
+
+  public enum WindowTraits {
+    ORIENTATION,
+    COLOR,
+    STYLE,
+    TRANSLUCENT,
+    HIDDEN,
+    ANIMATED
   }
 
   private static OnAttachStateChangeListener sShowSoftKeyboardOnAttach = new OnAttachStateChangeListener() {
@@ -68,6 +81,12 @@ public class Screen extends ViewGroup {
   private ReplaceAnimation mReplaceAnimation = ReplaceAnimation.POP;
   private StackAnimation mStackAnimation = StackAnimation.DEFAULT;
   private boolean mGestureEnabled = true;
+  private Integer mScreenOrientation;
+  private String mStatusBarStyle;
+  private Boolean mStatusBarHidden;
+  private Boolean mStatusBarTranslucent;
+  private Integer mStatusBarColor;
+  private Boolean mStatusBarAnimated;
 
   @Override
   protected void onAnimationStart() {
@@ -136,15 +155,17 @@ public class Screen extends ViewGroup {
     // autoFocus is implemented it sometimes gets triggered before native text view is mounted. As
     // a result Android ignores calls for opening soft keyboard and here we trigger it manually
     // again after the screen is attached.
-    View view = getFocusedChild();
-    if (view != null) {
-      while (view instanceof ViewGroup) {
-        view = ((ViewGroup) view).getFocusedChild();
-      }
-      if (view instanceof TextView) {
-        TextView textView = (TextView) view;
-        if (textView.getShowSoftInputOnFocus()) {
-          textView.addOnAttachStateChangeListener(sShowSoftKeyboardOnAttach);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      View view = getFocusedChild();
+      if (view != null) {
+        while (view instanceof ViewGroup) {
+          view = ((ViewGroup) view).getFocusedChild();
+        }
+        if (view instanceof TextView) {
+          TextView textView = (TextView) view;
+          if (textView.getShowSoftInputOnFocus()) {
+            textView.addOnAttachStateChangeListener(sShowSoftKeyboardOnAttach);
+          }
         }
       }
     }
@@ -254,5 +275,117 @@ public class Screen extends ViewGroup {
 
   public boolean isGestureEnabled() {
     return mGestureEnabled;
+  }
+
+  public void setScreenOrientation(String screenOrientation) {
+    if (screenOrientation == null) {
+      mScreenOrientation = null;
+      return;
+    }
+
+    ScreenWindowTraits.applyDidSetOrientation();
+
+    switch (screenOrientation) {
+      case "all":
+        mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR;
+        break;
+      case "portrait":
+        mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
+        break;
+      case "portrait_up":
+        mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+        break;
+      case "portrait_down":
+        mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
+        break;
+      case "landscape":
+        mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
+        break;
+      case "landscape_left":
+        mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
+        break;
+      case "landscape_right":
+        mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+        break;
+      default:
+        mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+        break;
+    }
+
+    if (getFragment() != null) {
+      ScreenWindowTraits.setOrientation(this, getFragment().tryGetActivity());
+    }
+  }
+
+  public Integer getScreenOrientation() {
+    return mScreenOrientation;
+  }
+
+  public void setStatusBarStyle(String statusBarStyle) {
+    if (statusBarStyle != null) {
+      ScreenWindowTraits.applyDidSetStatusBarAppearance();
+    }
+
+    mStatusBarStyle = statusBarStyle;
+    if (getFragment() != null) {
+      ScreenWindowTraits.setStyle(this, getFragment().tryGetActivity(), getFragment().tryGetContext());
+    }
+  }
+
+  public String getStatusBarStyle() {
+    return mStatusBarStyle;
+  }
+
+  public void setStatusBarHidden(Boolean statusBarHidden) {
+    if (statusBarHidden != null) {
+      ScreenWindowTraits.applyDidSetStatusBarAppearance();
+    }
+
+    mStatusBarHidden = statusBarHidden;
+    if (getFragment() != null) {
+      ScreenWindowTraits.setHidden(this, getFragment().tryGetActivity());
+    }
+  }
+
+  public Boolean isStatusBarHidden() {
+    return mStatusBarHidden;
+  }
+
+  public void setStatusBarTranslucent(Boolean statusBarTranslucent) {
+    if (statusBarTranslucent != null) {
+      ScreenWindowTraits.applyDidSetStatusBarAppearance();
+    }
+
+    mStatusBarTranslucent = statusBarTranslucent;
+    if (getFragment() != null) {
+      ScreenWindowTraits.setTranslucent(this, getFragment().tryGetActivity(), getFragment().tryGetContext());
+    }
+  }
+
+  public Boolean isStatusBarTranslucent() {
+    return mStatusBarTranslucent;
+  }
+
+  public void setStatusBarColor(Integer statusBarColor) {
+    if (statusBarColor != null) {
+      ScreenWindowTraits.applyDidSetStatusBarAppearance();
+    }
+
+    mStatusBarColor = statusBarColor;
+    if (getFragment() != null) {
+      ScreenWindowTraits.setColor(this, getFragment().tryGetActivity(), getFragment().tryGetContext());
+    }
+  }
+
+  public Integer getStatusBarColor() {
+    return mStatusBarColor;
+  }
+
+  public Boolean isStatusBarAnimated() {
+    return mStatusBarAnimated;
+  }
+
+  public void setStatusBarAnimated(Boolean statusBarAnimated) {
+    mStatusBarAnimated = statusBarAnimated;
   }
 }

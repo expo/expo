@@ -22,6 +22,8 @@ import java.io.ByteArrayOutputStream
 class PaymentSheetFragment : Fragment() {
   private var paymentSheet: PaymentSheet? = null
   private var flowController: PaymentSheet.FlowController? = null
+  private var paymentIntentClientSecret: String? = null
+  private var setupIntentClientSecret: String? = null
   private lateinit var paymentSheetConfiguration: PaymentSheet.Configuration
 
   override fun onCreateView(
@@ -39,9 +41,10 @@ class PaymentSheetFragment : Fragment() {
     val merchantDisplayName = arguments?.getString("merchantDisplayName").orEmpty()
     val customerId = arguments?.getString("customerId").orEmpty()
     val customerEphemeralKeySecret = arguments?.getString("customerEphemeralKeySecret").orEmpty()
-    val paymentIntentClientSecret = arguments?.getString("paymentIntentClientSecret").orEmpty()
     val countryCode = arguments?.getString("countryCode").orEmpty()
     val testEnv = arguments?.getBoolean("testEnv")
+    paymentIntentClientSecret = arguments?.getString("paymentIntentClientSecret").orEmpty()
+    setupIntentClientSecret = arguments?.getString("setupIntentClientSecret").orEmpty()
 
     val paymentOptionCallback = object: PaymentOptionCallback {
       override fun onPaymentOption(paymentOption: PaymentOption?) {
@@ -67,7 +70,7 @@ class PaymentSheetFragment : Fragment() {
       }
     }
 
-    this.paymentSheetConfiguration = PaymentSheet.Configuration(
+    paymentSheetConfiguration = PaymentSheet.Configuration(
       merchantDisplayName = merchantDisplayName,
       customer = if (customerId.isNotEmpty() && customerEphemeralKeySecret.isNotEmpty()) PaymentSheet.CustomerConfiguration(
         id = customerId,
@@ -81,7 +84,7 @@ class PaymentSheetFragment : Fragment() {
 
     if (arguments?.getBoolean("customFlow") == true) {
       flowController = PaymentSheet.FlowController.create(this, paymentOptionCallback, paymentResultCallback)
-      configureFlowController(paymentIntentClientSecret)
+      configureFlowController()
     } else {
       paymentSheet = PaymentSheet(this, paymentResultCallback)
     }
@@ -90,8 +93,12 @@ class PaymentSheetFragment : Fragment() {
     activity?.sendBroadcast(intent)
   }
 
-  fun present(clientSecret: String) {
-    paymentSheet?.presentWithPaymentIntent(clientSecret, paymentSheetConfiguration)
+  fun present() {
+    if (!paymentIntentClientSecret.isNullOrEmpty()) {
+      paymentSheet?.presentWithPaymentIntent(paymentIntentClientSecret!!, paymentSheetConfiguration)
+    } else if (!setupIntentClientSecret.isNullOrEmpty()) {
+      paymentSheet?.presentWithSetupIntent(setupIntentClientSecret!!, paymentSheetConfiguration)
+    }
   }
 
   fun presentPaymentOptions() {
@@ -102,7 +109,7 @@ class PaymentSheetFragment : Fragment() {
     flowController?.confirm()
   }
 
-  private fun configureFlowController(paymentIntentClientSecret: String) {
+  private fun configureFlowController() {
     val onFlowControllerConfigure = object : PaymentSheet.FlowController.ConfigCallback {
       override fun onConfigured(success: Boolean, error: Throwable?) {
         val paymentOption = flowController?.getPaymentOption()
@@ -119,11 +126,19 @@ class PaymentSheetFragment : Fragment() {
       }
     }
 
-    flowController?.configureWithPaymentIntent(
-      paymentIntentClientSecret = paymentIntentClientSecret,
-      configuration = this.paymentSheetConfiguration,
-      callback = onFlowControllerConfigure
-    )
+    if (!paymentIntentClientSecret.isNullOrEmpty()) {
+      flowController?.configureWithPaymentIntent(
+        paymentIntentClientSecret = paymentIntentClientSecret!!,
+        configuration = paymentSheetConfiguration,
+        callback = onFlowControllerConfigure
+      )
+    } else if (!setupIntentClientSecret.isNullOrEmpty()) {
+      flowController?.configureWithSetupIntent(
+        setupIntentClientSecret = setupIntentClientSecret!!,
+        configuration = paymentSheetConfiguration,
+        callback = onFlowControllerConfigure
+      )
+    }
   }
 }
 

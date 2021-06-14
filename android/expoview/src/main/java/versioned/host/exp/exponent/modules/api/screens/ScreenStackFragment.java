@@ -12,6 +12,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.widget.LinearLayout;
 
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.uimanager.PixelUtil;
 import com.google.android.material.appbar.AppBarLayout;
 
@@ -131,15 +132,25 @@ public class ScreenStackFragment extends ScreenFragment {
     // stack directly from here.
     // When using the Toolbar back button this is called an extra time with transit = 0 but in
     // this case we don't want to notify. The way I found to detect is case is check isHidden.
-    if (transit == 0 && !isHidden()) {
+    if (transit == 0 && !isHidden() && getScreen().getStackAnimation() == Screen.StackAnimation.NONE) {
       // If the container is nested then appear events will be dispatched by their parent screen so
       // they must not be triggered here.
       ScreenContainer container = getScreen().getContainer();
       boolean isNested = container != null && container.isNested();
       if (enter) {
         if (!isNested) {
-          dispatchOnWillAppear();
-          dispatchOnAppear();
+          // Android dispatches the animation start event for the fragment that is being added first
+          // however we want the one being dismissed first to match iOS. It also makes more sense from
+          // a navigation point of view to have the disappear event first.
+          // Since there are no explicit relationships between the fragment being added / removed the
+          // practical way to fix this is delaying dispatching the appear events at the end of the frame.
+          UiThreadUtil.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              dispatchOnWillAppear();
+              dispatchOnAppear();
+            }
+          });
         }
       } else {
         if (!isNested) {

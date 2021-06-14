@@ -3,7 +3,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import <EXUpdatesInterface/EXUpdatesInterface.h>
+#import <EXUpdatesInterface/EXUpdatesExternalInterface.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) RCTBridge * _Nullable appBridge;
 @property (nonatomic, strong) RCTBridge *launcherBridge;
 @property (nonatomic, strong) EXDevLauncherPendingDeepLinkRegistry *pendingDeepLinkRegistry;
-@property (nonatomic, strong) id<EXUpdatesInterface> updatesInterface;
+@property (nonatomic, strong) id<EXUpdatesExternalInterface> updatesInterface;
 
 + (instancetype)sharedInstance;
 

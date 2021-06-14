@@ -200,6 +200,9 @@ pod 'ABI41_0_0EXTrackingTransparency',
 pod 'ABI41_0_0EXUpdates',
   :path => './versioned-react-native/ABI41_0_0/Expo/EXUpdates',
   :project_name => 'ABI41_0_0'
+pod 'ABI41_0_0EXUpdatesInterface',
+  :path => './versioned-react-native/ABI41_0_0/Expo/EXUpdatesInterface',
+  :project_name => 'ABI41_0_0'
 pod 'ABI41_0_0EXVideoThumbnails',
   :path => './versioned-react-native/ABI41_0_0/Expo/EXVideoThumbnails',
   :project_name => 'ABI41_0_0'

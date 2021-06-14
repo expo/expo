@@ -113,21 +113,27 @@ module.exports = {
         }
       })
     );
-    // Create a sitemap for crawlers like Google and Algolia
-    createSitemap({
-      pathMap,
-      domain: 'https://docs.expo.io',
-      output: join(outDir, 'sitemap.xml'),
-      // Some of the search engines only track the first N items from the sitemap,
-      // this makes sure our starting and general guides are first, and API index last (in order from new to old)
-      pathsPriority: [
-        ...navigation.startingDirectories,
-        ...navigation.generalDirectories,
-        ...versions.VERSIONS.map(version => `versions/${version}`),
-      ],
-      // Some of our pages are "hidden" and should not be added to the sitemap
-      pathsHidden: navigation.previewDirectories,
-    });
+
+    const domains = ['docs.expo.io', 'docs.expo.dev'];
+
+    for (const domain of domains) {
+      // Create a sitemap for crawlers like Google and Algolia
+      createSitemap({
+        pathMap,
+        domain: `https://${domain}`,
+        output: join(outDir, `${domain}-sitemap.xml`),
+        // Some of the search engines only track the first N items from the sitemap,
+        // this makes sure our starting and general guides are first, and API index last (in order from new to old)
+        pathsPriority: [
+          ...navigation.startingDirectories,
+          ...navigation.generalDirectories,
+          ...versions.VERSIONS.map(version => `versions/${version}`),
+        ],
+        // Some of our pages are "hidden" and should not be added to the sitemap
+        pathsHidden: navigation.previewDirectories,
+      });
+    }
+
     return pathMap;
   },
   async headers() {

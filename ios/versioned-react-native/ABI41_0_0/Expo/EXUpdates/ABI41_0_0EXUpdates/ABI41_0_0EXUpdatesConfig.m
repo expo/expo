@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+static NSString * const ABI41_0_0EXUpdatesConfigPlistName = @"Expo";
+
 static NSString * const ABI41_0_0EXUpdatesDefaultReleaseChannelName = @"default";
 
 static NSString * const ABI41_0_0EXUpdatesConfigEnabledKey = @"ABI41_0_0EXUpdatesEnabled";
@@ -58,6 +60,17 @@ static NSString * const ABI41_0_0EXUpdatesConfigNeverString = @"NEVER";
   ABI41_0_0EXUpdatesConfig *updatesConfig = [[ABI41_0_0EXUpdatesConfig alloc] init];
   [updatesConfig loadConfigFromDictionary:config];
   return updatesConfig;
+}
+
++ (instancetype)configWithExpoPlist
+{
+  NSString *configPath = [[NSBundle mainBundle] pathForResource:ABI41_0_0EXUpdatesConfigPlistName ofType:@"plist"];
+  if (!configPath) {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:@"Cannot load configuration from Expo.plist. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project."
+                                 userInfo:@{}];
+  }
+  return [[self class] configWithDictionary:[NSDictionary dictionaryWithContentsOfFile:configPath]];
 }
 
 - (void)loadConfigFromDictionary:(NSDictionary *)config

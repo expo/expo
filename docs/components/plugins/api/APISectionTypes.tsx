@@ -33,10 +33,16 @@ const defineLiteralType = (types: TypeValueData[]): string => {
   return '';
 };
 
-const decorateValue = (type: TypeValueData): string =>
-  typeof type?.value === 'string'
-    ? "`'" + type.value + "'`"
-    : '`' + (type.value || type.name) + '`';
+export const decorateValue = (type: TypeValueData): string => {
+  if (type?.value === null) {
+    return '`null`';
+  } else if (type?.name === 'Record' && type?.typeArguments?.length) {
+    return '`Record<' + type.typeArguments[0]?.name + ',' + type.typeArguments[1]?.name + '>`';
+  } else if (typeof type?.value === 'string') {
+    return "`'" + type.value + "'`";
+  }
+  return '`' + (type.value || type.name) + '`';
+};
 
 const renderTypeDeclarationTable = ({ children }: TypeDeclarationContentData): JSX.Element => (
   <table key={`type-declaration-table-${children.map(child => child.name).join('-')}`}>
@@ -100,7 +106,10 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
     );
   } else if (type.types && type.type === 'union') {
     const literalTypes = type.types.filter(
-      (t: TypeValueData) => t.type === 'literal' || t.type === 'intrinsic'
+      (t: TypeValueData) =>
+        t.type === 'literal' ||
+        t.type === 'intrinsic' ||
+        (t.type === 'reference' && t.name === 'Record')
     );
     const propTypes = type.types.filter((t: TypeValueData) => t.type === 'reflection');
     if (literalTypes.length) {

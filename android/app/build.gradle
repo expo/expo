@@ -77,7 +77,12 @@ android {
     abortOnError false
   }
   packagingOptions {
-    pickFirst "lib/**"
+    // libfbjni.so is prebuilt library shared between all ABIs
+    pickFirst "lib/**/libfbjni.so"
+
+    // TODO: Remove when we drop support for SDK 41
+    pickFirst "lib/**/libhermes-inspector.so"
+    pickFirst "lib/**/libfolly_futures.so"
   }
 }
 
@@ -113,9 +118,6 @@ dependencies {
   // Our dependencies from ExpoView
   // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
   implementation 'androidx.appcompat:appcompat:1.2.0'
-  implementation('com.facebook.android:audience-network-sdk:5.1.1') {
-    exclude module: 'play-services-ads'
-  }
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
   implementation 'com.jakewharton:butterknife:10.2.1'
   implementation 'de.greenrobot:eventbus:2.4.0'
