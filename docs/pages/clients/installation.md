@@ -1,19 +1,14 @@
 ---
-title: Installation
+title: Installation in React Native and Bare workflow projects
+sidebar_title: Manual Installation
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
 import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
 
-**Expo Development Client** is an open source project to improve your development experience while working on your Expo and React Native projects. It allows your team to focus on the JavaScript portion of your project, only needing to interact with Xcode or Android Studio when you need to make changes to the native code used in your project.
+The installation steps on this page are only required to add a development client to an **existing** React Native or Bare project.
 
-> ⚠️ **Managed Expo projects are not yet supported**, but we are working on bringing the Development Client to the Managed Workflow! If you want to build a managed Expo project with the Development Client, you'll have to eject it first. See the [Ejecting to Bare Workflow](../workflow/customizing.md) page to learn how.
-
-## Create a new project with the Development Client
-
-The easiest way to get started is to initialize a new project by executing the following command:
-
-<InstallSection packageName="expo-development-client" cmd={["npx crna -t with-dev-client"]} hideBareInstructions />
+To initialize a new Bare project or to add a development client to an existing managed project, see our [Getting Started guide](/getting-started.md).
 
 ## Add the Development Client to the existing project
 
@@ -41,7 +36,7 @@ Then you can run the following command to install native code for the Dev Launch
 <InstallSection packageName="expo-development-client" cmd={["npx pod-install"]} hideBareInstructions />
 
 Also, make sure that your project is configured to deploy on iOS **above 10**.
-To do that you need open the Xcode, go to `Project settings` > `General` > `Deployment info` and select iOS version is at least 11.
+To do that, you need to open Xcode, go to `Project settings` > `General` > `Deployment info` and select iOS version is at least 11.
 
 <img src="/static/images/client/check_ios_version.png" style={{maxWidth: "100%" }}/>
 
