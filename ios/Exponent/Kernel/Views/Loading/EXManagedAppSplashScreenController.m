@@ -22,9 +22,7 @@
 
 - (instancetype)initWithRootView:(UIView *)rootView splashScreenView:(UIView *)splashScreenView
 {
-  self = [super initWithRootView:rootView splashScreenView:splashScreenView];
-  
-  if (self) {
+  if (self = [super initWithRootView:rootView splashScreenView:splashScreenView]) {
     self.splashScreenView.userInteractionEnabled = YES;
   }
   

@@ -12,12 +12,11 @@ const val SEARCH_FOR_ROOT_VIEW_INTERVAL = 20L
 open class SplashScreenViewController(
   activity: Activity,
   private val rootViewClass: Class<out ViewGroup>,
-  splashView: View
+  private val splashScreenView: View
 ) {
   private val weakActivity = WeakReference(activity)
   private val contentView: ViewGroup = activity.findViewById(android.R.id.content)
       ?: throw NoContentViewException()
-  private var splashScreenView = splashView
   private val handler = Handler()
 
   private var autoHideEnabled = true

@@ -39,7 +39,6 @@ import javax.inject.Inject;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import de.greenrobot.event.EventBus;
-import expo.modules.splashscreen.SplashScreenView;
 import expo.modules.splashscreen.singletons.SplashScreen;
 import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.AppLoader;
