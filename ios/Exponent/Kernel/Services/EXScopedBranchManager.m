@@ -55,7 +55,7 @@ UM_REGISTER_SINGLETON_MODULE(BranchManager);
   }
 
   EXScopedBranch *branchModule = (EXScopedBranch *)versionedBranchModule;
-  EXKernelAppRecord *appForModule = [[EXKernel sharedInstance].appRegistry newestRecordWithExperienceId:branchModule.experienceId];
+  EXKernelAppRecord *appForModule = [[EXKernel sharedInstance].appRegistry newestRecordWithScopeKey:branchModule.scopeKey];
   if (appForModule && appForModule == [EXKernel sharedInstance].appRegistry.standaloneAppRecord) {
     _isInitialized = YES;
 

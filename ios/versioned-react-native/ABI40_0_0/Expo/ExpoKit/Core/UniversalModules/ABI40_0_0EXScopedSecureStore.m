@@ -11,16 +11,16 @@
 
 @interface ABI40_0_0EXScopedSecureStore ()
 
-@property (strong, nonatomic) NSString *experienceId;
+@property (strong, nonatomic) NSString *scopeKey;
 
 @end
 
 @implementation ABI40_0_0EXScopedSecureStore
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId
+- (instancetype)initWithScopeKey:(NSString *)scopeKey
 {
   if (self = [super init]) {
-    _experienceId = experienceId;
+    _scopeKey = scopeKey;
   }
   return self;
 }
@@ -30,7 +30,7 @@
     return nil;
   }
 
-  return [NSString stringWithFormat:@"%@-%@", _experienceId, key];
+  return [NSString stringWithFormat:@"%@-%@", _scopeKey, key];
 }
 
 @end

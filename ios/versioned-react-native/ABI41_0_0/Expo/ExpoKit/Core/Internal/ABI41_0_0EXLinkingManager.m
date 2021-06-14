@@ -22,9 +22,11 @@ NSString * const ABI41_0_0EXLinkingEventOpenUrl = @"url";
 
 ABI41_0_0EX_EXPORT_SCOPED_MODULE(ABI41_0_0RCTLinkingManager, KernelLinkingManager);
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
+- (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
+                        scopeKey:(NSString *)scopeKey
+                     kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
 {
-  if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
+  if (self = [super initWithExperienceStableLegacyId:experienceStableLegacyId scopeKey:scopeKey kernelServiceDelegate:kernelServiceInstance params:params]) {
     _kernelLinkingDelegate = kernelServiceInstance;
     _initialUrl = params[@"initialUri"];
   }
