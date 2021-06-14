@@ -25,11 +25,6 @@ class NativeResourcesBasedSplashScreenViewProvider(
     return splashScreenView
   }
 
-  override fun createSplashScreenController(activity: Activity, rootViewClass: Class<out ViewGroup>): SplashScreenController {
-    val splashView = createSplashScreenView(activity)
-    return SplashScreenController(activity, rootViewClass, splashView)
-  }
-
   private fun getBackgroundColor(context: Context): Int {
     return ContextCompat.getColor(context, R.color.splashscreen_background)
   }

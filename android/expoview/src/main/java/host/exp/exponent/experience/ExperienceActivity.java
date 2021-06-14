@@ -39,6 +39,7 @@ import javax.inject.Inject;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import de.greenrobot.event.EventBus;
+import expo.modules.splashscreen.SplashScreenView;
 import expo.modules.splashscreen.singletons.SplashScreen;
 import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.AppLoader;
@@ -54,6 +55,7 @@ import host.exp.exponent.branch.BranchManager;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.experience.loading.LoadingProgressPopupController;
 import host.exp.exponent.experience.splashscreen.ManagedAppSplashScreenConfiguration;
+import host.exp.exponent.experience.splashscreen.ManagedAppSplashScreenController;
 import host.exp.exponent.experience.splashscreen.ManagedAppSplashScreenViewProvider;
 import host.exp.exponent.kernel.DevMenuManager;
 import host.exp.exponent.kernel.ExperienceKey;
@@ -410,7 +412,10 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     if (mManagedAppSplashScreenViewProvider == null) {
       ManagedAppSplashScreenConfiguration config = ManagedAppSplashScreenConfiguration.parseManifest(manifest);
       mManagedAppSplashScreenViewProvider = new ManagedAppSplashScreenViewProvider(config);
-      SplashScreen.show(this, mManagedAppSplashScreenViewProvider, getRootViewClass(manifest), true);
+
+      View splashScreenView = mManagedAppSplashScreenViewProvider.createSplashScreenView(this);
+      ManagedAppSplashScreenController controller = new ManagedAppSplashScreenController(this, getRootViewClass(manifest), splashScreenView);
+      SplashScreen.show(this, controller, true);
     } else {
       mManagedAppSplashScreenViewProvider.updateSplashScreenViewWithManifest(this, manifest);
     }

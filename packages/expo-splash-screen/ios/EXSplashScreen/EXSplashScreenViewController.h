@@ -5,7 +5,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXSplashScreenController : NSObject
+@interface EXSplashScreenViewController : NSObject
+
+@property (nonatomic, strong) UIView *splashScreenView;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -17,7 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)hideWithCallback:(void (^)(BOOL hasEffect))successCallback failureCallback:(void (^)(NSString *message))failureCallback;
 - (void)onAppContentDidAppear;
 - (void)onAppContentWillReload;
-
 @end
 
 NS_ASSUME_NONNULL_END

@@ -76,14 +76,5 @@
   });
 }
 
-- (EXSplashScreenController *)createSplashScreenControllerWithView:(UIView *)rootView
-{
-  UIView *splashScreenView = [self createSplashScreenView];
-  EXManagedAppSplashScreenController *controller = [[EXManagedAppSplashScreenController alloc]
-                                                    initWithRootView:rootView
-                                                    splashScreenView:splashScreenView];
-  return controller;
-}
-
 @end
 

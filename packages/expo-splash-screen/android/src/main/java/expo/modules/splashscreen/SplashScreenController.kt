@@ -9,7 +9,7 @@ import java.lang.ref.WeakReference
 
 const val SEARCH_FOR_ROOT_VIEW_INTERVAL = 20L
 
-open class SplashScreenController(
+open class SplashScreenViewController(
   activity: Activity,
   private val rootViewClass: Class<out ViewGroup>,
   splashView: View

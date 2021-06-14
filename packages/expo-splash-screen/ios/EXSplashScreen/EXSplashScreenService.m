@@ -6,7 +6,7 @@
 
 @interface EXSplashScreenService ()
 
-@property (nonatomic, strong) NSMapTable<UIViewController *, EXSplashScreenController *> *splashScreenControllers;
+@property (nonatomic, strong) NSMapTable<UIViewController *, EXSplashScreenViewController *> *splashScreenControllers;
 
 @end
 
@@ -41,7 +41,27 @@ UM_REGISTER_SINGLETON_MODULE(SplashScreen);
     return failureCallback(@"'SplashScreen.show' has already been called for given view controller.");
   }
   
-  EXSplashScreenController *splashScreenController = [splashScreenViewProvider createSplashScreenControllerWithView: viewController.view];
+  
+  UIView *rootView = viewController.view;
+  UIView *splashScreenView = [splashScreenViewProvider createSplashScreenView];
+  EXSplashScreenViewController *splashScreenController = [[EXSplashScreenViewController alloc] initWithRootView:rootView
+                                                                                       splashScreenView:splashScreenView];
+  
+  [self showSplashScreenFor:viewController
+     splashScreenController:splashScreenController
+            successCallback:successCallback
+            failureCallback:failureCallback];
+}
+
+- (void)showSplashScreenFor:(UIViewController *)viewController
+     splashScreenController:(EXSplashScreenViewController *)splashScreenController
+            successCallback:(void (^)(void))successCallback
+            failureCallback:(void (^)(NSString * _Nonnull))failureCallback
+{
+  if ([self.splashScreenControllers objectForKey:viewController]) {
+    return failureCallback(@"'SplashScreen.show' has already been called for given view controller.");
+  }
+  
   [self.splashScreenControllers setObject:splashScreenController forKey:viewController];
   [[self.splashScreenControllers objectForKey:viewController] showWithCallback:successCallback
                                                                failureCallback:failureCallback];

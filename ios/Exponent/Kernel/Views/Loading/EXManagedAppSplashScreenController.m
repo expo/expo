@@ -15,7 +15,6 @@
 
 @property (nonatomic, weak) NSTimer *warningTimer;
 @property (nonatomic, weak) MBProgressHUD *warningHud;
-@property (nonatomic, strong) UIView *splashScreenView;
 
 @end
 
@@ -26,8 +25,7 @@
   self = [super initWithRootView:rootView splashScreenView:splashScreenView];
   
   if (self) {
-    _splashScreenView = splashScreenView;
-    _splashScreenView.userInteractionEnabled = YES;
+    self.splashScreenView.userInteractionEnabled = YES;
   }
   
   return self;

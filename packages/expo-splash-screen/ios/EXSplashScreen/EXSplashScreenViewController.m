@@ -1,13 +1,12 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
-#import <EXSplashScreen/EXSplashScreenController.h>
+#import <EXSplashScreen/EXSplashScreenViewController.h>
 #import <UMCore/UMDefines.h>
 #import <UMCore/UMUtilities.h>
 
-@interface EXSplashScreenController ()
+@interface EXSplashScreenViewController ()
 
 @property (nonatomic, weak) UIView *rootView;
-@property (nonatomic, strong) UIView *splashScreenView;
 
 @property (nonatomic, assign) BOOL autoHideEnabled;
 @property (nonatomic, assign) BOOL splashScreenShown;
@@ -15,7 +14,7 @@
 
 @end
 
-@implementation EXSplashScreenController
+@implementation EXSplashScreenViewController
 
 - (instancetype)initWithRootView:(UIView *)rootView splashScreenView:(nonnull UIView *)splashScreenView
 {

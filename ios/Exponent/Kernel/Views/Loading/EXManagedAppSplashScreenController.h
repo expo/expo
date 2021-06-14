@@ -7,11 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <EXSplashScreen/EXSplashScreenController.h>
+#import <EXSplashScreen/EXSplashScreenViewController.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXManagedAppSplashScreenController : EXSplashScreenController
+@interface EXManagedAppSplashScreenController : EXSplashScreenViewController
 
 @end
 
