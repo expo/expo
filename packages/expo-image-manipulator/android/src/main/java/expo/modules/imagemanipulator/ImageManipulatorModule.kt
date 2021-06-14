@@ -50,10 +50,9 @@ class ImageManipulatorModule(
         // No cleanup required here.
         val basicMessage = "Could not get decoded bitmap of $uri"
         if (cause != null) {
-          promise.reject(ERROR_TAG + "_DECODE",
-            "$basicMessage: $cause", cause)
+          promise.reject("${ERROR_TAG}_DECODE", "$basicMessage: $cause", cause)
         } else {
-          promise.reject(ERROR_TAG + "_DECODE", "$basicMessage.")
+          promise.reject("${ERROR_TAG}_DECODE", "$basicMessage.")
         }
       }
     })

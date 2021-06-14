@@ -12,9 +12,9 @@ class FlipAction(private val flipType: FlipType) : Action {
     get() {
       val m = Matrix()
       if (flipType == FlipType.VERTICAL) {
-        m.postScale(1.toFloat(), (-1).toFloat())
+        m.postScale(1f, -1f)
       } else {
-        m.postScale((-1).toFloat(), 1.toFloat())
+        m.postScale(-1f, 1f)
       }
       return m
     }
