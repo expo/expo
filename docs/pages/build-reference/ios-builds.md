@@ -36,7 +36,7 @@ In this next phase, this is what happens when EAS Build picks up your request:
 1. Restore a previously saved cache identified by the `cache.key` value in the build profile. ([Learn more](../build/eas-json/).)
 1. Run `pod install` in the `ios` directory inside your project.
 1. Run the `eas-build-post-install` script from package.json if defined.
-1. **Generic** Restore the credentials: (for managed projects it's done before `expo prebuild`)
+1. **Generic** Restore the credentials (for managed projects it's done before `expo prebuild`):
 
    - Create a new keychain.
 
