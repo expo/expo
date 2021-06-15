@@ -33,6 +33,11 @@ export const globalTables = css`
 
   td {
     text-align: left;
+
+    li,
+    blockquote {
+      font-size: 0.8rem !important;
+    }
   }
 
   th {

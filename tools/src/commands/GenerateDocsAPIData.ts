@@ -96,6 +96,7 @@ async function action({ packageName }: ActionOptions) {
     'expo-network': ['Network.ts'],
     'expo-print': ['Print.ts'],
     'expo-random': ['Random.ts'],
+    'expo-secure-store': ['SecureStore.ts'],
     'expo-sensors': ['Pedometer.ts', 'expo-pedometer'],
     'expo-sharing': ['Sharing.ts'],
     'expo-splash-screen': ['SplashScreen.ts'],
