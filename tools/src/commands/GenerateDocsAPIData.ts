@@ -92,6 +92,7 @@ async function action({ packageName }: ActionOptions) {
     'expo-linear-gradient': ['LinearGradient.tsx'],
     'expo-localization': ['Localization.ts'],
     'expo-mail-composer': ['MailComposer.ts'],
+    'expo-network': ['Network.ts'],
     'expo-print': ['Print.ts'],
     'expo-random': ['Random.ts'],
     'expo-sensors': ['Pedometer.ts', 'expo-pedometer'],
