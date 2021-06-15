@@ -3,6 +3,8 @@ package expo.modules.notifications.service.delegates
 import android.content.Context
 import com.google.firebase.messaging.RemoteMessage
 import expo.modules.notifications.notifications.JSONNotificationContentBuilder
+import expo.modules.notifications.notifications.RemoteMessageSerializer
+import expo.modules.notifications.notifications.background.BackgroundRemoteNotificationTaskConsumer
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationContent
 import expo.modules.notifications.notifications.model.NotificationRequest
@@ -51,6 +53,25 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
         }
       }
     }
+
+    /**
+     * A weak map of task consumers -> reference. Used to check quickly whether given task
+     * is already registered and to iterate over when notifying of new notification received
+     * while the app is not in the foreground.
+     */
+    protected var sBackgroundTaskConsumerReferences = WeakHashMap<BackgroundRemoteNotificationTaskConsumer, WeakReference<BackgroundRemoteNotificationTaskConsumer>>()
+
+    /**
+     * Background tasks are registered in [BackgroundRemoteNotificationTaskConsumer] instances.
+     *
+     * @param taskConsumer A task instance to be executed when a notification is received while the * app is not in the foreground
+     */
+    fun addBackgroundTaskConsumer(taskConsumer: BackgroundRemoteNotificationTaskConsumer) {
+      if (sBackgroundTaskConsumerReferences.containsKey(taskConsumer)) {
+        return
+      }
+      sBackgroundTaskConsumerReferences[taskConsumer] = WeakReference(taskConsumer)
+    }
   }
 
   /**
@@ -65,8 +86,13 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
     sLastToken = token
   }
 
+  fun getBackgroundTasks() = sBackgroundTaskConsumerReferences.values.mapNotNull { it.get() }
+
   override fun onMessageReceived(remoteMessage: RemoteMessage) {
     NotificationsService.receive(context, createNotification(remoteMessage))
+    getBackgroundTasks().forEach {
+      it.scheduleJob(RemoteMessageSerializer.toBundle(remoteMessage))
+    }
   }
 
   protected fun createNotification(remoteMessage: RemoteMessage): Notification {
