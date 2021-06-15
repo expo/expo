@@ -25,7 +25,7 @@ For more information on Apple's new App Tracking Transparency framework, please 
 <SnackInline label='Basic tracking transparency usage' dependencies={['expo-tracking-transparency']}>
 
 ```jsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Text, StyleSheet, View } from 'react-native';
 import { requestTrackingPermissionsAsync } from 'expo-tracking-transparency';
 
