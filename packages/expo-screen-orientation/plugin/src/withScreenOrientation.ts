@@ -5,7 +5,7 @@ import {
   withDangerousMod,
 } from '@expo/config-plugins';
 import assert from 'assert';
-import * as fs from 'fs-extra';
+import fs from 'fs';
 
 const pkg = require('expo-screen-orientation/package.json');
 
@@ -54,7 +54,7 @@ const withScreenOrientationViewController: ConfigPlugin<{
     'ios',
     async config => {
       const fileInfo = IOSConfig.Paths.getAppDelegate(config.modRequest.projectRoot);
-      let contents = await fs.readFile(fileInfo.path, 'utf-8');
+      let contents = fs.readFileSync(fileInfo.path, { encoding: 'utf-8' });
       if (fileInfo.language === 'objc') {
         contents = modifyObjcAppDelegate(contents, OrientationLock[initialOrientation]);
       } else {
@@ -63,7 +63,7 @@ const withScreenOrientationViewController: ConfigPlugin<{
           `Cannot append screen orientation view controller to AppDelegate of language "${fileInfo.language}"`
         );
       }
-      await fs.writeFile(fileInfo.path, contents);
+      fs.writeFileSync(fileInfo.path, contents);
 
       return config;
     },

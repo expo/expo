@@ -35,7 +35,6 @@
     "expo-constants": "*"
   },
   "devDependencies": {
-    "@types/fs-extra": "^9.0.11",
     "expo-module-scripts": "^2.0.0"
   },
   "jest": {
