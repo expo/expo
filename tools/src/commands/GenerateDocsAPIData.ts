@@ -88,6 +88,7 @@ async function action({ packageName }: ActionOptions) {
     'expo-blur': ['index.ts'],
     'expo-cellular': ['Cellular.ts'],
     'expo-clipboard': ['Clipboard.ts'],
+    'expo-haptics': ['Haptics.ts'],
     'expo-keep-awake': ['index.ts'],
     'expo-linear-gradient': ['LinearGradient.tsx'],
     'expo-localization': ['Localization.ts'],
