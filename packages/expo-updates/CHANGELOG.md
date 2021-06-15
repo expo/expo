@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Backport runtimeVersion to classic Updates ([#13283](https://github.com/expo/expo/pull/13283) by [@jkhales](https://github.com/jkhales))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
