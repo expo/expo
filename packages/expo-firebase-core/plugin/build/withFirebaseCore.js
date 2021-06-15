@@ -28,7 +28,7 @@ const withFirebaseAppDelegate = config => {
         'ios',
         async (config) => {
             const fileInfo = config_plugins_1.IOSConfig.Paths.getAppDelegate(config.modRequest.projectRoot);
-            let contents = fs_1.default.readFileSync(fileInfo.path, 'utf-8');
+            let contents = fs_1.default.readFileSync(fileInfo.path, { encoding: 'utf8' });
             if (fileInfo.language === 'objc') {
                 contents = modifyObjcAppDelegate(contents);
             }
