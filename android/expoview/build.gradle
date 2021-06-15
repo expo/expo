@@ -266,6 +266,10 @@ dependencies {
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
   api project(':ReactAndroid')
 
+  def hermesPath = "../../node_modules/hermes-engine/android/";
+  debugImplementation files(hermesPath + "hermes-debug.aar")
+  releaseImplementation files(hermesPath + "hermes-release.aar")
+
   // Universal modules
   // In distribution they're "compileOnly" and it's the app/build.gradle who manages them.
   addUnimodulesDependencies([
