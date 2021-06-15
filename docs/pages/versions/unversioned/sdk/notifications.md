@@ -712,7 +712,7 @@ Notifications.setNotificationHandler({
 });
 ```
 
-## Handling incoming notifications when the app is NOT in the foreground
+## Handling incoming notifications when the app is not in the foreground (not supported in Expo Go)
 
 > **Please note:** In order to handle notifications while the app is backgrounded on iOS, you _must_ add `remote-notification` to the `ios.infoPlist.UIBackgroundModes` key in your app.json, **and** add `"content-available": 1` to your push notification payload. Under normal circumstances, the “content-available” flag should launch your app if it isn’t running and wasn’t killed by the user, _however_, this is ultimately decided by the OS so it might not always happen.
 
