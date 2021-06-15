@@ -10,7 +10,7 @@ const STORAGE_PREFIX = '@@expo@@';
  * kernel module and use this implementation only on web.
  */
 export default {
-  sdkVersions: [] as string[],
+  sdkVersions: '',
 
   async getDevMenuSettingsAsync(): Promise<null> {
     return null;
