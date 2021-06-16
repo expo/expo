@@ -175,4 +175,69 @@
   XCTAssertThrows([EXUpdatesLegacyUpdate updateWithLegacyManifest:manifest config:_config database:_database]);
 }
 
+- (void)testUpdateWithLegacyManifest_setsUpdateRuntimeAsSdkIfNoConfigRuntime
+{
+  NSString *sdkVersion = @"39.0.0";
+  EXUpdatesLegacyRawManifest *manifest = [[EXUpdatesLegacyRawManifest alloc] initWithRawManifestJSON:@{
+    @"runtimeVersion": @"hello",
+    @"sdkVersion": sdkVersion,
+    @"releaseId": @"0eef8214-4833-4089-9dff-b4138a14f196",
+    @"bundleUrl": @"https://url.to/bundle.js",
+    @"commitTime": @"2020-11-11T00:17:54.797Z"
+  }];
+  
+  EXUpdatesConfig *configWithNoRuntimeVersion = [EXUpdatesConfig configWithDictionary:@{
+    @"EXUpdatesURL": @"https://esamelson.github.io/self-hosting-test/ios-index.json",
+    @"EXUpdatesSDKVersion": sdkVersion
+  }];
+  
+  EXUpdatesUpdate *update = [EXUpdatesLegacyUpdate updateWithLegacyManifest:manifest config:configWithNoRuntimeVersion database:_database];
+  
+  XCTAssertEqualObjects(sdkVersion, update.runtimeVersion);
+}
+
+- (void)testUpdateWithLegacyManifest_setsUpdateRuntimeAsSdkIfNoManifestRuntime
+{
+  NSString *sdkVersion = @"39.0.0";
+  EXUpdatesLegacyRawManifest *manifest = [[EXUpdatesLegacyRawManifest alloc] initWithRawManifestJSON:@{
+    @"sdkVersion": sdkVersion,
+    @"releaseId": @"0eef8214-4833-4089-9dff-b4138a14f196",
+    @"bundleUrl": @"https://url.to/bundle.js",
+    @"commitTime": @"2020-11-11T00:17:54.797Z"
+  }];
+  
+  EXUpdatesConfig *configWithRuntimeVersion = [EXUpdatesConfig configWithDictionary:@{
+    @"EXUpdatesURL": @"https://esamelson.github.io/self-hosting-test/ios-index.json",
+    @"EXUpdatesSDKVersion": sdkVersion,
+    @"EXUpdatesRuntimeVersion": @"notEmpty"
+  }];
+  
+  EXUpdatesUpdate *update = [EXUpdatesLegacyUpdate updateWithLegacyManifest:manifest config:configWithRuntimeVersion database:_database];
+  
+  XCTAssertEqualObjects(sdkVersion, update.runtimeVersion);
+}
+
+- (void)testUpdateWithLegacyManifest_setsUpdateRuntimeAsRuntimeIfBothManifestRuntimeAndConfigRuntime
+{
+  NSString *sdkVersion = @"39.0.0";
+  NSString *runtimeVersion = @"hello";
+  EXUpdatesLegacyRawManifest *manifest = [[EXUpdatesLegacyRawManifest alloc] initWithRawManifestJSON:@{
+    @"runtimeVersion": runtimeVersion,
+    @"sdkVersion": sdkVersion,
+    @"releaseId": @"0eef8214-4833-4089-9dff-b4138a14f196",
+    @"bundleUrl": @"https://url.to/bundle.js",
+    @"commitTime": @"2020-11-11T00:17:54.797Z"
+  }];
+  
+  EXUpdatesConfig *configWithRuntimeVersion = [EXUpdatesConfig configWithDictionary:@{
+    @"EXUpdatesURL": @"https://esamelson.github.io/self-hosting-test/ios-index.json",
+    @"EXUpdatesSDKVersion": sdkVersion,
+    @"EXUpdatesRuntimeVersion": @"notEmpty"
+  }];
+  
+  EXUpdatesUpdate *update = [EXUpdatesLegacyUpdate updateWithLegacyManifest:manifest config:configWithRuntimeVersion database:_database];
+  
+  XCTAssertEqualObjects(runtimeVersion, update.runtimeVersion);
+}
+
 @end
