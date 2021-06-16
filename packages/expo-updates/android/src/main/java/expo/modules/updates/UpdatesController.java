@@ -85,7 +85,7 @@ public class UpdatesController {
     return sInstance;
   }
 
-  public static void initializeWithoutStarting(Context context) {
+  /* package */ static void initializeWithoutStarting(Context context) {
     if (sInstance == null) {
       UpdatesConfiguration updatesConfiguration = new UpdatesConfiguration().loadValuesFromMetadata(context);
       sInstance = new UpdatesController(context, updatesConfiguration);
@@ -211,7 +211,7 @@ public class UpdatesController {
     return mUpdatesDirectory;
   }
 
-  public Exception getUpdatesDirectoryException() {
+  /* package */ Exception getUpdatesDirectoryException() {
     return mUpdatesDirectoryException;
   }
 
@@ -246,23 +246,23 @@ public class UpdatesController {
    * next reload).
    * @param selectionPolicy The SelectionPolicy to use next, until overridden by expo-updates
    */
-  public void setNextSelectionPolicy(SelectionPolicy selectionPolicy) {
+  /* package */ void setNextSelectionPolicy(SelectionPolicy selectionPolicy) {
     mSelectionPolicy = selectionPolicy;
   }
 
-  public void resetSelectionPolicyToDefault() {
+  /* package */ void resetSelectionPolicyToDefault() {
     mSelectionPolicy = null;
   }
 
-  public void setDefaultSelectionPolicy(SelectionPolicy selectionPolicy) {
+  /* package */ void setDefaultSelectionPolicy(SelectionPolicy selectionPolicy) {
     mDefaultSelectionPolicy = selectionPolicy;
   }
 
-  public void setLauncher(Launcher launcher) {
+  /* package */ void setLauncher(Launcher launcher) {
     mLauncher = launcher;
   }
 
-  public void setUpdatesConfiguration(UpdatesConfiguration updatesConfiguration) {
+  /* package */ void setUpdatesConfiguration(UpdatesConfiguration updatesConfiguration) {
     mUpdatesConfiguration = updatesConfiguration;
   }
 
@@ -331,7 +331,7 @@ public class UpdatesController {
     notify();
   }
 
-  public void runReaper() {
+  /* package */ void runReaper() {
     AsyncTask.execute(() -> {
       UpdatesDatabase database = getDatabase();
       Reaper.reapUnusedUpdates(mUpdatesConfiguration, database, mUpdatesDirectory, getLaunchedUpdate(), getSelectionPolicy());
