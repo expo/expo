@@ -2,15 +2,16 @@ package host.exp.exponent.notifications.managers;
 
 import org.unimodules.core.interfaces.Function;
 
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.notifications.schedulers.Scheduler;
 
 public interface SchedulersManager {
 
   void triggerAll(String action);
 
-  void removeAll(String experienceId);
+  void removeAll(ExperienceKey experienceKey);
 
-  void cancelAlreadyScheduled(String experienceId);
+  void cancelAlreadyScheduled(ExperienceKey experienceKey);
 
   void rescheduleOrDelete(String id);
 

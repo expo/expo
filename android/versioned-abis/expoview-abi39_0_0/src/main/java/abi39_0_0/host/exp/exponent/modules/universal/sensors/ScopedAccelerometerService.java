@@ -5,12 +5,12 @@ import java.util.List;
 
 import abi39_0_0.org.unimodules.core.interfaces.InternalModule;
 import abi39_0_0.org.unimodules.interfaces.sensors.services.AccelerometerService;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.kernel.services.sensors.SubscribableSensorKernelService;
 
 public class ScopedAccelerometerService extends BaseSensorService implements InternalModule, AccelerometerService {
-  public ScopedAccelerometerService(ExperienceId experienceId) {
-    super(experienceId);
+  public ScopedAccelerometerService(ExperienceKey experienceKey) {
+    super(experienceKey);
   }
 
   @Override

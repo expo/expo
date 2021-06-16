@@ -22,6 +22,7 @@ import javax.inject.Singleton;
 
 import expo.modules.updates.manifest.ManifestFactory;
 import expo.modules.updates.manifest.raw.RawManifest;
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.expoview.ExpoViewBuildConfig;
 import host.exp.expoview.R;
 import host.exp.exponent.analytics.EXL;
@@ -237,12 +238,12 @@ public class ExponentSharedPreferences {
     }
   }
 
-  public void updateExperienceMetadata(String id, JSONObject metadata) {
-    mSharedPreferences.edit().putString(EXPERIENCE_METADATA_PREFIX + id, metadata.toString()).apply();
+  public void updateExperienceMetadata(ExperienceKey experienceKey, JSONObject metadata) {
+    mSharedPreferences.edit().putString(EXPERIENCE_METADATA_PREFIX + experienceKey.getScopeKey(), metadata.toString()).apply();
   }
 
-  public JSONObject getExperienceMetadata(String id) {
-    String jsonString = mSharedPreferences.getString(EXPERIENCE_METADATA_PREFIX + id, null);
+  public JSONObject getExperienceMetadata(ExperienceKey experienceKey) {
+    String jsonString = mSharedPreferences.getString(EXPERIENCE_METADATA_PREFIX + experienceKey.getScopeKey(), null);
     if (jsonString == null) {
       return null;
     }

@@ -14,6 +14,7 @@ import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.exceptions.ExceptionUtils;
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentSharedPreferences;
@@ -105,7 +106,6 @@ public abstract class AppLoader {
             fetchRemoteManifest();
             return;
           }
-          String experienceId = mCachedManifest.getID();
           @Nullable JSONObject updatesManifest = mCachedManifest.getUpdatesInfo();
           if (updatesManifest != null) {
             String checkAutomaticallyBehavior = updatesManifest.optString(ExponentManifest.MANIFEST_UPDATES_CHECK_AUTOMATICALLY_KEY, ExponentManifest.MANIFEST_UPDATES_CHECK_AUTOMATICALLY_ON_LOAD);
@@ -116,7 +116,8 @@ public abstract class AppLoader {
           }
 
           // if previous run of this app failed due to a loading error, set shouldCheckForUpdate to true regardless
-          JSONObject experienceMetadata = mExponentSharedPreferences.getExperienceMetadata(experienceId);
+          ExperienceKey experienceKey = ExperienceKey.fromRawManifest(mCachedManifest);
+          JSONObject experienceMetadata = mExponentSharedPreferences.getExperienceMetadata(experienceKey);
           if (experienceMetadata != null && experienceMetadata.optBoolean(ExponentSharedPreferences.EXPERIENCE_METADATA_LOADING_ERROR)) {
             shouldCheckForUpdate = true;
           }
@@ -285,12 +286,12 @@ public abstract class AppLoader {
       try {
         String bundleUrl = mManifest.getBundleURL();
         final boolean wasUpdated = !bundleUrl.equals(finalOldBundleUrl);
-        String id = mManifest.getID();
+        String id = mManifest.getLegacyID();
         String sdkVersion = mManifest.getSDKVersion();
 
         final RawManifest finalManifest = mManifest;
 
-        Exponent.getInstance().loadJSBundle(mManifest, bundleUrl, Exponent.getInstance().encodeExperienceId(id), sdkVersion, new Exponent.BundleListener() {
+        Exponent.getInstance().loadJSBundle(mManifest, bundleUrl, Exponent.encodeExperienceId(id), sdkVersion, new Exponent.BundleListener() {
           @Override
           public void onError(Exception e) {
             // if we fail to get a cached bundle, try to download it over the network as a last resort before failing

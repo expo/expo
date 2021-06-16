@@ -16,7 +16,7 @@ public interface TaskManagerUtilsInterface {
   /**
    * Cancels pending intent for given task.
    */
-  void cancelTaskIntent(Context context, String appId, String taskName);
+  void cancelTaskIntent(Context context, String appScopeKey, String taskName);
 
   /**
    * Schedules a job for given task and with given list of extra data.

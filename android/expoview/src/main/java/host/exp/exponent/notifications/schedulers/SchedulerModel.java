@@ -2,13 +2,15 @@ package host.exp.exponent.notifications.schedulers;
 
 import java.util.HashMap;
 
+import host.exp.exponent.kernel.ExperienceKey;
+
 public interface SchedulerModel {
 
   long getNextAppearanceTime();
 
   boolean shouldBeTriggeredByAction(String action);
 
-  String getOwnerExperienceId();
+  ExperienceKey getOwnerExperienceKey();
 
   int getNotificationId();
 

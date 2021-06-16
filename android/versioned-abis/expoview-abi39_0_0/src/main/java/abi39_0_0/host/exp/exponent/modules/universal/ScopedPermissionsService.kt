@@ -5,13 +5,13 @@ import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import abi39_0_0.expo.modules.permissions.PermissionsService
 import host.exp.exponent.di.NativeModuleDepsProvider
-import host.exp.exponent.kernel.ExperienceId
+import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry
 import abi39_0_0.org.unimodules.core.ModuleRegistry
 import abi39_0_0.org.unimodules.interfaces.permissions.PermissionsResponseListener
 import javax.inject.Inject
 
-class ScopedPermissionsService(context: Context, val experienceId: ExperienceId) : PermissionsService(context) {
+class ScopedPermissionsService(context: Context, val experienceKey: ExperienceKey) : PermissionsService(context) {
 
   // This variable cannot be lateinit, cause the Location module gets permissions before this module is initialized.
   @Inject
@@ -30,7 +30,7 @@ class ScopedPermissionsService(context: Context, val experienceId: ExperienceId)
   // We override this to scoped permissions in the headless mode.
   override fun getManifestPermissionFromContext(permission: String): Int {
     val globalPermissions = ContextCompat.checkSelfPermission(context, permission)
-    return mExpoKernelServiceRegistry?.permissionsKernelService?.getPermissions(globalPermissions, context.packageManager, permission, experienceId)
+    return mExpoKernelServiceRegistry?.permissionsKernelService?.getPermissions(globalPermissions, context.packageManager, permission, experienceKey)
       ?: PackageManager.PERMISSION_DENIED
   }
 }

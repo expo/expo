@@ -5,12 +5,12 @@ import android.content.SharedPreferences
 import expo.modules.errorrecovery.ErrorRecoveryModule
 import expo.modules.errorrecovery.RECOVERY_STORE
 import expo.modules.updates.manifest.raw.RawManifest
-import host.exp.exponent.kernel.ExperienceId
+import host.exp.exponent.kernel.ExperienceKey
 
 class ScopedErrorRecoveryModule(
   context: Context,
   manifest: RawManifest,
-  val experienceId: ExperienceId
+  val experienceKey: ExperienceKey
 ) : ErrorRecoveryModule(context) {
   override val mSharedPreferences: SharedPreferences = run {
     val currentSDKVersion = manifest.getSDKVersionNullable()
@@ -21,12 +21,12 @@ class ScopedErrorRecoveryModule(
   }
 
   override fun setRecoveryProps(props: String) {
-    mSharedPreferences.edit().putString(experienceId.get(), props).commit()
+    mSharedPreferences.edit().putString(experienceKey.scopeKey, props).commit()
   }
 
   override fun consumeRecoveryProps(): String? {
-    return mSharedPreferences.getString(experienceId.get(), null)?.let {
-      mSharedPreferences.edit().remove(experienceId.get()).commit()
+    return mSharedPreferences.getString(experienceKey.scopeKey, null)?.let {
+      mSharedPreferences.edit().remove(experienceKey.scopeKey).commit()
       it
     }
   }

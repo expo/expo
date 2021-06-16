@@ -1,6 +1,8 @@
 package host.exp.exponent.notifications.schedulers;
 
 import android.content.Context;
+
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.notifications.exceptions.UnableToScheduleException;
 
 public interface Scheduler {
@@ -9,7 +11,7 @@ public interface Scheduler {
 
   String getIdAsString();
 
-  String getOwnerExperienceId();
+  ExperienceKey getOwnerExperienceKey();
 
   void cancel();
 

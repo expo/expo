@@ -17,15 +17,15 @@ import androidx.annotation.NonNull;
 /**
  * Implementation of {@link TasksAndEventsRepository} to be used in bare workflow.
  *
- * It stores tasks and events by in relation to appId. However, upon retrieval it ignores appId and returns all stored tasks and events.
+ * It stores tasks and events by in relation to appScopeKey. However, upon retrieval it ignores appScopeKey and returns all stored tasks and events.
  *
- * In bare workflow there is no reason to map appId to task, since there is only one appId. However, we maintain this structure for some reasons:
+ * In bare workflow there is no reason to map appScopeKey to task, since there is only one appScopeKey. However, we maintain this structure for some reasons:
  *  1. Maintaining as much similarity as possible, due to delegation of persistent storage functionality
- *  2. It might happen, after migration from managed to bare workflow, that there are some tasks under different appIds stored already
+ *  2. It might happen, after migration from managed to bare workflow, that there are some tasks under different appScopeKeys stored already
  *
  *  For the sake of simplicity and avoiding potential bugs, we change the behavior as minimally as possible.
- *  In very unlikely scenario of having more than one appId in bare, we merge all tasks into one list upon retrieval.
- *  While storing, we clear all info that is not associated with current appId to avoid future confusions.
+ *  In very unlikely scenario of having more than one appScopeKey in bare, we merge all tasks into one list upon retrieval.
+ *  While storing, we clear all info that is not associated with current appScopeKey to avoid future confusions.
  */
 public class BareTasksAndEventsRepository implements TasksAndEventsRepository {
 
@@ -39,27 +39,27 @@ public class BareTasksAndEventsRepository implements TasksAndEventsRepository {
   }
 
   @Override
-  public void putEvents(String appId, List<Bundle> events) {
-    sEvents.put(appId, events);
+  public void putEvents(String appScopeKey, List<Bundle> events) {
+    sEvents.put(appScopeKey, events);
   }
 
   @Override
-  public void putEventForAppId(String appId, Bundle body) {
-    sEvents.get(appId).add(body);
+  public void putEventForAppScopeKey(String appScopeKey, Bundle body) {
+    sEvents.get(appScopeKey).add(body);
   }
 
   @Override
-  public boolean hasEvents(String appId) {
-    return sEvents.containsKey(appId);
+  public boolean hasEvents(String appScopeKey) {
+    return sEvents.containsKey(appScopeKey);
   }
 
   @Override
-  public void removeEvents(String appId) {
-    sEvents.remove(appId);
+  public void removeEvents(String appScopeKey) {
+    sEvents.remove(appScopeKey);
   }
 
   @Override
-  public List<Bundle> getEvents(String appId) {
+  public List<Bundle> getEvents(String appScopeKey) {
     List<Bundle> allEvents = new LinkedList<>();
     for(List<Bundle> value: sEvents.values()) {
       allEvents.addAll(value);
@@ -79,12 +79,12 @@ public class BareTasksAndEventsRepository implements TasksAndEventsRepository {
 
   @NonNull
   @Override
-  public Set<String> allAppIdsWithTasks() {
+  public Set<String> allAppScopeKeysWithTasks() {
     return sTasks.keySet();
   }
 
   @Override
-  public Map<String, TaskInterface> getTasks(String appId) {
+  public Map<String, TaskInterface> getTasks(String appScopeKey) {
     Map<String, TaskInterface> allTasks = new HashMap<>();
     for(Map<String, TaskInterface> value: sTasks.values()) {
       allTasks.putAll(value);
@@ -93,31 +93,31 @@ public class BareTasksAndEventsRepository implements TasksAndEventsRepository {
   }
 
   @Override
-  public boolean hasTasks(String appId) {
-    return sTasks.containsKey(appId);
+  public boolean hasTasks(String appScopeKey) {
+    return sTasks.containsKey(appScopeKey);
   }
 
   @Override
-  public void putTasks(String appId, Map<String, TaskInterface> tasks) {
-    sTasks.put(appId, tasks);
+  public void putTasks(String appScopeKey, Map<String, TaskInterface> tasks) {
+    sTasks.put(appScopeKey, tasks);
   }
 
   @Override
-  public void removeTasks(String appId) {
-    sTasks.remove(appId);
+  public void removeTasks(String appScopeKey) {
+    sTasks.remove(appScopeKey);
   }
 
   @Override
-  public void removeTask(String appId, String taskName) {
-    if (sTasks.containsKey(appId)) {
-      Objects.requireNonNull(sTasks.get(appId)).remove(taskName);
+  public void removeTask(String appScopeKey, String taskName) {
+    if (sTasks.containsKey(appScopeKey)) {
+      Objects.requireNonNull(sTasks.get(appScopeKey)).remove(taskName);
     }
   }
 
   @Override
-  public void persistTasksForAppId(SharedPreferences preferences, String appId) {
-    tasksPersistence.clearTaskPersistence(preferences, appId);
-    tasksPersistence.persistTasksForAppId(preferences, appId, getTasks(appId));
+  public void persistTasksForAppScopeKey(SharedPreferences preferences, String appScopeKey) {
+    tasksPersistence.clearTaskPersistence(preferences, appScopeKey);
+    tasksPersistence.persistTasksForAppScopeKey(preferences, appScopeKey, getTasks(appScopeKey));
   }
 
   @Override
