@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.1.0 — 2021-06-16
+
+### 🎉 New features
+
 - Added Clipboard event listener ([#13050](https://github.com/expo/expo/pull/13050) by [@cruzach](https://github.com/cruzach))
 
 ### 🐛 Bug fixes

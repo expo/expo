@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 11.1.0 — 2021-06-16
+
+### 🐛 Bug fixes
+
 - Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
 - Fixed `authenticateAsync` not resolving when the user used PIN on some Android devices. ([#13023](https://github.com/expo/expo/pull/13023) by [@lukmccall](https://github.com/lukmccall))
 

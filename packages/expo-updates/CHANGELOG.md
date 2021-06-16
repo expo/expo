@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Backport runtimeVersion to classic Updates ([#13283](https://github.com/expo/expo/pull/13283) by [@jkhales](https://github.com/jkhales))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.7.0 — 2021-06-16
+
+### 🎉 New features
+
+- Backport runtimeVersion to classic Updates ([#13283](https://github.com/expo/expo/pull/13283) by [@jkhales](https://github.com/jkhales))
 
 ## 0.7.0-rc.2 — 2021-06-10
 
