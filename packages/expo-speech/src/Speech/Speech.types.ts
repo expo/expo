@@ -3,7 +3,7 @@ export type SpeechEventCallback = (this: SpeechSynthesisUtterance, ev: SpeechSyn
 // @needsAudit @docsMissing
 export type SpeechOptions = {
   /**
-   * The code of a language that should be used to read the `text`, check out IETF BCP 47 to see
+   * The code of a language that should be used to read the `text`, refer to IETF BCP 47 to see
    * valid codes.
    */
   language?: string;
