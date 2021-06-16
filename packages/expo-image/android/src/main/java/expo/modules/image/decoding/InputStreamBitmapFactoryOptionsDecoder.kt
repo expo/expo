@@ -9,12 +9,10 @@ import java.io.IOException
 import java.io.InputStream
 
 class InputStreamBitmapFactoryOptionsDecoder : ResourceDecoder<InputStream, BitmapFactory.Options> {
-  override fun handles(source: InputStream, options: Options): Boolean {
-    return true
-  }
+  override fun handles(source: InputStream, options: Options) = true
 
   @Throws(IOException::class)
-  override fun decode(source: InputStream, width: Int, height: Int, glideOptions: Options): Resource<BitmapFactory.Options>? {
+  override fun decode(source: InputStream, width: Int, height: Int, glideOptions: Options): Resource<BitmapFactory.Options> {
     val options = BitmapFactory.Options()
     options.inJustDecodeBounds = true
     BitmapFactory.decodeStream(source, null, options)
