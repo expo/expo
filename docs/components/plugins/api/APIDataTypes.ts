@@ -25,9 +25,9 @@ export type CommentTagData = {
 };
 
 export type TypeDefinitionData = {
-  name: string;
+  name?: string;
   type: string;
-  types?: TypeDefinitionTypesData[];
+  types?: TypeDefinitionData[];
   elementType?: {
     name: string;
     type: string;
@@ -37,15 +37,7 @@ export type TypeDefinitionData = {
   };
   typeArguments?: TypeDefinitionData[];
   declaration?: TypeDeclarationContentData;
-};
-
-export type TypeDefinitionTypesData = {
-  type: string;
-  name?: string;
-  value?: string | null;
-  elementType?: {
-    name: string;
-  };
+  value?: string | boolean | null;
 };
 
 export type MethodParamData = {
@@ -150,19 +142,19 @@ export type TypeGeneralData = {
 
 export type TypeDeclarationContentData = {
   signatures: TypeSignaturesData[];
-  children: TypePropertyData[];
+  children?: TypePropertyData[];
 };
 
 export type TypeDeclarationData = {
   name?: string;
   declaration?: TypeDeclarationContentData;
   type?: string;
-  types: TypeValueData[];
+  types: TypeDefinitionData[];
   typeArguments?: TypeDefinitionData[];
 };
 
 export type TypeSignaturesData = {
-  parameters: MethodParamData[];
+  parameters?: MethodParamData[];
   type: TypeDefinitionData;
 };
 
@@ -172,12 +164,4 @@ export type TypePropertyData = {
   comment: CommentData;
   type: TypeDefinitionData;
   defaultValue: string;
-};
-
-export type TypeValueData = {
-  type: string;
-  value?: string | boolean | null;
-  name?: string;
-  declaration?: TypeDeclarationContentData;
-  typeArguments?: TypeDefinitionData[];
 };

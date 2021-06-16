@@ -69,7 +69,7 @@ const renderProps = (
     <div key={`props-definition-${name}`}>
       <UL>
         {propsDeclarations?.map((def: TypeDeclarationData) =>
-          def.declaration?.children.map((prop: PropData) =>
+          def.declaration?.children?.map((prop: PropData) =>
             renderProp(prop, extractDefaultPropValue(prop, defaultValues))
           )
         )}
