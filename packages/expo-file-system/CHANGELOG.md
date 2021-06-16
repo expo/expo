@@ -10,6 +10,8 @@
 
 - Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
 
+- crash of file system when try to read cache dir file on android. ([#12716](https://github.com/expo/expo/pull/13232) by [@nomi9995](https://github.com/nomi9995))
+
 ### 💡 Others
 
 - Migrated from `unimodules-file-system-interface` to `expo-modules-core`.
