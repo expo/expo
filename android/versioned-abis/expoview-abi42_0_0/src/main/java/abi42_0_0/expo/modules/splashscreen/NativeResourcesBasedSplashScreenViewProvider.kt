@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.core.content.ContextCompat
 
 // this needs to stay for versioning to work
+import abi42_0_0.host.exp.expoview.R
 
 /**
  * Default implementation that uses native resources.
