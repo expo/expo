@@ -28,5 +28,6 @@
   "license": "MIT",
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"
-  }
+  },
+  "gitHead": "c80d4c938920c5111e34c2dbca3a6bf500dff0e1"
 }
