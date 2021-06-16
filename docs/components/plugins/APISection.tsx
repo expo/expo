@@ -64,7 +64,11 @@ const renderAPI = (
     )[0];
     const enums = filterDataByKind(data, TypeDocKind.Enum);
     const interfaces = filterDataByKind(data, TypeDocKind.Interface);
-    const constants = filterDataByKind(data, TypeDocKind.Variable, entry => entry.flags.isConst);
+    const constants = filterDataByKind(
+      data,
+      TypeDocKind.Variable,
+      entry => entry?.flags?.isConst || false
+    );
 
     return (
       <>
