@@ -62,7 +62,7 @@ export type TypePropertyDataFlags = {
 
 export type ConstantDefinitionData = {
   name: string;
-  flags: {
+  flags?: {
     isConst: boolean;
   };
   comment?: CommentData;
