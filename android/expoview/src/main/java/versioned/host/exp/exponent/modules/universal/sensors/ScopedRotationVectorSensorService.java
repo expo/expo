@@ -6,12 +6,12 @@ import java.util.List;
 import org.unimodules.core.interfaces.InternalModule;
 
 import expo.modules.interfaces.sensors.services.RotationVectorSensorServiceInterface;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.kernel.services.sensors.SubscribableSensorKernelService;
 
 public class ScopedRotationVectorSensorService extends BaseSensorService implements InternalModule, RotationVectorSensorServiceInterface {
-  public ScopedRotationVectorSensorService(ExperienceId experienceId) {
-    super(experienceId);
+  public ScopedRotationVectorSensorService(ExperienceKey experienceKey) {
+    super(experienceKey);
   }
 
   @Override

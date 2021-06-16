@@ -122,13 +122,8 @@ export function postTransforms(versionName: string): TransformPipeline {
       },
       {
         paths: 'RNSVGTSpan.m',
-        replace: /\b(TopAlignedLabel\s*\*\s*label)\b/gi,
+        replace: new RegExp(`\\b(${versionName}RNSVGTopAlignedLabel\\s*\\*\\s*label)\\b`, 'gi'),
         with: 'static $1',
-      },
-      {
-        paths: 'RNSVGTSpan.m',
-        replace: /\b(TopAlignedLabel)\b/gi,
-        with: `${versionName}$1`,
       },
       {
         paths: 'RNSVGMarker.m',

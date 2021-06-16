@@ -522,7 +522,7 @@ UM_REGISTER_SINGLETON_MODULE(TaskService)
   
   [self _iterateTasksUsingBlock:^(id<UMTaskInterface> task) {
     if ([task.consumer.class respondsToSelector:@selector(supportsLaunchReason:)] && [task.consumer.class supportsLaunchReason:launchReason]) {
-      [self _addTask:task toRequest:request];
+      [self _addTask:task toRequest:request withInfo:userInfo];
     }
   }];
   
@@ -629,14 +629,15 @@ UM_REGISTER_SINGLETON_MODULE(TaskService)
   }
 }
 
-- (void)_addTask:(id<UMTaskInterface>)task toRequest:(EXTaskExecutionRequest *)request
+- (void)_addTask:(id<UMTaskInterface>)task toRequest:(EXTaskExecutionRequest *)request withInfo:(nullable NSDictionary *)info
 {
   [request addTask:task];
   
+  
   // Inform the consumer that the task can be executed from then on.
   // Some types of background tasks (like background fetch) may execute the task immediately.
-  if ([[task consumer] respondsToSelector:@selector(didBecomeReadyToExecute)]) {
-    [[task consumer] didBecomeReadyToExecute];
+  if ([[task consumer] respondsToSelector:@selector(didBecomeReadyToExecuteWithData:)]) {
+    [[task consumer] didBecomeReadyToExecuteWithData:info ?: @{}];
   }
 }
 

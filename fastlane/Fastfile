@@ -108,10 +108,22 @@ def remove_background_audio
   )
 end
 
+def remove_background_notification
+  update_info_plist(
+    xcodeproj: "ios/Exponent.xcodeproj",
+    plist_path: "Exponent/Supporting/Info.plist",
+    block: proc do |plist|
+      puts "Removing remote-notification from UIBackgroundModes..."
+      plist["UIBackgroundModes"].delete("remote-notification")
+    end
+  )
+end
+
 def configure_for_app_store
   puts "Configuring app for App Store submission..."
   remove_background_location
   remove_background_audio
+  remove_background_notification
 end
 
 platform :ios do

@@ -15,7 +15,11 @@ class LegacyRawManifest(json: JSONObject) : BaseLegacyRawManifest(json) {
   @Throws(JSONException::class)
   fun getReleaseId(): String = json.getString("releaseId")
 
-  fun getRuntimeVersion(): Any? = json.opt("runtimeVersion")
+  fun getRuntimeVersion(): String? = if (json.has("runtimeVersion")) {
+    json.getString("runtimeVersion")
+  } else {
+    null
+  }
 
   @Throws(JSONException::class)
   fun getBundledAssets(): JSONArray? = json.optJSONArray("bundledAssets")

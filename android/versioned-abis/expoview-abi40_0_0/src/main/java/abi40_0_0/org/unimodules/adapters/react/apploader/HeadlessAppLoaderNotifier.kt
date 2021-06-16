@@ -4,9 +4,9 @@ import java.lang.ref.WeakReference
 
 interface HeadlessAppLoaderListener {
 
-  fun appLoaded(appId: String)
+  fun appLoaded(appScopeKey: String)
 
-  fun appDestroyed(appId: String)
+  fun appDestroyed(appScopeKey: String)
 }
 
 object HeadlessAppLoaderNotifier {
@@ -17,15 +17,15 @@ object HeadlessAppLoaderNotifier {
     listeners.add(WeakReference(listener))
   }
 
-  fun notifyAppLoaded(appId: String?) {
-    if (appId != null) {
-      listeners.forEach { it.get()?.appLoaded(appId) }
+  fun notifyAppLoaded(appScopeKey: String?) {
+    if (appScopeKey != null) {
+      listeners.forEach { it.get()?.appLoaded(appScopeKey) }
     }
   }
 
-  fun notifyAppDestroyed(appId: String?) {
-    if (appId != null) {
-      listeners.forEach { it.get()?.appDestroyed(appId) }
+  fun notifyAppDestroyed(appScopeKey: String?) {
+    if (appScopeKey != null) {
+      listeners.forEach { it.get()?.appDestroyed(appScopeKey) }
     }
   }
 }

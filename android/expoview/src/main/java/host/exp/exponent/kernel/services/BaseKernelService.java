@@ -4,13 +4,16 @@ package host.exp.exponent.kernel.services;
 
 import android.content.Context;
 
+import androidx.annotation.Nullable;
+
 import de.greenrobot.event.EventBus;
 import host.exp.exponent.experience.BaseExperienceActivity;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
+import host.exp.exponent.kernel.ExperienceKey;
 
 public abstract class BaseKernelService {
   private Context mContext;
-  private ExperienceId mCurrentExperienceId = null;
+  private @Nullable ExperienceKey mCurrentExperienceKey = null;
 
   public BaseKernelService(Context context) {
     mContext = context;
@@ -21,20 +24,20 @@ public abstract class BaseKernelService {
     return mContext;
   }
 
-  protected ExperienceId getCurrentExperienceId() {
-    return mCurrentExperienceId;
+  protected @Nullable ExperienceKey getCurrentExperienceKey() {
+    return mCurrentExperienceKey;
   }
 
-  abstract public void onExperienceForegrounded(ExperienceId experienceId);
-  abstract public void onExperienceBackgrounded(ExperienceId experienceId);
+  abstract public void onExperienceForegrounded(ExperienceKey experienceKey);
+  abstract public void onExperienceBackgrounded(ExperienceKey experienceKey);
 
   public void onEvent(BaseExperienceActivity.ExperienceBackgroundedEvent event) {
-    mCurrentExperienceId = null;
-    onExperienceBackgrounded(event.getExperienceId());
+    mCurrentExperienceKey = null;
+    onExperienceBackgrounded(event.getExperienceKey());
   }
 
   public void onEvent(BaseExperienceActivity.ExperienceForegroundedEvent event) {
-    mCurrentExperienceId = event.getExperienceId();
-    onExperienceForegrounded(event.getExperienceId());
+    mCurrentExperienceKey = event.getExperienceKey();
+    onExperienceForegrounded(event.getExperienceKey());
   }
 }

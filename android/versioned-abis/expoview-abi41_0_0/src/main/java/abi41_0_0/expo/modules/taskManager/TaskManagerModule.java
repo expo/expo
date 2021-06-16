@@ -52,7 +52,7 @@ public class TaskManagerModule extends ExportedModule {
     if (!checkTaskService(promise)) {
       return;
     }
-    mTaskService.notifyTaskFinished(taskName, getAppId(), response);
+    mTaskService.notifyTaskFinished(taskName, getAppScopeKey(), response);
     promise.resolve(null);
   }
 
@@ -61,7 +61,7 @@ public class TaskManagerModule extends ExportedModule {
     if (!checkTaskService(promise)) {
       return;
     }
-    promise.resolve(mTaskService.hasRegisteredTask(taskName, getAppId()));
+    promise.resolve(mTaskService.hasRegisteredTask(taskName, getAppScopeKey()));
   }
 
   @ExpoMethod
@@ -69,7 +69,7 @@ public class TaskManagerModule extends ExportedModule {
     if (!checkTaskService(promise)) {
       return;
     }
-    promise.resolve(mTaskService.getTaskOptions(taskName, getAppId()));
+    promise.resolve(mTaskService.getTaskOptions(taskName, getAppScopeKey()));
   }
 
   @ExpoMethod
@@ -77,7 +77,7 @@ public class TaskManagerModule extends ExportedModule {
     if (!checkTaskService(promise)) {
       return;
     }
-    promise.resolve(mTaskService.getTasksForAppId(getAppId()));
+    promise.resolve(mTaskService.getTasksForAppScopeKey(getAppScopeKey()));
   }
 
   @ExpoMethod
@@ -86,7 +86,7 @@ public class TaskManagerModule extends ExportedModule {
       return;
     }
     try {
-      mTaskService.unregisterTask(taskName, getAppId(), null);
+      mTaskService.unregisterTask(taskName, getAppScopeKey(), null);
       promise.resolve(null);
     } catch (Exception e) {
       promise.reject(e);
@@ -99,7 +99,7 @@ public class TaskManagerModule extends ExportedModule {
       return;
     }
     try {
-      mTaskService.unregisterAllTasksForAppId(getAppId());
+      mTaskService.unregisterAllTasksForAppScopeKey(getAppScopeKey());
       promise.resolve(null);
     } catch (Exception e) {
       promise.reject(e);
@@ -129,8 +129,8 @@ public class TaskManagerModule extends ExportedModule {
   //endregion
   //region helpers
 
-  private String getAppId() {
-    return mTaskManagerInternal.getAppId();
+  private String getAppScopeKey() {
+    return mTaskManagerInternal.getAppScopeKey();
   }
 
   private boolean checkTaskService(final Promise promise) {
