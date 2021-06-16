@@ -2,7 +2,6 @@ package expo.modules.image
 
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
-import com.facebook.react.bridge.JSApplicationIllegalArgumentException
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.common.MapBuilder
@@ -44,9 +43,6 @@ class ExpoImageViewManager(applicationContext: ReactApplicationContext?) : Simpl
   @ReactProp(name = "resizeMode")
   fun setResizeMode(view: ExpoImageView, stringValue: String) {
     val resizeMode = ImageResizeMode.fromStringValue(stringValue)
-    if (resizeMode == ImageResizeMode.UNKNOWN) {
-      throw JSApplicationIllegalArgumentException("Invalid resizeMode: $stringValue")
-    }
     view.setResizeMode(resizeMode)
   }
 
