@@ -18,7 +18,6 @@ apply plugin: 'kotlin-android'
 apply plugin: 'devicefarm'
 
 android {
-  ndkVersion "23.0.7421159"
   compileSdkVersion safeExtGet("compileSdkVersion", 30)
 
   compileOptions {
