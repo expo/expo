@@ -38,7 +38,7 @@ PODS:
   - EXCalendar (9.2.0):
     - ExpoModulesCore
     - UMCore
-  - EXCamera (11.1.0):
+  - EXCamera (11.1.1):
     - ExpoModulesCore
     - UMCore
   - EXCellular (3.2.0):
@@ -140,17 +140,17 @@ PODS:
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (0.5.0):
-    - expo-dev-launcher/Main (= 0.5.0)
+  - expo-dev-launcher (0.5.1):
+    - expo-dev-launcher/Main (= 0.5.1)
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React
-  - expo-dev-launcher/Main (0.5.0):
+  - expo-dev-launcher/Main (0.5.1):
     - expo-dev-launcher/Unsafe
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React
-  - expo-dev-launcher/Unsafe (0.5.0):
+  - expo-dev-launcher/Unsafe (0.5.1):
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React
@@ -170,13 +170,13 @@ PODS:
   - expo-image (1.0.0-alpha.1):
     - React-Core
     - SDWebImage (~> 5.0)
-  - ExpoModulesCore (0.1.0):
-    - ExpoModulesCore/Core (= 0.1.0)
-    - ExpoModulesCore/Interfaces (= 0.1.0)
+  - ExpoModulesCore (0.1.1):
+    - ExpoModulesCore/Core (= 0.1.1)
+    - ExpoModulesCore/Interfaces (= 0.1.1)
     - UMCore
-  - ExpoModulesCore/Core (0.1.0):
+  - ExpoModulesCore/Core (0.1.1):
     - UMCore
-  - ExpoModulesCore/Interfaces (0.1.0):
+  - ExpoModulesCore/Interfaces (0.1.1):
     - ExpoModulesCore/Core
     - UMCore
   - EXPrint (10.2.0):
@@ -1215,7 +1215,7 @@ SPEC CHECKSUMS:
   EXBlur: 50d490040f3b14898ed8198d5125dc699189f4d9
   EXBrightness: b0eb62f204669cd7ae926847794b5bfabd595a4f
   EXCalendar: 64807f071c86ef3d9813fec49f55c38d5854c235
-  EXCamera: 749802944176f32cce72cfc99d53e6d9ecfd7311
+  EXCamera: 5a90a462cd0965bbf5e5ddb725115ac5109869e9
   EXCellular: 82f7267f13f296f37434d0031e9a214bbd4b8919
   EXClipboard: c66f7d22ba754496b0fc6b23a2cb9a3e10fa1581
   EXConstants: 7025f7965e87340f8e7493edc7062071ff48449f
@@ -1249,11 +1249,11 @@ SPEC CHECKSUMS:
   EXNotifications: 296d9487163c2c08fffec5e79a5f9094bc016d9c
   EXPermissions: 8eb648bd5c2115d01a39dc7c2ad4c94a5846e4cb
   expo-dev-client: 785792b8c8228d7adb8e8a0e7960ea28a254d08b
-  expo-dev-launcher: 0bdd625e28804874f19a6ca347d448d5d1d20820
+  expo-dev-launcher: 669533ea784dfeb1cb763a49e436d62db63252c1
   expo-dev-menu: 1c5a5194cb123e6f90358e815711cfea34524d72
   expo-dev-menu-interface: 4fda2fa6d974a518e546ca1193340513b0a8b0e8
   expo-image: 2fded43b1489487d7e84911caaadc821258f4905
-  ExpoModulesCore: 20a7ab61ac0d55c032d003c7eb6cfa79687e5b59
+  ExpoModulesCore: 7925199dfaa4db3ddbf7a31cb79d066822cd74c5
   EXPrint: 2dbe4d320687e559b46fdb01e330fdf875137094
   EXRandom: ecb71f5d01991f29bb0277f8a2c35d168f85d637
   EXScreenCapture: c51844407fbac8bbca4415467bc43f2b7764d225

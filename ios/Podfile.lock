@@ -1766,7 +1766,7 @@ PODS:
   - EXCalendar (9.2.0):
     - ExpoModulesCore
     - UMCore
-  - EXCamera (11.1.0):
+  - EXCamera (11.1.1):
     - ExpoModulesCore
     - UMCore
   - EXCellular (3.2.0):
@@ -1861,13 +1861,13 @@ PODS:
   - EXPermissions (12.1.0):
     - ExpoModulesCore
     - UMCore
-  - ExpoModulesCore (0.1.0):
-    - ExpoModulesCore/Core (= 0.1.0)
-    - ExpoModulesCore/Interfaces (= 0.1.0)
+  - ExpoModulesCore (0.1.1):
+    - ExpoModulesCore/Core (= 0.1.1)
+    - ExpoModulesCore/Interfaces (= 0.1.1)
     - UMCore
-  - ExpoModulesCore/Core (0.1.0):
+  - ExpoModulesCore/Core (0.1.1):
     - UMCore
-  - ExpoModulesCore/Interfaces (0.1.0):
+  - ExpoModulesCore/Interfaces (0.1.1):
     - ExpoModulesCore/Core
     - UMCore
   - EXPrint (10.2.0):
@@ -3998,7 +3998,7 @@ SPEC CHECKSUMS:
   EXBranch: 9c65961edddfb785cc26d8642f8f50e7e3c2e5ad
   EXBrightness: b0eb62f204669cd7ae926847794b5bfabd595a4f
   EXCalendar: 64807f071c86ef3d9813fec49f55c38d5854c235
-  EXCamera: 749802944176f32cce72cfc99d53e6d9ecfd7311
+  EXCamera: 5a90a462cd0965bbf5e5ddb725115ac5109869e9
   EXCellular: 82f7267f13f296f37434d0031e9a214bbd4b8919
   EXClipboard: c66f7d22ba754496b0fc6b23a2cb9a3e10fa1581
   EXConstants: 7025f7965e87340f8e7493edc7062071ff48449f
@@ -4030,7 +4030,7 @@ SPEC CHECKSUMS:
   EXNetwork: 6682b2bbbd90e66c4738159abaf8cd206c25e8b8
   EXNotifications: 296d9487163c2c08fffec5e79a5f9094bc016d9c
   EXPermissions: 8eb648bd5c2115d01a39dc7c2ad4c94a5846e4cb
-  ExpoModulesCore: 20a7ab61ac0d55c032d003c7eb6cfa79687e5b59
+  ExpoModulesCore: 7925199dfaa4db3ddbf7a31cb79d066822cd74c5
   EXPrint: 2dbe4d320687e559b46fdb01e330fdf875137094
   EXRandom: ecb71f5d01991f29bb0277f8a2c35d168f85d637
   EXScreenCapture: c51844407fbac8bbca4415467bc43f2b7764d225
