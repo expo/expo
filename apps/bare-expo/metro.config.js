@@ -25,6 +25,12 @@ module.exports = {
           req.url = req.url.replace(testSuiteAssets, '/assets/../test-suite/assets/');
         }
 
+        const nclAssets = '/native-component-list/';
+
+        if (req.url.startsWith(nclAssets)) {
+          req.url = req.url.replace(nclAssets, '/assets/../native-component-list/');
+        }
+
         return middleware(req, res, next);
       };
     },
