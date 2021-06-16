@@ -4,7 +4,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.uimanager.events.Event
 import com.facebook.react.uimanager.events.RCTEventEmitter
 
-class ImageLoadStartEvent(viewId: Int) : Event<ImageLoadStartEvent?>(viewId) {
+class ImageLoadStartEvent(viewId: Int) : Event<ImageLoadStartEvent>(viewId) {
   override fun getEventName(): String {
     return EVENT_NAME
   }

@@ -8,7 +8,7 @@ import com.facebook.react.uimanager.events.Event
 import com.facebook.react.uimanager.events.RCTEventEmitter
 import expo.modules.image.enums.ImageCacheType.Companion.fromNativeValue
 
-class ImageLoadEvent(viewId: Int, private val mModel: Any, private val mDataSource: DataSource, private val mBitmapOptions: BitmapFactory.Options) : Event<ImageLoadEvent?>(viewId) {
+class ImageLoadEvent(viewId: Int, private val mModel: Any, private val mDataSource: DataSource, private val mBitmapOptions: BitmapFactory.Options) : Event<ImageLoadEvent>(viewId) {
   override fun getEventName(): String {
     return EVENT_NAME
   }

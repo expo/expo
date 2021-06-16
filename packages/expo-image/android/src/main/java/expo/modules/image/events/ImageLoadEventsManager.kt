@@ -29,7 +29,7 @@ class ImageLoadEventsManager(private val mViewId: Int, private val mEventEmitter
     return false
   }
 
-  override fun onResourceReady(resource: BitmapFactory.Options, transition: Transition<in BitmapFactory.Options>?) {
+  override fun onResourceReady(resource: BitmapFactory.Options, transition: Transition<in BitmapFactory.Options?>?) {
     mBitmapFactoryOptions = resource
     onResourceReady()
   }

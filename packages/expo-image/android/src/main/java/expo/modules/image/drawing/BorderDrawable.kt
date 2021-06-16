@@ -19,6 +19,7 @@ import android.graphics.Region
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.view.View
+import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.uimanager.FloatUtil
 import com.facebook.react.modules.i18nmanager.I18nUtil
 import java.util.*
@@ -40,8 +41,8 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
       fun getPathEffect(style: BorderStyle?, borderWidth: Float): PathEffect? {
         return when (style) {
           SOLID -> null
-          DASHED -> DashPathEffect(floatArrayOf(borderWidth * 3, borderWidth * 3, borderWidth * 3, borderWidth * 3), 0)
-          DOTTED -> DashPathEffect(floatArrayOf(borderWidth, borderWidth, borderWidth, borderWidth), 0)
+          DASHED -> DashPathEffect(floatArrayOf(borderWidth * 3, borderWidth * 3, borderWidth * 3, borderWidth * 3), 0F)
+          DOTTED -> DashPathEffect(floatArrayOf(borderWidth, borderWidth, borderWidth, borderWidth), 0F)
           else -> null
         }
       }
@@ -75,7 +76,7 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
   private val mPaint = Paint(Paint.ANTI_ALIAS_FLAG)
   private var mColor = Color.TRANSPARENT
   private var mAlpha = 255
-  private var mBorderCornerRadii: FloatArray?
+  private var mBorderCornerRadii: FloatArray? = null
 
   /**
    * Similar to Drawable.getLayoutDirection, but available in APIs < 23.
@@ -170,7 +171,7 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
   private fun setBorderRGB(position: Int, rgb: Float) {
     // set RGB component
     if (mBorderRGB == null) {
-      mBorderRGB = Spacing(DEFAULT_BORDER_RGB)
+      mBorderRGB = Spacing(DEFAULT_BORDER_RGB.toFloat())
     }
     if (!FloatUtil.floatsEqual(mBorderRGB!!.getRaw(position), rgb)) {
       mBorderRGB!![position] = rgb
@@ -181,7 +182,7 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
   private fun setBorderAlpha(position: Int, alpha: Float) {
     // set Alpha component
     if (mBorderAlpha == null) {
-      mBorderAlpha = Spacing(DEFAULT_BORDER_ALPHA)
+      mBorderAlpha = Spacing(DEFAULT_BORDER_ALPHA.toFloat())
     }
     if (!FloatUtil.floatsEqual(mBorderAlpha!!.getRaw(position), alpha)) {
       mBorderAlpha!![position] = alpha
@@ -219,7 +220,7 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
   }
 
   val fullBorderRadius: Float
-    get() = if (YogaConstants.isUndefined(mBorderRadius)) 0 else mBorderRadius
+    get() = if (YogaConstants.isUndefined(mBorderRadius)) 0F else mBorderRadius
 
   fun getBorderRadius(location: BorderRadiusLocation): Float {
     return getBorderRadiusOrDefaultTo(YogaConstants.UNDEFINED, location)
@@ -954,7 +955,7 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
   companion object {
     private const val DEFAULT_BORDER_COLOR = Color.BLACK
     private const val DEFAULT_BORDER_RGB = 0x00FFFFFF and DEFAULT_BORDER_COLOR
-    private const val DEFAULT_BORDER_ALPHA = -0x1000000 and DEFAULT_BORDER_COLOR ushr 24
+    private const val DEFAULT_BORDER_ALPHA = (0xFF000000L and (DEFAULT_BORDER_COLOR.toLong() ushr 24)).toInt()
 
     // ~0 == 0xFFFFFFFF, all bits set to 1.
     private const val ALL_BITS_SET = 0.inv()
@@ -1071,9 +1072,10 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
     }
 
     private fun colorFromAlphaAndRGBComponents(alpha: Float, rgb: Float): Int {
-      val rgbComponent = 0x00FFFFFF and rgb.toInt()
-      val alphaComponent = -0x1000000 and alpha.toInt() shl 24
-      return rgbComponent or alphaComponent
+      val rgbComponent = 0x00FFFFFFL and rgb.toLong()
+      val alphaComponent = 0xFF000000L and (alpha.toLong() shl 24)
+      return (rgbComponent or alphaComponent).toInt()
+
     }
   }
 }

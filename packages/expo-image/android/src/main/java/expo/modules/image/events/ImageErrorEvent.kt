@@ -8,7 +8,7 @@ import com.facebook.react.uimanager.events.Event
 import com.facebook.react.uimanager.events.RCTEventEmitter
 import java.util.*
 
-class ImageErrorEvent(viewId: Int, private val mException: GlideException?) : Event<ImageErrorEvent?>(viewId) {
+class ImageErrorEvent(viewId: Int, private val mException: GlideException?) : Event<ImageErrorEvent>(viewId) {
   override fun getEventName(): String {
     return EVENT_NAME
   }

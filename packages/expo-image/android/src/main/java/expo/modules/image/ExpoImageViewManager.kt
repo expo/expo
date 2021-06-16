@@ -24,9 +24,7 @@ import expo.modules.image.okhttp.OkHttpClientProgressInterceptor
 class ExpoImageViewManager(applicationContext: ReactApplicationContext?) : SimpleViewManager<ExpoImageView>() {
   private val mRequestManager: RequestManager
   private val mProgressInterceptor: OkHttpClientProgressInterceptor
-  override fun getName(): String {
-    return REACT_CLASS
-  }
+  override fun getName() = "ExpoImage"
 
   override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any>? {
     return MapBuilder.builder<String, Any>()
@@ -106,7 +104,6 @@ class ExpoImageViewManager(applicationContext: ReactApplicationContext?) : Simpl
   }
 
   companion object {
-    private const val REACT_CLASS = "ExpoImage"
     private val BORDER_LOCATIONS = intArrayOf(
       Spacing.ALL,
       Spacing.LEFT,
@@ -119,6 +116,6 @@ class ExpoImageViewManager(applicationContext: ReactApplicationContext?) : Simpl
 
   init {
     mRequestManager = Glide.with(applicationContext!!)
-    mProgressInterceptor = OkHttpClientProgressInterceptor.getInstance()
+    mProgressInterceptor = OkHttpClientProgressInterceptor.instance
   }
 }

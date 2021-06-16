@@ -30,16 +30,16 @@ class ExpoImageView(context: ReactContext, requestManager: RequestManager, progr
   private var mBorderDrawable: BorderDrawable? = null
   private var mSourceMap: ReadableMap? = null
   private var mLoadedSource: GlideUrl? = null
-  protected fun setSource(sourceMap: ReadableMap?) {
+  internal fun setSource(sourceMap: ReadableMap?) {
     mSourceMap = sourceMap
   }
 
-  protected fun setResizeMode(resizeMode: ImageResizeMode) {
+  internal fun setResizeMode(resizeMode: ImageResizeMode) {
     scaleType = resizeMode.scaleType
     // TODO: repeat mode handling
   }
 
-  protected fun setBorderRadius(position: Int, borderRadius: Float) {
+  internal fun setBorderRadius(position: Int, borderRadius: Float) {
     var borderRadius = borderRadius
     val isInvalidated = mOutlineProvider.setBorderRadius(borderRadius, position)
     if (isInvalidated) {
@@ -61,19 +61,19 @@ class ExpoImageView(context: ReactContext, requestManager: RequestManager, progr
     }
   }
 
-  protected fun setBorderWidth(position: Int, width: Float) {
-    orCreateBorderDrawable.setBorderWidth(position, width)
+  internal fun setBorderWidth(position: Int, width: Float) {
+    getOrCreateBorderDrawable().setBorderWidth(position, width)
   }
 
-  protected fun setBorderColor(position: Int, rgb: Float, alpha: Float) {
-    orCreateBorderDrawable.setBorderColor(position, rgb, alpha)
+  internal fun setBorderColor(position: Int, rgb: Float, alpha: Float) {
+    getOrCreateBorderDrawable().setBorderColor(position, rgb, alpha)
   }
 
-  protected fun setBorderStyle(style: String?) {
-    orCreateBorderDrawable.setBorderStyle(style)
+  internal fun setBorderStyle(style: String?) {
+    getOrCreateBorderDrawable().setBorderStyle(style)
   }
 
-  protected fun setTintColor(color: Int?) {
+  internal fun setTintColor(color: Int?) {
     if (color == null) {
       clearColorFilter()
     } else {
@@ -81,7 +81,7 @@ class ExpoImageView(context: ReactContext, requestManager: RequestManager, progr
     }
   }
 
-  protected fun onAfterUpdateTransaction() {
+  internal fun onAfterUpdateTransaction() {
     val sourceToLoad = createUrlFromSourceMap(mSourceMap)
     if (sourceToLoad == null) {
       mRequestManager.clear(this)
@@ -105,17 +105,17 @@ class ExpoImageView(context: ReactContext, requestManager: RequestManager, progr
     }
   }
 
-  protected fun onDrop() {
+  internal fun onDrop() {
     mRequestManager.clear(this)
   }
 
-  protected fun createUrlFromSourceMap(sourceMap: ReadableMap?): GlideUrl? {
+  internal fun createUrlFromSourceMap(sourceMap: ReadableMap?): GlideUrl? {
     return if (sourceMap == null || sourceMap.getString(SOURCE_URI_KEY) == null) {
       null
     } else GlideUrl(sourceMap.getString(SOURCE_URI_KEY))
   }
 
-  protected fun createOptionsFromSourceMap(sourceMap: ReadableMap?): RequestOptions {
+  internal fun createOptionsFromSourceMap(sourceMap: ReadableMap?): RequestOptions {
     val options = RequestOptions()
     if (sourceMap != null) {
 
@@ -132,24 +132,23 @@ class ExpoImageView(context: ReactContext, requestManager: RequestManager, progr
     return options
   }
 
-  private val orCreateBorderDrawable: BorderDrawable
-    private get() {
-      if (mBorderDrawable == null) {
-        mBorderDrawable = BorderDrawable(context)
-        mBorderDrawable!!.callback = this
-        val borderRadii = mOutlineProvider.borderRadii
-        for (i in borderRadii.indices) {
-          var borderRadius = borderRadii[i]
-          borderRadius = if (!YogaConstants.isUndefined(borderRadius)) PixelUtil.toPixelFromDIP(borderRadius) else borderRadius
-          if (i == 0) {
-            mBorderDrawable!!.setRadius(borderRadius)
-          } else {
-            mBorderDrawable!!.setRadius(borderRadius, i - 1)
-          }
+  private fun getOrCreateBorderDrawable(): BorderDrawable {
+    if (mBorderDrawable == null) {
+      mBorderDrawable = BorderDrawable(context)
+      mBorderDrawable!!.callback = this
+      val borderRadii = mOutlineProvider.borderRadii
+      for (i in borderRadii.indices) {
+        var borderRadius = borderRadii[i]
+        borderRadius = if (!YogaConstants.isUndefined(borderRadius)) PixelUtil.toPixelFromDIP(borderRadius) else borderRadius
+        if (i == 0) {
+          mBorderDrawable!!.setRadius(borderRadius)
+        } else {
+          mBorderDrawable!!.setRadius(borderRadius, i - 1)
         }
       }
-      return mBorderDrawable!!
     }
+    return mBorderDrawable!!
+  }
 
   // Drawing overrides
   override fun invalidateDrawable(drawable: Drawable) {
@@ -174,7 +173,7 @@ class ExpoImageView(context: ReactContext, requestManager: RequestManager, progr
     // Draw borders on top of the background and image
     if (mBorderDrawable != null) {
       val layoutDirection = if (I18nUtil.getInstance().isRTL(context)) LAYOUT_DIRECTION_RTL else LAYOUT_DIRECTION_LTR
-      mBorderDrawable!!.resolvedLayoutDirection = layoutDirection
+      mBorderDrawable!!.setResolvedLayoutDirection(layoutDirection)
       mBorderDrawable!!.setBounds(0, 0, canvas.width, canvas.height)
       mBorderDrawable!!.draw(canvas)
     }

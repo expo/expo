@@ -23,6 +23,7 @@ enum class ImageCacheType {
   }
 
   companion object {
+    @JvmStatic
     fun fromNativeValue(value: DataSource): ImageCacheType {
       for (cacheType in values()) {
         for (dataSource in cacheType.mDataSources) {

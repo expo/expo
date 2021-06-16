@@ -52,14 +52,14 @@ class OkHttpClientProgressInterceptor private constructor() : Interceptor {
 
   companion object {
     private var sInstance: OkHttpClientProgressInterceptor? = null
-    val instance: OkHttpClientProgressInterceptor?
+    val instance: OkHttpClientProgressInterceptor
       get() {
         synchronized(OkHttpClientProgressInterceptor::class.java) {
           if (sInstance == null) {
             sInstance = OkHttpClientProgressInterceptor()
           }
         }
-        return sInstance
+        return sInstance!!
       }
   }
 
