@@ -4,7 +4,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.common.MapBuilder
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.SimpleViewManager
 import com.facebook.react.uimanager.Spacing
@@ -20,24 +19,33 @@ import expo.modules.image.events.ImageLoadStartEvent
 import expo.modules.image.events.ImageProgressEvent
 import expo.modules.image.okhttp.OkHttpClientProgressInterceptor
 
-class ExpoImageViewManager(applicationContext: ReactApplicationContext?) : SimpleViewManager<ExpoImageView>() {
-  private val mRequestManager: RequestManager
-  private val mProgressInterceptor: OkHttpClientProgressInterceptor
+private val BORDER_LOCATIONS = intArrayOf(
+  Spacing.ALL,
+  Spacing.LEFT,
+  Spacing.RIGHT,
+  Spacing.TOP,
+  Spacing.BOTTOM,
+  Spacing.START,
+  Spacing.END
+)
+
+class ExpoImageViewManager(applicationContext: ReactApplicationContext) : SimpleViewManager<ExpoImageView>() {
+  private val mRequestManager: RequestManager = Glide.with(applicationContext)
+  private val mProgressInterceptor: OkHttpClientProgressInterceptor = OkHttpClientProgressInterceptor
   override fun getName() = "ExpoImage"
 
-  override fun getExportedCustomDirectEventTypeConstants(): Map<String, Any>? {
-    return MapBuilder.builder<String, Any>()
-      .put(ImageLoadStartEvent.EVENT_NAME, MapBuilder.of("registrationName", ImageLoadStartEvent.EVENT_NAME))
-      .put(ImageProgressEvent.EVENT_NAME, MapBuilder.of("registrationName", ImageProgressEvent.EVENT_NAME))
-      .put(ImageErrorEvent.EVENT_NAME, MapBuilder.of("registrationName", ImageErrorEvent.EVENT_NAME))
-      .put(ImageLoadEvent.EVENT_NAME, MapBuilder.of("registrationName", ImageLoadEvent.EVENT_NAME))
-      .build()
-  }
+  override fun getExportedCustomDirectEventTypeConstants() =
+    mutableMapOf(
+      ImageLoadStartEvent.EVENT_NAME to mutableMapOf("registrationName" to ImageLoadStartEvent.EVENT_NAME),
+      ImageProgressEvent.EVENT_NAME to mutableMapOf("registrationName" to ImageProgressEvent.EVENT_NAME),
+      ImageErrorEvent.EVENT_NAME to mutableMapOf("registrationName" to ImageErrorEvent.EVENT_NAME),
+      ImageLoadEvent.EVENT_NAME to mutableMapOf("registrationName" to ImageLoadEvent.EVENT_NAME)
+    )
 
   // Props setters
   @ReactProp(name = "source")
   fun setSource(view: ExpoImageView, sourceMap: ReadableMap?) {
-    view.setSource(sourceMap)
+    view.sourceMap = sourceMap
   }
 
   @ReactProp(name = "resizeMode")
@@ -46,16 +54,31 @@ class ExpoImageViewManager(applicationContext: ReactApplicationContext?) : Simpl
     view.setResizeMode(resizeMode)
   }
 
-  @ReactPropGroup(names = [ViewProps.BORDER_RADIUS, ViewProps.BORDER_TOP_LEFT_RADIUS, ViewProps.BORDER_TOP_RIGHT_RADIUS, ViewProps.BORDER_BOTTOM_RIGHT_RADIUS, ViewProps.BORDER_BOTTOM_LEFT_RADIUS, ViewProps.BORDER_TOP_START_RADIUS, ViewProps.BORDER_TOP_END_RADIUS, ViewProps.BORDER_BOTTOM_START_RADIUS, ViewProps.BORDER_BOTTOM_END_RADIUS], defaultFloat = YogaConstants.UNDEFINED)
+  @ReactPropGroup(names = [
+    ViewProps.BORDER_RADIUS,
+    ViewProps.BORDER_TOP_LEFT_RADIUS,
+    ViewProps.BORDER_TOP_RIGHT_RADIUS,
+    ViewProps.BORDER_BOTTOM_RIGHT_RADIUS,
+    ViewProps.BORDER_BOTTOM_LEFT_RADIUS,
+    ViewProps.BORDER_TOP_START_RADIUS,
+    ViewProps.BORDER_TOP_END_RADIUS,
+    ViewProps.BORDER_BOTTOM_START_RADIUS,
+    ViewProps.BORDER_BOTTOM_END_RADIUS
+  ], defaultFloat = YogaConstants.UNDEFINED)
   fun setBorderRadius(view: ExpoImageView, index: Int, borderRadius: Float) {
-    var borderRadius = borderRadius
-    if (!YogaConstants.isUndefined(borderRadius) && borderRadius < 0) {
-      borderRadius = YogaConstants.UNDEFINED
-    }
-    view.setBorderRadius(index, borderRadius)
+    val radius = if (!YogaConstants.isUndefined(borderRadius) && borderRadius < 0) YogaConstants.UNDEFINED else borderRadius
+    view.setBorderRadius(index, radius)
   }
 
-  @ReactPropGroup(names = [ViewProps.BORDER_WIDTH, ViewProps.BORDER_LEFT_WIDTH, ViewProps.BORDER_RIGHT_WIDTH, ViewProps.BORDER_TOP_WIDTH, ViewProps.BORDER_BOTTOM_WIDTH, ViewProps.BORDER_START_WIDTH, ViewProps.BORDER_END_WIDTH], defaultFloat = YogaConstants.UNDEFINED)
+  @ReactPropGroup(names = [
+    ViewProps.BORDER_WIDTH,
+    ViewProps.BORDER_LEFT_WIDTH,
+    ViewProps.BORDER_RIGHT_WIDTH,
+    ViewProps.BORDER_TOP_WIDTH,
+    ViewProps.BORDER_BOTTOM_WIDTH,
+    ViewProps.BORDER_START_WIDTH,
+    ViewProps.BORDER_END_WIDTH
+  ], defaultFloat = YogaConstants.UNDEFINED)
   fun setBorderWidth(view: ExpoImageView, index: Int, width: Float) {
     var width = width
     if (!YogaConstants.isUndefined(width) && width < 0) {
@@ -67,7 +90,15 @@ class ExpoImageViewManager(applicationContext: ReactApplicationContext?) : Simpl
     view.setBorderWidth(BORDER_LOCATIONS[index], width)
   }
 
-  @ReactPropGroup(names = [ViewProps.BORDER_COLOR, ViewProps.BORDER_LEFT_COLOR, ViewProps.BORDER_RIGHT_COLOR, ViewProps.BORDER_TOP_COLOR, ViewProps.BORDER_BOTTOM_COLOR, ViewProps.BORDER_START_COLOR, ViewProps.BORDER_END_COLOR], customType = "Color")
+  @ReactPropGroup(names = [
+    ViewProps.BORDER_COLOR,
+    ViewProps.BORDER_LEFT_COLOR,
+    ViewProps.BORDER_RIGHT_COLOR,
+    ViewProps.BORDER_TOP_COLOR,
+    ViewProps.BORDER_BOTTOM_COLOR,
+    ViewProps.BORDER_START_COLOR,
+    ViewProps.BORDER_END_COLOR
+  ], customType = "Color")
   fun setBorderColor(view: ExpoImageView, index: Int, color: Int?) {
     val rgbComponent = if (color == null) YogaConstants.UNDEFINED else (color and 0x00FFFFFF).toFloat()
     val alphaComponent = if (color == null) YogaConstants.UNDEFINED else (color ushr 24).toFloat()
@@ -97,21 +128,5 @@ class ExpoImageViewManager(applicationContext: ReactApplicationContext?) : Simpl
   override fun onDropViewInstance(view: ExpoImageView) {
     view.onDrop()
     super.onDropViewInstance(view)
-  }
-
-  companion object {
-    private val BORDER_LOCATIONS = intArrayOf(
-      Spacing.ALL,
-      Spacing.LEFT,
-      Spacing.RIGHT,
-      Spacing.TOP,
-      Spacing.BOTTOM,
-      Spacing.START,
-      Spacing.END)
-  }
-
-  init {
-    mRequestManager = Glide.with(applicationContext!!)
-    mProgressInterceptor = OkHttpClientProgressInterceptor
   }
 }
