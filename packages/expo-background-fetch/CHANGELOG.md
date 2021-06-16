@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove exported enums aliases for `BackgroundFetchResult` and `BackgroundFetchStatus`. ([#12716](https://github.com/expo/expo/pull/13267) by [@Simek](https://github.com/Simek))
+
 ### 🎉 New features
 
 - Use stable manifest ID where applicable. ([#12964](https://github.com/expo/expo/pull/12964) by [@wschurman](https://github.com/wschurman))
@@ -21,6 +23,7 @@
 ### 💡 Others
 
 - Build Android code using Java 8 to fix Android instrumented test build error. ([#12939](https://github.com/expo/expo/pull/12939) by [@kudo](https://github.com/kudo))
+- Export missing `BackgroundFetchOptions` type. ([#12716](https://github.com/expo/expo/pull/13267) by [@Simek](https://github.com/Simek))
 
 ## 9.1.0 — 2021-03-10
 

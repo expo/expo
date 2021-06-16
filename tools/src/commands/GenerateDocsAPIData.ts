@@ -84,6 +84,7 @@ async function action({ packageName }: ActionOptions) {
     'expo-analytics-segment': ['Segment.ts'],
     'expo-apple-authentication': [['AppleAuthentication.ts', 'AppleAuthentication.types.ts']],
     'expo-application': ['Application.ts'],
+    'expo-background-fetch': ['BackgroundFetch.ts'],
     'expo-battery': ['Battery.ts'],
     'expo-blur': ['index.ts'],
     'expo-cellular': ['Cellular.ts'],
