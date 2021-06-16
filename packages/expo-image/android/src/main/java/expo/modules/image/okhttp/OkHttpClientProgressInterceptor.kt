@@ -8,8 +8,8 @@ import java.io.IOException
 import java.lang.ref.WeakReference
 import java.util.*
 
-class OkHttpClientProgressInterceptor private constructor() : Interceptor {
-  private val mProgressListeners: MutableMap<String, MutableCollection<WeakReference<ProgressListener>>>
+object OkHttpClientProgressInterceptor : Interceptor {
+  private val mProgressListeners: MutableMap<String, MutableCollection<WeakReference<ProgressListener>>> = HashMap()
 
   /**
    * Mostly copied from https://github.com/square/okhttp/blob/97a5e7a9e0cdafd2bb7cbc9a8bb1931082aaa0e4/samples/guide/src/main/java/okhttp3/recipes/Progress.java#L62-L69
@@ -24,18 +24,11 @@ class OkHttpClientProgressInterceptor private constructor() : Interceptor {
     val originalResponse = chain.proceed(chain.request())
     return originalResponse.newBuilder()
       .body(ProgressResponseBody(originalResponse.body()) { bytesWritten, contentLength, done ->
-        val strongThis = weakThis.get()
-        if (strongThis != null) {
-          val urlListeners: Collection<WeakReference<ProgressListener>>? = strongThis.mProgressListeners[requestUrl]
-          if (urlListeners != null) {
-            for (listenerReference in urlListeners) {
-              val listener = listenerReference.get()
-              listener?.onProgress(bytesWritten, contentLength, done)
-            }
-          }
-          if (done) {
-            strongThis.mProgressListeners.remove(requestUrl)
-          }
+        val strongThis = weakThis.get() ?: return@ProgressResponseBody
+        val urlListeners = strongThis.mProgressListeners[requestUrl]
+        urlListeners?.forEach { it.get()?.onProgress(bytesWritten, contentLength, done) }
+        if (done) {
+          strongThis.mProgressListeners.remove(requestUrl)
         }
       })
       .build()
@@ -48,22 +41,5 @@ class OkHttpClientProgressInterceptor private constructor() : Interceptor {
       mProgressListeners[requestUrl] = requestListeners
     }
     requestListeners.add(WeakReference(requestListener))
-  }
-
-  companion object {
-    private var sInstance: OkHttpClientProgressInterceptor? = null
-    val instance: OkHttpClientProgressInterceptor
-      get() {
-        synchronized(OkHttpClientProgressInterceptor::class.java) {
-          if (sInstance == null) {
-            sInstance = OkHttpClientProgressInterceptor()
-          }
-        }
-        return sInstance!!
-      }
-  }
-
-  init {
-    mProgressListeners = HashMap()
   }
 }

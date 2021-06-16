@@ -14,7 +14,7 @@ import java.io.InputStream
 class ExpoImageOkHttpClientGlideModule : LibraryGlideModule() {
   override fun registerComponents(context: Context, glide: Glide, registry: Registry) {
     val client = OkHttpClient.Builder()
-      .addNetworkInterceptor(OkHttpClientProgressInterceptor.instance)
+      .addNetworkInterceptor(OkHttpClientProgressInterceptor)
       .build()
     val factory = OkHttpUrlLoader.Factory(client)
     registry.replace(GlideUrl::class.java, InputStream::class.java, factory)

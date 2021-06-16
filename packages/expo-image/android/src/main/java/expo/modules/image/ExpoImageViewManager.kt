@@ -112,6 +112,6 @@ class ExpoImageViewManager(applicationContext: ReactApplicationContext?) : Simpl
 
   init {
     mRequestManager = Glide.with(applicationContext!!)
-    mProgressInterceptor = OkHttpClientProgressInterceptor.instance
+    mProgressInterceptor = OkHttpClientProgressInterceptor
   }
 }
