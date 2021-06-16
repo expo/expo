@@ -9,9 +9,7 @@ import com.facebook.react.uimanager.events.RCTEventEmitter
 import java.util.*
 
 class ImageErrorEvent(viewId: Int, private val mException: GlideException?) : Event<ImageErrorEvent>(viewId) {
-  override fun getEventName(): String {
-    return EVENT_NAME
-  }
+  override fun getEventName() = EVENT_NAME
 
   override fun dispatch(rctEventEmitter: RCTEventEmitter) {
     val eventData = Arguments.createMap()
@@ -20,7 +18,7 @@ class ImageErrorEvent(viewId: Int, private val mException: GlideException?) : Ev
     rctEventEmitter.receiveEvent(viewTag, eventName, eventData)
   }
 
-  fun serializeThrowablesList(throwables: List<Throwable?>?): ReadableArray? {
+  private fun serializeThrowablesList(throwables: List<Throwable?>?): ReadableArray? {
     if (throwables == null) {
       return null
     }
@@ -50,7 +48,7 @@ class ImageErrorEvent(viewId: Int, private val mException: GlideException?) : Ev
     val data = Arguments.createMap()
     data.putMap("origin", serializeThrowable(exception.origin))
     data.putArray("causes", serializeThrowablesList(exception.causes))
-    data.merge(Objects.requireNonNull(exceptionData)!!)
+    data.merge(exceptionData!!)
     return data
   }
 

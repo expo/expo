@@ -5,9 +5,7 @@ import com.facebook.react.uimanager.events.Event
 import com.facebook.react.uimanager.events.RCTEventEmitter
 
 class ImageProgressEvent(viewId: Int, private val mBytesWritten: Long, private val mContentLength: Long, private val mDone: Boolean) : Event<ImageProgressEvent>(viewId) {
-  override fun getEventName(): String {
-    return EVENT_NAME
-  }
+  override fun getEventName() = EVENT_NAME
 
   override fun dispatch(rctEventEmitter: RCTEventEmitter) {
     val eventData = Arguments.createMap()
