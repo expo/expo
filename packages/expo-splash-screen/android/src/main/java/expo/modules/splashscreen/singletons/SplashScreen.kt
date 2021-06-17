@@ -90,11 +90,11 @@ object SplashScreen : SingletonModule {
   @JvmStatic
   @JvmOverloads
   fun show(
-          activity: Activity,
-          splashScreenViewController: SplashScreenViewController,
-          statusBarTranslucent: Boolean,
-          successCallback: () -> Unit = {},
-          failureCallback: (reason: String) -> Unit = { Log.w(TAG, it) }
+  activity: Activity,
+  splashScreenViewController: SplashScreenViewController,
+  statusBarTranslucent: Boolean,
+  successCallback: () -> Unit = {},
+  failureCallback: (reason: String) -> Unit = { Log.w(TAG, it) }
   ) {
     // SplashScreen.show can only be called once per activity
     if (controllers.containsKey(activity)) {
