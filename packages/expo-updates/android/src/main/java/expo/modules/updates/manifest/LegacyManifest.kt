@@ -107,7 +107,7 @@ class LegacyManifest private constructor(
         }
       }
 
-      val runtimeVersion = if (rawManifest.getRuntimeVersion() != null){
+      val runtimeVersion = if (rawManifest.getRuntimeVersion() != null) {
         rawManifest.getRuntimeVersion()
       } else {
         rawManifest.getSDKVersion()
