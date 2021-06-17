@@ -5,7 +5,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import recursiveOmitBy from 'recursive-omit-by';
 
-import {EXPO_DIR, PACKAGES_DIR} from '../Constants';
+import { EXPO_DIR, PACKAGES_DIR } from '../Constants';
 import logger from '../Logger';
 
 type ActionOptions = {
