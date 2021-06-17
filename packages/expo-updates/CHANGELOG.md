@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Improve behavior of dev client (with updates integration) when developer is logged out of expo-cli.
+
 ### 💡 Others
 
 ## 0.7.0 — 2021-06-16
