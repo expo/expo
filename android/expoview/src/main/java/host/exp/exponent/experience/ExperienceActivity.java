@@ -54,7 +54,7 @@ import host.exp.exponent.branch.BranchManager;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.experience.loading.LoadingProgressPopupController;
 import host.exp.exponent.experience.splashscreen.ManagedAppSplashScreenConfiguration;
-import host.exp.exponent.experience.splashscreen.ManagedAppSplashScreenController;
+import host.exp.exponent.experience.splashscreen.ManagedAppSplashScreenViewController;
 import host.exp.exponent.experience.splashscreen.ManagedAppSplashScreenViewProvider;
 import host.exp.exponent.kernel.DevMenuManager;
 import host.exp.exponent.kernel.ExperienceKey;
@@ -413,7 +413,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       mManagedAppSplashScreenViewProvider = new ManagedAppSplashScreenViewProvider(config);
 
       View splashScreenView = mManagedAppSplashScreenViewProvider.createSplashScreenView(this);
-      ManagedAppSplashScreenController controller = new ManagedAppSplashScreenController(this, getRootViewClass(manifest), splashScreenView);
+      ManagedAppSplashScreenViewController controller = new ManagedAppSplashScreenViewController(this, getRootViewClass(manifest), splashScreenView);
       SplashScreen.show(this, controller, true);
     } else {
       mManagedAppSplashScreenViewProvider.updateSplashScreenViewWithManifest(this, manifest);

@@ -7,7 +7,6 @@
 #import "EXManagedAppSplashScreenConfigurationBuilder.h"
 #import "EXManagedAppSplashScreenViewProvider.h"
 #import "EXReactAppManager.h"
-#import "EXManagedAppSplashScreenController.h"
 
 @interface EXManagedAppSplashScreenViewProvider ()
 

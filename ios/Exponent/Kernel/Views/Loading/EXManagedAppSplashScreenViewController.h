@@ -1,5 +1,5 @@
 //
-//  EXManagedAppSplashScreenController.h
+//  EXManagedAppSplashScreenViewController.h
 //  Expo Go (unversioned)
 //
 //  Created by andrew on 2021-06-07.
@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXManagedAppSplashScreenController : EXSplashScreenViewController
+@interface EXManagedAppSplashScreenViewController : EXSplashScreenViewController
 
 @end
 

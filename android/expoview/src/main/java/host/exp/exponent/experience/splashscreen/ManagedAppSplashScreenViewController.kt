@@ -10,7 +10,7 @@ import com.google.android.material.snackbar.Snackbar
 import expo.modules.splashscreen.BuildConfig
 import expo.modules.splashscreen.SplashScreenViewController
 
-class ManagedAppSplashScreenController(activity: Activity,
+class ManagedAppSplashScreenViewController(activity: Activity,
                                        rootView: Class<out ViewGroup>,
                                        private val splashScreenView: View): SplashScreenViewController(activity, rootView, splashScreenView) {
   private val mWarningHandler = Handler()

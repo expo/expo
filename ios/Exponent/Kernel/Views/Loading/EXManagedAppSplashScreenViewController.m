@@ -1,24 +1,24 @@
 //
-//  EXManagedAppSplashScreenController.m
+//  EXManagedAppSplashScreenViewController.m
 //  Expo Go (unversioned)
 //
 //  Created by andrew on 2021-06-07.
 //  Copyright © 2021 650 Industries. All rights reserved.
 //
 
-#import "EXManagedAppSplashScreenController.h"
+#import "EXManagedAppSplashScreenViewController.h"
 #import "MBProgressHUD.h"
 #import "EXSplashScreenHUDButton.h"
 
 
-@interface EXManagedAppSplashScreenController()
+@interface EXManagedAppSplashScreenViewController()
 
 @property (nonatomic, weak) NSTimer *warningTimer;
 @property (nonatomic, weak) MBProgressHUD *warningHud;
 
 @end
 
-@implementation EXManagedAppSplashScreenController
+@implementation EXManagedAppSplashScreenViewController
 
 - (instancetype)initWithRootView:(UIView *)rootView splashScreenView:(UIView *)splashScreenView
 {
