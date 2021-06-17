@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Improve behavior of dev client (with updates integration) when developer is logged out of expo-cli.
+- Improve behavior of dev client (with updates integration) when developer is logged out of expo-cli. ([#13310](https://github.com/expo/expo/pull/13310) by [@esamelson](https://github.com/esamelson))
 
 ### 💡 Others
 
