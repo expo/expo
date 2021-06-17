@@ -391,8 +391,8 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       )}s used for grabbing style of dialogs are being resolved properly.`,
     ],
   },
-  '@react-native-community/masked-view': {
-    repoUrl: 'https://github.com/react-native-community/react-native-masked-view',
+  '@react-native-masked-view/masked-view': {
+    repoUrl: 'https://github.com/react-native-masked-view/masked-view',
     installableInManagedApps: true,
     steps: [
       {

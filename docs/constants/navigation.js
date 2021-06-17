@@ -94,7 +94,7 @@ const sections = [
     reference: [
       'Introduction',
       'Getting Started',
-      'Installation',
+      'Installation in React Native and Bare workflow projects',
       'Building With EAS',
       'Extending the Development Menu',
     ],

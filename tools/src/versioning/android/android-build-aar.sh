@@ -32,6 +32,18 @@ cp versioned-react-native/ReactAndroid/build/outputs/aar/ReactAndroid-release.aa
 rm -rf expoview/libs/ReactAndroid-temp
 unzip expoview/libs/ReactAndroid-temp.aar -d expoview/libs/ReactAndroid-temp
 
+# Sanity check for renaming all the native libraries,
+# but excluding prebuilt libraries like libc++_shared.so and libfbjni.so.
+set +e
+UNRENAMED_LIBS=`unzip -l expoview/libs/ReactAndroid-temp.aar | grep 'lib.*\.so' | grep -v "$ABI_VERSION" | grep -v 'libc++_shared.so' | grep -v 'libfbjni.so'`
+if [ "x$UNRENAMED_LIBS" != "x" ]; then
+  echo -e "\n\n👀 The following libraries have not been renamed. Please make sure to update \`tools/src/versioning/android/libraries.ts\`."
+  echo "$UNRENAMED_LIBS"
+  exit 1
+fi
+unset UNRENAMED_LIBS
+set -e
+
 # Write jarjar rules file. Used in next step to rename package
 rm -f jarjar-rules.txt
 

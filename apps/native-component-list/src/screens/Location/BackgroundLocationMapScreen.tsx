@@ -106,7 +106,9 @@ function BackgroundLocationMapView() {
     let isMounted = true;
     (async () => {
       if ((await Location.getBackgroundPermissionsAsync()).status !== 'granted') {
-        console.log('Missing background location permissions.');
+        console.log(
+          'Missing background location permissions. Make sure it is granted in the OS Settings.'
+        );
         return;
       }
       const { coords } = await Location.getCurrentPositionAsync();
@@ -154,7 +156,9 @@ function BackgroundLocationMapView() {
   const startLocationUpdates = React.useCallback(
     async (acc = state.accuracy) => {
       if ((await Location.getBackgroundPermissionsAsync()).status !== 'granted') {
-        console.log('Missing background location permissions.');
+        console.log(
+          'Missing background location permissions. Make sure it is granted in the OS Settings.'
+        );
         return;
       }
       await Location.startLocationUpdatesAsync(LOCATION_UPDATES_TASK, {

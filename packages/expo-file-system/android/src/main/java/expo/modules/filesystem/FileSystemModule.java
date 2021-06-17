@@ -234,10 +234,15 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
   @ExpoMethod
   public void getInfoAsync(String uriStr, Map<String, Object> options, Promise promise) {
     try {
-      Uri uri = Uri.parse(uriStr);
-      ensurePermission(uri, Permission.READ);
+       Uri uri = Uri.parse(uriStr);
+       Uri absoluteUri = uri;
+       if ("file".equals(uri.getScheme())) {
+        uriStr = uriStr.substring(uriStr.indexOf(':') + 3);
+        absoluteUri = Uri.parse(uriStr);
+       }
+      ensurePermission(absoluteUri, Permission.READ);
       if ("file".equals(uri.getScheme())) {
-        File file = uriToFile(uri);
+        File file = uriToFile(absoluteUri);
         Bundle result = new Bundle();
         if (file.exists()) {
           result.putBoolean("exists", true);

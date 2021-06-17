@@ -19,10 +19,6 @@ const STYLES_TAB_BUTTON = css`
   }
 `;
 
-const STYLES_TAB_PANELS = css`
-  padding-top: 6;
-`;
-
 function TabButton({ selected, ...props }) {
   return (
     <ReachTab
@@ -52,7 +48,7 @@ export function Tabs({ children, tabs }) {
           </TabButton>
         ))}
       </TabList>
-      <TabPanels className={STYLES_TAB_PANELS}>{children}</TabPanels>
+      <TabPanels style={{ paddingTop: 6 }}>{children}</TabPanels>
     </ReachTabs>
   );
 }

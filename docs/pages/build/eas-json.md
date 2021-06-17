@@ -135,7 +135,7 @@ The schema of a build profile for a managed Android project looks like this:
   "workflow": "managed",
   "extends": string,
   "credentialsSource": "local" | "remote", // default: "remote"
-  "buildType": "app-bundle" | "apk", // default: "app-bundle"
+  "buildType": "app-bundle" | "apk" | "development-client", // default: "app-bundle"
   "releaseChannel": string, // default: "default"
   "distribution": "store" | "internal", // default: "store"
   "image": string, // default: "default"
@@ -155,7 +155,7 @@ The schema of a build profile for a managed Android project looks like this:
 - `"workflow": "managed"` indicates that your project is a managed one.
 - `extends` allows extending values from another build profile.
 - `credentialsSource` defines the source of credentials for this build profile. If you want to provide your own `credentials.json` file, set this to `local` ([learn more on this here](/app-signing/local-credentials.md)). If you want to use the credentials managed by EAS, choose `remote` (this is the default option).
-- `buildType` when set to `app-bundle` produces an AAB archive but when set to `apk` produces an APK instead.
+- `buildType` when set to `app-bundle` or `apk` it produces a release AAB or APK archive respectively, but when set to `development-client` it produces a debug APK.
 - `releaseChannel` is the release channel for the `expo-updates` package ([Learn more about this](../distribution/release-channels.md)). If you do not specify a channel, your binary will pull releases from the `default` channel. If you do not use `expo-updates` in your project then this property will have no effect.
 - `distribution` is the flow of distributing your app. If you choose `internal` you'll be able to share your build URLs with anyone, and they will be able to install the builds to their devices straight from the Expo website. When `distribution` is `internal`, `buildType` needs to be set to `apk`. The default is `store` which means your build URLs won't be sharable. [Learn more about internal distribution](internal-distribution.md).
 - `image` - image with build environment. [Learn more about it here](../build-reference/infrastructure).
@@ -268,6 +268,7 @@ The schema of a build profile for a managed iOS project looks like this:
   "workflow": "managed",
   "extends": string,
   "credentialsSource": "local" | "remote", // default: "remote"
+  "buildType": "release" | "development-client", // default: "release"
   "releaseChannel": string, // default: "default"
   "distribution": "store" | "internal" | "simulator", // default: "store"
   "enterpriseProvisioning": "adhoc" | "universal",
@@ -292,6 +293,7 @@ The schema of a build profile for a managed iOS project looks like this:
 - `"workflow": "managed"` indicates that your project is a managed one.
 - `extends` allows extending values from another build profile.
 - `credentialsSource` defines the source of credentials for this build profile. If you want to provide your own `credentials.json` file, set this to `local` ([learn more on this here](/app-signing/local-credentials.md)). If you want to use the credentials managed by EAS, choose `remote` (this is the default option).
+- `buildType` when set to `release` it produces a release archive, but when set to `development-client` it produces a debug archive.
 - `releaseChannel` is the release channel for the `expo-updates` package ([Learn more about this](../distribution/release-channels.md)). If you do not specify a channel, your binary will pull releases from the `default` channel. If you do not use `expo-updates` in your project then this property will have no effect.
 - `distribution` is the flow of distributing your app. If you choose `internal` you'll be able to share your build URLs with anyone, and they will be able to install the builds to their devices straight from the Expo website. Choose `simulator` to run the app on an iOS simulator on your computer. The default is `store` which means your build URLs won't be sharable. [Learn more Internal Distribution](internal-distribution.md).
 - `enterpriseProvisioning` should only be used with `"distribution": "internal"` when you have an Apple account with Apple Developer Enterprise Program membership. You can choose if you want to use `adhoc` or `universal` provisioning. The latter is recommended as it does not require you to register each individual device. If you don't provide this option and you still authenticate with an enterprise team, you'll be prompted which provisioning to use.

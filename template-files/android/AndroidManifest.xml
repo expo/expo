@@ -79,6 +79,15 @@
           android:host="expo.io"
           android:path="/expo-go"
           android:scheme="http"/>
+        
+        <data
+          android:host="expo.dev"
+          android:path="/expo-go"
+          android:scheme="https"/>
+        <data
+          android:host="expo.dev"
+          android:path="/expo-go"
+          android:scheme="http"/>
 
         <action android:name="android.intent.action.VIEW"/>
 

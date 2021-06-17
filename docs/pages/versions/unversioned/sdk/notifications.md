@@ -19,7 +19,7 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 - 💯 get and set application badge icon number,
 - 📲 fetch a native device push token so you can send push notifications with FCM and APNS,
 - 😎 fetch an Expo push token so you can send push notifications with Expo,
-- 📬 listen to incoming notifications,
+- 📬 listen to incoming notifications in the foreground and background,
 - 👆 listen to interactions with notifications,
 - 🎛 handle notifications when the app is in foreground,
 - 🔕 imperatively dismiss notifications from Notification Center/tray,
@@ -489,7 +489,7 @@ A few different listeners are exposed, so we've provided a chart below which wil
 | User interacted with notification? | App state  | Listener(s) triggered                                                   |
 | :--------------------------------- | :--------: | ----------------------------------------------------------------------- |
 | false                              | Foreground | `NotificationReceivedListener`                                          |
-| false                              | Background | none                                                                    |
+| false                              | Background | `BackgroundNotificationTask`                                            |
 | false                              |   Killed   | none                                                                    |
 | true                               | Foreground | `NotificationReceivedListener` & `NotificationResponseReceivedListener` |
 | true                               | Background | `NotificationResponseReceivedListener`                                  |
@@ -711,6 +711,40 @@ Notifications.setNotificationHandler({
   }),
 });
 ```
+
+## Handling incoming notifications when the app is not in the foreground (not supported in Expo Go)
+
+> **Please note:** In order to handle notifications while the app is backgrounded on iOS, you _must_ add `remote-notification` to the `ios.infoPlist.UIBackgroundModes` key in your app.json, **and** add `"content-available": 1` to your push notification payload. Under normal circumstances, the “content-available” flag should launch your app if it isn’t running and wasn’t killed by the user, _however_, this is ultimately decided by the OS so it might not always happen.
+
+### `registerTaskAsync(taskName: string): void`
+
+When a notification is received while the app is backgrounded, using this function you can set a callback that will be run in response to that notification. Under the hood, this function is run using `expo-task-manager`. You **must** define the task _first_, with [`TaskManager.defineTask`](./task-manager.md/#taskmanagerdefinetasktaskname-task). Make sure you define it in the global scope.
+
+The `taskName` argument is the string you passed to `TaskManager.defineTask` as the "taskName". The callback function you define with `TaskManager.defineTask` will receive the following arguments:
+
+- **data**: The remote payload delivered by either FCM (Android) or APNs (iOS). [See here for details](#pushnotificationtrigger).
+- **error**: The error (if any) that occurred during execution of the task.
+- **executionInfo**: JSON object of additional info related to the task, including the `taskName`.
+
+#### Examples
+
+Implementing a notification handler that always shows the notification when it is received
+
+```ts
+import * as Notifications from 'expo-notifications';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+```
+
+### `unregisterTaskAsync(taskName: string): void`
+
+Used to unregister tasks registered with `registerTaskAsync`.
 
 ## Fetching information about notifications-related permissions
 

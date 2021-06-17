@@ -85,7 +85,7 @@ export default ({ config }) => {
 
 ### Switching configuration based on the environment
 
-It's common to want to want to have some different configuration in development, staging, and production environments, or to swap out configuration entirely in order to white label an app. To accomplish this, you can use `app.config.js` along with environment variables.
+It's common to have some different configuration in development, staging, and production environments, or to swap out configuration entirely in order to white label an app. To accomplish this, you can use `app.config.js` along with environment variables.
 
 ```js
 module.exports = () => {

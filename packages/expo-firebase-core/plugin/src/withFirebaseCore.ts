@@ -4,7 +4,7 @@ import {
   IOSConfig,
   withDangerousMod,
 } from '@expo/config-plugins';
-import * as fs from 'fs-extra';
+import fs from 'fs';
 
 const pkg = require('expo-firebase-core/package.json');
 
@@ -38,7 +38,7 @@ const withFirebaseAppDelegate: ConfigPlugin = config => {
     'ios',
     async config => {
       const fileInfo = IOSConfig.Paths.getAppDelegate(config.modRequest.projectRoot);
-      let contents = await fs.readFile(fileInfo.path, 'utf-8');
+      let contents = fs.readFileSync(fileInfo.path, { encoding: 'utf8' });
       if (fileInfo.language === 'objc') {
         contents = modifyObjcAppDelegate(contents);
       } else {
@@ -47,7 +47,7 @@ const withFirebaseAppDelegate: ConfigPlugin = config => {
           `Cannot add Firebase code to AppDelegate of language "${fileInfo.language}"`
         );
       }
-      await fs.writeFile(fileInfo.path, contents);
+      fs.writeFileSync(fileInfo.path, contents);
 
       return config;
     },

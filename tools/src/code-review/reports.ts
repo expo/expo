@@ -58,7 +58,7 @@ function footerForCommit(sha: string): string {
 function prefixForStatus(status: ReviewStatus): string {
   switch (status) {
     case ReviewStatus.WARN:
-      return '⚠️ Warning';
+      return '⚠️ Suggestions';
     case ReviewStatus.ERROR:
       return '❌ Error';
   }

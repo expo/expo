@@ -9,7 +9,10 @@ NSString *ON_NEW_DEEP_LINK_EVENT = @"expo.modules.devlauncher.onnewdeeplink";
 
 @implementation EXDevLauncherInternal
 
-RCT_EXPORT_MODULE()
++ (NSString *)moduleName
+{
+  return @"EXDevLauncherInternal";
+}
 
 - (instancetype)init {
   if (self = [super init]) {

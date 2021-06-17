@@ -7,6 +7,9 @@ import withDevMenu from 'expo-dev-menu/app.plugin';
 import fs from 'fs';
 import path from 'path';
 
+import withGeneratedAndroidScheme from './withGeneratedAndroidScheme';
+import withGeneratedIosScheme from './withGeneratedIosScheme';
+
 const pkg = require('expo-dev-client/package.json');
 
 const REACT_NATIVE_CONFIG_JS = `// File created by expo-dev-client/app.plugin.js
@@ -48,6 +51,8 @@ function withDevClient(config: ExpoConfig) {
   config = withDevMenu(config);
   config = withDevLauncher(config);
   config = withReactNativeConfigJs(config);
+  config = withGeneratedAndroidScheme(config);
+  config = withGeneratedIosScheme(config);
   return config;
 }
 

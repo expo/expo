@@ -154,8 +154,9 @@ export type TypeDeclarationContentData = {
 };
 
 export type TypeDeclarationData = {
+  name?: string;
   declaration?: TypeDeclarationContentData;
-  type: string;
+  type?: string;
   types: TypeValueData[];
   typeArguments?: TypeDefinitionData[];
 };
@@ -178,4 +179,5 @@ export type TypeValueData = {
   value?: string | boolean | null;
   name?: string;
   declaration?: TypeDeclarationContentData;
+  typeArguments?: TypeDefinitionData[];
 };

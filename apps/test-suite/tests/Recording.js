@@ -459,9 +459,10 @@ export async function test(t) {
       });
 
       t.it('creates and starts recording', async () => {
-        recordingObject = await Audio.Recording.createAsync(
+        const { recording } = await Audio.Recording.createAsync(
           Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY
         );
+        recordingObject = recording;
         await retryForStatus(recordingObject, { isRecording: true });
       });
     });

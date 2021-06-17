@@ -3,6 +3,7 @@ import ReactMarkdown from 'react-markdown';
 
 import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
+import { B, Quote } from '~/components/base/paragraph';
 import { H2, H3Code, H4 } from '~/components/plugins/Headings';
 import { MethodDefinitionData, MethodSignatureData } from '~/components/plugins/api/APIDataTypes';
 import {
@@ -32,6 +33,13 @@ const renderMethod = (
           {name}({parameters?.map(param => param.name).join(', ')})
         </InlineCode>
       </H3Code>
+      {comment?.tags
+        ?.filter(tag => tag.tag === 'deprecated')
+        .map(tag => (
+          <Quote>
+            <B>{tag.text}</B>
+          </Quote>
+        ))}
       {parameters ? <H4>Arguments</H4> : null}
       {parameters ? <UL>{parameters?.map(renderParam)}</UL> : null}
       <CommentTextBlock comment={comment} />
