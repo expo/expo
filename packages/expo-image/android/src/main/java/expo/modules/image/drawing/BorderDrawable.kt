@@ -23,6 +23,7 @@ import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.uimanager.FloatUtil
 import com.facebook.react.modules.i18nmanager.I18nUtil
 import java.util.*
+import kotlin.math.max
 
 /**
  * A modified version of ReactBackgroundDrawable that fixes various issues.
@@ -97,7 +98,7 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
     }
   }
 
-  fun hasRoundedBorders(): Boolean {
+  private fun hasRoundedBorders(): Boolean {
     if (!YogaConstants.isUndefined(mBorderRadius) && mBorderRadius > 0) {
       return true
     }
@@ -157,7 +158,13 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
     if (!FloatUtil.floatsEqual(mBorderWidth!!.getRaw(position), width)) {
       mBorderWidth!![position] = width
       when (position) {
-        Spacing.ALL, Spacing.LEFT, Spacing.BOTTOM, Spacing.RIGHT, Spacing.TOP, Spacing.START, Spacing.END -> mNeedUpdatePathForBorderRadius = true
+        Spacing.ALL,
+        Spacing.LEFT,
+        Spacing.BOTTOM,
+        Spacing.RIGHT,
+        Spacing.TOP,
+        Spacing.START,
+        Spacing.END -> mNeedUpdatePathForBorderRadius = true
       }
       invalidateSelf()
     }
@@ -210,7 +217,7 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
   fun setRadius(radius: Float, position: Int) {
     if (mBorderCornerRadii == null) {
       mBorderCornerRadii = FloatArray(8)
-      Arrays.fill(mBorderCornerRadii, YogaConstants.UNDEFINED)
+      Arrays.fill(mBorderCornerRadii!!, YogaConstants.UNDEFINED)
     }
     if (!FloatUtil.floatsEqual(mBorderCornerRadii!![position], radius)) {
       mBorderCornerRadii!![position] = radius
@@ -222,11 +229,11 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
   val fullBorderRadius: Float
     get() = if (YogaConstants.isUndefined(mBorderRadius)) 0F else mBorderRadius
 
-  fun getBorderRadius(location: BorderRadiusLocation): Float {
+  private fun getBorderRadius(location: BorderRadiusLocation): Float {
     return getBorderRadiusOrDefaultTo(YogaConstants.UNDEFINED, location)
   }
 
-  fun getBorderRadiusOrDefaultTo(
+  private fun getBorderRadiusOrDefaultTo(
     defaultValue: Float, location: BorderRadiusLocation): Float {
     if (mBorderCornerRadii == null) {
       return defaultValue
@@ -251,9 +258,7 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
   /**
    * Similar to Drawable.onLayoutDirectionChanged, but available in APIs < 23.
    */
-  fun onResolvedLayoutDirectionChanged(layoutDirection: Int): Boolean {
-    return false
-  }
+  private fun onResolvedLayoutDirectionChanged(layoutDirection: Int) = false
 
   @get:VisibleForTesting
   var color: Int
@@ -504,14 +509,14 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
       Path.Direction.CW)
     mCenterDrawPath!!.addRoundRect(
       mTempRectForCenterDrawPath!!, floatArrayOf(
-      Math.max(topLeftRadius - borderWidth.left * 0.5f, 0f),
-      Math.max(topLeftRadius - borderWidth.top * 0.5f, 0f),
-      Math.max(topRightRadius - borderWidth.right * 0.5f, 0f),
-      Math.max(topRightRadius - borderWidth.top * 0.5f, 0f),
-      Math.max(bottomRightRadius - borderWidth.right * 0.5f, 0f),
-      Math.max(bottomRightRadius - borderWidth.bottom * 0.5f, 0f),
-      Math.max(bottomLeftRadius - borderWidth.left * 0.5f, 0f),
-      Math.max(bottomLeftRadius - borderWidth.bottom * 0.5f, 0f)
+      max(topLeftRadius - borderWidth.left * 0.5f, 0f),
+      max(topLeftRadius - borderWidth.top * 0.5f, 0f),
+      max(topRightRadius - borderWidth.right * 0.5f, 0f),
+      max(topRightRadius - borderWidth.top * 0.5f, 0f),
+      max(bottomRightRadius - borderWidth.right * 0.5f, 0f),
+      max(bottomRightRadius - borderWidth.bottom * 0.5f, 0f),
+      max(bottomLeftRadius - borderWidth.left * 0.5f, 0f),
+      max(bottomLeftRadius - borderWidth.bottom * 0.5f, 0f)
     ),
       Path.Direction.CW)
     /**
@@ -699,7 +704,7 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
       mInnerBottomRightCorner!!)
   }
 
-  fun getBorderWidthOrDefaultTo(defaultValue: Float, spacingType: Int): Float {
+  private fun getBorderWidthOrDefaultTo(defaultValue: Float, spacingType: Int): Float {
     if (mBorderWidth == null) {
       return defaultValue
     }
@@ -720,7 +725,7 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
   /**
    * For rounded borders we use default "borderWidth" property.
    */
-  val fullBorderWidth: Float
+  private val fullBorderWidth: Float
     get() = if (mBorderWidth != null && !YogaConstants.isUndefined(mBorderWidth!!.getRaw(Spacing.ALL))) mBorderWidth!!.getRaw(Spacing.ALL) else 0f
 
   private fun drawRectangularBackgroundWithBorders(canvas: Canvas) {
@@ -896,14 +901,6 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
     canvas.drawPath(mPathForBorder!!, mPaint)
   }
 
-  private fun getBorderWidth(position: Int): Int {
-    if (mBorderWidth == null) {
-      return 0
-    }
-    val width = mBorderWidth!![position]
-    return if (YogaConstants.isUndefined(width)) -1 else Math.round(width)
-  }
-
   private fun isBorderColorDefined(position: Int): Boolean {
     val rgb = if (mBorderRGB != null) mBorderRGB!![position] else YogaConstants.UNDEFINED
     val alpha = if (mBorderAlpha != null) mBorderAlpha!![position] else YogaConstants.UNDEFINED
@@ -916,7 +913,7 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
     return colorFromAlphaAndRGBComponents(alpha, rgb)
   }
 
-  val directionAwareBorderInsets: RectF
+  private val directionAwareBorderInsets: RectF
     get() {
       val borderWidth = getBorderWidthOrDefaultTo(0f, Spacing.ALL)
       val borderTopWidth = getBorderWidthOrDefaultTo(borderWidth, Spacing.TOP)
@@ -1035,7 +1032,7 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
        */
       val x = x2 + ellipseCenterX
       val y = y2 + ellipseCenterY
-      if (!java.lang.Double.isNaN(x) && !java.lang.Double.isNaN(y)) {
+      if (!x.isNaN() && !y.isNaN()) {
         result.x = x.toFloat()
         result.y = y.toFloat()
       }

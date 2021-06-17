@@ -143,7 +143,7 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
     if (borderDrawable == null) {
       borderDrawable = BorderDrawable(context)
       borderDrawable!!.callback = this
-      val borderRadii = outlineProvider.borderRadii
+      val borderRadii = outlineProvider.borderRadiiConfig
       for (i in borderRadii.indices) {
         var borderRadius = borderRadii[i]
         borderRadius = if (!YogaConstants.isUndefined(borderRadius)) PixelUtil.toPixelFromDIP(borderRadius) else borderRadius

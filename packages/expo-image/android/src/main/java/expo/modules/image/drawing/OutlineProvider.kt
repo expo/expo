@@ -14,74 +14,97 @@ import com.facebook.yoga.YogaConstants
 import java.util.*
 
 class OutlineProvider(private val mContext: Context) : ViewOutlineProvider() {
-  private var mLayoutDirection: Int
-  private val mBounds: RectF
-  val borderRadii: FloatArray
-  private val mCornerRadii: FloatArray
-  private var mCornerRadiiInvalidated: Boolean
-  private val mConvexPath: Path
-  private var mConvexPathInvalidated: Boolean
-  private fun updateCornerRadiiIfNeeded() {
-    if (mCornerRadiiInvalidated) {
-      val isRTL = mLayoutDirection == View.LAYOUT_DIRECTION_RTL
-      val isRTLSwap = I18nUtil.getInstance().doLeftAndRightSwapInRTL(mContext)
-      updateCornerRadius(
-        CornerRadius.TOP_LEFT,
-        BorderRadiusConfig.TOP_LEFT,
-        BorderRadiusConfig.TOP_RIGHT,
-        BorderRadiusConfig.TOP_START,
-        BorderRadiusConfig.TOP_END,
-        isRTL,
-        isRTLSwap
-      )
-      updateCornerRadius(
-        CornerRadius.TOP_RIGHT,
-        BorderRadiusConfig.TOP_RIGHT,
-        BorderRadiusConfig.TOP_LEFT,
-        BorderRadiusConfig.TOP_END,
-        BorderRadiusConfig.TOP_START,
-        isRTL,
-        isRTLSwap
-      )
-      updateCornerRadius(
-        CornerRadius.BOTTOM_LEFT,
-        BorderRadiusConfig.BOTTOM_LEFT,
-        BorderRadiusConfig.BOTTOM_RIGHT,
-        BorderRadiusConfig.BOTTOM_START,
-        BorderRadiusConfig.BOTTOM_END,
-        isRTL,
-        isRTLSwap
-      )
-      updateCornerRadius(
-        CornerRadius.BOTTOM_RIGHT,
-        BorderRadiusConfig.BOTTOM_RIGHT,
-        BorderRadiusConfig.BOTTOM_LEFT,
-        BorderRadiusConfig.BOTTOM_END,
-        BorderRadiusConfig.BOTTOM_START,
-        isRTL,
-        isRTLSwap
-      )
-      mCornerRadiiInvalidated = false
-      mConvexPathInvalidated = true
-    }
+  enum class BorderRadiusConfig {
+    ALL, TOP_LEFT, TOP_RIGHT, BOTTOM_RIGHT, BOTTOM_LEFT, TOP_START, TOP_END, BOTTOM_START, BOTTOM_END
   }
 
-  private fun updateCornerRadius(outputPosition: CornerRadius, inputPosition: BorderRadiusConfig, oppositePosition: BorderRadiusConfig, startPosition: BorderRadiusConfig, endPosition: BorderRadiusConfig, isRTL: Boolean, isRTLSwap: Boolean) {
-    var radius = borderRadii[inputPosition.ordinal]
+  enum class CornerRadius {
+    TOP_LEFT, TOP_RIGHT, BOTTOM_RIGHT, BOTTOM_LEFT
+  }
+
+  private var mLayoutDirection = View.LAYOUT_DIRECTION_LTR
+  private val mBounds = RectF()
+  val borderRadiiConfig = FloatArray(9)
+  private val mCornerRadii = FloatArray(4)
+  private var mCornerRadiiInvalidated = true
+  private val mConvexPath = Path()
+  private var mConvexPathInvalidated = true
+
+  init {
+    Arrays.fill(borderRadiiConfig, YogaConstants.UNDEFINED)
+    updateCornerRadiiIfNeeded()
+  }
+
+  private fun updateCornerRadiiIfNeeded() {
+    if (!mCornerRadiiInvalidated) {
+      return
+    }
+
+    val isRTL = mLayoutDirection == View.LAYOUT_DIRECTION_RTL
+    val isRTLSwap = I18nUtil.getInstance().doLeftAndRightSwapInRTL(mContext)
+    updateCornerRadius(
+      CornerRadius.TOP_LEFT,
+      BorderRadiusConfig.TOP_LEFT,
+      BorderRadiusConfig.TOP_RIGHT,
+      BorderRadiusConfig.TOP_START,
+      BorderRadiusConfig.TOP_END,
+      isRTL,
+      isRTLSwap
+    )
+    updateCornerRadius(
+      CornerRadius.TOP_RIGHT,
+      BorderRadiusConfig.TOP_RIGHT,
+      BorderRadiusConfig.TOP_LEFT,
+      BorderRadiusConfig.TOP_END,
+      BorderRadiusConfig.TOP_START,
+      isRTL,
+      isRTLSwap
+    )
+    updateCornerRadius(
+      CornerRadius.BOTTOM_LEFT,
+      BorderRadiusConfig.BOTTOM_LEFT,
+      BorderRadiusConfig.BOTTOM_RIGHT,
+      BorderRadiusConfig.BOTTOM_START,
+      BorderRadiusConfig.BOTTOM_END,
+      isRTL,
+      isRTLSwap
+    )
+    updateCornerRadius(
+      CornerRadius.BOTTOM_RIGHT,
+      BorderRadiusConfig.BOTTOM_RIGHT,
+      BorderRadiusConfig.BOTTOM_LEFT,
+      BorderRadiusConfig.BOTTOM_END,
+      BorderRadiusConfig.BOTTOM_START,
+      isRTL,
+      isRTLSwap
+    )
+    mCornerRadiiInvalidated = false
+    mConvexPathInvalidated = true
+  }
+
+  private fun updateCornerRadius(
+    outputPosition: CornerRadius,
+    inputPosition: BorderRadiusConfig,
+    oppositePosition: BorderRadiusConfig,
+    startPosition: BorderRadiusConfig,
+    endPosition: BorderRadiusConfig,
+    isRTL: Boolean,
+    isRTLSwap: Boolean) {
+    var radius = borderRadiiConfig[inputPosition.ordinal]
     if (isRTL) {
       if (isRTLSwap) {
-        radius = borderRadii[oppositePosition.ordinal]
+        radius = borderRadiiConfig[oppositePosition.ordinal]
       }
       if (YogaConstants.isUndefined(radius)) {
-        radius = borderRadii[endPosition.ordinal]
+        radius = borderRadiiConfig[endPosition.ordinal]
       }
     } else {
       if (YogaConstants.isUndefined(radius)) {
-        radius = borderRadii[startPosition.ordinal]
+        radius = borderRadiiConfig[startPosition.ordinal]
       }
     }
     if (YogaConstants.isUndefined(radius)) {
-      radius = borderRadii[BorderRadiusConfig.ALL.ordinal]
+      radius = borderRadiiConfig[BorderRadiusConfig.ALL.ordinal]
     }
     if (YogaConstants.isUndefined(radius)) {
       radius = 0f
@@ -90,22 +113,22 @@ class OutlineProvider(private val mContext: Context) : ViewOutlineProvider() {
   }
 
   private fun updateConvexPathIfNeeded() {
-    if (mConvexPathInvalidated) {
-      mConvexPath.reset()
-      mConvexPath.addRoundRect(
-        mBounds, floatArrayOf(
-        mCornerRadii[CornerRadius.TOP_LEFT.ordinal],
-        mCornerRadii[CornerRadius.TOP_LEFT.ordinal],
-        mCornerRadii[CornerRadius.TOP_RIGHT.ordinal],
-        mCornerRadii[CornerRadius.TOP_RIGHT.ordinal],
-        mCornerRadii[CornerRadius.BOTTOM_RIGHT.ordinal],
-        mCornerRadii[CornerRadius.BOTTOM_RIGHT.ordinal],
-        mCornerRadii[CornerRadius.BOTTOM_LEFT.ordinal],
-        mCornerRadii[CornerRadius.BOTTOM_LEFT.ordinal]
-      ),
-        Path.Direction.CW)
-      mConvexPathInvalidated = false
+    if (!mConvexPathInvalidated) {
+      return
     }
+    mConvexPath.reset()
+    mConvexPath.addRoundRect(
+      mBounds, floatArrayOf(
+      mCornerRadii[CornerRadius.TOP_LEFT.ordinal],
+      mCornerRadii[CornerRadius.TOP_LEFT.ordinal],
+      mCornerRadii[CornerRadius.TOP_RIGHT.ordinal],
+      mCornerRadii[CornerRadius.TOP_RIGHT.ordinal],
+      mCornerRadii[CornerRadius.BOTTOM_RIGHT.ordinal],
+      mCornerRadii[CornerRadius.BOTTOM_RIGHT.ordinal],
+      mCornerRadii[CornerRadius.BOTTOM_LEFT.ordinal],
+      mCornerRadii[CornerRadius.BOTTOM_LEFT.ordinal]
+    ), Path.Direction.CW)
+    mConvexPathInvalidated = false
   }
 
   fun hasEqualCorners(): Boolean {
@@ -120,8 +143,8 @@ class OutlineProvider(private val mContext: Context) : ViewOutlineProvider() {
   }
 
   fun setBorderRadius(radius: Float, position: Int): Boolean {
-    if (!FloatUtil.floatsEqual(borderRadii[position], radius)) {
-      borderRadii[position] = radius
+    if (!FloatUtil.floatsEqual(borderRadiiConfig[position], radius)) {
+      borderRadiiConfig[position] = radius
       mCornerRadiiInvalidated = true
       return true
     }
@@ -142,7 +165,10 @@ class OutlineProvider(private val mContext: Context) : ViewOutlineProvider() {
     val top = 0
     val right = view.width
     val bottom = view.height
-    if (mBounds.left != left.toFloat() || mBounds.top != top.toFloat() || mBounds.right != right.toFloat() || mBounds.bottom != bottom.toFloat()) {
+    if (mBounds.left != left.toFloat()
+      || mBounds.top != top.toFloat()
+      || mBounds.right != right.toFloat()
+      || mBounds.bottom != bottom.toFloat()) {
       mBounds[left.toFloat(), top.toFloat(), right.toFloat()] = bottom.toFloat()
       mCornerRadiiInvalidated = true
     }
@@ -176,25 +202,5 @@ class OutlineProvider(private val mContext: Context) : ViewOutlineProvider() {
       updateConvexPathIfNeeded()
       canvas.clipPath(mConvexPath)
     }
-  }
-
-  enum class BorderRadiusConfig {
-    ALL, TOP_LEFT, TOP_RIGHT, BOTTOM_RIGHT, BOTTOM_LEFT, TOP_START, TOP_END, BOTTOM_START, BOTTOM_END
-  }
-
-  enum class CornerRadius {
-    TOP_LEFT, TOP_RIGHT, BOTTOM_RIGHT, BOTTOM_LEFT
-  }
-
-  init {
-    mLayoutDirection = View.LAYOUT_DIRECTION_LTR
-    mBounds = RectF()
-    borderRadii = FloatArray(9)
-    Arrays.fill(borderRadii, YogaConstants.UNDEFINED)
-    mCornerRadii = FloatArray(4)
-    mCornerRadiiInvalidated = true
-    mConvexPath = Path()
-    mConvexPathInvalidated = true
-    updateCornerRadiiIfNeeded()
   }
 }
