@@ -113,6 +113,11 @@ static NSString * const EXUpdatesErrorEventName = @"error";
                                    reason:@"expo-updates is enabled, but no valid URL is configured under EXUpdatesURL. If you are making a release build for the first time, make sure you have run `expo publish` at least once."
                                  userInfo:@{}];
   }
+  if (!_config.scopeKey) {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:@"expo-updates was configured with no scope key. Make sure a valid URL is configured under EXUpdatesURL."
+                                 userInfo:@{}];
+  }
 
   _isStarted = YES;
 
