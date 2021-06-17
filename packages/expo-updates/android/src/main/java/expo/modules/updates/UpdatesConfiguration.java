@@ -220,8 +220,6 @@ public class UpdatesConfiguration {
     if (mScopeKey == null) {
       if (mUpdateUrl != null) {
         mScopeKey = getNormalizedUrlOrigin(mUpdateUrl);
-      } else {
-        throw new AssertionError("expo-updates must be configured with a valid update URL or scope key.");
       }
     }
   }

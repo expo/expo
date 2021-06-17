@@ -56,7 +56,7 @@ public class UpdatesDevLauncherController implements UpdatesInterface {
     UpdatesConfiguration updatesConfiguration = new UpdatesConfiguration()
             .loadValuesFromMetadata(context)
             .loadValuesFromMap(configuration);
-    if (updatesConfiguration.getUpdateUrl() == null) {
+    if (updatesConfiguration.getUpdateUrl() == null || updatesConfiguration.getScopeKey() == null) {
       callback.onFailure(new Exception("Failed to load update: UpdatesConfiguration object must include a valid update URL"));
       return;
     }
