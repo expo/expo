@@ -64,7 +64,7 @@ This menu gives you access to several functions which are useful for debugging, 
 - iOS Device: Shake the device a little bit, or touch 3 fingers to the screen.
 - iOS Simulator: Hit `Ctrl-Cmd-Z` on a Mac in the emulator to simulate the shake gesture, or press `Cmd+D`.
 - Android Device: Shake the device vertically a little bit, or run `adb shell input keyevent 82` in your terminal window if your device is connected via USB.
-- Android Emulator: Either hit `Cmd+M`, or run `adb shell input keyevent 82` in your terminal window.
+- Android Emulator: Either hit `Cmd+M` (`Ctrl+M` on Windows), or run `adb shell input keyevent 82` in your terminal window.
 
 The Developer Menu gives you a couple different functionalities. A few are pretty self-explanatory, like:
 
