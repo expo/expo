@@ -1,4 +1,4 @@
-import {Command} from '@expo/commander';
+import { Command } from '@expo/commander';
 import chalk from 'chalk';
 import {Application, TSConfigReader, TypeDocReader} from 'typedoc';
 import fs from 'fs-extra';
