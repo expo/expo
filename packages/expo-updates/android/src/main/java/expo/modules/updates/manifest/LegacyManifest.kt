@@ -107,12 +107,7 @@ class LegacyManifest private constructor(
         }
       }
 
-      val runtimeVersion = if (rawManifest.getRuntimeVersion() != null) {
-        rawManifest.getRuntimeVersion()
-      } else {
-        rawManifest.getSDKVersion()
-      }
-
+      val runtimeVersion = rawManifest.getRuntimeVersion() ?: rawManifest.getSDKVersion()
       val bundleUrl = Uri.parse(rawManifest.getBundleURL())
       val bundledAssets = rawManifest.getBundledAssets()
       return LegacyManifest(
