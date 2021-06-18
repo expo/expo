@@ -2,7 +2,7 @@
 
 ## Unpublished
 
-- Add `accessTokenExpirationDate` in `Google.logInAsync`'s return value, `LogInResult`.
+- Add `accessTokenExpirationDate` in `Google.logInAsync`'s return value, `LogInResult`. ([#13342](https://github.com/expo/expo/pull/13342) by [@grimmer0125](https://github.com/grimmer0125))
 
 ### 🛠 Breaking changes
 
