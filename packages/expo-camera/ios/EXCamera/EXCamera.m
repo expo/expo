@@ -534,20 +534,24 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     UM_WEAKIFY(self);
     dispatch_async(self.sessionQueue, ^{
       UM_STRONGIFY(self);
-      if (!self) {
-        reject(@"E_IMAGE_SAVE_FAILED", @"Camera view has been unmounted.", nil);
-        return;
+      // it is possible that the session has been invalidated at this point
+      // for example, the video codec option is invalid and so this call has already rejected
+      if (self.movieFileOutput != nil) {
+        if (!self) {
+          reject(@"E_IMAGE_SAVE_FAILED", @"Camera view has been unmounted.", nil);
+          return;
+        }
+        if (!self.fileSystem) {
+          reject(@"E_IMAGE_SAVE_FAILED", @"No file system module", nil);
+          return;
+        }
+        NSString *directory = [self.fileSystem.cachesDirectory stringByAppendingPathComponent:@"Camera"];
+        NSString *path = [self.fileSystem generatePathInDirectory:directory withExtension:@".mov"];
+        NSURL *outputURL = [[NSURL alloc] initFileURLWithPath:path];
+        [self.movieFileOutput startRecordingToOutputFileURL:outputURL recordingDelegate:self];
+        self.videoRecordedResolve = resolve;
+        self.videoRecordedReject = reject;
       }
-      if (!self.fileSystem) {
-        reject(@"E_IMAGE_SAVE_FAILED", @"No file system module", nil);
-        return;
-      }
-      NSString *directory = [self.fileSystem.cachesDirectory stringByAppendingPathComponent:@"Camera"];
-      NSString *path = [self.fileSystem generatePathInDirectory:directory withExtension:@".mov"];
-      NSURL *outputURL = [[NSURL alloc] initFileURLWithPath:path];
-      [self.movieFileOutput startRecordingToOutputFileURL:outputURL recordingDelegate:self];
-      self.videoRecordedResolve = resolve;
-      self.videoRecordedReject = reject;
     });
   }
 }
