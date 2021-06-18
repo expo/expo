@@ -636,25 +636,25 @@ async function renameHermesEngine(version: string) {
 }
 
 export async function addVersionAsync(version: string) {
-  console.log(' 🛠   1/10: Updating android/versioned-react-native...');
+  console.log(' 🛠   1/11: Updating android/versioned-react-native...');
   await updateVersionedReactNativeAsync();
-  console.log(' ✅  1/10: Finished\n\n');
+  console.log(' ✅  1/11: Finished\n\n');
 
-  console.log(' 🛠   2/10: Creating versioned expoview package...');
+  console.log(' 🛠   2/11: Creating versioned expoview package...');
   await spawnAsync('./android-copy-expoview.sh', [version], {
     shell: true,
     cwd: SCRIPT_DIR,
   });
 
-  console.log(' ✅  2/10: Finished\n\n');
+  console.log(' ✅  2/11: Finished\n\n');
 
-  console.log(' 🛠   3/10: Renaming JNI libs in android/versioned-react-native and Reanimated...');
+  console.log(' 🛠   3/11: Renaming JNI libs in android/versioned-react-native and Reanimated...');
   await renameJniLibsAsync(version);
-  console.log(' ✅  3/10: Finished\n\n');
+  console.log(' ✅  3/11: Finished\n\n');
 
-  console.log(' 🛠   4/10: Renaming libhermes.so...');
+  console.log(' 🛠   4/11: Renaming libhermes.so...');
   await renameHermesEngine(version);
-  console.log(' ✅  4/10: Finished\n\n');
+  console.log(' ✅  4/11: Finished\n\n');
 
   console.log(' 🛠   5/11: Building versioned ReactAndroid AAR...');
   await spawnAsync('./android-build-aar.sh', [version], {
