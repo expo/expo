@@ -22,6 +22,8 @@ import android.view.View
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.uimanager.FloatUtil
 import com.facebook.react.modules.i18nmanager.I18nUtil
+import expo.modules.image.ifYogaUndefinedUse
+import expo.modules.image.isYogaPositive
 import java.util.*
 import kotlin.math.max
 
@@ -99,12 +101,12 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
   }
 
   private fun hasRoundedBorders(): Boolean {
-    if (!YogaConstants.isUndefined(mBorderRadius) && mBorderRadius > 0) {
+    if (isYogaPositive(mBorderRadius)) {
       return true
     }
     if (mBorderCornerRadii != null) {
       for (borderRadii in mBorderCornerRadii!!) {
-        if (!YogaConstants.isUndefined(borderRadii) && borderRadii > 0) {
+        if (isYogaPositive(mBorderRadius)) {
           return true
         }
       }
@@ -142,8 +144,7 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
       super.getOutline(outline)
       return
     }
-    if (!YogaConstants.isUndefined(mBorderRadius) && mBorderRadius > 0
-      || mBorderCornerRadii != null) {
+    if (isYogaPositive(mBorderRadius) || mBorderCornerRadii != null) {
       updatePath()
       outline.setConvexPath(mPathForBorderRadiusOutline!!)
     } else {
@@ -152,11 +153,9 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
   }
 
   fun setBorderWidth(position: Int, width: Float) {
-    if (mBorderWidth == null) {
-      mBorderWidth = Spacing()
-    }
-    if (!FloatUtil.floatsEqual(mBorderWidth!!.getRaw(position), width)) {
-      mBorderWidth!![position] = width
+    val borderWidth = mBorderWidth ?: Spacing()
+    if (!FloatUtil.floatsEqual(borderWidth.getRaw(position), width)) {
+      borderWidth[position] = width
       when (position) {
         Spacing.ALL,
         Spacing.LEFT,
@@ -166,6 +165,7 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
         Spacing.START,
         Spacing.END -> mNeedUpdatePathForBorderRadius = true
       }
+      mBorderWidth = borderWidth
       invalidateSelf()
     }
   }

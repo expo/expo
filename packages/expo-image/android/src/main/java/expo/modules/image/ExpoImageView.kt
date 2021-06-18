@@ -58,15 +58,16 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
 
     // Setting the border-radius doesn't necessarily mean that a border
     // should to be drawn. Only update the border-drawable when needed.
-    if (borderDrawable != null) {
-      radius = if (!YogaConstants.isUndefined(radius)) PixelUtil.toPixelFromDIP(radius) else radius
+    borderDrawable?.let {
+      radius = radius.ifYogaDefinedUse(PixelUtil::toPixelFromDIP)
       if (position == 0) {
-        borderDrawable!!.setRadius(radius)
+        it.setRadius(radius)
       } else {
-        borderDrawable!!.setRadius(radius, position - 1)
+        it.setRadius(radius, position - 1)
       }
     }
   }
+
 
   internal fun setBorderWidth(position: Int, width: Float) {
     getOrCreateBorderDrawable().setBorderWidth(position, width)
@@ -146,8 +147,7 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
       borderDrawable!!.callback = this
       val borderRadii = outlineProvider.borderRadiiConfig
       for (i in borderRadii.indices) {
-        var borderRadius = borderRadii[i]
-        borderRadius = if (!YogaConstants.isUndefined(borderRadius)) PixelUtil.toPixelFromDIP(borderRadius) else borderRadius
+        val borderRadius = borderRadii[i].ifYogaDefinedUse(PixelUtil::toPixelFromDIP)
         if (i == 0) {
           borderDrawable!!.setRadius(borderRadius)
         } else {

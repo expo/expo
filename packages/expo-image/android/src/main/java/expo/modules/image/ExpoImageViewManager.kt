@@ -66,7 +66,7 @@ class ExpoImageViewManager(applicationContext: ReactApplicationContext) : Simple
     ViewProps.BORDER_BOTTOM_END_RADIUS
   ], defaultFloat = YogaConstants.UNDEFINED)
   fun setBorderRadius(view: ExpoImageView, index: Int, borderRadius: Float) {
-    val radius = if (!YogaConstants.isUndefined(borderRadius) && borderRadius < 0) YogaConstants.UNDEFINED else borderRadius
+    val radius = makeYogaUndefinedIfNegative(borderRadius)
     view.setBorderRadius(index, radius)
   }
 
@@ -80,14 +80,8 @@ class ExpoImageViewManager(applicationContext: ReactApplicationContext) : Simple
     ViewProps.BORDER_END_WIDTH
   ], defaultFloat = YogaConstants.UNDEFINED)
   fun setBorderWidth(view: ExpoImageView, index: Int, width: Float) {
-    var width = width
-    if (!YogaConstants.isUndefined(width) && width < 0) {
-      width = YogaConstants.UNDEFINED
-    }
-    if (!YogaConstants.isUndefined(width)) {
-      width = PixelUtil.toPixelFromDIP(width)
-    }
-    view.setBorderWidth(BORDER_LOCATIONS[index], width)
+    val pixelWidth = makeYogaUndefinedIfNegative(width).ifYogaDefinedUse(PixelUtil::toPixelFromDIP)
+    view.setBorderWidth(BORDER_LOCATIONS[index], pixelWidth)
   }
 
   @ReactPropGroup(names = [
