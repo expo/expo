@@ -1,7 +1,12 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withDevLauncherAppDelegate = exports.modifyAppDelegate = void 0;
 const config_plugins_1 = require("@expo/config-plugins");
+const semver_1 = __importDefault(require("semver"));
+const resolveExpoUpdatesVersion_1 = require("./resolveExpoUpdatesVersion");
 const DEV_LAUNCHER_APP_DELEGATE_SOURCE_FOR_URL = `  #if defined(EX_DEV_LAUNCHER_ENABLED)
   return [[EXDevLauncherController sharedInstance] sourceUrl];
   #else
@@ -16,6 +21,11 @@ const DEV_LAUNCHER_APP_DELEGATE_ON_DEEP_LINK = `#if defined(EX_DEV_LAUNCHER_ENAB
 const DEV_LAUNCHER_APP_DELEGATE_IOS_IMPORT = `
 #if defined(EX_DEV_LAUNCHER_ENABLED)
 #include <EXDevLauncher/EXDevLauncherController.h>
+#endif`;
+const DEV_LAUNCHER_UPDATES_APP_DELEGATE_IOS_IMPORT = `
+#if defined(EX_DEV_LAUNCHER_ENABLED)
+#include <EXDevLauncher/EXDevLauncherController.h>
+#import <EXUpdates/EXUpdatesDevLauncherController.h>
 #endif`;
 const DEV_LAUNCHER_APP_DELEGATE_CONTROLLER_DELEGATE = `
 #if defined(EX_DEV_LAUNCHER_ENABLED)
@@ -38,6 +48,8 @@ const DEV_LAUNCHER_APP_DELEGATE_INIT = `#if defined(EX_DEV_LAUNCHER_ENABLED)
       #else
         [self initializeReactNativeApp];
       #endif`;
+const DEV_LAUNCHER_UPDATES_APP_DELEGATE_INIT = `EXDevLauncherController *controller = [EXDevLauncherController sharedInstance];
+        controller.updatesInterface = [EXUpdatesDevLauncherController sharedInstance];`;
 const DEV_LAUNCHER_APP_DELEGATE_BRIDGE = `#if defined(EX_DEV_LAUNCHER_ENABLED)
     NSDictionary *launchOptions = [EXDevLauncherController.sharedInstance getLaunchOptions];
   #else
@@ -50,14 +62,22 @@ const DEV_MENU_IOS_INIT = `
 #if defined(EX_DEV_MENU_ENABLED)
   [DevMenuManager configureWithBridge:bridge];
 #endif`;
-function modifyAppDelegate(appDelegate) {
-    if (!appDelegate.includes(DEV_LAUNCHER_APP_DELEGATE_IOS_IMPORT)) {
+function modifyAppDelegate(appDelegate, expoUpdatesVersion = null) {
+    const shouldAddUpdatesIntegration = expoUpdatesVersion != null && semver_1.default.gt(expoUpdatesVersion, '0.6.0');
+    if (!appDelegate.includes(DEV_LAUNCHER_APP_DELEGATE_IOS_IMPORT) &&
+        !appDelegate.includes(DEV_LAUNCHER_UPDATES_APP_DELEGATE_IOS_IMPORT)) {
         const lines = appDelegate.split('\n');
-        lines.splice(1, 0, DEV_LAUNCHER_APP_DELEGATE_IOS_IMPORT);
+        lines.splice(1, 0, shouldAddUpdatesIntegration
+            ? DEV_LAUNCHER_UPDATES_APP_DELEGATE_IOS_IMPORT
+            : DEV_LAUNCHER_APP_DELEGATE_IOS_IMPORT);
         appDelegate = lines.join('\n');
     }
     if (!appDelegate.includes(DEV_LAUNCHER_APP_DELEGATE_INIT)) {
         appDelegate = appDelegate.replace(/(didFinishLaunchingWithOptions([^}])*)\[self initializeReactNativeApp\];(([^}])*})/, `$1${DEV_LAUNCHER_APP_DELEGATE_INIT}$3`);
+    }
+    if (shouldAddUpdatesIntegration &&
+        !appDelegate.includes(DEV_LAUNCHER_UPDATES_APP_DELEGATE_INIT)) {
+        appDelegate = appDelegate.replace('EXDevLauncherController *controller = [EXDevLauncherController sharedInstance];', DEV_LAUNCHER_UPDATES_APP_DELEGATE_INIT);
     }
     if (!appDelegate.includes(DEV_LAUNCHER_APP_DELEGATE_BRIDGE)) {
         appDelegate = appDelegate.replace('RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:self.launchOptions];', DEV_LAUNCHER_APP_DELEGATE_BRIDGE);
@@ -82,7 +102,14 @@ exports.modifyAppDelegate = modifyAppDelegate;
 exports.withDevLauncherAppDelegate = config => {
     return config_plugins_1.withAppDelegate(config, config => {
         if (config.modResults.language === 'objc') {
-            config.modResults.contents = modifyAppDelegate(config.modResults.contents);
+            let expoUpdatesVersion;
+            try {
+                expoUpdatesVersion = resolveExpoUpdatesVersion_1.resolveExpoUpdatesVersion(config.modRequest.projectRoot);
+            }
+            catch (e) {
+                config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', `Failed to check compatibility with expo-updates - ${e}`);
+            }
+            config.modResults.contents = modifyAppDelegate(config.modResults.contents, expoUpdatesVersion);
         }
         else {
             config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', 'Swift AppDelegate files are not supported yet.');
