@@ -10,6 +10,7 @@
 {
   __weak RCTBridge *_bridge;
   UISearchController *_controller;
+  UIColor *_textColor;
 }
 
 @synthesize controller = _controller;
@@ -54,15 +55,40 @@
 
 - (void)setBarTintColor:(UIColor *)barTintColor
 {
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
   if (@available(iOS 13.0, *)) {
     [_controller.searchBar.searchTextField setBackgroundColor:barTintColor];
   }
+#endif
+}
+
+- (void)setTextColor:(UIColor *)textColor
+{
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+  _textColor = textColor;
+  if (@available(iOS 13.0, *)) {
+    [_controller.searchBar.searchTextField setTextColor:_textColor];
+  }
+#endif
 }
 
 #pragma mark delegate methods
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+  if (@available(iOS 13.0, *)) {
+    // for some reason, the color does not change when set at the beginning,
+    // so we apply it again here
+    if(_textColor != nil) {
+      [_controller.searchBar.searchTextField setTextColor:_textColor];
+    }
+  }
+#endif
+  
   [_controller.searchBar setShowsCancelButton:YES animated:YES];
   [self becomeFirstResponder];
 
@@ -131,6 +157,7 @@ RCT_EXPORT_VIEW_PROPERTY(hideWhenScrolling, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(autoCapitalize, UITextAutocapitalizationType)
 RCT_EXPORT_VIEW_PROPERTY(placeholder, NSString)
 RCT_EXPORT_VIEW_PROPERTY(barTintColor, UIColor)
+RCT_EXPORT_VIEW_PROPERTY(textColor, UIColor)
 
 RCT_EXPORT_VIEW_PROPERTY(onChangeText, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onCancelButtonPress, RCTBubblingEventBlock)
