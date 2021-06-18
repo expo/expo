@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import host.exp.expoview.R;
+
 public class ScreenStack extends ScreenContainer<ScreenStackFragment> {
 
   private static final String BACK_STACK_TAG = "RN_SCREEN_LAST";
