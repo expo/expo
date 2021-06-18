@@ -7,7 +7,7 @@ sidebar_title: Using Hermes
 
 [Hermes](https://hermesengine.dev/) is a JavaScript engine optimized for React Native. By compiling JavaScript into bytecode ahead of time, Hermes can improve your app start-up time. The binary size of Hermes is also smaller than other JavaScript engines, such as JavaScriptCore (JSC). It also uses less memory at runtime, which is particularly valuable on lower-end Android devices.
 
-A limitation with JavaScriptCore is that the debugger does not work with modules that use [JSI](https://github.com/react-native-community/discussions-and-proposals/issues/91). This means that if your app uses [react-native-reanimated](https://github.com/software-mansion/react-native-reanimated) version 2, for example, remote JS debugging will not work](https://docs.swmansion.com/react-native-reanimated/docs/#known-problems-and-limitations). Hermes makes it possible to debug your app even when using JSI modules.
+A limitation with JavaScriptCore is that the debugger does not work with modules that use [JSI](https://github.com/react-native-community/discussions-and-proposals/issues/91). This means that if your app uses [react-native-reanimated](https://github.com/software-mansion/react-native-reanimated) version 2, for example, [remote JS debugging will not work](https://docs.swmansion.com/react-native-reanimated/docs/#known-problems-and-limitations). Hermes makes it possible to debug your app even when using JSI modules.
 
 ## Android setup
 
