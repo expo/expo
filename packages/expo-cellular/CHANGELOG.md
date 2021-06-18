@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 3.2.0 — 2021-06-16
+
+### 🎉 New features
+
 - [plugin] Created config plugin for applying permissions on Android ([#13175](https://github.com/expo/expo/pull/13175) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes

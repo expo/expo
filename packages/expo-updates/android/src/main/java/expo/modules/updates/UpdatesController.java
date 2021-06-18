@@ -276,6 +276,9 @@ public class UpdatesController {
     if (!mUpdatesConfiguration.isEnabled()) {
       mLauncher = new NoDatabaseLauncher(context, mUpdatesConfiguration);
     }
+    if (mUpdatesConfiguration.getUpdateUrl() == null || mUpdatesConfiguration.getScopeKey() == null) {
+      throw new AssertionError("expo-updates is enabled, but no valid URL is configured in AndroidManifest.xml. If you are making a release build for the first time, make sure you have run `expo publish` at least once.");
+    }
     if (mUpdatesDirectory == null) {
       mLauncher = new NoDatabaseLauncher(context, mUpdatesConfiguration, mUpdatesDirectoryException);
       mIsEmergencyLaunch = true;

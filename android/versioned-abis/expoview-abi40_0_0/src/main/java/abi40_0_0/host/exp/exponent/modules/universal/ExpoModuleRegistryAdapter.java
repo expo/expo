@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import expo.modules.updates.manifest.raw.RawManifest;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 import abi40_0_0.host.exp.exponent.modules.api.notifications.channels.ScopedNotificationsChannelsProvider;
 import host.exp.exponent.utils.ScopedContext;
 import abi40_0_0.host.exp.exponent.modules.api.notifications.ScopedNotificationsCategoriesSerializer;
@@ -38,17 +38,17 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     super(moduleRegistryProvider);
   }
 
-  public List<NativeModule> createNativeModules(ScopedContext scopedContext, ExperienceId experienceId, Map<String, Object> experienceProperties, RawManifest manifest, List<NativeModule> otherModules) {
+  public List<NativeModule> createNativeModules(ScopedContext scopedContext, ExperienceKey experienceKey, Map<String, Object> experienceProperties, RawManifest manifest, String experienceStableLegacyId, List<NativeModule> otherModules) {
     ModuleRegistry moduleRegistry = mModuleRegistryProvider.get(scopedContext);
 
     // Overriding sensor services from expo-sensors for scoped implementations using kernel services
-    moduleRegistry.registerInternalModule(new ScopedAccelerometerService(experienceId));
-    moduleRegistry.registerInternalModule(new ScopedGravitySensorService(experienceId));
-    moduleRegistry.registerInternalModule(new ScopedGyroscopeService(experienceId));
-    moduleRegistry.registerInternalModule(new ScopedLinearAccelerationSensorService(experienceId));
-    moduleRegistry.registerInternalModule(new ScopedMagnetometerService(experienceId));
-    moduleRegistry.registerInternalModule(new ScopedMagnetometerUncalibratedService(experienceId));
-    moduleRegistry.registerInternalModule(new ScopedRotationVectorSensorService(experienceId));
+    moduleRegistry.registerInternalModule(new ScopedAccelerometerService(experienceKey));
+    moduleRegistry.registerInternalModule(new ScopedGravitySensorService(experienceKey));
+    moduleRegistry.registerInternalModule(new ScopedGyroscopeService(experienceKey));
+    moduleRegistry.registerInternalModule(new ScopedLinearAccelerationSensorService(experienceKey));
+    moduleRegistry.registerInternalModule(new ScopedMagnetometerService(experienceKey));
+    moduleRegistry.registerInternalModule(new ScopedMagnetometerUncalibratedService(experienceKey));
+    moduleRegistry.registerInternalModule(new ScopedRotationVectorSensorService(experienceKey));
     moduleRegistry.registerInternalModule(new SharedCookiesDataSourceFactoryProvider());
 
     // Overriding expo-constants/ConstantsService -- binding provides manifest and other expo-related constants
@@ -61,10 +61,10 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     moduleRegistry.registerExportedModule(new ScopedFileSystemModule(scopedContext));
 
     // Overriding expo-error-recovery ErrorRecoveryModule
-    moduleRegistry.registerExportedModule(new ScopedErrorRecoveryModule(scopedContext, manifest, experienceId));
+    moduleRegistry.registerExportedModule(new ScopedErrorRecoveryModule(scopedContext, manifest, experienceKey));
 
     // Overriding expo-permissions ScopedPermissionsService
-    moduleRegistry.registerInternalModule(new ScopedPermissionsService(scopedContext, experienceId));
+    moduleRegistry.registerInternalModule(new ScopedPermissionsService(scopedContext, experienceKey));
 
     // Overriding expo-updates UpdatesService
     moduleRegistry.registerInternalModule(new UpdatesBinding(scopedContext, experienceProperties));
@@ -73,19 +73,19 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     moduleRegistry.registerExportedModule(new ScopedFacebookModule(scopedContext, manifest));
 
     // Scoping Amplitude
-    moduleRegistry.registerExportedModule(new ScopedAmplitudeModule(scopedContext, experienceId));
+    moduleRegistry.registerExportedModule(new ScopedAmplitudeModule(scopedContext, experienceStableLegacyId));
 
     // Overriding expo-firebase-core
-    moduleRegistry.registerInternalModule(new ScopedFirebaseCoreService(scopedContext, manifest, experienceId));
+    moduleRegistry.registerInternalModule(new ScopedFirebaseCoreService(scopedContext, manifest, experienceKey));
 
     // Overriding expo-notifications classes
-    moduleRegistry.registerExportedModule(new ScopedNotificationsEmitter(scopedContext, experienceId));
-    moduleRegistry.registerExportedModule(new ScopedNotificationsHandler(scopedContext, experienceId));
-    moduleRegistry.registerExportedModule(new ScopedNotificationScheduler(scopedContext, experienceId));
-    moduleRegistry.registerExportedModule(new ScopedExpoNotificationCategoriesModule(scopedContext, experienceId));
-    moduleRegistry.registerExportedModule(new ScopedExpoNotificationPresentationModule(scopedContext, experienceId));
+    moduleRegistry.registerExportedModule(new ScopedNotificationsEmitter(scopedContext, experienceKey));
+    moduleRegistry.registerExportedModule(new ScopedNotificationsHandler(scopedContext, experienceKey));
+    moduleRegistry.registerExportedModule(new ScopedNotificationScheduler(scopedContext, experienceKey));
+    moduleRegistry.registerExportedModule(new ScopedExpoNotificationCategoriesModule(scopedContext, experienceKey));
+    moduleRegistry.registerExportedModule(new ScopedExpoNotificationPresentationModule(scopedContext, experienceKey));
     moduleRegistry.registerExportedModule(new ScopedServerRegistrationModule(scopedContext));
-    moduleRegistry.registerInternalModule(new ScopedNotificationsChannelsProvider(scopedContext, experienceId));
+    moduleRegistry.registerInternalModule(new ScopedNotificationsChannelsProvider(scopedContext, experienceKey));
     moduleRegistry.registerInternalModule(new ScopedNotificationsCategoriesSerializer());
 
     // ReactAdapterPackage requires ReactContext

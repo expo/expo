@@ -245,20 +245,15 @@ public class Exponent {
     return mApplication;
   }
 
-  public String encodeExperienceId(final String manifestId) throws UnsupportedEncodingException {
+  public static String encodeExperienceId(final String manifestId) throws UnsupportedEncodingException {
     return URLEncoder.encode("experience-" + manifestId, "UTF-8");
   }
-
-
-
-
 
   /*
    *
    * Bundle loading
    *
    */
-
   public interface BundleListener {
     void onBundleLoaded(String localBundlePath);
 
@@ -590,7 +585,7 @@ public class Exponent {
                 manifest,
                 manifestUrl,
                 bundleUrl,
-                manifest.getID(),
+                manifest.getLegacyID(),
                 manifest.getSDKVersion());
           } catch (JSONException e) {
             EXL.e(TAG, e);
@@ -617,7 +612,7 @@ public class Exponent {
 
   private void preloadBundle(final RawManifest manifest, final String manifestUrl, final String bundleUrl, final String id, final String sdkVersion) {
     try {
-      Exponent.getInstance().loadJSBundle(manifest, bundleUrl, Exponent.getInstance().encodeExperienceId(id), sdkVersion, new Exponent.BundleListener() {
+      Exponent.getInstance().loadJSBundle(manifest, bundleUrl, Exponent.encodeExperienceId(id), sdkVersion, new Exponent.BundleListener() {
         @Override
         public void onError(Exception e) {
           EXL.e(TAG, "Couldn't preload bundle: " + e.toString());

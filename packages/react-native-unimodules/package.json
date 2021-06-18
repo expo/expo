@@ -1,6 +1,6 @@
 {
   "name": "react-native-unimodules",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "description": "This library contains the core unimodule infrastructure and a collection of unimodules and interfaces that are commonly depended on by other unimodules.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -40,13 +40,13 @@
     "@unimodules/react-native-adapter": "~6.3.0",
     "chalk": "^2.4.2",
     "expo-asset": "~8.3.2",
-    "expo-constants": "~10.1.3",
-    "expo-file-system": "~11.0.2",
-    "expo-image-loader": "~2.1.1",
-    "expo-modules-core": "~0.0.2",
+    "expo-constants": "~11.0.0",
+    "expo-file-system": "~11.1.0",
+    "expo-image-loader": "~2.2.0",
+    "expo-modules-core": "~0.1.1",
     "find-up": "~5.0.0",
-    "unimodules-app-loader": "~2.1.0",
-    "unimodules-task-manager-interface": "~6.1.0"
+    "unimodules-app-loader": "~2.2.0",
+    "unimodules-task-manager-interface": "~6.2.0"
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"

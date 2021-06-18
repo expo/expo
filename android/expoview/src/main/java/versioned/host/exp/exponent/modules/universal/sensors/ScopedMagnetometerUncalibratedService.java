@@ -6,12 +6,12 @@ import java.util.List;
 import org.unimodules.core.interfaces.InternalModule;
 
 import expo.modules.interfaces.sensors.services.MagnetometerUncalibratedServiceInterface;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.kernel.services.sensors.SubscribableSensorKernelService;
 
 public class ScopedMagnetometerUncalibratedService extends BaseSensorService implements InternalModule, MagnetometerUncalibratedServiceInterface {
-  public ScopedMagnetometerUncalibratedService(ExperienceId experienceId) {
-    super(experienceId);
+  public ScopedMagnetometerUncalibratedService(ExperienceKey experienceKey) {
+    super(experienceKey);
   }
 
   @Override

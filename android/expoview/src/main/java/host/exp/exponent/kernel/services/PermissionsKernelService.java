@@ -8,7 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import host.exp.exponent.Constants;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 
 public class PermissionsKernelService extends BaseKernelService {
@@ -20,9 +20,9 @@ public class PermissionsKernelService extends BaseKernelService {
     mExponentSharedPreferences = exponentSharedPreferences;
   }
 
-  public void grantScopedPermissions(String permission, ExperienceId experienceId) {
+  public void grantScopedPermissions(String permission, ExperienceKey experienceKey) {
     try {
-      JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(experienceId.get());
+      JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(experienceKey);
       if (metadata == null) {
         metadata = new JSONObject();
       }
@@ -45,15 +45,15 @@ public class PermissionsKernelService extends BaseKernelService {
       permissions.put(permission, permissionObject);
       metadata.put(ExponentSharedPreferences.EXPERIENCE_METADATA_PERMISSIONS, permissions);
 
-      mExponentSharedPreferences.updateExperienceMetadata(experienceId.get(), metadata);
+      mExponentSharedPreferences.updateExperienceMetadata(experienceKey, metadata);
     } catch (JSONException e) {
       e.printStackTrace();
     }
   }
 
-  public void revokeScopedPermissions(String permission, ExperienceId experienceId) {
+  public void revokeScopedPermissions(String permission, ExperienceKey experienceKey) {
     try {
-      JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(experienceId.get());
+      JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(experienceKey);
       if (metadata == null) {
         return;
       }
@@ -63,7 +63,7 @@ public class PermissionsKernelService extends BaseKernelService {
         if (permissions.has(permission)) {
           permissions.remove(permission);
           metadata.put(ExponentSharedPreferences.EXPERIENCE_METADATA_PERMISSIONS, permissions);
-          mExponentSharedPreferences.updateExperienceMetadata(experienceId.get(), metadata);
+          mExponentSharedPreferences.updateExperienceMetadata(experienceKey, metadata);
         }
       }
     } catch (JSONException e) {
@@ -71,12 +71,12 @@ public class PermissionsKernelService extends BaseKernelService {
     }
   }
 
-  public boolean hasGrantedPermissions(String permission, ExperienceId experienceId) {
+  public boolean hasGrantedPermissions(String permission, ExperienceKey experienceKey) {
     // we don't want to worry about per-experience permissions for shell apps
     if (Constants.isStandaloneApp()) {
       return true;
     }
-    JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(experienceId.get());
+    JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(experienceKey);
     if (metadata == null) {
       return false;
     }
@@ -95,7 +95,7 @@ public class PermissionsKernelService extends BaseKernelService {
     return false;
   }
 
-  public int getPermissions(int globalPermissionStatus, PackageManager packageManager, String permission, ExperienceId experienceId) {
+  public int getPermissions(int globalPermissionStatus, PackageManager packageManager, String permission, ExperienceKey experienceKey) {
     // only these permissions, which show a dialog to the user should be scoped.
     boolean isDangerousPermission;
     try {
@@ -109,7 +109,7 @@ public class PermissionsKernelService extends BaseKernelService {
     }
 
     if (globalPermissionStatus == PackageManager.PERMISSION_GRANTED &&
-      hasGrantedPermissions(permission, experienceId)) {
+      hasGrantedPermissions(permission, experienceKey)) {
       return PackageManager.PERMISSION_GRANTED;
     } else {
       return PackageManager.PERMISSION_DENIED;
@@ -122,12 +122,12 @@ public class PermissionsKernelService extends BaseKernelService {
   }
 
   @Override
-  public void onExperienceForegrounded(ExperienceId experienceId) {
+  public void onExperienceForegrounded(ExperienceKey experienceKey) {
 
   }
 
   @Override
-  public void onExperienceBackgrounded(ExperienceId experienceId) {
+  public void onExperienceBackgrounded(ExperienceKey experienceKey) {
 
   }
 }

@@ -14,22 +14,22 @@ import abi40_0_0.com.facebook.react.modules.storage.AsyncStorageModule;
 import abi40_0_0.com.facebook.react.modules.storage.ReactDatabaseSupplier;
 import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.ExponentManifest;
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.kernel.KernelProvider;
 
 @ReactModule(name = ExponentAsyncStorageModule.NAME, canOverrideExistingModule = true)
 public class ExponentAsyncStorageModule extends AsyncStorageModule {
 
-  public static String experienceIdToDatabaseName(String experienceId) throws UnsupportedEncodingException {
-    String experienceIdEncoded = URLEncoder.encode(experienceId, "UTF-8");
-    return "RKStorage-scoped-experience-" + experienceIdEncoded;
+  public static String experienceKeyToDatabaseName(ExperienceKey experienceKey) throws UnsupportedEncodingException {
+    return "RKStorage-scoped-experience-" + experienceKey.getUrlEncodedScopeKey();
   }
 
   public ExponentAsyncStorageModule(ReactApplicationContext reactContext, RawManifest manifest) {
     super(reactContext);
 
     try {
-      String experienceId = manifest.getID();
-      String databaseName = experienceIdToDatabaseName(experienceId);
+      ExperienceKey experienceKey = ExperienceKey.fromRawManifest(manifest);
+      String databaseName = experienceKeyToDatabaseName(experienceKey);
       mReactDatabaseSupplier = new ReactDatabaseSupplier(reactContext, databaseName);
     } catch (JSONException e) {
       KernelProvider.getInstance().handleError("Requires Experience Id");

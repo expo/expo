@@ -6,11 +6,19 @@
 
 ### 🎉 New features
 
-- Backport runtimeVersion to classic Updates ([#13283](https://github.com/expo/expo/pull/13283) by [@jkhales](https://github.com/jkhales))
+- Use stable manifest ID where applicable. ([#12964](https://github.com/expo/expo/pull/12964) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 
+- Improve behavior of dev client (with updates integration) when developer is logged out of expo-cli. ([#13310](https://github.com/expo/expo/pull/13310) by [@esamelson](https://github.com/esamelson))
+
 ### 💡 Others
+
+## 0.7.0 — 2021-06-16
+
+### 🎉 New features
+
+- Backport runtimeVersion to classic Updates ([#13283](https://github.com/expo/expo/pull/13283) by [@jkhales](https://github.com/jkhales))
 
 ## 0.7.0-rc.2 — 2021-06-10
 
