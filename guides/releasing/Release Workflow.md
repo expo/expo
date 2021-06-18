@@ -282,7 +282,8 @@ In the managed workflow, we use our forked `react-native` repository because we 
 - Before proceeding, you may want to publish `native-component-list` for the SDK version that you are testing.
 
 - **Android**:
-  - The process for building a standalone app locally is to publish the app you want to build and then run `et android-shell-app --url <url> --sdkVersion XX.X.X`.
+  - The process for building a standalone app locally is to publish the app you want to build and then run `et android-build-packages` and then `et android-shell-app --url <url> --sdkVersion XX.X.X`. Once the app is built you can find it in `/tmp/shell-debug.apk`.
+  - Once you're done testing this, delete `~/.m2/repository` or you will not be able to build other React Native Android projects.
 - **iOS**:
   - To create a workspace that you can open up in Xcode and build/run/debug:
     - `et ios-shell-app --action create-workspace -u "https://exp.host/@username/project-slug/index.exp?sdkVersion=xx.0.0" -s xx.0.0 --skipRepoUpdate`.
