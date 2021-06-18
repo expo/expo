@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Add `accessTokenExpirationDate` in `Google.logInAsync`'s return value, `LogInResult`.
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
