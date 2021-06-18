@@ -32,7 +32,42 @@ exports[`APISectionUtils.resolveTypeName Record 1`] = `
   <span>
     Record
     &lt;
-    string,any
+    <span>
+      string
+      , 
+    </span>
+    <span>
+      any
+      
+    </span>
+    &gt;
+  </span>
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName Record with union 1`] = `
+<div>
+  <span>
+    Record
+    &lt;
+    <span>
+      string
+      , 
+    </span>
+    <span>
+      <span>
+        number
+         | 
+      </span>
+      <span>
+        boolean
+         | 
+      </span>
+      <span>
+        string
+      </span>
+      
+    </span>
     &gt;
   </span>
 </div>
@@ -114,6 +149,20 @@ exports[`APISectionUtils.resolveTypeName function with arguments 1`] = `
 exports[`APISectionUtils.resolveTypeName generic type 1`] = `
 <div>
   string
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName query type 1`] = `
+<div>
+  <span>
+    React.ComponentProps
+    &lt;
+    <span>
+      View
+      
+    </span>
+    &gt;
+  </span>
 </div>
 `;
 

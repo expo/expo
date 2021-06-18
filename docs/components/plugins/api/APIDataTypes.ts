@@ -34,6 +34,7 @@ export type TypeDefinitionData = {
   };
   queryType?: {
     name: string;
+    type: string;
   };
   typeArguments?: TypeDefinitionData[];
   declaration?: TypeDeclarationContentData;
@@ -112,9 +113,7 @@ export type MethodSignatureData = {
 
 export type PropsDefinitionData = {
   name: string;
-  type: {
-    types: TypeDeclarationData[];
-  };
+  type: TypeDefinitionData;
   kind: TypeDocKind;
 };
 
@@ -127,7 +126,7 @@ export type PropData = {
 
 export type DefaultPropsDefinitionData = {
   name: string;
-  type: TypeDeclarationData;
+  type: TypeDefinitionData;
   kind: TypeDocKind;
 };
 
@@ -136,21 +135,13 @@ export type DefaultPropsDefinitionData = {
 export type TypeGeneralData = {
   name: string;
   comment: CommentData;
-  type: TypeDeclarationData;
+  type: TypeDefinitionData;
   kind: TypeDocKind;
 };
 
 export type TypeDeclarationContentData = {
   signatures: TypeSignaturesData[];
   children?: TypePropertyData[];
-};
-
-export type TypeDeclarationData = {
-  name?: string;
-  declaration?: TypeDeclarationContentData;
-  type?: string;
-  types: TypeDefinitionData[];
-  typeArguments?: TypeDefinitionData[];
 };
 
 export type TypeSignaturesData = {

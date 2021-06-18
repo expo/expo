@@ -2,7 +2,7 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown';
 
 import { InlineCode } from '~/components/base/code';
-import { UL } from '~/components/base/list';
+import { UL, LI } from '~/components/base/list';
 import { B, P } from '~/components/base/paragraph';
 import { H2, H3Code, H4 } from '~/components/plugins/Headings';
 import {
@@ -25,23 +25,17 @@ export type APISectionTypesProps = {
   data: TypeGeneralData[];
 };
 
-const defineLiteralType = (types: TypeDefinitionData[]): string => {
+const defineLiteralType = (types: TypeDefinitionData[]): JSX.Element | null => {
   const uniqueTypes = Array.from(new Set(types.map((t: TypeDefinitionData) => typeof t.value)));
   if (uniqueTypes.length === 1) {
-    return '`' + uniqueTypes[0] + '` - ';
+    return (
+      <>
+        <InlineCode>{uniqueTypes[0]}</InlineCode>
+        {' - '}
+      </>
+    );
   }
-  return '';
-};
-
-export const decorateValue = (type: TypeDefinitionData): string => {
-  if (type?.value === null) {
-    return '`null`';
-  } else if (type?.name === 'Record' && type?.typeArguments?.length) {
-    return '`Record<' + type.typeArguments[0]?.name + ',' + type.typeArguments[1]?.name + '>`';
-  } else if (typeof type?.value === 'string') {
-    return "`'" + type.value + "'`";
-  }
-  return '`' + (type.value || type.name) + '`';
+  return null;
 };
 
 const renderTypeDeclarationTable = ({ children }: TypeDeclarationContentData): JSX.Element => (
@@ -57,29 +51,45 @@ const renderTypeDeclarationTable = ({ children }: TypeDeclarationContentData): J
   </table>
 );
 
-const renderTypePropertyRow = ({ name, flags, type, comment }: TypePropertyData): JSX.Element => (
-  <tr key={name}>
-    <td>
-      <B>{name}</B>
-      {flags?.isOptional ? (
-        <>
-          <br />
-          <span css={STYLES_OPTIONAL}>(optional)</span>
-        </>
-      ) : null}
-    </td>
-    <td>
-      <InlineCode>{resolveTypeName(type)}</InlineCode>
-    </td>
-    <td>
-      {comment?.shortText ? (
-        <ReactMarkdown renderers={mdInlineRenderers}>{comment.shortText}</ReactMarkdown>
-      ) : (
-        '-'
-      )}
-    </td>
-  </tr>
-);
+const renderTypePropertyRow = ({
+  name,
+  flags,
+  type,
+  comment,
+  defaultValue,
+}: TypePropertyData): JSX.Element => {
+  const initValue = defaultValue || comment?.tags?.filter(tag => tag.tag === 'default')[0]?.text;
+  return (
+    <tr key={name}>
+      <td>
+        <B>{name}</B>
+        {flags?.isOptional ? (
+          <>
+            <br />
+            <span css={STYLES_OPTIONAL}>(optional)</span>
+          </>
+        ) : null}
+      </td>
+      <td>
+        <InlineCode>{resolveTypeName(type)}</InlineCode>
+      </td>
+      <td>
+        {comment?.shortText ? (
+          <ReactMarkdown renderers={mdInlineRenderers}>{comment.shortText}</ReactMarkdown>
+        ) : (
+          '-'
+        )}
+        {initValue ? (
+          <>
+            <br />
+            <ReactMarkdown
+              renderers={mdInlineRenderers}>{`__Default:__ ${initValue}`}</ReactMarkdown>
+          </>
+        ) : null}
+      </td>
+    </tr>
+  );
+};
 
 const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | undefined => {
   if (type.declaration) {
@@ -118,10 +128,16 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
           <H3Code>
             <InlineCode>{name}</InlineCode>
           </H3Code>
-          <ReactMarkdown renderers={mdRenderers}>
-            {defineLiteralType(literalTypes) +
-              `Acceptable values are: ${literalTypes.map(decorateValue).join(', ')}.`}
-          </ReactMarkdown>
+          <P>
+            {defineLiteralType(literalTypes)}
+            Acceptable values are:{' '}
+            {literalTypes.map((type, index) => (
+              <span key={`${name}-literal-type-${index}`}>
+                <InlineCode>{resolveTypeName(type)}</InlineCode>
+                {index !== literalTypes.length - 1 ? ', ' : '.'}
+              </span>
+            ))}
+          </P>
         </div>
       );
     } else if (propTypes.length) {
@@ -146,6 +162,20 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
         </div>
       );
     }
+  } else if (type.name === 'Record' && type.typeArguments) {
+    return (
+      <div key={`record-definition-${name}`}>
+        <H3Code>
+          <InlineCode>{name}</InlineCode>
+        </H3Code>
+        <UL>
+          <LI>
+            <InlineCode>{resolveTypeName(type)}</InlineCode>
+          </LI>
+        </UL>
+        <CommentTextBlock comment={comment} />
+      </div>
+    );
   } else if (type.type === 'intrinsic') {
     return (
       <div key={`generic-type-definition-${name}`}>
