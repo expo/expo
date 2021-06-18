@@ -1068,7 +1068,6 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
       val rgbComponent = 0x00FFFFFFL and rgb.toLong()
       val alphaComponent = 0xFF000000L and (alpha.toLong() shl 24)
       return (rgbComponent or alphaComponent).toInt()
-
     }
   }
 }
