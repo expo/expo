@@ -103,12 +103,9 @@ class OutlineProvider(private val mContext: Context) : ViewOutlineProvider() {
         radius = borderRadiiConfig[startPosition.ordinal]
       }
     }
-    if (YogaConstants.isUndefined(radius)) {
-      radius = borderRadiiConfig[BorderRadiusConfig.ALL.ordinal]
-    }
-    if (YogaConstants.isUndefined(radius)) {
-      radius = 0f
-    }
+    radius = radius
+      .ifYogaUndefinedUse(borderRadiiConfig[BorderRadiusConfig.ALL.ordinal])
+      .ifYogaUndefinedUse(0f)
     mCornerRadii[outputPosition.ordinal] = PixelUtil.toPixelFromDIP(radius)
   }
 
@@ -152,7 +149,6 @@ class OutlineProvider(private val mContext: Context) : ViewOutlineProvider() {
   }
 
   private fun updateBoundsAndLayoutDirection(view: View) {
-
     // Update layout direction
     val layoutDirection = view.layoutDirection
     if (mLayoutDirection != layoutDirection) {

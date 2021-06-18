@@ -227,7 +227,7 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
   }
 
   val fullBorderRadius: Float
-    get() = if (YogaConstants.isUndefined(mBorderRadius)) 0F else mBorderRadius
+    get() = mBorderRadius.ifYogaUndefinedUse(0F)
 
   private fun getBorderRadius(location: BorderRadiusLocation): Float {
     return getBorderRadiusOrDefaultTo(YogaConstants.UNDEFINED, location)
@@ -239,9 +239,7 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
       return defaultValue
     }
     val radius = mBorderCornerRadii!![location.ordinal]
-    return if (YogaConstants.isUndefined(radius)) {
-      defaultValue
-    } else radius
+    return radius.ifYogaUndefinedUse(defaultValue)
   }
 
   /**
@@ -709,9 +707,7 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
       return defaultValue
     }
     val width = mBorderWidth!!.getRaw(spacingType)
-    return if (YogaConstants.isUndefined(width)) {
-      defaultValue
-    } else width
+    return width.ifYogaUndefinedUse(defaultValue)
   }
 
   /**
