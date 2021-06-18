@@ -18,7 +18,6 @@ apply plugin: 'kotlin-android'
 apply plugin: 'devicefarm'
 
 android {
-  ndkVersion "23.0.7421159"
   compileSdkVersion safeExtGet("compileSdkVersion", 30)
 
   compileOptions {
@@ -190,6 +189,11 @@ dependencies {
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
 
   // ADD_NEW_SDKS_HERE
+
+
+  // BEGIN_SDK_42
+  implementation(project(':expoview-abi42_0_0'))
+  // END_SDK_42
 
 
   // BEGIN_SDK_41
