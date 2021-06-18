@@ -1,5 +1,5 @@
 import { UnavailabilityError, CodedError } from '@unimodules/core';
-import { PermissionStatus } from 'unimodules-permissions-interface';
+import { PermissionStatus } from 'expo-modules-core';
 import ExponentImagePicker from './ExponentImagePicker';
 import { MediaTypeOptions, VideoExportPreset, } from './ImagePicker.types';
 function validateOptions(options) {

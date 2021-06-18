@@ -1,26 +1,19 @@
-import { AndroidConfig } from '@expo/config-plugins';
 import {
-  buildResourceItem,
-  readResourcesXMLAsync,
-  ResourceXML,
-} from '@expo/config-plugins/build/android/Resources';
-import {
-  getProjectStringsXMLPathAsync,
-  removeStringItem,
-  setStringItem,
-} from '@expo/config-plugins/build/android/Strings';
-import {
-  createAndroidManifestPlugin,
-  createStringsXmlPlugin,
-} from '@expo/config-plugins/build/plugins/android-plugins';
-import { writeXMLAsync } from '@expo/config-plugins/build/utils/XML';
-import { assert } from '@expo/config-plugins/build/utils/errors';
+  AndroidConfig,
+  ConfigPlugin,
+  withAndroidManifest,
+  withStringsXml,
+  XML,
+} from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
+import assert from 'assert';
 
+const { buildResourceItem, readResourcesXMLAsync } = AndroidConfig.Resources;
+const { getProjectStringsXMLPathAsync, removeStringItem, setStringItem } = AndroidConfig.Strings;
+const { writeXMLAsync } = XML;
 const {
   addMetaDataItemToMainApplication,
   getMainApplicationOrThrow,
-
   prefixAndroidKeys,
   removeMetaDataItemFromMainApplication,
 } = AndroidConfig.Manifest;
@@ -33,14 +26,19 @@ const META_AUTO_INIT = 'com.facebook.sdk.AutoInitEnabled';
 const META_AUTO_LOG_APP_EVENTS = 'com.facebook.sdk.AutoLogAppEventsEnabled';
 const META_AD_ID_COLLECTION = 'com.facebook.sdk.AdvertiserIDCollectionEnabled';
 
-export const withFacebookAppIdString = createStringsXmlPlugin(
-  applyFacebookAppIdString,
-  'withFacebookAppIdString'
-);
-export const withFacebookManifest = createAndroidManifestPlugin(
-  setFacebookConfig,
-  'withFacebookManifest'
-);
+export const withFacebookAppIdString: ConfigPlugin = config => {
+  return withStringsXml(config, config => {
+    config.modResults = applyFacebookAppIdString(config, config.modResults);
+    return config;
+  });
+};
+
+export const withFacebookManifest: ConfigPlugin = config => {
+  return withAndroidManifest(config, config => {
+    config.modResults = setFacebookConfig(config, config.modResults);
+    return config;
+  });
+};
 
 function buildXMLItem({
   head,
@@ -162,7 +160,10 @@ export async function setFacebookAppIdString(config: ExpoConfigFacebook, project
   return true;
 }
 
-function applyFacebookAppIdString(config: ExpoConfigFacebook, stringsJSON: ResourceXML) {
+function applyFacebookAppIdString(
+  config: ExpoConfigFacebook,
+  stringsJSON: AndroidConfig.Resources.ResourceXML
+) {
   const appId = getFacebookAppId(config);
 
   if (appId) {

@@ -175,9 +175,9 @@ public class ScreenContainer<T extends ScreenFragment> extends ViewGroup {
     // Otherwise we expect to connect directly with root view and get root fragment manager
     if (parent instanceof Screen) {
       ScreenFragment screenFragment = ((Screen) parent).getFragment();
-      setFragmentManager(screenFragment.getChildFragmentManager());
       mParentScreenFragment = screenFragment;
       mParentScreenFragment.registerChildScreenContainer(this);
+      setFragmentManager(screenFragment.getChildFragmentManager());
       return;
     }
 

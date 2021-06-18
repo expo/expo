@@ -46,7 +46,7 @@ import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.utils.ExperienceActivityUtils;
 import host.exp.expoview.BuildConfig;
@@ -66,13 +66,11 @@ public class HomeActivity extends BaseExperienceActivity {
     mSDKVersion = RNObject.UNVERSIONED;
     mManifest = mExponentManifest.getKernelManifest();
 
-    String id;
     try {
-      id = mManifest.getID();
+      mExperienceKey = ExperienceKey.fromRawManifest(mManifest);
     } catch (JSONException e) {
-      id = "";
+      mExperienceKey = new ExperienceKey("");
     }
-    mExperienceId = ExperienceId.create(id);
 
     // @sjchmiela, @lukmccall: We are consciously not overriding UI mode in Home, because it has no effect.
     // `ExpoAppearanceModule` with which `ExperienceActivityUtils#overrideUiMode` is compatible

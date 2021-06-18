@@ -1,4 +1,4 @@
-import { PermissionStatus } from 'unimodules-permissions-interface';
+import { PermissionStatus } from 'expo-modules-core';
 import { LocationAccuracy, } from './Location.types';
 import { LocationEventEmitter } from './LocationEventEmitter';
 class GeocoderError extends Error {

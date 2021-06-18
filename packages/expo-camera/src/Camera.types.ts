@@ -1,9 +1,5 @@
+import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'expo-modules-core';
 import { ViewProps } from 'react-native';
-import {
-  PermissionResponse,
-  PermissionStatus,
-  PermissionExpiration,
-} from 'unimodules-permissions-interface';
 
 export enum CameraType {
   /**

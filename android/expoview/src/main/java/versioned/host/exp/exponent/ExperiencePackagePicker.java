@@ -26,6 +26,7 @@ import expo.modules.notifications.NotificationsPackage;
 import expo.modules.screenorientation.ScreenOrientationPackage;
 import expo.modules.imageloader.ImageLoaderPackage;
 import expo.modules.sharing.SharingPackage;
+import expo.modules.clipboard.ClipboardPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.contacts.ContactsPackage;
 import expo.modules.crypto.CryptoPackage;
@@ -83,6 +84,7 @@ public class ExperiencePackagePicker {
       new CalendarPackage(),
       new CameraPackage(),
       new CellularPackage(),
+      new ClipboardPackage(),
       new ConstantsPackage(),
       new ContactsPackage(),
       new CryptoPackage(),

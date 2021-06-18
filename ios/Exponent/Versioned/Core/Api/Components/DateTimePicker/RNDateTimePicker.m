@@ -54,7 +54,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)setDate:(NSDate *)date {
     // Need to avoid the case where values coming back through the bridge trigger a new valueChanged event
     if (![self.date isEqualToDate:date]) {
-        [super setDate:date];
+        [super setDate:date animated:NO];
     }
 }
 

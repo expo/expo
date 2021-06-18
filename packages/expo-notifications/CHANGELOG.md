@@ -8,8 +8,26 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.12.0 — 2021-06-16
+
+### 🎉 New features
+
+- [plugin] Refactor imports ([#13029](https://github.com/expo/expo/pull/13029) by [@EvanBacon](https://github.com/EvanBacon))
+- Add support for custom notification sounds when using EAS Build. ([#12782](https://github.com/expo/expo/pull/12782) by [@cruzach](https://github.com/cruzach))
+- Added ability to respond to remote notifications received while the app is backgrounded. ([#13130](https://github.com/expo/expo/pull/13130) by [@cruzach](https://github.com/cruzach))
+
+### 🐛 Bug fixes
+
 - Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
 - Add new manifest2 field and make existing field optional. ([#12817](https://github.com/expo/expo/pull/12817) by [@wschurman](https://github.com/wschurman))
+- Use originalFullName instead of currentFullName ([#12953](https://github.com/expo/expo/pull/12953)) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+- Migrated from `unimodules-permissions-interface` to `expo-modules-core`. ([#12961](https://github.com/expo/expo/pull/12961) by [@tsapeta](https://github.com/tsapeta))
+- Refactored uuid imports to v7 style. ([#13037](https://github.com/expo/expo/pull/13037) by [@giautm](https://github.com/giautm))
 
 ## 0.11.5 — 2021-04-13
 

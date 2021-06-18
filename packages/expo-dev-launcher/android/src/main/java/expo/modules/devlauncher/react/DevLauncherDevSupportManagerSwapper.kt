@@ -2,10 +2,14 @@ package expo.modules.devlauncher.react
 
 import android.util.Log
 import com.facebook.react.ReactInstanceManager
+import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.devsupport.DevSupportManagerBase
 import com.facebook.react.devsupport.DisabledDevSupportManager
 import expo.modules.devlauncher.helpers.getProtectedFieldValue
 import expo.modules.devlauncher.helpers.setProtectedDeclaredField
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class DevLauncherDevSupportManagerSwapper {
   fun swapDevSupportManagerImpl(
@@ -30,6 +34,38 @@ class DevLauncherDevSupportManagerSwapper {
       )
 
       ReactInstanceManager::class.java.setProtectedDeclaredField(reactInstanceManager, "mDevSupportManager", newDevSupportManager)
+
+      /**
+       * We need to invalidate the old packager connection.
+       * However, this connection is established in the background
+       * and we don't know when it will be available (see [DevServerHelper.openPackagerConnection]).
+       * So we just wait for connection and then we kill it.
+       */
+      GlobalScope.launch {
+        try {
+          while (true) {
+            val devServerHelper: DevServerHelper = devManagerClass.getProtectedFieldValue(
+              currentDevSupportManager,
+              "mDevServerHelper"
+            )
+
+            val packagerConnectionLock: Boolean = DevServerHelper::class.java.getProtectedFieldValue(
+              devServerHelper,
+              "mPackagerConnectionLock"
+            )
+
+            if (!packagerConnectionLock) {
+              devServerHelper.closePackagerConnection()
+              return@launch
+            }
+
+            delay(50)
+          }
+        } catch (e: Exception) {
+          Log.w("DevLauncher", "Couldn't close the packager connection: ${e.message}", e)
+        }
+      }
+
     } catch (e: Exception) {
       Log.i("DevLauncher", "Couldn't inject `DevLauncherDevSupportManager`.", e)
     }

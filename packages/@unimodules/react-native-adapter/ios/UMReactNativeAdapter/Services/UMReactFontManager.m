@@ -1,9 +1,9 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <UMReactNativeAdapter/UMReactFontManager.h>
-#import <UMFontInterface/UMFontProcessorInterface.h>
+#import <ExpoModulesCore/EXFontProcessorInterface.h>
+#import <ExpoModulesCore/EXFontManagerInterface.h>
 #import <React/RCTFont.h>
-#import <UMFontInterface/UMFontManagerInterface.h>
 #import <UMCore/UMAppLifecycleService.h>
 #import <objc/runtime.h>
 
@@ -22,7 +22,7 @@ static NSPointerArray *currentFontProcessors;
          scaleMultiplier:(CGFloat)scaleMultiplier
 {
   UIFont *font;
-  for (id<UMFontProcessorInterface> fontProcessor in currentFontProcessors) {
+  for (id<EXFontProcessorInterface> fontProcessor in currentFontProcessors) {
     font = [fontProcessor updateFont:uiFont withFamily:family size:size weight:weight style:style variant:variant scaleMultiplier:scaleMultiplier];
     if (font) {
       return font;
@@ -75,7 +75,7 @@ UM_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(UMFontManagerInterface)];
+  return @[@protocol(EXFontManagerInterface)];
 }
 
 + (void)initialize
@@ -94,7 +94,7 @@ UM_REGISTER_MODULE();
 
 # pragma mark - UMFontManager
 
-- (void)addFontProcessor:(id<UMFontProcessorInterface>)processor
+- (void)addFontProcessor:(id<EXFontProcessorInterface>)processor
 {
   [_fontProcessors addObject:processor];
   [currentFontProcessors compact];

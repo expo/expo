@@ -12,7 +12,7 @@
 
 @implementation RNSVGForeignObject
 
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+- (RNSVGPlatformView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
     return nil;
 }
@@ -42,7 +42,7 @@
 
     __block CGRect bounds = CGRectNull;
 
-    [self traverseSubviews:^(UIView *node) {
+    [self traverseSubviews:^(RNSVGView *node) {
         if ([node isKindOfClass:[RNSVGMask class]] || [node isKindOfClass:[RNSVGClipPath class]]) {
             // no-op
         } else if ([node isKindOfClass:[RNSVGNode class]]) {

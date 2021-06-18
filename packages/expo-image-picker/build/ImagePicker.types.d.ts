@@ -1,4 +1,4 @@
-import { PermissionResponse } from 'unimodules-permissions-interface';
+import { PermissionResponse } from 'expo-modules-core';
 export { PermissionResponse as CameraPermissionResponse };
 export declare type MediaLibraryPermissionResponse = PermissionResponse & {
     accessPrivileges?: 'all' | 'limited' | 'none';

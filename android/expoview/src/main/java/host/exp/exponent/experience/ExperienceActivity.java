@@ -56,7 +56,7 @@ import host.exp.exponent.experience.loading.LoadingProgressPopupController;
 import host.exp.exponent.experience.splashscreen.ManagedAppSplashScreenConfiguration;
 import host.exp.exponent.experience.splashscreen.ManagedAppSplashScreenViewProvider;
 import host.exp.exponent.kernel.DevMenuManager;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.kernel.ExponentError;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.Kernel;
@@ -518,8 +518,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     soloaderInit();
 
     try {
-      mExperienceIdString = manifest.getID();
-      mExperienceId = ExperienceId.create(mExperienceIdString);
+      mExperienceKey = ExperienceKey.fromRawManifest(manifest);
       AsyncCondition.notify(KernelConstants.EXPERIENCE_ID_SET_FOR_ACTIVITY_KEY);
     } catch (JSONException e) {
       KernelProvider.getInstance().handleError("No ID found in manifest.");
@@ -549,18 +548,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       notificationObject = options.notificationObject;
     }
 
-    // if we have an embedded initial url, we never need any part of this in the initial url
-    // passed to the JS, so we check for that and filter it out here.
-    // this can happen in dev mode on a detached app, for example, because the intent will have
-    // a url like customscheme://localhost:19000 but we don't care about the localhost:19000 part.
-    if (mIntentUri == null || mIntentUri.equals(Constants.INITIAL_URL)) {
-      if (Constants.SHELL_APP_SCHEME != null) {
-        mIntentUri = Constants.SHELL_APP_SCHEME + "://";
-      } else {
-        mIntentUri = mManifestUrl;
-      }
-    }
-
     final ExponentNotification finalNotificationObject = notificationObject;
 
     BranchManager.handleLink(this, mIntentUri, mDetachSdkVersion);
@@ -578,14 +565,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       mReactRootView = new RNObject("host.exp.exponent.ReactUnthemedRootView");
       mReactRootView.loadVersion(mDetachSdkVersion).construct(ExperienceActivity.this);
       setReactRootView((View) mReactRootView.get());
-
-      String id;
-      try {
-        id = Exponent.getInstance().encodeExperienceId(mExperienceIdString);
-      } catch (UnsupportedEncodingException e) {
-        KernelProvider.getInstance().handleError("Can't URL encode manifest ID");
-        return;
-      }
 
       if (isDebugModeEnabled()) {
         mNotification = finalNotificationObject;
@@ -631,7 +610,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   }
 
   public void onEventMainThread(ReceivedNotificationEvent event) {
-    if (event.experienceId.equals(mExperienceIdString)) {
+    // TODO(wschurman): investigate removal, this probably is no longer used
+    if (event.experienceScopeKey.equals(mExperienceKey.getScopeKey())) {
       try {
         RNObject rctDeviceEventEmitter = new RNObject("com.facebook.react.modules.core.DeviceEventManagerModule$RCTDeviceEventEmitter");
         rctDeviceEventEmitter.loadVersion(mDetachSdkVersion);
@@ -827,8 +807,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     }
   }
 
-  public String getExperienceId() {
-    return mExperienceIdString;
+  public ExperienceKey getExperienceKey() {
+    return mExperienceKey;
   }
 
   /**

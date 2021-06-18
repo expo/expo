@@ -12,7 +12,6 @@ import {
   CommentData,
   MethodParamData,
   TypeDefinitionData,
-  TypeDefinitionTypesData,
 } from '~/components/plugins/api/APIDataTypes';
 
 export enum TypeDocKind {
@@ -67,9 +66,13 @@ export const resolveTypeName = ({
         if (name === 'Promise') {
           return (
             <span>
-              {'Promise<'}
-              {typeArguments.map(resolveTypeName)}
-              {'>'}
+              {name}&lt;{typeArguments.map(resolveTypeName)}&gt;
+            </span>
+          );
+        } else if (name === 'Record') {
+          return (
+            <span>
+              {name}&lt;{typeArguments.map(resolveTypeName).join(',')}&gt;
             </span>
           );
         } else {
@@ -104,7 +107,7 @@ export const resolveTypeName = ({
     return elementType.name + type;
   } else if (type === 'union' && types?.length) {
     return types
-      .map((t: TypeDefinitionTypesData) =>
+      .map((t: TypeDefinitionData) =>
         t.type === 'reference' ? (
           <Link href={`#${t.name?.toLowerCase()}`} key={`type-link-${t.name}`}>
             {t.name}
@@ -132,14 +135,18 @@ export const resolveTypeName = ({
           {baseSignature.parameters?.map((param, index) => (
             <span key={`param-${index}-${param.name}`}>
               {param.name}: {resolveTypeName(param.type)}
-              {index + 1 !== baseSignature.parameters.length && ', '}
+              {index + 1 !== baseSignature.parameters?.length && ', '}
             </span>
           ))}
           ) {'=>'} {resolveTypeName(baseSignature.type)}
         </>
       );
     } else {
-      return `() => ${resolveTypeName(baseSignature.type)}`;
+      return (
+        <>
+          {'() =>'} {resolveTypeName(baseSignature.type)}
+        </>
+      );
     }
   }
   return 'undefined';
@@ -171,11 +178,18 @@ export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
   const text = comment?.text?.trim().length ? (
     <ReactMarkdown renderers={renderers}>{comment.text}</ReactMarkdown>
   ) : null;
+
+  const example = comment?.tags?.filter(tag => tag.tag === 'example')[0];
+  const exampleText = example ? (
+    <ReactMarkdown renderers={renderers}>{`__Example:__ ${example.text}`}</ReactMarkdown>
+  ) : null;
+
   return (
     <>
       {withDash && (shortText || text) ? ' - ' : null}
       {shortText}
       {text}
+      {exampleText}
     </>
   );
 };

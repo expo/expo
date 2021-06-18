@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+static NSString * const EXUpdatesConfigPlistName = @"Expo";
+
 static NSString * const EXUpdatesDefaultReleaseChannelName = @"default";
 
 static NSString * const EXUpdatesConfigEnabledKey = @"EXUpdatesEnabled";
@@ -60,6 +62,17 @@ static NSString * const EXUpdatesConfigNeverString = @"NEVER";
   return updatesConfig;
 }
 
++ (instancetype)configWithExpoPlist
+{
+  NSString *configPath = [[NSBundle mainBundle] pathForResource:EXUpdatesConfigPlistName ofType:@"plist"];
+  if (!configPath) {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:@"Cannot load configuration from Expo.plist. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project."
+                                 userInfo:@{}];
+  }
+  return [[self class] configWithDictionary:[NSDictionary dictionaryWithContentsOfFile:configPath]];
+}
+
 - (void)loadConfigFromDictionary:(NSDictionary *)config
 {
   id isEnabled = config[EXUpdatesConfigEnabledKey];
@@ -87,10 +100,6 @@ static NSString * const EXUpdatesConfigNeverString = @"NEVER";
   if (!_scopeKey) {
     if (_updateUrl) {
       _scopeKey = [[self class] normalizedURLOrigin:_updateUrl];
-    } else {
-      @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                     reason:@"expo-updates must be configured with a valid update URL or scope key."
-                                   userInfo:@{}];
     }
   }
 

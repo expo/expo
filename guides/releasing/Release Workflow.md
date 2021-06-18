@@ -216,8 +216,8 @@ In the managed workflow, we use our forked `react-native` repository because we 
 
 **How:**
 
-- Go through another guide about [Quality Assurance](./Quality%20Assurance.md). Use `UNVERSIONED` as a `sdkVersion`.
-- Fix everything you noticed in quality assurance steps or delegate these issues to other people in a team (preferably unimodule owners). Fixes for all discovered bugs should land on `master` and then be cherry-picked to the `sdk-XX` branch before versioning.
+- Go through the [Quality Assurance](Quality%20Assurance.md) guide. Use `UNVERSIONED` as a `sdkVersion`.
+- Fix everything you noticed in quality assurance steps or delegate these issues to other people in a team (preferably unimodule owners). Fixes for all discovered bugs should land on `master` and then be cherry-picked to the `sdk-XX` branch (if it exists) before versioning.
 
 ## 1.3. Version code for the new SDK
 
@@ -237,6 +237,8 @@ In the managed workflow, we use our forked `react-native` repository because we 
 - **Android**:
   - Run `et add-sdk --platform android` to create the new versioned AAR and expoview code. This script will attempt to rename some native libraries and will ask you to manually verify that it has renamed them all properly. If you notice some that are missing, add them to the list in `tools/src/versioning/android/libraries.ts` and rerun the script. Commit the changes.
   - You may need to make a change like [this one](https://github.com/expo/expo/commit/8581608ab748ed3092b71befc3a0b8a48f0f20a0#diff-c31b32364ce19ca8fcd150a417ecce58) in order to get the project to build, as the manifest merger script we're currently using doesn't handle this properly.
+  - Some libraries (particularly expo-notifications and expo-updates) include classes and singletons that should be left out of versioning on Android -- i.e. of which there should only be one copy of in Expo Go. The file `tools/src/versioning/android/android-packages-to-rename.txt` contains all the Java/Kotlin packages and classes that will be versioned, and `tools/src/versioning/android/android-packages-to-keep.txt` contains all the packages and classes that will be left out of versioning (with the latter taking precedence over the former). If you run into compilation errors like `incompatible types: expo.modules.... cannot be converted to abixx_x_x.expo.modules...`, especially in one of the aforementioned modules, it's possible one or both of these lists may need to be updated with classes that have been added since the last SDK release.
+  - The versioning script is not idempotent, so if you need to make any changes or re-version any libraries, the simplest way to do so is either make the changes manually in versioned classes (if they are very simple) or remove the SDK and re-add it. If you run `et remove-sdk --platform android --sdkVersion XX.X.X && et add-sdk --platform android` then the resulting diff should just include the re-versioned changes, and it's easy to check this manually.
 - Commit the changes to the `sdk-XX` branch and push. Take a look at the GitHub stats of added/deleted lines in your commit and be proud of your most productive day this month 😎.
 
 ## 1.4. Update JS dependencies required for build
@@ -262,7 +264,7 @@ In the managed workflow, we use our forked `react-native` repository because we 
 **How:**
 
 - On iOS, by default, Expo Go builds with only unversioned code. Make sure to switch the scheme to `Expo Go (versioned)` in Xcode before building the app for versioned QA.
-- Go through another guide about [Quality Assurance](Quality%20Assurance.md).
+- Go through the [Quality Assurance](Quality%20Assurance.md) guide.
 - Commit any fixes to `master` and cherry-pick to the `sdk-XX` branch.
 
 ## 2.2. Standalone App Quality Assurance

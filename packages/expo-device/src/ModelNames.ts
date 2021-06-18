@@ -130,6 +130,14 @@ export const iosModelNames = {
   'iPad11,7': 'iPad (8th generation)', // iPad (8th generation) - WiFi + cellular
   'iPad13,1': 'iPad Air (4th generation)', // iPad Air (4th generation) - WiFi
   'iPad13,2': 'iPad Air (4th generation)', // iPad Air (4th generation) - WiFi + cellular
+  'iPad13,4': 'iPad Pro 11-inch (3rd generation)', // WiFi
+  'iPad13,5': 'iPad Pro 11-inch (3rd generation)', // WiFi
+  'iPad13,6': 'iPad Pro 11-inch (3rd generation)', // WiFi + cellular
+  'iPad13,7': 'iPad Pro 11-inch (3rd generation)', // WiFi + cellular
+  'iPad13,8': 'iPad Pro 12.9-inch (5th generation)', // WiFi
+  'iPad13,9': 'iPad Pro 12.9-inch (5th generation)', // WiFi
+  'iPad13,10': 'iPad Pro 12.9-inch (5th generation)', // WiFi + cellular
+  'iPad13,11': 'iPad Pro 12.9-inch (5th generation)', // WiFi + cellular
   'AppleTV2,1': 'Apple TV', // Apple TV (2nd Generation)
   'AppleTV3,1': 'Apple TV', // Apple TV (3rd Generation)
   'AppleTV3,2': 'Apple TV', // Apple TV (3rd Generation - Rev A)

@@ -15,17 +15,13 @@ import expo.modules.devlauncher.launcher.configurators.DevLauncherExpoActivityCo
 import expo.modules.devlauncher.launcher.manifest.DevLauncherUserInterface
 import expo.modules.devlauncher.launcher.manifest.DevLauncherManifest
 
-class DevLauncherExpoAppLoader(
+abstract class DevLauncherExpoAppLoader(
   private val manifest: DevLauncherManifest,
   appHost: ReactNativeHost,
   context: Context,
   private val activityConfigurator: DevLauncherExpoActivityConfigurator =
     DevLauncherExpoActivityConfigurator(manifest, context)
 ) : DevLauncherAppLoader(appHost, context) {
-  override fun getBundleUrl(): Uri {
-    return Uri.parse(manifest.bundleUrl)
-  }
-
   override fun onCreate(activity: ReactActivity) = with(activityConfigurator) {
     applyOrientation(activity)
     applyStatusBarConfiguration(activity)

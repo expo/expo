@@ -404,9 +404,9 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (void)_handleJavaScriptStartLoadingEvent:(NSNotification *)notification
 {
-  __weak typeof(self) weakSelf = self;
+  __weak __typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
-    __strong typeof(self) strongSelf = weakSelf;
+    __strong __typeof(self) strongSelf = weakSelf;
     if (strongSelf) {
       [strongSelf.delegate reactAppManagerStartedLoadingJavaScript:strongSelf];
     }
@@ -639,7 +639,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 #if DEBUG || RCT_DEV
   if ([self enablesDeveloperTools]) {
     if ([_versionManager respondsToSelector:@selector(addWebSocketNotificationHandler:queue:forMethod:)]) {
-      __weak typeof(self) weakSelf = self;
+      __weak __typeof(self) weakSelf = self;
 
       // Attach listeners to the bundler's dev server web socket connection.
       // This enables tools to automatically reload the client remotely (i.e. in expo-cli).

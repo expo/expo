@@ -1,0 +1,153 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`APISectionUtils.resolveTypeName Promise 1`] = `
+<div>
+  <span>
+    Promise
+    &lt;
+    void
+    &gt;
+  </span>
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName Promise with custom type 1`] = `
+<div>
+  <span>
+    Promise
+    &lt;
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="/#appleauthenticationcredential"
+    >
+      AppleAuthenticationCredential
+    </a>
+    &gt;
+  </span>
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName Record 1`] = `
+<div>
+  <span>
+    Record
+    &lt;
+    string,any
+    &gt;
+  </span>
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName custom type 1`] = `
+<div>
+  <a
+    class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+    href="/#speechsynthesisevent"
+  >
+    SpeechSynthesisEvent
+  </a>
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName custom type array 1`] = `
+<div>
+  <a
+    class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+    href="/#appleauthenticationscope"
+  >
+    AppleAuthenticationScope
+    []
+  </a>
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName function 1`] = `
+<div>
+  () =&gt;
+   
+  <span>
+    void
+     | 
+  </span>
+  <span>
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="/#speecheventcallback"
+    >
+      SpeechEventCallback
+    </a>
+  </span>
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName function with arguments 1`] = `
+<div>
+  (
+  <span>
+    error
+    : 
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="/#error"
+    >
+      Error
+    </a>
+  </span>
+  ) 
+  =&gt;
+   
+  <span>
+    void
+     | 
+  </span>
+  <span>
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="/#speecheventcallback"
+    >
+      SpeechEventCallback
+    </a>
+  </span>
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName generic type 1`] = `
+<div>
+  string
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName union 1`] = `
+<div>
+  <span>
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="/#speecheventcallback"
+    >
+      SpeechEventCallback
+    </a>
+     | 
+  </span>
+  <span>
+    null
+  </span>
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName union with array 1`] = `
+<div>
+  <span>
+    number[]
+     | 
+  </span>
+  <span>
+    null
+  </span>
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName void 1`] = `
+<div>
+  void
+</div>
+`;

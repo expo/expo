@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
 
 const noPermissionResponse: PermissionResponse = {
   status: PermissionStatus.UNDETERMINED,

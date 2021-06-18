@@ -5,12 +5,12 @@
 
 #import <GoogleMobileAds/GoogleMobileAds.h>
 
-#import <UMPermissionsInterface/UMPermissionsInterface.h>
-#import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
+#import <ExpoModulesCore/EXPermissionsInterface.h>
+#import <ExpoModulesCore/EXPermissionsMethodsDelegate.h>
 
 @interface EXAdsAdMob ()
 
-@property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
+@property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
 
 @end
 
@@ -20,15 +20,15 @@ UM_EXPORT_MODULE(ExpoAdsAdMob);
 
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
-  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
-  [UMPermissionsMethodsDelegate registerRequesters:@[[EXAdsAdMobAppTrackingPermissionRequester new]] withPermissionsManager:_permissionsManager];
+  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
+  [EXPermissionsMethodsDelegate registerRequesters:@[[EXAdsAdMobAppTrackingPermissionRequester new]] withPermissionsManager:_permissionsManager];
 }
 
 UM_EXPORT_METHOD_AS(getPermissionsAsync,
                     getPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                       withRequester:[EXAdsAdMobAppTrackingPermissionRequester class]
                                                             resolve:resolve
                                                              reject:reject];
@@ -38,7 +38,7 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                     requestPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[EXAdsAdMobAppTrackingPermissionRequester class]
                                                                resolve:resolve
                                                                 reject:reject];

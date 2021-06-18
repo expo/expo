@@ -1,8 +1,8 @@
 package versioned.host.exp.exponent.modules.api.screens;
 
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.TextUtils;
@@ -23,7 +23,8 @@ import host.exp.expoview.ExpoViewBuildConfig;
 
 import com.facebook.react.ReactApplication;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
-import com.facebook.react.views.text.ReactFontManager;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.views.text.ReactTypefaceUtils;
 
 import java.util.ArrayList;
 
@@ -35,6 +36,7 @@ public class ScreenStackHeaderConfig extends ViewGroup {
   private String mTitleFontFamily;
   private String mDirection;
   private float mTitleFontSize;
+  private int mTitleFontWeight;
   private Integer mBackgroundColor;
   private boolean mIsHidden;
   private boolean mIsBackButtonHidden;
@@ -45,7 +47,6 @@ public class ScreenStackHeaderConfig extends ViewGroup {
   private boolean mIsTranslucent;
   private int mTintColor;
   private final Toolbar mToolbar;
-  private int mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
 
   private boolean mIsAttachedToWindow = false;
 
@@ -173,10 +174,21 @@ public class ScreenStackHeaderConfig extends ViewGroup {
       }
     }
 
-    // orientation
-    if (getScreenFragment() == null || !getScreenFragment().hasChildScreenWithConfig(getScreen())) {
-      // we check if there is no child that provides config, since then we shouldn't change orientation here
-      activity.setRequestedOrientation(mScreenOrientation);
+    // orientation and status bar management
+    if (getScreen() != null) {
+      // we set the traits here too, not only when the prop for Screen is passed
+      // because sometimes we don't have the Fragment and Activity available then yet, e.g. on the first setting of props
+      // similar thing is done for Screens of ScreenContainers, but in `onContainerUpdate` of their Fragment
+
+      Screen screen = getScreen();
+      ReactContext context = null;
+      if (getContext() instanceof ReactContext) {
+        context = (ReactContext) getContext();
+      } else if (screen.getFragment() != null) {
+        context = screen.getFragment().tryGetContext();
+      }
+
+      ScreenWindowTraits.trySetWindowTraits(screen, activity, context);
     }
 
     if (mIsHidden) {
@@ -242,9 +254,10 @@ public class ScreenStackHeaderConfig extends ViewGroup {
       mToolbar.setTitleTextColor(mTitleColor);
     }
     if (titleTextView != null) {
-      if (mTitleFontFamily != null) {
-        titleTextView.setTypeface(ReactFontManager.getInstance().getTypeface(
-                mTitleFontFamily, 0, getContext().getAssets()));
+      if (mTitleFontFamily != null || mTitleFontWeight > 0) {
+        Typeface titleTypeface = ReactTypefaceUtils.applyStyles(
+              null, 0, mTitleFontWeight, mTitleFontFamily, getContext().getAssets());
+        titleTextView.setTypeface(titleTypeface);
       }
       if (mTitleFontSize > 0) {
         titleTextView.setTextSize(mTitleFontSize);
@@ -359,16 +372,16 @@ public class ScreenStackHeaderConfig extends ViewGroup {
     return null;
   }
 
-  public int getScreenOrientation() {
-    return mScreenOrientation;
-  }
-
   public void setTitle(String title) {
     mTitle = title;
   }
 
   public void setTitleFontFamily(String titleFontFamily) {
     mTitleFontFamily = titleFontFamily;
+  }
+
+  public void setTitleFontWeight(String fontWeightString) {
+    mTitleFontWeight = ReactTypefaceUtils.parseFontWeight(fontWeightString);
   }
 
   public void setTitleFontSize(float titleFontSize) {
@@ -409,39 +422,5 @@ public class ScreenStackHeaderConfig extends ViewGroup {
 
   public void setDirection(String direction) {
     mDirection = direction;
-  }
-
-  public void setScreenOrientation(String screenOrientation) {
-    if (screenOrientation == null) {
-      mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
-      return;
-    }
-
-    switch (screenOrientation) {
-      case "all":
-        mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR;
-        break;
-      case "portrait":
-        mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
-        break;
-      case "portrait_up":
-        mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-        break;
-      case "portrait_down":
-        mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT;
-        break;
-      case "landscape":
-        mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
-        break;
-      case "landscape_left":
-        mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
-        break;
-      case "landscape_right":
-        mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
-        break;
-      default:
-        mScreenOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
-        break;
-    }
   }
 }

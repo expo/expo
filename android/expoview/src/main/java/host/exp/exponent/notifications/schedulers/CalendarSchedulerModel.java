@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.notifications.helpers.ExpoCronDefinitionBuilder;
 import host.exp.exponent.notifications.managers.SchedulersManagerProxy;
 import host.exp.exponent.notifications.managers.SchedulersDatabase;
@@ -43,8 +44,8 @@ public class CalendarSchedulerModel extends BaseModel implements SchedulerModel 
   @Column
   int notificationId;
 
-  @Column
-  String experienceId;
+  @Column(name = "experienceId")
+  String scopeKey;
 
   @Column
   boolean repeat;
@@ -63,8 +64,8 @@ public class CalendarSchedulerModel extends BaseModel implements SchedulerModel 
   }
 
   @Override
-  public String getOwnerExperienceId() {
-    return experienceId;
+  public ExperienceKey getOwnerExperienceKey() {
+    return new ExperienceKey(scopeKey);
   }
 
   @Override
@@ -121,12 +122,12 @@ public class CalendarSchedulerModel extends BaseModel implements SchedulerModel 
     this.notificationId = notificationId;
   }
 
-  public String getExperienceId() {
-    return experienceId;
+  public String getExperienceScopeKey() {
+    return scopeKey;
   }
 
-  public void setExperienceId(String experienceId) {
-    this.experienceId = experienceId;
+  public void setExperienceScopeKey(String scopeKey) {
+    this.scopeKey = scopeKey;
   }
 
   public boolean isRepeat() {

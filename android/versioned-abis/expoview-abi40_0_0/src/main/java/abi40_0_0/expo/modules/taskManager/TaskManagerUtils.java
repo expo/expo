@@ -47,8 +47,8 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
   }
 
   @Override
-  public void cancelTaskIntent(Context context, String appId, String taskName) {
-    PendingIntent pendingIntent = createTaskIntent(context, appId, taskName, PendingIntent.FLAG_NO_CREATE);
+  public void cancelTaskIntent(Context context, String appScopeKey, String taskName) {
+    PendingIntent pendingIntent = createTaskIntent(context, appScopeKey, taskName, PendingIntent.FLAG_NO_CREATE);
 
     if (pendingIntent != null) {
       pendingIntent.cancel();
@@ -170,7 +170,7 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
     return createJobInfo(jobInfo.getId(), jobInfo.getService(), mergedExtras);
   }
 
-  private PendingIntent createTaskIntent(Context context, String appId, String taskName, int flags) {
+  private PendingIntent createTaskIntent(Context context, String appScopeKey, String taskName, int flags) {
     if (context == null) {
       return null;
     }
@@ -178,7 +178,7 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
     Intent intent = new Intent(TaskBroadcastReceiver.INTENT_ACTION, null, context, TaskBroadcastReceiver.class);
 
     Uri dataUri = new Uri.Builder()
-      .appendQueryParameter("appId", appId)
+      .appendQueryParameter("appId", appScopeKey)
       .appendQueryParameter("taskName", taskName)
       .build();
 
@@ -188,10 +188,10 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
   }
 
   private PendingIntent createTaskIntent(Context context, TaskInterface task, int flags) {
-    String appId = task.getAppId();
+    String appScopeKey = task.getAppScopeKey();
     String taskName = task.getName();
 
-    return createTaskIntent(context, appId, taskName, flags);
+    return createTaskIntent(context, appScopeKey, taskName, flags);
   }
 
   private JobInfo createJobInfo(int jobId, ComponentName jobService, PersistableBundle extras) {
@@ -210,7 +210,7 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
     PersistableBundle extras = new PersistableBundle();
 
     extras.putInt(EXTRAS_REQUIRED_KEY, 1);
-    extras.putString("appId", task.getAppId());
+    extras.putString("appId", task.getAppScopeKey());
     extras.putString("taskName", task.getName());
 
     if (data != null) {
@@ -228,11 +228,11 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
 
   private boolean isJobInfoRelatedToTask(JobInfo jobInfo, TaskInterface task) {
     PersistableBundle extras = jobInfo.getExtras();
-    String appId = task.getAppId();
+    String appScopeKey = task.getAppScopeKey();
     String taskName = task.getName();
 
     if (extras.containsKey(EXTRAS_REQUIRED_KEY)) {
-      return appId.equals(extras.getString("appId", "")) && taskName.equals(extras.getString("taskName", ""));
+      return appScopeKey.equals(extras.getString("appId", "")) && taskName.equals(extras.getString("taskName", ""));
     }
     return false;
   }

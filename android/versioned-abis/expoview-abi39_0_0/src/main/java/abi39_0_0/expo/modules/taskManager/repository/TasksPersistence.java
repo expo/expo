@@ -23,13 +23,13 @@ public class TasksPersistence {
     }
   }
 
-  public void persistTasksForAppId(SharedPreferences preferences, String appId, Map<String, TaskInterface> appRow) {
+  public void persistTasksForAppScopeKey(SharedPreferences preferences, String appScopeKey, Map<String, TaskInterface> appRow) {
 
     if (preferences == null) {
       return;
     }
     if (appRow == null || appRow.size() == 0) {
-      preferences.edit().remove(appId).apply();
+      preferences.edit().remove(appScopeKey).apply();
       return;
     }
 
@@ -47,9 +47,9 @@ public class TasksPersistence {
     appConfig.put("tasks", tasks);
 
     preferences
-      .edit()
-      .putString(appId, new JSONObject(appConfig).toString())
-      .apply();
+          .edit()
+          .putString(appScopeKey, new JSONObject(appConfig).toString())
+          .apply();
   }
 
   public Map<String, TasksAndEventsRepository.AppConfig> readPersistedTasks(SharedPreferences preferences) {

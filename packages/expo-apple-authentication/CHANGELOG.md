@@ -8,6 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 3.2.0 — 2021-06-16
+
+### 🎉 New features
+
+- [plugin] Apply entitlements regardless of `ios.usesAppleSignIn`, add support for locales ([#12927](https://github.com/expo/expo/pull/12927) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 3.1.0 — 2021-03-10
 
 ### 🎉 New features

@@ -21,6 +21,10 @@ const STYLES_LINK = css`
   color: ${theme.link.default};
 `;
 
+const STYLES_TABLE = css`
+  table-layout: fixed;
+`;
+
 const platforms = [
   { title: 'Android Device', propName: 'android' },
   { title: 'Android Emulator', propName: 'emulator' },
@@ -71,7 +75,7 @@ export default class PlatformsSection extends React.Component<Props> {
     return (
       <div>
         <H4 css={STYLES_TITLE}>{this.props.title || 'Platform Compatibility'}</H4>
-        <table>
+        <table css={STYLES_TABLE}>
           <thead>
             <tr>
               {platforms.map(({ title }) => (

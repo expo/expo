@@ -51,12 +51,12 @@
   UM_REGISTER_SINGLETON_MODULE_WITH_CUSTOM_LOAD(singleton_name,)
 
 #define UM_WEAKIFY(var) \
-__weak typeof(var) UMWeak_##var = var;
+__weak __typeof(var) UMWeak_##var = var;
 
 #define UM_STRONGIFY(var) \
 _Pragma("clang diagnostic push") \
 _Pragma("clang diagnostic ignored \"-Wshadow\"") \
-__strong typeof(var) var = UMWeak_##var; \
+__strong __typeof(var) var = UMWeak_##var; \
 _Pragma("clang diagnostic pop")
 
 #define UM_ENSURE_STRONGIFY(var) \

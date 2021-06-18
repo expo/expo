@@ -27,8 +27,6 @@ import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.core.interfaces.services.UIManager;
-import org.unimodules.interfaces.filesystem.FilePermissionModuleInterface;
-import org.unimodules.interfaces.filesystem.Permission;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -51,6 +49,9 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import androidx.documentfile.provider.DocumentFile;
+
+import expo.modules.interfaces.filesystem.FilePermissionModuleInterface;
+import expo.modules.interfaces.filesystem.Permission;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Headers;
@@ -233,10 +234,15 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
   @ExpoMethod
   public void getInfoAsync(String uriStr, Map<String, Object> options, Promise promise) {
     try {
-      Uri uri = Uri.parse(uriStr);
-      ensurePermission(uri, Permission.READ);
+       Uri uri = Uri.parse(uriStr);
+       Uri absoluteUri = uri;
+       if ("file".equals(uri.getScheme())) {
+        uriStr = uriStr.substring(uriStr.indexOf(':') + 3);
+        absoluteUri = Uri.parse(uriStr);
+       }
+      ensurePermission(absoluteUri, Permission.READ);
       if ("file".equals(uri.getScheme())) {
-        File file = uriToFile(uri);
+        File file = uriToFile(absoluteUri);
         Bundle result = new Bundle();
         if (file.exists()) {
           result.putBoolean("exists", true);

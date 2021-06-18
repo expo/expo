@@ -37,8 +37,6 @@ ${IOS_EXPOKIT_DEPS}
     ss.dependency 'UMCore'
     ss.dependency 'ExpoModulesCore'
     ss.dependency 'UMReactNativeAdapter'
-    ss.dependency 'UMFileSystemInterface'
-    ss.dependency 'UMPermissionsInterface'
   end
 
   s.subspec "Payments" do |ss|

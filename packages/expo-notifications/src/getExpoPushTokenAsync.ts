@@ -31,7 +31,7 @@ export default async function getExpoPushTokenAsync(options: Options = {}): Prom
   const deviceId = options.deviceId || (await getDeviceIdAsync());
 
   const experienceId =
-    options.experienceId || Constants.manifest?.currentFullName || Constants.manifest?.id;
+    options.experienceId || Constants.manifest?.originalFullName || Constants.manifest?.id;
 
   if (!experienceId) {
     throw new CodedError(

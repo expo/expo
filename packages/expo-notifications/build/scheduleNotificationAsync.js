@@ -1,5 +1,5 @@
 import { Platform, UnavailabilityError } from '@unimodules/core';
-import uuidv4 from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 import NotificationScheduler from './NotificationScheduler';
 export default async function scheduleNotificationAsync(request) {
     if (!NotificationScheduler.scheduleNotificationAsync) {

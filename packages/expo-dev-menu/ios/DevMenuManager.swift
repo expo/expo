@@ -60,6 +60,7 @@ private let extensionToDevMenuDataSourcesMap = NSMapTable<DevMenuExtensionProtoc
  */
 @objc
 open class DevMenuManager: NSObject, DevMenuManagerProtocol {
+  var packagerConnectionHandler: DevMenuPackagerConnectionHandler?
   lazy var expoSessionDelegate: DevMenuExpoSessionDelegate = DevMenuExpoSessionDelegate(manager: self)
   lazy var extensionSettings: DevMenuExtensionSettingsProtocol = DevMenuExtensionDefaultSettings(manager: self)
   
@@ -126,7 +127,8 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
   override init() {
     super.init()
     self.window = DevMenuWindow(manager: self)
-    
+    self.packagerConnectionHandler = DevMenuPackagerConnectionHandler(manager: self)
+    self.packagerConnectionHandler?.setup()
     DevMenuSettings.setup()
     self.expoSessionDelegate.restoreSession()
   }
@@ -231,11 +233,16 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
       return nil
     }
     let allExtensions = bridge.modulesConforming(to: DevMenuExtensionProtocol.self) as! [DevMenuExtensionProtocol]
-    let uniqueExtensionNames: [String] = Array(Set(allExtensions.map({ type(of: $0).moduleName!() })))
 
+    let uniqueExtensionNames = Set(
+      allExtensions
+        .map { type(of: $0).moduleName!() }
+        .compactMap { $0 } // removes nils
+    ).sorted()
+    
     return uniqueExtensionNames
       .map({ bridge.module(forName: DevMenuUtils.stripRCT($0)) })
-      .filter({ $0 is DevMenuExtensionProtocol }) as! [DevMenuExtensionProtocol]
+      .filter({ $0 is DevMenuExtensionProtocol }) as? [DevMenuExtensionProtocol]
   }
 
   /**

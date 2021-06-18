@@ -139,10 +139,7 @@ setPurchaseListener(({ responseCode, results, errorCode }) => {
         finishTransactionAsync(purchase, true);
       }
     });
-  }
-
-  // Else find out what went wrong
-  if (responseCode === IAPResponseCode.USER_CANCELED) {
+  } else if (responseCode === IAPResponseCode.USER_CANCELED) {
     console.log('User canceled the transaction');
   } else if (responseCode === IAPResponseCode.DEFERRED) {
     console.log('User does not have permissions to buy but requested parental approval (iOS only)');

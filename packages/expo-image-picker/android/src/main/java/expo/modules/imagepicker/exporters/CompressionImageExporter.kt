@@ -3,21 +3,21 @@ package expo.modules.imagepicker.exporters
 import android.graphics.Bitmap
 import android.net.Uri
 import expo.modules.imagepicker.exporters.ImageExporter.Listener
+import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import org.apache.commons.io.FilenameUtils
-import org.unimodules.interfaces.imageloader.ImageLoader
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
 class CompressionImageExporter(
-  private val mImageLoader: ImageLoader,
-  private val mQuality: Int,
-  private val mBase64: Boolean
+        private val mImageLoader: ImageLoaderInterface,
+        private val mQuality: Int,
+        private val mBase64: Boolean
 ) : ImageExporter {
 
   override fun export(source: Uri, output: File, exporterListener: Listener) {
-    val imageLoaderHandler = object : ImageLoader.ResultListener {
+    val imageLoaderHandler = object : ImageLoaderInterface.ResultListener {
       override fun onSuccess(bitmap: Bitmap) {
         val width = bitmap.width
         val height = bitmap.height

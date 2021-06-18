@@ -105,6 +105,14 @@ export declare const iosModelNames: {
     'iPad11,7': string;
     'iPad13,1': string;
     'iPad13,2': string;
+    'iPad13,4': string;
+    'iPad13,5': string;
+    'iPad13,6': string;
+    'iPad13,7': string;
+    'iPad13,8': string;
+    'iPad13,9': string;
+    'iPad13,10': string;
+    'iPad13,11': string;
     'AppleTV2,1': string;
     'AppleTV3,1': string;
     'AppleTV3,2': string;

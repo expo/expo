@@ -1,6 +1,6 @@
 import { UnavailabilityError } from '@unimodules/core';
+import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
 import { Platform } from 'react-native';
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 
 import ExpoBrightness from './ExpoBrightness';
 

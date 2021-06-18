@@ -1,5 +1,5 @@
 import { UnavailabilityError, CodedError } from '@unimodules/core';
-import { PermissionStatus, PermissionExpiration } from 'unimodules-permissions-interface';
+import { PermissionStatus, PermissionExpiration } from 'expo-modules-core';
 
 import ExponentImagePicker from './ExponentImagePicker';
 import {

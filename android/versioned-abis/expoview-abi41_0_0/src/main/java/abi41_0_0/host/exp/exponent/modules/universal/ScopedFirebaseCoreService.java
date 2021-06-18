@@ -7,7 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import expo.modules.updates.manifest.raw.RawManifest;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
@@ -34,7 +34,7 @@ public class ScopedFirebaseCoreService extends FirebaseCoreService implements Re
   private String mAppName;
   private FirebaseOptions mAppOptions;
 
-  public ScopedFirebaseCoreService(Context context, RawManifest manifest, ExperienceId experienceId) {
+  public ScopedFirebaseCoreService(Context context, RawManifest manifest, ExperienceKey experienceKey) {
     super(context);
 
     // Get the default firebase app name
@@ -42,8 +42,7 @@ public class ScopedFirebaseCoreService extends FirebaseCoreService implements Re
     String defaultAppName = (defaultApp != null) ? defaultApp.getName() : DEFAULT_APP_NAME;
 
     // Get experience key & unique app name
-    String experienceKey = getEncodedExperienceId(experienceId);
-    mAppName = "__sandbox_" + experienceKey;
+    mAppName = "__sandbox_" + getEncodedExperienceScopeKey(experienceKey);
     mAppOptions = getOptionsFromManifest(manifest);
 
     // Add the app to the list of protected app names
@@ -86,14 +85,14 @@ public class ScopedFirebaseCoreService extends FirebaseCoreService implements Re
     updateFirebaseApp(mAppOptions, mAppName);
   }
 
-  private static String getEncodedExperienceId(ExperienceId experienceId) {
+  private static String getEncodedExperienceScopeKey(ExperienceKey experienceKey) {
     try {
-      String encodedUrl = experienceId.getUrlEncoded();
+      String encodedUrl = experienceKey.getUrlEncodedScopeKey();
       byte[] data = encodedUrl.getBytes("UTF-8");
       String base64 = Base64.encodeToString(data, Base64.URL_SAFE | Base64.NO_PADDING | Base64.NO_WRAP);
       return base64;
     } catch (UnsupportedEncodingException e) {
-      return Integer.toString(experienceId.hashCode());
+      return Integer.toString(experienceKey.getScopeKey().hashCode());
     }
   }
 

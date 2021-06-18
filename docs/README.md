@@ -90,7 +90,7 @@ This method is not great for accessibility and should be avoided where possible.
 
 Use these for more complex rules than one-to-one path-to-path redirect mapping. For example, we use client-side redirects to strip the `.html` extension off, and to identify if the request is for a version of the documentation that we no longer support.
 
-You can add your own client-side redirect rules in `pages/_error.js`.
+You can add your own client-side redirect rules in `common/error-utilities.ts`.
 
 ## Algolia Docsearch
 
@@ -231,7 +231,7 @@ Sometimes it's useful to show multiple ways of doing something, for instance may
 import { Tab, Tabs } from '~/components/plugins/Tabs';
 
 <Tabs>
-    <Tab label="Add 1 One Way">
+<Tab label="Add 1 One Way">
 
     addOne = async x => {
     /* @info This text will be shown onHover */
@@ -240,8 +240,8 @@ import { Tab, Tabs } from '~/components/plugins/Tabs';
     };
 
 
-    </Tab>
-    <Tab label="Add 1 Another Way">
+</Tab>
+<Tab label="Add 1 Another Way">
 
 
     addOne = async x => {
@@ -250,9 +250,10 @@ import { Tab, Tabs } from '~/components/plugins/Tabs';
     /* @end */
     };
 
-    </Tab>
+</Tab>
 </Tabs>
 ```
+n.b. The components should not be indented or they will not be parsed correctly.
 
 ### Excluding pages from Docsearch
 

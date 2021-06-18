@@ -34,22 +34,22 @@ static SEL whenInUseAuthorizationSelector;
 
 - (NSDictionary *)parsePermissions:(CLAuthorizationStatus)systemStatus
 {
-  UMPermissionStatus status;
+  EXPermissionStatus status;
 
   switch (systemStatus) {
     case kCLAuthorizationStatusAuthorizedWhenInUse:
     case kCLAuthorizationStatusAuthorizedAlways: {
-      status = UMPermissionStatusGranted;
+      status = EXPermissionStatusGranted;
       break;
     }
     case kCLAuthorizationStatusDenied:
     case kCLAuthorizationStatusRestricted: {
-      status = UMPermissionStatusDenied;
+      status = EXPermissionStatusDenied;
       break;
     }
     case kCLAuthorizationStatusNotDetermined:
     default: {
-      status = UMPermissionStatusUndetermined;
+      status = EXPermissionStatusUndetermined;
       break;
     }
   }

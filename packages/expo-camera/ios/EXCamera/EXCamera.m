@@ -7,17 +7,18 @@
 #import <EXCamera/EXCameraPermissionRequester.h>
 #import <UMCore/UMAppLifecycleService.h>
 #import <UMCore/UMUtilities.h>
-#import <UMFaceDetectorInterface/UMFaceDetectorManagerProvider.h>
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
-#import <UMPermissionsInterface/UMPermissionsInterface.h>
+#import <ExpoModulesCore/EXFaceDetectorManagerInterface.h>
+#import <ExpoModulesCore/EXFaceDetectorManagerProviderInterface.h>
+#import <ExpoModulesCore/EXFileSystemInterface.h>
+#import <ExpoModulesCore/EXPermissionsInterface.h>
 
 @interface EXCamera ()
 
-@property (nonatomic, weak) id<UMFileSystemInterface> fileSystem;
+@property (nonatomic, weak) id<EXFileSystemInterface> fileSystem;
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
-@property (nonatomic, strong) id<UMFaceDetectorManager> faceDetectorManager;
+@property (nonatomic, strong) id<EXFaceDetectorManagerInterface> faceDetectorManager;
 @property (nonatomic, strong) id<EXBarCodeScannerInterface> barCodeScanner;
-@property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
+@property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
 @property (nonatomic, weak) id<UMAppLifecycleService> lifecycleManager;
 
 @property (nonatomic, assign, getter=isSessionPaused) BOOL paused;
@@ -51,8 +52,8 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     _faceDetectorManager = [self createFaceDetectorManager];
     _barCodeScanner = [self createBarCodeScanner];
     _lifecycleManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)];
-    _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
-    _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
+    _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
+    _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
 #if !(TARGET_IPHONE_SIMULATOR)
     _previewLayer = [AVCaptureVideoPreviewLayer layerWithSession:_session];
     _previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
@@ -926,10 +927,10 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
 
 - (id)createFaceDetectorManager
 {
-  id <UMFaceDetectorManagerProvider> faceDetectorProvider = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMFaceDetectorManagerProvider)];
+  id<EXFaceDetectorManagerProviderInterface> faceDetectorProvider = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFaceDetectorManagerProviderInterface)];
 
   if (faceDetectorProvider) {
-    id <UMFaceDetectorManager> faceDetector = [faceDetectorProvider createFaceDetectorManager];
+    id<EXFaceDetectorManagerInterface> faceDetector = [faceDetectorProvider createFaceDetectorManager];
     if (faceDetector) {
       UM_WEAKIFY(self);
       [faceDetector setOnFacesDetected:^(NSArray<NSDictionary *> *faces) {

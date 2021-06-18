@@ -1,5 +1,6 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
+#import <React/RCTDevLoadingViewSetEnabled.h>
 #import <React/RCTDevMenu.h>
 #import <React/RCTAsyncLocalStorage.h>
 #import <React/RCTDevSettings.h>
@@ -11,6 +12,8 @@
 #import "EXDevLauncherRCTBridge.h"
 #import "EXDevLauncherManifestParser.h"
 #import "EXDevLauncherLoadingView.h"
+#import "EXDevLauncherInternal.h"
+#import "RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h"
 
 #import <EXDevLauncher-Swift.h>
 
@@ -24,7 +27,7 @@
 #endif
 
 // Uncomment the below and set it to a React Native bundler URL to develop the launcher JS
-//#define DEV_LAUNCHER_URL "http://10.0.0.176:8090/index.bundle?platform=ios&dev=true&minify=false"
+//#define DEV_LAUNCHER_URL "http://localhost:8090/index.bundle?platform=ios&dev=true&minify=false"
 
 NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 
@@ -34,6 +37,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 @property (nonatomic, weak) id<EXDevLauncherControllerDelegate> delegate;
 @property (nonatomic, strong) NSDictionary *launchOptions;
 @property (nonatomic, strong) NSURL *sourceUrl;
+@property (nonatomic, assign) BOOL shouldPreferUpdatesInterfaceSourceUrl;
 @property (nonatomic, strong) EXDevLauncherRecentlyOpenedAppsRegistry *recentlyOpenedAppsRegistry;
 @property (nonatomic, strong) EXDevLauncherManifest *manifest;
 @property (nonatomic, strong) EXDevLauncherErrorManager *errorManager;
@@ -60,6 +64,9 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     self.recentlyOpenedAppsRegistry = [EXDevLauncherRecentlyOpenedAppsRegistry new];
     self.pendingDeepLinkRegistry = [EXDevLauncherPendingDeepLinkRegistry new];
     self.errorManager = [[EXDevLauncherErrorManager alloc] initWithController:self];
+    self.shouldPreferUpdatesInterfaceSourceUrl = NO;
+
+    EXDevLauncherBundleURLProviderInterceptor.isInstalled = true;
   }
   return self;
 }
@@ -67,9 +74,10 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
 {
   return @[
-    (id<RCTBridgeModule>)[[RCTDevMenu alloc] init],
-    [[RCTAsyncLocalStorage alloc] init],
-    [[EXDevLauncherLoadingView alloc] init]
+    (id<RCTBridgeModule>)[RCTDevMenu new],
+    [RCTAsyncLocalStorage new],
+    [EXDevLauncherLoadingView new],
+    [EXDevLauncherInternal new]
   ];
 }
 
@@ -172,6 +180,11 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   rootViewController.view = rootView;
   _window.rootViewController = rootViewController;
 
+#if RCT_DEV && defined(DEV_LAUNCHER_URL)
+    // Connect to the websocket
+    [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:[NSURL URLWithString:@DEV_LAUNCHER_URL]];
+#endif
+  
   [_window makeKeyAndVisible];
 }
 
@@ -184,7 +197,15 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   NSURL *appUrl = [EXDevLauncherURLHelper getAppURLFromDevLauncherURL:url];
   if (appUrl) {
     [self loadApp:appUrl onSuccess:nil onError:^(NSError *error) {
-      NSLog(@"%@", error.description);
+      __weak typeof(self) weakSelf = self;
+      dispatch_async(dispatch_get_main_queue(), ^{
+        typeof(self) self = weakSelf;
+        if (!self) {
+          return;
+        }
+        
+        [self.errorManager showErrorWithMessage:error.description stack:nil];
+      });
     }];
     return true;
   }
@@ -203,15 +224,21 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   return true;
 }
 
+- (NSURL *)sourceUrl
+{
+  if (_shouldPreferUpdatesInterfaceSourceUrl && _updatesInterface && _updatesInterface.launchAssetURL) {
+    return _updatesInterface.launchAssetURL;
+  }
+  return _sourceUrl;
+}
+
 - (void)loadApp:(NSURL *)expoUrl onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError
 {
-  NSURL *url = [EXDevLauncherURLHelper changeURLScheme:expoUrl to:@"http"];
-  
   if (@available(iOS 14, *)) {
     // Try to detect if we're trying to open a local network URL so we can preemptively show the
     // Local Network permission prompt -- otherwise the network request will fail before the user
     // has time to accept or reject the permission.
-    NSString *host = url.host;
+    NSString *host = expoUrl.host;
     if ([host hasPrefix:@"192.168."] || [host hasPrefix:@"172."] || [host hasPrefix:@"10."]) {
       // We want to trigger the local network permission dialog. However, the iOS API doesn't expose a way to do it.
       // But we can use system functionality that needs this permission to trigger prompt.
@@ -222,33 +249,73 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
       });
     }
   }
-    
-EXDevLauncherManifestParser *manifestParser = [[EXDevLauncherManifestParser alloc] initWithURL:url session:[NSURLSession sharedSession]];
-  __weak __typeof(self) weakSelf = self;
-  [manifestParser tryToParseManifest:^(EXDevLauncherManifest * _Nullable manifest) {
-    if (!weakSelf) {
+
+  NSDictionary *updatesConfiguration = @{
+    @"EXUpdatesURL": expoUrl.absoluteString,
+    @"EXUpdatesLaunchWaitMs": @(60000),
+    @"EXUpdatesCheckOnLaunch": @"ALWAYS",
+    @"EXUpdatesHasEmbeddedUpdate": @(NO),
+    @"EXUpdatesEnabled": @(YES)
+  };
+
+  void (^launchReactNativeApp)(void) = ^{
+    self->_shouldPreferUpdatesInterfaceSourceUrl = NO;
+    RCTDevLoadingViewSetEnabled(NO);
+    [self.recentlyOpenedAppsRegistry appWasOpened:expoUrl.absoluteString name:nil];
+    if ([expoUrl.path isEqual:@"/"] || [expoUrl.path isEqual:@""]) {
+      [self _initApp:[NSURL URLWithString:@"index.bundle?platform=ios&dev=true&minify=false" relativeToURL:expoUrl] manifest:nil];
+    } else {
+      [self _initApp:expoUrl manifest:nil];
+    }
+    if (onSuccess) {
+      onSuccess();
+    }
+  };
+
+  void (^launchExpoApp)(NSURL *, EXDevLauncherManifest *) = ^(NSURL *bundleURL, EXDevLauncherManifest *manifest) {
+    self->_shouldPreferUpdatesInterfaceSourceUrl = !manifest.isUsingDeveloperTool;
+    RCTDevLoadingViewSetEnabled(manifest.isUsingDeveloperTool);
+    [self.recentlyOpenedAppsRegistry appWasOpened:expoUrl.absoluteString name:manifest.name];
+    [self _initApp:bundleURL manifest:manifest];
+    if (onSuccess) {
+      onSuccess();
+    }
+  };
+
+  EXDevLauncherManifestParser *manifestParser = [[EXDevLauncherManifestParser alloc] initWithURL:expoUrl session:[NSURLSession sharedSession]];
+  [manifestParser isManifestURLWithCompletion:^(BOOL isManifestURL) {
+    if (!isManifestURL) {
+      // assume this is a direct URL to a bundle hosted by metro
+      launchReactNativeApp();
       return;
     }
-    __typeof(self) self = weakSelf;
-    
-    NSURL *bundleUrl = [NSURL URLWithString:manifest.bundleUrl];
-    
-    [self.recentlyOpenedAppsRegistry appWasOpened:[expoUrl absoluteString] name:manifest.name];
-    [self _initApp:bundleUrl manifest:manifest];
-    if (onSuccess) {
-      onSuccess();
+
+    if (!self->_updatesInterface) {
+      [manifestParser tryToParseManifest:^(EXDevLauncherManifest *manifest) {
+        if (!manifest.isUsingDeveloperTool) {
+          onError([NSError errorWithDomain:@"DevelopmentClient" code:1 userInfo:@{NSLocalizedDescriptionKey: @"expo-updates is not properly installed or integrated. In order to load published projects with this development client, follow all installation and setup instructions for both the expo-dev-client and expo-updates packages."}]);
+          return;
+        }
+        launchExpoApp([NSURL URLWithString:manifest.bundleUrl], manifest);
+      } onError:onError];
+      return;
     }
-  } onInvalidManifestURL:^{
-    [self.recentlyOpenedAppsRegistry appWasOpened:[expoUrl absoluteString] name:nil];
-    if ([url.path isEqual:@"/"] || [url.path isEqual:@""]) {
-      [self _initApp:[NSURL URLWithString:@"index.bundle?platform=ios&dev=true&minify=false" relativeToURL:url] manifest:nil];
-    } else {
-      [self _initApp:url manifest:nil];
-    }
-    
-    if (onSuccess) {
-      onSuccess();
-    }
+
+    [self->_updatesInterface fetchUpdateWithConfiguration:updatesConfiguration onManifest:^BOOL(NSDictionary *manifest) {
+      EXDevLauncherManifest *devLauncherManifest = [EXDevLauncherManifest fromJsonObject:manifest];
+      if (devLauncherManifest.isUsingDeveloperTool) {
+        // launch right away rather than continuing to load through EXUpdates
+        launchExpoApp([NSURL URLWithString:devLauncherManifest.bundleUrl], devLauncherManifest);
+        return NO;
+      }
+      return YES;
+    } progress:^(NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
+      // do nothing for now
+    } success:^(NSDictionary * _Nullable manifest) {
+      if (manifest) {
+        launchExpoApp(self->_updatesInterface.launchAssetURL, [EXDevLauncherManifest fromJsonObject:manifest]);
+      }
+    } error:onError];
   } onError:onError];
 }
 
@@ -266,6 +333,11 @@ EXDevLauncherManifestParser *manifestParser = [[EXDevLauncherManifestParser allo
     __typeof(self) self = weakSelf;
     
     self.sourceUrl = bundleUrl;
+    
+#if RCT_DEV
+    // Connect to the websocket
+    [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:bundleUrl];
+#endif
     
     if (@available(iOS 12, *)) {
       [self _applyUserInterfaceStyle:manifest.userInterfaceStyle];
@@ -292,6 +364,10 @@ EXDevLauncherManifestParser *manifestParser = [[EXDevLauncherManifestParser allo
     if (backgroundColor) {
       self.window.rootViewController.view.backgroundColor = backgroundColor;
       self.window.backgroundColor = backgroundColor;
+    }
+
+    if (self.updatesInterface) {
+      self.updatesInterface.bridge = self.appBridge;
     }
   });
 }

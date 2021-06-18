@@ -227,7 +227,8 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
       Bundle extras = new Bundle();
       final Bundle serviceOptions = options.getArguments(FOREGROUND_SERVICE_KEY).toBundle();
 
-      extras.putString("appId", mTask.getAppId());
+      // extras param name is appId for legacy reasons
+      extras.putString("appId", mTask.getAppScopeKey());
       extras.putString("taskName", mTask.getName());
       serviceIntent.putExtras(extras);
 

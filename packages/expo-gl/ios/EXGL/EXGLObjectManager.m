@@ -44,7 +44,7 @@ UM_REGISTER_MODULE();
 {
   _moduleRegistry = moduleRegistry;
   _uiManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMUIManager)];
-  _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
+  _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
 }
 
 - (EXGLContext *)getContextWithId:(NSNumber *)contextId

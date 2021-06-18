@@ -8,7 +8,21 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 10.0.0 — 2021-06-16
+
+### 🛠 Breaking changes
+
+- Deprecated `expo-payments-stripe` in favor of `@stripe/stripe-react-native`. ([#13259](https://github.com/expo/expo/pull/13259) by [@cruzach](https://github.com/cruzach))
+
+### 🐛 Bug fixes
+
 - Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+- Build Android code using Java 8 to fix Android instrumented test build error. ([#12939](https://github.com/expo/expo/pull/12939) by [@kudo](https://github.com/kudo))
 
 ## 9.2.3 — 2021-04-13
 

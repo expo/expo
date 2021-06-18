@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   EXJavaScriptResource *jsResource = [[EXJavaScriptResource alloc] initWithBundleName:[self.dataSource bundleResourceNameForAppFetcher:self withManifest:manifest]
                                                                             remoteUrl:[EXApiUtil bundleUrlFromManifest:manifest]
-                                                                      devToolsEnabled:manifest.isDevelopmentMode];
+                                                                      devToolsEnabled:manifest.isUsingDeveloperTool];
   jsResource.abiVersion = [[EXVersions sharedInstance] availableSdkVersionForManifest:manifest];
   jsResource.requestTimeoutInterval = timeoutInterval;
 
@@ -66,7 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
     // if this experience id encountered a loading error before, discard any cache we might have
     return EXCachedResourceWriteToCache;
   }
-  if (manifest.isDevelopmentMode) {
+  if (manifest.isUsingDeveloperTool) {
     return EXCachedResourceNoCache;
   }
   return EXCachedResourceWriteToCache;

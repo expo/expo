@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '12.0.2'
+version = '12.1.0'
 
 
 buildscript {
@@ -49,18 +49,19 @@ uploadArchives {
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 30)
 
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
     versionCode 37
-    versionName "12.0.2"
+    versionName "12.1.0"
   }
   lintOptions {
     abortOnError false
-  }
-  compileOptions {
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
   }
 }
 
@@ -74,7 +75,7 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 
 dependencies {
   unimodule "unimodules-core"
-  unimodule "unimodules-permissions-interface"
+  unimodule 'expo-modules-core'
 
   testImplementation "org.robolectric:robolectric:4.3.1"
 

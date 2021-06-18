@@ -46,7 +46,7 @@ type State = {
 
 type Props = { isUserLoggedIn: boolean; isSimulator: boolean };
 
-const bottomContainerHeight = isDevMenuAvailable() ? 40 : 0;
+const bottomContainerHeight = isDevMenuAvailable() ? 60 : 0;
 
 class LauncherMainScreen extends React.Component<Props, State> {
   state: State = {

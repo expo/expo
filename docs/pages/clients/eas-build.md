@@ -3,6 +3,7 @@ title: Building With EAS
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
+import { Tab, Tabs } from '~/components/plugins/Tabs';
 
 ## Setting up EAS
 
@@ -10,7 +11,40 @@ You can set up your project to use EAS by running `eas build:configure`.  If you
 
 ## Modifying your EAS.json
 
-Now edit your eas.json to look like this.
+Now edit your eas.json to look like this:
+
+<Tabs tabs={["With config plugins", "If you are directly managing your native projects"]}>
+
+<Tab >
+
+```json
+{
+  "builds": {
+    "android": {
+      "release": {
+        "workflow": "managed"
+      },
+      "development": {
+        "workflow": "managed",
+        "distribution": "internal",
+        "buildType": "development-client"
+      }
+    },
+    "ios": {
+      "release": {
+        "workflow": "managed"
+      },
+      "development": {
+        "workflow": "managed",
+        "distribution": "internal",
+        "buildType": "development-client"
+      }
+    }
+  }
+}
+```
+</Tab>
+<Tab>
 
 ```json
 {
@@ -28,17 +62,19 @@ Now edit your eas.json to look like this.
     },
     "ios": {
       "release": {
-        "workflow": "generic",
+        "workflow": "generic"
       },
       "development": {
         "workflow": "generic",
         "distribution": "internal",
-        "schemeBuildConfiguration": "Debug",
+        "schemeBuildConfiguration": "Debug"
       }
     }
   }
 }
 ```
+</Tab>
+</Tabs>
 
 ## Generating your first build
 

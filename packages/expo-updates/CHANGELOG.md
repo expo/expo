@@ -4,6 +4,38 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+- Use stable manifest ID where applicable. ([#12964](https://github.com/expo/expo/pull/12964) by [@wschurman](https://github.com/wschurman))
+
+### 🐛 Bug fixes
+
+- Improve behavior of dev client (with updates integration) when developer is logged out of expo-cli. ([#13310](https://github.com/expo/expo/pull/13310) by [@esamelson](https://github.com/esamelson))
+
+### 💡 Others
+
+## 0.7.0 — 2021-06-16
+
+### 🎉 New features
+
+- Backport runtimeVersion to classic Updates ([#13283](https://github.com/expo/expo/pull/13283) by [@jkhales](https://github.com/jkhales))
+
+## 0.7.0-rc.2 — 2021-06-10
+
+### 🛠 Breaking changes
+
+- Renamed the iOS protocol in expo-updates-interface to EXUpdatesExternalInterface. ([#13214](https://github.com/expo/expo/pull/13214) by [@esamelson](https://github.com/esamelson))
+
+## 0.7.0-rc.1 — 2021-06-08
+
+### 🐛 Bug fixes
+
+- Fixed prebuild issues with missing imports.
+
+## 0.7.0-rc.0 — 2021-06-08
+
+### 🛠 Breaking changes
+
 - Rename new manifest field updateMetadata to metadata ([#12831](https://github.com/expo/expo/pull/12831) by [@jkhales](https://github.com/jkhales))
 - Save asset with a key that does not include an extension. This introduces an implicit dependency on expo-asset@8.3.2 or above. ([#12734](https://github.com/expo/expo/pull/12734) by [@jkhales](https://github.com/jkhales))
 - Add last_accessed column to updates table schema, and rename metadata -> manifest. ([#12768](https://github.com/expo/expo/pull/12768) by [@esamelson](https://github.com/esamelson))
@@ -25,11 +57,18 @@
 - Remove code to handle nested root level manifest key. ([#12736](https://github.com/expo/expo/pull/12736) by [@wschurman](https://github.com/wschurman))
 - Move scope check from reaper to selection policy. ([#12769](https://github.com/expo/expo/pull/12769) by [@esamelson](https://github.com/esamelson))
 - Add ReaperSelectionPolicyDevelopmentClient, implement in Expo Go. ([#12770](https://github.com/expo/expo/pull/12770) by [@esamelson](https://github.com/esamelson))
+- Add UpdatesDevLauncherController for development client integration. (Android: [#13032](https://github.com/expo/expo/pull/13032) and iOS: ([#13112](https://github.com/expo/expo/pull/13112)) by [@esamelson](https://github.com/esamelson))
 
 ### 🐛 Bug fixes
 
 - Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
 - Rename Update.metadata -> manifest in internal module classes. ([#12818](https://github.com/expo/expo/pull/12818) by [@esamelson](https://github.com/esamelson))
+- Reset selection policy in UpdatesDevLauncherController ([#13113](https://github.com/expo/expo/pull/13113) by [@esamelson](https://github.com/esamelson))
+- UpdatesDevLauncherController: make Update nullable in onSuccess callback ([#13136](https://github.com/expo/expo/pull/13136) by [@esamelson](https://github.com/esamelson))
+
+### 💡 Others
+
+- Refactored uuid imports to v7 style. ([#13037](https://github.com/expo/expo/pull/13037) by [@giautm](https://github.com/giautm))
 
 ## 0.6.0 — 2021-04-13
 

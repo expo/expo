@@ -1,13 +1,13 @@
 import { UnavailabilityError } from '@unimodules/core';
 import ExpoImageManipulator from './ExpoImageManipulator';
 import { SaveFormat } from './ImageManipulator.types';
-export async function manipulateAsync(uri, actions = [], { format = SaveFormat.JPEG, ...rest } = {}) {
+import { validateArguments } from './validators';
+export async function manipulateAsync(uri, actions = [], saveOptions = {}) {
     if (!ExpoImageManipulator.manipulateAsync) {
         throw new UnavailabilityError('ImageManipulator', 'manipulateAsync');
     }
-    if (!(typeof uri === 'string')) {
-        throw new TypeError('The "uri" argument must be a string');
-    }
+    validateArguments(uri, actions, saveOptions);
+    const { format = SaveFormat.JPEG, ...rest } = saveOptions;
     return await ExpoImageManipulator.manipulateAsync(uri, actions, { format, ...rest });
 }
 export * from './ImageManipulator.types';

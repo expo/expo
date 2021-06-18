@@ -1,6 +1,4 @@
-import { ConfigPlugin, withInfoPlist } from '@expo/config-plugins';
-// TODO: export from config-plugins proper
-import { InfoPlist } from '@expo/config-plugins/build/ios/IosConfig.types';
+import { ConfigPlugin, InfoPlist, withInfoPlist } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 
 export const withAdMobIOS: ConfigPlugin = config => {

@@ -14,6 +14,10 @@ export default class Camera extends React.Component<CameraProps> {
     static defaultProps: CameraProps;
     static getPermissionsAsync(): Promise<PermissionResponse>;
     static requestPermissionsAsync(): Promise<PermissionResponse>;
+    static getCameraPermissionsAsync(): Promise<PermissionResponse>;
+    static requestCameraPermissionsAsync(): Promise<PermissionResponse>;
+    static getMicrophonePermissionsAsync(): Promise<PermissionResponse>;
+    static requestMicrophonePermissionsAsync(): Promise<PermissionResponse>;
     _cameraHandle?: number | null;
     _cameraRef?: React.Component | null;
     _lastEvents: {

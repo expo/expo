@@ -54,41 +54,6 @@ Tick the `Requires Full Screen` checkbox in Xcode. It should be located under `P
 import * as ScreenOrientation from 'expo-screen-orientation';
 ```
 
-### Methods
-
-- [`ScreenOrientation.lockAsync(orientationLock)`](#screenorientationlockasyncorientationlock)
-- [`ScreenOrientation.lockPlatformAsync(platformInfo)`](#screenorientationlockplatformasyncplatforminfo)
-- [`ScreenOrientation.unlockAsync()`](#screenorientationunlockasync)
-- [`ScreenOrientation.getOrientationAsync()`](#screenorientationgetorientationasync)
-- [`ScreenOrientation.getOrientationLockAsync()`](#screenorientationgetorientationlockasync)
-- [`ScreenOrientation.getPlatformOrientationLockAsync()`](#screenorientationgetplatformorientationlockasync)
-- [`ScreenOrientation.supportsOrientationLockAsync(orientationLock)`](#screenorientationsupportsorientationlockasyncorientationlock)
-- [`ScreenOrientation.addOrientationChangeListener(listener)`](#screenorientationaddorientationchangelistenerlistener)
-- [`ScreenOrientation.removeOrientationChangeListeners()`](#screenorientationremoveorientationchangelisteners)
-- [`ScreenOrientation.removeOrientationChangeListener(subscription)`](#screenorientationremoveorientationchangelistenersubscription)
-
-### Enum Types
-
-- [`ScreenOrientation.Orientation`](#screenorientationorientation)
-- [`ScreenOrientation.OrientationLock`](#screenorientationorientationlock)
-- [`ScreenOrientation.SizeClassIOS`](#screenorientationsizeclassios)
-- [`ScreenOrientation.WebOrientationLock`](#screenorientationweborientationlock)
-
-### Object Types
-
-- [`ScreenOrientation.PlatformOrientationInfo`](#screenorientationplatformorientationinfo)
-- [`ScreenOrientation.ScreenOrientationInfo`](#screenorientationscreenorientationinfo)
-- [`ScreenOrientation.OrientationChangeEvent`](#screenorientationorientationchangeevent)
-- [`Subscription`](#subscription)
-
-### Function Types
-
-- [`ScreenOrientation.OrientationChangeListener`](#screenorientationorientationchangelistener)
-
-### Errors
-
-- [Error Codes](#error-codes)
-
 ## Methods
 
 ### `ScreenOrientation.lockAsync(orientationLock)`

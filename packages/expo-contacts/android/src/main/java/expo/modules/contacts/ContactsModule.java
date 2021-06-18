@@ -21,7 +21,6 @@ import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.interfaces.permissions.Permissions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,6 +43,7 @@ import expo.modules.contacts.models.PhoneNumberModel;
 import expo.modules.contacts.models.PostalAddressModel;
 import expo.modules.contacts.models.RelationshipModel;
 import expo.modules.contacts.models.UrlAddressModel;
+import expo.modules.interfaces.permissions.Permissions;
 
 import static expo.modules.contacts.models.BaseModel.decodeList;
 
@@ -153,6 +153,8 @@ public class ContactsModule extends ExportedModule {
           } else {
             output.putParcelableArray("data", new Parcelable[0]);
           }
+          output.putBoolean("hasNextPage", false);
+          output.putBoolean("hasPreviousPage", false);
           promise.resolve(output);
         } else if (options.containsKey("name") && options.get("name") instanceof String) {
           String predicateMatchingName = "%" + (String) options.get("name") + "%";

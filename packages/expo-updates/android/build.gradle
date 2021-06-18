@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '0.6.0'
+version = '0.7.0'
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -48,11 +48,16 @@ uploadArchives {
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 30)
 
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
     versionCode 31
-    versionName '0.6.0'
+    versionName '0.7.0'
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     // uncomment below to export the database schema when making changes
     /* javaCompileOptions {
@@ -64,10 +69,6 @@ android {
   }
   lintOptions {
     abortOnError false
-  }
-  compileOptions {
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
   }
   testOptions {
     unitTests.includeAndroidResources = true
@@ -88,6 +89,7 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 dependencies {
   unimodule 'unimodules-core'
   unimodule 'expo-structured-headers'
+  unimodule 'expo-updates-interface'
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
 

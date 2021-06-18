@@ -8,8 +8,10 @@ on:
         required: true
   pull_request_target:
     branches: [master, sdk-*]
-    paths:
-      - packages/**
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   code_review:

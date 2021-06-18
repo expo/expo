@@ -34,11 +34,17 @@ buildscript {
 android {
   compileSdkVersion safeExtGet('compileSdkVersion', DEFAULT_COMPILE_SDK_VERSION)
   buildToolsVersion safeExtGet('buildToolsVersion', DEFAULT_BUILD_TOOLS_VERSION)
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+
   defaultConfig {
     minSdkVersion safeExtGet('minSdkVersion', DEFAULT_MIN_SDK_VERSION)
     targetSdkVersion safeExtGet('targetSdkVersion', DEFAULT_TARGET_SDK_VERSION)
     versionCode 1
-    versionName "1.0"
+    versionName "1.0.0-alpha.1"
   }
   lintOptions {
     abortOnError false

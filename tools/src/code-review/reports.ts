@@ -25,7 +25,7 @@ function reportForOutput(output: ReviewOutput): string {
   return `<details>
   <summary><strong>${prefixForStatus(output.status)}</strong>: ${output.title}</summary>
 
-\\
+&NewLine;
 ${output.body}
 </details>
 
@@ -58,7 +58,7 @@ function footerForCommit(sha: string): string {
 function prefixForStatus(status: ReviewStatus): string {
   switch (status) {
     case ReviewStatus.WARN:
-      return '⚠️ Warning';
+      return '⚠️ Suggestions';
     case ReviewStatus.ERROR:
       return '❌ Error';
   }

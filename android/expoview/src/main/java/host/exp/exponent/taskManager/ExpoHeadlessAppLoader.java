@@ -21,7 +21,7 @@ public class ExpoHeadlessAppLoader implements HeadlessAppLoader {
 
   private static AppLoaderInterface appLoader;
 
-  private final HashMap<String, AppRecordInterface> appIdsToAppRecords = new HashMap<>();
+  private final HashMap<String, AppRecordInterface> appScopeKeysToAppRecords = new HashMap<>();
 
   @DoNotStrip
   @SuppressWarnings("unused")
@@ -39,12 +39,12 @@ public class ExpoHeadlessAppLoader implements HeadlessAppLoader {
       throw new AppConfigurationError("Cannot execute background task because application URL is invalid");
     } else {
 
-      if (appIdsToAppRecords.containsKey(params.getAppId())) {
+      if (appScopeKeysToAppRecords.containsKey(params.getAppScopeKey())) {
         alreadyRunning.run();
       } else {
         Map<String, Object> options = new HashMap<>();
 
-        Log.i(TAG, "Loading headless app '" + params.getAppId() + "' with url '" + params.getAppUrl() + "'.");
+        Log.i(TAG, "Loading headless app '" + params.getAppScopeKey() + "' with url '" + params.getAppUrl() + "'.");
 
         AppRecordInterface appRecord = appLoader.loadApp(params.getAppUrl(), options, new AppLoaderProvider.Callback() {
           @Override
@@ -53,23 +53,23 @@ public class ExpoHeadlessAppLoader implements HeadlessAppLoader {
               exception.printStackTrace();
               Log.e(TAG, exception.getMessage());
             }
-            HeadlessAppLoaderNotifier.INSTANCE.notifyAppLoaded(params.getAppId());
+            HeadlessAppLoaderNotifier.INSTANCE.notifyAppLoaded(params.getAppScopeKey());
             callback.apply(success);
             if (!success) {
-              appIdsToAppRecords.remove(params.getAppId());
+              appScopeKeysToAppRecords.remove(params.getAppScopeKey());
             }
           }
         });
 
-        appIdsToAppRecords.put(params.getAppId(), appRecord);
+        appScopeKeysToAppRecords.put(params.getAppScopeKey(), appRecord);
       }
     }
   }
 
   @Override
-  public boolean invalidateApp(String appId) {
-    appIdsToAppRecords.remove(appId);
-    HeadlessAppLoaderNotifier.INSTANCE.notifyAppLoaded(appId);
+  public boolean invalidateApp(String appScopeKey) {
+    appScopeKeysToAppRecords.remove(appScopeKey);
+    HeadlessAppLoaderNotifier.INSTANCE.notifyAppLoaded(appScopeKey);
     return false;
   }
 
@@ -82,7 +82,7 @@ public class ExpoHeadlessAppLoader implements HeadlessAppLoader {
   }
 
   @Override
-  public boolean isRunning(String appId) {
-    return appIdsToAppRecords.containsKey(appId);
+  public boolean isRunning(String appScopeKey) {
+    return appScopeKeysToAppRecords.containsKey(appScopeKey);
   }
 }

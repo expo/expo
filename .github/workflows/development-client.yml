@@ -12,6 +12,10 @@ on:
       - .github/workflows/development-client.yml
       - packages/expo-dev-*/**
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   android:
     runs-on: ubuntu-18.04
@@ -117,6 +121,7 @@ jobs:
               'expo-dev-menu': 'file:../expo/packages/expo-dev-menu', \
               'expo-dev-menu-interface': 'file:../expo/packages/expo-dev-menu-interface', \
               'expo-dev-launcher': 'file:../expo/packages/expo-dev-launcher', \
+              'expo-updates-interface': 'file:../expo/packages/expo-updates-interface', \
             }; \
             fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');"
       - name: Add dependencies
