@@ -9,7 +9,6 @@ export function AuthResult({ result }: any) {
   if (!result) {
     return null;
   }
-
   return (
     <View>
       {Object.keys(result).map(key => {

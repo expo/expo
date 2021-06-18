@@ -596,14 +596,14 @@ function Spotify({ redirectUri, prompt, usePKCE, useProxy }: any) {
   );
 }
 
-function Strava({ redirectUri = 'auth.expo.io', prompt, usePKCE, useProxy }: any) {
+function Strava({ redirectUri, prompt, usePKCE, useProxy }: any) {
   const discovery = {
     authorizationEndpoint: 'https://www.strava.com/oauth/mobile/authorize',
     tokenEndpoint: 'https://www.strava.com/oauth/token',
   };
   const [request, result, promptAsync] = useAuthRequest(
     {
-      clientId: '67481',
+      clientId: '51935',
       redirectUri,
       scopes: ['activity:read_all'],
       usePKCE,
@@ -621,7 +621,7 @@ function Strava({ redirectUri = 'auth.expo.io', prompt, usePKCE, useProxy }: any
           code: result.params.code,
           extraParams: {
             // You must use the extraParams variation of clientSecret.
-            client_secret: `c3c7490019829cf0fa407208289fca0ba4547af0`,
+            client_secret: `...`,
           },
         },
         discovery

@@ -21,7 +21,7 @@ export async function test({ describe, expect, it, ...t }) {
 
     if (Constants.appOwnership === 'expo') {
       describe('managed workflow', () => {
-        t.fit('throws out-of-scope exceptions', async () => {
+        it('throws out-of-scope exceptions', async () => {
           const p = FS.documentDirectory;
 
           await throws(() => FS.readAsStringAsync(p + '../hello/world'));
