@@ -156,8 +156,10 @@ export default class DocumentationPage extends React.Component<Props, State> {
     );
   };
 
-  private isEasPath = () => {
-    return some(navigation.easDirectories, name => this.props.url.pathname.startsWith(`/${name}`));
+  private isFeaturePreviewPath = () => {
+    return some(navigation.featurePreviewDirectories, name =>
+      this.props.url.pathname.startsWith(`/${name}`)
+    );
   };
 
   private isPreviewPath = () => {
@@ -209,8 +211,8 @@ export default class DocumentationPage extends React.Component<Props, State> {
       return 'general';
     } else if (this.isGettingStartedPath()) {
       return 'starting';
-    } else if (this.isEasPath()) {
-      return 'eas';
+    } else if (this.isFeaturePreviewPath()) {
+      return 'featurePreview';
     } else if (this.isPreviewPath()) {
       return 'preview';
     }
