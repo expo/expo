@@ -3,15 +3,15 @@ title: Using Hermes JavaScript Engine
 sidebar_title: Using Hermes
 ---
 
-[Hermes](https://hermesengine.dev/) is a JavaScript engine optimized for React Native. By compiling JavaScript into bytecode ahead of time, Hermes could improve app start-up time. Compared to other JavaScript engines such as JavaScriptCore, the binary size of Hermes is dramatically tiny. This could reduce app size as well as memory usage. 
+> Hermes is currently only supported for Android apps using SDK 42 or greater, built with [EAS Build](https://docs.expo.io/build/introduction/). There are no plans to backport support to `expo build`. [Jump to "Limitations"](#limitations).
 
-For apps using [react-native-reanimated](https://github.com/software-mansion/react-native-reanimated) version 2, traditional React Native [remote JS debugging does not work](https://docs.swmansion.com/react-native-reanimated/docs/#known-problems-and-limitations). We recommend using Hermes and make JS debugging possible again.
+[Hermes](https://hermesengine.dev/) is a JavaScript engine optimized for React Native. By compiling JavaScript into bytecode ahead of time, Hermes can improve your app start-up time. The binary size of Hermes is also smaller than other JavaScript engines, such as JavaScriptCore (JSC). It also uses less memory at runtime, which is particularly valuable on lower-end Android devices.
 
-Right now Hermes is only supported on EAS Build.
+A limitation with JavaScriptCore is that the debugger does not work with modules that use [JSI](https://github.com/react-native-community/discussions-and-proposals/issues/91). This means that if your app uses [react-native-reanimated](https://github.com/software-mansion/react-native-reanimated) version 2, for example, remote JS debugging will not work](https://docs.swmansion.com/react-native-reanimated/docs/#known-problems-and-limitations). Hermes makes it possible to debug your app even when using JSI modules.
 
-## 🤖 Android setup
+## Android setup
 
-To get started, open your `app.json` and add `jsEngine` field under the android section:
+To get started, open your `app.json` and add `jsEngine` field under the `android` section:
 
 ```json
 {
@@ -25,11 +25,11 @@ To get started, open your `app.json` and add `jsEngine` field under the android 
 }
 ```
 
-Then to create an APK or AAB through `eas build`. We will setup React Native project and use Hermes as the JavaScript engine to generate the app.
+Now you can build an APK or AAB through `eas build` and your app will run with Hermes instead of JavaScriptCore.
 
 ### Bare workflow
 
-For bare apps created or ejected before SDK 42, there are some further steps to make sure things to be going right.
+> For bare apps created or ejected before SDK 42, [follow these instructions to update your project configuration](https://expo.fyi/hermes-android-config).
 
 - Add `expo.jsEngine` to `android/gradle.properties`
 
@@ -50,30 +50,27 @@ project.ext.react = [
 ]
 ```
 
-## ✈️ Publish Over-the-Air updates
+## Publish Over-the-Air updates
 
-Publishing app bundles in either way:
+Publishing updates with both `expo publish` and `expo export` will generate Hermes bytecode bundles and their sourcemaps.
 
-- To Expo managed server (by `expo publish`)
-- To self-hosted server (by `expo export`)
+Please note that the Hermes bytecode format may change between different versions of `hermes-engine` — an update produced for a specific version of Hermes will not run on a different version of Hermes. Updating the Hermes version can be thought of in the same way as updating any other native module, and so if you update the `hermes-engine` version you should also update the `runtimeVersion` in `app.json`. If you don't do this, your app may crash on launch because the update may be loaded by an existing binary that uses an older version of `hermes-engine` that is incompatible with the updated bytecode format. See ["Update Compatibility"](https://docs.expo.io/bare/updating-your-app/#update-compatibility) for more information.
 
-We will generate Hermes bytecode bundle and sourcemap accordingly.
+## JavaScript debugger for Hermes
 
-Please note that Hermes bytecode may change from different hermes-engine versions. Updating Hermes version is pretty much like updating native modules. After upgrading hermes-engine, react-native, or Expo SDK, please make sure to bump `sdkVersion` or `runtimeVersion` in `app.json`. Otherwise, the app may launch in fatal errors. See [Update Compatibility](https://docs.expo.io/bare/updating-your-app/#update-compatibility) for more information.
-
-## 🛠 JavaScript debugger for Hermes
-
-To use Hermes inspector for JavaScript debugging in the meantime, we recommend following [React Native steps](https://reactnative.dev/docs/hermes#debugging-js-on-hermes-using-google-chromes-devtools). We have plans to integrate Hermes inspector to the upcoming Development Client. Hopefully to make life easier.
+To use Hermes inspector for JavaScript debugging, we recommend following [the instructions from the React Native docs](https://reactnative.dev/docs/hermes#debugging-js-on-hermes-using-google-chromes-devtools).
 
 - _This is only supported on a debug build app._
 - _Execute `expo start` and make sure Expo development server is running._
 
-## ❗️ Limitations
+> 💡 The upcoming [Expo Development Client](https://expo.fyi/dev-client) will simplify this process by integrating directly with Hermes inspector.
+
+## Limitations
 
 ### iOS apps are not supported
 
-Sorry iOS is not supported yet. Hermes support on React Native iOS was added after 0.64. We would add iOS support after Expo SDK upgraded with newer React Native.
+iOS is not supported yet — Hermes support was added to React Native for iOS in `react-native@0.64` and will likely to be added to Expo projects when it has been used successfully in production more broadly.
 
-### Standalone apps are not supported
+### Standalone apps created with `expo build` are not supported
 
-Traditional standalone apps built from `expo build` is not supported. Please use EAS Build instead.
+The classic build system [isn't flexible enough](https://blog.expo.io/expo-managed-workflow-in-2021-5b887bbf7dbb) to support using Hermes for some apps and not for others. You will need to use the new build system, [EAS Build](https://docs.expo.io/build/introduction/), to use Hermes in your standalone apps.
