@@ -175,34 +175,67 @@
   XCTAssertThrows([ABI42_0_0EXUpdatesLegacyUpdate updateWithLegacyManifest:manifest config:_config database:_database]);
 }
 
-- (void)testUpdateWithLegacyManifest_setsUpdateRuntimeAsSdkIfNoManifestRuntime
+- (void)testUpdateWithLegacyManifest_setsUpdateRuntimeAsSdkIfNoConfigRuntime
 {
   NSString *sdkVersion = @"39.0.0";
-  EXUpdatesLegacyRawManifest *manifest = [[EXUpdatesLegacyRawManifest alloc] initWithRawManifestJSON:@{
+  ABI42_0_0EXUpdatesLegacyRawManifest *manifest = [[ABI42_0_0EXUpdatesLegacyRawManifest alloc] initWithRawManifestJSON:@{
+    @"runtimeVersion": @"hello",
     @"sdkVersion": sdkVersion,
     @"releaseId": @"0eef8214-4833-4089-9dff-b4138a14f196",
     @"bundleUrl": @"https://url.to/bundle.js",
     @"commitTime": @"2020-11-11T00:17:54.797Z"
   }];
-   
-  EXUpdatesUpdate *update = [EXUpdatesLegacyUpdate updateWithLegacyManifest:manifest config:_config database:_database];
+  
+  ABI42_0_0EXUpdatesConfig *configWithNoRuntimeVersion = [ABI42_0_0EXUpdatesConfig configWithDictionary:@{
+    @"ABI42_0_0EXUpdatesURL": @"https://esamelson.github.io/self-hosting-test/ios-index.json",
+    @"ABI42_0_0EXUpdatesSDKVersion": sdkVersion
+  }];
+  
+  ABI42_0_0EXUpdatesUpdate *update = [ABI42_0_0EXUpdatesLegacyUpdate updateWithLegacyManifest:manifest config:configWithNoRuntimeVersion database:_database];
   
   XCTAssertEqualObjects(sdkVersion, update.runtimeVersion);
 }
 
-- (void)testUpdateWithLegacyManifest_setsUpdateRuntimeAsRuntimeIfBothManifestRuntime
+- (void)testUpdateWithLegacyManifest_setsUpdateRuntimeAsSdkIfNoManifestRuntime
+{
+  NSString *sdkVersion = @"39.0.0";
+  ABI42_0_0EXUpdatesLegacyRawManifest *manifest = [[ABI42_0_0EXUpdatesLegacyRawManifest alloc] initWithRawManifestJSON:@{
+    @"sdkVersion": sdkVersion,
+    @"releaseId": @"0eef8214-4833-4089-9dff-b4138a14f196",
+    @"bundleUrl": @"https://url.to/bundle.js",
+    @"commitTime": @"2020-11-11T00:17:54.797Z"
+  }];
+  
+  ABI42_0_0EXUpdatesConfig *configWithRuntimeVersion = [ABI42_0_0EXUpdatesConfig configWithDictionary:@{
+    @"ABI42_0_0EXUpdatesURL": @"https://esamelson.github.io/self-hosting-test/ios-index.json",
+    @"ABI42_0_0EXUpdatesSDKVersion": sdkVersion,
+    @"ABI42_0_0EXUpdatesRuntimeVersion": @"notEmpty"
+  }];
+  
+  ABI42_0_0EXUpdatesUpdate *update = [ABI42_0_0EXUpdatesLegacyUpdate updateWithLegacyManifest:manifest config:configWithRuntimeVersion database:_database];
+  
+  XCTAssertEqualObjects(sdkVersion, update.runtimeVersion);
+}
+
+- (void)testUpdateWithLegacyManifest_setsUpdateRuntimeAsRuntimeIfBothManifestRuntimeAndConfigRuntime
 {
   NSString *sdkVersion = @"39.0.0";
   NSString *runtimeVersion = @"hello";
-  EXUpdatesLegacyRawManifest *manifest = [[EXUpdatesLegacyRawManifest alloc] initWithRawManifestJSON:@{
+  ABI42_0_0EXUpdatesLegacyRawManifest *manifest = [[ABI42_0_0EXUpdatesLegacyRawManifest alloc] initWithRawManifestJSON:@{
     @"runtimeVersion": runtimeVersion,
     @"sdkVersion": sdkVersion,
     @"releaseId": @"0eef8214-4833-4089-9dff-b4138a14f196",
     @"bundleUrl": @"https://url.to/bundle.js",
     @"commitTime": @"2020-11-11T00:17:54.797Z"
   }];
-   
-  EXUpdatesUpdate *update = [EXUpdatesLegacyUpdate updateWithLegacyManifest:manifest config:_config database:_database];
+  
+  ABI42_0_0EXUpdatesConfig *configWithRuntimeVersion = [ABI42_0_0EXUpdatesConfig configWithDictionary:@{
+    @"ABI42_0_0EXUpdatesURL": @"https://esamelson.github.io/self-hosting-test/ios-index.json",
+    @"ABI42_0_0EXUpdatesSDKVersion": sdkVersion,
+    @"ABI42_0_0EXUpdatesRuntimeVersion": @"notEmpty"
+  }];
+  
+  ABI42_0_0EXUpdatesUpdate *update = [ABI42_0_0EXUpdatesLegacyUpdate updateWithLegacyManifest:manifest config:configWithRuntimeVersion database:_database];
   
   XCTAssertEqualObjects(runtimeVersion, update.runtimeVersion);
 }
