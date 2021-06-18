@@ -13,8 +13,7 @@ class InputStreamBitmapFactoryOptionsDecoder : ResourceDecoder<InputStream, Bitm
 
   @Throws(IOException::class)
   override fun decode(source: InputStream, width: Int, height: Int, glideOptions: Options): Resource<BitmapFactory.Options> {
-    val options = BitmapFactory.Options()
-    options.inJustDecodeBounds = true
+    val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
     BitmapFactory.decodeStream(source, null, options)
     return SimpleResource(options)
   }

@@ -8,9 +8,10 @@ class ImageProgressEvent(viewId: Int, private val mBytesWritten: Long, private v
   override fun getEventName() = EVENT_NAME
 
   override fun dispatch(rctEventEmitter: RCTEventEmitter) {
-    val eventData = Arguments.createMap()
-    eventData.putInt("loaded", mBytesWritten.toInt())
-    eventData.putInt("total", mContentLength.toInt())
+    val eventData = Arguments.createMap().apply {
+      putInt("loaded", mBytesWritten.toInt())
+      putInt("total", mContentLength.toInt())
+    }
     rctEventEmitter.receiveEvent(viewTag, eventName, eventData)
   }
 

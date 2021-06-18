@@ -12,19 +12,20 @@ class ImageLoadEvent(viewId: Int, private val mModel: Any, private val mDataSour
   override fun getEventName() = EVENT_NAME
 
   override fun dispatch(rctEventEmitter: RCTEventEmitter) {
-    val eventData = Arguments.createMap()
-    eventData.putInt("cacheType", fromNativeValue(mDataSource).enumValue)
-    eventData.putMap("source", serializeSource(mBitmapOptions, mModel))
+    val eventData = Arguments.createMap().apply {
+      putInt("cacheType", fromNativeValue(mDataSource).enumValue)
+      putMap("source", serializeSource(mBitmapOptions, mModel))
+    }
     rctEventEmitter.receiveEvent(viewTag, eventName, eventData)
   }
 
   private fun serializeSource(options: BitmapFactory.Options, model: Any): ReadableMap {
-    val data = Arguments.createMap()
-    data.putString("url", model.toString())
-    data.putInt("width", options.outWidth)
-    data.putInt("height", options.outHeight)
-    data.putString("mediaType", options.outMimeType)
-    return data
+    return Arguments.createMap().apply {
+      putString("url", model.toString())
+      putInt("width", options.outWidth)
+      putInt("height", options.outHeight)
+      putString("mediaType", options.outMimeType)
+    }
   }
 
   companion object {

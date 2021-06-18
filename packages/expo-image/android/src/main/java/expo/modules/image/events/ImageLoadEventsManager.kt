@@ -47,9 +47,7 @@ class ImageLoadEventsManager(private val mViewId: Int, private val mEventEmitter
     }
   }
 
-  override fun onLoadCleared(placeholder: Drawable?) {
-    // do nothing
-  }
+  override fun onLoadCleared(placeholder: Drawable?) = Unit // do nothing
 
   private fun dispatch(event: Event<*>) {
     if (mEventEmitter != null) {

@@ -6,7 +6,6 @@ import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.uimanager.events.Event
 import com.facebook.react.uimanager.events.RCTEventEmitter
-import java.util.*
 
 class ImageErrorEvent(viewId: Int, private val mException: GlideException?) : Event<ImageErrorEvent>(viewId) {
   override fun getEventName() = EVENT_NAME
@@ -33,11 +32,11 @@ class ImageErrorEvent(viewId: Int, private val mException: GlideException?) : Ev
     if (throwable == null) {
       return null
     }
-    val data = Arguments.createMap()
-    data.putString("class", throwable.javaClass.name)
-    data.putMap("cause", serializeThrowable(throwable.cause))
-    data.putString("message", throwable.localizedMessage)
-    return data
+    return Arguments.createMap().apply {
+      putString("class", throwable.javaClass.name)
+      putMap("cause", serializeThrowable(throwable.cause))
+      putString("message", throwable.localizedMessage)
+    }
   }
 
   private fun serializeGlideException(exception: GlideException?): ReadableMap? {
@@ -45,11 +44,11 @@ class ImageErrorEvent(viewId: Int, private val mException: GlideException?) : Ev
       return null
     }
     val exceptionData = serializeThrowable(exception)
-    val data = Arguments.createMap()
-    data.putMap("origin", serializeThrowable(exception.origin))
-    data.putArray("causes", serializeThrowablesList(exception.causes))
-    data.merge(exceptionData!!)
-    return data
+    return Arguments.createMap().apply {
+      putMap("origin", serializeThrowable(exception.origin))
+      putArray("causes", serializeThrowablesList(exception.causes))
+      merge(exceptionData!!)
+    }
   }
 
   companion object {
