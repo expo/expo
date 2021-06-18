@@ -27,28 +27,7 @@ To get started, open your `app.json` and add `jsEngine` field under the `android
 
 Now you can build an APK or AAB through `eas build` and your app will run with Hermes instead of JavaScriptCore.
 
-### Bare workflow
-
 > For bare apps created or ejected before SDK 42, [follow these instructions to update your project configuration](https://expo.fyi/hermes-android-config).
-
-- Add `expo.jsEngine` to `android/gradle.properties`
-
-```
-# android/gradle.properties
-expo.jsEngine=hermes
-```
-
-- Edit `enableHermes` in `android/app/build.gradle`
-
-```groovy
-// android/app/build.gradle
-
-project.ext.react = [
-/* @info Originally the value may be true or false, modify the value to reference from gradle properties */
-    enableHermes: (findProperty('expo.jsEngine') ?: "jsc") == "hermes",
-/* @end */
-]
-```
 
 ## Publish Over-the-Air updates
 
