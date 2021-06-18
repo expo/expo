@@ -41,7 +41,7 @@ Manual smoke tests are included in `apps/native-component-list`, this is a good 
    - Ensures your computer is set up for React Native (will install the Android NDK if it's not present)
    - Downloads the Node packages (`yarn install`)
 
-   Make sure that you're using Java 8 (e.g. OpenJDK 1.8.0_292). ANDROID_SDK_ROOT, ANDROID_NDK_HOME environmental variables should be set or configured via `local.properties` file in `android/`.
+   Make sure that you're using Java 8 (e.g. OpenJDK 1.8.0_292). `ANDROID_SDK_ROOT`, `ANDROID_NDK_HOME` environmental variables should be set or configured via `local.properties` file in `android` folder of the native project you're working with.
 
 5. Navigate to the bare sandbox project `cd apps/bare-expo`
 6. Run the project on any platform (maybe start with web; it's the fastest! 😁)
