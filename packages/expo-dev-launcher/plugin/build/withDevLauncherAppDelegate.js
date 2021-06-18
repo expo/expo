@@ -50,7 +50,7 @@ const DEV_LAUNCHER_APP_DELEGATE_INIT = `#if defined(EX_DEV_LAUNCHER_ENABLED)
       #endif`;
 const DEV_LAUNCHER_UPDATES_APP_DELEGATE_INIT = `
         EXDevLauncherController *controller = [EXDevLauncherController sharedInstance];
-        contoller.updatesInterface = [EXUpdatesDevLauncherController sharedInstance];`;
+        controller.updatesInterface = [EXUpdatesDevLauncherController sharedInstance];`;
 const DEV_LAUNCHER_APP_DELEGATE_BRIDGE = `#if defined(EX_DEV_LAUNCHER_ENABLED)
     NSDictionary *launchOptions = [EXDevLauncherController.sharedInstance getLaunchOptions];
   #else
