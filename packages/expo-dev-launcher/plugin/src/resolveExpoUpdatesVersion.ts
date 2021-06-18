@@ -7,7 +7,10 @@ export function resolveExpoUpdatesVersion(projectRoot: string): string | null {
   if (!expoUpdatesBuildPath) {
     return null;
   }
-  const expoUpdatesPackageJsonPath = path.resolve(expoUpdatesBuildPath, '../package.json');
+  const expoUpdatesPackageJsonPath = path.resolve(
+    path.dirname(expoUpdatesBuildPath),
+    '../package.json'
+  );
   if (!fs.existsSync(expoUpdatesPackageJsonPath)) {
     return null;
   }

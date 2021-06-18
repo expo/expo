@@ -48,8 +48,7 @@ const DEV_LAUNCHER_APP_DELEGATE_INIT = `#if defined(EX_DEV_LAUNCHER_ENABLED)
       #else
         [self initializeReactNativeApp];
       #endif`;
-const DEV_LAUNCHER_UPDATES_APP_DELEGATE_INIT = `
-        EXDevLauncherController *controller = [EXDevLauncherController sharedInstance];
+const DEV_LAUNCHER_UPDATES_APP_DELEGATE_INIT = `EXDevLauncherController *controller = [EXDevLauncherController sharedInstance];
         controller.updatesInterface = [EXUpdatesDevLauncherController sharedInstance];`;
 const DEV_LAUNCHER_APP_DELEGATE_BRIDGE = `#if defined(EX_DEV_LAUNCHER_ENABLED)
     NSDictionary *launchOptions = [EXDevLauncherController.sharedInstance getLaunchOptions];

@@ -12,7 +12,7 @@ function resolveExpoUpdatesVersion(projectRoot) {
     if (!expoUpdatesBuildPath) {
         return null;
     }
-    const expoUpdatesPackageJsonPath = path_1.default.resolve(expoUpdatesBuildPath, '../package.json');
+    const expoUpdatesPackageJsonPath = path_1.default.resolve(path_1.default.dirname(expoUpdatesBuildPath), '../package.json');
     if (!fs_1.default.existsSync(expoUpdatesPackageJsonPath)) {
         return null;
     }
