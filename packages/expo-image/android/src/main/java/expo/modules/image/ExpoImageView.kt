@@ -177,11 +177,11 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
   public override fun onDraw(canvas: Canvas) {
     super.onDraw(canvas)
     // Draw borders on top of the background and image
-    if (borderDrawable != null) {
+    borderDrawable?.let {
       val layoutDirection = if (I18nUtil.getInstance().isRTL(context)) LAYOUT_DIRECTION_RTL else LAYOUT_DIRECTION_LTR
-      borderDrawable!!.setResolvedLayoutDirection(layoutDirection)
-      borderDrawable!!.setBounds(0, 0, width, height)
-      borderDrawable!!.draw(canvas)
+      it.setResolvedLayoutDirection(layoutDirection)
+      it.setBounds(0, 0, width, height)
+      it.draw(canvas)
     }
   }
 }
