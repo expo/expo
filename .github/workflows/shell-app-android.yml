@@ -53,7 +53,7 @@ jobs:
       - name: Install NDK
         if: steps.cache-android-ndk.outputs.cache-hit != 'true'
         run: |
-          sudo $ANDROID_HOME/tools/bin/sdkmanager --install "ndk;19.2.5345600"
+          sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager --install "ndk;19.2.5345600"
       - name: Build Android packages
         env:
           ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/
