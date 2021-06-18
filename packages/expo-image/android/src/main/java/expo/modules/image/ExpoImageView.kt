@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.appcompat.widget.AppCompatImageView
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.model.GlideUrl
@@ -166,7 +167,6 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
   }
 
   override fun draw(canvas: Canvas) {
-
     // When the border-radii are not all the same, a convex-path
     // is used for the Outline. Unfortunately clipping is not supported
     // for convex-paths and we fallback to Canvas clipping.
@@ -176,12 +176,11 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
 
   public override fun onDraw(canvas: Canvas) {
     super.onDraw(canvas)
-
     // Draw borders on top of the background and image
     if (borderDrawable != null) {
       val layoutDirection = if (I18nUtil.getInstance().isRTL(context)) LAYOUT_DIRECTION_RTL else LAYOUT_DIRECTION_LTR
       borderDrawable!!.setResolvedLayoutDirection(layoutDirection)
-      borderDrawable!!.setBounds(0, 0, canvas.width, canvas.height)
+      borderDrawable!!.setBounds(0, 0, width, height)
       borderDrawable!!.draw(canvas)
     }
   }
