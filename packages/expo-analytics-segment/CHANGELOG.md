@@ -8,12 +8,20 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 10.2.0 — 2021-06-16
+
+### 🐛 Bug fixes
+
 - Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
+- Update Android segment package from `v4.8.2` to `v4.9.2` . ([#13263](https://github.com/expo/expo/pull/13263) by [@ajsmth](https://github.com/ajsmth))
 
 ### 💡 Others
 
 - Migrated constants interface from `unimodules-constants-interface` to `expo-modules-core`. ([#12876](https://github.com/expo/expo/pull/12876) by [@tsapeta](https://github.com/tsapeta))
 - Build Android code using Java 8 to fix Android instrumented test build error. ([#12939](https://github.com/expo/expo/pull/12939) by [@kudo](https://github.com/kudo))
+- Replace various arguments generic object types with `Record`s. ([#13207](https://github.com/expo/expo/pull/13207) by [@Simek](https://github.com/Simek))
 
 ## 10.1.1 — 2021-03-30
 

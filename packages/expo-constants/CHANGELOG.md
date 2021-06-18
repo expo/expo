@@ -4,10 +4,20 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+- Use stable manifest ID where applicable. ([#12964](https://github.com/expo/expo/pull/12964) by [@wschurman](https://github.com/wschurman))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 11.0.0 — 2021-06-16
+
+### 🛠 Breaking changes
+
 - Add new manifest2 field and make existing field optional. ([#12817](https://github.com/expo/expo/pull/12817) by [@wschurman](https://github.com/wschurman))
 - Update `@expo/config` to include `originalFullName` in embedded config manifest. [Related PR on expo-cli](https://github.com/expo/expo-cli/pull/3494).
-
-### 🎉 New features
 
 ### 🐛 Bug fixes
 
@@ -18,6 +28,7 @@
 
 - Migrated module interface from `unimodules-constants-interface` to `expo-modules-core`. ([#12876](https://github.com/expo/expo/pull/12876) by [@tsapeta](https://github.com/tsapeta))
 - Build Android code using Java 8 to fix Android instrumented test build error. ([#12939](https://github.com/expo/expo/pull/12939) by [@kudo](https://github.com/kudo))
+- Inherit env vars in get-app-config-android.gradle. ([#13208](https://github.com/expo/expo/pull/13208) by [@jakub-gonet](https://github.com/jakub-gonet))
 
 ## 10.1.3 — 2021-04-13
 

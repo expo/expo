@@ -6,12 +6,12 @@ import java.util.List;
 import org.unimodules.core.interfaces.InternalModule;
 
 import expo.modules.interfaces.sensors.services.GravitySensorServiceInterface;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.kernel.services.sensors.SubscribableSensorKernelService;
 
 public class ScopedGravitySensorService extends BaseSensorService implements InternalModule, GravitySensorServiceInterface {
-  public ScopedGravitySensorService(ExperienceId experienceId) {
-    super(experienceId);
+  public ScopedGravitySensorService(ExperienceKey experienceKey) {
+    super(experienceKey);
   }
 
   @Override

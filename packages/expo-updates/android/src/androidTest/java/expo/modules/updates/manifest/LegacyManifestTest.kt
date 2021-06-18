@@ -219,4 +219,49 @@ class LegacyManifestTest {
     configMap["updateUrl"] = Uri.parse("https://exp.host/@test/test")
     return UpdatesConfiguration().loadValuesFromMap(configMap)
   }
+
+  @Test
+  @Throws(JSONException::class)
+  fun testFromLegacyManifestJson_setsUpdateRuntimeAsSdkIfNoConfigRuntime() {
+    val legacyManifestJsonWithRuntimeVersion =
+      "{\"runtimeVersion\":\"hello\",\"sdkVersion\":\"39.0.0\",\"releaseId\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"commitTime\":\"2020-11-11T00:17:54.797Z\",\"bundleUrl\":\"https://url.to/bundle.js\"}"
+    val rawManifest = LegacyRawManifest(JSONObject(legacyManifestJsonWithRuntimeVersion))
+    val configWithoutRuntimeVersion = createConfig()
+
+    val newLegacyManifest = LegacyManifest.fromLegacyRawManifest(rawManifest, configWithoutRuntimeVersion)
+    Assert.assertEquals("39.0.0",newLegacyManifest.updateEntity.runtimeVersion)
+  }
+
+  @Test
+  @Throws(JSONException::class)
+  fun testFromLegacyManifestJson_setsUpdateRuntimeAsSdkIfNoManifestRuntime() {
+    val legacyManifestJsonWithoutRuntimeVersion =
+      "{\"sdkVersion\":\"39.0.0\",\"releaseId\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"commitTime\":\"2020-11-11T00:17:54.797Z\",\"bundleUrl\":\"https://url.to/bundle.js\"}"
+    val rawManifest = LegacyRawManifest(JSONObject(legacyManifestJsonWithoutRuntimeVersion))
+
+    val configMap = HashMap<String, Any>()
+    configMap["updateUrl"] = Uri.parse("https://exp.host/@test/test")
+    configMap["runtimeVersion"] = "nonEmpty"
+    val configWithRuntimeVersion = UpdatesConfiguration().loadValuesFromMap(configMap)
+
+    val newLegacyManifest = LegacyManifest.fromLegacyRawManifest(rawManifest, configWithRuntimeVersion)
+    Assert.assertEquals("39.0.0",newLegacyManifest.updateEntity.runtimeVersion)
+  }
+
+  @Test
+  @Throws(JSONException::class)
+  fun testFromLegacyManifestJson_setsUpdateRuntimeAsRuntimeIfBothManifestRuntimeAndConfigRuntime() {
+    val runtimeVersion = "hello";
+    val legacyManifestJsonWithRuntimeVersion =
+      String.format("{\"runtimeVersion\":\"%s\",\"sdkVersion\":\"39.0.0\",\"releaseId\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"commitTime\":\"2020-11-11T00:17:54.797Z\",\"bundleUrl\":\"https://url.to/bundle.js\"}",runtimeVersion)
+    val rawManifest = LegacyRawManifest(JSONObject(legacyManifestJsonWithRuntimeVersion))
+
+    val configMap = HashMap<String, Any>()
+    configMap["updateUrl"] = Uri.parse("https://exp.host/@test/test")
+    configMap["runtimeVersion"] = "nonEmpty"
+    val configWithRuntimeVersion = UpdatesConfiguration().loadValuesFromMap(configMap)
+
+    val newLegacyManifest = LegacyManifest.fromLegacyRawManifest(rawManifest, configWithRuntimeVersion)
+    Assert.assertEquals(runtimeVersion,newLegacyManifest.updateEntity.runtimeVersion)
+  }
 }

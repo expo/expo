@@ -46,7 +46,15 @@ export default function ProfileUnauthenticated() {
       const authSessionURL = `${
         Config.website.origin
       }/${urlPath}?app_redirect_uri=${encodeURIComponent(redirectBase)}`;
-      const result = await WebBrowser.openAuthSessionAsync(authSessionURL, redirectBase);
+      const result = await WebBrowser.openAuthSessionAsync(authSessionURL, redirectBase, {
+        /** note(brentvatne): We should disable the showInRecents option when
+         * https://github.com/expo/expo/issues/8072 is resolved. This workaround
+         * prevents the Chrome Custom Tabs activity from closing when the user
+         * switches from the login / sign up form to a password manager or 2fa
+         * app. The downside of using this flag is that the browser window will
+         * remain open in the background after authentication completes. */
+        showInRecents: true,
+      });
 
       if (!mounted.current) {
         return;

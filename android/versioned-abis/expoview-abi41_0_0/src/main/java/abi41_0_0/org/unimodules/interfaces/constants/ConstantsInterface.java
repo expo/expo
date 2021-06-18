@@ -5,7 +5,7 @@ import java.util.Map;
 
 public interface ConstantsInterface {
   Map<String, Object> getConstants();
-  String getAppId();
+  String getAppScopeKey();
   String getAppOwnership();
   String getDeviceName();
   int getDeviceYearClass();

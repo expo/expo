@@ -53,6 +53,10 @@ If you use environment variables in your `app.config.js` or in your app source c
 
 Learn more about how to securely store your `NPM_TOKEN` on EAS Build: ["How to use private package repositories"](/build-reference/how-tos.md#how-to-use-private-package-repositories).
 
+### `expo-branch` is not supported on EAS Build
+
+You will need to remove `expo-branch` from your app to build it with EAS Build. The plan is to add support to [react-native-branch](https://www.npmjs.com/package/react-native-branch), the library maintained by engineers at [Branch](https://branch.io/). If Branch support is a blocker for you, you can try to build your own [config plugin](https://docs.expo.io/guides/config-plugins/) to add react-native-branch to your app today.
+
 ### `metro.config.js` must export the entire default config from `@expo/metro-config`
 
 Previously, with classic builds, your `metro.config.js` might have looked something like:

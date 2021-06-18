@@ -1,3 +1,5 @@
+# This library has been deprecated in favor of [`@stripe/stripe-react-native`](https://docs.expo.io/versions/latest/sdk/stripe/).
+
 # expo-payments-stripe
 
 Provides support for payments through Stripe and Apple Pay on iOS (in bare apps), and Stripe on Android (plus Android Pay with bare apps).

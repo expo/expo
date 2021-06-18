@@ -2,43 +2,47 @@ import { Command } from '@expo/commander';
 import chalk from 'chalk';
 import { Application, TSConfigReader, TypeDocReader } from 'typedoc';
 import fs from 'fs-extra';
+import path from 'path';
 import recursiveOmitBy from 'recursive-omit-by';
 
 import { EXPO_DIR, PACKAGES_DIR } from '../Constants';
 import logger from '../Logger';
 
 type ActionOptions = {
-  packageName: string;
+  packageName?: string;
+  version?: string;
 };
 
 type EntryPoint = string | string[];
 
 type CommandAdditionalParams = [
   entryPoint: EntryPoint,
-  jsonFileName?: string
+  packageName?: string
 ];
 
-const DATA_PATH = `${EXPO_DIR}/docs/public/static/data/unversioned`;
 const MINIFY_JSON = true;
 
 const executeCommand = async (
-  packageName: string,
+  jsonFileName: string,
+  version: string,
   entryPoint: EntryPoint = 'index.ts',
-  jsonFileName: string = packageName
+  packageName: string = jsonFileName
 ) => {
   const app = new Application();
 
   app.options.addReader(new TSConfigReader());
   app.options.addReader(new TypeDocReader());
 
-  const entriesPath = `${PACKAGES_DIR}/${packageName}/src`;
-  const tsConfigPath = `${PACKAGES_DIR}/${packageName}/tsconfig.json`;
-  const jsonOutputPath = `${DATA_PATH}/${jsonFileName}.json`;
+  const dataPath = path.join(EXPO_DIR, 'docs', 'public', 'static', 'data', version);
+  const basePath = path.join(PACKAGES_DIR, packageName);
+  const entriesPath = path.join(basePath, 'src');
+  const tsConfigPath = path.join(basePath, 'tsconfig.json');
+  const jsonOutputPath = path.join(dataPath, `${jsonFileName}.json`);
 
   const entryPoints = Array.isArray(entryPoint) ? (
-    entryPoint.map(entry => `${entriesPath}/${entry}`)
+    entryPoint.map(entry => path.join(entriesPath, entry))
   ) : (
-    [`${entriesPath}/${entryPoint}`]
+    [path.join(entriesPath, entryPoint)]
   );
 
   app.bootstrap({
@@ -55,6 +59,7 @@ const executeCommand = async (
   if (project) {
     await app.generateJson(project, jsonOutputPath);
     const output = await fs.readJson(jsonOutputPath);
+    output.name = jsonFileName;
 
     if (Array.isArray(entryPoint)) {
       const filterEntries = entryPoint.map(entry => entry.substring(0, entry.lastIndexOf('.')));
@@ -66,9 +71,10 @@ const executeCommand = async (
     }
 
     if (MINIFY_JSON) {
-      const minifiedJson = recursiveOmitBy(
-        output,
-        ({ key }) => key === 'id' || key === 'groups'
+      const minifiedJson = recursiveOmitBy(output, ({key, node}) =>
+        key === 'id' ||
+        key === 'groups' ||
+        (key === 'flags' && !Object.keys(node).length)
       );
       await fs.writeFile(jsonOutputPath, JSON.stringify(minifiedJson, null, 0));
     } else {
@@ -79,22 +85,28 @@ const executeCommand = async (
   }
 };
 
-async function action({ packageName }: ActionOptions) {
+async function action({packageName, version = 'unversioned'}: ActionOptions) {
   const packagesMapping: Record<string, CommandAdditionalParams> = {
+    'expo-analytics-segment': ['Segment.ts'],
     'expo-apple-authentication': [['AppleAuthentication.ts', 'AppleAuthentication.types.ts']],
     'expo-application': ['Application.ts'],
+    'expo-background-fetch': ['BackgroundFetch.ts'],
     'expo-battery': ['Battery.ts'],
     'expo-blur': ['index.ts'],
     'expo-cellular': ['Cellular.ts'],
     'expo-clipboard': ['Clipboard.ts'],
+    'expo-haptics': ['Haptics.ts'],
     'expo-keep-awake': ['index.ts'],
     'expo-linear-gradient': ['LinearGradient.tsx'],
     'expo-localization': ['Localization.ts'],
     'expo-mail-composer': ['MailComposer.ts'],
+    'expo-network': ['Network.ts'],
+    'expo-pedometer': ['Pedometer.ts', 'expo-sensors'],
     'expo-print': ['Print.ts'],
     'expo-random': ['Random.ts'],
-    'expo-sensors': ['Pedometer.ts', 'expo-pedometer'],
+    'expo-secure-store': ['SecureStore.ts'],
     'expo-sharing': ['Sharing.ts'],
+    'expo-speech': ['Speech/Speech.ts'],
     'expo-splash-screen': ['SplashScreen.ts'],
     'expo-store-review': ['StoreReview.ts'],
     'expo-task-manager': ['TaskManager.ts'],
@@ -107,7 +119,7 @@ async function action({ packageName }: ActionOptions) {
     if (packageName) {
       const packagesEntries = Object.entries(packagesMapping)
         .filter(([key, value]) => key == packageName || value.includes(packageName))
-        .map(([key, value]) => executeCommand(key, ...value));
+        .map(([key, value]) => executeCommand(key, version, ...value));
       if (packagesEntries.length) {
         await Promise.all(packagesEntries);
         logger.log(chalk.green(`\n🎉 Successful extraction of docs API data for the selected package!`));
@@ -116,7 +128,7 @@ async function action({ packageName }: ActionOptions) {
       }
     } else {
       const packagesEntries = Object.entries(packagesMapping)
-        .map(([key, value]) => executeCommand(key, ...value));
+        .map(([key, value]) => executeCommand(key, version, ...value));
       await Promise.all(packagesEntries);
       logger.log(chalk.green(`\n🎉 Successful extraction of docs API data for all available packages!`));
     }
@@ -129,7 +141,8 @@ export default (program: Command) => {
   program
     .command('generate-docs-api-data')
     .alias('gdad')
-    .description(`Extract API data for docs using TypeDoc.`)
+    .description(`Extract API data JSON files for docs using TypeDoc.`)
     .option('-p, --packageName <packageName>', 'Extract API data only for the specific package.')
+    .option('-v, --version <version>', 'Set the data output path to the specific version.', 'unversioned')
     .asyncAction(action);
 };

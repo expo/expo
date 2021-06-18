@@ -15,7 +15,7 @@ import de.greenrobot.event.EventBus;
 import host.exp.exponent.Constants;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.kernel.ExponentError;
 import host.exp.exponent.kernel.ExponentErrorMessage;
 import host.exp.exponent.kernel.Kernel;
@@ -27,32 +27,32 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   private static String TAG = BaseExperienceActivity.class.getSimpleName();
 
   private static abstract class ExperienceEvent {
-    private ExperienceId mExperienceId;
+    private ExperienceKey mExperienceKey;
 
-    ExperienceEvent(ExperienceId experienceId) {
-      this.mExperienceId = experienceId;
+    ExperienceEvent(ExperienceKey experienceKey) {
+      this.mExperienceKey = experienceKey;
     }
 
-    public ExperienceId getExperienceId() {
-      return mExperienceId;
+    public ExperienceKey getExperienceKey() {
+      return mExperienceKey;
     }
   }
 
   public static class ExperienceForegroundedEvent extends ExperienceEvent {
-    ExperienceForegroundedEvent(ExperienceId experienceId) {
-      super(experienceId);
+    ExperienceForegroundedEvent(ExperienceKey experienceKey) {
+      super(experienceKey);
     }
   }
 
   public static class ExperienceBackgroundedEvent extends ExperienceEvent {
-    ExperienceBackgroundedEvent(ExperienceId experienceId) {
-      super(experienceId);
+    ExperienceBackgroundedEvent(ExperienceKey experienceKey) {
+      super(experienceKey);
     }
   }
 
   public static class ExperienceContentLoaded extends ExperienceEvent {
-    public ExperienceContentLoaded(ExperienceId experienceId) {
-      super(experienceId);
+    public ExperienceContentLoaded(ExperienceKey experienceKey) {
+      super(experienceKey);
     }
   }
 
@@ -106,19 +106,19 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
     AsyncCondition.wait(KernelConstants.EXPERIENCE_ID_SET_FOR_ACTIVITY_KEY, new AsyncCondition.AsyncConditionListener() {
       @Override
       public boolean isReady() {
-        return mExperienceId != null || BaseExperienceActivity.this instanceof HomeActivity;
+        return mExperienceKey != null || BaseExperienceActivity.this instanceof HomeActivity;
       }
 
       @Override
       public void execute() {
-        EventBus.getDefault().post(new ExperienceForegroundedEvent(mExperienceId));
+        EventBus.getDefault().post(new ExperienceForegroundedEvent(mExperienceKey));
       }
     });
   }
 
   @Override
   protected void onPause() {
-    EventBus.getDefault().post(new ExperienceBackgroundedEvent(mExperienceId));
+    EventBus.getDefault().post(new ExperienceBackgroundedEvent(mExperienceKey));
     super.onPause();
 
     // For some reason onPause sometimes gets called soon after onResume.

@@ -58,7 +58,7 @@ async function editMainApplication(config, action) {
         return await saveFileAsync(mainApplicationPath, mainApplication);
     }
     catch (e) {
-        config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', `Couldn't modified MainApplication.java - ${e}.`);
+        config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', `Couldn't modify MainApplication.java - ${e}.`);
     }
 }
 async function editPodfile(config, action) {
@@ -68,7 +68,7 @@ async function editPodfile(config, action) {
         return await saveFileAsync(podfilePath, podfile);
     }
     catch (e) {
-        config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', `Couldn't modified AppDelegate.m - ${e}.`);
+        config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', `Couldn't modify AppDelegate.m - ${e}.`);
     }
 }
 async function editIndex(config, action) {
@@ -78,7 +78,7 @@ async function editIndex(config, action) {
         return await saveFileAsync(indexPath, index);
     }
     catch (e) {
-        config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', `Couldn't modified index.js - ${e}.`);
+        config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', `Couldn't modify index.js - ${e}.`);
     }
 }
 const withDevLauncherApplication = config => {

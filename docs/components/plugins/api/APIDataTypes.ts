@@ -25,9 +25,9 @@ export type CommentTagData = {
 };
 
 export type TypeDefinitionData = {
-  name: string;
+  name?: string;
   type: string;
-  types?: TypeDefinitionTypesData[];
+  types?: TypeDefinitionData[];
   elementType?: {
     name: string;
     type: string;
@@ -37,16 +37,7 @@ export type TypeDefinitionData = {
   };
   typeArguments?: TypeDefinitionData[];
   declaration?: TypeDeclarationContentData;
-  value?: string;
-};
-
-export type TypeDefinitionTypesData = {
-  type: string;
-  name?: string;
-  value?: string | null;
-  elementType?: {
-    name: string;
-  };
+  value?: string | boolean | null;
 };
 
 export type MethodParamData = {
@@ -63,7 +54,7 @@ export type TypePropertyDataFlags = {
 
 export type ConstantDefinitionData = {
   name: string;
-  flags: {
+  flags?: {
     isConst: boolean;
   };
   comment?: CommentData;
@@ -151,19 +142,19 @@ export type TypeGeneralData = {
 
 export type TypeDeclarationContentData = {
   signatures: TypeSignaturesData[];
-  children: TypePropertyData[];
+  children?: TypePropertyData[];
 };
 
 export type TypeDeclarationData = {
-  name: string;
+  name?: string;
   declaration?: TypeDeclarationContentData;
-  type: string;
-  types: TypeValueData[];
+  type?: string;
+  types: TypeDefinitionData[];
   typeArguments?: TypeDefinitionData[];
 };
 
 export type TypeSignaturesData = {
-  parameters: MethodParamData[];
+  parameters?: MethodParamData[];
   type: TypeDefinitionData;
 };
 
@@ -173,11 +164,4 @@ export type TypePropertyData = {
   comment: CommentData;
   type: TypeDefinitionData;
   defaultValue: string;
-};
-
-export type TypeValueData = {
-  type: string;
-  value?: string | boolean | null;
-  name?: string;
-  declaration?: TypeDeclarationContentData;
 };

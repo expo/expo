@@ -60,7 +60,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
   EXUpdatesAppController *controller = EXUpdatesAppController.sharedInstance;
   EXUpdatesConfig *updatesConfiguration = [EXUpdatesConfig configWithExpoPlist];
   [updatesConfiguration loadConfigFromDictionary:configuration];
-  if (!updatesConfiguration.updateUrl) {
+  if (!updatesConfiguration.updateUrl || !updatesConfiguration.scopeKey) {
     errorBlock([NSError errorWithDomain:EXUpdatesDevLauncherControllerErrorDomain code:EXUpdatesDevLauncherErrorCodeInvalidUpdateURL userInfo:@{NSLocalizedDescriptionKey: @"Failed to load update: configuration object must include a valid update URL"}]);
     return;
   }

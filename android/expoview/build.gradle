@@ -156,7 +156,18 @@ android {
   packagingOptions {
     println "Native libs debug enabled: ${debugNativeLibraries}"
     doNotStrip debugNativeLibraries ? "**/**/*.so" : ''
-    excludes = ["**/libc++_shared.so"]
+
+    // Gradle will add cmake target dependencies into packaging.
+    // Theses files are intermediated linking files to build reanimated and should not be in final package.
+    excludes = [
+      "**/libc++_shared.so",
+      "**/libreactnativejni.so",
+      "**/libglog.so",
+      "**/libjscexecutor.so",
+      "**/libfbjni.so",
+      "**/libfolly_json.so",
+      "**/libhermes.so",
+    ]
   }
 
   configurations {
@@ -254,6 +265,10 @@ dependencies {
 
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
   api project(':ReactAndroid')
+
+  def hermesPath = "../../node_modules/hermes-engine/android/";
+  debugImplementation files(hermesPath + "hermes-debug.aar")
+  releaseImplementation files(hermesPath + "hermes-release.aar")
 
   // Universal modules
   // In distribution they're "compileOnly" and it's the app/build.gradle who manages them.
@@ -726,6 +741,8 @@ tasks.whenTaskAdded { task ->
     extractSOFiles.dependsOn(prepareThirdPartyNdkHeaders)
     task.dependsOn(extractAARHeaders)
     task.dependsOn(extractSOFiles)
+    task.dependsOn(":ReactAndroid:packageReactNdkLibs")
+  } else if (task.name.startsWith('generateJsonModel')) {
     task.dependsOn(":ReactAndroid:packageReactNdkLibs")
   }
 }

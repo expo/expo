@@ -242,9 +242,6 @@ export async function test({
       expect(hasPreviousPage).toBe(false);
       expect(hasNextPage).toBe(false);
 
-      // Nothing else.
-      expect(Object.keys(props).length).toBe(0);
-
       // Test a contact
       expect(data[0]).toEqual(
         jasmine.objectContaining({
@@ -427,7 +424,7 @@ export async function test({
       expect(id).toBeDefined();
       expect(id).toEqual(contactId);
 
-      const result = await Contacts.getContactByIdAsync(contactId, Contacts.Fields.FirstName);
+      const result = await Contacts.getContactByIdAsync(contactId, [Contacts.Fields.FirstName]);
       expect(result[Contacts.Fields.FirstName]).toEqual('Andy');
     });
 

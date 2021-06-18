@@ -11,7 +11,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 
 public class ErrorRecoveryManager {
@@ -19,21 +19,21 @@ public class ErrorRecoveryManager {
   private static final long FIVE_MINUTES_MS = 5 * 60 * 1000;
   private static final long AUTO_RELOAD_BUFFER_BASE_MS = 5 * 1000;
 
-  private static Map<ExperienceId, ErrorRecoveryManager> sExperienceIdToManager = new HashMap<>();
+  private static Map<String, ErrorRecoveryManager> sExperienceScopeKeyToManager = new HashMap<>();
   private static long sTimeAnyExperienceLoaded = 0;
 
   // This goes up when there are a bunch of errors in succession
   private static long sReloadBufferDepth = 0;
 
-  public static ErrorRecoveryManager getInstance(final ExperienceId experienceId) {
-    if (!sExperienceIdToManager.containsKey(experienceId)) {
-      sExperienceIdToManager.put(experienceId, new ErrorRecoveryManager(experienceId));
+  public static ErrorRecoveryManager getInstance(final ExperienceKey experienceKey) {
+    if (!sExperienceScopeKeyToManager.containsKey(experienceKey.getScopeKey())) {
+      sExperienceScopeKeyToManager.put(experienceKey.getScopeKey(), new ErrorRecoveryManager(experienceKey));
     }
 
-    return sExperienceIdToManager.get(experienceId);
+    return sExperienceScopeKeyToManager.get(experienceKey.getScopeKey());
   }
 
-  private ExperienceId mExperienceId;
+  private ExperienceKey mExperienceKey;
   private long mTimeLastLoaded = 0;
   private boolean mErrored = false;
   private JSONObject mRecoveryProps;
@@ -41,8 +41,8 @@ public class ErrorRecoveryManager {
   @Inject
   ExponentSharedPreferences mExponentSharedPreferences;
 
-  public ErrorRecoveryManager(ExperienceId experienceId) {
-    mExperienceId = experienceId;
+  public ErrorRecoveryManager(ExperienceKey experienceKey) {
+    mExperienceKey = experienceKey;
     NativeModuleDepsProvider.getInstance().inject(ErrorRecoveryManager.class, this);
   }
 
@@ -58,14 +58,14 @@ public class ErrorRecoveryManager {
 
   public void markErrored(boolean errored) {
     mErrored = errored;
-    if (mExperienceId != null) {
-      JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(mExperienceId.get());
+    if (mExperienceKey != null) {
+      JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(mExperienceKey);
       if (metadata == null) {
         metadata = new JSONObject();
       }
       try {
         metadata.put(ExponentSharedPreferences.EXPERIENCE_METADATA_LOADING_ERROR, errored);
-        mExponentSharedPreferences.updateExperienceMetadata(mExperienceId.get(), metadata);
+        mExponentSharedPreferences.updateExperienceMetadata(mExperienceKey, metadata);
       } catch (JSONException e) {
         e.printStackTrace();
       }

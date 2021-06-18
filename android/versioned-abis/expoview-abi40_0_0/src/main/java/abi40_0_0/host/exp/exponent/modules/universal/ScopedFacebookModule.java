@@ -14,7 +14,7 @@ import abi40_0_0.org.unimodules.core.interfaces.LifecycleEventListener;
 
 import abi40_0_0.expo.modules.facebook.FacebookModule;
 import expo.modules.updates.manifest.raw.RawManifest;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 
 public class ScopedFacebookModule extends FacebookModule implements LifecycleEventListener {
   private final static String ERR_FACEBOOK_UNINITIALIZED = "ERR_FACEBOOK_UNINITIALIZED";

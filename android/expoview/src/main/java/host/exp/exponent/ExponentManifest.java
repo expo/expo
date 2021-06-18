@@ -700,8 +700,8 @@ public class ExponentManifest {
 
   public boolean isAnonymousExperience(final RawManifest manifest) {
     try {
-      final String id = manifest.getID();
-      return id != null && id.startsWith(ANONYMOUS_EXPERIENCE_PREFIX);
+      final String id = manifest.getLegacyID();
+      return id.startsWith(ANONYMOUS_EXPERIENCE_PREFIX);
     } catch (JSONException e) {
       return false;
     }

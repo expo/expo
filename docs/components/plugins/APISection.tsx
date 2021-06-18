@@ -46,8 +46,9 @@ const renderAPI = (
     const types = filterDataByKind(
       data,
       TypeDocKind.TypeAlias,
-      entry => !!(entry.type.declaration || entry.type.types || entry.type.typeArguments)
+      entry => !!(entry.type.declaration || entry.type.types || entry.type.type  || entry.type.typeArguments)
     );
+
     const props = filterDataByKind(
       data,
       TypeDocKind.TypeAlias,
@@ -63,7 +64,11 @@ const renderAPI = (
     )[0];
     const enums = filterDataByKind(data, TypeDocKind.Enum);
     const interfaces = filterDataByKind(data, TypeDocKind.Interface);
-    const constants = filterDataByKind(data, TypeDocKind.Variable, entry => entry.flags.isConst);
+    const constants = filterDataByKind(
+      data,
+      TypeDocKind.Variable,
+      entry => entry?.flags?.isConst || false
+    );
 
     return (
       <>

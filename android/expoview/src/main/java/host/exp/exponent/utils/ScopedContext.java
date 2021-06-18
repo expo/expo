@@ -41,11 +41,13 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
 import host.exp.exponent.Constants;
 import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.kernel.ExperienceKey;
 
 public class ScopedContext extends ContextWrapper {
 
@@ -57,8 +59,11 @@ public class ScopedContext extends ContextWrapper {
   private File mCacheDir;
   private ScopedApplicationContext mScopedApplicationContext;
 
-  public ScopedContext(final Context context, final String scope) {
+  public ScopedContext(final Context context, final ExperienceKey experienceKey) throws UnsupportedEncodingException {
     super(context);
+
+    String scope = experienceKey.getUrlEncodedScopeKey();
+
     mScope = scope + '-';
 
     File scopedFilesDir = new File(getBaseContext().getFilesDir() + "/ExperienceData/" + scope);

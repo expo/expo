@@ -1,7 +1,7 @@
 {
   "name": "expo-dev-launcher",
   "title": "Expo Development Launcher",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Pre-release version of the Expo development launcher package for testing.",
   "main": "build/DevLauncher.js",
   "types": "build/DevLauncher.d.ts",
@@ -31,7 +31,7 @@
     "@expo/config-plugins": "^2.0.0"
   },
   "devDependencies": {
-    "babel-preset-expo": "~8.3.0",
+    "babel-preset-expo": "~8.4.0",
     "expo-module-scripts": "^2.0.0",
     "react": "16.13.1",
     "react-native": "0.63.2"
