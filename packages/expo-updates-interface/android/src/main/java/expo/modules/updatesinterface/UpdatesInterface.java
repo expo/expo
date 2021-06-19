@@ -30,5 +30,6 @@ public interface UpdatesInterface {
     String getLaunchAssetPath();
   }
 
+  void reset();
   void fetchUpdateWithConfiguration(HashMap<String, Object> configuration, Context context, UpdateCallback callback);
 }

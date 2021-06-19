@@ -19,7 +19,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 @interface EXUpdatesAppController ()
 
 @property (nonatomic, readwrite, strong) EXUpdatesConfig *config;
-@property (nonatomic, readwrite, strong) id<EXUpdatesAppLauncher> launcher;
+@property (nonatomic, readwrite, strong, nullable) id<EXUpdatesAppLauncher> launcher;
 @property (nonatomic, readwrite, strong) EXUpdatesDatabase *database;
 @property (nonatomic, readwrite, strong) EXUpdatesSelectionPolicy *selectionPolicy;
 @property (nonatomic, readwrite, strong) EXUpdatesSelectionPolicy *defaultSelectionPolicy;
@@ -284,7 +284,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
   _defaultSelectionPolicy = selectionPolicy;
 }
 
-- (void)setLauncher:(id<EXUpdatesAppLauncher>)launcher
+- (void)setLauncher:(nullable id<EXUpdatesAppLauncher>)launcher
 {
   _launcher = launcher;
 }
