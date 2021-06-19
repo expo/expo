@@ -132,12 +132,7 @@ class OutlineProvider(private val mContext: Context) : ViewOutlineProvider() {
   fun hasEqualCorners(): Boolean {
     updateCornerRadiiIfNeeded()
     val initialCornerRadius = mCornerRadii[0]
-    for (cornerRadius in mCornerRadii) {
-      if (initialCornerRadius != cornerRadius) {
-        return false
-      }
-    }
-    return true
+    return mCornerRadii.all { initialCornerRadius == it }
   }
 
   fun setBorderRadius(radius: Float, position: Int): Boolean {
