@@ -31,7 +31,22 @@ private const val SOURCE_SCALE_KEY = "scale"
 class ExpoImageView(context: ReactContext, private val requestManager: RequestManager, private val progressInterceptor: OkHttpClientProgressInterceptor) : AppCompatImageView(context) {
   private val eventEmitter = context.getJSModule(RCTEventEmitter::class.java)
   private val outlineProvider = OutlineProvider(context)
-  private var borderDrawable: BorderDrawable? = null
+  private var borderDrawable: Lazy<BorderDrawable> = lazy {
+    BorderDrawable(context).apply {
+      callback = this@ExpoImageView
+
+      outlineProvider.borderRadiiConfig
+        .map { it.ifYogaDefinedUse(PixelUtil::toPixelFromDIP) }
+        .withIndex()
+        .forEach { (i, radius) ->
+          if (i == 0) {
+            setRadius(radius)
+          } else {
+            setRadius(radius, i - 1)
+          }
+        }
+    }
+  }
   private var loadedSource: GlideUrl? = null
   internal var sourceMap: ReadableMap? = null
 
@@ -58,27 +73,29 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
 
     // Setting the border-radius doesn't necessarily mean that a border
     // should to be drawn. Only update the border-drawable when needed.
-    borderDrawable?.let {
+    if (borderDrawable.isInitialized()) {
       radius = radius.ifYogaDefinedUse(PixelUtil::toPixelFromDIP)
-      if (position == 0) {
-        it.setRadius(radius)
-      } else {
-        it.setRadius(radius, position - 1)
+      borderDrawable.value.apply {
+        if (position == 0) {
+          setRadius(radius)
+        } else {
+          setRadius(radius, position - 1)
+        }
       }
     }
   }
 
 
   internal fun setBorderWidth(position: Int, width: Float) {
-    getOrCreateBorderDrawable().setBorderWidth(position, width)
+    borderDrawable.value.setBorderWidth(position, width)
   }
 
   internal fun setBorderColor(position: Int, rgb: Float, alpha: Float) {
-    getOrCreateBorderDrawable().setBorderColor(position, rgb, alpha)
+    borderDrawable.value.setBorderColor(position, rgb, alpha)
   }
 
   internal fun setBorderStyle(style: String?) {
-    getOrCreateBorderDrawable().setBorderStyle(style)
+    borderDrawable.value.setBorderStyle(style)
   }
 
   internal fun setTintColor(color: Int?) {
@@ -141,27 +158,10 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
       }
   }
 
-  private fun getOrCreateBorderDrawable(): BorderDrawable {
-    if (borderDrawable == null) {
-      borderDrawable = BorderDrawable(context)
-      borderDrawable!!.callback = this
-      val borderRadii = outlineProvider.borderRadiiConfig
-      for (i in borderRadii.indices) {
-        val borderRadius = borderRadii[i].ifYogaDefinedUse(PixelUtil::toPixelFromDIP)
-        if (i == 0) {
-          borderDrawable!!.setRadius(borderRadius)
-        } else {
-          borderDrawable!!.setRadius(borderRadius, i - 1)
-        }
-      }
-    }
-    return borderDrawable!!
-  }
-
   // Drawing overrides
   override fun invalidateDrawable(drawable: Drawable) {
     super.invalidateDrawable(drawable)
-    if (drawable === borderDrawable) {
+    if (borderDrawable.isInitialized() && drawable === borderDrawable.value) {
       invalidate()
     }
   }
@@ -177,11 +177,13 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
   public override fun onDraw(canvas: Canvas) {
     super.onDraw(canvas)
     // Draw borders on top of the background and image
-    borderDrawable?.let {
-      val layoutDirection = if (I18nUtil.getInstance().isRTL(context)) LAYOUT_DIRECTION_RTL else LAYOUT_DIRECTION_LTR
-      it.setResolvedLayoutDirection(layoutDirection)
-      it.setBounds(0, 0, width, height)
-      it.draw(canvas)
+    if (borderDrawable.isInitialized()) {
+      borderDrawable.value.apply {
+        val layoutDirection = if (I18nUtil.getInstance().isRTL(context)) LAYOUT_DIRECTION_RTL else LAYOUT_DIRECTION_LTR
+        setResolvedLayoutDirection(layoutDirection)
+        setBounds(0, 0, width, height)
+        draw(canvas)
+      }
     }
   }
 }
