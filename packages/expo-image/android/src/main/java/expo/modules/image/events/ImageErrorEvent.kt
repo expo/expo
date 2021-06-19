@@ -11,9 +11,10 @@ class ImageErrorEvent(viewId: Int, private val mException: GlideException?) : Ev
   override fun getEventName() = EVENT_NAME
 
   override fun dispatch(rctEventEmitter: RCTEventEmitter) {
-    val eventData = Arguments.createMap()
-    eventData.putString("error", mException.toString())
-    eventData.putMap("android", serializeGlideException(mException))
+    val eventData = Arguments.createMap().apply {
+      putString("error", mException.toString())
+      putMap("android", serializeGlideException(mException))
+    }
     rctEventEmitter.receiveEvent(viewTag, eventName, eventData)
   }
 
@@ -21,11 +22,9 @@ class ImageErrorEvent(viewId: Int, private val mException: GlideException?) : Ev
     if (throwables == null) {
       return null
     }
-    val array = Arguments.createArray()
-    for (throwable in throwables) {
-      array.pushMap(serializeThrowable(throwable))
+    return Arguments.createArray().apply {
+      throwables.map(::serializeThrowable).forEach(::pushMap)
     }
-    return array
   }
 
   private fun serializeThrowable(throwable: Throwable?): ReadableMap? {
