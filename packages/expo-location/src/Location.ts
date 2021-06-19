@@ -22,6 +22,9 @@ import {
   LocationRegion,
   LocationSubscription,
   LocationTaskOptions,
+  LocationActivityType,
+  LocationGeofencingEventType,
+  LocationGeofencingRegionState,
   LocationGeocodingOptions,
 } from './Location.types';
 import { LocationEventEmitter } from './LocationEventEmitter';
@@ -481,7 +484,14 @@ export async function hasStartedGeofencingAsync(taskName: string): Promise<boole
 export { LocationEventEmitter as EventEmitter, _getCurrentWatchId };
 
 // Export as namespaced types.
-export { PermissionStatus, setGoogleApiKey };
+export {
+  LocationAccuracy as Accuracy,
+  LocationActivityType as ActivityType,
+  LocationGeofencingEventType as GeofencingEventType,
+  LocationGeofencingRegionState as GeofencingRegionState,
+  PermissionStatus,
+  setGoogleApiKey,
+};
 
 export { installWebGeolocationPolyfill } from './GeolocationPolyfill';
 export * from './Location.types';
