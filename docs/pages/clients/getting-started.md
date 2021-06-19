@@ -42,7 +42,7 @@ or your Android emulator
 
 <InstallSection packageName="expo-dev-client" cmd={["expo run:android"]} hideBareInstructions />
 
-If you are eager to install your project on a physical device, we recommend using [EAS Build](eas-build.md) for the smoothest experience, but you can build and distribute the same as any other React Native application. Once its installed, you're ready to start developing by running:
+If you are eager to install your project on a physical device, we recommend using [EAS Build](eas-build.md) for the smoothest experience, but you can build and distribute the same as any other React Native application. Once it's installed, you're ready to start developing by running:
 
 <InstallSection packageName="expo-dev-client" cmd={["expo start --dev-client"]} hideBareInstructions />
 
@@ -57,25 +57,31 @@ Otherwise, you can connect by scanning the QR code displayed by Expo CLI.
 
 ## Customizing your runtime
 
-In the Expo Go client, you can already convert text to audio with [expo-speech](/versions/latest/sdk/speech), but what if you want to go the other direction and convert audio to text?  The community module [`@react-native-voice/voice`](https://github.com/react-native-voice/voice) provides this capability, and thanks to config plugins, you can add it into our project!
+In the Expo Go client, you can already convert text to audio with [expo-speech](/versions/latest/sdk/speech.md), but what if you want to go the other direction and convert audio to text?  The community module [`@react-native-voice/voice`](https://github.com/react-native-voice/voice) provides this capability, and thanks to config plugins, you can add it to your project!
 
-Add the module to our project by installing the module
+First, install the library as you normally would:
 
 <InstallSection packageName="expo-dev-client" cmd={["yarn add @react-native-voice/voice"]} hideBareInstructions />
 
-and registering the plugin in your app.json
+then register the plugin in your app.json.  Using this module will require new permissions, and the plugin can optionally customize the message displayed to users in the permission prompt.
 <!-- prettier-ignore -->
 ```js
 "expo": {
-  "plugins": ["@react-native-voice/voice"]
+  "plugins": [
+    "@react-native-voice/voice",
+    {
+      "microphonePermission" "Allow $(PRODUCT_NAME) to access your microphone",
+      "speechRecogntionPermission": "Allow $(PRODUCT_NAME) to securely recognize user speech"
+    }
+  ]
 }
 ```
 
-> ⚠️ Because adding this module changes our native runtime, you need to generate a new build of our development client with EAS before you'll be able to use it.
+> ⚠️ Because adding this module changes your native runtime, you'll need to generate a new development client build before using it.  If you forget to do so, you'll get an `Invariant Violation: Native module cannot be null.` error when you attempt to load your application.
 
-Once you've generated new builds with EAS build or the `expo run` commands, you can access the new capabilities in your application code:
+Once you've generated new builds with EAS build or the `expo run` commands, you can access the new capabilities in your application code.
 
-<SnackInline>
+Add the following code to your App.tsx, run `expo start --dev-client`, and load your JavaScript.  Now you can convert speech to text in your app!
 
 <!-- prettier-ignore -->
 ```js
@@ -228,7 +234,7 @@ class VoiceTest extends Component<Props, State> {
         })}
         <Text style={styles.stat}>{`End: ${this.state.end}`}</Text>
         <TouchableHighlight onPress={this._startRecognizing}>
-          <Text styles={styles.action}>Start Recognizing</Text>
+          <Text styles={style.action}>Start Recognizing</Text>
         </TouchableHighlight>
         <TouchableHighlight onPress={this._stopRecognizing}>
           <Text style={styles.action}>Stop Recognizing</Text>
@@ -269,8 +275,6 @@ const styles = StyleSheet.create({
 
 export default VoiceTest;
 ```
-
-</SnackInline>
 
 ## Debugging your application
 
