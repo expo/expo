@@ -55,6 +55,7 @@ export const LocationSubscriber = new Subscriber('Expo.locationChanged', 'locati
 export const HeadingSubscriber = new Subscriber('Expo.headingChanged', 'heading');
 /**
  * Necessary for some unit tests.
+ * @returns The current subscription id
  */
 export function _getCurrentWatchId() {
     return nextWatchId;

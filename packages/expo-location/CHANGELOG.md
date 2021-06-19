@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Dropped support for iOS 11.0 ([#14383](https://github.com/expo/expo/pull/14383) by [@cruzach](https://github.com/cruzach))
+- Remove deprecated `setApiKey` method. ([#13266](https://github.com/expo/expo/pull/13266) by [@FelipeACP](https://github.com/FelipeACP))
 
 ### 🎉 New features
 

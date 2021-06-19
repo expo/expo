@@ -112,6 +112,7 @@ async function action({packageName, version = 'unversioned'}: ActionOptions) {
     'expo-linear-gradient': ['LinearGradient.tsx'],
     'expo-local-authentication': ['LocalAuthentication.ts'],
     'expo-localization': ['Localization.ts'],
+    'expo-location': ['Location.ts'],
     'expo-mail-composer': ['MailComposer.ts'],
     'expo-media-library': ['MediaLibrary.ts'],
     'expo-network': ['Network.ts'],
