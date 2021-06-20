@@ -1,21 +1,9 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
-#import <Foundation/Foundation.h>
+#import <ExpoModulesCore/EXUnimodulesCompat.h>
+#import <ExpoModulesCore/EXModuleRegistryProvider.h>
+#import <UMCore/UMDefines.h>
 #import <UMCore/UMModuleRegistry.h>
-#import <UMCore/UMSingletonModule.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
-@interface UMModuleRegistryProvider : NSObject
-
-@property (nonatomic, weak) id<UMModuleRegistryDelegate> moduleRegistryDelegate;
-
-+ (NSSet *)singletonModules;
-+ (nullable UMSingletonModule *)getSingletonModuleForClass:(Class)singletonClass;
-
-- (instancetype)initWithSingletonModules:(NSSet *)modules;
-- (UMModuleRegistry *)moduleRegistry;
-
-@end
-
-NS_ASSUME_NONNULL_END
+//#define UMModuleRegistryProvider EXModuleRegistryProvider
+typedef UM_DEPRECATED(ModuleRegistryProvider) EXModuleRegistryProvider UMModuleRegistryProvider;
