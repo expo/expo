@@ -2452,14 +2452,7 @@ PODS:
     - ExpoModulesCore
     - UMCore
   - ExpoModulesCore (0.1.1):
-    - ExpoModulesCore/Core (= 0.1.1)
-    - ExpoModulesCore/Interfaces (= 0.1.1)
-    - UMCore
-  - ExpoModulesCore/Core (0.1.1):
-    - UMCore
-  - ExpoModulesCore/Interfaces (0.1.1):
-    - ExpoModulesCore/Core
-    - UMCore
+    - React-Core
   - EXPrint (10.2.0):
     - ExpoModulesCore
     - UMCore
@@ -2503,7 +2496,7 @@ PODS:
     - UMCore
     - UMTaskManagerInterface
   - EXTrackingTransparency (1.1.0):
-    - UMCore
+    - ExpoModulesCore
   - EXUpdates (0.7.0):
     - EXStructuredHeaders
     - EXUpdatesInterface
@@ -2956,11 +2949,10 @@ PODS:
     - Stripe (~> 21.6.0)
   - Stripe/Stripe3DS2 (21.6.0)
   - UMAppLoader (2.2.0)
-  - UMCore (7.1.1)
+  - UMCore (7.1.1):
+    - ExpoModulesCore
   - UMReactNativeAdapter (6.3.0):
     - ExpoModulesCore
-    - React-Core
-    - UMCore
   - UMTaskManagerInterface (6.2.0):
     - UMCore
   - Yoga (1.14.0)
@@ -5019,7 +5011,7 @@ SPEC CHECKSUMS:
   EXNetwork: 6682b2bbbd90e66c4738159abaf8cd206c25e8b8
   EXNotifications: 296d9487163c2c08fffec5e79a5f9094bc016d9c
   EXPermissions: 8eb648bd5c2115d01a39dc7c2ad4c94a5846e4cb
-  ExpoModulesCore: 7925199dfaa4db3ddbf7a31cb79d066822cd74c5
+  ExpoModulesCore: 085657f53b53e86ab71477ba7f5b75fe174ee9e4
   EXPrint: 2dbe4d320687e559b46fdb01e330fdf875137094
   EXRandom: ecb71f5d01991f29bb0277f8a2c35d168f85d637
   EXScreenCapture: c51844407fbac8bbca4415467bc43f2b7764d225
@@ -5035,7 +5027,7 @@ SPEC CHECKSUMS:
   EXStoreReview: 40674cc897a6d7fd249969b86d1833f67b99170a
   EXStructuredHeaders: 384ccdf0c09ed0be8fc73d4b2d70e436cd195975
   EXTaskManager: 91fef764a2ec7690aa8070f862098df064facdc4
-  EXTrackingTransparency: 2ac354968ed9167a8c48fef27d051624c66eed7a
+  EXTrackingTransparency: 3632a570eef235f579c2e004f6515ba352bc735f
   EXUpdates: 555bae578b14cfd76cc9e46cbd0a010dc6edddd2
   EXUpdatesInterface: 8e4f28434a2e6a75803c4ea0ab12cfb07ebb3438
   EXVideoThumbnails: f8a7d2330578131361c0a4f6e981a6e58baf1290
@@ -5100,8 +5092,8 @@ SPEC CHECKSUMS:
   Stripe: 6cc7bb348f4b1fad111129f6ee40eb6682deaefb
   stripe-react-native: 2598d45be4bad95f0c11a1dde7af185e8829bc67
   UMAppLoader: 21af63390e55c82e037fb9752d93114a80ecf16e
-  UMCore: 912510bbff567298d738590f17788a8516f9d7f3
-  UMReactNativeAdapter: ee750f3cf40e149643f9191de3ce8c02202f198f
+  UMCore: b531b41645f9250a138583bd0ac52edbc7a0e16c
+  UMReactNativeAdapter: c3ee775a59120220d5c564716ebc22e9f615b4f2
   UMTaskManagerInterface: 2be431101b73604e64fbfffcf759336f9d8fccbb
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
