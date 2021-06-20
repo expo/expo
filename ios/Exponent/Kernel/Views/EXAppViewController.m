@@ -24,7 +24,7 @@
 
 #import <EXSplashScreen/EXSplashScreenService.h>
 #import <React/RCTUtils.h>
-#import <UMCore/UMModuleRegistryProvider.h>
+#import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
 #if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
 #import <EXScreenOrientation/EXScreenOrientationRegistry.h>
@@ -375,7 +375,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_showSplashScreenWithProvider:(id<EXSplashScreenViewProvider>)provider
 {
-  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
+  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
 
   // EXSplashScreenService presents a splash screen on a root view controller
   // at the start of the app. Since we want the EXAppViewController to manage
@@ -502,12 +502,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)reactAppManagerAppContentDidAppear:(EXReactAppManager *)appManager
 {
-  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
+  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
   [splashScreenService onAppContentDidAppear:self];
 }
 
 - (void)reactAppManagerAppContentWillReload:(EXReactAppManager *)appManager {
-  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
+  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
   [splashScreenService onAppContentWillReload:self];
 }
 
@@ -531,7 +531,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
 #if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
-  EXScreenOrientationRegistry *screenOrientationRegistry = (EXScreenOrientationRegistry *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
+  EXScreenOrientationRegistry *screenOrientationRegistry = (EXScreenOrientationRegistry *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
   if (screenOrientationRegistry && [screenOrientationRegistry requiredOrientationMask] > 0) {
     return [screenOrientationRegistry requiredOrientationMask];
   }
@@ -573,7 +573,7 @@ NS_ASSUME_NONNULL_BEGIN
       || (self.traitCollection.horizontalSizeClass != previousTraitCollection.horizontalSizeClass)) {
 
     #if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
-      EXScreenOrientationRegistry *screenOrientationRegistryController = (EXScreenOrientationRegistry *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
+      EXScreenOrientationRegistry *screenOrientationRegistryController = (EXScreenOrientationRegistry *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
       [screenOrientationRegistryController traitCollectionDidChangeTo:self.traitCollection];
     #endif
 
