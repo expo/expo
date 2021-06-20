@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Export missing `Subscription` type.
+- Export missing `Subscription` type. ([#13352](https://github.com/expo/expo/pull/13352) by [@Simek](https://github.com/Simek))
 
 ## 3.2.0 — 2021-06-16
 
