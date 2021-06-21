@@ -12,7 +12,7 @@ const onScreenshotEventName = 'onScreenshot';
 /**
  * Returns whether the Screen Capture API is available on the current device.
  *
- * @returns Async `boolean`, indicating whether the Screen Capture API is available on the current
+ * @returns A promise that resolves to a `boolean` indicating whether the Screen Capture API is available on the current
  * device. Currently, this resolves `true` on Android and iOS only.
  */
 export async function isAvailableAsync(): Promise<boolean> {
