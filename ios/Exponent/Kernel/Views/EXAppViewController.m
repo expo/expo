@@ -647,10 +647,11 @@ NS_ASSUME_NONNULL_BEGIN
     appearancePreference = nil;
   }
   RCTOverrideAppearancePreference(appearancePreference);
+
+#ifdef INCLUDES_VERSIONED_CODE
 #if __has_include(<ABI42_0_0React/ABI42_0_0RCTAppearance.h>)
   ABI42_0_0RCTOverrideAppearancePreference(appearancePreference);
 #endif
-#ifdef INCLUDES_VERSIONED_CODE
 #if __has_include(<ABI41_0_0React/ABI41_0_0RCTAppearance.h>)
   ABI41_0_0RCTOverrideAppearancePreference(appearancePreference);
 #endif
