@@ -17,8 +17,8 @@ import FlipperKit
 #endif
 
 @UIApplicationMain
-class AppDelegate: UMAppDelegateWrapper {
-  var moduleRegistryAdapter: UMModuleRegistryAdapter!
+class AppDelegate: EXAppDelegateWrapper {
+  var moduleRegistryAdapter: EXModuleRegistryAdapter!
   var bridge: RCTBridge?
   var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
 
@@ -26,7 +26,7 @@ class AppDelegate: UMAppDelegateWrapper {
   
   override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
     initializeFlipper(with: application)
-    moduleRegistryAdapter = UMModuleRegistryAdapter(moduleRegistryProvider: UMModuleRegistryProvider())
+    moduleRegistryAdapter = EXModuleRegistryAdapter(moduleRegistryProvider: EXModuleRegistryProvider())
     window = UIWindow(frame: UIScreen.main.bounds)
     self.launchOptions = launchOptions;
 
