@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Added reset method to UpdatesDevLauncherController. ([#13346](https://github.com/expo/expo/pull/13346) by [@esamelson](https://github.com/esamelson))
+
 ### 🎉 New features
 
 - Use stable manifest ID where applicable. ([#12964](https://github.com/expo/expo/pull/12964) by [@wschurman](https://github.com/wschurman))

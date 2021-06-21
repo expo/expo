@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Added method to reset Updates module state. ([#13346](https://github.com/expo/expo/pull/13346) by [@esamelson](https://github.com/esamelson))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

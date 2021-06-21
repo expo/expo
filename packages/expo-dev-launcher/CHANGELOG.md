@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Reset Updates module state on each dev client load. ([#13346](https://github.com/expo/expo/pull/13346) by [@esamelson](https://github.com/esamelson))
+
 ### 🎉 New features
 
 - Added expo-updates integration to config plugin. ([#13198](https://github.com/expo/expo/pull/13198) by [@esamelson](https://github.com/esamelson))

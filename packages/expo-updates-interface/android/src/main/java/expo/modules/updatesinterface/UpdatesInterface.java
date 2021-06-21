@@ -31,5 +31,6 @@ public interface UpdatesInterface {
   }
 
   void reset();
+
   void fetchUpdateWithConfiguration(HashMap<String, Object> configuration, Context context, UpdateCallback callback);
 }
