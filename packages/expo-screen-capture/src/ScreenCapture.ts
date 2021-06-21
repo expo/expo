@@ -21,7 +21,7 @@ export async function isAvailableAsync(): Promise<boolean> {
 
 // @needsAudit
 /**
- * Prevents screenshots and screen recordings until `allowScreenCaptureAsync` is called. If you are
+ * Prevents screenshots and screen recordings until `allowScreenCaptureAsync` is called or the app is restarted. If you are
  * already preventing screen capture, this method does nothing (unless you pass a new and unique `key`).
  *
  * > Please note that on iOS, this will only prevent screen recordings, and is only available on
