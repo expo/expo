@@ -78,6 +78,8 @@ class DevLauncherController private constructor(
       val manifestParser = DevLauncherManifestParser(httpClient, url)
       val appIntent = createAppIntent()
 
+      updatesInterface?.reset()
+
       val appLoader = if (!manifestParser.isManifestUrl()) {
         // It's (maybe) a raw React Native bundle
         DevLauncherReactNativeAppLoader(url, appHost, context)
