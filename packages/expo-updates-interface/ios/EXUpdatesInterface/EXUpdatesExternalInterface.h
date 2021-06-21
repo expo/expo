@@ -24,6 +24,8 @@ typedef BOOL (^EXUpdatesManifestBlock) (NSDictionary *manifest);
 
 - (NSURL *)launchAssetURL;
 
+- (void)reset;
+
 - (void)fetchUpdateWithConfiguration:(NSDictionary *)configuration
                           onManifest:(EXUpdatesManifestBlock)manifestBlock
                             progress:(EXUpdatesProgressBlock)progressBlock

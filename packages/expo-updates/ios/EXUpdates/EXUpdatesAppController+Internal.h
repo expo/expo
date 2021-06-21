@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)initializeUpdatesDatabaseWithError:(NSError ** _Nullable)error;
 
 - (void)setDefaultSelectionPolicy:(EXUpdatesSelectionPolicy *)selectionPolicy;
-- (void)setLauncher:(id<EXUpdatesAppLauncher>)launcher;
+- (void)setLauncher:(nullable id<EXUpdatesAppLauncher>)launcher;
 - (void)setConfigurationInternal:(EXUpdatesConfig *)configuration;
 - (void)setIsStarted:(BOOL)isStarted;
 

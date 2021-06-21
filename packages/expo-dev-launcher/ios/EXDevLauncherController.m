@@ -282,6 +282,10 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     }
   };
 
+  if (_updatesInterface) {
+    [_updatesInterface reset];
+  }
+
   EXDevLauncherManifestParser *manifestParser = [[EXDevLauncherManifestParser alloc] initWithURL:expoUrl session:[NSURLSession sharedSession]];
   [manifestParser isManifestURLWithCompletion:^(BOOL isManifestURL) {
     if (!isManifestURL) {

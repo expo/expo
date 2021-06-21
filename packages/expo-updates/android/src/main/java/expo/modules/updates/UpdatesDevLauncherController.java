@@ -51,6 +51,12 @@ public class UpdatesDevLauncherController implements UpdatesInterface {
   }
 
   @Override
+  public void reset() {
+    UpdatesController controller = UpdatesController.getInstance();
+    controller.setLauncher(null);
+  }
+
+  @Override
   public void fetchUpdateWithConfiguration(HashMap<String, Object> configuration, Context context, UpdateCallback callback) {
     UpdatesController controller = UpdatesController.getInstance();
     UpdatesConfiguration updatesConfiguration = new UpdatesConfiguration()
