@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed switching from published to local bundle loading on Android.
+
 ### 💡 Others
 
 ## 0.5.1 — 2021-06-16
