@@ -22,7 +22,7 @@
 @property (nonatomic, weak) id<UMAppLifecycleService> lifecycleManager;
 
 @property (nonatomic, assign, getter=isSessionPaused) BOOL paused;
-@property (nonatomic, assign) BOOL isValidRecordingConfig;
+@property (nonatomic, assign) BOOL isValidVideoOptions;
 
 @property (nonatomic, strong) NSDictionary *photoCaptureOptions;
 @property (nonatomic, strong) UMPromiseResolveBlock photoCapturedResolve;
@@ -61,7 +61,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     _previewLayer.needsDisplayOnBoundsChange = YES;
 #endif
     _paused = NO;
-    _isValidRecordingConfig = YES;
+    _isValidVideoOptions = YES;
     _pictureSize = AVCaptureSessionPresetHigh;
     [self changePreviewOrientation:[UIApplication sharedApplication].statusBarOrientation];
     [self initializeCaptureSessionInput];
@@ -511,9 +511,6 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
   }
 
   if (_movieFileOutput != nil && !_movieFileOutput.isRecording && _videoRecordedResolve == nil && _videoRecordedReject == nil) {
-    // Reset validation flag
-    _isValidRecordingConfig = YES;
-
     bool shouldBeMuted = options[@"mute"] && [options[@"mute"] boolValue];
     [self updateSessionAudioIsMuted:shouldBeMuted];
 
@@ -539,7 +536,7 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
       UM_STRONGIFY(self);
       // it is possible that the session has been invalidated at this point
       // for example, the video codec option is invalid and so this call has already rejected
-      if (!self.isValidRecordingConfig) {
+      if (!self.isValidVideoOptions) {
         return;
       }
 
@@ -568,7 +565,9 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
   UM_WEAKIFY(self);
   dispatch_async(_sessionQueue, ^{
     UM_STRONGIFY(self);
-    
+    // Reset validation flag
+    self.isValidVideoOptions = YES;
+
     if (options[@"maxDuration"]) {
       Float64 maxDuration = [options[@"maxDuration"] floatValue];
       self.movieFileOutput.maxRecordedDuration = CMTimeMakeWithSeconds(maxDuration, 30);
@@ -606,7 +605,7 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
         [self cleanupMovieFileCapture];
         self.videoRecordedResolve = nil;
         self.videoRecordedReject = nil;
-        self.isValidRecordingConfig = NO;
+        self.isValidVideoOptions = NO;
       }
     }
     
