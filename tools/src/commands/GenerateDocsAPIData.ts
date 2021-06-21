@@ -113,6 +113,7 @@ async function action({packageName, version = 'unversioned'}: ActionOptions) {
     'expo-task-manager': ['TaskManager.ts'],
     'expo-tracking-transparency': ['TrackingTransparency.ts'],
     'expo-video-thumbnails': ['VideoThumbnails.ts'],
+    'expo-web-browser': ['WebBrowser.ts'],
   };
 
   try {

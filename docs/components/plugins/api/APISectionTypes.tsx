@@ -2,7 +2,7 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown';
 
 import { InlineCode } from '~/components/base/code';
-import { UL } from '~/components/base/list';
+import { UL, LI } from '~/components/base/list';
 import { B, P } from '~/components/base/paragraph';
 import { H2, H3Code, H4 } from '~/components/plugins/Headings';
 import {
@@ -57,29 +57,45 @@ const renderTypeDeclarationTable = ({ children }: TypeDeclarationContentData): J
   </table>
 );
 
-const renderTypePropertyRow = ({ name, flags, type, comment }: TypePropertyData): JSX.Element => (
-  <tr key={name}>
-    <td>
-      <B>{name}</B>
-      {flags?.isOptional ? (
-        <>
-          <br />
-          <span css={STYLES_OPTIONAL}>(optional)</span>
-        </>
-      ) : null}
-    </td>
-    <td>
-      <InlineCode>{resolveTypeName(type)}</InlineCode>
-    </td>
-    <td>
-      {comment?.shortText ? (
-        <ReactMarkdown renderers={mdInlineRenderers}>{comment.shortText}</ReactMarkdown>
-      ) : (
-        '-'
-      )}
-    </td>
-  </tr>
-);
+const renderTypePropertyRow = ({
+  name,
+  flags,
+  type,
+  comment,
+  defaultValue,
+}: TypePropertyData): JSX.Element => {
+  const initValue = defaultValue || comment?.tags?.filter(tag => tag.tag === 'default')[0]?.text;
+  return (
+    <tr key={name}>
+      <td>
+        <B>{name}</B>
+        {flags?.isOptional ? (
+          <>
+            <br />
+            <span css={STYLES_OPTIONAL}>(optional)</span>
+          </>
+        ) : null}
+      </td>
+      <td>
+        <InlineCode>{resolveTypeName(type)}</InlineCode>
+      </td>
+      <td>
+        {comment?.shortText ? (
+          <ReactMarkdown renderers={mdInlineRenderers}>{comment.shortText}</ReactMarkdown>
+        ) : (
+          '-'
+        )}
+        {initValue ? (
+          <>
+            <br />
+            <ReactMarkdown
+              renderers={mdInlineRenderers}>{`__Default:__ ${initValue}`}</ReactMarkdown>
+          </>
+        ) : null}
+      </td>
+    </tr>
+  );
+};
 
 const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | undefined => {
   if (type.declaration) {
@@ -146,6 +162,22 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
         </div>
       );
     }
+  } else if (type.name === 'Record' && type.typeArguments) {
+    return (
+      <div key={`record-definition-${name}`}>
+        <H3Code>
+          <InlineCode>{name}</InlineCode>
+        </H3Code>
+        <UL>
+          <LI>
+            <InlineCode>
+              Record&lt;{type.typeArguments[0].name}, {resolveTypeName(type.typeArguments[1])}&gt;
+            </InlineCode>
+          </LI>
+        </UL>
+        <CommentTextBlock comment={comment} />
+      </div>
+    );
   } else if (type.type === 'intrinsic') {
     return (
       <div key={`generic-type-definition-${name}`}>
