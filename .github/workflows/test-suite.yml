@@ -188,7 +188,7 @@ jobs:
         run: yarn detox:clean
         working-directory: apps/bare-expo
       - name: Prebuild react-native AAR
-        run: ./gradlew :ReactAndroid:installArchives
+        run: ./gradlew :ReactAndroid:installArchives | true
         working-directory: react-native-lab/react-native
         timeout-minutes: 35
         env:
