@@ -8,6 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import host.exp.exponent.analytics.EXL;
+import host.exp.expoview.BuildConfig;
 
 // TODO: add type checking in DEBUG
 public class RNObject {
@@ -46,9 +47,11 @@ public class RNObject {
     return mInstance != null;
   }
 
+  @SuppressWarnings("ConstantConditions")   // required for "unversioned" flavor check
   public RNObject loadVersion(String version) {
     try {
-      if (version.equals(UNVERSIONED)) {
+
+      if (version.equals(UNVERSIONED) || BuildConfig.FLAVOR.equals("unversioned")) {
         if (mClassName.startsWith("host.exp.exponent")) {
           mClazz = Class.forName("versioned." + mClassName);
         } else {

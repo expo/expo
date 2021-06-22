@@ -114,11 +114,14 @@ jobs:
           fi
           if [ -z "$ANDROID_KEYSTORE_B64" ]; then
             echo "External build detected, APK will not be signed"
-            bin/fastlane android build build_type:$BUILD_TYPE sign:false
+            bin/fastlane android build build_type:$BUILD_TYPE \
+              flavor:${{ steps.flavor.outputs.versioned == 'true' && 'Versioned' || 'Unversioned' }} \
+              sign:false
           else
             echo "Internal build detected, APK will be signed"
             echo $ANDROID_KEYSTORE_B64 | base64 -d > android/app/release-key.jks
-            bin/fastlane android build build_type:$BUILD_TYPE
+            bin/fastlane android build build_type:$BUILD_TYPE \
+              flavor:${{ steps.flavor.outputs.versioned == 'true' && 'Versioned' || 'Unversioned' }}
           fi
       - name: 💾 Upload APK artifact
         uses: actions/upload-artifact@v2

@@ -117,6 +117,10 @@ android {
     versionCode 1
     versionName "1.0"
 
+    /* WHEN_VERSIONING_UNCOMMENT_FROM_HERE
+    missingDimensionStrategy('versioning', 'versioned')
+    WHEN_VERSIONING_UNCOMMENT_TO_HERE */
+
     // WHEN_VERSIONING_REMOVE_FROM_HERE
     manifestPlaceholders = [
         'appAuthRedirectScheme': 'host.exp.exponent'
@@ -182,6 +186,23 @@ android {
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
     }
   }
+
+  // WHEN_VERSIONING_REMOVE_FROM_HERE
+  flavorDimensions "versioning"
+  productFlavors {
+    versioned {
+      dimension "versioning"
+    }
+    unversioned {
+      getIsDefault().set(true)
+      dimension "versioning"
+    }
+  }
+  // WHEN_VERSIONING_REMOVE_TO_HERE
+
+  // use `versionedRelease` configuration when publishing to maven
+  defaultPublishConfig "versionedRelease"
+
   compileOptions {
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
@@ -289,16 +310,16 @@ dependencies {
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
   // BEGIN_SDK_42
-  api 'host.exp:reactandroid-abi42_0_0:1.0.0'
+  versionedApi 'host.exp:reactandroid-abi42_0_0:1.0.0'
   // END_SDK_42
   // BEGIN_SDK_41
-  api 'host.exp:reactandroid-abi41_0_0:1.0.0'
+  versionedApi 'host.exp:reactandroid-abi41_0_0:1.0.0'
   // END_SDK_41
   // BEGIN_SDK_40
-  api 'host.exp:reactandroid-abi40_0_0:1.0.0'
+  versionedApi 'host.exp:reactandroid-abi40_0_0:1.0.0'
   // END_SDK_40
   // BEGIN_SDK_39
-  api 'host.exp:reactandroid-abi39_0_0:1.0.0'
+  versionedApi 'host.exp:reactandroid-abi39_0_0:1.0.0'
   // END_SDK_39
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_VERSIONING_REMOVE_TO_HERE
