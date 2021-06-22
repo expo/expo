@@ -1,4 +1,3 @@
-require_relative 'colors'
 require_relative 'constants'
 require_relative 'package'
 

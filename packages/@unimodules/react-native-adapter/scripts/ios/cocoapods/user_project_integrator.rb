@@ -1,5 +1,11 @@
 require_relative '../project_integrator'
 
+# Unfortunately there is no good and official place that we could use to generate module providers
+# and integrate them with user targets by operating on the PBXProj kept and saved by CocoaPods.
+# So we have to hook into the private method called `integrate_user_targets`
+# where we have public access to everything that we need.
+# Original implementation: https://github.com/CocoaPods/CocoaPods/blob/master/lib/cocoapods/installer/user_project_integrator.rb
+
 module Pod
   class Installer
     class UserProjectIntegrator
@@ -32,7 +38,7 @@ module Pod
           projects_to_integrate = user_projects_to_integrate()
 
           # However, we need to make sure that all projects are integrated,
-          # no matter of the CocoaPods cache.
+          # regardless of the CocoaPods cache.
           all_projects.each do |project|
             project_targets = targets.select { |target| target.user_project.equal?(project) }
 
