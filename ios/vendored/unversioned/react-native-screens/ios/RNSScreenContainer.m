@@ -246,38 +246,22 @@
 @end
 
 
-@implementation RNSScreenContainerManager {
-  NSMutableArray<RNSScreenContainerView *> *_markedContainers;
-}
+@implementation RNSScreenContainerManager
 
 RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  if (!_markedContainers) {
-    _markedContainers = [NSMutableArray new];
-  }
   return [[RNSScreenContainerView alloc] initWithManager:self];
 }
 
-- (void)markUpdated:(RNSScreenContainerView *)screen
+- (void)markUpdated:(RNSScreenContainerView *)container
 {
-  [_markedContainers addObject:screen];
-  if ([_markedContainers count] == 1) {
-    // we enqueue updates to be run on the main queue in order to make sure that
-    // all these updates (new screens attached etc) are executed in one batch.
-    // We call it asynchronously because the events being fired when swiping the screen
-    // resolve in calling this method, and inside it, the same type of event
-    // can be fired when calling e.g. `notifyFinishTransitioning` leading to a deadlock.
-    // See https://github.com/software-mansion/react-native-screens/issues/726#issuecomment-757879605
-    // for more information.
-    dispatch_async(dispatch_get_main_queue(), ^{
-      for (RNSScreenContainerView *container in self->_markedContainers) {
-        [container updateContainer];
-      }
-      [self->_markedContainers removeAllObjects];
-    });
-  }
+  // we want the attaching/detaching of children to be always made on main queue, which
+  // is currently true for `react-navigation` since the changes of `Animated` value in stack's
+  // transition and mounting/unmounting views in tabs and drawer are dispatched on main queue.
+  RCTAssertMainQueue();
+  [container updateContainer];
 }
 
 @end
