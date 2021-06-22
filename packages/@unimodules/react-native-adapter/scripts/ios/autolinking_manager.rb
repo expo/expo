@@ -46,7 +46,7 @@ module Expo
           # Install the pod.
           @podfile.pod(package.pod_name, pod_options)
 
-          # Can remove this once we move all the interfaces into the core.
+          # TODO: Can remove this once we move all the interfaces into the core.
           next if package.pod_name.end_with?('Interface')
 
           UI.message "— #{package.name.green} (#{package.version})"

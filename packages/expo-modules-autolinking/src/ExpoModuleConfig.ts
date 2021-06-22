@@ -32,5 +32,7 @@ export class ExpoModuleConfig {
  * Reads the config at given path and returns the config wrapped by `ExpoModuleConfig` class.
  */
 export function requireAndResolveExpoModuleConfig(path: string): ExpoModuleConfig {
+  // TODO: Validate the raw config against a schema.
+  // TODO: Support for `*.js` files, not only static `*.json`.
   return new ExpoModuleConfig(require(path) as RawExpoModuleConfig);
 }
