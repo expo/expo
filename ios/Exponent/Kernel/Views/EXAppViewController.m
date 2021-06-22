@@ -31,19 +31,17 @@
 #endif
 
 #import <React/RCTAppearance.h>
-#if __has_include(<ABI42_0_0React/ABI42_0_0RCTAppearance.h>)
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI42_0_0React/ABI42_0_0RCTAppearance.h>)
 #import <ABI42_0_0React/ABI42_0_0RCTAppearance.h>
 #endif
-#ifdef INCLUDES_VERSIONED_CODE
-#if __has_include(<ABI41_0_0React/ABI41_0_0RCTAppearance.h>)
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI41_0_0React/ABI41_0_0RCTAppearance.h>)
 #import <ABI41_0_0React/ABI41_0_0RCTAppearance.h>
 #endif
-#if __has_include(<ABI40_0_0React/ABI40_0_0RCTAppearance.h>)
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI40_0_0React/ABI40_0_0RCTAppearance.h>)
 #import <ABI40_0_0React/ABI40_0_0RCTAppearance.h>
 #endif
-#if __has_include(<ABI39_0_0React/ABI39_0_0RCTAppearance.h>)
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI39_0_0React/ABI39_0_0RCTAppearance.h>)
 #import <ABI39_0_0React/ABI39_0_0RCTAppearance.h>
-#endif
 #endif
 
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
@@ -648,19 +646,17 @@ NS_ASSUME_NONNULL_BEGIN
   }
   RCTOverrideAppearancePreference(appearancePreference);
 
-#ifdef INCLUDES_VERSIONED_CODE
-#if __has_include(<ABI42_0_0React/ABI42_0_0RCTAppearance.h>)
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI42_0_0React/ABI42_0_0RCTAppearance.h>)
   ABI42_0_0RCTOverrideAppearancePreference(appearancePreference);
 #endif
-#if __has_include(<ABI41_0_0React/ABI41_0_0RCTAppearance.h>)
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI41_0_0React/ABI41_0_0RCTAppearance.h>)
   ABI41_0_0RCTOverrideAppearancePreference(appearancePreference);
 #endif
-#if __has_include(<ABI40_0_0React/ABI40_0_0RCTAppearance.h>)
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI40_0_0React/ABI40_0_0RCTAppearance.h>)
   ABI40_0_0RCTOverrideAppearancePreference(appearancePreference);
 #endif
-#if __has_include(<ABI39_0_0React/ABI39_0_0RCTAppearance.h>)
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI39_0_0React/ABI39_0_0RCTAppearance.h>)
   ABI39_0_0RCTOverrideAppearancePreference(appearancePreference);
-#endif
 #endif
 }
 
