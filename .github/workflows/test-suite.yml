@@ -187,6 +187,12 @@ jobs:
       - name: Clean Detox
         run: yarn detox:clean
         working-directory: apps/bare-expo
+      - name: Prebuild react-native AAR
+        run: ./gradlew :ReactAndroid:installArchives
+        working-directory: react-native-lab/react-native
+        timeout-minutes: 35
+        env:
+          GRADLE_OPTS: "-Dorg.gradle.internal.http.connectionTimeout=180000 -Dorg.gradle.internal.http.socketTimeout=180000 -Dorg.gradle.internal.network.retry.max.attempts=18 -Dorg.gradle.internal.network.retry.initial.backOff=2000"
       - name: Build Android project for Detox
         run: yarn android:detox:build:release
         working-directory: apps/bare-expo
