@@ -264,7 +264,7 @@ CGRect unionRect(CGRect a, CGRect b) {
   }
 
   if (!_iconImageView) {
-    // prevent glitch with marker (cf. https://github.com/ABI42_0_0React-native-community/ABI42_0_0React-native-maps/issues/738)
+    // prevent glitch with marker (cf. https://github.com/ABI42_0_0React-native-maps/ABI42_0_0React-native-maps/issues/738)
     UIImageView *empyImageView = [[UIImageView alloc] init];
     _iconImageView = empyImageView;
     [self iconViewInsertSubview:_iconImageView atIndex:0];
@@ -340,7 +340,7 @@ CGRect unionRect(CGRect a, CGRect b) {
                                    NSLog(@"%@", error);
                                  }
                                  dispatch_async(dispatch_get_main_queue(), ^{
-                                   _realMarker.icon = image;
+                                   self->_realMarker.icon = image;
                                  });
                                }];
 }
