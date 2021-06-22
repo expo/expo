@@ -49,7 +49,7 @@ export default class FacebookAppEventsScreen extends React.Component {
         />
         <ListButton
           onPress={async () =>
-            await Facebook.logPurchaseAsync(29, 'usd', { myParam: 'thanks for testing this!' })
+            await Facebook.logPurchaseAsync(29.99, 'usd', { myParam: 'thanks for testing this!' })
           }
           title="Log a purchase"
         />
