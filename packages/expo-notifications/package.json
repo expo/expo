@@ -1,6 +1,6 @@
 {
   "name": "expo-notifications",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "description": "Notifications module",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -50,7 +50,7 @@
     "assert": "^2.0.0",
     "badgin": "^1.1.5",
     "expo-application": "~3.2.0",
-    "expo-constants": "11.0.0",
+    "expo-constants": "11.0.1",
     "expo-modules-core": "~0.2.0",
     "fs-extra": "^9.0.1",
     "uuid": "^3.4.0"
