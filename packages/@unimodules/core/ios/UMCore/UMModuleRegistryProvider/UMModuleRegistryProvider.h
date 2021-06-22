@@ -2,8 +2,6 @@
 
 #import <ExpoModulesCore/EXUnimodulesCompat.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
-#import <UMCore/UMDefines.h>
-#import <UMCore/UMModuleRegistry.h>
+#import <ExpoModulesCore/EXModuleRegistry.h>
 
-//#define UMModuleRegistryProvider EXModuleRegistryProvider
 typedef UM_DEPRECATED(ModuleRegistryProvider) EXModuleRegistryProvider UMModuleRegistryProvider;
