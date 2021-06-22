@@ -8,6 +8,7 @@
 // it and use in your AppDelegate to export different bridge modules
 // for different experiences.
 
+NS_SWIFT_NAME(ModuleRegistryAdapter)
 @interface EXModuleRegistryAdapter : NSObject
 
 @property (nonatomic, readonly) EXModuleRegistryProvider *moduleRegistryProvider;

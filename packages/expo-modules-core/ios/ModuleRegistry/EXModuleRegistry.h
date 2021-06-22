@@ -9,6 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NS_SWIFT_NAME(ModuleRegistry)
 @interface EXModuleRegistry : NSObject
 
 - (instancetype)initWithInternalModules:(NSSet<id<EXInternalModule>> *)internalModules

@@ -6,6 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NS_SWIFT_NAME(ModuleRegistryProvider)
 @interface EXModuleRegistryProvider : NSObject
 
 @property (nonatomic, weak) id<EXModuleRegistryDelegate> moduleRegistryDelegate;
