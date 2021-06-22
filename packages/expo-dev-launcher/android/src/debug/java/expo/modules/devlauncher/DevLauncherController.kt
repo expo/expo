@@ -79,6 +79,7 @@ class DevLauncherController private constructor(
       val appIntent = createAppIntent()
 
       updatesInterface?.reset()
+      useDeveloperSupport = true
 
       val appLoader = if (!manifestParser.isManifestUrl()) {
         // It's (maybe) a raw React Native bundle
