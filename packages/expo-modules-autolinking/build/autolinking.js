@@ -9,6 +9,7 @@ const fast_glob_1 = __importDefault(require("fast-glob"));
 const find_up_1 = __importDefault(require("find-up"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
+const ExpoModuleConfig_1 = require("./ExpoModuleConfig");
 // Names of the config files. From lowest to highest priority.
 const EXPO_MODULE_CONFIG_FILENAMES = ['unimodule.json', 'expo-module.config.json'];
 /**
@@ -64,9 +65,9 @@ async function findModulesAsync(providedOptions) {
         }, {}));
         for (const packageConfigPath of uniqueConfigPaths) {
             const packagePath = await fs_extra_1.default.realpath(path_1.default.join(searchPath, path_1.default.dirname(packageConfigPath)));
-            const packageConfig = require(path_1.default.join(packagePath, path_1.default.basename(packageConfigPath)));
+            const expoModuleConfig = ExpoModuleConfig_1.requireAndResolveExpoModuleConfig(path_1.default.join(packagePath, path_1.default.basename(packageConfigPath)));
             const { name, version } = require(path_1.default.join(packagePath, 'package.json'));
-            if (options.exclude?.includes(name) || !packageConfig.platforms?.includes(options.platform)) {
+            if (options.exclude?.includes(name) || !expoModuleConfig.supportsPlatform(options.platform)) {
                 continue;
             }
             const currentRevision = {
@@ -75,8 +76,12 @@ async function findModulesAsync(providedOptions) {
             };
             if (!results[name]) {
                 // The revision that was found first will be the main one.
-                // An array of duplicates is needed only here.
-                results[name] = { ...currentRevision, duplicates: [] };
+                // An array of duplicates and the config are needed only here.
+                results[name] = {
+                    ...currentRevision,
+                    config: expoModuleConfig,
+                    duplicates: [],
+                };
             }
             else if (results[name].path !== packagePath &&
                 results[name].duplicates?.every(({ path }) => path !== packagePath)) {
