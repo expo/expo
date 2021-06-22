@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- `logPurchaseAsync` on iOS now accepts an `NSNumber` type, which has no user-facing impact besides fixing an error message in the App Events console.
+
 ### 💡 Others
 
 ## 11.2.0 — 2021-06-16
