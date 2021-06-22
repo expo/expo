@@ -37,13 +37,13 @@
   },
   "dependencies": {
     "@unimodules/core": "~7.1.1",
-    "@unimodules/react-native-adapter": "~6.3.0",
+    "@unimodules/react-native-adapter": "~6.3.1",
     "chalk": "^2.4.2",
     "expo-asset": "~8.3.2",
     "expo-constants": "~11.0.0",
     "expo-file-system": "~11.1.0",
     "expo-image-loader": "~2.2.0",
-    "expo-modules-core": "~0.1.1",
+    "expo-modules-core": "~0.2.0",
     "find-up": "~5.0.0",
     "unimodules-app-loader": "~2.2.0",
     "unimodules-task-manager-interface": "~6.2.0"

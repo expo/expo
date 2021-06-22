@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Update video codec validation to properly reject an invalid codec option. ([#13341](https://github.com/expo/expo/pull/13341) by [@ajsmth](https://github.com/ajsmth))
-
 ### 💡 Others
+
+## 11.2.0 — 2021-06-22
+
+### 🐛 Bug fixes
+
+- Update video codec validation to properly reject an invalid codec option. ([#13341](https://github.com/expo/expo/pull/13341) by [@ajsmth](https://github.com/ajsmth))
 
 ## 11.1.1 — 2021-06-16
 

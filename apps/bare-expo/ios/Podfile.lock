@@ -38,7 +38,7 @@ PODS:
   - EXCalendar (9.2.0):
     - ExpoModulesCore
     - UMCore
-  - EXCamera (11.1.1):
+  - EXCamera (11.2.0):
     - ExpoModulesCore
     - UMCore
   - EXCellular (3.2.0):
@@ -170,13 +170,13 @@ PODS:
   - expo-image (1.0.0-alpha.1):
     - React-Core
     - SDWebImage (~> 5.0)
-  - ExpoModulesCore (0.1.1):
-    - ExpoModulesCore/Core (= 0.1.1)
-    - ExpoModulesCore/Interfaces (= 0.1.1)
+  - ExpoModulesCore (0.2.0):
+    - ExpoModulesCore/Core (= 0.2.0)
+    - ExpoModulesCore/Interfaces (= 0.2.0)
     - UMCore
-  - ExpoModulesCore/Core (0.1.1):
+  - ExpoModulesCore/Core (0.2.0):
     - UMCore
-  - ExpoModulesCore/Interfaces (0.1.1):
+  - ExpoModulesCore/Interfaces (0.2.0):
     - ExpoModulesCore/Core
     - UMCore
   - EXPrint (10.2.0):
@@ -705,7 +705,7 @@ PODS:
   - SDWebImage/Core (5.11.0)
   - UMAppLoader (2.2.0)
   - UMCore (7.1.1)
-  - UMReactNativeAdapter (6.3.0):
+  - UMReactNativeAdapter (6.3.1):
     - ExpoModulesCore
     - React-Core
     - UMCore
@@ -1215,7 +1215,7 @@ SPEC CHECKSUMS:
   EXBlur: 50d490040f3b14898ed8198d5125dc699189f4d9
   EXBrightness: b0eb62f204669cd7ae926847794b5bfabd595a4f
   EXCalendar: 64807f071c86ef3d9813fec49f55c38d5854c235
-  EXCamera: 5a90a462cd0965bbf5e5ddb725115ac5109869e9
+  EXCamera: 1b0f261e09489c3d9172641336f95350bbc79135
   EXCellular: 82f7267f13f296f37434d0031e9a214bbd4b8919
   EXClipboard: c66f7d22ba754496b0fc6b23a2cb9a3e10fa1581
   EXConstants: 7025f7965e87340f8e7493edc7062071ff48449f
@@ -1253,7 +1253,7 @@ SPEC CHECKSUMS:
   expo-dev-menu: 1c5a5194cb123e6f90358e815711cfea34524d72
   expo-dev-menu-interface: 4fda2fa6d974a518e546ca1193340513b0a8b0e8
   expo-image: 2fded43b1489487d7e84911caaadc821258f4905
-  ExpoModulesCore: 7925199dfaa4db3ddbf7a31cb79d066822cd74c5
+  ExpoModulesCore: 2734852616127a6c1fc23012197890a6f3763dc7
   EXPrint: 2dbe4d320687e559b46fdb01e330fdf875137094
   EXRandom: ecb71f5d01991f29bb0277f8a2c35d168f85d637
   EXScreenCapture: c51844407fbac8bbca4415467bc43f2b7764d225
@@ -1348,7 +1348,7 @@ SPEC CHECKSUMS:
   SDWebImage: 7acbb57630ac7db4a495547fb73916ff3e432f6b
   UMAppLoader: 21af63390e55c82e037fb9752d93114a80ecf16e
   UMCore: 912510bbff567298d738590f17788a8516f9d7f3
-  UMReactNativeAdapter: ee750f3cf40e149643f9191de3ce8c02202f198f
+  UMReactNativeAdapter: 464268cbf5636c1a2d9368ca06b0a33d814e4e88
   UMTaskManagerInterface: 2be431101b73604e64fbfffcf759336f9d8fccbb
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a

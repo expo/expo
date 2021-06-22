@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 6.3.1 — 2021-06-22
+
+_This version does not introduce any user-facing changes._
+
 ## 6.3.0 — 2021-05-25
 
 - Include missing `UMPermissionsInterface` dependency in the podspec. ([#12862](https://github.com/expo/expo/pull/12862) by [@budiTjendra](https://github.com/budiTjendra))
