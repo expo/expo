@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix resize action validator to allow providing just one of `width` or `height`.
+
 ### 💡 Others
 
 ## 9.2.0 — 2021-06-16

@@ -87,8 +87,7 @@ function validateResizeAction(action: ActionResize): void {
   const isValid =
     typeof action.resize === 'object' &&
     action.resize !== null &&
-    typeof action.resize.width === 'number' &&
-    typeof action.resize.height === 'number';
+    (typeof action.resize.width === 'number' || typeof action.resize.height === 'number');
   if (!isValid) {
     throw new TypeError(
       'Resize action must be an object of shape { width: number; height: number }'
