@@ -61,7 +61,7 @@ module Expo
         end
       end
 
-      # Remove the generated group if nothing has left inside
+      # Remove the generated group if it has nothing left inside
       if targets_with_modules_provider.empty?
         recursively_remove_group(generated_group)
       end

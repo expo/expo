@@ -12,8 +12,8 @@ module Pod
       # Integrates the targets of the user projects with the libraries
       # generated from the {Podfile}.
       #
-      # @note   {TargetDefinition} without dependencies are skipped prevent
-      #         creating empty libraries for targets definitions which are only
+      # @note   {TargetDefinition} without dependencies are skipped to prevent
+      #         creating empty libraries for target definitions which are only
       #         wrappers for others.
       #
       # @return [void]
@@ -27,7 +27,7 @@ module Pod
           all_projects = targets.map { |target| target.user_project }.uniq
 
           # Array of projects to integrate is usually a subset of `all_projects`,
-          # especially it might be empty after subsequent installations.
+          # and it might be empty subsequent installs after the first install.
           # CocoaPods integrates only these ones.
           projects_to_integrate = user_projects_to_integrate()
 
