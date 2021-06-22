@@ -279,12 +279,12 @@ platform :android do
     UI.message "APK version #{version_name} has been uploaded to staging"
   end
 
-  lane :start do
+  lane :start do |flavor: "unversioned"|
     gradle(
       project_dir: "android",
       task: "install",
       build_type: "Debug",
-      flavor: "versioned",
+      flavor: flavor,
     )
     adb(command: "shell am start -n host.exp.exponent/host.exp.exponent.LauncherActivity")
   end
