@@ -214,7 +214,7 @@ ABI42_0_0UM_EXPORT_METHOD_AS(logEventAsync,
 }
 
 ABI42_0_0UM_EXPORT_METHOD_AS(logPurchaseAsync,
-                    logPurchase:(double)purchaseAmount
+                    logPurchase:(NSNumber *)purchaseAmount
                     currency:(NSString *)currency
                     parameters:(NSDictionary *)parameters
                     resolver:(ABI42_0_0UMPromiseResolveBlock)resolve
@@ -222,7 +222,7 @@ ABI42_0_0UM_EXPORT_METHOD_AS(logPurchaseAsync,
 {
   parameters = dictionaryWithNullValuesAsStrings(parameters);
   
-  [FBSDKAppEvents logPurchase:purchaseAmount
+  [FBSDKAppEvents logPurchase:[purchaseAmount doubleValue]
                      currency:currency
                    parameters:parameters
                   accessToken:nil];
