@@ -8,10 +8,9 @@
 #ifdef ABI42_0_0HAVE_GOOGLE_MAPS
 
 #import <ABI42_0_0React/ABI42_0_0RCTViewManager.h>
-#import "ABI42_0_0AIRGoogleMap.h"
 
 @interface ABI42_0_0AIRGoogleMapManager : ABI42_0_0RCTViewManager
-@property (nonatomic, assign) ABI42_0_0AIRGoogleMap *map;
+@property (nonatomic) BOOL isGesture;
 
 @end
 

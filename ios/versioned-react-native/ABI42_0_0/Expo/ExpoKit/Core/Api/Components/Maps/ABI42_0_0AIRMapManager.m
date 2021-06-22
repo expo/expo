@@ -88,7 +88,9 @@ ABI42_0_0RCT_REMAP_VIEW_PROPERTY(testID, accessibilityIdentifier, NSString)
 ABI42_0_0RCT_EXPORT_VIEW_PROPERTY(showsUserLocation, BOOL)
 ABI42_0_0RCT_EXPORT_VIEW_PROPERTY(tintColor, UIColor)
 ABI42_0_0RCT_EXPORT_VIEW_PROPERTY(userLocationAnnotationTitle, NSString)
+ABI42_0_0RCT_EXPORT_VIEW_PROPERTY(userInterfaceStyle, NSString)
 ABI42_0_0RCT_EXPORT_VIEW_PROPERTY(followsUserLocation, BOOL)
+ABI42_0_0RCT_EXPORT_VIEW_PROPERTY(userLocationCalloutEnabled, BOOL)
 ABI42_0_0RCT_EXPORT_VIEW_PROPERTY(showsPointsOfInterest, BOOL)
 ABI42_0_0RCT_EXPORT_VIEW_PROPERTY(showsBuildings, BOOL)
 ABI42_0_0RCT_EXPORT_VIEW_PROPERTY(showsCompass, BOOL)
@@ -380,6 +382,7 @@ ABI42_0_0RCT_EXPORT_METHOD(animateToBearing:(nonnull NSNumber *)ABI42_0_0ReactTa
 }
 
 ABI42_0_0RCT_EXPORT_METHOD(fitToElements:(nonnull NSNumber *)ABI42_0_0ReactTag
+        edgePadding:(nonnull NSDictionary *)edgePadding
         animated:(BOOL)animated)
 {
     [self.bridge.uiManager addUIBlock:^(__unused ABI42_0_0RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
@@ -558,6 +561,46 @@ ABI42_0_0RCT_EXPORT_METHOD(coordinateForPoint:(nonnull NSNumber *)ABI42_0_0React
                       @"latitude": @(coordinate.latitude),
                       @"longitude": @(coordinate.longitude),
                       });
+        }
+    }];
+}
+
+ABI42_0_0RCT_EXPORT_METHOD(getAddressFromCoordinates:(nonnull NSNumber *)ABI42_0_0ReactTag
+                                 coordinate: (NSDictionary *)coordinate
+                                   resolver: (ABI42_0_0RCTPromiseResolveBlock)resolve
+                                   rejecter:(ABI42_0_0RCTPromiseRejectBlock)reject)
+{
+    [self.bridge.uiManager addUIBlock:^(__unused ABI42_0_0RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+        id view = viewRegistry[ABI42_0_0ReactTag];
+        if (![view isKindOfClass:[ABI42_0_0AIRMap class]]) {
+            reject(@"Invalid argument", [NSString stringWithFormat:@"Invalid view returned from registry, expecting ABI42_0_0AIRMap, got: %@", view], NULL);
+        } else {
+            if (coordinate != nil ||
+                ![[coordinate allKeys] containsObject:@"latitude"] ||
+                ![[coordinate allKeys] containsObject:@"longitude"]) {
+                reject(@"Invalid argument", [NSString stringWithFormat:@"Invalid coordinate format"], NULL);
+            }
+            CLLocation *location = [[CLLocation alloc] initWithLatitude:[coordinate[@"latitude"] doubleValue]
+                                                              longitude:[coordinate[@"longitude"] doubleValue]];
+            CLGeocoder *geoCoder = [[CLGeocoder alloc] init];
+            [geoCoder reverseGeocodeLocation:location
+                           completionHandler:^(NSArray *placemarks, NSError *error) {
+                    if (error == nil && [placemarks count] > 0){
+                        CLPlacemark *placemark = placemarks[0];
+                        resolve(@{
+                            @"name" : [NSString stringWithFormat:@"%@", placemark.name],
+                            @"thoroughfare" : [NSString stringWithFormat:@"%@", placemark.thoroughfare],
+                            @"subThoroughfare" : [NSString stringWithFormat:@"%@", placemark.subThoroughfare],
+                            @"locality" : [NSString stringWithFormat:@"%@", placemark.locality],
+                            @"subLocality" : [NSString stringWithFormat:@"%@", placemark.subLocality],
+                            @"administrativeArea" : [NSString stringWithFormat:@"%@", placemark.administrativeArea],
+                            @"subAdministrativeArea" : [NSString stringWithFormat:@"%@", placemark.subAdministrativeArea],
+                            @"postalCode" : [NSString stringWithFormat:@"%@", placemark.postalCode],
+                            @"countryCode" : [NSString stringWithFormat:@"%@", placemark.ISOcountryCode],
+                            @"country" : [NSString stringWithFormat:@"%@", placemark.country],
+                        });
+                    }
+            }];
         }
     }];
 }
@@ -840,6 +883,18 @@ ABI42_0_0RCT_EXPORT_METHOD(coordinateForPoint:(nonnull NSNumber *)ABI42_0_0React
 
 #pragma mark Annotation Stuff
 
+- (void)mapView:(ABI42_0_0AIRMap *)mapView didAddAnnotationViews:(NSArray<MKAnnotationView *> *)views
+{
+    if(!mapView.userLocationCalloutEnabled){
+        for(MKAnnotationView* view in views){
+            if ([view.annotation isKindOfClass:[MKUserLocation class]]){
+                [view setEnabled:NO];
+                [view setCanShowCallout:NO];
+                break;
+            }
+        }
+    }
+}
 
 
 - (void)mapView:(ABI42_0_0AIRMap *)mapView didSelectAnnotationView:(MKAnnotationView *)view

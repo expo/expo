@@ -17,6 +17,7 @@ ABI42_0_0RCT_EXPORT_MODULE()
 }
 
 ABI42_0_0RCT_REMAP_VIEW_PROPERTY(bounds, boundsRect, NSArray)
+ABI42_0_0RCT_REMAP_VIEW_PROPERTY(bearing, bearing, double)
 ABI42_0_0RCT_REMAP_VIEW_PROPERTY(image, imageSrc, NSString)
 ABI42_0_0RCT_REMAP_VIEW_PROPERTY(opacity, opacity, CGFloat)
 
