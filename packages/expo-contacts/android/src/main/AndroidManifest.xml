@@ -1,5 +1,17 @@
-
 <manifest package="expo.modules.contacts">
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.SEND" />
+            <category android:name="android.intent.category.DEFAULT" />
 
+            <data android:mimeType="application/octet-stream" />
+            <data android:mimeType="text/vcard" />
+            <data android:mimeType="text/x-vcard" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.EDIT" />
+            <action android:name="android.intent.action.INSERT" />
+        </intent>
+    </queries>
 </manifest>
   
