@@ -37,7 +37,7 @@ export interface BackgroundFetchOptions {
     /**
      * Inexact interval in seconds between subsequent repeats of the background fetch alarm. The final
      * interval may differ from the specified one to minimize wakeups and battery usage.
-     * - On Android it defaults to __15 minutes__,
+     * - On Android it defaults to __10 minutes__,
      * - On iOS it calls [`BackgroundFetch.setMinimumIntervalAsync`](#backgroundfetchsetminimumintervalasyncminimuminterval)
      * behind the scenes and the default value is the smallest fetch interval supported by the system __(10-15 minutes)__.
      * Background fetch task receives no data, but your task should return a value that best describes
