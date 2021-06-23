@@ -14,7 +14,7 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
 ## Known issues
 
-BackgroundFetch only works when the app is backgrounded, not if the app was terminated or upon device reboot. [Here is the relevant Github issue](https://github.com/expo/expo/issues/3582)
+**iOS only**: BackgroundFetch only works when the app is backgrounded, not if the app was terminated or upon device reboot. [Here is the relevant Github issue](https://github.com/expo/expo/issues/3582)
 
 ## Installation
 
@@ -49,7 +49,7 @@ TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
 // Note: This does NOT need to be in the global scope and CAN be used in your React components!
 async function registerBackgroundFetchAsync() {
   return BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
-    minimumInterval: 60 * 15, // 15 minutes - minimum possible is ~10-15 minutes
+    minimumInterval: 60 * 15, // 15 minutes
     stopOnTerminate: false, // android only,
     startOnBoot: true, // android only
   });
