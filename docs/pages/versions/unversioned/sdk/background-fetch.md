@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
 
 ## Triggering background fetches
 
-Background fetches can be difficult to test because they happen inconsistently and far into the future.
+Background fetches can be difficult to test because they can happen inconsistently. Fortunately, you can trigger background fetches manually when developing your apps.
 
 For iOS, you can use the `Instruments` app on MacOS to manually trigger background fetches:
 
@@ -145,9 +145,15 @@ For iOS, you can use the `Instruments` app on MacOS to manually trigger backgrou
 
 <ImageSpotlight alt="Xcode Menu with Simulate Background Fetch option" src="/static/images/simulate-background-fetch-instruments.png" />
 
-For Android, you can use the `adb` CLI to trigger background fetches
+For Android, you can set the `minimumInterval` option of your task to a small number and background your application like so:
 
-// TODO
+```tsx
+async function registerBackgroundFetchAsync() {
+  return BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
+    minimumInterval: 1, // task will fire 1 minute after app is backgrounded
+  });
+}
+```
 
 ## Configuration
 
