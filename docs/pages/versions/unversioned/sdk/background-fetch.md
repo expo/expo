@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
 
 Background fetches can be difficult to test because they can happen inconsistently. Fortunately, you can trigger background fetches manually when developing your apps.
 
-For iOS, you can use the `Instruments` app on MacOS to manually trigger background fetches:
+For iOS, you can use the `Instruments` app on macOS to manually trigger background fetches:
 
 1. Open the Instruments app
 2. Select `Time Profiler`
