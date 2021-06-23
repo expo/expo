@@ -1,5 +1,5 @@
 ---
-title: Using Hermes JavaScript Engine
+title: Using Hermes Engine
 sidebar_title: Using Hermes
 ---
 
