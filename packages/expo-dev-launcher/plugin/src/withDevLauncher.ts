@@ -34,9 +34,6 @@ const DEV_LAUNCHER_UPDATES_ANDROID_INIT =
 const DEV_LAUNCHER_UPDATES_DEVELOPER_SUPPORT =
   'return DevLauncherController.getInstance().getUseDeveloperSupport();';
 
-const DEV_LAUNCHER_POD_IMPORT =
-  "pod 'expo-dev-launcher', path: '../node_modules/expo-dev-launcher', :configurations => :debug";
-
 const DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS = `import { registerErrorHandlers } from 'expo-dev-launcher';
 registerErrorHandlers();`;
 
@@ -217,10 +214,14 @@ const withDevLauncherPodfile: ConfigPlugin = config => {
         // Rubocop: pod 'expo-dev-launcher', path: '../node_modules/expo-dev-launcher', configurations: :debug
         if (
           !podfile.match(
-            /pod ['"]expo-dev-launcher['"],\s?path: ['"]\.\.\/node_modules\/expo-dev-launcher['"],\s?:?configurations:?\s(?:=>\s)?:debug/
+            /pod ['"]expo-dev-launcher['"],\s?path: ['"][^'"]*node_modules\/expo-dev-launcher['"],\s?:?configurations:?\s(?:=>\s)?:debug/
           )
         ) {
-          podfile = addLines(podfile, 'use_react_native', 0, [`  ${DEV_LAUNCHER_POD_IMPORT}`]);
+          const packagePath = path.dirname(require.resolve('expo-dev-launcher/package.json'));
+          const relativePath = path.relative(config.modRequest.platformProjectRoot, packagePath);
+          podfile = addLines(podfile, 'use_react_native', 0, [
+            `  pod 'expo-dev-launcher', path: '${relativePath}', :configurations => :debug`,
+          ]);
         }
         return podfile;
       });

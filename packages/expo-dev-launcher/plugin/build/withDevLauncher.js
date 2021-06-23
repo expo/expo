@@ -25,7 +25,6 @@ const DEV_LAUNCHER_WRAPPED_ACTIVITY_DELEGATE = `DevLauncherController.wrapReactA
 const DEV_LAUNCHER_ANDROID_INIT = 'DevLauncherController.initialize(this, getReactNativeHost());';
 const DEV_LAUNCHER_UPDATES_ANDROID_INIT = 'DevLauncherController.getInstance().setUpdatesInterface(UpdatesDevLauncherController.initialize(this));';
 const DEV_LAUNCHER_UPDATES_DEVELOPER_SUPPORT = 'return DevLauncherController.getInstance().getUseDeveloperSupport();';
-const DEV_LAUNCHER_POD_IMPORT = "pod 'expo-dev-launcher', path: '../node_modules/expo-dev-launcher', :configurations => :debug";
 const DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS = `import { registerErrorHandlers } from 'expo-dev-launcher';
 registerErrorHandlers();`;
 async function readFileAsync(path) {
@@ -156,8 +155,12 @@ const withDevLauncherPodfile = config => {
                 // Match both variations of Ruby config:
                 // unknown: pod 'expo-dev-launcher', path: '../node_modules/expo-dev-launcher', :configurations => :debug
                 // Rubocop: pod 'expo-dev-launcher', path: '../node_modules/expo-dev-launcher', configurations: :debug
-                if (!podfile.match(/pod ['"]expo-dev-launcher['"],\s?path: ['"]\.\.\/node_modules\/expo-dev-launcher['"],\s?:?configurations:?\s(?:=>\s)?:debug/)) {
-                    podfile = addLines(podfile, 'use_react_native', 0, [`  ${DEV_LAUNCHER_POD_IMPORT}`]);
+                if (!podfile.match(/pod ['"]expo-dev-launcher['"],\s?path: ['"][^'"]*node_modules\/expo-dev-launcher['"],\s?:?configurations:?\s(?:=>\s)?:debug/)) {
+                    const packagePath = path_1.default.dirname(require.resolve('expo-dev-launcher/package.json'));
+                    const relativePath = path_1.default.relative(config.modRequest.platformProjectRoot, packagePath);
+                    podfile = addLines(podfile, 'use_react_native', 0, [
+                        `  pod 'expo-dev-launcher', path: '${relativePath}', :configurations => :debug`,
+                    ]);
                 }
                 return podfile;
             });

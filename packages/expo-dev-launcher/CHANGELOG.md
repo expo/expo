@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [plugin] Use Node module resolution to find package paths for Podfile
+
 ### 💡 Others
 
 ## 0.5.1 — 2021-06-16
