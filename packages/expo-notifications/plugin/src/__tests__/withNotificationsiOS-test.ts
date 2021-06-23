@@ -22,6 +22,7 @@ const projectRoot = '/app';
 
 describe('iOS notifications configuration', () => {
   beforeAll(async () => {
+    jest.mock('fs');
     const sound = fsReal.readFileSync(soundPath);
     vol.fromJSON({ 'ios/testproject/AppDelegate.m': '' }, projectRoot);
     vol.mkdirpSync('/app/assets');
