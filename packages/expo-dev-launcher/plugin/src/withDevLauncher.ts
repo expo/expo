@@ -34,8 +34,21 @@ const DEV_LAUNCHER_UPDATES_ANDROID_INIT =
 const DEV_LAUNCHER_UPDATES_DEVELOPER_SUPPORT =
   'return DevLauncherController.getInstance().getUseDeveloperSupport();';
 
-const DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS = `import { registerErrorHandlers } from 'expo-dev-launcher';
-registerErrorHandlers();`;
+const DEV_LAUNCHER_ERROR_HANDLERS_FILE = 'DevLauncherSetUpErrorHandlers.fx.js';
+const DEV_LAUNCHER_ERROR_HANDLERS_FILE_CONTENT = `import { registerErrorHandlers } from "expo-dev-launcher";
+registerErrorHandlers();
+`;
+const DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS = `import './DevLauncherSetUpErrorHandlers.fx.js'`;
+
+async function existsAsync(path: string): Promise<boolean> {
+  try {
+    await fs.promises.access(path, fs.constants.F_OK);
+  } catch (error) {
+    // file doesn't exist
+    return false;
+  }
+  return true;
+}
 
 async function readFileAsync(path: string): Promise<string> {
   return fs.promises.readFile(path, 'utf8');
@@ -239,8 +252,22 @@ const withErrorHandling: ConfigPlugin = config => {
         if (!index.includes(DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS)) {
           index = DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS + '\n\n' + index;
         }
+
         return index;
       });
+
+      const fxFile = path.join(config.modRequest.projectRoot, DEV_LAUNCHER_ERROR_HANDLERS_FILE);
+      if (!(await existsAsync(fxFile))) {
+        try {
+          fs.promises.writeFile(fxFile, DEV_LAUNCHER_ERROR_HANDLERS_FILE_CONTENT);
+        } catch (error) {
+          WarningAggregator.addWarningAndroid(
+            'expo-dev-launcher',
+            `Cannot automatically create ${DEV_LAUNCHER_ERROR_HANDLERS_FILE}.`
+          );
+        }
+      }
+
       return config;
     },
   ]);

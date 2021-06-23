@@ -23,10 +23,33 @@ const DEV_LAUNCHER_ON_NEW_INTENT = `
 `;
 const DEV_LAUNCHER_WRAPPED_ACTIVITY_DELEGATE = `DevLauncherController.wrapReactActivityDelegate(this, () -> $1);`;
 const DEV_LAUNCHER_ANDROID_INIT = 'DevLauncherController.initialize(this, getReactNativeHost());';
+<<<<<<< HEAD
 const DEV_LAUNCHER_UPDATES_ANDROID_INIT = 'DevLauncherController.getInstance().setUpdatesInterface(UpdatesDevLauncherController.initialize(this));';
 const DEV_LAUNCHER_UPDATES_DEVELOPER_SUPPORT = 'return DevLauncherController.getInstance().getUseDeveloperSupport();';
 const DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS = `import { registerErrorHandlers } from 'expo-dev-launcher';
 registerErrorHandlers();`;
+||||||| parent of a32d3ca6bf ([dev-launcher][ios] Ensure that error handler is initialised)
+const DEV_LAUNCHER_POD_IMPORT = "pod 'expo-dev-launcher', path: '../node_modules/expo-dev-launcher', :configurations => :debug";
+const DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS = `import { registerErrorHandlers } from 'expo-dev-launcher';
+registerErrorHandlers();`;
+=======
+const DEV_LAUNCHER_POD_IMPORT = "pod 'expo-dev-launcher', path: '../node_modules/expo-dev-launcher', :configurations => :debug";
+const DEV_LAUNCHER_ERROR_HANDLERS_FILE = 'DevLauncherSetUpErrorHandlers.fx.js';
+const DEV_LAUNCHER_ERROR_HANDLERS_FILE_CONTENT = `import { registerErrorHandlers } from "expo-dev-launcher";
+registerErrorHandlers();
+`;
+const DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS = `import './DevLauncherSetUpErrorHandlers.fx.js'`;
+async function existsAsync(path) {
+    try {
+        await fs_1.default.promises.access(path, fs_1.default.constants.F_OK);
+    }
+    catch (error) {
+        // file doesn't exist
+        return false;
+    }
+    return true;
+}
+>>>>>>> a32d3ca6bf ([dev-launcher][ios] Ensure that error handler is initialised)
 async function readFileAsync(path) {
     return fs_1.default.promises.readFile(path, 'utf8');
 }
@@ -179,6 +202,15 @@ const withErrorHandling = config => {
                 }
                 return index;
             });
+            const fxFile = path_1.default.join(config.modRequest.projectRoot, DEV_LAUNCHER_ERROR_HANDLERS_FILE);
+            if (!(await existsAsync(fxFile))) {
+                try {
+                    fs_1.default.promises.writeFile(fxFile, DEV_LAUNCHER_ERROR_HANDLERS_FILE_CONTENT);
+                }
+                catch (error) {
+                    config_plugins_1.WarningAggregator.addWarningAndroid('expo-dev-launcher', `Cannot automatically create ${DEV_LAUNCHER_ERROR_HANDLERS_FILE}.`);
+                }
+            }
             return config;
         },
     ]);
