@@ -40,9 +40,6 @@
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI40_0_0React/ABI40_0_0RCTAppearance.h>)
 #import <ABI40_0_0React/ABI40_0_0RCTAppearance.h>
 #endif
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI39_0_0React/ABI39_0_0RCTAppearance.h>)
-#import <ABI39_0_0React/ABI39_0_0RCTAppearance.h>
-#endif
 
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
 
@@ -654,9 +651,6 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI40_0_0React/ABI40_0_0RCTAppearance.h>)
   ABI40_0_0RCTOverrideAppearancePreference(appearancePreference);
-#endif
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI39_0_0React/ABI39_0_0RCTAppearance.h>)
-  ABI39_0_0RCTOverrideAppearancePreference(appearancePreference);
 #endif
 }
 
