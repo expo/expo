@@ -5,9 +5,7 @@ import * as path from 'path';
 import {
   getNotificationColor,
   getNotificationIcon,
-  NOTIFICATION_ICON_COLOR,
   setNotificationIconAsync,
-  setNotificationIconColorAsync,
   setNotificationSounds,
 } from '../withNotificationsAndroid';
 
@@ -86,14 +84,7 @@ describe('Android notifications configuration', () => {
       '#123456'
     );
   });
-  it('writes to colors.xml correctly', async () => {
-    await setNotificationIconColorAsync(projectRoot, '#00ff00');
 
-    const after = getDirFromFS(vol.toJSON(), projectRoot);
-    expect(after['android/app/src/main/res/values/colors.xml']).toContain(
-      `<color name="${NOTIFICATION_ICON_COLOR}">#00ff00</color>`
-    );
-  });
   it('writes all the asset files (sounds and images) as expected', async () => {
     await setNotificationIconAsync(projectRoot, '/app/assets/notificationIcon.png');
     setNotificationSounds(projectRoot, ['/app/assets/notificationSound.wav']);
