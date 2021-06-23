@@ -22,7 +22,7 @@ export async function versionVendoredModulesAsync(
   const config = vendoredModulesTransforms(prefix);
   const baseTransforms = baseTransformsFactory(prefix);
   const unversionedDir = path.join(IOS_VENDORED_DIR, 'unversioned');
-  const versionedDir = path.join(IOS_VENDORED_DIR, `sdk${sdkNumber}`);
+  const versionedDir = vendoredDirectoryForSDK(sdkNumber);
   const sourceDirents = (await fs.readdir(unversionedDir, { withFileTypes: true })).filter(
     (dirent) => {
       return dirent.isDirectory() && (!filterModules || filterModules.includes(dirent.name));
@@ -51,6 +51,14 @@ export async function versionVendoredModulesAsync(
       });
     }
   }
+}
+
+/**
+ * Removes the directory with vendored modules for given SDK number.
+ */
+export async function removeVersionedVendoredModulesAsync(sdkNumber: number): Promise<void> {
+  const versionedDir = vendoredDirectoryForSDK(sdkNumber);
+  await fs.remove(versionedDir);
 }
 
 /**
@@ -143,4 +151,11 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
       },
     ],
   };
+}
+
+/**
+ * Returns the vendored directory for given SDK number.
+ */
+function vendoredDirectoryForSDK(sdkNumber: number): string {
+  return path.join(IOS_VENDORED_DIR, `sdk${sdkNumber}`);
 }
