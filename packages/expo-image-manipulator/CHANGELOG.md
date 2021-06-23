@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix resize action validator to allow providing just one of `width` or `height`. ([#13369](https://github.com/expo/expo/pull/13369) by [@cruzach](https://github.com/cruzach))
-
 ### 💡 Others
+
+## 9.2.2 — 2021-06-23
+
+### 🐛 Bug fixes
+
+- Fix resize action validator to allow providing just one of `width` or `height`. ([#13369](https://github.com/expo/expo/pull/13369) by [@cruzach](https://github.com/cruzach))
 
 ## 9.2.1 — 2021-06-22
 

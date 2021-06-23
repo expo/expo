@@ -2334,7 +2334,7 @@ PODS:
   - EXAV (9.2.1):
     - ExpoModulesCore
     - UMCore
-  - EXBackgroundFetch (9.2.0):
+  - EXBackgroundFetch (9.2.1):
     - UMCore
     - UMTaskManagerInterface
   - EXBarCodeScanner (10.2.1):
@@ -2378,7 +2378,7 @@ PODS:
     - UMCore
   - EXErrorRecovery (2.2.0):
     - UMCore
-  - EXFacebook (11.2.1):
+  - EXFacebook (11.3.0):
     - ExpoModulesCore
     - FacebookSDK/CoreKit (= 9.2.0)
     - FacebookSDK/LoginKit (= 9.2.0)
@@ -2418,7 +2418,7 @@ PODS:
     - ExpoModulesCore
     - React-Core
     - UMCore
-  - EXImageManipulator (9.2.1):
+  - EXImageManipulator (9.2.2):
     - ExpoModulesCore
     - UMCore
   - EXImagePicker (10.2.1):
@@ -2485,7 +2485,7 @@ PODS:
     - UMCore
   - EXSpeech (9.2.0):
     - UMCore
-  - EXSplashScreen (0.11.0):
+  - EXSplashScreen (0.11.1):
     - React-Core
     - UMCore
   - EXSQLite (9.2.1):
@@ -2493,9 +2493,9 @@ PODS:
     - UMCore
   - EXStoreReview (4.1.0):
     - UMCore
-  - EXStructuredHeaders (1.1.0):
+  - EXStructuredHeaders (1.1.1):
     - UMCore
-  - EXStructuredHeaders/Tests (1.1.0):
+  - EXStructuredHeaders/Tests (1.1.1):
     - UMCore
   - EXTaskManager (9.2.1):
     - ExpoModulesCore
@@ -2504,12 +2504,12 @@ PODS:
     - UMTaskManagerInterface
   - EXTrackingTransparency (1.1.1):
     - UMCore
-  - EXUpdates (0.7.1):
+  - EXUpdates (0.7.2):
     - EXStructuredHeaders
     - EXUpdatesInterface
     - React-Core
     - UMCore
-  - EXUpdates/Tests (0.7.1):
+  - EXUpdates/Tests (0.7.2):
     - EXStructuredHeaders
     - EXUpdatesInterface
     - React-Core
@@ -4980,7 +4980,7 @@ SPEC CHECKSUMS:
   EXAppleAuthentication: 5994731faf4a3dd32be4a4b3e9feb930c2fa25c1
   EXApplication: 9ff2a206009d6e55bca6c20b3f33d07986b51ef3
   EXAV: 35d15e0c27a1e44d841e1deb575542eca31e6f5e
-  EXBackgroundFetch: 5a15dc52d77d5ea4b0896c283679e271447921d4
+  EXBackgroundFetch: 5ec36d4c384ff0417840c67646d9bfc7378343ab
   EXBarCodeScanner: 767a0cbf14df7907aac3aa5ce69d90210d8c0c77
   EXBattery: 6adbf9706bbe00d266b17b7846d556db9dea82c2
   EXBlur: 50d490040f3b14898ed8198d5125dc699189f4d9
@@ -4996,7 +4996,7 @@ SPEC CHECKSUMS:
   EXDevice: 6f1eed02c099f5b382a12a40406c58868892aba6
   EXDocumentPicker: 30823df8c5e13cef6184f1df40ba3afe336c7f23
   EXErrorRecovery: 404d827bc7d42f306c062d58a60b06afc4d082b3
-  EXFacebook: 8faae5c1699b87750f744fa21359d149f90b374e
+  EXFacebook: 40f72fd30b2cff607dc84b05abcf3ebbf077594a
   EXFaceDetector: 3247e936a772e37586d840cc1b5ed20b4891bb4e
   EXFileSystem: 870ef8c7c2e67a16c09e3d339236762cfeec53bd
   EXFirebaseAnalytics: ca01838167729b67f838a673e4b3e0637faec118
@@ -5007,7 +5007,7 @@ SPEC CHECKSUMS:
   EXGoogleSignIn: dd0efd8ee8bb7c15773c1585ebdb7d35d1bec7e4
   EXHaptics: 6dc4307ab0794fe7a87ec8d7d1c299cf103d6cb3
   EXImageLoader: d3531a3fe530b22925c19977cb53bb43e3821fe6
-  EXImageManipulator: ebfcb2c54e97e4c77ce3aeea5f9f301028907e15
+  EXImageManipulator: c9af8e8dc6543fdca23693eae280e388b2f93fb0
   EXImagePicker: 05d96c38f305d1c21bb0b66f902ac18a46d4aa8c
   EXKeepAwake: f4105ef469be7b283f66ce2d7234bb71ac80cd26
   EXLinearGradient: f9ea3259f096b27008860ca50764184225dc71c9
@@ -5030,13 +5030,13 @@ SPEC CHECKSUMS:
   EXSharing: 567f4b9f38a5266ec2f51973e2efe3b4aaf0bf69
   EXSMS: 1a1fcc1e825543b8b9256c230faf7663f0dec51d
   EXSpeech: 0c4eb2bb758bab41f9cbf455cf673d2e344cc186
-  EXSplashScreen: da00ad1d61c395c5c81b252c5987e8f83cba230a
+  EXSplashScreen: 01d39ac67ff6b5dc938f1431279ce2f9228e7703
   EXSQLite: cddb3b3f4c6999761c157b88dc8b55c7af2cd86b
   EXStoreReview: 40674cc897a6d7fd249969b86d1833f67b99170a
-  EXStructuredHeaders: 384ccdf0c09ed0be8fc73d4b2d70e436cd195975
+  EXStructuredHeaders: dc4b99d20ce14a5ec4d57a53743f0f95d7e82c65
   EXTaskManager: fc977aebcbd47746e73d49713e80837eec2b1cb1
   EXTrackingTransparency: 3d1064e147b071ad3ebde602f853e22fe87f7be4
-  EXUpdates: 4efd6a44d74c4ab2b7122f6013a2122a57cb8cfc
+  EXUpdates: d4ebcbba0d09e70a1f8054ae0c040cc6b2c7ebf3
   EXUpdatesInterface: 8e4f28434a2e6a75803c4ea0ab12cfb07ebb3438
   EXVideoThumbnails: 442c3abadb51a81551a3b53705b7560de390e6f7
   EXWebBrowser: 76783ba5dcb8699237746ecf41a9643d428a4cc5
