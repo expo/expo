@@ -188,6 +188,8 @@ jobs:
         run: yarn detox:clean
         working-directory: apps/bare-expo
       - name: Prebuild react-native AAR
+        # Workaround for next `yarn android:detox:build:release` occasionally failed at gradle fetching libraries on GitHub Actions
+        # Just to introduce another trail for gradle building.
         run: ./gradlew :ReactAndroid:installArchives | true
         working-directory: react-native-lab/react-native
         timeout-minutes: 35
