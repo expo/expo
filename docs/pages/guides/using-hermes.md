@@ -13,13 +13,14 @@ A limitation with JavaScriptCore is that the debugger does not work with modules
 
 To get started, open your `app.json` and add `jsEngine` field under the `android` section:
 
+<!-- prettier-ignore -->
 ```json
 {
   "expo": {
     "android": {
       /* @info Add jsEngine field here. Supported values are hermes or jsc  */
-      "jsEngine": "hermes"
-      /* @end */
+      "jsEngine": "hermes"/* @end */
+
     }
   }
 }
