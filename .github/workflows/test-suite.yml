@@ -149,7 +149,7 @@ jobs:
           author_name: Test Suite (iOS)
 
   android:
-    runs-on: macos-latest
+    runs-on: macos-10.15 # macos-11.0 is not public for now
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v2
@@ -205,6 +205,7 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
+          emulator-build: 6110076
           avd-name: bare-expo
           script: yarn android:detox:test:release
           working-directory: ./apps/bare-expo
