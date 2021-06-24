@@ -28,7 +28,9 @@
   "license": "MIT",
   "homepage": "https://docs.expo.io",
   "dependencies": {
-    "@expo/config-plugins": "^2.0.0"
+    "@expo/config-plugins": "^3.0.0",
+    "resolve-from": "^5.0.0",
+    "semver": "^7.3.5"
   },
   "devDependencies": {
     "babel-preset-expo": "~8.4.0",
