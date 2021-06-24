@@ -9,6 +9,5 @@ export declare function getFacebookDisplayName(config: ExpoConfigFacebook): stri
 export declare function getFacebookAutoInitEnabled(config: ExpoConfigFacebook): boolean | null;
 export declare function getFacebookAutoLogAppEvents(config: ExpoConfigFacebook): boolean | null;
 export declare function getFacebookAdvertiserIDCollection(config: ExpoConfigFacebook): boolean | null;
-export declare function setFacebookAppIdString(config: ExpoConfigFacebook, projectRoot: string): Promise<boolean>;
 export declare function setFacebookConfig(config: ExpoConfigFacebook, androidManifest: AndroidConfig.Manifest.AndroidManifest): AndroidConfig.Manifest.AndroidManifest;
 export {};

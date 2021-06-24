@@ -3,14 +3,11 @@ import {
   ConfigPlugin,
   withAndroidManifest,
   withStringsXml,
-  XML,
 } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
-import assert from 'assert';
 
-const { buildResourceItem, readResourcesXMLAsync } = AndroidConfig.Resources;
-const { getProjectStringsXMLPathAsync, removeStringItem, setStringItem } = AndroidConfig.Strings;
-const { writeXMLAsync } = XML;
+const { buildResourceItem } = AndroidConfig.Resources;
+const { removeStringItem, setStringItem } = AndroidConfig.Strings;
 const {
   addMetaDataItemToMainApplication,
   getMainApplicationOrThrow,
@@ -145,21 +142,6 @@ function ensureFacebookActivity({
   return mainApplication;
 }
 
-export async function setFacebookAppIdString(config: ExpoConfigFacebook, projectRoot: string) {
-  const stringsPath = await getProjectStringsXMLPathAsync(projectRoot);
-  assert(stringsPath, `There was a problem setting your Facebook App ID in "${stringsPath}"`);
-
-  let stringsJSON = await readResourcesXMLAsync({ path: stringsPath });
-  stringsJSON = applyFacebookAppIdString(config, stringsJSON);
-
-  try {
-    await writeXMLAsync({ path: stringsPath, xml: stringsJSON });
-  } catch {
-    throw new Error(`Error setting facebookAppId. Cannot write strings.xml to "${stringsPath}"`);
-  }
-  return true;
-}
-
 function applyFacebookAppIdString(
   config: ExpoConfigFacebook,
   stringsJSON: AndroidConfig.Resources.ResourceXML
@@ -196,7 +178,6 @@ export function setFacebookConfig(
     mainApplication = addMetaDataItemToMainApplication(
       mainApplication,
       META_APP_ID,
-      // The corresponding string is set in setFacebookAppIdString
       `@string/${STRING_FACEBOOK_APP_ID}`
     );
   } else {
