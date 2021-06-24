@@ -46,6 +46,9 @@ fun createUpdatesConfigurationWithUrl(url: Uri): HashMap<String, Any> {
     "hasEmbeddedUpdate" to false,
     "launchWaitMs" to 60000,
     "checkOnLaunch" to "ALWAYS",
-    "enabled" to true
+    "enabled" to true,
+    "requestHeaders" to hashMapOf(
+      "Expo-Updates-Environment" to "DEVELOPMENT"
+    )
   )
 }

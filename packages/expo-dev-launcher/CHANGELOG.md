@@ -14,6 +14,7 @@
 
 - Fixed switching from published to local bundle loading on Android. ([#13363](https://github.com/expo/expo/pull/13363) by [@esamelson](https://github.com/esamelson))
 - [plugin] Use Node module resolution to find package paths for Podfile ([#13382](https://github.com/expo/expo/pull/13382) by [@fson](https://github.com/fson))
+- Send expo-updates-environment: DEVELOPMENT header in manifest requests. ([#13375](https://github.com/expo/expo/pull/13375) by [@esamelson](https://github.com/esamelson))
 
 ### 💡 Others
 
