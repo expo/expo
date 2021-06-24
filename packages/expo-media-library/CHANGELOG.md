@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 12.1.2 — 2021-06-24
+
+_This version does not introduce any user-facing changes._
+
 ## 12.1.1 — 2021-06-22
 
 _This version does not introduce any user-facing changes._

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 10.0.1 — 2021-06-24
+
+_This version does not introduce any user-facing changes._
+
 ## 10.0.0 — 2021-06-16
 
 ### 🛠 Breaking changes
