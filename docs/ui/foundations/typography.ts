@@ -100,7 +100,7 @@ export const textStyles: { [k: string]: CSSObject } = {
     fontFamily: fontStacks.bold,
     color: theme.text.default,
     fontWeight: 500,
-    ...textSizes[32],
+    ...textSizes[52],
     [`@media (max-width: ${breakpoints.narrowWithGutters}px)`]: textSizes[28],
     [`@media (max-width: ${breakpoints.narrowMobile}px)`]: textSizes[22],
   },
