@@ -216,6 +216,9 @@ public class UpdatesController {
   }
 
   public UpdateEntity getLaunchedUpdate() {
+    if (mLauncher == null) {
+      return null;
+    }
     return mLauncher.getLaunchedUpdate();
   }
 

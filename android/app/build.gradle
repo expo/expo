@@ -73,6 +73,33 @@ android {
       }
     }
   }
+  // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
+  // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
+  flavorDimensions "versioning"
+  productFlavors {
+    versioned {
+      dimension "versioning"
+      manifestPlaceholders = [appLabel:"@string/versioned_app_name"]
+    }
+    unversioned {
+      dimension "versioning"
+      getIsDefault().set(true)
+      manifestPlaceholders = [appLabel: "@string/unversioned_app_name"]
+    }
+  }
+  // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
+  // WHEN_DISTRIBUTING_REMOVE_TO_HERE
+
+  // `productFlavors` must be defined before this block
+  defaultConfig {
+    if (android.productFlavors.empty) {
+      // when preparing shell app, the above flavor declarations  are removed
+      // this falls back :expoview to versioned flavor
+      missingDimensionStrategy 'versioning', 'versioned'
+      manifestPlaceholders = [appLabel:"@string/versioned_app_name"]
+    }
+  }
+
   lintOptions {
     abortOnError false
   }
@@ -192,22 +219,22 @@ dependencies {
 
 
   // BEGIN_SDK_42
-  implementation(project(':expoview-abi42_0_0'))
+  versionedImplementation(project(':expoview-abi42_0_0'))
   // END_SDK_42
 
 
   // BEGIN_SDK_41
-  implementation(project(':expoview-abi41_0_0'))
+  versionedImplementation(project(':expoview-abi41_0_0'))
   // END_SDK_41
 
 
   // BEGIN_SDK_40
-  implementation(project(':expoview-abi40_0_0'))
+  versionedImplementation(project(':expoview-abi40_0_0'))
   // END_SDK_40
 
 
   // BEGIN_SDK_39
-  implementation(project(':expoview-abi39_0_0'))
+  versionedImplementation(project(':expoview-abi39_0_0'))
   // END_SDK_39
 
   // This is not needed in shell apps, the Amplitude module will include this dep if installed

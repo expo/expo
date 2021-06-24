@@ -107,11 +107,14 @@ async function action({packageName, version = 'unversioned'}: ActionOptions) {
     'expo-secure-store': ['SecureStore.ts'],
     'expo-sharing': ['Sharing.ts'],
     'expo-speech': ['Speech/Speech.ts'],
+    'expo-screen-capture': ['ScreenCapture.ts'],
     'expo-splash-screen': ['SplashScreen.ts'],
+    'expo-sms': ['SMS.ts'],
     'expo-store-review': ['StoreReview.ts'],
     'expo-task-manager': ['TaskManager.ts'],
     'expo-tracking-transparency': ['TrackingTransparency.ts'],
     'expo-video-thumbnails': ['VideoThumbnails.ts'],
+    'expo-web-browser': ['WebBrowser.ts'],
   };
 
   try {

@@ -4,6 +4,7 @@ import findUp from 'find-up';
 import fs from 'fs-extra';
 import path from 'path';
 
+import { requireAndResolveExpoModuleConfig } from './ExpoModuleConfig';
 import {
   GenerateOptions,
   ModuleDescriptor,
@@ -79,10 +80,12 @@ export async function findModulesAsync(providedOptions: SearchOptions): Promise<
 
     for (const packageConfigPath of uniqueConfigPaths) {
       const packagePath = await fs.realpath(path.join(searchPath, path.dirname(packageConfigPath)));
-      const packageConfig = require(path.join(packagePath, path.basename(packageConfigPath)));
+      const expoModuleConfig = requireAndResolveExpoModuleConfig(
+        path.join(packagePath, path.basename(packageConfigPath))
+      );
       const { name, version } = require(path.join(packagePath, 'package.json'));
 
-      if (options.exclude?.includes(name) || !packageConfig.platforms?.includes(options.platform)) {
+      if (options.exclude?.includes(name) || !expoModuleConfig.supportsPlatform(options.platform)) {
         continue;
       }
 
@@ -93,8 +96,12 @@ export async function findModulesAsync(providedOptions: SearchOptions): Promise<
 
       if (!results[name]) {
         // The revision that was found first will be the main one.
-        // An array of duplicates is needed only here.
-        results[name] = { ...currentRevision, duplicates: [] };
+        // An array of duplicates and the config are needed only here.
+        results[name] = {
+          ...currentRevision,
+          config: expoModuleConfig,
+          duplicates: [],
+        };
       } else if (
         results[name].path !== packagePath &&
         results[name].duplicates?.every(({ path }) => path !== packagePath)

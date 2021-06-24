@@ -351,12 +351,15 @@
   __weak id _previousFirstResponder;
   CGRect _lastViewFrame;
   int _dismissCount;
+  BOOL _isSwiping;
+  BOOL _shouldNotify;
 }
 
 - (instancetype)initWithView:(UIView *)view
 {
   if (self = [super init]) {
     self.view = view;
+    _shouldNotify = YES;
   }
   return self;
 }
@@ -387,7 +390,7 @@
 - (UIStatusBarAnimation)preferredStatusBarUpdateAnimation
 {
   UIViewController *vc = [self findChildVCForConfigAndTrait:ABI42_0_0RNSWindowTraitAnimation includingModals:NO];
-  
+
   if ([vc isKindOfClass:[ABI42_0_0RNSScreen class]]) {
     return ((ABI42_0_0RNSScreenView *)vc.view).statusBarAnimation;
   }
@@ -513,46 +516,82 @@
 - (void)viewWillAppear:(BOOL)animated
 {
   [super viewWillAppear:animated];
+
+  if (!_isSwiping) {
+    [((ABI42_0_0RNSScreenView *)self.view) notifyWillAppear];
+    if (self.transitionCoordinator.isInteractive) {
+      // we started dismissing with swipe gesture
+      _isSwiping = YES;
+    }
+  } else {
+    // this event is also triggered if we cancelled the swipe.
+    // The _isSwiping is still true, but we don't want to notify then
+    _shouldNotify = NO;
+  }
+
   [ABI42_0_0RNSScreenWindowTraits updateWindowTraits];
-  [((ABI42_0_0RNSScreenView *)self.view) notifyWillAppear];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
   [super viewWillDisappear:animated];
-  
+
   if (!self.transitionCoordinator.isInteractive) {
     // user might have long pressed ios 14 back button item,
     // so he can go back more than one screen and we need to dismiss more screens in JS stack then.
     // We calculate it by substracting the difference between the index of currently displayed screen
     // and the index of the target screen, which is the view of topViewController at this point.
-    // If the values is lower than 1, it means we are navigating forward
+    // If the value is lower than 1, it means we are navigating forward
     int selfIndex = (int)[[(ABI42_0_0RNSScreenStackView *) self.navigationController.delegate ABI42_0_0ReactSubviews] indexOfObject:self.view];
     int targetIndex = (int)[[(ABI42_0_0RNSScreenStackView *) self.navigationController.delegate ABI42_0_0ReactSubviews] indexOfObject:self.navigationController.topViewController.view];
     _dismissCount = selfIndex - targetIndex > 0 ? selfIndex - targetIndex : 1;
-    
+
   } else {
     _dismissCount = 1;
   }
 
-  [((ABI42_0_0RNSScreenView *)self.view) notifyWillDisappear];
+  // same flow as in viewWillAppear
+  if (!_isSwiping) {
+    [((ABI42_0_0RNSScreenView *)self.view) notifyWillDisappear];
+    if (self.transitionCoordinator.isInteractive) {
+      _isSwiping = YES;
+    }
+  } else {
+    _shouldNotify = NO;
+  }
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
   [super viewDidAppear:animated];
-  [((ABI42_0_0RNSScreenView *)self.view) notifyAppear];
+
+  if (!_isSwiping || _shouldNotify) {
+    // we are going forward or dismissing without swipe
+    // or successfully swiped back
+    [((ABI42_0_0RNSScreenView *)self.view) notifyAppear];
+  }
+
+  _isSwiping = NO;
+  _shouldNotify = YES;
 }
 
 - (void)viewDidDisappear:(BOOL)animated
 {
   [super viewDidDisappear:animated];
 
-  [((ABI42_0_0RNSScreenView *)self.view) notifyDisappear];
   if (self.parentViewController == nil && self.presentingViewController == nil) {
     // screen dismissed, send event
     [((ABI42_0_0RNSScreenView *)self.view) notifyDismissedWithCount:_dismissCount];
   }
+  
+  // same flow as in viewDidAppear
+  if (!_isSwiping || _shouldNotify) {
+    [((ABI42_0_0RNSScreenView *)self.view) notifyDisappear];
+  }
+  
+  _isSwiping = NO;
+  _shouldNotify = YES;
+
   [self traverseForScrollView:self.view];
 }
 

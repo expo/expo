@@ -33,7 +33,7 @@ const buildGradlePath = path.join(ANDROID_DIR, 'build.gradle');
 const sdkVersionsPath = path.join(ANDROID_DIR, 'sdkVersions.json');
 const rnActivityPath = path.join(
   expoviewPath,
-  'src/main/java/host/exp/exponent/experience/MultipleVersionReactNativeActivity.java'
+  'src/versioned/java/host/exp/exponent/experience/MultipleVersionReactNativeActivity.java'
 );
 const expoviewConstantsPath = path.join(
   expoviewPath,

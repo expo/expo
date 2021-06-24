@@ -59,6 +59,7 @@ export const resolveTypeName = ({
   types,
   typeArguments,
   declaration,
+  value,
 }: TypeDefinitionData): string | JSX.Element | (string | JSX.Element)[] => {
   if (name) {
     if (type === 'reference') {
@@ -148,6 +149,8 @@ export const resolveTypeName = ({
         </>
       );
     }
+  } else if (type === 'literal' && value) {
+    return `'${value}'`;
   }
   return 'undefined';
 };

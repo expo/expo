@@ -95,7 +95,7 @@ const sections = [
       'Introduction',
       'Getting Started',
       'Installation in React Native and Bare workflow projects',
-      'Building With EAS',
+      'Building with EAS',
       'Extending the Development Menu',
     ],
   },

@@ -167,7 +167,7 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
   );
   const multipleVersionReactNativeActivity = path.join(
     ANDROID_DIR,
-    'expoview/src/main/java/host/exp/exponent/experience/MultipleVersionReactNativeActivity.java'
+    'expoview/src/versioned/java/host/exp/exponent/experience/MultipleVersionReactNativeActivity.java'
   );
 
   // Modify permanently
