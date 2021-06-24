@@ -4,3 +4,4 @@ apps/bare-expo/ios/BareExpo.xcodeproj/project.pbxproj merge=union -text diff lin
 packages/*/build/** -diff linguist-generated
 packages/*/plugin/build/** -diff linguist-generated
 packages/@*/*/build/** -diff linguist-generated
+*.webp filter=lfs diff=lfs merge=lfs -text
