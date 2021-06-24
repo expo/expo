@@ -74,18 +74,20 @@ const PlayerControls: React.FunctionComponent<{
         value={config.imperative}
       />
     </View>
-    <View style={{ paddingBottom: 10 }}>
-      <View>
-        <Text>Progress:</Text>
+    {!config.imperative && (
+      <View style={{ paddingBottom: 10 }}>
+        <View>
+          <Text>Progress:</Text>
+        </View>
+        <Slider
+          minimumValue={0}
+          maximumValue={1}
+          // @ts-ignore
+          value={progress.__getValue()}
+          onValueChange={onProgressChange}
+        />
       </View>
-      <Slider
-        minimumValue={0}
-        maximumValue={1}
-        // @ts-ignore
-        value={progress.__getValue()}
-        onValueChange={onProgressChange}
-      />
-    </View>
+    )}
     <View>
       <View>
         <Text>Duration: ({Math.round(config.duration)}ms)</Text>

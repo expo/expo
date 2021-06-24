@@ -303,10 +303,15 @@ public class ScreenContainer<T extends ScreenFragment> extends ViewGroup {
     // may choose not to remove the view despite the parent container being completely detached
     // from the view hierarchy until the transition is over. In such a case when the container gets
     // re-attached while tre transition is ongoing, the child view would still be there and we'd
-    // attept to re-attach it to with a misconfigured fragment. This would result in a crash. To
+    // attempt to re-attach it to with a misconfigured fragment. This would result in a crash. To
     // avoid it we clear all the children here as we attach all the child fragments when the container
-    // is reattached anyways.
-    removeAllViews();
+    // is reattached anyways. We don't use `removeAllViews` since it does not check if the children are
+    // not already detached, which may lead to calling `onDetachedFromWindow` on them twice. We also
+    // get the size earlier, because we will be removing child views in `for` loop.
+    int size = getChildCount();
+    for (int i = size - 1; i >= 0; i--) {
+      removeViewAt(i);
+    }
   }
 
   @Override

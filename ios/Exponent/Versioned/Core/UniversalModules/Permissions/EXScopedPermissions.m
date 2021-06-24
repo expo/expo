@@ -1,15 +1,16 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #if __has_include(<UMReactNativeAdapter/EXPermissionsService.h>)
+#import <ExpoModulesCore/EXUtilities.h>
+#import <ExpoModulesCore/EXDefines.h>
+
 #import "EXScopedPermissions.h"
-#import <UMCore/UMUtilities.h>
-#import <UMCore/UMDefines.h>
 
 @interface EXScopedPermissions ()
 
 @property (nonatomic, strong) NSString *experienceId;
 @property (nonatomic, weak) id<EXPermissionsScopedModuleDelegate> permissionsService;
-@property (nonatomic, weak) id<UMUtilitiesInterface> utils;
+@property (nonatomic, weak) id<EXUtilitiesInterface> utils;
 @property (nonatomic, weak) EXConstantsBinding *constantsBinding;
 
 @end
@@ -25,10 +26,10 @@
   return self;
 }
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   [super setModuleRegistry:moduleRegistry];
-  _utils = [moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
+  _utils = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
   _permissionsService = [moduleRegistry getSingletonModuleForName:@"Permissions"];
 }
 
@@ -59,17 +60,17 @@
 }
 
 - (void)askForPermissionUsingRequesterClass:(Class)requesterClass
-                                    resolve:(UMPromiseResolveBlock)resolve
-                                     reject:(UMPromiseRejectBlock)reject
+                                    resolve:(EXPromiseResolveBlock)resolve
+                                     reject:(EXPromiseRejectBlock)reject
 {
   NSDictionary *globalPermissions = [super getPermissionUsingRequesterClass:requesterClass];
   NSString *permissionType = [requesterClass permissionType];
-  UM_WEAKIFY(self)
+  EX_WEAKIFY(self)
   if (![globalPermissions[@"status"] isEqualToString:@"granted"]) {
     // first group
     // ask for permission. If granted then save it as scope permission
     void (^customOnResults)(NSDictionary *) = ^(NSDictionary *permission){
-      UM_ENSURE_STRONGIFY(self)
+      EX_ENSURE_STRONGIFY(self)
       // if permission should be scoped save it
       if ([self shouldVerifyScopedPermission:permissionType]) {
         [self.permissionsService savePermission:permission ofType:permissionType forExperience:self.experienceId];
@@ -83,7 +84,7 @@
     // second group
     // had to reinitilize UIAlertActions between alertShow invocations
     UIAlertAction *allowAction = [UIAlertAction actionWithTitle:@"Allow" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-      UM_ENSURE_STRONGIFY(self);
+      EX_ENSURE_STRONGIFY(self);
       NSMutableDictionary *permission = [globalPermissions mutableCopy];
       // try to save scoped permissions - if fails than permission is denied
       if (![self.permissionsService savePermission:permission ofType:permissionType forExperience:self.experienceId]) {
@@ -94,7 +95,7 @@
     }];
     
     UIAlertAction *denyAction = [UIAlertAction actionWithTitle:@"Deny" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-      UM_ENSURE_STRONGIFY(self);
+      EX_ENSURE_STRONGIFY(self);
       NSMutableDictionary *permission = [globalPermissions mutableCopy];
       permission[@"status"] = [[self class] permissionStringForStatus:EXPermissionStatusDenied];
       permission[@"granted"] = @(NO);
@@ -140,9 +141,9 @@
   [alert addAction:deny];
   [alert addAction:allow];
 
-  UM_WEAKIFY(self);
-  [UMUtilities performSynchronouslyOnMainThread:^{
-    UM_ENSURE_STRONGIFY(self);
+  EX_WEAKIFY(self);
+  [EXUtilities performSynchronouslyOnMainThread:^{
+    EX_ENSURE_STRONGIFY(self);
     // TODO: below line is sometimes failing with: "Presenting view controllers on detached view controllers is discourage"
     [self->_utils.currentViewController presentViewController:alert animated:YES completion:nil];
   }];

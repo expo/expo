@@ -85,7 +85,7 @@ public class UpdatesController {
     return sInstance;
   }
 
-  /* package */ static void initializeWithoutStarting(Context context) {
+  public static void initializeWithoutStarting(Context context) {
     if (sInstance == null) {
       UpdatesConfiguration updatesConfiguration = new UpdatesConfiguration().loadValuesFromMetadata(context);
       sInstance = new UpdatesController(context, updatesConfiguration);
@@ -211,11 +211,14 @@ public class UpdatesController {
     return mUpdatesDirectory;
   }
 
-  /* package */ Exception getUpdatesDirectoryException() {
+  public Exception getUpdatesDirectoryException() {
     return mUpdatesDirectoryException;
   }
 
   public UpdateEntity getLaunchedUpdate() {
+    if (mLauncher == null) {
+      return null;
+    }
     return mLauncher.getLaunchedUpdate();
   }
 
@@ -246,23 +249,23 @@ public class UpdatesController {
    * next reload).
    * @param selectionPolicy The SelectionPolicy to use next, until overridden by expo-updates
    */
-  /* package */ void setNextSelectionPolicy(SelectionPolicy selectionPolicy) {
+  public void setNextSelectionPolicy(SelectionPolicy selectionPolicy) {
     mSelectionPolicy = selectionPolicy;
   }
 
-  /* package */ void resetSelectionPolicyToDefault() {
+  public void resetSelectionPolicyToDefault() {
     mSelectionPolicy = null;
   }
 
-  /* package */ void setDefaultSelectionPolicy(SelectionPolicy selectionPolicy) {
+  public void setDefaultSelectionPolicy(SelectionPolicy selectionPolicy) {
     mDefaultSelectionPolicy = selectionPolicy;
   }
 
-  /* package */ void setLauncher(Launcher launcher) {
+  public void setLauncher(Launcher launcher) {
     mLauncher = launcher;
   }
 
-  /* package */ void setUpdatesConfiguration(UpdatesConfiguration updatesConfiguration) {
+  public void setUpdatesConfiguration(UpdatesConfiguration updatesConfiguration) {
     mUpdatesConfiguration = updatesConfiguration;
   }
 
@@ -334,7 +337,7 @@ public class UpdatesController {
     notify();
   }
 
-  /* package */ void runReaper() {
+  public void runReaper() {
     AsyncTask.execute(() -> {
       UpdatesDatabase database = getDatabase();
       Reaper.reapUnusedUpdates(mUpdatesConfiguration, database, mUpdatesDirectory, getLaunchedUpdate(), getSelectionPolicy());

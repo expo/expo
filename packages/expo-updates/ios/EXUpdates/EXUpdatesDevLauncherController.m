@@ -46,6 +46,13 @@ typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
   }
 }
 
+- (void)reset
+{
+  EXUpdatesAppController *controller = EXUpdatesAppController.sharedInstance;
+  [controller setLauncher:nil];
+  [controller setIsStarted:NO];
+}
+
 - (NSURL *)launchAssetURL
 {
   return EXUpdatesAppController.sharedInstance.launchAssetUrl;
@@ -75,7 +82,6 @@ typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
     return;
   }
 
-  [controller setIsStarted:YES];
   [self _setDevelopmentSelectionPolicy];
 
   EXUpdatesRemoteAppLoader *loader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:updatesConfiguration database:controller.database directory:controller.updatesDirectory completionQueue:controller.controllerQueue];
@@ -116,6 +122,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
       return;
     }
 
+    [controller setIsStarted:YES];
     [controller setConfigurationInternal:configuration];
     [controller setLauncher:launcher];
     successBlock(launcher.launchedUpdate.rawManifest.rawManifestJSON);

@@ -131,6 +131,25 @@ describe(validateActions, () => {
           },
         ]);
       }).not.toThrow();
+      expect(() => {
+        validateActions([
+          {
+            resize: {
+              width: 123,
+            },
+          },
+        ]);
+      }).not.toThrow();
+
+      expect(() => {
+        validateActions([
+          {
+            resize: {
+              height: 123,
+            },
+          },
+        ]);
+      }).not.toThrow();
     });
   });
 });

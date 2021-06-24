@@ -1,5 +1,5 @@
 ---
-title: Building With EAS
+title: Building with EAS
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
