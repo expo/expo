@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - Reset Updates module state on each dev client load. ([#13346](https://github.com/expo/expo/pull/13346) by [@esamelson](https://github.com/esamelson))
+- Ensure error handler is initialized. ([#13384](https://github.com/expo/expo/pull/13384) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🎉 New features
 
