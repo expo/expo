@@ -6,8 +6,8 @@
 
 + (void)askForPermissionWithPermissionsManager:(id<EXPermissionsInterface>)permissionsManager
                                  withRequester:(Class)requesterClass
-                                       resolve:(UMPromiseResolveBlock)resolve
-                                        reject:(UMPromiseRejectBlock)reject
+                                       resolve:(EXPromiseResolveBlock)resolve
+                                        reject:(EXPromiseRejectBlock)reject
 {
   if (!permissionsManager) {
     return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
@@ -19,8 +19,8 @@
 
 + (void)getPermissionWithPermissionsManager:(id<EXPermissionsInterface>)permissionsManager
                               withRequester:(Class)requesterClass
-                                    resolve:(UMPromiseResolveBlock)resolve
-                                     reject:(UMPromiseRejectBlock)reject
+                                    resolve:(EXPromiseResolveBlock)resolve
+                                     reject:(EXPromiseRejectBlock)reject
 {
   if (!permissionsManager) {
     return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);

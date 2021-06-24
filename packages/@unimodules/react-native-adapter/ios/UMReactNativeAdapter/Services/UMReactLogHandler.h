@@ -1,8 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <UMCore/UMSingletonModule.h>
-#import <UMCore/UMLogHandler.h>
+#import <ExpoModulesCore/EXReactLogHandler.h>
+#import <ExpoModulesCore/EXUnimodulesCompat.h>
 
-@interface UMReactLogHandler : UMSingletonModule <UMLogHandler>
-
-@end
+typedef UM_DEPRECATED(ReactLogHandler) EXReactLogHandler UMReactLogHandler;
