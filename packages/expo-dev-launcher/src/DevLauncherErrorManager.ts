@@ -1,7 +1,7 @@
 // Similar interface to the one used in expo modules.
 type CodedError = Error & { code?: string };
 
-let isErrorHandlingEnabled = false;
+let isErrorHandlingEnabled = true;
 
 const unavailableErrorPossibleSolutions = `Some possible solutions:
 - Make sure that the method is available on the current platform.
@@ -57,6 +57,6 @@ export function createErrorHandler(originalHandler) {
   };
 }
 
-export function enableErrorHandling() {
-  isErrorHandlingEnabled = true;
+export function disableErrorHandling() {
+  isErrorHandlingEnabled = false;
 }

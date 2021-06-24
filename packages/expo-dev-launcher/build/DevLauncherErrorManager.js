@@ -1,4 +1,4 @@
-let isErrorHandlingEnabled = false;
+let isErrorHandlingEnabled = true;
 const unavailableErrorPossibleSolutions = `Some possible solutions:
 - Make sure that the method is available on the current platform.
 - Make sure you're using the newest available version of this development client.
@@ -45,7 +45,7 @@ export function createErrorHandler(originalHandler) {
         originalHandler(error, isFatal);
     };
 }
-export function enableErrorHandling() {
-    isErrorHandlingEnabled = true;
+export function disableErrorHandling() {
+    isErrorHandlingEnabled = false;
 }
 //# sourceMappingURL=DevLauncherErrorManager.js.map

@@ -76,19 +76,10 @@ When you start your project on iOS, the metro bundler will be started automatica
 
 ### Add better error handlers
 
-Sometimes, for certain types of errors, we can provide more helpful error messages than the ones that ship by default with React Native. To turn this feature on, you need to
-
-- Create a file with `.fx.js` or `.fx.ts` extension (for example `DevLauncherSetUpErrorHandlers.fx.js`) which contains following lines:
+Sometimes, for certain types of errors, we can provide more helpful error messages than the ones that ship by default with React Native. To turn this feature on you need to import `expo-dev-client` in your `index` file. Make sure that the import statement is above of `import App from './App'`.
 
 ```js
-import { registerErrorHandlers } from 'expo-dev-client';
-registerErrorHandlers();
-```
-
-- Import the created file in your `index` file. Make sure that the import statement is above of `import App from './App'`.
-
-```js
-import './DevLauncherSetUpErrorHandlers.fx.js';
+import 'expo-dev-client';
 ...
 import App from "./App";
 ```
