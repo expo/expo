@@ -51,11 +51,12 @@ export function createTextComponent(Element: TextElements, textStyle?: CSSObject
   };
 }
 
-export const H1 = createTextComponent(TextElements.H1);
-export const H2 = createTextComponent(TextElements.H2);
-export const H3 = createTextComponent(TextElements.H3);
-export const H4 = createTextComponent(TextElements.H4);
-export const H5 = createTextComponent(TextElements.H5);
+// todo(cedric): check with Jon if this is right, we want to use the right semantic element
+export const H1 = createTextComponent(TextElements.H1, textStyles.h2);
+export const H2 = createTextComponent(TextElements.H2, textStyles.h3);
+export const H3 = createTextComponent(TextElements.H3, textStyles.h4);
+export const H4 = createTextComponent(TextElements.H4, textStyles.h5);
+export const H5 = createTextComponent(TextElements.H5, textStyles.h6);
 export const P = createTextComponent(TextElements.P);
 export const CODE = createTextComponent(TextElements.CODE);
 export const UL = createTextComponent(TextElements.UL);
