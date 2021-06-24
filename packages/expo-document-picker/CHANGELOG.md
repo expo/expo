@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Added `AndroidManifest.xml` queries for intent handling. ([#13388](https://github.com/expo/expo/pull/13388) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 💡 Others
+
+## 9.2.2 — 2021-06-24
+
+### 🐛 Bug fixes
+
+- Added `AndroidManifest.xml` queries for intent handling. ([#13388](https://github.com/expo/expo/pull/13388) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 9.2.1 — 2021-06-22
 
