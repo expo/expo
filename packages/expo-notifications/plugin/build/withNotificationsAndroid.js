@@ -1,12 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.withNotificationsAndroid = exports.setNotificationSounds = exports.setNotificationIconColorAsync = exports.setNotificationIconAsync = exports.getNotificationColor = exports.getNotificationIcon = exports.withNotificationSounds = exports.withNotificationManifest = exports.withNotificationIconColor = exports.withNotificationIcons = exports.NOTIFICATION_ICON_COLOR_RESOURCE = exports.NOTIFICATION_ICON_COLOR = exports.NOTIFICATION_ICON_RESOURCE = exports.NOTIFICATION_ICON = exports.META_DATA_NOTIFICATION_ICON_COLOR = exports.META_DATA_NOTIFICATION_ICON = exports.dpiValues = exports.ANDROID_RES_PATH = void 0;
+exports.withNotificationsAndroid = exports.setNotificationSounds = exports.setNotificationIconAsync = exports.setNotificationIconColor = exports.getNotificationColor = exports.getNotificationIcon = exports.withNotificationSounds = exports.withNotificationManifest = exports.withNotificationIconColor = exports.withNotificationIcons = exports.NOTIFICATION_ICON_COLOR_RESOURCE = exports.NOTIFICATION_ICON_COLOR = exports.NOTIFICATION_ICON_RESOURCE = exports.NOTIFICATION_ICON = exports.META_DATA_NOTIFICATION_ICON_COLOR = exports.META_DATA_NOTIFICATION_ICON = exports.dpiValues = exports.ANDROID_RES_PATH = void 0;
 const config_plugins_1 = require("@expo/config-plugins");
 const image_utils_1 = require("@expo/image-utils");
 const fs_1 = require("fs");
 const path_1 = require("path");
-const { buildResourceItem, readResourcesXMLAsync } = config_plugins_1.AndroidConfig.Resources;
-const { writeXMLAsync } = config_plugins_1.XML;
 const { Colors } = config_plugins_1.AndroidConfig;
 exports.ANDROID_RES_PATH = 'android/app/src/main/res/';
 exports.dpiValues = {
@@ -38,14 +36,11 @@ exports.withNotificationIcons = (config, { icon }) => {
 };
 exports.withNotificationIconColor = (config, { color }) => {
     // If no color provided in the config plugin props, fallback to value from app.json
-    color = color || getNotificationColor(config);
-    return config_plugins_1.withDangerousMod(config, [
-        'android',
-        async (config) => {
-            await setNotificationIconColorAsync(config.modRequest.projectRoot, color);
-            return config;
-        },
-    ]);
+    return config_plugins_1.withAndroidColors(config, config => {
+        color = color || getNotificationColor(config);
+        config.modResults = setNotificationIconColor(color, config.modResults);
+        return config;
+    });
 };
 exports.withNotificationManifest = (config, { icon, color }) => {
     // If no icon or color provided in the config plugin props, fallback to value from app.json
@@ -75,6 +70,13 @@ function getNotificationColor(config) {
     return ((_a = config.notification) === null || _a === void 0 ? void 0 : _a.color) || null;
 }
 exports.getNotificationColor = getNotificationColor;
+function setNotificationIconColor(color, colors) {
+    return Colors.assignColorValue(colors, {
+        name: exports.NOTIFICATION_ICON_COLOR,
+        value: color,
+    });
+}
+exports.setNotificationIconColor = setNotificationIconColor;
 /**
  * Applies notification icon configuration for expo-notifications
  */
@@ -103,19 +105,6 @@ function setNotificationConfig(props, manifest) {
     }
     return manifest;
 }
-async function setNotificationIconColorAsync(projectRoot, color) {
-    const colorsXmlPath = await Colors.getProjectColorsXMLPathAsync(projectRoot);
-    let colorsJson = await readResourcesXMLAsync({ path: colorsXmlPath });
-    if (color) {
-        const colorItemToAdd = buildResourceItem({ name: exports.NOTIFICATION_ICON_COLOR, value: color });
-        colorsJson = Colors.setColorItem(colorItemToAdd, colorsJson);
-    }
-    else {
-        colorsJson = Colors.removeColorItem(exports.NOTIFICATION_ICON_COLOR, colorsJson);
-    }
-    await writeXMLAsync({ path: colorsXmlPath, xml: colorsJson });
-}
-exports.setNotificationIconColorAsync = setNotificationIconColorAsync;
 async function writeNotificationIconImageFilesAsync(icon, projectRoot) {
     await Promise.all(Object.values(exports.dpiValues).map(async ({ folderName, scale }) => {
         const drawableFolderName = folderName.replace('mipmap', 'drawable');

@@ -3,7 +3,7 @@
 import Foundation
 
 @UIApplicationMain
-class AppDelegate: UMAppDelegateWrapper {
+class AppDelegate: AppDelegateWrapper {
   var rootViewController: EXRootViewController?
 
   override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {

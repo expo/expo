@@ -2,8 +2,8 @@ import {
   AndroidConfig,
   ConfigPlugin,
   withDangerousMod,
+  withAndroidColors,
   withAndroidManifest,
-  XML,
 } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 import { generateImageAsync } from '@expo/image-utils';
@@ -12,8 +12,6 @@ import { basename, resolve } from 'path';
 
 import { NotificationsPluginProps } from './withNotifications';
 
-const { buildResourceItem, readResourcesXMLAsync } = AndroidConfig.Resources;
-const { writeXMLAsync } = XML;
 const { Colors } = AndroidConfig;
 
 type DPIString = 'mdpi' | 'hdpi' | 'xhdpi' | 'xxhdpi' | 'xxxhdpi';
@@ -59,14 +57,11 @@ export const withNotificationIconColor: ConfigPlugin<{ color: string | null }> =
   { color }
 ) => {
   // If no color provided in the config plugin props, fallback to value from app.json
-  color = color || getNotificationColor(config);
-  return withDangerousMod(config, [
-    'android',
-    async config => {
-      await setNotificationIconColorAsync(config.modRequest.projectRoot, color);
-      return config;
-    },
-  ]);
+  return withAndroidColors(config, config => {
+    color = color || getNotificationColor(config);
+    config.modResults = setNotificationIconColor(color, config.modResults);
+    return config;
+  });
 };
 
 export const withNotificationManifest: ConfigPlugin<{
@@ -98,6 +93,16 @@ export function getNotificationIcon(config: ExpoConfig) {
 
 export function getNotificationColor(config: ExpoConfig) {
   return config.notification?.color || null;
+}
+
+export function setNotificationIconColor(
+  color: string | null,
+  colors: AndroidConfig.Resources.ResourceXML
+) {
+  return Colors.assignColorValue(colors, {
+    name: NOTIFICATION_ICON_COLOR,
+    value: color,
+  });
 }
 
 /**
@@ -137,18 +142,6 @@ function setNotificationConfig(
     removeMetaDataItemFromMainApplication(mainApplication, META_DATA_NOTIFICATION_ICON_COLOR);
   }
   return manifest;
-}
-
-export async function setNotificationIconColorAsync(projectRoot: string, color: string | null) {
-  const colorsXmlPath = await Colors.getProjectColorsXMLPathAsync(projectRoot);
-  let colorsJson = await readResourcesXMLAsync({ path: colorsXmlPath });
-  if (color) {
-    const colorItemToAdd = buildResourceItem({ name: NOTIFICATION_ICON_COLOR, value: color });
-    colorsJson = Colors.setColorItem(colorItemToAdd, colorsJson);
-  } else {
-    colorsJson = Colors.removeColorItem(NOTIFICATION_ICON_COLOR, colorsJson);
-  }
-  await writeXMLAsync({ path: colorsXmlPath, xml: colorsJson });
 }
 
 async function writeNotificationIconImageFilesAsync(icon: string, projectRoot: string) {

@@ -1,15 +1,6 @@
 // Copyright © 2015 650 Industries. All rights reserved.
 
-#import <Foundation/Foundation.h>
+#import <ExpoModulesCore/EXSingletonModule.h>
+#import <ExpoModulesCore/EXUnimodulesCompat.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
-@interface UMSingletonModule : NSObject
-
-+ (const NSString *)name;
-
-- (const NSInteger)priority;
-
-@end
-
-NS_ASSUME_NONNULL_END
+typedef UM_DEPRECATED(SingletonModule) EXSingletonModule UMSingletonModule;

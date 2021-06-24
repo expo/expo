@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- [plugin] Use Node module resolution to find package paths for Podfile ([#13382](https://github.com/expo/expo/pull/13382) by [@fson](https://github.com/fson))
 - Fix crash from inspector request failures. ([#13393](https://github.com/expo/expo/pull/13393) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others

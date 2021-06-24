@@ -10,7 +10,6 @@ const withDevMenuAppDelegate_1 = require("./withDevMenuAppDelegate");
 const pkg = require('expo-dev-menu/package.json');
 const DEV_MENU_ANDROID_IMPORT = 'expo.modules.devmenu.react.DevMenuAwareReactActivity';
 const DEV_MENU_ACTIVITY_CLASS = 'public class MainActivity extends DevMenuAwareReactActivity {';
-const DEV_MENU_POD_IMPORT = "pod 'expo-dev-menu', path: '../node_modules/expo-dev-menu', :configurations => :debug";
 async function readFileAsync(path) {
     return fs_1.default.promises.readFile(path, 'utf8');
 }
@@ -72,8 +71,12 @@ const withDevMenuPodfile = config => {
                 // Match both variations of Ruby config:
                 // unknown: pod 'expo-dev-menu', path: '../node_modules/expo-dev-menu', :configurations => :debug
                 // Rubocop: pod 'expo-dev-menu', path: '../node_modules/expo-dev-menu', configurations: :debug
-                if (!podfile.match(/pod ['"]expo-dev-menu['"],\s?path: ['"]\.\.\/node_modules\/expo-dev-menu['"],\s?:?configurations:?\s(?:=>\s)?:debug/)) {
-                    podfile = addLines(podfile, 'use_react_native', 0, [`  ${DEV_MENU_POD_IMPORT}`]);
+                if (!podfile.match(/pod ['"]expo-dev-menu['"],\s?path: ['"][^'"]*node_modules\/expo-dev-menu['"],\s?:?configurations:?\s(?:=>\s)?:debug/)) {
+                    const packagePath = path_1.default.dirname(require.resolve('expo-dev-menu/package.json'));
+                    const relativePath = path_1.default.relative(config.modRequest.platformProjectRoot, packagePath);
+                    podfile = addLines(podfile, 'use_react_native', 0, [
+                        `  pod 'expo-dev-menu', path: '${relativePath}', :configurations => :debug`,
+                    ]);
                 }
                 return podfile;
             });
