@@ -36,7 +36,7 @@ The Development Client uses deep links to open projects from the QR code. If you
 
 ### In the cloud
 
-However you choose to manage your native projects, we recommend using [EAS Build](eas-build.md) for the smoothest experience, especially if you do not have experience with Xcode and gradle builds.
+However you choose to manage your native projects, we recommend using [EAS Build](eas-build.md) for the smoothest experience, especially if you do not have experience with Xcode and Android Studio builds.
 
 After you configure your project as covered by [the Building with EAS guide](eas-build.md), you can build your custom client with one command:
 
@@ -60,9 +60,9 @@ and installing the resulting build on your device.
 
 ### Locally
 
-If you are comfortable setting up Xcode, Android Studio, and related dependencies, you can build and distribute your app the same as any other iOS or Android application (after running `expo prebuild` to generate the native projects if you are using config plugins).
+If you are comfortable setting up Xcode, Android Studio, and related dependencies, you can build and distribute your app the same as any other iOS or Android application.
 
-The `expo run` commands will run a new build, install it in your emulated device, and launch you into your application.
+The `expo run` commands will run a new build, install it on to your emulated device, and launch you into your application.
 
 <Tabs tabs={["For iOS Simulator (MacOS Only)", "For Android Emulator"]}>
 
@@ -85,15 +85,15 @@ The `expo run` commands will run a new build, install it in your emulated device
 
 As you can see, creating a new native build from scratch takes long enough that you'll be tempted to switch tasks and lose your focus.
 
-Now that you have a custom client for you project installed on your device, though, you won't have to wait for the native build process again until you change the native runtime!
+But now that you have a custom client for your project installed on your device, you won't have to wait for the native build process again until you change the underlying native code that powers your application!
 
-Instead, you can start developing in a fraction of the time by running:
+Instead, all you need to do to start developing is to run:
 
 <TerminalBlock packageName="expo-dev-client" cmd={["expo start --dev-client"]}  />
 
 and scanning the resulting QR code with your system camera or QR code reader (if you want to develop against a physical device)
 
-or pressing the A or I keys (to open the app in your Android or iPhone emulator respectively).
+or pressing the "a" or "i" keys (to open the app in your Android or iPhone emulator respectively).
 
 Now make some changes to your application code and see them reflected on your device!
 
@@ -103,7 +103,7 @@ If you launch your custom development client from your device's Home Screen, you
 
 <ImageSpotlight alt="The launcher screen of the Development Client" src="/static/images/dev-client-launcher.png" style={{ maxWidth: 225}} />
 
-If a bundler is detected on your local network, or you've signed in to an Expo account in `expo-cli` and your client, you can connect to it directly from this screen.
+If a bundler is detected on your local network, or if you've signed in to an Expo account in both `expo-cli` and your client, you can connect to it directly from this screen. Otherwise you can connect by scanning the QR code displayed by Expo CLI.
 
 ## Customizing your runtime
 
