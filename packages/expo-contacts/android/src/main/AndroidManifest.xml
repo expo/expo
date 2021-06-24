@@ -1,4 +1,4 @@
-<manifest package="expo.modules.contacts">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="expo.modules.contacts">
     <queries>
         <intent>
             <action android:name="android.intent.action.SEND" />
