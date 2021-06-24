@@ -137,7 +137,7 @@ Background fetches can be difficult to test because they can happen inconsistent
 
 For iOS, you can use the `Instruments` app on macOS to manually trigger background fetches:
 
-1. Open the Instruments app
+1. Open the Instruments app. The Instruments app can be searched through Spotlight (⌘ + Space) or opened from `/Applications/Xcode.app/Contents/Applications/Instruments.app`
 2. Select `Time Profiler`
 3. Select your device / simulator and pick the `Expo Go` app
 4. Press the `Record` button in the top left corner
