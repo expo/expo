@@ -8,13 +8,9 @@
 
 ### 🐛 Bug fixes
 
-### 💡 Others
-
-## 0.7.1 — 2021-06-24
-
-### 🐛 Bug fixes
-
 - [plugin] Use Node module resolution to find package paths for Podfile ([#13382](https://github.com/expo/expo/pull/13382) by [@fson](https://github.com/fson))
+
+### 💡 Others
 
 ## 0.7.0 — 2021-06-10
 
