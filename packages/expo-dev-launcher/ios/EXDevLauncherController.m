@@ -255,7 +255,10 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     @"EXUpdatesLaunchWaitMs": @(60000),
     @"EXUpdatesCheckOnLaunch": @"ALWAYS",
     @"EXUpdatesHasEmbeddedUpdate": @(NO),
-    @"EXUpdatesEnabled": @(YES)
+    @"EXUpdatesEnabled": @(YES),
+    @"EXUpdatesRequestHeaders": @{
+      @"Expo-Updates-Environment": @"DEVELOPMENT"
+    }
   };
 
   void (^launchReactNativeApp)(void) = ^{
