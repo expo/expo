@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- [plugin] Use Node module resolution to find package paths for Podfile
+- [plugin] Use Node module resolution to find package paths for Podfile ([#13382](https://github.com/expo/expo/pull/13382) by [@fson](https://github.com/fson))
 
 ### 💡 Others
 
