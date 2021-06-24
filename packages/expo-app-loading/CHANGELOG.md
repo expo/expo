@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Export `AppLoading` component props type as `AppLoadingProps`.
+
 ## 1.1.0 — 2021-06-16
 
 _This version does not introduce any user-facing changes._
