@@ -3,7 +3,7 @@ title: Getting Started
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
-import InstallSection from '~/components/plugins/InstallSection'
+import TerminalBlock from '~/components/plugins/TerminalBlock';
 import SnackInline from '~/components/plugins/SnackInline';
 import { Tab, Tabs } from '~/components/plugins/Tabs';
 
@@ -12,7 +12,7 @@ import { Tab, Tabs } from '~/components/plugins/Tabs';
 <Tabs tabs={["With config plugins", "If you are directly managing your native projects"]}>
 
 <Tab >
-<InstallSection packageName="expo-dev-client" cmd={["expo init # if you don't already have a Managed Workflow project", "yarn add expo-dev-client"]} hideBareInstructions />
+<TerminalBlock cmd={["expo init # if you don't already have a Managed Workflow project", "yarn add expo-dev-client"]}  />
 
 </Tab>
 
@@ -20,13 +20,13 @@ import { Tab, Tabs } from '~/components/plugins/Tabs';
 
 If you're just starting your project, you can create a new project from our template with:
 
-<InstallSection packageName="expo-dev-client" cmd={["npx crna -t with-dev-client"]} hideBareInstructions />
+<TerminalBlock cmd={["npx crna -t with-dev-client"]}  />
 
 If you have an existing project, you'll need to [install the package and make a few changes](installation.md) to your `AppDelegate.m`, `MainActivity.java` and `MainApplication.java`.
 
 The Development Client uses deep links to open projects from the QR code. If you had added a custom deep link schema to your project, the Development Client will use it. However, if this isn't the case, you need to configure the deep link support for your application. The `uri-scheme` package will do this for you once you have chosen a scheme.
 
-<InstallSection packageName="expo-dev-client" cmd={["npx uri-scheme add <your scheme>"]} hideBareInstructions />
+<TerminalBlock cmd={["npx uri-scheme add <your scheme>"]}  />
 
 </Tab>
 
@@ -44,13 +44,13 @@ After you configure your project as covered by [the Building with EAS guide](eas
 
 <Tab >
 
-<InstallSection packageName="expo-dev-client" cmd={["eas build --profile development --platform ios"]} hideBareInstructions />
+<TerminalBlock cmd={["eas build --profile development --platform ios"]}  />
 
 </Tab>
 
 <Tab >
 
-<InstallSection packageName="expo-dev-client" cmd={["eas build --profile development --platform android"]} hideBareInstructions />
+<TerminalBlock cmd={["eas build --profile development --platform android"]}  />
 
 </Tab>
 
@@ -68,13 +68,13 @@ The `expo run` commands will run a new build, install it in your emulated device
 
 <Tab >
 
-<InstallSection packageName="expo-dev-client" cmd={["expo run:ios"]} hideBareInstructions />
+<TerminalBlock cmd={["expo run:ios"]}  />
 
 </Tab>
 
 <Tab >
 
-<InstallSection packageName="expo-dev-client" cmd={["expo run:android"]} hideBareInstructions />
+<TerminalBlock cmd={["expo run:android"]}  />
 
 </Tab>
 
@@ -89,7 +89,7 @@ Now that you have a custom client for you project installed on your device, thou
 
 Instead, you can start developing in a fraction of the time by running:
 
-<InstallSection packageName="expo-dev-client" cmd={["expo start --dev-client"]} hideBareInstructions />
+<TerminalBlock packageName="expo-dev-client" cmd={["expo start --dev-client"]}  />
 
 and scanning the resulting QR code with your system camera or QR code reader (if you want to develop against a physical device)
 
@@ -111,7 +111,7 @@ In the Expo Go client, you can already convert text to audio with [expo-speech](
 
 First, install the library as you normally would:
 
-<InstallSection packageName="expo-dev-client" cmd={["yarn add @react-native-voice/voice"]} hideBareInstructions />
+<TerminalBlock cmd={["yarn add @react-native-voice/voice"]}  />
 
 then register the plugin in your app.json.  Using this module will require new permissions, and the plugin can optionally customize the message displayed to users in the permission prompt.
 <!-- prettier-ignore -->
