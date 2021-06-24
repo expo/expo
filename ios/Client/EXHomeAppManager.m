@@ -20,7 +20,7 @@
 #import <React/RCTUtils.h>
 #import <React/RCTBridge.h>
 
-#import <UMCore/UMModuleRegistryProvider.h>
+#import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
 NSString * const kEXHomeLaunchUrlDefaultsKey = @"EXKernelLaunchUrlDefaultsKey";
 NSString *kEXHomeBundleResourceName = @"kernel.ios";
@@ -46,7 +46,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
     @"isStandardDevMenuAllowed": @(YES), // kernel enables traditional RN dev menu
     @"manifest": self.appRecord.appLoader.manifest.rawManifestJSON,
     @"services": [EXKernel sharedInstance].serviceRegistry.allServices,
-    @"singletonModules": [UMModuleRegistryProvider singletonModules],
+    @"singletonModules": [EXModuleRegistryProvider singletonModules],
     @"fileSystemDirectories": @{
         @"documentDirectory": [self scopedDocumentDirectory],
         @"cachesDirectory": [self scopedCachesDirectory]

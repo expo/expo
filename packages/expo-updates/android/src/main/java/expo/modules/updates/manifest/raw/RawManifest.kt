@@ -172,6 +172,11 @@ abstract class RawManifest(protected val json: JSONObject) {
     return json.optJSONObject("androidNavigationBar")
   }
 
+  fun getAndroidJsEngine(): String? {
+    val android = json.optJSONObject("android") ?: return null
+    return android.optString("jsEngine") ?: return null
+  }
+
   fun getIconUrl(): String? {
     return json.optString("iconUrl")
   }

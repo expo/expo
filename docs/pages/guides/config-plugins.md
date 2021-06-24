@@ -466,7 +466,7 @@ Plugins will generally have `@expo/config-plugins` installed as a dependency, an
 
 ### Best practices for mods
 
-- Avoid regex: [static modification][#static-modification] is key. If you want to modify a value in an Android gradle file, consider using `gradle.properties`. If you want to modify some code in the Podfile, consider writing to JSON and having the Podfile read the static values.
+- Avoid regex: [static modification](#static-modification) is key. If you want to modify a value in an Android gradle file, consider using `gradle.properties`. If you want to modify some code in the Podfile, consider writing to JSON and having the Podfile read the static values.
 - Avoid performing long-running tasks like making network requests or installing Node modules in mods.
 - Do not add interactive terminal prompts in mods.
 - Generate, move, and delete new files in dangerous mods only. Failing to do so will break [introspection](#introspection).
@@ -597,7 +597,7 @@ By default, `expo prebuild` runs transformations on a [source template][source-t
 
 When Expo SDK upgrades to a new version of React Native for instance, the template may change significantly to account for changes in React Native or new releases of iOS or Android.
 
-If your plugin is mostly using [static modifications][#static-modifications] then it will work well across versions. If it's using a regular expression to transform application code, then you'll definitely want to document which Expo SDK version your plugin is intended for. Expo releases a new version quarterly (every 3 months), and there is a [beta period][expo-beta-docs] where you can test if your plugin works with the new version before it's released.
+If your plugin is mostly using [static modifications](#static-modification) then it will work well across versions. If it's using a regular expression to transform application code, then you'll definitely want to document which Expo SDK version your plugin is intended for. Expo releases a new version quarterly (every 3 months), and there is a [beta period][expo-beta-docs] where you can test if your plugin works with the new version before it's released.
 
 <!-- TODO: versioned plugin wrapper -->
 
@@ -634,7 +634,7 @@ Expo CLI commands can be profiled using `EXPO_PROFILE=1`.
 
 ## Introspection
 
-Introspection is an advanced technique used to read the evaluated results of modifiers without generating any code in the project. This can be used to quickly debug the results of [static modifications][#static-modifications] without needing to run prebuild.
+Introspection is an advanced technique used to read the evaluated results of modifiers without generating any code in the project. This can be used to quickly debug the results of [static modifications](#static-modification) without needing to run prebuild.
 
 You can try introspection by running `expo config --type introspect` in a project.
 

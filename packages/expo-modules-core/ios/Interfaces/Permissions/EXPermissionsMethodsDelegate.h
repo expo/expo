@@ -7,13 +7,13 @@
 
 + (void)getPermissionWithPermissionsManager:(id<EXPermissionsInterface>)permissionsManager
                               withRequester:(Class)requesterClass
-                                    resolve:(UMPromiseResolveBlock)resolve
-                                     reject:(UMPromiseRejectBlock)reject;
+                                    resolve:(EXPromiseResolveBlock)resolve
+                                     reject:(EXPromiseRejectBlock)reject;
 
 + (void)askForPermissionWithPermissionsManager:(id<EXPermissionsInterface>)permissionsManager
                                  withRequester:(Class)requesterClass
-                                       resolve:(UMPromiseResolveBlock)resolve
-                                        reject:(UMPromiseRejectBlock)reject;
+                                       resolve:(EXPromiseResolveBlock)resolve
+                                        reject:(EXPromiseRejectBlock)reject;
 
 + (void)registerRequesters:(NSArray<id<EXPermissionsRequester>> *)newRequesters
     withPermissionsManager:(id<EXPermissionsInterface>)permissionsManager;

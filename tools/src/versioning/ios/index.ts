@@ -15,6 +15,7 @@ import { kernelFilesTransforms } from './transforms/kernelFilesTransforms';
 import { podspecTransforms } from './transforms/podspecTransforms';
 import { postTransforms } from './transforms/postTransforms';
 
+import { removeVersionedVendoredModulesAsync } from './versionVendoredModules';
 export { versionVendoredModulesAsync } from './versionVendoredModules';
 
 const UNVERSIONED_PLACEHOLDER = '__UNVERSIONED__';
@@ -1148,6 +1149,9 @@ export async function removeVersionAsync(versionNumber: string) {
     `Removing versioned files under ${chalk.magenta(path.relative(EXPO_DIR, newVersionPath))}...`
   );
   await fs.remove(newVersionPath);
+
+  console.log('Removing vendored libraries...');
+  await removeVersionedVendoredModulesAsync(semver.major(versionNumber));
 
   // remove dep from main podfile
   console.log(`Removing ${chalk.green(versionedPodNames.React)} dependency from root Podfile...`);

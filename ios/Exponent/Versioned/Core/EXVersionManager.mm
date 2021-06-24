@@ -34,9 +34,9 @@
 
 #import <objc/message.h>
 
-#import <UMCore/UMDefines.h>
-#import <UMCore/UMModuleRegistry.h>
-#import <UMCore/UMModuleRegistryDelegate.h>
+#import <ExpoModulesCore/EXDefines.h>
+#import <ExpoModulesCore/EXModuleRegistry.h>
+#import <ExpoModulesCore/EXModuleRegistryDelegate.h>
 #import <UMReactNativeAdapter/UMNativeModulesProxy.h>
 #import <EXMediaLibrary/EXMediaLibraryImageLoader.h>
 #import <EXFileSystem/EXFileSystem.h>
@@ -352,18 +352,18 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
     [extraModules addObject:homeModule];
   }
 
-  UMModuleRegistryProvider *moduleRegistryProvider = [[UMModuleRegistryProvider alloc] initWithSingletonModules:params[@"singletonModules"]];
+  EXModuleRegistryProvider *moduleRegistryProvider = [[EXModuleRegistryProvider alloc] initWithSingletonModules:params[@"singletonModules"]];
 
   Class resolverClass = [EXScopedModuleRegistryDelegate class];
   if (params[@"moduleRegistryDelegateClass"] && params[@"moduleRegistryDelegateClass"] != [NSNull null]) {
     resolverClass = params[@"moduleRegistryDelegateClass"];
   }
 
-  id<UMModuleRegistryDelegate> moduleRegistryDelegate = [[resolverClass alloc] initWithParams:params];
+  id<EXModuleRegistryDelegate> moduleRegistryDelegate = [[resolverClass alloc] initWithParams:params];
   [moduleRegistryProvider setModuleRegistryDelegate:moduleRegistryDelegate];
 
   EXScopedModuleRegistryAdapter *moduleRegistryAdapter = [[EXScopedModuleRegistryAdapter alloc] initWithModuleRegistryProvider:moduleRegistryProvider];
-  UMModuleRegistry *moduleRegistry = [moduleRegistryAdapter moduleRegistryForParams:params forExperienceId:experienceId withKernelServices:services];
+  EXModuleRegistry *moduleRegistry = [moduleRegistryAdapter moduleRegistryForParams:params forExperienceId:experienceId withKernelServices:services];
   NSArray<id<RCTBridgeModule>> *expoModules = [moduleRegistryAdapter extraModulesForModuleRegistry:moduleRegistry];
   [extraModules addObjectsFromArray:expoModules];
   
@@ -516,12 +516,12 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   [bridge updateModuleWithInstance:eventDispatcher];
   _bridge_reanimated = bridge;
 
-  UM_WEAKIFY(self);
-  return new facebook::react::JSCExecutorFactory([UMWeak_self, bridge](facebook::jsi::Runtime &runtime) {
+  EX_WEAKIFY(self);
+  return new facebook::react::JSCExecutorFactory([EXWeak_self, bridge](facebook::jsi::Runtime &runtime) {
     if (!bridge) {
       return;
     }
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     self->_turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
                                                                      delegate:self
                                                                     jsInvoker:bridge.jsCallInvoker];
