@@ -2504,17 +2504,17 @@ PODS:
     - UMTaskManagerInterface
   - EXTrackingTransparency (1.1.2):
     - UMCore
-  - EXUpdates (0.7.3):
+  - EXUpdates (0.8.0):
     - EXStructuredHeaders
     - EXUpdatesInterface
     - React-Core
     - UMCore
-  - EXUpdates/Tests (0.7.3):
+  - EXUpdates/Tests (0.8.0):
     - EXStructuredHeaders
     - EXUpdatesInterface
     - React-Core
     - UMCore
-  - EXUpdatesInterface (0.1.0)
+  - EXUpdatesInterface (0.2.1)
   - EXVideoThumbnails (5.2.1):
     - ExpoModulesCore
     - UMCore
@@ -5036,8 +5036,8 @@ SPEC CHECKSUMS:
   EXStructuredHeaders: dc4b99d20ce14a5ec4d57a53743f0f95d7e82c65
   EXTaskManager: a56d88d245bdd4977b1a92943e8db5b8ed2a5c48
   EXTrackingTransparency: 3c4dd1ec833e827137480de3ee041c14c5c1f7b8
-  EXUpdates: 2199fd48144dd5c4aa2ac7bbbbac69e6908cab19
-  EXUpdatesInterface: 8e4f28434a2e6a75803c4ea0ab12cfb07ebb3438
+  EXUpdates: 19ae7ad2a46196b72ed46aef3f6d0a7101d44190
+  EXUpdatesInterface: 791eb16dd052395b82196cc676ef41d0ceec9a8f
   EXVideoThumbnails: 442c3abadb51a81551a3b53705b7560de390e6f7
   EXWebBrowser: 76783ba5dcb8699237746ecf41a9643d428a4cc5
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6
