@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix crash from inspector request failures. ([#13393](https://github.com/expo/expo/pull/13393) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.7.2 — 2021-06-24
