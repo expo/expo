@@ -21,6 +21,9 @@ import * as Constants from '~/constants/theme';
 import { VERSIONS } from '~/constants/versions';
 import { NavigationRoute, Url } from '~/types/common';
 import { PageHeader } from '~/ui/components/page-header';
+import { Navigation } from '~/ui/containers/navigation';
+import { Menu } from '~/ui/containers/menu';
+import { Toc } from '~/ui/containers/toc';
 
 const STYLES_DOCUMENT = css`
   background: ${theme.background.default};
@@ -229,6 +232,7 @@ export default class DocumentationPage extends React.Component<Props, State> {
 
     const isReferencePath = this.isReferencePath();
 
+    /*
     const headerElement = (
       <DocumentationHeader
         activeSection={this.getActiveTopLevelSection()}
@@ -241,7 +245,10 @@ export default class DocumentationPage extends React.Component<Props, State> {
         onToggleSearch={this.handleToggleSearch}
       />
     );
+    */
+    const headerElement = <Navigation />;
 
+    /*
     const sidebarElement = (
       <DocumentationSidebar
         url={this.props.url}
@@ -252,7 +259,10 @@ export default class DocumentationPage extends React.Component<Props, State> {
         isVersionSelectorHidden={!isReferencePath}
       />
     );
+    */
+    const sidebarElement = <Menu />;
 
+    /*
     const handleContentScroll = (contentScrollPosition: number) => {
       window.requestAnimationFrame(() => {
         if (this.sidebarRightRef && this.sidebarRightRef.current) {
@@ -262,6 +272,9 @@ export default class DocumentationPage extends React.Component<Props, State> {
     };
 
     const sidebarRight = <DocumentationSidebarRight ref={this.sidebarRightRef} />;
+    */
+
+    const sidebarRight = <Toc />;
 
     const algoliaTag = this.getAlgoliaTag();
 
@@ -274,7 +287,7 @@ export default class DocumentationPage extends React.Component<Props, State> {
         tocVisible={this.props.tocVisible}
         isMenuActive={this.state.isMenuActive}
         isMobileSearchActive={this.state.isMobileSearchActive}
-        onContentScroll={handleContentScroll}
+        // onContentScroll={handleContentScroll}
         sidebarScrollPosition={sidebarScrollPosition}>
         <Head title={`${this.props.title} - Expo Documentation`}>
           {algoliaTag !== null && <meta name="docsearch:version" content={algoliaTag} />}

@@ -38,6 +38,7 @@ const DIR_MAPPING = {
   archived: 'Archived',
   faq: 'FAQ',
   troubleshooting: 'Troubleshooting',
+  'test-design': 'Test Design',
 };
 
 const processUrl = path => {

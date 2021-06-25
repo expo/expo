@@ -1,7 +1,7 @@
 import { css, CSSObject } from '@emotion/react';
 import React, { HTMLAttributes } from 'react';
 
-import { Link, LinkProps } from '~/ui/components/link';
+import { Link, LinkProps } from '~/ui/components/Link';
 import { textStyles } from '~/ui/foundations/typography';
 
 export enum TextElements {

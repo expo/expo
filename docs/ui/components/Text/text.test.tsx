@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import React from 'react';
 
-import { createTextComponent, TextElements } from './text';
+import { createTextComponent, TextElements } from '.';
 
 describe(createTextComponent, () => {
   it('renders created text element components', () => {

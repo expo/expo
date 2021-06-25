@@ -5,7 +5,7 @@ const prevaledNavigationData = require('./navigation-data');
 // representation of them in the filesystem!
 // Groups -> Sections -> Pages
 const GROUPS = {
-  'The Basics': ['Conceptual Overview', 'Get Started', 'Tutorial', 'Next Steps'],
+  'The Basics': ['Conceptual Overview', 'Get Started', 'Tutorial', 'Next Steps', 'Test Design'],
   Fundamentals: ['Fundamentals'],
   'UI Programming': ['UI Programming'],
   'Assorted Guides': ['Assorted Guides'],

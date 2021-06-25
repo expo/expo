@@ -7,7 +7,7 @@ import { HeadingManager } from '~/common/headingManager';
 import DocumentationPage from '~/components/DocumentationPage';
 import { HeadingsContext } from '~/components/page-higher-order/withHeadingManager';
 import { PageMetadata } from '~/types/common';
-import { MarkdownComponents } from '~/ui/components/markdown';
+import { MarkdownComponents } from '~/ui/components/Markdown';
 
 const withDocumentationElements = (meta: PageMetadata) => {
   const DocumentationElementsHOC = withRouter(props => {

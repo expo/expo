@@ -237,13 +237,14 @@ export const textStyles: { [k: string]: CSSObject } = {
     fontFamily: fontStacks.mono,
     color: theme.text.default,
     display: 'inline-block',
-    fontSize: '13px',
+    fontSize: '14px', // was '13px'
     backgroundColor: theme.background.secondary,
     border: `1px solid ${theme.border.default}`,
     borderRadius: borderRadius.medium,
     padding: '2px 4px',
     lineHeight: '130%',
     fontWeight: 400,
+    whiteSpace: 'pre-line',
     [`@media (max-width: ${breakpoints.narrowMobile}px)`]: {
       fontSize: '12px',
     },

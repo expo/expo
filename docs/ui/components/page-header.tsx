@@ -2,7 +2,7 @@ import { css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
 import React, { ReactNode } from 'react';
 
-import { H1, P } from '~/ui/components/text';
+import { H1, P } from '~/ui/components/Text';
 
 type Props = {
   title: string;

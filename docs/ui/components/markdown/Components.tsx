@@ -1,9 +1,12 @@
 import { css, CSSObject } from '@emotion/react';
-import { colors, borderRadius } from '@expo/styleguide';
+import { colors } from '@expo/styleguide';
 import React from 'react';
 
-import { A, H1, H2, H3, H4, H5, CODE, P, BOLD, UL, LI } from '~/ui/components/text';
-import { textStyles, fontStacks } from '~/ui/foundations/typography';
+import { Blockquote } from './Blockquote';
+
+import { Code } from '~/ui/components/Snippet';
+import { A, H1, H2, H3, H4, H5, CODE, P, BOLD, UL, LI } from '~/ui/components/Text';
+import { textStyles } from '~/ui/foundations/typography';
 
 type MarkdownConfigType = {
   [i: string]: Config;
@@ -77,24 +80,16 @@ const markdownStyles: MarkdownConfigType = {
     style: { border: 'none', borderTop: `1px solid ${colors.gray[400]}`, margin: `2ch 0` },
   },
   blockquote: {
-    Component: 'div',
-    style: { borderLeft: `4px solid ${colors.gray[400]}`, paddingLeft: 16, margin: '2ch 0' },
+    Component: Blockquote,
+    style: { marginBottom: paragraphMarginBottom },
   },
   img: {
     Component: 'img',
     style: { width: '100%' },
   },
   code: {
-    Component: 'pre',
-    css: textStyles.psmall,
-    style: {
-      backgroundColor: colors.gray[100],
-      margin: '16px 0',
-      border: `1px solid ${colors.semantic.border}`,
-      borderRadius: borderRadius.small,
-      padding: 24,
-      fontFamily: fontStacks.mono,
-    },
+    Component: Code,
+    style: { marginBottom: paragraphMarginBottom },
   },
   inlineCode: {
     Component: CODE,

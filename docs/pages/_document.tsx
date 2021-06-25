@@ -30,7 +30,7 @@ export default class MyDocument extends Document<{ css?: string }> {
               globalReset,
               globalNProgress,
               globalTables,
-              globalPrism,
+              // globalPrism,
               globalTippy,
               globalExtras,
             ]}
