@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- Update `minimumInterval` value to accurately reflect Android default. ([#13387](https://github.com/expo/expo/pull/13387) by [@ajsmth](https://github.com/ajsmth))
+
 ### 💡 Others
 
 ## 9.2.0 — 2021-06-16
