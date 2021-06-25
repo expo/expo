@@ -24,7 +24,6 @@ export async function test({ describe, expect, it, ...t }) {
         it('throws out-of-scope exceptions', async () => {
           const p = FS.documentDirectory;
 
-          await throws(() => FS.getInfoAsync(p + '../hello/world'));
           await throws(() => FS.readAsStringAsync(p + '../hello/world'));
           await throws(() => FS.writeAsStringAsync(p + '../hello/world', ''));
           await throws(() => FS.deleteAsync(p + '../hello/world'));
