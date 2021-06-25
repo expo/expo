@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Force device ID to lowercase before sending to Expo's servers. (Only applicable if you're using `ExpoPushToken`s).
+
 ### 💡 Others
 
 ## 0.12.0 — 2021-06-16
