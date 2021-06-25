@@ -103,7 +103,7 @@ jobs:
         uses: dorny/paths-filter@v2
         with:
           # this action fails when base is not set on schedule event
-          base: ${{ github.event_name == 'schedule' && 'master' || null }}
+          base: ${{ github.ref }}
           filters: |
             versioned:
               - android/versioned-abis/**
