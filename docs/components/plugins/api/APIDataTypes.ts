@@ -122,6 +122,7 @@ export type PropData = {
   comment: CommentData;
   type: TypeDefinitionData;
   flags?: TypePropertyDataFlags;
+  defaultValue?: string;
 };
 
 export type DefaultPropsDefinitionData = {
@@ -141,18 +142,10 @@ export type TypeGeneralData = {
 
 export type TypeDeclarationContentData = {
   signatures: TypeSignaturesData[];
-  children?: TypePropertyData[];
+  children?: PropData[];
 };
 
 export type TypeSignaturesData = {
   parameters?: MethodParamData[];
   type: TypeDefinitionData;
-};
-
-export type TypePropertyData = {
-  name: string;
-  flags?: TypePropertyDataFlags;
-  comment: CommentData;
-  type: TypeDefinitionData;
-  defaultValue: string;
 };

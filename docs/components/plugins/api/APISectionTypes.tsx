@@ -6,10 +6,10 @@ import { UL, LI } from '~/components/base/list';
 import { B, P } from '~/components/base/paragraph';
 import { H2, H3Code, H4 } from '~/components/plugins/Headings';
 import {
+  PropData,
   TypeDeclarationContentData,
   TypeDefinitionData,
   TypeGeneralData,
-  TypePropertyData,
   TypeSignaturesData,
 } from '~/components/plugins/api/APIDataTypes';
 import {
@@ -57,7 +57,7 @@ const renderTypePropertyRow = ({
   type,
   comment,
   defaultValue,
-}: TypePropertyData): JSX.Element => {
+}: PropData): JSX.Element => {
   const initValue = defaultValue || comment?.tags?.filter(tag => tag.tag === 'default')[0]?.text;
   return (
     <tr key={name}>

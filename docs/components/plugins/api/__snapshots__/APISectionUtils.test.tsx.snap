@@ -121,12 +121,7 @@ exports[`APISectionUtils.resolveTypeName function with arguments 1`] = `
   <span>
     error
     : 
-    <a
-      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
-      href="/#error"
-    >
-      Error
-    </a>
+    Error
   </span>
   ) 
   =&gt;
@@ -143,6 +138,21 @@ exports[`APISectionUtils.resolveTypeName function with arguments 1`] = `
       SpeechEventCallback
     </a>
   </span>
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName function with non-linkable custom type 1`] = `
+<div>
+  (
+  <span>
+    error
+    : 
+    Error
+  </span>
+  ) 
+  =&gt;
+   
+  void
 </div>
 `;
 

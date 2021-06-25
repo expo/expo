@@ -1,2 +1,2 @@
-import AppLoading from './AppLoading';
-export default AppLoading;
+export { default as AppLoading } from './AppLoading';
+export { AppLoadingProps } from './AppLoading.types';

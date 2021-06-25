@@ -197,4 +197,28 @@ describe('APISectionUtils.resolveTypeName', () => {
     );
     expect(container).toMatchSnapshot();
   });
+
+  test('function with non-linkable custom type', () => {
+    const { container } = render(
+      <>
+        {resolveTypeName({
+          type: 'reflection',
+          declaration: {
+            signatures: [
+              {
+                parameters: [
+                  {
+                    name: 'error',
+                    type: { type: 'reference', name: 'Error' },
+                  },
+                ],
+                type: { type: 'intrinsic', name: 'void' },
+              },
+            ],
+          },
+        })}
+      </>
+    );
+    expect(container).toMatchSnapshot();
+  });
 });

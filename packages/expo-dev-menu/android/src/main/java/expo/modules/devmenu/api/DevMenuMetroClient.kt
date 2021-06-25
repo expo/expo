@@ -20,7 +20,11 @@ class DevMenuMetroClient {
       .get()
       .url(url.toString())
       .build()
-    return request.await(httpClient).isSuccessful
+    return try {
+      request.await(httpClient).isSuccessful
+    } catch (e: Exception) {
+      false
+    }
   }
 
   suspend fun openJSInspector(metroHost: String, applicationId: String) {

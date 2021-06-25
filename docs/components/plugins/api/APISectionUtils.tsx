@@ -50,7 +50,7 @@ export const mdInlineRenderers: MDRenderers = {
   paragraph: ({ children }) => (children ? <span>{children}</span> : null),
 };
 
-const nonLinkableTypes = ['Date', 'T', 'TaskOptions', 'Uint8Array'];
+const nonLinkableTypes = ['Date', 'Error', 'T', 'TaskOptions', 'Uint8Array'];
 
 export const resolveTypeName = ({
   elementType,
@@ -178,12 +178,14 @@ export type CommentTextBlockProps = {
   comment?: CommentData;
   renderers?: MDRenderers;
   withDash?: boolean;
+  beforeContent?: JSX.Element;
 };
 
 export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
   comment,
   renderers = mdRenderers,
   withDash,
+  beforeContent,
 }) => {
   const shortText = comment?.shortText?.trim().length ? (
     <ReactMarkdown renderers={renderers}>{comment.shortText}</ReactMarkdown>
@@ -197,8 +199,17 @@ export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
     <ReactMarkdown renderers={renderers}>{`__Example:__ ${example.text}`}</ReactMarkdown>
   ) : null;
 
+  const deprecation = comment?.tags?.filter(tag => tag.tag === 'deprecated')[0];
+  const deprecationNote = deprecation ? (
+    <Quote key="deprecation-note">
+      <B>{deprecation.text.trim().length ? deprecation.text : 'Deprecated'}</B>
+    </Quote>
+  ) : null;
+
   return (
     <>
+      {deprecationNote}
+      {beforeContent}
       {withDash && (shortText || text) ? ' - ' : null}
       {shortText}
       {text}

@@ -41,7 +41,7 @@
 /packages/expo-google-app-auth                  @EvanBacon
 /packages/expo-google-sign-in                   @EvanBacon
 /packages/expo-haptics                          @bbarthec
-/packages/expo-image                            @IjzerenHein
+/packages/expo-image                            @IjzerenHein @bbarthec
 /packages/expo-image-manipulator                @bbarthec
 /packages/expo-image-picker                     @bbarthec @lukmccall
 /packages/expo-in-app-purchases                 @ide
