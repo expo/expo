@@ -10,7 +10,7 @@ class DevMenuPackagerConnectionHandler {
   }
   
   func setup() {
-#if RCT_DEV
+#if DEBUG
     RCTPackagerConnection
       .shared()
       .addNotificationHandler(
