@@ -9,7 +9,7 @@ import {
   DefaultPropsDefinitionData,
   PropData,
   PropsDefinitionData,
-  TypeDeclarationData,
+  TypeDefinitionData,
 } from '~/components/plugins/api/APIDataTypes';
 import {
   CommentTextBlock,
@@ -37,17 +37,16 @@ const extractDefaultPropValue = (
   )[0]?.defaultValue;
 };
 
-const renderInheritedProp = (ip: TypeDeclarationData) => {
-  const component = ip?.typeArguments ? ip.typeArguments[0]?.queryType?.name : null;
-  return component ? (
-    <LI key={`inherited-prop-${component}`}>
-      <InlineCode>{component}</InlineCode>
+const renderInheritedProp = (ip: TypeDefinitionData) => {
+  return ip?.typeArguments ? (
+    <LI key={`inherited-prop-${ip.name}-${ip.type}`}>
+      <InlineCode>{resolveTypeName(ip)}</InlineCode>
     </LI>
   ) : null;
 };
 
-const renderInheritedProps = (data: TypeDeclarationData[]): JSX.Element | undefined => {
-  const inheritedProps = data?.filter((ip: TypeDeclarationData) => ip.type === 'reference') ?? [];
+const renderInheritedProps = (data: TypeDefinitionData[] | undefined): JSX.Element | undefined => {
+  const inheritedProps = data?.filter((ip: TypeDefinitionData) => ip.type === 'reference') ?? [];
   if (inheritedProps.length) {
     return (
       <div>
@@ -64,7 +63,7 @@ const renderProps = (
   defaultValues: DefaultPropsDefinitionData
 ): JSX.Element => {
   const propsDeclarations = type.types
-    ?.filter((t: TypeDeclarationData) => t.declaration)
+    ?.filter((t: TypeDefinitionData) => t.declaration)
     .map(def => def?.declaration?.children)
     .flat()
     .filter((dec, i, arr) => arr.findIndex(t => t?.name === dec?.name) === i);

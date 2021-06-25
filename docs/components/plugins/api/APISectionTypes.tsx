@@ -25,23 +25,17 @@ export type APISectionTypesProps = {
   data: TypeGeneralData[];
 };
 
-const defineLiteralType = (types: TypeDefinitionData[]): string => {
+const defineLiteralType = (types: TypeDefinitionData[]): JSX.Element | null => {
   const uniqueTypes = Array.from(new Set(types.map((t: TypeDefinitionData) => typeof t.value)));
   if (uniqueTypes.length === 1) {
-    return '`' + uniqueTypes[0] + '` - ';
+    return (
+      <>
+        <InlineCode>{uniqueTypes[0]}</InlineCode>
+        {' - '}
+      </>
+    );
   }
-  return '';
-};
-
-export const decorateValue = (type: TypeDefinitionData): string => {
-  if (type?.value === null) {
-    return '`null`';
-  } else if (type?.name === 'Record' && type?.typeArguments?.length) {
-    return '`Record<' + type.typeArguments[0]?.name + ',' + type.typeArguments[1]?.name + '>`';
-  } else if (typeof type?.value === 'string') {
-    return "`'" + type.value + "'`";
-  }
-  return '`' + (type.value || type.name) + '`';
+  return null;
 };
 
 const renderTypeDeclarationTable = ({ children }: TypeDeclarationContentData): JSX.Element => (
@@ -134,10 +128,16 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
           <H3Code>
             <InlineCode>{name}</InlineCode>
           </H3Code>
-          <ReactMarkdown renderers={mdRenderers}>
-            {defineLiteralType(literalTypes) +
-              `Acceptable values are: ${literalTypes.map(decorateValue).join(', ')}.`}
-          </ReactMarkdown>
+          <P>
+            {defineLiteralType(literalTypes)}
+            Acceptable values are:{' '}
+            {literalTypes.map((type, index) => (
+              <span key={`${name}-literal-type-${index}`}>
+                <InlineCode>{resolveTypeName(type)}</InlineCode>
+                {index !== literalTypes.length - 1 ? ', ' : '.'}
+              </span>
+            ))}
+          </P>
         </div>
       );
     } else if (propTypes.length) {
@@ -170,9 +170,7 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
         </H3Code>
         <UL>
           <LI>
-            <InlineCode>
-              Record&lt;{type.typeArguments[0].name}, {resolveTypeName(type.typeArguments[1])}&gt;
-            </InlineCode>
+            <InlineCode>{resolveTypeName(type)}</InlineCode>
           </LI>
         </UL>
         <CommentTextBlock comment={comment} />
