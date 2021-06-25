@@ -458,7 +458,10 @@ UM_REGISTER_MODULE();
 
 + (NSDictionary *)appConfig
 {
-  NSString *path = [[NSBundle mainBundle] pathForResource:@"app" ofType:@"config"];
+  NSBundle *frameworkBundle = [NSBundle bundleForClass:[EXConstantsService class]];
+  NSURL *bundleUrl = [frameworkBundle.resourceURL URLByAppendingPathComponent:@"EXConstants.bundle"];
+  NSBundle *bundle = [NSBundle bundleWithURL:bundleUrl];
+  NSString *path = [bundle pathForResource:@"app" ofType:@"config"];
   if (path) {
     NSData *configData = [NSData dataWithContentsOfFile:path];
     if (configData) {

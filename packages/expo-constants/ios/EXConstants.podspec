@@ -22,4 +22,17 @@ Pod::Spec.new do |s|
   else
     s.source_files = "#{s.name}/**/*.{h,m}"
   end
+
+  s.script_phase = {
+    :name => 'Generate app.config for prebuilt Constants.manifest',
+    :script => File.join(__dir__, '..', 'scripts', 'get-app-config-ios.sh'),
+    :execution_position => :before_compile
+  }
+
+  # Generate EXConstants.bundle without existing resources
+  # `get-app-config-ios.sh` will generate app.config in EXConstants.bundle
+  s.resource_bundles = {
+    'EXConstants' => []
+  }
+
 end
