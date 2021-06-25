@@ -3,7 +3,7 @@ id: animatedvaluexy
 title: Animated.ValueXY
 ---
 
-2D Value for driving 2D animations, such as pan gestures. Almost identical API to normal [`Animated.Value`](../animatedvalue/), but multiplexed. Contains two regular `Animated.Value`s under the hood.
+2D Value for driving 2D animations, such as pan gestures. Almost identical API to normal [`Animated.Value`](animatedvalue.md), but multiplexed. Contains two regular `Animated.Value`s under the hood.
 
 ## Example
 

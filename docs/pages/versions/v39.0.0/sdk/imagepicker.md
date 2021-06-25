@@ -20,17 +20,16 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Configuration
 
-In managed apps, the permissions to pick images, from camera ([`Permissions.CAMERA`](../permissions/#permissionscamera)) or camera roll ([`Permissions.CAMERA_ROLL`](../permissions/#permissionscamera_roll)), are added automatically.
+In managed apps, the permissions to pick images, from camera ([`Permissions.CAMERA`](permissions.md#permissionscamera)) or camera roll ([`Permissions.CAMERA_ROLL`](permissions.md#permissionscamera_roll)), are added automatically.
 
 ## Usage
 
-<SnackInline label='Image Picker' dependencies={['expo-constants', 'expo-permissions', 'expo-image-picker']}>
+<SnackInline label='Image Picker' dependencies={['expo-image-picker']}>
 
 ```js
 import React, { useState, useEffect } from 'react';
 import { Button, Image, View, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import Constants from 'expo-constants';
 
 export default function ImagePickerExample() {
   const [image, setImage] = useState(null);
@@ -243,7 +242,7 @@ Android system sometimes kills the `MainActivity` after the `ImagePicker` finish
 
 ### `ImagePicker.CameraRollPermissionResponse`
 
-`ImagePicker.CameraRollPermissionResponse` extends [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface` and contains additional iOS-specific field:
+`ImagePicker.CameraRollPermissionResponse` extends [PermissionResponse](permissions.md#permissionresponse) type exported by `unimodules-permission-interface` and contains additional iOS-specific field:
 
 - `accessPrivileges` **(string)** - Indicates if your app has access to the whole or only part of the photo library. Possible values are:
   - `all` if the user granted your app access to the whole photo library
@@ -252,7 +251,7 @@ Android system sometimes kills the `MainActivity` after the `ImagePicker` finish
 
 ### `ImagePicker.CameraPermissionResponse`
 
-`ImagePicker.CameraPermissionResponse` alias for [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface`.
+`ImagePicker.CameraPermissionResponse` alias for [PermissionResponse](permissions.md#permissionresponse) type exported by `unimodules-permission-interface`.
 
 ### `ImagePicker.ImagePickerErrorResult`
 

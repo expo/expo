@@ -20,13 +20,12 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Usage
 
-<SnackInline label='Image Picker' dependencies={['expo-constants', 'expo-permissions', 'expo-image-picker']}>
+<SnackInline label='Image Picker' dependencies={['expo-permissions', 'expo-image-picker']}>
 
 ```js
 import * as React from 'react';
 import { Button, Image, View, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
 
 export default class ImagePickerExample extends React.Component {
@@ -103,7 +102,7 @@ Asks the user to grant permissions for accessing camera. Alias for `Permissions.
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ### `ImagePicker.requestCameraRollPermissionsAsync()`
 
@@ -111,7 +110,7 @@ Asks the user to grant permissions for accessing user's photo. Alias for `Permis
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ### `ImagePicker.getCameraPermissionsAsync()`
 
@@ -119,7 +118,7 @@ Checks user's permissions for accessing camera. Alias for `Permissions.getAsync(
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ### `ImagePicker.getCameraRollPermissionsAsync()`
 
@@ -127,7 +126,7 @@ Checks user's permissions for accessing photos. Alias for `Permissions.getAsync(
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ### `ImagePicker.launchImageLibraryAsync(options)`
 

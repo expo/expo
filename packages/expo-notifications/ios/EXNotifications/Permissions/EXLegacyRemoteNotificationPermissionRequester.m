@@ -8,7 +8,7 @@
 @property (nonatomic, strong) UMPromiseResolveBlock resolve;
 @property (nonatomic, strong) UMPromiseRejectBlock reject;
 @property (nonatomic, assign) BOOL remoteNotificationsRegistrationIsPending;
-@property (nonatomic, weak) id<UMPermissionsRequester> userNotificationPermissionRequester;
+@property (nonatomic, weak) id<EXPermissionsRequester> userNotificationPermissionRequester;
 @property (nonatomic, weak) dispatch_queue_t methodQueue;
 @property (nonatomic, weak) id<EXRemoteNotificationPermissionProgressPublisher> permissionProgressPublisher;
 
@@ -21,7 +21,7 @@
   return @"notifications";
 }
 
-- (instancetype)initWithUserNotificationPermissionRequester:(id<UMPermissionsRequester>)userNotificationPermissionRequester
+- (instancetype)initWithUserNotificationPermissionRequester:(id<EXPermissionsRequester>)userNotificationPermissionRequester
                                         permissionPublisher:(id<EXRemoteNotificationPermissionProgressPublisher>)permissionProgressPublisher
                                             withMethodQueue:(dispatch_queue_t)methodQueue
 {
@@ -36,11 +36,11 @@
 
 - (NSDictionary *)getPermissions
 {
-  __block UMPermissionStatus status;
+  __block EXPermissionStatus status;
   [UMUtilities performSynchronouslyOnMainThread:^{
     status = (UMSharedApplication().isRegisteredForRemoteNotifications) ?
-    UMPermissionStatusGranted :
-    UMPermissionStatusUndetermined;
+    EXPermissionStatusGranted :
+    EXPermissionStatusUndetermined;
   }];
   NSMutableDictionary *permissions = [[_userNotificationPermissionRequester getPermissions] mutableCopy];
   
@@ -74,7 +74,7 @@
      UM_WEAKIFY(self)
     [_userNotificationPermissionRequester requestPermissionsWithResolver:^(NSDictionary *permission){
       UM_STRONGIFY(self)
-      UMPermissionStatus localNotificationsStatus = [[permission objectForKey:@"status"] intValue];
+      EXPermissionStatus localNotificationsStatus = [[permission objectForKey:@"status"] intValue];
       // We may assume that `EXLocalNotificationRequester`'s permission request will always finish
       // when the user responds to the dialog or has already responded in the past.
       // However, `UIApplication.registerForRemoteNotification` results in calling
@@ -82,7 +82,7 @@
       // `application:didFailToRegisterForRemoteNotificationsWithError:` on the application delegate
       // ONLY when the notifications are enabled in settings (by allowing sound, alerts or app badge).
       // So, when the local notifications are disabled, the application delegate's callbacks will not be called instantly.
-      if (localNotificationsStatus == UMPermissionStatusDenied) {
+      if (localNotificationsStatus == EXPermissionStatusDenied) {
         [self _clearObserver];
         [self _maybeConsumeResolverWithCurrentPermissions];
       } else {

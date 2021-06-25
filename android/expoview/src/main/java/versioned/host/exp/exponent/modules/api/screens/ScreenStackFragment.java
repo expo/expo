@@ -12,6 +12,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.widget.LinearLayout;
 
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.uimanager.PixelUtil;
 import com.google.android.material.appbar.AppBarLayout;
 
@@ -65,10 +66,15 @@ public class ScreenStackFragment extends ScreenFragment {
   private AppBarLayout mAppBarLayout;
   private Toolbar mToolbar;
   private boolean mShadowHidden;
+  private boolean mIsTranslucent;
 
   @SuppressLint("ValidFragment")
   public ScreenStackFragment(Screen screenView) {
     super(screenView);
+  }
+
+  public ScreenStackFragment() {
+    throw new IllegalStateException("ScreenStack fragments should never be restored. Follow instructions from https://github.com/software-mansion/react-native-screens/issues/17#issuecomment-424704067 to properly configure your main activity.");
   }
 
   public void removeToolbar() {
@@ -96,10 +102,19 @@ public class ScreenStackFragment extends ScreenFragment {
     }
   }
 
-  public void onStackUpdate() {
-    View child = mScreenView.getChildAt(0);
-    if (child instanceof ScreenStackHeaderConfig) {
-      ((ScreenStackHeaderConfig) child).onUpdate();
+  public void setToolbarTranslucent(boolean translucent) {
+    if (mIsTranslucent != translucent) {
+      ViewGroup.LayoutParams params = mScreenView.getLayoutParams();
+      ((CoordinatorLayout.LayoutParams) params).setBehavior(translucent ? null : new AppBarLayout.ScrollingViewBehavior());
+      mIsTranslucent = translucent;
+    }
+  }
+
+  @Override
+  public void onContainerUpdate() {
+    ScreenStackHeaderConfig headerConfig = getScreen().getHeaderConfig();
+    if (headerConfig != null) {
+      headerConfig.onUpdate();
     }
   }
 
@@ -117,15 +132,25 @@ public class ScreenStackFragment extends ScreenFragment {
     // stack directly from here.
     // When using the Toolbar back button this is called an extra time with transit = 0 but in
     // this case we don't want to notify. The way I found to detect is case is check isHidden.
-    if (transit == 0 && !isHidden()) {
+    if (transit == 0 && !isHidden() && getScreen().getStackAnimation() == Screen.StackAnimation.NONE) {
       // If the container is nested then appear events will be dispatched by their parent screen so
       // they must not be triggered here.
       ScreenContainer container = getScreen().getContainer();
       boolean isNested = container != null && container.isNested();
       if (enter) {
         if (!isNested) {
-          dispatchOnWillAppear();
-          dispatchOnAppear();
+          // Android dispatches the animation start event for the fragment that is being added first
+          // however we want the one being dismissed first to match iOS. It also makes more sense from
+          // a navigation point of view to have the disappear event first.
+          // Since there are no explicit relationships between the fragment being added / removed the
+          // practical way to fix this is delaying dispatching the appear events at the end of the frame.
+          UiThreadUtil.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              dispatchOnWillAppear();
+              dispatchOnAppear();
+            }
+          });
         }
       } else {
         if (!isNested) {
@@ -141,7 +166,7 @@ public class ScreenStackFragment extends ScreenFragment {
   }
 
   private void notifyViewAppearTransitionEnd() {
-    ViewParent screenStack = getView().getParent();
+    ViewParent screenStack = getView() != null ? getView().getParent() : null;
     if (screenStack instanceof ScreenStack) {
       ((ScreenStack) screenStack).onViewAppearTransitionEnd();
     }
@@ -154,7 +179,7 @@ public class ScreenStackFragment extends ScreenFragment {
     CoordinatorLayout view = new NotifyingCoordinatorLayout(getContext(), this);
     CoordinatorLayout.LayoutParams params = new CoordinatorLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-    params.setBehavior(new AppBarLayout.ScrollingViewBehavior());
+    params.setBehavior(mIsTranslucent ? null : new AppBarLayout.ScrollingViewBehavior());
     mScreenView.setLayoutParams(params);
     view.addView(recycleView(mScreenView));
 

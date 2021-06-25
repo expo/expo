@@ -29,6 +29,11 @@ RCT_ENUM_CONVERTER(UIDatePickerStyle, (@{
 #endif
 }), UIDatePickerStyleAutomatic, integerValue)
 
+RCT_ENUM_CONVERTER(UIUserInterfaceStyle, (@{
+    @"dark": @(UIUserInterfaceStyleDark),
+    @"light": @(UIUserInterfaceStyleLight),
+}), UIUserInterfaceStyleUnspecified, integerValue)
+
 @end
 
 @implementation RNDateTimePickerManager
@@ -84,8 +89,23 @@ RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 RCT_REMAP_VIEW_PROPERTY(mode, datePickerMode, UIDatePickerMode)
 RCT_REMAP_VIEW_PROPERTY(timeZoneOffsetInMinutes, timeZone, NSTimeZone)
 
+RCT_CUSTOM_VIEW_PROPERTY(themeVariant, UIUserInterfaceStyle, RNDateTimePicker) {
+    if (@available(iOS 13.0, *)) {
+        if (json) {
+            UIUserInterfaceStyle propValue = [RCTConvert UIUserInterfaceStyle:json];
+            view.overrideUserInterfaceStyle = propValue;
+        } else {
+            view.overrideUserInterfaceStyle = UIUserInterfaceStyleUnspecified;
+        }
+    }
+}
+
 RCT_CUSTOM_VIEW_PROPERTY(textColor, UIColor, RNDateTimePicker)
 {
+  if (@available(iOS 14.0, *) && view.datePickerStyle != UIDatePickerStyleWheels) {
+    // prevents #247
+    return;
+  }
   if (json) {
     [view setValue:[RCTConvert UIColor:json] forKey:@"textColor"];
     [view setValue:@(NO) forKey:@"highlightsToday"];
@@ -112,6 +132,15 @@ RCT_CUSTOM_VIEW_PROPERTY(displayIOS, UIDatePickerStyle, RNDateTimePicker)
             view.preferredDatePickerStyle = UIDatePickerStyleAutomatic;
         }
     }
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(disabled, BOOL, RNDateTimePicker)
+{
+  if (json) {
+    view.enabled = !([RCTConvert BOOL:json]);
+  } else {
+    view.enabled = defaultView.enabled;
+  }
 }
 
 @end

@@ -21,6 +21,15 @@ For bare React Native projects, you must ensure that you have [installed and con
 expo install expo-cellular
 ```
 
+### Configure for Android
+
+This package requires the `android.permission.READ_PHONE_STATE` be added to your `AndroidManifest.xml`, this is used for `TelephonyManager` on Android. We **do not** require the more risky `READ_PRIVILEGED_PHONE_STATE` permission.
+
+```xml
+<!-- Added permissions -->
+<uses-permission android:name="android.permission.READ_PHONE_STATE" />
+```
+
 # Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).

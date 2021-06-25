@@ -25,24 +25,26 @@ NSString * const EXPermissionsKey = @"ExpoPermissions";
 
 UM_REGISTER_SINGLETON_MODULE(Permissions)
 
-- (UMPermissionStatus)getPermission:(NSString *)permissionType forExperience:(NSString *)experienceId
+- (EXPermissionStatus)getPermission:(NSString *)permissionType forExperience:(NSString *)experienceId
 {
+  permissionType = [EXPermissionsManager mapPermissionType:permissionType];
+
   NSString *experienceIdKey = [EXPermissionsManager escapedResourceName:experienceId];
   NSDictionary *experiencePermissions = _permissionsCache[experienceIdKey];
   if (!experiencePermissions) {
-    return UMPermissionStatusUndetermined;
+    return EXPermissionStatusUndetermined;
   }
 
   NSDictionary *permissionData = experiencePermissions[permissionType];
   if (!permissionData) {
-    return UMPermissionStatusUndetermined;
+    return EXPermissionStatusUndetermined;
   }
 
-  if ([permissionData[@"status"] isEqualToString:[EXPermissions permissionStringForStatus:UMPermissionStatusGranted]]) {
-    return UMPermissionStatusGranted;
+  if ([permissionData[@"status"] isEqualToString:[EXPermissionsService permissionStringForStatus:EXPermissionStatusGranted]]) {
+    return EXPermissionStatusGranted;
   }
 
-  return UMPermissionStatusDenied;
+  return EXPermissionStatusDenied;
 }
 
 - (BOOL)hasGrantedPermission:(NSString *)permission forExperience:(NSString *)experienceId
@@ -50,12 +52,14 @@ UM_REGISTER_SINGLETON_MODULE(Permissions)
   if ([EXEnvironment sharedEnvironment].isDetached) {
     return YES;
   }
-
-  return [self getPermission:permission forExperience:experienceId] == UMPermissionStatusGranted;
+  
+  return [self getPermission:[EXPermissionsManager mapPermissionType:permission] forExperience:experienceId] == EXPermissionStatusGranted;
 }
 
 - (BOOL)savePermission:(NSDictionary *)permission ofType:(NSString *)type forExperience:(NSString *)experienceId
 {
+  type = [EXPermissionsManager mapPermissionType:type];
+  
   NSString *experienceIdKey = [EXPermissionsManager escapedResourceName:experienceId];
   NSMutableDictionary *experiencePermissions;
   if ([_permissionsCache objectForKey:experienceIdKey] == nil) {
@@ -82,6 +86,13 @@ UM_REGISTER_SINGLETON_MODULE(Permissions)
   return [name stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
 }
 
++ (NSString *)mapPermissionType:(NSString *)type
+{
+  if ([type isEqual:@"locationForeground"]) {
+    return @"location";
+  }
+  
+  return type;
+}
+
 @end
-
-

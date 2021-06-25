@@ -42,7 +42,7 @@ public class NotificationActionCenter {
   public synchronized static void setCategory(String categoryId, NotificationCompat.Builder builder, Context context, IntentProvider intentProvider) {
     throwExceptionIfOnMainThread();
 
-    // Expo Client has a permanent notification, so we have to set max priority in order to show up buttons
+    // Expo Go has a permanent notification, so we have to set max priority in order to show up buttons
     builder.setPriority(Notification.PRIORITY_MAX);
 
     List<ActionObject> actions = new Select().from(ActionObject.class)

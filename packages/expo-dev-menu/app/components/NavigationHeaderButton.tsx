@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Animated, View, Platform } from 'react-native';
+import { StyleSheet, Animated, View } from 'react-native';
+
 import { TouchableOpacity } from './Touchables';
 
 type Props = {
@@ -22,15 +23,16 @@ export default class NavigationHeaderButton extends React.PureComponent<Props, o
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     alignItems: 'center',
     flexDirection: 'row',
+    paddingHorizontal: 20,
   },
   disabled: {
     opacity: 0.5,
   },
   label: {
-    marginLeft: 12,
-    fontSize: 17,
+    fontSize: 16,
     // Title and back label are a bit different width due to title being bold
     // Adjusting the letterSpacing makes them coincide better
     letterSpacing: 0.35,

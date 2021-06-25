@@ -6,15 +6,15 @@ Your app will encounter circumstances where the internet connection is sub-par o
 
 ## Load JS updates in the background
 
-When you [publish](../../workflow/publishing/) an update to your app, your users will receive the new version of your JS over the air. The new version will download either next time the app starts, or next time you call [Updates.reload()](/versions/latest/sdk/updates/). This behavior also applies the very first time the user opens your app.
+When you [publish](../workflow/publishing.md) an update to your app, your users will receive the new version of your JS over the air. The new version will download either next time the app starts, or next time you call [Updates.reload()](../versions/latest/sdk/updates.md). This behavior also applies the very first time the user opens your app.
 
-Expo offers multiple behaviors for how it should download your JS. It can either block the UI with a [splash screen](../splash-screens/) or [AppLoading component](/versions/latest/sdk/app-loading/) until the new JS is downloaded, or it can immediately show an old version of your JS and download the update in the background. The former option is better if your users must have the latest version at all times; the latter option is better if you have a bad internet connection and need to show something right away.
+Expo offers multiple behaviors for how it should download your JS. It can either block the UI with a [splash screen](splash-screens.md) or [AppLoading component](../versions/latest/sdk/app-loading.md) until the new JS is downloaded, or it can immediately show an old version of your JS and download the update in the background. The former option is better if your users must have the latest version at all times; the latter option is better if you have a bad internet connection and need to show something right away.
 
-To force JS updates to run in the background (rather than synchronously checking and downloading on app start), set `updates.fallbackToCacheTimeout` to `0` in `app.json`. You can also listen to see when a new version has finished downloading. For more information, see [Configuring OTA Updates](../configuring-ota-updates/).
+To force JS updates to run in the background (rather than synchronously checking and downloading on app start), set `updates.fallbackToCacheTimeout` to `0` in `app.json`. You can also listen to see when a new version has finished downloading. For more information, see [Configuring OTA Updates](configuring-ota-updates.md).
 
 ## Cache your assets after downloading
 
-By default, all of your assets (images, fonts, etc.) are [uploaded to Expo's CDN](../assets/) when you publish updates to your app, which allows you to update them over the air. Once they're downloaded, you can [cache them](../preloading-and-caching-assets/) so you don't need to download them a second time. If you publish changes, the cache will be invalidated and the changed version will be downloaded.
+By default, all of your assets (images, fonts, etc.) are [uploaded to Expo's CDN](assets.md) when you publish updates to your app, which allows you to update them over the air. Once they're downloaded, you can [cache them](preloading-and-caching-assets.md) so you don't need to download them a second time. If you publish changes, the cache will be invalidated and the changed version will be downloaded.
 
 ## Bundle your assets inside your standalone binary
 
@@ -25,7 +25,7 @@ Expo can bundle assets into your standalone binary during the build process so t
 
 ### Managed workflow
 
-To bundle assets in your binary, use the [assetBundlePatterns](../../workflow/configuration/) key in `app.json` to provide a list of paths in your project directory:
+To bundle assets in your binary, use the [assetBundlePatterns](../workflow/configuration.md) key in `app.json` to provide a list of paths in your project directory:
 
 ```
 "assetBundlePatterns": [

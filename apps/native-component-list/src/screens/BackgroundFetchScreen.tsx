@@ -1,7 +1,13 @@
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import format from 'date-format';
-import * as BackgroundFetch from 'expo-background-fetch';
+import {
+  getStatusAsync,
+  registerTaskAsync,
+  unregisterTaskAsync,
+  BackgroundFetchResult,
+  BackgroundFetchStatus,
+} from 'expo-background-fetch';
 import * as TaskManager from 'expo-task-manager';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -15,7 +21,7 @@ const LAST_FETCH_DATE_KEY = 'background-fetch-date';
 export default function BackgroundFetchScreen() {
   const [isRegistered, setIsRegistered] = React.useState<boolean>(false);
   const [fetchDate, setFetchDate] = React.useState<Date | null>(null);
-  const [status, setStatus] = React.useState<BackgroundFetch.Status | null>(null);
+  const [status, setStatus] = React.useState<BackgroundFetchStatus | null>(null);
   const appState = useAppState(null);
 
   React.useEffect(() => {
@@ -39,7 +45,7 @@ export default function BackgroundFetchScreen() {
   };
 
   const checkStatusAsync = async () => {
-    const status = await BackgroundFetch.getStatusAsync();
+    const status = await getStatusAsync();
     const isRegistered = await TaskManager.isTaskRegisteredAsync(BACKGROUND_FETCH_TASK);
     setStatus(status);
     setIsRegistered(isRegistered);
@@ -47,9 +53,9 @@ export default function BackgroundFetchScreen() {
 
   const toggle = async () => {
     if (isRegistered) {
-      await BackgroundFetch.unregisterTaskAsync(BACKGROUND_FETCH_TASK);
+      await unregisterTaskAsync(BACKGROUND_FETCH_TASK);
     } else {
-      await BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
+      await registerTaskAsync(BACKGROUND_FETCH_TASK, {
         minimumInterval: 60, // 1 minute
         stopOnTerminate: false,
         startOnBoot: true,
@@ -75,7 +81,7 @@ export default function BackgroundFetchScreen() {
       <View style={styles.textContainer}>
         <Text>
           Background fetch status:{' '}
-          <Text style={styles.boldText}>{status ? BackgroundFetch.Status[status] : null}</Text>
+          <Text style={styles.boldText}>{status ? BackgroundFetchStatus[status] : null}</Text>
         </Text>
       </View>
       <View style={styles.textContainer}>{renderText()}</View>
@@ -98,7 +104,7 @@ TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
   console.log(`Got background fetch call at date: ${new Date(now).toISOString()}`);
   await AsyncStorage.setItem(LAST_FETCH_DATE_KEY, now.toString());
 
-  return BackgroundFetch.Result.NewData;
+  return BackgroundFetchResult.NewData;
 });
 
 const styles = StyleSheet.create({

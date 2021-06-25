@@ -1,4 +1,5 @@
 import { SyntheticPlatformEmitter } from '@unimodules/core';
+import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
 
 import { AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV';
 
@@ -170,4 +171,19 @@ export default {
   async pauseAudioRecording() {},
   async stopAudioRecording() {},
   async unloadAudioRecorder() {},
+
+  // Recording isn't available on the web
+  async getPermissionsAsync(): Promise<PermissionResponse> {
+    return {
+      status: PermissionStatus.DENIED,
+      expires: 'never',
+      canAskAgain: false,
+      granted: false,
+    };
+  },
+
+  // Recording isn't available on the web
+  async requestPermissionsAsync(): Promise<PermissionResponse> {
+    return this.getPermissionsAsync();
+  },
 };

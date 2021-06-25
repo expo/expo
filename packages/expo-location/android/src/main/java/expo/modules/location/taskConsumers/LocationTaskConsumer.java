@@ -159,6 +159,10 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
     return true;
   }
 
+  public static boolean shouldUseForegroundService(Map<String, Object> options) {
+    return options.containsKey(FOREGROUND_SERVICE_KEY);
+  }
+
   //region private
 
   private void startLocationUpdates() {
@@ -199,7 +203,7 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
 
     ReadableArguments options = new MapArguments(mTask.getOptions());
     final Context context = getContext();
-    boolean useForegroundService = options.containsKey(FOREGROUND_SERVICE_KEY);
+    boolean useForegroundService = shouldUseForegroundService(mTask.getOptions());
 
     if (context == null) {
       Log.w(TAG, "Context not found when trying to start foreground service.");
@@ -223,7 +227,8 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
       Bundle extras = new Bundle();
       final Bundle serviceOptions = options.getArguments(FOREGROUND_SERVICE_KEY).toBundle();
 
-      extras.putString("appId", mTask.getAppId());
+      // extras param name is appId for legacy reasons
+      extras.putString("appId", mTask.getAppScopeKey());
       extras.putString("taskName", mTask.getName());
       serviceIntent.putExtras(extras);
 

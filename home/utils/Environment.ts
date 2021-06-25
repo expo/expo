@@ -5,7 +5,9 @@ import semver from 'semver';
 import * as Kernel from '../kernel/Kernel';
 
 const isProduction = !!(
-  Constants.manifest.id === '@exponent/home' && Constants.manifest.publishedTime
+  (Constants.manifest?.originalFullName === '@exponent/home' ||
+    Constants.manifest?.id === '@exponent/home') &&
+  Constants.manifest?.publishedTime
 );
 
 const IOSClientReleaseType = Kernel.iosClientReleaseType;
@@ -16,17 +18,18 @@ const IsIOSRestrictedBuild =
 
 const SupportedExpoSdks = Constants.supportedExpoSdks || [];
 
+// Constants.supportedExpoSdks is not guaranteed to be sorted!
+const sortedSupportedExpoSdks = SupportedExpoSdks.sort();
+
 let lowestSupportedSdkVersion: number = -1;
 
 if (SupportedExpoSdks.length > 0) {
-  lowestSupportedSdkVersion = semver.major(SupportedExpoSdks[0]);
+  lowestSupportedSdkVersion = semver.major(sortedSupportedExpoSdks[0]);
 }
 
 const supportedSdksString = `SDK${
   SupportedExpoSdks.length === 1 ? ':' : 's:'
-} ${SupportedExpoSdks.map(semver.major)
-  .sort((a, b) => a - b)
-  .join(', ')}`;
+} ${sortedSupportedExpoSdks.map(semver.major).join(', ')}`;
 
 export default {
   isProduction,

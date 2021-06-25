@@ -17,7 +17,8 @@ import expo.modules.updates.db.DatabaseHolder;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.Launcher;
-import expo.modules.updates.launcher.SelectionPolicy;
+import expo.modules.updates.selectionpolicy.SelectionPolicy;
+import expo.modules.updates.loader.FileDownloader;
 
 public class UpdatesService implements InternalModule, UpdatesInterface {
 
@@ -51,6 +52,11 @@ public class UpdatesService implements InternalModule, UpdatesInterface {
   }
 
   @Override
+  public FileDownloader getFileDownloader() {
+    return UpdatesController.getInstance().getFileDownloader();
+  }
+
+  @Override
   public DatabaseHolder getDatabaseHolder() {
     return UpdatesController.getInstance().getDatabaseHolder();
   }
@@ -67,7 +73,7 @@ public class UpdatesService implements InternalModule, UpdatesInterface {
 
   @Override
   public boolean canRelaunch() {
-    return getConfiguration().isEnabled();
+    return getConfiguration().isEnabled() && getLaunchedUpdate() != null;
   }
 
   @Override
@@ -83,5 +89,10 @@ public class UpdatesService implements InternalModule, UpdatesInterface {
   @Override
   public void relaunchReactApplication(Launcher.LauncherCallback callback) {
     UpdatesController.getInstance().relaunchReactApplication(mContext, callback);
+  }
+
+  @Override
+  public void resetSelectionPolicy() {
+    UpdatesController.getInstance().resetSelectionPolicyToDefault();
   }
 }

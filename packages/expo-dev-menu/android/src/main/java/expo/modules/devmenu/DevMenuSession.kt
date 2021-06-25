@@ -14,10 +14,12 @@ import expo.interfaces.devmenu.DevMenuSessionInterface
  */
 class DevMenuSession(
   initReactInstanceManager: ReactInstanceManager,
-  initAppInfo: Bundle?
+  initAppInfo: Bundle?,
+  screen: String?
 ) : DevMenuSessionInterface {
   override val reactInstanceManager = initReactInstanceManager
   override val appInfo = initAppInfo ?: guessAppInfo()
+  override val openScreen = screen
 
   /**
    * Constructs app info `Bundle` based on the native app metadata such as `ApplicationContext`.
@@ -26,7 +28,7 @@ class DevMenuSession(
     val reactContext = reactInstanceManager.currentReactContext ?: return@apply
     val applicationContext = reactContext.applicationContext
     putCharSequence("appName", guessAppName(applicationContext))
-    putLong("appVersion", guessAppVersion(applicationContext))
+    putString("appVersion", guessAppVersion(applicationContext).toString())
     putString("appIcon", guessAppIcon(applicationContext))
     putString("hostUrl", reactContext.catalystInstance?.sourceURL)
   }

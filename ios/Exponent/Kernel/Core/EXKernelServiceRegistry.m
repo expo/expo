@@ -14,8 +14,9 @@
 #import "EXUpdatesManager.h"
 #import "EXUserNotificationManager.h"
 #import "EXUserNotificationCenter.h"
+#import "EXDeviceInstallationUUIDService.h"
 
-#import <UMCore/UMModuleRegistryProvider.h>
+#import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
 @interface EXKernelServiceRegistry ()
 
@@ -30,6 +31,7 @@
 @property (nonatomic, strong) EXUpdatesManager *updatesManager;
 @property (nonatomic, strong) EXUserNotificationManager *notificationsManager;
 @property (nonatomic, strong) EXUserNotificationCenter *notificationCenter;
+@property (nonatomic, strong) EXDeviceInstallationUUIDService *deviceInstallationUUIDService;
 @property (nonatomic, strong) NSDictionary<NSString *, id> *allServices;
 
 @end
@@ -51,8 +53,17 @@
     [self updatesManager];
     [self notificationsManager];
     [self notificationCenter];
+    [self deviceInstallationUUIDService];
   }
   return self;
+}
+
+- (EXDeviceInstallationUUIDService *)deviceInstallationUUIDService
+{
+  if (!_deviceInstallationUUIDService) {
+    _deviceInstallationUUIDService = [[EXDeviceInstallationUUIDService alloc] init];
+  }
+  return _deviceInstallationUUIDService;
 }
 
 - (EXCachedResourceManager *)cachedResourceManager
@@ -151,7 +162,7 @@
     // EXVersionManagers pass these modules to scoped modules as an initializer argument
     //
     // New modules should access singleton modules via the module registry.
-    // New singleton modules should register themselves in UMModuleRegistryProvider's set
+    // New singleton modules should register themselves in EXModuleRegistryProvider's set
     // using EX_REGISTER_SINGLETON_MODULE macro.
     NSArray *registryServices = @[
                                   self.cachedResourceManager,
@@ -164,9 +175,10 @@
                                   self.updatesDatabaseManager,
                                   self.updatesManager,
                                   self.notificationsManager,
-                                  self.notificationCenter
+                                  self.notificationCenter,
+                                  self.deviceInstallationUUIDService
                                   ];
-    NSArray *allServices = [registryServices arrayByAddingObjectsFromArray:[[UMModuleRegistryProvider singletonModules] allObjects]];
+    NSArray *allServices = [registryServices arrayByAddingObjectsFromArray:[[EXModuleRegistryProvider singletonModules] allObjects]];
     for (id service in allServices) {
       NSString *className = NSStringFromClass([service class]);
       result[className] = service;

@@ -1,1 +1,0 @@
-../../../../../../../node_modules/@react-native-community/slider/ios/RNCSliderManager.h

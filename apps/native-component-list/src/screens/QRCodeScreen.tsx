@@ -1,12 +1,10 @@
 import Ionicons from '@expo/vector-icons/build/Ionicons';
 import Slider from '@react-native-community/slider';
-import { usePermissions } from '@use-expo/permissions';
 import * as BarCodeScanner from 'expo-barcode-scanner';
 import { BlurView } from 'expo-blur';
 import { Camera } from 'expo-camera';
 import { CameraType } from 'expo-camera/build/Camera.types';
 import * as Haptics from 'expo-haptics';
-import * as Permissions from 'expo-permissions';
 import * as React from 'react';
 import {
   Animated,
@@ -23,6 +21,7 @@ import {
 import { Path, Svg, SvgProps } from 'react-native-svg';
 
 import Colors from '../constants/Colors';
+import usePermissions from '../utilities/usePermissions';
 
 function useCameraTypes(): CameraType[] | null {
   const [types, setTypes] = React.useState<CameraType[] | null>(null);
@@ -104,7 +103,7 @@ function useCameraAvailable(): boolean {
 }
 
 export default function QRCodeScreen() {
-  const [isPermissionsGranted] = usePermissions(Permissions.CAMERA, { ask: true });
+  const [isPermissionsGranted] = usePermissions(Camera.requestPermissionsAsync);
   const isAvailable = useCameraAvailable();
 
   if (!isPermissionsGranted || !isAvailable) {
@@ -196,7 +195,7 @@ function QRCodeView() {
 
       {showFooter && (
         <View pointerEvents="box-none" style={[styles.footer, { bottom: 30 }]}>
-          <QRFooterButton disabled={!toggle} onPress={toggle} iconName="ios-reverse-camera" />
+          <QRFooterButton disabled={!toggle} onPress={toggle} iconName="camera-reverse" />
           <QRFooterButton
             disabled={type !== CameraType.back}
             onPress={onFlashToggle}
@@ -342,7 +341,7 @@ function QRFooterButton({
   style?: StyleProp<ViewStyle>;
   onPress?: (() => void) | null;
   isActive?: boolean;
-  iconName: string;
+  iconName: React.ComponentProps<typeof Ionicons>['name'];
   iconSize?: number;
   disabled?: boolean;
 }) {
@@ -377,6 +376,7 @@ const styles = StyleSheet.create({
     width: size,
     height: size,
     borderRadius: size / 2,
+    overflow: 'hidden',
     justifyContent: 'center',
     alignItems: 'center',
   },

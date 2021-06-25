@@ -5,13 +5,12 @@ import android.content.Context;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import org.unimodules.interfaces.barcodescanner.BarCodeScanner;
-import org.unimodules.interfaces.barcodescanner.BarCodeScannerSettings;
+import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface;
+import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings;
 
-public abstract class ExpoBarCodeScanner implements BarCodeScanner {
+public abstract class ExpoBarCodeScanner implements BarCodeScannerInterface {
 
   protected Context mContext;
   protected List<Integer> mBarCodeTypes;

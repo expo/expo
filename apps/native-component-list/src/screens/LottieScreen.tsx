@@ -1,5 +1,5 @@
-import { Picker } from '@react-native-community/picker';
 import Slider from '@react-native-community/slider';
+import { Picker } from '@react-native-picker/picker';
 import Animation from 'lottie-react-native';
 import React from 'react';
 import {
@@ -15,6 +15,7 @@ import {
 
 const makeExample = (name: string, getJson: () => any) => ({ name, getJson });
 const EXAMPLES = [
+  makeExample('Science', () => require('../../assets/animations/Science.json')),
   makeExample('Hamburger Arrow', () => require('../../assets/animations/HamburgerArrow.json')),
   makeExample('Line Animation', () => require('../../assets/animations/LineAnimation.json')),
   makeExample('Lottie Logo 1', () => require('../../assets/animations/LottieLogo1.json')),
@@ -73,18 +74,20 @@ const PlayerControls: React.FunctionComponent<{
         value={config.imperative}
       />
     </View>
-    <View style={{ paddingBottom: 10 }}>
-      <View>
-        <Text>Progress:</Text>
+    {!config.imperative && (
+      <View style={{ paddingBottom: 10 }}>
+        <View>
+          <Text>Progress:</Text>
+        </View>
+        <Slider
+          minimumValue={0}
+          maximumValue={1}
+          // @ts-ignore
+          value={progress.__getValue()}
+          onValueChange={onProgressChange}
+        />
       </View>
-      <Slider
-        minimumValue={0}
-        maximumValue={1}
-        // @ts-ignore
-        value={progress.__getValue()}
-        onValueChange={onProgressChange}
-      />
-    </View>
+    )}
     <View>
       <View>
         <Text>Duration: ({Math.round(config.duration)}ms)</Text>

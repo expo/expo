@@ -40,7 +40,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import de.greenrobot.event.EventBus;
 import expo.modules.splashscreen.singletons.SplashScreen;
-import host.exp.exponent.ABIVersion;
+import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExpoUpdatesAppLoader;
@@ -56,7 +56,7 @@ import host.exp.exponent.experience.loading.LoadingProgressPopupController;
 import host.exp.exponent.experience.splashscreen.ManagedAppSplashScreenConfiguration;
 import host.exp.exponent.experience.splashscreen.ManagedAppSplashScreenViewProvider;
 import host.exp.exponent.kernel.DevMenuManager;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.kernel.ExponentError;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.kernel.Kernel;
@@ -110,9 +110,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   private boolean mIsShellApp;
   protected String mIntentUri;
   private boolean mIsReadyForBundle;
-
-  // TODO: Remove this flag and assume it is always false, once we drop support for SDK37
-  private boolean mWillBeReloaded = false;
 
   private RemoteViews mNotificationRemoteViews;
   private NotificationCompat.Builder mNotificationBuilder;
@@ -208,15 +205,15 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       boolean forceCache = getIntent().getBooleanExtra(KernelConstants.LOAD_FROM_CACHE_KEY, false);
       new ExpoUpdatesAppLoader(mManifestUrl, new ExpoUpdatesAppLoader.AppLoaderCallback() {
         @Override
-        public void onOptimisticManifest(final JSONObject optimisticManifest) {
+        public void onOptimisticManifest(final RawManifest optimisticManifest) {
           Exponent.getInstance().runOnUiThread(() -> setOptimisticManifest(optimisticManifest));
         }
 
         @Override
-        public void onManifestCompleted(final JSONObject manifest) {
+        public void onManifestCompleted(final RawManifest manifest) {
           Exponent.getInstance().runOnUiThread(() -> {
             try {
-              String bundleUrl = ExponentUrls.toHttp(manifest.getString("bundleUrl"));
+              String bundleUrl = ExponentUrls.toHttp(manifest.getBundleURL());
 
               setManifest(mManifestUrl, manifest, bundleUrl, null);
             } catch (JSONException e) {
@@ -321,6 +318,15 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     }
   }
 
+  public boolean toggleDevMenu() {
+    if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
+      mDevMenuManager.toggleInActivity(this);
+      return true;
+    }
+    return false;
+  }
+
+
   /**
    * Handles command line command `adb shell input keyevent 82` that toggles the dev menu on the current experience activity.
    */
@@ -395,7 +401,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
    * - first time for optimistic manifest
    * - seconds time for real manifest
    */
-  protected void showOrReconfigureManagedAppSplashScreen(final JSONObject manifest) {
+  protected void showOrReconfigureManagedAppSplashScreen(final RawManifest manifest) {
     if (!this.shouldCreateLoadingView()) {
       return;
     }
@@ -432,7 +438,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     }
   }
 
-  public void setOptimisticManifest(final JSONObject optimisticManifest) {
+  public void setOptimisticManifest(final RawManifest optimisticManifest) {
     runOnUiThread(() -> {
       if (!isInForeground()) {
         return;
@@ -450,7 +456,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     });
   }
 
-  public void setManifest(String manifestUrl, final JSONObject manifest, final String bundleUrl, final JSONObject kernelOptions) {
+  public void setManifest(String manifestUrl, final RawManifest manifest, final String bundleUrl, final JSONObject kernelOptions) {
     if (!isInForeground()) {
       return;
     }
@@ -482,7 +488,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     task.activityId = mActivityId;
     task.bundleUrl = bundleUrl;
 
-    mSDKVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
+    mSDKVersion = manifest.getSDKVersionNullable();
     mIsShellApp = manifestUrl.equals(Constants.INITIAL_URL);
 
     // Sometime we want to release a new version without adding a new .aar. Use TEMPORARY_ABI_VERSION
@@ -512,8 +518,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     soloaderInit();
 
     try {
-      mExperienceIdString = manifest.getString(ExponentManifest.MANIFEST_ID_KEY);
-      mExperienceId = ExperienceId.create(mExperienceIdString);
+      mExperienceKey = ExperienceKey.fromRawManifest(manifest);
       AsyncCondition.notify(KernelConstants.EXPERIENCE_ID_SET_FOR_ACTIVITY_KEY);
     } catch (JSONException e) {
       KernelProvider.getInstance().handleError("No ID found in manifest.");
@@ -525,18 +530,13 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
     ExperienceActivityUtils.updateOrientation(mManifest, this);
     ExperienceActivityUtils.updateSoftwareKeyboardLayoutMode(mManifest, this);
+    ExperienceActivityUtils.overrideUiMode(mManifest, this);
 
-    if (ABIVersion.toNumber(mSDKVersion) >= ABIVersion.toNumber("38.0.0")) {
-      ExperienceActivityUtils.overrideUiMode(mManifest, this);
-      mWillBeReloaded = false;
-    } else {
-      mWillBeReloaded = ExperienceActivityUtils.overrideUserInterfaceStyle(mManifest, this);
-    }
     addNotification(kernelOptions);
 
     ExponentNotification notificationObject = null;
     // Activity could be restarted due to Dark Mode change, only pop options if that will not happen
-    if (mKernel.hasOptionsForManifestUrl(manifestUrl) && !mWillBeReloaded) {
+    if (mKernel.hasOptionsForManifestUrl(manifestUrl)) {
       KernelConstants.ExperienceOptions options = mKernel.popOptionsForManifestUrl(manifestUrl);
 
       // if the kernel has an intent for our manifest url, that's the intent that triggered
@@ -546,18 +546,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       }
 
       notificationObject = options.notificationObject;
-    }
-
-    // if we have an embedded initial url, we never need any part of this in the initial url
-    // passed to the JS, so we check for that and filter it out here.
-    // this can happen in dev mode on a detached app, for example, because the intent will have
-    // a url like customscheme://localhost:19000 but we don't care about the localhost:19000 part.
-    if (mIntentUri == null || mIntentUri.equals(Constants.INITIAL_URL)) {
-      if (Constants.SHELL_APP_SCHEME != null) {
-        mIntentUri = Constants.SHELL_APP_SCHEME + "://";
-      } else {
-        mIntentUri = mManifestUrl;
-      }
     }
 
     final ExponentNotification finalNotificationObject = notificationObject;
@@ -577,14 +565,6 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       mReactRootView = new RNObject("host.exp.exponent.ReactUnthemedRootView");
       mReactRootView.loadVersion(mDetachSdkVersion).construct(ExperienceActivity.this);
       setReactRootView((View) mReactRootView.get());
-
-      String id;
-      try {
-        id = Exponent.getInstance().encodeExperienceId(mExperienceIdString);
-      } catch (UnsupportedEncodingException e) {
-        KernelProvider.getInstance().handleError("Can't URL encode manifest ID");
-        return;
-      }
 
       if (isDebugModeEnabled()) {
         mNotification = finalNotificationObject;
@@ -609,9 +589,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     // setOptimisticManifest from showing a rogue splash screen
     mShouldShowLoadingViewWithOptimisticManifest = false;
 
-    // To prevents starting application twice, we start react instance only if we know that the current activity won't be restarted.
-    // Restart of the activity could be triggered by dark mode change.
-    if (!isDebugModeEnabled() && !mWillBeReloaded) {
+    if (!isDebugModeEnabled()) {
       final boolean finalIsReadyForBundle = mIsReadyForBundle;
       AsyncCondition.wait(READY_FOR_BUNDLE, new AsyncCondition.AsyncConditionListener() {
         @Override
@@ -632,7 +610,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   }
 
   public void onEventMainThread(ReceivedNotificationEvent event) {
-    if (event.experienceId.equals(mExperienceIdString)) {
+    // TODO(wschurman): investigate removal, this probably is no longer used
+    if (event.experienceScopeKey.equals(mExperienceKey.getScopeKey())) {
       try {
         RNObject rctDeviceEventEmitter = new RNObject("com.facebook.react.modules.core.DeviceEventManagerModule$RCTDeviceEventEmitter");
         rctDeviceEventEmitter.loadVersion(mDetachSdkVersion);
@@ -684,24 +663,12 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
   }
 
   public void emitUpdatesEvent(JSONObject params) {
-    // event for SDK 39+
     KernelProvider.getInstance().addEventForExperience(mManifestUrl, new KernelConstants.ExperienceEvent(ExpoUpdatesAppLoader.UPDATES_EVENT_NAME, params.toString()));
-
-    // legacy event for SDK 38 and below
-    // TODO: remove once SDK 38 is phased out
-    try {
-      if (ExpoUpdatesAppLoader.UPDATE_AVAILABLE_EVENT.equals(params.getString("type"))) {
-        params.put("type", AppLoader.UPDATE_DOWNLOAD_FINISHED_EVENT);
-      }
-      KernelProvider.getInstance().addEventForExperience(mManifestUrl, new KernelConstants.ExperienceEvent(AppLoader.UPDATES_EVENT_NAME, params.toString()));
-    } catch (Exception e) {
-      EXL.e(TAG, e);
-    }
   }
 
   @Override
   public boolean isDebugModeEnabled() {
-    return ExponentManifest.isDebugModeEnabled(mManifest);
+    return mManifest.isDevelopmentMode();
   }
 
   @Override
@@ -738,7 +705,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       return;
     }
 
-    String name = mManifest.optString(ExponentManifest.MANIFEST_NAME_KEY, null);
+    String name = mManifest.getName();
     if (name == null) {
       return;
     }
@@ -840,44 +807,8 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     }
   }
 
-  @Override
-  protected void onError(final ExponentError error) {
-    if (mManifest == null) {
-      return;
-    }
-
-    JSONObject errorJson = error.toJSONObject();
-    if (errorJson == null) {
-      return;
-    }
-
-    String experienceId = mManifest.optString(ExponentManifest.MANIFEST_ID_KEY);
-    if (experienceId == null) {
-      return;
-    }
-
-    JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(experienceId);
-    if (metadata == null) {
-      metadata = new JSONObject();
-    }
-
-    JSONArray errors = metadata.optJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS);
-    if (errors == null) {
-      errors = new JSONArray();
-    }
-
-    errors.put(errorJson);
-
-    try {
-      metadata.put(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS, errors);
-      mExponentSharedPreferences.updateExperienceMetadata(experienceId, metadata);
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
-  }
-
-  public String getExperienceId() {
-    return mExperienceIdString;
+  public ExperienceKey getExperienceKey() {
+    return mExperienceKey;
   }
 
   /**

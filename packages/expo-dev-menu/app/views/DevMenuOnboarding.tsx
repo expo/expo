@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dimensions, Platform, StyleSheet, Text, View } from 'react-native';
-import { doesDeviceSupportKeyCommands } from '../DevMenuInternal';
 
+import { doesDeviceSupportKeyCommands } from '../DevMenuInternal';
 import * as DevMenuInternal from '../DevMenuInternal';
 import { StyledText } from '../components/Text';
 import { TouchableOpacity } from '../components/Touchables';
@@ -99,7 +99,6 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     left: 0,
-    opacity: 0.9,
   },
   onboardingContent: {
     marginTop: Dimensions.get('window').height * 0.12,

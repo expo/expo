@@ -7,7 +7,7 @@ title: useColorScheme
 import { useColorScheme } from 'react-native';
 ```
 
-The `useColorScheme` React hook provides and subscribes to color scheme updates from the [`Appearance`](../../sdk/appearance/) module. The return value indicates the current user preferred color scheme. The value may be updated later, either through direct user action (e.g. theme selection in device settings) or on a schedule (e.g. light and dark themes that follow the day/night cycle).
+The `useColorScheme` React hook provides and subscribes to color scheme updates from the [`Appearance`](../sdk/appearance.md) module. The return value indicates the current user preferred color scheme. The value may be updated later, either through direct user action (e.g. theme selection in device settings) or on a schedule (e.g. light and dark themes that follow the day/night cycle).
 
 Supported color schemes:
 

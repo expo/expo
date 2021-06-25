@@ -1,8 +1,10 @@
 import { Subscription } from '@unimodules/core';
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
 import { AVPlaybackStatus, AVPlaybackStatusToSet } from '../AV';
 import { Sound } from './Sound';
 export declare type RecordingOptions = {
+    isMeteringEnabled?: boolean;
+    keepAudioActiveHint?: boolean;
     android: {
         extension: string;
         outputFormat: number;
@@ -92,6 +94,7 @@ export declare type RecordingStatus = {
     isRecording: boolean;
     isDoneRecording: boolean;
     durationMillis: number;
+    metering?: number;
 };
 export { PermissionResponse, PermissionStatus };
 export declare function getPermissionsAsync(): Promise<PermissionResponse>;
@@ -112,6 +115,10 @@ export declare class Recording {
     _enablePollingIfNecessaryAndPossible(): void;
     _callOnRecordingStatusUpdateForNewStatus(status: RecordingStatus): void;
     _performOperationAndHandleStatusAsync(operation: () => Promise<RecordingStatus>): Promise<RecordingStatus>;
+    static createAsync: (options?: RecordingOptions, onRecordingStatusUpdate?: ((status: RecordingStatus) => void) | null, progressUpdateIntervalMillis?: number | null) => Promise<{
+        recording: Recording;
+        status: RecordingStatus;
+    }>;
     getStatusAsync: () => Promise<RecordingStatus>;
     setOnRecordingStatusUpdate(onRecordingStatusUpdate: ((status: RecordingStatus) => void) | null): void;
     setProgressUpdateInterval(progressUpdateIntervalMillis: number): void;

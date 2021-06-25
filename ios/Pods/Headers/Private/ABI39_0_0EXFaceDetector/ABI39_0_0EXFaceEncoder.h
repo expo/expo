@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI39_0_0/Expo/EXFaceDetector/ABI39_0_0EXFaceDetector/ABI39_0_0EXFaceEncoder.h

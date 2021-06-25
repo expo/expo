@@ -1,4 +1,5 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
+import { theme } from '@expo/styleguide';
 
 import * as Constants from '~/constants/theme';
 
@@ -7,7 +8,7 @@ export const globalTables = css`
     margin-bottom: 1rem;
     font-size: 0.8rem;
     border-collapse: collapse;
-    border: 1px solid ${Constants.expoColors.semantic.border};
+    border: 1px solid ${theme.border.default};
     border-radius: 4px;
     width: 100%;
   }
@@ -15,14 +16,15 @@ export const globalTables = css`
   thead {
     border-radius: 4px;
     text-align: left;
-    background: ${Constants.expoColors.gray[100]};
+    background: ${theme.background.tertiary};
   }
 
   td,
   th {
     padding: 16px;
-    border-bottom: 1px solid ${Constants.expoColors.semantic.border};
-    border-right: 1px solid ${Constants.expoColors.semantic.border};
+    border-bottom: 1px solid ${theme.border.default};
+    border-right: 1px solid ${theme.border.default};
+    color: ${theme.text.default};
 
     :last-child {
       border-right: 0px;
@@ -31,6 +33,11 @@ export const globalTables = css`
 
   td {
     text-align: left;
+
+    li,
+    blockquote {
+      font-size: 0.8rem !important;
+    }
   }
 
   th {

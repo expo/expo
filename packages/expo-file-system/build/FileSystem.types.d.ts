@@ -86,6 +86,12 @@ export declare type ProgressEvent = {
         totalBytesExpectedToWrite: number;
     };
 };
+export declare type FileSystemRequestDirectoryPermissionsResult = {
+    granted: true;
+    directoryUri: string;
+} | {
+    granted: false;
+};
 declare type PlatformMethod = (...args: any[]) => Promise<any>;
 export interface ExponentFileSystemModule {
     readonly name: 'ExponentFileSystem';
@@ -108,6 +114,10 @@ export interface ExponentFileSystemModule {
     readonly getContentUriAsync?: PlatformMethod;
     readonly getFreeDiskStorageAsync?: PlatformMethod;
     readonly getTotalDiskCapacityAsync?: PlatformMethod;
+    readonly requestDirectoryPermissionsAsync?: PlatformMethod;
+    readonly readSAFDirectoryAsync?: PlatformMethod;
+    readonly makeSAFDirectoryAsync?: PlatformMethod;
+    readonly createSAFFileAsync?: PlatformMethod;
     startObserving?: () => void;
     stopObserving?: () => void;
     addListener: (eventName: string) => void;

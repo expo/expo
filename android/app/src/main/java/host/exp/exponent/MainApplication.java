@@ -35,9 +35,4 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
   public List<Package> getExpoPackages() {
     return new BasePackageList().getPackageList();
   }
-
-  public static OkHttpClient.Builder okHttpClientBuilder(OkHttpClient.Builder builder) {
-    // Customize/override OkHttp client here
-    return builder;
-  }
 }

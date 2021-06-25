@@ -5,13 +5,13 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-39/packages/expo-branch'
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-**`expo-branch`** provides support for the [Branch](https://branch.io/) SDK, which is used for install referalls and attribution with deep links. **This module only works in standalone apps &mdash; you will need to [build a standalone app](/distribution/building-standalone-apps/) in order to test it, rather than using Expo client.**
+**`expo-branch`** provides support for the [Branch](https://branch.io/) SDK, which is used for install referalls and attribution with deep links. **This module only works in standalone apps &mdash; you will need to [build a standalone app](../../../distribution/building-standalone-apps.md) in order to test it, rather than using Expo client.**
 
 <PlatformsSection android emulator ios simulator />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-branch`. In a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, you should use [react-native-branch-deep-linking-attribution](https://github.com/BranchMetrics/react-native-branch-deep-linking-attribution) instead.
+For [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps, you'll need to run `expo install expo-branch`. In a [bare](../../../introduction/managed-vs-bare.md#bare-workflow) React Native app, you should use [react-native-branch-deep-linking-attribution](https://github.com/BranchMetrics/react-native-branch-deep-linking-attribution) instead.
 
 ## Configuration
 
@@ -21,7 +21,7 @@ For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll
 
 ### Enable Branch support for Universal Links (iOS only)
 
-Branch can track universal links from domains you associate with your app. **Note:** Universal Links handled by Branch won't be forwarded to the [Linking](../linking/) module.
+Branch can track universal links from domains you associate with your app. **Note:** Universal Links handled by Branch won't be forwarded to the [Linking](linking.md) module.
 
 - Enable associated domains on [Apple's Developer Portal](https://developer.apple.com/account/ios/identifier/bundle) for your app id. To do so go in the `App IDs` section and click on your app id. Select `Edit`, check the `Associated Domains` checkbox and click `Done`.
 

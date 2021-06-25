@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI36_0_0/Expo/UMImageLoaderInterface/ABI36_0_0UMImageLoaderInterface/ABI36_0_0UMImageLoaderInterface.h

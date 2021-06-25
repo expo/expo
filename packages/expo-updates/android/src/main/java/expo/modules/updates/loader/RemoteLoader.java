@@ -1,22 +1,24 @@
 package expo.modules.updates.loader;
 
 import android.content.Context;
-import android.net.Uri;
 import android.util.Log;
+
+import org.json.JSONObject;
 
 import androidx.annotation.Nullable;
 import expo.modules.updates.UpdatesConfiguration;
-import expo.modules.updates.UpdatesController;
 import expo.modules.updates.db.enums.UpdateStatus;
 import expo.modules.updates.UpdatesUtils;
 import expo.modules.updates.db.UpdatesDatabase;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.manifest.Manifest;
+import expo.modules.updates.manifest.ManifestMetadata;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class RemoteLoader {
 
@@ -25,8 +27,10 @@ public class RemoteLoader {
   private Context mContext;
   private UpdatesConfiguration mConfiguration;
   private UpdatesDatabase mDatabase;
+  private FileDownloader mFileDownloader;
   private File mUpdatesDirectory;
 
+  private Manifest mManifest;
   private UpdateEntity mUpdateEntity;
   private LoaderCallback mCallback;
   private int mAssetTotal = 0;
@@ -37,6 +41,17 @@ public class RemoteLoader {
   public interface LoaderCallback {
     void onFailure(Exception e);
     void onSuccess(@Nullable UpdateEntity update);
+
+    /**
+     * Called when an asset has either been successfully downloaded or failed to download.
+     *
+     * @param asset Entity representing the asset that was either just downloaded or failed
+     * @param successfulAssetCount The number of assets that have so far been loaded successfully
+     *                             (including any that were found to already exist on disk)
+     * @param failedAssetCount The number of assets that have so far failed to load
+     * @param totalAssetCount The total number of assets that comprise the update
+     */
+    void onAssetLoaded(AssetEntity asset, int successfulAssetCount, int failedAssetCount, int totalAssetCount);
 
     /**
      * Called when a manifest has been downloaded. The calling class should determine whether or not
@@ -50,24 +65,26 @@ public class RemoteLoader {
     boolean onManifestLoaded(Manifest manifest);
   }
 
-  public RemoteLoader(Context context, UpdatesConfiguration configuration, UpdatesDatabase database, File updatesDirectory) {
+  public RemoteLoader(Context context, UpdatesConfiguration configuration, UpdatesDatabase database, FileDownloader fileDownloader, File updatesDirectory) {
     mContext = context;
     mConfiguration = configuration;
     mDatabase = database;
+    mFileDownloader = fileDownloader;
     mUpdatesDirectory = updatesDirectory;
   }
 
   // lifecycle methods for class
 
-  public void start(Uri url, LoaderCallback callback) {
+  public void start(LoaderCallback callback) {
     if (mCallback != null) {
       callback.onFailure(new Exception("RemoteLoader has already started. Create a new instance in order to load multiple URLs in parallel."));
       return;
     }
 
     mCallback = callback;
+    JSONObject extraHeaders = ManifestMetadata.getServerDefinedHeaders(mDatabase, mConfiguration);
 
-    FileDownloader.downloadManifest(mConfiguration, mContext, new FileDownloader.ManifestDownloadCallback() {
+    mFileDownloader.downloadManifest(mConfiguration, extraHeaders, mContext, new FileDownloader.ManifestDownloadCallback() {
       @Override
       public void onFailure(String message, Exception e) {
         finishWithError(message, e);
@@ -75,10 +92,12 @@ public class RemoteLoader {
 
       @Override
       public void onSuccess(Manifest manifest) {
+        mManifest = manifest;
         if (mCallback.onManifestLoaded(manifest)) {
           processManifest(manifest);
         } else {
-          mCallback.onSuccess(null);
+          mUpdateEntity = null;
+          finishWithSuccess();
         }
       }
     });
@@ -98,6 +117,8 @@ public class RemoteLoader {
       Log.e(TAG, "RemoteLoader tried to finish but it already finished or was never initialized.");
       return;
     }
+
+    ManifestMetadata.saveMetadata(mManifest, mDatabase, mConfiguration);
 
     mCallback.onSuccess(mUpdateEntity);
     reset();
@@ -157,7 +178,7 @@ public class RemoteLoader {
     }
   }
 
-  private void downloadAllAssets(ArrayList<AssetEntity> assetList) {
+  private void downloadAllAssets(List<AssetEntity> assetList) {
     mAssetTotal = assetList.size();
     for (AssetEntity assetEntity : assetList) {
       AssetEntity matchingDbEntry = mDatabase.assetDao().loadAssetWithKey(assetEntity.key);
@@ -178,7 +199,7 @@ public class RemoteLoader {
         continue;
       }
 
-      FileDownloader.downloadAsset(assetEntity, mUpdatesDirectory, mConfiguration, new FileDownloader.AssetDownloadCallback() {
+      mFileDownloader.downloadAsset(assetEntity, mUpdatesDirectory, mConfiguration, new FileDownloader.AssetDownloadCallback() {
         @Override
         public void onFailure(Exception e, AssetEntity assetEntity) {
           Log.e(TAG, "Failed to download asset from " + assetEntity.url, e);
@@ -204,6 +225,8 @@ public class RemoteLoader {
       mErroredAssetList.add(assetEntity);
     }
 
+    mCallback.onAssetLoaded(assetEntity, mFinishedAssetList.size() + mExistingAssetList.size(), mErroredAssetList.size(), mAssetTotal);
+
     if (mFinishedAssetList.size() + mErroredAssetList.size() + mExistingAssetList.size() == mAssetTotal) {
       try {
         for (AssetEntity asset : mExistingAssetList) {
@@ -211,6 +234,7 @@ public class RemoteLoader {
           if (!existingAssetFound) {
             // the database and filesystem have gotten out of sync
             // do our best to create a new entry for this file even though it already existed on disk
+            // TODO: we should probably get rid of this assumption that if an asset exists on disk with the same filename, it's the same asset
             byte[] hash = null;
             try {
               hash = UpdatesUtils.sha256(new File(mUpdatesDirectory, asset.relativePath));

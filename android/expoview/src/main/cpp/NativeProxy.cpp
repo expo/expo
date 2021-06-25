@@ -3,14 +3,18 @@
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
-#include <jsi/JSCRuntime.h>
 #include <react/jni/ReadableNativeArray.h>
 #include <react/jni/ReadableNativeMap.h>
 #include <jsi/JSIDynamic.h>
 
+#if FOR_HERMES
+#import <hermes/hermes.h>
+#else
+#import <jsi/JSCRuntime.h>
+#endif
+
 #include "NativeProxy.h"
 #include "AndroidErrorHandler.h"
-#include "NativeReanimatedModule.h"
 #include "AndroidScheduler.h"
 #include <android/log.h>
 #include "PlatformDepMethodsHolder.h"
@@ -46,13 +50,30 @@ jni::local_ref<NativeProxy::jhybriddata> NativeProxy::initHybrid(
 
 void NativeProxy::installJSIBindings()
 {
-
-  auto propUpdater = [this](jsi::Runtime &rt, int viewTag, const jsi::Object &props) {
+  auto propUpdater = [this](jsi::Runtime &rt, int viewTag, const jsi::Value &viewName, const jsi::Object &props) {
+    // viewName is for iOS only, we skip it here
     this->updateProps(rt, viewTag, props);
   };
 
-  auto requestRender = [this](std::function<void(double)> onRender) {
-    this->requestRender(std::move(onRender));
+  auto getCurrentTime = [this]() {
+      auto method = javaPart_
+                        ->getClass()
+                        ->getMethod<local_ref<JString>()>("getUpTime");
+      local_ref<JString> output = method(javaPart_.get());
+      return (double)std::strtoll(output->toStdString().c_str(), NULL, 10);
+  };
+
+  auto requestRender = [this, getCurrentTime](std::function<void(double)> onRender, jsi::Runtime &rt) {
+    //doNoUse -> NodesManager passes here a timestamp from choreographer which is useless for us
+    //as we use diffrent timer to better handle events. The lambda is translated to NodeManager.OnAnimationFrame
+    //and treated just like reanimated 1 frame callbacks which make use of the timestamp.
+    auto wrappedOnRender = [getCurrentTime, &rt, onRender](double doNotUse) {
+       double frameTimestamp = getCurrentTime();
+       rt.global().setProperty(rt, "_frameTimestamp", frameTimestamp);
+       onRender(frameTimestamp);
+       rt.global().setProperty(rt, "_frameTimestamp", jsi::Value::undefined());
+    };
+    this->requestRender(std::move(wrappedOnRender));
   };
 
   auto propObtainer = [this](jsi::Runtime &rt, const int viewTag, const jsi::String &propName) -> jsi::Value {
@@ -73,15 +94,20 @@ void NativeProxy::installJSIBindings()
     scrollTo(viewTag, x, y, animated);
   };
 
-  std::unique_ptr<jsi::Runtime> animatedRuntime = jsc::makeJSCRuntime();
+#if FOR_HERMES
+  auto animatedRuntime = jsc::makeJSCRuntime();
+#else
+  auto animatedRuntime = facebook::jsc::makeJSCRuntime();
+#endif
 
-  std::shared_ptr<ErrorHandler> errorHandler = std::shared_ptr<AndroidErrorHandler>(new AndroidErrorHandler(scheduler_));
+  std::shared_ptr<ErrorHandler> errorHandler = std::make_shared<AndroidErrorHandler>(scheduler_);
 
   PlatformDepMethodsHolder platformDepMethodsHolder = {
     requestRender,
     propUpdater,
     scrollToFunction,
-    measuringFunction
+    measuringFunction,
+    getCurrentTime,
   };
 
   auto module = std::make_shared<NativeReanimatedModule>(jsCallInvoker_,
@@ -91,14 +117,22 @@ void NativeProxy::installJSIBindings()
                                                          propObtainer,
                                                          platformDepMethodsHolder);
 
-  this->registerEventHandler([module](std::string eventName, std::string eventAsString) {
+  _nativeReanimatedModule = module;
+
+  this->registerEventHandler([module, getCurrentTime](std::string eventName, std::string eventAsString) {
+    module->runtime->global().setProperty(*module->runtime, "_eventTimestamp", getCurrentTime());
     module->onEvent(eventName, eventAsString);
+    module->runtime->global().setProperty(*module->runtime, "_eventTimestamp", jsi::Value::undefined());
   });
 
   runtime_->global().setProperty(
-      *runtime_,
-      jsi::PropNameID::forAscii(*runtime_, "__reanimatedModuleProxy"),
-      jsi::Object::createFromHostObject(*runtime_, module));
+        *runtime_,
+        jsi::PropNameID::forAscii(*runtime_, "__reanimatedModuleProxy"),
+        jsi::Object::createFromHostObject(*runtime_, module));
+}
+
+bool NativeProxy::isAnyHandlerWaitingForEvent(std::string s) {
+  return _nativeReanimatedModule->isAnyHandlerWaitingForEvent(s);
 }
 
 void NativeProxy::registerNatives()
@@ -106,6 +140,7 @@ void NativeProxy::registerNatives()
   registerHybrid({
       makeNativeMethod("initHybrid", NativeProxy::initHybrid),
       makeNativeMethod("installJSIBindings", NativeProxy::installJSIBindings),
+      makeNativeMethod("isAnyHandlerWaitingForEvent", NativeProxy::isAnyHandlerWaitingForEvent)
   });
 }
 
@@ -159,7 +194,7 @@ static jni::local_ref<PropsMap> ConvertToPropsMap(jsi::Runtime &rt, const jsi::O
     }
     else if (value.isBool())
     {
-      map->put(key, jni::autobox(value.getBool()));
+      map->put(key, JBoolean::valueOf(value.getBool()));
     }
     else if (value.isNumber())
     {

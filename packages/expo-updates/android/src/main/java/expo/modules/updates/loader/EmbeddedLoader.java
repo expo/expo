@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class EmbeddedLoader {
 
@@ -83,7 +84,7 @@ public class EmbeddedLoader {
         JSONObject manifestJson = new JSONObject(manifestString);
         // automatically verify embedded manifest since it was already codesigned
         manifestJson.put("isVerified", true);
-        sEmbeddedManifest = ManifestFactory.getEmbeddedManifest(manifestJson, configuration, context);
+        sEmbeddedManifest = ManifestFactory.INSTANCE.getEmbeddedManifest(manifestJson, configuration);
       } catch (Exception e) {
         Log.e(TAG, "Could not read embedded manifest", e);
         throw new AssertionError("The embedded manifest is invalid or could not be read. Make sure you have configured expo-updates correctly in android/app/build.gradle. " + e.getMessage());
@@ -99,7 +100,7 @@ public class EmbeddedLoader {
     } else if (asset.resourcesFilename != null && asset.resourcesFolder != null) {
       return copyResourceAndGetHash(asset, destination, context);
     } else {
-      throw new AssertionError("Failed to copy asset " + asset.key + " from APK assets or resources because not enough information was provided.");
+      throw new AssertionError("Failed to copy embedded asset " + asset.key + " from APK assets or resources because not enough information was provided.");
     }
   }
 
@@ -150,7 +151,7 @@ public class EmbeddedLoader {
     }
   }
 
-  private void copyAllAssets(ArrayList<AssetEntity> assetList) {
+  private void copyAllAssets(List<AssetEntity> assetList) {
     for (AssetEntity asset : assetList) {
       if (shouldSkipAsset(asset)) {
         mSkippedAssetList.add(asset);
@@ -195,6 +196,7 @@ public class EmbeddedLoader {
       if (!existingAssetFound) {
         // the database and filesystem have gotten out of sync
         // do our best to create a new entry for this file even though it already existed on disk
+        // TODO: we should probably get rid of this assumption that if an asset exists on disk with the same filename, it's the same asset
         byte[] hash = null;
         try {
           hash = UpdatesUtils.sha256(new File(mUpdatesDirectory, asset.relativePath));

@@ -1,6 +1,12 @@
 import mux from '@expo/mux';
+import Constants from 'expo-constants';
+import getInstallationIdAsync from 'expo/build/environment/getInstallationIdAsync';
 import React from 'react';
 import { NativeModules, StyleSheet, Text, View } from 'react-native';
+import { v4 as uuidV4 } from 'uuid';
+
+const logUrl = Constants.manifest.logUrl;
+const sessionId = uuidV4();
 
 const { ExpoNativeModuleIntrospection } = NativeModules;
 
@@ -14,13 +20,17 @@ export default class App extends React.Component {
   async componentDidMount() {
     const moduleSpecs = await _getExpoModuleSpecsAsync();
     const code = `module.exports = ${JSON.stringify(moduleSpecs)};`;
-    console.log('\n');
-    console.log('------------------------------COPY THE TEXT BELOW------------------------------');
-    console.log('\n');
-    console.log(code);
-    console.log('\n');
-    console.log('------------------------------END OF TEXT TO COPY------------------------------');
-    console.log('\n');
+
+    const message = `
+
+------------------------------COPY THE TEXT BELOW------------------------------
+
+${code}
+
+------------------------------END OF TEXT TO COPY------------------------------
+
+`;
+    await _sendRawLogAsync(message, logUrl);
   }
 
   render() {
@@ -33,6 +43,35 @@ export default class App extends React.Component {
       </View>
     );
   }
+}
+
+/**
+ * Sends a log message without truncating it.
+ */
+async function _sendRawLogAsync(message, logUrl) {
+  const headers = {
+    'Content-Type': 'application/json',
+    Connection: 'keep-alive',
+    'Proxy-Connection': 'keep-alive',
+    Accept: 'application/json',
+    'Device-Id': await getInstallationIdAsync(),
+    'Session-Id': sessionId,
+  };
+  if (Constants.deviceName) {
+    headers['Device-Name'] = Constants.deviceName;
+  }
+  await fetch(logUrl, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify([
+      {
+        count: 0,
+        level: 'info',
+        body: [message],
+        includesStack: false,
+      },
+    ]),
+  });
 }
 
 async function _getExpoModuleSpecsAsync() {

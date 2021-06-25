@@ -15,6 +15,10 @@ import android.util.LruCache;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
+
+import expo.modules.updates.manifest.ManifestFactory;
+import expo.modules.updates.manifest.raw.InternalJSONMutator;
+import expo.modules.updates.manifest.raw.RawManifest;
 import okhttp3.CacheControl;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
@@ -33,6 +37,7 @@ import host.exp.expoview.R;
 import okhttp3.Request;
 
 import org.apache.commons.io.IOUtils;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,7 +61,7 @@ import java.util.Locale;
 public class ExponentManifest {
 
   public interface ManifestListener {
-    void onCompleted(JSONObject manifest);
+    void onCompleted(RawManifest manifest);
     void onError(Exception e);
     void onError(String e);
   }
@@ -136,6 +141,8 @@ public class ExponentManifest {
   public static final String DEEP_LINK_SEPARATOR = "--";
   public static final String DEEP_LINK_SEPARATOR_WITH_SLASH = "--/";
   public static final String QUERY_PARAM_KEY_RELEASE_CHANNEL = "release-channel";
+  public static final String QUERY_PARAM_KEY_EXPO_UPDATES_RUNTIME_VERSION = "runtime-version";
+  public static final String QUERY_PARAM_KEY_EXPO_UPDATES_CHANNEL_NAME = "channel-name";
 
   private static final int MAX_BITMAP_SIZE = 192;
   private static final String REDIRECT_SNIPPET = "exp.host/--/to-exp/";
@@ -348,7 +355,7 @@ public class ExponentManifest {
     try {
       JSONObject embeddedManifest = new JSONObject(embeddedResponse);
       embeddedManifest.put(ExponentManifest.MANIFEST_LOADED_FROM_CACHE_KEY, true);
-      fetchManifestStep3(manifestUrl, embeddedManifest, true, listener);
+      fetchManifestStep3(manifestUrl, ManifestFactory.INSTANCE.getRawManifestFromJson(embeddedManifest), true, listener);
     } catch (Exception e) {
       listener.onError(new Exception("Could not load embedded manifest. Are you sure this experience has been published?", e));
       e.printStackTrace();
@@ -380,17 +387,17 @@ public class ExponentManifest {
     }
   }
 
-  private JSONObject newerManifest(JSONObject manifest1, JSONObject manifest2) throws JSONException, ParseException {
+  private RawManifest newerManifest(RawManifest manifest1, RawManifest manifest2) throws JSONException, ParseException {
     // use commitTime instead of publishedTime as it is more accurate;
     // however, fall back to publishedTime in case older cached manifests do not contain
     // the commitTime key (we have not always served it)
-    String manifest1Timestamp = manifest1.optString(MANIFEST_COMMIT_TIME_KEY);
+    @Nullable String manifest1Timestamp = manifest1.getCommitTime();
     if (manifest1Timestamp == null) {
-      manifest1Timestamp = manifest1.getString(MANIFEST_PUBLISHED_TIME_KEY);
+      manifest1Timestamp = manifest1.getPublishedTime();
     }
-    String manifest2Timestamp = manifest2.optString(MANIFEST_COMMIT_TIME_KEY);
+    @Nullable String manifest2Timestamp = manifest2.getCommitTime();
     if (manifest2Timestamp == null) {
-      manifest2Timestamp = manifest2.getString(MANIFEST_PUBLISHED_TIME_KEY);
+      manifest2Timestamp = manifest2.getPublishedTime();
     }
 
     // SimpleDateFormat on Android does not support the ISO-8601 representation of the timezone,
@@ -407,8 +414,12 @@ public class ExponentManifest {
     }
   }
 
-  private boolean isManifestSDKVersionValid(JSONObject manifest) {
-    String sdkVersion = manifest.optString(MANIFEST_SDK_VERSION_KEY);
+  private boolean isManifestSDKVersionValid(RawManifest manifest) {
+    @Nullable String sdkVersion = manifest.getSDKVersionNullable();
+    if (sdkVersion == null) {
+      return false;
+    }
+
     if (RNObject.UNVERSIONED.equals(sdkVersion)) {
       return true;
     } else {
@@ -453,17 +464,19 @@ public class ExponentManifest {
       Analytics.markEvent(Analytics.TimedEvent.FINISHED_MANIFEST_NETWORK_REQUEST);
     }
 
-    final JSONObject outerManifest = extractManifest(manifestString);
+    final JSONObject outerManifestJson = extractManifest(manifestString);
     final boolean isMainShellAppExperience = manifestUrl.equals(Constants.INITIAL_URL);
     final URI parsedManifestUrl = new URI(manifestUrl);
 
-    boolean isManifestSigned = outerManifest.has(MANIFEST_STRING_KEY) && outerManifest.has(MANIFEST_SIGNATURE_KEY);
+    boolean isManifestSigned = outerManifestJson.has(MANIFEST_STRING_KEY) && outerManifestJson.has(MANIFEST_SIGNATURE_KEY);
 
-    JSONObject manifest = outerManifest;
+    JSONObject manifestJson = outerManifestJson;
     if (isManifestSigned) {
       // get inner manifest if manifest is wrapped in signature
-      manifest = new JSONObject(outerManifest.getString(MANIFEST_STRING_KEY));
+      manifestJson = new JSONObject(outerManifestJson.getString(MANIFEST_STRING_KEY));
     }
+
+    RawManifest manifest = ManifestFactory.INSTANCE.getRawManifestFromJson(manifestJson);
 
     // if the manifest we are passed is from the cache, we need to get the embedded manifest so that
     // we can compare them in case embedded manifest is newer (i.e. user has installed a new APK)
@@ -472,7 +485,7 @@ public class ExponentManifest {
       String embeddedResponse = mExponentNetwork.getClient().getHardCodedResponse(httpManifestUrl);
       if (embeddedResponse != null) {
         try {
-          JSONObject embeddedManifest = new JSONObject(embeddedResponse);
+          RawManifest embeddedManifest = ManifestFactory.INSTANCE.getRawManifestFromJson(new JSONObject(embeddedResponse));
           if (!isManifestSDKVersionValid(manifest)) {
             // if we somehow try to load a cached manifest with an invalid SDK version,
             // fall back immediately to the embedded manifest, which should never have an
@@ -487,7 +500,9 @@ public class ExponentManifest {
         }
       }
     }
-    manifest.put(MANIFEST_LOADED_FROM_CACHE_KEY, isCached || isUsingEmbeddedManifest);
+
+    final boolean isUsingEmbeddedManifestFinal = isUsingEmbeddedManifest;
+    manifest.mutateInternalJSONInPlace(json -> json.put(MANIFEST_LOADED_FROM_CACHE_KEY, isCached || isUsingEmbeddedManifestFinal));
 
     if (isManifestSigned) {
       final boolean isOffline = !ExponentNetwork.isNetworkAvailable(mContext);
@@ -496,9 +511,9 @@ public class ExponentManifest {
         // Automatically verified.
         fetchManifestStep3(manifestUrl, manifest, true, listener);
       } else {
-        final JSONObject finalManifest = manifest;
+        final RawManifest finalManifest = manifest;
         mCrypto.verifyPublicRSASignature(Constants.API_HOST + "/--/manifest-public-key",
-            outerManifest.getString(MANIFEST_STRING_KEY), outerManifest.getString(MANIFEST_SIGNATURE_KEY), new Crypto.RSASignatureListener() {
+            outerManifestJson.getString(MANIFEST_STRING_KEY), outerManifestJson.getString(MANIFEST_SIGNATURE_KEY), new Crypto.RSASignatureListener() {
               @Override
               public void onError(String errorMessage, boolean isNetworkError) {
                 if (isOffline && isNetworkError) {
@@ -530,9 +545,9 @@ public class ExponentManifest {
           String protocol = parsedManifestUrl.getScheme();
           String securityPrefix = protocol.equals("https") || protocol.equals("exps") ? "" : "UNVERIFIED-";
           String path = parsedManifestUrl.getPath() != null ? parsedManifestUrl.getPath() : "";
-          String slug = manifest.has(MANIFEST_SLUG) ? manifest.getString(MANIFEST_SLUG) : "";
+          String slug = manifest.getSlug() != null ? manifest.getSlug() : "";
           String sandboxedId = securityPrefix + parsedManifestUrl.getHost() + path + "-" + slug;
-          manifest.put(MANIFEST_ID_KEY, sandboxedId);
+          manifest.mutateInternalJSONInPlace(json -> json.put(MANIFEST_ID_KEY, sandboxedId));
         }
         fetchManifestStep3(manifestUrl, manifest, true, listener);
       } else {
@@ -560,14 +575,16 @@ public class ExponentManifest {
     return !isExpoHost;
   }
 
-  private void fetchManifestStep3(final String manifestUrl, final JSONObject manifest, final boolean isVerified, final ManifestListener listener) {
-    if (!manifest.has(MANIFEST_BUNDLE_URL_KEY)) {
+  private void fetchManifestStep3(final String manifestUrl, final RawManifest manifest, final boolean isVerified, final ManifestListener listener) {
+    try {
+      manifest.getBundleURL();
+    } catch (JSONException e) {
       listener.onError("No bundleUrl in manifest");
       return;
     }
 
     try {
-      manifest.put(MANIFEST_IS_VERIFIED_KEY, isVerified);
+      manifest.mutateInternalJSONInPlace(json -> json.put(MANIFEST_IS_VERIFIED_KEY, isVerified));
     } catch (JSONException e) {
       listener.onError(e);
       return;
@@ -576,28 +593,28 @@ public class ExponentManifest {
     listener.onCompleted(manifest);
   }
 
-  public JSONObject normalizeManifest(final String manifestUrl, final JSONObject manifest) throws JSONException {
-    if (!manifest.has(MANIFEST_ID_KEY)) {
-      manifest.put(MANIFEST_ID_KEY, manifestUrl);
-    }
+  public static void normalizeRawManifestInPlace(final RawManifest rawManifest, final String manifestUrl) throws JSONException {
+    rawManifest.mutateInternalJSONInPlace(json -> {
+      if (!json.has(MANIFEST_ID_KEY)) {
+        json.put(MANIFEST_ID_KEY, manifestUrl);
+      }
 
-    if (!manifest.has(MANIFEST_NAME_KEY)) {
-      manifest.put(MANIFEST_NAME_KEY, "My New Experience");
-    }
+      if (!json.has(MANIFEST_NAME_KEY)) {
+        json.put(MANIFEST_NAME_KEY, "My New Experience");
+      }
 
-    if (!manifest.has(MANIFEST_PRIMARY_COLOR_KEY)) {
-      manifest.put(MANIFEST_PRIMARY_COLOR_KEY, "#023C69");
-    }
+      if (!json.has(MANIFEST_PRIMARY_COLOR_KEY)) {
+        json.put(MANIFEST_PRIMARY_COLOR_KEY, "#023C69");
+      }
 
-    if (!manifest.has(MANIFEST_ICON_URL_KEY)) {
-      manifest.put(MANIFEST_ICON_URL_KEY, "https://d3lwq5rlu14cro.cloudfront.net/ExponentEmptyManifest_192.png");
-    }
+      if (!json.has(MANIFEST_ICON_URL_KEY)) {
+        json.put(MANIFEST_ICON_URL_KEY, "https://d3lwq5rlu14cro.cloudfront.net/ExponentEmptyManifest_192.png");
+      }
 
-    if (!manifest.has(MANIFEST_ORIENTATION_KEY)) {
-      manifest.put(MANIFEST_ORIENTATION_KEY, "default");
-    }
-
-    return manifest;
+      if (!json.has(MANIFEST_ORIENTATION_KEY)) {
+        json.put(MANIFEST_ORIENTATION_KEY, "default");
+      }
+    });
   }
 
   @WorkerThread
@@ -672,8 +689,8 @@ public class ExponentManifest {
     }
   }
 
-  public int getColorFromManifest(final JSONObject manifest) {
-    String colorString = manifest.optString(MANIFEST_PRIMARY_COLOR_KEY);
+  public int getColorFromManifest(final RawManifest manifest) {
+    @Nullable String colorString = manifest.getPrimaryColor();
     if (colorString != null && ColorParser.isValid(colorString)) {
       return Color.parseColor(colorString);
     } else {
@@ -681,42 +698,40 @@ public class ExponentManifest {
     }
   }
 
-  public boolean isAnonymousExperience(final JSONObject manifest) {
-    if (manifest.has(MANIFEST_ID_KEY)) {
-      final String id = manifest.optString(MANIFEST_ID_KEY);
-      if (id != null && id.startsWith(ANONYMOUS_EXPERIENCE_PREFIX)) {
-        return true;
-      }
+  public boolean isAnonymousExperience(final RawManifest manifest) {
+    try {
+      final String id = manifest.getLegacyID();
+      return id.startsWith(ANONYMOUS_EXPERIENCE_PREFIX);
+    } catch (JSONException e) {
+      return false;
     }
-
-    return false;
   }
 
-  private JSONObject getLocalKernelManifest() {
+  private RawManifest getLocalKernelManifest() {
     try {
       JSONObject manifest = new JSONObject(ExponentBuildConstants.BUILD_MACHINE_KERNEL_MANIFEST);
       manifest.put(MANIFEST_IS_VERIFIED_KEY, true);
-      return manifest;
+      return ManifestFactory.INSTANCE.getRawManifestFromJson(manifest);
     } catch (JSONException e) {
       throw new RuntimeException("Can't get local manifest: " + e.toString());
     }
   }
 
-  private JSONObject getRemoteKernelManifest() {
+  private RawManifest getRemoteKernelManifest() {
     try {
       InputStream inputStream = mContext.getAssets().open(EMBEDDED_KERNEL_MANIFEST_ASSET);
       String jsonString = IOUtils.toString(inputStream);
       JSONObject manifest = new JSONObject(jsonString);
       manifest.put(MANIFEST_IS_VERIFIED_KEY, true);
-      return manifest;
+      return ManifestFactory.INSTANCE.getRawManifestFromJson(manifest);
     } catch (Exception e) {
       KernelProvider.getInstance().handleError(e);
       return null;
     }
   }
 
-  public JSONObject getKernelManifest() {
-    JSONObject manifest;
+  public RawManifest getKernelManifest() {
+    RawManifest manifest;
     String log;
     if (mExponentSharedPreferences.shouldUseInternetKernel()) {
       log = "Using remote Expo kernel manifest";
@@ -732,26 +747,5 @@ public class ExponentManifest {
     }
 
     return manifest;
-  }
-
-  public String getKernelManifestField(final String fieldName) {
-    try {
-      return getKernelManifest().getString(fieldName);
-    } catch (JSONException e) {
-      KernelProvider.getInstance().handleError(e);
-      return null;
-    }
-  }
-
-  public static boolean isDebugModeEnabled(final JSONObject manifest) {
-    try {
-      return (manifest != null &&
-          manifest.has(ExponentManifest.MANIFEST_DEVELOPER_KEY) &&
-          manifest.has(ExponentManifest.MANIFEST_PACKAGER_OPTS_KEY) &&
-          manifest.getJSONObject(ExponentManifest.MANIFEST_PACKAGER_OPTS_KEY)
-              .optBoolean(ExponentManifest.MANIFEST_PACKAGER_OPTS_DEV_KEY, false));
-    } catch (JSONException e) {
-      return false;
-    }
   }
 }

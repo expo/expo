@@ -1,7 +1,15 @@
+import { ExpoConfig } from '@expo/config-types';
+
 export enum AppOwnership {
   Standalone = 'standalone',
   Expo = 'expo',
   Guest = 'guest',
+}
+
+export enum ExecutionEnvironment {
+  Bare = 'bare',
+  Standalone = 'standalone',
+  StoreClient = 'storeClient',
 }
 
 export enum UserInterfaceIdiom {
@@ -13,7 +21,7 @@ export enum UserInterfaceIdiom {
 export interface IOSManifest {
   buildNumber: string;
   platform: string;
-  model: string;
+  model: string | null;
   userInterfaceIdiom: UserInterfaceIdiom;
   systemVersion: string;
   [key: string]: any;
@@ -28,29 +36,30 @@ export interface WebManifest {
   [key: string]: any;
 }
 
-export interface AppManifest {
-  name?: string;
-  description?: string;
-  slug?: string;
-  sdkVersion?: string;
-  version?: string;
+export interface ManifestAsset {
+  url: string;
+}
+
+/**
+ * A modern manifest.
+ */
+export interface Manifest {
+  id: string;
+  createdAt: string;
+  runtimeVersion: string;
+  launchAsset: ManifestAsset;
+  assets: ManifestAsset[];
+  metadata: object;
+}
+
+/**
+ * A classic manifest https://docs.expo.io/guides/how-expo-works/#expo-manifest
+ */
+export interface AppManifest extends ExpoConfig {
   /** Published Apps Only */
   releaseId?: string;
   revisionId?: string;
   releaseChannel?: string;
-  orientation?: string;
-  primaryColor?: string;
-  icon?: string;
-  notification?: {
-    icon?: string;
-    color?: string;
-    [key: string]: any;
-  };
-  loading?: {
-    icon?: string;
-    [key: string]: any;
-  };
-  entryPoint?: string;
   packagerOpts?: {
     hostType?: string;
     dev?: boolean;
@@ -61,7 +70,6 @@ export interface AppManifest {
     lanType?: string;
     [key: string]: any;
   };
-  xde?: boolean;
   developer?: {
     tool?: string;
     [key: string]: any;
@@ -70,6 +78,40 @@ export interface AppManifest {
   debuggerHost?: string;
   mainModuleName?: string;
   logUrl?: string;
+
+  /**
+   * The Expo account name and slug for this project.
+   * @deprecated - Prefer `projectId` or `originalFullName` instead for identification and `scopeKey` for
+   * scoping due to immutability.
+   */
+  id?: string;
+
+  /**
+   * The original Expo account name and slug for this project. Formatted like `@username/slug`.
+   * When unauthenticated, the username is `@anonymous`. For published projects, this value
+   * will not change when a project is transferred between accounts or renamed.
+   */
+  originalFullName?: string;
+
+  /**
+   * The Expo account name and slug used for display purposes. Formatted like `@username/slug`.
+   * When unauthenticated, the username is `@anonymous`. For published projects, this value
+   * may change when a project is transferred between accounts or renamed.
+   */
+  currentFullName?: string;
+
+  /**
+   * An opaque unique string for scoping client-side data to this project. This value
+   * will not change when a project is transferred between accounts or renamed.
+   */
+  scopeKey?: string;
+
+  /**
+   * The ID for this project. UUID. This value will not change when a project is transferred
+   * between accounts or renamed.
+   */
+  projectId?: string;
+
   [key: string]: any;
 }
 
@@ -94,23 +136,37 @@ export interface NativeConstants {
   debugMode: boolean;
   deviceName?: string;
   deviceYearClass: number | null;
+  executionEnvironment: ExecutionEnvironment;
   experienceUrl: string;
   // only nullable on web
   expoRuntimeVersion: string | null;
   /**
    * The version string of the Expo client currently running.
-   * Returns `null` on and bare workflow and web.
+   * Returns `null` in bare workflow and web.
    */
   expoVersion: string | null;
   isDetached?: boolean;
   intentUri?: string;
+  /**
+   * @deprecated Constants.installationId is deprecated in favor of generating your own ID and
+   * storing it. This API will be removed in SDK 44.
+   */
   installationId: string;
   isDevice: boolean;
   isHeadless: boolean;
   linkingUri: string;
   nativeAppVersion: string | null;
   nativeBuildVersion: string | null;
-  manifest: AppManifest;
+  /**
+   * Classic manifest for Expo apps using classic updates.
+   * Returns `null` in bare workflow and when `manifest2` is non-null.
+   */
+  manifest: AppManifest | null;
+  /**
+   * New manifest for Expo apps using modern Expo Updates.
+   * Returns `null` in bare workflow and when `manifest` is non-null.
+   */
+  manifest2: Manifest | null;
   sessionId: string;
   statusBarHeight: number;
   systemFonts: string[];
@@ -122,6 +178,21 @@ export interface NativeConstants {
 }
 
 export interface Constants extends NativeConstants {
+  /**
+   * @deprecated Constants.deviceId is deprecated in favor of generating your own ID and storing it.
+   * This API will be removed in SDK 44.
+   */
   deviceId?: string;
+  /**
+   * @deprecated Constants.linkingUrl has been renamed to Constants.linkingUri. Consider using the
+   * Linking API directly. Constants.linkingUrl will be removed in SDK 44.
+   */
   linkingUrl?: string;
+  /**
+   * @warning do not use this property. Use `manifest` by default.
+   *
+   * In certain cases accessing manifest via this property
+   * suppresses important warning about missing manifest.
+   */
+  __unsafeNoWarnManifest?: AppManifest;
 }

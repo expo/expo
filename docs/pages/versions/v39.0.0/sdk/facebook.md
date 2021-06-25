@@ -8,7 +8,7 @@ import InstallSection from '~/components/plugins/InstallSection';
 
 **`expo-facebook`** provides Facebook integration, such as logging in through Facebook, for React Native apps. Expo exposes a minimal native API since you can access Facebook's [Graph API](https://developers.facebook.com/docs/graph-api) directly through HTTP (using [fetch](https://reactnative.dev/docs/network.html#fetch), for example).
 
-<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/pull/6862' }} />
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
@@ -28,8 +28,8 @@ Then follow these steps based on the platforms you're targetting. This will need
 
 The Android Play Store Expo client will use the Facebook App ID that you provide, however, all Facebook API calls in the **iOS App Store Expo client will use Expo's own Facebook App ID**. This is due to underlying configuration limitations, but the good news is it means less setup for you! The slight downside to this is that you can't customize which permissions your app requests from Facebook (like `user_photos` or `user_friends`), or integrate Facebook login with other services like Firebase auth. If you need that functionality on iOS, you have two options:
 
-- Build a [custom Expo client app](../../guides/adhoc-builds/)
-- Build a [standalone app](../../distribution/building-standalone-apps/)
+- Build a [custom Expo client app](../../../guides/adhoc-builds.md)
+- Build a [standalone app](../../../distribution/building-standalone-apps.md)
 
 #### Configure `app.json`
 
@@ -52,7 +52,7 @@ The Android Play Store Expo client will use the Facebook App ID that you provide
 
 #### Android standalone app
 
-- [Build your standalone app](../../distribution/building-standalone-apps/#building-standalone-apps) for Android.
+- [Build your standalone app](../../../distribution/building-standalone-apps.md#building-standalone-apps) for Android.
 - Run `expo fetch:android:hashes`.
 - Copy `Facebook Key Hash` and paste it as a key hash in your Facebook developer page pictured below.
 

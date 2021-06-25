@@ -13,7 +13,8 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.errors.InvalidArgumentException;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.interfaces.permissions.Permissions;
+
+import expo.modules.interfaces.permissions.Permissions;
 
 public class BrightnessModule extends ExportedModule {
   private ModuleRegistry mModuleRegistry;

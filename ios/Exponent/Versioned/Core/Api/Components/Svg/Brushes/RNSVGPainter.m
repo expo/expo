@@ -159,6 +159,11 @@ void PatternFunction(void* info, CGContextRef context)
     CGFloat h = [self getVal:[_points objectAtIndex:3] relative:height];
 
     CGAffineTransform viewbox = [self.pattern.svgView getViewBoxTransform];
+#if TARGET_OS_OSX
+    // This is needed because macOS and iOS have different conventions for where the origin is.
+    // For macOS, it's in the bottom-left corner. For iOS, it's in the top-left corner.
+    viewbox = CGAffineTransformScale(viewbox, 1, -1);
+#endif
     CGRect newBounds = CGRectMake(x, y, w, h);
     CGSize size = newBounds.size;
     self.useObjectBoundingBoxForContentUnits = _useContentObjectBoundingBox;

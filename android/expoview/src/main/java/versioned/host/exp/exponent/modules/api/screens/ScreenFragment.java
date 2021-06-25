@@ -1,16 +1,17 @@
 package versioned.host.exp.exponent.modules.api.screens;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.uimanager.UIManagerModule;
 
 import java.util.ArrayList;
@@ -39,15 +40,25 @@ public class ScreenFragment extends Fragment {
 
   protected Screen mScreenView;
   private List<ScreenContainer> mChildScreenContainers = new ArrayList<>();
+  private boolean shouldUpdateOnResume = false;
 
   public ScreenFragment() {
-    throw new IllegalStateException("Screen fragments should never be restored");
+    throw new IllegalStateException("Screen fragments should never be restored. Follow instructions from https://github.com/software-mansion/react-native-screens/issues/17#issuecomment-424704067 to properly configure your main activity.");
   }
 
   @SuppressLint("ValidFragment")
   public ScreenFragment(Screen screenView) {
     super();
     mScreenView = screenView;
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    if (shouldUpdateOnResume) {
+      shouldUpdateOnResume = false;
+      ScreenWindowTraits.trySetWindowTraits(getScreen(), tryGetActivity(), tryGetContext());
+    }
   }
 
   @Override
@@ -62,26 +73,67 @@ public class ScreenFragment extends Fragment {
     return wrapper;
   }
 
-  @Override
-  public void onDetach() {
-    super.onDetach();
-    // The below line is a workaround for an issue with keyboard handling within fragments. Despite
-    // Android handles input focus on the fragments that leave the screen, the keyboard stays open
-    // in a number of cases. The issue can be best reproduced on Android 5 devices, before some changes
-    // in Android's InputMethodManager have been introduced (specifically around dismissing the
-    // keyboard in onDetachedFromWindow). However, we also noticed the keyboard issue happen
-    // intermittently on recent versions of Android as well. The issue hasn't been previously noticed
-    // as in React Native <= 0.61 there was a logic that'd trigger keyboard dismiss upon a blur event
-    // (the blur even gets dispatched properly, the keyboard just stays open despite that) – note
-    // the change in RN core here: https://github.com/facebook/react-native/commit/e9b4928311513d3cbbd9d875827694eab6cfa932
-    // The workaround is to force-hide keyboard passing the fragment's view token when the given fragment
-    // is detached. It is safe to call this method regardless of whether the keyboard was open or not.
-    ((InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE))
-            .hideSoftInputFromWindow(mScreenView.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-  }
-
   public Screen getScreen() {
     return mScreenView;
+  }
+
+  public void onContainerUpdate() {
+   updateWindowTraits();
+  }
+
+  private void updateWindowTraits() {
+    Activity activity = getActivity();
+    if (activity == null) {
+      shouldUpdateOnResume = true;
+      return;
+    }
+    ScreenWindowTraits.trySetWindowTraits(getScreen(), activity, tryGetContext());
+  }
+
+  protected @Nullable Activity tryGetActivity() {
+    if (getActivity() != null) {
+      return getActivity();
+    }
+    Context context = getScreen().getContext();
+    if (context instanceof ReactContext && ((ReactContext) context).getCurrentActivity() != null) {
+      return ((ReactContext) context).getCurrentActivity();
+    }
+
+    ViewParent parent = getScreen().getContainer();
+    while (parent != null) {
+      if (parent instanceof Screen) {
+        ScreenFragment fragment = ((Screen) parent).getFragment();
+        if (fragment != null && fragment.getActivity() != null) {
+          return fragment.getActivity();
+        }
+      }
+      parent = parent.getParent();
+    }
+    return null;
+  }
+
+  protected @Nullable ReactContext tryGetContext() {
+    if (getContext() instanceof ReactContext) {
+      return ((ReactContext) getContext());
+    }
+    if (getScreen().getContext() instanceof ReactContext) {
+      return ((ReactContext) getScreen().getContext());
+    }
+
+    ViewParent parent = getScreen().getContainer();
+    while (parent != null) {
+      if (parent instanceof Screen) {
+          if (((Screen) parent).getContext() instanceof ReactContext) {
+            return (ReactContext) ((Screen) parent).getContext();
+          }
+        }
+      parent = parent.getParent();
+    }
+    return null;
+  }
+
+  public List<ScreenContainer> getChildScreenContainers() {
+    return mChildScreenContainers;
   }
 
   protected void dispatchOnWillAppear() {
@@ -153,7 +205,17 @@ public class ScreenFragment extends Fragment {
     // We override Screen#onAnimationStart and an appropriate method of the StackFragment's root view
     // in order to achieve this.
     if (isResumed()) {
-      dispatchOnWillAppear();
+      // Android dispatches the animation start event for the fragment that is being added first
+      // however we want the one being dismissed first to match iOS. It also makes more sense from
+      // a navigation point of view to have the disappear event first.
+      // Since there are no explicit relationships between the fragment being added / removed the
+      // practical way to fix this is delaying dispatching the appear events at the end of the frame.
+      UiThreadUtil.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          dispatchOnWillAppear();
+        }
+      });
     } else {
       dispatchOnWillDisappear();
     }
@@ -164,7 +226,13 @@ public class ScreenFragment extends Fragment {
     // We override Screen#onAnimationEnd and an appropriate method of the StackFragment's root view
     // in order to achieve this.
     if (isResumed()) {
-      dispatchOnAppear();
+      // See the comment in onViewAnimationStart for why this event is delayed.
+      UiThreadUtil.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          dispatchOnAppear();
+        }
+      });
     } else {
       dispatchOnDisappear();
     }

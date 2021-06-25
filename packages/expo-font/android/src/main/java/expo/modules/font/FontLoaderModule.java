@@ -12,8 +12,9 @@ import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.interfaces.constants.ConstantsInterface;
-import org.unimodules.interfaces.font.FontManager;
+
+import expo.modules.interfaces.constants.ConstantsInterface;
+import expo.modules.interfaces.font.FontManagerInterface;
 
 public class FontLoaderModule extends ExportedModule {
   private static final String ASSET_SCHEME = "asset://";
@@ -51,7 +52,7 @@ public class FontLoaderModule extends ExportedModule {
         typeface = Typeface.createFromFile(new File(Uri.parse(localUri).getPath()));
       }
 
-      FontManager fontManager = mModuleRegistry.getModule(FontManager.class);
+      FontManagerInterface fontManager = mModuleRegistry.getModule(FontManagerInterface.class);
       if (fontManager == null) {
         promise.reject("E_NO_FONT_MANAGER", "There is no FontManager in module registry. Are you sure all the dependencies of expo-font are installed and linked?");
         return;

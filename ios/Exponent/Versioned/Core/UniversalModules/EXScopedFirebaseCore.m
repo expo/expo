@@ -3,6 +3,7 @@
 #if __has_include(<EXFirebaseCore/EXFirebaseCore.h>)
 #import "EXScopedFirebaseCore.h"
 #import <EXFirebaseCore/EXFirebaseCore+FIROptions.h>
+#import <ExpoModulesCore/EXConstantsInterface.h>
 
 @interface NSObject (Private)
 - (NSString*)_methodDescription;
@@ -60,7 +61,7 @@
 
 - (BOOL)isAppAccessible:(nonnull NSString *)name
 {
-  // Deny access to the protected default app on the Expo client
+  // Deny access to the protected default app on the Expo Go
   if (_protectedAppNames && _protectedAppNames[name]) {
     return NO;
   }
@@ -77,7 +78,7 @@
   return [base64 stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"="]];
 }
 
-+ (nullable NSDictionary *)googleServicesFileFromConstantsManifest:(nullable id<UMConstantsInterface>)constants
++ (nullable NSDictionary *)googleServicesFileFromConstantsManifest:(nullable id<EXConstantsInterface>)constants
 {
   // load GoogleService-Info.plist from manifest
   @try {

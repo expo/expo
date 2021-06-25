@@ -48,9 +48,17 @@ export interface WeeklyTriggerInput {
     hour: number;
     minute: number;
 }
+export interface YearlyTriggerInput {
+    type: 'yearly';
+    channelId?: string;
+    day: number;
+    month: number;
+    hour: number;
+    minute: number;
+}
 export interface DateTriggerInput {
     type: 'date';
     channelId?: string;
     timestamp: number;
 }
-export declare type NotificationTriggerInput = null | ChannelAwareTriggerInput | DateTriggerInput | CalendarTriggerInput | TimeIntervalTriggerInput | DailyTriggerInput | WeeklyTriggerInput;
+export declare type NotificationTriggerInput = null | ChannelAwareTriggerInput | DateTriggerInput | CalendarTriggerInput | TimeIntervalTriggerInput | DailyTriggerInput | WeeklyTriggerInput | YearlyTriggerInput;

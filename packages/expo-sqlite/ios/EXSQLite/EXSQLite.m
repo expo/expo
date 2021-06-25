@@ -2,7 +2,7 @@
 
 #import <EXSQLite/EXSQLite.h>
 
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
+#import <ExpoModulesCore/EXFileSystemInterface.h>
 
 #import <sqlite3.h>
 
@@ -32,7 +32,7 @@ UM_EXPORT_MODULE(ExponentSQLite);
 
 - (NSString *)pathForDatabaseName:(NSString *)name
 {
-  id<UMFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
+  id<EXFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   if (!fileSystem) {
     UMLogError(@"No FileSystem module.");
     return nil;

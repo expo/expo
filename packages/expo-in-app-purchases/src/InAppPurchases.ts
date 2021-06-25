@@ -43,7 +43,9 @@ export async function connectAsync(): Promise<void> {
   connected = true;
 }
 
-export async function getProductsAsync(itemList: string[]): Promise<IAPQueryResponse> {
+export async function getProductsAsync(
+  itemList: string[]
+): Promise<IAPQueryResponse<IAPItemDetails>> {
   if (!connected) {
     throw new ConnectionError(errors.NOT_CONNECTED);
   }
@@ -51,7 +53,9 @@ export async function getProductsAsync(itemList: string[]): Promise<IAPQueryResp
   return await ExpoInAppPurchases.getProductsAsync(itemList);
 }
 
-export async function getPurchaseHistoryAsync(refresh?: boolean): Promise<IAPQueryResponse> {
+export async function getPurchaseHistoryAsync(
+  refresh?: boolean
+): Promise<IAPQueryResponse<InAppPurchase>> {
   if (!connected) {
     throw new ConnectionError(errors.NOT_CONNECTED);
   }
@@ -67,12 +71,14 @@ export async function purchaseItemAsync(itemId: string, oldItem?: string): Promi
   await ExpoInAppPurchases.purchaseItemAsync(itemId, oldItem);
 }
 
-export async function setPurchaseListener(callback: (result) => void): Promise<void> {
+export function setPurchaseListener(
+  callback: (result: IAPQueryResponse<InAppPurchase>) => void
+): void {
   if (purchaseUpdatedSubscription) {
     purchaseUpdatedSubscription.remove();
   }
 
-  purchaseUpdatedSubscription = eventEmitter.addListener<IAPQueryResponse>(
+  purchaseUpdatedSubscription = eventEmitter.addListener<IAPQueryResponse<InAppPurchase>>(
     PURCHASES_UPDATED_EVENT,
     result => {
       callback(result);

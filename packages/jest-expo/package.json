@@ -1,6 +1,6 @@
 {
   "name": "jest-expo",
-  "version": "39.0.0",
+  "version": "42.0.0",
   "description": "A Jest preset to painlessly test your Expo / React Native apps.",
   "license": "MIT",
   "main": "src",
@@ -30,13 +30,8 @@
   "jest": {
     "preset": "jest-expo/universal"
   },
-  "peerDependencies": {
-    "react": "16.13.1",
-    "react-native": "*",
-    "react-native-web": "~0.13.7"
-  },
   "dependencies": {
-    "@expo/config": "^3.2.3",
+    "@expo/config": "^4.0.0",
     "babel-jest": "^25.2.0",
     "jest": "^25.2.0",
     "jest-watch-select-projects": "^2.0.0",

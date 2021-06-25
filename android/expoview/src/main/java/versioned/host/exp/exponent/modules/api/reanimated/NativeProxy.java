@@ -1,23 +1,19 @@
 package versioned.host.exp.exponent.modules.api.reanimated;
 
+import android.os.SystemClock;
 import androidx.annotation.Nullable;
 
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.bridge.JSIModule;
+import com.facebook.react.bridge.JavaScriptExecutor;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
-import com.facebook.react.turbomodule.core.interfaces.TurboModule;
-import com.facebook.react.turbomodule.core.interfaces.TurboModuleRegistry;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 public class NativeProxy {
@@ -72,16 +68,20 @@ public class NativeProxy {
   private final HybridData mHybridData;
   private NodesManager mNodesManager;
   private final WeakReference<ReactApplicationContext> mContext;
+  private Scheduler mScheduler = null;
 
   public NativeProxy(ReactApplicationContext context) {
     CallInvokerHolderImpl holder = (CallInvokerHolderImpl)context.getCatalystInstance().getJSCallInvokerHolder();
-    mHybridData = initHybrid(context.getJavaScriptContextHolder().get(), holder, new Scheduler(context));
+    mScheduler = new Scheduler(context);
+    mHybridData = initHybrid(context.getJavaScriptContextHolder().get(), holder, mScheduler);
     mContext = new WeakReference<>(context);
     prepare();
   }
 
   private native HybridData initHybrid(long jsContext, CallInvokerHolderImpl jsCallInvokerHolder, Scheduler scheduler);
   private native void installJSIBindings();
+
+  public native boolean isAnyHandlerWaitingForEvent(String eventName);
 
   @DoNotStrip
   private void requestRender(AnimationFrameCallback callback) {
@@ -104,6 +104,11 @@ public class NativeProxy {
   }
 
   @DoNotStrip
+  private String getUpTime() {
+    return Long.toString(SystemClock.uptimeMillis());
+  }
+
+  @DoNotStrip
   private float[] measure(int viewTag) {
     return mNodesManager.measure(viewTag);
   }
@@ -115,6 +120,7 @@ public class NativeProxy {
   }
 
   public void onCatalystInstanceDestroy() {
+    mScheduler.deactivate();
     mHybridData.resetNative();
   }
 

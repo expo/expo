@@ -5,6 +5,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-38/packages/expo-screen-ca
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-screen-capture`** allows you to protect screens in your app from being captured or recorded. The two most common reasons you may want to prevent screen capture are:
 
@@ -25,55 +26,56 @@ This is especially important on Android, since the [`android.media.projection`](
 
 ### Example: hook
 
-<!-- prettier-ignore -->
+<SnackInline label="Screen Capture hook" dependencies={["expo-screen-capture"]}>
+
 ```javascript
 import { usePreventScreenCapture } from 'expo-screen-capture';
 import React from 'react';
 import { Text, View } from 'react-native';
 
-export default function ScreenCaptureExample {
-  /* @info As long as this component is mounted, the screen cannot captured */
+export default function ScreenCaptureExample() {
   usePreventScreenCapture();
-  /* @end */
+
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>This is an unrecordable screen!</Text>
+      <Text>As long as this component is mounted, this screen is unrecordable!</Text>
     </View>
   );
 }
 ```
 
+</SnackInline>
+
 ### Example: functions
 
-<!-- prettier-ignore -->
-```javascript
-import { preventScreenCaptureAsync, allowScreenCaptureAsync } from 'expo-screen-capture';
+<SnackInline label="Screen Capture functions" dependencies={["expo-screen-capture"]}>
+
+```js
+import * as ScreenCapture from 'expo-screen-capture';
 import React from 'react';
-import { Button, View } from 'react-native';
+import { Button, View, Platform } from 'react-native';
 
 export default class ScreenCaptureExample extends React.Component {
   render() {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Button onPress={this._activate}>Activate</Button>
-        <Button onPress={this._deactivate}>Deactivate</Button>
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'space-around' }}>
+        <Button title="Activate" onPress={this._activate} />
+        <Button title="Deactivate" onPress={this._deactivate} />
       </View>
     );
   }
 
-  _activate = () => {
-    /* @info Screen will be uncapturable once <strong>preventScreenCaptureAsync()</strong> is called. */
-    preventScreenCaptureAsync(); /* @end */
-
+  _activate = async () => {
+    await ScreenCapture.preventScreenCaptureAsync();
   };
 
-  _deactivate = () => {
-    /* @info Re-allows screen capture, or does nothing if preventScreenCaptureAsync() was never called. */
-    allowScreenCaptureAsync(); /* @end */
-
+  _deactivate = async () => {
+    await ScreenCapture.allowScreenCaptureAsync();
   };
 }
 ```
+
+</SnackInline>
 
 ## API
 

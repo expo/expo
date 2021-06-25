@@ -33,7 +33,7 @@ export default function App() {
     (async () => {
       const { status } = await Calendar.requestCalendarPermissionsAsync();
       if (status === 'granted') {
-        const calendars = await Calendar.getCalendarsAsync();
+        const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
         console.log('Here are all your calendars:');
         console.log({ calendars });
       }
@@ -55,7 +55,7 @@ export default function App() {
 }
 
 async function getDefaultCalendarSource() {
-  const calendars = await Calendar.getCalendarsAsync();
+  const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
   const defaultCalendars = calendars.filter(each => each.source.name === 'Default');
   return defaultCalendars[0].source;
 }
@@ -95,7 +95,7 @@ Gets an array of calendar objects with details about the different calendars sto
 
 #### Arguments
 
-- **entityType (_string_)** -- (iOS only) Not required, but if defined, filters the returned calendars to a specific entity type. Possible values are `Calendar.EntityTypes.EVENT` (for calendars shown in the Calendar app) and `Calendar.EntityTypes.REMINDER` (for the Reminders app).
+- **entityType (_string_)** -- (iOS only) Not required, but if defined, filters the returned calendars to a specific entity type. Possible values are `Calendar.EntityTypes.EVENT` (for calendars shown in the Calendar app) and `Calendar.EntityTypes.REMINDER` (for the Reminders app). **Note:** if not defined, you will need both permissions: **CALENDAR** and **REMINDERS**.
 
 #### Returns
 
@@ -115,7 +115,7 @@ Asks the user to grant permissions for accessing user's calendars. Alias for `Pe
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ### `Calendar.requestRemindersPermissionsAsync()`
 
@@ -123,7 +123,7 @@ A promise that resolves to an object of type [PermissionResponse](../permissions
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ### `Calendar.getCalendarPermissionsAsync()`
 
@@ -131,7 +131,7 @@ Checks user's permissions for accessing user's calendars. Alias for `Permissions
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ### `Calendar.getRemindersPermissionsAsync()`
 
@@ -139,7 +139,7 @@ A promise that resolves to an object of type [PermissionResponse](../permissions
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ### `Calendar.createCalendarAsync(details)`
 

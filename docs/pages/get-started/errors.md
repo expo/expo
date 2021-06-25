@@ -4,7 +4,7 @@ title: Errors and debugging
 
 import Video from '~/components/plugins/Video'
 
-> This is a brief introduction to debugging an Expo app. [We provide a more in-depth guide here](../../workflow/debugging/)
+> This is a brief introduction to debugging an Expo app. [We provide a more in-depth guide here](../workflow/debugging.md)
 
 In development it won't be long before you encounter a "Redbox" error or "Yellowbox" warning.
 
@@ -14,7 +14,7 @@ You can also create warnings and errors on your own with `console.warn("Warning 
 
 ## Redbox errors and stack traces
 
-When you encounter an error during development, you will be shown the error message, as well as the "stacktrace," which is a report of the recent calls your application made or was making when it crashed. This stacktrace is shown both in your terminal and in the Expo client app.
+When you encounter an error during development, you will be shown the error message, as well as the "stacktrace," which is a report of the recent calls your application made or was making when it crashed. This stacktrace is shown both in your terminal and in the Expo Go app.
 
 This stacktrace is **extremely valuable** since it gives you the location the error comes from. For example, in the following clip we know that the error came from the file `LinksScreen.js` on line 10 and column (character) 15.
 
@@ -26,4 +26,4 @@ This is a simple example, but it shows how useful error messages and stacktraces
 
 ## Up Next
 
-We suggest [following a tutorial](../../tutorial/planning/) before proceeding to the rest of the documentation, this will guide you through building a simple but meaningful project. [Continue to the tutorial](../../tutorial/planning/).
+We suggest [following a tutorial](../tutorial/planning.md) before proceeding to the rest of the documentation, this will guide you through building a simple but meaningful project. [Continue to the tutorial](../tutorial/planning.md).

@@ -17,15 +17,17 @@ Provides an API for interacting with the device's system calendars, events, remi
 
 ## Configuration
 
-In managed apps, `Calendar` requires `Permissions.CALENDAR`. Interacting with reminders on iOS requires `Permissions.REMINDERS`.
+You must add the following permissions to your `app.json`.
+- Android requires `READ_CALENDAR` & `WRITE_CALENDAR` inside the `expo.android.permissions` array.
+- iOS requires the `NSRemindersUsageDescription` key be added to `expo.ios.infoPlist` with a string value describing the reason for the permission request.
 
 ## Usage
 
-<SnackInline label='Basic Calendar usage' templateId='calendar' dependencies={['expo-calendar']}>
+<SnackInline label='Basic Calendar usage' dependencies={['expo-calendar']}>
 
-```js
+```jsx
 import React, { useEffect } from 'react';
-import { View, Text, Button, Platform } from 'react-native';
+import { StyleSheet, View, Text, Button, Platform } from 'react-native';
 import * as Calendar from 'expo-calendar';
 
 export default function App() {
@@ -33,7 +35,7 @@ export default function App() {
     (async () => {
       const { status } = await Calendar.requestCalendarPermissionsAsync();
       if (status === 'granted') {
-        const calendars = await Calendar.getCalendarsAsync();
+        const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
         console.log('Here are all your calendars:');
         console.log({ calendars });
       }
@@ -41,13 +43,7 @@ export default function App() {
   }, []);
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'space-around',
-      }}>
+    <View style={styles.container}>
       <Text>Calendar Module Example</Text>
       <Button title="Create a new calendar" onPress={createCalendar} />
     </View>
@@ -55,7 +51,7 @@ export default function App() {
 }
 
 async function getDefaultCalendarSource() {
-  const calendars = await Calendar.getCalendarsAsync();
+  const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
   const defaultCalendars = calendars.filter(each => each.source.name === 'Default');
   return defaultCalendars[0].source;
 }
@@ -77,6 +73,17 @@ async function createCalendar() {
   });
   console.log(`Your new calendar ID is: ${newCalendarID}`);
 }
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+});
+/* @end */
 ```
 
 </SnackInline>
@@ -103,7 +110,7 @@ Gets an array of calendar objects with details about the different calendars sto
 
 #### Arguments
 
-- **entityType (_string_)** -- (iOS only) Not required, but if defined, filters the returned calendars to a specific entity type. Possible values are `Calendar.EntityTypes.EVENT` (for calendars shown in the Calendar app) and `Calendar.EntityTypes.REMINDER` (for the Reminders app).
+- **entityType (_string_)** -- (iOS only) Not required, but if defined, filters the returned calendars to a specific entity type. Possible values are `Calendar.EntityTypes.EVENT` (for calendars shown in the Calendar app) and `Calendar.EntityTypes.REMINDER` (for the Reminders app). **Note:** if not defined, you will need both permissions: **CALENDAR** and **REMINDERS**.
 
 #### Returns
 
@@ -119,35 +126,35 @@ A promise resolving to [calendar object](#calendar) that is the user's default c
 
 ### `Calendar.requestCalendarPermissionsAsync()`
 
-Asks the user to grant permissions for accessing user's calendars. Alias for `Permissions.askAsync(Permissions.CALENDAR)`.
+Asks the user to grant permissions for accessing user's calendars.
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ### `Calendar.requestRemindersPermissionsAsync()`
 
-**iOS only**. Asks the user to grant permissions for accessing user's reminders. Alias for `Permissions.askAsync(Permissions.REMINDERS)`.
+**iOS only**. Asks the user to grant permissions for accessing user's reminders.
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ### `Calendar.getCalendarPermissionsAsync()`
 
-Checks user's permissions for accessing user's calendars. Alias for `Permissions.getAsync(Permissions.CALENDAR)`.
+Checks user's permissions for accessing user's calendars.
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ### `Calendar.getRemindersPermissionsAsync()`
 
-**iOS only**. Checks user's permissions for accessing user's reminders. Alias for `Permissions.getAsync(Permissions.REMINDERS)`.
+**iOS only**. Checks user's permissions for accessing user's reminders.
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ### `Calendar.createCalendarAsync(details)`
 

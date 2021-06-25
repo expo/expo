@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.internal.BundleJSONConverter;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
 import com.facebook.react.modules.core.PermissionAwareActivity;
@@ -40,7 +41,7 @@ import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import de.greenrobot.event.EventBus;
-import host.exp.exponent.ABIVersion;
+import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.experience.splashscreen.LoadingView;
@@ -48,7 +49,7 @@ import host.exp.exponent.RNObject;
 import host.exp.exponent.analytics.Analytics;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.kernel.ExponentError;
 import host.exp.exponent.kernel.ExponentErrorMessage;
 import host.exp.exponent.kernel.KernelConstants;
@@ -58,7 +59,6 @@ import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry;
 import host.exp.exponent.notifications.ExponentNotification;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.ExperienceActivityUtils;
-import host.exp.exponent.utils.JSONBundleConverter;
 import host.exp.exponent.utils.ScopedPermissionsRequester;
 import host.exp.expoview.Exponent;
 import host.exp.expoview.R;
@@ -109,9 +109,8 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
   protected boolean mIsCrashed = false;
 
   protected String mManifestUrl;
-  protected String mExperienceIdString;
-  protected ExperienceId mExperienceId;
-  protected String mSDKVersion;
+  protected ExperienceKey mExperienceKey;
+  @Nullable protected String mSDKVersion;
   protected int mActivityId;
 
   // In detach we want UNVERSIONED most places. We still need the numbered sdk version
@@ -122,7 +121,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
   private DoubleTapReloadRecognizer mDoubleTapReloadRecognizer;
   protected boolean mIsLoading = true;
   protected String mJSBundlePath;
-  protected JSONObject mManifest;
+  protected RawManifest mManifest;
   protected boolean mIsInForeground = false;
   protected static Queue<ExponentError> sErrorQueue = new LinkedList<>();
 
@@ -136,7 +135,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
 
   private FrameLayout mContainerView;
   /**
-   * This view is optional and available only when the app runs in Expo Client.
+   * This view is optional and available only when the app runs in Expo Go.
    */
   @Nullable private LoadingView mLoadingView;
   private FrameLayout mReactContainerView;
@@ -267,7 +266,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
         EXL.e(TAG, e);
       }
 
-      ErrorRecoveryManager.getInstance(mExperienceId).markExperienceLoaded();
+      ErrorRecoveryManager.getInstance(mExperienceKey).markExperienceLoaded();
       pollForEventsToSendToRN();
       EventBus.getDefault().post(new ExperienceDoneLoadingEvent(this));
       mIsLoading = false;
@@ -281,12 +280,12 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
   /**
    * Get what version (among versioned classes) of ReactRootView.class SplashScreen module should be looking for.
    */
-  protected Class<? extends ViewGroup> getRootViewClass(final JSONObject manifest) {
+  protected Class<? extends ViewGroup> getRootViewClass(final RawManifest manifest) {
     if (mReactRootView.rnClass() != null) {
       return mReactRootView.rnClass();
     }
 
-    String sdkVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
+    @Nullable String sdkVersion = manifest.getSDKVersionNullable();
     if (Constants.TEMPORARY_ABI_VERSION != null && Constants.TEMPORARY_ABI_VERSION.equals(mSDKVersion)) {
       sdkVersion = RNObject.UNVERSIONED;
     }
@@ -371,7 +370,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
   }
 
   public boolean isDebugModeEnabled() {
-    return ExponentManifest.isDebugModeEnabled(mManifest);
+    return mManifest.isDevelopmentMode();
   }
 
   protected void destroyReactInstanceManager() {
@@ -429,9 +428,8 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
     RNObject versionedUtils = new RNObject("host.exp.exponent.VersionedUtils").loadVersion(mSDKVersion);
     RNObject builder = versionedUtils.callRecursive("getReactInstanceManagerBuilder", instanceManagerBuilderProperties);
 
-    if (ABIVersion.toNumber(mSDKVersion) >= ABIVersion.toNumber("36.0.0")) {
-      builder.call("setCurrentActivity", this);
-    }
+    // This used to not be called prior to SDK 36
+    builder.call("setCurrentActivity", this);
 
     // ReactNativeInstance is considered to be resumed when it has its activity attached, which is expected to be the case here
     builder.call("setInitialLifecycleState", RNObject.versionedEnum(mSDKVersion, "com.facebook.react.common.LifecycleState", "RESUMED"));
@@ -443,8 +441,8 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
     }
 
     if (delegate.isDebugModeEnabled()) {
-      String debuggerHost = mManifest.optString(ExponentManifest.MANIFEST_DEBUGGER_HOST_KEY);
-      String mainModuleName = mManifest.optString(ExponentManifest.MANIFEST_MAIN_MODULE_NAME_KEY);
+      String debuggerHost = mManifest.getDebuggerHost();
+      String mainModuleName = mManifest.getMainModuleName();
       Exponent.enableDeveloperSupport(mSDKVersion, debuggerHost, mainModuleName, builder);
 
       RNObject devLoadingView = new RNObject("com.facebook.react.devsupport.DevLoadingViewController").loadVersion(mSDKVersion);
@@ -470,34 +468,21 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
     }
 
     try {
-      exponentProps.put("manifest", mManifest);
+      exponentProps.put("manifestString", mManifest.toString());
       exponentProps.put("shell", mIsShellApp);
       exponentProps.put("initialUri", mIntentUri == null ? null : mIntentUri.toString());
     } catch (JSONException e) {
       EXL.e(TAG, e);
     }
 
-    JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(mExperienceIdString);
+    JSONObject metadata = mExponentSharedPreferences.getExperienceMetadata(mExperienceKey);
     if (metadata != null) {
-      if (metadata.has(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS)) {
-        try {
-          exponentProps.put(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS,
-            metadata.getJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS));
-        } catch (JSONException e) {
-          e.printStackTrace();
-        }
-
-        metadata.remove(ExponentSharedPreferences.EXPERIENCE_METADATA_LAST_ERRORS);
-      }
-
       // TODO: fix this. this is the only place that EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS is sent to the experience,
       // we need to sent them with the standard notification events so that you can get all the unread notification through an event
       // Copy unreadNotifications into exponentProps
       if (metadata.has(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS)) {
         try {
           JSONArray unreadNotifications = metadata.getJSONArray(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS);
-          exponentProps.put(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS, unreadNotifications);
-
           delegate.handleUnreadNotifications(unreadNotifications);
         } catch (JSONException e) {
           e.printStackTrace();
@@ -506,10 +491,14 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
         metadata.remove(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS);
       }
 
-      mExponentSharedPreferences.updateExperienceMetadata(mExperienceIdString, metadata);
+      mExponentSharedPreferences.updateExperienceMetadata(mExperienceKey, metadata);
     }
 
-    bundle.putBundle("exp", JSONBundleConverter.JSONToBundle(exponentProps));
+    try {
+      bundle.putBundle("exp", BundleJSONConverter.convertToBundle(exponentProps));
+    } catch (JSONException e) {
+      throw new Error("JSONObject failed to be converted to Bundle", e);
+    }
 
     if (!delegate.isInForeground()) {
       return new RNObject("com.facebook.react.ReactInstanceManager");
@@ -526,9 +515,10 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
     }
 
     mReactInstanceManager.onHostResume(this, this);
+    String appKey = mManifest.getAppKey();
     mReactRootView.call("startReactApplication",
       mReactInstanceManager.get(),
-      mManifest.optString(ExponentManifest.MANIFEST_APP_KEY_KEY, KernelConstants.DEFAULT_APPLICATION_KEY),
+      appKey != null ? appKey : KernelConstants.DEFAULT_APPLICATION_KEY,
       initialProps(bundle));
 
     return mReactInstanceManager;
@@ -541,7 +531,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
       return true;
     }
 
-    ErrorRecoveryManager errorRecoveryManager = ErrorRecoveryManager.getInstance(mExperienceId);
+    ErrorRecoveryManager errorRecoveryManager = ErrorRecoveryManager.getInstance(mExperienceKey);
 
     errorRecoveryManager.markErrored();
 
@@ -618,8 +608,9 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
   @Override
   public void requestPermissions(final String[] permissions, final int requestCode, final PermissionListener listener) {
     if (requestCode == EXPONENT_PERMISSIONS_REQUEST) {
-      mScopedPermissionsRequester = new ScopedPermissionsRequester(mExperienceId);
-      mScopedPermissionsRequester.requestPermissions(this, mManifest.optString(ExponentManifest.MANIFEST_NAME_KEY), permissions, listener);
+      @Nullable String name = mManifest.getName();
+      mScopedPermissionsRequester = new ScopedPermissionsRequester(mExperienceKey);
+      mScopedPermissionsRequester.requestPermissions(this, name != null ? name : "", permissions, listener);
     } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       super.requestPermissions(permissions, requestCode);
     }
@@ -630,8 +621,9 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
   public void onRequestPermissionsResult(final int requestCode, final String[] permissions, @NonNull final int[] grantResults) {
     if (requestCode == EXPONENT_PERMISSIONS_REQUEST) {
       if (permissions.length > 0 && grantResults.length == permissions.length && mScopedPermissionsRequester != null) {
-        mScopedPermissionsRequester.onRequestPermissionsResult(permissions, grantResults);
-        mScopedPermissionsRequester = null;
+        if (mScopedPermissionsRequester.onRequestPermissionsResult(permissions, grantResults)) {
+          mScopedPermissionsRequester = null;
+        }
       }
     } else {
       super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -642,7 +634,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
   @Override
   public int checkPermission(final String permission, final int pid, final int uid) {
     int globalResult = super.checkPermission(permission, pid, uid);
-    return mExpoKernelServiceRegistry.getPermissionsKernelService().getPermissions(globalResult, getPackageManager(), permission, mExperienceId);
+    return mExpoKernelServiceRegistry.getPermissionsKernelService().getPermissions(globalResult, getPackageManager(), permission, mExperienceKey);
   }
 
   public RNObject getDevSupportManager() {

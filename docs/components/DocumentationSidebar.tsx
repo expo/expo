@@ -1,10 +1,11 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
 import * as React from 'react';
 
 import DocumentationSidebarGroup from '~/components/DocumentationSidebarGroup';
 import DocumentationSidebarLink from '~/components/DocumentationSidebarLink';
 import DocumentationSidebarTitle from '~/components/DocumentationSidebarTitle';
 import VersionSelector from '~/components/VersionSelector';
+import { hiddenSections } from '~/constants/navigation';
 import * as Constants from '~/constants/theme';
 import { NavigationRoute, Url } from '~/types/common';
 
@@ -20,6 +21,16 @@ const STYLES_SIDEBAR = css`
 const STYLES_SECTION_CATEGORY = css`
   margin-bottom: 24px;
 `;
+
+function shouldSkipCategory(info: NavigationRoute) {
+  // For now the /eas route is just responsible for having some index page and
+  // providing a convenient way to view feature preview docs
+  if (info.name === 'Feature Preview') {
+    return true;
+  }
+
+  return false;
+}
 
 function shouldSkipTitle(info: NavigationRoute, parentGroup?: NavigationRoute) {
   if (info.name === parentGroup?.name) {
@@ -66,6 +77,10 @@ export default class DocumentationSidebar extends React.Component<Props> {
   };
 
   private renderCategoryElements = (info: NavigationRoute, parentGroup?: NavigationRoute) => {
+    if (shouldSkipCategory(info)) {
+      return null;
+    }
+
     if (info.children) {
       return (
         <DocumentationSidebarGroup
@@ -112,8 +127,17 @@ export default class DocumentationSidebar extends React.Component<Props> {
           <VersionSelector version={this.props.version} onSetVersion={this.props.onSetVersion} />
         )}
 
-        {this.props.routes.map(categoryInfo => this.renderCategoryElements(categoryInfo))}
+        {this.props.routes.map(categoryInfo => {
+          if (categoryIsHidden(categoryInfo.name)) {
+            return null;
+          }
+          return this.renderCategoryElements(categoryInfo);
+        })}
       </nav>
     );
   }
+}
+
+function categoryIsHidden(categoryName: string): boolean {
+  return hiddenSections.includes(categoryName);
 }

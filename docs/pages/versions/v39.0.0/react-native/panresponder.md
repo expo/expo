@@ -152,7 +152,7 @@ static create(config)
 | ------ | ------ | -------- | ----------- |
 | config | object | Yes      | Refer below |
 
-The config object provides enhanced versions of all of the responder callbacks that provide not only the [`PressEvent`](../pressevent/), but also the `PanResponder` gesture state, by replacing the word `Responder` with `PanResponder` in each of the typical `onResponder*` callbacks. For example, the `config` object would look like:
+The config object provides enhanced versions of all of the responder callbacks that provide not only the [`PressEvent`](pressevent.md), but also the `PanResponder` gesture state, by replacing the word `Responder` with `PanResponder` in each of the typical `onResponder*` callbacks. For example, the `config` object would look like:
 
 - `onMoveShouldSetPanResponder: (e, gestureState) => {...}`
 - `onMoveShouldSetPanResponderCapture: (e, gestureState) => {...}`

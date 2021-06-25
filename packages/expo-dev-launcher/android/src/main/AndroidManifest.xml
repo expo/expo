@@ -1,0 +1,21 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="expo.modules.devlauncher">
+
+  <application>
+    <activity
+      android:name="expo.modules.devlauncher.launcher.DevLauncherActivity"
+      android:screenOrientation="portrait"
+      android:theme="@style/Theme.DevLauncher.LauncherActivity"
+      android:launchMode="singleTask" />
+      
+    <activity
+      android:name="expo.modules.devlauncher.launcher.errors.DevLauncherErrorActivity"
+      android:screenOrientation="portrait"
+      android:theme="@style/Theme.DevLauncher.ErrorActivity"
+      />
+  </application>
+
+  <queries>
+    <package android:name="host.exp.exponent" />
+  </queries>
+</manifest>

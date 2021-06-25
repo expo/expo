@@ -11,7 +11,7 @@
 - (NSDictionary *)getPermissions
 {
   return @{
-           @"status": @(UMPermissionStatusGranted)
+           @"status": @(EXPermissionStatusGranted)
            };
 }
 

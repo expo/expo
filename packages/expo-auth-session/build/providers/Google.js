@@ -186,7 +186,7 @@ export function useAuthRequest(config = {}, redirectUriOptions = {}) {
     }, [config.shouldAutoExchangeCode, result?.type]);
     useEffect(() => {
         let isMounted = true;
-        if (!fullResult && shouldAutoExchangeCode && result?.type === 'success') {
+        if (shouldAutoExchangeCode && result?.type === 'success') {
             const exchangeRequest = new AccessTokenRequest({
                 clientId,
                 clientSecret: config.clientSecret,
@@ -214,7 +214,7 @@ export function useAuthRequest(config = {}, redirectUriOptions = {}) {
             });
         }
         else {
-            setFullResult(fullResult ?? result);
+            setFullResult(result);
         }
         return () => {
             isMounted = false;
@@ -226,7 +226,7 @@ export function useAuthRequest(config = {}, redirectUriOptions = {}) {
         config.clientSecret,
         config.scopes?.join(','),
         request?.codeVerifier,
-        fullResult,
+        result,
     ]);
     return [request, fullResult, promptAsync];
 }

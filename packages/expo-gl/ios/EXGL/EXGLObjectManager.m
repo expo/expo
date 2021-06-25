@@ -2,7 +2,7 @@
 
 #import <UMCore/UMModuleRegistry.h>
 #import <UMCore/UMUIManager.h>
-#import <UMCameraInterface/UMCameraInterface.h>
+#import <ExpoModulesCore/EXCameraInterface.h>
 
 #import <EXGL/EXGLObjectManager.h>
 #import <EXGL/EXGLObject.h>
@@ -44,7 +44,7 @@ UM_REGISTER_MODULE();
 {
   _moduleRegistry = moduleRegistry;
   _uiManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMUIManager)];
-  _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
+  _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
 }
 
 - (EXGLContext *)getContextWithId:(NSNumber *)contextId
@@ -145,7 +145,7 @@ UM_EXPORT_METHOD_AS(createCameraTextureAsync,
 {
   [_uiManager executeUIBlock:^(id view) {
     EXGLContext *glContext = [self getContextWithId:exglCtxId];
-    id<UMCameraInterface> cameraView = (id<UMCameraInterface>)view;
+    id<EXCameraInterface> cameraView = (id<EXCameraInterface>)view;
     
     if (glContext == nil) {
       reject(@"E_GL_BAD_VIEW_TAG", nil, UMErrorWithMessage(@"ExponentGLObjectManager.createCameraTextureAsync: Expected an EXGLView"));
@@ -160,7 +160,7 @@ UM_EXPORT_METHOD_AS(createCameraTextureAsync,
     
     self->_objects[@(cameraTexture.exglObjId)] = cameraTexture;
     resolve(@{ @"exglObjId": @(cameraTexture.exglObjId) });
-  } forView:cameraViewTag implementingProtocol:@protocol(UMCameraInterface)];
+  } forView:cameraViewTag implementingProtocol:@protocol(EXCameraInterface)];
 }
 
 @end

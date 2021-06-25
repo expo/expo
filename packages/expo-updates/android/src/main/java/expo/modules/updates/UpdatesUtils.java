@@ -2,7 +2,6 @@ package expo.modules.updates;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -14,6 +13,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import org.apache.commons.io.FileUtils;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -24,6 +24,16 @@ import java.lang.ref.WeakReference;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
+import java.util.TimeZone;
 
 import androidx.annotation.Nullable;
 import expo.modules.updates.db.entity.AssetEntity;
@@ -33,6 +43,24 @@ public class UpdatesUtils {
   private static final String TAG = UpdatesUtils.class.getSimpleName();
   private static final String UPDATES_DIRECTORY_NAME = ".expo-internal";
   private static final String UPDATES_EVENT_NAME = "Expo.nativeUpdatesEvent";
+
+  public static Map<String,String> getHeadersMapFromJSONString(String stringifiedJSON) throws Exception {
+    JSONObject jsonObject = new JSONObject(stringifiedJSON);
+    Iterator<String> keys = jsonObject.keys();
+    Map<String, String> newMap = new HashMap<>();
+    while (keys.hasNext()) {
+      String key = keys.next();
+      String val;
+      try {
+        val = (String) jsonObject.get(key);
+      } catch (ClassCastException e) {
+        throw new Exception("The values in the JSON object must be strings");
+      }
+      newMap.put(key, val);
+
+    }
+    return newMap;
+  }
 
   public static File getOrCreateUpdatesDirectory(Context context) throws Exception {
     File updatesDirectory = new File(context.getFilesDir(), UPDATES_DIRECTORY_NAME);
@@ -93,6 +121,10 @@ public class UpdatesUtils {
   }
 
   public static String createFilenameForAsset(AssetEntity asset) {
+    if (asset.key == null) {
+      // create a filename that's unlikely to collide with any other asset
+      return "asset-" + new Date().getTime() + "-" + new Random().nextInt();
+    }
     return asset.key;
   }
 
@@ -166,7 +198,10 @@ public class UpdatesUtils {
     } else if (sdkVersion != null && sdkVersion.length() > 0) {
       return sdkVersion;
     } else {
-      throw new AssertionError("One of expo_runtime_version or expo_sdk_version must be defined in the Android app manifest");
+      // various places in the code assume that we have a nonnull runtimeVersion, so if the developer
+      // hasn't configured either runtimeVersion or sdkVersion, we'll use a dummy value of "1" but warn
+      // the developer in JS that they need to configure one of these values
+      return "1";
     }
   }
 
@@ -180,5 +215,19 @@ public class UpdatesUtils {
       hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
     }
     return new String(hexChars);
+  }
+
+  public static Date parseDateString(String dateString) throws ParseException {
+    try {
+      DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.US);
+      return formatter.parse(dateString);
+    } catch (ParseException | IllegalArgumentException e) {
+      Log.e(TAG, "Failed to parse date string on first try: " + dateString, e);
+      // some old Android versions don't support the 'X' character in SimpleDateFormat, so try without this
+      DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
+      formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+      // throw if this fails too
+      return formatter.parse(dateString);
+    }
   }
 }

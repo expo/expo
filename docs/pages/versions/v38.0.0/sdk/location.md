@@ -22,14 +22,14 @@ In Managed and bare apps, `Location` requires `Permissions.LOCATION`.
 
 In order to use [Background Location Methods](#background-location-methods), the following requirements apply:
 
-- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](../permissions/#permissionslocation) for more details.
-- `"location"` background mode must be specified in `Info.plist` file. See [background tasks configuration guide](../task-manager/#configuration). **(_iOS only_)**
-- Background location task must be defined in the top-level scope, using [TaskManager.defineTask](../task-manager/#taskmanagerdefinetasktaskname-task).
+- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](permissions.md#permissionslocation) for more details.
+- `"location"` background mode must be specified in `Info.plist` file. See [background tasks configuration guide](task-manager.md#configuration). **(_iOS only_)**
+- Background location task must be defined in the top-level scope, using [TaskManager.defineTask](task-manager.md#taskmanagerdefinetasktaskname-task).
 
 In order to use [Geofencing Methods](#geofencing-methods), the following requirements apply:
 
-- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](../permissions/#permissionslocation) for more details.
-- Geofencing task must be defined in the top-level scope, using [TaskManager.defineTask](../task-manager/#taskmanagerdefinetasktaskname-task).
+- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](permissions.md#permissionslocation) for more details.
+- Geofencing task must be defined in the top-level scope, using [TaskManager.defineTask](task-manager.md#taskmanagerdefinetasktaskname-task).
 - On iOS, there is a [limit of 20](https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions) `regions` that can be simultaneously monitored.
 
 ## Usage
@@ -104,7 +104,7 @@ Asks the user to grant permissions for location. Alias for `Permissions.askAsync
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse), where `ios` field is type of [PermissionDetailsLocationIOS](#PermissionDetailsLocationIOS) and `android` field is type of [PermissionDetailsLocationAndroid](#PermissionDetailsLocationIOS).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse), where `ios` field is type of [PermissionDetailsLocationIOS](#PermissionDetailsLocationIOS) and `android` field is type of [PermissionDetailsLocationAndroid](#PermissionDetailsLocationIOS).
 
 ### `Location.getPermissionsAsync()`
 
@@ -112,7 +112,7 @@ Checks user's permissions for accessing location. Alias for `Permissions.getAsyn
 
 #### Returns
 
-A promise that resolves to an object of type [PermissionResponse](../permissions/#permissionresponse), where `ios` field is type of [PermissionDetailsLocationIOS](#PermissionDetailsLocationIOS) and `android` field is type of [PermissionDetailsLocationAndroid](#PermissionDetailsLocationIOS).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse), where `ios` field is type of [PermissionDetailsLocationIOS](#PermissionDetailsLocationIOS) and `android` field is type of [PermissionDetailsLocationAndroid](#PermissionDetailsLocationIOS).
 
 ### `Location.getLastKnownPositionAsync()`
 
@@ -352,7 +352,7 @@ A promise resolving to boolean value indicating whether the location task is sta
 ## Geofencing Methods
 
 Geofencing API notifies your app when the device enters or leaves geographical regions you set up.
-To make it work in the background, it uses [TaskManager](../task-manager/) Native API under the hood. Make sure you've followed the required steps detailed [here](#configuration).
+To make it work in the background, it uses [TaskManager](task-manager.md) Native API under the hood. Make sure you've followed the required steps detailed [here](#configuration).
 
 ### `Location.startGeofencingAsync(taskName, regions)`
 

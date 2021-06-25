@@ -2,6 +2,7 @@
 
 @import XCTest;
 
+#import <EXUpdates/EXUpdatesAsset.h>
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesLegacyUpdate.h>
 #import <EXUpdates/EXUpdatesUtils.h>
@@ -51,27 +52,16 @@
   XCTAssert([@"https://exp.host:47" isEqualToString:[EXUpdatesConfig normalizedURLOrigin:urlOtherPort]], @"should return a normalized URL origin with port if non-default port is specified");
 }
 
-- (void)testBundledAssetBaseUrl_assetUrlOverride
+- (void)testAssetFilename
 {
-  EXUpdatesConfig *config = [[EXUpdatesConfig alloc] init];
-  [config loadConfigFromDictionary:@{ @"EXUpdatesURL": @"https://esamelson.github.io/self-hosting-test/ios-index.json", @"EXUpdatesSDKVersion": @"38.0.0" }];
+  EXUpdatesAsset *asset1 = [[EXUpdatesAsset alloc] initWithKey:nil type:@"bundle"];
+  EXUpdatesAsset *asset2 = [[EXUpdatesAsset alloc] initWithKey:nil type:@"bundle"];
+  XCTAssertNotEqualObjects(asset1.filename, asset2.filename, @"Asset filenames with null keys should be unique");
 
-  NSString *absoluteUrlString = @"https://xxx.dev/~assets";
-  NSURL *absoluteExpected = [NSURL URLWithString:absoluteUrlString];
-  NSURL *absoluteActual = [EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:@{ @"assetUrlOverride": absoluteUrlString } config:config];
-  XCTAssert([absoluteActual isEqual:absoluteExpected], @"should return the value of assetUrlOverride if it's an absolute URL");
-
-  NSURL *relativeExpected = [NSURL URLWithString:@"https://esamelson.github.io/self-hosting-test/my_assets"];
-  NSURL *relativeActual = [EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:@{ @"assetUrlOverride": @"my_assets" } config:config];
-  XCTAssert([relativeActual isEqual:relativeExpected], @"should return a URL relative to manifest URL base if it's a relative URL");
-
-  NSURL *relativeDotSlashExpected = [NSURL URLWithString:@"https://esamelson.github.io/self-hosting-test/assets"];
-  NSURL *relativeDotSlashActual = [EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:@{ @"assetUrlOverride": @"./assets" } config:config];
-  XCTAssert([relativeDotSlashActual isEqual:relativeDotSlashExpected], @"should return a URL relative to manifest URL base with `./` resolved correctly if it's a relative URL");
-
-  NSURL *defaultExpected = [NSURL URLWithString:@"https://esamelson.github.io/self-hosting-test/assets"];
-  NSURL *defaultActual = [EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:@{} config:config];
-  XCTAssert([defaultActual isEqual:defaultExpected], @"should return a URL with `assets` relative to manifest URL base if unspecified");
+  EXUpdatesAsset *assetSetFilename = [[EXUpdatesAsset alloc] initWithKey:nil type:@"bundle"];
+  NSString *filenameFromDatabase = @"filename.png";
+  assetSetFilename.filename = filenameFromDatabase;
+  XCTAssertEqualObjects(filenameFromDatabase, assetSetFilename.filename, @"Should be able to override the default asset filename if the database has something different");
 }
 
 @end

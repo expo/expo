@@ -29,7 +29,7 @@ class GetAlbumsTests {
 
   @Test
   fun `GetAlbums should resolve with correct response`() {
-    //arrange
+    // arrange
     val bucketDisplayName = "Some Album Name"
 
     val cursor = mockCursor(arrayOf(
@@ -40,10 +40,10 @@ class GetAlbumsTests {
 
     val context = mockContext with mockContentResolver(cursor)
 
-    //act
+    // act
     TestGetAlbums(context, promise).execute()
 
-    //assert
+    // assert
     promiseResolvedWithType<List<Bundle>>(promise) {
       assertEquals(1, it.size)
 
@@ -56,7 +56,7 @@ class GetAlbumsTests {
 
   @Test
   fun `GetAlbums should not list albums with null name`() {
-    //arrange
+    // arrange
     val bucketId = 123456
     val bucketDisplayName = null
 
@@ -67,10 +67,10 @@ class GetAlbumsTests {
 
     val context = mockContext with mockContentResolver(cursor)
 
-    //act
+    // act
     TestGetAlbums(context, promise).execute()
 
-    //assert
+    // assert
     promiseResolvedWithType<List<Bundle>>(promise) {
       assertEquals(0, it.size)
     }
@@ -78,37 +78,37 @@ class GetAlbumsTests {
 
   @Test
   fun `GetAlbums should reject on null cursor`() {
-    //arrange
+    // arrange
     val context = mockContext with mockContentResolver(null)
 
-    //act
+    // act
     TestGetAlbums(context, promise).execute()
 
-    //assert
+    // assert
     assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD)
   }
 
   @Test
   fun `GetAlbums should reject on SecurityException`() {
-    //arrange
+    // arrange
     val context = mockContext with throwableContentResolver(SecurityException())
 
-    //act
+    // act
     TestGetAlbums(context, promise).execute()
 
-    //assert
+    // assert
     assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD_PERMISSION)
   }
 
   @Test
   fun `GetAlbums should reject on IllegalArgumentException`() {
-    //arrange
+    // arrange
     val context = mockContext with throwableContentResolver(IllegalArgumentException())
 
-    //act
+    // act
     TestGetAlbums(context, promise).execute()
 
-    //assert
+    // assert
     assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD)
   }
 

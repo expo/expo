@@ -8,6 +8,8 @@ import {
   IAPResponseCode,
   purchaseItemAsync,
   setPurchaseListener,
+  IAPItemDetails,
+  InAppPurchase,
 } from 'expo-in-app-purchases';
 import React from 'react';
 import {
@@ -64,7 +66,7 @@ export default class InAppPurchases extends React.Component<any, any> {
     // Set purchase listener
     setPurchaseListener(({ responseCode, results, errorCode }) => {
       if (responseCode === IAPResponseCode.OK) {
-        for (const purchase of results) {
+        for (const purchase of results!) {
           console.log(`Successfully purchased ${purchase.productId}`);
           if (!purchase.acknowledged) {
             finishTransactionAsync(purchase, true);
@@ -91,7 +93,7 @@ export default class InAppPurchases extends React.Component<any, any> {
     }
   }
 
-  renderItem(item: any) {
+  renderItem(item: IAPItemDetails) {
     return (
       <View key={item.productId}>
         <Text style={styles.itemTitle}>{item.title}</Text>
@@ -109,7 +111,7 @@ export default class InAppPurchases extends React.Component<any, any> {
     );
   }
 
-  renderHistoryRecord(record: any) {
+  renderHistoryRecord(record: InAppPurchase) {
     const key = Platform.OS === 'android' ? record.purchaseToken : record.orderId;
     return (
       <View key={key}>

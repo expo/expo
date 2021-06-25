@@ -1,5 +1,5 @@
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
-import { PermissionStatus } from 'unimodules-permissions-interface';
+import { Platform } from '@unimodules/core';
+import { PermissionStatus } from 'expo-modules-core';
 function convertPermissionStatus(status) {
     switch (status) {
         case 'granted':
@@ -26,7 +26,7 @@ function convertPermissionStatus(status) {
     }
 }
 async function resolvePermissionAsync({ shouldAsk, }) {
-    if (!canUseDOM) {
+    if (!Platform.isDOMAvailable) {
         return convertPermissionStatus('denied');
     }
     const { Notification = {} } = window;

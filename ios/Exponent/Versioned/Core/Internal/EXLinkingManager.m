@@ -27,6 +27,9 @@ EX_EXPORT_SCOPED_MODULE(RCTLinkingManager, KernelLinkingManager);
   if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
     _kernelLinkingDelegate = kernelServiceInstance;
     _initialUrl = params[@"initialUri"];
+    if (_initialUrl == [NSNull null]) {
+      _initialUrl = nil;
+    }
   }
   return self;
 }

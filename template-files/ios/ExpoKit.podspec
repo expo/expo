@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.license = 'MIT'
   s.author = "650 Industries, Inc."
   s.requires_arc = true
-  s.platform = :ios, "10.0"
+  s.platform = :ios, "11.0"
   s.default_subspec = "Core"
   s.source = { :git => "http://github.com/expo/expo.git" }
   s.xcconfig = {
@@ -30,16 +30,13 @@ Pod::Spec.new do |s|
     ss.exclude_files = "Exponent/Supporting/**", "Exponent/Versioned/Optional/**/*.{h,m}"
 
 ${IOS_EXPOKIT_DEPS}
-    ss.dependency 'React' # explicit dependency required for CocoaPods >= 1.5.0
+    ss.dependency 'React-Core' # explicit dependency required for CocoaPods >= 1.5.0
+    ss.dependency 'ReactCommon' # needed for react-native-reanimated, see https://github.com/expo/expo/pull/11096#how
 
     # Universal modules required by ExpoKit so the code compiles
     ss.dependency 'UMCore'
+    ss.dependency 'ExpoModulesCore'
     ss.dependency 'UMReactNativeAdapter'
-    ss.dependency 'UMSensorsInterface'
-    ss.dependency 'UMFileSystemInterface'
-    ss.dependency 'UMPermissionsInterface'
-    ss.dependency 'UMCameraInterface'
-    ss.dependency 'UMConstantsInterface'
   end
 
   s.subspec "Payments" do |ss|

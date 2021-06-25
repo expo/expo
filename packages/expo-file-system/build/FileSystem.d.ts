@@ -1,6 +1,6 @@
 import { EventEmitter, Subscription } from '@unimodules/core';
-import { DownloadOptions, DownloadPauseState, DownloadProgressCallback, DownloadProgressData, DownloadResult, EncodingType, FileInfo, FileSystemAcceptedUploadHttpMethod, FileSystemDownloadResult, FileSystemSessionType, FileSystemUploadOptions, FileSystemUploadResult, FileSystemUploadType, ProgressEvent, ReadingOptions, WritingOptions } from './FileSystem.types';
-export { DownloadOptions, DownloadPauseState, DownloadProgressCallback, DownloadProgressData, DownloadResult, EncodingType, FileInfo, FileSystemDownloadResult, FileSystemAcceptedUploadHttpMethod, FileSystemSessionType, FileSystemUploadOptions, FileSystemUploadResult, FileSystemUploadType, ProgressEvent, ReadingOptions, WritingOptions, };
+import { DownloadOptions, DownloadPauseState, DownloadProgressCallback, DownloadProgressData, DownloadResult, EncodingType, FileInfo, FileSystemAcceptedUploadHttpMethod, FileSystemDownloadResult, FileSystemRequestDirectoryPermissionsResult, FileSystemSessionType, FileSystemUploadOptions, FileSystemUploadResult, FileSystemUploadType, ProgressEvent, ReadingOptions, WritingOptions } from './FileSystem.types';
+export { DownloadOptions, DownloadPauseState, DownloadProgressCallback, DownloadProgressData, DownloadResult, EncodingType, FileInfo, FileSystemDownloadResult, FileSystemRequestDirectoryPermissionsResult, FileSystemAcceptedUploadHttpMethod, FileSystemSessionType, FileSystemUploadOptions, FileSystemUploadResult, FileSystemUploadType, ProgressEvent, ReadingOptions, WritingOptions, };
 export declare const documentDirectory: string | null;
 export declare const cacheDirectory: string | null;
 export declare const bundledAssets: string | null, bundleDirectory: string | null;
@@ -48,4 +48,19 @@ export declare class DownloadResumable {
     savable(): DownloadPauseState;
     _addSubscription(): void;
     _removeSubscription(): void;
+}
+/**
+ * Android only
+ */
+export declare namespace StorageAccessFramework {
+    function getUriForDirectoryInRoot(folderName: string): string;
+    function requestDirectoryPermissionsAsync(initialFileUrl?: string | null): Promise<FileSystemRequestDirectoryPermissionsResult>;
+    function readDirectoryAsync(dirUri: string): Promise<string[]>;
+    function makeDirectoryAsync(parentUri: string, dirName: string): Promise<string>;
+    function createFileAsync(parentUri: string, fileName: string, mimeType: string): Promise<string>;
+    const writeAsStringAsync: typeof import("./FileSystem").writeAsStringAsync;
+    const readAsStringAsync: typeof import("./FileSystem").readAsStringAsync;
+    const deleteAsync: typeof import("./FileSystem").deleteAsync;
+    const moveAsync: typeof import("./FileSystem").moveAsync;
+    const copyAsync: typeof import("./FileSystem").copyAsync;
 }

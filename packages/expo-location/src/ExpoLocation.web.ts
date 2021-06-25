@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
 
 import {
   LocationLastKnownOptions,
@@ -144,6 +144,18 @@ export default {
 
   getPermissionsAsync,
   async requestPermissionsAsync(): Promise<PermissionResponse> {
+    return getPermissionsAsync();
+  },
+  async requestForegroundPermissionsAsync(): Promise<PermissionResponse> {
+    return getPermissionsAsync();
+  },
+  async requestBackgroundPermissionsAsync(): Promise<PermissionResponse> {
+    return getPermissionsAsync();
+  },
+  async getForegroundPermissionsAsync(): Promise<PermissionResponse> {
+    return getPermissionsAsync();
+  },
+  async getBackgroundPermissionsAsync(): Promise<PermissionResponse> {
     return getPermissionsAsync();
   },
 

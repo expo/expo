@@ -1,7 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <Photos/Photos.h>
-#import <MobileCoreServices/MobileCoreServices.h>
+#import <PhotosUI/PhotosUI.h>
+#import <AVFoundation/AVFoundation.h>
+#import <CoreServices/CoreServices.h>
 
 #import <EXMediaLibrary/EXMediaLibrary.h>
 #import <EXMediaLibrary/EXSaveToLibraryDelegate.h>
@@ -12,10 +14,9 @@
 #import <UMCore/UMUtilities.h>
 #import <UMCore/UMEventEmitterService.h>
 
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
-
-#import <UMPermissionsInterface/UMPermissionsInterface.h>
-#import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
+#import <ExpoModulesCore/EXFileSystemInterface.h>
+#import <ExpoModulesCore/EXPermissionsInterface.h>
+#import <ExpoModulesCore/EXPermissionsMethodsDelegate.h>
 
 NSString *const EXAssetMediaTypeAudio = @"audio";
 NSString *const EXAssetMediaTypePhoto = @"photo";
@@ -32,8 +33,8 @@ NSString *const EXMediaLibraryShouldDownloadFromNetworkKey = @"shouldDownloadFro
 @interface EXMediaLibrary ()
 
 @property (nonatomic, strong) PHFetchResult *allAssetsFetchResult;
-@property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
-@property (nonatomic, weak) id<UMFileSystemInterface> fileSystem;
+@property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
+@property (nonatomic, weak) id<EXFileSystemInterface> fileSystem;
 @property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
 @property (nonatomic, strong) NSMutableSet *saveToLibraryDelegates;
 
@@ -53,10 +54,10 @@ UM_EXPORT_MODULE(ExponentMediaLibrary);
 
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
-  _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
+  _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
-  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
-  [UMPermissionsMethodsDelegate registerRequesters:@[[EXMediaLibraryMediaLibraryPermissionRequester new], [EXMediaLibraryMediaLibraryWriteOnlyPermissionRequester new]] withPermissionsManager:_permissionsManager];
+  _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
+  [EXPermissionsMethodsDelegate registerRequesters:@[[EXMediaLibraryMediaLibraryPermissionRequester new], [EXMediaLibraryMediaLibraryWriteOnlyPermissionRequester new]] withPermissionsManager:_permissionsManager];
 }
 
 - (dispatch_queue_t)methodQueue
@@ -111,7 +112,7 @@ UM_EXPORT_METHOD_AS(getPermissionsAsync,
                     resolve:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                       withRequester:[self requesterClass:writeOnly]
                                                             resolve:resolve
                                                              reject:reject];
@@ -122,10 +123,28 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                     resolve:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[self requesterClass:writeOnly]
                                                                resolve:resolve
                                                                 reject:reject];
+}
+
+UM_EXPORT_METHOD_AS(presentPermissionsPickerAsync,
+                    presentPermissionsPickerAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+#ifdef __IPHONE_14_0
+  if (@available(iOS 14, *)) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [[PHPhotoLibrary sharedPhotoLibrary] presentLimitedLibraryPickerFromViewController:[[[[UIApplication sharedApplication] delegate] window] rootViewController]];
+      resolve(nil);
+    });
+  } else {
+#endif
+    reject(@"ERR_METHOD_UNAVAILABLE", @"presentLimitedLibraryPickerAsync is only available on iOS >= 14.", nil);
+#ifdef __IPHONE_14_0 
+  }
+#endif
 }
 
 UM_EXPORT_METHOD_AS(createAssetAsync,
@@ -154,7 +173,7 @@ UM_EXPORT_METHOD_AS(createAssetAsync,
     return;
   }
   
-  if (!([_fileSystem permissionsForURI:assetUrl] & UMFileSystemPermissionRead)) {
+  if (!([_fileSystem permissionsForURI:assetUrl] & EXFileSystemPermissionRead)) {
     reject(@"E_FILESYSTEM_PERMISSIONS", [NSString stringWithFormat:@"File '%@' isn't readable.", assetUrl], nil);
     return;
   }
@@ -408,7 +427,9 @@ UM_EXPORT_METHOD_AS(getAssetInfoAsync,
   
   PHAsset *asset = [EXMediaLibrary _getAssetById:assetId];
     
-  BOOL shouldDownloadFromNetwork = [[options objectForKey:EXMediaLibraryShouldDownloadFromNetworkKey] boolValue] ?: YES;
+  BOOL shouldDownloadFromNetwork = [options objectForKey:EXMediaLibraryShouldDownloadFromNetworkKey] != nil
+    ? [[options objectForKey:EXMediaLibraryShouldDownloadFromNetworkKey] boolValue]
+    : YES;
   
   if (asset) {
     NSMutableDictionary *result = [EXMediaLibrary _exportAssetInfo:asset];
@@ -420,7 +441,11 @@ UM_EXPORT_METHOD_AS(getAssetInfoAsync,
                                  completionHandler:^(PHContentEditingInput * _Nullable contentEditingInput, NSDictionary * _Nonnull info) {
         result[@"localUri"] = [contentEditingInput.fullSizeImageURL absoluteString];
         result[@"orientation"] = @(contentEditingInput.fullSizeImageOrientation);
-        result[@"isNetworkAsset"] = [info objectForKey:PHContentEditingInputResultIsInCloudKey];
+        if (!shouldDownloadFromNetwork) {
+          result[@"isNetworkAsset"] = [info objectForKey:PHContentEditingInputResultIsInCloudKey] != nil
+            ? @([[info objectForKey:PHContentEditingInputResultIsInCloudKey] boolValue])
+            : @(NO);
+        }
         
         CIImage *ciImage = [CIImage imageWithContentsOfURL:contentEditingInput.fullSizeImageURL];
         result[@"exif"] = ciImage.properties;
@@ -449,7 +474,11 @@ UM_EXPORT_METHOD_AS(getAssetInfoAsync,
             [exporter exportAsynchronouslyWithCompletionHandler:^{
                 if (exporter.status == AVAssetExportSessionStatusCompleted) {
                     result[@"localUri"] = videoFileOutputURL.absoluteString;
-                    result[@"isNetworkAsset"] = [info objectForKey:PHImageResultIsInCloudKey];
+                    if (!shouldDownloadFromNetwork) {
+                      result[@"isNetworkAsset"] = [info objectForKey:PHImageResultIsInCloudKey] != nil
+                        ? [info objectForKey:PHImageResultIsInCloudKey]
+                        : @(NO);
+                    }
                     resolve(result);
                 } else if (exporter.status == AVAssetExportSessionStatusFailed) {
                     reject(@"E_EXPORT_FAILED", @"Could not export the requested video.", nil);
@@ -461,7 +490,11 @@ UM_EXPORT_METHOD_AS(getAssetInfoAsync,
         } else {
             AVURLAsset *urlAsset = (AVURLAsset *)asset;
             result[@"localUri"] = [[urlAsset URL] absoluteString];
-            result[@"isNetworkAsset"] = [info objectForKey:PHImageResultIsInCloudKey];
+            if (!shouldDownloadFromNetwork) {
+              result[@"isNetworkAsset"] = [info objectForKey:PHImageResultIsInCloudKey] != nil
+                ? [info objectForKey:PHImageResultIsInCloudKey]
+                : @(NO);
+            }
             resolve(result);
         }
       }];
@@ -544,12 +577,13 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
       _allAssetsFetchResult = changeDetails.fetchResultAfterChanges;
       
       // PHPhotoLibraryChangeObserver is calling this method too often, so we need to filter out some calls before they are sent to JS.
-      // Ultimately, we emit an event only when something has been inserted or removed from the library.
+      // Ultimately, we emit an event when something has been inserted or removed from the library, or the user changed the permissions.
       if (changeDetails.hasIncrementalChanges && (changeDetails.insertedObjects.count > 0 || changeDetails.removedObjects.count > 0)) {
         NSMutableArray *insertedAssets = [NSMutableArray new];
         NSMutableArray *deletedAssets = [NSMutableArray new];
         NSMutableArray *updatedAssets = [NSMutableArray new];
         NSDictionary *body = @{
+                               @"hasIncrementalChanges": @(true),
                                @"insertedAssets": insertedAssets,
                                @"deletedAssets": deletedAssets,
                                @"updatedAssets": updatedAssets
@@ -566,6 +600,15 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
         }
         
         [_eventEmitter sendEventWithName:EXMediaLibraryDidChangeEvent body:body];
+        return;
+      }
+      
+      // Emit event when the scope of changes were too large and incremental changes could not be provided.
+      // For example, when the user changed the limited permissions.
+      if (!changeDetails.hasIncrementalChanges) {
+        [_eventEmitter sendEventWithName:EXMediaLibraryDidChangeEvent body:@{
+          @"hasIncrementalChanges": @(false)
+        }];
       }
     }
   }
@@ -977,12 +1020,10 @@ UM_EXPORT_METHOD_AS(getAssetsAsync,
                                                                @"screenshot": @(PHAssetMediaSubtypePhotoScreenshot),
                                                                @"highFrameRate": @(PHAssetMediaSubtypeVideoHighFrameRate)
                                                                } mutableCopy];
-  
+
   subtypesDict[@"livePhoto"] = @(PHAssetMediaSubtypePhotoLive);
-  if (@available(iOS 10.2, *)) {
-    subtypesDict[@"depthEffect"] = @(PHAssetMediaSubtypePhotoDepthEffect);
-  }
-  
+  subtypesDict[@"depthEffect"] = @(PHAssetMediaSubtypePhotoDepthEffect);
+
   for (NSString *subtype in subtypesDict) {
     if (mediaSubtypes & [subtypesDict[subtype] unsignedIntegerValue]) {
       [subtypes addObject:subtype];

@@ -2,8 +2,8 @@
 
 #import <Foundation/Foundation.h>
 #import <UMCore/UMInternalModule.h>
-#import <UMBarCodeScannerInterface/UMBarCodeScannerProviderInterface.h>
+#import <ExpoModulesCore/EXBarCodeScannerProviderInterface.h>
 
-@interface EXBarCodeScannerProvider : NSObject <UMInternalModule, UMBarCodeScannerProviderInterface>
+@interface EXBarCodeScannerProvider : NSObject <UMInternalModule, EXBarCodeScannerProviderInterface>
 
 @end

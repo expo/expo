@@ -8,7 +8,7 @@ import { InlineCode } from '~/components/base/code';
 
 **`expo-google-app-auth`** provides Google authentication integration for Expo apps using a secure system web browser with native [**`expo-app-auth`**][expo-app-auth]. This is better than a WebView because you can reuse credentials saved on the device. This module uses [PKCE](https://tools.ietf.org/html/rfc7636) for secure native authentication. You won't need to define a provider config because this package utilizes Open ID Connect [auto discovery](https://openid.net/specs/openid-connect-discovery-1_0.html).
 
-<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6884' }} />
+<PlatformsSection android emulator ios simulator />
 
 ### How it works
 
@@ -16,7 +16,7 @@ You'll get an access token after a successful login. Once you have the token, if
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-google-app-auth`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, you will need to run `npx pod-install` and do a new build after installing the package because this library pulls in [**`expo-app-auth`**][expo-app-auth] as a dependency.
+For [managed][managed-workflow] apps, you'll need to run `expo install expo-google-app-auth`. To use it in a [bare][bare-workflow] React Native app, you will need to run `npx pod-install` and do a new build after installing the package because this library pulls in [**`expo-app-auth`**][expo-app-auth] as a dependency.
 
 ## API
 
@@ -70,7 +70,7 @@ The difference between this method and native authentication are very sparce. Go
 | redirectUrl                             | <InlineCode>string \| undefined</InlineCode> | Defaults to `${AppAuth.OAuthRedirect}:/oauth2redirect/google`. Optionally you can define your own redirect URL, just make sure to see the note below.               |
 
 **Note on `redirectUrl`**:
-If you choose to provide your own `redirectUrl`, it should start with the value returned by [`AppAuth.OAuthRedirect`](../../sdk/app-auth/#appauthoauthredirect). This way, the method will function correctly and consistently whether you are testing in the Expo client or as a standalone app.
+If you choose to provide your own `redirectUrl`, it should start with the value returned by [`AppAuth.OAuthRedirect`](../sdk/app-auth.md#appauthoauthredirect). This way, the method will function correctly and consistently whether you are testing in the Expo client or as a standalone app.
 
 **Returns**
 
@@ -286,10 +286,10 @@ let result = await AuthSession.startAsync({
 
 [rn-fetch]: https://reactnative.dev/docs/network.html#fetch
 [google-api-explorer]: https://developers.google.com/apis-explorer/
-[managed-workflow]: ../../introduction/managed-vs-bare/#managed-workflow
-[bare-workflow]: ../../introduction/managed-vs-bare/#bare-workflow
-[expo-app-auth]: ../app-auth
-[expo-app-session]: ../auth-session
+[managed-workflow]: ../../../introduction/managed-vs-bare.md#managed-workflow
+[bare-workflow]: ../../../introduction/managed-vs-bare.md#bare-workflow
+[expo-app-auth]: app-auth.md
+[expo-app-session]: auth-session.md
 [auth-loginhint]: https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
 [g-using-apis]: https://gsuite-developers.googleblog.com/2012/01/tips-on-using-apis-discovery-service.html
 [g-creds]: https://console.developers.google.com/apis/credentials

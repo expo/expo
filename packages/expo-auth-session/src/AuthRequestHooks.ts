@@ -14,9 +14,16 @@ export function useAutoDiscovery(issuerOrDiscovery: IssuerOrDiscovery): Discover
   const [discovery, setDiscovery] = useState<DiscoveryDocument | null>(null);
 
   useEffect(() => {
+    let isAllowed = true;
     resolveDiscoveryAsync(issuerOrDiscovery).then(discovery => {
-      setDiscovery(discovery);
+      if (isAllowed) {
+        setDiscovery(discovery);
+      }
     });
+
+    return () => {
+      isAllowed = false;
+    };
   }, [issuerOrDiscovery]);
 
   return discovery;

@@ -20,17 +20,16 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Configuration
 
-In managed apps, the permissions to pick images, from camera ([`Permissions.CAMERA`](../permissions/#permissionscamera)) or camera roll ([`Permissions.MEDIA_LIBRARY`](../permissions/#permissionsmedia_library)), are added automatically.
+In managed apps, the permissions to pick images, from camera ([`Permissions.CAMERA`](permissions.md#permissionscamera)) or camera roll ([`Permissions.MEDIA_LIBRARY`](permissions.md#permissionsmedia_library)), are added automatically.
 
 ## Usage
 
-<SnackInline label='Image Picker' dependencies={['expo-constants', 'expo-permissions', 'expo-image-picker']}>
+<SnackInline label='Image Picker' dependencies={['expo-image-picker']}>
 
 ```js
 import React, { useState, useEffect } from 'react';
 import { Button, Image, View, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import Constants from 'expo-constants';
 
 export default function ImagePickerExample() {
   const [image, setImage] = useState(null);
@@ -83,6 +82,15 @@ When you run this example and pick an image, you will see the image that you pic
 }
 ```
 
+## Using ImagePicker with AWS S3
+
+Please refer to the [with-aws-storage-upload example](https://github.com/expo/examples/tree/master/with-aws-storage-upload). Follow [Amplify docs](https://docs.amplify.aws/) to set your project up correctly.
+
+
+## Using ImagePicker with Firebase
+
+Please refer to the [with-firebase-storage-upload example](https://github.com/expo/examples/tree/master/with-firebase-storage-upload). Make sure you follow the ["Using Firebase"](/guides/guides/using-firebase.md) docs to set your project up correctly.
+
 ## API
 
 ```js
@@ -91,7 +99,7 @@ import * as ImagePicker from 'expo-image-picker';
 
 ### `ImagePicker.requestCameraPermissionsAsync()`
 
-Asks the user to grant permissions for accessing camera. Alias for `Permissions.askAsync(Permissions.CAMERA)`. This does nothing on web because the browser camera is not used.
+Asks the user to grant permissions for accessing camera. This does nothing on web because the browser camera is not used.
 
 #### Returns
 
@@ -99,7 +107,7 @@ A promise that resolves to an object of type [CameraPermissionResponse](#imagepi
 
 ### `ImagePicker.requestMediaLibraryPermissionsAsync(writeOnly)`
 
-Asks the user to grant permissions for accessing user's photo. Alias for `Permissions.askAsync(Permissions.MEDIA_LIBRARY)`. This does nothing on web.
+Asks the user to grant permissions for accessing user's photo. This does nothing on web.
 
 #### Arguments
 
@@ -111,7 +119,7 @@ A promise that resolves to an object of type [MediaLibraryPermissionResponse](#i
 
 ### `ImagePicker.getCameraPermissionsAsync()`
 
-Checks user's permissions for accessing camera. Alias for `Permissions.getAsync(Permissions.CAMERA)`.
+Checks user's permissions for accessing camera.
 
 #### Returns
 
@@ -119,7 +127,7 @@ A promise that resolves to an object of type [CameraPermissionResponse](#imagepi
 
 ### `ImagePicker.getMediaLibraryPermissionsAsync()`
 
-Checks user's permissions for accessing photos. Alias for `Permissions.getAsync(Permissions.MEDIA_LIBRARY)`.
+Checks user's permissions for accessing photos.
 
 #### Arguments
 
@@ -132,6 +140,8 @@ A promise that resolves to an object of type [MediaLibraryPermissionResponse](#i
 ### `ImagePicker.launchImageLibraryAsync(options)`
 
 Display the system UI for choosing an image or a video from the phone's library. Requires `Permissions.MEDIA_LIBRARY` on iOS 10 only. On mobile web, this must be called immediately in a user interaction like a button press, otherwise the browser will block the request without a warning.
+
+> **Notes for Web:** The system UI can only be shown after user activation (e.g. a `Button` press). Therefore, calling `launchImageLibraryAsync` in `componentDidMount`, for example, will **not** work as intended. The `cancelled` event will not be returned in the browser due to platform restrictions and inconsistencies across browsers.
 
 #### Arguments
 
@@ -173,6 +183,8 @@ Otherwise, this method returns information about the selected media item. When t
 ### `ImagePicker.launchCameraAsync(options)`
 
 Display the system UI for taking a photo with the camera. Requires `Permissions.CAMERA`. On Android and iOS 10 `Permissions.CAMERA_ROLL` is also required. On mobile web, this must be called immediately in a user interaction like a button press, otherwise the browser will block the request without a warning.
+
+> **Notes for Web:** The system UI can only be shown after user activation (e.g. a `Button` press). Therefore, calling `launchCameraAsync` in `componentDidMount`, for example, will **not** work as intended. The `cancelled` event will not be returned in the browser due to platform restrictions and inconsistencies across browsers.
 
 #### Arguments
 
@@ -263,7 +275,7 @@ Android system sometimes kills the `MainActivity` after the `ImagePicker` finish
 
 ### `ImagePicker.MediaLibraryPermissionResponse`
 
-`ImagePicker.MediaLibraryPermissionResponse` extends [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface` and contains additional iOS-specific field:
+`ImagePicker.MediaLibraryPermissionResponse` extends [PermissionResponse](permissions.md#permissionresponse) type exported by `unimodules-permission-interface` and contains additional iOS-specific field:
 
 - `accessPrivileges` **(string)** - Indicates if your app has access to the whole or only part of the photo library. Possible values are:
   - `all` if the user granted your app access to the whole photo library
@@ -272,7 +284,7 @@ Android system sometimes kills the `MainActivity` after the `ImagePicker` finish
 
 ### `ImagePicker.CameraPermissionResponse`
 
-`ImagePicker.CameraPermissionResponse` alias for [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface`.
+`ImagePicker.CameraPermissionResponse` alias for [PermissionResponse](permissions.md#permissionresponse) type exported by `unimodules-permission-interface`.
 
 ### `ImagePicker.ImagePickerErrorResult`
 

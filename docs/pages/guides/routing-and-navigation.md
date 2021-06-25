@@ -25,5 +25,5 @@ React Navigation is the most popular navigation library in the React Native ecos
 
 ## Alternatives
 
-- An alternative solution for web is to use [Next.js](../../guides/using-nextjs). It provides its own routing system and built-in support for code-splitting. Read more in [Using Next.js with Expo for Web](guides/using-nextjs/).
+- An alternative solution for web is to use [Next.js](../guides/using-nextjs.md). It provides its own routing system and built-in support for code-splitting. Read more in [Using Next.js with Expo for Web](../guides/using-nextjs.md).
 - [React Native Navigation](https://github.com/wix/react-native-navigation) will not work in Expo managed workflow apps, but if you are using a bare React Native app it may be something you will consider. Similar to `createNativeStackNavigator` from React Navigation, it uses the platform native APIs.

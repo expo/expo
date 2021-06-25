@@ -65,9 +65,9 @@ An ID which is used to associate this `InputAccessoryView` to specified TextInpu
 
 ### `style`
 
-| Type                          | Required |
-| ----------------------------- | -------- |
-| [style](../view-style-props/) | No       |
+| Type                         | Required |
+| ---------------------------- | -------- |
+| [style](view-style-props.md) | No       |
 
 # Known issues
 

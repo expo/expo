@@ -7,8 +7,14 @@ import { Event } from '@sentry/types';
 
 // These exact error messages may be different depending on the browser!
 const ERRORS_TO_DISCARD = [
+  // Filter out errors from extensions
+  'chrome-extension://',
+  'moz-extension://',
+  'safari-extension://',
   // This error only appears in Safari
   "undefined is not an object (evaluating 'window.__pad.performLoop')",
+  // This error appears in Firefox related to local storage and flooded our Sentry bandwidth
+  'SecurityError: The operation is insecure.',
 ];
 
 const REPORTED_ERRORS_KEY = 'sentry:reportedErrors';
@@ -45,16 +51,16 @@ export function preprocessSentryError(event: Event) {
 }
 
 // https://gist.github.com/paulirish/5558557
-function isLocalStorageAvailable() {
-  if (!window.localStorage) {
-    return false;
-  }
-
+function isLocalStorageAvailable(): boolean {
   try {
+    if (!window.localStorage) {
+      return false;
+    }
+
     localStorage.setItem('localStorage:test', 'value');
     localStorage.removeItem('localStorage:test');
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
 }

@@ -500,7 +500,21 @@ NATIVE_METHOD(renderbufferStorage) {
 // Renderbuffers (WebGL2)
 // ----------------------
 
-UNIMPL_NATIVE_METHOD(getInternalformatParameter)
+NATIVE_METHOD(getInternalformatParameter) {
+  auto target = ARG(0, GLenum);
+  auto internalformat = ARG(1, GLenum);
+  auto pname = ARG(2, GLenum);
+
+  std::vector<TypedArrayBase::ContentType<TypedArrayKind::Int32Array>> glResults;
+  addBlockingToNextBatch([&] {
+    GLint count;
+    glGetInternalformativ(target, internalformat, GL_NUM_SAMPLE_COUNTS, 1, &count);
+    glResults.resize(count);
+    glGetInternalformativ(target, internalformat, pname, count, glResults.data());
+  });
+
+  return TypedArray<TypedArrayKind::Int32Array>(runtime, glResults);
+}
 
 UNIMPL_NATIVE_METHOD(renderbufferStorageMultisample)
 
@@ -1551,12 +1565,39 @@ NATIVE_METHOD(bindVertexArray) {
 // Extensions
 // ----------
 
+// It may return some extensions that are not specified by WebGL specification nor drafts.
 NATIVE_METHOD(getSupportedExtensions) {
-  return jsi::Array(runtime, 0);
+  // Set with supported extensions is cached to make checks in `getExtension` faster.
+  maybeReadAndCacheSupportedExtensions();
+
+  jsi::Array extensions(runtime, supportedExtensions.size());
+  int i = 0;
+  for (auto const &extensionName : supportedExtensions) {
+    extensions.setValueAtIndex(runtime, i++, jsi::String::createFromUtf8(runtime, extensionName));
+  }
+  return extensions;
 }
 
+#define GL_TEXTURE_MAX_ANISOTROPY_EXT 0x84FE
+#define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF
+
 NATIVE_METHOD(getExtension) {
-  return nullptr;
+  auto name = ARG(0, std::string);
+
+  // There is no `getExtension` equivalent in OpenGL ES so return `null`
+  // if requested extension is not returned by `getSupportedExtensions`.
+  maybeReadAndCacheSupportedExtensions();
+  if (supportedExtensions.find(name) == supportedExtensions.end()) {
+    return nullptr;
+  }
+
+  if (name == "EXT_texture_filter_anisotropic") {
+    jsi::Object result(runtime);
+    result.setProperty(runtime, "TEXTURE_MAX_ANISOTROPY_EXT", jsi::Value(GL_TEXTURE_MAX_ANISOTROPY_EXT));
+    result.setProperty(runtime, "MAX_TEXTURE_MAX_ANISOTROPY_EXT", jsi::Value(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
+    return result;
+  }
+  return jsi::Object(runtime);
 }
 
 // Exponent extensions

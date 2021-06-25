@@ -1,15 +1,16 @@
+// @needsAudit @docsMissing
 export var WebBrowserResultType;
 (function (WebBrowserResultType) {
     /**
-     * iOS only
+     * iOS only.
      */
     WebBrowserResultType["CANCEL"] = "cancel";
     /**
-     * iOS only
+     * iOS only.
      */
     WebBrowserResultType["DISMISS"] = "dismiss";
     /**
-     * Android only
+     * Android only.
      */
     WebBrowserResultType["OPENED"] = "opened";
     WebBrowserResultType["LOCKED"] = "locked";

@@ -1,65 +1,72 @@
 package versioned.host.exp.exponent.modules.api.components.viewpager;
 
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.reactnative.community.viewpager2.adapter.FragmentStateAdapter;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class FragmentAdapter extends FragmentStateAdapter {
-
+    private List<View> childrenViews = new ArrayList<>();
     public FragmentAdapter(@NonNull FragmentActivity fragmentActivity) {
         super(fragmentActivity);
     }
 
-    private ArrayList<Integer> childrenViewIDs = new ArrayList<>();
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        return ViewPagerFragment.newInstance(childrenViewIDs.get(position));
+        return new ViewPagerFragment(childrenViews.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return childrenViewIDs.size();
+        return childrenViews.size();
     }
 
     @Override
     public long getItemId(int position) {
-        return childrenViewIDs.get(position);
+        return childrenViews.get(position).getId();
     }
 
     @Override
     public boolean containsItem(long itemId) {
-        return childrenViewIDs.contains((int) itemId);
+        for(View child: childrenViews) {
+            if((int) itemId == child.getId()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void addFragment(View child, int index) {
-        childrenViewIDs.add(index, child.getId());
+        childrenViews.add(index, child);
         notifyItemInserted(index);
     }
 
     public void removeFragment(View child) {
-        int index = childrenViewIDs.indexOf(child.getId());
+        int index = childrenViews.indexOf(child);
         removeFragmentAt(index);
     }
 
     public void removeFragmentAt(int index) {
-        childrenViewIDs.remove(index);
+        childrenViews.remove(index);
         notifyItemRemoved(index);
     }
 
     public void removeAll() {
-        childrenViewIDs.clear();
+        childrenViews.clear();
         notifyDataSetChanged();
     }
 
-    public int getChildViewIDAt(int index) {
-        return childrenViewIDs.get(index);
+    public View getChildViewAt(int index) {
+        return childrenViews.get(index);
     }
 }

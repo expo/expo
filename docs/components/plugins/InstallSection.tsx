@@ -1,4 +1,5 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
+import { theme } from '@expo/styleguide';
 import * as React from 'react';
 
 import TerminalBlock from './TerminalBlock';
@@ -9,18 +10,21 @@ const STYLES_P = css`
   line-height: 1.8rem;
   margin-top: 1.4rem;
   margin-bottom: 1.4rem;
+  color: ${theme.text.default};
 `;
 
 const STYLES_BOLD = css`
   font-family: ${Constants.fonts.demi};
   font-weight: 400;
   text-decoration: none;
+  color: ${theme.link.default};
   :hover {
     text-decoration: underline;
   }
 `;
 const STYLES_LINK = css`
   text-decoration: none;
+  color: ${theme.link.default};
   :hover {
     text-decoration: underline;
   }
@@ -44,7 +48,7 @@ const InstallSection: React.FC<Props> = ({
     {hideBareInstructions ? null : (
       <p css={STYLES_P}>
         If you're installing this in a{' '}
-        <a css={STYLES_LINK} href="../../introduction/managed-vs-bare/#bare-workflow">
+        <a css={STYLES_LINK} href="/introduction/managed-vs-bare/#bare-workflow">
           bare React Native app
         </a>
         , you should also follow{' '}

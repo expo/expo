@@ -3,6 +3,7 @@ title: StoreReview
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-39/packages/expo-store-review'
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
@@ -10,9 +11,10 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 > If this is used in Android the device will attempt to link to the Play Store using native `Linking` and the `android.playStoreUrl` from `app.config.js` or `app.json` instead.
 
-<PlatformsSection android emulator ios simulator />
 
-![](/static/images/store-review.png)
+<ImageSpotlight src="/static/images/store-review.png" alt="Screenshots of the store review API in action on iOS" />
+
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
@@ -114,8 +116,8 @@ There is no equivalent redirect on Android, you can still open the Play Store to
 const androidPackageName = 'host.exp.exponent';
 // Open the Android Play Store in the browser -> redirects to Play Store on Android
 Linking.openURL(
-  `https://play.google.com/store/apps/details?id=${androidPackageName}?showAllReviews=true`
+  `https://play.google.com/store/apps/details?id=${androidPackageName}&showAllReviews=true`
 );
 // Open the Android Play Store directly
-Linking.openURL(`market://details?id=${androidPackageName}?showAllReviews=true`);
+Linking.openURL(`market://details?id=${androidPackageName}&showAllReviews=true`);
 ```

@@ -6,8 +6,8 @@ title: Using Firebase
 
 ## Usage with Expo
 
-If you'd like to use Firebase in the Expo client with the managed workflow, we'd recommend using the [Firebase JS SDK](https://github.com/firebase/firebase-js-sdk). It supports Authentication, Firestore & Realtime databases, Storage, and Functions on React Native. Other modules like Analytics are [not supported through the Firebase JS SDK](https://firebase.google.com/support/guides/environments_js-sdk), but you can use [expo-firebase-analytics](/versions/latest/sdk/firebase-analytics) for that.
-If you'd like access to the full suite of native firebase tools, we recommend using the bare workflow and [react-native-firebase](https://github.com/invertase/react-native-firebase), because we cannot support this in the Expo client currently.
+If you'd like to use Firebase in the Expo Go app with the managed workflow, we'd recommend using the [Firebase JS SDK](https://github.com/firebase/firebase-js-sdk). It supports Authentication, Firestore & Realtime databases, Storage, and Functions on React Native. Other modules like Analytics are [not supported through the Firebase JS SDK](https://firebase.google.com/support/guides/environments_js-sdk), but you can use [expo-firebase-analytics](/versions/latest/sdk/firebase-analytics) for that.
+If you'd like access to the full suite of native firebase tools, we recommend using the bare workflow and [react-native-firebase](https://github.com/invertase/react-native-firebase), because we cannot support this in the Expo Go app currently.
 
 Luckily, the Firebase JavaScript SDK starting from version 3.1+ has almost full support for React Native, so adding it to our Expo app is super easy. The one caveat covered later in this guide is that the user login components typically provided by the Firebase SDKs will **not** work for React Native, and thus we will have to work around it.
 
@@ -24,7 +24,7 @@ First we need to setup a Firebase Account and create a new project. We will be u
 [Firebase Console](http://console.firebase.google.com/) provides you with an API key, and other identifiers for your project needed for initialization. [firebase-web-start](https://firebase.google.com/docs/database/web/start) has a detailed description of what each field means and where to find them in your console.
 
 ```javascript
-import * as firebase from 'firebase';
+import firebase from 'firebase/app'
 
 // Optionally import the services that you want to use
 //import "firebase/auth";
@@ -201,7 +201,7 @@ function storeHighScore(user, score) {
 
 ## Using Expo with Firestore
 
-[Firestore](https://firebase.google.com/docs/firestore/) is another database offered in Firebase's suite of services. Realtime Database can be thought of as a "JSON tree in the cloud" where your app can listen to and modify different portions of the tree. On the other hand, Firestore is a "document store" database. Your application will store and retrieve entire "documents" at a time, where a "document" is essentially a JavaScript object.
+[Firestore](https://firebase.google.com/docs/firestore/) a second database service in Firebase, the other being Realtime Database. Realtime Database can be thought of as a "JSON tree in the cloud" where your app can listen to and modify different portions of the tree. On the other hand, Firestore is a "document store" database. Your application will store and retrieve entire "documents" at a time, where a "document" is essentially a JavaScript object. Each have their advantages, and sometimes applications will end up using both. See [the comparison chart](https://firebase.google.com/docs/firestore/rtdb-vs-firestore) and [take the survey](https://firebase.google.com/docs/firestore/rtdb-vs-firestore#key_considerations).
 
 Here's is an example of storing a document named "mario" inside of a collection named "characters" in Firestore:
 
@@ -230,7 +230,7 @@ In order to record analytics events, the Expo Firebase Core and Analytics packag
 
 `expo install expo-firebase-analytics`
 
-This package uses the native Firebase SDK in standalone apps and bare apps and a JavaScript based implementation on the standard Expo client.
+This package uses the native Firebase SDK in standalone apps and bare apps and a JavaScript based implementation on Expo Go.
 
 To configure native Firebase, please follow the configuration instructions for the [expo-firebase-analytics](/versions/latest/sdk/firebase-analytics) package.
 

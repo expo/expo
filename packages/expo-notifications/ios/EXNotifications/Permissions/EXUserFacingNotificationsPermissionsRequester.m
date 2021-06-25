@@ -12,6 +12,8 @@
 
 @implementation EXUserFacingNotificationsPermissionsRequester
 
+static NSDictionary *_requestedPermissions;
+
 + (NSString *)permissionType
 {
   return @"userFacingNotifications";
@@ -31,13 +33,13 @@
   dispatch_semaphore_t sem = dispatch_semaphore_create(0);
 
   __block NSMutableDictionary *status = [NSMutableDictionary dictionary];
-  __block UMPermissionStatus generalStatus = UMPermissionStatusUndetermined;
+  __block EXPermissionStatus generalStatus = EXPermissionStatusUndetermined;
 
   [[UNUserNotificationCenter currentNotificationCenter] getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *settings) {
     if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
-      generalStatus = UMPermissionStatusGranted;
+      generalStatus = EXPermissionStatusGranted;
     } else if (settings.authorizationStatus == UNAuthorizationStatusDenied) {
-      generalStatus = UMPermissionStatusDenied;
+      generalStatus = EXPermissionStatusDenied;
     }
 
     status[@"status"] = [self authorizationStatusToEnum:settings.authorizationStatus];
@@ -79,15 +81,14 @@
 
 - (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
 {
-  static NSDictionary *defaultPermissions;
-  if (!defaultPermissions) {
-    defaultPermissions = @{
-                           @"allowAlert": @(YES),
-                           @"allowBadge": @(YES),
-                           @"allowSound": @(YES)
-                           };
+  if (!_requestedPermissions || [_requestedPermissions count] == 0) {
+    _requestedPermissions = @{
+                              @"allowAlert": @(YES),
+                              @"allowBadge": @(YES),
+                              @"allowSound": @(YES)
+                            };
   }
-  [self requestPermissions:defaultPermissions withResolver:resolve rejecter:reject];
+  [self requestPermissions:_requestedPermissions withResolver:resolve rejecter:reject];
 }
 
 - (void)requestPermissions:(NSDictionary *)permissions withResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
@@ -193,6 +194,11 @@
     case UNNotificationSettingNotSupported:
       return nil;
   }
+}
+
++ (void)setRequestedPermissions:(NSDictionary *)permissions
+{
+  _requestedPermissions = permissions;
 }
 
 @end

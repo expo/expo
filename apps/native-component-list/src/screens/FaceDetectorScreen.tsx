@@ -1,22 +1,12 @@
 import * as FaceDetector from 'expo-face-detector';
 import * as ImagePicker from 'expo-image-picker';
 import { ImageInfo } from 'expo-image-picker/build/ImagePicker.types';
-import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { Alert, Image, PixelRatio, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
 import { scaledFace, scaledLandmarks } from '../components/Face';
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
-
-async function requestPermissionAsync(permission: Permissions.PermissionType) {
-  // Image Picker doesn't need permissions in the web
-  if (Platform.OS === 'web') {
-    return true;
-  }
-  const { status } = await Permissions.askAsync(permission);
-  return status === 'granted';
-}
 
 interface State {
   selection?: ImagePicker.ImagePickerResult;
@@ -71,8 +61,8 @@ export default class FeceDetectorScreen extends React.Component<{}, State> {
   };
 
   showPicker = async (mediaTypes: ImagePicker.MediaTypeOptions, allowsEditing = false) => {
-    const permission = await requestPermissionAsync(Permissions.MEDIA_LIBRARY);
-    if (permission) {
+    const { granted } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (granted || Platform.OS === 'web') {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes,
         allowsEditing,
@@ -193,10 +183,10 @@ const imageOvefrlowSizeAndPosition = (image: ImageInfo) => {
 };
 
 const calculateImageScale = (image: ImageInfo) => {
-  var scale = 1;
+  let scale = 1;
   const screenMultiplier = PixelRatio.getPixelSizeForLayoutSize(1);
   const imageHeight = image.height / screenMultiplier;
-  var imageWidth = image.width / screenMultiplier;
+  const imageWidth = image.width / screenMultiplier;
   if (imageWidth > imageHeight) {
     scale = imageViewSize / imageWidth;
   } else {

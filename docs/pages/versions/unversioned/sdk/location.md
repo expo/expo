@@ -22,14 +22,14 @@ In Managed and bare apps, `Location` requires `Permissions.LOCATION`.
 
 In order to use [Background Location Methods](#background-location-methods), the following requirements apply:
 
-- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](../permissions/#permissionslocation) for more details.
-- `"location"` background mode must be specified in `Info.plist` file. See [background tasks configuration guide](../task-manager/#configuration). **(_iOS only_)**
-- Background location task must be defined in the top-level scope, using [TaskManager.defineTask](../task-manager/#taskmanagerdefinetasktaskname-task).
+- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](permissions.md#permissionslocation) for more details.
+- `"location"` background mode must be specified in `Info.plist` file. See [background tasks configuration guide](task-manager.md#configuration). **(_iOS only_)**
+- Background location task must be defined in the top-level scope, using [TaskManager.defineTask](task-manager.md#taskmanagerdefinetasktaskname-task).
 
 In order to use [Geofencing Methods](#geofencing-methods), the following requirements apply:
 
-- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](../permissions/#permissionslocation) for more details.
-- Geofencing task must be defined in the top-level scope, using [TaskManager.defineTask](../task-manager/#taskmanagerdefinetasktaskname-task).
+- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](permissions.md#permissionslocation) for more details.
+- Geofencing task must be defined in the top-level scope, using [TaskManager.defineTask](task-manager.md#taskmanagerdefinetasktaskname-task).
 - On iOS, there is a [limit of 20](https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions) `regions` that can be simultaneously monitored.
 
 On Android, This module requires the permissions for approximate and exact device location. It also needs the foreground service permission to subscribe to location updates, while the app is in use. The `ACCESS_COARSE_LOCATION`, `ACCESS_FINE_LOCATION`, and `FOREGROUND_SERVICE` permissions are automatically added.
@@ -38,11 +38,14 @@ On Android, This module requires the permissions for approximate and exact devic
 
 If you're using the iOS or Android Emulators, ensure that [Location is enabled](#enabling-emulator-location).
 
-<SnackInline label='Location' templateId='location' dependencies={['expo-location', 'expo-constants']}>
+<SnackInline label='Location' dependencies={['expo-location', 'expo-constants']}>
 
-```js
+```jsx
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { Platform, Text, View, StyleSheet } from 'react-native';
+/* @hide */
+import Constants from 'expo-constants';
+/* @end */
 import * as Location from 'expo-location';
 
 export default function App() {
@@ -51,9 +54,18 @@ export default function App() {
 
   useEffect(() => {
     (async () => {
-      let { status } = await Location.requestPermissionsAsync();
+      /* @hide */
+      if (Platform.OS === 'android' && !Constants.isDevice) {
+        setErrorMsg(
+          'Oops, this will not work on Snack in an Android emulator. Try it on your device!'
+        );
+        return;
+      }
+      /* @end */
+      let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         setErrorMsg('Permission to access location was denied');
+        return;
       }
 
       let location = await Location.getCurrentPositionAsync({});
@@ -70,16 +82,25 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text>{text}</Text>
+      <Text style={styles.paragraph}>{text}</Text>
     </View>
   );
 }
 
+/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  paragraph: {
+    fontSize: 18,
+    textAlign: 'center',
   },
 });
+/* @end */
 ```
 
 </SnackInline>
@@ -102,7 +123,9 @@ A promise resolving to `true` if location services are enabled on the device, or
 
 ### `Location.requestPermissionsAsync()`
 
-Asks the user to grant permissions for location. Alias for `Permissions.askAsync(Permissions.LOCATION)`.
+> **Deprecated.** Use [`requestForegroundPermissionsAsync`](#locationrequestforegroundpermissionsasync) or [`requestBackgroundPermissionsAsync`](#locationrequestbackgroundpermissionsasync).
+
+Asks the user to grant permissions for location.
 
 #### Returns
 
@@ -110,11 +133,48 @@ A promise that resolves to an object of type [LocationPermissionResponse](#locat
 
 ### `Location.getPermissionsAsync()`
 
-Checks user's permissions for accessing location. Alias for `Permissions.getAsync(Permissions.LOCATION)`.
+> **Deprecated.** Use [`getForegroundPermissionsAsync`](#locationgetforegroundpermissionsasync) or [`getBackgroundPermissionsAsync`](#locationgetbackgroundpermissionsasync).
+
+Checks user's permissions for accessing location.
 
 #### Returns
 
 A promise that resolves to an object of type [LocationPermissionResponse](#locationpermissionresponse).
+
+### `Location.requestForegroundPermissionsAsync()`
+
+Asks the user to grant permissions for location while the app is in the foreground.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+### `Location.getForegroundPermissionsAsync()`
+
+Checks user's permissions for accessing location while the app is in the foreground.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+### `Location.requestBackgroundPermissionsAsync()`
+
+Asks the user to grant permissions for location while the app is in the background.
+On **Android 11 or higher**: this method will open the system settings page - before that happens you should explain to the user why your application needs background location permission. For example, you can use `Modal` component from `react-native` to do that.
+
+> **Note**: Foreground permissions should be granted before asking for the background permissions (your app can't obtain background permission without foreground permission).
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+### `Location.getBackgroundPermissionsAsync()`
+
+Checks user's permissions for accessing location while the app is in the background.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ### `Location.getLastKnownPositionAsync(options)`
 
@@ -123,7 +183,7 @@ Gets the last known position of the device. It's considered to be faster than `g
 #### Arguments
 
 - **options (_object_)** — A map of options:
-  - **maxAge (_number_)** — A number of miliseconds after which the last known location starts to be invalid and thus `null` is returned.
+  - **maxAge (_number_)** — A number of milliseconds after which the last known location starts to be invalid and thus `null` is returned.
   - **requiredAccuracy (_number_)** — The maximum radius of uncertainty for the location, measured in meters. If the last known location's accuracy radius is bigger (less accurate) then `null` is returned.
 
 #### Returns
@@ -206,7 +266,7 @@ Returns a promise resolving to a subscription object, which has one field:
 
 ### `Location.geocodeAsync(address)`
 
-Geocode an address string to latitiude-longitude location.
+Geocode an address string to latitude-longitude location.
 
 > **Note**: Geocoding is resource consuming and has to be used reasonably. Creating too many requests at a time can result in an error so they have to be managed properly. It's also discouraged to use geocoding while the app is in the background and its results won't be shown to the user immediately.
 >
@@ -274,6 +334,8 @@ Polyfills `navigator.geolocation` for interop with the core React Native and Web
 
 The Background Location API can notify your app about new locations while your app is backgrounded. Make sure you've followed the required steps detailed [here](#configuration).
 
+> **Note:** on Android, you have to [submit your app for review and request access to use the background location permission](https://support.google.com/googleplay/android-developer/answer/9799150?hl=en).
+
 ### `Location.startLocationUpdatesAsync(taskName, options)`
 
 Registers for receiving location updates that can also come when the app is in the background.
@@ -285,7 +347,7 @@ Registers for receiving location updates that can also come when the app is in t
   - **accuracy : [LocationAccuracy](#locationaccuracy)** -- Location manager accuracy. Pass one of [LocationAccuracy](#locationaccuracy) enum values. For low-accuracy the implementation can avoid geolocation providers that consume a significant amount of power (such as GPS).
   - **timeInterval (_number_)** -- Minimum time to wait between each update in milliseconds. Default value depends on `accuracy` option. (**Android only**)
   - **distanceInterval (_number_)** -- Receive updates only when the location has changed by at least this distance in meters. Default value may depend on `accuracy` option.
-  - **deferredUpdatesInterval (_number_)** -- Minimum time interval in miliseconds that must pass since last reported location before all later locations are reported in a batched update. Defaults to `0`.
+  - **deferredUpdatesInterval (_number_)** -- Minimum time interval in milliseconds that must pass since last reported location before all later locations are reported in a batched update. Defaults to `0`.
   - **deferredUpdatesDistance (_number_)** -- The distance in meters that must occur between last reported location and the current location before deferred locations are reported. Defaults to `0`.
   - **showsBackgroundLocationIndicator (_boolean_)** -- A boolean indicating whether the status bar changes its appearance when location services are used in the background. Defaults to `false`. (**Takes effect only on iOS 11.0 and later**)
   - **foregroundService (_object_)** -- Use this option to put the location service into a foreground state, which will make location updates in the background as frequent as in the foreground state. As a downside, it requires a sticky notification, so the user will be aware that your app is running and consumes more resources even if backgrounded. (**Available since Android 8.0**)
@@ -344,7 +406,9 @@ A promise resolving to boolean value indicating whether the location task is sta
 ## Geofencing Methods
 
 Geofencing API notifies your app when the device enters or leaves geographical regions you set up.
-To make it work in the background, it uses [TaskManager](../task-manager/) Native API under the hood. Make sure you've followed the required steps detailed [here](#configuration).
+To make it work in the background, it uses [TaskManager](task-manager.md) Native API under the hood. Make sure you've followed the required steps detailed [here](#configuration).
+
+> **Note:** on Android, you have to [submit your app for review and request access to use the background location permission](https://support.google.com/googleplay/android-developer/answer/9799150?hl=en).
 
 ### `Location.startGeofencingAsync(taskName, regions)`
 
@@ -416,7 +480,7 @@ A promise resolving to boolean value indicating whether the geofencing task is s
 
 ### `LocationPermissionResponse`
 
-`LocationPermissionResponse` extends [PermissionResponse](../permissions/#permissionresponse) type exported by `unimodules-permission-interface` and contains additional platform-specific fields:
+`LocationPermissionResponse` extends [PermissionResponse](permissions.md#permissionresponse) type exported by `unimodules-permission-interface` and contains additional platform-specific fields:
 
 - **ios (_object_)**
   - **scope (_string_)** — The scope of granted permission. Indicates when it's possible to use location, possible values are: `whenInUse`, `always` or `none`.
@@ -451,8 +515,8 @@ Object of type `LocationProviderStatus` contains following keys:
 Object of type `LocationRegion` includes following fields:
 
 - **identifier (_string_)** -- The identifier of the region object passed to `startGeofencingAsync` or auto-generated.
-- **latitude (_number_)** -- The latitude in degress of region's center point.
-- **longitude (_number_)** -- The longitude in degress of region's center point.
+- **latitude (_number_)** -- The latitude in degrees of region's center point.
+- **longitude (_number_)** -- The longitude in degrees of region's center point.
 - **radius (_number_)** -- The radius measured in meters that defines the region's outer boundary.
 - **state : [LocationGeofencingRegionState](#locationgeofencingregionstate)** -- One of [LocationGeofencingRegionState](#locationgeofencingregionstate) region state. Determines whether the device is inside or outside a region.
 
@@ -460,7 +524,7 @@ Object of type `LocationRegion` includes following fields:
 
 - **magHeading (_number_)** — Measure of magnetic north in degrees.
 - **trueHeading (_number_)** — Measure of true north in degrees (needs location permissions, will return -1 if not given).
-- **accuracy (_number_)** — Level of callibration of compass.
+- **accuracy (_number_)** — Level of calibration of compass.
   - **3**: high accuracy, **2**: medium accuracy, **1**: low accuracy, **0**: none
   - Reference for iOS: **3**: < 20 degrees uncertainty, **2**: < 35 degrees, **1**: < 50 degrees, **0**: > 50 degrees
 

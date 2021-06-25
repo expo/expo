@@ -1,4 +1,5 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
+import { theme, palette } from '@expo/styleguide';
 
 import * as Constants from '~/constants/theme';
 
@@ -7,7 +8,8 @@ export const globalExtras = css`
     max-width: 900px;
   }
 
-  img[src*="https://placehold.it/15"] {
+  img[src*="https://placehold.it/15"]
+  {
     width: 15px !important;
     height: 15px !important;
   }
@@ -25,22 +27,29 @@ export const globalExtras = css`
     outline: none;
     cursor: pointer;
     margin-bottom: 0.5rem;
+    color: ${theme.text.default};
+
+    ::-webkit-details-marker {
+      color: ${theme.icon.default};
+    }
   }
 
   details summary h3 {
     font-size: 1.2rem;
     font-weight: 500;
     font-family: ${Constants.fonts.demi};
-    color: ${Constants.colors.black90};
+    color: ${theme.text.default};
     display: inline-block;
   }
 
   details summary h4 {
     font-family: ${Constants.fonts.demi};
-    color: ${Constants.colors.black90};
-    font-size: 1.1rem;
+    color: ${theme.text.default};
+    font-size: 1rem;
     font-weight: 500;
     display: inline-block;
+    vertical-align: text-top;
+    max-width: 90%;
   }
 
   details summary p {
@@ -69,8 +78,8 @@ export const globalExtras = css`
     margin: 0;
     margin-bottom: 0.5rem;
     text-decoration: none;
-    background: ${Constants.expoColors.primary[500]};
-    color: ${Constants.expoColors.white};
+    background: ${theme.button.primary.background};
+    color: ${palette.dark.white};
     font-family: ${Constants.fontFamilies.book};
     font-size: 1rem;
     cursor: pointer;
@@ -96,7 +105,7 @@ export const globalExtras = css`
   }
 
   .diff-container {
-    border: 1px solid #e3e3e3;
+    border: 1px solid ${theme.border.default};
     border-radius: 2px;
     margin-bottom: 10px;
   }
@@ -111,5 +120,32 @@ export const globalExtras = css`
   .diff-container th {
     border-bottom: none;
     border-right: none;
+  }
+
+  .diff-container .diff-gutter-insert {
+    background: ${theme.background.success};
+  }
+
+  .diff-container .diff-gutter-delete {
+    background: ${theme.background.error};
+  }
+
+  .diff-container .diff-code-insert {
+    background: ${theme.background.success};
+  }
+
+  .diff-container .diff-code-delete {
+    background: ${theme.background.error};
+  }
+
+  .strike {
+    text-decoration: line-through;
+  }
+
+  // TODO: investigate why some style is forcing nested ordered lists to have
+  // 1rem bottom margin!
+  ul ul,
+  ol ul {
+    margin-bottom: 0 !important;
   }
 `;

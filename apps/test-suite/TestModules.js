@@ -70,11 +70,13 @@ export function getTestModules() {
     require('./tests/FirebaseCore'),
     require('./tests/FirebaseAnalytics'),
     require('./tests/FirebaseRecaptcha'),
+    require('./tests/FirebaseJSSDK'),
     optionalRequire(() => require('./tests/SQLite'))
   );
 
   if (Platform.OS === 'android') {
     modules.push(require('./tests/JSC'));
+    modules.push(require('./tests/Hermes'));
   }
 
   if (global.DETOX) {
@@ -85,7 +87,7 @@ export function getTestModules() {
       require('./tests/SecureStore'),
       require('./tests/SMS'),
       require('./tests/StoreReview'),
-      require('./tests/NewNotifications')
+      require('./tests/Notifications')
     );
     return modules;
   }
@@ -95,7 +97,7 @@ export function getTestModules() {
       require('./tests/Contacts'),
       // require('./tests/SVG'),
       require('./tests/Localization'),
-      optionalRequire(() => require('./tests/NewNotifications')),
+      optionalRequire(() => require('./tests/Notifications')),
       LocationTestScreen
     );
 
@@ -126,7 +128,7 @@ export function getTestModules() {
     optionalRequire(() => require('./tests/AdMobInterstitial')),
     optionalRequire(() => require('./tests/AdMobRewarded')),
     optionalRequire(() => require('./tests/FBBannerAd')),
-    optionalRequire(() => require('./tests/NewNotifications'))
+    optionalRequire(() => require('./tests/Notifications'))
   );
 
   if (!isDeviceFarm()) {
@@ -150,7 +152,6 @@ export function getTestModules() {
     modules.push(optionalRequire(() => require('./tests/Calendar')));
     modules.push(optionalRequire(() => require('./tests/CalendarReminders')));
     modules.push(optionalRequire(() => require('./tests/MediaLibrary')));
-    modules.push(optionalRequire(() => require('./tests/Notifications')));
 
     modules.push(optionalRequire(() => require('./tests/Battery')));
     if (Constants.isDevice) {
@@ -163,8 +164,9 @@ export function getTestModules() {
     modules.push(TaskManagerTestScreen);
     // Audio tests are flaky in CI due to asynchronous fetching of resources
     modules.push(optionalRequire(() => require('./tests/Audio')));
+
     // The Camera tests are flaky on iOS, i.e. they fail randomly
-    if (Constants.isDevice && Platform.OS === 'android') {
+    if (Constants.isDevice) {
       modules.push(CameraTestScreen);
     }
   }
@@ -172,5 +174,5 @@ export function getTestModules() {
     modules.push(optionalRequire(() => require('./tests/Cellular')));
     modules.push(optionalRequire(() => require('./tests/BarCodeScanner')));
   }
-  return modules.filter(Boolean);
+  return modules.filter(Boolean).sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase());
 }

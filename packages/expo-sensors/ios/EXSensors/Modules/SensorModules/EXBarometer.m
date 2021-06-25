@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <EXSensors/EXBarometer.h>
-#import <UMSensorsInterface/UMBarometerInterface.h>
+#import <ExpoModulesCore/EXBarometerInterface.h>
 
 @implementation EXBarometer
 
@@ -14,7 +14,7 @@ UM_EXPORT_MODULE(ExpoBarometer);
 
 - (id)getSensorServiceFromModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
-  return [moduleRegistry getModuleImplementingProtocol:@protocol(UMBarometerInterface)];
+  return [moduleRegistry getModuleImplementingProtocol:@protocol(EXBarometerInterface)];
 }
 
 - (void)setUpdateInterval:(double)updateInterval onSensorService:(id)sensorService

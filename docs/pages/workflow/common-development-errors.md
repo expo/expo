@@ -1,5 +1,5 @@
 ---
-title: Common Development Errors
+title: Common development errors
 ---
 
 Here you will find a list of errors that are commonly encountered by developers using Expo. For each error, the first bullet provides an explanation for why the error occurs and the second bullet contains debugging suggestions. If there is an error you think belongs here, we welcome and encourage you to [create a PR!](https://github.com/expo/expo/pulls)
@@ -8,13 +8,13 @@ Here you will find a list of errors that are commonly encountered by developers 
 
 - Either you do not have `expo-cli` installed or it is not properly configured in your `$PATH`.
 
-- [Install expo-cli](../../get-started/installation/) if you have not already. Otherwise, check how to set your `$PATH` based on your OS.
+- [Install expo-cli](../get-started/installation.md) if you have not already. Otherwise, check how to set your `$PATH` based on your OS.
 
 ### Metro bundler ECONNREFUSED 127.0.0.1:19001
 
 - An error is preventing the connection to your local development server.
 
-- Run `rm -rf .expo` to clear your local state. Check for firewalls or [proxies](../../guides/troubleshooting-proxies/) affecting the network you are currently connected to.
+- Run `rm -rf .expo` to clear your local state. Check for firewalls or [proxies](../guides/troubleshooting-proxies.md) affecting the network you are currently connected to.
 
 ### Module AppRegistry is not a registered callable module (calling runApplication)
 
@@ -32,4 +32,22 @@ Here you will find a list of errors that are commonly encountered by developers 
 
 - The SDK version you are running has been deprecated and is no longer supported.
 
-- [Upgrade your project](../../workflow/upgrading-expo-sdk-walkthrough/) to a supported SDK version. If you are using a supported version and see this message, you'll need to update your Expo client app. If you experience this error in a standalone app, make sure you have published a JS bundle for the specific SDK version and release channel for the given binary via `expo publish`.
+- [Upgrade your project](../workflow/upgrading-expo-sdk-walkthrough.md) to a supported SDK version. If you are using a supported version and see this message, you'll need to update your Expo Go app. If you experience this error in a standalone app, make sure you have published a JS bundle for the specific SDK version and release channel for the given binary via `expo publish`.
+
+### React Native version mismatch
+
+- The development server running in your terminal is bundling a different version of React Native than the app in your device or simulator.
+
+- [Align your versions of react-native](../troubleshooting/react-native-version-mismatch) by checking the versions in your `app.json` and `package.json`
+
+### Application has not been registered
+
+- There is a mismatch between the AppKey registered in the native and JS portion of your app.
+
+- [Align your AppKey](../troubleshooting/application-has-not-been-registered) with the native side of your project.
+
+### Application not behaving as expected
+
+- It is possible caches may be preventing you from seeing the current state of your application.
+
+- Clear all caches associated with your project in [Unix-like](../troubleshooting/clear-cache-macos-linux/) or [Windows](../troubleshooting/clear-cache-windows/) systems.

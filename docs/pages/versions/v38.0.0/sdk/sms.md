@@ -85,6 +85,6 @@ const { result } = await SMS.sendSMSAsync(
 
 An object that is used to describe an attachment that is included with a SMS message.
 
-- **uri (_string_)** -- the content URI of the attachment. The URI needs be a content URI so that it can be accessed by other applications outside of Expo. (See [FileSystem.getContentUriAsync](../filesystem/#filesystemgetcontenturiasyncfileuri))
+- **uri (_string_)** -- the content URI of the attachment. The URI needs be a content URI so that it can be accessed by other applications outside of Expo. (See [FileSystem.getContentUriAsync](filesystem.md#filesystemgetcontenturiasyncfileuri))
 - **mimeType (_string_)** -- the mime type of the attachment such as `image/png`
 - **filename (_string_)** -- the filename of the attachment

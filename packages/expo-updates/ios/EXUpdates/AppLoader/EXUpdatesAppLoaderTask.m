@@ -16,14 +16,14 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
 @property (nonatomic, strong) EXUpdatesConfig *config;
 @property (nonatomic, strong) EXUpdatesDatabase *database;
 @property (nonatomic, strong) NSURL *directory;
-@property (nonatomic, strong) id<EXUpdatesSelectionPolicy> selectionPolicy;
+@property (nonatomic, strong) EXUpdatesSelectionPolicy * selectionPolicy;
 @property (nonatomic, strong) dispatch_queue_t delegateQueue;
 
-@property (nonatomic, strong) id<EXUpdatesAppLauncher> launcher;
+@property (nonatomic, strong) id<EXUpdatesAppLauncher> candidateLauncher;
+@property (nonatomic, strong) id<EXUpdatesAppLauncher> finalizedLauncher;
 @property (nonatomic, strong) EXUpdatesEmbeddedAppLoader *embeddedAppLoader;
 @property (nonatomic, strong) EXUpdatesRemoteAppLoader *remoteAppLoader;
 
-@property (nonatomic, strong) id<EXUpdatesAppLauncher> candidateLauncher;
 @property (nonatomic, strong) NSTimer *timer;
 @property (nonatomic, assign) BOOL isReadyToLaunch;
 @property (nonatomic, assign) BOOL isTimerFinished;
@@ -39,7 +39,7 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
 - (instancetype)initWithConfig:(EXUpdatesConfig *)config
                       database:(EXUpdatesDatabase *)database
                      directory:(NSURL *)directory
-               selectionPolicy:(id<EXUpdatesSelectionPolicy>)selectionPolicy
+               selectionPolicy:(EXUpdatesSelectionPolicy *)selectionPolicy
                  delegateQueue:(dispatch_queue_t)delegateQueue
 {
   if (self = [super init]) {
@@ -105,9 +105,9 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
         NSLog(@"Failed to launch embedded or launchable update: %@", error.localizedDescription);
       } else {
         if (self->_delegate &&
-            ![self->_delegate appLoaderTask:self didLoadCachedUpdate:self->_launcher.launchedUpdate]) {
+            ![self->_delegate appLoaderTask:self didLoadCachedUpdate:self->_candidateLauncher.launchedUpdate]) {
           // ignore timer and other settings and force launch a remote update.
-          self->_launcher = nil;
+          self->_candidateLauncher = nil;
           [self _stopTimer];
           shouldCheckForUpdate = YES;
         } else {
@@ -136,11 +136,12 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
     return;
   }
   _hasLaunched = YES;
+  _finalizedLauncher = _candidateLauncher;
 
   if (_delegate) {
     dispatch_async(_delegateQueue, ^{
-      if (self->_isReadyToLaunch && (self->_launcher.launchAssetUrl || self->_launcher.launchedUpdate.status == EXUpdatesUpdateStatusDevelopment)) {
-        [self->_delegate appLoaderTask:self didFinishWithLauncher:self->_launcher isUpToDate:self->_isUpToDate];
+      if (self->_isReadyToLaunch && (self->_finalizedLauncher.launchAssetUrl || self->_finalizedLauncher.launchedUpdate.status == EXUpdatesUpdateStatusDevelopment)) {
+        [self->_delegate appLoaderTask:self didFinishWithLauncher:self->_finalizedLauncher isUpToDate:self->_isUpToDate];
       } else {
         [self->_delegate appLoaderTask:self didFinishWithError:error ?: [NSError errorWithDomain:EXUpdatesAppLoaderTaskErrorDomain code:1031 userInfo:@{
           NSLocalizedDescriptionKey: @"EXUpdatesAppLoaderTask encountered an unexpected error and could not launch an update."
@@ -180,40 +181,53 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
 
 - (void)_runReaper
 {
-  if (_launcher.launchedUpdate) {
+  if (_finalizedLauncher.launchedUpdate) {
     [EXUpdatesReaper reapUnusedUpdatesWithConfig:_config
                                         database:_database
                                        directory:_directory
                                  selectionPolicy:_selectionPolicy
-                                  launchedUpdate:_launcher.launchedUpdate];
+                                  launchedUpdate:_finalizedLauncher.launchedUpdate];
   }
 }
 
 - (void)_loadEmbeddedUpdateWithCompletion:(void (^)(void))completion
 {
   [EXUpdatesAppLauncherWithDatabase launchableUpdateWithConfig:_config database:_database selectionPolicy:_selectionPolicy completion:^(NSError * _Nullable error, EXUpdatesUpdate * _Nullable launchableUpdate) {
-    if (self->_config.hasEmbeddedUpdate &&
-        [self->_selectionPolicy shouldLoadNewUpdate:[EXUpdatesEmbeddedAppLoader embeddedManifestWithConfig:self->_config database:self->_database]
-                                 withLaunchedUpdate:launchableUpdate]) {
-      self->_embeddedAppLoader = [[EXUpdatesEmbeddedAppLoader alloc] initWithConfig:self->_config database:self->_database directory:self->_directory completionQueue:self->_loaderTaskQueue];
-      [self->_embeddedAppLoader loadUpdateFromEmbeddedManifestWithCallback:^BOOL(EXUpdatesUpdate * _Nonnull update) {
-        // we already checked using selection policy, so we don't need to check again
-        return YES;
-      } success:^(EXUpdatesUpdate * _Nullable update) {
-        completion();
-      } error:^(NSError * _Nonnull error) {
-        completion();
-      }];
-    } else {
-      completion();
-    }
+    dispatch_async(self->_database.databaseQueue, ^{
+      NSError *manifestFiltersError;
+      NSDictionary *manifestFilters = [self->_database manifestFiltersWithScopeKey:self->_config.scopeKey error:&manifestFiltersError];
+      dispatch_async(self->_loaderTaskQueue, ^{
+        if (manifestFiltersError) {
+          completion();
+          return;
+        }
+        if (self->_config.hasEmbeddedUpdate &&
+            [self->_selectionPolicy shouldLoadNewUpdate:[EXUpdatesEmbeddedAppLoader embeddedManifestWithConfig:self->_config database:self->_database]
+                                     withLaunchedUpdate:launchableUpdate
+                                                filters:manifestFilters]) {
+          self->_embeddedAppLoader = [[EXUpdatesEmbeddedAppLoader alloc] initWithConfig:self->_config database:self->_database directory:self->_directory completionQueue:self->_loaderTaskQueue];
+          [self->_embeddedAppLoader loadUpdateFromEmbeddedManifestWithCallback:^BOOL(EXUpdatesUpdate * _Nonnull update) {
+            // we already checked using selection policy, so we don't need to check again
+            return YES;
+          } onAsset:^(EXUpdatesAsset *asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
+            // do nothing for now
+          } success:^(EXUpdatesUpdate * _Nullable update) {
+            completion();
+          } error:^(NSError * _Nonnull error) {
+            completion();
+          }];
+        } else {
+          completion();
+        }
+      });
+    });
   } completionQueue:_loaderTaskQueue];
 }
 
 - (void)_launchWithCompletion:(void (^)(NSError * _Nullable error, BOOL success))completion
 {
   EXUpdatesAppLauncherWithDatabase *launcher = [[EXUpdatesAppLauncherWithDatabase alloc] initWithConfig:_config database:_database directory:_directory completionQueue:_loaderTaskQueue];
-  _launcher = launcher;
+  _candidateLauncher = launcher;
   [launcher launchUpdateWithSelectionPolicy:_selectionPolicy completion:completion];
 }
 
@@ -221,7 +235,7 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
 {
   _remoteAppLoader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:_config database:_database directory:_directory completionQueue:_loaderTaskQueue];
   [_remoteAppLoader loadUpdateFromUrl:_config.updateUrl onManifest:^BOOL(EXUpdatesUpdate * _Nonnull update) {
-    if ([self->_selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_launcher.launchedUpdate]) {
+    if ([self->_selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_candidateLauncher.launchedUpdate filters:update.manifestFilters]) {
       self->_isUpToDate = NO;
       if (self->_delegate) {
         dispatch_async(self->_delegateQueue, ^{
@@ -233,6 +247,8 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
       self->_isUpToDate = YES;
       return NO;
     }
+  } asset:^(EXUpdatesAsset *asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
+    // do nothing for now
   } success:^(EXUpdatesUpdate * _Nullable update) {
     completion(nil, update);
   } error:^(NSError *error) {
@@ -251,12 +267,11 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
 
     if (update) {
       if (!self->_hasLaunched) {
-        EXUpdatesAppLauncherWithDatabase *launcher = [[EXUpdatesAppLauncherWithDatabase alloc] initWithConfig:self->_config database:self->_database directory:self->_directory completionQueue:self->_loaderTaskQueue];
-        self->_candidateLauncher = launcher;
-        [launcher launchUpdateWithSelectionPolicy:self->_selectionPolicy completion:^(NSError * _Nullable error, BOOL success) {
+        EXUpdatesAppLauncherWithDatabase *newLauncher = [[EXUpdatesAppLauncherWithDatabase alloc] initWithConfig:self->_config database:self->_database directory:self->_directory completionQueue:self->_loaderTaskQueue];
+        [newLauncher launchUpdateWithSelectionPolicy:self->_selectionPolicy completion:^(NSError * _Nullable error, BOOL success) {
           if (success) {
             if (!self->_hasLaunched) {
-              self->_launcher = self->_candidateLauncher;
+              self->_candidateLauncher = newLauncher;
               self->_isReadyToLaunch = YES;
               self->_isUpToDate = YES;
               [self _finishWithError:nil];

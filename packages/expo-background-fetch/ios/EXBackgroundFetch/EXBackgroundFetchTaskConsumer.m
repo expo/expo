@@ -32,7 +32,7 @@
 // after the native app was launched with the launch reason supported by the consumer.
 // For background fetch, `application:performFetchWithCompletionHandler:` is the entry point of this method,
 // so the task can be executed immediately here.
-- (void)didBecomeReadyToExecute
+- (void)didBecomeReadyToExecuteWithData:(NSDictionary *)data
 {
   [_task executeWithData:nil withError:nil];
 }
