@@ -10,7 +10,6 @@ import {
   PropData,
   PropsDefinitionData,
   TypeDeclarationData,
-  TypePropertyData,
 } from '~/components/plugins/api/APIDataTypes';
 import {
   CommentTextBlock,
@@ -34,7 +33,7 @@ const extractDefaultPropValue = (
     return annotationDefault[0].text;
   }
   return defaultProps?.type?.declaration?.children?.filter(
-    (defaultProp: TypePropertyData) => defaultProp.name === name
+    (defaultProp: PropData) => defaultProp.name === name
   )[0]?.defaultValue;
 };
 
@@ -64,14 +63,17 @@ const renderProps = (
   { name, type }: PropsDefinitionData,
   defaultValues: DefaultPropsDefinitionData
 ): JSX.Element => {
-  const propsDeclarations = type.types?.filter((e: TypeDeclarationData) => e.declaration);
+  const propsDeclarations = type.types
+    ?.filter((t: TypeDeclarationData) => t.declaration)
+    .map(def => def?.declaration?.children)
+    .flat()
+    .filter((dec, i, arr) => arr.findIndex(t => t?.name === dec?.name) === i);
+
   return (
     <div key={`props-definition-${name}`}>
       <UL>
-        {propsDeclarations?.map((def: TypeDeclarationData) =>
-          def.declaration?.children?.map((prop: PropData) =>
-            renderProp(prop, extractDefaultPropValue(prop, defaultValues))
-          )
+        {propsDeclarations?.map(prop =>
+          prop ? renderProp(prop, extractDefaultPropValue(prop, defaultValues)) : null
         )}
       </UL>
       {renderInheritedProps(type.types)}
