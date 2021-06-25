@@ -5,6 +5,18 @@ const imageTests: ImageTestGroup = {
   name: 'Sources',
   tests: [
     {
+      name: `uri:.webp`,
+      props: {
+        source: images.require_webp,
+      },
+    },
+    {
+      name: `uri:.webp (animated)`,
+      props: {
+        source: images.require_webp_anim,
+      },
+    },
+    {
       name: `uri:.jpg (redirecting)`,
       props: {
         source: images.uri_random_unsplash,
