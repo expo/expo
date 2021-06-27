@@ -54,7 +54,7 @@ function dateToNumber(value) {
 export const MediaType = MediaLibrary.MediaType;
 export const SortBy = MediaLibrary.SortBy;
 export async function isAvailableAsync() {
-    return !!MediaLibrary.getAssetsAsync;
+    return !!MediaLibrary && 'getAssetsAsync' in MediaLibrary;
 }
 export async function requestPermissionsAsync(writeOnly = false) {
     if (!MediaLibrary.requestPermissionsAsync) {
