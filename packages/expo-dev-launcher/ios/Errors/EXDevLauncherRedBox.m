@@ -131,10 +131,13 @@
                 isUpdate:(BOOL)isUpdate
              errorCookie:(int)errorCookie
 {
-  [self.logBox hide];
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [[EXDevLauncherController sharedInstance].errorManager showErrorWithMessage:[self stripAnsi:message] stack:stack];
-  });
+  // Other errors should be handled by the LogBox
+  if (isUpdate == NO && errorCookie == -1) {
+    [self.logBox hide];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [[EXDevLauncherController sharedInstance].errorManager showErrorWithMessage:[self stripAnsi:message] stack:stack];
+    });
+  }
 }
 
 - (RCTRedBox *)unsafe_castToRCTRedBox {
