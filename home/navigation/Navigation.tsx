@@ -31,7 +31,10 @@ import QRCodeScreen from '../screens/QRCodeScreen';
 import SnacksForAccountScreen from '../screens/SnacksForAccountScreen';
 import UserSettingsScreen from '../screens/UserSettingsScreen';
 import Environment from '../utils/Environment';
-import requestCameraPermissionsAsync from '../utils/requestCameraPermissionsAsync';
+import {
+  alertWithCameraPermissionInstructions,
+  requestCameraPermissionsAsync,
+} from '../utils/PermissionUtils';
 import BottomTab, { getNavigatorProps } from './BottomTabNavigator';
 import {
   DiagnosticsStackRoutes,
@@ -233,7 +236,7 @@ export default (props: { theme: ColorTheme }) => {
         if (await requestCameraPermissionsAsync()) {
           nav.navigate('QRCode');
         } else {
-          alert('In order to use the QR Code scanner you need to provide camera permissions');
+          await alertWithCameraPermissionInstructions();
         }
       }
     };
