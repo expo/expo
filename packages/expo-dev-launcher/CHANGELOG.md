@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+- Fixed can't reload app from the blue screen. ([#13422](https://github.com/expo/expo/pull/13422) by [@lukmccall](https://github.com/lukmccall))
+- Fixed `JSPackagerClient` wasn't close on React Native 0.63.4 what may lead to various bugs on Android. ([#13423](https://github.com/expo/expo/pull/13423) by [@lukmccall](https://github.com/lukmccall))
+- Fixed the blue screen was shown instead of the LogBox on iOS. ([#13421](https://github.com/expo/expo/pull/13421) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 0.6.1 — 2021-06-24
