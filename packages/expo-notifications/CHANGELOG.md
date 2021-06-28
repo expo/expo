@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Fixed Android notifications not respecting the `shouldPlaySound` property in `setNotificationHandler`. ([#13411](https://github.com/expo/expo/pull/13411) by [@cruzach](https://github.com/cruzach))
 - Force device ID to lowercase before sending to Expo's servers. (Only applicable if you're using `ExpoPushToken`s). ([#13409](https://github.com/expo/expo/pull/13409) by [@cruzach](https://github.com/cruzach))
 
 ### 💡 Others

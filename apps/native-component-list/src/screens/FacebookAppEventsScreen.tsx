@@ -10,7 +10,7 @@ const appId = '629712900716487';
 const appEventsDashboardUrlExpoGoIos =
   'https://www.facebook.com/events_manager2/list/app/1696089354000816/test_events?act=453712715268302';
 const appEventsDashboardUrlAndroid =
-  'https://www.facebook.com/events_manager2/list/app/629712900716487/test_events?act=453712715268302';
+  'https://www.facebook.com/events_manager2/list/app/629712900716487/';
 
 export default class FacebookAppEventsScreen extends React.Component {
   static navigationOptions = {
@@ -94,7 +94,7 @@ export default class FacebookAppEventsScreen extends React.Component {
 
           <HeadingText style={{ textAlign: 'center' }}>
             To view app events in Expo Go on Android, and in standalones on iOS & Android, go to
-            this dashboard:
+            this dashboard and navigate to 'Test Events':
           </HeadingText>
           <Text selectable style={{ textAlign: 'center' }}>
             {appEventsDashboardUrlAndroid}

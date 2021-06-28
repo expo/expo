@@ -7,9 +7,15 @@ import TerminalBlock from '~/components/plugins/TerminalBlock';
 import SnackInline from '~/components/plugins/SnackInline';
 import { Tab, Tabs } from '~/components/plugins/Tabs';
 
+`expo-dev-client` has been designed to support any workflow, release process, or set of dependencies in the Expo / React Native ecosystem. Whatever the needs of your project, either now or in the future, you'll be able to create custom development clients for it and get the productivity and quality of life improvements of JavaScript-driven development.
+
+Of course, there are always tradeoffs, and that flexibility means there's not just one way to get started!  If you're ever not sure how to proceed, we've used ✨sparkles✨ to indicate our most magical experience, and 👷builders👷 for alternate options that may require more configuration or set up to get working.   
+
 ## Installing the Development Client module in your project
 
-<Tabs tabs={["With config plugins", "If you are directly managing your native projects"]}>
+If you have used Expo before, especially with the Managed workflow, [config plugins](guides/config-plugins.md) will let you customize your project from JavaScript without ever needing to directly modify Xcode or Android Studio projects.
+
+<Tabs tabs={["✨With config plugins✨", "👷If you are directly managing your native projects👷"]}>
 
 <Tab >
 <TerminalBlock cmd={["expo init # if you don't already have a Managed Workflow project", "yarn add expo-dev-client"]}  />
@@ -24,7 +30,7 @@ If you're just starting your project, you can create a new project from our temp
 
 If you have an existing project, you'll need to [install the package and make a few changes](installation.md) to your `AppDelegate.m`, `MainActivity.java` and `MainApplication.java`.
 
-The Development Client uses deep links to open projects from the QR code. If you had added a custom deep link schema to your project, the Development Client will use it. However, if this isn't the case, you need to configure the deep link support for your application. The `uri-scheme` package will do this for you once you have chosen a scheme.
+Custom clients use deep links to open projects from the QR code. If you had added a custom deep link schema to your project, the Development Client will use it. However, if this isn't the case, you need to configure the deep link support for your application. The `uri-scheme` package will do this for you once you have chosen a scheme.
 
 <TerminalBlock cmd={["npx uri-scheme add <your scheme>"]}  />
 
@@ -34,7 +40,7 @@ The Development Client uses deep links to open projects from the QR code. If you
 
 ## Building and installing your first custom client
 
-### In the cloud
+### ✨In the cloud✨
 
 However you choose to manage your native projects, we recommend using [EAS Build](eas-build.md) for the smoothest experience, especially if you do not have experience with Xcode and Android Studio builds.
 
@@ -58,7 +64,7 @@ After you configure your project as covered by [the Building with EAS guide](eas
 
 and installing the resulting build on your device.
 
-### Locally
+### 👷Locally👷
 
 If you are comfortable setting up Xcode, Android Studio, and related dependencies, you can build and distribute your app the same as any other iOS or Android application.
 
