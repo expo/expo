@@ -59,6 +59,21 @@ For usage information and detailed documentation, please refer to:
 - [Stripe's React Native GitHub repo](https://github.com/stripe/stripe-react-native)
 - [Stripe's example React Native app](https://github.com/stripe/stripe-react-native/tree/master/example)
 
+### Common issues
+
+#### Browser pop-ups are not redirecting back to my app
+
+If you're relying on redirects, you'll need to pass in a `urlScheme` to `initStripe`. To make sure you always use the proper `urlScheme`, pass in:
+
+```js
+urlScheme:
+  Constants.executionEnvironment === ExecutionEnvironment.StoreClient
+    ? Linking.createURL('/--/')
+    : Linking.createURL(''),
+```
+
+[Linking.createURL](/versions/latest/sdk/linking.md#linkingcreateurlpath-options) will ensure you're using the proper scheme, whether you're running in Expo Go or your production app. `'/--/'` is necessary in Expo Go because it indicates that the substring after it corresponds to the deep link path, and is not part of the path to the app itself.
+
 ## Limitations
 
 ### Standalone apps
