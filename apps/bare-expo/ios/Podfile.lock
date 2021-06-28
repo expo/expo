@@ -48,14 +48,14 @@ PODS:
   - EXConstants (11.0.1):
     - ExpoModulesCore
     - UMCore
-  - EXContacts (9.2.3):
+  - EXContacts (9.2.4):
     - ExpoModulesCore
     - UMCore
   - EXCrypto (9.2.0):
     - UMCore
   - EXDevice (3.3.0):
     - UMCore
-  - EXDocumentPicker (9.2.3):
+  - EXDocumentPicker (9.2.4):
     - ExpoModulesCore
     - UMCore
   - EXErrorRecovery (2.2.0):
@@ -135,36 +135,36 @@ PODS:
   - EXPermissions (12.1.1):
     - ExpoModulesCore
     - UMCore
-  - expo-dev-client (0.3.0):
+  - expo-dev-client (0.4.1):
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (0.5.1):
-    - expo-dev-launcher/Main (= 0.5.1)
+  - expo-dev-launcher (0.6.1):
+    - expo-dev-launcher/Main (= 0.6.1)
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React
-  - expo-dev-launcher/Main (0.5.1):
+  - expo-dev-launcher/Main (0.6.1):
     - expo-dev-launcher/Unsafe
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React
-  - expo-dev-launcher/Unsafe (0.5.1):
+  - expo-dev-launcher/Unsafe (0.6.1):
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React
-  - expo-dev-menu (0.7.0):
+  - expo-dev-menu (0.7.2):
     - expo-dev-menu-interface
-    - expo-dev-menu/Main (= 0.7.0)
+    - expo-dev-menu/Main (= 0.7.2)
     - React
   - expo-dev-menu-interface (0.3.1):
     - React
-  - expo-dev-menu/Main (0.7.0):
+  - expo-dev-menu/Main (0.7.2):
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - React
-  - expo-dev-menu/Vendored (0.7.0):
+  - expo-dev-menu/Vendored (0.7.2):
     - expo-dev-menu-interface
     - React
   - expo-image (1.0.0-alpha.1):
@@ -200,7 +200,7 @@ PODS:
   - EXSharing (9.2.1):
     - ExpoModulesCore
     - UMCore
-  - EXSMS (9.2.1):
+  - EXSMS (9.2.2):
     - UMCore
   - EXSpeech (9.2.0):
     - UMCore
@@ -221,7 +221,7 @@ PODS:
     - UMTaskManagerInterface
   - EXTrackingTransparency (1.1.2):
     - UMCore
-  - EXUpdatesInterface (0.1.0)
+  - EXUpdatesInterface (0.2.1)
   - EXVideoThumbnails (5.2.1):
     - ExpoModulesCore
     - UMCore
@@ -1219,10 +1219,10 @@ SPEC CHECKSUMS:
   EXCellular: 82f7267f13f296f37434d0031e9a214bbd4b8919
   EXClipboard: c66f7d22ba754496b0fc6b23a2cb9a3e10fa1581
   EXConstants: 3babb61f8f4bb7dffe85b8b7d6eaa31d903e4d7e
-  EXContacts: 54509731a9715536cae805a193fba42f2496d132
+  EXContacts: 03888e5155c319be22cac9505d7cb7a518c96b00
   EXCrypto: 46e28f1eb7ec3e2ae5aab652fe1dc4d46bafb386
   EXDevice: 6f1eed02c099f5b382a12a40406c58868892aba6
-  EXDocumentPicker: c919755592d80af4140d7db3dac133cac23e93b9
+  EXDocumentPicker: a96d7fc2e6fcfeb0fe52cede8e32497ca225f7d1
   EXErrorRecovery: 404d827bc7d42f306c062d58a60b06afc4d082b3
   EXFacebook: b31561b178f4c938e6e16a49515f04c6ad26cf76
   EXFaceDetector: 3247e936a772e37586d840cc1b5ed20b4891bb4e
@@ -1248,9 +1248,9 @@ SPEC CHECKSUMS:
   EXNetwork: 6682b2bbbd90e66c4738159abaf8cd206c25e8b8
   EXNotifications: 4680d2174e63b060904198222ea4e2330681ab82
   EXPermissions: 916efb5b817cb0a40160c0cd2f369af3c23a78be
-  expo-dev-client: 785792b8c8228d7adb8e8a0e7960ea28a254d08b
-  expo-dev-launcher: 669533ea784dfeb1cb763a49e436d62db63252c1
-  expo-dev-menu: 1c5a5194cb123e6f90358e815711cfea34524d72
+  expo-dev-client: fca0db32ca76552e50616c5359e5086681733df4
+  expo-dev-launcher: 1cb4745be5519ebb08032a9a29d396071eedcf44
+  expo-dev-menu: 2524600289d961cae3c5ea2dcdbc4a3305f4228c
   expo-dev-menu-interface: 4fda2fa6d974a518e546ca1193340513b0a8b0e8
   expo-image: 2fded43b1489487d7e84911caaadc821258f4905
   ExpoModulesCore: 2734852616127a6c1fc23012197890a6f3763dc7
@@ -1262,7 +1262,7 @@ SPEC CHECKSUMS:
   EXSegment: 24e2986d5e4b3a318f2240312f2b33deb76900e6
   EXSensors: 423ccb735109a7a47c280ec639638447dedf8298
   EXSharing: 567f4b9f38a5266ec2f51973e2efe3b4aaf0bf69
-  EXSMS: 2cf8215d484744459749f69769c7831a94265332
+  EXSMS: b0e26fd54d12f899704e997cbd9fbc69330459d7
   EXSpeech: 0c4eb2bb758bab41f9cbf455cf673d2e344cc186
   EXSplashScreen: 01d39ac67ff6b5dc938f1431279ce2f9228e7703
   EXSQLite: cddb3b3f4c6999761c157b88dc8b55c7af2cd86b
@@ -1270,7 +1270,7 @@ SPEC CHECKSUMS:
   EXStructuredHeaders: dc4b99d20ce14a5ec4d57a53743f0f95d7e82c65
   EXTaskManager: a56d88d245bdd4977b1a92943e8db5b8ed2a5c48
   EXTrackingTransparency: 3c4dd1ec833e827137480de3ee041c14c5c1f7b8
-  EXUpdatesInterface: 8e4f28434a2e6a75803c4ea0ab12cfb07ebb3438
+  EXUpdatesInterface: 791eb16dd052395b82196cc676ef41d0ceec9a8f
   EXVideoThumbnails: 442c3abadb51a81551a3b53705b7560de390e6f7
   EXWebBrowser: 76783ba5dcb8699237746ecf41a9643d428a4cc5
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6
