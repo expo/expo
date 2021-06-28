@@ -16,7 +16,7 @@ def config = project.hasProperty("react") ? project.react : [];
 def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
 
 afterEvaluate {
-  def projectRoot = file("../../")
+  def projectRoot = file("${rootProject.projectDir}")
   def inputExcludes = ["android/**", "ios/**"]
 
   if (!android.hasProperty('libraryVariants')) {
