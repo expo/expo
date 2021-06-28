@@ -16,7 +16,7 @@ if ! [ -x "$(command -v $NODE_BINARY)" ]; then
   exit 1
 fi
 
-# For traditionally main project build phases integration, will be no-op to prevent duplicated app.config creation.
+# For traditional main project build phases integration, will be no-op to prevent duplicated app.config creation.
 DIR_BASENAME=$(basename $PROJECT_ROOT)
 if [ "x$DIR_BASENAME" != "xPods" ]; then
   exit 0
