@@ -47,6 +47,10 @@ class DevLauncherController private constructor() {
     throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE) 
   }
 
+  fun onAppLoadedWithError() {
+    throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE) 
+  }
+
   companion object {
     private var sInstance: DevLauncherController? = null
 
