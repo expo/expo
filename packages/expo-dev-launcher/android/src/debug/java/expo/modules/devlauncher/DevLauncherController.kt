@@ -139,6 +139,12 @@ class DevLauncherController private constructor(
     }
   }
 
+  fun onAppLoadedWithError() {
+    synchronized(this) {
+      appIsLoading = false
+    }
+  }
+  
   fun getRecentlyOpenedApps(): Map<String, String?> = recentlyOpedAppsRegistry.getRecentlyOpenedApps()
 
   fun navigateToLauncher() {
