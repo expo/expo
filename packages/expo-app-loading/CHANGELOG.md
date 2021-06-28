@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Export `AppLoading` component props type as `AppLoadingProps`. ([#13396](https://github.com/expo/expo/pull/13396) by [@Simek](https://github.com/Simek))
+
 ## 1.1.0 — 2021-06-16
 
 _This version does not introduce any user-facing changes._

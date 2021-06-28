@@ -140,10 +140,6 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
 
   /* Android's elevation implementation requires this to be implemented to know where to draw the shadow. */
   override fun getOutline(outline: Outline) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-      super.getOutline(outline)
-      return
-    }
     if (isYogaPositive(mBorderRadius) || mBorderCornerRadii != null) {
       updatePath()
       outline.setConvexPath(mPathForBorderRadiusOutline!!)
@@ -298,34 +294,32 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
         // Draw border
         canvas.clipPath(mOuterClipPathForBorderRadius!!, Region.Op.INTERSECT)
         canvas.clipPath(mInnerClipPathForBorderRadius!!, Region.Op.DIFFERENCE)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-          val isRTL = resolvedLayoutDirection == View.LAYOUT_DIRECTION_RTL
-          var colorStart = getBorderColor(Spacing.START)
-          var colorEnd = getBorderColor(Spacing.END)
-          if (I18nUtil.getInstance().doLeftAndRightSwapInRTL(mContext)) {
-            if (!isBorderColorDefined(Spacing.START)) {
-              colorStart = colorLeft
-            }
-            if (!isBorderColorDefined(Spacing.END)) {
-              colorEnd = colorRight
-            }
-            val directionAwareColorLeft = if (isRTL) colorEnd else colorStart
-            val directionAwareColorRight = if (isRTL) colorStart else colorEnd
+        val isRTL = resolvedLayoutDirection == View.LAYOUT_DIRECTION_RTL
+        var colorStart = getBorderColor(Spacing.START)
+        var colorEnd = getBorderColor(Spacing.END)
+        if (I18nUtil.getInstance().doLeftAndRightSwapInRTL(mContext)) {
+          if (!isBorderColorDefined(Spacing.START)) {
+            colorStart = colorLeft
+          }
+          if (!isBorderColorDefined(Spacing.END)) {
+            colorEnd = colorRight
+          }
+          val directionAwareColorLeft = if (isRTL) colorEnd else colorStart
+          val directionAwareColorRight = if (isRTL) colorStart else colorEnd
+          colorLeft = directionAwareColorLeft
+          colorRight = directionAwareColorRight
+        } else {
+          val directionAwareColorLeft = if (isRTL) colorEnd else colorStart
+          val directionAwareColorRight = if (isRTL) colorStart else colorEnd
+          val isColorStartDefined = isBorderColorDefined(Spacing.START)
+          val isColorEndDefined = isBorderColorDefined(Spacing.END)
+          val isDirectionAwareColorLeftDefined = if (isRTL) isColorEndDefined else isColorStartDefined
+          val isDirectionAwareColorRightDefined = if (isRTL) isColorStartDefined else isColorEndDefined
+          if (isDirectionAwareColorLeftDefined) {
             colorLeft = directionAwareColorLeft
+          }
+          if (isDirectionAwareColorRightDefined) {
             colorRight = directionAwareColorRight
-          } else {
-            val directionAwareColorLeft = if (isRTL) colorEnd else colorStart
-            val directionAwareColorRight = if (isRTL) colorStart else colorEnd
-            val isColorStartDefined = isBorderColorDefined(Spacing.START)
-            val isColorEndDefined = isBorderColorDefined(Spacing.END)
-            val isDirectionAwareColorLeftDefined = if (isRTL) isColorEndDefined else isColorStartDefined
-            val isDirectionAwareColorRightDefined = if (isRTL) isColorStartDefined else isColorEndDefined
-            if (isDirectionAwareColorLeftDefined) {
-              colorLeft = directionAwareColorLeft
-            }
-            if (isDirectionAwareColorRightDefined) {
-              colorRight = directionAwareColorRight
-            }
           }
         }
         val left = mOuterClipTempRectForBorderRadius!!.left
@@ -412,50 +406,48 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
     var topRightRadius = getBorderRadiusOrDefaultTo(borderRadius, BorderRadiusLocation.TOP_RIGHT)
     var bottomLeftRadius = getBorderRadiusOrDefaultTo(borderRadius, BorderRadiusLocation.BOTTOM_LEFT)
     var bottomRightRadius = getBorderRadiusOrDefaultTo(borderRadius, BorderRadiusLocation.BOTTOM_RIGHT)
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      val isRTL = resolvedLayoutDirection == View.LAYOUT_DIRECTION_RTL
-      var topStartRadius = getBorderRadius(BorderRadiusLocation.TOP_START)
-      var topEndRadius = getBorderRadius(BorderRadiusLocation.TOP_END)
-      var bottomStartRadius = getBorderRadius(BorderRadiusLocation.BOTTOM_START)
-      var bottomEndRadius = getBorderRadius(BorderRadiusLocation.BOTTOM_END)
-      if (I18nUtil.getInstance().doLeftAndRightSwapInRTL(mContext)) {
-        if (YogaConstants.isUndefined(topStartRadius)) {
-          topStartRadius = topLeftRadius
-        }
-        if (YogaConstants.isUndefined(topEndRadius)) {
-          topEndRadius = topRightRadius
-        }
-        if (YogaConstants.isUndefined(bottomStartRadius)) {
-          bottomStartRadius = bottomLeftRadius
-        }
-        if (YogaConstants.isUndefined(bottomEndRadius)) {
-          bottomEndRadius = bottomRightRadius
-        }
-        val directionAwareTopLeftRadius = if (isRTL) topEndRadius else topStartRadius
-        val directionAwareTopRightRadius = if (isRTL) topStartRadius else topEndRadius
-        val directionAwareBottomLeftRadius = if (isRTL) bottomEndRadius else bottomStartRadius
-        val directionAwareBottomRightRadius = if (isRTL) bottomStartRadius else bottomEndRadius
+    val isRTL = resolvedLayoutDirection == View.LAYOUT_DIRECTION_RTL
+    var topStartRadius = getBorderRadius(BorderRadiusLocation.TOP_START)
+    var topEndRadius = getBorderRadius(BorderRadiusLocation.TOP_END)
+    var bottomStartRadius = getBorderRadius(BorderRadiusLocation.BOTTOM_START)
+    var bottomEndRadius = getBorderRadius(BorderRadiusLocation.BOTTOM_END)
+    if (I18nUtil.getInstance().doLeftAndRightSwapInRTL(mContext)) {
+      if (YogaConstants.isUndefined(topStartRadius)) {
+        topStartRadius = topLeftRadius
+      }
+      if (YogaConstants.isUndefined(topEndRadius)) {
+        topEndRadius = topRightRadius
+      }
+      if (YogaConstants.isUndefined(bottomStartRadius)) {
+        bottomStartRadius = bottomLeftRadius
+      }
+      if (YogaConstants.isUndefined(bottomEndRadius)) {
+        bottomEndRadius = bottomRightRadius
+      }
+      val directionAwareTopLeftRadius = if (isRTL) topEndRadius else topStartRadius
+      val directionAwareTopRightRadius = if (isRTL) topStartRadius else topEndRadius
+      val directionAwareBottomLeftRadius = if (isRTL) bottomEndRadius else bottomStartRadius
+      val directionAwareBottomRightRadius = if (isRTL) bottomStartRadius else bottomEndRadius
+      topLeftRadius = directionAwareTopLeftRadius
+      topRightRadius = directionAwareTopRightRadius
+      bottomLeftRadius = directionAwareBottomLeftRadius
+      bottomRightRadius = directionAwareBottomRightRadius
+    } else {
+      val directionAwareTopLeftRadius = if (isRTL) topEndRadius else topStartRadius
+      val directionAwareTopRightRadius = if (isRTL) topStartRadius else topEndRadius
+      val directionAwareBottomLeftRadius = if (isRTL) bottomEndRadius else bottomStartRadius
+      val directionAwareBottomRightRadius = if (isRTL) bottomStartRadius else bottomEndRadius
+      if (!YogaConstants.isUndefined(directionAwareTopLeftRadius)) {
         topLeftRadius = directionAwareTopLeftRadius
+      }
+      if (!YogaConstants.isUndefined(directionAwareTopRightRadius)) {
         topRightRadius = directionAwareTopRightRadius
+      }
+      if (!YogaConstants.isUndefined(directionAwareBottomLeftRadius)) {
         bottomLeftRadius = directionAwareBottomLeftRadius
+      }
+      if (!YogaConstants.isUndefined(directionAwareBottomRightRadius)) {
         bottomRightRadius = directionAwareBottomRightRadius
-      } else {
-        val directionAwareTopLeftRadius = if (isRTL) topEndRadius else topStartRadius
-        val directionAwareTopRightRadius = if (isRTL) topStartRadius else topEndRadius
-        val directionAwareBottomLeftRadius = if (isRTL) bottomEndRadius else bottomStartRadius
-        val directionAwareBottomRightRadius = if (isRTL) bottomStartRadius else bottomEndRadius
-        if (!YogaConstants.isUndefined(directionAwareTopLeftRadius)) {
-          topLeftRadius = directionAwareTopLeftRadius
-        }
-        if (!YogaConstants.isUndefined(directionAwareTopRightRadius)) {
-          topRightRadius = directionAwareTopRightRadius
-        }
-        if (!YogaConstants.isUndefined(directionAwareBottomLeftRadius)) {
-          bottomLeftRadius = directionAwareBottomLeftRadius
-        }
-        if (!YogaConstants.isUndefined(directionAwareBottomRightRadius)) {
-          bottomRightRadius = directionAwareBottomRightRadius
-        }
       }
     }
     val innerTopLeftRadiusX = Math.max(topLeftRadius - borderWidth.left, 0f)
@@ -744,34 +736,32 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
       val colorTop = getBorderColor(Spacing.TOP)
       var colorRight = getBorderColor(Spacing.RIGHT)
       val colorBottom = getBorderColor(Spacing.BOTTOM)
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-        val isRTL = resolvedLayoutDirection == View.LAYOUT_DIRECTION_RTL
-        var colorStart = getBorderColor(Spacing.START)
-        var colorEnd = getBorderColor(Spacing.END)
-        if (I18nUtil.getInstance().doLeftAndRightSwapInRTL(mContext)) {
-          if (!isBorderColorDefined(Spacing.START)) {
-            colorStart = colorLeft
-          }
-          if (!isBorderColorDefined(Spacing.END)) {
-            colorEnd = colorRight
-          }
-          val directionAwareColorLeft = if (isRTL) colorEnd else colorStart
-          val directionAwareColorRight = if (isRTL) colorStart else colorEnd
+      val isRTL = resolvedLayoutDirection == View.LAYOUT_DIRECTION_RTL
+      var colorStart = getBorderColor(Spacing.START)
+      var colorEnd = getBorderColor(Spacing.END)
+      if (I18nUtil.getInstance().doLeftAndRightSwapInRTL(mContext)) {
+        if (!isBorderColorDefined(Spacing.START)) {
+          colorStart = colorLeft
+        }
+        if (!isBorderColorDefined(Spacing.END)) {
+          colorEnd = colorRight
+        }
+        val directionAwareColorLeft = if (isRTL) colorEnd else colorStart
+        val directionAwareColorRight = if (isRTL) colorStart else colorEnd
+        colorLeft = directionAwareColorLeft
+        colorRight = directionAwareColorRight
+      } else {
+        val directionAwareColorLeft = if (isRTL) colorEnd else colorStart
+        val directionAwareColorRight = if (isRTL) colorStart else colorEnd
+        val isColorStartDefined = isBorderColorDefined(Spacing.START)
+        val isColorEndDefined = isBorderColorDefined(Spacing.END)
+        val isDirectionAwareColorLeftDefined = if (isRTL) isColorEndDefined else isColorStartDefined
+        val isDirectionAwareColorRightDefined = if (isRTL) isColorStartDefined else isColorEndDefined
+        if (isDirectionAwareColorLeftDefined) {
           colorLeft = directionAwareColorLeft
+        }
+        if (isDirectionAwareColorRightDefined) {
           colorRight = directionAwareColorRight
-        } else {
-          val directionAwareColorLeft = if (isRTL) colorEnd else colorStart
-          val directionAwareColorRight = if (isRTL) colorStart else colorEnd
-          val isColorStartDefined = isBorderColorDefined(Spacing.START)
-          val isColorEndDefined = isBorderColorDefined(Spacing.END)
-          val isDirectionAwareColorLeftDefined = if (isRTL) isColorEndDefined else isColorStartDefined
-          val isDirectionAwareColorRightDefined = if (isRTL) isColorStartDefined else isColorEndDefined
-          if (isDirectionAwareColorLeftDefined) {
-            colorLeft = directionAwareColorLeft
-          }
-          if (isDirectionAwareColorRightDefined) {
-            colorRight = directionAwareColorRight
-          }
         }
       }
       val left = bounds.left
@@ -916,10 +906,11 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
       val borderBottomWidth = getBorderWidthOrDefaultTo(borderWidth, Spacing.BOTTOM)
       var borderLeftWidth = getBorderWidthOrDefaultTo(borderWidth, Spacing.LEFT)
       var borderRightWidth = getBorderWidthOrDefaultTo(borderWidth, Spacing.RIGHT)
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && mBorderWidth != null) {
+      val mBorderWidth = mBorderWidth
+      if (mBorderWidth != null) {
         val isRTL = resolvedLayoutDirection == View.LAYOUT_DIRECTION_RTL
-        var borderStartWidth = mBorderWidth!!.getRaw(Spacing.START)
-        var borderEndWidth = mBorderWidth!!.getRaw(Spacing.END)
+        var borderStartWidth = mBorderWidth.getRaw(Spacing.START)
+        var borderEndWidth = mBorderWidth.getRaw(Spacing.END)
         if (I18nUtil.getInstance().doLeftAndRightSwapInRTL(mContext)) {
           if (YogaConstants.isUndefined(borderStartWidth)) {
             borderStartWidth = borderLeftWidth

@@ -47,6 +47,7 @@ const renderAPI = (
       data,
       TypeDocKind.TypeAlias,
       entry =>
+        !entry.name.includes('Props') &&
         !!(
           entry.type.declaration ||
           entry.type.types ||
