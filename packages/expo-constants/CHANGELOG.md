@@ -12,6 +12,10 @@
 
 ### 💡 Others
 
+### ⚠️ Notices
+
+- Modularized expo-constants without further app setup. ([#13424](https://github.com/expo/expo/pull/13424) by [@kudo](https://github.com/kudo))
+
 ## 11.0.0 — 2021-06-16
 
 ### 🛠 Breaking changes
