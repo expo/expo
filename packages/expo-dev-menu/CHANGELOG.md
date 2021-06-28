@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Fixed WebSocket handlers weren't registered properly on iOS. ([#13403](https://github.com/expo/expo/pull/13403) by [@lukmccall](https://github.com/lukmccall))
 - Fix crash from inspector request failures. ([#13393](https://github.com/expo/expo/pull/13393) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
