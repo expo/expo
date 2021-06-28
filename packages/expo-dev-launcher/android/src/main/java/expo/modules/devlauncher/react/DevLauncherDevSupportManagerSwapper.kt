@@ -5,6 +5,7 @@ import com.facebook.react.ReactInstanceManager
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.devsupport.DevSupportManagerBase
 import com.facebook.react.devsupport.DisabledDevSupportManager
+import com.facebook.react.packagerconnection.JSPackagerClient
 import expo.modules.devlauncher.helpers.getProtectedFieldValue
 import expo.modules.devlauncher.helpers.setProtectedDeclaredField
 import kotlinx.coroutines.GlobalScope
@@ -49,14 +50,27 @@ class DevLauncherDevSupportManagerSwapper {
               "mDevServerHelper"
             )
 
-            val packagerConnectionLock: Boolean = DevServerHelper::class.java.getProtectedFieldValue(
-              devServerHelper,
-              "mPackagerConnectionLock"
-            )
+            try {
+              val packagerConnectionLock: Boolean = DevServerHelper::class.java.getProtectedFieldValue(
+                devServerHelper,
+                "mPackagerConnectionLock"
+              )
 
-            if (!packagerConnectionLock) {
-              devServerHelper.closePackagerConnection()
-              return@launch
+              if (!packagerConnectionLock) {
+                devServerHelper.closePackagerConnection()
+                return@launch
+              }
+            } catch (_: NoSuchFieldException) {
+              // mPackagerConnectionLock was removed from the React Native in v0.63.4
+              val packagerClient: JSPackagerClient? = DevServerHelper::class.java.getProtectedFieldValue(
+                devServerHelper,
+                "mPackagerClient"
+              )
+
+              if (packagerClient != null) {
+                devServerHelper.closePackagerConnection()
+                return@launch
+              }
             }
 
             delay(50)
