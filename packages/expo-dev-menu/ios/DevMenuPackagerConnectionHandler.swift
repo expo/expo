@@ -10,6 +10,8 @@ class DevMenuPackagerConnectionHandler {
   }
   
   func setup() {
+    // `RCT_DEV` isn't available in Swift, that's why we used `DEBUG` instead.
+    // It shouldn't diverge, because of the definition of `RCT_DEV`.
 #if DEBUG
     RCTPackagerConnection
       .shared()
