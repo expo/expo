@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed Android notifications not respecting the `shouldPlaySound` property in `setNotificationHandler`. ([#13411](https://github.com/expo/expo/pull/13411) by [@cruzach](https://github.com/cruzach))
+
 ### 💡 Others
 
 ## 0.12.0 — 2021-06-16

@@ -1819,6 +1819,8 @@ export interface NotificationBehavior {
 }
 ```
 
+> On Android, setting `shouldPlaySound: false` will result in the drop-down notification alert **not** showing, no matter what the priority is. This setting will also override any channel-specific sounds you may have configured.
+
 #### `NotificationChannel`
 
 An object representing a notification channel (feature available only on Android).
