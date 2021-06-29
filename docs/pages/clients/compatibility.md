@@ -11,3 +11,10 @@ Expo Development Client contains three packages, which have to be compatible wit
 | `0.2.0`                 | `0.4.X`           | `0.3.0`           |
 | `0.1.2`                 | `0.3.X`           | `0.2.X`           |
 | `0.1.0` - `0.1.1`       | `0.1.X` - `0.2.X` | `0.1.X`           |
+
+Additionally, if you are using `expo-updates`, the interface between `expo-dev-launcher` and `expo-update` needs to be compatible.
+
+| expo-updates-interface | expo-dev-launcher | expo-updates |
+| ---------------------- | ----------------- | ------------ |
+| `0.2.X`                | `0.6.X` - `0.6.X` | `0.8.X`      |
+| `0.1.X`                | `0.5.X`           | `0.7.X`      |
