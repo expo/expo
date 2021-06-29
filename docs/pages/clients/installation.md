@@ -71,13 +71,15 @@ When you start your project on iOS, the metro bundler will be started automatica
 
 ### Add better error handlers
 
-Sometimes, for certain types of errors, we can provide more helpful error messages than the ones that ship by default with React Native. To turn this feature on you need to import `expo-dev-client` in your `index` file. Make sure that the import statement is above of `import App from './App'`.
+Sometimes, for certain types of errors, we can provide more helpful error messages than the ones that ship by default with React Native. To turn this feature on you need to import `expo-dev-client` in your `index` file (in the managed workflow, you need to add this import on top of the `App.{js|tsx}`). Make sure that the import statement is above of `import App from './App'`.
 
 ```js
 import 'expo-dev-client';
 ...
 import App from "./App";
 ```
+
+> Note: This will only affect application which uses modified index file. If you are loading multiple applications, you need to add this import statement to each of them.
 
 ## 4. Build and Install
 
