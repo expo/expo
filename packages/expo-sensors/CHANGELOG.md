@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Added Android `uses-feature` to plugin and docs. ([#11836](https://github.com/expo/expo/pull/11836) by [@EvanBacon](https://github.com/EvanBacon))
+- Added Android `uses-feature` to `AndroidManifest.xml`. ([#11836](https://github.com/expo/expo/pull/11836) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 

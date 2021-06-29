@@ -29,12 +29,7 @@ Run `npx pod-install` after installing the npm package.
 
 ### Configure for Android
 
-Add the `android.hardware.sensor.compass` feature to your manifest (`android/app/src/main/AndroidManifest.xml`):
-
-```xml
-<uses-feature android:name="android.hardware.sensor.compass" android:required="true" />
-```
-
+No additional set up necessary.
 
 # Contributing
 
