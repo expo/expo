@@ -6,7 +6,7 @@ This is a preview version of the Expo Development Client.
 
 `expo-dev-client` is an npm package installable in any Expo or React Native project. Once installed, any Debug builds of your application will gain an extensible debug menu and the ability to load projects from Expo CLI. Release builds of your application will not change other than the addition of a few header files.
 
-See [Development Client documentation](https://docs.expo.io/clients/introduction/) for more information.
+See [the documentation](https://docs.expo.io/clients/introduction/) for more information.
 
 ## Installation
 
