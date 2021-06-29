@@ -502,6 +502,17 @@ If you aren't comfortable with setting up a monorepo, you can try manually runni
 
 Packages should attempt to use the built-in `AndroidManifest.xml` [merging system](https://android-doc.github.io/tools/building/manifest-merge.html) before using a config plugin. This can be used for static, non-optional features like permissions. This will ensure features are merged during build-time and not prebuild-time, which minimizes the possibility of users forgetting to prebuild. The drawback is that users cannot use [introspection](#introspection) to preview the changes and debug any potential issues.
 
+Here is an example of a package's AndroidManifest.xml, which injects a required permission:
+
+```xml
+    <!-- /* @info Include this line to use `android:*` properties like `android:name` in your manifest. */ -->
+<manifest package="expo.modules.filesystem"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- /* @end */ -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+</manifest>
+```
+
 If you're building a plugin for your local project, or if your package needs more control, then you should implement a plugin.
 
 You can use built-in types and helpers to ease the process of working with complex objects.
@@ -709,7 +720,7 @@ The `gradle.properties` is a static key/value pair that groovy files can read fr
 
 `gradle.properties`
 
-```
+```properties
 /* @info Safely modified using the <code>withGradleProperties()</code> mod. */
 expo.react.jsEngine=hermes
 /* @end */
@@ -723,8 +734,7 @@ Then later in a Gradle file:
 project.ext.react = [
   /* @info This code would be added to the template ahead of time, but it could be regexed in using <code>withAppBuildGradle()</code> */
   enableHermes: findProperty('expo.react.jsEngine') ?: 'jsc'
-  /* @end */
-]
+/* @end */]
 ```
 
 - For keys in the `gradle.properties`, use camel case separated by `.`s, and usually starting with the `expo` prefix to denote that the property is managed by prebuild.
