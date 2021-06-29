@@ -505,10 +505,10 @@ Packages should attempt to use the built-in `AndroidManifest.xml` [merging syste
 Here is an example of a package's AndroidManifest.xml, which injects a required permission:
 
 ```xml
-    <!-- /* @info Include this line to use `android:*` properties like `android:name` in your manifest. */ -->
+<!-- @info Include <code>xmlns:android="..."</code> to use <code>android:*</code> properties like <code>android:name</code> in your manifest. -->
 <manifest package="expo.modules.filesystem"
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- /* @end */ -->
+    <!-- @end -->
     <uses-permission android:name="android.permission.INTERNET"/>
 </manifest>
 ```
@@ -721,9 +721,9 @@ The `gradle.properties` is a static key/value pair that groovy files can read fr
 `gradle.properties`
 
 ```properties
-/* @info Safely modified using the <code>withGradleProperties()</code> mod. */
+# @info Safely modified using the <code>withGradleProperties()</code> mod. #
 expo.react.jsEngine=hermes
-/* @end */
+# @end #
 ```
 
 Then later in a Gradle file:
