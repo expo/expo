@@ -111,6 +111,22 @@ UM_EXPORT_METHOD_AS(preventAutoHideAsync,
     return [utilService currentViewController];
   }
 
+  UIViewController *controller = [self viewControllerContainingRCTRootView];
+  if (!controller) {
+    // no RCTRootView was found, so just fall back to the key window's root view controller
+    return self.utilities.currentViewController;
+  }
+
+  UIViewController *presentedController = controller.presentedViewController;
+  while (presentedController && ![presentedController isBeingDismissed]) {
+    controller = presentedController;
+    presentedController = controller.presentedViewController;
+  }
+  return controller;
+}
+
+- (nullable UIViewController *)viewControllerContainingRCTRootView
+{
   NSArray<UIWindow *> *allWindows;
   if (@available(iOS 13, *)) {
     NSSet<UIScene *> *allWindowScenes = UIApplication.sharedApplication.connectedScenes;
@@ -140,8 +156,8 @@ UM_EXPORT_METHOD_AS(preventAutoHideAsync,
     }
   }
 
-  // if all else fails, fall back to the key window
-  return self.utilities.currentViewController;
+  // no RCTRootView was found
+  return nil;
 }
 
 @end
