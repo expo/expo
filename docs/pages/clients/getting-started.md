@@ -113,7 +113,7 @@ Now make some changes to your application code and see them reflected on your de
 
 If you launch your custom development client from your device's Home Screen, you will see your launcher screen, which looks like this:
 
-<ImageSpotlight alt="The launcher screen of the Development Client" src="/static/images/dev-client-launcher.png" style={{ maxWidth: 225}} />
+<ImageSpotlight alt="The launcher screen of the Development Client" src="/static/images/dev-client-launcher.png" style={{ maxWidth: 600}} />
 
 If a bundler is detected on your local network, or if you've signed in to an Expo account in both `expo-cli` and your client, you can connect to it directly from this screen. Otherwise you can connect by scanning the QR code displayed by Expo CLI.
 
