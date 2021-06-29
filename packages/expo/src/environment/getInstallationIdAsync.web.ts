@@ -27,10 +27,7 @@ export default async function getInstallationIdAsync() {
   try {
     localStorage.setItem(INSTALLATION_ID_KEY, installationId);
   } catch (error) {
-    console.debug(
-      '[expo-notifications] Could not save installation ID in persisted storage, it will get reset.',
-      error
-    );
+    console.debug('Could not save installation ID in persisted storage, it will get reset.', error);
   }
 
   return installationId;

@@ -72,7 +72,7 @@ The typical flow for browser-based authentication in mobile apps is as follows:
 
 - **Initiation**: the user presses a sign in button
 - **Open web browser**: the app opens up a web browser to the authentication provider sign in page. The url that is opened for the sign in page usually includes information to identify the app, and a URL to redirect to on success. _Note: the web browser should share cookies with your system web browser so that users do not need to sign in again if they are already authenticated on the system browser -- Expo's [WebBrowser](webbrowser.md) API takes care of this._
-- **Authentication provider redirects**: upon successful authentication, the authentication provider should redirect back to the application by redirecting to URL provided by the app in the query parameters on the sign in page ([read more about how linking works in mobile apps](../../../workflow/linking.md)), _provided that the URL is in the allowlist of allowed redirect URLs_. Allowlisting redirect URLs is important to prevent malicious actors from pretending to be your application. The redirect includes data in the URL (such as user id and token), either in the location hash, query parameters, or both.
+- **Authentication provider redirects**: upon successful authentication, the authentication provider should redirect back to the application by redirecting to URL provided by the app in the query parameters on the sign in page ([read more about how linking works in mobile apps](../../../guides/linking.md)), _provided that the URL is in the allowlist of allowed redirect URLs_. Allowlisting redirect URLs is important to prevent malicious actors from pretending to be your application. The redirect includes data in the URL (such as user id and token), either in the location hash, query parameters, or both.
 - **App handles redirect**: the redirect is handled by the app and data is parsed from the redirect URL.
 
 ## What `auth.expo.io` does for you
@@ -154,7 +154,7 @@ Given an OpenID Connect issuer URL, this will fetch and return the [`DiscoveryDo
 Create a redirect url for the current platform and environment. You need to manually define the redirect that will be used in a bare workflow React Native app, or an Expo standalone app, this is because it cannot be inferred automatically.
 
 - **Web:** Generates a path based on the current `window.location`. For production web apps, you should hard code the URL as well.
-- **Managed, and Custom workflow:** Uses the `scheme` property of your `app.config.js` or `app.json`.
+- **Managed workflow:** Uses the `scheme` property of your `app.config.js` or `app.json`.
   - **Proxy:** Uses auth.expo.io as the base URL for the path. This only works in Expo Go and standalone environments.
 - **Bare workflow:** Will fallback to using the `native` option for bare workflow React Native apps.
 
@@ -515,8 +515,8 @@ An extension of the [`AuthRequestConfig`][#authrequestconfig] for use with the b
 | selectAccount          | `?boolean` | Used in favor of `prompt: Prompt.SelectAccount` to switch accounts                    |
 | expoClientId           | `?string`  | Proxy client ID for use in Expo Go on iOS and Android.                                |
 | webClientId            | `?string`  | Web client ID for use in the browser (web apps).                                      |
-| iosClientId            | `?string`  | iOS native client ID for use in standalone, bare-workflow, and custom clients.        |
-| androidClientId        | `?string`  | Android native client ID for use in standalone, bare-workflow, and custom clients.    |
+| iosClientId            | `?string`  | iOS native client ID for use in standalone, bare workflow.                            |
+| androidClientId        | `?string`  | Android native client ID for use in standalone, bare workflow.                        |
 | shouldAutoExchangeCode | `?string`  | Should the hook automatically exchange the response code for an authentication token. |
 
 ## Providers
@@ -652,7 +652,7 @@ const result = await AuthSession.startAsync({
 
 ### Filtering out AuthSession events in Linking handlers
 
-There are many reasons why you might want to handle inbound links into your app, such as push notifications or just regular deep linking (you can read more about this in the [Linking guide](../../../workflow/linking.md)); authentication redirects are only one type of deep link, and `AuthSession` handles these particular links for you. In your own `Linking.addEventListener` handlers, you can filter out deep links that are handled by `AuthSession` by checking if the URL includes the `+expo-auth-session` string -- if it does, you can ignore it. This works because `AuthSession` adds `+expo-auth-session` to the default `returnUrl`; however, if you provide your own `returnUrl`, you may want to consider adding a similar identifier to enable you to filter out `AuthSession` events from other handlers.
+There are many reasons why you might want to handle inbound links into your app, such as push notifications or just regular deep linking (you can read more about this in the [Linking guide](../../../guides/linking.md)); authentication redirects are only one type of deep link, and `AuthSession` handles these particular links for you. In your own `Linking.addEventListener` handlers, you can filter out deep links that are handled by `AuthSession` by checking if the URL includes the `+expo-auth-session` string -- if it does, you can ignore it. This works because `AuthSession` adds `+expo-auth-session` to the default `returnUrl`; however, if you provide your own `returnUrl`, you may want to consider adding a similar identifier to enable you to filter out `AuthSession` events from other handlers.
 
 #### With React Navigation v5
 

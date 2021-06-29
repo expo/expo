@@ -12,16 +12,16 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule;
 
 public class ClearExperienceData {
-
   private static final String TAG = ClearExperienceData.class.getSimpleName();
 
-  public static void clear(Context context, String experienceId) {
+  public static void clear(Context context, ExperienceKey experienceKey) {
     try {
-      String databaseName = ExponentAsyncStorageModule.experienceIdToDatabaseName(experienceId);
+      String databaseName = ExponentAsyncStorageModule.experienceKeyToDatabaseName(experienceKey);
       ReactDatabaseSupplier supplier = new ReactDatabaseSupplier(context, databaseName);
       supplier.clearAndCloseDatabase();
     } catch (UnsupportedEncodingException e) {
@@ -29,8 +29,7 @@ public class ClearExperienceData {
     }
 
     try {
-      String experienceIdEncoded = URLEncoder.encode(experienceId, "UTF-8");
-      ScopedContext scopedContext = new ScopedContext(context, experienceIdEncoded);
+      ScopedContext scopedContext = new ScopedContext(context, experienceKey);
       FileUtils.deleteDirectory(scopedContext.getFilesDir());
       FileUtils.deleteDirectory(scopedContext.getCacheDir());
     } catch (IOException e) {

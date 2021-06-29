@@ -1,1 +1,0 @@
-../../../../../../../packages/expo-application/ios/EXApplication/EXApplication.h

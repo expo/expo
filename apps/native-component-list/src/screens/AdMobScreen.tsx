@@ -1,14 +1,18 @@
 import {
+  requestPermissionsAsync,
+  getPermissionsAsync,
   AdMobBanner,
   AdMobInterstitial,
   AdMobRewarded,
   isAvailableAsync,
   setTestDeviceIDAsync,
+  PublisherBanner,
 } from 'expo-ads-admob';
 import * as React from 'react';
-import { StyleSheet, Platform, Switch, Text, View } from 'react-native';
+import { StyleSheet, Platform, Switch, Text, View, ScrollView } from 'react-native';
 
 import Button from '../components/Button';
+import SimpleActionDemo from '../components/SimpleActionDemo';
 import { useResolvedValue } from '../utilities/useResolvedValue';
 
 export default function AdMobScreen() {
@@ -66,13 +70,13 @@ function AdMobView() {
     setTestDeviceIDAsync('EMULATOR');
     AdMobRewarded.setAdUnitID(AdMobRewardedTestUnitID);
     AdMobInterstitial.setAdUnitID(AdMobInterstitialTestUnitID);
-    AdMobRewarded.addEventListener('rewardedVideoDidClose', reloadRewarded);
+    AdMobRewarded.addEventListener('rewardedVideoDidDismiss', reloadRewarded);
     AdMobInterstitial.addEventListener('interstitialDidClose', reloadInterstitial);
     reloadRewarded();
     reloadInterstitial();
 
     return () => {
-      AdMobRewarded.removeEventListener('rewardedVideoDidClose', reloadRewarded);
+      AdMobRewarded.removeEventListener('rewardedVideoDidDismiss', reloadRewarded);
       AdMobInterstitial.removeEventListener('interstitialDidClose', reloadInterstitial);
     };
   }, []);
@@ -128,8 +132,16 @@ function AdMobView() {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.scrollViewContainer}>
       <View style={{ flex: 1 }}>
+        <SimpleActionDemo
+          title="get tracking permissions"
+          action={async () => await getPermissionsAsync()}
+        />
+        <SimpleActionDemo
+          title="request tracking permissions"
+          action={async () => await requestPermissionsAsync()}
+        />
         <Button
           style={styles.button}
           onPress={onPress}
@@ -142,7 +154,14 @@ function AdMobView() {
           onPress={onInterstitialPress}
           disabled={!isInterstitialReady}
         />
-        <AdMobBanner bannerSize="banner" adUnitID={AdMobBannerTestUnitID} />
+        <AdMobBanner
+          onAdViewDidReceiveAd={() => {
+            console.log('This should not spam the console.');
+          }}
+          bannerSize="largeBanner"
+          adUnitID={AdMobBannerTestUnitID}
+        />
+        <PublisherBanner bannerSize="largeBanner" adUnitID={AdMobBannerTestUnitID} />
         <View
           style={{
             flexDirection: 'row',
@@ -154,7 +173,7 @@ function AdMobView() {
           <Switch value={servePersonalizedAds} onValueChange={setPersonalizedAds} />
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -166,7 +185,11 @@ const styles = StyleSheet.create({
   container: {
     marginTop: 30,
     flex: 1,
+  },
+  scrollViewContainer: {
+    justifyContent: 'flex-start',
     alignItems: 'center',
+    paddingBottom: 15,
   },
   button: {
     marginVertical: 10,

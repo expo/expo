@@ -24,13 +24,14 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.core.interfaces.services.UIManager;
-import org.unimodules.interfaces.sensors.SensorService;
-import org.unimodules.interfaces.sensors.SensorServiceSubscription;
-import org.unimodules.interfaces.sensors.services.AccelerometerService;
-import org.unimodules.interfaces.sensors.services.GravitySensorService;
-import org.unimodules.interfaces.sensors.services.GyroscopeService;
-import org.unimodules.interfaces.sensors.services.LinearAccelerationSensorService;
-import org.unimodules.interfaces.sensors.services.RotationVectorSensorService;
+
+import expo.modules.interfaces.sensors.SensorServiceInterface;
+import expo.modules.interfaces.sensors.SensorServiceSubscriptionInterface;
+import expo.modules.interfaces.sensors.services.AccelerometerServiceInterface;
+import expo.modules.interfaces.sensors.services.GravitySensorServiceInterface;
+import expo.modules.interfaces.sensors.services.GyroscopeServiceInterface;
+import expo.modules.interfaces.sensors.services.LinearAccelerationSensorServiceInterface;
+import expo.modules.interfaces.sensors.services.RotationVectorSensorServiceInterface;
 
 public class DeviceMotionModule extends ExportedModule implements SensorEventListener2 {
   private long mLastUpdate = 0;
@@ -44,7 +45,7 @@ public class DeviceMotionModule extends ExportedModule implements SensorEventLis
   private SensorEvent mRotationRateEvent;
   private SensorEvent mGravityEvent;
 
-  private List<SensorServiceSubscription> mServiceSubscriptions = null;
+  private List<SensorServiceSubscriptionInterface> mServiceSubscriptions = null;
 
   private UIManager mUiManager = null;
   private ModuleRegistry mModuleRegistry = null;
@@ -78,8 +79,8 @@ public class DeviceMotionModule extends ExportedModule implements SensorEventLis
   public void startObserving(Promise promise) {
     if (mServiceSubscriptions == null) {
       mServiceSubscriptions = new ArrayList<>();
-      for (SensorService kernelService : getSensorKernelServices()) {
-        SensorServiceSubscription subscription = kernelService.createSubscriptionForListener(this);
+      for (SensorServiceInterface kernelService : getSensorKernelServices()) {
+        SensorServiceSubscriptionInterface subscription = kernelService.createSubscriptionForListener(this);
         // We want handle update interval on our own,
         // because we need to coordinate updates from multiple sensor services.
         subscription.setUpdateInterval(0);
@@ -87,7 +88,7 @@ public class DeviceMotionModule extends ExportedModule implements SensorEventLis
       }
     }
 
-    for (SensorServiceSubscription subscription : mServiceSubscriptions) {
+    for (SensorServiceSubscriptionInterface subscription : mServiceSubscriptions) {
       subscription.start();
     }
 
@@ -99,7 +100,7 @@ public class DeviceMotionModule extends ExportedModule implements SensorEventLis
     mUiManager.runOnUiQueueThread(new Runnable() {
       @Override
       public void run() {
-        for (SensorServiceSubscription subscription : mServiceSubscriptions) {
+        for (SensorServiceSubscriptionInterface subscription : mServiceSubscriptions) {
           subscription.stop();
         }
         mCurrentFrameCallback.stop();
@@ -130,13 +131,13 @@ public class DeviceMotionModule extends ExportedModule implements SensorEventLis
     mModuleRegistry = moduleRegistry;
   }
 
-  private List<SensorService> getSensorKernelServices() {
+  private List<SensorServiceInterface> getSensorKernelServices() {
     return Arrays.asList(
-        mModuleRegistry.getModule(GyroscopeService.class),
-        mModuleRegistry.getModule(LinearAccelerationSensorService.class),
-        mModuleRegistry.getModule(AccelerometerService.class),
-        mModuleRegistry.getModule(RotationVectorSensorService.class),
-        mModuleRegistry.getModule(GravitySensorService.class)
+        mModuleRegistry.getModule(GyroscopeServiceInterface.class),
+        mModuleRegistry.getModule(LinearAccelerationSensorServiceInterface.class),
+        mModuleRegistry.getModule(AccelerometerServiceInterface.class),
+        mModuleRegistry.getModule(RotationVectorSensorServiceInterface.class),
+        mModuleRegistry.getModule(GravitySensorServiceInterface.class)
     );
   }
 

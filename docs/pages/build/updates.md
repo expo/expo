@@ -49,4 +49,6 @@ Please refer to the ["Updating your app over-the-air"](/bare/updating-your-app.m
 
 ## Updating managed apps built with EAS Build
 
-Support for managed apps on EAS Build is still very early, and you may encounter unexpected issues. Please note that if you are publishing an update to a managed app built with EAS Build, you currently need to use the `--target bare` flag: `expo publish --release-channel your-channel --target bare`. If you do not, your app may crash.
+> Although we don't recommend using EAS Build for managed apps on SDK 40 or lower, if do this, you need to use the `--target bare` flag when publishing updates: `expo publish --release-channel your-channel --target bare`. If you do not, your app may crash.
+
+We recommend using a different release channel for each binary version of your app. Any time you change the native runtime (add a native library or remove one), you should create a new unique release channel name and only publish compatible updates to that channel.

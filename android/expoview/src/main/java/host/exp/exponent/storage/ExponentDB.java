@@ -13,7 +13,10 @@ import com.raizlabs.android.dbflow.structure.database.transaction.QueryTransacti
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
+
+import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
 
@@ -24,17 +27,16 @@ public class ExponentDB {
 
   public interface ExperienceResultListener {
     void onSuccess(ExperienceDBObject experience);
-
     void onFailure();
   }
 
   public static final String NAME = "ExponentKernel";
   public static final int VERSION = 1;
 
-  public static void saveExperience(String manifestUrl, JSONObject manifest, String bundleUrl) {
+  public static void saveExperience(String manifestUrl, RawManifest manifest, String bundleUrl) {
     try {
       ExperienceDBObject experience = new ExperienceDBObject();
-      experience.id = manifest.getString(ExponentManifest.MANIFEST_ID_KEY);
+      experience.scopeKey = manifest.getScopeKey();
       experience.manifestUrl = manifestUrl;
       experience.bundleUrl = bundleUrl;
       experience.manifest = manifest.toString();
@@ -44,28 +46,25 @@ public class ExponentDB {
     }
   }
 
-  public static void experienceIdToExperience(String experienceId, final ExperienceResultListener listener) {
+  public static void experienceScopeKeyToExperience(String experienceScopeKey, final ExperienceResultListener listener) {
     SQLite.select()
         .from(ExperienceDBObject.class)
-        .where(ExperienceDBObject_Table.id.is(experienceId))
+        .where(ExperienceDBObject_Table.id.is(experienceScopeKey))
         .async()
-        .queryResultCallback(new QueryTransaction.QueryResultCallback<ExperienceDBObject>() {
-          @Override
-          public void onQueryResult(QueryTransaction<ExperienceDBObject> transaction, @NonNull CursorResult<ExperienceDBObject> tResult) {
-            if (tResult.getCount() == 0) {
-              listener.onFailure();
-            } else {
-              listener.onSuccess(tResult.getItem(0));
-            }
+        .querySingleResultCallback((transaction, experienceDBObject) -> {
+          if (experienceDBObject == null) {
+            listener.onFailure();
+          } else {
+            listener.onSuccess(experienceDBObject);
           }
         }).execute();
   }
 
   @WorkerThread
-  public static ExperienceDBObject experienceIdToExperienceSync(String experienceId) {
+  public static @Nullable ExperienceDBObject experienceScopeKeyToExperienceSync(String experienceScopeKey) {
     return SQLite.select()
       .from(ExperienceDBObject.class)
-      .where(ExperienceDBObject_Table.id.is(experienceId))
+      .where(ExperienceDBObject_Table.id.is(experienceScopeKey))
       .querySingle();
    }
 }

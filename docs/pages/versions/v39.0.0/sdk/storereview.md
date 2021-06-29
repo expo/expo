@@ -3,6 +3,7 @@ title: StoreReview
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-39/packages/expo-store-review'
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
@@ -10,9 +11,10 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 > If this is used in Android the device will attempt to link to the Play Store using native `Linking` and the `android.playStoreUrl` from `app.config.js` or `app.json` instead.
 
-<PlatformsSection android emulator ios simulator />
 
-![](/static/images/store-review.png)
+<ImageSpotlight src="/static/images/store-review.png" alt="Screenshots of the store review API in action on iOS" />
+
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 

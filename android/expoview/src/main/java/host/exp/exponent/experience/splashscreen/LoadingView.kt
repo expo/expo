@@ -17,7 +17,9 @@ import host.exp.expoview.R
  * The only purpose of this view is to present Android progressBar (spinner) before manifest with experience-related info is available
  */
 class LoadingView @JvmOverloads constructor(
-  context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+  context: Context,
+  attrs: AttributeSet? = null,
+  defStyleAttr: Int = 0
 ) : RelativeLayout(context, attrs, defStyleAttr) {
   private val progressBar: ProgressBar
   private val progressBarHandler = Handler()

@@ -21,7 +21,6 @@ import org.unimodules.core.arguments.ReadableArguments;
 import org.unimodules.core.errors.InvalidArgumentException;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.RegistryLifecycleListener;
-import org.unimodules.interfaces.permissions.Permissions;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,6 +29,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+
+import expo.modules.interfaces.permissions.Permissions;
 
 public class CalendarModule extends ExportedModule implements RegistryLifecycleListener {
   private static final String TAG = CalendarModule.class.getSimpleName();
@@ -929,7 +930,11 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
   private ArrayList<String> calendarAllowedRemindersFromDBString(String dbString) {
     ArrayList<String> array = new ArrayList<>();
     for (String constant : dbString.split(",")) {
-      array.add(reminderStringMatchingConstant(Integer.parseInt(constant)));
+      try{
+      	array.add(reminderStringMatchingConstant(Integer.parseInt(constant)));
+      } catch (NumberFormatException e) {
+          Log.e(TAG, "Couldn't convert reminder constant into an int.", e);
+      }
     }
     return array;
   }
@@ -1118,7 +1123,11 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
   private ArrayList<String> calendarAllowedAttendeeTypesFromDBString(String dbString) {
     ArrayList<String> array = new ArrayList<>();
     for (String constant : dbString.split(",")) {
-      array.add(attendeeTypeStringMatchingConstant(Integer.parseInt(constant)));
+      try{
+        array.add(attendeeTypeStringMatchingConstant(Integer.parseInt(constant)));
+      } catch (NumberFormatException e) {
+          Log.e(TAG, "Couldn't convert attendee constant into an int.", e);
+      }
     }
     return array;
   }

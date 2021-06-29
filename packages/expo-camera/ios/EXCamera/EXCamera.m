@@ -1,26 +1,28 @@
 #import <AVFoundation/AVFoundation.h>
 
-#import <UMBarCodeScannerInterface/UMBarCodeScannerProviderInterface.h>
+#import <ExpoModulesCore/EXBarCodeScannerProviderInterface.h>
 #import <EXCamera/EXCamera.h>
 #import <EXCamera/EXCameraUtils.h>
 #import <EXCamera/EXCameraManager.h>
 #import <EXCamera/EXCameraPermissionRequester.h>
 #import <UMCore/UMAppLifecycleService.h>
 #import <UMCore/UMUtilities.h>
-#import <UMFaceDetectorInterface/UMFaceDetectorManagerProvider.h>
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
-#import <UMPermissionsInterface/UMPermissionsInterface.h>
+#import <ExpoModulesCore/EXFaceDetectorManagerInterface.h>
+#import <ExpoModulesCore/EXFaceDetectorManagerProviderInterface.h>
+#import <ExpoModulesCore/EXFileSystemInterface.h>
+#import <ExpoModulesCore/EXPermissionsInterface.h>
 
 @interface EXCamera ()
 
-@property (nonatomic, weak) id<UMFileSystemInterface> fileSystem;
+@property (nonatomic, weak) id<EXFileSystemInterface> fileSystem;
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
-@property (nonatomic, strong) id<UMFaceDetectorManager> faceDetectorManager;
-@property (nonatomic, strong) id<UMBarCodeScannerInterface> barCodeScanner;
-@property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
+@property (nonatomic, strong) id<EXFaceDetectorManagerInterface> faceDetectorManager;
+@property (nonatomic, strong) id<EXBarCodeScannerInterface> barCodeScanner;
+@property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
 @property (nonatomic, weak) id<UMAppLifecycleService> lifecycleManager;
 
 @property (nonatomic, assign, getter=isSessionPaused) BOOL paused;
+@property (nonatomic, assign) BOOL isValidVideoOptions;
 
 @property (nonatomic, strong) NSDictionary *photoCaptureOptions;
 @property (nonatomic, strong) UMPromiseResolveBlock photoCapturedResolve;
@@ -51,14 +53,15 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     _faceDetectorManager = [self createFaceDetectorManager];
     _barCodeScanner = [self createBarCodeScanner];
     _lifecycleManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)];
-    _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
-    _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
+    _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
+    _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
 #if !(TARGET_IPHONE_SIMULATOR)
     _previewLayer = [AVCaptureVideoPreviewLayer layerWithSession:_session];
     _previewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
     _previewLayer.needsDisplayOnBoundsChange = YES;
 #endif
     _paused = NO;
+    _isValidVideoOptions = YES;
     _pictureSize = AVCaptureSessionPresetHigh;
     [self changePreviewOrientation:[UIApplication sharedApplication].statusBarOrientation];
     [self initializeCaptureSessionInput];
@@ -508,27 +511,6 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
   }
 
   if (_movieFileOutput != nil && !_movieFileOutput.isRecording && _videoRecordedResolve == nil && _videoRecordedReject == nil) {
-    if (options[@"maxDuration"]) {
-      Float64 maxDuration = [options[@"maxDuration"] floatValue];
-      _movieFileOutput.maxRecordedDuration = CMTimeMakeWithSeconds(maxDuration, 30);
-    }
-
-    if (options[@"maxFileSize"]) {
-      _movieFileOutput.maxRecordedFileSize = [options[@"maxFileSize"] integerValue];
-    }
-
-    AVCaptureSessionPreset preset;
-    if (options[@"quality"]) {
-      EXCameraVideoResolution resolution = [options[@"quality"] integerValue];
-      preset = [EXCameraUtils captureSessionPresetForVideoResolution:resolution];
-    } else if ([_session.sessionPreset isEqual:AVCaptureSessionPresetPhoto]) {
-      preset = AVCaptureSessionPresetHigh;
-    }
-
-    if (preset != nil) {
-      [self updateSessionPreset:preset];
-    }
-
     bool shouldBeMuted = options[@"mute"] && [options[@"mute"] boolValue];
     [self updateSessionAudioIsMuted:shouldBeMuted];
 
@@ -540,7 +522,9 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
       [connection setPreferredVideoStabilizationMode:self.videoStabilizationMode];
     }
     [connection setVideoOrientation:[EXCameraUtils videoOrientationForDeviceOrientation:[[UIDevice currentDevice] orientation]]];
-
+    
+    [self setVideoOptions:options forConnection:connection onReject:reject];
+    
     bool canBeMirrored = connection.isVideoMirroringSupported;
     bool shouldBeMirrored = options[@"mirror"] && [options[@"mirror"] boolValue];
     if (canBeMirrored && shouldBeMirrored) {
@@ -550,6 +534,12 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     UM_WEAKIFY(self);
     dispatch_async(self.sessionQueue, ^{
       UM_STRONGIFY(self);
+      // it is possible that the session has been invalidated at this point
+      // for example, the video codec option is invalid and so this call has already rejected
+      if (!self.isValidVideoOptions) {
+        return;
+      }
+
       if (!self) {
         reject(@"E_IMAGE_SAVE_FAILED", @"Camera view has been unmounted.", nil);
         return;
@@ -566,6 +556,60 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
       self.videoRecordedReject = reject;
     });
   }
+}
+
+// Video options are set in an async block to prevent the possible race condition outlined here:
+// https://github.com/react-native-camera/react-native-camera/pull/2694
+- (void)setVideoOptions:(NSDictionary *)options forConnection:(AVCaptureConnection *)connection onReject:(UMPromiseRejectBlock)reject
+{
+  UM_WEAKIFY(self);
+  dispatch_async(_sessionQueue, ^{
+    UM_STRONGIFY(self);
+    // Reset validation flag
+    self.isValidVideoOptions = YES;
+
+    if (options[@"maxDuration"]) {
+      Float64 maxDuration = [options[@"maxDuration"] floatValue];
+      self.movieFileOutput.maxRecordedDuration = CMTimeMakeWithSeconds(maxDuration, 30);
+    }
+
+    if (options[@"maxFileSize"]) {
+      self.movieFileOutput.maxRecordedFileSize = [options[@"maxFileSize"] integerValue];
+    }
+    
+    AVCaptureSessionPreset preset;
+    if (options[@"quality"]) {
+      EXCameraVideoResolution resolution = [options[@"quality"] integerValue];
+      preset = [EXCameraUtils captureSessionPresetForVideoResolution:resolution];
+    } else if ([self.session.sessionPreset isEqual:AVCaptureSessionPresetPhoto]) {
+      preset = AVCaptureSessionPresetHigh;
+    }
+
+    if (preset != nil) {
+      [self updateSessionPreset:preset];
+    }
+    
+    if (options[@"codec"]) {
+      AVVideoCodecType videoCodecType = [EXCameraUtils videoCodecForType: [options[@"codec"] integerValue]];
+
+      if ([self.movieFileOutput.availableVideoCodecTypes containsObject:videoCodecType]) {
+        [self.movieFileOutput setOutputSettings: @{AVVideoCodecKey: videoCodecType} forConnection: connection];
+        self.videoCodecType = videoCodecType;
+      } else {
+        if ([videoCodecType isEqualToString: @"VIDEO_CODEC_UNKNOWN"]) {
+          videoCodecType = options[@"codec"];
+        }
+        NSString *videoCodecErrorMessage = [NSString stringWithFormat: @"Video Codec '%@' is not supported on this device", videoCodecType];
+        reject(@"E_RECORDING_FAILED", videoCodecErrorMessage, nil);
+        
+        [self cleanupMovieFileCapture];
+        self.videoRecordedResolve = nil;
+        self.videoRecordedReject = nil;
+        self.isValidVideoOptions = NO;
+      }
+    }
+    
+  });
 }
 
 - (void)maybeStartFaceDetection:(BOOL)mirrored {
@@ -877,6 +921,7 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
   }
   _videoRecordedResolve = nil;
   _videoRecordedReject = nil;
+  _videoCodecType = nil;
 
   [self cleanupMovieFileCapture];
   // If face detection has been running prior to recording to file
@@ -892,10 +937,10 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
 
 - (id)createFaceDetectorManager
 {
-  id <UMFaceDetectorManagerProvider> faceDetectorProvider = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMFaceDetectorManagerProvider)];
+  id<EXFaceDetectorManagerProviderInterface> faceDetectorProvider = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFaceDetectorManagerProviderInterface)];
 
   if (faceDetectorProvider) {
-    id <UMFaceDetectorManager> faceDetector = [faceDetectorProvider createFaceDetectorManager];
+    id<EXFaceDetectorManagerInterface> faceDetector = [faceDetectorProvider createFaceDetectorManager];
     if (faceDetector) {
       UM_WEAKIFY(self);
       [faceDetector setOnFacesDetected:^(NSArray<NSDictionary *> *faces) {
@@ -918,9 +963,9 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
 
 - (id)createBarCodeScanner
 {
-  id<UMBarCodeScannerProviderInterface> barCodeScannerProvider = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMBarCodeScannerProviderInterface)];
+  id<EXBarCodeScannerProviderInterface> barCodeScannerProvider = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXBarCodeScannerProviderInterface)];
   if (barCodeScannerProvider) {
-    id<UMBarCodeScannerInterface> barCodeScanner = [barCodeScannerProvider createBarCodeScanner];
+    id<EXBarCodeScannerInterface> barCodeScanner = [barCodeScannerProvider createBarCodeScanner];
     if (barCodeScanner) {
       UM_WEAKIFY(self);
       [barCodeScanner setSession:_session];

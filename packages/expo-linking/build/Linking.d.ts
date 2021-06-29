@@ -1,4 +1,4 @@
-import { ParsedURL, QueryParams, URLListener } from './Linking.types';
+import { CreateURLOptions, ParsedURL, QueryParams, URLListener } from './Linking.types';
 /**
  * Create a URL that works for the environment the app is currently running in.
  * The scheme in bare and standalone must be defined in the app.json under `expo.scheme`.
@@ -33,11 +33,7 @@ export declare function makeUrl(path?: string, queryParams?: QueryParams, scheme
  * @param scheme URI protocol `<scheme>://` that must be built into your native app.
  * @param queryParams An object of parameters that will be converted into a query string.
  */
-export declare function createURL(path: string, { scheme, queryParams, isTripleSlashed, }?: {
-    scheme?: string;
-    queryParams?: QueryParams;
-    isTripleSlashed?: boolean;
-}): string;
+export declare function createURL(path: string, { scheme, queryParams, isTripleSlashed }?: CreateURLOptions): string;
 /**
  * Returns the components and query parameters for a given URL.
  *
@@ -93,6 +89,11 @@ export declare function openURL(url: string): Promise<true>;
 export declare function canOpenURL(url: string): Promise<boolean>;
 /**
  * Returns the initial URL followed by any subsequent changes to the URL.
+ */
+export declare function useURL(): string | null;
+/**
+ * Returns the initial URL followed by any subsequent changes to the URL.
+ * @deprecated Use `useURL` instead.
  */
 export declare function useUrl(): string | null;
 export * from './Linking.types';

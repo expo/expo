@@ -13,4 +13,8 @@ interface DevMenuDelegateInterface {
    * Returns a `ReactInstanceManager` ot the currently shown app. It is a context of what the dev menu displays.
    */
   fun reactInstanceManager(): ReactInstanceManager
+
+  fun supportsDevelopment(): Boolean {
+    return true
+  }
 }

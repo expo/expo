@@ -1,1 +1,0 @@
-../../../../../versioned-react-native/ABI39_0_0/ReactNative/Libraries/Text/ABI39_0_0RCTTextTransform.h

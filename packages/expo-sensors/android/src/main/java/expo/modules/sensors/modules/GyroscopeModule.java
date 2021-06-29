@@ -10,8 +10,9 @@ import android.os.Bundle;
 
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.interfaces.sensors.SensorService;
-import org.unimodules.interfaces.sensors.services.GyroscopeService;
+
+import expo.modules.interfaces.sensors.SensorServiceInterface;
+import expo.modules.interfaces.sensors.services.GyroscopeServiceInterface;
 
 public class GyroscopeModule extends BaseSensorModule {
   public GyroscopeModule(Context reactContext) {
@@ -29,8 +30,8 @@ public class GyroscopeModule extends BaseSensorModule {
   }
 
   @Override
-  protected SensorService getSensorService() {
-    return getModuleRegistry().getModule(GyroscopeService.class);
+  protected SensorServiceInterface getSensorService() {
+    return getModuleRegistry().getModule(GyroscopeServiceInterface.class);
   }
 
   protected Bundle eventToMap(SensorEvent sensorEvent) {

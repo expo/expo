@@ -17,6 +17,7 @@ import {
   vendorPlatformAsync,
 } from '../vendoring';
 import vendoredModulesConfig from '../vendoring/config';
+import { legacyVendorModuleAsync } from '../vendoring/legacy';
 import { VendoringTargetConfig } from '../vendoring/types';
 
 type ActionOptions = {
@@ -34,8 +35,8 @@ const EXPO_GO_TARGET = 'expo-go';
 
 export default (program: Command) => {
   program
-    .command('new-update-vendored-module')
-    .alias('new-update-module', 'nuvm')
+    .command('update-vendored-module')
+    .alias('update-module', 'uvm')
     .description('Updates 3rd party modules.')
     .option('-l, --list', 'Shows a list of available 3rd party modules.', false)
     .option('-o, --list-outdated', 'Shows a list of outdated 3rd party modules.', false)
@@ -105,6 +106,15 @@ async function action(options: ActionOptions) {
       if (!targetConfig.platforms[platform]) {
         continue;
       }
+
+      // TODO(@tsapeta): Remove this once all vendored modules are migrated to the new system.
+      if (!targetConfig.modules[moduleName][platform]) {
+        // If the target doesn't support this platform, maybe legacy vendoring does.
+        logger.info('‼️  Using legacy vendoring for platform %s', chalk.yellow(platform));
+        await legacyVendorModuleAsync(moduleName, platform, sourceDirectory);
+        continue;
+      }
+
       const relativeTargetDirectory = path.join(
         targetConfig.platforms[platform].targetDirectory,
         moduleName

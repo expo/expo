@@ -5,9 +5,9 @@
 #import <UMCore/UMUIManager.h>
 #import <UMCore/UMEventEmitterService.h>
 #import <UMCore/UMAppLifecycleService.h>
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
-#import <UMPermissionsInterface/UMPermissionsInterface.h>
-#import <UMPermissionsInterface/UMPermissionsMethodsDelegate.h>
+#import <ExpoModulesCore/EXFileSystemInterface.h>
+#import <ExpoModulesCore/EXPermissionsInterface.h>
+#import <ExpoModulesCore/EXPermissionsMethodsDelegate.h>
 
 #import <EXAV/EXAV.h>
 #import <EXAV/EXAVPlayerData.h>
@@ -15,6 +15,7 @@
 #import <EXAV/EXAudioRecordingPermissionRequester.h>
 
 NSString *const EXAudioRecordingOptionsIsMeteringEnabledKey = @"isMeteringEnabled";
+NSString *const EXAudioRecordingOptionsKeepAudioActiveHintKey = @"keepAudioActiveHint";
 NSString *const EXAudioRecordingOptionsKey = @"ios";
 NSString *const EXAudioRecordingOptionExtensionKey = @"extension";
 NSString *const EXAudioRecordingOptionOutputFormatKey = @"outputFormat";
@@ -57,7 +58,7 @@ NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
 @property (nonatomic, assign) int audioRecorderDurationMillis;
 
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
-@property (nonatomic, weak) id<UMPermissionsInterface> permissionsManager;
+@property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
 
 @end
 
@@ -119,8 +120,8 @@ UM_EXPORT_MODULE(ExponentAV);
     [_kernelAudioSessionManagerDelegate moduleDidForeground:self];
   }
   [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)] registerAppLifecycleListener:self];
-  _permissionsManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMPermissionsInterface)];
-  [UMPermissionsMethodsDelegate registerRequesters:@[[EXAudioRecordingPermissionRequester new]] withPermissionsManager:_permissionsManager];
+  _permissionsManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
+  [EXPermissionsMethodsDelegate registerRequesters:@[[EXAudioRecordingPermissionRequester new]] withPermissionsManager:_permissionsManager];
 }
 
 - (void)onAppForegrounded
@@ -498,7 +499,7 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
     return UMErrorWithMessage(@"Recorder is already prepared.");
   }
   
-  id<UMFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
+  id<EXFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   
   if (!fileSystem) {
     return UMErrorWithMessage(@"No FileSystem module.");
@@ -765,7 +766,7 @@ UM_EXPORT_METHOD_AS(getPermissionsAsync,
                     getPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                       withRequester:[EXAudioRecordingPermissionRequester class]
                                                             resolve:resolve
                                                              reject:reject];
@@ -775,7 +776,7 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                     requestPermissionsAsync:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
-  [UMPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+  [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[EXAudioRecordingPermissionRequester class]
                                                                resolve:resolve
                                                                 reject:reject];
@@ -806,18 +807,22 @@ UM_EXPORT_METHOD_AS(prepareAudioRecorder,
       [self _removeAudioRecorder:YES];
       reject(@"E_AUDIO_RECORDERNOTCREATED", [NSString stringWithFormat:@"Prepare encountered an error: %@", error.description], error);
       return;
-    } else if ([_audioRecorder prepareToRecord]) {
-        if(options[EXAudioRecordingOptionsIsMeteringEnabledKey]) {
-        _audioRecorder.meteringEnabled = true;
-        }
-      resolve(@{@"uri": [[_audioRecorder url] absoluteString],
-                @"status": [self _getAudioRecorderStatus]});
-    } else {
+    } else if (![_audioRecorder prepareToRecord]) {
+      _audioRecorderIsPreparing = false;
       [self _removeAudioRecorder:YES];
       reject(@"E_AUDIO_RECORDERNOTCREATED", @"Prepare encountered an error: recorder not prepared.", nil);
+      return;
     }
+    if (options[EXAudioRecordingOptionsIsMeteringEnabledKey]) {
+      _audioRecorder.meteringEnabled = true;
+    }
+    
+    resolve(@{@"uri": [[_audioRecorder url] absoluteString],
+                @"status": [self _getAudioRecorderStatus]});
     _audioRecorderIsPreparing = false;
-    [self demoteAudioSessionIfPossible];
+    if (!options[EXAudioRecordingOptionsKeepAudioActiveHintKey]) {
+      [self demoteAudioSessionIfPossible];
+    }
   } else {
     reject(@"E_AUDIO_RECORDERNOTCREATED", [NSString stringWithFormat:@"Prepare encountered an error: %@", error.description], error);
   }

@@ -1,21 +1,67 @@
 import { UnavailabilityError } from '@unimodules/core';
 import ExpoSecureStore from './ExpoSecureStore';
+// @needsAudit
+/**
+ * The data in the keychain item cannot be accessed after a restart until the device has been
+ * unlocked once by the user. This may be useful if you need to access the item when the phone
+ * is locked.
+ */
 export const AFTER_FIRST_UNLOCK = ExpoSecureStore.AFTER_FIRST_UNLOCK;
+// @needsAudit
+/**
+ * Similar to `AFTER_FIRST_UNLOCK`, except the entry is not migrated to a new device when restoring
+ * from a backup.
+ */
 export const AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY = ExpoSecureStore.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY;
+// @needsAudit
+/**
+ * The data in the keychain item can always be accessed regardless of whether the device is locked.
+ * This is the least secure option.
+ */
 export const ALWAYS = ExpoSecureStore.ALWAYS;
+// @needsAudit
+/**
+ * Similar to `WHEN_UNLOCKED_THIS_DEVICE_ONLY`, except the user must have set a passcode in order to
+ * store an entry. If the user removes their passcode, the entry will be deleted.
+ */
 export const WHEN_PASSCODE_SET_THIS_DEVICE_ONLY = ExpoSecureStore.WHEN_PASSCODE_SET_THIS_DEVICE_ONLY;
+// @needsAudit
+/**
+ * Similar to `ALWAYS`, except the entry is not migrated to a new device when restoring from a backup.
+ */
 export const ALWAYS_THIS_DEVICE_ONLY = ExpoSecureStore.ALWAYS_THIS_DEVICE_ONLY;
+// @needsAudit
+/**
+ * The data in the keychain item can be accessed only while the device is unlocked by the user.
+ */
 export const WHEN_UNLOCKED = ExpoSecureStore.WHEN_UNLOCKED;
+// @needsAudit
+/**
+ * Similar to `WHEN_UNLOCKED`, except the entry is not migrated to a new device when restoring from
+ * a backup.
+ */
 export const WHEN_UNLOCKED_THIS_DEVICE_ONLY = ExpoSecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY;
 const VALUE_BYTES_LIMIT = 2048;
+// @needsAudit
 /**
- * Returns whether the SecureStore API is enabled on the current device. This does not check the app permissions.
+ * Returns whether the SecureStore API is enabled on the current device. This does not check the app
+ * permissions.
  *
- * @returns Async `boolean`, indicating whether the SecureStore API is available on the current device. Currently this resolves `true` on iOS and Android only.
+ * @return Promise which fulfils witch `boolean`, indicating whether the SecureStore API is available
+ * on the current device. Currently this resolves `true` on iOS and Android only.
  */
 export async function isAvailableAsync() {
     return !!ExpoSecureStore.getValueWithKeyAsync;
 }
+// @needsAudit
+/**
+ * Delete the value associated with the provided key.
+ *
+ * @param key The key that was used to store the associated value.
+ * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
+ *
+ * @return A promise that will reject if the value couldn't be deleted.
+ */
 export async function deleteItemAsync(key, options = {}) {
     _ensureValidKey(key);
     if (!ExpoSecureStore.deleteValueWithKeyAsync) {
@@ -23,10 +69,31 @@ export async function deleteItemAsync(key, options = {}) {
     }
     await ExpoSecureStore.deleteValueWithKeyAsync(key, options);
 }
+// @needsAudit
+/**
+ * Fetch the stored value associated with the provided key.
+ *
+ * @param key The key that was used to store the associated value.
+ * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
+ *
+ * @return A promise that resolves to the previously stored value, or `null` if there is no entry
+ * for the given key. The promise will reject if an error occurred while retrieving the value.
+ */
 export async function getItemAsync(key, options = {}) {
     _ensureValidKey(key);
     return await ExpoSecureStore.getValueWithKeyAsync(key, options);
 }
+// @needsAudit
+/**
+ * Store a key–value pair.
+ *
+ * @param key The key to associate with the stored value. Keys may contain alphanumeric characters
+ * `.`, `-`, and `_`.
+ * @param value The value to store. Size limit is 2048 bytes.
+ * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
+ *
+ * @return A promise that will reject if value cannot be stored on the device.
+ */
 export async function setItemAsync(key, value, options = {}) {
     _ensureValidKey(key);
     if (!_isValidValue(value)) {

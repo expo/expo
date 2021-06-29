@@ -6,9 +6,11 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-google-ap
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { InlineCode } from '~/components/base/code';
 
+> ⚠️ This package is deprecated in favor of the Google [**AuthSession**](auth-session.md) provider. Check out the [Google authentication guides](../../../guides/authentication.md#google) to learn how to migrate your app today.
+
 **`expo-google-app-auth`** provides Google authentication integration for Expo apps using a secure system web browser with native [**`expo-app-auth`**][expo-app-auth]. This is better than a WebView because you can reuse credentials saved on the device. This module uses [PKCE](https://tools.ietf.org/html/rfc7636) for secure native authentication. You won't need to define a provider config because this package utilizes Open ID Connect [auto discovery](https://openid.net/specs/openid-connect-discovery-1_0.html).
 
-<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6884' }} />
+<PlatformsSection android emulator ios simulator />
 
 ### How it works
 
@@ -59,8 +61,8 @@ The difference between this method and native authentication are very sparce. Go
 
 | Name                                    | Type                                         | Description                                                                                                                                                         |
 | --------------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [iosClientId][g-creds]                  | <InlineCode>string \| undefined</InlineCode> | The iOS client id registered with Google for use in the Expo Go app.                                                                                            |
-| [androidClientId][g-creds]              | <InlineCode>string \| undefined</InlineCode> | The Android client id registered with Google for use in the Expo Go app.                                                                                        |
+| [iosClientId][g-creds]                  | <InlineCode>string \| undefined</InlineCode> | The iOS client id registered with Google for use in the Expo Go app.                                                                                                |
+| [androidClientId][g-creds]              | <InlineCode>string \| undefined</InlineCode> | The Android client id registered with Google for use in the Expo Go app.                                                                                            |
 | [iosStandaloneAppClientId][g-creds]     | <InlineCode>string \| undefined</InlineCode> | The iOS client id registered with Google for use in a standalone app.                                                                                               |
 | [androidStandaloneAppClientId][g-creds] | <InlineCode>string \| undefined</InlineCode> | The Android client id registered with Google for use in a standalone app.                                                                                           |
 | [clientId][g-creds]                     | <InlineCode>string \| undefined</InlineCode> | If the platform-appropriate client ID is not provided, this will be used instead.                                                                                   |
@@ -136,8 +138,8 @@ Invalidates the provided `accessToken`, given the client ID used to sign-in is p
 | Name                                    | Type                                         | Description                                                                              |
 | --------------------------------------- | -------------------------------------------- | ---------------------------------------------------------------------------------------- |
 | accessToken                             | `string`                                     | Provided when the user authenticates with your Google application.                       |
-| [iosClientId][g-creds]                  | <InlineCode>string \| undefined</InlineCode> | The iOS client id registered with Google for use in the Expo Go app.                 |
-| [androidClientId][g-creds]              | <InlineCode>string \| undefined</InlineCode> | The Android client id registered with Google for use in the Expo Go app.             |
+| [iosClientId][g-creds]                  | <InlineCode>string \| undefined</InlineCode> | The iOS client id registered with Google for use in the Expo Go app.                     |
+| [androidClientId][g-creds]              | <InlineCode>string \| undefined</InlineCode> | The Android client id registered with Google for use in the Expo Go app.                 |
 | [iosStandaloneAppClientId][g-creds]     | <InlineCode>string \| undefined</InlineCode> | The iOS client id registered with Google for use in a standalone app.                    |
 | [androidStandaloneAppClientId][g-creds] | <InlineCode>string \| undefined</InlineCode> | The Android client id registered with Google for use in a standalone app.                |
 | scopes                                  | `string[] = ['profile', 'email']`            | The scopes to ask for from Google for this login ([more information here][g-using-apis]) |

@@ -8,6 +8,24 @@
 
 ### 🐛 Bug fixes
 
+## 8.3.2 — 2021-04-21
+
+### 🎉 New features
+
+- Find local assets without extensions.  ([#12624](https://github.com/expo/expo/pull/12624) by [@jkhales](https://github.com/jkhales))
+
+## 8.3.1 — 2021-03-23
+
+### 🐛 Bug fixes
+
+- Removed annoying yellowbox warning message in bare workflow when there's no manifest available. ([#12237](https://github.com/expo/expo/pull/12237) by [@bbarthec](https://github.com/bbarthec))
+
+## 8.3.0 — 2021-03-10
+
+### 🐛 Bug fixes
+
+- Remove peerDependencies and unimodulePeerDependencies from Expo modules. ([#11980](https://github.com/expo/expo/pull/11980) by [@brentvatne](https://github.com/brentvatne))
+
 ## 8.2.2 — 2021-01-15
 
 _This version does not introduce any user-facing changes._

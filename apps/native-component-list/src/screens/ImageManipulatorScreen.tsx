@@ -1,8 +1,7 @@
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
 import { Asset } from 'expo-asset';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
-import * as Permissions from 'expo-permissions';
 import React from 'react';
 import {
   Image,
@@ -100,18 +99,23 @@ export default class ImageManipulatorScreen extends React.Component<{}, State> {
   }
 
   _renderImage = () => {
+    const height =
+      this.state.image?.height && this.state.image?.height < 300 ? this.state.image?.height : 300;
+    const width =
+      this.state.image?.width && this.state.image?.width < 300 ? this.state.image?.width : 300;
+
     return (
       <View style={styles.imageContainer}>
         <Image
           source={{ uri: (this.state.image! as Asset).localUri || this.state.image!.uri }}
-          style={styles.image}
+          style={[styles.image, { height, width }]}
         />
       </View>
     );
   };
 
   _pickPhoto = async () => {
-    const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
       alert('Permission to MEDIA_LIBRARY not granted!');
       return;
@@ -206,8 +210,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   image: {
-    width: 300,
-    height: 300,
     resizeMode: 'contain',
   },
   button: {

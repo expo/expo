@@ -16,7 +16,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Configuration
 
-In managed apps, the permission to access images or videos ([`Permissions.CAMERA_ROLL`](permissions.md#permissionscamera_roll)) is added automatically.
+In managed apps, the permission to access images or videos ([`Permissions.MEDIA_LIBRARY`](permissions.md#permissionsmedia_library)) is added automatically.
 
 ## API
 

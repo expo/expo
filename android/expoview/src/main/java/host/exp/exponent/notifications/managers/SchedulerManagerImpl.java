@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.notifications.exceptions.UnableToScheduleException;
 import host.exp.exponent.notifications.schedulers.Scheduler;
 import host.exp.exponent.notifications.schedulers.SchedulerModel;
@@ -53,14 +54,14 @@ class SchedulerManagerImpl implements SchedulersManager {
   }
 
   @Override
-  public void removeAll(String experienceId) {
+  public void removeAll(ExperienceKey experienceKey) {
     fetchSchedulersMap();
-    cancelAlreadyScheduled(experienceId);
+    cancelAlreadyScheduled(experienceKey);
 
     ArrayList<String> toRemove = new ArrayList<String>();
 
     for (Map.Entry<String, Scheduler> scheduler : mSchedulersMap.entrySet()) {
-      if (experienceId == null || scheduler.getValue().getOwnerExperienceId().equals(experienceId)) {
+      if (experienceKey == null || scheduler.getValue().getOwnerExperienceKey().equals(experienceKey)) {
         scheduler.getValue().remove();
         toRemove.add(scheduler.getKey());
       }
@@ -72,10 +73,10 @@ class SchedulerManagerImpl implements SchedulersManager {
   }
 
   @Override
-  public void cancelAlreadyScheduled(String experienceId) {
+  public void cancelAlreadyScheduled(ExperienceKey experienceKey) {
     fetchSchedulersMap();
     for (Scheduler scheduler : mSchedulersMap.values()) {
-      if (experienceId == null || scheduler.getOwnerExperienceId().equals(experienceId)) {
+      if (experienceKey == null || scheduler.getOwnerExperienceKey().equals(experienceKey)) {
         scheduler.cancel();
       }
     }

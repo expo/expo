@@ -19,21 +19,21 @@ public interface HeadlessAppLoader {
 
   void loadApp(Context context, Params params, Runnable alreadyRunning, Consumer<Boolean> callback) throws AppConfigurationError;
 
-  boolean invalidateApp(String appId);
+  boolean invalidateApp(String appScopeKey);
 
-  boolean isRunning(String appId);
+  boolean isRunning(String appScopeKey);
 
   final class Params {
-    private final String appId;
+    private final String appScopeKey;
     private final String appUrl;
 
-    public Params(String appId, String appUrl) {
-      this.appId = appId;
+    public Params(String appScopeKey, String appUrl) {
+      this.appScopeKey = appScopeKey;
       this.appUrl = appUrl;
     }
 
-    public String getAppId() {
-      return appId;
+    public String getAppScopeKey() {
+      return appScopeKey;
     }
 
     public String getAppUrl() {

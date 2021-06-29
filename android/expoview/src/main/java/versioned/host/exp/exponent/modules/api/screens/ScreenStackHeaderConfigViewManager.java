@@ -84,6 +84,11 @@ public class ScreenStackHeaderConfigViewManager extends ViewGroupManager<ScreenS
     config.setTitleFontSize(titleFontSize);
   }
 
+  @ReactProp(name = "titleFontWeight")
+  public void setTitleFontWeight(ScreenStackHeaderConfig config, String titleFontWeight) {
+    config.setTitleFontWeight(titleFontWeight);
+  }
+
   @ReactProp(name = "titleColor", customType = "Color")
   public void setTitleColor(ScreenStackHeaderConfig config, int titleColor) {
     config.setTitleColor(titleColor);
@@ -133,7 +138,6 @@ public class ScreenStackHeaderConfigViewManager extends ViewGroupManager<ScreenS
   public void setDirection(ScreenStackHeaderConfig config, String direction) {
     config.setDirection(direction);
   }
-
 
 //  RCT_EXPORT_VIEW_PROPERTY(backTitle, NSString)
 //  RCT_EXPORT_VIEW_PROPERTY(backTitleFontFamily, NSString)

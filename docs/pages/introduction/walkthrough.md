@@ -3,6 +3,7 @@ title: Walkthrough
 sidebar_title: Walkthrough
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import Video from '~/components/plugins/Video'
 
 There's no need to install anything or even understand everything here, this page is meant to give you an overview of some of the big pieces of building a managed app. In the same way that getting a quick tour of Paris won't make you an expert on Paris, this walkthrough serves to help you identify a few landmarks and the most important areas in the managed workflow. You can do a walkthrough of the [bare workflow](../bare/exploring-bare-workflow.md) later on.
@@ -37,9 +38,8 @@ Let's scroll through the [API Reference](/versions/latest/) to find packages tha
 
 Let's say we had mockups for our app that look like the following:
 
-<div style={{flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 10}}>
-<img src="/static/images/exploring-managed/mockups.png" alt="Mockups of app screens" />
-</div>
+
+<ImageSpotlight alt="Mockups of app screens" src="/static/images/exploring-managed/mockups.png" />
 
 > _Note: These are actually screenshots from [Sindre Sorhus'](https://github.com/sindresorhus) open source app [Blear](https://sindresorhus.com/blear), but let's pretend they are mockups for the sake of demonstration._
 
@@ -95,7 +95,7 @@ Now when we run `expo build:ios` it will kick off a build with the Expo build se
 
 > _Note: Running `expo build:[ios/android]` uses the Expo build service &mdash; if you would rather run builds on your own infrastructure, read about how to do this in [Building Standalone Apps on Your CI](../distribution/turtle-cli.md)_
 
-Now you can use [Application Loader](https://help.apple.com/itc/apploader/) to upload the app to App Store Connect, but we find that it’s a bit easier to run `expo upload:ios` instead. Once it's up on App Store Connect, you'll have to do some manual work within their web interface. [Read more about deploying to app stores](../distribution/app-stores.md).
+Now you can use [Transporter](https://apps.apple.com/app/transporter/id1450874784) to upload the app to App Store Connect, but we find that it’s a bit easier to run `expo upload:ios` instead. Once it's up on App Store Connect, you'll have to do some manual work within their web interface. [Read more about deploying to app stores](../distribution/app-stores.md).
 
 <Video file="exploring-managed/uploadios.mp4" spaceAfter />
 

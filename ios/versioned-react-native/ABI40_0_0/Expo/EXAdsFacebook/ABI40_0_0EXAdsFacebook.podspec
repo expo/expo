@@ -2,13 +2,6 @@ require 'json'
 
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 
-fb_audience_network_version = '~> 5.9.0'
-using_custom_fb_audience_network_version = defined? $FBAudienceNetworkVersion
-if using_custom_fb_audience_network_version
-  fb_audience_network_version = $FBAudienceNetworkVersion
-  Pod::UI.puts "expo-ads-facebook: Using user specified FBAudienceNetwork version '#{$fb_audience_network_version}'"
-end
-
 Pod::Spec.new do |s|
   s.name           = 'ABI40_0_0EXAdsFacebook'
   s.version        = package['version']
@@ -24,5 +17,5 @@ Pod::Spec.new do |s|
   s.requires_arc   = true
 
   s.dependency 'ABI40_0_0UMCore'
-  s.dependency 'FBAudienceNetwork', fb_audience_network_version
+  s.dependency 'FBAudienceNetwork', $FBAudienceNetworkVersion || '6.5.0'
 end

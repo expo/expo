@@ -5,9 +5,8 @@ import { CodeChallengeMethod, ResponseType, } from './AuthRequest.types';
 import { AuthError } from './Errors';
 import * as PKCE from './PKCE';
 import * as QueryParams from './QueryParams';
-import { getSessionUrlProvider } from './SessionUrlProvider';
+import sessionUrlProvider from './SessionUrlProvider';
 import { TokenResponse } from './TokenRequest';
-const sessionUrlProvider = getSessionUrlProvider();
 let _authLock = false;
 /**
  * Implements an authorization request.
@@ -23,7 +22,7 @@ export class AuthRequest {
         this.scopes = request.scopes;
         this.clientSecret = request.clientSecret;
         this.prompt = request.prompt;
-        this.state = request.state ?? PKCE.generateRandomAsync(10);
+        this.state = request.state ?? PKCE.generateRandom(10);
         this.extraParams = request.extraParams ?? {};
         this.codeChallengeMethod = request.codeChallengeMethod ?? CodeChallengeMethod.S256;
         // PKCE defaults to true
@@ -62,7 +61,7 @@ export class AuthRequest {
             codeChallenge: this.codeChallenge,
             codeChallengeMethod: this.codeChallengeMethod,
             prompt: this.prompt,
-            state: await this.getStateAsync(),
+            state: this.state,
             extraParams: this.extraParams,
             usePKCE: this.usePKCE,
         };
@@ -73,7 +72,7 @@ export class AuthRequest {
      * @param discovery
      * @param promptOptions
      */
-    async promptAsync(discovery, { url, ...options } = {}) {
+    async promptAsync(discovery, { url, proxyOptions, ...options } = {}) {
         if (!url) {
             if (!this.url) {
                 // Generate a new url
@@ -90,7 +89,7 @@ export class AuthRequest {
         let startUrl = url;
         let returnUrl = this.redirectUri;
         if (options.useProxy) {
-            returnUrl = sessionUrlProvider.getDefaultReturnUrl();
+            returnUrl = sessionUrlProvider.getDefaultReturnUrl(proxyOptions?.path, proxyOptions);
             startUrl = sessionUrlProvider.getStartUrl(url, returnUrl);
         }
         // Prevent multiple sessions from running at the same time, WebBrowser doesn't
@@ -189,12 +188,6 @@ export class AuthRequest {
         // Store the URL for later
         this.url = `${discovery.authorizationEndpoint}?${query}`;
         return this.url;
-    }
-    async getStateAsync() {
-        // Resolve any pending state.
-        if (this.state instanceof Promise)
-            this.state = await this.state;
-        return this.state;
     }
     async ensureCodeIsSetupAsync() {
         if (this.codeVerifier) {

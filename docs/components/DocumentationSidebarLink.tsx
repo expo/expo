@@ -1,4 +1,5 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
+import { theme } from '@expo/styleguide';
 import NextLink from 'next/link';
 import * as React from 'react';
 
@@ -17,32 +18,32 @@ const STYLES_ACTIVE = css`
   font-size: 15px;
   line-height: 140%;
   font-family: ${Constants.fontFamilies.demi};
-  color: ${Constants.colors.expoLighter};
+  color: ${theme.link.default};
   position: relative;
   left: -7px;
 
   :visited {
-    color: ${Constants.expoColors.primary[500]};
+    color: ${theme.link.default};
   }
 
   :hover {
-    color: ${Constants.expoColors.primary[500]};
+    color: ${theme.link.default};
   }
 `;
 
 const STYLES_DEFAULT = css`
   ${paragraph}
-  color: ${Constants.colors.black80};
+  color: ${theme.text.default};
   line-height: 140%;
-  transition: 200ms ease color;
+  transition: 50ms ease color;
   font-size: 15px;
 
   :visited {
-    color: ${Constants.colors.black60};
+    color: ${theme.text.default};
   }
 
   :hover {
-    color: ${Constants.expoColors.primary[500]};
+    color: ${theme.link.default};
   }
 `;
 
@@ -56,7 +57,7 @@ const STYLES_ACTIVE_BULLET = css`
   min-width: 6px;
   height: 6px;
   width: 6px;
-  background-color: ${Constants.expoColors.primary[500]};
+  background-color: ${theme.link.default};
   border-radius: 4px;
   position: relative;
   left: -12px;

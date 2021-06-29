@@ -65,6 +65,7 @@ which is otherwise unavailable in react-native using the Firebase JavaScript SDK
         "firebase": {
           "appId": "xxxxxxxxxxxxx:web:xxxxxxxxxxxxxxxx",
           "apiKey": "AIzaXXXXXXXX-xxxxxxxxxxxxxxxxxxx",
+          "projectId": "my-awesome-project-id",
           ...
           "measurementId": "G-XXXXXXXXXXXX"
         }
@@ -91,7 +92,7 @@ You are free to use any native Firebase packages such as [react-native-firebase]
   ```groovy
   buildscript {
       dependencies {
-          classpath 'com.google.gms:google-services:4.2.0'
+          classpath 'com.google.gms:google-services:4.3.5'
       }
   }
   ```
@@ -99,7 +100,7 @@ You are free to use any native Firebase packages such as [react-native-firebase]
   ```groovy
   apply plugin: 'com.google.gms.google-services'
   ```
-- Finally rebuild your native Android app: `yarn react-native run-android`
+- Finally rebuild your native Android app: `expo run:android`
 
 ### iOS
 
@@ -120,7 +121,7 @@ You are free to use any native Firebase packages such as [react-native-firebase]
   - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
       [FIRApp configure];
   ```
-- Rebuild your iOS project to see the changes: `yarn react-native run-ios`
+- Rebuild your iOS project to see the changes: `expo run:ios`
 
 ### Usage with react-native-firebase
 

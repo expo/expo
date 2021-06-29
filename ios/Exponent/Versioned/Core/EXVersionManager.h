@@ -19,7 +19,12 @@
  */
 - (void)showDevMenuForBridge:(id)bridge;
 - (void)disableRemoteDebuggingForBridge:(id)bridge;
+- (void)toggleRemoteDebuggingForBridge:(id)bridge;
+- (void)togglePerformanceMonitorForBridge:(id)bridge;
 - (void)toggleElementInspectorForBridge:(id)bridge;
+- (uint32_t)addWebSocketNotificationHandler:(void (^)(NSDictionary<NSString *, id> *))handler
+                         queue:(dispatch_queue_t)queue
+                     forMethod:(NSString *)method;
 
 - (NSDictionary<NSString *, NSString *> *)devMenuItemsForBridge:(id)bridge;
 - (void)selectDevMenuItemWithKey:(NSString *)key onBridge:(id)bridge;

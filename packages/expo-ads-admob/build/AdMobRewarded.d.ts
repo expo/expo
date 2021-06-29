@@ -1,4 +1,5 @@
-declare type EventNameType = 'rewardedVideoDidRewardUser' | 'rewardedVideoDidLoad' | 'rewardedVideoDidFailToLoad' | 'rewardedVideoDidOpen' | 'rewardedVideoDidStart' | 'rewardedVideoDidClose' | 'rewardedVideoWillLeaveApplication';
+declare const eventNames: readonly ["rewardedVideoUserDidEarnReward", "rewardedVideoDidLoad", "rewardedVideoDidFailToLoad", "rewardedVideoDidPresent", "rewardedVideoDidFailToPresent", "rewardedVideoDidDismiss"];
+declare type EventNameType = typeof eventNames[number];
 declare type EventListener = (...args: any[]) => void;
 declare const _default: {
     setAdUnitID(id: string): Promise<void>;

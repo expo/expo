@@ -6,6 +6,8 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-permissio
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
+> **expo-permissions is deprecated.** Use permissions getters and requesters in specific modules instead, such as [MediaLibrary.getPermissionsAsync()](../media-library.md/#medialibrarygetpermissionsasync) and [MediaLibrary.requestPermissionsAsync()](../media-library.md/#medialibraryrequestpermissionsasync)..
+
 When you are creating an app that requires access to potentially sensitive information on a user's device, such as their location or contacts, you need to ask for the user's permission first. The `expo-permissions` module makes requesting these permissions easy, fast, and reliable.
 
 Please read the [permissions on iOS](#permissions-on-ios) and [permissions on Android](#permissions-on-android) sections carefully before deploying your app to the stores. If you don't configure or explain the permissions properly **it may result in your app getting rejected or pulled from the stores**. Read more about deploying to the stores in the [App Store Deployment Guide](../../../distribution/app-stores.md#system-permissions-dialogs-on-ios).
@@ -152,6 +154,8 @@ function App() {
 
 ### `Permissions.getAsync(...types)`
 
+> **Deprecated.** Use permissions getters in specific modules instead, such as [MediaLibrary.getPermissionsAsync()](../media-library.md/#medialibrarygetpermissionsasync).
+
 Determines whether your app has already been granted access to the provided permissions types.
 
 #### Arguments
@@ -184,6 +188,8 @@ async function checkMultiPermissions() {
 ```
 
 ### `Permissions.askAsync(...types)`
+
+> **Deprecated.** Use permissions requesters in specific modules instead, such as [MediaLibrary.requestPermissionsAsync()](../media-library.md/#medialibraryrequestpermissionsasync).
 
 Prompt the user for types of permissions. If they have already granted access, response will be success.
 
@@ -264,7 +270,7 @@ This object contains information, per requested permission, using the [`Permissi
 
 ### `PermissionInfo`
 
-This object contains information about a single requested permission, it's retuned within the `PermissionResponse` using the `permissions` property. It also may include additional platform-specific info, like the scope of the permission.
+This object contains information about a single requested permission, it's returned within the `PermissionResponse` using the `permissions` property. It also may include additional platform-specific info, like the scope of the permission.
 
 ```ts
 interface PermissionInfo {
@@ -349,6 +355,31 @@ Due to the design of the location permission API on iOS we aren't able to provid
 - if you provide only `NSLocationWhenInUseUsageDescription`, your application will only ever ask for location access permission "when in use",
 - if you provide both `NSLocationWhenInUseUsageDescription` and `NSLocationAlwaysAndWhenInUseUsageDescription`, your application will only ask for "when in use" permission on iOS 10, whereas on iOS 11+ it will show a dialog to the user where he'll be able to pick whether he'd like to give your app permission to access location always or only when the app is in use,
 - if you provide all three: `NSLocationWhenInUseUsageDescription`, `NSLocationAlwaysAndWhenInUseUsageDescription` and `NSLocationAlwaysUsageDescription`, your application on iOS 11+ will still show a dialog described above and on iOS 10 it will only ask for "always" location permission.
+
+### `Permissions.LOCATION_FOREGROUND`
+
+The permission type for location access while the app is in the foreground.
+
+- **Android:** it requires the [`ACCESS_COARSE_LOCATION`][location-android-coarse] and [`ACCESS_FINE_LOCATION`][location-android-fine] permissions in your manifest.
+- **iOS:** it requires the `expo-location` module and [`NSLocationWhenInUseUsageDescription`][location-foreground-ios-plist] message.
+
+[location-foreground-ios-plist]: https://developer.apple.com/documentation/bundleresources/information_property_list/nslocationwheninuseusagedescription
+
+> If you would like to access location data in a standalone app, note that you'll need to provide location usage descriptions in `app.json`. For more information see [Deploying to App Stores guide](../../../distribution/app-stores.md#system-permissions-dialogs-on-ios).
+
+### `Permissions.LOCATION_BACKGROUND`
+
+The permission type for location access while the app is in the background.
+
+- **Android:** it requires the [`ACCESS_BACKGROUND_LOCATION`][location-android-background] permission in your manifest.
+- **iOS:** it requires the `expo-location` module and [`NSLocationAlwaysAndWhenInUseUsageDescription`][location-background-ios-plist] message.
+
+[location-android-background]: https://developer.android.com/reference/android/Manifest.permission#ACCESS_BACKGROUND_LOCATION
+[location-background-ios-plist]: https://developer.apple.com/documentation/bundleresources/information_property_list/nslocationalwaysandwheninuseusagedescription
+
+> **Note**: Foreground permissions should be granted before asking for the background permissions (your app can't obtain background permission without foreground permission).
+
+> If you would like to access location data in a standalone app, note that you'll need to provide location usage descriptions in `app.json`. For more information see [Deploying to App Stores guide](../../../distribution/app-stores.md#system-permissions-dialogs-on-ios).
 
 ### `Permissions.CAMERA`
 

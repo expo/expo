@@ -95,8 +95,15 @@ open class ExpoPresentationDelegate(
       }
       return
     }
-    val tag = notification.notificationRequest.identifier
-    NotificationManagerCompat.from(context).notify(tag, ANDROID_NOTIFICATION_ID, createNotification(notification, behavior))
+    NotificationManagerCompat.from(context).notify(
+      notification.notificationRequest.identifier,
+      getNotifyId(notification.notificationRequest),
+      createNotification(notification, behavior)
+    )
+  }
+
+  protected open fun getNotifyId(request: NotificationRequest?): Int {
+    return ANDROID_NOTIFICATION_ID
   }
 
   /**
@@ -123,8 +130,9 @@ open class ExpoPresentationDelegate(
         // Foreign notification identified by us
         NotificationManagerCompat.from(context).cancel(foreignNotification.first, foreignNotification.second)
       } else {
-        // Let's hope it's our notification, we have no reason to believe otherwise
-        NotificationManagerCompat.from(context).cancel(identifier, ANDROID_NOTIFICATION_ID)
+        // If the notification exists, let's assume it's ours, we have no reason to believe otherwise
+        val existingNotification = this.getAllPresentedNotifications().find { it.notificationRequest.identifier == identifier }
+        NotificationManagerCompat.from(context).cancel(identifier, getNotifyId(existingNotification?.notificationRequest))
       }
     }
   }

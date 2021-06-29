@@ -314,7 +314,7 @@ Runs `npm-proofread`, which ensures a [dist-tag](https://docs.npmjs.com/cli/dist
 
 ## Excluding Files from npm
 
-By convention, `expo-module-scripts` uses `.npmignore` to exclude all top-level hidden directories (directories starting with `.`) from being published to npm. This behavior is useful for files that need to be in the Git repository but not in the npm package. =
+By convention, `expo-module-scripts` uses `.npmignore` to exclude all top-level hidden directories (directories starting with `.`) from being published to npm. This behavior is useful for files that need to be in the Git repository but not in the npm package.
 
 ## Unified Dependencies
 

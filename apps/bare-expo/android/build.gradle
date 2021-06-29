@@ -15,6 +15,7 @@ buildscript {
     }
     repositories {
         google()
+        mavenCentral()
         jcenter()
     }
     dependencies {
@@ -24,7 +25,7 @@ buildscript {
         // Newer versions suffer either from "play-services-basement was supposed to be 15.0.1,
         // but has been resolved to 17.0.0"
         // or https://github.com/segment-integrations/analytics-android-integration-firebase/issues/23
-        classpath 'com.google.gms:google-services:3.2.1'  // Google Services plugin
+        classpath 'com.google.gms:google-services:4.3.5'  // Google Services plugin
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -61,7 +62,13 @@ allprojects {
             url "$rootDir/../node_modules/expo-camera/android/maven"
         }
 
+       maven {
+           // Detox is installed from npm
+           url "$rootDir/../node_modules/detox/Detox-android"
+       }
+
         google()
+        mavenCentral()
         jcenter()
         maven { url 'https://jitpack.io' }
     }

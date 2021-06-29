@@ -1,8 +1,8 @@
 import { NavigationContainer, DarkTheme, DefaultTheme } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { StyleSheet, View, useColorScheme } from 'react-native';
 
-import { loadFontsAsync } from '../DevMenuInternal';
+import { loadFontsAsync, onScreenChangeAsync } from '../DevMenuInternal';
 import Colors from '../constants/Colors';
 import DevMenuContainer from './DevMenuContainer';
 
@@ -33,14 +33,16 @@ const CustomDarkTheme = {
 function DevMenuApp(props) {
   const colorScheme = useColorScheme();
   const [fontsWereLoaded, didFontsLoad] = useState(false);
+  const routeNameRef = useRef<string>();
+  const navigationRef = useRef();
 
   useEffect(() => {
-    const f = async () => {
+    const loadFonts = async () => {
       await loadFontsAsync();
       didFontsLoad(true);
     };
 
-    f();
+    loadFonts();
   }, []);
 
   if (!fontsWereLoaded) {
@@ -49,8 +51,20 @@ function DevMenuApp(props) {
 
   return (
     <View style={styles.rootView}>
-      <NavigationContainer theme={colorScheme === 'dark' ? CustomDarkTheme : CustomLightTheme}>
-        <DevMenuContainer {...props} />
+      <NavigationContainer
+        theme={colorScheme === 'dark' ? CustomDarkTheme : CustomLightTheme}
+        ref={navigationRef}
+        onStateChange={async () => {
+          const previousRouteName = routeNameRef.current;
+          const currentRouteName = navigationRef.current.getCurrentRoute().name;
+
+          if (previousRouteName !== currentRouteName) {
+            await onScreenChangeAsync(currentRouteName === 'Main' ? null : currentRouteName);
+          }
+
+          routeNameRef.current = currentRouteName;
+        }}>
+        <DevMenuContainer {...props} navigation={navigationRef.current} />
       </NavigationContainer>
     </View>
   );

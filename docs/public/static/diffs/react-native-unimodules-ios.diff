@@ -90,7 +90,8 @@ index a452872..e21468a 100644
  require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 +require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
  
- platform :ios, '10.0'
+- platform :ios, '10.0'
++ platform :ios, '11.0'
  
  target 'MyApp' do
 +  use_unimodules!

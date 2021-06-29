@@ -1,5 +1,5 @@
 ---
-title: Upgrading Expo SDK Walkthrough
+title: Upgrading Expo SDK
 ---
 
 If you are a couple of versions behind, upgrading your projects Expo SDK version can be difficult because of the amount of breaking changes and deprecations in each upgrade. Don't worry, here are all the breaking changes in each SDK version upgrade. We **strongly recommend** upgrading SDK versions incrementally if possible. Doing so will help you pinpoint breakages and issues that arise during the upgrade process.
@@ -7,6 +7,10 @@ If you are a couple of versions behind, upgrading your projects Expo SDK version
 Expo maintains ~6 months of backwards compatibility. Once an SDK version has been deprecated, you will no longer be able to use the Expo Go app for development or build new binaries via `expo build`. You will still be able to publish OTA updates via `expo publish` however. Deprecations **will not** affect standalone apps you have in production.
 
 > **Note**: If you are running ExpoKit inside a native project, upgrading will require extra steps. ExpoKit is deprecated and will no longer be supported after SDK 38. We recommend [migrating existing ExpoKit projects to the bare workflow](../bare/migrating-from-expokit.md).
+
+## SDK 41
+
+[Blog Post](https://blog.expo.io/expo-sdk-41-12cc5232f2ef)
 
 ## SDK 40
 
@@ -355,7 +359,7 @@ The following APIs have been removed after being deprecated for a minimum of 2 r
 </View>
 ```
 
-- React Native now defaults `enableBabelRCLookup` (recursive) to false in Metro bundler (the packager used by React Native / Expo). This is unlikely to cause any problems for your application — in our case, this lets us remove a script to delete nested `.babelrc` files from `node_modules` in our postinstall. If you run into transform errors when updating your app, [read this commit message for more information](https://github.com/facebook/react-native/commit/023ac57337b351959d443133c3c09607c4ffc800) and to see how to opt-in to the old behavior.
+- React Native now defaults `enableBabelRCLookup` (recursive) to `false` in Metro bundler (the default bundler for React Native). This is unlikely to cause any problems for your application — in our case, this lets us remove a script to delete nested `.babelrc` files from `node_modules` in our postinstall. If you run into transform errors when updating your app, [read this commit message for more information](https://github.com/facebook/react-native/commit/023ac57337b351959d443133c3c09607c4ffc800) and to see how to opt-in to the old behavior.
 
 ## SDK 22 [DEPRECATED]
 
@@ -378,7 +382,7 @@ The following APIs have been removed after being deprecated for a minimum of 2 r
 
 #### Notes
 
-Metro Bundler (the React Native packager) now errors (instead of silently ignoring) dynamic requires. In particular this breaks an older version of moment.js if you were using that (or indirectly depending on it).
+Metro Bundler (the default React Native bundler) now errors (instead of silently ignoring) dynamic requires. In particular this breaks an older version of moment.js if you were using that (or indirectly depending on it).
 
 - This is a known issue with Metro [which is being tracked on the project’s Github issues](https://github.com/facebook/metro-bundler/issues/65).
 - If you use moment.js in your app, [you may have success with this fix](https://github.com/facebook/metro-bundler/issues/65#issuecomment-336838866).

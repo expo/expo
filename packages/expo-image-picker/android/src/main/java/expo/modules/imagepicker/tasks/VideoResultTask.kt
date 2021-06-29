@@ -13,19 +13,21 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.lang.NullPointerException
 
-class VideoResultTask(private val promise: Promise,
-                      private val uri: Uri,
-                      private val contentResolver: ContentResolver,
-                      private val fileProvider: FileProvider,
-                      private val mediaMetadataRetriever: MediaMetadataRetriever)
-  :  AsyncTask<Void?, Void?, Void?>() {
+class VideoResultTask(
+  private val promise: Promise,
+  private val uri: Uri,
+  private val contentResolver: ContentResolver,
+  private val fileProvider: FileProvider,
+  private val mediaMetadataRetriever: MediaMetadataRetriever
+) :
+  AsyncTask<Void?, Void?, Void?>() {
 
   override fun doInBackground(vararg params: Void?): Void? {
     try {
       val outputFile = fileProvider.generateFile()
       saveVideo(outputFile)
       val response = Bundle().apply {
-        putString("uri", outputFile.toURI().toString())
+        putString("uri", Uri.fromFile(outputFile).toString())
         putBoolean("cancelled", false)
         putString("type", "video")
         putInt("width", mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)!!.toInt())
@@ -58,5 +60,4 @@ class VideoResultTask(private val promise: Promise,
       }
     }
   }
-
 }

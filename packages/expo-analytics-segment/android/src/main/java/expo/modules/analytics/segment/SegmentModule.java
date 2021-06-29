@@ -20,7 +20,8 @@ import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.interfaces.constants.ConstantsInterface;
+
+import expo.modules.interfaces.constants.ConstantsInterface;
 
 public class SegmentModule extends ExportedModule {
   private static final String NAME = "ExponentSegment";
@@ -134,6 +135,7 @@ public class SegmentModule extends ExportedModule {
   @ExpoMethod
   public void initialize(final String writeKey, Promise promise) {
     Analytics.Builder builder = new Analytics.Builder(mContext, writeKey);
+    builder.experimentalUseNewLifecycleMethods(false);
     builder.tag(Integer.toString(sCurrentTag++));
     builder.use(FirebaseIntegration.FACTORY);
     mClient = builder.build();
@@ -240,7 +242,7 @@ public class SegmentModule extends ExportedModule {
   @ExpoMethod
   public void setEnabledAsync(final boolean enabled, final Promise promise) {
     if (mConstants.getAppOwnership().equals("expo")) {
-      promise.reject("E_UNSUPPORTED", "Setting Segment's `enabled` is not supported in Expo Client.");
+      promise.reject("E_UNSUPPORTED", "Setting Segment's `enabled` is not supported in Expo Go.");
       return;
     }
     mSharedPreferences.edit().putBoolean(ENABLED_PREFERENCE_KEY, enabled).apply();

@@ -1,6 +1,7 @@
-import uuidv4 from 'uuid/v4';
+import { Platform } from '@unimodules/core';
+import { v4 as uuidv4 } from 'uuid';
 
-import { DocumentResult, DocumentPickerOptions } from './types';
+import { DocumentPickerOptions, DocumentResult } from './types';
 
 export default {
   get name(): string {
@@ -11,6 +12,11 @@ export default {
     type = '*/*',
     multiple = false,
   }: DocumentPickerOptions): Promise<DocumentResult> {
+    // SSR guard
+    if (!Platform.isDOMAvailable) {
+      return { type: 'cancel' };
+    }
+
     const input = document.createElement('input');
     input.style.display = 'none';
     input.setAttribute('type', 'file');

@@ -1,8 +1,5 @@
-'use strict';
-
-import { Platform } from 'react-native';
-import * as Permissions from 'expo-permissions';
 import { Audio } from 'expo-av';
+import { Platform } from 'react-native';
 
 import * as TestUtils from '../TestUtils';
 import { retryForStatus, waitFor } from './helpers';
@@ -65,7 +62,7 @@ export async function test(t) {
       });
 
       await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
-        return Permissions.askAsync(Permissions.AUDIO_RECORDING);
+        return Audio.requestPermissionsAsync();
       });
     });
 
@@ -75,7 +72,7 @@ export async function test(t) {
     let recordingObject = null;
 
     t.beforeEach(async () => {
-      const { status } = await Permissions.getAsync(Permissions.AUDIO_RECORDING);
+      const { status } = await Audio.getPermissionsAsync();
       t.expect(status).toEqual('granted');
       recordingObject = new Audio.Recording();
     });
@@ -453,6 +450,21 @@ export async function test(t) {
           });
         });
       }
+    });
+
+    t.describe('Recording.createAsync()', () => {
+      t.afterEach(async () => {
+        await waitFor(defaultRecordingDurationMillis);
+        await recordingObject.stopAndUnloadAsync();
+      });
+
+      t.it('creates and starts recording', async () => {
+        const { recording } = await Audio.Recording.createAsync(
+          Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY
+        );
+        recordingObject = recording;
+        await retryForStatus(recordingObject, { isRecording: true });
+      });
     });
   });
 }

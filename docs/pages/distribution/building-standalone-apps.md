@@ -57,7 +57,7 @@ for App Store metadata.
 
 ## 3. Start the build
 
-Run `expo build:android` or `expo build:ios`. If you don't already have a packager running for this project, `expo` will start one for you.
+Run `expo build:android` or `expo build:ios`. If you don't already have a development server running for this project, `expo` will start one for you.
 
 **Please note:** When you run `expo build`, Expo automatically publishes your app (with `expo publish`). In order to avoid accidentally publishing changes to your production app, you may want to use [release channels](release-channels.md).
 
@@ -164,7 +164,7 @@ When one of our building machines is free, it'll start building your app. You ca
 
 - **To run it on your iOS simulator**, first build your project with the simulator flag by running `expo build:ios -t simulator`, then download the artifact with the link printed when your build completes. To install the resulting `tar.gz` file, unzip it and drag-and-drop it into your iOS simulator. If you'd like to install it from the command line, run `tar -xvzf your-app.tar.gz` to unpack the file, open a simulator, then run `xcrun simctl install booted <path to .app>`.
 
-- **To test a device build with Apple TestFlight**, download the `.ipa` file to your local machine. Within [AppStoreConnect](https://appstoreconnect.apple.com/apps), click the plus icon and create a New App. Make sure your `bundleIdentifier` matches what you've placed in `app.json`. Now, you need to use Xcode or [Transporter](https://apps.apple.com/app/transporter/id1450874784) (previously known as Application Loader) to upload the `.ipa` you got from `expo build:ios`. Once you do that, you can check the status of your build under `Activity`. Processing an app can take 10-15 minutes before it shows up under available builds.
+- **To test a device build with Apple TestFlight**, download the `.ipa` file to your local machine. Within [App Store Connect](https://appstoreconnect.apple.com/apps), click the plus icon and create a New App. Make sure your `bundleIdentifier` matches what you've placed in `app.json`. Now, you need to use Xcode or [Transporter](https://apps.apple.com/app/transporter/id1450874784) (previously known as Application Loader) to upload the `.ipa` you got from `expo build:ios`. Once you do that, you can check the status of your build under `Activity`. Processing an app can take 10-15 minutes before it shows up under available builds.
 
 ## 6. Submit it to the appropriate store
 

@@ -38,7 +38,7 @@ If you need to make native code changes to your Expo project, such as adding cus
 
 Note: We support building Expo Go only on macOS.
 
-- Install [direnv](http://direnv.net/) (to do this with nix, run `nix-env -iA nixpkgs.direnv`)
+- Install [direnv](http://direnv.net/)
 - Clone this repo; we recommend cloning it to a directory whose full path does not include any spaces (you should clone all the submodules with `git clone --recurse-submodules`)
 - Run `yarn` in the root directory.
 - Run `npm run setup:native` in the root directory.
@@ -72,7 +72,8 @@ Note: We support building Expo Go only on macOS.
 - If the Play Store version of the Expo Go is installed on your test device, uninstall it.
 - Connect your test device to your computer with a USB cable.
 - Run `fastlane android start`, or alternately open the `android` directory in Android Studio, start it, and in the **Select Deployment Target** dialog, select your device.
-  - You can also run `./gradlew installDebug` from the `android` directory. 
+  - Expo Go can be built with either `versioned` or `unversioned` flavor. The latter is highly recommended for development and is used by default in Android Studio. You can switch flavors in _Build Variants_ pane.
+  - You can also run `./gradlew installUnversionedDebug` from the `android` directory.
   - If you're having trouble building the Android app, trying clearing your gradle cache with `./gradlew clean` and rebuilding.
 
 ## Standalone Apps

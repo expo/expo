@@ -11,6 +11,11 @@
 
 @interface ABI40_0_0EXCSBufferOrientationCalculator : NSObject
 
-+ (CGAffineTransform)pointTransformForInterfaceOrientation:(UIInterfaceOrientation)orientation forBufferWidth:(CGFloat)bufferWidth andBufferHeight:(CGFloat)bufferHeight andVideoWidth:(CGFloat)videoWidth andVideoHeight:(CGFloat)videoHeight andMirrored:(BOOL)mirrored;
++ (CGAffineTransform)pointTransformForInterfaceOrientation:(UIInterfaceOrientation)orientation
+                                            forBufferWidth:(CGFloat)bufferWidth
+                                           andBufferHeight:(CGFloat)bufferHeight
+                                             andVideoWidth:(CGFloat)videoWidth
+                                            andVideoHeight:(CGFloat)videoHeight
+                                               andMirrored:(BOOL)mirrored;
 
 @end

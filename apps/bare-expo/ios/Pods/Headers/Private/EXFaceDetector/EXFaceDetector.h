@@ -1,1 +1,0 @@
-../../../../../../../packages/expo-face-detector/ios/EXFaceDetector/EXFaceDetector.h

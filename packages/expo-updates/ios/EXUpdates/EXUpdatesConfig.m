@@ -7,6 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXUpdatesConfig ()
 
 @property (nonatomic, readwrite, assign) BOOL isEnabled;
+@property (nonatomic, readwrite, assign) BOOL expectsSignedManifest;
 @property (nonatomic, readwrite, strong) NSString *scopeKey;
 @property (nonatomic, readwrite, strong) NSURL *updateUrl;
 @property (nonatomic, readwrite, strong) NSDictionary *requestHeaders;
@@ -19,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+static NSString * const EXUpdatesConfigPlistName = @"Expo";
+
 static NSString * const EXUpdatesDefaultReleaseChannelName = @"default";
 
 static NSString * const EXUpdatesConfigEnabledKey = @"EXUpdatesEnabled";
@@ -30,7 +33,6 @@ static NSString * const EXUpdatesConfigLaunchWaitMsKey = @"EXUpdatesLaunchWaitMs
 static NSString * const EXUpdatesConfigCheckOnLaunchKey = @"EXUpdatesCheckOnLaunch";
 static NSString * const EXUpdatesConfigSDKVersionKey = @"EXUpdatesSDKVersion";
 static NSString * const EXUpdatesConfigRuntimeVersionKey = @"EXUpdatesRuntimeVersion";
-static NSString * const EXUpdatesConfigUsesLegacyManifestKey = @"EXUpdatesUsesLegacyManifest";
 static NSString * const EXUpdatesConfigHasEmbeddedUpdateKey = @"EXUpdatesHasEmbeddedUpdate";
 
 static NSString * const EXUpdatesConfigAlwaysString = @"ALWAYS";
@@ -43,11 +45,11 @@ static NSString * const EXUpdatesConfigNeverString = @"NEVER";
 {
   if (self = [super init]) {
     _isEnabled = YES;
+    _expectsSignedManifest = NO;
     _requestHeaders = @{};
     _releaseChannel = EXUpdatesDefaultReleaseChannelName;
     _launchWaitMs = @(0);
     _checkOnLaunch = EXUpdatesCheckAutomaticallyConfigAlways;
-    _usesLegacyManifest = YES;
     _hasEmbeddedUpdate = YES;
   }
   return self;
@@ -60,13 +62,29 @@ static NSString * const EXUpdatesConfigNeverString = @"NEVER";
   return updatesConfig;
 }
 
++ (instancetype)configWithExpoPlist
+{
+  NSString *configPath = [[NSBundle mainBundle] pathForResource:EXUpdatesConfigPlistName ofType:@"plist"];
+  if (!configPath) {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:@"Cannot load configuration from Expo.plist. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project."
+                                 userInfo:@{}];
+  }
+  return [[self class] configWithDictionary:[NSDictionary dictionaryWithContentsOfFile:configPath]];
+}
+
 - (void)loadConfigFromDictionary:(NSDictionary *)config
 {
   id isEnabled = config[EXUpdatesConfigEnabledKey];
   if (isEnabled && [isEnabled isKindOfClass:[NSNumber class]]) {
     _isEnabled = [(NSNumber *)isEnabled boolValue];
   }
-
+  
+  id expectsSignedManifest = config[@"EXUpdatesExpectsSignedManifest"];
+  if (expectsSignedManifest && [expectsSignedManifest isKindOfClass:[NSNumber class]]) {
+    _expectsSignedManifest = [(NSNumber *)expectsSignedManifest boolValue];
+  }
+  
   id updateUrl = config[EXUpdatesConfigUpdateUrlKey];
   if (updateUrl && [updateUrl isKindOfClass:[NSString class]]) {
     NSURL *url = [NSURL URLWithString:(NSString *)updateUrl];
@@ -82,16 +100,25 @@ static NSString * const EXUpdatesConfigNeverString = @"NEVER";
   if (!_scopeKey) {
     if (_updateUrl) {
       _scopeKey = [[self class] normalizedURLOrigin:_updateUrl];
-    } else {
-      @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                     reason:@"expo-updates must be configured with a valid update URL or scope key."
-                                   userInfo:@{}];
     }
   }
 
   id requestHeaders = config[EXUpdatesConfigRequestHeadersKey];
-  if (requestHeaders && [requestHeaders isKindOfClass:[NSDictionary class]]) {
+  if (requestHeaders) {
+    if(![requestHeaders isKindOfClass:[NSDictionary class]]){
+      @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                     reason:[NSString stringWithFormat:@"PList key '%@' must be a string valued Dictionary.", EXUpdatesConfigRequestHeadersKey]
+                                   userInfo:@{}];
+    }
     _requestHeaders = (NSDictionary *)requestHeaders;
+    
+    for (id key in _requestHeaders){
+      if (![_requestHeaders[key] isKindOfClass:[NSString class]]){
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                       reason:[NSString stringWithFormat:@"PList key '%@' must be a string valued Dictionary.", EXUpdatesConfigRequestHeadersKey]
+                                     userInfo:@{}];
+      }
+    }
   }
 
   id releaseChannel = config[EXUpdatesConfigReleaseChannelKey];
@@ -127,11 +154,6 @@ static NSString * const EXUpdatesConfigNeverString = @"NEVER";
   id runtimeVersion = config[EXUpdatesConfigRuntimeVersionKey];
   if (runtimeVersion && [runtimeVersion isKindOfClass:[NSString class]]) {
     _runtimeVersion = (NSString *)runtimeVersion;
-  }
-
-  id usesLegacyManifest = config[EXUpdatesConfigUsesLegacyManifestKey];
-  if (usesLegacyManifest && [usesLegacyManifest isKindOfClass:[NSNumber class]]) {
-    _usesLegacyManifest = [(NSNumber *)usesLegacyManifest boolValue];
   }
 
   id hasEmbeddedUpdate = config[EXUpdatesConfigHasEmbeddedUpdateKey];

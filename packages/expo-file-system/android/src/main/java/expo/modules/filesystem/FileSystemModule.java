@@ -1,7 +1,9 @@
 package expo.modules.filesystem;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -9,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StatFs;
+import android.provider.DocumentsContract;
 import android.util.Base64;
 import android.util.Log;
 
@@ -19,11 +22,11 @@ import org.apache.commons.io.IOUtils;
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ActivityEventListener;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.services.EventEmitter;
-import org.unimodules.interfaces.filesystem.FilePermissionModuleInterface;
-import org.unimodules.interfaces.filesystem.Permission;
+import org.unimodules.core.interfaces.services.UIManager;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -45,7 +48,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import androidx.annotation.Nullable;
+import androidx.documentfile.provider.DocumentFile;
+
+import expo.modules.interfaces.filesystem.FilePermissionModuleInterface;
+import expo.modules.interfaces.filesystem.Permission;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Headers;
@@ -65,15 +71,17 @@ import okio.ForwardingSource;
 import okio.Okio;
 import okio.Source;
 
-public class FileSystemModule extends ExportedModule {
+public class FileSystemModule extends ExportedModule implements ActivityEventListener {
   private static final String NAME = "ExponentFileSystem";
   private static final String TAG = FileSystemModule.class.getSimpleName();
   private static final String EXDownloadProgressEventName = "expo-file-system.downloadProgress";
   private static final long MIN_EVENT_DT_MS = 100;
   private static final String HEADER_KEY = "headers";
+  private static final int DIR_PERMISSIONS_REQUEST_CODE = 5394;
 
   private ModuleRegistry mModuleRegistry;
   private OkHttpClient mClient;
+  private Promise mDirPermissionsRequest;
 
   private final Map<String, DownloadResumable> mDownloadResumableMap = new HashMap<>();
 
@@ -153,6 +161,9 @@ public class FileSystemModule extends ExportedModule {
   }
 
   private EnumSet<Permission> permissionsForUri(Uri uri) {
+    if (isSAFUri(uri)) {
+      return permissionsForSAFUri(uri);
+    }
     if ("content".equals(uri.getScheme())) {
       return EnumSet.of(Permission.READ);
     }
@@ -167,6 +178,20 @@ public class FileSystemModule extends ExportedModule {
       return EnumSet.of(Permission.READ);
     }
     return EnumSet.noneOf(Permission.class);
+  }
+
+  private EnumSet<Permission> permissionsForSAFUri(Uri uri) {
+    DocumentFile documentFile = getNearestSAFFile(uri);
+    EnumSet<Permission> permissions = EnumSet.noneOf(Permission.class);
+    if (documentFile.canRead()) {
+      permissions.add(Permission.READ);
+    }
+
+    if (documentFile.canWrite()) {
+      permissions.add(Permission.WRITE);
+    }
+
+    return permissions;
   }
 
   // For now we only need to ensure one permission at a time, this allows easier error message strings,
@@ -209,10 +234,15 @@ public class FileSystemModule extends ExportedModule {
   @ExpoMethod
   public void getInfoAsync(String uriStr, Map<String, Object> options, Promise promise) {
     try {
-      Uri uri = Uri.parse(uriStr);
-      ensurePermission(uri, Permission.READ);
+       Uri uri = Uri.parse(uriStr);
+       Uri absoluteUri = uri;
+       if ("file".equals(uri.getScheme())) {
+        uriStr = uriStr.substring(uriStr.indexOf(':') + 3);
+        absoluteUri = Uri.parse(uriStr);
+       }
+      ensurePermission(absoluteUri, Permission.READ);
       if ("file".equals(uri.getScheme())) {
-        File file = uriToFile(uri);
+        File file = uriToFile(absoluteUri);
         Bundle result = new Bundle();
         if (file.exists()) {
           result.putBoolean("exists", true);
@@ -281,25 +311,18 @@ public class FileSystemModule extends ExportedModule {
       }
       String contents;
       if (encoding.equalsIgnoreCase("base64")) {
-        InputStream inputStream;
-        if ("file".equals(uri.getScheme())) {
-          inputStream = new FileInputStream(uriToFile(uri));
-        } else if ("asset".equals(uri.getScheme())) {
-          inputStream = openAssetInputStream(uri);
-        } else {
-          throw new IOException("Unsupported scheme for location '" + uri + "'.");
-        }
-
-        if (options.containsKey("length") && options.containsKey("position")) {
-          int length = ((Number) options.get("length")).intValue();
-          int position = ((Number) options.get("position")).intValue();
-          byte[] buffer = new byte[length];
-          inputStream.skip(position);
-          int bytesRead = inputStream.read(buffer, 0, length);
-          contents = Base64.encodeToString(buffer, 0, bytesRead, Base64.NO_WRAP);
-        } else {
-          byte[] inputData = getInputStreamBytes(inputStream);
-          contents = Base64.encodeToString(inputData, Base64.NO_WRAP);
+        try (InputStream inputStream = getInputStream(uri)) {
+          if (options.containsKey("length") && options.containsKey("position")) {
+            int length = ((Number) options.get("length")).intValue();
+            int position = ((Number) options.get("position")).intValue();
+            byte[] buffer = new byte[length];
+            inputStream.skip(position);
+            int bytesRead = inputStream.read(buffer, 0, length);
+            contents = Base64.encodeToString(buffer, 0, bytesRead, Base64.NO_WRAP);
+          } else {
+            byte[] inputData = getInputStreamBytes(inputStream);
+            contents = Base64.encodeToString(inputData, Base64.NO_WRAP);
+          }
         }
       } else {
         if ("file".equals(uri.getScheme())) {
@@ -309,6 +332,8 @@ public class FileSystemModule extends ExportedModule {
         } else if (uri.getScheme() == null) {
           // this is probably an asset embedded by the packager in resources
           contents = IOUtils.toString(openResourceInputStream(uriStr));
+        } else if (isSAFUri(uri)) {
+          contents = IOUtils.toString(getContext().getContentResolver().openInputStream(uri));
         } else {
           throw new IOException("Unsupported scheme for location '" + uri + "'.");
         }
@@ -325,27 +350,23 @@ public class FileSystemModule extends ExportedModule {
     try {
       Uri uri = Uri.parse(uriStr);
       ensurePermission(uri, Permission.WRITE);
-      if ("file".equals(uri.getScheme())) {
 
-        String encoding = "utf8";
-        if (options.containsKey("encoding") && options.get("encoding") instanceof String) {
-          encoding = ((String) options.get("encoding")).toLowerCase();
-        }
+      String encoding = "utf8";
+      if (options.containsKey("encoding") && options.get("encoding") instanceof String) {
+        encoding = ((String) options.get("encoding")).toLowerCase();
+      }
 
-        FileOutputStream out = new FileOutputStream(uriToFile(uri));
+      try (OutputStream out = getOutputStream(uri)) {
         if (encoding.equals("base64")) {
           byte[] bytes = Base64.decode(string, Base64.DEFAULT);
           out.write(bytes);
         } else {
-          OutputStreamWriter writer = new OutputStreamWriter(out);
-          writer.write(string);
-          writer.close();
+          try (OutputStreamWriter writer = new OutputStreamWriter(out)) {
+            writer.write(string);
+          }
         }
-        out.close();
-        promise.resolve(null);
-      } else {
-        throw new IOException("Unsupported scheme for location '" + uri + "'.");
       }
+      promise.resolve(null);
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
       promise.reject(e);
@@ -367,6 +388,19 @@ public class FileSystemModule extends ExportedModule {
             // to be removed once Android SDK 25 support is dropped
             forceDelete(file);
           }
+          promise.resolve(null);
+        } else {
+          if (options.containsKey("idempotent") && (Boolean) options.get("idempotent")) {
+            promise.resolve(null);
+          } else {
+            promise.reject("ERR_FILESYSTEM_CANNOT_FIND_FILE",
+              "File '" + uri + "' could not be deleted because it could not be found");
+          }
+        }
+      } else if (isSAFUri(uri)) {
+        DocumentFile file = getNearestSAFFile(uri);
+        if (file.exists()) {
+          file.delete();
           promise.resolve(null);
         } else {
           if (options.containsKey("idempotent") && (Boolean) options.get("idempotent")) {
@@ -410,6 +444,15 @@ public class FileSystemModule extends ExportedModule {
           promise.reject("ERR_FILESYSTEM_CANNOT_MOVE_FILE",
             "File '" + fromUri + "' could not be moved to '" + toUri + "'");
         }
+      } else if (isSAFUri(fromUri)) {
+        DocumentFile documentFile = getNearestSAFFile(fromUri);
+        if (!documentFile.exists()) {
+          promise.reject("ERR_FILESYSTEM_CANNOT_MOVE_FILE", "File '" + fromUri + "' could not be moved to '" + toUri + "'");
+          return;
+        }
+        File output = new File(toUri.getPath());
+        transformFilesFromSAF(documentFile, output, false);
+        promise.resolve(null);
       } else {
         throw new IOException("Unsupported scheme for location '" + fromUri + "'.");
       }
@@ -440,11 +483,19 @@ public class FileSystemModule extends ExportedModule {
         File to = uriToFile(toUri);
         if (from.isDirectory()) {
           FileUtils.copyDirectory(from, to);
-          promise.resolve(null);
         } else {
           FileUtils.copyFile(from, to);
-          promise.resolve(null);
         }
+        promise.resolve(null);
+      } else if (isSAFUri(fromUri)) {
+        DocumentFile documentFile = getNearestSAFFile(fromUri);
+        if (!documentFile.exists()) {
+          promise.reject("ERR_FILESYSTEM_CANNOT_FIND_FILE", "File '" + fromUri + "' could not be copied because it could not be found");
+          return;
+        }
+        File output = new File(toUri.getPath());
+        transformFilesFromSAF(documentFile, output, true);
+        promise.resolve(null);
       } else if ("content".equals(fromUri.getScheme())) {
         InputStream in = getContext().getContentResolver().openInputStream(fromUri);
         OutputStream out = new FileOutputStream(uriToFile(toUri));
@@ -467,6 +518,45 @@ public class FileSystemModule extends ExportedModule {
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
       promise.reject(e);
+    }
+  }
+
+  private void transformFilesFromSAF(DocumentFile documentFile, File outputDir, boolean copy) throws IOException {
+    if (!documentFile.exists()) {
+      return;
+    }
+
+    if (!outputDir.exists() && !outputDir.mkdirs()) {
+      throw new IOException("Couldn't create folder in output dir.");
+    }
+
+    if (documentFile.isDirectory()) {
+      for (DocumentFile file : documentFile.listFiles()) {
+        if (documentFile.getName() == null) {
+          continue;
+        }
+        transformFilesFromSAF(file, new File(outputDir, documentFile.getName()), copy);
+      }
+
+      if (!copy) {
+        documentFile.delete();
+      }
+
+      return;
+    }
+
+    if (documentFile.getName() == null) {
+      return;
+    }
+
+    File newFile = new File(outputDir.getPath(), documentFile.getName());
+    try (InputStream in = getContext().getContentResolver().openInputStream(documentFile.getUri());
+         OutputStream out = new FileOutputStream(newFile)) {
+      IOUtils.copy(in, out);
+    }
+
+    if (!copy) {
+      documentFile.delete();
     }
   }
 
@@ -513,6 +603,9 @@ public class FileSystemModule extends ExportedModule {
           promise.reject("ERR_FILESYSTEM_CANNOT_READ_DIRECTORY",
             "Directory '" + uri + "' could not be read.");
         }
+      } else if (isSAFUri(uri)) {
+        promise.reject("ERR_FILESYSTEM_UNSUPPORTED_SCHEME",
+          "Can't read Storage Access Framework directory, use StorageAccessFramework.readDirectoryAsync() instead.");
       } else {
         throw new IOException("Unsupported scheme for location '" + uri + "'.");
       }
@@ -850,6 +943,158 @@ public class FileSystemModule extends ExportedModule {
     }
   }
 
+  @ExpoMethod
+  public void readSAFDirectoryAsync(String uriStr, Map<String, Object> options, Promise promise) {
+    try {
+      Uri uri = Uri.parse(uriStr);
+      ensurePermission(uri, Permission.READ);
+      if (isSAFUri(uri)) {
+        DocumentFile file = DocumentFile.fromTreeUri(getContext(), uri);
+        if (file == null || !file.exists() || !file.isDirectory()) {
+          promise.reject("ERR_FILESYSTEM_CANNOT_READ_DIRECTORY",
+            "Uri '" + uri + "' doesn't exist or isn't a directory.");
+          return;
+        }
+        DocumentFile[] children = file.listFiles();
+        List<String> result = new ArrayList<>();
+        for (DocumentFile child : children) {
+          result.add(child.getUri().toString());
+        }
+        promise.resolve(result);
+      } else {
+        throw new IOException("The URI '" + uri + "' is not a Storage Access Framework URI. Try using FileSystem.readDirectoryAsync instead.");
+      }
+    } catch (Exception e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject(e);
+    }
+  }
+
+  @ExpoMethod
+  public void makeSAFDirectoryAsync(String uriStr, String dirName, Promise promise) {
+    try {
+      Uri uri = Uri.parse(uriStr);
+      ensurePermission(uri, Permission.WRITE);
+      if (isSAFUri(uri)) {
+        DocumentFile dir = getNearestSAFFile(uri);
+        if (!dir.isDirectory()) {
+          promise.reject("ERR_FILESYSTEM_CANNOT_CREATE_DIRECTORY", "Provided uri '" + uri + "' is not pointing to a directory.");
+          return;
+        }
+
+        DocumentFile newDir = dir.createDirectory(dirName);
+        if (newDir == null) {
+          promise.reject("ERR_FILESYSTEM_CANNOT_CREATE_DIRECTORY", "Unknown error.");
+          return;
+        }
+
+        promise.resolve(newDir.getUri().toString());
+      } else {
+        throw new IOException("The URI '" + uri + "' is not a Storage Access Framework URI. Try using FileSystem.makeDirectoryAsync instead.");
+      }
+    } catch (Exception e) {
+      promise.reject(e);
+    }
+  }
+
+  @ExpoMethod
+  public void createSAFFileAsync(String uriStr, String fileName, String mimeType, Promise promise) {
+    try {
+      Uri uri = Uri.parse(uriStr);
+      ensurePermission(uri, Permission.WRITE);
+      if (isSAFUri(uri)) {
+        DocumentFile dir = getNearestSAFFile(uri);
+        if (!dir.isDirectory()) {
+          promise.reject("ERR_FILESYSTEM_CANNOT_CREATE_FILE", "Provided uri '" + uri + "' is not pointing to a directory.");
+          return;
+        }
+
+        DocumentFile newFile = dir.createFile(mimeType, fileName);
+        if (newFile == null) {
+          promise.reject("ERR_FILESYSTEM_CANNOT_CREATE_FILE", "Unknown error.");
+          return;
+        }
+
+        promise.resolve(newFile.getUri().toString());
+      } else {
+        throw new IOException("The URI '" + uri + "' is not a Storage Access Framework URI.");
+      }
+    } catch (Exception e) {
+      promise.reject(e);
+    }
+  }
+
+  @ExpoMethod
+  public void requestDirectoryPermissionsAsync(final String initialFileUrl, Promise promise) {
+    if (mDirPermissionsRequest != null) {
+      promise.reject("ERR_FILESYSTEM_CANNOT_ASK_FOR_PERMISSIONS", "You have an unfinished permission request.");
+      return;
+    }
+
+    try {
+      Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        Uri fileUri = initialFileUrl == null ? null : Uri.parse(initialFileUrl);
+        if (fileUri != null) {
+          intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, fileUri);
+        }
+      }
+
+      Activity activity = mModuleRegistry.getModule(ActivityProvider.class).getCurrentActivity();
+      if (activity == null) {
+        promise.reject("ERR_FILESYSTEM_CANNOT_ASK_FOR_PERMISSIONS", "Can't find activity.");
+        return;
+      }
+
+      mModuleRegistry.getModule(UIManager.class).registerActivityEventListener(this);
+
+      mDirPermissionsRequest = promise;
+      activity.startActivityForResult(intent, DIR_PERMISSIONS_REQUEST_CODE);
+    } catch (Exception e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject("ERR_FILESYSTEM_CANNOT_ASK_FOR_PERMISSIONS", "Can't ask for permissions.", e);
+    }
+  }
+
+  @Override
+  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+    if (requestCode == DIR_PERMISSIONS_REQUEST_CODE && mDirPermissionsRequest != null) {
+      Bundle result = new Bundle();
+
+      if (resultCode == Activity.RESULT_OK) {
+        Uri treeUri = data.getData();
+
+        final int takeFlags = data.getFlags()
+          & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        activity.getContentResolver().takePersistableUriPermission(treeUri, takeFlags);
+
+        result.putBoolean("granted", true);
+        result.putString("directoryUri", treeUri.toString());
+      } else {
+        result.putBoolean("granted", false);
+      }
+
+      mDirPermissionsRequest.resolve(result);
+      mModuleRegistry.getModule(UIManager.class).unregisterActivityEventListener(this);
+      mDirPermissionsRequest = null;
+    }
+  }
+
+  @Override
+  public void onNewIntent(Intent intent) {
+  }
+
+  /**
+   * Checks if the provided URI is compatible with the Storage Access Framework.
+   * For more information check out https://developer.android.com/guide/topics/providers/document-provider.
+   *
+   * @param uri
+   * @return whatever the provided URI is SAF URI
+   */
+  private static boolean isSAFUri(Uri uri) {
+    return ("content".equals(uri.getScheme()) && uri.getHost().startsWith("com.android.externalstorage"));
+  }
+
   private static byte[] getInputStreamBytes(InputStream inputStream) throws IOException {
     byte[] bytesResult;
     ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
@@ -1095,5 +1340,38 @@ public class FileSystemModule extends ExportedModule {
     }
 
     return size;
+  }
+
+  private InputStream getInputStream(Uri uri) throws IOException {
+    if ("file".equals(uri.getScheme())) {
+      return new FileInputStream(uriToFile(uri));
+    } else if ("asset".equals(uri.getScheme())) {
+      return openAssetInputStream(uri);
+    } else if (isSAFUri(uri)) {
+      return getContext().getContentResolver().openInputStream(uri);
+    }
+
+    throw new IOException("Unsupported scheme for location '" + uri + "'.");
+  }
+
+  private OutputStream getOutputStream(Uri uri) throws IOException {
+    if ("file".equals(uri.getScheme())) {
+      return new FileOutputStream(uriToFile(uri));
+    }
+
+    if (isSAFUri(uri)) {
+      return getContext().getContentResolver().openOutputStream(uri);
+    }
+
+    throw new IOException("Unsupported scheme for location '" + uri + "'.");
+  }
+
+  private DocumentFile getNearestSAFFile(Uri uri) {
+    DocumentFile file = DocumentFile.fromSingleUri(getContext(), uri);
+    if (file != null && file.isFile()) {
+      return file;
+    }
+
+    return DocumentFile.fromTreeUri(getContext(), uri);
   }
 }

@@ -2,6 +2,7 @@
 
 #import "EXEnvironment.h"
 #import "EXKernel.h"
+#import "EXScreenOrientationManager.h"
 #import "EXViewController.h"
 #import "ExpoKit.h"
 #import "EXUtil.h"
@@ -60,6 +61,11 @@
 - (BOOL)shouldAutorotate
 {
   return YES;
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+  return [[EXKernel sharedInstance].serviceRegistry.screenOrientationManager supportedInterfaceOrientationsForVisibleApp];
 }
 
 - (void)presentViewController:(UIViewController *)viewControllerToPresent animated:(BOOL)flag completion:(void (^_Nullable)(void))completion

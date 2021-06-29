@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI39_0_0/Expo/EXFaceDetector/ABI39_0_0EXFaceDetector/Utilities/ABI39_0_0EXFaceDetectorUtils.h

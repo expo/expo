@@ -22,7 +22,7 @@ export async function versionVendoredModulesAsync(
   const config = vendoredModulesTransforms(prefix);
   const baseTransforms = baseTransformsFactory(prefix);
   const unversionedDir = path.join(IOS_VENDORED_DIR, 'unversioned');
-  const versionedDir = path.join(IOS_VENDORED_DIR, `sdk${sdkNumber}`);
+  const versionedDir = vendoredDirectoryForSDK(sdkNumber);
   const sourceDirents = (await fs.readdir(unversionedDir, { withFileTypes: true })).filter(
     (dirent) => {
       return dirent.isDirectory() && (!filterModules || filterModules.includes(dirent.name));
@@ -54,35 +54,108 @@ export async function versionVendoredModulesAsync(
 }
 
 /**
+ * Removes the directory with vendored modules for given SDK number.
+ */
+export async function removeVersionedVendoredModulesAsync(sdkNumber: number): Promise<void> {
+  const versionedDir = vendoredDirectoryForSDK(sdkNumber);
+  await fs.remove(versionedDir);
+}
+
+/**
  * Generates base transforms to apply for all vendored modules.
  */
 function baseTransformsFactory(prefix: string): Required<FileTransforms> {
   return {
     path: [
       {
-        find: /^([^/]+\.podspec\.json)$\b/,
-        replaceWith: `${prefix}-$1`,
+        find: /([^/]+\.podspec\.json)$\b/,
+        replaceWith: `${prefix}$1`,
+      },
+      {
+        find: /\b(RCT|RNC|RNG|RNR|REA|RNS)([^/]*\.)(h|m|mm)/,
+        replaceWith: `${prefix}$1$2$3`,
       },
     ],
     content: [
       {
         paths: '*.podspec.json',
         find: /"name": "([\w-]+)"/,
-        replaceWith: `"name": "${prefix}-$1"`,
+        replaceWith: `"name": "${prefix}$1"`,
       },
       {
-        find: /\b(React)/g,
-        replaceWith: `${prefix}$1`,
+        // Prefixes `React` with word-boundary and also in `insertReactSubview`, `removeReactSubview`.
+        find: /(\b|insert|remove)(React)/g,
+        replaceWith: `$1${prefix}$2`,
       },
       {
-        find: /\b(RCT\w+)\b/g,
-        replaceWith: `${prefix}$1`,
+        find: /\b(RCT|RNC|RNG|RNR|REA|RNS)(\w+)\b/g,
+        replaceWith: `${prefix}$1$2`,
       },
       {
+        find: /facebook::/g,
+        replaceWith: `${prefix}facebook::`,
+      },
+      {
+        find: /react::/g,
+        replaceWith: `${prefix}React::`,
+      },
+      {
+        find: /using namespace (facebook|react)/g,
+        replaceWith: (_, p1) => {
+          return `using namespace ${prefix}${p1 === 'react' ? 'React' : p1}`;
+        },
+      },
+      {
+        // Objective-C only, see the comment in the rule below.
+        paths: '*.{h,m,mm}',
+        find: /r(eactTag|eactSubviews|eactSuperview|eactViewController|eactSetFrame|eactAddControllerToClosestParent|eactZIndex)/gi,
+        replaceWith: `${prefix}R$1`,
+      },
+      {
+        // Swift translates uppercased letters at the beginning of the method name to lowercased letters, we must comply with it.
         paths: '*.swift',
-        find: /@objc\(([^)]+)\)/g,
+        find: /r(eactTag|eactSubviews|eactSuperview|eactViewController|eactSetFrame|eactAddControllerToClosestParent|eactZIndex)/gi,
+        replaceWith: (_, p1) => `${prefix.toLowerCase()}R${p1}`,
+      },
+      {
+        find: /<jsi\/(.*)\.h>/,
+        replaceWith: `<${prefix}jsi/${prefix}$1.h>`,
+      },
+      {
+        find: /(JSCExecutorFactory|HermesExecutorFactory)\.h/g,
+        replaceWith: `${prefix}$1.h`,
+      },
+      {
+        find: /viewForReactTag/g,
+        replaceWith: `viewFor${prefix}ReactTag`,
+      },
+      {
+        find: /isReactRootView/g,
+        replaceWith: `is${prefix}ReactRootView`,
+      },
+      {
+        // Prefix only unindented `@objc` (notice `^` and `m` flag in the pattern). Method names shouldn't get prefixed.
+        paths: '*.swift',
+        find: /^@objc\(([^)]+)\)/gm,
         replaceWith: `@objc(${prefix}$1)`,
+      },
+      {
+        paths: '*.podspec.json',
+        find: new RegExp(`${prefix}React-${prefix}RCT`, 'g'),
+        replaceWith: `${prefix}React-RCT`,
+      },
+      {
+        paths: '*.podspec.json',
+        find: new RegExp(`${prefix}React-Core\\/${prefix}RCT`, 'g'),
+        replaceWith: `${prefix}React-Core/RCT`,
       },
     ],
   };
+}
+
+/**
+ * Returns the vendored directory for given SDK number.
+ */
+function vendoredDirectoryForSDK(sdkNumber: number): string {
+  return path.join(IOS_VENDORED_DIR, `sdk${sdkNumber}`);
 }

@@ -1,13 +1,13 @@
 name: "\U0001F41B CLI Bug Report"
-about: 'You want to report an issue with Expo CLI, our command line tool'
-issue_body: false
-inputs:
-  - type: description
+description: 'You want to report an issue with Expo CLI, our command line tool'
+body:
+  - type: markdown
     attributes:
       value: This is not the repository for Expo CLI. Please post this issue in the https://github.com/expo/expo-cli repo instead.
   - type: dropdown
     attributes:
       label: Do you understand that any Expo CLI issues opened in the core Expo repository will be closed?
+      options:
+        - 'Yes'
+    validations:
       required: true
-      choices:
-        - Yes

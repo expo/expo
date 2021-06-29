@@ -97,7 +97,7 @@ export function makeUrl(path = '', queryParams, scheme) {
  * @param scheme URI protocol `<scheme>://` that must be built into your native app.
  * @param queryParams An object of parameters that will be converted into a query string.
  */
-export function createURL(path, { scheme, queryParams = {}, isTripleSlashed = false, } = {}) {
+export function createURL(path, { scheme, queryParams = {}, isTripleSlashed = false } = {}) {
     if (Platform.OS === 'web') {
         if (!Platform.isDOMAvailable)
             return '';
@@ -283,7 +283,7 @@ export async function canOpenURL(url) {
 /**
  * Returns the initial URL followed by any subsequent changes to the URL.
  */
-export function useUrl() {
+export function useURL() {
     const [url, setLink] = useState(null);
     function onChange(event) {
         setLink(event.url);
@@ -294,6 +294,14 @@ export function useUrl() {
         return () => removeEventListener('url', onChange);
     }, []);
     return url;
+}
+/**
+ * Returns the initial URL followed by any subsequent changes to the URL.
+ * @deprecated Use `useURL` instead.
+ */
+export function useUrl() {
+    console.warn(`Linking.useUrl has been deprecated in favor of Linking.useURL. This API will be removed in SDK 44.`);
+    return useURL();
 }
 export * from './Linking.types';
 //# sourceMappingURL=Linking.js.map

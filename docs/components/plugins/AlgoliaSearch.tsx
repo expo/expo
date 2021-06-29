@@ -1,9 +1,13 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
+import { theme } from '@expo/styleguide';
 import Router from 'next/router';
 import * as React from 'react';
 
 import * as Utilities from '~/common/utilities';
 import { paragraph } from '~/components/base/typography';
+import { Search } from '~/components/icons/Search';
+import { SlashShortcut } from '~/components/icons/SlashShortcut';
+import { X } from '~/components/icons/X';
 import * as Constants from '~/constants/theme';
 import { LATEST_VERSION } from '~/constants/versions';
 
@@ -25,14 +29,14 @@ const STYLES_INPUT = css`
     ${paragraph}
     -webkit-appearance: none;
     box-sizing: border-box;
-    width: 38vw;
+    width: 24vw;
     max-width: ${Constants.breakpoints.mobileValue - 32}px;
     padding: 0 16px 0 40px;
     border-radius: 4px;
     height: 40px;
     outline: 0;
     border: none;
-    background-color: ${Constants.expoColors.gray[200]};
+    background-color: ${theme.background.secondary};
   }
 
   .svg-icons {
@@ -119,7 +123,7 @@ class AlgoliaSearch extends React.Component<Props> {
 
   private processUrl(url: string) {
     // Update URLs for new doc URLs
-    var routes = url.split('/');
+    const routes = url.split('/');
     routes[routes.length - 1] = routes[routes.length - 1].replace('.html', '');
     return routes.join('/');
   }
@@ -210,7 +214,7 @@ class AlgoliaSearch extends React.Component<Props> {
         css={[STYLES_INPUT, !this.props.hiddenOnMobile && STYLES_INPUT_MOBILE]}
         style={this.props.style}>
         <div className="search">
-          <img src="/static/images/header/search.svg" />
+          <Search />
         </div>
 
         <input
@@ -218,7 +222,7 @@ class AlgoliaSearch extends React.Component<Props> {
           onBlur={() => this.setState({ isFocused: false })}
           id={this.props.hiddenOnMobile ? 'algolia-search-box' : 'algolia-search-box-mobile'}
           type="text"
-          placeholder="Search the documentation"
+          placeholder="Search"
           autoComplete="off"
           spellCheck="false"
           dir="auto"
@@ -229,11 +233,11 @@ class AlgoliaSearch extends React.Component<Props> {
           <div
             className="shortcut-hint"
             style={{ display: this.state.isFocused ? 'none' : 'flex' }}>
-            <img src="/static/images/header/slash.svg" />
+            <SlashShortcut />
           </div>
         ) : (
           <span className="close-search" onClick={this.props.onToggleSearch}>
-            <img src="/static/images/header/x.svg" />
+            <X />
           </span>
         )}
       </div>

@@ -1,19 +1,33 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
+import { theme } from '@expo/styleguide';
 import * as React from 'react';
 
-import * as Constants from '~/constants/theme';
+import { UL, LI } from '~/components/base/list';
+import Bug from '~/components/icons/Bug';
+import ChatBoxes from '~/components/icons/ChatBoxes';
+import Pencil from '~/components/icons/Pencil';
+import Spectacles from '~/components/icons/Spectacles';
 import { Url } from '~/types/common';
 
 const STYLES_FOOTER = css`
-  border-top: 1px solid ${Constants.expoColors.semantic.border};
+  border-top: 1px solid ${theme.border.default};
   padding: 24px 0 24px 0;
 `;
 
 const STYLES_FOOTER_LINK = css`
-  font-size: 18px;
+  font-size: 16px;
   display: block;
   text-decoration: none;
-  margin-bottom: 12px;
+  color: ${theme.link.default};
+  display: flex;
+  align-items: center;
+`;
+
+const STYLES_FOOTER_ICON = css`
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
+  margin-bottom: 1px;
 `;
 
 // Remove trailing slash and append .md
@@ -54,12 +68,12 @@ export default class DocumentationFooter extends React.PureComponent<Props> {
   render() {
     return (
       <footer css={STYLES_FOOTER}>
-        <ul>
+        <UL hideBullets>
           {this.renderForumsLink()}
           {this.maybeRenderIssuesLink()}
           {this.maybeRenderSourceCodeLink()}
           {this.maybeRenderGithubUrl()}
-        </ul>
+        </UL>
       </footer>
     );
   }
@@ -67,39 +81,48 @@ export default class DocumentationFooter extends React.PureComponent<Props> {
   private renderForumsLink() {
     if (!this.props.asPath.includes('/sdk/') || SDK_BLACKLIST.includes(this.props.title)) {
       return (
-        <li>
+        <LI>
           <a css={STYLES_FOOTER_LINK} target="_blank" rel="noopener" href="https://forums.expo.io/">
+            <span css={STYLES_FOOTER_ICON}>
+              <ChatBoxes fillColor="currentColor" />
+            </span>
             Ask a question on the forums
           </a>
-        </li>
+        </LI>
       );
     }
 
     return (
-      <li>
+      <LI>
         <a
           css={STYLES_FOOTER_LINK}
           target="_blank"
           rel="noopener"
           href={'https://forums.expo.io/tag/' + this.props.title}>
+          <span css={STYLES_FOOTER_ICON}>
+            <ChatBoxes fillColor="currentColor" />
+          </span>
           Get help from the community and ask questions about {this.props.title}
         </a>
-      </li>
+      </LI>
     );
   }
 
   private maybeRenderGithubUrl() {
     if (this.props.url) {
       return (
-        <li>
+        <LI>
           <a
             css={STYLES_FOOTER_LINK}
             target="_blank"
             rel="noopener"
             href={githubUrl(this.props.url.pathname)}>
+            <span css={STYLES_FOOTER_ICON}>
+              <Pencil fillColor="currentColor" />
+            </span>
             Edit this page
           </a>
-        </li>
+        </LI>
       );
     }
   }
@@ -110,14 +133,17 @@ export default class DocumentationFooter extends React.PureComponent<Props> {
     }
 
     return (
-      <li>
+      <LI>
         <a
           css={STYLES_FOOTER_LINK}
           target="_blank"
           href={`https://github.com/expo/expo/labels/${this.props.title}`}>
+          <span css={STYLES_FOOTER_ICON}>
+            <Bug fillColor="currentColor" />
+          </span>
           View open bug reports for {this.props.title}
         </a>
-      </li>
+      </LI>
     );
   };
 
@@ -127,11 +153,14 @@ export default class DocumentationFooter extends React.PureComponent<Props> {
     }
 
     return (
-      <li>
+      <LI>
         <a css={STYLES_FOOTER_LINK} target="_blank" href={`${this.props.sourceCodeUrl}`}>
+          <span css={STYLES_FOOTER_ICON}>
+            <Spectacles fillColor="currentColor" />
+          </span>
           View source code for {this.props.title}
         </a>
-      </li>
+      </LI>
     );
   };
 }

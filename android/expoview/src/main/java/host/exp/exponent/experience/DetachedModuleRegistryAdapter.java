@@ -3,7 +3,6 @@ package host.exp.exponent.experience;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 
-import org.json.JSONObject;
 import org.unimodules.adapters.react.ReactModuleRegistryProvider;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.interfaces.InternalModule;
@@ -15,11 +14,13 @@ import java.util.Map;
 import expo.modules.notifications.notifications.categories.ExpoNotificationCategoriesModule;
 import expo.modules.notifications.notifications.handling.NotificationsHandler;
 import expo.modules.notifications.notifications.scheduling.NotificationScheduler;
-import host.exp.exponent.kernel.ExperienceId;
+import expo.modules.updates.manifest.raw.RawManifest;
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.utils.ScopedContext;
 import versioned.host.exp.exponent.modules.universal.ConstantsBinding;
 import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter;
 import versioned.host.exp.exponent.modules.universal.ScopedFileSystemModule;
+import versioned.host.exp.exponent.modules.universal.ScopedSecureStoreModule;
 import versioned.host.exp.exponent.modules.universal.ScopedUIManagerModuleWrapper;
 import versioned.host.exp.exponent.modules.universal.UpdatesBinding;
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedServerRegistrationModule;
@@ -30,7 +31,7 @@ public class DetachedModuleRegistryAdapter extends ExpoModuleRegistryAdapter {
   }
 
   @Override
-  public List<NativeModule> createNativeModules(final ScopedContext scopedContext, ExperienceId experienceId, Map<String, Object> experienceProperties, JSONObject manifest, List<NativeModule> otherModules) {
+  public List<NativeModule> createNativeModules(final ScopedContext scopedContext, ExperienceKey experienceKey, Map<String, Object> experienceProperties, RawManifest manifest, String experienceStableLegacyId, List<NativeModule> otherModules) {
     ReactApplicationContext reactApplicationContext = (ReactApplicationContext) scopedContext.getContext();
 
     // We only use React application context, because we're detached -- no scopes
@@ -52,6 +53,9 @@ public class DetachedModuleRegistryAdapter extends ExpoModuleRegistryAdapter {
 
     // Overriding expo-file-system FileSystemModule
     moduleRegistry.registerExportedModule(new ScopedFileSystemModule(scopedContext));
+  
+    // Overriding expo-secure-store
+    moduleRegistry.registerExportedModule(new ScopedSecureStoreModule(scopedContext));
 
     // Certain notifications classes should share `SharedPreferences` object with the notifications services, so we don't want to use scoped context.
     moduleRegistry.registerExportedModule(new NotificationScheduler(scopedContext.getBaseContext()));

@@ -6,9 +6,25 @@
 
 ### 🎉 New features
 
-- Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 10.2.0 — 2021-06-16
 
 ### 🐛 Bug fixes
+
+- Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+- Build Android code using Java 8 to fix Android instrumented test build error. ([#12939](https://github.com/expo/expo/pull/12939) by [@kudo](https://github.com/kudo))
+
+## 10.1.0 — 2021-03-10
+
+### 🎉 New features
+
+- Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
 
 ## 10.0.0 — 2021-01-15
 
@@ -21,14 +37,14 @@
 ### 🛠 Breaking changes
 
 - Renamed all methods to include the 'Async' suffix:
-  -   `initialize` to `initializeAsync`
-  -   `setUserId` to `setUserIdAsync`
-  -   `setUserProperties` to `setUserPropertiesAsync`
-  -   `clearUserProperties` to `clearUserPropertiesAsync`
-  -   `logEvent` to `logEventAsync`
-  -   `logEventWithProperties` to `logEventWithPropertiesAsync`
-  -   `setGroup` to `setGroupAsync`
-  -   `setTrackingOptions` to `setTrackingOptionsAsync`
+  - `initialize` to `initializeAsync`
+  - `setUserId` to `setUserIdAsync`
+  - `setUserProperties` to `setUserPropertiesAsync`
+  - `clearUserProperties` to `clearUserPropertiesAsync`
+  - `logEvent` to `logEventAsync`
+  - `logEventWithProperties` to `logEventWithPropertiesAsync`
+  - `setGroup` to `setGroupAsync`
+  - `setTrackingOptions` to `setTrackingOptionsAsync`
 ([#9212](https://github.com/expo/expo/pull/9212/) by [@cruzach](https://github.com/cruzach))
 - All methods now return a Promise. ([#9212](https://github.com/expo/expo/pull/9212/) by [@cruzach](https://github.com/cruzach))
 

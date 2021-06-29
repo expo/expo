@@ -34,10 +34,9 @@
 
 #import <objc/message.h>
 
-#import <UMCore/UMDefines.h>
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
-#import <UMCore/UMModuleRegistry.h>
-#import <UMCore/UMModuleRegistryDelegate.h>
+#import <ExpoModulesCore/EXDefines.h>
+#import <ExpoModulesCore/EXModuleRegistry.h>
+#import <ExpoModulesCore/EXModuleRegistryDelegate.h>
 #import <UMReactNativeAdapter/UMNativeModulesProxy.h>
 #import <EXMediaLibrary/EXMediaLibraryImageLoader.h>
 #import <EXFileSystem/EXFileSystem.h>
@@ -45,9 +44,9 @@
 #import "EXScopedModuleRegistryAdapter.h"
 #import "EXScopedModuleRegistryDelegate.h"
 
-#import "REAModule.h"
-#import "REAEventDispatcher.h"
-#import "NativeProxy.h"
+#import <RNReanimated/REAModule.h>
+#import <RNReanimated/REAEventDispatcher.h>
+#import <RNReanimated/NativeProxy.h>
 
 #import <React/RCTCxxBridgeDelegate.h>
 #import <React/CoreModulesPlugins.h>
@@ -55,7 +54,11 @@
 #import <React/JSCExecutorFactory.h>
 #import <strings.h>
 
+// Import 3rd party modules that need to be scoped.
+#import "RNCWebViewManager.h"
+
 RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(void);
+RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
 @interface RCTEventDispatcher (REAnimated)
 
@@ -114,6 +117,13 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
     [self configureABIWithFatalHandler:fatalHandler logFunction:logFunction logThreshold:threshold];
   }
   return self;
+}
+
++ (void)load
+{
+  // Register scoped 3rd party modules. Some of them are separate pods that
+  // don't have access to EXScopedModuleRegistry and so they can't register themselves.
+  EXRegisterScopedModule([RNCWebViewManager class], EX_KERNEL_SERVICE_NONE, nil);
 }
 
 - (void)bridgeWillStartLoading:(id)bridge
@@ -251,12 +261,41 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
   devSettings.isDebuggingRemotely = NO;
 }
 
+- (void)toggleRemoteDebuggingForBridge:(id)bridge
+{
+  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForBridge:bridge named:@"DevSettings"];
+  devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
+}
+
+- (void)togglePerformanceMonitorForBridge:(id)bridge
+{
+  RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForBridge:bridge named:@"DevSettings"];
+  id perfMonitor = [self _moduleInstanceForBridge:bridge named:@"PerfMonitor"];
+  if (perfMonitor) {
+    if (devSettings.isPerfMonitorShown) {
+      [perfMonitor hide];
+      devSettings.isPerfMonitorShown = NO;
+    } else {
+      [perfMonitor show];
+      devSettings.isPerfMonitorShown = YES;
+    }
+  }
+}
+
 - (void)toggleElementInspectorForBridge:(id)bridge
 {
   RCTDevSettings *devSettings = (RCTDevSettings *)[self _moduleInstanceForBridge:bridge named:@"DevSettings"];
   [devSettings toggleElementInspector];
 }
 
+#if DEBUG || RCT_DEV
+- (uint32_t)addWebSocketNotificationHandler:(void (^)(NSDictionary<NSString *, id> *))handler
+                                    queue:(dispatch_queue_t)queue
+                                forMethod:(NSString *)method
+{
+  return [[RCTPackagerConnection sharedPackagerConnection] addNotificationHandler:handler queue:queue forMethod:method];
+}
+#endif
 
 #pragma mark - internal
 
@@ -313,18 +352,18 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
     [extraModules addObject:homeModule];
   }
 
-  UMModuleRegistryProvider *moduleRegistryProvider = [[UMModuleRegistryProvider alloc] initWithSingletonModules:params[@"singletonModules"]];
+  EXModuleRegistryProvider *moduleRegistryProvider = [[EXModuleRegistryProvider alloc] initWithSingletonModules:params[@"singletonModules"]];
 
   Class resolverClass = [EXScopedModuleRegistryDelegate class];
   if (params[@"moduleRegistryDelegateClass"] && params[@"moduleRegistryDelegateClass"] != [NSNull null]) {
     resolverClass = params[@"moduleRegistryDelegateClass"];
   }
 
-  id<UMModuleRegistryDelegate> moduleRegistryDelegate = [[resolverClass alloc] initWithParams:params];
+  id<EXModuleRegistryDelegate> moduleRegistryDelegate = [[resolverClass alloc] initWithParams:params];
   [moduleRegistryProvider setModuleRegistryDelegate:moduleRegistryDelegate];
 
   EXScopedModuleRegistryAdapter *moduleRegistryAdapter = [[EXScopedModuleRegistryAdapter alloc] initWithModuleRegistryProvider:moduleRegistryProvider];
-  UMModuleRegistry *moduleRegistry = [moduleRegistryAdapter moduleRegistryForParams:params forExperienceId:experienceId withKernelServices:services];
+  EXModuleRegistry *moduleRegistry = [moduleRegistryAdapter moduleRegistryForParams:params forExperienceId:experienceId withKernelServices:services];
   NSArray<id<RCTBridgeModule>> *expoModules = [moduleRegistryAdapter extraModulesForModuleRegistry:moduleRegistry];
   [extraModules addObjectsFromArray:expoModules];
   
@@ -477,12 +516,12 @@ RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(vo
   [bridge updateModuleWithInstance:eventDispatcher];
   _bridge_reanimated = bridge;
 
-  UM_WEAKIFY(self);
-  return new facebook::react::JSCExecutorFactory([UMWeak_self, bridge](facebook::jsi::Runtime &runtime) {
+  EX_WEAKIFY(self);
+  return new facebook::react::JSCExecutorFactory([EXWeak_self, bridge](facebook::jsi::Runtime &runtime) {
     if (!bridge) {
       return;
     }
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     self->_turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
                                                                      delegate:self
                                                                     jsInvoker:bridge.jsCallInvoker];

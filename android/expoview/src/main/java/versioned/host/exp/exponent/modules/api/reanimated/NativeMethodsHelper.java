@@ -5,11 +5,13 @@ import android.graphics.RectF;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewParent;
+import android.view.animation.AnimationUtils;
 
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.views.scroll.ReactHorizontalScrollView;
 import com.facebook.react.views.scroll.ReactScrollView;
+import com.facebook.react.views.swiperefresh.ReactSwipeRefreshLayout;
 
 public class NativeMethodsHelper {
 
@@ -43,9 +45,15 @@ public class NativeMethodsHelper {
     
     if (view instanceof ReactHorizontalScrollView) {
       horizontal = true;
-    } else if (!(view instanceof ReactScrollView)) {
-      Log.w("REANIMATED", "NativeMethodsHelper: Unhandled scroll view type - allowed only {ReactScrollView, ReactHorizontalScrollView}");
-      return;
+    }
+    else {
+      if (view instanceof ReactSwipeRefreshLayout) {
+        view = findScrollView((ReactSwipeRefreshLayout)view);
+      }
+      if (!(view instanceof ReactScrollView)) {
+        Log.w("REANIMATED", "NativeMethodsHelper: Unhandled scroll view type - allowed only {ReactScrollView, ReactHorizontalScrollView}");
+        return;
+      }
     }
 
     if (animated) {
@@ -62,6 +70,15 @@ public class NativeMethodsHelper {
       }
     }
 
+  }
+
+  private static ReactScrollView findScrollView(ReactSwipeRefreshLayout view) {
+    for(int i = 0; i < view.getChildCount(); i++) {
+      if(view.getChildAt(i) instanceof ReactScrollView) {
+        return (ReactScrollView)view.getChildAt(i);
+      }
+    }
+    return null;
   }
 
   private static void computeBoundingBox(View view, int[] outputBuffer) {

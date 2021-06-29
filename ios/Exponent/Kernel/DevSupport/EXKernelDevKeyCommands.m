@@ -162,6 +162,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                              action:^(__unused UIKeyCommand *_) {
                                [weakSelf _handleKernelMenuCommand];
                              }];
+
 }
 
 - (void)_handleMenuCommand
@@ -185,6 +186,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)_handleDisableDebuggingCommand
 {
   [[EXKernel sharedInstance].visibleApp.appManager disableRemoteDebugging];
+}
+
+- (void)_handleToggleRemoteDebuggingCommand
+{
+  [[EXKernel sharedInstance].visibleApp.appManager toggleRemoteDebugging];
+  // This reloads manifest and JS
+  [[EXKernel sharedInstance] reloadVisibleApp];
+}
+
+- (void)_handleTogglePerformanceMonitorCommand
+{
+  [[EXKernel sharedInstance].visibleApp.appManager togglePerformanceMonitor];
 }
 
 - (void)_handleToggleInspectorCommand

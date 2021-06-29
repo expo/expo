@@ -1,1 +1,0 @@
-../../../../../packages/expo-image-picker/ios/EXImagePicker/EXImagePicker.h

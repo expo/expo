@@ -1,8 +1,9 @@
 ---
 title: Using Next.js with Expo for Web
+sidebar_title: Using Next.js
 ---
 
-> Warning: Support for Next.js is experimental. Please open an issue at [expo-cli/issues](https://github.com/expo/expo-cli/issues) if you encountered any problems.
+> Please open any issues related to Next.js with Expo at [expo-cli/issues](https://github.com/expo/expo-cli/issues).
 
 [Next.js](https://nextjs.org/) is a React framework that provides simple page-based routing as well as server-side rendering. To use Next.js with Expo for web we recommend that you use a library called [`@expo/next-adapter`][next-adapter] to handle the configuration and integration of the tools.
 
@@ -16,12 +17,14 @@ Using Expo with Next.js means you can share all of your existing components and 
 - Start: `yarn next dev`
 - Open: `http://localhost:3000/`
 
+- [TL;DR:](#tldr)
 - [🏁 Setup](#-setup)
   - [Add Next.js to Expo projects](#add-nextjs-to-expo-projects)
   - [Add Expo to Next.js projects](#add-expo-to-nextjs-projects)
   - [Manual setup](#manual-setup)
 - [Guides](#guides)
   - [Deploy to Vercel](#deploy-to-vercel)
+  - [Polyfill setImmediate](#polyfill-setimmediate)
   - [Image support](#image-support)
   - [Font support](#font-support)
   - [Offline support](#offline-support)
@@ -40,8 +43,9 @@ Using Expo with Next.js means you can share all of your existing components and 
     - [`startServerAsync`](#startserverasync)
     - [`createServerAsync`](#createserverasync)
     - [`handleRequest`](#handlerequest)
-- [Limitations](#limitations-or-differences-comparing-to-the-default-expo-for-web)
+- [Limitations or differences comparing to the default Expo for Web](#limitations-or-differences-comparing-to-the-default-expo-for-web)
 - [Contributing](#contributing)
+- [Learn more about Next.js](#learn-more-about-nextjs)
 
 ## 🏁 Setup
 

@@ -15,10 +15,12 @@ import expo.modules.notifications.notifications.interfaces.NotificationBuilder;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.presentation.builders.CategoryAwareNotificationBuilder;
 import expo.modules.notifications.service.delegates.SharedPreferencesNotificationCategoriesStore;
+import expo.modules.updates.manifest.ManifestFactory;
+import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.notifications.model.ScopedNotificationRequest;
 import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
@@ -30,10 +32,10 @@ public class ScopedExpoNotificationBuilder extends CategoryAwareNotificationBuil
   @Inject
   ExponentManifest mExponentManifest;
   @Nullable
-  JSONObject manifest;
+  RawManifest manifest;
 
   @Nullable
-  ExperienceId mExperienceId;
+  ExperienceKey mExperienceKey;
 
   public ScopedExpoNotificationBuilder(Context context, SharedPreferencesNotificationCategoriesStore store) {
     super(context, store);
@@ -47,10 +49,11 @@ public class ScopedExpoNotificationBuilder extends CategoryAwareNotificationBuil
     // We parse manifest here to have easy access to it from other methods.
     NotificationRequest requester = getNotification().getNotificationRequest();
     if (requester instanceof ScopedNotificationRequest) {
-      mExperienceId = ExperienceId.create(((ScopedNotificationRequest) requester).getExperienceIdString());
-      ExperienceDBObject experience = ExponentDB.experienceIdToExperienceSync(mExperienceId.get());
+      String experienceScopeKey = ((ScopedNotificationRequest) requester).getExperienceScopeKeyString();
+      ExperienceDBObject experience = ExponentDB.experienceScopeKeyToExperienceSync(experienceScopeKey);
       try {
-        manifest = new JSONObject(experience.manifest);
+        manifest = ManifestFactory.INSTANCE.getRawManifestFromJson(new JSONObject(experience.manifest));
+        mExperienceKey = ExperienceKey.fromRawManifest(manifest);
       } catch (JSONException e) {
         Log.e("notifications", "Couldn't parse manifest.", e);
         e.printStackTrace();
@@ -63,11 +66,11 @@ public class ScopedExpoNotificationBuilder extends CategoryAwareNotificationBuil
   @NonNull
   @Override
   protected NotificationsChannelManager getNotificationsChannelManager() {
-    if (mExperienceId == null) {
+    if (mExperienceKey == null) {
       return super.getNotificationsChannelManager();
     }
 
-    return new ScopedNotificationsChannelManager(getContext(), mExperienceId, new ScopedNotificationsGroupManager(getContext(), mExperienceId));
+    return new ScopedNotificationsChannelManager(getContext(), mExperienceKey, new ScopedNotificationsGroupManager(getContext(), mExperienceKey));
   }
 
   @Override

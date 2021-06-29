@@ -7,7 +7,7 @@ import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
-**`expo-font`** allows loading fonts from the web and using them in React Native components. See more detailed usage information in the [Using Custom Fonts](../../../guides/using-custom-fonts.md#using-custom-fonts) guide.
+**`expo-font`** allows loading fonts from the web and using them in React Native components. See more detailed usage information in the [Fonts](../../../guides/using-custom-fonts.md) guide.
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -31,11 +31,11 @@ import { useFonts } from 'expo-font';
 const [loaded, error] = useFonts({ ... });
 ```
 
-Load a map of fonts with [`loadAsync`](#loadasyncobject). This returns a boolean if the fonts are loaded and ready to use. It also returns an error if something went wrong, to use in development.
+Load a map of fonts with [`loadAsync`](#fontloadasyncobject). This returns a boolean if the fonts are loaded and ready to use. It also returns an error if something went wrong, to use in development.
 
 #### Arguments
 
-- **fonts (_{ [fontFamily: string]: FontSource }_)** -- A map of `fontFamily`s to [`FontSource`](#FontSource)s. After loading the font you can use the **key** in the `fontFamily` style prop of a `Text` element.
+- **fonts (_{ [fontFamily: string]: FontSource }_)** -- A map of `fontFamily`s to [`FontSource`](#fontsource)s. After loading the font you can use the **key** in the `fontFamily` style prop of a `Text` element.
 
 #### Returns
 
@@ -95,7 +95,7 @@ Highly efficient method for loading fonts from static or remote resources which 
 
 #### Arguments
 
-- **{ [fontFamily: string]: FontSource }** -- A map of `fontFamily`s to [`FontSource`](#FontSource)s. After loading the font you can use the **key** in the `fontFamily` style prop of a `Text` element.
+- **{ [fontFamily: string]: FontSource }** -- A map of `fontFamily`s to [`FontSource`](#fontsource)s. After loading the font you can use the **key** in the `fontFamily` style prop of a `Text` element.
 
 #### Example: functions
 
@@ -125,7 +125,7 @@ export default class App extends React.Component {
       // Any string can be used as the fontFamily name. Here we use an object to provide more control
       'Montserrat-SemiBold': {
         uri: require('./assets/fonts/Montserrat-SemiBold.ttf'),
-        fontDisplay: Font.FontDisplay.FALLBACK,
+        display: Font.FontDisplay.FALLBACK,
       },
     });
     /* @end */
@@ -231,7 +231,7 @@ await Font.loadAsync({
 
 ### `FontResource`
 
-Used to dictate the resource that is loaded into the provided font namespace when used with [`loadAsync`](#loadasync). Optionally on web you can define a `display` value which sets the [`font-display`](#FontDisplay) property for a given typeface in the browser.
+Used to dictate the resource that is loaded into the provided font namespace when used with [`loadAsync`](#fontloadasyncobject). Optionally on web you can define a `display` value which sets the [`font-display`](#fontdisplay) property for a given typeface in the browser.
 
 ```ts
 type FontResource = {
@@ -242,7 +242,7 @@ type FontResource = {
 
 ### `FontSource`
 
-The different types of assets you can provide to the [`loadAsync()`](#loadAsync) function. A font source can be a URI, a module ID, or an Expo Asset.
+The different types of assets you can provide to the [`loadAsync()`](#fontloadasyncobject) function. A font source can be a URI, a module ID, or an Expo Asset.
 
 ```ts
 type FontSource = string | number | Asset | FontResource;

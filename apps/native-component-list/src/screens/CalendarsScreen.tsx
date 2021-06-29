@@ -1,6 +1,5 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
-import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
@@ -76,7 +75,7 @@ export default class CalendarsScreen extends React.Component<
   };
 
   _askForCalendarPermissions = async () => {
-    const response = await Permissions.askAsync(Permissions.CALENDAR);
+    const response = await Calendar.requestCalendarPermissionsAsync();
     const granted = response.status === 'granted';
     this.setState({
       haveCalendarPermissions: granted,
@@ -86,7 +85,7 @@ export default class CalendarsScreen extends React.Component<
 
   _askForReminderPermissions = async () => {
     if (Platform.OS === 'android') return true;
-    const response = await Permissions.askAsync(Permissions.REMINDERS);
+    const response = await Calendar.requestRemindersPermissionsAsync();
     const granted = response.status === 'granted';
     this.setState({
       haveReminderPermissions: granted,

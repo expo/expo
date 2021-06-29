@@ -1,6 +1,4 @@
-import { IOSConfig } from '@expo/config-plugins';
-import { InfoPlist } from '@expo/config-plugins/build/ios/IosConfig.types';
-import { createInfoPlistPlugin } from '@expo/config-plugins/build/plugins/ios-plugins';
+import { ConfigPlugin, InfoPlist, IOSConfig, withInfoPlist } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 
 const { Scheme } = IOSConfig;
@@ -18,7 +16,14 @@ type ExpoConfigFacebook = Pick<
 
 const fbSchemes = ['fbapi', 'fb-messenger-api', 'fbauth2', 'fbshareextension'];
 
-export const withFacebookIOS = createInfoPlistPlugin(setFacebookConfig, 'withFacebookIOS');
+const USER_TRACKING = 'This identifier will be used to deliver personalized ads to you.';
+
+export const withFacebookIOS: ConfigPlugin = config => {
+  return withInfoPlist(config, config => {
+    config.modResults = setFacebookConfig(config, config.modResults);
+    return config;
+  });
+};
 
 /**
  * Getters
@@ -36,6 +41,7 @@ export function getFacebookAppId(config: Pick<ExpoConfigFacebook, 'facebookAppId
 export function getFacebookDisplayName(config: ExpoConfigFacebook) {
   return config.facebookDisplayName ?? null;
 }
+
 export function getFacebookAutoInitEnabled(config: ExpoConfigFacebook) {
   return config.facebookAutoInitEnabled ?? null;
 }
@@ -196,3 +202,17 @@ export function setFacebookApplicationQuerySchemes(
     LSApplicationQueriesSchemes: updatedSchemes,
   };
 }
+
+export const withUserTrackingPermission: ConfigPlugin<{
+  userTrackingPermission?: string | false;
+} | void> = (config, { userTrackingPermission } = {}) => {
+  if (userTrackingPermission === false) {
+    return config;
+  }
+  if (!config.ios) config.ios = {};
+  if (!config.ios.infoPlist) config.ios.infoPlist = {};
+  config.ios.infoPlist.NSUserTrackingUsageDescription =
+    userTrackingPermission || config.ios.infoPlist.NSUserTrackingUsageDescription || USER_TRACKING;
+
+  return config;
+};

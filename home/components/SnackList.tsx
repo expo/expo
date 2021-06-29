@@ -1,6 +1,6 @@
 import { useTheme } from '@react-navigation/native';
 import * as React from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, FlatList, View } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
 import Colors from '../constants/Colors';
@@ -17,7 +17,6 @@ export type Snack = {
 type Props = {
   data: Snack[];
   loadMoreAsync: () => Promise<any>;
-  belongsToCurrentUser?: true;
 };
 
 export default function LoadingSnackList(props: Props) {
@@ -47,7 +46,7 @@ export default function LoadingSnackList(props: Props) {
   return <SnackList {...props} />;
 }
 
-function SnackList({ data, loadMoreAsync, belongsToCurrentUser }: Props) {
+function SnackList({ data, loadMoreAsync }: Props) {
   const [isLoadingMore, setLoadingMore] = React.useState(false);
   const isLoading = React.useRef<null | boolean>(false);
 
@@ -95,12 +94,8 @@ function SnackList({ data, loadMoreAsync, belongsToCurrentUser }: Props) {
   }, []);
 
   const style = React.useMemo(
-    () => [
-      { flex: 1 },
-      !belongsToCurrentUser && styles.largeProjectCardList,
-      { backgroundColor: theme.dark ? '#000' : Colors.light.greyBackground },
-    ],
-    [belongsToCurrentUser, theme]
+    () => [{ flex: 1 }, { backgroundColor: theme.dark ? '#000' : Colors.light.greyBackground }],
+    [theme]
   );
 
   return (
@@ -119,14 +114,3 @@ function SnackList({ data, loadMoreAsync, belongsToCurrentUser }: Props) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  largeProjectCardList: {
-    paddingTop: 10,
-    paddingBottom: 10,
-    backgroundColor: Colors.light.greyBackground,
-  },
-  largeProjectCard: {
-    marginBottom: 10,
-  },
-});

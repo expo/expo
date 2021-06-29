@@ -1,7 +1,10 @@
 package expo.modules.updates.launcher;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
+
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -19,6 +22,8 @@ import expo.modules.updates.db.enums.UpdateStatus;
 import expo.modules.updates.loader.EmbeddedLoader;
 import expo.modules.updates.loader.FileDownloader;
 import expo.modules.updates.manifest.Manifest;
+import expo.modules.updates.manifest.ManifestMetadata;
+import expo.modules.updates.selectionpolicy.SelectionPolicy;
 
 public class DatabaseLauncher implements Launcher {
 
@@ -26,6 +31,7 @@ public class DatabaseLauncher implements Launcher {
 
   private UpdatesConfiguration mConfiguration;
   private File mUpdatesDirectory;
+  private FileDownloader mFileDownloader;
   private SelectionPolicy mSelectionPolicy;
 
   private UpdateEntity mLaunchedUpdate = null;
@@ -39,9 +45,10 @@ public class DatabaseLauncher implements Launcher {
 
   private LauncherCallback mCallback = null;
 
-  public DatabaseLauncher(UpdatesConfiguration configuration, File updatesDirectory, SelectionPolicy selectionPolicy) {
+  public DatabaseLauncher(UpdatesConfiguration configuration, File updatesDirectory, FileDownloader fileDownloader, SelectionPolicy selectionPolicy) {
     mConfiguration = configuration;
     mUpdatesDirectory = updatesDirectory;
+    mFileDownloader = fileDownloader;
     mSelectionPolicy = selectionPolicy;
   }
 
@@ -77,6 +84,8 @@ public class DatabaseLauncher implements Launcher {
       return;
     }
 
+    database.updateDao().markUpdateAccessed(mLaunchedUpdate);
+
     if (mLaunchedUpdate.status == UpdateStatus.EMBEDDED) {
       mBundleAssetName = EmbeddedLoader.BARE_BUNDLE_FILENAME;
       if (mLocalAssetFiles != null) {
@@ -111,7 +120,7 @@ public class DatabaseLauncher implements Launcher {
         if (assetFile != null) {
           mLocalAssetFiles.put(
               asset,
-              assetFile.toURI().toString()
+              Uri.fromFile(assetFile).toString()
           );
         }
       }
@@ -143,10 +152,11 @@ public class DatabaseLauncher implements Launcher {
       filteredLaunchableUpdates.add(update);
     }
 
-    return mSelectionPolicy.selectUpdateToLaunch(filteredLaunchableUpdates);
+    JSONObject manifestFilters = ManifestMetadata.getManifestFilters(database, mConfiguration);
+    return mSelectionPolicy.selectUpdateToLaunch(filteredLaunchableUpdates, manifestFilters);
   }
 
-  private File ensureAssetExists(AssetEntity asset, UpdatesDatabase database, Context context) {
+  /* package */ File ensureAssetExists(AssetEntity asset, UpdatesDatabase database, Context context) {
     File assetFile = new File(mUpdatesDirectory, asset.relativePath);
     boolean assetFileExists = assetFile.exists();
     if (!assetFileExists) {
@@ -154,10 +164,10 @@ public class DatabaseLauncher implements Launcher {
       // first we check to see if a copy is embedded in the binary
       Manifest embeddedManifest = EmbeddedLoader.readEmbeddedManifest(context, mConfiguration);
       if (embeddedManifest != null) {
-        ArrayList<AssetEntity> embeddedAssets = embeddedManifest.getAssetEntityList();
+        List<AssetEntity> embeddedAssets = embeddedManifest.getAssetEntityList();
         AssetEntity matchingEmbeddedAsset = null;
         for (AssetEntity embeddedAsset : embeddedAssets) {
-          if (embeddedAsset.key.equals(asset.key)) {
+          if (embeddedAsset.key != null && embeddedAsset.key.equals(asset.key)) {
             matchingEmbeddedAsset = embeddedAsset;
             break;
           }
@@ -180,7 +190,7 @@ public class DatabaseLauncher implements Launcher {
     if (!assetFileExists) {
       // we still don't have the asset locally, so try downloading it remotely
       mAssetsToDownload++;
-      FileDownloader.downloadAsset(asset, mUpdatesDirectory, mConfiguration, new FileDownloader.AssetDownloadCallback() {
+      mFileDownloader.downloadAsset(asset, mUpdatesDirectory, mConfiguration, new FileDownloader.AssetDownloadCallback() {
         @Override
         public void onFailure(Exception e, AssetEntity assetEntity) {
           Log.e(TAG, "Failed to load asset from disk or network", e);

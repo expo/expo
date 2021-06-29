@@ -7,13 +7,16 @@ import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { Linking, Platform, StyleSheet, View } from 'react-native';
 import { useColorScheme } from 'react-native-appearance';
+import url from 'url';
 
+import { ColorTheme } from './constants/Colors';
 import Navigation from './navigation/Navigation';
 import HistoryActions from './redux/HistoryActions';
 import { useDispatch, useSelector } from './redux/Hooks';
 import SessionActions from './redux/SessionActions';
 import SettingsActions from './redux/SettingsActions';
 import LocalStorage from './storage/LocalStorage';
+import * as UrlUtils from './utils/UrlUtils';
 import addListenerWithNativeCallback from './utils/addListenerWithNativeCallback';
 
 // Download and cache stack assets, don't block loading on this though
@@ -56,8 +59,8 @@ export default function HomeApp() {
     if (!isShowingSplashScreen && Platform.OS === 'ios') {
       // If Expo Go is opened via deep linking, we'll get the URL here
       Linking.getInitialURL().then(initialUrl => {
-        if (initialUrl) {
-          Linking.openURL(initialUrl);
+        if (initialUrl && shouldOpenUrl(initialUrl)) {
+          Linking.openURL(UrlUtils.toExp(initialUrl));
         }
       });
     }
@@ -108,9 +111,18 @@ export default function HomeApp() {
   return (
     <View style={[styles.container, { backgroundColor }]}>
       <ActionSheetProvider>
-        <Navigation theme={theme} />
+        <Navigation theme={theme === 'light' ? ColorTheme.LIGHT : ColorTheme.DARK} />
       </ActionSheetProvider>
     </View>
+  );
+}
+
+// Certain links (i.e. 'expo.dev/expo-go') should just open the HomeScreen
+function shouldOpenUrl(urlString: string) {
+  const parsedUrl = url.parse(urlString);
+  return !(
+    (parsedUrl.hostname === 'expo.io' || parsedUrl.hostname === 'expo.dev') &&
+    parsedUrl.pathname === '/expo-go'
   );
 }
 

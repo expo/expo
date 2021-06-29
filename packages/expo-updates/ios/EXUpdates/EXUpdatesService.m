@@ -12,7 +12,7 @@ UM_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(EXUpdatesInterface)];
+  return @[@protocol(EXUpdatesModuleInterface)];
 }
 
 - (EXUpdatesConfig *)config
@@ -25,7 +25,7 @@ UM_REGISTER_MODULE();
   return EXUpdatesAppController.sharedInstance.database;
 }
 
-- (id<EXUpdatesSelectionPolicy>)selectionPolicy
+- (EXUpdatesSelectionPolicy *)selectionPolicy
 {
   return EXUpdatesAppController.sharedInstance.selectionPolicy;
 }
@@ -68,6 +68,11 @@ UM_REGISTER_MODULE();
 - (void)requestRelaunchWithCompletion:(EXUpdatesAppRelaunchCompletionBlock)completion
 {
   return [EXUpdatesAppController.sharedInstance requestRelaunchWithCompletion:completion];
+}
+
+- (void)resetSelectionPolicy
+{
+  return [EXUpdatesAppController.sharedInstance resetSelectionPolicyToDefault];
 }
 
 @end

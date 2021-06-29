@@ -77,7 +77,7 @@ public class AdSettingsManager extends ExportedModule implements LifecycleEventL
 
   @ExpoMethod
   public void setIsChildDirected(boolean isChildDirected, Promise promise) {
-    AdSettings.setIsChildDirected(isChildDirected);
+    AdSettings.setMixedAudience(isChildDirected);
     mIsChildDirected = isChildDirected;
     promise.resolve(null);
   }
@@ -101,14 +101,14 @@ public class AdSettingsManager extends ExportedModule implements LifecycleEventL
       AdSettings.addTestDevice(hash);
     }
 
-    AdSettings.setIsChildDirected(mIsChildDirected);
+    AdSettings.setMixedAudience(mIsChildDirected);
     AdSettings.setMediationService(mMediationService);
     AdSettings.setUrlPrefix(mUrlPrefix);
   }
 
   private void clearSettings() {
     AdSettings.clearTestDevices();
-    AdSettings.setIsChildDirected(false);
+    AdSettings.setMixedAudience(false);
     AdSettings.setMediationService(null);
     AdSettings.setUrlPrefix(null);
   }

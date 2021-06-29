@@ -17,6 +17,9 @@
 - (instancetype)init
 {
   if (self = [super init]) {
+    // Set it just above the LogBox so users can easily access it.
+    // https://github.com/facebook/react-native/blob/0.64-stable/React/CoreModules/RCTLogBoxView.mm#L38
+    self.windowLevel = UIWindowLevelStatusBar;
     self.backgroundColor = [UIColor clearColor];
     self.bounds = [[UIScreen mainScreen] bounds];
     self.hidden = YES;

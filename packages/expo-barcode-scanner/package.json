@@ -1,6 +1,6 @@
 {
   "name": "expo-barcode-scanner",
-  "version": "10.0.0",
+  "version": "10.2.0",
   "description": "Allows scanning variety of supported barcodes both as standalone module and as extension for expo-camera. It also allows scanning barcodes from existing images.",
   "main": "build/BarCodeScanner.js",
   "types": "build/BarCodeScanner.d.ts",
@@ -34,18 +34,11 @@
   "jest": {
     "preset": "expo-module-scripts/ios"
   },
-  "peerDependencies": {
-    "@unimodules/core": "*",
-    "react": "*",
-    "react-native": "*",
-    "unimodules-barcode-scanner-interface": "*",
-    "unimodules-permissions-interface": "*"
-  },
   "dependencies": {
-    "@expo/config-plugins": "~1.0.13",
-    "lodash": "^4.6.0"
+    "@expo/config-plugins": "^3.0.0",
+    "expo-modules-core": "~0.1.1"
   },
   "devDependencies": {
-    "expo-module-scripts": "~1.2.0"
+    "expo-module-scripts": "^2.0.0"
   }
 }

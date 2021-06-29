@@ -1,17 +1,17 @@
 package host.exp.exponent.experience.splashscreen
 
+import android.app.Activity
 import android.content.Context
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AlphaAnimation
-import android.widget.ImageView
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
-import expo.modules.splashscreen.SplashScreenImageResizeMode
 import expo.modules.splashscreen.SplashScreenView
 import expo.modules.splashscreen.SplashScreenViewProvider
+import expo.modules.updates.manifest.raw.RawManifest
 import host.exp.exponent.analytics.EXL
-import org.json.JSONObject
 
 /**
  * SplashScreenView provider that parses manifest and extracts splash configuration.
@@ -25,15 +25,14 @@ class ManagedAppSplashScreenViewProvider(
   companion object {
     private const val TAG: String = "ExperienceSplashScreenManifestBasedResourceProvider"
   }
-
   override fun createSplashScreenView(context: Context): View {
     splashScreenView = SplashScreenView(context)
     configureSplashScreenView(context, config, null)
     return splashScreenView
   }
 
-  fun updateSplashScreenViewWithManifest(context: Context, manifest: JSONObject) {
-    val previousConfig = config;
+  fun updateSplashScreenViewWithManifest(context: Context, manifest: RawManifest) {
+    val previousConfig = config
     config = ManagedAppSplashScreenConfiguration.parseManifest(manifest)
     configureSplashScreenView(context, config, previousConfig)
   }

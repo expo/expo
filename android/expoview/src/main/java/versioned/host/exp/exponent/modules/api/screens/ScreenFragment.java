@@ -1,16 +1,17 @@
 package versioned.host.exp.exponent.modules.api.screens;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.uimanager.UIManagerModule;
 
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ public class ScreenFragment extends Fragment {
 
   protected Screen mScreenView;
   private List<ScreenContainer> mChildScreenContainers = new ArrayList<>();
+  private boolean shouldUpdateOnResume = false;
 
   public ScreenFragment() {
     throw new IllegalStateException("Screen fragments should never be restored. Follow instructions from https://github.com/software-mansion/react-native-screens/issues/17#issuecomment-424704067 to properly configure your main activity.");
@@ -48,6 +50,15 @@ public class ScreenFragment extends Fragment {
   public ScreenFragment(Screen screenView) {
     super();
     mScreenView = screenView;
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
+    if (shouldUpdateOnResume) {
+      shouldUpdateOnResume = false;
+      ScreenWindowTraits.trySetWindowTraits(getScreen(), tryGetActivity(), tryGetContext());
+    }
   }
 
   @Override
@@ -64,6 +75,65 @@ public class ScreenFragment extends Fragment {
 
   public Screen getScreen() {
     return mScreenView;
+  }
+
+  public void onContainerUpdate() {
+   updateWindowTraits();
+  }
+
+  private void updateWindowTraits() {
+    Activity activity = getActivity();
+    if (activity == null) {
+      shouldUpdateOnResume = true;
+      return;
+    }
+    ScreenWindowTraits.trySetWindowTraits(getScreen(), activity, tryGetContext());
+  }
+
+  protected @Nullable Activity tryGetActivity() {
+    if (getActivity() != null) {
+      return getActivity();
+    }
+    Context context = getScreen().getContext();
+    if (context instanceof ReactContext && ((ReactContext) context).getCurrentActivity() != null) {
+      return ((ReactContext) context).getCurrentActivity();
+    }
+
+    ViewParent parent = getScreen().getContainer();
+    while (parent != null) {
+      if (parent instanceof Screen) {
+        ScreenFragment fragment = ((Screen) parent).getFragment();
+        if (fragment != null && fragment.getActivity() != null) {
+          return fragment.getActivity();
+        }
+      }
+      parent = parent.getParent();
+    }
+    return null;
+  }
+
+  protected @Nullable ReactContext tryGetContext() {
+    if (getContext() instanceof ReactContext) {
+      return ((ReactContext) getContext());
+    }
+    if (getScreen().getContext() instanceof ReactContext) {
+      return ((ReactContext) getScreen().getContext());
+    }
+
+    ViewParent parent = getScreen().getContainer();
+    while (parent != null) {
+      if (parent instanceof Screen) {
+          if (((Screen) parent).getContext() instanceof ReactContext) {
+            return (ReactContext) ((Screen) parent).getContext();
+          }
+        }
+      parent = parent.getParent();
+    }
+    return null;
+  }
+
+  public List<ScreenContainer> getChildScreenContainers() {
+    return mChildScreenContainers;
   }
 
   protected void dispatchOnWillAppear() {
@@ -135,7 +205,17 @@ public class ScreenFragment extends Fragment {
     // We override Screen#onAnimationStart and an appropriate method of the StackFragment's root view
     // in order to achieve this.
     if (isResumed()) {
-      dispatchOnWillAppear();
+      // Android dispatches the animation start event for the fragment that is being added first
+      // however we want the one being dismissed first to match iOS. It also makes more sense from
+      // a navigation point of view to have the disappear event first.
+      // Since there are no explicit relationships between the fragment being added / removed the
+      // practical way to fix this is delaying dispatching the appear events at the end of the frame.
+      UiThreadUtil.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          dispatchOnWillAppear();
+        }
+      });
     } else {
       dispatchOnWillDisappear();
     }
@@ -146,7 +226,13 @@ public class ScreenFragment extends Fragment {
     // We override Screen#onAnimationEnd and an appropriate method of the StackFragment's root view
     // in order to achieve this.
     if (isResumed()) {
-      dispatchOnAppear();
+      // See the comment in onViewAnimationStart for why this event is delayed.
+      UiThreadUtil.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          dispatchOnAppear();
+        }
+      });
     } else {
       dispatchOnDisappear();
     }

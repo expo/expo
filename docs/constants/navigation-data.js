@@ -23,6 +23,7 @@ const DIR_MAPPING = {
   workflow: 'Fundamentals',
   distribution: 'Distributing Your App',
   expokit: 'ExpoKit',
+  'ui-programming': 'UI Programming',
   'regulatory-compliance': 'Regulatory Compliance',
   'push-notifications': 'Push Notifications',
   preview: 'Preview',
@@ -31,8 +32,12 @@ const DIR_MAPPING = {
   'app-signing': 'App Signing',
   'build-reference': 'Reference',
   submit: 'EAS Submit',
+  'technical-specs': 'Technical Specs',
   accounts: 'Expo Accounts',
   clients: 'Development Clients',
+  archived: 'Archived',
+  faq: 'FAQ',
+  troubleshooting: 'Troubleshooting',
 };
 
 const processUrl = path => {
@@ -55,7 +60,7 @@ const generateGeneralNavLinks = (path_, arr = null) => {
   }
 
   const items = fs.readdirSync(path_);
-  for (var i = 0; i < items.length; i++) {
+  for (let i = 0; i < items.length; i++) {
     const filePath = path.join(path_, items[i]);
     const { ext, name } = path.parse(filePath);
     // Only process markdown files that are not index pages
@@ -81,7 +86,7 @@ const generateGeneralNavLinks = (path_, arr = null) => {
 const generateReferenceNavLinks = (path_, arr = []) => {
   const items = fs.readdirSync(path_);
 
-  for (var i = 0; i < items.length; i++) {
+  for (let i = 0; i < items.length; i++) {
     const filePath = path.join(path_, items[i]);
     if (fs.statSync(filePath).isDirectory()) {
       const { name } = path.parse(filePath);

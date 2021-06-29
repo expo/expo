@@ -16,7 +16,7 @@
 
 RCT_EXPORT_MODULE()
 
-- (UIView *)view
+- (RNSVGView *)view
 {
     return [RNSVGSvgView new];
 }
@@ -40,8 +40,8 @@ RCT_CUSTOM_VIEW_PROPERTY(color, id, RNSVGSvgView)
 
 
 - (void)toDataURL:(nonnull NSNumber *)reactTag options:(NSDictionary *)options callback:(RCTResponseSenderBlock)callback attempt:(int)attempt {
-    [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *,UIView *> *viewRegistry) {
-        __kindof UIView *view = viewRegistry[reactTag];
+    [self.bridge.uiManager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *,RNSVGView *> *viewRegistry) {
+        __kindof RNSVGView *view = viewRegistry[reactTag];
         NSString * b64;
         if ([view isKindOfClass:[RNSVGSvgView class]]) {
             RNSVGSvgView *svg = view;

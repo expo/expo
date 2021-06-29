@@ -40,7 +40,8 @@ extension UIResponder: DevMenuUIResponderExtensionProtocol {
   
   @objc
   var EXDevMenu_keyCommands: [UIKeyCommand] {
-    let actionsWithKeyCommands = DevMenuManager.shared.devMenuActions.filter { $0.keyCommand != nil }
+    let actions = DevMenuManager.shared.devMenuCallable.filter { $0 is DevMenuExportedAction } as! [DevMenuExportedAction]
+    let actionsWithKeyCommands = actions.filter { $0.keyCommand != nil }
     var keyCommands = actionsWithKeyCommands.map { $0.keyCommand! }
     keyCommands.insert(contentsOf: DevMenuKeyCommandsInterceptor.globalKeyCommands, at: 0)
     keyCommands.append(contentsOf: self.EXDevMenu_keyCommands)
@@ -50,11 +51,15 @@ extension UIResponder: DevMenuUIResponderExtensionProtocol {
   @objc
   public func EXDevMenu_handleKeyCommand(_ key: UIKeyCommand) {
     tryHandleKeyCommand(key) {
-      let actions = DevMenuManager.shared.devMenuActions
-      let action = actions.first { $0.keyCommand == key }
-
-      action?.action()
-      UIResponder.lastKeyCommandExecutionTime = CACurrentMediaTime()
+      let actions = DevMenuManager.shared.devMenuCallable.filter { $0 is DevMenuExportedAction} as! [DevMenuExportedAction]
+      guard let action = actions.first(where: { $0.keyCommand == key }) else {
+        return
+      }
+      
+      if action.isAvailable() {
+        action.call()
+        DevMenuManager.shared.closeMenu()
+      }
     }
   }
 

@@ -84,7 +84,7 @@ Async `boolean`, indicating whether the Contacts API is available on the current
 
 ### `Contacts.requestPermissionsAsync()`
 
-Asks the user to grant permissions for accessing contacts data. Alias for `Permissions.askAsync(Permissions.CONTACTS)`.
+Asks the user to grant permissions for accessing contacts data.
 
 #### Returns
 
@@ -92,7 +92,7 @@ A promise that resolves to an object of type [PermissionResponse](permissions.md
 
 ### `Contacts.getPermissionsAsync()`
 
-Checks user's permissions for accessing contacts data. Alias for `Permissions.getAsync(Permissions.CONTACTS)`.
+Checks user's permissions for accessing contacts data.
 
 #### Returns
 
@@ -236,7 +236,7 @@ await Contacts.presentFormAsync('161A368D-D614-4A15-8DC6-665FDBCFAE55');
 
 | Name    | Type      | Description                                                                           |
 | ------- | --------- | ------------------------------------------------------------------------------------- |
-| contact | `Contact` | A contact with the changes you wish to persist. The contact must contain a vaild `id` |
+| contact | `Contact` | A contact with the changes you wish to persist. The contact must contain a valid `id` |
 
 **Returns**
 
@@ -917,6 +917,6 @@ This table illustrates what fields will be added on demand to every contact.
 - The `thumbnail` field has been deprecated, use `image` on both platforms instead.
 - On iOS `image` is now `rawImage`. There is no Android version of `rawImage`.
 - Images now return a localUri instead of Base64 string.
-- Base64 string is now returned in a encodable format.
+- Base64 string is now returned in an encodable format.
 - Empty contact fields will no longer be returned as empty strings on iOS.
 - Passing no fields will now return all contact information.

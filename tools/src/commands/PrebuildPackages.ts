@@ -59,6 +59,7 @@ async function main(packageNames: string[], options: ActionOptions) {
 export default (program: Command) => {
   program
     .command('prebuild-packages [packageNames...]')
+    .description('Generates `.xcframework` artifacts for iOS packages.')
     .alias('prebuild')
     .option('-r, --remove-artifacts', 'Removes `.xcframework` artifacts for given packages.', false)
     .option('-c, --clean-cache', 'Cleans the shared derived data folder before prebuilding.', false)

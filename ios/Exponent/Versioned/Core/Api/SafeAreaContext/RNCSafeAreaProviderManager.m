@@ -20,8 +20,8 @@ RCT_EXPORT_VIEW_PROPERTY(onInsetsChange, RCTDirectEventBlock)
 
 - (NSDictionary *)constantsToExport
 {
-  if (@available(iOS 11.0, *)) {
     UIWindow* window = [[UIApplication sharedApplication] keyWindow];
+  if (@available(iOS 11.0, *)) {
     UIEdgeInsets safeAreaInsets = window.safeAreaInsets;
     return @{
       @"initialWindowMetrics": @{
@@ -40,7 +40,21 @@ RCT_EXPORT_VIEW_PROPERTY(onInsetsChange, RCTDirectEventBlock)
       }
     };
   } else {
-    return @{ @"initialWindowMetrics": [NSNull null] };
+    return @{ @"initialWindowMetrics": @{
+        @"insets": @{
+          @"top": @(20),
+          @"right": @(0),
+          @"bottom": @(0),
+          @"left": @(0),
+        },
+        @"frame": @{
+          @"x": @(window.frame.origin.x),
+          @"y": @(window.frame.origin.y),
+          @"width": @(window.frame.size.width),
+          @"height": @(window.frame.size.height),
+        },
+      }
+    } ;
   }
 }
 

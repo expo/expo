@@ -212,7 +212,7 @@ Then you can start to configure the native projects using steps below.
      RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
                                                       moduleName:@"devMenuDemo"
                                                initialProperties:nil];
-     // Add those lines.
+     // Add those lines only if you aren't using the dev-launcher.
      #if defined(EX_DEV_MENU_ENABLED)
      [DevMenuManager configureWithBridge:bridge];
      #endif
@@ -406,7 +406,7 @@ The below instructions will show you how to create simple extension that removes
 
    > **Note:** if you don't use Swift in your project earlier, you need to create bridging header. For more information, checks [importing objective-c into swift](https://developer.apple.com/documentation/swift/imported_c_and_objective-c_apis/importing_objective-c_into_swift).
 
-2. Create a `.m` file to integrate Swift class with react native and add following lines.
+2. Create a `.m` file to integrate Swift class with react native and add the following lines.
 
    ```objc
    // CustomDevMenuExtension.m

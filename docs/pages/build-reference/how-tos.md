@@ -2,7 +2,9 @@
 title: Integrating with JavaScript tooling
 ---
 
-This document outlines how to configure EAS Build for some common scenarios, such as monorepos and repositories with private dependencies. The examples described here do not provide step-by-step instructions to set up EAS Build from scratch. Instead, they explain the changes from the standard process that are necessary to acommodate the given scenario.
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+
+This document outlines how to configure EAS Build for some common scenarios, such as monorepos and repositories with private dependencies. The examples described here do not provide step-by-step instructions to set up EAS Build from scratch. Instead, they explain the changes from the standard process that are necessary to accommodate the given scenario.
 
 ## EAS Build-specific npm hooks
 
@@ -23,8 +25,8 @@ This is an example of how your package.json might look like:
     "eas-build-pre-install": "echo 123",
     "eas-build-post-install": "echo 456",
     "eas-build-pre-upload-artifacts": "echo 789",
-    "android": "react-native run-android",
-    "ios": "react-native run-ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "start": "react-native start",
     "test": "jest"
@@ -47,7 +49,7 @@ This is an example of how your package.json might look like:
 
 - Run all EAS CLI commands from the root of the app directory. For example: if your project exists inside of your git repository at `apps/my-app`, then run `eas build` from there.
 - All files related to EAS Build, such as `eas.json` and `credentials.json`, should be in the root of the app directory. If you have multiple apps that use EAS Build in your monorepo, each app directory will have its own copy of these files.
-- If your project needs additional setup beyond what is provided, add a `postinstall` step to `package.json` in your project that builds all necessary dependecies in other workspaces. For example:
+- If your project needs additional setup beyond what is provided, add a `postinstall` step to `package.json` in your project that builds all necessary dependencies in other workspaces. For example:
 
 ```json
 {
@@ -59,15 +61,23 @@ This is an example of how your package.json might look like:
 
 ## How to use private package repositories
 
-- Configure your project in a way that works with `yarn` and relies on the `NPM_TOKEN` env variable to authenticate with private repositories
-- add `experimental.npmToken` in `credentials.json`
+- Configure your project in a way that relies on the `NPM_TOKEN` env variable to authenticate with private repositories.
+- Add `NPM_TOKEN` to your account or project's secrets. See the [secret environment variables](/build-reference/variables/#using-secrets-in-environment-variables) docs to learn how to do this.
 
-```json
+<ImageSpotlight alt="Secret creation UI filled" src="/static/images/eas-build/environment-secrets/secrets-create-filled.png" />
+
+Before setting up private packages, check the existing configuration described in the [build server infrastructure](/build-reference/infrastructure) page under `.npmrc` and `yarnrc.yml` to verify that it won't affect your setup.
+
+## Using npm cache with yarn v1
+
+By default the EAS npm cache won't work with yarn v1, because `yarn.lock` files contain URLs to registries for every package and yarn does not provide any way to override it. The issue is fixed in yarn v2, but the yarn team does not plan to backport it to yarn v1. If you want to take advantage of the npm cache, you can use the `eas-build-pre-install` script to override the registry in your `yarn.lock`.
+
+e.g.
+
+```
 {
-  "experimental": {
-    "npmToken": "example npm token"
+ "scripts": {
+    "eas-build-pre-install": "bash -c \"[ ! -z \\\"EAS_BUILD_NPM_CACHE_URL\\\" ] && sed -i -e \\\"s#https://registry.yarnpkg.com#$EAS_BUILD_NPM_CACHE_URL#g\\\" yarn.lock\""
   }
 }
 ```
-
-If you are not using `credentials.json` for Android/iOS credentials, it is fine for `experimental.npmToken` to be the only entry in the file. Add `credentials.json` to `.gitignore` if it's not there already.

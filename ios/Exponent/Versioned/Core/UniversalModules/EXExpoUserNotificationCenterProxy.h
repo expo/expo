@@ -2,10 +2,10 @@
 
 #import <Foundation/Foundation.h>
 #import <UMCore/UMInternalModule.h>
-#import <UMPermissionsInterface/UMUserNotificationCenterProxyInterface.h>
+#import <ExpoModulesCore/EXUserNotificationCenterProxyInterface.h>
 
-@interface EXExpoUserNotificationCenterProxy : NSObject <UMInternalModule, UMUserNotificationCenterProxyInterface>
+@interface EXExpoUserNotificationCenterProxy : NSObject <UMInternalModule, EXUserNotificationCenterProxyInterface>
 
-- (instancetype)initWithUserNotificationCenter:(id<UMUserNotificationCenterProxyInterface>)userNotificationCenter;
+- (instancetype)initWithUserNotificationCenter:(id<EXUserNotificationCenterProxyInterface>)userNotificationCenter;
 
 @end
