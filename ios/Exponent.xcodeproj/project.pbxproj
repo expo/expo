@@ -311,6 +311,7 @@
 		BBB83C692479C3B50004FF8E /* RNCSafeAreaViewLocalData.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB83C5F2479C3B50004FF8E /* RNCSafeAreaViewLocalData.m */; };
 		BBB83C6A2479C3B50004FF8E /* RCTView+SafeAreaCompat.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB83C622479C3B50004FF8E /* RCTView+SafeAreaCompat.m */; };
 		BBD03196200011C9009F0434 /* RNAWSCognito.m in Sources */ = {isa = PBXBuildFile; fileRef = BBD03192200011C9009F0434 /* RNAWSCognito.m */; };
+		BBE4333C268BE5AE000D016A /* EXManagedAppSplashScreenViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A12E8B63266E8E51003ADA8F /* EXManagedAppSplashScreenViewController.m */; };
 		BBE603762310CD8900971F79 /* RNCAppearanceProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = BBE603712310CD8900971F79 /* RNCAppearanceProvider.m */; };
 		BBE603772310CD8900971F79 /* RNCAppearance.m in Sources */ = {isa = PBXBuildFile; fileRef = BBE603722310CD8900971F79 /* RNCAppearance.m */; };
 		BBE603782310CD8900971F79 /* RNCAppearanceProviderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BBE603732310CD8900971F79 /* RNCAppearanceProviderManager.m */; };
@@ -3728,6 +3729,7 @@
 				F14218D8262CB68600BB97E6 /* EXScreenOrientationManager.m in Sources */,
 				F14218D9262CB68600BB97E6 /* AIRMapWMSTileManager.m in Sources */,
 				F14218DA262CB68600BB97E6 /* AIRMapLocalTileManager.m in Sources */,
+				BBE4333C268BE5AE000D016A /* EXManagedAppSplashScreenViewController.m in Sources */,
 				F14218DC262CB68600BB97E6 /* EXApiUtil.m in Sources */,
 				F14218DD262CB68600BB97E6 /* RNSVGLength.m in Sources */,
 				F14218DE262CB68600BB97E6 /* AIRMapCalloutSubview.m in Sources */,
