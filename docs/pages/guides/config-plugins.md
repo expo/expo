@@ -460,6 +460,8 @@ Because of this reasoning, the root of a Node module is searched instead of righ
 
 ## Developing a Plugin
 
+> Use [modifier previews](https://github.com/expo/vscode-expo#expo-preview-modifier) to debug the results of your plugin live.
+
 To make plugin development easier, we've added plugin support to [`expo-module-scripts`](https://www.npmjs.com/package/expo-module-scripts). Refer to the [config plugins guide](https://github.com/expo/expo/tree/master/packages/expo-module-scripts#-config-plugin) for more info on using TypeScript, and Jest to build plugins.
 
 Plugins will generally have `@expo/config-plugins` installed as a dependency, and `expo-module-scripts`, `@expo/config-types` installed as a devDependencies.
@@ -497,6 +499,10 @@ If you aren't comfortable with setting up a monorepo, you can try manually runni
 - If you need to update the package, change the `version` in the package's `package.json` and repeat the process.
 
 ### Modifying the AndroidManifest.xml
+
+Packages should attempt to use the built-in `AndroidManifest.xml` [merging system](https://android-doc.github.io/tools/building/manifest-merge.html) before using a config plugin. This can be used for static, non-optional features like permissions. This will ensure features are merged during build-time and not prebuild-time, which minimizes the possibility of users forgetting to prebuild. The drawback is that users cannot use [introspection](#introspection) to preview the changes and debug any potential issues.
+
+If you're building a plugin for your local project, or if your package needs more control, then you should implement a plugin.
 
 You can use built-in types and helpers to ease the process of working with complex objects.
 Here's an example of adding a `<meta-data android:name="..." android:value="..."/>` to the default `<application android:name=".MainApplication" />`.
@@ -634,7 +640,7 @@ Expo CLI commands can be profiled using `EXPO_PROFILE=1`.
 
 ## Introspection
 
-Introspection is an advanced technique used to read the evaluated results of modifiers without generating any code in the project. This can be used to quickly debug the results of [static modifications](#static-modification) without needing to run prebuild.
+Introspection is an advanced technique used to read the evaluated results of modifiers without generating any code in the project. This can be used to quickly debug the results of [static modifications](#static-modification) without needing to run prebuild. You can interact with introspection live, by using the [preview feature](https://github.com/expo/vscode-expo#expo-preview-modifier) of `vscode-expo`.
 
 You can try introspection by running `expo config --type introspect` in a project.
 
