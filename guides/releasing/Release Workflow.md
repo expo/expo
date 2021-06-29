@@ -526,6 +526,7 @@ Publish a blog post that includes the following information:
 - Link to a GitHub umbrella issue for beta release issues
 - Link to CHANGELOG
 - Provide instructions for how to opt-in
+- Create and link to an issue that tracks changes and releases during beta testing
 
 ## 5.8. Test, fix, and monitor
 
@@ -538,6 +539,7 @@ Publish a blog post that includes the following information:
 - Test out new features.
 - Report updates in the umbrealla issue.
 - Fix, test, repeat.
+- Update issue with fixes from latest beta release
 
 ## 5.9. Submit iOS Expo Go for review
 
@@ -562,6 +564,7 @@ Publish a blog post that includes the following information:
   > I started putting together some ideas for high-level items that will go into the SDK 39 release notes here: `<link to notes>`.
   >
   > I know there are probably some things I missed, so @bacon @brent @Cruzan @cedric could you all take a look at this before the end of the week and let me know what other things you think we should highlight (or just add them to the list yourself)?
+
 
 # Stage 6 - Final release
 
