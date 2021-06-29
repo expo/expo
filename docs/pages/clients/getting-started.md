@@ -20,6 +20,8 @@ If you have used Expo before, especially with the Managed workflow, [config plug
 <Tab >
 <TerminalBlock cmd={["expo init # if you don't already have a Managed Workflow project", "yarn add expo-dev-client"]}  />
 
+> You can also improve error messages what will be helpful during the development process. To do it, you need to add `import 'expo-dev-client';` on top of your `App.{js|tsx}` file. [Learn more](installation.md#add-better-error-handlers).
+
 </Tab>
 
 <Tab >
