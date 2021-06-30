@@ -18,7 +18,14 @@ class DevLauncherManifestParser(
 
   private suspend fun downloadManifest(): Reader {
     val response = fetch(url, "GET").await(httpClient)
-    require(response.isSuccessful)
+    if (!response.isSuccessful) {
+      val extraMessage = if (url.scheme.equals("https")) {
+        "If you are trying to open a published project, you need to install a compatible version of expo-updates and follow all setup and integration steps."
+      } else {
+        "Please check your network connectivity and make sure you can access the local packager server."
+      }
+      throw Exception("Failed to open app. $extraMessage")
+    }
     return response.body()!!.charStream()
   }
 
