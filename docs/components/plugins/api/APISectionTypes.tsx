@@ -26,8 +26,10 @@ export type APISectionTypesProps = {
 };
 
 const defineLiteralType = (types: TypeDefinitionData[]): JSX.Element | null => {
-  const uniqueTypes = Array.from(new Set(types.map((t: TypeDefinitionData) => typeof t.value)));
-  if (uniqueTypes.length === 1) {
+  const uniqueTypes = Array.from(
+    new Set(types.map((t: TypeDefinitionData) => t.value && typeof t.value))
+  );
+  if (uniqueTypes.length === 1 && uniqueTypes.filter(Boolean).length === 1) {
     return (
       <>
         <InlineCode>{uniqueTypes[0]}</InlineCode>
@@ -117,9 +119,7 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
   } else if (type.types && (type.type === 'union' || 'intersection')) {
     const literalTypes = type.types.filter(
       (t: TypeDefinitionData) =>
-        t.type === 'literal' ||
-        t.type === 'intrinsic' ||
-        (t.type === 'reference' && t.name === 'Record')
+        t.type === 'literal' || t.type === 'intrinsic' || t.type === 'reference'
     );
     const propTypes = type.types.filter((t: TypeDefinitionData) => t.type === 'reflection');
     if (literalTypes.length) {
@@ -131,10 +131,10 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
           <P>
             {defineLiteralType(literalTypes)}
             Acceptable values are:{' '}
-            {literalTypes.map((type, index) => (
+            {literalTypes.map((lt, index) => (
               <span key={`${name}-literal-type-${index}`}>
-                <InlineCode>{resolveTypeName(type)}</InlineCode>
-                {index !== literalTypes.length - 1 ? ', ' : '.'}
+                <InlineCode>{resolveTypeName(lt)}</InlineCode>
+                {index + 1 !== literalTypes.length ? ', ' : '.'}
               </span>
             ))}
           </P>
