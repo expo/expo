@@ -6,9 +6,5 @@
 
 @property (nonatomic, copy) NSString *tint;
 @property (nonatomic, copy) NSNumber *intensity;
-@property (nonatomic, strong) UIBlurEffect *blurEffect;
-@property (nonatomic, strong) UIVisualEffectView *visualEffectView;
-
-- (void)didSetProps:(NSArray<NSString *> *)changedProps;
 
 @end

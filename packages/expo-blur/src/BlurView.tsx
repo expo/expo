@@ -1,41 +1,24 @@
-import { NativeModulesProxy, requireNativeViewManager } from 'expo-modules-core';
+import { requireNativeViewManager } from 'expo-modules-core';
 import * as React from 'react';
-import { findNodeHandle, View, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 
-import { BlurProps, BlurTint, ComponentOrHandle } from './BlurView.types';
+import { BlurProps } from './BlurView.types';
 
 export default class BlurView extends React.Component<BlurProps> {
-  static defaultProps = {
-    tint: 'default' as BlurTint,
-    intensity: 50,
-  };
-
-  _root: ComponentOrHandle = null;
-
-  _setNativeRef = (ref: ComponentOrHandle) => {
-    this._root = ref;
-  };
-
-  setNativeProps = (nativeProps) => {
-    if (this._root) {
-      NativeModulesProxy.ExpoBlurViewManager.updateProps(nativeProps, findNodeHandle(this._root));
-    }
-  };
-
   render() {
-    const { tint, intensity, style, children, ...props } = this.props;
+    const { tint = 'default', intensity = 50, style, children, ...props } = this.props;
+
     return (
-      <View {...props} style={[style, { backgroundColor: 'transparent' }]}>
-        <NativeBlurView
-          tint={tint}
-          intensity={intensity}
-          ref={this._setNativeRef}
-          style={StyleSheet.absoluteFill}
-        />
+      <View {...props} style={[styles.container, style]}>
+        <NativeBlurView tint={tint} intensity={intensity} style={StyleSheet.absoluteFill} />
         {children}
       </View>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  container: { backgroundColor: 'transparent' },
+});
 
 const NativeBlurView = requireNativeViewManager('ExpoBlurView');

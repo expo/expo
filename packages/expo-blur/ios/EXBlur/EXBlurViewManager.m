@@ -20,7 +20,7 @@ EX_EXPORT_MODULE(ExpoBlurViewManager);
 
 - (UIView *)view
 {
-  return [[EXBlurView alloc] init];
+  return [EXBlurView new];
 }
 
 - (NSString *)viewName
@@ -31,39 +31,11 @@ EX_EXPORT_MODULE(ExpoBlurViewManager);
 EX_VIEW_PROPERTY(tint, NSString *, EXBlurView)
 {
   [view setTint:value];
-  [view didSetProps:@[@"tint"]];
 }
 
 EX_VIEW_PROPERTY(intensity, NSNumber *, EXBlurView)
 {
   [view setIntensity:value];
-  [view didSetProps:@[@"intensity"]];
-}
-
-EX_EXPORT_METHOD_AS(updateProps,
-                    updateProps:(NSDictionary *)props
-                    onViewOfId:(id)viewId
-                    resolve:(EXPromiseResolveBlock)resolver
-                    reject:(EXPromiseRejectBlock)rejecter)
-{
-  [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXUIManager)] executeUIBlock:^(id view) {
-    if ([view isKindOfClass:[EXBlurView class]]) {
-      EXBlurView *blurView = view;
-      NSMutableArray *changedProps = [NSMutableArray new];
-      if (props[@"intensity"] && ![props[@"intensity"] isEqual:blurView.intensity]) {
-        [blurView setIntensity:props[@"intensity"]];
-        [changedProps addObject:@"intensity"];
-      }
-      if (props[@"tint"] && ![props[@"tint"] isEqual:blurView.tint]) {
-        [blurView setTint:props[@"tint"]];
-        [changedProps addObject:@"tint"];
-      }
-      [blurView didSetProps:changedProps];
-      resolver([NSNull null]);
-    } else {
-      rejecter(@"E_INVALID_VIEW", @"Invalid view found for requested tag", nil);
-    }
-  } forView:viewId ofClass:[EXBlurView class]];
 }
 
 @end
