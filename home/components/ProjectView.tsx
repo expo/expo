@@ -157,6 +157,11 @@ function LegacyLaunchSection({ app }: { app: ProjectDataProject }) {
     legacyUpdatesSDKMajorVersion !== null &&
     legacyUpdatesSDKMajorVersion < Environment.lowestSupportedSdkVersion;
 
+  const moreLegacyBranchesText =
+    Platform.OS === 'ios'
+      ? 'To launch from another classic release channel, follow the instructions on the project webpage.'
+      : 'To launch from another classic release channel, scan the QR code on the project webpage.';
+
   return (
     <View>
       <SectionHeader title="Classic release channels" />
@@ -173,11 +178,7 @@ function LegacyLaunchSection({ app }: { app: ProjectDataProject }) {
         }}
         last
       />
-      {Platform.OS === 'ios' ? null : (
-        <Text style={styles.moreLegacyBranchesText}>
-          To launch from another classic release channel, scan the QR code on the project webpage.
-        </Text>
-      )}
+      <Text style={styles.moreLegacyBranchesText}>{moreLegacyBranchesText}</Text>
     </View>
   );
 }
