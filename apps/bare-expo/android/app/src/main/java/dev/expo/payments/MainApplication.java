@@ -1,6 +1,7 @@
 package dev.expo.payments;
 
 import android.app.Application;
+import android.content.res.Configuration;
 
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
@@ -8,14 +9,17 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
 
-import expo.modules.devlauncher.DevLauncherController;
+import org.unimodules.adapters.react.ReactNativeHostWrapper;
 
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import expo.modules.devlauncher.DevLauncherController;
 
 public class MainApplication extends Application implements ReactApplication {
   static final boolean USE_DEV_CLIENT = false;
 
-  private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
+  private final ReactNativeHostWrapper mReactNativeHost = new ReactNativeHostWrapper(this) {
     @Override
     public boolean getUseDeveloperSupport() {
       return BuildConfig.DEBUG;
@@ -46,5 +50,12 @@ public class MainApplication extends Application implements ReactApplication {
     if (USE_DEV_CLIENT) {
       DevLauncherController.initialize(this, mReactNativeHost);
     }
+    mReactNativeHost.onApplicationCreate(this);
+  }
+
+  @Override
+  public void onConfigurationChanged(@NonNull Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    mReactNativeHost.onApplicationConfigurationChanged(this, newConfig);
   }
 }
