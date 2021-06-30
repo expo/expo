@@ -126,7 +126,7 @@ then register the plugin in your app.json.  Using this module will require new p
   "plugins": [
     "@react-native-voice/voice",
     {
-      "microphonePermission" "Allow $(PRODUCT_NAME) to access your microphone",
+      "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
       "speechRecogntionPermission": "Allow $(PRODUCT_NAME) to securely recognize user speech"
     }
   ]
@@ -290,7 +290,7 @@ class VoiceTest extends Component<Props, State> {
         })}
         <Text style={styles.stat}>{`End: ${this.state.end}`}</Text>
         <TouchableHighlight onPress={this._startRecognizing}>
-          <Text styles={style.action}>Start Recognizing</Text>
+          <Text style={styles.action}>Start Recognizing</Text>
         </TouchableHighlight>
         <TouchableHighlight onPress={this._stopRecognizing}>
           <Text style={styles.action}>Stop Recognizing</Text>
