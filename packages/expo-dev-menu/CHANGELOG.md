@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Order dev menu items consistently across platforms. ([#13449](https://github.com/expo/expo/pull/13449) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 0.7.3 — 2021-06-28
