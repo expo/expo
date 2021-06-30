@@ -32,7 +32,7 @@ class DevLauncherDevMenuExtensions(
         isEnabled = { true }
         label = { "Back to launcher" }
         glyphName = { "exit-to-app" }
-        importance = DevMenuItemImportance.HIGH.value
+        importance = DevMenuItemImportance.MEDIUM.value
         keyCommand = KeyCommand(KeyEvent.KEYCODE_L, false)
       }
     }

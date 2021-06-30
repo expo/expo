@@ -1,14 +1,13 @@
 package expo.interfaces.devmenu.items
 
 import java.util.*
-import kotlin.collections.ArrayList
 
 open class DevMenuItemsContainer : DevMenuDSLItemsContainerInterface {
-  private val items: ArrayList<DevMenuScreenItem> = ArrayList()
+  private val items = mutableListOf<DevMenuScreenItem>()
 
   override fun getRootItems(): List<DevMenuScreenItem> {
-    items.sortedBy { it.importance }
-    return items.toList()
+    items.sortedWith(compareBy { it.importance })
+    return items
   }
 
   override fun getAllItems(): List<DevMenuScreenItem> {
