@@ -168,19 +168,21 @@ const withDevLauncherPodfile = config => {
     ]);
 };
 const withErrorHandling = config => {
-    return config_plugins_1.withDangerousMod(config, [
-        // We want to edit js file, but for the `DangerousMod` we need to select a platform.
-        'android',
-        async (config) => {
-            await editIndex(config, index => {
-                if (!index.includes(DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS)) {
-                    index = DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS + '\n\n' + index;
-                }
-                return index;
-            });
-            return config;
-        },
-    ]);
+    const injectErrorHandlers = async (config) => {
+        await editIndex(config, index => {
+            if (!index.includes(DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS)) {
+                index = DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS + '\n\n' + index;
+            }
+            return index;
+        });
+        return config;
+    };
+    // We need to run the same task twice to ensure it will work on both platforms,
+    // because if someone runs `expo run:ios`, it will trigger only dangerous mode for that specific platform.
+    // Note: after the first execution, the second one won't change anything.
+    config = config_plugins_1.withDangerousMod(config, ['android', injectErrorHandlers]);
+    config = config_plugins_1.withDangerousMod(config, ['ios', injectErrorHandlers]);
+    return config;
 };
 const withDevLauncher = (config) => {
     config = withDevLauncherActivity(config);
