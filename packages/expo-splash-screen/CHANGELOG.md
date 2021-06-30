@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+## 0.10.3 — 2021-06-30
+
+### 🐛 Bug fixes
+
 - On iOS, search for a view controller with a RCTRootView rather than always using the keyWindow's rootViewController. ([#13429](https://github.com/expo/expo/pull/13429) by [@esamelson](https://github.com/esamelson))
 
 ## 0.10.2 — 2021-04-13

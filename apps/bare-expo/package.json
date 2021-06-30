@@ -125,7 +125,7 @@
     "expo-image": "~1.0.0-alpha.0",
     "expo-notifications": "~0.11.6",
     "expo-random": "~11.1.2",
-    "expo-splash-screen": "~0.10.2",
+    "expo-splash-screen": "~0.10.3",
     "native-component-list": "*",
     "react": "16.13.1",
     "react-dom": "16.13.1",
