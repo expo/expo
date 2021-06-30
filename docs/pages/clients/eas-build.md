@@ -9,14 +9,20 @@ import { Tab, Tabs } from '~/components/plugins/Tabs';
 
 You can set up your project to use EAS by running `eas build:configure`.  If you have not installed EAS CLI yet, you can do so by running `npm install -g eas-cli` (or `yarn global add eas-cli`.)
 
-## Modifying your EAS.json
 
-Now edit your eas.json to look like this:
+
+### Modifying an existing eas.json
+
+If you have already created an eas.json in you project, you'll need to update your config to create builds of your custom client.
 
 <Tabs tabs={["With config plugins", "If you are directly managing your native projects"]}>
 
 <Tab >
 
+`expo-dev-client` does not modify your application's behavior in a build you would submit to the Play Store or App Store, so you must specify `development-client` as your `buildType` to create a custom development client.
+To share the build with your internal team, use `internal` distribution.
+
+An example configuration would look like this:
 ```json
 {
   "builds": {
@@ -46,6 +52,10 @@ Now edit your eas.json to look like this:
 </Tab>
 <Tab>
 
+`expo-dev-client` does not modify your application's behavior in a "Release" build, so you must create a "Debug" build via `gradleCommand` (Android) or `schemeBuildConfiguraiton` (iOS) to create a custom development client.
+To share the build with your internal team, use `internal` distribution.
+
+An example configuration would look like this:
 ```json
 {
   "builds": {
@@ -79,10 +89,6 @@ Now edit your eas.json to look like this:
 ## Generating your first build
 
 You can now generate a new build of your project from any commit through EAS.
-
-### For iOS simulators:
-
-<InstallSection packageName="expo-dev-launcher" cmd={["eas build --profile development --platform ios"]} hideBareInstructions />
 
 ### For iOS devices:
 

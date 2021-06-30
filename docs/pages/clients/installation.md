@@ -6,20 +6,17 @@ sidebar_title: Manual Installation
 import InstallSection from '~/components/plugins/InstallSection';
 import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
 
-The installation steps on this page are only required to add a development client to an **existing** React Native or Bare project.
+The installation steps on this page are only required to add expo-dev-client to an **existing** React Native or Bare project.
 
 To initialize a new Bare project or to add a development client to an existing managed project, see our [Getting Started guide](/getting-started.md).
 
-## Add the Development Client to the existing project
+## Add expo-dev-client to an existing project
 
 ## 1. Installation
 
-Add the Expo Development Client packages to your package.json.
+Add the `expo-dev-client` package to your package.json.
 
 <InstallSection packageName="expo-development-client" cmd={["npm install expo-dev-client"]} hideBareInstructions />
-
-<!-- note: `/client/submodules` doesn't exists, commenting this out for now -->
-<!-- [Want to learn more about how these modules work?](/client/submodules/) -->
 
 ### 🍏 iOS
 
@@ -42,7 +39,7 @@ To do that, you need to open Xcode, go to `Project settings` > `General` > `Depl
 
 ## 2. Basic configuration
 
-The Development Client uses deep links to open projects from the QR code. If you had added a custom deep link schema to your project, the Development Client will use it. However, if this isn't the case, you need to configure the deep link support for your application. We know that this process might be difficult. So, we provided a simple command which will do all the work for you:
+To load your application JavaScript in your client by scanning a QR code, you need to configure a deep link schema for your application. The easiest way to do this is if you haven't already is with the `uri-scheme` package:
 
 <InstallSection packageName="expo-development-client" cmd={["npx uri-scheme add <your scheme>"]} hideBareInstructions />
 
@@ -62,11 +59,9 @@ Make the following changes to allow the Development Client to control project in
 
 <ConfigurationDiff source="/static/diffs/client/main-activity-and-application.diff" />
 
-## 3. Build and Install
+## 3. Optional configuration
 
-You're now ready to start developing your project with the Development Client.
-
-## 4. Optional configuration
+There are a few more changes you can make to get the best experience, but you [can skip ahead to building](/clients/getting-started/#building-and-installing-your-first-custom-client) if you prefer.
 
 ### Disable packager autostart when building for iOS
 
@@ -83,3 +78,7 @@ import 'expo-dev-client';
 ...
 import App from "./App";
 ```
+
+## 4. Build and Install
+
+[You're now ready to start developing your project with the Development Client.](/clients/getting-started/#building-and-installing-your-first-custom-client)
