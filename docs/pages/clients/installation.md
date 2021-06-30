@@ -79,7 +79,7 @@ import 'expo-dev-client';
 import App from "./App";
 ```
 
-> Note: This will only affect application which uses modified index file. If you are loading multiple applications, you need to add this import statement to each of them.
+> Note: This will only affect the application in which you make this change. If you are using your custom client to load multiple applications, you'll need to add this import statement to each of them.
 
 ## 4. Build and Install
 
