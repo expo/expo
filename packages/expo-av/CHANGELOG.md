@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [plugin] Added ability to disable microphone permission via `microphonePermission: false`. ([#13446](https://github.com/expo/expo/pull/13446) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
