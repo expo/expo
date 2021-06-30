@@ -15,9 +15,12 @@ ABI41_0_0EX_DEFINE_SCOPED_MODULE_GETTER(ABI41_0_0EXUtil, util)
 
 ABI41_0_0EX_EXPORT_SCOPED_MODULE(ExponentUtil, UtilService);
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id<ABI41_0_0EXUtilService>)kernelServiceInstance params:(NSDictionary *)params
+- (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId scopeKey:(NSString *)scopeKey kernelServiceDelegate:(id<ABI41_0_0EXUtilService>)kernelServiceInstance params:(NSDictionary *)params
 {
-  if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
+  if (self = [super initWithExperienceStableLegacyId:experienceStableLegacyId
+                                  scopeKey:scopeKey
+                               kernelServiceDelegate:kernelServiceInstance
+                                              params:params]) {
     _kernelUtilService = kernelServiceInstance;
   }
   return self;
@@ -44,7 +47,7 @@ ABI41_0_0EX_EXPORT_SCOPED_MODULE(ExponentUtil, UtilService);
 {
   const CGFloat *components = CGColorGetComponents(color);
   size_t count = CGColorGetNumberOfComponents(color);
-  
+
   if (count == 2) {
     return [NSString stringWithFormat:@"#%02lX%02lX%02lX",
             lroundf(components[0] * 255.0),
@@ -77,7 +80,7 @@ ABI41_0_0EX_EXPORT_SCOPED_MODULE(ExponentUtil, UtilService);
     int r = (hex >> 16) & 0xFF;
     int g = (hex >> 8) & 0xFF;
     int b = (hex) & 0xFF;
-    
+
     return [UIColor colorWithRed:r / 255.0f
                            green:g / 255.0f
                             blue:b / 255.0f

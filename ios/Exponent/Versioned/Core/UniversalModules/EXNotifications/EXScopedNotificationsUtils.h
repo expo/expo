@@ -11,19 +11,20 @@ typedef struct {
 
 @interface EXScopedNotificationsUtils : NSObject
 
-+ (BOOL)shouldNotificationRequest:(UNNotificationRequest *)request beHandledByExperience:(NSString *)experienceId;
++ (BOOL)shouldNotificationRequest:(UNNotificationRequest *)request beHandledByExperience:(NSString *)scopeKey;
 
-+ (BOOL)shouldNotification:(UNNotification *)notification beHandledByExperience:(NSString *)experienceId;
++ (BOOL)shouldNotification:(UNNotification *)notification beHandledByExperience:(NSString *)scopeKey;
 
-+ (NSString *)scopedIdentifierFromId:(NSString *)unscopedId forExperience:(NSString *)experienceId;
++ (NSString *)scopedIdentifierFromId:(NSString *)unscopedId forExperience:(NSString *)scopeKey;
 
-+ (BOOL)isId:(NSString *)identifier scopedByExperience:(NSString *)experienceId;
++ (BOOL)isId:(NSString *)identifier scopedByExperience:(NSString *)scopeKey;
 
 + (ScopedIdentifierComponents)getScopeAndIdentifierFromScopedIdentifier:(NSString *)scopedIdentifier;
 
-+ (BOOL)isLegacyCategoryId:(NSString *) scopedCategoryId scopedByExperience:(NSString *) experienceId;
++ (BOOL)isLegacyCategoryId:(NSString *)scopedCategoryId scopedByScopeKey:(NSString *)scopeKey;
 
-+ (NSString *)unscopedLegacyCategoryIdentifierWithId:(NSString *) scopedCategoryId forExperience:(NSString *) experienceId;
++ (NSString *)unscopedLegacyCategoryIdentifierWithId:(NSString *)scopedCategoryId
+                         forScopeKey:(NSString *)scopeKey;
 
 @end
 

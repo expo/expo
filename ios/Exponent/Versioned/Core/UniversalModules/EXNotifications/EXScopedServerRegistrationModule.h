@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXScopedServerRegistrationModule : EXServerRegistrationModule
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId;
+- (instancetype)initWithScopeKey:(NSString *)scopeKey;
 
 @end
 

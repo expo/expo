@@ -20,11 +20,11 @@
   return @[@protocol(ABI41_0_0EXDummyBranchProtocol)];
 }
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId
+- (instancetype)initWithScopeKey:(NSString *)scopeKey
 {
   if (self = [super init]) {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:ABI41_0_0RNBranchLinkOpenedNotification object:nil];
-    _experienceId = experienceId;
+    _scopeKey = scopeKey;
   }
   return self;
 }

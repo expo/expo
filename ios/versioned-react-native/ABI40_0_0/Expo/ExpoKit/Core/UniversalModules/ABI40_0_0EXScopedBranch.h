@@ -15,9 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ABI40_0_0EXScopedBranch : ABI40_0_0RNBranch <ABI40_0_0UMModuleRegistryConsumer, ABI40_0_0UMInternalModule>
 
-@property (nonatomic, strong) NSString *experienceId;
+@property (nonatomic, strong) NSString *scopeKey;
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId;
+- (instancetype)initWithScopeKey:(NSString *)scopeKey;
 
 @end
 
