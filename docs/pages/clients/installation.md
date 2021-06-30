@@ -39,7 +39,7 @@ To do that, you need to open Xcode, go to `Project settings` > `General` > `Depl
 
 ## 2. Basic configuration
 
-To load your application JavaScript in your client by scanning a QR code, you need to configure a deep link schema for your application. The easiest way to do this is if you haven't already is with the `uri-scheme` package:
+To load your application's JavaScript in your client by scanning a QR code, you need to configure a deep link scheme for your application. The easiest way to do this is if you haven't already is with the `uri-scheme` package:
 
 <InstallSection packageName="expo-development-client" cmd={["npx uri-scheme add <your scheme>"]} hideBareInstructions />
 
@@ -71,7 +71,7 @@ When you start your project on iOS, the metro bundler will be started automatica
 
 ### Add better error handlers
 
-Sometimes, for certain types of errors, we can provide more helpful error messages than the ones that ship by default with React Native. To turn this feature on you need to import `expo-dev-client` in your `index` file (in the managed workflow, you need to add this import on top of the `App.{js|tsx}`). Make sure that the import statement is above of `import App from './App'`.
+Sometimes, for certain types of errors, we can provide more helpful error messages than the ones that ship by default with React Native. To turn this feature on you need to import `expo-dev-client` in your `index` file (in the managed workflow, you need to add this import on top of the `App.{js|tsx}`). Make sure that the import statement is above `import App from './App'`.
 
 ```js
 import 'expo-dev-client';
@@ -83,4 +83,4 @@ import App from "./App";
 
 ## 4. Build and Install
 
-[You're now ready to start developing your project with the Development Client.](/clients/getting-started/#building-and-installing-your-first-custom-client)
+You're now ready to [build your first custom client](/clients/getting-started.md#building-and-installing-your-first-custom-client) and to start developing.

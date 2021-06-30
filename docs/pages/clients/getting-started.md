@@ -20,7 +20,7 @@ If you have used Expo before, especially with the Managed workflow, [config plug
 <Tab >
 <TerminalBlock cmd={["expo init # if you don't already have a Managed Workflow project", "yarn add expo-dev-client"]}  />
 
-> You can also improve error messages what will be helpful during the development process. To do it, you need to add `import 'expo-dev-client';` on top of your `App.{js|tsx}` file. [Learn more](installation.md#add-better-error-handlers).
+> You can also improve error messages to be helpful during the development process. To do so, add `import 'expo-dev-client';` to the top of your `App.{js|tsx}` file. [Learn more](installation.md#add-better-error-handlers).
 
 </Tab>
 
@@ -32,7 +32,7 @@ If you're just starting your project, you can create a new project from our temp
 
 If you have an existing project, you'll need to [install the package and make a few changes](installation.md) to your `AppDelegate.m`, `MainActivity.java` and `MainApplication.java`.
 
-Custom clients use deep links to open projects from the QR code. If you had added a custom deep link schema to your project, your client will use it. However, if this isn't the case, you need to configure the deep link support for your application. The `uri-scheme` package will do this for you once you have chosen a scheme.
+Custom clients use deep links to open projects from the QR code. If you have added a custom deep link scheme to your project, your client will use it. However, if this isn't the case, you need to configure the deep link support for your application. The `uri-scheme` package will do this for you once you have chosen a scheme.
 
 <TerminalBlock cmd={["npx uri-scheme add <your scheme>"]}  />
 

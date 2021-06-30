@@ -25,7 +25,7 @@ Depending on your project, you may find that you need to customize the standard 
 
 Your debug builds can be shared with anyone on your team who needs to work on or review your application. Your team can develop the JavaScript portion of your application with `expo-cli` and your custom client without waiting for your native code to build until the next time you need to upgrade, install a new module, or otherwise change the native code in your project.
 
-## What you'll gain by adopting expo-dev-client
+## What you'll gain by adopting `expo-dev-client`
 
 ### If you are using the Managed workflow with Expo Go
 
