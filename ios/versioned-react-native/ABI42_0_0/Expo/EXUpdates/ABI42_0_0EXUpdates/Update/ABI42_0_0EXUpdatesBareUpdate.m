@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   config:config
                                                                 database:database];
 
-  NSString *updateId = manifest.rawID;
+  NSString *updateId = manifest.rawId;
   NSNumber *commitTime = manifest.commitTimeNumber;
   NSArray *assets = manifest.assets;
   

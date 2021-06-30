@@ -44,10 +44,10 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
 
 @implementation ABI42_0_0EXScopedFacebook : ABI42_0_0EXFacebook
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId andParams:(NSDictionary *)params
+- (instancetype)initWithScopeKey:(NSString *)scopeKey andParams:(NSDictionary *)params
 {
   if (self = [super init]) {
-    NSString *suiteName = [NSString stringWithFormat:@"%@#%@", NSStringFromClass(self.class), experienceId];
+    NSString *suiteName = [NSString stringWithFormat:@"%@#%@", NSStringFromClass(self.class), scopeKey];
     _settings = [[NSUserDefaults alloc] initWithSuiteName:suiteName];
 
     BOOL hasPreviouslySetAutoInitEnabled = [_settings boolForKey:AUTO_INIT_KEY];
