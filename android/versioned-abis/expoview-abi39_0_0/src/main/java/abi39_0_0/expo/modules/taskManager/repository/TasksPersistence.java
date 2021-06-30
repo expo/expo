@@ -55,10 +55,10 @@ public class TasksPersistence {
   public Map<String, TasksAndEventsRepository.AppConfig> readPersistedTasks(SharedPreferences preferences) {
     Map<String, TasksAndEventsRepository.AppConfig> result = new HashMap<>();
 
-    Map<String, ?> appIdToAppConfigsMap = preferences.getAll();
+    Map<String, ?> appScopeKeyToAppConfigsMap = preferences.getAll();
 
-    for (Map.Entry<String, ?> appIdToConfig : appIdToAppConfigsMap.entrySet()) {
-      Map<String, Object> appConfig = jsonToMap(appIdToConfig.getValue().toString());
+    for (Map.Entry<String, ?> appScopeKeyToConfig : appScopeKeyToAppConfigsMap.entrySet()) {
+      Map<String, Object> appConfig = jsonToMap(appScopeKeyToConfig.getValue().toString());
       String appUrl = (String) appConfig.get("appUrl");
       Map<String, Object> tasksConfig = (HashMap<String, Object>) appConfig.get("tasks");
 
@@ -70,7 +70,7 @@ public class TasksPersistence {
         TasksAndEventsRepository.AppConfig app = new TasksAndEventsRepository.AppConfig();
         app.appUrl = appUrl;
         app.tasks = tasksForApp;
-        result.put(appIdToConfig.getKey(), app);
+        result.put(appScopeKeyToConfig.getKey(), app);
       }
     }
 
