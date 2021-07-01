@@ -6,6 +6,7 @@ import org.unimodules.core.interfaces.ApplicationLifecycleListener;
 import org.unimodules.core.interfaces.InternalModule;
 import org.unimodules.core.interfaces.Package;
 import org.unimodules.core.interfaces.ReactActivityLifecycleListener;
+import org.unimodules.core.interfaces.ReactNativeHostHandler;
 import org.unimodules.core.interfaces.SingletonModule;
 
 import java.util.Collections;
@@ -36,6 +37,11 @@ public class BasePackage implements Package {
 
   @Override
   public List<ApplicationLifecycleListener> createApplicationLifecycleListeners(Context context) {
+    return Collections.emptyList();
+  }
+
+  @Override
+  public List<? extends ReactNativeHostHandler> createReactNativeHostHandlers(Context context) {
     return Collections.emptyList();
   }
 

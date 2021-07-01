@@ -36,6 +36,10 @@ public interface Package {
     return Collections.emptyList();
   }
 
+  default List<? extends ReactNativeHostHandler> createReactNativeHostHandlers(Context context) {
+    return Collections.emptyList();
+  }
+
   default List<? extends ReactActivityLifecycleListener> createReactActivityLifecycleListeners(Context activityContext) {
     return Collections.emptyList();
   }
