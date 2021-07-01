@@ -9,6 +9,7 @@
 #import "EXAppLoadingCancelView.h"
 #import "EXManagedAppSplashScreenViewProvider.h"
 #import "EXManagedAppSplashScreenConfigurationBuilder.h"
+#import "EXManagedAppSplashScreenViewController.h"
 #import "EXHomeAppSplashScreenViewProvider.h"
 #import "EXEnvironment.h"
 #import "EXErrorRecoveryManager.h"
@@ -336,7 +337,7 @@ NS_ASSUME_NONNULL_BEGIN
   if (!_managedAppSplashScreenViewProvider) {
     _managedAppSplashScreenViewProvider = [[EXManagedAppSplashScreenViewProvider alloc] initWithManifest:manifest];
 
-    [self _showSplashScreenWithProvider:_managedAppSplashScreenViewProvider];
+    [self _showManagedSplashScreenWithProvider:_managedAppSplashScreenViewProvider];
   } else {
     [_managedAppSplashScreenViewProvider updateSplashScreenViewWithManifest:manifest];
   }
@@ -403,6 +404,27 @@ NS_ASSUME_NONNULL_BEGIN
                              successCallback:hideRootViewControllerSplashScreen
                              failureCallback:^(NSString *message){ UMLogWarn(@"%@", message); }];
   });
+}
+
+- (void)_showManagedSplashScreenWithProvider:(id<EXSplashScreenViewProvider>)provider
+{
+ 
+  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
+
+  UM_WEAKIFY(self);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UM_ENSURE_STRONGIFY(self);
+    
+    UIView *rootView = self.view;
+    UIView *splashScreenView = [provider createSplashScreenView];
+    EXManagedAppSplashScreenViewController *controller = [[EXManagedAppSplashScreenViewController alloc] initWithRootView:rootView
+                                                                                                 splashScreenView:splashScreenView];
+    [splashScreenService showSplashScreenFor:self
+                      splashScreenController:controller
+                             successCallback:^{}
+                             failureCallback:^(NSString *message){ UMLogWarn(@"%@", message); }];
+  });
+  
 }
 
 - (void)hideLoadingProgressWindow
@@ -766,7 +788,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)_willAutoRecoverFromError:(NSError *)error
 {
   if (![_appRecord.appManager enablesDeveloperTools]) {
-    BOOL shouldRecover = [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdShouldReloadOnError:_appRecord.experienceId];
+    BOOL shouldRecover = [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceShouldReloadOnError:_appRecord.scopeKey];
     if (shouldRecover) {
       [self _invalidateRecoveryTimer];
       _tmrAutoReloadDebounce = [NSTimer scheduledTimerWithTimeInterval:kEXAutoReloadDebounceSeconds

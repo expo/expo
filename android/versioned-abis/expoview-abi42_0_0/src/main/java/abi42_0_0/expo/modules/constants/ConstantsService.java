@@ -111,18 +111,9 @@ public class ConstantsService implements InternalModule, ConstantsInterface {
     return constants;
   }
 
-  @Deprecated
-  public String getAppId() {
+  public String getAppScopeKey() {
     // Just use package name in vanilla React Native apps.
     return mContext.getPackageName();
-  }
-
-  public String getAppScopeKey() {
-    return this.getAppId();
-  }
-
-  public String getLegacyAppId() {
-    return this.getAppId();
   }
 
   public String getAppOwnership() {

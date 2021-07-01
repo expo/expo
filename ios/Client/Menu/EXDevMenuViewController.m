@@ -95,9 +95,10 @@
 {
   EXKernelAppRecord *visibleApp = [EXKernel sharedInstance].visibleApp;
   NSString *manifestString = nil;
-  if (visibleApp.appLoader.manifest && [NSJSONSerialization isValidJSONObject:visibleApp.appLoader.manifest]) {
+  EXUpdatesRawManifest *manifest = visibleApp.appLoader.manifest;
+  if (manifest && [NSJSONSerialization isValidJSONObject:manifest.rawManifestJSON]) {
     NSError *error;
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:visibleApp.appLoader.manifest.rawManifestJSON options:0 error:&error];
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:manifest.rawManifestJSON options:0 error:&error];
     if (jsonData) {
       manifestString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     } else {

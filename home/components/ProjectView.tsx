@@ -2,7 +2,16 @@ import { getSDKVersionFromRuntimeVersion } from '@expo/sdk-runtime-versions';
 import { StackScreenProps } from '@react-navigation/stack';
 import dedent from 'dedent';
 import * as React from 'react';
-import { ActivityIndicator, Alert, Image, Linking, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  Linking,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import FadeIn from 'react-native-fade-in-image';
 import semver from 'semver';
 
@@ -148,9 +157,14 @@ function LegacyLaunchSection({ app }: { app: ProjectDataProject }) {
     legacyUpdatesSDKMajorVersion !== null &&
     legacyUpdatesSDKMajorVersion < Environment.lowestSupportedSdkVersion;
 
+  const moreLegacyBranchesText =
+    Platform.OS === 'ios'
+      ? 'To launch from another classic release channel, follow the instructions on the project webpage.'
+      : 'To launch from another classic release channel, scan the QR code on the project webpage.';
+
   return (
     <View>
-      <SectionHeader title="Classic update release channels" />
+      <SectionHeader title="Classic release channels" />
       <ListItem
         title="default"
         onPress={() => {
@@ -164,10 +178,7 @@ function LegacyLaunchSection({ app }: { app: ProjectDataProject }) {
         }}
         last
       />
-      <Text style={styles.moreLegacyBranchesText}>
-        To launch a update from another classic updates release channel, scan the QR code on project
-        webpage.
-      </Text>
+      <Text style={styles.moreLegacyBranchesText}>{moreLegacyBranchesText}</Text>
     </View>
   );
 }
@@ -211,7 +222,7 @@ function NewLaunchSection({ app }: { app: ProjectDataProject }) {
 
   return (
     <View>
-      <SectionHeader title="EAS Update branches" />
+      <SectionHeader title="EAS branches" />
       {branchManifests.map(renderBranchManifest)}
     </View>
   );

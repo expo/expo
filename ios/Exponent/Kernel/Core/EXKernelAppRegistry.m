@@ -28,7 +28,7 @@
 - (NSString *)registerAppWithManifestUrl:(NSURL *)manifestUrl initialProps:(NSDictionary *)initialProps
 {
   NSAssert(manifestUrl, @"Cannot register an app with no manifest URL");
-  // not enforcing uniqueness yet - we will do this once we download the manifest & have the experienceId
+  // not enforcing uniqueness yet - we will do this once we download the manifest & have the experience scope key
   EXKernelAppRecord *newRecord = [[EXKernelAppRecord alloc] initWithManifestUrl:manifestUrl initialProps:initialProps];
   NSString *recordId = [[NSUUID UUID] UUIDString];
   [_appRegistry setObject:newRecord forKey:recordId];
@@ -94,13 +94,13 @@
   return [_appRegistry objectForKey:recordId];
 }
 
-// when reloading, for a brief period of time there are two records with the same experienceId in the registry
-- (EXKernelAppRecord * _Nullable)newestRecordWithExperienceId:(NSString *)experienceId
+// when reloading, for a brief period of time there are two records with the same experience scopeKey in the registry
+- (EXKernelAppRecord * _Nullable)newestRecordWithScopeKey:(NSString *)scopeKey
 {
   EXKernelAppRecord *recordToReturn;
   for (NSString *recordId in self.appEnumerator) {
     EXKernelAppRecord *record = [self recordForId:recordId];
-    if (record && record.experienceId && [record.experienceId isEqualToString:experienceId]) {
+    if (record && record.scopeKey && [record.scopeKey isEqualToString:scopeKey]) {
       if (recordToReturn && [recordToReturn.timeCreated compare:record.timeCreated] == NSOrderedDescending) {
         continue;
       }
@@ -129,12 +129,12 @@
   return @"EXKernelAppRegistry (empty)";
 }
 
-- (BOOL)isExperienceIdUnique:(NSString *)experienceId
+- (BOOL)isScopeKeyUnique:(NSString *)scopeKey
 {
   int count = 0;
   for (NSString *recordId in self.appEnumerator) {
     EXKernelAppRecord *appRecord = [self recordForId:recordId];
-    if (appRecord.experienceId && [appRecord.experienceId isEqualToString:experienceId]) {
+    if (appRecord.scopeKey && [appRecord.scopeKey isEqualToString:scopeKey]) {
       count++;
       if (count > 1) {
         return NO;

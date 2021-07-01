@@ -154,7 +154,7 @@ After creating a secret, you can access the value via EAS Build hooks in Node.js
 The following environment variables are exposed to each build job:
 
 - `CI=1` - indicates this is a CI environment
-- `EAS_BUILD=1` - indicates this is an EAS Build environment
+- `EAS_BUILD=true` - indicates this is an EAS Build environment
 - `EAS_BUILD_PROFILE` - the name of the build profile from `eas.json`, e.g. `release`
 - `EAS_BUILD_GIT_COMMIT_HASH` - the hash of the Git commit, e.g. `88f28ab5ea39108ade978de2d0d1adeedf0ece76`
 - `EAS_BUILD_NPM_CACHE_URL` - the URL of the npm cache ([learn more](how-tos.md#using-npm-cache-with-yarn-v1))

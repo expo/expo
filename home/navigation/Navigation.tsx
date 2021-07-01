@@ -31,6 +31,10 @@ import QRCodeScreen from '../screens/QRCodeScreen';
 import SnacksForAccountScreen from '../screens/SnacksForAccountScreen';
 import UserSettingsScreen from '../screens/UserSettingsScreen';
 import Environment from '../utils/Environment';
+import {
+  alertWithCameraPermissionInstructions,
+  requestCameraPermissionsAsync,
+} from '../utils/PermissionUtils';
 import BottomTab, { getNavigatorProps } from './BottomTabNavigator';
 import {
   DiagnosticsStackRoutes,
@@ -219,7 +223,7 @@ export default (props: { theme: ColorTheme }) => {
   const initialURLWasConsumed = React.useRef(false);
 
   React.useEffect(() => {
-    const handleDeepLinks = ({ url }: { url: string | null }) => {
+    const handleDeepLinks = async ({ url }: { url: string | null }) => {
       if (Platform.OS === 'ios' || !url || !isNavigationReadyRef.current) {
         return;
       }
@@ -229,7 +233,11 @@ export default (props: { theme: ColorTheme }) => {
       }
 
       if (url.startsWith('expo-home://qr-scanner')) {
-        nav.navigate('QRCode');
+        if (await requestCameraPermissionsAsync()) {
+          nav.navigate('QRCode');
+        } else {
+          await alertWithCameraPermissionInstructions();
+        }
       }
     };
     if (!initialURLWasConsumed.current) {

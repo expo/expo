@@ -4,6 +4,7 @@ import android.util.Log
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.devsupport.DevSupportManagerBase
+import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.packagerconnection.JSPackagerClient
 import com.facebook.react.packagerconnection.RequestHandler
 import expo.modules.devmenu.helpers.getPrivateDeclaredFiledValue
@@ -18,11 +19,16 @@ class DevMenuPackagerCommandHandlersSwapper {
     handlers: Map<String, RequestHandler>
   ) {
     try {
-      val devSupportManager: DevSupportManagerBase =
+      val devSupportManager: DevSupportManager =
         ReactInstanceManager::class.java.getPrivateDeclaredFiledValue(
           "mDevSupportManager",
           reactInstanceManager
         )
+
+      // We don't want to add handlers into `DisabledDevSupportManager` or other custom classes
+      if (devSupportManager !is DevSupportManagerBase) {
+        return
+      }
 
       val currentCommandHandlers: Map<String, RequestHandler>? =
         DevSupportManagerBase::class.java.getPrivateDeclaredFiledValue(

@@ -50,6 +50,14 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
                    onError:(OnManifestError)onError
 {
   [self _fetch:@"GET" onError:onError completionHandler:^(NSData *data, NSURLResponse *response) {
+    if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
+      NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+      if (httpResponse.statusCode < 200 || httpResponse.statusCode >= 300) {
+        NSString *message = @"Failed to open app.\n\nIf you are trying to load the app from a development server, check your network connectivity and make sure you can access the server from your device.\n\nIf you are trying to open a published project, install a compatible version of expo-updates and follow all setup and integration steps.";
+        onError([NSError errorWithDomain:@"DevelopmentClient" code:1 userInfo:@{NSLocalizedDescriptionKey: message}]);
+        return;
+      }
+    }
     EXDevLauncherManifest *manifest = [EXDevLauncherManifest fromJsonData:data];
     if (!manifest) {
       NSMutableDictionary* details = [NSMutableDictionary dictionary];

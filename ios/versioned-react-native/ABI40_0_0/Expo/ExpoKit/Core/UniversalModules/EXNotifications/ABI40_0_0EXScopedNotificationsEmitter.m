@@ -8,7 +8,7 @@
 
 @interface ABI40_0_0EXScopedNotificationsEmitter ()
 
-@property (nonatomic, strong) NSString *experienceId;
+@property (nonatomic, strong) NSString *scopeKey;
 
 @end
 
@@ -21,18 +21,18 @@
 
 @implementation ABI40_0_0EXScopedNotificationsEmitter
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId
+- (instancetype)initWithScopeKey:(NSString *)scopeKey
 {
   if (self = [super init]) {
-    _experienceId = experienceId;
+    _scopeKey = scopeKey;
   }
-  
+
   return self;
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler
 {
-  if ([ABI40_0_0EXScopedNotificationsUtils shouldNotification:response.notification beHandledByExperience:_experienceId]) {
+  if ([ABI40_0_0EXScopedNotificationsUtils shouldNotification:response.notification beHandledByExperience:_scopeKey]) {
     [super userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
   } else {
     completionHandler();
@@ -41,7 +41,7 @@
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler
 {
-  if ([ABI40_0_0EXScopedNotificationsUtils shouldNotification:notification beHandledByExperience:_experienceId]) {
+  if ([ABI40_0_0EXScopedNotificationsUtils shouldNotification:notification beHandledByExperience:_scopeKey]) {
     [super userNotificationCenter:center willPresentNotification:notification withCompletionHandler:completionHandler];
   } else {
     completionHandler(UNNotificationPresentationOptionNone);

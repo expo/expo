@@ -86,6 +86,7 @@ ABI42_0_0RCT_EXTERN void ABI42_0_0EXRegisterScopedModule(Class, ...);
 // is this the first time this ABI has been touched at runtime?
 @property (nonatomic, assign) BOOL isFirstLoad;
 @property (nonatomic, strong) NSDictionary *params;
+@property (nonatomic, strong) ABI42_0_0EXUpdatesRawManifest *manifest;
 @property (nonatomic, strong) ABI42_0_0RCTTurboModuleManager *turboModuleManager;
 
 @end
@@ -94,7 +95,6 @@ ABI42_0_0RCT_EXTERN void ABI42_0_0EXRegisterScopedModule(Class, ...);
 
 /**
  *  Expected params:
- *    NSDictionary *manifest
  *    NSDictionary *constants
  *    NSURL *initialUri
  *    @BOOL isDeveloper
@@ -108,12 +108,14 @@ ABI42_0_0RCT_EXTERN void ABI42_0_0EXRegisterScopedModule(Class, ...);
  *    id exceptionsManagerDelegate
  */
 - (instancetype)initWithParams:(NSDictionary *)params
+                      manifest:(ABI42_0_0EXUpdatesRawManifest *)manifest
                   fatalHandler:(void (^)(NSError *))fatalHandler
                    logFunction:(ABI42_0_0RCTLogFunction)logFunction
                   logThreshold:(NSInteger)threshold
 {
   if (self = [super init]) {
     _params = params;
+    _manifest = manifest;
     [self configureABIWithFatalHandler:fatalHandler logFunction:logFunction logThreshold:threshold];
   }
   return self;
@@ -313,7 +315,7 @@ ABI42_0_0RCT_EXTERN void ABI42_0_0EXRegisterScopedModule(Class, ...);
                          logFunction:(ABI42_0_0RCTLogFunction)logFunction
                         logThreshold:(NSInteger)threshold
 {
-  ABI42_0_0RCTEnableTurboModule([self.params[@"manifest"][@"experiments"][@"turboModules"] boolValue]);
+  ABI42_0_0RCTEnableTurboModule([self.manifest.experiments[@"turboModules"] boolValue]);
   ABI42_0_0RCTSetFatalHandler(fatalHandler);
   ABI42_0_0RCTSetLogThreshold((ABI42_0_0RCTLogLevel) threshold);
   ABI42_0_0RCTSetLogFunction(logFunction);
@@ -334,7 +336,7 @@ ABI42_0_0RCT_EXTERN void ABI42_0_0EXRegisterScopedModule(Class, ...);
                                     ]];
   
   // add scoped modules
-  [extraModules addObjectsFromArray:[self _newScopedModulesWithExperienceId:experienceId services:services params:params]];
+  [extraModules addObjectsFromArray:[self _newScopedModulesForServices:services params:params]];
   
   if (params[@"testEnvironment"]) {
     ABI42_0_0EXTestEnvironment testEnvironment = (ABI42_0_0EXTestEnvironment)[params[@"testEnvironment"] unsignedIntegerValue];
@@ -346,9 +348,9 @@ ABI42_0_0RCT_EXTERN void ABI42_0_0EXRegisterScopedModule(Class, ...);
   
   if (params[@"browserModuleClass"]) {
     Class browserModuleClass = params[@"browserModuleClass"];
-    id homeModule = [[browserModuleClass alloc] initWithExperienceId:experienceId
-                                                    kernelServiceDelegate:services[@"EXHomeModuleManager"]
-                                                                   params:params];
+    id homeModule = [[browserModuleClass alloc] initWithExperienceStableLegacyId:self.manifest.stableLegacyId
+                                                                        scopeKey:self.manifest.scopeKey
+                                                           kernelServiceDelegate:services[@"EXHomeModuleManager"]                                                                params:params];
     [extraModules addObject:homeModule];
   }
 
@@ -363,7 +365,10 @@ ABI42_0_0RCT_EXTERN void ABI42_0_0EXRegisterScopedModule(Class, ...);
   [moduleRegistryProvider setModuleRegistryDelegate:moduleRegistryDelegate];
 
   ABI42_0_0EXScopedModuleRegistryAdapter *moduleRegistryAdapter = [[ABI42_0_0EXScopedModuleRegistryAdapter alloc] initWithModuleRegistryProvider:moduleRegistryProvider];
-  ABI42_0_0UMModuleRegistry *moduleRegistry = [moduleRegistryAdapter moduleRegistryForParams:params forExperienceId:experienceId withKernelServices:services];
+  ABI42_0_0UMModuleRegistry *moduleRegistry = [moduleRegistryAdapter moduleRegistryForParams:params
+                                                                 forExperienceStableLegacyId:self.manifest.stableLegacyId
+                                                                                    scopeKey:self.manifest.scopeKey
+                                                                          withKernelServices:services];
   NSArray<id<ABI42_0_0RCTBridgeModule>> *expoModules = [moduleRegistryAdapter extraModulesForModuleRegistry:moduleRegistry];
   [extraModules addObjectsFromArray:expoModules];
   
@@ -381,7 +386,7 @@ ABI42_0_0RCT_EXTERN void ABI42_0_0EXRegisterScopedModule(Class, ...);
   return extraModules;
 }
 
-- (NSArray *)_newScopedModulesWithExperienceId: (NSString *)experienceId services:(NSDictionary *)services params:(NSDictionary *)params
+- (NSArray *)_newScopedModulesForServices:(NSDictionary *)services params:(NSDictionary *)params
 {
   NSMutableArray *result = [NSMutableArray array];
   NSDictionary<NSString *, NSDictionary *> *ABI42_0_0EXScopedModuleClasses = ABI42_0_0EXGetScopedModuleClasses();
@@ -397,11 +402,20 @@ ABI42_0_0RCT_EXTERN void ABI42_0_0EXRegisterScopedModule(Class, ...);
       id scopedModule;
       Class scopedModuleClass = NSClassFromString(scopedModuleClassName);
       if (moduleServices.count > 1) {
-        scopedModule = [[scopedModuleClass alloc] initWithExperienceId:experienceId kernelServiceDelegates:moduleServices params:params];
+        scopedModule = [[scopedModuleClass alloc] initWithExperienceStableLegacyId:self.manifest.stableLegacyId
+                                                                          scopeKey:self.manifest.scopeKey
+                                                            kernelServiceDelegates:moduleServices
+                                                                            params:params];
       } else if (moduleServices.count == 0) {
-        scopedModule = [[scopedModuleClass alloc] initWithExperienceId:experienceId kernelServiceDelegate:nil params:params];
+        scopedModule = [[scopedModuleClass alloc] initWithExperienceStableLegacyId:self.manifest.stableLegacyId
+                                                                          scopeKey:self.manifest.scopeKey
+                                                             kernelServiceDelegate:nil
+                                                                            params:params];
       } else {
-        scopedModule = [[scopedModuleClass alloc] initWithExperienceId:experienceId kernelServiceDelegate:moduleServices[[moduleServices allKeys][0]] params:params];
+        scopedModule = [[scopedModuleClass alloc] initWithExperienceStableLegacyId:self.manifest.stableLegacyId
+                                                                          scopeKey:self.manifest.scopeKey
+                                                             kernelServiceDelegate:moduleServices[[moduleServices allKeys][0]]
+                                                                            params:params];
       }
       
       if (scopedModule) {
@@ -464,7 +478,7 @@ ABI42_0_0RCT_EXTERN void ABI42_0_0EXRegisterScopedModule(Class, ...);
   // Expo-specific
   if (moduleClass == ABI42_0_0EXDevSettings.class) {
     BOOL isDevelopment = ![self _isOpeningHomeInProductionMode] && [_params[@"isDeveloper"] boolValue];
-    return [[moduleClass alloc] initWithExperienceId:[self _experienceId] isDevelopment:isDevelopment];
+    return [[moduleClass alloc] initWithScopeKey:self.manifest.scopeKey isDevelopment:isDevelopment];
   } else if (moduleClass == ABI42_0_0RCTExceptionsManagerCls()) {
     id exceptionsManagerDelegate = _params[@"exceptionsManagerDelegate"];
     if (exceptionsManagerDelegate) {
@@ -497,15 +511,9 @@ ABI42_0_0RCT_EXTERN void ABI42_0_0EXRegisterScopedModule(Class, ...);
   return nullptr;
 }
 
-
-- (NSString *)_experienceId
-{
-  return _params[@"manifest"][@"id"];
-}
-
 - (BOOL)_isOpeningHomeInProductionMode
 {
-  return _params[@"browserModuleClass"] && !_params[@"manifest"][@"developer"];
+  return _params[@"browserModuleClass"] && !self.manifest.developer;
 }
 
 - (void *)versionedJsExecutorFactoryForBridge:(ABI42_0_0RCTBridge *)bridge

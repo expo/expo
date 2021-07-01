@@ -17,16 +17,15 @@ type CreateHeading = (
  * @param {number} defaultLevel default heading level for the permalink
  * @param type The `HeadingType` of heading for right sidebar, defaults to `HeadingType.Text`
  */
-const createHeading: CreateHeading = (Component, defaultLevel, type = HeadingType.Text) => ({
-  children,
-  ...props
-}) => {
-  return (
-    <Permalink nestingLevel={defaultLevel} additionalProps={{ sidebarType: type, ...props }}>
-      <Component>{children}</Component>
-    </Permalink>
-  );
-};
+const createHeading: CreateHeading =
+  (Component, defaultLevel, type = HeadingType.Text) =>
+  ({ children, ...props }) => {
+    return (
+      <Permalink nestingLevel={defaultLevel} additionalProps={{ sidebarType: type, ...props }}>
+        <Component>{children}</Component>
+      </Permalink>
+    );
+  };
 
 export const H1 = createHeading(RawH1, 1);
 export const H2 = createHeading(RawH2, 2);

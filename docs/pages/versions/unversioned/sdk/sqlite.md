@@ -115,7 +115,7 @@ module.exports = {
 - Use the following function (or similar) to open your database:
 
 ```ts
-async function openDatabase(pathToDatabaseFile: string): SQLite.WebSQLDatabase {
+async function openDatabase(pathToDatabaseFile: string): Promise<SQLite.WebSQLDatabase> {
   if (!(await FileSystem.getInfoAsync(FileSystem.documentDirectory + 'SQLite')).exists) {
     await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'SQLite');
   }

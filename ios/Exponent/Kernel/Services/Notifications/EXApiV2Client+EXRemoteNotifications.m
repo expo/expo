@@ -39,13 +39,13 @@
 }
 
 
-- (NSURLSessionTask *)getExpoPushTokenForExperience:(NSString *)experienceId
+- (NSURLSessionTask *)getExpoPushTokenForExperience:(NSString *)experienceStableLegacyId
                                         deviceToken:(NSData *)deviceToken
                                   completionHandler:(void (^)(NSString * _Nullable, NSError * _Nullable))handler
 {
   NSMutableDictionary *arguments = [NSMutableDictionary dictionaryWithDictionary:@{
     @"deviceId": [EXKernel deviceInstallationUUID],
-    @"experienceId": experienceId,
+    @"experienceId": experienceStableLegacyId,
     @"appId": NSBundle.mainBundle.bundleIdentifier,
     @"deviceToken": deviceToken.apnsTokenString,
     @"type": @"apns",

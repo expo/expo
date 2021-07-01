@@ -5,10 +5,12 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.util.Log
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.devsupport.DevInternalSettings
 import expo.interfaces.devmenu.DevMenuManagerInterface
+import expo.modules.devmenu.DEV_MENU_TAG
 import expo.modules.devmenu.DevMenuManager
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -72,7 +74,11 @@ class DevMenuDevToolsDelegate(
     val metroHost = "http://${devSettings.packagerConnectionSettings.debugServerHost}"
 
     GlobalScope.launch {
-      DevMenuManager.metroClient.openJSInspector(metroHost, reactContext.packageName)
+      try {
+        DevMenuManager.metroClient.openJSInspector(metroHost, reactContext.packageName)
+      } catch (e: Exception) {
+        Log.w(DEV_MENU_TAG, "Unable to open js inspector: ${e.message}", e)
+      }
     }
   }
 

@@ -10,6 +10,6 @@
 @interface ABI42_0_0RNCWKProcessPoolManager : NSObject
 
 + (instancetype) sharedManager;
-- (WKProcessPool *)sharedProcessPoolForExperienceId:(NSString *)experienceId;
+- (WKProcessPool *)sharedProcessPoolForScopeKey:(NSString *)scopeKey;
 
 @end

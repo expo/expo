@@ -27,7 +27,7 @@ typedef enum EXKernelAppRecordStatus {
 
 @property (nonatomic, readonly, assign) EXKernelAppRecordStatus status;
 @property (nonatomic, readonly, strong) NSDate *timeCreated;
-@property (nonatomic, readonly) NSString * _Nullable experienceId;
+@property (nonatomic, readonly) NSString * _Nullable scopeKey;
 @property (nonatomic, readonly) EXReactAppManager *appManager;
 @property (nonatomic, readonly, strong) EXAppLoader *appLoader;
 @property (nonatomic, readonly) EXAppViewController *viewController;

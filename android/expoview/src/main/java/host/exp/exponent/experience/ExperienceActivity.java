@@ -54,6 +54,7 @@ import host.exp.exponent.branch.BranchManager;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.experience.loading.LoadingProgressPopupController;
 import host.exp.exponent.experience.splashscreen.ManagedAppSplashScreenConfiguration;
+import host.exp.exponent.experience.splashscreen.ManagedAppSplashScreenViewController;
 import host.exp.exponent.experience.splashscreen.ManagedAppSplashScreenViewProvider;
 import host.exp.exponent.kernel.DevMenuManager;
 import host.exp.exponent.kernel.ExperienceKey;
@@ -410,12 +411,14 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     if (mManagedAppSplashScreenViewProvider == null) {
       ManagedAppSplashScreenConfiguration config = ManagedAppSplashScreenConfiguration.parseManifest(manifest);
       mManagedAppSplashScreenViewProvider = new ManagedAppSplashScreenViewProvider(config);
-      SplashScreen.show(this, mManagedAppSplashScreenViewProvider, getRootViewClass(manifest), true);
+
+      View splashScreenView = mManagedAppSplashScreenViewProvider.createSplashScreenView(this);
+      ManagedAppSplashScreenViewController controller = new ManagedAppSplashScreenViewController(this, getRootViewClass(manifest), splashScreenView);
+      SplashScreen.show(this, controller, true);
     } else {
       mManagedAppSplashScreenViewProvider.updateSplashScreenViewWithManifest(this, manifest);
     }
   }
-
   public void setLoadingProgressStatusIfEnabled() {
     ExpoUpdatesAppLoader appLoader = mKernel.getAppLoaderForManifestUrl(mManifestUrl);
     if (appLoader != null) {

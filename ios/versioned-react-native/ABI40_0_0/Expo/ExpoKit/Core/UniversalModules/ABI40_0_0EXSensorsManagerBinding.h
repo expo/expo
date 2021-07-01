@@ -11,30 +11,30 @@
 
 @protocol ABI40_0_0EXSensorsManagerBindingDelegate
 
-- (void)sensorModuleDidSubscribeForAccelerometerUpdatesOfExperience:(NSString *)experienceId withHandler:(void (^)(NSDictionary *event))handlerBlock;
-- (void)sensorModuleDidUnsubscribeForAccelerometerUpdatesOfExperience:(NSString *)experienceId;
+- (void)sensorModuleDidSubscribeForAccelerometerUpdatesOfExperience:(NSString *)scopeKey withHandler:(void (^)(NSDictionary *event))handlerBlock;
+- (void)sensorModuleDidUnsubscribeForAccelerometerUpdatesOfExperience:(NSString *)scopeKey;
 - (void)setAccelerometerUpdateInterval:(NSTimeInterval)intervalMs;
 
 - (float)getGravity;
-- (void)sensorModuleDidSubscribeForDeviceMotionUpdatesOfExperience:(NSString *)experienceId withHandler:(void (^)(NSDictionary *event))handlerBlock;
-- (void)sensorModuleDidUnsubscribeForDeviceMotionUpdatesOfExperience:(NSString *)experienceId;
+- (void)sensorModuleDidSubscribeForDeviceMotionUpdatesOfExperience:(NSString *)scopeKey withHandler:(void (^)(NSDictionary *event))handlerBlock;
+- (void)sensorModuleDidUnsubscribeForDeviceMotionUpdatesOfExperience:(NSString *)scopeKey;
 - (void)setDeviceMotionUpdateInterval:(NSTimeInterval)intervalMs;
 
-- (void)sensorModuleDidSubscribeForGyroscopeUpdatesOfExperience:(NSString *)experienceId withHandler:(void (^)(NSDictionary *event))handlerBlock;
-- (void)sensorModuleDidUnsubscribeForGyroscopeUpdatesOfExperience:(NSString *)experienceId;
+- (void)sensorModuleDidSubscribeForGyroscopeUpdatesOfExperience:(NSString *)scopeKey withHandler:(void (^)(NSDictionary *event))handlerBlock;
+- (void)sensorModuleDidUnsubscribeForGyroscopeUpdatesOfExperience:(NSString *)scopeKey;
 - (void)setGyroscopeUpdateInterval:(NSTimeInterval)intervalMs;
 
-- (void)sensorModuleDidSubscribeForMagnetometerUpdatesOfExperience:(NSString *)experienceId withHandler:(void (^)(NSDictionary *event))handlerBlock;
-- (void)sensorModuleDidUnsubscribeForMagnetometerUpdatesOfExperience:(NSString *)experienceId;
+- (void)sensorModuleDidSubscribeForMagnetometerUpdatesOfExperience:(NSString *)scopeKey withHandler:(void (^)(NSDictionary *event))handlerBlock;
+- (void)sensorModuleDidUnsubscribeForMagnetometerUpdatesOfExperience:(NSString *)scopeKey;
 - (void)setMagnetometerUpdateInterval:(NSTimeInterval)intervalMs;
 
-- (void)sensorModuleDidSubscribeForMagnetometerUncalibratedUpdatesOfExperience:(NSString *)experienceId
+- (void)sensorModuleDidSubscribeForMagnetometerUncalibratedUpdatesOfExperience:(NSString *)scopeKey
                                                        withHandler:(void (^)(NSDictionary *event))handlerBlock;
-- (void)sensorModuleDidUnsubscribeForMagnetometerUncalibratedUpdatesOfExperience:(NSString *)experienceId;
+- (void)sensorModuleDidUnsubscribeForMagnetometerUncalibratedUpdatesOfExperience:(NSString *)scopeKey;
 - (void)setMagnetometerUncalibratedUpdateInterval:(NSTimeInterval)intervalMs;
 
-- (void)sensorModuleDidSubscribeForBarometerUpdatesOfExperience:(NSString *)experienceId withHandler:(void (^)(NSDictionary *event))handlerBlock;
-- (void)sensorModuleDidUnsubscribeForBarometerUpdatesOfExperience:(NSString *)experienceId;
+- (void)sensorModuleDidSubscribeForBarometerUpdatesOfExperience:(NSString *)scopeKey withHandler:(void (^)(NSDictionary *event))handlerBlock;
+- (void)sensorModuleDidUnsubscribeForBarometerUpdatesOfExperience:(NSString *)scopeKey;
 - (void)setBarometerUpdateInterval:(NSTimeInterval)intervalMs;
 
 - (BOOL)isBarometerAvailable;
@@ -48,7 +48,7 @@
 
 @interface ABI40_0_0EXSensorsManagerBinding : NSObject <ABI40_0_0UMInternalModule, ABI40_0_0UMAccelerometerInterface, ABI40_0_0UMBarometerInterface, ABI40_0_0UMDeviceMotionInterface, ABI40_0_0UMGyroscopeInterface, ABI40_0_0UMMagnetometerInterface, ABI40_0_0UMMagnetometerUncalibratedInterface>
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId andKernelService:(id<ABI40_0_0EXSensorsManagerBindingDelegate>)kernelService;
+- (instancetype)initWithScopeKey:(NSString *)scopeKey andKernelService:(id<ABI40_0_0EXSensorsManagerBindingDelegate>)kernelService;
 
 - (void)sensorModuleDidSubscribeForAccelerometerUpdates:(id)scopedSensorModule withHandler:(void (^)(NSDictionary *))handlerBlock;
 - (void)sensorModuleDidSubscribeForDeviceMotionUpdates:(id)scopedSensorModule withHandler:(void (^)(NSDictionary *))handlerBlock;

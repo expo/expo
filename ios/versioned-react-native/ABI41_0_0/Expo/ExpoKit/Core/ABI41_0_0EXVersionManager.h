@@ -2,15 +2,17 @@
 
 #import <Foundation/Foundation.h>
 #import <ABI41_0_0React/ABI41_0_0RCTLog.h>
+#import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesRawManifest.h>
 
 @interface ABI41_0_0EXVersionManager : NSObject
 
 // Uses a params dict since the internal workings may change over time, but we want to keep the interface the same.
-- (instancetype)initWithParams: (NSDictionary *)params
-                  fatalHandler: (void (^)(NSError *))fatalHandler
-                   logFunction: (ABI41_0_0RCTLogFunction)logFunction
-                  logThreshold: (NSInteger)threshold;
-- (void)bridgeWillStartLoading: (id)bridge;
+- (instancetype)initWithParams:(NSDictionary *)params
+                      manifest:(ABI41_0_0EXUpdatesRawManifest *)manifest
+                  fatalHandler:(void (^)(NSError *))fatalHandler
+                   logFunction:(ABI41_0_0RCTLogFunction)logFunction
+                  logThreshold:(NSInteger)threshold;
+- (void)bridgeWillStartLoading:(id)bridge;
 - (void)bridgeFinishedLoading:(id)bridge;
 - (void)invalidate;
 

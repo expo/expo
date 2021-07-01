@@ -33,6 +33,19 @@ describe('APISectionUtils.resolveTypeName', () => {
     expect(container).toMatchSnapshot();
   });
 
+  test('query type', () => {
+    const { container } = render(
+      <>
+        {resolveTypeName({
+          type: 'reference',
+          typeArguments: [{ queryType: { type: 'reference', name: 'View' }, type: 'query' }],
+          name: 'React.ComponentProps',
+        })}
+      </>
+    );
+    expect(container).toMatchSnapshot();
+  });
+
   test('Promise', () => {
     const { container } = render(
       <>
@@ -67,6 +80,29 @@ describe('APISectionUtils.resolveTypeName', () => {
           typeArguments: [
             { type: 'intrinsic', name: 'string' },
             { type: 'intrinsic', name: 'any' },
+          ],
+          name: 'Record',
+        })}
+      </>
+    );
+    expect(container).toMatchSnapshot();
+  });
+
+  test('Record with union', () => {
+    const { container } = render(
+      <>
+        {resolveTypeName({
+          type: 'reference',
+          typeArguments: [
+            { type: 'intrinsic', name: 'string' },
+            {
+              type: 'union',
+              types: [
+                { type: 'intrinsic', name: 'number' },
+                { type: 'intrinsic', name: 'boolean' },
+                { type: 'intrinsic', name: 'string' },
+              ],
+            },
           ],
           name: 'Record',
         })}
@@ -153,6 +189,30 @@ describe('APISectionUtils.resolveTypeName', () => {
                     { type: 'reference', name: 'SpeechEventCallback' },
                   ],
                 },
+              },
+            ],
+          },
+        })}
+      </>
+    );
+    expect(container).toMatchSnapshot();
+  });
+
+  test('function with non-linkable custom type', () => {
+    const { container } = render(
+      <>
+        {resolveTypeName({
+          type: 'reflection',
+          declaration: {
+            signatures: [
+              {
+                parameters: [
+                  {
+                    name: 'error',
+                    type: { type: 'reference', name: 'Error' },
+                  },
+                ],
+                type: { type: 'intrinsic', name: 'void' },
               },
             ],
           },

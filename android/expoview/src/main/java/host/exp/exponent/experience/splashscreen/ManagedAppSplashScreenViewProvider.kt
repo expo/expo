@@ -1,7 +1,9 @@
 package host.exp.exponent.experience.splashscreen
 
+import android.app.Activity
 import android.content.Context
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AlphaAnimation
 import com.squareup.picasso.Callback
@@ -23,7 +25,6 @@ class ManagedAppSplashScreenViewProvider(
   companion object {
     private const val TAG: String = "ExperienceSplashScreenManifestBasedResourceProvider"
   }
-
   override fun createSplashScreenView(context: Context): View {
     splashScreenView = SplashScreenView(context)
     configureSplashScreenView(context, config, null)

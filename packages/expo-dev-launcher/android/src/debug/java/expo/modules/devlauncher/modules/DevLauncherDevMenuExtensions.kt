@@ -30,9 +30,9 @@ class DevLauncherDevMenuExtensions(
         instance.navigateToLauncher()
       }) {
         isEnabled = { true }
-        label = { "Back to launcher" }
+        label = { "Back to Launcher" }
         glyphName = { "exit-to-app" }
-        importance = DevMenuItemImportance.HIGH.value
+        importance = DevMenuItemImportance.MEDIUM.value
         keyCommand = KeyCommand(KeyEvent.KEYCODE_L, false)
       }
     }

@@ -6,7 +6,7 @@
 
 @interface EXPendingNotification : NSObject
 
-@property (nonatomic, readonly) NSString *experienceId;
+@property (nonatomic, readonly) NSString *scopeKey;
 
 - (instancetype)initWithNotification:(UNNotification *)notification;
 - (instancetype)initWithNotificationResponse:(UNNotificationResponse *)notificationResponse identifiersManager:(id<EXNotificationsIdentifiersManager>)manager;

@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ABI42_0_0EXScopedNotificationBuilder : ABI42_0_0EXNotificationBuilder
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId
+- (instancetype)initWithScopeKey:(NSString *)scopeKey
                  andConstantsBinding:(ABI42_0_0EXConstantsBinding *)constantsBinding;
 
 @end

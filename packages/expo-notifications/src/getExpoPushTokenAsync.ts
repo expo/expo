@@ -55,7 +55,7 @@ export default async function getExpoPushTokenAsync(options: Options = {}): Prom
 
   const body = {
     type,
-    deviceId,
+    deviceId: deviceId.toLowerCase(),
     development,
     experienceId,
     appId: applicationId,

@@ -7,6 +7,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ABI41_0_0EXUpdatesBareRawManifest : ABI41_0_0EXUpdatesBaseLegacyRawManifest<ABI41_0_0EXUpdatesRawManifestBehavior>
 
+/**
+* A UUID for this manifest.
+*/
+- (NSString *)rawId;
 - (NSNumber *)commitTimeNumber;
 - (nullable NSDictionary *)metadata;
 - (nullable NSArray *)assets;

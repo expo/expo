@@ -4,6 +4,9 @@
 
 @interface ABI40_0_0EXScopedModuleRegistryAdapter : ABI40_0_0UMModuleRegistryAdapter
 
-- (ABI40_0_0UMModuleRegistry *)moduleRegistryForParams:(NSDictionary *)params forExperienceId:(NSString *)experienceId withKernelServices:(NSDictionary *)kernelServices;
+- (ABI40_0_0UMModuleRegistry *)moduleRegistryForParams:(NSDictionary *)params
+                  forExperienceStableLegacyId:(NSString *)experienceStableLegacyId
+                           scopeKey:(NSString *)scopeKey
+                           withKernelServices:(NSDictionary *)kernelServices;
 
 @end

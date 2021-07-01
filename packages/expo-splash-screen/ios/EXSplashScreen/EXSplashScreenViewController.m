@@ -1,13 +1,12 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
-#import <EXSplashScreen/EXSplashScreenController.h>
+#import <EXSplashScreen/EXSplashScreenViewController.h>
 #import <UMCore/UMDefines.h>
 #import <UMCore/UMUtilities.h>
 
-@interface EXSplashScreenController ()
+@interface EXSplashScreenViewController ()
 
-@property (nonatomic, weak) UIViewController *viewController;
-@property (nonatomic, strong) UIView *splashScreenView;
+@property (nonatomic, weak) UIView *rootView;
 
 @property (nonatomic, assign) BOOL autoHideEnabled;
 @property (nonatomic, assign) BOOL splashScreenShown;
@@ -15,17 +14,16 @@
 
 @end
 
-@implementation EXSplashScreenController
+@implementation EXSplashScreenViewController
 
-- (instancetype)initWithViewController:(UIViewController *)viewController
-              splashScreenViewProvider:(id<EXSplashScreenViewProvider>)splashScreenViewProvider
+- (instancetype)initWithRootView:(UIView *)rootView splashScreenView:(nonnull UIView *)splashScreenView
 {
   if (self = [super init]) {
-    _viewController = viewController;
+    _rootView = rootView;
     _autoHideEnabled = YES;
     _splashScreenShown = NO;
     _appContentAppeared = NO;
-    _splashScreenView = [splashScreenViewProvider createSplashScreenView];
+    _splashScreenView = splashScreenView;
   }
   return self;
 }
@@ -40,7 +38,7 @@
 - (void)showWithCallback:(nullable void(^)(void))successCallback
 {
   [UMUtilities performSynchronouslyOnMainThread:^{
-    UIView *rootView = self.viewController.view;
+    UIView *rootView = self.rootView;
     self.splashScreenView.frame = rootView.bounds;
     [rootView addSubview:self.splashScreenView];
     self.splashScreenShown = YES;

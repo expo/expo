@@ -178,9 +178,9 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
+          key: ${{ runner.os }}-gradle-v20210625-${{ hashFiles('android/*.gradle*') }}
           restore-keys: |
-            ${{ runner.os }}-gradle-
+            ${{ runner.os }}-gradle-v20210625
       - name: ⚛️ Display React Native config
         run: yarn react-native config
         working-directory: apps/bare-expo
