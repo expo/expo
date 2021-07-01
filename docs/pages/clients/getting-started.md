@@ -20,6 +20,8 @@ If you have used Expo before, especially with the Managed workflow, [config plug
 <Tab >
 <TerminalBlock cmd={["expo init # if you don't already have a Managed Workflow project", "yarn add expo-dev-client"]}  />
 
+> You can also improve error messages to be helpful during the development process. To do so, add `import 'expo-dev-client';` to the top of your `App.{js|tsx}` file. [Learn more](installation.md#add-better-error-handlers).
+
 </Tab>
 
 <Tab >
@@ -30,7 +32,7 @@ If you're just starting your project, you can create a new project from our temp
 
 If you have an existing project, you'll need to [install the package and make a few changes](installation.md) to your `AppDelegate.m`, `MainActivity.java` and `MainApplication.java`.
 
-Custom clients use deep links to open projects from the QR code. If you had added a custom deep link schema to your project, the Development Client will use it. However, if this isn't the case, you need to configure the deep link support for your application. The `uri-scheme` package will do this for you once you have chosen a scheme.
+Custom clients use deep links to open projects from the QR code. If you have added a custom deep link scheme to your project, your client will use it. However, if this isn't the case, you need to configure the deep link support for your application. The `uri-scheme` package will do this for you once you have chosen a scheme.
 
 <TerminalBlock cmd={["npx uri-scheme add <your scheme>"]}  />
 
@@ -50,6 +52,10 @@ After you configure your project as covered by [the Building with EAS guide](eas
 
 <Tab >
 
+Register any devices you would like to use your development client on to your ad hoc provisioning profile:
+<TerminalBlock cmd={["eas device:create"]}  />
+
+Once you have all of the iOS devices you would like to install a custom client on registered, you can build your client with:
 <TerminalBlock cmd={["eas build --profile development --platform ios"]}  />
 
 </Tab>
@@ -107,7 +113,7 @@ Now make some changes to your application code and see them reflected on your de
 
 If you launch your custom development client from your device's Home Screen, you will see your launcher screen, which looks like this:
 
-<ImageSpotlight alt="The launcher screen of the Development Client" src="/static/images/dev-client-launcher.png" style={{ maxWidth: 225}} />
+<ImageSpotlight alt="The launcher screen of the Development Client" src="/static/images/dev-client-launcher.png" style={{ maxWidth: 600}} />
 
 If a bundler is detected on your local network, or if you've signed in to an Expo account in both `expo-cli` and your client, you can connect to it directly from this screen. Otherwise you can connect by scanning the QR code displayed by Expo CLI.
 
