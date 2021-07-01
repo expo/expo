@@ -98,7 +98,7 @@
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>Allow Expo projects to use your location</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Allow Expo projects to use your location</string>
+	<string>The app accesses your location in order to display it on a map or fetch it when you request it</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow Expo projects to access your microphone</string>
 	<key>NSMotionUsageDescription</key>
