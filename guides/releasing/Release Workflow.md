@@ -526,6 +526,7 @@ Publish a blog post that includes the following information:
 - Link to a GitHub umbrella issue for beta release issues
 - Link to CHANGELOG
 - Provide instructions for how to opt-in
+- Create and link to an issue that tracks changes and releases during beta testing
 
 ## 5.8. Test, fix, and monitor
 
@@ -538,6 +539,7 @@ Publish a blog post that includes the following information:
 - Test out new features.
 - Report updates in the umbrealla issue.
 - Fix, test, repeat.
+- Update issue with fixes from latest beta release
 
 ## 5.9. Submit iOS Expo Go for review
 
