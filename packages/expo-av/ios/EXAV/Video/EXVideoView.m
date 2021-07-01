@@ -686,13 +686,21 @@ willEndFullScreenPresentationWithAnimationCoordinator:(id<UIViewControllerTransi
 {
   if (_data) {
     [_data appDidForeground];
+
+    _playerViewController.player = _data.player;
+    _playerLayer.player = _data.player;
   }
 }
 
-- (void)appDidBackground
+- (void)appDidBackgroundStayActive:(BOOL)stayActive
 {
   if (_data) {
-    [_data appDidBackground];
+    [_data appDidBackgroundStayActive:stayActive];
+      
+    if (stayActive) {
+      _playerViewController.player = nil;
+      _playerLayer.player = nil;
+    }
   }
 }
 
