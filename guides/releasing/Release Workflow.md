@@ -565,7 +565,6 @@ Publish a blog post that includes the following information:
   >
   > I know there are probably some things I missed, so @bacon @brent @Cruzan @cedric could you all take a look at this before the end of the week and let me know what other things you think we should highlight (or just add them to the list yourself)?
 
-
 # Stage 6 - Final release
 
 **If today is Friday:** Wait until next week to finish the release :)
