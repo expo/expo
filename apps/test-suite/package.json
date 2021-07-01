@@ -17,7 +17,7 @@
     "expo-analytics-segment": "~10.2.1",
     "expo-application": "~3.2.0",
     "expo-asset": "~8.3.2",
-    "expo-av": "~9.2.2",
+    "expo-av": "~9.2.3",
     "expo-background-fetch": "~9.2.2",
     "expo-barcode-scanner": "~10.2.2",
     "expo-brightness": "~9.2.2",

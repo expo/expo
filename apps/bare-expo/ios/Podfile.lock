@@ -17,7 +17,7 @@ PODS:
     - UMCore
   - EXApplication (3.2.0):
     - UMCore
-  - EXAV (9.2.2):
+  - EXAV (9.2.3):
     - ExpoModulesCore
     - UMCore
   - EXBackgroundFetch (9.2.2):
@@ -204,7 +204,7 @@ PODS:
     - UMCore
   - EXSpeech (9.2.0):
     - UMCore
-  - EXSplashScreen (0.11.1):
+  - EXSplashScreen (0.11.2):
     - React-Core
     - UMCore
   - EXSQLite (9.2.1):
@@ -1208,7 +1208,7 @@ SPEC CHECKSUMS:
   EXAmplitude: b3ef1ed2ae853bccd08a685d2f0352c603b215fe
   EXAppAuth: 4eceeef2d606a5fd9412dcd8a447885dc625a2e2
   EXApplication: 9ff2a206009d6e55bca6c20b3f33d07986b51ef3
-  EXAV: 54acebcc6e5727c6191fc85c2a43b734258a5990
+  EXAV: 2be8c3faa679992f123f6f540e4f6ef7ab5262c0
   EXBackgroundFetch: a4ec08f6f831b350eccb30753f5e3cb4b4b77cb1
   EXBarCodeScanner: f9b69c7f770d68a009df3cc5dbdafcb8313b8e0c
   EXBattery: 6adbf9706bbe00d266b17b7846d556db9dea82c2
@@ -1264,7 +1264,7 @@ SPEC CHECKSUMS:
   EXSharing: 567f4b9f38a5266ec2f51973e2efe3b4aaf0bf69
   EXSMS: b0e26fd54d12f899704e997cbd9fbc69330459d7
   EXSpeech: 0c4eb2bb758bab41f9cbf455cf673d2e344cc186
-  EXSplashScreen: 01d39ac67ff6b5dc938f1431279ce2f9228e7703
+  EXSplashScreen: c8aaa61439c73e8d1d1118ded584a7b2269211b6
   EXSQLite: cddb3b3f4c6999761c157b88dc8b55c7af2cd86b
   EXStoreReview: 40674cc897a6d7fd249969b86d1833f67b99170a
   EXStructuredHeaders: dc4b99d20ce14a5ec4d57a53743f0f95d7e82c65
