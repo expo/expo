@@ -62,59 +62,96 @@ class DevLauncherController private constructor(
 
   internal var mode = Mode.LAUNCHER
 
+  private var appIsLoading = false
+
   suspend fun loadApp(url: Uri, mainActivity: ReactActivity? = null) {
-    ensureHostWasCleared(appHost, activityToBeInvalidated = mainActivity)
-
-    val manifestParser = DevLauncherManifestParser(httpClient, url)
-    val appIntent = createAppIntent()
-
-    val appLoader = if (!manifestParser.isManifestUrl()) {
-      // It's (maybe) a raw React Native bundle
-      DevLauncherReactNativeAppLoader(url, appHost, context)
-    } else {
-      if (updatesInterface == null) {
-        manifest = manifestParser.parseManifest()
-        if (!manifest!!.isUsingDeveloperTool()) {
-          throw Exception("expo-updates is not properly installed or integrated. In order to load published projects with this development client, follow all installation and setup instructions for both the expo-dev-client and expo-updates packages.")
-        }
-        DevLauncherLocalAppLoader(manifest!!, appHost, context)
-      } else {
-        val configuration = createUpdatesConfigurationWithUrl(url)
-        val update = updatesInterface!!.loadUpdate(configuration, context) {
-          manifest = DevLauncherManifest.fromJson(it.toString().reader())
-          return@loadUpdate !manifest!!.isUsingDeveloperTool()
-        }
-        if (manifest!!.isUsingDeveloperTool()) {
-          DevLauncherLocalAppLoader(manifest!!, appHost, context)
-        } else {
-          useDeveloperSupport = false
-          val localBundlePath = update.launchAssetPath
-          DevLauncherPublishedAppLoader(manifest!!, localBundlePath, appHost, context)
-        }
+    synchronized(this) {
+      if (appIsLoading) {
+        return
       }
+      appIsLoading = true
     }
 
-    val appLoaderListener = appLoader.createOnDelegateWillBeCreatedListener()
-    lifecycle.addListener(appLoaderListener)
-    mode = Mode.APP
+    try {
+      ensureHostWasCleared(appHost, activityToBeInvalidated = mainActivity)
 
-    // Note that `launch` method is a suspend one. So the execution will be stopped here until the method doesn't finish.
-    if (appLoader.launch(appIntent)) {
-      recentlyOpedAppsRegistry.appWasOpened(url, appLoader.getAppName())
-      latestLoadedApp = url
-      // Here the app will be loaded - we can remove listener here.
-      lifecycle.removeListener(appLoaderListener)
-    } else {
-      // The app couldn't be loaded. For now, we just return to the launcher.
-      mode = Mode.LAUNCHER
-      manifest = null
+      val manifestParser = DevLauncherManifestParser(httpClient, url)
+      val appIntent = createAppIntent()
+
+      updatesInterface?.reset()
+      useDeveloperSupport = true
+
+      val appLoader = if (!manifestParser.isManifestUrl()) {
+        // It's (maybe) a raw React Native bundle
+        DevLauncherReactNativeAppLoader(url, appHost, context)
+      } else {
+        if (updatesInterface == null) {
+          manifest = manifestParser.parseManifest()
+          if (!manifest!!.isUsingDeveloperTool()) {
+            throw Exception("expo-updates is not properly installed or integrated. In order to load published projects with this development client, follow all installation and setup instructions for both the expo-dev-client and expo-updates packages.")
+          }
+          DevLauncherLocalAppLoader(manifest!!, appHost, context)
+        } else {
+          val configuration = createUpdatesConfigurationWithUrl(url)
+          val update = updatesInterface!!.loadUpdate(configuration, context) {
+            manifest = DevLauncherManifest.fromJson(it.toString().reader())
+            return@loadUpdate !manifest!!.isUsingDeveloperTool()
+          }
+          if (manifest!!.isUsingDeveloperTool()) {
+            DevLauncherLocalAppLoader(manifest!!, appHost, context)
+          } else {
+            useDeveloperSupport = false
+            val localBundlePath = update.launchAssetPath
+            DevLauncherPublishedAppLoader(manifest!!, localBundlePath, appHost, context)
+          }
+        }
+      }
+
+      val appLoaderListener = appLoader.createOnDelegateWillBeCreatedListener()
+      lifecycle.addListener(appLoaderListener)
+      mode = Mode.APP
+
+      // Note that `launch` method is a suspend one. So the execution will be stopped here until the method doesn't finish.
+      if (appLoader.launch(appIntent)) {
+        recentlyOpedAppsRegistry.appWasOpened(url, appLoader.getAppName())
+        latestLoadedApp = url
+        // Here the app will be loaded - we can remove listener here.
+        lifecycle.removeListener(appLoaderListener)
+      } else {
+        // The app couldn't be loaded. For now, we just return to the launcher.
+        mode = Mode.LAUNCHER
+        manifest = null
+      }
+    } catch (e: Exception) {
+      synchronized(this) {
+        appIsLoading = false
+      }
+      throw e
     }
   }
 
+  fun onAppLoaded(context: ReactContext) {
+    // App can be started from deep link.
+    // That's why, we maybe need to initialized dev menu here.
+    maybeInitDevMenuDelegate(context)
+    synchronized(this) {
+      appIsLoading = false
+    }
+  }
+
+  fun onAppLoadedWithError() {
+    synchronized(this) {
+      appIsLoading = false
+    }
+  }
+  
   fun getRecentlyOpenedApps(): Map<String, String?> = recentlyOpedAppsRegistry.getRecentlyOpenedApps()
 
   fun navigateToLauncher() {
     ensureHostWasCleared(appHost)
+    synchronized(this) {
+      appIsLoading = false
+    }
 
     mode = Mode.LAUNCHER
     manifest = null

@@ -33,7 +33,7 @@ const buildGradlePath = path.join(ANDROID_DIR, 'build.gradle');
 const sdkVersionsPath = path.join(ANDROID_DIR, 'sdkVersions.json');
 const rnActivityPath = path.join(
   expoviewPath,
-  'src/main/java/host/exp/exponent/experience/MultipleVersionReactNativeActivity.java'
+  'src/versioned/java/host/exp/exponent/experience/MultipleVersionReactNativeActivity.java'
 );
 const expoviewConstantsPath = path.join(
   expoviewPath,
@@ -259,6 +259,31 @@ async function processMkFileAsync(filename: string, abiVersion: string) {
   }
 }
 
+async function processCMake(filePath: string, abiVersion: string) {
+  const libNameToReplace = new Set<string>();
+  for (const libName of JniLibNames) {
+    if (libName.startsWith('lib')) {
+      // in CMake we don't use the lib prefix
+      libNameToReplace.add(libName.slice(3));
+    } else {
+      libNameToReplace.add(libName);
+    }
+  }
+
+  libNameToReplace.delete('fb');
+  libNameToReplace.delete('fbjni'); // we use the prebuilt binary which is part of the `com.facebook.fbjni:fbjni`
+
+  for (const libName of libNameToReplace) {
+    await spawnAsync(
+      `sed -ri '' 's/${libName}([^\/]*$)/${libName}_abi${abiVersion}\\1/g' ${filePath}`,
+      [],
+      {
+        shell: true,
+      }
+    );
+  }
+}
+
 async function processJavaCodeAsync(libName: string, abiVersion: string) {
   const abiName = `abi${abiVersion}`;
   return spawnAsync(
@@ -313,13 +338,17 @@ async function renameJniLibsAsync(version: string) {
   }
 
   // Update LOCAL_MODULE, LOCAL_SHARED_LIBRARIES, LOCAL_STATIC_LIBRARIES fields in .mk files
-  let [reactCommonMkFiles, reactAndroidMkFiles, reanimatedMKFiles] = await Promise.all([
+  let [reactCommonMkFiles, reactAndroidMkFiles, versionedAbiMKFiles] = await Promise.all([
     glob(path.join(versionedReactCommonPath, '**/*.mk')),
     glob(path.join(versionedReactAndroidJniPath, '**/*.mk')),
     glob(path.join(versionedAbiPath, '**/*.mk')),
   ]);
-  let filenames = [...reactCommonMkFiles, ...reactAndroidMkFiles, ...reanimatedMKFiles];
+  let filenames = [...reactCommonMkFiles, ...reactAndroidMkFiles, ...versionedAbiMKFiles];
   await Promise.all(filenames.map((filename) => processMkFileAsync(filename, abiVersion)));
+
+  // Rename references to JNI libs in CMake
+  const cmakesFiles = await glob(path.join(versionedAbiPath, '**/CMakeLists.txt'));
+  await Promise.all(cmakesFiles.map((file) => processCMake(file, abiVersion)));
 
   // Rename references to JNI libs in Java code
   for (let i = 0; i < JniLibNames.length; i++) {
@@ -556,48 +585,106 @@ async function prepareReanimatedAsync(version: string): Promise<void> {
   await removeLeftoversFromGradle();
 }
 
-export async function addVersionAsync(version: string) {
-  console.log(' 🛠   1/9: Updating android/versioned-react-native...');
-  await updateVersionedReactNativeAsync();
-  console.log(' ✅  1/9: Finished\n\n');
+async function exportReactNdks() {
+  const versionedRN = path.join(versionedReactAndroidPath, '..');
+  await spawnAsync(`./gradlew :ReactAndroid:packageReactNdkLibs`, [], {
+    shell: true,
+    cwd: versionedRN,
+    stdio: 'inherit',
+  });
+}
 
-  console.log(' 🛠   2/9: Creating versioned expoview package...');
+async function exportReactNdksIfNeeded() {
+  const ndksPath = path.join(versionedReactAndroidPath, 'build', 'react-ndk', 'exported');
+  const exists = await fs.pathExists(ndksPath);
+  if (!exists) {
+    await exportReactNdks();
+    return;
+  }
+
+  const exportedSO = await glob(path.join(ndksPath, '**/*.so'));
+  if (exportedSO.length === 0) {
+    await exportReactNdks();
+  }
+}
+
+async function renameHermesEngine(version: string) {
+  const abiVersion = version.replace(/\./g, '_');
+  const abiName = `abi${abiVersion}`;
+  const prebuiltHermesMkPath = path.join(
+    versionedReactAndroidPath,
+    'src',
+    'main',
+    'jni',
+    'first-party',
+    'hermes',
+    'Android.mk'
+  );
+  await transformFileAsync(
+    prebuiltHermesMkPath,
+    /^(LOCAL_SRC_FILES\s+:=\s+jni\/\$\(TARGET_ARCH_ABI\))\/libhermes.so$/gm,
+    `$1/libhermes_${abiName}.so`
+  );
+
+  const buildGradlePath = path.join(versionedReactAndroidPath, 'build.gradle');
+  const renameTask = `        rename '(.+).so', '$$1_abi${abiVersion}.so'\n`;
+  await transformFileAsync(
+    buildGradlePath,
+    /(into "\$thirdPartyNdkDir\/hermes"\n)(\s+?\})/gm,
+    `$1${renameTask}$2`
+  );
+}
+
+export async function addVersionAsync(version: string) {
+  console.log(' 🛠   1/11: Updating android/versioned-react-native...');
+  await updateVersionedReactNativeAsync();
+  console.log(' ✅  1/11: Finished\n\n');
+
+  console.log(' 🛠   2/11: Creating versioned expoview package...');
   await spawnAsync('./android-copy-expoview.sh', [version], {
     shell: true,
     cwd: SCRIPT_DIR,
   });
 
-  console.log(' ✅  2/9: Finished\n\n');
+  console.log(' ✅  2/11: Finished\n\n');
 
-  console.log(' 🛠   3/9: Renaming JNI libs in android/versioned-react-native and Reanimated...');
+  console.log(' 🛠   3/11: Renaming JNI libs in android/versioned-react-native and Reanimated...');
   await renameJniLibsAsync(version);
-  console.log(' ✅  3/9: Finished\n\n');
+  console.log(' ✅  3/11: Finished\n\n');
 
-  console.log(' 🛠   4/9: prepare versioned Reanimated...');
-  await prepareReanimatedAsync(version);
-  console.log(' ✅  4/9: Finished\n\n');
+  console.log(' 🛠   4/11: Renaming libhermes.so...');
+  await renameHermesEngine(version);
+  console.log(' ✅  4/11: Finished\n\n');
 
-  console.log(' 🛠   5/9: Building versioned ReactAndroid AAR...');
+  console.log(' 🛠   5/11: Building versioned ReactAndroid AAR...');
   await spawnAsync('./android-build-aar.sh', [version], {
     shell: true,
     cwd: SCRIPT_DIR,
     stdio: 'inherit',
   });
-  console.log(' ✅  5/9: Finished\n\n');
+  console.log(' ✅  5/11: Finished\n\n');
 
-  console.log(' 🛠   6/9: Creating versioned unimodule packages...');
+  console.log(' 🛠   6/11: Exporting react ndks if needed...');
+  await exportReactNdksIfNeeded();
+  console.log(' ✅  6/11: Finished\n\n');
+
+  console.log(' 🛠   7/11: prepare versioned Reanimated...');
+  await prepareReanimatedAsync(version);
+  console.log(' ✅  7/11: Finished\n\n');
+
+  console.log(' 🛠   8/11: Creating versioned unimodule packages...');
   await copyUnimodulesAsync(version);
-  console.log(' ✅  6/9: Finished\n\n');
+  console.log(' ✅  8/11: Finished\n\n');
 
-  console.log(' 🛠   7/9: Adding extra versioned activites to AndroidManifest...');
+  console.log(' 🛠   9/11: Adding extra versioned activites to AndroidManifest...');
   await addVersionedActivitesToManifests(version);
-  console.log(' ✅  7/9: Finished\n\n');
+  console.log(' ✅  9/11: Finished\n\n');
 
-  console.log(' 🛠   8/9: Registering new version under sdkVersions config...');
+  console.log(' 🛠   10/11: Registering new version under sdkVersions config...');
   await registerNewVersionUnderSdkVersions(version);
-  console.log(' ✅  8/9: Finished\n\n');
+  console.log(' ✅  10/11: Finished\n\n');
 
-  console.log(' 🛠   9/9: Misc cleanup...');
+  console.log(' 🛠   11/11: Misc cleanup...');
   await cleanUpAsync(version);
-  console.log(' ✅  9/9: Finished');
+  console.log(' ✅  11/11: Finished');
 }

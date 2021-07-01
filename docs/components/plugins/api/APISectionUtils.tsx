@@ -12,7 +12,6 @@ import {
   CommentData,
   MethodParamData,
   TypeDefinitionData,
-  TypeDefinitionTypesData,
 } from '~/components/plugins/api/APIDataTypes';
 
 export enum TypeDocKind {
@@ -51,7 +50,7 @@ export const mdInlineRenderers: MDRenderers = {
   paragraph: ({ children }) => (children ? <span>{children}</span> : null),
 };
 
-const nonLinkableTypes = ['Date', 'T', 'TaskOptions', 'Uint8Array'];
+const nonLinkableTypes = ['Date', 'Error', 'T', 'TaskOptions', 'Uint8Array'];
 
 export const resolveTypeName = ({
   elementType,
@@ -60,6 +59,8 @@ export const resolveTypeName = ({
   types,
   typeArguments,
   declaration,
+  value,
+  queryType,
 }: TypeDefinitionData): string | JSX.Element | (string | JSX.Element)[] => {
   if (name) {
     if (type === 'reference') {
@@ -67,9 +68,20 @@ export const resolveTypeName = ({
         if (name === 'Promise') {
           return (
             <span>
-              {'Promise<'}
-              {typeArguments.map(resolveTypeName)}
-              {'>'}
+              {name}&lt;{typeArguments.map(resolveTypeName)}&gt;
+            </span>
+          );
+        } else if (name === 'Record' || name === 'React.ComponentProps') {
+          return (
+            <span>
+              {name}&lt;
+              {typeArguments.map((type, index) => (
+                <span key={`record-type-${index}`}>
+                  {resolveTypeName(type)}
+                  {index !== typeArguments.length - 1 ? ', ' : ''}
+                </span>
+              ))}
+              &gt;
             </span>
           );
         } else {
@@ -104,7 +116,7 @@ export const resolveTypeName = ({
     return elementType.name + type;
   } else if (type === 'union' && types?.length) {
     return types
-      .map((t: TypeDefinitionTypesData) =>
+      .map((t: TypeDefinitionData) =>
         t.type === 'reference' ? (
           <Link href={`#${t.name?.toLowerCase()}`} key={`type-link-${t.name}`}>
             {t.name}
@@ -132,15 +144,23 @@ export const resolveTypeName = ({
           {baseSignature.parameters?.map((param, index) => (
             <span key={`param-${index}-${param.name}`}>
               {param.name}: {resolveTypeName(param.type)}
-              {index + 1 !== baseSignature.parameters.length && ', '}
+              {index + 1 !== baseSignature.parameters?.length && ', '}
             </span>
           ))}
           ) {'=>'} {resolveTypeName(baseSignature.type)}
         </>
       );
     } else {
-      return `() => ${resolveTypeName(baseSignature.type)}`;
+      return (
+        <>
+          {'() =>'} {resolveTypeName(baseSignature.type)}
+        </>
+      );
     }
+  } else if (type === 'query' && queryType) {
+    return queryType.name;
+  } else if (type === 'literal' && value) {
+    return `'${value}'`;
   }
   return 'undefined';
 };
@@ -158,12 +178,14 @@ export type CommentTextBlockProps = {
   comment?: CommentData;
   renderers?: MDRenderers;
   withDash?: boolean;
+  beforeContent?: JSX.Element;
 };
 
 export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
   comment,
   renderers = mdRenderers,
   withDash,
+  beforeContent,
 }) => {
   const shortText = comment?.shortText?.trim().length ? (
     <ReactMarkdown renderers={renderers}>{comment.shortText}</ReactMarkdown>
@@ -171,11 +193,27 @@ export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
   const text = comment?.text?.trim().length ? (
     <ReactMarkdown renderers={renderers}>{comment.text}</ReactMarkdown>
   ) : null;
+
+  const example = comment?.tags?.filter(tag => tag.tag === 'example')[0];
+  const exampleText = example ? (
+    <ReactMarkdown renderers={renderers}>{`__Example:__ ${example.text}`}</ReactMarkdown>
+  ) : null;
+
+  const deprecation = comment?.tags?.filter(tag => tag.tag === 'deprecated')[0];
+  const deprecationNote = deprecation ? (
+    <Quote key="deprecation-note">
+      <B>{deprecation.text.trim().length ? deprecation.text : 'Deprecated'}</B>
+    </Quote>
+  ) : null;
+
   return (
     <>
+      {deprecationNote}
+      {beforeContent}
       {withDash && (shortText || text) ? ' - ' : null}
       {shortText}
       {text}
+      {exampleText}
     </>
   );
 };

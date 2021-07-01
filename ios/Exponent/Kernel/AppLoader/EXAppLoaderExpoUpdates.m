@@ -154,7 +154,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)supportsBundleReload
 {
   if (_optimisticManifest) {
-    return _optimisticManifest.isDevelopmentMode;
+    return _optimisticManifest.isUsingDeveloperTool;
   }
   return NO;
 }
@@ -184,7 +184,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   [self _setShouldShowRemoteUpdateStatus:update.rawManifest];
   // if cached manifest was dev mode, or a previous run of this app failed due to a loading error, we want to make sure to check for remote updates
-  if (update.rawManifest.isUsingDeveloperTool || [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:[EXAppFetcher experienceIdWithManifest:update.rawManifest]]) {
+  if (update.rawManifest.isUsingDeveloperTool || [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager scopeKeyIsRecoveringFromError:update.rawManifest.scopeKey]) {
     return NO;
   }
   return YES;
@@ -481,17 +481,16 @@ NS_ASSUME_NONNULL_BEGIN
     mutableManifest[@"isVerified"] = @(NO);
   }
 
-  if (![mutableManifest[@"isVerified"] boolValue] && (EXEnvironment.sharedEnvironment.isManifestVerificationBypassed || [self _isAnonymousExperience:manifest])) {
+  if (![mutableManifest[@"isVerified"] boolValue] && (EXEnvironment.sharedEnvironment.isManifestVerificationBypassed || [EXAppLoaderExpoUpdates _isAnonymousExperience:manifest])) {
     mutableManifest[@"isVerified"] = @(YES);
   }
 
   return [EXUpdatesUpdate rawManifestForJSON:[mutableManifest copy]];
 }
 
-- (BOOL)_isAnonymousExperience:(EXUpdatesRawManifest *)manifest
++ (BOOL)_isAnonymousExperience:(EXUpdatesRawManifest *)manifest
 {
-  NSString *experienceId = manifest.rawID;
-  return experienceId != nil && [experienceId hasPrefix:@"@anonymous/"];
+  return manifest.legacyId != nil && [manifest.legacyId hasPrefix:@"@anonymous/"];
 }
 
 #pragma mark - headers

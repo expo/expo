@@ -7,6 +7,7 @@ let CARD_FIELD_INSTANCE_ID = "CardFieldInstance"
 class CardFieldView: UIView, STPPaymentCardTextFieldDelegate {
     @objc var onCardChange: RCTDirectEventBlock?
     @objc var onFocusChange: RCTDirectEventBlock?
+    @objc var dangerouslyGetFullCardDetails: Bool = false
     
     private var cardField = STPPaymentCardTextField()
     
@@ -19,55 +20,69 @@ class CardFieldView: UIView, STPPaymentCardTextFieldDelegate {
             cardField.postalCodeEntryEnabled = postalCodeEnabled
         }
     }
-    
+
     @objc var placeholder: NSDictionary = NSDictionary() {
         didSet {
-            if let numberPlaceholder = placeholder["number"]  as? String {
+            if let numberPlaceholder = placeholder["number"] as? String {
                 cardField.numberPlaceholder = numberPlaceholder
             } else {
                 cardField.numberPlaceholder = "1234123412341234"
             }
-            if let expirationPlaceholder = placeholder["expiration"]  as? String {
+            if let expirationPlaceholder = placeholder["expiration"] as? String {
                 cardField.expirationPlaceholder = expirationPlaceholder
             }
-            if let cvcPlaceholder = placeholder["cvc"]  as? String {
+            if let cvcPlaceholder = placeholder["cvc"] as? String {
                 cardField.cvcPlaceholder = cvcPlaceholder
             }
-            if let postalCodePlaceholder = placeholder["postalCode"]  as? String {
+            if let postalCodePlaceholder = placeholder["postalCode"] as? String {
                 cardField.postalCodePlaceholder = postalCodePlaceholder
+            }
+        }
+    }
+    
+    @objc var autofocus: Bool = false {
+        didSet {
+            if autofocus == true {
+                cardField.reactFocus()
             }
         }
     }
     
     @objc var cardStyle: NSDictionary = NSDictionary() {
         didSet {
-            if let borderWidth = cardStyle["borderWidth"]  as? Int {
+            if let borderWidth = cardStyle["borderWidth"] as? Int {
                 cardField.borderWidth = CGFloat(borderWidth)
             } else {
                 cardField.borderWidth = CGFloat(0)
             }
-            if let backgroundColor = cardStyle["backgroundColor"]  as? String {
+            if let backgroundColor = cardStyle["backgroundColor"] as? String {
                 cardField.backgroundColor = UIColor(hexString: backgroundColor)
             }
-            if let borderColor = cardStyle["borderColor"]  as? String {
+            if let borderColor = cardStyle["borderColor"] as? String {
                 cardField.borderColor = UIColor(hexString: borderColor)
             }
-            if let borderRadius = cardStyle["borderRadius"]  as? Int {
+            if let borderRadius = cardStyle["borderRadius"] as? Int {
                 cardField.cornerRadius = CGFloat(borderRadius)
             }
-            if let cursorColor = cardStyle["cursorColor"]  as? String {
+            if let cursorColor = cardStyle["cursorColor"] as? String {
                 cardField.cursorColor = UIColor(hexString: cursorColor)
             }
-            if let textColor = cardStyle["textColor"]  as? String {
+            if let textColor = cardStyle["textColor"] as? String {
                 cardField.textColor = UIColor(hexString: textColor)
             }
-            if let textErrorColor = cardStyle["textErrorColor"]  as? String {
+            if let textErrorColor = cardStyle["textErrorColor"] as? String {
                 cardField.textErrorColor = UIColor(hexString: textErrorColor)
             }
-            if let fontSize = cardStyle["fontSize"]  as? Int {
-                cardField.font = UIFont.systemFont(ofSize: CGFloat(fontSize))
+            let fontSize = cardStyle["fontSize"] as? Int ?? 14
+
+            if let fontFamily = cardStyle["fontFamily"] as? String {
+                cardField.font = UIFont(name: fontFamily, size: CGFloat(fontSize)) ?? UIFont.systemFont(ofSize: CGFloat(fontSize))
+            } else {
+                if let fontSize = cardStyle["fontSize"] as? Int {
+                    cardField.font = UIFont.systemFont(ofSize: CGFloat(fontSize))
+                }
             }
-            if let placeholderColor = cardStyle["placeholderColor"]  as? String {
+            if let placeholderColor = cardStyle["placeholderColor"] as? String {
                 cardField.placeholderColor = UIColor(hexString: placeholderColor)
             }
         }
@@ -76,7 +91,7 @@ class CardFieldView: UIView, STPPaymentCardTextFieldDelegate {
     override init(frame: CGRect) {
         super.init(frame: frame)
         cardField.delegate = self
-        
+
         self.addSubview(cardField)
     }
     
@@ -110,20 +125,25 @@ class CardFieldView: UIView, STPPaymentCardTextFieldDelegate {
     func paymentCardTextFieldDidChange(_ textField: STPPaymentCardTextField) {
         if onCardChange != nil {
             let brand = STPCardValidator.brand(forNumber: textField.cardParams.number ?? "")
-            var cardData: [String: Any] = [
-                "expiryMonth": textField.cardParams.expMonth?.stringValue ?? "",
-                "expiryYear": textField.cardParams.expYear?.stringValue ?? "",
+            var cardData: [String: Any?] = [
+                "expiryMonth": textField.cardParams.expMonth ?? NSNull(),
+                "expiryYear": textField.cardParams.expYear ?? NSNull(),
                 "complete": textField.isValid,
-                "brand": Mappers.mapCardBrand(brand),
+                "brand": Mappers.mapCardBrand(brand) ?? NSNull(),
                 "last4": textField.cardParams.last4 ?? ""
             ]
             if (cardField.postalCodeEntryEnabled) {
                 cardData["postalCode"] = textField.postalCode ?? ""
             }
-            onCardChange!(cardData)
+            if (dangerouslyGetFullCardDetails) {
+                cardData["number"] = textField.cardParams.number ?? ""
+            }
+            onCardChange!(cardData as [AnyHashable : Any])
         }
         if (textField.isValid) {
             self.cardParams = textField.cardParams
+        } else {
+            self.cardParams = nil
         }
     }
     

@@ -1,7 +1,10 @@
 import { useNavigation } from '@react-navigation/native';
 import * as React from 'react';
 
-import requestCameraPermissionsAsync from '../utils/requestCameraPermissionsAsync';
+import {
+  alertWithCameraPermissionInstructions,
+  requestCameraPermissionsAsync,
+} from '../utils/PermissionUtils';
 import ListItem from './ListItem';
 
 type Props = React.ComponentProps<typeof ListItem>;
@@ -13,7 +16,7 @@ function QRCodeButton(props: Props) {
     if (await requestCameraPermissionsAsync()) {
       navigation.navigate('QRCode');
     } else {
-      alert('In order to use the QR Code scanner you need to provide camera permissions');
+      await alertWithCameraPermissionInstructions();
     }
   };
   return (

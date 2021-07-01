@@ -1,7 +1,7 @@
 #import <ABI41_0_0React/ABI41_0_0RCTBridgeModule.h>
 #import <ABI41_0_0React/ABI41_0_0RCTEventEmitter.h>
 
-@interface ABI41_0_0RCT_EXTERN_MODULE(StripeSdk, ABI41_0_0RCTEventEmitter)
+@interface ABI41_0_0RCT_EXTERN_REMAP_MODULE(StripeSdk, ABI41_0_0StripeSdk, ABI41_0_0RCTEventEmitter)
 
 
 ABI41_0_0RCT_EXTERN_METHOD(

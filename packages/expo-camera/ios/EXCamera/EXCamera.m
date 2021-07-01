@@ -22,6 +22,7 @@
 @property (nonatomic, weak) id<UMAppLifecycleService> lifecycleManager;
 
 @property (nonatomic, assign, getter=isSessionPaused) BOOL paused;
+@property (nonatomic, assign) BOOL isValidVideoOptions;
 
 @property (nonatomic, strong) NSDictionary *photoCaptureOptions;
 @property (nonatomic, strong) UMPromiseResolveBlock photoCapturedResolve;
@@ -60,6 +61,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     _previewLayer.needsDisplayOnBoundsChange = YES;
 #endif
     _paused = NO;
+    _isValidVideoOptions = YES;
     _pictureSize = AVCaptureSessionPresetHigh;
     [self changePreviewOrientation:[UIApplication sharedApplication].statusBarOrientation];
     [self initializeCaptureSessionInput];
@@ -509,8 +511,6 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
   }
 
   if (_movieFileOutput != nil && !_movieFileOutput.isRecording && _videoRecordedResolve == nil && _videoRecordedReject == nil) {
-
-
     bool shouldBeMuted = options[@"mute"] && [options[@"mute"] boolValue];
     [self updateSessionAudioIsMuted:shouldBeMuted];
 
@@ -534,6 +534,12 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     UM_WEAKIFY(self);
     dispatch_async(self.sessionQueue, ^{
       UM_STRONGIFY(self);
+      // it is possible that the session has been invalidated at this point
+      // for example, the video codec option is invalid and so this call has already rejected
+      if (!self.isValidVideoOptions) {
+        return;
+      }
+
       if (!self) {
         reject(@"E_IMAGE_SAVE_FAILED", @"Camera view has been unmounted.", nil);
         return;
@@ -559,7 +565,9 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
   UM_WEAKIFY(self);
   dispatch_async(_sessionQueue, ^{
     UM_STRONGIFY(self);
-    
+    // Reset validation flag
+    self.isValidVideoOptions = YES;
+
     if (options[@"maxDuration"]) {
       Float64 maxDuration = [options[@"maxDuration"] floatValue];
       self.movieFileOutput.maxRecordedDuration = CMTimeMakeWithSeconds(maxDuration, 30);
@@ -593,12 +601,14 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
         }
         NSString *videoCodecErrorMessage = [NSString stringWithFormat: @"Video Codec '%@' is not supported on this device", videoCodecType];
         reject(@"E_RECORDING_FAILED", videoCodecErrorMessage, nil);
-
+        
         [self cleanupMovieFileCapture];
         self.videoRecordedResolve = nil;
         self.videoRecordedReject = nil;
+        self.isValidVideoOptions = NO;
       }
     }
+    
   });
 }
 

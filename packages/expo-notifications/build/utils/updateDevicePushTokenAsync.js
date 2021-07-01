@@ -10,7 +10,7 @@ export async function updateDevicePushTokenAsync(signal, token) {
             getDeviceIdAsync(),
         ]);
         const body = {
-            deviceId,
+            deviceId: deviceId.toLowerCase(),
             development,
             deviceToken: token.data,
             appId: Application.applicationId,

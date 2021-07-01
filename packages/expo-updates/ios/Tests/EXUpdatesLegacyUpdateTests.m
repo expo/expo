@@ -175,4 +175,36 @@
   XCTAssertThrows([EXUpdatesLegacyUpdate updateWithLegacyManifest:manifest config:_config database:_database]);
 }
 
+- (void)testUpdateWithLegacyManifest_setsUpdateRuntimeAsSdkIfNoManifestRuntime
+{
+  NSString *sdkVersion = @"39.0.0";
+  EXUpdatesLegacyRawManifest *manifest = [[EXUpdatesLegacyRawManifest alloc] initWithRawManifestJSON:@{
+    @"sdkVersion": sdkVersion,
+    @"releaseId": @"0eef8214-4833-4089-9dff-b4138a14f196",
+    @"bundleUrl": @"https://url.to/bundle.js",
+    @"commitTime": @"2020-11-11T00:17:54.797Z"
+  }];
+   
+  EXUpdatesUpdate *update = [EXUpdatesLegacyUpdate updateWithLegacyManifest:manifest config:_config database:_database];
+  
+  XCTAssertEqualObjects(sdkVersion, update.runtimeVersion);
+}
+
+- (void)testUpdateWithLegacyManifest_setsUpdateRuntimeAsRuntimeIfBothManifestRuntime
+{
+  NSString *sdkVersion = @"39.0.0";
+  NSString *runtimeVersion = @"hello";
+  EXUpdatesLegacyRawManifest *manifest = [[EXUpdatesLegacyRawManifest alloc] initWithRawManifestJSON:@{
+    @"runtimeVersion": runtimeVersion,
+    @"sdkVersion": sdkVersion,
+    @"releaseId": @"0eef8214-4833-4089-9dff-b4138a14f196",
+    @"bundleUrl": @"https://url.to/bundle.js",
+    @"commitTime": @"2020-11-11T00:17:54.797Z"
+  }];
+   
+  EXUpdatesUpdate *update = [EXUpdatesLegacyUpdate updateWithLegacyManifest:manifest config:_config database:_database];
+  
+  XCTAssertEqualObjects(runtimeVersion, update.runtimeVersion);
+}
+
 @end

@@ -6,17 +6,15 @@
 @interface EXConstantsBinding ()
 
 @property (nonatomic, strong) NSString *appOwnership;
-@property (nonatomic, strong) NSString *experienceId;
 @property (nonatomic, strong) NSDictionary *unversionedConstants;
 
 @end
 
 @implementation EXConstantsBinding : EXConstantsService
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId andParams:(NSDictionary *)params
+- (instancetype)initWithParams:(NSDictionary *)params
 {
   if (self = [super init]) {
-    _experienceId = experienceId;
     _unversionedConstants = params[@"constants"];
     if (_unversionedConstants && _unversionedConstants[@"appOwnership"]) {
       _appOwnership = _unversionedConstants[@"appOwnership"];

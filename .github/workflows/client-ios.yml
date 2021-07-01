@@ -6,6 +6,8 @@ on:
       releaseSimulator:
         description: 'type "release-simulator" to confirm upload'
         required: false
+  schedule:
+    - cron: '20 5 * * 1,3,5' # 5:20 AM UTC time on every Monday, Wednesday and Friday
   pull_request:
     paths:
       - .github/workflows/client-ios.yml
@@ -91,16 +93,22 @@ jobs:
         id: flavor
         uses: dorny/paths-filter@v2
         with:
+          # this action fails when base is not set on schedule event
+          base: ${{ github.ref }}
           filters: |
             versioned:
               - ios/versioned-react-native/**
               - ios/Exponent/Versioned/**
       - name: 🏗 Build Expo Go for simulator
-        run: expotools client-build --platform ios --flavor ${{ steps.flavor.outputs.versioned == 'true' && 'versioned' || 'unversioned' }}
+        run: |
+          [[ "$IS_VERSIONED_FLAVOR" == "true" ]] && FLAVOR="versioned" || FLAVOR="unversioned"
+          echo "Building with $FLAVOR flavor"
+          expotools client-build --platform ios --flavor $FLAVOR
         timeout-minutes: 120
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          IS_VERSIONED_FLAVOR: ${{ github.event_name == 'schedule' || steps.flavor.outputs.versioned == 'true' }}
       - name: 💾 Save test results
         if: always()
         uses: actions/upload-artifact@v2

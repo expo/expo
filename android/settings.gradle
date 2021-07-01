@@ -13,6 +13,7 @@ project(":expo-random").projectDir = new File("../packages/expo-random/android")
 
 [
     // ADD_NEW_SUPPORTED_ABIS_HERE
+    "abi42_0_0",
     "abi41_0_0",
     "abi40_0_0",
     "abi39_0_0",

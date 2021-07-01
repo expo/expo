@@ -10,7 +10,7 @@ void runBefore(String dependentTaskName, Task task) {
   }
 }
 
-def expoConstantsDir = ["node", "-e", "console.log(require('path').dirname(require.resolve('expo-constants/package.json')));"].execute([], projectDir).text.trim()
+def expoConstantsDir = ["node", "-e", "console.log(require('path').dirname(require.resolve('expo-constants/package.json')));"].execute(null, projectDir).text.trim()
 
 def config = project.hasProperty("react") ? project.react : [];
 def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]

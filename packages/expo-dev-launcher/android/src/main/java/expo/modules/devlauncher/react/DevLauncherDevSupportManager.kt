@@ -42,6 +42,8 @@ class DevLauncherDevSupportManager(
     if (activity == null || activity.isFinishing || activity.isDestroyed) {
       return
     }
+
+    DevLauncherController.instance.onAppLoadedWithError()
     DevLauncherErrorActivity.showError(activity, DevLauncherAppError(message, e))
   }
 }

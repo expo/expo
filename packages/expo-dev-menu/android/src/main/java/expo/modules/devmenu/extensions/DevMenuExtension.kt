@@ -48,14 +48,6 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
       importance = DevMenuItemImportance.HIGHEST.value
     }
 
-    action("inspector", devDelegate::toggleElementInspector) {
-      isEnabled = { devSettings.isElementInspectorEnabled }
-      label = { if (isEnabled()) "Hide Element Inspector" else "Show Element Inspector" }
-      glyphName = { "border-style" }
-      keyCommand = KeyCommand(KeyEvent.KEYCODE_I)
-      importance = DevMenuItemImportance.HIGH.value
-    }
-
     action(
       "performance-monitor",
       {
@@ -68,6 +60,14 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
       label = { if (isEnabled()) "Hide Performance Monitor" else "Show Performance Monitor" }
       glyphName = { "speedometer" }
       keyCommand = KeyCommand(KeyEvent.KEYCODE_P)
+      importance = DevMenuItemImportance.HIGH.value
+    }
+
+    action("inspector", devDelegate::toggleElementInspector) {
+      isEnabled = { devSettings.isElementInspectorEnabled }
+      label = { if (isEnabled()) "Hide Element Inspector" else "Show Element Inspector" }
+      glyphName = { "border-style" }
+      keyCommand = KeyCommand(KeyEvent.KEYCODE_I)
       importance = DevMenuItemImportance.HIGH.value
     }
 

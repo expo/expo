@@ -6,10 +6,22 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- Update video codec validation to properly reject an invalid codec option. ([#13341](https://github.com/expo/expo/pull/13341) by [@ajsmth](https://github.com/ajsmth))
+
+### 💡 Others
+
+## 11.1.1 — 2021-06-16
+
+_This version does not introduce any user-facing changes._
+
+## 11.1.0 — 2021-06-07
+
+### 🎉 New features
+
 - On iOS added new `codec` parameter in `recordAsync()` method and new method `getAvailableVideoCodecsAsync()` that queries the device for available video codecs. ([#12772](https://github.com/expo/expo/pull/12772) by [@ajsmth](https://github.com/ajsmth))
 - Added new `requestCameraPermissionsAsync()`, `requestMicrophonePermissionsAsync()`, `getCameraPermissionsAsync()` and `getMicrophonePermissionsAsync()` methods which gives more fine-grained control over requested permissions. ([#12860](https://github.com/expo/expo/pull/12772) by [@ajsmth](https://github.com/ajsmth))
-
-### 🐛 Bug fixes
 
 ### 💡 Others
 

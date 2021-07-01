@@ -47,9 +47,12 @@ ABI41_0_0EX_EXPORT_SCOPED_MULTISERVICE_MODULE(ExponentNotifications, @"RemoteNot
   _bridge = bridge;
 }
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegates:(NSDictionary *)kernelServiceInstances params:(NSDictionary *)params
+- (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
+                              scopeKey:(NSString *)scopeKey
+                          kernelServiceDelegates:(NSDictionary *)kernelServiceInstances
+                                          params:(NSDictionary *)params
 {
-  if (self = [super initWithExperienceId:experienceId kernelServiceDelegates:kernelServiceInstances params:params]) {
+  if (self = [super initWithExperienceStableLegacyId:experienceStableLegacyId scopeKey:scopeKey kernelServiceDelegate:kernelServiceInstances params:params]) {
     _userNotificationCenter = kernelServiceInstances[@"UserNotificationCenter"];
     _remoteNotificationsDelegate = kernelServiceInstances[@"RemoteNotificationManager"];
     _notificationsIdentifiersManager = kernelServiceInstances[@"UserNotificationManager"];
@@ -80,7 +83,7 @@ ABI41_0_0RCT_REMAP_METHOD(getExponentPushTokenAsync,
                  getExponentPushTokenAsyncWithResolver:(ABI41_0_0RCTPromiseResolveBlock)resolve
                  rejecter:(ABI41_0_0RCTPromiseRejectBlock)reject)
 {
-  if (!self.experienceId) {
+  if (!self.experienceStableLegacyId) {
     reject(@"E_NOTIFICATIONS_INTERNAL_ERROR", @"The notifications module is missing the current project's ID", nil);
     return;
   }
@@ -212,7 +215,8 @@ ABI41_0_0RCT_EXPORT_METHOD(legacyScheduleLocalRepeatingNotification:(NSDictionar
   localNotification.applicationIconBadgeNumber = [ABI41_0_0RCTConvert NSInteger:payload[@"count"]] ?: 0;
   localNotification.userInfo = @{
                                  @"body": payload[@"data"],
-                                 @"experienceId": self.experienceId,
+                                 @"experienceId": self.scopeKey,
+                                 @"scopeKey": self.scopeKey,
                                  @"id": uniqueId
                                  };
   localNotification.fireDate = [ABI41_0_0RCTConvert NSDate:options[@"time"]] ?: [NSDate new];
@@ -256,7 +260,7 @@ ABI41_0_0RCT_REMAP_METHOD(cancelAllScheduledNotificationsAsync,
   [_userNotificationCenter getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
     NSMutableArray<NSString *> *requestsToCancelIdentifiers = [NSMutableArray new];
     for (UNNotificationRequest *request in requests) {
-      if ([request.content.userInfo[@"experienceId"] isEqualToString:self.experienceId]) {
+      if ([request.content.userInfo[@"experienceId"] isEqualToString:self.scopeKey]) {
         [requestsToCancelIdentifiers addObject:request.identifier];
       }
     }
@@ -378,7 +382,8 @@ ABI41_0_0RCT_REMAP_METHOD(deleteCategoryAsync,
 
   content.userInfo = @{
                        @"body": payload[@"data"],
-                       @"experienceId": self.experienceId,
+                       @"experienceId": self.scopeKey,
+                       @"scopeKey": self.scopeKey,
                        @"id": uniqueId
                        };
 
@@ -386,7 +391,7 @@ ABI41_0_0RCT_REMAP_METHOD(deleteCategoryAsync,
 }
 
 - (NSString *)internalIdForIdentifier:(NSString *)identifier {
-  return [_notificationsIdentifiersManager internalIdForIdentifier:identifier experienceId:self.experienceId];
+  return [_notificationsIdentifiersManager internalIdForIdentifier:identifier scopeKey:self.scopeKey];
 }
 
 - (UNCalendarNotificationTrigger *)notificationTriggerFor:(NSNumber * _Nullable)unixTime

@@ -15,9 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXScopedBranch : RNBranch <UMModuleRegistryConsumer, UMInternalModule>
 
-@property (nonatomic, strong) NSString *experienceId;
+@property (nonatomic, strong) NSString *scopeKey;
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId;
+- (instancetype)initWithScopeKey:(NSString *)scopeKey;
 
 @end
 

@@ -115,7 +115,7 @@ public class UpdatesConfiguration {
       mLaunchWaitMs = ai.metaData.getInt("expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS", 0);
 
       Object runtimeVersion = ai.metaData.get("expo.modules.updates.EXPO_RUNTIME_VERSION");
-      mRuntimeVersion = runtimeVersion == null ? null : String.valueOf(runtimeVersion);
+      mRuntimeVersion = runtimeVersion == null ? null : String.valueOf(runtimeVersion).replaceFirst("^string:","");
 
       String checkOnLaunchString = ai.metaData.getString("expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH", "ALWAYS");
       try {
@@ -220,8 +220,6 @@ public class UpdatesConfiguration {
     if (mScopeKey == null) {
       if (mUpdateUrl != null) {
         mScopeKey = getNormalizedUrlOrigin(mUpdateUrl);
-      } else {
-        throw new AssertionError("expo-updates must be configured with a valid update URL or scope key.");
       }
     }
   }

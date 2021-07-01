@@ -38,6 +38,7 @@ import expo.modules.updates.manifest.ManifestFactory;
 import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.exceptions.ManifestException;
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.kernel.ExpoViewKernel;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.kernel.KernelConfig;
@@ -270,9 +271,9 @@ public class ExpoUpdatesAppLoader {
           return false;
         } else {
           try {
-            String experienceId = update.getRawManifest().getID();
+            ExperienceKey experienceKey = ExperienceKey.fromRawManifest(update.getRawManifest());
             // if previous run of this app failed due to a loading error, we want to make sure to check for remote updates
-            JSONObject experienceMetadata = mExponentSharedPreferences.getExperienceMetadata(experienceId);
+            JSONObject experienceMetadata = mExponentSharedPreferences.getExperienceMetadata(experienceKey);
             if (experienceMetadata != null && experienceMetadata.optBoolean(ExponentSharedPreferences.EXPERIENCE_METADATA_LOADING_ERROR)) {
               return false;
             }

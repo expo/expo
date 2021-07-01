@@ -9,8 +9,7 @@ import {
   DefaultPropsDefinitionData,
   PropData,
   PropsDefinitionData,
-  TypeDeclarationData,
-  TypePropertyData,
+  TypeDefinitionData,
 } from '~/components/plugins/api/APIDataTypes';
 import {
   CommentTextBlock,
@@ -34,21 +33,20 @@ const extractDefaultPropValue = (
     return annotationDefault[0].text;
   }
   return defaultProps?.type?.declaration?.children?.filter(
-    (defaultProp: TypePropertyData) => defaultProp.name === name
+    (defaultProp: PropData) => defaultProp.name === name
   )[0]?.defaultValue;
 };
 
-const renderInheritedProp = (ip: TypeDeclarationData) => {
-  const component = ip?.typeArguments ? ip.typeArguments[0]?.queryType?.name : null;
-  return component ? (
-    <LI key={`inherited-prop-${component}`}>
-      <InlineCode>{component}</InlineCode>
+const renderInheritedProp = (ip: TypeDefinitionData) => {
+  return ip?.typeArguments ? (
+    <LI key={`inherited-prop-${ip.name}-${ip.type}`}>
+      <InlineCode>{resolveTypeName(ip)}</InlineCode>
     </LI>
   ) : null;
 };
 
-const renderInheritedProps = (data: TypeDeclarationData[]): JSX.Element | undefined => {
-  const inheritedProps = data?.filter((ip: TypeDeclarationData) => ip.type === 'reference') ?? [];
+const renderInheritedProps = (data: TypeDefinitionData[] | undefined): JSX.Element | undefined => {
+  const inheritedProps = data?.filter((ip: TypeDefinitionData) => ip.type === 'reference') ?? [];
   if (inheritedProps.length) {
     return (
       <div>
@@ -64,14 +62,17 @@ const renderProps = (
   { name, type }: PropsDefinitionData,
   defaultValues: DefaultPropsDefinitionData
 ): JSX.Element => {
-  const propsDeclarations = type.types?.filter((e: TypeDeclarationData) => e.declaration);
+  const propsDeclarations = type.types
+    ?.filter((t: TypeDefinitionData) => t.declaration)
+    .map(def => def?.declaration?.children)
+    .flat()
+    .filter((dec, i, arr) => arr.findIndex(t => t?.name === dec?.name) === i);
+
   return (
     <div key={`props-definition-${name}`}>
       <UL>
-        {propsDeclarations?.map((def: TypeDeclarationData) =>
-          def.declaration?.children.map((prop: PropData) =>
-            renderProp(prop, extractDefaultPropValue(prop, defaultValues))
-          )
+        {propsDeclarations?.map(prop =>
+          prop ? renderProp(prop, extractDefaultPropValue(prop, defaultValues)) : null
         )}
       </UL>
       {renderInheritedProps(type.types)}

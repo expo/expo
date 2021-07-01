@@ -113,7 +113,7 @@ tasks.whenTaskAdded {
     def credentialsJson = rootProject.file("../credentials.json");
 
     if (credentialsJson.exists()) {
-      if (storeFile && System.getenv("EAS_BUILD") != "true") {
+      if (storeFile && !System.getenv("EAS_BUILD")) {
         println("Path to release keystore file is already set, ignoring 'credentials.json'")
       } else {
         try {

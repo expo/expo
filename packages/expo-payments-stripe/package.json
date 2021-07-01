@@ -1,6 +1,6 @@
 {
   "name": "expo-payments-stripe",
-  "version": "9.2.3",
+  "version": "10.0.0",
   "description": "Provides support for payments through Stripe and Apple Pay on iOS (in bare apps), and Stripe on Android (plus Android Pay with bare apps).",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -33,7 +33,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/payments/",
   "dependencies": {
-    "@expo/config-plugins": "^2.0.0",
+    "@expo/config-plugins": "^3.0.0",
     "prop-types": "^15.6.0"
   },
   "devDependencies": {

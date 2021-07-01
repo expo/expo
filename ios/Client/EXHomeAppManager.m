@@ -20,7 +20,7 @@
 #import <React/RCTUtils.h>
 #import <React/RCTBridge.h>
 
-#import <UMCore/UMModuleRegistryProvider.h>
+#import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
 NSString * const kEXHomeLaunchUrlDefaultsKey = @"EXKernelLaunchUrlDefaultsKey";
 NSString *kEXHomeBundleResourceName = @"kernel.ios";
@@ -46,7 +46,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
     @"isStandardDevMenuAllowed": @(YES), // kernel enables traditional RN dev menu
     @"manifest": self.appRecord.appLoader.manifest.rawManifestJSON,
     @"services": [EXKernel sharedInstance].serviceRegistry.allServices,
-    @"singletonModules": [UMModuleRegistryProvider singletonModules],
+    @"singletonModules": [EXModuleRegistryProvider singletonModules],
     @"fileSystemDirectories": @{
         @"documentDirectory": [self scopedDocumentDirectory],
         @"cachesDirectory": [self scopedCachesDirectory]
@@ -64,7 +64,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
 
 - (void)addHistoryItemWithUrl:(NSURL *)manifestUrl manifest:(EXUpdatesRawManifest *)manifest
 {
-  if (!manifest || !manifestUrl || [manifest.rawID isEqualToString:@"@exponent/home"]) {
+  if (!manifest || !manifestUrl || [manifest.legacyId isEqualToString:@"@exponent/home"]) {
     return;
   }
   NSDictionary *params = @{
@@ -74,10 +74,10 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
   [self _dispatchHomeJSEvent:@"addHistoryItem" body:params onSuccess:nil onFailure:nil];
 }
 
-- (void)getHistoryUrlForExperienceId:(NSString *)experienceId completion:(void (^)(NSString *))completion
+- (void)getHistoryUrlForScopeKey:(NSString *)scopeKey completion:(void (^)(NSString *))completion
 {
   [self _dispatchHomeJSEvent:@"getHistoryUrlForExperienceId"
-                        body:@{ @"experienceId": experienceId }
+                        body:@{ @"experienceId": scopeKey }
                    onSuccess:^(NSDictionary *result) {
                      NSString *url = result[@"url"];
                      completion(url);

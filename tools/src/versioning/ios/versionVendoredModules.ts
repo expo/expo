@@ -22,7 +22,7 @@ export async function versionVendoredModulesAsync(
   const config = vendoredModulesTransforms(prefix);
   const baseTransforms = baseTransformsFactory(prefix);
   const unversionedDir = path.join(IOS_VENDORED_DIR, 'unversioned');
-  const versionedDir = path.join(IOS_VENDORED_DIR, `sdk${sdkNumber}`);
+  const versionedDir = vendoredDirectoryForSDK(sdkNumber);
   const sourceDirents = (await fs.readdir(unversionedDir, { withFileTypes: true })).filter(
     (dirent) => {
       return dirent.isDirectory() && (!filterModules || filterModules.includes(dirent.name));
@@ -54,6 +54,14 @@ export async function versionVendoredModulesAsync(
 }
 
 /**
+ * Removes the directory with vendored modules for given SDK number.
+ */
+export async function removeVersionedVendoredModulesAsync(sdkNumber: number): Promise<void> {
+  const versionedDir = vendoredDirectoryForSDK(sdkNumber);
+  await fs.remove(versionedDir);
+}
+
+/**
  * Generates base transforms to apply for all vendored modules.
  */
 function baseTransformsFactory(prefix: string): Required<FileTransforms> {
@@ -75,8 +83,9 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
         replaceWith: `"name": "${prefix}$1"`,
       },
       {
-        find: /\b(React)/g,
-        replaceWith: `${prefix}$1`,
+        // Prefixes `React` with word-boundary and also in `insertReactSubview`, `removeReactSubview`.
+        find: /(\b|insert|remove)(React)/g,
+        replaceWith: `$1${prefix}$2`,
       },
       {
         find: /\b(RCT|RNC|RNG|RNR|REA|RNS)(\w+)\b/g,
@@ -142,4 +151,11 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
       },
     ],
   };
+}
+
+/**
+ * Returns the vendored directory for given SDK number.
+ */
+function vendoredDirectoryForSDK(sdkNumber: number): string {
+  return path.join(IOS_VENDORED_DIR, `sdk${sdkNumber}`);
 }

@@ -15,7 +15,7 @@ import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import expo.modules.notifications.notifications.model.TextInputNotificationAction;
 import expo.modules.notifications.service.delegates.SharedPreferencesNotificationCategoriesStore;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.notifications.model.ScopedNotificationRequest;
 import versioned.host.exp.exponent.modules.api.notifications.ScopedNotificationsIdUtils;
 
@@ -32,7 +32,7 @@ public class ScopedCategoryAwareNotificationBuilder extends ScopedExpoNotificati
     String scopedCategoryIdentifier;
 
     if (requester instanceof ScopedNotificationRequest) {
-      scopedCategoryIdentifier = ScopedNotificationsIdUtils.getScopedCategoryId(ExperienceId.create(((ScopedNotificationRequest) requester).getExperienceIdString()), content.getCategoryId());
+      scopedCategoryIdentifier = ScopedNotificationsIdUtils.getScopedCategoryIdRaw(((ScopedNotificationRequest) requester).getExperienceScopeKeyString(), content.getCategoryId());
     } else {
       scopedCategoryIdentifier = content.getCategoryId();
     }

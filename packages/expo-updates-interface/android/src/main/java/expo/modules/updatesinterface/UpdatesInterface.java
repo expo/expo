@@ -20,7 +20,7 @@ public interface UpdatesInterface {
     /**
      * Called when a manifest has been downloaded. The return value indicates whether or not to
      * continue downloading the update described by this manifest. Returning `false` will abort the
-     * load and no other callback methods will be called.
+     * load, and the `onSuccess` callback will be immediately called with a null `update`.
      */
     boolean onManifestLoaded(JSONObject manifest);
   }
@@ -29,6 +29,8 @@ public interface UpdatesInterface {
     JSONObject getManifest();
     String getLaunchAssetPath();
   }
+
+  void reset();
 
   void fetchUpdateWithConfiguration(HashMap<String, Object> configuration, Context context, UpdateCallback callback);
 }

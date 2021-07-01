@@ -4,6 +4,7 @@ import findUp from 'find-up';
 import fs from 'fs-extra';
 import path from 'path';
 
+import { requireAndResolveExpoModuleConfig } from './ExpoModuleConfig';
 import {
   GenerateOptions,
   ModuleDescriptor,
@@ -13,8 +14,8 @@ import {
   SearchResults,
 } from './types';
 
-// TODO: Rename to `expo-module.json`
-const EXPO_MODULE_CONFIG_FILENAME = 'unimodule.json';
+// Names of the config files. From lowest to highest priority.
+const EXPO_MODULE_CONFIG_FILENAMES = ['unimodule.json', 'expo-module.config.json'];
 
 /**
  * Resolves autolinking search paths. If none is provided, it accumulates all node_modules when
@@ -59,19 +60,32 @@ export async function findModulesAsync(providedOptions: SearchOptions): Promise<
   const results: SearchResults = {};
 
   for (const searchPath of options.searchPaths) {
-    const paths = await glob(
-      [`*/${EXPO_MODULE_CONFIG_FILENAME}`, `@*/*/${EXPO_MODULE_CONFIG_FILENAME}`],
-      {
-        cwd: searchPath,
-      }
+    const bracedFilenames = '{' + EXPO_MODULE_CONFIG_FILENAMES.join(',') + '}';
+    const paths = await glob([`*/${bracedFilenames}`, `@*/*/${bracedFilenames}`], {
+      cwd: searchPath,
+    });
+
+    // If the package has multiple configs (e.g. `unimodule.json` and `expo-module.config.json` during the transition time)
+    // then we want to give `expo-module.config.json` the priority.
+    const uniqueConfigPaths: string[] = Object.values(
+      paths.reduce<Record<string, string>>((acc, configPath) => {
+        const dirname = path.dirname(configPath);
+
+        if (!acc[dirname] || configPriority(configPath) > configPriority(acc[dirname])) {
+          acc[dirname] = configPath;
+        }
+        return acc;
+      }, {})
     );
 
-    for (const packageConfigPath of paths) {
+    for (const packageConfigPath of uniqueConfigPaths) {
       const packagePath = await fs.realpath(path.join(searchPath, path.dirname(packageConfigPath)));
-      const packageConfig = require(path.join(packagePath, EXPO_MODULE_CONFIG_FILENAME));
+      const expoModuleConfig = requireAndResolveExpoModuleConfig(
+        path.join(packagePath, path.basename(packageConfigPath))
+      );
       const { name, version } = require(path.join(packagePath, 'package.json'));
 
-      if (options.exclude?.includes(name) || !packageConfig.platforms?.includes(options.platform)) {
+      if (options.exclude?.includes(name) || !expoModuleConfig.supportsPlatform(options.platform)) {
         continue;
       }
 
@@ -82,8 +96,12 @@ export async function findModulesAsync(providedOptions: SearchOptions): Promise<
 
       if (!results[name]) {
         // The revision that was found first will be the main one.
-        // An array of duplicates is needed only here.
-        results[name] = { ...currentRevision, duplicates: [] };
+        // An array of duplicates and the config are needed only here.
+        results[name] = {
+          ...currentRevision,
+          config: expoModuleConfig,
+          duplicates: [],
+        };
       } else if (
         results[name].path !== packagePath &&
         results[name].duplicates?.every(({ path }) => path !== packagePath)
@@ -197,4 +215,11 @@ export async function generatePackageListAsync(
       chalk.red(`Generating package list is not available for platform: ${options.platform}`)
     );
   }
+}
+
+/**
+ * Returns the priority of the config at given path. Higher number means higher priority.
+ */
+function configPriority(fullpath: string): number {
+  return EXPO_MODULE_CONFIG_FILENAMES.indexOf(path.basename(fullpath));
 }

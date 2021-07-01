@@ -9,7 +9,7 @@ Provides an API to fetch push notification tokens and to present, schedule, rece
 - 1️⃣ get and set application badge icon number,
 - 📲 fetch a native device push token so you can send push notifications with FCM and APNS,
 - 😎 fetch an Expo push token so you can send push notifications with Expo,
-- 📬 listen to incoming notifications,
+- 📬 listen to incoming notifications in the foreground and background,
 - 👆 listen to interactions with notifications (tapping or dismissing),
 - 🎛 handle notifications when the app is in foreground,
 - 🔕 imperatively dismiss notifications from Notification Center/tray,
@@ -47,70 +47,40 @@ In order to be able to receive push notifications on the device ensure that your
 
 This module requires permission to subscribe to device boot. It's used to setup the scheduled notifications right after the device (re)starts. The `RECEIVE_BOOT_COMPLETED` permission is added automatically.
 
-The notification icon and the default color can be customized.
+### Optional setup for notification icon, tint color, and custom sounds
 
-- **To customize the icon**:
+If you're using EAS Build or the bare workflow, you can set your Android notification icon and color tint, add custom push notification sounds, and set your iOS notification environment using the `expo-notifications` config plugin ([what's a config plugin?](http://docs.expo.io/guides/config-plugins/)). To setup, just add the config plugin to the `plugins` array of your `app.json` or `app.config.js`:
 
-  You can customize two icons: the default and the large one. See [the Android documentation](https://developer.android.com/guide/topics/ui/notifiers/notifications#Templates) for more details. The steps for them are very similar. The only difference is the tag in the second step.
-
-  1. You will need to ensure that the icon is properly set up and added the project. To read more on how to create a notification icon and add it to the project check out the [“Create notification icon” section](https://developer.android.com/studio/write/image-asset-studio#create-notification) at the official Android guide. Remember the name you use for the icon asset, you will need it later!
-  2. Then head over to `android/app/src/main/AndroidManifest.xml` and add a `<meta-data>` tag of `android:name="expo.modules.notifications.default_notification_icon"` (or `android:name="expo.modules.notifications.large_notification_icon"` if you are changing the large icon) inside the `<application>` node referencing the custom icon with `@drawable/<notification_icon_name_you_used_in_step_1>`, like [here](https://github.com/expo/expo/blob/335e67a1a3a91598c02061f3318a881541d0d57a/apps/bare-expo/android/app/src/main/AndroidManifest.xml#L44-L46).
-  3. In the end your `AndroidManifest.xml` should look more or less like this:
-
-  ```xml
-  <manifest xmlns:android="http://schemas.android.com/apk/res/android" ...>
+```json
+{
+  "expo": {
     ...
-    <application ...>
-      ...
-      <meta-data
-        android:name="expo.modules.notifications.default_notification_icon"
-        android:resource="@drawable/ic_stat_notifications" /> <!-- @drawable/<insert_notification_icon_name> -->
-      ...
-    </application>
-  </manifest>
-  ```
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./local/path/to/myNotificationIcon.png",
+          "color": "#ffffff",
+          "sounds": ["./local/path/to/mySound.wav", "./local/path/to/myOtherSound.wav"],
+          "mode": "production"
+        }
+      ]
+    ],
+  }
+}
+```
 
-- **To customize the default color of the notification**:
-  1. you will need a color resource added to the native project's resources. Some information on how to do this can be found in [the official Android guide](https://developer.android.com/guide/topics/resources/more-resources#Color). The most simple and fail-safe instructions would be to:
-     1. ensure that there is a file under `android/app/src/main/res/values/colors.xml` (if there is none, create it)
-     2. ensure that it's a valid resources XML file (it should start with a `<?xml version="1.0" encoding="utf-8"?>` declaration and have a root node of `<resources>`)
-     3. inside the `<resources>` node add a `<color>` node with an arbitrary name (like `notification_icon_color`) containing the color in HEX format inside, like [here](https://github.com/expo/expo/blob/335e67a1a3a91598c02061f3318a881541d0d57a/apps/bare-expo/android/app/src/main/res/values/colors.xml#L3).
-     4. in the end your `colors.xml` should look more or less like this:
-        ```java
-        <?xml version="1.0" encoding="utf-8"?>
-        <resources>
-          <color name="notification_icon_color">#4630EB</color>
-        </resources>
-        ```
-  2. now, when the color is added to the project, we need to configure `expo-notifications` to use it when it displays a notification — head over to `android/app/src/main/AndroidManifest.xml` and add a `<meta-data>` tag of `android:name="expo.modules.notifications.default_notification_color"` inside the `<application>` node referencing the custom icon with `@color/<notification_icon_color_name>`, like [here](https://github.com/expo/expo/blob/335e67a1a3a91598c02061f3318a881541d0d57a/apps/bare-expo/android/app/src/main/AndroidManifest.xml#L47-L49).
-  3. In the end your `AndroidManifest.xml` should look more or less like this:
-  ```xml
-  <manifest xmlns:android="http://schemas.android.com/apk/res/android" ...>
-    ...
-    <application ...>
-      ...
-      <meta-data
-        android:name="expo.modules.notifications.default_notification_color"
-        android:resource="@color/notification_icon_color" /> <!-- @color/<insert_notification_icon_color_name> -->
-      ...
-    </application>
-  </manifest>
-  ```
-- An `AndroidManifest.xml` with both color (of name `notification_icon_color`) and an icon (of name `ic_stat_notifications`) name would look like this:
-  ```xml
-  <manifest xmlns:android="http://schemas.android.com/apk/res/android" ...>
-    <application ...>
-      ...
-      <meta-data
-        android:name="expo.modules.notifications.default_notification_icon"
-        android:resource="@drawable/ic_stat_notifications" />
-      <meta-data
-        android:name="expo.modules.notifications.default_notification_color"
-        android:resource="@color/notification_icon_color" />
-      ...
-    </application>
-  </manifest>
-  ```
+<details><summary><strong>Expand to view property descriptions and default values</strong></summary> <p>
+
+- **icon**: Android only. Local path to an image to use as the icon for push notifications. 96x96 all-white png with transparency.
+- **color**: Android only. Tint color for the push notification image when it appears in the notification tray. Default: "#ffffff".
+- **sounds**: Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds.
+- **mode**: iOS only. Environment of the app: either 'development' or 'production'. Default: 'development'.
+
+</p>
+</details>
+
+Then rebuild the app. If you're using the bare workflow, make sure to run `expo prebuild` first (this will apply the config plugin using [prebuilding](https://expo.fyi/prebuilding)).
 
 ### Add your project's credentials to Expo server (optional)
 
@@ -178,22 +148,65 @@ If the device you're experiencing this on hasn't been setup with a SIM card it l
 </p>
 </details>
 
-### Setting custom notification sounds on Android
+### Setting custom notification sounds
+
+Custom notification sounds are only supported when using [EAS Build](https://docs.expo.io/build/introduction/), or in the bare workflow.
+
+To add custom push notification sounds to your app, add the `expo-notifications` plugin to your `app.json` file:
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "sounds": ["local/path/to/mySoundFile.wav"]
+        }
+      ]
+    ]
+  }
+}
+```
+
+After building your app, the array of files will be available for use in both [`NotificationContentInput`](#notificationcontentinput) and [`NotificationChannelInput`](#notificationchannelinput). You _only_ need to provide the base filename- here's an example using the config above:
+
+```ts
+await Notifications.setNotificationChannelAsync('new-emails', {
+  name: 'E-mail notifications',
+  sound: 'mySoundFile.wav', // Provide ONLY the base filename
+});
+
+await Notifications.scheduleNotificationAsync({
+  content: {
+    title: "You've got mail! 📬",
+    sound: 'mySoundFile.wav', // Provide ONLY the base filename
+  },
+  trigger: {
+    seconds: 2,
+    channelId: 'new-emails',
+  },
+});
+```
+
+You can also manually add notification files to your Android and iOS projects if you prefer:
+
+<details><summary><strong>Manually adding notification sounds on Android</strong></summary> <p>
 
 On Androids 8.0+, playing a custom sound for a notification requires more than setting the `sound` property on the `NotificationContentInput`. You will _also_ need to configure the `NotificationChannel` with the appropriate `sound`, and use it when sending/scheduling the notification.
 
-```ts
-import * as Notifications from 'expo-notifications';
+For the example below to work, you would place your `email-sound.wav` file in `android/app/src/main/res/raw/`.
 
+```ts
 // Prepare the notification channel
-Notifications.setNotificationChannelAsync('new-emails', {
+await Notifications.setNotificationChannelAsync('new-emails', {
   name: 'E-mail notifications',
   importance: Notifications.AndroidImportance.HIGH,
   sound: 'email-sound.wav', // <- for Android 8.0+, see channelId property below
 });
 
 // Eg. schedule the notification
-Notifications.scheduleNotificationAsync({
+await Notifications.scheduleNotificationAsync({
   content: {
     title: "You've got mail! 📬",
     body: 'Open the notification to read them all',
@@ -205,6 +218,29 @@ Notifications.scheduleNotificationAsync({
   },
 });
 ```
+
+</p>
+</details>
+
+<details><summary><strong>Manually adding notification sounds on iOS</strong></summary> <p>
+
+On iOS, all that's needed is to place your sound file in your Xcode project, and then specify the sound file in your `NotificationContentInput`, like this:
+
+```ts
+await Notifications.scheduleNotificationAsync({
+  content: {
+    title: "You've got mail! 📬",
+    body: 'Open the notification to read them all',
+    sound: 'notification.wav',
+  },
+  trigger: {
+    // ...
+  },
+});
+```
+
+</p>
+</details>
 
 # Contributing
 
@@ -405,6 +441,21 @@ Removes a push token subscription returned by a `addPushTokenListener` call.
 A single and required argument is a subscription returned by `addPushTokenListener`.
 
 ## Listening to notification events
+
+Notification events include incoming notifications, interactions your users perform with notifications (this can be tapping on a notification, or interacting with it via [notification categories](#managing-notification-categories-interactive-notifications)), and rare occasions when your notifications may be dropped.
+
+A few different listeners are exposed, so we've provided a chart below which will hopefully help you understand when you can expect each one to be triggered:
+
+| User interacted with notification? | App state  | Listener(s) triggered                                                   |
+| :--------------------------------- | :--------: | ----------------------------------------------------------------------- |
+| false                              | Foreground | `NotificationReceivedListener`                                          |
+| false                              | Background | `BackgroundNotificationTask`                                            |
+| false                              |   Killed   | none                                                                    |
+| true                               | Foreground | `NotificationReceivedListener` & `NotificationResponseReceivedListener` |
+| true                               | Background | `NotificationResponseReceivedListener`                                  |
+| true                               |   Killed   | `NotificationResponseReceivedListener`                                  |
+
+> In the chart above, whenever `NotificationResponseReceivedListener` is triggered, the same would apply to the `useLastNotificationResponse` hook.
 
 ### `useLastNotificationResponse(): undefined | NotificationResponse | null`
 
@@ -620,6 +671,40 @@ Notifications.setNotificationHandler({
   }),
 });
 ```
+
+## Handling incoming notifications when the app is not in the foreground (not supported in Expo Go)
+
+> **Please note:** In order to handle notifications while the app is backgrounded on iOS, you _must_ add `remote-notification` to the `ios.infoPlist.UIBackgroundModes` key in your app.json, **and** add `"content-available": 1` to your push notification payload. Under normal circumstances, the “content-available” flag should launch your app if it isn’t running and wasn’t killed by the user, _however_, this is ultimately decided by the OS so it might not always happen.
+
+### `registerTaskAsync(taskName: string): void`
+
+When a notification is received while the app is backgrounded, using this function you can set a callback that will be run in response to that notification. Under the hood, this function is run using `expo-task-manager`. You **must** define the task _first_, with [`TaskManager.defineTask`](https://docs.expo.io/versions/latest/sdk/task-manager/#taskmanagerdefinetasktaskname-task). Make sure you define it in the global scope.
+
+The `taskName` argument is the string you passed to `TaskManager.defineTask` as the "taskName". The callback function you define with `TaskManager.defineTask` will receive the following arguments:
+
+- **data**: The remote payload delivered by either FCM (Android) or APNs (iOS). [See here for details](#pushnotificationtrigger).
+- **error**: The error (if any) that occurred during execution of the task.
+- **executionInfo**: JSON object of additional info related to the task, including the `taskName`.
+
+#### Examples
+
+Implementing a notification handler that always shows the notification when it is received
+
+```ts
+import * as Notifications from 'expo-notifications';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+```
+
+### `unregisterTaskAsync(taskName: string): void`
+
+Used to unregister tasks registered with `registerTaskAsync`.
 
 ## Fetching information about notifications-related permissions
 
@@ -1677,6 +1762,8 @@ export interface NotificationBehavior {
   priority?: AndroidNotificationPriority;
 }
 ```
+
+> On Android, setting `shouldPlaySound: false` will result in the drop-down notification alert **not** showing, no matter what the priority is. This setting will also override any channel-specific sounds you may have configured.
 
 ### `NotificationChannel`
 

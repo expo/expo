@@ -7,10 +7,21 @@
 
 #import <EXDevLauncher-Swift.h>
 
+@interface EXDevLauncherRedBox ()
+
+@property (nonatomic, weak) RCTLogBox *logBox;
+
+@end
+
 @implementation EXDevLauncherRedBox
 
 @synthesize overrideBundleURL;
 @synthesize overrideReloadAction;
+
+- (void)registerLogBox:(RCTLogBox * _Nullable)logBox
+{
+  self.logBox = logBox;
+}
 
 - (void)addCustomButton:(NSString *)title onPressHandler:(RCTRedBoxButtonPressHandler)handler {
 
@@ -120,6 +131,12 @@
                 isUpdate:(BOOL)isUpdate
              errorCookie:(int)errorCookie
 {
+  if (isUpdate || errorCookie != -1) {
+    // These errors should be handled by LogBox
+    return;
+  }
+  
+  [self.logBox hide];
   dispatch_async(dispatch_get_main_queue(), ^{
     [[EXDevLauncherController sharedInstance].errorManager showErrorWithMessage:[self stripAnsi:message] stack:stack];
   });

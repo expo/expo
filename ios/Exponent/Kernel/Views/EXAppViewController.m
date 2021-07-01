@@ -9,6 +9,7 @@
 #import "EXAppLoadingCancelView.h"
 #import "EXManagedAppSplashScreenViewProvider.h"
 #import "EXManagedAppSplashScreenConfigurationBuilder.h"
+#import "EXManagedAppSplashScreenViewController.h"
 #import "EXHomeAppSplashScreenViewProvider.h"
 #import "EXEnvironment.h"
 #import "EXErrorRecoveryManager.h"
@@ -24,23 +25,21 @@
 
 #import <EXSplashScreen/EXSplashScreenService.h>
 #import <React/RCTUtils.h>
-#import <UMCore/UMModuleRegistryProvider.h>
+#import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
 #if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
 #import <EXScreenOrientation/EXScreenOrientationRegistry.h>
 #endif
 
 #import <React/RCTAppearance.h>
-#ifdef INCLUDES_VERSIONED_CODE
-#if __has_include(<ABI41_0_0React/ABI41_0_0RCTAppearance.h>)
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI42_0_0React/ABI42_0_0RCTAppearance.h>)
+#import <ABI42_0_0React/ABI42_0_0RCTAppearance.h>
+#endif
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI41_0_0React/ABI41_0_0RCTAppearance.h>)
 #import <ABI41_0_0React/ABI41_0_0RCTAppearance.h>
 #endif
-#if __has_include(<ABI40_0_0React/ABI40_0_0RCTAppearance.h>)
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI40_0_0React/ABI40_0_0RCTAppearance.h>)
 #import <ABI40_0_0React/ABI40_0_0RCTAppearance.h>
-#endif
-#if __has_include(<ABI39_0_0React/ABI39_0_0RCTAppearance.h>)
-#import <ABI39_0_0React/ABI39_0_0RCTAppearance.h>
-#endif
 #endif
 
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
@@ -338,7 +337,7 @@ NS_ASSUME_NONNULL_BEGIN
   if (!_managedAppSplashScreenViewProvider) {
     _managedAppSplashScreenViewProvider = [[EXManagedAppSplashScreenViewProvider alloc] initWithManifest:manifest];
 
-    [self _showSplashScreenWithProvider:_managedAppSplashScreenViewProvider];
+    [self _showManagedSplashScreenWithProvider:_managedAppSplashScreenViewProvider];
   } else {
     [_managedAppSplashScreenViewProvider updateSplashScreenViewWithManifest:manifest];
   }
@@ -374,7 +373,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_showSplashScreenWithProvider:(id<EXSplashScreenViewProvider>)provider
 {
-  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
+  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
 
   // EXSplashScreenService presents a splash screen on a root view controller
   // at the start of the app. Since we want the EXAppViewController to manage
@@ -405,6 +404,27 @@ NS_ASSUME_NONNULL_BEGIN
                              successCallback:hideRootViewControllerSplashScreen
                              failureCallback:^(NSString *message){ UMLogWarn(@"%@", message); }];
   });
+}
+
+- (void)_showManagedSplashScreenWithProvider:(id<EXSplashScreenViewProvider>)provider
+{
+ 
+  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
+
+  UM_WEAKIFY(self);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UM_ENSURE_STRONGIFY(self);
+    
+    UIView *rootView = self.view;
+    UIView *splashScreenView = [provider createSplashScreenView];
+    EXManagedAppSplashScreenViewController *controller = [[EXManagedAppSplashScreenViewController alloc] initWithRootView:rootView
+                                                                                                 splashScreenView:splashScreenView];
+    [splashScreenService showSplashScreenFor:self
+                      splashScreenController:controller
+                             successCallback:^{}
+                             failureCallback:^(NSString *message){ UMLogWarn(@"%@", message); }];
+  });
+  
 }
 
 - (void)hideLoadingProgressWindow
@@ -501,12 +521,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)reactAppManagerAppContentDidAppear:(EXReactAppManager *)appManager
 {
-  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
+  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
   [splashScreenService onAppContentDidAppear:self];
 }
 
 - (void)reactAppManagerAppContentWillReload:(EXReactAppManager *)appManager {
-  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
+  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
   [splashScreenService onAppContentWillReload:self];
 }
 
@@ -530,7 +550,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
 #if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
-  EXScreenOrientationRegistry *screenOrientationRegistry = (EXScreenOrientationRegistry *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
+  EXScreenOrientationRegistry *screenOrientationRegistry = (EXScreenOrientationRegistry *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
   if (screenOrientationRegistry && [screenOrientationRegistry requiredOrientationMask] > 0) {
     return [screenOrientationRegistry requiredOrientationMask];
   }
@@ -572,7 +592,7 @@ NS_ASSUME_NONNULL_BEGIN
       || (self.traitCollection.horizontalSizeClass != previousTraitCollection.horizontalSizeClass)) {
 
     #if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
-      EXScreenOrientationRegistry *screenOrientationRegistryController = (EXScreenOrientationRegistry *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
+      EXScreenOrientationRegistry *screenOrientationRegistryController = (EXScreenOrientationRegistry *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
       [screenOrientationRegistryController traitCollectionDidChangeTo:self.traitCollection];
     #endif
 
@@ -644,16 +664,15 @@ NS_ASSUME_NONNULL_BEGIN
     appearancePreference = nil;
   }
   RCTOverrideAppearancePreference(appearancePreference);
-#ifdef INCLUDES_VERSIONED_CODE
-#if __has_include(<ABI41_0_0React/ABI41_0_0RCTAppearance.h>)
+
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI42_0_0React/ABI42_0_0RCTAppearance.h>)
+  ABI42_0_0RCTOverrideAppearancePreference(appearancePreference);
+#endif
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI41_0_0React/ABI41_0_0RCTAppearance.h>)
   ABI41_0_0RCTOverrideAppearancePreference(appearancePreference);
 #endif
-#if __has_include(<ABI40_0_0React/ABI40_0_0RCTAppearance.h>)
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI40_0_0React/ABI40_0_0RCTAppearance.h>)
   ABI40_0_0RCTOverrideAppearancePreference(appearancePreference);
-#endif
-#if __has_include(<ABI39_0_0React/ABI39_0_0RCTAppearance.h>)
-  ABI39_0_0RCTOverrideAppearancePreference(appearancePreference);
-#endif
 #endif
 }
 
@@ -769,7 +788,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)_willAutoRecoverFromError:(NSError *)error
 {
   if (![_appRecord.appManager enablesDeveloperTools]) {
-    BOOL shouldRecover = [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdShouldReloadOnError:_appRecord.experienceId];
+    BOOL shouldRecover = [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceShouldReloadOnError:_appRecord.scopeKey];
     if (shouldRecover) {
       [self _invalidateRecoveryTimer];
       _tmrAutoReloadDebounce = [NSTimer scheduledTimerWithTimeInterval:kEXAutoReloadDebounceSeconds

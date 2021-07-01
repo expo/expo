@@ -58,7 +58,10 @@ extension RCTCxxBridge {
   @objc
   private func replaceRedBox(_ module: Any?) -> Any? {
     if (module is RCTRedBox) {
-      return EXDevLauncherRedBoxInterceptor.customRedBox.unsafe_castToRCTRedBox()
+      let logBox = EXDevLauncher_module(forClass: RCTLogBox.self) as? RCTLogBox
+      let customRedBox = EXDevLauncherRedBoxInterceptor.customRedBox
+      customRedBox.register(logBox)
+      return customRedBox.unsafe_castToRCTRedBox()
     }
     
     return module

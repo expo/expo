@@ -33,9 +33,39 @@ Check out the source if you would like to implement it in another language.
 >
 > If you're **not** testing in the Expo Go app, make sure you've [generated the proper push credentials](push-notifications-setup.md#credentials) before proceeding! If you haven't, push notifications will not work.
 
+## Implementing push notifications reliably
+
+Push notifications travel through several systems from your server to recipient devices. Notifications are delivered most of the the time but occasionally there are issues with systems along the way and the network connections between them. Handling outages and errors will help your push notifications arrive at their destinations more reliably.
+
+### Limit concurrent connections
+
+When sending a large number of push notifications at once, limit the number of your concurrent connections. The [Node SDK](https://github.com/expo/expo-server-sdk-node) implements this for you and opens a maximum of six concurrent connections. This smooths out your peak load and helps the Expo push notification service receive your push notifications successfully.
+
+### Retry on failure
+
+The first step of sending push notifications is to deliver them to the Expo push notification service, which internally adds them to a queue to be delivered to Apple (APNs), Google (FCM), or other push notification providers. This first step can fail for several reasons: network issues between your server and the Expo push notification service, an outage or degraded availability of the Expo notification service, misconfigured push credentials, or an invalid notification payload.
+
+Some of these failures are transient. If the Expo push notification service is down or unreachable and you get a network error, an HTTP 429 error (Too Many Requests), or HTTP 5xx error (Server Errors), use [exponential backoff](https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/) to wait a few seconds before retrying. If the first retry attempt is unsuccessful, wait for longer (follow exponential backoff) and retry again. This lets the temporarily unavailable service recover before you retry.
+
+Other failures will not resolve themselves no matter how many times you retry. If your push notification payload is malformed, you may get an HTTP 400 response explaining the issue with the payload. You will also get an error if there are no push credentials for your project or if you send push notifications for different projects in the same request. You must fix the underlying causes of these issues to resolve them.
+
+### Check push receipts for errors
+
+The Expo push notification service responds with [*push tickets*](#push-tickets) upon successfully receiving notifications. A push ticket indicates that Expo has received your notification payload but may not have sent it yet. Each push ticket contains a ticket ID, which you later use to look up a [*push receipt*](#push-receipts). A push receipt is available after Expo has tried to deliver the notification to APNs, FCM, etc… and tells you whether delivery to the push notification provider was successful.
+
+You must check your push receipts. If there is an issue delivering push notifications, the push receipts are the best way to get information about the underlying cause. The receipts may indicate a problem with APNs or FCM, the Expo push notification service, or your notification payload.
+
+Push receipts may also tell you if a recipient device has unsubscribed from notifications (for example, by revoking notification permissions or uninstalling your app) if the push notification provider like APNs or FCM responds with that information. The push receipt will contain a`details` → `error` field set to `DeviceNotRegistered`. In this scenario, stop sending notifications to this device's push token until it re-registers with your server so your app remains a good citizen. The `DeviceNotRegistered` error appears in push receipts only when Apple, Google, or another push notification provider deems the device to be unregistered; it takes an undefined amount of time and is often not possible to test by uninstalling your app and sending a push notification shortly after.
+
+We recommend checking push receipts 15 minutes after sending your push notifications. While push receipts are often available much sooner, a 15-minute window gives the Expo push notification service a comfortable amount of time to make the receipts available to you. If after 15 minutes there is no push receipt, this likely indicates an error with the Expo push notification service. Lastly, push receipts are cleared after 24 hours.
+
+### SLAs
+
+The Expo push notification service does not have an SLA and the APNs and FCM services also may have occasional outages. By following the guidance above, you can make your application robust against temporary service interruptions. 
+
 ## HTTP/2 API
 
-Don't want to use one of the above libraries? You may want to send requests directly to our HTTP/2 API (this API currently does not require any authentication).
+Instead of using one of the libraries listed earlier, you may want to send requests directly to our HTTP/2 API (this API currently does not require any authentication).
 
 To do so, send a POST request to `https://exp.host/--/api/v2/push/send` with the following HTTP headers:
 

@@ -6,9 +6,19 @@
 
 ### 🎉 New features
 
+- Use stable manifest ID where applicable. ([#12964](https://github.com/expo/expo/pull/12964) by [@wschurman](https://github.com/wschurman))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.1.1 — 2021-06-16
+
+_This version does not introduce any user-facing changes._
+
+## 0.1.0 — 2021-06-16
+
+_This version does not introduce any user-facing changes._
 
 ## 0.0.2 — 2021-05-25
 

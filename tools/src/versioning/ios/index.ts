@@ -15,6 +15,7 @@ import { kernelFilesTransforms } from './transforms/kernelFilesTransforms';
 import { podspecTransforms } from './transforms/podspecTransforms';
 import { postTransforms } from './transforms/postTransforms';
 
+import { removeVersionedVendoredModulesAsync } from './versionVendoredModules';
 export { versionVendoredModulesAsync } from './versionVendoredModules';
 
 const UNVERSIONED_PLACEHOLDER = '__UNVERSIONED__';
@@ -456,23 +457,32 @@ async function generateVersionedExpoAsync(
 
   // some pods are optional, so those specs should be omitted from versioned code
   const excludedPodNames = getExcludedPodNames();
-  const packages = await getListOfPackagesAsync();
+  const packages = (await getListOfPackagesAsync()).filter((pkg) => {
+    const podName = pkg.podspecName;
+    return podName && pkg.isVersionableOnPlatform('ios') && !excludedPodNames.includes(podName);
+  });
 
   for (const pkg of packages) {
     const modulePath = path.join(EXPO_DIR, RELATIVE_UNIVERSAL_MODULES_PATH, pkg.packageName);
-    const podName = pkg.podspecName;
+    const podName = pkg.podspecName!;
 
-    if (podName && pkg.isVersionableOnPlatform('ios') && !excludedPodNames.includes(podName)) {
-      await fs.copy(path.join(modulePath, 'ios'), path.join(versionedExpoPath, podName));
+    await fs.copy(path.join(modulePath, 'ios'), path.join(versionedExpoPath, podName));
+
+    // We're moving away from additional and unnecessary subdirectory.
+    // The source code may not be wrapped by the directory with pod's name (see ExpoModulesCore).
+    // So, move this dir only when it exists.
+    const versionedSourcesPath = path.join(versionedExpoPath, podName, podName);
+    if (await fs.pathExists(versionedSourcesPath)) {
       await fs.move(
-        path.join(versionedExpoPath, podName, podName),
+        versionedSourcesPath,
         path.join(versionedExpoPath, podName, versionedUnimodulePods[podName])
       );
-      await fs.copy(
-        path.join(modulePath, 'package.json'),
-        path.join(versionedExpoPath, podName, 'package.json')
-      );
     }
+
+    await fs.copy(
+      path.join(modulePath, 'package.json'),
+      path.join(versionedExpoPath, podName, 'package.json')
+    );
   }
 
   for (const originalUnimodulePodName of originalUnimodulePodNames) {
@@ -1140,6 +1150,9 @@ export async function removeVersionAsync(versionNumber: string) {
   );
   await fs.remove(newVersionPath);
 
+  console.log('Removing vendored libraries...');
+  await removeVersionedVendoredModulesAsync(semver.major(versionNumber));
+
   // remove dep from main podfile
   console.log(`Removing ${chalk.green(versionedPodNames.React)} dependency from root Podfile...`);
 
@@ -1337,6 +1350,10 @@ function _getReactNativeTransformRules(versionPrefix, reactPodName) {
       // Unprefix everything that got prefixed twice or more times.
       flags: '-Ei',
       pattern: `s/(${versionPrefix}){2,}/\\1/g`,
+    },
+    {
+      flags: '-Ei',
+      pattern: `s/#import <(Expo|RNReanimated)/#import <${versionPrefix}\\1/g`,
     },
   ];
 }

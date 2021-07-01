@@ -1,4 +1,4 @@
-import { PermissionResponse } from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'expo-modules-core';
 /**
  * Requests the user to authorize or deny access to app-related data that can be used for tracking
  * the user or the device. Examples of data used for tracking include email address, device ID,
@@ -40,9 +40,9 @@ export declare function getTrackingPermissionsAsync(): Promise<PermissionRespons
 /**
  * Returns whether the TrackingTransparency API is available on the current device.
  *
- * @returns `boolean`. Currently this is `true` on iOS 14 and above only. On devices where the
+ * @returns Currently this is `true` on iOS 14 and above only. On devices where the
  * Tracking Transparency API is unavailable, the get and request permissions methods will always
  * resolve to `granted`.
  */
 export declare function isAvailable(): boolean;
-export { PermissionResponse };
+export { PermissionResponse, PermissionStatus, PermissionExpiration };

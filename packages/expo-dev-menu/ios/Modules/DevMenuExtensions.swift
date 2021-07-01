@@ -46,12 +46,12 @@ open class DevMenuExtensions: NSObject, DevMenuExtensionProtocol {
     perfMonitor.isAvailable = { devDelegate.perfMonitor != nil }
     perfMonitor.isEnabled = { devSettings.isPerfMonitorShown }
 
+    container.addItem(reload)
+    container.addItem(perfMonitor)
+    container.addItem(inspector)
     container.addItem(remoteDebug)
     container.addItem(fastRefresh)
-    container.addItem(perfMonitor)
   
-    container.addItem(reload)
-    container.addItem(inspector)
     #endif
 
     return container

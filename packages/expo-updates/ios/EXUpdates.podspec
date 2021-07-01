@@ -16,6 +16,7 @@ Pod::Spec.new do |s|
   s.dependency 'UMCore'
   s.dependency 'React-Core'
   s.dependency 'EXStructuredHeaders'
+  s.dependency 'EXUpdatesInterface'
 
   s.pod_target_xcconfig = {
     'GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS' => 'YES',
@@ -30,6 +31,6 @@ Pod::Spec.new do |s|
   end
 
   s.test_spec 'Tests' do |test_spec|
-    test_spec.source_files = 'Tests/*.{h,m}'
+    test_spec.source_files = 'Tests/*.{h,m,swift}'
   end
 end

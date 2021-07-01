@@ -12,6 +12,7 @@
 #import "EXDevLauncherRCTBridge.h"
 #import "EXDevLauncherManifestParser.h"
 #import "EXDevLauncherLoadingView.h"
+#import "EXDevLauncherInternal.h"
 #import "RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h"
 
 #import <EXDevLauncher-Swift.h>
@@ -26,7 +27,7 @@
 #endif
 
 // Uncomment the below and set it to a React Native bundler URL to develop the launcher JS
-//#define DEV_LAUNCHER_URL "http://10.0.0.176:8090/index.bundle?platform=ios&dev=true&minify=false"
+//#define DEV_LAUNCHER_URL "http://localhost:8090/index.bundle?platform=ios&dev=true&minify=false"
 
 NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 
@@ -73,9 +74,10 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
 {
   return @[
-    (id<RCTBridgeModule>)[[RCTDevMenu alloc] init],
-    [[RCTAsyncLocalStorage alloc] init],
-    [[EXDevLauncherLoadingView alloc] init]
+    (id<RCTBridgeModule>)[RCTDevMenu new],
+    [RCTAsyncLocalStorage new],
+    [EXDevLauncherLoadingView new],
+    [EXDevLauncherInternal new]
   ];
 }
 
@@ -253,7 +255,10 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     @"EXUpdatesLaunchWaitMs": @(60000),
     @"EXUpdatesCheckOnLaunch": @"ALWAYS",
     @"EXUpdatesHasEmbeddedUpdate": @(NO),
-    @"EXUpdatesEnabled": @(YES)
+    @"EXUpdatesEnabled": @(YES),
+    @"EXUpdatesRequestHeaders": @{
+      @"Expo-Updates-Environment": @"DEVELOPMENT"
+    }
   };
 
   void (^launchReactNativeApp)(void) = ^{
@@ -279,6 +284,10 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
       onSuccess();
     }
   };
+
+  if (_updatesInterface) {
+    [_updatesInterface reset];
+  }
 
   EXDevLauncherManifestParser *manifestParser = [[EXDevLauncherManifestParser alloc] initWithURL:expoUrl session:[NSURLSession sharedSession]];
   [manifestParser isManifestURLWithCompletion:^(BOOL isManifestURL) {
@@ -309,8 +318,10 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
       return YES;
     } progress:^(NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
       // do nothing for now
-    } success:^(NSDictionary *manifest) {
-      launchExpoApp(self->_updatesInterface.launchAssetURL, [EXDevLauncherManifest fromJsonObject:manifest]);
+    } success:^(NSDictionary * _Nullable manifest) {
+      if (manifest) {
+        launchExpoApp(self->_updatesInterface.launchAssetURL, [EXDevLauncherManifest fromJsonObject:manifest]);
+      }
     } error:onError];
   } onError:onError];
 }

@@ -12,7 +12,7 @@
   NSDictionary* _protectedAppNames;
 }
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId andConstantsBinding:(ABI41_0_0EXConstantsBinding *)constantsBinding
+- (instancetype)initWithScopeKey:(NSString *)scopeKey andConstantsBinding:(ABI41_0_0EXConstantsBinding *)constantsBinding
 {
   if (![@"expo" isEqualToString:constantsBinding.appOwnership]) {
     return [super init];
@@ -24,20 +24,20 @@
     @"[DEFAULT]": @YES
   }];
   _protectedAppNames = protectedAppNames;
-  
+
   // Make sure the [DEFAULT] app is initialized
   NSString *path = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"];
   if (path && ![FIRApp defaultApp]) {
     [FIRApp configure];
   }
   if ([FIRApp defaultApp]) [protectedAppNames setValue:@YES forKey:[FIRApp defaultApp].name];
-  
+
   // Determine project app name & options
-  NSString *encodedExperienceId = [self.class encodedResourceName:experienceId];
-  NSString* appName = [NSString stringWithFormat:@"__sandbox_%@", encodedExperienceId];
+  NSString *encodedScopeKey = [self.class encodedResourceName:scopeKey];
+  NSString* appName = [NSString stringWithFormat:@"__sandbox_%@", encodedScopeKey];
   NSDictionary* googleServicesFile = [self.class googleServicesFileFromConstantsManifest:constantsBinding];
   FIROptions* options = [self.class optionsWithGoogleServicesFile:googleServicesFile];
-  
+
   // Delete all previously created (project) apps, except for the currently
   // loaded project and the "protected" ones
   NSDictionary<NSString *,FIRApp *>* apps = [FIRApp allApps];
@@ -101,9 +101,9 @@
 + (nullable FIROptions *)optionsWithGoogleServicesFile:(nullable NSDictionary *)plist
 {
   if (!plist) return nil;
-  
+
   FIROptions *firOptions = [[FIROptions alloc] initWithGoogleAppID:plist[@"GOOGLE_APP_ID"] GCMSenderID:plist[@"GCM_SENDER_ID"]];
-         
+
   firOptions.APIKey = plist[@"API_KEY"];
   firOptions.bundleID = plist[@"BUNDLE_ID"];
   firOptions.clientID = plist[@"CLIENT_ID"];
@@ -112,7 +112,7 @@
   firOptions.androidClientID = plist[@"ANDROID_CLIENT_ID"];
   firOptions.databaseURL = plist[@"DATABASE_URL"];
   firOptions.storageBucket = plist[@"STORAGE_BUCKET"];
-  
+
   return firOptions;
 }
 

@@ -100,6 +100,7 @@ public class AirMapPolyline extends AirMapFeature {
 
   private void applyPattern() {
     if(patternValues == null) {
+      polyline.setPattern(null);
       return;
     }
     this.pattern = new ArrayList<>(patternValues.size());

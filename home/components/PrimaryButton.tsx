@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Text,
   TouchableNativeFeedback,
+  TouchableOpacity,
   View,
 } from 'react-native';
 
@@ -22,15 +23,26 @@ export default function PrimaryButton({
   isLoading?: boolean;
   plain?: boolean;
 }) {
-  return (
-    <TouchableNativeFeedback {...props} style={[plain ? styles.plainButton : styles.button, style]}>
+  return Platform.OS === 'android' ? (
+    <TouchableNativeFeedback {...props}>
+      <View style={[plain ? styles.plainButton : styles.button, style]}>
+        <Text style={plain ? styles.plainButtonText : styles.buttonText}>{children}</Text>
+        {isLoading && (
+          <View style={styles.activityIndicatorContainer}>
+            <ActivityIndicator color="#fff" />
+          </View>
+        )}
+      </View>
+    </TouchableNativeFeedback>
+  ) : (
+    <TouchableOpacity {...props} style={[plain ? styles.plainButton : styles.button, style]}>
       <Text style={plain ? styles.plainButtonText : styles.buttonText}>{children}</Text>
       {isLoading && (
         <View style={styles.activityIndicatorContainer}>
           <ActivityIndicator color="#fff" />
         </View>
       )}
-    </TouchableNativeFeedback>
+    </TouchableOpacity>
   );
 }
 

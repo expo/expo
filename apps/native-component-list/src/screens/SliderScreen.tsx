@@ -12,11 +12,12 @@ export default function SliderScreen() {
     <Page>
       <Section title="Standard">
         <Text>Value: {value && +value.toFixed(3)}</Text>
-        <Slider onValueChange={setValue} />
+        <Slider value={value} onValueChange={setValue} />
       </Section>
       <Section title="Custom Color">
         <Text>Value: {value && +value.toFixed(3)}</Text>
         <Slider
+          value={value}
           minimumTrackTintColor="red"
           maximumTrackTintColor={Colors.tintColor}
           onValueChange={setValue}

@@ -111,7 +111,7 @@ function removeEmoji(emoji: string, children: string[]) {
   }
 }
 
-export const Quote = ({ children }: { children: JSX.Element[] }) => {
+export const Quote = ({ children }: { children: JSX.Element | JSX.Element[] }) => {
   let icon: React.ReactNode = (
     <div style={{ marginTop: 2 }}>
       <Info size={16} />

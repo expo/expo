@@ -19,14 +19,14 @@ export function kernelFilesTransforms(
         paths: ['EXAppViewController.m'],
         ...withRollback(rollback, {
           replace: /(?<=#import <React\/RCTAppearance\.h>)/,
-          with: `\n#if __has_include(<${versionName}React/${versionName}RCTAppearance.h>)\n#import <${versionName}React/${versionName}RCTAppearance.h>\n#endif`,
+          with: `\n#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<${versionName}React/${versionName}RCTAppearance.h>)\n#import <${versionName}React/${versionName}RCTAppearance.h>\n#endif`,
         }),
       },
       {
         paths: ['EXAppViewController.m'],
         ...withRollback(rollback, {
           replace: /(?<=\sRCTOverrideAppearancePreference\(appearancePreference\);)/,
-          with: `\n#if __has_include(<${versionName}React/${versionName}RCTAppearance.h>)\n  ${versionName}RCTOverrideAppearancePreference(appearancePreference);\n#endif`,
+          with: `\n#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<${versionName}React/${versionName}RCTAppearance.h>)\n  ${versionName}RCTOverrideAppearancePreference(appearancePreference);\n#endif`,
         }),
       },
     ],

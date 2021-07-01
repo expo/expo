@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 
   [self.appLoader fetchManifestWithCacheBehavior:EXManifestPrepareToCache success:^(EXUpdatesRawManifest * _Nonnull manifest) {
     self.manifest = manifest;
-    if (manifest.isDevelopmentMode && self.timer) {
+    if (manifest.isUsingDeveloperTool && self.timer) {
       // make sure we never time out in dev mode
       // this can happen because there is no cached manifest & therefore we fall back to default behavior w/ timer
       [self _stopTimer];

@@ -18,7 +18,7 @@ typedef NS_OPTIONS(NSUInteger, EXAVAudioSessionMode)
 
 - (void)appDidForeground;
 
-- (void)appDidBackground;
+- (void)appDidBackgroundStayActive:(BOOL)stayActive;
 
 - (void)handleAudioSessionInterruption:(NSNotification*)notification;
 

@@ -75,17 +75,17 @@ When selecting an image for the build you can use the full name provided below o
   npmRegistryServer: "registry=http://10.254.24.8:4873"
   ```
 
-#### Image `macos-catalina-11.15-xcode-12.1`
+#### Image `macos-big-sur-11.4-xcode-12.5` (alias `default`, `latest`)
 
-- macOS Catalina 10.15.4
-- Xcode 12.1 (12A7403)
+- macOS Big Sur 11.4
+- Xcode 12.5 (12E5244e)
 - Node.js 14.15.1
 - Yarn 1.22.10
-- fastlane 2.170.0
+- fastlane 2.185.1
 - CocoaPods 1.10.1
-- Ruby 2.6.3p62 (2019-04-16 revision 67580) [universal.x86_64-darwin19]
+- Ruby 2.7.0p0 (2019-12-25 revision 647ee6f091) [x86_64-darwin19]
 
-#### Image `macos-catalina-11.15-xcode-12.4` (alias `default`, `latest`)
+#### Image `macos-catalina-10.15-xcode-12.4`
 
 - macOS Catalina 10.15.7
 - Xcode 12.4 (12D4e)
@@ -94,3 +94,13 @@ When selecting an image for the build you can use the full name provided below o
 - fastlane 2.178.0
 - CocoaPods 1.10.1
 - Ruby 2.7.0p0 (2019-12-25 revision 647ee6f091) [x86_64-darwin19]
+
+#### Image `macos-catalina-10.15-xcode-12.1`
+
+- macOS Catalina 10.15.4
+- Xcode 12.1 (12A7403)
+- Node.js 14.15.1
+- Yarn 1.22.10
+- fastlane 2.170.0
+- CocoaPods 1.10.1
+- Ruby 2.6.3p62 (2019-04-16 revision 67580) [universal.x86_64-darwin19]

@@ -1,6 +1,6 @@
 {
   "name": "expo-brightness",
-  "version": "9.1.2",
+  "version": "9.2.0",
   "description": "Provides an API to get and set screen brightness.",
   "main": "build/Brightness.js",
   "types": "build/Brightness.d.ts",
@@ -35,8 +35,8 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/config-plugins": "^2.0.0",
-    "expo-modules-core": "~0.0.2"
+    "@expo/config-plugins": "^3.0.0",
+    "expo-modules-core": "~0.1.1"
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"

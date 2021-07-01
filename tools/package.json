@@ -27,7 +27,7 @@
     "@expo/json-file": "^8.2.6",
     "@expo/spawn-async": "^1.5.0",
     "@expo/xcodegen": "2.18.0-patch.1",
-    "@expo/xdl": "^59.1.0",
+    "@expo/xdl": "^59.1.1",
     "@octokit/rest": "^18.5.3",
     "@types/base-64": "^0.1.2",
     "@types/concat-stream": "^1.6.0",
@@ -90,7 +90,7 @@
     "tar": "^4.4.10",
     "terminal-link": "^2.1.1",
     "transformer-proxy": "^0.3.4",
-    "typedoc": "^0.20.35",
+    "typedoc": "^0.20.36",
     "uuid": "^3.1.0",
     "ws": "^7.4.6",
     "xcode": "^2.0.0"

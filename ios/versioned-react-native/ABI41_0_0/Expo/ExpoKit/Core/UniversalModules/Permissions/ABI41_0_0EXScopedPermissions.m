@@ -7,7 +7,7 @@
 
 @interface ABI41_0_0EXScopedPermissions ()
 
-@property (nonatomic, strong) NSString *experienceId;
+@property (nonatomic, strong) NSString *scopeKey;
 @property (nonatomic, weak) id<ABI41_0_0EXPermissionsScopedModuleDelegate> permissionsService;
 @property (nonatomic, weak) id<ABI41_0_0UMUtilitiesInterface> utils;
 @property (nonatomic, weak) ABI41_0_0EXConstantsBinding *constantsBinding;
@@ -16,10 +16,10 @@
 
 @implementation ABI41_0_0EXScopedPermissions
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId andConstantsBinding:(ABI41_0_0EXConstantsBinding *)constantsBinding
+- (instancetype)initWithScopeKey:(NSString *)scopeKey andConstantsBinding:(ABI41_0_0EXConstantsBinding *)constantsBinding
 {
   if (self = [super init]) {
-    _experienceId = experienceId;
+    _scopeKey = scopeKey;
     _constantsBinding = constantsBinding;
   }
   return self;
@@ -45,8 +45,8 @@
   if (!_permissionsService) {
     return [[self class] permissionStringForStatus:ABI41_0_0UMPermissionStatusGranted];
   }
-  
-  return [[self class] permissionStringForStatus:[_permissionsService getPermission:permissionType forExperience:_experienceId]];
+
+  return [[self class] permissionStringForStatus:[_permissionsService getPermission:permissionType forExperience:_scopeKey]];
 }
 
 - (BOOL)hasGrantedScopedPermission:(NSString *)permissionType
@@ -54,8 +54,8 @@
   if (!_permissionsService || ![self shouldVerifyScopedPermission:permissionType]) {
     return YES;
   }
-  
-  return [_permissionsService getPermission:permissionType forExperience:_experienceId] == ABI41_0_0UMPermissionStatusGranted;
+
+  return [_permissionsService getPermission:permissionType forExperience:_scopeKey] == ABI41_0_0UMPermissionStatusGranted;
 }
 
 - (void)askForPermissionUsingRequesterClass:(Class)requesterClass
@@ -72,11 +72,11 @@
       ABI41_0_0UM_ENSURE_STRONGIFY(self)
       // if permission should be scoped save it
       if ([self shouldVerifyScopedPermission:permissionType]) {
-        [self.permissionsService savePermission:permission ofType:permissionType forExperience:self.experienceId];
+        [self.permissionsService savePermission:permission ofType:permissionType forExperience:self.scopeKey];
       }
       resolve(permission);
     };
-    
+
     return [self askForGlobalPermissionUsingRequesterClass:requesterClass withResolver:customOnResults withRejecter:reject];
   } else if ([_constantsBinding.appOwnership isEqualToString:@"expo"] &&
              ![self hasGrantedScopedPermission:permissionType]) {
@@ -86,13 +86,13 @@
       ABI41_0_0UM_ENSURE_STRONGIFY(self);
       NSMutableDictionary *permission = [globalPermissions mutableCopy];
       // try to save scoped permissions - if fails than permission is denied
-      if (![self.permissionsService savePermission:permission ofType:permissionType forExperience:self.experienceId]) {
+      if (![self.permissionsService savePermission:permission ofType:permissionType forExperience:self.scopeKey]) {
         permission[@"status"] = [[self class] permissionStringForStatus:ABI41_0_0UMPermissionStatusDenied];
         permission[@"granted"] = @(NO);
       }
       resolve(permission);
     }];
-    
+
     UIAlertAction *denyAction = [UIAlertAction actionWithTitle:@"Deny" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
       ABI41_0_0UM_ENSURE_STRONGIFY(self);
       NSMutableDictionary *permission = [globalPermissions mutableCopy];
@@ -100,10 +100,10 @@
       permission[@"granted"] = @(NO);
       resolve([NSDictionary dictionaryWithDictionary:permission]);
     }];
-    
+
     return [self showPermissionRequestAlert:permissionType withAllowAction:allowAction withDenyAction:denyAction];
   }
-  
+
   resolve(globalPermissions); // third group
 }
 
@@ -115,7 +115,7 @@
     return nil;
   }
   NSMutableDictionary *permission = [NSMutableDictionary dictionaryWithDictionary:globalPermission];
-  
+
   if ([_constantsBinding.appOwnership isEqualToString:@"expo"]
       && [self shouldVerifyScopedPermission:permissionType]
       && [ABI41_0_0EXPermissionsService statusForPermission:permission] == ABI41_0_0UMPermissionStatusGranted) {
@@ -129,7 +129,7 @@
                    withAllowAction:(UIAlertAction *)allow
                     withDenyAction:(UIAlertAction *)deny
 {
-  NSString *experienceName = self.experienceId; // TODO: we might want to use name from the manifest?
+  NSString *experienceName = self.scopeKey; // TODO: we might want to use name from the manifest?
   NSString *messageTemplate = @"%1$@ needs permissions for %2$@. You\'ve already granted permission to another Expo experience. Allow %1$@ to also use it?";
   NSString *permissionString = [[self class] textForPermissionType:permissionType];
 
@@ -155,7 +155,7 @@
   } else if ([type isEqualToString:@"cameraRoll"]) {
     return @"photos";
   }
-  
+
   return type;
 }
 

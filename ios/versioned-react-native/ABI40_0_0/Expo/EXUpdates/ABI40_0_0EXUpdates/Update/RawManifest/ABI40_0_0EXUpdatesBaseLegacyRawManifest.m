@@ -5,6 +5,28 @@
 
 @implementation ABI40_0_0EXUpdatesBaseLegacyRawManifest
 
+- (NSString *)stableLegacyId {
+  NSString *originalFullName = [self.rawManifestJSON nullableStringForKey:@"originalFullName"];
+  if (originalFullName) {
+    return originalFullName;
+  } else {
+    return [self legacyId];
+  }
+}
+
+- (NSString *)scopeKey {
+  NSString *scopeKey = [self.rawManifestJSON nullableStringForKey:@"scopeKey"];
+  if (scopeKey) {
+    return scopeKey;
+  } else {
+    return [self stableLegacyId];
+  }
+}
+
+- (nullable NSString *)projectId {
+  return [self.rawManifestJSON nullableStringForKey:@"projectId"];
+}
+
 - (NSString *)bundleUrl {
   return [self.rawManifestJSON stringForKey:@"bundleUrl"];
 }

@@ -1,11 +1,7 @@
 package versioned.host.exp.exponent.modules.api.components.reactnativestripesdk
 
-import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.bridge.ReadableNativeMap
-import com.facebook.react.bridge.WritableMap
-import com.facebook.react.bridge.WritableNativeMap
+import com.facebook.react.bridge.*
 import com.facebook.react.common.MapBuilder
-import com.facebook.react.modules.core.ExceptionsManagerModule
 import com.facebook.react.uimanager.SimpleViewManager
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.annotations.ReactProp
@@ -23,9 +19,19 @@ class StripeSdkCardViewManager : SimpleViewManager<StripeSdkCardView>() {
       CardChangedEvent.EVENT_NAME, MapBuilder.of("registrationName", "onCardChange"))
   }
 
+  @ReactProp(name = "dangerouslyGetFullCardDetails")
+  fun setDangerouslyGetFullCardDetails(view: StripeSdkCardView, dangerouslyGetFullCardDetails: Boolean = false) {
+    view.setDangerouslyGetFullCardDetails(dangerouslyGetFullCardDetails);
+  }
+
   @ReactProp(name = "postalCodeEnabled")
   fun setPostalCodeEnabled(view: StripeSdkCardView, postalCodeEnabled: Boolean = true) {
     view.setPostalCodeEnabled(postalCodeEnabled);
+  }
+
+  @ReactProp(name = "autofocus")
+  fun setAutofocus(view: StripeSdkCardView, autofocus: Boolean = false) {
+    view.setAutofocus(autofocus);
   }
 
   @ReactProp(name = "cardStyle")

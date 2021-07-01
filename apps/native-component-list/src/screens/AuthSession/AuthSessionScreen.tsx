@@ -621,7 +621,7 @@ function Strava({ redirectUri, prompt, usePKCE, useProxy }: any) {
           code: result.params.code,
           extraParams: {
             // You must use the extraParams variation of clientSecret.
-            client_secret: '...',
+            client_secret: `...`,
           },
         },
         discovery

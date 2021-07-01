@@ -46,18 +46,12 @@ static NSString * const EXUpdatesExpoTestDomain = @"expo.test";
 
   NSString *bundleUrlString = manifest.bundleUrl;
   NSArray *assets = manifest.bundledAssets ?: @[];
-
-  id runtimeVersion = manifest.runtimeVersion;
-  if (runtimeVersion && [runtimeVersion isKindOfClass:[NSDictionary class]]) {
-    id runtimeVersionIos = ((NSDictionary *)runtimeVersion)[@"ios"];
-    NSAssert([runtimeVersionIos isKindOfClass:[NSString class]], @"runtimeVersion['ios'] should be a string");
-    update.runtimeVersion = (NSString *)runtimeVersionIos;
-  } else if (runtimeVersion && [runtimeVersion isKindOfClass:[NSString class]]) {
-    update.runtimeVersion = (NSString *)runtimeVersion;
+  
+  if (manifest.runtimeVersion != nil) {
+    update.runtimeVersion = manifest.runtimeVersion;
   } else {
-    NSString *sdkVersion = manifest.sdkVersion;
-    NSAssert(sdkVersion != nil, @"sdkVersion should not be null");
-    update.runtimeVersion = sdkVersion;
+    NSAssert(manifest.sdkVersion != nil, @"sdkVersion should not be null");
+    update.runtimeVersion = manifest.sdkVersion;
   }
 
   NSURL *bundleUrl = [NSURL URLWithString:bundleUrlString];

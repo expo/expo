@@ -65,7 +65,7 @@ export async function getTrackingPermissionsAsync() {
 /**
  * Returns whether the TrackingTransparency API is available on the current device.
  *
- * @returns `boolean`. Currently this is `true` on iOS 14 and above only. On devices where the
+ * @returns Currently this is `true` on iOS 14 and above only. On devices where the
  * Tracking Transparency API is unavailable, the get and request permissions methods will always
  * resolve to `granted`.
  */
@@ -74,4 +74,5 @@ export function isAvailable() {
         parseInt(Platform.Version.toString(), 10) >= 14 &&
         ExpoTrackingTransparency);
 }
+export { PermissionStatus };
 //# sourceMappingURL=TrackingTransparency.js.map

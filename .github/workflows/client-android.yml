@@ -9,6 +9,8 @@ on:
       releaseGooglePlay:
         description: 'type "release-google-play" to confirm release to Google Play'
         required: false
+  schedule:
+    - cron: '20 5 * * 1,3,5' # 5:20 AM UTC time on every Monday, Wednesday and Friday
   pull_request:
     paths:
       - .github/workflows/client-android.yml
@@ -95,7 +97,20 @@ jobs:
       - name: 🛠 Install NDK
         if: steps.cache-android-ndk.outputs.cache-hit != 'true'
         run: |
-          sudo $ANDROID_HOME/tools/bin/sdkmanager --install "ndk;19.2.5345600"
+          sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager --install "ndk;19.2.5345600"
+      - name: 🔎 Check which flavor to build
+        id: flavor
+        uses: dorny/paths-filter@v2
+        with:
+          # this action fails when base is not set on schedule event
+          base: ${{ github.ref }}
+          filters: |
+            versioned:
+              - android/versioned-abis/**
+              - android/versioned-react-native/**
+              - android/expoview/src/versioned/**
+              - android/expoview/src/main/java/versioned/**
+              - android/**/*.gradle
       - name: 🏭 Build APK
         env:
           ANDROID_KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
@@ -103,14 +118,25 @@ jobs:
           ANDROID_KEY_ALIAS: ExponentKey
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
           ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/
+          IS_RELEASE_BUILD: ${{ github.event.inputs.releaseAPK == 'release-apk' || github.event.inputs.releaseGooglePlay == 'release-google-play' }}
+          IS_VERSIONED_FLAVOR: ${{ github.event_name == 'schedule' || steps.flavor.outputs.versioned == 'true' }}
         run: |
+          if [ "$IS_RELEASE_BUILD" == "false" ]; then
+            export NDK_ABI_FILTERS="x86_64"
+            BUILD_TYPE="Debug"
+            echo "Using ABI filters: $NDK_ABI_FILTERS"
+          else
+            BUILD_TYPE="Release"
+          fi
+          [[ "$IS_VERSIONED_FLAVOR" == "true" ]] && FLAVOR="Versioned" || FLAVOR="Unversioned"
+          echo "Building with $FLAVOR flavor"
           if [ -z "$ANDROID_KEYSTORE_B64" ]; then
             echo "External build detected, APK will not be signed"
-            bin/fastlane android build build_type:Release sign:false
+            bin/fastlane android build build_type:$BUILD_TYPE flavor:$FLAVOR sign:false
           else
             echo "Internal build detected, APK will be signed"
             echo $ANDROID_KEYSTORE_B64 | base64 -d > android/app/release-key.jks
-            bin/fastlane android build build_type:Release
+            bin/fastlane android build build_type:$BUILD_TYPE flavor:$FLAVOR
           fi
       - name: 💾 Upload APK artifact
         uses: actions/upload-artifact@v2
@@ -130,7 +156,7 @@ jobs:
           AWS_ACCESS_KEY_ID: AKIAJ3SWUQ4QLNQC7FXA
           AWS_SECRET_ACCESS_KEY: ${{ secrets.android_client_build_aws_secret_key }}
           EXPO_VERSIONS_SECRET: ${{ secrets.expo_versions_secret }}
-      - name: Upload APK to Google Play and release to production
+      - name: 📤 Upload APK to Google Play and release to production
         if: ${{ github.event.inputs.releaseGooglePlay == 'release-google-play' }}
         run: bin/fastlane android prod_release
         env:

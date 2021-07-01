@@ -13,6 +13,8 @@
 		<string>applinks:exp.host</string>
 		<string>applinks:expo.io</string>
 		<string>webcredentials:expo.io</string>
+		<string>applinks:expo.dev</string>
+		<string>webcredentials:expo.dev</string>
 	</array>
 	<key>com.apple.developer.icloud-container-identifiers</key>
 	<array>

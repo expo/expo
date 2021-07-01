@@ -6,8 +6,17 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 3.3.0 — 2021-06-16
+
+### 🎉 New features
+
 - Added `totalMemory` to web. ([#12526](https://github.com/expo/expo/pull/12526) by [@EvanBacon](https://github.com/EvanBacon))
 - Add device code mappings for newer iPhones and iPads. ([#12630](https://github.com/expo/expo/pull/12630) by [@ide](https://github.com/ide))
+- Added missing mappings in `deviceYearClass` and `modelName`. ([#13261](https://github.com/expo/expo/pull/13261) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 

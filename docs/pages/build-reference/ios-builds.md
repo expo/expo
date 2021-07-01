@@ -36,7 +36,7 @@ In this next phase, this is what happens when EAS Build picks up your request:
 1. Restore a previously saved cache identified by the `cache.key` value in the build profile. ([Learn more](../build/eas-json/).)
 1. Run `pod install` in the `ios` directory inside your project.
 1. Run the `eas-build-post-install` script from package.json if defined.
-1. Restore the credentials:
+1. **Generic** Restore the credentials (for managed projects it's done before `expo prebuild`):
 
    - Create a new keychain.
 
@@ -46,8 +46,8 @@ In this next phase, this is what happens when EAS Build picks up your request:
 
    - Verify that the Distribution Certificate and Provisioning Profile match (every Provisioning Profile is assigned to a particular Distribution Certificate and cannot be used for building the iOS with any other certificate).
 
-   - Update the Xcode project with the ID of the Provisioning Profile.
 
+1. Update the Xcode project with the ID of the Provisioning Profile.
 1. Create `Gymfile` in the `ios` directory if it does **not** already exist (check out the [Default Gymfile](#default-gymfile) section).
 1. Run `fastlane gym` in the `ios` directory.
 1. Run the `eas-build-pre-upload-artifacts` script from package.json if defined.

@@ -32,9 +32,17 @@ const renderMethod = (
           {name}({parameters?.map(param => param.name).join(', ')})
         </InlineCode>
       </H3Code>
-      {parameters ? <H4>Arguments</H4> : null}
-      {parameters ? <UL>{parameters?.map(renderParam)}</UL> : null}
-      <CommentTextBlock comment={comment} />
+      <CommentTextBlock
+        comment={comment}
+        beforeContent={
+          parameters ? (
+            <>
+              <H4>Arguments</H4>
+              <UL>{parameters?.map(renderParam)}</UL>
+            </>
+          ) : undefined
+        }
+      />
       {resolveTypeName(type) !== 'undefined' ? (
         <div>
           <H4>Returns</H4>
