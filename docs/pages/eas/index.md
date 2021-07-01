@@ -1,5 +1,5 @@
 ---
-title: Feature Preview
+title: Expo Application Services
 ---
 
 Expo Application Services (EAS) is the next-generation of services that unlock new opportunities for improving your apps and development processes.

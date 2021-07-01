@@ -4,7 +4,7 @@ const fm = require('front-matter');
 const fs = require('fs-extra');
 const path = require('path');
 
-const { isEasReleased } = require('./FeatureFlags');
+const { isEasInFeaturePreview, isDevClientInFeaturePreview } = require('./FeatureFlags');
 
 // TODO(brentvatne): move this to navigation.js so it's all in one place!
 // Map directories in a version directory to a section name
@@ -29,6 +29,7 @@ const DIR_MAPPING = {
   preview: 'Preview',
   build: 'Start Building',
   eas: 'Feature Preview',
+  'feature-preview': 'Feature Preview',
   'app-signing': 'App Signing',
   'build-reference': 'Reference',
   submit: 'EAS Submit',
@@ -132,21 +133,20 @@ const referenceDirectories = fs
 // A manual list of directories to pull in to the getting started tutorial
 const startingDirectories = ['introduction', 'get-started', 'tutorial', 'next-steps'];
 
-let previewDirectories, easDirectories;
-if (isEasReleased) {
-  easDirectories = ['eas', 'build', 'app-signing', 'build-reference', 'submit'];
-  previewDirectories = ['preview', 'clients'];
+const easDirectories = ['eas', 'build', 'app-signing', 'build-reference', 'submit'];
+let previewDirectories = ['preview']; // a private preview section which isn't linked in the documentation
+let featurePreviewDirectories = ['feature-preview']; // a public preview section which is linked under `Feature Preview`
+
+if (isEasInFeaturePreview) {
+  featurePreviewDirectories = [...featurePreviewDirectories, ...easDirectories];
 } else {
-  easDirectories = [];
-  previewDirectories = [
-    'eas',
-    'preview',
-    'build',
-    'app-signing',
-    'build-reference',
-    'submit',
-    'clients',
-  ];
+  previewDirectories = [...previewDirectories, ...easDirectories];
+}
+
+if (isDevClientInFeaturePreview) {
+  featurePreviewDirectories = [...featurePreviewDirectories, 'clients'];
+} else {
+  previewDirectories = [...previewDirectories, 'clients'];
 }
 
 // Find any directories that aren't reference or starting directories. Also exclude the api
@@ -160,14 +160,14 @@ const generalDirectories = fs
     name =>
       name !== 'api' &&
       name !== 'versions' &&
-      ![...startingDirectories, ...previewDirectories, ...easDirectories].includes(name)
+      ![...startingDirectories, ...previewDirectories, ...featurePreviewDirectories].includes(name)
   );
 
 module.exports = {
   startingDirectories,
   generalDirectories,
   previewDirectories,
-  easDirectories,
+  featurePreviewDirectories,
   starting: startingDirectories.map(directory =>
     generateGeneralNavLinks(`${ROOT_PATH_PREFIX}/${directory}`)
   ),
@@ -177,7 +177,9 @@ module.exports = {
   preview: previewDirectories.map(directory =>
     generateGeneralNavLinks(`${ROOT_PATH_PREFIX}/${directory}`)
   ),
-  eas: easDirectories.map(directory => generateGeneralNavLinks(`${ROOT_PATH_PREFIX}/${directory}`)),
+  featurePreview: featurePreviewDirectories.map(directory =>
+    generateGeneralNavLinks(`${ROOT_PATH_PREFIX}/${directory}`)
+  ),
   reference: referenceDirectories.reduce(
     (obj, version) => ({
       ...obj,
