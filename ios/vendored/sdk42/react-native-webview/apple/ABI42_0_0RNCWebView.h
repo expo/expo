@@ -28,7 +28,7 @@
 @end
 
 @interface ABI42_0_0RNCWebView : ABI42_0_0RCTView
-@property (nonatomic, strong) NSString *experienceId;
+@property (nonatomic, strong) NSString *scopeKey;
 
 @property (nonatomic, weak) id<ABI42_0_0RNCWebViewDelegate> _Nullable delegate;
 @property (nonatomic, copy) NSDictionary * _Nullable source;
