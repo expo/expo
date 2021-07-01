@@ -1,6 +1,6 @@
 name: "\U0001F6E0 Development Client Bug Report"
 description: 'Report a reproducible issue with a Custom Development Client'
-labels: 'needs review', 'Custom Client'
+labels: 'Custom Client'
 body:
   - type: markdown
     attributes:
@@ -55,8 +55,6 @@ body:
     attributes:
       label: Stacktrace (if a crash is involved)
       description: 'If your issue involves a crash, please provide the native stacktrace if you are able.'
-    validations:
-      required: false
   - type: markdown
     attributes:
       value: "**Realize that it is up to you to debug your code and be as certain as possible that the bug is with Expo, not with your own app.** [Here's an excellent guide to debugging you can follow](https://gist.github.com/brentvatne/5ac00cba0c70b7a06b89a56787d6bc4a)."
