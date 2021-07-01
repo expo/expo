@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed Android intent XML parsing issues. ([#13401](https://github.com/expo/expo/pull/13401) by [@quicksnap](https://github.com/quicksnap))
+
 ### 💡 Others
 
 ## 9.2.4 — 2021-06-28
