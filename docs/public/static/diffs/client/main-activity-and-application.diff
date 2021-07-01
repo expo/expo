@@ -69,6 +69,6 @@ index 78736bf..bce13b9 100644
 @@ -85,6 +87,7 @@ public class MainApplication extends Application implements ReactApplication {
     
 
-     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
 +    DevLauncherController.initialize(this, getReactNativeHost());
+     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
    }

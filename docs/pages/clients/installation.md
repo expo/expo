@@ -81,6 +81,18 @@ import App from "./App";
 
 > Note: This will only affect the application in which you make this change. If you are using your custom client to load multiple applications, you'll need to add this import statement to each of them.
 
+### Loading published updates
+
+The Development Client can also be used to open and preview published updates to your app. To add this feature, you need to add `expo-updates@0.8.0` or newer to your app if it isn't already installed, and add a small additional integration in your `AppDelegate.m` and `MainApplication.java` files.
+
+1. [Install and set up `react-native-unimodules` in your project](../bare/installing-unimodules.md), if you have not already done so.
+2. [Install and set up `expo-updates` in your project](../bare/installing-updates.md), if you have not already done so.
+3. Make the following changes to complete the integration with `expo-updates`:
+
+<ConfigurationDiff source="/static/diffs/client/app-delegate-updates.diff" />
+
+<ConfigurationDiff source="/static/diffs/client/main-application-updates.diff" />
+
 ## 4. Build and Install
 
 You're now ready to [build your first custom client](/clients/getting-started.md#building-and-installing-your-first-custom-client) and to start developing.
