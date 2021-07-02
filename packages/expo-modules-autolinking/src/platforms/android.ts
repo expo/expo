@@ -56,13 +56,13 @@ import org.unimodules.core.interfaces.Package;
 
 public class ExpoModulesPackageList {
   private static class LazyHolder {
-    static final List<Package> LIST = Arrays.<Package>asList(
+    static final List<Package> packagesList = Arrays.<Package>asList(
 ${packagesClasses.map(packageClass => `      new ${packageClass}()`).join(',\n')}
     );
   }
 
   public static List<Package> getPackageList() {
-    return LazyHolder.LIST;
+    return LazyHolder.packagesList;
   }
 }
 `;

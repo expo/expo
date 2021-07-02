@@ -5,8 +5,10 @@ import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import org.unimodules.core.interfaces.ReactActivityLifecycleListener
 
-open class ReactActivityDelegateWrapper(activity: ReactActivity, mainComponentName: String?)
-  : ReactActivityDelegate(activity, mainComponentName) {
+open class ReactActivityDelegateWrapper(
+  activity: ReactActivity,
+  mainComponentName: String?
+) : ReactActivityDelegate(activity, mainComponentName) {
   private val reactActivityLifecycleListeners: ArrayList<ReactActivityLifecycleListener> = ArrayList()
   init {
     for (pkg in ExpoModulesPackageList.getPackageList()) {
