@@ -12,6 +12,7 @@ A paid developer account is required to submit an app &mdash; you can create an 
 ## 1. Build a standalone app
 
 You'll need a built native app binary. You can either use the [EAS Build](introduction.md) service or do it on your own.
+If you haven't you need to install EAS CLI by running `npm install -g eas-cli`. 
 
 ## 2. Start the submission
 
