@@ -14,6 +14,9 @@ yarn-error.log
 # Ruby
 .direnv
 
+# Env
+.envrc.local
+
 # Emacs
 *~
 
