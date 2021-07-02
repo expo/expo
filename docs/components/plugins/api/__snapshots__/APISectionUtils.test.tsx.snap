@@ -223,6 +223,26 @@ exports[`APISectionUtils.resolveTypeName query type 1`] = `
 </div>
 `;
 
+exports[`APISectionUtils.resolveTypeName tuple type 1`] = `
+<div>
+  [
+  <span>
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="/#sortbykey"
+    >
+      SortByKey
+    </a>
+    , 
+  </span>
+  <span>
+    boolean
+    
+  </span>
+  ]
+</div>
+`;
+
 exports[`APISectionUtils.resolveTypeName union 1`] = `
 <div>
   <span>

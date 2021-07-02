@@ -181,6 +181,21 @@ describe('APISectionUtils.resolveTypeName', () => {
     expect(container).toMatchSnapshot();
   });
 
+  test('tuple type', () => {
+    const { container } = render(
+      <>
+        {resolveTypeName({
+          type: 'tuple',
+          elements: [
+            { type: 'reference', name: 'SortByKey' },
+            { type: 'intrinsic', name: 'boolean' },
+          ],
+        })}
+      </>
+    );
+    expect(container).toMatchSnapshot();
+  });
+
   test('generic type in Promise', () => {
     const { container } = render(
       <>
