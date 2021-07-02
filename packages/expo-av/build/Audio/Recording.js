@@ -85,6 +85,10 @@ export const RECORDING_OPTIONS_PRESET_HIGH_QUALITY = {
         linearPCMIsBigEndian: false,
         linearPCMIsFloat: false,
     },
+    web: {
+        mimeType: 'audio/webm',
+        bitsPerSecond: 128000,
+    },
 };
 export const RECORDING_OPTIONS_PRESET_LOW_QUALITY = {
     isMeteringEnabled: true,
@@ -105,6 +109,10 @@ export const RECORDING_OPTIONS_PRESET_LOW_QUALITY = {
         linearPCMBitDepth: 16,
         linearPCMIsBigEndian: false,
         linearPCMIsFloat: false,
+    },
+    web: {
+        mimeType: 'audio/webm',
+        bitsPerSecond: 128000,
     },
 };
 export { PermissionStatus };
@@ -270,6 +278,10 @@ export class Recording {
         }
         catch (err) {
             stopError = err;
+        }
+        // Web has to return the URI at the end of recording, so needs a little destructuring
+        if (Platform.OS === 'web' && stopResult?.uri !== undefined) {
+            this._uri = stopResult.uri;
         }
         // Clean-up and return status
         await ExponentAV.unloadAudioRecorder();

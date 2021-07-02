@@ -364,6 +364,12 @@ The rest of the API for `Audio.Sound` is the same as the imperative playback API
 
 ## Recording sounds
 
+> **Notes on web usage:**
+>
+> - A MediaRecorder issue on Chrome produces WebM files missing the duration metadata. [See the open Chromium issue](https://bugs.chromium.org/p/chromium/issues/detail?id=642012)
+> - MediaRecorder encoding options and other configurations are inconsistent across browsers, utilising a Polyfill such as [kbumsik/opus-media-recorder](https://github.com/kbumsik/opus-media-recorder) or [ai/audio-recorder-polyfill](https://github.com/ai/audio-recorder-polyfill) in your application will improve your experience. Any options passed to `prepareToRecordAsync` will be passed directly to the MediaRecorder API and as such the polyfill.
+> - Web browsers require sites to be served securely in order for them to listen to a mic. See [MediaDevices#getUserMedia Security](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#security) for more details.
+
 ### `Audio.Recording`
 
 This class represents an audio recording. After creating an instance of this class, `prepareToRecordAsync` must be called in order to record audio. Once recording is finished, call `stopAndUnloadAsync`. Note that only one recorder is allowed to exist in the state between `prepareToRecordAsync` and `stopAndUnloadAsync` at any given time.
@@ -528,11 +534,11 @@ A static convenience method to construct and start a recording is also provided:
 
 - `recordingInstance.getURI()`
 
-  Gets the local URI of the `Recording`. Note that this will only succeed once the `Recording` is prepared to record.
+  Gets the local URI of the `Recording`. Note that this will only succeed once the `Recording` is prepared to record. On web, this will not return the URI until the recording is finished.
 
   #### Returns
 
-  A `string` with the local URI of the `Recording`, or `null` if the `Recording` is not prepared to record.
+  A `string` with the local URI of the `Recording`, or `null` if the `Recording` is not prepared to record (or, on Web, if the recording has not finished).
 
 - `recordingInstance.createNewLoadedSoundAsync()`
 
