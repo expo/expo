@@ -1,11 +1,6 @@
 import { PermissionResponse } from 'expo-modules-core';
 import { AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV';
 import { RecordingStatus } from './Audio/Recording';
-/**
- * Gets the permission details. The implementation is not very good as it actually requests
- * access to the microhpone, not all browsers support the experimental permissions api
- */
-declare function getPermissionsAsync(): Promise<PermissionResponse>;
 declare const _default: {
     readonly name: string;
     getStatusForVideo(element: HTMLMediaElement): Promise<AVPlaybackStatus>;
@@ -32,7 +27,7 @@ declare const _default: {
     pauseAudioRecording(): Promise<RecordingStatus>;
     stopAudioRecording(): Promise<RecordingStatus>;
     unloadAudioRecorder(): Promise<void>;
-    getPermissionsAsync: typeof getPermissionsAsync;
+    getPermissionsAsync(): Promise<PermissionResponse>;
     requestPermissionsAsync(): Promise<PermissionResponse>;
 };
 export default _default;

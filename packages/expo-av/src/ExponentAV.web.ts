@@ -4,24 +4,49 @@ import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
 import { AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV';
 import { RecordingStatus, RECORDING_OPTIONS_PRESET_HIGH_QUALITY } from './Audio/Recording';
 
-/**
- * Gets the permission details. The implementation is not very good as it actually requests
- * access to the microhpone, not all browsers support the experimental permissions api
- */
-async function getPermissionsAsync(): Promise<PermissionResponse> {
-  const resolveWithStatus = (status: PermissionStatus) => ({
-    status,
-    granted: status === PermissionStatus.GRANTED,
-    canAskAgain: true,
-    expires: 0,
-  });
+async function getPermissionWithQueryAsync(name: PermissionName): Promise<PermissionStatus | null> {
+  if (!navigator || !navigator.permissions || !navigator.permissions.query) return null;
 
   try {
-    await navigator.mediaDevices.getUserMedia({ audio: true });
-    return resolveWithStatus(PermissionStatus.GRANTED);
-  } catch (e) {
-    return resolveWithStatus(PermissionStatus.DENIED);
+    const { state } = await navigator.permissions.query({ name });
+    switch (state) {
+      case 'granted':
+        return PermissionStatus.GRANTED;
+      case 'denied':
+        return PermissionStatus.DENIED;
+      default:
+        return PermissionStatus.UNDETERMINED;
+    }
+  } catch (error) {
+    // FireFox - TypeError: 'microphone' (value of 'name' member of PermissionDescriptor) is not a valid value for enumeration PermissionName.
+    return PermissionStatus.UNDETERMINED;
   }
+}
+
+function getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream> {
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    return navigator.mediaDevices.getUserMedia(constraints);
+  }
+
+  // Some browsers partially implement mediaDevices. We can't just assign an object
+  // with getUserMedia as it would overwrite existing properties.
+  // Here, we will just add the getUserMedia property if it's missing.
+
+  // First get ahold of the legacy getUserMedia, if present
+  const getUserMedia =
+    navigator.getUserMedia ||
+    (navigator as any).webkitGetUserMedia ||
+    (navigator as any).mozGetUserMedia ||
+    function() {
+      const error: any = new Error('Permission unimplemented');
+      error.code = 0;
+      error.name = 'NotAllowedError';
+      throw error;
+    };
+
+  return new Promise((resolve, reject) => {
+    getUserMedia.call(navigator, constraints, resolve, reject);
+  });
 }
 
 function getStatusFromMedia(media?: HTMLMediaElement): AVPlaybackStatus {
@@ -222,7 +247,7 @@ export default {
     mediaRecorderUptimeOfLastStartResume = 0;
     mediaRecorderDurationAlreadyRecorded = 0;
 
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const stream = await getUserMedia({ audio: true });
 
     mediaRecorder = new (window as any).MediaRecorder(
       stream,
@@ -313,8 +338,44 @@ export default {
     mediaRecorder = null;
   },
 
-  getPermissionsAsync,
+  async getPermissionsAsync(): Promise<PermissionResponse> {
+    const maybeStatus = await getPermissionWithQueryAsync('microphone');
+    switch (maybeStatus) {
+      case PermissionStatus.GRANTED:
+        return {
+          status: PermissionStatus.GRANTED,
+          expires: 'never',
+          canAskAgain: true,
+          granted: true,
+        };
+      case PermissionStatus.DENIED:
+        return {
+          status: PermissionStatus.DENIED,
+          expires: 'never',
+          canAskAgain: true,
+          granted: false,
+        };
+      default:
+        return await this.requestPermissionsAsync();
+    }
+  },
   async requestPermissionsAsync(): Promise<PermissionResponse> {
-    return getPermissionsAsync();
+    try {
+      const stream = await getUserMedia({ audio: true });
+      stream.getTracks().forEach(track => track.stop());
+      return {
+        status: PermissionStatus.GRANTED,
+        expires: 'never',
+        canAskAgain: true,
+        granted: true,
+      };
+    } catch (e) {
+      return {
+        status: PermissionStatus.DENIED,
+        expires: 'never',
+        canAskAgain: true,
+        granted: false,
+      };
+    }
   },
 };
