@@ -28,6 +28,7 @@ export type TypeDefinitionData = {
   name?: string;
   type: string;
   types?: TypeDefinitionData[];
+  elements?: TypeDefinitionData[];
   elementType?: {
     name: string;
     type: string;

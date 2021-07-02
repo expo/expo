@@ -118,28 +118,10 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
     );
   } else if (type.types && ['union', 'intersection'].includes(type.type)) {
     const literalTypes = type.types.filter((t: TypeDefinitionData) =>
-      ['literal', 'intrinsic', 'reference'].includes(t.type)
+      ['literal', 'intrinsic', 'reference', 'tuple'].includes(t.type)
     );
     const propTypes = type.types.filter((t: TypeDefinitionData) => t.type === 'reflection');
-    if (literalTypes.length) {
-      return (
-        <div key={`type-definition-${name}`}>
-          <H3Code>
-            <InlineCode>{name}</InlineCode>
-          </H3Code>
-          <P>
-            {defineLiteralType(literalTypes)}
-            Acceptable values are:{' '}
-            {literalTypes.map((lt, index) => (
-              <span key={`${name}-literal-type-${index}`}>
-                <InlineCode>{resolveTypeName(lt)}</InlineCode>
-                {index + 1 !== literalTypes.length ? ', ' : '.'}
-              </span>
-            ))}
-          </P>
-        </div>
-      );
-    } else if (propTypes.length) {
+    if (propTypes.length) {
       return (
         <div key={`prop-type-definition-${name}`}>
           <H3Code>
@@ -158,6 +140,24 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
             propType =>
               propType?.declaration?.children && renderTypeDeclarationTable(propType.declaration)
           )}
+        </div>
+      );
+    } else if (literalTypes.length) {
+      return (
+        <div key={`type-definition-${name}`}>
+          <H3Code>
+            <InlineCode>{name}</InlineCode>
+          </H3Code>
+          <P>
+            {defineLiteralType(literalTypes)}
+            Acceptable values are:{' '}
+            {literalTypes.map((lt, index) => (
+              <span key={`${name}-literal-type-${index}`}>
+                <InlineCode>{resolveTypeName(lt)}</InlineCode>
+                {index + 1 !== literalTypes.length ? ', ' : '.'}
+              </span>
+            ))}
+          </P>
         </div>
       );
     }

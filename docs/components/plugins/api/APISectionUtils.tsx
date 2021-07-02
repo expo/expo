@@ -53,6 +53,7 @@ export const mdInlineRenderers: MDRenderers = {
 const nonLinkableTypes = ['Date', 'Error', 'Promise', 'T', 'TaskOptions', 'Uint8Array'];
 
 export const resolveTypeName = ({
+  elements,
   elementType,
   name,
   type,
@@ -155,6 +156,19 @@ export const resolveTypeName = ({
         </>
       );
     }
+  } else if (type === 'tuple' && elements) {
+    return (
+      <>
+        [
+        {elements.map((elem, i) => (
+          <span key={`tuple-${name}-${i}`}>
+            {resolveTypeName(elem)}
+            {i + 1 !== elements.length ? ', ' : ''}
+          </span>
+        ))}
+        ]
+      </>
+    );
   } else if (type === 'query' && queryType) {
     return queryType.name;
   } else if (type === 'literal' && value) {
