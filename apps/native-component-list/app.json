@@ -23,8 +23,8 @@
       "silentLaunch": true
     },
     "platforms": ["android", "ios", "web"],
-    "facebookScheme": "fb629712900716487",
-    "facebookAppId": "629712900716487",
+    "facebookScheme": "fb1696089354000816",
+    "facebookAppId": "1696089354000816",
     "facebookDisplayName": "Expo APIs",
     "facebookAutoLogAppEventsEnabled": true,
     "facebookAdvertiserIDCollectionEnabled": true,

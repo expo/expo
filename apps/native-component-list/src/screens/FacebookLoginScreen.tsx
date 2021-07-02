@@ -6,7 +6,7 @@ import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
 import SimpleActionDemo from '../components/SimpleActionDemo';
 
-const appId = '629712900716487';
+const appId = '1696089354000816';
 
 export default class FacebookLoginScreen extends React.Component {
   static navigationOptions = {
