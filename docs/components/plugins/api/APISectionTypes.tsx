@@ -116,7 +116,7 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
           : null}
       </div>
     );
-  } else if (type.types && (type.type === 'union' || 'intersection')) {
+  } else if (type.types && ['union', 'intersection'].includes(type.type)) {
     const literalTypes = type.types.filter(
       (t: TypeDefinitionData) =>
 		['literal', 'intrinsic', 'reference'].includes(t.type)
