@@ -95,7 +95,7 @@ export default function ProfileView({ navigation, loading, error, refetch, data 
     );
   }
 
-  if (loading) {
+  if (loading && !isRefreshing) {
     return (
       <View style={{ flex: 1, padding: 30, alignItems: 'center' }}>
         <ActivityIndicator color={Colors.light.tintColor} />
