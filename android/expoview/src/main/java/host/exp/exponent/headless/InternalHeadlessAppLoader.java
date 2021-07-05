@@ -200,7 +200,7 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
   }
 
   public boolean isDebugModeEnabled() {
-    return mManifest.isDevelopmentMode();
+    return mManifest != null && mManifest.isDevelopmentMode();
   }
 
   private void soloaderInit() {
