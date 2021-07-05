@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Remove unnecessary gradle dependency on unimodules-core. ([#13481](https://github.com/expo/expo/pull/13481) by [@esamelson](https://github.com/esamelson))
-
 ### 💡 Others
+
+## 0.2.2 — 2021-07-05
+
+### 🐛 Bug fixes
+
+- Remove unnecessary gradle dependency on unimodules-core. ([#13481](https://github.com/expo/expo/pull/13481) by [@esamelson](https://github.com/esamelson))
 
 ## 0.2.1 — 2021-06-24
 
