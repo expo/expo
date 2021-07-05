@@ -125,7 +125,8 @@ export function getTestModules() {
     optionalRequire(() => require('./tests/Speech')),
     optionalRequire(() => require('./tests/Recording')),
     optionalRequire(() => require('./tests/ScreenOrientation')),
-    optionalRequire(() => require('./tests/Payments'))
+    optionalRequire(() => require('./tests/Payments')),
+    optionalRequire(() => require('./tests/Notifications'))
   );
 
   if (!isDeviceFarm()) {
