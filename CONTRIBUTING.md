@@ -32,8 +32,9 @@ Manual smoke tests are included in `apps/native-component-list`, this is a good 
 
 1. [Fork](https://help.github.com/articles/fork-a-repo/) this repository to your own GitHub account and then [clone](https://help.github.com/articles/cloning-a-repository/) it to your local device. (`git remote add upstream git@github.com:expo/expo.git` 😉). You can use `git clone --depth 1 --single-branch --branch master git@github.com:expo/expo.git`, discarding most of branches and history to clone it faster.
 2. Ensure [direnv](https://direnv.net/) is installed on your computer.
-3. If you will be working with the iOS project, ensure **ruby 2.7** is installed on your machine. macOS comes with ruby 2.6, which will give you issues; if you use homebrew you can just run `brew install ruby@2.7`.
-4. Run the setup script with: `npm run setup:native` (if you just want to contribute to the docs, you can run `npm run setup:docs`). This command does the following for you:
+3. Ensure [Node 14](https://nodejs.org/) is installed on your computer. (Check version with `node -v`)
+4. If you will be working with the iOS project, ensure **ruby 2.7** is installed on your machine. macOS comes with ruby 2.6, which will give you issues; if you use homebrew you can just run `brew install ruby@2.7`.
+5. Run the setup script with: `npm run setup:native` (if you just want to contribute to the docs, you can run `npm run setup:docs`). This command does the following for you:
 
    <!-- TODO(Bacon): Split this into 2 scripts so people can contribute to docs without installing React Native -->
 
@@ -45,14 +46,14 @@ Manual smoke tests are included in `apps/native-component-list`, this is a good 
 
    Make sure that you're using Java 8 (e.g. OpenJDK 1.8.0_292). `ANDROID_SDK_ROOT`, `ANDROID_NDK_HOME` environmental variables should be set or configured via `local.properties` file in `android` folder of the native project you're working with.
 
-5. Navigate to the bare sandbox project `cd apps/bare-expo`
-6. Run the project on any platform (maybe start with web; it's the fastest! 😁)
+6. Navigate to the bare sandbox project `cd apps/bare-expo`
+7. Run the project on any platform (maybe start with web; it's the fastest! 😁)
 
    - Web: `yarn web`
    - iOS: `yarn ios`
    - Android: `yarn android`
 
-7. You are now running the `test-suite` app via the `bare-expo` project. The next section explains how you can begin to make changes to SDK packages.
+8. You are now running the `test-suite` app via the `bare-expo` project. The next section explains how you can begin to make changes to SDK packages.
 
 > If this didn't work for you as described, please [open an issue.](https://github.com/expo/expo/issues/new/choose)
 
