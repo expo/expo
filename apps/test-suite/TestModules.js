@@ -125,21 +125,10 @@ export function getTestModules() {
     optionalRequire(() => require('./tests/Speech')),
     optionalRequire(() => require('./tests/Recording')),
     optionalRequire(() => require('./tests/ScreenOrientation')),
-    optionalRequire(() => require('./tests/Payments')),
-    optionalRequire(() => require('./tests/AdMobInterstitial')),
-    optionalRequire(() => require('./tests/AdMobRewarded')),
-    optionalRequire(() => require('./tests/FBBannerAd')),
-    optionalRequire(() => require('./tests/Notifications'))
+    optionalRequire(() => require('./tests/Payments'))
   );
 
   if (!isDeviceFarm()) {
-    // Times out sometimes
-    modules.push(
-      optionalRequire(() => require('./tests/AdMobPublisherBanner')),
-      optionalRequire(() => require('./tests/AdMobBanner'))
-    );
-    // Invalid placementId in CI (all tests fail)
-    modules.push(optionalRequire(() => require('./tests/FBNativeAd')));
     // Requires interaction (sign in popup)
     modules.push(optionalRequire(() => require('./tests/GoogleSignIn')));
     // Popup to request device's location which uses Google's location service
