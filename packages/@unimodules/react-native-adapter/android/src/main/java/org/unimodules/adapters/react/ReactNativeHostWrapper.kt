@@ -17,6 +17,7 @@ import com.facebook.react.bridge.ReactMarkerConstants
 import com.facebook.react.common.LifecycleState
 import com.facebook.react.devsupport.RedBoxHandler
 import com.facebook.react.uimanager.UIImplementationProvider
+import org.unimodules.core.interfaces.ReactNativeHostHandler
 import java.lang.reflect.Method
 
 class ReactNativeHostWrapper(application: Application, host: ReactNativeHost)
@@ -25,55 +26,11 @@ class ReactNativeHostWrapper(application: Application, host: ReactNativeHost)
   private val reactNativeHostHandlers = ExpoModulesPackageList.getPackageList()
     .flatMap { it.createReactNativeHostHandlers(application) }
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
-  private var mReactInstanceManager: ReactInstanceManager? = null
-
-  //region ReactNativeHost
-
-  override fun getReactInstanceManager(): ReactInstanceManager {
-    if (mReactInstanceManager == null) {
-      ReactMarker.logMarker(ReactMarkerConstants.GET_REACT_INSTANCE_MANAGER_START)
-      mReactInstanceManager = createReactInstanceManager()
-      ReactMarker.logMarker(ReactMarkerConstants.GET_REACT_INSTANCE_MANAGER_END)
-    }
-    return mReactInstanceManager!!
-  }
-
-  override fun hasInstance(): Boolean {
-    return mReactInstanceManager != null
-  }
-
-  override fun clear() {
-    mReactInstanceManager?.let {
-      it.destroy()
-      mReactInstanceManager = null
-    }
-  }
 
   override fun createReactInstanceManager(): ReactInstanceManager {
-    ReactMarker.logMarker(ReactMarkerConstants.BUILD_REACT_INSTANCE_MANAGER_START)
-    val builder = ReactInstanceManager.builder()
-      .setApplication(application)
-      .setJSMainModulePath(jsMainModuleName)
-      .setUseDeveloperSupport(useDeveloperSupport)
-      .setRedBoxHandler(redBoxHandler)
-      .setJavaScriptExecutorFactory(javaScriptExecutorFactory)
-      .setUIImplementationProvider(uiImplementationProvider)
-      .setJSIModulesPackage(JSIModuleContainerPackage())
-      .setInitialLifecycleState(LifecycleState.BEFORE_CREATE)
-
-    for (reactPackage in this.packages) {
-      builder.addPackage(reactPackage)
-    }
-
-    val jsBundleFile = getOverrideJSBundleFile()
-    if (jsBundleFile != null) {
-      builder.setJSBundleFile(jsBundleFile)
-    } else {
-      builder.setBundleAssetName(Assertions.assertNotNull(getOverrideBundleAssetName()))
-    }
-    val reactInstanceManager = builder.build()
-    ReactMarker.logMarker(ReactMarkerConstants.BUILD_REACT_INSTANCE_MANAGER_END)
-    return reactInstanceManager
+    return reactNativeHostHandlers.asSequence()
+      .map(ReactNativeHostHandler::createReactInstanceManager)
+      .firstOrNull() ?: super.createReactInstanceManager()
   }
 
   override fun getRedBoxHandler(): RedBoxHandler? {
@@ -89,7 +46,8 @@ class ReactNativeHostWrapper(application: Application, host: ReactNativeHost)
   }
 
   override fun getJSIModulePackage(): JSIModulePackage? {
-    return invokeDelegateMethod("getJSIModulePackage")
+    val userJSIModulePackage = invokeDelegateMethod<JSIModulePackage?>("getJSIModulePackage")
+    return JSIModuleContainerPackage(userJSIModulePackage)
   }
 
   override fun getJSMainModuleName(): String {
@@ -97,11 +55,15 @@ class ReactNativeHostWrapper(application: Application, host: ReactNativeHost)
   }
 
   override fun getJSBundleFile(): String? {
-    return invokeDelegateMethod("getJSBundleFile")
+    return reactNativeHostHandlers.asSequence()
+      .map(ReactNativeHostHandler::getJSBundleFile)
+      .firstOrNull() ?: invokeDelegateMethod<String?>("getJSBundleFile")
   }
 
   override fun getBundleAssetName(): String? {
-    return invokeDelegateMethod("getBundleAssetName")
+    return reactNativeHostHandlers.asSequence()
+      .map(ReactNativeHostHandler::getBundleAssetName)
+      .firstOrNull() ?: invokeDelegateMethod<String?>("getBundleAssetName")
   }
 
   override fun getUseDeveloperSupport(): Boolean {
@@ -116,26 +78,16 @@ class ReactNativeHostWrapper(application: Application, host: ReactNativeHost)
 
   //region Internals
 
-  inner class JSIModuleContainerPackage : JSIModulePackage {
+  inner class JSIModuleContainerPackage(userJSIModulePackage: JSIModulePackage?) : JSIModulePackage {
+    private val userJSIModulePackage = userJSIModulePackage
     override fun getJSIModules(reactApplicationContext: ReactApplicationContext,
                                jsContext: JavaScriptContextHolder): List<JSIModuleSpec<JSIModule>> {
       reactNativeHostHandlers.forEach { handler ->
         handler.onRegisterJSIModules(reactApplicationContext, jsContext)
       }
+      userJSIModulePackage?.getJSIModules(reactApplicationContext, jsContext)
       return emptyList()
     }
-  }
-
-  private fun getOverrideJSBundleFile(): String? {
-    return reactNativeHostHandlers
-      .map { it.getJSBundleFile() }
-      .firstOrNull() ?: this.jsBundleFile
-  }
-
-  private fun getOverrideBundleAssetName(): String? {
-    return reactNativeHostHandlers
-      .map { it.getBundleAssetName() }
-      .firstOrNull() ?: this.bundleAssetName
   }
 
   private fun <T> invokeDelegateMethod(name: String): T {

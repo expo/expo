@@ -1,9 +1,19 @@
 package org.unimodules.core.interfaces
 
+import com.facebook.react.ReactInstanceManager
 import com.facebook.react.bridge.JavaScriptContextHolder
 import com.facebook.react.bridge.ReactApplicationContext
 
 interface ReactNativeHostHandler {
+  /**
+   * Given chance for modules to customize {@link ReactInstanceManager}
+   *
+   * @return instance of {@link ReactInstanceManager}, or null if not to override
+   */
+  fun createReactInstanceManager(): ReactInstanceManager? {
+    return null
+  }
+
   /**
    * Given chance for modules to override react bundle file.
    * e.g. for expo-updates
