@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -19,13 +19,11 @@
 namespace facebook {
 namespace react {
 
-YogaStylableProps::YogaStylableProps(YGStyle const &yogaStyle)
-    : yogaStyle(yogaStyle) {}
-
 YogaStylableProps::YogaStylableProps(
     YogaStylableProps const &sourceProps,
     RawProps const &rawProps)
-    : yogaStyle(convertRawProp(rawProps, sourceProps.yogaStyle)){};
+    : Props(sourceProps, rawProps),
+      yogaStyle(convertRawProp(rawProps, sourceProps.yogaStyle)){};
 
 #pragma mark - DebugStringConvertible
 

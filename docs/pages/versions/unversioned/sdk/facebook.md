@@ -1,19 +1,20 @@
 ---
 title: Facebook
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-facebook'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-facebook'
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import InstallSection from '~/components/plugins/InstallSection';
 
-**`expo-facebook`** provides Facebook integration, such as logging in through Facebook, for React Native apps. Expo exposes a minimal native API since you can access Facebook's [Graph API](https://developers.facebook.com/docs/graph-api) directly through HTTP (using [fetch](https://facebook.github.io/react-native/docs/network.html#fetch), for example).
+**`expo-facebook`** provides Facebook integration, such as logging in through Facebook, for React Native apps. Expo exposes a minimal native API since you can access Facebook's [Graph API](https://developers.facebook.com/docs/graph-api) directly through HTTP (using [fetch](https://reactnative.dev/docs/network.html#fetch), for example).
 
-<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/pull/6862' }} />
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-facebook`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-facebook).
+<InstallSection packageName="expo-facebook" />
 
-For ejected (see: [ExpoKit](../../expokit/overview)) apps, here are links to the [iOS Installation Walkthrough](https://developers.facebook.com/docs/ios/getting-started/) and the [Android Installation Walkthrough](https://developers.facebook.com/docs/android/getting-started).
+For bare apps, here are links to the [iOS Installation Walkthrough](https://developers.facebook.com/docs/ios/getting-started/#step-3---configure-your-project) and the [Android Installation Walkthrough](https://developers.facebook.com/docs/android/getting-started#app_id).
 
 ## Configuration
 
@@ -23,25 +24,33 @@ For ejected (see: [ExpoKit](../../expokit/overview)) apps, here are links to the
 
 Follow [Facebook's developer documentation](https://developers.facebook.com/docs/apps/register) to register an application with Facebook's API and get an application ID. Take note of this application ID because it will be used as the `appId` option in your [`Facebook.logInWithReadPermissionsAsync`](#expofacebookloginwithreadpermissionsasync 'Facebook.logInWithReadPermissionsAsync') call.
 
-Then follow these steps based on the platforms you're targetting. This will need to be done from the [Facebook developer site](https://developers.facebook.com/). You don't need to set up the iOS and Android standalone apps right away, you can do that at any time in the future if you just want to get the Expo client version running first.
+Then follow these steps based on the platforms you're targeting. This will need to be done from the [Facebook developer site](https://developers.facebook.com/).
 
-- **The Expo client app**
+Expo Go from the Android Play Store will use the Facebook App ID that you provide, however, all Facebook API calls in the **Expo Go from the iOS App Store will use Expo's own Facebook App ID**. This is due to underlying configuration limitations, but the good news is it means less setup for you! The slight downside to this is that you can't customize which permissions your app requests from Facebook (like `user_photos` or `user_friends`), or integrate Facebook login with other services like Firebase auth. If you need that functionality on iOS, you can build a standalone app. An easy way to test this is to run `expo build:ios -t simulator` and install the app in your simulator.
 
-  - Add `host.exp.Exponent` as an iOS _Bundle ID_. Add `rRW++LUjmZZ+58EbN5DVhGAnkX4=` as an Android _key hash_. Your app's settings should end up including the following under "Settings > Basic":
+#### Configure `app.json`
+
+- Add the field `facebookScheme` with your Facebook login redirect URL scheme found [here](https://developers.facebook.com/docs/facebook-login/ios) under "_4. Configure Your info.plist_." It should look like `"fb123456"`. If you do not do this, Facebook will not be able to redirect to your app after logging in.
+
+- Add the fields `facebookAppId` and `facebookDisplayName`, using your [Facebook App ID and Facebook Display Name](https://developers.facebook.com/docs/facebook-login/ios), respectively.
+
+- Optional fields
+  - `facebookAutoLogAppEventsEnabled`, defaults to Facebook's default policy (Only applies to standalone apps)
+  - `facebookAdvertiserIDCollectionEnabled`, defaults to Facebook's default policy (Only applies to standalone apps)
+
+#### iOS standalone app
+
+- Add your app's Bundle ID as a _Bundle ID_ in the app settings page pictured below.
+
+> An easy way to test that this is set up correctly is to run a simulator build with `expo build:ios -t simulator`.
+
+#### Android standalone app
+
+- [Build your standalone app](../../../distribution/building-standalone-apps.md#building-standalone-apps) for Android.
+- Run `expo fetch:android:hashes`.
+- Copy `Facebook Key Hash` and paste it as a key hash in your Facebook developer page pictured below.
 
 ![](/static/images/facebook-app-settings.png)
-
-- **iOS standalone app**
-
-  - Add your app's Bundle ID as a _Bundle ID_ in the app settings page pictured above. If you still have the `host.exp.Exponent` ID listed there, remove it.
-  - In your [app.json](../../workflow/configuration/), add a field `facebookScheme` with your Facebook login redirect URL scheme found [here](https://developers.facebook.com/docs/facebook-login/ios) under _4. Configure Your info.plist_. It should look like `"fb123456"`.
-  - Also in your [app.json](../../workflow/configuration/), add your [Facebook App ID and Facebook Display Name](https://developers.facebook.com/docs/facebook-login/ios) under the `facebookAppId` and `facebookDisplayName` keys.
-
-- **Android standalone app**
-
-  - [Build your standalone app](../../distribution/building-standalone-apps/#building-standalone-apps) for Android.
-  - Run `expo fetch:android:hashes`.
-  - Copy `Facebook Key Hash` and paste it as an additional key hash in your Facebook developer page pictured above.
 
 You may have to switch the app from 'development mode' to 'public mode' on the Facebook developer page before other users can log in. This requires adding a privacy policy URL, which can be as simple as a GitHub Gist.
 
@@ -51,41 +60,56 @@ You may have to switch the app from 'development mode' to 'public mode' on the F
 import * as Facebook from 'expo-facebook';
 ```
 
-### `Facebook.initializeAsync(appId: string | undefined, appName: string | undefined): Promise<void>`
+### `Facebook.initializeAsync(options: FacebookInitializationOptions): Promise<void>`
 
-Calling this method ensures that the SDK is initialized. You have to call this method before calling `logInWithReadPermissionsAsync` to ensure that Facebook support is initialized properly.
+Calling this method ensures that the SDK is initialized. You have to call this method before calling any method that uses the Facebook SDK (ex: `logInWithReadPermissionsAsync`, `logOutAsync`) to ensure that Facebook support is initialized properly.
 
-You may or may not provide an optional `appId: string` argument.
-
-- If you don't provide it, Facebook SDK will try to use `appId` from native app resources (which in standalone apps you would define in `app.json`, in Expo client are unavailable and in bare you configure yourself according to Facebook setup documentation for [iOS](https://developers.facebook.com/docs/facebook-login/ios#4--configure-your-project) and [Android](https://developers.facebook.com/docs/facebook-login/android#manifest)). If it fails to find one, the promise will be rejected.
+- On Android and iOS you can optionally provide an `appId` argument.
+  - If you don't provide it, the Facebook SDK will try to use `appId` from native app resources (which in standalone apps you define in `app.json`, in the app store development clients is unavailable, and in bare apps you configure yourself according to the Facebook setup documentation for [iOS][d-fbsdk-ios-config] and [Android][d-fbsdk-android-manifest]]). If the Facebook SDK fails to find a value for `appId`, the returned promise will be rejected.
+  - The same resolution mechanism works for `appName`.
 - If you provide an explicit `appId`, it will override any other source.
 
-The same resolution mechanism works for `appName`.
+#### Login Options
 
-### `Facebook.setAutoInitEnabledAsync(enabled: boolean): Promise<void>`
+A map of options:
 
-Sets whether Facebook SDK should autoinitialize itself. SDK initialization involves eg. fetching app settings from Facebook or a profile of the logged in user. In some cases, you may want to disable or delay the SDK initialization, such as to obtain user consent or fulfill legal obligations. This method corresponds to [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#disable-sdk-initialization) and [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#disable-sdk-initialization) native SDK methods. Even though calling this method with `enabled == true` initializes the Facebook SDK on iOS, it does not on Android and we recommend always calling `initializeAsync` before performing any actions with effects that should be visible to the user (like `loginWithPermissions`).
+- `FacebookInitializationOptions` type:
 
-In Expo, by default, autoinitialization of the Facebook SDK is disabled. You may change this value in runtime by calling this method or customize this feature in buildtime by setting appropriate `app.json` fields. The setting value is persisted across runs (value set with this method overriddes value from buildtime).
+  - **appId (_string | undefined_)** Application ID used to specify the Facebook app. On Android and iOS if you don't provide this, the Facebook SDK will try to use `appId` from native app resources (which in standalone apps you define in `app.json`, in the app store development clients is unavailable, and in bare apps you configure yourself according to the Facebook setup documentation for [iOS][d-fbsdk-ios-config] and [Android][d-fbsdk-android-manifest]). If the Facebook SDK fails to find a value for `appId`, the returned promise will be rejected.
+  - **version (_string | undefined_)** Selects the [version of the Facebook SDK](https://developers.facebook.com/docs/javascript/reference/FB.init/v5.0) to use.
+  - **appName (_string | undefined_)** An optional Facebook App Name argument for Android and iOS.
+  - **autoLogAppEvents (_boolean | undefined_)** Sets whether the Facebook SDK should log app events. App events involve e.g. app installs, app launches (more info [here](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#auto-events) and [here](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#auto-events)). In some cases, you may want to disable or delay the collection of automatically logged events, such as to obtain user consent or fulfill legal obligations. This method corresponds to [this iOS](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#disable-auto-events) and [this Android](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#disable-auto-events) native SDK method. The default value is `false`.
+  - **domain (_string | undefined_)** _(Android only)_ Sets the base Facebook domain to use when making Web requests. Defaults to: `'connect.facebook.net'`.
 
-### `Facebook.setAutoLogAppEventsEnabledAsync(enabled: boolean): Promise<void>`
+[d-fbsdk-ios-config]: https://developers.facebook.com/docs/facebook-login/ios#4--configure-your-project
+[d-fbsdk-android-manifest]: https://developers.facebook.com/docs/facebook-login/android#manifest
 
-Sets whether Facebook SDK should log app events. App events involve app eg. installs, app launches (more info [here](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#auto-events) and [here](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#auto-events)). In some cases, you may want to disable or delay the collection of automatically logged events, such as to obtain user consent or fulfill legal obligations. This method corresponds to [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#disable-auto-events) and [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#disable-auto-events) native SDK methods.
+### `Facebook.requestPermissionsAsync()`
 
-In Expo, by default, automatic logging app events is disabled. You may change this value in runtime by calling this method or customize this feature in buildtime by setting appropriate `app.json` fields. The setting value is persisted across runs (value set with this method overriddes value from buildtime).
+Asks for permissions to use data for tracking the user or the device.
 
-### `Facebook.setAdvertiserIDCollectionEnabledAsync(enabled: boolean): Promise<void>`
+> iOS: it requires the `NSUserTrackingUsageDescription` message added to the `info.plist`.
 
-Sets whether Facebook SDK should collect and attach `advertiser-id` to sent events. `advertiser-id` let you identify and target specific customers. To learn more visit [Facebook documentation](https://developers.facebook.com/docs/app-ads/targeting/mobile-advertiser-ids) describing that topic. In some cases, you may want to disable or delay the collection of `advertiser-id`, such as to obtain user consent or fulfill legal obligations. This method corresponds to [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#disable-advertiser-id) and [this](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#disable-advertiser-id) native SDK methods.
+#### Returns
 
-In Expo, by default, collecting those IDs is disabled. You may change this value in runtime by calling this method or customize this feature in buildtime by setting appropriate `app.json` fields. The setting value is persisted across runs (value set with this method overriddes value from buildtime).
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+### `Facebook.getPermissionsAsync()`
+
+Checks application's permissions for using data for tracking the user or the device.
+
+> iOS: it requires the `NSUserTrackingUsageDescription` message added to the `info.plist`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ### `Facebook.logInWithReadPermissionsAsync(options)`
 
 Prompts the user to log into Facebook and grants your app permission
-to access their Facebook data.
+to access their Facebook data. On iOS and Android, if the Facebook app isn't installed then a web view will be used to authenticate.
 
-#### param object options
+#### Initialization Options
 
 A map of options:
 
@@ -95,18 +119,43 @@ A map of options:
 
 If the user or Facebook cancelled the login, returns `{ type: 'cancel' }`.
 
-Otherwise, returns `{ type: 'success', token, expires, permissions, declinedPermissions }`. `token` is a string giving the access token to use with Facebook HTTP API requests. `expires` is the time at which this token will expire, as seconds since epoch. You can save the access token using, say, `AsyncStorage`, and use it till the expiration time. `permissions` is a list of all the approved permissions, whereas `declinedPermissions` is a list of the permissions that the user has rejected.
+Otherwise, returns `{ type: 'success' } &` [`FacebookAuthenticationCredential`](#facebookauthenticationcredential).
+
+### `Facebook.setAdvertiserTrackingEnabledAsync(enabled: boolean): Promise<boolean>`
+
+Sets whether Facebook SDK can use the device's Identifier for Advertisers (IDFA) to serve personalized ads to the user.
+Starting with iOS 14.5, an app will need to receive the user's permission to access their device's advertising identifier. Tracking refers to the act of linking user or device data collected from your app with user or device data collected from other companies' apps, websites, or offline properties for targeted advertising or advertising measurement purposes.
+
+Use this method to indicate whether Facebook SDK can use event data for ads in line with your own legal obligations, platform terms and commitments you've made to your users.
+
+#### Returns
+
+A promise that resolves to a boolean whether the value is set successfully. It will always return `false` on Android, iOS 13 and below.
+
+### `Facebook.setAutoLogAppEventsEnabledAsync(enabled: boolean): Promise<void>`
+
+Sets whether the Facebook SDK should log app events. App events involve e.g. app installs, app launches (more info [here (Android)](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#auto-events) and [here (iOS)](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#auto-events)). In some cases, you may want to disable or delay the collection of automatically logged events, such as to obtain user consent or fulfill legal obligations. This method corresponds to [this iOS](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#disable-auto-events) and [this Android](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#disable-auto-events) native SDK method.
+
+In Expo, by default, automatically logging Facebook app events is disabled. You may change this value at runtime by calling this method or customize this feature at build time by setting the appropriate `app.json` fields. The value set with this method persists across launches of the app and overrides the build-time configuration value.
+
+### `Facebook.setAdvertiserIDCollectionEnabledAsync(enabled: boolean): Promise<void>`
+
+Sets whether the Facebook SDK should collect and attach the `advertiser-id` field to sent events. The `advertiser-id` field lets you identify and target specific customers. To learn more visit [Facebook's documentation](https://developers.facebook.com/docs/app-ads/targeting/mobile-advertiser-ids) on this topic. In some cases, you may want to disable or delay the collection of the `advertiser-id` field, such as to obtain user consent or fulfill legal obligations. This method corresponds to [this iOS](https://developers.facebook.com/docs/app-events/getting-started-app-events-ios#disable-advertiser-id) and [this Android](https://developers.facebook.com/docs/app-events/getting-started-app-events-android/#disable-advertiser-id) native SDK method.
+
+In Expo, by default, collecting the advertiser ID is disabled. You may change this value at runtime by calling this method or customize this feature at build time by setting the appropriate `app.json` fields. The value set with this method persists across launches of the app and overrides the build-time configuration value.
 
 #### Example
 
 ```javascript
 async function logIn() {
   try {
-    await Facebook.initializeAsync('<APP_ID>');
+    await Facebook.initializeAsync({
+      appId: '<APP_ID>',
+    });
     const {
       type,
       token,
-      expires,
+      expirationDate,
       permissions,
       declinedPermissions,
     } = await Facebook.logInWithReadPermissionsAsync({
@@ -125,4 +174,93 @@ async function logIn() {
 }
 ```
 
-Given a valid Facebook application ID in place of `<APP_ID>`, the code above will prompt the user to log into Facebook then display the user's name. This uses React Native's [fetch](https://facebook.github.io/react-native/docs/network.html#fetch) to query Facebook's [Graph API](https://developers.facebook.com/docs/graph-api).
+Given a valid Facebook application ID in place of `<APP_ID>`, the code above will prompt the user to log into Facebook then display the user's name. This uses React Native's [fetch](https://reactnative.dev/docs/network.html#fetch) to query Facebook's [Graph API](https://developers.facebook.com/docs/graph-api).
+
+### `Facebook.logOutAsync()`
+
+Logs out of the currently authenticated session.
+
+### `Facebook.getAuthenticationCredentialAsync()`
+
+Returns the `FacebookAuthenticationCredential` object if a user is authenticated, and `null` if no valid authentication exists.
+
+You can use this method to check if the user should sign in or not.
+
+#### Returns
+
+- A promise that resolves a [`FacebookAuthenticationCredential`][#facebookauthenticationcredential].
+
+```tsx
+async function toggleAuthAsync() {
+  const auth = await Facebook.getAuthenticationCredentialAsync();
+
+  if (!auth) {
+    // Log in
+  } else {
+    // Log out
+  }
+}
+```
+
+## Types
+
+### FacebookAuthenticationCredential
+
+- **token (_string_)** Access token for the authenticated session. This token provides access to the Facebook Graph API.
+- **userId (_string_)** App-scoped Facebook ID of the user.
+- **appId (_string_)** Application ID used to initialize the Facebook SDK app.
+- **permissions (_string[] | undefined_)** List of granted permissions.
+- **declinedPermissions (_string[] | undefined_)** List of requested permissions that the user has declined.
+- **expiredPermissions (_string[] | undefined_)** List of permissions that were expired with this access token.
+- **expirationDate (_Date_)** Time at which the `token` expires.
+- **dataAccessExpirationDate (_Date_)** Time at which the current user data access expires.
+- **refreshDate (_Date | undefined_)** The last time the `token` was refreshed (or when it was first obtained).
+- **tokenSource (_string | undefined_)** _(Android only)_ Indicates how this `token` was obtained.
+- **signedRequest (_string | undefined_)** A valid raw signed request as a string.
+- **graphDomain (_string | undefined_)** A website domain within the Graph API.
+
+## Error Codes
+
+### `ERR_FACEBOOK_UNINITIALIZED`
+
+Attempted to use the Facebook SDK before it was initialized. Ensure `initializeAsync` has successfully resolved before attempting to use the Facebook SDK.
+
+### `ERR_FACEBOOK_MISCONFIGURED`
+
+Failed to initialize the Facebook SDK app because the `appId` option wasn't provided and the `appId` couldn't be resolved automatically from the native configuration files.
+
+### `ERR_FACEBOOK_LOGIN`
+
+An error occurred while trying to log in to Facebook.
+
+## Guide
+
+You can use the `fetch` API to get info about the user from the [Facebook Graph API](https://developers.facebook.com/docs/graph-api/using-graph-api/). Here are some helper methods you can use to make data access easier.
+
+```ts
+// Get default info about the currently authenticated user.
+async function getUserAsync() {
+  const { name } = await requestAsync('me');
+  console.log(`Hello ${name} 👋`);
+}
+
+// Request data from the Facebook Graph API.
+// Learn more https://developers.facebook.com/docs/graph-api/using-graph-api/
+async function requestAsync(path: string, token?: string): Promise<any> {
+  let resolvedToken = token;
+  if (!token) {
+    const auth = await Facebook.getAuthenticationCredentialAsync();
+    if (!auth) {
+      throw new Error(
+        'User is not authenticated. Ensure `logInWithReadPermissionsAsync` has successfully resolved before attempting to use the FBSDK Graph API.'
+      );
+    }
+    resolvedToken = auth.token;
+  }
+  const response = await fetch(
+    `https://graph.facebook.com/${path}?access_token=${encodeURIComponent(resolvedToken)}`
+  );
+  const body = await response.json();
+  return body;
+}
+```

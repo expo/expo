@@ -1,12 +1,17 @@
-import { NativeModulesProxy, ProxyNativeModule } from '@unimodules/core';
+import { Platform } from '@unimodules/core';
 
-import { NotificationBehavior } from './Notifications.types';
+import { NotificationsHandlerModule } from './NotificationsHandlerModule.types';
 
-export interface NotificationsHandlerModule extends ProxyNativeModule {
-  handleNotificationAsync: (
-    notificationId: string,
-    notificationBehavior: NotificationBehavior
-  ) => Promise<void>;
-}
+let warningHasBeenShown = false;
 
-export default (NativeModulesProxy.ExpoNotificationsHandlerModule as any) as NotificationsHandlerModule;
+export default {
+  addListener: () => {
+    if (!warningHasBeenShown) {
+      console.warn(
+        `[expo-notifications] Notifications handling is not yet fully supported on ${Platform.OS}. Handling notifications will have no effect.`
+      );
+      warningHasBeenShown = true;
+    }
+  },
+  removeListeners: () => {},
+} as NotificationsHandlerModule;

@@ -8,19 +8,24 @@ import android.util.Log;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.JSONObject;
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
 
 import androidx.annotation.Nullable;
-import expo.modules.updates.db.UpdatesDatabase;
+import expo.modules.updates.db.DatabaseHolder;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.Launcher;
 import expo.modules.updates.loader.FileDownloader;
 import expo.modules.updates.manifest.Manifest;
 import expo.modules.updates.loader.RemoteLoader;
+import expo.modules.updates.manifest.ManifestMetadata;
+
+// this unused import must stay because of versioning
+import expo.modules.updates.UpdatesConfiguration;
 
 public class UpdatesModule extends ExportedModule {
   private static final String NAME = "ExpoUpdates";
@@ -42,37 +47,52 @@ public class UpdatesModule extends ExportedModule {
     mModuleRegistry = moduleRegistry;
   }
 
+  private UpdatesInterface getUpdatesService() {
+    return mModuleRegistry.getModule(UpdatesInterface.class);
+  }
+
   @Override
   public Map<String, Object> getConstants() {
     Map<String, Object> constants = new HashMap<>();
 
     try {
-      UpdatesController controller = UpdatesController.getInstance();
-      if (controller != null) {
-        constants.put("isEmergencyLaunch", controller.isEmergencyLaunch());
+      UpdatesInterface updatesService = getUpdatesService();
+      if (updatesService != null) {
+        constants.put("isEmergencyLaunch", updatesService.isEmergencyLaunch());
+        constants.put("isMissingRuntimeVersion", updatesService.getConfiguration().isMissingRuntimeVersion());
 
-        UpdateEntity launchedUpdate = controller.getLaunchedUpdate();
+        UpdateEntity launchedUpdate = updatesService.getLaunchedUpdate();
         if (launchedUpdate != null) {
-          constants.put("manifestString", launchedUpdate.metadata.toString());
+          constants.put("updateId", launchedUpdate.id.toString());
+          constants.put("manifestString", launchedUpdate.manifest != null ? launchedUpdate.manifest.toString() : "{}");
         }
 
-        Map<AssetEntity, String> localAssetFiles = controller.getLocalAssetFiles();
+        Map<AssetEntity, String> localAssetFiles = updatesService.getLocalAssetFiles();
         if (localAssetFiles != null) {
           Map<String, String> localAssets = new HashMap<>();
           for (AssetEntity asset : localAssetFiles.keySet()) {
-            String localAssetsKey = UpdatesUtils.getLocalAssetsKey(asset);
-            if (localAssetsKey != null) {
-              localAssets.put(localAssetsKey, localAssetFiles.get(asset));
+            if (asset.key != null) {
+              localAssets.put(asset.key, localAssetFiles.get(asset));
             }
           }
           constants.put("localAssets", localAssets);
         }
 
-        constants.put("isEnabled", controller.getUpdatesConfiguration().isEnabled());
+        constants.put("isEnabled", updatesService.getConfiguration().isEnabled());
+        constants.put("releaseChannel", updatesService.getConfiguration().getReleaseChannel());
+        constants.put("isUsingEmbeddedAssets", updatesService.isUsingEmbeddedAssets());
       }
-    } catch (IllegalStateException e) {
+    } catch (Exception e) {
       // do nothing; this is expected in a development client
       constants.put("isEnabled", false);
+
+      // In a development client, we normally don't have access to the updates configuration, but
+      // we should attempt to see if the runtime/sdk versions are defined in AndroidManifest.xml
+      // and warn the developer if not. This does not take into account any extra configuration
+      // provided at runtime in MainApplication.java, because we don't have access to that in a
+      // debug build.
+      UpdatesConfiguration configuration = new UpdatesConfiguration().loadValuesFromMetadata(getContext());
+      constants.put("isMissingRuntimeVersion", configuration.isMissingRuntimeVersion());
     }
 
     return constants;
@@ -81,13 +101,13 @@ public class UpdatesModule extends ExportedModule {
   @ExpoMethod
   public void reload(final Promise promise) {
     try {
-      UpdatesController controller = UpdatesController.getInstance();
-      if (!controller.getUpdatesConfiguration().isEnabled()) {
+      UpdatesInterface updatesService = getUpdatesService();
+      if (!updatesService.canRelaunch()) {
         promise.reject("ERR_UPDATES_DISABLED", "You cannot reload when expo-updates is not enabled.");
         return;
       }
 
-      controller.relaunchReactApplication(getContext(), new Launcher.LauncherCallback() {
+      updatesService.relaunchReactApplication(new Launcher.LauncherCallback() {
         @Override
         public void onFailure(Exception e) {
           Log.e(TAG, "Failed to relaunch application", e);
@@ -110,13 +130,17 @@ public class UpdatesModule extends ExportedModule {
   @ExpoMethod
   public void checkForUpdateAsync(final Promise promise) {
     try {
-      final UpdatesController controller = UpdatesController.getInstance();
-      if (!controller.getUpdatesConfiguration().isEnabled()) {
+      final UpdatesInterface updatesService = getUpdatesService();
+      if (!updatesService.getConfiguration().isEnabled()) {
         promise.reject("ERR_UPDATES_DISABLED", "You cannot check for updates when expo-updates is not enabled.");
         return;
       }
 
-      FileDownloader.downloadManifest(controller.getUpdateUrl(), getContext(), new FileDownloader.ManifestDownloadCallback() {
+      DatabaseHolder databaseHolder = updatesService.getDatabaseHolder();
+      JSONObject extraHeaders = ManifestMetadata.getServerDefinedHeaders(databaseHolder.getDatabase(), updatesService.getConfiguration());
+      databaseHolder.releaseDatabase();
+
+      updatesService.getFileDownloader().downloadManifest(updatesService.getConfiguration(), extraHeaders, getContext(), new FileDownloader.ManifestDownloadCallback() {
         @Override
         public void onFailure(String message, Exception e) {
           promise.reject("ERR_UPDATES_CHECK", message, e);
@@ -125,20 +149,20 @@ public class UpdatesModule extends ExportedModule {
 
         @Override
         public void onSuccess(Manifest manifest) {
-          UpdateEntity launchedUpdate = controller.getLaunchedUpdate();
+          UpdateEntity launchedUpdate = updatesService.getLaunchedUpdate();
           Bundle updateInfo = new Bundle();
           if (launchedUpdate == null) {
             // this shouldn't ever happen, but if we don't have anything to compare
             // the new manifest to, let the user know an update is available
             updateInfo.putBoolean("isAvailable", true);
-            updateInfo.putString("manifestString", manifest.getRawManifestJson().toString());
+            updateInfo.putString("manifestString", manifest.getRawManifest().toString());
             promise.resolve(updateInfo);
             return;
           }
 
-          if (controller.getSelectionPolicy().shouldLoadNewUpdate(manifest.getUpdateEntity(), launchedUpdate)) {
+          if (updatesService.getSelectionPolicy().shouldLoadNewUpdate(manifest.getUpdateEntity(), launchedUpdate, manifest.getManifestFilters())) {
             updateInfo.putBoolean("isAvailable", true);
-            updateInfo.putString("manifestString", manifest.getRawManifestJson().toString());
+            updateInfo.putString("manifestString", manifest.getRawManifest().toString());
             promise.resolve(updateInfo);
           } else {
             updateInfo.putBoolean("isAvailable", false);
@@ -157,33 +181,45 @@ public class UpdatesModule extends ExportedModule {
   @ExpoMethod
   public void fetchUpdateAsync(final Promise promise) {
     try {
-      final UpdatesController controller = UpdatesController.getInstance();
-      if (!controller.getUpdatesConfiguration().isEnabled()) {
+      final UpdatesInterface updatesService = getUpdatesService();
+      if (!updatesService.getConfiguration().isEnabled()) {
         promise.reject("ERR_UPDATES_DISABLED", "You cannot fetch updates when expo-updates is not enabled.");
         return;
       }
 
       AsyncTask.execute(() -> {
-        UpdatesDatabase database = controller.getDatabase();
-        new RemoteLoader(getContext(), database, controller.getUpdatesDirectory())
+        final DatabaseHolder databaseHolder = updatesService.getDatabaseHolder();
+        new RemoteLoader(getContext(), updatesService.getConfiguration(), databaseHolder.getDatabase(), updatesService.getFileDownloader(), updatesService.getDirectory())
           .start(
-            controller.getUpdateUrl(),
             new RemoteLoader.LoaderCallback() {
               @Override
               public void onFailure(Exception e) {
-                controller.releaseDatabase();
+                databaseHolder.releaseDatabase();
                 promise.reject("ERR_UPDATES_FETCH", "Failed to download new update", e);
               }
 
               @Override
+              public void onAssetLoaded(AssetEntity asset, int successfulAssetCount, int failedAssetCount, int totalAssetCount) {
+              }
+
+              @Override
+              public boolean onManifestLoaded(Manifest manifest) {
+                return updatesService.getSelectionPolicy().shouldLoadNewUpdate(
+                  manifest.getUpdateEntity(),
+                  updatesService.getLaunchedUpdate(),
+                  manifest.getManifestFilters());
+              }
+
+              @Override
               public void onSuccess(@Nullable UpdateEntity update) {
-                controller.releaseDatabase();
+                databaseHolder.releaseDatabase();
                 Bundle updateInfo = new Bundle();
                 if (update == null) {
                   updateInfo.putBoolean("isNew", false);
                 } else {
+                  updatesService.resetSelectionPolicy();
                   updateInfo.putBoolean("isNew", true);
-                  updateInfo.putString("manifestString", update.metadata.toString());
+                  updateInfo.putString("manifestString", update.manifest.toString());
                 }
                 promise.resolve(updateInfo);
               }

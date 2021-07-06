@@ -1,9 +1,14 @@
-import uuidv4 from 'uuid/v4';
+import { Platform } from '@unimodules/core';
+import { v4 as uuidv4 } from 'uuid';
 export default {
     get name() {
         return 'ExpoDocumentPicker';
     },
     async getDocumentAsync({ type = '*/*', multiple = false, }) {
+        // SSR guard
+        if (!Platform.isDOMAvailable) {
+            return { type: 'cancel' };
+        }
         const input = document.createElement('input');
         input.style.display = 'none';
         input.setAttribute('type', 'file');

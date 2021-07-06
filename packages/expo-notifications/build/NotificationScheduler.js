@@ -1,3 +1,5 @@
-import { NativeModulesProxy } from '@unimodules/core';
-export default NativeModulesProxy.ExpoNotificationScheduler;
+export default {
+    addListener: () => { },
+    removeListeners: () => { },
+};
 //# sourceMappingURL=NotificationScheduler.js.map

@@ -1,18 +1,22 @@
 ---
 title: ScreenOrientation
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-37/packages/expo-screen-orientation'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-screen-orientation'
 ---
 
+import { palette } from '@expo/styleguide';
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-Screen Orientation is defined as the orientation in which graphics are painted on the device. For example, the figure below has a device in a vertical and horizontal physical orientation, but a portrait screen orientation. For physical device orientation, see the orientation section of [Device Motion](../devicemotion/).
+Screen Orientation is defined as the orientation in which graphics are painted on the device. For example, the figure below has a device in a vertical and horizontal physical orientation, but a portrait screen orientation. For physical device orientation, see the orientation section of [Device Motion](devicemotion.md).
 
-![Portrait orientation in different physical orientations](/static/images/screen-orientation-portrait.png)
+<ImageSpotlight alt="Portrait orientation in different physical orientations" src="/static/images/screen-orientation-portrait.png" containerStyle={{ backgroundColor: palette.light.gray['300'] }}  />
 
 `ScreenOrientation` from **`expo`** allows changing supported screen orientations at runtime, and subscribing to orientation changes. This will take priority over the `orientation` key in `app.json`.
 
 On both iOS and Android platforms, changes to the screen orientation will override any system settings or user preferences. On Android, it is possible to change the screen orientation while taking the user's preferred orientation into account. On iOS, user and system settings are not accessible by the application and any changes to the screen orientation will override existing settings.
+
+> Web support has [limited support](https://caniuse.com/#feat=deviceorientation). For improved resize detection on mobile Safari, check out the docs on using [Resize Observer in Expo web](../../../guides/customizing-webpack.md#resizeobserver).
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -49,41 +53,6 @@ Tick the `Requires Full Screen` checkbox in Xcode. It should be located under `P
 ```js
 import * as ScreenOrientation from 'expo-screen-orientation';
 ```
-
-### Methods
-
-- [`ScreenOrientation.lockAsync(orientationLock)`](#screenorientationlockasyncorientationlock)
-- [`ScreenOrientation.lockPlatformAsync(platformInfo)`](#screenorientationlockplatformasyncplatforminfo)
-- [`ScreenOrientation.unlockAsync()`](#screenorientationunlockasync)
-- [`ScreenOrientation.getOrientationAsync()`](#screenorientationgetorientationasync)
-- [`ScreenOrientation.getOrientationLockAsync()`](#screenorientationgetorientationlockasync)
-- [`ScreenOrientation.getPlatformOrientationLockAsync()`](#screenorientationgetplatformorientationlockasync)
-- [`ScreenOrientation.supportsOrientationLockAsync(orientationLock)`](#screenorientationsupportsorientationlockasyncorientationlock)
-- [`ScreenOrientation.addOrientationChangeListener(listener)`](#screenorientationaddorientationchangelistenerlistener)
-- [`ScreenOrientation.removeOrientationChangeListeners()`](#screenorientationremoveorientationchangelisteners)
-- [`ScreenOrientation.removeOrientationChangeListener(subscription)`](#screenorientationremoveorientationchangelistenersubscription)
-
-### Enum Types
-
-- [`ScreenOrientation.Orientation`](#screenorientationorientation)
-- [`ScreenOrientation.OrientationLock`](#screenorientationorientationlock)
-- [`ScreenOrientation.SizeClassIOS`](#screenorientationsizeclassios)
-- [`ScreenOrientation.WebOrientationLock`](#screenorientationweborientationlock)
-
-### Object Types
-
-- [`ScreenOrientation.PlatformOrientationInfo`](#screenorientationplatformorientationinfo)
-- [`ScreenOrientation.ScreenOrientationInfo`](#screenorientationscreenorientationinfo)
-- [`ScreenOrientation.OrientationChangeEvent`](#screenorientationorientationchangeevent)
-- [`Subscription`](#subscription)
-
-### Function Types
-
-- [`ScreenOrientation.OrientationChangeListener`](#screenorientationorientationchangelistener)
-
-### Errors
-
-- [Error Codes](#error-codes)
 
 ## Methods
 
@@ -147,7 +116,7 @@ Gets the current screen orientation.
 
 #### Returns
 
-Returns a promise that resolves to an [`ScreenOrientationInfo`](#screenorientationscreenorientationinfo) object value that reflects the current screen orientation.
+Returns a promise that resolves to an [`Orientation`](#screenorientationorientation) value that reflects the current screen orientation.
 
 #### Error Codes
 
@@ -198,7 +167,7 @@ Invokes the `listener` function when the screen orientation changes from `portra
 
 #### Returns
 
-Returns an [`Subscription`](#subscription) object that can later be used to unsuscribe updates to the listener.
+Returns an [`Subscription`](#subscription) object that can later be used to unsubscribe updates to the listener.
 
 ### `ScreenOrientation.removeOrientationChangeListeners()`
 
@@ -259,6 +228,7 @@ An enum representing the lock policies that can be applied on the web platform, 
 - **`LANDSCAPE_SECONDARY`**
 - **`LANDSCAPE`**
 - **`ANY`**
+- **`NATURAL`**
 - **`UNKNOWN`**
 
 ## Object Types
@@ -267,7 +237,7 @@ An enum representing the lock policies that can be applied on the web platform, 
 
 - **screenOrientationConstantAndroid (_integer_)**: A constant to set using the Android native [API](https://developer.android.com/reference/android/R.attr.html#screenOrientation). For example, in order to set the lock policy to [unspecified](https://developer.android.com/reference/android/content/pm/ActivityInfo.html#SCREEN_ORIENTATION_UNSPECIFIED), -1 should be passed in. (**Android only**)
 - **screenOrientationArrayIOS (Array[Orientation])**: An array of orientations to allow on the iOS platform (**iOS only**)
-- **screenOrientationLockWebOrientation (_WebOrientationLock_)**: A web orientation lock to apply in the browser (**web only**)
+- **screenOrientationLockWeb (_WebOrientationLock_)**: A web orientation lock to apply in the browser (**web only**)
 
 ### `ScreenOrientation.ScreenOrientationInfo`
 
@@ -282,7 +252,7 @@ An enum representing the lock policies that can be applied on the web platform, 
 
 ### `Subscription`
 
-A [subscription object](https://github.com/expo/expo/blob/master/packages/expo-react-native-adapter/src/EventEmitter.ts#L16).
+A [subscription object](https://github.com/expo/expo/blob/master/packages/%40unimodules/react-native-adapter/src/EventEmitter.ts#L13).
 
 ## Function Types
 

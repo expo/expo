@@ -26,7 +26,7 @@
       node.refCount = node.refCount + 1;
       return node;
     }
-      node = [[RNSharedElementNode alloc]init:reactTag view:view isParent:isParent];
+    node = [[RNSharedElementNode alloc]init:reactTag view:view isParent:isParent];
     [_items setObject:node forKey:reactTag];
     return node;
   }

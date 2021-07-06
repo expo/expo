@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI37_0_0/Expo/UMBarCodeScannerInterface/ABI37_0_0UMBarCodeScannerInterface/ABI37_0_0UMBarCodeScannerInterface.h

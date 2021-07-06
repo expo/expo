@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <EXSegment/EXSegment.h>
-#import <UMConstantsInterface/UMConstantsInterface.h>
 #import <Analytics/SEGAnalytics.h>
 
 static NSString *const EXSegmentEnabledKey = @"EXSegmentEnabledKey";
@@ -16,8 +15,8 @@ static NSString *const EXSegmentEnabledKey = @"EXSegmentEnabledKey";
 
 UM_EXPORT_MODULE(ExponentSegment)
 
-UM_EXPORT_METHOD_AS(initializeIOS,
-                    initializeIOS:(NSString *)writeKey
+UM_EXPORT_METHOD_AS(initialize,
+                    initialize:(NSString *)writeKey
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
@@ -28,15 +27,6 @@ UM_EXPORT_METHOD_AS(initializeIOS,
     [_instance disable];
   }
   resolve(nil);
-}
-
-UM_EXPORT_METHOD_AS(initializeAndroid,
-                    initializeAndroid:(NSString *)writeKey
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
-{
-  // NO-OP. Need this here because Segment has different keys for iOS and Android.
-  reject(@"E_WRONG_PLATFORM", @"Method initializeAndroid should not be called on iOS, please file an issue on GitHub.", nil);
 }
 
 UM_EXPORT_METHOD_AS(identify,
@@ -54,11 +44,12 @@ UM_EXPORT_METHOD_AS(identify,
  UM_EXPORT_METHOD_AS(identifyWithTraits,
                      identifyWithTraits:(NSString *)userId
                      withTraits:(NSDictionary *)traits
+                     withOptions:(nullable NSDictionary *)options
                      resolver:(UMPromiseResolveBlock)resolve
                      rejecter:(UMPromiseRejectBlock)reject)
 {
   if (_instance) {
-    [_instance identify:userId traits:traits];
+    [_instance identify:userId traits:traits options:options];
   }
   resolve(nil);
 }
@@ -75,12 +66,14 @@ UM_EXPORT_METHOD_AS(track,
 }
 
 UM_EXPORT_METHOD_AS(trackWithProperties,
-                    trackWithProperties:(NSString *)event withProperties:(NSDictionary *)properties
+                    trackWithProperties:(NSString *)event 
+                    withProperties:(NSDictionary *)properties
+                    withOptions:(nullable NSDictionary *)options
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   if (_instance) {
-    [_instance track:event properties:properties];
+    [_instance track:event properties:properties options:options];
   }
   resolve(nil);
 }
@@ -99,28 +92,25 @@ UM_EXPORT_METHOD_AS(group,
 UM_EXPORT_METHOD_AS(groupWithTraits,
                     groupWithTraits:(NSString *)groupId
                     withTraits:(NSDictionary *)traits
+                    withOptions:(nullable NSDictionary *)options
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   if (_instance) {
-    [_instance group:groupId traits:traits];
+    [_instance group:groupId traits:traits options:options];
   }
   resolve(nil);
 }
 
 UM_EXPORT_METHOD_AS(alias,
                     alias:(NSString *)newId
-                    withOptions:(NSDictionary *)options
+                    withOptions:(nullable NSDictionary *)options
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   SEGAnalytics *analytics = _instance;
   if (analytics) {
-    if (options) {
-      [analytics alias:newId options:@{@"integrations": options}];
-    } else {
-      [analytics alias:newId];
-    }
+    [analytics alias:newId options:options];
     resolve(UMNullIfNil(nil));
   } else {
     reject(@"E_NO_SEG", @"Segment instance has not been initialized yet, have you tried calling Segment.initialize prior to calling Segment.alias?", nil);
@@ -141,11 +131,12 @@ UM_EXPORT_METHOD_AS(screen,
 UM_EXPORT_METHOD_AS(screenWithProperties,
                     screenWithProperties:(NSString *)screenName
                     withProperties:(NSDictionary *)properties
+                    withOptions:(NSDictionary *)options
                     resolver:(UMPromiseResolveBlock)resolve
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   if (_instance) {
-    [_instance screen:screenName properties:properties];
+    [_instance screen:screenName properties:properties options:options];
   }
   resolve(nil);
 }

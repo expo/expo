@@ -1,6 +1,6 @@
 ---
 title: Admob
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-ads-admob'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-ads-admob'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -43,19 +43,22 @@ For the module to attribute interactions with ads to your AdMob app properly you
 
 ## Usage
 
-```javascript
+```tsx
 import {
   AdMobBanner,
   AdMobInterstitial,
   PublisherBanner,
-  AdMobRewarded
+  AdMobRewarded,
+  setTestDeviceIDAsync,
 } from 'expo-ads-admob';
+
+// Set global test device ID
+await setTestDeviceIDAsync('EMULATOR');
 
 // Display a banner
 <AdMobBanner
   bannerSize="fullBanner"
   adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
-  testDeviceID="EMULATOR"
   servePersonalizedAds // true or false
   onDidFailToReceiveAdWithError={this.bannerError} />
 
@@ -63,22 +66,73 @@ import {
 <PublisherBanner
   bannerSize="fullBanner"
   adUnitID="ca-app-pub-3940256099942544/6300978111" // Test ID, Replace with your-admob-unit-id
-  testDeviceID="EMULATOR"
   onDidFailToReceiveAdWithError={this.bannerError}
   onAdMobDispatchAppEvent={this.adMobEvent} />
 
 // Display an interstitial
-AdMobInterstitial.setAdUnitID('ca-app-pub-3940256099942544/1033173712'); // Test ID, Replace with your-admob-unit-id
-AdMobInterstitial.setTestDeviceID('EMULATOR');
+await AdMobInterstitial.setAdUnitID('ca-app-pub-3940256099942544/1033173712'); // Test ID, Replace with your-admob-unit-id
 await AdMobInterstitial.requestAdAsync({ servePersonalizedAds: true});
 await AdMobInterstitial.showAdAsync();
 
 // Display a rewarded ad
-AdMobRewarded.setAdUnitID('ca-app-pub-3940256099942544/5224354917'); // Test ID, Replace with your-admob-unit-id
-AdMobRewarded.setTestDeviceID('EMULATOR');
+await AdMobRewarded.setAdUnitID('ca-app-pub-3940256099942544/5224354917'); // Test ID, Replace with your-admob-unit-id
 await AdMobRewarded.requestAdAsync();
 await AdMobRewarded.showAdAsync();
 ```
+
+### Testing
+
+- Here is the full list of Test IDs
+  - [iOS Test IDs](https://developers.google.com/admob/ios/test-ads)
+  - [Android Test IDs](https://developers.google.com/admob/android/test-ads)
+- Ensure you **never** load a real production ad in an Android Emulator or iOS Simulator. Failure to do this can result in a ban from the AdMob program.
+
+```tsx
+import Constants from 'expo-constants';
+
+const testID = 'google-test-id';
+const productionID = 'my-id';
+// Is a real device and running in production.
+const adUnitID = Constants.isDevice && !__DEV__ ? productionID : testID;
+```
+
+## Methods
+
+### `isAvailableAsync()`
+
+Returns whether the AdMob API is enabled on the current device. This does not check the native configuration.
+
+#### Returns
+
+Async `boolean`, indicating whether the AdMob API is available on the current device. Currently this resolves `true` on iOS and Android only.
+
+### `requestPermissionsAsync()`
+
+Asks for permissions to use data for tracking the user or the device.
+
+> iOS: it requires the `NSUserTrackingUsageDescription` message added to the `info.plist`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+### `getPermissionsAsync()`
+
+Checks application's permissions for using data for tracking the user or the device.
+
+> iOS: it requires the `NSUserTrackingUsageDescription` message added to the `info.plist`.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+### setTestDeviceIDAsync(testDeviceID)
+
+Sets the test device ID. For simulators/emulators you can use `'EMULATOR'` for the test device ID.
+
+#### Arguments
+
+- **testDeviceID (_string_)** -- Test device ID.
 
 ### AdMobBanner
 
@@ -115,19 +169,27 @@ _Corresponding to [Ad lifecycle event callbacks](https://developers.google.com/a
 | `onAdViewDidDismissScreen()`                              |
 | `onAdViewWillLeaveApplication()`                          |
 
+#### Test ID
+
+```tsx
+const adUnitID = Platform.select({
+  // https://developers.google.com/admob/ios/test-ads
+  ios: 'ca-app-pub-3940256099942544/2934735716',
+  // https://developers.google.com/admob/android/test-ads
+  android: 'ca-app-pub-3940256099942544/6300978111',
+});
+```
+
 ### AdMobInterstitials
 
 #### Methods
 
-| Name                        | Description                                                                                                                                                                                                                        |
-| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `setAdUnitID(adUnitID)`     | sets the AdUnit ID for all future ad requests.                                                                                                                                                                                     |
-| `setTestDeviceID(deviceID)` | sets the test device ID                                                                                                                                                                                                            |
-| `requestAdAsync(options)`   | requests an interstitial and resolves when `interstitialDidLoad` or `interstitialDidFailToLoad` event fires. An optional `options` object argument may specify `servePersonalizedAds: true` value — then ads will be personalized. |
-| `showAdAsync()`             | shows an interstitial if it is ready and resolves when `interstitialDidOpen` event fires                                                                                                                                           |
-| `getIsReadyAsync()`         | resolves with boolean whether interstitial is ready to be shown                                                                                                                                                                    |
-
-_For simulators/emulators you can use `'EMULATOR'` for the test device ID._
+| Name                      | Description                                                                                                                                                                                                                        |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `setAdUnitID(adUnitID)`   | sets the AdUnit ID for all future ad requests.                                                                                                                                                                                     |
+| `requestAdAsync(options)` | requests an interstitial and resolves when `interstitialDidLoad` or `interstitialDidFailToLoad` event fires. An optional `options` object argument may specify `servePersonalizedAds: true` value — then ads will be personalized. |
+| `showAdAsync()`           | shows an interstitial if it is ready and resolves when `interstitialDidOpen` event fires                                                                                                                                           |
+| `getIsReadyAsync()`       | resolves with boolean whether interstitial is ready to be shown                                                                                                                                                                    |
 
 #### Events
 
@@ -145,30 +207,47 @@ Unfortunately, events are not consistent across iOS and Android. To have one uni
 
 _Note that `interstitialWillLeaveApplication` and `onAdLeftApplication` are not exactly the same but share one event in this library._
 
+#### Test ID
+
+```tsx
+const adUnitID = Platform.select({
+  // https://developers.google.com/admob/ios/test-ads
+  ios: 'ca-app-pub-3940256099942544/4411468910',
+  // https://developers.google.com/admob/android/test-ads
+  android: 'ca-app-pub-3940256099942544/1033173712',
+});
+```
+
 ### AdMobRewarded
 
 Opens a rewarded AdMob ad.
 
 #### Methods
 
-| Name                                    | Description                                                                                                                                          |
-| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `setAdUnitID(adUnitID: string)`         | sets the AdUnit ID for all future ad requests.                                                                                                       |
-| `setTestDeviceID(testDeviceID: string)` | sets the test device ID                                                                                                                              |
-| `requestAdAsync(options)`               | (async) requests a rewarded ad. An optional `options` object argument may specify `servePersonalizedAds: true` value — then ad will be personalized. |
-| `showAdAsync()`                         | (async) shows a rewarded if it is ready (async)                                                                                                      |
+| Name                            | Description                                    |
+| ------------------------------- | ---------------------------------------------- |
+| `setAdUnitID(adUnitID: string)` | sets the AdUnit ID for all future ad requests. |
+| `requestAdAsync(options)` | (async) requests a rewarded ad. An optional `options` object argument may specify `servePersonalizedAds: true` value — then ad will be personalized. |
+| `showAdAsync()` | (async) shows a rewarded if it is ready (async) |
 
 #### Events
 
-| iOS                                          | _this library_                      | Android                            |
-| -------------------------------------------- | ----------------------------------- | ---------------------------------- |
-| `rewardBasedVideoAd:didRewardUserWithReward` | `rewardedVideoDidRewardUser`        | `onRewarded`                       |
-| `rewardBasedVideoAdDidReceiveAd`             | `rewardedVideoDidLoad`              | `onRewardedVideoAdLoaded`          |
-| `rewardBasedVideoAd:didFailToLoadWithError`  | `rewardedVideoDidFailToLoad`        | `onRewardedVideoAdFailedToLoad`    |
-| `rewardBasedVideoAdDidOpen`                  | `rewardedVideoDidOpen`              | `onRewardedVideoAdOpened`          |
-|                                              | `rewardedVideoDidComplete`          | `onRewardedVideoCompleted`         |
-| `rewardBasedVideoAdDidClose`                 | `rewardedVideoDidClose`             | `onRewardedVideoAdClosed`          |
-| `rewardBasedVideoAdWillLeaveApplication`     | `rewardedVideoWillLeaveApplication` | `onRewardedVideoAdLeftApplication` |
-| `rewardBasedVideoAdDidStartPlaying`          | `rewardedVideoDidStart`             | `onRewardedVideoStarted`           |
+| Events are based on native ad lifecycle |
+| -------------------------------- |
+| `rewardedVideoUserDidEarnReward` |
+| `rewardedVideoDidLoad`           |
+| `rewardedVideoDidFailToLoad`     |
+| `rewardedVideoDidPresent`        |
+| `rewardedVideoDidFailToPresent`  |
+| `rewardedVideoDidDismiss`        |
 
-#
+#### Test ID
+
+```tsx
+const adUnitID = Platform.select({
+  // https://developers.google.com/admob/ios/test-ads
+  ios: 'ca-app-pub-3940256099942544/1712485313',
+  // https://developers.google.com/admob/android/test-ads
+  android: 'ca-app-pub-3940256099942544/5224354917',
+});
+```

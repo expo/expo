@@ -8,79 +8,79 @@ import android.graphics.RectF;
 import com.facebook.react.uimanager.ThemedReactContext;
 
 class RNSharedElementView extends View {
-    static private String LOG_TAG = "RNSharedElementView";
+  static private String LOG_TAG = "RNSharedElementView";
 
-    private RNSharedElementDrawable mDrawable;
-    private RNSharedElementDrawable.ViewType mViewType;
+  private RNSharedElementDrawable mDrawable;
+  private RNSharedElementDrawable.ViewType mViewType;
 
-    RNSharedElementView(ThemedReactContext context) {
-        super(context);
-        mViewType = RNSharedElementDrawable.ViewType.NONE;
-        mDrawable = new RNSharedElementDrawable();
-        setBackground(mDrawable);
+  RNSharedElementView(ThemedReactContext context) {
+    super(context);
+    mViewType = RNSharedElementDrawable.ViewType.NONE;
+    mDrawable = new RNSharedElementDrawable();
+    setBackground(mDrawable);
+  }
+
+  @Override
+  public boolean hasOverlappingRendering() {
+    return mViewType == RNSharedElementDrawable.ViewType.GENERIC;
+  }
+
+  void reset() {
+    setAlpha(0.0f);
+  }
+
+  void updateViewAndDrawable(
+          RectF layout,
+          RectF parentLayout,
+          Rect originalLayout,
+          Rect originalFrame,
+          RNSharedElementContent content,
+          RNSharedElementStyle style,
+          float alpha,
+          RNSharedElementResize resize,
+          RNSharedElementAlign align,
+          float position) {
+
+    // Update drawable
+    RNSharedElementDrawable.ViewType viewType = mDrawable.update(content, style, position);
+    boolean useGPUScaling = (resize != RNSharedElementResize.CLIP) &&
+            ((viewType == RNSharedElementDrawable.ViewType.GENERIC) ||
+                    (viewType == RNSharedElementDrawable.ViewType.PLAIN));
+
+    // Update layer type
+    if (mViewType != viewType) {
+      mViewType = viewType;
+      setLayerType(useGPUScaling ? View.LAYER_TYPE_HARDWARE : View.LAYER_TYPE_NONE, null);
     }
 
-    @Override
-    public boolean hasOverlappingRendering() {
-        return mViewType == RNSharedElementDrawable.ViewType.GENERIC;
-    }
+    // Update view size/position/scale
+    float width = layout.width();
+    float height = layout.height();
+    if (useGPUScaling) {
+      int originalWidth = originalFrame.width();
+      int originalHeight = originalFrame.height();
 
-    void reset() {
-      setAlpha(0.0f);
-    }
+      // Update view
+      layout(0, 0, originalWidth, originalHeight);
+      setTranslationX(layout.left - parentLayout.left);
+      setTranslationY(layout.top - parentLayout.top);
 
-    void updateViewAndDrawable(
-            RectF layout,
-            RectF parentLayout,
-            Rect originalLayout,
-            Rect originalFrame,
-            RNSharedElementContent content,
-            RNSharedElementStyle style,
-            float alpha,
-            RNSharedElementResize resize,
-            RNSharedElementAlign align,
-            float position) {
+      // Update scale
+      float scaleX = width / (float) originalWidth;
+      float scaleY = height / (float) originalHeight;
+      if (!Float.isInfinite(scaleX) && !Float.isNaN(scaleX) && !Float.isInfinite(scaleY) && !Float.isNaN(scaleY)) {
 
-        // Update drawable
-        RNSharedElementDrawable.ViewType viewType = mDrawable.update(content, style, position);
-        boolean useGPUScaling = (resize != RNSharedElementResize.CLIP) &&
-                ((viewType == RNSharedElementDrawable.ViewType.GENERIC) ||
-                        (viewType == RNSharedElementDrawable.ViewType.PLAIN));
-
-        // Update layer type
-        if (mViewType != viewType) {
-            mViewType = viewType;
-            setLayerType(useGPUScaling ? View.LAYER_TYPE_HARDWARE : View.LAYER_TYPE_NONE, null);
+        // Determine si
+        switch (resize) {
+          case AUTO:
+          case STRETCH:
+            break;
+          case CLIP:
+          case NONE:
+            scaleX = (float) originalWidth / (float) originalLayout.width();
+            scaleY = (float) originalHeight / (float) originalLayout.height();
+            break;
         }
-
-        // Update view size/position/scale
-        float width = layout.width();
-        float height = layout.height();
-        if (useGPUScaling) {
-            int originalWidth = originalFrame.width();
-            int originalHeight = originalFrame.height();
-
-            // Update view
-            layout(0, 0, originalWidth, originalHeight);
-            setTranslationX(layout.left - parentLayout.left);
-            setTranslationY(layout.top - parentLayout.top);
-
-            // Update scale
-            float scaleX = width / (float) originalWidth;
-            float scaleY = height / (float) originalHeight;
-            if (!Float.isInfinite(scaleX) && !Float.isNaN(scaleX) && !Float.isInfinite(scaleY) && !Float.isNaN(scaleY)) {
-
-                // Determine si
-                switch (resize) {
-                    case AUTO:
-                    case STRETCH:
-                        break;
-                    case CLIP:
-                    case NONE:
-                        scaleX = (float) originalWidth / (float) originalLayout.width();
-                        scaleY = (float) originalHeight / (float) originalLayout.height();
-                        break;
-                }
 
 
                 /*switch (align) {
@@ -104,23 +104,23 @@ class RNSharedElementView extends View {
                         break;
                 }*/
 
-                setScaleX(scaleX);
-                setScaleY(scaleY);
-            }
-            setPivotX(0);
-            setPivotY(0);
-        } else {
+        setScaleX(scaleX);
+        setScaleY(scaleY);
+      }
+      setPivotX(0);
+      setPivotY(0);
+    } else {
 
-            // Update view
-            layout(0, 0, (int)Math.ceil(width), (int)Math.ceil(height));
-            setTranslationX(layout.left - parentLayout.left);
-            setTranslationY(layout.top - parentLayout.top);
-        }
-
-        // Update view opacity and elevation
-        setAlpha(alpha);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            setElevation(style.elevation);
-        }
+      // Update view
+      layout(0, 0, (int) Math.ceil(width), (int) Math.ceil(height));
+      setTranslationX(layout.left - parentLayout.left);
+      setTranslationY(layout.top - parentLayout.top);
     }
+
+    // Update view opacity and elevation
+    setAlpha(alpha);
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+      setElevation(style.elevation);
+    }
+  }
 }

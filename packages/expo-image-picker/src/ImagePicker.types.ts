@@ -1,3 +1,17 @@
+import { PermissionResponse } from 'expo-modules-core';
+
+export { PermissionResponse as CameraPermissionResponse };
+
+export type MediaLibraryPermissionResponse = PermissionResponse & {
+  // iOS only
+  accessPrivileges?: 'all' | 'limited' | 'none';
+};
+
+/**
+ * @deprecated Use `ImagePicker.MediaLibraryPermissionResponse`
+ */
+export type CameraRollPermissionResponse = MediaLibraryPermissionResponse;
+
 export enum MediaTypeOptions {
   All = 'All',
   Videos = 'Videos',
@@ -18,6 +32,15 @@ export enum VideoExportPreset {
   HEVC_3840x2160 = 10,
 }
 
+export enum UIImagePickerControllerQualityType {
+  High = 0,
+  Medium = 1,
+  Low = 2,
+  VGA640x480 = 3,
+  IFrame1280x720 = 4,
+  IFrame960x540 = 5,
+}
+
 export type ImageInfo = {
   uri: string;
   width: number;
@@ -27,21 +50,45 @@ export type ImageInfo = {
   base64?: string;
 };
 
+export type ImagePickerErrorResult = {
+  code: string;
+  message: string;
+  exception?: string;
+};
+
 export type ImagePickerResult = { cancelled: true } | ({ cancelled: false } & ImageInfo);
+
+export type ImagePickerMultipleResult =
+  | { cancelled: true }
+  | { cancelled: false; selected: ImageInfo[] };
 
 export type ImagePickerOptions = {
   allowsEditing?: boolean;
   aspect?: [number, number];
   quality?: number;
-  allowsMultipleSelection?: boolean;
   mediaTypes?: MediaTypeOptions;
   exif?: boolean;
   base64?: boolean;
+  /**
+   * @deprecated see [iOS videoExportPreset](https://developer.apple.com/documentation/uikit/uiimagepickercontroller/2890964-videoexportpreset?language=objc)
+   */
   videoExportPreset?: VideoExportPreset;
+  videoQuality?: UIImagePickerControllerQualityType;
+  allowsMultipleSelection?: boolean;
+  videoMaxDuration?: number;
 };
 
 export type OpenFileBrowserOptions = {
   mediaTypes: MediaTypeOptions;
   capture?: boolean;
   allowsMultipleSelection: boolean;
+  base64: boolean;
 };
+
+export type ExpandImagePickerResult<
+  T extends ImagePickerOptions | OpenFileBrowserOptions
+> = T extends {
+  allowsMultipleSelection: true;
+}
+  ? ImagePickerMultipleResult
+  : ImagePickerResult;

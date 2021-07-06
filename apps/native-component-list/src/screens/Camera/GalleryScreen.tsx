@@ -1,47 +1,77 @@
-import React from 'react';
-import { StyleSheet, View, TouchableOpacity, Text, ScrollView, TouchableOpacityProps } from 'react-native';
-import * as Permissions from 'expo-permissions';
-import * as MediaLibrary from 'expo-media-library';
+import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
 import * as FileSystem from 'expo-file-system';
-import { MaterialIcons } from '@expo/vector-icons';
+import * as MediaLibrary from 'expo-media-library';
+import * as Permissions from 'expo-permissions';
+import React from 'react';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableOpacityProps,
+  View,
+  Platform,
+} from 'react-native';
+
 import Photo from './Photo';
 
 const PHOTOS_DIR = FileSystem.documentDirectory + 'photos';
 
 interface State {
-  photos: string[];
   selected: string[];
 }
 
-export default class GalleryScreen extends React.Component<TouchableOpacityProps, State> {
+function useLoadedPhotos() {
+  const [photos, setPhotos] = React.useState<string[]>([]);
+
+  React.useEffect(() => {
+    let isMounted = true;
+    if (Platform.OS !== 'web') {
+      FileSystem.readDirectoryAsync(PHOTOS_DIR).then(photos => {
+        if (isMounted) {
+          setPhotos(photos);
+        }
+      });
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+  return photos;
+}
+
+export default function GalleryScreen(props: TouchableOpacityProps & { photos?: string[] }) {
+  const photos = useLoadedPhotos();
+  return <LoadedGalleryScreen {...props} photos={photos.length ? photos : props.photos ?? []} />;
+}
+
+class LoadedGalleryScreen extends React.Component<
+  TouchableOpacityProps & { photos: string[] },
+  State
+> {
   readonly state: State = {
-    photos: [],
     selected: [],
   };
 
-  componentDidMount = async () => {
-    const photos = await FileSystem.readDirectoryAsync(PHOTOS_DIR);
-    this.setState({ photos });
-  }
-
   toggleSelection = (uri: string, isSelected: boolean) => {
-    let selected = this.state.selected;
-    if (isSelected) {
-      selected.push(uri);
-    } else {
-      selected = selected.filter(item => item !== uri);
-    }
-    this.setState({ selected });
-  }
+    this.setState(({ selected }) => {
+      if (isSelected) {
+        selected.push(uri);
+      } else {
+        selected = selected.filter(item => item !== uri);
+      }
+      return { selected };
+    });
+  };
 
   saveToGallery = async () => {
     const photos = this.state.selected;
 
     if (photos.length > 0) {
-      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
 
       if (status !== 'granted') {
-        throw new Error('Denied CAMERA_ROLL permissions!');
+        throw new Error('Denied MEDIA_LIBRARY permissions!');
       }
 
       const promises = photos.map(photoUri => {
@@ -49,19 +79,19 @@ export default class GalleryScreen extends React.Component<TouchableOpacityProps
       });
 
       await Promise.all(promises);
-      alert('Successfully saved photos to user\'s gallery!');
+      alert("Successfully saved photos to user's gallery!");
     } else {
       alert('No photos to save!');
     }
-  }
+  };
 
   renderPhoto = (fileName: string) => (
     <Photo
       key={fileName}
-      uri={`${PHOTOS_DIR}/${fileName}`}
+      uri={Platform.select({ web: fileName, default: `${PHOTOS_DIR}/${fileName}` })}
       onSelectionToggle={this.toggleSelection}
     />
-  )
+  );
 
   render() {
     return (
@@ -75,7 +105,7 @@ export default class GalleryScreen extends React.Component<TouchableOpacityProps
           </TouchableOpacity>
         </View>
         <ScrollView contentContainerStyle={{ flex: 1 }}>
-          <View style={styles.pictures}>{this.state.photos.map(this.renderPhoto)}</View>
+          <View style={styles.pictures}>{this.props.photos.map(this.renderPhoto)}</View>
         </ScrollView>
       </View>
     );
@@ -85,7 +115,6 @@ export default class GalleryScreen extends React.Component<TouchableOpacityProps
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 20,
     backgroundColor: 'white',
   },
   navbar: {

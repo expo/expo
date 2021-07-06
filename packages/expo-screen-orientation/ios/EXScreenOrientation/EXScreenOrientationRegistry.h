@@ -1,7 +1,10 @@
 //  Copyright © 2019-present 650 Industries. All rights reserved.
 
+#import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 #import <UMCore/UMSingletonModule.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 @protocol EXOrientationListener <NSObject>
 
@@ -30,9 +33,13 @@
 
 @end
 
-@interface EXScreenOrientationRegistry : UMSingletonModule <EXScreenOrientationEventEmitter, EXScreenOrientationRegistry>
+@interface EXScreenOrientationRegistry : UMSingletonModule <UIApplicationDelegate, EXScreenOrientationEventEmitter, EXScreenOrientationRegistry>
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary<UIApplicationLaunchOptionsKey,id> *)launchOptions;
 
 - (UIInterfaceOrientationMask)requiredOrientationMask;
 - (void)traitCollectionDidChangeTo:(UITraitCollection *)traitCollection;
 
 @end
+
+NS_ASSUME_NONNULL_END

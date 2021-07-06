@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI34_0_0/EXBrightness/ABI34_0_0EXBrightness/ABI34_0_0EXBrightness.h

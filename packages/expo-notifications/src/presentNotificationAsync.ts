@@ -1,10 +1,15 @@
-import uuidv4 from 'uuid/v4';
+import { UnavailabilityError } from '@unimodules/core';
+import { v4 as uuidv4 } from 'uuid';
 
-import NotificationPresenter from './NotificationPresenter';
+import NotificationPresenter from './NotificationPresenterModule';
 import { NotificationContentInput } from './Notifications.types';
 
 let warningMessageShown = false;
 
+/**
+ * @deprecated Use `scheduleNotificationAsync` with an explicit notification handler.
+ * [Read more](https://expo.fyi/presenting-notifications-deprecated).
+ */
 export default async function presentNotificationAsync(
   content: NotificationContentInput,
   identifier: string = uuidv4()
@@ -15,5 +20,10 @@ export default async function presentNotificationAsync(
     );
     warningMessageShown = true;
   }
+
+  if (!NotificationPresenter.presentNotificationAsync) {
+    throw new UnavailabilityError('Notifications', 'presentNotificationAsync');
+  }
+
   return await NotificationPresenter.presentNotificationAsync(identifier, content);
 }

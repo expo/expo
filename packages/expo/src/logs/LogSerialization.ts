@@ -70,21 +70,18 @@ async function serializeLogDataAsync(data: unknown[], level: LogLevel): Promise<
 
 function _stringifyLogData(data: unknown[]): string[] {
   return data.map(item => {
-    if (typeof item === 'string') {
-      return item;
+    // define the max length for log msg to be first 10000 characters
+    const LOG_MESSAGE_MAX_LENGTH = 10000;
+    const result =
+      typeof item === 'string' ? item : prettyFormat(item, { plugins: [ReactNodeFormatter] });
+    // check the size of string returned
+    if (result.length > LOG_MESSAGE_MAX_LENGTH) {
+      let truncatedResult = result.substring(0, LOG_MESSAGE_MAX_LENGTH);
+      // truncate the result string to the max length
+      truncatedResult += `...(truncated to the first ${LOG_MESSAGE_MAX_LENGTH} characters)`;
+      return truncatedResult;
     } else {
-      // define the max length for log msg to be first 10000 characters
-      const LOG_MESSAGE_MAX_LENGTH = 10000;
-      const result = prettyFormat(item, { plugins: [ReactNodeFormatter] });
-      // check the size of string returned
-      if (result.length > LOG_MESSAGE_MAX_LENGTH) {
-        let truncatedResult = result.substring(0, LOG_MESSAGE_MAX_LENGTH);
-        // truncate the result string to the max length
-        truncatedResult += `...(truncated to the first ${LOG_MESSAGE_MAX_LENGTH} characters)`;
-        return truncatedResult;
-      } else {
-        return result;
-      }
+      return result;
     }
   });
 }
@@ -92,15 +89,6 @@ function _stringifyLogData(data: unknown[]): string[] {
 async function _serializeErrorAsync(error: Error, message?: string): Promise<LogData> {
   if (message == null) {
     message = error.message;
-  }
-
-  // note(brentvatne): React Native currently appends part of the stack inside of
-  // the error message itself for some reason. This is just confusing and we don't
-  // want to include it in the expo-cli output
-  const messageParts = message.split('\n');
-  const firstUselessLine = messageParts.indexOf('This error is located at:');
-  if (firstUselessLine > 0) {
-    message = messageParts.slice(0, firstUselessLine - 1).join('\n');
   }
 
   if (!error.stack || !error.stack.length) {
@@ -117,7 +105,9 @@ async function _symbolicateErrorAsync(error: Error): Promise<StackFrame[]> {
   const parsedStack = parseErrorStack(error);
   let symbolicatedStack: StackFrame[] | null;
   try {
-    symbolicatedStack = await symbolicateStackTrace(parsedStack);
+    // @ts-ignore: symbolicateStackTrace has different real/Flow declaration
+    // than the one in DefinitelyTyped.
+    symbolicatedStack = (await symbolicateStackTrace(parsedStack))?.stack ?? null;
   } catch (error) {
     return parsedStack;
   }
@@ -204,9 +194,7 @@ function _captureConsoleStackTrace(): Error {
 }
 
 function _getProjectRoot(): string | null {
-  return Constants.manifest && Constants.manifest.developer
-    ? Constants.manifest.developer.projectRoot
-    : null;
+  return Constants.manifest?.developer?.projectRoot ?? null;
 }
 
 export default {

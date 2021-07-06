@@ -1,8 +1,8 @@
+import { useTheme } from '@react-navigation/native';
 import * as React from 'react';
-import { useTheme } from 'react-navigation';
 import { Platform, StyleSheet, Text } from 'react-native';
 
-import Colors from '../constants/Colors';
+import Colors, { ColorTheme } from '../constants/Colors';
 
 type TextProps = Text['props'];
 interface Props extends TextProps {
@@ -13,33 +13,34 @@ interface Props extends TextProps {
 type ThemedColors = keyof typeof Colors.light & keyof typeof Colors.dark;
 
 function useThemeColor(props: Props, colorName: ThemedColors) {
-  let theme = useTheme();
-  let colorFromProps = props[`${theme}Color`];
+  const theme = useTheme();
+  const themeName = theme.dark ? ColorTheme.DARK : ColorTheme.LIGHT;
+  const colorFromProps = themeName === ColorTheme.DARK ? props.darkColor : props.lightColor;
 
   if (colorFromProps) {
     return colorFromProps;
   } else {
-    return Colors[theme][colorName];
+    return Colors[themeName][colorName];
   }
 }
 
 export const SectionLabelText = (props: Props) => {
-  let { style, ...otherProps } = props;
-  let color = useThemeColor(props, 'sectionLabelText');
+  const { style, ...otherProps } = props;
+  const color = useThemeColor(props, 'sectionLabelText');
 
   return <Text style={[styles.sectionLabelText, { color }, style]} {...otherProps} />;
 };
 
 export const GenericCardTitle = (props: Props) => {
-  let { style, ...otherProps } = props;
-  let color = useThemeColor(props, 'cardTitle');
+  const { style, ...otherProps } = props;
+  const color = useThemeColor(props, 'cardTitle');
 
   return <Text style={[styles.genericCardTitle, { color }, style]} {...otherProps} />;
 };
 
 export const StyledText = (props: Props) => {
-  let { style, ...otherProps } = props;
-  let color = useThemeColor(props, 'text');
+  const { style, ...otherProps } = props;
+  const color = useThemeColor(props, 'text');
 
   return <Text style={[{ color }, style]} {...otherProps} />;
 };

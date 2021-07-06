@@ -123,11 +123,21 @@ UM_REGISTER_SINGLETON_MODULE(NotificationCenterDelegate);
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler
 {
-  if ([_delegates count] == 0) {
-    [_pendingNotificationResponses addObject:response];
-    completionHandler();
-    return;
+  // Save response to pending responses array if none of the handlers will handle it.
+  BOOL responseWillBeHandledByAppropriateDelegate = NO;
+  for (int i = 0; i < _delegates.count; i++) {
+    id pointer = [_delegates pointerAtIndex:i];
+    if ([pointer respondsToSelector:@selector(userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:)] 
+      && ![NSStringFromClass([pointer class]) isEqual: @"EXUserNotificationManager"]) {
+      // Remove EXUserNotificationManager check when LegacyNotifications are no longer supported
+      responseWillBeHandledByAppropriateDelegate = YES;
+      break;
+    }
   }
+  if (!responseWillBeHandledByAppropriateDelegate) {
+    [_pendingNotificationResponses addObject:response];
+  }
+
   __block int delegatesCalled = 0;
   __block int delegatesCompleted = 0;
   __block BOOL delegatingCompleted = NO;
@@ -174,13 +184,18 @@ UM_REGISTER_SINGLETON_MODULE(NotificationCenterDelegate);
 - (void)addDelegate:(id<EXNotificationsDelegate>)delegate
 {
   [_delegates addPointer:(__bridge void * _Nullable)(delegate)];
-  UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
-  for (UNNotificationResponse *response in _pendingNotificationResponses) {
-    [delegate userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:^{
-      // completion handler doesn't need to do anything
-    }];
+  if ([delegate respondsToSelector:@selector(userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:)]) {
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    for (UNNotificationResponse *response in _pendingNotificationResponses) {
+      [delegate userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:^{
+        // completion handler doesn't need to do anything
+      }];
+    }
+    // Remove EXUserNotificationManager check when LegacyNotifications are no longer supported
+    if (![NSStringFromClass([delegate class]) isEqual:@"EXUserNotificationManager"]) {
+      [_pendingNotificationResponses removeAllObjects];
+    }
   }
-  [_pendingNotificationResponses removeAllObjects];
 }
 
 - (void)removeDelegate:(id<EXNotificationsDelegate>)delegate

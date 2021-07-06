@@ -1,5 +1,5 @@
-import { Webpack } from '@expo/xdl';
 import path from 'path';
+import { Webpack } from 'xdl';
 
 async function main(args: any[]) {
   const projectRoot = path.resolve(args[0]);
@@ -7,12 +7,7 @@ async function main(args: any[]) {
   try {
     await Webpack.bundleAsync(projectRoot, {
       nonInteractive: true,
-      // @ts-ignore
-      verbose: true,
       mode: 'production',
-      webpackEnv: {
-        removeUnusedImportExports: true,
-      },
     });
     process.exit(0);
   } catch (error) {

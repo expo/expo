@@ -1,20 +1,25 @@
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
-import uuidv4 from 'uuid/v4';
+import { Platform } from '@unimodules/core';
+import { v4 as uuidv4 } from 'uuid';
 
-import { NativeConstants, PlatformManifest, WebManifest } from './Constants.types';
+import {
+  ExecutionEnvironment,
+  NativeConstants,
+  PlatformManifest,
+  WebManifest,
+} from './Constants.types';
 
 const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
 
-declare var __DEV__: boolean;
-declare var process: { env: any };
-declare var navigator: Navigator;
-declare var location: Location;
-declare var localStorage: Storage;
+declare let __DEV__: boolean;
+declare let process: { env: any };
+declare let navigator: Navigator;
+declare let location: Location;
+declare let localStorage: Storage;
 
 const _sessionId = uuidv4();
 
 function getBrowserName(): string | undefined {
-  if (canUseDOM) {
+  if (Platform.isDOMAvailable) {
     const agent = navigator.userAgent.toLowerCase();
     if (agent.includes('edge')) {
       return 'Edge';
@@ -40,8 +45,11 @@ export default {
   get name(): string {
     return 'ExponentConstants';
   },
-  get appOwnership(): 'expo' {
-    return 'expo';
+  get appOwnership() {
+    return null;
+  },
+  get executionEnvironment() {
+    return ExecutionEnvironment.Bare;
   },
   get installationId(): string {
     let installationId;
@@ -61,25 +69,25 @@ export default {
     return _sessionId;
   },
   get platform(): PlatformManifest {
-    return { web: canUseDOM ? { ua: navigator.userAgent } : undefined };
+    return { web: Platform.isDOMAvailable ? { ua: navigator.userAgent } : undefined };
   },
-  get isHeadless(): false {
-    return false;
+  get isHeadless(): boolean {
+    if (!Platform.isDOMAvailable) return true;
+
+    return /\bHeadlessChrome\//.test(navigator.userAgent);
   },
   get isDevice(): true {
     // TODO: Bacon: Possibly want to add information regarding simulators
     return true;
   },
-  get isDetached(): false {
-    return false;
-  },
   get expoVersion(): string | null {
-    return this.manifest.sdkVersion || null;
+    return this.manifest!.sdkVersion || null;
   },
   get linkingUri(): string {
-    if (canUseDOM) {
+    if (Platform.isDOMAvailable) {
       // On native this is `exp://`
-      return location.origin + location.pathname;
+      // On web we should use the protocol and hostname (location.origin)
+      return location.origin;
     } else {
       return '';
     }
@@ -112,9 +120,12 @@ export default {
     // If your site is bundled with a different config then you may not have access to the app.json automatically.
     return process.env.APP_MANIFEST || {};
   },
+  get manifest2(): null {
+    return null;
+  },
   get experienceUrl(): string {
-    if (canUseDOM) {
-      return location.origin + location.pathname;
+    if (Platform.isDOMAvailable) {
+      return location.origin;
     } else {
       return '';
     }
@@ -123,7 +134,7 @@ export default {
     return __DEV__;
   },
   async getWebViewUserAgentAsync(): Promise<string | null> {
-    if (canUseDOM) {
+    if (Platform.isDOMAvailable) {
       return navigator.userAgent;
     } else {
       return null;

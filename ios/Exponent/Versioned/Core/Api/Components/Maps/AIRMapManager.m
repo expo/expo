@@ -52,7 +52,7 @@ RCT_EXPORT_MODULE()
     AIRMap *map = [AIRMap new];
     map.delegate = self;
 
-    map.isAccessibilityElement = YES;
+    map.isAccessibilityElement = NO;
     map.accessibilityElementsHidden = NO;
     
     // MKMapView doesn't report tap events, so we attach gesture recognizers to it
@@ -83,10 +83,14 @@ RCT_EXPORT_MODULE()
     return map;
 }
 
+RCT_EXPORT_VIEW_PROPERTY(isAccessibilityElement, BOOL)
 RCT_REMAP_VIEW_PROPERTY(testID, accessibilityIdentifier, NSString)
 RCT_EXPORT_VIEW_PROPERTY(showsUserLocation, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(tintColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(userLocationAnnotationTitle, NSString)
+RCT_EXPORT_VIEW_PROPERTY(userInterfaceStyle, NSString)
 RCT_EXPORT_VIEW_PROPERTY(followsUserLocation, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(userLocationCalloutEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showsPointsOfInterest, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showsBuildings, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(showsCompass, BOOL)
@@ -106,6 +110,7 @@ RCT_EXPORT_VIEW_PROPERTY(maxDelta, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(minDelta, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(compassOffset, CGPoint)
 RCT_EXPORT_VIEW_PROPERTY(legalLabelInsets, UIEdgeInsets)
+RCT_EXPORT_VIEW_PROPERTY(mapPadding, UIEdgeInsets)
 RCT_EXPORT_VIEW_PROPERTY(mapType, MKMapType)
 RCT_EXPORT_VIEW_PROPERTY(onMapReady, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
@@ -120,6 +125,7 @@ RCT_EXPORT_VIEW_PROPERTY(onMarkerDragStart, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMarkerDrag, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMarkerDragEnd, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onCalloutPress, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onUserLocationChange, RCTBubblingEventBlock)
 RCT_CUSTOM_VIEW_PROPERTY(initialRegion, MKCoordinateRegion, AIRMap)
 {
     if (json == nil) return;
@@ -376,6 +382,7 @@ RCT_EXPORT_METHOD(animateToBearing:(nonnull NSNumber *)reactTag
 }
 
 RCT_EXPORT_METHOD(fitToElements:(nonnull NSNumber *)reactTag
+        edgePadding:(nonnull NSDictionary *)edgePadding
         animated:(BOOL)animated)
 {
     [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
@@ -468,6 +475,7 @@ RCT_EXPORT_METHOD(takeSnapshot:(nonnull NSNumber *)reactTag
             AIRMap *mapView = (AIRMap *)view;
             MKMapSnapshotOptions *options = [[MKMapSnapshotOptions alloc] init];
 
+            options.mapType = mapView.mapType;
             options.region = (region.center.latitude && region.center.longitude) ? region : mapView.region;
             options.size = CGSizeMake(
               ([width floatValue] == 0) ? mapView.bounds.size.width : [width floatValue],
@@ -553,6 +561,46 @@ RCT_EXPORT_METHOD(coordinateForPoint:(nonnull NSNumber *)reactTag
                       @"latitude": @(coordinate.latitude),
                       @"longitude": @(coordinate.longitude),
                       });
+        }
+    }];
+}
+
+RCT_EXPORT_METHOD(getAddressFromCoordinates:(nonnull NSNumber *)reactTag
+                                 coordinate: (NSDictionary *)coordinate
+                                   resolver: (RCTPromiseResolveBlock)resolve
+                                   rejecter:(RCTPromiseRejectBlock)reject)
+{
+    [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+        id view = viewRegistry[reactTag];
+        if (![view isKindOfClass:[AIRMap class]]) {
+            reject(@"Invalid argument", [NSString stringWithFormat:@"Invalid view returned from registry, expecting AIRMap, got: %@", view], NULL);
+        } else {
+            if (coordinate != nil ||
+                ![[coordinate allKeys] containsObject:@"latitude"] ||
+                ![[coordinate allKeys] containsObject:@"longitude"]) {
+                reject(@"Invalid argument", [NSString stringWithFormat:@"Invalid coordinate format"], NULL);
+            }
+            CLLocation *location = [[CLLocation alloc] initWithLatitude:[coordinate[@"latitude"] doubleValue]
+                                                              longitude:[coordinate[@"longitude"] doubleValue]];
+            CLGeocoder *geoCoder = [[CLGeocoder alloc] init];
+            [geoCoder reverseGeocodeLocation:location
+                           completionHandler:^(NSArray *placemarks, NSError *error) {
+                    if (error == nil && [placemarks count] > 0){
+                        CLPlacemark *placemark = placemarks[0];
+                        resolve(@{
+                            @"name" : [NSString stringWithFormat:@"%@", placemark.name],
+                            @"thoroughfare" : [NSString stringWithFormat:@"%@", placemark.thoroughfare],
+                            @"subThoroughfare" : [NSString stringWithFormat:@"%@", placemark.subThoroughfare],
+                            @"locality" : [NSString stringWithFormat:@"%@", placemark.locality],
+                            @"subLocality" : [NSString stringWithFormat:@"%@", placemark.subLocality],
+                            @"administrativeArea" : [NSString stringWithFormat:@"%@", placemark.administrativeArea],
+                            @"subAdministrativeArea" : [NSString stringWithFormat:@"%@", placemark.subAdministrativeArea],
+                            @"postalCode" : [NSString stringWithFormat:@"%@", placemark.postalCode],
+                            @"countryCode" : [NSString stringWithFormat:@"%@", placemark.ISOcountryCode],
+                            @"country" : [NSString stringWithFormat:@"%@", placemark.country],
+                        });
+                    }
+            }];
         }
     }];
 }
@@ -835,6 +883,18 @@ RCT_EXPORT_METHOD(coordinateForPoint:(nonnull NSNumber *)reactTag
 
 #pragma mark Annotation Stuff
 
+- (void)mapView:(AIRMap *)mapView didAddAnnotationViews:(NSArray<MKAnnotationView *> *)views
+{
+    if(!mapView.userLocationCalloutEnabled){
+        for(MKAnnotationView* view in views){
+            if ([view.annotation isKindOfClass:[MKUserLocation class]]){
+                [view setEnabled:NO];
+                [view setCanShowCallout:NO];
+                break;
+            }
+        }
+    }
+}
 
 
 - (void)mapView:(AIRMap *)mapView didSelectAnnotationView:(MKAnnotationView *)view
@@ -948,6 +1008,21 @@ static int kDragCenterContext;
 
 - (void)mapView:(AIRMap *)mapView didUpdateUserLocation:(MKUserLocation *)location
 {
+    id event = @{@"coordinate": @{
+                         @"latitude": @(location.coordinate.latitude),
+                         @"longitude": @(location.coordinate.longitude),
+                         @"altitude": @(location.location.altitude),
+                         @"timestamp": @(location.location.timestamp.timeIntervalSinceReferenceDate * 1000),
+                         @"accuracy": @(location.location.horizontalAccuracy),
+                         @"altitudeAccuracy": @(location.location.verticalAccuracy),
+                         @"speed": @(location.location.speed),
+                         }
+                 };
+    
+    if (mapView.onUserLocationChange) {
+        mapView.onUserLocationChange(event);
+    }
+    
     if (mapView.followUserLocation) {
         MKCoordinateRegion region;
         region.span.latitudeDelta = AIRMapDefaultSpan;
@@ -958,6 +1033,7 @@ static int kDragCenterContext;
         // Move to user location only for the first time it loads up.
         // mapView.followUserLocation = NO;
     }
+    
 }
 
 - (void)mapView:(AIRMap *)mapView regionWillChangeAnimated:(__unused BOOL)animated
@@ -1277,6 +1353,15 @@ static int kDragCenterContext;
     double zoomLevel = AIRMapMaxZoomLevel - zoomExponent;
 
     return zoomLevel;
+}
+
+#pragma mark MKMapViewDelegate - Tracking the User Location
+
+- (void)mapView:(AIRMap *)mapView didFailToLocateUserWithError:(NSError *)error {
+    id event = @{@"error": @{ @"message": error.localizedDescription }};
+    if (mapView.onUserLocationChange) {
+        mapView.onUserLocationChange(event);
+    }
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {

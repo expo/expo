@@ -1,6 +1,6 @@
 ---
 title: FacebookAds
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-ads-facebook'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-ads-facebook'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -8,11 +8,13 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-ads-facebook`** provides access to the Facebook Audience SDK, allowing you to monetize your app with targeted ads.
 
-<PlatformsSection android emulator ios simulator />
+<PlatformsSection android ios />
 
 ## Installation
 
 <InstallSection packageName="expo-ads-facebook" />
+
+For bare apps, you will also need to follow [Facebook's Get Started guide](https://developers.facebook.com/docs/audience-network/get-started).
 
 ## Configuration
 
@@ -22,11 +24,16 @@ You need to create a placement ID to display ads. Follow steps 1 and 3 from the 
 
 ### Configuring app.json
 
-In your project's [app.json](../../workflow/configuration/), add your [Facebook App ID and Facebook Display Name](https://developers.facebook.com/docs/facebook-login/ios) under the `facebookAppId` and `facebookDisplayName` keys.
+In your project's [app.json](../../../workflow/configuration.md), add your [Facebook App ID and Facebook Display Name](https://developers.facebook.com/docs/facebook-login/ios) under the `facebookAppId` and `facebookDisplayName` keys.
+
+- In the Expo Go app, all of your Facebook API calls will be made with Expo's Facebook App ID. This means you will not see any related ad info in your Facebook developer page while running your project in Expo Go.
+- To use your app's own Facebook App ID (and thus see any related ad info in your Facebook developer page), you'll need to [build a standalone app](../../../distribution/building-standalone-apps.md).
 
 ### Development vs Production
 
-When using Facebook Ads in development, you'll need to register your device to be able to show ads. You can add the following at the top of your file to register your device:
+When using Facebook Ads in development, you can use Facebook's test ad IDs so that there's minimal setup needed on your part. Wherever a `placementId` is required, simply provide `DEMO_AD_TYPE#YOUR_PLACEMENT_ID` where `DEMO_AD_TYPE` is one of the values [shown here in the "Demo Ad Type Table"](https://developers.facebook.com/docs/audience-network/overview/in-house-mediation/server-to-server/testing/).
+
+Another option is to add the following at the top of your file to register your device:
 
 ```js
 import * as FacebookAds from 'expo-ads-facebook';
@@ -54,7 +61,7 @@ FacebookAds.InterstitialAdManager.showAd(placementId)
   .catch(error => {});
 ```
 
-The method returns a promise that will be rejected when an error occurs during a call (e.g. no fill from ad server or network error) and resolved when the user either dimisses or interacts with the displayed ad.
+The method returns a promise that will be rejected when an error occurs during a call (e.g. no fill from ad server or network error) and resolved when the user either dismisses or interacts with the displayed ad.
 
 ### Native Ads
 
@@ -173,6 +180,27 @@ class MyApp extends React.Component {
 }
 ```
 
+If you want, you can optionally pass two other callback properties — `onAdLoaded` and `onError`.
+
+- `onAdLoaded` will be called once an ad is fetched and provided to your component (the `nativeAd` property introduced in step 2.) The one and only argument with which the function will be called will be the native ad object.
+- `onError` will be called if the Audience framework encounters an error while fetching the ad. The one and only argument with which the function will be called will be an instance of `Error`.
+
+```js
+class MyApp extends React.Component {
+  render() {
+    return (
+      <View>
+        <AdComponent
+          adsManager={adsManager}
+          onAdLoaded={ad => console.log(ad)}
+          onError={error => console.warn(error)}
+        />
+      </View>
+    );
+  }
+}
+```
+
 ### BannerAd
 
 The `BannerAd` component allows you to display native as banners (known as _AdView_).
@@ -255,6 +283,26 @@ Promise will be rejected when there's an error loading ads from Facebook Audienc
 
 AdSettings contains global settings for all ad controls.
 
+#### requestPermissionsAsync
+
+Asks for permissions to use data for tracking the user or the device.
+
+> iOS: it requires the `NSUserTrackingUsageDescription` message added to the `info.plist`.
+
+##### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+#### getPermissionsAsync
+
+Checks application's permissions for using data for tracking the user or the device.
+
+> iOS: it requires the `NSUserTrackingUsageDescription` message added to the `info.plist`.
+
+##### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
 #### currentDeviceHash
 
 Constant which contains current device's hash.
@@ -279,6 +327,16 @@ an instance of AdsManager once again.
 FacebookAds.AdSettings.clearTestDevices();
 ```
 
+### setAdvertiserTrackingEnabled (iOS)
+
+Indicate to the Audience Network SDK if the user has consented to advertising tracking. This only applies to iOS 14+ and for all other versions "Limited Ad Tracking" is used. [Learn more](https://developers.facebook.com/docs/app-events/guides/advertising-tracking-enabled/).
+
+```js
+FacebookAds.AdSettings.setAdvertisingTrackingEnabled(true);
+```
+
+**Note:** This method is a no-op on Android and on iOS <= 13.
+
 #### setLogLevel (iOS)
 
 Sets current SDK log level.
@@ -299,6 +357,8 @@ Configures the ad control for treatment as child-directed.
 FacebookAds.AdSettings.setIsChildDirected(true | false);
 ```
 
+> This is called `setMixedAudience` in the underlying Android SDK.
+
 #### setMediationService
 
 If an ad provided service is mediating Audience Network in their SDK, it is required to set the name of the mediation service
@@ -317,4 +377,8 @@ FacebookAds.AdSettings.setUrlPrefix('...');
 
 **Note:** This method should never be used in production
 
-#
+## Troubleshooting
+
+Facebook provides a [table of common errors](https://developers.facebook.com/docs/audience-network/guides/test/checklist-errors/) when attempting to serve ads, this should be your first reference if you run into any issues.
+
+There are also some changes with iOS 14 that impact the Audience Network's ability to serve ads. According to facebook, _["some iOS 14 users may not see any ads from Audience Network, while others may still see ads from us, but they'll be less relevant"](https://www.facebook.com/audiencenetwork/news-and-insights/preparing-audience-network-for-ios14)_.

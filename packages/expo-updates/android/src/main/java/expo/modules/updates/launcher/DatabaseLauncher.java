@@ -1,7 +1,10 @@
 package expo.modules.updates.launcher;
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
+
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -11,22 +14,29 @@ import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.Nullable;
+import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.db.UpdatesDatabase;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
+import expo.modules.updates.db.enums.UpdateStatus;
 import expo.modules.updates.loader.EmbeddedLoader;
 import expo.modules.updates.loader.FileDownloader;
 import expo.modules.updates.manifest.Manifest;
+import expo.modules.updates.manifest.ManifestMetadata;
+import expo.modules.updates.selectionpolicy.SelectionPolicy;
 
 public class DatabaseLauncher implements Launcher {
 
   private static final String TAG = DatabaseLauncher.class.getSimpleName();
 
+  private UpdatesConfiguration mConfiguration;
   private File mUpdatesDirectory;
+  private FileDownloader mFileDownloader;
   private SelectionPolicy mSelectionPolicy;
 
   private UpdateEntity mLaunchedUpdate = null;
   private String mLaunchAssetFile = null;
+  private String mBundleAssetName = null;
   private Map<AssetEntity, String> mLocalAssetFiles = null;
 
   private int mAssetsToDownload = 0;
@@ -35,8 +45,10 @@ public class DatabaseLauncher implements Launcher {
 
   private LauncherCallback mCallback = null;
 
-  public DatabaseLauncher(File updatesDirectory, SelectionPolicy selectionPolicy) {
+  public DatabaseLauncher(UpdatesConfiguration configuration, File updatesDirectory, FileDownloader fileDownloader, SelectionPolicy selectionPolicy) {
+    mConfiguration = configuration;
     mUpdatesDirectory = updatesDirectory;
+    mFileDownloader = fileDownloader;
     mSelectionPolicy = selectionPolicy;
   }
 
@@ -49,11 +61,15 @@ public class DatabaseLauncher implements Launcher {
   }
 
   public @Nullable String getBundleAssetName() {
-    return null;
+    return mBundleAssetName;
   }
 
   public @Nullable Map<AssetEntity, String> getLocalAssetFiles() {
     return mLocalAssetFiles;
+  }
+
+  public boolean isUsingEmbeddedAssets() {
+    return mLocalAssetFiles == null;
   }
 
   public synchronized void launch(UpdatesDatabase database, Context context, LauncherCallback callback) {
@@ -61,10 +77,24 @@ public class DatabaseLauncher implements Launcher {
       throw new AssertionError("DatabaseLauncher has already started. Create a new instance in order to launch a new version.");
     }
     mCallback = callback;
-    mLaunchedUpdate = getLaunchableUpdate(database);
+    mLaunchedUpdate = getLaunchableUpdate(database, context);
 
     if (mLaunchedUpdate == null) {
-      mCallback.onFailure(new Exception("No launchable update was found"));
+      mCallback.onFailure(new Exception("No launchable update was found. If this is a bare workflow app, make sure you have configured expo-updates correctly in android/app/build.gradle."));
+      return;
+    }
+
+    database.updateDao().markUpdateAccessed(mLaunchedUpdate);
+
+    if (mLaunchedUpdate.status == UpdateStatus.EMBEDDED) {
+      mBundleAssetName = EmbeddedLoader.BARE_BUNDLE_FILENAME;
+      if (mLocalAssetFiles != null) {
+        throw new AssertionError("mLocalAssetFiles should be null for embedded updates");
+      }
+      mCallback.onSuccess();
+      return;
+    } else if (mLaunchedUpdate.status == UpdateStatus.DEVELOPMENT) {
+      mCallback.onSuccess();
       return;
     }
 
@@ -90,7 +120,7 @@ public class DatabaseLauncher implements Launcher {
         if (assetFile != null) {
           mLocalAssetFiles.put(
               asset,
-              assetFile.toURI().toString()
+              Uri.fromFile(assetFile).toString()
           );
         }
       }
@@ -105,23 +135,39 @@ public class DatabaseLauncher implements Launcher {
     }
   }
 
-  public UpdateEntity getLaunchableUpdate(UpdatesDatabase database) {
-    List<UpdateEntity> launchableUpdates = database.updateDao().loadLaunchableUpdates();
-    return mSelectionPolicy.selectUpdateToLaunch(launchableUpdates);
+  public UpdateEntity getLaunchableUpdate(UpdatesDatabase database, Context context) {
+    List<UpdateEntity> launchableUpdates = database.updateDao().loadLaunchableUpdatesForScope(mConfiguration.getScopeKey());
+
+    // We can only run an update marked as embedded if it's actually the update embedded in the
+    // current binary. We might have an older update from a previous binary still listed as
+    // "EMBEDDED" in the database so we need to do this check.
+    Manifest embeddedManifest = EmbeddedLoader.readEmbeddedManifest(context, mConfiguration);
+    ArrayList<UpdateEntity> filteredLaunchableUpdates = new ArrayList<>();
+    for (UpdateEntity update : launchableUpdates) {
+      if (update.status == UpdateStatus.EMBEDDED) {
+        if (embeddedManifest != null && !embeddedManifest.getUpdateEntity().id.equals(update.id)) {
+          continue;
+        }
+      }
+      filteredLaunchableUpdates.add(update);
+    }
+
+    JSONObject manifestFilters = ManifestMetadata.getManifestFilters(database, mConfiguration);
+    return mSelectionPolicy.selectUpdateToLaunch(filteredLaunchableUpdates, manifestFilters);
   }
 
-  private File ensureAssetExists(AssetEntity asset, UpdatesDatabase database, Context context) {
+  /* package */ File ensureAssetExists(AssetEntity asset, UpdatesDatabase database, Context context) {
     File assetFile = new File(mUpdatesDirectory, asset.relativePath);
     boolean assetFileExists = assetFile.exists();
     if (!assetFileExists) {
       // something has gone wrong, we're missing this asset
       // first we check to see if a copy is embedded in the binary
-      Manifest embeddedManifest = EmbeddedLoader.readEmbeddedManifest(context);
+      Manifest embeddedManifest = EmbeddedLoader.readEmbeddedManifest(context, mConfiguration);
       if (embeddedManifest != null) {
-        ArrayList<AssetEntity> embeddedAssets = embeddedManifest.getAssetEntityList();
+        List<AssetEntity> embeddedAssets = embeddedManifest.getAssetEntityList();
         AssetEntity matchingEmbeddedAsset = null;
         for (AssetEntity embeddedAsset : embeddedAssets) {
-          if (embeddedAsset.url.equals(asset.url)) {
+          if (embeddedAsset.key != null && embeddedAsset.key.equals(asset.key)) {
             matchingEmbeddedAsset = embeddedAsset;
             break;
           }
@@ -144,7 +190,7 @@ public class DatabaseLauncher implements Launcher {
     if (!assetFileExists) {
       // we still don't have the asset locally, so try downloading it remotely
       mAssetsToDownload++;
-      FileDownloader.downloadAsset(asset, mUpdatesDirectory, context, new FileDownloader.AssetDownloadCallback() {
+      mFileDownloader.downloadAsset(asset, mUpdatesDirectory, mConfiguration, new FileDownloader.AssetDownloadCallback() {
         @Override
         public void onFailure(Exception e, AssetEntity assetEntity) {
           Log.e(TAG, "Failed to load asset from disk or network", e);

@@ -1,10 +1,13 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <EXSensors/EXPedometer.h>
+#import <EXSensors/EXMotionPermissionRequester.h>
 #import <CoreMotion/CoreMotion.h>
 #import <UMCore/UMModuleRegistry.h>
 #import <UMCore/UMAppLifecycleService.h>
 #import <UMCore/UMEventEmitterService.h>
+#import <ExpoModulesCore/EXPermissionsInterface.h>
+#import <ExpoModulesCore/EXPermissionsMethodsDelegate.h>
 
 NSString * const EXPedometerUpdateEventName = @"Exponent.pedometerUpdate";
 NSString * const EXPedometerModuleName = @"ExponentPedometer";
@@ -18,6 +21,7 @@ NSString * const EXPedometerModuleName = @"ExponentPedometer";
 
 @property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
 @property (nonatomic, weak) id<UMAppLifecycleService> lifecycleManager;
+@property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
 
 @end
 
@@ -64,7 +68,10 @@ NSString * const EXPedometerModuleName = @"ExponentPedometer";
   if (moduleRegistry) {
     _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
     _lifecycleManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)];
+    _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
   }
+
+  [EXPermissionsMethodsDelegate registerRequesters:@[[EXMotionPermissionRequester new]] withPermissionsManager:_permissionsManager];
   
   if (_lifecycleManager) {
     [_lifecycleManager registerAppLifecycleListener:self];
@@ -146,6 +153,28 @@ UM_EXPORT_METHOD_AS(isAvailableAsync, isAvailableAsync:(UMPromiseResolveBlock)re
 {
   resolve(@([CMPedometer isStepCountingAvailable]));
 }
+
+
+UM_EXPORT_METHOD_AS(getPermissionsAsync,
+                    getPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+                                                      withRequester:[EXMotionPermissionRequester class]
+                                                            resolve:resolve
+                                                             reject:reject];
+}
+
+UM_EXPORT_METHOD_AS(requestPermissionsAsync,
+                    requestPermissionsAsync:(UMPromiseResolveBlock)resolve
+                    rejecter:(UMPromiseRejectBlock)reject)
+{
+  [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+                                                         withRequester:[EXMotionPermissionRequester class]
+                                                               resolve:resolve
+                                                                reject:reject];
+}
+
 
 # pragma mark - UMAppLifecycleListener
 

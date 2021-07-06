@@ -1,134 +1,77 @@
-import { EventEmitter } from '@unimodules/core';
-import { PermissionResponse as UMPermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
-declare const LocationEventEmitter: EventEmitter;
-export interface ProviderStatus {
-    locationServicesEnabled: boolean;
-    backgroundModeEnabled: boolean;
-    gpsAvailable?: boolean;
-    networkAvailable?: boolean;
-    passiveAvailable?: boolean;
-}
-export interface LocationOptions {
-    accuracy?: LocationAccuracy;
-    maximumAge?: number;
-    enableHighAccuracy?: boolean;
-    timeInterval?: number;
-    distanceInterval?: number;
-    timeout?: number;
-    mayShowUserSettingsDialog?: boolean;
-}
-export interface LocationData {
-    coords: {
-        latitude: number;
-        longitude: number;
-        altitude: number;
-        accuracy: number;
-        heading: number;
-        speed: number;
-    };
-    timestamp: number;
-}
-export interface HeadingData {
-    trueHeading: number;
-    magHeading: number;
-    accuracy: number;
-}
-export interface GeocodedLocation {
-    latitude: number;
-    longitude: number;
-    altitude?: number;
-    accuracy?: number;
-}
-export interface Address {
-    city: string;
-    street: string;
-    region: string;
-    country: string;
-    postalCode: string;
-    name: string;
-}
-export { PermissionStatus };
-export declare type PermissionDetailsLocationIOS = {
-    scope: 'whenInUse' | 'always';
-};
-export declare type PermissionDetailsLocationAndroid = {
-    scope: 'fine' | 'coarse' | 'none';
-};
-export interface PermissionResponse extends UMPermissionResponse {
-    ios?: PermissionDetailsLocationIOS;
-    android?: PermissionDetailsLocationAndroid;
-}
-export interface LocationTaskOptions {
-    accuracy?: LocationAccuracy;
-    timeInterval?: number;
-    distanceInterval?: number;
-    showsBackgroundLocationIndicator?: boolean;
-    deferredUpdatesDistance?: number;
-    deferredUpdatesTimeout?: number;
-    deferredUpdatesInterval?: number;
-    activityType?: LocationActivityType;
-    pausesUpdatesAutomatically?: boolean;
-    foregroundService?: {
-        notificationTitle: string;
-        notificationBody: string;
-        notificationColor?: string;
-    };
-}
-export interface LocationRegion {
-    identifier?: string;
-    latitude: number;
-    longitude: number;
-    radius: number;
-    notifyOnEnter?: boolean;
-    notifyOnExit?: boolean;
-}
-export declare type LocationCallback = (data: LocationData) => any;
-export declare type LocationHeadingCallback = (data: HeadingData) => any;
-declare enum LocationAccuracy {
-    Lowest = 1,
-    Low = 2,
-    Balanced = 3,
-    High = 4,
-    Highest = 5,
-    BestForNavigation = 6
-}
-declare enum LocationActivityType {
-    Other = 1,
-    AutomotiveNavigation = 2,
-    Fitness = 3,
-    OtherNavigation = 4,
-    Airborne = 5
-}
-export { LocationAccuracy as Accuracy, LocationActivityType as ActivityType };
-export declare enum GeofencingEventType {
-    Enter = 1,
-    Exit = 2
-}
-export declare enum GeofencingRegionState {
-    Unknown = 0,
-    Inside = 1,
-    Outside = 2
-}
-declare function _getCurrentWatchId(): number;
-export declare function getProviderStatusAsync(): Promise<ProviderStatus>;
+import { PermissionStatus, PermissionResponse } from 'expo-modules-core';
+import { LocationAccuracy, LocationCallback, LocationGeocodedAddress, LocationGeocodedLocation, LocationHeadingCallback, LocationHeadingObject, LocationLastKnownOptions, LocationObject, LocationOptions, LocationPermissionResponse, LocationProviderStatus, LocationRegion, LocationSubscription, LocationTaskOptions, LocationActivityType, LocationGeofencingEventType, LocationGeofencingRegionState, LocationGeocodingOptions } from './Location.types';
+import { LocationEventEmitter } from './LocationEventEmitter';
+import { setGoogleApiKey } from './LocationGoogleGeocoding';
+import { _getCurrentWatchId } from './LocationSubscribers';
+export declare function getProviderStatusAsync(): Promise<LocationProviderStatus>;
 export declare function enableNetworkProviderAsync(): Promise<void>;
-export declare function getCurrentPositionAsync(options?: LocationOptions): Promise<LocationData>;
-export declare function getLastKnownPositionAsync(): Promise<LocationData>;
-export declare function getHeadingAsync(): Promise<HeadingData>;
-export declare function watchHeadingAsync(callback: LocationHeadingCallback): Promise<{
-    remove: () => void;
-}>;
-export declare function geocodeAsync(address: string): Promise<GeocodedLocation[]>;
-export declare function reverseGeocodeAsync(location: {
-    latitude: number;
-    longitude: number;
-}): Promise<Address[]>;
-export declare function setApiKey(apiKey: string): void;
+/**
+ * Requests for one-time delivery of the user's current location.
+ * Depending on given `accuracy` option it may take some time to resolve,
+ * especially when you're inside a building.
+ */
+export declare function getCurrentPositionAsync(options?: LocationOptions): Promise<LocationObject>;
+/**
+ * Gets the last known position of the device or `null` if it's not available
+ * or doesn't match given requirements such as maximum age or required accuracy.
+ * It's considered to be faster than `getCurrentPositionAsync` as it doesn't request for the current location.
+ */
+export declare function getLastKnownPositionAsync(options?: LocationLastKnownOptions): Promise<LocationObject | null>;
+/**
+ * Starts watching for location changes.
+ * Given callback will be called once the new location is available.
+ */
 export declare function watchPositionAsync(options: LocationOptions, callback: LocationCallback): Promise<{
     remove(): void;
 }>;
-export declare function getPermissionsAsync(): Promise<PermissionResponse>;
-export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
+/**
+ * Resolves to an object with current heading details.
+ * To simplify, it calls `watchHeadingAsync` and waits for a couple of updates
+ * and returns the one that is accurate enough.
+ */
+export declare function getHeadingAsync(): Promise<LocationHeadingObject>;
+/**
+ * Starts watching for heading changes.
+ * Given callback will be called once the new heading is available.
+ */
+export declare function watchHeadingAsync(callback: LocationHeadingCallback): Promise<LocationSubscription>;
+/**
+ * Geocodes given address to an array of latitude-longitude coordinates.
+ */
+export declare function geocodeAsync(address: string, options?: LocationGeocodingOptions): Promise<LocationGeocodedLocation[]>;
+/**
+ * The opposite behavior of `geocodeAsync` — translates location coordinates to an array of addresses.
+ */
+export declare function reverseGeocodeAsync(location: Pick<LocationGeocodedLocation, 'latitude' | 'longitude'>, options?: LocationGeocodingOptions): Promise<LocationGeocodedAddress[]>;
+/**
+ * Gets the current state of location permissions.
+ * @deprecated Use `getForegroundPermissionsAsync()` or `getBackgroundPermissionsAsync()` instead.
+ */
+export declare function getPermissionsAsync(): Promise<LocationPermissionResponse>;
+/**
+ * Requests the user to grant location permissions.
+ * @deprecated Use `requestForegroundPermissionsAsync()` or `requestBackgroundPermissionsAsync()` instead.
+ */
+export declare function requestPermissionsAsync(): Promise<LocationPermissionResponse>;
+/**
+ * Gets the current state of foreground location permissions.
+ */
+export declare function getForegroundPermissionsAsync(): Promise<LocationPermissionResponse>;
+/**
+ * Requests the user to grant foreground location permissions.
+ */
+export declare function requestForegroundPermissionsAsync(): Promise<LocationPermissionResponse>;
+/**
+ * Gets the current state of background location permissions.
+ */
+export declare function getBackgroundPermissionsAsync(): Promise<PermissionResponse>;
+/**
+ * Requests the user to grant background location permissions.
+ */
+export declare function requestBackgroundPermissionsAsync(): Promise<PermissionResponse>;
+/**
+ * Returns `true` if the device has location services enabled or `false` otherwise.
+ */
 export declare function hasServicesEnabledAsync(): Promise<boolean>;
 export declare function isBackgroundLocationAvailableAsync(): Promise<boolean>;
 export declare function startLocationUpdatesAsync(taskName: string, options?: LocationTaskOptions): Promise<void>;
@@ -137,5 +80,12 @@ export declare function hasStartedLocationUpdatesAsync(taskName: string): Promis
 export declare function startGeofencingAsync(taskName: string, regions?: LocationRegion[]): Promise<void>;
 export declare function stopGeofencingAsync(taskName: string): Promise<void>;
 export declare function hasStartedGeofencingAsync(taskName: string): Promise<boolean>;
-export declare function installWebGeolocationPolyfill(): void;
-export { LocationEventEmitter as EventEmitter, _getCurrentWatchId, };
+/**
+ * @deprecated
+ * Deprecated as of SDK39 in favour of `setGoogleApiKey`.
+ */
+export declare function setApiKey(apiKey: string): void;
+export { LocationEventEmitter as EventEmitter, _getCurrentWatchId };
+export { LocationAccuracy as Accuracy, LocationActivityType as ActivityType, LocationGeofencingEventType as GeofencingEventType, LocationGeofencingRegionState as GeofencingRegionState, PermissionStatus, setGoogleApiKey, };
+export { installWebGeolocationPolyfill } from './GeolocationPolyfill';
+export * from './Location.types';

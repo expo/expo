@@ -8,12 +8,13 @@ import android.provider.Settings;
 import android.view.WindowManager;
 
 import org.unimodules.core.ExportedModule;
-import org.unimodules.core.InvalidArgumentException;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
+import org.unimodules.core.errors.InvalidArgumentException;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.interfaces.permissions.Permissions;
+
+import expo.modules.interfaces.permissions.Permissions;
 
 public class BrightnessModule extends ExportedModule {
   private ModuleRegistry mModuleRegistry;
@@ -206,7 +207,7 @@ public class BrightnessModule extends ExportedModule {
     }
   }
 
-  private int brightnessModeJSToNative(int jsValue) throws Exception {
+  private int brightnessModeJSToNative(int jsValue) throws InvalidArgumentException {
     switch (jsValue) {
       case 1:
         return Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC;

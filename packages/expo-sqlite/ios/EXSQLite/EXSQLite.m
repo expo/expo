@@ -2,7 +2,7 @@
 
 #import <EXSQLite/EXSQLite.h>
 
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
+#import <ExpoModulesCore/EXFileSystemInterface.h>
 
 #import <sqlite3.h>
 
@@ -32,7 +32,7 @@ UM_EXPORT_MODULE(ExponentSQLite);
 
 - (NSString *)pathForDatabaseName:(NSString *)name
 {
-  id<UMFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
+  id<EXFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   if (!fileSystem) {
     UMLogError(@"No FileSystem module.");
     return nil;
@@ -146,12 +146,6 @@ UM_EXPORT_METHOD_AS(close,
     }
   }
 
-  int previousRowsAffected = 0;
-  if (!queryIsReadOnly) {
-    // calculate the total changes in order to diff later
-    previousRowsAffected = sqlite3_total_changes(db);
-  }
-
   // iterate through sql results
   int columnCount = 0;
   NSMutableArray *columnNames = [NSMutableArray arrayWithCapacity:0];
@@ -194,7 +188,7 @@ UM_EXPORT_METHOD_AS(close,
   }
 
   if (!queryIsReadOnly) {
-    rowsAffected = (sqlite3_total_changes(db) - previousRowsAffected);
+    rowsAffected = sqlite3_changes(db);
     if (rowsAffected > 0) {
       insertId = sqlite3_last_insert_rowid(db);
     }

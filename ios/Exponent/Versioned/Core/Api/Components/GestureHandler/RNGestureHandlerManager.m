@@ -5,7 +5,14 @@
 #import <React/RCTComponent.h>
 #import <React/RCTRootView.h>
 #import <React/RCTTouchHandler.h>
+#import <React/RCTUIManager.h>
+#import <React/RCTEventDispatcher.h>
+
+#if __has_include(<React/RCTRootContentView.h>)
 #import <React/RCTRootContentView.h>
+#else
+#import "RCTRootContentView.h"
+#endif
 
 #import "RNGestureHandlerState.h"
 #import "RNGestureHandler.h"
@@ -33,7 +40,7 @@
 {
     RNGestureHandlerRegistry *_registry;
     RCTUIManager *_uiManager;
-    NSMutableSet<UIView*> *_rootViews;
+    NSHashTable<UIView *> *_rootViews;
     RCTEventDispatcher *_eventDispatcher;
 }
 
@@ -44,7 +51,7 @@
         _uiManager = uiManager;
         _eventDispatcher = eventDispatcher;
         _registry = [RNGestureHandlerRegistry new];
-        _rootViews = [NSMutableSet new];
+        _rootViews = [NSHashTable hashTableWithOptions:NSPointerFunctionsWeakMemory];
     }
     return self;
 }

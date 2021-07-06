@@ -1,21 +1,24 @@
-import React from 'react';
-import {
-  Alert,
-  AsyncStorage,
-  Platform,
-  ProgressBarAndroid,
-  ProgressViewIOS,
-  ScrollView,
-  StyleSheet,
-} from 'react-native';
-import * as FileSystem from 'expo-file-system';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Asset } from 'expo-asset';
+import * as FileSystem from 'expo-file-system';
+// import * as Progress from 'expo-progress';
+import React from 'react';
+import { Alert, ScrollView, Text, Platform } from 'react-native';
+
+import HeadingText from '../components/HeadingText';
 import ListButton from '../components/ListButton';
+import SimpleActionDemo from '../components/SimpleActionDemo';
+
+const { StorageAccessFramework } = FileSystem;
 
 interface State {
   downloadProgress: number;
+  permittedURI: string | null;
+  createdFileURI: string | null;
 }
 
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
 export default class FileSystemScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: 'FileSystem',
@@ -23,6 +26,8 @@ export default class FileSystemScreen extends React.Component<{}, State> {
 
   readonly state: State = {
     downloadProgress: 0,
+    permittedURI: null,
+    createdFileURI: null,
   };
 
   download?: FileSystem.DownloadResumable;
@@ -31,7 +36,7 @@ export default class FileSystemScreen extends React.Component<{}, State> {
     const url = 'http://ipv4.download.thinkbroadband.com/256KB.zip';
     await FileSystem.downloadAsync(url, FileSystem.documentDirectory + '256KB.zip');
     alert('Download complete!');
-  }
+  };
 
   _startDownloading = async () => {
     const url = 'http://ipv4.download.thinkbroadband.com/5MB.zip';
@@ -47,14 +52,14 @@ export default class FileSystemScreen extends React.Component<{}, State> {
     this.download = FileSystem.createDownloadResumable(url, fileUri, options, callback);
 
     try {
-      await this.download.downloadAsync();
-      if (this.state.downloadProgress === 1) {
-        alert('Download complete!');
+      const result = await this.download.downloadAsync();
+      if (result) {
+        this._downloadComplete();
       }
     } catch (e) {
       console.log(e);
     }
-  }
+  };
 
   _pause = async () => {
     if (!this.download) {
@@ -68,14 +73,14 @@ export default class FileSystemScreen extends React.Component<{}, State> {
     } catch (e) {
       console.log(e);
     }
-  }
+  };
 
   _resume = async () => {
     try {
       if (this.download) {
-        await this.download.resumeAsync();
-        if (this.state.downloadProgress === 1) {
-          alert('Download complete!');
+        const result = await this.download.resumeAsync();
+        if (result) {
+          this._downloadComplete();
         }
       } else {
         this._fetchDownload();
@@ -83,7 +88,16 @@ export default class FileSystemScreen extends React.Component<{}, State> {
     } catch (e) {
       console.log(e);
     }
-  }
+  };
+
+  _downloadComplete = () => {
+    if (this.state.downloadProgress !== 1) {
+      this.setState({
+        downloadProgress: 1,
+      });
+    }
+    alert('Download complete!');
+  };
 
   _fetchDownload = async () => {
     try {
@@ -115,7 +129,7 @@ export default class FileSystemScreen extends React.Component<{}, State> {
     } catch (e) {
       console.log(e);
     }
-  }
+  };
 
   _getInfo = async () => {
     if (!this.download) {
@@ -128,7 +142,7 @@ export default class FileSystemScreen extends React.Component<{}, State> {
     } catch (e) {
       console.log(e);
     }
-  }
+  };
 
   _readAsset = async () => {
     const asset = Asset.fromModule(require('../../assets/index.html'));
@@ -139,7 +153,7 @@ export default class FileSystemScreen extends React.Component<{}, State> {
     } catch (e) {
       Alert.alert('Error', e.message);
     }
-  }
+  };
 
   _getInfoAsset = async () => {
     const asset = Asset.fromModule(require('../../assets/index.html'));
@@ -150,7 +164,7 @@ export default class FileSystemScreen extends React.Component<{}, State> {
     } catch (e) {
       Alert.alert('Error', e.message);
     }
-  }
+  };
 
   _copyAndReadAsset = async () => {
     const asset = Asset.fromModule(require('../../assets/index.html'));
@@ -163,47 +177,142 @@ export default class FileSystemScreen extends React.Component<{}, State> {
     } catch (e) {
       Alert.alert('Error', e.message);
     }
-  }
+  };
 
   _alertFreeSpace = async () => {
     const freeBytes = await FileSystem.getFreeDiskStorageAsync();
     alert(`${Math.round(freeBytes / 1024 / 1024)} MB available`);
-  }
+  };
+
+  _askForDirPermissions = async () => {
+    const permissions = await StorageAccessFramework.requestDirectoryPermissionsAsync();
+    if (permissions.granted) {
+      const uri = permissions.directoryUri;
+      this.setState({
+        permittedURI: uri,
+      });
+      alert(`You selected: ${uri}`);
+    }
+  };
+
+  _readSAFDirAsync = async () => {
+    return await StorageAccessFramework.readDirectoryAsync(this.state.permittedURI!);
+  };
+
+  _creatSAFFileAsync = async () => {
+    const createdFile = await StorageAccessFramework.createFileAsync(
+      // eslint-disable-next-line react/no-access-state-in-setstate
+      this.state.permittedURI!,
+      'test',
+      'text/plain'
+    );
+
+    this.setState({
+      createdFileURI: createdFile,
+    });
+
+    return createdFile;
+  };
+
+  _writeToSAFFileAsync = async () => {
+    await StorageAccessFramework.writeAsStringAsync(
+      this.state.createdFileURI!,
+      'Expo is awesome 🚀🚀🚀'
+    );
+
+    return 'Done 👍';
+  };
+
+  _readSAFFileAsync = async () => {
+    return await StorageAccessFramework.readAsStringAsync(this.state.createdFileURI!);
+  };
+
+  _deleteSAFFileAsync = async () => {
+    await StorageAccessFramework.deleteAsync(this.state.createdFileURI!);
+
+    this.setState({
+      createdFileURI: null,
+    });
+  };
+
+  _copySAFFileToInternalStorageAsync = async () => {
+    const outputDir = FileSystem.cacheDirectory! + '/SAFTest';
+    await StorageAccessFramework.copyAsync({
+      from: this.state.createdFileURI!,
+      to: outputDir,
+    });
+
+    return await FileSystem.readDirectoryAsync(outputDir);
+  };
+
+  _moveSAFFileToInternalStorageAsync = async () => {
+    await StorageAccessFramework.moveAsync({
+      from: this.state.createdFileURI!,
+      to: FileSystem.cacheDirectory!,
+    });
+
+    this.setState({
+      createdFileURI: null,
+    });
+  };
 
   render() {
-    let progress = null;
-    if (Platform.OS === 'ios') {
-      progress = <ProgressViewIOS style={styles.progress} progress={this.state.downloadProgress} />;
-    } else {
-      progress = (
-        <ProgressBarAndroid
-          style={styles.progress}
-          styleAttr="Horizontal"
-          indeterminate={false}
-          progress={this.state.downloadProgress}
-        />
-      );
-    }
     return (
       <ScrollView style={{ padding: 10 }}>
         <ListButton onPress={this._download} title="Download file (512KB)" />
         <ListButton onPress={this._startDownloading} title="Start Downloading file (5MB)" />
+        {this.state.downloadProgress ? (
+          <Text style={{ paddingVertical: 15 }}>
+            Download progress: {this.state.downloadProgress * 100}%
+          </Text>
+        ) : null}
+        {/* Add back progress bar once deprecation warnings from reanimated 2 are resolved */}
+        {/* <Progress.Bar style={styles.progress} isAnimated progress={this.state.downloadProgress} /> */}
         <ListButton onPress={this._pause} title="Pause Download" />
         <ListButton onPress={this._resume} title="Resume Download" />
         <ListButton onPress={this._getInfo} title="Get Info" />
-        {progress}
         <ListButton onPress={this._readAsset} title="Read Asset" />
         <ListButton onPress={this._getInfoAsset} title="Get Info Asset" />
         <ListButton onPress={this._copyAndReadAsset} title="Copy and Read Asset" />
         <ListButton onPress={this._alertFreeSpace} title="Alert free space" />
+        {Platform.OS === 'android' && (
+          <>
+            <HeadingText>Storage Access Framework</HeadingText>
+            <ListButton
+              onPress={this._askForDirPermissions}
+              title="Ask for directory permissions"
+            />
+            {this.state.permittedURI && (
+              <>
+                <SimpleActionDemo title="Read directory" action={this._readSAFDirAsync} />
+                <SimpleActionDemo title="Create a file" action={this._creatSAFFileAsync} />
+
+                {this.state.createdFileURI && (
+                  <>
+                    <SimpleActionDemo
+                      title="Write to created file"
+                      action={this._writeToSAFFileAsync}
+                    />
+                    <SimpleActionDemo
+                      title="Read from created file"
+                      action={this._readSAFFileAsync}
+                    />
+                    <ListButton title="Delete created file" onPress={this._deleteSAFFileAsync} />
+                    <SimpleActionDemo
+                      title="Copy file to internal storage"
+                      action={this._copySAFFileToInternalStorageAsync}
+                    />
+                    <ListButton
+                      title="Move file to internal storage"
+                      onPress={this._moveSAFFileToInternalStorageAsync}
+                    />
+                  </>
+                )}
+              </>
+            )}
+          </>
+        )}
       </ScrollView>
     );
   }
 }
-
-const styles = StyleSheet.create({
-  progress: {
-    marginHorizontal: 10,
-    marginVertical: 32,
-  },
-});

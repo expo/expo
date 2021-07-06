@@ -11,6 +11,12 @@ node_modules
 npm-debug.log
 yarn-error.log
 
+# Ruby
+.direnv
+
+# Env
+.envrc.local
+
 # Emacs
 *~
 
@@ -31,24 +37,23 @@ yarn-error.log
 *.xcscmblueprint
 xcuserdata
 
-# Android Studio
+# IDEA / Android Studio
 *.iml
 .gradle
-.idea/libraries
-.idea/workspace.xml
-.idea/gradle.xml
-.idea/misc.xml
-.idea/modules.xml
-.idea/vcs.xml
+.idea
 
 # Eclipse
 .project
 .settings
 
+# VSCode
+.history/
+
 # Android
 *.apk
 *.hprof
 /android/**/build
+/android/**/.cxx
 /android/**/local.properties
 /android/captures
 /android/expoview/libs/ReactAndroid-temp
@@ -73,7 +78,6 @@ jarjar-rules.txt
 /android/app/src/main/AndroidManifest.xml
 /android/app/google-services.json
 /android/expoview/src/main/java/host/exp/exponent/generated/ExponentKeys.java
-/android/app/fabric.properties
 /apps/bare-expo/android/app/google-services.json
 /apps/bare-expo/ios/BareExpo/GoogleService-Info.plist
 /ios/Exponent/Generated/EXKeys.h
@@ -83,6 +87,7 @@ jarjar-rules.txt
 # Template projects
 templates/**/android/**/generated/*
 templates/**/android/app/build
+templates/**/Pods/**
 
 # Codemod
 .codemod.bookmark
@@ -94,6 +99,7 @@ templates/**/android/app/build
 /fastlane/Deployment
 /Preview.html
 /gc_keys.json
+/fastlane/gc_keys.json
 
 # CI
 /android/logcat.txt
@@ -113,3 +119,20 @@ shellAppWorkspaces
 .env.development.local
 .env.test.local
 .env.production.local
+apps/bare-expo/deploy-url.txt
+
+# Expo Doc merging
+docs/pages/versions/*/react-native/ADDED_*.md
+docs/pages/versions/*/react-native/REMOVED_*.md
+docs/pages/versions/*/react-native/*.diff
+
+# Home
+/home/dist
+
+# Prebuilds
+/packages/**/*.xcframework
+/packages/**/*.spec.json
+/packages/**/Info-generated.plist
+
+# Pods
+/ios/Pods

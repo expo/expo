@@ -1,6 +1,7 @@
 import WebSocket from 'ws';
 
 import RelapseError from './RelapseError';
+import { RelapseCode } from './protocol';
 
 const defaultOptions = {
   port: 8085,
@@ -24,7 +25,18 @@ export async function startAsync(startOptions = {}) {
   wss.on('connection', ws => {
     ws.on('message', message => {
       const body = JSON.parse(message);
-      options.onEvent && options.onEvent(body.call, body.arguments || []);
+      if (body.code === RelapseCode.SerializationError) {
+        console.error(`Client failed to serialize the arguments for a call to ${body.call}`);
+      } else if (body.code === RelapseCode.ProxyCall) {
+        if (!Array.isArray(body.arguments)) {
+          console.error(
+            `Proxied invocation of ${body.call} from the client did not send an array of arguments:`,
+            body.arguments
+          );
+        } else {
+          options.onEvent && options.onEvent(body.call, body.arguments);
+        }
+      }
     });
     state.ws = ws;
     startOptions.onConnect && startOptions.onConnect(ws);

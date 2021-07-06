@@ -1,10 +1,12 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import mapValues from 'lodash/mapValues';
-import { AsyncStorage } from 'react-native';
+import { SessionObject } from 'redux/SessionReducer';
 
 import * as Kernel from '../kernel/Kernel';
+import { HistoryItem } from '../types';
 import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallback';
 
-type Settings = object;
+type Settings = Record<string, any>;
 
 const Keys = mapValues(
   {
@@ -16,7 +18,7 @@ const Keys = mapValues(
 );
 
 async function getSettingsAsync(): Promise<Settings> {
-  let json = await AsyncStorage.getItem(Keys.Settings);
+  const json = await AsyncStorage.getItem(Keys.Settings);
   if (!json) {
     return {};
   }
@@ -29,8 +31,8 @@ async function getSettingsAsync(): Promise<Settings> {
 }
 
 async function updateSettingsAsync(updatedSettings: Partial<Settings>): Promise<void> {
-  let currentSettings = await getSettingsAsync();
-  let newSettings = {
+  const currentSettings = await getSettingsAsync();
+  const newSettings = {
     ...currentSettings,
     ...updatedSettings,
   };
@@ -45,11 +47,11 @@ async function getSessionAsync() {
     // using the Kernel module instead of AsyncStorage, but we need to
     // continue to check the old location for a little while
     // until all clients in use have migrated over
-    let json = await AsyncStorage.getItem(Keys.Session);
+    const json = await AsyncStorage.getItem(Keys.Session);
     if (json) {
       try {
         results = JSON.parse(json);
-        await saveSessionAsync(results);
+        await saveSessionAsync(results as SessionObject);
         await AsyncStorage.removeItem(Keys.Session);
       } catch (e) {
         return null;
@@ -60,12 +62,12 @@ async function getSessionAsync() {
   return results;
 }
 
-async function saveSessionAsync(session): Promise<void> {
-  await Kernel.setSessionAsync(session);
+async function saveSessionAsync(session: SessionObject): Promise<void> {
+  await Kernel.setSessionAsync(session as any);
 }
 
-async function getHistoryAsync() {
-  let jsonHistory = await AsyncStorage.getItem(Keys.History);
+async function getHistoryAsync(): Promise<HistoryItem[]> {
+  const jsonHistory = await AsyncStorage.getItem(Keys.History);
   if (jsonHistory) {
     try {
       return JSON.parse(jsonHistory);
@@ -76,7 +78,7 @@ async function getHistoryAsync() {
   return [];
 }
 
-async function saveHistoryAsync(history): Promise<void> {
+async function saveHistoryAsync(history: HistoryItem[]): Promise<void> {
   await AsyncStorage.setItem(Keys.History, JSON.stringify(history));
 }
 
@@ -91,17 +93,24 @@ async function removeSessionAsync(): Promise<void> {
 // adds a hook for native code to query Home's history.
 // needed for routing push notifications in Home.
 addListenerWithNativeCallback('ExponentKernel.getHistoryUrlForExperienceId', async event => {
-  const { experienceId } = event;
+  const { experienceId } = event; // scopeKey
   let history = await getHistoryAsync();
   history = history.sort((item1, item2) => {
     // date descending -- we want to pick the most recent experience with this id,
     // in case there are multiple (e.g. somebody was developing against various URLs of the
     // same app)
-    let item2time = item2.time ? item2.time : 0;
-    let item1time = item1.time ? item1.time : 0;
+    const item2time = item2.time ? item2.time : 0;
+    const item1time = item1.time ? item1.time : 0;
     return item2time - item1time;
   });
-  let historyItem = history.find(item => item.manifest && item.manifest.id === experienceId);
+  // TODO(wschurman): only check for scope key in the future when most manifests contain it
+  // TODO(wschurman): update for new manifest2 format (Manifest)
+  const historyItem = history.find(
+    item =>
+      item.manifest &&
+      (item.manifest.id === experienceId ||
+        ('scopeKey' in item.manifest && item.manifest.scopeKey === experienceId))
+  );
   if (historyItem) {
     return { url: historyItem.url };
   }

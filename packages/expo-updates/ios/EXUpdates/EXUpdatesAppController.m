@@ -1,41 +1,38 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesConfig.h>
-#import <EXUpdates/EXUpdatesAppController.h>
+#import <EXUpdates/EXUpdatesAppController+Internal.h>
 #import <EXUpdates/EXUpdatesAppLauncher.h>
 #import <EXUpdates/EXUpdatesAppLauncherNoDatabase.h>
 #import <EXUpdates/EXUpdatesAppLauncherWithDatabase.h>
-#import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
-#import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <EXUpdates/EXUpdatesReaper.h>
-#import <EXUpdates/EXUpdatesSelectionPolicyNewest.h>
+#import <EXUpdates/EXUpdatesSelectionPolicyFactory.h>
 #import <EXUpdates/EXUpdatesUtils.h>
+#import <React/RCTReloadCommand.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString * const kEXUpdatesUpdateAvailableEventName = @"updateAvailable";
-static NSString * const kEXUpdatesNoUpdateAvailableEventName = @"noUpdateAvailable";
-static NSString * const kEXUpdatesErrorEventName = @"error";
-static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppController";
+static NSString * const EXUpdatesAppControllerErrorDomain = @"EXUpdatesAppController";
+
+static NSString * const EXUpdatesUpdateAvailableEventName = @"updateAvailable";
+static NSString * const EXUpdatesNoUpdateAvailableEventName = @"noUpdateAvailable";
+static NSString * const EXUpdatesErrorEventName = @"error";
 
 @interface EXUpdatesAppController ()
 
-@property (nonatomic, readwrite, strong) id<EXUpdatesAppLauncher> launcher;
+@property (nonatomic, readwrite, strong) EXUpdatesConfig *config;
+@property (nonatomic, readwrite, strong, nullable) id<EXUpdatesAppLauncher> launcher;
 @property (nonatomic, readwrite, strong) EXUpdatesDatabase *database;
-@property (nonatomic, readwrite, strong) id<EXUpdatesSelectionPolicy> selectionPolicy;
-@property (nonatomic, readwrite, strong) EXUpdatesEmbeddedAppLoader *embeddedAppLoader;
-@property (nonatomic, readwrite, strong) EXUpdatesRemoteAppLoader *remoteAppLoader;
+@property (nonatomic, readwrite, strong) EXUpdatesSelectionPolicy *selectionPolicy;
+@property (nonatomic, readwrite, strong) EXUpdatesSelectionPolicy *defaultSelectionPolicy;
+@property (nonatomic, readwrite, strong) dispatch_queue_t controllerQueue;
 @property (nonatomic, readwrite, strong) dispatch_queue_t assetFilesQueue;
 
 @property (nonatomic, readwrite, strong) NSURL *updatesDirectory;
 
 @property (nonatomic, strong) id<EXUpdatesAppLauncher> candidateLauncher;
-@property (nonatomic, strong) NSTimer *timer;
-@property (nonatomic, assign) BOOL isReadyToLaunch;
-@property (nonatomic, assign) BOOL isTimerFinished;
 @property (nonatomic, assign) BOOL hasLaunched;
-@property (nonatomic, strong) dispatch_queue_t controllerQueue;
 
+@property (nonatomic, assign) BOOL isStarted;
 @property (nonatomic, assign) BOOL isEmergencyLaunch;
 
 @end
@@ -57,31 +54,53 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
 - (instancetype)init
 {
   if (self = [super init]) {
+    _config = [EXUpdatesConfig configWithExpoPlist];
     _database = [[EXUpdatesDatabase alloc] init];
-    _selectionPolicy = [[EXUpdatesSelectionPolicyNewest alloc] init];
+    _defaultSelectionPolicy = [EXUpdatesSelectionPolicyFactory filterAwarePolicyWithRuntimeVersion:[EXUpdatesUtils getRuntimeVersionWithConfig:_config]];
     _assetFilesQueue = dispatch_queue_create("expo.controller.AssetFilesQueue", DISPATCH_QUEUE_SERIAL);
     _controllerQueue = dispatch_queue_create("expo.controller.ControllerQueue", DISPATCH_QUEUE_SERIAL);
-    _isReadyToLaunch = NO;
-    _isTimerFinished = NO;
-    _hasLaunched = NO;
+    _isStarted = NO;
   }
   return self;
 }
 
 - (void)setConfiguration:(NSDictionary *)configuration
 {
-  NSAssert(!_updatesDirectory, @"EXUpdatesAppController:setConfiguration should not be called after start");
-  [EXUpdatesConfig.sharedInstance loadConfigFromDictionary:configuration];
+  if (_isStarted) {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:@"EXUpdatesAppController:setConfiguration should not be called after start"
+                                 userInfo:@{}];
+  }
+  [_config loadConfigFromDictionary:configuration];
+  [self resetSelectionPolicyToDefault];
+}
+
+- (EXUpdatesSelectionPolicy *)selectionPolicy
+{
+  if (!_selectionPolicy) {
+    _selectionPolicy = _defaultSelectionPolicy;
+  }
+  return _selectionPolicy;
+}
+
+- (void)setNextSelectionPolicy:(EXUpdatesSelectionPolicy *)nextSelectionPolicy
+{
+  _selectionPolicy = nextSelectionPolicy;
+}
+
+- (void)resetSelectionPolicyToDefault
+{
+  _selectionPolicy = nil;
 }
 
 - (void)start
 {
-  NSAssert(!_updatesDirectory, @"EXUpdatesAppController:start should only be called once per instance");
+  NSAssert(!_isStarted, @"EXUpdatesAppController:start should only be called once per instance");
 
-  if (!EXUpdatesConfig.sharedInstance.isEnabled) {
+  if (!_config.isEnabled) {
     EXUpdatesAppLauncherNoDatabase *launcher = [[EXUpdatesAppLauncherNoDatabase alloc] init];
     _launcher = launcher;
-    [launcher launchUpdate];
+    [launcher launchUpdateWithConfig:_config];
 
     if (_delegate) {
       [_delegate appController:self didStartWithSuccess:self.launchAssetUrl != nil];
@@ -90,112 +109,84 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
     return;
   }
 
-  if (!EXUpdatesConfig.sharedInstance.updateUrl) {
+  if (!_config.updateUrl) {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                    reason:@"expo-updates is enabled, but no valid URL is configured under EXUpdatesURL. If you are making a release build for the first time, make sure you have run `expo publish` at least once."
                                  userInfo:@{}];
   }
+  if (!_config.scopeKey) {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:@"expo-updates was configured with no scope key. Make sure a valid URL is configured under EXUpdatesURL."
+                                 userInfo:@{}];
+  }
+
+  _isStarted = YES;
 
   NSError *fsError;
-  _updatesDirectory = [EXUpdatesUtils initializeUpdatesDirectoryWithError:&fsError];
+  [self initializeUpdatesDirectoryWithError:&fsError];
   if (fsError) {
     [self _emergencyLaunchWithFatalError:fsError];
     return;
   }
 
-  __block BOOL dbSuccess;
-  __block NSError *dbError;
-  dispatch_semaphore_t dbSemaphore = dispatch_semaphore_create(0);
-  dispatch_async(_database.databaseQueue, ^{
-    dbSuccess = [self->_database openDatabaseWithError:&dbError];
-    dispatch_semaphore_signal(dbSemaphore);
-  });
-
-  BOOL shouldCheckForUpdate = [EXUpdatesUtils shouldCheckForUpdate];
-  NSNumber *launchWaitMs = [EXUpdatesConfig sharedInstance].launchWaitMs;
-  if ([launchWaitMs isEqualToNumber:@(0)] || !shouldCheckForUpdate) {
-    self->_isTimerFinished = YES;
-  } else {
-    NSDate *fireDate = [NSDate dateWithTimeIntervalSinceNow:[launchWaitMs doubleValue] / 1000];
-    self->_timer = [[NSTimer alloc] initWithFireDate:fireDate interval:0 target:self selector:@selector(_timerDidFire) userInfo:nil repeats:NO];
-    [[NSRunLoop mainRunLoop] addTimer:self->_timer forMode:NSDefaultRunLoopMode];
-  }
-
-  dispatch_semaphore_wait(dbSemaphore, DISPATCH_TIME_FOREVER);
-  if (!dbSuccess) {
-    if (self->_timer) {
-      [self->_timer invalidate];
-    }
+  NSError *dbError;
+  if (![self initializeUpdatesDatabaseWithError:&dbError]) {
     [self _emergencyLaunchWithFatalError:dbError];
     return;
   }
 
-  [self _loadEmbeddedUpdateWithCompletion:^{
-    [self _launchWithCompletion:^(NSError * _Nullable error, BOOL success) {
-      if (!success) {
-        [self _emergencyLaunchWithFatalError:error ?: [NSError errorWithDomain:kEXUpdatesAppControllerErrorDomain
-                                                                     code:1010
-                                                                 userInfo:@{NSLocalizedDescriptionKey: @"Failed to find or load launch asset"}]];
-      } else {
-        self->_isReadyToLaunch = YES;
-        [self _maybeFinish];
-      }
-
-      if (shouldCheckForUpdate) {
-        [self _loadRemoteUpdateWithCompletion:^(NSError * _Nullable error, EXUpdatesUpdate * _Nullable update) {
-          [self _handleRemoteUpdateLoaded:update error:error];
-        }];
-      } else {
-        [self _runReaper];
-      }
-    }];
-  }];
+  EXUpdatesAppLoaderTask *loaderTask = [[EXUpdatesAppLoaderTask alloc] initWithConfig:_config
+                                                                             database:_database
+                                                                            directory:_updatesDirectory
+                                                                      selectionPolicy:self.selectionPolicy
+                                                                        delegateQueue:_controllerQueue];
+  loaderTask.delegate = self;
+  [loaderTask start];
 }
 
 - (void)startAndShowLaunchScreen:(UIWindow *)window
 {
+  NSBundle *mainBundle = [NSBundle mainBundle];
   UIViewController *rootViewController = [UIViewController new];
-  NSArray *views;
-  @try {
-    NSString *launchScreen = (NSString *)[[NSBundle mainBundle] objectForInfoDictionaryKey:@"UILaunchStoryboardName"] ?: @"LaunchScreen";
-    views = [[NSBundle mainBundle] loadNibNamed:launchScreen owner:self options:nil];
-  } @catch (NSException *_) {
-    NSLog(@"LaunchScreen.xib is missing. Unexpected loading behavior may occur.");
-  }
-  if (views) {
+  NSString *launchScreen = (NSString *)[mainBundle objectForInfoDictionaryKey:@"UILaunchStoryboardName"] ?: @"LaunchScreen";
+  
+  if ([mainBundle pathForResource:launchScreen ofType:@"nib"] != nil) {
+    NSArray *views = [mainBundle loadNibNamed:launchScreen owner:self options:nil];
     rootViewController.view = views.firstObject;
     rootViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  } else if ([mainBundle pathForResource:launchScreen ofType:@"storyboard"] != nil ||
+             [mainBundle pathForResource:launchScreen ofType:@"storyboardc"] != nil) {
+    UIStoryboard *launchScreenStoryboard = [UIStoryboard storyboardWithName:launchScreen bundle:nil];
+    rootViewController = [launchScreenStoryboard instantiateInitialViewController];
   } else {
+    NSLog(@"Launch screen could not be loaded from a .xib or .storyboard. Unexpected loading behavior may occur.");
     UIView *view = [UIView new];
-    view.backgroundColor = [UIColor whiteColor];;
+    view.backgroundColor = [UIColor whiteColor];
     rootViewController.view = view;
   }
+  
   window.rootViewController = rootViewController;
   [window makeKeyAndVisible];
 
   [self start];
 }
 
-- (void)requestRelaunchWithCompletion:(EXUpdatesAppControllerRelaunchCompletionBlock)completion
+- (void)requestRelaunchWithCompletion:(EXUpdatesAppRelaunchCompletionBlock)completion
 {
-  if (_bridge) {
-    EXUpdatesAppLauncherWithDatabase *launcher = [[EXUpdatesAppLauncherWithDatabase alloc] initWithCompletionQueue:_controllerQueue];
-    _candidateLauncher = launcher;
-    [launcher launchUpdateWithSelectionPolicy:self->_selectionPolicy completion:^(NSError * _Nullable error, BOOL success) {
-      if (success) {
-        self->_launcher = self->_candidateLauncher;
-        completion(YES);
-        [self->_bridge reload];
-        [self _runReaper];
-      } else {
-        NSLog(@"Failed to relaunch: %@", error.localizedDescription);
-        completion(NO);
-      }
-    }];
-  } else {
-    NSLog(@"EXUpdatesAppController: Failed to reload because bridge was nil. Did you set the bridge property on the controller singleton?");
-    completion(NO);
-  }
+  EXUpdatesAppLauncherWithDatabase *launcher = [[EXUpdatesAppLauncherWithDatabase alloc] initWithConfig:_config database:_database directory:_updatesDirectory completionQueue:_controllerQueue];
+  _candidateLauncher = launcher;
+  [launcher launchUpdateWithSelectionPolicy:self.selectionPolicy completion:^(NSError * _Nullable error, BOOL success) {
+    if (success) {
+      self->_launcher = self->_candidateLauncher;
+      completion(YES);
+      RCTReloadCommandSetBundleURL(launcher.launchAssetUrl);
+      RCTTriggerReloadCommandListeners(@"Requested by JavaScript - Updates.reloadAsync()");
+      [self runReaper];
+    } else {
+      NSLog(@"Failed to relaunch: %@", error.localizedDescription);
+      completion(NO);
+    }
+  }];
 }
 
 - (nullable EXUpdatesUpdate *)launchedUpdate
@@ -213,27 +204,29 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
   return _launcher.assetFilesMap ?: nil;
 }
 
-# pragma mark - internal
-
-- (void)_maybeFinish
+- (BOOL)isUsingEmbeddedAssets
 {
-  if (!_isTimerFinished || !_isReadyToLaunch) {
-    // too early, bail out
-    return;
+  if (!_launcher) {
+    return YES;
   }
-  if (_hasLaunched) {
-    // we've already fired once, don't do it again
-    return;
-  }
+  return _launcher.isUsingEmbeddedAssets;
+}
 
-  _hasLaunched = YES;
-  if (!self.launchAssetUrl) {
-    [self _emergencyLaunchWithFatalError:[NSError errorWithDomain:kEXUpdatesAppControllerErrorDomain
-                                                             code:1020
-                                                         userInfo:@{NSLocalizedDescriptionKey: @"Unexpectedly tried to launch without a valid launchAssetUrl"}]];
-    return;
-  }
+# pragma mark - EXUpdatesAppLoaderTaskDelegate
 
+- (BOOL)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didLoadCachedUpdate:(nonnull EXUpdatesUpdate *)update
+{
+  return YES;
+}
+
+- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didStartLoadingUpdate:(EXUpdatesUpdate *)update
+{
+  // do nothing here for now
+}
+
+- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithLauncher:(id<EXUpdatesAppLauncher>)launcher isUpToDate:(BOOL)isUpToDate
+{
+  _launcher = launcher;
   if (self->_delegate) {
     [EXUpdatesUtils runBlockOnMainThread:^{
       [self->_delegate appController:self didStartWithSuccess:YES];
@@ -241,118 +234,88 @@ static NSString * const kEXUpdatesAppControllerErrorDomain = @"EXUpdatesAppContr
   }
 }
 
-- (void)_timerDidFire
+- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithError:(NSError *)error
 {
-  dispatch_async(_controllerQueue, ^{
-    self->_isTimerFinished = YES;
-    [self _maybeFinish];
-  });
+  [self _emergencyLaunchWithFatalError:error];
 }
 
-- (void)_loadEmbeddedUpdateWithCompletion:(void (^)(void))completion
+- (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishBackgroundUpdateWithStatus:(EXUpdatesBackgroundUpdateStatus)status update:(nullable EXUpdatesUpdate *)update error:(nullable NSError *)error
 {
-  [EXUpdatesAppLauncherWithDatabase launchableUpdateWithSelectionPolicy:_selectionPolicy completion:^(NSError * _Nullable error, EXUpdatesUpdate * _Nullable launchableUpdate) {
-    if ([self->_selectionPolicy shouldLoadNewUpdate:[EXUpdatesEmbeddedAppLoader embeddedManifest] withLaunchedUpdate:launchableUpdate]) {
-      self->_embeddedAppLoader = [[EXUpdatesEmbeddedAppLoader alloc] initWithCompletionQueue:self->_controllerQueue];
-      [self->_embeddedAppLoader loadUpdateFromEmbeddedManifestWithSuccess:^(EXUpdatesUpdate * _Nullable update) {
-        completion();
-      } error:^(NSError * _Nonnull error) {
-        completion();
-      }];
-    } else {
-      completion();
-    }
-  } completionQueue:_controllerQueue];
-}
-
-- (void)_launchWithCompletion:(void (^)(NSError * _Nullable error, BOOL success))completion
-{
-  EXUpdatesAppLauncherWithDatabase *launcher = [[EXUpdatesAppLauncherWithDatabase alloc] initWithCompletionQueue:_controllerQueue];
-  _launcher = launcher;
-  [launcher launchUpdateWithSelectionPolicy:_selectionPolicy completion:completion];
-}
-
-- (void)_loadRemoteUpdateWithCompletion:(void (^)(NSError * _Nullable error, EXUpdatesUpdate * _Nullable update))completion
-{
-  _remoteAppLoader = [[EXUpdatesRemoteAppLoader alloc] initWithCompletionQueue:_controllerQueue];
-  [_remoteAppLoader loadUpdateFromUrl:[EXUpdatesConfig sharedInstance].updateUrl success:^(EXUpdatesUpdate * _Nullable update) {
-    completion(nil, update);
-  } error:^(NSError *error) {
-    completion(error, nil);
-  }];
-}
-
-- (void)_handleRemoteUpdateLoaded:(nullable EXUpdatesUpdate *)update error:(nullable NSError *)error
-{
-  // If the app has not yet been launched (because the timer is still running),
-  // create a new launcher so that we can launch with the newly downloaded update.
-  // Otherwise, we've already launched. Send an event to the notify JS of the new update.
-
-  dispatch_async(_controllerQueue, ^{
-    if (self->_timer) {
-      [self->_timer invalidate];
-    }
-    self->_isTimerFinished = YES;
-
-    if (update) {
-      if (!self->_hasLaunched) {
-        EXUpdatesAppLauncherWithDatabase *launcher = [[EXUpdatesAppLauncherWithDatabase alloc] initWithCompletionQueue:self->_controllerQueue];
-        self->_candidateLauncher = launcher;
-        [launcher launchUpdateWithSelectionPolicy:self->_selectionPolicy completion:^(NSError * _Nullable error, BOOL success) {
-          if (success) {
-            if (!self->_hasLaunched) {
-              self->_launcher = self->_candidateLauncher;
-              [self _maybeFinish];
-            }
-          } else {
-            [self _maybeFinish];
-            NSLog(@"Downloaded update but failed to relaunch: %@", error.localizedDescription);
-          }
-
-          [self _runReaper];
-        }];
-      } else {
-        [EXUpdatesUtils sendEventToBridge:self->_bridge
-                                 withType:kEXUpdatesUpdateAvailableEventName
-                                     body:@{@"manifest": update.rawManifest}];
-        [self _runReaper];
-      }
-    } else {
-      // there's no update, so signal we're ready to launch
-      [self _maybeFinish];
-      if (error) {
-        [EXUpdatesUtils sendEventToBridge:self->_bridge
-                                 withType:kEXUpdatesErrorEventName
-                                     body:@{@"message": error.localizedDescription}];
-      } else {
-        [EXUpdatesUtils sendEventToBridge:self->_bridge withType:kEXUpdatesNoUpdateAvailableEventName body:@{}];
-      }
-
-      [self _runReaper];
-    }
-  });
-}
-
-- (void)_runReaper
-{
-  if (_launcher.launchedUpdate) {
-    [EXUpdatesReaper reapUnusedUpdatesWithSelectionPolicy:self->_selectionPolicy
-                                           launchedUpdate:self->_launcher.launchedUpdate];
+  if (status == EXUpdatesBackgroundUpdateStatusError) {
+    NSAssert(error != nil, @"Background update with error status must have a nonnull error object");
+    [EXUpdatesUtils sendEventToBridge:_bridge withType:EXUpdatesErrorEventName body:@{@"message": error.localizedDescription}];
+  } else if (status == EXUpdatesBackgroundUpdateStatusUpdateAvailable) {
+    NSAssert(update != nil, @"Background update with error status must have a nonnull update object");
+    [EXUpdatesUtils sendEventToBridge:_bridge withType:EXUpdatesUpdateAvailableEventName body:@{@"manifest": update.rawManifest.rawManifestJSON}];
+  } else if (status == EXUpdatesBackgroundUpdateStatusNoUpdateAvailable) {
+    [EXUpdatesUtils sendEventToBridge:_bridge withType:EXUpdatesNoUpdateAvailableEventName body:@{}];
   }
 }
+
+# pragma mark - EXUpdatesAppController+Internal
+
+- (BOOL)initializeUpdatesDirectoryWithError:(NSError ** _Nullable)error
+{
+  _updatesDirectory = [EXUpdatesUtils initializeUpdatesDirectoryWithError:error];
+  return _updatesDirectory != nil;
+}
+
+- (BOOL)initializeUpdatesDatabaseWithError:(NSError ** _Nullable)error
+{
+  __block NSError *dbError;
+  dispatch_semaphore_t dbSemaphore = dispatch_semaphore_create(0);
+  dispatch_async(_database.databaseQueue, ^{
+    [self->_database openDatabaseInDirectory:self->_updatesDirectory withError:&dbError];
+    dispatch_semaphore_signal(dbSemaphore);
+  });
+
+  dispatch_semaphore_wait(dbSemaphore, DISPATCH_TIME_FOREVER);
+  if (dbError && error) {
+    *error = dbError;
+  }
+  return dbError == nil;
+}
+
+- (void)setDefaultSelectionPolicy:(EXUpdatesSelectionPolicy *)selectionPolicy
+{
+  _defaultSelectionPolicy = selectionPolicy;
+}
+
+- (void)setLauncher:(nullable id<EXUpdatesAppLauncher>)launcher
+{
+  _launcher = launcher;
+}
+
+- (void)setConfigurationInternal:(EXUpdatesConfig *)configuration
+{
+  _config = configuration;
+}
+
+- (void)setIsStarted:(BOOL)isStarted
+{
+  _isStarted = isStarted;
+}
+
+- (void)runReaper
+{
+  if (_launcher.launchedUpdate) {
+    [EXUpdatesReaper reapUnusedUpdatesWithConfig:_config
+                                        database:_database
+                                       directory:_updatesDirectory
+                                 selectionPolicy:self.selectionPolicy
+                                  launchedUpdate:_launcher.launchedUpdate];
+  }
+}
+
+# pragma mark - internal
 
 - (void)_emergencyLaunchWithFatalError:(NSError *)error
 {
-  if (_timer) {
-    [_timer invalidate];
-  }
-
   _isEmergencyLaunch = YES;
-  _hasLaunched = YES;
 
   EXUpdatesAppLauncherNoDatabase *launcher = [[EXUpdatesAppLauncherNoDatabase alloc] init];
   _launcher = launcher;
-  [launcher launchUpdateWithFatalError:error];
+  [launcher launchUpdateWithConfig:_config fatalError:error];
 
   if (_delegate) {
     [EXUpdatesUtils runBlockOnMainThread:^{

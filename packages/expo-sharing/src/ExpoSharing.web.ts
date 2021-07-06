@@ -2,12 +2,6 @@ import { UnavailabilityError } from '@unimodules/core';
 
 type ShareOptions = { title?: string; text?: string; url?: string };
 
-type NavigatorShare = (options: ShareOptions) => Promise<object>;
-
-interface Navigator {
-  share?: NavigatorShare;
-}
-
 export default {
   get name(): string {
     return 'ExpoSharing';
@@ -17,14 +11,12 @@ export default {
       return false;
     }
 
-    return !!(navigator as Navigator).share;
+    return !!navigator.share;
   },
-  async shareAsync(url: string, options: ShareOptions = {}): Promise<object> {
-    const sharingNavigator: Navigator = navigator as Navigator;
-
+  async shareAsync(url: string, options: ShareOptions = {}): Promise<void> {
     // NOTE: `navigator.share` is only available via HTTPS
-    if (sharingNavigator.share) {
-      return await sharingNavigator.share({ ...options, url });
+    if (navigator.share) {
+      await navigator.share({ ...options, url });
     } else {
       throw new UnavailabilityError('navigator', 'share');
     }

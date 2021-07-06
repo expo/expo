@@ -5,7 +5,7 @@
 #import <EXAV/EXAVObject.h>
 #import <EXAV/EXVideoPlayerViewControllerDelegate.h>
 
-@interface EXVideoView : UIView <EXVideoPlayerViewControllerDelegate, EXAVObject>
+@interface EXVideoView : UIView <EXVideoPlayerViewControllerDelegate, AVPlayerViewControllerDelegate, EXAVObject>
 
 typedef NS_OPTIONS(NSUInteger, EXVideoFullscreenUpdate)
 {

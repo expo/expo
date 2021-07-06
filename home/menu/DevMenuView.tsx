@@ -1,13 +1,14 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React from 'react';
 import { Clipboard, PixelRatio, StyleSheet } from 'react-native';
 
-import * as DevMenu from './DevMenuModule';
-import DevMenuButton from './DevMenuButton';
 import { StyledView } from '../components/Views';
-import DevMenuTaskInfo from './DevMenuTaskInfo';
-import DevMenuOnboarding from './DevMenuOnboarding';
-import DevMenuCloseButton from './DevMenuCloseButton';
 import DevMenuBottomSheetContext, { Context } from './DevMenuBottomSheetContext';
+import DevMenuButton from './DevMenuButton';
+import DevMenuCloseButton from './DevMenuCloseButton';
+import * as DevMenu from './DevMenuModule';
+import DevMenuOnboarding from './DevMenuOnboarding';
+import DevMenuTaskInfo from './DevMenuTaskInfo';
 
 type Props = {
   task: { [key: string]: any };
@@ -32,7 +33,9 @@ const DEV_MENU_ORDER = [
   'dev-inspector',
 ];
 
-const MENU_ITEMS_ICON_MAPPINGS = {
+const MENU_ITEMS_ICON_MAPPINGS: {
+  [key: string]: React.ComponentProps<typeof MaterialCommunityIcons>['name'];
+} = {
   'dev-hmr': 'run-fast',
   'dev-remote-debug': 'remote-desktop',
   'dev-perf-monitor': 'speedometer',
@@ -44,7 +47,7 @@ class DevMenuView extends React.PureComponent<Props, State> {
 
   context!: Context;
 
-  constructor(props, context) {
+  constructor(props: Props, context?: unknown) {
     super(props, context);
 
     this.state = {
@@ -98,10 +101,10 @@ class DevMenuView extends React.PureComponent<Props, State> {
     DevMenu.reloadAppAsync();
   };
 
-  onCopyTaskUrl = () => {
+  onCopyTaskUrl = async () => {
     const { manifestUrl } = this.props.task;
 
-    this.collapseAndCloseDevMenuAsync();
+    await this.collapseAndCloseDevMenuAsync();
     Clipboard.setString(manifestUrl);
     alert(`Copied "${manifestUrl}" to the clipboard!`);
   };
@@ -111,7 +114,7 @@ class DevMenuView extends React.PureComponent<Props, State> {
     DevMenu.goToHomeAsync();
   };
 
-  onPressDevMenuButton = key => {
+  onPressDevMenuButton = (key: string) => {
     DevMenu.selectItemWithKeyAsync(key);
   };
 
@@ -138,7 +141,7 @@ class DevMenuView extends React.PureComponent<Props, State> {
     return null;
   }
 
-  renderDevMenuItem(key, item) {
+  renderDevMenuItem(key: string, item: any) {
     const { label, isEnabled, detail } = item;
 
     return (

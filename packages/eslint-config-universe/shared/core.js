@@ -1,11 +1,25 @@
 const { jsExtensions } = require('./extensions');
 
 module.exports = {
-  parser: 'babel-eslint',
+  parser: '@babel/eslint-parser',
   parserOptions: {
     sourceType: 'module',
-    ecmaVersion: 2019,
+    ecmaVersion: 2021,
     ecmaFeatures: { impliedStrict: true },
+    requireConfigFile: false,
+    babelOptions: {
+      parserOpts: {
+        plugins: [
+          // Languages extensions used in Expo projects and dependencies
+          'flow',
+          'jsx',
+          // Stage 3+ proposals that aren't supported by the base ECMAScript version
+          'classProperties',
+          'classPrivateProperties',
+          'classPrivateMethods',
+        ],
+      },
+    },
   },
   env: { es6: true, jest: true },
   globals: {
@@ -15,7 +29,7 @@ module.exports = {
     module: false,
     require: false,
   },
-  plugins: ['babel', 'flowtype', 'import'],
+  plugins: ['@babel', 'import'],
   rules: {
     'array-bracket-spacing': ['warn', 'never'],
     'arrow-spacing': ['warn', { before: true, after: true }],
@@ -98,7 +112,7 @@ module.exports = {
     'no-unneeded-ternary': 'warn',
     'no-unreachable': 'warn',
     'no-unsafe-negation': 'warn',
-    'no-unused-expressions': ['warn', { allowShortCircuit: true }],
+    'no-unused-expressions': 'off',
     'no-unused-labels': 'warn',
     'no-unused-vars': ['warn', { vars: 'all', args: 'none', ignoreRestSiblings: true }],
     'no-useless-computed-key': 'warn',
@@ -107,6 +121,7 @@ module.exports = {
     'no-useless-escape': 'warn',
     'no-useless-rename': 'warn',
     'no-useless-return': 'warn',
+    'no-var': 'warn',
     'no-void': 'warn',
     'no-whitespace-before-property': 'warn',
     'no-with': 'warn',
@@ -134,20 +149,7 @@ module.exports = {
     'yield-star-spacing': ['warn', 'after'],
     yoda: ['warn', 'never', { exceptRange: true }],
 
-    'flowtype/boolean-style': ['warn', 'boolean'],
-    'flowtype/define-flow-type': 'warn',
-    'flowtype/delimiter-dangle': ['warn', 'always-multiline'],
-    'flowtype/generic-spacing': ['warn', 'never'],
-    'flowtype/no-dupe-keys': 'error',
-    'flowtype/no-primitive-constructor-types': 'warn',
-    'flowtype/no-types-missing-file-annotation': 'warn',
-    'flowtype/object-type-delimiter': ['warn', 'comma'],
-    'flowtype/semi': ['warn', 'always'],
-    'flowtype/space-after-type-colon': ['warn', 'always', { allowLineBreak: true }],
-    'flowtype/space-before-generic-bracket': ['warn', 'never'],
-    'flowtype/space-before-type-colon': ['warn', 'never'],
-    'flowtype/union-intersection-spacing': ['warn', 'always'],
-    'flowtype/use-flow-type': 'warn',
+    '@babel/no-unused-expressions': ['warn', { allowShortCircuit: true }],
 
     'import/default': 'off',
     'import/export': 'error',
@@ -168,7 +170,7 @@ module.exports = {
   settings: {
     'import/extensions': jsExtensions,
     'import/parsers': {
-      'babel-eslint': jsExtensions,
+      '@babel/eslint-parser': jsExtensions,
     },
     'import/resolver': {
       node: { extensions: jsExtensions },

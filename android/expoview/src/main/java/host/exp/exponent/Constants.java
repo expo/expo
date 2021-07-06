@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import expo.modules.splashscreen.SplashScreenImageResizeMode;
 import host.exp.exponent.analytics.EXL;
 
 public class Constants {
@@ -24,9 +25,12 @@ public class Constants {
     public String RELEASE_CHANNEL;
     public boolean SHOW_LOADING_VIEW_IN_SHELL_APP;
     public boolean ARE_REMOTE_UPDATES_ENABLED;
+    public boolean UPDATES_CHECK_AUTOMATICALLY;
+    public int UPDATES_FALLBACK_TO_CACHE_TIMEOUT;
     public List<Constants.EmbeddedResponse> EMBEDDED_RESPONSES;
     public int ANDROID_VERSION_CODE;
     public boolean FCM_ENABLED;
+    public SplashScreenImageResizeMode SPLASH_SCREEN_IMAGE_RESIZE_MODE;
     // no longer used, but we need to leave this here so that people's old detached apps don't break
     public boolean ANALYTICS_ENABLED;
     // same but since SDK32
@@ -50,9 +54,12 @@ public class Constants {
   public static String RELEASE_CHANNEL = "default";
   public static boolean SHOW_LOADING_VIEW_IN_SHELL_APP = false;
   public static boolean ARE_REMOTE_UPDATES_ENABLED = true;
+  public static boolean UPDATES_CHECK_AUTOMATICALLY = true;
+  public static int UPDATES_FALLBACK_TO_CACHE_TIMEOUT = 0;
   public static int ANDROID_VERSION_CODE;
   public static boolean FCM_ENABLED;
   public static boolean ANALYTICS_ENABLED;
+  public static SplashScreenImageResizeMode SPLASH_SCREEN_IMAGE_RESIZE_MODE;
 
   public static void setSdkVersions(List<String> sdkVersions) {
     ABI_VERSIONS = TextUtils.join(",", sdkVersions);
@@ -64,22 +71,22 @@ public class Constants {
   }
 
   static {
-    Set<String> abiVersions = new HashSet<>();
+    List<String> abiVersions = new ArrayList<>();
     // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
     // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
     // ADD ABI VERSIONS HERE DO NOT MODIFY
-    // BEGIN_SDK_37
-    abiVersions.add("37.0.0");
-    // END_SDK_37
-    // BEGIN_SDK_36
-    abiVersions.add("36.0.0");
-    // END_SDK_36
-    // BEGIN_SDK_35
-    abiVersions.add("35.0.0");
-    // END_SDK_35
-    // BEGIN_SDK_34
-    abiVersions.add("34.0.0");
-    // END_SDK_34
+    // BEGIN_SDK_42
+    abiVersions.add("42.0.0");
+    // END_SDK_42
+    // BEGIN_SDK_41
+    abiVersions.add("41.0.0");
+    // END_SDK_41
+    // BEGIN_SDK_40
+    abiVersions.add("40.0.0");
+    // END_SDK_40
+    // BEGIN_SDK_39
+    abiVersions.add("39.0.0");
+    // END_SDK_39
     // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
     // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
@@ -87,7 +94,7 @@ public class Constants {
       abiVersions.add(TEMPORARY_ABI_VERSION);
     }
 
-    setSdkVersions(new ArrayList<>(abiVersions));
+    setSdkVersions(abiVersions);
 
     List<EmbeddedResponse> embeddedResponses = new ArrayList<>();
     // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
@@ -107,12 +114,15 @@ public class Constants {
       RELEASE_CHANNEL = appConstants.RELEASE_CHANNEL;
       SHOW_LOADING_VIEW_IN_SHELL_APP = appConstants.SHOW_LOADING_VIEW_IN_SHELL_APP;
       ARE_REMOTE_UPDATES_ENABLED = appConstants.ARE_REMOTE_UPDATES_ENABLED;
+      UPDATES_CHECK_AUTOMATICALLY = appConstants.UPDATES_CHECK_AUTOMATICALLY;
+      UPDATES_FALLBACK_TO_CACHE_TIMEOUT = appConstants.UPDATES_FALLBACK_TO_CACHE_TIMEOUT;
       ANDROID_VERSION_CODE = appConstants.ANDROID_VERSION_CODE;
       FCM_ENABLED = appConstants.FCM_ENABLED;
       ANALYTICS_ENABLED = !isStandaloneApp();
 
       embeddedResponses.addAll(appConstants.EMBEDDED_RESPONSES);
       EMBEDDED_RESPONSES = embeddedResponses;
+      SPLASH_SCREEN_IMAGE_RESIZE_MODE = appConstants.SPLASH_SCREEN_IMAGE_RESIZE_MODE;
     } catch (ClassNotFoundException e) {
       e.printStackTrace();
     } catch (IllegalAccessException e) {

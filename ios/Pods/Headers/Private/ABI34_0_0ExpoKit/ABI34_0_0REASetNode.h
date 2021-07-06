@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI34_0_0/Expo/Core/Api/Reanimated/Nodes/ABI34_0_0REASetNode.h

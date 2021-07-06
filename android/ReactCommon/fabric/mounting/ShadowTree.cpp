@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "ShadowTree.h"
 
@@ -15,6 +17,7 @@
 #include <react/mounting/ShadowViewMutation.h>
 
 #include "ShadowTreeDelegate.h"
+#include "TreeStateReconciliation.h"
 
 namespace facebook {
 namespace react {
@@ -50,7 +53,7 @@ static void updateMountedFlag(
       continue;
     }
 
-    if (oldChild->getTag() != newChild->getTag()) {
+    if (!ShadowNode::sameFamily(*oldChild, *newChild)) {
       // Totally different nodes, updating is impossible.
       break;
     }
@@ -80,56 +83,53 @@ static void updateMountedFlag(
 
 ShadowTree::ShadowTree(
     SurfaceId surfaceId,
-    const LayoutConstraints &layoutConstraints,
-    const LayoutContext &layoutContext,
-    const RootComponentDescriptor &rootComponentDescriptor)
-    : surfaceId_(surfaceId) {
+    LayoutConstraints const &layoutConstraints,
+    LayoutContext const &layoutContext,
+    RootComponentDescriptor const &rootComponentDescriptor,
+    ShadowTreeDelegate const &delegate)
+    : surfaceId_(surfaceId), delegate_(delegate) {
   const auto noopEventEmitter = std::make_shared<const ViewEventEmitter>(
       nullptr, -1, std::shared_ptr<const EventDispatcher>());
 
   const auto props = std::make_shared<const RootProps>(
       *RootShadowNode::defaultSharedProps(), layoutConstraints, layoutContext);
 
+  auto family = rootComponentDescriptor.createFamily(
+      ShadowNodeFamilyFragment{surfaceId, surfaceId, noopEventEmitter},
+      nullptr);
   rootShadowNode_ = std::static_pointer_cast<const RootShadowNode>(
-      rootComponentDescriptor.createShadowNode(ShadowNodeFragment{
-          /* .tag = */ surfaceId,
-          /* .surfaceId = */ surfaceId,
-          /* .props = */ props,
-          /* .eventEmitter = */ noopEventEmitter,
-      }));
+      rootComponentDescriptor.createShadowNode(
+          ShadowNodeFragment{
+              /* .props = */ props,
+          },
+          family));
 
   mountingCoordinator_ = std::make_shared<MountingCoordinator const>(
       ShadowTreeRevision{rootShadowNode_, 0, {}});
 }
 
 ShadowTree::~ShadowTree() {
-  commit(
-      [](const SharedRootShadowNode &oldRootShadowNode) {
-        return std::make_shared<RootShadowNode>(
-            *oldRootShadowNode,
-            ShadowNodeFragment{
-                /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-                /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
-                /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-                /* .eventEmitter = */
-                ShadowNodeFragment::eventEmitterPlaceholder(),
-                /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
-            });
-      });
+  mountingCoordinator_->revoke();
 }
 
 Tag ShadowTree::getSurfaceId() const {
   return surfaceId_;
 }
 
-void ShadowTree::commit(ShadowTreeCommitTransaction transaction) const {
+MountingCoordinator::Shared ShadowTree::getMountingCoordinator() const {
+  return mountingCoordinator_;
+}
+
+void ShadowTree::commit(
+    ShadowTreeCommitTransaction transaction,
+    bool enableStateReconciliation) const {
   SystraceSection s("ShadowTree::commit");
 
   int attempts = 0;
 
   while (true) {
     attempts++;
-    if (tryCommit(transaction)) {
+    if (tryCommit(transaction, enableStateReconciliation)) {
       return;
     }
 
@@ -139,13 +139,15 @@ void ShadowTree::commit(ShadowTreeCommitTransaction transaction) const {
   }
 }
 
-bool ShadowTree::tryCommit(ShadowTreeCommitTransaction transaction) const {
+bool ShadowTree::tryCommit(
+    ShadowTreeCommitTransaction transaction,
+    bool enableStateReconciliation) const {
   SystraceSection s("ShadowTree::tryCommit");
 
   auto telemetry = MountingTelemetry{};
   telemetry.willCommit();
 
-  SharedRootShadowNode oldRootShadowNode;
+  RootShadowNode::Shared oldRootShadowNode;
 
   {
     // Reading `rootShadowNode_` in shared manner.
@@ -153,19 +155,32 @@ bool ShadowTree::tryCommit(ShadowTreeCommitTransaction transaction) const {
     oldRootShadowNode = rootShadowNode_;
   }
 
-  UnsharedRootShadowNode newRootShadowNode = transaction(oldRootShadowNode);
+  RootShadowNode::Unshared newRootShadowNode = transaction(oldRootShadowNode);
 
   if (!newRootShadowNode) {
     return false;
   }
 
+  // Compare state revisions of old and new root
+  // Children of the root node may be mutated in-place
+  if (enableStateReconciliation) {
+    UnsharedShadowNode reconciledNode =
+        reconcileStateWithTree(newRootShadowNode.get(), oldRootShadowNode);
+    if (reconciledNode != nullptr) {
+      newRootShadowNode = std::make_shared<RootShadowNode>(
+          *reconciledNode, ShadowNodeFragment{});
+    }
+  }
+
+  // Layout nodes
   std::vector<LayoutableShadowNode const *> affectedLayoutableNodes{};
   affectedLayoutableNodes.reserve(1024);
 
   telemetry.willLayout();
-  newRootShadowNode->layout(&affectedLayoutableNodes);
+  newRootShadowNode->layoutIfNeeded(&affectedLayoutableNodes);
   telemetry.didLayout();
 
+  // Seal the shadow node so it can no longer be mutated
   newRootShadowNode->sealRecursive();
 
   auto revisionNumber = ShadowTreeRevision::Number{};
@@ -198,11 +213,22 @@ bool ShadowTree::tryCommit(ShadowTreeCommitTransaction transaction) const {
   mountingCoordinator_->push(
       ShadowTreeRevision{newRootShadowNode, revisionNumber, telemetry});
 
-  if (delegate_) {
-    delegate_->shadowTreeDidCommit(*this, mountingCoordinator_);
-  }
+  delegate_.shadowTreeDidFinishTransaction(*this, mountingCoordinator_);
 
   return true;
+}
+
+void ShadowTree::commitEmptyTree() const {
+  commit(
+      [](RootShadowNode::Shared const &oldRootShadowNode)
+          -> RootShadowNode::Unshared {
+        return std::make_shared<RootShadowNode>(
+            *oldRootShadowNode,
+            ShadowNodeFragment{
+                /* .props = */ ShadowNodeFragment::propsPlaceholder(),
+                /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
+            });
+      });
 }
 
 void ShadowTree::emitLayoutEvents(
@@ -226,16 +252,6 @@ void ShadowTree::emitLayoutEvents(
 
     viewEventEmitter.onLayout(layoutableNode->getLayoutMetrics());
   }
-}
-
-#pragma mark - Delegate
-
-void ShadowTree::setDelegate(ShadowTreeDelegate const *delegate) {
-  delegate_ = delegate;
-}
-
-ShadowTreeDelegate const *ShadowTree::getDelegate() const {
-  return delegate_;
 }
 
 } // namespace react

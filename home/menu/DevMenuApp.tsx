@@ -1,18 +1,20 @@
+import { ThemeProvider } from '@react-navigation/native';
 import React from 'react';
-import { ThemeContext } from 'react-navigation';
-import { AppRegistry, StyleSheet } from 'react-native';
+import { AppRegistry } from 'react-native';
 import { AppearanceProvider, useColorScheme } from 'react-native-appearance';
 
+import { ColorTheme } from '../constants/Colors';
+import Themes from '../constants/Themes';
+import LocalStorage from '../storage/LocalStorage';
 import DevMenuBottomSheet from './DevMenuBottomSheet';
 import DevMenuView from './DevMenuView';
-import LocalStorage from '../storage/LocalStorage';
 
-function useUserSettings(renderId): { preferredAppearance?: string } {
-  let [settings, setSettings] = React.useState({});
+function useUserSettings(renderId: string): { preferredAppearance?: string } {
+  const [settings, setSettings] = React.useState({});
 
   React.useEffect(() => {
     async function getUserSettings() {
-      let settings = await LocalStorage.getSettingsAsync();
+      const settings = await LocalStorage.getSettingsAsync();
       setSettings(settings);
     }
 
@@ -22,36 +24,34 @@ function useUserSettings(renderId): { preferredAppearance?: string } {
   return settings;
 }
 
-class DevMenuRoot extends React.PureComponent<any, any> {
-  render() {
-    return <DevMenuApp {...this.props} />;
-  }
-}
-
-function DevMenuApp(props) {
+function useAppColorScheme(uuid: string): ColorTheme {
   const colorScheme = useColorScheme();
-  const { preferredAppearance = 'no-preference' } = useUserSettings(props.uuid);
+  const { preferredAppearance = 'no-preference' } = useUserSettings(uuid);
 
   let theme = preferredAppearance === 'no-preference' ? colorScheme : preferredAppearance;
   if (theme === 'no-preference') {
     theme = 'light';
   }
+  return theme === 'light' ? ColorTheme.LIGHT : ColorTheme.DARK;
+}
 
+class DevMenuRoot extends React.PureComponent<{ task: { [key: string]: any }; uuid: string }, any> {
+  render() {
+    return <DevMenuApp {...this.props} />;
+  }
+}
+
+function DevMenuApp(props: { task: { [key: string]: any }; uuid: string }) {
+  const theme = useAppColorScheme(props.uuid);
   return (
-    <AppearanceProvider style={styles.rootView}>
+    <AppearanceProvider>
       <DevMenuBottomSheet uuid={props.uuid}>
-        <ThemeContext.Provider value={theme}>
+        <ThemeProvider value={Themes[theme]}>
           <DevMenuView {...props} />
-        </ThemeContext.Provider>
+        </ThemeProvider>
       </DevMenuBottomSheet>
     </AppearanceProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  rootView: {
-    flex: 1,
-  },
-});
 
 AppRegistry.registerComponent('HomeMenu', () => DevMenuRoot);

@@ -1,6 +1,8 @@
+import { Platform } from '@unimodules/core';
 import * as React from 'react';
 import { findDOMNode } from 'react-dom';
-import { createElement, PixelRatio, StyleSheet, View, } from 'react-native';
+import { PixelRatio, StyleSheet, View } from 'react-native';
+import createElement from 'react-native-web/dist/exports/createElement';
 function getElement(component) {
     try {
         return findDOMNode(component);
@@ -27,7 +29,8 @@ const CanvasWrapper = ({ pointerEvents, children, ...props }) => {
     const _canvasRef = React.useRef(null);
     function updateCanvasSize() {
         const canvas = _canvasRef.current;
-        if (canvas) {
+        // eslint-disable-next-line no-undef
+        if (typeof HTMLCanvasElement !== 'undefined' && canvas instanceof HTMLCanvasElement) {
             const size = getSize();
             const scale = PixelRatio.get();
             canvas.style.width = `${size.width}px`;
@@ -37,19 +40,23 @@ const CanvasWrapper = ({ pointerEvents, children, ...props }) => {
         }
     }
     function getSize() {
-        if (size)
+        if (size) {
             return size;
-        if (!ref.current)
+        }
+        else if (!ref.current || !Platform.isDOMAvailable) {
             return { width: 0, height: 0 };
+        }
         const element = getElement(ref.current);
         const { offsetWidth: width = 0, offsetHeight: height = 0 } = element;
         return { width, height };
     }
     function onLayout(event) {
         const { nativeEvent: { layout: { width, height }, }, } = event;
-        setSize({ width, height });
-        if (props.onLayout) {
-            props.onLayout(event);
+        if (width !== size?.width || height !== size.height) {
+            setSize({ width, height });
+            if (props.onLayout) {
+                props.onLayout(event);
+            }
         }
     }
     React.useEffect(() => {
@@ -67,10 +74,9 @@ const CanvasWrapper = ({ pointerEvents, children, ...props }) => {
         }
         setRef(props.canvasRef, canvas);
     }, [_canvasRef]);
-    return (<View {...props} pointerEvents="box-none" ref={ref} onLayout={onLayout}>
-      <Canvas ref={_canvasRef} pointerEvents={pointerEvents} style={StyleSheet.absoluteFill}/>
-      {children}
-    </View>);
+    return (React.createElement(View, Object.assign({}, props, { pointerEvents: "box-none", ref: ref, onLayout: onLayout }),
+        React.createElement(Canvas, { ref: _canvasRef, pointerEvents: pointerEvents, style: StyleSheet.absoluteFill }),
+        children));
 };
 export default CanvasWrapper;
 //# sourceMappingURL=Canvas.js.map

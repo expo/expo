@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.Looper;
 import android.util.Log;
 
@@ -16,6 +15,8 @@ import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.WritableMap;
 
 import androidx.annotation.Nullable;
+
+import expo.modules.updates.db.DatabaseHolder;
 import expo.modules.updates.db.Reaper;
 import expo.modules.updates.db.UpdatesDatabase;
 import expo.modules.updates.db.entity.AssetEntity;
@@ -23,10 +24,11 @@ import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.DatabaseLauncher;
 import expo.modules.updates.launcher.NoDatabaseLauncher;
 import expo.modules.updates.launcher.Launcher;
-import expo.modules.updates.launcher.SelectionPolicy;
-import expo.modules.updates.launcher.SelectionPolicyNewest;
-import expo.modules.updates.loader.EmbeddedLoader;
-import expo.modules.updates.loader.RemoteLoader;
+import expo.modules.updates.selectionpolicy.SelectionPolicy;
+import expo.modules.updates.loader.FileDownloader;
+import expo.modules.updates.loader.LoaderTask;
+import expo.modules.updates.manifest.Manifest;
+import expo.modules.updates.selectionpolicy.SelectionPolicyFactory;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -50,19 +52,20 @@ public class UpdatesController {
   private Exception mUpdatesDirectoryException;
   private Launcher mLauncher;
   private DatabaseHolder mDatabaseHolder;
-  private SelectionPolicy mSelectionPolicy;
+  private SelectionPolicy mSelectionPolicy = null;
+  private FileDownloader mFileDownloader;
+
+  private SelectionPolicy mDefaultSelectionPolicy;
 
   // launch conditions
-  private boolean mIsReadyToLaunch = false;
-  private boolean mTimeoutFinished = false;
-  private boolean mHasLaunched = false;
+  private boolean mIsLoaderTaskFinished = false;
   private boolean mIsEmergencyLaunch = false;
-  private HandlerThread mHandlerThread;
 
   private UpdatesController(Context context, UpdatesConfiguration updatesConfiguration) {
     mUpdatesConfiguration = updatesConfiguration;
     mDatabaseHolder = new DatabaseHolder(UpdatesDatabase.getInstance(context));
-    mSelectionPolicy = new SelectionPolicyNewest(UpdatesUtils.getRuntimeVersion(updatesConfiguration));
+    mDefaultSelectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(UpdatesUtils.getRuntimeVersion(mUpdatesConfiguration));
+    mFileDownloader = new FileDownloader(context);
     if (context instanceof ReactApplication) {
       mReactNativeHost = new WeakReference<>(((ReactApplication) context).getReactNativeHost());
     }
@@ -73,8 +76,6 @@ public class UpdatesController {
       mUpdatesDirectoryException = e;
       mUpdatesDirectory = null;
     }
-
-    mHandlerThread = new HandlerThread("expo-updates-timer");
   }
 
   public static UpdatesController getInstance() {
@@ -84,17 +85,21 @@ public class UpdatesController {
     return sInstance;
   }
 
+  public static void initializeWithoutStarting(Context context) {
+    if (sInstance == null) {
+      UpdatesConfiguration updatesConfiguration = new UpdatesConfiguration().loadValuesFromMetadata(context);
+      sInstance = new UpdatesController(context, updatesConfiguration);
+    }
+  }
+
   /**
    * Initializes the UpdatesController singleton. This should be called as early as possible in the
    * application's lifecycle.
    * @param context the base context of the application, ideally a {@link ReactApplication}
    */
   public static void initialize(Context context) {
-    if (sInstance == null) {
-      UpdatesConfiguration updatesConfiguration = new UpdatesConfiguration().loadValuesFromMetadata(context);
-      sInstance = new UpdatesController(context, updatesConfiguration);
-      sInstance.start(context);
-    }
+    initializeWithoutStarting(context);
+    sInstance.start(context);
   }
 
   /**
@@ -123,43 +128,6 @@ public class UpdatesController {
     mReactNativeHost = new WeakReference<>(reactNativeHost);
   }
 
-  // database
-
-  private class DatabaseHolder {
-    private UpdatesDatabase mDatabase;
-    private boolean isInUse = false;
-
-    public DatabaseHolder(UpdatesDatabase database) {
-      mDatabase = database;
-    }
-
-    public synchronized UpdatesDatabase getDatabase() {
-      while (isInUse) {
-        try {
-          wait();
-        } catch (InterruptedException e) {
-          Log.e(TAG, "Interrupted while waiting for database", e);
-        }
-      }
-
-      isInUse = true;
-      return mDatabase;
-    }
-
-    public synchronized void releaseDatabase() {
-      isInUse = false;
-      notify();
-    }
-  }
-
-  public UpdatesDatabase getDatabase() {
-    return mDatabaseHolder.getDatabase();
-  }
-
-  public void releaseDatabase() {
-    mDatabaseHolder.releaseDatabase();
-  }
-
   /**
    * Returns the path on disk to the launch asset (JS bundle) file for the React Native host to use.
    * Blocks until the configured timeout runs out, or a new update has been downloaded and is ready
@@ -170,15 +138,13 @@ public class UpdatesController {
    * fallback value to use.
    */
   public synchronized @Nullable String getLaunchAssetFile() {
-    while (!mIsReadyToLaunch || !mTimeoutFinished) {
+    while (!mIsLoaderTaskFinished) {
       try {
         wait();
       } catch (InterruptedException e) {
         Log.e(TAG, "Interrupted while waiting for launch asset file", e);
       }
     }
-
-    mHasLaunched = true;
 
     if (mLauncher == null) {
       return null;
@@ -212,7 +178,26 @@ public class UpdatesController {
     return mLauncher.getLocalAssetFiles();
   }
 
+  public boolean isUsingEmbeddedAssets() {
+    if (mLauncher == null) {
+      return true;
+    }
+    return mLauncher.isUsingEmbeddedAssets();
+  }
+
   // other getters
+
+  public DatabaseHolder getDatabaseHolder() {
+    return mDatabaseHolder;
+  }
+
+  public UpdatesDatabase getDatabase() {
+    return mDatabaseHolder.getDatabase();
+  }
+
+  public void releaseDatabase() {
+    mDatabaseHolder.releaseDatabase();
+  }
 
   public Uri getUpdateUrl() {
     return mUpdatesConfiguration.getUpdateUrl();
@@ -226,16 +211,62 @@ public class UpdatesController {
     return mUpdatesDirectory;
   }
 
+  public Exception getUpdatesDirectoryException() {
+    return mUpdatesDirectoryException;
+  }
+
   public UpdateEntity getLaunchedUpdate() {
+    if (mLauncher == null) {
+      return null;
+    }
     return mLauncher.getLaunchedUpdate();
   }
 
   public SelectionPolicy getSelectionPolicy() {
+    if (mSelectionPolicy == null) {
+      mSelectionPolicy = mDefaultSelectionPolicy;
+    }
     return mSelectionPolicy;
+  }
+
+  public FileDownloader getFileDownloader() {
+    return mFileDownloader;
   }
 
   public boolean isEmergencyLaunch() {
     return mIsEmergencyLaunch;
+  }
+
+  // internal setters
+
+  /**
+   * For external modules that want to modify the selection policy used at runtime.
+   *
+   * This method does not provide any guarantees about how long the provided selection policy will
+   * persist; sometimes expo-updates will reset the selection policy in situations where it makes
+   * sense to have explicit control (e.g. if the developer/user has programmatically fetched an
+   * update, expo-updates will reset the selection policy so the new update is launched on th
+   * next reload).
+   * @param selectionPolicy The SelectionPolicy to use next, until overridden by expo-updates
+   */
+  public void setNextSelectionPolicy(SelectionPolicy selectionPolicy) {
+    mSelectionPolicy = selectionPolicy;
+  }
+
+  public void resetSelectionPolicyToDefault() {
+    mSelectionPolicy = null;
+  }
+
+  public void setDefaultSelectionPolicy(SelectionPolicy selectionPolicy) {
+    mDefaultSelectionPolicy = selectionPolicy;
+  }
+
+  public void setLauncher(Launcher launcher) {
+    mLauncher = launcher;
+  }
+
+  public void setUpdatesConfiguration(UpdatesConfiguration updatesConfiguration) {
+    mUpdatesConfiguration = updatesConfiguration;
   }
 
   /**
@@ -246,132 +277,70 @@ public class UpdatesController {
    */
   public synchronized void start(final Context context) {
     if (!mUpdatesConfiguration.isEnabled()) {
-      mLauncher = new NoDatabaseLauncher(context);
+      mLauncher = new NoDatabaseLauncher(context, mUpdatesConfiguration);
+    }
+    if (mUpdatesConfiguration.getUpdateUrl() == null || mUpdatesConfiguration.getScopeKey() == null) {
+      throw new AssertionError("expo-updates is enabled, but no valid URL is configured in AndroidManifest.xml. If you are making a release build for the first time, make sure you have run `expo publish` at least once.");
     }
     if (mUpdatesDirectory == null) {
-      mLauncher = new NoDatabaseLauncher(context, mUpdatesDirectoryException);
+      mLauncher = new NoDatabaseLauncher(context, mUpdatesConfiguration, mUpdatesDirectoryException);
       mIsEmergencyLaunch = true;
     }
 
-    if (mLauncher != null) {
-      mIsReadyToLaunch = true;
-      mTimeoutFinished = true;
-      return;
-    }
-
-    if (mUpdatesConfiguration.getUpdateUrl() == null) {
-      throw new AssertionError("expo-updates is enabled, but no valid updateUrl is configured in AndroidManifest.xml. If you are making a release build for the first time, make sure you have run `expo publish` at least once.");
-    }
-
-    boolean shouldCheckForUpdate = UpdatesUtils.shouldCheckForUpdateOnLaunch(mUpdatesConfiguration, context);
-    int delay = getUpdatesConfiguration().getLaunchWaitMs();
-    if (delay > 0 && shouldCheckForUpdate) {
-      mHandlerThread.start();
-      new Handler(mHandlerThread.getLooper()).postDelayed(this::finishTimeout, delay);
-    } else {
-      mTimeoutFinished = true;
-    }
-
-    UpdatesDatabase database = getDatabase();
-    DatabaseLauncher launcher = new DatabaseLauncher(mUpdatesDirectory, mSelectionPolicy);
-    mLauncher = launcher;
-    if (mSelectionPolicy.shouldLoadNewUpdate(EmbeddedLoader.readEmbeddedManifest(context).getUpdateEntity(), launcher.getLaunchableUpdate(database))) {
-      new EmbeddedLoader(context, database, mUpdatesDirectory).loadEmbeddedUpdate();
-    }
-    launcher.launch(database, context, new Launcher.LauncherCallback() {
-      private void finish() {
-        releaseDatabase();
-        synchronized (UpdatesController.this) {
-          mIsReadyToLaunch = true;
-          UpdatesController.this.notify();
-        }
-      }
-
+    new LoaderTask(mUpdatesConfiguration, mDatabaseHolder, mUpdatesDirectory, mFileDownloader, getSelectionPolicy(), new LoaderTask.LoaderTaskCallback() {
       @Override
       public void onFailure(Exception e) {
-        mLauncher = new NoDatabaseLauncher(context, e);
+        mLauncher = new NoDatabaseLauncher(context, mUpdatesConfiguration, e);
         mIsEmergencyLaunch = true;
-        finish();
+        notifyController();
       }
 
       @Override
-      public void onSuccess() {
-        finish();
+      public boolean onCachedUpdateLoaded(UpdateEntity update) {
+        return true;
       }
-    });
 
-    if (shouldCheckForUpdate) {
-      AsyncTask.execute(() -> {
-        UpdatesDatabase db = getDatabase();
-        new RemoteLoader(context, db, mUpdatesDirectory)
-            .start(getUpdateUrl(), new RemoteLoader.LoaderCallback() {
-              @Override
-              public void onFailure(Exception e) {
-                Log.e(TAG, "Failed to download remote update", e);
-                releaseDatabase();
+      @Override
+      public void onRemoteManifestLoaded(Manifest manifest) { }
 
-                WritableMap params = Arguments.createMap();
-                params.putString("message", e.getMessage());
-                UpdatesUtils.sendEventToReactNative(mReactNativeHost, UPDATE_ERROR_EVENT, params);
+      @Override
+      public void onSuccess(Launcher launcher, boolean isUpToDate) {
+        mLauncher = launcher;
+        notifyController();
+      }
 
-                runReaper();
-              }
-
-              @Override
-              public void onSuccess(@Nullable UpdateEntity update) {
-                final DatabaseLauncher newLauncher = new DatabaseLauncher(mUpdatesDirectory, mSelectionPolicy);
-                newLauncher.launch(database, context, new Launcher.LauncherCallback() {
-                  @Override
-                  public void onFailure(Exception e) {
-                    releaseDatabase();
-                    finishTimeout();
-                    Log.e(TAG, "Loaded new update but it failed to launch", e);
-                  }
-
-                  @Override
-                  public void onSuccess() {
-                    releaseDatabase();
-
-                    boolean hasLaunched = mHasLaunched;
-                    if (!hasLaunched) {
-                      mLauncher = newLauncher;
-                    }
-
-                    finishTimeout();
-
-                    if (hasLaunched) {
-                      if (update == null) {
-                        UpdatesUtils.sendEventToReactNative(mReactNativeHost, UPDATE_NO_UPDATE_AVAILABLE_EVENT, null);
-                      } else {
-                        WritableMap params = Arguments.createMap();
-                        params.putString("manifestString", update.metadata.toString());
-                        UpdatesUtils.sendEventToReactNative(mReactNativeHost, UPDATE_AVAILABLE_EVENT, params);
-                      }
-                    }
-
-                    runReaper();
-                  }
-                });
-              }
-            });
-      });
-    } else {
-      runReaper();
-    }
+      @Override
+      public void onBackgroundUpdateFinished(LoaderTask.BackgroundUpdateStatus status, @Nullable UpdateEntity update, @Nullable Exception exception) {
+        if (status == LoaderTask.BackgroundUpdateStatus.ERROR) {
+          if (exception == null) {
+            throw new AssertionError("Background update with error status must have a nonnull exception object");
+          }
+          WritableMap params = Arguments.createMap();
+          params.putString("message", exception.getMessage());
+          UpdatesUtils.sendEventToReactNative(mReactNativeHost, UPDATE_ERROR_EVENT, params);
+        } else if (status == LoaderTask.BackgroundUpdateStatus.UPDATE_AVAILABLE) {
+          if (update == null) {
+            throw new AssertionError("Background update with error status must have a nonnull update object");
+          }
+          WritableMap params = Arguments.createMap();
+          params.putString("manifestString", update.manifest.toString());
+          UpdatesUtils.sendEventToReactNative(mReactNativeHost, UPDATE_AVAILABLE_EVENT, params);
+        } else if (status == LoaderTask.BackgroundUpdateStatus.NO_UPDATE_AVAILABLE) {
+          UpdatesUtils.sendEventToReactNative(mReactNativeHost, UPDATE_NO_UPDATE_AVAILABLE_EVENT, null);
+        }
+      }
+    }).start(context);
   }
 
-  private synchronized void finishTimeout() {
-    if (!mTimeoutFinished) {
-      mTimeoutFinished = true;
-      notify();
-    }
-    mHandlerThread.quitSafely();
+  private synchronized void notifyController() {
+    mIsLoaderTaskFinished = true;
+    notify();
   }
 
-  private void runReaper() {
+  public void runReaper() {
     AsyncTask.execute(() -> {
       UpdatesDatabase database = getDatabase();
-      Reaper.reapUnusedUpdates(database, mUpdatesDirectory, getLaunchedUpdate(), mSelectionPolicy);
+      Reaper.reapUnusedUpdates(mUpdatesConfiguration, database, mUpdatesDirectory, getLaunchedUpdate(), getSelectionPolicy());
       releaseDatabase();
     });
   }
@@ -386,7 +355,7 @@ public class UpdatesController {
     final String oldLaunchAssetFile = mLauncher.getLaunchAssetFile();
 
     UpdatesDatabase database = getDatabase();
-    final DatabaseLauncher newLauncher = new DatabaseLauncher(mUpdatesDirectory, mSelectionPolicy);
+    final DatabaseLauncher newLauncher = new DatabaseLauncher(mUpdatesConfiguration, mUpdatesDirectory, mFileDownloader, getSelectionPolicy());
     newLauncher.launch(database, context, new Launcher.LauncherCallback() {
       @Override
       public void onFailure(Exception e) {

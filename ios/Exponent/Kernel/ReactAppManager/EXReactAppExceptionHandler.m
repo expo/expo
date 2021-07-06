@@ -8,7 +8,6 @@
 #import "EXReactAppExceptionHandler.h"
 #import "EXUtil.h"
 
-#import <Crashlytics/Crashlytics.h>
 #import <React/RCTBridge.h>
 #import <React/RCTRedBox.h>
 
@@ -53,23 +52,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                    stack:(nullable NSArray<NSDictionary<NSString *, id> *> *)stack
                              exceptionId:(NSNumber *)exceptionId
 {
-  [[self _bridgeForRecord].redBox showErrorMessage:message withStack:stack];
+  // In RN 0.8 this was used to invoke the native red box errors (via `showErrorMessage`).
+  // The invocation has since been moved into the method that invokes this delegate method.
+  // https://github.com/facebook/react-native/commit/31b5b0ac010d44afe3e742e85c75a9ef9e72a9e0#diff-35e5d8a9e7e9ea80b2ccfd41b905b703
 }
 
 - (void)handleFatalJSExceptionWithMessage:(nullable NSString *)message
                                     stack:(nullable NSArray<NSDictionary<NSString *, id> *> *)stack
                               exceptionId:(NSNumber *)exceptionId
 {
-  [[self _bridgeForRecord].redBox showErrorMessage:message withStack:stack];
-
   NSString *description = [@"Unhandled JS Exception: " stringByAppendingString:message];
   NSDictionary *errorInfo = @{ NSLocalizedDescriptionKey: description, RCTJSStackTraceKey: stack };
   NSError *error = [NSError errorWithDomain:RCTErrorDomain code:0 userInfo:errorInfo];
 
-  [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:error forExperienceId:_appRecord.experienceId];
+  [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:error forScopeKey:_appRecord.scopeKey];
 
   if ([self _isProdHome]) {
-    [self _recordCrashlyticsExceptionFromMessage:message stack:stack];
     RCTFatal(error);
   }
 }
@@ -94,46 +92,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return NO;
   }
   return (_appRecord && _appRecord == [EXKernel sharedInstance].appRegistry.homeAppRecord);
-}
-
-- (void)_recordCrashlyticsExceptionFromMessage:(NSString *)message stack:(NSArray *)stack
-{
-  NSError *error;
-  NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^([a-z$_][a-z\\d$_]*):\\s*"
-                                                                         options:NSRegularExpressionCaseInsensitive
-                                                                           error:&error];
-  if (!regex) {
-    DDLogError(@"Error creating regular expression: %@", error.localizedDescription);
-    return;
-  }
-  
-  NSString *errorName;
-  NSString *errorReason;
-  NSTextCheckingResult *match = [regex firstMatchInString:message options:0 range:NSMakeRange(0, message.length)];
-  if (match) {
-    errorName = [message substringWithRange:[match rangeAtIndex:1]];
-    errorName = [message substringFromIndex:match.range.location + match.range.length];
-  } else {
-    errorName = @"UnknownError";
-    errorReason = message;
-  }
-  
-  NSMutableArray *frameArray = [NSMutableArray arrayWithCapacity:stack.count];
-  for (NSDictionary *frameInfo in stack) {
-    CLSStackFrame *frame = [CLSStackFrame stackFrame];
-    if ([frameInfo[@"file"] isKindOfClass:[NSString class]]) {
-      frame.fileName = frameInfo[@"file"];
-    }
-    if ([frameInfo[@"methodName"] isKindOfClass:[NSString class]]) {
-      frame.symbol = frameInfo[@"methodName"];
-    }
-    if ([frameInfo[@"lineNumber"] isKindOfClass:[NSNumber class]]) {
-      frame.lineNumber = (uint32_t)MAX([frameInfo[@"lineNumber"] integerValue], 0);
-    }
-    [frameArray addObject:frame];
-  }
-  
-  [[Crashlytics sharedInstance] recordCustomExceptionName:errorName reason:errorReason frameArray:frameArray];
 }
 
 @end

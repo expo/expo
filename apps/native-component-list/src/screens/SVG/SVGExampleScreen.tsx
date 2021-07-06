@@ -1,41 +1,43 @@
-import React from 'react';
-import { StyleSheet, ScrollView, Text, View } from 'react-native';
-import { NavigationScreenProps, NavigationScreenConfig } from 'react-navigation';
+import { StackScreenProps } from '@react-navigation/stack';
+import * as React from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import examples from './examples';
 
-export default class SVGExampleScreen extends React.Component<NavigationScreenProps> {
-  static navigationOptions: NavigationScreenConfig<{}> = ({ navigation }) => {
-    return {
-      title: navigation.getParam('title', 'An SVG Example'),
-    };
-  }
+type Links = { SVGExample: { title?: string; key: string } };
 
-  renderSample = (Sample: React.ComponentType & { title: string }, index: number) => (
+type Props = StackScreenProps<Links, 'SVGExample'>;
+
+export default function SVGExampleScreen(props: Props) {
+  React.useLayoutEffect(() => {
+    props.navigation.setOptions({
+      title: props.route.params.title ?? 'An SVG Example',
+    });
+  }, [props.navigation, props.route]);
+
+  const renderSample = (Sample: React.ComponentType & { title: string }, index: number) => (
     <View style={styles.example} key={`sample-${index}`}>
       <Text style={styles.sampleTitle}>{Sample.title}</Text>
       <Sample />
     </View>
-  )
+  );
 
-  renderNoExample = () => <Text>No example found.</Text>;
+  const renderNoExample = React.useCallback(() => <Text>No example found.</Text>, []);
 
-  renderContent = () => {
-    const example = examples[this.props.navigation.getParam('key')];
+  const renderContent = () => {
+    const example = examples[props.route.params.key];
     if (!example) {
-      return this.renderNoExample();
+      return renderNoExample();
     }
     const { samples } = example;
-    return samples.map(this.renderSample);
-  }
+    return samples.map(renderSample);
+  };
 
-  render() {
-    return (
-      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-        {this.renderContent()}
-      </ScrollView>
-    );
-  }
+  return (
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+      {renderContent()}
+    </ScrollView>
+  );
 }
 
 const styles = StyleSheet.create({

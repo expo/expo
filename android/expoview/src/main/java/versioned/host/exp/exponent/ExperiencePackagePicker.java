@@ -22,9 +22,11 @@ import expo.modules.calendar.CalendarPackage;
 import expo.modules.camera.CameraPackage;
 import expo.modules.cellular.CellularPackage;
 import expo.modules.errorrecovery.ErrorRecoveryPackage;
+import expo.modules.notifications.NotificationsPackage;
 import expo.modules.screenorientation.ScreenOrientationPackage;
 import expo.modules.imageloader.ImageLoaderPackage;
 import expo.modules.sharing.SharingPackage;
+import expo.modules.clipboard.ClipboardPackage;
 import expo.modules.constants.ConstantsPackage;
 import expo.modules.contacts.ContactsPackage;
 import expo.modules.crypto.CryptoPackage;
@@ -52,13 +54,17 @@ import expo.modules.network.NetworkPackage;
 import expo.modules.payments.stripe.StripePackage;
 import expo.modules.permissions.PermissionsPackage;
 import expo.modules.print.PrintPackage;
-import expo.modules.random.RandomPackage;
+import expo.modules.screencapture.ScreenCapturePackage;
 import expo.modules.securestore.SecureStorePackage;
 import expo.modules.sensors.SensorsPackage;
 import expo.modules.sms.SMSPackage;
 import expo.modules.speech.SpeechPackage;
+import expo.modules.splashscreen.SplashScreenPackage;
 import expo.modules.sqlite.SQLitePackage;
+import expo.modules.storereview.StoreReviewPackage;
 import expo.modules.taskManager.TaskManagerPackage;
+import expo.modules.updates.UpdatesPackage;
+import expo.modules.updates.manifest.raw.RawManifest;
 import expo.modules.videothumbnails.VideoThumbnailsPackage;
 import expo.modules.webbrowser.WebBrowserPackage;
 import expo.modules.device.DevicePackage;
@@ -78,6 +84,7 @@ public class ExperiencePackagePicker {
       new CalendarPackage(),
       new CameraPackage(),
       new CellularPackage(),
+      new ClipboardPackage(),
       new ConstantsPackage(),
       new ContactsPackage(),
       new CryptoPackage(),
@@ -105,19 +112,23 @@ public class ExperiencePackagePicker {
       new MailComposerPackage(),
       new MediaLibraryPackage(),
       new NetworkPackage(),
+      new NotificationsPackage(),
       new PermissionsPackage(),
       new PrintPackage(),
-      new RandomPackage(),
       new SMSPackage(),
+      new StoreReviewPackage(),
       new SQLitePackage(),
+      new ScreenCapturePackage(),
       new ScreenOrientationPackage(),
       new SecureStorePackage(),
       new SegmentPackage(),
       new SensorsPackage(),
       new SharingPackage(),
       new SpeechPackage(),
+      new SplashScreenPackage(),
       new StripePackage(),
       new TaskManagerPackage(),
+      new UpdatesPackage(),
       new VideoThumbnailsPackage(),
       new WebBrowserPackage()
   );
@@ -133,7 +144,7 @@ public class ExperiencePackagePicker {
    * Returns packages filtered based on the app's manifest.
    * For now, filtering is not applied but it is on the todo list.
    */
-  static List<Package> packages(JSONObject manifest) {
+  static List<Package> packages(RawManifest manifest) {
     return EXPO_MODULES_PACKAGES;
   }
 }

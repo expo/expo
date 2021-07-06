@@ -1,6 +1,6 @@
 import { EventEmitter, Subscription } from '@unimodules/core';
-import { DownloadOptions, DownloadResult, DownloadProgressCallback, DownloadProgressData, DownloadPauseState, FileInfo, EncodingType, ReadingOptions, WritingOptions, ProgressEvent } from './FileSystem.types';
-export { DownloadOptions, DownloadResult, DownloadProgressCallback, DownloadProgressData, DownloadPauseState, FileInfo, EncodingType, ReadingOptions, WritingOptions, ProgressEvent, };
+import { DownloadOptions, DownloadPauseState, DownloadProgressCallback, DownloadProgressData, DownloadResult, EncodingType, FileInfo, FileSystemAcceptedUploadHttpMethod, FileSystemDownloadResult, FileSystemRequestDirectoryPermissionsResult, FileSystemSessionType, FileSystemUploadOptions, FileSystemUploadResult, FileSystemUploadType, ProgressEvent, ReadingOptions, WritingOptions } from './FileSystem.types';
+export { DownloadOptions, DownloadPauseState, DownloadProgressCallback, DownloadProgressData, DownloadResult, EncodingType, FileInfo, FileSystemDownloadResult, FileSystemRequestDirectoryPermissionsResult, FileSystemAcceptedUploadHttpMethod, FileSystemSessionType, FileSystemUploadOptions, FileSystemUploadResult, FileSystemUploadType, ProgressEvent, ReadingOptions, WritingOptions, };
 export declare const documentDirectory: string | null;
 export declare const cacheDirectory: string | null;
 export declare const bundledAssets: string | null, bundleDirectory: string | null;
@@ -29,7 +29,8 @@ export declare function makeDirectoryAsync(fileUri: string, options?: {
 export declare function readDirectoryAsync(fileUri: string): Promise<string[]>;
 export declare function getFreeDiskStorageAsync(): Promise<number>;
 export declare function getTotalDiskCapacityAsync(): Promise<number>;
-export declare function downloadAsync(uri: string, fileUri: string, options?: DownloadOptions): Promise<DownloadResult>;
+export declare function downloadAsync(uri: string, fileUri: string, options?: DownloadOptions): Promise<FileSystemDownloadResult>;
+export declare function uploadAsync(url: string, fileUri: string, options?: FileSystemUploadOptions): Promise<FileSystemUploadResult>;
 export declare function createDownloadResumable(uri: string, fileUri: string, options?: DownloadOptions, callback?: DownloadProgressCallback, resumeData?: string): DownloadResumable;
 export declare class DownloadResumable {
     _uuid: string;
@@ -41,10 +42,25 @@ export declare class DownloadResumable {
     _subscription?: Subscription | null;
     _emitter: EventEmitter;
     constructor(url: string, fileUri: string, options?: DownloadOptions, callback?: DownloadProgressCallback, resumeData?: string);
-    downloadAsync(): Promise<DownloadResult | undefined>;
+    downloadAsync(): Promise<FileSystemDownloadResult | undefined>;
     pauseAsync(): Promise<DownloadPauseState>;
-    resumeAsync(): Promise<DownloadResult | undefined>;
+    resumeAsync(): Promise<FileSystemDownloadResult | undefined>;
     savable(): DownloadPauseState;
     _addSubscription(): void;
     _removeSubscription(): void;
+}
+/**
+ * Android only
+ */
+export declare namespace StorageAccessFramework {
+    function getUriForDirectoryInRoot(folderName: string): string;
+    function requestDirectoryPermissionsAsync(initialFileUrl?: string | null): Promise<FileSystemRequestDirectoryPermissionsResult>;
+    function readDirectoryAsync(dirUri: string): Promise<string[]>;
+    function makeDirectoryAsync(parentUri: string, dirName: string): Promise<string>;
+    function createFileAsync(parentUri: string, fileName: string, mimeType: string): Promise<string>;
+    const writeAsStringAsync: typeof import("./FileSystem").writeAsStringAsync;
+    const readAsStringAsync: typeof import("./FileSystem").readAsStringAsync;
+    const deleteAsync: typeof import("./FileSystem").deleteAsync;
+    const moveAsync: typeof import("./FileSystem").moveAsync;
+    const copyAsync: typeof import("./FileSystem").copyAsync;
 }

@@ -1,0 +1,100 @@
+diff --git a/android/app/build.gradle b/android/app/build.gradle
+index e5b1a7d..d06dfd0 100644
+--- a/android/app/build.gradle
++++ b/android/app/build.gradle
+@@ -81,10 +81,11 @@ import com.android.build.OutputFile
+ project.ext.react = [
+     enableHermes: false,  // clean and rebuild if changing
+ ]
+ 
+ apply from: "../../node_modules/react-native/react.gradle"
++apply from: "../../node_modules/expo-updates/scripts/create-manifest-android.gradle"
+ 
+ /**
+  * Set this to true to create two separate APKs instead of one:
+  *   - An APK that only works on ARM devices
+  *   - An APK that only works on x86 devices
+diff --git a/android/app/src/main/AndroidManifest.xml b/android/app/src/main/AndroidManifest.xml
+index 955757b..3fa4cb1 100644
+--- a/android/app/src/main/AndroidManifest.xml
++++ b/android/app/src/main/AndroidManifest.xml
+@@ -8,12 +8,15 @@
+       android:label="@string/app_name"
+       android:icon="@mipmap/ic_launcher"
+       android:roundIcon="@mipmap/ic_launcher_round"
+       android:allowBackup="false"
+       android:theme="@style/AppTheme">
++      <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="https://exp.host/@my-expo-username/my-app" />
++      <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="38.0.0" />
++
+  <activity
+        android:name=".MainActivity"
+         android:label="@string/app_name"
+         android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
+         android:launchMode="singleTask"
+         android:windowSoftInputMode="adjustResize">
+         <intent-filter>
+diff --git a/android/app/src/main/java/com/myapp/MainApplication.java b/android/app/src/main/java/com/myapp/MainApplication.java
+index 0151e90..48cc96c 100644
+--- a/android/app/src/main/java/com/myapp/MainApplication.java
++++ b/android/app/src/main/java/com/myapp/MainApplication.java
+@@ -17,10 +17,14 @@ import java.util.Arrays;
+ 
+ import org.unimodules.adapters.react.ModuleRegistryAdapter;
+ import org.unimodules.adapters.react.ReactModuleRegistryProvider;
+ import org.unimodules.core.interfaces.SingletonModule;
+ 
++import android.net.Uri;
++import expo.modules.updates.UpdatesController;
++import javax.annotation.Nullable;
++
+ public class MainApplication extends Application implements ReactApplication {
+   private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(new BasePackageList().getPackageList(), null);
+ 
+   private final ReactNativeHost mReactNativeHost =
+       new ReactNativeHost(this) {
+@@ -46,10 +50,28 @@ public class MainApplication extends Application implements ReactApplication {
+ 
+         @Override
+         protected String getJSMainModuleName() {
+           return "index";
+         }
++
++        @Override
++        protected @Nullable String getJSBundleFile() {
++          if (BuildConfig.DEBUG) {
++            return super.getJSBundleFile();
++          } else {
++            return UpdatesController.getInstance().getLaunchAssetFile();
++          }
++        }
++
++        @Override
++        protected @Nullable String getBundleAssetName() {
++          if (BuildConfig.DEBUG) {
++            return super.getBundleAssetName();
++          } else {
++            return UpdatesController.getInstance().getBundleAssetName();
++          }
++        }
+       };
+ 
+   @Override
+   public ReactNativeHost getReactNativeHost() {
+     return mReactNativeHost;
+@@ -57,10 +79,15 @@ public class MainApplication extends Application implements ReactApplication {
+ 
+   @Override
+   public void onCreate() {
+     super.onCreate();
+     SoLoader.init(this, /* native exopackage */ false);
++
++    if (!BuildConfig.DEBUG) {
++      UpdatesController.initialize(this);
++    }
++
+     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+   }
+ 
+   /**
+    * Loads Flipper in React Native templates. Call this in the onCreate method with something like

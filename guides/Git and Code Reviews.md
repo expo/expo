@@ -19,7 +19,7 @@
 
 # Git
 
-Expo’s code is stored in Git repositories, including the Expo client repository. We generally develop on feature branches and then rebase those commits on top of the “master” branch. All of the Git repositories keep a linear history, which makes it easier to read the history, bisect issues, and revert commits.
+Expo’s code is stored in Git repositories, including the Expo platform repository. We generally develop on feature branches and then rebase those commits on top of the “master” branch. All of the Git repositories keep a linear history, which makes it easier to read the history, bisect issues, and revert commits.
 
 ## “master” is green
 
@@ -63,6 +63,8 @@ On larger projects, send PRs and land them on master often. This makes each PR e
 ## Squash before pushing
 
 If you have more than one commit, squash them together before pushing if they are all part of the same idea. For example, commits that fix small bugs or address code review feedback usually should be squashed in the same commit. This makes it easier to read our commit log and revert commits. If some groups of your commits make more sense in isolation, then keep them separate.
+
+**However, GitHub doesn't gracefully handle squashed commits when updating PRs.** Specifically, GitHub doesn't show the diff between old and new squashed commits; it expects you to add new commits to a PR instead of squashing them back into the original commit. So after the first round of code review, it often helps reviewability to squash just the new commits together and to keep them separate from the original squashed commit. Finally, after your PR has been approved, squash all of your commits before merging your PR so that the commit history stays clean.
 
 ## Code behind feature flags
 

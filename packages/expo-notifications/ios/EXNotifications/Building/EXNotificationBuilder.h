@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol EXNotificationBuilder
 
-- (UNNotificationContent *)notificationContentFromRequest:(NSDictionary *)request;
+- (UNMutableNotificationContent *)notificationContentFromRequest:(NSDictionary *)request;
 
 @end
 

@@ -1,31 +1,35 @@
+import { EventSubscription } from 'fbemitter';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Appearance, ColorSchemeName, AppearanceListener } from 'react-native-appearance';
+import { Appearance, ColorSchemeName } from 'react-native-appearance';
 
 interface State {
   colorScheme: ColorSchemeName;
 }
 
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
 export default class AppearanceScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: 'Appearance',
   };
 
-  subscription: AppearanceListener;
+  subscription?: EventSubscription;
 
   state: State = {
     colorScheme: Appearance.getColorScheme(),
   };
 
   componentDidMount() {
-    this.subscription = Appearance.addChangeListener(({ colorScheme }: { colorScheme: ColorSchemeName }) => {
-      this.setState({ colorScheme });
-    });
+    this.subscription = Appearance.addChangeListener(
+      ({ colorScheme }: { colorScheme: ColorSchemeName }) => {
+        this.setState({ colorScheme });
+      }
+    );
   }
 
   componentWillUnmount() {
-    this.subscription.remove();
-    this.subscription = null;
+    if (this.subscription) this.subscription.remove();
   }
 
   render() {
@@ -36,10 +40,8 @@ export default class AppearanceScreen extends React.Component<{}, State> {
       <View style={[styles.screen, isDark ? styles.darkScreen : styles.lightScreen]}>
         <Text style={isDark ? styles.darkText : styles.lightText}>
           {`Current color scheme: `}
-          
-          <Text style={styles.boldText}>
-            {this.state.colorScheme}
-          </Text>
+
+          <Text style={styles.boldText}>{this.state.colorScheme}</Text>
         </Text>
       </View>
     );

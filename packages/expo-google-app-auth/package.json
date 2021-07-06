@@ -1,6 +1,6 @@
 {
   "name": "expo-google-app-auth",
-  "version": "8.1.0",
+  "version": "8.2.0",
   "description": "Provides a wrapper around expo-app-auth for Google sign in.",
   "main": "build/Google.js",
   "types": "build/Google.d.ts",
@@ -31,22 +31,12 @@
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/google/",
   "jest": {
-    "preset": "expo-module-scripts/ios"
-  },
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*",
-    "expo-constants": "*"
-  },
-  "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
+    "preset": "expo-module-scripts"
   },
   "devDependencies": {
-    "expo-module-scripts": "~1.2.0",
-    "babel-preset-expo": "~8.1.0"
+    "expo-module-scripts": "^2.0.0"
   },
   "dependencies": {
-    "expo-app-auth": "~9.0.0"
-  },
-  "gitHead": "3ad68bbd9847ebc8a55272c263b17d998a92f64f"
+    "expo-app-auth": "~10.2.0"
+  }
 }

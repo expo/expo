@@ -1,11 +1,11 @@
 ---
 title: Magnetometer
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-sensors'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-sensors'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+import SnackInline from '~/components/plugins/SnackInline';
 
 `Magnetometer` from **`expo-sensors`** provides access to the device magnetometer sensor(s) to respond to and measure the changes in the magnetic field. You can access the calibrated values with `Magnetometer.` and uncalibrated raw values with `MagnetometerUncalibrated`.
 
@@ -15,13 +15,118 @@ import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
 <InstallSection packageName="expo-sensors" />
 
+## Usage
+
+<SnackInline label='Magnetometer' dependencies={['expo-sensors']}>
+
+```jsx
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Magnetometer } from 'expo-sensors';
+
+export default function Compass() {
+  const [data, setData] = useState({
+    x: 0,
+    y: 0,
+    z: 0,
+  });
+  const [subscription, setSubscription] = useState(null);
+
+  const _slow = () => {
+    Magnetometer.setUpdateInterval(1000);
+  };
+
+  const _fast = () => {
+    Magnetometer.setUpdateInterval(16);
+  };
+
+  const _subscribe = () => {
+    setSubscription(
+      Magnetometer.addListener(result => {
+        setData(result);
+      })
+    );
+  };
+
+  const _unsubscribe = () => {
+    subscription && subscription.remove();
+    setSubscription(null);
+  };
+
+  useEffect(() => {
+    _subscribe();
+    return () => _unsubscribe();
+  }, []);
+
+  const { x, y, z } = data;
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>Magnetometer:</Text>
+      <Text style={styles.text}>
+        x: {round(x)} y: {round(y)} z: {round(z)}
+      </Text>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity onPress={subscription ? _unsubscribe : _subscribe} style={styles.button}>
+          <Text>{subscription ? 'On' : 'Off'}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={_slow} style={[styles.button, styles.middleButton]}>
+          <Text>Slow</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={_fast} style={styles.button}>
+          <Text>Fast</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+/* @hide function round() { ... } */
+function round(n) {
+  if (!n) {
+    return 0;
+  }
+  return Math.floor(n * 100) / 100;
+}
+/* @end */
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 10,
+  },
+  text: {
+    textAlign: 'center',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    marginTop: 15,
+  },
+  button: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#eee',
+    padding: 10,
+  },
+  middleButton: {
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    borderColor: '#ccc',
+  },
+});
+/* @end */
+```
+
+</SnackInline>
+
 ## API
 
 ```js
 import { Magnetometer } from 'expo-sensors';
 ```
-
-<TableOfContentSection title='Methods' contents={['Magnetometer.isAvailableAsync()', 'Magnetometer.addListener(listener)', 'Magnetometer.removeAllListeners()', 'Magnetometer.setUpdateInterval(intervalMs)']} />
 
 ## Methods
 
@@ -49,7 +154,7 @@ Subscribe for updates to the Magnetometer.
 
 - **listener (_function_)** -- A callback that is invoked when an
   Magnetometer update is available. When invoked, the listener is
-  provided a single argumument that is an object containing keys x, y,
+  provided a single argument that is an object containing keys x, y,
   z.
 
 #### Returns
@@ -69,112 +174,3 @@ Subscribe for updates to the Magnetometer.
 
 - **intervalMs (_number_)** Desired interval in milliseconds between
   Magnetometer updates.
-
-#### Example: basic subscription
-
-```javascript
-import React from 'react';
-import { Magnetometer } from 'expo-sensors';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-
-export default class MagnetometerSensor extends React.Component {
-  state = {
-    MagnetometerData: {},
-  };
-
-  componentDidMount() {
-    this._toggle();
-  }
-
-  componentWillUnmount() {
-    this._unsubscribe();
-  }
-
-  _toggle = () => {
-    if (this._subscription) {
-      this._unsubscribe();
-    } else {
-      this._subscribe();
-    }
-  };
-
-  _slow = () => {
-    Magnetometer.setUpdateInterval(1000);
-  };
-
-  _fast = () => {
-    Magnetometer.setUpdateInterval(16);
-  };
-
-  _subscribe = () => {
-    this._subscription = Magnetometer.addListener(result => {
-      this.setState({ MagnetometerData: result });
-    });
-  };
-
-  _unsubscribe = () => {
-    this._subscription && this._subscription.remove();
-    this._subscription = null;
-  };
-
-  render() {
-    let { x, y, z } = this.state.MagnetometerData;
-
-    return (
-      <View style={styles.sensor}>
-        <Text>Magnetometer:</Text>
-        <Text>
-          x: {round(x)} y: {round(y)} z: {round(z)}
-        </Text>
-
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity onPress={this._toggle} style={styles.button}>
-            <Text>Toggle</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={this._slow} style={[styles.button, styles.middleButton]}>
-            <Text>Slow</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={this._fast} style={styles.button}>
-            <Text>Fast</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  }
-}
-
-function round(n) {
-  if (!n) {
-    return 0;
-  }
-
-  return Math.floor(n * 100) / 100;
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    alignItems: 'stretch',
-    marginTop: 15,
-  },
-  button: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#eee',
-    padding: 10,
-  },
-  middleButton: {
-    borderLeftWidth: 1,
-    borderRightWidth: 1,
-    borderColor: '#ccc',
-  },
-  sensor: {
-    marginTop: 15,
-    paddingHorizontal: 10,
-  },
-});
-```

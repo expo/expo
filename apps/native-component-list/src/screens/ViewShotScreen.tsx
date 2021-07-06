@@ -1,20 +1,11 @@
-import React from 'react';
+import { Platform } from '@unimodules/core';
 import { LinearGradient } from 'expo-linear-gradient';
-import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  ScrollView,
-  Dimensions,
-} from 'react-native';
-import { captureScreen } from 'react-native-view-shot';
-import { captureRef as takeSnapshotAsync } from 'react-native-view-shot';
-
 import * as MediaLibrary from 'expo-media-library';
 import * as Permissions from 'expo-permissions';
+import React from 'react';
+import { Dimensions, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { captureRef as takeSnapshotAsync, captureScreen } from 'react-native-view-shot';
 
-import { Platform } from '@unimodules/core';
 import Button from '../components/Button';
 
 // Source: https://codepen.io/zessx/pen/rDEAl <3
@@ -25,6 +16,8 @@ interface State {
   screenUri?: string;
 }
 
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
 export default class ViewShotScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: 'ViewShot',
@@ -35,7 +28,7 @@ export default class ViewShotScreen extends React.Component<{}, State> {
 
   handleRef = (ref: View) => {
     this.view = ref;
-  }
+  };
 
   handlePress = async () => {
     try {
@@ -48,12 +41,12 @@ export default class ViewShotScreen extends React.Component<{}, State> {
     } catch (e) {
       console.error(e);
     }
-  }
+  };
 
   handleScreenCapturePress = async () => {
     if (Platform.OS === 'web') {
       try {
-        const screenUri = await takeSnapshotAsync(undefined as unknown as number, {
+        const screenUri = await takeSnapshotAsync((undefined as unknown) as number, {
           format: 'jpg',
           quality: 0.8,
           result: 'data-uri',
@@ -69,47 +62,38 @@ export default class ViewShotScreen extends React.Component<{}, State> {
       quality: 0.8,
     });
     this.setState({ screenUri: uri });
-  }
+  };
 
   handleAddToMediaLibraryPress = async () => {
     const uri = this.state.screenUri;
 
     if (uri) {
-      const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+      const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
 
       if (status === 'granted') {
         await MediaLibrary.createAssetAsync(uri);
         alert('Successfully added captured screen to media library');
       } else {
-        alert('Camera roll permissions not granted');
+        alert('Media library permissions not granted');
       }
     }
-  }
+  };
 
   render() {
     const imageSource = { uri: this.state.image };
     return (
       <ScrollView contentContainerStyle={{ alignItems: 'center' }}>
-        <View
-          style={styles.snapshotContainer}
-          ref={this.handleRef}
-          collapsable={false}
-        >
+        <View style={styles.snapshotContainer} ref={this.handleRef} collapsable={false}>
           <LinearGradient
             colors={gradientColors}
             style={styles.gradient}
             start={[0, 0]}
-            end={[0, 1]}
-          >
+            end={[0, 1]}>
             <Image style={styles.snapshot} source={imageSource} />
             <Text style={styles.text}>Snapshot will show above</Text>
           </LinearGradient>
         </View>
-        <Button
-          style={styles.button}
-          onPress={this.handlePress}
-          title="TAKE THE (SNAP)SHOT!"
-        />
+        <Button style={styles.button} onPress={this.handlePress} title="TAKE THE (SNAP)SHOT!" />
         <Button
           style={styles.button}
           onPress={this.handleScreenCapturePress}

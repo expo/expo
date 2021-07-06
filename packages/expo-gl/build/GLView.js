@@ -1,7 +1,7 @@
-import { NativeModulesProxy, UnavailabilityError, requireNativeViewManager, } from '@unimodules/core';
-import PropTypes from 'prop-types';
+import { NativeModulesProxy, UnavailabilityError, requireNativeViewManager, CodedError, } from '@unimodules/core';
 import * as React from 'react';
-import { Platform, View, ViewPropTypes, findNodeHandle } from 'react-native';
+import { Platform, View, findNodeHandle } from 'react-native';
+import { configureLogging } from './GLUtils';
 const packageJSON = require('../package.json');
 const { ExponentGLObjectManager, ExponentGLViewManager } = NativeModulesProxy;
 const NativeView = requireNativeViewManager('ExponentGLView');
@@ -41,16 +41,15 @@ export class GLView extends React.Component {
     render() {
         const { onContextCreate, // eslint-disable-line no-unused-vars
         msaaSamples, ...viewProps } = this.props;
-        return (<View {...viewProps}>
-        <NativeView ref={this._setNativeRef} style={{
-            flex: 1,
-            ...(Platform.OS === 'ios'
-                ? {
-                    backgroundColor: 'transparent',
-                }
-                : {}),
-        }} onSurfaceCreate={this._onSurfaceCreate} msaaSamples={Platform.OS === 'ios' ? msaaSamples : undefined}/>
-      </View>);
+        return (React.createElement(View, Object.assign({}, viewProps),
+            React.createElement(NativeView, { ref: this._setNativeRef, style: {
+                    flex: 1,
+                    ...(Platform.OS === 'ios'
+                        ? {
+                            backgroundColor: 'transparent',
+                        }
+                        : {}),
+                }, onSurfaceCreate: this._onSurfaceCreate, msaaSamples: Platform.OS === 'ios' ? msaaSamples : undefined })));
     }
     async startARSessionAsync() {
         if (!ExponentGLViewManager.startARSessionAsync) {
@@ -84,12 +83,6 @@ export class GLView extends React.Component {
         return await GLView.takeSnapshotAsync(exglCtxId, options);
     }
 }
-GLView.propTypes = {
-    onContextCreate: PropTypes.func,
-    msaaSamples: PropTypes.number,
-    nativeRef_EXPERIMENTAL: PropTypes.func,
-    ...ViewPropTypes,
-};
 GLView.defaultProps = {
     msaaSamples: 4,
 };
@@ -108,7 +101,7 @@ export class WebGLObject {
         this.id = id; // Native GL object id
     }
     toString() {
-        return `[WebGLObject ${this.id}]`;
+        return `[${this.constructor.name} ${this.id}]`;
     }
 }
 const wrapObject = (type, id) => {
@@ -135,15 +128,24 @@ class WebGLUniformLocation {
     constructor(id) {
         this.id = id; // Native GL object id
     }
+    toString() {
+        return `[${this.constructor.name} ${this.id}]`;
+    }
 }
 class WebGLActiveInfo {
     constructor(obj) {
         Object.assign(this, obj);
     }
+    toString() {
+        return `[${this.constructor.name} ${JSON.stringify(this)}]`;
+    }
 }
 class WebGLShaderPrecisionFormat {
     constructor(obj) {
         Object.assign(this, obj);
+    }
+    toString() {
+        return `[${this.constructor.name} ${JSON.stringify(this)}]`;
     }
 }
 // WebGL2 classes
@@ -328,6 +330,9 @@ const wrapMethods = gl => {
 };
 // Get the GL interface from an EXGLContextID and do JS-side setup
 const getGl = (exglCtxId) => {
+    if (!global.__EXGLContexts) {
+        throw new CodedError('ERR_GL_NOT_AVAILABLE', 'GL is currently not available. (Have you enabled remote debugging? GL is not available while debugging remotely.)');
+    }
     const gl = global.__EXGLContexts[exglCtxId];
     gl.__exglCtxId = exglCtxId;
     delete global.__EXGLContexts[exglCtxId];
@@ -353,42 +358,7 @@ const getGl = (exglCtxId) => {
     const viewport = gl.getParameter(gl.VIEWPORT);
     gl.drawingBufferWidth = viewport[2];
     gl.drawingBufferHeight = viewport[3];
-    // Enable/disable logging of all GL function calls
-    let enableLogging = false;
-    // $FlowIssue: Flow wants a "value" field
-    Object.defineProperty(gl, 'enableLogging', {
-        configurable: true,
-        get() {
-            return enableLogging;
-        },
-        set(enable) {
-            if (enable === enableLogging) {
-                return;
-            }
-            if (enable) {
-                Object.keys(gl).forEach(key => {
-                    if (typeof gl[key] === 'function') {
-                        const original = gl[key];
-                        gl[key] = (...args) => {
-                            console.log(`EXGL: ${key}(${args.join(', ')})`);
-                            const r = original.apply(gl, args);
-                            console.log(`EXGL:    = ${r}`);
-                            return r;
-                        };
-                        gl[key].original = original;
-                    }
-                });
-            }
-            else {
-                Object.keys(gl).forEach(key => {
-                    if (typeof gl[key] === 'function' && gl[key].original) {
-                        gl[key] = gl[key].original;
-                    }
-                });
-            }
-            enableLogging = enable;
-        },
-    });
+    configureLogging(gl);
     return gl;
 };
 const getContextId = (exgl) => {

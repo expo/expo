@@ -34,7 +34,7 @@ export default class Image extends React.Component {
         const { style, resizeMode: resizeModeProp, ...restProps } = this.props;
         const { resizeMode: resizeModeStyle, ...restStyle } = StyleSheet.flatten([style]) || {};
         const resizeMode = resizeModeProp ?? resizeModeStyle ?? DEFAULT_RESIZE_MODE;
-        return (<ExpoImage {...restProps} style={restStyle} resizeMode={resizeMode} onLoad={this.state.onLoad} onError={this.state.onError}/>);
+        return (React.createElement(ExpoImage, Object.assign({}, restProps, { style: restStyle, resizeMode: resizeMode, onLoad: this.state.onLoad, onError: this.state.onError })));
     }
 }
 //# sourceMappingURL=Image.js.map

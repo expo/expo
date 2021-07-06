@@ -15,6 +15,8 @@ RCT_EXPORT_VIEW_PROPERTY(orientation, UIPageViewControllerNavigationOrientation)
 RCT_EXPORT_VIEW_PROPERTY(onPageSelected, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPageScroll, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPageScrollStateChanged, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(overdrag, BOOL)
+
 
 - (void) goToPage
                   : (nonnull NSNumber *)reactTag index
@@ -28,7 +30,7 @@ RCT_EXPORT_VIEW_PROPERTY(onPageScrollStateChanged, RCTDirectEventBlock)
             RCTLogError(@"Cannot find ReactNativePageView with tag #%@", reactTag);
             return;
         }
-        [view goTo:index animated:animated];
+        [view goTo:index.integerValue animated:animated];
     }];
 }
 

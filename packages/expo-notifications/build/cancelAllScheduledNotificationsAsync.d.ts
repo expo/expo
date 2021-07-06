@@ -1,1 +1,1 @@
-export default function cancelScheduledNotificationAsync(): Promise<void>;
+export default function cancelAllScheduledNotificationsAsync(): Promise<void>;

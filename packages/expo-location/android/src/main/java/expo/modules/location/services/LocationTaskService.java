@@ -48,7 +48,7 @@ public class LocationTaskService extends Service {
       mChannelId = extras.getString("appId") + ":" + extras.getString("taskName");
     }
 
-    return START_STICKY;
+    return START_REDELIVER_INTENT;
   }
 
   public void setParentContext(Context context) {
@@ -60,6 +60,12 @@ public class LocationTaskService extends Service {
   public void stop() {
     stopForeground(true);
     stopSelf();
+  }
+
+  @Override
+  public void onTaskRemoved(Intent rootIntent) {
+    super.onTaskRemoved(rootIntent);
+    stop();
   }
 
   public void startForeground(Bundle serviceOptions) {

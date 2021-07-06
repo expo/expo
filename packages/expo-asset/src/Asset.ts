@@ -3,8 +3,8 @@ import { Platform } from '@unimodules/core';
 import { getAssetByID } from './AssetRegistry';
 import * as AssetSources from './AssetSources';
 import * as AssetUris from './AssetUris';
-import { getEmbeddedAssetUri } from './EmbeddedAssets';
 import * as ImageAssets from './ImageAssets';
+import { getLocalAssetUri } from './LocalAssets';
 import { downloadAsync, IS_ENV_WITH_UPDATES_ENABLED } from './PlatformUtils';
 import resolveAssetSource from './resolveAssetSource';
 
@@ -53,7 +53,7 @@ export class Asset {
     }
 
     if (hash) {
-      this.localUri = getEmbeddedAssetUri(hash, type);
+      this.localUri = getLocalAssetUri(hash, type);
       if (this.localUri) {
         this.downloaded = true;
       }
@@ -69,7 +69,7 @@ export class Asset {
     }
   }
 
-  static loadAsync(moduleId: number | number[]): Promise<void[]> {
+  static loadAsync(moduleId: number | number[] | string | string[]): Promise<Asset[]> {
     const moduleIds = Array.isArray(moduleId) ? moduleId : [moduleId];
     return Promise.all(moduleIds.map(moduleId => Asset.fromModule(moduleId).downloadAsync()));
   }
@@ -160,15 +160,15 @@ export class Asset {
     return asset;
   }
 
-  async downloadAsync(): Promise<void> {
+  async downloadAsync(): Promise<this> {
     if (this.downloaded) {
-      return;
+      return this;
     }
     if (this.downloading) {
       await new Promise((resolve, reject) => {
         this._downloadCallbacks.push({ resolve, reject });
       });
-      return;
+      return this;
     }
     this.downloading = true;
 
@@ -194,5 +194,6 @@ export class Asset {
       this.downloading = false;
       this._downloadCallbacks = [];
     }
+    return this;
   }
 }

@@ -4,8 +4,13 @@
 
 #import "EXAnalytics.h"
 #import "EXAppLoader.h"
-#import "EXAppLoadingView.h"
 #import "EXAppViewController.h"
+#import "EXAppLoadingProgressWindowController.h"
+#import "EXAppLoadingCancelView.h"
+#import "EXManagedAppSplashScreenViewProvider.h"
+#import "EXManagedAppSplashScreenConfigurationBuilder.h"
+#import "EXManagedAppSplashScreenViewController.h"
+#import "EXHomeAppSplashScreenViewProvider.h"
 #import "EXEnvironment.h"
 #import "EXErrorRecoveryManager.h"
 #import "EXErrorView.h"
@@ -17,13 +22,25 @@
 #import "EXVersions.h"
 #import "EXUpdatesManager.h"
 #import "EXUtil.h"
-#import <UMCore/UMModuleRegistryProvider.h>
+
+#import <EXSplashScreen/EXSplashScreenService.h>
+#import <React/RCTUtils.h>
+#import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
 #if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
 #import <EXScreenOrientation/EXScreenOrientationRegistry.h>
 #endif
 
-#import <React/RCTUtils.h>
+#import <React/RCTAppearance.h>
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI42_0_0React/ABI42_0_0RCTAppearance.h>)
+#import <ABI42_0_0React/ABI42_0_0RCTAppearance.h>
+#endif
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI41_0_0React/ABI41_0_0RCTAppearance.h>)
+#import <ABI41_0_0React/ABI41_0_0RCTAppearance.h>
+#endif
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI40_0_0React/ABI40_0_0RCTAppearance.h>)
+#import <ABI40_0_0React/ABI40_0_0RCTAppearance.h>
+#endif
 
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
 
@@ -39,17 +56,40 @@ const CGFloat kEXDevelopmentErrorCoolDownSeconds = 0.1;
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXAppViewController ()
-  <EXReactAppManagerUIDelegate, EXAppLoaderDelegate, EXErrorViewDelegate>
+  <EXReactAppManagerUIDelegate, EXAppLoaderDelegate, EXErrorViewDelegate, EXAppLoadingCancelViewDelegate>
 
 @property (nonatomic, assign) BOOL isLoading;
 @property (nonatomic, assign) BOOL isBridgeAlreadyLoading;
 @property (nonatomic, weak) EXKernelAppRecord *appRecord;
-@property (nonatomic, strong) EXAppLoadingView *loadingView;
 @property (nonatomic, strong) EXErrorView *errorView;
 @property (nonatomic, assign) UIInterfaceOrientationMask supportedInterfaceOrientations; // override super
 @property (nonatomic, strong) NSTimer *tmrAutoReloadDebounce;
 @property (nonatomic, strong) NSDate *dtmLastFatalErrorShown;
 @property (nonatomic, strong) NSMutableArray<UIViewController *> *backgroundedControllers;
+
+@property (nonatomic, assign) BOOL isStandalone;
+@property (nonatomic, assign) BOOL isHomeApp;
+
+/*
+ * Controller for handling all messages from bundler/fetcher.
+ * It shows another UIWindow with text and percentage progress.
+ * Enabled only in managed workflow or home when in development mode.
+ * It should appear once manifest is fetched.
+ */
+@property (nonatomic, strong, nonnull) EXAppLoadingProgressWindowController *appLoadingProgressWindowController;
+
+/**
+ * SplashScreenViewProvider that is used only in managed workflow app.
+ * Managed app does not need any specific SplashScreenViewProvider as it uses generic one povided by the SplashScreen module.
+ * See also EXHomeAppSplashScreenViewProvider in self.viewDidLoad
+ */
+@property (nonatomic, strong, nullable) EXManagedAppSplashScreenViewProvider *managedAppSplashScreenViewProvider;
+
+/*
+ * This view is available in managed apps run in Expo Go only.
+ * It is shown only before any managed app manifest is delivered by the app loader.
+ */
+@property (nonatomic, strong, nullable) EXAppLoadingCancelView *appLoadingCancelView;
 
 @end
 
@@ -64,6 +104,7 @@ NS_ASSUME_NONNULL_BEGIN
   if (self = [super init]) {
     _appRecord = record;
     _supportedInterfaceOrientations = EX_INTERFACE_ORIENTATION_USE_MANIFEST;
+    _isStandalone = [EXEnvironment sharedEnvironment].isDetached;
   }
   return self;
 }
@@ -78,11 +119,35 @@ NS_ASSUME_NONNULL_BEGIN
 {
   [super viewDidLoad];
 
-  // TODO(brentvatne): probably this should not just be UIColor whiteColor?
-  self.view.backgroundColor = [UIColor whiteColor];
+  // EXKernel.appRegistry.homeAppRecord does not contain any homeAppRecord until this point,
+  // therefore we cannot move this property initialization to the constructor/initializer
+  _isHomeApp = _appRecord == [EXKernel sharedInstance].appRegistry.homeAppRecord;
 
-  _loadingView = [[EXAppLoadingView alloc] initWithAppRecord:_appRecord];
-  [self.view addSubview:_loadingView];
+  // show LoadingCancelView in managed apps only
+  if (!self.isStandalone && !self.isHomeApp) {
+    self.appLoadingCancelView = [EXAppLoadingCancelView new];
+    // if home app is available then LoadingCancelView can show `go to home` button
+    if ([EXKernel sharedInstance].appRegistry.homeAppRecord) {
+      self.appLoadingCancelView.delegate = self;
+    }
+    [self.view addSubview:self.appLoadingCancelView];
+    [self.view bringSubviewToFront:self.appLoadingCancelView];
+  }
+
+  // show LoadingProgressWindow in the development client for all apps other than production home
+  BOOL isProductionHomeApp = self.isHomeApp && ![EXEnvironment sharedEnvironment].isDebugXCodeScheme;
+  self.appLoadingProgressWindowController = [[EXAppLoadingProgressWindowController alloc] initWithEnabled:!self.isStandalone && !isProductionHomeApp];
+
+  // show SplashScreen in standalone apps and home app only
+  // SplashScreen for managed is shown once the manifest is available
+  if (self.isHomeApp) {
+    EXHomeAppSplashScreenViewProvider *homeAppSplashScreenViewProvider = [EXHomeAppSplashScreenViewProvider new];
+    [self _showSplashScreenWithProvider:homeAppSplashScreenViewProvider];
+  } else if (self.isStandalone) {
+    [self _showSplashScreenWithProvider:[EXSplashScreenViewNativeProvider new]];
+  }
+
+  self.view.backgroundColor = [UIColor whiteColor];
   _appRecord.appManager.delegate = self;
   self.isLoading = YES;
 }
@@ -105,18 +170,36 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)viewWillLayoutSubviews
 {
   [super viewWillLayoutSubviews];
-  if (_loadingView) {
-    _loadingView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
+  if (_appLoadingCancelView) {
+    _appLoadingCancelView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
   }
   if (_contentView) {
     _contentView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
   }
 }
 
+- (void)viewWillDisappear:(BOOL)animated
+{
+  [_appLoadingProgressWindowController hide];
+  [super viewWillDisappear:animated];
+}
+
+/**
+ * Force presented view controllers to use the same user interface style.
+ */
 - (void)presentViewController:(UIViewController *)viewControllerToPresent animated: (BOOL)flag completion:(void (^ __nullable)(void))completion
 {
   [super presentViewController:viewControllerToPresent animated:flag completion:completion];
   [self _overrideUserInterfaceStyleOf:viewControllerToPresent];
+}
+
+/**
+ * Force child view controllers to use the same user interface style.
+ */
+- (void)addChildViewController:(UIViewController *)childController
+{
+  [super addChildViewController:childController];
+  [self _overrideUserInterfaceStyleOf:childController];
 }
 
 #pragma mark - Public
@@ -143,7 +226,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
 
   NSString *domain = (error && error.domain) ? error.domain : @"";
-  BOOL isNetworkError = ([domain isEqualToString:(NSString *)kCFErrorDomainCFNetwork] || [domain isEqualToString:EXNetworkErrorDomain]);
+  BOOL isNetworkError = ([domain isEqualToString:(NSString *)kCFErrorDomainCFNetwork] || [domain isEqualToString:NSURLErrorDomain] || [domain isEqualToString:EXNetworkErrorDomain]);
 
   if (isNetworkError) {
     // show a human-readable reachability error
@@ -159,13 +242,6 @@ NS_ASSUME_NONNULL_BEGIN
       [self _showErrorWithType:kEXFatalErrorTypeException error:error];
     });
   }
-}
-
-- (void)_rebuildBridge
-{
-  [self _invalidateRecoveryTimer];
-  [[EXKernel sharedInstance] logAnalyticsEvent:@"LOAD_EXPERIENCE" forAppRecord:_appRecord];
-  [_appRecord.appManager rebuildBridge];
 }
 
 - (void)refresh
@@ -188,6 +264,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     [self _enforceDesiredDeviceOrientation];
+
+    // Reset the root view background color and window color if we switch between Expo home and project
+    [self _setBackgroundColor:self.view];
   });
   [_appRecord.appManager appStateDidBecomeActive];
 }
@@ -197,15 +276,17 @@ NS_ASSUME_NONNULL_BEGIN
   [_appRecord.appManager appStateDidBecomeInactive];
 }
 
-- (void)_rebuildBridgeWithLoadingViewManifest:(NSDictionary *)manifest
+- (void)_rebuildBridge
 {
   if (!self.isBridgeAlreadyLoading) {
     self.isBridgeAlreadyLoading = YES;
     dispatch_async(dispatch_get_main_queue(), ^{
-      self->_loadingView.manifest = manifest;
       [self _overrideUserInterfaceStyleOf:self];
+      [self _overrideAppearanceModuleBehaviour];
       [self _enforceDesiredDeviceOrientation];
-      [self _rebuildBridge];
+      [self _invalidateRecoveryTimer];
+      [[EXKernel sharedInstance] logAnalyticsEvent:@"LOAD_EXPERIENCE" forAppRecord:self.appRecord];
+      [self.appRecord.appManager rebuildBridge];
     });
   }
 }
@@ -214,12 +295,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
   if (_backgroundedControllers != nil) {
     __block UIViewController *parentController = self;
-    
+
     [_backgroundedControllers enumerateObjectsUsingBlock:^(UIViewController * _Nonnull viewController, NSUInteger idx, BOOL * _Nonnull stop) {
       [parentController presentViewController:viewController animated:NO completion:nil];
       parentController = viewController;
     }];
-    
+
     _backgroundedControllers = nil;
   }
 }
@@ -227,12 +308,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)backgroundControllers
 {
   UIViewController *childController = [self presentedViewController];
-  
+
   if (childController != nil) {
     if (_backgroundedControllers == nil) {
       _backgroundedControllers = [NSMutableArray new];
     }
-    
+
     while (childController != nil) {
       [_backgroundedControllers addObject:childController];
       childController = childController.presentedViewController;
@@ -240,28 +321,154 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
+/**
+ * In managed app we expect two kinds of manifest:
+ * - optimistic one (served from cache)
+ * - actual one served when app is fetched.
+ * For each of them we should show SplashScreen,
+ * therefore for any consecutive SplashScreen.show call we just reconfigure what's already visible.
+ * In HomeApp or standalone apps this function is no-op as SplashScreen is managed differently.
+ */
+- (void)_showOrReconfigureManagedAppSplashScreen:(EXUpdatesRawManifest *)manifest
+{
+  if (_isStandalone || _isHomeApp) {
+    return;
+  }
+  if (!_managedAppSplashScreenViewProvider) {
+    _managedAppSplashScreenViewProvider = [[EXManagedAppSplashScreenViewProvider alloc] initWithManifest:manifest];
+
+    [self _showManagedSplashScreenWithProvider:_managedAppSplashScreenViewProvider];
+  } else {
+    [_managedAppSplashScreenViewProvider updateSplashScreenViewWithManifest:manifest];
+  }
+}
+
+- (void)_showCachedExperienceAlert
+{
+  if (self.isStandalone || self.isHomeApp) {
+    return;
+  }
+
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UIAlertController *alert = [UIAlertController
+                                alertControllerWithTitle:@"Using a cached project"
+                                message:@"If you did not intend to use a cached project, check your network connection and reload."
+                                preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Reload" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+      [self refresh];
+    }]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Use cache" style:UIAlertActionStyleCancel handler:nil]];
+    [self presentViewController:alert animated:YES completion:nil];
+  });
+}
+
+- (void)_setLoadingViewStatusIfEnabledFromAppLoader:(EXAppLoader *)appLoader
+{
+  if (appLoader.shouldShowRemoteUpdateStatus) {
+    [self.appLoadingProgressWindowController updateStatus:appLoader.remoteUpdateStatus];
+  } else {
+    [self.appLoadingProgressWindowController hide];
+  }
+}
+
+- (void)_showSplashScreenWithProvider:(id<EXSplashScreenViewProvider>)provider
+{
+  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
+
+  // EXSplashScreenService presents a splash screen on a root view controller
+  // at the start of the app. Since we want the EXAppViewController to manage
+  // the lifecycle of the splash screen we need to:
+  // 1. present the splash screen on EXAppViewController
+  // 2. hide the splash screen of root view controller
+  // Disclaimer:
+  //  there's only one root view controller, but possibly many EXAppViewControllers
+  //  (in Expo Go: one project -> one EXAppViewController)
+  //  and we want to hide SplashScreen only once for the root view controller, hence the "once"
+  static dispatch_once_t once;
+  void (^hideRootViewControllerSplashScreen)(void) = ^void() {
+    dispatch_once(&once, ^{
+      UIViewController *rootViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
+      [splashScreenService hideSplashScreenFor:rootViewController
+                               successCallback:^(BOOL hasEffect){}
+                               failureCallback:^(NSString * _Nonnull message) {
+        UMLogWarn(@"Hiding splash screen from root view controller did not succeed: %@", message);
+      }];
+    });
+  };
+
+  UM_WEAKIFY(self);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UM_ENSURE_STRONGIFY(self);
+    [splashScreenService showSplashScreenFor:self
+                    splashScreenViewProvider:provider
+                             successCallback:hideRootViewControllerSplashScreen
+                             failureCallback:^(NSString *message){ UMLogWarn(@"%@", message); }];
+  });
+}
+
+- (void)_showManagedSplashScreenWithProvider:(id<EXSplashScreenViewProvider>)provider
+{
+ 
+  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
+
+  UM_WEAKIFY(self);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UM_ENSURE_STRONGIFY(self);
+    
+    UIView *rootView = self.view;
+    UIView *splashScreenView = [provider createSplashScreenView];
+    EXManagedAppSplashScreenViewController *controller = [[EXManagedAppSplashScreenViewController alloc] initWithRootView:rootView
+                                                                                                 splashScreenView:splashScreenView];
+    [splashScreenService showSplashScreenFor:self
+                      splashScreenController:controller
+                             successCallback:^{}
+                             failureCallback:^(NSString *message){ UMLogWarn(@"%@", message); }];
+  });
+  
+}
+
+- (void)hideLoadingProgressWindow
+{
+  [self.appLoadingProgressWindowController hide];
+}
+
 #pragma mark - EXAppLoaderDelegate
 
-- (void)appLoader:(EXAppLoader *)appLoader didLoadOptimisticManifest:(NSDictionary *)manifest
+- (void)appLoader:(EXAppLoader *)appLoader didLoadOptimisticManifest:(EXUpdatesRawManifest *)manifest
 {
+  if (_appLoadingCancelView) {
+    UM_WEAKIFY(self);
+    dispatch_async(dispatch_get_main_queue(), ^{
+      UM_ENSURE_STRONGIFY(self);
+      [self.appLoadingCancelView removeFromSuperview];
+      self.appLoadingCancelView = nil;
+    });
+  }
+  [self _showOrReconfigureManagedAppSplashScreen:manifest];
+  [self _setLoadingViewStatusIfEnabledFromAppLoader:appLoader];
   if ([EXKernel sharedInstance].browserController) {
     [[EXKernel sharedInstance].browserController addHistoryItemWithUrl:appLoader.manifestUrl manifest:manifest];
   }
-  [self _rebuildBridgeWithLoadingViewManifest:manifest];
+  [self _rebuildBridge];
 }
 
 - (void)appLoader:(EXAppLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress
 {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [self->_loadingView updateStatusWithProgress:progress];
-  });
+  if (self->_appRecord.appManager.status != kEXReactAppManagerStatusRunning) {
+    [self.appLoadingProgressWindowController updateStatusWithProgress:progress];
+  }
 }
 
-- (void)appLoader:(EXAppLoader *)appLoader didFinishLoadingManifest:(NSDictionary *)manifest bundle:(NSData *)data
+- (void)appLoader:(EXAppLoader *)appLoader didFinishLoadingManifest:(EXUpdatesRawManifest *)manifest bundle:(NSData *)data
 {
-  [self _rebuildBridgeWithLoadingViewManifest:manifest];
+  [self _showOrReconfigureManagedAppSplashScreen:manifest];
+  [self _rebuildBridge];
   if (self->_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {
     [self->_appRecord.appManager appLoaderFinished];
+  }
+
+  if (!appLoader.isUpToDate && appLoader.shouldShowRemoteUpdateStatus) {
+    [self _showCachedExperienceAlert];
   }
 }
 
@@ -273,7 +480,7 @@ NS_ASSUME_NONNULL_BEGIN
   [self maybeShowError:error];
 }
 
-- (void)appLoader:(EXAppLoader *)appLoader didResolveUpdatedBundleWithManifest:(NSDictionary * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error
+- (void)appLoader:(EXAppLoader *)appLoader didResolveUpdatedBundleWithManifest:(EXUpdatesRawManifest * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error
 {
   [[EXKernel sharedInstance].serviceRegistry.updatesManager notifyApp:_appRecord ofDownloadWithManifest:manifest isNew:!isFromCache error:error];
 }
@@ -286,14 +493,15 @@ NS_ASSUME_NONNULL_BEGIN
   reactView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
   reactView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-  [self _setRootViewBackgroundColor:reactView];
-  
+
   [_contentView removeFromSuperview];
   _contentView = reactView;
   [self.view addSubview:_contentView];
   [self.view sendSubviewToBack:_contentView];
-
   [reactView becomeFirstResponder];
+
+  // Set root view background color after adding as subview so we can access window
+  [self _setBackgroundColor:reactView];
 }
 
 - (void)reactAppManagerStartedLoadingJavaScript:(EXReactAppManager *)appManager
@@ -311,6 +519,17 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
+- (void)reactAppManagerAppContentDidAppear:(EXReactAppManager *)appManager
+{
+  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
+  [splashScreenService onAppContentDidAppear:self];
+}
+
+- (void)reactAppManagerAppContentWillReload:(EXReactAppManager *)appManager {
+  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
+  [splashScreenService onAppContentWillReload:self];
+}
+
 - (void)reactAppManager:(EXReactAppManager *)appManager failedToLoadJavaScriptWithError:(NSError *)error
 {
   EXAssertMainThread();
@@ -319,7 +538,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)reactAppManagerDidInvalidate:(EXReactAppManager *)appManager
 {
-
 }
 
 - (void)errorViewDidSelectRetry:(EXErrorView *)errorView
@@ -332,23 +550,23 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
 #if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
-  EXScreenOrientationRegistry *screenOrientationRegistry = (EXScreenOrientationRegistry *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
+  EXScreenOrientationRegistry *screenOrientationRegistry = (EXScreenOrientationRegistry *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
   if (screenOrientationRegistry && [screenOrientationRegistry requiredOrientationMask] > 0) {
     return [screenOrientationRegistry requiredOrientationMask];
   }
 #endif
-  
+
   // TODO: Remove once sdk 37 is phased out
   if (_supportedInterfaceOrientations != EX_INTERFACE_ORIENTATION_USE_MANIFEST) {
     return _supportedInterfaceOrientations;
   }
-  
+
   return [self orientationMaskFromManifestOrDefault];
 }
 
 - (UIInterfaceOrientationMask)orientationMaskFromManifestOrDefault {
   if (_appRecord.appLoader.manifest) {
-    NSString *orientationConfig = _appRecord.appLoader.manifest[@"orientation"];
+    NSString *orientationConfig = _appRecord.appLoader.manifest.orientation;
     if ([orientationConfig isEqualToString:@"portrait"]) {
       // lock to portrait
       return UIInterfaceOrientationMaskPortrait;
@@ -372,12 +590,12 @@ NS_ASSUME_NONNULL_BEGIN
   [super traitCollectionDidChange:previousTraitCollection];
   if ((self.traitCollection.verticalSizeClass != previousTraitCollection.verticalSizeClass)
       || (self.traitCollection.horizontalSizeClass != previousTraitCollection.horizontalSizeClass)) {
-    
+
     #if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
-      EXScreenOrientationRegistry *screenOrientationRegistryController = (EXScreenOrientationRegistry *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
+      EXScreenOrientationRegistry *screenOrientationRegistryController = (EXScreenOrientationRegistry *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
       [screenOrientationRegistryController traitCollectionDidChangeTo:self.traitCollection];
     #endif
-      
+
     // TODO: Remove once sdk 37 is phased out
     [[EXKernel sharedInstance].serviceRegistry.screenOrientationManager handleScreenOrientationChange:self.traitCollection];
   }
@@ -427,6 +645,37 @@ NS_ASSUME_NONNULL_BEGIN
   [UIViewController attemptRotationToDeviceOrientation];
 }
 
+#pragma mark - RCTAppearanceModule
+
+/**
+ * This function overrides behaviour of RCTAppearanceModule
+ * basing on 'userInterfaceStyle' option from the app manifest.
+ * It also defaults the RCTAppearanceModule to 'light'.
+ */
+- (void)_overrideAppearanceModuleBehaviour
+{
+  NSString *userInterfaceStyle = [self _readUserInterfaceStyleFromManifest:_appRecord.appLoader.manifest];
+  NSString *appearancePreference = nil;
+  if (!userInterfaceStyle || [userInterfaceStyle isEqualToString:@"light"]) {
+    appearancePreference = @"light";
+  } else if ([userInterfaceStyle isEqualToString:@"dark"]) {
+    appearancePreference = @"dark";
+  } else if ([userInterfaceStyle isEqualToString:@"automatic"]) {
+    appearancePreference = nil;
+  }
+  RCTOverrideAppearancePreference(appearancePreference);
+
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI42_0_0React/ABI42_0_0RCTAppearance.h>)
+  ABI42_0_0RCTOverrideAppearancePreference(appearancePreference);
+#endif
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI41_0_0React/ABI41_0_0RCTAppearance.h>)
+  ABI41_0_0RCTOverrideAppearancePreference(appearancePreference);
+#endif
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI40_0_0React/ABI40_0_0RCTAppearance.h>)
+  ABI40_0_0RCTOverrideAppearancePreference(appearancePreference);
+#endif
+}
+
 #pragma mark - user interface style
 
 - (void)_overrideUserInterfaceStyleOf:(UIViewController *)viewController
@@ -437,12 +686,9 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-- (NSString * _Nullable)_readUserInterfaceStyleFromManifest:(NSDictionary *)manifest
+- (NSString * _Nullable)_readUserInterfaceStyleFromManifest:(EXUpdatesRawManifest *)manifest
 {
-  if (manifest[@"ios"] && manifest[@"ios"][@"userInterfaceStyle"]) {
-    return manifest[@"ios"][@"userInterfaceStyle"];
-  }
-  return manifest[@"userInterfaceStyle"];
+  return manifest.userInterfaceStyle;
 }
 
 - (UIUserInterfaceStyle)_userInterfaceStyleForString:(NSString *)userInterfaceStyleString API_AVAILABLE(ios(12.0)) {
@@ -455,17 +701,25 @@ NS_ASSUME_NONNULL_BEGIN
   return UIUserInterfaceStyleLight;
 }
 
-#pragma mark - root view background color
+#pragma mark - root view and window background color
 
-- (void)_setRootViewBackgroundColor:(UIView *)view
+- (void)_setBackgroundColor:(UIView *)view
 {
     NSString *backgroundColorString = [self _readBackgroundColorFromManifest:_appRecord.appLoader.manifest];
     UIColor *backgroundColor = [EXUtil colorWithHexString:backgroundColorString];
 
     if (backgroundColor) {
       view.backgroundColor = backgroundColor;
+      // NOTE(brentvatne): it may be desirable at some point to split the window backgroundColor out from the
+      // root view, we can do if use case is presented to us.
+      view.window.backgroundColor = backgroundColor;
     } else {
       view.backgroundColor = [UIColor whiteColor];
+
+      // NOTE(brentvatne): we used to use white as a default background color for window but this caused
+      // problems when using form sheet presentation style with vcs eg: <Modal /> and native-stack. Most
+      // users expect the background behind these to be black, which is the default if backgroundColor is nil.
+      view.window.backgroundColor = nil;
 
       // NOTE(brentvatne): we may want to default to respecting the default system background color
       // on iOS13 and higher, but if we do make this choice then we will have to implement it on Android
@@ -478,12 +732,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (NSString * _Nullable)_readBackgroundColorFromManifest:(NSDictionary *)manifest
+- (NSString * _Nullable)_readBackgroundColorFromManifest:(EXUpdatesRawManifest *)manifest
 {
-  if (manifest[@"ios"] && manifest[@"ios"][@"backgroundColor"]) {
-    return manifest[@"ios"][@"backgroundColor"];
-  }
-  return manifest[@"backgroundColor"];
+  return manifest.androidOrRootBackroundColor;
 }
 
 
@@ -523,12 +774,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
   }
   _isLoading = isLoading;
+  UM_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
-    if (isLoading) {
-      self.loadingView.hidden = NO;
-      [self.view bringSubviewToFront:self.loadingView];
-    } else {
-      self.loadingView.hidden = YES;
+    UM_ENSURE_STRONGIFY(self);
+    if (!isLoading) {
+      [self.appLoadingProgressWindowController hide];
     }
   });
 }
@@ -538,7 +788,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)_willAutoRecoverFromError:(NSError *)error
 {
   if (![_appRecord.appManager enablesDeveloperTools]) {
-    BOOL shouldRecover = [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdShouldReloadOnError:_appRecord.experienceId];
+    BOOL shouldRecover = [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceShouldReloadOnError:_appRecord.scopeKey];
     if (shouldRecover) {
       [self _invalidateRecoveryTimer];
       _tmrAutoReloadDebounce = [NSTimer scheduledTimerWithTimeInterval:kEXAutoReloadDebounceSeconds
@@ -557,6 +807,14 @@ NS_ASSUME_NONNULL_BEGIN
   if (_tmrAutoReloadDebounce) {
     [_tmrAutoReloadDebounce invalidate];
     _tmrAutoReloadDebounce = nil;
+  }
+}
+
+#pragma mark - EXAppLoadingCancelViewDelegate
+
+- (void)appLoadingCancelViewDidCancel:(EXAppLoadingCancelView *)view {
+  if ([EXKernel sharedInstance].browserController) {
+    [[EXKernel sharedInstance].browserController moveHomeToVisible];
   }
 }
 

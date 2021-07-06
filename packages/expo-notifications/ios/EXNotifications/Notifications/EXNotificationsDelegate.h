@@ -6,7 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol EXNotificationsDelegate
+@protocol EXNotificationsDelegate <NSObject>
 
 @optional
 

@@ -9,11 +9,11 @@ Provides system information that remains constant throughout the lifetime of you
 
 # Installation in managed Expo projects
 
-For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](#api-documentation). If you follow the link and there is no documentation available then this library is not yet usable within managed projects &mdash; it is likely to be included in an upcoming Expo SDK release.
+For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/constants/).
 
 # Installation in bare React Native projects
 
-For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
+For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/expo/expo/tree/master/packages/react-native-unimodules) before continuing.
 
 ### Add the package to your npm dependencies
 
@@ -21,6 +21,40 @@ For bare React Native projects, you must ensure that you have [installed and con
 expo install expo-constants
 ```
 
+### Optional: set up script to get app config
+
+Optionally, you can set up a build script that will grab your app's config (from app.json or app.config.js) and embed it into your build. This will ensure `Constants.manifest` is defined on the first run of your app (before it has downloaded any OTA updates). If your app doesn't use `Constants.manifest`, you can skip this step.
+
+To set up the script on iOS, add the following line to the **Bundle React Native code and images** Build Phase in your Xcode project:
+
+```
+../node_modules/expo-constants/scripts/get-app-config-ios.sh
+```
+
+To set up the script on Android, apply the following diff to `android/app/build.gradle`:
+
+```diff
+ apply from: "../../node_modules/react-native/react.gradle"
++apply from: "../../node_modules/expo-constants/scripts/get-app-config-android.gradle"
+```
+
+#### Monorepo Support
+
+In a monorepo, the `expo-constants` package might be in a different folder than the native scripts are expecting. You can easily symlink the node module to your app's local `node_modules` folder by doing the following:
+ 
+- Follow the setup instructions for [`expo-yarn-workspaces`](https://github.com/expo/expo/tree/master/packages/expo-yarn-workspaces). 
+- Add the following configuration to your app's `package.json`:
+
+```json
+{
+  "expo-yarn-workspaces": {
+    "symlinks": ["expo-constants"]
+  }
+}
+```
+
+- Finally, run `yarn` in the app folder to create symlinks to `expo-constants` in your app's local `node_modules` folder.
+
 # Contributing
 
-Contributions are very welcome! Please refer to guidelines described in the [contributing guide]( https://github.com/expo/expo#contributing).
+Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).

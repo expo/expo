@@ -1,10 +1,10 @@
 import querystring from 'querystring';
 import { Platform } from 'react-native';
 
-import ApiV2Error from './ApiV2Error';
-import Config from './Config';
 import * as Kernel from '../kernel/Kernel';
 import Store from '../redux/Store';
+import ApiV2Error from './ApiV2Error';
+import Config from './Config';
 
 type RequestOptions = {
   httpMethod: 'get' | 'post';
@@ -30,13 +30,13 @@ export default class ApiV2HttpClient {
   }
 
   async _requestAsync<R>(methodName: string, options: RequestOptions): Promise<R> {
-    let url = `${Config.api.host}/--/api/v2/${encodeURI(methodName)}`;
+    let url = `${Config.api.origin}/--/api/v2/${encodeURI(methodName)}`;
     if (options.queryParameters) {
       url += '?' + querystring.stringify(options.queryParameters);
     }
 
-    let { session } = Store.getState();
-    let fetchOptions: any = {
+    const { session } = Store.getState();
+    const fetchOptions: any = {
       method: options.httpMethod,
       headers: {
         'Expo-SDK-Version': Kernel.sdkVersions,
@@ -50,27 +50,28 @@ export default class ApiV2HttpClient {
     }
 
     // We expect the result to be JSON
-    let response = await fetch(url, fetchOptions);
-    let resultText = await response.text();
+    const response = await fetch(url, fetchOptions);
+    const resultText = await response.text();
     let result: any;
     try {
       result = JSON.parse(resultText);
     } catch (e) {
-      let error: any = new Error(`There was a problem understanding the server.`);
+      const error: any = new Error(`There was a problem understanding the server.`);
       error.responseBody = resultText;
       throw error;
     }
 
     if (!result || typeof result !== 'object') {
-      let error: any = new Error(`There was a problem understanding the server.`);
+      const error: any = new Error(`There was a problem understanding the server.`);
       error.responseBody = result;
       throw error;
     }
 
     if (result.errors && result.errors.length) {
-      let responseError = result.errors[0];
-      let error = new ApiV2Error(responseError.message, responseError.code);
+      const responseError = result.errors[0];
+      const error = new ApiV2Error(responseError.message, responseError.code);
       error.serverStack = responseError.stack;
+      error.metadata = responseError.metadata;
       throw error;
     }
 

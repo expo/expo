@@ -2,7 +2,6 @@
 
 #import <EXBarCodeScanner/EXBarCodeScanner.h>
 #import <EXBarCodeScanner/EXBarCodeScannerUtils.h>
-#import <UMBarCodeScannerInterface/UMBarCodeScannerInterface.h>
 #import <UMCore/UMDefines.h>
 #import <ZXingObjC/ZXingObjCCore.h>
 #import <ZXingObjC/ZXingObjCPDF417.h>
@@ -16,6 +15,7 @@
 @property (nonatomic, copy, nullable) void (^onBarCodeScanned)(NSDictionary*);
 @property (nonatomic, assign, getter=isScanningBarCodes) BOOL barCodesScanning;
 @property (nonatomic, strong) NSDictionary<NSString *, id> *settings;
+@property (nonatomic, weak) AVCaptureVideoPreviewLayer *previewLayer;
 
 @property (nonatomic, strong) NSDictionary<NSString *, id<ZXReader>> *zxingBarcodeReaders;
 @property (nonatomic, assign) CGFloat zxingFPSProcessed;
@@ -205,21 +205,21 @@ NSString *const EX_BARCODE_TYPES_KEY = @"barCodeTypes";
 
   for (AVMetadataObject *metadata in metadataObjects) {
     if ([metadata isKindOfClass:[AVMetadataMachineReadableCodeObject class]]) {
-      AVMetadataMachineReadableCodeObject *codeMetadata = (AVMetadataMachineReadableCodeObject *) metadata;
+      AVMetadataMachineReadableCodeObject *codeMetadata;
+      if (_previewLayer) {
+        codeMetadata = (AVMetadataMachineReadableCodeObject *)[_previewLayer transformedMetadataObjectForMetadataObject:metadata];
+      } else {
+        codeMetadata = (AVMetadataMachineReadableCodeObject *)metadata;
+      }
+
       for (id barcodeType in _settings[EX_BARCODE_TYPES_KEY]) {
         // some barcodes aren't handled properly by iOS SDK build-in reader -> zxing handles it in separate flow
         if ([_zxingBarcodeReaders objectForKey:barcodeType]) {
           continue;
         }
         if (codeMetadata.stringValue && [codeMetadata.type isEqualToString:barcodeType]) {
-
-          NSDictionary *event = @{
-                                  @"type" : codeMetadata.type,
-                                  @"data" : codeMetadata.stringValue
-                                  };
-
           if (_onBarCodeScanned) {
-            _onBarCodeScanned(event);
+            _onBarCodeScanned([EXBarCodeScannerUtils avMetadataCodeObjectToDicitionary:codeMetadata]);
           }
           return;
         }
@@ -259,20 +259,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
       CVImageBufferRef videoFrame = CMSampleBufferGetImageBuffer(sampleBuffer);
       CGImageRef videoFrameImage = [ZXCGImageLuminanceSource createImageFromBuffer:videoFrame];
-      [self scanBarcodesFromImage:videoFrameImage withCompletion:^(NSString* text, NSString* type, NSError* error){
-        // text contains characteres u'\0' (null character) that malforme resulting string, so we get rid of them
-        NSMutableString* data = [NSMutableString new];
-        for (int i = 0; i < [text length]; i++) {
-          if ([text characterAtIndex:i] != u'\0') {
-            [data appendFormat:@"%c", [text characterAtIndex:i]];
-          }
-        }
-        NSDictionary *event = @{
-          @"type": type,
-          @"data": data,
-        };
+      [self scanBarcodesFromImage:videoFrameImage withCompletion:^(ZXResult *barCodeScannerResult, NSError *error) {
         if (self->_onBarCodeScanned) {
-          self->_onBarCodeScanned(event);
+          self->_onBarCodeScanned([EXBarCodeScannerUtils zxResultToDicitionary:barCodeScannerResult]);
         }
       }];
     }
@@ -280,7 +269,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 }
 
 - (void)scanBarcodesFromImage:(CGImageRef)image
-               withCompletion:(void(^)(NSString* text, NSString* type, NSError* error))completion
+               withCompletion:(void(^)(ZXResult *barCodeResult, NSError *error))completion
 {
   ZXCGImageLuminanceSource *source = [[ZXCGImageLuminanceSource alloc] initWithCGImage:image];
   CGImageRelease(image);
@@ -309,8 +298,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
   }
 
   if (result) {
-    NSString* type = [EXBarCodeScanner zxingFormatToString:result.barcodeFormat];
-    completion(result.text, type, error);
+    completion(result, error);
   }
 }
 

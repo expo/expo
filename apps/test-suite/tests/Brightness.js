@@ -1,6 +1,6 @@
-import * as Permissions from 'expo-permissions';
 import * as Brightness from 'expo-brightness';
 import { Platform } from 'react-native';
+
 import * as TestUtils from '../TestUtils';
 
 export const name = 'Brightness';
@@ -84,7 +84,7 @@ export async function test(t) {
         () => {
           t.beforeAll(async () => {
             await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
-              return Permissions.askAsync(Permissions.SYSTEM_BRIGHTNESS);
+              return Brightness.requestPermissionsAsync();
             });
           });
 
@@ -148,7 +148,7 @@ export async function test(t) {
       describeWithPermissions(`Brightness.useSystemBrightnessAsync`, () => {
         t.beforeAll(async () => {
           await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
-            return Permissions.askAsync(Permissions.SYSTEM_BRIGHTNESS);
+            return Brightness.requestPermissionsAsync();
           });
         });
 
@@ -194,7 +194,7 @@ export async function test(t) {
       describeWithPermissions(`Brightness.isUsingSystemBrightnessAsync`, () => {
         t.beforeAll(async () => {
           await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
-            return Permissions.askAsync(Permissions.SYSTEM_BRIGHTNESS);
+            return Brightness.requestPermissionsAsync();
           });
         });
 
@@ -225,7 +225,7 @@ export async function test(t) {
       describeWithPermissions(`Brightness Mode`, () => {
         t.beforeAll(async () => {
           await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
-            return Permissions.askAsync(Permissions.SYSTEM_BRIGHTNESS);
+            return Brightness.requestPermissionsAsync();
           });
         });
 

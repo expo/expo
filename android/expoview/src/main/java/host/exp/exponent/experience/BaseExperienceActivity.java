@@ -3,13 +3,11 @@
 package host.exp.exponent.experience;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.Pair;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 
 import javax.inject.Inject;
 
@@ -17,8 +15,7 @@ import de.greenrobot.event.EventBus;
 import host.exp.exponent.Constants;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.gcm.GcmRegistrationIntentService;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.kernel.ExponentError;
 import host.exp.exponent.kernel.ExponentErrorMessage;
 import host.exp.exponent.kernel.Kernel;
@@ -30,32 +27,32 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   private static String TAG = BaseExperienceActivity.class.getSimpleName();
 
   private static abstract class ExperienceEvent {
-    private ExperienceId mExperienceId;
+    private ExperienceKey mExperienceKey;
 
-    ExperienceEvent(ExperienceId experienceId) {
-      this.mExperienceId = experienceId;
+    ExperienceEvent(ExperienceKey experienceKey) {
+      this.mExperienceKey = experienceKey;
     }
 
-    public ExperienceId getExperienceId() {
-      return mExperienceId;
+    public ExperienceKey getExperienceKey() {
+      return mExperienceKey;
     }
   }
 
   public static class ExperienceForegroundedEvent extends ExperienceEvent {
-    ExperienceForegroundedEvent(ExperienceId experienceId) {
-      super(experienceId);
+    ExperienceForegroundedEvent(ExperienceKey experienceKey) {
+      super(experienceKey);
     }
   }
 
   public static class ExperienceBackgroundedEvent extends ExperienceEvent {
-    ExperienceBackgroundedEvent(ExperienceId experienceId) {
-      super(experienceId);
+    ExperienceBackgroundedEvent(ExperienceKey experienceKey) {
+      super(experienceKey);
     }
   }
 
   public static class ExperienceContentLoaded extends ExperienceEvent {
-    public ExperienceContentLoaded(ExperienceId experienceId) {
-      super(experienceId);
+    public ExperienceContentLoaded(ExperienceKey experienceKey) {
+      super(experienceKey);
     }
   }
 
@@ -109,19 +106,19 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
     AsyncCondition.wait(KernelConstants.EXPERIENCE_ID_SET_FOR_ACTIVITY_KEY, new AsyncCondition.AsyncConditionListener() {
       @Override
       public boolean isReady() {
-        return mExperienceId != null || BaseExperienceActivity.this instanceof HomeActivity;
+        return mExperienceKey != null || BaseExperienceActivity.this instanceof HomeActivity;
       }
 
       @Override
       public void execute() {
-        EventBus.getDefault().post(new ExperienceForegroundedEvent(mExperienceId));
+        EventBus.getDefault().post(new ExperienceForegroundedEvent(mExperienceKey));
       }
     });
   }
 
   @Override
   protected void onPause() {
-    EventBus.getDefault().post(new ExperienceBackgroundedEvent(mExperienceId));
+    EventBus.getDefault().post(new ExperienceBackgroundedEvent(mExperienceKey));
     super.onPause();
 
     // For some reason onPause sometimes gets called soon after onResume.
@@ -176,6 +173,15 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
     // TODO: OkHttpClientProvider leaks Activity. Clean it up.
   }
 
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+
+    if (mReactInstanceManager != null && mReactInstanceManager.isNotNull() && !mIsCrashed) {
+      mReactInstanceManager.call("onConfigurationChanged", this, newConfig);
+    }
+  }
+
   protected void consumeErrorQueue() {
     if (sErrorQueue.isEmpty()) {
       return;
@@ -205,7 +211,7 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
       }
 
       if (!isDebugModeEnabled()) {
-        removeViews();
+        removeAllViewsFromContainer();
         mReactInstanceManager.assign(null);
         mReactRootView.assign(null);
       }
@@ -233,9 +239,6 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
       while (!sErrorQueue.isEmpty()) {
         ExponentError error = sErrorQueue.remove();
         ErrorActivity.addError(error);
-        if (sVisibleActivity != null) {
-          sVisibleActivity.onError(error);
-        }
 
         // Just use the last error message for now, is there a better way to do this?
         errorMessage = error.errorMessage;
@@ -256,29 +259,5 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
   // Override
   protected void onError(final Intent intent) {
     // Modify intent used to start ErrorActivity
-  }
-
-  // Override
-  protected void onError(final ExponentError error) {
-    // Called for each JS error
-  }
-
-  protected void registerForNotifications() {
-    try {
-      int googlePlayServicesCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
-      if (googlePlayServicesCode == ConnectionResult.SUCCESS) {
-        if (!Constants.FCM_ENABLED) {
-          Intent intent = new Intent(this, GcmRegistrationIntentService.class);
-          startService(intent);
-        }
-      }
-    } catch (IllegalStateException e) {
-      // This is pretty hacky but we need to prevent crashes when trying to start this service in
-      // the background, which fails on Android 9 and above.
-      // TODO(eric): find a better fix for this.
-      // Probably we need to either remove GCM entirely from the clients, or update the
-      // implementation to ensure we only try to register in the foreground (like we do with FCM).
-      Log.e(TAG, "Failed to register for GCM notifications", e);
-    }
   }
 }

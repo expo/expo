@@ -11,8 +11,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.PersistableBundle;
-import androidx.collection.ArraySet;
 import android.util.Log;
+
+import org.unimodules.interfaces.taskManager.TaskInterface;
+import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,12 +23,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
-import org.unimodules.interfaces.taskManager.TaskInterface;
+import androidx.annotation.NonNull;
+import androidx.collection.ArraySet;
 
 public class TaskManagerUtils implements TaskManagerUtilsInterface {
+
   // Key that every job created by the task manager must contain in its extras bundle.
   private static final String EXTRAS_REQUIRED_KEY = "expo.modules.taskManager";
+  private static final String TAG = "TaskManagerUtils";
 
   // Request code number used for pending intents created by this module.
   private static final int PENDING_INTENT_REQUEST_CODE = 5055;
@@ -43,8 +47,8 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
   }
 
   @Override
-  public void cancelTaskIntent(Context context, String appId, String taskName) {
-    PendingIntent pendingIntent = createTaskIntent(context, appId, taskName, PendingIntent.FLAG_NO_CREATE);
+  public void cancelTaskIntent(Context context, String appScopeKey, String taskName) {
+    PendingIntent pendingIntent = createTaskIntent(context, appScopeKey, taskName, PendingIntent.FLAG_NO_CREATE);
 
     if (pendingIntent != null) {
       pendingIntent.cancel();
@@ -52,8 +56,12 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
   }
 
   @Override
-  public void scheduleJob(Context context, TaskInterface task, List<PersistableBundle> data) {
-    updateOrScheduleJob(context, task, data);
+  public void scheduleJob(Context context, @NonNull TaskInterface task, List<PersistableBundle> data) {
+    if (task == null) {
+      Log.e(TAG, "Trying to schedule job for null task!");
+    } else {
+      updateOrScheduleJob(context, task, data);
+    }
   }
 
   @Override
@@ -162,17 +170,18 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
     return createJobInfo(jobInfo.getId(), jobInfo.getService(), mergedExtras);
   }
 
-  private PendingIntent createTaskIntent(Context context, String appId, String taskName, int flags) {
+  private PendingIntent createTaskIntent(Context context, String appScopeKey, String taskName, int flags) {
     if (context == null) {
       return null;
     }
 
     Intent intent = new Intent(TaskBroadcastReceiver.INTENT_ACTION, null, context, TaskBroadcastReceiver.class);
 
+    // query param is called appId for legacy reasons
     Uri dataUri = new Uri.Builder()
-        .appendQueryParameter("appId", appId)
-        .appendQueryParameter("taskName", taskName)
-        .build();
+      .appendQueryParameter("appId", appScopeKey)
+      .appendQueryParameter("taskName", taskName)
+      .build();
 
     intent.setData(dataUri);
 
@@ -180,18 +189,18 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
   }
 
   private PendingIntent createTaskIntent(Context context, TaskInterface task, int flags) {
-    String appId = task.getAppId();
+    String appScopeKey = task.getAppScopeKey();
     String taskName = task.getName();
 
-    return createTaskIntent(context, appId, taskName, flags);
+    return createTaskIntent(context, appScopeKey, taskName, flags);
   }
 
   private JobInfo createJobInfo(int jobId, ComponentName jobService, PersistableBundle extras) {
     return new JobInfo.Builder(jobId, jobService)
-        .setExtras(extras)
-        .setMinimumLatency(0)
-        .setOverrideDeadline(DEFAULT_OVERRIDE_DEADLINE)
-        .build();
+      .setExtras(extras)
+      .setMinimumLatency(0)
+      .setOverrideDeadline(DEFAULT_OVERRIDE_DEADLINE)
+      .build();
   }
 
   private JobInfo createJobInfo(Context context, TaskInterface task, int jobId, List<PersistableBundle> data) {
@@ -201,8 +210,9 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
   private PersistableBundle createExtrasForTask(TaskInterface task, List<PersistableBundle> data) {
     PersistableBundle extras = new PersistableBundle();
 
+    // persistable bundle extras key is called appId for legacy reasons
     extras.putInt(EXTRAS_REQUIRED_KEY, 1);
-    extras.putString("appId", task.getAppId());
+    extras.putString("appId", task.getAppScopeKey());
     extras.putString("taskName", task.getName());
 
     if (data != null) {
@@ -220,11 +230,13 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
 
   private boolean isJobInfoRelatedToTask(JobInfo jobInfo, TaskInterface task) {
     PersistableBundle extras = jobInfo.getExtras();
-    String appId = task.getAppId();
+
+    // persistable bundle extras key is called appId for legacy reasons
+    String appScopeKey = task.getAppScopeKey();
     String taskName = task.getName();
 
     if (extras.containsKey(EXTRAS_REQUIRED_KEY)) {
-      return appId.equals(extras.getString("appId", "")) && taskName.equals(extras.getString("taskName", ""));
+      return appScopeKey.equals(extras.getString("appId", "")) && taskName.equals(extras.getString("taskName", ""));
     }
     return false;
   }

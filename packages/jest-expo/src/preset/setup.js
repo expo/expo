@@ -152,9 +152,24 @@ jest.mock('react-native/Libraries/Image/AssetRegistry', () => ({
 
 jest.doMock('react-native/Libraries/BatchedBridge/NativeModules', () => mockNativeModules);
 
+jest.doMock('react-native/Libraries/LogBox/LogBox', () => ({
+  ignoreLogs: patterns => {
+    // Do nothing.
+  },
+  ignoreAllLogs: value => {
+    // Do nothing.
+  },
+  install: () => {
+    // Do nothing.
+  },
+  uninstall: () => {
+    // Do nothing.
+  },
+}));
+
 try {
   jest.mock('@unimodules/react-native-adapter', () => {
-    const ReactNativeAdapter = require.requireActual('@unimodules/react-native-adapter');
+    const ReactNativeAdapter = jest.requireActual('@unimodules/react-native-adapter');
     const { NativeModulesProxy } = ReactNativeAdapter;
 
     // After the NativeModules mock is set up, we can mock NativeModuleProxy's functions that call

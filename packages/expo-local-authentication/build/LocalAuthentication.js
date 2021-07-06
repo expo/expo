@@ -1,9 +1,8 @@
 import { UnavailabilityError } from '@unimodules/core';
 import invariant from 'invariant';
-import { Platform } from 'react-native';
 import ExpoLocalAuthentication from './ExpoLocalAuthentication';
-import { AuthenticationType, } from './LocalAuthentication.types';
-export { AuthenticationType };
+import { AuthenticationType, SecurityLevel, } from './LocalAuthentication.types';
+export { AuthenticationType, SecurityLevel };
 export async function hasHardwareAsync() {
     if (!ExpoLocalAuthentication.hasHardwareAsync) {
         throw new UnavailabilityError('expo-local-authentication', 'hasHardwareAsync');
@@ -22,29 +21,25 @@ export async function isEnrolledAsync() {
     }
     return await ExpoLocalAuthentication.isEnrolledAsync();
 }
+export async function getEnrolledLevelAsync() {
+    if (!ExpoLocalAuthentication.getEnrolledLevelAsync) {
+        throw new UnavailabilityError('expo-local-authentication', 'getEnrolledLevelAsync');
+    }
+    return await ExpoLocalAuthentication.getEnrolledLevelAsync();
+}
 export async function authenticateAsync(options = {}) {
     if (!ExpoLocalAuthentication.authenticateAsync) {
         throw new UnavailabilityError('expo-local-authentication', 'authenticateAsync');
     }
-    // Warn if using an old API - to be removed in SDK35.
-    if (typeof options === 'string') {
-        console.warn('String argument in LocalAuthentication.authenticateAsync has been deprecated. Please use options object with `promptMessage` key instead.');
-        options = { promptMessage: options };
+    if (options.hasOwnProperty('promptMessage')) {
+        invariant(typeof options.promptMessage === 'string' && options.promptMessage.length, 'LocalAuthentication.authenticateAsync : `options.promptMessage` must be a non-empty string.');
     }
-    if (Platform.OS === 'ios') {
-        if (options.hasOwnProperty('promptMessage')) {
-            invariant(typeof options.promptMessage === 'string' && options.promptMessage.length, 'LocalAuthentication.authenticateAsync : `options.promptMessage` must be a non-empty string.');
-        }
-        const promptMessage = options.promptMessage || 'Authenticate';
-        const result = await ExpoLocalAuthentication.authenticateAsync({ ...options, promptMessage });
-        if (result.warning) {
-            console.warn(result.warning);
-        }
-        return result;
+    const promptMessage = options.promptMessage || 'Authenticate';
+    const result = await ExpoLocalAuthentication.authenticateAsync({ ...options, promptMessage });
+    if (result.warning) {
+        console.warn(result.warning);
     }
-    else {
-        return await ExpoLocalAuthentication.authenticateAsync();
-    }
+    return result;
 }
 export async function cancelAuthenticate() {
     if (!ExpoLocalAuthentication.cancelAuthenticate) {

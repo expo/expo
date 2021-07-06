@@ -1,5 +1,6 @@
 import { UnavailabilityError } from '@unimodules/core';
 import ExpoFirebaseAnalytics from './ExpoFirebaseAnalytics';
+export { default as FirebaseAnalyticsJS } from './FirebaseAnalyticsJS';
 if (!ExpoFirebaseAnalytics) {
     console.warn("No native ExpoFirebaseAnalytics module found, are you sure the expo-firebase-analytics's module is linked properly?");
 }
@@ -151,12 +152,43 @@ export async function setUserProperties(properties) {
  * Firebase Analytics, create a standalone build or custom client.
  * Use this function to suppress the warning and log messages.
  *
- * @param properties key/value set of user properties
+ * @param isEnabled A flag that enables or disables unavailability logging.
  */
 export function setUnavailabilityLogging(isEnabled) {
     if (!ExpoFirebaseAnalytics.setUnavailabilityLogging) {
         throw new UnavailabilityError('expo-firebase-analytics', 'setUnavailabilityLogging');
     }
     ExpoFirebaseAnalytics.setUnavailabilityLogging(isEnabled);
+}
+/**
+ * In Expo Go, sets the clientId to the given value for the current session.
+ *
+ * By default, the clientId is set to `Constants.installationId` in Expo Go,
+ * which is deprecated and will be removed in SDK 44. At that time, this method
+ * will need to be used to set the `clientId` when using Expo Go.
+ *
+ * @param clientId UUIDv4 string value to set for the current session in Expo Go
+ */
+export function setClientId(clientId) {
+    if (!ExpoFirebaseAnalytics.setClientId) {
+        throw new UnavailabilityError('expo-firebase-analytics', 'setClientId');
+    }
+    ExpoFirebaseAnalytics.setClientId(clientId);
+}
+/**
+ * Enables or disabled debug mode on the Expo client, so events can
+ * be tracked using the [DebugView in the Analytics dashboard](https://firebase.google.com/docs/analytics/debugview#reporting).
+ *
+ * This option is only available on the standard Expo client.
+ * When using a standalone build, the bare workflow or web, use the
+ * [natively available options](https://firebase.google.com/docs/analytics/debugview).
+ *
+ * @param isEnabled A flag that enables or disables debug mode.
+ */
+export async function setDebugModeEnabled(isEnabled) {
+    if (!ExpoFirebaseAnalytics.setDebugModeEnabled) {
+        throw new UnavailabilityError('expo-firebase-analytics', 'setDebugModeEnabled');
+    }
+    return await ExpoFirebaseAnalytics.setDebugModeEnabled(isEnabled);
 }
 //# sourceMappingURL=Analytics.js.map

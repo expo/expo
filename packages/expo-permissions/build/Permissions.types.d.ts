@@ -1,20 +1,21 @@
-import { PermissionResponse as UMPermissionResponse, PermissionStatus, PermissionExpiration } from 'unimodules-permissions-interface';
-export declare type PermissionType = 'camera' | 'cameraRoll' | 'audioRecording' | 'location' | 'userFacingNotifications' | 'notifications' | 'contacts' | 'calendar' | 'reminders' | 'systemBrightness';
-export interface PermissionResponse extends UMPermissionResponse {
+import { PermissionResponse as EXPermissionResponse, PermissionStatus, PermissionExpiration } from 'expo-modules-core';
+export declare type PermissionType = 'camera' | 'cameraRoll' | 'mediaLibrary' | 'mediaLibraryWriteOnly' | 'audioRecording' | 'location' | 'locationForeground' | 'locationBackground' | 'userFacingNotifications' | 'notifications' | 'contacts' | 'calendar' | 'reminders' | 'motion' | 'systemBrightness';
+export interface PermissionResponse extends EXPermissionResponse {
     permissions: PermissionMap;
 }
 export interface PermissionMap {
     [permissionType: string]: PermissionInfo;
 }
-export interface PermissionInfo extends UMPermissionResponse {
-    ios?: PermissionDetailsLocationIOS;
+export interface PermissionInfo extends EXPermissionResponse {
+    /**
+     * iOS only - Permission.MEDIA_LIBRARY/MEDIA_LIBRARY_WRITE_ONLY
+     */
+    accessPrivileges?: 'all' | 'limited' | 'none';
+    scope?: 'whenInUse' | 'always' | 'none';
     android?: PermissionDetailsLocationAndroid;
 }
 export { PermissionStatus };
 export { PermissionExpiration };
-export declare type PermissionDetailsLocationIOS = {
-    scope: 'whenInUse' | 'always';
-};
 export declare type PermissionDetailsLocationAndroid = {
-    scope: 'fine' | 'coarse' | 'none';
+    accuracy: 'fine' | 'coarse' | 'none';
 };

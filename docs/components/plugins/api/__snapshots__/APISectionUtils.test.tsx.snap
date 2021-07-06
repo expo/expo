@@ -1,0 +1,302 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`APISectionUtils.resolveTypeName Promise 1`] = `
+<div>
+  Promise
+  &lt;
+  <span>
+    void
+  </span>
+  &gt;
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName Promise with custom type 1`] = `
+<div>
+  Promise
+  &lt;
+  <span>
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="/#appleauthenticationcredential"
+    >
+      AppleAuthenticationCredential
+    </a>
+  </span>
+  &gt;
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName Record 1`] = `
+<div>
+  Record
+  &lt;
+  <span>
+    string
+    , 
+  </span>
+  <span>
+    any
+    
+  </span>
+  &gt;
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName Record with union 1`] = `
+<div>
+  Record
+  &lt;
+  <span>
+    string
+    , 
+  </span>
+  <span>
+    <span>
+      number
+       | 
+    </span>
+    <span>
+      boolean
+       | 
+    </span>
+    <span>
+      string
+    </span>
+    
+  </span>
+  &gt;
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName custom type 1`] = `
+<div>
+  <a
+    class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+    href="/#speechsynthesisevent"
+  >
+    SpeechSynthesisEvent
+  </a>
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName custom type array 1`] = `
+<div>
+  <a
+    class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+    href="/#appleauthenticationscope"
+  >
+    AppleAuthenticationScope
+    []
+  </a>
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName custom type non-linkable array 1`] = `
+<div>
+  T[]
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName function 1`] = `
+<div>
+  () =&gt;
+   
+  <span>
+    void
+     | 
+  </span>
+  <span>
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="/#speecheventcallback"
+    >
+      SpeechEventCallback
+    </a>
+  </span>
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName function with arguments 1`] = `
+<div>
+  (
+  <span>
+    error
+    : 
+    Error
+  </span>
+  ) 
+  =&gt;
+   
+  <span>
+    void
+     | 
+  </span>
+  <span>
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="/#speecheventcallback"
+    >
+      SpeechEventCallback
+    </a>
+  </span>
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName function with non-linkable custom type 1`] = `
+<div>
+  (
+  <span>
+    error
+    : 
+    Error
+  </span>
+  ) 
+  =&gt;
+   
+  void
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName generic type 1`] = `
+<div>
+  string
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName generic type 2`] = `
+<div>
+  <a
+    class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+    href="/#pagedinfo"
+  >
+    PagedInfo
+  </a>
+  &lt;
+  <span>
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="/#asset"
+    >
+      Asset
+    </a>
+  </span>
+  &gt;
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName generic type in Promise 1`] = `
+<div>
+  Promise
+  &lt;
+  <span>
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="/#pagedinfo"
+    >
+      PagedInfo
+    </a>
+    &lt;
+    <span>
+      <a
+        class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+        href="/#asset"
+      >
+        Asset
+      </a>
+    </span>
+    &gt;
+  </span>
+  &gt;
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName query type 1`] = `
+<div>
+  React.ComponentProps
+  &lt;
+  <span>
+    View
+    
+  </span>
+  &gt;
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName tuple type 1`] = `
+<div>
+  [
+  <span>
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="/#sortbykey"
+    >
+      SortByKey
+    </a>
+    , 
+  </span>
+  <span>
+    boolean
+    
+  </span>
+  ]
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName union 1`] = `
+<div>
+  <span>
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="/#speecheventcallback"
+    >
+      SpeechEventCallback
+    </a>
+     | 
+  </span>
+  <span>
+    null
+  </span>
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName union with array 1`] = `
+<div>
+  <span>
+    number[]
+     | 
+  </span>
+  <span>
+    null
+  </span>
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName union with custom type and array 1`] = `
+<div>
+  <span>
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="/#assetref"
+    >
+      AssetRef
+      []
+    </a>
+     | 
+  </span>
+  <span>
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="/#assetref"
+    >
+      AssetRef
+    </a>
+  </span>
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName void 1`] = `
+<div>
+  void
+</div>
+`;

@@ -25,47 +25,51 @@ NSString * const EXPermissionsKey = @"ExpoPermissions";
 
 UM_REGISTER_SINGLETON_MODULE(Permissions)
 
-- (UMPermissionStatus)getPermission:(NSString *)permissionType forExperience:(NSString *)experienceId
+- (EXPermissionStatus)getPermission:(NSString *)permissionType forExperience:(NSString *)scopeKey
 {
-  NSString *experienceIdKey = [EXPermissionsManager escapedResourceName:experienceId];
-  NSDictionary *experiencePermissions = _permissionsCache[experienceIdKey];
+  permissionType = [EXPermissionsManager mapPermissionType:permissionType];
+
+  NSString *scopeKeyKey = [EXPermissionsManager escapedResourceName:scopeKey];
+  NSDictionary *experiencePermissions = _permissionsCache[scopeKeyKey];
   if (!experiencePermissions) {
-    return UMPermissionStatusUndetermined;
+    return EXPermissionStatusUndetermined;
   }
 
   NSDictionary *permissionData = experiencePermissions[permissionType];
   if (!permissionData) {
-    return UMPermissionStatusUndetermined;
+    return EXPermissionStatusUndetermined;
   }
 
-  if ([permissionData[@"status"] isEqualToString:[EXPermissions permissionStringForStatus:UMPermissionStatusGranted]]) {
-    return UMPermissionStatusGranted;
+  if ([permissionData[@"status"] isEqualToString:[EXPermissionsService permissionStringForStatus:EXPermissionStatusGranted]]) {
+    return EXPermissionStatusGranted;
   }
 
-  return UMPermissionStatusDenied;
+  return EXPermissionStatusDenied;
 }
 
-- (BOOL)hasGrantedPermission:(NSString *)permission forExperience:(NSString *)experienceId
+- (BOOL)hasGrantedPermission:(NSString *)permission forExperience:(NSString *)scopeKey
 {
   if ([EXEnvironment sharedEnvironment].isDetached) {
     return YES;
   }
-
-  return [self getPermission:permission forExperience:experienceId] == UMPermissionStatusGranted;
+  
+  return [self getPermission:[EXPermissionsManager mapPermissionType:permission] forExperience:scopeKey] == EXPermissionStatusGranted;
 }
 
-- (BOOL)savePermission:(NSDictionary *)permission ofType:(NSString *)type forExperience:(NSString *)experienceId
+- (BOOL)savePermission:(NSDictionary *)permission ofType:(NSString *)type forExperience:(NSString *)scopeKey
 {
-  NSString *experienceIdKey = [EXPermissionsManager escapedResourceName:experienceId];
+  type = [EXPermissionsManager mapPermissionType:type];
+  
+  NSString *scopeKeyKey = [EXPermissionsManager escapedResourceName:scopeKey];
   NSMutableDictionary *experiencePermissions;
-  if ([_permissionsCache objectForKey:experienceIdKey] == nil) {
+  if ([_permissionsCache objectForKey:scopeKeyKey] == nil) {
     experiencePermissions = [[NSMutableDictionary alloc] init];
   } else {
-    experiencePermissions = [[NSMutableDictionary alloc] initWithDictionary:_permissionsCache[experienceIdKey]];
+    experiencePermissions = [[NSMutableDictionary alloc] initWithDictionary:_permissionsCache[scopeKeyKey]];
   }
 
   experiencePermissions[type] = permission;
-  _permissionsCache[experienceIdKey] = experiencePermissions;
+  _permissionsCache[scopeKeyKey] = experiencePermissions;
   [self synchronizeWithPermissions:_permissionsCache];
   return YES;
 }
@@ -82,6 +86,13 @@ UM_REGISTER_SINGLETON_MODULE(Permissions)
   return [name stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
 }
 
++ (NSString *)mapPermissionType:(NSString *)type
+{
+  if ([type isEqual:@"locationForeground"]) {
+    return @"location";
+  }
+  
+  return type;
+}
+
 @end
-
-

@@ -2,8 +2,6 @@
 // when we add or change a native module and haven't yet updated the mocks in jest-expo. This list
 // is a temporary workaround, not a way to indefinitely avoid testing modules.
 const skippedExports: string[] = [
-  'IntentLauncherAndroid',
-  'Localization',
   'Accelerometer',
   'AdMobBanner',
   'AdMobInterstitial',
@@ -11,8 +9,11 @@ const skippedExports: string[] = [
   'Animated',
   'Amplitude',
   'AppAuth',
+  'AR',
+  'AppLoading',
   'Asset',
   'Audio',
+  'AuthSession',
   'BackgroundFetch',
   'BarCodeScanner',
   'Barometer',
@@ -25,6 +26,7 @@ const skippedExports: string[] = [
   'Crypto',
   'DocumentPicker',
   'Easing',
+  'ErrorRecovery',
   'Facebook',
   'FacebookAds',
   'FaceDetector',
@@ -65,16 +67,30 @@ const skippedExports: string[] = [
   'Sharing',
   'SMS',
   'Speech',
+  'SplashScreen',
   'SQLite',
+  'StoreReview',
   'Svg',
   'takeSnapshotAsync',
   'TaskManager',
   'Transition',
   'Transitioning',
+  'Updates',
   'Video',
   'WebBrowser',
   'WebView',
 ];
+
+// This list lets us define native modules that we consider always available
+// even in bare React Native.
+//
+// We use this array in "importing Expo > throws a clear error in bare React Native"
+// where we clear all the native modules to simulate a bare environment. Some of the native modules though
+// are expected to be present by React Native, like SourceCode which is fetched with
+// TurboModuleRegistry.getEnforcing, which throws an error if the module is not there.
+// Since bare React Native would have the SourceCode module let's not remove it
+// when preparing NativeModules to simulate bare environment.
+const bareReactNativeModulesNames = ['SourceCode'];
 
 describe(`Expo APIs`, () => {
   const Expo = require('../Expo');
@@ -100,6 +116,13 @@ describe(`Expo APIs`, () => {
   }
 });
 
+jest.mock('react-native/Libraries/Core/Devtools/getDevServer', () => ({
+  __esModule: true,
+  default() {
+    return { bundleLoadedFromServer: true, url: 'http://localhost:8081/' };
+  },
+}));
+
 describe(`importing Expo`, () => {
   beforeAll(() => {
     jest.resetModules();
@@ -113,12 +136,14 @@ describe(`importing Expo`, () => {
     const clearPropertiesInPlace = aThing => {
       const propertyNames = Object.keys(aThing);
       for (const propertyName of propertyNames) {
-        Object.defineProperty(aThing, propertyName, {
-          configurable: true,
-          enumerable: true,
-          writable: true,
-          value: undefined,
-        });
+        if (!bareReactNativeModulesNames.includes(propertyName)) {
+          Object.defineProperty(aThing, propertyName, {
+            configurable: true,
+            enumerable: true,
+            writable: true,
+            value: undefined,
+          });
+        }
       }
     };
     // Clear all the native modules as a way to simulate running outside of Expo

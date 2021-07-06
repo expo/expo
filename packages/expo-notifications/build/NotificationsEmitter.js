@@ -1,6 +1,7 @@
-import { EventEmitter, NativeModulesProxy } from '@unimodules/core';
+import { EventEmitter, UnavailabilityError } from '@unimodules/core';
+import NotificationsEmitterModule from './NotificationsEmitterModule';
 // Web uses SyntheticEventEmitter
-const emitter = new EventEmitter(NativeModulesProxy.ExpoNotificationsEmitter);
+const emitter = new EventEmitter(NotificationsEmitterModule);
 const didReceiveNotificationEventName = 'onDidReceiveNotification';
 const didDropNotificationsEventName = 'onNotificationsDeleted';
 const didReceiveNotificationResponseEventName = 'onDidReceiveNotificationResponse';
@@ -17,9 +18,10 @@ export function addNotificationResponseReceivedListener(listener) {
 export function removeNotificationSubscription(subscription) {
     emitter.removeSubscription(subscription);
 }
-export function removeAllNotificationListeners() {
-    emitter.removeAllListeners(didReceiveNotificationEventName);
-    emitter.removeAllListeners(didDropNotificationsEventName);
-    emitter.removeAllListeners(didReceiveNotificationResponseEventName);
+export async function getLastNotificationResponseAsync() {
+    if (!NotificationsEmitterModule.getLastNotificationResponseAsync) {
+        throw new UnavailabilityError('ExpoNotifications', 'getLastNotificationResponseAsync');
+    }
+    return await NotificationsEmitterModule.getLastNotificationResponseAsync();
 }
 //# sourceMappingURL=NotificationsEmitter.js.map

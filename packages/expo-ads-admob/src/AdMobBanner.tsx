@@ -1,7 +1,6 @@
 import { requireNativeViewManager } from '@unimodules/core';
-import PropTypes from 'prop-types';
 import * as React from 'react';
-import { View, ViewPropTypes } from 'react-native';
+import { View } from 'react-native';
 
 type PropsType = React.ComponentProps<typeof View> & {
   /**
@@ -62,28 +61,6 @@ type StateType = {
 let _hasWarnedAboutTestDeviceID = false;
 
 export default class AdMobBanner extends React.Component<PropsType, StateType> {
-  static propTypes = {
-    bannerSize: PropTypes.oneOf([
-      'banner',
-      'largeBanner',
-      'mediumRectangle',
-      'fullBanner',
-      'leaderboard',
-      'smartBannerPortrait',
-      'smartBannerLandscape',
-    ]),
-    adUnitID: PropTypes.string,
-    servePersonalizedAds: PropTypes.bool,
-    onAdViewDidReceiveAd: PropTypes.func,
-    additionalRequestParams: PropTypes.object,
-    onDidFailToReceiveAdWithError: PropTypes.func,
-    onAdViewWillPresentScreen: PropTypes.func,
-    onAdViewWillDismissScreen: PropTypes.func,
-    onAdViewDidDismissScreen: PropTypes.func,
-    onAdViewWillLeaveApplication: PropTypes.func,
-    ...ViewPropTypes,
-  };
-
   static defaultProps = { bannerSize: 'smartBannerPortrait' };
 
   state = { style: {} };

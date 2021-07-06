@@ -4,12 +4,17 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+
 import androidx.annotation.Nullable;
+
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Pair;
 import android.view.Surface;
 
 import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Format;
@@ -36,6 +41,7 @@ import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer2.upstream.RawResourceDataSource;
 import com.google.android.exoplayer2.util.Util;
 
 import java.io.IOException;
@@ -43,12 +49,14 @@ import java.util.Map;
 
 import expo.modules.av.AVManagerInterface;
 import expo.modules.av.AudioFocusNotAcquiredException;
+import expo.modules.av.player.datasource.CustomHeadersOkHttpDataSourceFactory;
 import expo.modules.av.player.datasource.DataSourceFactoryProvider;
 
 class SimpleExoPlayerData extends PlayerData
-    implements Player.EventListener, ExtractorMediaSource.EventListener, SimpleExoPlayer.VideoListener, AdaptiveMediaSourceEventListener {
+  implements Player.EventListener, ExtractorMediaSource.EventListener, SimpleExoPlayer.VideoListener, AdaptiveMediaSourceEventListener {
 
   private static final String IMPLEMENTATION_NAME = "SimpleExoPlayer";
+  private static final String TAG = SimpleExoPlayerData.class.getSimpleName();
 
   private SimpleExoPlayer mSimpleExoPlayer = null;
   private String mOverridingExtension;
@@ -83,16 +91,22 @@ class SimpleExoPlayerData extends PlayerData
     final Handler mainHandler = new Handler();
     // Measures bandwidth during playback. Can be null if not required.
     final BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
-    final TrackSelection.Factory trackSelectionFactory = new AdaptiveTrackSelection.Factory(bandwidthMeter);
+    final TrackSelection.Factory trackSelectionFactory = new AdaptiveTrackSelection.Factory();
     final TrackSelector trackSelector = new DefaultTrackSelector(trackSelectionFactory);
 
     // Create the player
-    mSimpleExoPlayer = ExoPlayerFactory.newSimpleInstance(mAVModule.getContext(), trackSelector);
+    mSimpleExoPlayer = ExoPlayerFactory.newSimpleInstance(
+      mAVModule.getContext(),
+      new DefaultRenderersFactory(mAVModule.getContext()),
+      trackSelector,
+      new DefaultLoadControl(),
+      null,
+      bandwidthMeter);
     mSimpleExoPlayer.addListener(this);
     mSimpleExoPlayer.addVideoListener(this);
 
     // Produces DataSource instances through which media data is loaded.
-    final DataSource.Factory dataSourceFactory = mAVModule.getModuleRegistry().getModule(DataSourceFactoryProvider.class).createFactory(mReactContext, mAVModule.getModuleRegistry(), Util.getUserAgent(mAVModule.getContext(), "yourApplicationName"), mRequestHeaders);
+    final DataSource.Factory dataSourceFactory = mAVModule.getModuleRegistry().getModule(DataSourceFactoryProvider.class).createFactory(mReactContext, mAVModule.getModuleRegistry(), Util.getUserAgent(mAVModule.getContext(), "yourApplicationName"), mRequestHeaders, bandwidthMeter.getTransferListener());
     try {
       // This is the MediaSource representing the media to be played.
       final MediaSource source = buildMediaSource(mUri, mOverridingExtension, mainHandler, dataSourceFactory);
@@ -135,13 +149,11 @@ class SimpleExoPlayerData extends PlayerData
     mSimpleExoPlayer.setPlaybackParameters(new PlaybackParameters(mRate, mShouldCorrectPitch ? 1.0f : mRate));
 
     mSimpleExoPlayer.setPlayWhenReady(mShouldPlay);
-
-    beginUpdatingProgressIfNecessary();
   }
 
   @Override
   void applyNewStatus(final Integer newPositionMillis, final Boolean newIsLooping)
-      throws AudioFocusNotAcquiredException, IllegalStateException {
+    throws AudioFocusNotAcquiredException, IllegalStateException {
     if (mSimpleExoPlayer == null) {
       throw new IllegalStateException("mSimpleExoPlayer is null!");
     }
@@ -188,14 +200,14 @@ class SimpleExoPlayerData extends PlayerData
     final int duration = (int) mSimpleExoPlayer.getDuration();
     map.putInt(STATUS_DURATION_MILLIS_KEY_PATH, duration);
     map.putInt(STATUS_POSITION_MILLIS_KEY_PATH,
-        getClippedIntegerForValue((int) mSimpleExoPlayer.getCurrentPosition(), 0, duration));
+      getClippedIntegerForValue((int) mSimpleExoPlayer.getCurrentPosition(), 0, duration));
     map.putInt(STATUS_PLAYABLE_DURATION_MILLIS_KEY_PATH,
-        getClippedIntegerForValue((int) mSimpleExoPlayer.getBufferedPosition(), 0, duration));
+      getClippedIntegerForValue((int) mSimpleExoPlayer.getBufferedPosition(), 0, duration));
 
     map.putBoolean(STATUS_IS_PLAYING_KEY_PATH,
-        mSimpleExoPlayer.getPlayWhenReady() && mSimpleExoPlayer.getPlaybackState() == Player.STATE_READY);
+      mSimpleExoPlayer.getPlayWhenReady() && mSimpleExoPlayer.getPlaybackState() == Player.STATE_READY);
     map.putBoolean(STATUS_IS_BUFFERING_KEY_PATH,
-        mIsLoading || mSimpleExoPlayer.getPlaybackState() == Player.STATE_BUFFERING);
+      mIsLoading || mSimpleExoPlayer.getPlaybackState() == Player.STATE_BUFFERING);
 
     map.putBoolean(STATUS_IS_LOOPING_KEY_PATH, mIsLooping);
   }
@@ -284,11 +296,15 @@ class SimpleExoPlayerData extends PlayerData
     }
 
     if (mLastPlaybackState != null
-        && playbackState != mLastPlaybackState
-        && playbackState == Player.STATE_ENDED) {
+      && playbackState != mLastPlaybackState
+      && playbackState == Player.STATE_ENDED) {
       callStatusUpdateListenerWithDidJustFinish();
+      stopUpdatingProgressIfNecessary();
     } else {
       callStatusUpdateListener();
+      if (playWhenReady && (playbackState == Player.STATE_READY)) {
+        beginUpdatingProgressIfNecessary();
+      }
     }
     mLastPlaybackState = playbackState;
   }
@@ -329,7 +345,7 @@ class SimpleExoPlayerData extends PlayerData
       final LoadCompletionListener listener = mLoadCompletionListener;
       mLoadCompletionListener = null;
       listener.onLoadError(error.toString());
-    } else {
+    } else if (mErrorListener != null) {
       mErrorListener.onError("Player error: " + error.getMessage());
     }
     release();
@@ -356,14 +372,25 @@ class SimpleExoPlayerData extends PlayerData
 
   // https://github.com/google/ExoPlayer/blob/2b20780482a9c6b07416bcbf4de829532859d10a/demos/main/src/main/java/com/google/android/exoplayer2/demo/PlayerActivity.java#L365-L393
   private MediaSource buildMediaSource(Uri uri, String overrideExtension, Handler mainHandler, DataSource.Factory factory) {
+    try {
+      if (uri.getScheme() == null) {
+        int resourceId = mReactContext.getResources().getIdentifier(uri.toString(), "raw", mReactContext.getPackageName());
+        DataSpec dataSpec = new DataSpec(RawResourceDataSource.buildRawResourceUri(resourceId));
+        final RawResourceDataSource rawResourceDataSource = new RawResourceDataSource(mReactContext);
+        rawResourceDataSource.open(dataSpec);
+        uri = rawResourceDataSource.getUri();
+      }
+    } catch (Exception e) {
+      Log.e(TAG, "Error reading raw resource from ExoPlayer", e);
+    }
     @C.ContentType int type = TextUtils.isEmpty(overrideExtension) ? Util.inferContentType(String.valueOf(uri)) : Util.inferContentType("." + overrideExtension);
     switch (type) {
       case C.TYPE_SS:
         return new SsMediaSource(uri, factory,
-            new DefaultSsChunkSource.Factory(factory), mainHandler, this);
+          new DefaultSsChunkSource.Factory(factory), mainHandler, this);
       case C.TYPE_DASH:
         return new DashMediaSource(uri, factory,
-            new DefaultDashChunkSource.Factory(factory), mainHandler, this);
+          new DefaultDashChunkSource.Factory(factory), mainHandler, this);
       case C.TYPE_HLS:
         return new HlsMediaSource(uri, factory, mainHandler, this);
       case C.TYPE_OTHER:

@@ -1,7 +1,7 @@
 package expo.modules.splashscreen
 
 import android.content.Context
-import expo.modules.splashscreen.SplashScreenModule
+import expo.modules.splashscreen.singletons.SplashScreen
 
 import org.unimodules.core.BasePackage
 import org.unimodules.core.ExportedModule

@@ -41,11 +41,13 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
 import host.exp.exponent.Constants;
 import host.exp.exponent.analytics.EXL;
+import host.exp.exponent.kernel.ExperienceKey;
 
 public class ScopedContext extends ContextWrapper {
 
@@ -53,16 +55,21 @@ public class ScopedContext extends ContextWrapper {
   
   private String mScope;
   private File mFilesDir;
+  private File mNoBackupDir;
   private File mCacheDir;
   private ScopedApplicationContext mScopedApplicationContext;
 
-  public ScopedContext(final Context context, final String scope) {
+  public ScopedContext(final Context context, final ExperienceKey experienceKey) throws UnsupportedEncodingException {
     super(context);
+
+    String scope = experienceKey.getUrlEncodedScopeKey();
+
     mScope = scope + '-';
 
     File scopedFilesDir = new File(getBaseContext().getFilesDir() + "/ExperienceData/" + scope);
     mFilesDir = scopedFilesDir;
     mCacheDir = new File(getBaseContext().getCacheDir() + "/ExperienceData/" + scope);
+    mNoBackupDir = new File(getBaseContext().getNoBackupFilesDir() + "/ExperienceData/" + scope);
 
     if (Constants.isStandaloneApp()) {
       File scopedFilesMigrationMarker = new File(scopedFilesDir, ".expo-migration");
@@ -71,6 +78,7 @@ public class ScopedContext extends ContextWrapper {
       }
       mFilesDir = getBaseContext().getFilesDir();
       mCacheDir = getBaseContext().getCacheDir();
+      mNoBackupDir = getBaseContext().getNoBackupFilesDir();
     }
   }
 
@@ -167,6 +175,16 @@ public class ScopedContext extends ContextWrapper {
   @Override
   public File getCacheDir() {
     return mCacheDir;
+  }
+
+  @Override
+  public File getNoBackupFilesDir() {
+    // We only need to create the directory if someone
+    // asks for it - that's why .mkdirs() is not
+    // in the constructor.
+    //noinspection ResultOfMethodCallIgnored
+    mNoBackupDir.mkdirs();
+    return mNoBackupDir;
   }
 
   @Override

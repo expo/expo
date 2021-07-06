@@ -38,7 +38,7 @@ public class NativeAdViewManager extends ViewManager<NativeAdView> {
 
   @Override
   public List<String> getExportedEventNames() {
-    return Arrays.asList("onAdLoaded", "onAdFailed");
+    return Arrays.asList("onAdLoaded");
   }
 
   @Override

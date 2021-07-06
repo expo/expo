@@ -1,5 +1,5 @@
 import { EventEmitter, Platform } from '@unimodules/core';
-import { PermissionStatus } from 'unimodules-permissions-interface';
+import { PermissionStatus } from 'expo-modules-core';
 import { _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS, } from '../AV';
 import ExponentAV from '../ExponentAV';
 import { isAudioEnabled, throwIfAudioIsDisabled } from './AudioAvailability';
@@ -66,6 +66,7 @@ export const RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_VARIABLE_CONSTRAINED = 2;
 export const RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_VARIABLE = 3;
 // TODO : maybe make presets for music and speech, or lossy / lossless.
 export const RECORDING_OPTIONS_PRESET_HIGH_QUALITY = {
+    isMeteringEnabled: true,
     android: {
         extension: '.m4a',
         outputFormat: RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4,
@@ -84,8 +85,13 @@ export const RECORDING_OPTIONS_PRESET_HIGH_QUALITY = {
         linearPCMIsBigEndian: false,
         linearPCMIsFloat: false,
     },
+    web: {
+        mimeType: 'audio/webm',
+        bitsPerSecond: 128000,
+    },
 };
 export const RECORDING_OPTIONS_PRESET_LOW_QUALITY = {
+    isMeteringEnabled: true,
     android: {
         extension: '.3gp',
         outputFormat: RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_THREE_GPP,
@@ -103,6 +109,10 @@ export const RECORDING_OPTIONS_PRESET_LOW_QUALITY = {
         linearPCMBitDepth: 16,
         linearPCMIsBigEndian: false,
         linearPCMIsFloat: false,
+    },
+    web: {
+        mimeType: 'audio/webm',
+        bitsPerSecond: 128000,
     },
 };
 export { PermissionStatus };
@@ -129,8 +139,7 @@ export class Recording {
         this._cleanupForUnloadedRecorder = async (finalStatus) => {
             this._canRecord = false;
             this._isDoneRecording = true;
-            // $FlowFixMe(greg): durationMillis is not always defined
-            this._finalDurationMillis = finalStatus.durationMillis;
+            this._finalDurationMillis = finalStatus?.durationMillis ?? 0;
             _recorderExists = false;
             if (this._subscription) {
                 this._subscription.remove();
@@ -150,7 +159,6 @@ export class Recording {
                 }
             }
         };
-        // Note that all calls automatically call onRecordingStatusUpdate as a side effect.
         // Get status API
         this.getStatusAsync = async () => {
             // Automatically calls onRecordingStatusUpdate.
@@ -263,14 +271,28 @@ export class Recording {
         }
         // We perform a separate native API call so that the state of the Recording can be updated with
         // the final duration of the recording. (We cast stopStatus as Object to appease Flow)
-        const finalStatus = await ExponentAV.stopAudioRecording();
+        let stopResult;
+        let stopError;
+        try {
+            stopResult = await ExponentAV.stopAudioRecording();
+        }
+        catch (err) {
+            stopError = err;
+        }
+        // Web has to return the URI at the end of recording, so needs a little destructuring
+        if (Platform.OS === 'web' && stopResult?.uri !== undefined) {
+            this._uri = stopResult.uri;
+        }
+        // Clean-up and return status
         await ExponentAV.unloadAudioRecorder();
-        return this._cleanupForUnloadedRecorder(finalStatus);
+        const status = await this._cleanupForUnloadedRecorder(stopResult);
+        return stopError ? Promise.reject(stopError) : status;
     }
     // Read API
     getURI() {
         return this._uri;
     }
+    /** @deprecated Use `createNewLoadedSoundAsync()` instead */
     async createNewLoadedSound(initialStatus = {}, onPlaybackStatusUpdate = null) {
         console.warn(`createNewLoadedSound is deprecated in favor of createNewLoadedSoundAsync, which has the same API aside from the method name`);
         return this.createNewLoadedSoundAsync(initialStatus, onPlaybackStatusUpdate);
@@ -284,4 +306,24 @@ export class Recording {
         { uri: this._uri }, initialStatus, onPlaybackStatusUpdate, false);
     }
 }
+// Note that all calls automatically call onRecordingStatusUpdate as a side effect.
+Recording.createAsync = async (options = RECORDING_OPTIONS_PRESET_LOW_QUALITY, onRecordingStatusUpdate = null, progressUpdateIntervalMillis = null) => {
+    const recording = new Recording();
+    if (progressUpdateIntervalMillis) {
+        recording._progressUpdateIntervalMillis = progressUpdateIntervalMillis;
+    }
+    recording.setOnRecordingStatusUpdate(onRecordingStatusUpdate);
+    await recording.prepareToRecordAsync({
+        ...options,
+        keepAudioActiveHint: true,
+    });
+    try {
+        const status = await recording.startAsync();
+        return { recording, status };
+    }
+    catch (err) {
+        recording.stopAndUnloadAsync();
+        throw err;
+    }
+};
 //# sourceMappingURL=Recording.js.map

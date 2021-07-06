@@ -27,7 +27,6 @@ import javax.inject.Inject
 import host.exp.exponent.modules.ExponentKernelModule
 import host.exp.exponent.storage.ExponentSharedPreferences
 
-
 private const val DEV_MENU_JS_MODULE_NAME = "HomeMenu"
 
 /**
@@ -80,18 +79,20 @@ class DevMenuManager {
         val devMenuModule = devMenuModulesRegistry[activity] ?: return@runOnUiThread
         val devMenuView = prepareRootView(devMenuModule.getInitialProps())
 
+        loseFocusInActivity(activity)
+
         // We need to force the device to use portrait orientation as the dev menu doesn't support landscape.
         // However, when removing it, we should set it back to the orientation from before showing the dev menu.
         orientationBeforeShowingDevMenu = activity.requestedOrientation
         activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
-        activity.addView(devMenuView)
+        activity.addReactViewToContentContainer(devMenuView)
 
         // @tsapeta: We need to call onHostResume on kernel's react instance with the new ExperienceActivity.
         // Otherwise, touches and other gestures may not work correctly.
         kernel?.reactInstanceManager?.onHostResume(activity)
       } catch (exception: Exception) {
-        Log.e("ExpoDevMenu", exception.message)
+        Log.e("ExpoDevMenu", exception.message ?: "No error message.")
       }
     }
   }
@@ -134,7 +135,7 @@ class DevMenuManager {
    * Toggles dev menu visibility in given experience activity.
    */
   fun toggleInActivity(activity: ExperienceActivity) {
-    if (isDevMenuVisible() && activity.hasView(reactRootView)) {
+    if (isDevMenuVisible() && activity.hasReactView(reactRootView)) {
       requestToClose(activity)
     } else {
       showInActivity(activity)
@@ -221,7 +222,7 @@ class DevMenuManager {
    * Checks whether the dev menu is shown over given experience activity.
    */
   fun isShownInActivity(activity: ExperienceActivity): Boolean {
-    return reactRootView != null && activity.hasView(reactRootView)
+    return reactRootView != null && activity.hasReactView(reactRootView)
   }
 
   /**
@@ -266,7 +267,7 @@ class DevMenuManager {
    * the user opens an experience, or he hasn't finished onboarding yet.
    */
   private fun shouldShowOnboarding(): Boolean {
-    return !Constants.isStandaloneApp() && !KernelConfig.HIDE_ONBOARDING && !isOnboardingFinished()
+    return !Constants.isStandaloneApp() && !KernelConfig.HIDE_ONBOARDING && !isOnboardingFinished() && !Constants.DISABLE_NUX
   }
 
   /**
@@ -317,6 +318,13 @@ class DevMenuManager {
     rootView.visibility = View.VISIBLE
 
     return rootView
+  }
+
+  /**
+   * Loses view focus in given activity. It makes sure that system's keyboard is hidden when presenting dev menu view.
+   */
+  private fun loseFocusInActivity(activity: ExperienceActivity) {
+    activity.getCurrentFocus()?.clearFocus()
   }
 
   /**

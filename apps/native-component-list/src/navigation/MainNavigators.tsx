@@ -1,51 +1,60 @@
-import React from 'react';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { DrawerNavigationOptions } from '@react-navigation/drawer';
+import { PathConfig } from '@react-navigation/native';
+import { StackNavigationOptions } from '@react-navigation/stack';
 
-import TabIcon from '../components/TabIcon';
-import ExpoApisStackNavigator from './ExpoApisStackNavigator';
-import ExpoComponentsStackNavigator from './ExpoComponentsStackNavigator';
-import ReactNativeCoreStackNavigator from './ReactNativeCoreStackNavigator';
+import ExpoApisStackNavigator, { Screens as APIScreens } from './ExpoApisStackNavigator';
+import ExpoComponentsStackNavigator, {
+  Screens as ComponentScreens,
+} from './ExpoComponentsStackNavigator';
 
 // @tsapeta: These navigators are being used by `bare-expo` app,
 // so make sure they still work there once you change something here.
 
-const ExpoApis = {
-  screen: ExpoApisStackNavigator,
-  path: 'apis',
-  navigationOptions: {
-    title: 'Expo APIs',
-    tabBarLabel: 'APIs',
-    tabBarIcon: ({ focused }: { focused: boolean }) => {
-      return <TabIcon name="exponent-box" focused={focused} />;
-    },
-  },
+type ScreenConfig = {
+  linking: PathConfig;
+  navigator: ((props: { navigation: BottomTabNavigationProp<any> }) => JSX.Element) & {
+    navigationOptions: StackNavigationOptions & DrawerNavigationOptions;
+  };
 };
 
-const ExpoComponents = {
-  screen: ExpoComponentsStackNavigator,
-  path: 'components',
-  navigationOptions: {
-    title: 'Expo Components',
-    tabBarLabel: 'Components',
-    tabBarIcon: ({ focused }: { focused: boolean }) => {
-      return <TabIcon name="cards-playing-outline" focused={focused} />;
+const apis: ScreenConfig = {
+  linking: {
+    path: '/apis',
+    initialRouteName: 'ExpoApis',
+    screens: {
+      ExpoApis: '',
+      ...APIScreens.reduce(
+        (prev, curr) => ({
+          ...prev,
+          [curr.name]: curr.name.toLowerCase(),
+        }),
+        {}
+      ),
     },
   },
+  navigator: ExpoApisStackNavigator,
 };
 
-const ReactNativeCore = {
-  screen: ReactNativeCoreStackNavigator,
-  path: 'react-native',
-  navigationOptions: {
-    title: 'React Native Core',
-    tabBarLabel: 'React Native',
-    tabBarIcon: ({ focused }: { focused: boolean }) => {
-      return <TabIcon name="react" focused={focused} />;
+const components = {
+  linking: {
+    path: '/components',
+    initialRouteName: 'ExpoComponents',
+    screens: {
+      ExpoComponents: '',
+      ...ComponentScreens.reduce(
+        (prev, curr) => ({
+          ...prev,
+          [curr.name]: curr.route || curr.name.toLowerCase(),
+        }),
+        {}
+      ),
     },
   },
+  navigator: ExpoComponentsStackNavigator,
 };
 
 export default {
-  ExpoApis,
-  ExpoComponents,
-  ReactNativeCore,
+  apis,
+  components,
 };

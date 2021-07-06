@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.lang.Math;
 
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
@@ -23,17 +24,18 @@ import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.core.interfaces.services.UIManager;
-import org.unimodules.interfaces.sensors.SensorService;
-import org.unimodules.interfaces.sensors.SensorServiceSubscription;
-import org.unimodules.interfaces.sensors.services.AccelerometerService;
-import org.unimodules.interfaces.sensors.services.GravitySensorService;
-import org.unimodules.interfaces.sensors.services.GyroscopeService;
-import org.unimodules.interfaces.sensors.services.LinearAccelerationSensorService;
-import org.unimodules.interfaces.sensors.services.RotationVectorSensorService;
+
+import expo.modules.interfaces.sensors.SensorServiceInterface;
+import expo.modules.interfaces.sensors.SensorServiceSubscriptionInterface;
+import expo.modules.interfaces.sensors.services.AccelerometerServiceInterface;
+import expo.modules.interfaces.sensors.services.GravitySensorServiceInterface;
+import expo.modules.interfaces.sensors.services.GyroscopeServiceInterface;
+import expo.modules.interfaces.sensors.services.LinearAccelerationSensorServiceInterface;
+import expo.modules.interfaces.sensors.services.RotationVectorSensorServiceInterface;
 
 public class DeviceMotionModule extends ExportedModule implements SensorEventListener2 {
   private long mLastUpdate = 0;
-  private int mUpdateInterval = 100;
+  private float mUpdateInterval = 1.0f / 60.0f;
   private float[] mRotationMatrix = new float[9];
   private float[] mRotationResult = new float[3];
 
@@ -43,7 +45,7 @@ public class DeviceMotionModule extends ExportedModule implements SensorEventLis
   private SensorEvent mRotationRateEvent;
   private SensorEvent mGravityEvent;
 
-  private List<SensorServiceSubscription> mServiceSubscriptions = null;
+  private List<SensorServiceSubscriptionInterface> mServiceSubscriptions = null;
 
   private UIManager mUiManager = null;
   private ModuleRegistry mModuleRegistry = null;
@@ -61,7 +63,8 @@ public class DeviceMotionModule extends ExportedModule implements SensorEventLis
   public Map<String, Object> getConstants() {
     return Collections.unmodifiableMap(new HashMap<String, Object>() {
       {
-        put("Gravity", 9.81);
+        // Gravity on the planet this module supports (currently just Earth) represented as m/s^2.
+        put("Gravity", 9.80665);
       }
     });
   }
@@ -76,8 +79,8 @@ public class DeviceMotionModule extends ExportedModule implements SensorEventLis
   public void startObserving(Promise promise) {
     if (mServiceSubscriptions == null) {
       mServiceSubscriptions = new ArrayList<>();
-      for (SensorService kernelService : getSensorKernelServices()) {
-        SensorServiceSubscription subscription = kernelService.createSubscriptionForListener(this);
+      for (SensorServiceInterface kernelService : getSensorKernelServices()) {
+        SensorServiceSubscriptionInterface subscription = kernelService.createSubscriptionForListener(this);
         // We want handle update interval on our own,
         // because we need to coordinate updates from multiple sensor services.
         subscription.setUpdateInterval(0);
@@ -85,7 +88,7 @@ public class DeviceMotionModule extends ExportedModule implements SensorEventLis
       }
     }
 
-    for (SensorServiceSubscription subscription : mServiceSubscriptions) {
+    for (SensorServiceSubscriptionInterface subscription : mServiceSubscriptions) {
       subscription.start();
     }
 
@@ -97,7 +100,7 @@ public class DeviceMotionModule extends ExportedModule implements SensorEventLis
     mUiManager.runOnUiQueueThread(new Runnable() {
       @Override
       public void run() {
-        for (SensorServiceSubscription subscription : mServiceSubscriptions) {
+        for (SensorServiceSubscriptionInterface subscription : mServiceSubscriptions) {
           subscription.stop();
         }
         mCurrentFrameCallback.stop();
@@ -128,13 +131,13 @@ public class DeviceMotionModule extends ExportedModule implements SensorEventLis
     mModuleRegistry = moduleRegistry;
   }
 
-  private List<SensorService> getSensorKernelServices() {
+  private List<SensorServiceInterface> getSensorKernelServices() {
     return Arrays.asList(
-        mModuleRegistry.getModule(GyroscopeService.class),
-        mModuleRegistry.getModule(LinearAccelerationSensorService.class),
-        mModuleRegistry.getModule(AccelerometerService.class),
-        mModuleRegistry.getModule(RotationVectorSensorService.class),
-        mModuleRegistry.getModule(GravitySensorService.class)
+        mModuleRegistry.getModule(GyroscopeServiceInterface.class),
+        mModuleRegistry.getModule(LinearAccelerationSensorServiceInterface.class),
+        mModuleRegistry.getModule(AccelerometerServiceInterface.class),
+        mModuleRegistry.getModule(RotationVectorSensorServiceInterface.class),
+        mModuleRegistry.getModule(GravitySensorServiceInterface.class)
     );
   }
 
@@ -231,13 +234,13 @@ public class DeviceMotionModule extends ExportedModule implements SensorEventLis
     Bundle accelerationIncludingGravity = new Bundle();
     Bundle rotation = new Bundle();
     Bundle rotationRate = new Bundle();
-
+    double interval = 0;
     if (mAccelerationEvent != null) {
       acceleration.putDouble("x", mAccelerationEvent.values[0]);
       acceleration.putDouble("y", mAccelerationEvent.values[1]);
       acceleration.putDouble("z", mAccelerationEvent.values[2]);
       map.putBundle("acceleration", acceleration);
-
+      interval = mAccelerationEvent.timestamp;
     }
 
     if (mAccelerationIncludingGravityEvent != null && mGravityEvent != null) {
@@ -245,13 +248,15 @@ public class DeviceMotionModule extends ExportedModule implements SensorEventLis
       accelerationIncludingGravity.putDouble("y", mAccelerationIncludingGravityEvent.values[1] - 2 * mGravityEvent.values[1]);
       accelerationIncludingGravity.putDouble("z", mAccelerationIncludingGravityEvent.values[2] - 2 * mGravityEvent.values[2]);
       map.putBundle("accelerationIncludingGravity", accelerationIncludingGravity);
+      interval = mAccelerationIncludingGravityEvent.timestamp;
     }
 
     if (mRotationRateEvent != null) {
-      rotationRate.putDouble("alpha", mRotationRateEvent.values[2]);
-      rotationRate.putDouble("beta", mRotationRateEvent.values[0]);
-      rotationRate.putDouble("gamma", mRotationRateEvent.values[1]);
+      rotationRate.putDouble("alpha", Math.toDegrees(mRotationRateEvent.values[0]));
+      rotationRate.putDouble("beta", Math.toDegrees(mRotationRateEvent.values[1]));
+      rotationRate.putDouble("gamma", Math.toDegrees(mRotationRateEvent.values[2]));
       map.putBundle("rotationRate", rotationRate);
+      interval = mRotationRateEvent.timestamp;
     }
 
     if (mRotationEvent != null) {
@@ -261,8 +266,10 @@ public class DeviceMotionModule extends ExportedModule implements SensorEventLis
       rotation.putDouble("beta", -mRotationResult[1]);
       rotation.putDouble("gamma", mRotationResult[2]);
       map.putBundle("rotation", rotation);
+      interval = mRotationEvent.timestamp;
     }
 
+    map.putDouble("interval", interval);
     map.putInt("orientation", getOrientation());
 
     return map;

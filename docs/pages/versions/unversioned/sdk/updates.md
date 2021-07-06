@@ -1,15 +1,14 @@
 ---
 title: Updates
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo/src/Updates'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo/src/Updates'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
 
-The `Updates` API from **`expo`** allows you to programatically control and respond to over-the-air updates to your app.
+The `Updates` API from **`expo`** allows you to programmatically control and respond to over-the-air updates to your app.
 
-<PlatformsSection android emulator ios simulator web />
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
@@ -17,19 +16,13 @@ The `Updates` API from **`expo`** allows you to programatically control and resp
 
 Since extra setup is required to use this module in bare React Native apps, for easiest use we recommend using a template project with `expo-updates` already installed. You can use `expo init --template=expo-template-bare-minimum` to initialize a new project from such a template.
 
+> Most of the methods and constants in this module can only be used or tested in release mode; they do not make sense in debug builds where you always load the latest JS from your computer while developing. To test manual updates in the Expo Go app, run `expo publish` and then open the published version of your app with Expo Go. To test manual updates in Bare workflow apps, make a release build with `npm run ios --configuration Release` or `npm run android --variant Release` (you don't need to submit this build to the App/Play Store to test).
+
 ## API
 
 ```js
 import * as Updates from 'expo-updates';
 ```
-
-<TableOfContentSection title='Constants' contents={['Updates.isEmergencyLaunch', 'Updates.manifest']} />
-
-<TableOfContentSection title='Methods' contents={['Updates.reloadAsync()', 'Updates.checkForUpdateAsync()', 'Updates.fetchUpdateAsync()']} />
-
-<TableOfContentSection title='Related Types' contents={['EventSubscription', 'UpdateEvent', 'UpdateEventType']} />
-
-<TableOfContentSection title='Error Codes' contents={[]} />
 
 ## Constants
 
@@ -39,13 +32,25 @@ import * as Updates from 'expo-updates';
 
 ### `Updates.manifest`
 
-(_object_) The [manifest](../../workflow/how-expo-works/#expo-development-server) object for the update that's currently running.
+(_object_) If `expo-updates` is enabled, this is the [manifest](../../../guides/how-expo-works.md#expo-development-server) object for the update that's currently running.
+
+In development mode, or any other environment in which `expo-updates` is disabled, this object is empty.
+
+### `Updates.releaseChannel`
+
+(_string_) The name of the release channel currently configured in this standalone or bare app.
+
+### `Updates.updateId`
+
+(_string | null_) If `expo-updates` is enabled, the UUID that uniquely identifies the currently running update. The UUID is represented in its canonical string form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) and will always use lowercase letters. In development mode, or any other environment in which `expo-updates` is disabled, this value is null.
 
 ## Methods
 
 ### `Updates.reloadAsync()`
 
 Instructs the app to reload using the most recently downloaded version. This is useful for triggering a newly downloaded update to launch without the user needing to manually restart the app.
+
+It is not recommended to place any meaningful logic after a call to `await Updates.reloadAsync()`. This is because the `Promise` is resolved after verifying that the app can be reloaded, and immediately before posting an asynchronous task to the main thread to actually reload the app. It is unsafe to make any assumptions about whether any more JS code will be executed after the `Updates.reloadAsync` method call resolves, since that depends on the OS and the state of the native module and main threads.
 
 This method cannot be used in development mode, and the returned `Promise` will be rejected if you try to do so.
 
@@ -68,7 +73,7 @@ A `Promise` that resolves to an object with the following keys:
 - **isAvailable (_boolean_)** -- `true` if an update is available, `false` if you're already running the most up-to-date JS bundle.
 - **manifest (_object_)** -- If `isAvailable` is true, the manifest of the available update. Undefined otherwise.
 
-The `Promise` rejects if the app is in development mode, or if there is an unexpected error communicating with the server.
+The `Promise` rejects if the app is in development mode, or if there is an unexpected error or timeout communicating with the server.
 
 ### `Updates.fetchUpdateAsync()`
 
@@ -83,7 +88,7 @@ A `Promise` that resolves to an object with the following keys:
 - **isNew (_boolean_)** -- `true` if the fetched bundle is new (i.e. a different version than what's currently running), `false` otherwise.
 - **manifest (_object_)** -- If `isNew` is true, the manifest of the newly downloaded update. Undefined otherwise.
 
-The `Promise` rejects if the app is in development mode, or if there is an unexpected error communicating with the server.
+The `Promise` rejects if the app is in development mode, or if there is an unexpected error or timeout communicating with the server.
 
 ### `Updates.addListener(eventListener)`
 
@@ -121,9 +126,9 @@ An object that is passed into each event listener when an auto-update check has 
 
 ## Error Codes
 
-| Code | Description |
-| --- | --- |
-| `ERR_UPDATES_DISABLED` | A method call was attempted when the Updates module was disabled, or the application was running in development mode |
-| `ERR_UPDATES_RELOAD` | An error occurred when trying to reload the application and it could not be reloaded. For bare workflow apps, double check the setup steps for this module to ensure it has been installed correctly and the proper native initialization methods are called. |
-| `ERR_UPDATES_CHECK` | An unexpected error occurred when trying to check for new updates. Check the error message for more information. |
-| `ERR_UPDATES_FETCH` | An unexpected error occurred when trying to fetch a new update. Check the error message for more information. |
+| Code                   | Description                                                                                                                                                                                                                                                   |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ERR_UPDATES_DISABLED` | A method call was attempted when the Updates module was disabled, or the application was running in development mode                                                                                                                                          |
+| `ERR_UPDATES_RELOAD`   | An error occurred when trying to reload the application and it could not be reloaded. For bare workflow apps, double check the setup steps for this module to ensure it has been installed correctly and the proper native initialization methods are called. |
+| `ERR_UPDATES_CHECK`    | An unexpected error occurred when trying to check for new updates. Check the error message for more information.                                                                                                                                              |
+| `ERR_UPDATES_FETCH`    | An unexpected error occurred when trying to fetch a new update. Check the error message for more information.                                                                                                                                                 |

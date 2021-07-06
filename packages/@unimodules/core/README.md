@@ -20,7 +20,7 @@ If you're using Cocoapods, add the following dependency to your `Podfile`:
 
 `pod 'UMCore', path: '../node_modules/@unimodules/core/ios'`
 
-and run `pod install`.
+and run `npx pod-install`.
 
 ### Android
 
@@ -48,7 +48,7 @@ and run `pod install`.
 ### Glossary
 
 - **Native code** — iOS/Android native code.
-- **Client code** — code _over the bridge_, for React Native it would be the JavaScript app, for Flutter it would be Flutter code.
+- **Client code** — code _over the bridge_, for React Native it's the JavaScript app.
 - **Internal module** — a class implementing `UMInternalModule`/`org.unimodules.interfaces.InternalModule` interface. Its instance can be exposed internally to other modules via *Module Registry* (how dependants reference modules differs between platforms).
 - **Module interface** — an interface that should be implemented by the dependency so it can act as an implementation of it.
 

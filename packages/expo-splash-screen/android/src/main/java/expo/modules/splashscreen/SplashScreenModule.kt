@@ -9,6 +9,12 @@ import org.unimodules.core.errors.CurrentActivityNotFoundException
 import org.unimodules.core.interfaces.ActivityProvider
 import org.unimodules.core.interfaces.ExpoMethod
 
+// Below import must be kept unversioned even in versioned code to provide a redirection from
+// versioned code realm to unversioned code realm.
+// Without this import any `SplashScreen.anyMethodName(...)` invocation on JS side ends up
+// in versioned SplashScreen kotlin object that stores no information about the ExperienceActivity.
+import expo.modules.splashscreen.singletons.SplashScreen
+
 class SplashScreenModule(context: Context) : ExportedModule(context) {
   companion object {
     private const val NAME = "ExpoSplashScreen"

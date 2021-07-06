@@ -12,7 +12,8 @@
 #include <arpa/inet.h>
 
 #if !TARGET_OS_TV
-@import CoreTelephony;
+#import <CoreTelephony/CTCarrier.h>
+#import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #endif
 @import SystemConfiguration.CaptiveNetwork;
 
@@ -106,7 +107,7 @@ RCT_EXPORT_METHOD(getCurrentState:(nullable NSString *)requestedInterface resolv
   if (connected) {
     details[@"isConnectionExpensive"] = @(state.expensive);
   }
-  
+
   return @{
     @"type": selectedInterface,
     @"isConnected": @(connected),
@@ -123,8 +124,9 @@ RCT_EXPORT_METHOD(getCurrentState:(nullable NSString *)requestedInterface resolv
   } else if ([requestedInterface isEqualToString: RNCConnectionTypeWifi] || [requestedInterface isEqualToString: RNCConnectionTypeEthernet]) {
     details[@"ipAddress"] = [self ipAddress] ?: NSNull.null;
     details[@"subnet"] = [self subnet] ?: NSNull.null;
-    #if !TARGET_OS_TV
+    #if !TARGET_OS_TV && !TARGET_OS_OSX
     details[@"ssid"] = [self ssid] ?: NSNull.null;
+    details[@"bssid"] = [self bssid] ?: NSNull.null;
     #endif
   }
   return details;
@@ -132,7 +134,7 @@ RCT_EXPORT_METHOD(getCurrentState:(nullable NSString *)requestedInterface resolv
 
 - (NSString *)carrier
 {
-#if (TARGET_OS_TV)
+#if (TARGET_OS_TV || TARGET_OS_OSX)
   return nil;
 #else
   CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
@@ -163,10 +165,12 @@ RCT_EXPORT_METHOD(getCurrentState:(nullable NSString *)requestedInterface resolv
           [ifname isEqualToString:@"en1"]
         ) {
           // Get NSString from C String
-          address = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)];
+          char str[INET_ADDRSTRLEN];
+          inet_ntop(AF_INET, &((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr, str, INET_ADDRSTRLEN);
+          address = [NSString stringWithUTF8String:str];
         }
       }
-      
+
       temp_addr = temp_addr->ifa_next;
     }
   }
@@ -197,10 +201,12 @@ RCT_EXPORT_METHOD(getCurrentState:(nullable NSString *)requestedInterface resolv
           [ifname isEqualToString:@"en1"]
         ) {
           // Get NSString from C String
-          subnet = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_netmask)->sin_addr)];
+          char str[INET_ADDRSTRLEN];
+          inet_ntop(AF_INET, &((struct sockaddr_in *)temp_addr->ifa_netmask)->sin_addr, str, INET_ADDRSTRLEN);
+          subnet = [NSString stringWithUTF8String:str];
         }
       }
-      
+
       temp_addr = temp_addr->ifa_next;
     }
   }
@@ -209,7 +215,7 @@ RCT_EXPORT_METHOD(getCurrentState:(nullable NSString *)requestedInterface resolv
   return subnet;
 }
 
-#if !TARGET_OS_TV
+#if !TARGET_OS_TV && !TARGET_OS_OSX
 - (NSString *)ssid
 {
   NSArray *interfaceNames = CFBridgingRelease(CNCopySupportedInterfaces());
@@ -226,6 +232,22 @@ RCT_EXPORT_METHOD(getCurrentState:(nullable NSString *)requestedInterface resolv
     }
   }
   return SSID;
+}
+
+- (NSString *)bssid
+{
+  NSArray *interfaceNames = CFBridgingRelease(CNCopySupportedInterfaces());
+  NSDictionary *networkDetails;
+  NSString *BSSID = NULL;
+  for (NSString *interfaceName in interfaceNames) {
+      networkDetails = CFBridgingRelease(CNCopyCurrentNetworkInfo((__bridge CFStringRef)interfaceName));
+      if (networkDetails.count > 0)
+      {
+          BSSID = networkDetails[(NSString *) kCNNetworkInfoKeyBSSID];
+          break;
+      }
+  }
+  return BSSID;
 }
 #endif
 

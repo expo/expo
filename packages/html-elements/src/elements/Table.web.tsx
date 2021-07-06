@@ -1,5 +1,6 @@
 import { ComponentType, forwardRef } from 'react';
-import { StyleSheet, createElement } from 'react-native';
+import { StyleSheet } from 'react-native';
+import createElement from 'react-native-web/dist/exports/createElement';
 
 import { TableTextProps } from '../primitives/Table';
 import { TextProps } from '../primitives/Text';

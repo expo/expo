@@ -1,13 +1,16 @@
-import { openAuthSessionAsync, dismissAuthSession } from 'expo-web-browser';
-import qs from 'qs';
-import { getSessionUrlProvider } from './SessionUrlProvider';
+import { Platform } from '@unimodules/core';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
+import * as Linking from 'expo-linking';
+import { dismissAuthSession, openAuthSessionAsync } from 'expo-web-browser';
+import { AuthRequest } from './AuthRequest';
+import { CodeChallengeMethod, Prompt, ResponseType, } from './AuthRequest.types';
+import { fetchDiscoveryAsync, resolveDiscoveryAsync, } from './Discovery';
+import { generateHexStringAsync } from './PKCE';
+import { getQueryParams } from './QueryParams';
+import sessionUrlProvider from './SessionUrlProvider';
 let _authLock = false;
-const sessionUrlProvider = getSessionUrlProvider();
 export async function startAsync(options) {
-    const returnUrl = options.returnUrl || sessionUrlProvider.getDefaultReturnUrl();
     const authUrl = options.authUrl;
-    const startUrl = sessionUrlProvider.getStartUrl(authUrl, returnUrl);
-    const showInRecents = options.showInRecents || false;
     // Prevent accidentally starting to an empty url
     if (!authUrl) {
         throw new Error('No authUrl provided to AuthSession.startAsync. An authUrl is required -- it points to the page where the user will be able to sign in.');
@@ -20,6 +23,9 @@ export async function startAsync(options) {
         }
         return { type: 'locked' };
     }
+    const returnUrl = options.returnUrl || sessionUrlProvider.getDefaultReturnUrl();
+    const startUrl = sessionUrlProvider.getStartUrl(authUrl, returnUrl);
+    const showInRecents = options.showInRecents || false;
     // About to start session, set lock
     _authLock = true;
     let result;
@@ -42,22 +48,105 @@ export async function startAsync(options) {
             throw new Error('Unexpected AuthSession result with missing type');
         }
     }
-    const { params, errorCode } = parseUrl(result.url);
+    const { params, errorCode } = getQueryParams(result.url);
     return {
         type: errorCode ? 'error' : 'success',
         params,
         errorCode,
+        authentication: null,
         url: result.url,
     };
 }
 export function dismiss() {
     dismissAuthSession();
 }
-export function getDefaultReturnUrl() {
-    return sessionUrlProvider.getDefaultReturnUrl();
+export const getDefaultReturnUrl = sessionUrlProvider.getDefaultReturnUrl;
+/**
+ * @deprecated Use `makeRedirectUri({ path, useProxy })` instead.
+ *
+ * @param path
+ */
+export function getRedirectUrl(path) {
+    return sessionUrlProvider.getRedirectUrl(path);
 }
-export function getRedirectUrl() {
-    return sessionUrlProvider.getRedirectUrl();
+/**
+ * Create a redirect url for the current platform.
+ *
+ * - **Web:** Generates a path based on the current \`window.location\`. For production web apps you should hard code the URL.
+ * - **Managed:** Uses the `scheme` property of your `app.config.js` or `app.json`.
+ *   - **Proxy:** Uses auth.expo.io as the base URL for the path. This only works in Expo client and standalone environments.
+ * - **Bare workflow:** Provide either the `scheme` or a manual `native` property to use.
+ *
+ * @param options Additional options for configuring the path.
+ *
+ * @example
+ * ```ts
+ * const redirectUri = makeRedirectUri({
+ *   scheme: 'my-scheme',
+ *   path: 'redirect'
+ * });
+ * // Custom app: my-scheme://redirect
+ * // Expo Go: exp://127.0.0.1:19000/--/redirect
+ * // Web dev: https://localhost:19006/redirect
+ * // Web prod: https://yourwebsite.com/redirect
+ *
+ * const redirectUri2 = makeRedirectUri({
+ *   scheme: 'scheme2',
+ *   preferLocalhost: true,
+ *   isTripleSlashed: true,
+ * });
+ * // Custom app: scheme2:///
+ * // Expo Go: exp://localhost:19000
+ * // Web dev: https://localhost:19006
+ * // Web prod: https://yourwebsite.com
+ * ```
+ *
+ * const redirectUri3 = makeRedirectUri({
+ *   useProxy: true,
+ * });
+ * // Custom app: https://auth.expo.io/@username/slug
+ * // Expo Go: https://auth.expo.io/@username/slug
+ * // Web dev: https://localhost:19006
+ * // Web prod: https://yourwebsite.com
+ * ```
+ */
+export function makeRedirectUri({ native, scheme, isTripleSlashed, queryParams, path, preferLocalhost, useProxy, } = {}) {
+    if (Platform.OS !== 'web' &&
+        native &&
+        [ExecutionEnvironment.Standalone, ExecutionEnvironment.Bare].includes(Constants.executionEnvironment)) {
+        // Should use the user-defined native scheme in standalone builds
+        return native;
+    }
+    if (!useProxy || Platform.OS === 'web') {
+        const url = Linking.createURL(path || '', {
+            isTripleSlashed,
+            scheme,
+            queryParams,
+        });
+        if (preferLocalhost) {
+            const ipAddress = url.match(/\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/);
+            // Only replace if an IP address exists
+            if (ipAddress?.length) {
+                const [protocol, path] = url.split(ipAddress[0]);
+                return `${protocol}localhost${path}`;
+            }
+        }
+        return url;
+    }
+    // Attempt to use the proxy
+    return sessionUrlProvider.getRedirectUrl(path);
+}
+/**
+ * Build an `AuthRequest` and load it before returning.
+ *
+ * @param config
+ * @param issuerOrDiscovery
+ */
+export async function loadAsync(config, issuerOrDiscovery) {
+    const request = new AuthRequest(config);
+    const discovery = await resolveDiscoveryAsync(issuerOrDiscovery);
+    await request.makeAuthUrlAsync(discovery);
+    return request;
 }
 async function _openWebBrowserAsync(startUrl, returnUrl, showInRecents) {
     // $FlowIssue: Flow thinks the awaited result can be a promise
@@ -67,29 +156,14 @@ async function _openWebBrowserAsync(startUrl, returnUrl, showInRecents) {
     }
     return result;
 }
-function parseUrl(url) {
-    const parts = url.split('#');
-    const hash = parts[1];
-    const partsWithoutHash = parts[0].split('?');
-    const queryString = partsWithoutHash[partsWithoutHash.length - 1];
-    // Get query string (?hello=world)
-    const parsedSearch = qs.parse(queryString);
-    // Pull errorCode off of params
-    const { errorCode } = parsedSearch;
-    delete parsedSearch.errorCode;
-    // Get hash (#abc=example)
-    let parsedHash = {};
-    if (parts[1]) {
-        parsedHash = qs.parse(hash);
-    }
-    // Merge search and hash
-    const params = {
-        ...parsedSearch,
-        ...parsedHash,
-    };
-    return {
-        errorCode,
-        params,
-    };
-}
+export { useAutoDiscovery, useAuthRequest } from './AuthRequestHooks';
+export { AuthError, TokenError } from './Errors';
+export { AuthRequest, CodeChallengeMethod, Prompt, ResponseType, resolveDiscoveryAsync, fetchDiscoveryAsync, generateHexStringAsync, };
+export { 
+// Token classes
+TokenResponse, AccessTokenRequest, RefreshTokenRequest, RevokeTokenRequest, 
+// Token methods
+revokeAsync, refreshAsync, exchangeCodeAsync, fetchUserInfoAsync, } from './TokenRequest';
+// Token types
+export * from './TokenRequest.types';
 //# sourceMappingURL=AuthSession.js.map

@@ -1,5 +1,5 @@
 import { ComponentType, forwardRef } from 'react';
-import { createElement } from 'react-native';
+import createElement from 'react-native-web/dist/exports/createElement';
 
 import { ViewProps } from '../primitives/View';
 

@@ -2,14 +2,13 @@
 
 package host.exp.exponent;
 
-import android.util.Log;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import host.exp.exponent.analytics.EXL;
+import host.exp.expoview.BuildConfig;
 
 // TODO: add type checking in DEBUG
 public class RNObject {
@@ -48,9 +47,11 @@ public class RNObject {
     return mInstance != null;
   }
 
+  @SuppressWarnings("ConstantConditions")   // required for "unversioned" flavor check
   public RNObject loadVersion(String version) {
     try {
-      if (version.equals(UNVERSIONED)) {
+
+      if (version.equals(UNVERSIONED) || BuildConfig.FLAVOR.equals("unversioned")) {
         if (mClassName.startsWith("host.exp.exponent")) {
           mClazz = Class.forName("versioned." + mClassName);
         } else {
@@ -88,6 +89,15 @@ public class RNObject {
       return abiVersion.substring(3);
     } else {
       return UNVERSIONED;
+    }
+  }
+
+  public static Object versionedEnum(String sdkVersion, String clazz, String value) {
+    try {
+      return new RNObject(clazz).loadVersion(sdkVersion).rnClass().getDeclaredField(value).get(null);
+    } catch (IllegalAccessException | NoSuchFieldException e) {
+      EXL.e(TAG, e);
+      throw new IllegalStateException("Unable to create enum: " + clazz + "." + "value", e);
     }
   }
 

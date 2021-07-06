@@ -4,8 +4,6 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
-	<key>CFBundleDisplayName</key>
-	<string>$(PRODUCT_NAME)</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -17,29 +15,24 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>1.0.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLName</key>
-			<string>bareexpo</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>bareexpo</string>
+				<string>msauth.dev.expo.Payments</string>
+				<string>com.googleusercontent.apps.29635966244-v8mbqt2mtno71thelt7f2i6pob104f6e</string>
+				<string>dev.expo.Payments</string>
 			</array>
 		</dict>
 		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLName</key>
-			<string>OAuthRedirect</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>dev.expo.Payments</string>
+				<string>fb629712900716487</string>
 			</array>
 		</dict>
 	</array>
@@ -75,13 +68,15 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow bare-expo to access your microphone</string>
 	<key>NSMotionUsageDescription</key>
-	<string>Allow bare-expo to access your device's accelerometer</string>
+	<string>Allow bare-expo to access your device&apos;s accelerometer</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Give bare-expo periences permission to save photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Give bare-expo periences permission to access your photos</string>
 	<key>NSRemindersUsageDescription</key>
 	<string>Allow bare-expo to access your reminders</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Allow Expo projects to use data for tracking the user or the device</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
@@ -95,10 +90,26 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>UIRequiresFullScreen</key>
+	<false/>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>fbapi</string>
+		<string>fb-messenger-api</string>
+		<string>fbauth2</string>
+		<string>fbshareextension</string>
+	</array>
+	<key>CFBundleDisplayName</key>
+	<string>BareExpo</string>
+	<key>FacebookAppID</key>
+	<string>629712900716487</string>
+	<key>FacebookDisplayName</key>
+	<string>Expo APIs</string>
 </dict>
 </plist>

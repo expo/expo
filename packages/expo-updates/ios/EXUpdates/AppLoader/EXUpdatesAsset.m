@@ -3,28 +3,32 @@
 #import <EXUpdates/EXUpdatesAsset.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 
+#include <stdlib.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXUpdatesAsset
 
-- (instancetype)initWithUrl:(NSURL *)url type:(NSString *)type
+- (instancetype)initWithKey:(nullable NSString *)key type:(NSString *)type
 {
   if (self = [super init]) {
-    _url = url;
+    _key = key;
     _type = type;
   }
   return self;
 }
 
-- (nullable NSString *)localAssetsKey
+- (nullable NSString *)filename
 {
-  if (!_localAssetsKey) {
-    NSString *remoteFilename = _url.lastPathComponent;
-    if (remoteFilename) {
-      _localAssetsKey = [NSString stringWithFormat:@"%@.%@", remoteFilename, _type];
+  if (!_filename) {
+    if (_key) {
+      _filename = _key;
+    } else {
+      // create a filename that's unlikely to collide with any other asset
+      _filename = [NSString stringWithFormat:@"asset-%d-%u", (int)[NSDate date].timeIntervalSince1970, arc4random()];
     }
   }
-  return _localAssetsKey;
+  return _filename;
 }
 
 @end

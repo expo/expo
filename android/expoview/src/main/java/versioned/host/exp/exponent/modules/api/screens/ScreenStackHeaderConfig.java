@@ -2,7 +2,9 @@ package versioned.host.exp.exponent.modules.api.screens;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -12,13 +14,17 @@ import android.view.ViewParent;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import host.exp.expoview.ExpoViewBuildConfig;
 
+import com.facebook.react.ReactApplication;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
-import com.facebook.react.views.text.ReactFontManager;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.views.text.ReactTypefaceUtils;
 
 import java.util.ArrayList;
 
@@ -28,12 +34,17 @@ public class ScreenStackHeaderConfig extends ViewGroup {
   private String mTitle;
   private int mTitleColor;
   private String mTitleFontFamily;
+  private String mDirection;
   private float mTitleFontSize;
-  private int mBackgroundColor;
+  private int mTitleFontWeight;
+  private Integer mBackgroundColor;
   private boolean mIsHidden;
   private boolean mIsBackButtonHidden;
   private boolean mIsShadowHidden;
   private boolean mDestroyed;
+  private boolean mBackButtonInCustomView;
+  private boolean mIsTopInsetEnabled = true;
+  private boolean mIsTranslucent;
   private int mTintColor;
   private final Toolbar mToolbar;
 
@@ -41,6 +52,19 @@ public class ScreenStackHeaderConfig extends ViewGroup {
 
   private int mDefaultStartInset;
   private int mDefaultStartInsetWithNavigation;
+
+  private static class DebugMenuToolbar extends Toolbar {
+
+    public DebugMenuToolbar(Context context) {
+      super(context);
+    }
+
+    @Override
+    public boolean showOverflowMenu() {
+      ((ReactApplication) getContext().getApplicationContext()).getReactNativeHost().getReactInstanceManager().showDevOptionsDialog();
+      return true;
+    }
+  }
 
   private OnClickListener mBackClickListener = new OnClickListener() {
     @Override
@@ -64,7 +88,7 @@ public class ScreenStackHeaderConfig extends ViewGroup {
     super(context);
     setVisibility(View.GONE);
 
-    mToolbar = new Toolbar(context);
+    mToolbar = ExpoViewBuildConfig.DEBUG ? new DebugMenuToolbar(context) : new Toolbar(context);
     mDefaultStartInset = mToolbar.getContentInsetStart();
     mDefaultStartInsetWithNavigation = mToolbar.getContentInsetStartWithNavigation();
 
@@ -73,6 +97,7 @@ public class ScreenStackHeaderConfig extends ViewGroup {
     if (context.getTheme().resolveAttribute(android.R.attr.colorPrimary, tv, true)) {
       mToolbar.setBackgroundColor(tv.data);
     }
+    mToolbar.setClipChildren(false);
   }
 
   @Override
@@ -116,7 +141,7 @@ public class ScreenStackHeaderConfig extends ViewGroup {
     return null;
   }
 
-  private ScreenStackFragment getScreenFragment() {
+  protected @Nullable ScreenStackFragment getScreenFragment() {
     ViewParent screen = getParent();
     if (screen instanceof Screen) {
       Fragment fragment = ((Screen) screen).getFragment();
@@ -141,6 +166,31 @@ public class ScreenStackHeaderConfig extends ViewGroup {
       return;
     }
 
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && mDirection != null) {
+      if (mDirection.equals("rtl")) {
+        mToolbar.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+      } else if (mDirection.equals("ltr")) {
+        mToolbar.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
+      }
+    }
+
+    // orientation and status bar management
+    if (getScreen() != null) {
+      // we set the traits here too, not only when the prop for Screen is passed
+      // because sometimes we don't have the Fragment and Activity available then yet, e.g. on the first setting of props
+      // similar thing is done for Screens of ScreenContainers, but in `onContainerUpdate` of their Fragment
+
+      Screen screen = getScreen();
+      ReactContext context = null;
+      if (getContext() instanceof ReactContext) {
+        context = (ReactContext) getContext();
+      } else if (screen.getFragment() != null) {
+        context = screen.getFragment().tryGetContext();
+      }
+
+      ScreenWindowTraits.trySetWindowTraits(screen, activity, context);
+    }
+
     if (mIsHidden) {
       if (mToolbar.getParent() != null) {
         getScreenFragment().removeToolbar();
@@ -150,6 +200,19 @@ public class ScreenStackHeaderConfig extends ViewGroup {
 
     if (mToolbar.getParent() == null) {
       getScreenFragment().setToolbar(mToolbar);
+    }
+
+    if (mIsTopInsetEnabled) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        mToolbar.setPadding(0, getRootWindowInsets().getSystemWindowInsetTop(), 0, 0);
+      } else {
+        // Hacky fallback for old android. Before Marshmallow, the status bar height was always 25
+        mToolbar.setPadding(0, (int) (25 * getResources().getDisplayMetrics().density), 0, 0);
+      }
+    } else {
+      if (mToolbar.getPaddingTop() > 0) {
+        mToolbar.setPadding(0, 0, 0, 0);
+      }
     }
 
     activity.setSupportActionBar(mToolbar);
@@ -175,6 +238,9 @@ public class ScreenStackHeaderConfig extends ViewGroup {
     // shadow
     getScreenFragment().setToolbarShadowHidden(mIsShadowHidden);
 
+    // translucent
+    getScreenFragment().setToolbarTranslucent(mIsTranslucent);
+
     // title
     actionBar.setTitle(mTitle);
     if (TextUtils.isEmpty(mTitle)) {
@@ -188,9 +254,10 @@ public class ScreenStackHeaderConfig extends ViewGroup {
       mToolbar.setTitleTextColor(mTitleColor);
     }
     if (titleTextView != null) {
-      if (mTitleFontFamily != null) {
-        titleTextView.setTypeface(ReactFontManager.getInstance().getTypeface(
-                mTitleFontFamily, 0, getContext().getAssets()));
+      if (mTitleFontFamily != null || mTitleFontWeight > 0) {
+        Typeface titleTypeface = ReactTypefaceUtils.applyStyles(
+              null, 0, mTitleFontWeight, mTitleFontFamily, getContext().getAssets());
+        titleTextView.setTypeface(titleTypeface);
       }
       if (mTitleFontSize > 0) {
         titleTextView.setTextSize(mTitleFontSize);
@@ -198,7 +265,7 @@ public class ScreenStackHeaderConfig extends ViewGroup {
     }
 
     // background
-    if (mBackgroundColor != 0) {
+    if (mBackgroundColor != null) {
       mToolbar.setBackgroundColor(mBackgroundColor);
     }
 
@@ -236,14 +303,16 @@ public class ScreenStackHeaderConfig extends ViewGroup {
 
       switch (type) {
         case LEFT:
-          // when there is a left item we need to disable navigation icon
+          // when there is a left item we need to disable navigation icon by default
           // we also hide title as there is no other way to display left side items
-          mToolbar.setNavigationIcon(null);
+          if (!mBackButtonInCustomView) {
+            mToolbar.setNavigationIcon(null);
+          }
           mToolbar.setTitle(null);
-          params.gravity = Gravity.LEFT;
+          params.gravity = Gravity.START;
           break;
         case RIGHT:
-          params.gravity = Gravity.RIGHT;
+          params.gravity = Gravity.END;
           break;
         case CENTER:
           params.width = LayoutParams.MATCH_PARENT;
@@ -261,6 +330,10 @@ public class ScreenStackHeaderConfig extends ViewGroup {
     if (getParent() != null && !mDestroyed) {
       onUpdate();
     }
+  }
+
+  public Toolbar getToolbar() {
+    return mToolbar;
   }
 
   public ScreenStackHeaderSubview getConfigSubview(int index) {
@@ -307,6 +380,10 @@ public class ScreenStackHeaderConfig extends ViewGroup {
     mTitleFontFamily = titleFontFamily;
   }
 
+  public void setTitleFontWeight(String fontWeightString) {
+    mTitleFontWeight = ReactTypefaceUtils.parseFontWeight(fontWeightString);
+  }
+
   public void setTitleFontSize(float titleFontSize) {
     mTitleFontSize = titleFontSize;
   }
@@ -319,7 +396,9 @@ public class ScreenStackHeaderConfig extends ViewGroup {
     mTintColor = color;
   }
 
-  public void setBackgroundColor(int color) {
+  public void setTopInsetEnabled(boolean topInsetEnabled) { mIsTopInsetEnabled = topInsetEnabled; }
+
+  public void setBackgroundColor(Integer color) {
     mBackgroundColor = color;
   }
 
@@ -333,5 +412,15 @@ public class ScreenStackHeaderConfig extends ViewGroup {
 
   public void setHidden(boolean hidden) {
     mIsHidden = hidden;
+  }
+
+  public void setTranslucent(boolean translucent) {
+    mIsTranslucent = translucent;
+  }
+
+  public void setBackButtonInCustomView(boolean backButtonInCustomView) { mBackButtonInCustomView = backButtonInCustomView; }
+
+  public void setDirection(String direction) {
+    mDirection = direction;
   }
 }

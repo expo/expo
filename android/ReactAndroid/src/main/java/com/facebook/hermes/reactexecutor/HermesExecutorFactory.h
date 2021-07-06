@@ -1,4 +1,9 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
@@ -14,7 +19,7 @@ class HermesExecutorFactory : public JSExecutorFactory {
  public:
   explicit HermesExecutorFactory(
       JSIExecutor::RuntimeInstaller runtimeInstaller,
-      const JSIScopedTimeoutInvoker& timeoutInvoker =
+      const JSIScopedTimeoutInvoker &timeoutInvoker =
           JSIExecutor::defaultTimeoutInvoker,
       ::hermes::vm::RuntimeConfig runtimeConfig = ::hermes::vm::RuntimeConfig())
       : runtimeInstaller_(runtimeInstaller),
@@ -39,7 +44,7 @@ class HermesExecutor : public JSIExecutor {
       std::shared_ptr<jsi::Runtime> runtime,
       std::shared_ptr<ExecutorDelegate> delegate,
       std::shared_ptr<MessageQueueThread> jsQueue,
-      const JSIScopedTimeoutInvoker& timeoutInvoker,
+      const JSIScopedTimeoutInvoker &timeoutInvoker,
       RuntimeInstaller runtimeInstaller);
 
  private:

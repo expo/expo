@@ -1,12 +1,25 @@
 # expo-random
 
-Provides a native interface for creating strong random bytes. With `Random` you can create values equivalent to `Node.js` core `crypto.randomBytes` API.
+Provides a native interface for creating strong random bytes. With `Random` you can generate random values to address use cases that other APIs like the web's `crypto.getRandomValues` and Node's `crypto.randomBytes` might address.
 
-# Installation
+# Installation in managed Expo projects
 
-This package is pre-installed in [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects as of SDK 33. You may skip the rest of the installation guide if this applies to you.
+For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/random/).
 
-For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
+You can add a polyfill for the web's `crypto.getRandomValues` by installing [expo-standard-web-crypto](https://github.com/expo/expo/tree/master/packages/expo-standard-web-crypto) and importing it in SDK 39 and higher:
+
+```js
+import { polyfillWebCrypto } from 'expo-standard-web-crypto';
+
+polyfillWebCrypto();
+// crypto.getRandomValues is now globally defined
+```
+
+Other libraries like [react-native-get-random-values](https://github.com/LinusU/react-native-get-random-values) may work too.
+
+# Installation in bare React Native projects
+
+For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/expo/expo/tree/master/packages/react-native-unimodules) before continuing.
 
 ### Add the package to your npm dependencies
 
@@ -16,65 +29,8 @@ expo install expo-random
 
 ### Configure for iOS
 
-Run `pod install` in the ios directory after installing the npm package.
+Run `npx pod-install` after installing the npm package.
 
 ### Configure for Android
 
 No additional set up necessary.
-
-# Documentation
-
-```js
-// in managed apps:
-import { Random } from 'expo';
-
-// in bare apps:
-import * as Random from 'expo-random';
-```
-
-## Methods
-
-### `getRandomBytesAsync`
-
-```js
-getRandomBytesAsync(byteCount: number): Promise<Uint8Array>
-```
-
-Generates completely random bytes using native implementations. The `byteCount` property is a `number` indicating the number of bytes to generate in the form of a `Uint8Array`.
-
-**Parameters**
-
-| Name      | Type     | Description                                                                     |
-| --------- | -------- | ------------------------------------------------------------------------------- |
-| byteCount | `number` | A number within the range: **0...1024**. Anything else will throw a `TypeError` |
-
-**Returns**
-
-| Name        | Type                  | Description                                                      |
-| ----------- | --------------------- | ---------------------------------------------------------------- |
-| randomBytes | `Promise<Uint8Array>` | An array of random bytes with the same length as the `byteCount` |
-
-**Example**
-
-```js
-const randomBytes = await Random.getRandomBytesAsync(3);
-```
-
-# Usage
-
-```javascript
-import React from 'react';
-import { View } from 'react-native';
-import * as Random from 'expo-random';
-
-export default class DemoView extends React.Component {
-  async componentDidMount() {
-    const randomBytes = await Random.getRandomBytesAsync(16);
-
-    /* Some crypto operation... */
-  }
-  render() {
-    return <View />;
-  }
-}
-```

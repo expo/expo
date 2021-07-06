@@ -15,25 +15,23 @@
     "packages": [
       "apps/*",
       "apps/test-suite/puppeteer-test",
-      "expokit-npm-package",
       "home",
       "packages/*",
       "packages/@unimodules/*",
       "react-native-lab/react-native"
     ]
   },
+  "resolutions": {
+    "react-native": "0.63.2"
+  },
   "dependencies": {
-    "react-native-unimodules": "~0.8.0"
+    "jsc-android": "^245459.0.0",
+    "react-native-unimodules": "~0.14.0"
   },
   "devDependencies": {
-    "babel-core": "^7.0.0-bridge.0",
-    "eslint": "^6.6.0",
-    "eslint-config-universe": "^2.0.0",
-    "expo-cli": "^3.15.4",
+    "@expo/config-types": "^40.0.0-beta.2",
+    "eslint": "^7.9.0",
     "expo-yarn-workspaces": "*",
-    "prettier": "^1.19.0"
-  },
-  "resolutions": {
-    "@react-native-community/cli-platform-ios": "3.0.0"
+    "prettier": "^1.19.1"
   }
 }

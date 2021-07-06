@@ -1,6 +1,12 @@
 import mux from '@expo/mux';
+import Constants from 'expo-constants';
+import getInstallationIdAsync from 'expo/build/environment/getInstallationIdAsync';
 import React from 'react';
 import { NativeModules, StyleSheet, Text, View } from 'react-native';
+import { v4 as uuidV4 } from 'uuid';
+
+const logUrl = Constants.manifest.logUrl;
+const sessionId = uuidV4();
 
 const { ExpoNativeModuleIntrospection } = NativeModules;
 
@@ -12,15 +18,19 @@ if (!ExpoNativeModuleIntrospection) {
 
 export default class App extends React.Component {
   async componentDidMount() {
-    let moduleSpecs = await _getExpoModuleSpecsAsync();
-    let code = `module.exports = ${JSON.stringify(moduleSpecs)};`;
-    console.log('\n');
-    console.log('------------------------------COPY THE TEXT BELOW------------------------------');
-    console.log('\n');
-    console.log(code);
-    console.log('\n');
-    console.log('------------------------------END OF TEXT TO COPY------------------------------');
-    console.log('\n');
+    const moduleSpecs = await _getExpoModuleSpecsAsync();
+    const code = `module.exports = ${JSON.stringify(moduleSpecs)};`;
+
+    const message = `
+
+------------------------------COPY THE TEXT BELOW------------------------------
+
+${code}
+
+------------------------------END OF TEXT TO COPY------------------------------
+
+`;
+    await _sendRawLogAsync(message, logUrl);
   }
 
   render() {
@@ -35,12 +45,41 @@ export default class App extends React.Component {
   }
 }
 
+/**
+ * Sends a log message without truncating it.
+ */
+async function _sendRawLogAsync(message, logUrl) {
+  const headers = {
+    'Content-Type': 'application/json',
+    Connection: 'keep-alive',
+    'Proxy-Connection': 'keep-alive',
+    Accept: 'application/json',
+    'Device-Id': await getInstallationIdAsync(),
+    'Session-Id': sessionId,
+  };
+  if (Constants.deviceName) {
+    headers['Device-Name'] = Constants.deviceName;
+  }
+  await fetch(logUrl, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify([
+      {
+        count: 0,
+        level: 'info',
+        body: [message],
+        includesStack: false,
+      },
+    ]),
+  });
+}
+
 async function _getExpoModuleSpecsAsync() {
-  let whitelist = /^(Expo(?:nent)?|AIR|CTK|Lottie|Reanimated|RN|NativeUnimoduleProxy)(?![a-z])/;
-  let moduleNames = await ExpoNativeModuleIntrospection.getNativeModuleNamesAsync();
-  let expoModuleNames = moduleNames.filter(moduleName => whitelist.test(moduleName)).sort();
-  let specPromises = {};
-  for (let moduleName of expoModuleNames) {
+  const whitelist = /^(Expo(?:nent)?|AIR|CTK|Lottie|Reanimated|RN|NativeUnimoduleProxy)(?![a-z])/;
+  const moduleNames = await ExpoNativeModuleIntrospection.getNativeModuleNamesAsync();
+  const expoModuleNames = moduleNames.filter(moduleName => whitelist.test(moduleName)).sort();
+  const specPromises = {};
+  for (const moduleName of expoModuleNames) {
     specPromises[moduleName] = _getModuleSpecAsync(moduleName, NativeModules[moduleName]);
   }
   return await mux(specPromises);
@@ -51,10 +90,10 @@ async function _getModuleSpecAsync(moduleName, module) {
     return {};
   }
 
-  let moduleDescription = await ExpoNativeModuleIntrospection.introspectNativeModuleAsync(
+  const moduleDescription = await ExpoNativeModuleIntrospection.introspectNativeModuleAsync(
     moduleName
   );
-  let spec = _addFunctionTypes(_mockify(module), moduleDescription.methods);
+  const spec = _addFunctionTypes(_mockify(module), moduleDescription.methods);
   if (moduleName === 'NativeUnimoduleProxy') {
     spec.exportedMethods.mock = _sortObject(module.exportedMethods);
     spec.viewManagersNames.mock = module.viewManagersNames.sort();
@@ -78,9 +117,9 @@ const _mockify = (obj, context) =>
   Object.keys(obj)
     .sort()
     .reduce((spec, key) => {
-      let value = obj[key];
-      let type = Array.isArray(value) ? 'array' : typeof value;
-      let mock = type !== 'function' ? _mockifyValue(value, { context, key }) : undefined;
+      const value = obj[key];
+      const type = Array.isArray(value) ? 'array' : typeof value;
+      const mock = type !== 'function' ? _mockifyValue(value, { context, key }) : undefined;
       return { ...spec, [key]: { type, mock } };
     }, {});
 

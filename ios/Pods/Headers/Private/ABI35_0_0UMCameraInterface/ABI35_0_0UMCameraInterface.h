@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI35_0_0/UMCameraInterface/ABI35_0_0UMCameraInterface/ABI35_0_0UMCameraInterface.h

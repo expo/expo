@@ -16,9 +16,8 @@ export async function connectAsync() {
     if (connected) {
         throw new ConnectionError(errors.ALREADY_CONNECTED);
     }
-    const result = await ExpoInAppPurchases.connectAsync();
+    await ExpoInAppPurchases.connectAsync();
     connected = true;
-    return result;
 }
 export async function getProductsAsync(itemList) {
     if (!connected) {
@@ -38,7 +37,7 @@ export async function purchaseItemAsync(itemId, oldItem) {
     }
     await ExpoInAppPurchases.purchaseItemAsync(itemId, oldItem);
 }
-export async function setPurchaseListener(callback) {
+export function setPurchaseListener(callback) {
     if (purchaseUpdatedSubscription) {
         purchaseUpdatedSubscription.remove();
     }

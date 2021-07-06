@@ -13,23 +13,23 @@ For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-
 
 # Installation in bare React Native projects
 
-For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
+For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/expo/expo/tree/master/packages/react-native-unimodules) before continuing.
 
 ### Add the package to your npm dependencies
 
 ```
-expo install expo-auth-session
+expo install expo-auth-session expo-random
 ```
 
 ### Configuration
 
-To use this module, you need to set up React Native deep linking in your application. For more information, check out [React Native documentation](https://facebook.github.io/react-native/docs/linking#basic-usage).
+To use this module, you need to set up React Native deep linking in your application. For more information, check out [React Native documentation](https://reactnative.dev/docs/linking).
 
 #### Add support for React Native deep linking
 
 - **Android**:
 
-  Add intent fileter and set the `launchMode` of your MainActivity to `singleTask` in `AndroidManifest.yml`:
+  Add intent filter and set the `launchMode` of your MainActivity to `singleTask` in `AndroidManifest.yml`:
 
   ```xml
   <activity

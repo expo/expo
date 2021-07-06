@@ -6,10 +6,53 @@
 #import <UMCore/UMUIManager.h>
 #import <UMCore/UMEventEmitterService.h>
 
-@interface EXNativeAdManager () <FBNativeAdsManagerDelegate>
+@class EXAdManagerDelegate;
+
+@interface EXNativeAdManager ()
 
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
 @property (nonatomic, strong) NSMutableDictionary<NSString*, FBNativeAdsManager*> *adsManagers;
+@property (nonatomic, strong) NSMutableDictionary<NSString*, EXAdManagerDelegate*> *adsManagersDelegates;
+
+- (void)nativeAdsLoaded;
+- (void)nativeAdForPlacementId:(NSString *)placementId failedToLoadWithError:(NSError *)error;
+
+@end
+
+// A light delegate object responsible for delivering information
+// about errors to EXNativeAdManager, but with a specific placement ID
+// for which the error has happened. FBNativeAdsManagerDelegate protocol
+// does not provide such information, we only get the error. Proxying
+// the event through this middleman lets us assign specific placement ID
+// to each error.
+
+@interface EXAdManagerDelegate : NSObject <FBNativeAdsManagerDelegate>
+
+@property (nonatomic, weak) EXNativeAdManager *manager;
+@property (nonatomic, strong) NSString *placementId;
+
+@end
+
+@implementation EXAdManagerDelegate
+
+- (instancetype)initWithPlacementId:(NSString *)placementId andManager:(EXNativeAdManager *)manager
+{
+  if (self = [super init]) {
+    _manager = manager;
+    _placementId = placementId;
+  }
+  return self;
+}
+
+- (void)nativeAdsLoaded
+{
+  [_manager nativeAdsLoaded];
+}
+
+- (void)nativeAdsFailedToLoadWithError:(NSError *)errors
+{
+  [_manager nativeAdForPlacementId:_placementId failedToLoadWithError:errors];
+}
 
 @end
 
@@ -22,6 +65,7 @@ UM_EXPORT_MODULE(CTKNativeAdManager)
   self = [super init];
   if (self) {
     _adsManagers = [NSMutableDictionary new];
+    _adsManagersDelegates = [NSMutableDictionary new];
   }
   return self;
 }
@@ -38,7 +82,7 @@ UM_EXPORT_MODULE(CTKNativeAdManager)
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[@"CTKNativeAdsManagersChanged", @"onAdLoaded"];
+  return @[@"CTKNativeAdsManagersChanged", @"CTKNativeAdManagerErrored", @"onAdLoaded"];
 }
 
 UM_EXPORT_METHOD_AS(registerViewsForInteraction,
@@ -114,7 +158,9 @@ UM_EXPORT_METHOD_AS(init,
   FBNativeAdsManager *adsManager = [[FBNativeAdsManager alloc] initWithPlacementID:placementId
                                                                 forNumAdsRequested:[adsToRequest intValue]];
 
-  [adsManager setDelegate:self];
+  EXAdManagerDelegate *delegate = [[EXAdManagerDelegate alloc] initWithPlacementId:placementId andManager:self];
+  _adsManagersDelegates[placementId] = delegate;
+  [adsManager setDelegate:delegate];
 
   [UMUtilities performSynchronouslyOnMainThread:^{
     [adsManager loadAds];
@@ -158,9 +204,15 @@ UM_EXPORT_METHOD_AS(disableAutoRefresh,
   [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)] sendEventWithName:@"CTKNativeAdsManagersChanged" body:adsManagersState];
 }
 
-- (void)nativeAdsFailedToLoadWithError:(NSError *)errors
+- (void)nativeAdForPlacementId:(NSString *)placementId failedToLoadWithError:(NSError *)error
 {
-  // @todo handle errors here
+  [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)] sendEventWithName:@"CTKNativeAdManagerErrored" body:@{
+    @"placementId": placementId,
+    @"error": @{
+        @"message": error.localizedDescription ?: error.description,
+        @"code": @(error.code)
+    },
+  }];
 }
 
 - (UIView *)view

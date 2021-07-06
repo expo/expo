@@ -1,5 +1,7 @@
 package expo.modules.notifications.notifications;
 
+import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 import android.util.Log;
 
@@ -23,17 +25,29 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
   private static final String VIBRATE_KEY = "vibrate";
   private static final String PRIORITY_KEY = "priority";
   private static final String BADGE_KEY = "badge";
+  private static final String COLOR_KEY = "color";
+  private static final String AUTO_DISMISS_KEY = "autoDismiss";
+  private static final String CATEGORY_IDENTIFIER_KEY = "categoryIdentifier";
+  private static final String STICKY_KEY = "sticky";
 
-  public ArgumentsNotificationContentBuilder() {
+  private SoundResolver mSoundResolver;
+
+  public ArgumentsNotificationContentBuilder(Context context) {
+    mSoundResolver = new SoundResolver(context);
   }
 
   public NotificationContent.Builder setPayload(ReadableArguments payload) {
     this.setTitle(payload.getString(TITLE_KEY))
-        .setSubtitle(payload.getString(SUBTITLE_KEY))
-        .setText(payload.getString(TEXT_KEY))
-        .setBody(getBody(payload))
-        .setPriority(getPriority(payload))
-        .setBadgeCount(getBadgeCount(payload));
+      .setSubtitle(payload.getString(SUBTITLE_KEY))
+      .setText(payload.getString(TEXT_KEY))
+      .setBody(getBody(payload))
+      .setPriority(getPriority(payload))
+      .setBadgeCount(getBadgeCount(payload))
+      .setColor(getColor(payload))
+      .setAutoDismiss(getAutoDismiss(payload))
+      .setCategoryId(getCategoryId(payload))
+      .setSticky(getSticky(payload));
+
     if (shouldPlayDefaultSound(payload)) {
       useDefaultSound();
     } else {
@@ -52,6 +66,15 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
     return payload.containsKey(BADGE_KEY) ? payload.getInt(BADGE_KEY) : null;
   }
 
+  protected Number getColor(ReadableArguments payload) {
+    try {
+      return payload.containsKey(COLOR_KEY) ? Color.parseColor(payload.getString(COLOR_KEY)) : null;
+    } catch (IllegalArgumentException e) {
+      Log.e("expo-notifications", "Could not have parsed color passed in notification.");
+      return null;
+    }
+  }
+
   protected boolean shouldPlayDefaultSound(ReadableArguments payload) {
     if (payload.get(SOUND_KEY) instanceof Boolean) {
       return payload.getBoolean(SOUND_KEY);
@@ -62,10 +85,8 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
   }
 
   protected Uri getSound(ReadableArguments payload) {
-    if (payload.getString(SOUND_KEY) != null) {
-      return Uri.parse(payload.getString(SOUND_KEY));
-    }
-    return null;
+    String soundValue = payload.getString(SOUND_KEY);
+    return mSoundResolver.resolve(soundValue);
   }
 
   @Nullable
@@ -109,5 +130,20 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
   protected NotificationPriority getPriority(ReadableArguments payload) {
     String priorityString = payload.getString(PRIORITY_KEY);
     return NotificationPriority.fromEnumValue(priorityString);
+  }
+
+  protected boolean getAutoDismiss(ReadableArguments payload) {
+    // TODO(sjchmiela): the default value should be determined by NotificationContent.Builder
+    return payload.getBoolean(AUTO_DISMISS_KEY, true);
+  }
+
+  @Nullable
+  protected String getCategoryId(ReadableArguments payload) {
+    return payload.getString(CATEGORY_IDENTIFIER_KEY, null);
+  }
+
+  protected boolean getSticky(ReadableArguments payload) {
+    // TODO: the default value should be determined by NotificationContent.Builder
+    return payload.getBoolean(STICKY_KEY, false);
   }
 }

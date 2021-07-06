@@ -2,8 +2,8 @@ import { Platform } from '@unimodules/core';
 import { getAssetByID } from './AssetRegistry';
 import * as AssetSources from './AssetSources';
 import * as AssetUris from './AssetUris';
-import { getEmbeddedAssetUri } from './EmbeddedAssets';
 import * as ImageAssets from './ImageAssets';
+import { getLocalAssetUri } from './LocalAssets';
 import { downloadAsync, IS_ENV_WITH_UPDATES_ENABLED } from './PlatformUtils';
 import resolveAssetSource from './resolveAssetSource';
 export class Asset {
@@ -26,7 +26,7 @@ export class Asset {
             this.height = height;
         }
         if (hash) {
-            this.localUri = getEmbeddedAssetUri(hash, type);
+            this.localUri = getLocalAssetUri(hash, type);
             if (this.localUri) {
                 this.downloaded = true;
             }
@@ -120,13 +120,13 @@ export class Asset {
     }
     async downloadAsync() {
         if (this.downloaded) {
-            return;
+            return this;
         }
         if (this.downloading) {
             await new Promise((resolve, reject) => {
                 this._downloadCallbacks.push({ resolve, reject });
             });
-            return;
+            return this;
         }
         this.downloading = true;
         try {
@@ -153,6 +153,7 @@ export class Asset {
             this.downloading = false;
             this._downloadCallbacks = [];
         }
+        return this;
     }
 }
 Asset.byHash = {};

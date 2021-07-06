@@ -21,7 +21,6 @@ import org.unimodules.core.arguments.ReadableArguments;
 import org.unimodules.core.errors.InvalidArgumentException;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.RegistryLifecycleListener;
-import org.unimodules.interfaces.permissions.Permissions;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,6 +29,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+
+import expo.modules.interfaces.permissions.Permissions;
 
 public class CalendarModule extends ExportedModule implements RegistryLifecycleListener {
   private static final String TAG = CalendarModule.class.getSimpleName();
@@ -929,7 +930,11 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
   private ArrayList<String> calendarAllowedRemindersFromDBString(String dbString) {
     ArrayList<String> array = new ArrayList<>();
     for (String constant : dbString.split(",")) {
-      array.add(reminderStringMatchingConstant(Integer.parseInt(constant)));
+      try{
+      	array.add(reminderStringMatchingConstant(Integer.parseInt(constant)));
+      } catch (NumberFormatException e) {
+          Log.e(TAG, "Couldn't convert reminder constant into an int.", e);
+      }
     }
     return array;
   }
@@ -1118,7 +1123,11 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
   private ArrayList<String> calendarAllowedAttendeeTypesFromDBString(String dbString) {
     ArrayList<String> array = new ArrayList<>();
     for (String constant : dbString.split(",")) {
-      array.add(attendeeTypeStringMatchingConstant(Integer.parseInt(constant)));
+      try{
+        array.add(attendeeTypeStringMatchingConstant(Integer.parseInt(constant)));
+      } catch (NumberFormatException e) {
+          Log.e(TAG, "Couldn't convert attendee constant into an int.", e);
+      }
     }
     return array;
   }
@@ -1235,16 +1244,19 @@ public class CalendarModule extends ExportedModule implements RegistryLifecycleL
       }
 
       if (recurrenceRules.length >= 3) {
-        if (recurrenceRules[2].split("=")[0].equals("UNTIL")) {
-          try {
-            recurrenceRule.putString("endDate", sdf.format(format.parse(recurrenceRules[2].split("=")[1])));
-          } catch (ParseException e) {
-            Log.e(TAG, "error", e);
+        String[] terminationRules = recurrenceRules[2].split("=");
+        if (terminationRules.length >= 2) {
+          if (terminationRules[0].equals("UNTIL")) {
+            try {
+              recurrenceRule.putString("endDate", sdf.format(format.parse(terminationRules[1])));
+            } catch (ParseException e) {
+              Log.e(TAG, "Couldn't parse the `endDate` property.", e);
+            }
+          } else if (terminationRules[0].equals("COUNT")) {
+            recurrenceRule.putInt("occurrence", Integer.parseInt(recurrenceRules[2].split("=")[1]));
           }
-        } else if (recurrenceRules[2].split("=")[0].equals("COUNT")) {
-          recurrenceRule.putInt("occurrence", Integer.parseInt(recurrenceRules[2].split("=")[1]));
         }
-
+        Log.e(TAG, String.format("Couldn't parse termination rules: '%s'.", recurrenceRules[2]), null);
       }
 
       event.putBundle("recurrenceRule", recurrenceRule);

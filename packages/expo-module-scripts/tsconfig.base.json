@@ -2,10 +2,9 @@
   "compilerOptions": {
     "target": "esnext",
     "lib": ["dom", "esnext"],
-    "jsx": "react-native",
+    "jsx": "react",
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
     "types": ["jest", "jest-require"],
     "typeRoots": [
       "./ts-declarations",

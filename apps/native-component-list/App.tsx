@@ -1,70 +1,50 @@
+import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
-import { AppLoading } from 'expo';
-import { Platform, StatusBar, StyleSheet, View } from 'react-native';
-import { enableScreens } from 'react-native-screens';
-import { AppearanceProvider, useColorScheme, ColorSchemeName } from 'react-native-appearance';
+import { Platform, StatusBar } from 'react-native';
+import { AppearanceProvider } from 'react-native-appearance';
 
 import RootNavigation from './src/navigation/RootNavigation';
 import loadAssetsAsync from './src/utilities/loadAssetsAsync';
 
-if (Platform.OS === 'android') {
-  enableScreens(true);
+function useSplashScreen(loadingFunction: () => void | Promise<void>) {
+  const [isLoadingCompleted, setLoadingComplete] = React.useState(false);
+
+  // Load any resources or data that we need prior to rendering the app
+  React.useEffect(() => {
+    async function loadAsync() {
+      try {
+        await SplashScreen.preventAutoHideAsync();
+        await loadingFunction();
+      } catch (e) {
+        // We might want to provide this error information to an error reporting service
+        console.warn(e);
+      } finally {
+        setLoadingComplete(true);
+        SplashScreen.hideAsync();
+      }
+    }
+
+    loadAsync();
+  }, []);
+
+  return isLoadingCompleted;
 }
 
-const initialState = {
-  appIsReady: false,
-};
+export default function App(props: any) {
+  const isLoadingCompleted = useSplashScreen(async () => {
+    if (Platform.OS === 'ios') {
+      StatusBar.setBarStyle('dark-content', false);
+    }
+    await loadAssetsAsync();
+  });
 
-type Props = { colorScheme: ColorSchemeName };
-type State = typeof initialState;
+  if (!isLoadingCompleted) {
+    return null;
+  }
 
-export default function AppContainer() {
-  let colorScheme = useColorScheme();
   return (
     <AppearanceProvider>
-      <App colorScheme={colorScheme} />
+      <RootNavigation {...props} />
     </AppearanceProvider>
   );
 }
-
-class App extends React.Component<Props, State> {
-  readonly state: State = initialState;
-
-  componentDidMount() {
-    this._loadAssetsAsync();
-  }
-
-  async _loadAssetsAsync() {
-    try {
-      await loadAssetsAsync();
-    } catch (e) {
-      console.log({ e });
-    } finally {
-      this.setState({ appIsReady: true });
-    }
-  }
-
-  render() {
-    if (this.state.appIsReady) {
-      return (
-        <View style={styles.container} testID="native_component_list">
-          <RootNavigation />
-          {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" />}
-        </View>
-      );
-    }
-    // We should check whether `AppLoading` is set, as this code may be used by `bare-expo`
-    // where this module is not exported due to bare workflow.
-    if (AppLoading) {
-      return <AppLoading />;
-    }
-    return null;
-  }
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-});

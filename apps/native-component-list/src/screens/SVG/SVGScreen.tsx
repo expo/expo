@@ -1,19 +1,25 @@
+import Ionicons from '@expo/vector-icons/build/Ionicons';
+import { StackNavigationProp } from '@react-navigation/stack';
 import React from 'react';
 import {
-  StyleSheet,
-  View,
   FlatList,
+  ListRenderItem,
+  PixelRatio,
+  StyleSheet,
   Text,
   TouchableHighlight,
-  PixelRatio,
-  ListRenderItem,
+  View,
 } from 'react-native';
-import { NavigationScreenProps } from 'react-navigation';
-import { EvilIcons } from '@expo/vector-icons';
 
 import examples from './examples';
 
-export default class SVGScreen extends React.Component<NavigationScreenProps> {
+type StackParams = {
+  SVGExample: { title: string; key: string };
+};
+
+export default class SVGScreen extends React.Component<{
+  navigation: StackNavigationProp<StackParams>;
+}> {
   static navigationOptions = {
     title: '<Svg />',
   };
@@ -24,17 +30,16 @@ export default class SVGScreen extends React.Component<NavigationScreenProps> {
       style={styles.rowTouchable}
       onPress={() =>
         this.props.navigation.navigate('SVGExample', { title: exampleKey, key: exampleKey })
-      }
-    >
+      }>
       <View style={styles.row}>
         <View style={styles.rowIcon}>{examples[exampleKey].icon}</View>
         <Text style={styles.rowLabel}>{exampleKey}</Text>
         <Text style={styles.rowDecorator}>
-          <EvilIcons name="chevron-right" size={24} color="#595959" />
+          <Ionicons name="chevron-forward" size={18} color="#595959" />
         </Text>
       </View>
     </TouchableHighlight>
-  )
+  );
 
   keyExtractor = (item: string) => item;
 
@@ -53,6 +58,7 @@ export default class SVGScreen extends React.Component<NavigationScreenProps> {
 const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'white',
   },
   row: {
     flexDirection: 'row',

@@ -43,7 +43,7 @@ public class InAppPurchasesModule extends ExportedModule implements RegistryLife
     }
     mEventEmitter = mModuleRegistry.getModule(EventEmitter.class);
     mBillingManager = new BillingManager(activity, mEventEmitter);
-    mBillingManager.startConnectionAndQueryHistory(promise);
+    mBillingManager.startConnection(promise);
   }
 
   @ExpoMethod

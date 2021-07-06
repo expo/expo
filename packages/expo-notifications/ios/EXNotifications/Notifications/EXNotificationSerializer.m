@@ -37,13 +37,14 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
 {
   NSMutableDictionary *serializedRequest = [NSMutableDictionary dictionary];
   serializedRequest[@"identifier"] = request.identifier;
-  serializedRequest[@"content"] = [self serializedNotificationContent:request.content];
-  serializedRequest[@"trigger"] = [self serializedNotificationTrigger:request.trigger];
+  serializedRequest[@"content"] = [self serializedNotificationContent:request];
+  serializedRequest[@"trigger"] = [self serializedNotificationTrigger:request];
   return serializedRequest;
 }
 
-+ (NSDictionary *)serializedNotificationContent:(UNNotificationContent *)content
++ (NSDictionary *)serializedNotificationContent:(UNNotificationRequest *)request
 {
+  UNNotificationContent *content = request.content;
   NSMutableDictionary *serializedContent = [NSMutableDictionary dictionary];
   serializedContent[@"title"] = content.title ?: [NSNull null];
   serializedContent[@"subtitle"] = content.subtitle ?: [NSNull null];
@@ -51,21 +52,26 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
   serializedContent[@"badge"] = content.badge ?: [NSNull null];
   serializedContent[@"sound"] = [self serializedNotificationSound:content.sound] ?: [NSNull null];
   serializedContent[@"launchImageName"] = content.launchImageName ?: [NSNull null];
-  serializedContent[@"data"] = content.userInfo ?: [NSNull null];
+  serializedContent[@"data"] = [self serializedNotificationData:request] ?: [NSNull null];
   serializedContent[@"attachments"] = [self serializedNotificationAttachments:content.attachments];
 
   if (@available(iOS 12.0, *)) {
     serializedContent[@"summaryArgument"] = content.summaryArgument ?: [NSNull null];
     serializedContent[@"summaryArgumentCount"] = @(content.summaryArgumentCount);
   }
-
-  serializedContent[@"categoryIdentifier"] = content.categoryIdentifier ?: [NSNull null];
+  serializedContent[@"categoryIdentifier"] = content.categoryIdentifier ? content.categoryIdentifier : [NSNull null];
   serializedContent[@"threadIdentifier"] = content.threadIdentifier ?: [NSNull null];
   if (@available(iOS 13.0, *)) {
     serializedContent[@"targetContentIdentifier"] = content.targetContentIdentifier ?: [NSNull null];
   }
 
   return serializedContent;
+}
+
++ (NSDictionary *)serializedNotificationData:(UNNotificationRequest *)request
+{
+  BOOL isRemote = [request.trigger isKindOfClass:[UNPushNotificationTrigger class]];
+  return isRemote ? request.content.userInfo[@"body"] : request.content.userInfo;
 }
 
 + (NSString *)serializedNotificationSound:(UNNotificationSound *)sound
@@ -106,22 +112,26 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
   return serializedAttachment;
 }
 
-+ (NSDictionary *)serializedNotificationTrigger:(UNNotificationTrigger *)trigger
++ (NSDictionary *)serializedNotificationTrigger:(UNNotificationRequest *)request
 {
+  UNNotificationTrigger *trigger = request.trigger;
   NSMutableDictionary *serializedTrigger = [NSMutableDictionary dictionary];
   serializedTrigger[@"class"] = NSStringFromClass(trigger.class);
   if ([trigger isKindOfClass:[UNPushNotificationTrigger class]]) {
     serializedTrigger[@"type"] = @"push";
+    serializedTrigger[@"payload"] = request.content.userInfo;
   } else if ([trigger isKindOfClass:[UNCalendarNotificationTrigger class]]) {
     serializedTrigger[@"type"] = @"calendar";
     serializedTrigger[@"repeats"] = @(trigger.repeats);
     UNCalendarNotificationTrigger *calendarTrigger = (UNCalendarNotificationTrigger *)trigger;
     serializedTrigger[@"dateComponents"] = [self serializedDateComponents:calendarTrigger.dateComponents];
+#if !(TARGET_OS_MACCATALYST)
   } else if ([trigger isKindOfClass:[UNLocationNotificationTrigger class]]) {
     serializedTrigger[@"type"] = @"location";
     serializedTrigger[@"repeats"] = @(trigger.repeats);
     UNLocationNotificationTrigger *locationTrigger = (UNLocationNotificationTrigger *)trigger;
     serializedTrigger[@"region"] = [self serializedRegion:locationTrigger.region];
+#endif
   } else if ([trigger isKindOfClass:[UNTimeIntervalNotificationTrigger class]]) {
     serializedTrigger[@"type"] = @"timeInterval";
     UNTimeIntervalNotificationTrigger *timeIntervalTrigger = (UNTimeIntervalNotificationTrigger *)trigger;

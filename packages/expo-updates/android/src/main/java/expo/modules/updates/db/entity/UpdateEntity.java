@@ -1,6 +1,8 @@
 package expo.modules.updates.db.entity;
 
 import expo.modules.updates.db.enums.UpdateStatus;
+import expo.modules.updates.manifest.ManifestFactory;
+import expo.modules.updates.manifest.raw.RawManifest;
 
 import org.json.JSONObject;
 
@@ -22,16 +24,16 @@ import static androidx.room.ForeignKey.CASCADE;
                                   childColumns = "launch_asset_id",
                                   onDelete = CASCADE),
         indices = {@Index(value = "launch_asset_id"),
-                   @Index(value = {"project_identifier", "commit_time"}, unique = true)})
+                   @Index(value = {"scope_key", "commit_time"}, unique = true)})
 public class UpdateEntity {
   @PrimaryKey
   @ColumnInfo(typeAffinity = ColumnInfo.BLOB)
   @NonNull
   public UUID id;
 
-  @ColumnInfo(name = "project_identifier")
+  @ColumnInfo(name = "scope_key")
   @NonNull
-  public String projectIdentifier;
+  public String scopeKey;
 
   @ColumnInfo(name = "commit_time")
   @NonNull
@@ -44,7 +46,8 @@ public class UpdateEntity {
   @ColumnInfo(name = "launch_asset_id")
   public Long launchAssetId = null;
 
-  public JSONObject metadata = null;
+  @ColumnInfo(name = "manifest")
+  public JSONObject manifest = null;
 
   @NonNull
   public UpdateStatus status = UpdateStatus.PENDING;
@@ -52,10 +55,19 @@ public class UpdateEntity {
   @NonNull
   public boolean keep = false;
 
-  public UpdateEntity(UUID id, Date commitTime, String runtimeVersion, String projectIdentifier) {
+  @ColumnInfo(name = "last_accessed")
+  @NonNull
+  public Date lastAccessed;
+
+  public UpdateEntity(UUID id, Date commitTime, String runtimeVersion, String scopeKey) {
     this.id = id;
     this.commitTime = commitTime;
     this.runtimeVersion = runtimeVersion;
-    this.projectIdentifier = projectIdentifier;
+    this.scopeKey = scopeKey;
+    this.lastAccessed = new Date();
+  }
+
+  public RawManifest getRawManifest() {
+    return ManifestFactory.INSTANCE.getRawManifestFromJson(this.manifest);
   }
 }

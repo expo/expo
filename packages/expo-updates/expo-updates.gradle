@@ -1,6 +1,7 @@
 // Gradle script for downloading assets that make up an OTA update and bundling them into the APK
 
 import org.apache.tools.ant.taskdefs.condition.Os
+import org.gradle.util.GradleVersion
 
 void runBefore(String dependentTaskName, Task task) {
   Task dependentTask = tasks.findByPath(dependentTaskName);
@@ -8,6 +9,8 @@ void runBefore(String dependentTaskName, Task task) {
     dependentTask.dependsOn task
   }
 }
+
+def config = project.hasProperty("react") ? project.react : [];
 
 afterEvaluate {
   def projectRoot = file("../../")
@@ -50,7 +53,7 @@ afterEvaluate {
         commandLine("./node_modules/expo-updates/run-expo.sh", "bundle-assets", projectRoot, "--platform", "android", "--dest", assetsDir)
       }
 
-      enabled targetName.toLowerCase().contains("release")
+      enabled config."bundleIn${targetName}" || targetName.toLowerCase().contains("release")
     }
 
     currentBundleTask.dependsOn("merge${targetName}Resources")

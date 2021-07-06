@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.image;
 
 import android.content.Context;
@@ -50,7 +51,7 @@ import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.modules.fresco.ReactNetworkImageRequest;
 import com.facebook.react.uimanager.FloatUtil;
 import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.imagehelper.ImageSource;
 import com.facebook.react.views.imagehelper.MultiSourceHelper;
@@ -88,6 +89,11 @@ public class ReactImageView extends GenericDraweeView {
   private static final Matrix sMatrix = new Matrix();
   private static final Matrix sInverse = new Matrix();
   private ImageResizeMethod mResizeMethod = ImageResizeMethod.AUTO;
+
+  public void updateCallerContext(@Nullable Object callerContext) {
+    mCallerContext = callerContext;
+    mIsDirty = true;
+  }
 
   private class RoundedCornerPostprocessor extends BasePostprocessor {
 
@@ -196,7 +202,7 @@ public class ReactImageView extends GenericDraweeView {
   private @Nullable ControllerListener mControllerListener;
   private @Nullable ControllerListener mControllerForTesting;
   private @Nullable GlobalImageLoadListener mGlobalImageLoadListener;
-  private final @Nullable Object mCallerContext;
+  private @Nullable Object mCallerContext;
   private int mFadeDurationMs = -1;
   private boolean mProgressiveRenderingEnabled;
   private ReadableMap mHeaders;
@@ -228,7 +234,7 @@ public class ReactImageView extends GenericDraweeView {
       mControllerListener = null;
     } else {
       final EventDispatcher mEventDispatcher =
-          ((ReactContext) getContext()).getNativeModule(UIManagerModule.class).getEventDispatcher();
+          UIManagerHelper.getEventDispatcherForReactTag((ReactContext) getContext(), getId());
 
       mControllerListener =
           new BaseControllerListener<ImageInfo>() {

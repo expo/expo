@@ -1,6 +1,6 @@
 import { mount } from 'enzyme';
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { Animated, StyleSheet } from 'react-native';
 
 import { BlurView } from '..';
 
@@ -37,4 +37,10 @@ it(`uses a transparent background color when filters aren't supported`, () => {
   expect(getStyleProp(withoutNativeBlur.find('div'), 'WebkitBackdropFilter')).not.toBeDefined();
   expect(getStyleProp(withoutNativeBlur.find('div'), 'backdropFilter')).not.toBeDefined();
   expect(getStyleProp(withoutNativeBlur.find('div'), 'backgroundColor')).toBeDefined();
+});
+
+it(`supports Animated API`, () => {
+  // react-native-web 0.11 doesn't support createAnimatedComponent with functional components.
+  // This test ensures that the current version of RNW in Expo works with expo-blur.
+  Animated.createAnimatedComponent(BlurView);
 });

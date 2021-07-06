@@ -1,6 +1,9 @@
 import React from 'react';
-import { AccessibilityProps, ImageResizeMode, ImageSourcePropType, ImageStyle, NativeSyntheticEvent, StyleProp } from 'react-native';
+import { AccessibilityProps, ImageResizeMode, ImageSourcePropType, ImageStyle as RNImageStyle, NativeSyntheticEvent, StyleProp } from 'react-native';
 import { ImageErrorEventData, ImageLoadEventData, ImageLoadProgressEventData } from './Image.types';
+interface ImageStyle extends RNImageStyle {
+    elevation?: number;
+}
 export interface ImageProps extends AccessibilityProps {
     source?: ImageSourcePropType | null;
     style?: StyleProp<ImageStyle>;

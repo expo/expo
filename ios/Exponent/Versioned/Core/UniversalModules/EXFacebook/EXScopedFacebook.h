@@ -4,11 +4,10 @@
 #import <Foundation/Foundation.h>
 #import <EXFacebook/EXFacebook.h>
 #import <UMCore/UMAppLifecycleListener.h>
-#import <UMCore/UMModuleRegistryConsumer.h>
 
-@interface EXScopedFacebook : EXFacebook <UMAppLifecycleListener, UMModuleRegistryConsumer>
+@interface EXScopedFacebook : EXFacebook <UMAppLifecycleListener>
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId andParams:(NSDictionary *)params;
+- (instancetype)initWithScopeKey:(NSString *)scopeKey andParams:(NSDictionary *)params;
 
 @end
 #endif

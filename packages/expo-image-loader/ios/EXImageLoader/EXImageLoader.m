@@ -1,7 +1,7 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
 #import <EXImageLoader/EXImageLoader.h>
-#import <React/RCTImageLoader.h>
+#import <React/RCTImageLoaderProtocol.h>
 
 @interface EXImageLoader ()
 
@@ -20,7 +20,7 @@ UM_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(UMImageLoaderInterface)];
+  return @[@protocol(EXImageLoaderInterface)];
 }
 
 - (void)setBridge:(RCTBridge *)bridge
@@ -29,9 +29,9 @@ UM_REGISTER_MODULE();
 }
 
 - (void)loadImageForURL:(NSURL *)imageURL
-      completionHandler:(UMImageLoaderCompletionBlock)completionHandler
+      completionHandler:(EXImageLoaderCompletionBlock)completionHandler
 {
-  [[_bridge moduleForClass:[RCTImageLoader class]] loadImageWithURLRequest:[NSURLRequest requestWithURL:imageURL]
+  [[_bridge moduleForName:@"ImageLoader" lazilyLoadIfNecessary:YES] loadImageWithURLRequest:[NSURLRequest requestWithURL:imageURL]
                                                                   callback:^(NSError *error, UIImage *loadedImage) {
                                                                     completionHandler(error, loadedImage);
                                                                   }];

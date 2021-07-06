@@ -135,7 +135,7 @@ public class ResolveTakenPictureAsyncTask extends AsyncTask<Void, Void, Bundle> 
 
       // Write base64-encoded image to the response if requested
       if (isOptionEnabled(BASE64_KEY)) {
-        response.putString(BASE64_KEY, Base64.encodeToString(imageStream.toByteArray(), Base64.DEFAULT));
+        response.putString(BASE64_KEY, Base64.encodeToString(imageStream.toByteArray(), Base64.NO_WRAP));
       }
 
       // Cleanup
@@ -197,7 +197,7 @@ public class ResolveTakenPictureAsyncTask extends AsyncTask<Void, Void, Bundle> 
 
       // handle base64
       if (isOptionEnabled(BASE64_KEY)) {
-        response.putString(BASE64_KEY, Base64.encodeToString(mImageData, Base64.DEFAULT));
+        response.putString(BASE64_KEY, Base64.encodeToString(mImageData, Base64.NO_WRAP));
       }
 
       return response;

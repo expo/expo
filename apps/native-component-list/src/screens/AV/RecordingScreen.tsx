@@ -1,18 +1,20 @@
 import React from 'react';
-import { ScrollView, StyleSheet, PixelRatio } from 'react-native';
+import { PixelRatio, ScrollView, StyleSheet } from 'react-native';
 
 import HeadingText from '../../components/HeadingText';
-import Recorder from './Recorder';
 import AudioModeSelector from './AudioModeSelector';
 import Player from './AudioPlayer';
+import Recorder from './Recorder';
 
 interface State {
   recordingUri?: string;
 }
 
-export default class AuthSessionScreen extends React.Component<{}, State> {
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
+export default class RecordingScreen extends React.Component<{}, State> {
   static navigationOptions = {
-    title: 'Audio',
+    title: 'Audio Recording',
   };
 
   readonly state: State = {};
@@ -21,11 +23,11 @@ export default class AuthSessionScreen extends React.Component<{}, State> {
 
   _maybeRenderLastRecording = () =>
     this.state.recordingUri ? (
-      <React.Fragment>
+      <>
         <HeadingText>Last recording</HeadingText>
         <Player source={{ uri: this.state.recordingUri }} />
-      </React.Fragment>
-    ) : null
+      </>
+    ) : null;
 
   render() {
     return (

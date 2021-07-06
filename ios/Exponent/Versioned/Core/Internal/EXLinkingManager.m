@@ -22,11 +22,16 @@ NSString * const EXLinkingEventOpenUrl = @"url";
 
 EX_EXPORT_SCOPED_MODULE(RCTLinkingManager, KernelLinkingManager);
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
+- (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
+                        scopeKey:(NSString *)scopeKey
+                     kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
 {
-  if (self = [super initWithExperienceId:experienceId kernelServiceDelegate:kernelServiceInstance params:params]) {
+  if (self = [super initWithExperienceStableLegacyId:experienceStableLegacyId scopeKey:scopeKey kernelServiceDelegate:kernelServiceInstance params:params]) {
     _kernelLinkingDelegate = kernelServiceInstance;
     _initialUrl = params[@"initialUri"];
+    if (_initialUrl == [NSNull null]) {
+      _initialUrl = nil;
+    }
   }
   return self;
 }
@@ -92,6 +97,21 @@ RCT_EXPORT_METHOD(canOpenURL:(NSURL *)URL
     }];
   }
   resolve(@(canOpen));
+}
+
+RCT_EXPORT_METHOD(openSettings:(RCTPromiseResolveBlock)resolve
+                        reject:(RCTPromiseRejectBlock)reject)
+{
+  [EXUtil performSynchronouslyOnMainThread:^{
+    NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+    [RCTSharedApplication() openURL:url options:@{} completionHandler:^(BOOL success) {
+      if (success) {
+        resolve(nil);
+      } else {
+        reject(RCTErrorUnspecified, @"Unable to open app settings", nil);
+      }
+    }];
+  }];
 }
 
 RCT_EXPORT_METHOD(getInitialURL:(RCTPromiseResolveBlock)resolve

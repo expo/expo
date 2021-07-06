@@ -296,7 +296,7 @@ public class SecureStoreModule extends ExportedModule {
    * We use a shared preferences file that's scoped to both the experience and SecureStore. This
    * lets us easily list or remove all the entries for an experience.
    */
-  private SharedPreferences getSharedPreferences() {
+  protected SharedPreferences getSharedPreferences() {
     return getContext().getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
   }
 
@@ -414,9 +414,9 @@ public class SecureStoreModule extends ExportedModule {
 
       byte[] plaintextBytes = plaintextValue.getBytes(StandardCharsets.UTF_8);
       byte[] ciphertextBytes = cipher.doFinal(plaintextBytes);
-      String ciphertext = Base64.encodeToString(ciphertextBytes, Base64.DEFAULT);
+      String ciphertext = Base64.encodeToString(ciphertextBytes, Base64.NO_WRAP);
 
-      String ivString = Base64.encodeToString(gcmSpec.getIV(), Base64.DEFAULT);
+      String ivString = Base64.encodeToString(gcmSpec.getIV(), Base64.NO_WRAP);
       int authenticationTagLength = gcmSpec.getTLen();
 
       return new JSONObject()
@@ -551,7 +551,7 @@ public class SecureStoreModule extends ExportedModule {
 
       // Ensure the IV in the encrypted item matches our generated IV
       String ivString = encryptedItem.getString(AESEncrypter.IV_PROPERTY);
-      String expectedIVString = Base64.encodeToString(ivBytes, Base64.DEFAULT);
+      String expectedIVString = Base64.encodeToString(ivBytes, Base64.NO_WRAP);
       if (!ivString.equals(expectedIVString)) {
         Log.e(TAG, String.format("HybridAESEncrypter generated two different IVs: %s and %s", expectedIVString, ivString));
         throw new IllegalStateException("HybridAESEncrypter must store the same IV as the one used to parameterize the secret key");
@@ -562,7 +562,7 @@ public class SecureStoreModule extends ExportedModule {
       Cipher cipher = getRSACipher();
       cipher.init(Cipher.ENCRYPT_MODE, privateKeyEntry.getCertificate());
       byte[] encryptedSecretKeyBytes = cipher.doFinal(secretKeyBytes);
-      String encryptedSecretKeyString = Base64.encodeToString(encryptedSecretKeyBytes, Base64.DEFAULT);
+      String encryptedSecretKeyString = Base64.encodeToString(encryptedSecretKeyBytes, Base64.NO_WRAP);
 
       // Store the encrypted symmetric key in the encrypted item
       return encryptedItem.put(ENCRYPTED_SECRET_KEY_PROPERTY, encryptedSecretKeyString);

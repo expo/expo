@@ -1,19 +1,14 @@
-
+#import <React/RCTEventDispatcher.h>
 #import <React/RCTShadowView.h>
 #import <React/UIView+React.h>
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ReactNativePageView: UIView <UIPageViewControllerDataSource, UIPageViewControllerDelegate,UIScrollViewDelegate>
+@interface ReactNativePageView: UIView
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher;
 
-@property(strong, nonatomic, readonly) UIPageViewController *reactPageViewController;
-@property(strong, nonatomic, readonly) UIPageControl *reactPageIndicatorView;
-@property(nonatomic, readonly) RCTEventDispatcher *eventDispatcher;
-
-@property(nonatomic, strong) NSMutableArray<UIViewController *> *childrenViewControllers;
 @property(nonatomic) NSInteger initialPage;
 @property(nonatomic) NSInteger currentIndex;
 @property(nonatomic) NSInteger pageMargin;
@@ -25,9 +20,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, copy) RCTDirectEventBlock onPageSelected;
 @property(nonatomic, copy) RCTDirectEventBlock onPageScroll;
 @property(nonatomic, copy) RCTDirectEventBlock onPageScrollStateChanged;
+@property(nonatomic) BOOL overdrag;
 
 
-- (void)goTo:(NSNumber *)index animated:(BOOL)animated;
+- (void)goTo:(NSInteger)index animated:(BOOL)animated;
 - (void)shouldScroll:(BOOL)scrollEnabled;
 - (void)shouldShowPageIndicator:(BOOL)showPageIndicator;
 - (void)shouldDismissKeyboard:(NSString *)dismissKeyboard;

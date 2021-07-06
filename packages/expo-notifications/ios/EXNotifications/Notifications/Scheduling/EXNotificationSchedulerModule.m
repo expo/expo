@@ -13,6 +13,21 @@ static NSString * const notificationTriggerRepeatsKey = @"repeats";
 static NSString * const intervalNotificationTriggerType = @"timeInterval";
 static NSString * const intervalNotificationTriggerIntervalKey = @"seconds";
 
+static NSString * const dailyNotificationTriggerType = @"daily";
+static NSString * const dailyNotificationTriggerHourKey = @"hour";
+static NSString * const dailyNotificationTriggerMinuteKey = @"minute";
+
+static NSString * const weeklyNotificationTriggerType = @"weekly";
+static NSString * const weeklyNotificationTriggerWeekdayKey = @"weekday";
+static NSString * const weeklyNotificationTriggerHourKey = @"hour";
+static NSString * const weeklyNotificationTriggerMinuteKey = @"minute";
+
+static NSString * const yearlyNotificationTriggerType = @"yearly";
+static NSString * const yearlyNotificationTriggerDayKey = @"day";
+static NSString * const yearlyNotificationTriggerMonthKey = @"month";
+static NSString * const yearlyNotificationTriggerHourKey = @"hour";
+static NSString * const yearlyNotificationTriggerMinuteKey = @"minute";
+
 static NSString * const dateNotificationTriggerType = @"date";
 static NSString * const dateNotificationTriggerTimestampKey = @"timestamp";
 
@@ -44,11 +59,7 @@ UM_EXPORT_METHOD_AS(getAllScheduledNotificationsAsync,
                     )
 {
   [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
-    NSMutableArray *serializedRequests = [NSMutableArray new];
-    for (UNNotificationRequest *request in requests) {
-      [serializedRequests addObject:[EXNotificationSerializer serializedNotificationRequest:request]];
-    }
-    resolve(serializedRequests);
+    resolve([self serializeNotificationRequests:requests]);
   }];
 }
 
@@ -56,8 +67,7 @@ UM_EXPORT_METHOD_AS(scheduleNotificationAsync,
                      scheduleNotification:(NSString *)identifier notificationSpec:(NSDictionary *)notificationSpec triggerSpec:(NSDictionary *)triggerSpec resolve:(UMPromiseResolveBlock)resolve rejecting:(UMPromiseRejectBlock)reject)
 {
   @try {
-    UNNotificationContent *content = [_builder notificationContentFromRequest:notificationSpec];
-    UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:[self triggerFromParams:triggerSpec]];
+    UNNotificationRequest *request = [self buildNotificationRequestWithIdentifier:identifier content:notificationSpec trigger:triggerSpec];
     [[UNUserNotificationCenter currentNotificationCenter] addNotificationRequest:request withCompletionHandler:^(NSError * _Nullable error) {
       if (error) {
         NSString *message = [NSString stringWithFormat:@"Failed to schedule notification. %@", error];
@@ -86,6 +96,49 @@ UM_EXPORT_METHOD_AS(cancelAllScheduledNotificationsAsync,
   resolve(nil);
 }
 
+UM_EXPORT_METHOD_AS(getNextTriggerDateAsync,
+                    getNextTriggerDate:(NSDictionary *)triggerSpec resolve:(UMPromiseResolveBlock)resolve rejecting:(UMPromiseRejectBlock)reject)
+{
+  @try {
+    UNNotificationTrigger *trigger = [self triggerFromParams:triggerSpec];
+    if ([trigger isKindOfClass:[UNCalendarNotificationTrigger class]]) {
+      UNCalendarNotificationTrigger *calendarTrigger = (UNCalendarNotificationTrigger *)trigger;
+      NSDate *nextTriggerDate = [calendarTrigger nextTriggerDate];
+      // We want to return milliseconds from this method.
+      resolve(nextTriggerDate ? @([nextTriggerDate timeIntervalSince1970] * 1000) : [NSNull null]);
+    } else if ([trigger isKindOfClass:[UNTimeIntervalNotificationTrigger class]]) {
+      UNTimeIntervalNotificationTrigger *timeIntervalTrigger = (UNTimeIntervalNotificationTrigger *)trigger;
+      NSDate *nextTriggerDate = [timeIntervalTrigger nextTriggerDate];
+      // We want to return milliseconds from this method.
+      resolve(nextTriggerDate ? @([nextTriggerDate timeIntervalSince1970] * 1000) : [NSNull null]);
+    } else {
+      NSString *message = [NSString stringWithFormat:@"It is not possible to get next trigger date for triggers other than calendar-based. Provided trigger resulted in %@ trigger.", NSStringFromClass([trigger class])];
+      reject(@"ERR_NOTIFICATIONS_INVALID_CALENDAR_TRIGGER", message, nil);
+    }
+  } @catch (NSException *exception) {
+    NSString *message = [NSString stringWithFormat:@"Failed to get next trigger date. %@", exception];
+    reject(@"ERR_NOTIFICATIONS_FAILED_TO_GET_NEXT_TRIGGER_DATE", message, nil);
+  }
+}
+
+- (UNNotificationRequest *)buildNotificationRequestWithIdentifier:(NSString *)identifier
+                                                          content:(NSDictionary *)contentInput
+                                                          trigger:(NSDictionary *)triggerInput
+{
+  UNNotificationContent *content = [_builder notificationContentFromRequest:contentInput];
+  UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:identifier content:content trigger:[self triggerFromParams:triggerInput]];
+  return request;
+}
+
+- (NSArray * _Nonnull)serializeNotificationRequests:(NSArray<UNNotificationRequest *> * _Nonnull) requests
+{
+  NSMutableArray *serializedRequests = [NSMutableArray new];
+  for (UNNotificationRequest *request in requests) {
+    [serializedRequests addObject:[EXNotificationSerializer serializedNotificationRequest:request]];
+  }
+  return serializedRequests;
+}
+
 - (UNNotificationTrigger *)triggerFromParams:(NSDictionary *)params
 {
   if (!params) {
@@ -104,11 +157,46 @@ UM_EXPORT_METHOD_AS(cancelAllScheduledNotificationsAsync,
     return [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:[interval unsignedIntegerValue]
                                                               repeats:[repeats boolValue]];
   } else if ([dateNotificationTriggerType isEqualToString:triggerType]) {
-    NSNumber *timestamp = [params objectForKey:dateNotificationTriggerTimestampKey verifyingClass:[NSNumber class]];
-    NSDate *date = [NSDate dateWithTimeIntervalSince1970:[timestamp unsignedIntegerValue]];
+    NSNumber *timestampMs = [params objectForKey:dateNotificationTriggerTimestampKey verifyingClass:[NSNumber class]];
+    NSUInteger timestamp = [timestampMs unsignedIntegerValue] / 1000;
+    NSDate *date = [NSDate dateWithTimeIntervalSince1970:timestamp];
 
     return [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:[date timeIntervalSinceNow]
                                                               repeats:NO];
+
+  } else if ([dailyNotificationTriggerType isEqualToString:triggerType]) {
+    NSNumber *hour = [params objectForKey:dailyNotificationTriggerHourKey verifyingClass:[NSNumber class]];
+    NSNumber *minute = [params objectForKey:dailyNotificationTriggerMinuteKey verifyingClass:[NSNumber class]];
+    NSDateComponents *dateComponents = [NSDateComponents new];
+    dateComponents.hour = [hour integerValue];
+    dateComponents.minute = [minute integerValue];
+
+    return [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:dateComponents
+                                                                    repeats:YES];
+  } else if ([weeklyNotificationTriggerType isEqualToString:triggerType]) {
+    NSNumber *weekday = [params objectForKey:weeklyNotificationTriggerWeekdayKey verifyingClass:[NSNumber class]];
+    NSNumber *hour = [params objectForKey:weeklyNotificationTriggerHourKey verifyingClass:[NSNumber class]];
+    NSNumber *minute = [params objectForKey:weeklyNotificationTriggerMinuteKey verifyingClass:[NSNumber class]];
+    NSDateComponents *dateComponents = [NSDateComponents new];
+    dateComponents.weekday = [weekday integerValue];
+    dateComponents.hour = [hour integerValue];
+    dateComponents.minute = [minute integerValue];
+
+    return [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:dateComponents
+                                                                    repeats:YES];
+  } else if ([yearlyNotificationTriggerType isEqualToString:triggerType]) {
+    NSNumber *day = [params objectForKey:yearlyNotificationTriggerDayKey verifyingClass:[NSNumber class]];
+    NSNumber *month = [params objectForKey:yearlyNotificationTriggerMonthKey verifyingClass:[NSNumber class]];
+    NSNumber *hour = [params objectForKey:yearlyNotificationTriggerHourKey verifyingClass:[NSNumber class]];
+    NSNumber *minute = [params objectForKey:yearlyNotificationTriggerMinuteKey verifyingClass:[NSNumber class]];
+    NSDateComponents *dateComponents = [NSDateComponents new];
+    dateComponents.day = [day integerValue];
+    dateComponents.month = [month integerValue] + 1; // iOS uses 1-12 based numbers for months
+    dateComponents.hour = [hour integerValue];
+    dateComponents.minute = [minute integerValue];
+
+    return [UNCalendarNotificationTrigger triggerWithDateMatchingComponents:dateComponents
+                                                                    repeats:YES];
   } else if ([calendarNotificationTriggerType isEqualToString:triggerType]) {
     NSDateComponents *dateComponents = [self dateComponentsFromParams:params[calendarNotificationTriggerComponentsKey]];
     NSNumber *repeats = [params objectForKey:notificationTriggerRepeatsKey verifyingClass:[NSNumber class]];

@@ -12,38 +12,38 @@ import com.facebook.react.module.annotations.ReactModule;
 
 @ReactModule(name = RNSharedElementModule.MODULE_NAME)
 public class RNSharedElementModule extends ReactContextBaseJavaModule {
-    public static final String MODULE_NAME = "RNSharedElementTransition";
-    static String LOG_TAG = "RNSharedElementModule";
+  public static final String MODULE_NAME = "RNSharedElementTransition";
+  static String LOG_TAG = "RNSharedElementModule";
 
-    private RNSharedElementNodeManager mNodeManager;
+  private RNSharedElementNodeManager mNodeManager;
 
-    public RNSharedElementModule(ReactApplicationContext reactContext) {
-        super(reactContext);
-        mNodeManager = new RNSharedElementNodeManager(reactContext);
-    }
+  public RNSharedElementModule(ReactApplicationContext reactContext) {
+    super(reactContext);
+    mNodeManager = new RNSharedElementNodeManager(reactContext);
+  }
 
-    @Override
-    public String getName() {
-        return MODULE_NAME;
-    }
+  @Override
+  public String getName() {
+    return MODULE_NAME;
+  }
 
-    RNSharedElementNodeManager getNodeManager() {
-        return mNodeManager;
-    }
+  RNSharedElementNodeManager getNodeManager() {
+    return mNodeManager;
+  }
 
-    @ReactMethod
-    public void configure(final ReadableMap config, final Promise promise) {
+  @ReactMethod
+  public void configure(final ReadableMap config, final Promise promise) {
 
-        // Store a reference to the native view manager in the node-manager.
-        // This is done so that we can efficiently resolve a view when the 
-        // start- and end props are set on the Transition view.
-        final ReactApplicationContext context = getReactApplicationContext();
-        final UIManagerModule uiManager = context.getNativeModule(UIManagerModule.class);
-        uiManager.prependUIBlock(new UIBlock() {
-            @Override
-            public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
-                mNodeManager.setNativeViewHierarchyManager(nativeViewHierarchyManager);
-            }
-        });
-    }
+    // Store a reference to the native view manager in the node-manager.
+    // This is done so that we can efficiently resolve a view when the
+    // start- and end props are set on the Transition view.
+    final ReactApplicationContext context = getReactApplicationContext();
+    final UIManagerModule uiManager = context.getNativeModule(UIManagerModule.class);
+    uiManager.prependUIBlock(new UIBlock() {
+      @Override
+      public void execute(NativeViewHierarchyManager nativeViewHierarchyManager) {
+        mNodeManager.setNativeViewHierarchyManager(nativeViewHierarchyManager);
+      }
+    });
+  }
 }

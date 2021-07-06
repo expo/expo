@@ -1,9 +1,8 @@
-import { CodedError } from '@unimodules/core';
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
+import { CodedError, Platform } from '@unimodules/core';
 import FontObserver from 'fontfaceobserver';
 import { FontDisplay } from './Font.types';
 function getFontFaceStyleSheet() {
-    if (!canUseDOM) {
+    if (!Platform.isDOMAvailable) {
         return null;
     }
     const styleSheet = getStyleElement();
@@ -37,7 +36,7 @@ export default {
         return 'ExpoFontLoader';
     },
     async unloadAllAsync() {
-        if (!canUseDOM)
+        if (!Platform.isDOMAvailable)
             return;
         const element = document.getElementById(ID);
         if (element && element instanceof HTMLStyleElement) {
@@ -54,7 +53,7 @@ export default {
         }
     },
     async loadAsync(fontFamilyName, resource) {
-        if (!canUseDOM) {
+        if (!Platform.isDOMAvailable) {
             return;
         }
         const canInjectStyle = document.head && typeof document.head.appendChild === 'function';
@@ -108,8 +107,10 @@ function isFontLoadingListenerSupported() {
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
     // Edge is broken https://github.com/bramstein/fontfaceobserver/issues/109#issuecomment-333356795
     const isEdge = userAgent.includes('Edge');
+    // Internet Explorer
+    const isIE = userAgent.includes('Trident');
     // Firefox
     const isFirefox = userAgent.includes('Firefox');
-    return !isSafari && !isIOS && !isEdge && !isFirefox;
+    return !isSafari && !isIOS && !isEdge && !isIE && !isFirefox;
 }
 //# sourceMappingURL=ExpoFontLoader.web.js.map

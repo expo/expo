@@ -1,6 +1,6 @@
-import React from 'react';
-import { PixelRatio, View, Text, Switch } from 'react-native';
 import { Audio } from 'expo-av';
+import React from 'react';
+import { PixelRatio, Switch, Text, View } from 'react-native';
 
 import Button from '../../components/Button';
 import ListButton from '../../components/ListButton';
@@ -17,6 +17,8 @@ interface State {
   setMode: Mode;
 }
 
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
 export default class AudioModeSelector extends React.Component<{}, State> {
   readonly state: State = {
     modeToSet: {
@@ -42,20 +44,21 @@ export default class AudioModeSelector extends React.Component<{}, State> {
         playsInSilentModeIOS: false,
         interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
       });
-      this.setState({ setMode: this.state.modeToSet });
+      const { modeToSet } = this.state;
+      this.setState({ setMode: modeToSet });
     } catch (error) {
       alert(error.message);
     }
-  }
+  };
 
   _modesEqual = (modeA: Mode, modeB: Mode) =>
     modeA.interruptionModeAndroid === modeB.interruptionModeAndroid &&
     modeA.playThroughEarpieceAndroid === modeB.playThroughEarpieceAndroid &&
     modeA.shouldDuckAndroid === modeB.shouldDuckAndroid &&
-    modeA.staysActiveInBackground === modeB.staysActiveInBackground
+    modeA.staysActiveInBackground === modeB.staysActiveInBackground;
 
   _setMode = (interruptionModeAndroid: number) => () =>
-    this.setState({ modeToSet: { ...this.state.modeToSet, interruptionModeAndroid } })
+    this.setState(state => ({ modeToSet: { ...state.modeToSet, interruptionModeAndroid } }));
 
   _renderToggle = ({
     title,
@@ -66,10 +69,10 @@ export default class AudioModeSelector extends React.Component<{}, State> {
     title: string;
     disabled?: boolean;
     valueName:
-     | 'interruptionModeAndroid'
-     | 'shouldDuckAndroid'
-     | 'playThroughEarpieceAndroid'
-     | 'staysActiveInBackground';
+      | 'interruptionModeAndroid'
+      | 'shouldDuckAndroid'
+      | 'playThroughEarpieceAndroid'
+      | 'staysActiveInBackground';
     value?: boolean;
   }) => (
     <View
@@ -80,20 +83,19 @@ export default class AudioModeSelector extends React.Component<{}, State> {
         paddingVertical: 5,
         borderBottomWidth: 1.0 / PixelRatio.get(),
         borderBottomColor: '#cccccc',
-      }}
-    >
+      }}>
       <Text style={{ flex: 1, fontSize: 16 }}>{title}</Text>
       <Switch
         disabled={disabled}
         value={value !== undefined ? value : Boolean(this.state.modeToSet[valueName])}
         onValueChange={() =>
-          this.setState({
-            modeToSet: { ...this.state.modeToSet, [valueName]: !this.state.modeToSet[valueName] },
-          })
+          this.setState(state => ({
+            modeToSet: { ...state.modeToSet, [valueName]: !state.modeToSet[valueName] },
+          }))
         }
       />
     </View>
-  )
+  );
 
   _renderModeSelector = ({
     title,
@@ -109,7 +111,7 @@ export default class AudioModeSelector extends React.Component<{}, State> {
       title={`${this.state.modeToSet.interruptionModeAndroid === value ? '✓ ' : ''}${title}`}
       onPress={this._setMode(value)}
     />
-  )
+  );
 
   render() {
     return (

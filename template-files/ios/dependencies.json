@@ -1,15 +1,11 @@
 [
   {
-    "name": "Amplitude-iOS",
-    "version": "~> 4.7.1"
+    "name": "Amplitude",
+    "version": "~> 6.0.0"
   },
   {
     "name": "CocoaLumberjack",
     "version": "~> 3.5.3"
-  },
-  {
-    "name": "Crashlytics",
-    "version": "~> 3.14.0"
   },
   {
     "name": "GoogleMaps",
@@ -21,10 +17,14 @@
   },
   {
     "name": "lottie-ios",
-    "version": "~> 2.5.0"
+    "version": "~> 3.1.9"
   },
   {
     "name": "JKBigInteger2",
     "version": "0.0.5"
+  },
+  {
+    "name": "MBProgressHUD",
+    "version": "~> 1.2.0"
   }
 ]

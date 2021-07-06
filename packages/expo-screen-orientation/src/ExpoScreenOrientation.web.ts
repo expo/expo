@@ -1,5 +1,4 @@
-import { SyntheticPlatformEmitter } from '@unimodules/core';
-import { canUseViewport, canUseEventListeners } from 'fbjs/lib/ExecutionEnvironment';
+import { SyntheticPlatformEmitter, Platform } from '@unimodules/core';
 
 import { getOrientationLockAsync, getOrientationAsync } from './ScreenOrientation';
 import {
@@ -12,14 +11,14 @@ import {
 const OrientationLockAPIToWeb: {
   [lock: string]: WebOrientationLock;
 } = {
-  DEFAULT: WebOrientationLock.NATURAL,
-  ALL: WebOrientationLock.ANY,
-  PORTRAIT: WebOrientationLock.PORTRAIT,
-  PORTRAIT_UP: WebOrientationLock.PORTRAIT_PRIMARY,
-  PORTRAIT_DOWN: WebOrientationLock.PORTRAIT_SECONDARY,
-  LANDSCAPE: WebOrientationLock.LANDSCAPE,
-  LANDSCAPE_LEFT: WebOrientationLock.LANDSCAPE_PRIMARY,
-  LANDSCAPE_RIGHT: WebOrientationLock.LANDSCAPE_SECONDARY,
+  [OrientationLock.DEFAULT]: WebOrientationLock.NATURAL,
+  [OrientationLock.ALL]: WebOrientationLock.ANY,
+  [OrientationLock.PORTRAIT]: WebOrientationLock.PORTRAIT,
+  [OrientationLock.PORTRAIT_UP]: WebOrientationLock.PORTRAIT_PRIMARY,
+  [OrientationLock.PORTRAIT_DOWN]: WebOrientationLock.PORTRAIT_SECONDARY,
+  [OrientationLock.LANDSCAPE]: WebOrientationLock.LANDSCAPE,
+  [OrientationLock.LANDSCAPE_LEFT]: WebOrientationLock.LANDSCAPE_PRIMARY,
+  [OrientationLock.LANDSCAPE_RIGHT]: WebOrientationLock.LANDSCAPE_SECONDARY,
 };
 
 const OrientationWebToAPI: {
@@ -33,9 +32,10 @@ const OrientationWebToAPI: {
 
 declare const window: Window;
 
-const { screen } = canUseViewport && window;
-const orientation: ScreenOrientation | null =
-  canUseViewport && (screen.orientation || (screen as any).msOrientation || null);
+const screen: Screen = Platform.canUseViewport ? window.screen : ({} as Screen);
+const orientation: ScreenOrientation | null = Platform.canUseViewport
+  ? screen.orientation || (screen as any).msOrientation || null
+  : null;
 
 async function emitOrientationEvent() {
   const [orientationLock, orientation] = await Promise.all([
@@ -44,11 +44,11 @@ async function emitOrientationEvent() {
   ]);
   SyntheticPlatformEmitter.emit('expoDidUpdateDimensions', {
     orientationLock,
-    orientation,
+    orientationInfo: { orientation },
   });
 }
 
-if (canUseEventListeners) {
+if (Platform.canUseEventListeners) {
   if (orientation && orientation.addEventListener) {
     orientation.addEventListener('change', emitOrientationEvent);
   } else {

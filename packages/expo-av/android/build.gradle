@@ -1,12 +1,23 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '8.1.0'
+version = '9.2.0'
 
-// Simple helper that allows the root project to override versions declared by this library.
-def safeExtGet(prop, fallback) {
-  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+buildscript {
+  // Simple helper that allows the root project to override versions declared by this library.
+  ext.safeExtGet = { prop, fallback ->
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+  }
+
+  repositories {
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.4.21')}")
+  }
 }
 
 // Upload android library to maven with javadoc and android sources
@@ -35,34 +46,44 @@ uploadArchives {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 28)
+  compileSdkVersion safeExtGet("compileSdkVersion", 30)
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 28)
-    versionCode 15
-    versionName "8.1.0"
+    targetSdkVersion safeExtGet("targetSdkVersion", 30)
+    versionCode 24
+    versionName "9.2.0"
   }
   lintOptions {
     abortOnError false
   }
-  compileOptions {
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
+  testOptions {
+    unitTests.all {
+      useJUnitPlatform()
+    }
   }
+
 }
 
 if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
   apply from: project(":unimodules-core").file("../unimodules-core.gradle")
 } else {
   throw new GradleException(
-      "'unimodules-core.gradle' was not found in the usual Flutter or React Native dependency locations. " +
+      "'unimodules-core.gradle' was not found in the usual React Native dependency location. " +
           "This package can only be used in such projects. Are you sure you've installed the dependencies properly?")
 }
 
 dependencies {
   unimodule "unimodules-core"
-  unimodule "unimodules-permissions-interface"
+  unimodule 'expo-modules-core'
+
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
+
   // Newer version introduces dependency versions conflict
   // on 'com.android.support:support-annotations'
   api 'com.google.android.exoplayer:exoplayer:2.9.2'
@@ -71,8 +92,13 @@ dependencies {
 
   api 'com.yqritc:android-scalablevideoview:1.0.1'
 
-  api "com.squareup.okhttp3:okhttp:3.10.0"
-  api "com.squareup.okhttp3:okhttp-urlconnection:3.10.0"
+  api "com.squareup.okhttp3:okhttp:3.14.9"
+  api "com.squareup.okhttp3:okhttp-urlconnection:3.14.9"
 
-  api "com.android.support:support-annotations:${safeExtGet("supportLibVersion", "28.0.0")}"
+  api "com.android.support:support-annotations:${safeExtGet("supportLibVersion", "29.0.0")}"
+
+  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.1'
+  testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.5.1"
+
+  testImplementation 'io.mockk:mockk:1.9'
 }

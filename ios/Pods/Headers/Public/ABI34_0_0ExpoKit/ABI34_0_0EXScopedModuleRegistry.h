@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI34_0_0/Expo/Core/Internal/ABI34_0_0EXScopedModuleRegistry.h

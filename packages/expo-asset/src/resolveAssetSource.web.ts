@@ -3,7 +3,7 @@ import { NativeModules } from 'react-native';
 import { getAssetByID } from './AssetRegistry';
 import AssetSourceResolver, { ResolvedAssetSource } from './AssetSourceResolver';
 
-declare var nativeExtensions: any;
+declare let nativeExtensions: any;
 
 let _customSourceTransformer;
 let _serverURL: string | undefined | null;

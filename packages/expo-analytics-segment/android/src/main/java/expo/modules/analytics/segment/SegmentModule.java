@@ -5,6 +5,8 @@ package expo.modules.analytics.segment;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.annotation.Nullable;
+
 import com.segment.analytics.Analytics;
 import com.segment.analytics.Options;
 import com.segment.analytics.Properties;
@@ -18,7 +20,8 @@ import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
 import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.interfaces.constants.ConstantsInterface;
+
+import expo.modules.interfaces.constants.ConstantsInterface;
 
 public class SegmentModule extends ExportedModule {
   private static final String NAME = "ExponentSegment";
@@ -76,17 +79,35 @@ public class SegmentModule extends ExportedModule {
     Options options = new Options();
     if (properties != null) {
       for (Map.Entry<String, Object> entry : properties.entrySet()) {
-        String integrationKey = entry.getKey();
-        if (entry.getValue() instanceof Map) {
-          Map integrationOptions = (Map) entry.getValue();
-          if (integrationOptions.get("enabled") instanceof Double) {
-            boolean enabled = (Double) integrationOptions.get("enabled") > 0;
-            options.setIntegration(integrationKey, enabled);
+        String keyName = entry.getKey();
+        if (keyName.equals("context") && entry.getValue() != null) {
+          Map<String, Object> contexts = (Map) entry.getValue();
+          for (Map.Entry<String, Object> context : contexts.entrySet()) {
+            options.putContext(context.getKey(), context.getValue());
           }
-          if (integrationOptions.get("options") instanceof Map) {
-            Map<String, Object> jsonOptions = coalesceAnonymousMapToJsonObject((Map) integrationOptions.get("options"));
-            options.setIntegrationOptions(integrationKey, jsonOptions);
-          }
+        } else if (keyName.equals("integrations") && entry.getValue() != null) {
+          options = addIntegrationsToOptions(options, (Map) entry.getValue());
+        }
+      }
+    }
+    return options;
+  }
+
+  private static Options addIntegrationsToOptions(Options options, Map<String,Object> integrations) {
+    for (Map.Entry<String, Object> integration : integrations.entrySet()) {
+      String integrationKey = integration.getKey();
+      if (integration.getValue() instanceof Map) {
+        Map integrationOptions = (Map) integration.getValue();
+        if (integrationOptions.get("enabled") instanceof Boolean) {
+          boolean enabled = (Boolean) integrationOptions.get("enabled");
+          options.setIntegration(integrationKey, enabled);
+        } else if (integrationOptions.get("enabled") instanceof String) {
+          String enabled = (String) integrationOptions.get("enabled");
+          options.setIntegration(integrationKey, Boolean.valueOf(enabled));
+        }
+        if (integrationOptions.get("options") instanceof Map) {
+          Map<String, Object> jsonOptions = coalesceAnonymousMapToJsonObject((Map) integrationOptions.get("options"));
+          options.setIntegrationOptions(integrationKey, jsonOptions);
         }
       }
     }
@@ -112,19 +133,14 @@ public class SegmentModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void initializeAndroid(final String writeKey, Promise promise) {
+  public void initialize(final String writeKey, Promise promise) {
     Analytics.Builder builder = new Analytics.Builder(mContext, writeKey);
+    builder.experimentalUseNewLifecycleMethods(false);
     builder.tag(Integer.toString(sCurrentTag++));
     builder.use(FirebaseIntegration.FACTORY);
     mClient = builder.build();
     mClient.optOut(!getEnabledPreferenceValue());
     promise.resolve(null);
-  }
-
-  @ExpoMethod
-  public void initializeIOS(final String writeKey, Promise promise) {
-    // NO-OP. Need this here because Segment has different keys for iOS and Android.
-    promise.reject("E_WRONG_PLATFORM", "Method initializeIOS should not be called on Android, please file an issue on GitHub.");
   }
 
   @ExpoMethod
@@ -136,9 +152,9 @@ public class SegmentModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void identifyWithTraits(final String userId, final Map<String, Object> properties, Promise promise) {
+  public void identifyWithTraits(final String userId, final Map<String, Object> properties, @Nullable final Map<String, Object> options, Promise promise) {
     if (mClient != null) {
-      mClient.identify(userId, readableMapToTraits(properties), new Options());
+      mClient.identify(userId, readableMapToTraits(properties), readableMapToOptions(options));
     }
     promise.resolve(null);
   }
@@ -152,9 +168,9 @@ public class SegmentModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void trackWithProperties(final String eventName, final Map<String, Object> properties, Promise promise) {
+  public void trackWithProperties(final String eventName, final Map<String, Object> properties, @Nullable final Map<String, Object> options, Promise promise) {
     if (mClient != null) {
-      mClient.track(eventName, readableMapToProperties(properties));
+      mClient.track(eventName, readableMapToProperties(properties), readableMapToOptions(options));
     }
     promise.resolve(null);
   }
@@ -179,9 +195,9 @@ public class SegmentModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void groupWithTraits(final String groupId, final Map<String, Object> properties, Promise promise) {
+  public void groupWithTraits(final String groupId, final Map<String, Object> properties, @Nullable final Map<String, Object> options, Promise promise) {
     if (mClient != null) {
-      mClient.group(groupId, readableMapToTraits(properties), new Options());
+      mClient.group(groupId, readableMapToTraits(properties), readableMapToOptions(options));
     }
     promise.resolve(null);
   }
@@ -195,9 +211,9 @@ public class SegmentModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void screenWithProperties(final String screenName, final Map<String, Object> properties, Promise promise) {
+  public void screenWithProperties(final String screenName, final Map<String, Object> properties, @Nullable final Map<String, Object> options, Promise promise) {
     if (mClient != null) {
-      mClient.screen(screenName, readableMapToProperties(properties));
+      mClient.screen(null, screenName, readableMapToProperties(properties), readableMapToOptions(options));
     }
     promise.resolve(null);
   }
@@ -226,7 +242,7 @@ public class SegmentModule extends ExportedModule {
   @ExpoMethod
   public void setEnabledAsync(final boolean enabled, final Promise promise) {
     if (mConstants.getAppOwnership().equals("expo")) {
-      promise.reject("E_UNSUPPORTED", "Setting Segment's `enabled` is not supported in Expo Client.");
+      promise.reject("E_UNSUPPORTED", "Setting Segment's `enabled` is not supported in Expo Go.");
       return;
     }
     mSharedPreferences.edit().putBoolean(ENABLED_PREFERENCE_KEY, enabled).apply();

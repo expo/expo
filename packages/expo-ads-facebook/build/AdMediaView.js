@@ -4,13 +4,12 @@ import React from 'react';
 import { AdMediaViewContext } from './withNativeAd';
 export default class AdMediaView extends React.Component {
     render() {
-        return (<AdMediaViewContext.Consumer>
-        {(contextValue) => {
+        return (React.createElement(AdMediaViewContext.Consumer, null, (contextValue) => {
             const context = nullthrows(contextValue);
-            return <NativeAdMediaView {...this.props} ref={context.nativeRef}/>;
-        }}
-      </AdMediaViewContext.Consumer>);
+            return React.createElement(NativeAdMediaView, Object.assign({}, this.props, { ref: context.nativeRef }));
+        }));
     }
 }
+// eslint-disable-next-line @typescript-eslint/no-redeclare -- the type and variable share a name
 export const NativeAdMediaView = requireNativeViewManager('MediaView');
 //# sourceMappingURL=AdMediaView.js.map

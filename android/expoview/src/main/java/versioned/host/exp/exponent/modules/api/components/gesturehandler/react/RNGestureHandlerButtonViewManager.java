@@ -1,5 +1,6 @@
 package versioned.host.exp.exponent.modules.api.components.gesturehandler.react;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -11,8 +12,11 @@ import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
 import android.util.TypedValue;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 
+import com.facebook.react.bridge.SoftAssertions;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewProps;
@@ -25,19 +29,29 @@ public class RNGestureHandlerButtonViewManager extends
 
     static TypedValue sResolveOutValue = new TypedValue();
     static ButtonViewGroup sResponder;
+    static OnClickListener sDummyClickListener = new OnClickListener() {
+      @Override
+      public void onClick(View v) { }
+    };
 
     int mBackgroundColor = Color.TRANSPARENT;
     // Using object because of handling null representing no value set.
     Integer mRippleColor;
+    Integer mRippleRadius;
     boolean mUseForeground = false;
     boolean mUseBorderless = false;
     float mBorderRadius = 0;
     boolean mNeedBackgroundUpdate = false;
+    long mLastEventTime = 0;
+    public static final String SELECTABLE_ITEM_BACKGROUND = "selectableItemBackground";
+    public static final String SELECTABLE_ITEM_BACKGROUND_BORDERLESS = "selectableItemBackgroundBorderless";
 
 
     public ButtonViewGroup(Context context) {
       super(context);
 
+      // we attach empty click listener to trigger tap sounds (see View#performClick())
+      setOnClickListener(sDummyClickListener);
       setClickable(true);
       setFocusable(true);
 
@@ -55,20 +69,30 @@ public class RNGestureHandlerButtonViewManager extends
       mNeedBackgroundUpdate = true;
     }
 
+    public void setRippleRadius(Integer radius) {
+      mRippleRadius = radius;
+      mNeedBackgroundUpdate = true;
+    }
+
     public void setBorderRadius(float borderRadius) {
-      mBorderRadius = borderRadius * (float)getResources().getDisplayMetrics().density;
+      mBorderRadius = borderRadius * getResources().getDisplayMetrics().density;
       mNeedBackgroundUpdate = true;
     }
 
     private Drawable applyRippleEffectWhenNeeded(Drawable selectable) {
       if (mRippleColor != null
-              && selectable != null
               && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
               && selectable instanceof RippleDrawable) {
         int[][] states = new int[][]{ new int[]{ android.R.attr.state_enabled } };
         int[] colors = new int[]{ mRippleColor };
         ColorStateList colorStateList = new ColorStateList(states, colors);
         ((RippleDrawable) selectable).setColor(colorStateList);
+      }
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+              && mRippleRadius != null
+              && selectable instanceof RippleDrawable) {
+        RippleDrawable rippleDrawable = (RippleDrawable) selectable;
+        rippleDrawable.setRadius((int) PixelUtil.toPixelFromDIP(mRippleRadius));
       }
       return selectable;
     }
@@ -78,11 +102,34 @@ public class RNGestureHandlerButtonViewManager extends
       if (super.onInterceptTouchEvent(ev)) {
         return true;
       }
-      // We call `onTouchEvent` to and wait until button changes state to `pressed`, if it's pressed
-      // we return true so that the gesture handler can activate
+      // We call `onTouchEvent` and wait until button changes state to `pressed`, if it's pressed
+      // we return true so that the gesture handler can activate.
       onTouchEvent(ev);
-      if (isPressed()) {
-        return true;
+      return isPressed();
+    }
+
+    /**
+     * Buttons in RN are wrapped in NativeViewGestureHandler which manages
+     * calling onTouchEvent after activation of the handler. Problem is, in order to verify that
+     * underlying button implementation is interested in receiving touches we have to call onTouchEvent
+     * and check if button is pressed.
+     *
+     * This leads to invoking onTouchEvent twice which isn't idempotent in View - it calls OnClickListener
+     * and plays sound effect if OnClickListener was set.
+     *
+     * To mitigate this behavior we use mLastEventTime variable to check that we already handled
+     * the event in {@link #onInterceptTouchEvent(MotionEvent)}. We assume here that different events
+     * will have different event times.
+     *
+     * Reference:
+     * {@link versioned.host.exp.exponent.modules.api.components.gesturehandler.NativeViewGestureHandler#onHandle(MotionEvent)} */
+    @SuppressLint("ClickableViewAccessibility")
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+      long eventTime = event.getEventTime();
+      if (mLastEventTime != eventTime || mLastEventTime == 0) {
+        mLastEventTime = eventTime;
+        return super.onTouchEvent(event);
       }
       return false;
     }
@@ -144,14 +191,26 @@ public class RNGestureHandlerButtonViewManager extends
 
     private Drawable createSelectableDrawable() {
       final int version = Build.VERSION.SDK_INT;
-      String identifier = mUseBorderless && version >= 21 ? "selectableItemBackgroundBorderless"
-              : "selectableItemBackground";
-      int attrID = getResources().getIdentifier(identifier, "attr", "android");
+      String identifier = mUseBorderless && version >= 21 ? SELECTABLE_ITEM_BACKGROUND_BORDERLESS
+              : SELECTABLE_ITEM_BACKGROUND;
+      int attrID = getAttrId(getContext(), identifier);
       getContext().getTheme().resolveAttribute(attrID, sResolveOutValue, true);
       if (version >= 21) {
         return getResources().getDrawable(sResolveOutValue.resourceId, getContext().getTheme());
       } else {
         return getResources().getDrawable(sResolveOutValue.resourceId);
+      }
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private static int getAttrId(Context context, String attr) {
+      SoftAssertions.assertNotNull(attr);
+      if (SELECTABLE_ITEM_BACKGROUND.equals(attr)) {
+        return android.R.attr.selectableItemBackground;
+      } else if (SELECTABLE_ITEM_BACKGROUND_BORDERLESS.equals(attr)) {
+        return android.R.attr.selectableItemBackgroundBorderless;
+      } else {
+        return context.getResources().getIdentifier(attr, "attr", "android");
       }
     }
 
@@ -223,6 +282,11 @@ public class RNGestureHandlerButtonViewManager extends
   @ReactProp(name = "rippleColor")
   public void setRippleColor(ButtonViewGroup view, Integer rippleColor) {
     view.setRippleColor(rippleColor);
+  }
+
+  @ReactProp(name = "rippleRadius")
+  public void setRippleRadius(ButtonViewGroup view, Integer rippleRadius) {
+    view.setRippleRadius(rippleRadius);
   }
 
   @Override

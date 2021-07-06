@@ -27,7 +27,7 @@ const defaultMode = {
     staysActiveInBackground: false,
     interruptionModeAndroid: INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
     shouldDuckAndroid: true,
-    playThroughEarpieceAndroid: true,
+    playThroughEarpieceAndroid: false,
 };
 let currentAudioMode = null;
 function getCurrentAudioMode() {

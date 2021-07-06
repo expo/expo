@@ -2,15 +2,14 @@
 
 #import <CommonCrypto/CommonDigest.h>
 
-#import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 #import <SystemConfiguration/SystemConfiguration.h>
 #import <arpa/inet.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString * const kEXUpdatesEventName = @"Expo.nativeUpdatesEvent";
-static NSString * const kEXUpdatesUtilsErrorDomain = @"EXUpdatesUtils";
+static NSString * const EXUpdatesEventName = @"Expo.nativeUpdatesEvent";
+static NSString * const EXUpdatesUtilsErrorDomain = @"EXUpdatesUtils";
 
 @implementation EXUpdatesUtils
 
@@ -48,7 +47,7 @@ static NSString * const kEXUpdatesUtilsErrorDomain = @"EXUpdatesUtils";
   BOOL exists = [fileManager fileExistsAtPath:updatesDirectoryPath isDirectory:&isDir];
   if (exists) {
     if (!isDir) {
-      *error = [NSError errorWithDomain:kEXUpdatesUtilsErrorDomain code:1005 userInfo:@{NSLocalizedDescriptionKey: @"Failed to create the Updates Directory; a file already exists with the required directory name"}];
+      *error = [NSError errorWithDomain:EXUpdatesUtilsErrorDomain code:1005 userInfo:@{NSLocalizedDescriptionKey: @"Failed to create the Updates Directory; a file already exists with the required directory name"}];
       return nil;
     }
   } else {
@@ -68,15 +67,14 @@ static NSString * const kEXUpdatesUtilsErrorDomain = @"EXUpdatesUtils";
   if (bridge) {
     NSMutableDictionary *mutableBody = [body mutableCopy];
     mutableBody[@"type"] = eventType;
-    [bridge enqueueJSCall:@"RCTDeviceEventEmitter.emit" args:@[kEXUpdatesEventName, mutableBody]];
+    [bridge enqueueJSCall:@"RCTDeviceEventEmitter.emit" args:@[EXUpdatesEventName, mutableBody]];
   } else {
     NSLog(@"EXUpdates: Could not emit %@ event. Did you set the bridge property on the controller singleton?", eventType);
   }
 }
 
-+ (BOOL)shouldCheckForUpdate
++ (BOOL)shouldCheckForUpdateWithConfig:(EXUpdatesConfig *)config
 {
-  EXUpdatesConfig *config = [EXUpdatesConfig sharedInstance];
   switch (config.checkOnLaunch) {
     case EXUpdatesCheckAutomaticallyConfigNever:
       return NO;
@@ -96,6 +94,14 @@ static NSString * const kEXUpdatesUtilsErrorDomain = @"EXUpdatesUtils";
     default:
       return YES;
   }
+}
+
++ (NSString *)getRuntimeVersionWithConfig:(EXUpdatesConfig *)config
+{
+  // various places in the code assume that we have a nonnull runtimeVersion, so if the developer
+  // hasn't configured either runtimeVersion or sdkVersion, we'll use a dummy value of "1" but warn
+  // the developer in JS that they need to configure one of these values
+  return config.runtimeVersion ?: config.sdkVersion ?: @"1";
 }
 
 @end

@@ -24,7 +24,6 @@ export async function test({ describe, expect, it, ...t }) {
         it('throws out-of-scope exceptions', async () => {
           const p = FS.documentDirectory;
 
-          await throws(() => FS.getInfoAsync(p + '../hello/world'));
           await throws(() => FS.readAsStringAsync(p + '../hello/world'));
           await throws(() => FS.writeAsStringAsync(p + '../hello/world', ''));
           await throws(() => FS.deleteAsync(p + '../hello/world'));
@@ -65,7 +64,10 @@ export async function test({ describe, expect, it, ...t }) {
         await FS.deleteAsync(localUri, { idempotent: true });
         await assertExists(false);
 
-        const { md5, headers } = await FS.downloadAsync(
+        const {
+          md5,
+          headers,
+        } = await FS.downloadAsync(
           'https://s3-us-west-1.amazonaws.com/test-suite-data/avatar2.png',
           localUri,
           { md5: true }
@@ -123,7 +125,9 @@ export async function test({ describe, expect, it, ...t }) {
     it('download(md5, uri) -> read -> delete -> !exists -> read[error]', async () => {
       const localUri = FS.documentDirectory + 'download1.txt';
 
-      const { md5 } = await FS.downloadAsync(
+      const {
+        md5,
+      } = await FS.downloadAsync(
         'https://s3-us-west-1.amazonaws.com/test-suite-data/text-file.txt',
         localUri,
         { md5: true }
@@ -285,6 +289,23 @@ export async function test({ describe, expect, it, ...t }) {
       }
     );
 
+    it('getInfo(dirPath)', async () => {
+      const dir = FS.documentDirectory + 'dir';
+      const path = FS.documentDirectory + 'dir/file.txt';
+
+      await FS.deleteAsync(dir, { idempotent: true });
+      await FS.makeDirectoryAsync(dir, {
+        intermediates: true,
+      });
+      await FS.writeAsStringAsync(path, 'Expo is awesome 🚀🚀🚀');
+      const info = await FS.getInfoAsync(dir);
+
+      expect(info).toBeDefined();
+      expect(info.exists).toBe(true);
+      expect(info.isDirectory).toBe(true);
+      expect(info.size).toBe(28);
+    });
+
     /*
     This test fails in CI because of an exception being thrown by deleteAsync in the nativeModule.
     I traced it down to the FileUtils.forceDelete call here:
@@ -364,7 +385,9 @@ export async function test({ describe, expect, it, ...t }) {
 
       await FS.deleteAsync(localUri, { idempotent: true });
 
-      const { md5 } = await FS.downloadAsync(
+      const {
+        md5,
+      } = await FS.downloadAsync(
         'https://s3-us-west-1.amazonaws.com/test-suite-data/avatar2.png',
         localUri,
         { md5: true }
@@ -410,7 +433,10 @@ export async function test({ describe, expect, it, ...t }) {
 
       let error;
       try {
-        await FS.downloadAsync('https://nonexistent-subdomain.expo.io', localUri, { md5: true });
+        await FS.downloadAsync('https://nonexistent-subdomain.expo.io', localUri, {
+          md5: true,
+          sessionType: FS.FileSystemSessionType.FOREGROUND,
+        });
       } catch (e) {
         error = e;
       }
@@ -434,7 +460,7 @@ export async function test({ describe, expect, it, ...t }) {
       await FS.deleteAsync(localUri, { idempotent: true });
       await assertExists(false);
 
-      const { status } = await FS.downloadAsync('https://expo.io/404', localUri, {
+      const { status } = await FS.downloadAsync('https://github.com/omg1231sdfaljs', localUri, {
         md5: true,
       });
       await assertExists(true);

@@ -1,10 +1,16 @@
 import { Platform } from 'react-native';
-import { ThemeColors } from 'react-navigation';
+
+export enum ColorTheme {
+  LIGHT = 'light',
+  DARK = 'dark',
+}
+
 const tintColor = '#4e9bde';
 const darkTintColor = '#1a74b3';
+const error = '#dc3545';
 
 export default {
-  light: {
+  [ColorTheme.LIGHT]: {
     absolute: '#fff',
     text: '#242c39',
     tintColor,
@@ -17,6 +23,8 @@ export default {
     cardBackground: '#fff',
     cardSeparator: '#f4f4f5',
     cardTitle: '#242c39',
+    error,
+    highlightColor: '#5944ed',
 
     tabIconDefault: '#bdbfc3',
     tabIconSelected: Platform.OS === 'android' ? '#000' : tintColor,
@@ -27,21 +35,24 @@ export default {
     greyUnderlayColor: '#f7f7f7',
     blackText: '#242c39',
     separator: '#f4f4f5',
+    refreshControl: undefined,
   },
-  dark: {
+  [ColorTheme.DARK]: {
     absolute: '#000',
     text: '#fff',
     tintColor: darkTintColor,
     darkTintColor: tintColor,
     navBackgroundColor: '#000',
     navBorderBottom: '#000',
-    sectionLabelBackgroundColor: ThemeColors.dark.bodyContent,
+    sectionLabelBackgroundColor: '#2a2a2a',
     sectionLabelText: '#fff',
     bodyBackground: '#000',
     cardBackground: '#1c1c1e',
     cardSeparator: '#343437',
     cardTitle: '#fff',
     separator: '#1b1b1b',
+    error,
+    highlightColor: '#5944ed',
 
     tabBar: '#000',
     tabIconDefault: '#bdbfc3',
@@ -51,5 +62,6 @@ export default {
     greyText: '#a7aab0',
     greyUnderlayColor: '#f7f7f7',
     blackText: '#242c39',
+    refreshControl: '#ffffff',
   },
 };

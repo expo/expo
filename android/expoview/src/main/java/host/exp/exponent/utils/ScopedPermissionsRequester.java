@@ -17,9 +17,8 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.experience.BaseExperienceActivity;
 import host.exp.exponent.experience.ReactNativeActivity;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry;
 import host.exp.expoview.Exponent;
 import host.exp.expoview.R;
@@ -31,16 +30,16 @@ public class ScopedPermissionsRequester {
 
   public static final int EXPONENT_PERMISSIONS_REQUEST = 13;
   private PermissionListener mPermissionListener;
-  private ExperienceId mExperienceId;
+  private ExperienceKey mExperienceKey;
   private String mExperienceName;
   private Map<String, Integer> mPermissionsResult = new HashMap<>();
   private List<String> mPermissionsToRequestPerExperience = new ArrayList<>();
   private List<String> mPermissionsToRequestGlobally = new ArrayList<>();
   private int mPermissionsAskedCount = 0;
 
-  public ScopedPermissionsRequester(ExperienceId experienceId) {
+  public ScopedPermissionsRequester(ExperienceKey experienceKey) {
     NativeModuleDepsProvider.getInstance().inject(ScopedPermissionsRequester.class, this);
-    mExperienceId = experienceId;
+    mExperienceKey = experienceKey;
   }
 
   public void requestPermissions(ReactNativeActivity currentActivity, final String experienceName, final String[] permissions, final PermissionListener listener) {
@@ -52,8 +51,8 @@ public class ScopedPermissionsRequester {
       int globalStatus = currentActivity.checkSelfPermission(permission);
       if (globalStatus == PackageManager.PERMISSION_DENIED) {
         mPermissionsToRequestGlobally.add(permission);
-      } else if (mExperienceId != null &&
-          !mExpoKernelServiceRegistry.getPermissionsKernelService().hasGrantedPermissions(permission, mExperienceId)) {
+      } else if (mExperienceKey != null &&
+          !mExpoKernelServiceRegistry.getPermissionsKernelService().hasGrantedPermissions(permission, mExperienceKey)) {
         mPermissionsToRequestPerExperience.add(permission);
       } else {
         mPermissionsResult.put(permission, PackageManager.PERMISSION_GRANTED);
@@ -81,32 +80,32 @@ public class ScopedPermissionsRequester {
     }
   }
 
-  public void onRequestPermissionsResult(final String[] permissions, final int[] grantResults) {
+  public Boolean onRequestPermissionsResult(final String[] permissions, final int[] grantResults) {
     if (mPermissionListener == null) {
       // sometimes onRequestPermissionsResult is called multiple times if the first permission
       // is rejected...
-      return;
+      return true;
     }
 
     if (grantResults.length > 0) {
       for (int i = 0; i < grantResults.length; i++) {
-        if (grantResults[i] == PackageManager.PERMISSION_GRANTED && mExperienceId != null) {
-          mExpoKernelServiceRegistry.getPermissionsKernelService().grantPermissions(permissions[i], mExperienceId);
+        if (grantResults[i] == PackageManager.PERMISSION_GRANTED && mExperienceKey != null) {
+          mExpoKernelServiceRegistry.getPermissionsKernelService().grantScopedPermissions(permissions[i], mExperienceKey);
         }
         mPermissionsResult.put(permissions[i], grantResults[i]);
       }
     }
 
-    callPermissionsListener();
+    return callPermissionsListener();
   }
 
-  private void callPermissionsListener() {
+  private boolean callPermissionsListener() {
     String[] permissions = mPermissionsResult.keySet().toArray(new String[0]);
     int[] result = new int[permissions.length];
     for (int i = 0; i < permissions.length; i++) {
       result[i] = mPermissionsResult.get(permissions[i]);
     }
-    mPermissionListener.onRequestPermissionsResult(EXPONENT_PERMISSIONS_REQUEST, permissions, result);
+    return mPermissionListener.onRequestPermissionsResult(EXPONENT_PERMISSIONS_REQUEST, permissions, result);
   }
 
   private void requestExperienceAndGlobalPermissions(String permission) {
@@ -114,13 +113,18 @@ public class ScopedPermissionsRequester {
 
     AlertDialog.Builder builder = new AlertDialog.Builder(activity);
     ScopedPermissionsRequester.PermissionsDialogOnClickListener onClickListener = new ScopedPermissionsRequester.PermissionsDialogOnClickListener(permission);
-    builder.setMessage(activity.getString(
-        R.string.experience_needs_permissions,
-        mExperienceName,
-        activity.getString(permissionToResId(permission))))
-        .setPositiveButton(R.string.allow_experience_permissions, onClickListener)
-        .setNegativeButton(R.string.deny_experience_permissions, onClickListener).show();
 
+    builder
+      .setMessage(
+        activity.getString(
+          R.string.experience_needs_permissions,
+          mExperienceName,
+          activity.getString(permissionToResId(permission))
+        )
+      )
+      .setPositiveButton(R.string.allow_experience_permissions, onClickListener)
+      .setNegativeButton(R.string.deny_experience_permissions, onClickListener)
+      .show();
   }
 
   private int permissionToResId(String permission) {
@@ -147,6 +151,8 @@ public class ScopedPermissionsRequester {
         return R.string.perm_fine_location;
       case android.Manifest.permission.ACCESS_COARSE_LOCATION:
         return R.string.perm_coarse_location;
+      case android.Manifest.permission.ACCESS_BACKGROUND_LOCATION:
+        return R.string.perm_background_location;
       default:
         return -1;
     }
@@ -165,12 +171,12 @@ public class ScopedPermissionsRequester {
       mPermissionsAskedCount -= 1;
       switch (which) {
         case DialogInterface.BUTTON_POSITIVE:
-          mExpoKernelServiceRegistry.getPermissionsKernelService().grantPermissions(mPermission, mExperienceId);
+          mExpoKernelServiceRegistry.getPermissionsKernelService().grantScopedPermissions(mPermission, mExperienceKey);
           mPermissionsResult.put(mPermission, PackageManager.PERMISSION_GRANTED);
           break;
 
         case DialogInterface.BUTTON_NEGATIVE:
-          mExpoKernelServiceRegistry.getPermissionsKernelService().revokePermissions(mPermission, mExperienceId);
+          mExpoKernelServiceRegistry.getPermissionsKernelService().revokeScopedPermissions(mPermission, mExperienceKey);
           mPermissionsResult.put(mPermission, PackageManager.PERMISSION_DENIED);
           break;
       }

@@ -5,8 +5,9 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.SparseArray;
 
+import androidx.annotation.Nullable;
+
 import com.facebook.react.ReactPackage;
-import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.soloader.SoLoader;
 
@@ -22,12 +23,14 @@ import org.unimodules.core.interfaces.SingletonModule;
 import java.util.List;
 import java.util.Map;
 
-import host.exp.exponent.AppLoader;
+import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.Constants;
+import host.exp.exponent.ExpoUpdatesAppLoader;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.RNObject;
 import host.exp.exponent.experience.DetachedModuleRegistryAdapter;
 import host.exp.exponent.kernel.ExponentUrls;
+import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.taskManager.AppLoaderInterface;
 import host.exp.exponent.taskManager.AppRecordInterface;
 import host.exp.exponent.utils.AsyncCondition;
@@ -52,9 +55,9 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
 
   private static final SparseArray<String> sActivityIdToBundleUrl = new SparseArray<>();
 
-  private JSONObject mManifest;
+  private RawManifest mManifest;
   private String mManifestUrl;
-  private String mSdkVersion;
+  @Nullable private String mSdkVersion;
   private String mDetachSdkVersion;
   private RNObject mReactInstanceManager = new RNObject("com.facebook.react.ReactInstanceManager");
   private Context mContext;
@@ -84,16 +87,16 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
     mCallback = callback;
     mActivityId = ExpoActivityIds.getNextHeadlessActivityId();
 
-    new AppLoader(mManifestUrl, true) {
+    new ExpoUpdatesAppLoader(mManifestUrl, new ExpoUpdatesAppLoader.AppLoaderCallback() {
       @Override
-      public void onOptimisticManifest(final JSONObject optimisticManifest) {
+      public void onOptimisticManifest(final RawManifest optimisticManifest) {
       }
 
       @Override
-      public void onManifestCompleted(final JSONObject manifest) {
+      public void onManifestCompleted(final RawManifest manifest) {
         Exponent.getInstance().runOnUiThread(() -> {
           try {
-            String bundleUrl = ExponentUrls.toHttp(manifest.getString("bundleUrl"));
+            String bundleUrl = ExponentUrls.toHttp(manifest.getBundleURL());
 
             sActivityIdToBundleUrl.put(mActivityId, bundleUrl);
             setManifest(mManifestUrl, manifest, bundleUrl);
@@ -105,7 +108,9 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
 
       @Override
       public void onBundleCompleted(String localBundlePath) {
-        setBundle(localBundlePath);
+        Exponent.getInstance().runOnUiThread(() -> {
+          setBundle(localBundlePath);
+        });
       }
 
       @Override
@@ -113,23 +118,27 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
       }
 
       @Override
-      public void onError(Exception e) {
-        mCallback.onComplete(false, new Exception(e.getMessage()));
+      public void updateStatus(ExpoUpdatesAppLoader.AppLoaderStatus status) {
       }
 
       @Override
-      public void onError(String e) {
-        mCallback.onComplete(false, new Exception(e));
+      public void onError(Exception e) {
+        Exponent.getInstance().runOnUiThread(() -> {
+          mCallback.onComplete(false, new Exception(e.getMessage()));
+        });
       }
-    }.start();
+    }, true).start(mContext);
 
     return mAppRecord;
   }
 
-  public void setManifest(String manifestUrl, final JSONObject manifest, final String bundleUrl) {
+  public void setManifest(String manifestUrl, final RawManifest manifest, final String bundleUrl) {
     mManifestUrl = manifestUrl;
     mManifest = manifest;
-    mSdkVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY);
+    mSdkVersion = manifest.getSDKVersionNullable();
+
+    // Notifications logic uses this to determine which experience to route a notification to
+    ExponentDB.saveExperience(mManifestUrl, manifest, bundleUrl);
 
     // Sometime we want to release a new version without adding a new .aar. Use TEMPORARY_ABI_VERSION
     // to point to the unversioned code in ReactAndroid.
@@ -155,18 +164,6 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
     }
 
     soloaderInit();
-
-    // if we have an embedded initial url, we never need any part of this in the initial url
-    // passed to the JS, so we check for that and filter it out here.
-    // this can happen in dev mode on a detached app, for example, because the intent will have
-    // a url like customscheme://localhost:19000 but we don't care about the localhost:19000 part.
-    if (mIntentUri == null || mIntentUri.equals(Constants.INITIAL_URL)) {
-      if (Constants.SHELL_APP_SCHEME != null) {
-        mIntentUri = Constants.SHELL_APP_SCHEME + "://";
-      } else {
-        mIntentUri = mManifestUrl;
-      }
-    }
 
     runOnUiThread(() -> {
       if (mReactInstanceManager.isNotNull()) {
@@ -203,7 +200,7 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
   }
 
   public boolean isDebugModeEnabled() {
-    return ExponentManifest.isDebugModeEnabled(mManifest);
+    return mManifest != null && mManifest.isDevelopmentMode();
   }
 
   private void soloaderInit() {
@@ -216,7 +213,7 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
   @SuppressWarnings("unchecked")
   private List<ReactPackage> reactPackages() {
     if (!Constants.isStandaloneApp()) {
-      // Pass null if it's on Expo Client. In that case packages from ExperiencePackagePicker will be used instead.
+      // Pass null if it's on Expo Go. In that case packages from ExperiencePackagePicker will be used instead.
       return null;
     }
     try {
@@ -231,7 +228,7 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
   @SuppressWarnings("unchecked")
   public List<Package> expoPackages() {
     if (!Constants.isStandaloneApp()) {
-      // Pass null if it's on Expo Client. In that case packages from ExperiencePackagePicker will be used instead.
+      // Pass null if it's on Expo Go. In that case packages from ExperiencePackagePicker will be used instead.
       return null;
     }
     try {
@@ -297,7 +294,7 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
     RNObject builder = versionedUtils.callRecursive("getReactInstanceManagerBuilder", instanceManagerBuilderProperties);
 
     // Since there is no activity to be attached, we cannot set ReactInstanceManager state to RESUMED, so we opt to BEFORE_RESUME
-    builder.call("setInitialLifecycleState", LifecycleState.BEFORE_RESUME);
+    builder.call("setInitialLifecycleState", RNObject.versionedEnum(mSDKVersion, "com.facebook.react.common.LifecycleState", "BEFORE_RESUME"));
 
     if (extraNativeModules != null) {
       for (Object nativeModule : extraNativeModules) {
@@ -306,8 +303,8 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
     }
 
     if (delegate.isDebugModeEnabled()) {
-      String debuggerHost = mManifest.optString(ExponentManifest.MANIFEST_DEBUGGER_HOST_KEY);
-      String mainModuleName = mManifest.optString(ExponentManifest.MANIFEST_MAIN_MODULE_NAME_KEY);
+      String debuggerHost = mManifest.getDebuggerHost();
+      String mainModuleName = mManifest.getMainModuleName();
       Exponent.enableDeveloperSupport(mSDKVersion, debuggerHost, mainModuleName, builder);
     }
 
@@ -320,7 +317,9 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
       }
     }
 
-    reactInstanceManager.call("createReactContextInBackground");
+    if (reactInstanceManager != null) {
+      reactInstanceManager.call("createReactContextInBackground");
+    }
 
     // keep a reference in app record, so it can be invalidated through AppRecord.invalidate()
     mAppRecord.setReactInstanceManager(reactInstanceManager);

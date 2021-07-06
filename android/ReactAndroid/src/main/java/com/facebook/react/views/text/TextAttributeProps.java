@@ -1,9 +1,10 @@
-/**
- * Copyright (c) 2014-present, Facebook, Inc.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.text;
 
 import android.graphics.Typeface;
@@ -12,12 +13,16 @@ import android.text.Layout;
 import android.view.Gravity;
 import androidx.annotation.Nullable;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.yoga.YogaDirection;
 
+// TODO: T63643819 refactor naming of TextAttributeProps to make explicit that this represents
+// TextAttributes and not TextProps. As part of this refactor extract methods that don't belong to
+// TextAttributeProps (e.g. TextAlign)
 public class TextAttributeProps {
 
   private static final String INLINE_IMAGE_PLACEHOLDER = "I";
@@ -32,9 +37,13 @@ public class TextAttributeProps {
   private static final String PROP_TEXT_TRANSFORM = "textTransform";
 
   private static final int DEFAULT_TEXT_SHADOW_COLOR = 0x55000000;
+  private static final int DEFAULT_JUSTIFICATION_MODE =
+      (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? 0 : Layout.JUSTIFICATION_MODE_NONE;
+
+  private static final int DEFAULT_BREAK_STRATEGY =
+      (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
 
   protected float mLineHeight = Float.NaN;
-  protected float mLetterSpacing = Float.NaN;
   protected boolean mIsColorSet = false;
   protected boolean mAllowFontScaling = true;
   protected int mColor;
@@ -47,10 +56,7 @@ public class TextAttributeProps {
   protected float mLineHeightInput = UNSET;
   protected float mLetterSpacingInput = Float.NaN;
   protected int mTextAlign = Gravity.NO_GRAVITY;
-  protected int mTextBreakStrategy =
-      (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
-  protected int mJustificationMode =
-      (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? 0 : Layout.JUSTIFICATION_MODE_NONE;
+
   protected TextTransform mTextTransform = TextTransform.UNSET;
 
   protected float mTextShadowOffsetDx = 0;
@@ -92,6 +98,9 @@ public class TextAttributeProps {
    */
   protected @Nullable String mFontFamily = null;
 
+  /** @see android.graphics.Paint#setFontFeatureSettings */
+  protected @Nullable String mFontFeatureSettings = null;
+
   protected boolean mContainsImages = false;
   protected float mHeightOfTallestInlineImage = Float.NaN;
 
@@ -103,7 +112,6 @@ public class TextAttributeProps {
     setLineHeight(getFloatProp(ViewProps.LINE_HEIGHT, UNSET));
     setLetterSpacing(getFloatProp(ViewProps.LETTER_SPACING, Float.NaN));
     setAllowFontScaling(getBooleanProp(ViewProps.ALLOW_FONT_SCALING, true));
-    setTextAlign(getStringProp(ViewProps.TEXT_ALIGN));
     setFontSize(getFloatProp(ViewProps.FONT_SIZE, UNSET));
     setColor(props.hasKey(ViewProps.COLOR) ? props.getInt(ViewProps.COLOR, 0) : null);
     setColor(props.hasKey("foregroundColor") ? props.getInt("foregroundColor", 0) : null);
@@ -114,13 +122,49 @@ public class TextAttributeProps {
     setFontFamily(getStringProp(ViewProps.FONT_FAMILY));
     setFontWeight(getStringProp(ViewProps.FONT_WEIGHT));
     setFontStyle(getStringProp(ViewProps.FONT_STYLE));
+    setFontVariant(getArrayProp(ViewProps.FONT_VARIANT));
     setIncludeFontPadding(getBooleanProp(ViewProps.INCLUDE_FONT_PADDING, true));
     setTextDecorationLine(getStringProp(ViewProps.TEXT_DECORATION_LINE));
-    setTextBreakStrategy(getStringProp(ViewProps.TEXT_BREAK_STRATEGY));
     setTextShadowOffset(props.hasKey(PROP_SHADOW_OFFSET) ? props.getMap(PROP_SHADOW_OFFSET) : null);
     setTextShadowRadius(getIntProp(PROP_SHADOW_RADIUS, 1));
     setTextShadowColor(getIntProp(PROP_SHADOW_COLOR, DEFAULT_TEXT_SHADOW_COLOR));
     setTextTransform(getStringProp(PROP_TEXT_TRANSFORM));
+  }
+
+  // TODO T63645393 add support for RTL
+  public static int getTextAlignment(ReactStylesDiffMap props) {
+    @Nullable
+    String textAlignPropValue =
+        props.hasKey(ViewProps.TEXT_ALIGN) ? props.getString(ViewProps.TEXT_ALIGN) : null;
+    int textAlignment;
+
+    if ("justify".equals(textAlignPropValue)) {
+      textAlignment = Gravity.LEFT;
+    } else {
+      if (textAlignPropValue == null || "auto".equals(textAlignPropValue)) {
+        textAlignment = Gravity.NO_GRAVITY;
+      } else if ("left".equals(textAlignPropValue)) {
+        textAlignment = Gravity.LEFT;
+      } else if ("right".equals(textAlignPropValue)) {
+        textAlignment = Gravity.RIGHT;
+      } else if ("center".equals(textAlignPropValue)) {
+        textAlignment = Gravity.CENTER_HORIZONTAL;
+      } else {
+        throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlignPropValue);
+      }
+    }
+    return textAlignment;
+  }
+
+  public static int getJustificationMode(ReactStylesDiffMap props) {
+    @Nullable
+    String textAlignPropValue =
+        props.hasKey(ViewProps.TEXT_ALIGN) ? props.getString(ViewProps.TEXT_ALIGN) : null;
+
+    if ("justify".equals(textAlignPropValue) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      return Layout.JUSTIFICATION_MODE_INTER_WORD;
+    }
+    return DEFAULT_JUSTIFICATION_MODE;
   }
 
   private boolean getBooleanProp(String name, boolean defaultValue) {
@@ -155,6 +199,14 @@ public class TextAttributeProps {
     }
   }
 
+  private @Nullable ReadableArray getArrayProp(String name) {
+    if (mProps.hasKey(name)) {
+      return mProps.getArray(name);
+    } else {
+      return null;
+    }
+  }
+
   // Returns a line height which takes into account the requested line height
   // and the height of the inline images.
   public float getEffectiveLineHeight() {
@@ -163,19 +215,6 @@ public class TextAttributeProps {
             && !Float.isNaN(mHeightOfTallestInlineImage)
             && mHeightOfTallestInlineImage > mLineHeight;
     return useInlineViewHeight ? mHeightOfTallestInlineImage : mLineHeight;
-  }
-
-  // Return text alignment according to LTR or RTL style
-  public int getTextAlign() {
-    int textAlign = mTextAlign;
-    if (getLayoutDirection() == YogaDirection.RTL) {
-      if (textAlign == Gravity.RIGHT) {
-        textAlign = Gravity.LEFT;
-      } else if (textAlign == Gravity.LEFT) {
-        textAlign = Gravity.RIGHT;
-      }
-    }
-    return textAlign;
   }
 
   public void setNumberOfLines(int numberOfLines) {
@@ -196,10 +235,21 @@ public class TextAttributeProps {
 
   public void setLetterSpacing(float letterSpacing) {
     mLetterSpacingInput = letterSpacing;
-    mLetterSpacing =
+  }
+
+  public float getLetterSpacing() {
+    float letterSpacingPixels =
         mAllowFontScaling
             ? PixelUtil.toPixelFromSP(mLetterSpacingInput)
             : PixelUtil.toPixelFromDIP(mLetterSpacingInput);
+
+    if (mFontSize <= 0) {
+      throw new IllegalArgumentException(
+          "FontSize should be a positive value. Current value: " + mFontSize);
+    }
+    // `letterSpacingPixels` and `mFontSize` are both in pixels,
+    // yielding an accurate em value.
+    return letterSpacingPixels / mFontSize;
   }
 
   public void setAllowFontScaling(boolean allowFontScaling) {
@@ -208,31 +258,6 @@ public class TextAttributeProps {
       setFontSize(mFontSizeInput);
       setLineHeight(mLineHeightInput);
       setLetterSpacing(mLetterSpacingInput);
-    }
-  }
-
-  public void setTextAlign(@Nullable String textAlign) {
-    if ("justify".equals(textAlign)) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        mJustificationMode = Layout.JUSTIFICATION_MODE_INTER_WORD;
-      }
-      mTextAlign = Gravity.LEFT;
-    } else {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        mJustificationMode = Layout.JUSTIFICATION_MODE_NONE;
-      }
-
-      if (textAlign == null || "auto".equals(textAlign)) {
-        mTextAlign = Gravity.NO_GRAVITY;
-      } else if ("left".equals(textAlign)) {
-        mTextAlign = Gravity.LEFT;
-      } else if ("right".equals(textAlign)) {
-        mTextAlign = Gravity.RIGHT;
-      } else if ("center".equals(textAlign)) {
-        mTextAlign = Gravity.CENTER_HORIZONTAL;
-      } else {
-        throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlign);
-      }
     }
   }
 
@@ -267,6 +292,10 @@ public class TextAttributeProps {
 
   public void setFontFamily(@Nullable String fontFamily) {
     mFontFamily = fontFamily;
+  }
+
+  public void setFontVariant(@Nullable ReadableArray fontVariant) {
+    mFontFeatureSettings = ReactTypefaceUtils.parseFontVariant(fontVariant);
   }
 
   /**
@@ -322,23 +351,6 @@ public class TextAttributeProps {
     }
   }
 
-  public void setTextBreakStrategy(@Nullable String textBreakStrategy) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      return;
-    }
-
-    if (textBreakStrategy == null || "highQuality".equals(textBreakStrategy)) {
-      mTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
-    } else if ("simple".equals(textBreakStrategy)) {
-      mTextBreakStrategy = Layout.BREAK_STRATEGY_SIMPLE;
-    } else if ("balanced".equals(textBreakStrategy)) {
-      mTextBreakStrategy = Layout.BREAK_STRATEGY_BALANCED;
-    } else {
-      throw new JSApplicationIllegalArgumentException(
-          "Invalid textBreakStrategy: " + textBreakStrategy);
-    }
-  }
-
   public void setTextShadowOffset(ReadableMap offsetMap) {
     mTextShadowOffsetDx = 0;
     mTextShadowOffsetDy = 0;
@@ -383,6 +395,24 @@ public class TextAttributeProps {
     }
   }
 
+  public static int getTextBreakStrategy(@Nullable String textBreakStrategy) {
+    int androidTextBreakStrategy = DEFAULT_BREAK_STRATEGY;
+    if (textBreakStrategy != null) {
+      switch (textBreakStrategy) {
+        case "simple":
+          androidTextBreakStrategy = Layout.BREAK_STRATEGY_SIMPLE;
+          break;
+        case "balanced":
+          androidTextBreakStrategy = Layout.BREAK_STRATEGY_BALANCED;
+          break;
+        default:
+          androidTextBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
+          break;
+      }
+    }
+    return androidTextBreakStrategy;
+  }
+
   /**
    * Return -1 if the input string is not a valid numeric fontWeight (100, 200, ..., 900), otherwise
    * return the weight.
@@ -400,7 +430,7 @@ public class TextAttributeProps {
         : -1;
   }
 
-  // TODO T31905686 remove this from here and add support to RTL
+  // TODO T63645393 remove this from here and add support to RTL
   private YogaDirection getLayoutDirection() {
     return YogaDirection.LTR;
   }

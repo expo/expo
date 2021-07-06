@@ -12,12 +12,13 @@ export const name = 'Video';
 const imageRemoteSource = { uri: 'http://via.placeholder.com/350x150' };
 const videoRemoteSource = { uri: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4' };
 const redirectingVideoRemoteSource = { uri: 'http://bit.ly/2mcW40Q' };
-let webmSource = require('../assets/unsupported_bunny.webm');
-let imageSource = require('../assets/black-128x256.png');
 const mp4Source = require('../assets/big_buck_bunny.mp4');
 const hlsStreamUri = 'http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8';
 const hlsStreamUriWithRedirect = 'http://bit.ly/1iy90bn';
 let source = null; // Local URI of the downloaded default source is set in a beforeAll callback.
+let portraitVideoSource = null;
+let imageSource = null;
+let webmSource = null;
 
 const style = { width: 200, height: 200 };
 
@@ -28,11 +29,15 @@ export function test(t, { setPortalChild, cleanupPortal }) {
       await mp4Asset.downloadAsync();
       source = { uri: mp4Asset.localUri };
 
-      const imageAsset = Asset.fromModule(imageSource);
+      const portraitAsset = Asset.fromModule(require('../assets/portrait_video.mp4'));
+      await portraitAsset.downloadAsync();
+      portraitVideoSource = { uri: portraitAsset.localUri };
+
+      const imageAsset = Asset.fromModule(require('../assets/black-128x256.png'));
       await imageAsset.downloadAsync();
       imageSource = { uri: imageAsset.localUri };
 
-      const webmAsset = Asset.fromModule(webmSource);
+      const webmAsset = Asset.fromModule(require('../assets/unsupported_bunny.webm'));
       await webmAsset.downloadAsync();
       webmSource = { uri: webmAsset.localUri };
     });
@@ -218,6 +223,23 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         t.expect(status).toEqual(t.jasmine.objectContaining({ isLoaded: true }));
       });
 
+      t.it('changes the source', async () => {
+        await mountAndWaitFor(<Video style={style} source={videoRemoteSource} />);
+        await mountAndWaitFor(<Video style={style} source={redirectingVideoRemoteSource} />);
+      });
+
+      t.it('changes the source and enables native-controls', async () => {
+        await mountAndWaitFor(<Video style={style} source={videoRemoteSource} />);
+        await mountAndWaitFor(
+          <Video style={style} source={redirectingVideoRemoteSource} useNativeControls />
+        );
+      });
+
+      t.it('changes the source and disables native-controls', async () => {
+        await mountAndWaitFor(<Video style={style} source={videoRemoteSource} useNativeControls />);
+        await mountAndWaitFor(<Video style={style} source={redirectingVideoRemoteSource} />);
+      });
+
       // These two are flaky on iOS, sometimes they pass, sometimes they timeout.
       t.it(
         'calls onError when given image source',
@@ -289,7 +311,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         t.expect(status.naturalSize).toBeDefined();
         t.expect(status.naturalSize.width).toBeDefined();
         t.expect(status.naturalSize.height).toBeDefined();
-        t.expect(status.naturalSize.orientation).toBeDefined();
+        t.expect(status.naturalSize.orientation).toBe('landscape');
       });
 
       t.it('gets called with the `status` object', async () => {
@@ -323,6 +345,30 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         t.expect(status.status).toBeDefined();
         t.expect(status.status.isLoaded).toBe(true);
       });
+
+      t.it('gets called for HLS streams', async () => {
+        const props = {
+          style,
+          source: { uri: hlsStreamUri },
+        };
+        const status = await mountAndWaitFor(<Video {...props} />, 'onReadyForDisplay');
+        t.expect(status.naturalSize).toBeDefined();
+        t.expect(status.naturalSize.width).toBeDefined();
+        t.expect(status.naturalSize.height).toBeDefined();
+        t.expect(status.naturalSize.orientation).toBeDefined();
+      });
+
+      t.it('correctly detects portrait video', async () => {
+        const props = {
+          style,
+          source: portraitVideoSource,
+        };
+        const status = await mountAndWaitFor(<Video {...props} />, 'onReadyForDisplay');
+        t.expect(status.naturalSize).toBeDefined();
+        t.expect(status.naturalSize.width).toBeDefined();
+        t.expect(status.naturalSize.height).toBeDefined();
+        t.expect(status.naturalSize.orientation).toBe('portrait');
+      })
     });
 
     t.describe('Video fullscreen player', () => {
@@ -563,6 +609,39 @@ export function test(t, { setPortalChild, cleanupPortal }) {
             resolve();
           }, 1000);
         });
+      });
+
+      t.it('gets called periodically when playing', async () => {
+        const onPlaybackStatusUpdate = t.jasmine.createSpy('onPlaybackStatusUpdate');
+        const props = {
+          onPlaybackStatusUpdate,
+          source,
+          style,
+          ref: refSetter,
+          progressUpdateIntervalMillis: 10,
+        };
+        await mountAndWaitFor(<Video {...props} />);
+        await new Promise(resolve => setTimeout(resolve, 100));
+        await retryForStatus(instance, { isBuffering: false, isLoaded: true });
+        // Verify that status-update doesn't get called periodically when not started
+        const beforeCount = onPlaybackStatusUpdate.calls.count();
+        t.expect(beforeCount).toBeLessThan(6);
+
+        const status = await instance.getStatusAsync();
+        await instance.setStatusAsync({
+          shouldPlay: true,
+          positionMillis: status.durationMillis - 500,
+        });
+        await retryForStatus(instance, { isPlaying: true });
+        await new Promise(resolve => setTimeout(resolve, 500));
+        await retryForStatus(instance, { isPlaying: false });
+        const duringCount = onPlaybackStatusUpdate.calls.count() - beforeCount;
+        t.expect(duringCount).toBeGreaterThan(50);
+
+        // Wait a bit longer and verify it doesn't get called anymore
+        await new Promise(resolve => setTimeout(resolve, 100));
+        const afterCount = onPlaybackStatusUpdate.calls.count() - beforeCount - duringCount;
+        t.expect(afterCount).toBeLessThan(3);
       });
     });
 

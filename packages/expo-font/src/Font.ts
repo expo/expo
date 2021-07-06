@@ -31,9 +31,7 @@ export function processFontFamily(fontFamily: string | null): string | null {
     if (__DEV__) {
       if (isLoading(fontFamily)) {
         console.error(
-          `You started loading the font "${fontFamily}", but used it before it finished loading.\n
-- You need to wait for Font.loadAsync to complete before using the font.\n
-- We recommend loading all fonts before rendering the app, and rendering only Expo.AppLoading while waiting for loading to complete.`
+          `You started loading the font "${fontFamily}", but used it before it finished loading. You need to wait for Font.loadAsync to complete before using the font.`
         );
       } else {
         console.error(
@@ -72,7 +70,7 @@ export function isLoading(fontFamily: string): boolean {
 
 /**
  * Natively load a font for use with Text elements.
- * @param fontFamilyOrFontMap string or map of values that can be used as the [`fontFamily`](https://facebook.github.io/react-native/docs/text#style) style prop with React Native Text elements.
+ * @param fontFamilyOrFontMap string or map of values that can be used as the [`fontFamily`](https://reactnative.dev/docs/text#style) style prop with React Native Text elements.
  * @param source the font asset that should be loaded into the `fontFamily` namespace.
  */
 export async function loadAsync(

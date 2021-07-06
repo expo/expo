@@ -1,6 +1,6 @@
 import { UnavailabilityError } from '@unimodules/core';
+import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 
 import ExpoCalendar from './ExpoCalendar';
 
@@ -140,7 +140,7 @@ export enum MonthOfTheYear {
 export type RecurrenceRule = {
   frequency: string; // Frequency
   interval?: number;
-  endDate?: string;
+  endDate?: string | Date;
   occurrence?: number;
 
   daysOfTheWeek?: { dayOfTheWeek: DayOfTheWeek; weekNumber?: number }[];
@@ -156,6 +156,15 @@ export { PermissionResponse, PermissionStatus };
 type OptionalKeys<T> = {
   [P in keyof T]?: T[P] | null;
 };
+
+/**
+ * Returns whether the Calendar API is enabled on the current device. This does not check the app permissions.
+ *
+ * @returns Async `boolean`, indicating whether the Calendar API is available on the current device. Currently this resolves `true` on iOS and Android only.
+ */
+export async function isAvailableAsync(): Promise<boolean> {
+  return !!ExpoCalendar.getCalendarsAsync;
+}
 
 export async function getCalendarsAsync(entityType?: string): Promise<Calendar[]> {
   if (!ExpoCalendar.getCalendarsAsync) {
@@ -544,7 +553,7 @@ export function openEventInCalendar(id: string): void {
 } // Android
 
 /**
- * @deprecated Use requestCalendarPermissionsAsync()
+ * @deprecated Use `requestCalendarPermissionsAsync()` instead
  */
 export async function requestPermissionsAsync(): Promise<PermissionResponse> {
   console.warn(
@@ -701,7 +710,14 @@ function stringifyIfDate(date: any): any {
 
 function stringifyDateValues(obj: object): object {
   return Object.keys(obj).reduce((acc, key) => {
-    acc[key] = stringifyIfDate(obj[key]);
+    const value = obj[key];
+    if (value != null && typeof value === 'object' && !(value instanceof Date)) {
+      if (Array.isArray(value)) {
+        return { ...acc, [key]: value.map(stringifyDateValues) };
+      }
+      return { ...acc, [key]: stringifyDateValues(value) };
+    }
+    acc[key] = stringifyIfDate(value);
     return acc;
   }, {});
 }

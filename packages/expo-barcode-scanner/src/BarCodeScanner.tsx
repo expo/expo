@@ -1,9 +1,7 @@
 import { UnavailabilityError } from '@unimodules/core';
-import mapValues from 'lodash/mapValues';
-import PropTypes from 'prop-types';
-import React from 'react';
-import { Platform, ViewProps, ViewPropTypes } from 'react-native';
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
+import * as React from 'react';
+import { Platform, ViewProps } from 'react-native';
 
 import ExpoBarCodeScannerModule from './ExpoBarCodeScannerModule';
 import ExpoBarCodeScannerView from './ExpoBarCodeScannerView';
@@ -12,10 +10,30 @@ const { BarCodeType, Type } = ExpoBarCodeScannerModule;
 
 const EVENT_THROTTLE_MS = 500;
 
-export type BarCodeEvent = {
+export type BarCodePoint = {
+  x: number;
+  y: number;
+};
+
+export type BarCodeSize = {
+  height: number;
+  width: number;
+};
+
+export type BarCodeBounds = {
+  origin: BarCodePoint;
+  size: BarCodeSize;
+};
+
+export type BarCodeScannerResult = {
   type: string;
   data: string;
-  [key: string]: any;
+  bounds?: BarCodeBounds;
+  cornerPoints?: BarCodePoint[];
+};
+
+export type BarCodeEvent = BarCodeScannerResult & {
+  target?: number;
 };
 
 export type BarCodeEventCallbackArguments = {
@@ -29,7 +47,7 @@ export { PermissionResponse, PermissionStatus };
 export interface BarCodeScannerProps extends ViewProps {
   type?: 'front' | 'back' | number;
   barCodeTypes?: string[];
-  onBarCodeScanned: BarCodeScannedCallback;
+  onBarCodeScanned?: BarCodeScannedCallback;
 }
 
 export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
@@ -43,13 +61,6 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
 
   static ConversionTables = {
     type: Type,
-  };
-
-  static propTypes = {
-    ...ViewPropTypes,
-    onBarCodeScanned: PropTypes.func,
-    barCodeTypes: PropTypes.array,
-    type: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   };
 
   static defaultProps = {
@@ -68,7 +79,7 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
   static async scanFromURLAsync(
     url: string,
     barCodeTypes: string[] = Object.values(BarCodeType)
-  ): Promise<{ type: string; data: string }> {
+  ): Promise<BarCodeScannerResult[]> {
     if (!ExpoBarCodeScannerModule.scanFromURLAsync) {
       throw new UnavailabilityError('expo-barcode-scanner', 'scanFromURLAsync');
     }
@@ -100,8 +111,6 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
     );
   }
 
-  // coordinates of cornerPoints and boundingBox are represented in DP (Display-Indepent Points) unit
-  // React Native is using the same unit
   onObjectDetected = (callback?: BarCodeScannedCallback) => ({
     nativeEvent,
   }: BarCodeEventCallbackArguments) => {
@@ -123,15 +132,17 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
   };
 
   convertNativeProps(props: BarCodeScannerProps) {
-    const newProps = mapValues(props, this.convertProp);
-    return newProps;
-  }
+    const nativeProps: BarCodeScannerProps = {};
 
-  convertProp(value: any, key: string): any {
-    if (typeof value === 'string' && BarCodeScanner.ConversionTables[key]) {
-      return BarCodeScanner.ConversionTables[key][value];
+    for (const [key, value] of Object.entries(props)) {
+      if (typeof value === 'string' && BarCodeScanner.ConversionTables[key]) {
+        nativeProps[key] = BarCodeScanner.ConversionTables[key][value];
+      } else {
+        nativeProps[key] = value;
+      }
     }
-    return value;
+
+    return nativeProps;
   }
 }
 

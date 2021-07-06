@@ -1,6 +1,8 @@
+/* eslint-disable */
 // tslint:disable max-classes-per-file
 import React from 'react';
 import * as Svg from 'react-native-svg';
+
 import Example from './Example';
 
 const { Circle, Path, Rect, G, Text, ClipPath, Defs } = Svg;
@@ -36,7 +38,7 @@ class HoverExample extends React.Component {
 
   toggle = () => {
     this.setState({ hover: !this.state.hover });
-  }
+  };
 
   render() {
     return (
@@ -84,8 +86,7 @@ class GroupExample extends React.Component {
                 x="50"
                 y="10"
                 scale="2"
-                onPress={() => alert('Pressed on Text')}
-              >
+                onPress={() => alert('Pressed on Text')}>
                 H
               </Text>
               <Rect x="20" y="20" width="40" height="40" fill="yellow" />

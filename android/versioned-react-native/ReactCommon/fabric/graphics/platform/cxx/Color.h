@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -40,6 +40,14 @@ class SharedColor {
 
   Color operator*() const {
     return color_;
+  }
+
+  bool operator==(const SharedColor &otherColor) const {
+    return color_ == otherColor.color_;
+  }
+
+  bool operator!=(const SharedColor &otherColor) const {
+    return color_ != otherColor.color_;
   }
 
   operator bool() const {

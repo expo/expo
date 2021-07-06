@@ -12,6 +12,7 @@
 @property (nonatomic, strong) NSMapTable<id, NSNumber *> *moduleInterfaceMasks;
 @property (nonatomic, weak) id foregroundedModule;
 @property (nonatomic, weak, nullable) UITraitCollection *currentTraitCollection;
+@property (nonatomic, assign) UIInterfaceOrientationMask lastOrientationMask;
 
 @end
 
@@ -25,19 +26,41 @@ UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
     _moduleInterfaceMasks =  [NSMapTable weakToStrongObjectsMapTable];
     _notificationListeners = [NSPointerArray weakObjectsPointerArray];
     _currentTraitCollection = nil;
+    _currentScreenOrientation = 0;
+    _lastOrientationMask = 0;
     
     [[NSNotificationCenter defaultCenter] addObserver:self
                                             selector:@selector(handleDeviceOrientationChange:)
                                                 name:UIDeviceOrientationDidChangeNotification
                                               object:[UIDevice currentDevice]];
-    
+
     dispatch_async(dispatch_get_main_queue(), ^{
       [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
     });
-
   }
   
   return self;
+}
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary<UIApplicationLaunchOptionsKey,id> *)launchOptions
+{
+  // application:didFinishLaunchingWithOptions should be executed on the main thread.
+  // However, it's safer to ensure that we are on a good thread.
+  UM_WEAKIFY(self);
+  [UMUtilities performSynchronouslyOnMainThread:^{
+    UM_ENSURE_STRONGIFY(self);
+    if (@available(iOS 13, *)) {
+      NSArray<UIWindow *> *windows = UIApplication.sharedApplication.windows;
+      if (windows.count > 0) {
+        self.currentScreenOrientation = windows[0].windowScene.interfaceOrientation;
+      }
+    } else {
+      // statusBarOrientation was deprecated in iOS 13
+      self.currentScreenOrientation = UIApplication.sharedApplication.statusBarOrientation;
+    }
+  }];
+  
+  return YES;
 }
 
 - (void)dealloc
@@ -79,6 +102,11 @@ UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
 
 - (UIInterfaceOrientationMask)requiredOrientationMask
 {
+  // The app is moved to the foreground.
+  if (!_foregroundedModule) {
+    return _lastOrientationMask;
+  }
+  
   NSNumber *current = [_moduleInterfaceMasks objectForKey:_foregroundedModule];
   if (!current) {
     return 0;
@@ -89,7 +117,6 @@ UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
 
 - (UIInterfaceOrientationMask)currentOrientationMask
 {
-  
   __block UIInterfaceOrientationMask currentOrientationMask = [self requiredOrientationMask];
   [UMUtilities performSynchronouslyOnMainThread:^{
     currentOrientationMask = [[[[UIApplication sharedApplication] keyWindow] rootViewController] supportedInterfaceOrientations];
@@ -215,6 +242,9 @@ UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
 - (void)moduleDidBackground:(id)module
 {
   if (_foregroundedModule == module) {
+    // We save the mask to restore it when the app moves to the foreground.
+    // We don't want to wait for the module to call moduleDidForeground, cause it will add unnecessary rotation.
+    _lastOrientationMask = [self requiredOrientationMask];
     _foregroundedModule = nil;
   }
 }

@@ -9,7 +9,20 @@
     <item name="android:outAnimation">@android:anim/fade_out</item>
     <item name="android:textColor">@android:color/white</item>
   </style>
+  <style name="ReactAndroidTheme.Catalyst.LogBox">
+    <item name="android:windowTranslucentStatus">true</item>
+    <item name="android:windowTranslucentNavigation">false</item>
+    <item name="android:windowBackground">@android:color/transparent</item>
+    <item name="android:windowAnimationStyle">@style/ReactAndroidAnimation.Catalyst.LogBox</item>
+    <item name="android:inAnimation">@android:anim/fade_in</item>
+    <item name="android:outAnimation">@android:anim/fade_out</item>
+    <item name="android:textColor">@android:color/white</item>
+  </style>
   <style name="ReactAndroidAnimation.Catalyst.RedBox" parent="@android:style/Animation">
+    <item name="android:windowEnterAnimation">@anim/reactandroid_catalyst_push_up_in</item>
+    <item name="android:windowExitAnimation">@anim/reactandroid_catalyst_push_up_out</item>
+  </style>
+  <style name="ReactAndroidAnimation.Catalyst.LogBox" parent="@android:style/Animation">
     <item name="android:windowEnterAnimation">@anim/reactandroid_catalyst_push_up_in</item>
     <item name="android:windowExitAnimation">@anim/reactandroid_catalyst_push_up_out</item>
   </style>

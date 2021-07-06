@@ -96,25 +96,6 @@ public class SvgView extends ReactViewGroup implements ReactCompoundView, ReactC
         mBitmap = null;
     }
 
-    // Enable rendering other native ancestor views in e.g. masks, but don't render them another time
-    Bitmap fakeBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-    Canvas fake = new Canvas(fakeBitmap);
-
-    @Override
-    protected void dispatchDraw(Canvas canvas) {
-        super.dispatchDraw(fake);
-    }
-
-    protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
-        return super.drawChild(fake, child, drawingTime);
-    }
-
-    @Override
-    public void onDescendantInvalidated(@NonNull View child, @NonNull View target) {
-        super.onDescendantInvalidated(child, target);
-        invalidate();
-    }
-
     @Override
     protected void onDraw(Canvas canvas) {
         if (getParent() instanceof VirtualView) {

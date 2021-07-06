@@ -1,3 +1,4 @@
+export { default as FirebaseAnalyticsJS } from './FirebaseAnalyticsJS';
 /**
  * Logs an app event. The event can have up to 25 parameters. Events with the same name must have
  * the same parameters. Up to 500 event names are supported. Using predefined events and/or
@@ -113,6 +114,27 @@ export declare function setUserProperties(properties: {
  * Firebase Analytics, create a standalone build or custom client.
  * Use this function to suppress the warning and log messages.
  *
- * @param properties key/value set of user properties
+ * @param isEnabled A flag that enables or disables unavailability logging.
  */
 export declare function setUnavailabilityLogging(isEnabled: boolean): void;
+/**
+ * In Expo Go, sets the clientId to the given value for the current session.
+ *
+ * By default, the clientId is set to `Constants.installationId` in Expo Go,
+ * which is deprecated and will be removed in SDK 44. At that time, this method
+ * will need to be used to set the `clientId` when using Expo Go.
+ *
+ * @param clientId UUIDv4 string value to set for the current session in Expo Go
+ */
+export declare function setClientId(clientId: string): void;
+/**
+ * Enables or disabled debug mode on the Expo client, so events can
+ * be tracked using the [DebugView in the Analytics dashboard](https://firebase.google.com/docs/analytics/debugview#reporting).
+ *
+ * This option is only available on the standard Expo client.
+ * When using a standalone build, the bare workflow or web, use the
+ * [natively available options](https://firebase.google.com/docs/analytics/debugview).
+ *
+ * @param isEnabled A flag that enables or disables debug mode.
+ */
+export declare function setDebugModeEnabled(isEnabled: boolean): Promise<void>;

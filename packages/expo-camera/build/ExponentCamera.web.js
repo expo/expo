@@ -1,107 +1,95 @@
-import React, { forwardRef } from 'react';
-import { createElement, findNodeHandle, StyleSheet, View } from 'react-native';
-import CameraModule from './CameraModule/CameraModule';
+import { CodedError } from '@unimodules/core';
+import * as React from 'react';
+import { StyleSheet, View } from 'react-native';
+import createElement from 'react-native-web/dist/exports/createElement';
+import { CameraType, } from './Camera.types';
 import CameraManager from './ExponentCameraManager.web';
-export default class ExponentCamera extends React.Component {
-    constructor() {
-        super(...arguments);
-        this.state = { type: null };
-        this._updateCameraProps = async ({ type, pictureSize, ...webCameraSettings }) => {
-            const { camera } = this;
-            if (!camera) {
-                return;
+import { capture } from './WebCameraUtils';
+import { PictureSizes } from './WebConstants';
+import { useWebCameraStream } from './useWebCameraStream';
+import { useWebQRScanner } from './useWebQRScanner';
+const ExponentCamera = React.forwardRef(({ type, pictureSize, poster, ...props }, ref) => {
+    const video = React.useRef(null);
+    const native = useWebCameraStream(video, type, props, {
+        onCameraReady() {
+            if (props.onCameraReady) {
+                props.onCameraReady();
             }
-            await camera.setTypeAsync(type);
-            await camera.updateWebCameraSettingsAsync(webCameraSettings);
-            // await camera.setPictureSize(pictureSize as string);
-            await camera.ensureCameraIsRunningAsync();
-            const actualCameraType = camera.getActualCameraType();
-            if (actualCameraType !== this.state.type) {
-                this.setState({ type: actualCameraType });
+        },
+        onMountError: props.onMountError,
+    });
+    const isQRScannerEnabled = React.useMemo(() => {
+        return !!(props.barCodeScannerSettings?.barCodeTypes?.includes('qr') && !!props.onBarCodeScanned);
+    }, [props.barCodeScannerSettings?.barCodeTypes, props.onBarCodeScanned]);
+    useWebQRScanner(video, {
+        interval: props.barCodeScannerSettings?.interval,
+        isEnabled: isQRScannerEnabled,
+        captureOptions: { scale: 1, isImageMirror: native.type === CameraType.front },
+        onScanned(event) {
+            if (props.onBarCodeScanned) {
+                props.onBarCodeScanned(event);
             }
-        };
-        this.getCamera = () => {
-            if (this.camera) {
-                return this.camera;
+        },
+    });
+    // const [pause, setPaused]
+    React.useImperativeHandle(ref, () => ({
+        async getAvailablePictureSizes(ratio) {
+            return PictureSizes;
+        },
+        async takePicture(options) {
+            if (!video.current || video.current?.readyState !== video.current?.HAVE_ENOUGH_DATA) {
+                throw new CodedError('ERR_CAMERA_NOT_READY', 'HTMLVideoElement does not have enough camera data to construct an image yet.');
             }
-            throw new Error('Camera is not defined yet!');
-        };
-        this.getAvailablePictureSizes = async (ratio) => {
-            const camera = this.getCamera();
-            return camera.getAvailablePictureSizes(ratio);
-        };
-        this.takePicture = async (options) => {
-            const camera = this.getCamera();
-            return camera.takePicture({
+            const settings = native.mediaTrackSettings;
+            if (!settings) {
+                throw new CodedError('ERR_CAMERA_NOT_READY', 'MediaStream is not ready yet.');
+            }
+            return capture(video.current, settings, {
                 ...options,
                 // This will always be defined, the option gets added to a queue in the upper-level. We should replace the original so it isn't called twice.
-                onPictureSaved: this.props.onPictureSaved,
+                onPictureSaved(picture) {
+                    if (options.onPictureSaved) {
+                        options.onPictureSaved(picture);
+                    }
+                    if (props.onPictureSaved) {
+                        props.onPictureSaved({ nativeEvent: { data: picture, id: -1 } });
+                    }
+                },
             });
-        };
-        this.getAvailableCameraTypesAsync = async () => {
-            const camera = this.getCamera();
-            return await camera.getAvailableCameraTypesAsync();
-        };
-        this.resumePreview = async () => {
-            const camera = this.getCamera();
-            await camera.resumePreview();
-        };
-        this.pausePreview = async () => {
-            const camera = this.getCamera();
-            await camera.stopAsync();
-        };
-        this.onCameraReady = () => {
-            if (this.props.onCameraReady) {
-                this.props.onCameraReady();
+        },
+        async resumePreview() {
+            if (video.current) {
+                video.current.play();
             }
-        };
-        this.onMountError = ({ nativeEvent }) => {
-            if (this.props.onMountError) {
-                this.props.onMountError({ nativeEvent });
+        },
+        async pausePreview() {
+            if (video.current) {
+                video.current.pause();
             }
-        };
-        this._setRef = ref => {
-            if (!ref) {
-                this.video = null;
-                if (this.camera) {
-                    this.camera.stopAsync();
-                    this.camera = undefined;
-                }
-                return;
-            }
-            this.video = findNodeHandle(ref);
-            this.video.webkitPlaysinline = true;
-            this.camera = new CameraModule(ref);
-            this.camera.onCameraReady = this.onCameraReady;
-            this.camera.onMountError = this.onMountError;
-            this._updateCameraProps(this.props);
-        };
-    }
-    componentWillUnmount() {
-        if (this.camera) {
-            this.camera.stopAsync();
-        }
-    }
-    componentDidUpdate(nextProps) {
-        this._updateCameraProps(nextProps);
-    }
-    render() {
-        const { pointerEvents } = this.props;
-        // TODO: Bacon: Create a universal prop, on native the microphone is only used when recording videos.
-        // Because we don't support recording video in the browser we don't need the user to give microphone permissions.
-        const isMuted = true;
-        const isFrontFacingCamera = this.state.type === CameraManager.Type.front;
-        const style = {
-            // Flip the camera
-            transform: isFrontFacingCamera ? [{ scaleX: -1 }] : undefined,
-        };
-        return (<View pointerEvents="box-none" style={[styles.videoWrapper, this.props.style]}>
-        <Video autoPlay playsInline muted={isMuted} pointerEvents={pointerEvents} ref={this._setRef} style={[StyleSheet.absoluteFill, styles.video, style]}/>
-        {this.props.children}
-      </View>);
-    }
-}
-const Video = forwardRef((props, ref) => createElement('video', { ...props, ref }));
+        },
+    }), [native.mediaTrackSettings, props.onPictureSaved]);
+    // TODO(Bacon): Create a universal prop, on native the microphone is only used when recording videos.
+    // Because we don't support recording video in the browser we don't need the user to give microphone permissions.
+    const isMuted = true;
+    const style = React.useMemo(() => {
+        const isFrontFacingCamera = native.type === CameraManager.Type.front;
+        return [
+            StyleSheet.absoluteFill,
+            styles.video,
+            {
+                // Flip the camera
+                transform: isFrontFacingCamera ? [{ scaleX: -1 }] : undefined,
+            },
+        ];
+    }, [native.type]);
+    return (React.createElement(View, { pointerEvents: "box-none", style: [styles.videoWrapper, props.style] },
+        React.createElement(Video, { autoPlay: true, playsInline: true, muted: isMuted, poster: poster, 
+            // webkitPlaysinline
+            pointerEvents: props.pointerEvents, ref: video, style: style }),
+        props.children));
+});
+export default ExponentCamera;
+const Video = React.forwardRef((props, ref) => createElement('video', { ...props, ref }));
 const styles = StyleSheet.create({
     videoWrapper: {
         flex: 1,

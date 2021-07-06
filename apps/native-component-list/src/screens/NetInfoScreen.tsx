@@ -1,10 +1,10 @@
+import NetInfo, { NetInfoState, NetInfoSubscription } from '@react-native-community/netinfo';
 import React from 'react';
 import { ScrollView, View } from 'react-native';
-import NetInfo, { NetInfoState, NetInfoSubscription } from '@react-native-community/netinfo';
 
-import Colors from '../constants/Colors';
 import HeadingText from '../components/HeadingText';
 import MonoText from '../components/MonoText';
+import Colors from '../constants/Colors';
 
 interface ConnectionEvent {
   time: Date;
@@ -21,7 +21,9 @@ interface State {
   connectionChangeEvents: ConnectionChangeEvent[];
 }
 
-export default class NetInfoScreen extends React.Component<object, State> {
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
+export default class NetInfoScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: 'NetInfo',
   };

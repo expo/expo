@@ -1,40 +1,67 @@
-import { NativeModulesProxy, Platform, UnavailabilityError } from '@unimodules/core';
+import { Platform, UnavailabilityError } from '@unimodules/core';
 import * as TaskManager from 'expo-task-manager';
 
-const { ExpoBackgroundFetch } = NativeModulesProxy;
+import {
+  BackgroundFetchOptions,
+  BackgroundFetchResult,
+  BackgroundFetchStatus,
+} from './BackgroundFetch.types';
+import ExpoBackgroundFetch from './ExpoBackgroundFetch';
 
-enum BackgroundFetchResult {
-  NoData = 1,
-  NewData = 2,
-  Failed = 3,
-}
-
-enum BackgroundFetchStatus {
-  Denied = 1,
-  Restricted = 2,
-  Available = 3,
-}
-
-export interface BackgroundFetchOptions {
-  minimumInterval?: number;
-  stopOnTerminate?: boolean;
-  startOnBoot?: boolean;
-}
-
+// @needsAudit
+/**
+ * Gets a status of background fetch.
+ * @return Returns a promise which fulfils with one of `BackgroundFetchStatus` enum values.
+ */
 export async function getStatusAsync(): Promise<BackgroundFetchStatus | null> {
-  if (Platform.OS !== 'ios') {
+  if (Platform.OS === 'android') {
     return BackgroundFetchStatus.Available;
   }
   return ExpoBackgroundFetch.getStatusAsync();
 }
 
+// @needsAudit
+/**
+ * Sets the minimum number of seconds that must elapse before another background fetch can be
+ * initiated. This value is advisory only and does not indicate the exact amount of time expected
+ * between fetch operations.
+ *
+ * > This method doesn't take any effect on Android. It is a global value which means that it can
+ * overwrite settings from another application opened through Expo Go.
+ *
+ * @param minimumInterval Number of seconds that must elapse before another background fetch can be called.
+ * @return A promise which fulfils once the minimum interval is set.
+ */
 export async function setMinimumIntervalAsync(minimumInterval: number): Promise<void> {
-  if (Platform.OS !== 'ios') {
+  if (!ExpoBackgroundFetch.setMinimumIntervalAsync) {
     return;
   }
+  // iOS only
   await ExpoBackgroundFetch.setMinimumIntervalAsync(minimumInterval);
 }
 
+// @needsAudit
+/**
+ * Registers background fetch task with given name. Registered tasks are saved in persistent storage and restored once the app is initialized.
+ * @param taskName Name of the task to register. The task needs to be defined first - see [`TaskManager.defineTask`](taskmanager#defineTask)
+ * for more details.
+ * @param options An object containing the background fetch options.
+ *
+ * # Example
+ * ```ts
+ * import * as BackgroundFetch from 'expo-background-fetch';
+ * import * as TaskManager from 'expo-task-manager';
+ *
+ * TaskManager.defineTask(YOUR_TASK_NAME, () => {
+ *   try {
+ *     const receivedNewData = // do your background fetch here
+ *     return receivedNewData ? BackgroundFetch.Result.NewData : BackgroundFetch.Result.NoData;
+ *   } catch (error) {
+ *     return BackgroundFetch.Result.Failed;
+ *   }
+ * });
+ * ```
+ */
 export async function registerTaskAsync(
   taskName: string,
   options: BackgroundFetchOptions = {}
@@ -50,6 +77,12 @@ export async function registerTaskAsync(
   await ExpoBackgroundFetch.registerTaskAsync(taskName, options);
 }
 
+// @needsAudit
+/**
+ * Unregisters background fetch task, so the application will no longer be executing this task.
+ * @param taskName Name of the task to unregister.
+ * @return A promise which fulfils when the task is fully unregistered.
+ */
 export async function unregisterTaskAsync(taskName: string): Promise<void> {
   if (!ExpoBackgroundFetch.unregisterTaskAsync) {
     throw new UnavailabilityError('BackgroundFetch', 'unregisterTaskAsync');
@@ -57,4 +90,4 @@ export async function unregisterTaskAsync(taskName: string): Promise<void> {
   await ExpoBackgroundFetch.unregisterTaskAsync(taskName);
 }
 
-export { BackgroundFetchResult as Result, BackgroundFetchStatus as Status };
+export { BackgroundFetchResult, BackgroundFetchStatus, BackgroundFetchOptions };

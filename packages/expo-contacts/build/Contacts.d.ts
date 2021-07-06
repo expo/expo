@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
 export declare type CalendarFormatType = typeof CalendarFormats.Gregorian | typeof CalendarFormats.Buddhist | typeof CalendarFormats.Chinese | typeof CalendarFormats.Coptic | typeof CalendarFormats.EthiopicAmeteMihret | typeof CalendarFormats.EthiopicAmeteAlem | typeof CalendarFormats.Hebrew | typeof CalendarFormats.ISO8601 | typeof CalendarFormats.Indian | typeof CalendarFormats.Islamic | typeof CalendarFormats.IslamicCivil | typeof CalendarFormats.Japanese | typeof CalendarFormats.Persian | typeof CalendarFormats.RepublicOfChina | typeof CalendarFormats.IslamicTabular | typeof CalendarFormats.IslamicUmmAlQura;
 export declare type ContainerType = typeof ContainerTypes.Local | typeof ContainerTypes.Exchange | typeof ContainerTypes.CardDAV | typeof ContainerTypes.Unassigned;
 export declare type ContactType = typeof ContactTypes.Person | typeof ContactTypes.Company;
@@ -150,6 +150,12 @@ export declare type Container = {
     type: ContainerType;
 };
 export { PermissionStatus, PermissionResponse };
+/**
+ * Returns whether the Contacts API is enabled on the current device. This does not check the app permissions.
+ *
+ * @returns Async `boolean`, indicating whether the Contacts API is available on the current device. Currently this resolves to `true` on iOS and Android only.
+ */
+export declare function isAvailableAsync(): Promise<boolean>;
 export declare function shareContactAsync(contactId: string, message: string, shareOptions?: object): Promise<any>;
 export declare function getContactsAsync(contactQuery?: ContactQuery): Promise<ContactResponse>;
 export declare function getPagedContactsAsync(contactQuery?: ContactQuery): Promise<ContactResponse>;

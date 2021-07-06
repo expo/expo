@@ -1,41 +1,40 @@
 import {
   A,
   Article,
+  Aside,
   B,
   BR,
   Caption,
   Code,
+  Del,
+  EM,
   Footer,
   H1,
   H2,
-  Pre,
   H3,
   H4,
   H5,
   H6,
   Header,
-  Time,
-  HR,
   I,
-  Mark,
-  Del,
-  EM,
   LI,
   Main,
+  Mark,
   Nav,
   P,
+  Pre,
   S,
   Section,
+  Strong,
   Table,
   TBody,
   TD,
+  TFoot,
   TH,
   THead,
+  Time,
   TR,
   UL,
-  Strong,
-  Aside,
-  TFoot,
 } from '@expo/html-elements';
 import View from '@expo/html-elements/build/primitives/View';
 import React from 'react';
@@ -96,6 +95,7 @@ function LayoutArticle() {
 function TextArticle() {
   return (
     <CustomArticle title="Text">
+      {/* @ts-ignore */}
       <A href="https://expo.io/" target="_blank">
         Anchor
       </A>
@@ -104,6 +104,7 @@ function TextArticle() {
       <Strong>Strong</Strong>
       <Mark>Mark</Mark>
       <Code>Code</Code>
+      {/* @ts-ignore */}
       <Time>Feb 2020</Time>
       <I>Italic</I>
       <EM>Emphasize</EM>

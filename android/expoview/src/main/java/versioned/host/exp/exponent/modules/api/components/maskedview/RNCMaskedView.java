@@ -14,12 +14,13 @@ public class RNCMaskedView extends ReactViewGroup {
   private static final String TAG = "RNCMaskedView";
 
   private Bitmap mBitmapMask = null;
+  private boolean mBitmapMaskInvalidated = false;
   private Paint mPaint;
   private PorterDuffXfermode mPorterDuffXferMode;
 
   public RNCMaskedView(Context context) {
     super(context);
-    setLayerType(LAYER_TYPE_SOFTWARE, null);
+    setLayerType(LAYER_TYPE_HARDWARE, null);
 
     mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     mPorterDuffXferMode = new PorterDuffXfermode(PorterDuff.Mode.DST_IN);
@@ -28,6 +29,13 @@ public class RNCMaskedView extends ReactViewGroup {
   @Override
   protected void dispatchDraw(Canvas canvas) {
     super.dispatchDraw(canvas);
+
+    if (mBitmapMaskInvalidated) {
+      // redraw mask element to support animated elements
+      updateBitmapMask();
+
+      mBitmapMaskInvalidated = false;
+    }
 
     // draw the mask
     if (mBitmapMask != null) {
@@ -38,15 +46,41 @@ public class RNCMaskedView extends ReactViewGroup {
   }
 
   @Override
+  public void onDescendantInvalidated(View child, View target) {
+    super.onDescendantInvalidated(child, target);
+
+    if (!mBitmapMaskInvalidated) {
+      View maskView = getChildAt(0);
+      if (maskView.equals(child)) {
+        mBitmapMaskInvalidated = true;
+      }
+    }
+  }
+
+  @Override
   protected void onLayout(boolean changed, int l, int t, int r, int b) {
     super.onLayout(changed, l, t, r, b);
 
     if (changed) {
-      View maskView = getChildAt(0);
-      maskView.setVisibility(View.VISIBLE);
-      this.mBitmapMask = getBitmapFromView(maskView);
-      maskView.setVisibility(View.INVISIBLE);
+      mBitmapMaskInvalidated = true;
     }
+  }
+
+  @Override
+  protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+    mBitmapMaskInvalidated = true;
+  }
+
+  private void updateBitmapMask() {
+    if (this.mBitmapMask != null) {
+      this.mBitmapMask.recycle();
+    }
+
+    View maskView = getChildAt(0);
+    maskView.setVisibility(View.VISIBLE);
+    this.mBitmapMask = getBitmapFromView(maskView);
+    maskView.setVisibility(View.INVISIBLE);
   }
 
   public static Bitmap getBitmapFromView(final View view) {

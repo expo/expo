@@ -1,14 +1,15 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesAppLoader.h>
-#import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
+#import <EXUpdates/EXUpdatesAppLoaderTask.h>
+#import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
+#import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesSelectionPolicy.h>
+#import <EXUpdates/EXUpdatesService.h>
 #import <React/RCTBridge.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
-typedef void (^EXUpdatesAppControllerRelaunchCompletionBlock)(BOOL success);
 
 @class EXUpdatesAppController;
 
@@ -18,7 +19,7 @@ typedef void (^EXUpdatesAppControllerRelaunchCompletionBlock)(BOOL success);
 
 @end
 
-@interface EXUpdatesAppController : NSObject
+@interface EXUpdatesAppController : NSObject <EXUpdatesAppLoaderTaskDelegate>
 
 /**
  Delegate which will be notified when EXUpdates has an update ready to launch and
@@ -45,14 +46,17 @@ typedef void (^EXUpdatesAppControllerRelaunchCompletionBlock)(BOOL success);
  use the locally downloaded assets.
  */
 @property (nullable, nonatomic, readonly, strong) NSDictionary *assetFilesMap;
+@property (nonatomic, readonly, assign) BOOL isUsingEmbeddedAssets;
 
 /**
  for internal use in EXUpdates
  */
+@property (nonatomic, readonly) EXUpdatesConfig *config;
 @property (nonatomic, readonly) EXUpdatesDatabase *database;
-@property (nonatomic, readonly) id<EXUpdatesSelectionPolicy> selectionPolicy;
+@property (nonatomic, readonly) EXUpdatesSelectionPolicy *selectionPolicy;
 @property (nonatomic, readonly) NSURL *updatesDirectory;
 @property (nonatomic, readonly) dispatch_queue_t assetFilesQueue;
+@property (nonatomic, readonly, assign) BOOL isStarted;
 @property (nonatomic, readonly, assign) BOOL isEmergencyLaunch;
 @property (nullable, nonatomic, readonly, strong) EXUpdatesUpdate *launchedUpdate;
 
@@ -65,6 +69,23 @@ typedef void (^EXUpdatesAppControllerRelaunchCompletionBlock)(BOOL success);
  shared instance of EXUpdatesAppController.
  */
 - (void)setConfiguration:(NSDictionary *)configuration;
+
+/**
+ * For external modules that want to modify the selection policy used at runtime.
+ *
+ * This method does not provide any guarantees about how long the provided selection policy will
+ * persist; sometimes expo-updates will reset the selection policy in situations where it makes
+ * sense to have explicit control (e.g. if the developer/user has programmatically fetched an
+ * update, expo-updates will reset the selection policy so the new update is launched on the
+ * next reload).
+ */
+- (void)setNextSelectionPolicy:(EXUpdatesSelectionPolicy *)nextSelectionPolicy;
+
+/**
+ * Similar to the above method, but sets the next selection policy to whatever
+ * EXUpdatesAppController's default selection policy is.
+ */
+- (void)resetSelectionPolicyToDefault;
 
 /**
  Starts the update process to launch a previously-loaded update and (if configured to do so)
@@ -88,7 +109,7 @@ typedef void (^EXUpdatesAppControllerRelaunchCompletionBlock)(BOOL success);
  */
 - (void)startAndShowLaunchScreen:(UIWindow *)window;
 
-- (void)requestRelaunchWithCompletion:(EXUpdatesAppControllerRelaunchCompletionBlock)completion;
+- (void)requestRelaunchWithCompletion:(EXUpdatesAppRelaunchCompletionBlock)completion;
 
 @end
 

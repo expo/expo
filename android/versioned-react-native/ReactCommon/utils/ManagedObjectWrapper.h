@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -7,10 +7,16 @@
 
 #pragma once
 
-#ifdef __OBJC__
-#ifdef __cplusplus
+#if defined(__OBJC__) && defined(__cplusplus)
+#if TARGET_OS_MAC && TARGET_OS_IPHONE
 
 #include <memory>
+
+#import <Foundation/Foundation.h>
+
+@interface RCTInternalGenericWeakWrapper : NSObject
+@property (nonatomic, weak) id object;
+@end
 
 namespace facebook {
 namespace react {
@@ -29,12 +35,28 @@ namespace react {
  * represented as multiple bumps of C++ counter, so we can have multiple
  * counters for the same object that form some kind of counters tree.
  */
-inline std::shared_ptr<void> wrapManagedObject(id object) {
+inline std::shared_ptr<void> wrapManagedObject(id object)
+{
   return std::shared_ptr<void>((__bridge_retained void *)object, CFRelease);
 }
 
-inline id unwrapManagedObject(std::shared_ptr<void> const &object) {
+inline id unwrapManagedObject(std::shared_ptr<void> const &object)
+{
   return (__bridge id)object.get();
+}
+
+inline std::shared_ptr<void> wrapManagedObjectWeakly(id object)
+{
+  RCTInternalGenericWeakWrapper *weakWrapper = [RCTInternalGenericWeakWrapper new];
+  weakWrapper.object = object;
+  return wrapManagedObject(weakWrapper);
+}
+
+inline id unwrapManagedObjectWeakly(std::shared_ptr<void> const &object)
+{
+  RCTInternalGenericWeakWrapper *weakWrapper = (RCTInternalGenericWeakWrapper *)unwrapManagedObject(object);
+  assert(weakWrapper && "`RCTInternalGenericWeakWrapper` instance must not be `nil`.");
+  return weakWrapper.object;
 }
 
 } // namespace react

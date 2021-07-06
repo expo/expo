@@ -1,16 +1,20 @@
-import * as badgin from 'badgin';
-
 import { BadgeModule } from './BadgeModule.types';
 
 let lastSetBadgeCount = 0;
 
-export default {
+const badgeModule: BadgeModule = {
   addListener: () => {},
   removeListeners: () => {},
   getBadgeCountAsync: async () => {
     return lastSetBadgeCount;
   },
-  setBadgeCountAsync: async (badgeCount: number, options?: badgin.Options) => {
+  setBadgeCountAsync: async (badgeCount, options) => {
+    // If this module is loaded in SSR (NextJS), we can't modify the badge.
+    // It also can't load the badgin module, that instantly invokes methods on window.
+    if (typeof window === 'undefined') {
+      return false;
+    }
+    const badgin = require('badgin');
     if (badgeCount > 0) {
       badgin.set(badgeCount, options);
     } else {
@@ -19,4 +23,6 @@ export default {
     lastSetBadgeCount = badgeCount;
     return true;
   },
-} as BadgeModule;
+};
+
+export default badgeModule;

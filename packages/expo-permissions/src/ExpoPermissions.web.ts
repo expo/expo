@@ -141,6 +141,25 @@ async function enumerateDevices(): Promise<MediaDeviceInfo[] | null> {
   return null;
 }
 
+async function askSensorPermissionAsync(): Promise<PermissionStatus> {
+  const requestPermission = getRequestMotionPermission();
+  // Technically this is incorrect because it doesn't account for iOS 12.2 Safari.
+  // But unfortunately we can only abstract so much.
+  if (!requestPermission) return PermissionStatus.GRANTED;
+
+  // If this isn't invoked in a touch-event then it never resolves.
+  // Safari probably should throw an error but because it doesn't we have no way of informing the developer.
+  const status = await requestPermission();
+  switch (status) {
+    case 'granted':
+      return PermissionStatus.GRANTED;
+    case 'denied':
+      return PermissionStatus.DENIED;
+    default:
+      return PermissionStatus.UNDETERMINED;
+  }
+}
+
 async function getMediaMaybeGrantedAsync(targetKind: MediaDeviceKind): Promise<boolean> {
   const devices = await enumerateDevices();
   if (!devices) {
@@ -196,7 +215,33 @@ async function getPermissionAsync(
         }
       }
       break;
+    case 'motion': {
+      if (shouldAsk) {
+        const status = await askSensorPermissionAsync();
+        return {
+          status,
+          expires: 'never',
+          granted: status === PermissionStatus.GRANTED,
+          canAskAgain: false,
+        };
+      }
+
+      // We can infer from the requestor if this is an older browser.
+      const status = getRequestMotionPermission()
+        ? PermissionStatus.UNDETERMINED
+        : isIOS()
+        ? PermissionStatus.DENIED
+        : PermissionStatus.GRANTED;
+      return {
+        status,
+        expires: 'never',
+        canAskAgain: true,
+        granted: status === PermissionStatus.GRANTED,
+      };
+    }
     case 'location':
+    case 'locationForeground':
+    case 'locationBackground':
       {
         const maybeStatus = await getPermissionWithQueryAsync('geolocation');
         if (maybeStatus) {
@@ -305,3 +350,18 @@ export default {
     return results;
   },
 };
+
+export function getRequestMotionPermission(): (() => Promise<PermissionState>) | null {
+  if (typeof DeviceMotionEvent !== 'undefined' && !!DeviceMotionEvent?.requestPermission) {
+    return DeviceMotionEvent.requestPermission;
+  }
+
+  return null;
+}
+
+// https://stackoverflow.com/a/9039885/4047926
+function isIOS(): boolean {
+  const isIOSUA = /(iPad|iPhone|iPod)/g.test(navigator.userAgent);
+  const isIE11 = !!window['MSStream'];
+  return isIOSUA && !isIE11;
+}

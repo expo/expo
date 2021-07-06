@@ -1,7 +1,7 @@
-import React from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { TouchableOpacity as TouchableOpacityGH } from 'react-native-gesture-handler';
+import React from 'react';
 import { Platform, StyleSheet, TouchableOpacity as TouchableOpacityRN, View } from 'react-native';
+import { TouchableOpacity as TouchableOpacityGH } from 'react-native-gesture-handler';
 
 import { StyledText } from '../components/Text';
 
@@ -9,7 +9,7 @@ type Props = {
   buttonKey: string;
   label: string;
   onPress: (key: string) => any;
-  icon?: string;
+  icon?: React.ComponentProps<typeof MaterialCommunityIcons>['name'];
   isEnabled?: boolean;
   detail?: string;
 };
@@ -35,7 +35,10 @@ class DevMenuButton extends React.PureComponent<Props, any> {
     }
   };
 
-  renderButtonIcon(icon: string | undefined, isEnabled: boolean) {
+  renderButtonIcon(
+    icon: React.ComponentProps<typeof MaterialCommunityIcons>['name'] | undefined,
+    isEnabled: boolean
+  ) {
     if (!icon) {
       return null;
     }

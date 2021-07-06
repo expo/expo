@@ -11,8 +11,6 @@ import android.os.Handler;
 import android.os.PersistableBundle;
 import android.util.Log;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.unimodules.apploader.AppLoaderProvider;
 import org.unimodules.apploader.HeadlessAppLoader;
@@ -26,10 +24,8 @@ import org.unimodules.interfaces.taskManager.TaskServiceInterface;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -38,6 +34,11 @@ import androidx.annotation.Nullable;
 import expo.modules.taskManager.exceptions.InvalidConsumerClassException;
 import expo.modules.taskManager.exceptions.TaskNotFoundException;
 import expo.modules.taskManager.exceptions.TaskRegisteringFailedException;
+import expo.modules.taskManager.repository.TasksAndEventsRepository;
+
+import static expo.modules.taskManager.Utils.getConsumerVersion;
+import static expo.modules.taskManager.Utils.jsonToMap;
+import static expo.modules.taskManager.Utils.unversionedClassForClass;
 
 // @tsapeta: TaskService is a funny kind of singleton module... because it's actually not a singleton :D
 // Since it would make too much troubles in order to get the singleton instance (from ModuleRegistryProvider)
@@ -52,20 +53,16 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   private WeakReference<Context> mContextRef;
   private TaskManagerUtilsInterface mTaskManagerUtils;
 
-  // { "<appId>": { "<taskName>": TaskInterface } }
-  private static Map<String, Map<String, TaskInterface>> sTasksTable = null;
-
-  // Map with task managers of running (foregrounded) apps. { "<appId>": WeakReference(TaskManagerInterface) }
+  // Map with task managers of running (foregrounded) apps. { "<appScopeKey>": WeakReference(TaskManagerInterface) }
   private static final Map<String, WeakReference<TaskManagerInterface>> sTaskManagers = new HashMap<>();
 
   // Same as above but for headless (backgrounded) apps.
   private static final Map<String, WeakReference<TaskManagerInterface>> sHeadlessTaskManagers = new HashMap<>();
 
-  // { "<appId>": List(eventIds...) }
+  // { "<appScopeKey>": List(eventIds...) }
   private static final Map<String, List<String>> sEvents = new HashMap<>();
 
-  // { "<appId>": List(eventBodies...) }
-  private static final Map<String, List<Bundle>> sEventsQueues = new HashMap<>();
+  private TasksAndEventsRepository mTasksAndEventsRepository;
 
   // Map of callbacks for task execution events. Schema: { "<eventId>": TaskExecutionCallback }
   private static final Map<String, TaskExecutionCallback> sTaskCallbacks = new HashMap<>();
@@ -73,9 +70,10 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   public TaskService(Context context) {
     super();
     mContextRef = new WeakReference<>(context);
+    mTasksAndEventsRepository = TasksAndEventsRepository.create(context);
 
-    if (sTasksTable == null) {
-      sTasksTable = new HashMap<>();
+    if (!mTasksAndEventsRepository.tasksExist()) {
+      mTasksAndEventsRepository.createTasks();
       restoreTasks();
     }
   }
@@ -87,14 +85,14 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   //region TaskServiceInterface
 
   @Override
-  public boolean hasRegisteredTask(String taskName, String appId) {
-    TaskInterface task = getTask(taskName, appId);
+  public boolean hasRegisteredTask(String taskName, String appScopeKey) {
+    TaskInterface task = getTask(taskName, appScopeKey);
     return task != null;
   }
 
   @Override
-  public void registerTask(String taskName, String appId, String appUrl, Class consumerClass, Map<String, Object> options) throws TaskRegisteringFailedException {
-    TaskInterface task = getTask(taskName, appId);
+  public void registerTask(String taskName, String appScopeKey, String appUrl, Class consumerClass, Map<String, Object> options) throws TaskRegisteringFailedException {
+    TaskInterface task = getTask(taskName, appScopeKey);
     Class unversionedConsumerClass = unversionedClassForClass(consumerClass);
 
     if (task != null && unversionedConsumerClass != null && unversionedConsumerClass.isInstance(task.getConsumer())) {
@@ -102,19 +100,19 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
       task.setOptions(options);
       task.getConsumer().setOptions(options);
     } else {
-      internalRegisterTask(taskName, appId, appUrl, consumerClass, options);
+      internalRegisterTask(taskName, appScopeKey, appUrl, consumerClass, options);
     }
-    saveTasksForAppWithId(appId);
+    mTasksAndEventsRepository.persistTasksForAppScopeKey(getSharedPreferences(), appScopeKey);
   }
 
   @Override
-  public void unregisterTask(String taskName, String appId, Class consumerClass) throws TaskNotFoundException, InvalidConsumerClassException {
-    TaskInterface task = getTask(taskName, appId);
+  public void unregisterTask(String taskName, String appScopeKey, Class consumerClass) throws TaskNotFoundException, InvalidConsumerClassException {
+    TaskInterface task = getTask(taskName, appScopeKey);
     Class unversionedConsumerClass = unversionedClassForClass(consumerClass);
 
     // Task not found.
     if (task == null) {
-      throw new TaskNotFoundException(taskName, appId);
+      throw new TaskNotFoundException(taskName, appScopeKey);
     }
 
     // Check if the consumer is an instance of given consumer class.
@@ -122,44 +120,40 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
       throw new InvalidConsumerClassException(taskName);
     }
 
-    Map<String, TaskInterface> appTasks = sTasksTable.get(appId);
+    mTasksAndEventsRepository.removeTask(appScopeKey, taskName);
 
-    if (appTasks != null) {
-      appTasks.remove(taskName);
-    }
-
-    Log.i(TAG, "Unregistering task '" + taskName + "' for app '" + appId + "'.");
+    Log.i(TAG, "Unregistering task '" + taskName + "' for app with scoping identifier '" + appScopeKey + "'.");
 
     task.getConsumer().didUnregister();
-    saveTasksForAppWithId(appId);
+    mTasksAndEventsRepository.persistTasksForAppScopeKey(getSharedPreferences(), appScopeKey);
   }
 
   @Override
-  public void unregisterAllTasksForAppId(String appId) {
-    Map<String, TaskInterface> appTasks = sTasksTable.get(appId);
+  public void unregisterAllTasksForAppScopeKey(String appScopeKey) {
+    Map<String, TaskInterface> appTasks = mTasksAndEventsRepository.getTasks(appScopeKey);
 
     if (appTasks != null) {
-      Log.i(TAG, "Unregistering all tasks for app '" + appId + "'.");
+      Log.i(TAG, "Unregistering all tasks for app with scoping identifier '" + appScopeKey + "'.");
 
       for (TaskInterface task : appTasks.values()) {
         task.getConsumer().didUnregister();
       }
 
-      appTasks.clear();
-      removeAppFromConfig(appId);
+      mTasksAndEventsRepository.removeTasks(appScopeKey);
+      removeAppFromConfig(appScopeKey);
     }
   }
 
   @Override
-  public boolean taskHasConsumerOfClass(String taskName, String appId, Class consumerClass) {
-    TaskInterface task = getTask(taskName, appId);
+  public boolean taskHasConsumerOfClass(String taskName, String appScopeKey, Class consumerClass) {
+    TaskInterface task = getTask(taskName, appScopeKey);
     Class unversionedConsumerClass = unversionedClassForClass(consumerClass);
     return task != null && unversionedConsumerClass.isInstance(task.getConsumer());
   }
 
   @Override
-  public Bundle getTaskOptions(String taskName, String appId) {
-    TaskInterface task = getTask(taskName, appId);
+  public Bundle getTaskOptions(String taskName, String appScopeKey) {
+    TaskInterface task = getTask(taskName, appScopeKey);
     if (task != null) {
       return task.getOptionsBundle();
     }
@@ -167,8 +161,8 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   @Override
-  public List<Bundle> getTasksForAppId(String appId) {
-    Map<String, TaskInterface> appTasks = sTasksTable.get(appId);
+  public List<Bundle> getTasksForAppScopeKey(String appScopeKey) {
+    Map<String, TaskInterface> appTasks = mTasksAndEventsRepository.getTasks(appScopeKey);
     List<Bundle> tasks = new ArrayList<>();
 
     if (appTasks != null) {
@@ -186,8 +180,8 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   @Override
-  public List<TaskConsumerInterface> getTaskConsumers(String appId) {
-    Map<String, TaskInterface> appTasks = sTasksTable.get(appId);
+  public List<TaskConsumerInterface> getTaskConsumers(String appScopeKey) {
+    Map<String, TaskInterface> appTasks = mTasksAndEventsRepository.getTasks(appScopeKey);
     List<TaskConsumerInterface> taskConsumers = new ArrayList<>();
 
     if (appTasks != null) {
@@ -199,9 +193,9 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   @Override
-  public void notifyTaskFinished(String taskName, final String appId, Map<String, Object> response) {
+  public void notifyTaskFinished(String taskName, final String appScopeKey, Map<String, Object> response) {
     String eventId = (String) response.get("eventId");
-    List<String> appEvents = sEvents.get(appId);
+    List<String> appEvents = sEvents.get(appScopeKey);
 
     Log.i(TAG, "Finished task '" + taskName + "' with eventId '" + eventId + "'.");
 
@@ -209,15 +203,15 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
       appEvents.remove(eventId);
 
       if (appEvents.size() == 0) {
-        sEvents.remove(appId);
+        sEvents.remove(appScopeKey);
 
         // Invalidate app record but after 2 seconds delay so we can still take batched events.
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
           @Override
           public void run() {
-            if (!sEvents.containsKey(appId)) {
-              invalidateAppRecord(appId);
+            if (!sEvents.containsKey(appScopeKey)) {
+              invalidateAppRecord(appScopeKey);
             }
           }
         }, 2000);
@@ -233,24 +227,24 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   @Override
-  public void setTaskManager(TaskManagerInterface taskManager, String appId, String appUrl) {
+  public void setTaskManager(TaskManagerInterface taskManager, String appScopeKey, String appUrl) {
     // It may be called with null when the host activity is destroyed.
     if (taskManager == null) {
-      sTaskManagers.remove(appId);
+      sTaskManagers.remove(appScopeKey);
       return;
     }
 
     // Determine in which table the task manager will be stored.
     // Having two tables for them is to prevent race condition problems,
     // when both foreground and background apps are launching at the same time.
-    boolean isHeadless = isStartedByHeadlessLoader(appId);
+    boolean isHeadless = isStartedByHeadlessLoader(appScopeKey);
     Map<String, WeakReference<TaskManagerInterface>> taskManagers = isHeadless ? sHeadlessTaskManagers : sTaskManagers;
 
     // Set task manager in appropriate map.
-    taskManagers.put(appId, new WeakReference<>(taskManager));
+    taskManagers.put(appScopeKey, new WeakReference<>(taskManager));
 
     // Execute events waiting for the task manager.
-    List<Bundle> eventsQueue = sEventsQueues.get(appId);
+    List<Bundle> eventsQueue = mTasksAndEventsRepository.getEvents(appScopeKey);
 
     if (eventsQueue != null) {
       for (Bundle body : eventsQueue) {
@@ -259,19 +253,19 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     }
 
     // Remove events queue for that app.
-    sEventsQueues.remove(appId);
+    mTasksAndEventsRepository.removeEvents(appScopeKey);
 
     if (!isHeadless) {
       // Maybe update app url in user defaults. It might change only in non-headless mode.
-      maybeUpdateAppUrlForAppId(appUrl, appId);
+      maybeUpdateAppUrlForAppScopeKey(appUrl, appScopeKey);
     }
   }
 
   @Override
-  public boolean isStartedByHeadlessLoader(String appId) {
+  public boolean isStartedByHeadlessLoader(String appScopeKey) {
     HeadlessAppLoader appLoader = getAppLoader();
     if (appLoader != null) {
-      return appLoader.isRunning(appId);
+      return appLoader.isRunning(appScopeKey);
     }
     return false;
   }
@@ -285,8 +279,8 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
       Log.i(TAG, "Handling intent with action '" + action + "'.");
 
-      for (String appId : sTasksTable.keySet()) {
-        List<TaskConsumerInterface> taskConsumers = getTaskConsumers(appId);
+      for (String appScopeKey : mTasksAndEventsRepository.allAppScopeKeysWithTasks()) {
+        List<TaskConsumerInterface> taskConsumers = getTaskConsumers(appScopeKey);
 
         for (TaskConsumerInterface consumer : taskConsumers) {
           if (consumer.canReceiveCustomBroadcast(action)) {
@@ -300,18 +294,19 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
       return;
     }
 
-    String appId = dataUri.getQueryParameter("appId");
+    // Data URI param name is appId for legacy reasons
+    String appScopeKey = dataUri.getQueryParameter("appId");
     String taskName = dataUri.getQueryParameter("taskName");
 
-    TaskConsumerInterface consumer = getTaskConsumer(taskName, appId);
+    TaskConsumerInterface consumer = getTaskConsumer(taskName, appScopeKey);
 
-    Log.i(TAG, "Handling intent with task name '" + taskName + "' and appId '" + appId + "'.");
+    Log.i(TAG, "Handling intent with task name '" + taskName + "' and app scoping identifier '" + appScopeKey + "'.");
 
     if (consumer == null) {
       Log.w(TAG, "Task or consumer not found.");
 
       // Cancel pending intent.
-      getTaskManagerUtils().cancelTaskIntent(mContextRef.get(), appId, taskName);
+      getTaskManagerUtils().cancelTaskIntent(mContextRef.get(), appScopeKey, taskName);
       return;
     }
 
@@ -321,17 +316,18 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
   public boolean handleJob(final JobService jobService, final JobParameters params) {
     PersistableBundle extras = params.getExtras();
-    String appId = extras.getString("appId");
+    // persistable bundle extras param name is appId for legacy reasons
+    String appScopeKey = extras.getString("appId");
     String taskName = extras.getString("taskName");
 
-    TaskConsumerInterface consumer = getTaskConsumer(taskName, appId);
+    TaskConsumerInterface consumer = getTaskConsumer(taskName, appScopeKey);
 
     if (consumer == null) {
       Log.w(TAG, "Task or consumer not found.");
       return false;
     }
 
-    Log.i(TAG, "Handling job with task name '" + taskName + "' for app with ID '" + appId + "'.");
+    Log.i(TAG, "Handling job with task name '" + taskName + "' for app with scoping identifier '" + appScopeKey + "'.");
 
     // executes task
     boolean isAsyncJob = consumer.didExecuteJob(jobService, params);
@@ -346,10 +342,11 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
   public boolean cancelJob(JobService jobService, JobParameters params) {
     PersistableBundle extras = params.getExtras();
-    String appId = extras.getString("appId");
+    // persistable bundle extras param name is appId for legacy reasons
+    String appScopeKey = extras.getString("appId");
     String taskName = extras.getString("taskName");
 
-    TaskInterface task = getTask(taskName, appId);
+    TaskInterface task = getTask(taskName, appScopeKey);
 
     // `notifyTaskJobCancelled` notifies TaskManagerUtils about a job for task being cancelled.
     // It returns `true` if the job has been intentionally cancelled to be rescheduled,
@@ -372,7 +369,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   public void executeTask(TaskInterface task, Bundle data, Error error, TaskExecutionCallback callback) {
-    TaskManagerInterface taskManager = getTaskManager(task.getAppId());
+    TaskManagerInterface taskManager = getTaskManager(task.getAppScopeKey());
     Bundle body = createExecutionEventBody(task, data, error);
     Bundle executionInfo = body.getBundle("executionInfo");
 
@@ -382,17 +379,17 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     }
 
     String eventId = executionInfo.getString("eventId");
-    String appId = task.getAppId();
+    String appScopeKey = task.getAppScopeKey();
 
     if (callback != null) {
       sTaskCallbacks.put(eventId, callback);
     }
 
     final List<String> appEvents;
-    if (sEvents.get(appId) == null) {
+    if (sEvents.get(appScopeKey) == null) {
       appEvents = new ArrayList<>();
       appEvents.add(eventId);
-      sEvents.put(appId, appEvents);
+      sEvents.put(appScopeKey, appEvents);
     } else {
       appEvents = new ArrayList<>();
       appEvents.add(eventId);
@@ -405,31 +402,31 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
     // The app is not fully loaded as its task manager is not there yet.
     // We need to add event's body to the queue from which events will be executed once the task manager is ready.
-    if (!sEventsQueues.containsKey(appId)) {
-      sEventsQueues.put(appId, new ArrayList<>());
+    if (!mTasksAndEventsRepository.hasEvents(appScopeKey)) {
+      mTasksAndEventsRepository.putEvents(appScopeKey, new ArrayList<>());
     }
-    sEventsQueues.get(appId).add(body);
+    mTasksAndEventsRepository.putEventForAppScopeKey(appScopeKey, body);
 
     try {
-      getAppLoader().loadApp(mContextRef.get(), new HeadlessAppLoader.Params(appId, task.getAppUrl()), () -> {
+      getAppLoader().loadApp(mContextRef.get(), new HeadlessAppLoader.Params(appScopeKey, task.getAppUrl()), () -> {
       }, success -> {
         if (!success) {
-          sEvents.remove(appId);
-          sEventsQueues.remove(appId);
+          sEvents.remove(appScopeKey);
+          mTasksAndEventsRepository.removeEvents(appScopeKey);
 
           // Host unreachable? Unregister all tasks for that app.
-          unregisterAllTasksForAppId(appId);
+          unregisterAllTasksForAppScopeKey(appScopeKey);
         }
       });
     } catch (HeadlessAppLoader.AppConfigurationError ignored) {
       try {
-        unregisterTask(task.getName(), appId, null);
+        unregisterTask(task.getName(), appScopeKey, null);
       } catch (Exception e) {
         Log.e(TAG, "Error occurred while unregistering invalid task.", e);
       }
 
       appEvents.remove(eventId);
-      sEventsQueues.remove(appId);
+      mTasksAndEventsRepository.removeEvents(appScopeKey);
     }
   }
 
@@ -444,7 +441,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     }
   }
 
-  private void internalRegisterTask(String taskName, String appId, String appUrl, Class<TaskConsumerInterface> consumerClass, Map<String, Object> options) throws TaskRegisteringFailedException {
+  private void internalRegisterTask(String taskName, String appScopeKey, String appUrl, Class<TaskConsumerInterface> consumerClass, Map<String, Object> options) throws TaskRegisteringFailedException {
     Constructor<?> consumerConstructor;
     TaskConsumerInterface consumer;
     Context context = mContextRef.get();
@@ -460,13 +457,13 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
       throw new TaskRegisteringFailedException(consumerClass, e);
     }
 
-    Task task = new Task(taskName, appId, appUrl, consumer, options, this);
+    Task task = new Task(taskName, appScopeKey, appUrl, consumer, options, this);
 
-    Map<String, TaskInterface> appTasks = sTasksTable.containsKey(appId) ? sTasksTable.get(appId) : new HashMap<String, TaskInterface>();
+    Map<String, TaskInterface> appTasks = mTasksAndEventsRepository.hasTasks(appScopeKey) ? mTasksAndEventsRepository.getTasks(appScopeKey) : new HashMap<String, TaskInterface>();
     appTasks.put(taskName, task);
-    sTasksTable.put(appId, appTasks);
+    mTasksAndEventsRepository.putTasks(appScopeKey, appTasks);
 
-    Log.i(TAG, "Registered task with name '" + taskName + "' for app with ID '" + appId + "'.");
+    Log.i(TAG, "Registered task with name '" + taskName + "' for app with scoping identifier '" + appScopeKey + "'.");
 
     consumer.didRegister(task);
   }
@@ -496,16 +493,16 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     return errorBundle;
   }
 
-  private static TaskInterface getTask(String taskName, String appId) {
-    Map<String, TaskInterface> appTasks = sTasksTable.get(appId);
+  private TaskInterface getTask(String taskName, String appScopeKey) {
+    Map<String, TaskInterface> appTasks = mTasksAndEventsRepository.getTasks(appScopeKey);
     return appTasks != null ? appTasks.get(taskName) : null;
   }
 
-  private TaskConsumerInterface getTaskConsumer(String taskName, String appId) {
-    if (taskName == null || appId == null) {
+  private TaskConsumerInterface getTaskConsumer(String taskName, String appScopeKey) {
+    if (taskName == null || appScopeKey == null) {
       return null;
     }
-    TaskInterface task = getTask(taskName, appId);
+    TaskInterface task = getTask(taskName, appScopeKey);
     return task != null ? task.getConsumer() : null;
   }
 
@@ -521,9 +518,9 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     return context != null ? context.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE) : null;
   }
 
-  private void maybeUpdateAppUrlForAppId(String appUrl, String appId) {
+  private void maybeUpdateAppUrlForAppScopeKey(String appUrl, String appScopeKey) {
     SharedPreferences preferences = getSharedPreferences();
-    Map<String, Object> appConfig = preferences != null ? jsonToMap(preferences.getString(appId, "")) : null;
+    Map<String, Object> appConfig = preferences != null ? jsonToMap(preferences.getString(appScopeKey, "")) : null;
 
     if (appConfig != null && appConfig.size() > 0) {
       String oldAppUrl = (String) appConfig.get("appUrl");
@@ -533,7 +530,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
         preferences
           .edit()
-          .putString(appId, new JSONObject(appConfig).toString())
+          .putString(appScopeKey, new JSONObject(appConfig).toString())
           .apply();
       }
     }
@@ -541,13 +538,12 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
   @SuppressWarnings("unchecked")
   private void restoreTasks() {
-    SharedPreferences preferences = getSharedPreferences();
-    Map<String, ?> config = preferences.getAll();
+    Map<String, TasksAndEventsRepository.AppConfig> apps = mTasksAndEventsRepository.readPersistedTasks(getSharedPreferences());
 
-    for (Map.Entry<String, ?> entry : config.entrySet()) {
-      Map<String, Object> appConfig = jsonToMap(entry.getValue().toString());
-      Map<String, Object> tasksConfig = (HashMap<String, Object>) appConfig.get("tasks");
-      String appUrl = (String) appConfig.get("appUrl");
+    for (Map.Entry<String, TasksAndEventsRepository.AppConfig> entry : apps.entrySet()) {
+      String appScopeKey = entry.getKey();
+      String appUrl = entry.getValue().appUrl;
+      Map<String, Object> tasksConfig = entry.getValue().tasks;
 
       if (appUrl != null && tasksConfig != null && tasksConfig.size() > 0) {
         for (String taskName : tasksConfig.keySet()) {
@@ -565,7 +561,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
 
               try {
                 // register the task using internal method which doesn't change shared preferences.
-                internalRegisterTask(taskName, entry.getKey(), appUrl, consumerClass, options);
+                internalRegisterTask(taskName, appScopeKey, appUrl, consumerClass, options);
               } catch (TaskRegisteringFailedException e) {
                 Log.e(TAG, e.getMessage());
               }
@@ -581,77 +577,33 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
       }
 
       // Update tasks for the app to unregister tasks that couldn't be restored.
-      saveTasksForAppWithId(entry.getKey());
+      mTasksAndEventsRepository.persistTasksForAppScopeKey(getSharedPreferences(), entry.getKey());
     }
   }
 
-  private void saveTasksForAppWithId(String appId) {
-    SharedPreferences preferences = getSharedPreferences();
-    Map<String, TaskInterface> appRow = sTasksTable.get(appId);
-
-    if (preferences == null) {
-      return;
-    }
-    if (appRow == null || appRow.size() == 0) {
-      preferences.edit().remove(appId).apply();
-      return;
-    }
-
-    Map<String, Object> appConfig = new HashMap<>();
-    Map<String, Object> tasks = new HashMap<>();
-    String appUrl = null;
-
-    for (TaskInterface task : appRow.values()) {
-      Map<String, Object> taskConfig = exportTaskToMap(task);
-      tasks.put(task.getName(), taskConfig);
-      appUrl = task.getAppUrl();
-    }
-
-    appConfig.put("appUrl", appUrl);
-    appConfig.put("tasks", tasks);
-
-    preferences
-      .edit()
-      .putString(appId, new JSONObject(appConfig).toString())
-      .apply();
-  }
-
-  private void removeAppFromConfig(String appId) {
-    getSharedPreferences().edit().remove(appId).apply();
+  private void removeAppFromConfig(String appScopeKey) {
+    getSharedPreferences().edit().remove(appScopeKey).apply();
   }
 
   /**
-   * Returns task manager for given appId. Task managers initialized in non-headless contexts have precedence over headless one.
+   * Returns task manager for given appScopeKey. Task managers initialized in non-headless contexts have precedence over headless one.
    */
   @Nullable
-  private TaskManagerInterface getTaskManager(String appId) {
-    WeakReference<TaskManagerInterface> weakRef = sTaskManagers.get(appId);
+  private TaskManagerInterface getTaskManager(String appScopeKey) {
+    WeakReference<TaskManagerInterface> weakRef = sTaskManagers.get(appScopeKey);
     TaskManagerInterface taskManager = weakRef == null ? null : weakRef.get();
 
     if (taskManager == null) {
-      weakRef = sHeadlessTaskManagers.get(appId);
+      weakRef = sHeadlessTaskManagers.get(appScopeKey);
     }
     return weakRef == null ? null : weakRef.get();
   }
 
-  private Map<String, Object> exportTaskToMap(TaskInterface task) {
-    Map<String, Object> map = new HashMap<>();
-    Class consumerClass = task.getConsumer().getClass();
-    String consumerClassName = unversionedClassNameForClass(consumerClass);
-
-    map.put("name", task.getName());
-    map.put("consumerClass", consumerClassName);
-    map.put("consumerVersion", getConsumerVersion(consumerClass));
-    map.put("options", task.getOptions());
-
-    return map;
-  }
-
-  private void invalidateAppRecord(String appId) {
+  private void invalidateAppRecord(String appScopeKey) {
     HeadlessAppLoader appLoader = getAppLoader();
     if (appLoader != null) {
-      if (getAppLoader().invalidateApp(appId)) {
-        sHeadlessTaskManagers.remove(appId);
+      if (getAppLoader().invalidateApp(appScopeKey)) {
+        sHeadlessTaskManagers.remove(appScopeKey);
       }
     }
   }
@@ -666,100 +618,4 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     }, timeout);
   }
 
-  private static Map<String, Object> jsonToMap(String jsonStr) {
-    try {
-      return jsonToMap(new JSONObject(jsonStr));
-    } catch (JSONException e) {
-      return new HashMap<>();
-    }
-  }
-
-  private static Map<String, Object> jsonToMap(JSONObject json) {
-    Map<String, Object> map = new HashMap<>();
-
-    try {
-      Iterator<?> keys = json.keys();
-
-      while (keys.hasNext()) {
-        String key = (String) keys.next();
-        Object value = jsonObjectToObject(json.get(key));
-
-        map.put(key, value);
-      }
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
-    return map;
-  }
-
-  private static List<Object> jsonToList(JSONArray json) {
-    List<Object> list = new ArrayList<>();
-
-    try {
-      for (int i = 0; i < json.length(); i++) {
-        Object value = json.get(i);
-
-        if (value instanceof JSONArray) {
-          value = jsonToList((JSONArray) value);
-        } else if (value instanceof JSONObject) {
-          value = jsonToMap((JSONObject) value);
-        }
-        list.add(value);
-      }
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
-    return list;
-  }
-
-  private static Object jsonObjectToObject(Object json) {
-    if (json instanceof JSONObject) {
-      return jsonToMap((JSONObject) json);
-    }
-    if (json instanceof JSONArray) {
-      return jsonToList((JSONArray) json);
-    }
-    return json;
-  }
-
-  /**
-   * Returns task consumer's version. Defaults to 0 if `VERSION` static field is not implemented.
-   */
-  private static int getConsumerVersion(Class consumerClass) {
-    try {
-      Field versionField = consumerClass.getDeclaredField("VERSION");
-      return (Integer) versionField.get(null);
-    } catch (NoSuchFieldException | IllegalAccessException e) {
-      return 0;
-    }
-  }
-
-  /**
-   * Method that unversions class names, so we can always use unversioned task consumer classes.
-   */
-  private static String unversionedClassNameForClass(Class versionedClass) {
-    String className = versionedClass.getName();
-    return className.replaceFirst("\\^abi\\d+_\\d+_\\d+\\.", "");
-  }
-
-  /**
-   * Returns unversioned class from versioned one.
-   */
-  private static Class unversionedClassForClass(Class versionedClass) {
-    if (versionedClass == null) {
-      return null;
-    }
-
-    String unversionedClassName = unversionedClassNameForClass(versionedClass);
-
-    try {
-      return Class.forName(unversionedClassName);
-    } catch (ClassNotFoundException e) {
-      Log.e(TAG, "Class with name '" + unversionedClassName + "' not found.");
-      e.printStackTrace();
-      return null;
-    }
-  }
-
-  //endregion
 }

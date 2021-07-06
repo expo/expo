@@ -122,9 +122,6 @@ class GroupView extends RenderableView {
                 if (svgView.isResponsible()) {
                     svg.enableTouchEvents();
                 }
-            } else {
-                // Enable rendering other native ancestor views in e.g. masks
-                child.draw(canvas);
             }
         }
         this.setClientRect(groupRect);

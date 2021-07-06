@@ -1,6 +1,4 @@
 import React from 'react';
-import Animated from 'react-native-reanimated';
-import BottomSheet from 'reanimated-bottom-sheet';
 import {
   Dimensions,
   EventSubscription,
@@ -8,15 +6,21 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import Animated from 'react-native-reanimated';
+import BottomSheet from 'reanimated-bottom-sheet';
 
-import * as DevMenu from './DevMenuModule';
 import DevMenuBottomSheetContext from './DevMenuBottomSheetContext';
+import * as DevMenu from './DevMenuModule';
 
 type Props = {
   uuid: string;
 };
 
 class DevMenuBottomSheet extends React.PureComponent<Props, any> {
+  // We need to track whether the bottom sheet is expanded to prevent
+  // collapsing on some unnecessary `onCloseEnd` calls.
+  hasExpandingFinished: boolean = false;
+
   ref = React.createRef<BottomSheet>();
 
   snapPoints = [0, Math.max(BottomSheet.renumber('50%'), 600), '90%'];
@@ -28,8 +32,6 @@ class DevMenuBottomSheet extends React.PureComponent<Props, any> {
     outputRange: [0.5, 0],
   });
 
-  closeStarted = false;
-
   closeSubscription: EventSubscription | null = null;
 
   componentDidMount() {
@@ -40,20 +42,14 @@ class DevMenuBottomSheet extends React.PureComponent<Props, any> {
     // The awaited return value of this listener is then send back as a response
     // so the native module knows when it can fully close dev menu (detach its root view).
     this.closeSubscription = DevMenu.listenForCloseRequests(() => {
-      // Unsubscribe immediately so we don't accidentally collapse twice.
-      // Also componentWillUnmount is not called (why?) when the app is hot reloading this component,
-      // despite the componentDidMount is later called after first render.
-      this.unsubscribeCloseSubscription();
-
       // `collapse` returns a promise, so this `return` is important to finish the close event once the view is fully collapsed.
       return this.collapse();
     });
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: Props) {
     // Make sure it gets expanded once we receive new identifier.
     if (prevProps.uuid !== this.props.uuid) {
-      this.closeStarted = false;
       this.expand();
     }
   }
@@ -63,8 +59,7 @@ class DevMenuBottomSheet extends React.PureComponent<Props, any> {
   }
 
   collapse = (): Promise<void> => {
-    // @tsapeta: There is a bug in react-native-reanimated@1.7.0 that can be workarounded by calling `snapTo` twice.
-    this.ref.current && this.ref.current.snapTo(0);
+    this.hasExpandingFinished = false;
     this.ref.current && this.ref.current.snapTo(0);
 
     // Use setTimeout until there is a better solution to execute something once the sheet is fully collapsed.
@@ -77,9 +72,11 @@ class DevMenuBottomSheet extends React.PureComponent<Props, any> {
   };
 
   expand = () => {
-    // @tsapeta: There is a bug in react-native-reanimated@1.7.0 that can be workarounded by calling `snapTo` twice.
     this.ref.current && this.ref.current.snapTo(1);
-    this.ref.current && this.ref.current.snapTo(1);
+
+    setTimeout(() => {
+      this.hasExpandingFinished = true;
+    }, 300);
   };
 
   unsubscribeCloseSubscription = () => {
@@ -89,13 +86,8 @@ class DevMenuBottomSheet extends React.PureComponent<Props, any> {
     }
   };
 
-  onCloseStart = () => {
-    this.closeStarted = true;
-  };
-
   onCloseEnd = () => {
-    if (this.closeStarted) {
-      this.closeStarted = false;
+    if (this.hasExpandingFinished) {
       this.collapseAndClose();
     }
   };
@@ -135,7 +127,6 @@ class DevMenuBottomSheet extends React.PureComponent<Props, any> {
             callbackNode={this.callbackNode}
             renderHeader={this.renderHeader}
             renderContent={this.renderContent}
-            onCloseStart={this.onCloseStart}
             onCloseEnd={this.onCloseEnd}
           />
         </View>

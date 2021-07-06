@@ -1,5 +1,7 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
+#import <Foundation/Foundation.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXUpdatesAsset : NSObject
@@ -7,9 +9,11 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * properties determined by asset source
  */
-@property (nonatomic, strong) NSURL *url;
+@property (nullable, nonatomic, strong) NSString *key;
 @property (nonatomic, strong) NSString *type;
+@property (nullable, nonatomic, strong) NSURL *url;
 @property (nullable, nonatomic, strong) NSDictionary *metadata;
+@property (nullable, nonatomic, strong) NSString *mainBundleDir; // used for embedded assets
 @property (nullable, nonatomic, strong) NSString *mainBundleFilename; // used for embedded assets
 @property (nonatomic, assign) BOOL isLaunchAsset;
 
@@ -21,9 +25,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nullable, nonatomic, strong) NSString *contentHash;
 @property (nullable, nonatomic, strong) NSDictionary *headers;
 
-@property (nullable, nonatomic, strong) NSString *localAssetsKey;
+/**
+ * properties determined by updates database
+ */
+@property (nonatomic, assign) NSUInteger assetId;
 
-- (instancetype)initWithUrl:(NSURL *)url type:(NSString *)type;
+- (instancetype)initWithKey:(nullable NSString *)key type:(NSString *)type;
 
 @end
 

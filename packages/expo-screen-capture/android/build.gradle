@@ -1,0 +1,83 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'maven'
+
+group = 'host.exp.exponent'
+version = '3.2.0'
+
+buildscript {
+  // Simple helper that allows the root project to override versions declared by this library.
+  ext.safeExtGet = { prop, fallback ->
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+  }
+
+  repositories {
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.4.21')}")
+  }
+}
+
+// Upload android library to maven with javadoc and android sources
+configurations {
+  deployerJars
+}
+
+// Creating sources with comments
+task androidSourcesJar(type: Jar) {
+  classifier = 'sources'
+  from android.sourceSets.main.java.srcDirs
+}
+
+// Put the androidSources and javadoc to the artifacts
+artifacts {
+  archives androidSourcesJar
+}
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      configuration = configurations.deployerJars
+      repository(url: mavenLocal().url)
+    }
+  }
+}
+
+android {
+  compileSdkVersion rootProject.ext.compileSdkVersion
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+
+  defaultConfig {
+    minSdkVersion rootProject.ext.minSdkVersion
+    targetSdkVersion rootProject.ext.targetSdkVersion
+    versionCode 7
+    versionName '3.2.0'
+  }
+  lintOptions {
+    abortOnError false
+  }
+}
+
+if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
+  apply from: project(":unimodules-core").file("../unimodules-core.gradle")
+} else {
+  throw new GradleException(
+      '\'unimodules-core.gradle\' was not found in the usual React Native dependency location. ' +
+          'This package can only be used in such projects. Are you sure you\'ve installed the dependencies properly?')
+}
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  unimodule 'unimodules-core'
+  implementation 'androidx.appcompat:appcompat:1.2.0'
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
+}

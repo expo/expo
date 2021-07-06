@@ -1,47 +1,32 @@
+import Slider from '@react-native-community/slider';
+import { Picker } from '@react-native-picker/picker';
+import Animation from 'lottie-react-native';
 import React from 'react';
 import {
   Animated,
   Button,
-  Picker,
   Platform,
   ScrollView,
-  Slider,
   StyleSheet,
   Switch,
   Text,
   View,
 } from 'react-native';
-import Animation from 'lottie-react-native';
 
 const makeExample = (name: string, getJson: () => any) => ({ name, getJson });
 const EXAMPLES = [
-  makeExample('Hamburger Arrow', () =>
-    require('../../assets/animations/HamburgerArrow.json')
-  ),
-  makeExample('Line Animation', () =>
-    require('../../assets/animations/LineAnimation.json')
-  ),
-  makeExample('Lottie Logo 1', () =>
-    require('../../assets/animations/LottieLogo1.json')
-  ),
-  makeExample('Lottie Logo 2', () =>
-    require('../../assets/animations/LottieLogo2.json')
-  ),
+  makeExample('Science', () => require('../../assets/animations/Science.json')),
+  makeExample('Hamburger Arrow', () => require('../../assets/animations/HamburgerArrow.json')),
+  makeExample('Line Animation', () => require('../../assets/animations/LineAnimation.json')),
+  makeExample('Lottie Logo 1', () => require('../../assets/animations/LottieLogo1.json')),
+  makeExample('Lottie Logo 2', () => require('../../assets/animations/LottieLogo2.json')),
   makeExample('Lottie Walkthrough', () =>
     require('../../assets/animations/LottieWalkthrough.json')
   ),
-  makeExample('Pin Jump', () =>
-    require('../../assets/animations/PinJump.json')
-  ),
-  makeExample('Twitter Heart', () =>
-    require('../../assets/animations/TwitterHeart.json')
-  ),
-  makeExample('Watermelon', () =>
-    require('../../assets/animations/Watermelon.json')
-  ),
-  makeExample('Motion Corpse', () =>
-    require('../../assets/animations/MotionCorpse-Jrcanest.json')
-  ),
+  makeExample('Pin Jump', () => require('../../assets/animations/PinJump.json')),
+  makeExample('Twitter Heart', () => require('../../assets/animations/TwitterHeart.json')),
+  makeExample('Watermelon', () => require('../../assets/animations/Watermelon.json')),
+  makeExample('Motion Corpse', () => require('../../assets/animations/MotionCorpse-Jrcanest.json')),
 ].reduce<{ [key: string]: { name: string; getJson: () => any } }>(
   (acc, e) => ({
     ...acc,
@@ -52,13 +37,9 @@ const EXAMPLES = [
 
 const ExamplePicker: React.FunctionComponent<{
   value: string;
-  onChange: (value: string) => void;
+  onChange: (value: any, index?: number) => void;
 }> = ({ value, onChange }) => (
-  <Picker
-    selectedValue={value}
-    onValueChange={onChange}
-    style={styles.examplePicker}
-  >
+  <Picker selectedValue={value} onValueChange={onChange} style={styles.examplePicker}>
     {Object.values(EXAMPLES).map(({ name }) => (
       <Picker.Item key={name} label={name} value={name} />
     ))}
@@ -72,14 +53,7 @@ const PlayerControls: React.FunctionComponent<{
   onConfigChange: (config: Config) => void;
   config: Config;
   progress: Animated.Value;
-}> = ({
-  onPlayPress,
-  onResetPress,
-  onProgressChange,
-  onConfigChange,
-  config,
-  progress,
-}) => (
+}> = ({ onPlayPress, onResetPress, onProgressChange, onConfigChange, config, progress }) => (
   <View style={{ paddingBottom: 20, paddingHorizontal: 10 }}>
     <View style={{ paddingBottom: 20 }}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
@@ -92,8 +66,7 @@ const PlayerControls: React.FunctionComponent<{
         flexDirection: 'row',
         justifyContent: 'space-between',
         paddingBottom: 10,
-      }}
-    >
+      }}>
       <Text>Use Imperative API:</Text>
       <View />
       <Switch
@@ -101,18 +74,20 @@ const PlayerControls: React.FunctionComponent<{
         value={config.imperative}
       />
     </View>
-    <View style={{ paddingBottom: 10 }}>
-      <View>
-        <Text>Progress:</Text>
+    {!config.imperative && (
+      <View style={{ paddingBottom: 10 }}>
+        <View>
+          <Text>Progress:</Text>
+        </View>
+        <Slider
+          minimumValue={0}
+          maximumValue={1}
+          // @ts-ignore
+          value={progress.__getValue()}
+          onValueChange={onProgressChange}
+        />
       </View>
-      <Slider
-        minimumValue={0}
-        maximumValue={1}
-        // @ts-ignore
-        value={progress.__getValue()}
-        onValueChange={onProgressChange}
-      />
-    </View>
+    )}
     <View>
       <View>
         <Text>Duration: ({Math.round(config.duration)}ms)</Text>
@@ -138,6 +113,8 @@ interface State {
   config: Config;
 }
 
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
 export default class LottieScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: '<Lottie />',
@@ -161,12 +138,13 @@ export default class LottieScreen extends React.Component<{}, State> {
       this.state.progress.setValue(0);
       Animated.timing(this.state.progress, {
         toValue: 1,
+        useNativeDriver: false,
         duration: this.state.config.duration,
       }).start(({ finished }) => {
         if (finished) this.forceUpdate();
       });
     }
-  }
+  };
 
   onResetPress = () => {
     if (this.state.config.imperative && this.anim) {
@@ -175,6 +153,7 @@ export default class LottieScreen extends React.Component<{}, State> {
       this.state.progress.setValue(1);
       Animated.timing(this.state.progress, {
         toValue: 0,
+        useNativeDriver: false,
         duration: this.state.config.duration,
       }).start(({ finished }) => {
         if (finished) {
@@ -182,11 +161,11 @@ export default class LottieScreen extends React.Component<{}, State> {
         }
       });
     }
-  }
+  };
 
   setAnim = (anim: any) => {
     this.anim = anim;
-  }
+  };
 
   render() {
     return (
@@ -201,9 +180,7 @@ export default class LottieScreen extends React.Component<{}, State> {
               ref={this.setAnim}
               style={styles.animation}
               source={EXAMPLES[this.state.exampleName].getJson()}
-              progress={
-                this.state.config.imperative ? undefined : this.state.progress
-              }
+              progress={this.state.config.imperative ? undefined : this.state.progress}
             />
           </View>
         </View>

@@ -10,10 +10,9 @@ export default {
         return !!navigator.share;
     },
     async shareAsync(url, options = {}) {
-        const sharingNavigator = navigator;
         // NOTE: `navigator.share` is only available via HTTPS
-        if (sharingNavigator.share) {
-            return await sharingNavigator.share({ ...options, url });
+        if (navigator.share) {
+            await navigator.share({ ...options, url });
         }
         else {
             throw new UnavailabilityError('navigator', 'share');

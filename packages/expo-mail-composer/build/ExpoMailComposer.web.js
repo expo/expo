@@ -1,4 +1,5 @@
 import qs from 'query-string';
+import { MailComposerStatus } from './MailComposer.types';
 function removeNullishValues(obj) {
     for (const propName in obj) {
         if (obj[propName] == null) {
@@ -30,7 +31,7 @@ export default {
         const to = checkValue(options.recipients) || '';
         const mailto = `mailto:${to}${queryComponent}`;
         window.open(mailto);
-        return { status: 'undetermined' };
+        return { status: MailComposerStatus.UNDETERMINED };
     },
     async isAvailableAsync() {
         return true;

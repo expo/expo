@@ -1,7 +1,15 @@
-import React from 'react';
+import FontAwesome from '@expo/vector-icons/build/FontAwesome';
 import * as MediaLibrary from 'expo-media-library';
-import { View, Image, StyleSheet, Text, TouchableOpacity, StyleProp, ViewStyle } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import React from 'react';
+import {
+  Image,
+  StyleProp,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from 'react-native';
 
 export default class MediaLibraryCell extends React.Component<{
   asset: MediaLibrary.Asset;
@@ -11,7 +19,7 @@ export default class MediaLibraryCell extends React.Component<{
   onPress = () => {
     const { asset } = this.props;
     this.props.onPress(asset);
-  }
+  };
 
   getAssetData(asset: MediaLibrary.Asset) {
     switch (asset.mediaType) {
@@ -51,7 +59,7 @@ export default class MediaLibraryCell extends React.Component<{
         {data && data.preview}
         {data && (
           <View style={styles.cellFooter}>
-            <FontAwesome name={data.icon} size={12} color="white" />
+            <FontAwesome name={data.icon as any} size={12} color="white" />
             <Text style={styles.description}>{data.description}</Text>
           </View>
         )}

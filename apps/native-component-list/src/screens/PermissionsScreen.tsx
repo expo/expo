@@ -1,13 +1,13 @@
+import * as Permissions from 'expo-permissions';
 import React from 'react';
 import {
   ScrollView,
-  View,
   StyleSheet,
   Text,
   TouchableOpacity,
   TouchableOpacityProps,
+  View,
 } from 'react-native';
-import * as Permissions from 'expo-permissions';
 
 interface ButtonProps extends TouchableOpacityProps {
   title: string;
@@ -41,6 +41,8 @@ interface State {
   permissionsFunction: 'askAsync' | 'getAsync';
 }
 
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
 export default class PermissionsScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: 'Permissions',
@@ -53,27 +55,27 @@ export default class PermissionsScreen extends React.Component<{}, State> {
   invokePermissionsFunction = async (...types: Permissions.PermissionType[]) => {
     const result = await Permissions[this.state.permissionsFunction](...types);
     alert(JSON.stringify(result, null, 2));
-  }
+  };
 
   renderSinglePermissionsButtons() {
-    const permissions: Array<[string, Permissions.PermissionType]> = [
+    const permissions: [string, Permissions.PermissionType][] = [
       ['CAMERA', Permissions.CAMERA],
+      ['MOTION', Permissions.MOTION],
       ['AUDIO_RECORDING', Permissions.AUDIO_RECORDING],
       ['LOCATION', Permissions.LOCATION],
       ['USER_FACING_NOTIFICATIONS', Permissions.USER_FACING_NOTIFICATIONS],
       ['NOTIFICATIONS', Permissions.NOTIFICATIONS],
       ['CONTACTS', Permissions.CONTACTS],
       ['SYSTEM_BRIGHTNESS', Permissions.SYSTEM_BRIGHTNESS],
-      ['CAMERA_ROLL', Permissions.CAMERA_ROLL],
+      ['MEDIA_LIBRARY_WRITE_ONLY', Permissions.MEDIA_LIBRARY_WRITE_ONLY],
+      ['MEDIA_LIBRARY', Permissions.MEDIA_LIBRARY],
       ['CALENDAR', Permissions.CALENDAR],
       ['REMINDERS', Permissions.REMINDERS],
     ];
     return permissions.map(([permissionName, permissionType]) => (
       <View key={permissionType} style={styles.button}>
         <Button
-          onPress={() =>
-            this.invokePermissionsFunction(permissionType)
-          }
+          onPress={() => this.invokePermissionsFunction(permissionType)}
           title={`Permissions.${permissionName}`}
         />
       </View>
@@ -82,10 +84,7 @@ export default class PermissionsScreen extends React.Component<{}, State> {
 
   render() {
     return (
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}
-      >
+      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
         <View>
           <Text style={styles.switchText}>
             Function to be invoked Permissions.
@@ -96,18 +95,14 @@ export default class PermissionsScreen extends React.Component<{}, State> {
               <Button
                 disabled={this.state.permissionsFunction === 'askAsync'}
                 title="askAsync"
-                onPress={() =>
-                  this.setState({ permissionsFunction: 'askAsync' })
-                }
+                onPress={() => this.setState({ permissionsFunction: 'askAsync' })}
               />
             </View>
             <View style={styles.switchButton}>
               <Button
                 disabled={this.state.permissionsFunction === 'getAsync'}
                 title="getAsync"
-                onPress={() =>
-                  this.setState({ permissionsFunction: 'getAsync' })
-                }
+                onPress={() => this.setState({ permissionsFunction: 'getAsync' })}
               />
             </View>
           </View>
@@ -128,7 +123,7 @@ export default class PermissionsScreen extends React.Component<{}, State> {
                     Permissions.NOTIFICATIONS,
                     Permissions.CONTACTS,
                     Permissions.SYSTEM_BRIGHTNESS,
-                    Permissions.CAMERA_ROLL,
+                    Permissions.MEDIA_LIBRARY,
                     Permissions.CALENDAR,
                     Permissions.REMINDERS,
                   ] as Permissions.PermissionType[])
@@ -137,7 +132,7 @@ export default class PermissionsScreen extends React.Component<{}, State> {
               title={
                 'Ask for Permissions: ' +
                 'CAMERA, AUDIO_RECORDING, LOCATION, USER_FACING_NOTIFICATIONS, ' +
-                'NOTIFICATIONS, CONTACTS, SYSTEM_BRIGHTNESS, CAMERA_ROLL, CALENDAR, REMINDERS'
+                'NOTIFICATIONS, CONTACTS, SYSTEM_BRIGHTNESS, MEDIA_LIBRARY, CALENDAR, REMINDERS'
               }
             />
           </View>

@@ -1,6 +1,1 @@
-declare const process: {
-  env: {
-    NODE_ENV: string;
-  };
-  [key: string]: any;
-};
+declare const process: Record<string, any>;

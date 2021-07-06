@@ -4,7 +4,7 @@
 #import <EXFirebaseCore/UMFirebaseCoreInterface.h>
 #import <EXFirebaseAnalytics/EXFirebaseAnalytics.h>
 #import <UIKit/UIKit.h>
-#import <Firebase/Firebase.h>
+#import <FirebaseAnalytics/FirebaseAnalytics.h>
 
 @interface NSObject (Private)
 - (NSString*)_methodDescription;
@@ -27,7 +27,7 @@ UM_EXPORT_MODULE(ExpoFirebaseAnalytics);
 }
 
 - (void)reject:(UMPromiseRejectBlock)reject withException:(NSException *)exception {
-  NSError *error = [NSError errorWithDomain:@"ERR_FIREBASE_ANALYTICS" code:4815162342 userInfo:@{
+  NSError *error = [NSError errorWithDomain:@"ERR_FIREBASE_ANALYTICS" code:0 userInfo:@{
         @"message": exception.reason,
         @"code": exception.name,
     }];

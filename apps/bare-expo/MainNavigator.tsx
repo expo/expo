@@ -1,29 +1,29 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { createBrowserApp } from '@react-navigation/web';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import * as Linking from 'expo-linking';
 import React from 'react';
 import { Platform } from 'react-native';
-import {
-  createAppContainer,
-  createSwitchNavigator,
-  NavigationRouteConfigMap,
-} from 'react-navigation';
-import { createBottomTabNavigator } from 'react-navigation-tabs';
 import TestSuite from 'test-suite/AppNavigator';
 
-import Redirect from './Redirect';
 import Colors from './src/constants/Colors';
 
+type NavigationRouteConfigMap = React.ReactElement;
+
 type RoutesConfig = {
-  TestSuite: NavigationRouteConfigMap;
-  ExpoApis?: NavigationRouteConfigMap;
-  ExpoComponents?: NavigationRouteConfigMap;
+  'test-suite': NavigationRouteConfigMap;
+  apis?: NavigationRouteConfigMap;
+  components?: NavigationRouteConfigMap;
 };
 
 type NativeComponentListExportsType = null | {
-  [routeName: string]: NavigationRouteConfigMap;
+  [routeName: string]: {
+    linking: any;
+    navigator: NavigationRouteConfigMap;
+  };
 };
 
-function optionalRequire(requirer: () => { default: React.ComponentType }) {
+export function optionalRequire(requirer: () => { default: React.ComponentType }) {
   try {
     return requirer().default;
   } catch (e) {
@@ -32,16 +32,7 @@ function optionalRequire(requirer: () => { default: React.ComponentType }) {
 }
 
 const routes: RoutesConfig = {
-  TestSuite: {
-    screen: TestSuite,
-    path: 'test-suite',
-    navigationOptions: {
-      tabBarIcon: ({ focused }: { focused: boolean }) => {
-        const color = focused ? Colors.activeTintColor : Colors.inactiveTintColor;
-        return <MaterialCommunityIcons name="format-list-checks" size={27} color={color} />;
-      },
-    },
-  },
+  'test-suite': TestSuite,
 };
 
 // We'd like to get rid of `native-component-list` being a part of the final bundle.
@@ -50,37 +41,75 @@ const routes: RoutesConfig = {
 const NativeComponentList: NativeComponentListExportsType = optionalRequire(() =>
   require('native-component-list/src/navigation/MainNavigators')
 ) as any;
+const Redirect = optionalRequire(() =>
+  require('native-component-list/src/screens/RedirectScreen')
+) as any;
+const Search = optionalRequire(() =>
+  require('native-component-list/src/screens/SearchScreen')
+) as any;
 
+let nclLinking: Record<string, any> = {};
 if (NativeComponentList) {
-  routes.ExpoApis = NativeComponentList.ExpoApis;
-  routes.ExpoComponents = NativeComponentList.ExpoComponents;
+  routes.apis = NativeComponentList.apis.navigator;
+  routes.components = NativeComponentList.components.navigator;
+  nclLinking.apis = NativeComponentList.apis.linking;
+  nclLinking.components = NativeComponentList.components.linking;
 }
 
-const MainNavigator = createBottomTabNavigator(routes, {
-  initialRouteName: 'TestSuite',
-  tabBarOptions: {
-    labelStyle: {
-      fontSize: 12,
-    },
-    activeTintColor: Colors.activeTintColor,
-    inactiveTintColor: Colors.inactiveTintColor,
-    safeAreaInset: {
-      top: 5,
-      right: 'always',
-      bottom: 'always',
-      left: 'always',
+const Tab = createBottomTabNavigator();
+const Switch = createStackNavigator();
+
+const linking = {
+  prefixes: [Platform.select({ web: Linking.createURL('/', { scheme: 'bareexpo' }), default: 'bareexpo://' })],
+  config: {
+    screens: {
+      main: {
+        initialRouteName: 'test-suite',
+        screens: {
+          'test-suite': {
+            path: 'test-suite',
+            screens: {
+              select: '',
+              run: '/run',
+            },
+          },
+
+          ...nclLinking,
+        },
+      },
     },
   },
-});
+};
 
-const SwitchRedirectNavigator = createSwitchNavigator({
-  main: MainNavigator,
-  Redirect,
-});
+function TabNavigator() {
+  return (
+    <Tab.Navigator
+      tabBarOptions={{
+        activeTintColor: Colors.activeTintColor,
+        inactiveTintColor: Colors.inactiveTintColor,
+        safeAreaInsets: {
+          top: 5,
+        },
+      }}
+      initialRouteName="test-suite">
+      {Object.keys(routes).map(name => (
+        <Tab.Screen
+          name={name}
+          key={name}
+          component={routes[name]}
+          options={routes[name].navigationOptions}
+        />
+      ))}
+    </Tab.Navigator>
+  );
+}
 
-const createApp = Platform.select({
-  web: input => createBrowserApp(input),
-  default: input => createAppContainer(input),
-});
-
-export default createApp(SwitchRedirectNavigator);
+export default () => (
+  <NavigationContainer linking={linking}>
+    <Switch.Navigator headerMode="none" initialRouteName="main">
+      {Redirect && <Switch.Screen name="redirect" component={Redirect} />}
+      {Search && <Switch.Screen name="search" component={Search} />}
+      <Switch.Screen name="main" component={TabNavigator} />
+    </Switch.Navigator>
+  </NavigationContainer>
+);

@@ -1,58 +1,65 @@
-import React from 'react';
+import * as React from 'react';
+
+import ExpoAPIIcon from '../components/ExpoAPIIcon';
 import ComponentListScreen from './ComponentListScreen';
-import { Layout } from '../constants';
-import { Screens } from '../navigation/ExpoComponents';
 
-export default class ExpoComponentsScreen extends React.Component {
-  static path = '';
+const screens = [
+  'ActivityIndicator',
+  'AdMob',
+  'BarCodeScanner',
+  'BlurView',
+  'Button',
+  'Camera',
+  'Checkbox',
+  'DateTimePicker',
+  'DrawerLayoutAndroid',
+  'FacebookAds',
+  'GL',
+  'GestureHandlerList',
+  'GestureHandlerPinch',
+  'GestureHandlerSwipeable',
+  'Gif',
+  'HTML',
+  'Image',
+  'LinearGradient',
+  'Lottie',
+  'Maps',
+  'MaskedView',
+  'Modal',
+  'Picker',
+  'Pressable',
+  'ProgressBarAndroid',
+  'ProgressViewIOS',
+  'QRCode',
+  'Reanimated',
+  'SVG',
+  'Screens',
+  'ScrollView',
+  'SegmentedControl',
+  'SharedElement',
+  'Slider',
+  'Switch',
+  'Text',
+  'TextInput',
+  'TouchableBounce',
+  'Touchables',
+  'Video',
+  'ViewPager',
+  'WebView',
+];
 
-  static navigationOptions = {
-    title: Layout.isSmallDevice ? 'Expo SDK Components' : 'Components in Expo SDK',
-  };
+export const ScreenItems = screens.map(name => ({
+  name,
+  route: `/components/${name.toLowerCase()}`,
+  // isAvailable: !!Screens[name],
+  isAvailable: true,
+}));
 
-  render() {
-    // @ts-ignore
-    return <ComponentListScreen apis={this._getApis()} tabName="ExpoComponents" />;
-  }
+export default function ExpoComponentsScreen() {
+  const renderItemRight = React.useCallback(
+    ({ name }) => <ExpoAPIIcon name={name} style={{ marginRight: 10, marginLeft: 6 }} />,
+    []
+  );
 
-  _getApis = () => {
-    const screens = [
-      'AdMob',
-      'BarCodeScanner',
-      'BlurView',
-      'Camera',
-      'DateTimePicker',
-      'FacebookAds',
-      'GestureHandlerList',
-      'GestureHandlerPinch',
-      'GestureHandlerSwipeable',
-      'Gif',
-      'GL',
-      'HTML',
-      'Image',
-      'LinearGradient',
-      'Lottie',
-      'Maps',
-      'MaskedView',
-      'ReanimatedImagePreview',
-      'ReanimatedProgress',
-      'Screens',
-      'SharedElement',
-      'SVG',
-      'ViewPager',
-      'Video',
-      'WebView',
-    ];
-    return screens
-      .map(name => ({ name, isAvailable: !!Screens[name] }))
-      .sort((a, b) => {
-        if (a.isAvailable !== b.isAvailable) {
-          if (a.isAvailable) {
-            return -1;
-          }
-          return 1;
-        }
-        return 0;
-      });
-  };
+  return <ComponentListScreen renderItemRight={renderItemRight} apis={ScreenItems} />;
 }

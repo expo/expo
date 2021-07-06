@@ -1,26 +1,13 @@
-import PropTypes from 'prop-types';
 import * as React from 'react';
-import { View, ViewPropTypes } from 'react-native';
+import { View } from 'react-native';
 
-import { BlurTint, BlurProps } from './BlurView.types';
+import { BlurProps } from './BlurView.types';
 import getBackgroundColor from './getBackgroundColor';
 
-export default class BlurView extends React.Component<BlurProps> {
-  static propTypes = {
-    tint: PropTypes.oneOf(['light', 'default', 'dark']),
-    ...ViewPropTypes,
-  };
-
-  static defaultProps = {
-    tint: 'default' as BlurTint,
-    intensity: 50,
-  };
-
+class BlurView extends React.Component<BlurProps> {
   render() {
-    const { tint, intensity, style = {}, ...props } = this.props;
-
+    const { tint = 'default', intensity = 50, style, ...props } = this.props;
     const blurStyle = getBlurStyle({ tint, intensity });
-
     return <View {...props} style={[style, blurStyle]} />;
   }
 }
@@ -35,14 +22,16 @@ function isBlurSupported(): boolean {
   );
 }
 
-function getBlurStyle({ intensity, tint }): { [key: string]: string } {
-  const style: any = {
+function getBlurStyle({ intensity, tint }): Record<string, string> {
+  const style: Record<string, string> = {
     backgroundColor: getBackgroundColor(intensity, tint),
   };
 
   if (isBlurSupported()) {
-    style.backdropFilter = `blur(${intensity * 0.8}px)`;
+    style.backdropFilter = `saturate(180%) blur(${intensity * 0.2}px)`;
   }
 
   return style;
 }
+
+export default BlurView;

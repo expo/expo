@@ -9,11 +9,11 @@ A React component that renders a preview for the device's either front or back c
 
 # Installation in managed Expo projects
 
-For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](#api-documentation). If you follow the link and there is no documentation available then this library is not yet usable within managed projects &mdash; it is likely to be included in an upcoming Expo SDK release.
+For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/camera/).
 
 # Installation in bare React Native projects
 
-For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
+For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/expo/expo/tree/master/packages/react-native-unimodules) before continuing.
 
 ### Add the package to your npm dependencies
 
@@ -23,30 +23,37 @@ expo install expo-camera
 
 ### Configure for iOS
 
-Add `NSCameraUsageDescription` key to your `Info.plist`:
+Add `NSCameraUsageDescription` and `NSMicrophoneUsageDescription` keys to your `Info.plist`:
 
 ```xml
 <key>NSCameraUsageDescription</key>
 <string>Allow $(PRODUCT_NAME) to use the camera</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to use the microphone</string>
 ```
 
-Run `pod install` in the ios directory after installing the npm package.
+Run `npx pod-install` after installing the npm package.
 
 ### Configure for Android
 
-Add `android.permission.CAMERA` permission to your manifest (`android/app/src/main/AndroidManifest.xml`):
+This package automatically adds the `CAMERA` permission to your app. If you want to record videos with audio, you have to include the `RECORD_AUDIO`.
 
 ```xml
+<!-- Added permissions -->
 <uses-permission android:name="android.permission.CAMERA" />
+
+<!-- Optional permissions -->
+<uses-permission android:name="android.permission.RECORD_AUDIO" />
 ```
 
 Adjust the `android/build.gradle` to add a new `maven` block after all other repositories as described below:
+
 ```gradle
 allprojects {
     repositories {
-    
+
         // * Your other repositories here *
-        
+
         // * Add a new maven block after other repositories / blocks *
         maven {
             // expo-camera bundles a custom com.google.android:cameraview
@@ -55,6 +62,8 @@ allprojects {
     }
 }
 ```
+
+The sourcecode for `cameraview` can be found at [`expo/cameraview`](https://github.com/expo/cameraview).
 
 # Contributing
 

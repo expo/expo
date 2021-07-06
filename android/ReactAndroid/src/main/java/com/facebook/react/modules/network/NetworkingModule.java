@@ -1,8 +1,8 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 package com.facebook.react.modules.network;
 
@@ -11,10 +11,10 @@ import android.os.Bundle;
 import android.util.Base64;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
+import com.facebook.fbreact.specs.NativeNetworkingAndroidSpec;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -50,7 +50,7 @@ import okio.Okio;
 
 /** Implements the XMLHttpRequest JavaScript interface. */
 @ReactModule(name = NetworkingModule.NAME)
-public class NetworkingModule extends ReactContextBaseJavaModule {
+public class NetworkingModule extends NativeNetworkingAndroidSpec {
 
     /**
    * Allows to implement a custom fetching process for specific URIs. It is the handler's job to
@@ -237,19 +237,24 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
         mResponseHandlers.remove(handler);
     }
 
-    @ReactMethod
-    public void sendRequest(String method, String url, final int requestId, ReadableArray headers, ReadableMap data, final String responseType, final boolean useIncrementalUpdates, int timeout, boolean withCredentials) {
+    @Override
+    public void sendRequest(String method, String url, double requestIdAsDouble, ReadableArray headers, ReadableMap data, String responseType, boolean useIncrementalUpdates, double timeoutAsDouble, boolean withCredentials) {
+        int requestId = (int) requestIdAsDouble;
+        int timeout = (int) timeoutAsDouble;
         try {
             sendRequestInternal(method, url, requestId, headers, data, responseType, useIncrementalUpdates, timeout, withCredentials);
         } catch (Throwable th) {
             FLog.e(TAG, "Failed to send url request: " + url, th);
-            ResponseUtil.onRequestError(getEventEmitter(), requestId, th.getMessage(), th);
+            final RCTDeviceEventEmitter eventEmitter = getEventEmitter("sendRequest error");
+            if (eventEmitter != null) {
+                ResponseUtil.onRequestError(eventEmitter, requestId, th.getMessage(), th);
+            }
         }
     }
 
     /** @param timeout value of 0 results in no timeout */
     public void sendRequestInternal(String method, String url, final int requestId, ReadableArray headers, ReadableMap data, final String responseType, final boolean useIncrementalUpdates, int timeout, boolean withCredentials) {
-        final RCTDeviceEventEmitter eventEmitter = getEventEmitter();
+        final RCTDeviceEventEmitter eventEmitter = getEventEmitter("sendRequestInternal");
         try {
             Uri uri = Uri.parse(url);
             // Check if a handler is registered
@@ -553,8 +558,9 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
         return Arguments.fromBundle(responseHeaders);
     }
 
-    @ReactMethod
-    public void abortRequest(final int requestId) {
+    @Override
+    public void abortRequest(double requestIdAsDouble) {
+        int requestId = (int) requestIdAsDouble;
         cancelRequest(requestId);
         removeRequest(requestId);
     }
@@ -576,9 +582,17 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
         mCookieHandler.clearCookies(callback);
     }
 
+    @Override
+    public void addListener(String eventName) {
+    }
+
+    @Override
+    public void removeListeners(double count) {
+    }
+
     @Nullable
     private MultipartBody.Builder constructMultipartBody(ReadableArray body, String contentType, int requestId) {
-        RCTDeviceEventEmitter eventEmitter = getEventEmitter();
+        RCTDeviceEventEmitter eventEmitter = getEventEmitter("constructMultipartBody");
         MultipartBody.Builder multipartBuilder = new MultipartBody.Builder();
         multipartBuilder.setType(MediaType.parse(contentType));
         for (int i = 0, size = body.size(); i < size; i++) {
@@ -652,7 +666,11 @@ public class NetworkingModule extends ReactContextBaseJavaModule {
         return headersBuilder.build();
     }
 
-    private RCTDeviceEventEmitter getEventEmitter() {
-        return getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class);
+    private RCTDeviceEventEmitter getEventEmitter(String reason) {
+        ReactApplicationContext reactApplicationContext = getReactApplicationContextIfActiveOrWarn();
+        if (reactApplicationContext != null) {
+            return getReactApplicationContext().getJSModule(RCTDeviceEventEmitter.class);
+        }
+        return null;
     }
 }

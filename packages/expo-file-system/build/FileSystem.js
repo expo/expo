@@ -1,14 +1,14 @@
 import { EventEmitter, UnavailabilityError } from '@unimodules/core';
 import { Platform } from 'react-native';
-import uuidv4 from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 import ExponentFileSystem from './ExponentFileSystem';
-import { EncodingType, } from './FileSystem.types';
+import { EncodingType, FileSystemSessionType, FileSystemUploadType, } from './FileSystem.types';
 if (!ExponentFileSystem) {
     console.warn("No native ExponentFileSystem module found, are you sure the expo-file-system's module is linked properly?");
 }
 // Prevent webpack from pruning this.
 const _unused = new EventEmitter(ExponentFileSystem); // eslint-disable-line
-export { EncodingType, };
+export { EncodingType, FileSystemSessionType, FileSystemUploadType, };
 function normalizeEndingSlash(p) {
     if (p != null) {
         return p.replace(/\/*$/, '') + '/';
@@ -102,7 +102,21 @@ export async function downloadAsync(uri, fileUri, options = {}) {
     if (!ExponentFileSystem.downloadAsync) {
         throw new UnavailabilityError('expo-file-system', 'downloadAsync');
     }
-    return await ExponentFileSystem.downloadAsync(uri, fileUri, options);
+    return await ExponentFileSystem.downloadAsync(uri, fileUri, {
+        sessionType: FileSystemSessionType.BACKGROUND,
+        ...options,
+    });
+}
+export async function uploadAsync(url, fileUri, options = {}) {
+    if (!ExponentFileSystem.uploadAsync) {
+        throw new UnavailabilityError('expo-file-system', 'uploadAsync');
+    }
+    return await ExponentFileSystem.uploadAsync(url, fileUri, {
+        sessionType: FileSystemSessionType.BACKGROUND,
+        uploadType: FileSystemUploadType.BINARY_CONTENT,
+        ...options,
+        httpMethod: (options.httpMethod || 'POST').toUpperCase(),
+    });
 }
 export function createDownloadResumable(uri, fileUri, options, callback, resumeData) {
     return new DownloadResumable(uri, fileUri, options, callback, resumeData);
@@ -158,7 +172,7 @@ export class DownloadResumable {
         if (this._subscription) {
             return;
         }
-        this._subscription = this._emitter.addListener('Exponent.downloadProgress', (event) => {
+        this._subscription = this._emitter.addListener('expo-file-system.downloadProgress', (event) => {
             if (event.uuid === this._uuid) {
                 const callback = this._callback;
                 if (callback) {
@@ -175,4 +189,52 @@ export class DownloadResumable {
         this._subscription = null;
     }
 }
+const baseReadAsStringAsync = readAsStringAsync;
+const baseWriteAsStringAsync = writeAsStringAsync;
+const baseDeleteAsync = deleteAsync;
+const baseMoveAsync = moveAsync;
+const baseCopyAsync = copyAsync;
+/**
+ * Android only
+ */
+export var StorageAccessFramework;
+(function (StorageAccessFramework) {
+    function getUriForDirectoryInRoot(folderName) {
+        return `content://com.android.externalstorage.documents/tree/primary:${folderName}/document/primary:${folderName}`;
+    }
+    StorageAccessFramework.getUriForDirectoryInRoot = getUriForDirectoryInRoot;
+    async function requestDirectoryPermissionsAsync(initialFileUrl = null) {
+        if (!ExponentFileSystem.requestDirectoryPermissionsAsync) {
+            throw new UnavailabilityError('expo-file-system', 'StorageAccessFramework.requestDirectoryPermissionsAsync');
+        }
+        return await ExponentFileSystem.requestDirectoryPermissionsAsync(initialFileUrl);
+    }
+    StorageAccessFramework.requestDirectoryPermissionsAsync = requestDirectoryPermissionsAsync;
+    async function readDirectoryAsync(dirUri) {
+        if (!ExponentFileSystem.readSAFDirectoryAsync) {
+            throw new UnavailabilityError('expo-file-system', 'StorageAccessFramework.readDirectoryAsync');
+        }
+        return await ExponentFileSystem.readSAFDirectoryAsync(dirUri, {});
+    }
+    StorageAccessFramework.readDirectoryAsync = readDirectoryAsync;
+    async function makeDirectoryAsync(parentUri, dirName) {
+        if (!ExponentFileSystem.makeSAFDirectoryAsync) {
+            throw new UnavailabilityError('expo-file-system', 'StorageAccessFramework.makeDirectoryAsync');
+        }
+        return await ExponentFileSystem.makeSAFDirectoryAsync(parentUri, dirName);
+    }
+    StorageAccessFramework.makeDirectoryAsync = makeDirectoryAsync;
+    async function createFileAsync(parentUri, fileName, mimeType) {
+        if (!ExponentFileSystem.createSAFFileAsync) {
+            throw new UnavailabilityError('expo-file-system', 'StorageAccessFramework.createFileAsync');
+        }
+        return await ExponentFileSystem.createSAFFileAsync(parentUri, fileName, mimeType);
+    }
+    StorageAccessFramework.createFileAsync = createFileAsync;
+    StorageAccessFramework.writeAsStringAsync = baseWriteAsStringAsync;
+    StorageAccessFramework.readAsStringAsync = baseReadAsStringAsync;
+    StorageAccessFramework.deleteAsync = baseDeleteAsync;
+    StorageAccessFramework.moveAsync = baseMoveAsync;
+    StorageAccessFramework.copyAsync = baseCopyAsync;
+})(StorageAccessFramework || (StorageAccessFramework = {}));
 //# sourceMappingURL=FileSystem.js.map

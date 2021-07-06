@@ -1,7 +1,7 @@
-import React from 'react';
-import { Image, StyleSheet, View, TouchableOpacity, Text } from 'react-native';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
 import * as FaceDetector from 'expo-face-detector';
-import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const pictureSize = 150;
 
@@ -30,10 +30,11 @@ export default class Photo extends React.Component<
   }
 
   toggleSelection = () => {
-    this.setState({ selected: !this.state.selected }, () =>
-      this.props.onSelectionToggle(this.props.uri, this.state.selected)
+    this.setState(
+      state => ({ selected: !state.selected }),
+      () => this.props.onSelectionToggle(this.props.uri, this.state.selected)
     );
-  }
+  };
 
   detectFace = () =>
     FaceDetector.detectFacesAsync(this.props.uri, {
@@ -41,7 +42,7 @@ export default class Photo extends React.Component<
       runClassifications: FaceDetector.Constants.Classifications.all,
     })
       .then(this.facesDetected)
-      .catch(this.handleFaceDetectionError)
+      .catch(this.handleFaceDetectionError);
 
   facesDetected = ({
     faces,
@@ -54,7 +55,7 @@ export default class Photo extends React.Component<
       faces,
       image,
     });
-  }
+  };
 
   getImageDimensions = ({ width, height }: FaceDetector.Image) => {
     if (width > height) {
@@ -82,7 +83,7 @@ export default class Photo extends React.Component<
         offsetY: 0,
       };
     }
-  }
+  };
 
   // tslint:disable-next-line no-console
   handleFaceDetectionError = (error: any) => console.warn(error);
@@ -111,14 +112,13 @@ export default class Photo extends React.Component<
               { rotateY: `${(face.yawAngle || 0).toFixed(0)}deg` },
             ],
           },
-        ]}
-      >
+        ]}>
         {face.smilingProbability && (
           <Text style={styles.faceText}>😁 {(face.smilingProbability * 100).toFixed(0)}%</Text>
         )}
       </View>
     );
-  }
+  };
 
   render() {
     const { uri } = this.props;
@@ -127,8 +127,7 @@ export default class Photo extends React.Component<
         style={styles.pictureWrapper}
         onLongPress={this.detectFace}
         onPress={this.toggleSelection}
-        activeOpacity={1}
-      >
+        activeOpacity={1}>
         <Image style={styles.picture} source={{ uri }} />
         {this.state.selected && <Ionicons name="md-checkmark-circle" size={30} color="#4630EB" />}
         <View style={styles.facesContainer}>{this.renderFaces()}</View>

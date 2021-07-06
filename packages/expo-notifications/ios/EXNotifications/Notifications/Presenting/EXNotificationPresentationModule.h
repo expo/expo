@@ -5,4 +5,9 @@
 #import <EXNotifications/EXNotificationsDelegate.h>
 
 @interface EXNotificationPresentationModule : UMExportedModule <UMModuleRegistryConsumer, EXNotificationsDelegate>
+
+- (NSArray * _Nonnull)serializeNotifications:(NSArray<UNNotification *> * _Nonnull)notifications;
+
+- (void)dismissNotificationWithIdentifier:(NSString *)identifier resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject;
+
 @end

@@ -9,7 +9,7 @@
 
 #import "AIRGoogleMapMarker.h"
 #import <GoogleMaps/GoogleMaps.h>
-#import <React/RCTImageLoader.h>
+#import <React/RCTImageLoaderProtocol.h>
 #import <React/RCTUtils.h>
 #import "AIRGMSMarker.h"
 #import "AIRGoogleMapCallout.h"
@@ -117,9 +117,9 @@ CGRect unionRect(CGRect a, CGRect b) {
 
 - (void)redraw {
   if (!_realMarker.iconView) return;
-  
+
   BOOL oldValue = _realMarker.tracksViewChanges;
-  
+
   if (oldValue == YES)
   {
     // Immediate refresh, like right now. Not waiting for next frame.
@@ -264,13 +264,13 @@ CGRect unionRect(CGRect a, CGRect b) {
   }
 
   if (!_iconImageView) {
-    // prevent glitch with marker (cf. https://github.com/react-native-community/react-native-maps/issues/738)
+    // prevent glitch with marker (cf. https://github.com/react-native-maps/react-native-maps/issues/738)
     UIImageView *empyImageView = [[UIImageView alloc] init];
     _iconImageView = empyImageView;
     [self iconViewInsertSubview:_iconImageView atIndex:0];
   }
 
-  _reloadImageCancellationBlock = [_bridge.imageLoader loadImageWithURLRequest:[RCTConvert NSURLRequest:_imageSrc]
+  _reloadImageCancellationBlock = [[_bridge moduleForName:@"ImageLoader"] loadImageWithURLRequest:[RCTConvert NSURLRequest:_imageSrc]
                                                                           size:self.bounds.size
                                                                          scale:RCTScreenScale()
                                                                        clipped:YES
@@ -327,7 +327,7 @@ CGRect unionRect(CGRect a, CGRect b) {
   }
 
   _reloadImageCancellationBlock =
-  [_bridge.imageLoader loadImageWithURLRequest:[RCTConvert NSURLRequest:_iconSrc]
+  [[_bridge moduleForName:@"ImageLoader"] loadImageWithURLRequest:[RCTConvert NSURLRequest:_iconSrc]
                                           size:self.bounds.size
                                          scale:RCTScreenScale()
                                        clipped:YES
@@ -340,7 +340,7 @@ CGRect unionRect(CGRect a, CGRect b) {
                                    NSLog(@"%@", error);
                                  }
                                  dispatch_async(dispatch_get_main_queue(), ^{
-                                   _realMarker.icon = image;
+                                   self->_realMarker.icon = image;
                                  });
                                }];
 }

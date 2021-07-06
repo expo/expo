@@ -11,12 +11,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import androidx.annotation.Nullable;
+import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.loader.EmbeddedLoader;
+import expo.modules.updates.manifest.BareManifest;
 import expo.modules.updates.manifest.Manifest;
-
-import static expo.modules.updates.loader.EmbeddedLoader.BUNDLE_FILENAME;
 
 public class NoDatabaseLauncher implements Launcher {
 
@@ -24,20 +24,30 @@ public class NoDatabaseLauncher implements Launcher {
 
   private static final String ERROR_LOG_FILENAME = "expo-error.log";
 
+  private String mBundleAssetName;
   private Map<AssetEntity, String> mLocalAssetFiles;
 
-  public NoDatabaseLauncher(Context context) {
-    this(context, null);
+  public NoDatabaseLauncher(Context context, UpdatesConfiguration configuration) {
+    this(context, configuration, null);
   }
 
-  public NoDatabaseLauncher(final Context context, final @Nullable Exception fatalException) {
-    Manifest embeddedManifest = EmbeddedLoader.readEmbeddedManifest(context);
-    mLocalAssetFiles = new HashMap<>();
-    for (AssetEntity asset : embeddedManifest.getAssetEntityList()) {
-      mLocalAssetFiles.put(
-        asset,
-        "asset:///" + asset.embeddedAssetFilename
-      );
+  public NoDatabaseLauncher(final Context context, UpdatesConfiguration configuration, final @Nullable Exception fatalException) {
+    Manifest embeddedManifest = EmbeddedLoader.readEmbeddedManifest(context, configuration);
+    if (embeddedManifest == null) {
+      throw new RuntimeException("Failed to launch with embedded update because the embedded manifest was null");
+    }
+    if (embeddedManifest instanceof BareManifest) {
+      mBundleAssetName = EmbeddedLoader.BARE_BUNDLE_FILENAME;
+      mLocalAssetFiles = null;
+    } else {
+      mBundleAssetName = EmbeddedLoader.BUNDLE_FILENAME;
+      mLocalAssetFiles = new HashMap<>();
+      for (AssetEntity asset : embeddedManifest.getAssetEntityList()) {
+        mLocalAssetFiles.put(
+          asset,
+          "asset:///" + asset.embeddedAssetFilename
+        );
+      }
     }
 
     if (fatalException != null) {
@@ -56,11 +66,15 @@ public class NoDatabaseLauncher implements Launcher {
   }
 
   public @Nullable String getBundleAssetName() {
-    return BUNDLE_FILENAME;
+    return mBundleAssetName;
   }
 
   public @Nullable Map<AssetEntity, String> getLocalAssetFiles() {
     return mLocalAssetFiles;
+  }
+
+  public boolean isUsingEmbeddedAssets() {
+    return mLocalAssetFiles == null;
   }
 
   private void writeErrorToLog(Context context, Exception fatalException) {

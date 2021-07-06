@@ -46,15 +46,20 @@ public class AirMapOverlayManager extends ViewGroupManager<AirMapOverlay> {
     view.setBounds(bounds);
   }
 
+  @ReactProp(name = "bearing")
+  public void setBearing(AirMapOverlay view, float bearing){
+    view.setBearing(bearing);
+  }
+
   @ReactProp(name = "zIndex", defaultFloat = 1.0f)
   public void setZIndex(AirMapOverlay view, float zIndex) {
     view.setZIndex(zIndex);
   }
 
-  // @ReactProp(name = "transparency", defaultFloat = 1.0f)
-  // public void setTransparency(AirMapOverlay view, float transparency) {
-  //   view.setTransparency(transparency);
-  // }
+  @ReactProp(name = "opacity", defaultFloat = 1.0f)
+  public void setOpacity(AirMapOverlay view, float opacity) {
+    view.setTransparency(1 - opacity);
+  }
 
   @ReactProp(name = "image")
   public void setImage(AirMapOverlay view, @Nullable String source) {

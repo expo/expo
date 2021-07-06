@@ -12,7 +12,7 @@ describe('selectAssetSource', () => {
   beforeEach(() => {
     _mockConstants({
       experienceUrl: 'https://example.com/app/expo-manifest.json',
-      manifest: {
+      __unsafeNoWarnManifest: {
         assetMapOverride: {
           d00dd00dd00dd00dd00dd00dd00dd00d: { name: 'overridden', type: 'mp4' },
         },
@@ -36,7 +36,7 @@ describe('selectAssetSource', () => {
 
   it(`returns a URI based on the bundle's URL in development`, () => {
     _mockConstants({
-      manifest: {
+      __unsafeNoWarnManifest: {
         developer: {},
         bundleUrl: 'https://exp.direct:19001/src/App.js',
       },
@@ -184,7 +184,7 @@ describe('resolveUri', () => {
 
 function _mockConstants(constants: { [key: string]: any }): void {
   jest.doMock('expo-constants', () => {
-    const Constants = require.requireActual('expo-constants');
+    const Constants = jest.requireActual('expo-constants');
     return {
       ...Constants,
       ...constants,

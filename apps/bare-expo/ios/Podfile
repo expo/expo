@@ -1,78 +1,48 @@
-require 'json'
-
 install! 'cocoapods',
-         :generate_multiple_pod_projects => true,
-         :incremental_installation => true
+         generate_multiple_pod_projects: true,
+         incremental_installation: true
 source 'https://cdn.cocoapods.org/'
-platform :ios, '10.0'
+platform :ios, '12.0'
 inhibit_all_warnings!
 
-# Get the package.json for the excluded modules
-package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
-
-# [Custom] Add target the root modules in the workspace
-modules_path = '../../../node_modules'
-
 # Import the auto-linking packages
-require_relative "#{modules_path}/react-native-unimodules/cocoapods.rb"
-require_relative "#{modules_path}/@react-native-community/cli-platform-ios/native_modules"
+require_relative '../node_modules/react-native/scripts/react_native_pods'
+require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+require_relative '../../../packages/@unimodules/react-native-adapter/scripts/autolinking'
 
-target 'BareExpo' do
-  # [Custom] Don't try to use the symlinked copy from the postinstall script it won't work as
-  # expected (you may get `'React/<File>.h' file not found` when building)
-  rnPrefix = '../../../react-native-lab/react-native'
+abstract_target 'BareExpoMain' do
+  use_expo_modules!
 
-  # React Native and its dependencies
-  pod 'FBLazyVector', :path => "#{rnPrefix}/Libraries/FBLazyVector"
-  pod 'FBReactNativeSpec', :path => "#{rnPrefix}/Libraries/FBReactNativeSpec"
-  pod 'RCTRequired', :path => "#{rnPrefix}/Libraries/RCTRequired"
-  pod 'RCTTypeSafety', :path => "#{rnPrefix}/Libraries/TypeSafety"
-  pod 'React', :path => "#{rnPrefix}/"
-  pod 'React-Core', :path => "#{rnPrefix}/"
-  pod 'React-CoreModules', :path => "#{rnPrefix}/React/CoreModules"
-  pod 'React-RCTActionSheet', :path => "#{rnPrefix}/Libraries/ActionSheetIOS"
-  pod 'React-RCTAnimation', :path => "#{rnPrefix}/Libraries/NativeAnimation"
-  pod 'React-RCTBlob', :path => "#{rnPrefix}/Libraries/Blob"
-  pod 'React-RCTImage', :path => "#{rnPrefix}/Libraries/Image"
-  pod 'React-RCTLinking', :path => "#{rnPrefix}/Libraries/LinkingIOS"
-  pod 'React-RCTNetwork', :path => "#{rnPrefix}/Libraries/Network"
-  pod 'React-RCTSettings', :path => "#{rnPrefix}/Libraries/Settings"
-  pod 'React-RCTText', :path => "#{rnPrefix}/Libraries/Text"
-  pod 'React-RCTVibration', :path => "#{rnPrefix}/Libraries/Vibration"
-  pod 'React-Core/RCTWebSocket', :path => "#{rnPrefix}/"
-  pod 'React-Core/DevSupport', :path => "#{rnPrefix}/"
-  pod 'React-cxxreact', :path => "#{rnPrefix}/ReactCommon/cxxreact"
-  pod 'React-jsi', :path => "#{rnPrefix}/ReactCommon/jsi"
-  pod 'React-jsiexecutor', :path => "#{rnPrefix}/ReactCommon/jsiexecutor"
-  pod 'React-jsinspector', :path => "#{rnPrefix}/ReactCommon/jsinspector"
-  pod 'ReactCommon/jscallinvoker', :path => "#{rnPrefix}/ReactCommon"
-  pod 'ReactCommon/turbomodule/core', :path => "#{rnPrefix}/ReactCommon"
-  pod 'Yoga', :path => "#{rnPrefix}/ReactCommon/yoga"
-  pod 'DoubleConversion', :podspec => "#{rnPrefix}/third-party-podspecs/DoubleConversion.podspec"
-  pod 'glog', :podspec => "#{rnPrefix}/third-party-podspecs/glog.podspec"
-  pod 'Folly', :podspec => "#{rnPrefix}/third-party-podspecs/Folly.podspec"
+  config = use_native_modules!
 
-  # Auto-linking
-  use_unimodules!(
-    {
-      modules_paths: %w[../../../packages], # [Custom] Prevent the bundling of template code and stripe
-      exclude: package['excludedUnimodules'],
-      flags: { inhibit_warnings: false }
-    }
-  )
+  use_react_native!(path: config['reactNativePath'])
 
-  pod 'expo-image', path: '../../../packages/expo-image'
-
-  # react-native-cli auto-linking
-  use_native_modules!
-
-  # Fix Google Sign-in
+  # Fix Google Sign-in and Flipper
   post_install do |installer|
     installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
       target_installation_result.native_target.build_configurations.each do |config|
-        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '10.0'
+        config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
+
+        if (pod_name == 'Flipper') || (pod_name == 'Flipper-Folly') || (pod_name == 'Flipper-RSocket')
+          # Fix `Typedef redefinition with different types ('uint8_t' (aka 'unsigned char') vs 'enum clockid_t')`
+          # See https://github.com/react-native-community/upgrade-support/issues/91 and https://github.com/facebook/flipper/issues/834
+          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '9.0'
+        else
+          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+        end
       end
     end
+  end
+
+  target 'BareExpo' do
+    # Enables Flipper.
+    # Note that if you have use_frameworks! enabled, Flipper will not work and
+    use_flipper!('Flipper' => '0.79.0') # should match the version of your Flipper client app
+    # Note that we don't call `flipper_post_install`.
+    # It causes problems with cocoapods. We add the FB_SONARKIT_ENABLED manually instead.
+  end
+
+  target 'BareExpoDetox' do
   end
 
   target 'BareExpoTests' do

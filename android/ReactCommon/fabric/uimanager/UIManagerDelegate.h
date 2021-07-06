@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -9,6 +9,7 @@
 
 #include <react/core/ReactPrimitives.h>
 #include <react/core/ShadowNode.h>
+#include <react/mounting/MountingCoordinator.h>
 
 namespace facebook {
 namespace react {
@@ -19,12 +20,11 @@ namespace react {
 class UIManagerDelegate {
  public:
   /*
-   * Called right after the new/updated Shadow Node tree is constructed.
-   * The tree is not laid out and not sealed at this time.
+   * Called right after a new/updated Shadow Node tree is constructed.
+   * For this moment the tree is already laid out and sealed.
    */
   virtual void uiManagerDidFinishTransaction(
-      SurfaceId surfaceId,
-      const SharedShadowNodeUnsharedList &rootChildNodes) = 0;
+      MountingCoordinator::Shared const &mountingCoordinator) = 0;
 
   /*
    * Called each time when UIManager constructs a new Shadow Node. Receiver
@@ -32,13 +32,13 @@ class UIManagerDelegate {
    * instances.
    */
   virtual void uiManagerDidCreateShadowNode(
-      const SharedShadowNode &shadowNode) = 0;
+      const ShadowNode::Shared &shadowNode) = 0;
 
   /*
    * Called when UIManager wants to dispatch a command to the mounting layer.
    */
   virtual void uiManagerDidDispatchCommand(
-      const SharedShadowNode &shadowNode,
+      const ShadowNode::Shared &shadowNode,
       std::string const &commandName,
       folly::dynamic const args) = 0;
 
@@ -47,7 +47,7 @@ class UIManagerDelegate {
    */
   virtual void uiManagerDidSetJSResponder(
       SurfaceId surfaceId,
-      SharedShadowNode const &shadowView,
+      ShadowNode::Shared const &shadowView,
       bool blockNativeResponder) = 0;
 
   /*

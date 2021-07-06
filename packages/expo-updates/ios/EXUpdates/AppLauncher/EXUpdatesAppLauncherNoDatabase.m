@@ -6,7 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString * const kEXUpdatesErrorLogFile = @"expo-error.log";
+static NSString * const EXUpdatesErrorLogFile = @"expo-error.log";
 
 @interface EXUpdatesAppLauncherNoDatabase ()
 
@@ -18,26 +18,36 @@ static NSString * const kEXUpdatesErrorLogFile = @"expo-error.log";
 
 @implementation EXUpdatesAppLauncherNoDatabase
 
-- (void)launchUpdate
+- (void)launchUpdateWithConfig:(EXUpdatesConfig *)config
 {
-  _launchedUpdate = [EXUpdatesEmbeddedAppLoader embeddedManifest];
+  _launchedUpdate = [EXUpdatesEmbeddedAppLoader embeddedManifestWithConfig:config database:nil];
   if (_launchedUpdate) {
-    _launchAssetUrl = [[NSBundle mainBundle] URLForResource:kEXUpdatesEmbeddedBundleFilename withExtension:kEXUpdatesEmbeddedBundleFileType];
-    
-    NSMutableDictionary *assetFilesMap = [NSMutableDictionary new];
-    for (EXUpdatesAsset *asset in _launchedUpdate.assets) {
-      NSURL *localUrl = [[NSBundle mainBundle] URLForResource:asset.mainBundleFilename withExtension:asset.type];
-      if (localUrl && asset.localAssetsKey) {
-        assetFilesMap[asset.localAssetsKey] = localUrl.absoluteString;
+    if (_launchedUpdate.status == EXUpdatesUpdateStatusEmbedded) {
+      NSAssert(_assetFilesMap == nil, @"assetFilesMap should be null for embedded updates");
+      _launchAssetUrl = [[NSBundle mainBundle] URLForResource:EXUpdatesBareEmbeddedBundleFilename withExtension:EXUpdatesBareEmbeddedBundleFileType];
+    } else {
+      _launchAssetUrl = [[NSBundle mainBundle] URLForResource:EXUpdatesEmbeddedBundleFilename withExtension:EXUpdatesEmbeddedBundleFileType];
+
+      NSMutableDictionary *assetFilesMap = [NSMutableDictionary new];
+      for (EXUpdatesAsset *asset in _launchedUpdate.assets) {
+        NSURL *localUrl = [[NSBundle mainBundle] URLForResource:asset.mainBundleFilename withExtension:asset.type];
+        if (localUrl && asset.key) {
+          assetFilesMap[asset.key] = localUrl.absoluteString;
+        }
       }
+      _assetFilesMap = assetFilesMap;
     }
-    _assetFilesMap = assetFilesMap;
   }
 }
 
-- (void)launchUpdateWithFatalError:(NSError *)error;
+- (BOOL)isUsingEmbeddedAssets
 {
-  [self launchUpdate];
+  return _assetFilesMap == nil;
+}
+
+- (void)launchUpdateWithConfig:(EXUpdatesConfig *)config fatalError:(NSError *)error;
+{
+  [self launchUpdateWithConfig:config];
   dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
     [self _writeErrorToLog:error];
   });
@@ -91,7 +101,7 @@ static NSString * const kEXUpdatesErrorLogFile = @"expo-error.log";
 + (NSString *)_errorLogFilePath
 {
   NSURL *applicationDocumentsDirectory = [[NSFileManager.defaultManager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask] lastObject];
-  return [[applicationDocumentsDirectory URLByAppendingPathComponent:kEXUpdatesErrorLogFile] path];
+  return [[applicationDocumentsDirectory URLByAppendingPathComponent:EXUpdatesErrorLogFile] path];
 }
 
 @end

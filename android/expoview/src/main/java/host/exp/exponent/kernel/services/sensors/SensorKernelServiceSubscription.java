@@ -2,18 +2,18 @@
 
 package host.exp.exponent.kernel.services.sensors;
 
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 
 public class SensorKernelServiceSubscription {
   private boolean mIsEnabled = false;
   private Long mUpdateInterval = null;
-  private final ExperienceId mExperienceId;
+  private final ExperienceKey mExperienceKey;
   private boolean mHasBeenReleased = false;
   private final SubscribableSensorKernelService mSubscribableSensorKernelService;
   private final SensorEventListener mSensorEventListener;
 
-  SensorKernelServiceSubscription(ExperienceId experienceId, SubscribableSensorKernelService kernelService, SensorEventListener listener) {
-    mExperienceId = experienceId;
+  SensorKernelServiceSubscription(ExperienceKey experienceKey, SubscribableSensorKernelService kernelService, SensorEventListener listener) {
+    mExperienceKey = experienceKey;
     mSensorEventListener = listener;
     mSubscribableSensorKernelService = kernelService;
   }
@@ -30,8 +30,8 @@ public class SensorKernelServiceSubscription {
     return !mHasBeenReleased && mIsEnabled;
   }
 
-  public ExperienceId getExperienceId() {
-    return mExperienceId;
+  public ExperienceKey getExperienceKey() {
+    return mExperienceKey;
   }
 
   public Long getUpdateInterval() {

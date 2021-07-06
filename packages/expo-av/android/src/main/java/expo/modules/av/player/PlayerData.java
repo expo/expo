@@ -3,18 +3,19 @@ package expo.modules.av.player;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Pair;
 import android.view.Surface;
 
-import java.lang.ref.WeakReference;
-import java.util.Map;
-
 import org.unimodules.core.Promise;
 import org.unimodules.core.arguments.ReadableArguments;
+
+import java.util.Map;
+
 import expo.modules.av.AVManagerInterface;
 import expo.modules.av.AudioEventHandler;
 import expo.modules.av.AudioFocusNotAcquiredException;
+import expo.modules.av.progress.AndroidLooperTimeMachine;
+import expo.modules.av.progress.ProgressLooper;
 
 public abstract class PlayerData implements AudioEventHandler {
   static final String STATUS_ANDROID_IMPLEMENTATION_KEY_PATH = "androidImplementation";
@@ -76,25 +77,8 @@ public abstract class PlayerData implements AudioEventHandler {
   final Uri mUri;
   final Map<String, Object> mRequestHeaders;
 
-  private Handler mHandler = new Handler();
-  private Runnable mProgressUpdater = new ProgressUpdater(this);
+  private ProgressLooper mProgressUpdater = new ProgressLooper(new AndroidLooperTimeMachine());
 
-  private class ProgressUpdater implements Runnable {
-    private WeakReference<PlayerData> mPlayerDataWeakReference;
-
-    private ProgressUpdater(PlayerData playerData) {
-      mPlayerDataWeakReference = new WeakReference<>(playerData);
-    }
-
-    @Override
-    public void run() {
-      final PlayerData playerData = mPlayerDataWeakReference.get();
-      if (playerData != null) {
-        playerData.callStatusUpdateListener();
-        playerData.progressUpdateLoop();
-      }
-    }
-  }
 
   private FullscreenPresenter mFullscreenPresenter = null;
   private StatusUpdateListener mStatusUpdateListener = null;
@@ -125,7 +109,7 @@ public abstract class PlayerData implements AudioEventHandler {
     final Uri uri = Uri.parse(uriString);
 
     if (status.containsKey(STATUS_ANDROID_IMPLEMENTATION_KEY_PATH)
-        && status.getString(STATUS_ANDROID_IMPLEMENTATION_KEY_PATH).equals(MediaPlayerData.IMPLEMENTATION_NAME)) {
+      && status.getString(STATUS_ANDROID_IMPLEMENTATION_KEY_PATH).equals(MediaPlayerData.IMPLEMENTATION_NAME)) {
       return new MediaPlayerData(avModule, context, uri, requestHeaders);
     } else {
       return new SimpleExoPlayerData(avModule, context, uri, uriOverridingExtension, requestHeaders);
@@ -161,25 +145,30 @@ public abstract class PlayerData implements AudioEventHandler {
   abstract boolean shouldContinueUpdatingProgress();
 
   final void stopUpdatingProgressIfNecessary() {
-    mHandler.removeCallbacks(mProgressUpdater);
-  }
-
-  private void progressUpdateLoop() {
-    if (!shouldContinueUpdatingProgress()) {
-      stopUpdatingProgressIfNecessary();
-    } else {
-      mHandler.postDelayed(mProgressUpdater, mProgressUpdateIntervalMillis);
-    }
+    mProgressUpdater.stopLooping();
   }
 
   final void beginUpdatingProgressIfNecessary() {
-    mHandler.post(mProgressUpdater);
+    if (shouldContinueUpdatingProgress() && !mProgressUpdater.isLooping() && (mStatusUpdateListener != null)) {
+      mProgressUpdater.loop(mProgressUpdateIntervalMillis, () -> {
+        this.callStatusUpdateListener();
+        return null;
+      });
+    }
   }
 
   public final void setStatusUpdateListener(final StatusUpdateListener listener) {
+    final StatusUpdateListener oldListener = mStatusUpdateListener;
     mStatusUpdateListener = listener;
     if (mStatusUpdateListener != null) {
       beginUpdatingProgressIfNecessary();
+
+      // Notify app about the current status upon setting the status listener
+      if (oldListener == null) {
+        callStatusUpdateListener();
+      }
+    } else {
+      stopUpdatingProgressIfNecessary();
     }
   }
 
@@ -198,11 +187,19 @@ public abstract class PlayerData implements AudioEventHandler {
   abstract void playPlayerWithRateAndMuteIfNecessary() throws AudioFocusNotAcquiredException;
 
   abstract void applyNewStatus(final Integer newPositionMillis, final Boolean newIsLooping)
-      throws AudioFocusNotAcquiredException, IllegalStateException;
+    throws AudioFocusNotAcquiredException, IllegalStateException;
 
   final void setStatusWithListener(final Bundle status, final SetStatusCompletionListener setStatusCompletionListener) {
     if (status.containsKey(STATUS_PROGRESS_UPDATE_INTERVAL_MILLIS_KEY_PATH)) {
-      mProgressUpdateIntervalMillis = (int) status.getDouble(STATUS_PROGRESS_UPDATE_INTERVAL_MILLIS_KEY_PATH);
+      if (mProgressUpdateIntervalMillis != (int) status.getDouble(STATUS_PROGRESS_UPDATE_INTERVAL_MILLIS_KEY_PATH)) {
+        mProgressUpdateIntervalMillis = (int) status.getDouble(STATUS_PROGRESS_UPDATE_INTERVAL_MILLIS_KEY_PATH);
+
+        // Restart looper when update interval is changed
+        if (mProgressUpdater.isLooping()) {
+          stopUpdatingProgressIfNecessary();
+          beginUpdatingProgressIfNecessary();
+        }
+      }
     }
 
     final Integer newPositionMillis;

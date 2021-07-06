@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -113,8 +113,10 @@ static facebook::jsi::Value __hostFunction_NativeSampleTurboModuleSpecJSI_getCon
 
 NativeSampleTurboModuleSpecJSI::NativeSampleTurboModuleSpecJSI(
     id<RCTTurboModule> instance,
-    std::shared_ptr<JSCallInvoker> jsInvoker)
-    : ObjCTurboModule("SampleTurboModule", instance, jsInvoker)
+    std::shared_ptr<CallInvoker> jsInvoker,
+    std::shared_ptr<CallInvoker> nativeInvoker,
+    id<RCTTurboModulePerformanceLogger> perfLogger)
+    : ObjCTurboModule("SampleTurboModule", instance, jsInvoker, nativeInvoker, perfLogger)
 {
   methodMap_["voidFunc"] = MethodMetadata{0, __hostFunction_NativeSampleTurboModuleSpecJSI_voidFunc};
   methodMap_["getBool"] = MethodMetadata{1, __hostFunction_NativeSampleTurboModuleSpecJSI_getBool};

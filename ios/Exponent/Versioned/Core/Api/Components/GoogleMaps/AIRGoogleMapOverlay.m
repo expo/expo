@@ -8,13 +8,14 @@
 #import "AIRGoogleMapOverlay.h"
 
 #import <React/RCTEventDispatcher.h>
-#import <React/RCTImageLoader.h>
+#import <React/RCTImageLoaderProtocol.h>
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
 @interface AIRGoogleMapOverlay()
   @property (nonatomic, strong, readwrite) UIImage *overlayImage;
   @property (nonatomic, readwrite) GMSCoordinateBounds *overlayBounds;
+  @property (nonatomic) CLLocationDirection bearing;
 @end
 
 @implementation AIRGoogleMapOverlay {
@@ -42,7 +43,7 @@
   }
 
   __weak typeof(self) weakSelf = self;
-  _reloadImageCancellationBlock = [_bridge.imageLoader loadImageWithURLRequest:[RCTConvert NSURLRequest:_imageSrc]
+  _reloadImageCancellationBlock = [[_bridge moduleForName:@"ImageLoader"] loadImageWithURLRequest:[RCTConvert NSURLRequest:_imageSrc]
                                                                           size:weakSelf.bounds.size
                                                                          scale:RCTScreenScale()
                                                                        clipped:YES
@@ -73,6 +74,17 @@
                                                         coordinate:_northEast];
 
   _overlay.bounds = _overlayBounds;
+}
+
+- (void)setBearing:(double)bearing
+{
+    _bearing = (double)bearing;
+    _overlay.bearing = _bearing;
+}
+
+- (void)setOpacity:(CGFloat)opacity
+{
+  _overlay.opacity = opacity;
 }
 
 @end

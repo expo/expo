@@ -7,9 +7,10 @@ import java.io.IOException;
 import java.util.EnumSet;
 
 import org.unimodules.core.ModuleRegistry;
-import org.unimodules.interfaces.constants.ConstantsInterface;
 import expo.modules.filesystem.FilePermissionModule;
-import org.unimodules.interfaces.filesystem.Permission;
+
+import expo.modules.interfaces.constants.ConstantsInterface;
+import expo.modules.interfaces.filesystem.Permission;
 import host.exp.exponent.utils.ScopedContext;
 
 public class ScopedFilePermissionModule extends FilePermissionModule {
@@ -23,7 +24,7 @@ public class ScopedFilePermissionModule extends FilePermissionModule {
   @Override
   protected EnumSet<Permission> getExternalPathPermissions(String path) {
     try {
-      // In scoped context we do not allow access to Expo Client's directory,
+      // In scoped context we do not allow access to Expo Go's directory,
       // however accessing other directories is ok as far as we're concerned.
       Context context = mScopedContext.getContext();
       String dataDirCanonicalPath = new File(context.getApplicationInfo().dataDir).getCanonicalPath();
@@ -42,7 +43,7 @@ public class ScopedFilePermissionModule extends FilePermissionModule {
 
   private boolean shouldForbidAccessToDataDirectory() {
     ConstantsInterface constantsModule = mModuleRegistry.getModule(ConstantsInterface.class);
-    // If there's no constants module, or app ownership isn't "expo", we're not in Expo Client.
+    // If there's no constants module, or app ownership isn't "expo", we're not in Expo Go.
     return constantsModule != null && "expo".equals(constantsModule.getAppOwnership());
   }
 

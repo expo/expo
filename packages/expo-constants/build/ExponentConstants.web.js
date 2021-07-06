@@ -1,9 +1,10 @@
-import { canUseDOM } from 'fbjs/lib/ExecutionEnvironment';
-import uuidv4 from 'uuid/v4';
+import { Platform } from '@unimodules/core';
+import { v4 as uuidv4 } from 'uuid';
+import { ExecutionEnvironment, } from './Constants.types';
 const ID_KEY = 'EXPO_CONSTANTS_INSTALLATION_ID';
 const _sessionId = uuidv4();
 function getBrowserName() {
-    if (canUseDOM) {
+    if (Platform.isDOMAvailable) {
         const agent = navigator.userAgent.toLowerCase();
         if (agent.includes('edge')) {
             return 'Edge';
@@ -34,7 +35,10 @@ export default {
         return 'ExponentConstants';
     },
     get appOwnership() {
-        return 'expo';
+        return null;
+    },
+    get executionEnvironment() {
+        return ExecutionEnvironment.Bare;
     },
     get installationId() {
         let installationId;
@@ -56,25 +60,25 @@ export default {
         return _sessionId;
     },
     get platform() {
-        return { web: canUseDOM ? { ua: navigator.userAgent } : undefined };
+        return { web: Platform.isDOMAvailable ? { ua: navigator.userAgent } : undefined };
     },
     get isHeadless() {
-        return false;
+        if (!Platform.isDOMAvailable)
+            return true;
+        return /\bHeadlessChrome\//.test(navigator.userAgent);
     },
     get isDevice() {
         // TODO: Bacon: Possibly want to add information regarding simulators
         return true;
     },
-    get isDetached() {
-        return false;
-    },
     get expoVersion() {
         return this.manifest.sdkVersion || null;
     },
     get linkingUri() {
-        if (canUseDOM) {
+        if (Platform.isDOMAvailable) {
             // On native this is `exp://`
-            return location.origin + location.pathname;
+            // On web we should use the protocol and hostname (location.origin)
+            return location.origin;
         }
         else {
             return '';
@@ -108,9 +112,12 @@ export default {
         // If your site is bundled with a different config then you may not have access to the app.json automatically.
         return process.env.APP_MANIFEST || {};
     },
+    get manifest2() {
+        return null;
+    },
     get experienceUrl() {
-        if (canUseDOM) {
-            return location.origin + location.pathname;
+        if (Platform.isDOMAvailable) {
+            return location.origin;
         }
         else {
             return '';
@@ -120,7 +127,7 @@ export default {
         return __DEV__;
     },
     async getWebViewUserAgentAsync() {
-        if (canUseDOM) {
+        if (Platform.isDOMAvailable) {
             return navigator.userAgent;
         }
         else {

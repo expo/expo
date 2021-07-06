@@ -1,6 +1,5 @@
-import React from 'react';
 import Constants from 'expo-constants';
-import { TouchableOpacity as TouchableOpacityGH } from 'react-native-gesture-handler';
+import React from 'react';
 import {
   Dimensions,
   Platform,
@@ -9,6 +8,7 @@ import {
   TouchableOpacity as TouchableOpacityRN,
   View,
 } from 'react-native';
+import { TouchableOpacity as TouchableOpacityGH } from 'react-native-gesture-handler';
 
 import { StyledText } from '../components/Text';
 import { StyledView } from '../components/Views';
@@ -20,17 +20,25 @@ type Props = {
 // When rendered inside bottom sheet, touchables from RN don't work on Android, but the ones from GH don't work on iOS.
 const TouchableOpacity = Platform.OS === 'android' ? TouchableOpacityGH : TouchableOpacityRN;
 
-const KEYBOARD_CODES = {
-  ios: '\u2318D',
-  android: '\u2318M on MacOS or Ctrl+M on other platforms',
+const KEYBOARD_CODES: { [key: string]: string } = {
+  ios: '^\u2318Z',
+  android: '\u2318M on macOS or Ctrl+M on other platforms',
 };
 
 const MENU_NARROW_SCREEN = Dimensions.get('window').width < 375;
 const ONBOARDING_MESSAGE = (() => {
-  const fragment = Constants.isDevice
-    ? 'you can shake your device'
-    : `in a simulator you can press ${KEYBOARD_CODES[Platform.OS]}`;
-  return `Since this is your first time opening the Expo client, we wanted to show you this menu and let you know that ${fragment} to get back to it at any time.`;
+  let fragment;
+  if (Constants.isDevice) {
+    if (Platform.OS === 'ios') {
+      fragment =
+        'you can shake your device or long press anywhere on the screen with three fingers';
+    } else {
+      fragment = 'you can shake your device';
+    }
+  } else {
+    fragment = `in a simulator you can press ${KEYBOARD_CODES[Platform.OS]}`;
+  }
+  return `Since this is your first time opening Expo Go, we wanted to show you this menu and let you know that ${fragment} to get back to it at any time.`;
 })();
 
 class DevMenuOnboarding extends React.PureComponent<Props, any> {

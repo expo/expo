@@ -15,6 +15,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import expo.modules.updates.db.DatabaseHolder;
+import expo.modules.updates.db.UpdatesDatabase;
 import host.exp.exponent.ExpoHandler;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
@@ -64,6 +66,10 @@ public class NativeModuleDepsProvider {
   @DoNotStrip
   DevMenuManager mDevMenuManager;
 
+  @Inject
+  @DoNotStrip
+  DatabaseHolder mUpdatesDatabaseHolder;
+
   private Map<Class, Object> mClassesToInjectedObjects = new HashMap<>();
 
   public NativeModuleDepsProvider(Application application) {
@@ -75,6 +81,7 @@ public class NativeModuleDepsProvider {
     mKernelServiceRegistry = new ExpoKernelServiceRegistry(mContext, mExponentSharedPreferences);
     mCrypto = new Crypto(mExponentNetwork);
     mExponentManifest = new ExponentManifest(mContext, mExponentNetwork, mCrypto, mExponentSharedPreferences);
+    mUpdatesDatabaseHolder = new DatabaseHolder(UpdatesDatabase.getInstance(mContext));
 
     for (Field field : NativeModuleDepsProvider.class.getDeclaredFields()) {
       if (field.isAnnotationPresent(Inject.class)) {

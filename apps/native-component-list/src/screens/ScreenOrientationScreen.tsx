@@ -1,7 +1,8 @@
+import { Platform, Subscription } from '@unimodules/core';
+import * as ScreenOrientation from 'expo-screen-orientation';
 import React from 'react';
 import { ScrollView, Text } from 'react-native';
-import * as ScreenOrientation from 'expo-screen-orientation';
-import { Platform, Subscription } from '@unimodules/core';
+
 import ListButton from '../components/ListButton';
 
 interface State {
@@ -9,6 +10,8 @@ interface State {
   orientationLock?: ScreenOrientation.OrientationLock;
 }
 
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
 export default class ScreenOrientationScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: 'ScreenOrientation',
@@ -100,10 +103,10 @@ export default class ScreenOrientationScreen extends React.Component<{}, State> 
     alert(`Orientation.PORTRAIT_DOWN supported: ${JSON.stringify(result)}`);
   };
 
-  getScreenOrientationLockOptions(): Array<{
+  getScreenOrientationLockOptions(): {
     key: string;
     value: ScreenOrientation.OrientationLock;
-  }> {
+  }[] {
     const orientationOptions = [
       ScreenOrientation.OrientationLock.DEFAULT,
       ScreenOrientation.OrientationLock.ALL,

@@ -1,6 +1,6 @@
-import React from 'react';
 import { FaceFeature } from 'expo-face-detector';
-import { View, Text, StyleSheet } from 'react-native';
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 const landmarkSize = 2;
 
@@ -36,6 +36,7 @@ export const scaledLandmarks = (scale: number) => (face: FaceFeature) => {
   const renderLandmark = (position?: { x: number; y: number }) =>
     position && (
       <View
+        key={`${position?.x ?? 'no-x'}${position?.y ?? 'no-y'}`}
         style={[
           styles.landmark,
           {

@@ -5,11 +5,27 @@ import addListenerWithNativeCallback from '../utils/addListenerWithNativeCallbac
 
 const NativeKernel = NativeModules.ExponentKernel || MockKernel;
 
+export type DevMenuSettings = {
+  motionGestureEnabled?: boolean;
+  touchGestureEnabled?: boolean;
+};
+
 export type DevMenuItem = {
   label: string;
   isEnabled: boolean;
   detail?: string;
 };
+
+export async function getSettingsAsync(): Promise<DevMenuSettings | null> {
+  if (!NativeKernel.getDevMenuSettingsAsync) {
+    return null;
+  }
+  return await NativeKernel.getDevMenuSettingsAsync();
+}
+
+export async function setSettingAsync(key: keyof DevMenuSettings, value?: boolean): Promise<void> {
+  await NativeKernel.setDevMenuSettingAsync(key, value);
+}
 
 export async function doesCurrentTaskEnableDevtoolsAsync(): Promise<boolean> {
   return await NativeKernel.doesCurrentTaskEnableDevtoolsAsync();
@@ -43,6 +59,6 @@ export async function goToHomeAsync(): Promise<void> {
   await NativeKernel.goToHomeAsync();
 }
 
-export function listenForCloseRequests(listener: () => void): EventSubscription {
+export function listenForCloseRequests(listener: (event: any) => Promise<any>): EventSubscription {
   return addListenerWithNativeCallback('ExponentKernel.requestToCloseDevMenu', listener);
 }

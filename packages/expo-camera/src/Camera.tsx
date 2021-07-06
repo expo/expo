@@ -1,27 +1,25 @@
-import { UnavailabilityError } from '@unimodules/core';
-import mapValues from 'lodash/mapValues';
-import PropTypes from 'prop-types';
-import React from 'react';
-import { findNodeHandle, Platform, ViewPropTypes } from 'react-native';
+import { Platform, UnavailabilityError } from '@unimodules/core';
+import * as React from 'react';
+import { findNodeHandle } from 'react-native';
 
 import {
+  BarCodeScanningResult,
   CameraCapturedPicture,
+  CameraMountError,
   CameraNativeProps,
   CameraPictureOptions,
   CameraProps,
   CameraRecordingOptions,
+  ConstantsType,
+  FaceDetectionResult,
+  PermissionExpiration,
   PermissionResponse,
   PermissionStatus,
-  PermissionExpiration,
-  BarCodeScanningResult,
-  FaceDetectionResult,
-  CameraMountError,
+  VideoCodec,
 } from './Camera.types';
 import ExponentCamera from './ExponentCamera';
-import _CameraManager from './ExponentCameraManager';
-
-// TODO: Bacon: Fix multiplatform
-const CameraManager = _CameraManager as any;
+import CameraManager from './ExponentCameraManager';
+import { ConversionTables, ensureNativeProps } from './utils/props';
 
 const EventThrottleMs = 500;
 
@@ -30,11 +28,8 @@ const _PICTURE_SAVED_CALLBACKS = {};
 let _GLOBAL_PICTURE_ID = 1;
 
 function ensurePictureOptions(options?: CameraPictureOptions): CameraPictureOptions {
-  let pictureOptions = options || {};
-
-  if (!pictureOptions || typeof pictureOptions !== 'object') {
-    pictureOptions = {};
-  }
+  const pictureOptions: CameraPictureOptions =
+    !options || typeof options !== 'object' ? {} : options;
 
   if (!pictureOptions.quality) {
     pictureOptions.quality = 1;
@@ -58,51 +53,6 @@ function ensureRecordingOptions(options?: CameraRecordingOptions): CameraRecordi
   }
 
   return recordingOptions;
-}
-
-function ensureNativeProps(options?: CameraProps): CameraNativeProps {
-  let props = options || {};
-
-  if (!props || typeof props !== 'object') {
-    props = {};
-  }
-
-  const newProps: CameraNativeProps = mapValues(props, convertProp);
-
-  const propsKeys = Object.keys(newProps);
-  // barCodeTypes is deprecated
-  if (!propsKeys.includes('barCodeScannerSettings') && propsKeys.includes('barCodeTypes')) {
-    console.warn(
-      `The "barCodeTypes" prop for Camera is deprecated and will be removed in SDK 34. Use "barCodeScannerSettings" instead.`
-    );
-    newProps.barCodeScannerSettings = {
-      // @ts-ignore
-      barCodeTypes: newProps.barCodeTypes,
-    };
-  }
-
-  if (props.onBarCodeScanned) {
-    newProps.barCodeScannerEnabled = true;
-  }
-
-  if (props.onFacesDetected) {
-    newProps.faceDetectorEnabled = true;
-  }
-
-  if (Platform.OS !== 'android') {
-    delete newProps.ratio;
-    delete newProps.useCamera2Api;
-  }
-
-  return newProps;
-}
-
-function convertProp(value: any, key: string): any {
-  if (typeof value === 'string' && Camera.ConversionTables[key]) {
-    return Camera.ConversionTables[key][value];
-  }
-
-  return value;
 }
 
 function _onPictureSaved({
@@ -135,42 +85,26 @@ export default class Camera extends React.Component<CameraProps> {
     return await CameraManager.getAvailableCameraTypesAsync();
   }
 
-  static Constants = {
+  static async getAvailableVideoCodecsAsync(): Promise<string[]> {
+    if (!CameraManager.getAvailableVideoCodecsAsync) {
+      throw new UnavailabilityError('Camera', 'getAvailableVideoCodecsAsync');
+    }
+
+    return await CameraManager.getAvailableVideoCodecsAsync();
+  }
+
+  static Constants: ConstantsType = {
     Type: CameraManager.Type,
     FlashMode: CameraManager.FlashMode,
     AutoFocus: CameraManager.AutoFocus,
     WhiteBalance: CameraManager.WhiteBalance,
     VideoQuality: CameraManager.VideoQuality,
     VideoStabilization: CameraManager.VideoStabilization || {},
+    VideoCodec: CameraManager.VideoCodec,
   };
 
   // Values under keys from this object will be transformed to native options
-  static ConversionTables = {
-    type: CameraManager.Type,
-    flashMode: CameraManager.FlashMode,
-    autoFocus: CameraManager.AutoFocus,
-    whiteBalance: CameraManager.WhiteBalance,
-  };
-
-  static propTypes = {
-    ...ViewPropTypes,
-    zoom: PropTypes.number,
-    ratio: PropTypes.string,
-    focusDepth: PropTypes.number,
-    onMountError: PropTypes.func,
-    pictureSize: PropTypes.string,
-    onCameraReady: PropTypes.func,
-    useCamera2Api: PropTypes.bool,
-    onBarCodeScanned: PropTypes.func,
-    barCodeScannerSettings: PropTypes.object,
-    onFacesDetected: PropTypes.func,
-    faceDetectorSettings: PropTypes.object,
-    type: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    flashMode: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    videoStabilizationMode: PropTypes.number,
-    whiteBalance: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    autoFocus: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.bool]),
-  };
+  static ConversionTables = ConversionTables;
 
   static defaultProps: CameraProps = {
     zoom: 0,
@@ -189,6 +123,22 @@ export default class Camera extends React.Component<CameraProps> {
 
   static async requestPermissionsAsync(): Promise<PermissionResponse> {
     return CameraManager.requestPermissionsAsync();
+  }
+
+  static async getCameraPermissionsAsync(): Promise<PermissionResponse> {
+    return CameraManager.getCameraPermissionsAsync();
+  }
+
+  static async requestCameraPermissionsAsync(): Promise<PermissionResponse> {
+    return CameraManager.requestCameraPermissionsAsync();
+  }
+
+  static async getMicrophonePermissionsAsync(): Promise<PermissionResponse> {
+    return CameraManager.getMicrophonePermissionsAsync();
+  }
+
+  static async requestMicrophonePermissionsAsync(): Promise<PermissionResponse> {
+    return CameraManager.requestMicrophonePermissionsAsync();
   }
 
   _cameraHandle?: number | null;
@@ -217,13 +167,14 @@ export default class Camera extends React.Component<CameraProps> {
     return await CameraManager.getAvailablePictureSizes(ratio, this._cameraHandle);
   }
 
-  async recordAsync(options?: CameraRecordingOptions): Promise<{ uri: string }> {
+  async recordAsync(
+    options?: CameraRecordingOptions
+  ): Promise<{ uri: string; codec?: VideoCodec }> {
     if (!CameraManager.record) {
       throw new UnavailabilityError('Camera', 'recordAsync');
     }
 
     const recordingOptions = ensureRecordingOptions(options);
-
     return await CameraManager.record(recordingOptions, this._cameraHandle);
   }
 
@@ -284,7 +235,7 @@ export default class Camera extends React.Component<CameraProps> {
   _setReference = (ref?: React.Component) => {
     if (ref) {
       this._cameraRef = ref;
-      // TODO: Bacon: Unify these
+      // TODO(Bacon): Unify these - perhaps with hooks?
       if (Platform.OS === 'web') {
         this._cameraHandle = ref as any;
       } else {
@@ -299,7 +250,9 @@ export default class Camera extends React.Component<CameraProps> {
   render() {
     const nativeProps = ensureNativeProps(this.props);
 
-    const onBarCodeScanned = this._onObjectDetected(this.props.onBarCodeScanned);
+    const onBarCodeScanned = this.props.onBarCodeScanned
+      ? this._onObjectDetected(this.props.onBarCodeScanned)
+      : undefined;
     const onFacesDetected = this._onObjectDetected(this.props.onFacesDetected);
 
     return (

@@ -1,7 +1,7 @@
 'use strict';
 
-import { Audio } from 'expo-av';
 import { Asset } from 'expo-asset';
+import { Audio } from 'expo-av';
 import { Platform } from 'react-native';
 
 import { retryForStatus, waitFor } from './helpers';
@@ -12,7 +12,7 @@ const soundUri = 'http://www.noiseaddicts.com/samples_1w72b820/280.mp3';
 const hlsStreamUri = 'http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8';
 const hlsStreamUriWithRedirect = 'http://bit.ly/1iy90bn';
 const redirectingSoundUri = 'http://bit.ly/2qBMx80';
-const authenticatedStaticFilesBackend = 'https://authenticated-static-files-hagckpsbra.now.sh';
+const authenticatedStaticFilesBackend = 'https://authenticated-static-files.vercel.app';
 
 export function test(t) {
   t.describe('Audio class', () => {
@@ -141,13 +141,12 @@ export function test(t) {
             } else {
               t.expect(error.toString()).toMatch('error code -1013');
             }
-            const signInResponse = await (await fetch(
-              `${authenticatedStaticFilesBackend}/sign_in`,
-              {
+            const signInResponse = await (
+              await fetch(`${authenticatedStaticFilesBackend}/sign_in`, {
                 method: 'POST',
                 credentials: true,
-              }
-            )).text();
+              })
+            ).text();
             t.expect(signInResponse).toMatch('Signed in successfully!');
             error = null;
             try {
@@ -226,12 +225,12 @@ export function test(t) {
         );
       }
 
-      t.it('redirects from HTTPS URL to HTTPS URL (301)', async () => {
+      t.it('redirects from HTTPS URL to HTTPS URL (302)', async () => {
+        // Redirects link shortened URL to GitHub raw audio MP3 URL for LLizard.mp3 asset.
         let error = null;
         try {
           await soundObject.loadAsync({
-            uri:
-              'https://player.vimeo.com/external/181375362.sd.mp4?s=cf573e9cf7d747f4eaf7e57eeec88e9b22e3933f&profile_id=165',
+            uri: 'https://rb.gy/eodxez',
           });
         } catch (err) {
           error = err;
@@ -574,7 +573,11 @@ export function test(t) {
         let hasBeenRejected = false;
 
         try {
-          const status = await soundObject.setRateAsync(rate, shouldCorrectPitch, pitchCorrectionQuality);
+          const status = await soundObject.setRateAsync(
+            rate,
+            shouldCorrectPitch,
+            pitchCorrectionQuality
+          );
           t.expect(status.rate).toBeCloseTo(rate, 2);
           t.expect(status.shouldCorrectPitch).toBe(shouldCorrectPitch);
           t.expect(status.pitchCorrectionQuality).toBe(pitchCorrectionQuality);

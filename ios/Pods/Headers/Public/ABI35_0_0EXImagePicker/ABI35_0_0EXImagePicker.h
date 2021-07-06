@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI35_0_0/EXImagePicker/ABI35_0_0EXImagePicker/ABI35_0_0EXImagePicker.h

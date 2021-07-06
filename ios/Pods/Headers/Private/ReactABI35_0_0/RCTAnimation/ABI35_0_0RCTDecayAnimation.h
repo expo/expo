@@ -1,1 +1,0 @@
-../../../../../versioned-react-native/ABI35_0_0/Libraries/NativeAnimation/Drivers/ABI35_0_0RCTDecayAnimation.h

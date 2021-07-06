@@ -20,7 +20,6 @@ export function reportMagic({ testName, failed, results, failures }) {
 
 export function expectResults({ testName, input }) {
   const { magic, failed, failures, results } = JSON.parse(input);
-  expect(magic).toBe('[TEST-SUITE-END]');
   expect(results).toBeDefined();
 
   reportMagic({
@@ -30,5 +29,6 @@ export function expectResults({ testName, input }) {
     failures,
   });
 
+  expect(magic).toBe('[TEST-SUITE-END]');
   expect(failed).toBe(0);
 }

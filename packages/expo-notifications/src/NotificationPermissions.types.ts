@@ -1,4 +1,4 @@
-import { PermissionResponse } from 'unimodules-permissions-interface';
+import { PermissionResponse } from 'expo-modules-core';
 
 export enum IosAlertStyle {
   NONE = 0,
@@ -17,6 +17,7 @@ export enum IosAuthorizationStatus {
   DENIED = 1,
   AUTHORIZED = 2,
   PROVISIONAL = 3,
+  EPHEMERAL = 4,
 }
 
 export interface NotificationPermissionsStatus extends PermissionResponse {

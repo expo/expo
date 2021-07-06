@@ -3,7 +3,7 @@ import {
   AccessibilityProps,
   ImageResizeMode,
   ImageSourcePropType,
-  ImageStyle,
+  ImageStyle as RNImageStyle,
   NativeSyntheticEvent,
   StyleProp,
   StyleSheet,
@@ -13,6 +13,10 @@ import ExpoImage from './ExpoImage';
 import { ImageErrorEventData, ImageLoadEventData, ImageLoadProgressEventData } from './Image.types';
 
 const DEFAULT_RESIZE_MODE = 'cover';
+
+interface ImageStyle extends RNImageStyle {
+  elevation?: number;
+}
 
 export interface ImageProps extends AccessibilityProps {
   // On one hand we want to pass resolved source to native module.

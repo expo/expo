@@ -1,66 +1,74 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesAppController.h>
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
-#import <EXUpdates/EXUpdatesConfig.h>
-#import <EXUpdates/EXUpdatesUpdate+Private.h>
 #import <EXUpdates/EXUpdatesLegacyUpdate.h>
+#import <EXUpdates/EXUpdatesUpdate+Private.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 #import <React/RCTConvert.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString * const kEXUpdatesExpoAssetBaseUrl = @"https://d1wp6m56sqw74a.cloudfront.net/~assets/";
-static NSString * const kEXUpdatesExpoIoDomain = @"expo.io";
-static NSString * const kEXUpdatesExpHostDomain = @"exp.host";
-static NSString * const kEXUpdatesExpoTestDomain = @"expo.test";
+static NSString * const EXUpdatesExpoAssetBaseUrl = @"https://d1wp6m56sqw74a.cloudfront.net/~assets/";
+static NSString * const EXUpdatesExpoIoDomain = @"expo.io";
+static NSString * const EXUpdatesExpHostDomain = @"exp.host";
+static NSString * const EXUpdatesExpoTestDomain = @"expo.test";
 
 @implementation EXUpdatesLegacyUpdate
 
-+ (EXUpdatesUpdate *)updateWithLegacyManifest:(NSDictionary *)manifest
++ (EXUpdatesUpdate *)updateWithLegacyManifest:(EXUpdatesLegacyRawManifest *)manifest
+                                       config:(EXUpdatesConfig *)config
+                                     database:(EXUpdatesDatabase *)database
 {
-  EXUpdatesUpdate *update = [[EXUpdatesUpdate alloc] initWithRawManifest:manifest];
+  EXUpdatesUpdate *update = [[EXUpdatesUpdate alloc] initWithRawManifest:manifest
+                                                                  config:config
+                                                                database:database];
 
-  id updateId = manifest[@"releaseId"];
-  id commitTime = manifest[@"commitTime"];
-  id bundleUrlString = manifest[@"bundleUrl"];
-  id assets = manifest[@"bundledAssets"] ?: @[];
-
-  id sdkVersion = manifest[@"sdkVersion"];
-  id runtimeVersion = manifest[@"runtimeVersion"];
-  if (runtimeVersion && [runtimeVersion isKindOfClass:[NSDictionary class]]) {
-    id runtimeVersionIos = ((NSDictionary *)runtimeVersion)[@"ios"];
-    NSAssert([runtimeVersionIos isKindOfClass:[NSString class]], @"runtimeVersion['ios'] should be a string");
-    update.runtimeVersion = (NSString *)runtimeVersionIos;
-  } else if (runtimeVersion && [runtimeVersion isKindOfClass:[NSString class]]) {
-    update.runtimeVersion = (NSString *)runtimeVersion;
+  if (manifest.isUsingDeveloperTool) {
+    // XDL does not set a releaseId or commitTime for development manifests.
+    // we do not need these so we just stub them out
+    update.updateId = [NSUUID UUID];
+    update.commitTime = [NSDate date];
   } else {
-    NSAssert([sdkVersion isKindOfClass:[NSString class]], @"sdkVersion should be a string");
-    update.runtimeVersion = (NSString *)sdkVersion;
+    NSString *updateId = manifest.releaseID;
+    update.updateId = [[NSUUID alloc] initWithUUIDString:(NSString *)updateId];
+    NSAssert(update.updateId, @"update ID should be a valid UUID");
+
+    NSString *commitTimeString = manifest.commitTime;
+    update.commitTime = [RCTConvert NSDate:commitTimeString];
   }
 
-  NSAssert([updateId isKindOfClass:[NSString class]], @"update ID should be a string");
-  NSAssert([commitTime isKindOfClass:[NSString class]], @"commitTime should be a string");
-  NSAssert([bundleUrlString isKindOfClass:[NSString class]], @"bundleUrl should be a string");
-  NSAssert([assets isKindOfClass:[NSArray class]], @"assets should be a nonnull array");
+  if (manifest.isDevelopmentMode) {
+    update.isDevelopmentMode = YES;
+    update.status = EXUpdatesUpdateStatusDevelopment;
+  } else {
+    update.status = EXUpdatesUpdateStatusPending;
+  }
 
-  NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:(NSString *)updateId];
-  NSAssert(uuid, @"update ID should be a valid UUID");
+  NSString *bundleUrlString = manifest.bundleUrl;
+  NSArray *assets = manifest.bundledAssets ?: @[];
+  
+  if (manifest.runtimeVersion != nil) {
+    update.runtimeVersion = manifest.runtimeVersion;
+  } else {
+    NSAssert(manifest.sdkVersion != nil, @"sdkVersion should not be null");
+    update.runtimeVersion = manifest.sdkVersion;
+  }
+
   NSURL *bundleUrl = [NSURL URLWithString:bundleUrlString];
   NSAssert(bundleUrl, @"bundleUrl should be a valid URL");
 
   NSMutableArray<EXUpdatesAsset *> *processedAssets = [NSMutableArray new];
-  EXUpdatesAsset *jsBundleAsset = [[EXUpdatesAsset alloc] initWithUrl:bundleUrl type:kEXUpdatesEmbeddedBundleFileType];
+
+  NSString *bundleKey = manifest.bundleKey ?: nil;
+  EXUpdatesAsset *jsBundleAsset = [[EXUpdatesAsset alloc] initWithKey:bundleKey type:EXUpdatesEmbeddedBundleFileType];
+  jsBundleAsset.url = bundleUrl;
   jsBundleAsset.isLaunchAsset = YES;
-  jsBundleAsset.mainBundleFilename = kEXUpdatesEmbeddedBundleFilename;
-  jsBundleAsset.filename = [NSString stringWithFormat:@"%@.%@",
-                              [EXUpdatesUtils sha256WithData:[[bundleUrl absoluteString] dataUsingEncoding:NSUTF8StringEncoding]],
-                              kEXUpdatesEmbeddedBundleFileType];
+  jsBundleAsset.mainBundleFilename = EXUpdatesEmbeddedBundleFilename;
   [processedAssets addObject:jsBundleAsset];
   
-  NSURL *bundledAssetBaseUrl = [[self class] bundledAssetBaseUrlWithManifest:manifest];
+  NSURL *bundledAssetBaseUrl = [[self class] bundledAssetBaseUrlWithManifest:manifest config:config];
 
-  for (NSString *bundledAsset in (NSArray *)assets) {
+  for (NSString *bundledAsset in assets) {
     NSAssert([bundledAsset isKindOfClass:[NSString class]], @"bundledAssets must be an array of strings");
 
     NSRange extensionStartRange = [bundledAsset rangeOfString:@"." options:NSBackwardsSearch];
@@ -81,20 +89,15 @@ static NSString * const kEXUpdatesExpoTestDomain = @"expo.test";
 
     NSURL *url = [bundledAssetBaseUrl URLByAppendingPathComponent:hash];
 
-    EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithUrl:url type:(NSString *)type];
+    NSString *key = hash;
+    EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithKey:key type:(NSString *)type];
+    asset.url = url;
     asset.mainBundleFilename = filename;
-
-    asset.filename = [NSString stringWithFormat:@"%@.%@",
-                        [EXUpdatesUtils sha256WithData:[[url absoluteString] dataUsingEncoding:NSUTF8StringEncoding]],
-                        type];
 
     [processedAssets addObject:asset];
   }
 
-  update.updateId = uuid;
-  update.commitTime = [RCTConvert NSDate:commitTime];
-  update.metadata = manifest;
-  update.status = EXUpdatesUpdateStatusPending;
+  update.manifest = manifest.rawManifestJSON;
   update.keep = YES;
   update.bundleUrl = bundleUrl;
   update.assets = processedAssets;
@@ -102,18 +105,20 @@ static NSString * const kEXUpdatesExpoTestDomain = @"expo.test";
   return update;
 }
 
-+ (NSURL *)bundledAssetBaseUrlWithManifest:(NSDictionary *)manifest
++ (NSURL *)bundledAssetBaseUrlWithManifest:(EXUpdatesLegacyRawManifest *)manifest config:(EXUpdatesConfig *)config
 {
-  NSURL *manifestUrl = [EXUpdatesConfig sharedInstance].updateUrl;
+  NSURL *manifestUrl = config.updateUrl;
   NSString *host = manifestUrl.host;
   if (!host ||
-      [host containsString:kEXUpdatesExpoIoDomain] ||
-      [host containsString:kEXUpdatesExpHostDomain] ||
-      [host containsString:kEXUpdatesExpoTestDomain]) {
-    return [NSURL URLWithString:kEXUpdatesExpoAssetBaseUrl];
+      [host containsString:EXUpdatesExpoIoDomain] ||
+      [host containsString:EXUpdatesExpHostDomain] ||
+      [host containsString:EXUpdatesExpoTestDomain]) {
+    return [NSURL URLWithString:EXUpdatesExpoAssetBaseUrl];
   } else {
-    NSString *assetsPath = manifest[@"assetUrlOverride"] ?: @"assets";
-    return [manifestUrl.URLByDeletingLastPathComponent URLByAppendingPathComponent:assetsPath];
+    NSString *assetsPathOrUrl = manifest.assetUrlOverride ?: @"assets";
+    // assetUrlOverride may be an absolute or relative URL
+    // if relative, we should resolve with respect to the manifest URL
+    return [NSURL URLWithString:assetsPathOrUrl relativeToURL:manifestUrl].absoluteURL.standardizedURL;
   }
 }
 

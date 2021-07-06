@@ -1,76 +1,127 @@
+import Ionicons from '@expo/vector-icons/build/Ionicons';
+import { Link, useLinkProps } from '@react-navigation/native';
 import React from 'react';
 import {
   FlatList,
+  ListRenderItem,
   PixelRatio,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableHighlight,
   View,
-  ListRenderItem,
+  Platform,
+  Pressable,
+  useWindowDimensions,
 } from 'react-native';
-import { withNavigation, NavigationScreenProps } from 'react-navigation';
-
-import { EvilIcons } from '@expo/vector-icons';
-
-import ExpoAPIIcon from '../components/ExpoAPIIcon';
+import { useSafeArea } from 'react-native-safe-area-context';
 
 interface ListElement {
   name: string;
+  route?: string;
   isAvailable?: boolean;
 }
 
 interface Props {
   apis: ListElement[];
+  renderItemRight?: (props: ListElement) => React.ReactNode;
 }
 
-class ComponentListScreen extends React.Component<NavigationScreenProps & Props> {
-  _listView?: FlatList<ListElement>;
+function LinkButton({
+  to,
+  action,
+  children,
+  ...rest
+}: React.ComponentProps<typeof Link> & { disabled?: boolean; children?: React.ReactNode }) {
+  const { onPress, ...props } = useLinkProps({ to, action });
 
-  _renderExampleSection: ListRenderItem<ListElement> = ({
-    item: { name: exampleName, isAvailable },
-  }) => {
+  const [isPressed, setIsPressed] = React.useState(false);
+
+  if (Platform.OS === 'web') {
+    // It's important to use a `View` or `Text` on web instead of `TouchableX`
+    // Otherwise React Native for Web omits the `onClick` prop that's passed
+    // You'll also need to pass `onPress` as `onClick` to the `View`
+    // You can add hover effects using `onMouseEnter` and `onMouseLeave`
     return (
-      <TouchableHighlight
-        underlayColor="#dddddd"
-        style={styles.rowTouchable}
-        onPress={isAvailable ? () => this.props.navigation.navigate(exampleName) : undefined}>
-        <View style={[styles.row, !isAvailable && styles.disabledRow]}>
-          <ExpoAPIIcon name={exampleName} style={styles.rowIcon} />
-          <Text style={styles.rowLabel}>{exampleName}</Text>
-          <Text style={styles.rowDecorator}>
-            <EvilIcons name="chevron-right" size={24} color="#595959" />
-          </Text>
-        </View>
-      </TouchableHighlight>
-    );
-  };
-
-  _keyExtractor = (item: ListElement) => item.name;
-
-  render() {
-    return (
-      // @ts-ignore
-      <FlatList<ListElement>
-        ref={view => {
-          this._listView = view!;
-        }}
-        initialNumToRender={25}
-        stickySectionHeadersEnabled
-        removeClippedSubviews={false}
-        keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="on-drag"
-        contentContainerStyle={{ backgroundColor: '#fff' }}
-        data={this.props.apis}
-        keyExtractor={this._keyExtractor}
-        renderItem={this._renderExampleSection}
-      />
+      <Pressable
+        pointerEvents={rest.disabled === true ? 'none' : 'auto'}
+        onPressIn={() => setIsPressed(true)}
+        onPressOut={() => setIsPressed(false)}
+        onPress={onPress}
+        {...props}
+        {...rest}
+        style={[
+          {
+            backgroundColor: isPressed ? '#dddddd' : undefined,
+          },
+          rest.style,
+        ]}>
+        {children}
+      </Pressable>
     );
   }
 
-  _scrollToTop = () => {
-    // @ts-ignore
-    this._listView!.scrollTo({ x: 0, y: 0 });
+  return (
+    <TouchableHighlight underlayColor="#dddddd" onPress={onPress} {...props} {...rest}>
+      {children}
+    </TouchableHighlight>
+  );
+}
+
+export default function ComponentListScreen(props: Props) {
+  React.useEffect(() => {
+    StatusBar.setHidden(false);
+  }, []);
+
+  const { width } = useWindowDimensions();
+  const isMobile = width <= 640;
+
+  // adjust the right padding for safe area -- we don't need the left because that's where the drawer is.
+  const { bottom, right } = useSafeArea();
+
+  const renderExampleSection: ListRenderItem<ListElement> = ({ item }) => {
+    const { route, name: exampleName, isAvailable } = item;
+    return (
+      <LinkButton disabled={!isAvailable} to={route ?? exampleName} style={[styles.rowTouchable]}>
+        <View
+          pointerEvents="none"
+          style={[styles.row, !isAvailable && styles.disabledRow, { paddingRight: 10 + right }]}>
+          {props.renderItemRight && props.renderItemRight(item)}
+          <Text style={styles.rowLabel}>{exampleName}</Text>
+          <Text style={styles.rowDecorator}>
+            <Ionicons name="chevron-forward" size={18} color="#595959" />
+          </Text>
+        </View>
+      </LinkButton>
+    );
   };
+
+  const keyExtractor = React.useCallback((item: ListElement) => item.name, []);
+
+  const sortedApis = React.useMemo(() => {
+    return props.apis.sort((a, b) => {
+      if (a.isAvailable !== b.isAvailable) {
+        if (a.isAvailable) {
+          return -1;
+        }
+        return 1;
+      }
+      return 0;
+    });
+  }, [props.apis]);
+
+  return (
+    <FlatList<ListElement>
+      initialNumToRender={25}
+      removeClippedSubviews={false}
+      keyboardShouldPersistTaps="handled"
+      keyboardDismissMode="on-drag"
+      contentContainerStyle={{ backgroundColor: '#fff', paddingBottom: isMobile ? 0 : bottom }}
+      data={sortedApis}
+      keyExtractor={keyExtractor}
+      renderItem={renderExampleSection}
+    />
+  );
 }
 
 const styles = StyleSheet.create({
@@ -79,6 +130,8 @@ const styles = StyleSheet.create({
     paddingTop: 100,
   },
   row: {
+    paddingHorizontal: 10,
+    paddingVertical: 14,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -88,8 +141,6 @@ const styles = StyleSheet.create({
     paddingRight: 4,
   },
   rowTouchable: {
-    paddingHorizontal: 10,
-    paddingVertical: 14,
     borderBottomWidth: 1.0 / PixelRatio.get(),
     borderBottomColor: '#dddddd',
   },
@@ -105,5 +156,3 @@ const styles = StyleSheet.create({
     marginLeft: 6,
   },
 });
-
-export default withNavigation(ComponentListScreen);

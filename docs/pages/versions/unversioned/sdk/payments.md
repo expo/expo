@@ -1,30 +1,26 @@
 ---
 title: Payments
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-payments-stripe'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-payments-stripe'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-Expo includes support for payments through [Stripe](https://stripe.com/) and [Apple Pay](https://www.apple.com/apple-pay/) on iOS via ExpoKit, and Stripe on Android (plus Android Pay via ExpoKit).
+> **This library is deprecated in favor of [`@stripe/stripe-react-native`](./stripe.md), and will be removed in SDK 43.** [Here's a guide to help make the transition as easy as possible](https://github.com/expo/fyi/blob/master/payments-migration-guide.md#how-to-migrate-from-expo-payments-stripe-to-the-new-stripestripe-react-native-library).
+
+> 🚨 On iOS, the Payments module is currently only supported the [bare workflow](https://docs.expo.io/workflow/customizing/).
+
+Payments uses [Stripe](https://stripe.com/) and [Apple Pay](https://www.apple.com/apple-pay/) on iOS, but the module is only available in bare workflow apps.
+
+Stripe is supported in the managed workflow for Android, and Android Pay is supported in the bare workflow.
 
 Need more help than what's on the page? The Payments module is largely based off [tipsi-stripe](https://github.com/tipsi/tipsi-stripe). The documentation and questions there may prove helpful.
-
-_Note_: (Android only) If you are using Expo client then the setup has already been done for you.
-
-```js
-import { PaymentsStripe } from 'expo-payments-stripe';
-```
 
 <PlatformsSection android ios simulator web={{ pending: 'https://github.com/expo/expo/issues/4046' }} />
 
 ## Installation
 
 <InstallSection packageName="expo-payments-stripe" />
-
-## Compatibility
-
-The Payments module is currently only supported the bare workflow on iOS. If you have a managed workflow project, you'll need to [move to the bare workflow](../../bare/customizing/) in order to use this module on iOS.
 
 ## Setup
 
@@ -37,6 +33,8 @@ If you haven't done payments with Stripe before, create an account with [Stripe]
 For iOS, follow [Stripe instructions](https://stripe.com/docs/mobile/ios/sources#redirecting-your-customer).
 
 For Android, add the following code to your `AndroidManifest.xml`, replacing `your_scheme` with the URI scheme you're going to use when specifying return URL for payment process.
+
+> 💡 If you are using Expo Go then the setup has already been done for you.
 
 ```xml
       ...
@@ -128,7 +126,7 @@ const params = {
   addressZip: '55555',
 };
 
-const token = await stripe.createTokenWithCardAsync(params);
+const token = await Stripe.createTokenWithCardAsync(params);
 
 // Client specific code
 // api.sendTokenToBackend(token)
@@ -209,9 +207,9 @@ const token = await stripe.paymentRequestWithCardFormAsync(options);
 
 Creates source object based on params. Sources are used to create payments for a variety of [payment methods](https://stripe.com/docs/sources)
 
-_NOTE_: For sources that require redirecting your customer to authorize the payment, you need to specify a return URL when you create the source. This allows your customer to be redirected back to your app after they authorize the payment. The prefix before ':' in your return URL should be the same as the scheme in your `info.plist` and `AndroidManifest.xml`. If You are not sure about this step look at above sections "Register hook in order to Stripe could process source authorization".
+_NOTE_: For sources that require redirecting your customer to authorize the payment, you need to specify a return URL when you create the source. This allows your customer to be redirected back to your app after they authorize the payment. The prefix before ':' in your return URL should be the same as the scheme in your `info.plist` and `AndroidManifest.xml`. If you are not sure about this step look at above sections "Register hook in order to Stripe could process source authorization".
 
-_NOTE_: If you are using Expo client or an ejected Expo application, do not specify `returnURL`.
+_NOTE_: If you are using Expo Go or an ejected Expo application, do not specify `returnURL`.
 
 `params` — An object with the following keys:
 
@@ -252,7 +250,7 @@ const source = await stripe.createSourceWithParamsAsync(params);
 
 ## ApplePay [iOS]
 
-Remember: to use Apple Pay on a real device, you need to [set up apple pay first](#enabling-apple-pay-in-expokit).
+Remember: to use Apple Pay on a real device, you need to [set up apple pay first](#enabling-apple-pay-in-bare).
 
 ### `openApplePaySetupAsync()`
 
@@ -433,7 +431,7 @@ try {
 
 ## AndroidPay
 
-Android Pay (also known as Google Pay) is currently only supported on ExpoKit apps. To add it to your app, add the following lines to your `AndroidManifest.xml` file, inside of the `<application>....</applicaton>` tags:
+Android Pay (also known as Google Pay) is currently only supported in the bare workflow. To add it to your app, add the following lines to your `AndroidManifest.xml` file, inside of the `<application>....</applicaton>` tags:
 
 ```xml
 <meta-data
@@ -764,7 +762,7 @@ A source object returned from creating a source (via `createSourceWithParamsAsyn
 }
 ```
 
-## Enabling Apple Pay in ExpoKit
+## Enabling Apple Pay in bare
 
 If you want to use Apple Pay for payments, you'll need to set up your merchant ID in XCode first. Note that you do not need to go through this process to use the Payments module - you can still process payments with Stripe without going through the steps in this section.
 

@@ -1,78 +1,95 @@
+import { useFocusEffect } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Platform } from '@unimodules/core';
+import * as Contacts from 'expo-contacts';
 import React from 'react';
 import { RefreshControl, StyleSheet, Text, View } from 'react-native';
-import * as Permissions from 'expo-permissions';
-import * as Contacts from 'expo-contacts';
-import { NavigationEvents, NavigationScreenProps } from 'react-navigation';
-import HeaderButtons from 'react-navigation-header-buttons';
-import { Ionicons } from '@expo/vector-icons';
 
-import ContactsList from './ContactsList';
+import HeaderIconButton, { HeaderContainerRight } from '../../components/HeaderIconButton';
+import usePermissions from '../../utilities/usePermissions';
+import { useResolvedValue } from '../../utilities/useResolvedValue';
 import * as ContactUtils from './ContactUtils';
+import ContactsList from './ContactsList';
+
+type StackParams = {
+  ContactDetail: { id: string };
+};
+
+type Props = {
+  navigation: StackNavigationProp<StackParams>;
+};
 
 const CONTACT_PAGE_SIZE = 500;
 
-interface State {
-  contacts: Contacts.Contact[];
-  hasPreviousPage: boolean;
-  hasNextPage: boolean;
-  permission?: boolean;
-  refreshing: boolean;
-}
-
-export default class ContactsScreen extends React.Component<NavigationScreenProps, State> {
-  static navigationOptions = () => {
-    return {
+export default function ContactsScreen({ navigation }: Props) {
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
       title: 'Contacts',
-      headerRight: (
-        <HeaderButtons
-          IconComponent={Ionicons}
-          OverflowIcon={<Ionicons name="ios-more" size={23} color="blue" />}
-          iconSize={23}
-          color="blue"
-        >
-          <HeaderButtons.Item
-            title="add"
-            iconName="md-add"
-            onPress={async () => {
-              const randomContact = { note: 'Likes expo...' };
-
-              // @ts-ignore
+      headerRight: () => (
+        <HeaderContainerRight>
+          <HeaderIconButton
+            disabled={Platform.select({ web: true, default: false })}
+            name="md-add"
+            onPress={() => {
+              const randomContact = { note: 'Likes expo...' } as Contacts.Contact;
               ContactUtils.presentNewContactFormAsync({ contact: randomContact });
-              // ContactUtils.presentUnknownContactFormAsync({
-              //   contact: randomContact,
-              // });
             }}
           />
-        </HeaderButtons>
+        </HeaderContainerRight>
       ),
-    };
+    });
+  }, [navigation]);
+
+  const [isAvailable, error] = useResolvedValue(Contacts.isAvailableAsync);
+  const [permission] = usePermissions(Contacts.requestPermissionsAsync);
+
+  const warning = React.useMemo(() => {
+    if (error) {
+      return `An unknown error occurred while checking the API availability: ${error.message}`;
+    } else if (isAvailable === null) {
+      return 'Checking availability...';
+    } else if (isAvailable === false) {
+      return 'Contacts API is not available on this platform.';
+    } else if (!permission) {
+      return 'Contacts permission has not been granted for this app. Grant permission in the Settings app to continue.';
+    } else if (permission) {
+      return null;
+    }
+    return 'Pending user permission...';
+  }, [error, permission, isAvailable]);
+
+  if (warning) {
+    return (
+      <View style={styles.permissionContainer}>
+        <Text>{warning}</Text>
+      </View>
+    );
   }
 
-  _rawContacts: { [contactId: string]: Contacts.Contact } = {};
-  readonly state: State = {
-    contacts: [],
-    hasPreviousPage: false,
-    hasNextPage: false,
-    refreshing: false,
-  };
+  return <ContactsView navigation={navigation} />;
+}
 
-  componentDidFocus = async () => {
-    await this.checkPermissionAsync();
-    await this.loadAsync();
-  }
+function ContactsView({ navigation }: Props) {
+  let rawContacts: Record<string, Contacts.Contact> = {};
 
-  checkPermissionAsync = async () => {
-    const { status } = await Permissions.askAsync(Permissions.CONTACTS);
-    this.setState({ permission: status === 'granted' });
-  }
+  const [contacts, setContacts] = React.useState<Contacts.Contact[]>([]);
+  const [hasNextPage, setHasNextPage] = React.useState(true);
+  const [refreshing, setRefreshing] = React.useState(false);
 
-  loadAsync = async ({ distanceFromEnd }: { distanceFromEnd?: number } = {}, restart = false) => {
-    if (!this.state.permission || this.state.refreshing) {
+  const onPressItem = React.useCallback(
+    (id: string) => {
+      navigation.navigate('ContactDetail', { id });
+    },
+    [navigation]
+  );
+
+  const loadAsync = async (event: { distanceFromEnd?: number } = {}, restart = false) => {
+    if (!hasNextPage || refreshing || Platform.OS === 'web') {
       return;
     }
-    this.setState({ refreshing: true });
+    setRefreshing(true);
 
-    const pageOffset = restart ? 0 : this.state.contacts.length || 0;
+    const pageOffset = restart ? 0 : contacts.length || 0;
 
     const pageSize = restart ? Math.max(pageOffset, CONTACT_PAGE_SIZE) : CONTACT_PAGE_SIZE;
 
@@ -83,65 +100,42 @@ export default class ContactsScreen extends React.Component<NavigationScreenProp
       pageOffset,
     });
 
-    const { data: contacts, hasPreviousPage, hasNextPage } = payload;
+    const { data: nextContacts } = payload;
 
     if (restart) {
-      this._rawContacts = {};
+      rawContacts = {};
     }
 
-    for (const contact of contacts) {
-      this._rawContacts[contact.id] = contact;
+    for (const contact of nextContacts) {
+      rawContacts[contact.id] = contact;
     }
-    this.setState({
-      contacts: Object.values(this._rawContacts),
-      hasPreviousPage,
-      hasNextPage,
-      refreshing: false,
-    });
-  }
+    setContacts(Object.values(rawContacts));
+    setHasNextPage(payload.hasNextPage);
+    setRefreshing(false);
+  };
 
-  onPressItem = async (id: string) => {
-    // tslint:disable-next-line no-console
-    console.log('onPress', id);
-    this.props.navigation.navigate('ContactDetail', { id });
-  }
+  const onFocus = React.useCallback(() => {
+    loadAsync();
+  }, []);
 
-  render() {
-    const { contacts, permission } = this.state;
-    if (!permission) {
-      return (
-        <View style={styles.permissionContainer}>
-          <NavigationEvents onDidFocus={this.componentDidFocus} />
-          <Text>No Contact Permission</Text>
-        </View>
-      );
-    }
-    return (
-      <View style={styles.container}>
-        <NavigationEvents onDidFocus={this.componentDidFocus} />
-        <ContactsList
-          onEndReachedThreshold={-1.5}
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={() => this.loadAsync({}, true)}
-            />
-          }
-          data={contacts}
-          onPressItem={this.onPressItem}
-          onEndReached={this.loadAsync}
-        />
-      </View>
-    );
-  }
+  useFocusEffect(onFocus);
+
+  return (
+    <ContactsList
+      onEndReachedThreshold={-1.5}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={() => loadAsync({}, true)} />
+      }
+      data={contacts}
+      onPressItem={onPressItem}
+      onEndReached={loadAsync}
+    />
+  );
 }
 
 const styles = StyleSheet.create({
   button: {
     marginVertical: 10,
-  },
-  container: {
-    flex: 1,
   },
   permissionContainer: {
     flex: 1,

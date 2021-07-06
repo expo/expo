@@ -62,7 +62,7 @@ class PathParser {
 
             if (!has_prev_cmd && first_char != 'M' && first_char != 'm') {
                 // The first segment must be a MoveTo.
-                throw new Error("UnexpectedData");
+                throw new Error(String.format("Unexpected character '%c' (i=%d, s=%s)", first_char, i, s));
             }
 
             // TODO: simplify
@@ -75,7 +75,7 @@ class PathParser {
             } else if (is_number_start(first_char) && has_prev_cmd) {
                 if (prev_cmd == 'Z' || prev_cmd == 'z') {
                     // ClosePath cannot be followed by a number.
-                    throw new Error("UnexpectedData");
+                    throw new Error(String.format("Unexpected number after 'z' (s=%s)", s));
                 }
 
                 if (prev_cmd == 'M' || prev_cmd == 'm') {
@@ -93,7 +93,7 @@ class PathParser {
                     cmd = prev_cmd;
                 }
             } else {
-                throw new Error("UnexpectedData");
+                throw new Error(String.format("Unexpected character '%c' (i=%d, s=%s)", first_char, i, s));
             }
 
             boolean absolute = is_absolute(cmd);
@@ -176,7 +176,7 @@ class PathParser {
                     break;
                 }
                 default: {
-                    throw new Error("UnexpectedData");
+                    throw new Error(String.format("Unexpected comand '%c' (s=%s)", cmd, s));
                 }
             }
 
@@ -514,7 +514,7 @@ class PathParser {
                 break;
             }
             default:
-                throw new Error("UnexpectedData");
+                throw new Error(String.format("Unexpected flag '%c' (i=%d, s=%s)", c, i, s));
         }
 
         return c == '1';
@@ -522,7 +522,7 @@ class PathParser {
 
     private static float parse_list_number() {
         if (i == l) {
-            throw new Error("UnexpectedEnd");
+            throw new Error(String.format("Unexpected end (s=%s)", s));
         }
 
         float n = parse_number();
@@ -537,7 +537,7 @@ class PathParser {
         skip_spaces();
 
         if (i == l) {
-            throw new Error("InvalidNumber");
+            throw new Error(String.format("Unexpected end (s=%s)", s));
         }
 
         int start = i;
@@ -557,7 +557,7 @@ class PathParser {
                 c = s.charAt(i);
             }
         } else if (c != '.') {
-            throw new Error("InvalidNumber");
+            throw new Error(String.format("Invalid number formating character '%c' (i=%d, s=%s)", c ,i, s));
         }
 
         // Consume fraction.
@@ -582,7 +582,7 @@ class PathParser {
                 } else if (c >= '0' && c <= '9') {
                     skip_digits();
                 } else {
-                    throw new Error("InvalidNumber");
+                    throw new Error(String.format("Invalid number formating character '%c' (i=%d, s=%s)", c, i, s));
                 }
             }
         }
@@ -592,7 +592,7 @@ class PathParser {
 
         // inf, nan, etc. are an error.
         if (Float.isInfinite(n) || Float.isNaN(n)) {
-            throw new Error("InvalidNumber");
+            throw new Error(String.format("Invalid number '%s' (start=%d, i=%d, s=%s)", num, start, i, s));
         }
 
         return n;

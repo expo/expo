@@ -1,4 +1,5 @@
 import RelapseError from './RelapseError';
+import { RelapseCode } from './protocol';
 
 let listeners = [];
 
@@ -35,7 +36,14 @@ export function send(message) {
   if (!socket) {
     throw new RelapseError(`server`, `Socket isn't running`);
   }
-  socket.send(JSON.stringify(message));
+
+  let json;
+  try {
+    json = JSON.stringify(message);
+  } catch (e) {
+    json = JSON.stringify({ code: RelapseCode.SerializationError, call: message.call });
+  }
+  socket.send(json);
 }
 
 export function createProxy(name) {
@@ -44,7 +52,11 @@ export function createProxy(name) {
     {
       get: (target, prop) => {
         return (...args) => {
-          send({ call: `${name}.${prop.toString()}`, arguments: args });
+          send({
+            code: RelapseCode.ProxyCall,
+            call: `${name}.${prop.toString()}`,
+            arguments: args,
+          });
         };
       },
     }

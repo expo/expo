@@ -1,7 +1,8 @@
 import Constants from 'expo-constants';
 import { EventEmitter } from 'fbemitter';
 import invariant from 'invariant';
-import uuidv4 from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
+import getInstallationIdAsync from '../environment/getInstallationIdAsync';
 import LogSerialization from './LogSerialization';
 const _sessionId = uuidv4();
 const _logQueue = [];
@@ -47,7 +48,7 @@ async function _sendRemoteLogsAsync() {
     // Our current transport policy is to send all of the pending log messages in one batch. If we opt
     // for another policy (ex: throttling) this is where to to implement it.
     const batch = _logQueue.splice(0);
-    const { logUrl } = Constants.manifest;
+    const logUrl = Constants.manifest?.logUrl;
     if (typeof logUrl !== 'string') {
         throw new Error('The Expo project manifest must specify `logUrl`');
     }
@@ -72,7 +73,7 @@ async function _sendNextLogBatchAsync(batch, logUrl) {
         Connection: 'keep-alive',
         'Proxy-Connection': 'keep-alive',
         Accept: 'application/json',
-        'Device-Id': Constants.installationId,
+        'Device-Id': await getInstallationIdAsync(),
         'Session-Id': _sessionId,
     };
     if (Constants.deviceName) {

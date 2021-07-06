@@ -3,14 +3,14 @@
 buildscript {
   ext {
     minSdkVersion = 21
-    targetSdkVersion = 28
-    compileSdkVersion = 28
+    targetSdkVersion = 30
+    compileSdkVersion = 30
 
     dbFlowVersion = '4.2.4'
-    buildToolsVersion = '28.0.0'
-    supportLibVersion = '28.0.0'
-    kotlinVersion = '1.3.50'
-    gradlePluginVersion = '3.5.3'
+    buildToolsVersion = '30.0.5'
+    supportLibVersion = '29.0.0'
+    kotlinVersion = '1.4.21'
+    gradlePluginVersion = '4.1.2'
     gradleDownloadTaskVersion = '3.4.3'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
   }
@@ -20,8 +20,8 @@ buildscript {
     maven { url 'https://dl.bintray.com/android/android-tools/' }
   }
   dependencies {
-    classpath "com.android.tools.build:gradle:$gradlePluginVersion"
-    classpath 'com.google.gms:google-services:3.2.1'
+    classpath "com.android.tools.build:gradle:${gradlePluginVersion}"
+    classpath 'com.google.gms:google-services:4.3.5'
     classpath "de.undercouch:gradle-download-task:$gradleDownloadTaskVersion"
 
     // https://github.com/awslabs/aws-device-farm-gradle-plugin/releases
@@ -29,6 +29,10 @@ buildscript {
 
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
   }
+}
+
+plugins {
+  id "com.diffplug.spotless" version "5.12.1"
 }
 
 allprojects {
@@ -39,33 +43,30 @@ allprojects {
     }
     // For old expoviews to work
     maven {
-      url "$rootDir/versioned-abis/expoview-abi37_0_0/maven"
+      url "$rootDir/versioned-abis/expoview-abi42_0_0/maven"
     }
     maven {
-      url "$rootDir/versioned-abis/expoview-abi36_0_0/maven"
+      url "$rootDir/versioned-abis/expoview-abi41_0_0/maven"
     }
     maven {
-      url "$rootDir/versioned-abis/expoview-abi34_0_0/maven"
+      url "$rootDir/versioned-abis/expoview-abi40_0_0/maven"
     }
     maven {
-      url "$rootDir/versioned-abis/expoview-abi35_0_0/maven"
+      url "$rootDir/versioned-abis/expoview-abi39_0_0/maven"
     }
     maven {
       url "$rootDir/versioned-abis/maven"
-    }
-    // For detach
-    maven {
-      url "$rootDir/../node_modules/expokit/maven"
-    }
-    maven {
-      // We use a modified build of com.android.support.test:runner:1.0.1. Explanation in maven-test/README
-      url "$rootDir/maven-test"
     }
     google()
     jcenter()
     maven {
       // Local Maven repo containing AARs with JSC built for Android
       url "$rootDir/../node_modules/jsc-android/dist"
+    }
+    maven {
+      // Local expo-camera Maven repo containing our slightly modified
+      // Google's cameraview from expo/cameraview.
+      url "$rootDir/../packages/expo-camera/android/maven"
     }
     flatDir {
       dirs 'libs'
@@ -80,8 +81,50 @@ allprojects {
     // Want this last so that we never end up with a stale cache
     mavenLocal()
   }
+
+  configurations.all {
+    // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
+    resolutionStrategy.dependencySubstitution {
+      substitute module("com.facebook.react:react-native:+") with project(":ReactAndroid")
+
+      // Gradle needs another hint (apart from plain dependency substitution)
+      // to know that it should first evaluate the replacing project before resolving
+      // classpaths etc. Without this block an error is thrown when running tests
+      // in a project that depends on react-native (eg. expo-updates):
+      //   > No matching configuration of project :ReactAndroid was found.
+      //   > The consumer was configured to find a runtime of a component,
+      //   > as well as attribute 'com.android.build.api.attributes.BuildTypeAttr'
+      //   > with value 'debug' but:
+      //   >   - None of the consumable configurations have attributes.
+      all {
+        if (requested.displayName == "com.facebook.react:react-native:+") {
+          evaluationDependsOn(":ReactAndroid")
+        }
+      }
+    }
+    // WHEN_DISTRIBUTING_REMOVE_TO_HERE
+  }
 }
 
-task clean(type: Delete) {
-  delete rootProject.buildDir
+subprojects {
+  plugins.apply("com.diffplug.spotless")
+  spotless {
+    format 'gradle', {
+      target '*.gradle'
+      trimTrailingWhitespace()
+      indentWithSpaces()
+      endWithNewline()
+    }
+    kotlin {
+      target '**/*.kt'
+      ktlint().userData([
+          "disabled_rules"          : "no-wildcard-imports,import-ordering",
+          "indent_size"             : "2",
+          "continuation_indent_size": "4"
+      ])
+      trimTrailingWhitespace()
+      indentWithSpaces()
+      endWithNewline()
+    }
+  }
 }

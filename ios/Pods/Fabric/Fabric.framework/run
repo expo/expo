@@ -1,6 +1,0 @@
-if [[ -z $PODS_ROOT ]]; then
-    echo "error: The run binary delivered by cocoapods is in a new location, under '$"{"PODS_ROOT"}"/Fabric/run'. This script was put in place for backwards compatibility, but it relies on PODS_ROOT, which does not have a value in your current setup. Please update the path to the run binary to fix this issue."
-else
-    echo "warning: The run script is now located at '$"{"PODS_ROOT"}"/Fabric/run'. To remove this warning, update your Run Script Build Phase to point to this new location."
-    sh "${PODS_ROOT}/Fabric/run" "$@"
-fi

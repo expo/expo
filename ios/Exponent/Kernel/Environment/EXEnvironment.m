@@ -6,7 +6,6 @@
 #import "ExpoKit.h"
 #import "EXEnvironment.h"
 
-#import <Crashlytics/Crashlytics.h>
 #import <React/RCTUtils.h>
 
 NSString * const kEXEmbeddedBundleResourceName = @"shell-app";
@@ -52,6 +51,8 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
   _standaloneManifestUrl = nil;
   _urlScheme = nil;
   _areRemoteUpdatesEnabled = YES;
+  _updatesCheckAutomatically = YES;
+  _updatesFallbackToCacheTimeout = @(0);
   _allManifestUrls = @[];
   _isDebugXCodeScheme = NO;
   _releaseChannel = @"default";
@@ -203,6 +204,13 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
   _areRemoteUpdatesEnabled = (shellConfig[@"areRemoteUpdatesEnabled"] == nil)
     ? YES
     : [shellConfig[@"areRemoteUpdatesEnabled"] boolValue];
+  _updatesCheckAutomatically = (shellConfig[@"updatesCheckAutomatically"] == nil)
+    ? YES
+    : [shellConfig[@"updatesCheckAutomatically"] boolValue];
+  _updatesFallbackToCacheTimeout = (shellConfig[@"updatesFallbackToCacheTimeout"] &&
+                                    [shellConfig[@"updatesFallbackToCacheTimeout"] isKindOfClass:[NSNumber class]])
+    ? shellConfig[@"updatesFallbackToCacheTimeout"]
+    : @(0);
   if (infoPlist[@"ExpoReleaseChannel"]) {
     _releaseChannel = infoPlist[@"ExpoReleaseChannel"];
   } else {
@@ -224,7 +232,6 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
 {
   if (_testEnvironment == EXTestEnvironmentNone) {
     [[EXAnalytics sharedInstance] setUserProperties:@{ @"INITIAL_URL": shellManifestUrl }];
-    [CrashlyticsKit setObjectValue:_standaloneManifestUrl forKey:@"initial_url"];
     if (isUserDetached) {
       [[EXAnalytics sharedInstance] setUserProperties:@{ @"IS_DETACHED": @YES }];
     }

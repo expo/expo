@@ -1,9 +1,61 @@
 # Changelog
 
-## master
+## Unpublished
 
 ### 🛠 Breaking changes
 
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+## 8.3.2 — 2021-04-21
+
+### 🎉 New features
+
+- Find local assets without extensions.  ([#12624](https://github.com/expo/expo/pull/12624) by [@jkhales](https://github.com/jkhales))
+
+## 8.3.1 — 2021-03-23
+
+### 🐛 Bug fixes
+
+- Removed annoying yellowbox warning message in bare workflow when there's no manifest available. ([#12237](https://github.com/expo/expo/pull/12237) by [@bbarthec](https://github.com/bbarthec))
+
+## 8.3.0 — 2021-03-10
+
+### 🐛 Bug fixes
+
+- Remove peerDependencies and unimodulePeerDependencies from Expo modules. ([#11980](https://github.com/expo/expo/pull/11980) by [@brentvatne](https://github.com/brentvatne))
+
+## 8.2.2 — 2021-01-15
+
+_This version does not introduce any user-facing changes._
+
+## 8.2.1 — 2020-11-17
+
+_This version does not introduce any user-facing changes._
+
+## 8.2.0 — 2020-08-18
+
+### 🎉 New features
+
+- Add `useAssets` hook to simplify assets handling. ([#8928](https://github.com/expo/expo/pull/8928) by [@bycedric](https://github.com/bycedric))
+
+### 🐛 Bug fixes
+
+- Fixed `Asset.loadAsync()` TypeScript signature to match `Asset.fromModule()` types. ([#9246](https://github.com/expo/expo/pull/9246) by [@barthap](https://github.com/barthap))
+
+## 8.1.7 — 2020-05-29
+
+*This version does not introduce any user-facing changes.*
+
+## 8.1.6 — 2020-05-27
+
+*This version does not introduce any user-facing changes.*
+
+## 8.1.5
+
+### 🎉 New features
+
+- `asset.downloadAsync()` returns the resolved `Asset` when it resolves. ([#8646](https://github.com/expo/expo/pull/8646) by [@EvanBacon](https://github.com/EvanBacon))
+- `Asset.loadAsync()` returns an array of resolved `Asset`s when it finishes loading the resources. ([#8646](https://github.com/expo/expo/pull/8646) by [@EvanBacon](https://github.com/EvanBacon))
+- Added support for the `expo-updates` **no-publish workflow**. ([#8003](https://github.com/expo/expo/pull/8003) by [@esamelson](https://github.com/esamelson))

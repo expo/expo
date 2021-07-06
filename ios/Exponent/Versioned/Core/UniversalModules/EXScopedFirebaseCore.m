@@ -3,6 +3,7 @@
 #if __has_include(<EXFirebaseCore/EXFirebaseCore.h>)
 #import "EXScopedFirebaseCore.h"
 #import <EXFirebaseCore/EXFirebaseCore+FIROptions.h>
+#import <ExpoModulesCore/EXConstantsInterface.h>
 
 @interface NSObject (Private)
 - (NSString*)_methodDescription;
@@ -12,7 +13,7 @@
   NSDictionary* _protectedAppNames;
 }
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId andConstantsBinding:(EXConstantsBinding *)constantsBinding
+- (instancetype)initWithScopeKey:(NSString *)scopeKey andConstantsBinding:(EXConstantsBinding *)constantsBinding
 {
   if (![@"expo" isEqualToString:constantsBinding.appOwnership]) {
     return [super init];
@@ -33,8 +34,8 @@
   if ([FIRApp defaultApp]) [protectedAppNames setValue:@YES forKey:[FIRApp defaultApp].name];
   
   // Determine project app name & options
-  NSString *encodedExperienceId = [self.class encodedResourceName:experienceId];
-  NSString* appName = [NSString stringWithFormat:@"__sandbox_%@", encodedExperienceId];
+  NSString *encodedScopeKey = [self.class encodedResourceName:scopeKey];
+  NSString* appName = [NSString stringWithFormat:@"__sandbox_%@", encodedScopeKey];
   NSDictionary* googleServicesFile = [self.class googleServicesFileFromConstantsManifest:constantsBinding];
   FIROptions* options = [self.class optionsWithGoogleServicesFile:googleServicesFile];
   
@@ -60,7 +61,7 @@
 
 - (BOOL)isAppAccessible:(nonnull NSString *)name
 {
-  // Deny access to the protected default app on the Expo client
+  // Deny access to the protected default app on the Expo Go
   if (_protectedAppNames && _protectedAppNames[name]) {
     return NO;
   }
@@ -77,7 +78,7 @@
   return [base64 stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"="]];
 }
 
-+ (nullable NSDictionary *)googleServicesFileFromConstantsManifest:(nullable id<UMConstantsInterface>)constants
++ (nullable NSDictionary *)googleServicesFileFromConstantsManifest:(nullable id<EXConstantsInterface>)constants
 {
   // load GoogleService-Info.plist from manifest
   @try {

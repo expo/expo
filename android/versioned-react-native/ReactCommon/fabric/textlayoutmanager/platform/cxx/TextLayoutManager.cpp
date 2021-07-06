@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -17,7 +17,7 @@ void *TextLayoutManager::getNativeTextLayoutManager() const {
 }
 
 Size TextLayoutManager::measure(
-    AttributedString attributedString,
+    AttributedStringBox attributedStringBox,
     ParagraphAttributes paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
   return Size{0, 0};

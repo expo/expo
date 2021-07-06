@@ -87,8 +87,12 @@ class GetQueryInfo {
     }
 
     // to maintain compatibility with IOS field after is in string object
-    mOffset = mInput.containsKey("after") ?
+    try {
+      mOffset = mInput.containsKey("after") ?
         Integer.parseInt((String) mInput.get("after")) : 0;
+    } catch (NumberFormatException e) {
+      mOffset = 0;
+    }
     return this;
   }
 }

@@ -1,9 +1,10 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
- * directory of this source tree.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.react.views.scroll;
 
 import android.content.Context;
@@ -12,7 +13,6 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.FocusFinder;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -22,11 +22,17 @@ import android.widget.OverScroller;
 import androidx.annotation.Nullable;
 import androidx.core.text.TextUtilsCompat;
 import androidx.core.view.ViewCompat;
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
+import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
@@ -41,6 +47,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   private static @Nullable Field sScrollerField;
   private static boolean sTriedToGetScrollerField = false;
+  private static final String CONTENT_OFFSET_LEFT = "contentOffsetLeft";
+  private static final String CONTENT_OFFSET_TOP = "contentOffsetTop";
 
   private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
   private final @Nullable OverScroller mScroller;
@@ -68,6 +76,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   private boolean mSnapToEnd = true;
   private ReactViewBackgroundManager mReactBackgroundManager;
   private boolean mPagedArrowScrolling = false;
+  private @Nullable StateWrapper mStateWrapper;
 
   private final Rect mTempRect = new Rect();
 
@@ -93,7 +102,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
         sScrollerField = HorizontalScrollView.class.getDeclaredField("mScroller");
         sScrollerField.setAccessible(true);
       } catch (NoSuchFieldException e) {
-        Log.w(
+        FLog.w(
             ReactConstants.TAG,
             "Failed to get mScroller field for HorizontalScrollView! "
                 + "This app will exhibit the bounce-back scrolling bug :(");
@@ -106,7 +115,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
         if (scrollerValue instanceof OverScroller) {
           scroller = (OverScroller) scrollerValue;
         } else {
-          Log.w(
+          FLog.w(
               ReactConstants.TAG,
               "Failed to cast mScroller field in HorizontalScrollView (probably due to OEM changes to AOSP)! "
                   + "This app will exhibit the bounce-back scrolling bug :(");
@@ -215,7 +224,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
   @Override
   protected void onLayout(boolean changed, int l, int t, int r, int b) {
     // Call with the present values in order to re-layout if necessary
-    scrollTo(getScrollX(), getScrollY());
+    reactScrollTo(getScrollX(), getScrollY());
   }
 
   /**
@@ -324,7 +333,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       // Log and ignore the error. This seems to be a bug in the android SDK and
       // this is the commonly accepted workaround.
       // https://tinyurl.com/mw6qkod (Stack Overflow)
-      Log.w(ReactConstants.TAG, "Error intercepting touch event.", e);
+      FLog.w(ReactConstants.TAG, "Error intercepting touch event.", e);
     }
 
     return false;
@@ -381,6 +390,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     mVelocityHelper.calculateVelocity(ev);
     int action = ev.getAction() & MotionEvent.ACTION_MASK;
     if (action == MotionEvent.ACTION_UP && mDragging) {
+      updateStateOnScroll(getScrollX(), getScrollY());
+
       float velocityX = mVelocityHelper.getXVelocity();
       float velocityY = mVelocityHelper.getYVelocity();
       ReactScrollViewHelper.emitScrollEndDragEvent(this, velocityX, velocityY);
@@ -491,6 +502,13 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     outClippingRect.set(Assertions.assertNotNull(mClippingRect));
   }
 
+  @Override
+  public boolean getChildVisibleRect(View child, Rect r, android.graphics.Point offset) {
+    return ReactFeatureFlags.clipChildRectsIfOverflowIsHidden
+        ? ReactClippingViewGroupHelper.getChildVisibleRectHelper(child, r, offset, this, mOverflow)
+        : super.getChildVisibleRect(child, r, offset);
+  }
+
   private int getSnapInterval() {
     if (mSnapInterval != 0) {
       return mSnapInterval;
@@ -596,6 +614,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
               ViewCompat.postOnAnimationDelayed(
                   ReactHorizontalScrollView.this, this, ReactScrollViewHelper.MOMENTUM_DELAY);
             } else {
+              updateStateOnScroll(getScrollX(), getScrollY());
+
               if (mPagingEnabled && !mSnappingToPage) {
                 // Only if we have pagingEnabled and we have not snapped to the page do we
                 // need to continue checking for the scroll.  And we cause that scroll by asking for
@@ -689,7 +709,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
     targetOffset = currentPage * interval;
     if (targetOffset != currentOffset) {
       mActivelyScrolling = true;
-      smoothScrollTo((int) targetOffset, getScrollY());
+      reactSmoothScrollTo((int) targetOffset, getScrollY());
     }
   }
 
@@ -825,7 +845,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
       postInvalidateOnAnimation();
     } else {
-      smoothScrollTo(targetOffset, getScrollY());
+      reactSmoothScrollTo(targetOffset, getScrollY());
     }
   }
 
@@ -848,7 +868,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
       page = 0;
     }
 
-    smoothScrollTo(page * width, getScrollY());
+    reactSmoothScrollTo(page * width, getScrollY());
     handlePostTouchScrolling(0, 0);
   }
 
@@ -875,5 +895,46 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
 
   public void setBorderStyle(@Nullable String style) {
     mReactBackgroundManager.setBorderStyle(style);
+  }
+
+  /**
+   * Calls `smoothScrollTo` and updates state.
+   *
+   * <p>`smoothScrollTo` changes `contentOffset` and we need to keep `contentOffset` in sync between
+   * scroll view and state. Calling raw `smoothScrollTo` doesn't update state.
+   */
+  public void reactSmoothScrollTo(int x, int y) {
+    smoothScrollTo(x, y);
+    updateStateOnScroll(x, y);
+  }
+
+  /**
+   * Calls `reactScrollTo` and updates state.
+   *
+   * <p>`reactScrollTo` changes `contentOffset` and we need to keep `contentOffset` in sync between
+   * scroll view and state. Calling raw `reactScrollTo` doesn't update state.
+   */
+  public void reactScrollTo(int x, int y) {
+    scrollTo(x, y);
+    updateStateOnScroll(x, y);
+  }
+
+  public void updateState(@Nullable StateWrapper stateWrapper) {
+    mStateWrapper = stateWrapper;
+  }
+
+  /**
+   * Called on any stabilized onScroll change to propagate content offset value to a Shadow Node.
+   */
+  private void updateStateOnScroll(int scrollX, int scrollY) {
+    if (mStateWrapper == null) {
+      return;
+    }
+
+    WritableMap map = new WritableNativeMap();
+    map.putDouble(CONTENT_OFFSET_LEFT, PixelUtil.toDIPFromPixel(scrollX));
+    map.putDouble(CONTENT_OFFSET_TOP, PixelUtil.toDIPFromPixel(scrollY));
+
+    mStateWrapper.updateState(map);
   }
 }

@@ -1,6 +1,6 @@
 ---
 title: Crypto
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-crypto'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-crypto'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -17,11 +17,11 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Usage
 
-<SnackInline label='Basic Crypto usage' templateId='crypto' dependencies={['expo-crypto']}>
+<SnackInline label='Basic Crypto usage' dependencies={['expo-crypto']}>
 
-```js
+```jsx
 import React, { useEffect } from 'react';
-import { View, Text } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import * as Crypto from 'expo-crypto';
 
 export default function App() {
@@ -34,21 +34,25 @@ export default function App() {
       console.log('Digest: ', digest);
       /* Some crypto operation... */
     })();
-    runCrypto();
   }, []);
 
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
+    <View style={styles.container}>
       <Text>Crypto Module Example</Text>
     </View>
   );
 }
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+/* @end */
 ```
 
 </SnackInline>

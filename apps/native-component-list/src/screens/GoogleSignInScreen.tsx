@@ -1,7 +1,9 @@
+import Constants from 'expo-constants';
 import * as GoogleSignIn from 'expo-google-sign-in';
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
+import { getGUID } from '../api/guid';
 import GoogleSignInButton from '../components/GoogleSignInButton';
 
 GoogleSignIn.allowInClient();
@@ -15,6 +17,8 @@ interface State {
   };
 }
 
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
 export default class GoogleSignInScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: 'Native Google Sign-In',
@@ -31,14 +35,13 @@ export default class GoogleSignInScreen extends React.Component<{}, State> {
       await GoogleSignIn.initAsync({
         isOfflineEnabled: false,
         isPromptEnabled: true,
-        clientId:
-          '603386649315-vp4revvrcgrcjme51ebuhbkbspl048l9.apps.googleusercontent.com',
+        clientId: `${getGUID()}.apps.googleusercontent.com`,
       });
     } catch ({ message }) {
       console.error('Demo: Error: init: ' + message);
     }
     this._syncUserWithStateAsync();
-  }
+  };
 
   _syncUserWithStateAsync = async () => {
     /*
@@ -52,7 +55,7 @@ export default class GoogleSignInScreen extends React.Component<{}, State> {
       if (user) {
         this.setState({
           user: {
-            ...user.toJSON() as { displayName: string, email: string },
+            ...(user.toJSON() as { displayName: string; email: string }),
             photoURL: photoURL || user.photoURL!,
           },
         });
@@ -60,7 +63,7 @@ export default class GoogleSignInScreen extends React.Component<{}, State> {
     } else {
       this.setState({ user: undefined });
     }
-  }
+  };
 
   get buttonTitle() {
     return this.state.user ? 'Sign-Out of Google' : 'Sign-In with Google';
@@ -68,10 +71,18 @@ export default class GoogleSignInScreen extends React.Component<{}, State> {
 
   render() {
     const { user } = this.state;
+    const isInExpoGo = Constants.executionEnvironment === 'storeClient';
+
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        {isInExpoGo && (
+          <Text style={{ padding: 12 }}>
+            This library cannot be used in Expo Go as the native GoogleSignIn library expects your
+            REVERSED_CLIENT_ID in the info.plist at build-time.
+          </Text>
+        )}
         {user && <GoogleProfile {...user} />}
-        <GoogleSignInButton onPress={this._toggleAuth}>
+        <GoogleSignInButton disabled={isInExpoGo} onPress={this._toggleAuth}>
           {this.buttonTitle}
         </GoogleSignInButton>
       </View>
@@ -84,7 +95,7 @@ export default class GoogleSignInScreen extends React.Component<{}, State> {
     } else {
       this._signInAsync();
     }
-  }
+  };
 
   _signOutAsync = async () => {
     try {
@@ -96,7 +107,7 @@ export default class GoogleSignInScreen extends React.Component<{}, State> {
     } finally {
       this.setState({ user: undefined });
     }
-  }
+  };
 
   _signInAsync = async () => {
     try {
@@ -109,7 +120,7 @@ export default class GoogleSignInScreen extends React.Component<{}, State> {
     } catch ({ message }) {
       console.error('login: Error:' + message);
     }
-  }
+  };
 }
 
 const GoogleProfile: React.FunctionComponent<{

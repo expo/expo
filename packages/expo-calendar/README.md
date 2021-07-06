@@ -9,11 +9,11 @@ Provides an API for interacting with the device's system calendars, events, remi
 
 # Installation in managed Expo projects
 
-For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](#api-documentation). If you follow the link and there is no documentation available then this library is not yet usable within managed projects &mdash; it is likely to be included in an upcoming Expo SDK release.
+For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/calendar/).
 
 # Installation in bare React Native projects
 
-For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
+For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/expo/expo/tree/master/packages/react-native-unimodules) before continuing.
 
 ### Add the package to your npm dependencies
 
@@ -23,14 +23,16 @@ expo install expo-calendar
 
 ### Configure for iOS
 
-Add `NSCalendarsUsageDescription` key to your `Info.plist`:
+Add `NSCalendarsUsageDescription`, and `NSRemindersUsageDescription` keys to your `Info.plist`:
 
 ```xml
 <key>NSCalendarsUsageDescription</key>
 <string>Allow $(PRODUCT_NAME) to access your calendar</string>
+<key>NSRemindersUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to access your reminders</string>
 ```
 
-Run `pod install` in the ios directory after installing the npm package.
+Run `npx pod-install` after installing the npm package.
 
 ### Configure for Android
 

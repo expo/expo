@@ -1,4 +1,4 @@
-import { EventEmitter, Subscription, CodedError } from '@unimodules/core';
+import { EventEmitter, Subscription, CodedError, UnavailabilityError } from '@unimodules/core';
 
 import { Notification, NotificationBehavior } from './Notifications.types';
 import NotificationsHandlerModule from './NotificationsHandlerModule';
@@ -49,15 +49,19 @@ export function setNotificationHandler(handler: NotificationHandler | null): voi
     handleSubscription = notificationEmitter.addListener<HandleNotificationEvent>(
       handleNotificationEventName,
       async ({ id, notification }) => {
+        if (!NotificationsHandlerModule.handleNotificationAsync) {
+          handler.handleError?.(
+            id,
+            new UnavailabilityError('Notifications', 'handleNotificationAsync')
+          );
+          return;
+        }
+
         try {
           const behavior = await handler.handleNotification(notification);
           await NotificationsHandlerModule.handleNotificationAsync(id, behavior);
-          // TODO: Remove eslint-disable once we upgrade to a version that supports ?. notation.
-          // eslint-disable-next-line
           handler.handleSuccess?.(id);
         } catch (error) {
-          // TODO: Remove eslint-disable once we upgrade to a version that supports ?. notation.
-          // eslint-disable-next-line
           handler.handleError?.(id, error);
         }
       }

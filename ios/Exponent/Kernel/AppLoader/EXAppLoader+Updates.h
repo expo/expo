@@ -2,6 +2,10 @@
 
 #import "EXAppLoader.h"
 
+#import <EXUpdates/EXUpdatesAppLauncher.h>
+#import <EXUpdates/EXUpdatesConfig.h>
+#import <EXUpdates/EXUpdatesSelectionPolicy.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 /**
@@ -9,6 +13,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 
 @interface EXAppLoader ()
+
+@property (nonatomic, readonly, nullable) EXUpdatesConfig *config;
+@property (nonatomic, readonly, nullable) EXUpdatesSelectionPolicy *selectionPolicy;
+@property (nonatomic, readonly, nullable) id<EXUpdatesAppLauncher> appLauncher;
+@property (nonatomic, readonly, assign) BOOL isEmergencyLaunch;
 
 /**
  * Fetch JS bundle without any side effects or interaction with the timer.

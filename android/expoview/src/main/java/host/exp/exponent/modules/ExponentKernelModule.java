@@ -4,6 +4,7 @@ package host.exp.exponent.modules;
 
 import androidx.annotation.Nullable;
 
+import com.facebook.internal.BundleJSONConverter;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -32,7 +33,6 @@ import host.exp.exponent.kernel.ExponentKernelModuleProvider;
 import host.exp.exponent.kernel.Kernel;
 import host.exp.exponent.network.ExponentNetwork;
 import host.exp.exponent.storage.ExponentSharedPreferences;
-import host.exp.exponent.utils.JSONBundleConverter;
 
 public class ExponentKernelModule extends ReactContextBaseJavaModule implements ExponentKernelModuleInterface {
 
@@ -102,9 +102,13 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
       sKernelEventCallbacks.put(eventId, event.callback);
     }
 
-    getReactApplicationContext()
+    try {
+      getReactApplicationContext()
         .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
         .emit(event.name, event.data);
+    } catch (Exception e) {
+      onEventFailure(eventId, e.getMessage());
+    }
 
     consumeEventQueue();
   }
@@ -116,7 +120,7 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
     String sessionString = mExponentSharedPreferences.getString(ExponentSharedPreferences.EXPO_AUTH_SESSION);
     try {
       JSONObject sessionJsonObject = new JSONObject(sessionString);
-      WritableMap session = Arguments.fromBundle(JSONBundleConverter.JSONToBundle(sessionJsonObject));
+      WritableMap session = Arguments.fromBundle(BundleJSONConverter.convertToBundle(sessionJsonObject));
       promise.resolve(session);
     } catch (Exception e) {
       promise.resolve(null);
@@ -145,13 +149,6 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
       promise.reject("ERR_SESSION_NOT_REMOVED", "Could not remove session secret", e);
       EXL.e(TAG, e);
     }
-  }
-
-  @ReactMethod
-  public void createShortcutAsync(String manifestUrl, ReadableMap manifest, String bundleUrl, Promise promise) {
-    mKernel.installShortcut(manifestUrl, manifest, bundleUrl);
-
-    promise.resolve(true);
   }
 
   @ReactMethod

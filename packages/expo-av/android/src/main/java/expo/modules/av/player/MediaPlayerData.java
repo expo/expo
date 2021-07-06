@@ -1,6 +1,5 @@
 package expo.modules.av.player;
 
-
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.media.PlaybackParams;
@@ -70,8 +69,13 @@ class MediaPlayerData extends PlayerData implements
     final MediaPlayer unpreparedPlayer = new MediaPlayer();
 
     try {
+      Uri uri = mUri;
+      if (uri.getScheme() == null) {
+        int resourceId = mAVModule.getContext().getResources().getIdentifier(uri.toString(), "raw", mAVModule.getContext().getPackageName());
+        uri = Uri.parse("android.resource://" + mAVModule.getContext().getPackageName() + "/" + resourceId);
+      }
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        unpreparedPlayer.setDataSource(mAVModule.getContext(), mUri, null, getHttpCookiesList());
+        unpreparedPlayer.setDataSource(mAVModule.getContext(), uri, null, getHttpCookiesList());
       } else {
         Map<String, String> headers = new HashMap<>(1);
         StringBuilder cookieBuilder = new StringBuilder();
@@ -90,7 +94,7 @@ class MediaPlayerData extends PlayerData implements
             }
           }
         }
-        unpreparedPlayer.setDataSource(mAVModule.getContext(), mUri, headers);
+        unpreparedPlayer.setDataSource(mAVModule.getContext(), uri, headers);
       }
     } catch (final Throwable throwable) {
       loadCompletionListener.onLoadError("Load encountered an error: setDataSource() threw an exception was thrown with message: " + throwable.toString());
@@ -343,6 +347,7 @@ class MediaPlayerData extends PlayerData implements
 
     if (!mp.isLooping()) {
       mAVModule.abandonAudioFocusIfUnused();
+      stopUpdatingProgressIfNecessary();
     }
   }
 

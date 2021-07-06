@@ -40,8 +40,8 @@ public class LauncherActivity extends Activity {
 
     NativeModuleDepsProvider.getInstance().inject(LauncherActivity.class, this);
 
-    mKernel.setActivityContext(this);
-
+    // Kernel's JS needs to be started for the dev menu to work when the app is launched through the deep link.
+    mKernel.startJSKernel(this);
     mKernel.handleIntent(this, getIntent());
 
     // Start a service to keep our process awake. This isn't necessary most of the time, but

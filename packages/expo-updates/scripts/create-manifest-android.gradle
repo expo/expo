@@ -1,0 +1,87 @@
+// Gradle script for downloading assets that make up an OTA update and bundling them into the APK
+
+import org.apache.tools.ant.taskdefs.condition.Os
+import org.gradle.util.GradleVersion
+
+void runBefore(String dependentTaskName, Task task) {
+  Task dependentTask = tasks.findByPath(dependentTaskName);
+  if (dependentTask != null) {
+    dependentTask.dependsOn task
+  }
+}
+
+def expoUpdatesDir = ["node", "-e", "console.log(require('path').dirname(require.resolve('expo-updates/package.json')));"].execute([], projectDir).text.trim()
+
+def config = project.hasProperty("react") ? project.react : [];
+def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
+def entryFile = config.entryFile ?: "index.js"
+def assetsFile = entryFile.take(entryFile.lastIndexOf('.')) + ".assets"
+
+afterEvaluate {
+  def projectRoot = file("../../")
+  def inputExcludes = ["android/**", "ios/**"]
+
+  android.applicationVariants.each { variant ->
+    def targetName = variant.name.capitalize()
+    def targetPath = variant.dirName
+
+    def assetsDir = file("$buildDir/generated/assets/expo-updates/${targetPath}")
+
+    def currentBundleTask = tasks.create(
+        name: "create${targetName}ExpoManifest",
+        type: Exec) {
+      description = "expo-updates: Create manifest for ${targetName}."
+
+      doFirst {
+        assetsDir.deleteDir()
+        assetsDir.mkdirs()
+      }
+
+      // Set up inputs and outputs so gradle can cache the result
+      inputs.files fileTree(dir: projectRoot, excludes: inputExcludes)
+      outputs.dir assetsDir
+
+      // Set up the call to exp
+      workingDir projectRoot
+
+      if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        // in cmd, & must be escaped with ^
+        assetsFile = assetsFile.replace('&', '^&');
+        commandLine("cmd", "/c", *nodeExecutableAndArgs, "$expoUpdatesDir/scripts/createManifest.js", "android", projectRoot, assetsDir)
+      } else {
+        commandLine(*nodeExecutableAndArgs, "$expoUpdatesDir/scripts/createManifest.js", "android", projectRoot, assetsDir)
+      }
+
+      enabled config."bundleIn${targetName}" || targetName.toLowerCase().contains("release")
+    }
+
+    def currentAssetsCopyTask = tasks.create(
+        name: "copy${targetName}ExpoManifest",
+        type: Copy) {
+      description = "expo-updates: Copy manifest into ${targetName}."
+
+      into ("$buildDir/intermediates")
+      into ("assets/${targetPath}") {
+        from(assetsDir)
+      }
+
+      // Workaround for Android Gradle Plugin 3.2+ new asset directory
+      into ("merged_assets/${variant.name}/merge${targetName}Assets/out") {
+        from(assetsDir)
+      }
+
+      // Workaround for Android Gradle Plugin 3.4+ new asset directory
+      into ("merged_assets/${variant.name}/out") {
+        from(assetsDir)
+      }
+
+      // mergeAssets must run first, as it clears the intermediates directory
+      dependsOn(variant.mergeAssetsProvider.get())
+      dependsOn(currentBundleTask)
+
+      enabled(currentBundleTask.enabled)
+    }
+
+    runBefore("process${targetName}Resources", currentAssetsCopyTask)
+  }
+}

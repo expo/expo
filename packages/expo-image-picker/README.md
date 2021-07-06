@@ -9,11 +9,11 @@ Provides access to the system's UI for selecting images and videos from the phon
 
 # Installation in managed Expo projects
 
-For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](#api-documentation). If you follow the link and there is no documentation available then this library is not yet usable within managed projects &mdash; it is likely to be included in an upcoming Expo SDK release.
+For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/imagepicker/).
 
 # Installation in bare React Native projects
 
-For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/unimodules/react-native-unimodules) before continuing.
+For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/expo/expo/tree/master/packages/react-native-unimodules) before continuing.
 
 ### Add the package to your npm dependencies
 
@@ -23,16 +23,29 @@ expo install expo-image-picker
 
 ### Configure for iOS
 
-Add `NSPhotoLibraryUsageDescription` key to your `Info.plist`:
+Add `NSPhotoLibraryUsageDescription`, `NSCameraUsageDescription`, and `NSMicrophoneUsageDescription` keys to your `Info.plist`:
 
 ```xml
 <key>NSPhotoLibraryUsageDescription</key>
 <string>Give $(PRODUCT_NAME) permission to save photos</string>
+<key>NSCameraUsageDescription</key>
+<string>Give $(PRODUCT_NAME) permission to access your camera</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>Give $(PRODUCT_NAME) permission to use your microphone</string>
 ```
 
-Run `pod install` in the ios directory after installing the npm package.
+Run `npx pod-install` after installing the npm package.
 
 ### Configure for Android
+
+This package automatically adds the `CAMERA`, `READ_EXTERNAL_STORAGE`, and `WRITE_EXTERNAL_STORAGE` permissions. They are used when picking images from the camera directly, or from the camera roll.
+
+```xml
+<!-- Added permissions -->
+<uses-permission android:name="android.permission.CAMERA" />
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+```
 
 In `AndroidManifest.xml` add the following `activity` within `application`:
 
@@ -43,13 +56,6 @@ In `AndroidManifest.xml` add the following `activity` within `application`:
 </activity>
 ```
 
-and add following permissions:
-
-```xml
-<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-```
-
 # Contributing
 
-Contributions are very welcome! Please refer to guidelines described in the [contributing guide]( https://github.com/expo/expo#contributing).
+Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).

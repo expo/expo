@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -8,7 +8,6 @@
 #pragma once
 
 #include <folly/Optional.h>
-#include <react/components/text/ParagraphMeasurementCache.h>
 #include <react/components/text/ParagraphProps.h>
 #include <react/components/text/ParagraphState.h>
 #include <react/components/text/TextShadowNode.h>
@@ -39,10 +38,19 @@ class ParagraphShadowNode : public ConcreteViewShadowNode<
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
-  /*
-   * Returns a `AttributedString` which represents text content of the node.
-   */
-  AttributedString getAttributedString() const;
+  static ShadowNodeTraits BaseTraits() {
+    auto traits = ConcreteViewShadowNode::BaseTraits();
+    traits.set(ShadowNodeTraits::Trait::LeafYogaNode);
+    traits.set(ShadowNodeTraits::Trait::TextKind);
+
+#ifdef ANDROID
+    // Unsetting `FormsStackingContext` trait is essential on Android where we
+    // can't mount views inside `TextView`.
+    traits.unset(ShadowNodeTraits::Trait::FormsStackingContext);
+#endif
+
+    return traits;
+  }
 
   /*
    * Associates a shared TextLayoutManager with the node.
@@ -51,35 +59,47 @@ class ParagraphShadowNode : public ConcreteViewShadowNode<
    */
   void setTextLayoutManager(SharedTextLayoutManager textLayoutManager);
 
-  /*
-   * Associates a shared LRU cache with the node.
-   * `ParagraphShadowNode` uses this to cache the results of
-   * text rendering measurements.
-   * By design, the ParagraphComponentDescriptor outlives all
-   * shadow nodes, so it's safe for this to be a raw pointer.
-   */
-  void setMeasureCache(ParagraphMeasurementCache const *cache);
-
 #pragma mark - LayoutableShadowNode
 
   void layout(LayoutContext layoutContext) override;
   Size measure(LayoutConstraints layoutConstraints) const override;
 
+  /*
+   * Internal representation of the nested content of the node in a format
+   * suitable for future processing.
+   */
+  class Content final {
+   public:
+    AttributedString attributedString;
+    ParagraphAttributes paragraphAttributes;
+    Attachments attachments;
+  };
+
  private:
+  /*
+   * Builds (if needed) and returns a reference to a `Content` object.
+   */
+  Content const &getContent() const;
+
+  /*
+   * Builds and returns a `Content` object with given `layoutConstraints`.
+   */
+  Content getContentWithMeasuredAttachments(
+      LayoutContext const &layoutContext,
+      LayoutConstraints const &layoutConstraints) const;
+
   /*
    * Creates a `State` object (with `AttributedText` and
    * `TextLayoutManager`) if needed.
    */
-  void updateStateIfNeeded();
+  void updateStateIfNeeded(Content const &content);
 
   SharedTextLayoutManager textLayoutManager_;
-  ParagraphMeasurementCache const *measureCache_;
 
   /*
-   * Cached attributed string that represents the content of the subtree started
-   * from the node.
+   * Cached content of the subtree started from the node.
    */
-  mutable folly::Optional<AttributedString> cachedAttributedString_{};
+  mutable better::optional<Content> content_{};
 };
 
 } // namespace react

@@ -1,4 +1,4 @@
 {
   "name": "expo-store-review",
-  "platforms": ["ios"]
+  "platforms": ["ios", "android"]
 }

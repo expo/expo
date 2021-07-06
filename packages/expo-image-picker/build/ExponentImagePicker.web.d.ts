@@ -1,13 +1,20 @@
-import * as Permissions from 'expo-permissions';
-import { PermissionResponse } from 'unimodules-permissions-interface';
-import { ImagePickerResult, ImagePickerOptions } from './ImagePicker.types';
+import { PermissionResponse } from 'expo-modules-core';
+import { ImagePickerMultipleResult, ImagePickerResult, MediaTypeOptions } from './ImagePicker.types';
 declare const _default: {
     readonly name: string;
-    launchImageLibraryAsync({ mediaTypes, allowsMultipleSelection, }: ImagePickerOptions): Promise<ImagePickerResult>;
-    launchCameraAsync({ mediaTypes, allowsMultipleSelection, }: ImagePickerOptions): Promise<ImagePickerResult>;
-    getCameraPermissionAsync(): Promise<Permissions.PermissionResponse>;
-    requestCameraPermissionsAsync(): Promise<Permissions.PermissionResponse>;
-    getCameraRollPermissionsAsync(): Promise<PermissionResponse>;
-    requestCameraRollPermissionsAsync(): Promise<PermissionResponse>;
+    launchImageLibraryAsync({ mediaTypes, allowsMultipleSelection, base64, }: {
+        mediaTypes?: MediaTypeOptions | undefined;
+        allowsMultipleSelection?: boolean | undefined;
+        base64?: boolean | undefined;
+    }): Promise<ImagePickerResult | ImagePickerMultipleResult>;
+    launchCameraAsync({ mediaTypes, allowsMultipleSelection, base64, }: {
+        mediaTypes?: MediaTypeOptions | undefined;
+        allowsMultipleSelection?: boolean | undefined;
+        base64?: boolean | undefined;
+    }): Promise<ImagePickerResult | ImagePickerMultipleResult>;
+    getCameraPermissionsAsync(): Promise<PermissionResponse>;
+    requestCameraPermissionsAsync(): Promise<PermissionResponse>;
+    getMediaLibraryPermissionsAsync(_writeOnly: boolean): Promise<PermissionResponse>;
+    requestMediaLibraryPermissionsAsync(_writeOnly: boolean): Promise<PermissionResponse>;
 };
 export default _default;

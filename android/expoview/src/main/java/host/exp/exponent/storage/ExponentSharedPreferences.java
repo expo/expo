@@ -8,6 +8,11 @@ import android.content.SharedPreferences;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -15,6 +20,9 @@ import java.util.UUID;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import expo.modules.updates.manifest.ManifestFactory;
+import expo.modules.updates.manifest.raw.RawManifest;
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.expoview.ExpoViewBuildConfig;
 import host.exp.expoview.R;
 import host.exp.exponent.analytics.EXL;
@@ -28,10 +36,10 @@ public class ExponentSharedPreferences {
   private static final String TAG = ExponentSharedPreferences.class.getSimpleName();
 
   public static class ManifestAndBundleUrl {
-    public final JSONObject manifest;
+    public final RawManifest manifest;
     public final String bundleUrl;
 
-    ManifestAndBundleUrl(JSONObject manifest, String bundleUrl) {
+    ManifestAndBundleUrl(RawManifest manifest, String bundleUrl) {
       this.manifest = manifest;
       this.bundleUrl = bundleUrl;
     }
@@ -42,9 +50,6 @@ public class ExponentSharedPreferences {
 
   // Other
   public static final String IS_FIRST_KERNEL_RUN_KEY = "is_first_kernel_run";
-  public static final String HAS_SAVED_SHORTCUT_KEY = "has_saved_shortcut";
-  public static final String UUID_KEY = "uuid";
-  public static final String GCM_TOKEN_KEY = "gcm_token";
   public static final String FCM_TOKEN_KEY = "fcm_token";
   public static final String REFERRER_KEY = "referrer";
   public static final String NUX_HAS_FINISHED_FIRST_RUN_KEY = "nux_has_finished_first_run";
@@ -54,10 +59,10 @@ public class ExponentSharedPreferences {
   public static final String SAFE_MANIFEST_KEY = "safe_manifest";
   public static final String EXPO_AUTH_SESSION = "expo_auth_session";
   public static final String EXPO_AUTH_SESSION_SECRET_KEY = "sessionSecret";
+  public static final String OKHTTP_CACHE_VERSION_KEY = "okhttp_cache_version";
 
   // Metadata
   public static final String EXPERIENCE_METADATA_PREFIX = "experience_metadata_";
-  public static final String EXPERIENCE_METADATA_LAST_ERRORS = "lastErrors";
   public static final String EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS = "unreadNotifications";
   public static final String EXPERIENCE_METADATA_ALL_NOTIFICATION_IDS = "allNotificationIds";
   public static final String EXPERIENCE_METADATA_ALL_SCHEDULED_NOTIFICATION_IDS = "allScheduledNotificationIds";
@@ -69,7 +74,6 @@ public class ExponentSharedPreferences {
 
   static {
     DEFAULT_VALUES.put(USE_INTERNET_KERNEL_KEY, ExpoViewBuildConfig.USE_INTERNET_KERNEL);
-    DEFAULT_VALUES.put(HAS_SAVED_SHORTCUT_KEY, false);
     DEFAULT_VALUES.put(IS_FIRST_KERNEL_RUN_KEY, true);
     DEFAULT_VALUES.put(IS_ONBOARDING_FINISHED_KEY, false);
     DEFAULT_VALUES.put(NUX_HAS_FINISHED_FIRST_RUN_KEY, false);
@@ -78,11 +82,13 @@ public class ExponentSharedPreferences {
 
   private SharedPreferences mSharedPreferences;
   private Context mContext;
+  private ExponentInstallationId mExponentInstallationId;
 
   @Inject
   public ExponentSharedPreferences(Context context) {
     mSharedPreferences = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
     mContext = context;
+    mExponentInstallationId = new ExponentInstallationId(context, mSharedPreferences);
 
     // We renamed `nux` to `onboarding` in January 2020 - the old preference key can be removed from here after some time,
     // but since then we need to rewrite nux setting to the new key.
@@ -107,6 +113,18 @@ public class ExponentSharedPreferences {
     mSharedPreferences.edit().putBoolean(key, value).apply();
   }
 
+  public int getInteger(String key) {
+    return getInteger(key, 0);
+  }
+
+  public int getInteger(String key, int defaultValue) {
+    return mSharedPreferences.getInt(key, defaultValue);
+  }
+
+  public void setInteger(String key, int value) {
+    mSharedPreferences.edit().putInt(key, value).apply();
+  }
+
   public String getString(String key) {
     return getString(key, null);
   }
@@ -127,23 +145,12 @@ public class ExponentSharedPreferences {
     return getBoolean(USE_INTERNET_KERNEL_KEY);
   }
 
-  public boolean hasSavedShortcut() {
-    return getBoolean(HAS_SAVED_SHORTCUT_KEY);
-  }
-
   public String getUUID() {
-    return mSharedPreferences.getString(UUID_KEY, null);
+    return mExponentInstallationId.getUUID();
   }
 
   public String getOrCreateUUID() {
-    String uuid = mSharedPreferences.getString(UUID_KEY, null);
-    if (uuid != null) {
-      return uuid;
-    }
-
-    uuid = UUID.randomUUID().toString();
-    setString(UUID_KEY, uuid);
-    return uuid;
+    return mExponentInstallationId.getOrCreateUUID();
   }
 
   public void updateSession(JSONObject session) {
@@ -168,12 +175,12 @@ public class ExponentSharedPreferences {
     }
   }
 
-  public void updateManifest(String manifestUrl, JSONObject manifest, String bundleUrl) {
+  public void updateManifest(String manifestUrl, RawManifest manifest, String bundleUrl) {
     try {
       JSONObject parentObject = new JSONObject();
       parentObject.put(MANIFEST_KEY, manifest);
       parentObject.put(BUNDLE_URL_KEY, bundleUrl);
-      parentObject.put(SAFE_MANIFEST_KEY, manifest);
+      parentObject.put(SAFE_MANIFEST_KEY, manifest.getRawJson());
 
       mSharedPreferences.edit().putString(manifestUrl, parentObject.toString()).apply();
     } catch (JSONException e) {
@@ -189,17 +196,17 @@ public class ExponentSharedPreferences {
 
     try {
       JSONObject json = new JSONObject(jsonString);
-      JSONObject manifest = json.getJSONObject(MANIFEST_KEY);
+      JSONObject manifestJson = json.getJSONObject(MANIFEST_KEY);
       String bundleUrl = json.getString(BUNDLE_URL_KEY);
 
-      return new ManifestAndBundleUrl(manifest, bundleUrl);
+      return new ManifestAndBundleUrl(ManifestFactory.INSTANCE.getRawManifestFromJson(manifestJson), bundleUrl);
     } catch (JSONException e) {
       EXL.e(TAG, e);
       return null;
     }
   }
 
-  public void updateSafeManifest(String manifestUrl, JSONObject manifest) {
+  public void updateSafeManifest(String manifestUrl, RawManifest manifest) {
     try {
       JSONObject parentObject;
       String jsonString = mSharedPreferences.getString(manifestUrl, null);
@@ -208,7 +215,7 @@ public class ExponentSharedPreferences {
       } else {
         parentObject = new JSONObject();
       }
-      parentObject.put(SAFE_MANIFEST_KEY, manifest);
+      parentObject.put(SAFE_MANIFEST_KEY, manifest.getRawJson());
 
       mSharedPreferences.edit().putString(manifestUrl, parentObject.toString()).apply();
     } catch (JSONException e) {
@@ -231,12 +238,12 @@ public class ExponentSharedPreferences {
     }
   }
 
-  public void updateExperienceMetadata(String id, JSONObject metadata) {
-    mSharedPreferences.edit().putString(EXPERIENCE_METADATA_PREFIX + id, metadata.toString()).apply();
+  public void updateExperienceMetadata(ExperienceKey experienceKey, JSONObject metadata) {
+    mSharedPreferences.edit().putString(EXPERIENCE_METADATA_PREFIX + experienceKey.getScopeKey(), metadata.toString()).apply();
   }
 
-  public JSONObject getExperienceMetadata(String id) {
-    String jsonString = mSharedPreferences.getString(EXPERIENCE_METADATA_PREFIX + id, null);
+  public JSONObject getExperienceMetadata(ExperienceKey experienceKey) {
+    String jsonString = mSharedPreferences.getString(EXPERIENCE_METADATA_PREFIX + experienceKey.getScopeKey(), null);
     if (jsonString == null) {
       return null;
     }

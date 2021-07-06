@@ -7,16 +7,17 @@
  */
 
 #import <React/UIView+React.h>
+#import <React/RCTPointerEvents.h>
 #import "RNSVGCGFCRule.h"
 #import "RNSVGSvgView.h"
 @class RNSVGGroup;
 
 /**
- * RNSVG nodes are implemented as base UIViews. They should be implementation for all basic
+ * RNSVG nodes are implemented as base NSViews/UIViews. They should be implementation for all basic
  ＊interfaces for all non-definition nodes.
  */
 
-@interface RNSVGNode : UIView
+@interface RNSVGNode : RNSVGView
 
 /*
  N[1/Sqrt[2], 36]
@@ -35,7 +36,13 @@ extern CGFloat const RNSVG_DEFAULT_FONT_SIZE;
 @property (nonatomic, strong) NSString *markerStart;
 @property (nonatomic, strong) NSString *markerMid;
 @property (nonatomic, strong) NSString *markerEnd;
+
+/**
+ * Used to control how touch events are processed.
+ */
+@property (nonatomic, assign) RCTPointerEvents pointerEvents;
 @property (nonatomic, assign) BOOL responsible;
+
 @property (nonatomic, assign) CGAffineTransform ctm;
 @property (nonatomic, assign) CGAffineTransform screenCTM;
 @property (nonatomic, assign) CGAffineTransform matrix;
@@ -125,7 +132,7 @@ extern CGFloat const RNSVG_DEFAULT_FONT_SIZE;
 
 - (void)endTransparencyLayer:(CGContextRef)context;
 
-- (void)traverseSubviews:(BOOL (^)(__kindof UIView *node))block;
+- (void)traverseSubviews:(BOOL (^)(__kindof RNSVGView *node))block;
 
 - (void)clearChildCache;
 

@@ -1,20 +1,20 @@
+import { Picker } from '@react-native-picker/picker';
+import * as Linking from 'expo-linking';
+import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
 import {
   Alert,
-  ScrollView,
-  View,
-  StyleSheet,
-  Text,
-  Switch,
-  TextInput,
-  Picker,
   Platform,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  View,
 } from 'react-native';
-import * as WebBrowser from 'expo-web-browser';
-import Constants from 'expo-constants';
 
-import Colors from '../constants/Colors';
 import Button from '../components/Button';
+import Colors from '../constants/Colors';
 
 const url = 'https://expo.io';
 interface Package {
@@ -25,6 +25,7 @@ interface Package {
 interface State {
   showTitle: boolean;
   toolbarColor?: string;
+  secondaryToolbarColor?: string;
   authResult?: Record<string, string> | null;
   controlsColorText?: string;
   shouldPrompt: boolean;
@@ -33,10 +34,13 @@ interface State {
   lastWarmedPackage?: string;
   barCollapsing: boolean;
   showInRecents: boolean;
+  createTask: boolean;
   readerMode: boolean;
   enableDefaultShare: boolean;
 }
 
+// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
+// eslint-disable-next-line @typescript-eslint/ban-types
 export default class WebBrowserScreen extends React.Component<{}, State> {
   static navigationOptions = {
     title: 'WebBrowser',
@@ -48,8 +52,11 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
     authResult: null,
     shouldPrompt: false,
     showInRecents: false,
+    createTask: true,
     toolbarColor: Colors.tintColor.replace(/^#/, ''),
     controlsColorText: Colors.headerTitle.replace(/^#/, ''),
+    readerMode: false,
+    enableDefaultShare: false,
   };
 
   componentDidMount() {
@@ -88,13 +95,13 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
   };
 
   startAuthAsync = async (shouldPrompt: boolean): Promise<any> => {
-    const url = Platform.select({ web: window.location.origin, default: Constants.linkingUrl });
-    const redirectUrl = `${url}/redirect`;
+    const redirectUrl = Linking.makeUrl('redirect');
     const result = await WebBrowser.openAuthSessionAsync(
       `https://fake-auth.netlify.com?state=faker&redirect_uri=${encodeURIComponent(
         redirectUrl
       )}&prompt=${shouldPrompt ? 'consent' : 'none'}`,
-      redirectUrl
+      redirectUrl,
+      { createTask: this.state.createTask }
     );
     return result;
   };
@@ -126,29 +133,42 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
     const args = {
       showTitle: this.state.showTitle,
       toolbarColor: this.state.toolbarColor && `#${this.state.toolbarColor}`,
+      secondaryToolbarColor:
+        this.state.secondaryToolbarColor && `#${this.state.secondaryToolbarColor}`,
       controlsColor: this.state.controlsColorText && `#${this.state.controlsColorText}`,
       browserPackage: this.state.selectedPackage,
       enableBarCollapsing: this.state.barCollapsing,
       showInRecents: this.state.showInRecents,
+      createTask: this.state.createTask,
       readerMode: this.state.readerMode,
       enableDefaultShareMenuItem: this.state.enableDefaultShare,
     };
-    const result = await WebBrowser.openBrowserAsync('https://expo.io', args);
+    const result = await WebBrowser.openBrowserAsync(
+      'https://blog.expo.io/expo-sdk-40-is-now-available-d4d73e67da33',
+      args
+    );
     setTimeout(() => Alert.alert('Result', JSON.stringify(result, null, 2)), 1000);
   };
 
   handleToolbarColorInputChanged = (toolbarColor: string) => this.setState({ toolbarColor });
 
+  handleSecondaryToolbarColorInputChanged = (secondaryToolbarColor: string) =>
+    this.setState({ secondaryToolbarColor });
+
   handleControlsColorInputChanged = (controlsColorText: string) =>
     this.setState({ controlsColorText });
 
-  packageSelected = (value: string) => {
-    this.setState({ selectedPackage: value });
+  packageSelected = (value: string | number) => {
+    if (typeof value === 'string') {
+      this.setState({ selectedPackage: value });
+    }
   };
 
   handleShowTitleChanged = (showTitle: boolean) => this.setState({ showTitle });
 
   handleRecents = (showInRecents: boolean) => this.setState({ showInRecents });
+
+  handleCreateTask = (createTask: boolean) => this.setState({ createTask });
 
   renderIOSChoices = () =>
     Platform.OS === 'ios' && (
@@ -177,6 +197,15 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
     Platform.OS === 'android' && (
       <>
         <View style={styles.label}>
+          <Text>Secondary toolbar color (#rrggbb):</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="RRGGBB"
+            onChangeText={this.handleSecondaryToolbarColorInputChanged}
+            value={this.state.secondaryToolbarColor}
+          />
+        </View>
+        <View style={styles.label}>
           <Text>Show Title</Text>
           <Switch
             style={styles.switch}
@@ -190,6 +219,14 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
             style={styles.switch}
             onValueChange={this.handleRecents}
             value={this.state.showInRecents}
+          />
+        </View>
+        <View style={styles.label}>
+          <Text>Create task</Text>
+          <Switch
+            style={styles.switch}
+            onValueChange={this.handleCreateTask}
+            value={this.state.createTask}
           />
         </View>
         <View style={styles.label}>
@@ -261,7 +298,9 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
           <Button
             style={styles.button}
             onPress={async () => {
-              this.setState({ authResult: await this.startAuthAsync(this.state.shouldPrompt) });
+              // eslint-disable-next-line react/no-access-state-in-setstate
+              const authResult = await this.startAuthAsync(this.state.shouldPrompt);
+              this.setState({ authResult });
             }}
             title="Open web auth session"
           />
@@ -286,7 +325,6 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1,
   },
   label: {
     paddingBottom: 5,

@@ -141,6 +141,7 @@ export class Sound {
         }));
     }
 }
+/** @deprecated Use `Sound.createAsync()` instead */
 Sound.create = async (source, initialStatus = {}, onPlaybackStatusUpdate = null, downloadFirst = true) => {
     console.warn(`Sound.create is deprecated in favor of Sound.createAsync with the same API except for the new method name`);
     return Sound.createAsync(source, initialStatus, onPlaybackStatusUpdate, downloadFirst);

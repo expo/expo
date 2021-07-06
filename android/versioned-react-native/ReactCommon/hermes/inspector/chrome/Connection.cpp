@@ -1,4 +1,9 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #include "Connection.h"
 
@@ -12,8 +17,10 @@
 #include <hermes/inspector/Inspector.h>
 #include <hermes/inspector/chrome/MessageConverters.h>
 #include <hermes/inspector/chrome/RemoteObjectsTable.h>
+#include <hermes/inspector/detail/CallbackOStream.h>
 #include <hermes/inspector/detail/SerialExecutor.h>
 #include <hermes/inspector/detail/Thread.h>
+#include <jsi/instrumentation.h>
 
 namespace facebook {
 namespace hermes {
@@ -41,7 +48,7 @@ class Connection::Impl : public inspector::InspectorObserver,
       bool waitForDebugger);
   ~Impl();
 
-  HermesRuntime &getRuntime();
+  jsi::Runtime &getRuntime();
   std::string getTitle() const;
 
   bool connect(std::unique_ptr<IRemoteConnection> remoteConn);
@@ -68,11 +75,17 @@ class Connection::Impl : public inspector::InspectorObserver,
   void handle(const m::debugger::PauseRequest &req) override;
   void handle(const m::debugger::RemoveBreakpointRequest &req) override;
   void handle(const m::debugger::ResumeRequest &req) override;
+  void handle(const m::debugger::SetBreakpointRequest &req) override;
   void handle(const m::debugger::SetBreakpointByUrlRequest &req) override;
   void handle(const m::debugger::SetPauseOnExceptionsRequest &req) override;
   void handle(const m::debugger::StepIntoRequest &req) override;
   void handle(const m::debugger::StepOutRequest &req) override;
   void handle(const m::debugger::StepOverRequest &req) override;
+  void handle(const m::heapProfiler::TakeHeapSnapshotRequest &req) override;
+  void handle(
+      const m::heapProfiler::StartTrackingHeapObjectsRequest &req) override;
+  void handle(
+      const m::heapProfiler::StopTrackingHeapObjectsRequest &req) override;
   void handle(const m::runtime::EvaluateRequest &req) override;
   void handle(const m::runtime::GetPropertiesRequest &req) override;
 
@@ -86,12 +99,19 @@ class Connection::Impl : public inspector::InspectorObserver,
       const std::string &objectGroup,
       bool onlyOwnProperties);
 
+  void sendSnapshot(
+      int reqId,
+      std::string message,
+      bool reportProgress,
+      bool stopStackTraceCapture);
   void sendToClient(const std::string &str);
   void sendResponseToClient(const m::Response &resp);
+  void sendNotificationToClient(const m::Notification &resp);
   folly::Function<void(const std::exception &)> sendErrorToClient(int id);
   void sendResponseToClientViaExecutor(int id);
   void sendResponseToClientViaExecutor(folly::Future<Unit> future, int id);
   void sendNotificationToClientViaExecutor(const m::Notification &note);
+  void sendErrorToClientViaExecutor(int id, const std::string &error);
 
   std::shared_ptr<RuntimeAdapter> runtimeAdapter_;
   std::string title_;
@@ -140,7 +160,7 @@ Connection::Impl::Impl(
 
 Connection::Impl::~Impl() = default;
 
-HermesRuntime &Connection::Impl::getRuntime() {
+jsi::Runtime &Connection::Impl::getRuntime() {
   return runtimeAdapter_->getRuntime();
 }
 
@@ -245,11 +265,6 @@ void Connection::Impl::onContextCreated(Inspector &inspector) {
   note.context.id = 1;
   note.context.name = "hermes";
 
-  // isDefault and isPageContext are custom properties that the legacy RN to
-  // JSC adapter set for some unknown reason.
-  note.context.isDefault = true;
-  note.context.isPageContext = true;
-
   sendNotificationToClientViaExecutor(note);
 }
 
@@ -352,14 +367,18 @@ void Connection::Impl::handle(
       ->evaluate(
           atoi(req.callFrameId.c_str()),
           req.expression,
-          [this, remoteObjPtr, objectGroup = req.objectGroup](
+          [this,
+           remoteObjPtr,
+           objectGroup = req.objectGroup,
+           byValue = req.returnByValue.value_or(false)](
               const facebook::hermes::debugger::EvalResult
                   &evalResult) mutable {
             *remoteObjPtr = m::runtime::makeRemoteObject(
                 getRuntime(),
                 evalResult.value,
                 objTable_,
-                objectGroup.value_or(""));
+                objectGroup.value_or(""),
+                byValue);
           })
       .via(executor_.get())
       .thenValue(
@@ -379,6 +398,86 @@ void Connection::Impl::handle(
       .thenError<std::exception>(sendErrorToClient(req.id));
 }
 
+void Connection::Impl::sendSnapshot(
+    int reqId,
+    std::string message,
+    bool reportProgress,
+    bool stopStackTraceCapture) {
+  inspector_
+      ->executeIfEnabled(
+          message,
+          [this, reportProgress, stopStackTraceCapture](
+              const debugger::ProgramState &) {
+            if (reportProgress) {
+              // A progress notification with finished = true indicates the
+              // snapshot has been captured and is ready to be sent.  Our
+              // implementation streams the snapshot as it is being captured, so
+              // we must send this notification first.
+              m::heapProfiler::ReportHeapSnapshotProgressNotification note;
+              note.done = 1;
+              note.total = 1;
+              note.finished = true;
+              sendNotificationToClient(note);
+            }
+
+            // Size picked to conform to Chrome's own implementation, at the
+            // time of writing.
+            inspector::detail::CallbackOStream cos(
+                /* sz */ 100 << 10, [this](std::string s) {
+                  m::heapProfiler::AddHeapSnapshotChunkNotification note;
+                  note.chunk = std::move(s);
+                  sendNotificationToClient(note);
+                  return true;
+                });
+
+            getRuntime().instrumentation().createSnapshotToStream(cos);
+            if (stopStackTraceCapture) {
+              getRuntime()
+                  .instrumentation()
+                  .stopTrackingHeapObjectStackTraces();
+            }
+          })
+      .via(executor_.get())
+      .thenValue([this, reqId](auto &&) {
+        sendResponseToClient(m::makeOkResponse(reqId));
+      })
+      .thenError<std::exception>(sendErrorToClient(reqId));
+}
+
+void Connection::Impl::handle(
+    const m::heapProfiler::TakeHeapSnapshotRequest &req) {
+  sendSnapshot(
+      req.id,
+      "HeapSnapshot.takeHeapSnapshot",
+      req.reportProgress && *req.reportProgress,
+      /* stopStackTraceCapture */ false);
+}
+
+void Connection::Impl::handle(
+    const m::heapProfiler::StartTrackingHeapObjectsRequest &req) {
+  const auto id = req.id;
+
+  inspector_
+      ->executeIfEnabled(
+          "HeapProfiler.startTrackingHeapObjects",
+          [this](const debugger::ProgramState &) {
+            getRuntime().instrumentation().startTrackingHeapObjectStackTraces();
+          })
+      .via(executor_.get())
+      .thenValue(
+          [this, id](auto &&) { sendResponseToClient(m::makeOkResponse(id)); })
+      .thenError<std::exception>(sendErrorToClient(req.id));
+}
+
+void Connection::Impl::handle(
+    const m::heapProfiler::StopTrackingHeapObjectsRequest &req) {
+  sendSnapshot(
+      req.id,
+      "HeapSnapshot.takeHeapSnapshot",
+      req.reportProgress && *req.reportProgress,
+      /* stopStackTraceCapture */ true);
+}
+
 void Connection::Impl::handle(const m::runtime::EvaluateRequest &req) {
   auto remoteObjPtr = std::make_shared<m::runtime::RemoteObject>();
 
@@ -386,14 +485,18 @@ void Connection::Impl::handle(const m::runtime::EvaluateRequest &req) {
       ->evaluate(
           0, // Top of the stackframe
           req.expression,
-          [this, remoteObjPtr, objectGroup = req.objectGroup](
+          [this,
+           remoteObjPtr,
+           objectGroup = req.objectGroup,
+           byValue = req.returnByValue.value_or(false)](
               const facebook::hermes::debugger::EvalResult
                   &evalResult) mutable {
             *remoteObjPtr = m::runtime::makeRemoteObject(
                 getRuntime(),
                 evalResult.value,
                 objTable_,
-                objectGroup.value_or("ConsoleObjectGroup"));
+                objectGroup.value_or("ConsoleObjectGroup"),
+                byValue);
           })
       .via(executor_.get())
       .thenValue(
@@ -425,6 +528,40 @@ void Connection::Impl::handle(const m::debugger::RemoveBreakpointRequest &req) {
 
 void Connection::Impl::handle(const m::debugger::ResumeRequest &req) {
   sendResponseToClientViaExecutor(inspector_->resume(), req.id);
+}
+
+void Connection::Impl::handle(const m::debugger::SetBreakpointRequest &req) {
+  debugger::SourceLocation loc;
+
+  auto scriptId = folly::tryTo<unsigned int>(req.location.scriptId);
+  if (!scriptId) {
+    sendErrorToClientViaExecutor(
+        req.id, "Expected integer scriptId: " + req.location.scriptId);
+    return;
+  }
+
+  loc.fileId = scriptId.value();
+  // CDP Locations are 0-based, Hermes lines/columns are 1-based
+  loc.line = req.location.lineNumber + 1;
+  if (req.location.columnNumber) {
+    loc.column = req.location.columnNumber.value() + 1;
+  }
+
+  inspector_->setBreakpoint(loc, req.condition)
+      .via(executor_.get())
+      .thenValue([this, id = req.id](debugger::BreakpointInfo info) {
+        m::debugger::SetBreakpointResponse resp;
+        resp.id = id;
+        resp.breakpointId = folly::to<std::string>(info.id);
+
+        if (info.resolved) {
+          resp.actualLocation =
+              m::debugger::makeLocation(info.resolvedLocation);
+        }
+
+        sendResponseToClient(resp);
+      })
+      .thenError<std::exception>(sendErrorToClient(req.id));
 }
 
 void Connection::Impl::handle(
@@ -464,7 +601,9 @@ void Connection::Impl::handle(
   } else if (req.state == "uncaught") {
     mode = debugger::PauseOnThrowMode::Uncaught;
   } else {
-    sendErrorToClient(req.id);
+    sendErrorToClientViaExecutor(
+        req.id, "Unknown pause-on-exception state: " + req.state);
+    return;
   }
 
   sendResponseToClientViaExecutor(
@@ -488,6 +627,10 @@ Connection::Impl::makePropsFromScope(
     std::pair<uint32_t, uint32_t> frameAndScopeIndex,
     const std::string &objectGroup,
     const debugger::ProgramState &state) {
+  // Chrome represents variables in a scope as properties on a dummy object.
+  // We don't instantiate such dummy objects, we just pretended to have one.
+  // Chrome has now asked for its properties, so it's time to synthesize
+  // descriptions of the properties that the dummy object would have had.
   std::vector<m::runtime::PropertyDescriptor> result;
 
   uint32_t frameIndex = frameAndScopeIndex.first;
@@ -495,6 +638,19 @@ Connection::Impl::makePropsFromScope(
   debugger::LexicalInfo lexicalInfo = state.getLexicalInfo(frameIndex);
   uint32_t varCount = lexicalInfo.getVariablesCountInScope(scopeIndex);
 
+  // If this is the frame's local scope, include 'this'.
+  if (scopeIndex == 0) {
+    auto varInfo = state.getVariableInfoForThis(frameIndex);
+    m::runtime::PropertyDescriptor desc;
+    desc.name = varInfo.name;
+    desc.value = m::runtime::makeRemoteObject(
+        getRuntime(), varInfo.value, objTable_, objectGroup);
+    // Chrome only shows enumerable properties.
+    desc.enumerable = true;
+    result.emplace_back(std::move(desc));
+  }
+
+  // Then add each of the variables in this lexical scope.
   for (uint32_t varIndex = 0; varIndex < varCount; varIndex++) {
     debugger::VariableInfo varInfo =
         state.getVariableInfo(frameIndex, scopeIndex, varIndex);
@@ -503,6 +659,7 @@ Connection::Impl::makePropsFromScope(
     desc.name = varInfo.name;
     desc.value = m::runtime::makeRemoteObject(
         getRuntime(), varInfo.value, objTable_, objectGroup);
+    desc.enumerable = true;
 
     result.emplace_back(std::move(desc));
   }
@@ -518,7 +675,7 @@ Connection::Impl::makePropsFromValue(
   std::vector<m::runtime::PropertyDescriptor> result;
 
   if (value.isObject()) {
-    HermesRuntime &runtime = getRuntime();
+    jsi::Runtime &runtime = getRuntime();
     jsi::Object obj = value.getObject(runtime);
 
     // TODO(hypuk): obj.getPropertyNames only returns enumerable properties.
@@ -539,9 +696,21 @@ Connection::Impl::makePropsFromValue(
       m::runtime::PropertyDescriptor desc;
       desc.name = propName.utf8(runtime);
 
-      jsi::Value propValue = obj.getProperty(runtime, propName);
-      desc.value = m::runtime::makeRemoteObject(
-          runtime, propValue, objTable_, objectGroup);
+      try {
+        // Currently, we fetch the property even if it runs code.
+        // Chrome instead detects getters and makes you click to invoke.
+        jsi::Value propValue = obj.getProperty(runtime, propName);
+        desc.value = m::runtime::makeRemoteObject(
+            runtime, propValue, objTable_, objectGroup);
+      } catch (const jsi::JSError &err) {
+        // We fetched a property with a getter that threw. Show a placeholder.
+        // We could have added additional info, but the UI quickly gets messy.
+        desc.value = m::runtime::makeRemoteObject(
+            runtime,
+            jsi::String::createFromUtf8(runtime, "(Exception)"),
+            objTable_,
+            objectGroup);
+      }
 
       result.emplace_back(std::move(desc));
     }
@@ -602,6 +771,10 @@ void Connection::Impl::sendResponseToClient(const m::Response &resp) {
   sendToClient(resp.toJson());
 }
 
+void Connection::Impl::sendNotificationToClient(const m::Notification &note) {
+  sendToClient(note.toJson());
+}
+
 folly::Function<void(const std::exception &)>
 Connection::Impl::sendErrorToClient(int id) {
   return [this, id](const std::exception &e) {
@@ -624,6 +797,17 @@ void Connection::Impl::sendResponseToClientViaExecutor(
       .thenError<std::exception>(sendErrorToClient(id));
 }
 
+void Connection::Impl::sendErrorToClientViaExecutor(
+    int id,
+    const std::string &error) {
+  folly::makeFuture()
+      .via(executor_.get())
+      .thenValue([this, id, error](const Unit &unit) {
+        sendResponseToClient(
+            makeErrorResponse(id, m::ErrorCode::ServerError, error));
+      });
+}
+
 void Connection::Impl::sendNotificationToClientViaExecutor(
     const m::Notification &note) {
   executor_->add(
@@ -642,7 +826,7 @@ Connection::Connection(
 
 Connection::~Connection() = default;
 
-HermesRuntime &Connection::getRuntime() {
+jsi::Runtime &Connection::getRuntime() {
   return impl_->getRuntime();
 }
 

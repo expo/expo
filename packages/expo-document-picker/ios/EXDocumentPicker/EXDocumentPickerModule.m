@@ -3,11 +3,39 @@
 
 #import <EXDocumentPicker/EXDocumentPickerModule.h>
 #import <UMCore/UMUtilitiesInterface.h>
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
+#import <ExpoModulesCore/EXFileSystemInterface.h>
 
 #import <UIKit/UIKit.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000
+  #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+#endif
+
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000
+  API_AVAILABLE(ios(14.0))
+  static UTType* EXConvertMimeTypeToUTType(NSString *mimeType)
+  {
+    // UTType#typeWithMIMEType doesn't work with wildcard mimetypes
+    // so support common top level types with wildcards here.
+    if ([mimeType isEqualToString:@"*/*"]) {
+      return UTTypeData;
+    } else if ([mimeType isEqualToString:@"image/*"]) {
+      return UTTypeImage;
+    } else if ([mimeType isEqualToString:@"video/*"]) {
+      return UTTypeMovie;
+    } else if ([mimeType isEqualToString:@"audio/*"]) {
+      return UTTypeAudio;
+    } else if ([mimeType isEqualToString:@"text/*"]) {
+      return UTTypeText;
+    } else {
+      return [UTType typeWithMIMEType:mimeType];
+    }
+  }
+#endif
+
+// Deprecated in iOS 14
 static NSString * EXConvertMimeTypeToUTI(NSString *mimeType)
 {
   CFStringRef uti;
@@ -19,7 +47,7 @@ static NSString * EXConvertMimeTypeToUTI(NSString *mimeType)
   } else if ([mimeType isEqualToString:@"image/*"]) {
     uti = kUTTypeImage;
   } else if ([mimeType isEqualToString:@"video/*"]) {
-    uti = kUTTypeVideo;
+    uti = kUTTypeMovie;
   } else if ([mimeType isEqualToString:@"audio/*"]) {
     uti = kUTTypeAudio;
   } else if ([mimeType isEqualToString:@"text/*"]) {
@@ -32,10 +60,10 @@ static NSString * EXConvertMimeTypeToUTI(NSString *mimeType)
   return (__bridge_transfer NSString *)uti;
 }
 
-@interface EXDocumentPickerModule () <UIDocumentMenuDelegate, UIDocumentPickerDelegate>
+@interface EXDocumentPickerModule () <UIDocumentPickerDelegate, UIAdaptivePresentationControllerDelegate>
 
 @property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
-@property (nonatomic, weak) id<UMFileSystemInterface> fileSystem;
+@property (nonatomic, weak) id<EXFileSystemInterface> fileSystem;
 @property (nonatomic, weak) id<UMUtilitiesInterface> utilities;
 
 @property (nonatomic, strong) UMPromiseResolveBlock resolve;
@@ -54,7 +82,7 @@ UM_EXPORT_MODULE(ExpoDocumentPicker);
   _moduleRegistry = moduleRegistry;
   
   if (_moduleRegistry != nil) {
-    _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
+    _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
     _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
   }
 }
@@ -70,19 +98,31 @@ UM_EXPORT_METHOD_AS(getDocumentAsync,
   _resolve = resolve;
   _reject = reject;
   
-  NSString *type = EXConvertMimeTypeToUTI(options[@"type"] ?: @"*/*");
+  NSString *mimeType = options[@"type"] ?: @"*/*";
   
-  _shouldCopyToCacheDirectory = options[@"copyToCacheDirectory"] && [options[@"copyToCacheDirectory"] boolValue] == NO ? NO : YES;
+  _shouldCopyToCacheDirectory = options[@"copyToCacheDirectory"] && [options[@"copyToCacheDirectory"] boolValue] == YES;
 
   UM_WEAKIFY(self);
 
   dispatch_async(dispatch_get_main_queue(), ^{
     UM_ENSURE_STRONGIFY(self);
-    UIDocumentMenuViewController *documentMenuVC;
+    UIDocumentPickerViewController *documentPickerVC;
 
     @try {
-      documentMenuVC = [[UIDocumentMenuViewController alloc] initWithDocumentTypes:@[type]
-                                                                            inMode:UIDocumentPickerModeImport];
+      // TODO: drop #if macro once Xcode is updated to 12
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000
+      if (@available(iOS 14, *)) {
+        UTType* utType = EXConvertMimeTypeToUTType(mimeType);
+        documentPickerVC = [[UIDocumentPickerViewController alloc] initForOpeningContentTypes:@[utType] asCopy:YES];
+      } else {
+#endif
+        NSString* type = EXConvertMimeTypeToUTI(mimeType);
+        documentPickerVC = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[type]
+                                                                                  inMode:UIDocumentPickerModeImport];
+        // TODO: drop #if macro once Xcode is updated to 12
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000
+      }
+#endif
     }
     @catch (NSException *exception) {
       reject(@"E_PICKER_ICLOUD", @"DocumentPicker requires the iCloud entitlement. If you are using ExpoKit, you need to add this capability to your App Id. See `https://docs.expo.io/versions/latest/expokit/advanced-expokit-topics#using-documentpicker` for more info.", nil);
@@ -90,38 +130,24 @@ UM_EXPORT_METHOD_AS(getDocumentAsync,
       self->_reject = nil;
       return;
     }
-    documentMenuVC.delegate = self;
+    documentPickerVC.delegate = self;
+    documentPickerVC.presentationController.delegate = self;
 
     // Because of the way IPad works with Actionsheets such as this one, we need to provide a source view and set it's position.
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-      documentMenuVC.popoverPresentationController.sourceRect = CGRectMake(CGRectGetMidX([self->_utilities.currentViewController.view frame]), CGRectGetMaxY([self->_utilities.currentViewController.view frame]), 0, 0);
-      documentMenuVC.popoverPresentationController.sourceView = self->_utilities.currentViewController.view;
-      documentMenuVC.modalPresentationStyle = UIModalPresentationPageSheet;
+      documentPickerVC.popoverPresentationController.sourceRect = CGRectMake(CGRectGetMidX([self->_utilities.currentViewController.view frame]), CGRectGetMaxY([self->_utilities.currentViewController.view frame]), 0, 0);
+      documentPickerVC.popoverPresentationController.sourceView = self->_utilities.currentViewController.view;
+      documentPickerVC.modalPresentationStyle = UIModalPresentationPageSheet;
     }
 
-    [self->_utilities.currentViewController presentViewController:documentMenuVC animated:YES completion:nil];
+    [self->_utilities.currentViewController presentViewController:documentPickerVC animated:YES completion:nil];
   });
-}
-
-- (void)documentMenu:(UIDocumentMenuViewController *)documentMenu didPickDocumentPicker:(UIDocumentPickerViewController *)documentPicker
-{
-  documentPicker.delegate = self;
-  [_utilities.currentViewController presentViewController:documentPicker animated:YES completion:nil];
-}
-
-- (void)documentMenuWasCancelled:(UIDocumentMenuViewController *)documentMenu
-{
-  _resolve(@{@"type": @"cancel"});
-  _resolve = nil;
-  _reject = nil;
 }
 
 - (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentAtURL:(NSURL *)url
 {
-  
-  NSNumber *fileSize = nil;
   NSError *fileSizeError = nil;
-  [url getResourceValue:&fileSize forKey:NSURLFileSizeKey error:&fileSizeError];
+  unsigned long long fileSize = [EXDocumentPickerModule getFileSize:[url path] error:&fileSizeError];
   if (fileSizeError) {
     _reject(@"E_INVALID_FILE", @"Unable to get file size", fileSizeError);
     _resolve = nil;
@@ -151,17 +177,54 @@ UM_EXPORT_METHOD_AS(getDocumentAsync,
              @"type": @"success",
              @"uri": [newUrl absoluteString],
              @"name": [url lastPathComponent],
-             @"size": fileSize,
+             @"size": @(fileSize),
              });
   _resolve = nil;
   _reject = nil;
 }
 
+// Document picker view controller has been cancelled with a button
 - (void)documentPickerWasCancelled:(UIDocumentPickerViewController *)controller
 {
   _resolve(@{@"type": @"cancel"});
   _resolve = nil;
   _reject = nil;
+}
+
+// Document picker view controller has been dismissed by gesture
+- (void)presentationControllerDidDismiss:(UIPresentationController *)presentationController
+{
+  [self documentPickerWasCancelled:presentationController.presentedViewController];
+}
+
++ (unsigned long long)getFileSize:(NSString *)path error:(NSError **)error
+{
+  NSDictionary<NSFileAttributeKey, id> *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:error];
+  if (*error) {
+    return 0;
+  }
+  
+  if (fileAttributes.fileType != NSFileTypeDirectory) {
+    return fileAttributes.fileSize;
+  }
+  
+  // The path is pointing to the folder
+  NSArray *contents = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:path error:error];
+  if (*error) {
+    return 0;
+  }
+  
+  NSEnumerator *contentsEnumurator = [contents objectEnumerator];
+  NSString *file;
+  unsigned long long folderSize = 0;
+  while (file = [contentsEnumurator nextObject]) {
+    folderSize += [EXDocumentPickerModule getFileSize:[path stringByAppendingPathComponent:file] error:error];
+    if (*error) {
+      return 0;
+    }
+  }
+  
+  return folderSize;
 }
 
 @end

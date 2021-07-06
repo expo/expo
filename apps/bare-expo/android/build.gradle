@@ -4,27 +4,28 @@ import groovy.json.JsonSlurper
 
 buildscript {
     ext {
-        buildToolsVersion = "28.0.3"
-        gradlePluginVersion = "3.5.3"
+        buildToolsVersion = "30.0.5"
+        gradlePluginVersion = '4.1.2'
         minSdkVersion = 21
-        compileSdkVersion = 28
-        targetSdkVersion = 28
+        compileSdkVersion = 30
+        targetSdkVersion = 30
         // Some dependencies still expect supportLibVersion to be defined
-        supportLibVersion = "28.0.0"
-        kotlinVersion = '1.3.50'
+        supportLibVersion = "29.0.0"
+        kotlinVersion = '1.4.21'
     }
     repositories {
         google()
+        mavenCentral()
         jcenter()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:$gradlePluginVersion")
+        classpath("com.android.tools.build:gradle:${gradlePluginVersion}")
 
         // Copied version from the Exponent Android project.
         // Newer versions suffer either from "play-services-basement was supposed to be 15.0.1,
         // but has been resolved to 17.0.0"
         // or https://github.com/segment-integrations/analytics-android-integration-firebase/issues/23
-        classpath 'com.google.gms:google-services:3.2.1'  // Google Services plugin
+        classpath 'com.google.gms:google-services:4.3.5'  // Google Services plugin
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -54,12 +55,21 @@ allprojects {
         }
         maven {
             // Android JSC is installed from npm
-            url("$rootDir/../../../node_modules/jsc-android/dist")
+            url("$rootDir/../node_modules/jsc-android/dist")
+        }
+        maven {
+            // expo-camera bundles a custom com.google.android:cameraview
+            url "$rootDir/../node_modules/expo-camera/android/maven"
         }
 
+       maven {
+           // Detox is installed from npm
+           url "$rootDir/../node_modules/detox/Detox-android"
+       }
+
         google()
+        mavenCentral()
         jcenter()
         maven { url 'https://jitpack.io' }
     }
 }
-

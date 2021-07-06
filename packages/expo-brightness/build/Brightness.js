@@ -1,6 +1,6 @@
 import { UnavailabilityError } from '@unimodules/core';
+import { PermissionStatus } from 'expo-modules-core';
 import { Platform } from 'react-native';
-import { PermissionStatus } from 'unimodules-permissions-interface';
 import ExpoBrightness from './ExpoBrightness';
 export var BrightnessMode;
 (function (BrightnessMode) {
@@ -9,6 +9,14 @@ export var BrightnessMode;
     BrightnessMode[BrightnessMode["MANUAL"] = 2] = "MANUAL";
 })(BrightnessMode || (BrightnessMode = {}));
 export { PermissionStatus };
+/**
+ * Returns whether the Brightness API is enabled on the current device. This does not check the app permissions.
+ *
+ * @returns Async `boolean`, indicating whether the Brightness API is available on the current device. Currently this resolves `true` on iOS and Android only.
+ */
+export async function isAvailableAsync() {
+    return !!ExpoBrightness.getBrightnessAsync;
+}
 export async function getBrightnessAsync() {
     if (!ExpoBrightness.getBrightnessAsync) {
         throw new UnavailabilityError('expo-brightness', 'getBrightnessAsync');
@@ -45,6 +53,7 @@ export async function useSystemBrightnessAsync() {
     if (Platform.OS !== 'android') {
         return;
     }
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     return await ExpoBrightness.useSystemBrightnessAsync();
 }
 export async function isUsingSystemBrightnessAsync() {

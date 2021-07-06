@@ -15,10 +15,9 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
-
-import androidx.annotation.NonNull;
 
 import android.util.Log;
 
@@ -34,14 +33,13 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.SettingsClient;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
@@ -52,22 +50,20 @@ import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.LifecycleEventListener;
 import org.unimodules.core.interfaces.services.EventEmitter;
 import org.unimodules.core.interfaces.services.UIManager;
-import org.unimodules.interfaces.permissions.Permissions;
-import org.unimodules.interfaces.permissions.PermissionsResponse;
-import org.unimodules.interfaces.permissions.PermissionsStatus;
 import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 
+import androidx.annotation.RequiresApi;
+
+import expo.modules.interfaces.permissions.Permissions;
+import expo.modules.interfaces.permissions.PermissionsResponse;
+import expo.modules.interfaces.permissions.PermissionsStatus;
+import expo.modules.location.exceptions.LocationBackgroundUnauthorizedException;
 import expo.modules.location.exceptions.LocationRequestRejectedException;
-import expo.modules.location.exceptions.LocationRequestTimeoutException;
 import expo.modules.location.exceptions.LocationSettingsUnsatisfiedException;
 import expo.modules.location.exceptions.LocationUnauthorizedException;
 import expo.modules.location.exceptions.LocationUnavailableException;
 import expo.modules.location.taskConsumers.GeofencingTaskConsumer;
 import expo.modules.location.taskConsumers.LocationTaskConsumer;
-import expo.modules.location.utils.TimeoutObject;
-import io.nlopez.smartlocation.OnGeocodingListener;
-import io.nlopez.smartlocation.OnLocationUpdatedListener;
-import io.nlopez.smartlocation.OnReverseGeocodingListener;
 import io.nlopez.smartlocation.SmartLocation;
 import io.nlopez.smartlocation.geocoding.utils.LocationAddress;
 import io.nlopez.smartlocation.location.config.LocationParams;
@@ -95,9 +91,14 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   public static final int GEOFENCING_REGION_STATE_INSIDE = 1;
   public static final int GEOFENCING_REGION_STATE_OUTSIDE = 2;
 
+  public interface OnResultListener {
+    void onResult(Location location);
+  }
+
   private Context mContext;
   private SensorManager mSensorManager;
   private GeomagneticField mGeofield;
+  private FusedLocationProviderClient mLocationProvider;
 
   private Map<Integer, LocationCallback> mLocationCallbacks = new HashMap<>();
   private Map<Integer, LocationRequest> mLocationRequests = new HashMap<>();
@@ -113,7 +114,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   private float[] mGravity;
   private float[] mGeomagnetic;
   private int mHeadingId;
-  private float mLastAzimut = 0;
+  private float mLastAzimuth = 0;
   private int mAccuracy = 0;
   private long mLastUpdate = 0;
   private boolean mGeocoderPaused = false;
@@ -150,94 +151,148 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   //region Expo methods
 
+  @Deprecated
   @ExpoMethod
   public void requestPermissionsAsync(final Promise promise) {
     if (mPermissionsManager == null) {
       promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
       return;
     }
-    mPermissionsManager.askForPermissions(result -> {
-      promise.resolve(handleLocationPermissions(result));
-    }, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
+
+    if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
+      mPermissionsManager.askForPermissions(result -> {
+        promise.resolve(handleLegacyPermissions(result));
+      }, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+    } else {
+      requestForegroundPermissionsAsync(promise);
+    }
   }
 
+  @Deprecated
   @ExpoMethod
   public void getPermissionsAsync(final Promise promise) {
     if (mPermissionsManager == null) {
       promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
       return;
     }
-    mPermissionsManager.getPermissions(result -> {
-      promise.resolve(handleLocationPermissions(result));
+
+    if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
+      mPermissionsManager.getPermissions(result -> {
+        promise.resolve(handleLegacyPermissions(result));
+      }, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+    } else {
+      getForegroundPermissionsAsync(promise);
+    }
+  }
+
+  @ExpoMethod
+  public void requestForegroundPermissionsAsync(final Promise promise) {
+    if (mPermissionsManager == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+    mPermissionsManager.askForPermissions(result -> {
+      promise.resolve(handleForegroundLocationPermissions(result));
     }, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
   }
 
   @ExpoMethod
-  public void getLastKnownPositionAsync(final Promise promise) {
-    // Check for permissions
-    if (isMissingPermissions()) {
-      promise.reject(new LocationUnauthorizedException());
+  public void requestBackgroundPermissionsAsync(final Promise promise) {
+    if (mPermissionsManager == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
       return;
     }
 
-    getLastKnownLocation(null, location -> {
-      if (location == null) {
-        promise.reject("E_LAST_KNOWN_LOCATION_NOT_FOUND", "Last known location not found.", null);
-        return;
-      }
-      promise.resolve(LocationHelpers.locationToBundle(location, Bundle.class));
-    });
+    if (!isBackgroundPermissionInManifest()) {
+      promise.reject("ERR_NO_PERMISSIONS", "You need to add `ACCESS_BACKGROUND_LOCATION` to the AndroidManifest.");
+      return;
+    }
+
+    if (!shouldAskBackgroundPermissions()) {
+      requestForegroundPermissionsAsync(promise);
+      return;
+    }
+    mPermissionsManager.askForPermissions(result -> {
+      promise.resolve(handleBackgroundLocationPermissions(result));
+    }, Manifest.permission.ACCESS_BACKGROUND_LOCATION);
   }
 
   @ExpoMethod
+  public void getForegroundPermissionsAsync(final Promise promise) {
+    if (mPermissionsManager == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+    mPermissionsManager.getPermissions(result -> {
+      promise.resolve(handleForegroundLocationPermissions(result));
+    }, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
+  }
+
+  @ExpoMethod
+  public void getBackgroundPermissionsAsync(final Promise promise) {
+    if (mPermissionsManager == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+
+    if (!isBackgroundPermissionInManifest()) {
+      promise.reject("ERR_NO_PERMISSIONS", "You need to add `ACCESS_BACKGROUND_LOCATION` to the AndroidManifest.");
+      return;
+    }
+
+    if (!shouldAskBackgroundPermissions()) {
+      getForegroundPermissionsAsync(promise);
+      return;
+    }
+    mPermissionsManager.getPermissions(result -> {
+      promise.resolve(handleBackgroundLocationPermissions(result));
+    }, Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+  }
+
+  /**
+   * Resolves to the last known position if it is available and matches given requirements or null otherwise.
+   */
+  @ExpoMethod
+  public void getLastKnownPositionAsync(final Map<String, Object> options, final Promise promise) {
+    // Check for permissions
+    if (isMissingForegroundPermissions()) {
+      promise.reject(new LocationUnauthorizedException());
+      return;
+    }
+    getLastKnownLocation(location -> {
+      if (LocationHelpers.isLocationValid(location, options)) {
+        promise.resolve(LocationHelpers.locationToBundle(location, Bundle.class));
+      } else {
+        promise.resolve(null);
+      }
+    });
+  }
+
+  /**
+   * Requests for the current position. Depending on given accuracy, it may take some time to resolve.
+   * If you don't need an up-to-date location see `getLastKnownPosition`.
+   */
+  @ExpoMethod
   public void getCurrentPositionAsync(final Map<String, Object> options, final Promise promise) {
     // Read options
-    final Long timeout = options.containsKey("timeout") ? ((Double) options.get("timeout")).longValue() : null;
     final LocationRequest locationRequest = LocationHelpers.prepareLocationRequest(options);
     boolean showUserSettingsDialog = !options.containsKey(SHOW_USER_SETTINGS_DIALOG_KEY) || (boolean) options.get(SHOW_USER_SETTINGS_DIALOG_KEY);
 
     // Check for permissions
-    if (isMissingPermissions()) {
+    if (isMissingForegroundPermissions()) {
       promise.reject(new LocationUnauthorizedException());
       return;
     }
 
-    final TimeoutObject timeoutObject = new TimeoutObject(timeout);
-    timeoutObject.onTimeout(new TimeoutObject.TimeoutListener() {
-      @Override
-      public void onTimeout() {
-        promise.reject(new LocationRequestTimeoutException());
-      }
-    });
-    timeoutObject.start();
-
-    // Have location cached already?
-    if (options.containsKey("maximumAge")) {
-      final Double maximumAge = (Double) options.get("maximumAge");
-
-      getLastKnownLocation(maximumAge, new OnSuccessListener<Location>() {
-        @Override
-        public void onSuccess(Location location) {
-          if (location != null) {
-            promise.resolve(LocationHelpers.locationToBundle(location, Bundle.class));
-            timeoutObject.markDoneIfNotTimedOut();
-          }
-        }
-      });
-    }
-
     if (LocationHelpers.hasNetworkProviderEnabled(mContext) || !showUserSettingsDialog) {
-      LocationHelpers.requestSingleLocation(this, locationRequest, timeoutObject, promise);
+      LocationHelpers.requestSingleLocation(this, locationRequest, promise);
     } else {
       // Pending requests can ask the user to turn on improved accuracy mode in user's settings.
-      addPendingLocationRequest(locationRequest, new LocationActivityResultListener() {
-        @Override
-        public void onResult(int resultCode) {
-          if (resultCode == Activity.RESULT_OK) {
-            LocationHelpers.requestSingleLocation(LocationModule.this, locationRequest, timeoutObject, promise);
-          } else {
-            promise.reject(new LocationSettingsUnsatisfiedException());
-          }
+      addPendingLocationRequest(locationRequest, resultCode -> {
+        if (resultCode == Activity.RESULT_OK) {
+          LocationHelpers.requestSingleLocation(LocationModule.this, locationRequest, promise);
+        } else {
+          promise.reject(new LocationSettingsUnsatisfiedException());
         }
       });
     }
@@ -247,6 +302,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   public void getProviderStatusAsync(final Promise promise) {
     if (mContext == null) {
       promise.reject("E_CONTEXT_UNAVAILABLE", "Context is not available");
+      return;
     }
 
     LocationState state = SmartLocation.with(mContext).location().state();
@@ -275,7 +331,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   @ExpoMethod
   public void watchPositionImplAsync(final int watchId, final Map<String, Object> options, final Promise promise) {
     // Check for permissions
-    if (isMissingPermissions()) {
+    if (isMissingForegroundPermissions()) {
       promise.reject(new LocationUnauthorizedException());
       return;
     }
@@ -287,14 +343,11 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
       LocationHelpers.requestContinuousUpdates(this, locationRequest, watchId, promise);
     } else {
       // Pending requests can ask the user to turn on improved accuracy mode in user's settings.
-      addPendingLocationRequest(locationRequest, new LocationActivityResultListener() {
-        @Override
-        public void onResult(int resultCode) {
-          if (resultCode == Activity.RESULT_OK) {
-            LocationHelpers.requestContinuousUpdates(LocationModule.this, locationRequest, watchId, promise);
-          } else {
-            promise.reject(new LocationSettingsUnsatisfiedException());
-          }
+      addPendingLocationRequest(locationRequest, resultCode -> {
+        if (resultCode == Activity.RESULT_OK) {
+          LocationHelpers.requestContinuousUpdates(LocationModule.this, locationRequest, watchId, promise);
+        } else {
+          promise.reject(new LocationSettingsUnsatisfiedException());
         }
       });
     }
@@ -302,7 +355,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void removeWatchAsync(final int watchId, final Promise promise) {
-    if (isMissingPermissions()) {
+    if (isMissingForegroundPermissions()) {
       promise.reject(new LocationUnauthorizedException());
       return;
     }
@@ -324,30 +377,27 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
       return;
     }
 
-    if (isMissingPermissions()) {
+    if (isMissingForegroundPermissions()) {
       promise.reject(new LocationUnauthorizedException());
       return;
     }
 
     if (Geocoder.isPresent()) {
       SmartLocation.with(mContext).geocoding()
-          .direct(address, new OnGeocodingListener() {
-            @Override
-            public void onLocationResolved(String s, List<LocationAddress> list) {
-              List<Bundle> results = new ArrayList<>(list.size());
+        .direct(address, (s, list) -> {
+          List<Bundle> results = new ArrayList<>(list.size());
 
-              for (LocationAddress locationAddress : list) {
-                Bundle coords = LocationHelpers.locationToCoordsBundle(locationAddress.getLocation(), Bundle.class);
+          for (LocationAddress locationAddress : list) {
+            Bundle coords = LocationHelpers.locationToCoordsBundle(locationAddress.getLocation(), Bundle.class);
 
-                if (coords != null) {
-                  results.add(coords);
-                }
-              }
-
-              SmartLocation.with(mContext).geocoding().stop();
-              promise.resolve(results);
+            if (coords != null) {
+              results.add(coords);
             }
-          });
+          }
+
+          SmartLocation.with(mContext).geocoding().stop();
+          promise.resolve(results);
+        });
     } else {
       promise.reject("E_NO_GEOCODER", "Geocoder service is not available for this device.");
     }
@@ -360,7 +410,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
       return;
     }
 
-    if (isMissingPermissions()) {
+    if (isMissingForegroundPermissions()) {
       promise.reject(new LocationUnauthorizedException());
       return;
     }
@@ -371,19 +421,16 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
     if (Geocoder.isPresent()) {
       SmartLocation.with(mContext).geocoding()
-          .reverse(location, new OnReverseGeocodingListener() {
-            @Override
-            public void onAddressResolved(Location original, List<Address> addresses) {
-              List<Bundle> results = new ArrayList<>(addresses.size());
+        .reverse(location, (original, addresses) -> {
+          List<Bundle> results = new ArrayList<>(addresses.size());
 
-              for (Address address : addresses) {
-                results.add(LocationHelpers.addressToBundle(address));
-              }
+          for (Address address : addresses) {
+            results.add(LocationHelpers.addressToBundle(address));
+          }
 
-              SmartLocation.with(mContext).geocoding().stop();
-              promise.resolve(results);
-            }
-          });
+          SmartLocation.with(mContext).geocoding().stop();
+          promise.resolve(results);
+        });
     } else {
       promise.reject("E_NO_GEOCODER", "Geocoder service is not available for this device.");
     }
@@ -396,16 +443,13 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
       return;
     }
 
-    LocationRequest locationRequest = LocationHelpers.prepareLocationRequest(new HashMap<String, Object>());
+    LocationRequest locationRequest = LocationHelpers.prepareLocationRequest(new HashMap<>());
 
-    addPendingLocationRequest(locationRequest, new LocationActivityResultListener() {
-      @Override
-      public void onResult(int resultCode) {
-        if (resultCode == Activity.RESULT_OK) {
-          promise.resolve(null);
-        } else {
-          promise.reject(new LocationSettingsUnsatisfiedException());
-        }
+    addPendingLocationRequest(locationRequest, resultCode -> {
+      if (resultCode == Activity.RESULT_OK) {
+        promise.resolve(null);
+      } else {
+        promise.reject(new LocationSettingsUnsatisfiedException());
       }
     });
   }
@@ -420,6 +464,16 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void startLocationUpdatesAsync(String taskName, Map<String, Object> options, final Promise promise) {
+    boolean shouldUseForegroundService = LocationTaskConsumer.shouldUseForegroundService(options);
+
+    // There are two ways of starting this service.
+    // 1. As a background location service, this requires the background location permission.
+    // 2. As a user-initiated foreground service with notification, this does NOT require the background location permission.
+    if (!shouldUseForegroundService && isMissingBackgroundPermissions()) {
+      promise.reject(new LocationBackgroundUnauthorizedException());
+      return;
+    }
+
     try {
       mTaskManager.registerTask(taskName, LocationTaskConsumer.class, options);
       promise.resolve(null);
@@ -448,6 +502,11 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void startGeofencingAsync(String taskName, Map<String, Object> options, final Promise promise) {
+    if (isMissingBackgroundPermissions()) {
+      promise.reject(new LocationBackgroundUnauthorizedException());
+      return;
+    }
+
     try {
       mTaskManager.registerTask(taskName, GeofencingTaskConsumer.class, options);
       promise.resolve(null);
@@ -458,6 +517,11 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void stopGeofencingAsync(String taskName, final Promise promise) {
+    if (isMissingBackgroundPermissions()) {
+      promise.reject(new LocationBackgroundUnauthorizedException());
+      return;
+    }
+
     try {
       mTaskManager.unregisterTask(taskName, GeofencingTaskConsumer.class);
       promise.resolve(null);
@@ -468,6 +532,11 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   @ExpoMethod
   public void hasStartedGeofencingAsync(String taskName, final Promise promise) {
+    if (isMissingBackgroundPermissions()) {
+      promise.reject(new LocationBackgroundUnauthorizedException());
+      return;
+    }
+
     promise.resolve(mTaskManager.taskHasConsumerOfClass(taskName, GeofencingTaskConsumer.class));
   }
 
@@ -476,7 +545,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   //region public methods
 
   void requestLocationUpdates(final LocationRequest locationRequest, Integer requestId, final LocationRequestCallbacks callbacks) {
-    final FusedLocationProviderClient locationClient = LocationServices.getFusedLocationProviderClient(mContext);
+    final FusedLocationProviderClient locationProvider = getLocationProvider();
 
     LocationCallback locationCallback = new LocationCallback() {
       @Override
@@ -503,7 +572,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     }
 
     try {
-      locationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
+      locationProvider.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
       callbacks.onRequestSuccess();
     } catch (SecurityException e) {
       callbacks.onRequestFailed(new LocationRequestRejectedException(e));
@@ -512,26 +581,42 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
   //region private methods
 
-  private boolean isMissingPermissions() {
+  /**
+   * Checks whether all required permissions have been granted by the user.
+   */
+  private boolean isMissingForegroundPermissions() {
     return mPermissionsManager == null || !mPermissionsManager.hasGrantedPermissions(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
   }
 
-  private void getLastKnownLocation(final Double maximumAge, final OnSuccessListener<Location> callback) {
-    final FusedLocationProviderClient locationClient = LocationServices.getFusedLocationProviderClient(mContext);
+  /**
+   * Checks if the background location permission is granted by the user.
+   */
+  private boolean isMissingBackgroundPermissions() {
+    return mPermissionsManager == null ||
+      (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !mPermissionsManager.hasGrantedPermissions(Manifest.permission.ACCESS_BACKGROUND_LOCATION));
+  }
 
+  /**
+   * Helper method that lazy-loads the location provider for the context that the module was created.
+   */
+  private FusedLocationProviderClient getLocationProvider() {
+    if (mLocationProvider == null) {
+      mLocationProvider = LocationServices.getFusedLocationProviderClient(mContext);
+    }
+    return mLocationProvider;
+  }
+
+  /**
+   * Gets the best most recent location found by the provider.
+   */
+  private void getLastKnownLocation(final OnResultListener callback) {
     try {
-      locationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-        @Override
-        public void onSuccess(Location location) {
-          if (location != null && (maximumAge == null || System.currentTimeMillis() - location.getTime() < maximumAge)) {
-            callback.onSuccess(location);
-          } else {
-            callback.onSuccess(null);
-          }
-        }
-      });
+      getLocationProvider().getLastLocation()
+        .addOnSuccessListener(location -> callback.onResult(location))
+        .addOnCanceledListener(() -> callback.onResult(null))
+        .addOnFailureListener(exception -> callback.onResult(null));
     } catch (SecurityException e) {
-      callback.onSuccess(null);
+      callback.onResult(null);
     }
   }
 
@@ -545,6 +630,9 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     }
   }
 
+  /**
+   * Triggers system's dialog to ask the user to enable settings required for given location request.
+   */
   private void resolveUserSettingsForRequest(LocationRequest locationRequest) {
     final Activity activity = mActivityProvider.getCurrentActivity();
 
@@ -558,54 +646,43 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     SettingsClient client = LocationServices.getSettingsClient(mContext);
     Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
 
-    task.addOnSuccessListener(new OnSuccessListener<LocationSettingsResponse>() {
-      @Override
-      public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-        // All location settings requirements are satisfied.
-        executePendingRequests(Activity.RESULT_OK);
-      }
+    task.addOnSuccessListener(locationSettingsResponse -> {
+      // All location settings requirements are satisfied.
+      executePendingRequests(Activity.RESULT_OK);
     });
 
-    task.addOnFailureListener(new OnFailureListener() {
-      @Override
-      public void onFailure(@NonNull Exception e) {
-        int statusCode = ((ApiException) e).getStatusCode();
+    task.addOnFailureListener(e -> {
+      int statusCode = ((ApiException) e).getStatusCode();
 
-        switch (statusCode) {
-          case CommonStatusCodes.RESOLUTION_REQUIRED:
-            // Location settings are not satisfied, but this can be fixed by showing the user a dialog.
-            // Show the dialog by calling startResolutionForResult(), and check the result in onActivityResult().
+      if (statusCode == CommonStatusCodes.RESOLUTION_REQUIRED) {
+        // Location settings are not satisfied, but this can be fixed by showing the user a dialog.
+        // Show the dialog by calling startResolutionForResult(), and check the result in onActivityResult().
 
-            try {
-              ResolvableApiException resolvable = (ResolvableApiException) e;
+        try {
+          ResolvableApiException resolvable = (ResolvableApiException) e;
 
-              mUIManager.registerActivityEventListener(LocationModule.this);
-              resolvable.startResolutionForResult(activity, CHECK_SETTINGS_REQUEST_CODE);
-            } catch (IntentSender.SendIntentException sendEx) {
-              // Ignore the error.
-              executePendingRequests(Activity.RESULT_CANCELED);
-            }
-            break;
-          default:
-            // Location settings are not satisfied. However, we have no way to fix the settings so we won't show the dialog.
-            executePendingRequests(Activity.RESULT_CANCELED);
-            break;
+          mUIManager.registerActivityEventListener(LocationModule.this);
+          resolvable.startResolutionForResult(activity, CHECK_SETTINGS_REQUEST_CODE);
+        } catch (IntentSender.SendIntentException sendEx) {
+          // Ignore the error.
+          executePendingRequests(Activity.RESULT_CANCELED);
         }
+      } else {// Location settings are not satisfied. However, we have no way to fix the settings so we won't show the dialog.
+        executePendingRequests(Activity.RESULT_CANCELED);
       }
     });
   }
 
   private void pauseLocationUpdatesForRequest(Integer requestId) {
-    final FusedLocationProviderClient locationClient = LocationServices.getFusedLocationProviderClient(mContext);
+    LocationCallback locationCallback = mLocationCallbacks.get(requestId);
 
-    if (mLocationCallbacks.containsKey(requestId)) {
-      LocationCallback locationCallback = mLocationCallbacks.get(requestId);
-      locationClient.removeLocationUpdates(locationCallback);
+    if (locationCallback != null) {
+      getLocationProvider().removeLocationUpdates(locationCallback);
     }
   }
 
   private void resumeLocationUpdates() {
-    final FusedLocationProviderClient locationClient = LocationServices.getFusedLocationProviderClient(mContext);
+    final FusedLocationProviderClient locationClient = getLocationProvider();
 
     for (Integer requestId : mLocationCallbacks.keySet()) {
       LocationCallback locationCallback = mLocationCallbacks.get(requestId);
@@ -649,24 +726,19 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     Location currLoc = locationControl.getLastLocation();
     if (currLoc != null) {
       mGeofield = new GeomagneticField(
-          (float) currLoc.getLatitude(),
-          (float) currLoc.getLongitude(),
-          (float) currLoc.getAltitude(),
-          System.currentTimeMillis());
+        (float) currLoc.getLatitude(),
+        (float) currLoc.getLongitude(),
+        (float) currLoc.getAltitude(),
+        System.currentTimeMillis());
     } else {
-      locationControl.start(new OnLocationUpdatedListener() {
-        @Override
-        public void onLocationUpdated(Location location) {
-          mGeofield = new GeomagneticField(
-              (float) location.getLatitude(),
-              (float) location.getLongitude(),
-              (float) location.getAltitude(),
-              System.currentTimeMillis());
-        }
-      });
+      locationControl.start(location -> mGeofield = new GeomagneticField(
+        (float) location.getLatitude(),
+        (float) location.getLongitude(),
+        (float) location.getAltitude(),
+        System.currentTimeMillis()));
     }
     mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
-        SensorManager.SENSOR_DELAY_NORMAL);
+      SensorManager.SENSOR_DELAY_NORMAL);
     mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
   }
 
@@ -681,8 +753,8 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
       // Make sure Delta is big enough to warrant an update
       // Currently: 50ms and ~2 degrees of change (android has a lot of useless updates block up the sending)
-      if ((Math.abs(orientation[0] - mLastAzimut)) > DEGREE_DELTA && (System.currentTimeMillis() - mLastUpdate) > TIME_DELTA) {
-        mLastAzimut = orientation[0];
+      if ((Math.abs(orientation[0] - mLastAzimuth)) > DEGREE_DELTA && (System.currentTimeMillis() - mLastUpdate) > TIME_DELTA) {
+        mLastAzimuth = orientation[0];
         mLastUpdate = System.currentTimeMillis();
         float magneticNorth = calcMagNorth(orientation[0]);
         float trueNorth = calcTrueNorth(magneticNorth);
@@ -699,14 +771,14 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     }
   }
 
-  private float calcMagNorth(float azimut) {
-    float azimutDeg = (float) Math.toDegrees(azimut);
-    return (azimutDeg + 360) % 360;
+  private float calcMagNorth(float azimuth) {
+    float azimuthDeg = (float) Math.toDegrees(azimuth);
+    return (azimuthDeg + 360) % 360;
   }
 
   private float calcTrueNorth(float magNorth) {
     // Need to request geo location info to calculate true north
-    if (isMissingPermissions() || mGeofield == null) {
+    if (isMissingForegroundPermissions() || mGeofield == null) {
       return -1;
     }
     return magNorth + mGeofield.getDeclination();
@@ -726,7 +798,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     mGeomagnetic = null;
     mGeofield = null;
     mHeadingId = 0;
-    mLastAzimut = 0;
+    mLastAzimuth = 0;
     mAccuracy = 0;
   }
 
@@ -736,7 +808,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     }
 
     // if permissions not granted it won't work anyway, but this can be invoked when permission dialog disappears
-    if (!isMissingPermissions()) {
+    if (!isMissingForegroundPermissions()) {
       mGeocoderPaused = false;
     }
 
@@ -750,7 +822,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     }
 
     // if permissions not granted it won't work anyway, but this can be invoked when permission dialog appears
-    if (Geocoder.isPresent() && !isMissingPermissions()) {
+    if (Geocoder.isPresent() && !isMissingForegroundPermissions()) {
       SmartLocation.with(mContext).geocoding().stop();
       mGeocoderPaused = true;
     }
@@ -760,34 +832,110 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     }
   }
 
-  private Bundle handleLocationPermissions(Map<String, PermissionsResponse> result) {
+  private Bundle handleForegroundLocationPermissions(Map<String, PermissionsResponse> result) {
     PermissionsResponse accessFineLocation = result.get(Manifest.permission.ACCESS_FINE_LOCATION);
     PermissionsResponse accessCoarseLocation = result.get(Manifest.permission.ACCESS_COARSE_LOCATION);
+    Objects.requireNonNull(accessFineLocation);
+    Objects.requireNonNull(accessCoarseLocation);
+
     PermissionsStatus status = PermissionsStatus.UNDETERMINED;
-    String scope = "none";
-    Boolean canAskAgain = accessCoarseLocation.getCanAskAgain() && accessFineLocation.getCanAskAgain();
+    String accuracy = "none";
+    boolean canAskAgain = accessCoarseLocation.getCanAskAgain() && accessFineLocation.getCanAskAgain();
 
     if (accessFineLocation.getStatus() == PermissionsStatus.GRANTED) {
-      scope = "fine";
+      accuracy = "fine";
       status = PermissionsStatus.GRANTED;
     } else if (accessCoarseLocation.getStatus() == PermissionsStatus.GRANTED) {
-      scope = "coarse";
+      accuracy = "coarse";
       status = PermissionsStatus.GRANTED;
     } else if (accessFineLocation.getStatus() == PermissionsStatus.DENIED && accessCoarseLocation.getStatus() == PermissionsStatus.DENIED) {
       status = PermissionsStatus.DENIED;
     }
 
     Bundle resultBundle = new Bundle();
-    Bundle scopeBundle = new Bundle();
-
-    scopeBundle.putString("scope", scope);
     resultBundle.putString(PermissionsResponse.STATUS_KEY, status.getStatus());
     resultBundle.putString(PermissionsResponse.EXPIRES_KEY, PermissionsResponse.PERMISSION_EXPIRES_NEVER);
     resultBundle.putBoolean(PermissionsResponse.CAN_ASK_AGAIN_KEY, canAskAgain);
     resultBundle.putBoolean(PermissionsResponse.GRANTED_KEY, status == PermissionsStatus.GRANTED);
-    resultBundle.putBundle("android", scopeBundle);
+
+    Bundle androidBundle = new Bundle();
+
+    androidBundle.putString("scoped", accuracy); // deprecated
+    androidBundle.putString("accuracy", accuracy);
+    resultBundle.putBundle("android", androidBundle);
 
     return resultBundle;
+  }
+
+  @RequiresApi(Build.VERSION_CODES.Q)
+  private Bundle handleBackgroundLocationPermissions(Map<String, PermissionsResponse> result) {
+    PermissionsResponse accessBackgroundLocation = result.get(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+    Objects.requireNonNull(accessBackgroundLocation);
+
+    PermissionsStatus status = accessBackgroundLocation.getStatus();
+    boolean canAskAgain = accessBackgroundLocation.getCanAskAgain();
+
+    Bundle resultBundle = new Bundle();
+
+    resultBundle.putString(PermissionsResponse.STATUS_KEY, status.getStatus());
+    resultBundle.putString(PermissionsResponse.EXPIRES_KEY, PermissionsResponse.PERMISSION_EXPIRES_NEVER);
+    resultBundle.putBoolean(PermissionsResponse.CAN_ASK_AGAIN_KEY, canAskAgain);
+    resultBundle.putBoolean(PermissionsResponse.GRANTED_KEY, status == PermissionsStatus.GRANTED);
+
+    return resultBundle;
+  }
+
+  @RequiresApi(Build.VERSION_CODES.Q)
+  private Bundle handleLegacyPermissions(Map<String, PermissionsResponse> result) {
+    PermissionsResponse accessFineLocation = result.get(Manifest.permission.ACCESS_FINE_LOCATION);
+    PermissionsResponse accessCoarseLocation = result.get(Manifest.permission.ACCESS_COARSE_LOCATION);
+    PermissionsResponse backgroundLocation = result.get(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+
+    Objects.requireNonNull(accessFineLocation);
+    Objects.requireNonNull(accessCoarseLocation);
+    Objects.requireNonNull(backgroundLocation);
+
+    PermissionsStatus status = PermissionsStatus.UNDETERMINED;
+    String accuracy = "none";
+    boolean canAskAgain = accessCoarseLocation.getCanAskAgain() && accessFineLocation.getCanAskAgain();
+
+    if (accessFineLocation.getStatus() == PermissionsStatus.GRANTED) {
+      accuracy = "fine";
+      status = PermissionsStatus.GRANTED;
+    } else if (accessCoarseLocation.getStatus() == PermissionsStatus.GRANTED) {
+      accuracy = "coarse";
+      status = PermissionsStatus.GRANTED;
+    } else if (accessFineLocation.getStatus() == PermissionsStatus.DENIED && accessCoarseLocation.getStatus() == PermissionsStatus.DENIED) {
+      status = PermissionsStatus.DENIED;
+    }
+
+    Bundle resultBundle = new Bundle();
+    resultBundle.putString(PermissionsResponse.STATUS_KEY, status.getStatus());
+    resultBundle.putString(PermissionsResponse.EXPIRES_KEY, PermissionsResponse.PERMISSION_EXPIRES_NEVER);
+    resultBundle.putBoolean(PermissionsResponse.CAN_ASK_AGAIN_KEY, canAskAgain);
+    resultBundle.putBoolean(PermissionsResponse.GRANTED_KEY, status == PermissionsStatus.GRANTED);
+
+    Bundle androidBundle = new Bundle();
+    androidBundle.putString("accuracy", accuracy);
+    resultBundle.putBundle("android", androidBundle);
+
+    return resultBundle;
+  }
+
+  /**
+   * Check if we need to request background location permission separately.
+   *
+   * @see `https://medium.com/swlh/request-location-permission-correctly-in-android-11-61afe95a11ad`
+   */
+  private boolean shouldAskBackgroundPermissions() {
+    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
+  }
+
+  private boolean isBackgroundPermissionInManifest() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      return mPermissionsManager.isPermissionPresentInManifest(Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+    }
+    return true;
   }
 
   //endregion

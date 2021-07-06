@@ -30,6 +30,7 @@ declare class NativeAdsManager {
      * handler for events
      */
     onAdsLoaded(listener: () => void): EventSubscription;
+    onAdsErrored(listener: (error: Error) => void): EventSubscription;
     /**
      * Disables auto refreshing for this native ad manager
      */

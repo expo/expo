@@ -1,34 +1,24 @@
 import * as ErrorRecovery from 'expo-error-recovery';
-import * as Font from 'expo-font';
 import * as React from 'react';
-import { StyleSheet } from 'react-native';
-import Notifications from '../Notifications/Notifications';
-import RootErrorBoundary from './RootErrorBoundary';
+// This hook can be optionally imported because __DEV__ never changes during runtime.
+// Using __DEV__ like this enables tree shaking to remove the hook in production.
+let useDevKeepAwake = () => { };
+if (__DEV__) {
+    try {
+        // Optionally import expo-keep-awake
+        const { useKeepAwake } = require('expo-keep-awake');
+        useDevKeepAwake = useKeepAwake;
+    }
+    catch { }
+}
 export default function withExpoRoot(AppRootComponent) {
     return function ExpoRoot(props) {
-        const didInitialize = React.useRef(false);
-        if (!didInitialize.current) {
-            if (StyleSheet.setStyleAttributePreprocessor) {
-                StyleSheet.setStyleAttributePreprocessor('fontFamily', Font.processFontFamily);
-            }
-            const { exp } = props;
-            if (exp.notification) {
-                Notifications._setInitialNotification(exp.notification);
-            }
-            didInitialize.current = true;
-        }
+        useDevKeepAwake();
         const combinedProps = {
             ...props,
             exp: { ...props.exp, errorRecovery: ErrorRecovery.recoveredProps },
         };
-        if (__DEV__) {
-            return (<RootErrorBoundary>
-          <AppRootComponent {...combinedProps}/>
-        </RootErrorBoundary>);
-        }
-        else {
-            return <AppRootComponent {...combinedProps}/>;
-        }
+        return React.createElement(AppRootComponent, Object.assign({}, combinedProps));
     };
 }
 //# sourceMappingURL=withExpoRoot.js.map

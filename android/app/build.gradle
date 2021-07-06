@@ -1,27 +1,24 @@
 buildscript {
+  // Simple helper that allows the root project to override versions declared by this library.
+  ext.safeExtGet = { prop, fallback ->
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+  }
+
   repositories {
     google()
-    maven { url 'https://maven.fabric.io/public' }
+    mavenCentral()
   }
 
   dependencies {
-    classpath 'io.fabric.tools:gradle:1.31.0'
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.4.21')}")
   }
 }
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
+apply plugin: 'kotlin-android'
 apply plugin: 'devicefarm'
 
-repositories {
-  maven { url 'https://maven.fabric.io/public' }
-}
-
-def safeExtGet(prop, fallback) {
-  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
-}
-
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 28)
+  compileSdkVersion safeExtGet("compileSdkVersion", 30)
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
@@ -31,11 +28,11 @@ android {
   defaultConfig {
     applicationId 'host.exp.exponent'
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 28)
+    targetSdkVersion safeExtGet("targetSdkVersion", 30)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 123
-    versionName '2.15.0'
+    versionCode 148
+    versionName '2.19.2'
     // END VERSIONS
 
     multiDexEnabled true
@@ -44,6 +41,9 @@ android {
     manifestPlaceholders = [
         'appAuthRedirectScheme': 'host.exp.exponent'
     ]
+    ndk {
+      abiFilters(*(System.getenv('NDK_ABI_FILTERS') ?: 'armeabi-v7a x86 arm64-v8a x86_64').split(' '))
+    }
   }
   dexOptions {
     javaMaxHeapSize System.getenv("DISABLE_DEX_MAX_HEAP") ? null : "8g"
@@ -63,20 +63,53 @@ android {
   buildTypes {
     debug {
       debuggable true
-      ext.enableCrashlytics = false
     }
     release {
       minifyEnabled true
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
       consumerProguardFiles 'proguard-rules.pro'
-      signingConfig signingConfigs.release
+      if (!System.getenv("ANDROID_UNSIGNED")) {
+        signingConfig signingConfigs.release
+      }
     }
   }
+  // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
+  // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
+  flavorDimensions "versioning"
+  productFlavors {
+    versioned {
+      dimension "versioning"
+      manifestPlaceholders = [appLabel:"@string/versioned_app_name"]
+    }
+    unversioned {
+      dimension "versioning"
+      getIsDefault().set(true)
+      manifestPlaceholders = [appLabel: "@string/unversioned_app_name"]
+    }
+  }
+  // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
+  // WHEN_DISTRIBUTING_REMOVE_TO_HERE
+
+  // `productFlavors` must be defined before this block
+  defaultConfig {
+    if (android.productFlavors.empty) {
+      // when preparing shell app, the above flavor declarations  are removed
+      // this falls back :expoview to versioned flavor
+      missingDimensionStrategy 'versioning', 'versioned'
+      manifestPlaceholders = [appLabel:"@string/versioned_app_name"]
+    }
+  }
+
   lintOptions {
     abortOnError false
   }
   packagingOptions {
-    pickFirst "**"
+    // libfbjni.so is prebuilt library shared between all ABIs
+    pickFirst "lib/**/libfbjni.so"
+
+    // TODO: Remove when we drop support for SDK 41
+    pickFirst "lib/**/libhermes-inspector.so"
+    pickFirst "lib/**/libfolly_futures.so"
   }
 }
 
@@ -95,18 +128,7 @@ configurations.all {
   resolutionStrategy {
     force 'org.webkit:android-jsc:r245459'
   }
-// WHEN_DISTRIBUTING_REMOVE_FROM_HERE
-  resolutionStrategy.dependencySubstitution {
-    substitute module("com.facebook.react:react-native:+") with project(":ReactAndroid")
-  }
-// WHEN_DISTRIBUTING_REMOVE_TO_HERE
 }
-
-// WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
-/* UNCOMMENT WHEN DISTRIBUTING
-apply from: 'expo.gradle'
-END UNCOMMENT WHEN DISTRIBUTING */
-// WHEN_PREPARING_SHELL_REMOVE_TO_HERE
 
 apply from: "../../node_modules/react-native-unimodules/gradle.groovy"
 
@@ -115,21 +137,19 @@ dependencies {
 
   implementation 'androidx.multidex:multidex:2.0.0'
 
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
+
   // Our dependencies
-  implementation 'androidx.appcompat:appcompat:1.1.0'
+  implementation 'androidx.appcompat:appcompat:1.2.0'
 
   // Our dependencies from ExpoView
   // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
-  implementation 'androidx.appcompat:appcompat:1.1.0'
-  implementation('com.facebook.android:audience-network-sdk:5.1.1') {
-    exclude module: 'play-services-ads'
-  }
+  implementation 'androidx.appcompat:appcompat:1.2.0'
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
-  implementation 'com.jakewharton:butterknife:10.2.0'
+  implementation 'com.jakewharton:butterknife:10.2.1'
   implementation 'de.greenrobot:eventbus:2.4.0'
 
   implementation 'com.squareup.picasso:picasso:2.5.2'
-  implementation 'com.google.android.gms:play-services-gcm:15.0.1'
   implementation 'com.google.android.gms:play-services-analytics:16.0.1'
   implementation 'com.google.android.gms:play-services-maps:15.0.1'
   implementation 'com.google.android.gms:play-services-auth:15.0.1'
@@ -145,13 +165,14 @@ dependencies {
   implementation 'com.segment.analytics.android:analytics:4.3.0'
   implementation 'com.google.zxing:core:3.3.3'
   implementation 'net.openid:appauth:0.4.1'
-  implementation 'com.airbnb.android:lottie:2.5.6'
+  implementation 'com.airbnb.android:lottie:3.4.0'
   implementation('io.nlopez.smartlocation:library:3.2.11') {
     transitive = false
   }
   implementation "androidx.exifinterface:exifinterface:1.0.0"
   implementation 'com.squareup.okio:okio:1.9.0'
-  implementation 'com.facebook.soloader:soloader:0.6.0'
+  implementation 'com.facebook.soloader:soloader:0.8.2'
+  implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
 
   // expo-file-system
   implementation 'com.squareup.okhttp3:okhttp:3.10.0'
@@ -159,7 +180,6 @@ dependencies {
 
   // Testing
   androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
-  // We use a modified build of com.android.support.test:runner:1.0.1. Explanation in maven-test/README
   androidTestImplementation 'androidx.test:runner:1.1.0'
   androidTestImplementation "androidx.annotation:annotation:1.0.0"
   androidTestImplementation 'com.google.code.findbugs:jsr305:3.0.0'
@@ -178,7 +198,7 @@ dependencies {
   testImplementation 'org.mockito:mockito-core:1.10.19'
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  implementation('host.exp.exponent:expoview:37.0.0@aar') {
+  implementation('host.exp.exponent:expoview:42.0.0@aar') {
     transitive = true
     exclude group: 'com.squareup.okhttp3', module: 'okhttp'
     exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
@@ -188,7 +208,9 @@ dependencies {
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
 
   // BEGIN_SDK_UNVERSIONED
-  implementation(project(path: ':expoview'))
+  implementation(project(':expoview'))
+
+  implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
   // END_SDK_UNVERSIONED
 
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
@@ -196,22 +218,24 @@ dependencies {
   // ADD_NEW_SDKS_HERE
 
 
-  // BEGIN_SDK_37
-  implementation(project(':expoview-abi37_0_0'))
-  // END_SDK_37
-
-  // BEGIN_SDK_36
-  implementation(project(':expoview-abi36_0_0'))
-  // END_SDK_36
+  // BEGIN_SDK_42
+  versionedImplementation(project(':expoview-abi42_0_0'))
+  // END_SDK_42
 
 
-  // BEGIN_SDK_35
-  implementation(project(':expoview-abi35_0_0'))
-  // END_SDK_35
+  // BEGIN_SDK_41
+  versionedImplementation(project(':expoview-abi41_0_0'))
+  // END_SDK_41
 
-  // BEGIN_SDK_34
-  implementation(project(':expoview-abi34_0_0'))
-  // END_SDK_34
+
+  // BEGIN_SDK_40
+  versionedImplementation(project(':expoview-abi40_0_0'))
+  // END_SDK_40
+
+
+  // BEGIN_SDK_39
+  versionedImplementation(project(':expoview-abi39_0_0'))
+  // END_SDK_39
 
   // This is not needed in shell apps, the Amplitude module will include this dep if installed
   implementation 'com.amplitude:android-sdk:2.23.2'
@@ -234,34 +258,13 @@ dependencies {
       target       : 'react-native',
       exclude      : [
         'expo-module-template',
-        'expo-bluetooth',
         'expo-in-app-purchases',
-        'expo-notifications',
-        'expo-payments-stripe',
-        'expo-updates',
-        'expo-splash-screen'
+        'expo-payments-stripe'
       ]
   ])
+  implementation 'host.exp.exponent:expo-random:+'
   END UNCOMMENT WHEN DISTRIBUTING */
   // WHEN_DETACHING_REMOVE_TO_HERE
-
-  /* UNCOMMENT WHEN DETACHING
-  addUnimodulesDependencies([
-      modulesPaths : [
-        '../../node_modules'
-      ],
-      configuration: 'api',
-      target       : 'react-native',
-      exclude      : [
-        // You can exclude unneeded modules here, eg.
-        // 'unimodules-face-detector-interface',
-        // 'expo-face-detector'
-
-        // Adding a name here will also remove the package
-        // from auto-generated BasePackageList.java
-      ]
-  ])
-  END UNCOMMENT WHEN DETACHING */
 }
 
 // This has to be down here for some reason

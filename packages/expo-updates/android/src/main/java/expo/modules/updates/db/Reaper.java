@@ -2,9 +2,13 @@ package expo.modules.updates.db;
 
 import android.util.Log;
 
-import expo.modules.updates.launcher.SelectionPolicy;
+import org.json.JSONObject;
+
+import expo.modules.updates.UpdatesConfiguration;
+import expo.modules.updates.selectionpolicy.SelectionPolicy;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
+import expo.modules.updates.manifest.ManifestMetadata;
 
 import java.io.File;
 import java.util.LinkedList;
@@ -14,7 +18,7 @@ public class Reaper {
 
   private static String TAG = Reaper.class.getSimpleName();
 
-  public static void reapUnusedUpdates(UpdatesDatabase database, File updatesDirectory, UpdateEntity launchedUpdate, SelectionPolicy selectionPolicy) {
+  public static void reapUnusedUpdates(UpdatesConfiguration configuration, UpdatesDatabase database, File updatesDirectory, UpdateEntity launchedUpdate, SelectionPolicy selectionPolicy) {
     if (launchedUpdate == null) {
       Log.d(TAG, "Tried to reap while no update was launched; aborting");
       return;
@@ -22,7 +26,8 @@ public class Reaper {
 
     List<UpdateEntity> allUpdates = database.updateDao().loadAllUpdates();
 
-    List<UpdateEntity> updatesToDelete = selectionPolicy.selectUpdatesToDelete(allUpdates, launchedUpdate);
+    JSONObject manifestFilters = ManifestMetadata.getManifestFilters(database, configuration);
+    List<UpdateEntity> updatesToDelete = selectionPolicy.selectUpdatesToDelete(allUpdates, launchedUpdate, manifestFilters);
     database.updateDao().deleteUpdates(updatesToDelete);
 
     List<AssetEntity> assetsToDelete = database.assetDao().deleteUnusedAssets();

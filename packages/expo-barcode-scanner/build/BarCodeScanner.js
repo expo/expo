@@ -1,9 +1,7 @@
 import { UnavailabilityError } from '@unimodules/core';
-import mapValues from 'lodash/mapValues';
-import PropTypes from 'prop-types';
-import React from 'react';
-import { Platform, ViewPropTypes } from 'react-native';
-import { PermissionStatus } from 'unimodules-permissions-interface';
+import { PermissionStatus } from 'expo-modules-core';
+import * as React from 'react';
+import { Platform } from 'react-native';
 import ExpoBarCodeScannerModule from './ExpoBarCodeScannerModule';
 import ExpoBarCodeScannerView from './ExpoBarCodeScannerView';
 const { BarCodeType, Type } = ExpoBarCodeScannerModule;
@@ -14,8 +12,6 @@ export class BarCodeScanner extends React.Component {
         super(...arguments);
         this.lastEvents = {};
         this.lastEventsTimes = {};
-        // coordinates of cornerPoints and boundingBox are represented in DP (Display-Indepent Points) unit
-        // React Native is using the same unit
         this.onObjectDetected = (callback) => ({ nativeEvent, }) => {
             const { type } = nativeEvent;
             if (this.lastEvents[type] &&
@@ -58,17 +54,19 @@ export class BarCodeScanner extends React.Component {
     render() {
         const nativeProps = this.convertNativeProps(this.props);
         const { onBarCodeScanned } = this.props;
-        return (<ExpoBarCodeScannerView {...nativeProps} onBarCodeScanned={this.onObjectDetected(onBarCodeScanned)}/>);
+        return (React.createElement(ExpoBarCodeScannerView, Object.assign({}, nativeProps, { onBarCodeScanned: this.onObjectDetected(onBarCodeScanned) })));
     }
     convertNativeProps(props) {
-        const newProps = mapValues(props, this.convertProp);
-        return newProps;
-    }
-    convertProp(value, key) {
-        if (typeof value === 'string' && BarCodeScanner.ConversionTables[key]) {
-            return BarCodeScanner.ConversionTables[key][value];
+        const nativeProps = {};
+        for (const [key, value] of Object.entries(props)) {
+            if (typeof value === 'string' && BarCodeScanner.ConversionTables[key]) {
+                nativeProps[key] = BarCodeScanner.ConversionTables[key][value];
+            }
+            else {
+                nativeProps[key] = value;
+            }
         }
-        return value;
+        return nativeProps;
     }
 }
 BarCodeScanner.Constants = {
@@ -77,12 +75,6 @@ BarCodeScanner.Constants = {
 };
 BarCodeScanner.ConversionTables = {
     type: Type,
-};
-BarCodeScanner.propTypes = {
-    ...ViewPropTypes,
-    onBarCodeScanned: PropTypes.func,
-    barCodeTypes: PropTypes.array,
-    type: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 BarCodeScanner.defaultProps = {
     type: Type.back,

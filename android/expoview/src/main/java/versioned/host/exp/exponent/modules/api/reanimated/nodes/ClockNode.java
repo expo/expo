@@ -29,7 +29,7 @@ public class ClockNode extends Node implements NodesManager.OnAnimationFrame {
   }
 
   @Override
-  public void onAnimationFrame() {
+  public void onAnimationFrame(double timestampMs) {
     if (isRunning) {
       markUpdated();
       mNodesManager.postOnAnimation(this);

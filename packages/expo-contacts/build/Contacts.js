@@ -1,9 +1,17 @@
 import { UnavailabilityError } from '@unimodules/core';
+import { PermissionStatus } from 'expo-modules-core';
 import { Platform, Share } from 'react-native';
-import { PermissionStatus } from 'unimodules-permissions-interface';
-import uuidv4 from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 import ExpoContacts from './ExpoContacts';
 export { PermissionStatus };
+/**
+ * Returns whether the Contacts API is enabled on the current device. This does not check the app permissions.
+ *
+ * @returns Async `boolean`, indicating whether the Contacts API is available on the current device. Currently this resolves to `true` on iOS and Android only.
+ */
+export async function isAvailableAsync() {
+    return !!ExpoContacts.getContactsAsync;
+}
 export async function shareContactAsync(contactId, message, shareOptions = {}) {
     if (Platform.OS === 'ios') {
         const url = await writeContactToFileAsync({
@@ -163,7 +171,7 @@ export async function getPermissionsAsync() {
     if (!ExpoContacts.getPermissionsAsync) {
         throw new UnavailabilityError('Contacts', 'getPermissionsAsync');
     }
-    return ExpoContacts.getPermissionsAsync();
+    return await ExpoContacts.getPermissionsAsync();
 }
 export async function requestPermissionsAsync() {
     if (!ExpoContacts.requestPermissionsAsync) {

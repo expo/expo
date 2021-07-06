@@ -1,7 +1,9 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
-
-// This source code is licensed under the MIT license found in the
-// LICENSE file in the root directory of this source tree.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 
 #pragma once
 
@@ -9,7 +11,6 @@
 #include <folly/Hash.h>
 #include <react/core/EventEmitter.h>
 #include <react/core/LayoutMetrics.h>
-#include <react/core/LocalData.h>
 #include <react/core/Props.h>
 #include <react/core/ReactPrimitives.h>
 #include <react/core/ShadowNode.h>
@@ -42,7 +43,6 @@ struct ShadowView final {
   Props::Shared props{};
   EventEmitter::Shared eventEmitter{};
   LayoutMetrics layoutMetrics{EmptyLayoutMetrics};
-  LocalData::Shared localData{};
   State::Shared state{};
 };
 
@@ -51,7 +51,7 @@ struct ShadowView final {
 std::string getDebugName(ShadowView const &object);
 std::vector<DebugStringConvertibleObject> getDebugProps(
     ShadowView const &object,
-    DebugStringConvertibleOptions options = {});
+    DebugStringConvertibleOptions options);
 
 #endif
 
@@ -86,7 +86,6 @@ struct hash<facebook::react::ShadowView> {
         shadowView.tag,
         shadowView.props,
         shadowView.eventEmitter,
-        shadowView.localData,
         shadowView.state);
   }
 };

@@ -5,7 +5,11 @@ const expoPreset = require('../jest-preset');
 const { withWatchPlugins } = require('./withWatchPlugins');
 
 function getPlatformPreset(displayOptions, extensions) {
-  const moduleFileExtensions = getManagedExtensions(extensions);
+  const moduleFileExtensions = getManagedExtensions(extensions, {
+    isTS: true,
+    isReact: true,
+    isModern: false,
+  });
   const testMatch = ['', ...extensions].reduce((arr, cur) => {
     const platformExtension = cur ? `.${cur}` : '';
     const sourceExtension = `.[jt]s?(x)`;

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
@@ -44,7 +44,7 @@ class NativeModuleRegistry {
 
 class UITemplateProcessor {
  public:
-  static SharedShadowNode buildShadowTree(
+  static ShadowNode::Shared buildShadowTree(
       const std::string &jsonStr,
       int rootTag,
       const folly::dynamic &params,
@@ -53,7 +53,7 @@ class UITemplateProcessor {
       const std::shared_ptr<const ReactNativeConfig> reactNativeConfig);
 
  private:
-  static SharedShadowNode runCommand(
+  static ShadowNode::Shared runCommand(
       const folly::dynamic &command,
       Tag rootTag,
       std::vector<SharedShadowNode> &nodes,

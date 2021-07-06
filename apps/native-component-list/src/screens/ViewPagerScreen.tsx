@@ -1,13 +1,16 @@
-import React from 'react';
-import { Platform, StyleSheet, View, Text } from 'react-native';
 import ViewPager from '@react-native-community/viewpager';
+import React from 'react';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 
 export default function ViewPagerScreen() {
   return (
     <ViewPager
       style={styles.container}
       initialPage={0}
-      transitionStyle={Platform.OS === 'ios' ? 'curl' : 'scroll'}>
+      transitionStyle={Platform.OS === 'ios' ? 'curl' : 'scroll'}
+      onPageSelected={_ => {
+        console.log('New page!');
+      }}>
       <View key="1" style={styles.page}>
         <Text style={styles.text}>First page</Text>
         <Text style={styles.description}>Swipe this to scroll to the next page</Text>

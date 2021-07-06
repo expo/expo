@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { Platform } from '@unimodules/core';
 import { getRecoveryPropsToSave } from './ErroRecoveryStore';
 import ExpoErrorRecovery from './ExpoErrorRecovery';
 if (Platform.OS !== 'web') {
@@ -12,7 +12,7 @@ if (Platform.OS !== 'web') {
         globalHandler(error, isFatal);
     });
 }
-else {
+else if (Platform.OS === 'web' && Platform.isDOMAvailable) {
     window.addEventListener('error', () => {
         ExpoErrorRecovery.saveRecoveryProps(getRecoveryPropsToSave());
     });

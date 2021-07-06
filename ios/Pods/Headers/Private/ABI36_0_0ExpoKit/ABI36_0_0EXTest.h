@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI36_0_0/Expo/ExpoKit/Core/Internal/Test/ABI36_0_0EXTest.h

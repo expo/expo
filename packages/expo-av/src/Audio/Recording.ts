@@ -1,5 +1,5 @@
 import { EventEmitter, Subscription, Platform } from '@unimodules/core';
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
 
 import {
   _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS,
@@ -11,6 +11,8 @@ import { isAudioEnabled, throwIfAudioIsDisabled } from './AudioAvailability';
 import { Sound } from './Sound';
 
 export type RecordingOptions = {
+  isMeteringEnabled?: boolean;
+  keepAudioActiveHint?: boolean;
   android: {
     extension: string;
     outputFormat: number;
@@ -32,6 +34,10 @@ export type RecordingOptions = {
     linearPCMBitDepth?: number;
     linearPCMIsBigEndian?: boolean;
     linearPCMIsFloat?: boolean;
+  };
+  web: {
+    mimeType?: string;
+    bitsPerSecond?: number;
   };
 };
 
@@ -103,6 +109,7 @@ export const RECORDING_OPTION_IOS_BIT_RATE_STRATEGY_VARIABLE = 3;
 // TODO : maybe make presets for music and speech, or lossy / lossless.
 
 export const RECORDING_OPTIONS_PRESET_HIGH_QUALITY: RecordingOptions = {
+  isMeteringEnabled: true,
   android: {
     extension: '.m4a',
     outputFormat: RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_MPEG_4,
@@ -121,9 +128,14 @@ export const RECORDING_OPTIONS_PRESET_HIGH_QUALITY: RecordingOptions = {
     linearPCMIsBigEndian: false,
     linearPCMIsFloat: false,
   },
+  web: {
+    mimeType: 'audio/webm',
+    bitsPerSecond: 128000,
+  },
 };
 
 export const RECORDING_OPTIONS_PRESET_LOW_QUALITY: RecordingOptions = {
+  isMeteringEnabled: true,
   android: {
     extension: '.3gp',
     outputFormat: RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_THREE_GPP,
@@ -142,6 +154,10 @@ export const RECORDING_OPTIONS_PRESET_LOW_QUALITY: RecordingOptions = {
     linearPCMIsBigEndian: false,
     linearPCMIsFloat: false,
   },
+  web: {
+    mimeType: 'audio/webm',
+    bitsPerSecond: 128000,
+  },
 };
 
 // TODO: For consistency with PlaybackStatus, should we include progressUpdateIntervalMillis here as
@@ -151,6 +167,8 @@ export type RecordingStatus = {
   isRecording: boolean;
   isDoneRecording: boolean;
   durationMillis: number;
+  metering?: number;
+  uri?: string | null;
 };
 
 export { PermissionResponse, PermissionStatus };
@@ -179,11 +197,10 @@ export class Recording {
 
   // Internal methods
 
-  _cleanupForUnloadedRecorder = async (finalStatus: RecordingStatus) => {
+  _cleanupForUnloadedRecorder = async (finalStatus?: RecordingStatus) => {
     this._canRecord = false;
     this._isDoneRecording = true;
-    // $FlowFixMe(greg): durationMillis is not always defined
-    this._finalDurationMillis = finalStatus.durationMillis;
+    this._finalDurationMillis = finalStatus?.durationMillis ?? 0;
     _recorderExists = false;
     if (this._subscription) {
       this._subscription.remove();
@@ -241,6 +258,29 @@ export class Recording {
   }
 
   // Note that all calls automatically call onRecordingStatusUpdate as a side effect.
+
+  static createAsync = async (
+    options: RecordingOptions = RECORDING_OPTIONS_PRESET_LOW_QUALITY,
+    onRecordingStatusUpdate: ((status: RecordingStatus) => void) | null = null,
+    progressUpdateIntervalMillis: number | null = null
+  ): Promise<{ recording: Recording; status: RecordingStatus }> => {
+    const recording: Recording = new Recording();
+    if (progressUpdateIntervalMillis) {
+      recording._progressUpdateIntervalMillis = progressUpdateIntervalMillis;
+    }
+    recording.setOnRecordingStatusUpdate(onRecordingStatusUpdate);
+    await recording.prepareToRecordAsync({
+      ...options,
+      keepAudioActiveHint: true,
+    });
+    try {
+      const status = await recording.startAsync();
+      return { recording, status };
+    } catch (err) {
+      recording.stopAndUnloadAsync();
+      throw err;
+    }
+  };
 
   // Get status API
 
@@ -317,11 +357,10 @@ export class Recording {
         uri,
         status,
       }: {
-        uri: string;
+        uri: string | null;
         // status is of type RecordingStatus, but without the canRecord field populated
         status: Pick<RecordingStatus, Exclude<keyof RecordingStatus, 'canRecord'>>;
       } = await ExponentAV.prepareAudioRecorder(options);
-
       _recorderExists = true;
       this._uri = uri;
       this._options = options;
@@ -354,9 +393,23 @@ export class Recording {
     }
     // We perform a separate native API call so that the state of the Recording can be updated with
     // the final duration of the recording. (We cast stopStatus as Object to appease Flow)
-    const finalStatus = await ExponentAV.stopAudioRecording();
+    let stopResult: RecordingStatus | undefined;
+    let stopError: Error | undefined;
+    try {
+      stopResult = await ExponentAV.stopAudioRecording();
+    } catch (err) {
+      stopError = err;
+    }
+
+    // Web has to return the URI at the end of recording, so needs a little destructuring
+    if (Platform.OS === 'web' && stopResult?.uri !== undefined) {
+      this._uri = stopResult.uri;
+    }
+
+    // Clean-up and return status
     await ExponentAV.unloadAudioRecorder();
-    return this._cleanupForUnloadedRecorder(finalStatus);
+    const status = await this._cleanupForUnloadedRecorder(stopResult);
+    return stopError ? Promise.reject(stopError) : status;
   }
 
   // Read API
@@ -365,6 +418,7 @@ export class Recording {
     return this._uri;
   }
 
+  /** @deprecated Use `createNewLoadedSoundAsync()` instead */
   async createNewLoadedSound(
     initialStatus: AVPlaybackStatusToSet = {},
     onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null = null

@@ -1,38 +1,30 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import * as React from 'react';
 import { LayoutRectangle, View } from 'react-native';
 import normalizeColor from 'react-native-web/src/modules/normalizeColor';
 
-type Props = {
-  colors: number[];
-  locations?: number[] | null;
-  startPoint?: Point | null;
-  endPoint?: Point | null;
-  onLayout?: Function;
-} & React.ComponentProps<typeof View>;
+import { NativeLinearGradientPoint, NativeLinearGradientProps } from './NativeLinearGradient.types';
 
-type Point = [number, number];
-
-const NativeLinearGradient: FunctionComponent<Props> = ({
+export default function NativeLinearGradient({
   colors,
   locations,
   startPoint,
   endPoint,
   ...props
-}: Props) => {
-  const [layout, setLayout] = useState<LayoutRectangle | null>(null);
-  const [gradientColors, setGradientColors] = useState<string[]>([]);
-  const [pseudoAngle, setPseudoAngle] = useState<number>(0);
+}: NativeLinearGradientProps): React.ReactElement {
+  const [layout, setLayout] = React.useState<LayoutRectangle | null>(null);
 
-  useEffect(() => {
-    const getControlPoints = (): Point[] => {
-      let correctedStartPoint: Point = [0, 0];
+  const { width = 1, height = 1 } = layout ?? {};
+
+  const pseudoAngle = React.useMemo(() => {
+    const getControlPoints = (): NativeLinearGradientPoint[] => {
+      let correctedStartPoint: NativeLinearGradientPoint = [0, 0];
       if (Array.isArray(startPoint)) {
         correctedStartPoint = [
           startPoint[0] != null ? startPoint[0] : 0.0,
           startPoint[1] != null ? startPoint[1] : 0.0,
         ];
       }
-      let correctedEndPoint: Point = [0.0, 1.0];
+      let correctedEndPoint: NativeLinearGradientPoint = [0.0, 1.0];
       if (Array.isArray(endPoint)) {
         correctedEndPoint = [
           endPoint[0] != null ? endPoint[0] : 0.0,
@@ -43,7 +35,6 @@ const NativeLinearGradient: FunctionComponent<Props> = ({
     };
 
     const [start, end] = getControlPoints();
-    const { width = 1, height = 1 } = layout || {};
     start[0] *= width;
     end[0] *= width;
     start[1] *= height;
@@ -51,11 +42,11 @@ const NativeLinearGradient: FunctionComponent<Props> = ({
     const py = end[1] - start[1];
     const px = end[0] - start[0];
 
-    setPseudoAngle(90 + (Math.atan2(py, px) * 180) / Math.PI);
-  }, [startPoint, endPoint]);
+    return 90 + (Math.atan2(py, px) * 180) / Math.PI;
+  }, [width, height, startPoint, endPoint]);
 
-  useEffect(() => {
-    const nextGradientColors = colors.map((color: number, index: number): string => {
+  const gradientColors = React.useMemo(() => {
+    return colors.map((color: number, index: number): string => {
       const hexColor = normalizeColor(color);
       let output = hexColor;
       if (locations && locations[index]) {
@@ -66,13 +57,11 @@ const NativeLinearGradient: FunctionComponent<Props> = ({
       }
       return output;
     });
-
-    setGradientColors(nextGradientColors);
   }, [colors, locations]);
 
   const colorStyle = gradientColors.join(',');
   const backgroundImage = `linear-gradient(${pseudoAngle}deg, ${colorStyle})`;
-  // TODO: Bacon: In the future we could consider adding `backgroundRepeat: "no-repeat"`. For more
+  // TODO(Bacon): In the future we could consider adding `backgroundRepeat: "no-repeat"`. For more
   // browser support.
   return (
     <View
@@ -83,13 +72,22 @@ const NativeLinearGradient: FunctionComponent<Props> = ({
         { backgroundImage },
       ]}
       onLayout={event => {
-        setLayout(event.nativeEvent.layout);
+        const { x, y, width, height } = event.nativeEvent.layout;
+        const oldLayout = layout ?? { x: 0, y: 0, width: 1, height: 1 };
+        // don't set new layout state unless the layout has actually changed
+        if (
+          x !== oldLayout.x ||
+          y !== oldLayout.y ||
+          width !== oldLayout.width ||
+          height !== oldLayout.height
+        ) {
+          setLayout({ x, y, width, height });
+        }
+
         if (props.onLayout) {
           props.onLayout(event);
         }
       }}
     />
   );
-};
-
-export default NativeLinearGradient;
+}

@@ -4,7 +4,7 @@ export default class BannerAd extends React.Component {
     render() {
         const { type, onPress, onError, style, ...props } = this.props;
         const size = _getSizeForAdType(type);
-        return (<NativeBannerView size={size} onAdPress={onPress} onAdError={onError} style={[style, { height: size }]} {...props}/>);
+        return (React.createElement(NativeBannerView, Object.assign({ size: size, onAdPress: onPress, onAdError: onError, style: [style, { height: size }] }, props)));
     }
 }
 function _getSizeForAdType(type) {

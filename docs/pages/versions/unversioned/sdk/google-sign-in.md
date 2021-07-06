@@ -1,23 +1,19 @@
 ---
 title: GoogleSignIn
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-36/packages/expo-google-sign-in'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-google-sign-in'
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-import TableOfContentSection from '~/components/plugins/TableOfContentSection';
+**`expo-google-sign-in`** provides native Google authentication for **standalone** Expo apps or bare React Native apps. It cannot be used in Expo Go as the native `GoogleSignIn` library expects your `REVERSED_CLIENT_ID` in the `info.plist` at build-time. To use Google authentication in the Expo Go, check out [`expo-google-app-auth`](google.md) or [expo-app-auth](app-auth.md).
 
-**`expo-google-sign-in`** provides native Google authentication for **standalone** Expo apps or bare React Native apps. It cannot be used in the Expo client as the native `GoogleSignIn` library expects your `REVERSE_CLIENT_ID` in the `info.plist` at build-time. To use Google authentication in the Expo client, check out [`expo-google-app-auth`](../google) or [expo-app-auth](../app-auth).
-
-<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6884' }} />
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
-For [managed](../../introduction/managed-vs-bare/#managed-workflow) apps, you'll need to run `expo install expo-google-sign-in`. To use it in a [bare](../../introduction/managed-vs-bare/#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-google-sign-in).
+For [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps, you'll need to run `expo install expo-google-sign-in`. To use it in a [bare](../../../introduction/managed-vs-bare.md#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-google-sign-in).
 
 ## Configuration
-
-For questions on setup, feel free to comment on this post: [**React Native Google Sign-Up**](https://blog.expo.io/react-native-google-sign-in-with-expo-d1707579a7ce)
 
 1. Go to your `app.json` and make sure you define your `ios.bundleIdentifier` and the `android.package` you want to use.
 2. In `app.json`, set `expo.ios.config.googleSignIn.reservedClientId` to your reversed client ID.
@@ -27,11 +23,13 @@ For questions on setup, feel free to comment on this post: [**React Native Googl
 When using Firebase, also configure the Google-services configuration files:
 
 1. Open up [the Firebase Console](https://console.firebase.google.com) and setup a new project, or use an existing one.
-2. Create a native iOS, and Android app using the Bundle ID and Android package you defined earlier.
-3. Download the `GoogleService-Info.plist` (iOS) & the `google-services.json` (Android). Move them to your Expo project.
-4. In `app.json`, set your `expo.ios.config.googleSignIn.reservedClientId` to the value of `REVERSE_CLIENT_ID` in the `GoogleService-Info.plist`.
-5. Also in `app.json`, set `expo.ios.googleServicesFile` to the relative path of your `GoogleService-Info.plist`. Make sure the file is located somewhere in your Expo project.
-6. And also in `app.json`, set `expo.android.googleServicesFile` to the relative path of your `google-services.json`. Make sure the file is located somewhere in your Expo project.
+2. Create a native iOS app using the `ios.bundleIdentifier` you defined earlier, and an Android app using the `android.package`.
+3. (**Android only**) Go to your Firebase project's settings, scroll down to "Your apps" and select your Android app. Under `SHA certificate fingerprints`, click `Add fingerprint`, and paste the value of you get for `Google Certificate Fingerprint` when running `expo fetch:android:hashes`.
+   > If you haven't already run `expo build:android` for this project, you'll need to do that first before getting the Google Certificate Fingerprint.
+4. Download the `GoogleService-Info.plist` (iOS) & the `google-services.json` (Android) from your Firebase project settings page. Move them to your Expo project.
+5. In `app.json`, set your `expo.ios.config.googleSignIn.reservedClientId` to the value of `REVERSED_CLIENT_ID` in the `GoogleService-Info.plist`.
+6. Also in `app.json`, set `expo.ios.googleServicesFile` to the relative path of your `GoogleService-Info.plist`. Make sure the file is located somewhere in your Expo project.
+7. And also in `app.json`, set `expo.android.googleServicesFile` to the relative path of your `google-services.json`. Make sure the file is located somewhere in your Expo project.
 
 ```js
  // app.json
@@ -149,14 +147,6 @@ try {
 ```js
 import * as GoogleSignIn from 'expo-google-sign-in';
 ```
-
-<TableOfContentSection title='Methods' contents={['GoogleSignIn.getPlayServiceAvailability(shouldAsk)', 'GoogleSignIn.askForPlayServicesAsync()', 'GoogleSignIn.initAsync(options)', 'GoogleSignIn.isSignedInAsync()', 'GoogleSignIn.signInSilentlyAsync()', 'GoogleSignIn.signInAsync()', 'GoogleSignIn.signOutAsync()', 'GoogleSignIn.isConnectedAsync()', 'GoogleSignIn.disconnectAsync()', 'GoogleSignIn.getCurrentUserAsync()', 'GoogleSignIn.getCurrentUser()', 'GoogleSignIn.getPhotoAsync(size)']} />
-
-<TableOfContentSection title='Types' contents={[]} />
-
-<TableOfContentSection title='Classes' contents={['GoogleAuthData', 'GoogleIdentity', 'GoogleUser', 'GoogleAuthentication']} />
-
-<TableOfContentSection title='Constants' contents={['GoogleSignIn.ERRORS', 'GoogleSignIn.SCOPES', 'GoogleSignIn.TYPES']} />
 
 ## Methods
 
@@ -389,7 +379,7 @@ All of the available authentication error codes.
 - `GoogleSignIn.ERRORS.SIGN_IN_REQUIRED` Attempting to access user data before any user has been authenticated
 - `GoogleSignIn.ERRORS.TASK_IN_PROGRESS` An existing auth task is already running.
 - `GoogleSignIn.ERRORS.SIGN_IN_EXCEPTION` A general error has occurred
-- `GoogleSignIn.ERRORS.SIGN_IN_FAILED` A Play Services error has occured (Android only)
+- `GoogleSignIn.ERRORS.SIGN_IN_FAILED` A Play Services error has occurred (Android only)
 - `GoogleSignIn.ERRORS.INVALID_ACCOUNT` An invalid account has been provided with `accountName` (Android only)
 - `GoogleSignIn.ERRORS.SIGN_IN_NETWORK_ERROR` An issue with the internet connection has caused the auth task to fail (Android only)
 

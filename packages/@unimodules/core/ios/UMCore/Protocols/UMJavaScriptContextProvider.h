@@ -1,10 +1,5 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
-#import <Foundation/Foundation.h>
-#import <JavaScriptCore/JavaScriptCore.h>
+#import <ExpoModulesCore/EXJavaScriptContextProvider.h>
 
-@protocol UMJavaScriptContextProvider <NSObject>
-
-- (JSGlobalContextRef)javaScriptContextRef;
-
-@end
+#define UMJavaScriptContextProvider EXJavaScriptContextProvider

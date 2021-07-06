@@ -22,7 +22,7 @@ UM_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(UMAccelerometerInterface), @protocol(UMBarometerInterface), @protocol(UMDeviceMotionInterface), @protocol(UMGyroscopeInterface), @protocol(UMMagnetometerInterface), @protocol(UMMagnetometerUncalibratedInterface)];
+  return @[@protocol(EXAccelerometerInterface), @protocol(EXBarometerInterface), @protocol(EXDeviceMotionInterface), @protocol(EXGyroscopeInterface), @protocol(EXMagnetometerInterface), @protocol(EXMagnetometerUncalibratedInterface)];
 }
 
 - (instancetype)init
@@ -117,7 +117,7 @@ UM_REGISTER_MODULE();
     if (strongSelf && data) {
       for (void (^handler)(NSDictionary *) in strongSelf.barometerHandlers.allValues) {
         handler(@{
-                  @"pressure": @([data.pressure intValue] * 10), // conversion from kPa to hPa
+                  @"pressure": @([data.pressure doubleValue] * 10.0), // conversion from kPa to hPa
                   @"relativeAltitude": data.relativeAltitude,
                   });
       }
@@ -291,9 +291,16 @@ UM_REGISTER_MODULE();
   return EXGravity;
 }
 
+- (float)radiansToDegrees:(double)radians
+{
+    return radians * 180 / M_PI;
+}
+
+// Match https://www.w3.org/TR/orientation-event/
 - (void)activateDeviceMotionUpdates
 {
-  [[self manager] setDeviceMotionUpdateInterval:0.1f];
+  float interval = 1.0f / 60.0f;
+  [[self manager] setDeviceMotionUpdateInterval:interval];
   __weak EXSensorsManager *weakSelf = self;
   [[self manager] startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXArbitraryCorrectedZVertical toQueue:[NSOperationQueue mainQueue] withHandler:^(CMDeviceMotion *data, NSError *error) {
     __strong EXSensorsManager *strongSelf = weakSelf;
@@ -320,12 +327,8 @@ UM_REGISTER_MODULE();
         break;
     }
     
-    NSDictionary *result = @{
-                             @"acceleration": @{
-                                 @"x": @(data.userAcceleration.x * EXGravity),
-                                 @"y": @(data.userAcceleration.y * EXGravity),
-                                 @"z": @(data.userAcceleration.z * EXGravity)
-                                 },
+    NSMutableDictionary *result = [NSMutableDictionary dictionaryWithDictionary:@{
+                             @"acceleration": [NSNull null],
                              @"accelerationIncludingGravity": @{
                                  @"x": @((data.userAcceleration.x + data.gravity.x) * EXGravity),
                                  @"y": @((data.userAcceleration.y + data.gravity.y) * EXGravity),
@@ -336,14 +339,25 @@ UM_REGISTER_MODULE();
                                  @"beta": @(data.attitude.pitch),
                                  @"gamma": @(data.attitude.roll),
                                  },
-                             @"rotationRate" :@{
-                                 @"alpha": @(data.rotationRate.z),
-                                 @"beta": @(data.rotationRate.y),
-                                 @"gamma": @(data.rotationRate.x)
-                                 },
-                             @"orientation": @(orientationDegrees)
-                             };
+                             @"rotationRate": [NSNull null],
+                             @"orientation": @(orientationDegrees),
+                             @"interval": @(interval),
+                             }];
     
+    if ([[strongSelf manager] isGyroAvailable]) {
+      result[@"acceleration"] = @{
+        @"x": @(data.userAcceleration.x * EXGravity),
+        @"y": @(data.userAcceleration.y * EXGravity),
+        @"z": @(data.userAcceleration.z * EXGravity)
+      };
+      // Rate of rotation of the hosting device in space expressed in degrees per second.
+      result[@"rotationRate"] = @{
+        @"alpha": @([strongSelf radiansToDegrees:data.rotationRate.x]),
+        @"beta": @([strongSelf radiansToDegrees:data.rotationRate.y]),
+        @"gamma": @([strongSelf radiansToDegrees:data.rotationRate.z])
+      };
+    }
+
     // DeviceMotionUpdates handle DeviceMotion data as well as magnetic field
     for (void (^handler)(NSDictionary *) in strongSelf.deviceMotionHandlers.allValues) {
       handler(result);
