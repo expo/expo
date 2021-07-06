@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Remove usage of deprecated `[RCTBridge reload]` method. ([#13501](https://github.com/expo/expo/pull/13501) by [@esamelson](https://github.com/esamelson))
+
 ### 💡 Others
 
 ## 0.8.1 — 2021-07-08
