@@ -1,0 +1,1 @@
+Fixed an issue where projects were crashing on startup.
