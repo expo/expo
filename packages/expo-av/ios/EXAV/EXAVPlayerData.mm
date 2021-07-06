@@ -122,84 +122,92 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     
     
     
+    static bool isRunning = false;
     
-    [[AVAudioSession sharedInstance] setMode:AVAudioSessionModeMoviePlayback error:nil];
-    [[AVAudioSession sharedInstance] setActive:YES error:nil];
-    
-    _engine = [[AVAudioEngine alloc] init];
-    [_engine mainMixerNode]; // lazy getter init
-    [_engine prepare];
-    
-    NSError *engineStartError;
-    [_engine startAndReturnError:&engineStartError];
-    if (engineStartError != nil) {
-      NSLog(@"Error starting session!", engineStartError.description);
-    } else {
-      NSURL *filePath = [[NSBundle mainBundle] URLForResource:@"notification" withExtension:@"wav"];
-      _playerNode = [[AVAudioPlayerNode alloc] init];
+    if (!isRunning) {
+      isRunning = true;
+      [[AVAudioSession sharedInstance] setMode:AVAudioSessionModeMoviePlayback error:nil];
+      [[AVAudioSession sharedInstance] setActive:YES error:nil];
       
-      NSError *fileReadError;
-      _audioFile = [[AVAudioFile alloc] initForReading:filePath error:&fileReadError];
-      if (fileReadError != nil) {
-        NSLog(@"Error reading audio file!", fileReadError.description);
+      _engine = [[AVAudioEngine alloc] init];
+      [_engine mainMixerNode]; // lazy getter init
+      [_engine prepare];
+      
+      NSError *engineStartError;
+      [_engine startAndReturnError:&engineStartError];
+      if (engineStartError != nil) {
+        NSLog(@"Error starting session!", engineStartError.description);
       } else {
-        [_engine attachNode:_playerNode];
-        [_engine connect:_playerNode to:[_engine mainMixerNode] format:_audioFile.processingFormat];
+        NSURL *filePath = [[NSBundle mainBundle] URLForResource:@"x" withExtension:@"mp3"];
+        _playerNode = [[AVAudioPlayerNode alloc] init];
         
-        jsi::Function* callback;
-        
-        [_playerNode scheduleFile:_audioFile atTime:nil completionHandler:nil];
-        
-        RCTBridge* bridge = [RCTBridge currentBridge];
-        RCTCxxBridge* cxxBridge = (RCTCxxBridge *)[RCTBridge currentBridge];
-        if (cxxBridge.runtime) {
-          jsi::Runtime& jsiRuntime = *(jsi::Runtime*)cxxBridge.runtime;
-          auto setAudioCallback = [self](jsi::Runtime& runtime,
-                                          const jsi::Value& thisValue,
-                                          const jsi::Value* arguments,
-                                          size_t count) -> jsi::Value {
-            auto func = arguments[0].asObject(runtime).asFunction(runtime);
-            auto callback = std::make_shared<jsi::Function>(std::move(func));
-            NSLog(@"setAudioCallback()...");
-            
-            [_playerNode installTapOnBus:0
-                              bufferSize:1024
-                                  format:nil
-                                   block:^(AVAudioPCMBuffer * _Nonnull buffer,
-                                           AVAudioTime * _Nonnull when) {
-              NSLog(@"Frame Length: %u | Capacity: %u | Stride: %u | Time: %u", buffer.frameLength, buffer.frameCapacity, buffer.stride, (UInt32)when.hostTime);
-              float* firstChannel = buffer.floatChannelData[0];
-              NSLog(@"Frame Buffer received! %f", firstChannel[0]);
+        NSError *fileReadError;
+        _audioFile = [[AVAudioFile alloc] initForReading:filePath error:&fileReadError];
+        if (fileReadError != nil) {
+          NSLog(@"Error reading audio file!", fileReadError.description);
+        } else {
+          [_engine attachNode:_playerNode];
+          [_engine connect:_playerNode to:[_engine mainMixerNode] format:_audioFile.processingFormat];
+          
+          jsi::Function* callback;
+          
+          [_playerNode scheduleFile:_audioFile atTime:nil completionHandler:nil];
+          
+          RCTBridge* bridge = [RCTBridge currentBridge];
+          RCTCxxBridge* cxxBridge = (RCTCxxBridge *)[RCTBridge currentBridge];
+          if (cxxBridge.runtime) {
+            jsi::Runtime& jsiRuntime = *(jsi::Runtime*)cxxBridge.runtime;
+            auto setAudioCallback = [self](jsi::Runtime& runtime,
+                                            const jsi::Value& thisValue,
+                                            const jsi::Value* arguments,
+                                            size_t count) -> jsi::Value {
+              auto func = arguments[0].asObject(runtime).asFunction(runtime);
+              auto callback = std::make_shared<jsi::Function>(std::move(func));
+              NSLog(@"setAudioCallback()...");
               
-              auto channelsCount = (size_t) buffer.stride;
-              auto framesCount = buffer.frameLength;
-              
-              auto channels = jsi::Array(runtime, channelsCount);
-              for (auto i = 0; i < channelsCount; i++) {
-                auto channel = jsi::Object(runtime);
+              [_playerNode installTapOnBus:0
+                                bufferSize:1024
+                                    format:nil
+                                     block:^(AVAudioPCMBuffer * _Nonnull buffer,
+                                             AVAudioTime * _Nonnull when) {
+                double** data;
+                if (buffer.floatChannelData != nil) {
+                  data = (double**) buffer.floatChannelData;
+                } else if (buffer.int32ChannelData != nil) {
+                  data = (double**) buffer.int32ChannelData;
+                } else if (buffer.int16ChannelData != nil) {
+                  data = (double**) buffer.int16ChannelData;
+                }
+                auto channelsCount = (size_t) buffer.stride;
+                auto framesCount = buffer.frameLength;
                 
-                auto frames = jsi::Array(runtime, framesCount);
-                for (auto ii = 0; ii < framesCount; ii++) {
-                  frames.setValueAtIndex(runtime, ii, jsi::Value((double) buffer.floatChannelData[i][ii]));
+                auto channels = jsi::Array(runtime, channelsCount);
+                for (auto i = 0; i < channelsCount; i++) {
+                  auto channel = jsi::Object(runtime);
+                  
+                  auto frames = jsi::Array(runtime, framesCount);
+                  for (auto ii = 0; ii < framesCount; ii++) {
+                    frames.setValueAtIndex(runtime, ii, jsi::Value((double) buffer.floatChannelData[i][ii]));
+                  }
+                  
+                  channel.setProperty(runtime, "frames", frames);
+                  channels.setValueAtIndex(runtime, i, channel);
                 }
                 
-                channel.setProperty(runtime, "frames", frames);
-                channels.setValueAtIndex(runtime, i, channel);
-              }
+                auto sample = jsi::Object(runtime);
+                sample.setProperty(runtime, "channels", channels);
+                callback->call(runtime, sample);
+              }];
+              [_playerNode play];
               
-              auto sample = jsi::Object(runtime);
-              sample.setProperty(runtime, "channels", channels);
-              callback->call(runtime, sample);
-            }];
-            [_playerNode play];
-            
-            return jsi::Value::undefined();
-          };
-          jsiRuntime.global().setProperty(jsiRuntime, "setAudioCallback", jsi::Function::createFromHostFunction(jsiRuntime,
-                                                                                                                jsi::PropNameID::forAscii(jsiRuntime, "setAudioCallback"),
-                                                                                                                2,
-                                                                                                                setAudioCallback));
+              return jsi::Value::undefined();
+            };
+            jsiRuntime.global().setProperty(jsiRuntime, "setAudioCallback", jsi::Function::createFromHostFunction(jsiRuntime,
+                                                                                                                  jsi::PropNameID::forAscii(jsiRuntime, "setAudioCallback"),
+                                                                                                                  2,
+                                                                                                                  setAudioCallback));
 
+          }
         }
       }
     }
