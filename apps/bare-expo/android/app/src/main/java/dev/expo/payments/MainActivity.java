@@ -31,7 +31,8 @@ public class MainActivity extends DevMenuAwareReactActivity {
   @Override
   protected ReactActivityDelegate createReactActivityDelegate() {
     Activity activity = this;
-    ReactActivityDelegate delegate = new ReactActivityDelegateWrapper(this, getMainComponentName()) {
+    ReactActivityDelegate delegate = new ReactActivityDelegateWrapper(this,
+      new ReactActivityDelegate(this, getMainComponentName()) {
       @Override
       protected ReactRootView createRootView() {
         return new RNGestureHandlerEnabledRootView(MainActivity.this);
@@ -57,7 +58,7 @@ public class MainActivity extends DevMenuAwareReactActivity {
           pref.edit().putBoolean("isOnboardingFinished", true).apply();
         }
       }
-    };
+    });
 
     if (MainApplication.USE_DEV_CLIENT) {
       return DevLauncherController.wrapReactActivityDelegate(this, () -> delegate);
