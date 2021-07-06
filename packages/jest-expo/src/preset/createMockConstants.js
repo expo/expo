@@ -1,23 +1,29 @@
 'use strict';
 
 const { getConfig } = require('@expo/config');
-const os = require('os');
+const findUp = require('find-up');
 const path = require('path');
+const assert = require('assert');
+
+function findUpPackageJson(root) {
+  const packageJson = findUp.sync('package.json', { cwd: root });
+  assert(packageJson, `No package.json found for module "${root}"`);
+  return packageJson;
+}
 
 /**
  * Returns an object with mock exports for the Constants module, such as the
  * manifest.
  */
 module.exports = function createMockConstants() {
-  const appConfig = _readAppConfiguration();
-  const expoConfig = appConfig || {};
+  const expoConfig = readExpoConfig();
 
   const mockDeveloper = '@test';
   const mockSlug = expoConfig.slug || 'test';
   const mockId = `${mockDeveloper}/${mockSlug}`;
   const mockLinkingUri = `exp://exp.host/${mockDeveloper}/${mockSlug}/--/`;
   const mockHostUri = `exp.host/${mockDeveloper}/${mockSlug}`;
-  const mockSdkVersion = expoConfig.sdkVersion || '42';
+  const mockSdkVersion = expoConfig.sdkVersion || '42.0.0';
 
   return {
     deviceName: 'Test Phone',
@@ -36,30 +42,10 @@ module.exports = function createMockConstants() {
   };
 };
 
-function _readAppConfiguration() {
-  let config = null;
-
+function readExpoConfig() {
   // This file is under <package>/node_modules/jest-expo/src and we want to
   // start looking for app.json under <package>
-  let nextDirectory = path.resolve(__dirname, '..', '..', '..');
-  let currentDirectory;
-  do {
-    currentDirectory = nextDirectory;
-
-    try {
-      config = getConfig(currentDirectory);
-    } catch (e) {
-      if (!e.message.includes('expected package.json path')) {
-        throw e;
-      }
-    }
-
-    nextDirectory = path.dirname(currentDirectory);
-  } while (
-    config == null &&
-    currentDirectory !== nextDirectory &&
-    currentDirectory !== os.homedir()
-  );
-
-  return config != null ? config.exp : null;
+  const nextDirectory = path.resolve(__dirname, '..', '..', '..');
+  const projectRoot = path.dirname(findUpPackageJson(nextDirectory));
+  return getConfig(projectRoot, { skipSDKVersionRequirement: true }).exp;
 }
