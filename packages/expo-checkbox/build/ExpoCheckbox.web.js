@@ -18,7 +18,7 @@ const ExpoCheckbox = props => {
         onChange && onChange(event);
         onValueChange && onValueChange(value);
     }, [onChange, onValueChange]);
-    const fakeControl = (React.createElement(View, { style: [
+    const fakeControl = (React.createElement(View, { pointerEvents: "none", style: [
             styles.fakeControl,
             value && styles.fakeControlChecked,
             // custom color
@@ -27,6 +27,7 @@ const ExpoCheckbox = props => {
             value && disabled && styles.fakeControlCheckedAndDisabled,
         ] }));
     const nativeControl = createElement('input', {
+        accessibilityState: { disabled, checked: value },
         checked: value,
         disabled,
         onChange: handleChange,
@@ -34,11 +35,10 @@ const ExpoCheckbox = props => {
         type: 'checkbox',
     });
     return (React.createElement(View, Object.assign({}, other, { style: [styles.root, style, disabled && styles.cursorDefault] }),
-        fakeControl,
-        nativeControl));
+        nativeControl,
+        fakeControl));
 };
 ExpoCheckbox.displayName = 'Checkbox';
-ExpoCheckbox.isAvailableAsync = async () => true;
 const styles = StyleSheet.create({
     root: {
         // @ts-ignore
@@ -56,6 +56,7 @@ const styles = StyleSheet.create({
         cursor: 'inherit',
     },
     fakeControl: {
+        ...StyleSheet.absoluteFillObject,
         alignItems: 'center',
         backgroundColor: '#fff',
         borderColor: '#657786',
@@ -84,9 +85,10 @@ const styles = StyleSheet.create({
         ...StyleSheet.absoluteFillObject,
         height: '100%',
         margin: 0,
-        opacity: 0,
         padding: 0,
         width: '100%',
+        // @ts-ignore
+        WebkitAppearance: 'none',
     },
 });
 export default ExpoCheckbox;
