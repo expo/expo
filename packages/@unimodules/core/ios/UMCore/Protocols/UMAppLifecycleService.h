@@ -3,6 +3,4 @@
 #import <ExpoModulesCore/EXAppLifecycleService.h>
 #import <UMCore/UMAppLifecycleListener.h>
 
-@protocol UMAppLifecycleService <EXAppLifecycleService>
-
-@end
+#define UMAppLifecycleService EXAppLifecycleService
