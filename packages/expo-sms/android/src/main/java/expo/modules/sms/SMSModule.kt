@@ -39,7 +39,6 @@ class SMSModule(context: Context) : ExportedModule(context), LifecycleEventListe
     mModuleRegistry.getModule(UIManager::class.java)?.unregisterLifecycleEventListener(this)
   }
 
-  // TODO, name of second parameter!
   private fun getAttachment(attachment: Map<String?, String?>?, key: String): String? {
     return attachment?.get(key)
   }
