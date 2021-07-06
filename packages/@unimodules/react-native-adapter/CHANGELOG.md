@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Escape Android autolinking script for Windows. ([#13494](https://github.com/expo/expo/pull/13494) by [@byCedric](https://github.com/byCedric))
-
 ### 💡 Others
+
+## 6.3.2 — 2021-07-06
+
+### 🐛 Bug fixes
+
+- Escape Android autolinking script for Windows. ([#13494](https://github.com/expo/expo/pull/13494) by [@byCedric](https://github.com/byCedric))
 
 ## 6.3.1 — 2021-06-22
 
