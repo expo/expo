@@ -59,7 +59,7 @@ const WaveForm = () => {
         }, 0);
 
         const rmsValue = Math.sqrt(frameSum / channel.frames.length);
-        const decibel = 10 * Math.log10(rmsValue);
+        const decibel = 10 * Math.log10(rmsValue); // ranges from -160dB to 0dB
 
         scale.value = interpolate(decibel, [-30, 0], [0.1, 1], Extrapolate.CLAMP);
       });
