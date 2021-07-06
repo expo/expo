@@ -52,9 +52,11 @@ const WaveForm = () => {
         );
 
         const loudness = Audio.Sound.getAverageLoudness(sample);
-        scale.value = interpolate(loudness, [0, 0.3, 1], [0.1, 1, 2], Extrapolate.CLAMP);
+        // 0.90 to 0.96 is the most interesting range, 0.96 to 0.99 is mostly bass in this song so emphasize it even more.
+        scale.value = interpolate(loudness, [0.9, 0.96, 0.99], [0.2, 1, 1.5], Extrapolate.CLAMP);
       });
       didThingy = true;
+      clearInterval(interval);
     }, 1000);
     return () => {
       console.log('clear');
