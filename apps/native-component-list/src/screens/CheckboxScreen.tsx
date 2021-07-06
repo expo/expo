@@ -1,6 +1,6 @@
 import Checkbox from 'expo-checkbox';
 import * as React from 'react';
-import { Platform, Text } from 'react-native';
+import { Platform } from 'react-native';
 
 import { Page, Section } from '../components/Page';
 
