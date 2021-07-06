@@ -50,7 +50,18 @@ const WaveForm = () => {
         console.log(
           `Received sample data! ${sample.channels.length} Channels; ${sample.channels[0].frames.length} Frames; ${firstFrame}`
         );
-        scale.value = interpolate(firstFrame, [-0.5, 0, 0.5], [1, 0.5, 0], Extrapolate.CLAMP);
+
+        const channel = sample.channels[0];
+        // https://developer.apple.com/documentation/accelerate/1450655-vdsp_rmsqv
+        const frameSum = channel.frames.reduce((prev, curr) => {
+          const x = curr ** 2;
+          return prev + x;
+        }, 0);
+
+        const rmsValue = Math.sqrt(frameSum / channel.frames.length);
+        const decibel = 10 * Math.log10(rmsValue);
+
+        scale.value = interpolate(decibel, [-30, 0], [0.1, 1], Extrapolate.CLAMP);
       });
       didThingy = true;
     }, 1000);
