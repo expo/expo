@@ -45,7 +45,7 @@ export class Sound {
         if ('frames' in sampleOrChannel) {
             // https://developer.apple.com/documentation/accelerate/1450655-vdsp_rmsqv
             const frameSum = sampleOrChannel.frames.reduce((prev, curr) => prev + curr ** 2, 0);
-            const rmsValue = Math.sqrt(frameSum / frames.length);
+            const rmsValue = Math.sqrt(frameSum / sampleOrChannel.frames.length);
             const decibel = 10 * Math.log10(rmsValue); // ranges from -160dB to 0dB
             return (160 + decibel) / 160; // map 0...160 to 0...1
         }
