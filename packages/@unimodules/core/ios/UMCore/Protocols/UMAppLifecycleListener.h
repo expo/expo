@@ -2,6 +2,4 @@
 
 #import <ExpoModulesCore/EXAppLifecycleListener.h>
 
-@protocol UMAppLifecycleListener <EXAppLifecycleListener>
-
-@end
+#define UMAppLifecycleListener EXAppLifecycleListener

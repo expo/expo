@@ -2,6 +2,4 @@
 
 #import <ExpoModulesCore/EXUIManager.h>
 
-@protocol UMUIManager <EXUIManager>
-
-@end
+#define UMUIManager EXUIManager
