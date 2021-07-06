@@ -14,10 +14,10 @@ import com.facebook.react.ReactRootView
 import com.facebook.react.modules.core.PermissionListener
 import java.lang.reflect.Method
 
-class ReactActivityDelegateWrapper(activity: ReactActivity, delegate: ReactActivityDelegate)
-  : ReactActivityDelegate(activity, null) {
-  private val delegate = delegate
-  private val activity = activity
+class ReactActivityDelegateWrapper(
+  private val activity: ReactActivity,
+  private val delegate: ReactActivityDelegate
+) : ReactActivityDelegate(activity, null) {
   private val reactActivityLifecycleListeners = ExpoModulesPackageList.getPackageList()
     .flatMap { it.createReactActivityLifecycleListeners(activity) }
   private val methodMap: ArrayMap<String, Method> = ArrayMap()

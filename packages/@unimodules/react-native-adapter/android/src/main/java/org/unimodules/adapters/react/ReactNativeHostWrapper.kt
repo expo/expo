@@ -20,9 +20,10 @@ import com.facebook.react.uimanager.UIImplementationProvider
 import org.unimodules.core.interfaces.ReactNativeHostHandler
 import java.lang.reflect.Method
 
-class ReactNativeHostWrapper(application: Application, host: ReactNativeHost)
-  : ReactNativeHost(application) {
-  private val host = host
+class ReactNativeHostWrapper(
+  application: Application,
+  private val host: ReactNativeHost
+) : ReactNativeHost(application) {
   private val reactNativeHostHandlers = ExpoModulesPackageList.getPackageList()
     .flatMap { it.createReactNativeHostHandlers(application) }
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
@@ -80,8 +81,10 @@ class ReactNativeHostWrapper(application: Application, host: ReactNativeHost)
 
   inner class JSIModuleContainerPackage(userJSIModulePackage: JSIModulePackage?) : JSIModulePackage {
     private val userJSIModulePackage = userJSIModulePackage
-    override fun getJSIModules(reactApplicationContext: ReactApplicationContext,
-                               jsContext: JavaScriptContextHolder): List<JSIModuleSpec<JSIModule>> {
+    override fun getJSIModules(
+      reactApplicationContext: ReactApplicationContext,
+      jsContext: JavaScriptContextHolder
+    ): List<JSIModuleSpec<JSIModule>> {
       reactNativeHostHandlers.forEach { handler ->
         handler.onRegisterJSIModules(reactApplicationContext, jsContext)
       }
