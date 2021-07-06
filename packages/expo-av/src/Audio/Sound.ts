@@ -14,6 +14,13 @@ import { PitchCorrectionQuality } from '../Audio';
 import ExponentAV from '../ExponentAV';
 import { throwIfAudioIsDisabled } from './AudioAvailability';
 
+export interface AudioChannel {
+  frames: number[];
+}
+export interface AudioSample {
+  channels: AudioChannel[];
+}
+
 type AudioInstance = number | HTMLMediaElement | null;
 export class Sound implements Playback {
   _loaded: boolean = false;
@@ -50,6 +57,36 @@ export class Sound implements Playback {
     const status: AVPlaybackStatus = await sound.loadAsync(source, initialStatus, downloadFirst);
     return { sound, status };
   };
+
+  /**
+   * Returns the average loudness of all audio sample frames in the given `AudioChannel`.
+   *
+   * The resulting "loudness" value ranges from `0` to `1`, where `0` is "silent" (-160dB) and `1` is "loud" (0dB)
+   * @param channel The `AudioChannel` to calculate average "loudness" from.
+   */
+  public static getAverageLoudness(channel: AudioChannel): number;
+  /**
+   * Returns the average loudness of all audio sample frames in every `AudioChannel` of the given `AudioSample`.
+   *
+   * The resulting "loudness" value ranges from `0` to `1`, where `0` is "silent" (-160dB) and `1` is "loud" (0dB)
+   * @param sample The `AudioSample` to calculate average "loudness" from.
+   */
+  public static getAverageLoudness(sample: AudioSample): number;
+  public static getAverageLoudness(sampleOrChannel: AudioSample | AudioChannel): number {
+    if ('frames' in sampleOrChannel) {
+      // https://developer.apple.com/documentation/accelerate/1450655-vdsp_rmsqv
+      const frameSum = sampleOrChannel.frames.reduce((prev, curr) => prev + curr ** 2, 0);
+      const rmsValue = Math.sqrt(frameSum / frames.length);
+      const decibel = 10 * Math.log10(rmsValue); // ranges from -160dB to 0dB
+      return (160 + decibel) / 160; // map 0...160 to 0...1
+    } else {
+      const sumOfAllChannels = sampleOrChannel.channels.reduce(
+        (prev, curr) => prev + this.getAverageLoudness(curr),
+        0
+      );
+      return sumOfAllChannels / sampleOrChannel.channels.length;
+    }
+  }
 
   // Internal methods
 

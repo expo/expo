@@ -51,17 +51,8 @@ const WaveForm = () => {
           `Received sample data! ${sample.channels.length} Channels; ${sample.channels[0].frames.length} Frames; ${firstFrame}`
         );
 
-        const channel = sample.channels[0];
-        // https://developer.apple.com/documentation/accelerate/1450655-vdsp_rmsqv
-        const frameSum = channel.frames.reduce((prev, curr) => {
-          const x = curr ** 2;
-          return prev + x;
-        }, 0);
-
-        const rmsValue = Math.sqrt(frameSum / channel.frames.length);
-        const decibel = 10 * Math.log10(rmsValue); // ranges from -160dB to 0dB
-
-        scale.value = interpolate(decibel, [-30, 0], [0.1, 1], Extrapolate.CLAMP);
+        const loudness = Audio.Sound.getAverageLoudness(sample);
+        scale.value = interpolate(loudness, [0, 0.3, 1], [0.1, 1, 2], Extrapolate.CLAMP);
       });
       didThingy = true;
     }, 1000);
