@@ -4,6 +4,22 @@
 
 @implementation ABI40_0_0EXUpdatesNewRawManifest
 
+- (NSString *)rawId {
+  return [self.rawManifestJSON stringForKey:@"id"];
+}
+
+- (NSString *)stableLegacyId {
+  return self.rawId;
+}
+
+- (NSString *)scopeKey {
+  return self.rawId;
+}
+
+- (NSString *)projectId {
+  return self.rawId;
+}
+
 - (NSString *)createdAt {
   return [self.rawManifestJSON stringForKey:@"createdAt"];
 }
@@ -21,7 +37,7 @@
       return [runtimeVersion substringWithRange:matchRange];
     }
   }
-  
+
   return nil;
 }
 

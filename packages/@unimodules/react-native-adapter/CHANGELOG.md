@@ -6,11 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 6.4.0 — 2021-07-05
+
+### 🎉 New features
+
 - Use stable manifest ID where applicable. ([#12964](https://github.com/expo/expo/pull/12964) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- Escape Android autolinking script for Windows. ([#13494](https://github.com/expo/expo/pull/13494) by [@byCedric](https://github.com/byCedric))
 
 ## 6.3.0 — 2021-05-25
 

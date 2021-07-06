@@ -489,17 +489,17 @@ const sortedReference = Object.assign(
 const sortedGeneral = groupNav(sortNav(prevaledNavigationData.general));
 const sortedStarting = groupNav(sortNav(prevaledNavigationData.starting));
 const sortedPreview = groupNav(sortNav(prevaledNavigationData.preview));
-const sortedEas = groupNav(sortNav(prevaledNavigationData.eas));
+const sortedFeaturePreview = groupNav(sortNav(prevaledNavigationData.featurePreview));
 
 module.exports = {
   generalDirectories: prevaledNavigationData.generalDirectories,
   startingDirectories: prevaledNavigationData.startingDirectories,
   previewDirectories: prevaledNavigationData.previewDirectories,
-  easDirectories: prevaledNavigationData.easDirectories,
+  featurePreviewDirectories: prevaledNavigationData.featurePreviewDirectories,
   starting: sortedStarting,
   general: sortedGeneral,
   preview: sortedPreview,
-  eas: sortedEas,
+  featurePreview: sortedFeaturePreview,
   reference: { ...sortedReference, latest: sortedReference['v' + packageVersion] },
   hiddenSections,
 };

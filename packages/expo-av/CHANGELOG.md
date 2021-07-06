@@ -6,11 +6,14 @@
 
 ### 🎉 New features
 
+- Add web support for recording. ([#8721](https://github.com/expo/expo/pull/8721) by [@WazzaJB](https://github.com/WazzaJB) and [@mnightingale](https://github.com/mnightingale))
+- Add permissions support for web. ([#8721](https://github.com/expo/expo/pull/8721) by [@mnightingale](https://github.com/mnightingale))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
-## 9.2.0 — 2021-06-16
+## 9.2.3 — 2021-06-30
 
 ### 🎉 New features
 
@@ -18,6 +21,7 @@
 - Remove lodash and nullthrows. ([#12522](https://github.com/expo/expo/pull/12522) by [@EvanBacon](https://github.com/EvanBacon))
 - Add new `Recording.createAsync` API for faster recording on iOS. ([#12294](https://github.com/expo/expo/pull/12294) by [@IjzerenHein](https://github.com/IjzerenHein))
 - Add `keepAudioActiveHint` recording option to prevent deactivation of the Audio session when recording on iOS. ([#12294](https://github.com/expo/expo/pull/12294) by [@IjzerenHein](https://github.com/IjzerenHein))
+- Allow video audio to continue to play in the background on iOS. ([#12950](https://github.com/expo/expo/pull/12950) by [@matt-oakes](https://github.com/matt-oakes))
 
 ### 🐛 Bug fixes
 

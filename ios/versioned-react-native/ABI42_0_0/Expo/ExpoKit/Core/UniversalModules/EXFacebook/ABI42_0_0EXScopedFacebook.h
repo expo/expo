@@ -7,7 +7,7 @@
 
 @interface ABI42_0_0EXScopedFacebook : ABI42_0_0EXFacebook <ABI42_0_0UMAppLifecycleListener>
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId andParams:(NSDictionary *)params;
+- (instancetype)initWithScopeKey:(NSString *)scopeKey andParams:(NSDictionary *)params;
 
 @end
 #endif

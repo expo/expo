@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol ABI41_0_0EXNotificationsIdentifiersManager
 
-- (NSString *)internalIdForIdentifier:(NSString *)identifier experienceId:(NSString *)experienceId;
+- (NSString *)internalIdForIdentifier:(NSString *)identifier scopeKey:(NSString *)scopeKey;
 - (NSString *)exportedIdForInternalIdentifier:(NSString *)identifier;
 
 @end

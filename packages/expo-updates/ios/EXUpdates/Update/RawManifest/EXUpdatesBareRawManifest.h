@@ -7,6 +7,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXUpdatesBareRawManifest : EXUpdatesBaseLegacyRawManifest<EXUpdatesRawManifestBehavior>
 
+/**
+* A UUID for this manifest.
+*/
+- (NSString *)rawId;
 - (NSNumber *)commitTimeNumber;
 - (nullable NSDictionary *)metadata;
 - (nullable NSArray *)assets;

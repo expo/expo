@@ -248,7 +248,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
   // if this experience id encountered a loading error before,
   // we should always check for an update, even if the manifest says not to
-  if ([[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:[EXAppFetcher experienceIdWithManifest:manifest]]) {
+  if ([[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager scopeKeyIsRecoveringFromError:manifest.scopeKey]) {
     shouldCheckForUpdate = YES;
   }
 

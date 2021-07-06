@@ -46,6 +46,7 @@ Package-specific changes not released in any SDK will be added here just before 
   - Add `keepAudioActiveHint` recording option to prevent deactivation of the Audio session when recording on iOS. ([#12294](https://github.com/expo/expo/pull/12294) by [@IjzerenHein](https://github.com/IjzerenHein)) ([#12294](https://github.com/expo/expo/pull/12294) by [@IjzerenHein](https://github.com/IjzerenHein))
   - [plugin] Added Android `android.permission.MODIFY_AUDIO_SETTINGS` permission. ([#13163](https://github.com/expo/expo/pull/13163) by [@EvanBacon](https://github.com/EvanBacon)) ([#13163](https://github.com/expo/expo/pull/13163) by [@EvanBacon](https://github.com/EvanBacon))
   - Remove lodash and nullthrows. ([#12522](https://github.com/expo/expo/pull/12522) by [@EvanBacon](https://github.com/EvanBacon)) ([#12522](https://github.com/expo/expo/pull/12522) by [@EvanBacon](https://github.com/EvanBacon))
+  - Allow video audio to continue to play in the background on iOS. ([#12950](https://github.com/expo/expo/pull/12950) by [@matt-oakes](https://github.com/matt-oakes))
 - **`expo-gl`**
   - Implemented basic functionality of `getSupportedExtensions` and `getExtension` methods. However, some of the supported extensions are platform-specific so they may differ from what is described in WebGL extensions specification. ([#12309](https://github.com/expo/expo/pull/12309) by [@tsapeta](https://github.com/tsapeta)) ([#12309](https://github.com/expo/expo/pull/12309) by [@tsapeta](https://github.com/tsapeta))
 - **`expo-ads-admob`**

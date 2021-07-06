@@ -6,11 +6,9 @@ import HeadingText from '../components/HeadingText';
 import ListButton from '../components/ListButton';
 import SimpleActionDemo from '../components/SimpleActionDemo';
 
-const appId = '629712900716487';
-const appEventsDashboardUrlExpoGoIos =
+const appId = '1696089354000816';
+const appEventsDashboardUrl =
   'https://www.facebook.com/events_manager2/list/app/1696089354000816/test_events?act=453712715268302';
-const appEventsDashboardUrlAndroid =
-  'https://www.facebook.com/events_manager2/list/app/629712900716487/';
 
 export default class FacebookAppEventsScreen extends React.Component {
   static navigationOptions = {
@@ -86,18 +84,10 @@ export default class FacebookAppEventsScreen extends React.Component {
 
         <View style={{ paddingBottom: 30 }}>
           <HeadingText style={{ textAlign: 'center' }}>
-            To view app events in Expo Go on iOS, go to this dashboard:
+            To view app events from Expo Go, go to this dashboard:
           </HeadingText>
           <Text selectable style={{ textAlign: 'center' }}>
-            {appEventsDashboardUrlExpoGoIos}
-          </Text>
-
-          <HeadingText style={{ textAlign: 'center' }}>
-            To view app events in Expo Go on Android, and in standalones on iOS & Android, go to
-            this dashboard and navigate to 'Test Events':
-          </HeadingText>
-          <Text selectable style={{ textAlign: 'center' }}>
-            {appEventsDashboardUrlAndroid}
+            {appEventsDashboardUrl}
           </Text>
         </View>
       </ScrollView>

@@ -141,9 +141,13 @@ UM_EXPORT_MODULE(ExponentAV);
     [self _deactivateAudioSession]; // This will pause all players and stop all recordings
     
     [self _runBlockForAllAVObjects:^(NSObject<EXAVObject> *exAVObject) {
-      [exAVObject appDidBackground];
+      [exAVObject appDidBackgroundStayActive:NO];
     }];
     [_kernelAudioSessionManagerDelegate moduleDidBackground:self];
+  } else {
+    [self _runBlockForAllAVObjects:^(NSObject<EXAVObject> *exAVObject) {
+      [exAVObject appDidBackgroundStayActive:YES];
+    }];
   }
 }
 
