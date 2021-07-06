@@ -676,7 +676,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
   @Override
   public boolean isDebugModeEnabled() {
-    return mManifest.isDevelopmentMode();
+    return mManifest != null && mManifest.isDevelopmentMode();
   }
 
   @Override

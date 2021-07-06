@@ -371,7 +371,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
   }
 
   public boolean isDebugModeEnabled() {
-    return mManifest.isDevelopmentMode();
+    return mManifest != null && mManifest.isDevelopmentMode();
   }
 
   protected void destroyReactInstanceManager() {
