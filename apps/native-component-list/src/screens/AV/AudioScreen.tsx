@@ -8,12 +8,38 @@ import ListButton from '../../components/ListButton';
 import AudioModeSelector from './AudioModeSelector';
 import Player from './AudioPlayer';
 
+interface Channel {
+  frames: number[];
+}
+
+interface AudioSample {
+  channels: Channel[];
+}
+
 export default class AudioScreen extends React.Component {
   static navigationOptions = {
     title: 'Audio',
   };
 
   _setAudioActive = (active: boolean) => () => Audio.setIsEnabledAsync(active);
+
+  _didThingy: boolean = false;
+  doThingy() {
+    if (this._didThingy) return;
+    if (global.setAudioCallback == null) return;
+    global.setAudioCallback((sample: AudioSample) => {
+      console.log(
+        `Received sample data! ${sample.channels.length} Channels; ${sample.channels[0].frames.length} Frames; ${sample.channels[0].frames[0]}`
+      );
+    });
+    this._didThingy = true;
+  }
+
+  componentDidMount() {
+    setInterval(() => {
+      this.doThingy();
+    }, 1000);
+  }
 
   render() {
     return (
