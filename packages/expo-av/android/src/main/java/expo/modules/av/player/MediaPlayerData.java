@@ -1,6 +1,7 @@
 package expo.modules.av.player;
 
 import android.content.Context;
+import android.media.audiofx.Visualizer;
 import android.media.MediaPlayer;
 import android.media.PlaybackParams;
 import android.net.Uri;
@@ -40,6 +41,8 @@ class MediaPlayerData extends PlayerData implements
   private MediaPlayer mMediaPlayer = null;
   private ModuleRegistry mModuleRegistry = null;
   private boolean mMediaPlayerHasStartedEver = false;
+
+  private Visualizer mVisualizer = null;
 
   private Integer mPlayableDurationMillis = null;
   private boolean mIsBuffering = false;
@@ -117,6 +120,27 @@ class MediaPlayerData extends PlayerData implements
         mMediaPlayer.setOnCompletionListener(MediaPlayerData.this);
         mMediaPlayer.setOnErrorListener(MediaPlayerData.this);
         mMediaPlayer.setOnInfoListener(MediaPlayerData.this);
+
+
+        mVisualizer = new Visualizer(mMediaPlayer.getAudioSessionId());
+        // TODO: Check config?
+        // visualizer.setEnabled(false);
+        // visualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
+
+        visualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
+          @Override
+          public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
+            // TODO: Send bytes to JSI
+          }
+
+          @Override
+          public void onFftDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
+            // TODO: use frequency?
+          }
+        }, Visualizer.getMaxCaptureRate() / 2, true, false);
+
+        // visualizer.setEnabled(true);
+
 
         setStatusWithListener(status, new SetStatusCompletionListener() {
           @Override
