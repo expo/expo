@@ -33,6 +33,13 @@ Add the following lines to your `Podfile`:
 
 <Tab >
 <ConfigurationDiff source="/static/diffs/client/podfile-no-unimodules.diff" />
+
+Add an empty Swift file to your project from inside of Xcode by choosing File > New > File > Swift File.
+
+<img src="/static/images/client/xcode_bridging_header_alert.png" style={{ maxWidth: "60%" }}/>
+
+When the above prompt comes up, choose **Create Bridging Header**.
+
 </Tab>
 
 </Tabs>
