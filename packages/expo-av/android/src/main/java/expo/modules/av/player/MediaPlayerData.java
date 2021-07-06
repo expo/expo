@@ -124,10 +124,12 @@ class MediaPlayerData extends PlayerData implements
 
         mVisualizer = new Visualizer(mMediaPlayer.getAudioSessionId());
         // TODO: Check config?
-        // visualizer.setEnabled(false);
-        // visualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
+        // mVisualizer.setEnabled(false);
+        // mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
 
-        visualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
+        // the rate at which the Visualizer calls back with new bytes - will be clamped to max 100ms.
+        int callbackRate = Math.min(Visualizer.getMaxCaptureRate(), 100);
+        mVisualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
           @Override
           public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
             // TODO: Send bytes to JSI
@@ -137,9 +139,9 @@ class MediaPlayerData extends PlayerData implements
           public void onFftDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
             // TODO: use frequency?
           }
-        }, Visualizer.getMaxCaptureRate() / 2, true, false);
+        }, callbackRate, true, false);
 
-        // visualizer.setEnabled(true);
+        // mVisualizer.setEnabled(true);
 
 
         setStatusWithListener(status, new SetStatusCompletionListener() {
