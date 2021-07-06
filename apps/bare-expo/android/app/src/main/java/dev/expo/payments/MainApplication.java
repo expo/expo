@@ -9,6 +9,7 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
 
+import org.unimodules.adapters.react.ApplicationLifecycleDispatcher;
 import org.unimodules.adapters.react.ReactNativeHostWrapper;
 
 import java.util.List;
@@ -19,7 +20,7 @@ import expo.modules.devlauncher.DevLauncherController;
 public class MainApplication extends Application implements ReactApplication {
   static final boolean USE_DEV_CLIENT = false;
 
-  private final ReactNativeHostWrapper mReactNativeHost = new ReactNativeHostWrapper(this) {
+  private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
     @Override
     public boolean getUseDeveloperSupport() {
       return BuildConfig.DEBUG;
@@ -38,7 +39,7 @@ public class MainApplication extends Application implements ReactApplication {
 
   @Override
   public ReactNativeHost getReactNativeHost() {
-    return mReactNativeHost;
+    return new ReactNativeHostWrapper(this, mReactNativeHost);
   }
 
   @Override
@@ -50,12 +51,12 @@ public class MainApplication extends Application implements ReactApplication {
     if (USE_DEV_CLIENT) {
       DevLauncherController.initialize(this, mReactNativeHost);
     }
-    mReactNativeHost.onApplicationCreate(this);
+    ApplicationLifecycleDispatcher.onApplicationCreate(this);
   }
 
   @Override
   public void onConfigurationChanged(@NonNull Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
-    mReactNativeHost.onApplicationConfigurationChanged(this, newConfig);
+    ApplicationLifecycleDispatcher.onConfigurationChanged(this, newConfig);
   }
 }

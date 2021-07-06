@@ -1,29 +1,51 @@
 package org.unimodules.adapters.react
 
 import android.app.Application
-import android.content.Context
-import android.content.res.Configuration
+import androidx.collection.ArrayMap
 import com.facebook.infer.annotation.Assertions
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
+import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.JSIModule
 import com.facebook.react.bridge.JSIModulePackage
 import com.facebook.react.bridge.JSIModuleSpec
 import com.facebook.react.bridge.JavaScriptContextHolder
+import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactMarker
 import com.facebook.react.bridge.ReactMarkerConstants
 import com.facebook.react.common.LifecycleState
-import org.unimodules.core.interfaces.ApplicationLifecycleListener
-import org.unimodules.core.interfaces.ReactNativeHostHandler
+import com.facebook.react.devsupport.RedBoxHandler
+import com.facebook.react.uimanager.UIImplementationProvider
+import java.lang.reflect.Method
 
-abstract class ReactNativeHostWrapper(application: Application) : ReactNativeHost(application) {
-  private val applicationLifecycleListeners: ArrayList<ApplicationLifecycleListener> = ArrayList()
-  private val reactNativeHostHandlers: ArrayList<ReactNativeHostHandler> = ArrayList()
-  init {
-    for (pkg in ExpoModulesPackageList.getPackageList()) {
-      applicationLifecycleListeners.addAll(pkg.createApplicationLifecycleListeners(application))
-      reactNativeHostHandlers.addAll(pkg.createReactNativeHostHandlers(application))
+class ReactNativeHostWrapper(application: Application, host: ReactNativeHost)
+  : ReactNativeHost(application) {
+  private val host = host
+  private val reactNativeHostHandlers = ExpoModulesPackageList.getPackageList()
+    .flatMap { it.createReactNativeHostHandlers(application) }
+  private val methodMap: ArrayMap<String, Method> = ArrayMap()
+  private var mReactInstanceManager: ReactInstanceManager? = null
+
+  //region ReactNativeHost
+
+  override fun getReactInstanceManager(): ReactInstanceManager {
+    if (mReactInstanceManager == null) {
+      ReactMarker.logMarker(ReactMarkerConstants.GET_REACT_INSTANCE_MANAGER_START)
+      mReactInstanceManager = createReactInstanceManager()
+      ReactMarker.logMarker(ReactMarkerConstants.GET_REACT_INSTANCE_MANAGER_END)
+    }
+    return mReactInstanceManager!!
+  }
+
+  override fun hasInstance(): Boolean {
+    return mReactInstanceManager != null
+  }
+
+  override fun clear() {
+    mReactInstanceManager?.let {
+      it.destroy()
+      mReactInstanceManager = null
     }
   }
 
@@ -54,11 +76,50 @@ abstract class ReactNativeHostWrapper(application: Application) : ReactNativeHos
     return reactInstanceManager
   }
 
-  //region internals
+  override fun getRedBoxHandler(): RedBoxHandler? {
+    return invokeDelegateMethod("getRedBoxHandler")
+  }
+
+  override fun getJavaScriptExecutorFactory(): JavaScriptExecutorFactory? {
+    return invokeDelegateMethod("getJavaScriptExecutorFactory")
+  }
+
+  override fun getUIImplementationProvider(): UIImplementationProvider {
+    return invokeDelegateMethod("getUIImplementationProvider")
+  }
+
+  override fun getJSIModulePackage(): JSIModulePackage? {
+    return invokeDelegateMethod("getJSIModulePackage")
+  }
+
+  override fun getJSMainModuleName(): String {
+    return invokeDelegateMethod("getJSMainModuleName")
+  }
+
+  override fun getJSBundleFile(): String? {
+    return invokeDelegateMethod("getJSBundleFile")
+  }
+
+  override fun getBundleAssetName(): String? {
+    return invokeDelegateMethod("getBundleAssetName")
+  }
+
+  override fun getUseDeveloperSupport(): Boolean {
+    return host.useDeveloperSupport
+  }
+
+  override fun getPackages(): MutableList<ReactPackage> {
+    return invokeDelegateMethod("getPackages")
+  }
+
+  //endregion
+
+  //region Internals
 
   inner class JSIModuleContainerPackage : JSIModulePackage {
-    override fun getJSIModules(reactApplicationContext: ReactApplicationContext, jsContext: JavaScriptContextHolder): List<JSIModuleSpec<JSIModule>> {
-      for (handler in reactNativeHostHandlers) {
+    override fun getJSIModules(reactApplicationContext: ReactApplicationContext,
+                               jsContext: JavaScriptContextHolder): List<JSIModuleSpec<JSIModule>> {
+      reactNativeHostHandlers.forEach { handler ->
         handler.onRegisterJSIModules(reactApplicationContext, jsContext)
       }
       return emptyList()
@@ -66,39 +127,25 @@ abstract class ReactNativeHostWrapper(application: Application) : ReactNativeHos
   }
 
   private fun getOverrideJSBundleFile(): String? {
-    for (handler in reactNativeHostHandlers) {
-      val jsBundleFile = handler.getJSBundleFile()
-      if (jsBundleFile != null) {
-        return jsBundleFile
-      }
-    }
-    return this.jsBundleFile
+    return reactNativeHostHandlers
+      .map { it.getJSBundleFile() }
+      .firstOrNull() ?: this.jsBundleFile
   }
 
   private fun getOverrideBundleAssetName(): String? {
-    for (handler in reactNativeHostHandlers) {
-      val bundleAssetName = handler.getBundleAssetName()
-      if (bundleAssetName != null) {
-        return bundleAssetName
-      }
-    }
-    return this.bundleAssetName
+    return reactNativeHostHandlers
+      .map { it.getBundleAssetName() }
+      .firstOrNull() ?: this.bundleAssetName
   }
 
-  //endregion
-
-  //region ApplicationLifecycle
-
-  fun onApplicationCreate(application: Application) {
-    for (listener in applicationLifecycleListeners) {
-      listener.onCreate(application)
+  private fun <T> invokeDelegateMethod(name: String): T {
+    var method = methodMap[name]
+    if (method == null) {
+      method = ReactNativeHost::class.java.getDeclaredMethod(name)
+      method.isAccessible = true
+      methodMap[name] = method
     }
-  }
-
-  fun onApplicationConfigurationChanged(context: Context, newConfig: Configuration) {
-    for (listener in applicationLifecycleListeners) {
-      listener.onConfigurationChanged(newConfig)
-    }
+    return method!!.invoke(host) as T
   }
 
   //endregion
