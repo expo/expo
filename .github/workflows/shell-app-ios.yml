@@ -42,7 +42,7 @@ jobs:
           path: 'tools/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('tools/yarn.lock') }}
       - name: Patch xdl
-        run: patch -p0 < a.patch
+        run: patch -p0 < a.patch || true
       - name: 🍏 Generate dynamic macros
         run: expotools ios-generate-dynamic-macros
       - name: 📦 Build iOS shell app for real devices
