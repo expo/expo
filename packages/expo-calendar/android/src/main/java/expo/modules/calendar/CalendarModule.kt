@@ -1,1416 +1,1208 @@
-package expo.modules.calendar;
+package expo.modules.calendar
 
-import android.Manifest;
-import android.content.ContentResolver;
-import android.content.ContentUris;
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.provider.CalendarContract;
-import android.text.TextUtils;
-import android.util.Log;
+import android.Manifest
+import android.content.ContentUris
+import android.content.ContentValues
+import android.content.Context
+import android.content.Intent
+import android.database.Cursor
+import android.os.Bundle
+import android.provider.CalendarContract
+import android.text.TextUtils
+import android.util.Log
+import expo.modules.interfaces.permissions.Permissions
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import org.unimodules.core.ExportedModule
+import org.unimodules.core.ModuleRegistry
+import org.unimodules.core.Promise
+import org.unimodules.core.arguments.ReadableArguments
+import org.unimodules.core.errors.InvalidArgumentException
+import org.unimodules.core.interfaces.ExpoMethod
+import org.unimodules.core.interfaces.RegistryLifecycleListener
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.arguments.ReadableArguments;
-import org.unimodules.core.errors.InvalidArgumentException;
-import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.RegistryLifecycleListener;
+class CalendarModule(private val mContext: Context) : ExportedModule(mContext), RegistryLifecycleListener {
+  private var mPermissionsManager: Permissions? = null
+  private val moduleCoroutineScope = CoroutineScope(Dispatchers.Default)
+  private val contentResolver
+    get() = mContext.contentResolver
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
-
-import expo.modules.interfaces.permissions.Permissions;
-
-public class CalendarModule extends ExportedModule implements RegistryLifecycleListener {
-  private static final String TAG = CalendarModule.class.getSimpleName();
-
-  private Context mContext;
-  private Permissions mPermissionsManager;
-
-  public CalendarModule(Context context) {
-    super(context);
-    mContext = context;
+  override fun getName(): String {
+    return "ExpoCalendar"
   }
 
-  @Override
-  public String getName() {
-    return "ExpoCalendar";
+  override fun onCreate(moduleRegistry: ModuleRegistry) {
+    mPermissionsManager = moduleRegistry.getModule(Permissions::class.java)
   }
 
-  @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
-    mPermissionsManager = moduleRegistry.getModule(Permissions.class);
+  override fun onDestroy() {
+    try {
+      moduleCoroutineScope.cancel(ModuleDestroyedException())
+    } catch (e: IllegalStateException) {
+      Log.e(TAG, "The scope does not have a job in it")
+    }
+  }
+
+  private val sdf: SimpleDateFormat
+
+  init {
+    val dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+    sdf = SimpleDateFormat(dateFormat)
+    sdf.timeZone = TimeZone.getTimeZone("GMT")
   }
 
   //region Exported methods
-
   @ExpoMethod
-  public void getCalendarsAsync(final String type, final Promise promise) {
+  fun getCalendarsAsync(type: String?, promise: Promise) {
     if (!checkPermissions(promise)) {
-      return;
+      return
     }
-    if (type != null && type.equals("reminder")) {
-      promise.reject("E_CALENDARS_NOT_FOUND", "Calendars of type `reminder` are not supported on Android");
-      return;
+    if (type != null && type == "reminder") {
+      promise.reject("E_CALENDARS_NOT_FOUND", "Calendars of type `reminder` are not supported on Android")
+      return
     }
     try {
-      AsyncTask.execute(new Runnable() {
-        @Override
-        public void run() {
-          List<Bundle> calendars = findCalendars();
-          promise.resolve(calendars);
-        }
-      });
-    } catch (Exception e) {
-      promise.reject("E_CALENDARS_NOT_FOUND", "Calendars could not be found", e);
+      moduleCoroutineScope.launch {
+        val calendars = findCalendars()
+        promise.resolve(calendars)
+      }
+    } catch (e: ModuleDestroyedException) {
+      promise.reject("E_MODULE_DESTROYED", "Module has been destroyed")
+    } catch (e: Exception) {
+      promise.reject("E_CALENDARS_NOT_FOUND", "Calendars could not be found", e)
     }
   }
 
   @ExpoMethod
-  public void saveCalendarAsync(final ReadableArguments details, final Promise promise) {
+  fun saveCalendarAsync(details: ReadableArguments, promise: Promise) {
     if (!checkPermissions(promise)) {
-      return;
+      return
     }
-    AsyncTask.execute(new Runnable() {
-      @Override
-      public void run() {
+    try {
+      moduleCoroutineScope.launch {
         try {
-          Integer calendarID = saveCalendar(details);
-          promise.resolve(calendarID.toString());
-        } catch (Exception e) {
-          promise.reject("E_CALENDAR_NOT_SAVED", "Calendar could not be saved: " + e.getMessage(), e);
+          val calendarID = saveCalendar(details)
+          promise.resolve(calendarID.toString())
+        } catch (e: ModuleDestroyedException) {
+          promise.reject("E_MODULE_DESTROYED", "Module has been destroyed")
+        } catch (e: Exception) {
+          promise.reject("E_CALENDAR_NOT_SAVED", "Calendar could not be saved: " + e.message, e)
         }
       }
-    });
-  }
-
-  @ExpoMethod
-  public void deleteCalendarAsync(final String calendarID, final Promise promise) {
-    if (!checkPermissions(promise)) {
-      return;
+    } catch (e: ModuleDestroyedException) {
+      promise.reject("E_MODULE_DESTROYED", "Module has been destroyed")
     }
-    AsyncTask.execute(new Runnable() {
-      @Override
-      public void run() {
-        boolean successful = deleteCalendar(calendarID);
-        if (successful) {
-          promise.resolve(null);
-        } else {
-          promise.reject("E_CALENDAR_NOT_DELETED", String.format("Calendar with id %s could not be deleted", calendarID));
-        }
-      }
-    });
   }
 
   @ExpoMethod
-  public void getEventsAsync(final Object startDate, final Object endDate, final List<String> calendars, final Promise promise) {
+  fun deleteCalendarAsync(calendarID: String, promise: Promise) {
     if (!checkPermissions(promise)) {
-      return;
+      return
+    }
+    try{
+      moduleCoroutineScope.launch {
+        val successful = deleteCalendar(calendarID)
+        if (successful) {
+          promise.resolve(null)
+        } else {
+          promise.reject("E_CALENDAR_NOT_DELETED", "Calendar with id $calendarID could not be deleted")
+        }
+      }
+    } catch (e: ModuleDestroyedException) {
+      promise.reject("E_MODULE_DESTROYED", "Module has been destroyed")
+    }
+  }
+
+  @ExpoMethod
+  fun getEventsAsync(startDate: Any, endDate: Any, calendars: List<String>, promise: Promise) {
+    if (!checkPermissions(promise)) {
+      return
     }
     try {
-      AsyncTask.execute(new Runnable() {
-        @Override
-        public void run() {
-          List<Bundle> results = findEvents(startDate, endDate, calendars);
-          promise.resolve(results);
-        }
-      });
-
-    } catch (Exception e) {
-      promise.reject("E_EVENTS_NOT_FOUND", "Events could not be found", e);
+      moduleCoroutineScope.launch {
+        val results = findEvents(startDate, endDate, calendars)
+        promise.resolve(results)
+      }
+    } catch (e: ModuleDestroyedException) {
+      promise.reject("E_MODULE_DESTROYED", "Module has been destroyed")
+    } catch (e: Exception) {
+      promise.reject("E_EVENTS_NOT_FOUND", "Events could not be found", e)
     }
   }
 
   @ExpoMethod
-  public void getEventByIdAsync(final String eventID, final Promise promise) {
+  fun getEventByIdAsync(eventID: String, promise: Promise) {
     if (!checkPermissions(promise)) {
-      return;
+      return
     }
-    AsyncTask.execute(new Runnable() {
-      @Override
-      public void run() {
-        Bundle results = findEventById(eventID);
+    try {
+      moduleCoroutineScope.launch {
+        val results = findEventById(eventID)
         if (results != null) {
-          promise.resolve(results);
+          promise.resolve(results)
         } else {
-          promise.reject("E_EVENT_NOT_FOUND", "Event with id " + eventID + " could not be found");
+          promise.reject("E_EVENT_NOT_FOUND", "Event with id $eventID could not be found")
         }
       }
-    });
+    } catch (e: ModuleDestroyedException) {
+      promise.reject("E_MODULE_DESTROYED", "Module has been destroyed")
+    }
   }
 
   @ExpoMethod
-  public void saveEventAsync(final ReadableArguments details, final ReadableArguments options, final Promise promise) {
+  fun saveEventAsync(details: ReadableArguments, options: ReadableArguments?, promise: Promise) {
     if (!checkPermissions(promise)) {
-      return;
+      return
     }
-    AsyncTask.execute(new Runnable() {
-      @Override
-      public void run() {
+    try {
+      moduleCoroutineScope.launch {
         try {
-          Integer eventID = saveEvent(details);
-          promise.resolve(eventID.toString());
-        } catch (ParseException | EventNotSavedException | InvalidArgumentException e) {
-          promise.reject("E_EVENT_NOT_SAVED", "Event could not be saved", e);
+          val eventID = saveEvent(details)
+          promise.resolve(eventID.toString())
+        } catch (e: ParseException) {
+          promise.reject("E_EVENT_NOT_SAVED", "Event could not be saved", e)
+        } catch (e: EventNotSavedException) {
+          promise.reject("E_EVENT_NOT_SAVED", "Event could not be saved", e)
+        } catch (e: InvalidArgumentException) {
+          promise.reject("E_EVENT_NOT_SAVED", "Event could not be saved", e)
         }
       }
-    });
+    } catch (e: ModuleDestroyedException) {
+      promise.reject("E_MODULE_DESTROYED", "Module has been destroyed")
+    }
   }
 
   @ExpoMethod
-  public void deleteEventAsync(final ReadableArguments details, final ReadableArguments options, final Promise promise) {
+  fun deleteEventAsync(details: ReadableArguments, options: ReadableArguments?, promise: Promise) {
     if (!checkPermissions(promise)) {
-      return;
+      return
     }
-    AsyncTask.execute(new Runnable() {
-      @Override
-      public void run() {
+    try {
+      moduleCoroutineScope.launch {
         try {
-          boolean successful = removeEvent(details);
+          val successful = removeEvent(details)
           if (successful) {
-            promise.resolve(null);
+            promise.resolve(null)
           } else {
-            promise.reject("E_EVENT_NOT_DELETED", String.format("Event with id %s could not be deleted", details.getString("id")));
+            promise.reject("E_EVENT_NOT_DELETED", "Event with id ${details.getString("id")} could not be deleted")
           }
-        } catch (Exception e) {
-          promise.reject("E_EVENT_NOT_DELETED", String.format("Event with id %s could not be deleted", details.getString("id")), e);
+        } catch (e: Exception) {
+          promise.reject("E_EVENT_NOT_DELETED", "Event with id ${details.getString("id")} could not be deleted", e)
         }
       }
-    });
+    } catch (e: ModuleDestroyedException) {
+      promise.reject("E_MODULE_DESTROYED", "Module has been destroyed")
+    }
   }
 
   @ExpoMethod
-  public void getAttendeesForEventAsync(final String eventID, final Promise promise) {
+  fun getAttendeesForEventAsync(eventID: String, promise: Promise) {
     if (!checkPermissions(promise)) {
-      return;
+      return
     }
-    AsyncTask.execute(new Runnable() {
-      @Override
-      public void run() {
-        List<Bundle> results = findAttendeesByEventId(eventID);
-        promise.resolve(results);
+    try {
+      moduleCoroutineScope.launch {
+        val results = findAttendeesByEventId(eventID)
+        promise.resolve(results)
       }
-    });
+    } catch (e: ModuleDestroyedException) {
+      promise.reject("E_MODULE_DESTROYED", "Module has been destroyed")
+    }
   }
 
+  // TODO: needs refactor
   @ExpoMethod
-  public void saveAttendeeForEventAsync(final ReadableArguments details, final String eventID, final Promise promise) {
+  fun saveAttendeeForEventAsync(details: ReadableArguments, eventID: String?, promise: Promise) {
     if (!checkPermissions(promise)) {
-      return;
+      return
     }
-    AsyncTask.execute(new Runnable() {
-      @Override
-      public void run() {
+    try {
+      moduleCoroutineScope.launch {
         try {
-          Integer attendeeID = saveAttendeeForEvent(details, eventID);
-          promise.resolve(attendeeID.toString());
-        } catch (Exception e) {
-          promise.reject("E_ATTENDEE_NOT_SAVED", String.format("Attendees for event with id %s could not be saved", eventID), e);
+          val attendeeID = saveAttendeeForEvent(details, eventID)
+          promise.resolve(attendeeID.toString())
+        } catch (e: Exception) {
+          promise.reject("E_ATTENDEE_NOT_SAVED", "Attendees for event with id $eventID could not be saved", e)
         }
       }
-    });
+    } catch (e: ModuleDestroyedException) {
+      promise.reject("E_MODULE_DESTROYED", "Module has been destroyed")
+    }
   }
 
   @ExpoMethod
-  public void deleteAttendeeAsync(final String attendeeID, final Promise promise) {
+  fun deleteAttendeeAsync(attendeeID: String, promise: Promise) {
     if (!checkPermissions(promise)) {
-      return;
+      return
     }
-    AsyncTask.execute(new Runnable() {
-      @Override
-      public void run() {
-        boolean successful = deleteAttendee(attendeeID);
+    try {
+      moduleCoroutineScope.launch {
+        val successful = deleteAttendee(attendeeID)
         if (successful) {
-          promise.resolve(null);
+          promise.resolve(null)
         } else {
-          promise.reject("E_ATTENDEE_NOT_DELETED", String.format("Attendee with id %s could not be deleted", attendeeID));
+          promise.reject("E_ATTENDEE_NOT_DELETED", "Attendee with id $attendeeID could not be deleted")
         }
       }
-    });
-  }
-
-  @ExpoMethod
-  public void openEventInCalendar(int eventID, Promise promise) {
-    Uri uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID);
-    Intent sendIntent = new Intent(Intent.ACTION_VIEW).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).setData(uri);
-
-    if (sendIntent.resolveActivity(mContext.getPackageManager()) != null) {
-      mContext.startActivity(sendIntent);
+    } catch (e: ModuleDestroyedException) {
+      promise.reject("E_MODULE_DESTROYED", "Module has been destroyed")
     }
-    promise.resolve(null);
   }
 
   @ExpoMethod
-  public void requestCalendarPermissionsAsync(final Promise promise) {
-    Permissions.askForPermissionsWithPermissionsManager(mPermissionsManager, promise, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR);
+  fun openEventInCalendar(eventID: Int, promise: Promise) {
+    val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toLong())
+    val sendIntent = Intent(Intent.ACTION_VIEW).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).setData(uri)
+    if (sendIntent.resolveActivity(mContext.packageManager) != null) {
+      mContext.startActivity(sendIntent)
+    }
+    promise.resolve(null)
   }
 
   @ExpoMethod
-  public void getCalendarPermissionsAsync(final Promise promise) {
-    Permissions.getPermissionsWithPermissionsManager(mPermissionsManager, promise, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR);
+  fun requestCalendarPermissionsAsync(promise: Promise?) {
+    Permissions.askForPermissionsWithPermissionsManager(mPermissionsManager, promise, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)
+  }
+
+  @ExpoMethod
+  fun getCalendarPermissionsAsync(promise: Promise?) {
+    Permissions.getPermissionsWithPermissionsManager(mPermissionsManager, promise, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)
   }
 
   //endregion
-
-  private List<Bundle> findCalendars() throws SecurityException {
-    Cursor cursor;
-    ContentResolver cr = mContext.getContentResolver();
-
-    Uri uri = CalendarContract.Calendars.CONTENT_URI;
-
-    cursor = cr.query(uri, new String[]{
-        CalendarContract.Calendars._ID,
-        CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,
-        CalendarContract.Calendars.ACCOUNT_NAME,
-        CalendarContract.Calendars.IS_PRIMARY,
-        CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL,
-        CalendarContract.Calendars.ALLOWED_AVAILABILITY,
-        CalendarContract.Calendars.NAME,
-        CalendarContract.Calendars.ACCOUNT_TYPE,
-        CalendarContract.Calendars.CALENDAR_COLOR,
-        CalendarContract.Calendars.OWNER_ACCOUNT,
-        CalendarContract.Calendars.CALENDAR_TIME_ZONE,
-        CalendarContract.Calendars.ALLOWED_REMINDERS,
-        CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES,
-        CalendarContract.Calendars.VISIBLE,
-        CalendarContract.Calendars.SYNC_EVENTS
-    }, null, null, null);
-
-    return serializeEventCalendars(cursor);
+  @Throws(SecurityException::class)
+  private fun findCalendars(): List<Bundle> {
+    val cursor: Cursor
+    val uri = CalendarContract.Calendars.CONTENT_URI
+    cursor = contentResolver.query(uri, arrayOf(
+      CalendarContract.Calendars._ID,
+      CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,
+      CalendarContract.Calendars.ACCOUNT_NAME,
+      CalendarContract.Calendars.IS_PRIMARY,
+      CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL,
+      CalendarContract.Calendars.ALLOWED_AVAILABILITY,
+      CalendarContract.Calendars.NAME,
+      CalendarContract.Calendars.ACCOUNT_TYPE,
+      CalendarContract.Calendars.CALENDAR_COLOR,
+      CalendarContract.Calendars.OWNER_ACCOUNT,
+      CalendarContract.Calendars.CALENDAR_TIME_ZONE,
+      CalendarContract.Calendars.ALLOWED_REMINDERS,
+      CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES,
+      CalendarContract.Calendars.VISIBLE,
+      CalendarContract.Calendars.SYNC_EVENTS
+    ), null, null, null)!!
+    return serializeEventCalendars(cursor)
   }
 
-  private List<Bundle> findEvents(Object startDate, Object endDate, List<String> calendars) {
-    String dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-    SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
-    sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-
-    Calendar eStartDate = Calendar.getInstance();
-    Calendar eEndDate = Calendar.getInstance();
-
+  private fun findEvents(startDate: Any, endDate: Any, calendars: List<String>): List<Bundle> {
+    val eStartDate = Calendar.getInstance()
+    val eEndDate = Calendar.getInstance()
     try {
-      if (startDate instanceof String) {
-        eStartDate.setTime(sdf.parse((String) startDate));
-      } else if (startDate instanceof Number) {
-        eStartDate.setTimeInMillis(((Number) startDate).longValue());
-      }
-
-      if (endDate instanceof String) {
-        eEndDate.setTime(sdf.parse((String) endDate));
-      } else if (endDate instanceof Number) {
-        eEndDate.setTimeInMillis(((Number) endDate).longValue());
-      }
-    } catch (ParseException e) {
-      Log.e(TAG, "error parsing", e);
-    } catch (Exception e) {
-      Log.e(TAG, "misc error parsing", e);
+      setDateInCalendar(eStartDate, startDate)
+      setDateInCalendar(eEndDate, endDate)
+    } catch (e: ParseException) {
+      Log.e(TAG, "error parsing", e)
+    } catch (e: Exception) {
+      Log.e(TAG, "misc error parsing", e)
     }
-
-    Cursor cursor;
-    ContentResolver cr = mContext.getContentResolver();
-
-    Uri.Builder uriBuilder = CalendarContract.Instances.CONTENT_URI.buildUpon();
-    ContentUris.appendId(uriBuilder, eStartDate.getTimeInMillis());
-    ContentUris.appendId(uriBuilder, eEndDate.getTimeInMillis());
-
-    Uri uri = uriBuilder.build();
-
-    String selection = "((" + CalendarContract.Instances.BEGIN + " >= " + eStartDate.getTimeInMillis() + ") " +
-        "AND (" + CalendarContract.Instances.END + " <= " + eEndDate.getTimeInMillis() + ") " +
-        "AND (" + CalendarContract.Instances.VISIBLE + " = 1) ";
-
-    if (calendars.size() > 0) {
-      String calendarQuery = "AND (";
-      for (int i = 0; i < calendars.size(); i++) {
-        calendarQuery += CalendarContract.Instances.CALENDAR_ID + " = '" + calendars.get(i) + "'";
-        if (i != calendars.size() - 1) {
-          calendarQuery += " OR ";
+    val cursor: Cursor
+    val uriBuilder = CalendarContract.Instances.CONTENT_URI.buildUpon()
+    ContentUris.appendId(uriBuilder, eStartDate.timeInMillis)
+    ContentUris.appendId(uriBuilder, eEndDate.timeInMillis)
+    val uri = uriBuilder.build()
+    var selection: String? =
+      "((${CalendarContract.Instances.BEGIN} >= ${eStartDate.timeInMillis}) " +
+        "AND (${CalendarContract.Instances.END} <= ${eEndDate.timeInMillis}) " +
+        "AND (${CalendarContract.Instances.VISIBLE} = 1) "
+    if (calendars.isNotEmpty()) {
+      var calendarQuery = "AND ("
+      for (i in calendars.indices) {
+        calendarQuery += CalendarContract.Instances.CALENDAR_ID + " = '" + calendars[i] + "'"
+        if (i != calendars.size - 1) {
+          calendarQuery += " OR "
         }
       }
-      calendarQuery += ")";
-      selection += calendarQuery;
+      calendarQuery += ")"
+      selection += calendarQuery
     }
-
-    selection += ")";
-
-    cursor = cr.query(uri, new String[]{
-        CalendarContract.Instances.EVENT_ID,
-        CalendarContract.Instances.TITLE,
-        CalendarContract.Instances.DESCRIPTION,
-        CalendarContract.Instances.BEGIN,
-        CalendarContract.Instances.END,
-        CalendarContract.Instances.ALL_DAY,
-        CalendarContract.Instances.EVENT_LOCATION,
-        CalendarContract.Instances.RRULE,
-        CalendarContract.Instances.CALENDAR_ID,
-        CalendarContract.Instances.AVAILABILITY,
-        CalendarContract.Instances.ORGANIZER,
-        CalendarContract.Instances.EVENT_TIMEZONE,
-        CalendarContract.Instances.EVENT_END_TIMEZONE,
-        CalendarContract.Instances.ACCESS_LEVEL,
-        CalendarContract.Instances.GUESTS_CAN_MODIFY,
-        CalendarContract.Instances.GUESTS_CAN_INVITE_OTHERS,
-        CalendarContract.Instances.GUESTS_CAN_SEE_GUESTS,
-        CalendarContract.Instances.ORIGINAL_ID,
-        CalendarContract.Instances._ID
-    }, selection, null, null);
-
-    return serializeEvents(cursor);
+    selection += ")"
+    cursor = contentResolver.query(uri, arrayOf(
+      CalendarContract.Instances.EVENT_ID,
+      CalendarContract.Instances.TITLE,
+      CalendarContract.Instances.DESCRIPTION,
+      CalendarContract.Instances.BEGIN,
+      CalendarContract.Instances.END,
+      CalendarContract.Instances.ALL_DAY,
+      CalendarContract.Instances.EVENT_LOCATION,
+      CalendarContract.Instances.RRULE,
+      CalendarContract.Instances.CALENDAR_ID,
+      CalendarContract.Instances.AVAILABILITY,
+      CalendarContract.Instances.ORGANIZER,
+      CalendarContract.Instances.EVENT_TIMEZONE,
+      CalendarContract.Instances.EVENT_END_TIMEZONE,
+      CalendarContract.Instances.ACCESS_LEVEL,
+      CalendarContract.Instances.GUESTS_CAN_MODIFY,
+      CalendarContract.Instances.GUESTS_CAN_INVITE_OTHERS,
+      CalendarContract.Instances.GUESTS_CAN_SEE_GUESTS,
+      CalendarContract.Instances.ORIGINAL_ID,
+      CalendarContract.Instances._ID
+    ), selection, null, null)!!
+    return serializeEvents(cursor)
   }
 
-  private Bundle findEventById(String eventID) {
-    Bundle result;
-    Cursor cursor;
-    ContentResolver cr = mContext.getContentResolver();
-    Uri uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, Integer.parseInt(eventID));
-
-    String selection = "((" + CalendarContract.Events.DELETED + " != 1))";
-
-    cursor = cr.query(uri, new String[]{
-        CalendarContract.Events._ID,
-        CalendarContract.Events.TITLE,
-        CalendarContract.Events.DESCRIPTION,
-        CalendarContract.Events.DTSTART,
-        CalendarContract.Events.DTEND,
-        CalendarContract.Events.ALL_DAY,
-        CalendarContract.Events.EVENT_LOCATION,
-        CalendarContract.Events.RRULE,
-        CalendarContract.Events.CALENDAR_ID,
-        CalendarContract.Events.AVAILABILITY,
-        CalendarContract.Events.ORGANIZER,
-        CalendarContract.Events.EVENT_TIMEZONE,
-        CalendarContract.Events.EVENT_END_TIMEZONE,
-        CalendarContract.Events.ACCESS_LEVEL,
-        CalendarContract.Events.GUESTS_CAN_MODIFY,
-        CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS,
-        CalendarContract.Events.GUESTS_CAN_SEE_GUESTS,
-        CalendarContract.Events.ORIGINAL_ID
-    }, selection, null, null);
-
-    if (cursor.getCount() > 0) {
-      cursor.moveToFirst();
-      result = serializeEvent(cursor);
+  private fun findEventById(eventID: String): Bundle? {
+    val result: Bundle?
+    val cursor: Cursor
+    val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toInt().toLong())
+    val selection = "((${CalendarContract.Events.DELETED} != 1))"
+    cursor = contentResolver.query(uri, arrayOf(
+      CalendarContract.Events._ID,
+      CalendarContract.Events.TITLE,
+      CalendarContract.Events.DESCRIPTION,
+      CalendarContract.Events.DTSTART,
+      CalendarContract.Events.DTEND,
+      CalendarContract.Events.ALL_DAY,
+      CalendarContract.Events.EVENT_LOCATION,
+      CalendarContract.Events.RRULE,
+      CalendarContract.Events.CALENDAR_ID,
+      CalendarContract.Events.AVAILABILITY,
+      CalendarContract.Events.ORGANIZER,
+      CalendarContract.Events.EVENT_TIMEZONE,
+      CalendarContract.Events.EVENT_END_TIMEZONE,
+      CalendarContract.Events.ACCESS_LEVEL,
+      CalendarContract.Events.GUESTS_CAN_MODIFY,
+      CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS,
+      CalendarContract.Events.GUESTS_CAN_SEE_GUESTS,
+      CalendarContract.Events.ORIGINAL_ID
+    ), selection, null, null)!!
+    result = if (cursor.count > 0) {
+      cursor.moveToFirst()
+      serializeEvent(cursor)
     } else {
-      result = null;
+      null
     }
-
-    cursor.close();
-
-    return result;
+    cursor.close()
+    return result
   }
 
-  private Bundle findCalendarById(String calendarID) {
-    Bundle result;
-    Cursor cursor;
-    ContentResolver cr = mContext.getContentResolver();
-    Uri uri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, Integer.parseInt(calendarID));
-
-    cursor = cr.query(uri, new String[]{
-        CalendarContract.Calendars._ID,
-        CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,
-        CalendarContract.Calendars.ACCOUNT_NAME,
-        CalendarContract.Calendars.IS_PRIMARY,
-        CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL,
-        CalendarContract.Calendars.ALLOWED_AVAILABILITY,
-        CalendarContract.Calendars.NAME,
-        CalendarContract.Calendars.ACCOUNT_TYPE,
-        CalendarContract.Calendars.CALENDAR_COLOR,
-        CalendarContract.Calendars.OWNER_ACCOUNT,
-        CalendarContract.Calendars.CALENDAR_TIME_ZONE,
-        CalendarContract.Calendars.ALLOWED_REMINDERS,
-        CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES,
-        CalendarContract.Calendars.VISIBLE,
-        CalendarContract.Calendars.SYNC_EVENTS
-    }, null, null, null);
-
-    if (cursor.getCount() > 0) {
-      cursor.moveToFirst();
-      result = serializeEventCalendar(cursor);
+  private fun findCalendarById(calendarID: String): Bundle? {
+    val result: Bundle?
+    val cursor: Cursor
+    val uri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, calendarID.toInt().toLong())
+    cursor = contentResolver.query(uri, arrayOf(
+      CalendarContract.Calendars._ID,
+      CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,
+      CalendarContract.Calendars.ACCOUNT_NAME,
+      CalendarContract.Calendars.IS_PRIMARY,
+      CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL,
+      CalendarContract.Calendars.ALLOWED_AVAILABILITY,
+      CalendarContract.Calendars.NAME,
+      CalendarContract.Calendars.ACCOUNT_TYPE,
+      CalendarContract.Calendars.CALENDAR_COLOR,
+      CalendarContract.Calendars.OWNER_ACCOUNT,
+      CalendarContract.Calendars.CALENDAR_TIME_ZONE,
+      CalendarContract.Calendars.ALLOWED_REMINDERS,
+      CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES,
+      CalendarContract.Calendars.VISIBLE,
+      CalendarContract.Calendars.SYNC_EVENTS
+    ), null, null, null)!!
+    result = if (cursor.count > 0) {
+      cursor.moveToFirst()
+      serializeEventCalendar(cursor)
     } else {
-      result = null;
+      null
     }
-
-    cursor.close();
-
-    return result;
+    cursor.close()
+    return result
   }
 
-  private List<Bundle> findAttendeesByEventId(String eventID) {
-    Cursor cursor;
-    ContentResolver cr = mContext.getContentResolver();
-
-    cursor = CalendarContract.Attendees.query(cr, Long.parseLong(eventID), new String[]{
-        CalendarContract.Attendees._ID,
-        CalendarContract.Attendees.ATTENDEE_NAME,
-        CalendarContract.Attendees.ATTENDEE_EMAIL,
-        CalendarContract.Attendees.ATTENDEE_RELATIONSHIP,
-        CalendarContract.Attendees.ATTENDEE_TYPE,
-        CalendarContract.Attendees.ATTENDEE_STATUS
-    });
-
-    return serializeAttendees(cursor);
+  private fun findAttendeesByEventId(eventID: String): List<Bundle> {
+    val cursor: Cursor = CalendarContract.Attendees.query(contentResolver, eventID.toLong(), arrayOf(
+      CalendarContract.Attendees._ID,
+      CalendarContract.Attendees.ATTENDEE_NAME,
+      CalendarContract.Attendees.ATTENDEE_EMAIL,
+      CalendarContract.Attendees.ATTENDEE_RELATIONSHIP,
+      CalendarContract.Attendees.ATTENDEE_TYPE,
+      CalendarContract.Attendees.ATTENDEE_STATUS
+    ))
+    return serializeAttendees(cursor)
   }
 
-  private int saveCalendar(ReadableArguments details) throws Exception {
-    ContentResolver cr = mContext.getContentResolver();
-    ContentValues calendarValues = new ContentValues();
-
-    if (details.containsKey("name")) {
-      calendarValues.put(CalendarContract.Calendars.NAME, details.getString("name"));
+  @Throws(Exception::class)
+  private fun saveCalendar(details: ReadableArguments): Int {
+    val calendarValues = ContentValues()
+    val putDetailsString: (calendarKey: String, detailsKey: String) -> Unit = { calendarKey, detailsKey ->
+      if (details.containsKey(detailsKey)) {
+        calendarValues.put(calendarKey, details.getString(detailsKey))
+      }
     }
+    putDetailsString(CalendarContract.Calendars.NAME, "name")
+    putDetailsString(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME, "title")
 
-    if (details.containsKey("title")) {
-      calendarValues.put(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME, details.getString("title"));
+    val putDetailsBoolean: (calendarKey: String, detailsKey: String) -> Unit = { calendarKey, detailsKey ->
+      if (details.containsKey(detailsKey)) {
+        calendarValues.put(calendarKey, if (details.getBoolean(detailsKey)) 1 else 0)
+      }
     }
+    putDetailsBoolean(CalendarContract.Calendars.VISIBLE, "isVisible")
+    putDetailsBoolean(CalendarContract.Calendars.SYNC_EVENTS, "isSynced")
 
-    if (details.containsKey("isVisible")) {
-      calendarValues.put(CalendarContract.Calendars.VISIBLE, details.getBoolean("isVisible") ? 1 : 0);
-    }
-
-    if (details.containsKey("isSynced")) {
-      calendarValues.put(CalendarContract.Calendars.SYNC_EVENTS, details.getBoolean("isSynced") ? 1 : 0);
-    }
-
-    if (details.containsKey("id")) {
-      int calendarID = Integer.parseInt(details.getString("id"));
-      Uri updateUri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, calendarID);
-      cr.update(updateUri, calendarValues, null, null);
-      return calendarID;
+    return if (details.containsKey("id")) {
+      val calendarID = details.getString("id").toInt()
+      val updateUri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, calendarID.toLong())
+      contentResolver.update(updateUri, calendarValues, null, null)
+      calendarID
     } else {
-      // required fields for new calendars
-      if (!details.containsKey("source")) {
-        throw new Exception("new calendars require `source` object");
+      val checkMissingItem: (key: String) -> Unit = {
+        if (!details.containsKey(it)) {
+          throw Exception("new calendars require $it")
+        }
       }
-      if (!details.containsKey("name")) {
-        throw new Exception("new calendars require `name`");
-      }
-      if (!details.containsKey("title")) {
-        throw new Exception("new calendars require `title`");
-      }
-      if (!details.containsKey("color")) {
-        throw new Exception("new calendars require `color`");
-      }
-      if (!details.containsKey("accessLevel")) {
-        throw new Exception("new calendars require `accessLevel`");
-      }
-      if (!details.containsKey("ownerAccount")) {
-        throw new Exception("new calendars require `ownerAccount`");
-      }
-
-      ReadableArguments source = details.getArguments("source");
-
+      checkMissingItem("name")
+      checkMissingItem("title")
+      checkMissingItem("source")
+      checkMissingItem("color")
+      checkMissingItem("accessLevel")
+      checkMissingItem("ownerAccount")
+      val source = details.getArguments("source")
       if (!source.containsKey("name")) {
-        throw new Exception("new calendars require a `source` object with a `name`");
+        throw Exception("new calendars require a `source` object with a `name`")
       }
-
-      boolean isLocalAccount = false;
+      var isLocalAccount = false
       if (source.containsKey("isLocalAccount")) {
-        isLocalAccount = source.getBoolean("isLocalAccount");
+        isLocalAccount = source.getBoolean("isLocalAccount")
       }
-
       if (!source.containsKey("type") && !isLocalAccount) {
-        throw new Exception("new calendars require a `source` object with a `type`, or `isLocalAccount`: true");
+        throw Exception("new calendars require a `source` object with a `type`, or `isLocalAccount`: true")
       }
-
-      calendarValues.put(CalendarContract.Calendars.ACCOUNT_NAME, source.getString("name"));
-      calendarValues.put(CalendarContract.Calendars.ACCOUNT_TYPE, isLocalAccount ? CalendarContract.ACCOUNT_TYPE_LOCAL : source.getString("type"));
-      calendarValues.put(CalendarContract.Calendars.CALENDAR_COLOR, details.getInt("color"));
-      calendarValues.put(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL, calAccessConstantMatchingString(details.getString("accessLevel")));
-      calendarValues.put(CalendarContract.Calendars.OWNER_ACCOUNT, details.getString("ownerAccount"));
+      calendarValues.put(CalendarContract.Calendars.ACCOUNT_NAME, source.getString("name"))
+      calendarValues.put(CalendarContract.Calendars.ACCOUNT_TYPE, if (isLocalAccount) CalendarContract.ACCOUNT_TYPE_LOCAL else source.getString("type"))
+      calendarValues.put(CalendarContract.Calendars.CALENDAR_COLOR, details.getInt("color"))
+      calendarValues.put(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL, calAccessConstantMatchingString(details.getString("accessLevel")))
+      calendarValues.put(CalendarContract.Calendars.OWNER_ACCOUNT, details.getString("ownerAccount"))
       // end required fields
-
       if (details.containsKey("timeZone")) {
-        calendarValues.put(CalendarContract.Calendars.CALENDAR_TIME_ZONE, details.getString("timeZone"));
+        calendarValues.put(CalendarContract.Calendars.CALENDAR_TIME_ZONE, details.getString("timeZone"))
       }
-
       if (details.containsKey("allowedReminders")) {
-        List array = details.getList("allowedReminders");
-        Integer[] values = new Integer[array.size()];
-        for (int i = 0; i < array.size(); i++) {
-          values[i] = reminderConstantMatchingString((String) array.get(i));
+        val array = details.getList("allowedReminders")
+        val values = arrayOfNulls<Int>(array.size)
+        for (i in array.indices) {
+          values[i] = reminderConstantMatchingString(array[i] as String?)
         }
-        calendarValues.put(CalendarContract.Calendars.ALLOWED_REMINDERS, TextUtils.join(",", values));
+        calendarValues.put(CalendarContract.Calendars.ALLOWED_REMINDERS, TextUtils.join(",", values))
       }
-
       if (details.containsKey("allowedAvailabilities")) {
-        List array = details.getList("allowedAvailabilities");
-        Integer[] values = new Integer[array.size()];
-        for (int i = 0; i < array.size(); i++) {
-          values[i] = availabilityConstantMatchingString((String) array.get(i));
+        val array = details.getList("allowedAvailabilities")
+        val values = arrayOfNulls<Int>(array.size)
+        for (i in array.indices) {
+          values[i] = availabilityConstantMatchingString(array[i] as String)
         }
-        calendarValues.put(CalendarContract.Calendars.ALLOWED_AVAILABILITY, TextUtils.join(",", values));
+        calendarValues.put(CalendarContract.Calendars.ALLOWED_AVAILABILITY, TextUtils.join(",", values))
       }
-
       if (details.containsKey("allowedAttendeeTypes")) {
-        List array = details.getList("allowedAttendeeTypes");
-        Integer[] values = new Integer[array.size()];
-        for (int i = 0; i < array.size(); i++) {
-          values[i] = attendeeTypeConstantMatchingString((String) array.get(i));
+        val array = details.getList("allowedAttendeeTypes")
+        val values = arrayOfNulls<Int>(array.size)
+        for (i in array.indices) {
+          values[i] = attendeeTypeConstantMatchingString(array[i] as String)
         }
-        calendarValues.put(CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES, TextUtils.join(",", values));
+        calendarValues.put(CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES, TextUtils.join(",", values))
       }
-
-
-      Uri.Builder uriBuilder = CalendarContract.Calendars.CONTENT_URI.buildUpon();
-      uriBuilder.appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true");
-      uriBuilder.appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, source.getString("name"));
-      uriBuilder.appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, isLocalAccount ? CalendarContract.ACCOUNT_TYPE_LOCAL : source.getString("type"));
-
-      Uri calendarsUri = uriBuilder.build();
-
-      Uri calendarUri = cr.insert(calendarsUri, calendarValues);
-      return Integer.parseInt(calendarUri.getLastPathSegment());
+      val uriBuilder = CalendarContract.Calendars.CONTENT_URI.buildUpon()
+      uriBuilder.appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
+      uriBuilder.appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, source.getString("name"))
+      uriBuilder.appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, if (isLocalAccount) CalendarContract.ACCOUNT_TYPE_LOCAL else source.getString("type"))
+      val calendarsUri = uriBuilder.build()
+      val calendarUri = contentResolver.insert(calendarsUri, calendarValues)
+      calendarUri!!.lastPathSegment!!.toInt()
     }
   }
 
-  private boolean deleteCalendar(String calendarId) throws SecurityException {
-    ContentResolver cr = mContext.getContentResolver();
-    Uri uri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, Integer.parseInt(calendarId));
-    int rows = cr.delete(uri, null, null);
-
-    return rows > 0;
+  @Throws(SecurityException::class)
+  private fun deleteCalendar(calendarId: String): Boolean {
+    val uri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, calendarId.toInt().toLong())
+    val rows = contentResolver.delete(uri, null, null)
+    return rows > 0
   }
 
-  private int saveEvent(ReadableArguments details) throws EventNotSavedException, ParseException, SecurityException, InvalidArgumentException {
-    String dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-    SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
-    sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+  @Throws(EventNotSavedException::class, ParseException::class, SecurityException::class, InvalidArgumentException::class)
+  private fun saveEvent(details: ReadableArguments): Int {
+    val eventValues = ContentValues()
 
-    ContentResolver cr = mContext.getContentResolver();
-    ContentValues eventValues = new ContentValues();
-
-    if (details.containsKey("title")) {
-      eventValues.put(CalendarContract.Events.TITLE, details.getString("title"));
+    val putEventString: (eventKey: String, detailsKey: String) -> Unit = { eventKey, detailsKey ->
+      if (details.containsKey(detailsKey)) {
+        eventValues.put(eventKey, details.getString(detailsKey))
+      }
     }
-    if (details.containsKey("notes")) {
-      eventValues.put(CalendarContract.Events.DESCRIPTION, details.getString("notes"));
-    }
-    if (details.containsKey("location")) {
-      eventValues.put(CalendarContract.Events.EVENT_LOCATION, details.getString("location"));
-    }
+    putEventString(CalendarContract.Events.TITLE, "title")
+    putEventString(CalendarContract.Events.DESCRIPTION, "notes")
+    putEventString(CalendarContract.Events.EVENT_LOCATION, "location")
+    putEventString(CalendarContract.Events.ORGANIZER, "organizerEmail")
 
     if (details.containsKey("startDate")) {
-      Calendar startCal = Calendar.getInstance();
-      Object startDate = details.get("startDate");
-
+      val startCal = Calendar.getInstance()
+      val startDate = details["startDate"]
       try {
-        if (startDate instanceof String) {
-          startCal.setTime(sdf.parse((String) startDate));
-          eventValues.put(CalendarContract.Events.DTSTART, startCal.getTimeInMillis());
-        } else if (startDate instanceof Number) {
-          eventValues.put(CalendarContract.Events.DTSTART, ((Number) startDate).longValue());
-        }
-      } catch (ParseException e) {
-        Log.e(TAG, "error", e);
-        throw e;
-      }
-    }
-
-    if (details.containsKey("endDate")) {
-      Calendar endCal = Calendar.getInstance();
-      Object endDate = details.get("endDate");
-
-      try {
-        if (endDate instanceof String) {
-          endCal.setTime(sdf.parse((String) endDate));
-          eventValues.put(CalendarContract.Events.DTEND, endCal.getTimeInMillis());
-        } else if (endDate instanceof Number) {
-          eventValues.put(CalendarContract.Events.DTEND, ((Number) endDate).longValue());
-        }
-      } catch (ParseException e) {
-        Log.e(TAG, "error", e);
-        throw e;
-      }
-    }
-
-    if (details.containsKey("recurrenceRule")) {
-      ReadableArguments recurrenceRule = details.getArguments("recurrenceRule");
-
-      if (recurrenceRule.containsKey("frequency")) {
-        String frequency = recurrenceRule.getString("frequency");
-        Integer interval = null;
-        Integer occurrence = null;
-        String endDate = null;
-
-        if (recurrenceRule.containsKey("interval")) {
-          interval = recurrenceRule.getInt("interval");
-        }
-
-        if (recurrenceRule.containsKey("occurrence")) {
-          occurrence = recurrenceRule.getInt("occurrence");
-        }
-
-        if (recurrenceRule.containsKey("endDate")) {
-          SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
-          Object endDateObj = recurrenceRule.get("endDate");
-
-          if (endDateObj instanceof String) {
-            endDate = format.format(sdf.parse((String) endDateObj));
-          } else if (endDateObj instanceof Number) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(((Number) endDateObj).longValue());
-            endDate = format.format(calendar.getTime());
+        when (startDate) {
+          is String -> {
+            val parsedDate = sdf.parse(startDate)
+            if (parsedDate != null) {
+              startCal.time = parsedDate
+              eventValues.put(CalendarContract.Events.DTSTART, startCal.timeInMillis)
+            } else {
+              Log.e(TAG, "Parsed date is null")
+            }
+          }
+          is Number -> {
+            eventValues.put(CalendarContract.Events.DTSTART, startDate.toLong())
+          }
+          else -> {
+            Log.e(TAG, "startDate has unsupported type")
           }
         }
-
-        if (endDate == null && occurrence == null) {
-          long eventStartDate = eventValues.getAsLong(CalendarContract.Events.DTSTART);
-          long eventEndDate = eventValues.getAsLong(CalendarContract.Events.DTEND);
-          long duration = (eventEndDate - eventStartDate) / 1000;
-
-          eventValues.putNull(CalendarContract.Events.LAST_DATE);
-          eventValues.putNull(CalendarContract.Events.DTEND);
-
-          eventValues.put(CalendarContract.Events.DURATION, String.format("PT%dS", duration));
-        }
-
-        String rule = createRecurrenceRule(frequency, interval, endDate, occurrence);
-        if (rule != null) {
-          eventValues.put(CalendarContract.Events.RRULE, rule);
-        }
+      } catch (e: ParseException) {
+        Log.e(TAG, "error", e)
+        throw e
       }
     }
-
-    if (details.containsKey("allDay")) {
-      eventValues.put(CalendarContract.Events.ALL_DAY, details.getBoolean("allDay") ? 1 : 0);
-    }
-
-    if (details.containsKey("alarms")) {
-      eventValues.put(CalendarContract.Events.HAS_ALARM, true);
-    }
-
-    if (details.containsKey("availability")) {
-      eventValues.put(CalendarContract.Events.AVAILABILITY, availabilityConstantMatchingString(details.getString("availability")));
-    }
-
-    if (details.containsKey("organizer_email")) {
-      eventValues.put(CalendarContract.Events.ORGANIZER, details.getString("organizerEmail"));
-    }
-
-    eventValues.put(CalendarContract.Events.EVENT_TIMEZONE, details.containsKey("timeZone") ? details.getString("timeZone") : TimeZone.getDefault().getID());
-    eventValues.put(CalendarContract.Events.EVENT_END_TIMEZONE, details.containsKey("endTimeZone") ? details.getString("endTimeZone") : TimeZone.getDefault().getID());
-
-    if (details.containsKey("accessLevel")) {
-      eventValues.put(CalendarContract.Events.ACCESS_LEVEL, accessConstantMatchingString(details.getString("accessLevel")));
-    }
-
-    if (details.containsKey("guestsCanModify")) {
-      eventValues.put(CalendarContract.Events.GUESTS_CAN_MODIFY, details.getBoolean("guestsCanModify") ? 1 : 0);
-    }
-
-    if (details.containsKey("guestsCanInviteOthers")) {
-      eventValues.put(CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS, details.getBoolean("guestsCanInviteOthers") ? 1 : 0);
-    }
-
-    if (details.containsKey("guestsCanSeeGuests")) {
-      eventValues.put(CalendarContract.Events.GUESTS_CAN_SEE_GUESTS, details.getBoolean("guestsCanSeeGuests") ? 1 : 0);
-    }
-
-    if (details.containsKey("id")) {
-      int eventID = Integer.parseInt(details.getString("id"));
-      Uri updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID);
-      cr.update(updateUri, eventValues, null, null);
-
-      removeRemindersForEvent(cr, eventID);
-      if (details.containsKey("alarms")) {
-        createRemindersForEvent(cr, eventID, details.getList("alarms"));
-      }
-      return eventID;
-    } else {
-
-      if (details.containsKey("calendarId")) {
-        Bundle calendar = findCalendarById(details.getString("calendarId"));
-
-        if (calendar != null) {
-          eventValues.put(CalendarContract.Events.CALENDAR_ID, Integer.parseInt(calendar.getString("id")));
-        } else {
-          throw new InvalidArgumentException("Couldn't find calendar with given id: " + details.getString("calendarId"));
-        }
-
-      } else {
-        throw new InvalidArgumentException("CalendarId is required.");
-      }
-
-      Uri eventsUri = CalendarContract.Events.CONTENT_URI;
-      Uri eventUri = cr.insert(eventsUri, eventValues);
-      if (eventUri == null) {
-        throw new EventNotSavedException();
-      }
-      int eventID = Integer.parseInt(eventUri.getLastPathSegment());
-
-      if (details.containsKey("alarms")) {
-        createRemindersForEvent(cr, eventID, details.getList("alarms"));
-      }
-      return eventID;
-    }
-  }
-
-  private boolean removeEvent(ReadableArguments details) throws ParseException, SecurityException {
-    int rows = 0;
-
-    Integer eventID = Integer.parseInt(details.getString("id"));
-
-    ContentResolver cr = mContext.getContentResolver();
-
-    if (!details.containsKey("instanceStartDate")) {
-      Uri uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID);
-      rows = cr.delete(uri, null, null);
-      return rows > 0;
-    } else {
-      ContentValues exceptionValues = new ContentValues();
-      String dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-      SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
-      sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-
-      Calendar startCal = Calendar.getInstance();
-      Object instanceStartDate = details.get("instanceStartDate");
-
+    if (details.containsKey("endDate")) {
+      val endCal = Calendar.getInstance()
+      val endDate = details["endDate"]
       try {
-        if (instanceStartDate instanceof String) {
-          startCal.setTime(sdf.parse((String) instanceStartDate));
-          exceptionValues.put(CalendarContract.Events.ORIGINAL_INSTANCE_TIME, startCal.getTimeInMillis());
-        } else if (instanceStartDate instanceof Number) {
-          exceptionValues.put(CalendarContract.Events.ORIGINAL_INSTANCE_TIME, ((Number) instanceStartDate).longValue());
+        if (endDate is String) {
+          val parsedDate = sdf.parse(endDate)
+          if (parsedDate != null) {
+            endCal.time = parsedDate
+            eventValues.put(CalendarContract.Events.DTEND, endCal.timeInMillis)
+          } else {
+            Log.e(TAG, "Parsed date is null")
+          }
+        } else if (endDate is Number) {
+          eventValues.put(CalendarContract.Events.DTEND, endDate.toLong())
         }
-      } catch (ParseException e) {
-        Log.e(TAG, "error", e);
-        throw e;
+      } catch (e: ParseException) {
+        Log.e(TAG, "error", e)
+        throw e
       }
-
-      exceptionValues.put(CalendarContract.Events.STATUS, CalendarContract.Events.STATUS_CANCELED);
-
-      Uri exceptionUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_EXCEPTION_URI, eventID);
-      cr.insert(exceptionUri, exceptionValues);
     }
-
-    return true;
+    if (details.containsKey("recurrenceRule")) {
+      val recurrenceRule = details.getArguments("recurrenceRule")
+      if (recurrenceRule.containsKey("frequency")) {
+        val frequency = recurrenceRule.getString("frequency")
+        var interval: Int? = null
+        var occurrence: Int? = null
+        var endDate: String? = null
+        if (recurrenceRule.containsKey("interval")) {
+          interval = recurrenceRule.getInt("interval")
+        }
+        if (recurrenceRule.containsKey("occurrence")) {
+          occurrence = recurrenceRule.getInt("occurrence")
+        }
+        if (recurrenceRule.containsKey("endDate")) {
+          val format = SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'")
+          val endDateObj = recurrenceRule["endDate"]
+          if (endDateObj is String) {
+            val parsedDate = sdf.parse(endDateObj)
+            if (parsedDate != null) {
+              endDate = format.format(parsedDate)
+            } else {
+              Log.e(TAG, "endDate is null")
+            }
+          } else if (endDateObj is Number) {
+            val calendar = Calendar.getInstance()
+            calendar.timeInMillis = endDateObj.toLong()
+            endDate = format.format(calendar.time)
+          }
+        }
+        if (endDate == null && occurrence == null) {
+          val eventStartDate = eventValues.getAsLong(CalendarContract.Events.DTSTART)
+          val eventEndDate = eventValues.getAsLong(CalendarContract.Events.DTEND)
+          val duration = (eventEndDate - eventStartDate) / 1000
+          eventValues.putNull(CalendarContract.Events.LAST_DATE)
+          eventValues.putNull(CalendarContract.Events.DTEND)
+          eventValues.put(CalendarContract.Events.DURATION, "PT${duration}S")
+        }
+        val rule = createRecurrenceRule(frequency, interval, endDate, occurrence)
+        eventValues.put(CalendarContract.Events.RRULE, rule)
+      }
+    }
+    val putEventBoolean: (eventKey: String, detailsKey: String) -> Unit = { eventKey, detailsKey ->
+      if (details.containsKey(detailsKey)) {
+        eventValues.put(eventKey, if (details.getBoolean(detailsKey)) 1 else 0)
+      }
+    }
+    putEventBoolean(CalendarContract.Events.ALL_DAY, "allDay")
+    putEventBoolean(CalendarContract.Events.GUESTS_CAN_MODIFY, "guestsCanModify")
+    putEventBoolean(CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS, "guestsCanInviteOthers")
+    putEventBoolean(CalendarContract.Events.GUESTS_CAN_SEE_GUESTS, "guestsCanSeeGuests")
+    if (details.containsKey("alarms")) {
+      eventValues.put(CalendarContract.Events.HAS_ALARM, true)
+    }
+    if (details.containsKey("availability")) {
+      eventValues.put(CalendarContract.Events.AVAILABILITY, availabilityConstantMatchingString(details.getString("availability")))
+    }
+    eventValues.put(CalendarContract.Events.EVENT_TIMEZONE, if (details.containsKey("timeZone")) details.getString("timeZone") else TimeZone.getDefault().id)
+    eventValues.put(CalendarContract.Events.EVENT_END_TIMEZONE, if (details.containsKey("endTimeZone")) details.getString("endTimeZone") else TimeZone.getDefault().id)
+    if (details.containsKey("accessLevel")) {
+      eventValues.put(CalendarContract.Events.ACCESS_LEVEL, accessConstantMatchingString(details.getString("accessLevel")))
+    }
+    return if (details.containsKey("id")) {
+      val eventID = details.getString("id").toInt()
+      val updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toLong())
+      contentResolver.update(updateUri, eventValues, null, null)
+      removeRemindersForEvent(eventID)
+      if (details.containsKey("alarms")) {
+        createRemindersForEvent(eventID, details.getList("alarms"))
+      }
+      eventID
+    } else {
+      if (details.containsKey("calendarId")) {
+        val calendar = findCalendarById(details.getString("calendarId"))
+        if (calendar != null) {
+          eventValues.put(CalendarContract.Events.CALENDAR_ID, calendar.getString("id")!!.toInt())
+        } else {
+          throw InvalidArgumentException("Couldn't find calendar with given id: " + details.getString("calendarId"))
+        }
+      } else {
+        throw InvalidArgumentException("CalendarId is required.")
+      }
+      val eventsUri = CalendarContract.Events.CONTENT_URI
+      val eventUri = contentResolver.insert(eventsUri, eventValues)
+        ?: throw EventNotSavedException()
+      val eventID = eventUri.lastPathSegment!!.toInt()
+      if (details.containsKey("alarms")) {
+        createRemindersForEvent(eventID, details.getList("alarms"))
+      }
+      eventID
+    }
   }
 
-  private int saveAttendeeForEvent(ReadableArguments details, String eventID) throws Exception, SecurityException {
-    ContentResolver cr = mContext.getContentResolver();
-    ContentValues attendeeValues = new ContentValues();
-    boolean isNew = !details.containsKey("id");
+  @Throws(ParseException::class, SecurityException::class)
+  private fun removeEvent(details: ReadableArguments): Boolean {
+    val rows: Int
+    val eventID = details.getString("id").toInt()
+    if (!details.containsKey("instanceStartDate")) {
+      val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toLong())
+      rows = contentResolver.delete(uri, null, null)
+      return rows > 0
+    } else {
+      val exceptionValues = ContentValues()
+      val startCal = Calendar.getInstance()
+      val instanceStartDate = details["instanceStartDate"]
+      try {
+        if (instanceStartDate is String) {
+          val parsedDate = sdf.parse(instanceStartDate)
+          if (parsedDate != null) {
+            startCal.time = parsedDate
+            exceptionValues.put(CalendarContract.Events.ORIGINAL_INSTANCE_TIME, startCal.timeInMillis)
+          } else {
+            Log.e(TAG, "Parsed date is null")
+          }
+        } else if (instanceStartDate is Number) {
+          exceptionValues.put(CalendarContract.Events.ORIGINAL_INSTANCE_TIME, instanceStartDate.toLong())
+        }
+      } catch (e: ParseException) {
+        Log.e(TAG, "error", e)
+        throw e
+      }
+      exceptionValues.put(CalendarContract.Events.STATUS, CalendarContract.Events.STATUS_CANCELED)
+      val exceptionUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_EXCEPTION_URI, eventID.toLong())
+      contentResolver.insert(exceptionUri, exceptionValues)
+    }
+    return true
+  }
 
+  // TODO: needs refactor, argument `eventID` is probably redundant
+  @Throws(Exception::class, SecurityException::class)
+  private fun saveAttendeeForEvent(details: ReadableArguments, eventID: String?): Int {
+    val attendeeValues = ContentValues()
+    val isNew = !details.containsKey("id")
     if (details.containsKey("name")) {
-      attendeeValues.put(CalendarContract.Attendees.ATTENDEE_NAME, details.getString("name"));
+      attendeeValues.put(CalendarContract.Attendees.ATTENDEE_NAME, details.getString("name"))
     }
-
     if (details.containsKey("email")) {
-      attendeeValues.put(CalendarContract.Attendees.ATTENDEE_EMAIL, details.getString("email"));
+      attendeeValues.put(CalendarContract.Attendees.ATTENDEE_EMAIL, details.getString("email"))
     } else {
       if (isNew) {
-        throw new Exception("new attendees require `email`");
+        throw Exception("new attendees require `email`")
       }
     }
-
     if (details.containsKey("role")) {
-      attendeeValues.put(CalendarContract.Attendees.ATTENDEE_RELATIONSHIP, attendeeRelationshipConstantMatchingString(details.getString("role")));
+      attendeeValues.put(CalendarContract.Attendees.ATTENDEE_RELATIONSHIP, attendeeRelationshipConstantMatchingString(details.getString("role")))
     } else {
       if (isNew) {
-        throw new Exception("new attendees require `role`");
+        throw Exception("new attendees require `role`")
       }
     }
-
     if (details.containsKey("type")) {
-      attendeeValues.put(CalendarContract.Attendees.ATTENDEE_TYPE, attendeeTypeConstantMatchingString(details.getString("type")));
+      attendeeValues.put(CalendarContract.Attendees.ATTENDEE_TYPE, attendeeTypeConstantMatchingString(details.getString("type")))
     } else {
       if (isNew) {
-        throw new Exception("new attendees require `type`");
+        throw Exception("new attendees require `type`")
       }
     }
-
     if (details.containsKey("status")) {
-      attendeeValues.put(CalendarContract.Attendees.ATTENDEE_STATUS, attendeeStatusConstantMatchingString(details.getString("status")));
+      attendeeValues.put(CalendarContract.Attendees.ATTENDEE_STATUS, attendeeStatusConstantMatchingString(details.getString("status")))
     } else {
       if (isNew) {
-        throw new Exception("new attendees require `status`");
+        throw Exception("new attendees require `status`")
       }
     }
-
-    if (isNew) {
-      attendeeValues.put(CalendarContract.Attendees.EVENT_ID, Integer.parseInt(eventID));
-      Uri attendeesUri = CalendarContract.Attendees.CONTENT_URI;
-      Uri attendeeUri = cr.insert(attendeesUri, attendeeValues);
-      return Integer.parseInt(attendeeUri.getLastPathSegment());
+    return if (isNew) {
+      attendeeValues.put(CalendarContract.Attendees.EVENT_ID, eventID?.toInt())
+      val attendeesUri = CalendarContract.Attendees.CONTENT_URI
+      val attendeeUri = contentResolver.insert(attendeesUri, attendeeValues)
+      attendeeUri!!.lastPathSegment!!.toInt()
     } else {
-      int attendeeID = Integer.parseInt(details.getString("id"));
-      Uri updateUri = ContentUris.withAppendedId(CalendarContract.Attendees.CONTENT_URI, attendeeID);
-      cr.update(updateUri, attendeeValues, null, null);
-      return attendeeID;
+      val attendeeID = details.getString("id").toInt()
+      val updateUri = ContentUris.withAppendedId(CalendarContract.Attendees.CONTENT_URI, attendeeID.toLong())
+      contentResolver.update(updateUri, attendeeValues, null, null)
+      attendeeID
     }
   }
 
-  private boolean deleteAttendee(String attendeeID) throws SecurityException {
-    int rows = 0;
-
-    ContentResolver cr = mContext.getContentResolver();
-    Uri uri = ContentUris.withAppendedId(CalendarContract.Attendees.CONTENT_URI, Integer.parseInt(attendeeID));
-
-    rows = cr.delete(uri, null, null);
-
-    return rows > 0;
+  @Throws(SecurityException::class)
+  private fun deleteAttendee(attendeeID: String): Boolean {
+    val rows: Int
+    val uri = ContentUris.withAppendedId(CalendarContract.Attendees.CONTENT_URI, attendeeID.toInt().toLong())
+    rows = contentResolver.delete(uri, null, null)
+    return rows > 0
   }
 
-  private void createRemindersForEvent(ContentResolver resolver, int eventID, List reminders) throws SecurityException {
-    for (int i = 0; i < reminders.size(); i++) {
-      Map<String, Object> reminder = (Map<String, Object>) reminders.get(i);
-      Object relativeOffset = reminder.get("relativeOffset");
-
-      if (relativeOffset instanceof Number) {
-        int minutes = - ((Number) relativeOffset).intValue();
-        int method = CalendarContract.Reminders.METHOD_DEFAULT;
-        ContentValues reminderValues = new ContentValues();
-
+  @Throws(SecurityException::class)
+  private fun createRemindersForEvent(eventID: Int, reminders: List<*>) {
+    for (i in reminders.indices) {
+      val reminder = reminders[i] as Map<*, *>
+      val relativeOffset = reminder["relativeOffset"]
+      if (relativeOffset is Number) {
+        val minutes = -relativeOffset.toInt()
+        var method = CalendarContract.Reminders.METHOD_DEFAULT
+        val reminderValues = ContentValues()
         if (reminder.containsKey("method")) {
-          method = reminderConstantMatchingString((String) reminder.get("method"));
+          method = reminderConstantMatchingString(reminder["method"] as? String)
         }
-
-        reminderValues.put(CalendarContract.Reminders.EVENT_ID, eventID);
-        reminderValues.put(CalendarContract.Reminders.MINUTES, minutes);
-        reminderValues.put(CalendarContract.Reminders.METHOD, method);
-
-        resolver.insert(CalendarContract.Reminders.CONTENT_URI, reminderValues);
+        reminderValues.put(CalendarContract.Reminders.EVENT_ID, eventID)
+        reminderValues.put(CalendarContract.Reminders.MINUTES, minutes)
+        reminderValues.put(CalendarContract.Reminders.METHOD, method)
+        contentResolver.insert(CalendarContract.Reminders.CONTENT_URI, reminderValues)
       }
     }
   }
 
-  private void removeRemindersForEvent(ContentResolver resolver, int eventID) throws SecurityException {
-    Cursor cursor = CalendarContract.Reminders.query(resolver, eventID, new String[]{
-        CalendarContract.Reminders._ID
-    });
-
+  @Throws(SecurityException::class)
+  private fun removeRemindersForEvent(eventID: Int) {
+    val cursor = CalendarContract.Reminders.query(contentResolver, eventID.toLong(), arrayOf(
+      CalendarContract.Reminders._ID
+    ))
     while (cursor.moveToNext()) {
-      Uri reminderUri = ContentUris.withAppendedId(CalendarContract.Reminders.CONTENT_URI, cursor.getLong(0));
-      resolver.delete(reminderUri, null, null);
+      val reminderUri = ContentUris.withAppendedId(CalendarContract.Reminders.CONTENT_URI, cursor.getLong(0))
+      contentResolver.delete(reminderUri, null, null)
     }
   }
 
-  private String reminderStringMatchingConstant(Integer constant) {
-    switch (constant) {
-      case CalendarContract.Reminders.METHOD_ALARM:
-        return "alarm";
-      case CalendarContract.Reminders.METHOD_ALERT:
-        return "alert";
-      case CalendarContract.Reminders.METHOD_EMAIL:
-        return "email";
-      case CalendarContract.Reminders.METHOD_SMS:
-        return "sms";
-      case CalendarContract.Reminders.METHOD_DEFAULT:
-      default:
-        return "default";
+  private fun reminderStringMatchingConstant(constant: Int): String =
+    when (constant) {
+      CalendarContract.Reminders.METHOD_ALARM -> "alarm"
+      CalendarContract.Reminders.METHOD_ALERT -> "alert"
+      CalendarContract.Reminders.METHOD_EMAIL -> "email"
+      CalendarContract.Reminders.METHOD_SMS -> "sms"
+      CalendarContract.Reminders.METHOD_DEFAULT -> "default"
+      else -> "default"
     }
-  }
 
-  private Integer reminderConstantMatchingString(String string) {
-    if (string.equals("alert")) {
-      return CalendarContract.Reminders.METHOD_ALERT;
+  private fun reminderConstantMatchingString(string: String?): Int =
+    when (string) {
+      "alert" -> CalendarContract.Reminders.METHOD_ALERT
+      "alarm" -> CalendarContract.Reminders.METHOD_ALARM
+      "email" -> CalendarContract.Reminders.METHOD_EMAIL
+      "sms" -> CalendarContract.Reminders.METHOD_SMS
+      else -> CalendarContract.Reminders.METHOD_DEFAULT
     }
-    if (string.equals("alarm")) {
-      return CalendarContract.Reminders.METHOD_ALARM;
-    }
-    if (string.equals("email")) {
-      return CalendarContract.Reminders.METHOD_EMAIL;
-    }
-    if (string.equals("sms")) {
-      return CalendarContract.Reminders.METHOD_SMS;
-    }
-    return CalendarContract.Reminders.METHOD_DEFAULT;
-  }
 
-  private ArrayList<String> calendarAllowedRemindersFromDBString(String dbString) {
-    ArrayList<String> array = new ArrayList<>();
-    for (String constant : dbString.split(",")) {
-      try{
-      	array.add(reminderStringMatchingConstant(Integer.parseInt(constant)));
-      } catch (NumberFormatException e) {
-          Log.e(TAG, "Couldn't convert reminder constant into an int.", e);
+  private fun calendarAllowedRemindersFromDBString(dbString: String?): ArrayList<String> {
+    val array = ArrayList<String>()
+    for (constant in dbString!!.split(",").toTypedArray()) {
+      try {
+        array.add(reminderStringMatchingConstant(constant.toInt()))
+      } catch (e: NumberFormatException) {
+        Log.e(TAG, "Couldn't convert reminder constant into an int.", e)
       }
     }
-    return array;
+    return array
   }
 
-  private ArrayList<String> calendarAllowedAvailabilitiesFromDBString(String dbString) {
-    ArrayList<String> availabilitiesStrings = new ArrayList<>();
-    for (String availabilityId : dbString.split(",")) {
-      switch (Integer.parseInt(availabilityId)) {
-        case CalendarContract.Events.AVAILABILITY_BUSY:
-          availabilitiesStrings.add("busy");
-          break;
-        case CalendarContract.Events.AVAILABILITY_FREE:
-          availabilitiesStrings.add("free");
-          break;
-        case CalendarContract.Events.AVAILABILITY_TENTATIVE:
-          availabilitiesStrings.add("tentative");
-          break;
+  private fun calendarAllowedAvailabilitiesFromDBString(dbString: String?): ArrayList<String> {
+    val availabilitiesStrings = ArrayList<String>()
+    for (availabilityId in dbString!!.split(",").toTypedArray()) {
+      when (availabilityId.toInt()) {
+        CalendarContract.Events.AVAILABILITY_BUSY -> availabilitiesStrings.add("busy")
+        CalendarContract.Events.AVAILABILITY_FREE -> availabilitiesStrings.add("free")
+        CalendarContract.Events.AVAILABILITY_TENTATIVE -> availabilitiesStrings.add("tentative")
       }
     }
-
-    return availabilitiesStrings;
+    return availabilitiesStrings
   }
 
-  private String availabilityStringMatchingConstant(Integer constant) {
-    switch (constant) {
-      case CalendarContract.Events.AVAILABILITY_BUSY:
-      default:
-        return "busy";
-      case CalendarContract.Events.AVAILABILITY_FREE:
-        return "free";
-      case CalendarContract.Events.AVAILABILITY_TENTATIVE:
-        return "tentative";
-    }
-  }
-
-  private Integer availabilityConstantMatchingString(String string) throws IllegalArgumentException {
-    if (string.equals("free")) {
-      return CalendarContract.Events.AVAILABILITY_FREE;
+  private fun availabilityStringMatchingConstant(constant: Int): String =
+    when (constant) {
+      CalendarContract.Events.AVAILABILITY_BUSY -> "busy"
+      CalendarContract.Events.AVAILABILITY_FREE -> "free"
+      CalendarContract.Events.AVAILABILITY_TENTATIVE -> "tentative"
+      else -> "busy"
     }
 
-    if (string.equals("tentative")) {
-      return CalendarContract.Events.AVAILABILITY_TENTATIVE;
+  private fun availabilityConstantMatchingString(string: String): Int =
+    when (string) {
+      "free" -> CalendarContract.Events.AVAILABILITY_FREE
+      "tentative" -> CalendarContract.Events.AVAILABILITY_TENTATIVE
+      else -> CalendarContract.Events.AVAILABILITY_BUSY
     }
 
-    return CalendarContract.Events.AVAILABILITY_BUSY;
-  }
+  private fun accessStringMatchingConstant(constant: Int): String =
+    when (constant) {
+      CalendarContract.Events.ACCESS_CONFIDENTIAL -> "confidential"
+      CalendarContract.Events.ACCESS_PRIVATE -> "private"
+      CalendarContract.Events.ACCESS_PUBLIC -> "public"
+      CalendarContract.Events.ACCESS_DEFAULT -> "default"
+      else -> "default"
+    }
 
-  private String accessStringMatchingConstant(Integer constant) {
-    switch (constant) {
-      case CalendarContract.Events.ACCESS_CONFIDENTIAL:
-        return "confidential";
-      case CalendarContract.Events.ACCESS_PRIVATE:
-        return "private";
-      case CalendarContract.Events.ACCESS_PUBLIC:
-        return "public";
-      case CalendarContract.Events.ACCESS_DEFAULT:
-      default:
-        return "default";
+  private fun accessConstantMatchingString(string: String): Int =
+    when (string) {
+      "confidential" -> CalendarContract.Events.ACCESS_CONFIDENTIAL
+      "private" -> CalendarContract.Events.ACCESS_PRIVATE
+      "public" -> CalendarContract.Events.ACCESS_PUBLIC
+      else -> CalendarContract.Events.ACCESS_DEFAULT
     }
-  }
 
-  private Integer accessConstantMatchingString(String string) {
-    if (string.equals("confidential")) {
-      return CalendarContract.Events.ACCESS_CONFIDENTIAL;
+  private fun calAccessStringMatchingConstant(constant: Int): String =
+    when (constant) {
+      CalendarContract.Calendars.CAL_ACCESS_CONTRIBUTOR -> "contributor"
+      CalendarContract.Calendars.CAL_ACCESS_EDITOR -> "editor"
+      CalendarContract.Calendars.CAL_ACCESS_FREEBUSY -> "freebusy"
+      CalendarContract.Calendars.CAL_ACCESS_OVERRIDE -> "override"
+      CalendarContract.Calendars.CAL_ACCESS_OWNER -> "owner"
+      CalendarContract.Calendars.CAL_ACCESS_READ -> "read"
+      CalendarContract.Calendars.CAL_ACCESS_RESPOND -> "respond"
+      CalendarContract.Calendars.CAL_ACCESS_ROOT -> "root"
+      CalendarContract.Calendars.CAL_ACCESS_NONE -> "none"
+      else -> "none"
     }
-    if (string.equals("private")) {
-      return CalendarContract.Events.ACCESS_PRIVATE;
-    }
-    if (string.equals("public")) {
-      return CalendarContract.Events.ACCESS_PUBLIC;
-    }
-    return CalendarContract.Events.ACCESS_DEFAULT;
-  }
 
-  private String calAccessStringMatchingConstant(Integer constant) {
-    switch (constant) {
-      case CalendarContract.Calendars.CAL_ACCESS_CONTRIBUTOR:
-        return "contributor";
-      case CalendarContract.Calendars.CAL_ACCESS_EDITOR:
-        return "editor";
-      case CalendarContract.Calendars.CAL_ACCESS_FREEBUSY:
-        return "freebusy";
-      case CalendarContract.Calendars.CAL_ACCESS_OVERRIDE:
-        return "override";
-      case CalendarContract.Calendars.CAL_ACCESS_OWNER:
-        return "owner";
-      case CalendarContract.Calendars.CAL_ACCESS_READ:
-        return "read";
-      case CalendarContract.Calendars.CAL_ACCESS_RESPOND:
-        return "respond";
-      case CalendarContract.Calendars.CAL_ACCESS_ROOT:
-        return "root";
-      case CalendarContract.Calendars.CAL_ACCESS_NONE:
-      default:
-        return "none";
+  private fun calAccessConstantMatchingString(string: String): Int =
+    when (string) {
+      "contributor" -> CalendarContract.Calendars.CAL_ACCESS_CONTRIBUTOR
+      "editor" -> CalendarContract.Calendars.CAL_ACCESS_EDITOR
+      "freebusy" -> CalendarContract.Calendars.CAL_ACCESS_FREEBUSY
+      "override" -> CalendarContract.Calendars.CAL_ACCESS_OVERRIDE
+      "owner" -> CalendarContract.Calendars.CAL_ACCESS_OWNER
+      "read" -> CalendarContract.Calendars.CAL_ACCESS_READ
+      "respond" -> CalendarContract.Calendars.CAL_ACCESS_RESPOND
+      "root" -> CalendarContract.Calendars.CAL_ACCESS_ROOT
+      else -> CalendarContract.Calendars.CAL_ACCESS_NONE
     }
-  }
 
-  private Integer calAccessConstantMatchingString(String string) {
-    if (string.equals("contributor")) {
-      return CalendarContract.Calendars.CAL_ACCESS_CONTRIBUTOR;
+  private fun attendeeRelationshipStringMatchingConstant(constant: Int): String =
+    when (constant) {
+      CalendarContract.Attendees.RELATIONSHIP_ATTENDEE -> "attendee"
+      CalendarContract.Attendees.RELATIONSHIP_ORGANIZER -> "organizer"
+      CalendarContract.Attendees.RELATIONSHIP_PERFORMER -> "performer"
+      CalendarContract.Attendees.RELATIONSHIP_SPEAKER -> "speaker"
+      CalendarContract.Attendees.RELATIONSHIP_NONE -> "none"
+      else -> "none"
     }
-    if (string.equals("editor")) {
-      return CalendarContract.Calendars.CAL_ACCESS_EDITOR;
-    }
-    if (string.equals("freebusy")) {
-      return CalendarContract.Calendars.CAL_ACCESS_FREEBUSY;
-    }
-    if (string.equals("override")) {
-      return CalendarContract.Calendars.CAL_ACCESS_OVERRIDE;
-    }
-    if (string.equals("owner")) {
-      return CalendarContract.Calendars.CAL_ACCESS_OWNER;
-    }
-    if (string.equals("read")) {
-      return CalendarContract.Calendars.CAL_ACCESS_READ;
-    }
-    if (string.equals("respond")) {
-      return CalendarContract.Calendars.CAL_ACCESS_RESPOND;
-    }
-    if (string.equals("root")) {
-      return CalendarContract.Calendars.CAL_ACCESS_ROOT;
-    }
-    return CalendarContract.Calendars.CAL_ACCESS_NONE;
-  }
 
-  private String attendeeRelationshipStringMatchingConstant(Integer constant) {
-    switch (constant) {
-      case CalendarContract.Attendees.RELATIONSHIP_ATTENDEE:
-        return "attendee";
-      case CalendarContract.Attendees.RELATIONSHIP_ORGANIZER:
-        return "organizer";
-      case CalendarContract.Attendees.RELATIONSHIP_PERFORMER:
-        return "performer";
-      case CalendarContract.Attendees.RELATIONSHIP_SPEAKER:
-        return "speaker";
-      case CalendarContract.Attendees.RELATIONSHIP_NONE:
-      default:
-        return "none";
+  private fun attendeeRelationshipConstantMatchingString(string: String): Int =
+    when (string) {
+      "attendee" -> CalendarContract.Attendees.RELATIONSHIP_ATTENDEE
+      "organizer" -> CalendarContract.Attendees.RELATIONSHIP_ORGANIZER
+      "performer" -> CalendarContract.Attendees.RELATIONSHIP_PERFORMER
+      "speaker" -> CalendarContract.Attendees.RELATIONSHIP_SPEAKER
+      else -> CalendarContract.Attendees.RELATIONSHIP_NONE
     }
-  }
 
-  private Integer attendeeRelationshipConstantMatchingString(String string) {
-    if (string.equals("attendee")) {
-      return CalendarContract.Attendees.RELATIONSHIP_ATTENDEE;
+  private fun attendeeTypeStringMatchingConstant(constant: Int): String =
+    when (constant) {
+      CalendarContract.Attendees.TYPE_OPTIONAL -> "optional"
+      CalendarContract.Attendees.TYPE_REQUIRED -> "required"
+      CalendarContract.Attendees.TYPE_RESOURCE -> "resource"
+      CalendarContract.Attendees.TYPE_NONE -> "none"
+      else -> "none"
     }
-    if (string.equals("organizer")) {
-      return CalendarContract.Attendees.RELATIONSHIP_ORGANIZER;
-    }
-    if (string.equals("performer")) {
-      return CalendarContract.Attendees.RELATIONSHIP_PERFORMER;
-    }
-    if (string.equals("speaker")) {
-      return CalendarContract.Attendees.RELATIONSHIP_SPEAKER;
-    }
-    return CalendarContract.Attendees.RELATIONSHIP_NONE;
-  }
 
-  private String attendeeTypeStringMatchingConstant(Integer constant) {
-    switch (constant) {
-      case CalendarContract.Attendees.TYPE_OPTIONAL:
-        return "optional";
-      case CalendarContract.Attendees.TYPE_REQUIRED:
-        return "required";
-      case CalendarContract.Attendees.TYPE_RESOURCE:
-        return "resource";
-      case CalendarContract.Attendees.TYPE_NONE:
-      default:
-        return "none";
+  private fun attendeeTypeConstantMatchingString(string: String): Int =
+    when (string) {
+      "optional" -> CalendarContract.Attendees.TYPE_OPTIONAL
+      "required" -> CalendarContract.Attendees.TYPE_REQUIRED
+      "resource" -> CalendarContract.Attendees.TYPE_RESOURCE
+      else -> CalendarContract.Attendees.TYPE_NONE
     }
-  }
 
-  private Integer attendeeTypeConstantMatchingString(String string) {
-    if (string.equals("optional")) {
-      return CalendarContract.Attendees.TYPE_OPTIONAL;
-    }
-    if (string.equals("required")) {
-      return CalendarContract.Attendees.TYPE_REQUIRED;
-    }
-    if (string.equals("resource")) {
-      return CalendarContract.Attendees.TYPE_RESOURCE;
-    }
-    return CalendarContract.Attendees.TYPE_NONE;
-  }
-
-  private ArrayList<String> calendarAllowedAttendeeTypesFromDBString(String dbString) {
-    ArrayList<String> array = new ArrayList<>();
-    for (String constant : dbString.split(",")) {
-      try{
-        array.add(attendeeTypeStringMatchingConstant(Integer.parseInt(constant)));
-      } catch (NumberFormatException e) {
-          Log.e(TAG, "Couldn't convert attendee constant into an int.", e);
+  private fun calendarAllowedAttendeeTypesFromDBString(dbString: String?): ArrayList<String> {
+    val array = ArrayList<String>()
+    for (constant in dbString!!.split(",").toTypedArray()) {
+      try {
+        array.add(attendeeTypeStringMatchingConstant(constant.toInt()))
+      } catch (e: NumberFormatException) {
+        Log.e(TAG, "Couldn't convert attendee constant into an int.", e)
       }
     }
-    return array;
+    return array
   }
 
-  private String attendeeStatusStringMatchingConstant(Integer constant) {
-    switch (constant) {
-      case CalendarContract.Attendees.ATTENDEE_STATUS_ACCEPTED:
-        return "accepted";
-      case CalendarContract.Attendees.ATTENDEE_STATUS_DECLINED:
-        return "declined";
-      case CalendarContract.Attendees.ATTENDEE_STATUS_INVITED:
-        return "invited";
-      case CalendarContract.Attendees.ATTENDEE_STATUS_TENTATIVE:
-        return "tentative";
-      case CalendarContract.Attendees.ATTENDEE_STATUS_NONE:
-      default:
-        return "none";
-    }
-  }
-
-  private Integer attendeeStatusConstantMatchingString(String string) {
-    if (string.equals("accepted")) {
-      return CalendarContract.Attendees.ATTENDEE_STATUS_ACCEPTED;
-    }
-    if (string.equals("declined")) {
-      return CalendarContract.Attendees.ATTENDEE_STATUS_DECLINED;
-    }
-    if (string.equals("invited")) {
-      return CalendarContract.Attendees.ATTENDEE_STATUS_INVITED;
-    }
-    if (string.equals("tentative")) {
-      return CalendarContract.Attendees.ATTENDEE_STATUS_TENTATIVE;
-    }
-    return CalendarContract.Attendees.ATTENDEE_STATUS_NONE;
-  }
-
-  private String createRecurrenceRule(String recurrence, Integer interval, String endDate, Integer occurrence) {
-    String rrule = "";
-
-    if (recurrence.equals("daily")) {
-      rrule = "FREQ=DAILY";
-    } else if (recurrence.equals("weekly")) {
-      rrule = "FREQ=WEEKLY";
-    } else if (recurrence.equals("monthly")) {
-      rrule = "FREQ=MONTHLY";
-    } else if (recurrence.equals("yearly")) {
-      rrule = "FREQ=YEARLY";
-    } else {
-      return null;
+  private fun attendeeStatusStringMatchingConstant(constant: Int): String =
+    when (constant) {
+      CalendarContract.Attendees.ATTENDEE_STATUS_ACCEPTED -> "accepted"
+      CalendarContract.Attendees.ATTENDEE_STATUS_DECLINED -> "declined"
+      CalendarContract.Attendees.ATTENDEE_STATUS_INVITED -> "invited"
+      CalendarContract.Attendees.ATTENDEE_STATUS_TENTATIVE -> "tentative"
+      CalendarContract.Attendees.ATTENDEE_STATUS_NONE -> "none"
+      else -> "none"
     }
 
+  private fun attendeeStatusConstantMatchingString(string: String): Int =
+    when (string) {
+      "accepted" -> CalendarContract.Attendees.ATTENDEE_STATUS_ACCEPTED
+      "declined" -> CalendarContract.Attendees.ATTENDEE_STATUS_DECLINED
+      "invited" -> CalendarContract.Attendees.ATTENDEE_STATUS_INVITED
+      "tentative" -> CalendarContract.Attendees.ATTENDEE_STATUS_TENTATIVE
+      else -> CalendarContract.Attendees.ATTENDEE_STATUS_NONE
+    }
+
+  private fun createRecurrenceRule(recurrence: String, interval: Int?, endDate: String?, occurrence: Int?): String {
+    var rrule: String = when (recurrence) {
+      "daily" -> "FREQ=DAILY"
+      "weekly" -> "FREQ=WEEKLY"
+      "monthly" -> "FREQ=MONTHLY"
+      "yearly" -> "FREQ=YEARLY"
+      else -> ""
+    }
     if (interval != null) {
-      rrule += ";INTERVAL=" + interval;
+      rrule += ";INTERVAL=$interval"
     }
-
     if (endDate != null) {
-      rrule += ";UNTIL=" + endDate;
+      rrule += ";UNTIL=$endDate"
     } else if (occurrence != null) {
-      rrule += ";COUNT=" + occurrence;
+      rrule += ";COUNT=$occurrence"
     }
-
-    return rrule;
+    return rrule
   }
 
-  private List<Bundle> serializeEvents(Cursor cursor) {
-    List<Bundle> results = new ArrayList<>();
-
-    while (cursor.moveToNext()) {
-      results.add(serializeEvent(cursor));
+  private fun serializeEvents(cursor: Cursor?): List<Bundle> {
+    val results: MutableList<Bundle> = ArrayList()
+    while (cursor!!.moveToNext()) {
+      results.add(serializeEvent(cursor))
     }
-
-    cursor.close();
-
-    return results;
+    cursor.close()
+    return results
   }
 
-  private Bundle serializeEvent(Cursor cursor) {
-    Bundle event = new Bundle();
-
-    String dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-    SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
-    sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-
-    Calendar foundStartDate = Calendar.getInstance();
-    Calendar foundEndDate = Calendar.getInstance();
-
-    String startDateUTC = "";
-    String endDateUTC = "";
+  private fun serializeEvent(cursor: Cursor?): Bundle {
+    val event = Bundle()
+    val foundStartDate = Calendar.getInstance()
+    val foundEndDate = Calendar.getInstance()
+    var startDateUTC: String? = ""
+    var endDateUTC: String? = ""
 
     // may be CalendarContract.Instances.BEGIN or CalendarContract.Events.DTSTART (which have different string values)
-    String startDate = cursor.getString(3);
+    val startDate = cursor!!.getString(3)
     if (startDate != null) {
-      foundStartDate.setTimeInMillis(Long.parseLong(startDate));
-      startDateUTC = sdf.format(foundStartDate.getTime());
+      foundStartDate.timeInMillis = startDate.toLong()
+      startDateUTC = sdf.format(foundStartDate.time)
     }
 
     // may be CalendarContract.Instances.END or CalendarContract.Events.DTEND (which have different string values)
-    String endDate = cursor.getString(4);
+    val endDate = cursor.getString(4)
     if (endDate != null) {
-      foundEndDate.setTimeInMillis(Long.parseLong(endDate));
-      endDateUTC = sdf.format(foundEndDate.getTime());
+      foundEndDate.timeInMillis = endDate.toLong()
+      endDateUTC = sdf.format(foundEndDate.time)
     }
-
-    String rrule = optStringFromCursor(cursor, CalendarContract.Events.RRULE);
+    val rrule = optStringFromCursor(cursor, CalendarContract.Events.RRULE)
     if (rrule != null) {
-      Bundle recurrenceRule = new Bundle();
-      String[] recurrenceRules = rrule.split(";");
-      SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
-
-      recurrenceRule.putString("frequency", recurrenceRules[0].split("=")[1].toLowerCase());
-
-      if (recurrenceRules.length >= 2 && recurrenceRules[1].split("=")[0].equals("INTERVAL")) {
-        recurrenceRule.putInt("interval", Integer.parseInt(recurrenceRules[1].split("=")[1]));
+      val recurrenceRule = Bundle()
+      val recurrenceRules = rrule.split(";").toTypedArray()
+      recurrenceRule.putString("frequency", recurrenceRules[0].split("=").toTypedArray()[1].toLowerCase())
+      if (recurrenceRules.size >= 2 && recurrenceRules[1].split("=").toTypedArray()[0] == "INTERVAL") {
+        recurrenceRule.putInt("interval", recurrenceRules[1].split("=").toTypedArray()[1].toInt())
       }
-
-      if (recurrenceRules.length >= 3) {
-        String[] terminationRules = recurrenceRules[2].split("=");
-        if (terminationRules.length >= 2) {
-          if (terminationRules[0].equals("UNTIL")) {
+      if (recurrenceRules.size >= 3) {
+        val terminationRules = recurrenceRules[2].split("=").toTypedArray()
+        if (terminationRules.size >= 2) {
+          if (terminationRules[0] == "UNTIL") {
             try {
-              recurrenceRule.putString("endDate", sdf.format(format.parse(terminationRules[1])));
-            } catch (ParseException e) {
-              Log.e(TAG, "Couldn't parse the `endDate` property.", e);
+              recurrenceRule.putString("endDate", sdf.parse(terminationRules[1])?.toString())
+            } catch (e: ParseException) {
+              Log.e(TAG, "Couldn't parse the `endDate` property.", e)
+            } catch (e: NullPointerException) {
+              Log.e(TAG, "endDate is null", e)
             }
-          } else if (terminationRules[0].equals("COUNT")) {
-            recurrenceRule.putInt("occurrence", Integer.parseInt(recurrenceRules[2].split("=")[1]));
+          } else if (terminationRules[0] == "COUNT") {
+            recurrenceRule.putInt("occurrence", recurrenceRules[2].split("=").toTypedArray()[1].toInt())
           }
         }
-        Log.e(TAG, String.format("Couldn't parse termination rules: '%s'.", recurrenceRules[2]), null);
+        Log.e(TAG, "Couldn't parse termination rules: '${recurrenceRules[2]}'.", null)
       }
-
-      event.putBundle("recurrenceRule", recurrenceRule);
+      event.putBundle("recurrenceRule", recurrenceRule)
     }
 
 
     // may be CalendarContract.Instances.EVENT_ID or CalendarContract.Events._ID (which have different string values)
-    event.putString("id", cursor.getString(0));
-    event.putString("calendarId", optStringFromCursor(cursor, CalendarContract.Events.CALENDAR_ID));
-    event.putString("title", optStringFromCursor(cursor, CalendarContract.Events.TITLE));
-    event.putString("notes", optStringFromCursor(cursor, CalendarContract.Events.DESCRIPTION));
-    event.putString("startDate", startDateUTC);
-    event.putString("endDate", endDateUTC);
-    event.putBoolean("allDay", optIntFromCursor(cursor, CalendarContract.Events.ALL_DAY) != 0);
-    event.putString("location", optStringFromCursor(cursor, CalendarContract.Events.EVENT_LOCATION));
-    event.putString("availability", availabilityStringMatchingConstant(optIntFromCursor(cursor, CalendarContract.Events.AVAILABILITY)));
-    event.putParcelableArrayList("alarms", serializeAlarms(cursor.getLong(0)));
-    event.putString("organizerEmail", optStringFromCursor(cursor, CalendarContract.Events.ORGANIZER));
-    event.putString("timeZone", optStringFromCursor(cursor, CalendarContract.Events.EVENT_TIMEZONE));
-    event.putString("endTimeZone", optStringFromCursor(cursor, CalendarContract.Events.EVENT_END_TIMEZONE));
-    event.putString("accessLevel", accessStringMatchingConstant(optIntFromCursor(cursor, CalendarContract.Events.ACCESS_LEVEL)));
-    event.putBoolean("guestsCanModify", optIntFromCursor(cursor, CalendarContract.Events.GUESTS_CAN_MODIFY) != 0);
-    event.putBoolean("guestsCanInviteOthers", optIntFromCursor(cursor, CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS) != 0);
-    event.putBoolean("guestsCanSeeGuests", optIntFromCursor(cursor, CalendarContract.Events.GUESTS_CAN_SEE_GUESTS) != 0);
-    event.putString("originalId", optStringFromCursor(cursor, CalendarContract.Events.ORIGINAL_ID));
+    event.putString("id", cursor.getString(0))
+    event.putString("calendarId", optStringFromCursor(cursor, CalendarContract.Events.CALENDAR_ID))
+    event.putString("title", optStringFromCursor(cursor, CalendarContract.Events.TITLE))
+    event.putString("notes", optStringFromCursor(cursor, CalendarContract.Events.DESCRIPTION))
+    event.putString("startDate", startDateUTC)
+    event.putString("endDate", endDateUTC)
+    event.putBoolean("allDay", optIntFromCursor(cursor, CalendarContract.Events.ALL_DAY) != 0)
+    event.putString("location", optStringFromCursor(cursor, CalendarContract.Events.EVENT_LOCATION))
+    event.putString("availability", availabilityStringMatchingConstant(optIntFromCursor(cursor, CalendarContract.Events.AVAILABILITY)))
+    event.putParcelableArrayList("alarms", serializeAlarms(cursor.getLong(0)))
+    event.putString("organizerEmail", optStringFromCursor(cursor, CalendarContract.Events.ORGANIZER))
+    event.putString("timeZone", optStringFromCursor(cursor, CalendarContract.Events.EVENT_TIMEZONE))
+    event.putString("endTimeZone", optStringFromCursor(cursor, CalendarContract.Events.EVENT_END_TIMEZONE))
+    event.putString("accessLevel", accessStringMatchingConstant(optIntFromCursor(cursor, CalendarContract.Events.ACCESS_LEVEL)))
+    event.putBoolean("guestsCanModify", optIntFromCursor(cursor, CalendarContract.Events.GUESTS_CAN_MODIFY) != 0)
+    event.putBoolean("guestsCanInviteOthers", optIntFromCursor(cursor, CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS) != 0)
+    event.putBoolean("guestsCanSeeGuests", optIntFromCursor(cursor, CalendarContract.Events.GUESTS_CAN_SEE_GUESTS) != 0)
+    event.putString("originalId", optStringFromCursor(cursor, CalendarContract.Events.ORIGINAL_ID))
 
     // unfortunately the string values of CalendarContract.Events._ID and CalendarContract.Instances._ID are equal
     // so we'll use the somewhat brittle column number from the query
-    if (cursor.getColumnCount() > 18) {
-      event.putString("instanceId", cursor.getString(18));
+    if (cursor.columnCount > 18) {
+      event.putString("instanceId", cursor.getString(18))
     }
-
-    return event;
+    return event
   }
 
-  private ArrayList<Bundle> serializeAlarms(long eventID) {
-    ArrayList<Bundle> alarms = new ArrayList<>();
-    ContentResolver cr = mContext.getContentResolver();
-    Cursor cursor = CalendarContract.Reminders.query(cr, eventID, new String[]{
-        CalendarContract.Reminders.MINUTES,
-        CalendarContract.Reminders.METHOD
-    });
-
+  private fun serializeAlarms(eventID: Long): ArrayList<Bundle> {
+    val alarms = ArrayList<Bundle>()
+    val cursor = CalendarContract.Reminders.query(contentResolver, eventID, arrayOf(
+      CalendarContract.Reminders.MINUTES,
+      CalendarContract.Reminders.METHOD
+    ))
     while (cursor.moveToNext()) {
-      Bundle thisAlarm = new Bundle();
-      thisAlarm.putInt("relativeOffset", -cursor.getInt(0));
-      int method = cursor.getInt(1);
-      thisAlarm.putString("method", reminderStringMatchingConstant(method));
-      alarms.add(thisAlarm);
+      val thisAlarm = Bundle()
+      thisAlarm.putInt("relativeOffset", -cursor.getInt(0))
+      val method = cursor.getInt(1)
+      thisAlarm.putString("method", reminderStringMatchingConstant(method))
+      alarms.add(thisAlarm)
     }
-
-    return alarms;
+    return alarms
   }
 
-  private List<Bundle> serializeEventCalendars(Cursor cursor) {
-    List<Bundle> results = new ArrayList<>();
+  private fun serializeEventCalendars(cursor: Cursor?): List<Bundle> {
+    val results: MutableList<Bundle> = ArrayList()
+    while (cursor!!.moveToNext()) {
+      results.add(serializeEventCalendar(cursor))
+    }
+    cursor.close()
+    return results
+  }
 
+  private fun serializeEventCalendar(cursor: Cursor?): Bundle {
+    val calendar = Bundle().apply {
+      putString("id", optStringFromCursor(cursor, CalendarContract.Calendars._ID))
+      putString("title", optStringFromCursor(cursor, CalendarContract.Calendars.CALENDAR_DISPLAY_NAME))
+      putBoolean("isPrimary", optStringFromCursor(cursor, CalendarContract.Calendars.IS_PRIMARY) === "1")
+      putStringArrayList("allowedAvailabilities", calendarAllowedAvailabilitiesFromDBString(optStringFromCursor(cursor, CalendarContract.Calendars.ALLOWED_AVAILABILITY)))
+      putString("name", optStringFromCursor(cursor, CalendarContract.Calendars.NAME))
+      putString("color", String.format("#%06X", 0xFFFFFF and optIntFromCursor(cursor, CalendarContract.Calendars.CALENDAR_COLOR)))
+      putString("ownerAccount", optStringFromCursor(cursor, CalendarContract.Calendars.OWNER_ACCOUNT))
+      putString("timeZone", optStringFromCursor(cursor, CalendarContract.Calendars.CALENDAR_TIME_ZONE))
+      putStringArrayList("allowedReminders", calendarAllowedRemindersFromDBString(optStringFromCursor(cursor, CalendarContract.Calendars.ALLOWED_REMINDERS)))
+      putStringArrayList("allowedAttendeeTypes", calendarAllowedAttendeeTypesFromDBString(optStringFromCursor(cursor, CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES)))
+      putBoolean("isVisible", optIntFromCursor(cursor, CalendarContract.Calendars.VISIBLE) != 0)
+      putBoolean("isSynced", optIntFromCursor(cursor, CalendarContract.Calendars.SYNC_EVENTS) != 0)
+      val accessLevel = optIntFromCursor(cursor, CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL)
+      putString("accessLevel", calAccessStringMatchingConstant(accessLevel))
+      putBoolean(
+        "allowsModifications",
+        accessLevel == CalendarContract.Calendars.CAL_ACCESS_ROOT
+          or CalendarContract.Calendars.CAL_ACCESS_OWNER
+          or CalendarContract.Calendars.CAL_ACCESS_EDITOR
+          or CalendarContract.Calendars.CAL_ACCESS_CONTRIBUTOR
+      )
+    }
+    val source = Bundle().apply {
+      putString("name", optStringFromCursor(cursor, CalendarContract.Calendars.ACCOUNT_NAME))
+      val type = optStringFromCursor(cursor, CalendarContract.Calendars.ACCOUNT_TYPE)
+      putString("type", type)
+      putBoolean("isLocalAccount", type == CalendarContract.ACCOUNT_TYPE_LOCAL)
+    }
+    calendar.putBundle("source", source)
+    return calendar
+  }
+
+  private fun serializeAttendees(cursor: Cursor): List<Bundle> {
+    val results: MutableList<Bundle> = ArrayList()
     while (cursor.moveToNext()) {
-      results.add(serializeEventCalendar(cursor));
+      results.add(serializeAttendee(cursor))
     }
-
-    cursor.close();
-
-    return results;
+    cursor.close()
+    return results
   }
 
-  private Bundle serializeEventCalendar(Cursor cursor) {
-    Bundle calendar = new Bundle();
-
-    calendar.putString("id", optStringFromCursor(cursor, CalendarContract.Calendars._ID));
-    calendar.putString("title", optStringFromCursor(cursor, CalendarContract.Calendars.CALENDAR_DISPLAY_NAME));
-    calendar.putBoolean("isPrimary", optStringFromCursor(cursor, CalendarContract.Calendars.IS_PRIMARY) == "1");
-    calendar.putStringArrayList("allowedAvailabilities", calendarAllowedAvailabilitiesFromDBString(optStringFromCursor(cursor, CalendarContract.Calendars.ALLOWED_AVAILABILITY)));
-    calendar.putString("name", optStringFromCursor(cursor, CalendarContract.Calendars.NAME));
-    calendar.putString("color", String.format("#%06X", (0xFFFFFF & optIntFromCursor(cursor, CalendarContract.Calendars.CALENDAR_COLOR))));
-    calendar.putString("ownerAccount", optStringFromCursor(cursor, CalendarContract.Calendars.OWNER_ACCOUNT));
-    calendar.putString("timeZone", optStringFromCursor(cursor, CalendarContract.Calendars.CALENDAR_TIME_ZONE));
-    calendar.putStringArrayList("allowedReminders", calendarAllowedRemindersFromDBString(optStringFromCursor(cursor, CalendarContract.Calendars.ALLOWED_REMINDERS)));
-    calendar.putStringArrayList("allowedAttendeeTypes", calendarAllowedAttendeeTypesFromDBString(optStringFromCursor(cursor, CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES)));
-    calendar.putBoolean("isVisible", optIntFromCursor(cursor, CalendarContract.Calendars.VISIBLE) != 0);
-    calendar.putBoolean("isSynced", optIntFromCursor(cursor, CalendarContract.Calendars.SYNC_EVENTS) != 0);
-
-    Bundle source = new Bundle();
-    source.putString("name", optStringFromCursor(cursor, CalendarContract.Calendars.ACCOUNT_NAME));
-    String type = optStringFromCursor(cursor, CalendarContract.Calendars.ACCOUNT_TYPE);
-    source.putString("type", type);
-    source.putBoolean("isLocalAccount", type.equals(CalendarContract.ACCOUNT_TYPE_LOCAL));
-    calendar.putBundle("source", source);
-
-    int accessLevel = optIntFromCursor(cursor, CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL);
-    calendar.putString("accessLevel", calAccessStringMatchingConstant(accessLevel));
-
-    if (accessLevel == CalendarContract.Calendars.CAL_ACCESS_ROOT ||
-        accessLevel == CalendarContract.Calendars.CAL_ACCESS_OWNER ||
-        accessLevel == CalendarContract.Calendars.CAL_ACCESS_EDITOR ||
-        accessLevel == CalendarContract.Calendars.CAL_ACCESS_CONTRIBUTOR) {
-      calendar.putBoolean("allowsModifications", true);
-    } else {
-      calendar.putBoolean("allowsModifications", false);
-    }
-
-    return calendar;
+  private fun serializeAttendee(cursor: Cursor): Bundle = Bundle().apply {
+    putString("id", optStringFromCursor(cursor, CalendarContract.Attendees._ID))
+    putString("name", optStringFromCursor(cursor, CalendarContract.Attendees.ATTENDEE_NAME))
+    putString("email", optStringFromCursor(cursor, CalendarContract.Attendees.ATTENDEE_EMAIL))
+    putString("role", attendeeRelationshipStringMatchingConstant(optIntFromCursor(cursor, CalendarContract.Attendees.ATTENDEE_RELATIONSHIP)))
+    putString("type", attendeeTypeStringMatchingConstant(optIntFromCursor(cursor, CalendarContract.Attendees.ATTENDEE_TYPE)))
+    putString("status", attendeeStatusStringMatchingConstant(optIntFromCursor(cursor, CalendarContract.Attendees.ATTENDEE_STATUS)))
   }
 
-  private List<Bundle> serializeAttendees(Cursor cursor) {
-    List<Bundle> results = new ArrayList<>();
-
-    while (cursor.moveToNext()) {
-      results.add(serializeAttendee(cursor));
-    }
-
-    cursor.close();
-
-    return results;
+  private fun optStringFromCursor(cursor: Cursor?, columnName: String): String? {
+    val index = cursor!!.getColumnIndex(columnName)
+    return if (index == -1) {
+      null
+    } else cursor.getString(index)
   }
 
-  private Bundle serializeAttendee(Cursor cursor) {
-    Bundle attendee = new Bundle();
-
-    attendee.putString("id", optStringFromCursor(cursor, CalendarContract.Attendees._ID));
-    attendee.putString("name", optStringFromCursor(cursor, CalendarContract.Attendees.ATTENDEE_NAME));
-    attendee.putString("email", optStringFromCursor(cursor, CalendarContract.Attendees.ATTENDEE_EMAIL));
-    attendee.putString("role", attendeeRelationshipStringMatchingConstant(optIntFromCursor(cursor, CalendarContract.Attendees.ATTENDEE_RELATIONSHIP)));
-    attendee.putString("type", attendeeTypeStringMatchingConstant(optIntFromCursor(cursor, CalendarContract.Attendees.ATTENDEE_TYPE)));
-    attendee.putString("status", attendeeStatusStringMatchingConstant(optIntFromCursor(cursor, CalendarContract.Attendees.ATTENDEE_STATUS)));
-
-    return attendee;
+  private fun optIntFromCursor(cursor: Cursor?, columnName: String): Int {
+    val index = cursor!!.getColumnIndex(columnName)
+    return if (index == -1) {
+      0
+    } else cursor.getInt(index)
   }
 
-  private String optStringFromCursor(Cursor cursor, String columnName) {
-    int index = cursor.getColumnIndex(columnName);
-    if (index == -1) {
-      return null;
-    }
-    return cursor.getString(index);
-  }
-
-  private int optIntFromCursor(Cursor cursor, String columnName) {
-    int index = cursor.getColumnIndex(columnName);
-    if (index == -1) {
-      return 0;
-    }
-    return cursor.getInt(index);
-  }
-
-  private boolean checkPermissions(Promise promise) {
+  private fun checkPermissions(promise: Promise): Boolean {
     if (mPermissionsManager == null) {
-      promise.reject("E_NO_PERMISSIONS", "Permissions module not found. Are you sure that Expo modules are properly linked?");
-      return false;
+      promise.reject("E_NO_PERMISSIONS", "Permissions module not found. Are you sure that Expo modules are properly linked?")
+      return false
     }
-    if (!mPermissionsManager.hasGrantedPermissions(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)) {
-      promise.reject("E_MISSING_PERMISSIONS", "CALENDAR permission is required to do this operation.");
-      return false;
+    if (!mPermissionsManager!!.hasGrantedPermissions(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)) {
+      promise.reject("E_MISSING_PERMISSIONS", "CALENDAR permission is required to do this operation.")
+      return false
     }
-    return true;
+    return true
+  }
+
+  private fun setDateInCalendar(calendar: Calendar, date: Any) {
+    when (date) {
+      is String -> {
+        val parsedDate = sdf.parse(date)
+        if (parsedDate != null) {
+          calendar.time = parsedDate
+        } else {
+          Log.e(TAG, "Parsed date is null")
+        }
+      }
+      is Number -> {
+        calendar.timeInMillis = date.toLong()
+      }
+      else -> {
+        Log.e(TAG, "date has unsupported type")
+      }
+    }
+  }
+
+  companion object {
+    private val TAG = CalendarModule::class.java.simpleName
   }
 }
