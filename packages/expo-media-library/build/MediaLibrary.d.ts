@@ -89,6 +89,7 @@ export declare type AlbumRef = Album | string;
 export { PermissionStatus, PermissionExpiration };
 export declare const MediaType: MediaTypeObject;
 export declare const SortBy: SortByObject;
+export declare function isAvailableAsync(): Promise<boolean>;
 export declare function requestPermissionsAsync(writeOnly?: boolean): Promise<PermissionResponse>;
 export declare function getPermissionsAsync(writeOnly?: boolean): Promise<PermissionResponse>;
 /**
