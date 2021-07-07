@@ -41,10 +41,6 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 
 @property (nonatomic, weak) EXAV *exAV;
 
-@property (nonatomic, strong) AVAudioEngine *engine;
-@property (nonatomic, strong) AVAudioPlayerNode *playerNode;
-@property (nonatomic, strong) AVAudioFile *audioFile;
-
 @property (nonatomic, assign) BOOL isLoaded;
 @property (nonatomic, strong) void (^loadFinishBlock)(BOOL success, NSDictionary *successStatus, NSString *error);
 
@@ -92,7 +88,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     _isLoaded = NO;
     _loadFinishBlock = loadFinishBlock;
   
-    _player = nil;
+    _engine = [[AVAudioEngine alloc] init];
   
     _url = [NSURL URLWithString:[source objectForKey:EXAVPlayerDataStatusURIKeyPath]];
     _headers = [self validatedRequestHeaders:source[EXAVPlayerDataStatusHeadersKeyPath]];
@@ -121,9 +117,10 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     [self _loadNewPlayer];
     
     
+    bool RUN_THIS_CODE = false; // yep.
     
     static bool isRunning = false;
-    if (!isRunning && false /* yep. */) {
+    if (!isRunning && RUN_THIS_CODE) {
       isRunning = true;
       [[AVAudioSession sharedInstance] setMode:AVAudioSessionModeMoviePlayback error:nil];
       [[AVAudioSession sharedInstance] setActive:YES error:nil];
@@ -141,7 +138,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
         _playerNode = [[AVAudioPlayerNode alloc] init];
         
         NSError *fileReadError;
-        _audioFile = [[AVAudioFile alloc] initForReading:filePath error:&fileReadError];
+        auto _audioFile = [[AVAudioFile alloc] initForReading:filePath error:&fileReadError];
         if (fileReadError != nil) {
           NSLog(@"Error reading audio file!", fileReadError.description);
         } else {

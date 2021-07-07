@@ -6,7 +6,8 @@
 
 @interface EXAVPlayerData : NSObject <EXAVObject>
 
-@property (nonatomic, strong) AVQueuePlayer *player;
+@property (nonatomic, strong) AVAudioEngine *engine;
+@property (nonatomic, strong) AVAudioPlayerNode *playerNode;
 @property (nonatomic, strong) NSURL *url;
 @property (nonatomic, strong) NSDictionary *headers;
 @property (nonatomic, strong) void (^statusUpdateCallback)(NSDictionary *);
