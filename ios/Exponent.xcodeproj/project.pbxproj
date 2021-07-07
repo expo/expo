@@ -49,11 +49,13 @@
 		0CC6F961225F5C7700322635 /* ExpoKitAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CC6F960225F5C7700322635 /* ExpoKitAppDelegate.m */; };
 		0DBCB92B4EB6445CB2A162E4 /* RNSVGMarkerPosition.m in Sources */ = {isa = PBXBuildFile; fileRef = 417AEE2C283C4782885B8C12 /* RNSVGMarkerPosition.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		19382BA91EC2EACC001ED4A1 /* EXScopedBranchManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19382BA81EC2EACC001ED4A1 /* EXScopedBranchManager.m */; };
+		19762DC50FD4D897EDAF61A5 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522580D8EA8D0267870DC600 /* ExpoModulesProvider.swift */; };
 		19B2EF751FB25A1A003F2E1B /* EXCachedResourceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 19B2EF741FB25A1A003F2E1B /* EXCachedResourceManager.m */; };
 		2168B25C23E3058600A94C0D /* EXScopedFirebaseCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 2168B25A23E3058500A94C0D /* EXScopedFirebaseCore.m */; };
 		2197FFB523C613A9003CA3B2 /* RNSharedElementContent.m in Sources */ = {isa = PBXBuildFile; fileRef = 2197FFB323C613A9003CA3B2 /* RNSharedElementContent.m */; };
 		2519CCFC216B292600FA7C80 /* EXUserNotificationCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = 2519CCFB216B292600FA7C80 /* EXUserNotificationCenter.m */; };
 		2520E83A21ABEEF100D900A4 /* EXScopedFilePermissionModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2520E83921ABEEF100D900A4 /* EXScopedFilePermissionModule.m */; };
+		254282F6B824A72BCE19E8D8 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73635417C6851995A8B869A4 /* ExpoModulesProvider.swift */; };
 		255A630A2154FB89009FDFC6 /* EXPendingNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = 255A63092154FB88009FDFC6 /* EXPendingNotification.m */; };
 		25742BE72174B8BE003E7453 /* EXExpoUserNotificationCenterProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 25742BE62174B8BE003E7453 /* EXExpoUserNotificationCenterProxy.m */; };
 		25742BF121774212003E7453 /* EXNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 25742BEF21774212003E7453 /* EXNotifications.m */; };
@@ -202,6 +204,7 @@
 		78D8252E2051217F00CBD9D9 /* NSData+EXRemoteNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D8252D2051217F00CBD9D9 /* NSData+EXRemoteNotifications.m */; };
 		78D825312051226200CBD9D9 /* EXApiV2Client+EXRemoteNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D825302051226200CBD9D9 /* EXApiV2Client+EXRemoteNotifications.m */; };
 		78F55D34D7E441D7B334C01E /* RNCMaskedView.m in Sources */ = {isa = PBXBuildFile; fileRef = 35005E2F0ED24BB98E4DC990 /* RNCMaskedView.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		827A699919CED163689E655D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79E446843BA3BF044F621CBE /* ExpoModulesProvider.swift */; };
 		8746D75E24D04B2300BFAD22 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8746D75C24D04B2300BFAD22 /* LaunchScreen.storyboard */; };
 		8767F5B824D177AD009F9372 /* EXManagedAppSplashScreenConfigurationBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8767F5B724D177AD009F9372 /* EXManagedAppSplashScreenConfigurationBuilder.m */; };
 		8767F97324D17CB2009F9372 /* EXManagedAppSplashScreenViewProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 8767F97224D17CB2009F9372 /* EXManagedAppSplashScreenViewProvider.m */; };
@@ -649,6 +652,7 @@
 		FCB4099525C6207C00326AC8 /* EXScopedNotificationsUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B2F7C02D246B09AE0060EE06 /* EXScopedNotificationsUtils.m */; };
 		FCF6D37025B34BC200808BF5 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF6D36F25B34BC200808BF5 /* NotificationService.swift */; };
 		FCF6D37425B34BC200808BF5 /* ExpoNotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FCF6D36D25B34BC200808BF5 /* ExpoNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		FE8D4A1FC2BDC25C8D4684F8 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C849D84FFC04012BBF6DFFD /* ExpoModulesProvider.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -969,8 +973,10 @@
 		391920741A374C4AB61BDB48 /* RNSharedElementStyle.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementStyle.m; sourceTree = "<group>"; };
 		417AEE2C283C4782885B8C12 /* RNSVGMarkerPosition.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSVGMarkerPosition.m; sourceTree = "<group>"; };
 		476C8FFA59854F80BD436259 /* RNCMaskedViewManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCMaskedViewManager.h; sourceTree = "<group>"; };
+		522580D8EA8D0267870DC600 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Expo Go-Expo Go (versioned)/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		57C7EC4AED92477D8C6743E0 /* RNSharedElementCornerRadii.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementCornerRadii.h; sourceTree = "<group>"; };
 		5972DE6FF6EE4E5BAE26F7FC /* RNSVGMarkerManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSVGMarkerManager.h; sourceTree = "<group>"; };
+		5C849D84FFC04012BBF6DFFD /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-ExponentIntegrationTests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		5DA1762EB8644F4CB2DF792F /* AIRGoogleMapHeatmapManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = AIRGoogleMapHeatmapManager.h; sourceTree = "<group>"; };
 		5E8A7DA8E798407CA5410CF6 /* RNSVGPathMeasure.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSVGPathMeasure.m; sourceTree = "<group>"; };
 		626540C9AA14409B8CD2A9F5 /* RNSharedElementNode.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementNode.h; sourceTree = "<group>"; };
@@ -1096,6 +1102,7 @@
 		7043DF742283303800272D74 /* RNSVGNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNSVGNode.m; sourceTree = "<group>"; };
 		7043DF752283303800272D74 /* RNSVGContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNSVGContainer.h; sourceTree = "<group>"; };
 		731D1E5D176247F4893297CE /* RNSVGMarker.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSVGMarker.h; sourceTree = "<group>"; };
+		73635417C6851995A8B869A4 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Tests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		780F0BF062134A048B33344C /* RNSharedElementCornerRadii.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementCornerRadii.m; sourceTree = "<group>"; };
 		78CEE2C01ACD07D70095B124 /* Expo Go.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Expo Go.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		78CEE2D01ACD07D70095B124 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
@@ -1108,6 +1115,7 @@
 		78D8252F2051226200CBD9D9 /* EXApiV2Client+EXRemoteNotifications.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "EXApiV2Client+EXRemoteNotifications.h"; sourceTree = "<group>"; };
 		78D825302051226200CBD9D9 /* EXApiV2Client+EXRemoteNotifications.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "EXApiV2Client+EXRemoteNotifications.m"; sourceTree = "<group>"; };
 		78EFF1819B1C44F2A92FC309 /* RNCMaskedViewManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCMaskedViewManager.m; sourceTree = "<group>"; };
+		79E446843BA3BF044F621CBE /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Expo Go-Expo Go (unversioned)/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		7A6D470702C8378E4086FCF2 /* Pods-Expo Go-Expo Go (versioned).debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go-Expo Go (versioned).debug.xcconfig"; path = "Target Support Files/Pods-Expo Go-Expo Go (versioned)/Pods-Expo Go-Expo Go (versioned).debug.xcconfig"; sourceTree = "<group>"; };
 		7B5470F008B04F93A7E19D7B /* RNSVGMarker.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSVGMarker.m; sourceTree = "<group>"; };
 		7E7497021CDE4FBA925D5F50 /* RNSharedElementTransitionItem.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementTransitionItem.m; sourceTree = "<group>"; };
@@ -1646,6 +1654,14 @@
 			path = ViewShot;
 			sourceTree = "<group>";
 		};
+		344E183534ED1467E47B0E35 /* Expo Go (unversioned) */ = {
+			isa = PBXGroup;
+			children = (
+				79E446843BA3BF044F621CBE /* ExpoModulesProvider.swift */,
+			);
+			name = "Expo Go (unversioned)";
+			sourceTree = "<group>";
+		};
 		65B902B660654403B6731F7E /* SharedElement */ = {
 			isa = PBXGroup;
 			children = (
@@ -1886,6 +1902,7 @@
 				AE58247EE2419C33B3A8CBAE /* Pods */,
 				78CEE2C11ACD07D70095B124 /* Products */,
 				B505BA0F20CAF77A0046ACFB /* Tests */,
+				994130004C859A4758AD583C /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -1942,6 +1959,25 @@
 				2519CCFB216B292600FA7C80 /* EXUserNotificationCenter.m */,
 			);
 			path = Notifications;
+			sourceTree = "<group>";
+		};
+		78FC17D1421550B82AA58084 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				73635417C6851995A8B869A4 /* ExpoModulesProvider.swift */,
+			);
+			name = Tests;
+			sourceTree = "<group>";
+		};
+		994130004C859A4758AD583C /* ExpoModulesProviders */ = {
+			isa = PBXGroup;
+			children = (
+				344E183534ED1467E47B0E35 /* Expo Go (unversioned) */,
+				F2F4B300B300F7E0685B5A6A /* Expo Go (versioned) */,
+				EC27866F78F13D1263CDAAB8 /* ExponentIntegrationTests */,
+				78FC17D1421550B82AA58084 /* Tests */,
+			);
+			name = ExpoModulesProviders;
 			sourceTree = "<group>";
 		};
 		A17682721BE42C7F0057BBF2 /* Libraries */ = {
@@ -2636,6 +2672,14 @@
 			path = DateTimePicker;
 			sourceTree = "<group>";
 		};
+		EC27866F78F13D1263CDAAB8 /* ExponentIntegrationTests */ = {
+			isa = PBXGroup;
+			children = (
+				5C849D84FFC04012BBF6DFFD /* ExpoModulesProvider.swift */,
+			);
+			name = ExponentIntegrationTests;
+			sourceTree = "<group>";
+		};
 		F11E530C2160101B007ACF56 /* HeadlessApp */ = {
 			isa = PBXGroup;
 			children = (
@@ -2654,6 +2698,14 @@
 				3451876A2368FE9E008C4171 /* cp-bundle-resources-conditionally.sh */,
 			);
 			path = "Build-Phases";
+			sourceTree = "<group>";
+		};
+		F2F4B300B300F7E0685B5A6A /* Expo Go (versioned) */ = {
+			isa = PBXGroup;
+			children = (
+				522580D8EA8D0267870DC600 /* ExpoModulesProvider.swift */,
+			);
+			name = "Expo Go (versioned)";
 			sourceTree = "<group>";
 		};
 		FCF6D36E25B34BC200808BF5 /* ExpoNotificationServiceExtension */ = {
@@ -3449,6 +3501,7 @@
 				07CB4E1A26045B620057443E /* RCTOnPageSelected.m in Sources */,
 				8B1448C54DEB4CFDB79D7E45 /* RNCSafeAreaViewMode.m in Sources */,
 				6782D340A0024AF58B3805D0 /* RNSVGTopAlignedLabel.ios.m in Sources */,
+				827A699919CED163689E655D /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3468,6 +3521,7 @@
 				B5854ED920D0790C001D2F6E /* EXDevDetachTestCase.m in Sources */,
 				B5854EEB20D07D4D001D2F6E /* EXLinkingTests.m in Sources */,
 				B5FABDF420DD920600642528 /* EXAppLoaderConfigurationTestsProdService.m in Sources */,
+				254282F6B824A72BCE19E8D8 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3476,6 +3530,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B51333431CE649FE00E9FC9E /* ExponentIntegrationTests.m in Sources */,
+				FE8D4A1FC2BDC25C8D4684F8 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3781,6 +3836,7 @@
 				F1421908262CB68600BB97E6 /* RNCSliderManager.m in Sources */,
 				F1421909262CB68600BB97E6 /* RCTOnPageSelected.m in Sources */,
 				F142190A262CB68600BB97E6 /* RNCSafeAreaViewMode.m in Sources */,
+				19762DC50FD4D897EDAF61A5 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
