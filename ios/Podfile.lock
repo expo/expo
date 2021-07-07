@@ -1873,7 +1873,7 @@ PODS:
     - GoogleSignIn (~> 5.0.2)
     - UMCore
   - EXHaptics (10.1.0):
-    - UMCore
+    - ExpoModulesCore
   - EXImageLoader (2.2.0):
     - ExpoModulesCore
     - React-Core
@@ -4049,7 +4049,7 @@ SPEC CHECKSUMS:
   EXGL: 6c3cb47b094c185c6e3fdac50449a504458052c2
   EXGL_CPP: dcca866c4f6af6694a12217fb2db3325acd19b57
   EXGoogleSignIn: d61beec381962b350f6ed60c9b65ae46ca26ef12
-  EXHaptics: 6dc4307ab0794fe7a87ec8d7d1c299cf103d6cb3
+  EXHaptics: 718e4b457673bd88384a7fbb6f357c2138c771b0
   EXImageLoader: d3531a3fe530b22925c19977cb53bb43e3821fe6
   EXImageManipulator: c4a7a24d867f8b2bb15e5d0d64ff8f3c2fb35761
   EXImagePicker: 958720afb9395ee1168dcda28d9915345c4e7cae

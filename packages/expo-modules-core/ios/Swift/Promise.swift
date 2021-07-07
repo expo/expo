@@ -6,7 +6,7 @@ public struct Promise: AnyMethodArgument {
   public var resolver: ResolveClosure
   public var rejecter: RejectClosure
 
-  public func resolve(_ value: Any?) -> Void {
+  public func resolve(_ value: Any? = nil) -> Void {
     resolver(value)
   }
 
