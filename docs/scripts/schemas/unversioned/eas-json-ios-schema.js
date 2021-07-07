@@ -85,7 +85,7 @@ export default [
     name: 'expoCli',
     type: 'string',
     description: [
-      'Version of [expo-cli](https://www.npmjs.com/package/expo-cli) used to [prebuild](../../workflow/expo-cli/#expo-prebuild) your app. It does not have any effect for bare projects.',
+      'Version of [expo-cli](https://www.npmjs.com/package/expo-cli) used to [prebuild](../../workflow/expo-cli/#expo-prebuild) your app. It does not have any effect on bare projects.',
     ],
   },
   {

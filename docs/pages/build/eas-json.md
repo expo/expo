@@ -84,7 +84,7 @@ where `PLATFORM_NAME` is one of `android` or `ios`.
         "extends": "base",
         "env": {
           "ENVIRONMENT": "staging"
-        }
+        },
         "distribution": "internal",
         "buildType": "apk"
       },
@@ -102,11 +102,11 @@ where `PLATFORM_NAME` is one of `android` or `ios`.
       "base": {
         "image": "latest",
         "node": "12.13.0",
-        "yarn": "1.22.5",
+        "yarn": "1.22.5"
       },
       "release": {
         "extends": "base",
-        "buildType": "release"
+        "buildType": "release",
         "env": {
           "ENVIRONMENT": "production"
         },
@@ -117,14 +117,14 @@ where `PLATFORM_NAME` is one of `android` or `ios`.
         "enterpriseProvisioning": "universal",
         "env": {
           "ENVIRONMENT": "staging"
-        },
-      }
+        }
+      },
       "adhoc": {
         "extends": "base",
-        "distribution": "internal"
+        "distribution": "internal",
         "env": {
           "ENVIRONMENT": "staging"
-        },
+        }
       },
       "client": {
         "extends": "adhoc",
@@ -161,7 +161,7 @@ where `PLATFORM_NAME` is one of `android` or `ios`.
         "extends": "base",
         "env": {
           "ENVIRONMENT": "staging"
-        }
+        },
         "distribution": "internal",
         "gradleCommand": ":app:assembleRelease"
       },
@@ -172,7 +172,7 @@ where `PLATFORM_NAME` is one of `android` or `ios`.
           "ENVIRONMENT": "staging"
         },
         "distribution": "internal",
-        "gradleCommand": ":app:assembleDebug",
+        "gradleCommand": ":app:assembleDebug"
       }
     },
     "ios": {
@@ -184,27 +184,27 @@ where `PLATFORM_NAME` is one of `android` or `ios`.
       "release": {
         "extends": "base",
         "schemeBuildConfiguration": "Release",
-        "scheme": "testapp"
+        "scheme": "testapp",
         "env": {
           "ENVIRONMENT": "production"
-        },
+        }
       },
       "inhouse": {
         "extends": "base",
         "distribution": "internal",
         "enterpriseProvisioning": "universal",
-        "scheme": "testapp-enterprise"
+        "scheme": "testapp-enterprise",
         "env": {
           "ENVIRONMENT": "staging"
-        },
-      }
+        }
+      },
       "adhoc": {
         "extends": "base",
-        "distribution": "internal"
-        "scheme": "testapp"
+        "distribution": "internal",
+        "scheme": "testapp",
         "env": {
           "ENVIRONMENT": "staging"
-        },
+        }
       }
     }
   }
