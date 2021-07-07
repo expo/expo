@@ -15,7 +15,6 @@ import org.unimodules.core.interfaces.services.EventEmitter
 
 class BatteryModule(context: Context) : ExportedModule(context), RegistryLifecycleListener {
   private val NAME = "ExpoBattery"
-  private var moduleRegistry: ModuleRegistry? = null
 
   enum class BatteryState(val value: Int) {
     UNKNOWN(0), UNPLUGGED(1), CHARGING(2), FULL(3);
@@ -30,13 +29,13 @@ class BatteryModule(context: Context) : ExportedModule(context), RegistryLifecyc
   }
 
   override fun onCreate(moduleRegistry: ModuleRegistry) {
-    this.moduleRegistry = moduleRegistry
     val eventEmitter = moduleRegistry.getModule(EventEmitter::class.java)
     context.registerReceiver(BatteryStateReceiver(eventEmitter), IntentFilter(Intent.ACTION_BATTERY_CHANGED))
     context.registerReceiver(PowerSaverReceiver(eventEmitter), IntentFilter("android.os.action.POWER_SAVE_MODE_CHANGED"))
-    val ifilter = IntentFilter()
-    ifilter.addAction(Intent.ACTION_BATTERY_LOW)
-    ifilter.addAction(Intent.ACTION_BATTERY_OKAY)
+    val ifilter = IntentFilter().apply {
+      addAction(Intent.ACTION_BATTERY_LOW)
+      addAction(Intent.ACTION_BATTERY_OKAY)
+    }
     context.registerReceiver(BatteryLevelReceiver(eventEmitter), ifilter)
   }
 
@@ -50,7 +49,11 @@ class BatteryModule(context: Context) : ExportedModule(context), RegistryLifecyc
     }
     val level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
     val scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
-    val batteryLevel = if (level != -1 && scale != -1) level / scale.toFloat() else -1f
+    val batteryLevel = if (level != -1 && scale != -1) {
+      level / scale.toFloat()
+    } else {
+      -1f
+    }
     promise.resolve(batteryLevel)
   }
 
@@ -94,15 +97,4 @@ class BatteryModule(context: Context) : ExportedModule(context), RegistryLifecyc
         return false
       return powerManager.isPowerSaveMode
     }
-
-  fun batteryStatusNativeToJS(status: Int): BatteryState {
-
-    return when (status) {
-      BatteryManager.BATTERY_STATUS_FULL -> BatteryState.FULL
-      BatteryManager.BATTERY_STATUS_CHARGING -> BatteryState.CHARGING
-      BatteryManager.BATTERY_STATUS_NOT_CHARGING -> BatteryState.UNPLUGGED
-      BatteryManager.BATTERY_STATUS_DISCHARGING -> BatteryState.UNPLUGGED
-      else -> BatteryState.UNKNOWN
-    }
-  }
 }

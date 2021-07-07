@@ -7,19 +7,9 @@ import android.os.BatteryManager
 import android.os.Bundle
 import org.unimodules.core.interfaces.services.EventEmitter
 
+private val BATTERY_CHARGED_EVENT_NAME = "Expo.batteryStateDidChange"
+
 class BatteryStateReceiver(private val eventEmitter: EventEmitter?) : BroadcastReceiver() {
-  private val BATTERY_CHARGED_EVENT_NAME = "Expo.batteryStateDidChange"
-
-  fun batteryStatusNativeToJS(status: Int): BatteryModule.BatteryState {
-    return when (status) {
-      BatteryManager.BATTERY_STATUS_FULL -> BatteryModule.BatteryState.FULL
-      BatteryManager.BATTERY_STATUS_CHARGING -> BatteryModule.BatteryState.CHARGING
-      BatteryManager.BATTERY_STATUS_NOT_CHARGING -> BatteryModule.BatteryState.UNPLUGGED
-      BatteryManager.BATTERY_STATUS_DISCHARGING -> BatteryModule.BatteryState.UNPLUGGED
-      else -> BatteryModule.BatteryState.UNKNOWN
-    }
-  }
-
   private fun onBatteryStateChange(batteryState: BatteryModule.BatteryState) {
     eventEmitter?.emit(BATTERY_CHARGED_EVENT_NAME, Bundle().apply {
       putInt("batteryState", batteryState.value)

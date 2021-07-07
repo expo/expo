@@ -6,6 +6,6 @@ import org.unimodules.core.ExportedModule
 
 class BatteryPackage : BasePackage() {
   override fun createExportedModules(context: Context): List<ExportedModule> {
-    return listOf(BatteryModule(context) as ExportedModule)
+    return listOf(BatteryModule(context))
   }
 }
