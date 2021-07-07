@@ -7,6 +7,7 @@ NODE_BINARY=${NODE_BINARY:-node}
 
 # Related to: https://github.com/facebook/react-native/blob/c9f869f9c7c8b035a669980382af4bbd4afecb89/scripts/react-native-xcode.sh#L59-L69
 PROJECT_ROOT=${PROJECT_ROOT:-$PWD}
+echo "XXX Debug PROJECT_ROOT: $PROJECT_ROOT"
 cd "$PROJECT_ROOT" || exit
 
 if ! [ -x "$(command -v $NODE_BINARY)" ]; then
@@ -18,8 +19,19 @@ fi
 
 # For traditional main project build phases integration, will be no-op to prevent duplicated app.config creation.
 DIR_BASENAME=$(basename $PROJECT_ROOT)
+echo "XXX Debug DIR_BASENAME: $DIR_BASENAME"
 if [ "x$DIR_BASENAME" != "xPods" ]; then
   exit 0
 fi
+echo "XXX Debug DEST: $DEST"
+
+echo "XXX ls PROJECT_ROOT/.."
+ls "$PROJECT_ROOT/.."
+
+echo "XXX ls PROJECT_ROOT/../.."
+ls "$PROJECT_ROOT/../.."
+
+echo "XXX ls PROJECT_ROOT/../../.."
+ls "$PROJECT_ROOT/../../.."
 
 "$NODE_BINARY" "$(dirname "${BASH_SOURCE[0]}")/getAppConfig.js" "$PROJECT_ROOT/.." "$DEST/EXConstants.bundle"
