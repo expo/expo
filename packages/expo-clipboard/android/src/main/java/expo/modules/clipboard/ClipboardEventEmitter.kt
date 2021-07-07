@@ -1,34 +1,34 @@
 package expo.modules.clipboard
 
 import android.content.Context
-import android.content.ClipData
 import android.content.ClipboardManager
 import android.os.Bundle
+import android.util.Log
 
 import org.unimodules.core.ModuleRegistry
 import org.unimodules.core.interfaces.LifecycleEventListener
 import org.unimodules.core.interfaces.services.EventEmitter
 import org.unimodules.core.interfaces.services.UIManager
 
-import java.lang.Exception
-
 class ClipboardEventEmitter(context: Context, moduleRegistry: ModuleRegistry) : LifecycleEventListener {
-  private val onClipboardEventName: String = "onClipboardChanged"
-  private var isListening: Boolean = true
-  private var eventEmitter: EventEmitter
+  private val onClipboardEventName = "onClipboardChanged"
+  private var isListening = true
+  private var eventEmitter = moduleRegistry.getModule(EventEmitter::class.java)
 
   init {
     moduleRegistry.getModule(UIManager::class.java).registerLifecycleEventListener(this)
-    eventEmitter = moduleRegistry.getModule(EventEmitter::class.java)
-
-    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-    clipboard.addPrimaryClipChangedListener {
-      if (isListening) {
-        val clip = clipboard.getPrimaryClip()
-        if (clip != null && clip.getItemCount() >= 1) {
-          val result = Bundle()
-          result.putString("content", clip.getItemAt(0).getText().toString())
-          eventEmitter.emit(onClipboardEventName, result)
+    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+    if (clipboard == null) {
+      Log.e("Clipboard", "CLIPBOARD_SERVICE unavailable. Events wont be received")
+    } else {
+      clipboard.addPrimaryClipChangedListener {
+        if (isListening) {
+          val clip = clipboard.primaryClip
+          if (clip != null && clip.itemCount >= 1) {
+            eventEmitter.emit(onClipboardEventName, Bundle().apply {
+              putString("content", clip.getItemAt(0).text.toString())
+            })
+          }
         }
       }
     }
@@ -42,7 +42,5 @@ class ClipboardEventEmitter(context: Context, moduleRegistry: ModuleRegistry) : 
     isListening = false
   }
 
-  override fun onHostDestroy() {
-    // Do nothing
-  }
+  override fun onHostDestroy() = Unit
 }
