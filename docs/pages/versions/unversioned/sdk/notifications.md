@@ -720,26 +720,26 @@ Notifications.setNotificationHandler({
 
 When a notification is received while the app is backgrounded, using this function you can set a callback that will be run in response to that notification. Under the hood, this function is run using `expo-task-manager`. You **must** define the task _first_, with [`TaskManager.defineTask`](./task-manager.md/#taskmanagerdefinetasktaskname-task). Make sure you define it in the global scope.
 
-The `taskName` argument is the string you passed to `TaskManager.defineTask` as the "taskName". The callback function you define with `TaskManager.defineTask` will receive the following arguments:
+The `taskName` argument is the string you passed to `TaskManager.defineTask` as the "taskName". The callback function you define with `TaskManager.defineTask` will receive an object with the following fields:
 
 - **data**: The remote payload delivered by either FCM (Android) or APNs (iOS). [See here for details](#pushnotificationtrigger).
 - **error**: The error (if any) that occurred during execution of the task.
 - **executionInfo**: JSON object of additional info related to the task, including the `taskName`.
 
-#### Examples
-
-Implementing a notification handler that always shows the notification when it is received
+#### Example
 
 ```ts
+import * as TaskManager from 'expo-task-manager';
 import * as Notifications from 'expo-notifications';
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
+const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK';
+
+TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, ({ data, error, executionInfo }) => {
+  console.log('Received a notification in the background!');
+  // Do something with the notification data
 });
+
+Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
 ```
 
 ### `unregisterTaskAsync(taskName: string): void`
