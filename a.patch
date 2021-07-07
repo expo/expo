@@ -1,0 +1,11 @@
+--- tools/node_modules/@expo/xdl/build/detach/IosShellApp.js.orig	2021-07-07 21:23:51.000000000 +0800
++++ tools/node_modules/@expo/xdl/build/detach/IosShellApp.js	2021-07-07 21:24:11.000000000 +0800
+@@ -213,7 +213,7 @@
+     buildCmd += ` -sdk iphonesimulator CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO ARCHS="x86_64" ONLY_ACTIVE_ARCH=NO | xcpretty`;
+     pathToArtifact = _path().default.join(buildDest, 'Build', 'Products', `${configuration}-iphonesimulator`, `${projectName}.app`);
+   } else if (type === 'archive') {
+-    buildCmd += ` -sdk iphoneos -destination generic/platform=iOS archive -archivePath ${buildDest}/${projectName}.xcarchive CODE_SIGNING_ALLOWED=NO | xcpretty`;
++    buildCmd += ` -sdk iphoneos -destination generic/platform=iOS archive -archivePath ${buildDest}/${projectName}.xcarchive CODE_SIGNING_ALLOWED=NO`;
+     pathToArtifact = _path().default.join(buildDest, `${projectName}.xcarchive`);
+   } else {
+     throw new Error(`Unsupported build type: ${type}`);
