@@ -2,74 +2,70 @@
 
 exports[`APISectionUtils.resolveTypeName Promise 1`] = `
 <div>
+  Promise
+  &lt;
   <span>
-    Promise
-    &lt;
     void
-    &gt;
   </span>
+  &gt;
 </div>
 `;
 
 exports[`APISectionUtils.resolveTypeName Promise with custom type 1`] = `
 <div>
+  Promise
+  &lt;
   <span>
-    Promise
-    &lt;
     <a
       class="css-12zqqiz-STYLES_EXTERNAL_LINK"
       href="/#appleauthenticationcredential"
     >
       AppleAuthenticationCredential
     </a>
-    &gt;
   </span>
+  &gt;
 </div>
 `;
 
 exports[`APISectionUtils.resolveTypeName Record 1`] = `
 <div>
+  Record
+  &lt;
   <span>
-    Record
-    &lt;
-    <span>
-      string
-      , 
-    </span>
-    <span>
-      any
-      
-    </span>
-    &gt;
+    string
+    , 
   </span>
+  <span>
+    any
+    
+  </span>
+  &gt;
 </div>
 `;
 
 exports[`APISectionUtils.resolveTypeName Record with union 1`] = `
 <div>
+  Record
+  &lt;
   <span>
-    Record
-    &lt;
+    string
+    , 
+  </span>
+  <span>
+    <span>
+      number
+       | 
+    </span>
+    <span>
+      boolean
+       | 
+    </span>
     <span>
       string
-      , 
     </span>
-    <span>
-      <span>
-        number
-         | 
-      </span>
-      <span>
-        boolean
-         | 
-      </span>
-      <span>
-        string
-      </span>
-      
-    </span>
-    &gt;
+    
   </span>
+  &gt;
 </div>
 `;
 
@@ -93,6 +89,12 @@ exports[`APISectionUtils.resolveTypeName custom type array 1`] = `
     AppleAuthenticationScope
     []
   </a>
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName custom type non-linkable array 1`] = `
+<div>
+  T[]
 </div>
 `;
 
@@ -162,17 +164,82 @@ exports[`APISectionUtils.resolveTypeName generic type 1`] = `
 </div>
 `;
 
-exports[`APISectionUtils.resolveTypeName query type 1`] = `
+exports[`APISectionUtils.resolveTypeName generic type 2`] = `
 <div>
+  <a
+    class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+    href="/#pagedinfo"
+  >
+    PagedInfo
+  </a>
+  &lt;
   <span>
-    React.ComponentProps
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="/#asset"
+    >
+      Asset
+    </a>
+  </span>
+  &gt;
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName generic type in Promise 1`] = `
+<div>
+  Promise
+  &lt;
+  <span>
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="/#pagedinfo"
+    >
+      PagedInfo
+    </a>
     &lt;
     <span>
-      View
-      
+      <a
+        class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+        href="/#asset"
+      >
+        Asset
+      </a>
     </span>
     &gt;
   </span>
+  &gt;
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName query type 1`] = `
+<div>
+  React.ComponentProps
+  &lt;
+  <span>
+    View
+    
+  </span>
+  &gt;
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName tuple type 1`] = `
+<div>
+  [
+  <span>
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="/#sortbykey"
+    >
+      SortByKey
+    </a>
+    , 
+  </span>
+  <span>
+    boolean
+    
+  </span>
+  ]
 </div>
 `;
 
@@ -201,6 +268,29 @@ exports[`APISectionUtils.resolveTypeName union with array 1`] = `
   </span>
   <span>
     null
+  </span>
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName union with custom type and array 1`] = `
+<div>
+  <span>
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="/#assetref"
+    >
+      AssetRef
+      []
+    </a>
+     | 
+  </span>
+  <span>
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="/#assetref"
+    >
+      AssetRef
+    </a>
   </span>
 </div>
 `;

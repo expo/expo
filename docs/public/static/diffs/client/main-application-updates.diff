@@ -1,0 +1,28 @@
+diff --git a/android/app/src/main/java/com/expodevexample/MainApplication.java b/android/app/src/main/java/com/expodevexample/MainApplication.java
+index 15b21ef..f6f50f7 100644
+--- a/android/app/src/main/java/com/expodevexample/MainApplication.java
++++ b/android/app/src/main/java/com/expodevexample/MainApplication.java
+@@ -23,6 +23,7 @@ import expo.modules.devlauncher.DevLauncherController;
+ import expo.modules.permissions.PermissionsPackage;
+ import expo.modules.filesystem.FileSystemPackage;
+ import expo.modules.updates.UpdatesController;
++import expo.modules.updates.UpdatesDevLauncherController;
+
+ import java.lang.reflect.InvocationTargetException;
+ import java.util.Arrays;
+@@ -37,7 +38,7 @@ public class MainApplication extends Application implements ReactApplication {
+   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
+     @Override
+     public boolean getUseDeveloperSupport() {
+-      return BuildConfig.DEBUG;
++      return DevLauncherController.getInstance().getUseDeveloperSupport();
+     }
+
+     @Override
+@@ -88,6 +89,7 @@ public class MainApplication extends Application implements ReactApplication {
+     }
+
+     DevLauncherController.initialize(this, getReactNativeHost());
++    DevLauncherController.getInstance().setUpdatesInterface(UpdatesDevLauncherController.initialize(this));
+     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+   }

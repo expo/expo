@@ -37,12 +37,12 @@ If you want to make static changes to your native project files like the iOS `In
 
 If you've decided that you want to roll your app back to being fully managed (no iOS and Android projects in your project directory), you can checkout your most recent commit before executing `expo run:[ios|android]`, then run `npm install` again to restore the state of your `node_modules` directory.
 
+## Developing apps with custom native code
+
+Once you have customized the native code in your project, you can use the [`expo-dev-client`](/clients/introduction.md) package to create a custom development client and retain the convenience of working with just JavaScript and/or TypeScript in Expo Go. You can create a custom client for your managed or bare workflow by following [our guide](/clients/getting-started.md).
+
 ## Releasing apps with custom native code to production
 
 The classic `expo build` command does not support custom native code. When you're ready to ship your app, you can [build it with EAS Build](/build/introduction.md) or archive and sign it locally.
 
 <TerminalBlock cmd={['# Install the CLI', 'npm i -g eas-cli', '', '# Build your app!', 'eas build -p all']} />
-
-## Coming soon: "Expo Development Client"
-
-We are working on a way for developers to be able to customize the native code in their projects and retain the convenience of working with just JavaScript and/or TypeScript. You can learn more about this in ["Expo managed workflow in 2021, Part 2: Customizing the runtime"](https://blog.expo.io/expo-managed-workflow-in-2021-d1c9b68aa10).

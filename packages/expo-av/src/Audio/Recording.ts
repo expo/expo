@@ -35,6 +35,10 @@ export type RecordingOptions = {
     linearPCMIsBigEndian?: boolean;
     linearPCMIsFloat?: boolean;
   };
+  web: {
+    mimeType?: string;
+    bitsPerSecond?: number;
+  };
 };
 
 // TODO: consider changing these to enums
@@ -124,6 +128,10 @@ export const RECORDING_OPTIONS_PRESET_HIGH_QUALITY: RecordingOptions = {
     linearPCMIsBigEndian: false,
     linearPCMIsFloat: false,
   },
+  web: {
+    mimeType: 'audio/webm',
+    bitsPerSecond: 128000,
+  },
 };
 
 export const RECORDING_OPTIONS_PRESET_LOW_QUALITY: RecordingOptions = {
@@ -146,6 +154,10 @@ export const RECORDING_OPTIONS_PRESET_LOW_QUALITY: RecordingOptions = {
     linearPCMIsBigEndian: false,
     linearPCMIsFloat: false,
   },
+  web: {
+    mimeType: 'audio/webm',
+    bitsPerSecond: 128000,
+  },
 };
 
 // TODO: For consistency with PlaybackStatus, should we include progressUpdateIntervalMillis here as
@@ -156,6 +168,7 @@ export type RecordingStatus = {
   isDoneRecording: boolean;
   durationMillis: number;
   metering?: number;
+  uri?: string | null;
 };
 
 export { PermissionResponse, PermissionStatus };
@@ -344,7 +357,7 @@ export class Recording {
         uri,
         status,
       }: {
-        uri: string;
+        uri: string | null;
         // status is of type RecordingStatus, but without the canRecord field populated
         status: Pick<RecordingStatus, Exclude<keyof RecordingStatus, 'canRecord'>>;
       } = await ExponentAV.prepareAudioRecorder(options);
@@ -386,6 +399,11 @@ export class Recording {
       stopResult = await ExponentAV.stopAudioRecording();
     } catch (err) {
       stopError = err;
+    }
+
+    // Web has to return the URI at the end of recording, so needs a little destructuring
+    if (Platform.OS === 'web' && stopResult?.uri !== undefined) {
+      this._uri = stopResult.uri;
     }
 
     // Clean-up and return status

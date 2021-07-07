@@ -2,6 +2,4 @@
 
 #import <ExpoModulesCore/EXKernelService.h>
 
-@protocol UMKernelService <EXKernelService>
-
-@end
+#define UMKernelService EXKernelService

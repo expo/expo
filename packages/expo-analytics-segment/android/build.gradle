@@ -77,7 +77,7 @@ dependencies {
   unimodule "expo-modules-core"
 
   api 'com.segment.analytics.android:analytics:4.9.4'
-  api 'com.segment.analytics.android.integrations:firebase:1.2.0'
+  api 'com.segment.analytics.android.integrations:firebase:2.+@aar'
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
 }

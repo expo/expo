@@ -6,6 +6,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXUpdatesBaseLegacyRawManifest : EXUpdatesBaseRawManifest
 
+- (NSString *)stableLegacyId;
+- (NSString *)scopeKey;
+- (nullable NSString *)projectId;
+
 - (NSString *)bundleUrl;
 - (nullable NSString *)sdkVersion;
 - (nullable NSArray *)assets;

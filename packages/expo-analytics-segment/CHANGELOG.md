@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Install the Segment-Firebase integration via `aar` package to avoid potential build-time crashes. ([#10972](https://github.com/expo/expo/pull/10972) by [@cruzach](https://github.com/cruzach/))
+
 ### 💡 Others
 
 ## 10.2.0 — 2021-06-16

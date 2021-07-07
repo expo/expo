@@ -97,6 +97,7 @@ export function getTestModules() {
       require('./tests/Contacts'),
       // require('./tests/SVG'),
       require('./tests/Localization'),
+      require('./tests/Recording'),
       optionalRequire(() => require('./tests/Notifications')),
       LocationTestScreen
     );

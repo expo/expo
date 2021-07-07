@@ -7,7 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ABI40_0_0EXScopedAmplitude : ABI40_0_0EXAmplitude
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId;
+- (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId;
 
 @end
 

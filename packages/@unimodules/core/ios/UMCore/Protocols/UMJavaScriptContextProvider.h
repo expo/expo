@@ -2,6 +2,4 @@
 
 #import <ExpoModulesCore/EXJavaScriptContextProvider.h>
 
-@protocol UMJavaScriptContextProvider <EXJavaScriptContextProvider>
-
-@end
+#define UMJavaScriptContextProvider EXJavaScriptContextProvider

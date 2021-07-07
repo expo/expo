@@ -16,7 +16,7 @@ static NSString * const scopedIdentifierSeparator = @":";
 
 @implementation EXUserNotificationManager
 
-- (EXPendingNotification *)initialNotificationForExperience:(NSString *)experienceId
+- (EXPendingNotification *)initialNotification
 {
   if ([EXEnvironment sharedEnvironment].isDetached) {
     return _pendingNotification;
@@ -27,12 +27,12 @@ static NSString * const scopedIdentifierSeparator = @":";
 
 # pragma mark - EXNotificationsIdentifiersManager
 
-- (NSString *)internalIdForIdentifier:(NSString *)identifier experienceId:(nonnull NSString *)experienceId
+- (NSString *)internalIdForIdentifier:(NSString *)identifier scopeKey:(nonnull NSString *)scopeKey
 {
   if ([EXEnvironment sharedEnvironment].isDetached) {
     return identifier;
   }
-  return [NSString stringWithFormat:@"%@%@%@", experienceId, scopedIdentifierSeparator, identifier];
+  return [NSString stringWithFormat:@"%@%@%@", scopeKey, scopedIdentifierSeparator, identifier];
 }
 
 - (NSString *)exportedIdForInternalIdentifier:(NSString *)identifier

@@ -5,6 +5,8 @@ apply plugin: 'maven'
 group = 'host.exp.exponent'
 version = '11.0.0'
 
+apply from: "../scripts/get-app-config-android.gradle"
+
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
   ext.safeExtGet = { prop, fallback ->

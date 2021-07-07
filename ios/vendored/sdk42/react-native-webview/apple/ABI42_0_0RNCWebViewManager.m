@@ -26,17 +26,18 @@ ABI42_0_0RCT_ENUM_CONVERTER(WKContentMode, (@{
 
 @implementation ABI42_0_0RNCWebViewManager
 {
-  NSString *_experienceId;
+  NSString *_scopeKey;
   NSConditionLock *_shouldStartLoadLock;
   BOOL _shouldStartLoad;
 }
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId
-               kernelServiceDelegate:(id)kernelServiceInstance
-                              params:(NSDictionary *)params
+- (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
+                                        scopeKey:(NSString *)scopeKey
+                                     kernelServiceDelegate:(id)kernelServiceInstance
+                                              params:(NSDictionary *)params
 {
   if (self = [super init]) {
-    _experienceId = experienceId;
+    _scopeKey = _scopeKey;
   }
   return self;
 }
@@ -48,7 +49,7 @@ ABI42_0_0RCT_ENUM_CONVERTER(WKContentMode, (@{
 #endif // !TARGET_OS_OSX
 {
   ABI42_0_0RNCWebView *webView = [ABI42_0_0RNCWebView new];
-  webView.experienceId = _experienceId;
+  webView.scopeKey = _scopeKey;
   webView.delegate = self;
   return webView;
 }
