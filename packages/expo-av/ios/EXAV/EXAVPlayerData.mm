@@ -123,8 +123,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     
     
     static bool isRunning = false;
-    
-    if (!isRunning) {
+    if (!isRunning && false /* yep. */) {
       isRunning = true;
       [[AVAudioSession sharedInstance] setMode:AVAudioSessionModeMoviePlayback error:nil];
       [[AVAudioSession sharedInstance] setActive:YES error:nil];
