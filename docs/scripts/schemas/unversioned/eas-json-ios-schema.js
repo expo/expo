@@ -28,7 +28,7 @@ export default [
     description: [ 'The method of distributing your app.',
       '- `internal` - with this option you\'ll be able to share your build URLs with anyone, and they will be able to install the builds to their devices straight from the Expo website. [Learn more about internal distribution](../internal-distribution).',
       ' - `simulator` - creates build for simulator',
-      ' - `store` - creates builds intended for store upload, your build URLs won\'t be sharable.'
+      ' - `store` - produces builds for store uploads, your build URLs won\'t be sharable.'
     ]
   },
   {
@@ -46,7 +46,7 @@ export default [
       ' - `"buildNumber"` (or `true`) - the last component of `expo.ios.buildNumber` is bumped (e.g. `1.2.3.39` -> `1.2.3.40`).',
       ' - `false` - versions won\'t be bumped automatically',
       '',
-      'Versions will also be updated in native code if it\'s a bare project. `expo.version` corresponds to `CFBundleShortVersionString` and `expo.ios.buildNumber` to `CFBundleVersion` in the `Info.plist`. The App Store is using those values to identify the app build, `CFBundleShortVersionString` is the version visible to users, whereas `CFBundleVersion` defines the build number. The combination of those needs to be unique, so you can bump either of them.',
+      'In the case of a bare project, it also updates versions in native code. `expo.version` corresponds to `CFBundleShortVersionString` and `expo.ios.buildNumber` to `CFBundleVersion` in the `Info.plist`. The App Store is using those values to identify the app build, `CFBundleShortVersionString` is the version visible to users, whereas `CFBundleVersion` defines the build number. The combination of those needs to be unique, so you can bump either of them.',
     ],
   },
   {
@@ -85,7 +85,7 @@ export default [
     name: 'expoCli',
     type: 'string',
     description: [
-      'Version of [expo-cli](https://www.npmjs.com/package/expo-cli) used to [prebuild](../../workflow/expo-cli/#expo-prebuild) your app. It does not affect bare projects.',
+      'Version of [expo-cli](https://www.npmjs.com/package/expo-cli) used to [prebuild](../../workflow/expo-cli/#expo-prebuild) your app. It does not have any effect for bare projects.',
     ],
   },
   {
@@ -99,7 +99,7 @@ export default [
     name: 'cache',
     type: 'object',
     description: [
-      'Configuration for caching machanism. This feature is intended for caching values that require a lot of computation, e.g. compilation results (both final binaries and any intermediate files), but it wouldn\'t work well for `node_modules` because the cache is not local to the machine, so a download speed is similar to downloading from the npm registry.'
+      'Cache configuration. This feature is intended for caching values that require a lot of computation, e.g. compilation results (both final binaries and any intermediate files), but it wouldn\'t work well for `node_modules` because the cache is not local to the machine, so the download speed is similar to downloading from the npm registry.'
     ],
     properties: [
       {
@@ -110,20 +110,20 @@ export default [
       {
         name: 'key',
         type: 'string',
-        description: [ 'Identifies where cache is saved and restored from. The cache can be invalidated by changing this value.' ],
+        description: [ 'Cache key. You can invalidate the cache by changing this value.' ],
       },
       {
         name: 'customPaths',
         type: 'array',
         description: [
-          'List of the paths that will be saved after sucesfull build and restored at the beging of the next one. Both absolute and relative paths are supported, where relative paths are resolved from the directory with `eas.json`.',
+          'List of the paths that will be saved after a successful build and restored at the beginning of the next one. Both absolute and relative paths are supported, where relative paths are resolved from the directory with `eas.json`.',
         ]
       },
       {
         name: 'cacheDefaultPaths',
         type: 'boolean',
         description: [
-          'Specifies whether recommended set of files should be cached, currently only Podfile.lock is included in that list. Defaults to true.',
+          'Specifies whether to cache the recommended set of files, currently only Podfile.lock is included in the list. Defaults to true.',
         ],
       }
     ]
@@ -135,8 +135,8 @@ export default [
       'Type of the artifact you want to build. It controls which Xcode Build Configuration will be used, can be overridden by `schemeBuildConfiguration` option.',
       ' - `release` - `Release`',
       ' - `development-client` - `Debug`',
-      '   - for managed project it will build development client',
-      '   - for bare project it will build development client if it\'s configured, otherwise it will be a regular debug build',
+      '   - managed project: builds a development client',
+      '   - bare project: builds a development client (if configured)',
     ],
   },
   {
@@ -144,10 +144,10 @@ export default [
     type: 'string',
     description: [
       'Xcode project\'s scheme.',
-      ' - managed project have only one scheme and this value should not be defined.',
+      ' - managed project: does not have any effect',
       ' - bare project',
       '   - If your project has multiple schemes, you should set this value.',
-      '   - If the project has only one scheme, it will automatically be detected.',
+      '   - If the project has only one scheme, it will be detected automatically.',
       '   - If multiple schemes exist and this value is **not** set, EAS CLI will prompt you to select one of them.',
 
     ]
@@ -157,10 +157,10 @@ export default [
     type: 'string',
     description: [
       'Xcode project\'s Build Configuration.',
-      ' - managed projects have only 2 configurations "Debug" and "Release", defaults to "Release"',
-      ' - bare projects defaults to value specified in scheme',
+      ' - managed project: "Release" or "Debug", defaults to "Release"',
+      ' - bare project: defaults to the value specified in the scheme',
       '',
-      'it will overide `buildType` behaviour if both are specified.',
+      'It takes priority over `buildType`.',
     ],
   },
   {

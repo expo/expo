@@ -27,7 +27,7 @@ export default [
     enum: [ 'store', 'internal' ],
     description: [ 'The method of distributing your app.',
       '- `internal` - with this option you\'ll be able to share your build URLs with anyone, and they will be able to install the builds to their devices straight from the Expo website. When using `internal`, make sure the build produces an APK file (e.g. `gradleCommand: ":app:assembleRelease"` or `buildType: "apk"` or `"buildType": "development-client"` ). Otherwise, the sharable URL will be useless. [Learn more about internal distribution](../internal-distribution).',
-      ' - `store` - creates builds intended for store upload, your build URLs won\'t be sharable.'
+      ' - `store` - produces builds for store uploads, your build URLs won\'t be sharable.'
     ]
   },
   {
@@ -64,7 +64,7 @@ export default [
     name: 'expoCli',
     type: 'string',
     description: [
-      'Version of [expo-cli](https://www.npmjs.com/package/expo-cli) used to [prebuild](../../workflow/expo-cli/#expo-prebuild) your app. It does not affect bare projects.',
+      'Version of [expo-cli](https://www.npmjs.com/package/expo-cli) used to [prebuild](../../workflow/expo-cli/#expo-prebuild) your app. It does not have any effect for bare projects.',
     ],
   },
   {
@@ -78,24 +78,24 @@ export default [
     name: 'cache',
     type: 'object',
     description: [
-      'Configuration for caching machanism. This feature is intended for caching values that require a lot of computation, e.g. compilation results (both final binaries and any intermediate files), but it wouldn\'t work well for `node_modules` because the cache is not local to the machine, so a download speed is similar to downloading from the npm registry. '
+      'Cache configuration. This feature is intended for caching values that require a lot of computation, e.g. compilation results (both final binaries and any intermediate files), but it wouldn\'t work well for `node_modules` because the cache is not local to the machine, so the download speed is similar to downloading from the npm registry. '
     ],
     properties: [
       {
         name: 'disabled',
         type: 'boolean',
-        description: [ 'Disables caching. Dafults to false.' ],
+        description: [ 'Disables caching. Defaults to false.' ],
       },
       {
         name: 'key',
         type: 'string',
-        description: [ 'Identifies where cache is saved and restored from. The cache can be invalidated by changing this value.' ],
+        description: [ 'Cache key. You can invalidate the cache by changing this value.' ],
       },
       {
         name: 'customPaths',
         type: 'array',
         description: [
-          'List of the paths that will be saved after sucesfull build and restored at the beging of the next one. Both absolute and relative paths are supported, where relative paths are resolved from the directory with `eas.json`.',
+          'List of the paths that will be saved after a successful build and restored at the beginning of the next one. Both absolute and relative paths are supported, where relative paths are resolved from the directory with `eas.json`.',
         ]
       }
     ]
@@ -108,8 +108,8 @@ export default [
       ' - `app-bundle` - `:app:bundleRelease`',
       ' - `apk` - `:app:assembleRelease`',
       ' - `development-client` - `:app:assembleDebug`',
-      '   - for managed project it will build development client',
-      '   - for bare project it will build development client if it\'s configured, otherwise it will be regular debug build',
+      '   - managed project: builds a development client',
+      '   - bare project: builds a development client (if configured)',
     ],
   },
   {
@@ -117,7 +117,7 @@ export default [
     type: 'string',
     description: [
       'Gradle task that will be used to build your project, e.g. `:app:assembleDebug` to build a debug binary.',
-      "It's not recommended unless you need to run a task that `buildType` does not support, it will overide `buildType` behaviour if both are specified.",
+      "It's not recommended unless you need to run a task that `buildType` does not support, it takes priority over `buildType`.",
     ],
   },
   {

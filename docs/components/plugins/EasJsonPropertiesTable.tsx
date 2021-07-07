@@ -44,7 +44,7 @@ export function formatSchema(rawSchema: Property[]) {
   return formattedSchema;
 }
 
-//appends a property and recursivley appends sub-properties
+//appends a property and recursively appends sub-properties
 function appendProperty(
   formattedSchema: FormattedProperty[],
   property: Property,
