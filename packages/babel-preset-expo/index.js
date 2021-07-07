@@ -118,7 +118,7 @@ function getBundler(caller) {
       // NextJS 11
       return 'webpack';
     } else if (name === 'babel-loader') {
-      // NextJS <10
+      // expo/webpack-config, gatsby, storybook, and next.js <10
       return 'webpack';
     }
   }
