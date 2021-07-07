@@ -217,32 +217,53 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
   AVURLAsset *avAsset = [AVURLAsset URLAssetWithURL:_url options:@{AVURLAssetHTTPCookiesKey : cookies, @"AVURLAssetHTTPHeaderFieldsKey": _headers}];
   
-  // unless we preload, the asset will not necessarily load the duration by the time we try to play it.
-  // http://stackoverflow.com/questions/20581567/avplayer-and-avfoundationerrordomain-code-11819
-  UM_WEAKIFY(self);
-  [avAsset loadValuesAsynchronouslyForKeys:@[ @"duration" ] completionHandler:^{
-    UM_ENSURE_STRONGIFY(self);
-
-    // We prepare three items for AVQueuePlayer, so when the first finishes playing,
-    // second can start playing and the third can start preparing to play.
-    AVPlayerItem *firstplayerItem = [AVPlayerItem playerItemWithAsset:avAsset];
-    AVPlayerItem *secondPlayerItem = [AVPlayerItem playerItemWithAsset:avAsset];
-    AVPlayerItem *thirdPlayerItem = [AVPlayerItem playerItemWithAsset:avAsset];
-    self.items = @[firstplayerItem, secondPlayerItem, thirdPlayerItem];
-    self.player = [AVQueuePlayer queuePlayerWithItems:@[firstplayerItem, secondPlayerItem, thirdPlayerItem]];
-    if (self.player) {
-      [self _addObserver:self.player forKeyPath:EXAVPlayerDataObserverStatusKeyPath];
-      [self _addObserver:self.player.currentItem forKeyPath:EXAVPlayerDataObserverStatusKeyPath];
-    } else {
-      NSString *errorMessage = @"Load encountered an error: [AVPlayer playerWithPlayerItem:] returned nil.";
-      if (self.loadFinishBlock) {
-        self.loadFinishBlock(NO, nil, errorMessage);
-        self.loadFinishBlock = nil;
-      } else if (self.errorCallback) {
-        self.errorCallback(errorMessage);
-      }
+  // TODO: do any AVAudioSession configuration?
+  
+  _engine = [[AVAudioEngine alloc] init];
+  [_engine mainMixerNode]; // lazy getter init
+  [_engine prepare];
+  
+  auto onError = ^(NSString* errorMessage){
+    if (self.loadFinishBlock) {
+      self.loadFinishBlock(NO, nil, errorMessage);
+      self.loadFinishBlock = nil;
+    } else if (self.errorCallback) {
+      self.errorCallback(errorMessage);
     }
-  }];
+  };
+  auto onSuccess = ^{
+    if (self.loadFinishBlock) {
+      self.loadFinishBlock(YES, [self getStatus], nil);
+      self.loadFinishBlock = nil;
+    }
+  };
+  
+  NSError *engineStartError;
+  [_engine startAndReturnError:&engineStartError];
+  if (engineStartError != nil) {
+    // Failed to start AVAudioEngine!
+    onError([NSString stringWithFormat:@"Error starting audio engine! %@", engineStartError.description]);
+  } else {
+    // Successfully started AVAudioEngine.
+    _playerNode = [[AVAudioPlayerNode alloc] init];
+    
+    NSError *fileReadError;
+    AVAudioFile *file = [[AVAudioFile alloc] initForReading:_url error:&fileReadError];
+    if (fileReadError != nil) {
+      // Failed to read AVAudioFile!
+      onError([NSString stringWithFormat:@"Error reading audio file from \"%@\"! %@", _url.absoluteString, engineStartError.description]);
+    } else {
+      // Successfully read AVAudioFile.
+      [_engine attachNode:_playerNode];
+      [_engine connect:_playerNode to:[_engine mainMixerNode] format:file.processingFormat];
+      [_playerNode scheduleFile:file atTime:nil completionHandler:^{
+        // AVAudioFile finished playing to end (or [stop] was called)
+        // TODO: Clean up player node? uninstall tap?
+      }];
+      onSuccess();
+      [_playerNode play];
+    }
+  }
 }
 
 - (void)_finishLoadingNewPlayer
