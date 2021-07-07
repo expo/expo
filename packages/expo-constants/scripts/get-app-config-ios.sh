@@ -34,4 +34,5 @@ ls "$PROJECT_ROOT/../.."
 echo "XXX ls PROJECT_ROOT/../../.."
 ls "$PROJECT_ROOT/../../.."
 
+export NODE_DEBUG=module
 "$NODE_BINARY" "$(dirname "${BASH_SOURCE[0]}")/getAppConfig.js" "$PROJECT_ROOT/.." "$DEST/EXConstants.bundle"
