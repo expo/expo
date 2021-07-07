@@ -10,7 +10,6 @@ import org.unimodules.core.interfaces.services.EventEmitter
 private val POWERMODE_EVENT_NAME = "Expo.powerModeDidChange"
 
 class PowerSaverReceiver(private val eventEmitter: EventEmitter?) : BroadcastReceiver() {
-
   private fun onLowPowerModeChange(lowPowerMode: Boolean) {
     eventEmitter?.emit(POWERMODE_EVENT_NAME, Bundle().apply {
       putBoolean("lowPowerMode", lowPowerMode)
