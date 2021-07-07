@@ -59,8 +59,8 @@ jobs:
           key: ${{ runner.os }}-modules-${{ hashFiles('tools/yarn.lock') }}
       - name: 🍏 Generate dynamic macros
         run: expotools ios-generate-dynamic-macros
-      - name: Patch xdl
-        run: patch -p0 -f < a.patch
+      # - name: Patch xdl
+      #   run: patch -p0 -f < a.patch
       - name: 📦 Build iOS shell app for real devices
         timeout-minutes: 30
         run: expotools ios-shell-app --action build --type archive --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
