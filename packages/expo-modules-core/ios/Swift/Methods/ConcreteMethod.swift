@@ -68,13 +68,13 @@ public struct ConcreteMethod<Args, ReturnType>: AnyMethod {
         return desiredType.cast(arg)
       }
 
-      // TODO: Handle structs convertible to dictionary
+      // TODO: (@tsapeta) Handle structs convertible to dictionary
 //      // If we get here, the argument can be converted (not casted!) to the desired type.
 //      if let arg = arg as? [AnyHashable : Any?], let dt = desiredType.castWrappedType(ConvertibleFromDictionary.Type.self) {
 //        return dt.init(dictionary: arg)
 //      }
 
-      // TODO: Handle convertible arrays
+      // TODO: (@tsapeta) Handle convertible arrays
       throw Errors.IncompatibleArgumentType(
         argument: arg,
         atIndex: index,

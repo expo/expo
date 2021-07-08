@@ -14,7 +14,7 @@ public class ModuleHolder {
   init(module: AnyModule) {
     self.module = module
 
-    // FIXME: Temporarily preload the definition
+    // FIXME: (@tsapeta) Temporarily preload the definition
     self.definition.constants
   }
 
