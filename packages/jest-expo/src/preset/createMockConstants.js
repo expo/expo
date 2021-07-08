@@ -1,9 +1,9 @@
 'use strict';
 
 const { getConfig } = require('@expo/config');
+const assert = require('assert');
 const findUp = require('find-up');
 const path = require('path');
-const assert = require('assert');
 
 function findUpPackageJson(root) {
   const packageJson = findUp.sync('package.json', { cwd: root });
