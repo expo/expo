@@ -10,6 +10,9 @@
 
 ### 💡 Others
 
+- Clean up Android code. ([#13517](https://github.com/expo/expo/pull/13517) by [@mstach60161](https://github.com/mstach60161))
+([#13517](https://github.com/expo/expo/pull/13517) by [@mstach60161](https://github.com/mstach60161))
+
 ## 1.1.0 — 2021-06-16
 
 ### 🎉 New features
