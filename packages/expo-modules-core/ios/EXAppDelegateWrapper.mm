@@ -295,6 +295,8 @@ static dispatch_once_t onceToken;
 
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
 {
+  using namespace facebook;
+  
   // BEGIN Required for Reanimated
   [bridge moduleForClass:[RCTEventDispatcher class]];
   RCTEventDispatcher *eventDispatcher = [REAEventDispatcher new];
@@ -319,12 +321,29 @@ static dispatch_once_t onceToken;
     // BEGIN Required for Reanimated
     auto reanimatedModule = reanimated::createReanimatedModule(strongBridge.jsCallInvoker);
     runtime.global().setProperty(runtime,
-                                 facebook::jsi::PropNameID::forAscii(runtime, "__reanimatedModuleProxy"),
-                                 facebook::jsi::Object::createFromHostObject(runtime, reanimatedModule));
+                                 jsi::PropNameID::forAscii(runtime, "__reanimatedModuleProxy"),
+                                 jsi::Object::createFromHostObject(runtime, reanimatedModule));
     // END Required for Reanimated
     
-    runtime.global().setProperty(runtime, "__custom_js_factory_installed", facebook::jsi::Value(true));
+    auto global = runtime.global();
+    global.setProperty(runtime, "__custom_js_factory_installed", jsi::Value(true));
+    
     // TODO: Initialize all custom JSI funcs from the Unimodules.
+    
+    // Example on how to register a JSI function:
+    auto functionName = "__av_sound_setOnAudioSampleReceivedCallback";
+    auto function = [](jsi::Runtime &runtime,
+                       const jsi::Value &thisValue,
+                       const jsi::Value *args,
+                       size_t argsCount) -> jsi::Value {
+      return jsi::Value::undefined();
+    };
+    global.setProperty(runtime,
+                       functionName,
+                       jsi::Function::createFromHostFunction(runtime,
+                                                             jsi::PropNameID::forUtf8(runtime, functionName),
+                                                             2,
+                                                             std::move(function)));
   };
   
   // FACTORY_WRAPPER installs globals such as console, nativePerformanceNow, etc.
