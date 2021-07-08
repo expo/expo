@@ -144,7 +144,7 @@
 #endif
 
 #if __has_include(<ABI40_0_0EXFirebaseCore/ABI40_0_0EXFirebaseCore.h>)
-  ABI40_0_0EXScopedFirebaseCore *firebaseCoreModule = [[ABI40_0_0EXScopedFirebaseCore alloc] initWithScopeKey:scopeKey andConstantsBinding:constantsBinding];
+  ABI40_0_0EXScopedFirebaseCore *firebaseCoreModule = [[ABI40_0_0EXScopedFirebaseCore alloc] initWithScopeKey:scopeKey manifest:manifest constantsBinding:constantsBinding];
   [moduleRegistry registerExportedModule:firebaseCoreModule];
   [moduleRegistry registerInternalModule:firebaseCoreModule];
 #endif

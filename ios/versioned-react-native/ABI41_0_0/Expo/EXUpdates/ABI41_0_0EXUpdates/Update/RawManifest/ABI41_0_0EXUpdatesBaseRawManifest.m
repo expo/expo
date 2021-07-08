@@ -140,6 +140,13 @@
                                        ]];
 }
 
+- (nullable NSString *)iosGoogleServicesFile {
+  if (self.iosConfig) {
+    return [self.iosConfig nullableStringForKey:@"googleServicesFile"];
+  }
+  return nil;
+}
+
 + (NSString * _Nullable)getStringFromManifest:(NSDictionary *)manifest
                                         paths:(NSArray<NSArray<const NSString *> *> *)paths
 {
