@@ -119,4 +119,4 @@ Check the `details` property of the returned push ticket or receipt for more inf
 
 ### I want to play a custom sound when I send a notification
 
-The Expo push notification currently doesn't support custom sounds. You will need to use APNs and FCM directly with the native device tokens received from `expo-notifications` in standalone apps.
+The Expo push notification service currently doesn't support custom sounds. You will need to use APNs and FCM directly with the native device tokens received from `expo-notifications` in standalone apps.
