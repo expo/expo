@@ -105,7 +105,7 @@
     "expo-dev-client": "~0.4.4",
     "expo-face-detector": "~10.1.1",
     "expo-image": "~1.0.0-alpha.1",
-    "expo-notifications": "~0.12.2",
+    "expo-notifications": "~0.12.3",
     "expo-random": "~11.2.0",
     "expo-splash-screen": "~0.11.2",
     "native-component-list": "*",
@@ -119,7 +119,7 @@
     "react-native-screens": "~3.4.0",
     "react-native-shared-element": "0.7.0",
     "react-native-svg": "12.1.1",
-    "react-native-unimodules": "~0.14.3",
+    "react-native-unimodules": "~0.14.4",
     "react-native-view-shot": "3.1.2",
     "react-native-webview": "11.6.2",
     "test-suite": "*"
@@ -133,7 +133,7 @@
     "detox": "^18.13.0",
     "expo-module-scripts": "^2.0.0",
     "expo-yarn-workspaces": "^1.5.2",
-    "jest-expo": "~42.0.0",
+    "jest-expo": "~42.0.1",
     "jest-expo-puppeteer": "^1.1.0",
     "puppeteer": "^2.1.1"
   }

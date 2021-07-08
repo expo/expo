@@ -129,42 +129,42 @@ PODS:
     - UMCore
   - EXNetwork (3.2.0):
     - UMCore
-  - EXNotifications (0.12.2):
+  - EXNotifications (0.12.3):
     - ExpoModulesCore
     - UMCore
   - EXPermissions (12.1.1):
     - ExpoModulesCore
     - UMCore
-  - expo-dev-client (0.4.3):
+  - expo-dev-client (0.4.4):
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (0.6.3):
-    - expo-dev-launcher/Main (= 0.6.3)
+  - expo-dev-launcher (0.6.4):
+    - expo-dev-launcher/Main (= 0.6.4)
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React
-  - expo-dev-launcher/Main (0.6.3):
+  - expo-dev-launcher/Main (0.6.4):
     - expo-dev-launcher/Unsafe
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React
-  - expo-dev-launcher/Unsafe (0.6.3):
+  - expo-dev-launcher/Unsafe (0.6.4):
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React
-  - expo-dev-menu (0.7.4):
+  - expo-dev-menu (0.7.5):
     - expo-dev-menu-interface
-    - expo-dev-menu/Main (= 0.7.4)
+    - expo-dev-menu/Main (= 0.7.5)
     - React
   - expo-dev-menu-interface (0.3.2):
     - React
-  - expo-dev-menu/Main (0.7.4):
+  - expo-dev-menu/Main (0.7.5):
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - React
-  - expo-dev-menu/Vendored (0.7.4):
+  - expo-dev-menu/Vendored (0.7.5):
     - expo-dev-menu-interface
     - React
   - expo-image (1.0.0-alpha.1):
@@ -1246,11 +1246,11 @@ SPEC CHECKSUMS:
   EXMailComposer: ea8f537bcd4b89daf12c52298aeee61562c89146
   EXMediaLibrary: a90b1d33334e7a5da30f86cbcf3c3a1a6ac164ed
   EXNetwork: 6682b2bbbd90e66c4738159abaf8cd206c25e8b8
-  EXNotifications: 4680d2174e63b060904198222ea4e2330681ab82
+  EXNotifications: f0d0a38e97c9a790f5fb3c14efab79b9ece83a7e
   EXPermissions: 916efb5b817cb0a40160c0cd2f369af3c23a78be
-  expo-dev-client: 795bfabcc9225d3024b687390e9612ceafde6536
-  expo-dev-launcher: b6ce623d94712d6e4706294eb1b3853932ebc520
-  expo-dev-menu: 83ef3dcf8d35a07c6d8a4873e0d464dad72b03d9
+  expo-dev-client: 57a72f2bae168ffd79746bbccdc9ffd7bc56bc6f
+  expo-dev-launcher: 492125b0502ac0c3c0ce1c106a301ea53f6bc0ec
+  expo-dev-menu: c1d43574828f37cb541a0bb52fe7bb7829586147
   expo-dev-menu-interface: 848563c91c9f36f963a8456e885129a46f4cdfa1
   expo-image: 2fded43b1489487d7e84911caaadc821258f4905
   ExpoModulesCore: 2734852616127a6c1fc23012197890a6f3763dc7
