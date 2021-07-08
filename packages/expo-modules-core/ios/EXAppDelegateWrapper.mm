@@ -344,6 +344,11 @@ static dispatch_once_t onceToken;
                                                              jsi::PropNameID::forUtf8(runtime, functionName),
                                                              2,
                                                              std::move(function)));
+    
+    auto *modules = [[[strongSelf.moduleRegistryAdapter moduleRegistryProvider] moduleRegistry] getAllExportedModules];
+    for (EXExportedModule *module : modules) {
+      // TODO: get exported JSI methods and install them.
+    }
   };
   
   // FACTORY_WRAPPER installs globals such as console, nativePerformanceNow, etc.
