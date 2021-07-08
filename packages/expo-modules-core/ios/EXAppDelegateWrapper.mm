@@ -11,10 +11,10 @@
 
 #if __has_include(<React/HermesExecutorFactory.h>)
 #import <React/HermesExecutorFactory.h>
-typedef HermesExecutorFactory ExecutorFactory;
+typedef facebook::react::HermesExecutorFactory ExecutorFactory;
 #else
 #import <React/JSCExecutorFactory.h>
-typedef JSCExecutorFactory ExecutorFactory;
+typedef facebook::react::JSCExecutorFactory ExecutorFactory;
 #endif
 
 #if __has_include(<React/RCTJSIExecutorRuntimeInstaller.h>)
@@ -298,7 +298,6 @@ static dispatch_once_t onceToken;
   
   // FACTORY_WRAPPER installs globals such as console, nativePerformanceNow, etc.
   return std::make_unique<ExecutorFactory>(FACTORY_WRAPPER(executor));
-#endif
 }
 
 
