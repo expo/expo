@@ -25,7 +25,6 @@ extension ConvertibleFromDictionary {
       if let value = value as? AnyDictionaryValue {
         if let valueInDict = dictionary[key] {
           value.set(valueInDict)
-          print(key, value, value.get())
         }
       }
     }
@@ -53,8 +52,3 @@ public class DictionaryValue<Type>: AnyDictionaryValue {
     self.wrappedValue = newValue as! Type
   }
 }
-
-//struct TestStruct: ConvertibleFromDictionary {
-//  @DictionaryValue
-//  var property: Int = 0
-//}

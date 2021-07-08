@@ -22,13 +22,12 @@ public struct ConcreteMethod<Args, ReturnType>: AnyMethod {
     _ name: String,
     argTypes: [AnyArgumentType],
     queue: DispatchQueue? = nil,
-    _ closure: @escaping ClosureType) {
+    _ closure: @escaping ClosureType
+  ) {
     self.name = name
     self.argTypes = argTypes
     self.queue = queue
     self.closure = closure
-
-    print(name, argTypes, takesPromise)
   }
 
   public func call(args: [Any?], promise: Promise) {
@@ -76,9 +75,6 @@ public struct ConcreteMethod<Args, ReturnType>: AnyMethod {
 //      }
 
       // TODO: Handle convertible arrays
-//      if let arg = arg as? [Any?] {
-//
-//      }
       throw Errors.IncompatibleArgumentType(
         argument: arg,
         atIndex: index,
