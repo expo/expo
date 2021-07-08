@@ -132,7 +132,10 @@ function removeNotificationIconImageFiles(projectRoot) {
     Object.values(exports.dpiValues).forEach(async ({ folderName }) => {
         const drawableFolderName = folderName.replace('mipmap', 'drawable');
         const dpiFolderPath = path_1.resolve(projectRoot, exports.ANDROID_RES_PATH, drawableFolderName);
-        fs_1.unlinkSync(path_1.resolve(dpiFolderPath, exports.NOTIFICATION_ICON + '.png'));
+        const iconFile = path_1.resolve(dpiFolderPath, exports.NOTIFICATION_ICON + '.png');
+        if (fs_1.existsSync(iconFile)) {
+            fs_1.unlinkSync(iconFile);
+        }
     });
 }
 /**
