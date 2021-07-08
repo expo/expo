@@ -1,11 +1,10 @@
 {
   "include": ["./src"],
+  "extends": "@tsconfig/node12/tsconfig.json",
   "compilerOptions": {
     "outDir": "./build",
-    "target": "esnext",
     "module": "commonjs",
     "moduleResolution": "node",
-    "strict": true,
     "types": [],
     "typeRoots": ["./ts-declarations", "node_modules/@types"],
     "sourceMap": true,
@@ -17,7 +16,6 @@
     "skipLibCheck": true,
     "noImplicitThis": true,
     "noImplicitReturns": true,
-    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true
   }
 }
