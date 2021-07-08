@@ -73,7 +73,7 @@ class PrintModule(context: Context) : ExportedModule(context) {
       try {
         val pda: PrintDocumentAdapter = object : PrintDocumentAdapter() {
           override fun onWrite(pages: Array<PageRange>, destination: ParcelFileDescriptor, cancellationSignal: CancellationSignal, callback: WriteResultCallback) {
-            if (uri == null){
+            if (uri == null) {
               promise.reject("E_INVALID_URI", "Given URI is null.")
               return
             }
@@ -108,7 +108,7 @@ class PrintModule(context: Context) : ExportedModule(context) {
             }
           }
 
-          override fun onLayout(oldAttributes: PrintAttributes, newAttributes: PrintAttributes, cancellationSignal: CancellationSignal, callback:  LayoutResultCallback, extras: Bundle) {
+          override fun onLayout(oldAttributes: PrintAttributes, newAttributes: PrintAttributes, cancellationSignal: CancellationSignal, callback: LayoutResultCallback, extras: Bundle) {
             if (cancellationSignal.isCanceled) {
               callback.onLayoutCancelled()
               return
