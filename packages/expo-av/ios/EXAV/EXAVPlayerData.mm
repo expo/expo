@@ -40,6 +40,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 @interface EXAVPlayerData ()
 
 @property (nonatomic, weak) EXAV *exAV;
+@property (nonatomic, assign) NSNumber *playerId;
 
 @property (nonatomic, assign) BOOL isLoaded;
 @property (nonatomic, strong) void (^loadFinishBlock)(BOOL success, NSDictionary *successStatus, NSString *error);
@@ -75,6 +76,21 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   return @{EXAVPlayerDataStatusIsLoadedKeyPath: @(NO)};
 }
 
++ (NSMutableDictionary<NSNumber *, EXAVPlayerData *> *)players
+{
+  static NSMutableDictionary<NSNumber *, EXAVPlayerData *> *_players;
+  if (_players == nil) {
+    _players = [NSMutableDictionary dictionary];
+  }
+  return _players;
+}
+
++ (NSNumber *)getNewUniquePlayerId
+{
+  static int currentPlayerId = 0;
+  return [NSNumber numberWithInt:currentPlayerId++];
+}
+
 #pragma mark - Init and player loading
 
 - (instancetype)initWithEXAV:(EXAV *)exAV
@@ -84,6 +100,8 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 {
   if ((self = [super init])) {
     _exAV = exAV;
+    _playerId = [EXAVPlayerData getNewUniquePlayerId];
+    [[EXAVPlayerData players] setObject:self forKey:_playerId];
   
     _isLoaded = NO;
     _loadFinishBlock = loadFinishBlock;
@@ -210,6 +228,11 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   }
   
   return self;
+}
+
+- (void)dealloc
+{
+  [[EXAVPlayerData players] removeObjectForKey:_playerId];
 }
 
 - (void)_loadNewPlayer
