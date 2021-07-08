@@ -5,7 +5,7 @@ package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 reactVersion = '0.0.0'
 
 begin
-  reactVersion = JSON.parse(File.read(File.join(__dir__, "..", "react-native", "package.json")))["version"]
+  reactVersion = JSON.parse(File.read(File.join(__dir__, "..", "..", "react-native", "package.json")))["version"]
 rescue
   reactVersion = '0.64.0'
 end
