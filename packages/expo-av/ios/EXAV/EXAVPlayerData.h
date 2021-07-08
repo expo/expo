@@ -6,6 +6,11 @@
 
 @interface EXAVPlayerData : NSObject <EXAVObject>
 
+// --------------------------------------------------------
+// TODO: REMOVE THIS - ONLY ADDED TO MAKE THE PROJECT BUILD
+@property (nonatomic, strong) AVQueuePlayer *player;
+// --------------------------------------------------------
+
 @property (nonatomic, strong) AVAudioEngine *engine;
 @property (nonatomic, strong) AVAudioPlayerNode *playerNode;
 @property (nonatomic, strong) NSURL *url;
