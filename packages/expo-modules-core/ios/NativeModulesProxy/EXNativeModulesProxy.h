@@ -12,6 +12,7 @@
 NS_SWIFT_NAME(NativeModulesProxy)
 @interface EXNativeModulesProxy : NSObject <RCTBridgeModule>
 
-- (instancetype)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry;
+- (nonnull instancetype)initWithModuleRegistry:(nullable EXModuleRegistry *)moduleRegistry;
+- (nonnull instancetype)initWithModuleRegistry:(nullable EXModuleRegistry *)moduleRegistry swiftModulesProviderClass:(nullable Class)swiftModulesProviderClass;
 
 @end

@@ -1260,7 +1260,7 @@ SPEC CHECKSUMS:
   expo-dev-menu: 1c5a5194cb123e6f90358e815711cfea34524d72
   expo-dev-menu-interface: 4fda2fa6d974a518e546ca1193340513b0a8b0e8
   expo-image: e6f48da9523f56d844bcaac6d555ee92f89b70aa
-  ExpoModulesCore: 085657f53b53e86ab71477ba7f5b75fe174ee9e4
+  ExpoModulesCore: a70ccb0e2d7483de92f7a5b368f524b63809788c
   EXPrint: 2dbe4d320687e559b46fdb01e330fdf875137094
   EXRandom: ecb71f5d01991f29bb0277f8a2c35d168f85d637
   EXScreenCapture: c51844407fbac8bbca4415467bc43f2b7764d225
