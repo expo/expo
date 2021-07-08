@@ -13,7 +13,7 @@ Of course, there are always tradeoffs, and that flexibility means there's not ju
 
 ## Installing the Development Client module in your project
 
-If you have used Expo before, especially with the Managed workflow, [config plugins](guides/config-plugins.md) will let you customize your project from JavaScript without ever needing to directly modify Xcode or Android Studio projects.
+If you have used Expo before, especially with the Managed workflow, [config plugins](/guides/config-plugins.md) will let you customize your project from JavaScript without ever needing to directly modify Xcode or Android Studio projects.
 
 <Tabs tabs={["✨With config plugins✨", "👷If you are directly managing your native projects👷"]}>
 
