@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Rewrite print module from Java to Kotlin.
+
 ## 10.2.0 — 2021-06-16
 
 ### 🐛 Bug fixes
