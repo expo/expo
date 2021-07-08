@@ -24,6 +24,22 @@ typedef facebook::react::JSCExecutorFactory ExecutorFactory;
 #define FACTORY_WRAPPER(F) F
 #endif
 
+// BEGIN Required for Reanimated
+#import <RNReanimated/REAEventDispatcher.h>
+#import <RNReanimated/NativeProxy.h>
+#import <RNReanimated/REAModule.h>
+#import <React/RCTBridge+Private.h>
+#import <ReactCommon/RCTTurboModule.h>
+// END Required for Reanimated
+
+// BEGIN Required for Reanimated
+@interface RCTEventDispatcher(Reanimated)
+
+- (void)setBridge:(RCTBridge*)bridge;
+
+@end
+// END Required for Reanimated
+
 static NSMutableArray<id<UIApplicationDelegate>> *subcontractors;
 static NSMutableDictionary<NSString *,NSArray<id<UIApplicationDelegate>> *> *subcontractorsForSelector;
 static dispatch_once_t onceToken;
@@ -279,6 +295,14 @@ static dispatch_once_t onceToken;
 
 - (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
 {
+  // BEGIN Required for Reanimated
+  [bridge moduleForClass:[RCTEventDispatcher class]];
+  RCTEventDispatcher *eventDispatcher = [REAEventDispatcher new];
+  [eventDispatcher setBridge:bridge];
+  [bridge updateModuleWithInstance:eventDispatcher];
+  _bridge_reanimated = bridge;
+  // END Required for Reanimated
+  
   __weak __typeof(self) weakSelf = self;
   __weak RCTBridge *weakBridge = bridge;
   
@@ -291,6 +315,13 @@ static dispatch_once_t onceToken;
     if (!strongSelf) {
       return;
     }
+    
+    // BEGIN Required for Reanimated
+    auto reanimatedModule = reanimated::createReanimatedModule(strongBridge.jsCallInvoker);
+    runtime.global().setProperty(runtime,
+                                 facebook::jsi::PropNameID::forAscii(runtime, "__reanimatedModuleProxy"),
+                                 facebook::jsi::Object::createFromHostObject(runtime, reanimatedModule));
+    // END Required for Reanimated
     
     runtime.global().setProperty(runtime, "__custom_js_factory_installed", facebook::jsi::Value(true));
     // TODO: Initialize all custom JSI funcs from the Unimodules.
