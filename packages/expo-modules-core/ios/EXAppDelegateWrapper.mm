@@ -5,9 +5,32 @@
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <ExpoModulesCore/EXAppDelegateWrapper.h>
 
+#import <React/RCTCxxBridgeDelegate.h>
+#import <ReactCommon/CallInvoker.h>
+#import <jsi/jsi.h>
+
+#if __has_include(<React/HermesExecutorFactory.h>)
+#import <React/HermesExecutorFactory.h>
+typedef HermesExecutorFactory ExecutorFactory;
+#else
+#import <React/JSCExecutorFactory.h>
+typedef JSCExecutorFactory ExecutorFactory;
+#endif
+
+#if __has_include(<React/RCTJSIExecutorRuntimeInstaller.h>)
+#import <React/RCTJSIExecutorRuntimeInstaller.h>
+#define FACTORY_WRAPPER(F) RCTJSIExecutorRuntimeInstaller(F)
+#else
+#define FACTORY_WRAPPER(F) F
+#endif
+
 static NSMutableArray<id<UIApplicationDelegate>> *subcontractors;
 static NSMutableDictionary<NSString *,NSArray<id<UIApplicationDelegate>> *> *subcontractorsForSelector;
 static dispatch_once_t onceToken;
+
+@interface EXAppDelegateWrapper (JSI) <RCTCxxBridgeDelegate>
+
+@end
 
 @implementation EXAppDelegateWrapper
 
@@ -251,5 +274,32 @@ static dispatch_once_t onceToken;
   
   return result;
 }
+
+#pragma mark - JSI
+
+- (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
+{
+  __weak __typeof(self) weakSelf = self;
+  __weak RCTBridge *weakBridge = bridge;
+  
+  const auto executor = [weakSelf, weakBridge](facebook::jsi::Runtime &runtime) {
+    RCTBridge *strongBridge = weakBridge;
+    if (!strongBridge) {
+      return;
+    }
+    __typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+    
+    runtime.global().setProperty(runtime, "__custom_js_factory_installed", facebook::jsi::Value(true));
+    // TODO: Initialize all custom JSI funcs from the Unimodules.
+  };
+  
+  // FACTORY_WRAPPER installs globals such as console, nativePerformanceNow, etc.
+  return std::make_unique<ExecutorFactory>(FACTORY_WRAPPER(executor));
+#endif
+}
+
 
 @end
