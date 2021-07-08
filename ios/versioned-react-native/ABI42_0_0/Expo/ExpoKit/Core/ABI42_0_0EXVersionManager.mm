@@ -368,6 +368,7 @@ ABI42_0_0RCT_EXTERN void ABI42_0_0EXRegisterScopedModule(Class, ...);
   ABI42_0_0UMModuleRegistry *moduleRegistry = [moduleRegistryAdapter moduleRegistryForParams:params
                                                                  forExperienceStableLegacyId:self.manifest.stableLegacyId
                                                                                     scopeKey:self.manifest.scopeKey
+                                                                                    manifest:self.manifest
                                                                           withKernelServices:services];
   NSArray<id<ABI42_0_0RCTBridgeModule>> *expoModules = [moduleRegistryAdapter extraModulesForModuleRegistry:moduleRegistry];
   [extraModules addObjectsFromArray:expoModules];

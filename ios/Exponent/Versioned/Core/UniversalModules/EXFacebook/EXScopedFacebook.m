@@ -44,17 +44,17 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
 
 @implementation EXScopedFacebook : EXFacebook
 
-- (instancetype)initWithScopeKey:(NSString *)scopeKey andParams:(NSDictionary *)params
+- (instancetype)initWithScopeKey:(NSString *)scopeKey manifest:(EXUpdatesRawManifest *)manifest
 {
   if (self = [super init]) {
     NSString *suiteName = [NSString stringWithFormat:@"%@#%@", NSStringFromClass(self.class), scopeKey];
     _settings = [[NSUserDefaults alloc] initWithSuiteName:suiteName];
 
     BOOL hasPreviouslySetAutoInitEnabled = [_settings boolForKey:AUTO_INIT_KEY];
-    BOOL manifestDefinesAutoInitEnabled = [params[@"manifest"][@"facebookAutoInitEnabled"] boolValue];
+    BOOL manifestDefinesAutoInitEnabled = manifest.facebookAutoInitEnabled;
     
     NSString *scopedFacebookAppId = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"FacebookAppID"];
-    NSString *manifestFacebookAppId = params[@"manifest"][@"facebookAppId"];
+    NSString *manifestFacebookAppId = manifest.facebookAppId;
 
     if (hasPreviouslySetAutoInitEnabled || manifestDefinesAutoInitEnabled) {
       // This happens even before the app foregrounds, which mimics

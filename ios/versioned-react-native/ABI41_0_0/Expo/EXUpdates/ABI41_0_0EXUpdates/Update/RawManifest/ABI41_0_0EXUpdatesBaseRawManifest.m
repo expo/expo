@@ -65,6 +65,19 @@
   return [self.rawManifestJSON nullableDictionaryForKey:@"developer"];
 }
 
+- (nullable NSString *)facebookAppId {
+  return [self.rawManifestJSON nullableStringForKey:@"facebookAppId"];
+}
+
+- (nullable NSString *)facebookApplicationName {
+  return [self.rawManifestJSON nullableStringForKey:@"facebookDisplayName"];
+}
+
+- (BOOL)facebookAutoInitEnabled {
+  NSNumber *enabledNumber = [self.rawManifestJSON nullableNumberForKey:@"facebookAutoInitEnabled"];
+  return enabledNumber != nil && [enabledNumber boolValue];
+}
+
 # pragma mark - Derived Methods
 
 - (BOOL)isDevelopmentMode {
