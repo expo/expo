@@ -50,9 +50,15 @@ export class Sound implements Playback {
         throw new Error(`'onAudioSampleReceived' is not supported on ${Platform.OS}!`);
       }
     }
-    if (typeof this._key !== 'number') {
+    if (this._key == null) {
       throw new Error(
         'Cannot set Audio Sample Buffer callback when the Sound instance has not been successfully loaded/initialized!'
+      );
+    }
+    if (typeof this._key !== 'number') {
+      throw new Error(
+        `Cannot set Audio Sample Buffer callback when Sound instance key is of type ${typeof this
+          ._key}! (expected: number)`
       );
     }
     this._onAudioSampleReceived = callback;
