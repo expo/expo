@@ -76,11 +76,11 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   return @{EXAVPlayerDataStatusIsLoadedKeyPath: @(NO)};
 }
 
-+ (NSMapTable<NSNumber *, EXAVPlayerData *> *)players
++ (NSMutableDictionary<NSNumber *, EXAVPlayerData *> *)players
 {
-  static NSMapTable<NSNumber *, EXAVPlayerData *> *_players;
+  static NSMutableDictionary<NSNumber *, EXAVPlayerData *> *_players;
   if (_players == nil) {
-    _players = [NSMapTable mapTableWithKeyOptions:NSMapTableCopyIn valueOptions:NSMapTableWeakMemory];
+    _players = [NSMutableDictionary dictionary];
   }
   return _players;
 }
