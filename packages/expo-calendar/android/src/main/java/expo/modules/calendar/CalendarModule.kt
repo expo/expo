@@ -38,9 +38,7 @@ class CalendarModule(
   private val contentResolver
     get() = mContext.contentResolver
 
-  override fun getName(): String {
-    return "ExpoCalendar"
-  }
+  override fun getName(): String = "ExpoCalendar"
 
   private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
 
@@ -56,12 +54,8 @@ class CalendarModule(
     }
   }
 
-  private val sdf: SimpleDateFormat
-
-  init {
-    val dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
-    sdf = SimpleDateFormat(dateFormat)
-    sdf.timeZone = TimeZone.getTimeZone("GMT")
+  private val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").apply {
+    timeZone = TimeZone.getTimeZone("GMT")
   }
 
   //region Exported methods
@@ -278,16 +272,15 @@ class CalendarModule(
   }
 
   @ExpoMethod
-  fun getCalendarPermissionsAsync(promise: Promise?) {
+  fun getCalendarPermissionsAsync(promise: Promise) {
     mPermissions.getPermissionsWithPromise(promise, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)
   }
 
   //endregion
   @Throws(SecurityException::class)
   private fun findCalendars(): List<Bundle> {
-    val cursor: Cursor
     val uri = CalendarContract.Calendars.CONTENT_URI
-    cursor = contentResolver.query(uri, arrayOf(
+    val cursor = contentResolver.query(uri, arrayOf(
       CalendarContract.Calendars._ID,
       CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,
       CalendarContract.Calendars.ACCOUNT_NAME,
@@ -303,7 +296,8 @@ class CalendarModule(
       CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES,
       CalendarContract.Calendars.VISIBLE,
       CalendarContract.Calendars.SYNC_EVENTS
-    ), null, null, null)!!
+    ), null, null, null)
+    requireNotNull(cursor) { "Cursor shouldn't be null" }
     return serializeEventCalendars(cursor)
   }
 
@@ -318,7 +312,6 @@ class CalendarModule(
     } catch (e: Exception) {
       Log.e(TAG, "misc error parsing", e)
     }
-    val cursor: Cursor?
     val uriBuilder = CalendarContract.Instances.CONTENT_URI.buildUpon()
     ContentUris.appendId(uriBuilder, eStartDate.timeInMillis)
     ContentUris.appendId(uriBuilder, eEndDate.timeInMillis)
@@ -339,7 +332,7 @@ class CalendarModule(
       selection += calendarQuery
     }
     selection += ")"
-    cursor = contentResolver.query(uri, arrayOf(
+    val cursor = contentResolver.query(uri, arrayOf(
       CalendarContract.Instances.EVENT_ID,
       CalendarContract.Instances.TITLE,
       CalendarContract.Instances.DESCRIPTION,
@@ -361,7 +354,7 @@ class CalendarModule(
       CalendarContract.Instances._ID
     ), selection, null, null)
 
-    requireNotNull(cursor) { "vod" }
+    requireNotNull(cursor) { "Cursor shouldn't be null" }
     return serializeEvents(cursor)
   }
 
@@ -387,7 +380,8 @@ class CalendarModule(
       CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS,
       CalendarContract.Events.GUESTS_CAN_SEE_GUESTS,
       CalendarContract.Events.ORIGINAL_ID
-    ), selection, null, null)!!
+    ), selection, null, null)
+    requireNotNull(cursor) { "Cursor shouldn't be null" }
     val result = if (cursor.count > 0) {
       cursor.moveToFirst()
       serializeEvent(cursor)
@@ -399,10 +393,8 @@ class CalendarModule(
   }
 
   private fun findCalendarById(calendarID: String): Bundle? {
-    val result: Bundle?
-    val cursor: Cursor
     val uri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, calendarID.toInt().toLong())
-    cursor = contentResolver.query(uri, arrayOf(
+    val cursor = contentResolver.query(uri, arrayOf(
       CalendarContract.Calendars._ID,
       CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,
       CalendarContract.Calendars.ACCOUNT_NAME,
@@ -418,8 +410,9 @@ class CalendarModule(
       CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES,
       CalendarContract.Calendars.VISIBLE,
       CalendarContract.Calendars.SYNC_EVENTS
-    ), null, null, null)!!
-    result = if (cursor.count > 0) {
+    ), null, null, null)
+    requireNotNull(cursor) { "Cursor shouldn't be null" }
+    val result = if (cursor.count > 0) {
       cursor.moveToFirst()
       serializeEventCalendar(cursor)
     } else {
@@ -430,7 +423,7 @@ class CalendarModule(
   }
 
   private fun findAttendeesByEventId(eventID: String): List<Bundle> {
-    val cursor: Cursor = CalendarContract.Attendees.query(contentResolver, eventID.toLong(), arrayOf(
+    val cursor = CalendarContract.Attendees.query(contentResolver, eventID.toLong(), arrayOf(
       CalendarContract.Attendees._ID,
       CalendarContract.Attendees.ATTENDEE_NAME,
       CalendarContract.Attendees.ATTENDEE_EMAIL,
@@ -825,15 +818,15 @@ class CalendarModule(
     return results
   }
 
-  private fun serializeEvent(cursor: Cursor?): Bundle {
+  private fun serializeEvent(cursor: Cursor): Bundle {
     val event = Bundle()
     val foundStartDate = Calendar.getInstance()
     val foundEndDate = Calendar.getInstance()
-    var startDateUTC: String? = ""
-    var endDateUTC: String? = ""
+    var startDateUTC = ""
+    var endDateUTC = ""
 
     // may be CalendarContract.Instances.BEGIN or CalendarContract.Events.DTSTART (which have different string values)
-    val startDate = cursor!!.getString(3)
+    val startDate = cursor.getString(3)
     if (startDate != null) {
       foundStartDate.timeInMillis = startDate.toLong()
       startDateUTC = sdf.format(foundStartDate.time)
@@ -918,27 +911,27 @@ class CalendarModule(
     return alarms
   }
 
-  private fun serializeEventCalendars(cursor: Cursor?): List<Bundle> {
+  private fun serializeEventCalendars(cursor: Cursor): List<Bundle> {
     val results: MutableList<Bundle> = ArrayList()
-    while (cursor!!.moveToNext()) {
+    while (cursor.moveToNext()) {
       results.add(serializeEventCalendar(cursor))
     }
     cursor.close()
     return results
   }
 
-  private fun serializeEventCalendar(cursor: Cursor?): Bundle {
+  private fun serializeEventCalendar(cursor: Cursor): Bundle {
     val calendar = Bundle().apply {
       putString("id", optStringFromCursor(cursor, CalendarContract.Calendars._ID))
       putString("title", optStringFromCursor(cursor, CalendarContract.Calendars.CALENDAR_DISPLAY_NAME))
       putBoolean("isPrimary", optStringFromCursor(cursor, CalendarContract.Calendars.IS_PRIMARY) === "1")
-      putStringArrayList("allowedAvailabilities", calendarAllowedAvailabilitiesFromDBString(optStringFromCursor(cursor, CalendarContract.Calendars.ALLOWED_AVAILABILITY)))
+      putStringArrayList("allowedAvailabilities", calendarAllowedAvailabilitiesFromDBString(stringFromCursor(cursor, CalendarContract.Calendars.ALLOWED_AVAILABILITY)))
       putString("name", optStringFromCursor(cursor, CalendarContract.Calendars.NAME))
       putString("color", String.format("#%06X", 0xFFFFFF and optIntFromCursor(cursor, CalendarContract.Calendars.CALENDAR_COLOR)))
       putString("ownerAccount", optStringFromCursor(cursor, CalendarContract.Calendars.OWNER_ACCOUNT))
       putString("timeZone", optStringFromCursor(cursor, CalendarContract.Calendars.CALENDAR_TIME_ZONE))
-      putStringArrayList("allowedReminders", calendarAllowedRemindersFromDBString(optStringFromCursor(cursor, CalendarContract.Calendars.ALLOWED_REMINDERS)))
-      putStringArrayList("allowedAttendeeTypes", calendarAllowedAttendeeTypesFromDBString(optStringFromCursor(cursor, CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES)))
+      putStringArrayList("allowedReminders", calendarAllowedRemindersFromDBString(stringFromCursor(cursor, CalendarContract.Calendars.ALLOWED_REMINDERS)))
+      putStringArrayList("allowedAttendeeTypes", calendarAllowedAttendeeTypesFromDBString(stringFromCursor(cursor, CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES)))
       putBoolean("isVisible", optIntFromCursor(cursor, CalendarContract.Calendars.VISIBLE) != 0)
       putBoolean("isSynced", optIntFromCursor(cursor, CalendarContract.Calendars.SYNC_EVENTS) != 0)
       val accessLevel = optIntFromCursor(cursor, CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL)
@@ -979,18 +972,31 @@ class CalendarModule(
     putString("status", attendeeStatusStringMatchingConstant(optIntFromCursor(cursor, CalendarContract.Attendees.ATTENDEE_STATUS)))
   }
 
-  private fun optStringFromCursor(cursor: Cursor?, columnName: String): String? {
-    val index = cursor!!.getColumnIndex(columnName)
+  private fun optStringFromCursor(cursor: Cursor, columnName: String): String? {
+    val index = cursor.getColumnIndex(columnName)
     return if (index == -1) {
       null
-    } else cursor.getString(index)
+    } else {
+      cursor.getString(index)
+    }
   }
 
-  private fun optIntFromCursor(cursor: Cursor?, columnName: String): Int {
-    val index = cursor!!.getColumnIndex(columnName)
+  private fun stringFromCursor(cursor: Cursor, columnName: String): String {
+    val index = cursor.getColumnIndex(columnName)
+    if (index == -1) {
+      throw Exception("String not found")
+    } else {
+      return cursor.getString(index)
+    }
+  }
+
+  private fun optIntFromCursor(cursor: Cursor, columnName: String): Int {
+    val index = cursor.getColumnIndex(columnName)
     return if (index == -1) {
       0
-    } else cursor.getInt(index)
+    } else {
+      cursor.getInt(index)
+    }
   }
 
   private fun checkPermissions(promise: Promise): Boolean {

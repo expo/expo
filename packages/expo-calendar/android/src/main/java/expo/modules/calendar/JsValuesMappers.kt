@@ -22,9 +22,9 @@ internal fun reminderConstantMatchingString(string: String?): Int =
     else -> CalendarContract.Reminders.METHOD_DEFAULT
   }
 
-internal fun calendarAllowedRemindersFromDBString(dbString: String?): ArrayList<String> {
+internal fun calendarAllowedRemindersFromDBString(dbString: String): ArrayList<String> {
   val array = ArrayList<String>()
-  for (constant in dbString!!.split(",").toTypedArray()) {
+  for (constant in dbString.split(",").toTypedArray()) {
     try {
       array.add(reminderStringMatchingConstant(constant.toInt()))
     } catch (e: NumberFormatException) {
@@ -34,9 +34,9 @@ internal fun calendarAllowedRemindersFromDBString(dbString: String?): ArrayList<
   return array
 }
 
-internal fun calendarAllowedAvailabilitiesFromDBString(dbString: String?): ArrayList<String> {
+internal fun calendarAllowedAvailabilitiesFromDBString(dbString: String): ArrayList<String> {
   val availabilitiesStrings = ArrayList<String>()
-  for (availabilityId in dbString!!.split(",").toTypedArray()) {
+  for (availabilityId in dbString.split(",").toTypedArray()) {
     when (availabilityId.toInt()) {
       CalendarContract.Events.AVAILABILITY_BUSY -> availabilitiesStrings.add("busy")
       CalendarContract.Events.AVAILABILITY_FREE -> availabilitiesStrings.add("free")
@@ -141,9 +141,9 @@ internal fun attendeeTypeConstantMatchingString(string: String): Int =
     else -> CalendarContract.Attendees.TYPE_NONE
   }
 
-internal fun calendarAllowedAttendeeTypesFromDBString(dbString: String?): ArrayList<String> {
+internal fun calendarAllowedAttendeeTypesFromDBString(dbString: String): ArrayList<String> {
   val array = ArrayList<String>()
-  for (constant in dbString!!.split(",").toTypedArray()) {
+  for (constant in dbString.split(",").toTypedArray()) {
     try {
       array.add(attendeeTypeStringMatchingConstant(constant.toInt()))
     } catch (e: NumberFormatException) {
