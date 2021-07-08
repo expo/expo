@@ -17,6 +17,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import org.unimodules.core.ExportedModule
 import org.unimodules.core.ModuleRegistry
+import org.unimodules.core.ModuleRegistryDelegate
 import org.unimodules.core.Promise
 import org.unimodules.core.arguments.ReadableArguments
 import org.unimodules.core.errors.InvalidArgumentException
@@ -27,8 +28,12 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class CalendarModule(private val mContext: Context) : ExportedModule(mContext), RegistryLifecycleListener {
-  private var mPermissionsManager: Permissions? = null
+class CalendarModule(
+  private val mContext: Context,
+  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate(),
+) : ExportedModule(mContext), RegistryLifecycleListener {
+  private val mPermissions: Permissions by moduleRegistry()
+
   private val moduleCoroutineScope = CoroutineScope(Dispatchers.Default)
   private val contentResolver
     get() = mContext.contentResolver
@@ -37,8 +42,10 @@ class CalendarModule(private val mContext: Context) : ExportedModule(mContext), 
     return "ExpoCalendar"
   }
 
+  private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
+
   override fun onCreate(moduleRegistry: ModuleRegistry) {
-    mPermissionsManager = moduleRegistry.getModule(Permissions::class.java)
+    moduleRegistryDelegate.onCreate(moduleRegistry)
   }
 
   override fun onDestroy() {
@@ -105,7 +112,7 @@ class CalendarModule(private val mContext: Context) : ExportedModule(mContext), 
     if (!checkPermissions(promise)) {
       return
     }
-    try{
+    try {
       moduleCoroutineScope.launch {
         val successful = deleteCalendar(calendarID)
         if (successful) {
@@ -267,12 +274,12 @@ class CalendarModule(private val mContext: Context) : ExportedModule(mContext), 
 
   @ExpoMethod
   fun requestCalendarPermissionsAsync(promise: Promise?) {
-    Permissions.askForPermissionsWithPermissionsManager(mPermissionsManager, promise, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)
+    mPermissions.askForPermissionsWithPromise(promise, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)
   }
 
   @ExpoMethod
   fun getCalendarPermissionsAsync(promise: Promise?) {
-    Permissions.getPermissionsWithPermissionsManager(mPermissionsManager, promise, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)
+    mPermissions.getPermissionsWithPromise(promise, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)
   }
 
   //endregion
@@ -311,12 +318,12 @@ class CalendarModule(private val mContext: Context) : ExportedModule(mContext), 
     } catch (e: Exception) {
       Log.e(TAG, "misc error parsing", e)
     }
-    val cursor: Cursor
+    val cursor: Cursor?
     val uriBuilder = CalendarContract.Instances.CONTENT_URI.buildUpon()
     ContentUris.appendId(uriBuilder, eStartDate.timeInMillis)
     ContentUris.appendId(uriBuilder, eEndDate.timeInMillis)
     val uri = uriBuilder.build()
-    var selection: String? =
+    var selection =
       "((${CalendarContract.Instances.BEGIN} >= ${eStartDate.timeInMillis}) " +
         "AND (${CalendarContract.Instances.END} <= ${eEndDate.timeInMillis}) " +
         "AND (${CalendarContract.Instances.VISIBLE} = 1) "
@@ -352,16 +359,16 @@ class CalendarModule(private val mContext: Context) : ExportedModule(mContext), 
       CalendarContract.Instances.GUESTS_CAN_SEE_GUESTS,
       CalendarContract.Instances.ORIGINAL_ID,
       CalendarContract.Instances._ID
-    ), selection, null, null)!!
+    ), selection, null, null)
+
+    requireNotNull(cursor) { "vod" }
     return serializeEvents(cursor)
   }
 
   private fun findEventById(eventID: String): Bundle? {
-    val result: Bundle?
-    val cursor: Cursor
     val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toInt().toLong())
     val selection = "((${CalendarContract.Events.DELETED} != 1))"
-    cursor = contentResolver.query(uri, arrayOf(
+    val cursor = contentResolver.query(uri, arrayOf(
       CalendarContract.Events._ID,
       CalendarContract.Events.TITLE,
       CalendarContract.Events.DESCRIPTION,
@@ -381,7 +388,7 @@ class CalendarModule(private val mContext: Context) : ExportedModule(mContext), 
       CalendarContract.Events.GUESTS_CAN_SEE_GUESTS,
       CalendarContract.Events.ORIGINAL_ID
     ), selection, null, null)!!
-    result = if (cursor.count > 0) {
+    val result = if (cursor.count > 0) {
       cursor.moveToFirst()
       serializeEvent(cursor)
     } else {
@@ -436,40 +443,31 @@ class CalendarModule(private val mContext: Context) : ExportedModule(mContext), 
 
   @Throws(Exception::class)
   private fun saveCalendar(details: ReadableArguments): Int {
-    val calendarValues = ContentValues()
-    val putDetailsString: (calendarKey: String, detailsKey: String) -> Unit = { calendarKey, detailsKey ->
-      if (details.containsKey(detailsKey)) {
-        calendarValues.put(calendarKey, details.getString(detailsKey))
-      }
-    }
-    putDetailsString(CalendarContract.Calendars.NAME, "name")
-    putDetailsString(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME, "title")
+    val calendarEvenFactory = CalendarEvenFactory(details)
 
-    val putDetailsBoolean: (calendarKey: String, detailsKey: String) -> Unit = { calendarKey, detailsKey ->
-      if (details.containsKey(detailsKey)) {
-        calendarValues.put(calendarKey, if (details.getBoolean(detailsKey)) 1 else 0)
-      }
-    }
-    putDetailsBoolean(CalendarContract.Calendars.VISIBLE, "isVisible")
-    putDetailsBoolean(CalendarContract.Calendars.SYNC_EVENTS, "isSynced")
+    calendarEvenFactory.putEventStrings(
+      Pair(CalendarContract.Calendars.NAME, "name"),
+      Pair(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME, "title")
+    )
+    calendarEvenFactory.putEventBooleans(
+      Pair(CalendarContract.Calendars.VISIBLE, "isVisible"),
+      Pair(CalendarContract.Calendars.SYNC_EVENTS, "isSynced")
+    )
 
     return if (details.containsKey("id")) {
       val calendarID = details.getString("id").toInt()
       val updateUri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, calendarID.toLong())
-      contentResolver.update(updateUri, calendarValues, null, null)
+      contentResolver.update(updateUri, calendarEvenFactory.eventValues, null, null)
       calendarID
     } else {
-      val checkMissingItem: (key: String) -> Unit = {
-        if (!details.containsKey(it)) {
-          throw Exception("new calendars require $it")
-        }
-      }
-      checkMissingItem("name")
-      checkMissingItem("title")
-      checkMissingItem("source")
-      checkMissingItem("color")
-      checkMissingItem("accessLevel")
-      checkMissingItem("ownerAccount")
+      calendarEvenFactory.checkIfContainsRequiredKeys(
+        "name",
+        "title",
+        "source",
+        "color",
+        "accessLevel",
+        "ownerAccount"
+      )
       val source = details.getArguments("source")
       if (!source.containsKey("name")) {
         throw Exception("new calendars require a `source` object with a `name`")
@@ -481,14 +479,14 @@ class CalendarModule(private val mContext: Context) : ExportedModule(mContext), 
       if (!source.containsKey("type") && !isLocalAccount) {
         throw Exception("new calendars require a `source` object with a `type`, or `isLocalAccount`: true")
       }
-      calendarValues.put(CalendarContract.Calendars.ACCOUNT_NAME, source.getString("name"))
-      calendarValues.put(CalendarContract.Calendars.ACCOUNT_TYPE, if (isLocalAccount) CalendarContract.ACCOUNT_TYPE_LOCAL else source.getString("type"))
-      calendarValues.put(CalendarContract.Calendars.CALENDAR_COLOR, details.getInt("color"))
-      calendarValues.put(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL, calAccessConstantMatchingString(details.getString("accessLevel")))
-      calendarValues.put(CalendarContract.Calendars.OWNER_ACCOUNT, details.getString("ownerAccount"))
+      calendarEvenFactory.put(CalendarContract.Calendars.ACCOUNT_NAME, source.getString("name"))
+      calendarEvenFactory.put(CalendarContract.Calendars.ACCOUNT_TYPE, if (isLocalAccount) CalendarContract.ACCOUNT_TYPE_LOCAL else source.getString("type"))
+      calendarEvenFactory.put(CalendarContract.Calendars.CALENDAR_COLOR, details.getInt("color"))
+      calendarEvenFactory.put(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL, calAccessConstantMatchingString(details.getString("accessLevel")))
+      calendarEvenFactory.put(CalendarContract.Calendars.OWNER_ACCOUNT, details.getString("ownerAccount"))
       // end required fields
       if (details.containsKey("timeZone")) {
-        calendarValues.put(CalendarContract.Calendars.CALENDAR_TIME_ZONE, details.getString("timeZone"))
+        calendarEvenFactory.put(CalendarContract.Calendars.CALENDAR_TIME_ZONE, details.getString("timeZone"))
       }
       if (details.containsKey("allowedReminders")) {
         val array = details.getList("allowedReminders")
@@ -496,7 +494,7 @@ class CalendarModule(private val mContext: Context) : ExportedModule(mContext), 
         for (i in array.indices) {
           values[i] = reminderConstantMatchingString(array[i] as String?)
         }
-        calendarValues.put(CalendarContract.Calendars.ALLOWED_REMINDERS, TextUtils.join(",", values))
+        calendarEvenFactory.put(CalendarContract.Calendars.ALLOWED_REMINDERS, TextUtils.join(",", values))
       }
       if (details.containsKey("allowedAvailabilities")) {
         val array = details.getList("allowedAvailabilities")
@@ -504,7 +502,7 @@ class CalendarModule(private val mContext: Context) : ExportedModule(mContext), 
         for (i in array.indices) {
           values[i] = availabilityConstantMatchingString(array[i] as String)
         }
-        calendarValues.put(CalendarContract.Calendars.ALLOWED_AVAILABILITY, TextUtils.join(",", values))
+        calendarEvenFactory.put(CalendarContract.Calendars.ALLOWED_AVAILABILITY, TextUtils.join(",", values))
       }
       if (details.containsKey("allowedAttendeeTypes")) {
         val array = details.getList("allowedAttendeeTypes")
@@ -512,14 +510,14 @@ class CalendarModule(private val mContext: Context) : ExportedModule(mContext), 
         for (i in array.indices) {
           values[i] = attendeeTypeConstantMatchingString(array[i] as String)
         }
-        calendarValues.put(CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES, TextUtils.join(",", values))
+        calendarEvenFactory.put(CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES, TextUtils.join(",", values))
       }
       val uriBuilder = CalendarContract.Calendars.CONTENT_URI.buildUpon()
       uriBuilder.appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
       uriBuilder.appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, source.getString("name"))
       uriBuilder.appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, if (isLocalAccount) CalendarContract.ACCOUNT_TYPE_LOCAL else source.getString("type"))
       val calendarsUri = uriBuilder.build()
-      val calendarUri = contentResolver.insert(calendarsUri, calendarValues)
+      val calendarUri = contentResolver.insert(calendarsUri, calendarEvenFactory.eventValues)
       calendarUri!!.lastPathSegment!!.toInt()
     }
   }
@@ -533,17 +531,14 @@ class CalendarModule(private val mContext: Context) : ExportedModule(mContext), 
 
   @Throws(EventNotSavedException::class, ParseException::class, SecurityException::class, InvalidArgumentException::class)
   private fun saveEvent(details: ReadableArguments): Int {
-    val eventValues = ContentValues()
+    val calendarEvenFactory = CalendarEvenFactory(details)
 
-    val putEventString: (eventKey: String, detailsKey: String) -> Unit = { eventKey, detailsKey ->
-      if (details.containsKey(detailsKey)) {
-        eventValues.put(eventKey, details.getString(detailsKey))
-      }
-    }
-    putEventString(CalendarContract.Events.TITLE, "title")
-    putEventString(CalendarContract.Events.DESCRIPTION, "notes")
-    putEventString(CalendarContract.Events.EVENT_LOCATION, "location")
-    putEventString(CalendarContract.Events.ORGANIZER, "organizerEmail")
+    calendarEvenFactory.putEventStrings(
+      Pair(CalendarContract.Events.TITLE, "title"),
+      Pair(CalendarContract.Events.DESCRIPTION, "notes"),
+      Pair(CalendarContract.Events.EVENT_LOCATION, "location"),
+      Pair(CalendarContract.Events.ORGANIZER, "organizerEmail")
+    )
 
     if (details.containsKey("startDate")) {
       val startCal = Calendar.getInstance()
@@ -554,13 +549,13 @@ class CalendarModule(private val mContext: Context) : ExportedModule(mContext), 
             val parsedDate = sdf.parse(startDate)
             if (parsedDate != null) {
               startCal.time = parsedDate
-              eventValues.put(CalendarContract.Events.DTSTART, startCal.timeInMillis)
+              calendarEvenFactory.put(CalendarContract.Events.DTSTART, startCal.timeInMillis)
             } else {
               Log.e(TAG, "Parsed date is null")
             }
           }
           is Number -> {
-            eventValues.put(CalendarContract.Events.DTSTART, startDate.toLong())
+            calendarEvenFactory.put(CalendarContract.Events.DTSTART, startDate.toLong())
           }
           else -> {
             Log.e(TAG, "startDate has unsupported type")
@@ -579,12 +574,12 @@ class CalendarModule(private val mContext: Context) : ExportedModule(mContext), 
           val parsedDate = sdf.parse(endDate)
           if (parsedDate != null) {
             endCal.time = parsedDate
-            eventValues.put(CalendarContract.Events.DTEND, endCal.timeInMillis)
+            calendarEvenFactory.put(CalendarContract.Events.DTEND, endCal.timeInMillis)
           } else {
             Log.e(TAG, "Parsed date is null")
           }
         } else if (endDate is Number) {
-          eventValues.put(CalendarContract.Events.DTEND, endDate.toLong())
+          calendarEvenFactory.put(CalendarContract.Events.DTEND, endDate.toLong())
         }
       } catch (e: ParseException) {
         Log.e(TAG, "error", e)
@@ -621,41 +616,36 @@ class CalendarModule(private val mContext: Context) : ExportedModule(mContext), 
           }
         }
         if (endDate == null && occurrence == null) {
-          val eventStartDate = eventValues.getAsLong(CalendarContract.Events.DTSTART)
-          val eventEndDate = eventValues.getAsLong(CalendarContract.Events.DTEND)
+          val eventStartDate = calendarEvenFactory.eventValues.getAsLong(CalendarContract.Events.DTSTART)
+          val eventEndDate = calendarEvenFactory.eventValues.getAsLong(CalendarContract.Events.DTEND)
           val duration = (eventEndDate - eventStartDate) / 1000
-          eventValues.putNull(CalendarContract.Events.LAST_DATE)
-          eventValues.putNull(CalendarContract.Events.DTEND)
-          eventValues.put(CalendarContract.Events.DURATION, "PT${duration}S")
+          calendarEvenFactory.putNull(CalendarContract.Events.LAST_DATE)
+          calendarEvenFactory.putNull(CalendarContract.Events.DTEND)
+          calendarEvenFactory.put(CalendarContract.Events.DURATION, "PT${duration}S")
         }
         val rule = createRecurrenceRule(frequency, interval, endDate, occurrence)
-        eventValues.put(CalendarContract.Events.RRULE, rule)
+        calendarEvenFactory.put(CalendarContract.Events.RRULE, rule)
       }
     }
-    val putEventBoolean: (eventKey: String, detailsKey: String) -> Unit = { eventKey, detailsKey ->
-      if (details.containsKey(detailsKey)) {
-        eventValues.put(eventKey, if (details.getBoolean(detailsKey)) 1 else 0)
-      }
-    }
-    putEventBoolean(CalendarContract.Events.ALL_DAY, "allDay")
-    putEventBoolean(CalendarContract.Events.GUESTS_CAN_MODIFY, "guestsCanModify")
-    putEventBoolean(CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS, "guestsCanInviteOthers")
-    putEventBoolean(CalendarContract.Events.GUESTS_CAN_SEE_GUESTS, "guestsCanSeeGuests")
+    calendarEvenFactory.putEventBooleans(Pair(CalendarContract.Events.ALL_DAY, "allDay"),
+      Pair(CalendarContract.Events.GUESTS_CAN_MODIFY, "guestsCanModify"),
+      Pair(CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS, "guestsCanInviteOthers"),
+      Pair(CalendarContract.Events.GUESTS_CAN_SEE_GUESTS, "guestsCanSeeGuests"))
     if (details.containsKey("alarms")) {
-      eventValues.put(CalendarContract.Events.HAS_ALARM, true)
+      calendarEvenFactory.put(CalendarContract.Events.HAS_ALARM, true)
     }
     if (details.containsKey("availability")) {
-      eventValues.put(CalendarContract.Events.AVAILABILITY, availabilityConstantMatchingString(details.getString("availability")))
+      calendarEvenFactory.put(CalendarContract.Events.AVAILABILITY, availabilityConstantMatchingString(details.getString("availability")))
     }
-    eventValues.put(CalendarContract.Events.EVENT_TIMEZONE, if (details.containsKey("timeZone")) details.getString("timeZone") else TimeZone.getDefault().id)
-    eventValues.put(CalendarContract.Events.EVENT_END_TIMEZONE, if (details.containsKey("endTimeZone")) details.getString("endTimeZone") else TimeZone.getDefault().id)
+    calendarEvenFactory.put(CalendarContract.Events.EVENT_TIMEZONE, if (details.containsKey("timeZone")) details.getString("timeZone") else TimeZone.getDefault().id)
+    calendarEvenFactory.put(CalendarContract.Events.EVENT_END_TIMEZONE, if (details.containsKey("endTimeZone")) details.getString("endTimeZone") else TimeZone.getDefault().id)
     if (details.containsKey("accessLevel")) {
-      eventValues.put(CalendarContract.Events.ACCESS_LEVEL, accessConstantMatchingString(details.getString("accessLevel")))
+      calendarEvenFactory.put(CalendarContract.Events.ACCESS_LEVEL, accessConstantMatchingString(details.getString("accessLevel")))
     }
     return if (details.containsKey("id")) {
       val eventID = details.getString("id").toInt()
       val updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toLong())
-      contentResolver.update(updateUri, eventValues, null, null)
+      contentResolver.update(updateUri, calendarEvenFactory.eventValues, null, null)
       removeRemindersForEvent(eventID)
       if (details.containsKey("alarms")) {
         createRemindersForEvent(eventID, details.getList("alarms"))
@@ -665,7 +655,7 @@ class CalendarModule(private val mContext: Context) : ExportedModule(mContext), 
       if (details.containsKey("calendarId")) {
         val calendar = findCalendarById(details.getString("calendarId"))
         if (calendar != null) {
-          eventValues.put(CalendarContract.Events.CALENDAR_ID, calendar.getString("id")!!.toInt())
+          calendarEvenFactory.put(CalendarContract.Events.CALENDAR_ID, calendar.getString("id")!!.toInt())
         } else {
           throw InvalidArgumentException("Couldn't find calendar with given id: " + details.getString("calendarId"))
         }
@@ -673,7 +663,7 @@ class CalendarModule(private val mContext: Context) : ExportedModule(mContext), 
         throw InvalidArgumentException("CalendarId is required.")
       }
       val eventsUri = CalendarContract.Events.CONTENT_URI
-      val eventUri = contentResolver.insert(eventsUri, eventValues)
+      val eventUri = contentResolver.insert(eventsUri, calendarEvenFactory.eventValues)
         ?: throw EventNotSavedException()
       val eventID = eventUri.lastPathSegment!!.toInt()
       if (details.containsKey("alarms")) {
@@ -806,174 +796,6 @@ class CalendarModule(private val mContext: Context) : ExportedModule(mContext), 
     }
   }
 
-  private fun reminderStringMatchingConstant(constant: Int): String =
-    when (constant) {
-      CalendarContract.Reminders.METHOD_ALARM -> "alarm"
-      CalendarContract.Reminders.METHOD_ALERT -> "alert"
-      CalendarContract.Reminders.METHOD_EMAIL -> "email"
-      CalendarContract.Reminders.METHOD_SMS -> "sms"
-      CalendarContract.Reminders.METHOD_DEFAULT -> "default"
-      else -> "default"
-    }
-
-  private fun reminderConstantMatchingString(string: String?): Int =
-    when (string) {
-      "alert" -> CalendarContract.Reminders.METHOD_ALERT
-      "alarm" -> CalendarContract.Reminders.METHOD_ALARM
-      "email" -> CalendarContract.Reminders.METHOD_EMAIL
-      "sms" -> CalendarContract.Reminders.METHOD_SMS
-      else -> CalendarContract.Reminders.METHOD_DEFAULT
-    }
-
-  private fun calendarAllowedRemindersFromDBString(dbString: String?): ArrayList<String> {
-    val array = ArrayList<String>()
-    for (constant in dbString!!.split(",").toTypedArray()) {
-      try {
-        array.add(reminderStringMatchingConstant(constant.toInt()))
-      } catch (e: NumberFormatException) {
-        Log.e(TAG, "Couldn't convert reminder constant into an int.", e)
-      }
-    }
-    return array
-  }
-
-  private fun calendarAllowedAvailabilitiesFromDBString(dbString: String?): ArrayList<String> {
-    val availabilitiesStrings = ArrayList<String>()
-    for (availabilityId in dbString!!.split(",").toTypedArray()) {
-      when (availabilityId.toInt()) {
-        CalendarContract.Events.AVAILABILITY_BUSY -> availabilitiesStrings.add("busy")
-        CalendarContract.Events.AVAILABILITY_FREE -> availabilitiesStrings.add("free")
-        CalendarContract.Events.AVAILABILITY_TENTATIVE -> availabilitiesStrings.add("tentative")
-      }
-    }
-    return availabilitiesStrings
-  }
-
-  private fun availabilityStringMatchingConstant(constant: Int): String =
-    when (constant) {
-      CalendarContract.Events.AVAILABILITY_BUSY -> "busy"
-      CalendarContract.Events.AVAILABILITY_FREE -> "free"
-      CalendarContract.Events.AVAILABILITY_TENTATIVE -> "tentative"
-      else -> "busy"
-    }
-
-  private fun availabilityConstantMatchingString(string: String): Int =
-    when (string) {
-      "free" -> CalendarContract.Events.AVAILABILITY_FREE
-      "tentative" -> CalendarContract.Events.AVAILABILITY_TENTATIVE
-      else -> CalendarContract.Events.AVAILABILITY_BUSY
-    }
-
-  private fun accessStringMatchingConstant(constant: Int): String =
-    when (constant) {
-      CalendarContract.Events.ACCESS_CONFIDENTIAL -> "confidential"
-      CalendarContract.Events.ACCESS_PRIVATE -> "private"
-      CalendarContract.Events.ACCESS_PUBLIC -> "public"
-      CalendarContract.Events.ACCESS_DEFAULT -> "default"
-      else -> "default"
-    }
-
-  private fun accessConstantMatchingString(string: String): Int =
-    when (string) {
-      "confidential" -> CalendarContract.Events.ACCESS_CONFIDENTIAL
-      "private" -> CalendarContract.Events.ACCESS_PRIVATE
-      "public" -> CalendarContract.Events.ACCESS_PUBLIC
-      else -> CalendarContract.Events.ACCESS_DEFAULT
-    }
-
-  private fun calAccessStringMatchingConstant(constant: Int): String =
-    when (constant) {
-      CalendarContract.Calendars.CAL_ACCESS_CONTRIBUTOR -> "contributor"
-      CalendarContract.Calendars.CAL_ACCESS_EDITOR -> "editor"
-      CalendarContract.Calendars.CAL_ACCESS_FREEBUSY -> "freebusy"
-      CalendarContract.Calendars.CAL_ACCESS_OVERRIDE -> "override"
-      CalendarContract.Calendars.CAL_ACCESS_OWNER -> "owner"
-      CalendarContract.Calendars.CAL_ACCESS_READ -> "read"
-      CalendarContract.Calendars.CAL_ACCESS_RESPOND -> "respond"
-      CalendarContract.Calendars.CAL_ACCESS_ROOT -> "root"
-      CalendarContract.Calendars.CAL_ACCESS_NONE -> "none"
-      else -> "none"
-    }
-
-  private fun calAccessConstantMatchingString(string: String): Int =
-    when (string) {
-      "contributor" -> CalendarContract.Calendars.CAL_ACCESS_CONTRIBUTOR
-      "editor" -> CalendarContract.Calendars.CAL_ACCESS_EDITOR
-      "freebusy" -> CalendarContract.Calendars.CAL_ACCESS_FREEBUSY
-      "override" -> CalendarContract.Calendars.CAL_ACCESS_OVERRIDE
-      "owner" -> CalendarContract.Calendars.CAL_ACCESS_OWNER
-      "read" -> CalendarContract.Calendars.CAL_ACCESS_READ
-      "respond" -> CalendarContract.Calendars.CAL_ACCESS_RESPOND
-      "root" -> CalendarContract.Calendars.CAL_ACCESS_ROOT
-      else -> CalendarContract.Calendars.CAL_ACCESS_NONE
-    }
-
-  private fun attendeeRelationshipStringMatchingConstant(constant: Int): String =
-    when (constant) {
-      CalendarContract.Attendees.RELATIONSHIP_ATTENDEE -> "attendee"
-      CalendarContract.Attendees.RELATIONSHIP_ORGANIZER -> "organizer"
-      CalendarContract.Attendees.RELATIONSHIP_PERFORMER -> "performer"
-      CalendarContract.Attendees.RELATIONSHIP_SPEAKER -> "speaker"
-      CalendarContract.Attendees.RELATIONSHIP_NONE -> "none"
-      else -> "none"
-    }
-
-  private fun attendeeRelationshipConstantMatchingString(string: String): Int =
-    when (string) {
-      "attendee" -> CalendarContract.Attendees.RELATIONSHIP_ATTENDEE
-      "organizer" -> CalendarContract.Attendees.RELATIONSHIP_ORGANIZER
-      "performer" -> CalendarContract.Attendees.RELATIONSHIP_PERFORMER
-      "speaker" -> CalendarContract.Attendees.RELATIONSHIP_SPEAKER
-      else -> CalendarContract.Attendees.RELATIONSHIP_NONE
-    }
-
-  private fun attendeeTypeStringMatchingConstant(constant: Int): String =
-    when (constant) {
-      CalendarContract.Attendees.TYPE_OPTIONAL -> "optional"
-      CalendarContract.Attendees.TYPE_REQUIRED -> "required"
-      CalendarContract.Attendees.TYPE_RESOURCE -> "resource"
-      CalendarContract.Attendees.TYPE_NONE -> "none"
-      else -> "none"
-    }
-
-  private fun attendeeTypeConstantMatchingString(string: String): Int =
-    when (string) {
-      "optional" -> CalendarContract.Attendees.TYPE_OPTIONAL
-      "required" -> CalendarContract.Attendees.TYPE_REQUIRED
-      "resource" -> CalendarContract.Attendees.TYPE_RESOURCE
-      else -> CalendarContract.Attendees.TYPE_NONE
-    }
-
-  private fun calendarAllowedAttendeeTypesFromDBString(dbString: String?): ArrayList<String> {
-    val array = ArrayList<String>()
-    for (constant in dbString!!.split(",").toTypedArray()) {
-      try {
-        array.add(attendeeTypeStringMatchingConstant(constant.toInt()))
-      } catch (e: NumberFormatException) {
-        Log.e(TAG, "Couldn't convert attendee constant into an int.", e)
-      }
-    }
-    return array
-  }
-
-  private fun attendeeStatusStringMatchingConstant(constant: Int): String =
-    when (constant) {
-      CalendarContract.Attendees.ATTENDEE_STATUS_ACCEPTED -> "accepted"
-      CalendarContract.Attendees.ATTENDEE_STATUS_DECLINED -> "declined"
-      CalendarContract.Attendees.ATTENDEE_STATUS_INVITED -> "invited"
-      CalendarContract.Attendees.ATTENDEE_STATUS_TENTATIVE -> "tentative"
-      CalendarContract.Attendees.ATTENDEE_STATUS_NONE -> "none"
-      else -> "none"
-    }
-
-  private fun attendeeStatusConstantMatchingString(string: String): Int =
-    when (string) {
-      "accepted" -> CalendarContract.Attendees.ATTENDEE_STATUS_ACCEPTED
-      "declined" -> CalendarContract.Attendees.ATTENDEE_STATUS_DECLINED
-      "invited" -> CalendarContract.Attendees.ATTENDEE_STATUS_INVITED
-      "tentative" -> CalendarContract.Attendees.ATTENDEE_STATUS_TENTATIVE
-      else -> CalendarContract.Attendees.ATTENDEE_STATUS_NONE
-    }
 
   private fun createRecurrenceRule(recurrence: String, interval: Int?, endDate: String?, occurrence: Int?): String {
     var rrule: String = when (recurrence) {
@@ -994,9 +816,9 @@ class CalendarModule(private val mContext: Context) : ExportedModule(mContext), 
     return rrule
   }
 
-  private fun serializeEvents(cursor: Cursor?): List<Bundle> {
+  private fun serializeEvents(cursor: Cursor): List<Bundle> {
     val results: MutableList<Bundle> = ArrayList()
-    while (cursor!!.moveToNext()) {
+    while (cursor.moveToNext()) {
       results.add(serializeEvent(cursor))
     }
     cursor.close()
@@ -1172,11 +994,7 @@ class CalendarModule(private val mContext: Context) : ExportedModule(mContext), 
   }
 
   private fun checkPermissions(promise: Promise): Boolean {
-    if (mPermissionsManager == null) {
-      promise.reject("E_NO_PERMISSIONS", "Permissions module not found. Are you sure that Expo modules are properly linked?")
-      return false
-    }
-    if (!mPermissionsManager!!.hasGrantedPermissions(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)) {
+    if (!mPermissions.hasGrantedPermissions(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)) {
       promise.reject("E_MISSING_PERMISSIONS", "CALENDAR permission is required to do this operation.")
       return false
     }
@@ -1203,6 +1021,6 @@ class CalendarModule(private val mContext: Context) : ExportedModule(mContext), 
   }
 
   companion object {
-    private val TAG = CalendarModule::class.java.simpleName
+    internal val TAG = CalendarModule::class.java.simpleName
   }
 }
