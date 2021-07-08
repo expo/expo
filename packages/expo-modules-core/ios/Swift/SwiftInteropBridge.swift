@@ -3,11 +3,15 @@ import Foundation
 
 @objc
 public class SwiftInteropBridge: NSObject {
-  let registry: ModuleRegistry
+  let appContext: AppContext
+
+  var registry: ModuleRegistry {
+    appContext.moduleRegistry
+  }
 
   @objc
-  public init(modulesProvider: ModulesProviderObjCProtocol) {
-    self.registry = ModuleRegistry(withProvider: modulesProvider as! ModulesProviderProtocol)
+  public init(modulesProvider: ModulesProviderObjCProtocol, legacyModuleRegistry: EXModuleRegistry) {
+    self.appContext = AppContext(withModulesProvider: modulesProvider as! ModulesProviderProtocol, legacyModuleRegistry: legacyModuleRegistry)
     super.init()
   }
 

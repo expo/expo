@@ -1,16 +1,34 @@
 
 public class ModuleRegistry: Sequence {
+  public typealias Element = ModuleHolder
+
+  private weak var appContext: AppContext?
+
   private var registry: [String: ModuleHolder] = [:]
 
-  init(withProvider provider: ModulesProviderProtocol) {
-    provider.exportedModules().forEach { moduleType in
-      register(module: moduleType.init())
-    }
+  init(appContext: AppContext) {
+    self.appContext = appContext
   }
 
+  /**
+   Registers a single module in the registry.
+   */
   public func register(module: AnyModule) {
     let holder = ModuleHolder(module: module)
     registry[holder.name] = holder
+  }
+
+  /**
+   Registers modules exported by given modules provider.
+   */
+  public func register(fromProvider provider: ModulesProviderProtocol) {
+    guard let appContext = appContext else {
+      // TODO: (@tsapeta) App context is deallocated, throw an error?
+      return
+    }
+    provider.exportedModules().forEach { moduleType in
+      register(module: moduleType.init(appContext: appContext))
+    }
   }
 
   public func has(moduleWithName moduleName: String) -> Bool {
