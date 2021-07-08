@@ -1,4 +1,4 @@
-import { EventEmitter } from '@unimodules/core';
+import { EventEmitter, Platform } from '@unimodules/core';
 
 import {
   Playback,
@@ -21,6 +21,8 @@ export interface AudioSample {
   channels: AudioChannel[];
 }
 
+type TAudioSampleCallback = ((sample: AudioSample) => void) | null;
+
 type AudioInstance = number | HTMLMediaElement | null;
 export class Sound implements Playback {
   _loaded: boolean = false;
@@ -32,6 +34,26 @@ export class Sound implements Playback {
   _eventEmitter: EventEmitter = new EventEmitter(ExponentAV);
   _coalesceStatusUpdatesInMillis: number = 100;
   _onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null = null;
+  _onAudioSampleReceived: TAudioSampleCallback = null;
+
+  get onAudioSampleReceived(): TAudioSampleCallback {
+    return this._onAudioSampleReceived;
+  }
+  set onAudioSampleReceived(callback: TAudioSampleCallback) {
+    // @ts-expect-error
+    if (global.__av_sound_setOnAudioSampleReceivedCallback == null) {
+      if (Platform.OS === 'android' || Platform.OS === 'ios') {
+        throw new Error(
+          'Failed to set Audio Sample Buffer callback! The JSI function seems to not be installed correctly.'
+        );
+      } else {
+        throw new Error(`'onAudioSampleReceived' is not supported on ${Platform.OS}!`);
+      }
+    }
+    this._onAudioSampleReceived = callback;
+    // @ts-expect-error
+    global.__av_sound_setOnAudioSampleReceivedCallback(this._key, callback);
+  }
 
   /** @deprecated Use `Sound.createAsync()` instead */
   static create = async (
