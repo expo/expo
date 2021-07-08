@@ -26,8 +26,10 @@ export type APISectionTypesProps = {
 };
 
 const defineLiteralType = (types: TypeDefinitionData[]): JSX.Element | null => {
-  const uniqueTypes = Array.from(new Set(types.map((t: TypeDefinitionData) => typeof t.value)));
-  if (uniqueTypes.length === 1) {
+  const uniqueTypes = Array.from(
+    new Set(types.map((t: TypeDefinitionData) => t.value && typeof t.value))
+  );
+  if (uniqueTypes.length === 1 && uniqueTypes.filter(Boolean).length === 1) {
     return (
       <>
         <InlineCode>{uniqueTypes[0]}</InlineCode>
@@ -114,33 +116,12 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
           : null}
       </div>
     );
-  } else if (type.types && (type.type === 'union' || 'intersection')) {
-    const literalTypes = type.types.filter(
-      (t: TypeDefinitionData) =>
-        t.type === 'literal' ||
-        t.type === 'intrinsic' ||
-        (t.type === 'reference' && t.name === 'Record')
+  } else if (type.types && ['union', 'intersection'].includes(type.type)) {
+    const literalTypes = type.types.filter((t: TypeDefinitionData) =>
+      ['literal', 'intrinsic', 'reference', 'tuple'].includes(t.type)
     );
     const propTypes = type.types.filter((t: TypeDefinitionData) => t.type === 'reflection');
-    if (literalTypes.length) {
-      return (
-        <div key={`type-definition-${name}`}>
-          <H3Code>
-            <InlineCode>{name}</InlineCode>
-          </H3Code>
-          <P>
-            {defineLiteralType(literalTypes)}
-            Acceptable values are:{' '}
-            {literalTypes.map((type, index) => (
-              <span key={`${name}-literal-type-${index}`}>
-                <InlineCode>{resolveTypeName(type)}</InlineCode>
-                {index !== literalTypes.length - 1 ? ', ' : '.'}
-              </span>
-            ))}
-          </P>
-        </div>
-      );
-    } else if (propTypes.length) {
+    if (propTypes.length) {
       return (
         <div key={`prop-type-definition-${name}`}>
           <H3Code>
@@ -159,6 +140,24 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
             propType =>
               propType?.declaration?.children && renderTypeDeclarationTable(propType.declaration)
           )}
+        </div>
+      );
+    } else if (literalTypes.length) {
+      return (
+        <div key={`type-definition-${name}`}>
+          <H3Code>
+            <InlineCode>{name}</InlineCode>
+          </H3Code>
+          <P>
+            {defineLiteralType(literalTypes)}
+            Acceptable values are:{' '}
+            {literalTypes.map((lt, index) => (
+              <span key={`${name}-literal-type-${index}`}>
+                <InlineCode>{resolveTypeName(lt)}</InlineCode>
+                {index + 1 !== literalTypes.length ? ', ' : '.'}
+              </span>
+            ))}
+          </P>
         </div>
       );
     }

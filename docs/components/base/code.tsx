@@ -109,7 +109,39 @@ export class Code extends React.Component<Props> {
     return text.replace(/"/g, '&quot;');
   }
 
-  private replaceCommentsWithAnnotations(value: string) {
+  private replaceXmlCommentsWithAnnotations(value: string) {
+    return value
+      .replace(
+        /<span class="token comment">&lt;!-- @info (.*?)--><\/span>\s*/g,
+        (match, content) => {
+          return `<span class="code-annotation" data-tippy-content="${this.escapeHtml(content)}">`;
+        }
+      )
+      .replace(
+        /<span class="token comment">&lt;!-- @hide (.*?)--><\/span>\s*/g,
+        (match, content) => {
+          return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${this.escapeHtml(
+            content
+          )}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
+        }
+      )
+      .replace(/<span class="token comment">&lt;!-- @end --><\/span>(\n *)?/g, '</span></span>');
+  }
+
+  private replaceHashCommentsWithAnnotations(value: string) {
+    return value
+      .replace(/<span class="token comment"># @info (.*?)#<\/span>\s*/g, (match, content) => {
+        return `<span class="code-annotation" data-tippy-content="${this.escapeHtml(content)}">`;
+      })
+      .replace(/<span class="token comment"># @hide (.*?)#<\/span>\s*/g, (match, content) => {
+        return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${this.escapeHtml(
+          content
+        )}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
+      })
+      .replace(/<span class="token comment"># @end #<\/span>(\n *)?/g, '</span></span>');
+  }
+
+  private replaceSlashCommentsWithAnnotations(value: string) {
     return value
       .replace(/<span class="token comment">\/\* @info (.*?)\*\/<\/span>\s*/g, (match, content) => {
         return `<span class="code-annotation" data-tippy-content="${this.escapeHtml(content)}">`;
@@ -141,7 +173,13 @@ export class Code extends React.Component<Props> {
       }
 
       html = Prism.highlight(html, grammar, lang as Language);
-      html = this.replaceCommentsWithAnnotations(html);
+      if (['properties', 'ruby'].includes(lang)) {
+        html = this.replaceHashCommentsWithAnnotations(html);
+      } else if (['xml', 'html'].includes(lang)) {
+        html = this.replaceXmlCommentsWithAnnotations(html);
+      } else {
+        html = this.replaceSlashCommentsWithAnnotations(html);
+      }
     }
 
     // Remove leading newline if it exists (because inside <pre> all whitespace is dislayed as is by the browser, and

@@ -10,6 +10,7 @@ import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ExpoMethod
 
 class ClipboardModule(context: Context) : ExportedModule(context) {
+  private val NAME = "ExpoClipboard"
 
   override fun getName(): String {
     return NAME
@@ -22,11 +23,11 @@ class ClipboardModule(context: Context) : ExportedModule(context) {
   @ExpoMethod
   fun getStringAsync(promise: Promise) {
     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-    val clip = clipboard.getPrimaryClip()
-    if (clip != null && clip.getItemCount() >= 1) {
-        promise.resolve(clip.getItemAt(0).getText());
+    val clip = clipboard.primaryClip
+    if (clip != null && clip.itemCount >= 1) {
+      promise.resolve(clip.getItemAt(0).text);
     } else {
-        promise.resolve("");
+      promise.resolve("");
     }
   }
 
@@ -35,10 +36,6 @@ class ClipboardModule(context: Context) : ExportedModule(context) {
     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     val clip = ClipData.newPlainText(null, content)
     clipboard.setPrimaryClip(clip)
-    promise.resolve(null);
-  }
-
-  companion object {
-    private val NAME = "ExpoClipboard"
+    promise.resolve(null)
   }
 }

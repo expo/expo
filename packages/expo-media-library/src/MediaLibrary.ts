@@ -183,6 +183,10 @@ function dateToNumber(value?: Date | number): number | undefined {
 export const MediaType: MediaTypeObject = MediaLibrary.MediaType;
 export const SortBy: SortByObject = MediaLibrary.SortBy;
 
+export async function isAvailableAsync(): Promise<boolean> {
+  return !!MediaLibrary && 'getAssetsAsync' in MediaLibrary;
+}
+
 export async function requestPermissionsAsync(
   writeOnly: boolean = false
 ): Promise<PermissionResponse> {

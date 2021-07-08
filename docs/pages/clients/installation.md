@@ -5,12 +5,15 @@ sidebar_title: Manual Installation
 
 import InstallSection from '~/components/plugins/InstallSection';
 import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
+import { Tab, Tabs } from '~/components/plugins/Tabs';
 
 The installation steps on this page are only required to add expo-dev-client to an **existing** React Native or Bare project.
 
-To initialize a new Bare project or to add a development client to an existing managed project, see our [Getting Started guide](/getting-started.md).
+To initialize a new Bare project or to add a development client to an existing managed project, see our [Getting Started guide](getting-started.md).
 
-## Add expo-dev-client to an existing project
+If you created your project with `expo init`, or already you have `react-native-unimodules` and/or other Expo modules up and running, use the tabs marked **With unimodules** (most projects will fall under this category).
+
+If you created your project with `npx react-native init` and do not have `react-native-unimodules` or any other Expo packages installed, use the tabs marked **Without unimodules**.
 
 ## 1. Installation
 
@@ -20,9 +23,26 @@ Add the `expo-dev-client` package to your package.json.
 
 ### 🍏 iOS
 
-Change your `Podfile` to make sure that the Development Client will be removed in the release builds:
+Add the following lines to your `Podfile`:
 
+<Tabs tabs={["With unimodules", "Without unimodules"]}>
+
+<Tab >
 <ConfigurationDiff source="/static/diffs/client/podfile.diff" />
+</Tab>
+
+<Tab >
+<ConfigurationDiff source="/static/diffs/client/podfile-no-unimodules.diff" />
+
+Add an empty Swift file to your project from inside of Xcode by choosing File > New > File > Swift File.
+
+<img src="/static/images/client/xcode_bridging_header_alert.png" style={{ maxWidth: "60%" }}/>
+
+When the above prompt comes up, choose **Create Bridging Header**.
+
+</Tab>
+
+</Tabs>
 
 Add configuration in `react-native.config.js` to allow React Native autolinking to find the dependencies of `expo-dev-client`:
 
@@ -37,6 +57,30 @@ To do that, you need to open Xcode, go to `Project settings` > `General` > `Depl
 
 <img src="/static/images/client/check_ios_version.png" style={{maxWidth: "100%" }}/>
 
+### 🤖 Android
+
+<Tabs tabs={["With unimodules", "Without unimodules"]}>
+
+<Tab >
+
+If your project is set up with unimodules, no additional changes are needed to install the package on Android. 🎉
+
+</Tab>
+
+<Tab >
+
+Add the following lines to your `settings.gradle`:
+
+<ConfigurationDiff source="/static/diffs/client/settings-gradle-no-unimodules.diff" />
+
+Additionally, ensure your project's `minSdkVersion` and Gradle version are at least the following:
+
+<ConfigurationDiff source="/static/diffs/client/gradle-no-unimodules.diff" />
+
+</Tab>
+
+</Tabs>
+
 ## 2. Basic configuration
 
 To load your application's JavaScript in your client by scanning a QR code, you need to configure a deep link scheme for your application. The easiest way to do this is if you haven't already is with the `uri-scheme` package:
@@ -49,7 +93,17 @@ See the [uri-scheme package](https://www.npmjs.com/package/uri-scheme) for more 
 
 Make the following changes to allow the Development Client to control project initialization in the **DEBUG** mode.
 
+<Tabs tabs={["With unimodules", "Without unimodules"]}>
+
+<Tab >
 <ConfigurationDiff source="/static/diffs/client/app-delegate.diff" />
+</Tab>
+
+<Tab >
+<ConfigurationDiff source="/static/diffs/client/app-delegate-no-unimodules.diff" />
+</Tab>
+
+</Tabs>
 
 ### 🤖 Android
 
@@ -57,7 +111,17 @@ Make the following changes to allow the Development Client to control project in
 
 > **Note:** If you have a custom activity in your application already, or just want to understand what the `DevMenuAwareReactActivity` is doing, you can see [advanced instructions for Android here.](https://github.com/expo/expo/tree/master/packages/expo-dev-menu#-android)
 
+<Tabs tabs={["With unimodules", "Without unimodules"]}>
+
+<Tab >
 <ConfigurationDiff source="/static/diffs/client/main-activity-and-application.diff" />
+</Tab>
+
+<Tab >
+<ConfigurationDiff source="/static/diffs/client/main-activity-and-application-no-unimodules.diff" />
+</Tab>
+
+</Tabs>
 
 ## 3. Optional configuration
 

@@ -66,7 +66,7 @@ jobs:
           author_name: Test Suite (Web)
 
   ios:
-    runs-on: macos-10.15
+    runs-on: macos-11
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v2
@@ -194,13 +194,13 @@ jobs:
         working-directory: react-native-lab/react-native
         timeout-minutes: 35
         env:
-          GRADLE_OPTS: "-Dorg.gradle.internal.http.connectionTimeout=180000 -Dorg.gradle.internal.http.socketTimeout=180000 -Dorg.gradle.internal.network.retry.max.attempts=18 -Dorg.gradle.internal.network.retry.initial.backOff=2000"
+          GRADLE_OPTS: '-Dorg.gradle.internal.http.connectionTimeout=180000 -Dorg.gradle.internal.http.socketTimeout=180000 -Dorg.gradle.internal.network.retry.max.attempts=18 -Dorg.gradle.internal.network.retry.initial.backOff=2000'
       - name: Build Android project for Detox
         run: yarn android:detox:build:release
         working-directory: apps/bare-expo
         timeout-minutes: 35
         env:
-          GRADLE_OPTS: "-Dorg.gradle.internal.http.connectionTimeout=180000 -Dorg.gradle.internal.http.socketTimeout=180000 -Dorg.gradle.internal.network.retry.max.attempts=18 -Dorg.gradle.internal.network.retry.initial.backOff=2000"
+          GRADLE_OPTS: '-Dorg.gradle.internal.http.connectionTimeout=180000 -Dorg.gradle.internal.http.socketTimeout=180000 -Dorg.gradle.internal.network.retry.max.attempts=18 -Dorg.gradle.internal.network.retry.initial.backOff=2000'
       - name: Run tests
         uses: reactivecircus/android-emulator-runner@v2
         with:

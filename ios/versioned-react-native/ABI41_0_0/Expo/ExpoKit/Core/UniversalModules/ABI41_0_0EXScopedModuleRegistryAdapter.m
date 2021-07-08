@@ -38,9 +38,10 @@
 @implementation ABI41_0_0EXScopedModuleRegistryAdapter
 
 - (ABI41_0_0UMModuleRegistry *)moduleRegistryForParams:(NSDictionary *)params
-                  forExperienceStableLegacyId:(NSString *)experienceStableLegacyId
-                           scopeKey:(NSString *)scopeKey
-                           withKernelServices:(NSDictionary *)kernelServices
+                           forExperienceStableLegacyId:(NSString *)experienceStableLegacyId
+                                              scopeKey:(NSString *)scopeKey
+                                              manifest:(ABI41_0_0EXUpdatesRawManifest *)manifest
+                                    withKernelServices:(NSDictionary *)kernelServices
 {
   ABI41_0_0UMModuleRegistry *moduleRegistry = [self.moduleRegistryProvider moduleRegistry];
 
@@ -58,7 +59,7 @@
 #if __has_include(<ABI41_0_0EXFacebook/ABI41_0_0EXFacebook.h>)
   // only override in Expo Go
   if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
-    ABI41_0_0EXScopedFacebook *scopedFacebook = [[ABI41_0_0EXScopedFacebook alloc] initWithScopeKey:scopeKey andParams:params];
+    ABI41_0_0EXScopedFacebook *scopedFacebook = [[ABI41_0_0EXScopedFacebook alloc] initWithScopeKey:scopeKey manifest:manifest];
     [moduleRegistry registerExportedModule:scopedFacebook];
   }
 #endif
