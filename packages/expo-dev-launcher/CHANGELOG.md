@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed Android release builds. ([#13544](https://github.com/expo/expo/pull/13544) by [@esamelson](https://github.com/esamelson))
+
 ### 💡 Others
 
 ## 0.6.3 — 2021-06-30
