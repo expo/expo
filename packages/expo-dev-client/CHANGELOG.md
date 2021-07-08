@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.4.4 — 2021-07-08
+
+_This version does not introduce any user-facing changes._
+
 ## 0.4.3 — 2021-06-30
 
 _This version does not introduce any user-facing changes._

@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.6.4 — 2021-07-08
+
+### 🐛 Bug fixes
+
 - Fixed Android release builds. ([#13544](https://github.com/expo/expo/pull/13544) by [@esamelson](https://github.com/esamelson))
 - Fixed web compatibility. ([#13535](https://github.com/expo/expo/pull/13535) by [@lukmccall](https://github.com/lukmccall))
-
-### 💡 Others
 
 ## 0.6.3 — 2021-06-30
 

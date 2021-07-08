@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed web compatibility. ([#13535](https://github.com/expo/expo/pull/13535) by [@lukmccall](https://github.com/lukmccall))
-
 ### 💡 Others
+
+## 0.7.5 — 2021-07-08
+
+### 🐛 Bug fixes
+
+- Fixed web compatibility. ([#13535](https://github.com/expo/expo/pull/13535) by [@lukmccall](https://github.com/lukmccall))
 
 ## 0.7.4 — 2021-06-30
 
