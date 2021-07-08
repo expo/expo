@@ -11,6 +11,7 @@ const path_1 = __importDefault(require("path"));
  * Resolves module search result with additional details required for iOS platform.
  */
 async function resolveModuleAsync(packageName, revision, options) {
+    var _a;
     const [podspecFile] = await fast_glob_1.default('*/*.podspec', {
         cwd: revision.path,
         ignore: ['**/node_modules/**'],
@@ -24,7 +25,7 @@ async function resolveModuleAsync(packageName, revision, options) {
         podName,
         podspecDir,
         flags: options.flags,
-        modulesClassNames: revision.config?.iosModulesClassNames(),
+        modulesClassNames: (_a = revision.config) === null || _a === void 0 ? void 0 : _a.iosModulesClassNames(),
     };
 }
 exports.resolveModuleAsync = resolveModuleAsync;
