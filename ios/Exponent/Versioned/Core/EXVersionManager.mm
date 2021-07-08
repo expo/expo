@@ -366,7 +366,8 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   EXScopedModuleRegistryAdapter *moduleRegistryAdapter = [[EXScopedModuleRegistryAdapter alloc] initWithModuleRegistryProvider:moduleRegistryProvider];
   EXModuleRegistry *moduleRegistry = [moduleRegistryAdapter moduleRegistryForParams:params
                                                         forExperienceStableLegacyId:self.manifest.stableLegacyId
-                                                                 scopeKey:self.manifest.scopeKey
+                                                                           scopeKey:self.manifest.scopeKey
+                                                                           manifest:self.manifest
                                                                  withKernelServices:services];
   NSArray<id<RCTBridgeModule>> *expoModules = [moduleRegistryAdapter extraModulesForModuleRegistry:moduleRegistry];
   [extraModules addObjectsFromArray:expoModules];

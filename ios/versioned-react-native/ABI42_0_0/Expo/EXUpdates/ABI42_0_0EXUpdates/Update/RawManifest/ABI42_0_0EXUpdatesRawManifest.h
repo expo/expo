@@ -55,6 +55,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)orientation;
 - (nullable NSDictionary *)experiments;
 - (nullable NSDictionary *)developer;
+- (nullable NSString *)facebookAppId;
+- (nullable NSString *)facebookApplicationName;
+- (BOOL)facebookAutoInitEnabled;
 
 # pragma mark - Derived Methods
 
