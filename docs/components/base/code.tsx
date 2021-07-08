@@ -173,7 +173,7 @@ export class Code extends React.Component<Props> {
       }
 
       html = Prism.highlight(html, grammar, lang as Language);
-      if (['properties', 'rb'].includes(lang)) {
+      if (['properties', 'ruby'].includes(lang)) {
         html = this.replaceHashCommentsWithAnnotations(html);
       } else if (['xml', 'html'].includes(lang)) {
         html = this.replaceXmlCommentsWithAnnotations(html);

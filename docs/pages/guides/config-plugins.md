@@ -766,12 +766,12 @@ The `ios/Podfile` can be customized dangerously with regex, or statically via JS
 
 `Podfile`
 
-```rb
+```ruby
 require 'json'
 
-/* @info Import a JSON file and parse it in Ruby */
+# @info Import a JSON file and parse it in Ruby #
 podfileConfig = JSON.parse(File.read(File.join(__dir__, 'podfile.config.json')))
-/* @end */
+# @end #
 
 platform :ios, '11.0'
 
