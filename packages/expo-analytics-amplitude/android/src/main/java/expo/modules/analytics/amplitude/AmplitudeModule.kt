@@ -37,7 +37,7 @@ open class AmplitudeModule(context: Context?) : ExportedModule(context) {
   }
 
 
-  private fun rejectUnlessClientInitialized(promise: Promise, block: (AmplitudeClient) -> Unit) {
+  private inline fun rejectUnlessClientInitialized(promise: Promise, block: (AmplitudeClient) -> Unit) {
     val client = mClient
     if (client == null) {
       promise.reject("E_NO_INIT", "Amplitude client has not been initialized, are you sure you have configured it with #init(apiKey)?")
