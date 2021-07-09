@@ -50,7 +50,17 @@ export const mdInlineRenderers: MDRenderers = {
   paragraph: ({ children }) => (children ? <span>{children}</span> : null),
 };
 
-const nonLinkableTypes = ['Date', 'Error', 'Promise', 'T', 'TaskOptions', 'Uint8Array'];
+const nonLinkableTypes = [
+  'Date',
+  'Error',
+  'Promise',
+  'React.FC',
+  'StyleProp',
+  'T',
+  'TaskOptions',
+  'Uint8Array',
+  'ViewStyle',
+];
 
 export const resolveTypeName = ({
   elements,

@@ -3,7 +3,7 @@ import React from 'react';
 import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
 import { P } from '~/components/base/paragraph';
-import { H2, H4 } from '~/components/plugins/Headings';
+import { H2, H3Code, H4 } from '~/components/plugins/Headings';
 import {
   CommentTagData,
   DefaultPropsDefinitionData,
@@ -19,14 +19,15 @@ import {
 
 export type APISectionPropsProps = {
   data: PropsDefinitionData[];
-  defaultProps: DefaultPropsDefinitionData;
+  defaultProps?: DefaultPropsDefinitionData;
+  header?: string;
 };
 
 const UNKNOWN_VALUE = '...';
 
 const extractDefaultPropValue = (
   { comment, name }: PropData,
-  defaultProps: DefaultPropsDefinitionData
+  defaultProps?: DefaultPropsDefinitionData
 ): string | undefined => {
   const annotationDefault = comment?.tags?.filter((tag: CommentTagData) => tag.tag === 'default');
   if (annotationDefault?.length) {
@@ -60,10 +61,12 @@ const renderInheritedProps = (data: TypeDefinitionData[] | undefined): JSX.Eleme
 
 const renderProps = (
   { name, type }: PropsDefinitionData,
-  defaultValues: DefaultPropsDefinitionData
+  defaultValues?: DefaultPropsDefinitionData
 ): JSX.Element => {
-  const propsDeclarations = type.types
-    ?.filter((t: TypeDefinitionData) => t.declaration)
+  const baseTypes = type.types
+    ? type.types?.filter((t: TypeDefinitionData) => t.declaration)
+    : [type];
+  const propsDeclarations = baseTypes
     .map(def => def?.declaration?.children)
     .flat()
     .filter((dec, i, arr) => arr.findIndex(t => t?.name === dec?.name) === i);
@@ -97,10 +100,20 @@ const renderProp = ({ comment, name, type, flags }: PropData, defaultValue?: str
   </LI>
 );
 
-const APISectionProps: React.FC<APISectionPropsProps> = ({ data, defaultProps }) =>
+const APISectionProps: React.FC<APISectionPropsProps> = ({
+  data,
+  defaultProps,
+  header = 'Props',
+}) =>
   data?.length ? (
     <>
-      <H2 key="props-header">Props</H2>
+      {header === 'Props' ? (
+        <H2 key="props-header">{header}</H2>
+      ) : (
+        <H3Code key={`${header}-props-header`}>
+          <InlineCode>{header}</InlineCode>
+        </H3Code>
+      )}
       {data.map((propsDefinition: PropsDefinitionData) =>
         renderProps(propsDefinition, defaultProps)
       )}

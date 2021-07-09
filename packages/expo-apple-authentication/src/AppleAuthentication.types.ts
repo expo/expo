@@ -1,12 +1,24 @@
 import { StyleProp, ViewStyle } from 'react-native';
 
-/**
- * @hidden
- */
+// @needsAudit @docsMissing
 export type AppleAuthenticationButtonProps = {
+  /**
+   * The method to call when the user presses the button. You should call [`AppleAuthentication.signInAsync`](#isavailableasync)
+   * in here.
+   */
   onPress: () => void;
+  /**
+   * The type of button text to display ("Sign In with Apple" vs. "Continue with Apple").
+   */
   buttonType: AppleAuthenticationButtonType;
+  /**
+   * The Apple-defined color scheme to use to display the button.
+   */
   buttonStyle: AppleAuthenticationButtonStyle;
+  /**
+   * The border radius to use when rendering the button. This works similarly to
+   * `style.borderRadius` in other Views.
+   */
   cornerRadius?: number;
   style?: StyleProp<ViewStyle>;
 };
