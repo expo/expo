@@ -3,7 +3,7 @@ import React from 'react';
 import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
 import { P } from '~/components/base/paragraph';
-import { H2, H3Code, H4 } from '~/components/plugins/Headings';
+import { H2, H4, H4Code } from '~/components/plugins/Headings';
 import {
   CommentTagData,
   DefaultPropsDefinitionData,
@@ -110,9 +110,12 @@ const APISectionProps: React.FC<APISectionPropsProps> = ({
       {header === 'Props' ? (
         <H2 key="props-header">{header}</H2>
       ) : (
-        <H3Code key={`${header}-props-header`}>
-          <InlineCode>{header}</InlineCode>
-        </H3Code>
+        <>
+          <H4Code key={`${header}-props-header`}>
+            <InlineCode>{header}</InlineCode>
+          </H4Code>
+          <br />
+        </>
       )}
       {data.map((propsDefinition: PropsDefinitionData) =>
         renderProps(propsDefinition, defaultProps)
