@@ -96,8 +96,9 @@ class PrintModule(context: Context) : ExportedModule(context) {
                     // other URIs, like file://
                     URL(uri).openStream()
                   }
-                  if (inputStream != null) {
-                    loadAndClose(destination, callback, inputStream)
+
+                  inputStream?.use {
+                    copyToOutputStream(destination, callback, it)
                   }
                 } catch (e: Exception) {
                   e.printStackTrace()
@@ -106,8 +107,9 @@ class PrintModule(context: Context) : ExportedModule(context) {
               }).start()
             } else if (uri.startsWith("data:") && uri.contains(";base64,")) {
               try {
-                val input = decodeDataURI(uri)
-                loadAndClose(destination, callback, input)
+                decodeDataURI(uri).use {
+                  copyToOutputStream(destination, callback, it)
+                }
               } catch (e: IOException) {
                 promise.reject("E_CANNOT_LOAD", "An error occurred while trying to load given data URI.", e)
               }
@@ -221,20 +223,14 @@ class PrintModule(context: Context) : ExportedModule(context) {
   }
 
   @Throws(IOException::class)
-  private fun loadAndClose(destination: ParcelFileDescriptor, callback: WriteResultCallback, input: InputStream) {
+  private fun copyToOutputStream(destination: ParcelFileDescriptor, callback: WriteResultCallback, input: InputStream) {
     FileOutputStream(destination.fileDescriptor).use {
       val buf = ByteArray(1024)
-      var bytesRead = input.read(buf)
-      while (bytesRead > 0) {
+      do {
+        val bytesRead = input.read(buf)
         it.write(buf, 0, bytesRead)
-        bytesRead = input.read(buf)
-      }
+      } while (bytesRead > 0)
       callback.onWriteFinished(arrayOf(PageRange.ALL_PAGES))
-    }
-    try {
-      input.close()
-    } catch (e: IOException) {
-      e.printStackTrace()
     }
   }
 }
