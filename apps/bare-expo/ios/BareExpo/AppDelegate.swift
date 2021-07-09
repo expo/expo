@@ -18,6 +18,7 @@ import FlipperKit
 
 @UIApplicationMain
 class AppDelegate: AppDelegateWrapper {
+  var moduleRegistryAdapter: ModuleRegistryAdapter!
   var bridge: RCTBridge?
   var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
 
