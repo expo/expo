@@ -85,6 +85,8 @@ typedef facebook::react::JSCExecutorFactory ExecutorFactory;
                                  jsi::Object::createFromHostObject(runtime, reanimatedModule));
     // END Required for Reanimated
     
+    auto callInvoker = strongBridge.jsCallInvoker;
+    
     auto global = runtime.global();
     auto modulesProxy = jsi::Object(runtime);
     global.setProperty(runtime, "__custom_js_factory_installed", jsi::Value(true));
@@ -92,6 +94,8 @@ typedef facebook::react::JSCExecutorFactory ExecutorFactory;
     // Install all Modules
     auto *modules = [[[strongSelf.moduleRegistryAdapter moduleRegistryProvider] moduleRegistry] getAllExportedModules];
     for (EXExportedModule *module : modules) {
+      const NSString *moduleName = [[module class] exportedModuleName];
+      NSLog(@"Installing ExpoModule \"%@\"...", moduleName);
       // Create a new object for each module, so e.g.: ExpoModules.AV contains all functions for that module
       auto moduleJsObject = jsi::Object(runtime);
       
@@ -99,6 +103,7 @@ typedef facebook::react::JSCExecutorFactory ExecutorFactory;
       auto constants = [module constantsToExport];
       for (NSString *constantName : constants) {
         id constantValue = [constants objectForKey:constantName];
+        NSLog(@"Exporting \"%@.%@\"...", moduleName, constantName);
         auto value = expo::convertObjCObjectToJSIValue(runtime, constantValue);
         moduleJsObject.setProperty(runtime,
                                    constantName.UTF8String,
@@ -112,18 +117,54 @@ typedef facebook::react::JSCExecutorFactory ExecutorFactory;
         auto jsName = selectorName.UTF8String;
         auto selectorComponents = [[selectorName componentsSeparatedByString:@":"] count];
         // - 3 is for resolver and rejecter of the promise and the last, empty component
-        auto selectorArgsCount = (unsigned int)(selectorComponents - 3);
+        auto selectorArgsCount = (selectorComponents - 3);
+        NSLog(@"Exporting \"%@.%@(%u)\"...", moduleName, selectorName, selectorArgsCount);
         
-        auto func = [jsName, selectorArgsCount](jsi::Runtime &runtime,
+        auto func = [module, selectorName, selectorArgsCount, callInvoker](jsi::Runtime &runtime,
                                                 const jsi::Value &thisValue,
                                                 const jsi::Value *args,
                                                 size_t argsCount) -> jsi::Value {
-          NSLog(@"Called \"%s\"!", jsName);
+          NSLog(@"Calling \"%@\"...", selectorName);
           if (selectorArgsCount != argsCount) {
-            auto message = "Invalid Arguments: \"" + std::string(jsName) + "\" expects " + std::to_string(selectorArgsCount) + " arguments, but was called with " + std::to_string(argsCount) + "!";
+            auto message = "Invalid Arguments: \"" + std::string(selectorName.UTF8String) + "\" expects " + std::to_string(selectorArgsCount) + " arguments, but was called with " + std::to_string(argsCount) + "!";
             throw jsi::JSError(runtime, message);
           }
-          return jsi::Value::undefined();
+          
+          auto arguments = expo::convertJSICStyleArrayToNSArray(runtime, args, argsCount, callInvoker);
+          
+          auto function = jsi::Function::createFromHostFunction(runtime,
+                                                                jsi::PropNameID::forAscii(runtime, "f"),
+                                                                2,
+                                                                [module, selectorName, callInvoker, arguments](jsi::Runtime &runtime,
+                                                                                                               const jsi::Value&,
+                                                                                                               const jsi::Value *args,
+                                                                                                               size_t count) -> jsi::Value {
+            NSLog(@"Calling in Promise...");
+            auto resolve = std::make_shared<jsi::Function>((args[0].asObject(runtime).asFunction(runtime)));
+            auto reject = std::make_shared<jsi::Function>((args[1].asObject(runtime).asFunction(runtime)));
+            
+            auto resolver = ^(id result){
+              NSLog(@"resolve(...)");
+              callInvoker->invokeAsync([&runtime, result, resolve]() {
+                auto jsiValue = expo::convertObjCObjectToJSIValue(runtime, result);
+                resolve->call(runtime, jsiValue);
+              });
+            };
+            auto rejecter = ^(NSString *code, NSString *message, NSError *error){
+              NSLog(@"reject(%@)", message);
+              callInvoker->invokeAsync([&runtime, code, message, error, reject]() {
+                auto error = jsi::JSError(runtime, message.UTF8String);
+                reject->call(runtime, error.value());
+              });
+            };
+            [module callExportedMethod:selectorName
+                         withArguments:arguments
+                              resolver:resolver
+                              rejecter:rejecter];
+          });
+          
+          auto promise = runtime.global().getPropertyAsFunction(runtime, "Promise").callAsConstructor(runtime, function);
+          return promise;
         };
         // Install func to Module object, e.g.: ExpoModules.AV.recordAudio()
         moduleJsObject.setProperty(runtime, jsName, jsi::Function::createFromHostFunction(runtime,
@@ -132,10 +173,9 @@ typedef facebook::react::JSCExecutorFactory ExecutorFactory;
                                                                                           std::move(func)));
       }
       
-      const NSString *exportedModuleName = [[module class] exportedModuleName];
-      auto name = exportedModuleName.UTF8String;
+      auto name = moduleName.UTF8String;
       if (modulesProxy.hasProperty(runtime, name)) {
-        [NSException raise:@"Tried to register two modules with the same name!" format:@"Module %@ already exists!", exportedModuleName];
+        [NSException raise:@"Tried to register two modules with the same name!" format:@"Module %@ already exists!", moduleName];
       }
       modulesProxy.setProperty(runtime, name, moduleJsObject);
     }
