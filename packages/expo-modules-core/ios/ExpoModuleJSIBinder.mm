@@ -9,6 +9,7 @@
 
 #import "EXAppDelegateWrapper.h"
 #import "EXModuleRegistryProvider.h"
+#import "JSIConverter.h"
 
 #import <React/RCTCxxBridgeDelegate.h>
 #import <ReactCommon/CallInvoker.h>
@@ -98,8 +99,7 @@ typedef facebook::react::JSCExecutorFactory ExecutorFactory;
       auto constants = [module constantsToExport];
       for (NSString *constantName : constants) {
         id constantValue = [constants objectForKey:constantName];
-        // TODO: CONVERT jsi::Value value = convertObjCObjectToJSIValue(runtime, constantValue);
-        auto value = jsi::String::createFromUtf8(runtime, [constantValue description].UTF8String);
+        auto value = expo::convertObjCObjectToJSIValue(runtime, constantValue);
         moduleJsObject.setProperty(runtime,
                                    constantName.UTF8String,
                                    value);

@@ -11,9 +11,10 @@
 #import <ReactCommon/CallInvoker.h>
 #import <React/RCTBridgeModule.h>
 
-// -----------------------------------------
-// Converts Objective-C values to JSI values
-// -----------------------------------------
+// -----------------------------------------------------------------------------------------------------
+//                             Converts Objective-C values to JSI values
+// -----------------------------------------------------------------------------------------------------
+// source: https://github.com/mrousavy/react-native-vision-camera/blob/main/ios/React%20Utils/JSIUtils.h
 
 namespace expo {
 
