@@ -172,7 +172,9 @@ PODS:
     - SDWebImage (~> 5.0)
     - SDWebImageWebPCoder (~> 0.8.4)
   - ExpoModulesCore (0.1.1):
+    - Folly
     - React-Core
+    - ReactCommon/turbomodule/core
   - EXPrint (10.2.0):
     - ExpoModulesCore
     - UMCore
@@ -1271,7 +1273,7 @@ SPEC CHECKSUMS:
   expo-dev-menu: 1c5a5194cb123e6f90358e815711cfea34524d72
   expo-dev-menu-interface: 4fda2fa6d974a518e546ca1193340513b0a8b0e8
   expo-image: e6f48da9523f56d844bcaac6d555ee92f89b70aa
-  ExpoModulesCore: a70ccb0e2d7483de92f7a5b368f524b63809788c
+  ExpoModulesCore: 24d784e64da83b42afea3a13bda0a459fa2f7625
   EXPrint: 2dbe4d320687e559b46fdb01e330fdf875137094
   EXRandom: ecb71f5d01991f29bb0277f8a2c35d168f85d637
   EXScreenCapture: c51844407fbac8bbca4415467bc43f2b7764d225
@@ -1374,6 +1376,6 @@ SPEC CHECKSUMS:
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 591bf474a6a42fc7a7a0ee8231dd7a24b964b8a1
+PODFILE CHECKSUM: b1f7a36bc4d8b90d7513a4cd0a150a5523c80eef
 
 COCOAPODS: 1.10.1
