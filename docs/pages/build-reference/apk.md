@@ -8,9 +8,9 @@ The default file format used when building Android apps with EAS Build is an [An
 
 ### Managed projects
 
-By default EAS Build will produce Android App Bundle, you can change it by:
+By default, EAS Build produces Android App Bundle, you can change it by:
 - setting `buildType` to `apk` or `development-client`
-- setting `gradleCommand` to `:app:assembleRelease`, `:app:assembleDebug` or any other gradle command that will produce APK
+- setting `gradleCommand` to `:app:assembleRelease`, `:app:assembleDebug` or any other gradle command that produces APK
 
 ```json
 {
@@ -18,11 +18,9 @@ By default EAS Build will produce Android App Bundle, you can change it by:
     "android": {
       "release": {},
       "preview": {
-        "workflow": "managed",
         "buildType": "apk"
       },
       "preview2": {
-        "workflow": "managed",
         "gradleCommand": ":app:assembleRelease"
       }
     }
