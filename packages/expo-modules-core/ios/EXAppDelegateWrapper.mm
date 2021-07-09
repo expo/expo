@@ -347,6 +347,22 @@ static dispatch_once_t onceToken;
     
     auto *modules = [[[strongSelf.moduleRegistryAdapter moduleRegistryProvider] moduleRegistry] getAllExportedModules];
     for (EXExportedModule *module : modules) {
+      auto exportedMethods = [module getExportedMethods];
+      for (NSString *key : [exportedMethods allKeys]) {
+        auto objcName = [exportedMethods objectForKey:key];
+        auto jsName = key.UTF8String;
+        auto func = [jsName](jsi::Runtime &runtime,
+                             const jsi::Value &thisValue,
+                             const jsi::Value *args,
+                             size_t argsCount) -> jsi::Value {
+          NSLog(@"Called \"%s\"!", jsName);
+          return jsi::Value::undefined();
+        };
+        global.setProperty(runtime, jsName, jsi::Function::createFromHostFunction(runtime,
+                                                                                  jsi::PropNameID::forUtf8(runtime, jsName),
+                                                                                  999,
+                                                                                  std::move(func)));
+      }
       // TODO: get exported JSI methods and install them.
     }
   };
