@@ -1,6 +1,8 @@
 // Copyright 2017-present 650 Industries. All rights reserved.
 
+#import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
+#import "EXAV.h"
 
 #import <UMCore/UMUIManager.h>
 #import <UMCore/UMEventEmitterService.h>
