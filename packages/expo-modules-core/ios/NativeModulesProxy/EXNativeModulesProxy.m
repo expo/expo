@@ -45,7 +45,7 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
 {
   if (self = [self initWithModuleRegistry:moduleRegistry]) {
     if ([swiftModulesProviderClass conformsToProtocol:@protocol(ModulesProviderObjCProtocol)]) {
-      _swiftInteropBridge = [[SwiftInteropBridge alloc] initWithModulesProvider:[swiftModulesProviderClass new]];
+      _swiftInteropBridge = [[SwiftInteropBridge alloc] initWithModulesProvider:[swiftModulesProviderClass new] legacyModuleRegistry:_exModuleRegistry];
     }
   }
   return self;

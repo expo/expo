@@ -5,7 +5,11 @@
  other modules to use `override` keyword in the function returning the definition.
  */
 open class BaseModule {
-  required public init() {}
+  public private(set) weak var appContext: AppContext?
+
+  required public init(appContext: AppContext) {
+    self.appContext = appContext
+  }
 }
 
 /**
