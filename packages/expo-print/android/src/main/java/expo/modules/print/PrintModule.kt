@@ -96,7 +96,6 @@ class PrintModule(context: Context) : ExportedModule(context) {
                     // other URIs, like file://
                     URL(uri).openStream()
                   }
-
                   inputStream?.use {
                     copyToOutputStream(destination, callback, it)
                   }
