@@ -326,6 +326,7 @@ static dispatch_once_t onceToken;
     // END Required for Reanimated
     
     auto global = runtime.global();
+    auto modulesProxy = jsi::Object(runtime);
     global.setProperty(runtime, "__custom_js_factory_installed", jsi::Value(true));
     
     // TODO: Initialize all custom JSI funcs from the Unimodules.
@@ -345,12 +346,20 @@ static dispatch_once_t onceToken;
                                                              2,
                                                              std::move(function)));
     
+    // Install all Modules
     auto *modules = [[[strongSelf.moduleRegistryAdapter moduleRegistryProvider] moduleRegistry] getAllExportedModules];
     for (EXExportedModule *module : modules) {
+      // Create a new object for each module, so e.g.: ExpoModules.AV contains all functions for that module
+      auto moduleJsObject = jsi::Object(runtime);
+      
+      // Install all Methods for a single module
       auto exportedMethods = [module getExportedMethods];
-      for (NSString *key : [exportedMethods allKeys]) {
-        auto objcName = [exportedMethods objectForKey:key];
-        auto jsName = key.UTF8String;
+      for (NSString *selectorName : [exportedMethods allKeys]) {
+        auto objcName = [exportedMethods objectForKey:selectorName];
+        auto jsName = selectorName.UTF8String;
+        // - 3 is for resolver and rejecter of the promise and the last, empty component
+        auto argsCount = @([[selectorName componentsSeparatedByString:@":"] count] - 3);
+        
         auto func = [jsName](jsi::Runtime &runtime,
                              const jsi::Value &thisValue,
                              const jsi::Value *args,
@@ -358,13 +367,23 @@ static dispatch_once_t onceToken;
           NSLog(@"Called \"%s\"!", jsName);
           return jsi::Value::undefined();
         };
-        global.setProperty(runtime, jsName, jsi::Function::createFromHostFunction(runtime,
-                                                                                  jsi::PropNameID::forUtf8(runtime, jsName),
-                                                                                  999,
-                                                                                  std::move(func)));
+        // Install func to Module object, e.g.: ExpoModules.AV.recordAudio()
+        moduleJsObject.setProperty(runtime, jsName, jsi::Function::createFromHostFunction(runtime,
+                                                                                          jsi::PropNameID::forUtf8(runtime, jsName),
+                                                                                          [argsCount intValue],
+                                                                                          std::move(func)));
       }
-      // TODO: get exported JSI methods and install them.
+      
+      const NSString *exportedModuleName = [[module class] exportedModuleName];
+      auto name = exportedModuleName.UTF8String;
+      if (modulesProxy.hasProperty(runtime, name)) {
+        [NSException raise:@"Tried to register two modules with the same name!" format:@"Module %@ already exists!", exportedModuleName];
+      }
+      modulesProxy.setProperty(runtime, name, moduleJsObject);
     }
+    
+    // global.ExpoModules contains all modules. e.g.: global.ExpoModules.AV
+    global.setProperty(runtime, "ExpoModules", modulesProxy);
   };
   
   // FACTORY_WRAPPER installs globals such as console, nativePerformanceNow, etc.
