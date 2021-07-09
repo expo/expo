@@ -20,7 +20,7 @@ export function initialize(): void {
     return;
   }
 
-  Amplitude.initialize(apiKey);
+  Amplitude.initializeAsync(apiKey);
   isInitialized = true;
 }
 
