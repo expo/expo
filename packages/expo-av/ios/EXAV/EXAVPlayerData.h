@@ -30,4 +30,9 @@
                 resolver:(EXPromiseResolveBlock)resolve
                 rejecter:(EXPromiseRejectBlock)reject;
 
+typedef void (^SampleBufferCallback)(AVAudioPCMBuffer * _Nonnull buffer);
+
+- (void)addSampleBufferCallback:(SampleBufferCallback)callback;
+- (void)removeSampleBufferCallback;
+
 @end
