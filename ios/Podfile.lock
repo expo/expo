@@ -1912,7 +1912,9 @@ PODS:
     - ExpoModulesCore
     - UMCore
   - ExpoModulesCore (0.1.1):
+    - Folly
     - React-Core
+    - ReactCommon/turbomodule/core
   - EXPrint (10.2.0):
     - ExpoModulesCore
     - UMCore
@@ -4023,7 +4025,7 @@ SPEC CHECKSUMS:
   EXAppAuth: b7ecb4ce7634676985f67d2489054ea7727cd5e3
   EXAppleAuthentication: 5994731faf4a3dd32be4a4b3e9feb930c2fa25c1
   EXApplication: 9ff2a206009d6e55bca6c20b3f33d07986b51ef3
-  EXAV: 1e88c98d82a22cb21865e83ba8a9a11f75b6b12b
+  EXAV: 726fbafdfcaa6e8a73a84ebc56635d9e22ca70fa
   EXBackgroundFetch: 5a15dc52d77d5ea4b0896c283679e271447921d4
   EXBarCodeScanner: 22f8d8ea393de371e80f9529664c07900e1e7639
   EXBattery: 6adbf9706bbe00d266b17b7846d556db9dea82c2
@@ -4140,7 +4142,7 @@ SPEC CHECKSUMS:
   React-RCTText: 1b6773e776e4b33f90468c20fe3b16ca3e224bb8
   React-RCTVibration: 4d2e726957f4087449739b595f107c0d4b6c2d2d
   ReactCommon: a0a1edbebcac5e91338371b72ffc66aa822792ce
-  RNReanimated: d9da990fc90123f4ffbfdda93d00fc15174863a8
+  RNReanimated: 6b7d1e26f099a28a76c54e02be4e5c479deeac62
   RNScreens: 21b73c94c9117e1110a79ee0ee80c93ccefed8ce
   Stripe: 6cc7bb348f4b1fad111129f6ee40eb6682deaefb
   stripe-react-native: 2598d45be4bad95f0c11a1dde7af185e8829bc67
