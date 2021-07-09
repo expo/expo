@@ -45,8 +45,6 @@ ExpoCheckbox.displayName = 'Checkbox';
 
 export default ExpoCheckbox;
 
-export const name = 'ExpoCheckbox';
-
 const defaultEnabledColor = Platform.select({
   ios: '#007AFF',
   android: '#009688',
@@ -63,17 +61,14 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: defaultGrayColor,
   },
-
   checked: {
     backgroundColor: defaultEnabledColor,
     borderColor: defaultEnabledColor,
   },
-
   disabled: {
     borderColor: disabledGrayColor,
     backgroundColor: 'transparent',
   },
-
   checkedAndDisabled: {
     backgroundColor: disabledCheckedGrayColor,
     borderColor: disabledCheckedGrayColor,
