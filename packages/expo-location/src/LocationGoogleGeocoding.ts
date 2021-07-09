@@ -128,7 +128,7 @@ function reverseGeocodingResultToAddress(
       address.district = long_name;
       continue;
     }
-    if (types.includes('street_number') {
+    if (types.includes('street_number')) {
       address.streetNumber = long_name;
       continue;
     }
