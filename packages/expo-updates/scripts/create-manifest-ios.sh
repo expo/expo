@@ -7,8 +7,13 @@ ENTRY_FILE=${ENTRY_FILE:-index.js}
 RCT_METRO_PORT=${RCT_METRO_PORT:=8081}
 NODE_BINARY=${NODE_BINARY:-node}
 
-# Related to: https://github.com/facebook/react-native/blob/c9f869f9c7c8b035a669980382af4bbd4afecb89/scripts/react-native-xcode.sh#L59-L69
-PROJECT_ROOT=${PROJECT_ROOT:-$PWD}
+
+# ref: https://github.com/facebook/react-native/blob/c974cbff04a8d90ac0f856dbada3fc5a75c75b49/scripts/react-native-xcode.sh#L59-L65
+EXPO_UPDATES_PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# The project should be located next to where expo-updates is installed
+# in node_modules.
+PROJECT_ROOT=${PROJECT_ROOT:-"$EXPO_UPDATES_PACKAGE_DIR/../.."}
+
 cd "$PROJECT_ROOT" || exit
 
 if ! [ -x "$(command -v $NODE_BINARY)" ]; then
@@ -18,4 +23,4 @@ if ! [ -x "$(command -v $NODE_BINARY)" ]; then
   exit 1
 fi
 
-"$NODE_BINARY" "$(dirname "${BASH_SOURCE[0]}")/createManifest.js" ios "$PROJECT_ROOT" "$DEST"
+"$NODE_BINARY" "${EXPO_UPDATES_PACKAGE_DIR}/scripts/createManifest.js" ios "$PROJECT_ROOT" "$DEST"
