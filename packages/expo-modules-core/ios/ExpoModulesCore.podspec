@@ -2,22 +2,7 @@ require 'json'
 
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 
-reactVersion = '0.0.0'
-
-begin
-  reactVersion = JSON.parse(File.read(File.join(__dir__, "..", "..", "react-native", "package.json")))["version"]
-rescue
-  reactVersion = '0.64.0'
-end
-
-rnVersion = reactVersion.split('.')[1]
-
-folly_prefix = ""
-if rnVersion.to_i >= 64
-  folly_prefix = "RCT-"
-end
-
-folly_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DRNVERSION=' + rnVersion
+folly_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
 folly_compiler_flags = folly_flags + ' ' + '-Wno-comma -Wno-shorten-64-to-32'
 folly_version = '2020.01.13.00'
 boost_compiler_flags = '-Wno-documentation'
