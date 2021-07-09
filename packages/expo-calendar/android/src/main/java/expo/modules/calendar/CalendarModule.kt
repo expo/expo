@@ -38,6 +38,10 @@ class CalendarModule(
   private val contentResolver
     get() = mContext.contentResolver
 
+  private val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").apply {
+    timeZone = TimeZone.getTimeZone("GMT")
+  }
+
   override fun getName(): String = "ExpoCalendar"
 
   private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
@@ -52,10 +56,6 @@ class CalendarModule(
     } catch (e: IllegalStateException) {
       Log.e(TAG, "The scope does not have a job in it")
     }
-  }
-
-  private val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").apply {
-    timeZone = TimeZone.getTimeZone("GMT")
   }
 
   //region Exported methods
@@ -280,25 +280,9 @@ class CalendarModule(
   @Throws(SecurityException::class)
   private fun findCalendars(): List<Bundle> {
     val uri = CalendarContract.Calendars.CONTENT_URI
-    val cursor = contentResolver.query(uri, arrayOf(
-      CalendarContract.Calendars._ID,
-      CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,
-      CalendarContract.Calendars.ACCOUNT_NAME,
-      CalendarContract.Calendars.IS_PRIMARY,
-      CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL,
-      CalendarContract.Calendars.ALLOWED_AVAILABILITY,
-      CalendarContract.Calendars.NAME,
-      CalendarContract.Calendars.ACCOUNT_TYPE,
-      CalendarContract.Calendars.CALENDAR_COLOR,
-      CalendarContract.Calendars.OWNER_ACCOUNT,
-      CalendarContract.Calendars.CALENDAR_TIME_ZONE,
-      CalendarContract.Calendars.ALLOWED_REMINDERS,
-      CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES,
-      CalendarContract.Calendars.VISIBLE,
-      CalendarContract.Calendars.SYNC_EVENTS
-    ), null, null, null)
+    val cursor = contentResolver.query(uri, findCalendarsQueryParameters, null, null, null)
     requireNotNull(cursor) { "Cursor shouldn't be null" }
-    return serializeEventCalendars(cursor)
+    return cursor.use(::serializeEventCalendars)
   }
 
   private fun findEvents(startDate: Any, endDate: Any, calendars: List<String>): List<Bundle> {
@@ -332,120 +316,81 @@ class CalendarModule(
       selection += calendarQuery
     }
     selection += ")"
-    val cursor = contentResolver.query(uri, arrayOf(
-      CalendarContract.Instances.EVENT_ID,
-      CalendarContract.Instances.TITLE,
-      CalendarContract.Instances.DESCRIPTION,
-      CalendarContract.Instances.BEGIN,
-      CalendarContract.Instances.END,
-      CalendarContract.Instances.ALL_DAY,
-      CalendarContract.Instances.EVENT_LOCATION,
-      CalendarContract.Instances.RRULE,
-      CalendarContract.Instances.CALENDAR_ID,
-      CalendarContract.Instances.AVAILABILITY,
-      CalendarContract.Instances.ORGANIZER,
-      CalendarContract.Instances.EVENT_TIMEZONE,
-      CalendarContract.Instances.EVENT_END_TIMEZONE,
-      CalendarContract.Instances.ACCESS_LEVEL,
-      CalendarContract.Instances.GUESTS_CAN_MODIFY,
-      CalendarContract.Instances.GUESTS_CAN_INVITE_OTHERS,
-      CalendarContract.Instances.GUESTS_CAN_SEE_GUESTS,
-      CalendarContract.Instances.ORIGINAL_ID,
-      CalendarContract.Instances._ID
-    ), selection, null, null)
+    val cursor = contentResolver.query(
+      uri,
+      findEventsQueryParameters,
+      selection,
+      null,
+      null
+    )
 
     requireNotNull(cursor) { "Cursor shouldn't be null" }
-    return serializeEvents(cursor)
+    return cursor.use(::serializeEvents)
   }
 
   private fun findEventById(eventID: String): Bundle? {
     val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toInt().toLong())
     val selection = "((${CalendarContract.Events.DELETED} != 1))"
-    val cursor = contentResolver.query(uri, arrayOf(
-      CalendarContract.Events._ID,
-      CalendarContract.Events.TITLE,
-      CalendarContract.Events.DESCRIPTION,
-      CalendarContract.Events.DTSTART,
-      CalendarContract.Events.DTEND,
-      CalendarContract.Events.ALL_DAY,
-      CalendarContract.Events.EVENT_LOCATION,
-      CalendarContract.Events.RRULE,
-      CalendarContract.Events.CALENDAR_ID,
-      CalendarContract.Events.AVAILABILITY,
-      CalendarContract.Events.ORGANIZER,
-      CalendarContract.Events.EVENT_TIMEZONE,
-      CalendarContract.Events.EVENT_END_TIMEZONE,
-      CalendarContract.Events.ACCESS_LEVEL,
-      CalendarContract.Events.GUESTS_CAN_MODIFY,
-      CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS,
-      CalendarContract.Events.GUESTS_CAN_SEE_GUESTS,
-      CalendarContract.Events.ORIGINAL_ID
-    ), selection, null, null)
-    requireNotNull(cursor) { "Cursor shouldn't be null" }
-    val result = if (cursor.count > 0) {
-      cursor.moveToFirst()
-      serializeEvent(cursor)
-    } else {
+    val cursor = contentResolver.query(
+      uri,
+      findEventByIdQueryParameters,
+      selection,
+      null,
       null
+    )
+    requireNotNull(cursor) { "Cursor shouldn't be null" }
+    return cursor.use {
+      if (cursor.count > 0) {
+        cursor.moveToFirst()
+        serializeEvent(cursor)
+      } else {
+        null
+      }
     }
-    cursor.close()
-    return result
   }
 
   private fun findCalendarById(calendarID: String): Bundle? {
     val uri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, calendarID.toInt().toLong())
-    val cursor = contentResolver.query(uri, arrayOf(
-      CalendarContract.Calendars._ID,
-      CalendarContract.Calendars.CALENDAR_DISPLAY_NAME,
-      CalendarContract.Calendars.ACCOUNT_NAME,
-      CalendarContract.Calendars.IS_PRIMARY,
-      CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL,
-      CalendarContract.Calendars.ALLOWED_AVAILABILITY,
-      CalendarContract.Calendars.NAME,
-      CalendarContract.Calendars.ACCOUNT_TYPE,
-      CalendarContract.Calendars.CALENDAR_COLOR,
-      CalendarContract.Calendars.OWNER_ACCOUNT,
-      CalendarContract.Calendars.CALENDAR_TIME_ZONE,
-      CalendarContract.Calendars.ALLOWED_REMINDERS,
-      CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES,
-      CalendarContract.Calendars.VISIBLE,
-      CalendarContract.Calendars.SYNC_EVENTS
-    ), null, null, null)
-    requireNotNull(cursor) { "Cursor shouldn't be null" }
-    val result = if (cursor.count > 0) {
-      cursor.moveToFirst()
-      serializeEventCalendar(cursor)
-    } else {
+    val cursor = contentResolver.query(
+      uri,
+      findCalendarByIdQueryFields,
+      null,
+      null,
       null
+    )
+    requireNotNull(cursor) { "Cursor shouldn't be null" }
+    return cursor.use {
+      if (it.count > 0) {
+        it.moveToFirst()
+        serializeEventCalendar(it)
+      } else {
+        null
+      }
     }
-    cursor.close()
-    return result
   }
 
   private fun findAttendeesByEventId(eventID: String): List<Bundle> {
-    val cursor = CalendarContract.Attendees.query(contentResolver, eventID.toLong(), arrayOf(
-      CalendarContract.Attendees._ID,
-      CalendarContract.Attendees.ATTENDEE_NAME,
-      CalendarContract.Attendees.ATTENDEE_EMAIL,
-      CalendarContract.Attendees.ATTENDEE_RELATIONSHIP,
-      CalendarContract.Attendees.ATTENDEE_TYPE,
-      CalendarContract.Attendees.ATTENDEE_STATUS
-    ))
-    return serializeAttendees(cursor)
+    val cursor = CalendarContract.Attendees.query(
+      contentResolver,
+      eventID.toLong(),
+      findAttendeesByEventIdQueryParameters
+    )
+    return cursor.use(::serializeAttendees)
   }
 
   @Throws(Exception::class)
   private fun saveCalendar(details: ReadableArguments): Int {
     val calendarEvenFactory = CalendarEvenFactory(details)
 
-    calendarEvenFactory.putEventStrings(
-      Pair(CalendarContract.Calendars.NAME, "name"),
-      Pair(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME, "title")
-    )
-    calendarEvenFactory.putEventBooleans(
-      Pair(CalendarContract.Calendars.VISIBLE, "isVisible"),
-      Pair(CalendarContract.Calendars.SYNC_EVENTS, "isSynced")
-    )
+    calendarEvenFactory
+      .putEventStrings(
+        CalendarContract.Calendars.NAME to "name",
+        CalendarContract.Calendars.CALENDAR_DISPLAY_NAME to "title"
+      )
+      .putEventBooleans(
+        CalendarContract.Calendars.VISIBLE to "isVisible",
+        CalendarContract.Calendars.SYNC_EVENTS to "isSynced"
+      )
 
     return if (details.containsKey("id")) {
       val calendarID = details.getString("id").toInt()
@@ -472,11 +417,15 @@ class CalendarModule(
       if (!source.containsKey("type") && !isLocalAccount) {
         throw Exception("new calendars require a `source` object with a `type`, or `isLocalAccount`: true")
       }
-      calendarEvenFactory.put(CalendarContract.Calendars.ACCOUNT_NAME, source.getString("name"))
-      calendarEvenFactory.put(CalendarContract.Calendars.ACCOUNT_TYPE, if (isLocalAccount) CalendarContract.ACCOUNT_TYPE_LOCAL else source.getString("type"))
-      calendarEvenFactory.put(CalendarContract.Calendars.CALENDAR_COLOR, details.getInt("color"))
-      calendarEvenFactory.put(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL, calAccessConstantMatchingString(details.getString("accessLevel")))
-      calendarEvenFactory.put(CalendarContract.Calendars.OWNER_ACCOUNT, details.getString("ownerAccount"))
+
+      calendarEvenFactory.apply {
+        put(CalendarContract.Calendars.ACCOUNT_NAME, source.getString("name"))
+        put(CalendarContract.Calendars.ACCOUNT_TYPE, if (isLocalAccount) CalendarContract.ACCOUNT_TYPE_LOCAL else source.getString("type"))
+        put(CalendarContract.Calendars.CALENDAR_COLOR, details.getInt("color"))
+        put(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL, calAccessConstantMatchingString(details.getString("accessLevel")))
+        put(CalendarContract.Calendars.OWNER_ACCOUNT, details.getString("ownerAccount"))
+      }
+
       // end required fields
       if (details.containsKey("timeZone")) {
         calendarEvenFactory.put(CalendarContract.Calendars.CALENDAR_TIME_ZONE, details.getString("timeZone"))
@@ -505,10 +454,11 @@ class CalendarModule(
         }
         calendarEvenFactory.put(CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES, TextUtils.join(",", values))
       }
-      val uriBuilder = CalendarContract.Calendars.CONTENT_URI.buildUpon()
-      uriBuilder.appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
-      uriBuilder.appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, source.getString("name"))
-      uriBuilder.appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, if (isLocalAccount) CalendarContract.ACCOUNT_TYPE_LOCAL else source.getString("type"))
+      val uriBuilder = CalendarContract.Calendars.CONTENT_URI.buildUpon().apply {
+        appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
+        appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, source.getString("name"))
+        appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, if (isLocalAccount) CalendarContract.ACCOUNT_TYPE_LOCAL else source.getString("type"))
+      }
       val calendarsUri = uriBuilder.build()
       val calendarUri = contentResolver.insert(calendarsUri, calendarEvenFactory.eventValues)
       calendarUri!!.lastPathSegment!!.toInt()
@@ -525,14 +475,6 @@ class CalendarModule(
   @Throws(EventNotSavedException::class, ParseException::class, SecurityException::class, InvalidArgumentException::class)
   private fun saveEvent(details: ReadableArguments): Int {
     val calendarEvenFactory = CalendarEvenFactory(details)
-
-    calendarEvenFactory.putEventStrings(
-      Pair(CalendarContract.Events.TITLE, "title"),
-      Pair(CalendarContract.Events.DESCRIPTION, "notes"),
-      Pair(CalendarContract.Events.EVENT_LOCATION, "location"),
-      Pair(CalendarContract.Events.ORGANIZER, "organizerEmail")
-    )
-
     if (details.containsKey("startDate")) {
       val startCal = Calendar.getInstance()
       val startDate = details["startDate"]
@@ -620,18 +562,29 @@ class CalendarModule(
         calendarEvenFactory.put(CalendarContract.Events.RRULE, rule)
       }
     }
-    calendarEvenFactory.putEventBooleans(Pair(CalendarContract.Events.ALL_DAY, "allDay"),
-      Pair(CalendarContract.Events.GUESTS_CAN_MODIFY, "guestsCanModify"),
-      Pair(CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS, "guestsCanInviteOthers"),
-      Pair(CalendarContract.Events.GUESTS_CAN_SEE_GUESTS, "guestsCanSeeGuests"))
     if (details.containsKey("alarms")) {
       calendarEvenFactory.put(CalendarContract.Events.HAS_ALARM, true)
     }
     if (details.containsKey("availability")) {
       calendarEvenFactory.put(CalendarContract.Events.AVAILABILITY, availabilityConstantMatchingString(details.getString("availability")))
     }
-    calendarEvenFactory.put(CalendarContract.Events.EVENT_TIMEZONE, if (details.containsKey("timeZone")) details.getString("timeZone") else TimeZone.getDefault().id)
-    calendarEvenFactory.put(CalendarContract.Events.EVENT_END_TIMEZONE, if (details.containsKey("endTimeZone")) details.getString("endTimeZone") else TimeZone.getDefault().id)
+    calendarEvenFactory
+      .putEventStrings(
+        CalendarContract.Events.TITLE to "title",
+        CalendarContract.Events.DESCRIPTION to "notes",
+        CalendarContract.Events.EVENT_LOCATION to "location",
+        CalendarContract.Events.ORGANIZER to "organizerEmail"
+      )
+      .putEventBooleans(
+        CalendarContract.Events.ALL_DAY to "allDay",
+        CalendarContract.Events.GUESTS_CAN_MODIFY to "guestsCanModify",
+        CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS to "guestsCanInviteOthers",
+        CalendarContract.Events.GUESTS_CAN_SEE_GUESTS to "guestsCanSeeGuests"
+      )
+      .putEventTimeZones(
+        CalendarContract.Events.EVENT_TIMEZONE to "timeZone",
+        CalendarContract.Events.EVENT_END_TIMEZONE to "endTimeZone"
+      )
     if (details.containsKey("accessLevel")) {
       calendarEvenFactory.put(CalendarContract.Events.ACCESS_LEVEL, accessConstantMatchingString(details.getString("accessLevel")))
     }
@@ -814,12 +767,10 @@ class CalendarModule(
     while (cursor.moveToNext()) {
       results.add(serializeEvent(cursor))
     }
-    cursor.close()
     return results
   }
 
   private fun serializeEvent(cursor: Cursor): Bundle {
-    val event = Bundle()
     val foundStartDate = Calendar.getInstance()
     val foundEndDate = Calendar.getInstance()
     var startDateUTC = ""
@@ -839,10 +790,10 @@ class CalendarModule(
       endDateUTC = sdf.format(foundEndDate.time)
     }
     val rrule = optStringFromCursor(cursor, CalendarContract.Events.RRULE)
-    if (rrule != null) {
+    val rruleBundle = if (rrule != null) {
       val recurrenceRule = Bundle()
       val recurrenceRules = rrule.split(";").toTypedArray()
-      recurrenceRule.putString("frequency", recurrenceRules[0].split("=").toTypedArray()[1].toLowerCase())
+      recurrenceRule.putString("frequency", recurrenceRules[0].split("=").toTypedArray()[1].toLowerCase(Locale.getDefault()))
       if (recurrenceRules.size >= 2 && recurrenceRules[1].split("=").toTypedArray()[0] == "INTERVAL") {
         recurrenceRule.putInt("interval", recurrenceRules[1].split("=").toTypedArray()[1].toInt())
       }
@@ -863,29 +814,36 @@ class CalendarModule(
         }
         Log.e(TAG, "Couldn't parse termination rules: '${recurrenceRules[2]}'.", null)
       }
-      event.putBundle("recurrenceRule", recurrenceRule)
+      recurrenceRule
+    } else {
+      null
     }
 
 
     // may be CalendarContract.Instances.EVENT_ID or CalendarContract.Events._ID (which have different string values)
-    event.putString("id", cursor.getString(0))
-    event.putString("calendarId", optStringFromCursor(cursor, CalendarContract.Events.CALENDAR_ID))
-    event.putString("title", optStringFromCursor(cursor, CalendarContract.Events.TITLE))
-    event.putString("notes", optStringFromCursor(cursor, CalendarContract.Events.DESCRIPTION))
-    event.putString("startDate", startDateUTC)
-    event.putString("endDate", endDateUTC)
-    event.putBoolean("allDay", optIntFromCursor(cursor, CalendarContract.Events.ALL_DAY) != 0)
-    event.putString("location", optStringFromCursor(cursor, CalendarContract.Events.EVENT_LOCATION))
-    event.putString("availability", availabilityStringMatchingConstant(optIntFromCursor(cursor, CalendarContract.Events.AVAILABILITY)))
-    event.putParcelableArrayList("alarms", serializeAlarms(cursor.getLong(0)))
-    event.putString("organizerEmail", optStringFromCursor(cursor, CalendarContract.Events.ORGANIZER))
-    event.putString("timeZone", optStringFromCursor(cursor, CalendarContract.Events.EVENT_TIMEZONE))
-    event.putString("endTimeZone", optStringFromCursor(cursor, CalendarContract.Events.EVENT_END_TIMEZONE))
-    event.putString("accessLevel", accessStringMatchingConstant(optIntFromCursor(cursor, CalendarContract.Events.ACCESS_LEVEL)))
-    event.putBoolean("guestsCanModify", optIntFromCursor(cursor, CalendarContract.Events.GUESTS_CAN_MODIFY) != 0)
-    event.putBoolean("guestsCanInviteOthers", optIntFromCursor(cursor, CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS) != 0)
-    event.putBoolean("guestsCanSeeGuests", optIntFromCursor(cursor, CalendarContract.Events.GUESTS_CAN_SEE_GUESTS) != 0)
-    event.putString("originalId", optStringFromCursor(cursor, CalendarContract.Events.ORIGINAL_ID))
+    val event = Bundle().apply {
+      rruleBundle?.let {
+        putBundle("recurrenceRule", it)
+      }
+      putString("id", cursor.getString(0))
+      putString("calendarId", optStringFromCursor(cursor, CalendarContract.Events.CALENDAR_ID))
+      putString("title", optStringFromCursor(cursor, CalendarContract.Events.TITLE))
+      putString("notes", optStringFromCursor(cursor, CalendarContract.Events.DESCRIPTION))
+      putString("startDate", startDateUTC)
+      putString("endDate", endDateUTC)
+      putBoolean("allDay", optIntFromCursor(cursor, CalendarContract.Events.ALL_DAY) != 0)
+      putString("location", optStringFromCursor(cursor, CalendarContract.Events.EVENT_LOCATION))
+      putString("availability", availabilityStringMatchingConstant(optIntFromCursor(cursor, CalendarContract.Events.AVAILABILITY)))
+      putParcelableArrayList("alarms", serializeAlarms(cursor.getLong(0)))
+      putString("organizerEmail", optStringFromCursor(cursor, CalendarContract.Events.ORGANIZER))
+      putString("timeZone", optStringFromCursor(cursor, CalendarContract.Events.EVENT_TIMEZONE))
+      putString("endTimeZone", optStringFromCursor(cursor, CalendarContract.Events.EVENT_END_TIMEZONE))
+      putString("accessLevel", accessStringMatchingConstant(optIntFromCursor(cursor, CalendarContract.Events.ACCESS_LEVEL)))
+      putBoolean("guestsCanModify", optIntFromCursor(cursor, CalendarContract.Events.GUESTS_CAN_MODIFY) != 0)
+      putBoolean("guestsCanInviteOthers", optIntFromCursor(cursor, CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS) != 0)
+      putBoolean("guestsCanSeeGuests", optIntFromCursor(cursor, CalendarContract.Events.GUESTS_CAN_SEE_GUESTS) != 0)
+      putString("originalId", optStringFromCursor(cursor, CalendarContract.Events.ORIGINAL_ID))
+    }
 
     // unfortunately the string values of CalendarContract.Events._ID and CalendarContract.Instances._ID are equal
     // so we'll use the somewhat brittle column number from the query
@@ -916,7 +874,6 @@ class CalendarModule(
     while (cursor.moveToNext()) {
       results.add(serializeEventCalendar(cursor))
     }
-    cursor.close()
     return results
   }
 
@@ -959,7 +916,6 @@ class CalendarModule(
     while (cursor.moveToNext()) {
       results.add(serializeAttendee(cursor))
     }
-    cursor.close()
     return results
   }
 
