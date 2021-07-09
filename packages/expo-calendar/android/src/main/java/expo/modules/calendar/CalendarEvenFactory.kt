@@ -1,6 +1,8 @@
 package expo.modules.calendar
 
 import android.content.ContentValues
+import android.provider.CalendarContract
+import android.text.TextUtils
 import org.unimodules.core.arguments.ReadableArguments
 import java.util.*
 
@@ -29,35 +31,35 @@ class CalendarEvenFactory(
     eventValues.putNull(key)
   }
 
-  fun putEventStrings(vararg pairs: Pair<String, String>) = apply {
-    pairs.forEach { putEventString(it.first, it.second) }
-  }
-
-  fun putEventBooleans(vararg pairs: Pair<String, String>) = apply {
-    pairs.forEach { putEventBoolean(it.first, it.second) }
-  }
-
-  fun putEventTimeZones(vararg pairs: Pair<String, String>) = apply {
-    pairs.forEach { putEventTimeZone(it.first, it.second) }
-  }
-
   fun checkIfContainsRequiredKeys(vararg keys: String) = apply {
     keys.forEach { checkDetailsContainsRequiredKey(it) }
   }
 
-  private fun putEventString(eventKey: String, detailsKey: String) {
+  fun putEventString(eventKey: String, detailsKey: String) = apply {
     if (eventDetails.containsKey(detailsKey)) {
       eventValues.put(eventKey, eventDetails.getString(detailsKey))
     }
   }
 
-  private fun putEventBoolean(eventKey: String, detailsKey: String) {
+  fun putEventString(eventKey: String, detailsKey: String, mapper: (String) -> Int) = apply {
+    if (eventDetails.containsKey(detailsKey)) {
+      eventValues.put(eventKey, mapper(eventDetails.getString(detailsKey)))
+    }
+  }
+
+  fun putEventBoolean(eventKey: String, detailsKey: String) = apply {
     if (eventDetails.containsKey(detailsKey)) {
       eventValues.put(eventKey, if (eventDetails.getBoolean(detailsKey)) 1 else 0)
     }
   }
 
-  private fun putEventTimeZone(eventKey: String, detailsKey: String) {
+  fun putEventBoolean(eventKey: String, detailsKey: String, value: Boolean) = apply {
+    if (eventDetails.containsKey(detailsKey)) {
+      eventValues.put(eventKey, value)
+    }
+  }
+
+  fun putEventTimeZone(eventKey: String, detailsKey: String) = apply {
     eventValues.put(
       eventKey,
       if (eventDetails.containsKey(detailsKey)) {
@@ -68,7 +70,17 @@ class CalendarEvenFactory(
     )
   }
 
-  private fun checkDetailsContainsRequiredKey(key: String) {
+  fun <OutputListItemType> putEventDetailsList(eventKey: String, detailsKey: String, mappingMethod: (Any?) -> OutputListItemType) = apply {
+    if (eventDetails.containsKey(eventKey)) {
+      val array = eventDetails.getList(eventKey)
+      val values = array.map {
+        mappingMethod(it)
+      }
+      eventValues.put(detailsKey, TextUtils.join(",", values))
+    }
+  }
+
+  fun checkDetailsContainsRequiredKey(key: String) = apply {
     if (!eventDetails.containsKey(key)) {
       throw Exception("new calendars require $key")
     }

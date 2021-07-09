@@ -8,7 +8,6 @@ import android.content.Intent
 import android.database.Cursor
 import android.os.Bundle
 import android.provider.CalendarContract
-import android.text.TextUtils
 import android.util.Log
 import expo.modules.interfaces.permissions.Permissions
 import kotlinx.coroutines.CoroutineScope
@@ -57,6 +56,16 @@ class CalendarModule(
     }
   }
 
+  private inline fun launchAsyncWithModuleScope(promise: Promise, crossinline block: () -> Unit) {
+    try {
+      moduleCoroutineScope.launch {
+        block()
+      }
+    } catch (e: ModuleDestroyedException) {
+      promise.reject("E_MODULE_DESTROYED", "Module has been destroyed")
+    }
+  }
+
   private inline fun withPermissions(promise: Promise, block: () -> Unit) {
     if (!checkPermissions(promise)) {
       return
@@ -71,179 +80,128 @@ class CalendarModule(
       promise.reject("E_CALENDARS_NOT_FOUND", "Calendars of type `reminder` are not supported on Android")
       return
     }
-    try {
-      moduleCoroutineScope.launch {
+    launchAsyncWithModuleScope(promise) {
+      try {
         val calendars = findCalendars()
         promise.resolve(calendars)
+      } catch (e: Exception) {
+        promise.reject("E_CALENDARS_NOT_FOUND", "Calendars could not be found", e)
       }
-    } catch (e: ModuleDestroyedException) {
-      promise.reject("E_MODULE_DESTROYED", "Module has been destroyed")
-    } catch (e: Exception) {
-      promise.reject("E_CALENDARS_NOT_FOUND", "Calendars could not be found", e)
     }
   }
 
   @ExpoMethod
   fun saveCalendarAsync(details: ReadableArguments, promise: Promise) = withPermissions(promise) {
-    try {
-      moduleCoroutineScope.launch {
-        try {
-          val calendarID = saveCalendar(details)
-          promise.resolve(calendarID.toString())
-        } catch (e: ModuleDestroyedException) {
-          promise.reject("E_MODULE_DESTROYED", "Module has been destroyed")
-        } catch (e: Exception) {
-          promise.reject("E_CALENDAR_NOT_SAVED", "Calendar could not be saved: " + e.message, e)
-        }
+    launchAsyncWithModuleScope(promise) {
+      try {
+        val calendarID = saveCalendar(details)
+        promise.resolve(calendarID.toString())
+      } catch (e: Exception) {
+        promise.reject("E_CALENDAR_NOT_SAVED", "Calendar could not be saved: " + e.message, e)
       }
-    } catch (e: ModuleDestroyedException) {
-      promise.reject("E_MODULE_DESTROYED", "Module has been destroyed")
     }
   }
 
   @ExpoMethod
   fun deleteCalendarAsync(calendarID: String, promise: Promise) = withPermissions(promise) {
-    try {
-      moduleCoroutineScope.launch {
-        val successful = deleteCalendar(calendarID)
-        if (successful) {
-          promise.resolve(null)
-        } else {
-          promise.reject("E_CALENDAR_NOT_DELETED", "Calendar with id $calendarID could not be deleted")
-        }
+    launchAsyncWithModuleScope(promise) {
+      val successful = deleteCalendar(calendarID)
+      if (successful) {
+        promise.resolve(null)
+      } else {
+        promise.reject("E_CALENDAR_NOT_DELETED", "Calendar with id $calendarID could not be deleted")
       }
-    } catch (e: ModuleDestroyedException) {
-      promise.reject("E_MODULE_DESTROYED", "Module has been destroyed")
     }
   }
 
+
   @ExpoMethod
   fun getEventsAsync(startDate: Any, endDate: Any, calendars: List<String>, promise: Promise) = withPermissions(promise) {
-    try {
-      moduleCoroutineScope.launch {
+    launchAsyncWithModuleScope(promise) {
+      try {
         val results = findEvents(startDate, endDate, calendars)
         promise.resolve(results)
+      } catch (e: Exception) {
+        promise.reject("E_EVENTS_NOT_FOUND", "Events could not be found", e)
       }
-    } catch (e: ModuleDestroyedException) {
-      promise.reject("E_MODULE_DESTROYED", "Module has been destroyed")
-    } catch (e: Exception) {
-      promise.reject("E_EVENTS_NOT_FOUND", "Events could not be found", e)
     }
   }
 
   @ExpoMethod
   fun getEventByIdAsync(eventID: String, promise: Promise) = withPermissions(promise) {
-    try {
-      moduleCoroutineScope.launch {
-        val results = findEventById(eventID)
-        if (results != null) {
-          promise.resolve(results)
-        } else {
-          promise.reject("E_EVENT_NOT_FOUND", "Event with id $eventID could not be found")
-        }
-      }
-    } catch (e: ModuleDestroyedException) {
-      promise.reject("E_MODULE_DESTROYED", "Module has been destroyed")
-    }
-  }
-
-  @ExpoMethod
-  fun saveEventAsync(details: ReadableArguments, options: ReadableArguments?, promise: Promise) {
-    if (!checkPermissions(promise)) {
-      return
-    }
-    try {
-      moduleCoroutineScope.launch {
-        try {
-          val eventID = saveEvent(details)
-          promise.resolve(eventID.toString())
-        } catch (e: ParseException) {
-          promise.reject("E_EVENT_NOT_SAVED", "Event could not be saved", e)
-        } catch (e: EventNotSavedException) {
-          promise.reject("E_EVENT_NOT_SAVED", "Event could not be saved", e)
-        } catch (e: InvalidArgumentException) {
-          promise.reject("E_EVENT_NOT_SAVED", "Event could not be saved", e)
-        }
-      }
-    } catch (e: ModuleDestroyedException) {
-      promise.reject("E_MODULE_DESTROYED", "Module has been destroyed")
-    }
-  }
-
-  @ExpoMethod
-  fun deleteEventAsync(details: ReadableArguments, options: ReadableArguments?, promise: Promise) {
-    if (!checkPermissions(promise)) {
-      return
-    }
-    try {
-      moduleCoroutineScope.launch {
-        try {
-          val successful = removeEvent(details)
-          if (successful) {
-            promise.resolve(null)
-          } else {
-            promise.reject("E_EVENT_NOT_DELETED", "Event with id ${details.getString("id")} could not be deleted")
-          }
-        } catch (e: Exception) {
-          promise.reject("E_EVENT_NOT_DELETED", "Event with id ${details.getString("id")} could not be deleted", e)
-        }
-      }
-    } catch (e: ModuleDestroyedException) {
-      promise.reject("E_MODULE_DESTROYED", "Module has been destroyed")
-    }
-  }
-
-  @ExpoMethod
-  fun getAttendeesForEventAsync(eventID: String, promise: Promise) {
-    if (!checkPermissions(promise)) {
-      return
-    }
-    try {
-      moduleCoroutineScope.launch {
-        val results = findAttendeesByEventId(eventID)
+    launchAsyncWithModuleScope(promise) {
+      val results = findEventById(eventID)
+      if (results != null) {
         promise.resolve(results)
+      } else {
+        promise.reject("E_EVENT_NOT_FOUND", "Event with id $eventID could not be found")
       }
-    } catch (e: ModuleDestroyedException) {
-      promise.reject("E_MODULE_DESTROYED", "Module has been destroyed")
+    }
+  }
+
+
+  @ExpoMethod
+  fun saveEventAsync(details: ReadableArguments, options: ReadableArguments?, promise: Promise) = withPermissions(promise) {
+    launchAsyncWithModuleScope(promise) {
+      try {
+        val eventID = saveEvent(details)
+        promise.resolve(eventID.toString())
+      } catch (e: ParseException) {
+        promise.reject("E_EVENT_NOT_SAVED", "Event could not be saved", e)
+      } catch (e: EventNotSavedException) {
+        promise.reject("E_EVENT_NOT_SAVED", "Event could not be saved", e)
+      } catch (e: InvalidArgumentException) {
+        promise.reject("E_EVENT_NOT_SAVED", "Event could not be saved", e)
+      }
+    }
+  }
+
+  @ExpoMethod
+  fun deleteEventAsync(details: ReadableArguments, options: ReadableArguments?, promise: Promise) = withPermissions(promise) {
+    launchAsyncWithModuleScope(promise) {
+      try {
+        val successful = removeEvent(details)
+        if (successful) {
+          promise.resolve(null)
+        } else {
+          promise.reject("E_EVENT_NOT_DELETED", "Event with id ${details.getString("id")} could not be deleted")
+        }
+      } catch (e: Exception) {
+        promise.reject("E_EVENT_NOT_DELETED", "Event with id ${details.getString("id")} could not be deleted", e)
+      }
+    }
+  }
+
+  @ExpoMethod
+  fun getAttendeesForEventAsync(eventID: String, promise: Promise) = withPermissions(promise) {
+    launchAsyncWithModuleScope(promise) {
+      val results = findAttendeesByEventId(eventID)
+      promise.resolve(results)
     }
   }
 
   // TODO: needs refactor
   @ExpoMethod
-  fun saveAttendeeForEventAsync(details: ReadableArguments, eventID: String?, promise: Promise) {
-    if (!checkPermissions(promise)) {
-      return
-    }
-    try {
-      moduleCoroutineScope.launch {
-        try {
-          val attendeeID = saveAttendeeForEvent(details, eventID)
-          promise.resolve(attendeeID.toString())
-        } catch (e: Exception) {
-          promise.reject("E_ATTENDEE_NOT_SAVED", "Attendees for event with id $eventID could not be saved", e)
-        }
+  fun saveAttendeeForEventAsync(details: ReadableArguments, eventID: String?, promise: Promise) = withPermissions(promise) {
+    launchAsyncWithModuleScope(promise) {
+      try {
+        val attendeeID = saveAttendeeForEvent(details, eventID)
+        promise.resolve(attendeeID.toString())
+      } catch (e: Exception) {
+        promise.reject("E_ATTENDEE_NOT_SAVED", "Attendees for event with id $eventID could not be saved", e)
       }
-    } catch (e: ModuleDestroyedException) {
-      promise.reject("E_MODULE_DESTROYED", "Module has been destroyed")
     }
   }
 
   @ExpoMethod
-  fun deleteAttendeeAsync(attendeeID: String, promise: Promise) {
-    if (!checkPermissions(promise)) {
-      return
-    }
-    try {
-      moduleCoroutineScope.launch {
-        val successful = deleteAttendee(attendeeID)
-        if (successful) {
-          promise.resolve(null)
-        } else {
-          promise.reject("E_ATTENDEE_NOT_DELETED", "Attendee with id $attendeeID could not be deleted")
-        }
+  fun deleteAttendeeAsync(attendeeID: String, promise: Promise) = withPermissions(promise) {
+    launchAsyncWithModuleScope(promise) {
+      val successful = deleteAttendee(attendeeID)
+      if (successful) {
+        promise.resolve(null)
+      } else {
+        promise.reject("E_ATTENDEE_NOT_DELETED", "Attendee with id $attendeeID could not be deleted")
       }
-    } catch (e: ModuleDestroyedException) {
-      promise.reject("E_MODULE_DESTROYED", "Module has been destroyed")
     }
   }
 
@@ -374,14 +332,10 @@ class CalendarModule(
     val calendarEvenFactory = CalendarEvenFactory(details)
 
     calendarEvenFactory
-      .putEventStrings(
-        CalendarContract.Calendars.NAME to "name",
-        CalendarContract.Calendars.CALENDAR_DISPLAY_NAME to "title"
-      )
-      .putEventBooleans(
-        CalendarContract.Calendars.VISIBLE to "isVisible",
-        CalendarContract.Calendars.SYNC_EVENTS to "isSynced"
-      )
+      .putEventString(CalendarContract.Calendars.NAME, "name")
+      .putEventString(CalendarContract.Calendars.CALENDAR_DISPLAY_NAME, "title")
+      .putEventBoolean(CalendarContract.Calendars.VISIBLE, "isVisible")
+      .putEventBoolean(CalendarContract.Calendars.SYNC_EVENTS, "isSynced")
 
     return if (details.containsKey("id")) {
       val calendarID = details.getString("id").toInt()
@@ -416,35 +370,13 @@ class CalendarModule(
         .put(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL, calAccessConstantMatchingString(details.getString("accessLevel")))
         .put(CalendarContract.Calendars.OWNER_ACCOUNT, details.getString("ownerAccount"))
 
-
       // end required fields
-      if (details.containsKey("timeZone")) {
-        calendarEvenFactory.put(CalendarContract.Calendars.CALENDAR_TIME_ZONE, details.getString("timeZone"))
-      }
-      if (details.containsKey("allowedReminders")) {
-        val array = details.getList("allowedReminders")
-        val values = arrayOfNulls<Int>(array.size)
-        for (i in array.indices) {
-          values[i] = reminderConstantMatchingString(array[i] as String?)
-        }
-        calendarEvenFactory.put(CalendarContract.Calendars.ALLOWED_REMINDERS, TextUtils.join(",", values))
-      }
-      if (details.containsKey("allowedAvailabilities")) {
-        val array = details.getList("allowedAvailabilities")
-        val values = arrayOfNulls<Int>(array.size)
-        for (i in array.indices) {
-          values[i] = availabilityConstantMatchingString(array[i] as String)
-        }
-        calendarEvenFactory.put(CalendarContract.Calendars.ALLOWED_AVAILABILITY, TextUtils.join(",", values))
-      }
-      if (details.containsKey("allowedAttendeeTypes")) {
-        val array = details.getList("allowedAttendeeTypes")
-        val values = arrayOfNulls<Int>(array.size)
-        for (i in array.indices) {
-          values[i] = attendeeTypeConstantMatchingString(array[i] as String)
-        }
-        calendarEvenFactory.put(CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES, TextUtils.join(",", values))
-      }
+      calendarEvenFactory
+        .putEventTimeZone(CalendarContract.Calendars.CALENDAR_TIME_ZONE, "timeZone")
+        .putEventDetailsList(CalendarContract.Calendars.ALLOWED_REMINDERS, "allowedReminders") { reminderConstantMatchingString(it as String?) }
+        .putEventDetailsList(CalendarContract.Calendars.ALLOWED_AVAILABILITY, "allowedAvailabilities") { availabilityConstantMatchingString(it as String) }
+        .putEventDetailsList(CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES, "allowedAttendeeTypes") { attendeeTypeConstantMatchingString(it as String) }
+
       val uriBuilder = CalendarContract.Calendars.CONTENT_URI
         .buildUpon()
         .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
@@ -555,32 +487,22 @@ class CalendarModule(
         calendarEvenFactory.put(CalendarContract.Events.RRULE, rule)
       }
     }
-    if (details.containsKey("alarms")) {
-      calendarEvenFactory.put(CalendarContract.Events.HAS_ALARM, true)
-    }
-    if (details.containsKey("availability")) {
-      calendarEvenFactory.put(CalendarContract.Events.AVAILABILITY, availabilityConstantMatchingString(details.getString("availability")))
-    }
+
     calendarEvenFactory
-      .putEventStrings(
-        CalendarContract.Events.TITLE to "title",
-        CalendarContract.Events.DESCRIPTION to "notes",
-        CalendarContract.Events.EVENT_LOCATION to "location",
-        CalendarContract.Events.ORGANIZER to "organizerEmail"
-      )
-      .putEventBooleans(
-        CalendarContract.Events.ALL_DAY to "allDay",
-        CalendarContract.Events.GUESTS_CAN_MODIFY to "guestsCanModify",
-        CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS to "guestsCanInviteOthers",
-        CalendarContract.Events.GUESTS_CAN_SEE_GUESTS to "guestsCanSeeGuests"
-      )
-      .putEventTimeZones(
-        CalendarContract.Events.EVENT_TIMEZONE to "timeZone",
-        CalendarContract.Events.EVENT_END_TIMEZONE to "endTimeZone"
-      )
-    if (details.containsKey("accessLevel")) {
-      calendarEvenFactory.put(CalendarContract.Events.ACCESS_LEVEL, accessConstantMatchingString(details.getString("accessLevel")))
-    }
+      .putEventBoolean(CalendarContract.Events.HAS_ALARM, "alarms", true)
+      .putEventString(CalendarContract.Events.AVAILABILITY, "availability", ::availabilityConstantMatchingString)
+      .putEventString(CalendarContract.Events.TITLE, "title")
+      .putEventString(CalendarContract.Events.DESCRIPTION, "notes")
+      .putEventString(CalendarContract.Events.EVENT_LOCATION, "location")
+      .putEventString(CalendarContract.Events.ORGANIZER, "organizerEmail")
+      .putEventBoolean(CalendarContract.Events.ALL_DAY, "allDay")
+      .putEventBoolean(CalendarContract.Events.GUESTS_CAN_MODIFY, "guestsCanModify")
+      .putEventBoolean(CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS, "guestsCanInviteOthers")
+      .putEventBoolean(CalendarContract.Events.GUESTS_CAN_SEE_GUESTS, "guestsCanSeeGuests")
+      .putEventTimeZone(CalendarContract.Events.EVENT_TIMEZONE, "timeZone")
+      .putEventTimeZone(CalendarContract.Events.EVENT_END_TIMEZONE, "endTimeZone")
+      .putEventString(CalendarContract.Events.ACCESS_LEVEL, "accessLevel", ::accessConstantMatchingString)
+
     return if (details.containsKey("id")) {
       val eventID = details.getString("id").toInt()
       val updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toLong())
@@ -657,31 +579,23 @@ class CalendarModule(
     }
     if (details.containsKey("email")) {
       attendeeValues.put(CalendarContract.Attendees.ATTENDEE_EMAIL, details.getString("email"))
-    } else {
-      if (isNew) {
-        throw Exception("new attendees require `email`")
-      }
+    } else if (isNew) {
+      throw Exception("new attendees require `email`")
     }
     if (details.containsKey("role")) {
       attendeeValues.put(CalendarContract.Attendees.ATTENDEE_RELATIONSHIP, attendeeRelationshipConstantMatchingString(details.getString("role")))
-    } else {
-      if (isNew) {
-        throw Exception("new attendees require `role`")
-      }
+    } else if (isNew) {
+      throw Exception("new attendees require `role`")
     }
     if (details.containsKey("type")) {
       attendeeValues.put(CalendarContract.Attendees.ATTENDEE_TYPE, attendeeTypeConstantMatchingString(details.getString("type")))
-    } else {
-      if (isNew) {
-        throw Exception("new attendees require `type`")
-      }
+    } else if (isNew) {
+      throw Exception("new attendees require `type`")
     }
     if (details.containsKey("status")) {
       attendeeValues.put(CalendarContract.Attendees.ATTENDEE_STATUS, attendeeStatusConstantMatchingString(details.getString("status")))
-    } else {
-      if (isNew) {
-        throw Exception("new attendees require `status`")
-      }
+    } else if (isNew) {
+      throw Exception("new attendees require `status`")
     }
     return if (isNew) {
       attendeeValues.put(CalendarContract.Attendees.EVENT_ID, eventID?.toInt())
