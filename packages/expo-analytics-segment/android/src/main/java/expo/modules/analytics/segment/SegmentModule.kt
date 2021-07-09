@@ -120,21 +120,17 @@ class SegmentModule(private val mContext: Context) : ExportedModule(mContext) {
 
   @ExpoMethod
   fun setEnabledAsync(enabled: Boolean, promise: Promise) {
-    mConstants?.appOwnership
     if (mConstants!!.appOwnership == "expo") {
       promise.reject("E_UNSUPPORTED", "Setting Segment's `enabled` is not supported in Expo Go.")
       return
     }
     mSharedPreferences.edit().putBoolean(ENABLED_PREFERENCE_KEY, enabled).apply()
-    if (mClient != null) {
-      mClient!!.optOut(!enabled)
-    }
+    mClient?.optOut(!enabled)
     promise.resolve(null)
   }
 
   override fun onCreate(moduleRegistry: ModuleRegistry?) {
     mConstants = null
-    // TODO: in java source moduleRegistry is checked against being null?!
     mConstants = moduleRegistry?.getModule(ConstantsInterface::class.java)
   }
 
