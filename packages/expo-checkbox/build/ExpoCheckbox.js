@@ -21,7 +21,6 @@ const ExpoCheckbox = props => {
 };
 ExpoCheckbox.displayName = 'Checkbox';
 export default ExpoCheckbox;
-export const name = 'ExpoCheckbox';
 const defaultEnabledColor = Platform.select({
     ios: '#007AFF',
     android: '#009688',
