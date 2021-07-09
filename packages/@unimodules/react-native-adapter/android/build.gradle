@@ -56,7 +56,7 @@ task generateExpoModulesPackageList {
 }
 
 // Run that task during prebuilding phase.
-preBuild.dependsOn generateExpoModulesPackageList
+preBuild.dependsOn "generateExpoModulesPackageList"
 
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 30)
