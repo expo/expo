@@ -189,7 +189,7 @@
 #if __has_include(<ABI42_0_0EXNotifications/ABI42_0_0EXNotificationCategoriesModule.h>)
   // only override in Expo Go
   if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
-    ABI42_0_0EXScopedNotificationCategoriesModule *scopedCategoriesModule = [[ABI42_0_0EXScopedNotificationCategoriesModule alloc] initWithScopeKey:scopeKey andConstantsBinding:constantsBinding];
+    ABI42_0_0EXScopedNotificationCategoriesModule *scopedCategoriesModule = [[ABI42_0_0EXScopedNotificationCategoriesModule alloc] initWithScopeKey:scopeKey];
     [moduleRegistry registerExportedModule:scopedCategoriesModule];
   }
   [ABI42_0_0EXScopedNotificationCategoriesModule maybeMigrateLegacyCategoryIdentifiersForProjectWithExperienceStableLegacyId:experienceStableLegacyId
