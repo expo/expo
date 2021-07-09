@@ -33,7 +33,6 @@ class CalendarModule(
   private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate(),
 ) : ExportedModule(mContext), RegistryLifecycleListener {
   private val mPermissions: Permissions by moduleRegistry()
-
   private val moduleCoroutineScope = CoroutineScope(Dispatchers.Default)
   private val contentResolver
     get() = mContext.contentResolver
@@ -42,7 +41,7 @@ class CalendarModule(
     timeZone = TimeZone.getTimeZone("GMT")
   }
 
-  override fun getName(): String = "ExpoCalendar"
+  override fun getName() = "ExpoCalendar"
 
   private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
 
@@ -58,12 +57,16 @@ class CalendarModule(
     }
   }
 
-  //region Exported methods
-  @ExpoMethod
-  fun getCalendarsAsync(type: String?, promise: Promise) {
+  private inline fun withPermissions(promise: Promise, block: () -> Unit) {
     if (!checkPermissions(promise)) {
       return
     }
+    block()
+  }
+
+  //region Exported methods
+  @ExpoMethod
+  fun getCalendarsAsync(type: String?, promise: Promise) = withPermissions(promise) {
     if (type != null && type == "reminder") {
       promise.reject("E_CALENDARS_NOT_FOUND", "Calendars of type `reminder` are not supported on Android")
       return
@@ -81,10 +84,7 @@ class CalendarModule(
   }
 
   @ExpoMethod
-  fun saveCalendarAsync(details: ReadableArguments, promise: Promise) {
-    if (!checkPermissions(promise)) {
-      return
-    }
+  fun saveCalendarAsync(details: ReadableArguments, promise: Promise) = withPermissions(promise) {
     try {
       moduleCoroutineScope.launch {
         try {
@@ -102,10 +102,7 @@ class CalendarModule(
   }
 
   @ExpoMethod
-  fun deleteCalendarAsync(calendarID: String, promise: Promise) {
-    if (!checkPermissions(promise)) {
-      return
-    }
+  fun deleteCalendarAsync(calendarID: String, promise: Promise) = withPermissions(promise) {
     try {
       moduleCoroutineScope.launch {
         val successful = deleteCalendar(calendarID)
@@ -121,10 +118,7 @@ class CalendarModule(
   }
 
   @ExpoMethod
-  fun getEventsAsync(startDate: Any, endDate: Any, calendars: List<String>, promise: Promise) {
-    if (!checkPermissions(promise)) {
-      return
-    }
+  fun getEventsAsync(startDate: Any, endDate: Any, calendars: List<String>, promise: Promise) = withPermissions(promise) {
     try {
       moduleCoroutineScope.launch {
         val results = findEvents(startDate, endDate, calendars)
@@ -138,10 +132,7 @@ class CalendarModule(
   }
 
   @ExpoMethod
-  fun getEventByIdAsync(eventID: String, promise: Promise) {
-    if (!checkPermissions(promise)) {
-      return
-    }
+  fun getEventByIdAsync(eventID: String, promise: Promise) = withPermissions(promise) {
     try {
       moduleCoroutineScope.launch {
         val results = findEventById(eventID)
@@ -418,13 +409,13 @@ class CalendarModule(
         throw Exception("new calendars require a `source` object with a `type`, or `isLocalAccount`: true")
       }
 
-      calendarEvenFactory.apply {
-        put(CalendarContract.Calendars.ACCOUNT_NAME, source.getString("name"))
-        put(CalendarContract.Calendars.ACCOUNT_TYPE, if (isLocalAccount) CalendarContract.ACCOUNT_TYPE_LOCAL else source.getString("type"))
-        put(CalendarContract.Calendars.CALENDAR_COLOR, details.getInt("color"))
-        put(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL, calAccessConstantMatchingString(details.getString("accessLevel")))
-        put(CalendarContract.Calendars.OWNER_ACCOUNT, details.getString("ownerAccount"))
-      }
+      calendarEvenFactory
+        .put(CalendarContract.Calendars.ACCOUNT_NAME, source.getString("name"))
+        .put(CalendarContract.Calendars.ACCOUNT_TYPE, if (isLocalAccount) CalendarContract.ACCOUNT_TYPE_LOCAL else source.getString("type"))
+        .put(CalendarContract.Calendars.CALENDAR_COLOR, details.getInt("color"))
+        .put(CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL, calAccessConstantMatchingString(details.getString("accessLevel")))
+        .put(CalendarContract.Calendars.OWNER_ACCOUNT, details.getString("ownerAccount"))
+
 
       // end required fields
       if (details.containsKey("timeZone")) {
@@ -454,11 +445,12 @@ class CalendarModule(
         }
         calendarEvenFactory.put(CalendarContract.Calendars.ALLOWED_ATTENDEE_TYPES, TextUtils.join(",", values))
       }
-      val uriBuilder = CalendarContract.Calendars.CONTENT_URI.buildUpon().apply {
-        appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
-        appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, source.getString("name"))
-        appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, if (isLocalAccount) CalendarContract.ACCOUNT_TYPE_LOCAL else source.getString("type"))
-      }
+      val uriBuilder = CalendarContract.Calendars.CONTENT_URI
+        .buildUpon()
+        .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
+        .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_NAME, source.getString("name"))
+        .appendQueryParameter(CalendarContract.Calendars.ACCOUNT_TYPE, if (isLocalAccount) CalendarContract.ACCOUNT_TYPE_LOCAL else source.getString("type"))
+
       val calendarsUri = uriBuilder.build()
       val calendarUri = contentResolver.insert(calendarsUri, calendarEvenFactory.eventValues)
       calendarUri!!.lastPathSegment!!.toInt()
@@ -554,9 +546,10 @@ class CalendarModule(
           val eventStartDate = calendarEvenFactory.eventValues.getAsLong(CalendarContract.Events.DTSTART)
           val eventEndDate = calendarEvenFactory.eventValues.getAsLong(CalendarContract.Events.DTEND)
           val duration = (eventEndDate - eventStartDate) / 1000
-          calendarEvenFactory.putNull(CalendarContract.Events.LAST_DATE)
-          calendarEvenFactory.putNull(CalendarContract.Events.DTEND)
-          calendarEvenFactory.put(CalendarContract.Events.DURATION, "PT${duration}S")
+          calendarEvenFactory
+            .putNull(CalendarContract.Events.LAST_DATE)
+            .putNull(CalendarContract.Events.DTEND)
+            .put(CalendarContract.Events.DURATION, "PT${duration}S")
         }
         val rule = createRecurrenceRule(frequency, interval, endDate, occurrence)
         calendarEvenFactory.put(CalendarContract.Events.RRULE, rule)
@@ -742,7 +735,6 @@ class CalendarModule(
     }
   }
 
-
   private fun createRecurrenceRule(recurrence: String, interval: Int?, endDate: String?, occurrence: Int?): String {
     var rrule: String = when (recurrence) {
       "daily" -> "FREQ=DAILY"
@@ -818,7 +810,6 @@ class CalendarModule(
     } else {
       null
     }
-
 
     // may be CalendarContract.Instances.EVENT_ID or CalendarContract.Events._ID (which have different string values)
     val event = Bundle().apply {

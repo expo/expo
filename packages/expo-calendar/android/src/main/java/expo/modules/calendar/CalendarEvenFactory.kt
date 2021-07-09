@@ -9,44 +9,40 @@ class CalendarEvenFactory(
 ) {
   val eventValues = ContentValues()
 
-  fun put(key: String, value: String) {
+  fun put(key: String, value: String) = apply {
     eventValues.put(key, value)
   }
 
-  fun put(key: String, value: Int) {
+  fun put(key: String, value: Int) = apply {
     eventValues.put(key, value)
   }
 
-  fun put(key: String, value: Long) {
+  fun put(key: String, value: Long) = apply {
     eventValues.put(key, value)
   }
 
-  fun put(key: String, value: Boolean) {
+  fun put(key: String, value: Boolean) = apply {
     eventValues.put(key, value)
   }
 
-  fun putNull(key: String) {
+  fun putNull(key: String) = apply {
     eventValues.putNull(key)
   }
 
-  fun putEventStrings(vararg pairs: Pair<String, String>): CalendarEvenFactory {
+  fun putEventStrings(vararg pairs: Pair<String, String>) = apply {
     pairs.forEach { putEventString(it.first, it.second) }
-    return this
   }
 
-  fun putEventBooleans(vararg pairs: Pair<String, String>): CalendarEvenFactory {
+  fun putEventBooleans(vararg pairs: Pair<String, String>) = apply {
     pairs.forEach { putEventBoolean(it.first, it.second) }
-    return this
   }
 
-  fun putEventTimeZones(vararg pairs: Pair<String, String>): CalendarEvenFactory {
+  fun putEventTimeZones(vararg pairs: Pair<String, String>) = apply {
     pairs.forEach { putEventTimeZone(it.first, it.second) }
-    return this
   }
 
-  fun checkIfContainsRequiredKeys(vararg keys: String): CalendarEvenFactory {
+  fun checkIfContainsRequiredKeys(vararg keys: String) = apply {
     keys.forEach { checkDetailsContainsRequiredKey(it) }
-    return this
   }
 
   private fun putEventString(eventKey: String, detailsKey: String) {
