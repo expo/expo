@@ -17,34 +17,42 @@ If you only want to use EAS Build for a single platform, that's fine. If you cha
 
 #### 2. Create eas.json
 
-The command will create an `eas.json` file in the root directory with the following contents:
+The command will create an `eas.json` file in the root directory with the default configuration. It looks something like this:
 
 ```json
 {
   "builds": {
     "android": {
       "release": {
-        "workflow": "generic"
+        "buildType": "app-bundle"
+      },
+      "development": {
+        "buildType": "development-client",
+        "distribution": "internal",
       }
     },
     "ios": {
       "release": {
-        "workflow": "generic"
+        "buildType": "release"
+      },
+      "development": {
+        "buildType": "development-client",
+        "distribution": "internal"
       }
     }
   }
 }
 ```
 
-> **Note:** If you have a managed workflow project, you'll see `"workflow": "managed"` in the configuration.
+If you have a bare project, it will look a bit different.
 
-This is your EAS Build configuration. It defines a single build profile named `release` (you can have multiple build profiles like `release`, `debug`, `testing`, etc.) for each platform. In the generated configuration, each profile declares that the project is a generic React Native project (unlike a managed Expo project which doesn't contain native code in the project tree). If you want to learn more about `eas.json` see the [Configuration with eas.json](/build/eas-json.md) page.
+This is your EAS Build configuration. It defines two build profiles named `release` and `development` (you can have multiple build profiles like `release`, `debug`, `testing`, etc.) for each platform. If you want to learn more about `eas.json` see the [Configuration with eas.json](/build/eas-json.md) page.
 
 #### 3. Configure the project
 
 This step varies depending on the project type you have.
 
-#### 3.1. Generic project
+#### 3.1. Bare project
 
 If you choose to configure the Android project, EAS CLI will update your Gradle project so we can build it on our servers.
 This step patches `build.gradle` and includes our custom signing configuration. The configuration itself is saved to a separate file: `eas-build.gradle`.
