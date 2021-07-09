@@ -2,14 +2,6 @@
 
 #import <EXAV/EXAVPlayerData.h>
 
-#import <React/RCTBridge.h>
-#import <React/RCTBridge+Private.h>
-#import <React/RCTUIManager.h>
-#import <React-callinvoker/ReactCommon/CallInvoker.h>
-#import <jsi/jsi.h>
-
-using namespace facebook;
-
 NSString *const EXAVPlayerDataStatusIsLoadedKeyPath = @"isLoaded";
 NSString *const EXAVPlayerDataStatusURIKeyPath = @"uri";
 NSString *const EXAVPlayerDataStatusHeadersKeyPath = @"headers";
@@ -84,25 +76,25 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 {
   if ((self = [super init])) {
     _exAV = exAV;
-  
+
     _isLoaded = NO;
     _loadFinishBlock = loadFinishBlock;
-  
-    _engine = [[AVAudioEngine alloc] init];
-  
+
+    _player = nil;
+
     _url = [NSURL URLWithString:[source objectForKey:EXAVPlayerDataStatusURIKeyPath]];
     _headers = [self validatedRequestHeaders:source[EXAVPlayerDataStatusHeadersKeyPath]];
-  
+
     _timeObserver = nil;
     _finishObserver = nil;
     _playbackStalledObserver = nil;
     _statusUpdateCallback = nil;
     _observers = [NSMapTable new];
-  
+
     // These status props will be potentially reset by the following call to [self setStatus:parameters ...].
     _progressUpdateIntervalMillis = @(500);
     _currentPosition = kCMTimeZero;
-    _timeControlStatus = AVPlayerTimeControlStatusPaused;
+    _timeControlStatus = 0;
     _shouldPlay = NO;
     _rate = @(1.0);
     _pitchCorrectionQuality = AVAudioTimePitchAlgorithmVarispeed;
@@ -111,104 +103,12 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     _volume = @(1.0);
     _isMuted = NO;
     _isLooping = NO;
-  
-    [self setStatus:parameters resolver:nil rejecter:nil];
-  
-    [self _loadNewPlayer];
-    
-    
-    bool RUN_THIS_CODE = false; // yep.
-    
-    static bool isRunning = false;
-    if (!isRunning && RUN_THIS_CODE) {
-      isRunning = true;
-      [[AVAudioSession sharedInstance] setMode:AVAudioSessionModeMoviePlayback error:nil];
-      [[AVAudioSession sharedInstance] setActive:YES error:nil];
-      
-      _engine = [[AVAudioEngine alloc] init];
-      [_engine mainMixerNode]; // lazy getter init
-      [_engine prepare];
-      
-      NSError *engineStartError;
-      [_engine startAndReturnError:&engineStartError];
-      if (engineStartError != nil) {
-        NSLog(@"Error starting session!", engineStartError.description);
-      } else {
-        NSURL *filePath = [[NSBundle mainBundle] URLForResource:@"x" withExtension:@"mp3"];
-        _playerNode = [[AVAudioPlayerNode alloc] init];
-        
-        NSError *fileReadError;
-        auto _audioFile = [[AVAudioFile alloc] initForReading:filePath error:&fileReadError];
-        if (fileReadError != nil) {
-          NSLog(@"Error reading audio file!", fileReadError.description);
-        } else {
-          [_engine attachNode:_playerNode];
-          [_engine connect:_playerNode to:[_engine mainMixerNode] format:_audioFile.processingFormat];
-          
-          jsi::Function* callback;
-          
-          [_playerNode scheduleFile:_audioFile atTime:nil completionHandler:nil];
-          
-          RCTBridge* bridge = [RCTBridge currentBridge];
-          RCTCxxBridge* cxxBridge = (RCTCxxBridge *)[RCTBridge currentBridge];
-          if (cxxBridge.runtime) {
-            jsi::Runtime& jsiRuntime = *(jsi::Runtime*)cxxBridge.runtime;
-            auto setAudioCallback = [self](jsi::Runtime& runtime,
-                                            const jsi::Value& thisValue,
-                                            const jsi::Value* arguments,
-                                            size_t count) -> jsi::Value {
-              auto func = arguments[0].asObject(runtime).asFunction(runtime);
-              auto callback = std::make_shared<jsi::Function>(std::move(func));
-              NSLog(@"setAudioCallback()...");
-              
-              [_playerNode installTapOnBus:0
-                                bufferSize:1024
-                                    format:nil
-                                     block:^(AVAudioPCMBuffer * _Nonnull buffer,
-                                             AVAudioTime * _Nonnull when) {
-                double** data;
-                if (buffer.floatChannelData != nil) {
-                  data = (double**) buffer.floatChannelData;
-                } else if (buffer.int32ChannelData != nil) {
-                  data = (double**) buffer.int32ChannelData;
-                } else if (buffer.int16ChannelData != nil) {
-                  data = (double**) buffer.int16ChannelData;
-                }
-                auto channelsCount = (size_t) buffer.stride;
-                auto framesCount = buffer.frameLength;
-                
-                auto channels = jsi::Array(runtime, channelsCount);
-                for (auto i = 0; i < channelsCount; i++) {
-                  auto channel = jsi::Object(runtime);
-                  
-                  auto frames = jsi::Array(runtime, framesCount);
-                  for (auto ii = 0; ii < framesCount; ii++) {
-                    frames.setValueAtIndex(runtime, ii, jsi::Value((double) buffer.floatChannelData[i][ii]));
-                  }
-                  
-                  channel.setProperty(runtime, "frames", frames);
-                  channels.setValueAtIndex(runtime, i, channel);
-                }
-                
-                auto sample = jsi::Object(runtime);
-                sample.setProperty(runtime, "channels", channels);
-                callback->call(runtime, sample);
-              }];
-              [_playerNode play];
-              
-              return jsi::Value::undefined();
-            };
-            jsiRuntime.global().setProperty(jsiRuntime, "setAudioCallback", jsi::Function::createFromHostFunction(jsiRuntime,
-                                                                                                                  jsi::PropNameID::forAscii(jsiRuntime, "setAudioCallback"),
-                                                                                                                  2,
-                                                                                                                  setAudioCallback));
 
-          }
-        }
-      }
-    }
+    [self setStatus:parameters resolver:nil rejecter:nil];
+
+    [self _loadNewPlayer];
   }
-  
+
   return self;
 }
 
@@ -216,54 +116,33 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 {
   NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
   AVURLAsset *avAsset = [AVURLAsset URLAssetWithURL:_url options:@{AVURLAssetHTTPCookiesKey : cookies, @"AVURLAssetHTTPHeaderFieldsKey": _headers}];
-  
-  // TODO: do any AVAudioSession configuration?
-  
-  _engine = [[AVAudioEngine alloc] init];
-  [_engine mainMixerNode]; // lazy getter init
-  [_engine prepare];
-  
-  auto onError = ^(NSString* errorMessage){
-    if (self.loadFinishBlock) {
-      self.loadFinishBlock(NO, nil, errorMessage);
-      self.loadFinishBlock = nil;
-    } else if (self.errorCallback) {
-      self.errorCallback(errorMessage);
-    }
-  };
-  auto onSuccess = ^{
-    if (self.loadFinishBlock) {
-      self.loadFinishBlock(YES, [self getStatus], nil);
-      self.loadFinishBlock = nil;
-    }
-  };
-  
-  NSError *engineStartError;
-  [_engine startAndReturnError:&engineStartError];
-  if (engineStartError != nil) {
-    // Failed to start AVAudioEngine!
-    onError([NSString stringWithFormat:@"Error starting audio engine! %@", engineStartError.description]);
-  } else {
-    // Successfully started AVAudioEngine.
-    _playerNode = [[AVAudioPlayerNode alloc] init];
-    
-    NSError *fileReadError;
-    AVAudioFile *file = [[AVAudioFile alloc] initForReading:_url error:&fileReadError];
-    if (fileReadError != nil) {
-      // Failed to read AVAudioFile!
-      onError([NSString stringWithFormat:@"Error reading audio file from \"%@\"! %@", _url.absoluteString, engineStartError.description]);
+
+  // unless we preload, the asset will not necessarily load the duration by the time we try to play it.
+  // http://stackoverflow.com/questions/20581567/avplayer-and-avfoundationerrordomain-code-11819
+  UM_WEAKIFY(self);
+  [avAsset loadValuesAsynchronouslyForKeys:@[ @"duration" ] completionHandler:^{
+    UM_ENSURE_STRONGIFY(self);
+
+    // We prepare three items for AVQueuePlayer, so when the first finishes playing,
+    // second can start playing and the third can start preparing to play.
+    AVPlayerItem *firstplayerItem = [AVPlayerItem playerItemWithAsset:avAsset];
+    AVPlayerItem *secondPlayerItem = [AVPlayerItem playerItemWithAsset:avAsset];
+    AVPlayerItem *thirdPlayerItem = [AVPlayerItem playerItemWithAsset:avAsset];
+    self.items = @[firstplayerItem, secondPlayerItem, thirdPlayerItem];
+    self.player = [AVQueuePlayer queuePlayerWithItems:@[firstplayerItem, secondPlayerItem, thirdPlayerItem]];
+    if (self.player) {
+      [self _addObserver:self.player forKeyPath:EXAVPlayerDataObserverStatusKeyPath];
+      [self _addObserver:self.player.currentItem forKeyPath:EXAVPlayerDataObserverStatusKeyPath];
     } else {
-      // Successfully read AVAudioFile.
-      [_engine attachNode:_playerNode];
-      [_engine connect:_playerNode to:[_engine mainMixerNode] format:file.processingFormat];
-      [_playerNode scheduleFile:file atTime:nil completionHandler:^{
-        // AVAudioFile finished playing to end (or [stop] was called)
-        // TODO: Clean up player node? uninstall tap?
-      }];
-      onSuccess();
-      [_playerNode play];
+      NSString *errorMessage = @"Load encountered an error: [AVPlayer playerWithPlayerItem:] returned nil.";
+      if (self.loadFinishBlock) {
+        self.loadFinishBlock(NO, nil, errorMessage);
+        self.loadFinishBlock = nil;
+      } else if (self.errorCallback) {
+        self.errorCallback(errorMessage);
+      }
     }
-  }
+  }];
 }
 
 - (void)_finishLoadingNewPlayer
@@ -332,60 +211,58 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
          resolver:(UMPromiseResolveBlock)resolve
          rejecter:(UMPromiseRejectBlock)reject
 {
-  
-  /*
   BOOL mustUpdateTimeObserver = NO;
   BOOL mustSeek = NO;
-  
+
   if ([parameters objectForKey:EXAVPlayerDataStatusProgressUpdateIntervalMillisKeyPath] != nil) {
     NSNumber *progressUpdateIntervalMillis = parameters[EXAVPlayerDataStatusProgressUpdateIntervalMillisKeyPath];
     mustUpdateTimeObserver = ![progressUpdateIntervalMillis isEqualToNumber:_progressUpdateIntervalMillis];
     _progressUpdateIntervalMillis = progressUpdateIntervalMillis;
   }
-  
+
   // To prevent a race condition, we set _currentPosition at the end of this method.
   CMTime newPosition = _currentPosition;
-  
+
   if ([parameters objectForKey:EXAVPlayerDataStatusPositionMillisKeyPath] != nil) {
     NSNumber *currentPositionMillis = parameters[EXAVPlayerDataStatusPositionMillisKeyPath];
-    
+
     // We only seek if the new position is different from _currentPosition by a whole number of milliseconds.
     mustSeek = currentPositionMillis.longValue != [self _getRoundedMillisFromCMTime:_currentPosition].longValue;
     if (mustSeek) {
       newPosition = CMTimeMakeWithSeconds(currentPositionMillis.floatValue / 1000, NSEC_PER_SEC);
     }
   }
-  
+
   // Default values, see: https://developer.apple.com/documentation/avfoundation/avplayer/1388493-seek
   CMTime toleranceBefore = kCMTimePositiveInfinity;
   CMTime toleranceAfter = kCMTimePositiveInfinity;
-  
+
   // We need to set toleranceBefore only if we will seek
   if (mustSeek && [parameters objectForKey:EXAVPlayerDataStatusSeekMillisToleranceBeforeKeyPath] != nil) {
     NSNumber *seekMillisToleranceBefore = parameters[EXAVPlayerDataStatusSeekMillisToleranceBeforeKeyPath];
     toleranceBefore = CMTimeMakeWithSeconds(seekMillisToleranceBefore.floatValue / 1000, NSEC_PER_SEC);
   }
-  
+
   // We need to set toleranceAfter only if we will seek
   if (mustSeek && [parameters objectForKey:EXAVPlayerDataStatusSeekMillisToleranceAfterKeyPath] != nil) {
     NSNumber *seekMillisToleranceAfter = parameters[EXAVPlayerDataStatusSeekMillisToleranceAfterKeyPath];
     toleranceAfter = CMTimeMakeWithSeconds(seekMillisToleranceAfter.floatValue / 1000, NSEC_PER_SEC);
   }
-  
+
   if ([parameters objectForKey:EXAVPlayerDataStatusShouldPlayKeyPath] != nil) {
     NSNumber *shouldPlay = parameters[EXAVPlayerDataStatusShouldPlayKeyPath];
     _shouldPlay = shouldPlay.boolValue;
   }
-  
+
   if ([parameters objectForKey:EXAVPlayerDataStatusRateKeyPath] != nil) {
     NSNumber *rate = parameters[EXAVPlayerDataStatusRateKeyPath];
     _rate = rate;
   }
-  
+
   if (parameters[EXAVPlayerDataStatusPitchCorrectionQualityKeyPath] != nil) {
     _pitchCorrectionQuality = parameters[EXAVPlayerDataStatusPitchCorrectionQualityKeyPath];
   }
-  
+
   if ([parameters objectForKey:EXAVPlayerDataStatusShouldCorrectPitchKeyPath] != nil) {
     NSNumber *shouldCorrectPitch = parameters[EXAVPlayerDataStatusShouldCorrectPitchKeyPath];
     _shouldCorrectPitch = shouldCorrectPitch.boolValue;
@@ -402,7 +279,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     NSNumber *isLooping = parameters[EXAVPlayerDataStatusIsLoopingKeyPath];
     [self _updateLooping:isLooping.boolValue];
   }
-  
+
   if (_player && _isLoaded) {
     // Pause / mute first if necessary.
     if (![self _shouldPlayerPlay]) {
@@ -421,7 +298,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     }
 
     _player.volume = _volume.floatValue;
-    
+
     // Apply parameters necessary after seek.
     UM_WEAKIFY(self);
     void (^applyPostSeekParameters)(BOOL) = ^(BOOL seekSucceeded) {
@@ -452,7 +329,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 
       [self.exAV demoteAudioSessionIfPossible];
     };
-    
+
     // Apply seek if necessary.
     if (mustSeek) {
       [_player seekToTime:newPosition toleranceBefore:toleranceBefore toleranceAfter:toleranceAfter completionHandler:^(BOOL seekSucceeded) {
@@ -468,7 +345,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     if (resolve) {
       resolve([EXAVPlayerData getUnloadedStatus]);
     }
-  }*/
+  }
 }
 
 #pragma mark - getStatus
@@ -502,21 +379,21 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   if (!_isLoaded || _player == nil) {
     return [EXAVPlayerData getUnloadedStatus];
   }
-  
+
   AVPlayerItem *currentItem = _player.currentItem;
   if (_player.status != AVPlayerStatusReadyToPlay || currentItem.status != AVPlayerItemStatusReadyToPlay) {
     return [EXAVPlayerData getUnloadedStatus];
   }
-  
+
   // Get duration and position:
   NSNumber *durationMillis = [self _getRoundedMillisFromCMTime:currentItem.duration];
   if (durationMillis) {
     durationMillis = [durationMillis doubleValue] < 0 ? 0 : durationMillis;
   }
-  
+
   NSNumber *positionMillis = [self _getRoundedMillisFromCMTime:[_player currentTime]];
   positionMillis = [self _getClippedValueForValue:positionMillis withMin:@(0) withMax:durationMillis];
-  
+
   // Calculate playable duration:
   NSNumber *playableDurationMillis;
   if (_player.status == AVPlayerStatusReadyToPlay) {
@@ -533,7 +410,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
       playableDurationMillis = [self _getClippedValueForValue:playableDurationMillis withMin:@(0) withMax:durationMillis];
     }
   }
-  
+
   // Calculate if the player is buffering
   BOOL isPlaying = [self _isPlayerPlaying];
   BOOL isBuffering;
@@ -545,35 +422,35 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   } else {
     isBuffering = !_player.currentItem.isPlaybackLikelyToKeepUp && _player.currentItem.isPlaybackBufferEmpty;
   }
-  
+
   // TODO : react-native-video includes the iOS-only keys seekableDuration and canReverse (etc) flags.
   //        Consider adding these.
   NSMutableDictionary *mutableStatus = [@{EXAVPlayerDataStatusIsLoadedKeyPath: @(YES),
-                                          
+
                                           EXAVPlayerDataStatusURIKeyPath: [_url absoluteString],
-                                          
+
                                           EXAVPlayerDataStatusProgressUpdateIntervalMillisKeyPath: _progressUpdateIntervalMillis,
                                           // positionMillis, playableDurationMillis, and durationMillis may be nil and are added after this definition.
-                                          
+
                                           EXAVPlayerDataStatusShouldPlayKeyPath: @(_shouldPlay),
                                           EXAVPlayerDataStatusIsPlayingKeyPath: @(isPlaying),
                                           EXAVPlayerDataStatusIsBufferingKeyPath: @(isBuffering),
-                                          
+
                                           EXAVPlayerDataStatusRateKeyPath: _rate,
                                           EXAVPlayerDataStatusShouldCorrectPitchKeyPath: @(_shouldCorrectPitch),
                                           EXAVPlayerDataStatusPitchCorrectionQualityKeyPath: _pitchCorrectionQuality,
                                           EXAVPlayerDataStatusVolumeKeyPath: @(_player.volume),
                                           EXAVPlayerDataStatusIsMutedKeyPath: @(_player.muted),
                                           EXAVPlayerDataStatusIsLoopingKeyPath: @(_isLooping),
-                                          
+
                                           EXAVPlayerDataStatusDidJustFinishKeyPath: @(NO),
                                           EXAVPlayerDataStatusHasJustBeenInterruptedKeyPath: @(NO),
                                           } mutableCopy];
-  
+
   mutableStatus[EXAVPlayerDataStatusPlayableDurationMillisKeyPath] = playableDurationMillis;
   mutableStatus[EXAVPlayerDataStatusDurationMillisKeyPath] = durationMillis;
   mutableStatus[EXAVPlayerDataStatusPositionMillisKeyPath] = positionMillis;
-  
+
   return mutableStatus;
 }
 
@@ -685,7 +562,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 - (void)_removeObserversForPlayerItem:(AVPlayerItem *)playerItem
 {
   [self _tryRemoveObserver:playerItem forKeyPath:EXAVPlayerDataObserverStatusKeyPath];
-  
+
   NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
   if (_finishObserver) {
     [center removeObserver:_finishObserver];
@@ -695,7 +572,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     [center removeObserver:_playbackStalledObserver];
     _playbackStalledObserver = nil;
   }
-  
+
   [self _tryRemoveObserver:playerItem forKeyPath:EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath];
 }
 
@@ -703,7 +580,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 {
   NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
   UM_WEAKIFY(self);
-  
+
   void (^didPlayToEndTimeObserverBlock)(NSNotification *note) = ^(NSNotification *note) {
     UM_ENSURE_STRONGIFY(self);
     __strong EXAV *strongEXAV = self.exAV;
@@ -723,17 +600,17 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
       });
     }
   };
-  
+
   _finishObserver = [center addObserverForName:AVPlayerItemDidPlayToEndTimeNotification
                                         object:[_player currentItem]
                                          queue:nil
                                     usingBlock:didPlayToEndTimeObserverBlock];
-  
+
   void (^playbackStalledObserverBlock)(NSNotification *note) = ^(NSNotification *note) {
     UM_ENSURE_STRONGIFY(self);
     [self _callStatusUpdateCallback];
   };
-  
+
   _playbackStalledObserver = [center addObserverForName:AVPlayerItemPlaybackStalledNotification
                                                  object:[_player currentItem]
                                                   queue:nil
@@ -745,18 +622,18 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 - (void)_updateTimeObserver
 {
   [self _removeTimeObserver];
-  
+
   UM_WEAKIFY(self);
-  
+
   CMTime interval = CMTimeMakeWithSeconds(_progressUpdateIntervalMillis.floatValue / 1000.0, NSEC_PER_SEC);
-  
+
   void (^timeObserverBlock)(CMTime time) = ^(CMTime time) {
     UM_ENSURE_STRONGIFY(self);
     __strong EXAV *strongEXAV = self.exAV;
     if (strongEXAV) {
       dispatch_async(strongEXAV.methodQueue, ^{
         UM_ENSURE_STRONGIFY(self);
-        
+
         if (self && self.player.status == AVPlayerStatusReadyToPlay) {
           self.currentPosition = time; // We keep track of _currentPosition to reset the AVPlayer in handleMediaServicesReset.
           [self _callStatusUpdateCallback];
@@ -764,7 +641,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
       });
     }
   };
-  
+
   _timeObserver = [_player addPeriodicTimeObserverForInterval:interval
                                                         queue:NULL
                                                    usingBlock:timeObserverBlock];
@@ -791,7 +668,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     return;
   }
-  
+
   __weak EXAVPlayerData *weakSelf = nil;
 
   // Specification of Objective-C always allows creation of weak references,
@@ -811,7 +688,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   if (strongEXAV == nil) {
     return;
   }
-  
+
   dispatch_async(strongEXAV.methodQueue, ^{
     __strong EXAVPlayerData *strongSelf = weakSelf;
     if (strongSelf) {
@@ -975,13 +852,13 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 {
   // See here: https://developer.apple.com/library/content/qa/qa1749/_index.html
   // (this is an unlikely notification to receive, but best practices suggests that we catch it just in case)
-  
+
   _isLoaded = NO;
-  
+
   // We want to temporarily disable _statusUpdateCallback so that all of the new state changes don't trigger a waterfall of updates:
   void (^callback)(NSDictionary *) = _statusUpdateCallback;
   _statusUpdateCallback = nil;
-    
+
   UM_WEAKIFY(self);
   _loadFinishBlock = ^(BOOL success, NSDictionary *successStatus, NSString *error) {
     UM_ENSURE_STRONGIFY(self);
@@ -996,10 +873,10 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
       self.errorCallback(error);
     }
   };
-  
+
   [self _removeTimeObserver];
   [self _removeObservers];
-  
+
   [self _loadNewPlayer];
 }
 
