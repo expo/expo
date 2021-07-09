@@ -133,19 +133,32 @@ UM_EXPORT_MODULE(ExponentAV);
   if (jsRuntimePtr) {
     auto& runtime = *static_cast<jsi::Runtime*>(jsRuntimePtr);
     
-    auto setAudioSampleCallback = [](jsi::Runtime &runtime,
-                                     const jsi::Value &thisValue,
-                                     const jsi::Value *args,
-                                     size_t argsCount) -> jsi::Value {
+    __weak auto weakSelf = self;
+    auto setAudioSampleCallback = [weakSelf](jsi::Runtime &runtime,
+                                             const jsi::Value &thisValue,
+                                             const jsi::Value *args,
+                                             size_t argsCount) -> jsi::Value {
+      auto strongSelf = weakSelf;
+      if (!strongSelf) {
+        throw jsi::JSError(runtime, "Failed to strongify self!");
+      }
+      
       auto avId = static_cast<int>(args[0].asNumber());
       auto callback = args[0].asObject(runtime).asFunction(runtime);
       
       NSLog(@"SET CALLBACK FOR RECORDER %i...", avId);
-      auto sound = [_soundDictionary objectForKey:@(avId)];
+      auto sound = [weakSelf.soundDictionary objectForKey:@(avId)];
       if (sound == nil) {
         auto message = [NSString stringWithFormat:@"Sound Instance with ID %i does not exist!", avId];
         throw jsi::JSError(runtime, message.UTF8String);
       }
+      
+      auto callbackShared = std::make_shared<jsi::Function>(std::move(callback));
+      
+      [sound addSampleBufferCallback:^(AVAudioPCMBuffer * _Nonnull buffer) {
+        NSLog(@"Sample Buffer Callback invoked!");
+        callbackShared->call(runtime, jsi::Value::undefined());
+      }];
       
       return jsi::Value::undefined();
     };
