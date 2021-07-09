@@ -43,7 +43,11 @@ class PrintPDFRenderTask(private val context: Context, private val options: Map<
       }
     }
     moduleRegistry.getModule(UIManager::class.java).runOnUiQueueThread {
-      val html = if (options.containsKey("html")) options["html"] as String else ""
+      val html = if (options.containsKey("html")) {
+        options["html"] as String
+      } else {
+        ""
+      }
       webView = WebView(context)
       val settings = webView.settings
       settings.defaultTextEncodingName = "UTF-8"
@@ -73,11 +77,11 @@ class PrintPDFRenderTask(private val context: Context, private val options: Map<
         if (options.containsKey("orientation") && "landscape" == options["orientation"]) {
           mediaSize = mediaSize.asLandscape()
         }
-        builder.apply {
-          setMediaSize(mediaSize)
-          setMinMargins(PrintAttributes.Margins.NO_MARGINS)
-          setResolution(PrintAttributes.Resolution("id", "label", PIXELS_PER_INCH, PIXELS_PER_INCH))
-        }
+        builder
+          .setMediaSize(mediaSize)
+          .setMinMargins(PrintAttributes.Margins.NO_MARGINS)
+          .setResolution(PrintAttributes.Resolution("id", "label", PIXELS_PER_INCH, PIXELS_PER_INCH))
+
       }
       return builder.build()
     }
@@ -114,12 +118,8 @@ class PrintPDFRenderTask(private val context: Context, private val options: Map<
   }
 
   abstract class Callbacks {
-    open fun onRenderFinished(document: PrintDocumentAdapter, outputFile: File?, numberOfPages: Int) {
-      /* do nothing - stub */
-    }
+    open fun onRenderFinished(document: PrintDocumentAdapter, outputFile: File?, numberOfPages: Int) = Unit
 
-    open fun onRenderError(errorCode: String?, errorMessage: String?, exception: Exception?) {
-      /* do nothing - stub */
-    }
+    open fun onRenderError(errorCode: String?, errorMessage: String?, exception: Exception?) = Unit
   }
 }

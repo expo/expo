@@ -49,8 +49,16 @@ class PrintModule(context: Context) : ExportedModule(context) {
 
   @ExpoMethod
   fun print(options: Map<String?, Any?>, promise: Promise) {
-    val html = if (options.containsKey("html")) options["html"] as String? else null
-    val uri = if (options.containsKey("uri")) options["uri"] as String? else null
+    val html = if (options.containsKey("html")) {
+      options["html"] as String?
+    } else {
+      null
+    }
+    val uri = if (options.containsKey("uri")) {
+      options["uri"] as String?
+    } else {
+      null
+    }
     if (html != null) {
       // Renders HTML to PDF and then prints
       try {
@@ -170,13 +178,17 @@ class PrintModule(context: Context) : ExportedModule(context) {
   }
 
   private fun getAttributesFromOptions(options: Map<String?, Any?>): PrintAttributes.Builder {
-    val orientation = if (options.containsKey("orientation")) options["orientation"] as String? else null
+    val orientation = if (options.containsKey("orientation")) {
+      options["orientation"] as String?
+    } else {
+      null
+    }
     val builder = PrintAttributes.Builder()
 
     // @tsapeta: Unfortunately these attributes might be ignored on some devices or Android versions,
     // in other words it might not change the default orientation in the print dialog,
     // however the user can change it there.
-    if ((ORIENTATION_LANDSCAPE == orientation)) {
+    if (ORIENTATION_LANDSCAPE == orientation) {
       builder.setMediaSize(PrintAttributes.MediaSize.UNKNOWN_LANDSCAPE)
     } else {
       builder.setMediaSize(PrintAttributes.MediaSize.UNKNOWN_PORTRAIT)
@@ -210,16 +222,17 @@ class PrintModule(context: Context) : ExportedModule(context) {
 
   @Throws(IOException::class)
   private fun loadAndClose(destination: ParcelFileDescriptor, callback: WriteResultCallback, input: InputStream) {
-    val output = FileOutputStream(destination.fileDescriptor)
-    val buf = ByteArray(1024)
-    var bytesRead: Int
-    while ((input.read(buf).also { bytesRead = it }) > 0) {
-      output.write(buf, 0, bytesRead)
+    FileOutputStream(destination.fileDescriptor).use {
+      val buf = ByteArray(1024)
+      var bytesRead = input.read(buf)
+      while (bytesRead > 0) {
+        it.write(buf, 0, bytesRead)
+        bytesRead = input.read(buf)
+      }
+      callback.onWriteFinished(arrayOf(PageRange.ALL_PAGES))
     }
-    callback.onWriteFinished(arrayOf(PageRange.ALL_PAGES))
     try {
       input.close()
-      output.close()
     } catch (e: IOException) {
       e.printStackTrace()
     }
