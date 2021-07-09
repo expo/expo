@@ -5,10 +5,6 @@
 #import <React/RCTBridge.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTUIManager.h>
-#import <React-callinvoker/ReactCommon/CallInvoker.h>
-#import <jsi/jsi.h>
-
-using namespace facebook;
 
 NSString *const EXAVPlayerDataStatusIsLoadedKeyPath = @"isLoaded";
 NSString *const EXAVPlayerDataStatusURIKeyPath = @"uri";
@@ -119,6 +115,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     
     bool RUN_THIS_CODE = false; // yep.
     
+    /*
     static bool isRunning = false;
     if (!isRunning && RUN_THIS_CODE) {
       isRunning = true;
@@ -206,7 +203,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
           }
         }
       }
-    }
+    } */
   }
   
   return self;
@@ -223,7 +220,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   [_engine mainMixerNode]; // lazy getter init
   [_engine prepare];
   
-  auto onError = ^(NSString* errorMessage){
+  void (^onError)(NSString *) = ^(NSString *errorMessage){
     if (self.loadFinishBlock) {
       self.loadFinishBlock(NO, nil, errorMessage);
       self.loadFinishBlock = nil;
@@ -231,7 +228,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
       self.errorCallback(errorMessage);
     }
   };
-  auto onSuccess = ^{
+  void (^onSuccess)() = ^{
     if (self.loadFinishBlock) {
       self.loadFinishBlock(YES, [self getStatus], nil);
       self.loadFinishBlock = nil;
