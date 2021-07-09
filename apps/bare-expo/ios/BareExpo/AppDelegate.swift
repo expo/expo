@@ -12,7 +12,7 @@ import EXDevMenuInterface
 import EXDevMenu
 #endif
 
-#if FB_SONARKIT_ENABLED
+#if FB_SONARKIT_ENABLED && canImport(FlipperKit)
 import FlipperKit
 #endif
 
@@ -73,7 +73,7 @@ class AppDelegate: AppDelegateWrapper {
   }
   
   private func initializeFlipper(with application: UIApplication) {
-  #if FB_SONARKIT_ENABLED
+  #if FB_SONARKIT_ENABLED && canImport(FlipperKit)
     let client = FlipperClient.shared()
     let layoutDescriptorMapper = SKDescriptorMapper(defaults: ())
     client?.add(FlipperKitLayoutPlugin(rootNode: application, with: layoutDescriptorMapper!))
