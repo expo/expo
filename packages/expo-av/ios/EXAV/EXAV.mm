@@ -141,6 +141,11 @@ UM_EXPORT_MODULE(ExponentAV);
       auto callback = args[0].asObject(runtime).asFunction(runtime);
       
       NSLog(@"SET CALLBACK FOR RECORDER %i...", avId);
+      auto sound = [_soundDictionary objectForKey:@(avId)];
+      if (sound == nil) {
+        auto message = [NSString stringWithFormat:@"Sound Instance with ID %i does not exist!", avId];
+        throw jsi::JSError(runtime, message.UTF8String);
+      }
       
       return jsi::Value::undefined();
     };
@@ -150,7 +155,7 @@ UM_EXPORT_MODULE(ExponentAV);
                                  jsi::Function::createFromHostFunction(runtime,
                                                                        jsi::PropNameID::forUtf8(runtime, "__exav_setAudioSampleCallback"),
                                                                        2, // [AV-Instance ID, Callback]
-                                                                       std::move(setAudioSampleCallback)))
+                                                                       std::move(setAudioSampleCallback)));
   } else {
     UMLogWarn(@"EXAV: Cannot install Audio Sample Buffer callback. Do you have 'Remote Debugging' enabled in your app's Developer Menu (https://reactnative.dev/docs/debugging)? Audio Sample Buffer callbacks are not supported while using Remote Debugging, you will need to disable it to use them.");
   }
