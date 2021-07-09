@@ -102,7 +102,7 @@ const renderAPI = (
           apiName={apiName}
           header="Event Subscriptions"
         />
-        {props && !componentsProps ? (
+        {props && !componentsProps.length ? (
           <APISectionProps data={props} defaultProps={defaultProps} />
         ) : null}
         <APISectionTypes data={types} />
