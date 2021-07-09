@@ -332,7 +332,6 @@ PODS:
     - AppAuth/Core (~> 1.4)
     - GTMSessionFetcher/Core (~> 1.5)
   - GTMSessionFetcher/Core (1.5.0)
-  - libevent (2.1.12)
   - libwebp (1.2.0):
     - libwebp/demux (= 1.2.0)
     - libwebp/mux (= 1.2.0)
@@ -816,7 +815,6 @@ SPEC REPOS:
     - GoogleUtilitiesComponents
     - GTMAppAuth
     - GTMSessionFetcher
-    - libevent
     - libwebp
     - MLKitCommon
     - MLKitFaceDetection
@@ -826,7 +824,6 @@ SPEC REPOS:
     - Protobuf
     - SDWebImage
     - SDWebImageWebPCoder
-    - YogaKit
     - ZXingObjC
 
 EXTERNAL SOURCES:
@@ -1146,7 +1143,7 @@ SPEC CHECKSUMS:
   EXCamera: 5a90a462cd0965bbf5e5ddb725115ac5109869e9
   EXCellular: 82f7267f13f296f37434d0031e9a214bbd4b8919
   EXClipboard: c66f7d22ba754496b0fc6b23a2cb9a3e10fa1581
-  EXConstants: abbb7d6af1bab55debdb7ac1b9def07033ca35ee
+  EXConstants: 73a9aaa5e2af2889782520c081346dc2c956b38a
   EXContacts: bc06f42aa1bc7fb5ed0f5b29287f772faa33ad55
   EXCrypto: 46e28f1eb7ec3e2ae5aab652fe1dc4d46bafb386
   EXDevice: 6f1eed02c099f5b382a12a40406c58868892aba6
@@ -1221,7 +1218,6 @@ SPEC CHECKSUMS:
   GoogleUtilitiesComponents: a69c0b3b369ba443e988141e75ef49d9010b1c80
   GTMAppAuth: 5b53231ef6920f149ab84b2969cb0ab572da3077
   GTMSessionFetcher: b3503b20a988c4e20cc189aa798fd18220133f52
-  libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   libwebp: e90b9c01d99205d03b6bb8f2c8c415e5a4ef66f0
   MLKitCommon: 9ed187a042139d51c0d8bf6a8301bb20b375c576
   MLKitFaceDetection: 5b92261dd6e4205e3dab0df62537ac3f4e90e5db
