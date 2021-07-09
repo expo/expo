@@ -37,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)iosSplashBackgroundColor;
 - (nullable NSString *)iosSplashImageUrl;
 - (nullable NSString *)iosSplashImageResizeMode;
+- (nullable NSString *)iosGoogleServicesFile;
 
 @end
 
