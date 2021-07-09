@@ -26,7 +26,7 @@ Pod::Spec.new do |s|
     s.source_files = '**/*.h'
     s.vendored_frameworks = "#{s.name}.xcframework"
   else
-    s.source_files = '**/*.{h,m,mm,swift}'
+    s.source_files = '**/*.{h,m,swift}'
   end
 
   s.exclude_files = 'Tests/'
