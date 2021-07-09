@@ -88,8 +88,9 @@ typedef facebook::react::JSCExecutorFactory ExecutorFactory;
     auto callInvoker = strongBridge.jsCallInvoker;
     
     auto global = runtime.global();
-    auto modulesProxy = jsi::Object(runtime);
     global.setProperty(runtime, "__custom_js_factory_installed", jsi::Value(true));
+    
+    auto modulesProxy = jsi::Object(runtime);
     
     // Install all Modules
     auto *modules = [[[strongSelf.moduleRegistryAdapter moduleRegistryProvider] moduleRegistry] getAllExportedModules];
@@ -112,21 +113,19 @@ typedef facebook::react::JSCExecutorFactory ExecutorFactory;
       
       // Install all Methods for this module
       auto exportedMethods = [module getExportedMethods];
-      for (NSString *selectorName : [exportedMethods allKeys]) {
-        auto objcName = [exportedMethods objectForKey:selectorName];
-        auto jsName = selectorName.UTF8String;
-        auto selectorComponents = [[selectorName componentsSeparatedByString:@":"] count];
+      for (NSString *jsName : [exportedMethods allKeys]) {
+        auto objcName = [exportedMethods objectForKey:jsName];
+        auto selectorComponents = [[objcName componentsSeparatedByString:@":"] count];
         // - 3 is for resolver and rejecter of the promise and the last, empty component
-        auto selectorArgsCount = (selectorComponents - 3);
-        NSLog(@"Exporting \"%@.%@(%u)\"...", moduleName, selectorName, selectorArgsCount);
+        auto selectorArgsCount = selectorComponents - 3;
         
-        auto func = [module, selectorName, selectorArgsCount, callInvoker](jsi::Runtime &runtime,
+        auto func = [module, jsName, selectorArgsCount, callInvoker](jsi::Runtime &runtime,
                                                 const jsi::Value &thisValue,
                                                 const jsi::Value *args,
                                                 size_t argsCount) -> jsi::Value {
-          NSLog(@"Calling \"%@\"...", selectorName);
+          NSLog(@"Calling \"%@\"...", jsName);
           if (selectorArgsCount != argsCount) {
-            auto message = "Invalid Arguments: \"" + std::string(selectorName.UTF8String) + "\" expects " + std::to_string(selectorArgsCount) + " arguments, but was called with " + std::to_string(argsCount) + "!";
+            auto message = "Invalid Arguments: \"" + std::string(jsName.UTF8String) + "\" expects " + std::to_string(selectorArgsCount) + " arguments, but was called with " + std::to_string(argsCount) + "!";
             throw jsi::JSError(runtime, message);
           }
           
@@ -135,42 +134,40 @@ typedef facebook::react::JSCExecutorFactory ExecutorFactory;
           auto function = jsi::Function::createFromHostFunction(runtime,
                                                                 jsi::PropNameID::forAscii(runtime, "f"),
                                                                 2,
-                                                                [module, selectorName, callInvoker, arguments](jsi::Runtime &runtime,
-                                                                                                               const jsi::Value&,
-                                                                                                               const jsi::Value *args,
-                                                                                                               size_t count) -> jsi::Value {
-            NSLog(@"Calling in Promise...");
-            auto resolve = std::make_shared<jsi::Function>((args[0].asObject(runtime).asFunction(runtime)));
-            auto reject = std::make_shared<jsi::Function>((args[1].asObject(runtime).asFunction(runtime)));
+                                                                [module, jsName, callInvoker, arguments](jsi::Runtime &runtime,
+                                                                                                         const jsi::Value&,
+                                                                                                         const jsi::Value *args,
+                                                                                                         size_t count) -> jsi::Value {
+            auto resolve = std::make_shared<jsi::Function>(args[0].asObject(runtime).asFunction(runtime));
+            auto reject = std::make_shared<jsi::Function>(args[1].asObject(runtime).asFunction(runtime));
             
             auto resolver = ^(id result){
-              NSLog(@"resolve(...)");
-              callInvoker->invokeAsync([&runtime, result, resolve]() {
+              callInvoker->invokeAsync(^{
                 auto jsiValue = expo::convertObjCObjectToJSIValue(runtime, result);
                 resolve->call(runtime, jsiValue);
               });
             };
             auto rejecter = ^(NSString *code, NSString *message, NSError *error){
-              NSLog(@"reject(%@)", message);
-              callInvoker->invokeAsync([&runtime, code, message, error, reject]() {
-                auto error = jsi::JSError(runtime, message.UTF8String);
-                reject->call(runtime, error.value());
+              callInvoker->invokeAsync(^{
+                auto jsError = jsi::JSError(runtime, message.UTF8String);
+                reject->call(runtime, jsError.value());
               });
             };
-            [module callExportedMethod:selectorName
+            [module callExportedMethod:jsName
                          withArguments:arguments
                               resolver:resolver
                               rejecter:rejecter];
+            return jsi::Value::undefined();
           });
           
           auto promise = runtime.global().getPropertyAsFunction(runtime, "Promise").callAsConstructor(runtime, function);
           return promise;
         };
         // Install func to Module object, e.g.: ExpoModules.AV.recordAudio()
-        moduleJsObject.setProperty(runtime, jsName, jsi::Function::createFromHostFunction(runtime,
-                                                                                          jsi::PropNameID::forUtf8(runtime, jsName),
-                                                                                          selectorArgsCount,
-                                                                                          std::move(func)));
+        moduleJsObject.setProperty(runtime, jsName.UTF8String, jsi::Function::createFromHostFunction(runtime,
+                                                                                                     jsi::PropNameID::forUtf8(runtime, jsName.UTF8String),
+                                                                                                     selectorArgsCount,
+                                                                                                     std::move(func)));
       }
       
       auto name = moduleName.UTF8String;
