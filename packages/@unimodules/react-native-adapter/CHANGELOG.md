@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Changed generateExpoModulesPackageList for preBuild.dependsOn with quotes in build.gradle. ([#13568](https://github.com/expo/expo/pull/13568) by [@wbroek](https://github.com/wbroek))
-
 ### 💡 Others
+
+## 6.3.4 — 2021-07-09
+
+### 🐛 Bug fixes
+
+- Changed generateExpoModulesPackageList for preBuild.dependsOn with quotes in build.gradle. ([#13568](https://github.com/expo/expo/pull/13568) by [@wbroek](https://github.com/wbroek))
 
 ## 6.3.3 — 2021-07-08
 
