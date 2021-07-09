@@ -17,8 +17,7 @@
 #import <EXAV/EXVideoView.h>
 #import <EXAV/EXAudioRecordingPermissionRequester.h>
 
-#import <jsi/jsi.h>
-using namespace facebook;
+#import "EXAV+AudioSampleCallback.h"
 
 NSString *const EXAudioRecordingOptionsIsMeteringEnabledKey = @"isMeteringEnabled";
 NSString *const EXAudioRecordingOptionsKeepAudioActiveHintKey = @"keepAudioActiveHint";
@@ -133,44 +132,7 @@ UM_EXPORT_MODULE(ExponentAV);
   id<UMJavaScriptContextProvider> jsContextProvider = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMJavaScriptContextProvider)];
   void *jsRuntimePtr = [jsContextProvider javaScriptRuntimePointer];
   if (jsRuntimePtr) {
-    auto& runtime = *static_cast<jsi::Runtime*>(jsRuntimePtr);
-    
-    __weak auto weakSelf = self;
-    auto setAudioSampleCallback = [weakSelf](jsi::Runtime &runtime,
-                                             const jsi::Value &thisValue,
-                                             const jsi::Value *args,
-                                             size_t argsCount) -> jsi::Value {
-      auto strongSelf = weakSelf;
-      if (!strongSelf) {
-        throw jsi::JSError(runtime, "Failed to strongify self!");
-      }
-      
-      auto avId = static_cast<int>(args[0].asNumber());
-      auto callback = args[0].asObject(runtime).asFunction(runtime);
-      
-      NSLog(@"SET CALLBACK FOR RECORDER %i...", avId);
-      auto sound = [weakSelf.soundDictionary objectForKey:@(avId)];
-      if (sound == nil) {
-        auto message = [NSString stringWithFormat:@"Sound Instance with ID %i does not exist!", avId];
-        throw jsi::JSError(runtime, message.UTF8String);
-      }
-      
-      auto callbackShared = std::make_shared<jsi::Function>(std::move(callback));
-      
-      [sound addSampleBufferCallback:^(AVAudioPCMBuffer * _Nonnull buffer) {
-        NSLog(@"Sample Buffer Callback invoked!");
-        callbackShared->call(runtime, jsi::Value::undefined());
-      }];
-      
-      return jsi::Value::undefined();
-    };
-    
-    runtime.global().setProperty(runtime,
-                                 "__exav_setAudioSampleCallback",
-                                 jsi::Function::createFromHostFunction(runtime,
-                                                                       jsi::PropNameID::forUtf8(runtime, "__exav_setAudioSampleCallback"),
-                                                                       2, // [AV-Instance ID, Callback]
-                                                                       std::move(setAudioSampleCallback)));
+    [self installJSIBindingsForRuntime:jsRuntimePtr withSoundDictionary:_soundDictionary];
   } else {
     UMLogWarn(@"EXAV: Cannot install Audio Sample Buffer callback. Do you have 'Remote Debugging' enabled in your app's Developer Menu (https://reactnative.dev/docs/debugging)? Audio Sample Buffer callbacks are not supported while using Remote Debugging, you will need to disable it to use them.");
   }
