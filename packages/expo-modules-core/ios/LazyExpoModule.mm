@@ -84,10 +84,12 @@ jsi::Function LazyExpoModule::createFunctionForModuleSelector(jsi::Runtime &runt
           reject->call(runtime, jsError.value());
         });
       };
+      
       [_expoModule callExportedMethod:jsFunctionName
                         withArguments:arguments
                              resolver:resolver
                              rejecter:rejecter];
+      
       return jsi::Value::undefined();
     });
     
