@@ -12,9 +12,8 @@ import java.io.InputStream
 /**
  * [LibraryGlideModule] registering support for SVG to Glide.
  *
- *
  * Copied from https://github.com/bumptech/glide/blob/10acc31a16b4c1b5684f69e8de3117371dfa77a8/samples/svg/src/main/java/com/bumptech/glide/samples/svg/SvgModule.java
- * and rewritten to Kotlin
+ * and rewritten to Kotlin.
  */
 @GlideModule
 class SVGModule : LibraryGlideModule() {

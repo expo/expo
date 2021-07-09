@@ -12,9 +12,8 @@ import java.io.InputStream
 /**
  * Decodes an SVG internal representation from an [InputStream].
  *
- *
  * Copied from https://github.com/bumptech/glide/blob/10acc31a16b4c1b5684f69e8de3117371dfa77a8/samples/svg/src/main/java/com/bumptech/glide/samples/svg/SvgDecoder.java
- * and rewritten to Kotlin
+ * and rewritten to Kotlin.
  */
 class SVGDecoder : ResourceDecoder<InputStream, SVG> {
   // TODO: Can we tell?
