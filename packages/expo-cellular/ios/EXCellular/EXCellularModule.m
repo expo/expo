@@ -8,15 +8,15 @@
 
 @interface EXCellularModule ()
 
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation EXCellularModule
 
-UM_EXPORT_MODULE(ExpoCellular);
+EX_EXPORT_MODULE(ExpoCellular);
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }
@@ -27,14 +27,14 @@ UM_EXPORT_MODULE(ExpoCellular);
 
   return @{
            @"allowsVoip": @(carrier.allowsVOIP),
-           @"carrier": UMNullIfNil(carrier.carrierName),
-           @"isoCountryCode": UMNullIfNil(carrier.isoCountryCode),
-           @"mobileCountryCode": UMNullIfNil(carrier.mobileCountryCode),
-           @"mobileNetworkCode": UMNullIfNil(carrier.mobileNetworkCode),
+           @"carrier": EXNullIfNil(carrier.carrierName),
+           @"isoCountryCode": EXNullIfNil(carrier.isoCountryCode),
+           @"mobileCountryCode": EXNullIfNil(carrier.mobileCountryCode),
+           @"mobileNetworkCode": EXNullIfNil(carrier.mobileNetworkCode),
            };
 }
 
-UM_EXPORT_METHOD_AS(getCellularGenerationAsync, getCellularGenerationAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getCellularGenerationAsync, getCellularGenerationAsyncWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject)
 {
   resolve(@([[self class] getCellularGeneration]));
 }
