@@ -112,6 +112,7 @@ UM_EXPORT_MODULE(ExponentAV);
   } else {
     UMLogWarn(@"EXAV: Cannot install Audio Sample Buffer callback. Do you have 'Remote Debugging' enabled in your app's Developer Menu (https://reactnative.dev/docs/debugging)? Audio Sample Buffer callbacks are not supported while using Remote Debugging, you will need to disable it to use them.");
   }
+  
   return @{
     @"Qualities": @{
         @"Low": AVAudioTimePitchAlgorithmLowQualityZeroLatency,

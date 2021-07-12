@@ -27,11 +27,10 @@ using namespace facebook;
                                                       size_t argsCount) -> jsi::Value {
     auto strongSoundDictionary = weakSoundDictionary;
     if (!strongSoundDictionary) {
-      throw jsi::JSError(runtime, "Failed to strongify self!");
+      throw jsi::JSError(runtime, "Failed to strongify sound dictionary!");
     }
     
     auto avId = static_cast<int>(args[0].asNumber());
-    auto callback = args[0].asObject(runtime).asFunction(runtime);
     
     NSLog(@"SET CALLBACK FOR RECORDER %i...", avId);
     auto sound = [strongSoundDictionary objectForKey:@(avId)];
@@ -40,20 +39,27 @@ using namespace facebook;
       throw jsi::JSError(runtime, message.UTF8String);
     }
     
-    auto callbackShared = std::make_shared<jsi::Function>(std::move(callback));
-    
-    [sound addSampleBufferCallback:^(AVAudioPCMBuffer * _Nonnull buffer) {
-      NSLog(@"Sample Buffer Callback invoked!");
-      callbackShared->call(runtime, jsi::Value::undefined());
-    }];
+    if (argsCount > 1 && args[1].isObject() && !args[1].isUndefined()) {
+      // second parameter received, it's the callback function.
+      auto callback = args[1].asObject(runtime).asFunction(runtime);
+      auto callbackShared = std::make_shared<jsi::Function>(std::move(callback));
+      
+      [sound addSampleBufferCallback:^(AVAudioPCMBuffer * _Nonnull buffer) {
+        NSLog(@"Sample Buffer Callback invoked!");
+        callbackShared->call(runtime, jsi::Value::undefined());
+      }];
+    } else {
+      // second parameter omitted or undefined, so remove callback
+      [sound removeSampleBufferCallback];
+    }
     
     return jsi::Value::undefined();
   };
   
   runtime.global().setProperty(runtime,
-                               "__exav_setAudioSampleCallback",
+                               "__av_sound_setOnAudioSampleReceivedCallback",
                                jsi::Function::createFromHostFunction(runtime,
-                                                                     jsi::PropNameID::forUtf8(runtime, "__exav_setAudioSampleCallback"),
+                                                                     jsi::PropNameID::forUtf8(runtime, "__av_sound_setOnAudioSampleReceivedCallback"),
                                                                      2, // [AV-Instance ID, Callback]
                                                                      std::move(setAudioSampleCallback)));
 }

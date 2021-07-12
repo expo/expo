@@ -468,6 +468,24 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   }*/
 }
 
+- (void)addSampleBufferCallback:(SampleBufferCallback)callback
+{
+  
+  [_playerNode installTapOnBus:0
+                    bufferSize:1024
+                        format:nil
+                         block:^(AVAudioPCMBuffer * _Nonnull buffer,
+                                 AVAudioTime * _Nonnull when) {
+    NSLog(@"Tap called!");
+    callback(buffer);
+  }];
+}
+
+- (void)removeSampleBufferCallback
+{
+  [_playerNode removeTapOnBus:0];
+}
+
 #pragma mark - getStatus
 
 - (BOOL)_isPlayerPlaying
