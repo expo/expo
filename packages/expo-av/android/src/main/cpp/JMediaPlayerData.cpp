@@ -35,7 +35,7 @@ void JMediaPlayerData::sampleBufferCallback(jint sampleBuffer) {
         return;
     }
 
-    auto sampleBufferStrong = make_local(sampleBuffer);
+    auto sampleBufferStrong = /* TODO: make_local(sampleBuffer); */ sampleBuffer;
     try {
         sampleBufferCallback_(sampleBufferStrong);
     } catch (const std::exception& exception) {
@@ -54,8 +54,8 @@ void JMediaPlayerData::setEnableSampleBufferCallback(bool enable) {
     javaMethod(javaPart_.get(), enable);
 }
 
-void JMediaPlayerData::setFrameProcessor(const FrameProcessor&& frameProcessor) {
-    sampleBufferCallback_ = frameProcessor;
+void JMediaPlayerData::setSampleBufferCallback(const SampleBufferCallback &&sampleBufferCallback) {
+    sampleBufferCallback_ = sampleBufferCallback;
     setEnableSampleBufferCallback(true);
 }
 
