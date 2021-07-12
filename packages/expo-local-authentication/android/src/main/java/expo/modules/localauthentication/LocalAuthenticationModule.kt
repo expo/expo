@@ -53,19 +53,21 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
       isAuthenticating = false
       biometricPrompt = null
-      safeResolve(Bundle().apply {
+      promise?.resolve(Bundle().apply {
         putBoolean("success", true)
       })
+      promise = null
     }
 
     override fun onAuthenticationError(errMsgId: Int, errString: CharSequence) {
       isAuthenticating = false
       biometricPrompt = null
-      safeResolve(Bundle().apply {
+      promise?.resolve(Bundle().apply {
         putBoolean("success", false)
         putString("error", convertErrorCode(errMsgId))
         putString("message", errString.toString())
       })
+      promise = null
     }
   }
 
@@ -163,33 +165,40 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
     // having to do locking.
     uIManager!!.runOnUiQueueThread(Runnable {
       if (isAuthenticating) {
-        safeResolve(Bundle().apply {
+        this.promise?.resolve(Bundle().apply {
           putBoolean("success", false)
           putString("error", "app_cancel")
         })
         this.promise = promise
         return@Runnable
       }
-      var promptMessage: String? = ""
-      var cancelLabel: String? = ""
-      var disableDeviceFallback = false
-      if (options.containsKey("promptMessage")) {
-        promptMessage = options["promptMessage"] as String?
+      val promptMessage = if (options.containsKey("promptMessage")) {
+        options["promptMessage"] as String?
+      } else {
+        ""
       }
-      if (options.containsKey("cancelLabel")) {
-        cancelLabel = options["cancelLabel"] as String?
+      val cancelLabel = if (options.containsKey("cancelLabel")) {
+        options["cancelLabel"] as String?
+      } else {
+        ""
       }
-      if (options.containsKey("disableDeviceFallback")) {
-        disableDeviceFallback = (options["disableDeviceFallback"] as Boolean?)!!
+      val disableDeviceFallback = if (options.containsKey("disableDeviceFallback")) {
+        options["disableDeviceFallback"] as Boolean?
+      } else {
+        false
       }
       isAuthenticating = true
       this.promise = promise
       val executor: Executor = Executors.newSingleThreadExecutor()
       biometricPrompt = BiometricPrompt(fragmentActivity, executor, authenticationCallback)
       val promptInfoBuilder = PromptInfo.Builder()
-        .setTitle(promptMessage!!)
-      if (disableDeviceFallback) {
-        promptInfoBuilder.setNegativeButtonText(cancelLabel!!)
+      promptMessage?.let {
+        promptInfoBuilder.setTitle(it)
+      }
+      if (disableDeviceFallback == true) {
+        cancelLabel?.let {
+          promptInfoBuilder.setNegativeButtonText(it)
+        }
       } else {
         promptInfoBuilder.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_WEAK
           or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
@@ -206,7 +215,8 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
   @ExpoMethod
   fun cancelAuthenticate(promise: Promise) {
     uIManager!!.runOnUiQueueThread {
-      safeCancel()
+      biometricPrompt?.cancelAuthentication()
+      isAuthenticating = false
       promise.resolve(null)
     }
   }
@@ -247,18 +257,6 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
       // https://developer.android.com/reference/androidx/biometric/BiometricManager#canAuthenticate(int)
       keyguardManager.isKeyguardSecure
     }
-
-  private fun safeCancel() {
-    if (biometricPrompt != null && isAuthenticating) {
-      biometricPrompt!!.cancelAuthentication()
-      isAuthenticating = false
-    }
-  }
-
-  private fun safeResolve(result: Any) {
-    promise?.resolve(result)
-    promise = null
-  }
 
   private val keyguardManager: KeyguardManager
     get() = context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
