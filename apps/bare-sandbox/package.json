@@ -29,7 +29,7 @@
     "expo-module-scripts": "^2.0.0",
     "expo-yarn-workspaces": "^1.5.2",
     "babel-plugin-module-resolver": "^4.0.0",
-    "babel-preset-expo": "~8.4.0"
+    "babel-preset-expo": "~8.4.1"
   },
   "expo-yarn-workspaces": {
     "symlinks": [

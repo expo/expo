@@ -169,7 +169,7 @@
     "@types/three": "^0.93.28",
     "@types/victory": "^31.0.14",
     "babel-jest": "~25.2.6",
-    "babel-preset-expo": "~8.4.0",
+    "babel-preset-expo": "~8.4.1",
     "expo-module-scripts": "^2.0.0",
     "expo-yarn-workspaces": "^1.5.2",
     "jest": "~25.2.6",
