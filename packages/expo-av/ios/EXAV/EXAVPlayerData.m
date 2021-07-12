@@ -160,12 +160,11 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
       // Successfully read AVAudioFile.
       [_engine attachNode:_playerNode];
       [_engine connect:_playerNode to:[_engine mainMixerNode] format:_audioFile.processingFormat];
-      [_playerNode scheduleFile:_audioFile atTime:nil completionHandler:^{
-        NSLog(@"PlayerNode completion handler called!");
-        // AVAudioFile finished playing to end (or [stop] was called)
-        // TODO: Clean up player node? uninstall tap?
+      [_playerNode scheduleFile:_audioFile atTime:nil completionCallbackType:AVAudioPlayerNodeCompletionDataPlayedBack completionHandler:^(AVAudioPlayerNodeCompletionCallbackType callbackType) {
         if (self.isLooping) {
           [_playerNode play];
+        } else {
+          [self stop];
         }
       }];
       onSuccess();
