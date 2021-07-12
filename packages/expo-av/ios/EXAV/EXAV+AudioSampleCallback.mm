@@ -44,7 +44,7 @@ using namespace facebook;
       auto callback = args[1].asObject(runtime).asFunction(runtime);
       auto callbackShared = std::make_shared<jsi::Function>(std::move(callback));
       
-      [sound addSampleBufferCallback:^(AVAudioPCMBuffer * _Nonnull buffer) {
+      [sound addSampleBufferCallback:^(AVAudioPCMBuffer * _Nonnull buffer, double timestamp) {
         auto channelsCount = (size_t) buffer.stride;
         auto framesCount = buffer.frameLength;
         
@@ -73,6 +73,7 @@ using namespace facebook;
         
         auto sample = jsi::Object(runtime);
         sample.setProperty(runtime, "channels", channels);
+        sample.setProperty(runtime, "timestamp", jsi::Value(timestamp));
         callbackShared->call(runtime, sample);
       }];
     } else {

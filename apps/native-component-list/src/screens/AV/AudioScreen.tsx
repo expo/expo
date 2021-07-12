@@ -48,7 +48,7 @@ const WaveForm = () => {
       soundObject.onAudioSampleReceived = sample => {
         const firstFrame = sample.channels[0].frames[0];
         console.log(
-          `Received sample data! ${sample.channels.length} Channels; ${sample.channels[0].frames.length} Frames; ${firstFrame}`
+          `Received sample data at ${sample.timestamp}s! ${sample.channels.length} Channels; ${sample.channels[0].frames.length} Frames; ${firstFrame}`
         );
 
         const loudness = Audio.Sound.getAverageLoudness(sample);
