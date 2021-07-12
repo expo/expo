@@ -2,10 +2,22 @@ import { EventEmitter } from '@unimodules/core';
 import { Playback, AVPlaybackSource, AVPlaybackStatus, AVPlaybackStatusToSet } from '../AV';
 import { PitchCorrectionQuality } from '../Audio';
 export interface AudioChannel {
+    /**
+     * All samples for this specific Audio Channel in PCM Buffer format.
+     */
     frames: number[];
 }
 export interface AudioSample {
+    /**
+     * Data from each Channel in PCM Buffer format.
+     */
     channels: AudioChannel[];
+    /**
+     * The timestamp of this sample, relative to the Audio Track's timeline in seconds.
+     * * `0.0` is the start of the track.
+     * * `1.0` is one second after the start of the track.
+     */
+    timestamp: number;
 }
 declare type TAudioSampleCallback = ((sample: AudioSample) => void) | null;
 declare type AudioInstance = number | HTMLMediaElement | null;

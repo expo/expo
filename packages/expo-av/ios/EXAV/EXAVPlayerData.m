@@ -377,7 +377,8 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
                          block:^(AVAudioPCMBuffer * _Nonnull buffer,
                                  AVAudioTime * _Nonnull when) {
     if (self.isNodePlaying) {
-      callback(buffer);
+      double timestamp = (double)when.sampleTime / _audioFile.processingFormat.sampleRate;
+      callback(buffer, timestamp);
     }
   }];
 }
