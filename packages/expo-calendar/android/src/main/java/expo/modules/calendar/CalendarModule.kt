@@ -9,10 +9,13 @@ import android.database.Cursor
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.util.Log
+import android.view.ViewDebug.trace
 import expo.modules.interfaces.permissions.Permissions
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.unimodules.core.ExportedModule
 import org.unimodules.core.ModuleRegistry
@@ -57,12 +60,12 @@ class CalendarModule(
   }
 
   private inline fun launchAsyncWithModuleScope(promise: Promise, crossinline block: () -> Unit) {
-    try {
-      moduleCoroutineScope.launch {
+    moduleCoroutineScope.launch {
+      try {
         block()
+      } catch (e: ModuleDestroyedException) {
+        promise.reject("E_CALENDAR_MODULE_DESTROYED", "Module destroyed, promise canceled")
       }
-    } catch (e: ModuleDestroyedException) {
-      promise.reject("E_MODULE_DESTROYED", "Module has been destroyed")
     }
   }
 
