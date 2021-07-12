@@ -8,7 +8,6 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 
 import java.util.ArrayList
-import java.lang.StringBuilder
 
 import org.unimodules.core.ExportedModule
 import org.unimodules.core.interfaces.LifecycleEventListener
