@@ -35,7 +35,6 @@ public class UpdatesDevLauncherController implements UpdatesInterface {
       sInstance = new UpdatesDevLauncherController();
     }
     UpdatesController.initializeWithoutStarting(context);
-    setDevelopmentSelectionPolicy();
     return getInstance();
   }
 
@@ -70,6 +69,8 @@ public class UpdatesDevLauncherController implements UpdatesInterface {
       callback.onFailure(controller.getUpdatesDirectoryException());
       return;
     }
+
+    setDevelopmentSelectionPolicy();
 
     DatabaseHolder databaseHolder = controller.getDatabaseHolder();
     RemoteLoader loader = new RemoteLoader(context, updatesConfiguration, databaseHolder.getDatabase(), controller.getFileDownloader(), controller.getUpdatesDirectory());
