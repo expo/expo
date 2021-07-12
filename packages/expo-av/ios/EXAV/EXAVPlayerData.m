@@ -334,7 +334,9 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     if (mustSeek) {
       [_playerNode stop];
       [self scheduleFile:_audioFile atTime:newPosition];
-      [_playerNode play];
+      if ([self _shouldPlayerPlay]) {
+        [_playerNode play];
+      }
     }
     
     // TODO: UPDATE TIMESTAMP
