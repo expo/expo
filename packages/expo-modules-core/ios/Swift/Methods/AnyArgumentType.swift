@@ -19,7 +19,7 @@ struct AnyArgumentType: CustomDebugStringConvertible {
         .contains { $0.subjectType == baseType }
       }
     } else {
-      self.canCastHelper = { $0 is T }
+      self.canCastHelper = { $0 is T.Type }
     }
   }
 
