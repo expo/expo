@@ -119,11 +119,13 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 
 - (void)_loadNewPlayer
 {
+  UM_WEAKIFY(self);
+  
   dispatch_async([self.exAV methodQueue], ^{
+    UM_STRONGIFY(self);
+    
     NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
     AVURLAsset *avAsset = [AVURLAsset URLAssetWithURL:_url options:@{AVURLAssetHTTPCookiesKey : cookies, @"AVURLAssetHTTPHeaderFieldsKey": _headers}];
-    
-    // TODO: do any AVAudioSession configuration?
     
     _engine = [[AVAudioEngine alloc] init];
     [_engine mainMixerNode]; // lazy getter init
