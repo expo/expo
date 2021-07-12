@@ -1,20 +1,22 @@
 package expo.modules.sms
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.provider.Telephony
+import android.content.pm.PackageManager
+import android.os.Bundle
+
+import java.util.ArrayList
+import java.lang.StringBuilder
+
 import org.unimodules.core.ExportedModule
 import org.unimodules.core.interfaces.LifecycleEventListener
 import org.unimodules.core.ModuleRegistry
 import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.services.UIManager
 import org.unimodules.core.interfaces.ExpoMethod
-import java.util.ArrayList
-import android.content.Intent
-import android.net.Uri
-import android.provider.Telephony
-import android.content.pm.PackageManager
-import android.os.Bundle
 import org.unimodules.core.interfaces.ActivityProvider
-import java.lang.StringBuilder
 
 private const val TAG = "ExpoSMS"
 private const val ERROR_TAG = "E_SMS"
@@ -58,7 +60,7 @@ class SMSModule(context: Context) : ExportedModule(context), LifecycleEventListe
       return
     }
 
-    val attachments = options?.get(OPTIONS_ATTACHMENTS_KEY) as? List<*>?
+    val attachments = options?.get(OPTIONS_ATTACHMENTS_KEY) as? List<*>
 
     // ACTION_SEND causes a weird flicker on Android 10 devices if the messaging app is not already
     // open in the background, but it seems to be the only intent type that works for including
@@ -72,7 +74,6 @@ class SMSModule(context: Context) : ExportedModule(context), LifecycleEventListe
         type = getAttachment(attachment, "mimeType")
         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
       }
-
     } else {
       Intent(Intent.ACTION_SENDTO).apply {
         data = Uri.parse("smsto:" + constructRecipients(addresses))
@@ -123,11 +124,7 @@ class SMSModule(context: Context) : ExportedModule(context), LifecycleEventListe
 
   private fun constructRecipients(addresses: List<String>): String {
     if (addresses.isNotEmpty()) {
-      val addressesBuilder = StringBuilder(addresses[0])
-      for (address in addresses) {
-        addressesBuilder.append(';').append(address)
-      }
-      return addressesBuilder.toString()
+      return addresses[0] + addresses.joinToString(";")
     }
     return ""
   }
