@@ -127,6 +127,7 @@ class MediaPlayerData extends PlayerData implements
         // mVisualizer.setEnabled(false);
         // mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
 
+        // TODO: __av_sound_setOnAudioSampleReceivedCallback
         // the rate at which the Visualizer calls back with new bytes - will be clamped to max 100ms.
         int callbackRate = Math.min(Visualizer.getMaxCaptureRate(), 100);
         mVisualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
