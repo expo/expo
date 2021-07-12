@@ -12,7 +12,10 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.Surface;
 
-import expo.modules.core.ModuleRegistry;
+import com.facebook.jni.HybridData;
+
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.interfaces.DoNotStrip;
 
 import java.io.IOException;
 import java.net.CookieHandler;
@@ -38,6 +41,8 @@ class MediaPlayerData extends PlayerData implements
 
   static final String IMPLEMENTATION_NAME = "MediaPlayer";
 
+  @DoNotStrip
+  private HybridData mHybridData = null;
   private MediaPlayer mMediaPlayer = null;
   private ModuleRegistry mModuleRegistry = null;
   private boolean mMediaPlayerHasStartedEver = false;
@@ -50,6 +55,51 @@ class MediaPlayerData extends PlayerData implements
   MediaPlayerData(final AVManagerInterface avModule, final Context context, final Uri uri, final Map<String, Object> requestHeaders) {
     super(avModule, uri, requestHeaders);
     mModuleRegistry = avModule.getModuleRegistry();
+    mHybridData = initHybrid();
+  }
+
+  @Override
+  protected void finalize() throws Throwable {
+    super.finalize();
+    mHybridData.resetNative();
+    mHybridData = null;
+  }
+
+
+  private native HybridData initHybrid();
+  private native void sampleBufferCallback(int sampleBuffer);
+
+  @SuppressWarnings("unused")
+  @DoNotStrip
+  private void setEnableSampleBufferCallback(boolean enable) {
+    if (enable) {
+      mVisualizer = new Visualizer(mMediaPlayer.getAudioSessionId());
+      // TODO: Check config?
+      // mVisualizer.setEnabled(false);
+      // mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
+
+      // TODO: __av_sound_setOnAudioSampleReceivedCallback
+
+      // the rate at which the Visualizer calls back with new bytes - will be clamped to max 100ms.
+      int callbackRate = Math.min(Visualizer.getMaxCaptureRate(), 100);
+      mVisualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
+        @Override
+        public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
+          // TODO: Send bytes to JSI
+        }
+
+        @Override
+        public void onFftDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
+          // TODO: use frequency?
+        }
+      }, callbackRate, true, false);
+
+      mVisualizer.setEnabled(true);
+    } else {
+      mVisualizer.setEnabled(false);
+      mVisualizer.release();
+      mVisualizer = null;
+    }
   }
 
   @Override
@@ -120,29 +170,6 @@ class MediaPlayerData extends PlayerData implements
         mMediaPlayer.setOnCompletionListener(MediaPlayerData.this);
         mMediaPlayer.setOnErrorListener(MediaPlayerData.this);
         mMediaPlayer.setOnInfoListener(MediaPlayerData.this);
-
-
-        mVisualizer = new Visualizer(mMediaPlayer.getAudioSessionId());
-        // TODO: Check config?
-        // mVisualizer.setEnabled(false);
-        // mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
-
-        // TODO: __av_sound_setOnAudioSampleReceivedCallback
-        // the rate at which the Visualizer calls back with new bytes - will be clamped to max 100ms.
-        int callbackRate = Math.min(Visualizer.getMaxCaptureRate(), 100);
-        mVisualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
-          @Override
-          public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
-            // TODO: Send bytes to JSI
-          }
-
-          @Override
-          public void onFftDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
-            // TODO: use frequency?
-          }
-        }, callbackRate, true, false);
-
-        // mVisualizer.setEnabled(true);
 
 
         setStatusWithListener(status, new SetStatusCompletionListener() {
