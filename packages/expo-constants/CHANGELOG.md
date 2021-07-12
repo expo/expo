@@ -10,6 +10,9 @@
 
 ### 🐛 Bug fixes
 
+- Fix `PROJECT_ROOT` path resolution in `get-app-config-ios.sh`. ([#13439](https://github.com/expo/expo/pull/13439) by [@ajsmth](https://github.com/ajsmth))
+
+
 ### 💡 Others
 
 ### ⚠️ Notices

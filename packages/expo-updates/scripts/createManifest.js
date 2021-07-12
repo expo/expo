@@ -15,7 +15,7 @@ const filterPlatformAssetScales = require('./filterPlatformAssetScales');
   // Remove projectRoot validation when we no longer support React Native <= 62
   let projectRoot;
   if (fs.existsSync(path.join(possibleProjectRoot, entryFile))) {
-    projectRoot = possibleProjectRoot;
+    projectRoot = path.resolve(possibleProjectRoot);
   } else if (fs.existsSync(path.join(possibleProjectRoot, '..', entryFile))) {
     projectRoot = path.resolve(possibleProjectRoot, '..');
   }
