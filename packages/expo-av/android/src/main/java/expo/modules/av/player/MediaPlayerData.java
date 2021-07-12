@@ -66,7 +66,9 @@ class MediaPlayerData extends PlayerData implements
   }
 
 
+  @SuppressWarnings("JavaJniMissingFunction")
   private native HybridData initHybrid();
+  @SuppressWarnings("JavaJniMissingFunction")
   private native void sampleBufferCallback(int sampleBuffer);
 
   @SuppressWarnings("unused")
