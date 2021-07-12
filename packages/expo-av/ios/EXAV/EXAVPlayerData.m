@@ -162,16 +162,27 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
         // Successfully read AVAudioFile.
         [_engine attachNode:_playerNode];
         [_engine connect:_playerNode to:[_engine mainMixerNode] format:_audioFile.processingFormat];
-        [_playerNode scheduleFile:_audioFile atTime:nil completionCallbackType:AVAudioPlayerNodeCompletionDataPlayedBack completionHandler:^(AVAudioPlayerNodeCompletionCallbackType callbackType) {
-          self.isNodePlaying = NO;
-        }];
-        onSuccess();
+        
+        [self scheduleFile:_audioFile];
         [_playerNode play];
+        onSuccess();
+        
         self.isNodePlaying = YES;
         self.isLoaded = YES;
       }
     }
   });
+}
+
+- (void)scheduleFile:(AVAudioFile *)file
+{
+  [_playerNode scheduleFile:file atTime:nil completionCallbackType:AVAudioPlayerNodeCompletionDataPlayedBack completionHandler:^(AVAudioPlayerNodeCompletionCallbackType callbackType) {
+    if (self.isLooping) {
+      [self scheduleFile:file];
+    } else {
+      self.isNodePlaying = NO;
+    }
+  }];
 }
 
 - (void)_finishLoadingNewPlayer

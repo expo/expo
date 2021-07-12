@@ -49,6 +49,7 @@ const WaveForm = () => {
         console.error(`failed to load source:`, e);
       }
 
+      await soundObject.setIsLoopingAsync(true);
       await soundObject.playAsync();
       console.log('played');
 
