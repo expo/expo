@@ -15,14 +15,6 @@ import ListButton from '../../components/ListButton';
 import AudioModeSelector from './AudioModeSelector';
 import Player from './AudioPlayer';
 
-interface Channel {
-  frames: number[];
-}
-
-interface AudioSample {
-  channels: Channel[];
-}
-
 const WaveForm = () => {
   const scale = useSharedValue(1);
 
