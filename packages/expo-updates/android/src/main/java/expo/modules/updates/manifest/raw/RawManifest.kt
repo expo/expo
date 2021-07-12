@@ -63,7 +63,7 @@ abstract class RawManifest(protected val json: JSONObject) {
   abstract fun getBundleURL(): String
 
   @Throws(JSONException::class)
-  fun getRevisionId(): String = json.getString("revisionId")
+  fun getRevisionId(): String = getExpoClientConfigRootObject()!!.getString("revisionId")
 
   abstract fun getSDKVersionNullable(): String?
 
@@ -170,7 +170,8 @@ abstract class RawManifest(protected val json: JSONObject) {
   }
 
   fun getAndroidJsEngine(): String? {
-    val android = json.optJSONObject("android") ?: return null
+    val expoClientConfig = getExpoClientConfigRootObject() ?: return null
+    val android = expoClientConfig.optJSONObject("android") ?: return null
     return android.optString("jsEngine") ?: return null
   }
 
