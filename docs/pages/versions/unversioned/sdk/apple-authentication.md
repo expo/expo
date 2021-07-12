@@ -78,25 +78,6 @@ Apple's response includes a signed JWT with information about the user. To ensur
 import * as AppleAuthentication from 'expo-apple-authentication';
 ```
 
-## Components
-
-### `AppleAuthentication.AppleAuthenticationButton`
-
-This component displays the proprietary "Sign In with Apple" / "Continue with Apple" button on your screen. The App Store Guidelines require you to use this component to start the authentication process instead of a custom button. Limited customization of the button is available via the provided properties.
-
-You should only attempt to render this if [`AppleAuthentication.isAvailableAsync()`](#appleauthenticationisavailableasync) resolves to `true`. This component will render nothing if it is not available and you will get a warning in development mode.
-
-The properties of this component extend from `View`; however, you should not attempt to set `backgroundColor` or `borderRadius` with the `style` property. This will not work and is against the App Store Guidelines. Instead, you should use the `buttonStyle` property to choose one of the predefined color styles and the `cornerRadius` property to change the border radius of the button.
-
-Make sure to attach height and width via the style props as without these styles, the button will not appear on the screen.
-
-#### `AppleAuthentication.AppleAuthenticationButtonProps`
-
-- **onPress (`function`)** - The method to call when the user presses the button. You should call [`AppleAuthentication.signInAsync`](#appleauthenticationsigninasyncoptions) in here.
-- **buttonType (`[AppleAuthenticationButtonType](#appleauthenticationappleauthenticationbuttontype)`)** - The type of button text to display ("Sign In with Apple" vs. "Continue with Apple").
-- **buttonStyle (`[AppleAuthenticationButtonStyle](#appleauthenticationappleauthenticationbuttonstyle)`)** - The Apple-defined color scheme to use to display the button.
-- **cornerRadius (`number`)** - The border radius to use when rendering the button. This works similarly to `style.borderRadius` in other Views.
-
 <APISection packageName="expo-apple-authentication" apiName="AppleAuthentication" />
 
 ## Error Codes
