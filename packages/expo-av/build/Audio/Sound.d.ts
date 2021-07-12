@@ -7,6 +7,7 @@ export interface AudioChannel {
 export interface AudioSample {
     channels: AudioChannel[];
 }
+declare type TAudioSampleCallback = ((sample: AudioSample) => void) | null;
 declare type AudioInstance = number | HTMLMediaElement | null;
 export declare class Sound implements Playback {
     _loaded: boolean;
@@ -20,6 +21,9 @@ export declare class Sound implements Playback {
     _eventEmitter: EventEmitter;
     _coalesceStatusUpdatesInMillis: number;
     _onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null;
+    _onAudioSampleReceived: TAudioSampleCallback;
+    get onAudioSampleReceived(): TAudioSampleCallback;
+    set onAudioSampleReceived(callback: TAudioSampleCallback);
     /** @deprecated Use `Sound.createAsync()` instead */
     static create: (source: AVPlaybackSource, initialStatus?: AVPlaybackStatusToSet, onPlaybackStatusUpdate?: ((status: AVPlaybackStatus) => void) | null, downloadFirst?: boolean) => Promise<{
         sound: Sound;

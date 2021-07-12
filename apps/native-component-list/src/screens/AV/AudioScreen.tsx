@@ -28,24 +28,27 @@ const WaveForm = () => {
 
   useEffect(() => {
     scale.value = 1;
-    let didThingy = false;
 
-    const soundObject = new Audio.Sound();
-    try {
-      soundObject.loadAsync(Asset.fromModule(require('../../../assets/sounds/polonez.mp3')), {
-        progressUpdateIntervalMillis: 150,
-      });
-    } catch (e) {
-      console.error(`failed to load source:`, e);
-    }
+    (async () => {
+      console.log('start');
+      const soundObject = new Audio.Sound();
+      console.log('created');
+      try {
+        await soundObject.loadAsync(
+          Asset.fromModule(require('../../../assets/sounds/polonez.mp3')),
+          {
+            progressUpdateIntervalMillis: 150,
+          }
+        );
+        console.log('loaded');
+      } catch (e) {
+        console.error(`failed to load source:`, e);
+      }
 
-    const interval = setInterval(() => {
-      console.log('1');
-      if (didThingy) return;
-      console.log('2');
-      if (global.setAudioCallback == null) return;
-      console.log('3');
-      global.setAudioCallback((sample: AudioSample) => {
+      await soundObject.playAsync();
+      console.log('played');
+
+      soundObject.onAudioSampleReceived = sample => {
         const firstFrame = sample.channels[0].frames[0];
         console.log(
           `Received sample data! ${sample.channels.length} Channels; ${sample.channels[0].frames.length} Frames; ${firstFrame}`
@@ -54,14 +57,8 @@ const WaveForm = () => {
         const loudness = Audio.Sound.getAverageLoudness(sample);
         // 0.90 to 0.96 is the most interesting range, 0.96 to 0.99 is mostly bass in this song so emphasize it even more.
         scale.value = interpolate(loudness, [0.9, 0.96, 0.99], [0.2, 1, 1.5], Extrapolate.CLAMP);
-      });
-      didThingy = true;
-      clearInterval(interval);
-    }, 1000);
-    return () => {
-      console.log('clear');
-      clearInterval(interval);
-    };
+      };
+    })();
   }, []);
 
   const style = useAnimatedStyle(

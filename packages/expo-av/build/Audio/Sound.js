@@ -1,4 +1,4 @@
-import { EventEmitter } from '@unimodules/core';
+import { EventEmitter, Platform } from '@unimodules/core';
 import { PlaybackMixin, assertStatusValuesInBounds, getNativeSourceAndFullInitialStatusForLoadAsync, getUnloadedStatus, } from '../AV';
 import ExponentAV from '../ExponentAV';
 import { throwIfAudioIsDisabled } from './AudioAvailability';
@@ -13,6 +13,7 @@ export class Sound {
         this._eventEmitter = new EventEmitter(ExponentAV);
         this._coalesceStatusUpdatesInMillis = 100;
         this._onPlaybackStatusUpdate = null;
+        this._onAudioSampleReceived = null;
         this._internalStatusUpdateCallback = ({ key, status, }) => {
             if (this._key === key) {
                 this._callOnPlaybackStatusUpdateForNewStatus(status);
@@ -40,6 +41,30 @@ export class Sound {
             this._callOnPlaybackStatusUpdateForNewStatus(status);
             return status;
         };
+    }
+    get onAudioSampleReceived() {
+        return this._onAudioSampleReceived;
+    }
+    set onAudioSampleReceived(callback) {
+        // @ts-expect-error
+        if (global.__av_sound_setOnAudioSampleReceivedCallback == null) {
+            if (Platform.OS === 'android' || Platform.OS === 'ios') {
+                throw new Error('Failed to set Audio Sample Buffer callback! The JSI function seems to not be installed correctly.');
+            }
+            else {
+                throw new Error(`'onAudioSampleReceived' is not supported on ${Platform.OS}!`);
+            }
+        }
+        if (this._key == null) {
+            throw new Error('Cannot set Audio Sample Buffer callback when the Sound instance has not been successfully loaded/initialized!');
+        }
+        if (typeof this._key !== 'number') {
+            throw new Error(`Cannot set Audio Sample Buffer callback when Sound instance key is of type ${typeof this
+                ._key}! (expected: number)`);
+        }
+        this._onAudioSampleReceived = callback;
+        // @ts-expect-error
+        global.__av_sound_setOnAudioSampleReceivedCallback(this._key, callback);
     }
     static getAverageLoudness(sampleOrChannel) {
         if ('frames' in sampleOrChannel) {
