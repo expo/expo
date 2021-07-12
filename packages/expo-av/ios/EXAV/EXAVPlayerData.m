@@ -19,7 +19,6 @@ NSString *const EXAVPlayerDataStatusShouldPlayKeyPath = @"shouldPlay";
 NSString *const EXAVPlayerDataStatusIsPlayingKeyPath = @"isPlaying";
 NSString *const EXAVPlayerDataStatusIsBufferingKeyPath = @"isBuffering";
 NSString *const EXAVPlayerDataStatusRateKeyPath = @"rate";
-NSString *const EXAVPlayerDataStatusPitchCorrectionQualityKeyPath = @"pitchCorrectionQuality";
 NSString *const EXAVPlayerDataStatusShouldCorrectPitchKeyPath = @"shouldCorrectPitch";
 NSString *const EXAVPlayerDataStatusVolumeKeyPath = @"volume";
 NSString *const EXAVPlayerDataStatusIsMutedKeyPath = @"isMuted";
@@ -102,12 +101,14 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     _timeControlStatus = AVPlayerTimeControlStatusPaused;
     _shouldPlay = NO;
     _rate = @(1.0);
-    _pitchCorrectionQuality = AVAudioTimePitchAlgorithmVarispeed;
     _observedRate = @(1.0);
     _shouldCorrectPitch = NO;
     _volume = @(1.0);
     _isMuted = NO;
     _isLooping = NO;
+    
+    _timePitch = [AVAudioUnitTimePitch new];
+    _speedControl = [AVAudioUnitVarispeed new];
   
     [self setStatus:parameters resolver:nil rejecter:nil];
   
@@ -163,7 +164,12 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
       } else {
         // Successfully read AVAudioFile.
         [_engine attachNode:_playerNode];
-        [_engine connect:_playerNode to:[_engine mainMixerNode] format:_audioFile.processingFormat];
+        [_engine attachNode:_speedControl];
+        [_engine attachNode:_timePitch];
+        
+        [_engine connect:_playerNode to:_speedControl format:_audioFile.processingFormat];
+        [_engine connect:_speedControl to:_timePitch format:_audioFile.processingFormat];
+        [_engine connect:_timePitch to:[_engine mainMixerNode] format:_audioFile.processingFormat];
         
         [self scheduleFile:_audioFile];
         [_playerNode play];
@@ -187,41 +193,6 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   }];
 }
 
-- (void)_finishLoadingNewPlayer
-{
-  // Set up player with parameters
-  UM_WEAKIFY(self);
-  NSLog(@"_finishLoadingNewPlayer");
-  /*
-  [_player seekToTime:_currentPosition completionHandler:^(BOOL finished) {
-    UM_ENSURE_STRONGIFY(self);
-    __strong EXAV *strongEXAV = self.exAV;
-    if (strongEXAV) {
-      dispatch_async(self.exAV.methodQueue, ^{
-        UM_ENSURE_STRONGIFY(self);
-        self.currentPosition = self.player.currentTime;
-
-        self.player.currentItem.audioTimePitchAlgorithm = self.pitchCorrectionQuality;
-        self.player.volume = self.volume.floatValue;
-        self.player.muted = self.isMuted;
-        [self _updateLooping:self.isLooping];
-
-        [self _tryPlayPlayerWithRateAndMuteIfNecessary];
-
-        self.isLoaded = YES;
-
-        [self _addObserversForNewPlayer];
-
-        if (self.loadFinishBlock) {
-          self.loadFinishBlock(YES, [self getStatus], nil);
-          self.loadFinishBlock = nil;
-        }
-      });
-    }
-  }];
-   */
-}
-
 #pragma mark - setStatus
 
 - (BOOL)_shouldPlayerPlay
@@ -237,7 +208,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
       if (_isMuted) {
         _playerNode.volume = 0.0f;
       }
-      _playerNode.rate = [_rate floatValue];
+      _speedControl.rate = [_rate floatValue];
     }
     return error;
   }
@@ -308,10 +279,6 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     _rate = rate;
   }
   
-  if (parameters[EXAVPlayerDataStatusPitchCorrectionQualityKeyPath] != nil) {
-    _pitchCorrectionQuality = parameters[EXAVPlayerDataStatusPitchCorrectionQualityKeyPath];
-  }
-  
   if ([parameters objectForKey:EXAVPlayerDataStatusShouldCorrectPitchKeyPath] != nil) {
     NSNumber *shouldCorrectPitch = parameters[EXAVPlayerDataStatusShouldCorrectPitchKeyPath];
     _shouldCorrectPitch = shouldCorrectPitch.boolValue;
@@ -345,9 +312,9 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 
     // Apply idempotent parameters.
     if (_shouldCorrectPitch) {
-      //_player.currentItem.audioTimePitchAlgorithm = _pitchCorrectionQuality;
+      _timePitch.pitch = 0.0 - ((_rate.floatValue - 1.0) / 32.0 * 2400.0);
     } else {
-      //_player.currentItem.audioTimePitchAlgorithm = AVAudioTimePitchAlgorithmVarispeed;
+      _timePitch.pitch = 0.0;
     }
 
     _playerNode.volume = _volume.floatValue;
@@ -499,7 +466,6 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
                                           
                                           EXAVPlayerDataStatusRateKeyPath: _rate,
                                           EXAVPlayerDataStatusShouldCorrectPitchKeyPath: @(_shouldCorrectPitch),
-                                          EXAVPlayerDataStatusPitchCorrectionQualityKeyPath: _pitchCorrectionQuality,
                                           EXAVPlayerDataStatusVolumeKeyPath: @(_playerNode.volume),
                                           EXAVPlayerDataStatusIsMutedKeyPath: @(_playerNode.volume > 0.0f),
                                           EXAVPlayerDataStatusIsLoopingKeyPath: @(_isLooping),
