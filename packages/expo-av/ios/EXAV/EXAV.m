@@ -105,6 +105,13 @@ UM_EXPORT_MODULE(ExponentAV);
 
 - (NSDictionary *)constantsToExport
 {
+  id<UMJavaScriptContextProvider> jsContextProvider = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMJavaScriptContextProvider)];
+  void *jsRuntimePtr = [jsContextProvider javaScriptRuntimePointer];
+  if (jsRuntimePtr) {
+    [self installJSIBindingsForRuntime:jsRuntimePtr withSoundDictionary:_soundDictionary];
+  } else {
+    UMLogWarn(@"EXAV: Cannot install Audio Sample Buffer callback. Do you have 'Remote Debugging' enabled in your app's Developer Menu (https://reactnative.dev/docs/debugging)? Audio Sample Buffer callbacks are not supported while using Remote Debugging, you will need to disable it to use them.");
+  }
   return @{
     @"Qualities": @{
         @"Low": AVAudioTimePitchAlgorithmLowQualityZeroLatency,
@@ -127,15 +134,6 @@ UM_EXPORT_MODULE(ExponentAV);
   [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)] registerAppLifecycleListener:self];
   _permissionsManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
   [EXPermissionsMethodsDelegate registerRequesters:@[[EXAudioRecordingPermissionRequester new]] withPermissionsManager:_permissionsManager];
-  
-  
-  id<UMJavaScriptContextProvider> jsContextProvider = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMJavaScriptContextProvider)];
-  void *jsRuntimePtr = [jsContextProvider javaScriptRuntimePointer];
-  if (jsRuntimePtr) {
-    [self installJSIBindingsForRuntime:jsRuntimePtr withSoundDictionary:_soundDictionary];
-  } else {
-    UMLogWarn(@"EXAV: Cannot install Audio Sample Buffer callback. Do you have 'Remote Debugging' enabled in your app's Developer Menu (https://reactnative.dev/docs/debugging)? Audio Sample Buffer callbacks are not supported while using Remote Debugging, you will need to disable it to use them.");
-  }
 }
 
 - (void)onAppForegrounded
