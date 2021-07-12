@@ -37,6 +37,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 
 @property (nonatomic, weak) EXAV *exAV;
 
+@property (nonatomic, assign) BOOL isNodePlaying;
 @property (nonatomic, assign) BOOL isLoaded;
 @property (nonatomic, strong) void (^loadFinishBlock)(BOOL success, NSDictionary *successStatus, NSString *error);
 
@@ -118,60 +119,59 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 
 - (void)_loadNewPlayer
 {
-  NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
-  AVURLAsset *avAsset = [AVURLAsset URLAssetWithURL:_url options:@{AVURLAssetHTTPCookiesKey : cookies, @"AVURLAssetHTTPHeaderFieldsKey": _headers}];
-  
-  // TODO: do any AVAudioSession configuration?
-  
-  _engine = [[AVAudioEngine alloc] init];
-  [_engine mainMixerNode]; // lazy getter init
-  [_engine prepare];
-  
-  void (^onError)(NSString *) = ^(NSString *errorMessage){
-    if (self.loadFinishBlock) {
-      self.loadFinishBlock(NO, nil, errorMessage);
-      self.loadFinishBlock = nil;
-    } else if (self.errorCallback) {
-      self.errorCallback(errorMessage);
-    }
-  };
-  void (^onSuccess)() = ^{
-    if (self.loadFinishBlock) {
-      self.loadFinishBlock(YES, [self getStatus], nil);
-      self.loadFinishBlock = nil;
-    }
-  };
-  
-  NSError *engineStartError;
-  [_engine startAndReturnError:&engineStartError];
-  if (engineStartError != nil) {
-    // Failed to start AVAudioEngine!
-    onError([NSString stringWithFormat:@"Error starting audio engine! %@", engineStartError.description]);
-  } else {
-    // Successfully started AVAudioEngine.
-    _playerNode = [[AVAudioPlayerNode alloc] init];
+  dispatch_async([self.exAV methodQueue], ^{
+    NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
+    AVURLAsset *avAsset = [AVURLAsset URLAssetWithURL:_url options:@{AVURLAssetHTTPCookiesKey : cookies, @"AVURLAssetHTTPHeaderFieldsKey": _headers}];
     
-    NSError *fileReadError;
-    _audioFile = [[AVAudioFile alloc] initForReading:_url error:&fileReadError];
-    if (fileReadError != nil) {
-      // Failed to read AVAudioFile!
-      onError([NSString stringWithFormat:@"Error reading audio file from \"%@\"! %@", _url.absoluteString, engineStartError.description]);
+    // TODO: do any AVAudioSession configuration?
+    
+    _engine = [[AVAudioEngine alloc] init];
+    [_engine mainMixerNode]; // lazy getter init
+    [_engine prepare];
+    
+    void (^onError)(NSString *) = ^(NSString *errorMessage){
+      if (self.loadFinishBlock) {
+        self.loadFinishBlock(NO, nil, errorMessage);
+        self.loadFinishBlock = nil;
+      } else if (self.errorCallback) {
+        self.errorCallback(errorMessage);
+      }
+    };
+    void (^onSuccess)() = ^{
+      if (self.loadFinishBlock) {
+        self.loadFinishBlock(YES, [self getStatus], nil);
+        self.loadFinishBlock = nil;
+      }
+    };
+    
+    NSError *engineStartError;
+    [_engine startAndReturnError:&engineStartError];
+    if (engineStartError != nil) {
+      // Failed to start AVAudioEngine!
+      onError([NSString stringWithFormat:@"Error starting audio engine! %@", engineStartError.description]);
     } else {
-      // Successfully read AVAudioFile.
-      [_engine attachNode:_playerNode];
-      [_engine connect:_playerNode to:[_engine mainMixerNode] format:_audioFile.processingFormat];
-      [_playerNode scheduleFile:_audioFile atTime:nil completionCallbackType:AVAudioPlayerNodeCompletionDataPlayedBack completionHandler:^(AVAudioPlayerNodeCompletionCallbackType callbackType) {
-        if (self.isLooping) {
-          [_playerNode play];
-        } else {
-          [self stop];
-        }
-      }];
-      onSuccess();
-      [_playerNode play];
-      self.isLoaded = YES;
+      // Successfully started AVAudioEngine.
+      _playerNode = [[AVAudioPlayerNode alloc] init];
+      
+      NSError *fileReadError;
+      _audioFile = [[AVAudioFile alloc] initForReading:_url error:&fileReadError];
+      if (fileReadError != nil) {
+        // Failed to read AVAudioFile!
+        onError([NSString stringWithFormat:@"Error reading audio file from \"%@\"! %@", _url.absoluteString, engineStartError.description]);
+      } else {
+        // Successfully read AVAudioFile.
+        [_engine attachNode:_playerNode];
+        [_engine connect:_playerNode to:[_engine mainMixerNode] format:_audioFile.processingFormat];
+        [_playerNode scheduleFile:_audioFile atTime:nil completionCallbackType:AVAudioPlayerNodeCompletionDataPlayedBack completionHandler:^(AVAudioPlayerNodeCompletionCallbackType callbackType) {
+          self.isNodePlaying = NO;
+        }];
+        onSuccess();
+        [_playerNode play];
+        self.isNodePlaying = YES;
+        self.isLoaded = YES;
+      }
     }
-  }
+  });
 }
 
 - (void)_finishLoadingNewPlayer
@@ -320,8 +320,10 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     // Pause / mute first if necessary.
     if ([self _shouldPlayerPlay]) {
       [_playerNode play];
+      self.isNodePlaying = YES;
     } else {
       [_playerNode pause];
+      self.isNodePlaying = NO;
     }
 
     if (_isMuted) {
@@ -396,7 +398,9 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
                         format:nil
                          block:^(AVAudioPCMBuffer * _Nonnull buffer,
                                  AVAudioTime * _Nonnull when) {
-    callback(buffer);
+    if (self.isNodePlaying) {
+      callback(buffer);
+    }
   }];
 }
 
