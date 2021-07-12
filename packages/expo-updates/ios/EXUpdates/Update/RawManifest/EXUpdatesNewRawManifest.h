@@ -32,6 +32,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSDictionary *)launchAsset;
 - (nullable NSArray *)assets;
 
+- (nullable NSDictionary *)expoGoConfigRootObject;
+- (nullable NSDictionary *)expoClientConfigRootObject;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -734,7 +734,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString * _Nullable)_readBackgroundColorFromManifest:(EXUpdatesRawManifest *)manifest
 {
-  return manifest.androidOrRootBackroundColor;
+  return manifest.iosOrRootBackroundColor;
 }
 
 

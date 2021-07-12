@@ -37,7 +37,7 @@
       return [runtimeVersion substringWithRange:matchRange];
     }
   }
-  
+
   return nil;
 }
 
@@ -55,6 +55,24 @@
 
 - (NSString *)bundleUrl {
   return [self.launchAsset stringForKey:@"url"];
+}
+
+- (nullable NSDictionary *)extra {
+  return [self.rawManifestJSON nullableDictionaryForKey:@"extra"];
+}
+
+- (nullable NSDictionary *)expoClientConfigRootObject {
+  if (!self.extra) {
+    return nil;
+  }
+  return [self.extra nullableDictionaryForKey:@"expoClient"];
+}
+
+- (nullable NSDictionary *)expoGoConfigRootObject {
+  if (!self.extra) {
+    return nil;
+  }
+  return [self.extra nullableDictionaryForKey:@"expoGo"];
 }
 
 @end

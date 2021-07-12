@@ -6,6 +6,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXUpdatesBaseLegacyRawManifest : EXUpdatesBaseRawManifest
 
+- (nullable NSDictionary *)expoGoConfigRootObject;
+- (nullable NSDictionary *)expoClientConfigRootObject;
+
 - (NSString *)stableLegacyId;
 - (NSString *)scopeKey;
 - (nullable NSString *)projectId;
