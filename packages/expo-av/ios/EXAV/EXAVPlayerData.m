@@ -322,7 +322,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 
     // Apply idempotent parameters.
     if (_shouldCorrectPitch) {
-      _timePitch.pitch = 0.0 - ((_rate.floatValue - 1.0) / 32.0 * 2400.0);
+      _timePitch.pitch = 1200.0 * log2(_rate.doubleValue);
     } else {
       _timePitch.pitch = 0.0;
     }
