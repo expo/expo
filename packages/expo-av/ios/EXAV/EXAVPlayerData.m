@@ -46,7 +46,6 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 @property (nonatomic, strong) NSMapTable<NSObject *, NSMutableSet<NSString *> *> *observers;
 
 @property (nonatomic, strong) NSNumber *progressUpdateIntervalMillis;
-@property (nonatomic, assign) CMTime currentPosition;
 @property (nonatomic, assign) BOOL shouldPlay;
 @property (nonatomic, strong) NSNumber *rate;
 @property (nonatomic, strong) NSString *pitchCorrectionQuality;
@@ -97,7 +96,6 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   
     // These status props will be potentially reset by the following call to [self setStatus:parameters ...].
     _progressUpdateIntervalMillis = @(500);
-    _currentPosition = kCMTimeZero;
     _timeControlStatus = AVPlayerTimeControlStatusPaused;
     _shouldPlay = NO;
     _rate = @(1.0);
@@ -186,8 +184,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 {
   AVAudioTime *audioTime = nil;
   if (CMTimeCompare(time, kCMTimeZero) != 0) {
-    audioTime = [[AVAudioTime alloc] initWithHostTime:time.value];
-    [_playerNode stop];
+    audioTime = [AVAudioTime timeWithHostTime:[AVAudioTime hostTimeForSeconds:CMTimeGetSeconds(time)]];
   }
   
   [_playerNode scheduleFile:file atTime:audioTime completionCallbackType:AVAudioPlayerNodeCompletionDataPlayedBack completionHandler:^(AVAudioPlayerNodeCompletionCallbackType callbackType) {
@@ -233,12 +230,20 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   [_engine stop];
 }
 
+- (NSNumber *)currentPositionMillis
+{
+  AVAudioTime *lastTime = [_playerNode playerTimeForNodeTime:_playerNode.lastRenderTime];
+  uint64_t seconds = [AVAudioTime secondsForHostTime:lastTime.hostTime];
+  return [NSNumber numberWithDouble:(double)seconds * 1000.0];
+}
+
 - (void)setStatus:(NSDictionary *)parameters
          resolver:(UMPromiseResolveBlock)resolve
          rejecter:(UMPromiseRejectBlock)reject
 {
   BOOL mustUpdateTimeObserver = NO;
   BOOL mustSeek = NO;
+  CMTime newPosition = kCMTimeZero;
   
   if ([parameters objectForKey:EXAVPlayerDataStatusProgressUpdateIntervalMillisKeyPath] != nil) {
     NSNumber *progressUpdateIntervalMillis = parameters[EXAVPlayerDataStatusProgressUpdateIntervalMillisKeyPath];
@@ -246,16 +251,15 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     _progressUpdateIntervalMillis = progressUpdateIntervalMillis;
   }
   
-  // To prevent a race condition, we set _currentPosition at the end of this method.
-  CMTime newPosition = _currentPosition;
-  
   if ([parameters objectForKey:EXAVPlayerDataStatusPositionMillisKeyPath] != nil) {
-    NSNumber *currentPositionMillis = parameters[EXAVPlayerDataStatusPositionMillisKeyPath];
+    NSNumber *newPositionMillis = parameters[EXAVPlayerDataStatusPositionMillisKeyPath];
+    NSNumber *currentPositionMillis = [self currentPositionMillis];
     
     // We only seek if the new position is different from _currentPosition by a whole number of milliseconds.
-    mustSeek = currentPositionMillis.longValue != [self _getRoundedMillisFromCMTime:_currentPosition].longValue;
+    mustSeek = currentPositionMillis.longValue != newPositionMillis.longValue;
     if (mustSeek) {
-      newPosition = CMTimeMakeWithSeconds(currentPositionMillis.floatValue / 1000, NSEC_PER_SEC);
+      float seconds = newPositionMillis.floatValue / 1000.0;
+      newPosition = CMTimeMakeWithSeconds(seconds, NSEC_PER_SEC);
     }
   }
   
@@ -329,6 +333,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     if (mustSeek) {
       [_playerNode stop];
       [self scheduleFile:_audioFile atTime:newPosition];
+      [_playerNode play];
     }
     
     // TODO: UPDATE TIMESTAMP
@@ -354,7 +359,6 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
       resolve([self getStatus]);
     }
   } else {
-    _currentPosition = newPosition; // Will be set in the new _player on the call to [self _finishLoadingNewPlayer].
     if (resolve) {
       resolve([EXAVPlayerData getUnloadedStatus]);
     }
