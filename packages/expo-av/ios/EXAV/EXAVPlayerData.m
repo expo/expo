@@ -237,6 +237,13 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   _isLooping = isLooping;
 }
 
+- (void)stop
+{
+  [self removeSampleBufferCallback];
+  [_playerNode stop];
+  [_engine stop];
+}
+
 - (void)setStatus:(NSDictionary *)parameters
          resolver:(UMPromiseResolveBlock)resolve
          rejecter:(UMPromiseRejectBlock)reject
@@ -390,7 +397,6 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
                         format:nil
                          block:^(AVAudioPCMBuffer * _Nonnull buffer,
                                  AVAudioTime * _Nonnull when) {
-    NSLog(@"Tap called!");
     callback(buffer);
   }];
 }
