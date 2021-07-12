@@ -45,14 +45,6 @@ using namespace facebook;
       auto callbackShared = std::make_shared<jsi::Function>(std::move(callback));
       
       [sound addSampleBufferCallback:^(AVAudioPCMBuffer * _Nonnull buffer) {
-        double** data;
-        if (buffer.floatChannelData != nil) {
-          data = (double**) buffer.floatChannelData;
-        } else if (buffer.int32ChannelData != nil) {
-          data = (double**) buffer.int32ChannelData;
-        } else if (buffer.int16ChannelData != nil) {
-          data = (double**) buffer.int16ChannelData;
-        }
         auto channelsCount = (size_t) buffer.stride;
         auto framesCount = buffer.frameLength;
         
