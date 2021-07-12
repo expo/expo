@@ -32,7 +32,7 @@ private:
 
     void sampleBufferCallback(jint sampleBuffer);
 
-    explicit JMediaPlayerData(jni::alias_ref<CameraView::jhybridobject> jThis) :
+    explicit JMediaPlayerData(jni::alias_ref<JMediaPlayerData::jhybridobject> jThis) :
             javaPart_(jni::make_global(jThis)),
             sampleBufferCallback_(nullptr)
     {}
