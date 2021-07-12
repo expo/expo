@@ -33,6 +33,9 @@ const WaveForm = () => {
     (async () => {
       console.log('start');
       soundObject = new Audio.Sound();
+      soundObject.setOnPlaybackStatusUpdate(status => {
+        console.log(`Playback status changed: ${JSON.stringify(status)}`);
+      });
       console.log('created');
       try {
         await soundObject.loadAsync(
