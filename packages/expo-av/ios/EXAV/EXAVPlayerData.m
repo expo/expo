@@ -171,7 +171,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
         [_engine connect:_speedControl to:_timePitch format:_audioFile.processingFormat];
         [_engine connect:_timePitch to:[_engine mainMixerNode] format:_audioFile.processingFormat];
         
-        [self scheduleFile:_audioFile];
+        [self scheduleFile:_audioFile atTime:kCMTimeZero];
         [_playerNode play];
         onSuccess();
         
@@ -182,11 +182,17 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   });
 }
 
-- (void)scheduleFile:(AVAudioFile *)file
+- (void)scheduleFile:(AVAudioFile *)file atTime:(CMTime)time
 {
-  [_playerNode scheduleFile:file atTime:nil completionCallbackType:AVAudioPlayerNodeCompletionDataPlayedBack completionHandler:^(AVAudioPlayerNodeCompletionCallbackType callbackType) {
+  AVAudioTime *audioTime = nil;
+  if (CMTimeCompare(time, kCMTimeZero) != 0) {
+    audioTime = [[AVAudioTime alloc] initWithHostTime:time.value];
+    [_playerNode stop];
+  }
+  
+  [_playerNode scheduleFile:file atTime:audioTime completionCallbackType:AVAudioPlayerNodeCompletionDataPlayedBack completionHandler:^(AVAudioPlayerNodeCompletionCallbackType callbackType) {
     if (self.isLooping) {
-      [self scheduleFile:file];
+      [self scheduleFile:file atTime:time];
     } else {
       self.isNodePlaying = NO;
     }
@@ -319,48 +325,33 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 
     _playerNode.volume = _volume.floatValue;
     
-    // Apply parameters necessary after seek.
-    UM_WEAKIFY(self);
-    void (^applyPostSeekParameters)(BOOL) = ^(BOOL seekSucceeded) {
-      UM_ENSURE_STRONGIFY(self);
-      // TODO: UPDATE TIMESTAMP
-      //self.currentPosition = self.playerNode.lastRenderTime;
-
-      if (mustUpdateTimeObserver) {
-        [self _updateTimeObserver];
-      }
-
-      NSError *audioSessionError = [self _tryPlayPlayerWithRateAndMuteIfNecessary];
-
-      if (audioSessionError) {
-        if (reject) {
-          reject(@"E_AV_PLAY", @"Play encountered an error: audio session not activated.", audioSessionError);
-        }
-      } else if (!seekSucceeded) {
-        if (reject) {
-          reject(@"E_AV_SEEKING", nil, UMErrorWithMessage(@"Seeking interrupted."));
-        }
-      } else if (resolve) {
-        resolve([self getStatus]);
-      }
-
-      if (!resolve || !reject) {
-        [self _callStatusUpdateCallback];
-      }
-
-      [self.exAV demoteAudioSessionIfPossible];
-    };
-    
     // Apply seek if necessary.
     if (mustSeek) {
-      // TODO: SEEK
-      /*[_player seekToTime:newPosition toleranceBefore:toleranceBefore toleranceAfter:toleranceAfter completionHandler:^(BOOL seekSucceeded) {
-        dispatch_async(self->_exAV.methodQueue, ^{
-          applyPostSeekParameters(seekSucceeded);
-        });
-      }];*/
+      [_playerNode stop];
+      [self scheduleFile:_audioFile atTime:newPosition];
+    }
+    
+    // TODO: UPDATE TIMESTAMP
+    //self.currentPosition = self.playerNode.lastRenderTime;
+    
+    if (mustUpdateTimeObserver) {
+      [self _updateTimeObserver];
+    }
+    
+    NSError *audioSessionError = [self _tryPlayPlayerWithRateAndMuteIfNecessary];
+    
+    if (!resolve || !reject) {
+      [self _callStatusUpdateCallback];
+    }
+    
+    [self.exAV demoteAudioSessionIfPossible];
+    
+    if (audioSessionError) {
+      if (reject) {
+        reject(@"E_AV_PLAY", @"Play encountered an error: audio session not activated.", audioSessionError);
+      }
     } else {
-      applyPostSeekParameters(YES);
+      resolve([self getStatus]);
     }
   } else {
     _currentPosition = newPosition; // Will be set in the new _player on the call to [self _finishLoadingNewPlayer].
