@@ -14,6 +14,9 @@
 @property (nonatomic, strong) AVAudioEngine *engine;
 @property (nonatomic, strong) AVAudioPlayerNode *playerNode;
 @property (nonatomic, strong) AVAudioFile *audioFile;
+@property (nonatomic, strong) AVAudioUnitTimePitch *timePitch;
+@property (nonatomic, strong) AVAudioUnitVarispeed *speedControl;
+
 @property (nonatomic, strong) NSURL *url;
 @property (nonatomic, strong) NSDictionary *headers;
 @property (nonatomic, strong) void (^statusUpdateCallback)(NSDictionary *);
