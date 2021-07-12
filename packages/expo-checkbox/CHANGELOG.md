@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove `isAvailableAsync()` and reimplement module in javascript. ([#13510](https://github.com/expo/expo/pull/13510) by [@ajsmth](https://github.com/ajsmth))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

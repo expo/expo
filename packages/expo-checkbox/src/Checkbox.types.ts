@@ -15,6 +15,4 @@ export interface CheckboxProps extends ViewProps {
   onValueChange?: (value: boolean) => void;
 }
 
-export type CheckboxComponent = React.FC<CheckboxProps> & {
-  isAvailableAsync: () => Promise<boolean>;
-};
+export type CheckboxComponent = React.FC<CheckboxProps>;

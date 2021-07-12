@@ -1,29 +1,11 @@
 import Checkbox from 'expo-checkbox';
 import * as React from 'react';
-import { Platform, Text } from 'react-native';
+import { Platform } from 'react-native';
 
 import { Page, Section } from '../components/Page';
-import { useResolvedValue } from '../utilities/useResolvedValue';
 
 export default function CheckboxScreen() {
-  const [isAvailable] = useResolvedValue(Checkbox.isAvailableAsync);
   const [value, setValue] = React.useState(true);
-
-  if (isAvailable === null) {
-    return (
-      <Page>
-        <Text>Checking if checkbox is available on this platform...</Text>
-      </Page>
-    );
-  }
-
-  if (isAvailable === false) {
-    return (
-      <Page>
-        <Text>CheckBox is not available on this platform.</Text>
-      </Page>
-    );
-  }
 
   return (
     <Page>

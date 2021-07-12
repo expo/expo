@@ -7,13 +7,13 @@ import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
-**`expo-checkbox`** provides an component to provide a `boolean` input element on Android and Web.
+**`expo-checkbox`** provides a `boolean` input element for all platforms. If you are looking for a more flexible checkbox component, please see our  [guide to implementing your own checkbox](../../../ui-programming/implementing-a-checkbox.md).
 
-<PlatformsSection android emulator web />
+<PlatformsSection android emulator web ios simulator />
 
 ## Installation
 
-<InstallSection packageName="expo-checkbox" />
+<InstallSection packageName="expo-checkbox" hideBareInstructions />
 
 ## Usage
 
@@ -76,16 +76,6 @@ const styles = StyleSheet.create({
 ```js
 import Checkbox from 'expo-checkbox';
 ```
-
-## Static Methods
-
-### `Checkbox.isAvailableAsync(): Promise<boolean>`
-
-Determines whether the checkbox is available.
-
-#### Returns
-
-Returns a promise that resolves to a `Boolean`, indicating whether the checkbox is available on this device.
 
 ## Props
 
