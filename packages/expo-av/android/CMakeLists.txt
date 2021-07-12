@@ -14,7 +14,7 @@ set (RN_SO_DIR ${NODE_MODULES_DIR}/react-native/ReactAndroid/src/main/jni/first-
 add_library(
         ${PACKAGE_NAME}
         SHARED
-        src/main/cpp/JPlayerData.cpp
+        src/main/cpp/JMediaPlayerData.cpp
 )
 
 # includes
