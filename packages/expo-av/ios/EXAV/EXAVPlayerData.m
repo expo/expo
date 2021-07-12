@@ -322,6 +322,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 
     // Apply idempotent parameters.
     if (_shouldCorrectPitch) {
+      // source: https://developer.apple.com/documentation/avfaudio/avaudiounitvarispeed/1387118-rate
       _timePitch.pitch = 1200.0 * log2(_rate.doubleValue);
     } else {
       _timePitch.pitch = 0.0;
