@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Rewrite module from Java to Kotlin. ([#13582](https://github.com/expo/expo/pull/13582) by [@mstach60161](https://github.com/mstach60161))
+
 ## 11.1.0 — 2021-06-16
 
 ### 🐛 Bug fixes
