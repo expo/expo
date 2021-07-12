@@ -13,6 +13,7 @@ typedef NS_OPTIONS(NSUInteger, EXAVAudioSessionMode)
 @protocol EXAVObject <NSObject> // For EXAVPlayerData and EXVideoView to interact with the Audio Session properly
 
 - (void)pauseImmediately;
+- (void)stop;
 
 - (EXAVAudioSessionMode)getAudioSessionModeRequired; // TODO (clarity): is needsAudioSession a better name?
 

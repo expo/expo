@@ -677,6 +677,7 @@ UM_EXPORT_METHOD_AS(unloadForSound,
                     rejecter:(UMPromiseRejectBlock)reject)
 {
   [self _runBlock:^(EXAVPlayerData *data) {
+    [data stop];
     [self _removeSoundForKey:key];
     resolve([EXAVPlayerData getUnloadedStatus]);
   } withSoundForKey:key withRejecter:reject];

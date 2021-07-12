@@ -28,10 +28,11 @@ const WaveForm = () => {
 
   useEffect(() => {
     scale.value = 1;
+    let soundObject: Audio.Sound | null = null;
 
     (async () => {
       console.log('start');
-      const soundObject = new Audio.Sound();
+      soundObject = new Audio.Sound();
       console.log('created');
       try {
         await soundObject.loadAsync(
@@ -59,6 +60,12 @@ const WaveForm = () => {
         scale.value = interpolate(loudness, [0.9, 0.96, 0.99], [0.2, 1, 1.5], Extrapolate.CLAMP);
       };
     })();
+
+    return () => {
+      if (soundObject != null) {
+        soundObject.unloadAsync();
+      }
+    };
   }, []);
 
   const style = useAnimatedStyle(
