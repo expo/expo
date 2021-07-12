@@ -36,7 +36,6 @@ open class AmplitudeModule(context: Context?) : ExportedModule(context) {
     promise.resolve(null)
   }
 
-
   private inline fun rejectUnlessClientInitialized(promise: Promise, block: (AmplitudeClient) -> Unit) {
     val client = mClient
     if (client == null) {

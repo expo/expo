@@ -6,6 +6,6 @@ import org.unimodules.core.ExportedModule
 
 class AmplitudePackage : BasePackage() {
   override fun createExportedModules(context: Context): List<ExportedModule> {
-    return listOf(AmplitudeModule(context) as ExportedModule)
+    return listOf(AmplitudeModule(context))
   }
 }
