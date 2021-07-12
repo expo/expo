@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Rewrite print module from Java to Kotlin. ([#13538](https://github.com/expo/expo/pull/13538) by [@mstach60161](https://github.com/mstach60161))
+
 ## 10.2.0 — 2021-06-16
 
 ### 🐛 Bug fixes
