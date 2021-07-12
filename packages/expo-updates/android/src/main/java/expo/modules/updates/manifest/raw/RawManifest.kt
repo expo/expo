@@ -72,104 +72,101 @@ abstract class RawManifest(protected val json: JSONObject) {
 
   abstract fun getAssets(): JSONArray?
 
+  abstract fun getExpoGoConfigRootObject(): JSONObject?
+  abstract fun getExpoClientConfigRootObject(): JSONObject?
+
   fun isDevelopmentMode(): Boolean {
+    val expoGoRootObject = getExpoGoConfigRootObject() ?: return false
     return try {
-      json.has("developer") &&
-          json.has("packagerOpts") &&
-          json.getJSONObject("packagerOpts").optBoolean("dev", false)
+      expoGoRootObject.has("developer") &&
+              expoGoRootObject.has("packagerOpts") &&
+              expoGoRootObject.getJSONObject("packagerOpts").optBoolean("dev", false)
     } catch (e: JSONException) {
       false
     }
   }
 
   fun isDevelopmentSilentLaunch(): Boolean {
+    val expoGoRootObject = getExpoGoConfigRootObject() ?: return false
     return try {
-      json.has("developmentClient") &&
-          json.getJSONObject("developmentClient")
-            .optBoolean("silentLaunch", false)
+      expoGoRootObject.has("developmentClient") &&
+              expoGoRootObject.getJSONObject("developmentClient").optBoolean("silentLaunch", false)
     } catch (e: JSONException) {
       false
     }
   }
 
   fun isUsingDeveloperTool(): Boolean {
+    val expoGoRootObject = getExpoGoConfigRootObject() ?: return false
     return try {
-      json.has("developer") && json.getJSONObject("developer").has("tool")
+      expoGoRootObject.has("developer") && expoGoRootObject.getJSONObject(
+        "developer"
+      ).has("tool")
     } catch (e: JSONException) {
       false
     }
   }
 
-  fun getSlug(): String? = if (json.has("slug")) {
-    json.optString("slug")
-  } else {
-    null
-  }
+  abstract fun getSlug(): String?
 
-  fun getDebuggerHost(): String = json.optString("debuggerHost")
-  fun getMainModuleName(): String = json.optString("mainModuleName")
+  fun getDebuggerHost(): String = getExpoGoConfigRootObject()!!.getString("debuggerHost")
+  fun getMainModuleName(): String = getExpoGoConfigRootObject()!!.getString("mainModuleName")
 
   fun isVerified(): Boolean = json.optBoolean("isVerified")
 
-  fun getAppKey(): String? = if (json.has("appKey")) {
-    json.optString("appKey")
-  } else {
-    null
+  abstract fun getAppKey(): String?
+
+  fun getName(): String? {
+    val expoClientConfig = getExpoClientConfigRootObject() ?: return null
+    return expoClientConfig.optString("name")
   }
 
-  fun getName(): String? = if (json.has("name")) {
-    json.optString("name")
-  } else {
-    null
+  fun getUpdatesInfo(): JSONObject? {
+    val expoClientConfig = getExpoClientConfigRootObject() ?: return null
+    return expoClientConfig.optJSONObject("updates")
   }
 
-  fun getUpdatesInfo(): JSONObject? = json.optJSONObject("updates")
+  abstract fun getSortTime(): String?
 
-  fun getCommitTime(): String? = if (json.has("commitTime")) {
-    json.optString("commitTime")
-  } else {
-    null
+  fun getPrimaryColor(): String? {
+    val expoClientConfig = getExpoClientConfigRootObject() ?: return null
+    return expoClientConfig.optString("primaryColor")
   }
 
-  @Throws(JSONException::class)
-  fun getPublishedTime(): String = json.getString("publishedTime")
-
-  fun getPrimaryColor(): String? = if (json.has("primaryColor")) {
-    json.optString("primaryColor")
-  } else {
-    null
-  }
-
-  fun getOrientation(): String? = if (json.has("orientation")) {
-    json.optString("orientation")
-  } else {
-    null
+  fun getOrientation(): String? {
+    val expoClientConfig = getExpoClientConfigRootObject() ?: return null
+    return expoClientConfig.optString("orientation")
   }
 
   fun getAndroidKeyboardLayoutMode(): String? {
-    val android = json.optJSONObject("android") ?: return null
-    return android.optString("softwareKeyboardLayoutMode") ?: return null
+    val expoClientConfig = getExpoClientConfigRootObject() ?: return null
+    val android = expoClientConfig.optJSONObject("android") ?: return null
+    return android.optString("softwareKeyboardLayoutMode")
   }
 
   fun getAndroidUserInterfaceStyle(): String? {
-    val android = json.optJSONObject("android") ?: return null
-    return android.optString("userInterfaceStyle") ?: return null
+    val expoClientConfig = getExpoClientConfigRootObject() ?: return null
+    val android = expoClientConfig.optJSONObject("android") ?: return null
+    return android.optString("userInterfaceStyle")
   }
 
   fun getAndroidStatusBarOptions(): JSONObject? {
-    return json.optJSONObject("androidStatusBar")
+    val expoClientConfig = getExpoClientConfigRootObject() ?: return null
+    return expoClientConfig.optJSONObject("androidStatusBar")
   }
 
   fun getAndroidBackgroundColor(): String? {
+    val expoClientConfig = getExpoClientConfigRootObject() ?: return null
     return try {
-      json.getJSONObject("android").getString("backgroundColor")
+      expoClientConfig.getJSONObject("android").getString("backgroundColor")
     } catch (e: JSONException) {
-      json.optString("backgroundColor")
+      expoClientConfig.optString("backgroundColor")
     }
   }
 
   fun getAndroidNavigationBarOptions(): JSONObject? {
-    return json.optJSONObject("androidNavigationBar")
+    val expoClientConfig = getExpoClientConfigRootObject() ?: return null
+    return expoClientConfig.optJSONObject("androidNavigationBar")
   }
 
   fun getAndroidJsEngine(): String? {
@@ -178,45 +175,43 @@ abstract class RawManifest(protected val json: JSONObject) {
   }
 
   fun getIconUrl(): String? {
-    return json.optString("iconUrl")
+    val expoClientConfig = getExpoClientConfigRootObject() ?: return null
+    return expoClientConfig.optString("iconUrl")
   }
 
   fun getNotificationPreferences(): JSONObject? {
-    return json.optJSONObject("notification")
+    val expoClientConfig = getExpoClientConfigRootObject() ?: return null
+    return expoClientConfig.optJSONObject("notification")
   }
 
   fun getAndroidSplashInfo(): JSONObject? {
-    return json.optJSONObject("android")?.optJSONObject("splash")
+    val expoClientConfig = getExpoClientConfigRootObject() ?: return null
+    return expoClientConfig.optJSONObject("android")?.optJSONObject("splash")
   }
 
   fun getRootSplashInfo(): JSONObject? {
-    return json.optJSONObject("splash")
+    val expoClientConfig = getExpoClientConfigRootObject() ?: return null
+    return expoClientConfig.optJSONObject("splash")
   }
 
   fun getAndroidGoogleServicesFile(): String? {
-    val android = json.optJSONObject("android")
-    return if (android != null && android.has("googleServicesFile")) {
-      android.optString("googleServicesFile")
-    } else {
-      null
-    }
+    val expoClientConfig = getExpoClientConfigRootObject() ?: return null
+    val android = expoClientConfig.optJSONObject("android") ?: return null
+    return android.optString("googleServicesFile")
   }
 
   fun getAndroidPackageName(): String? {
-    val android = json.optJSONObject("android")
-    return if (android != null && android.has("packageName")) {
-      android.optString("packageName")
-    } else {
-      null
-    }
+    val expoClientConfig = getExpoClientConfigRootObject() ?: return null
+    val android = expoClientConfig.optJSONObject("android") ?: return null
+    return android.optString("packageName")
   }
 
   @Throws(JSONException::class)
-  fun getFacebookAppId(): String = json.getString("facebookAppId")
+  fun getFacebookAppId(): String = getExpoClientConfigRootObject()!!.getString("facebookAppId")
 
   @Throws(JSONException::class)
-  fun getFacebookApplicationName(): String = json.getString("facebookDisplayName")
+  fun getFacebookApplicationName(): String = getExpoClientConfigRootObject()!!.getString("facebookDisplayName")
 
   @Throws(JSONException::class)
-  fun getFacebookAutoInitEnabled(): Boolean = json.getBoolean("facebookAutoInitEnabled")
+  fun getFacebookAutoInitEnabled(): Boolean = getExpoClientConfigRootObject()!!.getBoolean("facebookAutoInitEnabled")
 }
