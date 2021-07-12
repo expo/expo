@@ -45,8 +45,43 @@ using namespace facebook;
       auto callbackShared = std::make_shared<jsi::Function>(std::move(callback));
       
       [sound addSampleBufferCallback:^(AVAudioPCMBuffer * _Nonnull buffer) {
-        NSLog(@"Sample Buffer Callback invoked!");
-        callbackShared->call(runtime, jsi::Value::undefined());
+        double** data;
+        if (buffer.floatChannelData != nil) {
+          data = (double**) buffer.floatChannelData;
+        } else if (buffer.int32ChannelData != nil) {
+          data = (double**) buffer.int32ChannelData;
+        } else if (buffer.int16ChannelData != nil) {
+          data = (double**) buffer.int16ChannelData;
+        }
+        auto channelsCount = (size_t) buffer.stride;
+        auto framesCount = buffer.frameLength;
+        
+        auto channels = jsi::Array(runtime, channelsCount);
+        for (auto i = 0; i < channelsCount; i++) {
+          auto channel = jsi::Object(runtime);
+          
+          auto frames = jsi::Array(runtime, framesCount);
+          for (auto ii = 0; ii < framesCount; ii++) {
+            
+            double frame;
+            if (buffer.floatChannelData != nil) {
+              frame = (double) buffer.floatChannelData[i][ii];
+            } else if (buffer.int32ChannelData != nil) {
+              frame = (double) buffer.int32ChannelData[i][ii];
+            } else if (buffer.int16ChannelData != nil) {
+              frame = (double) buffer.int16ChannelData[i][ii];
+            }
+            
+            frames.setValueAtIndex(runtime, ii, jsi::Value(frame));
+          }
+          
+          channel.setProperty(runtime, "frames", frames);
+          channels.setValueAtIndex(runtime, i, channel);
+        }
+        
+        auto sample = jsi::Object(runtime);
+        sample.setProperty(runtime, "channels", channels);
+        callbackShared->call(runtime, sample);
       }];
     } else {
       // second parameter omitted or undefined, so remove callback
