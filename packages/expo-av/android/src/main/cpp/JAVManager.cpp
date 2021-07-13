@@ -5,6 +5,8 @@
 
 #include "JAVManager.h"
 
+#include <jsi/jsi.h>
+
 #include <jni.h>
 #include <fbjni/fbjni.h>
 
@@ -44,9 +46,9 @@ void JAVManager::installJSIBindings(jlong jsRuntimePointer,
     auto callInvoker = jsCallInvokerHolder->cthis()->getCallInvoker();
 
     auto function = [this](jsi::Runtime &runtime,
-                       const jsi::Value &thisValue,
-                       const jsi::Value *args,
-                       size_t argsCount) -> jsi::Value {
+                           const jsi::Value &thisValue,
+                           const jsi::Value *args,
+                           size_t argsCount) -> jsi::Value {
         auto playerId = args[0].asNumber();
 
         auto mediaPlayer = getMediaPlayerById(static_cast<int>(playerId));
@@ -88,6 +90,7 @@ void JAVManager::installJSIBindings(jlong jsRuntimePointer,
             // second parameter omitted or undefined, so remove callback
             mediaPlayer->unsetSampleBufferCallback();
         }
+
         return jsi::Value::undefined();
     };
     runtime.global().setProperty(runtime,
