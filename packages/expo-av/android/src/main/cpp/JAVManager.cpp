@@ -81,11 +81,12 @@ void JAVManager::installJSIBindings(jlong jsRuntimePointer,
                     auto frames = jsi::Array(runtime, size);
 
                     for (size_t ii = 0; ii < size; ii++) {
+                        uint8_t pcm = buffer[ii];
                         // format of waveform is unsigned 8 bit integer (byte), but we
                         // interpret it as a signed 8 bit int so it ranges from -127 to 128.
                         // we want to have a normalized value of -1.0 to 1.0, so we divide by 256.
-                        double frame = ((double)buffer[ii]) / 256;
-                        frames.setValueAtIndex(runtime, i, jsi::Value(frame));
+                        double frame = ((double)(pcm - 128)) / 256.0;
+                        frames.setValueAtIndex(runtime, ii, jsi::Value(frame));
                     }
 
                     channel.setProperty(runtime, "frames", frames);
