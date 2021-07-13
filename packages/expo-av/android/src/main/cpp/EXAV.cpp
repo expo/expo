@@ -5,11 +5,11 @@
 #include <jni.h>
 #include <fbjni/fbjni.h>
 #include "JAVManager.h"
-#include "JMediaPlayerData.h"
+#include "JPlayerData.h"
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     return facebook::jni::initialize(vm, [] {
         expo::JAVManager::registerNatives();
-        expo::JMediaPlayerData::registerNatives();
+        expo::JPlayerData::registerNatives();
     });
 }

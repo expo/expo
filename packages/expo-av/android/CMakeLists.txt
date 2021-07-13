@@ -14,7 +14,7 @@ add_library(
         ${PACKAGE_NAME}
         SHARED
         src/main/cpp/EXAV.cpp
-        src/main/cpp/JMediaPlayerData.cpp
+        src/main/cpp/JPlayerData.cpp
         src/main/cpp/JAVManager.cpp
         "${NODE_MODULES_DIR}/react-native/ReactCommon/jsi/jsi/jsi.cpp"
 )

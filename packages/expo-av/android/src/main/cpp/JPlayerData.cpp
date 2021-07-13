@@ -2,7 +2,7 @@
 // Created by Marc Rousavy on 12.07.21.
 //
 
-#include "JMediaPlayerData.h"
+#include "JPlayerData.h"
 
 #include <jni.h>
 #include <fbjni/fbjni.h>
@@ -15,20 +15,20 @@ namespace expo {
 using namespace facebook;
 using namespace jni;
 
-using TSelf = local_ref<HybridClass<expo::JMediaPlayerData>::jhybriddata>;
+using TSelf = local_ref<HybridClass<expo::JPlayerData>::jhybriddata>;
 
-TSelf JMediaPlayerData::initHybrid(alias_ref<HybridClass::jhybridobject> jThis) {
+TSelf JPlayerData::initHybrid(alias_ref<HybridClass::jhybridobject> jThis) {
     return makeCxxInstance(jThis);
 }
 
-void JMediaPlayerData::registerNatives() {
+void JPlayerData::registerNatives() {
     registerHybrid({
-       makeNativeMethod("initHybrid", JMediaPlayerData::initHybrid),
-       makeNativeMethod("sampleBufferCallback", JMediaPlayerData::sampleBufferCallback),
+       makeNativeMethod("initHybrid", JPlayerData::initHybrid),
+       makeNativeMethod("sampleBufferCallback", JPlayerData::sampleBufferCallback),
     });
 }
 
-void JMediaPlayerData::sampleBufferCallback(jni::alias_ref<jni::JArrayByte> sampleBuffer) {
+void JPlayerData::sampleBufferCallback(jni::alias_ref<jni::JArrayByte> sampleBuffer) {
     if (sampleBufferCallback_ == nullptr) {
         __android_log_write(ANDROID_LOG_WARN, TAG, "Sample Buffer Callback is null!");
         setEnableSampleBufferCallback(false);
@@ -44,7 +44,7 @@ void JMediaPlayerData::sampleBufferCallback(jni::alias_ref<jni::JArrayByte> samp
     }
 }
 
-void JMediaPlayerData::setEnableSampleBufferCallback(bool enable) {
+void JPlayerData::setEnableSampleBufferCallback(bool enable) {
     if (enable) {
         __android_log_write(ANDROID_LOG_INFO, TAG, "Enabling Sample Buffer Callback...");
     } else {
@@ -54,12 +54,13 @@ void JMediaPlayerData::setEnableSampleBufferCallback(bool enable) {
     javaMethod(javaPart_.get(), enable);
 }
 
-void JMediaPlayerData::setSampleBufferCallback(const SampleBufferCallback &&sampleBufferCallback) {
+void JPlayerData::setSampleBufferCallback(const SampleBufferCallback &&sampleBufferCallback) {
+    __android_log_write(ANDROID_LOG_INFO, TAG, "setting callback");
     sampleBufferCallback_ = sampleBufferCallback;
     setEnableSampleBufferCallback(true);
 }
 
-void JMediaPlayerData::unsetSampleBufferCallback() {
+void JPlayerData::unsetSampleBufferCallback() {
     sampleBufferCallback_ = nullptr;
     setEnableSampleBufferCallback(false);
 }

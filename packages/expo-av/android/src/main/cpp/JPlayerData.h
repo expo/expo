@@ -14,10 +14,10 @@ namespace expo {
 using namespace facebook;
 using SampleBufferCallback = std::function<void(jni::local_ref<jni::JArrayByte>)>;
 
-class JMediaPlayerData : public jni::HybridClass<JMediaPlayerData> {
+class JPlayerData : public jni::HybridClass<JPlayerData> {
 public:
-    static auto constexpr kJavaDescriptor = "Lexpo/modules/av/player/MediaPlayerData;";
-    static auto constexpr TAG = "JMediaPlayerData";
+    static auto constexpr kJavaDescriptor = "Lexpo/modules/av/player/PlayerData;";
+    static auto constexpr TAG = "JPlayerData";
     static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject> jThis);
     static void registerNatives();
 
@@ -26,13 +26,13 @@ public:
 
 private:
     friend HybridBase;
-    jni::global_ref<JMediaPlayerData::javaobject> javaPart_;
+    jni::global_ref<JPlayerData::javaobject> javaPart_;
     SampleBufferCallback sampleBufferCallback_;
 
     void sampleBufferCallback(jni::alias_ref<jni::JArrayByte> sampleBuffer);
     void setEnableSampleBufferCallback(bool enable);
 
-    explicit JMediaPlayerData(jni::alias_ref<JMediaPlayerData::jhybridobject> jThis) :
+    explicit JPlayerData(jni::alias_ref<JPlayerData::jhybridobject> jThis) :
             javaPart_(jni::make_global(jThis)),
             sampleBufferCallback_(nullptr)
     {}
