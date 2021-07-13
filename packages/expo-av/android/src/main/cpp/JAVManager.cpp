@@ -21,7 +21,7 @@ using namespace jni;
 
 using TSelf = local_ref<HybridClass<expo::JAVManager>::jhybriddata>;
 
-TSelf JAVManager::initHybrid(alias_ref<HybridClass::jhybridobject> jThis) {
+TSelf JAVManager::initHybrid(alias_ref<jhybridobject> jThis) {
     return makeCxxInstance(jThis);
 }
 

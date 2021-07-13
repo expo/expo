@@ -13,6 +13,7 @@ set (BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
 add_library(
         ${PACKAGE_NAME}
         SHARED
+        src/main/cpp/EXAV.cpp
         src/main/cpp/JMediaPlayerData.cpp
         src/main/cpp/JAVManager.cpp
 )
