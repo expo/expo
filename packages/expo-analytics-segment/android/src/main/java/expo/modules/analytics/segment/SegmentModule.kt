@@ -36,9 +36,8 @@ class SegmentModule(private val moduleContext: Context) : ExportedModule(moduleC
     return NAME
   }
 
-  override fun onCreate(moduleRegistry: ModuleRegistry?) {
-    constants = null
-    constants = moduleRegistry?.getModule(ConstantsInterface::class.java)
+  override fun onCreate(moduleRegistry: ModuleRegistry) {
+    constants = moduleRegistry.getModule(ConstantsInterface::class.java)
   }
 
   private val enabledPreferenceValue: Boolean
@@ -47,7 +46,7 @@ class SegmentModule(private val moduleContext: Context) : ExportedModule(moduleC
   @ExpoMethod
   fun initialize(writeKey: String, promise: Promise) {
     val builder = Analytics.Builder(moduleContext, writeKey)
-        .experimentalUseNewLifecycleMethods(false)
+      .experimentalUseNewLifecycleMethods(false)
       .tag((currentTag++).toString())
       .use(FirebaseIntegration.FACTORY)
     client = builder.build().also {
