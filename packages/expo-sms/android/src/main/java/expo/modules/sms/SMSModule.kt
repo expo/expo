@@ -67,7 +67,7 @@ class SMSModule(context: Context) : ExportedModule(context), LifecycleEventListe
     val smsIntent = if (attachments?.isNotEmpty() == true) {
       Intent(Intent.ACTION_SEND).apply {
         type = "text/plain"
-        putExtra("address", constructRecipients(addresses))
+        putExtra("address", addresses.joinToString(separator = ";"))
         val attachment = attachments[0] as? Map<String?, String?>
         putExtra(Intent.EXTRA_STREAM, Uri.parse(getAttachment(attachment, "uri")))
         type = getAttachment(attachment, "mimeType")
@@ -75,7 +75,7 @@ class SMSModule(context: Context) : ExportedModule(context), LifecycleEventListe
       }
     } else {
       Intent(Intent.ACTION_SENDTO).apply {
-        data = Uri.parse("smsto:" + constructRecipients(addresses))
+        data = Uri.parse("smsto:" + addresses.joinToString(separator = ";"))
       }
     }
 
@@ -120,11 +120,4 @@ class SMSModule(context: Context) : ExportedModule(context), LifecycleEventListe
   override fun onHostPause() = Unit
 
   override fun onHostDestroy() = Unit
-
-  private fun constructRecipients(addresses: List<String>): String {
-    if (addresses.isNotEmpty()) {
-      return addresses[0] + addresses.joinToString(";")
-    }
-    return ""
-  }
 }
