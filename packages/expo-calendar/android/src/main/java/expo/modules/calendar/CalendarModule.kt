@@ -183,7 +183,7 @@ class CalendarModule(
     }
   }
 
-  // TODO: needs refactor
+  // TODO: needs refactor, argument `eventID` is probably redundant
   @ExpoMethod
   fun saveAttendeeForEventAsync(details: ReadableArguments, eventID: String?, promise: Promise) = withPermissions(promise) {
     launchAsyncWithModuleScope(promise) {
