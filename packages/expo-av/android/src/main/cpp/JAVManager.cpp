@@ -47,10 +47,10 @@ void JAVManager::installJSIBindings(jlong jsRuntimePointer,
     auto& runtime = *reinterpret_cast<jsi::Runtime*>(jsRuntimePointer);
     auto callInvoker = jsCallInvokerHolder->cthis()->getCallInvoker();
 
-    auto function = [this](jsi::Runtime &runtime,
-                           const jsi::Value &thisValue,
-                           const jsi::Value *args,
-                           size_t argsCount) -> jsi::Value {
+    auto function = [this, callInvoker](jsi::Runtime &runtime,
+                                        const jsi::Value &thisValue,
+                                        const jsi::Value *args,
+                                        size_t argsCount) -> jsi::Value {
         auto playerId = args[0].asNumber();
 
         auto mediaPlayer = getMediaPlayerById(static_cast<int>(playerId));
@@ -64,7 +64,7 @@ void JAVManager::installJSIBindings(jlong jsRuntimePointer,
             auto callback = args[1].asObject(runtime).asFunction(runtime);
             auto callbackShared = std::make_shared<jsi::Function>(std::move(callback));
 
-            mediaPlayer->setSampleBufferCallback([callbackShared, &runtime](jni::alias_ref<jni::JArrayByte> sampleBuffer)  {
+            mediaPlayer->setSampleBufferCallback([callbackShared, &runtime, callInvoker](jni::alias_ref<jni::JArrayByte> sampleBuffer)  {
                 auto channelsCount = /* TODO: channelsCount */ 1;
                 auto size = sampleBuffer->size();
 
@@ -90,9 +90,18 @@ void JAVManager::installJSIBindings(jlong jsRuntimePointer,
                 auto sample = jsi::Object(runtime);
                 sample.setProperty(runtime, "channels", channels);
                 sample.setProperty(runtime, "timestamp", jsi::Value(13));
-                // TODO: callInvoker->invokeAsync([]() {}) ?
-                callbackShared->call(runtime, sample);
-                __android_log_write(ANDROID_LOG_INFO, TAG, "js func called.");
+                auto sharedSample = std::make_shared<jsi::Object>(std::move(sample));
+
+                callInvoker->invokeAsync([callbackShared, &runtime, sharedSample] () {
+                    try {
+                        jsi::Object* s = sharedSample.get();
+                        callbackShared->call(runtime, std::move(*s));
+                        __android_log_write(ANDROID_LOG_INFO, TAG, "js func called.");
+                    } catch (std::exception &exception) {
+                        auto message = "Sample Buffer Callback threw an error: " + std::string(exception.what());
+                        __android_log_write(ANDROID_LOG_ERROR, TAG, message.c_str());
+                    }
+                });
             });
             __android_log_write(ANDROID_LOG_INFO, TAG, "finish set callback");
         } else {
