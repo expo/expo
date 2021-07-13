@@ -28,14 +28,14 @@ void JMediaPlayerData::registerNatives() {
     });
 }
 
-void JMediaPlayerData::sampleBufferCallback(jint sampleBuffer) {
+void JMediaPlayerData::sampleBufferCallback(jni::alias_ref<jni::JArrayByte> sampleBuffer) {
     if (sampleBufferCallback_ == nullptr) {
         __android_log_write(ANDROID_LOG_WARN, TAG, "Sample Buffer Callback is null!");
         setEnableSampleBufferCallback(false);
         return;
     }
 
-    auto sampleBufferStrong = /* TODO: make_local(sampleBuffer); */ sampleBuffer;
+    auto sampleBufferStrong = make_local(sampleBuffer);
     try {
         sampleBufferCallback_(sampleBufferStrong);
     } catch (const std::exception& exception) {

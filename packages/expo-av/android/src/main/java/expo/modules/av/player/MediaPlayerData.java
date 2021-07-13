@@ -69,7 +69,7 @@ public class MediaPlayerData extends PlayerData implements
   @SuppressWarnings("JavaJniMissingFunction")
   private native HybridData initHybrid();
   @SuppressWarnings("JavaJniMissingFunction")
-  private native void sampleBufferCallback(int sampleBuffer);
+  private native void sampleBufferCallback(byte[] sampleBuffer);
 
   @SuppressWarnings("unused")
   @DoNotStrip
@@ -87,7 +87,7 @@ public class MediaPlayerData extends PlayerData implements
       mVisualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
         @Override
         public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
-          // TODO: Send bytes to JSI
+          sampleBufferCallback(bytes);
         }
 
         @Override
