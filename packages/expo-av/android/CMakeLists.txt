@@ -16,6 +16,7 @@ add_library(
         src/main/cpp/EXAV.cpp
         src/main/cpp/JMediaPlayerData.cpp
         src/main/cpp/JAVManager.cpp
+        "${NODE_MODULES_DIR}/react-native/ReactCommon/jsi/jsi/jsi.cpp"
 )
 
 file(GLOB LIBRN_DIR "${BUILD_DIR}/react-native-0*/jni/${ANDROID_ABI}")
