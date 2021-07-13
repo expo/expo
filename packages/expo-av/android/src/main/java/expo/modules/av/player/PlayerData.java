@@ -152,8 +152,9 @@ public abstract class PlayerData implements AudioEventHandler {
         mVisualizer.setEnabled(false);
         mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
 
-        // the rate at which the Visualizer calls back with new bytes - will be clamped to max 100ms.
-        int callbackRate = Math.min(Visualizer.getMaxCaptureRate(), 100);
+
+        // the rate at which the Visualizer calls back with new bytes - will be clamped to max 100ms (1000 mHz)
+        int callbackRate = Math.min(Visualizer.getMaxCaptureRate(), 10000);
         mVisualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
           @Override
           public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
@@ -165,6 +166,8 @@ public abstract class PlayerData implements AudioEventHandler {
         }, callbackRate, true, false);
 
         mVisualizer.setEnabled(true);
+
+        Log.i("PlayerData", "Visualizer initialized with a capture rate of " + callbackRate);
       } catch (Throwable e) {
         Log.e("PlayerData", "Failed to initialize Visualizer! " + e.getLocalizedMessage());
         e.printStackTrace();
