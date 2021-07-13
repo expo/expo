@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.8.2 — 2021-07-13
+
+### 🐛 Bug fixes
+
 - Remove usage of deprecated `[RCTBridge reload]` method. ([#13501](https://github.com/expo/expo/pull/13501) by [@esamelson](https://github.com/esamelson))
 - Remove side effects from UpdatesDevLauncherController.initialize() method. ([#13555](https://github.com/expo/expo/pull/13555) by [@esamelson](https://github.com/esamelson))
-
-### 💡 Others
 
 ## 0.8.1 — 2021-07-08
 
