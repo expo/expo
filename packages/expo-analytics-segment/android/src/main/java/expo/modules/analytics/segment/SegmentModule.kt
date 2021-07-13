@@ -15,12 +15,10 @@ import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ExpoMethod
 import java.util.*
 
-
 private const val NAME = "ExponentSegment"
 private const val ENABLED_PREFERENCE_KEY = "enabled"
 private val TAG = SegmentModule::class.java.simpleName
 private var currentTag = 0
-
 
 class SegmentModule(private val moduleContext: Context) : ExportedModule(moduleContext) {
   private var client: Analytics? = null
