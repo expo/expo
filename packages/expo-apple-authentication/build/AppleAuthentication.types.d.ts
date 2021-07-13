@@ -1,5 +1,5 @@
-import { StyleProp, ViewStyle } from 'react-native';
-export declare type AppleAuthenticationButtonProps = {
+import { StyleProp, ViewStyle, ViewProps } from 'react-native';
+export declare type AppleAuthenticationButtonProps = ViewProps & {
     /**
      * The method to call when the user presses the button. You should call [`AppleAuthentication.signInAsync`](#isavailableasync)
      * in here.
@@ -18,7 +18,11 @@ export declare type AppleAuthenticationButtonProps = {
      * `style.borderRadius` in other Views.
      */
     cornerRadius?: number;
-    style?: StyleProp<ViewStyle>;
+    /**
+     * The custom style to apply to the button. Should not include `backgroundColor` or `borderRadius`
+     * properties.
+     */
+    style?: StyleProp<Omit<ViewStyle, 'backgroundColor' | 'borderRadius'>>;
 };
 /**
  * The options you can supply when making a call to [`AppleAuthentication.signInAsync()`](#appleauthenticationsigninasyncoptions).

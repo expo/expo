@@ -39,11 +39,15 @@ const extractDefaultPropValue = (
 };
 
 const renderInheritedProp = (ip: TypeDefinitionData) => {
-  return ip?.typeArguments ? (
+  return (
     <LI key={`inherited-prop-${ip.name}-${ip.type}`}>
-      <InlineCode>{resolveTypeName(ip)}</InlineCode>
+      {ip?.typeArguments ? (
+        <InlineCode>{resolveTypeName(ip)}{ip}</InlineCode>
+      ) : (
+        <InlineCode>{ip.name}</InlineCode>
+      )}
     </LI>
-  ) : null;
+  );
 };
 
 const renderInheritedProps = (data: TypeDefinitionData[] | undefined): JSX.Element | undefined => {

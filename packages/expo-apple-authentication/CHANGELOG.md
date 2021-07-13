@@ -10,6 +10,9 @@
 
 ### 💡 Others
 
+- Extend the `AppleAuthenticationButton` component by `View`
+- Exclude `backgroundColor` and `borderRadius` from the `style` type
+
 ## 3.2.0 — 2021-06-16
 
 ### 🎉 New features

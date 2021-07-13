@@ -53,6 +53,7 @@ export const mdInlineRenderers: MDRenderers = {
 const nonLinkableTypes = [
   'Date',
   'Error',
+  'Omit',
   'Promise',
   'React.FC',
   'StyleProp',
@@ -101,7 +102,10 @@ export const resolveTypeName = ({
               )}
               &lt;
               {typeArguments.map((type, index) => (
-                <span key={`${name}-nested-type-${index}`}>{resolveTypeName(type)}</span>
+                <span key={`${name}-nested-type-${index}`}>
+                  {resolveTypeName(type)}
+                  {index !== typeArguments.length - 1 ? ', ' : ''}
+                </span>
               ))}
               &gt;
             </>
