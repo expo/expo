@@ -6,6 +6,6 @@ import org.unimodules.core.ExportedModule
 
 class SegmentPackage : BasePackage() {
   override fun createExportedModules(context: Context): List<ExportedModule> {
-    return listOf(SegmentModule(context) as ExportedModule)
+    return listOf(SegmentModule(context))
   }
 }
