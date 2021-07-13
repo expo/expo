@@ -98,6 +98,34 @@ exports[`APISectionUtils.resolveTypeName custom type non-linkable array 1`] = `
 </div>
 `;
 
+exports[`APISectionUtils.resolveTypeName extended props with multiple omits 1`] = `
+<div>
+  StyleProp
+  &lt;
+  <span>
+    Omit
+    &lt;
+    <span>
+      ViewStyle
+      , 
+    </span>
+    <span>
+      <span>
+        'backgroundColor'
+         | 
+      </span>
+      <span>
+        'borderRadius'
+      </span>
+      
+    </span>
+    &gt;
+    
+  </span>
+  &gt;
+</div>
+`;
+
 exports[`APISectionUtils.resolveTypeName function 1`] = `
 <div>
   () =&gt;

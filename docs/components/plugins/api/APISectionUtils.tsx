@@ -84,7 +84,7 @@ export const resolveTypeName = ({
               {typeArguments.map((type, index) => (
                 <span key={`record-type-${index}`}>
                   {resolveTypeName(type)}
-                  {index !== typeArguments.length - 1 ? ', ' : ''}
+                  {index !== typeArguments.length - 1 ? ', ' : null}
                 </span>
               ))}
               &gt;
@@ -104,7 +104,7 @@ export const resolveTypeName = ({
               {typeArguments.map((type, index) => (
                 <span key={`${name}-nested-type-${index}`}>
                   {resolveTypeName(type)}
-                  {index !== typeArguments.length - 1 ? ', ' : ''}
+                  {index !== typeArguments.length - 1 ? ', ' : null}
                 </span>
               ))}
               &gt;
@@ -177,7 +177,7 @@ export const resolveTypeName = ({
         {elements.map((elem, i) => (
           <span key={`tuple-${name}-${i}`}>
             {resolveTypeName(elem)}
-            {i + 1 !== elements.length ? ', ' : ''}
+            {i + 1 !== elements.length ? ', ' : null}
           </span>
         ))}
         ]

@@ -295,4 +295,35 @@ describe('APISectionUtils.resolveTypeName', () => {
     );
     expect(container).toMatchSnapshot();
   });
+
+  test('extended props with multiple omits', () => {
+    const { container } = render(
+      <>
+        {resolveTypeName({
+          type: 'reference',
+          typeArguments: [
+            {
+              type: 'reference',
+              typeArguments: [
+                { type: 'reference', name: 'ViewStyle' },
+                {
+                  type: 'union',
+                  types: [
+                    { type: 'literal', value: 'backgroundColor' },
+                    {
+                      type: 'literal',
+                      value: 'borderRadius',
+                    },
+                  ],
+                },
+              ],
+              name: 'Omit',
+            },
+          ],
+          name: 'StyleProp',
+        })}
+      </>
+    );
+    expect(container).toMatchSnapshot();
+  });
 });
