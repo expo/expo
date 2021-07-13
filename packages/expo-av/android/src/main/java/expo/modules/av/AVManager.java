@@ -39,7 +39,9 @@ import java.util.UUID;
 import expo.modules.av.player.PlayerData;
 import expo.modules.av.video.VideoView;
 import expo.modules.av.video.VideoViewWrapper;
+import expo.modules.interfaces.filesystem.Permission;
 import expo.modules.interfaces.permissions.Permissions;
+import expo.modules.interfaces.permissions.PermissionsResponseListener;
 
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
@@ -555,9 +557,16 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   // Note that setStatusUpdateCallback happens in the JS for video via onStatusUpdate
 
   // Recording API
+  public boolean hasAudioPermission() {
+    return mModuleRegistry.getModule(Permissions.class).hasGrantedPermissions(Manifest.permission.RECORD_AUDIO);
+  }
+
+  public void requestAudioPermission(PermissionsResponseListener permissionsResponseListener) {
+    mModuleRegistry.getModule(Permissions.class).askForPermissions(permissionsResponseListener, Manifest.permission.RECORD_AUDIO);
+  }
 
   private boolean isMissingAudioRecordingPermissions() {
-    return !mModuleRegistry.getModule(Permissions.class).hasGrantedPermissions(Manifest.permission.RECORD_AUDIO);
+    return !hasAudioPermission();
   }
 
   // Rejects the promise and returns false if the MediaRecorder is not found.

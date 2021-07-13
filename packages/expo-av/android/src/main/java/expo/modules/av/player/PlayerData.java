@@ -1,5 +1,6 @@
 package expo.modules.av.player;
 
+import android.Manifest;
 import android.content.Context;
 import android.media.audiofx.Visualizer;
 import android.net.Uri;
@@ -20,6 +21,8 @@ import expo.modules.av.AudioEventHandler;
 import expo.modules.av.AudioFocusNotAcquiredException;
 import expo.modules.av.progress.AndroidLooperTimeMachine;
 import expo.modules.av.progress.ProgressLooper;
+import expo.modules.interfaces.permissions.PermissionsResponse;
+import expo.modules.interfaces.permissions.PermissionsStatus;
 
 public abstract class PlayerData implements AudioEventHandler {
   static final String STATUS_ANDROID_IMPLEMENTATION_KEY_PATH = "androidImplementation";
@@ -127,7 +130,25 @@ public abstract class PlayerData implements AudioEventHandler {
   void setEnableSampleBufferCallback(boolean enable) {
   if (enable) {
     try {
-      mVisualizer = new Visualizer(getAudioSessionId());
+      boolean hasRecordAudioPermission = mAVModule.hasAudioPermission();
+      if (!hasRecordAudioPermission) {
+        mAVModule.requestAudioPermission(result -> {
+          PermissionsResponse response = result.get(Manifest.permission.RECORD_AUDIO);
+          if (response == null) {
+            return;
+          }
+          if (response.getStatus() == PermissionsStatus.GRANTED) {
+            // call func again, this time we have audio permission
+            setEnableSampleBufferCallback(true);
+          } else if (!response.getCanAskAgain()) {
+            Log.e("PlayerData", "Cannot initialize Sample Data Callback (Visualizer) when RECORD_AUDIO permission is not granted!");
+          }
+        });
+        return;
+      }
+      int id = getAudioSessionId();
+      Log.i("PlayerData", "Initializing Visualizer for Audio Session #" + id + "...");
+      mVisualizer = new Visualizer(id);
       mVisualizer.setEnabled(false);
       mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
 
