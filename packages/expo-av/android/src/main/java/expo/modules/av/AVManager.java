@@ -49,7 +49,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   static {
     System.loadLibrary("EXAV");
   }
-  
+
   private static final String AUDIO_MODE_SHOULD_DUCK_KEY = "shouldDuckAndroid";
   private static final String AUDIO_MODE_INTERRUPTION_MODE_KEY = "interruptionModeAndroid";
   private static final String AUDIO_MODE_PLAY_THROUGH_EARPIECE = "playThroughEarpieceAndroid";
