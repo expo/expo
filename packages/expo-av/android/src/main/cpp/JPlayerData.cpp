@@ -28,7 +28,7 @@ void JPlayerData::registerNatives() {
     });
 }
 
-void JPlayerData::sampleBufferCallback(jni::alias_ref<jni::JArrayByte> sampleBuffer) {
+void JPlayerData::sampleBufferCallback(jni::alias_ref<jni::JArrayByte> sampleBuffer, jdouble positionSeconds) {
     if (sampleBufferCallback_ == nullptr) {
         __android_log_write(ANDROID_LOG_WARN, TAG, "Sample Buffer Callback is null!");
         setEnableSampleBufferCallback(false);
@@ -37,7 +37,7 @@ void JPlayerData::sampleBufferCallback(jni::alias_ref<jni::JArrayByte> sampleBuf
 
     auto sampleBufferStrong = make_local(sampleBuffer);
     try {
-        sampleBufferCallback_(sampleBufferStrong);
+        sampleBufferCallback_(sampleBufferStrong, positionSeconds);
     } catch (const std::exception& exception) {
         auto message = "Sample Buffer Callback threw an error! " + std::string(exception.what());
         __android_log_write(ANDROID_LOG_ERROR, TAG, message.c_str());

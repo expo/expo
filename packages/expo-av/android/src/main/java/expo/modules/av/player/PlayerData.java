@@ -123,7 +123,11 @@ public abstract class PlayerData implements AudioEventHandler {
   @SuppressWarnings("JavaJniMissingFunction")
   private native HybridData initHybrid();
   @SuppressWarnings({"JavaJniMissingFunction"})
-  protected native void sampleBufferCallback(byte[] sampleBuffer);
+  protected native void sampleBufferCallback(byte[] sampleBuffer, double positionSeconds);
+
+  protected double getCurrentPositionSeconds() {
+    return 0;
+  }
 
   @SuppressWarnings("unused")
   @DoNotStrip
@@ -152,13 +156,12 @@ public abstract class PlayerData implements AudioEventHandler {
         mVisualizer.setEnabled(false);
         mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
 
-
         // the rate at which the Visualizer calls back with new bytes - will be clamped to max 100ms (1000 mHz)
         int callbackRate = Math.min(Visualizer.getMaxCaptureRate(), 10000);
         mVisualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
           @Override
           public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
-            sampleBufferCallback(bytes);
+            sampleBufferCallback(bytes, getCurrentPositionSeconds());
           }
 
           @Override

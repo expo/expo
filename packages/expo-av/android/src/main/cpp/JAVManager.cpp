@@ -66,7 +66,7 @@ void JAVManager::installJSIBindings(jlong jsRuntimePointer,
             auto callback = args[1].asObject(runtime).asFunction(runtime);
             auto callbackShared = std::make_shared<jsi::Function>(std::move(callback));
 
-            mediaPlayer->setSampleBufferCallback([callbackShared, &runtime, callInvoker](jni::alias_ref<jni::JArrayByte> sampleBuffer)  {
+            mediaPlayer->setSampleBufferCallback([callbackShared, &runtime, callInvoker](jni::alias_ref<jni::JArrayByte> sampleBuffer, double positionSeconds)  {
                 auto channelsCount = /* TODO: channelsCount */ 1;
                 auto size = sampleBuffer->size();
 
@@ -94,7 +94,7 @@ void JAVManager::installJSIBindings(jlong jsRuntimePointer,
 
                 auto sample = std::make_shared<jsi::Object>(runtime);
                 sample->setProperty(runtime, "channels", channels);
-                sample->setProperty(runtime, "timestamp", jsi::Value(13));
+                sample->setProperty(runtime, "timestamp", jsi::Value(positionSeconds));
 
                 callInvoker->invokeAsync([callbackShared, &runtime, sample = std::move(sample)] () {
                     try {
