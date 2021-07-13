@@ -11,6 +11,9 @@
 #include <memory>
 #include <string>
 
+#include <ReactCommon/CallInvokerHolder.h>
+#include <ReactCommon/CallInvoker.h>
+
 namespace expo {
 
 using namespace facebook;
@@ -18,8 +21,13 @@ using namespace jni;
 
 using TSelf = local_ref<HybridClass<expo::JAVManager>::jhybriddata>;
 
-TSelf JAVManager::initHybrid(alias_ref<HybridClass::jhybridobject> jThis) {
-    return makeCxxInstance(jThis);
+TSelf JAVManager::initHybrid(alias_ref<HybridClass::jhybridobject> jThis,
+                             jlong jsContext,
+                             jni::alias_ref<facebook::react::CallInvokerHolder::javaobject> jsCallInvokerHolder) {
+
+    return makeCxxInstance(jThis,
+                           reinterpret_cast<jsi::Runtime *>(jsContext),
+                           jsCallInvokerHolder->cthis()->getCallInvoker());
 }
 
 void JAVManager::registerNatives() {

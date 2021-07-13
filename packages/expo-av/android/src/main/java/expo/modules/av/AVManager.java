@@ -40,6 +40,9 @@ import expo.modules.av.video.VideoView;
 import expo.modules.av.video.VideoViewWrapper;
 import expo.modules.interfaces.permissions.Permissions;
 
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
+
 import static android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED;
 
 public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFocusChangeListener, MediaRecorder.OnInfoListener, AVManagerInterface, InternalModule {
@@ -116,8 +119,10 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     mContext.registerReceiver(mNoisyAudioStreamReceiver,
       new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
     mIsRegistered = true;
-    mHybridData = initHybrid();
-    installJSIBindings();
+    mHybridData = initHybrid(
+      ((ReactContext)reactContext).getJavaScriptContextHolder().get(),
+      (CallInvokerHolderImpl)((ReactContext)reactContext).getCatalystInstance().getJSCallInvokerHolder()
+    );
   }
 
   @Override
@@ -128,9 +133,8 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   }
 
   @SuppressWarnings("JavaJniMissingFunction")
-  private native HybridData initHybrid();
-  @SuppressWarnings("JavaJniMissingFunction")
-  private native void installJSIBindings();
+  private native HybridData initHybrid(long jsRuntimePointer,
+                                       CallInvokerHolderImpl jsCallInvokerHolder);
 
   @Override
   public ModuleRegistry getModuleRegistry() {
