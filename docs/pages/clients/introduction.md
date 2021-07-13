@@ -4,6 +4,8 @@ title: Introduction
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
+> ⏩ Want to create a custom client for your project?  Follow the [getting started guide](/getting-started.md).
+
 **Expo Clients** provide a precompiled runtime that can load and run applications built with Expo. With a compatible client for each platform an application targets, you can focus your time and energy building your application fully in JavaScript and gain the developer experience that Expo is known for:
 
 - Easy for new developers without native experience to join the team
@@ -33,6 +35,8 @@ Your debug builds can be shared with anyone on your team who needs to work on or
 - Develop in the same environment as your released application
 - Access to the full power of Xcode and Android Studio when you need them
 
+> ⏩ [Create a custom client for your project](/getting-started.md).
+
 ### If you are using React Native CLI
 
 - Develop iOS applications without a machine running MacOS
@@ -40,3 +44,6 @@ Your debug builds can be shared with anyone on your team who needs to work on or
 - Develop using any available port
 - Quickly connect to your device via QR code
 - Improved developer experience of Expo CLI
+
+
+> ⏩ [Create a custom client for your project](/installation.md).
