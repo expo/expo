@@ -1,6 +1,6 @@
 import { StyleProp, ViewStyle, ViewProps } from 'react-native';
 
-// @needsAudit @docsMissing
+// @needsAudit
 export declare type AppleAuthenticationButtonProps = ViewProps & {
   /**
    * The method to call when the user presses the button. You should call [`AppleAuthentication.signInAsync`](#isavailableasync)

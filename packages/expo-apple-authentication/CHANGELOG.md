@@ -10,8 +10,8 @@
 
 ### 💡 Others
 
-- Extend the `AppleAuthenticationButton` component by `View`
-- Exclude `backgroundColor` and `borderRadius` from the `style` type
+- Extend the `AppleAuthenticationButton` component type by the `View` component type. (#13567 by @Simek)
+- Exclude `backgroundColor` and `borderRadius` properties from the `AppleAuthenticationButton`'s style prop. These two are invalid for `AppleAuthenticationButton`, but TypeScript allowed the usage of them; instead use `buttonStyle` and `cornerRadius` props repsectively. (#13567 by @Simek)
 
 ## 3.2.0 — 2021-06-16
 
