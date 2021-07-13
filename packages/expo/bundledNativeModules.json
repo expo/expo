@@ -46,7 +46,7 @@
   "expo-firebase-core": "~3.1.0",
   "expo-font": "~9.2.1",
   "expo-gl": "~10.4.1",
-  "expo-gl-cpp": "~10.4.0",
+  "expo-gl-cpp": "~10.4.1",
   "expo-google-sign-in": "~9.2.1",
   "expo-haptics": "~10.1.0",
   "expo-image-loader": "~2.2.0",

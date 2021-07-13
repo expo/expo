@@ -37,7 +37,7 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "expo-gl-cpp": "~10.4.0",
+    "expo-gl-cpp": "~10.4.1",
     "expo-modules-core": "~0.2.0",
     "invariant": "^2.2.4"
   },
