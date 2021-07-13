@@ -70,8 +70,9 @@ void JAVManager::installJSIBindings(jlong jsRuntimePointer,
                 auto channelsCount = /* TODO: channelsCount */ 1;
                 auto size = sampleBuffer->size();
 
-                std::vector<jbyte> buffer(size);
-                sampleBuffer->getRegion(0, size, buffer.data());
+                // copies the JNI array into a vector and reinterprets it as an unsigned 8 bit int (u_byte)
+                std::vector<uint8_t> buffer(size);
+                sampleBuffer->getRegion(0, size, (int8_t*)buffer.data());
 
                 // TODO: Run per channel instead of flat array?
                 auto channels = jsi::Array(runtime, channelsCount);
@@ -81,11 +82,10 @@ void JAVManager::installJSIBindings(jlong jsRuntimePointer,
                     auto frames = jsi::Array(runtime, size);
 
                     for (size_t ii = 0; ii < size; ii++) {
-                        uint8_t pcm = buffer[ii];
-                        // format of waveform is unsigned 8 bit integer (byte), but we
-                        // interpret it as a signed 8 bit int so it ranges from -127 to 128.
-                        // we want to have a normalized value of -1.0 to 1.0, so we divide by 256.
-                        double frame = ((double)(pcm - 128)) / 256.0;
+                        // `buffer` is interpreted as a 8-bit signed integer (byte), but the waveform
+                        // output is actually 8-bit unsigned integer (u_byte), so we reinterpret as that
+                        // and then divide it by 256 to normalize it to a -1.0 to 1.0 scale.
+                        double frame = ((double)buffer[ii] - 128) / 128.0;
                         frames.setValueAtIndex(runtime, ii, jsi::Value(frame));
                     }
 
