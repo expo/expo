@@ -24,6 +24,7 @@
       }
     },
     "android": {
+      "jsEngine": "hermes",
       "scheme": [
         "com.googleusercontent.apps.29635966244-knmlpr1upnv6rs4bumqea7hpit4o7kg2"
       ],
