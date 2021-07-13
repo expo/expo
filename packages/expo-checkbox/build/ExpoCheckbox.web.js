@@ -92,5 +92,9 @@ const styles = StyleSheet.create({
     },
 });
 export default ExpoCheckbox;
+ExpoCheckbox.isAvailableAsync = () => {
+    console.warn('Checkbox.isAvailableAsync() is deprecated and will be removed in future releases');
+    return Promise.resolve(true);
+};
 export const name = 'ExpoCheckbox';
 //# sourceMappingURL=ExpoCheckbox.web.js.map

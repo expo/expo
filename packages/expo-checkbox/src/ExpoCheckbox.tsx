@@ -74,3 +74,8 @@ const styles = StyleSheet.create({
     borderColor: disabledCheckedGrayColor,
   },
 });
+
+ExpoCheckbox.isAvailableAsync = () => {
+  console.warn('Checkbox.isAvailableAsync() is deprecated and will be removed in future releases');
+  return Promise.resolve(true);
+};
