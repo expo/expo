@@ -109,4 +109,3 @@ data class DevLauncherManifest(
     }
   }
 }
-

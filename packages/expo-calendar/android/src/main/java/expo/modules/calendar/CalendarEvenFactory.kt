@@ -1,7 +1,6 @@
 package expo.modules.calendar
 
 import android.content.ContentValues
-import android.provider.CalendarContract
 import android.text.TextUtils
 import org.unimodules.core.arguments.ReadableArguments
 import java.util.*

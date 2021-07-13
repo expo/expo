@@ -135,8 +135,7 @@ internal class ShakeDetectorTest {
       ShadowSensorManager.createSensorEvent(3).apply {
         timestamp = System.currentTimeMillis() + time
         values[0] = force
-      },
+      }
     )
   }
 }
-

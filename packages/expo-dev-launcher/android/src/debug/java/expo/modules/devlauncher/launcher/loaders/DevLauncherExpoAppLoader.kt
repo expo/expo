@@ -2,7 +2,6 @@ package expo.modules.devlauncher.launcher.loaders
 
 import android.content.Context
 import android.graphics.Color
-import android.net.Uri
 import android.util.Log
 import android.view.View
 import com.facebook.react.ReactActivity

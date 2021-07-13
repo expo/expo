@@ -29,7 +29,7 @@ import kotlin.collections.ArrayList
 
 class CalendarModule(
   private val mContext: Context,
-  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate(),
+  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
 ) : ExportedModule(mContext), RegistryLifecycleListener {
   private val mPermissions: Permissions by moduleRegistry()
   private val moduleCoroutineScope = CoroutineScope(Dispatchers.Default)
@@ -114,7 +114,6 @@ class CalendarModule(
     }
   }
 
-
   @ExpoMethod
   fun getEventsAsync(startDate: Any, endDate: Any, calendars: List<String>, promise: Promise) = withPermissions(promise) {
     launchAsyncWithModuleScope(promise) {
@@ -138,7 +137,6 @@ class CalendarModule(
       }
     }
   }
-
 
   @ExpoMethod
   fun saveEventAsync(details: ReadableArguments, options: ReadableArguments?, promise: Promise) = withPermissions(promise) {

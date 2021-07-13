@@ -86,5 +86,4 @@ internal class DevLauncherManifestParserTest {
 
     Truth.assertThat(failure).isNotNull()
   }
-
 }

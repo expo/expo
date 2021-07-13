@@ -39,5 +39,4 @@ class DevMenuDefaultSettings : DevMenuSettingsInterface {
         putBoolean("showsAtLaunch", showsAtLaunch)
         putBoolean("isOnboardingFinished", isOnboardingFinished)
       }
-
 }

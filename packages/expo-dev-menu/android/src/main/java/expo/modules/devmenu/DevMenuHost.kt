@@ -5,7 +5,6 @@ import android.content.Context
 import android.util.Log
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
-import com.facebook.react.ReactPackage
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.shell.MainReactPackage
 import expo.modules.devmenu.react.DevMenuReactInternalSettings
