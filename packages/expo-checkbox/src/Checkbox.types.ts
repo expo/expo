@@ -16,5 +16,6 @@ export interface CheckboxProps extends ViewProps {
 }
 
 export type CheckboxComponent = React.FC<CheckboxProps> & {
+  // Deprecated
   isAvailableAsync: () => Promise<boolean>;
 };

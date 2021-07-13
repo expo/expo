@@ -4,10 +4,6 @@ import React from 'react';
 import Checkbox from '../Checkbox';
 
 describe('Checkbox', () => {
-  it('isAvailableAsync resolves to true on web', async () => {
-    await expect(Checkbox.isAvailableAsync()).resolves.toBeTruthy();
-  });
-
   it('renders content matching snapshot', () => {
     const wrapper = mount(<Checkbox value color="#4630EB" />);
     expect(wrapper).toMatchSnapshot();
