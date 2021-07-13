@@ -4,6 +4,7 @@ import android.content.Context;
 import android.media.audiofx.Visualizer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Pair;
 import android.view.Surface;
 
@@ -90,6 +91,7 @@ public abstract class PlayerData implements AudioEventHandler {
   ErrorListener mErrorListener = null;
   VideoSizeUpdateListener mVideoSizeUpdateListener = null;
 
+  private Visualizer mVisualizer = null;
   private int mProgressUpdateIntervalMillis = 500;
   boolean mShouldPlay = false;
   float mRate = 1.0f;
@@ -107,10 +109,13 @@ public abstract class PlayerData implements AudioEventHandler {
   @Override
   protected void finalize() throws Throwable {
     super.finalize();
+    if (mVisualizer != null) {
+      mVisualizer.release();
+      mVisualizer = null;
+    }
     mHybridData.resetNative();
     mHybridData = null;
   }
-
 
   @SuppressWarnings("JavaJniMissingFunction")
   private native HybridData initHybrid();
@@ -119,7 +124,36 @@ public abstract class PlayerData implements AudioEventHandler {
 
   @SuppressWarnings("unused")
   @DoNotStrip
-  abstract void setEnableSampleBufferCallback(boolean enable);
+  void setEnableSampleBufferCallback(boolean enable) {
+  if (enable) {
+    try {
+      mVisualizer = new Visualizer(getAudioSessionId());
+      mVisualizer.setEnabled(false);
+      mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
+
+      // the rate at which the Visualizer calls back with new bytes - will be clamped to max 100ms.
+      int callbackRate = Math.min(Visualizer.getMaxCaptureRate(), 100);
+      mVisualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
+        @Override
+        public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
+          sampleBufferCallback(bytes);
+        }
+
+        @Override
+        public void onFftDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) { }
+      }, callbackRate, true, false);
+
+      mVisualizer.setEnabled(true);
+    } catch (Throwable e) {
+      Log.e("PlayerData", "Failed to initialize Visualizer! " + e.getLocalizedMessage());
+      e.printStackTrace();
+    }
+  } else {
+    mVisualizer.setEnabled(false);
+    mVisualizer.release();
+    mVisualizer = null;
+  }
+  }
 
   public static PlayerData createUnloadedPlayerData(final AVManagerInterface avModule, final Context context, final ReadableArguments source, final Bundle status) {
     final String uriString = source.getString(STATUS_URI_KEY_PATH);

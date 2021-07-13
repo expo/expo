@@ -51,25 +51,20 @@ void JAVManager::installJSIBindings(jlong jsRuntimePointer,
                            const jsi::Value &thisValue,
                            const jsi::Value *args,
                            size_t argsCount) -> jsi::Value {
-        __android_log_write(ANDROID_LOG_INFO, TAG, "called");
         auto playerId = args[0].asNumber();
 
-        __android_log_write(ANDROID_LOG_INFO, TAG, "player");
         auto mediaPlayer = getMediaPlayerById(static_cast<int>(playerId));
         if (mediaPlayer == nullptr) {
             auto message = "Sound Instance with ID " + std::to_string(playerId) + "does not exist!";
             throw jsi::JSError(runtime, message.c_str());
         }
-        __android_log_write(ANDROID_LOG_INFO, TAG, "got player!");
 
         if (argsCount > 1 && args[1].isObject() && !args[1].isUndefined()) {
             // second parameter received, it's the callback function.
             auto callback = args[1].asObject(runtime).asFunction(runtime);
             auto callbackShared = std::make_shared<jsi::Function>(std::move(callback));
-            __android_log_write(ANDROID_LOG_INFO, TAG, "moved callback!");
 
             mediaPlayer->setSampleBufferCallback([callbackShared, &runtime](jni::alias_ref<jni::JArrayByte> sampleBuffer)  {
-                __android_log_write(ANDROID_LOG_INFO, TAG, "callback called.");
                 auto channelsCount = /* TODO: channelsCount */ 1;
                 auto size = sampleBuffer->size();
 

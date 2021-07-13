@@ -1,7 +1,6 @@
 package expo.modules.av.player;
 
 import android.content.Context;
-import android.media.audiofx.Visualizer;
 import android.media.MediaPlayer;
 import android.media.PlaybackParams;
 import android.net.Uri;
@@ -12,11 +11,7 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.Surface;
 
-import com.facebook.jni.HybridData;
-
 import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.interfaces.DoNotStrip;
-
 import java.io.IOException;
 import java.net.CookieHandler;
 import java.net.HttpCookie;
@@ -42,7 +37,6 @@ class MediaPlayerData extends PlayerData implements
   static final String IMPLEMENTATION_NAME = "MediaPlayer";
 
   private MediaPlayer mMediaPlayer = null;
-  private Visualizer mVisualizer = null;
   private ModuleRegistry mModuleRegistry = null;
   private boolean mMediaPlayerHasStartedEver = false;
 
@@ -145,31 +139,6 @@ class MediaPlayerData extends PlayerData implements
     }
   }
 
-  @Override
-  void setEnableSampleBufferCallback(boolean enable) {
-    if (enable) {
-      mVisualizer = new Visualizer(mMediaPlayer.getAudioSessionId());
-      mVisualizer.setEnabled(false);
-      mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
-
-      // the rate at which the Visualizer calls back with new bytes - will be clamped to max 100ms.
-      int callbackRate = Math.min(Visualizer.getMaxCaptureRate(), 100);
-      mVisualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
-        @Override
-        public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
-          sampleBufferCallback(bytes);
-        }
-        @Override
-        public void onFftDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) { }
-      }, callbackRate, true, false);
-
-      mVisualizer.setEnabled(true);
-    } else {
-      mVisualizer.setEnabled(false);
-      mVisualizer.release();
-      mVisualizer = null;
-    }
-  }
 
   @Override
   public synchronized void release() {
@@ -182,10 +151,6 @@ class MediaPlayerData extends PlayerData implements
       mMediaPlayer.stop();
       mMediaPlayer.release();
       mMediaPlayer = null;
-    }
-    if (mVisualizer != null) {
-      mVisualizer.release();
-      mVisualizer = null;
     }
   }
 
