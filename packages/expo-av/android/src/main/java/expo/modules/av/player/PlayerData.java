@@ -203,7 +203,14 @@ public abstract class PlayerData implements AudioEventHandler {
 
   public abstract void load(final Bundle status, final LoadCompletionListener loadCompletionListener);
 
-  public abstract void release();
+  public void release() {
+    if (mVisualizer != null) {
+      mVisualizer.setDataCaptureListener(null, 0, false, false);
+      mVisualizer.setEnabled(false);
+      mVisualizer.release();
+      mVisualizer = null;
+    }
+  }
 
   // Status update listener
 

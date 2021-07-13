@@ -142,6 +142,7 @@ class MediaPlayerData extends PlayerData implements
 
   @Override
   public synchronized void release() {
+    super.release();
     stopUpdatingProgressIfNecessary();
     if (mMediaPlayer != null) {
       mMediaPlayer.setOnBufferingUpdateListener(null);

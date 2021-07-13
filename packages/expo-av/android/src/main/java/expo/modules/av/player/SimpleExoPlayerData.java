@@ -119,6 +119,7 @@ class SimpleExoPlayerData extends PlayerData
 
   @Override
   public synchronized void release() {
+    super.release();
     if (mSimpleExoPlayer != null) {
       mSimpleExoPlayer.release();
       mSimpleExoPlayer = null;
