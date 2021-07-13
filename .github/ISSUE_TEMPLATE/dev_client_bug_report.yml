@@ -8,6 +8,9 @@ body:
   - type: markdown
     attributes:
       value: If you leave out sections there is a high likelihood your issue will be closed. If you have a question, not a bug report, please post it on our [forums](https://forums.expo.io/) instead.
+  - type: markdown
+    attributes:
+      value: 'IMPORTANT: Before filling out this template further, ensure you have the latest version of the `expo-dev-client` package. If not, try upgrading first and see if that fixes your issue.'
   - type: textarea
     attributes:
       label: Summary
