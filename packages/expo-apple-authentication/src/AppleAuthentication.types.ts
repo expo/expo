@@ -1,4 +1,4 @@
-import { StyleProp, ViewStyle } from 'react-native';
+import { StyleProp, ViewStyle, ViewProps } from 'react-native';
 
 // @needsAudit @docsMissing
 export type AppleAuthenticationButtonProps = {
