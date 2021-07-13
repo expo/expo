@@ -63,11 +63,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isDevelopmentSilentLaunch;
 - (BOOL)isUsingDeveloperTool;
 - (nullable NSString *)userInterfaceStyle;
-- (nullable NSString *)androidOrRootBackroundColor;
+- (nullable NSString *)iosOrRootBackgroundColor;
 - (nullable NSString *)iosSplashBackgroundColor;
 - (nullable NSString *)iosSplashImageUrl;
 - (nullable NSString *)iosSplashImageResizeMode;
 - (nullable NSString *)iosGoogleServicesFile;
+
+# pragma mark - helper methods
+
+- (nullable NSDictionary *)expoGoConfigRootObject;
+- (nullable NSDictionary *)expoClientConfigRootObject;
 
 @end
 
