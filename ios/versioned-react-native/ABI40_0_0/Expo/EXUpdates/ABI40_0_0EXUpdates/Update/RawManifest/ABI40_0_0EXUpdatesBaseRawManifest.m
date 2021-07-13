@@ -2,6 +2,8 @@
 
 #import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesBaseRawManifest.h>
 
+#import <UIKit/UIKit.h>
+
 @implementation ABI40_0_0EXUpdatesBaseRawManifest
 
 - (instancetype)initWithRawManifestJSON:(NSDictionary *)rawManifestJSON {
