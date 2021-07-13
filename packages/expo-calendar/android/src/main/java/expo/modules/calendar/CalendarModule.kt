@@ -9,13 +9,10 @@ import android.database.Cursor
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.util.Log
-import android.view.ViewDebug.trace
 import expo.modules.interfaces.permissions.Permissions
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.unimodules.core.ExportedModule
 import org.unimodules.core.ModuleRegistry
