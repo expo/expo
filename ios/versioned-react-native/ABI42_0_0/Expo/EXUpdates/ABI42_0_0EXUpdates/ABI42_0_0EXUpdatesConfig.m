@@ -100,10 +100,6 @@ static NSString * const ABI42_0_0EXUpdatesConfigNeverString = @"NEVER";
   if (!_scopeKey) {
     if (_updateUrl) {
       _scopeKey = [[self class] normalizedURLOrigin:_updateUrl];
-    } else {
-      @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                     reason:@"expo-updates must be configured with a valid update URL or scope key."
-                                   userInfo:@{}];
     }
   }
 
