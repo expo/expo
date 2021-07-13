@@ -55,7 +55,6 @@ void JPlayerData::setEnableSampleBufferCallback(bool enable) {
 }
 
 void JPlayerData::setSampleBufferCallback(const SampleBufferCallback &&sampleBufferCallback) {
-    __android_log_write(ANDROID_LOG_INFO, TAG, "setting callback");
     sampleBufferCallback_ = sampleBufferCallback;
     setEnableSampleBufferCallback(true);
 }
