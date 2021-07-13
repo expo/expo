@@ -14,6 +14,7 @@ add_library(
         ${PACKAGE_NAME}
         SHARED
         src/main/cpp/JMediaPlayerData.cpp
+        src/main/cpp/JAVManager.cpp
 )
 
 file(GLOB libfbjni_link_DIRS "${BUILD_DIR}/fbjni*.aar/jni/${ANDROID_ABI}")

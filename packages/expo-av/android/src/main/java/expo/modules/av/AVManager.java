@@ -21,6 +21,7 @@ import expo.modules.core.interfaces.InternalModule;
 import expo.modules.core.interfaces.LifecycleEventListener;
 import expo.modules.core.interfaces.services.EventEmitter;
 import expo.modules.core.interfaces.services.UIManager;
+import com.facebook.jni.HybridData;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,6 +59,9 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   private static final String RECORDING_OPTION_MAX_FILE_SIZE_KEY = "maxFileSize";
 
   private boolean mShouldRouteThroughEarpiece = false;
+
+  @DoNotStrip
+  private HybridData mHybridData = null;
 
   private enum AudioInterruptionMode {
     DO_NOT_MIX,
@@ -112,7 +116,21 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     mContext.registerReceiver(mNoisyAudioStreamReceiver,
       new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
     mIsRegistered = true;
+    mHybridData = initHybrid();
+    installJSIBindings();
   }
+
+  @Override
+  protected void finalize() throws Throwable {
+    super.finalize();
+    mHybridData.resetNative();
+    mHybridData = null;
+  }
+
+  @SuppressWarnings("JavaJniMissingFunction")
+  private native HybridData initHybrid();
+  @SuppressWarnings("JavaJniMissingFunction")
+  private native void installJSIBindings();
 
   @Override
   public ModuleRegistry getModuleRegistry() {

@@ -16,7 +16,7 @@ using SampleBufferCallback = std::function<void(jint)>;
 
 class JMediaPlayerData : public jni::HybridClass<JMediaPlayerData> {
 public:
-    static auto constexpr kJavaDescriptor = "Lexpo.modules.av.player/MediaPlayerData;";
+    static auto constexpr kJavaDescriptor = "Lexpo/modules/av/player/MediaPlayerData;";
     static auto constexpr TAG = "JMediaPlayerData";
     static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject> jThis);
     static void registerNatives();
