@@ -65,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isDevelopmentSilentLaunch;
 - (BOOL)isUsingDeveloperTool;
 - (nullable NSString *)userInterfaceStyle;
-- (nullable NSString *)iosOrRootBackroundColor;
+- (nullable NSString *)iosOrRootBackgroundColor;
 - (nullable NSString *)iosSplashBackgroundColor;
 - (nullable NSString *)iosSplashImageUrl;
 - (nullable NSString *)iosSplashImageResizeMode;

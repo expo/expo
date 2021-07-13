@@ -174,7 +174,7 @@
   return [expoClientConfig nullableStringForKey:@"userInterfaceStyle"];
 }
 
-- (nullable NSString *)iosOrRootBackroundColor {
+- (nullable NSString *)iosOrRootBackgroundColor {
   if (self.iosConfig && [self.iosConfig nullableStringForKey:@"backgroundColor"]) {
     return [self.iosConfig nullableStringForKey:@"backgroundColor"];
   }
