@@ -60,9 +60,29 @@ void JAVManager::installJSIBindings(jlong jsRuntimePointer,
             auto callback = args[1].asObject(runtime).asFunction(runtime);
             auto callbackShared = std::make_shared<jsi::Function>(std::move(callback));
 
-            mediaPlayer->setSampleBufferCallback([callbackShared, &runtime](int sampleBuffer)  {
+
+            mediaPlayer->setSampleBufferCallback([callbackShared, &runtime](jni::alias_ref<jni::JArrayByte> sampleBuffer)  {
+                auto channelsCount = /* TODO: channelsCount */ 1;
+                auto size = sampleBuffer->size();
+
+                std::vector<jbyte> buffer(size);
+                sampleBuffer->getRegion(0, size, buffer.data());
+                jsi::Array frames = jsi::Array::createWithElements(runtime, buffer);
+
+                // TODO: Run per channel instead of flat array?
+                auto channels = jsi::Array(runtime, channelsCount);
+                for (auto i = 0; i < channelsCount; i++) {
+                    auto channel = jsi::Object(runtime);
+
+                    channel.setProperty(runtime, "frames", frames);
+                    channels.setValueAtIndex(runtime, i, channel);
+                }
+
+                auto sample = jsi::Object(runtime);
+                sample.setProperty(runtime, "channels", channels);
+                sample.setProperty(runtime, "timestamp", jsi::Value(13));
                 // TODO: callInvoker->invokeAsync([]() {}) ?
-                callbackShared->call(runtime, jsi::Value(sampleBuffer));
+                callbackShared->call(runtime, sample);
             });
         } else {
             // second parameter omitted or undefined, so remove callback
