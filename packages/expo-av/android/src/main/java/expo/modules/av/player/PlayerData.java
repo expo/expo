@@ -128,52 +128,52 @@ public abstract class PlayerData implements AudioEventHandler {
   @SuppressWarnings("unused")
   @DoNotStrip
   void setEnableSampleBufferCallback(boolean enable) {
-  if (enable) {
-    try {
-      boolean hasRecordAudioPermission = mAVModule.hasAudioPermission();
-      if (!hasRecordAudioPermission) {
-        mAVModule.requestAudioPermission(result -> {
-          PermissionsResponse response = result.get(Manifest.permission.RECORD_AUDIO);
-          if (response == null) {
-            return;
-          }
-          if (response.getStatus() == PermissionsStatus.GRANTED) {
-            // call func again, this time we have audio permission
-            setEnableSampleBufferCallback(true);
-          } else if (!response.getCanAskAgain()) {
-            Log.e("PlayerData", "Cannot initialize Sample Data Callback (Visualizer) when RECORD_AUDIO permission is not granted!");
-          }
-        });
-        return;
-      }
-      int id = getAudioSessionId();
-      Log.i("PlayerData", "Initializing Visualizer for Audio Session #" + id + "...");
-      mVisualizer = new Visualizer(id);
-      mVisualizer.setEnabled(false);
-      mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
-
-      // the rate at which the Visualizer calls back with new bytes - will be clamped to max 100ms.
-      int callbackRate = Math.min(Visualizer.getMaxCaptureRate(), 100);
-      mVisualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
-        @Override
-        public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
-          sampleBufferCallback(bytes);
+    if (enable) {
+      try {
+        boolean hasRecordAudioPermission = mAVModule.hasAudioPermission();
+        if (!hasRecordAudioPermission) {
+          mAVModule.requestAudioPermission(result -> {
+            PermissionsResponse response = result.get(Manifest.permission.RECORD_AUDIO);
+            if (response == null) {
+              return;
+            }
+            if (response.getStatus() == PermissionsStatus.GRANTED) {
+              // call func again, this time we have audio permission
+              setEnableSampleBufferCallback(true);
+            } else if (!response.getCanAskAgain()) {
+              Log.e("PlayerData", "Cannot initialize Sample Data Callback (Visualizer) when RECORD_AUDIO permission is not granted!");
+            }
+          });
+          return;
         }
+        int id = getAudioSessionId();
+        Log.i("PlayerData", "Initializing Visualizer for Audio Session #" + id + "...");
+        mVisualizer = new Visualizer(id);
+        mVisualizer.setEnabled(false);
+        mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
 
-        @Override
-        public void onFftDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) { }
-      }, callbackRate, true, false);
+        // the rate at which the Visualizer calls back with new bytes - will be clamped to max 100ms.
+        int callbackRate = Math.min(Visualizer.getMaxCaptureRate(), 100);
+        mVisualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
+          @Override
+          public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
+            sampleBufferCallback(bytes);
+          }
 
-      mVisualizer.setEnabled(true);
-    } catch (Throwable e) {
-      Log.e("PlayerData", "Failed to initialize Visualizer! " + e.getLocalizedMessage());
-      e.printStackTrace();
+          @Override
+          public void onFftDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) { }
+        }, callbackRate, true, false);
+
+        mVisualizer.setEnabled(true);
+      } catch (Throwable e) {
+        Log.e("PlayerData", "Failed to initialize Visualizer! " + e.getLocalizedMessage());
+        e.printStackTrace();
+      }
+    } else {
+      mVisualizer.setEnabled(false);
+      mVisualizer.release();
+      mVisualizer = null;
     }
-  } else {
-    mVisualizer.setEnabled(false);
-    mVisualizer.release();
-    mVisualizer = null;
-  }
   }
 
   public static PlayerData createUnloadedPlayerData(final AVManagerInterface avModule, final Context context, final ReadableArguments source, final Bundle status) {
