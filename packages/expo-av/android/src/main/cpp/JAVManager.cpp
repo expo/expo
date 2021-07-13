@@ -21,13 +21,8 @@ using namespace jni;
 
 using TSelf = local_ref<HybridClass<expo::JAVManager>::jhybriddata>;
 
-TSelf JAVManager::initHybrid(alias_ref<HybridClass::jhybridobject> jThis,
-                             jlong jsContext,
-                             jni::alias_ref<facebook::react::CallInvokerHolder::javaobject> jsCallInvokerHolder) {
-
-    return makeCxxInstance(jThis,
-                           reinterpret_cast<jsi::Runtime *>(jsContext),
-                           jsCallInvokerHolder->cthis()->getCallInvoker());
+TSelf JAVManager::initHybrid(alias_ref<HybridClass::jhybridobject> jThis) {
+    return makeCxxInstance(jThis);
 }
 
 void JAVManager::registerNatives() {
@@ -37,7 +32,8 @@ void JAVManager::registerNatives() {
     });
 }
 
-void JAVManager::installJSIBindings() {
+void JAVManager::installJSIBindings(jlong jsRuntimePointer,
+                                    jni::alias_ref<facebook::react::CallInvokerHolder::javaobject> jsCallInvokerHolder) {
   // TODO: ...
 }
 

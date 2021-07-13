@@ -119,10 +119,8 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     mContext.registerReceiver(mNoisyAudioStreamReceiver,
       new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
     mIsRegistered = true;
-    mHybridData = initHybrid(
-      ((ReactContext)reactContext).getJavaScriptContextHolder().get(),
-      (CallInvokerHolderImpl)((ReactContext)reactContext).getCatalystInstance().getJSCallInvokerHolder()
-    );
+
+    mHybridData = initHybrid();
   }
 
   @Override
@@ -133,8 +131,9 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   }
 
   @SuppressWarnings("JavaJniMissingFunction")
-  private native HybridData initHybrid(long jsRuntimePointer,
-                                       CallInvokerHolderImpl jsCallInvokerHolder);
+  private native HybridData initHybrid();
+  @SuppressWarnings("JavaJniMissingFunction")
+  private native void installJSIBindings(long jsRuntimePointer, CallInvokerHolderImpl jsCallInvokerHolder);
 
   @Override
   public ModuleRegistry getModuleRegistry() {
@@ -149,6 +148,17 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     mModuleRegistry = moduleRegistry;
     if (mModuleRegistry != null) {
       mModuleRegistry.getModule(UIManager.class).registerLifecycleEventListener(this);
+    }
+
+    if (mModuleRegistry != null) {
+      final UIManager uiManager = mModuleRegistry.getModule(UIManager.class);
+
+      uiManager.runOnClientCodeQueueThread(() -> {
+        final JavaScriptContextProvider jsContextProvider = mModuleRegistry.getModule(JavaScriptContextProvider.class);
+        CallInvokerHolderImpl callInvoker = (CallInvokerHolderImpl) ((ReactContext) mContext).getCatalystInstance().getJSCallInvokerHolder();
+
+        installJSIBindings(jsContextProvider.getJavaScriptContextRef(), callInvoker);
+      });
     }
   }
 
