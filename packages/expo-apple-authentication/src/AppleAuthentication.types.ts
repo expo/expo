@@ -20,7 +20,7 @@ export type AppleAuthenticationButtonProps = {
    * `style.borderRadius` in other Views.
    */
   cornerRadius?: number;
-  style?: StyleProp<ViewStyle>;
+  style?: StyleProp<Omit<ViewStyle, 'backgroundColor' | 'borderRadius'>>;
 };
 
 // @needsAudit
