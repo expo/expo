@@ -13,6 +13,7 @@ import androidx.biometric.BiometricPrompt.PromptInfo
 import androidx.fragment.app.FragmentActivity
 import org.unimodules.core.ExportedModule
 import org.unimodules.core.ModuleRegistry
+import org.unimodules.core.ModuleRegistryDelegate
 import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ActivityEventListener
 import org.unimodules.core.interfaces.ActivityProvider
@@ -34,8 +35,10 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
   private var biometricPrompt: BiometricPrompt? = null
   private var promise: Promise? = null
   private var isAuthenticating = false
-  private lateinit var moduleRegistry: ModuleRegistry
-  private var uIManager: UIManager? = null
+  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
+  private val uIManager: UIManager by moduleRegistry()
+
+  private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
 
   private fun convertErrorCode(code: Int): String {
     return when (code) {
@@ -76,9 +79,8 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
   }
 
   override fun onCreate(moduleRegistry: ModuleRegistry) {
-    this.moduleRegistry = moduleRegistry
-    uIManager = moduleRegistry.getModule(UIManager::class.java)
-    uIManager?.registerActivityEventListener(this)
+    moduleRegistryDelegate.onCreate(moduleRegistry)
+    uIManager.registerActivityEventListener(this)
   }
 
   @ExpoMethod
@@ -163,7 +165,7 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
 
     // BiometricPrompt callbacks are invoked on the main thread so also run this there to avoid
     // having to do locking.
-    uIManager!!.runOnUiQueueThread(Runnable {
+    uIManager.runOnUiQueueThread(Runnable {
       if (isAuthenticating) {
         this.promise?.resolve(Bundle().apply {
           putBoolean("success", false)
@@ -214,7 +216,7 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
 
   @ExpoMethod
   fun cancelAuthenticate(promise: Promise) {
-    uIManager!!.runOnUiQueueThread {
+    uIManager.runOnUiQueueThread {
       biometricPrompt?.cancelAuthentication()
       isAuthenticating = false
       promise.resolve(null)
@@ -231,9 +233,7 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
     }
   }
 
-  override fun onNewIntent(intent: Intent) {
-    // noop
-  }
+  override fun onNewIntent(intent: Intent) = Unit
 
   // NOTE: `KeyguardManager#isKeyguardSecure()` considers SIM locked state,
   // but it will be ignored on falling-back to device credential on biometric authentication.
@@ -262,7 +262,7 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
     get() = context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
   private val currentActivity: Activity?
     get() {
-      val activityProvider = moduleRegistry.getModule(ActivityProvider::class.java)
-      return activityProvider?.currentActivity
+      val activityProvider: ActivityProvider by moduleRegistry()
+      return activityProvider.currentActivity
     }
 }
