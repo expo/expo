@@ -7,7 +7,7 @@ import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
-**`expo-checkbox`** provides a `boolean` input element for all platforms. If you are looking for a more flexible checkbox component, please see our  [guide to implementing your own checkbox](../../../ui-programming/implementing-a-checkbox.md).
+**`expo-checkbox`** provides a basic `boolean` input element for all platforms. If you are looking for a more flexible checkbox component, please see the [guide to implementing your own checkbox](/ui-programming/implementing-a-checkbox.md).
 
 <PlatformsSection android emulator web ios simulator />
 
