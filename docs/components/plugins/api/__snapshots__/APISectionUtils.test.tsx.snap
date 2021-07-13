@@ -37,7 +37,6 @@ exports[`APISectionUtils.resolveTypeName Record 1`] = `
   </span>
   <span>
     any
-    
   </span>
   &gt;
 </div>
@@ -63,7 +62,6 @@ exports[`APISectionUtils.resolveTypeName Record with union 1`] = `
     <span>
       string
     </span>
-    
   </span>
   &gt;
 </div>
@@ -117,10 +115,8 @@ exports[`APISectionUtils.resolveTypeName extended props with multiple omits 1`] 
       <span>
         'borderRadius'
       </span>
-      
     </span>
     &gt;
-    
   </span>
   &gt;
 </div>
@@ -245,7 +241,6 @@ exports[`APISectionUtils.resolveTypeName query type 1`] = `
   &lt;
   <span>
     View
-    
   </span>
   &gt;
 </div>
@@ -265,7 +260,6 @@ exports[`APISectionUtils.resolveTypeName tuple type 1`] = `
   </span>
   <span>
     boolean
-    
   </span>
   ]
 </div>
