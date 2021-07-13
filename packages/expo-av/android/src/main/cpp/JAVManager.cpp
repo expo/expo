@@ -93,11 +93,12 @@ void JAVManager::installJSIBindings(jlong jsRuntimePointer,
                     channels.setValueAtIndex(runtime, i, channel);
                 }
 
+                // TODO: Avoid smart pointer here? Cannot move into lambda...
                 auto sample = std::make_shared<jsi::Object>(runtime);
                 sample->setProperty(runtime, "channels", channels);
                 sample->setProperty(runtime, "timestamp", jsi::Value(positionSeconds));
 
-                callInvoker->invokeAsync([callbackShared, &runtime, sample = std::move(sample)] () {
+                callInvoker->invokeAsync([callbackShared, &runtime, sample] () {
                     try {
                         jsi::Object* s = sample.get();
                         callbackShared->call(runtime, std::move(*s));
