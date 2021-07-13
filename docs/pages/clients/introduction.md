@@ -6,6 +6,8 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
 > ⏩ Want to create a custom client for your project?  Follow the [getting started guide](getting-started.md).
 
+> 👀 Want to get notified of new releases with a changelog and upgrade instructions?  Sign up for the [mailing list](https://expo.dev/mailing-list/dev-client).
+
 **Expo Clients** provide a precompiled runtime that can load and run applications built with Expo. With a compatible client for each platform an application targets, you can focus your time and energy building your application fully in JavaScript and gain the developer experience that Expo is known for:
 
 - Easy for new developers without native experience to join the team
