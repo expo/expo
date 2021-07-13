@@ -13,7 +13,7 @@
 #include <ReactCommon/CallInvokerHolder.h>
 #include <ReactCommon/CallInvoker.h>
 
-#include "JMediaPlayerData.h"
+#include "JPlayerData.h"
 
 namespace expo {
 
@@ -37,7 +37,7 @@ private:
             javaPart_(jni::make_global(jThis))
     {}
 
-    JMediaPlayerData* getMediaPlayerById(int id);
+    JPlayerData* getMediaPlayerById(int id);
 };
 
 } // namespace expo

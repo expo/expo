@@ -16,6 +16,8 @@
 #include <ReactCommon/CallInvokerHolder.h>
 #include <ReactCommon/CallInvoker.h>
 
+#include <android/log.h>
+
 namespace expo {
 
 using namespace facebook;
@@ -34,8 +36,8 @@ void JAVManager::registerNatives() {
     });
 }
 
-JMediaPlayerData* JAVManager::getMediaPlayerById(int id) {
-    static const auto func = javaPart_->getClass()->getMethod<JMediaPlayerData*(jint)>("getMediaPlayerById");
+JPlayerData* JAVManager::getMediaPlayerById(int id) {
+    static const auto func = javaPart_->getClass()->getMethod<JPlayerData*(jint)>("getMediaPlayerById");
     auto result = func(javaPart_.get(), id);
     return result->cthis();
 }
@@ -49,21 +51,25 @@ void JAVManager::installJSIBindings(jlong jsRuntimePointer,
                            const jsi::Value &thisValue,
                            const jsi::Value *args,
                            size_t argsCount) -> jsi::Value {
+        __android_log_write(ANDROID_LOG_INFO, TAG, "called");
         auto playerId = args[0].asNumber();
 
+        __android_log_write(ANDROID_LOG_INFO, TAG, "player");
         auto mediaPlayer = getMediaPlayerById(static_cast<int>(playerId));
         if (mediaPlayer == nullptr) {
             auto message = "Sound Instance with ID " + std::to_string(playerId) + "does not exist!";
             throw jsi::JSError(runtime, message.c_str());
         }
+        __android_log_write(ANDROID_LOG_INFO, TAG, "got player!");
 
         if (argsCount > 1 && args[1].isObject() && !args[1].isUndefined()) {
             // second parameter received, it's the callback function.
             auto callback = args[1].asObject(runtime).asFunction(runtime);
             auto callbackShared = std::make_shared<jsi::Function>(std::move(callback));
-
+            __android_log_write(ANDROID_LOG_INFO, TAG, "moved callback!");
 
             mediaPlayer->setSampleBufferCallback([callbackShared, &runtime](jni::alias_ref<jni::JArrayByte> sampleBuffer)  {
+                __android_log_write(ANDROID_LOG_INFO, TAG, "callback called.");
                 auto channelsCount = /* TODO: channelsCount */ 1;
                 auto size = sampleBuffer->size();
 
@@ -84,18 +90,23 @@ void JAVManager::installJSIBindings(jlong jsRuntimePointer,
                     channel.setProperty(runtime, "frames", frames);
                     channels.setValueAtIndex(runtime, i, channel);
                 }
+                __android_log_write(ANDROID_LOG_INFO, TAG, "created obj");
 
                 auto sample = jsi::Object(runtime);
                 sample.setProperty(runtime, "channels", channels);
                 sample.setProperty(runtime, "timestamp", jsi::Value(13));
                 // TODO: callInvoker->invokeAsync([]() {}) ?
                 callbackShared->call(runtime, sample);
+                __android_log_write(ANDROID_LOG_INFO, TAG, "js func called.");
             });
+            __android_log_write(ANDROID_LOG_INFO, TAG, "finish set callback");
         } else {
+            __android_log_write(ANDROID_LOG_INFO, TAG, "unset.");
             // second parameter omitted or undefined, so remove callback
             mediaPlayer->unsetSampleBufferCallback();
         }
 
+        __android_log_write(ANDROID_LOG_INFO, TAG, "finish.");
         return jsi::Value::undefined();
     };
     runtime.global().setProperty(runtime,

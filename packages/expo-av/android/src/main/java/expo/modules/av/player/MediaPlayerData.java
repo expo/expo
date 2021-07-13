@@ -31,7 +31,7 @@ import expo.modules.av.AVManagerInterface;
 import expo.modules.av.AudioFocusNotAcquiredException;
 
 
-public class MediaPlayerData extends PlayerData implements
+class MediaPlayerData extends PlayerData implements
     MediaPlayer.OnBufferingUpdateListener,
     MediaPlayer.OnCompletionListener,
     MediaPlayer.OnErrorListener,
@@ -41,13 +41,10 @@ public class MediaPlayerData extends PlayerData implements
 
   static final String IMPLEMENTATION_NAME = "MediaPlayer";
 
-  @DoNotStrip
-  private HybridData mHybridData = null;
   private MediaPlayer mMediaPlayer = null;
+  private Visualizer mVisualizer = null;
   private ModuleRegistry mModuleRegistry = null;
   private boolean mMediaPlayerHasStartedEver = false;
-
-  private Visualizer mVisualizer = null;
 
   private Integer mPlayableDurationMillis = null;
   private boolean mIsBuffering = false;
@@ -55,53 +52,6 @@ public class MediaPlayerData extends PlayerData implements
   MediaPlayerData(final AVManagerInterface avModule, final Context context, final Uri uri, final Map<String, Object> requestHeaders) {
     super(avModule, uri, requestHeaders);
     mModuleRegistry = avModule.getModuleRegistry();
-    mHybridData = initHybrid();
-  }
-
-  @Override
-  protected void finalize() throws Throwable {
-    super.finalize();
-    mHybridData.resetNative();
-    mHybridData = null;
-  }
-
-
-  @SuppressWarnings("JavaJniMissingFunction")
-  private native HybridData initHybrid();
-  @SuppressWarnings("JavaJniMissingFunction")
-  private native void sampleBufferCallback(byte[] sampleBuffer);
-
-  @SuppressWarnings("unused")
-  @DoNotStrip
-  private void setEnableSampleBufferCallback(boolean enable) {
-    if (enable) {
-      mVisualizer = new Visualizer(mMediaPlayer.getAudioSessionId());
-      // TODO: Check config?
-      // mVisualizer.setEnabled(false);
-      // mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
-
-      // TODO: __av_sound_setOnAudioSampleReceivedCallback
-
-      // the rate at which the Visualizer calls back with new bytes - will be clamped to max 100ms.
-      int callbackRate = Math.min(Visualizer.getMaxCaptureRate(), 100);
-      mVisualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
-        @Override
-        public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
-          sampleBufferCallback(bytes);
-        }
-
-        @Override
-        public void onFftDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
-          // TODO: use frequency?
-        }
-      }, callbackRate, true, false);
-
-      mVisualizer.setEnabled(true);
-    } else {
-      mVisualizer.setEnabled(false);
-      mVisualizer.release();
-      mVisualizer = null;
-    }
   }
 
   @Override
@@ -196,6 +146,32 @@ public class MediaPlayerData extends PlayerData implements
   }
 
   @Override
+  void setEnableSampleBufferCallback(boolean enable) {
+    if (enable) {
+      mVisualizer = new Visualizer(mMediaPlayer.getAudioSessionId());
+      mVisualizer.setEnabled(false);
+      mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
+
+      // the rate at which the Visualizer calls back with new bytes - will be clamped to max 100ms.
+      int callbackRate = Math.min(Visualizer.getMaxCaptureRate(), 100);
+      mVisualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
+        @Override
+        public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
+          sampleBufferCallback(bytes);
+        }
+        @Override
+        public void onFftDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) { }
+      }, callbackRate, true, false);
+
+      mVisualizer.setEnabled(true);
+    } else {
+      mVisualizer.setEnabled(false);
+      mVisualizer.release();
+      mVisualizer = null;
+    }
+  }
+
+  @Override
   public synchronized void release() {
     stopUpdatingProgressIfNecessary();
     if (mMediaPlayer != null) {
@@ -206,6 +182,10 @@ public class MediaPlayerData extends PlayerData implements
       mMediaPlayer.stop();
       mMediaPlayer.release();
       mMediaPlayer = null;
+    }
+    if (mVisualizer != null) {
+      mVisualizer.release();
+      mVisualizer = null;
     }
   }
 
