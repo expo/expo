@@ -6,6 +6,7 @@ import expo.modules.core.ModuleRegistry;
 import expo.modules.core.Promise;
 import expo.modules.core.arguments.ReadableArguments;
 import expo.modules.av.video.VideoView;
+import expo.modules.interfaces.permissions.PermissionsResponseListener;
 
 public interface AVManagerInterface {
   void registerVideoViewForAudioLifecycle(final VideoView videoView);
@@ -55,6 +56,9 @@ public interface AVManagerInterface {
   void getAudioRecordingStatus(final Promise promise);
 
   void unloadAudioRecorder(final Promise promise);
+
+  boolean hasAudioPermission();
+  void requestAudioPermission(PermissionsResponseListener permissionsResponseListener);
 
   ModuleRegistry getModuleRegistry();
 }
