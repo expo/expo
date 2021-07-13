@@ -69,12 +69,17 @@ void JAVManager::installJSIBindings(jlong jsRuntimePointer,
 
                 std::vector<jbyte> buffer(size);
                 sampleBuffer->getRegion(0, size, buffer.data());
-                jsi::Array frames = jsi::Array::createWithElements(runtime, buffer);
 
                 // TODO: Run per channel instead of flat array?
                 auto channels = jsi::Array(runtime, channelsCount);
                 for (auto i = 0; i < channelsCount; i++) {
                     auto channel = jsi::Object(runtime);
+
+                    auto frames = jsi::Array(runtime, size);
+
+                    for (size_t ii = 0; ii < size; ii++) {
+                        frames.setValueAtIndex(runtime, i, jsi::Value((int)buffer[i]));
+                    }
 
                     channel.setProperty(runtime, "frames", frames);
                     channels.setValueAtIndex(runtime, i, channel);
