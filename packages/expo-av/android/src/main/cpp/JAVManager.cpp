@@ -61,6 +61,8 @@ void JAVManager::installJSIBindings(jlong jsRuntimePointer,
 
         if (argsCount > 1 && args[1].isObject() && !args[1].isUndefined()) {
             // second parameter received, it's the callback function.
+            __android_log_write(ANDROID_LOG_INFO, TAG, "Setting Sample Buffer Callback...");
+
             auto callback = args[1].asObject(runtime).asFunction(runtime);
             auto callbackShared = std::make_shared<jsi::Function>(std::move(callback));
 
@@ -85,7 +87,6 @@ void JAVManager::installJSIBindings(jlong jsRuntimePointer,
                     channel.setProperty(runtime, "frames", frames);
                     channels.setValueAtIndex(runtime, i, channel);
                 }
-                __android_log_write(ANDROID_LOG_INFO, TAG, "created obj");
 
                 auto sample = std::make_shared<jsi::Object>(runtime);
                 sample->setProperty(runtime, "channels", channels);
@@ -95,21 +96,20 @@ void JAVManager::installJSIBindings(jlong jsRuntimePointer,
                     try {
                         jsi::Object* s = sample.get();
                         callbackShared->call(runtime, std::move(*s));
-                        __android_log_write(ANDROID_LOG_INFO, TAG, "js func called.");
                     } catch (std::exception &exception) {
                         auto message = "Sample Buffer Callback threw an error: " + std::string(exception.what());
                         __android_log_write(ANDROID_LOG_ERROR, TAG, message.c_str());
                     }
                 });
             });
-            __android_log_write(ANDROID_LOG_INFO, TAG, "finish set callback");
         } else {
-            __android_log_write(ANDROID_LOG_INFO, TAG, "unset.");
             // second parameter omitted or undefined, so remove callback
+            __android_log_write(ANDROID_LOG_INFO, TAG, "Unsetting Sample Buffer Callback...");
+
             mediaPlayer->unsetSampleBufferCallback();
         }
 
-        __android_log_write(ANDROID_LOG_INFO, TAG, "finish.");
+        __android_log_write(ANDROID_LOG_INFO, TAG, "Finished.");
         return jsi::Value::undefined();
     };
     runtime.global().setProperty(runtime,
