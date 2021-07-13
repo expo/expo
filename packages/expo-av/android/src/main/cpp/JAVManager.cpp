@@ -34,7 +34,22 @@ void JAVManager::registerNatives() {
 
 void JAVManager::installJSIBindings(jlong jsRuntimePointer,
                                     jni::alias_ref<facebook::react::CallInvokerHolder::javaobject> jsCallInvokerHolder) {
-  // TODO: ...
+    auto& runtime = *reinterpret_cast<jsi::Runtime*>(jsRuntimePointer);
+
+    auto function = [](jsi::Runtime &runtime,
+                       const jsi::Value &thisValue,
+                       const jsi::Value *args,
+                       size_t argsCount) -> jsi::Value {
+
+
+        return jsi::Value::undefined();
+    };
+    runtime.global().setProperty(runtime,
+                                 "__av_sound_setOnAudioSampleReceivedCallback",
+                                 jsi::Function::createFromHostFunction(runtime,
+                                                                       jsi::PropNameID::forAscii(runtime, "__av_sound_setOnAudioSampleReceivedCallback"),
+                                                                       2,
+                                                                       function));
 }
 
 } // namespace expo
