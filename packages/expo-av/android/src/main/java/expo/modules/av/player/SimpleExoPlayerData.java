@@ -127,6 +127,11 @@ class SimpleExoPlayerData extends PlayerData
   }
 
   @Override
+  protected double getCurrentPositionSeconds() {
+    return (double)mSimpleExoPlayer.getCurrentPosition() / 1000.0;
+  }
+
+  @Override
   boolean shouldContinueUpdatingProgress() {
     return mSimpleExoPlayer != null && mSimpleExoPlayer.getPlayWhenReady();
   }

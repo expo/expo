@@ -141,6 +141,11 @@ class MediaPlayerData extends PlayerData implements
 
 
   @Override
+  protected double getCurrentPositionSeconds() {
+    return (double)mMediaPlayer.getCurrentPosition() / 1000.0;
+  }
+
+  @Override
   public synchronized void release() {
     super.release();
     stopUpdatingProgressIfNecessary();

@@ -12,7 +12,7 @@
 namespace expo {
 
 using namespace facebook;
-using SampleBufferCallback = std::function<void(jni::local_ref<jni::JArrayByte>)>;
+using SampleBufferCallback = std::function<void(jni::local_ref<jni::JArrayByte>, double)>;
 
 class JPlayerData : public jni::HybridClass<JPlayerData> {
 public:
@@ -29,7 +29,7 @@ private:
     jni::global_ref<JPlayerData::javaobject> javaPart_;
     SampleBufferCallback sampleBufferCallback_;
 
-    void sampleBufferCallback(jni::alias_ref<jni::JArrayByte> sampleBuffer);
+    void sampleBufferCallback(jni::alias_ref<jni::JArrayByte> sampleBuffer, jdouble positionSeconds);
     void setEnableSampleBufferCallback(bool enable);
 
     explicit JPlayerData(jni::alias_ref<JPlayerData::jhybridobject> jThis) :
