@@ -1,7 +1,6 @@
 package expo.modules.av.player;
 
 import android.content.Context;
-import android.media.audiofx.Visualizer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -58,7 +57,6 @@ class SimpleExoPlayerData extends PlayerData
   private static final String TAG = SimpleExoPlayerData.class.getSimpleName();
 
   private SimpleExoPlayer mSimpleExoPlayer = null;
-  private Visualizer mVisualizer = null;
   private String mOverridingExtension;
   private LoadCompletionListener mLoadCompletionListener = null;
   private boolean mFirstFrameRendered = false;
@@ -72,32 +70,6 @@ class SimpleExoPlayerData extends PlayerData
     super(avModule, uri, requestHeaders);
     mReactContext = context;
     mOverridingExtension = overridingExtension;
-  }
-
-  @Override
-  void setEnableSampleBufferCallback(boolean enable) {
-    if (enable) {
-      mVisualizer = new Visualizer(mSimpleExoPlayer.getAudioSessionId());
-      mVisualizer.setEnabled(false);
-      mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
-
-      // the rate at which the Visualizer calls back with new bytes - will be clamped to max 100ms.
-      int callbackRate = Math.min(Visualizer.getMaxCaptureRate(), 100);
-      mVisualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
-        @Override
-        public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
-          sampleBufferCallback(bytes);
-        }
-        @Override
-        public void onFftDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) { }
-      }, callbackRate, true, false);
-
-      mVisualizer.setEnabled(true);
-    } else {
-      mVisualizer.setEnabled(false);
-      mVisualizer.release();
-      mVisualizer = null;
-    }
   }
 
   @Override
@@ -150,10 +122,6 @@ class SimpleExoPlayerData extends PlayerData
     if (mSimpleExoPlayer != null) {
       mSimpleExoPlayer.release();
       mSimpleExoPlayer = null;
-    }
-    if (mVisualizer != null) {
-      mVisualizer.release();
-      mVisualizer = null;
     }
   }
 
