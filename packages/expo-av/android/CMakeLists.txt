@@ -16,6 +16,9 @@ add_library(
         src/main/cpp/JMediaPlayerData.cpp
 )
 
+file(GLOB libfbjni_link_DIRS "${build_DIR}/fbjni*.aar/jni/${ANDROID_ABI}")
+file(GLOB libfbjni_include_DIRS "${build_DIR}/fbjni-*-headers.jar/")
+
 # includes
 
 target_include_directories(
@@ -24,18 +27,19 @@ target_include_directories(
         "${NODE_MODULES_DIR}/react-native/ReactCommon"
         "${NODE_MODULES_DIR}/react-native/ReactCommon/callinvoker"
         "${NODE_MODULES_DIR}/react-native/ReactCommon/jsi"
+        ${libfbjni_include_DIRS}
 )
 
 # find libraries
 
-find_package(fbjni REQUIRED CONFIG) # installed through gradle 4.x.x prefabs
 find_library(LOG_LIB log)
+find_library(FBJNI_LIBRARY fbjni PATHS ${libfbjni_link_DIRS} NO_CMAKE_FIND_ROOT_PATH)
 
 # linking
 
 target_link_libraries(
         ${PACKAGE_NAME}
         ${LOG_LIB}
-        fbjni::fbjni
+        ${FBJNI_LIBRARY}
         android
 )

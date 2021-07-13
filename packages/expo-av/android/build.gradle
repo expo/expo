@@ -92,6 +92,10 @@ android {
   packagingOptions {
     excludes = ["**/libc++_shared.so"]
   }
+  configurations {
+    extractHeaders
+    extractJNI
+  }
 }
 
 if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
@@ -105,7 +109,9 @@ if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
 dependencies {
   implementation project(':expo-modules-core')
 
-  implementation 'com.facebook.fbjni:fbjni:0.2.2'
+  compileOnly 'com.facebook.fbjni:fbjni:0.2.2'
+  extractHeaders 'com.facebook.fbjni:fbjni:0.2.2:headers'
+  extractJNI 'com.facebook.fbjni:fbjni:0.2.2'
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
 
@@ -126,4 +132,37 @@ dependencies {
   testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.5.1"
 
   testImplementation 'io.mockk:mockk:1.9'
+}
+
+task extractAARHeaders {
+  doLast {
+    configurations.extractHeaders.files.each {
+      def file = it.absoluteFile
+      copy {
+        from zipTree(file)
+        into "$buildDir/$file.name"
+        include "**/*.h"
+      }
+    }
+  }
+}
+
+task extractJNIFiles {
+  doLast {
+    configurations.extractJNI.files.each {
+      def file = it.absoluteFile
+      copy {
+        from zipTree(file)
+        into "$buildDir/$file.name"
+        include "jni/**/*"
+      }
+    }
+  }
+}
+
+tasks.whenTaskAdded { task ->
+  if (task.name.contains('externalNativeBuild')) {
+    task.dependsOn(extractAARHeaders)
+    task.dependsOn(extractJNIFiles)
+  }
 }
