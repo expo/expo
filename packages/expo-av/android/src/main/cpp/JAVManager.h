@@ -13,6 +13,8 @@
 #include <ReactCommon/CallInvokerHolder.h>
 #include <ReactCommon/CallInvoker.h>
 
+#include "JMediaPlayerData.h"
+
 namespace expo {
 
 using namespace facebook;
@@ -34,6 +36,8 @@ private:
     explicit JAVManager(jni::alias_ref<JAVManager::jhybridobject> jThis) :
             javaPart_(jni::make_global(jThis))
     {}
+
+    JMediaPlayerData* getMediaPlayerById(int id);
 };
 
 } // namespace expo

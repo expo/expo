@@ -31,7 +31,7 @@ import expo.modules.av.AVManagerInterface;
 import expo.modules.av.AudioFocusNotAcquiredException;
 
 
-class MediaPlayerData extends PlayerData implements
+public class MediaPlayerData extends PlayerData implements
     MediaPlayer.OnBufferingUpdateListener,
     MediaPlayer.OnCompletionListener,
     MediaPlayer.OnErrorListener,
