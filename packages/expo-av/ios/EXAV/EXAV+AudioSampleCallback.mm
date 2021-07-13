@@ -48,6 +48,7 @@ using namespace facebook;
         auto channelsCount = (size_t) buffer.stride;
         auto framesCount = buffer.frameLength;
         
+        // TODO: Avoid copy by directly using ArrayBuffer?
         auto channels = jsi::Array(runtime, channelsCount);
         for (auto i = 0; i < channelsCount; i++) {
           auto channel = jsi::Object(runtime);
