@@ -82,9 +82,8 @@ void JAVManager::installJSIBindings(jlong jsRuntimePointer,
                     auto frames = jsi::Array(runtime, size);
 
                     for (size_t ii = 0; ii < size; ii++) {
-                        // `buffer` is interpreted as a 8-bit signed integer (byte), but the waveform
-                        // output is actually 8-bit unsigned integer (u_byte), so we reinterpret as that
-                        // and then divide it by 256 to normalize it to a -1.0 to 1.0 scale.
+                        // `buffer` is interpreted as a 8-bit unsigned integer (byte), so it ranges from
+                        // 0 to 255. To normalize it to a -1..1 scale we subtract 128 and divide by 128.
                         double frame = ((double)buffer[ii] - 128) / 128.0;
                         frames.setValueAtIndex(runtime, ii, jsi::Value(frame));
                     }
