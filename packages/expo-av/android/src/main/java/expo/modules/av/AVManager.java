@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import expo.modules.av.player.MediaPlayerData;
 import expo.modules.av.player.PlayerData;
 import expo.modules.av.video.VideoView;
 import expo.modules.av.video.VideoViewWrapper;
@@ -138,6 +139,19 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   private native HybridData initHybrid();
   @SuppressWarnings("JavaJniMissingFunction")
   private native void installJSIBindings(long jsRuntimePointer, CallInvokerHolderImpl jsCallInvokerHolder);
+
+  @DoNotStrip
+  private MediaPlayerData getMediaPlayerById(int id) {
+    if (!mSoundMap.containsKey(id)) {
+      return null;
+    }
+    PlayerData player = mSoundMap.get(id);
+    if (player instanceof MediaPlayerData) {
+      return (MediaPlayerData) player;
+    } else {
+      return null;
+    }
+  }
 
   @Override
   public ModuleRegistry getModuleRegistry() {

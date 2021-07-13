@@ -32,16 +32,42 @@ void JAVManager::registerNatives() {
     });
 }
 
+JMediaPlayerData* JAVManager::getMediaPlayerById(int id) {
+    static const auto func = javaPart_->getClass()->getMethod<JMediaPlayerData*(jint)>("getMediaPlayerById");
+    auto result = func(javaPart_.get(), id);
+    return result->cthis();
+}
+
 void JAVManager::installJSIBindings(jlong jsRuntimePointer,
                                     jni::alias_ref<facebook::react::CallInvokerHolder::javaobject> jsCallInvokerHolder) {
     auto& runtime = *reinterpret_cast<jsi::Runtime*>(jsRuntimePointer);
+    auto callInvoker = jsCallInvokerHolder->cthis()->getCallInvoker();
 
-    auto function = [](jsi::Runtime &runtime,
+    auto function = [this](jsi::Runtime &runtime,
                        const jsi::Value &thisValue,
                        const jsi::Value *args,
                        size_t argsCount) -> jsi::Value {
+        auto playerId = args[0].asNumber();
 
+        auto mediaPlayer = getMediaPlayerById(static_cast<int>(playerId));
+        if (mediaPlayer == nullptr) {
+            auto message = "Sound Instance with ID " + std::to_string(playerId) + "does not exist!";
+            throw jsi::JSError(runtime, message.c_str());
+        }
 
+        if (argsCount > 1 && args[1].isObject() && !args[1].isUndefined()) {
+            // second parameter received, it's the callback function.
+            auto callback = args[1].asObject(runtime).asFunction(runtime);
+            auto callbackShared = std::make_shared<jsi::Function>(std::move(callback));
+
+            mediaPlayer->setSampleBufferCallback([callbackShared, &runtime](int sampleBuffer)  {
+                // TODO: callInvoker->invokeAsync([]() {}) ?
+                callbackShared->call(runtime, jsi::Value(sampleBuffer));
+            });
+        } else {
+            // second parameter omitted or undefined, so remove callback
+            mediaPlayer->unsetSampleBufferCallback();
+        }
         return jsi::Value::undefined();
     };
     runtime.global().setProperty(runtime,
