@@ -87,14 +87,13 @@ void JAVManager::installJSIBindings(jlong jsRuntimePointer,
                 }
                 __android_log_write(ANDROID_LOG_INFO, TAG, "created obj");
 
-                auto sample = jsi::Object(runtime);
-                sample.setProperty(runtime, "channels", channels);
-                sample.setProperty(runtime, "timestamp", jsi::Value(13));
-                auto sharedSample = std::make_shared<jsi::Object>(std::move(sample));
+                auto sample = std::make_shared<jsi::Object>(runtime);
+                sample->setProperty(runtime, "channels", channels);
+                sample->setProperty(runtime, "timestamp", jsi::Value(13));
 
-                callInvoker->invokeAsync([callbackShared, &runtime, sharedSample] () {
+                callInvoker->invokeAsync([callbackShared, &runtime, sample = std::move(sample)] () {
                     try {
-                        jsi::Object* s = sharedSample.get();
+                        jsi::Object* s = sample.get();
                         callbackShared->call(runtime, std::move(*s));
                         __android_log_write(ANDROID_LOG_INFO, TAG, "js func called.");
                     } catch (std::exception &exception) {
