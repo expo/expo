@@ -65,7 +65,7 @@ ${pods.map(podName => `import ${podName}`).join('\n')}
 public class ${className}: ModulesProvider {
   public override func exportedModules() -> [AnyModule.Type] {
     return [
-      ${classNames.map(className => `${className}.self`).join('\n')}
+      ${classNames.map(className => `${className}.self`).join(',\n      ')}
     ]
   }
 }
