@@ -18,6 +18,7 @@ import expo.modules.devlauncher.launcher.DevLauncherIntentRegistry
 import expo.modules.devlauncher.launcher.DevLauncherLifecycle
 import expo.modules.devlauncher.launcher.DevLauncherReactActivityDelegateSupplier
 import expo.modules.devlauncher.launcher.DevLauncherRecentlyOpenedAppsRegistry
+import expo.modules.devlauncher.launcher.loaders.DevLauncherAppLoader
 import expo.modules.devlauncher.launcher.loaders.DevLauncherLocalAppLoader
 import expo.modules.devlauncher.launcher.loaders.DevLauncherPublishedAppLoader
 import expo.modules.devlauncher.launcher.loaders.DevLauncherReactNativeAppLoader
@@ -75,38 +76,9 @@ class DevLauncherController private constructor(
     try {
       ensureHostWasCleared(appHost, activityToBeInvalidated = mainActivity)
 
-      val manifestParser = DevLauncherManifestParser(httpClient, url)
       val appIntent = createAppIntent()
 
-      updatesInterface?.reset()
-      useDeveloperSupport = true
-
-      val appLoader = if (!manifestParser.isManifestUrl()) {
-        // It's (maybe) a raw React Native bundle
-        DevLauncherReactNativeAppLoader(url, appHost, context)
-      } else {
-        if (updatesInterface == null) {
-          manifest = manifestParser.parseManifest()
-          if (!manifest!!.isUsingDeveloperTool()) {
-            throw Exception("expo-updates is not properly installed or integrated. In order to load published projects with this development client, follow all installation and setup instructions for both the expo-dev-client and expo-updates packages.")
-          }
-          DevLauncherLocalAppLoader(manifest!!, appHost, context)
-        } else {
-          val configuration = createUpdatesConfigurationWithUrl(url)
-          val update = updatesInterface!!.loadUpdate(configuration, context) {
-            manifest = DevLauncherManifest.fromJson(it.toString().reader())
-            return@loadUpdate !manifest!!.isUsingDeveloperTool()
-          }
-          if (manifest!!.isUsingDeveloperTool()) {
-            DevLauncherLocalAppLoader(manifest!!, appHost, context)
-          } else {
-            useDeveloperSupport = false
-            val localBundlePath = update.launchAssetPath
-            DevLauncherPublishedAppLoader(manifest!!, localBundlePath, appHost, context)
-          }
-        }
-      }
-
+      val appLoader = loadManifestIntoAppLoader(url, DevLauncherManifestParser(httpClient, url))
       val appLoaderListener = appLoader.createOnDelegateWillBeCreatedListener()
       lifecycle.addListener(appLoaderListener)
       mode = Mode.APP
@@ -127,6 +99,37 @@ class DevLauncherController private constructor(
         appIsLoading = false
       }
       throw e
+    }
+  }
+
+  suspend fun loadManifestIntoAppLoader(url: Uri, manifestParser: DevLauncherManifestParser): DevLauncherAppLoader {
+    updatesInterface?.reset()
+    useDeveloperSupport = true
+
+    return if (!manifestParser.isManifestUrl()) {
+      // It's (maybe) a raw React Native bundle
+      DevLauncherReactNativeAppLoader(url, appHost, context)
+    } else {
+      if (updatesInterface == null) {
+        manifest = manifestParser.parseManifest()
+        if (!manifest!!.isUsingDeveloperTool()) {
+          throw Exception("expo-updates is not properly installed or integrated. In order to load published projects with this development client, follow all installation and setup instructions for both the expo-dev-client and expo-updates packages.")
+        }
+        DevLauncherLocalAppLoader(manifest!!, appHost, context)
+      } else {
+        val configuration = createUpdatesConfigurationWithUrl(url)
+        val update = updatesInterface!!.loadUpdate(configuration, context) {
+          manifest = DevLauncherManifest.fromJson(it.toString().reader())
+          return@loadUpdate !manifest!!.isUsingDeveloperTool()
+        }
+        if (manifest!!.isUsingDeveloperTool()) {
+          DevLauncherLocalAppLoader(manifest!!, appHost, context)
+        } else {
+          useDeveloperSupport = false
+          val localBundlePath = update.launchAssetPath
+          DevLauncherPublishedAppLoader(manifest!!, localBundlePath, appHost, context)
+        }
+      }
     }
   }
 
