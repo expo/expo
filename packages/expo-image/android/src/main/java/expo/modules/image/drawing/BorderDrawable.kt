@@ -640,7 +640,7 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
         mInnerClipTempRectForBorderRadius!!.left.toDouble(),
         mInnerClipTempRectForBorderRadius!!.top.toDouble(), (
         mInnerClipTempRectForBorderRadius!!.left + 2 * innerTopLeftRadiusX).toDouble(), (
-        mInnerClipTempRectForBorderRadius!!.top + 2 * innerTopLeftRadiusY).toDouble(), Line Start
+        mInnerClipTempRectForBorderRadius!!.top + 2 * innerTopLeftRadiusY).toDouble(), // Line Start
         mOuterClipTempRectForBorderRadius!!.left.toDouble(),
         mOuterClipTempRectForBorderRadius!!.top.toDouble(), // Line End
         mInnerClipTempRectForBorderRadius!!.left.toDouble(), //
