@@ -1,64 +1,53 @@
-package expo.modules.haptics;
+package expo.modules.haptics
 
-import android.content.Context;
-import android.os.Build;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
+import android.content.Context
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
+import expo.modules.haptics.arguments.HapticsImpactType
+import expo.modules.haptics.arguments.HapticsInvalidArgumentException
+import expo.modules.haptics.arguments.HapticsNotificationType
+import expo.modules.haptics.arguments.HapticsSelectionType
+import expo.modules.haptics.arguments.HapticsVibrationType
+import org.unimodules.core.ExportedModule
+import org.unimodules.core.Promise
+import org.unimodules.core.interfaces.ExpoMethod
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.Promise;
-import org.unimodules.core.interfaces.ExpoMethod;
-import expo.modules.haptics.arguments.HapticsInvalidArgumentException;
-import expo.modules.haptics.arguments.HapticsImpactType;
-import expo.modules.haptics.arguments.HapticsNotificationType;
-import expo.modules.haptics.arguments.HapticsSelectionType;
-import expo.modules.haptics.arguments.HapticsVibrationType;
-
-public class HapticsModule extends ExportedModule {
-  private static final String TAG = "ExpoHaptics";
-  private final Vibrator mVibrator;
-
-  HapticsModule(Context context) {
-    super(context);
-    mVibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-  }
-
-  @Override
-  public String getName() {
-    return TAG;
-  }
+class HapticsModule internal constructor(context: Context) : ExportedModule(context) {
+  private val mVibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+  override fun getName() = "ExpoHaptics"
 
   @ExpoMethod
-  public void notificationAsync(String type, Promise promise) {
+  fun notificationAsync(type: String, promise: Promise) {
     try {
-      vibrate(HapticsNotificationType.fromString(type));
-      promise.resolve(null);
-    } catch (HapticsInvalidArgumentException e) {
-      promise.reject(e);
+      vibrate(HapticsNotificationType.fromString(type))
+      promise.resolve(null)
+    } catch (e: HapticsInvalidArgumentException) {
+      promise.reject(e)
     }
   }
 
   @ExpoMethod
-  public void selectionAsync(Promise promise) {
-    vibrate(new HapticsSelectionType());
-    promise.resolve(null);
+  fun selectionAsync(promise: Promise) {
+    vibrate(HapticsSelectionType)
+    promise.resolve(null)
   }
 
   @ExpoMethod
-  public void impactAsync(String style, Promise promise) {
+  fun impactAsync(style: String, promise: Promise) {
     try {
-      vibrate(HapticsImpactType.fromString(style));
-      promise.resolve(null);
-    } catch (HapticsInvalidArgumentException e) {
-      promise.reject(e);
+      vibrate(HapticsImpactType.fromString(style))
+      promise.resolve(null)
+    } catch (e: HapticsInvalidArgumentException) {
+      promise.reject(e)
     }
   }
 
-  private void vibrate(HapticsVibrationType type) {
+  private fun vibrate(type: HapticsVibrationType) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      mVibrator.vibrate(VibrationEffect.createWaveform(type.getTimings(), type.getAmplitudes(), -1));
+      mVibrator.vibrate(VibrationEffect.createWaveform(type.timings, type.amplitudes, -1))
     } else {
-      mVibrator.vibrate(type.getOldSDKPattern(), -1);
+      mVibrator.vibrate(type.oldSDKPattern, -1)
     }
   }
 }
