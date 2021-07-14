@@ -25,7 +25,7 @@ Pod::Spec.new do |s|
 
   s.script_phase = {
     :name => 'Generate app.config for prebuilt Constants.manifest',
-    :script => File.join(__dir__, '..', 'scripts', 'get-app-config-ios.sh'),
+    :script => '$PODS_TARGET_SRCROOT/../scripts/get-app-config-ios.sh',
     :execution_position => :before_compile
   }
 
