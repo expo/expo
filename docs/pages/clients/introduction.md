@@ -4,7 +4,7 @@ title: Introduction
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
-> ⏩ Want to create a custom client for your project?  Follow the [getting started guide](getting-started.md).
+> ⏩ Want to create a custom client for your project?  Follow the [Getting Started guide](getting-started.md).
 
 > 👀 Want to get notified of new releases with a changelog and upgrade instructions?  Sign up for the [mailing list](https://expo.dev/mailing-list/dev-client).
 

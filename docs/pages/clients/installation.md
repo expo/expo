@@ -129,7 +129,7 @@ There are a few more changes you can make to get the best experience, but you [c
 
 ### Enable development with Expo CLI
 
-Expo CLI requires you to have the `expo` package installed so it can maintain consistent behavior in your project when new versions of the Expo SDK are released.  The package will not be used directly by you project unless you import it in your application code, which is not recommended.
+Expo CLI requires you to have the `expo` package installed so it can maintain consistent behavior in your project when new versions of the Expo SDK are released.  The package will not be used directly by your project unless you import it in your application code, which is not recommended.
 
 <InstallSection packageName="expo" cmd={["npm install expo --save-dev"]} hideBareInstructions />
 
