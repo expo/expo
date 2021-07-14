@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- fix `__dir__` absolute path in script_phase making an inconsistent Podfile.lock. ([#13610](https://github.com/expo/expo/pull/13610) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ### ⚠️ Notices
