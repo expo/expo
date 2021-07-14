@@ -18,11 +18,13 @@ typedef BOOL (^ABI41_0_0EXUpdatesManifestBlock) (NSDictionary *manifest);
  * Protocol for modules that depend on expo-updates for loading production updates but do not want
  * to depend on expo-updates or delegate control to the singleton ABI41_0_0EXUpdatesAppController.
  */
-@protocol ABI41_0_0EXUpdatesInterface
+@protocol ABI41_0_0EXUpdatesExternalInterface
 
 @property (nonatomic, weak) id bridge;
 
 - (NSURL *)launchAssetURL;
+
+- (void)reset;
 
 - (void)fetchUpdateWithConfiguration:(NSDictionary *)configuration
                           onManifest:(ABI41_0_0EXUpdatesManifestBlock)manifestBlock
