@@ -131,6 +131,12 @@ Make the following changes to allow the Development Client to control project in
 
 There are a few more changes you can make to get the best experience, but you [can skip ahead to building](/clients/getting-started/#building-and-installing-your-first-custom-client) if you prefer.
 
+### Enable development with Expo CLI
+
+Expo CLI requires you to have the `expo` package installed so it can maintain consistent behavior in your project when new versions of the Expo SDK are released.  The package will not be used directly by your project unless you import it in your application code, which is not recommended.
+
+<InstallSection packageName="expo" cmd={["npm install expo --save-dev"]} hideBareInstructions />
+
 ### Disable packager autostart when building for iOS
 
 When you start your project on iOS, the metro bundler will be started automatically. This behavior might not be ideal when you want to use `expo start`. Our recommended solution is to remove the `Start Packager` action from building scripts. To do that you need to open the Xcode, go to `Project settings` > `Build Phases` and remove the `Start Packager` action.
