@@ -86,14 +86,14 @@ e.g.
 
 ## How to use git submodules
 
-Create a [secret](/build-reference/variables/#using-secrets-in-environment-variables) with base64 encoded private ssh key that have permission to access submodules repositories and add `eas-build-pre-install` npm hook that is checking out those submodules e.g.
+Create a [secret](/build-reference/variables/#using-secrets-in-environment-variables) with a base64 encoded private ssh key that has permission to access submodules repositories and add the `eas-build-pre-install` npm hook that is checking out those submodules, e.g.
 
 ```bash
 #!/usr/bin/env bash
 
 mkdir -p ~/.ssh
 
-# uncomment line bellow and specify url for remote "origin" if your submodules
+# uncomment the line below and replace the origin's URL if your submodules
 # are defined with relative urls in .gitmodules
 #
 # git remote set-url origin git@github.com:example/repo.git
