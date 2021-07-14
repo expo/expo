@@ -269,7 +269,15 @@ export default class Camera extends React.Component<CameraProps> {
   }
 }
 
-export const { Constants, getPermissionsAsync, requestPermissionsAsync } = Camera;
+export const {
+  Constants,
+  getPermissionsAsync,
+  requestPermissionsAsync,
+  getCameraPermissionsAsync,
+  requestCameraPermissionsAsync,
+  getMicrophonePermissionsAsync,
+  requestMicrophonePermissionsAsync,
+} = Camera;
 
 export {
   CameraCapturedPicture,

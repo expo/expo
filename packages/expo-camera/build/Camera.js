@@ -192,6 +192,6 @@ Camera.defaultProps = {
     flashMode: CameraManager.FlashMode.off,
     whiteBalance: CameraManager.WhiteBalance.auto,
 };
-export const { Constants, getPermissionsAsync, requestPermissionsAsync } = Camera;
+export const { Constants, getPermissionsAsync, requestPermissionsAsync, getCameraPermissionsAsync, requestCameraPermissionsAsync, getMicrophonePermissionsAsync, requestMicrophonePermissionsAsync, } = Camera;
 export { PermissionStatus, };
 //# sourceMappingURL=Camera.js.map
