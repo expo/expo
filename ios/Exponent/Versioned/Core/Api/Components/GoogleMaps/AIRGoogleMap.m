@@ -49,7 +49,7 @@ id regionAsJSON(MKCoordinateRegion region) {
            };
 }
 
-@interface AIRGoogleMap () <GMSIndoorDisplayDelegate>
+@interface AIRGoogleMap ()
 
 - (id)eventFromCoordinate:(CLLocationCoordinate2D)coordinate;
 
@@ -95,8 +95,6 @@ id regionAsJSON(MKCoordinateRegion region) {
               context:NULL];
 
     self.origGestureRecognizersMeta = [[NSMutableDictionary alloc] init];
-
-    self.indoorDisplay.delegate = self;
   }
   return self;
 }
@@ -436,14 +434,6 @@ id regionAsJSON(MKCoordinateRegion region) {
 
 - (BOOL)zoomEnabled {
   return self.settings.zoomGestures;
-}
-
-- (void)setScrollDuringRotateOrZoomEnabled:(BOOL)enableScrollGesturesDuringRotateOrZoom {
-  self.settings.allowScrollGesturesDuringRotateOrZoom = enableScrollGesturesDuringRotateOrZoom;
-}
-
-- (BOOL)scrollDuringRotateOrZoomEnabled {
-  return self.settings.allowScrollGesturesDuringRotateOrZoom;
 }
 
 - (void)setZoomTapEnabled:(BOOL)zoomTapEnabled {
@@ -889,63 +879,6 @@ id regionAsJSON(MKCoordinateRegion region) {
     REQUIRES_GOOGLE_MAPS_UTILS();
 #endif
 }
-
-
-- (void) didChangeActiveBuilding: (nullable GMSIndoorBuilding *) building {
-    if (!building) {
-        if (!self.onIndoorBuildingFocused) {
-            return;
-        }
-        self.onIndoorBuildingFocused(@{
-            @"IndoorBuilding": @{
-                    @"activeLevelIndex": @0,
-                    @"underground": @false,
-                    @"levels": [[NSMutableArray alloc]init]
-            }
-        });
-    }
-    NSInteger i = 0;
-    NSMutableArray *arrayLevels = [[NSMutableArray alloc]init];
-    for (GMSIndoorLevel *level in building.levels) {
-        [arrayLevels addObject: @{
-            @"index": @(i),
-            @"name" : level.name,
-            @"shortName" : level.shortName,
-        }];
-        i++;
-    }
-    if (!self.onIndoorBuildingFocused) {
-        return;
-    }
-    self.onIndoorBuildingFocused(@{
-        @"IndoorBuilding": @{
-                @"activeLevelIndex": @(building.defaultLevelIndex),
-                @"underground": @(building.underground),
-                @"levels": arrayLevels
-        }
-    });
-}
-
-- (void) didChangeActiveLevel: (nullable GMSIndoorLevel *)     level {
-    if (!self.onIndoorLevelActivated || !self.indoorDisplay  || !level) {
-        return;
-    }
-    NSInteger i = 0;
-    for (GMSIndoorLevel *buildingLevel in self.indoorDisplay.activeBuilding.levels) {
-        if (buildingLevel.name == level.name && buildingLevel.shortName == level.shortName) {
-            break;
-        }
-        i++;
-    }
-    self.onIndoorLevelActivated(@{
-        @"IndoorLevel": @{
-                @"activeLevelIndex": @(i),
-                @"name": level.name,
-                @"shortName": level.shortName
-        }
-    });
-}
-
 
 @end
 
