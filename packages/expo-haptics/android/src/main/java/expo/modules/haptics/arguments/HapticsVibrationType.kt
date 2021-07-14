@@ -1,9 +1,27 @@
-package expo.modules.haptics.arguments;
+package expo.modules.haptics.arguments
 
-public interface HapticsVibrationType {
-  long[] getTimings();
+data class HapticsVibrationType(
+  val timings: LongArray,
+  val amplitudes: IntArray,
+  val oldSDKPattern: LongArray
+) {
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
 
-  int[] getAmplitudes();
+    other as HapticsVibrationType
 
-  long[] getOldSDKPattern();
+    if (!timings.contentEquals(other.timings)) return false
+    if (!amplitudes.contentEquals(other.amplitudes)) return false
+    if (!oldSDKPattern.contentEquals(other.oldSDKPattern)) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = timings.contentHashCode()
+    result = 31 * result + amplitudes.contentHashCode()
+    result = 31 * result + oldSDKPattern.contentHashCode()
+    return result
+  }
 }
