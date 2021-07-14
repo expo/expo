@@ -11,7 +11,8 @@
     "test": "expo-module test",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "expo-module": "expo-module",
+    "start:examples": "et run-stories"
   },
   "keywords": [
     "react-native",
@@ -34,5 +35,10 @@
   },
   "jest": {
     "preset": "expo-module-scripts/enzyme"
+  },
+  "expoStories": {
+    "packages": {
+      "expo-checkbox": "~1.0.3"
+    }
   }
 }

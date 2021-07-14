@@ -1,0 +1,17 @@
+# Import the auto-linking packages
+require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
+require File.join(File.dirname(`node --print "require.resolve('@react-native-community/cli-platform-ios/package.json')"`), "native_modules")
+require File.join(File.dirname(`node --print "require.resolve('expo-modules-core/package.json')"`), "scripts/autolinking")
+
+
+platform :ios, '11.0'
+
+target '{{ targetName }}' do
+  use_expo_modules!
+  
+  pod 'UMCore', :path => "../../../packages/@unimodules/core/ios"
+  pod 'UMReactNativeAdapter', :path => "../../../packages/@unimodules/react-native-adapter/ios"
+
+  config = use_native_modules!
+  use_react_native!(:path => config["reactNativePath"])
+end
