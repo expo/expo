@@ -18,11 +18,10 @@ Depending on your project, you may find that you need to customize the standard 
 
 ## How it works
 
-
 <object width="100%" height="400">
-  <param name="movie" value="https://youtube.com/embed/5c60VHxUBo8" />
+  <param name="movie" value="https://youtube.com/embed/_SWalkrP0CA" />
   <param name="wmode" value="transparent" />
-  <embed src="https://youtube.com/embed/5c60VHxUBo8" type="application/x-shockwave-flash" wmode="transparent" width="100%" height="400" />
+  <embed src="https://youtube.com/embed/_SWalkrP0CA" type="application/x-shockwave-flash" wmode="transparent" width="100%" height="400" />
 </object>
 
 `expo-dev-client` is an npm package installable in any Expo or React Native project. Once installed, any Debug builds of your application will gain an extensible debug menu and the ability to load projects from Expo CLI. Release builds of your application will not change other than the addition of a few header files.
