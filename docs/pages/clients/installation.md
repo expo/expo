@@ -101,7 +101,7 @@ Make the following changes to allow the Development Client to control project in
 
 <Tab >
 
-Make sure to replace `MyApp` on line 75 in the following diff with your app's actual module name (found on the removed line 36).
+> ⚠️ Make sure to replace `MyApp` on line 75 in the following diff with your app's actual module name (found on the removed line 36).
 
 <ConfigurationDiff source="/static/diffs/client/app-delegate-no-unimodules.diff" />
 
