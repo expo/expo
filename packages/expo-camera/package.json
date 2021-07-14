@@ -41,5 +41,17 @@
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"
+  },
+  "expoStories": {
+    "packages": [
+      "expo-camera",
+      "expo-file-system",
+      "expo-constants",
+      "expo-barcode-scanner",
+      "expo-media-library",
+      "expo-permissions",
+      "expo-font",
+      "expo-face-detector"
+    ]
   }
 }
