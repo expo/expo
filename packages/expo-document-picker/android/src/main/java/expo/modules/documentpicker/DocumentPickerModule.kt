@@ -25,7 +25,7 @@ private const val OPEN_DOCUMENT_CODE = 4137
 
 class DocumentPickerModule(
   mContext: Context,
-  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate(),
+  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
 ) : ExportedModule(mContext), ActivityEventListener {
   private var mPromise: Promise? = null
   private var mCopyToCacheDirectory = true

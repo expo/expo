@@ -22,7 +22,6 @@ internal class DevLauncherURLHelperTest {
     Truth.assertThat(expoParsedUri.host).isEqualTo("localhost")
     Truth.assertThat(expoParsedUri.port).isEqualTo(1999)
 
-
     Truth.assertThat(httpsParsedUri.scheme).isEqualTo("http")
     Truth.assertThat(httpsParsedUri.host).isEqualTo("google.com")
 

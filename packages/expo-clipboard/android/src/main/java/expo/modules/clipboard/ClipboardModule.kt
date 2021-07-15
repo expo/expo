@@ -22,11 +22,11 @@ class ClipboardModule(context: Context) : ExportedModule(context) {
   @ExpoMethod
   fun getStringAsync(promise: Promise) {
     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-    val clip = clipboard.getPrimaryClip()
-    if (clip != null && clip.getItemCount() >= 1) {
-        promise.resolve(clip.getItemAt(0).getText());
+    val clip = clipboard.primaryClip
+    if (clip != null && clip.itemCount >= 1) {
+      promise.resolve(clip.getItemAt(0).text)
     } else {
-        promise.resolve("");
+      promise.resolve("")
     }
   }
 

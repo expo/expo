@@ -51,11 +51,11 @@ class DevLauncherController private constructor() {
   }
 
   fun onAppLoaded(context: ReactContext) {
-    throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE) 
+    throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
   }
 
   fun onAppLoadedWithError() {
-    throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE) 
+    throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
   }
 
   companion object {
