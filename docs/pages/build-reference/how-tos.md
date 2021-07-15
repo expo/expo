@@ -86,7 +86,7 @@ e.g.
 
 ## How to use git submodules
 
-Create a [secret](/build-reference/variables/#using-secrets-in-environment-variables) with a base64 encoded private ssh key that has permission to access submodules repositories and add the `eas-build-pre-install` npm hook that is checking out those submodules, e.g.
+First, create a [secret](/build-reference/variables/#using-secrets-in-environment-variables) with a base64 encoded private SSH key that has permission to access submodule repositories. Next, add an `eas-build-pre-install` npm hook to check out those submodules, for example:
 
 ```bash
 #!/usr/bin/env bash
