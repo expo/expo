@@ -151,4 +151,15 @@ export async function getCellularGenerationAsync() {
     }
     return await ExpoCellular.getCellularGenerationAsync();
 }
+// TODO add docs
+/**
+ * @return Returns a promise which fulfils with a [`Cellular.CellularInfo`](#cellularinfo)
+ * object that contains all cellular information.
+ */
+export async function getCurrentCarrierAsync() {
+    if (!ExpoCellular.getCurrentCarrierAsync) {
+        throw new UnavailabilityError('expo-cellular', 'getCurrentCarrierAsync');
+    }
+    return await ExpoCellular.getCurrentCarrierAsync();
+}
 //# sourceMappingURL=Cellular.js.map

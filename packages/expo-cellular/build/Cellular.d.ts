@@ -1,5 +1,5 @@
 import { PermissionResponse } from 'expo-modules-core';
-import { CellularGeneration } from './Cellular.types';
+import { CellularGeneration, CellularInfo } from './Cellular.types';
 export { CellularGeneration };
 /**
  * Indicates if the carrier allows making VoIP calls on its network. On Android, this checks whether
@@ -101,3 +101,8 @@ export declare function getPhoneStatePermissionsAsync(): Promise<PermissionRespo
  * ```
  */
 export declare function getCellularGenerationAsync(): Promise<CellularGeneration>;
+/**
+ * @return Returns a promise which fulfils with a [`Cellular.CellularInfo`](#cellularinfo)
+ * object that contains all cellular information.
+ */
+export declare function getCurrentCarrierAsync(): Promise<CellularInfo>;

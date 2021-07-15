@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.sip.SipManager
 import android.os.Build
+import android.os.Bundle
 import android.telephony.TelephonyManager
 import expo.modules.interfaces.permissions.Permissions
 import org.unimodules.core.ExportedModule
@@ -73,22 +74,29 @@ class CellularModule(
 
   @ExpoMethod
   fun getCurrentCarrierAsync(promise: Promise) {
-    val carrierInfo = HashMap<String, Any?>()
-    carrierInfo["allowsVoip"] = SipManager.isVoipSupported(mContext)
+    val carrierInfo = Bundle()
+    carrierInfo.putSerializable("allowsVoip", SipManager.isVoipSupported(mContext))
     val telephonyManager = mContext.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-    carrierInfo["isoCountryCode"] = telephonyManager.simCountryIso
+    carrierInfo.putSerializable("isoCountryCode", telephonyManager.simCountryIso)
 
     if (telephonyManager.simState == TelephonyManager.SIM_STATE_READY) {
-      carrierInfo["carrier"] = telephonyManager.simOperatorName
-      carrierInfo["mobileCountryCode"] = telephonyManager.simOperator.take(3)
-      carrierInfo["mobileNetworkCode"] = StringBuilder(telephonyManager.simOperator).delete(0, 3).toString()
-      carrierInfo["generation"] = getNetworkGeneration()
+      carrierInfo.putSerializable("carrier", telephonyManager.simOperatorName)
+      carrierInfo.putSerializable("mobileCountryCode", telephonyManager.simOperator.take(3))
+      carrierInfo.putSerializable("mobileNetworkCode", StringBuilder(telephonyManager.simOperator).delete(0, 3).toString())
+      try {
+        carrierInfo.putSerializable("generation", getNetworkGeneration())
+      } catch (e: SecurityException) {
+        promise.reject("E_MISSING_PERMISSIONS", e)
+      }  catch (e: Exception) {
+        promise.reject("ERR_CELLULAR_GENERATION_UNKNOWN_NETWORK_TYPE", "Unable to access network type or not connected to a cellular network", e)
+      }
     } else {
-      carrierInfo["carrier"] = null
-      carrierInfo["mobileCountryCode"] = null
-      carrierInfo["mobileNetworkCode"] = null
-      carrierInfo["generation"] = null
+      carrierInfo.putSerializable("carrier", null)
+      carrierInfo.putSerializable("mobileCountryCode", null)
+      carrierInfo.putSerializable("mobileNetworkCode", null)
+      carrierInfo.putSerializable("generation", null)
     }
+    promise.resolve(carrierInfo)
   }
 
   @SuppressLint("MissingPermission")

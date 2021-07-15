@@ -2,7 +2,7 @@ import { UnavailabilityError } from '@unimodules/core';
 import { Platform } from '@unimodules/react-native-adapter';
 import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
 
-import { CellularGeneration } from './Cellular.types';
+import { CellularGeneration, CellularInfo } from './Cellular.types';
 import ExpoCellular from './ExpoCellular';
 
 export { CellularGeneration };
@@ -158,4 +158,16 @@ export async function getCellularGenerationAsync(): Promise<CellularGeneration> 
     throw new UnavailabilityError('expo-cellular', 'getCellularGenerationAsync');
   }
   return await ExpoCellular.getCellularGenerationAsync();
+}
+
+// TODO add docs
+/**
+ * @return Returns a promise which fulfils with a [`Cellular.CellularInfo`](#cellularinfo)
+ * object that contains all cellular information.
+ */
+export async function getCurrentCarrierAsync(): Promise<CellularInfo> {
+  if (!ExpoCellular.getCurrentCarrierAsync) {
+    throw new UnavailabilityError('expo-cellular', 'getCurrentCarrierAsync');
+  }
+  return await ExpoCellular.getCurrentCarrierAsync();
 }

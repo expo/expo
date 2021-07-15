@@ -1,4 +1,5 @@
 import * as Cellular from 'expo-cellular';
+import { CellularInfo } from 'expo-cellular/build/Cellular.types';
 import { PermissionResponse } from 'expo-modules-core';
 import * as React from 'react';
 import { useState } from 'react';
@@ -10,35 +11,52 @@ import { useResolvedValue } from '../utilities/useResolvedValue';
 
 export default function CellularScreen() {
   const [permissions, setPermissions] = useState<PermissionResponse>();
-  const [generation, error] = useResolvedValue(Cellular.getCellularGenerationAsync, [permissions]);
+  const [_, error] = useResolvedValue(Cellular.getCellularGenerationAsync, [permissions]);
+  const [cellularInfo, setCellularInfo] = useState<CellularInfo>();
 
   React.useEffect(() => {
     if (error) alert(error.message);
   }, [error]);
 
   const _requestPermissions = async () => {
-    const newPermissions = await Cellular.requestPhoneStatePermissionsAsync();
-    setPermissions(newPermissions);
+    try {
+      const newPermissions = await Cellular.requestPhoneStatePermissionsAsync();
+      setPermissions(newPermissions);
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  const _getCellularInfo = async () => {
+    const newCellularCarrier = await Cellular.getCurrentCarrierAsync();
+    setCellularInfo(newCellularCarrier);
   };
 
   return (
     <ScrollView style={{ padding: 10 }}>
-      <Button onPress={_requestPermissions} title="Request phone permissions" />
-      <MonoText>
-        {JSON.stringify(
-          {
-            allowsVoip: Cellular.allowsVoip,
-            carrier: Cellular.carrier,
-            isoCountryCode: Cellular.isoCountryCode,
-            mobileCountryCode: Cellular.mobileCountryCode,
-            mobileNetworkCode: Cellular.mobileNetworkCode,
-            generation,
-            generationName: generationMap[generation ?? 0],
-          },
-          null,
-          2
-        )}
-      </MonoText>
+      <Button
+        onPress={_requestPermissions}
+        title="Request phone permissions"
+        style={{ padding: 10 }}
+      />
+      <Button onPress={_getCellularInfo} title="Get cellular information" style={{ padding: 10 }} />
+      {cellularInfo ? (
+        <MonoText>
+          {JSON.stringify(
+            {
+              allowsVoip: cellularInfo.allowsVoip,
+              carrier: cellularInfo.carrier,
+              isoCountryCode: cellularInfo.isoCountryCode,
+              mobileCountryCode: cellularInfo.mobileCountryCode,
+              mobileNetworkCode: cellularInfo.mobileNetworkCode,
+              generation: cellularInfo.generation,
+              generationName: generationMap[cellularInfo.generation ?? 0],
+            },
+            null,
+            2
+          )}
+        </MonoText>
+      ) : null}
     </ScrollView>
   );
 }
