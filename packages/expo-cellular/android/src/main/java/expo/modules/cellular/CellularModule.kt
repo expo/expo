@@ -13,7 +13,7 @@ import org.unimodules.core.ModuleRegistryDelegate
 import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ExpoMethod
 import org.unimodules.core.interfaces.RegistryLifecycleListener
-import java.util.*
+import kotlin.collections.HashMap
 
 
 class CellularModule(
@@ -39,10 +39,8 @@ class CellularModule(
     //check if sim state is ready
     if (telephonyManager.simState == TelephonyManager.SIM_STATE_READY) {
       constants["carrier"] = telephonyManager.simOperatorName
-      val combo = telephonyManager.simOperator
-      constants["mobileCountryCode"] = combo.substring(0, 3)
-      val stringBuilder: StringBuilder = StringBuilder(combo).delete(0, 3)
-      constants["mobileNetworkCode"] = stringBuilder.toString()
+      constants["mobileCountryCode"] = telephonyManager.simOperator.substring(0, 3)
+      constants["mobileNetworkCode"] = StringBuilder(telephonyManager.simOperator).delete(0, 3).toString()
     } else {
       constants["carrier"] = null
       constants["mobileCountryCode"] = null
@@ -61,56 +59,86 @@ class CellularModule(
     mPermissions.getPermissionsWithPromise(promise, Manifest.permission.READ_PHONE_STATE)
   }
 
-  @SuppressLint("MissingPermission")
   @ExpoMethod
   fun getCellularGenerationAsync(promise: Promise) {
     try {
-      val mTelephonyManager = mContext.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-      if (checkPermissions(promise)) {
-        val networkType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-          mTelephonyManager.dataNetworkType
-        } else {
-          mTelephonyManager.networkType
-        }
-        when (networkType) {
-          TelephonyManager.NETWORK_TYPE_GPRS,
-          TelephonyManager.NETWORK_TYPE_EDGE,
-          TelephonyManager.NETWORK_TYPE_CDMA,
-          TelephonyManager.NETWORK_TYPE_1xRTT,
-          TelephonyManager.NETWORK_TYPE_IDEN -> {
-            promise.resolve(CellularGeneration.CG_2G.value)
-          }
-          TelephonyManager.NETWORK_TYPE_UMTS,
-          TelephonyManager.NETWORK_TYPE_EVDO_0,
-          TelephonyManager.NETWORK_TYPE_EVDO_A,
-          TelephonyManager.NETWORK_TYPE_HSDPA,
-          TelephonyManager.NETWORK_TYPE_HSUPA,
-          TelephonyManager.NETWORK_TYPE_HSPA,
-          TelephonyManager.NETWORK_TYPE_EVDO_B,
-          TelephonyManager.NETWORK_TYPE_EHRPD,
-          TelephonyManager.NETWORK_TYPE_HSPAP -> {
-            promise.resolve(CellularGeneration.CG_3G.value)
-          }
-          TelephonyManager.NETWORK_TYPE_LTE -> {
-            promise.resolve(CellularGeneration.CG_4G.value)
-          }
-          TelephonyManager.NETWORK_TYPE_NR -> {
-            promise.resolve(CellularGeneration.CG_5G.value)
-          }
-          else -> promise.resolve(CellularGeneration.UNKNOWN.value)
-        }
-      }
+      val networkType = getNetworkGeneration()
+      promise.resolve(networkType)
+    } catch (e: SecurityException) {
+      promise.reject("E_MISSING_PERMISSIONS", e)
     } catch (e: Exception) {
       promise.reject("ERR_CELLULAR_GENERATION_UNKNOWN_NETWORK_TYPE", "Unable to access network type or not connected to a cellular network", e)
     }
   }
 
-  private fun checkPermissions(promise: Promise): Boolean {
+  @ExpoMethod
+  fun getCurrentCarrierAsync(promise: Promise) {
+    val carrierInfo = HashMap<String, Any?>()
+    carrierInfo["allowsVoip"] = SipManager.isVoipSupported(mContext)
+    val telephonyManager = mContext.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+    carrierInfo["isoCountryCode"] = telephonyManager.simCountryIso
+
+    if (telephonyManager.simState == TelephonyManager.SIM_STATE_READY) {
+      carrierInfo["carrier"] = telephonyManager.simOperatorName
+      carrierInfo["mobileCountryCode"] = telephonyManager.simOperator.take(3)
+      carrierInfo["mobileNetworkCode"] = StringBuilder(telephonyManager.simOperator).delete(0, 3).toString()
+      carrierInfo["generation"] = getNetworkGeneration()
+    } else {
+      carrierInfo["carrier"] = null
+      carrierInfo["mobileCountryCode"] = null
+      carrierInfo["mobileNetworkCode"] = null
+      carrierInfo["generation"] = null
+    }
+  }
+
+  @SuppressLint("MissingPermission")
+  private fun getNetworkGeneration(): Int {
+    if (checkPermissions()) {
+      val mTelephonyManager = mContext.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+      val networkType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        mTelephonyManager.dataNetworkType
+      } else {
+        @Suppress("DEPRECATION")
+        mTelephonyManager.networkType
+      }
+      return when (networkType) {
+        TelephonyManager.NETWORK_TYPE_GPRS,
+        TelephonyManager.NETWORK_TYPE_EDGE,
+        TelephonyManager.NETWORK_TYPE_CDMA,
+        TelephonyManager.NETWORK_TYPE_1xRTT,
+        TelephonyManager.NETWORK_TYPE_IDEN -> {
+          CellularGeneration.CG_2G.value
+        }
+        TelephonyManager.NETWORK_TYPE_UMTS,
+        TelephonyManager.NETWORK_TYPE_EVDO_0,
+        TelephonyManager.NETWORK_TYPE_EVDO_A,
+        TelephonyManager.NETWORK_TYPE_HSDPA,
+        TelephonyManager.NETWORK_TYPE_HSUPA,
+        TelephonyManager.NETWORK_TYPE_HSPA,
+        TelephonyManager.NETWORK_TYPE_EVDO_B,
+        TelephonyManager.NETWORK_TYPE_EHRPD,
+        TelephonyManager.NETWORK_TYPE_HSPAP -> {
+          CellularGeneration.CG_3G.value
+        }
+        TelephonyManager.NETWORK_TYPE_LTE -> {
+          CellularGeneration.CG_4G.value
+        }
+        TelephonyManager.NETWORK_TYPE_NR -> {
+          CellularGeneration.CG_5G.value
+        }
+        else -> CellularGeneration.UNKNOWN.value
+      }
+    }
+    return -1
+  }
+
+  private fun checkPermissions(): Boolean {
     if (!mPermissions.hasGrantedPermissions(Manifest.permission.READ_PHONE_STATE)) {
-      promise.reject("E_MISSING_PERMISSIONS", "READ_PHONE_STATE permission is required to do this operation.")
-      return false
+      throw SecurityException("READ_PHONE_STATE permission is required to do this operation.")
     }
     return true
   }
+
+
 
 }
