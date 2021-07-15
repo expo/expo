@@ -508,7 +508,7 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
 
     builder.tilt((float)camera.getDouble("pitch"));
     builder.bearing((float)camera.getDouble("heading"));
-    builder.zoom((float)camera.getDouble("zoom"));
+    builder.zoom(camera.getInt("zoom"));
 
     CameraUpdate update = CameraUpdateFactory.newCameraPosition(builder.build());
 
@@ -827,7 +827,7 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
     map.animateCamera(CameraUpdateFactory.newLatLng(coordinate), duration, null);
   }
 
-  public void fitToElements(ReadableMap edgePadding, boolean animated) {
+  public void fitToElements(boolean animated) {
     if (map == null) return;
 
     LatLngBounds.Builder builder = new LatLngBounds.Builder();
@@ -845,12 +845,6 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
     if (addedPosition) {
       LatLngBounds bounds = builder.build();
       CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, baseMapPadding);
-
-      if (edgePadding != null) {
-        map.setPadding(edgePadding.getInt("left"), edgePadding.getInt("top"),
-          edgePadding.getInt("right"), edgePadding.getInt("bottom"));
-      }
-
       if (animated) {
         map.animateCamera(cu);
       } else {
@@ -901,19 +895,6 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
     }
   }
 
-  int baseLeftMapPadding;
-  int baseRightMapPadding;
-  int baseTopMapPadding;
-  int baseBottomMapPadding;
-
-  public void applyBaseMapPadding(int left, int top, int right, int bottom){
-    this.map.setPadding(left, top, right, bottom);
-    baseLeftMapPadding = left;
-    baseRightMapPadding = right;
-    baseTopMapPadding = top;
-    baseBottomMapPadding = bottom;
-  }
-
   public void fitToCoordinates(ReadableArray coordinatesArray, ReadableMap edgePadding,
       boolean animated) {
     if (map == null) return;
@@ -931,7 +912,8 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
     CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, baseMapPadding);
 
     if (edgePadding != null) {
-      appendMapPadding(edgePadding.getInt("left"), edgePadding.getInt("top"), edgePadding.getInt("right"), edgePadding.getInt("bottom"));
+      map.setPadding(edgePadding.getInt("left"), edgePadding.getInt("top"),
+          edgePadding.getInt("right"), edgePadding.getInt("bottom"));
     }
 
     if (animated) {
@@ -939,26 +921,8 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
     } else {
       map.moveCamera(cu);
     }
-    // Move the google logo to the default base padding value.
-    map.setPadding(baseLeftMapPadding, baseTopMapPadding, baseRightMapPadding, baseBottomMapPadding);
-  }
-
-  private void appendMapPadding(int iLeft,int iTop, int iRight, int iBottom) {
-    int left;
-    int top;
-    int right;
-    int bottom;
-    double density = getResources().getDisplayMetrics().density;
-
-    left = (int) (iLeft * density);
-    top = (int) (iTop * density);
-    right = (int) (iRight * density);
-    bottom = (int) (iBottom * density);
-
-    map.setPadding(left + baseLeftMapPadding,
-            top + baseTopMapPadding,
-            right + baseRightMapPadding,
-            bottom + baseBottomMapPadding);
+    map.setPadding(0, 0, 0,
+        0); // Without this, the Google logo is moved up by the value of edgePadding.bottom
   }
 
   public double[][] getMapBoundaries() {
@@ -1351,19 +1315,4 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
 
     return airMarker;
   }
-
-  @Override
-  public void requestLayout() {
-    super.requestLayout();
-    post(measureAndLayout);
-  }
-
-  private final Runnable measureAndLayout = new Runnable() {
-    @Override
-    public void run() {
-      measure(MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY),
-              MeasureSpec.makeMeasureSpec(getHeight(), MeasureSpec.EXACTLY));
-      layout(getLeft(), getTop(), getRight(), getBottom());
-    }
-  };
 }

@@ -158,8 +158,6 @@ const NSInteger AIRMapMaxZoomLevel = 20;
         [self removeOverlay:(id <MKOverlay>) subview];
     } else if ([subview isKindOfClass:[AIRMapUrlTile class]]) {
         [self removeOverlay:(id <MKOverlay>) subview];
-    } else if ([subview isKindOfClass:[AIRMapWMSTile class]]) {
-        [self removeOverlay:(id <MKOverlay>) subview];
     } else if ([subview isKindOfClass:[AIRMapLocalTile class]]) {
         [self removeOverlay:(id <MKOverlay>) subview];
     } else if ([subview isKindOfClass:[AIRMapOverlay class]]) {
@@ -360,21 +358,6 @@ const NSInteger AIRMapMaxZoomLevel = 20;
     }
 }
 
-- (void)setUserInterfaceStyle:(NSString*)userInterfaceStyle
-{
-    if (@available(iOS 13.0, *)) {
-        if([userInterfaceStyle isEqualToString:@"light"]) {
-            self.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
-        } else if([userInterfaceStyle isEqualToString:@"dark"]) {
-            self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
-        } else {
-            self.overrideUserInterfaceStyle = UIUserInterfaceStyleUnspecified;
-        }
-    } else {
-        NSLog(@"UserInterfaceStyle not supported below iOS 13");
-    }
-}
-
 - (void)setTintColor:(UIColor *)tintColor
 {
     super.tintColor = tintColor;
@@ -383,11 +366,6 @@ const NSInteger AIRMapMaxZoomLevel = 20;
 - (void)setFollowsUserLocation:(BOOL)followsUserLocation
 {
     _followUserLocation = followsUserLocation;
-}
-
-- (void)setUserLocationCalloutEnabled:(BOOL)calloutEnabled
-{
-    _userLocationCalloutEnabled = calloutEnabled;
 }
 
 - (void)setHandlePanDrag:(BOOL)handleMapDrag {

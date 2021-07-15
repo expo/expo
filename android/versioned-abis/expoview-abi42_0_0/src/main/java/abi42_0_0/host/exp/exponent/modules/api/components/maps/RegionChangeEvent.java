@@ -31,7 +31,6 @@ public class RegionChangeEvent extends Event<RegionChangeEvent> {
 
   @Override
   public void dispatch(RCTEventEmitter rctEventEmitter) {
-
     WritableMap event = new WritableNativeMap();
     event.putBoolean("continuous", continuous);
 
@@ -43,7 +42,7 @@ public class RegionChangeEvent extends Event<RegionChangeEvent> {
     region.putDouble("longitudeDelta", bounds.northeast.longitude - bounds.southwest.longitude);
     event.putMap("region", region);
     event.putBoolean("isGesture", isGesture);
-    
+
     rctEventEmitter.receiveEvent(getViewTag(), getEventName(), event);
   }
 }

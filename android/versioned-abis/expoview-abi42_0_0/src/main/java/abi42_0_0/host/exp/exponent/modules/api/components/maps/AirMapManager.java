@@ -151,7 +151,7 @@ public class AirMapManager extends ViewGroupManager<AirMapView> {
         bottom = (int) (padding.getDouble("bottom") * density);
       }
     }
-    view.applyBaseMapPadding(left, top, right, bottom);
+
     view.map.setPadding(left, top, right, bottom);
   }
 
@@ -235,11 +235,6 @@ public class AirMapManager extends ViewGroupManager<AirMapView> {
   @ReactProp(name = "rotateEnabled", defaultBoolean = false)
   public void setRotateEnabled(AirMapView view, boolean rotateEnabled) {
     view.map.getUiSettings().setRotateGesturesEnabled(rotateEnabled);
-  }
-
-  @ReactProp(name = "scrollDuringRotateOrZoomEnabled", defaultBoolean = true)
-   public void setScrollDuringRotateOrZoomEnabled(AirMapView view, boolean scrollDuringRotateOrZoomEnabled) {
-     view.map.getUiSettings().setScrollGesturesEnabledDuringRotateOrZoom(scrollDuringRotateOrZoomEnabled);
   }
 
   @ReactProp(name = "cacheEnabled", defaultBoolean = false)
@@ -359,7 +354,7 @@ public class AirMapManager extends ViewGroupManager<AirMapView> {
         break;
 
       case FIT_TO_ELEMENTS:
-        view.fitToElements(args.getMap(0), args.getBoolean(1));
+        view.fitToElements(args.getBoolean(0));
         break;
 
       case FIT_TO_SUPPLIED_MARKERS:
