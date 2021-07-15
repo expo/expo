@@ -5,8 +5,13 @@ set -eo pipefail
 DEST="$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH"
 NODE_BINARY=${NODE_BINARY:-node}
 
-# Related to: https://github.com/facebook/react-native/blob/c9f869f9c7c8b035a669980382af4bbd4afecb89/scripts/react-native-xcode.sh#L59-L69
-PROJECT_ROOT=${PROJECT_ROOT:-$PWD}
+# ref: https://github.com/facebook/react-native/blob/c974cbff04a8d90ac0f856dbada3fc5a75c75b49/scripts/react-native-xcode.sh#L59-L65
+# Path to expo-constants folder inside node_modules
+EXPO_CONSTANTS_PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# The project should be located next to where expo-constants is installed
+# in node_modules.
+PROJECT_ROOT=${PROJECT_ROOT:-"$EXPO_CONSTANTS_PACKAGE_DIR/../.."}
+
 cd "$PROJECT_ROOT" || exit
 
 if ! [ -x "$(command -v $NODE_BINARY)" ]; then
@@ -22,4 +27,4 @@ if [ "x$DIR_BASENAME" != "xPods" ]; then
   exit 0
 fi
 
-"$NODE_BINARY" "$(dirname "${BASH_SOURCE[0]}")/getAppConfig.js" "$PROJECT_ROOT/.." "$DEST/EXConstants.bundle"
+"$NODE_BINARY" "${EXPO_CONSTANTS_PACKAGE_DIR}/scripts/getAppConfig.js" "$PROJECT_ROOT" "$DEST"
