@@ -1,6 +1,7 @@
 import * as LocalAuthentication from 'expo-local-authentication';
 import React from 'react';
 import { Text, View } from 'react-native';
+import { getPendingResultAsync } from '../../../../packages/expo-image-picker/build/ImagePicker';
 
 import Button from '../components/Button';
 import MonoText from '../components/MonoText';
@@ -61,7 +62,7 @@ export default class LocalAuthenticationScreen extends React.Component<{}, State
       if (result.success) {
         alert('Authenticated!');
       } else {
-        alert('Failed to authenticate, reason: ' + result.error);
+        alert(`Failed to authenticate, reason: ${result.error}, message: ${result.message}`);
       }
     } finally {
       this.setState({ waiting: false });
