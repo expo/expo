@@ -41,9 +41,7 @@ class CellularModule(
       constants["carrier"] = telephonyManager.simOperatorName
       val combo = telephonyManager.simOperator
       constants["mobileCountryCode"] = combo.substring(0, 3)
-      var stringBuilder: StringBuilder? = null
-      stringBuilder = StringBuilder(combo)
-      stringBuilder.delete(0, 3)
+      val stringBuilder: StringBuilder = StringBuilder(combo).delete(0, 3)
       constants["mobileNetworkCode"] = stringBuilder.toString()
     } else {
       constants["carrier"] = null

@@ -1,4 +1,6 @@
 import { UnavailabilityError } from '@unimodules/core';
+import { Platform } from '@unimodules/react-native-adapter';
+import { PermissionStatus } from 'expo-modules-core';
 import { CellularGeneration } from './Cellular.types';
 import ExpoCellular from './ExpoCellular';
 export { CellularGeneration };
@@ -93,6 +95,40 @@ export const mobileCountryCode = ExpoCellular
 export const mobileNetworkCode = ExpoCellular
     ? ExpoCellular.mobileNetworkCode
     : null;
+// TODO add docs
+export async function requestPhoneStatePermissionsAsync() {
+    if (Platform.OS === 'android') {
+        if (!ExpoCellular.requestPhoneStatePermissionsAsync) {
+            throw new UnavailabilityError('expo-cellular', 'getCellularGenerationAsync');
+        }
+        return ExpoCellular.requestPhoneStatePermissionsAsync();
+    }
+    else {
+        return {
+            canAskAgain: true,
+            expires: 'never',
+            granted: true,
+            status: PermissionStatus.GRANTED,
+        };
+    }
+}
+// TODO add docs
+export async function getPhoneStatePermissionsAsync() {
+    if (Platform.OS === 'android') {
+        if (!ExpoCellular.getPhoneStatePermissionsAsync) {
+            throw new UnavailabilityError('expo-cellular', 'getCellularGenerationAsync');
+        }
+        return ExpoCellular.requestPhoneStatePermissionsAsync();
+    }
+    else {
+        return {
+            canAskAgain: true,
+            expires: 'never',
+            granted: true,
+            status: PermissionStatus.GRANTED,
+        };
+    }
+}
 // @needsAudit
 /**
  * @return Returns a promise which fulfils with a [`Cellular.CellularGeneration`](#cellulargeneration)

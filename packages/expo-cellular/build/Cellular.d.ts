@@ -1,3 +1,4 @@
+import { PermissionResponse } from 'expo-modules-core';
 import { CellularGeneration } from './Cellular.types';
 export { CellularGeneration };
 /**
@@ -82,6 +83,8 @@ export declare const mobileCountryCode: string | null;
  * ```
  */
 export declare const mobileNetworkCode: string | null;
+export declare function requestPhoneStatePermissionsAsync(): Promise<PermissionResponse>;
+export declare function getPhoneStatePermissionsAsync(): Promise<PermissionResponse>;
 /**
  * @return Returns a promise which fulfils with a [`Cellular.CellularGeneration`](#cellulargeneration)
  * enum value that represents the current cellular-generation type.

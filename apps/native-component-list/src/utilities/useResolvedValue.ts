@@ -1,6 +1,9 @@
 import * as React from 'react';
 
-export function useResolvedValue<T>(method: () => Promise<T>): [T | null, Error | null] {
+export function useResolvedValue<T>(
+  method: () => Promise<T>,
+  deps?: React.DependencyList
+): [T | null, Error | null] {
   const [error, setError] = React.useState<Error | null>(null);
   const [value, setValue] = React.useState<T | null>(null);
 
@@ -21,7 +24,7 @@ export function useResolvedValue<T>(method: () => Promise<T>): [T | null, Error 
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, deps);
 
   return [value, error];
 }
