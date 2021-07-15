@@ -11,7 +11,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix inline playback on Safari iOS (web). ([#12160](https://github.com/expo/expo/pull/12160) by [@andreibarabas](https://github.com/andreibarabas) and [@IjzerenHein](https://github.com/IjzerenHein))
+- Fix inline playback on Safari iOS (web). ([#13628](https://github.com/expo/expo/pull/13628) by [@andreibarabas](https://github.com/andreibarabas) and [@IjzerenHein](https://github.com/IjzerenHein))
 
 ### 💡 Others
 
