@@ -25,9 +25,9 @@ class ClipboardModule(context: Context) : ExportedModule(context) {
     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     val clip = clipboard.primaryClip
     if (clip != null && clip.itemCount >= 1) {
-      promise.resolve(clip.getItemAt(0).text);
+      promise.resolve(clip.getItemAt(0).text)
     } else {
-      promise.resolve("");
+      promise.resolve("")
     }
   }
 

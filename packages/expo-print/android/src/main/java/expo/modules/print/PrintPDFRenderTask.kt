@@ -8,7 +8,6 @@ import android.print.PrintAttributes
 import android.print.PrintDocumentAdapter
 import android.print.PrintDocumentAdapterLayoutCallback
 import android.print.PrintDocumentAdapterWriteCallback
-import android.util.Log
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import org.unimodules.core.ModuleRegistry
@@ -81,7 +80,6 @@ class PrintPDFRenderTask(private val context: Context, private val options: Map<
           .setMediaSize(mediaSize)
           .setMinMargins(PrintAttributes.Margins.NO_MARGINS)
           .setResolution(PrintAttributes.Resolution("id", "label", PIXELS_PER_INCH, PIXELS_PER_INCH))
-
       }
       return builder.build()
     }

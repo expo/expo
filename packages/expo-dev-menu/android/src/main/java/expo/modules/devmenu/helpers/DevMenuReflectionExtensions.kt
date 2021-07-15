@@ -4,7 +4,7 @@ import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 
 @Suppress("UNCHECKED_CAST")
-fun <T, R> Class<out T>.getPrivateDeclaredFiledValue(filedName: String, obj: T) : R {
+fun <T, R> Class<out T>.getPrivateDeclaredFiledValue(filedName: String, obj: T): R {
   val field = getDeclaredField(filedName)
   field.isAccessible = true
   return field.get(obj) as R

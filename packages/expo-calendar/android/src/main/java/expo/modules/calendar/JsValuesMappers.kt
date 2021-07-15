@@ -64,7 +64,7 @@ internal fun availabilityConstantMatchingString(string: String): Int =
 internal fun accessStringMatchingConstant(constant: Int): String =
   when (constant) {
     CalendarContract.Events.ACCESS_CONFIDENTIAL -> "confidential"
-    CalendarContract.Events.ACCESS_PRIVATE-> "private"
+    CalendarContract.Events.ACCESS_PRIVATE -> "private"
     CalendarContract.Events.ACCESS_PUBLIC -> "public"
     CalendarContract.Events.ACCESS_DEFAULT -> "default"
     else -> "default"

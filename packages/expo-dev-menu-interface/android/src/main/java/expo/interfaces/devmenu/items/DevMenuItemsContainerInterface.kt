@@ -28,4 +28,3 @@ fun screen(name: String, init: DevMenuScreen.() -> Unit): DevMenuScreen {
   screen.init()
   return screen
 }
-

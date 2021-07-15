@@ -33,6 +33,10 @@ buildscript {
     }
 }
 
+plugins {
+  id "com.diffplug.spotless" version "5.14.1"
+}
+
 def packageJsonFile = new File(rootProject.projectDir, '../package.json')
 def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
 
@@ -72,4 +76,21 @@ allprojects {
         jcenter()
         maven { url 'https://jitpack.io' }
     }
+}
+
+subprojects {
+  plugins.apply("com.diffplug.spotless")
+  spotless {
+    kotlin {
+      target '**/*.kt'
+      ktlint().userData([
+          "disabled_rules"          : "no-wildcard-imports,import-ordering",
+          "indent_size"             : "2",
+          "continuation_indent_size": "4"
+      ])
+      trimTrailingWhitespace()
+      indentWithSpaces()
+      endWithNewline()
+    }
+  }
 }

@@ -2,7 +2,6 @@ package expo.modules.devlauncher.react
 
 import android.content.Context
 import android.util.Log
-import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.devsupport.DevSupportManagerBase
 import com.facebook.react.devsupport.ReactInstanceManagerDevHelper
 import com.facebook.react.devsupport.RedBoxHandler

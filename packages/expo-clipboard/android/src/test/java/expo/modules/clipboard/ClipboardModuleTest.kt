@@ -1,6 +1,5 @@
 package expo.modules.clipboard
 
-import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 
 import org.junit.Assert.assertEquals

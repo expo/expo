@@ -91,10 +91,9 @@ class BatteryModule(context: Context) : ExportedModule(context), RegistryLifecyc
   // implemented yet
   private val isLowPowerModeEnabled: Boolean
     get() {
-      val powerManager = context.applicationContext.getSystemService(Context.POWER_SERVICE) as PowerManager
-        ?: // We default to false on web and any future platforms that haven't been
+      val powerManager = context.applicationContext.getSystemService(Context.POWER_SERVICE) as PowerManager // We default to false on web and any future platforms that haven't been
         // implemented yet
-        return false
+        ?: return false
       return powerManager.isPowerSaveMode
     }
 }

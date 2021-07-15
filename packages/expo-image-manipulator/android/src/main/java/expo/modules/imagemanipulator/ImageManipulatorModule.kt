@@ -18,7 +18,6 @@ import org.unimodules.core.interfaces.ExpoMethod
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
 import java.util.*
 
 private const val TAG = "ExpoImageManipulator"
@@ -26,7 +25,7 @@ private const val ERROR_TAG = "E_IMAGE_MANIPULATOR"
 
 class ImageManipulatorModule(
   context: Context,
-  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate(),
+  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
 ) : ExportedModule(context) {
   private val mImageLoader: ImageLoaderInterface by moduleRegistry()
 

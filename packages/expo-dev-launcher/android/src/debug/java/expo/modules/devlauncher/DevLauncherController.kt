@@ -144,7 +144,7 @@ class DevLauncherController private constructor(
       appIsLoading = false
     }
   }
-  
+
   fun getRecentlyOpenedApps(): Map<String, String?> = recentlyOpedAppsRegistry.getRecentlyOpenedApps()
 
   fun navigateToLauncher() {
@@ -287,7 +287,7 @@ class DevLauncherController private constructor(
 
     @JvmStatic
     fun wasInitialized() = sInstance != null
-    
+
     @JvmStatic
     val instance: DevLauncherController
       get() = checkNotNull(sInstance) {
