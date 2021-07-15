@@ -1,115 +1,118 @@
-package expo.modules.cellular;
+package expo.modules.cellular
 
-import java.util.HashMap;
-import java.util.Map;
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
+import android.net.sip.SipManager
+import android.os.Build
+import android.telephony.TelephonyManager
+import expo.modules.interfaces.permissions.Permissions
+import org.unimodules.core.ExportedModule
+import org.unimodules.core.ModuleRegistry
+import org.unimodules.core.ModuleRegistryDelegate
+import org.unimodules.core.Promise
+import org.unimodules.core.interfaces.ExpoMethod
+import org.unimodules.core.interfaces.RegistryLifecycleListener
+import java.util.*
 
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.net.sip.SipManager;
-import android.telephony.TelephonyManager;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.RegistryLifecycleListener;
+class CellularModule(
+  private val mContext: Context,
+  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate(),
+) : ExportedModule(mContext), RegistryLifecycleListener {
+  private val mPermissions: Permissions by moduleRegistry()
 
-public class CellularModule extends ExportedModule implements RegistryLifecycleListener {
-  private static final String NAME = "ExpoCellular";
-  private static final String TAG = CellularModule.class.getSimpleName();
+  override fun getName(): String = "ExpoCellular"
 
-  private ModuleRegistry mModuleRegistry;
-  private Context mContext;
+  private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
 
-  public CellularModule(Context context) {
-    super(context);
-    mContext = context;
+  override fun onCreate(moduleRegistry: ModuleRegistry) {
+    moduleRegistryDelegate.onCreate(moduleRegistry)
   }
 
-  public enum CellularGeneration {
-    UNKNOWN(0),
-    CG_2G(1),
-    CG_3G(2),
-    CG_4G(3);
-
-    private final int value;
-
-    CellularGeneration(int value) {
-      this.value = value;
-    }
-
-    public int getValue() {
-      return value;
-    }
-  }
-
-  @Override
-  public String getName() {
-    return NAME;
-  }
-
-  @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
-    mModuleRegistry = moduleRegistry;
-  }
-
-  @Override
-  public Map<String, Object> getConstants() {
-    HashMap<String, Object> constants = new HashMap<>();
-    constants.put("allowsVoip", SipManager.isVoipSupported(mContext));
-
-    TelephonyManager tm = (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
-    constants.put("isoCountryCode", tm != null ? tm.getSimCountryIso() : null);
+  override fun getConstants(): HashMap<String, Any?> {
+    val constants = HashMap<String, Any?>()
+    constants["allowsVoip"] = SipManager.isVoipSupported(mContext)
+    val telephonyManager = mContext.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+    constants["isoCountryCode"] = telephonyManager.simCountryIso
 
     //check if sim state is ready
-    if (tm != null && tm.getSimState() == TelephonyManager.SIM_STATE_READY) {
-      constants.put("carrier", tm.getSimOperatorName());
-      String combo = tm.getSimOperator();
-      constants.put("mobileCountryCode", combo != null ? combo.substring(0, 3) : null);
-      StringBuilder sb = null;
-      if (combo != null) {
-        sb = new StringBuilder(combo);
-        sb.delete(0, 3);
-      }
-      constants.put("mobileNetworkCode", sb != null ? sb.toString() : null);
+    if (telephonyManager.simState == TelephonyManager.SIM_STATE_READY) {
+      constants["carrier"] = telephonyManager.simOperatorName
+      val combo = telephonyManager.simOperator
+      constants["mobileCountryCode"] = combo.substring(0, 3)
+      var stringBuilder: StringBuilder? = null
+      stringBuilder = StringBuilder(combo)
+      stringBuilder.delete(0, 3)
+      constants["mobileNetworkCode"] = stringBuilder.toString()
     } else {
-      constants.put("carrier", null);
-      constants.put("mobileCountryCode", null);
-      constants.put("mobileNetworkCode", null);
+      constants["carrier"] = null
+      constants["mobileCountryCode"] = null
+      constants["mobileNetworkCode"] = null
     }
-    return constants;
+    return constants
   }
 
   @ExpoMethod
-  public void getCellularGenerationAsync(Promise promise) {
+  fun requestPhoneStatePermissionsAsync(promise: Promise?) {
+    mPermissions.askForPermissionsWithPromise(promise, Manifest.permission.READ_PHONE_STATE)
+  }
+
+  @ExpoMethod
+  fun getPhoneStatePermissionsAsync(promise: Promise) {
+    mPermissions.getPermissionsWithPromise(promise, Manifest.permission.READ_PHONE_STATE)
+  }
+
+  @SuppressLint("MissingPermission")
+  @ExpoMethod
+  fun getCellularGenerationAsync(promise: Promise) {
     try {
-      TelephonyManager mTelephonyManager = (TelephonyManager)
-          mContext.getSystemService(Context.TELEPHONY_SERVICE);
-      int networkType = mTelephonyManager.getNetworkType();
-      switch (networkType) {
-        case TelephonyManager.NETWORK_TYPE_GPRS:
-        case TelephonyManager.NETWORK_TYPE_EDGE:
-        case TelephonyManager.NETWORK_TYPE_CDMA:
-        case TelephonyManager.NETWORK_TYPE_1xRTT:
-        case TelephonyManager.NETWORK_TYPE_IDEN:
-          promise.resolve(CellularGeneration.CG_2G.getValue());
-        case TelephonyManager.NETWORK_TYPE_UMTS:
-        case TelephonyManager.NETWORK_TYPE_EVDO_0:
-        case TelephonyManager.NETWORK_TYPE_EVDO_A:
-        case TelephonyManager.NETWORK_TYPE_HSDPA:
-        case TelephonyManager.NETWORK_TYPE_HSUPA:
-        case TelephonyManager.NETWORK_TYPE_HSPA:
-        case TelephonyManager.NETWORK_TYPE_EVDO_B:
-        case TelephonyManager.NETWORK_TYPE_EHRPD:
-        case TelephonyManager.NETWORK_TYPE_HSPAP:
-          promise.resolve(CellularGeneration.CG_3G.getValue());
-        case TelephonyManager.NETWORK_TYPE_LTE:
-          promise.resolve(CellularGeneration.CG_4G.getValue());
-        default:
-          promise.resolve(CellularGeneration.UNKNOWN.getValue());
+      val mTelephonyManager = mContext.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+      if (checkPermissions(promise)) {
+        val networkType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+          mTelephonyManager.dataNetworkType
+        } else {
+          mTelephonyManager.networkType
+        }
+        when (networkType) {
+          TelephonyManager.NETWORK_TYPE_GPRS,
+          TelephonyManager.NETWORK_TYPE_EDGE,
+          TelephonyManager.NETWORK_TYPE_CDMA,
+          TelephonyManager.NETWORK_TYPE_1xRTT,
+          TelephonyManager.NETWORK_TYPE_IDEN -> {
+            promise.resolve(CellularGeneration.CG_2G.value)
+          }
+          TelephonyManager.NETWORK_TYPE_UMTS,
+          TelephonyManager.NETWORK_TYPE_EVDO_0,
+          TelephonyManager.NETWORK_TYPE_EVDO_A,
+          TelephonyManager.NETWORK_TYPE_HSDPA,
+          TelephonyManager.NETWORK_TYPE_HSUPA,
+          TelephonyManager.NETWORK_TYPE_HSPA,
+          TelephonyManager.NETWORK_TYPE_EVDO_B,
+          TelephonyManager.NETWORK_TYPE_EHRPD,
+          TelephonyManager.NETWORK_TYPE_HSPAP -> {
+            promise.resolve(CellularGeneration.CG_3G.value)
+          }
+          TelephonyManager.NETWORK_TYPE_LTE -> {
+            promise.resolve(CellularGeneration.CG_4G.value)
+          }
+          TelephonyManager.NETWORK_TYPE_NR -> {
+            promise.resolve(CellularGeneration.CG_5G.value)
+          }
+          else -> promise.resolve(CellularGeneration.UNKNOWN.value)
+        }
       }
-    } catch (Exception e) {
-      promise.reject("ERR_CELLULAR_GENERATION_UNKNOWN_NETWORK_TYPE", "Unable to access network type or not connected to a cellular network", e);
+    } catch (e: Exception) {
+      promise.reject("ERR_CELLULAR_GENERATION_UNKNOWN_NETWORK_TYPE", "Unable to access network type or not connected to a cellular network", e)
     }
   }
+
+  private fun checkPermissions(promise: Promise): Boolean {
+    if (!mPermissions.hasGrantedPermissions(Manifest.permission.READ_PHONE_STATE)) {
+      promise.reject("E_MISSING_PERMISSIONS", "READ_PHONE_STATE permission is required to do this operation.")
+      return false
+    }
+    return true
+  }
+
 }

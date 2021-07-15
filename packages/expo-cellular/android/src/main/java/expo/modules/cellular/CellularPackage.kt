@@ -1,17 +1,10 @@
-package expo.modules.cellular;
+package expo.modules.cellular
 
-import android.content.Context;
+import android.content.Context
+import org.unimodules.core.BasePackage
+import org.unimodules.core.ExportedModule
 
-import java.util.Collections;
-import java.util.List;
-
-import org.unimodules.core.BasePackage;
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ViewManager;
-
-public class CellularPackage extends BasePackage {
-  @Override
-  public List<ExportedModule> createExportedModules(Context context) {
-    return Collections.singletonList((ExportedModule) new CellularModule(context));
-  }
+class CellularPackage : BasePackage() {
+  override fun createExportedModules(context: Context) =
+    listOf(CellularModule(context) as ExportedModule)
 }
