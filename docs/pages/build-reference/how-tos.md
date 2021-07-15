@@ -93,8 +93,9 @@ First, create a [secret](/build-reference/variables/#using-secrets-in-environmen
 
 mkdir -p ~/.ssh
 
-# uncomment the line below and replace the origin's URL if your submodules
-# are defined with relative urls in .gitmodules
+# Real origin URl is lost during the packaging process, so if your
+# submodules are defined using relative urls in .gitmodules then
+# you need to restore it with:
 #
 # git remote set-url origin git@github.com:example/repo.git
 
