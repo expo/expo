@@ -67,7 +67,7 @@ If you're relying on redirects, you'll need to pass in a `urlScheme` to `initStr
 
 ```js
 urlScheme:
-  Constants.executionEnvironment === ExecutionEnvironment.StoreClient
+  Constants.appOwnership === 'expo'
     ? Linking.createURL('/--/')
     : Linking.createURL(''),
 ```
