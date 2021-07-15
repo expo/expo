@@ -1,7 +1,6 @@
 import * as LocalAuthentication from 'expo-local-authentication';
 import React from 'react';
 import { Text, View } from 'react-native';
-import { getPendingResultAsync } from '../../../../packages/expo-image-picker/build/ImagePicker';
 
 import Button from '../components/Button';
 import MonoText from '../components/MonoText';
