@@ -2109,10 +2109,10 @@
     xcode "^3.0.1"
     xml2js "^0.4.23"
 
-"@expo/config-plugins@3.0.0", "@expo/config-plugins@^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@expo/config-plugins/-/config-plugins-3.0.0.tgz#29ed1cb1c5ecf3d12f5811bd39b13ac8f3a3c2aa"
-  integrity sha512-kRPSFgnZvce/X1c+Zfq0k0H7oAirAhe4dWrT2ZZwOoBI8xQtRaRgqG5OpIEYXyYznvWYugbsOGJ72/ykBpu7Hg==
+"@expo/config-plugins@3.0.3":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@expo/config-plugins/-/config-plugins-3.0.3.tgz#4aff484fd2adedbd12a1cd73daabf07b1a5af0e5"
+  integrity sha512-+DWHd/2L3O+njVercxGSzcBUXMm5CSzdvIK+7dU+FRhoiF57y2NzBhfNQcReYx/EY1coBrYOsMtENPhV1tWoWQ==
   dependencies:
     "@expo/config-types" "^41.0.0"
     "@expo/json-file" "8.2.30"
@@ -2127,10 +2127,10 @@
     xcode "^3.0.1"
     xml2js "^0.4.23"
 
-"@expo/config-plugins@3.0.3":
-  version "3.0.3"
-  resolved "https://registry.yarnpkg.com/@expo/config-plugins/-/config-plugins-3.0.3.tgz#4aff484fd2adedbd12a1cd73daabf07b1a5af0e5"
-  integrity sha512-+DWHd/2L3O+njVercxGSzcBUXMm5CSzdvIK+7dU+FRhoiF57y2NzBhfNQcReYx/EY1coBrYOsMtENPhV1tWoWQ==
+"@expo/config-plugins@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@expo/config-plugins/-/config-plugins-3.0.0.tgz#29ed1cb1c5ecf3d12f5811bd39b13ac8f3a3c2aa"
+  integrity sha512-kRPSFgnZvce/X1c+Zfq0k0H7oAirAhe4dWrT2ZZwOoBI8xQtRaRgqG5OpIEYXyYznvWYugbsOGJ72/ykBpu7Hg==
   dependencies:
     "@expo/config-types" "^41.0.0"
     "@expo/json-file" "8.2.30"
@@ -2202,27 +2202,7 @@
     semver "7.3.2"
     slugify "^1.3.4"
 
-"@expo/config@5.0.0":
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/@expo/config/-/config-5.0.0.tgz#55c690f48f84255b9a2dbf7c3e4b17d6b14b0e5a"
-  integrity sha512-eBDl4rWlZVxUObvcq3MLvyUTCumKEYgPVhHSp4dL6lR06It9Qq//4zSHSyRDyoM+/VGJifAhelYNHVL5tri4HQ==
-  dependencies:
-    "@babel/core" "7.9.0"
-    "@babel/plugin-proposal-class-properties" "~7.12.13"
-    "@babel/preset-env" "~7.12.13"
-    "@babel/preset-typescript" "~7.12.13"
-    "@expo/config-plugins" "3.0.0"
-    "@expo/config-types" "^41.0.0"
-    "@expo/json-file" "8.2.30"
-    fs-extra "9.0.0"
-    getenv "^1.0.0"
-    glob "7.1.6"
-    require-from-string "^2.0.2"
-    resolve-from "^5.0.0"
-    semver "7.3.2"
-    slugify "^1.3.4"
-
-"@expo/config@^5.0.3":
+"@expo/config@5.0.3", "@expo/config@^5.0.3":
   version "5.0.3"
   resolved "https://registry.yarnpkg.com/@expo/config/-/config-5.0.3.tgz#4b37cb2690b2dc6e86931369800fc7dddc1053e7"
   integrity sha512-FMv2Jk/v3QZXaNN/mGKqj3wLvsbAa1RjtSTNhJ7QxMiSLl6vlmfMutmKyBiuzk2KDCbELR65JkDf15m4sAZCGg==
@@ -2450,12 +2430,12 @@
     xmldom "~0.5.0"
 
 "@expo/prebuild-config@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@expo/prebuild-config/-/prebuild-config-2.0.0.tgz#7b760db792ca48c299fa6cae76305372956d3c6f"
-  integrity sha512-cBs8Pw3k3aTPBd423xosEKC50mM5JH1DVeJNBmmu24MyfIpBJ3aU9n98BiThRA0mbH6heZhoo802GITOV/6sMA==
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@expo/prebuild-config/-/prebuild-config-2.0.3.tgz#4b7c274af8fe530558989e0ba5f2cd1f60f8eae3"
+  integrity sha512-ruZHhdEB0nv7mHwssUFXeYeGQ8Atfeben0CdO461cmjQ/CwxmlusrkFdGfMucj5CocR9WujBr/nIMvfm4FIDIA==
   dependencies:
-    "@expo/config" "5.0.0"
-    "@expo/config-plugins" "3.0.0"
+    "@expo/config" "5.0.3"
+    "@expo/config-plugins" "3.0.3"
     "@expo/config-types" "^41.0.0"
     "@expo/image-utils" "~0.3.14"
     "@expo/json-file" "^8.2.30"
