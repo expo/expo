@@ -204,7 +204,8 @@ jobs:
       - name: Run tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 29
+          api-level: 27
+          arch: x86_64
           avd-name: bare-expo
           script: yarn android:detox:test:release
           working-directory: ./apps/bare-expo
