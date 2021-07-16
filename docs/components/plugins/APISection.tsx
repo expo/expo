@@ -17,6 +17,7 @@ const LATEST_VERSION = `v${require('~/package.json').version}`;
 type Props = {
   packageName: string;
   apiName?: string;
+  test_forceVersion?: string;
 };
 
 const filterDataByKind = (
@@ -31,10 +32,15 @@ const filterDataByKind = (
 const renderAPI = (
   packageName: string,
   version: string = 'unversioned',
-  apiName?: string
+  apiName?: string,
+  isTestMode: boolean = false
 ): JSX.Element => {
   try {
-    const data = require(`~/public/static/data/${version}/${packageName}.json`).children;
+    // Note: When the path prefix is interpolated the Next fails to locate the file,
+    // so until someone figures it out we are stuck with this ugliness
+    const data = isTestMode
+      ? require(`../../public/static/data/${version}/${packageName}.json`).children
+      : require(`~/public/static/data/${version}/${packageName}.json`).children;
 
     const methods = filterDataByKind(
       data,
@@ -115,11 +121,16 @@ const renderAPI = (
   }
 };
 
-const APISection: React.FC<Props> = ({ packageName, apiName }) => {
+const APISection: React.FC<Props> = ({ packageName, apiName, test_forceVersion }) => {
   const { version } = useContext(DocumentationPageContext);
   const resolvedVersion =
     version === 'unversioned' ? version : version === 'latest' ? LATEST_VERSION : version;
-  return renderAPI(packageName, resolvedVersion, apiName);
+  return renderAPI(
+    packageName,
+    test_forceVersion || resolvedVersion,
+    apiName,
+    test_forceVersion !== undefined
+  );
 };
 
 export default APISection;
