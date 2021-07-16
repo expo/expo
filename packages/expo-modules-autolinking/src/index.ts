@@ -30,7 +30,7 @@ function registerSearchCommand<OptionsType extends SearchOptions>(
     )
     .option(
       '-p, --platform [platform]',
-      'The platform that the resulted modules must support. Available options: "ios", "android"',
+      'The platform that the resulting modules must support. Available options: "ios", "android"',
       'ios'
     )
     .action(async (searchPaths, providedOptions) => {

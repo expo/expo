@@ -25,7 +25,7 @@ const projectPackageJsonPath = findUp.sync('package.json', { cwd: process.cwd() 
 
 // This won't happen in usual scenarios, but we need to unwrap the optional path :)
 if (!projectPackageJsonPath) {
-  throw new Error(`Couldn't find up the "package.json" from path "${process.cwd()}"`);
+  throw new Error(`Couldn't find "package.json" up from path "${process.cwd()}"`);
 }
 
 /**
