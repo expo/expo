@@ -13,7 +13,7 @@ function registerSearchCommand(commandName, fn) {
         .command(`${commandName} [paths...]`)
         .option('-i, --ignore-paths <ignorePaths...>', 'Paths to ignore when looking up for modules.', (value, previous) => (previous !== null && previous !== void 0 ? previous : []).concat(value))
         .option('-e, --exclude <exclude...>', 'Package names to exclude when looking up for modules.', (value, previous) => (previous !== null && previous !== void 0 ? previous : []).concat(value))
-        .option('-p, --platform [platform]', 'The platform that the resulted modules must support. Available options: "ios", "android"', 'ios')
+        .option('-p, --platform [platform]', 'The platform that the resulting modules must support. Available options: "ios", "android"', 'ios')
         .action(async (searchPaths, providedOptions) => {
         const options = await autolinking_1.mergeLinkingOptionsAsync({
             ...providedOptions,

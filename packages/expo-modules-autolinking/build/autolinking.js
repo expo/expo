@@ -19,7 +19,7 @@ const EXPO_MODULE_CONFIG_FILENAMES = ['unimodule.json', 'expo-module.config.json
 const projectPackageJsonPath = find_up_1.default.sync('package.json', { cwd: process.cwd() });
 // This won't happen in usual scenarios, but we need to unwrap the optional path :)
 if (!projectPackageJsonPath) {
-    throw new Error(`Couldn't find up the "package.json" from path "${process.cwd()}"`);
+    throw new Error(`Couldn't find "package.json" up from path "${process.cwd()}"`);
 }
 /**
  * Custom `require` that resolves from the current working dir instead of this script path.
