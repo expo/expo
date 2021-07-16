@@ -33,7 +33,7 @@
     "semver": "^7.3.5"
   },
   "devDependencies": {
-    "babel-preset-expo": "~8.4.1",
+    "babel-preset-expo": "~8.4.0",
     "expo-module-scripts": "^2.0.0",
     "react": "16.13.1",
     "react-native": "0.63.2"
