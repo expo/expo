@@ -207,24 +207,20 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     Log.i(DEV_MENU_TAG, "Delegate's context was loaded.")
 
     maybeInitDevMenuHost(reactContext.currentActivity?.application
-      ?: reactContext.applicationContext as Application)
+        ?: reactContext.applicationContext as Application)
     maybeStartDetectors(devMenuHost.getContext())
 
     settings = testInterceptor.overrideSettings()
-    if (settings != null) {
-      return
-    }
-
-    settings = if (reactContext.hasNativeModule(DevMenuSettings::class.java)) {
-      reactContext.getNativeModule(DevMenuSettings::class.java)!!
-    } else {
-      DevMenuDefaultSettings()
-    }.also {
-      shouldLaunchDevMenuOnStart = it.showsAtLaunch || !it.isOnboardingFinished
-      if (shouldLaunchDevMenuOnStart) {
-        reactContext.addLifecycleEventListener(this)
-      }
-    }
+        ?: if (reactContext.hasNativeModule(DevMenuSettings::class.java)) {
+          reactContext.getNativeModule(DevMenuSettings::class.java)!!
+        } else {
+          DevMenuDefaultSettings()
+        }.also {
+          shouldLaunchDevMenuOnStart = it.showsAtLaunch || !it.isOnboardingFinished
+          if (shouldLaunchDevMenuOnStart) {
+            reactContext.addLifecycleEventListener(this)
+          }
+        }
   }
 
   //endregion
