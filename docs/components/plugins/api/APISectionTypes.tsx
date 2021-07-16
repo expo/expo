@@ -163,7 +163,6 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
       );
     }
   } else if ((type.name === 'Record' && type.typeArguments) || type.type === 'reference') {
-    console.warn(JSON.stringify(type))
     return (
       <div key={`record-definition-${name}`}>
         <H3Code>
