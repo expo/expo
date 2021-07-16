@@ -16,8 +16,8 @@
     UM_ENSURE_STRONGIFY(self);
     NSString *jsResultString = jsResult;
     NSArray *items = [jsResultString componentsSeparatedByString:@" "];
-    CGFloat pageHeight = [[items objectAtIndex:0] doubleValue];
-    CGFloat scrollHeight = [[items objectAtIndex:1] doubleValue];
+    CGFloat pageHeight = [items[0] doubleValue];
+    CGFloat scrollHeight = [items[1] doubleValue];
     int numberOfPages = ceil(scrollHeight / pageHeight);
 
     // Ensure all content is loaded by scrolling to the end of webpage
