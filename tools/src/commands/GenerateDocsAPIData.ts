@@ -96,6 +96,7 @@ async function action({packageName, version = 'unversioned'}: ActionOptions) {
     'expo-blur': ['index.ts'],
     'expo-cellular': ['Cellular.ts'],
     'expo-clipboard': ['Clipboard.ts'],
+    'expo-facebook': ['Facebook.ts'],
     'expo-font': ['index.ts'],
     'expo-haptics': ['Haptics.ts'],
     'expo-keep-awake': ['index.ts'],
