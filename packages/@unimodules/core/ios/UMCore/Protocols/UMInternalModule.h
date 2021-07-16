@@ -3,6 +3,5 @@
 #import <ExpoModulesCore/EXInternalModule.h>
 #import <UMCore/UMDefines.h>
 
-@protocol UMInternalModule <EXInternalModule>
+#define UMInternalModule EXInternalModule
 
-@end

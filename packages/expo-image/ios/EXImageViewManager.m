@@ -2,6 +2,8 @@
 
 #import <expo-image/EXImageViewManager.h>
 #import <expo-image/EXImageView.h>
+#import <SDWebImage/SDImageCodersManager.h>
+#import <SDWebImageWebPCoder/SDWebImageWebPCoder.h>
 
 #import <React/RCTImageShadowView.h>
 
@@ -12,6 +14,14 @@ RCT_EXPORT_MODULE(ExpoImage)
 - (RCTShadowView *)shadowView
 {
   return [RCTImageShadowView new];
+}
+
++ (void)initialize
+{
+  SDImageWebPCoder *webPCoder = [SDImageWebPCoder sharedCoder];
+  if (![[SDImageCodersManager sharedManager].coders containsObject:webPCoder]) {
+    [[SDImageCodersManager sharedManager] addCoder:webPCoder];
+  }
 }
 
 RCT_EXPORT_VIEW_PROPERTY(source, NSDictionary)

@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 
 class DevLauncherDevSupportManagerSwapper {
   fun swapDevSupportManagerImpl(
-    reactInstanceManager: ReactInstanceManager,
+    reactInstanceManager: ReactInstanceManager
   ) {
     val currentDevSupportManager = reactInstanceManager.devSupportManager
     if (currentDevSupportManager is DisabledDevSupportManager) {
@@ -79,7 +79,6 @@ class DevLauncherDevSupportManagerSwapper {
           Log.w("DevLauncher", "Couldn't close the packager connection: ${e.message}", e)
         }
       }
-
     } catch (e: Exception) {
       Log.i("DevLauncher", "Couldn't inject `DevLauncherDevSupportManager`.", e)
     }

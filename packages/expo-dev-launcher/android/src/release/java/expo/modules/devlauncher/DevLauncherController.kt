@@ -9,6 +9,7 @@ import com.facebook.react.bridge.ReactContext
 import expo.modules.devlauncher.launcher.DevLauncherClientHost
 import expo.modules.devlauncher.launcher.DevLauncherReactActivityDelegateSupplier
 import expo.modules.devlauncher.launcher.manifest.DevLauncherManifest
+import expo.modules.updatesinterface.UpdatesInterface
 
 const val DEV_LAUNCHER_IS_NOT_AVAILABLE = "DevLauncher isn't available in release builds"
 
@@ -31,6 +32,12 @@ class DevLauncherController private constructor() {
   val appHost: ReactNativeHost
     get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
 
+  var updatesInterface: UpdatesInterface?
+    get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
+    set(updatesInterface) {}
+
+  val useDeveloperSupport = false
+
   fun maybeInitDevMenuDelegate(context: ReactContext) {
     throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
   }
@@ -44,11 +51,11 @@ class DevLauncherController private constructor() {
   }
 
   fun onAppLoaded(context: ReactContext) {
-    throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE) 
+    throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
   }
 
   fun onAppLoadedWithError() {
-    throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE) 
+    throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
   }
 
   companion object {

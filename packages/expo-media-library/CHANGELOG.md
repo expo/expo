@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `isAvailableAsync` method ([#13418](https://github.com/expo/expo/pull/13418) by [@danielmark0116](https://github.com/danielmark0116))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

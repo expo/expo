@@ -50,9 +50,21 @@ export const mdInlineRenderers: MDRenderers = {
   paragraph: ({ children }) => (children ? <span>{children}</span> : null),
 };
 
-const nonLinkableTypes = ['Date', 'Error', 'T', 'TaskOptions', 'Uint8Array'];
+const nonLinkableTypes = [
+  'Date',
+  'Error',
+  'Omit',
+  'Promise',
+  'React.FC',
+  'StyleProp',
+  'T',
+  'TaskOptions',
+  'Uint8Array',
+  'ViewStyle',
+];
 
 export const resolveTypeName = ({
+  elements,
   elementType,
   name,
   type,
@@ -65,27 +77,39 @@ export const resolveTypeName = ({
   if (name) {
     if (type === 'reference') {
       if (typeArguments) {
-        if (name === 'Promise') {
+        if (name === 'Record' || name === 'React.ComponentProps') {
           return (
-            <span>
-              {name}&lt;{typeArguments.map(resolveTypeName)}&gt;
-            </span>
-          );
-        } else if (name === 'Record' || name === 'React.ComponentProps') {
-          return (
-            <span>
+            <>
               {name}&lt;
               {typeArguments.map((type, index) => (
                 <span key={`record-type-${index}`}>
                   {resolveTypeName(type)}
-                  {index !== typeArguments.length - 1 ? ', ' : ''}
+                  {index !== typeArguments.length - 1 ? ', ' : null}
                 </span>
               ))}
               &gt;
-            </span>
+            </>
           );
         } else {
-          return `${typeArguments.map(resolveTypeName)}`;
+          return (
+            <>
+              {nonLinkableTypes.includes(name) ? (
+                name
+              ) : (
+                <Link href={`#${name.toLowerCase()}`} key={`type-link-${name}`}>
+                  {name}
+                </Link>
+              )}
+              &lt;
+              {typeArguments.map((type, index) => (
+                <span key={`${name}-nested-type-${index}`}>
+                  {resolveTypeName(type)}
+                  {index !== typeArguments.length - 1 ? ', ' : null}
+                </span>
+              ))}
+              &gt;
+            </>
+          );
         }
       } else {
         if (nonLinkableTypes.includes(name)) {
@@ -103,6 +127,9 @@ export const resolveTypeName = ({
     }
   } else if (elementType?.name) {
     if (elementType.type === 'reference') {
+      if (nonLinkableTypes.includes(elementType.name)) {
+        return elementType.name + (type === 'array' && '[]');
+      }
       return (
         <Link href={`#${elementType.name?.toLowerCase()}`} key={`type-link-${elementType.name}`}>
           {elementType.name}
@@ -115,26 +142,12 @@ export const resolveTypeName = ({
     }
     return elementType.name + type;
   } else if (type === 'union' && types?.length) {
-    return types
-      .map((t: TypeDefinitionData) =>
-        t.type === 'reference' ? (
-          <Link href={`#${t.name?.toLowerCase()}`} key={`type-link-${t.name}`}>
-            {t.name}
-          </Link>
-        ) : t.type === 'array' ? (
-          `${t.elementType?.name}[]`
-        ) : t.type === 'literal' && typeof t.value === 'string' ? (
-          `'${t.name || t.value}'`
-        ) : (
-          `${t.name || t.value}`
-        )
-      )
-      .map((valueToRender, index) => (
-        <span key={`union-type-${index}`}>
-          {valueToRender}
-          {index + 1 !== types.length && ' | '}
-        </span>
-      ));
+    return types.map(resolveTypeName).map((valueToRender, index) => (
+      <span key={`union-type-${index}`}>
+        {valueToRender}
+        {index + 1 !== types.length && ' | '}
+      </span>
+    ));
   } else if (declaration?.signatures) {
     const baseSignature = declaration.signatures[0];
     if (baseSignature?.parameters?.length) {
@@ -157,10 +170,25 @@ export const resolveTypeName = ({
         </>
       );
     }
+  } else if (type === 'tuple' && elements) {
+    return (
+      <>
+        [
+        {elements.map((elem, i) => (
+          <span key={`tuple-${name}-${i}`}>
+            {resolveTypeName(elem)}
+            {i + 1 !== elements.length ? ', ' : null}
+          </span>
+        ))}
+        ]
+      </>
+    );
   } else if (type === 'query' && queryType) {
     return queryType.name;
   } else if (type === 'literal' && value) {
     return `'${value}'`;
+  } else if (value === null) {
+    return 'null';
   }
   return 'undefined';
 };

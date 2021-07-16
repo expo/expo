@@ -10,7 +10,15 @@
 
 ### 🐛 Bug fixes
 
+- fix `__dir__` absolute path in script_phase making an inconsistent Podfile.lock. ([#13610](https://github.com/expo/expo/pull/13610) by [@kudo](https://github.com/kudo))
+- Fix `PROJECT_ROOT` path resolution in `get-app-config-ios.sh`. ([#13439](https://github.com/expo/expo/pull/13439) by [@ajsmth](https://github.com/ajsmth))
+
+
 ### 💡 Others
+
+### ⚠️ Notices
+
+- Modularized expo-constants without further app setup. ([#13424](https://github.com/expo/expo/pull/13424) by [@kudo](https://github.com/kudo))
 
 ## 11.0.0 — 2021-06-16
 

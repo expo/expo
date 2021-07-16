@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Added experimental opt-in implementation in Swift ([#13523](https://github.com/expo/expo/pull/13523) by [@tsapeta](https://github.com/tsapeta))
+
 ## 3.2.0 — 2021-06-16
 
 ### 🎉 New features

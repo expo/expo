@@ -67,7 +67,7 @@ If you're relying on redirects, you'll need to pass in a `urlScheme` to `initStr
 
 ```js
 urlScheme:
-  Constants.executionEnvironment === ExecutionEnvironment.StoreClient
+  Constants.appOwnership === 'expo'
     ? Linking.createURL('/--/')
     : Linking.createURL(''),
 ```
@@ -78,7 +78,7 @@ urlScheme:
 
 ### Standalone apps
 
-`@stripe/stripe-react-native` is supported in Expo Go on Android and iOS out of the box, **however**, for iOS, it is only available for standalone apps built with [EAS Build](/build/introduction.md), and not for apps built on the legacy build system- `expo build:ios`. Android apps built with `expo build:android` _will_ have access to the `@stripe/stripe-react-native` library.
+`@stripe/stripe-react-native` is supported in Expo Go on Android and iOS out of the box, **however**, for iOS, it is only available for standalone apps built with [EAS Build](/build/introduction.md), and not for apps built on the classic build system- `expo build:ios`. Android apps built with `expo build:android` _will_ have access to the `@stripe/stripe-react-native` library.
 
 ### Apple Pay
 

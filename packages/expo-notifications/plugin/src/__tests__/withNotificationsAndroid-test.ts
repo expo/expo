@@ -52,7 +52,7 @@ const soundPath = path.resolve(__dirname, './fixtures/cat.wav');
 const projectRoot = '/app';
 
 describe('Android notifications configuration', () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
     const icon = fsReal.readFileSync(iconPath);
     const sound = fsReal.readFileSync(soundPath);
     vol.fromJSON(
@@ -65,10 +65,13 @@ describe('Android notifications configuration', () => {
     vol.writeFileSync('/app/assets/notificationSound.wav', sound);
   });
 
+  afterEach(() => {
+    vol.reset();
+  });
+
   afterAll(() => {
     jest.unmock('@expo/image-utils');
     jest.unmock('fs');
-    vol.reset();
   });
 
   it(`returns null if no config provided`, () => {
@@ -91,6 +94,24 @@ describe('Android notifications configuration', () => {
 
     const after = getDirFromFS(vol.toJSON(), projectRoot);
     expect(Object.keys(after).sort()).toEqual(LIST_OF_GENERATED_NOTIFICATION_FILES.sort());
+  });
+
+  it('Safely remove icon if it exists, and ignore if it doesnt', async () => {
+    const before = getDirFromFS(vol.toJSON(), projectRoot);
+    // first set the icon
+    await setNotificationIconAsync(projectRoot, '/app/assets/notificationIcon.png');
+
+    // now remove
+    await setNotificationIconAsync(projectRoot, null);
+
+    const after = getDirFromFS(vol.toJSON(), projectRoot);
+    expect(before).toMatchObject(after);
+
+    // now remove again to make sure we don't throw in that case
+    await setNotificationIconAsync(projectRoot, null);
+
+    const final = getDirFromFS(vol.toJSON(), projectRoot);
+    expect(before).toMatchObject(final);
   });
 });
 

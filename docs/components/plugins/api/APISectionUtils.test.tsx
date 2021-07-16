@@ -33,6 +33,18 @@ describe('APISectionUtils.resolveTypeName', () => {
     expect(container).toMatchSnapshot();
   });
 
+  test('custom type non-linkable array', () => {
+    const { container } = render(
+      <>
+        {resolveTypeName({
+          type: 'array',
+          elementType: { type: 'reference', name: 'T' },
+        })}
+      </>
+    );
+    expect(container).toMatchSnapshot();
+  });
+
   test('query type', () => {
     const { container } = render(
       <>
@@ -141,6 +153,68 @@ describe('APISectionUtils.resolveTypeName', () => {
     expect(container).toMatchSnapshot();
   });
 
+  test('union with custom type and array', () => {
+    const { container } = render(
+      <>
+        {resolveTypeName({
+          type: 'union',
+          types: [
+            { type: 'array', elementType: { type: 'reference', name: 'AssetRef' } },
+            { type: 'reference', name: 'AssetRef' },
+          ],
+        })}
+      </>
+    );
+    expect(container).toMatchSnapshot();
+  });
+
+  test('generic type', () => {
+    const { container } = render(
+      <>
+        {resolveTypeName({
+          type: 'reference',
+          typeArguments: [{ type: 'reference', name: 'Asset' }],
+          name: 'PagedInfo',
+        })}
+      </>
+    );
+    expect(container).toMatchSnapshot();
+  });
+
+  test('tuple type', () => {
+    const { container } = render(
+      <>
+        {resolveTypeName({
+          type: 'tuple',
+          elements: [
+            { type: 'reference', name: 'SortByKey' },
+            { type: 'intrinsic', name: 'boolean' },
+          ],
+        })}
+      </>
+    );
+    expect(container).toMatchSnapshot();
+  });
+
+  test('generic type in Promise', () => {
+    const { container } = render(
+      <>
+        {resolveTypeName({
+          type: 'reference',
+          typeArguments: [
+            {
+              type: 'reference',
+              typeArguments: [{ type: 'reference', name: 'Asset' }],
+              name: 'PagedInfo',
+            },
+          ],
+          name: 'Promise',
+        })}
+      </>
+    );
+    expect(container).toMatchSnapshot();
+  });
+
   test('function', () => {
     const { container } = render(
       <>
@@ -216,6 +290,37 @@ describe('APISectionUtils.resolveTypeName', () => {
               },
             ],
           },
+        })}
+      </>
+    );
+    expect(container).toMatchSnapshot();
+  });
+
+  test('extended props with multiple omits', () => {
+    const { container } = render(
+      <>
+        {resolveTypeName({
+          type: 'reference',
+          typeArguments: [
+            {
+              type: 'reference',
+              typeArguments: [
+                { type: 'reference', name: 'ViewStyle' },
+                {
+                  type: 'union',
+                  types: [
+                    { type: 'literal', value: 'backgroundColor' },
+                    {
+                      type: 'literal',
+                      value: 'borderRadius',
+                    },
+                  ],
+                },
+              ],
+              name: 'Omit',
+            },
+          ],
+          name: 'StyleProp',
         })}
       </>
     );

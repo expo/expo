@@ -10,6 +10,7 @@
 
 @property (nonatomic, strong) EXModuleRegistryProvider *moduleRegistryProvider;
 @property (nonatomic, strong) EXViewManagerAdapterClassesRegistry *viewManagersClassesRegistry;
+@property (nonatomic, strong, nullable) Class swiftModulesProviderClass;
 
 @end
 
@@ -24,6 +25,14 @@
   return self;
 }
 
+- (instancetype)initWithModuleRegistryProvider:(EXModuleRegistryProvider *)moduleRegistryProvider swiftModulesProviderClass:(nullable Class)swiftModulesProviderClass
+{
+  if (self = [self initWithModuleRegistryProvider:moduleRegistryProvider]) {
+    _swiftModulesProviderClass = swiftModulesProviderClass;
+  }
+  return self;
+}
+
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
 {
   return [self extraModulesForModuleRegistry:[_moduleRegistryProvider moduleRegistry]];
@@ -32,11 +41,11 @@
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   NSMutableArray<id<RCTBridgeModule>> *extraModules = [NSMutableArray array];
-  
-  EXNativeModulesProxy *nativeModulesProxy = [[EXNativeModulesProxy alloc] initWithModuleRegistry:moduleRegistry];
-  
+
+  EXNativeModulesProxy *nativeModulesProxy = [[EXNativeModulesProxy alloc] initWithModuleRegistry:moduleRegistry swiftModulesProviderClass:_swiftModulesProviderClass];
+
   [extraModules addObject:nativeModulesProxy];
-  
+
   for (EXViewManager *viewManager in [moduleRegistry getAllViewManagers]) {
     Class viewManagerAdapterClass = [_viewManagersClassesRegistry viewManagerAdapterClassForViewManager:viewManager];
     [extraModules addObject:[[viewManagerAdapterClass alloc] initWithViewManager:viewManager]];

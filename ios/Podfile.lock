@@ -1820,7 +1820,7 @@ PODS:
     - ExpoModulesCore
     - UMCore
   - EXCellular (3.2.0):
-    - UMCore
+    - ExpoModulesCore
   - EXClipboard (1.1.0):
     - UMCore
   - EXConstants (11.0.0):
@@ -1873,7 +1873,7 @@ PODS:
     - GoogleSignIn (~> 5.0.2)
     - UMCore
   - EXHaptics (10.1.0):
-    - UMCore
+    - ExpoModulesCore
   - EXImageLoader (2.2.0):
     - ExpoModulesCore
     - React-Core
@@ -2412,7 +2412,7 @@ PODS:
   - UMAppLoader (2.2.0)
   - UMCore (7.1.1):
     - ExpoModulesCore
-  - UMReactNativeAdapter (6.3.0):
+  - UMReactNativeAdapter (6.4.0):
     - ExpoModulesCore
   - UMTaskManagerInterface (6.2.0):
     - UMCore
@@ -4032,9 +4032,9 @@ SPEC CHECKSUMS:
   EXBrightness: b0eb62f204669cd7ae926847794b5bfabd595a4f
   EXCalendar: 64807f071c86ef3d9813fec49f55c38d5854c235
   EXCamera: 5a90a462cd0965bbf5e5ddb725115ac5109869e9
-  EXCellular: 82f7267f13f296f37434d0031e9a214bbd4b8919
+  EXCellular: c023099c6d53230d69c03a0ed0b515fbf2ffc5eb
   EXClipboard: c66f7d22ba754496b0fc6b23a2cb9a3e10fa1581
-  EXConstants: 7025f7965e87340f8e7493edc7062071ff48449f
+  EXConstants: 0c200d22d140d3f1834dc51c4ebe0465ddaa82c5
   EXContacts: bc06f42aa1bc7fb5ed0f5b29287f772faa33ad55
   EXCrypto: 46e28f1eb7ec3e2ae5aab652fe1dc4d46bafb386
   EXDevice: 6f1eed02c099f5b382a12a40406c58868892aba6
@@ -4049,7 +4049,7 @@ SPEC CHECKSUMS:
   EXGL: 6c3cb47b094c185c6e3fdac50449a504458052c2
   EXGL_CPP: dcca866c4f6af6694a12217fb2db3325acd19b57
   EXGoogleSignIn: d61beec381962b350f6ed60c9b65ae46ca26ef12
-  EXHaptics: 6dc4307ab0794fe7a87ec8d7d1c299cf103d6cb3
+  EXHaptics: 718e4b457673bd88384a7fbb6f357c2138c771b0
   EXImageLoader: d3531a3fe530b22925c19977cb53bb43e3821fe6
   EXImageManipulator: c4a7a24d867f8b2bb15e5d0d64ff8f3c2fb35761
   EXImagePicker: 958720afb9395ee1168dcda28d9915345c4e7cae
@@ -4063,7 +4063,7 @@ SPEC CHECKSUMS:
   EXNetwork: 6682b2bbbd90e66c4738159abaf8cd206c25e8b8
   EXNotifications: 296d9487163c2c08fffec5e79a5f9094bc016d9c
   EXPermissions: 8eb648bd5c2115d01a39dc7c2ad4c94a5846e4cb
-  ExpoModulesCore: 085657f53b53e86ab71477ba7f5b75fe174ee9e4
+  ExpoModulesCore: a70ccb0e2d7483de92f7a5b368f524b63809788c
   EXPrint: 2dbe4d320687e559b46fdb01e330fdf875137094
   EXRandom: ecb71f5d01991f29bb0277f8a2c35d168f85d637
   EXScreenCapture: c51844407fbac8bbca4415467bc43f2b7764d225
@@ -4079,7 +4079,7 @@ SPEC CHECKSUMS:
   EXStoreReview: 40674cc897a6d7fd249969b86d1833f67b99170a
   EXStructuredHeaders: 384ccdf0c09ed0be8fc73d4b2d70e436cd195975
   EXTaskManager: 91fef764a2ec7690aa8070f862098df064facdc4
-  EXTrackingTransparency: 3632a570eef235f579c2e004f6515ba352bc735f
+  EXTrackingTransparency: 212dcc45e24c0e3ec8ea89e4d93c1d123c5a1fb4
   EXUpdates: 555bae578b14cfd76cc9e46cbd0a010dc6edddd2
   EXUpdatesInterface: 8e4f28434a2e6a75803c4ea0ab12cfb07ebb3438
   EXVideoThumbnails: f8a7d2330578131361c0a4f6e981a6e58baf1290
@@ -4146,11 +4146,11 @@ SPEC CHECKSUMS:
   stripe-react-native: 2598d45be4bad95f0c11a1dde7af185e8829bc67
   UMAppLoader: 21af63390e55c82e037fb9752d93114a80ecf16e
   UMCore: b531b41645f9250a138583bd0ac52edbc7a0e16c
-  UMReactNativeAdapter: c3ee775a59120220d5c564716ebc22e9f615b4f2
+  UMReactNativeAdapter: 5d34de03540c3a22624919492974df6f187d9c55
   UMTaskManagerInterface: 2be431101b73604e64fbfffcf759336f9d8fccbb
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 3a9793cb2e3cb8be49958563e27a94eb9ae37af6
+PODFILE CHECKSUM: 57c679a3db102899bc876a899804e78034217bd9
 
 COCOAPODS: 1.10.1

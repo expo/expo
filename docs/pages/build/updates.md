@@ -17,22 +17,18 @@ The following example demonstrates how you might use the `"production"` release 
   "builds": {
     "android": {
       "release": {
-        "workflow": "generic",
         "releaseChannel": "production"
       },
       "team": {
-        "workflow": "generic",
         "releaseChannel": "staging",
         "distribution": "internal"
       }
     },
     "ios": {
       "release": {
-        "workflow": "generic",
         "releaseChannel": "production"
       },
       "team": {
-        "workflow": "generic",
         "releaseChannel": "staging",
         "distribution": "internal"
       }

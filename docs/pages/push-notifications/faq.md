@@ -116,3 +116,7 @@ This indicates an issue with the image asset you're providing. The image should 
 ### I'm getting back an error message when I send a notification
 
 Check the `details` property of the returned push ticket or receipt for more information which you can use to debug further. [Read here for common error code responses and their associated solutions](/push-notifications/sending-notifications.md#errors).
+
+### I want to play a custom sound when I send a notification
+
+The Expo push notification service currently doesn't support custom sounds. You will need to use APNs and FCM directly with the native device tokens received from `expo-notifications` in standalone apps.

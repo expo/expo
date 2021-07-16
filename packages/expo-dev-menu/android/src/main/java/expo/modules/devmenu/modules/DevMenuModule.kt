@@ -7,8 +7,8 @@ import com.facebook.react.bridge.ReactMethod
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class DevMenuModule(reactContext: ReactApplicationContext)
-  : ReactContextBaseJavaModule(reactContext) {
+class DevMenuModule(reactContext: ReactApplicationContext) :
+  ReactContextBaseJavaModule(reactContext) {
   override fun getName() = "ExpoDevMenu"
 
   private val devMenuManager by lazy {

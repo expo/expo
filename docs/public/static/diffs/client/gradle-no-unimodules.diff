@@ -1,0 +1,33 @@
+diff --git a/android/build.gradle b/android/build.gradle
+index ed5a568..41b9fe0 100644
+--- a/android/build.gradle
++++ b/android/build.gradle
+@@ -3,7 +3,7 @@
+ buildscript {
+     ext {
+         buildToolsVersion = "29.0.2"
+-        minSdkVersion = 16
++        minSdkVersion = 23
+         compileSdkVersion = 29
+         targetSdkVersion = 29
+     }
+@@ -12,7 +12,7 @@ buildscript {
+         jcenter()
+     }
+     dependencies {
+-        classpath("com.android.tools.build:gradle:3.5.3")
++        classpath("com.android.tools.build:gradle:4.1.1")
+         // NOTE: Do not place your application dependencies here; they belong
+         // in the individual module build.gradle files
+     }
+diff --git a/android/gradle/wrapper/gradle-wrapper.properties b/android/gradle/wrapper/gradle-wrapper.properties
+index 8422670..fd09330 100644
+--- a/android/gradle/wrapper/gradle-wrapper.properties
++++ b/android/gradle/wrapper/gradle-wrapper.properties
+@@ -1,5 +1,5 @@
+ distributionBase=GRADLE_USER_HOME
+ distributionPath=wrapper/dists
+-distributionUrl=https\://services.gradle.org/distributions/gradle-6.2-all.zip
++distributionUrl=https\://services.gradle.org/distributions/gradle-6.5-bin.zip
+ zipStoreBase=GRADLE_USER_HOME
+ zipStorePath=wrapper/dists

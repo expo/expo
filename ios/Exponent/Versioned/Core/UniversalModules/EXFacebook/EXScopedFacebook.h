@@ -4,10 +4,11 @@
 #import <Foundation/Foundation.h>
 #import <EXFacebook/EXFacebook.h>
 #import <UMCore/UMAppLifecycleListener.h>
+#import <EXUpdates/EXUpdatesRawManifest.h>
 
 @interface EXScopedFacebook : EXFacebook <UMAppLifecycleListener>
 
-- (instancetype)initWithScopeKey:(NSString *)scopeKey andParams:(NSDictionary *)params;
+- (instancetype)initWithScopeKey:(NSString *)scopeKey manifest:(EXUpdatesRawManifest *)manifest;
 
 @end
 #endif
