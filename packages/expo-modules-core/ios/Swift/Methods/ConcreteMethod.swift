@@ -1,5 +1,5 @@
 
-public struct ConcreteMethod<Args, ReturnType>: AnyMethod {
+public class ConcreteMethod<Args, ReturnType>: AnyMethod {
   public typealias ClosureType = (Args) -> ReturnType
 
   public let name: String
@@ -21,12 +21,10 @@ public struct ConcreteMethod<Args, ReturnType>: AnyMethod {
   init(
     _ name: String,
     argTypes: [AnyArgumentType],
-    queue: DispatchQueue? = nil,
     _ closure: @escaping ClosureType
   ) {
     self.name = name
     self.argTypes = argTypes
-    self.queue = queue
     self.closure = closure
   }
 
@@ -50,6 +48,11 @@ public struct ConcreteMethod<Args, ReturnType>: AnyMethod {
     if !takesPromise {
       promise.resolve(returnedValue)
     }
+  }
+
+  public func runOnQueue(_ queue: DispatchQueue?) -> Self {
+    self.queue = queue
+    return self
   }
 
   private func argumentType(atIndex index: Int) -> AnyArgumentType? {
