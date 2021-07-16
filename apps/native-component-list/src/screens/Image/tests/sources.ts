@@ -44,6 +44,7 @@ const imageTests: ImageTestGroup = {
       name: `require(expo.svg)`,
       props: {
         source: images.require_svg,
+        resizeMode: 'contain',
       },
     },
     {
