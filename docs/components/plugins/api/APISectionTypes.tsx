@@ -148,6 +148,7 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
           <H3Code>
             <InlineCode>{name}</InlineCode>
           </H3Code>
+          <CommentTextBlock comment={comment} />
           <P>
             {defineLiteralType(literalTypes)}
             Acceptable values are:{' '}
@@ -161,7 +162,8 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
         </div>
       );
     }
-  } else if (type.name === 'Record' && type.typeArguments) {
+  } else if ((type.name === 'Record' && type.typeArguments) || type.type === 'reference') {
+    console.warn(JSON.stringify(type))
     return (
       <div key={`record-definition-${name}`}>
         <H3Code>

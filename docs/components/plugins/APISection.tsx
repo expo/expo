@@ -28,6 +28,9 @@ const filterDataByKind = (
     ? entries.filter((entry: GeneratedData) => entry.kind === kind && additionalCondition(entry))
     : [];
 
+const isHook = ({ name }: GeneratedData) => name.startsWith('use');
+const isListener = ({ name }: GeneratedData) => name.endsWith('Listener');
+
 const renderAPI = (
   packageName: string,
   version: string = 'unversioned',
@@ -39,11 +42,11 @@ const renderAPI = (
     const methods = filterDataByKind(
       data,
       TypeDocKind.Function,
-      entry => !entry.name.includes('Listener')
+      entry => !isListener(entry) && !isHook(entry)
     );
-    const eventSubscriptions = filterDataByKind(data, TypeDocKind.Function, entry =>
-      entry.name.includes('Listener')
-    );
+    const hooks = filterDataByKind(data, TypeDocKind.Function, isHook);
+    const eventSubscriptions = filterDataByKind(data, TypeDocKind.Function, isListener);
+
     const types = filterDataByKind(
       data,
       TypeDocKind.TypeAlias,
@@ -96,6 +99,7 @@ const renderAPI = (
       <>
         <APISectionComponents data={components} componentsProps={componentsProps} />
         <APISectionConstants data={constants} apiName={apiName} />
+        <APISectionMethods data={hooks} header="Hooks" />
         <APISectionMethods data={methods} apiName={apiName} />
         <APISectionMethods
           data={eventSubscriptions}
