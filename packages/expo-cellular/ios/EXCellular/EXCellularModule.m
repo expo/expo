@@ -65,6 +65,9 @@ EX_EXPORT_METHOD_AS(getCellularGenerationAsync, getCellularGenerationAsyncWithRe
       return EXCellularGeneration3G;
     } else if ([serviceCurrentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyLTE]) {
       return EXCellularGeneration4G;
+    } else if ([serviceCurrentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyNRNSA] ||
+               [serviceCurrentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyNR]) {
+      return EXCellularGeneration5G;
     }
   }
   return EXCellularGenerationUnknown;

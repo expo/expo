@@ -32,6 +32,7 @@ public class CellularModule: Module {
     case cellular2G = 1
     case cellular3G = 2
     case cellular4G = 3
+    case cellular5G = 4
   }
 
   static func currentCellularGeneration() -> CellularGeneration {
@@ -52,6 +53,9 @@ public class CellularModule: Module {
       return .cellular3G
     case CTRadioAccessTechnologyLTE:
       return .cellular4G
+    case CTRadioAccessTechnologyNRNSA,
+         CTRadioAccessTechnologyNR:
+      return .cellular5G
     default:
       return .unknown
     }
