@@ -18,6 +18,7 @@ import org.unimodules.test.core.mockkInternalModule
 internal class SMSModuleTest {
   private lateinit var smsModule: SMSModule
   private lateinit var moduleRegistry: ModuleRegistry
+  private val optionsAttachmentsKey = "attachments";
 
   @Before
   fun initializeMock() {
@@ -39,7 +40,7 @@ internal class SMSModuleTest {
 
   @Test
   fun `sendSMSAsync's promise is resolved in onHostResume when options=null`() {
-    val promise = PromiseMock()
+    val promise   = PromiseMock()
     val addresses = arrayListOf("123456789", "234567891")
     val message   = "test text message"
     smsModule.sendSMSAsync(addresses, message, null, promise)
@@ -49,6 +50,15 @@ internal class SMSModuleTest {
 
   @Test
   fun `sendSMSAsync's promise is resolved in onHostResume when options!=null`() {
-
+    val promise   = PromiseMock()
+    val addresses = arrayListOf("123456789", "234567891")
+    val message   = "test text message"
+    val options = mapOf(optionsAttachmentsKey to listOf(mapOf(
+      "someattachment" to "someattachment",
+      "mimeType" to "intent type",
+      "uri" to "some resource identifier")))
+    smsModule.sendSMSAsync(addresses, message, options, promise)
+    smsModule.onHostResume()
+    assertResolved(promise)
   }
 }
