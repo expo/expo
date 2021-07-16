@@ -1,6 +1,6 @@
 import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'expo-modules-core';
 import { FacebookAuthenticationCredential, FacebookLoginResult, FacebookOptions, FacebookInitializationOptions } from './Facebook.types';
-export { FacebookLoginResult, FacebookOptions, FacebookAuthenticationCredential, PermissionResponse, PermissionStatus, PermissionExpiration, };
+export { FacebookLoginResult, FacebookOptions, FacebookAuthenticationCredential, FacebookInitializationOptions, PermissionResponse, PermissionStatus, PermissionExpiration, };
 declare type Params = {
     [key: string]: string | number;
 };
