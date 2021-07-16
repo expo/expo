@@ -14,9 +14,10 @@ public class ModuleHolder {
   init(module: AnyModule) {
     self.module = module
 
-    // FIXME: (@tsapeta) Temporarily preload the definition
-    self.definition.constants
+    post(event: .moduleCreate)
   }
+
+  // MARK: Calling methods
 
   func call(method methodName: String, args: [Any?], promise: Promise) {
     if let method = definition.methods[methodName] {
@@ -27,5 +28,31 @@ public class ModuleHolder {
     } else {
       promise.reject("Method \"\(methodName)\" is not exported by \(name)")
     }
+  }
+
+  // MARK: Listening to events
+
+  func listeners(forEvent event: EventName) -> [EventListener] {
+    return definition.eventListeners.filter {
+      $0.name == event
+    }
+  }
+
+  func post(event: EventName) {
+    listeners(forEvent: event).forEach {
+      $0.call(nil)
+    }
+  }
+
+  func post<PayloadType>(event: EventName, payload: PayloadType?) {
+    listeners(forEvent: event).forEach {
+      $0.call(payload)
+    }
+  }
+
+  // MARK: Deallocation
+
+  deinit {
+    post(event: .moduleDestroy)
   }
 }
