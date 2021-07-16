@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- More TypeScript doc blocks.
+
 ## 11.2.0 — 2021-06-16
 
 ### 🎉 New features

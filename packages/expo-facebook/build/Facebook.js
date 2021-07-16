@@ -9,6 +9,13 @@ const androidPermissionsResponse = {
     canAskAgain: true,
     status: PermissionStatus.GRANTED,
 };
+/**
+ * Asks for permissions to use data for tracking the user or the device.
+ *
+ * > iOS: it requires the NSUserTrackingUsageDescription message added to the info.plist.
+ *
+ * @returns A promise that resolves to an object of type [PermissionResponse](#permissionresponse).
+ */
 export async function requestPermissionsAsync() {
     if (Platform.OS === 'android') {
         return Promise.resolve(androidPermissionsResponse);
@@ -18,6 +25,13 @@ export async function requestPermissionsAsync() {
     }
     return await ExponentFacebook.requestPermissionsAsync();
 }
+/**
+ * Checks application's permissions for using data for tracking the user or the device.
+ *
+ * >iOS: it requires the NSUserTrackingUsageDescription message added to the info.plist.
+ *
+ * @returns A promise that resolves to an object of type [PermissionResponse](#permissionresponse).
+ */
 export async function getPermissionsAsync() {
     if (Platform.OS === 'android') {
         return Promise.resolve(androidPermissionsResponse);
@@ -27,6 +41,13 @@ export async function getPermissionsAsync() {
     }
     return await ExponentFacebook.getPermissionsAsync();
 }
+/**
+ * Prompts the user to log into Facebook and grants your app permission to access their Facebook data. On iOS and Android, if the Facebook app isn't installed then a web view will be used to authenticate.
+ *
+ * @param options A map of options:
+ *  - **permissions (array)** -- An array specifying the permissions to ask for from Facebook for this login. The permissions are strings as specified in the [Facebook API documentation](https://developers.facebook.com/docs/permissions/reference). The default permissions are ['public_profile', 'email'].
+ * @returns If the user or Facebook cancelled the login, returns { type: 'cancel' }. Otherwise, returns { type: 'success' } & [FacebookAuthenticationCredential](#facebookauthenticationcredential).
+ */
 export async function logInWithReadPermissionsAsync(options = {}) {
     if (!ExponentFacebook.logInWithReadPermissionsAsync) {
         throw new UnavailabilityError('Facebook', 'logInWithReadPermissionsAsync');
@@ -226,6 +247,8 @@ export async function setUserIDAsync(userID) {
     return await ExponentFacebook.setUserIDAsync(userID);
 }
 /**
+ * Gets the user ID.
+ *
  * @return A promise fulfilled with the user id or null if not set.
  */
 export async function getUserIDAsync() {
@@ -235,6 +258,8 @@ export async function getUserIDAsync() {
     return await ExponentFacebook.getUserIDAsync();
 }
 /**
+ * Get an anonymous ID from Facebook.
+ *
  * @return A promise fulfilled with an anonymous id or null if not set.
  */
 export async function getAnonymousIDAsync() {
@@ -244,6 +269,8 @@ export async function getAnonymousIDAsync() {
     return await ExponentFacebook.getAnonymousIDAsync();
 }
 /**
+ * Get the advertiser ID from Facebook.
+ *
  * @return A promise fulfilled with the advertiser id or null if not set.
  */
 export async function getAdvertiserIDAsync() {
@@ -253,7 +280,8 @@ export async function getAdvertiserIDAsync() {
     return await ExponentFacebook.getAdvertiserIDAsync();
 }
 /**
- * **Android only.**
+ * **Android only.** Gets the attribution ID from Facebook.
+ *
  * @return A promise fulfilled with the attribution id or null if not set.
  */
 export async function getAttributionIDAsync() {
