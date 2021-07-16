@@ -24,9 +24,9 @@ class ClipboardModule(context: Context) : ExportedModule(context) {
     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     val clip = clipboard.getPrimaryClip()
     if (clip != null && clip.getItemCount() >= 1) {
-        promise.resolve(clip.getItemAt(0).getText());
+      promise.resolve(clip.getItemAt(0).getText())
     } else {
-        promise.resolve("");
+      promise.resolve("")
     }
   }
 
@@ -35,7 +35,7 @@ class ClipboardModule(context: Context) : ExportedModule(context) {
     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     val clip = ClipData.newPlainText(null, content)
     clipboard.setPrimaryClip(clip)
-    promise.resolve(null);
+    promise.resolve(null)
   }
 
   companion object {

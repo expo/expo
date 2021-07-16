@@ -151,15 +151,18 @@ class DevMenuManager {
       return
     }
 
-    ExponentKernelModule.queueEvent("ExponentKernel.requestToCloseDevMenu", Arguments.createMap(), object : ExponentKernelModuleProvider.KernelEventCallback {
-      override fun onEventSuccess(result: ReadableMap) {
-        hideInActivity(activity)
-      }
+    ExponentKernelModule.queueEvent(
+      "ExponentKernel.requestToCloseDevMenu", Arguments.createMap(),
+      object : ExponentKernelModuleProvider.KernelEventCallback {
+        override fun onEventSuccess(result: ReadableMap) {
+          hideInActivity(activity)
+        }
 
-      override fun onEventFailure(errorMessage: String) {
-        hideInActivity(activity)
+        override fun onEventFailure(errorMessage: String) {
+          hideInActivity(activity)
+        }
       }
-    })
+    )
   }
 
   /**

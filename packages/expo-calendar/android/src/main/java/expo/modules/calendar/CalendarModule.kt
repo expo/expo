@@ -638,9 +638,12 @@ class CalendarModule(
 
   @Throws(SecurityException::class)
   private fun removeRemindersForEvent(eventID: Int) {
-    val cursor = CalendarContract.Reminders.query(contentResolver, eventID.toLong(), arrayOf(
-      CalendarContract.Reminders._ID
-    ))
+    val cursor = CalendarContract.Reminders.query(
+      contentResolver, eventID.toLong(),
+      arrayOf(
+        CalendarContract.Reminders._ID
+      )
+    )
     while (cursor.moveToNext()) {
       val reminderUri = ContentUris.withAppendedId(CalendarContract.Reminders.CONTENT_URI, cursor.getLong(0))
       contentResolver.delete(reminderUri, null, null)
@@ -758,10 +761,13 @@ class CalendarModule(
 
   private fun serializeAlarms(eventID: Long): ArrayList<Bundle> {
     val alarms = ArrayList<Bundle>()
-    val cursor = CalendarContract.Reminders.query(contentResolver, eventID, arrayOf(
-      CalendarContract.Reminders.MINUTES,
-      CalendarContract.Reminders.METHOD
-    ))
+    val cursor = CalendarContract.Reminders.query(
+      contentResolver, eventID,
+      arrayOf(
+        CalendarContract.Reminders.MINUTES,
+        CalendarContract.Reminders.METHOD
+      )
+    )
     while (cursor.moveToNext()) {
       val thisAlarm = Bundle()
       thisAlarm.putInt("relativeOffset", -cursor.getInt(0))

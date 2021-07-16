@@ -58,7 +58,8 @@ class NewManifest private constructor(
           url = Uri.parse(mLaunchAsset.getString("url"))
           isLaunchAsset = true
           embeddedAssetFilename = EmbeddedLoader.BUNDLE_FILENAME
-        })
+        }
+      )
     } catch (e: JSONException) {
       Log.e(TAG, "Could not read launch asset from manifest", e)
     }
@@ -66,13 +67,15 @@ class NewManifest private constructor(
       for (i in 0 until mAssets.length()) {
         try {
           val assetObject = mAssets.getJSONObject(i)
-          assetList.add(AssetEntity(
-            assetObject.getString("key"),
-            assetObject.getString("contentType")
-          ).apply {
-            url = Uri.parse(assetObject.getString("url"))
-            embeddedAssetFilename = assetObject.optString("embeddedAssetFilename")
-          })
+          assetList.add(
+            AssetEntity(
+              assetObject.getString("key"),
+              assetObject.getString("contentType")
+            ).apply {
+              url = Uri.parse(assetObject.getString("url"))
+              embeddedAssetFilename = assetObject.optString("embeddedAssetFilename")
+            }
+          )
         } catch (e: JSONException) {
           Log.e(TAG, "Could not read asset from manifest", e)
         }
