@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.6.5 — 2021-07-16
+
+### 🐛 Bug fixes
+
 - Fixed compatibility with React Native 0.64.X. ([#13632](https://github.com/expo/expo/pull/13632) by [@lukmccall](https://github.com/lukmccall))
 - Updated plugin to only initialize UpdatesDevLauncherController in debug builds. ([#13597](https://github.com/expo/expo/pull/13597) by [@esamelson](https://github.com/esamelson))
-
-### 💡 Others
 
 ## 0.6.4 — 2021-07-08
 
