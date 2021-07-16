@@ -14,7 +14,7 @@
 
 ### 💡 Others
 
-- More TypeScript doc blocks.
+- More TypeScript doc blocks. ([#13657](https://github.com/expo/expo/pull/13657) by [@cruzach](https://github.com/cruzach))
 
 ## 11.2.0 — 2021-06-16
 
