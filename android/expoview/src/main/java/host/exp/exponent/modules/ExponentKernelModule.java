@@ -2,6 +2,7 @@
 
 package host.exp.exponent.modules;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.facebook.internal.BundleJSONConverter;
@@ -70,12 +71,12 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
     return constants;
   }
 
-  public static void queueEvent(String name, WritableMap data, ExponentKernelModuleProvider.KernelEventCallback callback) {
+  public static void queueEvent(@NonNull String name, @NonNull WritableMap data, @NonNull ExponentKernelModuleProvider.KernelEventCallback callback) {
     queueEvent(new ExponentKernelModuleProvider.KernelEvent(name, data, callback));
   }
 
   public static void queueEvent(ExponentKernelModuleProvider.KernelEvent event) {
-    ExponentKernelModuleProvider.sEventQueue.add(event);
+    ExponentKernelModuleProvider.getEventQueue().add(event);
 
     if (sInstance != null) {
       sInstance.consumeEventQueue();
@@ -89,23 +90,23 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
 
   @Override
   public void consumeEventQueue() {
-    if (ExponentKernelModuleProvider.sEventQueue.size() == 0) {
+    if (ExponentKernelModuleProvider.getEventQueue().size() == 0) {
       return;
     }
 
-    ExponentKernelModuleProvider.KernelEvent event = ExponentKernelModuleProvider.sEventQueue.remove();
+    ExponentKernelModuleProvider.KernelEvent event = ExponentKernelModuleProvider.getEventQueue().remove();
 
     String eventId = UUID.randomUUID().toString();
-    event.data.putString("eventId", eventId);
+    event.getData().putString("eventId", eventId);
 
-    if (event.callback != null) {
-      sKernelEventCallbacks.put(eventId, event.callback);
+    if (event.getCallback() != null) {
+      sKernelEventCallbacks.put(eventId, event.getCallback());
     }
 
     try {
       getReactApplicationContext()
         .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-        .emit(event.name, event.data);
+        .emit(event.getName(), event.getData());
     } catch (Exception e) {
       onEventFailure(eventId, e.getMessage());
     }

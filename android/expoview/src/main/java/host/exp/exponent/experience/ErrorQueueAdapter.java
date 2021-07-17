@@ -38,10 +38,10 @@ public class ErrorQueueAdapter extends ArrayAdapter<ExponentError> {
       holder = (ViewHolder) convertView.getTag();
     }
     ExponentError item = getItem(position);
-    holder.errorMessageView.setText(mContext.getString(R.string.error_uncaught, item.errorMessage.developerErrorMessage()));
+    holder.errorMessageView.setText(mContext.getString(R.string.error_uncaught, item.getErrorMessage().developerErrorMessage()));
 
-    if (item.stack.length > 0) {
-      Bundle bundle = item.stack[0];
+    if (item.getStack().length > 0) {
+      Bundle bundle = item.getStack()[0];
 
       String fileName = "";
       String path = bundle.getString("file");
@@ -63,8 +63,8 @@ public class ErrorQueueAdapter extends ArrayAdapter<ExponentError> {
       holder.stacktraceView.setText(stacktracePreview);
     }
 
-    String timestampViewText = new SimpleDateFormat("HH:mm:ss", Locale.US).format(item.timestamp);
-    if (item.isFatal) {
+    String timestampViewText = new SimpleDateFormat("HH:mm:ss", Locale.US).format(item.getTimestamp());
+    if (item.isFatal()) {
       timestampViewText += " Fatal Error";
     }
     holder.timestampView.setText(timestampViewText);
