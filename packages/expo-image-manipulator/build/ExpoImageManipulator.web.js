@@ -4,12 +4,15 @@ import { FlipType, } from './ImageManipulator.types';
  * Hermite resize - fast image resize/resample using Hermite filter. 1 cpu version!
  * https://stackoverflow.com/a/18320662/4047926
  *
- * @param {HtmlElement} canvas
+ * @param {HTMLCanvasElement} canvas
  * @param {int} width
  * @param {int} height
  * @param {boolean} resizeCanvas if true, canvas will be resized. Optional.
  */
 function resampleSingle(canvas, width, height, resizeCanvas = false) {
+    const result = document.createElement('canvas');
+    result.width = canvas.width;
+    result.height = canvas.height;
     const widthSource = canvas.width;
     const heightSource = canvas.height;
     width = Math.round(width);
@@ -71,16 +74,15 @@ function resampleSingle(canvas, width, height, resizeCanvas = false) {
             data2[x2 + 3] = gx_a / weightsAlpha;
         }
     }
-    //clear and resize canvas
+    //resize canvas
     if (resizeCanvas) {
-        canvas.width = width;
-        canvas.height = height;
-    }
-    else {
-        ctx.clearRect(0, 0, widthSource, heightSource);
+        result.width = width;
+        result.height = height;
     }
     //draw
-    ctx.putImageData(img2, 0, 0);
+    const context = getContext(result);
+    context.putImageData(img2, 0, 0);
+    return result;
 }
 function sizeFromAngle(width, height, angle) {
     const radians = (angle * Math.PI) / 180;
@@ -94,22 +96,21 @@ function sizeFromAngle(width, height, angle) {
     }
     return { width: height * s + width * c, height: height * c + width * s };
 }
-function cropImage(canvas, image, x = 0, y = 0, width = 0, height = 0) {
-    const context = getContext(canvas);
-    context.save();
+function cropImage(image, x = 0, y = 0, width = 0, height = 0) {
+    const result = document.createElement('canvas');
+    result.width = width;
+    result.height = height;
+    const context = getContext(result);
     context.drawImage(image, x, y, width, height, 0, 0, width, height);
+    return result;
 }
-function drawImage(canvas, img, x = 0, y = 0, angle = 0, xFlip = false, yFlip = false, width, height) {
-    const context = getContext(canvas);
-    context.save();
-    if (width == null) {
-        width = img.naturalWidth;
-    }
-    if (height == null) {
-        height = img.naturalHeight;
-    }
+function drawImage(img, x = 0, y = 0, angle = 0, xFlip = false, yFlip = false, width, height) {
+    const result = document.createElement('canvas');
+    result.width = width ?? img.width;
+    result.height = height ?? img.height;
+    const context = getContext(result);
     // Set the origin to the center of the image
-    context.translate(x + canvas.width / 2, y + canvas.height / 2);
+    context.translate(x + result.width / 2, y + result.height / 2);
     // Rotate the canvas around the origin
     const radians = (angle * Math.PI) / 180;
     context.rotate(radians);
@@ -118,9 +119,8 @@ function drawImage(canvas, img, x = 0, y = 0, angle = 0, xFlip = false, yFlip = 
     const yScale = yFlip ? -1 : 1;
     context.scale(xScale, yScale);
     // Draw the image
-    context.drawImage(img, -img.naturalWidth / 2, -img.naturalHeight / 2, img.naturalWidth, img.naturalHeight);
-    context.restore();
-    return context;
+    context.drawImage(img, -img.width / 2, -img.height / 2, img.width, img.height);
+    return result;
 }
 function getContext(canvas) {
     const ctx = canvas.getContext('2d');
@@ -153,104 +153,88 @@ function getResults(canvas, options) {
 function loadImageAsync(uri) {
     return new Promise((resolve, reject) => {
         const imageSource = new Image();
-        imageSource.onload = () => resolve(imageSource);
-        imageSource.onerror = () => reject(imageSource);
+        const canvas = document.createElement('canvas');
+        imageSource.onload = () => {
+            canvas.width = imageSource.naturalWidth;
+            canvas.height = imageSource.naturalHeight;
+            const context = getContext(canvas);
+            context.drawImage(imageSource, 0, 0, imageSource.naturalWidth, imageSource.naturalHeight);
+            resolve(canvas);
+        };
+        imageSource.onerror = () => reject(canvas);
         imageSource.src = uri;
     });
 }
-async function manipulateWithActionAsync(uri, action, options) {
-    const canvas = document.createElement('canvas');
-    const imageSource = await loadImageAsync(uri);
-    canvas.width = imageSource.naturalWidth;
-    canvas.height = imageSource.naturalHeight;
-    if (action.crop) {
-        const { crop } = action;
-        // ensure values are defined.
-        let { originX = 0, originY = 0, width = 0, height = 0 } = crop;
-        const clamp = (value, max) => Math.max(0, Math.min(max, value));
-        // lock within bounds.
-        width = clamp(width, canvas.width);
-        height = clamp(height, canvas.height);
-        originX = clamp(originX, canvas.width);
-        originY = clamp(originY, canvas.height);
-        // lock sum of crop.
-        width = Math.min(originX + width, canvas.width) - originX;
-        height = Math.min(originY + height, canvas.height) - originY;
-        if (width === 0 || height === 0) {
-            throw new CodedError('ERR_IMAGE_MANIPULATOR_CROP', 'Crop size must be greater than 0: ' + JSON.stringify(crop, null, 2));
+function actionCrop(canvas, action) {
+    const { crop } = action;
+    // ensure values are defined.
+    let { originX = 0, originY = 0, width = 0, height = 0 } = crop;
+    const clamp = (value, max) => Math.max(0, Math.min(max, value));
+    // lock within bounds.
+    width = clamp(width, canvas.width);
+    height = clamp(height, canvas.height);
+    originX = clamp(originX, canvas.width);
+    originY = clamp(originY, canvas.height);
+    // lock sum of crop.
+    width = Math.min(originX + width, canvas.width) - originX;
+    height = Math.min(originY + height, canvas.height) - originY;
+    if (width === 0 || height === 0) {
+        throw new CodedError('ERR_IMAGE_MANIPULATOR_CROP', 'Crop size must be greater than 0: ' + JSON.stringify(crop, null, 2));
+    }
+    return cropImage(canvas, originX, originY, width, height);
+}
+function actionResize(canvas, action) {
+    const { resize: { width, height }, } = action;
+    const imageRatio = canvas.width / canvas.height;
+    let requestedWidth = 0;
+    let requestedHeight = 0;
+    if (width !== undefined) {
+        requestedWidth = width;
+        requestedHeight = requestedWidth / imageRatio;
+    }
+    if (height !== undefined) {
+        requestedHeight = height;
+        if (requestedWidth === 0) {
+            requestedWidth = requestedHeight * imageRatio;
         }
-        // change size of canvas.
-        canvas.width = width;
-        canvas.height = height;
-        cropImage(canvas, imageSource, originX, originY, width, height);
     }
-    else if (action.resize) {
-        const { resize } = action;
-        const { width, height } = resize;
-        const imageRatio = imageSource.naturalWidth / imageSource.naturalHeight;
-        let requestedWidth = 0;
-        let requestedHeight = 0;
-        if (width !== undefined) {
-            requestedWidth = width;
-            requestedHeight = requestedWidth / imageRatio;
-        }
-        if (height !== undefined) {
-            requestedHeight = height;
-            if (requestedWidth === 0) {
-                requestedWidth = requestedHeight * imageRatio;
-            }
-        }
-        const context = getContext(canvas);
-        context.save();
-        context.drawImage(imageSource, 0, 0, imageSource.naturalWidth, imageSource.naturalHeight);
-        resampleSingle(canvas, requestedWidth, requestedHeight, true);
-    }
-    else if (action.flip !== undefined) {
-        const { flip } = action;
-        const xFlip = flip === FlipType.Horizontal;
-        const yFlip = flip === FlipType.Vertical;
-        drawImage(canvas, imageSource, 0, 0, 0, xFlip, yFlip);
-    }
-    else if (action.rotate !== undefined) {
-        const { rotate } = action;
-        const { width, height } = sizeFromAngle(imageSource.naturalWidth, imageSource.naturalHeight, rotate);
-        canvas.width = width;
-        canvas.height = height;
-        drawImage(canvas, imageSource, 0, 0, rotate, false, false, width, height);
-    }
-    else {
-        const context = getContext(canvas);
-        context.save();
-        context.drawImage(imageSource, 0, 0, imageSource.naturalWidth, imageSource.naturalHeight);
-    }
-    return getResults(canvas, options);
+    return resampleSingle(canvas, requestedWidth, requestedHeight, true);
+}
+function actionFlip(canvas, action) {
+    const { flip } = action;
+    const xFlip = flip === FlipType.Horizontal;
+    const yFlip = flip === FlipType.Vertical;
+    return drawImage(canvas, 0, 0, 0, xFlip, yFlip);
+}
+function actionRotate(canvas, action) {
+    const { rotate } = action;
+    const { width, height } = sizeFromAngle(canvas.width, canvas.height, rotate);
+    return drawImage(canvas, 0, 0, rotate, false, false, width, height);
 }
 export default {
     get name() {
         return 'ExpoImageManipulator';
     },
     async manipulateAsync(uri, actions = [], options) {
-        if (!actions.length) {
-            const canvas = document.createElement('canvas');
-            const imageSource = await loadImageAsync(uri);
-            canvas.width = imageSource.naturalWidth;
-            canvas.height = imageSource.naturalHeight;
-            const ctx = getContext(canvas);
-            ctx.drawImage(imageSource, 0, 0, imageSource.naturalWidth, imageSource.naturalHeight);
-            return getResults(canvas, options);
-        }
-        else {
-            let output;
-            for (let i = 0; i < actions.length; i++) {
-                const action = actions[i];
-                let _options;
-                if (i === actions.length - 1) {
-                    _options = options;
-                }
-                output = await manipulateWithActionAsync(uri || output.uri, action, _options);
+        const original = await loadImageAsync(uri);
+        const result = actions.reduce((canvas, action) => {
+            if (action.crop) {
+                return actionCrop(canvas, action);
             }
-            return output;
-        }
+            else if (action.resize) {
+                return actionResize(canvas, action);
+            }
+            else if (action.flip !== undefined) {
+                return actionFlip(canvas, action);
+            }
+            else if (action.rotate !== undefined) {
+                return actionRotate(canvas, action);
+            }
+            else {
+                return canvas;
+            }
+        }, original);
+        return getResults(result, options);
     },
 };
 //# sourceMappingURL=ExpoImageManipulator.web.js.map
