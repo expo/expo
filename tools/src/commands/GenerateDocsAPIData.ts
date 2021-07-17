@@ -106,12 +106,12 @@ async function action({packageName, version = 'unversioned'}: ActionOptions) {
     'expo-pedometer': ['Pedometer.ts', 'expo-sensors'],
     'expo-print': ['Print.ts'],
     'expo-random': ['Random.ts'],
+    'expo-screen-capture': ['ScreenCapture.ts'],
     'expo-secure-store': ['SecureStore.ts'],
     'expo-sharing': ['Sharing.ts'],
-    'expo-speech': ['Speech/Speech.ts'],
-    'expo-screen-capture': ['ScreenCapture.ts'],
-    'expo-splash-screen': ['SplashScreen.ts'],
     'expo-sms': ['SMS.ts'],
+    'expo-speech': ['Speech/Speech.ts'],
+    'expo-splash-screen': ['SplashScreen.ts'],
     'expo-store-review': ['StoreReview.ts'],
     'expo-task-manager': ['TaskManager.ts'],
     'expo-tracking-transparency': ['TrackingTransparency.ts'],
@@ -126,7 +126,7 @@ async function action({packageName, version = 'unversioned'}: ActionOptions) {
         .map(([key, value]) => executeCommand(key, version, ...value));
       if (packagesEntries.length) {
         await Promise.all(packagesEntries);
-        logger.log(chalk.green(`\n🎉 Successful extraction of docs API data for the selected package!`));
+        logger.log(chalk.green(`🎉 Successful extraction of docs API data for the selected package!`));
       } else {
         logger.warn(`🚨 Package '${packageName}' API data generation is not supported yet!`);
       }

@@ -9,7 +9,7 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
+    "prepare": "expo-module prepare && et generate-docs-api-data -p expo-app-loading",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
