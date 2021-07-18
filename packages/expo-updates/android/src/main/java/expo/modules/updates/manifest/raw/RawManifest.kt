@@ -79,8 +79,8 @@ abstract class RawManifest(protected val json: JSONObject) {
     val expoGoRootObject = getExpoGoConfigRootObject() ?: return false
     return try {
       expoGoRootObject.has("developer") &&
-              expoGoRootObject.has("packagerOpts") &&
-              expoGoRootObject.getJSONObject("packagerOpts").optBoolean("dev", false)
+        expoGoRootObject.has("packagerOpts") &&
+        expoGoRootObject.getJSONObject("packagerOpts").optBoolean("dev", false)
     } catch (e: JSONException) {
       false
     }
@@ -90,7 +90,7 @@ abstract class RawManifest(protected val json: JSONObject) {
     val expoGoRootObject = getExpoGoConfigRootObject() ?: return false
     return try {
       expoGoRootObject.has("developmentClient") &&
-              expoGoRootObject.getJSONObject("developmentClient").optBoolean("silentLaunch", false)
+        expoGoRootObject.getJSONObject("developmentClient").optBoolean("silentLaunch", false)
     } catch (e: JSONException) {
       false
     }

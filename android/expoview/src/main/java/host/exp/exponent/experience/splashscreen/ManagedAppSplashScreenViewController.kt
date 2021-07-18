@@ -10,9 +10,11 @@ import com.google.android.material.snackbar.Snackbar
 import expo.modules.splashscreen.BuildConfig
 import expo.modules.splashscreen.SplashScreenViewController
 
-class ManagedAppSplashScreenViewController(activity: Activity,
-                                       rootView: Class<out ViewGroup>,
-                                       private val splashScreenView: View): SplashScreenViewController(activity, rootView, splashScreenView) {
+class ManagedAppSplashScreenViewController(
+  activity: Activity,
+  rootView: Class<out ViewGroup>,
+  private val splashScreenView: View
+) : SplashScreenViewController(activity, rootView, splashScreenView) {
   private val mWarningHandler = Handler()
   private var mSnackbar: Snackbar? = null
   private var mRunnable: Runnable? = null
@@ -20,13 +22,16 @@ class ManagedAppSplashScreenViewController(activity: Activity,
   private fun startSplashScreenWarningTimer() {
     mRunnable = Runnable {
       mSnackbar = Snackbar.make(splashScreenView, "Stuck on splash screen?", Snackbar.LENGTH_LONG)
-      mSnackbar!!.setAction("Info", View.OnClickListener { v ->
-        val url = "https://expo.fyi/splash-screen-hanging"
-        val webpage = Uri.parse(url)
-        val intent = Intent(Intent.ACTION_VIEW, webpage)
-        v.context.startActivity(intent)
-        mSnackbar!!.dismiss()
-      })
+      mSnackbar!!.setAction(
+        "Info",
+        View.OnClickListener { v ->
+          val url = "https://expo.fyi/splash-screen-hanging"
+          val webpage = Uri.parse(url)
+          val intent = Intent(Intent.ACTION_VIEW, webpage)
+          v.context.startActivity(intent)
+          mSnackbar!!.dismiss()
+        }
+      )
       mSnackbar!!.show()
     }
 
@@ -45,9 +50,12 @@ class ManagedAppSplashScreenViewController(activity: Activity,
   }
 
   override fun hideSplashScreen(successCallback: (hasEffect: Boolean) -> Unit, failureCallback: (reason: String) -> Unit) {
-    super.hideSplashScreen({
-      mRunnable?.let { it1 -> mWarningHandler.removeCallbacks(it1) }
-      successCallback(it)
-    }, failureCallback)
+    super.hideSplashScreen(
+      {
+        mRunnable?.let { it1 -> mWarningHandler.removeCallbacks(it1) }
+        successCallback(it)
+      },
+      failureCallback
+    )
   }
 }
