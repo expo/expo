@@ -74,4 +74,4 @@ jobs:
         env:
           ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/
         working-directory: android
-        run: ./gradlew spotlessCheck || { echo '::error Spotless lint failed. Run `./gradlew spotlessApply` to automatically fix formatting.' && exit 1 }
+        run: ./gradlew spotlessCheck || { echo '::error Spotless lint failed. Run `./gradlew spotlessApply` to automatically fix formatting.' && exit 1; }
