@@ -12,7 +12,7 @@ import org.unimodules.test.core.assertRejected
 
 @RunWith(RobolectricTestRunner::class)
 class CryptoModuleTest {
-  private val testValue = "Expo";
+  private val testValue = "Expo"
   private val algorithms = listOf("SHA-1", "SHA-256", "SHA-384", "SHA-512", "MD2", "MD4", "MD5")
   private lateinit var module: CryptoModule
 
