@@ -13,7 +13,6 @@ import {
   testSMSComposeWithUndefinedRecipient,
 } from './SMSCommon';
 
-
 export const name = 'SMS';
 
 export function test({ describe, it, expect, beforeAll, afterAll }) {
