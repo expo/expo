@@ -1,9 +1,7 @@
 package expo.modules.errorrecovery
 
-import android.app.Application
 import androidx.test.core.app.ApplicationProvider
 import org.junit.Assert.assertEquals
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.Assert.assertNull
@@ -54,7 +52,7 @@ internal class ErrorRecoveryModuleTest {
     val promise = PromiseMock()
     val mockProps = "test props"
     val module = ErrorRecoveryModule(ApplicationProvider.getApplicationContext())
-    module.saveRecoveryProps(mockProps,  promise)
+    module.saveRecoveryProps(mockProps, promise)
     val constants = module.constants
     assertEquals(constants[RECOVERY_STORE_KEY], mockProps)
   }
@@ -63,7 +61,7 @@ internal class ErrorRecoveryModuleTest {
   fun `props are saved when props=null`() {
     val promise = PromiseMock()
     val module = ErrorRecoveryModule(ApplicationProvider.getApplicationContext())
-    module.saveRecoveryProps(null,  promise)
+    module.saveRecoveryProps(null, promise)
     val constants = module.constants
     assertNull(constants[RECOVERY_STORE_KEY])
   }
