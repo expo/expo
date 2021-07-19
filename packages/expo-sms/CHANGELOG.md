@@ -22,6 +22,7 @@
 
 ### 💡 Others
 
+- Handle null/undefined recipients in sendSMSAsync ([#13673](https://github.com/expo/expo/pull/13673) by [@kkafar](https://github.com/kkafar))
 - Converted Android code to Kotlin ([#13505](https://github.com/expo/expo/pull/13505) by [@kkafar](https://github.com/kkafar))
 
 - Build Android code using Java 8 to fix Android instrumented test build error. ([#12939](https://github.com/expo/expo/pull/12939) by [@kudo](https://github.com/kudo))
