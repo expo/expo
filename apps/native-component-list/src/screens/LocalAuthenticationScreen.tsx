@@ -61,7 +61,7 @@ export default class LocalAuthenticationScreen extends React.Component<{}, State
       if (result.success) {
         alert('Authenticated!');
       } else {
-        alert(`Failed to authenticate, reason: ${result.error}, message: ${result.message}`);
+        alert('Failed to authenticate, reason: ' + result.error);
       }
     } finally {
       this.setState({ waiting: false });
