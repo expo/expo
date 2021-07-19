@@ -19,6 +19,5 @@ class ApplicationLifecycleDispatcher private constructor() {
         .flatMap { it.createApplicationLifecycleListeners(application) }
         .forEach { it.onConfigurationChanged(newConfig) }
     }
-
   }
 }

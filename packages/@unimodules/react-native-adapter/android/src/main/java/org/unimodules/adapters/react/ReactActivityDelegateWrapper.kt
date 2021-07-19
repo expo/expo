@@ -134,9 +134,11 @@ class ReactActivityDelegateWrapper(
     return method!!.invoke(delegate) as T
   }
 
-  private fun <T, A> invokeDelegateMethod(name: String,
-                                          argTypes: Array<Class<*>>,
-                                          args: Array<A>): T {
+  private fun <T, A> invokeDelegateMethod(
+    name: String,
+    argTypes: Array<Class<*>>,
+    args: Array<A>
+  ): T {
     var method = methodMap[name]
     if (method == null) {
       method = ReactActivityDelegate::class.java.getDeclaredMethod(name, *argTypes)
