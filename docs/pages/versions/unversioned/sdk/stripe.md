@@ -68,6 +68,7 @@ If you're relying on redirects, you'll need to pass in a `urlScheme` to `initStr
 ```js
 import * as Linking from 'expo-linking';
 import Constants from 'expo-constants';
+
 urlScheme:
   Constants.executionEnvironment === ExecutionEnvironment.StoreClient
     ? Linking.createURL('/--/')
