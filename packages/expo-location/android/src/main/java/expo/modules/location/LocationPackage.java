@@ -5,8 +5,8 @@ import android.content.Context;
 import java.util.Collections;
 import java.util.List;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.BasePackage;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.BasePackage;
 
 public class LocationPackage extends BasePackage {
   @Override

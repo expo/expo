@@ -3,11 +3,11 @@ package expo.modules.keepawake;
 import android.app.Activity;
 import android.view.WindowManager;
 
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.errors.CurrentActivityNotFoundException;
-import org.unimodules.core.interfaces.ActivityProvider;
-import org.unimodules.core.interfaces.InternalModule;
-import org.unimodules.core.interfaces.services.KeepAwakeManager;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.errors.CurrentActivityNotFoundException;
+import expo.modules.core.interfaces.ActivityProvider;
+import expo.modules.core.interfaces.InternalModule;
+import expo.modules.core.interfaces.services.KeepAwakeManager;
 
 import java.util.Collections;
 import java.util.HashSet;

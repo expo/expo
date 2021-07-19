@@ -15,7 +15,7 @@ import android.text.format.DateUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.unimodules.core.errors.InvalidArgumentException;
+import expo.modules.core.errors.InvalidArgumentException;
 
 import java.io.IOException;
 import java.text.DateFormat;

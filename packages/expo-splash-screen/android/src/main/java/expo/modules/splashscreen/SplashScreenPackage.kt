@@ -2,10 +2,10 @@ package expo.modules.splashscreen
 
 import android.content.Context
 import expo.modules.splashscreen.singletons.SplashScreen
-import org.unimodules.core.BasePackage
-import org.unimodules.core.ExportedModule
-import org.unimodules.core.interfaces.ReactActivityLifecycleListener
-import org.unimodules.core.interfaces.SingletonModule
+import expo.modules.core.BasePackage
+import expo.modules.core.ExportedModule
+import expo.modules.core.interfaces.ReactActivityLifecycleListener
+import expo.modules.core.interfaces.SingletonModule
 
 class SplashScreenPackage : BasePackage() {
   override fun createExportedModules(context: Context): List<ExportedModule> {

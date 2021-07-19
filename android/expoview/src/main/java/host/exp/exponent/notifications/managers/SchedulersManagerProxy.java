@@ -2,7 +2,7 @@ package host.exp.exponent.notifications.managers;
 
 import android.content.Context;
 
-import org.unimodules.core.interfaces.Function;
+import expo.modules.core.interfaces.Function;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;

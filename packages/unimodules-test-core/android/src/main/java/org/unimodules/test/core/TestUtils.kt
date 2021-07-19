@@ -4,8 +4,8 @@ import android.os.Bundle
 import junit.framework.ComparisonFailure
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.unimodules.core.arguments.MapArguments
-import org.unimodules.core.arguments.ReadableArguments
+import expo.modules.core.arguments.MapArguments
+import expo.modules.core.arguments.ReadableArguments
 
 fun assertSetsEqual(first: Set<*>, second: Set<*>, message: String = "") {
   if (!first.all { second.contains(it) }) {

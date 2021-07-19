@@ -2,7 +2,7 @@ package expo.modules.updates;
 
 import android.content.Context;
 
-import org.unimodules.core.interfaces.InternalModule;
+import expo.modules.core.interfaces.InternalModule;
 
 import java.io.File;
 import java.util.Collections;

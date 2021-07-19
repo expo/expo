@@ -2,9 +2,9 @@ package expo.modules.barcodescanner;
 
 import android.content.Context;
 
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.ViewManager;
-import org.unimodules.core.interfaces.ExpoProp;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.ViewManager;
+import expo.modules.core.interfaces.ExpoProp;
 
 import java.util.List;
 import java.util.ArrayList;

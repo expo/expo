@@ -12,8 +12,8 @@ import java.util.HashMap;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.ModuleRegistry;
 
 public class FirebaseCoreModule extends ExportedModule {
   private static final String NAME = "ExpoFirebaseCore";

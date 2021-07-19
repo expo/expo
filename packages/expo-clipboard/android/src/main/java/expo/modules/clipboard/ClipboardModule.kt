@@ -4,10 +4,10 @@ import android.content.Context
 import android.content.ClipData
 import android.content.ClipboardManager
 
-import org.unimodules.core.ExportedModule
-import org.unimodules.core.ModuleRegistry
-import org.unimodules.core.Promise
-import org.unimodules.core.interfaces.ExpoMethod
+import expo.modules.core.ExportedModule
+import expo.modules.core.ModuleRegistry
+import expo.modules.core.Promise
+import expo.modules.core.interfaces.ExpoMethod
 
 class ClipboardModule(context: Context) : ExportedModule(context) {
   private val NAME = "ExpoClipboard"

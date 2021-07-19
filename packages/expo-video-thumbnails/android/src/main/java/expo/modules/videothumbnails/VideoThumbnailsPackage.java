@@ -5,9 +5,9 @@ import android.content.Context;
 import java.util.Collections;
 import java.util.List;
 
-import org.unimodules.core.BasePackage;
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ViewManager;
+import expo.modules.core.BasePackage;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.ViewManager;
 
 public class VideoThumbnailsPackage extends BasePackage {
     @Override

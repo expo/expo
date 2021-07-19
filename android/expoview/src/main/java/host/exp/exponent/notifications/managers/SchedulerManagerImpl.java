@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.raizlabs.android.dbflow.sql.language.SQLite;
 import com.raizlabs.android.dbflow.sql.language.Select;
-import org.unimodules.core.interfaces.Function;
+import expo.modules.core.interfaces.Function;
 
 import java.util.ArrayList;
 import java.util.Arrays;

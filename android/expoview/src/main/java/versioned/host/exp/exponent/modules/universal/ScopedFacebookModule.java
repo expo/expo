@@ -8,9 +8,9 @@ import com.facebook.FacebookSdk;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.unimodules.core.Promise;
-import org.unimodules.core.arguments.ReadableArguments;
-import org.unimodules.core.interfaces.LifecycleEventListener;
+import expo.modules.core.Promise;
+import expo.modules.core.arguments.ReadableArguments;
+import expo.modules.core.interfaces.LifecycleEventListener;
 
 import expo.modules.facebook.FacebookModule;
 import host.exp.exponent.kernel.ExperienceKey;

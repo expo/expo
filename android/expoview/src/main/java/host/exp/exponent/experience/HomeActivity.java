@@ -15,7 +15,7 @@ import com.facebook.soloader.SoLoader;
 import com.squareup.leakcanary.LeakCanary;
 
 import org.json.JSONException;
-import org.unimodules.core.interfaces.Package;
+import expo.modules.core.interfaces.Package;
 
 import java.util.Arrays;
 import java.util.List;
