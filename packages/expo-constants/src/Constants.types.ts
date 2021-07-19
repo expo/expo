@@ -122,7 +122,10 @@ export type ExpoClientConfig = ExpoConfig & {
 /**
  * A classic manifest https://docs.expo.io/guides/how-expo-works/#expo-manifest
  */
-export type AppManifest = ExpoClientConfig & ExpoGoConfig;
+export type AppManifest = ExpoClientConfig &
+  ExpoGoConfig & {
+    [key: string]: any;
+  };
 
 export interface PlatformManifest {
   ios?: IOSManifest;
