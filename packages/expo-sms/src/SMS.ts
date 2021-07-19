@@ -68,7 +68,7 @@ export async function sendSMSAsync(
   const finalAddresses = Array.isArray(addresses) ? addresses : [addresses];
   finalAddresses.forEach(address => {
     if (address === null || address === undefined) {
-      throw new TypeError('undefined, null or empty address');
+      throw new TypeError('undefined or null address');
     }
   });
   const finalOptions = {
