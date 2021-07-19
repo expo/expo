@@ -119,7 +119,15 @@ export const mobileNetworkCode: string | null = ExpoCellular
   ? ExpoCellular.mobileNetworkCode
   : null;
 
-// TODO add docs
+/**
+ * @return Returns a promise which fulfils with a [`PermissionResponse`](#permissionresponse)
+ * of android.permission.READ_PHONE_STATE.
+ *
+ * The permission is required only on Android, to be able to
+ * check generation of current cellular connection. On iOS
+ * this methods returns, that permissions are always granted.
+ *
+ */
 export async function requestPhoneStatePermissionsAsync(): Promise<PermissionResponse> {
   if (Platform.OS === 'android') {
     if (!ExpoCellular.requestPhoneStatePermissionsAsync) {
@@ -136,7 +144,15 @@ export async function requestPhoneStatePermissionsAsync(): Promise<PermissionRes
   }
 }
 
-// TODO add docs
+/**
+ * @return Returns a promise which fulfils with a [`PermissionResponse`](#permissionresponse)
+ * of android.permission.READ_PHONE_STATE
+ *
+ * The permission is required only on Android, to be able to
+ * check generation of current cellular connection. On iOS
+ * this methods returns, that permissions are always granted.
+ *
+ */
 export async function getPhoneStatePermissionsAsync(): Promise<PermissionResponse> {
   if (Platform.OS === 'android') {
     if (!ExpoCellular.getPhoneStatePermissionsAsync) {
@@ -178,8 +194,11 @@ export async function getCellularGenerationAsync(): Promise<CellularGeneration> 
 
 // TODO add docs
 /**
- * @return Returns a promise which fulfils with a [`Cellular.CellularInfo`](#cellularinfo)
+ * @return Returns a promise which fulfils with a [`Cellular.CellularInfo`](#cellularinfo) -
  * object that contains all cellular information.
+ *
+ * This method should be used in favour of constants, because status of the cellular
+ * may change after initialisation of the module.
  */
 export async function getCurrentCarrierAsync(): Promise<CellularInfo> {
   if (!ExpoCellular.getCurrentCarrierAsync) {

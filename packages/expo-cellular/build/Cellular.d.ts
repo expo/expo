@@ -99,7 +99,25 @@ export declare const mobileCountryCode: string | null;
  * ```
  */
 export declare const mobileNetworkCode: string | null;
+/**
+ * @return Returns a promise which fulfils with a [`PermissionResponse`](#permissionresponse)
+ * of android.permission.READ_PHONE_STATE.
+ *
+ * The permission is required only on Android, to be able to
+ * check generation of current cellular connection. On iOS
+ * this methods returns, that permissions are always granted.
+ *
+ */
 export declare function requestPhoneStatePermissionsAsync(): Promise<PermissionResponse>;
+/**
+ * @return Returns a promise which fulfils with a [`PermissionResponse`](#permissionresponse)
+ * of android.permission.READ_PHONE_STATE
+ *
+ * The permission is required only on Android, to be able to
+ * check generation of current cellular connection. On iOS
+ * this methods returns, that permissions are always granted.
+ *
+ */
 export declare function getPhoneStatePermissionsAsync(): Promise<PermissionResponse>;
 /**
  * @return Returns a promise which fulfils with a [`Cellular.CellularGeneration`](#cellulargeneration)
@@ -118,7 +136,10 @@ export declare function getPhoneStatePermissionsAsync(): Promise<PermissionRespo
  */
 export declare function getCellularGenerationAsync(): Promise<CellularGeneration>;
 /**
- * @return Returns a promise which fulfils with a [`Cellular.CellularInfo`](#cellularinfo)
+ * @return Returns a promise which fulfils with a [`Cellular.CellularInfo`](#cellularinfo) -
  * object that contains all cellular information.
+ *
+ * This method should be used in favour of constants, because status of the cellular
+ * may change after initialisation of the module.
  */
 export declare function getCurrentCarrierAsync(): Promise<CellularInfo>;
