@@ -9,6 +9,9 @@ export { CellularGeneration };
 
 // @needsAudit
 /**
+ * @deprecated use `getCurrentCarrierAsync()` instead
+ *
+ *
  * Indicates if the carrier allows making VoIP calls on its network. On Android, this checks whether
  * the system supports SIP-based VoIP API. See [here](https://developer.android.com/reference/android/net/sip/SipManager.html#isVoipSupported(android.content.Context))
  * to view more information.
@@ -28,6 +31,9 @@ export const allowsVoip: boolean | null = ExpoCellular ? ExpoCellular.allowsVoip
 
 // @needsAudit
 /**
+ * @deprecated use `getCurrentCarrierAsync()` instead
+ *
+ *
  * The name of the user’s home cellular service provider. If the device has dual SIM cards, only the
  * carrier for the currently active SIM card will be returned. On Android, this value is only
  * available when the SIM state is [`SIM_STATE_READY`](https://developer.android.com/reference/android/telephony/TelephonyManager.html#SIM_STATE_READY).
@@ -49,6 +55,9 @@ export const carrier: string | null = ExpoCellular ? ExpoCellular.carrier : null
 
 // @needsAudit
 /**
+ * @deprecated use `getCurrentCarrierAsync()` instead
+ *
+ *
  * The ISO country code for the user’s cellular service provider. On iOS, the value is `null` if any
  * of the following apply:
  * - The device is in airplane mode.
@@ -61,11 +70,15 @@ export const carrier: string | null = ExpoCellular ? ExpoCellular.carrier : null
  * ```ts
  * Cellular.isoCountryCode; // "us" or "au"
  * ```
+ *
  */
 export const isoCountryCode: string | null = ExpoCellular ? ExpoCellular.isoCountryCode : null;
 
 // @needsAudit
 /**
+ * @deprecated use `getCurrentCarrierAsync()` instead
+ *
+ *
  * The mobile country code (MCC) for the user’s current registered cellular service provider.
  * On Android, this value is only available when SIM state is [`SIM_STATE_READY`](https://developer.android.com/reference/android/telephony/TelephonyManager.html#SIM_STATE_READY). Otherwise, this
  * returns `null`. On iOS, the value may be null on hardware prior to iPhone 4S when in airplane mode.
@@ -86,6 +99,9 @@ export const mobileCountryCode: string | null = ExpoCellular
 
 // @needsAudit
 /**
+ * @deprecated field, use `getCurrentCarrierAsync()` instead
+ *
+ *
  * The ISO country code for the user’s cellular service provider. On iOS, the value is `null` if
  * any of the following apply:
  * - The device is in airplane mode.

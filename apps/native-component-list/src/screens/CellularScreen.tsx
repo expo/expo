@@ -1,35 +1,30 @@
 import * as Cellular from 'expo-cellular';
 import { CellularInfo } from 'expo-cellular/build/Cellular.types';
-import { PermissionResponse } from 'expo-modules-core';
 import * as React from 'react';
 import { useState } from 'react';
 import { ScrollView } from 'react-native';
 
 import Button from '../components/Button';
 import MonoText from '../components/MonoText';
-import { useResolvedValue } from '../utilities/useResolvedValue';
 
 export default function CellularScreen() {
-  const [permissions, setPermissions] = useState<PermissionResponse>();
-  const [_, error] = useResolvedValue(Cellular.getCellularGenerationAsync, [permissions]);
   const [cellularInfo, setCellularInfo] = useState<CellularInfo>();
-
-  React.useEffect(() => {
-    if (error) alert(error.message);
-  }, [error]);
 
   const _requestPermissions = async () => {
     try {
-      const newPermissions = await Cellular.requestPhoneStatePermissionsAsync();
-      setPermissions(newPermissions);
+      await Cellular.requestPhoneStatePermissionsAsync();
     } catch (error) {
       alert(error.message);
     }
   };
 
   const _getCellularInfo = async () => {
-    const newCellularCarrier = await Cellular.getCurrentCarrierAsync();
-    setCellularInfo(newCellularCarrier);
+    try {
+      const newCellularCarrier = await Cellular.getCurrentCarrierAsync();
+      setCellularInfo(newCellularCarrier);
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   return (
