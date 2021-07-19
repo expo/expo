@@ -23,9 +23,9 @@ if (__DEV__) {
         }
     }
     else if (
-    // If this is defined then we can be define Constants.manifest.logUrl without worrying about the warning.
+    // If this is defined then we can be define Constants.manifest2.extra.expoGo.logUrl without worrying about the warning.
     Constants.__unsafeNoWarnManifest2 &&
-        // Only attempt to set the URL if `Constants.__unsafeNoWarnManifest.logUrl` is not defined.
+        // Only attempt to set the URL if `Constants.__unsafeNoWarnManifest2.logUrl` is not defined.
         !Constants.__unsafeNoWarnManifest2.extra?.expoGo?.logUrl) {
         const devServerInfo = getDevServer();
         // Ensure the URL is remote and not local. i.e `file://`

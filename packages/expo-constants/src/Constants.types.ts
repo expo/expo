@@ -43,7 +43,7 @@ export interface ManifestAsset {
 /**
  * A modern manifest.
  */
-export interface Manifest {
+export type Manifest = {
   id: string;
   createdAt: string;
   runtimeVersion: string;
@@ -54,9 +54,9 @@ export interface Manifest {
     expoClient?: ExpoClientConfig;
     expoGo?: ExpoGoConfig;
   };
-}
+};
 
-export interface ExpoGoConfig {
+export type ExpoGoConfig = {
   mainModuleName?: string;
   debuggerHost?: string;
   logUrl?: string;
@@ -74,9 +74,9 @@ export interface ExpoGoConfig {
     lanType?: string;
     [key: string]: any;
   };
-}
+};
 
-export interface ExpoClientConfig extends ExpoConfig {
+export type ExpoClientConfig = ExpoConfig & {
   /** Published Apps Only */
   releaseId?: string;
   revisionId?: string;
@@ -117,25 +117,12 @@ export interface ExpoClientConfig extends ExpoConfig {
    * between accounts or renamed.
    */
   projectId?: string;
-}
+};
 
 /**
  * A classic manifest https://docs.expo.io/guides/how-expo-works/#expo-manifest
  */
-export interface AppManifest extends ExpoClientConfig, ExpoGoConfig {
-  // this needs to be specified to appease typescript
-  packagerOpts?: {
-    hostType?: string;
-    dev?: boolean;
-    strict?: boolean;
-    minify?: boolean;
-    urlType?: string;
-    urlRandomness?: string;
-    lanType?: string;
-    [key: string]: any;
-  };
-  [key: string]: any;
-}
+export type AppManifest = ExpoClientConfig & ExpoGoConfig;
 
 export interface PlatformManifest {
   ios?: IOSManifest;
