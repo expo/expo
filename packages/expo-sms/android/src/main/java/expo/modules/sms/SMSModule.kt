@@ -88,7 +88,6 @@ class SMSModule(context: Context) : ExportedModule(context), LifecycleEventListe
     }
     smsIntent.putExtra("exit_on_sent", true)
     smsIntent.putExtra("compose_mode", true)
-    smsIntent.putExtra(Intent.EXTRA_TEXT, message)
     smsIntent.putExtra("sms_body", message)
     mPendingPromise = promise
     val activityProvider = mModuleRegistry.getModule(
