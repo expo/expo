@@ -158,7 +158,7 @@ function drawImage(
   context.translate(x + canvas.width / 2, y + canvas.height / 2);
 
   // Rotate the canvas around the origin
-  const radians = 2 * Math.PI - (angle * Math.PI) / 180;
+  const radians = (angle * Math.PI) / 180;
   context.rotate(radians);
 
   // Flip/flop the canvas
