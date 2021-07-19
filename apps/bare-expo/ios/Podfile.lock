@@ -38,7 +38,7 @@ PODS:
   - EXCalendar (9.2.2):
     - ExpoModulesCore
     - UMCore
-  - EXCamera (11.2.1):
+  - EXCamera (11.3.0):
     - ExpoModulesCore
     - UMCore
   - EXCellular (3.2.0):
@@ -135,22 +135,22 @@ PODS:
   - EXPermissions (12.1.1):
     - ExpoModulesCore
     - UMCore
-  - expo-dev-client (0.4.4):
+  - expo-dev-client (0.4.5):
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (0.6.4):
-    - expo-dev-launcher/Main (= 0.6.4)
+  - expo-dev-launcher (0.6.5):
+    - expo-dev-launcher/Main (= 0.6.5)
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React
-  - expo-dev-launcher/Main (0.6.4):
+  - expo-dev-launcher/Main (0.6.5):
     - expo-dev-launcher/Unsafe
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React
-  - expo-dev-launcher/Unsafe (0.6.4):
+  - expo-dev-launcher/Unsafe (0.6.5):
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React
@@ -1215,7 +1215,7 @@ SPEC CHECKSUMS:
   EXBlur: 50d490040f3b14898ed8198d5125dc699189f4d9
   EXBrightness: 8c4fd91c787d05eab082e7efefe8072fd6c715c2
   EXCalendar: 949f962838e6297f7c810230407b1aa152f5d5b6
-  EXCamera: 30900a4e40a782a349214ec2eeeae0d3d902d630
+  EXCamera: 883f77cc8ff898a7fb8381b8da177a70f26acda8
   EXCellular: 82f7267f13f296f37434d0031e9a214bbd4b8919
   EXClipboard: c66f7d22ba754496b0fc6b23a2cb9a3e10fa1581
   EXConstants: 3babb61f8f4bb7dffe85b8b7d6eaa31d903e4d7e
@@ -1248,8 +1248,8 @@ SPEC CHECKSUMS:
   EXNetwork: 6682b2bbbd90e66c4738159abaf8cd206c25e8b8
   EXNotifications: f0d0a38e97c9a790f5fb3c14efab79b9ece83a7e
   EXPermissions: 916efb5b817cb0a40160c0cd2f369af3c23a78be
-  expo-dev-client: 57a72f2bae168ffd79746bbccdc9ffd7bc56bc6f
-  expo-dev-launcher: 492125b0502ac0c3c0ce1c106a301ea53f6bc0ec
+  expo-dev-client: afef34fe62fd2f853cb3feb7b0ea1da3ed7717e9
+  expo-dev-launcher: 696f20b99996080a3eebdaa723627a614e526ada
   expo-dev-menu: c1d43574828f37cb541a0bb52fe7bb7829586147
   expo-dev-menu-interface: 848563c91c9f36f963a8456e885129a46f4cdfa1
   expo-image: 2fded43b1489487d7e84911caaadc821258f4905
