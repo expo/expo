@@ -44,7 +44,7 @@ export type CellularInfo = {
    * Cellular.allowsVoip; // true or false
    * ```
    */
-  allowsVoip?: boolean;
+  allowsVoip: boolean | null;
 
   // @needsAudit
   /**
@@ -62,7 +62,7 @@ export type CellularInfo = {
    * ```
    */
 
-  isoCountryCode?: string;
+  isoCountryCode: string | null;
   // @needsAudit
   /**
    * The name of the user’s home cellular service provider. If the device has dual SIM cards, only the
@@ -82,7 +82,7 @@ export type CellularInfo = {
    * Cellular.carrier; // "T-Mobile" or "Verizon"
    * ```
    */
-  carrier?: string;
+  carrier: string | null;
 
   // @needsAudit
   /**
@@ -100,7 +100,7 @@ export type CellularInfo = {
    * Cellular.mobileCountryCode; // "310"
    * ```
    */
-  mobileCountryCode?: string;
+  mobileCountryCode: string | null;
 
   // @needsAudit
   /**
@@ -117,12 +117,12 @@ export type CellularInfo = {
    * Cellular.mobileNetworkCode; // "260"
    * ```
    */
-  mobileNetworkCode?: string;
+  mobileNetworkCode: string | null;
 
   // @needsAudit
   /**
    * Describes the current generation of the cellular connection. It is an enum with these possible
    * values:
    */
-  generation?: CellularGeneration;
+  generation?: CellularGeneration | null;
 };

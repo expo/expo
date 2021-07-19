@@ -41,7 +41,7 @@ export declare type CellularInfo = {
      * Cellular.allowsVoip; // true or false
      * ```
      */
-    allowsVoip?: boolean;
+    allowsVoip: boolean | null;
     /**
      * The ISO country code for the user’s cellular service provider. On iOS, the value is `null` if any
      * of the following apply:
@@ -56,7 +56,7 @@ export declare type CellularInfo = {
      * Cellular.isoCountryCode; // "us" or "au"
      * ```
      */
-    isoCountryCode?: string;
+    isoCountryCode: string | null;
     /**
      * The name of the user’s home cellular service provider. If the device has dual SIM cards, only the
      * carrier for the currently active SIM card will be returned. On Android, this value is only
@@ -75,7 +75,7 @@ export declare type CellularInfo = {
      * Cellular.carrier; // "T-Mobile" or "Verizon"
      * ```
      */
-    carrier?: string;
+    carrier: string | null;
     /**
      * The mobile country code (MCC) for the user’s current registered cellular service provider.
      * On Android, this value is only available when SIM state is [`SIM_STATE_READY`](https://developer.android.com/reference/android/telephony/TelephonyManager.html#SIM_STATE_READY). Otherwise, this
@@ -91,7 +91,7 @@ export declare type CellularInfo = {
      * Cellular.mobileCountryCode; // "310"
      * ```
      */
-    mobileCountryCode?: string;
+    mobileCountryCode: string | null;
     /**
      * The ISO country code for the user’s cellular service provider. On iOS, the value is `null` if
      * any of the following apply:
@@ -106,10 +106,10 @@ export declare type CellularInfo = {
      * Cellular.mobileNetworkCode; // "260"
      * ```
      */
-    mobileNetworkCode?: string;
+    mobileNetworkCode: string | null;
     /**
      * Describes the current generation of the cellular connection. It is an enum with these possible
      * values:
      */
-    generation?: CellularGeneration;
+    generation?: CellularGeneration | null;
 };

@@ -1,4 +1,4 @@
-import { CellularGeneration } from './Cellular.types';
+import { CellularGeneration, CellularInfo } from './Cellular.types';
 
 export default {
   get allowsVoip(): null {
@@ -37,5 +37,15 @@ export default {
     } else {
       return CellularGeneration.UNKNOWN;
     }
+  },
+  async getCurrentCarrierAsync(): Promise<CellularInfo> {
+    return {
+      allowsVoip: this.allowsVoip,
+      isoCountryCode: this.isoCountryCode,
+      carrier: this.carrier,
+      mobileCountryCode: this.mobileNetworkCode,
+      mobileNetworkCode: this.mobileNetworkCode,
+      generation: await this.getCellularGenerationAsync(),
+    };
   },
 };
