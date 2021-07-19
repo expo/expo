@@ -5,12 +5,11 @@ import { getAssetForSource, loadSingleFontAsync, fontFamilyNeedsScoping, getNati
 const loaded = {};
 const loadPromises = {};
 // @needsAudit
+// note(brentvatne): at some point we may want to warn if this is called outside of a managed app.
 /**
  * Used to transform font family names to the scoped name. This does not need to
  * be called in standalone or bare apps but it will return unscoped font family
  * names if it is called in those contexts.
- * note(brentvatne): at some point we may want to warn if this is called
- * outside of a managed app.
  *
  * @param fontFamily Name of font to process.
  * @returns Returns a name processed for use with the [current workflow](https://docs.expo.io/introduction/managed-vs-bare/).
