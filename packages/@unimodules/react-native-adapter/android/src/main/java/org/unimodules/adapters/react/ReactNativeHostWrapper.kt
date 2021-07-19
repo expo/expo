@@ -2,7 +2,6 @@ package org.unimodules.adapters.react
 
 import android.app.Application
 import androidx.collection.ArrayMap
-import com.facebook.infer.annotation.Assertions
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
@@ -12,9 +11,6 @@ import com.facebook.react.bridge.JSIModuleSpec
 import com.facebook.react.bridge.JavaScriptContextHolder
 import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactMarker
-import com.facebook.react.bridge.ReactMarkerConstants
-import com.facebook.react.common.LifecycleState
 import com.facebook.react.devsupport.RedBoxHandler
 import com.facebook.react.uimanager.UIImplementationProvider
 import org.unimodules.core.interfaces.ReactNativeHostHandler
