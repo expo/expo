@@ -6,7 +6,7 @@ import { Logo } from './Logo';
 import { Theme } from './Theme';
 
 import AlgoliaSearch from '~/components/plugins/AlgoliaSearch'; // todo
-import { MenuColumn, TocColumn } from '~/ui/containers/document';
+import { MenuColumn, TocColumn } from '~/ui/containers/Document';
 import { breakpoints } from '~/ui/foundations/breakpoints';
 
 export const Navigation = () => {

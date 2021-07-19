@@ -7,7 +7,7 @@ import { GroupLink } from './GroupLink';
 import { RootLink } from './RootLink';
 
 import { Spacer } from '~/ui/components/Spacer';
-import { MenuColumn } from '~/ui/containers/document';
+import { MenuColumn } from '~/ui/containers/Document';
 import { SDKIcon } from '~/ui/foundations/icons';
 
 type MenuProps = object;
