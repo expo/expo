@@ -41,6 +41,7 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_ALBUM;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS_MESSAGE;
+import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_READ_PERMISSION_MESSAGE;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_WRITE_PERMISSION_MESSAGE;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_ASK_FOR_PERMISSIONS;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_ASK_FOR_PERMISSIONS_MESSAGE;
@@ -141,7 +142,7 @@ public class MediaLibraryModule extends ExportedModule implements ActivityEventL
 
   @ExpoMethod
   public void createAssetAsync(String localUri, Promise promise) {
-    if (isMissingPermissions()) {
+    if (isMissingReadOrWritePermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
       return;
     }
@@ -152,7 +153,7 @@ public class MediaLibraryModule extends ExportedModule implements ActivityEventL
 
   @ExpoMethod
   public void addAssetsToAlbumAsync(List<String> assetsId, String albumId, boolean copyToAlbum, Promise promise) {
-    if (isMissingPermissions()) {
+    if (isMissingReadOrWritePermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
       return;
     }
@@ -172,7 +173,7 @@ public class MediaLibraryModule extends ExportedModule implements ActivityEventL
 
   @ExpoMethod
   public void removeAssetsFromAlbumAsync(List<String> assetsId, String albumId, Promise promise) {
-    if (isMissingPermissions()) {
+    if (isMissingReadOrWritePermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
       return;
     }
@@ -192,7 +193,7 @@ public class MediaLibraryModule extends ExportedModule implements ActivityEventL
 
   @ExpoMethod
   public void deleteAssetsAsync(List<String> assetsId, Promise promise) {
-    if (isMissingPermissions()) {
+    if (isMissingReadOrWritePermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
       return;
     }
@@ -212,7 +213,7 @@ public class MediaLibraryModule extends ExportedModule implements ActivityEventL
 
   @ExpoMethod
   public void getAssetInfoAsync(String assetId, Map<String, Object> options /* unused on android atm */, Promise promise) {
-    if (isMissingPermissions()) {
+    if (isMissingReadOrWritePermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
       return;
     }
@@ -224,7 +225,7 @@ public class MediaLibraryModule extends ExportedModule implements ActivityEventL
 
   @ExpoMethod
   public void getAlbumsAsync(Map<String, Object> options /* unused on android atm */, Promise promise) {
-    if (isMissingPermissions()) {
+    if (isMissingReadOrWritePermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
       return;
     }
@@ -235,7 +236,7 @@ public class MediaLibraryModule extends ExportedModule implements ActivityEventL
 
   @ExpoMethod
   public void getAlbumAsync(String albumName, Promise promise) {
-    if (isMissingPermissions()) {
+    if (isMissingReadOrWritePermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
       return;
     }
@@ -246,7 +247,7 @@ public class MediaLibraryModule extends ExportedModule implements ActivityEventL
 
   @ExpoMethod
   public void createAlbumAsync(String albumName, String assetId, boolean copyAsset, Promise promise) {
-    if (isMissingPermissions()) {
+    if (isMissingReadOrWritePermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
       return;
     }
@@ -266,7 +267,7 @@ public class MediaLibraryModule extends ExportedModule implements ActivityEventL
 
   @ExpoMethod
   public void deleteAlbumsAsync(List<String> albumIds, Promise promise) {
-    if (isMissingPermissions()) {
+    if (isMissingReadOrWritePermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
       return;
     }
@@ -286,8 +287,8 @@ public class MediaLibraryModule extends ExportedModule implements ActivityEventL
 
   @ExpoMethod
   public void getAssetsAsync(Map<String, Object> assetOptions, Promise promise) {
-    if (isMissingPermissions()) {
-      promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
+    if (isMissingReadPermission()) {
+      promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_READ_PERMISSION_MESSAGE);
       return;
     }
 
@@ -358,7 +359,7 @@ public class MediaLibraryModule extends ExportedModule implements ActivityEventL
 
   @ExpoMethod
   public void albumNeedsMigrationAsync(String albumId, Promise promise) {
-    if (isMissingPermissions()) {
+    if (isMissingReadOrWritePermissions()) {
       promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
       return;
     }
@@ -431,7 +432,7 @@ public class MediaLibraryModule extends ExportedModule implements ActivityEventL
   public void onNewIntent(Intent intent) {
   }
 
-  private boolean isMissingPermissions() {
+  private boolean isMissingReadOrWritePermissions() {
     Permissions permissionsManager = mModuleRegistry.getModule(Permissions.class);
     if (permissionsManager == null) {
       return false;
@@ -447,6 +448,15 @@ public class MediaLibraryModule extends ExportedModule implements ActivityEventL
     }
 
     return !permissionsManager.hasGrantedPermissions(WRITE_EXTERNAL_STORAGE);
+  }
+
+  private boolean isMissingReadPermission() {
+    Permissions permissionsManager = mModuleRegistry.getModule(Permissions.class);
+    if (permissionsManager == null) {
+      return false;
+    }
+
+    return !permissionsManager.hasGrantedPermissions(READ_EXTERNAL_STORAGE);
   }
 
   private String[] getManifestPermissions(boolean writeOnly) {

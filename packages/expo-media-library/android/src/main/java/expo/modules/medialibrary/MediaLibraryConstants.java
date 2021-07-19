@@ -25,6 +25,7 @@ final class MediaLibraryConstants {
   static final String ERROR_UNABLE_TO_ASK_FOR_PERMISSIONS = "ERR_UNABLE_TO_ASK_FOR_PERMISSIONS";
   static final String ERROR_NO_PERMISSIONS_MESSAGE = "Missing MEDIA_LIBRARY permissions.";
   static final String ERROR_NO_WRITE_PERMISSION_MESSAGE = "Missing MEDIA_LIBRARY write permission.";
+  static final String ERROR_NO_READ_PERMISSION_MESSAGE = "Missing MEDIA_LIBRARY read permission.";
   static final String ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE = "User didn't grant write permission to requested files.";
   static final String ERROR_UNABLE_TO_ASK_FOR_PERMISSIONS_MESSAGE = "Unable to ask for permissions.";
   static final String ERROR_NO_FILE_EXTENSION = "E_NO_FILE_EXTENSION";
