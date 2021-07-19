@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Add tests. 
+- Add tests. ([#13592](https://github.com/expo/expo/pull/13592) by [@mstach60161](https://github.com/mstach60161))
 
 ## 9.2.0 — 2021-06-16
 
