@@ -21,7 +21,7 @@ private const val TAG = "ExpoSMS"
 private const val ERROR_TAG = "E_SMS"
 private const val OPTIONS_ATTACHMENTS_KEY = "attachments"
 
-class SMSModule(context: Context) : ExportedModule(context), LifecycleEventListener {
+class SMSModule(context: Context, private val smsPackage: String? = null) : ExportedModule(context), LifecycleEventListener {
   private lateinit var mModuleRegistry: ModuleRegistry
   private var mPendingPromise: Promise? = null
   private var mSMSComposerOpened = false
@@ -79,7 +79,13 @@ class SMSModule(context: Context) : ExportedModule(context), LifecycleEventListe
       }
     }
 
-    val defaultSMSPackage = Telephony.Sms.getDefaultSmsPackage(context)
+    val defaultSMSPackage: String?
+    if (smsPackage != null) {
+      defaultSMSPackage = smsPackage
+    } else {
+      defaultSMSPackage = Telephony.Sms.getDefaultSmsPackage(context)
+    }
+
     if (defaultSMSPackage != null) {
       smsIntent.setPackage(defaultSMSPackage)
     } else {

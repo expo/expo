@@ -57,7 +57,7 @@ internal class SMSModuleTest {
       "someattachment" to "someattachment",
       "mimeType" to "intent type",
       "uri" to "some resource identifier")))
-    smsModule.sendSMSAsync(addresses, message, options, promise)
+    smsModule.sendSMSAsync(addresses, message, options as Map<String?, Any?>, promise)
     smsModule.onHostResume()
     assertResolved(promise)
   }
