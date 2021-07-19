@@ -4,11 +4,15 @@
 
 ### 🛠 Breaking changes
 
+- Remove the deprecated, non-async methods: `initialize`, `setUserId`, `setUserProperties`, `clearUserProperties`, `logEvent`, `logEventWithProperties`, `setGroup` and `setTrackingOptions`.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Replace the generic object types with `Record`s.
 
 ## 10.2.0 — 2021-06-16
 
