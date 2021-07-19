@@ -66,6 +66,9 @@ For usage information and detailed documentation, please refer to:
 If you're relying on redirects, you'll need to pass in a `urlScheme` to `initStripe`. To make sure you always use the proper `urlScheme`, pass in:
 
 ```js
+import * as Linking from 'expo-linking';
+import Constants from 'expo-constants';
+
 urlScheme:
   Constants.executionEnvironment === ExecutionEnvironment.StoreClient
     ? Linking.createURL('/--/')
