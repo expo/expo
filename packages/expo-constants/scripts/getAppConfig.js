@@ -13,6 +13,8 @@ if (fs.existsSync(path.join(possibleProjectRoot, 'package.json'))) {
   projectRoot = path.resolve(possibleProjectRoot, '..');
 }
 
+process.chdir(projectRoot);
+
 const { exp } = getConfig(projectRoot, {
   isPublicConfig: true,
   skipSDKVersionRequirement: true,
