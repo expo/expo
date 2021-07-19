@@ -39,7 +39,7 @@ describe('APISection', () => {
     expect(queryByText('Components'));
 
     expect(queryByDisplayValue('AppleAuthenticationButton'));
-    expect(queryByDisplayValue('AppleAuthenticationButton'));
+    expect(queryByDisplayValue('AppleAuthenticationButtonProps'));
     expect(queryByDisplayValue('Subscription'));
 
     expect(queryAllByText('Constants')).toHaveLength(0);
