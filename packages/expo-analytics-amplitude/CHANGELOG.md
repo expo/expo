@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- Replace the generic object types with `Record`s.
+- Replace the generic object types with `Record`s. ([#13675](https://github.com/expo/expo/pull/13675) by [@Simek](https://github.com/Simek))
 
 ## 10.2.0 — 2021-06-16
 
