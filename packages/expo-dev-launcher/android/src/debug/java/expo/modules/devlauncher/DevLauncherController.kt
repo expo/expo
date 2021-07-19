@@ -63,7 +63,7 @@ class DevLauncherController private constructor()
   private val pendingIntentRegistry: DevLauncherIntentRegistryInterface by inject()
   val internalUpdatesInterface: UpdatesInterface? by optInject()
   private var devMenuManager: DevMenuManagerInterface? = null
-  var updatesInterface: UpdatesInterface?
+  override var updatesInterface: UpdatesInterface?
     get() = internalUpdatesInterface
     set(value) = DevLauncherKoinContext.app.koin.loadModules(listOf(module {
       single { value }
@@ -75,7 +75,7 @@ class DevLauncherController private constructor()
   override var manifest: DevLauncherManifest? = null
     private set
   override var latestLoadedApp: Uri? = null
-  var useDeveloperSupport = true
+  override var useDeveloperSupport = true
 
   enum class Mode {
     LAUNCHER, APP

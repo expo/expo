@@ -8,6 +8,7 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReactContext
 import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.launcher.manifest.DevLauncherManifest
+import expo.modules.updatesinterface.UpdatesInterface
 
 interface DevLauncherControllerInterface {
   suspend fun loadApp(url: Uri, mainActivity: ReactActivity? = null)
@@ -25,4 +26,6 @@ interface DevLauncherControllerInterface {
   val mode: DevLauncherController.Mode
   val appHost: ReactNativeHost
   val latestLoadedApp: Uri?
+  val useDeveloperSupport: Boolean
+  var updatesInterface: UpdatesInterface?
 }
