@@ -39,6 +39,21 @@ EX_EXPORT_METHOD_AS(getCellularGenerationAsync, getCellularGenerationAsyncWithRe
   resolve(@([[self class] getCellularGeneration]));
 }
 
+EX_EXPORT_METHOD_AS(getCurrentCarrierAsync, getCurrentCarrierAsyncWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject)
+{
+  CTCarrier *carrier = [self carrier];
+  EXCellularGeneration generation = [[self class] getCellularGeneration];
+    
+  resolve(@{
+    @"allowsVoip": @(carrier.allowsVOIP),
+    @"carrier": EXNullIfNil(carrier.carrierName),
+    @"isoCountryCode": EXNullIfNil(carrier.isoCountryCode),
+    @"mobileCountryCode": EXNullIfNil(carrier.mobileCountryCode),
+    @"mobileNetworkCode": EXNullIfNil(carrier.mobileNetworkCode),
+    @"generation": @(generation),
+  });
+}
+
 + (EXCellularGeneration)getCellularGeneration
 {
   CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
@@ -65,9 +80,10 @@ EX_EXPORT_METHOD_AS(getCellularGenerationAsync, getCellularGenerationAsyncWithRe
       return EXCellularGeneration3G;
     } else if ([serviceCurrentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyLTE]) {
       return EXCellularGeneration4G;
-    } else if ([serviceCurrentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyNRNSA] ||
-               [serviceCurrentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyNR]) {
-      return EXCellularGeneration5G;
+    } else if (@available(iOS 14.1, *) &&
+               ([serviceCurrentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyNRNSA] ||
+                [serviceCurrentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyNR])) {
+        return EXCellularGeneration5G;
     }
   }
   return EXCellularGenerationUnknown;

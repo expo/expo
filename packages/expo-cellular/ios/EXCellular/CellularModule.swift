@@ -20,6 +20,10 @@ public class CellularModule: Module {
     method("getCellularGenerationAsync") { () -> Int in
       Self.currentCellularGeneration().rawValue
     }
+    
+    method("getCurrentCarrierAsync") {() -> [String: Any?] in
+      Self.getCurrentCarrierAsync()
+    }
   }
 
   // MARK: - internals
@@ -38,27 +42,62 @@ public class CellularModule: Module {
   static func currentCellularGeneration() -> CellularGeneration {
     let radioAccessTechnology = currentRadioAccessTechnology()
 
-    switch radioAccessTechnology {
-    case CTRadioAccessTechnologyGPRS,
-         CTRadioAccessTechnologyEdge,
-         CTRadioAccessTechnologyCDMA1x:
-      return .cellular2G
-    case CTRadioAccessTechnologyWCDMA,
-         CTRadioAccessTechnologyHSDPA,
-         CTRadioAccessTechnologyHSUPA,
-         CTRadioAccessTechnologyCDMAEVDORev0,
-         CTRadioAccessTechnologyCDMAEVDORevA,
-         CTRadioAccessTechnologyCDMAEVDORevB,
-         CTRadioAccessTechnologyeHRPD:
-      return .cellular3G
-    case CTRadioAccessTechnologyLTE:
-      return .cellular4G
-    case CTRadioAccessTechnologyNRNSA,
-         CTRadioAccessTechnologyNR:
-      return .cellular5G
-    default:
-      return .unknown
+    if #available(iOS 14.1, *) {
+      switch radioAccessTechnology {
+      case CTRadioAccessTechnologyGPRS,
+           CTRadioAccessTechnologyEdge,
+           CTRadioAccessTechnologyCDMA1x:
+        return .cellular2G
+      case CTRadioAccessTechnologyWCDMA,
+           CTRadioAccessTechnologyHSDPA,
+           CTRadioAccessTechnologyHSUPA,
+           CTRadioAccessTechnologyCDMAEVDORev0,
+           CTRadioAccessTechnologyCDMAEVDORevA,
+           CTRadioAccessTechnologyCDMAEVDORevB,
+           CTRadioAccessTechnologyeHRPD:
+        return .cellular3G
+      case CTRadioAccessTechnologyLTE:
+        return .cellular4G
+      case CTRadioAccessTechnologyNRNSA,
+           CTRadioAccessTechnologyNR:
+        return .cellular5G
+      default:
+        return .unknown
+      }
+    } else {
+      switch radioAccessTechnology {
+      case CTRadioAccessTechnologyGPRS,
+           CTRadioAccessTechnologyEdge,
+           CTRadioAccessTechnologyCDMA1x:
+        return .cellular2G
+      case CTRadioAccessTechnologyWCDMA,
+           CTRadioAccessTechnologyHSDPA,
+           CTRadioAccessTechnologyHSUPA,
+           CTRadioAccessTechnologyCDMAEVDORev0,
+           CTRadioAccessTechnologyCDMAEVDORevA,
+           CTRadioAccessTechnologyCDMAEVDORevB,
+           CTRadioAccessTechnologyeHRPD:
+        return .cellular3G
+      case CTRadioAccessTechnologyLTE:
+        return .cellular4G
+      default:
+        return .unknown
+      }
     }
+  }
+  
+  static func getCurrentCarrierAsync() -> [String: Any?] {
+    let carrier = Self.currentCarrier()
+    let generation = Self.currentCellularGeneration()
+
+    return [
+      "allowsVoip": carrier?.allowsVOIP,
+      "carrier": carrier?.carrierName,
+      "isoCountryCode": carrier?.isoCountryCode,
+      "mobileCountryCode": carrier?.mobileCountryCode,
+      "mobileNetworkCode": carrier?.mobileNetworkCode,
+      "generation": generation.rawValue,
+    ]
   }
 
   static func currentRadioAccessTechnology() -> String? {
@@ -84,4 +123,5 @@ public class CellularModule: Module {
     }
     return netinfo.subscriberCellularProvider
   }
+
 }
