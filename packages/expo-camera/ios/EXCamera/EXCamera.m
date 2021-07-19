@@ -523,6 +523,18 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     }
     [connection setVideoOrientation:[EXCameraUtils videoOrientationForDeviceOrientation:[[UIDevice currentDevice] orientation]]];
     
+    AVCaptureSessionPreset preset;
+    if (options[@"quality"]) {
+      EXCameraVideoResolution resolution = [options[@"quality"] integerValue];
+      preset = [EXCameraUtils captureSessionPresetForVideoResolution:resolution];
+    } else if ([self.session.sessionPreset isEqual:AVCaptureSessionPresetPhoto]) {
+      preset = AVCaptureSessionPresetHigh;
+    }
+
+    if (preset != nil) {
+      [self updateSessionPreset:preset];
+    }
+    
     [self setVideoOptions:options forConnection:connection onReject:reject];
     
     bool canBeMirrored = connection.isVideoMirroringSupported;
@@ -575,18 +587,6 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
 
     if (options[@"maxFileSize"]) {
       self.movieFileOutput.maxRecordedFileSize = [options[@"maxFileSize"] integerValue];
-    }
-    
-    AVCaptureSessionPreset preset;
-    if (options[@"quality"]) {
-      EXCameraVideoResolution resolution = [options[@"quality"] integerValue];
-      preset = [EXCameraUtils captureSessionPresetForVideoResolution:resolution];
-    } else if ([self.session.sessionPreset isEqual:AVCaptureSessionPresetPhoto]) {
-      preset = AVCaptureSessionPresetHigh;
-    }
-
-    if (preset != nil) {
-      [self updateSessionPreset:preset];
     }
     
     if (options[@"codec"]) {
