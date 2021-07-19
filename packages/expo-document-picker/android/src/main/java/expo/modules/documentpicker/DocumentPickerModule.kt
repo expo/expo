@@ -132,6 +132,6 @@ class DocumentPickerModule(
       return null
     }
 
-    return outputFilePath
+    return "file://$outputFilePath"
   }
 }
