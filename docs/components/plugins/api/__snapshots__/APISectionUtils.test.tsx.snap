@@ -96,27 +96,21 @@ exports[`APISectionUtils.resolveTypeName custom type non-linkable array 1`] = `
 </div>
 `;
 
-exports[`APISectionUtils.resolveTypeName extended props with multiple omits 1`] = `
+exports[`APISectionUtils.resolveTypeName custom type with single pick 1`] = `
 <div>
-  StyleProp
+  Pick
   &lt;
   <span>
-    Omit
-    &lt;
-    <span>
-      ViewStyle
-      , 
-    </span>
-    <span>
-      <span>
-        'backgroundColor'
-         | 
-      </span>
-      <span>
-        'borderRadius'
-      </span>
-    </span>
-    &gt;
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="/#fontresource"
+    >
+      FontResource
+    </a>
+    , 
+  </span>
+  <span>
+    'display'
   </span>
   &gt;
 </div>
@@ -228,6 +222,32 @@ exports[`APISectionUtils.resolveTypeName generic type in Promise 1`] = `
       >
         Asset
       </a>
+    </span>
+    &gt;
+  </span>
+  &gt;
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName props with multiple omits 1`] = `
+<div>
+  StyleProp
+  &lt;
+  <span>
+    Omit
+    &lt;
+    <span>
+      ViewStyle
+      , 
+    </span>
+    <span>
+      <span>
+        'backgroundColor'
+         | 
+      </span>
+      <span>
+        'borderRadius'
+      </span>
     </span>
     &gt;
   </span>
