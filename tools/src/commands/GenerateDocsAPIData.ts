@@ -94,6 +94,7 @@ async function action({packageName, version = 'unversioned'}: ActionOptions) {
     'expo-background-fetch': ['BackgroundFetch.ts'],
     'expo-battery': ['Battery.ts'],
     'expo-blur': ['index.ts'],
+    'expo-brightness': ['Brightness.ts'],
     'expo-cellular': ['Cellular.ts'],
     'expo-clipboard': ['Clipboard.ts'],
     'expo-facebook': [['Facebook.ts', 'Facebook.types.ts']],

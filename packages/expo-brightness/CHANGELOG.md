@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Rename `useSystemBrightnessAsync` method to `resetToSystemBrightnessAsync` to avoid it being interpreted as a hook.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

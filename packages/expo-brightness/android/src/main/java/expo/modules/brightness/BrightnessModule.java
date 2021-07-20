@@ -132,7 +132,7 @@ public class BrightnessModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void useSystemBrightnessAsync(final Promise promise) {
+  public void resetToSystemBrightnessAsync(final Promise promise) {
     final Activity activity = getCurrentActivity();
     activity.runOnUiThread(new Runnable() {
       @Override
