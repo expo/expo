@@ -88,7 +88,6 @@ class SMSModule(context: Context) : ExportedModule(context), LifecycleEventListe
     }
     smsIntent.putExtra("exit_on_sent", true)
     smsIntent.putExtra("compose_mode", true)
-    smsIntent.putExtra(Intent.EXTRA_TEXT, message)
     smsIntent.putExtra("sms_body", message)
     mPendingPromise = promise
     val activityProvider = mModuleRegistry.getModule(
@@ -109,9 +108,11 @@ class SMSModule(context: Context) : ExportedModule(context), LifecycleEventListe
       // the only way to check the status of the message is to query the device's SMS database
       // but this requires READ_SMS permission, which Google is heavily restricting beginning Jan 2019
       // so we just resolve with an unknown value
-      promise.resolve(Bundle().apply {
-        putString("result", "unknown")
-      })
+      promise.resolve(
+        Bundle().apply {
+          putString("result", "unknown")
+        }
+      )
       mPendingPromise = null
     }
     mSMSComposerOpened = false

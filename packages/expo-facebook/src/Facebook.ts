@@ -14,6 +14,7 @@ export {
   FacebookLoginResult,
   FacebookOptions,
   FacebookAuthenticationCredential,
+  FacebookInitializationOptions,
   PermissionResponse,
   PermissionStatus,
   PermissionExpiration,

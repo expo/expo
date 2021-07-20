@@ -24,10 +24,12 @@ internal class MediaLibraryUtilsTests {
   @Test
   fun `putAssetsInfo returns correct response when fullInfo=false`() {
     // arrange
-    val cursor = mockCursor(arrayOf(
-      MockData.mockVideo.toColumnArray(),
-      MockData.mockAudio.toColumnArray()
-    ))
+    val cursor = mockCursor(
+      arrayOf(
+        MockData.mockVideo.toColumnArray(),
+        MockData.mockAudio.toColumnArray()
+      )
+    )
 
     val contentResolver = mockContentResolver(cursor)
 

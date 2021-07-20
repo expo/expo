@@ -28,11 +28,13 @@ class ScreenOrientationModule(context: Context) : ExportedModule(context), Lifec
 
   override fun onCreate(moduleRegistry: ModuleRegistry) {
     mActivityProvider = moduleRegistry.getModule(ActivityProvider::class.java)
-        ?: throw IllegalStateException("Could not find implementation for ActivityProvider.")
+      ?: throw IllegalStateException("Could not find implementation for ActivityProvider.")
 
-    (moduleRegistry.getModule(UIManager::class.java)
-        ?: throw IllegalStateException("Could not find implementation for UIManager."))
-        .registerLifecycleEventListener(this)
+    (
+      moduleRegistry.getModule(UIManager::class.java)
+        ?: throw IllegalStateException("Could not find implementation for UIManager.")
+      )
+      .registerLifecycleEventListener(this)
   }
 
   override fun onHostResume() {
@@ -167,8 +169,8 @@ class ScreenOrientationModule(context: Context) : ExportedModule(context), Lifec
    */
   private fun isPortraitNaturalOrientation(rotation: Int, width: Int, height: Int): Boolean {
     return (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180) &&
-        height > width || (rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270) &&
-        width > height
+      height > width || (rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270) &&
+      width > height
   }
 
   private fun exportOrientationLock(nativeOrientationLock: Int): Int {
