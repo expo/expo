@@ -59,7 +59,7 @@ export declare function setSystemBrightnessAsync(brightnessValue: number): Promi
  * brightness value rather than overriding it.
  * @return A `Promise` that fulfils when the setting has been successfully changed.
  */
-export declare function resetToSystemBrightnessAsync(): Promise<void>;
+export declare function useSystemBrightnessAsync(): Promise<void>;
 /**
  * __Android only.__ Returns a boolean specifying whether or not the current activity is using the
  * system-wide brightness value.

@@ -99,11 +99,12 @@ export async function setSystemBrightnessAsync(brightnessValue) {
  * brightness value rather than overriding it.
  * @return A `Promise` that fulfils when the setting has been successfully changed.
  */
-export async function resetToSystemBrightnessAsync() {
+export async function useSystemBrightnessAsync() {
     if (Platform.OS !== 'android') {
         return;
     }
-    return await ExpoBrightness.resetToSystemBrightnessAsync();
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    return await ExpoBrightness.useSystemBrightnessAsync();
 }
 // @needsAudit
 /**
