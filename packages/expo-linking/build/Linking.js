@@ -11,11 +11,8 @@ function validateURL(url) {
     invariant(url, 'Invalid URL: cannot be empty');
 }
 function getHostUri() {
-    if (Constants.manifest?.hostUri) {
-        return Constants.manifest.hostUri;
-    }
-    else if (Constants.manifest2?.extra?.expoClient?.hostUri) {
-        return Constants.manifest2.extra.expoClient.hostUri;
+    if (Constants.manifestInterface?.hostUri) {
+        return Constants.manifestInterface.hostUri;
     }
     else if (!hasCustomScheme()) {
         // we're probably not using up-to-date xdl, so just fake it for now
@@ -30,7 +27,7 @@ function isExpoHosted() {
     const hostUri = getHostUri();
     return !!(hostUri &&
         (/^(.*\.)?(expo\.io|exp\.host|exp\.direct|expo\.test)(:.*)?(\/.*)?$/.test(hostUri) ||
-            Constants.manifest?.developer));
+            Constants.manifestInterface?.developer));
 }
 function removeScheme(url) {
     return url.replace(/^[a-zA-Z0-9+.-]+:\/\//, '');

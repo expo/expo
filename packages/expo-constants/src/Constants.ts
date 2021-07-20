@@ -7,8 +7,11 @@ import {
   AppOwnership,
   Constants,
   ExecutionEnvironment,
+  ExpoClientConfig,
+  ExpoGoConfig,
   IOSManifest,
   Manifest,
+  ManifestInterface,
   NativeConstants,
   PlatformManifest,
   UserInterfaceIdiom,
@@ -122,6 +125,55 @@ const constants = {
     }
     return maybeManifest;
   },
+  get manifestInterface(): ManifestInterface | null {
+    let getFromClientConfig: <K extends keyof ExpoClientConfig>(
+      k: K
+    ) => ExpoClientConfig[K] | undefined;
+    let getFromExpoGoConfig: <K extends keyof ExpoGoConfig>(k: K) => ExpoGoConfig[K] | undefined;
+    let stableLegacyId: string | undefined;
+    const legacyManifest = this.manifest;
+    const newManifest = this.manifest2;
+    if (legacyManifest) {
+      getFromClientConfig = <K extends keyof ExpoClientConfig>(
+        k: K
+      ): ExpoClientConfig[K] | undefined => {
+        return legacyManifest[k];
+      };
+      getFromExpoGoConfig = <K extends keyof ExpoGoConfig>(k: K): ExpoGoConfig[K] | undefined => {
+        return legacyManifest[k];
+      };
+      stableLegacyId = getFromClientConfig('originalFullName') ?? getFromClientConfig('id');
+    } else if (newManifest) {
+      getFromClientConfig = <K extends keyof ExpoClientConfig>(
+        k: K
+      ): ExpoClientConfig[K] | undefined => {
+        return newManifest.extra?.expoClient?.[k];
+      };
+      getFromExpoGoConfig = <K extends keyof ExpoGoConfig>(k: K): ExpoGoConfig[K] | undefined => {
+        return newManifest.extra?.expoGo?.[k];
+      };
+      stableLegacyId = getFromClientConfig('originalFullName'); // TODO(wschurman): this is incorrect
+    } else {
+      return null;
+    }
+
+    return {
+      logUrl: getFromExpoGoConfig('logUrl'),
+      slug: getFromClientConfig('slug'),
+      stableLegacyId,
+      publishedTime: getFromClientConfig('publishedTime'),
+      hostUri: getFromClientConfig('hostUri'),
+      name: getFromClientConfig('name'),
+      developer: getFromExpoGoConfig('developer'),
+      iosConfig: getFromClientConfig('ios'),
+      androidConfig: getFromClientConfig('android'),
+      webConfig: getFromClientConfig('web'),
+      detach: getFromClientConfig('detach'),
+      notificationConfig: getFromClientConfig('notification'),
+      amplitudeApiKey: getFromClientConfig('extra')?.amplitudeApiKey,
+      scheme: getFromClientConfig('scheme'),
+    };
+  },
   /**
    * Use `manifest` property by default.
    * This property is only used for internal purposes.
@@ -185,4 +237,4 @@ function getManifest(suppressWarning = false): AppManifest | Manifest | null {
   return rawManifest;
 }
 
-export default constants as Constants;
+export default constants;

@@ -32,6 +32,22 @@ export interface WebManifest {
 export interface ManifestAsset {
     url: string;
 }
+export interface ManifestInterface {
+    logUrl: string | undefined;
+    slug: string | undefined;
+    stableLegacyId: string | undefined;
+    publishedTime: string | undefined;
+    hostUri: string | undefined;
+    name: string | undefined;
+    developer: ExpoGoConfig['developer'] | undefined;
+    iosConfig: ExpoConfig['ios'] | undefined;
+    androidConfig: ExpoConfig['android'] | undefined;
+    webConfig: ExpoConfig['web'] | undefined;
+    detach: ExpoConfig['detach'] | undefined;
+    notificationConfig: ExpoConfig['notification'] | undefined;
+    amplitudeApiKey: string | undefined;
+    scheme: string | undefined;
+}
 /**
  * A modern manifest.
  */
@@ -149,16 +165,6 @@ export interface NativeConstants {
     linkingUri: string;
     nativeAppVersion: string | null;
     nativeBuildVersion: string | null;
-    /**
-     * Classic manifest for Expo apps using classic updates.
-     * Returns `null` in bare workflow and when `manifest2` is non-null.
-     */
-    manifest: AppManifest | null;
-    /**
-     * New manifest for Expo apps using modern Expo Updates.
-     * Returns `null` in bare workflow and when `manifest` is non-null.
-     */
-    manifest2: Manifest | null;
     sessionId: string;
     statusBarHeight: number;
     systemFonts: string[];
@@ -178,6 +184,20 @@ export interface Constants extends NativeConstants {
      * Linking API directly. Constants.linkingUrl will be removed in SDK 44.
      */
     linkingUrl?: string;
+    /**
+     * Classic manifest for Expo apps using classic updates.
+     * Returns `null` in bare workflow and when `manifest2` is non-null.
+     */
+    manifest: AppManifest | null;
+    /**
+     * New manifest for Expo apps using modern Expo Updates.
+     * Returns `null` in bare workflow and when `manifest` is non-null.
+     */
+    manifest2: Manifest | null;
+    /**
+     * A common interface for working with manifests.
+     */
+    manifestInterface: ManifestInterface | null;
     /**
      * @warning do not use this property. Use `manifest` by default.
      *

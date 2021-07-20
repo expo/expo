@@ -83,6 +83,50 @@ const constants = {
         }
         return maybeManifest;
     },
+    get manifestInterface() {
+        let getFromClientConfig;
+        let getFromExpoGoConfig;
+        let stableLegacyId;
+        const legacyManifest = this.manifest;
+        const newManifest = this.manifest2;
+        if (legacyManifest) {
+            getFromClientConfig = (k) => {
+                return legacyManifest[k];
+            };
+            getFromExpoGoConfig = (k) => {
+                return legacyManifest[k];
+            };
+            stableLegacyId = getFromClientConfig('originalFullName') ?? getFromClientConfig('id');
+        }
+        else if (newManifest) {
+            getFromClientConfig = (k) => {
+                return newManifest.extra?.expoClient?.[k];
+            };
+            getFromExpoGoConfig = (k) => {
+                return newManifest.extra?.expoGo?.[k];
+            };
+            stableLegacyId = getFromClientConfig('originalFullName'); // TODO(wschurman): this is incorrect
+        }
+        else {
+            return null;
+        }
+        return {
+            logUrl: getFromExpoGoConfig('logUrl'),
+            slug: getFromClientConfig('slug'),
+            stableLegacyId,
+            publishedTime: getFromClientConfig('publishedTime'),
+            hostUri: getFromClientConfig('hostUri'),
+            name: getFromClientConfig('name'),
+            developer: getFromExpoGoConfig('developer'),
+            iosConfig: getFromClientConfig('ios'),
+            androidConfig: getFromClientConfig('android'),
+            webConfig: getFromClientConfig('web'),
+            detach: getFromClientConfig('detach'),
+            notificationConfig: getFromClientConfig('notification'),
+            amplitudeApiKey: getFromClientConfig('extra')?.amplitudeApiKey,
+            scheme: getFromClientConfig('scheme'),
+        };
+    },
     /**
      * Use `manifest` property by default.
      * This property is only used for internal purposes.

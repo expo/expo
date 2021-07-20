@@ -30,12 +30,7 @@ export default async function getExpoPushTokenAsync(options: Options = {}): Prom
 
   const deviceId = options.deviceId || (await getDeviceIdAsync());
 
-  const experienceId =
-    options.experienceId ||
-    Constants.manifest?.originalFullName ||
-    Constants.manifest2?.extra?.expoClient?.originalFullName ||
-    Constants.manifest?.id;
-
+  const experienceId = options.experienceId || Constants.manifestInterface?.stableLegacyId;
   if (!experienceId) {
     throw new CodedError(
       'ERR_NOTIFICATIONS_NO_EXPERIENCE_ID',

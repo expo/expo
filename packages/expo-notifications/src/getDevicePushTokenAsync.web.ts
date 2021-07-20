@@ -33,9 +33,7 @@ function guardPermission() {
 async function _subscribeDeviceToPushNotificationsAsync(): Promise<DevicePushToken['data']> {
   const vapidPublicKey: string | null =
     // @ts-expect-error: TODO: not on the schema
-    Constants.manifest?.notification?.vapidPublicKey ??
-    // @ts-expect-error: TODO: not on the schema
-    Constants.manifest2?.extra?.expoClient?.notification?.vapidPublicKey;
+    Constants.manifestInterface?.notification?.vapidPublicKey;
   if (!vapidPublicKey) {
     throw new CodedError(
       'ERR_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG',
@@ -45,9 +43,7 @@ async function _subscribeDeviceToPushNotificationsAsync(): Promise<DevicePushTok
 
   const serviceWorkerPath =
     // @ts-expect-error: TODO: not on the schema
-    Constants.manifest?.notification.serviceWorkerPath ??
-    // @ts-expect-error: TODO: not on the schema
-    Constants.manifest2?.extra?.expoClient?.notification?.serviceWorkerPath;
+    Constants.manifestInterface?.notification.serviceWorkerPath;
   if (!serviceWorkerPath) {
     throw new CodedError(
       'ERR_NOTIFICATIONS_PUSH_MISSING_CONFIGURATION',
@@ -104,11 +100,7 @@ async function _subscribeDeviceToPushNotificationsAsync(): Promise<DevicePushTok
   // We wrap it with `fromExpoWebClient` to make sure other message
   // will not override content such as `notificationIcon`.
   // https://stackoverflow.com/a/35729334/2603230
-  const notificationIcon = (
-    Constants.manifest?.notification ??
-    Constants.manifest2?.extra?.expoClient?.notification ??
-    {}
-  ).icon;
+  const notificationIcon = (Constants.manifestInterface?.notificationConfig ?? {}).icon;
   await registration.active.postMessage(
     JSON.stringify({ fromExpoWebClient: { notificationIcon } })
   );

@@ -47,11 +47,7 @@ export class SessionUrlProvider {
       }
     }
 
-    const legacyExpoProjectId =
-      Constants.manifest?.originalFullName ||
-      Constants.manifest2?.extra?.expoClient?.originalFullName ||
-      Constants.manifest?.id;
-
+    const legacyExpoProjectId = Constants.manifestInterface?.stableLegacyId;
     if (!legacyExpoProjectId) {
       let nextSteps = '';
       if (__DEV__) {
@@ -77,8 +73,7 @@ export class SessionUrlProvider {
   }
 
   private static getHostAddressQueryParams(): ParsedQs | undefined {
-    let hostUri: string | undefined =
-      Constants.manifest?.hostUri ?? Constants.manifest2?.extra?.expoClient?.hostUri;
+    let hostUri: string | undefined = Constants.manifestInterface?.hostUri;
     if (
       !hostUri &&
       (ExecutionEnvironment.StoreClient === Constants.executionEnvironment || resolveScheme({}))

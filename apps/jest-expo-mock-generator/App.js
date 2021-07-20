@@ -5,7 +5,7 @@ import React from 'react';
 import { NativeModules, StyleSheet, Text, View } from 'react-native';
 import { v4 as uuidV4 } from 'uuid';
 
-const logUrl = Constants.manifest.logUrl;
+const logUrl = Constants.manifestInterface.logUrl;
 const sessionId = uuidV4();
 
 const { ExpoNativeModuleIntrospection } = NativeModules;

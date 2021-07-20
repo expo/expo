@@ -56,17 +56,14 @@ export function collectManifestSchemes() {
     // They'll be added when we drop support for `expo build` or decide
     // to have them only work with `eas build`.
     const platformManifest = Platform.select({
-        ios: Constants.manifest?.ios ?? Constants.manifest2?.extra?.expoClient?.ios,
-        android: Constants.manifest?.android ?? Constants.manifest2?.extra?.expoClient?.android,
+        ios: Constants.manifestInterface?.iosConfig,
+        android: Constants.manifestInterface?.androidConfig,
         web: {},
     }) ?? {};
-    const schemes = getSchemes(Constants.manifest ?? Constants.manifest2?.extra?.expoClient);
+    const schemes = getSchemes(Constants.manifestInterface);
     // Add the detached scheme after the manifest scheme for legacy ExpoKit support.
-    if (Constants.manifest?.detach?.scheme) {
-        schemes.push(Constants.manifest.detach.scheme);
-    }
-    if (Constants.manifest2?.extra?.expoClient?.detach?.scheme) {
-        schemes.push(Constants.manifest2.extra.expoClient.detach.scheme);
+    if (Constants.manifestInterface?.detach?.scheme) {
+        schemes.push(Constants.manifestInterface.detach.scheme);
     }
     // Add the unimplemented platform schemes last.
     schemes.push(...getSchemes(platformManifest));
@@ -76,17 +73,14 @@ function getNativeAppIdScheme() {
     // Add the native application identifier to the list of schemes for parity with `expo build`.
     // The native app id has been added to builds for a long time to support Google Sign-In.
     return (Platform.select({
-        ios: Constants.manifest?.ios?.bundleIdentifier ??
-            Constants.manifest2?.extra?.expoClient?.ios?.bundleIdentifier,
+        ios: Constants.manifestInterface?.iosConfig?.bundleIdentifier,
         // TODO: This may change to android.applicationId in the future.
-        android: Constants.manifest?.android?.package ??
-            Constants.manifest2?.extra?.expoClient?.android?.package,
+        android: Constants.manifestInterface?.androidConfig?.package,
     }) ?? null);
 }
 export function hasConstantsManifest() {
     // Ensure the user has linked the expo-constants manifest in bare workflow.
-    return (!!Object.keys(Constants.manifest ?? {}).length ||
-        !!Object.keys(Constants.manifest2 ?? {}).length);
+    return !!Object.keys(Constants.manifestInterface ?? {}).length;
 }
 export function resolveScheme(props) {
     if (Constants.executionEnvironment !== ExecutionEnvironment.StoreClient &&

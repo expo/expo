@@ -13,8 +13,5 @@ export type IFirebaseOptions = Partial<{
 }>;
 
 export function getDefaultWebOptions(): IFirebaseOptions | void {
-  return (
-    Constants.manifest?.web?.config?.firebase ??
-    Constants.manifest2?.extra?.expoClient?.web?.config?.firebase
-  );
+  return Constants.manifestInterface?.webConfig?.config?.firebase;
 }

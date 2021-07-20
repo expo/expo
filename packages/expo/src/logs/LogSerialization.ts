@@ -194,11 +194,7 @@ function _captureConsoleStackTrace(): Error {
 }
 
 function _getProjectRoot(): string | null {
-  return (
-    Constants.manifest?.developer?.projectRoot ??
-    Constants.manifest2?.extra?.expoGo?.developer?.projectRoot ??
-    null
-  );
+  return Constants.manifestInterface?.developer?.projectRoot ?? null;
 }
 
 export default {

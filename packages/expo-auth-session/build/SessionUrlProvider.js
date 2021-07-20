@@ -38,9 +38,7 @@ export class SessionUrlProvider {
                 return '';
             }
         }
-        const legacyExpoProjectId = Constants.manifest?.originalFullName ||
-            Constants.manifest2?.extra?.expoClient?.originalFullName ||
-            Constants.manifest?.id;
+        const legacyExpoProjectId = Constants.manifestInterface?.stableLegacyId;
         if (!legacyExpoProjectId) {
             let nextSteps = '';
             if (__DEV__) {
@@ -63,7 +61,7 @@ export class SessionUrlProvider {
         return redirectUrl;
     }
     static getHostAddressQueryParams() {
-        let hostUri = Constants.manifest?.hostUri ?? Constants.manifest2?.extra?.expoClient?.hostUri;
+        let hostUri = Constants.manifestInterface?.hostUri;
         if (!hostUri &&
             (ExecutionEnvironment.StoreClient === Constants.executionEnvironment || resolveScheme({}))) {
             if (!Constants.linkingUri) {
