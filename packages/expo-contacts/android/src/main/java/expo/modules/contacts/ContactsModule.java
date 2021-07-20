@@ -2,6 +2,7 @@
 package expo.modules.contacts;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
 import android.content.ContentResolver;
@@ -19,8 +20,10 @@ import android.provider.ContactsContract.CommonDataKinds;
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ActivityEventListener;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.services.UIManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,7 +51,11 @@ import expo.modules.interfaces.permissions.Permissions;
 import static expo.modules.contacts.models.BaseModel.decodeList;
 
 public class ContactsModule extends ExportedModule {
+  public static final int RC_EDIT_CONTACT = 2138;
+
+  private final ActivityEventListener mActivityEventListener = new ContactsActivityEventListener();
   private ModuleRegistry mModuleRegistry;
+  private Promise mPendingPromise;
 
   public ContactsModule(Context context) {
     super(context);
@@ -62,6 +69,8 @@ public class ContactsModule extends ExportedModule {
   @Override
   public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
+    UIManager uiManager = mModuleRegistry.getModule(UIManager.class);
+    uiManager.registerActivityEventListener(mActivityEventListener);
   }
 
   private static final String TAG = ContactsModule.class.getSimpleName();
@@ -287,8 +296,7 @@ public class ContactsModule extends ExportedModule {
         return;
       }
       // contact = mutateContact(contact, contactData);
-      presentEditForm(contact);
-      promise.resolve(0);
+      presentEditForm(contact, promise);
       return;
     }
     // Create contact from supplied data.
@@ -307,13 +315,14 @@ public class ContactsModule extends ExportedModule {
     activityProvider.getCurrentActivity().startActivity(intent);
   }
 
-  private void presentEditForm(Contact contact) {
+  private void presentEditForm(Contact contact, Promise promise) {
     Uri selectedContactUri = ContactsContract.Contacts.getLookupUri(Long.parseLong(contact.contactId),
       contact.lookupKey);
     Intent intent = new Intent(Intent.ACTION_EDIT);
     intent.setDataAndType(selectedContactUri, ContactsContract.Contacts.CONTENT_ITEM_TYPE);
     ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
-    activityProvider.getCurrentActivity().startActivity(intent);
+    mPendingPromise = promise;
+    activityProvider.getCurrentActivity().startActivityForResult(intent, RC_EDIT_CONTACT);
   }
 
   // TODO: Evan: WIP - Not for SDK 29
@@ -844,5 +853,19 @@ public class ContactsModule extends ExportedModule {
       promise.reject("E_MISSING_PERMISSION", "Missing write contacts permission.");
     }
     return !hasPermission;
+  }
+
+  private class ContactsActivityEventListener implements ActivityEventListener {
+    @Override
+    public void onActivityResult(Activity activity, final int requestCode, final int resultCode, final Intent intent) {
+      if (requestCode == RC_EDIT_CONTACT && mPendingPromise != null) {
+        mPendingPromise.resolve(0);
+      }
+    }
+
+    @Override
+    public void onNewIntent(Intent intent) {
+      // do nothing
+    }
   }
 }
