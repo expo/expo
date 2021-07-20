@@ -83,13 +83,10 @@ abstract_target 'Expo Go' do
     end
 
     # Fix building failures on M1
-    installer.generated_projects.each do |project|
-      project.targets.each do |target|
-        target.build_configurations.each do |config|
-          config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
-        end
+    installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
+      target_installation_result.native_target.build_configurations.each do |config|
+        config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
       end
-      project.save()
     end
 
   end
