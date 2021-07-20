@@ -9,8 +9,16 @@ target 'bare-sandbox' do
 
   config = use_native_modules!
 
+  use_react_native!(
+    :path => config[:reactNativePath],
+    # to enable hermes on iOS, change `false` to `true` and then install pods
+    :hermes_enabled => false
+  )
+
   pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', :configurations => :debug
   pod 'expo-dev-launcher', path: '../../../packages/expo-dev-launcher', :configurations => :debug
 
-  use_react_native!(:path => config["reactNativePath"])
+  post_install do |installer|
+    react_native_post_install(installer)
+  end
 end

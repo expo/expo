@@ -15,12 +15,17 @@ abstract_target 'BareExpoMain' do
 
   config = use_native_modules!
 
-  use_react_native!(path: config['reactNativePath'])
+  use_react_native!(
+    :path => config[:reactNativePath],
+    # to enable hermes on iOS, change `false` to `true` and then install pods
+    :hermes_enabled => false
+  )
 
   pod 'expo-dev-launcher', path: '../../../packages/expo-dev-launcher', :testspecs => ['Tests']
 
   # Fix Google Sign-in and Flipper
   post_install do |installer|
+    react_native_post_install(installer)
     installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
       target_installation_result.native_target.build_configurations.each do |config|
         config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
