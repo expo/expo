@@ -86,6 +86,9 @@ class CellularModule(
         TelephonyManager.NETWORK_TYPE_LTE -> {
           promise.resolve(CellularGeneration.CG_4G.value)
         }
+        TelephonyManager.NETWORK_TYPE_NR -> {
+          promise.resolve(CellularGeneration.CG_5G.value)
+        }
         else -> promise.resolve(CellularGeneration.UNKNOWN.value)
       }
     } catch (e: Exception) {
