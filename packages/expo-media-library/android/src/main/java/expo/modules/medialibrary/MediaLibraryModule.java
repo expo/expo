@@ -213,8 +213,8 @@ public class MediaLibraryModule extends ExportedModule implements ActivityEventL
 
   @ExpoMethod
   public void getAssetInfoAsync(String assetId, Map<String, Object> options /* unused on android atm */, Promise promise) {
-    if (isMissingReadOrWritePermissions()) {
-      promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
+    if (isMissingReadPermission()) {
+      promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_READ_PERMISSION_MESSAGE);
       return;
     }
 
@@ -225,8 +225,8 @@ public class MediaLibraryModule extends ExportedModule implements ActivityEventL
 
   @ExpoMethod
   public void getAlbumsAsync(Map<String, Object> options /* unused on android atm */, Promise promise) {
-    if (isMissingReadOrWritePermissions()) {
-      promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
+    if (isMissingReadPermission()) {
+      promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_READ_PERMISSION_MESSAGE);
       return;
     }
 
@@ -236,8 +236,8 @@ public class MediaLibraryModule extends ExportedModule implements ActivityEventL
 
   @ExpoMethod
   public void getAlbumAsync(String albumName, Promise promise) {
-    if (isMissingReadOrWritePermissions()) {
-      promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
+    if (isMissingReadPermission()) {
+      promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_READ_PERMISSION_MESSAGE);
       return;
     }
 
