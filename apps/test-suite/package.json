@@ -22,7 +22,7 @@
     "expo-barcode-scanner": "~10.2.2",
     "expo-brightness": "~9.2.2",
     "expo-calendar": "~9.2.2",
-    "expo-camera": "~11.3.0",
+    "expo-camera": "~11.3.1",
     "expo-cellular": "~3.2.0",
     "expo-constants": "~11.0.1",
     "expo-contacts": "~9.2.5",
