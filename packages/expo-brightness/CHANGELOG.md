@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Rename `useSystemBrightnessAsync` method to `resetToSystemBrightnessAsync` to avoid it being interpreted as a hook.
+- Rename `useSystemBrightnessAsync` method to `resetToSystemBrightnessAsync` to avoid it being interpreted as a hook. ([#13693](https://github.com/expo/expo/pull/13693) by [@Simek](https://github.com/Simek))
 
 ### 🎉 New features
 
