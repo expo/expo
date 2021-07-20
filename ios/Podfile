@@ -81,6 +81,17 @@ abstract_target 'Expo Go' do
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ENABLE_PACKAGER_CONNECTION=0'
       end
     end
+
+    # Fix building failures on M1
+    installer.generated_projects.each do |project|
+      project.targets.each do |target|
+        target.build_configurations.each do |config|
+          config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
+        end
+      end
+      project.save()
+    end
+
   end
 
   # Target for development, contains only unversioned code
