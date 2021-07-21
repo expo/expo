@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix loading pdf. 
+- Fix loading pdf. ([#13677](https://github.com/expo/expo/pull/13677) by [@mstach60161](https://github.com/mstach60161))
 
 ### 💡 Others
 
