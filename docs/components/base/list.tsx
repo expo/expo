@@ -75,7 +75,7 @@ const STYLE_RETURN_LIST = css`
 
 type LIProps = {
   returnType?: boolean;
-  customCss?: SerializedStyles;
+  customCss?: SerializedStyles | undefined;
 };
 
 export const LI: React.FC<LIProps> = ({ children, returnType, customCss }) => {
