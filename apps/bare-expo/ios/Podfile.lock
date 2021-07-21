@@ -113,7 +113,7 @@ PODS:
   - EXKeepAwake (9.2.0):
     - UMCore
   - EXLinearGradient (9.2.0):
-    - UMCore
+    - ExpoModulesCore
   - EXLocalAuthentication (11.1.0):
     - UMCore
   - EXLocalization (10.2.0):
@@ -1178,7 +1178,7 @@ SPEC CHECKSUMS:
   EXImagePicker: 958720afb9395ee1168dcda28d9915345c4e7cae
   EXInAppPurchases: e54068db701c8879d975a1f304b2d00e6fc8eece
   EXKeepAwake: f4105ef469be7b283f66ce2d7234bb71ac80cd26
-  EXLinearGradient: f9ea3259f096b27008860ca50764184225dc71c9
+  EXLinearGradient: 3e1f1558e4a7f8335b432e1d171811e38217edd4
   EXLocalAuthentication: e6347880c31bc3b9693933780d3bc84823fe0698
   EXLocalization: 356f4e16a606cec21a77d6250528fde526152b45
   EXLocation: bdf1af6aa8fc4f4dc1fd21aa39760484026f8a5d
