@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added 5G cellular support ([#13713](https://github.com/expo/expo/pull/13713) by [@m1st4ke](https://github.com/m1st4ke))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
