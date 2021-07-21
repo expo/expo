@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Support loading base64 data URIs on iOS.
+- Support loading base64 data URIs on iOS. ([#13725](https://github.com/expo/expo/pull/13725) by [@mnightingale](https://github.com/mnightingale))
 
 ### 🐛 Bug fixes
 
