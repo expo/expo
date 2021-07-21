@@ -54,10 +54,15 @@ internal class SMSModuleTest {
     val promise = PromiseMock()
     val addresses = arrayListOf("123456789", "234567891")
     val message = "test text message"
-    val options = mapOf(optionsAttachmentsKey to listOf(mapOf(
-      "someattachment" to "someattachment",
-      "mimeType" to "intent type",
-      "uri" to "some resource identifier")))
+    val options = mapOf(
+      optionsAttachmentsKey to listOf(
+        mapOf(
+          "someattachment" to "someattachment",
+          "mimeType" to "intent type",
+          "uri" to "some resource identifier"
+        )
+      )
+    )
     smsModule.sendSMSAsync(addresses, message, options as Map<String?, Any?>, promise)
     smsModule.onHostResume()
     assertResolved(promise)
