@@ -414,8 +414,13 @@ const ROOT = [
 // These directories will not be placed in the sidebar, but will still be searchable
 const hiddenSections = ['FAQ', 'Troubleshooting'];
 
-//These sections will NOT be expanded by default in the sidebar
-const unexpandedSections = ['Deprecated', 'Regulatory Compliance', 'UI Programming'];
+// These sections will NOT be expanded by default in the sidebar
+const collapsedSections = [
+  'Deprecated',
+  'Regulatory Compliance',
+  'UI Programming',
+  'Technical Specs',
+];
 
 const sortAccordingToReference = (arr, reference) => {
   reference = Array.from(reference).reverse();
@@ -503,5 +508,5 @@ module.exports = {
   eas: sortedEas,
   reference: { ...sortedReference, latest: sortedReference['v' + packageVersion] },
   hiddenSections,
-  unexpandedSections,
+  collapsedSections,
 };
