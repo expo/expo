@@ -41,6 +41,29 @@ export default class SMSScreen extends React.Component<{}, State> {
     }
   };
 
+  _sendSMSWithInvalidRecipient = async (address: null | undefined) => {
+    const isAvailable = await SMS.isAvailableAsync();
+    if (!isAvailable) {
+      this.setState({
+        error: 'SMS functionality is not available on this device!',
+      });
+      setTimeout(() => this.setState({ error: undefined }), 10000);
+      return;
+    }
+    try {
+      if (this.state.message) {
+        // @ts-ignore -- testing if addresses === null is handled
+        // expected behavior: exception is thrown
+        const { result } = await SMS.sendSMSAsync(address, this.state.message);
+        this.setState({ phoneNumbers: [], message: undefined, result });
+        setTimeout(() => this.setState({ result: undefined }), 5000);
+      }
+    } catch (e) {
+      this.setState({ error: e.message });
+      setTimeout(() => this.setState({ error: undefined }), 10000);
+    }
+  };
+
   render() {
     return (
       <View style={styles.container}>
@@ -61,6 +84,18 @@ export default class SMSScreen extends React.Component<{}, State> {
           onChangeText={message => this.setState({ message })}
         />
         <Button title="Send" disabled={!this.state.message} onPress={this._sendSMS}>
+          Send SMS
+        </Button>
+        <Button
+          title="Send message with null recipient"
+          disabled={!this.state.message}
+          onPress={() => this._sendSMSWithInvalidRecipient(undefined)}>
+          Send SMS
+        </Button>
+        <Button
+          title="Send message with undefined recipient"
+          disabled={!this.state.message}
+          onPress={() => this._sendSMSWithInvalidRecipient(null)}>
           Send SMS
         </Button>
         {this.state.error && (
