@@ -133,9 +133,9 @@ Consider the following example that changes the config name:
 `my-plugin.js`
 
 ```js
-module.exports = function withCustomName(config, name) {
+module.exports = function withPrefixedName(config, prefix) {
   // Modify the config
-  config.name = 'custom-' + name;
+  config.name = prefix + '-' + config.name;
   // Return the results
   return config;
 };
@@ -146,7 +146,9 @@ module.exports = function withCustomName(config, name) {
 ```json
 {
   "name": "my-app",
-  "plugins": ["./my-plugin", "app"]
+  "plugins": [
+    ["./my-plugin", "custom"]
+  ]
 }
 ```
 
@@ -157,7 +159,9 @@ module.exports = function withCustomName(config, name) {
 ```json
 {
   "name": "custom-my-app",
-  "plugins": ["./my-plugin", "app"]
+  "plugins": [
+    ["./my-plugin", "custom"]
+  ]
 }
 ```
 
