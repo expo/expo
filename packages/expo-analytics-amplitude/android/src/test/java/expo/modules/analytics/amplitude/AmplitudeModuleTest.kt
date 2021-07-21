@@ -42,13 +42,13 @@ internal class AmplitudeModuleTest {
       mapOf(
         "property 1 key" to "property 1",
         "property 2 key" to "property 2",
-      )
-    , promise)
+      ),
+      promise)
     assertRejected(promise)
   }
 
   @Test
-  fun `clearUserPropertiesAsync rejects when module is not intitialized`() {
+  fun `clearUserPropertiesAsync rejects when module is not initialized`() {
     module = AmplitudeModule(ApplicationProvider.getApplicationContext())
     val promise = PromiseMock()
     module.clearUserPropertiesAsync(promise)
