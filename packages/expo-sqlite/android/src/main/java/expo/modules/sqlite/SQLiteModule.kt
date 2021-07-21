@@ -102,7 +102,7 @@ class SQLiteModule(private val mContext: Context) : ExportedModule(mContext) {
                 return EMPTY_RESULT
             }
             val numColumns = cursor.columnCount
-            val rows: Array<Array<Any?>> = arrayOfNulls(numRows)
+            val rows: Array<Array<Any?>?> = arrayOfNulls(numRows)
             val columnNames = cursor.columnNames
             var i = 0
             while (cursor.moveToNext()) {
@@ -123,7 +123,8 @@ class SQLiteModule(private val mContext: Context) : ExportedModule(mContext) {
         when (columnType) {
             Cursor.FIELD_TYPE_FLOAT -> return cursor!!.getDouble(index)
             Cursor.FIELD_TYPE_INTEGER -> return cursor!!.getLong(index)
-            Cursor.FIELD_TYPE_BLOB ->         // convert byte[] to binary string; it's good enough, because
+            Cursor.FIELD_TYPE_BLOB ->
+                // convert byte[] to binary string; it's good enough, because
                 // WebSQL doesn't support blobs anyway
                 return String(cursor!!.getBlob(index))
             Cursor.FIELD_TYPE_STRING -> return cursor!!.getString(index)
@@ -153,14 +154,14 @@ class SQLiteModule(private val mContext: Context) : ExportedModule(mContext) {
         return database
     }
 
-    private class SQLitePluginResult(val rows: Array<Array<Any?>>, val columns: Array<String?>,
+    private class SQLitePluginResult(val rows: Array<Array<Any?>?>, val columns: Array<String?>,
                                      val rowsAffected: Int, val insertId: Long, val error: Throwable?)
 
     private class ReadOnlyException : Exception("could not prepare statement (23 not authorized)")
     companion object {
         private const val DEBUG_MODE = false
         private val TAG = SQLiteModule::class.java.simpleName
-        private val EMPTY_ROWS = arrayOf<Array<Any?>>()
+        private val EMPTY_ROWS = arrayOf<Array<Any?>?>()
         private val EMPTY_COLUMNS = arrayOf<String?>()
         private val EMPTY_RESULT = SQLitePluginResult(EMPTY_ROWS, EMPTY_COLUMNS, 0, 0, null)
         private val DATABASES: MutableMap<String, SQLiteDatabase?> = HashMap()
@@ -171,15 +172,14 @@ class SQLiteModule(private val mContext: Context) : ExportedModule(mContext) {
                     throw IOException("Path '$dir' points to a file, but must point to a directory.")
                 }
                 if (!dir.mkdirs()) {
-                    var additionalErrorMessage: String? = null
+                    var additionalErrorMessage = ""
                     if (dir.exists()) {
                         additionalErrorMessage = "Path already points to a non-normal file."
                     }
                     if (dir.parentFile == null) {
                         additionalErrorMessage = "Parent directory is null."
                     }
-                    throw IOException("Couldn't create directory '" + dir + "'. " + (additionalErrorMessage
-                            ?: ""))
+                    throw IOException("Couldn't create directory '$dir'. $additionalErrorMessage")
                 }
             }
             return dir
@@ -197,11 +197,7 @@ class SQLiteModule(private val mContext: Context) : ExportedModule(mContext) {
 
         private fun convertPluginResultToArray(result: SQLitePluginResult?): List<Any?> {
             val data: MutableList<Any?> = ArrayList()
-            if (result!!.error != null) {
-                data.add(result.error.message)
-            } else {
-                data.add(null)
-            }
+            data.add(result!!.error?.message)
             data.add(result.insertId.toInt())
             data.add(result.rowsAffected)
 
@@ -215,7 +211,8 @@ class SQLiteModule(private val mContext: Context) : ExportedModule(mContext) {
             // rows
             val rows: MutableList<Any> = ArrayList()
             for (i in result.rows.indices) {
-                val values = result.rows[i]
+                val values = result.rows[i] ?: continue
+
                 // row content
                 val rowContent: MutableList<Any?> = ArrayList()
                 for (j in values.indices) {
@@ -245,9 +242,7 @@ class SQLiteModule(private val mContext: Context) : ExportedModule(mContext) {
             if (!isPragma(str)) {
                 return false
             }
-            return if (str.matches(".*=.*")) {
-                false
-            } else true
+            return !str.contains('=')
         }
 
         private fun isSelect(str: String): Boolean {
@@ -291,29 +286,29 @@ class SQLiteModule(private val mContext: Context) : ExportedModule(mContext) {
         }
 
         private fun convertParamsToStringArray(paramArrayArg: Any): Array<String?> {
-            val paramArray = paramArrayArg as ArrayList<Any>
+            val paramArray = paramArrayArg as ArrayList<Any?>
             val len = paramArray.size
             val res = arrayOfNulls<String>(len)
             for (i in 0 until len) {
-                val `object` = paramArray[i]
+                val value = paramArray[i]
                 res[i] = null
-                if (`object` is String) {
-                    res[i] = unescapeBlob(`object`)
-                } else if (`object` is Boolean) {
-                    res[i] = if (`object`) "1" else "0"
-                } else if (`object` is Double) {
-                    res[i] = `object`.toString()
-                } else if (`object` != null) {
-                    throw ClassCastException("Could not find proper SQLite data type for argument: $`object`")
+                if (value is String) {
+                    res[i] = unescapeBlob(value)
+                } else if (value is Boolean) {
+                    res[i] = if (value) "1" else "0"
+                } else if (value is Double) {
+                    res[i] = value.toString()
+                } else if (value != null) {
+                    throw ClassCastException("Could not find proper SQLite data type for argument: $")
                 }
             }
             return res
         }
 
         private fun unescapeBlob(str: String): String {
-            return str.replace("\u0001\u0001".toRegex(), "\u0000")
-                    .replace("\u0001\u0002".toRegex(), "\u0001")
-                    .replace("\u0002\u0002".toRegex(), "\u0002")
+            return str.replace("\u0001\u0001", "\u0000")
+                    .replace("\u0001\u0002", "\u0001")
+                    .replace("\u0002\u0002", "\u0002")
         }
     }
 }
