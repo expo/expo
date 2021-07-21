@@ -1,34 +1,44 @@
 import * as Cellular from 'expo-cellular';
+import { CellularInfo } from 'expo-cellular/build/Cellular.types';
 import * as React from 'react';
+import { useState } from 'react';
 import { ScrollView } from 'react-native';
 
+import Button from '../components/Button';
 import MonoText from '../components/MonoText';
-import { useResolvedValue } from '../utilities/useResolvedValue';
 
 export default function CellularScreen() {
-  const [generation, error] = useResolvedValue(Cellular.getCellularGenerationAsync);
+  const [cellularInfo, setCellularInfo] = useState<CellularInfo>();
 
-  React.useEffect(() => {
-    if (error) alert(error.message);
-  }, [error]);
+  const _getCellularInfo = async () => {
+    try {
+      const newCellularCarrier = await Cellular.getCurrentCellularInfoAsync();
+      setCellularInfo(newCellularCarrier);
+    } catch (error) {
+      alert(error.message);
+    }
+  };
 
   return (
     <ScrollView style={{ padding: 10 }}>
-      <MonoText>
-        {JSON.stringify(
-          {
-            allowsVoip: Cellular.allowsVoip,
-            carrier: Cellular.carrier,
-            isoCountryCode: Cellular.isoCountryCode,
-            mobileCountryCode: Cellular.mobileCountryCode,
-            mobileNetworkCode: Cellular.mobileNetworkCode,
-            generation,
-            generationName: generationMap[generation ?? 0],
-          },
-          null,
-          2
-        )}
-      </MonoText>
+      <Button onPress={_getCellularInfo} title="Get cellular information" style={{ padding: 10 }} />
+      {cellularInfo ? (
+        <MonoText>
+          {JSON.stringify(
+            {
+              allowsVoip: cellularInfo.allowsVoip,
+              carrier: cellularInfo.carrier,
+              isoCountryCode: cellularInfo.isoCountryCode,
+              mobileCountryCode: cellularInfo.mobileCountryCode,
+              mobileNetworkCode: cellularInfo.mobileNetworkCode,
+              generation: cellularInfo.generation,
+              generationName: generationMap[cellularInfo.generation ?? 0],
+            },
+            null,
+            2
+          )}
+        </MonoText>
+      ) : null}
     </ScrollView>
   );
 }
