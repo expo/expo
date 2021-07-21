@@ -442,7 +442,6 @@ async function generateExpoKitPodspecAsync(
         `
 folly_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
 folly_compiler_flags = folly_flags + ' ' + '-Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2020.01.13.00'
 boost_compiler_flags = '-Wno-documentation'\n\n`
       )
       .replace(
