@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Changed generateExpoModulesPackageList for preBuild.dependsOn with quotes in build.gradle. ([#13568](https://github.com/expo/expo/pull/13568) by [@wbroek](https://github.com/wbroek))
+- Fix removing event listeners for projects with `react-native@>0.64.0`. ([#13654](https://github.com/expo/expo/pull/13654) by [@dsokal](https://github.com/dsokal))
 
 ### 💡 Others
 
