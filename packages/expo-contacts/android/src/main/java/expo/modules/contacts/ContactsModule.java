@@ -51,7 +51,7 @@ import expo.modules.interfaces.permissions.Permissions;
 import static expo.modules.contacts.models.BaseModel.decodeList;
 
 public class ContactsModule extends ExportedModule {
-  public static final int RC_EDIT_CONTACT = 2138;
+  public static final int RC_EDIT_CONTACT = 2137;
 
   private final ActivityEventListener mActivityEventListener = new ContactsActivityEventListener();
   private ModuleRegistry mModuleRegistry;
