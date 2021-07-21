@@ -18,7 +18,7 @@ Progressive Web Apps
 </a>
 </H2>
 
-Expo makes it easy to create PWAs by generating web app data from your app config. You can customize your offline support to fully enable PWA features in your website. Run your app on a variety of different devices and reach a much wider user-base with a feature-filled PWA.
+Expo makes it easy to create PWAs by generating web app data from your app config. You can add offline support to fully enable PWA features in your website. Run your app on a variety of different devices and reach a much wider user-base with a feature-filled PWA.
 
 - ⭐️ **Share Icons:** Automatically reuse the App Icon and Splash Screens from your mobile app!
 - 💬 **Native Features:** Use secure features like the Sharing API in your PWA.
