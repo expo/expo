@@ -307,7 +307,7 @@ class DevLauncherController private constructor()
     fun initialize(context: Context, appHost: ReactNativeHost) {
       val testInterceptor = DevLauncherKoinContext.app.koin.get<DevLauncherTestInterceptor>()
       if (!testInterceptor.allowReinitialization()) {
-        check(wasInitialized()) { "DevelopmentClientController was initialized." }
+        check(!wasInitialized()) { "DevelopmentClientController was initialized." }
       }
 
       MenuDelegateWasInitialized = false
