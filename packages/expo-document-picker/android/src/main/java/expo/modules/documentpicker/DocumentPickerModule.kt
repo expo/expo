@@ -20,7 +20,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
-
 private const val TAG = "ExpoDocumentPicker"
 private const val OPEN_DOCUMENT_CODE = 4137
 
@@ -96,15 +95,10 @@ class DocumentPickerModule(
           putString("type", "success")
           putString("uri", documentDetails.uri)
           putString("name", documentDetails.name)
-          putString("mimeType", documentDetails.mimeType)
-          if (documentDetails.mimeType == null) {
-            putParcelable("mimeType", null)
-          } else {
+          documentDetails.mimeType?.let {
             putString("mimeType", documentDetails.mimeType)
           }
-          if (documentDetails.size == null) {
-            putParcelable("size", null)
-          } else {
+          documentDetails.size?.let {
             putInt("size", documentDetails.size)
           }
         }
