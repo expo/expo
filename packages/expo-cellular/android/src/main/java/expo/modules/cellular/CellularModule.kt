@@ -13,10 +13,9 @@ import org.unimodules.core.interfaces.ExpoMethod
 import org.unimodules.core.interfaces.RegistryLifecycleListener
 import java.util.*
 
-
 class CellularModule(
   private val mContext: Context,
-  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate(),
+  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
 ) : ExportedModule(mContext), RegistryLifecycleListener {
   override fun getName(): String = "ExpoCellular"
 
@@ -35,7 +34,7 @@ class CellularModule(
     }
     constants["isoCountryCode"] = telephonyManager?.simCountryIso
 
-    //check if sim state is ready
+    // check if sim state is ready
     if (telephonyManager != null && telephonyManager.simState == TelephonyManager.SIM_STATE_READY) {
       constants["carrier"] = telephonyManager.simOperatorName
       constants["mobileCountryCode"] = telephonyManager.simOperator.substring(0, 3)
