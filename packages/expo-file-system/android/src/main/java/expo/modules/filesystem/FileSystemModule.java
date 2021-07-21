@@ -1312,7 +1312,6 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
   private static class DownloadTaskHandler extends TaskHandler {
     public final Uri fileUri;
 
-
     public DownloadTaskHandler(Uri fileUri, Call call) {
       super(call);
       this.fileUri = fileUri;
