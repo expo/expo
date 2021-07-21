@@ -63,6 +63,21 @@ public class CellularModule: Module {
       return .unknown
     }
   }
+  
+  
+  static func getCurrentCellularInfoAsync() -> [String: Any?] {
+    let carrier = Self.currentCarrier()
+    let generation = Self.currentCellularGeneration()
+
+    return [
+      "allowsVoip": carrier?.allowsVOIP,
+      "carrier": carrier?.carrierName,
+      "isoCountryCode": carrier?.isoCountryCode,
+      "mobileCountryCode": carrier?.mobileCountryCode,
+      "mobileNetworkCode": carrier?.mobileNetworkCode,
+      "generation": generation.rawValue,
+    ]
+  }
 
   static func currentRadioAccessTechnology() -> String? {
     let netinfo = CTTelephonyNetworkInfo()

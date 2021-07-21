@@ -39,6 +39,22 @@ EX_EXPORT_METHOD_AS(getCellularGenerationAsync, getCellularGenerationAsyncWithRe
   resolve(@([[self class] getCellularGeneration]));
 }
 
+
+EX_EXPORT_METHOD_AS(getCurrentCellularInfoAsync, getCurrentCarrierAsyncWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject)
+{
+  CTCarrier *carrier = [self carrier];
+  EXCellularGeneration generation = [[self class] getCellularGeneration];
+
+  resolve(@{
+    @"allowsVoip": @(carrier.allowsVOIP),
+    @"carrier": EXNullIfNil(carrier.carrierName),
+    @"isoCountryCode": EXNullIfNil(carrier.isoCountryCode),
+    @"mobileCountryCode": EXNullIfNil(carrier.mobileCountryCode),
+    @"mobileNetworkCode": EXNullIfNil(carrier.mobileNetworkCode),
+    @"generation": @(generation),
+  });
+}
+
 + (EXCellularGeneration)getCellularGeneration
 {
   CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
