@@ -5,11 +5,13 @@ import { androidPermissions, AndroidPermissionItem } from './data';
 
 import { InlineCode } from '~/components/base/code';
 import { Quote } from '~/components/base/paragraph';
-import { Info } from '~/components/icons/Info';
+import { QuestionIcon } from '~/components/icons/QuestionIcon';
 
 type AndroidPermissionsProps = {
   keys: string[];
 };
+
+const grantedByInfo = 'Some permissions are granted by the system without user approval';
 
 export function AndroidPermissions(props: AndroidPermissionsProps) {
   const list = props.keys.map(key => androidPermissions[key]);
@@ -20,10 +22,8 @@ export function AndroidPermissions(props: AndroidPermissionsProps) {
         <tr>
           <th>Android Permission</th>
           <th>
-            <span
-              css={grantedByInfoStyle}
-              title="Some permissions are granted by the system without user approval">
-              Granted by <Info size={11} />
+            <span css={grantedByInfoStyle} title={grantedByInfo}>
+              Granted by <QuestionIcon size={12} title={grantedByInfo} />
             </span>
           </th>
           <th>Description</th>
@@ -70,10 +70,6 @@ function AndroidPermissionRow(permission: AndroidPermissionItem) {
 
 const grantedByInfoStyle = css`
   white-space: nowrap;
-  
-  svg {
-    vertical-align: middle;
-  }
 `;
 
 const deprecatedStyle = css`
