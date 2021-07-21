@@ -12,8 +12,8 @@
 
 @implementation EXSessionCancelableUploadTaskDelegate
 
-- (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
-                         reject:(UMPromiseRejectBlock)reject
+- (instancetype)initWithResolve:(EXPromiseResolveBlock)resolve
+                         reject:(EXPromiseRejectBlock)reject
                  onSendCallback:(EXUploadDelegateOnSendCallback)onSendCallback
                 resumableManager:(EXTaskHandlersManager *)manager
                            uuid:(NSString *)uuid;

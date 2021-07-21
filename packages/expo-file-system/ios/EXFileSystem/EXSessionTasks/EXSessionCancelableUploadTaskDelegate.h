@@ -7,8 +7,8 @@ typedef void (^EXUploadDelegateOnSendCallback)(NSURLSessionUploadTask *task, int
 
 @interface EXSessionCancelableUploadTaskDelegate : EXSessionUploadTaskDelegate
 
-- (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
-                         reject:(UMPromiseRejectBlock)reject
+- (instancetype)initWithResolve:(EXPromiseResolveBlock)resolve
+                         reject:(EXPromiseRejectBlock)reject
                  onSendCallback:(EXUploadDelegateOnSendCallback)onSendCallback
                resumableManager:(EXTaskHandlersManager *)manager
                            uuid:(NSString *)uuid;

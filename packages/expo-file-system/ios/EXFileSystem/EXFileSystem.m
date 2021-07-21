@@ -41,7 +41,7 @@ typedef NS_ENUM(NSInteger, EXFileSystemUploadType) {
 @property (nonatomic, strong) NSURLSession *backgroundSession;
 @property (nonatomic, strong) NSURLSession *foregroundSession;
 @property (nonatomic, strong) EXSessionTaskDispatcher *sessionTaskDispatcher;
-@property (nonatomic, strong) EXTaskHandlersManager *takskHandlersManager;
+@property (nonatomic, strong) EXTaskHandlersManager *taskHandlersManager;
 @property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) id<EXEventEmitterService> eventEmitter;
 @property (nonatomic, strong) NSString *documentDirectory;
@@ -71,7 +71,7 @@ EX_REGISTER_MODULE();
     _cachesDirectory = cachesDirectory;
     _bundleDirectory = bundleDirectory;
     
-    _takskHandlersManager = [EXTaskHandlersManager new];
+    _taskHandlersManager = [EXTaskHandlersManager new];
     
     [EXFileSystem ensureDirExistsWithPath:_documentDirectory];
     [EXFileSystem ensureDirExistsWithPath:_cachesDirectory];
@@ -622,11 +622,11 @@ EX_EXPORT_METHOD_AS(uploadTaskStartAsync,
   EXSessionTaskDelegate *taskDelegate = [[EXSessionCancelableUploadTaskDelegate alloc] initWithResolve:resolve
                                                                                           reject:reject
                                                                                   onSendCallback:onSend
-                                                                                resumableManager:_takskHandlersManager
+                                                                                resumableManager:_taskHandlersManager
                                                                                             uuid:uuid];
   
   [_sessionTaskDispatcher registerTaskDelegate:taskDelegate forTask:task];
-  [_takskHandlersManager registerTask:task uuid:uuid];
+  [_taskHandlersManager registerTask:task uuid:uuid];
   [task resume];
 }
 
@@ -746,7 +746,7 @@ EX_EXPORT_METHOD_AS(downloadResumablePauseAsync,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  NSURLSessionDownloadTask *task = [_takskHandlersManager downloadTaskForId:uuid];
+  NSURLSessionDownloadTask *task = [_taskHandlersManager downloadTaskForId:uuid];
   if (!task) {
     reject(@"ERR_FILESYSTEM_CANNOT_FIND_TASK",
            [NSString stringWithFormat:@"There is no download object with UUID: %@", uuid],
@@ -766,7 +766,7 @@ EX_EXPORT_METHOD_AS(networkTaskCancelAsync,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  NSURLSessionDownloadTask *task = [_takskHandlersManager taskForId:uuid];
+  NSURLSessionDownloadTask *task = [_taskHandlersManager taskForId:uuid];
   if (task) {
     [task cancel];
   }
@@ -942,10 +942,10 @@ EX_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
                                                                                                localUrl:fileUrl
                                                                                      shouldCalculateMd5:[options[@"md5"] boolValue]
                                                                                         onWriteCallback:onWrite
-                                                                                       resumableManager:_takskHandlersManager
+                                                                                       resumableManager:_taskHandlersManager
                                                                                                    uuid:uuid];
   [_sessionTaskDispatcher registerTaskDelegate:taskDelegate forTask:downloadTask];
-  [_takskHandlersManager registerTask:downloadTask uuid:uuid];
+  [_taskHandlersManager registerTask:downloadTask uuid:uuid];
   [downloadTask resume];
 }
 

@@ -27,6 +27,7 @@
 {
   return _resumableDownloads[uuid];
 }
+
 - (NSURLSessionDownloadTask * _Nullable)downloadTaskForId:(NSString *)uuid
 {
   NSURLSessionTask *task = [self taskForId:uuid];
