@@ -28,7 +28,11 @@ const filterDataByKind = (
     ? entries.filter((entry: GeneratedData) => entry.kind === kind && additionalCondition(entry))
     : [];
 
-const isHook = ({ name }: GeneratedData) => name.startsWith('use');
+const isHook = ({ name }: GeneratedData) =>
+  name.startsWith('use') &&
+  // note(simek): hardcode this exception until the method will be renamed
+  name !== 'useSystemBrightnessAsync';
+
 const isListener = ({ name }: GeneratedData) => name.endsWith('Listener');
 
 const renderAPI = (
