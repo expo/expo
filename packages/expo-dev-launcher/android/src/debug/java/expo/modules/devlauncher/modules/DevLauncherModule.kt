@@ -2,13 +2,12 @@ package expo.modules.devlauncher.modules
 
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
-import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.koin.DevLauncherKoinComponent
+import expo.modules.devlauncher.koin.optInject
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
-import org.koin.core.component.inject
 
 class DevLauncherModule(reactContext: ReactApplicationContext?) : ReactContextBaseJavaModule(reactContext), DevLauncherKoinComponent {
-  private val controller: DevLauncherControllerInterface by inject()
+  private val controller: DevLauncherControllerInterface? by optInject()
 
   override fun getName() = "EXDevLauncher"
 
@@ -16,7 +15,7 @@ class DevLauncherModule(reactContext: ReactApplicationContext?) : ReactContextBa
 
   override fun getConstants(): Map<String, Any?> {
     val manifestString = try {
-      controller.manifest?.rawData
+      controller?.manifest?.rawData
     } catch (_: IllegalStateException) {
       null
     }
