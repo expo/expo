@@ -223,7 +223,7 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
     }
   }
 
-  override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent) {
+  override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
     // If the user uses PIN as an authentication method, the result will be passed to the `onActivityResult`.
     // Unfortunately, react-native doesn't pass this value to the underlying fragment - we won't resolve the promise.
     // So we need to do it manually.
