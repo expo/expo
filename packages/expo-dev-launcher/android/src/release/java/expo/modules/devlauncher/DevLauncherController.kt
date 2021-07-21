@@ -34,11 +34,11 @@ class DevLauncherController private constructor() : DevLauncherControllerInterfa
   override val appHost: ReactNativeHost
     get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
 
-  var updatesInterface: UpdatesInterface?
+  override var updatesInterface: UpdatesInterface?
     get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
     set(_) {}
 
-  val useDeveloperSupport = false
+  override val useDeveloperSupport = false
 
   override fun maybeInitDevMenuDelegate(context: ReactContext) {
     throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
