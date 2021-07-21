@@ -25,12 +25,18 @@ android {
     versionCode 9
     versionName "0.6.5"
   }
+
   lintOptions {
     abortOnError false
   }
+
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
     targetCompatibility JavaVersion.VERSION_1_8
+  }
+
+  kotlinOptions {
+    jvmTarget = "1.8"
   }
 
   buildTypes {
@@ -92,6 +98,9 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
   implementation "org.jetbrains.kotlin:kotlin-reflect:${safeExtGet('kotlinVersion', '1.4.21')}"
+
+  api "io.insert-koin:koin-core:3.1.2"
+  api "io.insert-koin:koin-android:3.1.2"
 
   testImplementation "com.google.truth:truth:1.1.2"
   testImplementation "org.robolectric:robolectric:4.3.1"
