@@ -658,8 +658,6 @@ There are many reasons why you might want to handle inbound links into your app,
 
 If you are using deep linking with React Navigation v5, filtering through `Linking.addEventListener` will not be sufficient, because deep linking is [handled differently](https://reactnavigation.org/docs/configuring-links/#advanced-cases). Instead, to filter these events you can add a custom `getStateFromPath` function to your linking configuration, and then filter by URL in the same way as described above.
 
-#
-
 [userinfo]: https://openid.net/specs/openid-connect-core-1_0.html#UserInfo
 [provider-meta]: https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata
 [oidc-dcr]: https://openid.net/specs/openid-connect-discovery-1_0.html#OpenID.Registration

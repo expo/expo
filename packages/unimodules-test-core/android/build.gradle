@@ -78,7 +78,6 @@ repositories {
 
 dependencies {
   unimodule 'unimodules-core'
-
   api 'androidx.test:core:1.2.0'
   api 'junit:junit:4.12'
   api 'io.mockk:mockk:1.10.6'

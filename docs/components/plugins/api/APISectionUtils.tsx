@@ -54,6 +54,7 @@ const nonLinkableTypes = [
   'Date',
   'Error',
   'Omit',
+  'Pick',
   'Promise',
   'React.FC',
   'StyleProp',
