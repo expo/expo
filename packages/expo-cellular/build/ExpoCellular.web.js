@@ -37,5 +37,15 @@ export default {
             return CellularGeneration.UNKNOWN;
         }
     },
+    async getCurrentCellularInfoAsync() {
+        return {
+            allowsVoip: this.allowsVoip,
+            isoCountryCode: this.isoCountryCode,
+            carrier: this.carrier,
+            mobileCountryCode: this.mobileCountryCode,
+            mobileNetworkCode: this.mobileNetworkCode,
+            generation: await this.getCellularGenerationAsync(),
+        };
+    },
 };
 //# sourceMappingURL=ExpoCellular.web.js.map
