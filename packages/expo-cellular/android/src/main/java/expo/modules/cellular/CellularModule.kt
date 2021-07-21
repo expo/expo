@@ -27,11 +27,16 @@ class CellularModule(
   override fun getConstants(): HashMap<String, Any?> {
     val constants = HashMap<String, Any?>()
     constants["allowsVoip"] = SipManager.isVoipSupported(mContext)
-    val telephonyManager = mContext.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-    constants["isoCountryCode"] = telephonyManager.simCountryIso
+    val systemService = mContext.getSystemService(Context.TELEPHONY_SERVICE)
+    val telephonyManager = if (systemService != null) {
+      systemService as TelephonyManager
+    } else {
+      null
+    }
+    constants["isoCountryCode"] = telephonyManager?.simCountryIso
 
     //check if sim state is ready
-    if (telephonyManager.simState == TelephonyManager.SIM_STATE_READY) {
+    if (telephonyManager != null && telephonyManager.simState == TelephonyManager.SIM_STATE_READY) {
       constants["carrier"] = telephonyManager.simOperatorName
       constants["mobileCountryCode"] = telephonyManager.simOperator.substring(0, 3)
       constants["mobileNetworkCode"] = StringBuilder(telephonyManager.simOperator).delete(0, 3).toString()
@@ -47,17 +52,17 @@ class CellularModule(
   @ExpoMethod
   fun getCellularGenerationAsync(promise: Promise) {
     try {
-      val mSystemService = mContext.getSystemService(Context.TELEPHONY_SERVICE)
-      val mTelephonyManager = if (mSystemService != null) {
-        mSystemService as TelephonyManager
+      val systemService = mContext.getSystemService(Context.TELEPHONY_SERVICE)
+      val telephonyManager = if (systemService != null) {
+        systemService as TelephonyManager
       } else {
         promise.resolve(CellularGeneration.UNKNOWN.value)
         return
       }
       val networkType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        mTelephonyManager.dataNetworkType
+        telephonyManager.dataNetworkType
       } else {
-        mTelephonyManager.networkType
+        telephonyManager.networkType
       }
       when (networkType) {
         TelephonyManager.NETWORK_TYPE_GPRS,
