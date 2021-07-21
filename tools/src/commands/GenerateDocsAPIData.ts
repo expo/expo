@@ -95,6 +95,7 @@ async function action({packageName, version = 'unversioned'}: ActionOptions) {
     'expo-battery': ['Battery.ts'],
     'expo-blur': ['index.ts'],
     'expo-cellular': ['Cellular.ts'],
+    'expo-checkbox': ['Checkbox.ts'],
     'expo-clipboard': ['Clipboard.ts'],
     'expo-facebook': [['Facebook.ts', 'Facebook.types.ts']],
     'expo-font': ['index.ts'],

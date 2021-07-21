@@ -82,7 +82,10 @@ const renderAPI = (
     const constants = filterDataByKind(
       data,
       TypeDocKind.Variable,
-      entry => (entry?.flags?.isConst || false) && entry?.type?.name !== 'React.FC'
+      entry =>
+        (entry?.flags?.isConst || false) &&
+        entry.name !== 'default' &&
+        entry?.type?.name !== 'React.FC'
     );
 
     const components = filterDataByKind(

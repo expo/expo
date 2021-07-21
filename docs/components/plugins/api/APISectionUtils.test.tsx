@@ -296,6 +296,29 @@ describe('APISectionUtils.resolveTypeName', () => {
     expect(container).toMatchSnapshot();
   });
 
+  test('object reflection', () => {
+    const { container } = render(
+      <>
+        {resolveTypeName({
+          type: 'reflection',
+          declaration: {
+            children: [
+              {
+                name: 'target',
+                type: { type: 'intrinsic', name: 'number' },
+              },
+              {
+                name: 'value',
+                type: { type: 'intrinsic', name: 'boolean' },
+              },
+            ],
+          },
+        })}
+      </>
+    );
+    expect(container).toMatchSnapshot();
+  });
+
   test('custom type with single pick', () => {
     const { container } = render(
       <>

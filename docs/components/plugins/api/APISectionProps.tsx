@@ -1,9 +1,10 @@
+import { css } from '@emotion/react';
 import React from 'react';
 
 import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
 import { P } from '~/components/base/paragraph';
-import { H2, H4, H4Code } from '~/components/plugins/Headings';
+import { H2, H3, H4Code } from '~/components/plugins/Headings';
 import {
   CommentTagData,
   DefaultPropsDefinitionData,
@@ -24,6 +25,10 @@ export type APISectionPropsProps = {
 };
 
 const UNKNOWN_VALUE = '...';
+
+const PROP_LIST_ELEMENT_STYLE = css`
+  padding: 0;
+`;
 
 const extractDefaultPropValue = (
   { comment, name }: PropData,
@@ -54,10 +59,10 @@ const renderInheritedProps = (data: TypeDefinitionData[] | undefined): JSX.Eleme
   const inheritedProps = data?.filter((ip: TypeDefinitionData) => ip.type === 'reference') ?? [];
   if (inheritedProps.length) {
     return (
-      <div>
-        <H4>Inherited Props</H4>
+      <>
+        <H3>Inherited Props</H3>
         <UL>{inheritedProps.map(renderInheritedProp)}</UL>
-      </div>
+      </>
     );
   }
   return undefined;
@@ -88,8 +93,8 @@ const renderProps = (
 };
 
 const renderProp = ({ comment, name, type, flags }: PropData, defaultValue?: string) => (
-  <LI key={`prop-entry-${name}`}>
-    <H4>{name}</H4>
+  <LI key={`prop-entry-${name}`} customCss={PROP_LIST_ELEMENT_STYLE}>
+    <H3>{name}</H3>
     <P>
       {flags?.isOptional && <span css={STYLES_SECONDARY}>Optional&emsp;&bull;&emsp;</span>}
       <span css={STYLES_SECONDARY}>Type:</span> <InlineCode>{resolveTypeName(type)}</InlineCode>
