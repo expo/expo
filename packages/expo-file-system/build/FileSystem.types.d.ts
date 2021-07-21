@@ -40,11 +40,11 @@ export declare type FileSystemUploadOptions = ({
 export declare type FileSystemUploadResult = FileSystemHttpResult & {
     body: string;
 };
-export declare type NetworkTaskProgressCallback<T extends DownloadProgressData | UploadProgressData> = (data: T) => void;
+export declare type FileSystemNetworkTaskProgressCallback<T extends DownloadProgressData | UploadProgressData> = (data: T) => void;
 /**
  * @deprecated use `NetworkTaskProgressCallback<DownloadProgressData>` instead
  */
-export declare type DownloadProgressCallback = NetworkTaskProgressCallback<DownloadProgressData>;
+export declare type DownloadProgressCallback = FileSystemNetworkTaskProgressCallback<DownloadProgressData>;
 export declare type DownloadProgressData = {
     totalBytesWritten: number;
     totalBytesExpectedToWrite: number;

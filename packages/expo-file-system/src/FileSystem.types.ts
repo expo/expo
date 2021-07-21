@@ -63,14 +63,14 @@ export type FileSystemUploadResult = FileSystemHttpResult & {
   body: string;
 };
 
-export type NetworkTaskProgressCallback<T extends DownloadProgressData | UploadProgressData> = (
-  data: T
-) => void;
+export type FileSystemNetworkTaskProgressCallback<
+  T extends DownloadProgressData | UploadProgressData
+> = (data: T) => void;
 
 /**
  * @deprecated use `NetworkTaskProgressCallback<DownloadProgressData>` instead
  */
-export type DownloadProgressCallback = NetworkTaskProgressCallback<DownloadProgressData>;
+export type DownloadProgressCallback = FileSystemNetworkTaskProgressCallback<DownloadProgressData>;
 
 export type DownloadProgressData = {
   totalBytesWritten: number;

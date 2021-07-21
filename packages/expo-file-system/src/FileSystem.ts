@@ -7,7 +7,7 @@ import {
   DownloadOptions,
   DownloadPauseState,
   DownloadProgressCallback,
-  NetworkTaskProgressCallback,
+  FileSystemNetworkTaskProgressCallback,
   DownloadProgressData,
   UploadProgressData,
   DownloadResult,
@@ -48,6 +48,7 @@ export {
   FileSystemUploadOptions,
   FileSystemUploadResult,
   FileSystemUploadType,
+  FileSystemNetworkTaskProgressCallback,
   ReadingOptions,
   WritingOptions,
 };
@@ -207,7 +208,7 @@ export function createDownloadResumable(
   uri: string,
   fileUri: string,
   options?: DownloadOptions,
-  callback?: NetworkTaskProgressCallback<DownloadProgressData>,
+  callback?: FileSystemNetworkTaskProgressCallback<DownloadProgressData>,
   resumeData?: string
 ): DownloadResumable {
   return new DownloadResumable(uri, fileUri, options, callback, resumeData);
@@ -217,12 +218,14 @@ export function createUploadTask(
   url: string,
   fileUri: string,
   options?: FileSystemUploadOptions,
-  callback?: NetworkTaskProgressCallback<UploadProgressData>
+  callback?: FileSystemNetworkTaskProgressCallback<UploadProgressData>
 ): UploadTask {
   return new UploadTask(url, fileUri, options, callback);
 }
 
-export abstract class NetworkTask<T extends DownloadProgressData | UploadProgressData> {
+export abstract class FileSystemCancellableNetworkTask<
+  T extends DownloadProgressData | UploadProgressData
+> {
   private _uuid = uuidv4();
   protected taskWasCanceled = false;
   private emitter = new EventEmitter(ExponentFileSystem);
@@ -238,7 +241,7 @@ export abstract class NetworkTask<T extends DownloadProgressData | UploadProgres
     return await ExponentFileSystem.networkTaskCancelAsync(this.uuid);
   }
 
-  protected checkIfTaskWasCanceled(): boolean {
+  protected isTaskCancelled(): boolean {
     if (this.taskWasCanceled) {
       console.warn('This task was already canceled.');
       return true;
@@ -253,7 +256,7 @@ export abstract class NetworkTask<T extends DownloadProgressData | UploadProgres
 
   protected abstract getEventName(): string;
 
-  protected abstract getCallback(): NetworkTaskProgressCallback<T> | undefined;
+  protected abstract getCallback(): FileSystemNetworkTaskProgressCallback<T> | undefined;
 
   protected addSubscription() {
     if (this.subscription) {
@@ -279,14 +282,14 @@ export abstract class NetworkTask<T extends DownloadProgressData | UploadProgres
   }
 }
 
-export class UploadTask extends NetworkTask<UploadProgressData> {
+export class UploadTask extends FileSystemCancellableNetworkTask<UploadProgressData> {
   private options: FileSystemUploadOptions;
 
   constructor(
     private url: string,
     private fileUri: string,
     options?: FileSystemUploadOptions,
-    private callback?: NetworkTaskProgressCallback<UploadProgressData>
+    private callback?: FileSystemNetworkTaskProgressCallback<UploadProgressData>
   ) {
     super();
 
@@ -304,7 +307,7 @@ export class UploadTask extends NetworkTask<UploadProgressData> {
   protected getEventName(): string {
     return 'expo-file-system.uploadProgress';
   }
-  protected getCallback(): NetworkTaskProgressCallback<UploadProgressData> | undefined {
+  protected getCallback(): FileSystemNetworkTaskProgressCallback<UploadProgressData> | undefined {
     return this.callback;
   }
 
@@ -313,8 +316,8 @@ export class UploadTask extends NetworkTask<UploadProgressData> {
       throw new UnavailabilityError('expo-file-system', 'uploadTaskStartAsync');
     }
 
-    if (this.checkIfTaskWasCanceled()) {
-      return undefined;
+    if (this.isTaskCancelled()) {
+      return;
     }
 
     this.addSubscription();
@@ -330,12 +333,12 @@ export class UploadTask extends NetworkTask<UploadProgressData> {
   }
 }
 
-export class DownloadResumable extends NetworkTask<DownloadProgressData> {
+export class DownloadResumable extends FileSystemCancellableNetworkTask<DownloadProgressData> {
   constructor(
     private url: string,
     private _fileUri: string,
     private options: DownloadOptions = {},
-    private callback?: NetworkTaskProgressCallback<DownloadProgressData>,
+    private callback?: FileSystemNetworkTaskProgressCallback<DownloadProgressData>,
     private resumeData?: string
   ) {
     super();
@@ -349,7 +352,7 @@ export class DownloadResumable extends NetworkTask<DownloadProgressData> {
     return 'expo-file-system.downloadProgress';
   }
 
-  protected getCallback(): NetworkTaskProgressCallback<DownloadProgressData> | undefined {
+  protected getCallback(): FileSystemNetworkTaskProgressCallback<DownloadProgressData> | undefined {
     return this.callback;
   }
 
@@ -358,8 +361,8 @@ export class DownloadResumable extends NetworkTask<DownloadProgressData> {
       throw new UnavailabilityError('expo-file-system', 'downloadResumableStartAsync');
     }
 
-    if (this.checkIfTaskWasCanceled()) {
-      return undefined;
+    if (this.isTaskCancelled()) {
+      return;
     }
 
     this.addSubscription();
@@ -377,7 +380,7 @@ export class DownloadResumable extends NetworkTask<DownloadProgressData> {
       throw new UnavailabilityError('expo-file-system', 'downloadResumablePauseAsync');
     }
 
-    if (this.checkIfTaskWasCanceled()) {
+    if (this.isTaskCancelled()) {
       return {
         fileUri: this._fileUri,
         options: this.options,
@@ -400,8 +403,8 @@ export class DownloadResumable extends NetworkTask<DownloadProgressData> {
       throw new UnavailabilityError('expo-file-system', 'downloadResumableStartAsync');
     }
 
-    if (this.checkIfTaskWasCanceled()) {
-      return undefined;
+    if (this.isTaskCancelled()) {
+      return;
     }
 
     this.addSubscription();
