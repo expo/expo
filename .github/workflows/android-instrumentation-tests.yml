@@ -61,6 +61,5 @@ jobs:
       - name: 🎸 Run instrumented unit tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 27
-          arch: x86_64
+          api-level: 29
           script: bin/expotools android-native-unit-tests --type instrumented
