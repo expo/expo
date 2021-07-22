@@ -1,4 +1,4 @@
-import { CellularGeneration } from './Cellular.types';
+import { CellularGeneration, CellularInfo } from './Cellular.types';
 export { CellularGeneration };
 /**
  * @deprecated field, use `getCurrentCellularInfoAsync()` instead
