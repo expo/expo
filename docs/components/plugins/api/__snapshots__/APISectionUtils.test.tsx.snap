@@ -229,6 +229,20 @@ exports[`APISectionUtils.resolveTypeName generic type in Promise 1`] = `
 </div>
 `;
 
+exports[`APISectionUtils.resolveTypeName object reflection 1`] = `
+<div>
+  { 
+  <span>
+    target: number
+    , 
+  </span>
+  <span>
+    value: boolean
+  </span>
+   }
+</div>
+`;
+
 exports[`APISectionUtils.resolveTypeName props with multiple omits 1`] = `
 <div>
   StyleProp
