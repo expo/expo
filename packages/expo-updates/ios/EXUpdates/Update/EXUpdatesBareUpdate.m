@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSAssert([mainBundleDir isKindOfClass:[NSString class]], @"asset nsBundleDir should be a string");
       }
 
-      NSString *key = packagerHash;
+      NSString *key = [NSString stringWithFormat:@"%@.%@", packagerHash, type];
       EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithKey:key type:(NSString *)type];
       asset.mainBundleDir = mainBundleDir;
       asset.mainBundleFilename = mainBundleFilename;

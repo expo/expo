@@ -59,10 +59,12 @@ class LegacyManifest private constructor(
             extensionIndex
           ) else bundledAsset.substring(prefixLength)
           val type = if (extensionIndex > 0) bundledAsset.substring(extensionIndex + 1) else ""
-          assetList.add(AssetEntity(hash, type).apply {
-            url = Uri.withAppendedPath(assetsUrlBase, hash)
-            embeddedAssetFilename = bundledAsset
-          })
+          assetList.add(
+            AssetEntity("$hash.$type", type).apply {
+              url = Uri.withAppendedPath(assetsUrlBase, hash)
+              embeddedAssetFilename = bundledAsset
+            }
+          )
         } catch (e: JSONException) {
           Log.e(TAG, "Could not read asset from manifest", e)
         }
