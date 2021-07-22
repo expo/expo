@@ -9,5 +9,6 @@
 
 - (void)setCloseButton:(NSString *)title;
 - (void)closeController;
+- (void)handleViewDisappeared: (void (^)(void))handler;
 
 @end

@@ -15,8 +15,8 @@ class ScopedErrorRecoveryModule(
   override val mSharedPreferences: SharedPreferences = run {
     val currentSDKVersion = manifest.getSDKVersionNullable()
     context.applicationContext.getSharedPreferences(
-        "$RECOVERY_STORE.$currentSDKVersion",
-        Context.MODE_PRIVATE
+      "$RECOVERY_STORE.$currentSDKVersion",
+      Context.MODE_PRIVATE
     )
   }
 

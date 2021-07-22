@@ -208,4 +208,9 @@ const RENAMED_PAGES: Record<string, string> = {
   '/faq/clear-cache-macos-linux/': '/troubleshooting/clear-cache-macos-linux/',
   '/faq/application-has-not-been-registered/':
     '/troubleshooting/application-has-not-been-registered/',
+
+  // Permissions API is moved to guide
+  '/versions/v40.0.0/sdk/permissions/': '/guides/permissions/',
+  '/versions/v41.0.0/sdk/permissions/': '/guides/permissions/',
+  '/versions/v42.0.0/sdk/permissions/': '/guides/permissions/',
 };

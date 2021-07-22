@@ -295,4 +295,51 @@ describe('APISectionUtils.resolveTypeName', () => {
     );
     expect(container).toMatchSnapshot();
   });
+
+  test('custom type with single pick', () => {
+    const { container } = render(
+      <>
+        {resolveTypeName({
+          type: 'reference',
+          typeArguments: [
+            { type: 'reference', name: 'FontResource' },
+            { type: 'literal', value: 'display' },
+          ],
+          name: 'Pick',
+        })}
+      </>
+    );
+    expect(container).toMatchSnapshot();
+  });
+
+  test('props with multiple omits', () => {
+    const { container } = render(
+      <>
+        {resolveTypeName({
+          type: 'reference',
+          typeArguments: [
+            {
+              type: 'reference',
+              typeArguments: [
+                { type: 'reference', name: 'ViewStyle' },
+                {
+                  type: 'union',
+                  types: [
+                    { type: 'literal', value: 'backgroundColor' },
+                    {
+                      type: 'literal',
+                      value: 'borderRadius',
+                    },
+                  ],
+                },
+              ],
+              name: 'Omit',
+            },
+          ],
+          name: 'StyleProp',
+        })}
+      </>
+    );
+    expect(container).toMatchSnapshot();
+  });
 });

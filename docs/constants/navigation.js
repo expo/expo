@@ -63,7 +63,7 @@ const sections = [
     name: 'Reference',
     reference: [
       'Migrating from "expo build"',
-      'Integrating with JavaScript tooling',
+      'Integrating with third-party tooling',
       'Environment variables and secrets',
       'Server infrastructure',
       'Caching dependencies',

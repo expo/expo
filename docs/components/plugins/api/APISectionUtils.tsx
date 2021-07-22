@@ -50,7 +50,19 @@ export const mdInlineRenderers: MDRenderers = {
   paragraph: ({ children }) => (children ? <span>{children}</span> : null),
 };
 
-const nonLinkableTypes = ['Date', 'Error', 'Promise', 'T', 'TaskOptions', 'Uint8Array'];
+const nonLinkableTypes = [
+  'Date',
+  'Error',
+  'Omit',
+  'Pick',
+  'Promise',
+  'React.FC',
+  'StyleProp',
+  'T',
+  'TaskOptions',
+  'Uint8Array',
+  'ViewStyle',
+];
 
 export const resolveTypeName = ({
   elements,
@@ -73,7 +85,7 @@ export const resolveTypeName = ({
               {typeArguments.map((type, index) => (
                 <span key={`record-type-${index}`}>
                   {resolveTypeName(type)}
-                  {index !== typeArguments.length - 1 ? ', ' : ''}
+                  {index !== typeArguments.length - 1 ? ', ' : null}
                 </span>
               ))}
               &gt;
@@ -91,7 +103,10 @@ export const resolveTypeName = ({
               )}
               &lt;
               {typeArguments.map((type, index) => (
-                <span key={`${name}-nested-type-${index}`}>{resolveTypeName(type)}</span>
+                <span key={`${name}-nested-type-${index}`}>
+                  {resolveTypeName(type)}
+                  {index !== typeArguments.length - 1 ? ', ' : null}
+                </span>
               ))}
               &gt;
             </>
@@ -163,7 +178,7 @@ export const resolveTypeName = ({
         {elements.map((elem, i) => (
           <span key={`tuple-${name}-${i}`}>
             {resolveTypeName(elem)}
-            {i + 1 !== elements.length ? ', ' : ''}
+            {i + 1 !== elements.length ? ', ' : null}
           </span>
         ))}
         ]

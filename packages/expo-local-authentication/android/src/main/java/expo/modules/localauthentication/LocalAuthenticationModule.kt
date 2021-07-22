@@ -56,9 +56,11 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
       isAuthenticating = false
       biometricPrompt = null
-      promise?.resolve(Bundle().apply {
-        putBoolean("success", true)
-      })
+      promise?.resolve(
+        Bundle().apply {
+          putBoolean("success", true)
+        }
+      )
       promise = null
     }
 
@@ -165,53 +167,59 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
 
     // BiometricPrompt callbacks are invoked on the main thread so also run this there to avoid
     // having to do locking.
-    uIManager.runOnUiQueueThread(Runnable {
-      if (isAuthenticating) {
-        this.promise?.resolve(Bundle().apply {
-          putBoolean("success", false)
-          putString("error", "app_cancel")
-        })
-        this.promise = promise
-        return@Runnable
-      }
-      val promptMessage = if (options.containsKey("promptMessage")) {
-        options["promptMessage"] as String?
-      } else {
-        ""
-      }
-      val cancelLabel = if (options.containsKey("cancelLabel")) {
-        options["cancelLabel"] as String?
-      } else {
-        ""
-      }
-      val disableDeviceFallback = if (options.containsKey("disableDeviceFallback")) {
-        options["disableDeviceFallback"] as Boolean?
-      } else {
-        false
-      }
-      isAuthenticating = true
-      this.promise = promise
-      val executor: Executor = Executors.newSingleThreadExecutor()
-      biometricPrompt = BiometricPrompt(fragmentActivity, executor, authenticationCallback)
-      val promptInfoBuilder = PromptInfo.Builder()
-      promptMessage?.let {
-        promptInfoBuilder.setTitle(it)
-      }
-      if (disableDeviceFallback == true) {
-        cancelLabel?.let {
-          promptInfoBuilder.setNegativeButtonText(it)
+    uIManager.runOnUiQueueThread(
+      Runnable {
+        if (isAuthenticating) {
+          this.promise?.resolve(
+            Bundle().apply {
+              putBoolean("success", false)
+              putString("error", "app_cancel")
+            }
+          )
+          this.promise = promise
+          return@Runnable
         }
-      } else {
-        promptInfoBuilder.setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_WEAK
-          or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+        val promptMessage = if (options.containsKey("promptMessage")) {
+          options["promptMessage"] as String?
+        } else {
+          ""
+        }
+        val cancelLabel = if (options.containsKey("cancelLabel")) {
+          options["cancelLabel"] as String?
+        } else {
+          ""
+        }
+        val disableDeviceFallback = if (options.containsKey("disableDeviceFallback")) {
+          options["disableDeviceFallback"] as Boolean?
+        } else {
+          false
+        }
+        isAuthenticating = true
+        this.promise = promise
+        val executor: Executor = Executors.newSingleThreadExecutor()
+        biometricPrompt = BiometricPrompt(fragmentActivity, executor, authenticationCallback)
+        val promptInfoBuilder = PromptInfo.Builder()
+        promptMessage?.let {
+          promptInfoBuilder.setTitle(it)
+        }
+        if (disableDeviceFallback == true) {
+          cancelLabel?.let {
+            promptInfoBuilder.setNegativeButtonText(it)
+          }
+        } else {
+          promptInfoBuilder.setAllowedAuthenticators(
+            BiometricManager.Authenticators.BIOMETRIC_WEAK
+              or BiometricManager.Authenticators.DEVICE_CREDENTIAL
+          )
+        }
+        val promptInfo = promptInfoBuilder.build()
+        try {
+          biometricPrompt!!.authenticate(promptInfo)
+        } catch (ex: NullPointerException) {
+          promise.reject("E_INTERNAL_ERRROR", "Canceled authentication due to an internal error")
+        }
       }
-      val promptInfo = promptInfoBuilder.build()
-      try {
-        biometricPrompt!!.authenticate(promptInfo)
-      } catch (ex: NullPointerException) {
-        promise.reject("E_INTERNAL_ERRROR", "Canceled authentication due to an internal error")
-      }
-    })
+    )
   }
 
   @ExpoMethod
@@ -223,7 +231,7 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
     }
   }
 
-  override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent) {
+  override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
     // If the user uses PIN as an authentication method, the result will be passed to the `onActivityResult`.
     // Unfortunately, react-native doesn't pass this value to the underlying fragment - we won't resolve the promise.
     // So we need to do it manually.

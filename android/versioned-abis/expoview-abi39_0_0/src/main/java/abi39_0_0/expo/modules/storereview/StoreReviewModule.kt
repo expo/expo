@@ -61,7 +61,7 @@ class StoreReviewModule(private val mContext: Context) :
   private fun isPlayStoreInstalled(): Boolean {
     return try {
       mContext.packageManager
-              .getPackageInfo(GooglePlayServicesUtil.GOOGLE_PLAY_STORE_PACKAGE, 0)
+        .getPackageInfo(GooglePlayServicesUtil.GOOGLE_PLAY_STORE_PACKAGE, 0)
       true
     } catch (e: PackageManager.NameNotFoundException) {
       false

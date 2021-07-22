@@ -1,8 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <UIKit/UIKit.h>
-#import <UMCore/UMModuleRegistry.h>
-#import <UMCore/UMAppLifecycleListener.h>
 
 @interface EXLinearGradient : UIView
 

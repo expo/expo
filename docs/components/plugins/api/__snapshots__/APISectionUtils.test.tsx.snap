@@ -37,7 +37,6 @@ exports[`APISectionUtils.resolveTypeName Record 1`] = `
   </span>
   <span>
     any
-    
   </span>
   &gt;
 </div>
@@ -63,7 +62,6 @@ exports[`APISectionUtils.resolveTypeName Record with union 1`] = `
     <span>
       string
     </span>
-    
   </span>
   &gt;
 </div>
@@ -95,6 +93,26 @@ exports[`APISectionUtils.resolveTypeName custom type array 1`] = `
 exports[`APISectionUtils.resolveTypeName custom type non-linkable array 1`] = `
 <div>
   T[]
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName custom type with single pick 1`] = `
+<div>
+  Pick
+  &lt;
+  <span>
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="/#fontresource"
+    >
+      FontResource
+    </a>
+    , 
+  </span>
+  <span>
+    'display'
+  </span>
+  &gt;
 </div>
 `;
 
@@ -211,13 +229,38 @@ exports[`APISectionUtils.resolveTypeName generic type in Promise 1`] = `
 </div>
 `;
 
+exports[`APISectionUtils.resolveTypeName props with multiple omits 1`] = `
+<div>
+  StyleProp
+  &lt;
+  <span>
+    Omit
+    &lt;
+    <span>
+      ViewStyle
+      , 
+    </span>
+    <span>
+      <span>
+        'backgroundColor'
+         | 
+      </span>
+      <span>
+        'borderRadius'
+      </span>
+    </span>
+    &gt;
+  </span>
+  &gt;
+</div>
+`;
+
 exports[`APISectionUtils.resolveTypeName query type 1`] = `
 <div>
   React.ComponentProps
   &lt;
   <span>
     View
-    
   </span>
   &gt;
 </div>
@@ -237,7 +280,6 @@ exports[`APISectionUtils.resolveTypeName tuple type 1`] = `
   </span>
   <span>
     boolean
-    
   </span>
   ]
 </div>
