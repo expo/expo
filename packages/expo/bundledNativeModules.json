@@ -105,5 +105,5 @@
   "unimodules-app-loader": "~2.2.0",
   "unimodules-image-loader-interface": "~6.1.0",
   "unimodules-task-manager-interface": "~6.2.0",
-  "stripe-react-native": "0.1.4"
+  "@stripe/stripe-react-native": "0.1.4"
 }
