@@ -61,7 +61,7 @@ describe('githubUrl', () => {
     expect(githubUrl('/versions/latest')).toBe(EDIT_URL_PREFIX + '/versions/unversioned/index.md');
   });
 
-  test('nested versioned page', () => {
+  test('nested latest page', () => {
     expect(githubUrl('/versions/latest/sdk/av')).toBe(
       EDIT_URL_PREFIX + '/versions/unversioned/sdk/av.md'
     );
