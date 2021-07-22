@@ -38,31 +38,30 @@ public class CellularModule: Module {
   static func currentCellularGeneration() -> CellularGeneration {
     let radioAccessTechnology = currentRadioAccessTechnology()
 
-   
-      switch radioAccessTechnology {
-      case CTRadioAccessTechnologyGPRS,
-           CTRadioAccessTechnologyEdge,
-           CTRadioAccessTechnologyCDMA1x:
-        return .cellular2G
-      case CTRadioAccessTechnologyWCDMA,
-           CTRadioAccessTechnologyHSDPA,
-           CTRadioAccessTechnologyHSUPA,
-           CTRadioAccessTechnologyCDMAEVDORev0,
-           CTRadioAccessTechnologyCDMAEVDORevA,
-           CTRadioAccessTechnologyCDMAEVDORevB,
-           CTRadioAccessTechnologyeHRPD:
-        return .cellular3G
-      case CTRadioAccessTechnologyLTE:
-        return .cellular4G
-      default:
-        if #available(iOS 14.1, *) {
-          if (radioAccessTechnology == CTRadioAccessTechnologyNRNSA ||
-              radioAccessTechnology == CTRadioAccessTechnologyNR) {
-            return .cellular5G
-          }
+    switch radioAccessTechnology {
+    case CTRadioAccessTechnologyGPRS,
+         CTRadioAccessTechnologyEdge,
+         CTRadioAccessTechnologyCDMA1x:
+      return .cellular2G
+    case CTRadioAccessTechnologyWCDMA,
+         CTRadioAccessTechnologyHSDPA,
+         CTRadioAccessTechnologyHSUPA,
+         CTRadioAccessTechnologyCDMAEVDORev0,
+         CTRadioAccessTechnologyCDMAEVDORevA,
+         CTRadioAccessTechnologyCDMAEVDORevB,
+         CTRadioAccessTechnologyeHRPD:
+      return .cellular3G
+    case CTRadioAccessTechnologyLTE:
+      return .cellular4G
+    default:
+      if #available(iOS 14.1, *) {
+        if (radioAccessTechnology == CTRadioAccessTechnologyNRNSA ||
+            radioAccessTechnology == CTRadioAccessTechnologyNR) {
+          return .cellular5G
         }
-        return .unknown
       }
+      return .unknown
+    }
   }
 
   static func currentRadioAccessTechnology() -> String? {
