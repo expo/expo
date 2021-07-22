@@ -16,9 +16,9 @@ class CellularModule(private val mContext: Context) : ExportedModule(mContext), 
 
   override fun getConstants(): HashMap<String, Any?> {
     val telephonyManager =
-        (mContext.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager).takeIf {
-          it?.simState == TelephonyManager.SIM_STATE_READY
-        }
+      (mContext.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager).takeIf {
+        it?.simState == TelephonyManager.SIM_STATE_READY
+      }
 
     return HashMap<String, Any?>().apply {
       put("allowsVoip", SipManager.isVoipSupported(mContext))
