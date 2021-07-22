@@ -30,7 +30,7 @@ internal fun pluginResultsToPrimitiveData(results: List<SQLiteModule.SQLitePlugi
 
 private fun convertPluginResultToArray(result: SQLiteModule.SQLitePluginResult): List<Any?> {
   val rowsContent = result.rows.map { row ->
-    row?.map { value ->
+    row.map { value ->
       when (value) {
         null -> null
         is String -> value
@@ -45,7 +45,7 @@ private fun convertPluginResultToArray(result: SQLiteModule.SQLitePluginResult):
       result.insertId.toInt(),
       result.rowsAffected,
       result.columns,
-      rowsContent,
+      rowsContent
   )
 }
 

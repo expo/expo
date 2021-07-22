@@ -4,7 +4,6 @@ package expo.modules.sqlite
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import android.database.sqlite.SQLiteStatement
 import org.unimodules.core.ExportedModule
 import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ExpoMethod
@@ -29,28 +28,25 @@ class SQLiteModule(private val mContext: Context) : ExportedModule(mContext) {
   @ExpoMethod
   fun exec(dbName: String, queries: ArrayList<ArrayList<Any>>, readOnly: Boolean, promise: Promise) {
     try {
-      val numQueries = queries.size
-      val results = arrayOfNulls<SQLitePluginResult>(numQueries)
       val db = getDatabase(dbName)
-      for (i in 0 until numQueries) {
-        val sqlQuery = queries[i]
+      val results = queries.map { sqlQuery ->
         val sql = sqlQuery[0] as String
-        val bindArgs = convertParamsToStringArray(sqlQuery[1])
+        val bindArgs = convertParamsToStringArray(sqlQuery[1] as ArrayList<Any?>)
         try {
           if (isSelect(sql)) {
-            results[i] = doSelectInBackgroundAndPossiblyThrow(sql, bindArgs, db)
+            doSelectInBackgroundAndPossiblyThrow(sql, bindArgs, db)
           } else { // update/insert/delete
             if (readOnly) {
-              results[i] = SQLitePluginResult(EMPTY_ROWS, EMPTY_COLUMNS, 0, 0, ReadOnlyException())
+              SQLitePluginResult(EMPTY_ROWS, EMPTY_COLUMNS, 0, 0, ReadOnlyException())
             } else {
-              results[i] = doUpdateInBackgroundAndPossiblyThrow(sql, bindArgs, db)
+              doUpdateInBackgroundAndPossiblyThrow(sql, bindArgs, db)
             }
           }
         } catch (e: Throwable) {
           if (DEBUG_MODE) {
             e.printStackTrace()
           }
-          results[i] = SQLitePluginResult(EMPTY_ROWS, EMPTY_COLUMNS, 0, 0, e)
+          SQLitePluginResult(EMPTY_ROWS, EMPTY_COLUMNS, 0, 0, e)
         }
       }
       val data = pluginResultsToPrimitiveData(results)
@@ -62,20 +58,19 @@ class SQLiteModule(private val mContext: Context) : ExportedModule(mContext) {
 
   @ExpoMethod
   fun close(dbName: String, promise: Promise) {
-    DATABASES[dbName]!!.close()
-    DATABASES.remove(dbName)
+    DATABASES
+        .remove(dbName)
+        ?.close()
     promise.resolve(null)
   }
 
   // do a update/delete/insert operation
   private fun doUpdateInBackgroundAndPossiblyThrow(
-    sql: String,
-    bindArgs: Array<String?>?,
-    db: SQLiteDatabase?
+      sql: String,
+      bindArgs: Array<String?>?,
+      db: SQLiteDatabase
   ): SQLitePluginResult {
-    var statement: SQLiteStatement? = null
-    return try {
-      statement = db!!.compileStatement(sql)
+    return db.compileStatement(sql).use { statement ->
       if (bindArgs != null) {
         for (i in bindArgs.size downTo 1) {
           if (bindArgs[i - 1] == null) {
@@ -98,30 +93,26 @@ class SQLiteModule(private val mContext: Context) : ExportedModule(mContext) {
         statement.execute()
         EMPTY_RESULT
       }
-    } finally {
-      statement?.close()
     }
   }
 
   // do a select operation
   private fun doSelectInBackgroundAndPossiblyThrow(
-    sql: String,
-    bindArgs: Array<String?>,
-    db: SQLiteDatabase?
+      sql: String,
+      bindArgs: Array<String?>,
+      db: SQLiteDatabase
   ): SQLitePluginResult {
-    var cursor: Cursor? = null
-    return try {
-      cursor = db!!.rawQuery(sql, bindArgs)
+    return db.rawQuery(sql, bindArgs).use { cursor ->
       val numRows = cursor.count
       if (numRows == 0) {
         return EMPTY_RESULT
       }
       val numColumns = cursor.columnCount
-      val rows: Array<Array<Any?>?> = arrayOfNulls(numRows)
       val columnNames = cursor.columnNames
+      val rows: Array<Array<Any?>> = Array(numRows) { arrayOfNulls(numColumns) }
       var i = 0
       while (cursor.moveToNext()) {
-        val row = arrayOfNulls<Any>(numColumns)
+        val row = rows[i]
         for (j in 0 until numColumns) {
           row[j] = getValueFromCursor(cursor, j, cursor.getType(j))
         }
@@ -129,33 +120,31 @@ class SQLiteModule(private val mContext: Context) : ExportedModule(mContext) {
         i++
       }
       SQLitePluginResult(rows, columnNames, 0, 0, null)
-    } finally {
-      cursor?.close()
     }
   }
 
-  private fun getValueFromCursor(cursor: Cursor?, index: Int, columnType: Int): Any? {
-    when (columnType) {
-      Cursor.FIELD_TYPE_FLOAT -> return cursor!!.getDouble(index)
-      Cursor.FIELD_TYPE_INTEGER -> return cursor!!.getLong(index)
+  private fun getValueFromCursor(cursor: Cursor, index: Int, columnType: Int): Any? {
+    return when (columnType) {
+      Cursor.FIELD_TYPE_FLOAT -> cursor.getDouble(index)
+      Cursor.FIELD_TYPE_INTEGER -> cursor.getLong(index)
       Cursor.FIELD_TYPE_BLOB ->
         // convert byte[] to binary string; it's good enough, because
         // WebSQL doesn't support blobs anyway
-        return String(cursor!!.getBlob(index))
-      Cursor.FIELD_TYPE_STRING -> return cursor!!.getString(index)
+        String(cursor.getBlob(index))
+      Cursor.FIELD_TYPE_STRING -> cursor.getString(index)
+      else -> null
     }
-    return null
   }
 
   @Throws(IOException::class)
   private fun pathForDatabaseName(name: String): String {
-    val directory = File(mContext.filesDir.toString() + File.separator + "SQLite")
+    val directory = File("${mContext.filesDir}${File.separator}SQLite")
     ensureDirExists(directory)
-    return directory.toString() + File.separator + name
+    return "$directory${File.separator}$name"
   }
 
   @Throws(IOException::class)
-  private fun getDatabase(name: String): SQLiteDatabase? {
+  private fun getDatabase(name: String): SQLiteDatabase {
     var database: SQLiteDatabase? = null
     val path = pathForDatabaseName(name)
     if (File(path).exists()) {
@@ -166,15 +155,15 @@ class SQLiteModule(private val mContext: Context) : ExportedModule(mContext) {
       database = SQLiteDatabase.openOrCreateDatabase(path, null)
       DATABASES[name] = database
     }
-    return database
+    return database!!
   }
 
-  private class SQLitePluginResult(
-    val rows: Array<Array<Any?>?>,
-    val columns: Array<String?>,
-    val rowsAffected: Int,
-    val insertId: Long,
-    val error: Throwable?
+  internal class SQLitePluginResult(
+      val rows: Array<Array<Any?>>,
+      val columns: Array<String?>,
+      val rowsAffected: Int,
+      val insertId: Long,
+      val error: Throwable?
   )
 
   private class ReadOnlyException : Exception("could not prepare statement (23 not authorized)")
