@@ -29,6 +29,7 @@ abstract_target 'Expo Go' do
     ],
     # Modules for which to include Tests subspec
     tests: [
+      'expo-modules-core',
       'expo-updates',
       'expo-structured-headers',
     ],

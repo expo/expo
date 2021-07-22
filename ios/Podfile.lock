@@ -1910,6 +1910,8 @@ PODS:
     - UMCore
   - ExpoModulesCore (0.1.1):
     - React-Core
+  - ExpoModulesCore/Tests (0.1.1):
+    - React-Core
   - EXPrint (10.2.0):
     - ExpoModulesCore
     - UMCore
@@ -2784,6 +2786,7 @@ DEPENDENCIES:
   - EXNotifications (from `../packages/expo-notifications/ios`)
   - EXPermissions (from `../packages/expo-permissions/ios`)
   - ExpoModulesCore (from `../packages/expo-modules-core/ios`)
+  - ExpoModulesCore/Tests (from `../packages/expo-modules-core/ios`)
   - EXPrint (from `../packages/expo-print/ios`)
   - EXRandom (from `../packages/expo-random/ios`)
   - EXScreenCapture (from `../packages/expo-screen-capture/ios`)
@@ -4060,7 +4063,7 @@ SPEC CHECKSUMS:
   EXNetwork: 6682b2bbbd90e66c4738159abaf8cd206c25e8b8
   EXNotifications: 296d9487163c2c08fffec5e79a5f9094bc016d9c
   EXPermissions: 8eb648bd5c2115d01a39dc7c2ad4c94a5846e4cb
-  ExpoModulesCore: a70ccb0e2d7483de92f7a5b368f524b63809788c
+  ExpoModulesCore: 82ee658feb15e6804de9f3530c39c62ff900048b
   EXPrint: 2dbe4d320687e559b46fdb01e330fdf875137094
   EXRandom: ecb71f5d01991f29bb0277f8a2c35d168f85d637
   EXScreenCapture: c51844407fbac8bbca4415467bc43f2b7764d225
@@ -4148,6 +4151,6 @@ SPEC CHECKSUMS:
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: aedc9740dc0df246ce92a2b37bfa1b77c655d633
+PODFILE CHECKSUM: 69ce016b5097862f7c506e7daafaf3ed664304bb
 
 COCOAPODS: 1.10.1
