@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Added experimental opt-in implementation in Swift ([#13523](https://github.com/expo/expo/pull/13523) by [@tsapeta](https://github.com/tsapeta))
+- Rewrote Android part from Java to Kotlin ([#13694](https://github.com/expo/expo/pull/13694) by [@m1st4ke](https://github.com/m1st4ke))
 
 ## 3.2.0 — 2021-06-16
 
