@@ -53,6 +53,7 @@ export const mdInlineRenderers: MDRenderers = {
 
 const nonLinkableTypes = [
   'Date',
+  'ColorValue',
   'Error',
   'NativeSyntheticEvent',
   'Omit',
