@@ -33,10 +33,9 @@ class CellularModule(private val mContext: Context) : ExportedModule(mContext), 
   @ExpoMethod
   fun getCellularGenerationAsync(promise: Promise) {
     try {
-      val systemService = mContext.getSystemService(Context.TELEPHONY_SERVICE)
-      val telephonyManager = if (systemService != null) {
-        systemService as TelephonyManager
-      } else {
+      val telephonyManager =
+        mContext.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager
+      if (telephonyManager == null) {
         promise.resolve(CellularGeneration.UNKNOWN.value)
         return
       }
@@ -66,6 +65,9 @@ class CellularModule(private val mContext: Context) : ExportedModule(mContext), 
         }
         TelephonyManager.NETWORK_TYPE_LTE -> {
           promise.resolve(CellularGeneration.CG_4G.value)
+        }
+        TelephonyManager.NETWORK_TYPE_NR -> {
+          promise.resolve(CellularGeneration.CG_5G.value)
         }
         else -> promise.resolve(CellularGeneration.UNKNOWN.value)
       }
