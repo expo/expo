@@ -29,51 +29,51 @@ class CellularModule(private val mContext: Context) : ExportedModule(mContext), 
     }
   }
 
-  @SuppressLint("MissingPermission")
-  @ExpoMethod
-  fun getCellularGenerationAsync(promise: Promise) {
-    try {
-      val systemService = mContext.getSystemService(Context.TELEPHONY_SERVICE)
-      val telephonyManager = if (systemService != null) {
-        systemService as TelephonyManager
-      } else {
-        promise.resolve(CellularGeneration.UNKNOWN.value)
-        return
+    @SuppressLint("MissingPermission")
+    @ExpoMethod
+    fun getCellularGenerationAsync(promise: Promise) {
+      try {
+        val systemService = mContext.getSystemService(Context.TELEPHONY_SERVICE)
+        val telephonyManager = if (systemService != null) {
+          systemService as TelephonyManager
+        } else {
+          promise.resolve(CellularGeneration.UNKNOWN.value)
+          return
+        }
+        val networkType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+          telephonyManager.dataNetworkType
+        } else {
+          telephonyManager.networkType
+        }
+        when (networkType) {
+          TelephonyManager.NETWORK_TYPE_GPRS,
+          TelephonyManager.NETWORK_TYPE_EDGE,
+          TelephonyManager.NETWORK_TYPE_CDMA,
+          TelephonyManager.NETWORK_TYPE_1xRTT,
+          TelephonyManager.NETWORK_TYPE_IDEN -> {
+            promise.resolve(CellularGeneration.CG_2G.value)
+          }
+          TelephonyManager.NETWORK_TYPE_UMTS,
+          TelephonyManager.NETWORK_TYPE_EVDO_0,
+          TelephonyManager.NETWORK_TYPE_EVDO_A,
+          TelephonyManager.NETWORK_TYPE_HSDPA,
+          TelephonyManager.NETWORK_TYPE_HSUPA,
+          TelephonyManager.NETWORK_TYPE_HSPA,
+          TelephonyManager.NETWORK_TYPE_EVDO_B,
+          TelephonyManager.NETWORK_TYPE_EHRPD,
+          TelephonyManager.NETWORK_TYPE_HSPAP -> {
+            promise.resolve(CellularGeneration.CG_3G.value)
+          }
+          TelephonyManager.NETWORK_TYPE_LTE -> {
+            promise.resolve(CellularGeneration.CG_4G.value)
+          }
+          TelephonyManager.NETWORK_TYPE_NR -> {
+            promise.resolve(CellularGeneration.CG_5G.value)
+          }
+          else -> promise.resolve(CellularGeneration.UNKNOWN.value)
+        }
+      } catch (e: Exception) {
+        promise.reject("ERR_CELLULAR_GENERATION_UNKNOWN_NETWORK_TYPE", "Unable to access network type or not connected to a cellular network", e)
       }
-      val networkType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        telephonyManager.dataNetworkType
-      } else {
-        telephonyManager.networkType
-      }
-      when (networkType) {
-        TelephonyManager.NETWORK_TYPE_GPRS,
-        TelephonyManager.NETWORK_TYPE_EDGE,
-        TelephonyManager.NETWORK_TYPE_CDMA,
-        TelephonyManager.NETWORK_TYPE_1xRTT,
-        TelephonyManager.NETWORK_TYPE_IDEN -> {
-          promise.resolve(CellularGeneration.CG_2G.value)
-        }
-        TelephonyManager.NETWORK_TYPE_UMTS,
-        TelephonyManager.NETWORK_TYPE_EVDO_0,
-        TelephonyManager.NETWORK_TYPE_EVDO_A,
-        TelephonyManager.NETWORK_TYPE_HSDPA,
-        TelephonyManager.NETWORK_TYPE_HSUPA,
-        TelephonyManager.NETWORK_TYPE_HSPA,
-        TelephonyManager.NETWORK_TYPE_EVDO_B,
-        TelephonyManager.NETWORK_TYPE_EHRPD,
-        TelephonyManager.NETWORK_TYPE_HSPAP -> {
-          promise.resolve(CellularGeneration.CG_3G.value)
-        }
-        TelephonyManager.NETWORK_TYPE_LTE -> {
-          promise.resolve(CellularGeneration.CG_4G.value)
-        }
-        TelephonyManager.NETWORK_TYPE_NR -> {
-          promise.resolve(CellularGeneration.CG_5G.value)
-        }
-        else -> promise.resolve(CellularGeneration.UNKNOWN.value)
-      }
-    } catch (e: Exception) {
-      promise.reject("ERR_CELLULAR_GENERATION_UNKNOWN_NETWORK_TYPE", "Unable to access network type or not connected to a cellular network", e)
     }
   }
-}
