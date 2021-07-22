@@ -17,7 +17,7 @@ const LATEST_VERSION = `v${require('~/package.json').version}`;
 type Props = {
   packageName: string;
   apiName?: string;
-  test_forceVersion?: string;
+  forceVersion?: string;
 };
 
 const filterDataByKind = (
@@ -120,16 +120,12 @@ const renderAPI = (
   }
 };
 
-const APISection: React.FC<Props> = ({ packageName, apiName, test_forceVersion }) => {
+const APISection: React.FC<Props> = ({ packageName, apiName, forceVersion }) => {
   const { version } = useContext(DocumentationPageContext);
   const resolvedVersion =
-    version === 'unversioned' ? version : version === 'latest' ? LATEST_VERSION : version;
-  return renderAPI(
-    packageName,
-    test_forceVersion || resolvedVersion,
-    apiName,
-    test_forceVersion !== undefined
-  );
+    forceVersion ||
+    (version === 'unversioned' ? version : version === 'latest' ? LATEST_VERSION : version);
+  return renderAPI(packageName, resolvedVersion, apiName, !!forceVersion);
 };
 
 export default APISection;

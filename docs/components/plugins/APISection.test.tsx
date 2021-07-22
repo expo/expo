@@ -28,7 +28,7 @@ describe('APISection', () => {
   test('expo-apple-authentication', () => {
     const { container, queryByText, getAllByRole, queryAllByText, queryByDisplayValue } =
       customRender(
-        <APISection packageName="expo-apple-authentication" test_forceVersion="unversioned" />
+        <APISection packageName="expo-apple-authentication" forceVersion="unversioned" />
       );
 
     expect(getAllByRole('heading', { level: 2 })).toHaveLength(5);
@@ -51,7 +51,7 @@ describe('APISection', () => {
 
   test('expo-pedometer', () => {
     const { container, queryByText, getAllByRole, queryAllByText, queryByDisplayValue } =
-      customRender(<APISection packageName="expo-pedometer" test_forceVersion="v42.0.0" />);
+      customRender(<APISection packageName="expo-pedometer" forceVersion="v42.0.0" />);
 
     expect(getAllByRole('heading', { level: 2 })).toHaveLength(4);
     expect(getAllByRole('heading', { level: 3 })).toHaveLength(11);
