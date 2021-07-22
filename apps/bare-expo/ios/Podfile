@@ -10,8 +10,6 @@ require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 require_relative '../../../packages/@unimodules/react-native-adapter/scripts/autolinking'
 
-use_experimental_swift_modules!
-
 abstract_target 'BareExpoMain' do
   use_expo_modules!
 
