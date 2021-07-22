@@ -8,20 +8,19 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* BareExpoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* BareExpoTests.m */; };
-		0896A0045DE3E249F0FEB51B /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE364330EE657335D22F3801 /* ExpoModulesProvider.swift */; };
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		31B5C869245847DF0086F49B /* notification.wav in Resources */ = {isa = PBXBuildFile; fileRef = 31B5C868245847DF0086F49B /* notification.wav */; };
 		5DC9DF1054C4E89DCC320FF6 /* libPods-BareExpoMain-BareExpo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E4C0090D0F27565DCCEFA522 /* libPods-BareExpoMain-BareExpo.a */; };
-		6D04D3255DCA89BD612BB4A4 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = BABF3EC4318DD00551DE1EC5 /* ExpoModulesProvider.swift */; };
-		845406897A9952CA223C3101 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13A3DA188FDEE5808C8D543A /* ExpoModulesProvider.swift */; };
 		939BFF55AC295FF0F5061CB9 /* libPods-BareExpoTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5C39FCE97DFC97D488091623 /* libPods-BareExpoTests.a */; };
 		B2C0264E256BDB3E008FD925 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD59639B247F2EFA0030EECA /* AppDelegate.swift */; };
 		B2C0264F256BDB3E008FD925 /* Dispatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDB247B24802C4C00F6E7AC /* Dispatch.swift */; };
+		B2C02651256BDB3E008FD925 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6B041223091F4B002044FF /* StoreKit.framework */; };
 		B2C02654256BDB3E008FD925 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		B2C02655256BDB3E008FD925 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		B2C02656256BDB3E008FD925 /* notification.wav in Resources */ = {isa = PBXBuildFile; fileRef = 31B5C868245847DF0086F49B /* notification.wav */; };
 		CD59639C247F2EFA0030EECA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD59639B247F2EFA0030EECA /* AppDelegate.swift */; };
+		CD6B041323091F4B002044FF /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6B041223091F4B002044FF /* StoreKit.framework */; };
 		CDDB247C24802C4C00F6E7AC /* Dispatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDDB247B24802C4C00F6E7AC /* Dispatch.swift */; };
 		F7F18C5DD624F6B244DFF40C /* libPods-BareExpoMain-BareExpoDetox.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BAF8128E6D385105BAC158C /* libPods-BareExpoMain-BareExpoDetox.a */; };
 /* End PBXBuildFile section */
@@ -41,7 +40,6 @@
 		00E356EE1AD99517003FC87E /* BareExpoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BareExpoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* BareExpoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BareExpoTests.m; sourceTree = "<group>"; };
-		13A3DA188FDEE5808C8D543A /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-BareExpoTests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Bare Expo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Bare Expo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = BareExpo/Images.xcassets; sourceTree = "<group>"; };
@@ -57,16 +55,15 @@
 		8BAF8128E6D385105BAC158C /* libPods-BareExpoMain-BareExpoDetox.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BareExpoMain-BareExpoDetox.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B2C0265D256BDB3E008FD925 /* BareExpoDetox.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BareExpoDetox.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B2C02661256BDB47008FD925 /* BareExpo copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "BareExpo copy-Info.plist"; path = "/Users/lukasz/work/expo/apps/bare-expo/ios/BareExpo copy-Info.plist"; sourceTree = "<absolute>"; };
-		BABF3EC4318DD00551DE1EC5 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-BareExpoMain-BareExpo/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		BC18BA048F8FB37715445686 /* Pods-BareExpoTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BareExpoTests.release.xcconfig"; path = "Target Support Files/Pods-BareExpoTests/Pods-BareExpoTests.release.xcconfig"; sourceTree = "<group>"; };
 		CD59639A247F2EF90030EECA /* BareExpo-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BareExpo-Bridging-Header.h"; sourceTree = "<group>"; };
 		CD59639B247F2EFA0030EECA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = BareExpo/AppDelegate.swift; sourceTree = "<group>"; };
+		CD6B041223091F4B002044FF /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		CDDB247B24802C4C00F6E7AC /* Dispatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Dispatch.swift; path = BareExpo/Dispatch.swift; sourceTree = "<group>"; };
 		E4C0090D0F27565DCCEFA522 /* libPods-BareExpoMain-BareExpo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BareExpoMain-BareExpo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 		F8766410D614F77523CC7237 /* Pods-BareExpoMain-BareExpoDetox.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BareExpoMain-BareExpoDetox.debug.xcconfig"; path = "Target Support Files/Pods-BareExpoMain-BareExpoDetox/Pods-BareExpoMain-BareExpoDetox.debug.xcconfig"; sourceTree = "<group>"; };
-		FE364330EE657335D22F3801 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-BareExpoMain-BareExpoDetox/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +79,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD6B041323091F4B002044FF /* StoreKit.framework in Frameworks */,
 				5DC9DF1054C4E89DCC320FF6 /* libPods-BareExpoMain-BareExpo.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -90,6 +88,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B2C02651256BDB3E008FD925 /* StoreKit.framework in Frameworks */,
 				F7F18C5DD624F6B244DFF40C /* libPods-BareExpoMain-BareExpoDetox.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -130,14 +129,6 @@
 			name = BareExpo;
 			sourceTree = "<group>";
 		};
-		2A7C0989B814E38B96FB12B6 /* BareExpo */ = {
-			isa = PBXGroup;
-			children = (
-				BABF3EC4318DD00551DE1EC5 /* ExpoModulesProvider.swift */,
-			);
-			name = BareExpo;
-			sourceTree = "<group>";
-		};
 		2D115E8860689707E971EF14 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -154,6 +145,7 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CD6B041223091F4B002044FF /* StoreKit.framework */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				ED2971642150620600B7C4FE /* JavaScriptCore.framework */,
 				2D16E6891FA4F8E400B85C8A /* libReact.a */,
@@ -162,24 +154,6 @@
 				5C39FCE97DFC97D488091623 /* libPods-BareExpoTests.a */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		704198F92AD2A98120B10D02 /* ExpoModulesProviders */ = {
-			isa = PBXGroup;
-			children = (
-				2A7C0989B814E38B96FB12B6 /* BareExpo */,
-				D6016951DB74B65645C88C2F /* BareExpoDetox */,
-				7E8051228B771BB9EB9D61E2 /* BareExpoTests */,
-			);
-			name = ExpoModulesProviders;
-			sourceTree = "<group>";
-		};
-		7E8051228B771BB9EB9D61E2 /* BareExpoTests */ = {
-			isa = PBXGroup;
-			children = (
-				13A3DA188FDEE5808C8D543A /* ExpoModulesProvider.swift */,
-			);
-			name = BareExpoTests;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -199,7 +173,6 @@
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				2D115E8860689707E971EF14 /* Pods */,
 				B2C02661256BDB47008FD925 /* BareExpo copy-Info.plist */,
-				704198F92AD2A98120B10D02 /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -214,14 +187,6 @@
 				B2C0265D256BDB3E008FD925 /* BareExpoDetox.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		D6016951DB74B65645C88C2F /* BareExpoDetox */ = {
-			isa = PBXGroup;
-			children = (
-				FE364330EE657335D22F3801 /* ExpoModulesProvider.swift */,
-			);
-			name = BareExpoDetox;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -310,7 +275,7 @@
 						LastSwiftMigration = 1140;
 					};
 					B2C02649256BDB3E008FD925 = {
-						DevelopmentTeam = J5FM626PE2;
+						DevelopmentTeam = C8D8QTF339;
 					};
 				};
 			};
@@ -642,7 +607,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				00E356F31AD99517003FC87E /* BareExpoTests.m in Sources */,
-				845406897A9952CA223C3101 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -652,7 +616,6 @@
 			files = (
 				CD59639C247F2EFA0030EECA /* AppDelegate.swift in Sources */,
 				CDDB247C24802C4C00F6E7AC /* Dispatch.swift in Sources */,
-				6D04D3255DCA89BD612BB4A4 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -662,7 +625,6 @@
 			files = (
 				B2C0264E256BDB3E008FD925 /* AppDelegate.swift in Sources */,
 				B2C0264F256BDB3E008FD925 /* Dispatch.swift in Sources */,
-				0896A0045DE3E249F0FEB51B /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -918,7 +880,7 @@
 				CODE_SIGN_ENTITLEMENTS = "BareExpo/Bare Expo.entitlements";
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = J5FM626PE2;
+				DEVELOPMENT_TEAM = C8D8QTF339;
 				INFOPLIST_FILE = BareExpo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -951,7 +913,7 @@
 				CODE_SIGN_ENTITLEMENTS = "BareExpo/Bare Expo.entitlements";
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = J5FM626PE2;
+				DEVELOPMENT_TEAM = C8D8QTF339;
 				INFOPLIST_FILE = BareExpo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
