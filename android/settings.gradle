@@ -1,4 +1,16 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenLocal()
+        google()
+    }
+}
+
 include ':app'
+
+include ':packages:react-native-codegen:android'
+project(':packages:react-native-codegen:android').projectDir = new File('../react-native-lab/react-native/packages/react-native-codegen/android')
+includeBuild('../react-native-lab/react-native/packages/react-native-codegen/android')
 
 // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
 include ':expoview'

@@ -501,7 +501,7 @@ dependencies {
 apply(from: "release.gradle")
 
 react {
-    jsRootDir = file("../Libraries")
-    reactNativeRootDir = file("$projectDir/..")
+    jsRootDir = file("$projectDir/../../react-native-lab/react-native/Libraries")
+    reactNativeRootDir = file("$projectDir/../../react-native-lab/react-native")
     useJavaGenerator = System.getenv("USE_CODEGEN_JAVAPOET") ?: false
 }
