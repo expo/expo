@@ -19,7 +19,6 @@ object HapticsImpactType {
     )
   )
 
-
   @Throws(HapticsInvalidArgumentException::class)
   fun fromString(style: String): HapticsVibrationType = types.getOrElse(style) {
     throw HapticsInvalidArgumentException("'style' must be one of ['light', 'medium', 'heavy']. Obtained $style'.")

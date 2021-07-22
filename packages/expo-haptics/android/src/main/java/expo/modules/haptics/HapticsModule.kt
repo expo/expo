@@ -4,14 +4,14 @@ import android.content.Context
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
-import expo.modules.core.ExportedModule;
-import expo.modules.core.Promise;
-import expo.modules.core.interfaces.ExpoMethod;
-import expo.modules.haptics.arguments.HapticsInvalidArgumentException;
-import expo.modules.haptics.arguments.HapticsImpactType;
-import expo.modules.haptics.arguments.HapticsNotificationType;
-import expo.modules.haptics.arguments.HapticsSelectionType;
-import expo.modules.haptics.arguments.HapticsVibrationType;
+import expo.modules.core.ExportedModule
+import expo.modules.core.Promise
+import expo.modules.core.interfaces.ExpoMethod
+import expo.modules.haptics.arguments.HapticsInvalidArgumentException
+import expo.modules.haptics.arguments.HapticsImpactType
+import expo.modules.haptics.arguments.HapticsNotificationType
+import expo.modules.haptics.arguments.HapticsSelectionType
+import expo.modules.haptics.arguments.HapticsVibrationType
 
 class HapticsModule internal constructor(context: Context) : ExportedModule(context) {
   private val mVibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
