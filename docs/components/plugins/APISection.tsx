@@ -36,11 +36,10 @@ const renderAPI = (
   isTestMode: boolean = false
 ): JSX.Element => {
   try {
-    // Note: When the path prefix is interpolated the Next fails to locate the file,
-    // so until someone figures it out we are stuck with this ugliness
-    const data = isTestMode
-      ? require(`../../public/static/data/${version}/${packageName}.json`).children
-      : require(`~/public/static/data/${version}/${packageName}.json`).children;
+    // note(simek): When the path prefix is interpolated Next or Webpack fails to locate the file
+    const { children: data } = isTestMode
+      ? require(`../../public/static/data/${version}/${packageName}.json`)
+      : require(`~/public/static/data/${version}/${packageName}.json`);
 
     const methods = filterDataByKind(
       data,
