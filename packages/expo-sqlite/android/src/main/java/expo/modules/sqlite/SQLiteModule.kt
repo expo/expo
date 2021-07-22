@@ -13,6 +13,15 @@ import java.io.IOException
 import java.util.*
 
 class SQLiteModule(private val mContext: Context) : ExportedModule(mContext) {
+  companion object {
+    private const val DEBUG_MODE = false
+    private val TAG = SQLiteModule::class.java.simpleName
+    private val EMPTY_ROWS = arrayOf<Array<Any?>>()
+    private val EMPTY_COLUMNS = arrayOf<String?>()
+    private val EMPTY_RESULT = SQLitePluginResult(EMPTY_ROWS, EMPTY_COLUMNS, 0, 0, null)
+    private val DATABASES: MutableMap<String, SQLiteDatabase?> = HashMap()
+  }
+
   override fun getName(): String {
     return "ExponentSQLite"
   }
@@ -169,158 +178,4 @@ class SQLiteModule(private val mContext: Context) : ExportedModule(mContext) {
   )
 
   private class ReadOnlyException : Exception("could not prepare statement (23 not authorized)")
-  companion object {
-    private const val DEBUG_MODE = false
-    private val TAG = SQLiteModule::class.java.simpleName
-    private val EMPTY_ROWS = arrayOf<Array<Any?>?>()
-    private val EMPTY_COLUMNS = arrayOf<String?>()
-    private val EMPTY_RESULT = SQLitePluginResult(EMPTY_ROWS, EMPTY_COLUMNS, 0, 0, null)
-    private val DATABASES: MutableMap<String, SQLiteDatabase?> = HashMap()
-
-    @Throws(IOException::class)
-    private fun ensureDirExists(dir: File): File {
-      if (!dir.isDirectory) {
-        if (dir.isFile) {
-          throw IOException("Path '$dir' points to a file, but must point to a directory.")
-        }
-        if (!dir.mkdirs()) {
-          var additionalErrorMessage = ""
-          if (dir.exists()) {
-            additionalErrorMessage = "Path already points to a non-normal file."
-          }
-          if (dir.parentFile == null) {
-            additionalErrorMessage = "Parent directory is null."
-          }
-          throw IOException("Couldn't create directory '$dir'. $additionalErrorMessage")
-        }
-      }
-      return dir
-    }
-
-    private fun pluginResultsToPrimitiveData(results: Array<SQLitePluginResult?>): List<Any> {
-      val list: MutableList<Any> = ArrayList()
-      for (i in results.indices) {
-        val result = results[i]
-        val arr = convertPluginResultToArray(result)
-        list.add(arr)
-      }
-      return list
-    }
-
-    private fun convertPluginResultToArray(result: SQLitePluginResult?): List<Any?> {
-      val data: MutableList<Any?> = ArrayList()
-      data.add(result!!.error?.message)
-      data.add(result.insertId.toInt())
-      data.add(result.rowsAffected)
-
-      // column names
-      val columnNames: MutableList<String?> = ArrayList()
-      for (i in result.columns.indices) {
-        columnNames.add(result.columns[i])
-      }
-      data.add(columnNames)
-
-      // rows
-      val rows: MutableList<Any> = ArrayList()
-      for (i in result.rows.indices) {
-        val values = result.rows[i] ?: continue
-
-        // row content
-        val rowContent: MutableList<Any?> = ArrayList()
-        for (j in values.indices) {
-          val value = values[j]
-          if (value == null) {
-            rowContent.add(null)
-          } else if (value is String) {
-            rowContent.add(value as String?)
-          } else if (value is Boolean) {
-            rowContent.add(value as Boolean?)
-          } else {
-            val v = value as Number
-            rowContent.add(v.toDouble())
-          }
-        }
-        rows.add(rowContent)
-      }
-      data.add(rows)
-      return data
-    }
-
-    private fun isPragma(str: String): Boolean {
-      return startsWithCaseInsensitive(str, "pragma")
-    }
-
-    private fun isPragmaReadOnly(str: String): Boolean {
-      if (!isPragma(str)) {
-        return false
-      }
-      return !str.contains('=')
-    }
-
-    private fun isSelect(str: String): Boolean {
-      return startsWithCaseInsensitive(str, "select") || isPragmaReadOnly(str)
-    }
-
-    private fun isInsert(str: String): Boolean {
-      return startsWithCaseInsensitive(str, "insert")
-    }
-
-    private fun isUpdate(str: String): Boolean {
-      return startsWithCaseInsensitive(str, "update")
-    }
-
-    private fun isDelete(str: String): Boolean {
-      return startsWithCaseInsensitive(str, "delete")
-    }
-
-    // identify an "insert"/"select" query more efficiently than with a Pattern
-    private fun startsWithCaseInsensitive(str: String, substr: String): Boolean {
-      var i = -1
-      val len = str.length
-      while (++i < len) {
-        val ch = str[i]
-        if (!Character.isWhitespace(ch)) {
-          break
-        }
-      }
-      var j = -1
-      val substrLen = substr.length
-      while (++j < substrLen) {
-        if (j + i >= len) {
-          return false
-        }
-        val ch = str[j + i]
-        if (Character.toLowerCase(ch) != substr[j]) {
-          return false
-        }
-      }
-      return true
-    }
-
-    private fun convertParamsToStringArray(paramArrayArg: Any): Array<String?> {
-      val paramArray = paramArrayArg as ArrayList<Any?>
-      val len = paramArray.size
-      val res = arrayOfNulls<String>(len)
-      for (i in 0 until len) {
-        val value = paramArray[i]
-        res[i] = null
-        if (value is String) {
-          res[i] = unescapeBlob(value)
-        } else if (value is Boolean) {
-          res[i] = if (value) "1" else "0"
-        } else if (value is Double) {
-          res[i] = value.toString()
-        } else if (value != null) {
-          throw ClassCastException("Could not find proper SQLite data type for argument: $")
-        }
-      }
-      return res
-    }
-
-    private fun unescapeBlob(str: String): String {
-      return str.replace("\u0001\u0001", "\u0000")
-        .replace("\u0001\u0002", "\u0001")
-        .replace("\u0002\u0002", "\u0002")
-    }
-  }
 }
