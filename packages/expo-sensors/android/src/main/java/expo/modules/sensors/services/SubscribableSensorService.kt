@@ -49,16 +49,9 @@ abstract class SubscribableSensorService internal constructor(reactContext: Cont
       val currentTime = System.currentTimeMillis()
       val listeners: Set<SensorServiceSubscription> = mSensorEventListenerLastUpdateMap.keys
       for (sensorServiceSubscription in listeners) {
-        if (sensorServiceSubscription != null && sensorServiceSubscription.isEnabled) {
-          var lastUpdate: Long = 0
-          if (mSensorEventListenerLastUpdateMap.containsKey(sensorServiceSubscription)) {
-            lastUpdate = mSensorEventListenerLastUpdateMap[sensorServiceSubscription]!!
-          }
-          var updateInterval = DEFAULT_UPDATE_INTERVAL.toLong()
-          if (sensorServiceSubscription.updateInterval != null) {
-            updateInterval = sensorServiceSubscription.updateInterval
-          }
-          if (currentTime - lastUpdate > updateInterval) {
+        if (sensorServiceSubscription.isEnabled) {
+          val lastUpdate = mSensorEventListenerLastUpdateMap[sensorServiceSubscription] ?: 0L
+          if (currentTime - lastUpdate > sensorServiceSubscription.updateInterval) {
             sensorServiceSubscription.sensorEventListener.onSensorChanged(sensorEvent)
             mSensorEventListenerLastUpdateMap[sensorServiceSubscription] = currentTime
           }
@@ -95,9 +88,5 @@ abstract class SubscribableSensorService internal constructor(reactContext: Cont
     } else {
       super.stopObserving()
     }
-  }
-
-  companion object {
-    protected var DEFAULT_UPDATE_INTERVAL = 100
   }
 }

@@ -6,7 +6,7 @@ import expo.modules.interfaces.sensors.SensorServiceSubscriptionInterface
 
 class SensorServiceSubscription internal constructor(private val mSubscribableSensorService: SubscribableSensorService, val sensorEventListener: SensorEventListener2) : SensorServiceSubscriptionInterface {
   private var mIsEnabled = false
-  private var mUpdateInterval: Long? = null
+  private var mUpdateInterval: Long = 100L
   private var mHasBeenReleased = false
   override fun start() {
     assertSubscriptionIsAlive()
@@ -21,7 +21,7 @@ class SensorServiceSubscription internal constructor(private val mSubscribableSe
   }
 
   override fun getUpdateInterval(): Long {
-    return mUpdateInterval!!
+    return mUpdateInterval
   }
 
   override fun setUpdateInterval(updateInterval: Long) {

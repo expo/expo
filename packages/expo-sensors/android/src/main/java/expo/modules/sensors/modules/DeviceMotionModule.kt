@@ -22,7 +22,6 @@ import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ExpoMethod
 import org.unimodules.core.interfaces.services.EventEmitter
 import org.unimodules.core.interfaces.services.UIManager
-import java.util.*
 
 class DeviceMotionModule(context: Context?) : ExportedModule(context), SensorEventListener2 {
   private var mLastUpdate: Long = 0
@@ -34,20 +33,19 @@ class DeviceMotionModule(context: Context?) : ExportedModule(context), SensorEve
   private var mRotationEvent: SensorEvent? = null
   private var mRotationRateEvent: SensorEvent? = null
   private var mGravityEvent: SensorEvent? = null
-  private var mServiceSubscriptions: MutableList<SensorServiceSubscriptionInterface>? = null
-  private var mUiManager: UIManager? = null
-  private var mModuleRegistry: ModuleRegistry? = null
-  override fun getName(): String {
-    return "ExponentDeviceMotion"
-  }
+  private lateinit var mServiceSubscriptions: MutableList<SensorServiceSubscriptionInterface>
+  private lateinit var mUiManager: UIManager
+  private lateinit var mModuleRegistry: ModuleRegistry
+
+  private val mCurrentFrameCallback: ScheduleDispatchFrameCallback = ScheduleDispatchFrameCallback()
+  private val mDispatchEventRunnable = DispatchEventRunnable()
+  private lateinit var mEventEmitter: EventEmitter
+
+  override fun getName(): String = "ExponentDeviceMotion"
 
   override fun getConstants(): Map<String, Any> {
-    return Collections.unmodifiableMap(object : HashMap<String?, Any?>() {
-      init {
-        // Gravity on the planet this module supports (currently just Earth) represented as m/s^2.
-        put("Gravity", 9.80665)
-      }
-    })
+    // Gravity on the planet this module supports (currently just Earth) represented as m/s^2.
+    return mapOf(Pair("Gravity", 9.80665))
   }
 
   @ExpoMethod
@@ -58,28 +56,24 @@ class DeviceMotionModule(context: Context?) : ExportedModule(context), SensorEve
 
   @ExpoMethod
   fun startObserving(promise: Promise) {
-    if (mServiceSubscriptions == null) {
+    if (!this::mServiceSubscriptions.isInitialized) {
       mServiceSubscriptions = ArrayList()
-      for (kernelService in sensorKernelServices) {
+      for (kernelService in getSensorKernelServices()) {
         val subscription = kernelService.createSubscriptionForListener(this)
         // We want handle update interval on our own,
         // because we need to coordinate updates from multiple sensor services.
-        subscription.setUpdateInterval(0)
+        subscription.updateInterval = 0
         mServiceSubscriptions.add(subscription)
       }
     }
-    for (subscription in mServiceSubscriptions!!) {
-      subscription.start()
-    }
+    mServiceSubscriptions.forEach { it.start() }
     promise.resolve(null)
   }
 
   @ExpoMethod
   fun stopObserving(promise: Promise) {
-    mUiManager!!.runOnUiQueueThread {
-      for (subscription in mServiceSubscriptions!!) {
-        subscription.stop()
-      }
+    mUiManager.runOnUiQueueThread {
+      mServiceSubscriptions.forEach { it.stop() }
       mCurrentFrameCallback.stop()
       promise.resolve(null)
     }
@@ -88,7 +82,7 @@ class DeviceMotionModule(context: Context?) : ExportedModule(context), SensorEve
   @ExpoMethod
   fun isAvailableAsync(promise: Promise) {
     val mSensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-    val sensorTypes = ArrayList(Arrays.asList(Sensor.TYPE_GYROSCOPE, Sensor.TYPE_ACCELEROMETER, Sensor.TYPE_LINEAR_ACCELERATION, Sensor.TYPE_ROTATION_VECTOR, Sensor.TYPE_GRAVITY))
+    val sensorTypes = arrayListOf(Sensor.TYPE_GYROSCOPE, Sensor.TYPE_ACCELEROMETER, Sensor.TYPE_LINEAR_ACCELERATION, Sensor.TYPE_ROTATION_VECTOR, Sensor.TYPE_GRAVITY)
     for (type in sensorTypes) {
       if (mSensorManager.getDefaultSensor(type!!) == null) {
         promise.resolve(false)
@@ -104,47 +98,37 @@ class DeviceMotionModule(context: Context?) : ExportedModule(context), SensorEve
     mModuleRegistry = moduleRegistry
   }
 
-  private val sensorKernelServices: List<SensorServiceInterface>
-    private get() = Arrays.asList(
-        mModuleRegistry!!.getModule(GyroscopeServiceInterface::class.java),
-        mModuleRegistry!!.getModule(LinearAccelerationSensorServiceInterface::class.java),
-        mModuleRegistry!!.getModule(AccelerometerServiceInterface::class.java),
-        mModuleRegistry!!.getModule(RotationVectorSensorServiceInterface::class.java),
-        mModuleRegistry!!.getModule(GravitySensorServiceInterface::class.java)
+  private fun getSensorKernelServices(): List<SensorServiceInterface> {
+    return arrayListOf(
+        mModuleRegistry.getModule(GyroscopeServiceInterface::class.java),
+        mModuleRegistry.getModule(LinearAccelerationSensorServiceInterface::class.java),
+        mModuleRegistry.getModule(AccelerometerServiceInterface::class.java),
+        mModuleRegistry.getModule(RotationVectorSensorServiceInterface::class.java),
+        mModuleRegistry.getModule(GravitySensorServiceInterface::class.java)
     )
+  }
 
   override fun onSensorChanged(sensorEvent: SensorEvent) {
     val sensor = sensorEvent.sensor
-    if (sensor.type == Sensor.TYPE_GYROSCOPE) {
-      mRotationRateEvent = sensorEvent
-    } else if (sensor.type == Sensor.TYPE_ACCELEROMETER) {
-      mAccelerationIncludingGravityEvent = sensorEvent
-    } else if (sensor.type == Sensor.TYPE_LINEAR_ACCELERATION) {
-      mAccelerationEvent = sensorEvent
-    } else if (sensor.type == Sensor.TYPE_ROTATION_VECTOR) {
-      mRotationEvent = sensorEvent
-    } else if (sensor.type == Sensor.TYPE_GRAVITY) {
-      mGravityEvent = sensorEvent
+    when (sensor.type) {
+      Sensor.TYPE_GYROSCOPE -> mRotationRateEvent = sensorEvent
+      Sensor.TYPE_ACCELEROMETER -> mAccelerationIncludingGravityEvent = sensorEvent
+      Sensor.TYPE_LINEAR_ACCELERATION -> mAccelerationEvent = sensorEvent
+      Sensor.TYPE_ROTATION_VECTOR -> mRotationEvent = sensorEvent
+      Sensor.TYPE_GRAVITY -> mGravityEvent = sensorEvent
     }
     mCurrentFrameCallback.maybePostFromNonUI()
   }
 
-  override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
-    // do nothing
-  }
+  override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) = Unit
 
-  override fun onFlushCompleted(sensor: Sensor) {
-    // do nothing
-  }
-
-  private val mCurrentFrameCallback: ScheduleDispatchFrameCallback = ScheduleDispatchFrameCallback()
-  private val mDispatchEventRunnable = DispatchEventRunnable()
-  private var mEventEmitter: EventEmitter? = null
+  override fun onFlushCompleted(sensor: Sensor) = Unit
 
   private inner class ScheduleDispatchFrameCallback : Choreographer.FrameCallback {
     @Volatile
     private var mIsPosted = false
     private var mShouldStop = false
+
     override fun doFrame(frameTimeNanos: Long) {
       if (mShouldStop) {
         mIsPosted = false
@@ -153,7 +137,7 @@ class DeviceMotionModule(context: Context?) : ExportedModule(context), SensorEve
       }
       val curTime = System.currentTimeMillis()
       if (curTime - mLastUpdate > mUpdateInterval) {
-        mUiManager!!.runOnClientCodeQueueThread(mDispatchEventRunnable)
+        mUiManager.runOnClientCodeQueueThread(mDispatchEventRunnable)
         mLastUpdate = curTime
       }
     }
@@ -177,71 +161,70 @@ class DeviceMotionModule(context: Context?) : ExportedModule(context), SensorEve
       if (mIsPosted) {
         return
       }
-      mUiManager!!.runOnUiQueueThread { maybePost() }
+      mUiManager.runOnUiQueueThread { maybePost() }
     }
   }
 
   private inner class DispatchEventRunnable : Runnable {
     override fun run() {
-      mEventEmitter!!.emit("deviceMotionDidUpdate", eventsToMap())
+      mEventEmitter.emit("deviceMotionDidUpdate", eventsToMap())
     }
   }
 
   private fun eventsToMap(): Bundle {
     val map = Bundle()
-    val acceleration = Bundle()
-    val accelerationIncludingGravity = Bundle()
-    val rotation = Bundle()
-    val rotationRate = Bundle()
     var interval = 0.0
     if (mAccelerationEvent != null) {
-      acceleration.putDouble("x", mAccelerationEvent!!.values[0].toDouble())
-      acceleration.putDouble("y", mAccelerationEvent!!.values[1].toDouble())
-      acceleration.putDouble("z", mAccelerationEvent!!.values[2].toDouble())
-      map.putBundle("acceleration", acceleration)
+      map.putBundle("acceleration", Bundle().apply {
+        putDouble("x", mAccelerationEvent!!.values[0].toDouble())
+        putDouble("y", mAccelerationEvent!!.values[1].toDouble())
+        putDouble("z", mAccelerationEvent!!.values[2].toDouble())
+      })
       interval = mAccelerationEvent!!.timestamp.toDouble()
     }
     if (mAccelerationIncludingGravityEvent != null && mGravityEvent != null) {
-      accelerationIncludingGravity.putDouble("x", (mAccelerationIncludingGravityEvent!!.values[0] - 2 * mGravityEvent!!.values[0]).toDouble())
-      accelerationIncludingGravity.putDouble("y", (mAccelerationIncludingGravityEvent!!.values[1] - 2 * mGravityEvent!!.values[1]).toDouble())
-      accelerationIncludingGravity.putDouble("z", (mAccelerationIncludingGravityEvent!!.values[2] - 2 * mGravityEvent!!.values[2]).toDouble())
-      map.putBundle("accelerationIncludingGravity", accelerationIncludingGravity)
+      map.putBundle("accelerationIncludingGravity", Bundle().apply {
+        putDouble("x", (mAccelerationIncludingGravityEvent!!.values[0] - 2 * mGravityEvent!!.values[0]).toDouble())
+        putDouble("y", (mAccelerationIncludingGravityEvent!!.values[1] - 2 * mGravityEvent!!.values[1]).toDouble())
+        putDouble("z", (mAccelerationIncludingGravityEvent!!.values[2] - 2 * mGravityEvent!!.values[2]).toDouble())
+      })
       interval = mAccelerationIncludingGravityEvent!!.timestamp.toDouble()
     }
     if (mRotationRateEvent != null) {
-      rotationRate.putDouble("alpha", Math.toDegrees(mRotationRateEvent!!.values[0].toDouble()))
-      rotationRate.putDouble("beta", Math.toDegrees(mRotationRateEvent!!.values[1].toDouble()))
-      rotationRate.putDouble("gamma", Math.toDegrees(mRotationRateEvent!!.values[2].toDouble()))
-      map.putBundle("rotationRate", rotationRate)
+      map.putBundle("rotationRate", Bundle().apply {
+        putDouble("alpha", Math.toDegrees(mRotationRateEvent!!.values[0].toDouble()))
+        putDouble("beta", Math.toDegrees(mRotationRateEvent!!.values[1].toDouble()))
+        putDouble("gamma", Math.toDegrees(mRotationRateEvent!!.values[2].toDouble()))
+      })
       interval = mRotationRateEvent!!.timestamp.toDouble()
     }
     if (mRotationEvent != null) {
       SensorManager.getRotationMatrixFromVector(mRotationMatrix, mRotationEvent!!.values)
       SensorManager.getOrientation(mRotationMatrix, mRotationResult)
-      rotation.putDouble("alpha", (-mRotationResult[0]).toDouble())
-      rotation.putDouble("beta", (-mRotationResult[1]).toDouble())
-      rotation.putDouble("gamma", mRotationResult[2].toDouble())
-      map.putBundle("rotation", rotation)
+      map.putBundle("rotation", Bundle().apply {
+        putDouble("alpha", (-mRotationResult[0]).toDouble())
+        putDouble("beta", (-mRotationResult[1]).toDouble())
+        putDouble("gamma", mRotationResult[2].toDouble())
+      })
       interval = mRotationEvent!!.timestamp.toDouble()
     }
     map.putDouble("interval", interval)
-    map.putInt("orientation", orientation)
+    map.putInt("orientation", getOrientation())
     return map
   }
 
-  private val orientation: Int
-    private get() {
-      val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-      if (windowManager != null) {
-        when (windowManager.defaultDisplay.rotation) {
-          Surface.ROTATION_0 -> return 0
-          Surface.ROTATION_90 -> return 90
-          Surface.ROTATION_180 -> return 180
-          Surface.ROTATION_270 -> return -90
-          else -> {
-          }
+  private fun getOrientation(): Int {
+    val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager?
+    if (windowManager != null) {
+      when (windowManager.defaultDisplay.rotation) {
+        Surface.ROTATION_0 -> return 0
+        Surface.ROTATION_90 -> return 90
+        Surface.ROTATION_180 -> return 180
+        Surface.ROTATION_270 -> return -90
+        else -> {
         }
       }
-      return 0
     }
+    return 0
+  }
 }

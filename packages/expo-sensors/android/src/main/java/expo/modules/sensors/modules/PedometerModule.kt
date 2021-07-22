@@ -12,22 +12,23 @@ import org.unimodules.core.interfaces.ExpoMethod
 
 class PedometerModule(reactContext: Context?) : BaseSensorModule(reactContext) {
   private var stepsAtTheBeginning: Int? = null
+  override val eventName: String = "Exponent.pedometerUpdate"
+
   override fun getName(): String {
     return "ExponentPedometer"
   }
 
-  override val eventName: String
-    get() = "Exponent.pedometerUpdate"
-  override val sensorService: SensorServiceInterface
-    protected get() = moduleRegistry!!.getModule(PedometerServiceInterface::class.java)
+  override fun getSensorService(): SensorServiceInterface {
+    return moduleRegistry.getModule(PedometerServiceInterface::class.java)
+  }
 
-  override fun eventToMap(sensorEvent: SensorEvent?): Bundle? {
+  override fun eventToMap(sensorEvent: SensorEvent): Bundle {
     if (stepsAtTheBeginning == null) {
-      stepsAtTheBeginning = sensorEvent!!.values[0].toInt() - 1
+      stepsAtTheBeginning = sensorEvent.values[0].toInt() - 1
     }
-    val map = Bundle()
-    map.putDouble("steps", (sensorEvent!!.values[0] - stepsAtTheBeginning!!).toDouble())
-    return map
+    return Bundle().apply {
+      putDouble("steps", (sensorEvent.values[0] - stepsAtTheBeginning!!).toDouble())
+    }
   }
 
   @ExpoMethod

@@ -7,9 +7,7 @@ import expo.modules.interfaces.sensors.services.AccelerometerServiceInterface
 import org.unimodules.core.interfaces.InternalModule
 
 class AccelerometerService(reactContext: Context?) : SubscribableSensorService(reactContext), InternalModule, AccelerometerServiceInterface {
-  public override fun getSensorType(): Int {
-    return Sensor.TYPE_ACCELEROMETER
-  }
+  override val sensorType: Int = Sensor.TYPE_ACCELEROMETER
 
   override fun getExportedInterfaces(): List<Class<*>> {
     return listOf<Class<*>>(AccelerometerServiceInterface::class.java)

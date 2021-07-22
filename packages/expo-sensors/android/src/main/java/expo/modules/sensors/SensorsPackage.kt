@@ -20,11 +20,10 @@ import expo.modules.sensors.services.RotationVectorSensorService
 import org.unimodules.core.BasePackage
 import org.unimodules.core.ExportedModule
 import org.unimodules.core.interfaces.InternalModule
-import java.util.*
 
 class SensorsPackage : BasePackage() {
   override fun createInternalModules(context: Context): List<InternalModule> {
-    return Arrays.asList<InternalModule>(
+    return listOf<InternalModule>(
         AccelerometerService(context),
         BarometerService(context),
         GravitySensorService(context),
@@ -38,7 +37,7 @@ class SensorsPackage : BasePackage() {
   }
 
   override fun createExportedModules(context: Context): List<ExportedModule> {
-    return Arrays.asList<ExportedModule>(
+    return listOf<ExportedModule>(
         AccelerometerModule(context),
         BarometerModule(context),
         GyroscopeModule(context),

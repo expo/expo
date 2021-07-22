@@ -7,9 +7,7 @@ import expo.modules.interfaces.sensors.services.PedometerServiceInterface
 import org.unimodules.core.interfaces.InternalModule
 
 class PedometerService(reactContext: Context?) : SubscribableSensorService(reactContext), InternalModule, PedometerServiceInterface {
-  public override fun getSensorType(): Int {
-    return Sensor.TYPE_STEP_COUNTER
-  }
+  override val sensorType: Int = Sensor.TYPE_STEP_COUNTER
 
   override fun getExportedInterfaces(): List<Class<*>> {
     return listOf<Class<*>>(PedometerServiceInterface::class.java)

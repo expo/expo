@@ -7,9 +7,7 @@ import expo.modules.interfaces.sensors.services.MagnetometerServiceInterface
 import org.unimodules.core.interfaces.InternalModule
 
 class MagnetometerService(reactContext: Context?) : SubscribableSensorService(reactContext), InternalModule, MagnetometerServiceInterface {
-  public override fun getSensorType(): Int {
-    return Sensor.TYPE_MAGNETIC_FIELD
-  }
+  override val sensorType: Int = Sensor.TYPE_MAGNETIC_FIELD
 
   override fun getExportedInterfaces(): List<Class<*>> {
     return listOf<Class<*>>(MagnetometerServiceInterface::class.java)

@@ -12,21 +12,20 @@ import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ExpoMethod
 
 class MagnetometerModule(reactContext: Context?) : BaseSensorModule(reactContext) {
-  override fun getName(): String {
-    return "ExponentMagnetometer"
+  override val eventName: String = "magnetometerDidUpdate"
+
+  override fun getName(): String = "ExponentMagnetometer"
+
+  override fun getSensorService(): SensorServiceInterface {
+    return moduleRegistry.getModule(MagnetometerServiceInterface::class.java)
   }
 
-  override val eventName: String
-    get() = "magnetometerDidUpdate"
-  override val sensorService: SensorServiceInterface
-    protected get() = moduleRegistry!!.getModule(MagnetometerServiceInterface::class.java)
-
-  override fun eventToMap(sensorEvent: SensorEvent?): Bundle? {
-    val map = Bundle()
-    map.putDouble("x", sensorEvent!!.values[0].toDouble())
-    map.putDouble("y", sensorEvent.values[1].toDouble())
-    map.putDouble("z", sensorEvent.values[2].toDouble())
-    return map
+  override fun eventToMap(sensorEvent: SensorEvent): Bundle {
+    return Bundle().apply {
+      putDouble("x", sensorEvent.values[0].toDouble())
+      putDouble("y", sensorEvent.values[1].toDouble())
+      putDouble("z", sensorEvent.values[2].toDouble())
+    }
   }
 
   @ExpoMethod

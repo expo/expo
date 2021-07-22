@@ -12,24 +12,20 @@ import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ExpoMethod
 
 class AccelerometerModule(reactContext: Context?) : BaseSensorModule(reactContext) {
-  override fun getName(): String {
-    return "ExponentAccelerometer"
-  }
+  override val eventName: String = "accelerometerDidUpdate"
 
-  public override fun getEventName(): String {
-    return "accelerometerDidUpdate"
-  }
+  override fun getName(): String = "ExponentAccelerometer"
 
   override fun getSensorService(): SensorServiceInterface {
     return moduleRegistry.getModule(AccelerometerServiceInterface::class.java)
   }
 
   override fun eventToMap(sensorEvent: SensorEvent): Bundle {
-    val map = Bundle()
-    map.putDouble("x", (sensorEvent.values[0] / SensorManager.GRAVITY_EARTH).toDouble())
-    map.putDouble("y", (sensorEvent.values[1] / SensorManager.GRAVITY_EARTH).toDouble())
-    map.putDouble("z", (sensorEvent.values[2] / SensorManager.GRAVITY_EARTH).toDouble())
-    return map
+    return Bundle().apply {
+      putDouble("x", (sensorEvent.values[0] / SensorManager.GRAVITY_EARTH).toDouble())
+      putDouble("y", (sensorEvent.values[1] / SensorManager.GRAVITY_EARTH).toDouble())
+      putDouble("z", (sensorEvent.values[2] / SensorManager.GRAVITY_EARTH).toDouble())
+    }
   }
 
   @ExpoMethod

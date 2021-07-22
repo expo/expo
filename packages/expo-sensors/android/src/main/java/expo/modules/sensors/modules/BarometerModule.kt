@@ -12,23 +12,19 @@ import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ExpoMethod
 
 class BarometerModule(reactContext: Context?) : BaseSensorModule(reactContext) {
-  override fun getName(): String {
-    return "ExpoBarometer"
-  }
+  override val eventName: String = "barometerDidUpdate"
 
-  public override fun getEventName(): String {
-    return "barometerDidUpdate"
-  }
+  override fun getName(): String = "ExpoBarometer"
 
   override fun getSensorService(): SensorServiceInterface {
     return moduleRegistry.getModule(BarometerServiceInterface::class.java)
   }
 
   override fun eventToMap(sensorEvent: SensorEvent): Bundle {
-    val map = Bundle()
-    // TODO: Bacon: Can we get relative altitude?
-    map.putDouble("pressure", sensorEvent.values[0].toDouble())
-    return map
+    return Bundle().apply {
+      // TODO: Bacon: Can we get relative altitude?
+      putDouble("pressure", sensorEvent.values[0].toDouble())
+    }
   }
 
   @ExpoMethod

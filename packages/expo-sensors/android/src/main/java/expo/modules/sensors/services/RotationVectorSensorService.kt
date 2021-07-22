@@ -7,9 +7,7 @@ import expo.modules.interfaces.sensors.services.RotationVectorSensorServiceInter
 import org.unimodules.core.interfaces.InternalModule
 
 class RotationVectorSensorService(context: Context?) : SubscribableSensorService(context), InternalModule, RotationVectorSensorServiceInterface {
-  public override fun getSensorType(): Int {
-    return Sensor.TYPE_ROTATION_VECTOR
-  }
+  override val sensorType: Int = Sensor.TYPE_ROTATION_VECTOR
 
   override fun getExportedInterfaces(): List<Class<*>> {
     return listOf<Class<*>>(RotationVectorSensorServiceInterface::class.java)

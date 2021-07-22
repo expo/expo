@@ -15,78 +15,69 @@ import org.unimodules.core.interfaces.services.EventEmitter
 import org.unimodules.core.interfaces.services.UIManager
 
 abstract class BaseSensorModule internal constructor(context: Context?) : ExportedModule(context), SensorEventListener2, LifecycleEventListener {
-  private var mSensorServiceSubscription: SensorServiceSubscriptionInterface? = null
-  var moduleRegistry: ModuleRegistry? = null
+  lateinit var moduleRegistry: ModuleRegistry
     private set
+  private val sensorKernelServiceSubscription: SensorServiceSubscriptionInterface by lazy {
+    getSensorService().createSubscriptionForListener(this)
+  }
   private var mIsObserving = false
+
   protected abstract val eventName: String
-  protected abstract val sensorService: SensorServiceInterface
-  protected abstract fun eventToMap(sensorEvent: SensorEvent?): Bundle?
+  protected abstract fun getSensorService(): SensorServiceInterface
+  protected abstract fun eventToMap(sensorEvent: SensorEvent): Bundle
+
   override fun onCreate(moduleRegistry: ModuleRegistry) {
     // Unregister from old UIManager
-    if (this.moduleRegistry != null && moduleRegistry.getModule(UIManager::class.java) != null) {
+    if (this::moduleRegistry.isInitialized && moduleRegistry.getModule(UIManager::class.java) != null) {
       moduleRegistry.getModule(UIManager::class.java).unregisterLifecycleEventListener(this)
     }
     this.moduleRegistry = moduleRegistry
 
     // Register to new UIManager
-    if (this.moduleRegistry != null && moduleRegistry.getModule(UIManager::class.java) != null) {
+    if (moduleRegistry.getModule(UIManager::class.java) != null) {
       moduleRegistry.getModule(UIManager::class.java).registerLifecycleEventListener(this)
     }
   }
 
   override fun onSensorChanged(sensorEvent: SensorEvent) {
-    val eventEmitter = moduleRegistry!!.getModule(EventEmitter::class.java)
+    val eventEmitter = moduleRegistry.getModule(EventEmitter::class.java)
     eventEmitter?.emit(eventName, eventToMap(sensorEvent))
         ?: Log.e("E_SENSOR_MODULE", "Could not emit $eventName event, no event emitter present.")
   }
 
-  override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
-    // do nothing
-  }
+  override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) = Unit
 
-  override fun onFlushCompleted(sensor: Sensor) {
-    // do nothing
-  }
+  override fun onFlushCompleted(sensor: Sensor) = Unit
 
   fun setUpdateInterval(updateInterval: Int) {
-    sensorKernelServiceSubscription!!.updateInterval = updateInterval.toLong()
+    sensorKernelServiceSubscription.updateInterval = updateInterval.toLong()
   }
-
-  private val sensorKernelServiceSubscription: SensorServiceSubscriptionInterface?
-    private get() {
-      if (mSensorServiceSubscription != null) {
-        return mSensorServiceSubscription
-      }
-      mSensorServiceSubscription = sensorService.createSubscriptionForListener(this)
-      return mSensorServiceSubscription
-    }
 
   fun startObserving() {
     mIsObserving = true
-    sensorKernelServiceSubscription!!.start()
+    sensorKernelServiceSubscription.start()
   }
 
   fun stopObserving() {
     if (mIsObserving) {
       mIsObserving = false
-      sensorKernelServiceSubscription!!.stop()
+      sensorKernelServiceSubscription.stop()
     }
   }
 
   override fun onHostResume() {
     if (mIsObserving) {
-      sensorKernelServiceSubscription!!.start()
+      sensorKernelServiceSubscription.start()
     }
   }
 
   override fun onHostPause() {
     if (mIsObserving) {
-      sensorKernelServiceSubscription!!.stop()
+      sensorKernelServiceSubscription.stop()
     }
   }
 
   override fun onHostDestroy() {
-    sensorKernelServiceSubscription!!.release()
+    sensorKernelServiceSubscription.release()
   }
 }

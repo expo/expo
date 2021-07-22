@@ -8,7 +8,7 @@ import android.hardware.SensorManager
 
 abstract class BaseSensorService internal constructor(reactContext: Context?) : BaseService(reactContext!!), SensorEventListener2 {
   private var mSensor: Sensor? = null
-  private val mSensorManager: SensorManager
+  private val mSensorManager: SensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
   // Abstract methods that subclasses should implement
   abstract val sensorType: Int
@@ -22,9 +22,5 @@ abstract class BaseSensorService internal constructor(reactContext: Context?) : 
 
   protected fun stopObserving() {
     mSensorManager.unregisterListener(this)
-  }
-
-  init {
-    mSensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
   }
 }

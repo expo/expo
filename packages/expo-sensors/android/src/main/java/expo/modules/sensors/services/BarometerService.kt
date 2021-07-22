@@ -7,9 +7,7 @@ import expo.modules.interfaces.sensors.services.BarometerServiceInterface
 import org.unimodules.core.interfaces.InternalModule
 
 class BarometerService(reactContext: Context?) : SubscribableSensorService(reactContext), InternalModule, BarometerServiceInterface {
-  public override fun getSensorType(): Int {
-    return Sensor.TYPE_PRESSURE
-  }
+  override val sensorType: Int = Sensor.TYPE_PRESSURE
 
   override fun getExportedInterfaces(): List<Class<*>> {
     return listOf<Class<*>>(BarometerServiceInterface::class.java)

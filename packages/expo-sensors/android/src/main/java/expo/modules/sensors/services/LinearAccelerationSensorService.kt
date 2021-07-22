@@ -7,9 +7,7 @@ import expo.modules.interfaces.sensors.services.LinearAccelerationSensorServiceI
 import org.unimodules.core.interfaces.InternalModule
 
 class LinearAccelerationSensorService(reactContext: Context?) : SubscribableSensorService(reactContext), InternalModule, LinearAccelerationSensorServiceInterface {
-  public override fun getSensorType(): Int {
-    return Sensor.TYPE_LINEAR_ACCELERATION
-  }
+  override val sensorType: Int = Sensor.TYPE_LINEAR_ACCELERATION
 
   override fun getExportedInterfaces(): List<Class<*>> {
     return listOf<Class<*>>(LinearAccelerationSensorServiceInterface::class.java)

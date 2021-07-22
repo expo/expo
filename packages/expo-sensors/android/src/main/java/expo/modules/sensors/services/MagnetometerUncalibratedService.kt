@@ -7,9 +7,7 @@ import expo.modules.interfaces.sensors.services.MagnetometerUncalibratedServiceI
 import org.unimodules.core.interfaces.InternalModule
 
 class MagnetometerUncalibratedService(reactContext: Context?) : SubscribableSensorService(reactContext), InternalModule, MagnetometerUncalibratedServiceInterface {
-  public override fun getSensorType(): Int {
-    return Sensor.TYPE_MAGNETIC_FIELD_UNCALIBRATED
-  }
+  override val sensorType: Int = Sensor.TYPE_MAGNETIC_FIELD_UNCALIBRATED
 
   override fun getExportedInterfaces(): List<Class<*>> {
     return listOf<Class<*>>(MagnetometerUncalibratedServiceInterface::class.java)

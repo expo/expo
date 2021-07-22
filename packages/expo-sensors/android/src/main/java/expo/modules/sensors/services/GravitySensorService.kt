@@ -7,9 +7,7 @@ import expo.modules.interfaces.sensors.services.GravitySensorServiceInterface
 import org.unimodules.core.interfaces.InternalModule
 
 class GravitySensorService(reactContext: Context?) : SubscribableSensorService(reactContext), InternalModule, GravitySensorServiceInterface {
-  public override fun getSensorType(): Int {
-    return Sensor.TYPE_GRAVITY
-  }
+  override val sensorType: Int = Sensor.TYPE_GRAVITY
 
   override fun getExportedInterfaces(): List<Class<*>> {
     return listOf<Class<*>>(GravitySensorServiceInterface::class.java)

@@ -7,9 +7,9 @@ import org.unimodules.core.interfaces.LifecycleEventListener
 import org.unimodules.core.interfaces.RegistryLifecycleListener
 import org.unimodules.core.interfaces.services.UIManager
 
-/* package */
-internal abstract class BaseService     /* package */(protected val context: Context) : LifecycleEventListener, RegistryLifecycleListener {
-  private var mModuleRegistry: ModuleRegistry? = null
+/* internal */
+abstract class BaseService(protected val context: Context) : LifecycleEventListener, RegistryLifecycleListener {
+  private lateinit var mModuleRegistry: ModuleRegistry
   var experienceIsForegrounded = false
     private set
 
@@ -17,15 +17,15 @@ internal abstract class BaseService     /* package */(protected val context: Con
     mModuleRegistry = moduleRegistry
 
     // Register to new UIManager
-    if (mModuleRegistry != null && mModuleRegistry!!.getModule(UIManager::class.java) != null) {
-      mModuleRegistry!!.getModule(UIManager::class.java).registerLifecycleEventListener(this)
+    if (mModuleRegistry.getModule(UIManager::class.java) != null) {
+      mModuleRegistry.getModule(UIManager::class.java).registerLifecycleEventListener(this)
     }
   }
 
   override fun onDestroy() {
     // Unregister from old UIManager
-    if (mModuleRegistry != null && mModuleRegistry!!.getModule(UIManager::class.java) != null) {
-      mModuleRegistry!!.getModule(UIManager::class.java).unregisterLifecycleEventListener(this)
+    if (this::mModuleRegistry.isInitialized && mModuleRegistry.getModule(UIManager::class.java) != null) {
+      mModuleRegistry.getModule(UIManager::class.java).unregisterLifecycleEventListener(this)
     }
   }
 
@@ -34,9 +34,7 @@ internal abstract class BaseService     /* package */(protected val context: Con
     onExperienceForegrounded()
   }
 
-  override fun onHostDestroy() {
-    // do nothing
-  }
+  override fun onHostDestroy() = Unit
 
   override fun onHostPause() {
     experienceIsForegrounded = false

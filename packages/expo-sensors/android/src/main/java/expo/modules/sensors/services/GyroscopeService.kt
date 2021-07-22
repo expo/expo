@@ -7,9 +7,7 @@ import expo.modules.interfaces.sensors.services.GyroscopeServiceInterface
 import org.unimodules.core.interfaces.InternalModule
 
 class GyroscopeService(context: Context?) : SubscribableSensorService(context), InternalModule, GyroscopeServiceInterface {
-  public override fun getSensorType(): Int {
-    return Sensor.TYPE_GYROSCOPE
-  }
+  override val sensorType: Int = Sensor.TYPE_GYROSCOPE
 
   override fun getExportedInterfaces(): List<Class<*>> {
     return listOf<Class<*>>(GyroscopeServiceInterface::class.java)
