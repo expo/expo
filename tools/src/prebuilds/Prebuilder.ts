@@ -64,6 +64,7 @@ export const PACKAGES_TO_PREBUILD = [
   'expo-location',
   // 'expo-mail-composer',
   'expo-media-library',
+  'expo-modules-core',
   // 'expo-network',
   'expo-notifications',
   // 'expo-permissions',
@@ -189,6 +190,14 @@ export async function generateXcodeProjectSpecAsync(pkg: Package): Promise<Xcode
         embed: false,
       };
     }
+
+    // const projectPath = await findProjectAsync(dependencyName);
+
+    // if (projectPath) {
+    //   return {
+    //     target: projectPath
+    //   }
+    // }
     return null;
   });
 
@@ -235,6 +244,15 @@ async function findFrameworkForProjectAsync(projectName: string): Promise<string
         return path.join(cwd, paths[0]);
       }
     }
+  }
+  return null;
+}
+
+async function findProjectAsync(projectName: string): Promise<string | null> {
+  const xcodeprojPath = path.join(PODS_DIR, projectName + '.xcodeproj');
+
+  if (await fs.pathExists(xcodeprojPath)) {
+    return xcodeprojPath;
   }
   return null;
 }

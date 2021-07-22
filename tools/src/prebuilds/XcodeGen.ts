@@ -43,7 +43,7 @@ export async function generateXcodeProjectAsync(dir: string, spec: ProjectSpec):
   });
 
   // Remove temporary spec file.
-  await fs.remove(specPath);
+  // await fs.remove(specPath);
 
   return path.join(dir, `${spec.name}.xcodeproj`);
 }
@@ -68,9 +68,14 @@ export async function createSpecFromPodspecAsync(
   ).filter(Boolean) as ProjectSpecDependency[];
 
   const bundleId = podNameToBundleId(podspec.name);
-
+  console.log(podspec);
   return {
     name: podspec.name,
+    projectReferences: {
+      'React-Core': {
+        path: path.join(PODS_DIR, 'React-Core.xcodeproj'),
+      },
+    },
     targets: {
       [podspec.name]: {
         type: 'framework',
@@ -80,7 +85,7 @@ export async function createSpecFromPodspecAsync(
             path: '',
             name: podspec.name,
             createIntermediateGroups: true,
-            includes: arrayize(podspec.source_files),
+            includes: [...arrayize(podspec.source_files), '**/*.modulemap'],
             excludes: [
               INFO_PLIST_FILENAME,
               `${podspec.name}.spec.json`,
@@ -97,6 +102,11 @@ export async function createSpecFromPodspecAsync(
             sdk: `${framework}.framework`,
           })),
           ...dependencies,
+          {
+            target: 'React-Core/React-Core',
+            link: false,
+            embed: false,
+          },
         ],
         settings: {
           base: mergeXcodeConfigs(podspec.pod_target_xcconfig ?? {}, {
@@ -127,6 +137,7 @@ export async function createSpecFromPodspecAsync(
         IPHONEOS_DEPLOYMENT_TARGET: podspec.platforms.ios,
         FRAMEWORK_SEARCH_PATHS: constructFrameworkSearchPaths(dependencies),
         HEADER_SEARCH_PATHS: constructHeaderSearchPaths(dependenciesNames),
+        USE_HEADERMAP: 'NO',
 
         // Suppresses deprecation warnings coming from frameworks like OpenGLES.
         VALIDATE_WORKSPACE_SKIPPED_SDK_FRAMEWORKS: arrayize(podspec.frameworks).join(' '),

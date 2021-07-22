@@ -1,3 +1,5 @@
+import UIKit
+
 /**
  A definition of the view factory that creates views.
  */

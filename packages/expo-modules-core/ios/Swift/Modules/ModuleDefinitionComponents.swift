@@ -1,3 +1,5 @@
+import UIKit
+
 /**
  Extends all modules with the functions used to build a module definition.
  Unfortunately they need to be scoped here, but hopefully this proposal

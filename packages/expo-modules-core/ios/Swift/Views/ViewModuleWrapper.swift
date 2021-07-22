@@ -1,3 +1,6 @@
+import UIKit
+import ObjectiveC
+
 /**
  Each module that has a view manager definition needs to be wrapped by `RCTViewManager`.
  Unfortunately, we can't use just one class because React Native checks for duplicated classes.
