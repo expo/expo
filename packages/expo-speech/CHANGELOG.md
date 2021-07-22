@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix setting speaking listener for projects with `react-native@>0.64.0`. ([#13654](https://github.com/expo/expo/pull/13654) by [@dsokal](https://github.com/dsokal))
+
 ### 💡 Others
 
 ## 9.2.0 — 2021-06-16
