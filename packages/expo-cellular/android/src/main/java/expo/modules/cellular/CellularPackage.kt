@@ -6,5 +6,5 @@ import org.unimodules.core.ExportedModule
 
 class CellularPackage : BasePackage() {
   override fun createExportedModules(context: Context) =
-    listOf(CellularModule(context) as ExportedModule)
+    listOf(CellularModule(context))
 }

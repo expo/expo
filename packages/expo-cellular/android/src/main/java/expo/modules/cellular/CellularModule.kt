@@ -6,45 +6,27 @@ import android.net.sip.SipManager
 import android.os.Build
 import android.telephony.TelephonyManager
 import org.unimodules.core.ExportedModule
-import org.unimodules.core.ModuleRegistry
-import org.unimodules.core.ModuleRegistryDelegate
 import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ExpoMethod
 import org.unimodules.core.interfaces.RegistryLifecycleListener
 import java.util.*
 
-class CellularModule(
-  private val mContext: Context,
-  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
-) : ExportedModule(mContext), RegistryLifecycleListener {
+class CellularModule(private val mContext: Context) : ExportedModule(mContext), RegistryLifecycleListener {
   override fun getName(): String = "ExpoCellular"
 
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    moduleRegistryDelegate.onCreate(moduleRegistry)
-  }
-
   override fun getConstants(): HashMap<String, Any?> {
-    val constants = HashMap<String, Any?>()
-    constants["allowsVoip"] = SipManager.isVoipSupported(mContext)
-    val systemService = mContext.getSystemService(Context.TELEPHONY_SERVICE)
-    val telephonyManager = if (systemService != null) {
-      systemService as TelephonyManager
-    } else {
-      null
-    }
-    constants["isoCountryCode"] = telephonyManager?.simCountryIso
+    val telephonyManager =
+        (mContext.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager).takeIf {
+          it?.simState == TelephonyManager.SIM_STATE_READY
+        }
 
-    // check if sim state is ready
-    if (telephonyManager != null && telephonyManager.simState == TelephonyManager.SIM_STATE_READY) {
-      constants["carrier"] = telephonyManager.simOperatorName
-      constants["mobileCountryCode"] = telephonyManager.simOperator.substring(0, 3)
-      constants["mobileNetworkCode"] = StringBuilder(telephonyManager.simOperator).delete(0, 3).toString()
-    } else {
-      constants["carrier"] = null
-      constants["mobileCountryCode"] = null
-      constants["mobileNetworkCode"] = null
+    return HashMap<String, Any?>().apply {
+      put("allowsVoip", SipManager.isVoipSupported(mContext))
+      put("isoCountryCode", telephonyManager?.simCountryIso)
+      put("carrier", telephonyManager?.simOperatorName)
+      put("mobileCountryCode", telephonyManager?.simOperator?.substring(0, 3))
+      put("mobileNetworkCode", telephonyManager?.simOperator?.substring(3))
     }
-    return constants
   }
 
   @SuppressLint("MissingPermission")
