@@ -14,6 +14,7 @@ public struct ModuleDefinition: AnyDefinition {
   let methods: [String : AnyMethod]
   let constants: [String : Any?]
   let eventListeners: [EventListener]
+  let viewManager: ViewManagerDefinition?
 
   init(definitions: [AnyDefinition]) {
     self.name = definitions
@@ -34,6 +35,10 @@ public struct ModuleDefinition: AnyDefinition {
       }
 
     self.eventListeners = definitions.compactMap { $0 as? EventListener }
+
+    self.viewManager = definitions
+      .compactMap { $0 as? ViewManagerDefinition }
+      .last
   }
 }
 
