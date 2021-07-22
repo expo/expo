@@ -86,7 +86,7 @@ export type CellularInfo = {
   mobileNetworkCode: string | null;
   /**
    * Describes the current generation of the cellular connection. It's possible values
-   * are described by [CellularGeneration](#cellulargeneration) 
+   * are described by [CellularGeneration](#cellulargeneration)
    */
   generation: CellularGeneration;
 };

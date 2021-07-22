@@ -4,7 +4,7 @@ import ExpoCellular from './ExpoCellular';
 export { CellularGeneration };
 // @needsAudit
 /**
- * @deprecated field, use `getCurrentCellularInfoAsync()` instead
+ * @deprecated field, use [`getCurrentCellularInfoAsync()`](#getcurrentcellularinfoasync) instead
  *
  * Indicates if the carrier allows making VoIP calls on its network. On Android, this checks whether
  * the system supports SIP-based VoIP API. See [here](https://developer.android.com/reference/android/net/sip/SipManager.html#isVoipSupported(android.content.Context))
@@ -24,7 +24,7 @@ export { CellularGeneration };
 export const allowsVoip = ExpoCellular ? ExpoCellular.allowsVoip : null;
 // @needsAudit
 /**
- * @deprecated field, use `getCurrentCellularInfoAsync()` instead
+ * @deprecated field, use [`getCurrentCellularInfoAsync()`](#getcurrentcellularinfoasync) instead
  *
  * The name of the user’s home cellular service provider. If the device has dual SIM cards, only the
  * carrier for the currently active SIM card will be returned. On Android, this value is only
@@ -46,7 +46,7 @@ export const allowsVoip = ExpoCellular ? ExpoCellular.allowsVoip : null;
 export const carrier = ExpoCellular ? ExpoCellular.carrier : null;
 // @needsAudit
 /**
- * @deprecated field, use `getCurrentCellularInfoAsync()` instead
+ * @deprecated field, use [`getCurrentCellularInfoAsync()`](#getcurrentcellularinfoasync) instead
  *
  * The ISO country code for the user’s cellular service provider. On iOS, the value is `null` if any
  * of the following apply:
@@ -64,7 +64,7 @@ export const carrier = ExpoCellular ? ExpoCellular.carrier : null;
 export const isoCountryCode = ExpoCellular ? ExpoCellular.isoCountryCode : null;
 // @needsAudit
 /**
- * @deprecated field, use `getCurrentCellularInfoAsync()` instead
+ * @deprecated field, use [`getCurrentCellularInfoAsync()`](#getcurrentcellularinfoasync) instead
  *
  * The mobile country code (MCC) for the user’s current registered cellular service provider.
  * On Android, this value is only available when SIM state is [`SIM_STATE_READY`](https://developer.android.com/reference/android/telephony/TelephonyManager.html#SIM_STATE_READY). Otherwise, this
@@ -85,7 +85,7 @@ export const mobileCountryCode = ExpoCellular
     : null;
 // @needsAudit
 /**
- * @deprecated field, use `getCurrentCellularInfoAsync()` instead
+ * @deprecated field, use [`getCurrentCellularInfoAsync()`](#getcurrentcellularinfoasync) instead
  *
  * The ISO country code for the user’s cellular service provider. On iOS, the value is `null` if
  * any of the following apply:
