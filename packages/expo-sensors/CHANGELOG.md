@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Converted Android code to Kotlin
+
 ## 10.2.0 — 2021-06-16
 
 ### 🐛 Bug fixes
