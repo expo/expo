@@ -1,18 +1,27 @@
 package expo.modules.cellular
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.sip.SipManager
 import android.os.Build
 import android.telephony.TelephonyManager
+import expo.modules.interfaces.permissions.Permissions
 import org.unimodules.core.ExportedModule
+import org.unimodules.core.ModuleRegistryDelegate
 import org.unimodules.core.Promise
 import org.unimodules.core.interfaces.ExpoMethod
 import org.unimodules.core.interfaces.RegistryLifecycleListener
 import java.util.*
 
-class CellularModule(private val mContext: Context) : ExportedModule(mContext), RegistryLifecycleListener {
+class CellularModule(
+  private val mContext: Context,
+  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate(),
+) : ExportedModule(mContext), RegistryLifecycleListener {
   override fun getName(): String = "ExpoCellular"
+
+  private val mPermissions: Permissions by moduleRegistry()
+  private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
 
   override fun getConstants(): HashMap<String, Any?> {
     val telephonyManager =
@@ -29,6 +38,16 @@ class CellularModule(private val mContext: Context) : ExportedModule(mContext), 
     }
   }
 
+  @ExpoMethod
+  fun requestAndroidPhoneStatePermissionsAsync(promise: Promise?) {
+    mPermissions.askForPermissionsWithPromise(promise, Manifest.permission.READ_PHONE_STATE)
+  }
+
+  @ExpoMethod
+  fun getAndroidPhoneStatePermissionsAsync(promise: Promise) {
+    mPermissions.getPermissionsWithPromise(promise, Manifest.permission.READ_PHONE_STATE)
+  }
+
   @SuppressLint("MissingPermission")
   @ExpoMethod
   fun getCellularGenerationAsync(promise: Promise) {
@@ -36,6 +55,10 @@ class CellularModule(private val mContext: Context) : ExportedModule(mContext), 
       val telephonyManager =
         mContext.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager
       if (telephonyManager == null) {
+        promise.resolve(CellularGeneration.UNKNOWN.value)
+        return
+      }
+      if (!checkPermissions()) {
         promise.resolve(CellularGeneration.UNKNOWN.value)
         return
       }
@@ -75,4 +98,7 @@ class CellularModule(private val mContext: Context) : ExportedModule(mContext), 
       promise.reject("ERR_CELLULAR_GENERATION_UNKNOWN_NETWORK_TYPE", "Unable to access network type or not connected to a cellular network", e)
     }
   }
+
+  private fun checkPermissions() =
+    mPermissions.hasGrantedPermissions(Manifest.permission.READ_PHONE_STATE)
 }
