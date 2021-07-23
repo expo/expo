@@ -13,8 +13,9 @@
 - Fix regression in video quality option of recordAsync() ([#13659](https://github.com/expo/expo/pull/13659) by [@ajsmth](https://github.com/ajsmth))
 - Update permission validation to check for only camera permissions in `initWithModuleRegistry()` ([#13690](https://github.com/expo/expo/pull/13690) by [@ajsmth](https://github.com/ajsmth))
 
-
 ### 💡 Others
+
+- Migrated from `@unimodules/core` to `expo-modules-core`.
 
 ## 11.1.1 — 2021-06-16
 
