@@ -1793,7 +1793,6 @@ PODS:
     - UMCore
   - EXAV (9.2.0):
     - ExpoModulesCore
-    - UMCore
   - EXBackgroundFetch (9.2.0):
     - UMCore
     - UMTaskManagerInterface
@@ -1852,7 +1851,6 @@ PODS:
     - UMCore
   - EXFileSystem (11.1.0):
     - ExpoModulesCore
-    - UMCore
   - EXFirebaseAnalytics (4.1.0):
     - EXFirebaseCore
     - Firebase/Core (= 7.7.0)
@@ -1887,7 +1885,7 @@ PODS:
   - EXKeepAwake (9.2.0):
     - UMCore
   - EXLinearGradient (9.2.0):
-    - UMCore
+    - ExpoModulesCore
   - EXLocalAuthentication (11.1.0):
     - UMCore
   - EXLocalization (10.2.0):
@@ -4023,7 +4021,7 @@ SPEC CHECKSUMS:
   EXAppAuth: b7ecb4ce7634676985f67d2489054ea7727cd5e3
   EXAppleAuthentication: 5994731faf4a3dd32be4a4b3e9feb930c2fa25c1
   EXApplication: 9ff2a206009d6e55bca6c20b3f33d07986b51ef3
-  EXAV: 1e88c98d82a22cb21865e83ba8a9a11f75b6b12b
+  EXAV: 7f27c872fb45479d66e762a88484f58d52174131
   EXBackgroundFetch: 5a15dc52d77d5ea4b0896c283679e271447921d4
   EXBarCodeScanner: 22f8d8ea393de371e80f9529664c07900e1e7639
   EXBattery: 6adbf9706bbe00d266b17b7846d556db9dea82c2
@@ -4042,7 +4040,7 @@ SPEC CHECKSUMS:
   EXErrorRecovery: 404d827bc7d42f306c062d58a60b06afc4d082b3
   EXFacebook: 71cc9f6b6bbdf0bc702d65c287f23cab14cc6430
   EXFaceDetector: e0908fe9700ed402a9658975a3eac719479b5205
-  EXFileSystem: 7cda0bbbdf6695c51c0e693799c6d54c04b53c94
+  EXFileSystem: 9a77e33ba77e8b1ffbbe0625a211e3abee6f69ab
   EXFirebaseAnalytics: ca01838167729b67f838a673e4b3e0637faec118
   EXFirebaseCore: 9b5380fd62fce3c790fa1d6727a8d7cbbef4f0fb
   EXFont: 6e7d5a7a09fbd0ee801de76601b2e620c4d2f575
@@ -4054,7 +4052,7 @@ SPEC CHECKSUMS:
   EXImageManipulator: c4a7a24d867f8b2bb15e5d0d64ff8f3c2fb35761
   EXImagePicker: 958720afb9395ee1168dcda28d9915345c4e7cae
   EXKeepAwake: f4105ef469be7b283f66ce2d7234bb71ac80cd26
-  EXLinearGradient: f9ea3259f096b27008860ca50764184225dc71c9
+  EXLinearGradient: 36053f529a48cc7534d6125b0ddc8dd17e091fdd
   EXLocalAuthentication: e6347880c31bc3b9693933780d3bc84823fe0698
   EXLocalization: 356f4e16a606cec21a77d6250528fde526152b45
   EXLocation: bdf1af6aa8fc4f4dc1fd21aa39760484026f8a5d
@@ -4151,6 +4149,6 @@ SPEC CHECKSUMS:
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 57c679a3db102899bc876a899804e78034217bd9
+PODFILE CHECKSUM: aedc9740dc0df246ce92a2b37bfa1b77c655d633
 
 COCOAPODS: 1.10.1

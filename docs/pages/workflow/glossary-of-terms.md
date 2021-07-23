@@ -105,7 +105,7 @@ We use the word "slug" in [app.json](#appjson) to refer to the name to use for y
 
 ### Snack
 
-[Snack](https://snack.expo.io/) is an in-browser development environment where you can build Expo [experiences](#experience) without installing any tools on your phone or computer.
+[Snack](https://snack.expo.dev/) is an in-browser development environment where you can build Expo [experiences](#experience) without installing any tools on your phone or computer.
 
 ### Standalone app
 

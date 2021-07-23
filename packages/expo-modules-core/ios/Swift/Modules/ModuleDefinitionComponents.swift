@@ -187,3 +187,24 @@ extension AnyModule {
     return EventListener(.appEntersBackground, closure)
   }
 }
+
+/**
+ Creates the view manager definition that scopes other view-related definitions.
+ */
+public func viewManager(@ViewManagerDefinitionBuilder _ closure: @escaping () -> ViewManagerDefinition) -> AnyDefinition {
+  return closure()
+}
+
+/**
+ Defines the factory creating a native view when the module is used as a view.
+ */
+public func view(_ closure: @escaping () -> UIView) -> AnyDefinition {
+  return ViewFactory(closure)
+}
+
+/**
+ Creates a view prop that defines its name and setter.
+ */
+public func prop<ViewType: UIView, PropType>(_ name: String, _ setter: @escaping (ViewType, PropType) -> Void) -> AnyDefinition {
+  return ConcreteViewProp(name, setter)
+}

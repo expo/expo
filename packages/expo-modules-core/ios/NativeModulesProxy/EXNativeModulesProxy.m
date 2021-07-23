@@ -41,12 +41,10 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
   return self;
 }
 
-- (instancetype)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry swiftModulesProviderClass:(nullable Class)swiftModulesProviderClass
+- (instancetype)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry swiftInteropBridge:(SwiftInteropBridge *)swiftInteropBridge
 {
   if (self = [self initWithModuleRegistry:moduleRegistry]) {
-    if ([swiftModulesProviderClass conformsToProtocol:@protocol(ModulesProviderObjCProtocol)]) {
-      _swiftInteropBridge = [[SwiftInteropBridge alloc] initWithModulesProvider:[swiftModulesProviderClass new] legacyModuleRegistry:_exModuleRegistry];
-    }
+    _swiftInteropBridge = swiftInteropBridge;
   }
   return self;
 }
@@ -101,6 +99,8 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
   for (EXViewManager *viewManager in viewManagers) {
     [viewManagersNames addObject:[viewManager viewName]];
   }
+
+  [viewManagersNames addObjectsFromArray:[_swiftInteropBridge exportedViewManagersNames]];
 
   NSMutableDictionary <NSString *, id> *constantsAccumulator = [NSMutableDictionary dictionary];
   constantsAccumulator[viewManagersNamesKeyPath] = viewManagersNames;

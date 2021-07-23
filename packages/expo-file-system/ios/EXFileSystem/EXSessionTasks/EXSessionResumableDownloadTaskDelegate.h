@@ -7,8 +7,8 @@ typedef void (^EXDownloadDelegateOnWriteCallback)(NSURLSessionDownloadTask *task
 
 @interface EXSessionResumableDownloadTaskDelegate : EXSessionDownloadTaskDelegate
 
-- (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
-                         reject:(UMPromiseRejectBlock)reject
+- (instancetype)initWithResolve:(EXPromiseResolveBlock)resolve
+                         reject:(EXPromiseRejectBlock)reject
                        localUrl:(NSURL *)localUrl
              shouldCalculateMd5:(BOOL)shouldCalculateMd5
                 onWriteCallback:(EXDownloadDelegateOnWriteCallback)onWriteCallback

@@ -2,7 +2,7 @@
 
 #import <EXLinearGradient/EXLinearGradientManager.h>
 #import <EXLinearGradient/EXLinearGradient.h>
-#import <UMCore/UMUIManager.h>
+#import <ExpoModulesCore/EXUIManager.h>
 
 @interface EXLinearGradientManager ()
 
@@ -10,7 +10,7 @@
 
 @implementation EXLinearGradientManager
 
-UM_EXPORT_MODULE(ExpoLinearGradientManager);
+EX_EXPORT_MODULE(ExpoLinearGradientManager);
 
 - (NSString *)viewName
 {
@@ -22,23 +22,23 @@ UM_EXPORT_MODULE(ExpoLinearGradientManager);
   return [[EXLinearGradient alloc] init];
 }
 
-UM_VIEW_PROPERTY(colors, NSArray *, EXLinearGradient) {
+EX_VIEW_PROPERTY(colors, NSArray *, EXLinearGradient) {
   [view setColors:value];
 }
 
 // NOTE: startPoint and endPoint assume that the value is an array with exactly two floats
 
-UM_VIEW_PROPERTY(startPoint, NSArray *, EXLinearGradient) {
+EX_VIEW_PROPERTY(startPoint, NSArray *, EXLinearGradient) {
   CGPoint point = CGPointMake([[value objectAtIndex:0] floatValue], [[value objectAtIndex:1] floatValue]);
   [view setStartPoint:point];
 }
 
-UM_VIEW_PROPERTY(endPoint, NSArray *, EXLinearGradient) {
+EX_VIEW_PROPERTY(endPoint, NSArray *, EXLinearGradient) {
   CGPoint point = CGPointMake([[value objectAtIndex:0] floatValue], [[value objectAtIndex:1] floatValue]);
   [view setEndPoint:point];
 }
 
-UM_VIEW_PROPERTY(locations, NSArray *, EXLinearGradient) {
+EX_VIEW_PROPERTY(locations, NSArray *, EXLinearGradient) {
   [view setLocations:value];
 }
 
