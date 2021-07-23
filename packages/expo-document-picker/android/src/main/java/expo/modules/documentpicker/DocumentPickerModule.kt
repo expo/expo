@@ -119,10 +119,10 @@ class DocumentPickerModule(
       "DocumentPicker",
       FilenameUtils.getExtension(name)
     )
-
+    val outputFile = File(outputFilePath)
     try {
       context.contentResolver.openInputStream(documentUri).use { inputStream ->
-        FileOutputStream(File(outputFilePath)).use { outputStream ->
+        FileOutputStream(outputFile).use { outputStream ->
           IOUtils.copy(inputStream, outputStream)
         }
       }
@@ -130,6 +130,6 @@ class DocumentPickerModule(
       e.printStackTrace()
       return null
     }
-    return outputFilePath
+    return Uri.fromFile(outputFile).toString()
   }
 }

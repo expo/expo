@@ -120,7 +120,7 @@ export type PropsDefinitionData = {
 
 export type PropData = {
   name: string;
-  comment: CommentData;
+  comment?: CommentData;
   type: TypeDefinitionData;
   flags?: TypePropertyDataFlags;
   defaultValue?: string;
@@ -142,7 +142,7 @@ export type TypeGeneralData = {
 };
 
 export type TypeDeclarationContentData = {
-  signatures: TypeSignaturesData[];
+  signatures?: TypeSignaturesData[];
   children?: PropData[];
 };
 

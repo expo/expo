@@ -1,0 +1,1 @@
+{"version":3,"file":"EmbeddedAssets.web.js","sourceRoot":"","sources":["../src/EmbeddedAssets.web.ts"],"names":[],"mappings":"AAAA,MAAM,UAAU,mBAAmB,CAAC,IAAY,EAAE,IAAmB;IACnE,cAAc;IACd,OAAO,IAAI,CAAC;AACd,CAAC","sourcesContent":["export function getEmbeddedAssetUri(hash: string, type: string | null): string | null {\n  // noop on web\n  return null;\n}\n"]}
