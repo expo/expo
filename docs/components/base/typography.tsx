@@ -4,12 +4,14 @@ import { theme } from '@expo/styleguide';
 import * as Constants from '~/constants/theme';
 
 export const h1 = css`
-  font-family: ${Constants.fonts.bold};
+  font-family: ${Constants.fonts.black};
   color: ${theme.text.default};
-  font-size: 48px;
+  font-size: 44px;
   line-height: 120%;
-  letter-spacing: -0.022em;
-  font-weight: 500;
+  font-weight: 800;
+  background-image: linear-gradient(60deg, #9e3ab7, var(--expo-theme-link-default));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 `;
 
 export const h2 = css`

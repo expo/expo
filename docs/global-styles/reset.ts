@@ -133,4 +133,8 @@ export const globalReset = css`
     background-color: ${theme.highlight.accent};
     color: ${theme.text.default};
   }
+
+  h1::selection {
+    -webkit-text-fill-color: ${theme.text.default};
+  }
 `;
