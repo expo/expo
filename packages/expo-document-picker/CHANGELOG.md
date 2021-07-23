@@ -9,7 +9,7 @@
 ### 🐛 Bug fixes
 
 - Added `AndroidManifest.xml` queries for intent handling. ([#13388](https://github.com/expo/expo/pull/13388) by [@EvanBacon](https://github.com/EvanBacon))
-- Added possibility to pass mimetypes array in order to set multiple mimetypes, fix bug with default mimetype.
+- Added possibility to pass mimetypes array in order to set multiple mimetypes, fix bug with default mimetype. ([#13751](https://github.com/expo/expo/pull/13751) by [@mstach60161](https://github.com/mstach60161))
 
 ### 💡 Others
 
