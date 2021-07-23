@@ -80,7 +80,7 @@ class ImageManipulatorModule(
     val result = Bundle().apply {
       putString("uri", Uri.fromFile(File(path)).toString())
       putInt("width", resultBitmap.width)
-      putInt("height", bitmap.height)
+      putInt("height", resultBitmap.height)
       if (base64String != null) {
         putString("base64", base64String)
       }
