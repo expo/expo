@@ -119,19 +119,19 @@ UM_EXPORT_METHOD_AS(getDocumentAsync,
     @try {
       // TODO: drop #if macro once Xcode is updated to 12
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000
-      if ((@available(iOS 14, *))) {
-        NSMutableArray *uttArray = [mimeTypes mutableCopy];
+      if (@available(iOS 14, *)) {
+        NSMutableArray *utTypes = [mimeTypes mutableCopy];
         for (int i = 0; i < [mimeTypes count]; i++) {
-          uttArray[i] = (NSString *)EXConvertMimeTypeToUTType(mimeTypes[i]);
+          utTypes[i] = (NSString *)EXConvertMimeTypeToUTType(mimeTypes[i]);
         }
-        documentPickerVC = [[UIDocumentPickerViewController alloc] initForOpeningContentTypes:uttArray asCopy:true];
+        documentPickerVC = [[UIDocumentPickerViewController alloc] initForOpeningContentTypes:utTypes asCopy:true];
       } else {
 #endif
-        NSMutableArray *utiArray = [mimeTypes mutableCopy];
+        NSMutableArray *utiTypes = [mimeTypes mutableCopy];
         for (int i = 0; i < [mimeTypes count]; i++) {
-          utiArray[i] = (NSString *)EXConvertMimeTypeToUTI(mimeTypes[i]);
+            utiTypes[i] = (NSString *)EXConvertMimeTypeToUTI(mimeTypes[i]);
         }
-        documentPickerVC = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:utiArray
+        documentPickerVC = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:utiTypes
                                                                                   inMode:UIDocumentPickerModeImport];
         // TODO: drop #if macro once Xcode is updated to 12
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000
