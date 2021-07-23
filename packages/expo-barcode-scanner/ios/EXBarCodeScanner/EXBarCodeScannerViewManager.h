@@ -1,9 +1,9 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <AVFoundation/AVFoundation.h>
-#import <UMCore/UMViewManager.h>
-#import <UMCore/UMModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXViewManager.h>
+#import <ExpoModulesCore/EXModuleRegistryConsumer.h>
 
-@interface EXBarCodeScannerViewManager : UMViewManager <UMModuleRegistryConsumer>
+@interface EXBarCodeScannerViewManager : EXViewManager <EXModuleRegistryConsumer>
 
 @end
