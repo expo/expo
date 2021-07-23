@@ -1817,7 +1817,6 @@ PODS:
     - UMCore
   - EXCamera (11.1.1):
     - ExpoModulesCore
-    - UMCore
   - EXCellular (3.2.0):
     - ExpoModulesCore
   - EXClipboard (1.1.0):
@@ -4029,7 +4028,7 @@ SPEC CHECKSUMS:
   EXBranch: 9c65961edddfb785cc26d8642f8f50e7e3c2e5ad
   EXBrightness: b0eb62f204669cd7ae926847794b5bfabd595a4f
   EXCalendar: 64807f071c86ef3d9813fec49f55c38d5854c235
-  EXCamera: 5a90a462cd0965bbf5e5ddb725115ac5109869e9
+  EXCamera: d39ee631cecae1722c12a0b5fe4651a09b262863
   EXCellular: c023099c6d53230d69c03a0ed0b515fbf2ffc5eb
   EXClipboard: c66f7d22ba754496b0fc6b23a2cb9a3e10fa1581
   EXConstants: 0c200d22d140d3f1834dc51c4ebe0465ddaa82c5
