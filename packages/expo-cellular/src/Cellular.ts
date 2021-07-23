@@ -1,4 +1,6 @@
 import { UnavailabilityError } from '@unimodules/core';
+import { Platform } from '@unimodules/react-native-adapter';
+import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
 
 import { CellularGeneration } from './Cellular.types';
 import ExpoCellular from './ExpoCellular';
@@ -122,4 +124,54 @@ export async function getCellularGenerationAsync(): Promise<CellularGeneration> 
     throw new UnavailabilityError('expo-cellular', 'getCellularGenerationAsync');
   }
   return await ExpoCellular.getCellularGenerationAsync();
+}
+
+/**
+ * Requests permission to access information about the device's cellular connection.
+ *
+ * This permission is required only on Android to get the generation of the current cellular
+ * connection. On other platforms, this permission is always granted.
+ *
+ * @returns A promise that fulfills with a [`PermissionResponse`](#permissionresponse) specifying
+ * whether the user granted the `android.permission.READ_PHONE_STATE` permission on Android. On
+ * other platforms, the `PermissionResponse` is always granted.
+ */
+export async function requestPhoneStatePermissionsAsync(): Promise<PermissionResponse> {
+  if (Platform.OS === 'android') {
+    if (!ExpoCellular.requestAndroidPhoneStatePermissionsAsync) {
+      throw new UnavailabilityError('expo-cellular', 'requestPhoneStatePermissionsAsync');
+    }
+    return ExpoCellular.requestAndroidPhoneStatePermissionsAsync();
+  } else {
+    return {
+      canAskAgain: true,
+      expires: 'never',
+      granted: true,
+      status: PermissionStatus.GRANTED,
+    };
+  }
+}
+
+/**
+ * Returns whether the app has permission to read information about the device's cellular
+ * connection.
+ *
+ * @returns A promise that fulfills with a [`PermissionResponse`](#permissionresponse) specifying
+ * whether the user granted the `android.permission.READ_PHONE_STATE` permission on Android. On
+ * other platforms, the `PermissionResponse` is always granted.
+ */
+export async function getPhoneStatePermissionsAsync(): Promise<PermissionResponse> {
+  if (Platform.OS === 'android') {
+    if (!ExpoCellular.getAndroidPhoneStatePermissionsAsync) {
+      throw new UnavailabilityError('expo-cellular', 'getPhoneStatePermissionsAsync');
+    }
+    return ExpoCellular.getAndroidPhoneStatePermissionsAsync();
+  } else {
+    return {
+      canAskAgain: true,
+      expires: 'never',
+      granted: true,
+      status: PermissionStatus.GRANTED,
+    };
+  }
 }

@@ -2,11 +2,19 @@ import * as Cellular from 'expo-cellular';
 import * as React from 'react';
 import { ScrollView } from 'react-native';
 
+import Button from '../components/Button';
 import MonoText from '../components/MonoText';
 import { useResolvedValue } from '../utilities/useResolvedValue';
 
 export default function CellularScreen() {
   const [generation, error] = useResolvedValue(Cellular.getCellularGenerationAsync);
+  const _requestPermissions = async () => {
+    try {
+      await Cellular.requestPhoneStatePermissionsAsync();
+    } catch (error) {
+      alert(error.message);
+    }
+  };
 
   React.useEffect(() => {
     if (error) alert(error.message);
@@ -14,6 +22,11 @@ export default function CellularScreen() {
 
   return (
     <ScrollView style={{ padding: 10 }}>
+      <Button
+        onPress={_requestPermissions}
+        title="Request phone permissions"
+        style={{ padding: 10 }}
+      />
       <MonoText>
         {JSON.stringify(
           {

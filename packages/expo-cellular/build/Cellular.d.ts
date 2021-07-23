@@ -1,3 +1,4 @@
+import { PermissionResponse } from 'expo-modules-core';
 import { CellularGeneration } from './Cellular.types';
 export { CellularGeneration };
 /**
@@ -98,3 +99,23 @@ export declare const mobileNetworkCode: string | null;
  * ```
  */
 export declare function getCellularGenerationAsync(): Promise<CellularGeneration>;
+/**
+ * Requests permission to access information about the device's cellular connection.
+ *
+ * This permission is required only on Android to get the generation of the current cellular
+ * connection. On other platforms, this permission is always granted.
+ *
+ * @returns A promise that fulfills with a [`PermissionResponse`](#permissionresponse) specifying
+ * whether the user granted the `android.permission.READ_PHONE_STATE` permission on Android. On
+ * other platforms, the `PermissionResponse` is always granted.
+ */
+export declare function requestPhoneStatePermissionsAsync(): Promise<PermissionResponse>;
+/**
+ * Returns whether the app has permission to read information about the device's cellular
+ * connection.
+ *
+ * @returns A promise that fulfills with a [`PermissionResponse`](#permissionresponse) specifying
+ * whether the user granted the `android.permission.READ_PHONE_STATE` permission on Android. On
+ * other platforms, the `PermissionResponse` is always granted.
+ */
+export declare function getPhoneStatePermissionsAsync(): Promise<PermissionResponse>;
