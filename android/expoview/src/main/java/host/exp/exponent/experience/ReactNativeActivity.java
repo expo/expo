@@ -521,6 +521,9 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
       appKey != null ? appKey : KernelConstants.DEFAULT_APPLICATION_KEY,
       initialProps(bundle));
 
+    // Requesting layout to make sure {@link ReactRootView} attached to {@link ReactInstanceManager}
+    mReactRootView.call("requestLayout");
+
     return mReactInstanceManager;
   }
 
