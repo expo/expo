@@ -39,11 +39,13 @@ class PermissionsModule(context: Context) : ExportedModule(context) {
     }
     mRequesters = mapOf(
       // Legacy requester
-      PermissionsTypes.LOCATION.type to LegacyLocationRequester(if (android.os.Build.VERSION.SDK_INT == android.os.Build.VERSION_CODES.Q) {
-        mPermissions.isPermissionPresentInManifest(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-      } else {
-        false
-      }),
+      PermissionsTypes.LOCATION.type to LegacyLocationRequester(
+        if (android.os.Build.VERSION.SDK_INT == android.os.Build.VERSION_CODES.Q) {
+          mPermissions.isPermissionPresentInManifest(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+        } else {
+          false
+        }
+      ),
       PermissionsTypes.LOCATION_FOREGROUND.type to ForegroundLocationRequester(),
       PermissionsTypes.LOCATION_BACKGROUND.type to BackgroundLocationRequester(),
       PermissionsTypes.CAMERA.type to SimpleRequester(Manifest.permission.CAMERA),

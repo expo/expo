@@ -62,6 +62,9 @@ abstract_target 'Expo Go' do
 
       target_installation_result.native_target.build_configurations.each do |config|
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
+
+        # Fix building failures on M1
+        config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
       end
 
       if pod_name == 'Branch'

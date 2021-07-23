@@ -215,7 +215,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 // You can use:
 /* @hide Content that is still shown, like a preview. */
   Everything in here is hidden in the example Snack until
-  you open it in snack.expo.io
+  you open it in snack.expo.dev
 /* @end */
 // to shorten the length of the Snack shown in our docs. Common example are hiding useless code in examples, like StyleSheets
 

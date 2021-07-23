@@ -36,22 +36,25 @@ class LocationRequester(val includeBackgroundPermission: Boolean = false) : Perm
       val canAskAgain = accessCoarseLocation.canAskAgain && accessCoarseLocation.canAskAgain
       val isGranted = accessCoarseLocation.status == PermissionsStatus.GRANTED || accessFineLocation.status == PermissionsStatus.GRANTED
 
-      putString(STATUS_KEY, when {
-        accessFineLocation.status == PermissionsStatus.GRANTED -> {
-          accuracy = "fine"
-          PermissionsStatus.GRANTED.status
+      putString(
+        STATUS_KEY,
+        when {
+          accessFineLocation.status == PermissionsStatus.GRANTED -> {
+            accuracy = "fine"
+            PermissionsStatus.GRANTED.status
+          }
+          accessCoarseLocation.status == PermissionsStatus.GRANTED -> {
+            accuracy = "coarse"
+            PermissionsStatus.GRANTED.status
+          }
+          accessFineLocation.status == PermissionsStatus.DENIED && accessCoarseLocation.status == PermissionsStatus.DENIED -> {
+            PermissionsStatus.DENIED.status
+          }
+          else -> {
+            PermissionsStatus.UNDETERMINED.status
+          }
         }
-        accessCoarseLocation.status == PermissionsStatus.GRANTED -> {
-          accuracy = "coarse"
-          PermissionsStatus.GRANTED.status
-        }
-        accessFineLocation.status == PermissionsStatus.DENIED && accessCoarseLocation.status == PermissionsStatus.DENIED -> {
-          PermissionsStatus.DENIED.status
-        }
-        else -> {
-          PermissionsStatus.UNDETERMINED.status
-        }
-      })
+      )
       scope =
         if (includeBackgroundPermission && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
           val accessBackgroundLocation = permissionsResponse.getValue(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
@@ -69,9 +72,12 @@ class LocationRequester(val includeBackgroundPermission: Boolean = false) : Perm
       putBoolean(CAN_ASK_AGAIN_KEY, canAskAgain)
       putBoolean(GRANTED_KEY, isGranted)
       putString(SCOPE_KEY, scope)
-      putBundle("android", Bundle().apply {
-        putString("accuracy", accuracy)
-      })
+      putBundle(
+        "android",
+        Bundle().apply {
+          putString("accuracy", accuracy)
+        }
+      )
     }
   }
 }

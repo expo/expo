@@ -57,4 +57,25 @@ public class SwiftInteropBridge: NSObject {
       acc[holder.name] = holder.definition.constants
     }
   }
+
+  @objc
+  public func exportedViewManagersNames() -> [String] {
+    return registry.compactMap { holder in
+      return holder.definition.viewManager != nil ? holder.name : nil
+    }
+  }
+
+  /**
+   Returns view modules wrapped by the base `ViewModuleWrapper` class.
+   */
+  @objc
+  public func getViewManagers() -> [ViewModuleWrapper] {
+    return registry.compactMap { holder in
+      if holder.definition.viewManager != nil {
+        return ViewModuleWrapper(holder)
+      } else {
+        return nil
+      }
+    }
+  }
 }

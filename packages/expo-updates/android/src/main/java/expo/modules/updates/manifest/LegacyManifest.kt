@@ -42,11 +42,13 @@ class LegacyManifest private constructor(
   override val assetEntityList: List<AssetEntity> by lazy {
     val assetList = mutableListOf<AssetEntity>()
     val bundleKey = rawManifest.getBundleKey()
-    assetList.add(AssetEntity(bundleKey, "js").apply {
-      url = mBundleUrl
-      isLaunchAsset = true
-      embeddedAssetFilename = EmbeddedLoader.BUNDLE_FILENAME
-    })
+    assetList.add(
+      AssetEntity(bundleKey, "js").apply {
+        url = mBundleUrl
+        isLaunchAsset = true
+        embeddedAssetFilename = EmbeddedLoader.BUNDLE_FILENAME
+      }
+    )
 
     if (mAssets != null && mAssets.length() > 0) {
       for (i in 0 until mAssets.length()) {
@@ -59,10 +61,12 @@ class LegacyManifest private constructor(
             extensionIndex
           ) else bundledAsset.substring(prefixLength)
           val type = if (extensionIndex > 0) bundledAsset.substring(extensionIndex + 1) else ""
-          assetList.add(AssetEntity(hash, type).apply {
-            url = Uri.withAppendedPath(assetsUrlBase, hash)
-            embeddedAssetFilename = bundledAsset
-          })
+          assetList.add(
+            AssetEntity("$hash.$type", type).apply {
+              url = Uri.withAppendedPath(assetsUrlBase, hash)
+              embeddedAssetFilename = bundledAsset
+            }
+          )
         } catch (e: JSONException) {
           Log.e(TAG, "Could not read asset from manifest", e)
         }

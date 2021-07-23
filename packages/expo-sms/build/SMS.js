@@ -54,6 +54,11 @@ export async function sendSMSAsync(addresses, message, options) {
         throw new UnavailabilityError('expo-sms', 'sendSMSAsync');
     }
     const finalAddresses = Array.isArray(addresses) ? addresses : [addresses];
+    finalAddresses.forEach(address => {
+        if (address === null || address === undefined) {
+            throw new TypeError('undefined or null address');
+        }
+    });
     const finalOptions = {
         ...options,
     };

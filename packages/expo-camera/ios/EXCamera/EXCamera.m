@@ -4,7 +4,7 @@
 #import <EXCamera/EXCamera.h>
 #import <EXCamera/EXCameraUtils.h>
 #import <EXCamera/EXCameraManager.h>
-#import <EXCamera/EXCameraPermissionRequester.h>
+#import <EXCamera/EXCameraCameraPermissionRequester.h>
 #import <UMCore/UMAppLifecycleService.h>
 #import <UMCore/UMUtilities.h>
 #import <ExpoModulesCore/EXFaceDetectorManagerInterface.h>
@@ -523,6 +523,18 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     }
     [connection setVideoOrientation:[EXCameraUtils videoOrientationForDeviceOrientation:[[UIDevice currentDevice] orientation]]];
     
+    AVCaptureSessionPreset preset;
+    if (options[@"quality"]) {
+      EXCameraVideoResolution resolution = [options[@"quality"] integerValue];
+      preset = [EXCameraUtils captureSessionPresetForVideoResolution:resolution];
+    } else if ([self.session.sessionPreset isEqual:AVCaptureSessionPresetPhoto]) {
+      preset = AVCaptureSessionPresetHigh;
+    }
+
+    if (preset != nil) {
+      [self updateSessionPreset:preset];
+    }
+    
     [self setVideoOptions:options forConnection:connection onReject:reject];
     
     bool canBeMirrored = connection.isVideoMirroringSupported;
@@ -575,18 +587,6 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
 
     if (options[@"maxFileSize"]) {
       self.movieFileOutput.maxRecordedFileSize = [options[@"maxFileSize"] integerValue];
-    }
-    
-    AVCaptureSessionPreset preset;
-    if (options[@"quality"]) {
-      EXCameraVideoResolution resolution = [options[@"quality"] integerValue];
-      preset = [EXCameraUtils captureSessionPresetForVideoResolution:resolution];
-    } else if ([self.session.sessionPreset isEqual:AVCaptureSessionPresetPhoto]) {
-      preset = AVCaptureSessionPresetHigh;
-    }
-
-    if (preset != nil) {
-      [self updateSessionPreset:preset];
     }
     
     if (options[@"codec"]) {
@@ -648,7 +648,7 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
 #if TARGET_IPHONE_SIMULATOR
   return;
 #endif
-  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXCameraPermissionRequester class]]) {
+  if (![_permissionsManager hasGrantedPermissionUsingRequesterClass:[EXCameraCameraPermissionRequester class]]) {
     [self onMountingError:@{@"message": @"Camera permissions not granted - component could not be rendered."}];
     return;
   }

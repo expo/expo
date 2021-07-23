@@ -47,14 +47,16 @@ fun browserArguments(
   createTask: Boolean = true
 ): ReadableArguments {
   // Move creation of readable arguments to TestUtils
-  return readableArgumentsOf(mapOf(
-    "toolbarColor" to toolbarColor,
-    "toolbarSecondaryColor" to toolbarSecondaryColor,
-    "browserPackage" to browserPackage,
-    "enableBarCollapsing" to enableBarCollapsing,
-    "showTitle" to showTitle,
-    "enableDefaultShareMenuItem" to enableDefaultShareMenuItem,
-    "showInRecents" to showInRecents,
-    "createTask" to createTask
-  ))
+  return readableArgumentsOf(
+    mapOf(
+      "toolbarColor" to toolbarColor,
+      "toolbarSecondaryColor" to toolbarSecondaryColor,
+      "browserPackage" to browserPackage,
+      "enableBarCollapsing" to enableBarCollapsing,
+      "showTitle" to showTitle,
+      "enableDefaultShareMenuItem" to enableDefaultShareMenuItem,
+      "showInRecents" to showInRecents,
+      "createTask" to createTask
+    )
+  )
 }

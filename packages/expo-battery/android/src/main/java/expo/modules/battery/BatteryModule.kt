@@ -41,8 +41,10 @@ class BatteryModule(context: Context) : ExportedModule(context), RegistryLifecyc
 
   @ExpoMethod
   fun getBatteryLevelAsync(promise: Promise) {
-    val batteryIntent: Intent? = context.applicationContext.registerReceiver(null,
-      IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+    val batteryIntent: Intent? = context.applicationContext.registerReceiver(
+      null,
+      IntentFilter(Intent.ACTION_BATTERY_CHANGED)
+    )
     if (batteryIntent == null) {
       promise.resolve(-1)
       return
@@ -59,8 +61,10 @@ class BatteryModule(context: Context) : ExportedModule(context), RegistryLifecyc
 
   @ExpoMethod
   fun getBatteryStateAsync(promise: Promise) {
-    val batteryIntent: Intent? = context.applicationContext.registerReceiver(null,
-      IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+    val batteryIntent: Intent? = context.applicationContext.registerReceiver(
+      null,
+      IntentFilter(Intent.ACTION_BATTERY_CHANGED)
+    )
     if (batteryIntent == null) {
       promise.resolve(BatteryState.UNKNOWN.value)
       return

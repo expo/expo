@@ -25,12 +25,14 @@ class PendingPromise(
   }
 
   override fun reject(code: String, message: String, e: Throwable?) {
-    pickerResultsStore.addPendingResult(Bundle().apply {
-      putString("code", code)
-      putString("message", message)
-      e?.let {
-        putString("exception", it.toString())
+    pickerResultsStore.addPendingResult(
+      Bundle().apply {
+        putString("code", code)
+        putString("message", message)
+        e?.let {
+          putString("exception", it.toString())
+        }
       }
-    })
+    )
   }
 }
