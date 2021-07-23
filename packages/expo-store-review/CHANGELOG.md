@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Migrated from `@unimodules/core` to `expo-modules-core`.
+
 ## 4.1.0 — 2021-06-16
 
 ### 🐛 Bug fixes
