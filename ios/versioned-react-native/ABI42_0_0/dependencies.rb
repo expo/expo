@@ -10,7 +10,6 @@ pod 'ABI42_0_0ExpoKit',
   :subspecs => ['Expo', 'ExpoOptional']
 
 use_pods! 'vendored/sdk42/*/*.podspec.json', 'ABI42_0_0'
-pod 'Folly', :podspec => './vendored/shared/RN063Folly.podspec'
 
 pod 'ABI42_0_0UMCore',
   :path => './versioned-react-native/ABI42_0_0/Expo/UMCore',
