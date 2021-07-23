@@ -134,6 +134,8 @@ export const resolveTypeName = ({
   } else if (elementType?.name) {
     if (elementType.type === 'reference') {
       return renderWithLink(elementType.name, type);
+    } else if (type === 'array') {
+      return elementType.name + '[]';
     }
     return elementType.name + type;
   } else if (type === 'union' && types?.length) {
