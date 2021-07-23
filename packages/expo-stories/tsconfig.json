@@ -4,6 +4,6 @@
     "outDir": "./build",
     "target": "ES5"
   },
-  "include": ["./src"],
+  "include": ["./src", "./clients", "./server", "./shared", "./types"],
   "exclude": ["**/__mocks__/*", "**/__tests__/*"]
 }

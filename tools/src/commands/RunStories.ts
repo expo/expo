@@ -128,9 +128,14 @@ async function action({ platform, packageName }: Action) {
     watchRoot: packageRoot,
   };
 
-  // add native modules by removing them from excluded autolinked packages
+  // remove dependencies from excluded autolinked packages
   const defaultPackagesToExclude = mergedPkg.expo.autolinking.exclude;
-  const packagesRequiredByModule: string[] = packagePkg.expoStories?.packages ?? [];
+  const extraNodeModules: any = packagePkg.expoStories?.packages ?? {};
+
+  const packagesRequiredByModule: string[] = [
+    ...Object.keys(extraNodeModules),
+    ...Object.keys(mergedPkg?.dependencies ?? {}),
+  ];
 
   const packagesToExclude = defaultPackagesToExclude.filter(
     (pkg: string) => !packagesRequiredByModule.includes(pkg)
@@ -138,8 +143,6 @@ async function action({ platform, packageName }: Action) {
 
   mergedPkg.expo.autolinking.exclude = packagesToExclude;
 
-  // add any extra node modules required by the package (e.g stories components)
-  const extraNodeModules = packagePkg.expoStories?.extraNodeModules || {};
   mergedPkg.dependencies = {
     ...mergedPkg.dependencies,
     ...extraNodeModules,

@@ -3,10 +3,12 @@
   "version": "1.0.0",
   "main": "build/index.js",
   "bin": "bin/index.js",
-  "types": "types.d.ts",
+  "types": "build/types/index.d.ts",
   "license": "MIT",
   "files": [
-    "bin",
+    "clients/*",
+    "shared/*",
+    "types/*",
     "metro-config.js",
     "webpack-config",
     "types.d.ts"

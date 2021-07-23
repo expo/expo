@@ -1,7 +1,7 @@
 const path = require('path');
 
-const { storiesFileDir } = require('./build/constants');
-const { writeRequiredFiles } = require('./build/writeRequiredFiles');
+const { storiesFileDir } = require('./build/server/constants');
+const { writeRequiredFiles } = require('./build/server/writeRequiredFiles');
 
 function withExpoStories(metroConfig) {
   writeRequiredFiles({

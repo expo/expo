@@ -1,0 +1,21 @@
+declare const _default: {
+    tintColor: string;
+    headerBackground: string;
+    headerTitle: string;
+    secondaryText: string;
+    disabled: string;
+    border: string;
+    highlightColor: string;
+    tabIconDefault: string;
+    tabIconSelected: string;
+    tabBar: string;
+    errorBackground: string;
+    errorText: string;
+    greyBackground: string;
+    warningBackground: string;
+    warningText: string;
+    noticeBackground: string;
+    noticeText: string;
+    listItemTouchableHighlight: string;
+};
+export default _default;
