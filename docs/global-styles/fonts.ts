@@ -6,7 +6,7 @@ export const globalFonts = css`
   @font-face {
     font-family: ${Constants.fonts.black};
     font-style: normal;
-    font-weight: 900;
+    font-weight: 700;
     src: url('/static/fonts/Inter-Bold.woff2?v=3.15') format('woff2'),
       url('/static/fonts/Inter-Bold.woff?v=3.15') format('woff');
   }

@@ -6,11 +6,14 @@ import * as Constants from '~/constants/theme';
 export const h1 = css`
   font-family: ${Constants.fonts.black};
   color: ${theme.text.default};
-  font-size: 44px;
+  font-size: 48px;
   line-height: 120%;
-  letter-spacing: -0.021em;
-  font-weight: 900;
-  background-image: linear-gradient(60deg, #9e3ab7, var(--expo-theme-link-default));
+  letter-spacing: -0.025em;
+  font-weight: 700;
+  // Initial design
+  // background-image: linear-gradient(60deg, #9e3ab7, var(--expo-theme-link-default) 66%);
+  // Alternative design
+  background-image: linear-gradient(35deg, #6b4ce8, #da3f9c 70%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 `;
