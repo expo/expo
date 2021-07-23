@@ -52,20 +52,36 @@ export const mdInlineRenderers: MDRenderers = {
 };
 
 const nonLinkableTypes = [
-  'Date',
   'ColorValue',
-  'Error',
   'NativeSyntheticEvent',
   'Omit',
   'Pick',
-  'Promise',
   'React.FC',
   'StyleProp',
   'T',
   'TaskOptions',
   'Uint8Array',
-  'ViewStyle',
 ];
+
+const hardcodedTypeLinks: Record<string, string> = {
+  Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
+  Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
+  Promise:
+    'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
+  View: '../../react-native/view',
+  ViewProps: '../../react-native/view#props',
+  ViewStyle: '../../react-native/view-style-props/',
+};
+
+const renderWithLink = (name: string, type?: string) =>
+  nonLinkableTypes.includes(name) ? (
+    name + (type === 'array' ? '[]' : '')
+  ) : (
+    <Link href={hardcodedTypeLinks[name] || `#${name.toLowerCase()}`} key={`type-link-${name}`}>
+      {name}
+      {type === 'array' && '[]'}
+    </Link>
+  );
 
 export const resolveTypeName = ({
   elements,
@@ -97,13 +113,7 @@ export const resolveTypeName = ({
         } else {
           return (
             <>
-              {nonLinkableTypes.includes(name) ? (
-                name
-              ) : (
-                <Link href={`#${name.toLowerCase()}`} key={`type-link-${name}`}>
-                  {name}
-                </Link>
-              )}
+              {renderWithLink(name)}
               &lt;
               {typeArguments.map((type, index) => (
                 <span key={`${name}-nested-type-${index}`}>
@@ -116,33 +126,14 @@ export const resolveTypeName = ({
           );
         }
       } else {
-        if (nonLinkableTypes.includes(name)) {
-          return name;
-        } else {
-          return (
-            <Link href={`#${name.toLowerCase()}`} key={`type-link-${name}`}>
-              {name}
-            </Link>
-          );
-        }
+        return renderWithLink(name);
       }
     } else {
       return name;
     }
   } else if (elementType?.name) {
     if (elementType.type === 'reference') {
-      if (nonLinkableTypes.includes(elementType.name)) {
-        return elementType.name + (type === 'array' && '[]');
-      }
-      return (
-        <Link href={`#${elementType.name?.toLowerCase()}`} key={`type-link-${elementType.name}`}>
-          {elementType.name}
-          {type === 'array' && '[]'}
-        </Link>
-      );
-    }
-    if (type === 'array') {
-      return elementType.name + '[]';
+      return renderWithLink(elementType.name, type);
     }
     return elementType.name + type;
   } else if (type === 'union' && types?.length) {

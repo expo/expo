@@ -47,11 +47,7 @@ const extractDefaultPropValue = (
 const renderInheritedProp = (ip: TypeDefinitionData) => {
   return (
     <LI key={`inherited-prop-${ip.name}-${ip.type}`}>
-      {ip?.typeArguments ? (
-        <InlineCode>{resolveTypeName(ip)}</InlineCode>
-      ) : (
-        <InlineCode>{ip.name}</InlineCode>
-      )}
+      <InlineCode>{resolveTypeName(ip)}</InlineCode>
     </LI>
   );
 };
