@@ -116,7 +116,6 @@ PODS:
   - EXMediaLibrary (12.1.0):
     - ExpoModulesCore
     - React-Core
-    - UMCore
   - EXNetwork (3.2.0):
     - ExpoModulesCore
   - EXNotifications (0.12.0):
@@ -1167,7 +1166,7 @@ SPEC CHECKSUMS:
   EXLocalization: 356f4e16a606cec21a77d6250528fde526152b45
   EXLocation: bdf1af6aa8fc4f4dc1fd21aa39760484026f8a5d
   EXMailComposer: d1976c864ee1d74907b15c98ec68ddf5ca2331b1
-  EXMediaLibrary: bdbcfe2435571f9c83d6ced2e28ec193d69bc40d
+  EXMediaLibrary: 3243417362d85fb5881c27bf0c944b502324f7b2
   EXNetwork: c15bb1026d72d1eb3782710faf373ed35c6eb024
   EXNotifications: 296d9487163c2c08fffec5e79a5f9094bc016d9c
   EXPermissions: c7bead8f093700d5fcfb4f41238430a51702c5c8
