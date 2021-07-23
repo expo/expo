@@ -2,7 +2,7 @@
 
 #import <EXPrint/EXPrint.h>
 #import <EXPrint/EXWKPDFRenderer.h>
-#import <UMCore/UMUtilitiesInterface.h>
+#import <ExpoModulesCore/EXUtilitiesInterface.h>
 #import <ExpoModulesCore/EXFileSystemInterface.h>
 
 NSString *const EXPrintOrientationPortrait = @"portrait";
@@ -12,13 +12,13 @@ NSString *const EXPrintOrientationLandscape = @"landscape";
 
 @property (nonatomic, strong) NSMutableDictionary<NSString *, UIPrinter *> *printers;
 
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation EXPrint
 
-UM_EXPORT_MODULE(ExponentPrint);
+EX_EXPORT_MODULE(ExponentPrint);
 
 - (instancetype)init
 {
@@ -28,7 +28,7 @@ UM_EXPORT_MODULE(ExponentPrint);
   return self;
 }
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }
@@ -53,14 +53,14 @@ UM_EXPORT_MODULE(ExponentPrint);
            };
 }
 
-UM_EXPORT_METHOD_AS(print,
+EX_EXPORT_METHOD_AS(print,
                     print:(NSDictionary *)options
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [self _getPrintingDataForOptions:options callback:^(NSData *printingData, NSDictionary *errorDetails) {
     if (errorDetails != nil) {
-      reject(errorDetails[@"code"], errorDetails[@"message"], UMErrorWithMessage(errorDetails[@"message"]));
+      reject(errorDetails[@"code"], errorDetails[@"message"], EXErrorWithMessage(errorDetails[@"message"]));
       return;
     }
     
@@ -79,7 +79,7 @@ UM_EXPORT_METHOD_AS(print,
           printInteractionController.printFormatter = formatter;
         } else {
           NSString *message = [NSString stringWithFormat:@"The specified html string is not valid for printing."];
-          reject(@"E_HTML_INVALID", message, UMErrorWithMessage(message));
+          reject(@"E_HTML_INVALID", message, EXErrorWithMessage(message));
           return;
         }
       } else {
@@ -134,8 +134,8 @@ UM_EXPORT_METHOD_AS(print,
   }];
 }
 
-UM_EXPORT_METHOD_AS(selectPrinter,selectPrinter:(UMPromiseResolveBlock)resolve
-                  rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(selectPrinter,selectPrinter:(EXPromiseResolveBlock)resolve
+                  rejecter:(EXPromiseRejectBlock)reject)
 {
   UIPrinterPickerController *printPicker = [UIPrinterPickerController printerPickerControllerWithInitiallySelectedPrinter:nil];
   
@@ -168,10 +168,10 @@ UM_EXPORT_METHOD_AS(selectPrinter,selectPrinter:(UMPromiseResolveBlock)resolve
   }
 }
 
-UM_EXPORT_METHOD_AS(printToFileAsync,
+EX_EXPORT_METHOD_AS(printToFileAsync,
                     printToFileWithOptions:(nonnull NSDictionary *)options
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   NSString *format = options[@"format"];
   
@@ -221,7 +221,7 @@ UM_EXPORT_METHOD_AS(printToFileAsync,
 
 - (UIViewController *)printInteractionControllerParentViewController:(UIPrintInteractionController *)printInteractionController
 {
-  id<UMUtilitiesInterface> utils = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
+  id<EXUtilitiesInterface> utils = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
   return utils.currentViewController;
 }
 
@@ -229,7 +229,7 @@ UM_EXPORT_METHOD_AS(printToFileAsync,
 
 - (UIViewController *)printerPickerControllerParentViewController:(UIPrinterPickerController *)printerPickerController
 {
-  id<UMUtilitiesInterface> utils = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
+  id<EXUtilitiesInterface> utils = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
   return utils.currentViewController;
 }
 
