@@ -24,8 +24,8 @@ private const val TAG = "ExpoDocumentPicker"
 private const val OPEN_DOCUMENT_CODE = 4137
 
 class DocumentPickerModule(
-  mContext: Context,
-  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
+    mContext: Context,
+    private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
 ) : ExportedModule(mContext), ActivityEventListener {
   private var mPromise: Promise? = null
   private var mCopyToCacheDirectory = true
@@ -48,17 +48,16 @@ class DocumentPickerModule(
       promise.reject("E_DOCUMENT_PICKER", "Different document picking in progress. Await other document picking first.")
       return
     }
-
     val pickerOptions = DocumentPickerOptions.optionsFromMap(options, promise) ?: return
-
     mPromise = promise
     mCopyToCacheDirectory = pickerOptions.copyToCacheDirectory
-
     val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
       addCategory(Intent.CATEGORY_OPENABLE)
       type = pickerOptions.type
+      pickerOptions.types?.let {
+        putExtra(Intent.EXTRA_MIME_TYPES, it)
+      }
     }
-
     mActivityProvider.currentActivity.startActivityForResult(intent, OPEN_DOCUMENT_CODE)
   }
 
@@ -131,7 +130,6 @@ class DocumentPickerModule(
       e.printStackTrace()
       return null
     }
-
     return outputFilePath
   }
 }
