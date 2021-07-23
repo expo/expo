@@ -13,9 +13,12 @@ class BatteryLevelReceiver(private val eventEmitter: EventEmitter?) : BroadcastR
   private val BATTERY_LEVEL_EVENT_NAME = "Expo.batteryLevelDidChange"
 
   private fun onBatteryLevelChange(BatteryLevel: Float) {
-    eventEmitter?.emit(BATTERY_LEVEL_EVENT_NAME, Bundle().apply {
-      putFloat("batteryLevel", BatteryLevel)
-    })
+    eventEmitter?.emit(
+      BATTERY_LEVEL_EVENT_NAME,
+      Bundle().apply {
+        putFloat("batteryLevel", BatteryLevel)
+      }
+    )
   }
 
   override fun onReceive(context: Context, intent: Intent) {

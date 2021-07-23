@@ -45,10 +45,12 @@ internal class GetAssetsTest {
   @Test
   fun `getAssets should resolve with correct response`() {
     // arrange
-    val context = mockContext with mockContentResolverForResult(arrayOf(
-      MockData.mockImage.toColumnArray(),
-      MockData.mockVideo.toColumnArray()
-    ))
+    val context = mockContext with mockContentResolverForResult(
+      arrayOf(
+        MockData.mockImage.toColumnArray(),
+        MockData.mockVideo.toColumnArray()
+      )
+    )
 
     // act
     GetAssets(context, mutableMapOf(), promise).doInBackground()

@@ -11,9 +11,12 @@ private val BATTERY_CHARGED_EVENT_NAME = "Expo.batteryStateDidChange"
 
 class BatteryStateReceiver(private val eventEmitter: EventEmitter?) : BroadcastReceiver() {
   private fun onBatteryStateChange(batteryState: BatteryModule.BatteryState) {
-    eventEmitter?.emit(BATTERY_CHARGED_EVENT_NAME, Bundle().apply {
-      putInt("batteryState", batteryState.value)
-    })
+    eventEmitter?.emit(
+      BATTERY_CHARGED_EVENT_NAME,
+      Bundle().apply {
+        putInt("batteryState", batteryState.value)
+      }
+    )
   }
 
   override fun onReceive(context: Context, intent: Intent) {

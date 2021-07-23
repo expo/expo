@@ -1,8 +1,8 @@
 #import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
 #import <EXCamera/EXCameraManager.h>
-#import <UMCore/UMModuleRegistry.h>
-#import <UMCore/UMAppLifecycleListener.h>
+#import <ExpoModulesCore/EXModuleRegistry.h>
+#import <ExpoModulesCore/EXAppLifecycleListener.h>
 #import <ExpoModulesCore/EXCameraInterface.h>
 
 @class EXCameraManager;
@@ -64,7 +64,7 @@ typedef NS_ENUM(NSInteger, EXCameraVideoCodec) {
   EXCameraVideoCodecAppleProRes4444 = 4,
 };
 
-@interface EXCamera : UIView <AVCaptureMetadataOutputObjectsDelegate, AVCaptureFileOutputRecordingDelegate, UMAppLifecycleListener, EXCameraInterface, AVCapturePhotoCaptureDelegate>
+@interface EXCamera : UIView <AVCaptureMetadataOutputObjectsDelegate, AVCaptureFileOutputRecordingDelegate, EXAppLifecycleListener, EXCameraInterface, AVCapturePhotoCaptureDelegate>
 
 @property (nonatomic, strong) dispatch_queue_t sessionQueue;
 @property (nonatomic, strong) AVCaptureSession *session;
@@ -87,7 +87,7 @@ typedef NS_ENUM(NSInteger, EXCameraVideoCodec) {
 @property (nonatomic, assign) BOOL isDetectingFaces;
 @property (nonatomic, assign) AVVideoCodecType videoCodecType;
 
-- (id)initWithModuleRegistry:(UMModuleRegistry *)moduleRegistry;
+- (id)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry;
 - (void)updateType;
 - (void)updateFlashMode;
 - (void)updateFocusMode;
@@ -97,8 +97,8 @@ typedef NS_ENUM(NSInteger, EXCameraVideoCodec) {
 - (void)updatePictureSize;
 - (void)updateFaceDetectorSettings:(NSDictionary *)settings;
 - (void)setBarCodeScannerSettings:(NSDictionary *)settings;
-- (void)takePicture:(NSDictionary *)options resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject;
-- (void)record:(NSDictionary *)options resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject;
+- (void)takePicture:(NSDictionary *)options resolve:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject;
+- (void)record:(NSDictionary *)options resolve:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject;
 - (void)stopRecording;
 - (void)resumePreview;
 - (void)pausePreview;

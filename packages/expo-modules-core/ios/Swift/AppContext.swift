@@ -1,3 +1,4 @@
+import UIKit
 /**
  The app context is an interface to a single Expo app.
  */
@@ -10,12 +11,20 @@ public class AppContext {
   /**
    The legacy module registry with modules written in the old-fashioned way.
    */
-  public let legacyModuleRegistry: EXModuleRegistry?
+  public private(set) var legacyModuleRegistry: EXModuleRegistry?
+
+  /**
+   Designated initializer without modules provider.
+   */
+  public init() {
+    listenToClientAppNotifications()
+  }
 
   /**
    Initializes the app context and registers provided modules in the module registry.
    */
-  public init(withModulesProvider provider: ModulesProviderProtocol, legacyModuleRegistry: EXModuleRegistry?) {
+  public convenience init(withModulesProvider provider: ModulesProviderProtocol, legacyModuleRegistry: EXModuleRegistry?) {
+    self.init()
     self.legacyModuleRegistry = legacyModuleRegistry
     moduleRegistry.register(fromProvider: provider)
   }
@@ -60,5 +69,43 @@ public class AppContext {
    */
   public var utilities: EXUtilitiesInterface? {
     return legacyModule(implementing: EXUtilitiesInterface.self)
+  }
+
+  /**
+   Starts listening to `UIApplication` notifications.
+   */
+  private func listenToClientAppNotifications() {
+    [
+      UIApplication.willEnterForegroundNotification,
+      UIApplication.didBecomeActiveNotification,
+      UIApplication.didEnterBackgroundNotification,
+    ].forEach { name in
+      NotificationCenter.default.addObserver(self, selector: #selector(handleClientAppNotification(_:)), name: name, object: nil)
+    }
+  }
+
+  /**
+   Handles app's (`UIApplication`) lifecycle notifications and posts appropriate events to the module registry.
+   */
+  @objc
+  private func handleClientAppNotification(_ notification: Notification) {
+    switch notification.name {
+    case UIApplication.willEnterForegroundNotification:
+      moduleRegistry.post(event: .appEntersForeground)
+    case UIApplication.didBecomeActiveNotification:
+      moduleRegistry.post(event: .appBecomesActive)
+    case UIApplication.didEnterBackgroundNotification:
+      moduleRegistry.post(event: .appEntersBackground)
+    default:
+      return
+    }
+  }
+
+  /**
+   Cleans things up before deallocation.
+   */
+  deinit {
+    NotificationCenter.default.removeObserver(self)
+    moduleRegistry.post(event: .appContextDestroys)
   }
 }

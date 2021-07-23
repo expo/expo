@@ -1,9 +1,5 @@
 package expo.modules.updates.manifest.raw
 
-import android.net.Uri
-import android.util.Log
-import expo.modules.updates.db.entity.AssetEntity
-import expo.modules.updates.manifest.NewManifest
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject

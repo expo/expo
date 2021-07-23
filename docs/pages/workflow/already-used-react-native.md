@@ -54,7 +54,7 @@ If you prefer to build your app on your own machine, you can [follow these steps
 
 ## Helpful Tools & Resources
 
-- [snack.expo.io](https://snack.expo.io)
+- [snack.expo.dev](https://snack.expo.dev)
   - The best way to test and share examples and small projects directly from your browser. Point your phone at the QR code and you have a sandbox environment you can build in the browser and test directly on your device.
 - [docs.expo.io](/versions/latest/)
   - If there's something you don't understand or wish to learn more about, this is a great place to start.

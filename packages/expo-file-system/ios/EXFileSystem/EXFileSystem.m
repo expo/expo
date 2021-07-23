@@ -1,6 +1,6 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <UMCore/UMModuleRegistry.h>
+#import <ExpoModulesCore/EXModuleRegistry.h>
 
 #import <EXFileSystem/EXFileSystem.h>
 
@@ -13,7 +13,7 @@
 #import <ExpoModulesCore/EXFileSystemInterface.h>
 #import <ExpoModulesCore/EXFilePermissionModuleInterface.h>
 
-#import <UMCore/UMEventEmitterService.h>
+#import <ExpoModulesCore/EXEventEmitterService.h>
 
 #import <EXFileSystem/EXResumablesManager.h>
 #import <EXFileSystem/EXSessionTaskDispatcher.h>
@@ -40,8 +40,8 @@ typedef NS_ENUM(NSInteger, EXFileSystemUploadType) {
 @property (nonatomic, strong) NSURLSession *foregroundSession;
 @property (nonatomic, strong) EXSessionTaskDispatcher *sessionTaskDispatcher;
 @property (nonatomic, strong) EXResumablesManager *resumableManager;
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
-@property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id<EXEventEmitterService> eventEmitter;
 @property (nonatomic, strong) NSString *documentDirectory;
 @property (nonatomic, strong) NSString *cachesDirectory;
 @property (nonatomic, strong) NSString *bundleDirectory;
@@ -50,7 +50,7 @@ typedef NS_ENUM(NSInteger, EXFileSystemUploadType) {
 
 @implementation EXFileSystem
 
-UM_REGISTER_MODULE();
+EX_REGISTER_MODULE();
 
 + (const NSString *)exportedModuleName
 {
@@ -90,10 +90,10 @@ UM_REGISTER_MODULE();
                          bundleDirectory:[NSBundle mainBundle].bundlePath];
 }
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  _eventEmitter = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
+  _eventEmitter = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
   
   _sessionTaskDispatcher = [[EXSessionTaskDispatcher alloc] initWithSessionHandler:[moduleRegistry getSingletonModuleForName:@"SessionHandler"]];
   _backgroundSession = [self _createSession:EXFileSystemBackgroundSession delegate:_sessionTaskDispatcher];
@@ -171,11 +171,11 @@ UM_REGISTER_MODULE();
            };
 }
 
-UM_EXPORT_METHOD_AS(getInfoAsync,
+EX_EXPORT_METHOD_AS(getInfoAsync,
                     getInfoAsyncWithURI:(NSString *)uriString
                     withOptions:(NSDictionary *)options
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   NSURL *uri = [NSURL URLWithString:uriString];
   // no scheme provided in uri, handle as a local path and add 'file://' scheme
@@ -200,11 +200,11 @@ UM_EXPORT_METHOD_AS(getInfoAsync,
   }
 }
 
-UM_EXPORT_METHOD_AS(readAsStringAsync,
+EX_EXPORT_METHOD_AS(readAsStringAsync,
                     readAsStringAsyncWithURI:(NSString *)uriString
                     withOptions:(NSDictionary *)options
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   NSURL *uri = [NSURL URLWithString:uriString];
   // no scheme provided in uri, handle as a local path and add 'file://' scheme
@@ -266,12 +266,12 @@ UM_EXPORT_METHOD_AS(readAsStringAsync,
   }
 }
 
-UM_EXPORT_METHOD_AS(writeAsStringAsync,
+EX_EXPORT_METHOD_AS(writeAsStringAsync,
                     writeAsStringAsyncWithURI:(NSString *)uriString
                     withString:(NSString *)string
                     withOptions:(NSDictionary *)options
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   NSURL *uri = [NSURL URLWithString:uriString];
   if (!([self permissionsForURI:uri] & EXFileSystemPermissionWrite)) {
@@ -327,11 +327,11 @@ UM_EXPORT_METHOD_AS(writeAsStringAsync,
   }
 }
 
-UM_EXPORT_METHOD_AS(deleteAsync,
+EX_EXPORT_METHOD_AS(deleteAsync,
                     deleteAsyncWithURI:(NSString *)uriString
                     withOptions:(NSDictionary *)options
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   NSURL *uri = [NSURL URLWithString:uriString];
   if (!([self permissionsForURI:[uri URLByAppendingPathComponent:@".."]] & EXFileSystemPermissionWrite)) {
@@ -368,10 +368,10 @@ UM_EXPORT_METHOD_AS(deleteAsync,
   }
 }
 
-UM_EXPORT_METHOD_AS(moveAsync,
+EX_EXPORT_METHOD_AS(moveAsync,
                     moveAsyncWithOptions:(NSDictionary *)options
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   NSURL *from = [NSURL URLWithString:options[@"from"]];
   if (!from) {
@@ -424,10 +424,10 @@ UM_EXPORT_METHOD_AS(moveAsync,
   }
 }
 
-UM_EXPORT_METHOD_AS(copyAsync,
+EX_EXPORT_METHOD_AS(copyAsync,
                     copyAsyncWithOptions:(NSDictionary *)options
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   NSURL *from = [NSURL URLWithString:options[@"from"]];
   if (!from) {
@@ -463,11 +463,11 @@ UM_EXPORT_METHOD_AS(copyAsync,
   }
 }
 
-UM_EXPORT_METHOD_AS(makeDirectoryAsync,
+EX_EXPORT_METHOD_AS(makeDirectoryAsync,
                     makeDirectoryAsyncWithURI:(NSString *)uriString
                     withOptions:(NSDictionary *)options
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   
   NSURL *uri = [NSURL URLWithString:uriString];
@@ -497,11 +497,11 @@ UM_EXPORT_METHOD_AS(makeDirectoryAsync,
   }
 }
 
-UM_EXPORT_METHOD_AS(readDirectoryAsync,
+EX_EXPORT_METHOD_AS(readDirectoryAsync,
                     readDirectoryAsyncWithURI:(NSString *)uriString
                     withOptions:(NSDictionary *)options
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   NSURL *uri = [NSURL URLWithString:uriString];
   if (!([self permissionsForURI:uri] & EXFileSystemPermissionRead)) {
@@ -528,12 +528,12 @@ UM_EXPORT_METHOD_AS(readDirectoryAsync,
   }
 }
 
-UM_EXPORT_METHOD_AS(downloadAsync,
+EX_EXPORT_METHOD_AS(downloadAsync,
                     downloadAsyncWithUrl:(NSString *)urlString
                                 localURI:(NSString *)localUriString
                                  options:(NSDictionary *)options
-                                resolver:(UMPromiseResolveBlock)resolve
-                                rejecter:(UMPromiseRejectBlock)reject)
+                                resolver:(EXPromiseResolveBlock)resolve
+                                rejecter:(EXPromiseRejectBlock)reject)
 {
   NSURL *url = [NSURL URLWithString:urlString];
   NSURL *localUri = [NSURL URLWithString:localUriString];
@@ -574,12 +574,12 @@ UM_EXPORT_METHOD_AS(downloadAsync,
   [task resume];
 }
 
-UM_EXPORT_METHOD_AS(uploadAsync,
+EX_EXPORT_METHOD_AS(uploadAsync,
                     uploadAsync:(NSString *)urlString
                        localURI:(NSString *)fileUriString
                         options:(NSDictionary *)options
-                       resolver:(UMPromiseResolveBlock)resolve
-                       rejecter:(UMPromiseRejectBlock)reject)
+                       resolver:(EXPromiseResolveBlock)resolve
+                       rejecter:(EXPromiseRejectBlock)reject)
 {
   NSURL *fileUri = [NSURL URLWithString:fileUriString];
   NSString *httpMethod = options[@"httpMethod"];
@@ -642,14 +642,14 @@ UM_EXPORT_METHOD_AS(uploadAsync,
   [task resume];
 }
 
-UM_EXPORT_METHOD_AS(downloadResumableStartAsync,
+EX_EXPORT_METHOD_AS(downloadResumableStartAsync,
                     downloadResumableStartAsyncWithUrl:(NSString *)urlString
                                                fileURI:(NSString *)fileUri
                                                   uuid:(NSString *)uuid
                                                options:(NSDictionary *)options
                                             resumeData:(NSString *)data
-                                              resolver:(UMPromiseResolveBlock)resolve
-                                              rejecter:(UMPromiseRejectBlock)reject)
+                                              resolver:(EXPromiseResolveBlock)resolve
+                                              rejecter:(EXPromiseRejectBlock)reject)
 {
   NSURL *url = [NSURL URLWithString:urlString];
   NSURL *localUrl = [NSURL URLWithString:fileUri];
@@ -691,10 +691,10 @@ UM_EXPORT_METHOD_AS(downloadResumableStartAsync,
                                         reject:reject];
 }
 
-UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
+EX_EXPORT_METHOD_AS(downloadResumablePauseAsync,
                     downloadResumablePauseAsyncWithUUID:(NSString *)uuid
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   NSURLSessionDownloadTask *task = [_resumableManager taskForId:uuid];
   if (!task) {
@@ -704,14 +704,14 @@ UM_EXPORT_METHOD_AS(downloadResumablePauseAsync,
     return;
   }
   
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   [task cancelByProducingResumeData:^(NSData * _Nullable resumeData) {
-    UM_ENSURE_STRONGIFY(self);
-    resolve(@{ @"resumeData": UMNullIfNil([resumeData base64EncodedStringWithOptions:0]) });
+    EX_ENSURE_STRONGIFY(self);
+    resolve(@{ @"resumeData": EXNullIfNil([resumeData base64EncodedStringWithOptions:0]) });
   }];
 }
 
-UM_EXPORT_METHOD_AS(getFreeDiskStorageAsync, getFreeDiskStorageAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getFreeDiskStorageAsync, getFreeDiskStorageAsyncWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject)
 {
   if(![self freeDiskStorage]) {
     reject(@"ERR_FILESYSTEM_CANNOT_DETERMINE_DISK_CAPACITY", @"Unable to determine free disk storage capacity", nil);
@@ -720,7 +720,7 @@ UM_EXPORT_METHOD_AS(getFreeDiskStorageAsync, getFreeDiskStorageAsyncWithResolver
   }
 }
 
-UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject)
 {
   if(![self totalDiskCapacity]) {
     reject(@"ERR_FILESYSTEM_CANNOT_DETERMINE_DISK_CAPACITY", @"Unable to determine total disk capacity", nil);
@@ -844,12 +844,12 @@ UM_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
                                           uuid:(NSString *)uuid
                                         optins:(NSDictionary *)options
                                     resumeData:(NSData * _Nullable)resumeData
-                                       resolve:(UMPromiseResolveBlock)resolve
-                                        reject:(UMPromiseRejectBlock)reject
+                                       resolve:(EXPromiseResolveBlock)resolve
+                                        reject:(EXPromiseRejectBlock)reject
 {
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   EXDownloadDelegateOnWriteCallback onWrite = ^(NSURLSessionDownloadTask *task, int64_t bytesWritten, int64_t totalBytesWritten, int64_t totalBytesExpectedToWrite) {
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     [self sendEventWithName:EXDownloadProgressEventName
                        body:@{
                              @"uuid": uuid,
