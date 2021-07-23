@@ -1,12 +1,12 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
 #import <UIKit/UIKit.h>
-#import <UMCore/UMSingletonModule.h>
+#import <ExpoModulesCore/EXSingletonModule.h>
 #import <EXBranch/RNBranch.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXBranchManager : UMSingletonModule <UIApplicationDelegate>
+@interface EXBranchManager : EXSingletonModule <UIApplicationDelegate>
 
 + (BOOL)isBranchEnabled;
 
