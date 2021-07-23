@@ -195,7 +195,7 @@ function getResults(canvas: HTMLCanvasElement, options?: SaveOptions): ImageResu
     if (options.format === 'png' && options.compress !== undefined) {
       console.warn('compress is not supported with png format.');
     }
-    const quality = Math.min(1, Math.max(0, options.compress || 1));
+    const quality = Math.min(1, Math.max(0, options.compress ?? 1));
     base64 = canvas.toDataURL('image/' + format, quality);
   } else {
     // defaults to PNG with no loss

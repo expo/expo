@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix resize action validator to allow providing just one of `width` or `height`. ([#13369](https://github.com/expo/expo/pull/13369) by [@cruzach](https://github.com/cruzach))
+- Fix incorrect compression used when `0` is requested on web. ([#13728](https://github.com/expo/expo/pull/13728) by [@mnightingale](https://github.com/mnightingale))
 
 ### 💡 Others
 
