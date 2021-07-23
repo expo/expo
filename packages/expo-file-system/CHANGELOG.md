@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- Migrated from `@unimodules/core` to `expo-modules-core`.
+- Migrated from `@unimodules/core` to `expo-modules-core`. ([#13749](https://github.com/expo/expo/pull/13749) by [@tsapeta](https://github.com/tsapeta))
 
 ## 11.1.0 — 2021-06-16
 
