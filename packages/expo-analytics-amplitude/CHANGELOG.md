@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - Replace the generic object types with `Record`s. ([#13675](https://github.com/expo/expo/pull/13675) by [@Simek](https://github.com/Simek))
+- Migrated from `@unimodules/core` to `expo-modules-core`.
 
 ## 10.2.0 — 2021-06-16
 
@@ -50,7 +51,7 @@
   - `logEventWithProperties` to `logEventWithPropertiesAsync`
   - `setGroup` to `setGroupAsync`
   - `setTrackingOptions` to `setTrackingOptionsAsync`
-([#9212](https://github.com/expo/expo/pull/9212/) by [@cruzach](https://github.com/cruzach))
+    ([#9212](https://github.com/expo/expo/pull/9212/) by [@cruzach](https://github.com/cruzach))
 - All methods now return a Promise. ([#9212](https://github.com/expo/expo/pull/9212/) by [@cruzach](https://github.com/cruzach))
 
 ## 8.3.1 — 2020-08-24
