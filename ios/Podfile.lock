@@ -1852,7 +1852,6 @@ PODS:
     - UMCore
   - EXFileSystem (11.1.0):
     - ExpoModulesCore
-    - UMCore
   - EXFirebaseAnalytics (4.1.0):
     - EXFirebaseCore
     - Firebase/Core (= 7.7.0)
@@ -4042,7 +4041,7 @@ SPEC CHECKSUMS:
   EXErrorRecovery: 404d827bc7d42f306c062d58a60b06afc4d082b3
   EXFacebook: 71cc9f6b6bbdf0bc702d65c287f23cab14cc6430
   EXFaceDetector: e0908fe9700ed402a9658975a3eac719479b5205
-  EXFileSystem: 7cda0bbbdf6695c51c0e693799c6d54c04b53c94
+  EXFileSystem: 9a77e33ba77e8b1ffbbe0625a211e3abee6f69ab
   EXFirebaseAnalytics: ca01838167729b67f838a673e4b3e0637faec118
   EXFirebaseCore: 9b5380fd62fce3c790fa1d6727a8d7cbbef4f0fb
   EXFont: 6e7d5a7a09fbd0ee801de76601b2e620c4d2f575
