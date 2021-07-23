@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Migrated from `@unimodules/core` to `expo-modules-core`.
+
 ## 10.1.0 — 2021-06-16
 
 ### 🎉 New features
