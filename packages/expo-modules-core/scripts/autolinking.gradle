@@ -28,9 +28,10 @@ class ExpoAutolinkingManager {
   private Map options
   private Object cachedResolvingResults
 
-  static String generatedPackageListNamespace = 'org.unimodules.adapters.react'
+  static String generatedPackageListNamespace = 'expo.modules.linker'
   static String generatedPackageListFilename = 'ExpoModulesPackageList.java'
   static String generatedFilesSrcDir = 'generated/expo/src/main/java'
+  static String modulesLinkerName = 'expo-modules-linker'
 
   ExpoAutolinkingManager(File projectDir, Map options = [:]) {
     this.projectDir = projectDir
@@ -137,6 +138,17 @@ if (rootProject instanceof ProjectDescriptor) {
     for (module in modules) {
       include(":${module.projectName}")
       project(":${module.projectName}").projectDir = new File(module.sourceDir)
+
+      if (module.projectName == "expo-modules-core") {
+        String modulesLinkerPath = Paths.get(
+          module.sourceDir,
+          "..",
+          "android-linker"
+        ).toString()
+
+        include(":${ExpoAutolinkingManager.modulesLinkerName}")
+        project(":${ExpoAutolinkingManager.modulesLinkerName}").projectDir = new File(modulesLinkerPath)
+      }
     }
 
     // Save the manager in the shared context, so that we can later use it in `build.gradle`.
@@ -171,6 +183,23 @@ if (rootProject instanceof ProjectDescriptor) {
 
       println "— ${Colors.GREEN}${module.name}${Colors.RESET} (${module.version})"
     }
+  }
+
+  def findAppProject = { Project project -> 
+    return project.rootProject.subprojects.find { 
+      it.plugins.find { it.class.name == "com.android.build.gradle.AppPlugin" } 
+    }
+  }
+
+  ext.addLinkerPackage = { Project project -> 
+    Project appProject = findAppProject(project)  
+    Project linkerProject = rootProject.findProject(":${ExpoAutolinkingManager.modulesLinkerName}")
+    if (linkerProject == null) {
+      logger.warn("Can't find `expo-modules-linker` project. Please, make sure that `useExpoModules` was called in `settings.gradle`")
+      return
+    }
+
+    appProject.dependencies.add('implementation', linkerProject)
   }
 
   // Adding dependencies

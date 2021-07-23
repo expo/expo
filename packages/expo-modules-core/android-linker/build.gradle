@@ -2,8 +2,11 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 
-group = 'org.unimodules'
-version = '6.4.0'
+// Import autolinking script
+apply from: "../scripts/autolinking.gradle"
+
+group = 'host.exp.exponent'
+version = '0.1.1'
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -56,25 +59,35 @@ android {
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
-    versionCode 23
-    versionName "6.4.0"
-    consumerProguardFiles("proguard-rules.pro")
+    versionCode 1
+    versionName "0.1.1"
   }
   lintOptions {
     abortOnError false
   }
+  kotlinOptions {
+    jvmTarget = '1.8'
+  }
+
+  sourceSets {
+    main {
+      java {
+        srcDirs += new File(project.buildDir, generatedFilesSrcDir)
+      }
+    }
+  }
 }
 
-apply from: project(":unimodules-core").file("../unimodules-core.gradle")
-
-dependencies {
-  unimodule 'unimodules-core'
-  unimodule 'expo-modules-core'
-  unimodule 'unimodules-app-loader'
-
-  //noinspection GradleDynamicVersion
-  implementation 'com.facebook.react:react-native:+'
-
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
+// A task generating a package list of expo modules.
+task generateExpoModulesPackageList {
+  doLast {
+    generateExpoModulesPackageList()
+  }
 }
 
+// Run that task during prebuilding phase.
+preBuild.dependsOn "generateExpoModulesPackageList"
+
+// Link expo modules as dependencies of the adapter. It uses `api` configuration so they all will be visible for the app as well.
+// A collection of the dependencies depends on the options passed to `useExpoModules` in your project's `settings.gradle`.
+addExpoModulesDependencies(project)
