@@ -64,28 +64,28 @@ open class AmplitudeModule(context: Context?) : ExportedModule(context) {
     rejectUnlessClientInitialized(promise) { client ->
       client.clearUserProperties()
       promise.resolve(null)
-  }
+    }
 
   @ExpoMethod
   fun logEventAsync(eventName: String, promise: Promise) =
     rejectUnlessClientInitialized(promise) { client ->
       client.logEvent(eventName)
       promise.resolve(null)
-  }
+    }
 
   @ExpoMethod
   fun logEventWithPropertiesAsync(eventName: String, properties: Map<String, Any?>, promise: Promise) =
     rejectUnlessClientInitialized(promise) { client ->
       client.logEvent(eventName, JSONObject(properties))
       promise.resolve(null)
-  }
+    }
 
   @ExpoMethod
   fun setGroupAsync(groupType: String, groupNames: List<Any?>, promise: Promise) =
     rejectUnlessClientInitialized(promise) { client ->
       client.setGroup(groupType, JSONArray(groupNames))
       promise.resolve(null)
-  }
+    }
 
   @ExpoMethod
   fun setTrackingOptionsAsync(options: ReadableArguments, promise: Promise) {
