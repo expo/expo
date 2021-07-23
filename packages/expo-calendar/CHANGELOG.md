@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Rewrote from Java to Kotlin, migrated from `AsyncTask` to `kotlinx.coroutines`. ([#13527](https://github.com/expo/expo/pull/13527) by [@M1ST4KE](https://github.com/M1ST4KE))
+- Migrated from `@unimodules/core` to `expo-modules-core`.
 
 ## 9.2.0 — 2021-06-16
 
