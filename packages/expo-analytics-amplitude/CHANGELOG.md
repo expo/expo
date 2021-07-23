@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Added unit tests ([#13747](https://github.com/expo/expo/pull/13747) by [@kkafar](https://github.com/kkafar))
+
 ## 10.2.0 — 2021-06-16
 
 ### 🐛 Bug fixes
