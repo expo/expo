@@ -1,5 +1,5 @@
 export declare type DocumentPickerOptions = {
-    type?: string;
+    type?: string | string[];
     copyToCacheDirectory?: boolean;
     multiple?: boolean;
 };
