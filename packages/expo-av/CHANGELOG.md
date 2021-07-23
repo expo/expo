@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- Migrated from `@unimodules/core` to `expo-modules-core`. ([#13745](https://github.com/expo/expo/pull/13745) by [@tsapeta](https://github.com/tsapeta))
+
 ## 9.2.3 — 2021-06-30
 
 ### 🎉 New features
