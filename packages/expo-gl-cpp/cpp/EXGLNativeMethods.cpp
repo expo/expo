@@ -1481,7 +1481,10 @@ NATIVE_METHOD(getUniformIndices) {
   std::vector<GLuint> indices(uniformNames.size());
   addBlockingToNextBatch([&] {
     glGetUniformIndices(
-        lookupObject(program), static_cast<GLsizei>(uniformNames.size()), uniformNamesRaw.data(), &indices[0]);
+        lookupObject(program),
+        static_cast<GLsizei>(uniformNames.size()),
+        uniformNamesRaw.data(),
+        &indices[0]);
   });
   return TypedArray<TypedArrayKind::Uint32Array>(runtime, indices);
 }
@@ -1593,8 +1596,10 @@ NATIVE_METHOD(getExtension) {
 
   if (name == "EXT_texture_filter_anisotropic") {
     jsi::Object result(runtime);
-    result.setProperty(runtime, "TEXTURE_MAX_ANISOTROPY_EXT", jsi::Value(GL_TEXTURE_MAX_ANISOTROPY_EXT));
-    result.setProperty(runtime, "MAX_TEXTURE_MAX_ANISOTROPY_EXT", jsi::Value(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
+    result.setProperty(
+        runtime, "TEXTURE_MAX_ANISOTROPY_EXT", jsi::Value(GL_TEXTURE_MAX_ANISOTROPY_EXT));
+    result.setProperty(
+        runtime, "MAX_TEXTURE_MAX_ANISOTROPY_EXT", jsi::Value(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT));
     return result;
   }
   return jsi::Object(runtime);

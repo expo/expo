@@ -349,6 +349,7 @@ task buildNdkLib(dependsOn: [prepareJSI, prepareBoost, prepareDoubleConversion, 
   inputs.dir("../cpp")
   outputs.dir("$buildDir/expo-gl-ndk/all")
   commandLine(getNdkBuildFullPath(),
+      "GEN_COMPILE_COMMANDS_DB=true",
       "NDK_PROJECT_PATH=null",
       "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
       "NDK_OUT=" + temporaryDir,

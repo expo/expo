@@ -85,6 +85,7 @@ public class GLContext {
     final JavaScriptContextProvider jsContextProvider = moduleRegistry.getModule(JavaScriptContextProvider.class);
     final RuntimeEnvironmentInterface environment = moduleRegistry.getModule(RuntimeEnvironmentInterface.class);
 
+    EXGLRegisterThread();
     uiManager.runOnClientCodeQueueThread(new Runnable() {
       @Override
       public void run() {
@@ -94,6 +95,7 @@ public class GLContext {
             mEXGLCtxId = EXGLContextCreate(jsContextRef);
           }
         }
+        EXGLRegisterThread();
         EXGLContextSetFlushMethod(mEXGLCtxId, glContext);
         mManager.saveContext(glContext);
         completionCallback.run();

@@ -128,7 +128,8 @@ inline std::enable_if_t<is_integral_v<T>, T> unpackArg(
   } else if (jsArgv->isNull() || jsArgv->isUndefined()) {
     return 0;
   } else if (jsArgv->isBool()) {
-    // this case should not be necessary but one of the ncl threejs examples relies on this behaviour
+    // this case should not be necessary but one of the ncl threejs examples relies on this
+    // behaviour
     return jsArgv->getBool() ? GL_TRUE : GL_FALSE;
   }
   return jsArgv->asNumber();

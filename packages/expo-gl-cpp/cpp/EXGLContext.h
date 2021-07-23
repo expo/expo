@@ -14,15 +14,16 @@
 
 #include <exception>
 #include <future>
+#include <set>
 #include <sstream>
 #include <unordered_map>
 #include <vector>
-#include <set>
 
 #include <jsi/jsi.h>
 
 #include "EXGLNativeMethodsUtils.h"
 #include "EXJSIUtils.h"
+#include "EXPlatformUtils.h"
 #include "TypedArrayApi.h"
 
 // Constants in WebGL that aren't in OpenGL ES
@@ -42,20 +43,8 @@
 namespace expo {
 namespace gl_cpp {
 
-class InvalidateOnDestroyHostObject : public jsi::HostObject {
- public:
-  InvalidateOnDestroyHostObject() {}
-  virtual ~InvalidateOnDestroyHostObject() {
-    invalidateJsiPropNameIDCache();
-  }
-  virtual jsi::Value get(jsi::Runtime &, const jsi::PropNameID &name) {
-    return jsi::Value::null();
-  }
-  virtual void set(jsi::Runtime &, const jsi::PropNameID &name, const jsi::Value &value) {}
-  virtual std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime &rt) {
-    return {};
-  }
-};
+constexpr const char *OnJSRuntimeDestroyPropertyName = "__EXGLOnJsRuntimeDestroy";
+constexpr const char *EXGLContextsMapPropertyName = "__EXGLContexts";
 
 // --- EXGLContext -------------------------------------------------------------
 
@@ -189,32 +178,62 @@ class EXGLContext {
 
  public:
   EXGLContext(jsi::Runtime &runtime, UEXGLContextId exglCtxId) {
+    auto viewport = prepareOpenGlesContext();
+    attachContextToJsRuntime(runtime, exglCtxId, viewport);
+    registerOnJSRuntimeDestroy(runtime);
+
+    jsi::Value workletRuntimeValue = runtime.global().getProperty(runtime, "_WORKLET_RUNTIME");
+    if (workletRuntimeValue.isNumber()) {
+      jsi::Runtime &workletRuntime = *reinterpret_cast<jsi::Runtime *>(
+          static_cast<uintptr_t>(workletRuntimeValue.getNumber()));
+      attachContextToJsRuntime(workletRuntime, exglCtxId, viewport);
+      registerOnJSRuntimeDestroy(workletRuntime);
+    }
+  }
+
+  void attachContextToJsRuntime(
+      jsi::Runtime &runtime,
+      UEXGLContextId exglCtxId,
+      std::pair<int32_t, int32_t> viewport) {
     jsi::Object jsGl(runtime);
-    jsGl.setProperty(
-        runtime, jsi::PropNameID::forUtf8(runtime, "exglCtxId"), static_cast<double>(exglCtxId));
     installMethods(runtime, jsGl, exglCtxId);
     installConstants(runtime, jsGl);
+    jsGl.setProperty(runtime, "drawingBufferWidth", viewport.first);
+    jsGl.setProperty(runtime, "drawingBufferHeight", viewport.second);
+    jsGl.setProperty(runtime, "supportsWebGL2", this->supportsWebGL2);
+    jsGl.setProperty(runtime, "exglCtxId", static_cast<double>(exglCtxId));
 
     // Save JavaScript object
-    jsi::Value jsContextMap = runtime.global().getProperty(runtime, "__EXGLContexts");
+    jsi::Value jsContextMap = runtime.global().getProperty(runtime, EXGLContextsMapPropertyName);
+    auto global = runtime.global();
     if (jsContextMap.isNull() || jsContextMap.isUndefined()) {
-      runtime.global().setProperty(runtime, "__EXGLContexts", jsi::Object(runtime));
-
-      // Property `__EXGLOnDestroyHostObject` of the global object will be released when entire `jsi::Runtime`
-      // is being destroyed and that will trigger destructor of `InvalidateOnDestroyHostObject` class which
-      // will invalidate JSI PropNameID cache.
-      runtime.global().setProperty(
-          runtime,
-          "__EXGLOnDestroyHostObject",
-          jsi::Object::createFromHostObject(runtime, std::make_shared<InvalidateOnDestroyHostObject>()));
+      global.setProperty(runtime, EXGLContextsMapPropertyName, jsi::Object(runtime));
     }
-    runtime.global()
-        .getProperty(runtime, "__EXGLContexts")
+    global.getProperty(runtime, EXGLContextsMapPropertyName)
         .asObject(runtime)
         .setProperty(runtime, jsi::PropNameID::forUtf8(runtime, std::to_string(exglCtxId)), jsGl);
+  }
 
+  void registerOnJSRuntimeDestroy(jsi::Runtime &runtime) {
+    auto global = runtime.global();
+
+    if (global.getProperty(runtime, OnJSRuntimeDestroyPropertyName).isObject()) {
+      return;
+    }
+    // Property `__EXGLOnDestroyHostObject` of the global object will be released when entire
+    // `jsi::Runtime` is being destroyed and that will trigger destructor of
+    // `InvalidateCacheOnDestroy` class which will invalidate JSI PropNameID cache.
+    global.setProperty(
+        runtime,
+        OnJSRuntimeDestroyPropertyName,
+        jsi::Object::createFromHostObject(
+            runtime, std::make_shared<InvalidateCacheOnDestroy>(runtime)));
+  }
+
+  std::pair<int, int> prepareOpenGlesContext() {
+    std::pair<int, int> result;
     // Clear everything to initial values
-    addToNextBatch([this] {
+    addBlockingToNextBatch([&] {
       std::string version = reinterpret_cast<const char *>(glGetString(GL_VERSION));
       double glesVersion = strtod(version.substr(10).c_str(), 0);
       this->supportsWebGL2 = glesVersion >= 3.0;
@@ -229,13 +248,20 @@ class EXGLContext {
         glClearDepthf(1);
         glClearStencil(0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+        int32_t viewport[4];
+        glGetIntegerv(GL_VIEWPORT, viewport);
+        result.first = viewport[2];
+        result.second = viewport[1];
       } else {
         // Set up an initial viewport for headless context.
         // These values are the same as newly created WebGL context has,
         // however they should be changed by the user anyway.
         glViewport(0, 0, 300, 150);
+        result.first = 300;
+        result.second = 150;
       }
     });
+    return result;
   }
 
   static EXGLContext *ContextGet(UEXGLContextId exglCtxId);

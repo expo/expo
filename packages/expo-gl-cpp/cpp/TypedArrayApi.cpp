@@ -32,10 +32,14 @@ enum class Prop {
 class PropNameIDCache {
  public:
   const jsi::PropNameID &get(jsi::Runtime &runtime, Prop prop) {
-    if (!this->props[prop]) {
-      this->props[prop] = std::make_unique<jsi::PropNameID>(createProp(runtime, prop));
+    auto key = reinterpret_cast<uintptr_t>(&runtime);
+    if (this->props.find(key) == this->props.end()) {
+      this->props[key] = std::unordered_map<Prop, std::unique_ptr<jsi::PropNameID>>();
     }
-    return *(this->props[prop]);
+    if (!this->props[key][prop]) {
+      this->props[key][prop] = std::make_unique<jsi::PropNameID>(createProp(runtime, prop));
+    }
+    return *(this->props[key][prop]);
   }
 
   const jsi::PropNameID &getConstructorNameProp(jsi::Runtime &runtime, TypedArrayKind kind);
@@ -45,14 +49,17 @@ class PropNameIDCache {
   }
 
  private:
-  std::unordered_map<Prop, std::unique_ptr<jsi::PropNameID>> props;
+  std::unordered_map<uintptr_t, std::unordered_map<Prop, std::unique_ptr<jsi::PropNameID>>> props;
 
   jsi::PropNameID createProp(jsi::Runtime &runtime, Prop prop);
 };
 
 PropNameIDCache propNameIDCache;
 
-void invalidateJsiPropNameIDCache() {
+InvalidateCacheOnDestroy::InvalidateCacheOnDestroy(jsi::Runtime &runtime) {
+  key = reinterpret_cast<uintptr_t>(&runtime);
+}
+InvalidateCacheOnDestroy::~InvalidateCacheOnDestroy() {
   propNameIDCache.invalidate();
 }
 
@@ -102,8 +109,7 @@ bool TypedArrayBase::hasBuffer(jsi::Runtime &runtime) const {
 }
 
 std::vector<uint8_t> TypedArrayBase::toVector(jsi::Runtime &runtime) {
-  auto start =
-      reinterpret_cast<uint8_t *>(getBuffer(runtime).data(runtime) + byteOffset(runtime));
+  auto start = reinterpret_cast<uint8_t *>(getBuffer(runtime).data(runtime) + byteOffset(runtime));
   auto end = start + byteLength(runtime);
   return std::vector<uint8_t>(start, end);
 }

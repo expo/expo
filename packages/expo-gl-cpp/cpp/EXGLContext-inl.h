@@ -62,7 +62,9 @@ inline jsi::Value EXGLContext::exglCall(Func func, T &&... args) {
 template <typename Func, typename T>
 inline jsi::Value
 EXGLContext::exglUniformv(Func func, GLuint uniform, size_t dim, std::vector<T> &&data) {
-  addToNextBatch([=, data{std::move(data)}] { func(uniform, static_cast<int>(data.size() / dim), data.data()); });
+  addToNextBatch([=, data{std::move(data)}] {
+    func(uniform, static_cast<int>(data.size() / dim), data.data());
+  });
   return nullptr;
 }
 
@@ -73,8 +75,9 @@ inline jsi::Value EXGLContext::exglUniformMatrixv(
     GLboolean transpose,
     size_t dim,
     std::vector<T> &&data) {
-  addToNextBatch(
-      [=, data{std::move(data)}] { func(uniform, static_cast<int>(data.size() / dim), transpose, data.data()); });
+  addToNextBatch([=, data{std::move(data)}] {
+    func(uniform, static_cast<int>(data.size() / dim), transpose, data.data());
+  });
   return nullptr;
 }
 
