@@ -8,7 +8,8 @@ export const h1 = css`
   color: ${theme.text.default};
   font-size: 44px;
   line-height: 120%;
-  font-weight: 800;
+  letter-spacing: -0.021em;
+  font-weight: 900;
   background-image: linear-gradient(60deg, #9e3ab7, var(--expo-theme-link-default));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
