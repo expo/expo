@@ -1392,6 +1392,7 @@ export interface NotificationContentInput {
   data?: { [key: string]: unknown };
   badge?: number;
   sound?: boolean | string;
+  categoryIdentifier?: string;
 
   // Android-specific fields
   // See https://developer.android.com/reference/android/app/Notification.html#fields
