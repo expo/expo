@@ -31,7 +31,7 @@ jobs:
       - run: git lfs pull
       - uses: actions/setup-node@v1
         with:
-          node-version: '14.4.0'
+          node-version: '14.17'
       - run: yarn global add expo-cli@3
       - name: Cache Node.js modules
         uses: actions/cache@v2
