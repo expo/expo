@@ -2,51 +2,51 @@
 
 #import <EXClipboard/EXClipboardModule.h>
 
-#import <UMCore/UMEventEmitterService.h>
+#import <ExpoModulesCore/EXEventEmitterService.h>
 
 static NSString * const onClipboardEventName = @"onClipboardChanged";
 
 @interface EXClipboardModule ()
 
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 @property (nonatomic, assign) BOOL isListening;
 @property (nonatomic, assign) BOOL isBeingObserved;
-@property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
+@property (nonatomic, weak) id<EXEventEmitterService> eventEmitter;
 
 @end
 
 @implementation EXClipboardModule
 
-UM_EXPORT_MODULE(ExpoClipboard);
+EX_EXPORT_MODULE(ExpoClipboard);
 
-# pragma mark - UMModuleRegistryConsumer
+# pragma mark - EXModuleRegistryConsumer
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
+  _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
 }
 
 # pragma mark - Exported methods
 
-UM_EXPORT_METHOD_AS(getStringAsync,
-                    getStringAsyncWithResolver:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getStringAsync,
+                    getStringAsyncWithResolver:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
   resolve((clipboard.string ?: @""));
 }
 
-UM_EXPORT_METHOD_AS(setString,
+EX_EXPORT_METHOD_AS(setString,
                     setStringWithContent:(NSString *)content
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
   clipboard.string = (content ? : @"");
 }
 
-# pragma mark - UMEventEmitter
+# pragma mark - EXEventEmitter
 
 - (NSArray<NSString *> *)supportedEvents
 {

@@ -2,19 +2,19 @@
 
 #import <EXBlur/EXBlurView.h>
 #import <EXBlur/EXBlurViewManager.h>
-#import <UMCore/UMUIManager.h>
+#import <ExpoModulesCore/EXUIManager.h>
 
 @interface EXBlurViewManager ()
 
-@property (weak, nonatomic) UMModuleRegistry *moduleRegistry;
+@property (weak, nonatomic) EXModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation EXBlurViewManager
 
-UM_EXPORT_MODULE(ExpoBlurViewManager);
+EX_EXPORT_MODULE(ExpoBlurViewManager);
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry {
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry {
   _moduleRegistry = moduleRegistry;
 }
 
@@ -28,25 +28,25 @@ UM_EXPORT_MODULE(ExpoBlurViewManager);
   return @"ExpoBlurView";
 }
 
-UM_VIEW_PROPERTY(tint, NSString *, EXBlurView)
+EX_VIEW_PROPERTY(tint, NSString *, EXBlurView)
 {
   [view setTint:value];
   [view didSetProps:@[@"tint"]];
 }
 
-UM_VIEW_PROPERTY(intensity, NSNumber *, EXBlurView)
+EX_VIEW_PROPERTY(intensity, NSNumber *, EXBlurView)
 {
   [view setIntensity:value];
   [view didSetProps:@[@"intensity"]];
 }
 
-UM_EXPORT_METHOD_AS(updateProps,
+EX_EXPORT_METHOD_AS(updateProps,
                     updateProps:(NSDictionary *)props
                     onViewOfId:(id)viewId
-                    resolve:(UMPromiseResolveBlock)resolver
-                    reject:(UMPromiseRejectBlock)rejecter)
+                    resolve:(EXPromiseResolveBlock)resolver
+                    reject:(EXPromiseRejectBlock)rejecter)
 {
-  [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMUIManager)] executeUIBlock:^(id view) {
+  [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXUIManager)] executeUIBlock:^(id view) {
     if ([view isKindOfClass:[EXBlurView class]]) {
       EXBlurView *blurView = view;
       NSMutableArray *changedProps = [NSMutableArray new];
