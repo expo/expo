@@ -13,7 +13,7 @@
 ### 💡 Others
 
 - Replace the generic object types with `Record`s. ([#13675](https://github.com/expo/expo/pull/13675) by [@Simek](https://github.com/Simek))
-- Migrated from `@unimodules/core` to `expo-modules-core`.
+- Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))
 
 ## 10.2.0 — 2021-06-16
 
