@@ -9,6 +9,7 @@
 #import <ExpoModulesCore/EXViewManager.h>
 #import <ExpoModulesCore/EXViewManagerAdapter.h>
 #import <ExpoModulesCore/EXViewManagerAdapterClassesRegistry.h>
+#import "ExpoModulesCore-Swift.h"
 
 static const NSString *exportedMethodsNamesKeyPath = @"exportedMethods";
 static const NSString *viewManagersNamesKeyPath = @"viewManagersNames";
@@ -24,6 +25,7 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
 @property (nonatomic, strong) EXModuleRegistry *exModuleRegistry;
 @property (nonatomic, strong) NSMutableDictionary<const NSString *, NSMutableDictionary<NSString *, NSNumber *> *> *exportedMethodsKeys;
 @property (nonatomic, strong) NSMutableDictionary<const NSString *, NSMutableDictionary<NSNumber *, NSString *> *> *exportedMethodsReverseKeys;
+@property (nonatomic, strong) SwiftInteropBridge *swiftInteropBridge;
 
 @end
 
@@ -35,6 +37,14 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
     _exModuleRegistry = moduleRegistry;
     _exportedMethodsKeys = [NSMutableDictionary dictionary];
     _exportedMethodsReverseKeys = [NSMutableDictionary dictionary];
+  }
+  return self;
+}
+
+- (instancetype)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry swiftInteropBridge:(SwiftInteropBridge *)swiftInteropBridge
+{
+  if (self = [self initWithModuleRegistry:moduleRegistry]) {
+    _swiftInteropBridge = swiftInteropBridge;
   }
   return self;
 }
@@ -62,6 +72,7 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
       continue;
     }
   }
+  [exportedModulesConstants addEntriesFromDictionary:[_swiftInteropBridge exportedModulesConstants]];
 
   // Also add `exportedMethodsNames`
   NSMutableDictionary<const NSString *, NSMutableArray<NSMutableDictionary<const NSString *, id> *> *> *exportedMethodsNamesAccumulator = [NSMutableDictionary dictionary];
@@ -79,12 +90,17 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
     [self assignExportedMethodsKeys:exportedMethodsNamesAccumulator[exportedModuleName] forModuleName:exportedModuleName];
   }
 
+  // Add entries from Swift modules
+  [exportedMethodsNamesAccumulator addEntriesFromDictionary:[_swiftInteropBridge exportedMethodNames]];
+
   // Also, add `viewManagersNames` for sanity check and testing purposes -- with names we know what managers to mock on UIManager
   NSArray<EXViewManager *> *viewManagers = [_exModuleRegistry getAllViewManagers];
   NSMutableArray<NSString *> *viewManagersNames = [NSMutableArray arrayWithCapacity:[viewManagers count]];
   for (EXViewManager *viewManager in viewManagers) {
     [viewManagersNames addObject:[viewManager viewName]];
   }
+
+  [viewManagersNames addObjectsFromArray:[_swiftInteropBridge exportedViewManagersNames]];
 
   NSMutableDictionary <NSString *, id> *constantsAccumulator = [NSMutableDictionary dictionary];
   constantsAccumulator[viewManagersNamesKeyPath] = viewManagersNames;
@@ -96,6 +112,10 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
 
 RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNameOrKey arguments:(NSArray *)arguments resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
+  if ([_swiftInteropBridge hasModule:moduleName]) {
+    [_swiftInteropBridge callMethod:methodNameOrKey onModule:moduleName withArgs:arguments resolve:resolve reject:reject];
+    return;
+  }
   EXExportedModule *module = [_exModuleRegistry getExportedModuleForName:moduleName];
   if (module == nil) {
     NSString *reason = [NSString stringWithFormat:@"No exported module was found for name '%@'. Are you sure all the packages are linked correctly?", moduleName];

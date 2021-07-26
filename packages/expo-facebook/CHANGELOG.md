@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [plugin] Removed swift noop file plugin. ([#13532](https://github.com/expo/expo/pull/13532) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
@@ -11,6 +13,10 @@
 - `logPurchaseAsync` on iOS now accepts an `NSNumber` type, which has no user-facing impact besides fixing an error message in the App Events console. ([#13369](https://github.com/expo/expo/pull/13369) by [@cruzach](https://github.com/cruzach))
 
 ### 💡 Others
+
+- More TypeScript doc blocks. ([#13657](https://github.com/expo/expo/pull/13657) by [@cruzach](https://github.com/cruzach))
+- Export `FacebookInitializationOptions`
+- Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))
 
 ## 11.2.0 — 2021-06-16
 

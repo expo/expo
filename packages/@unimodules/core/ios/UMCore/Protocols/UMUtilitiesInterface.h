@@ -2,6 +2,4 @@
 
 #import <ExpoModulesCore/EXUtilitiesInterface.h>
 
-@protocol UMUtilitiesInterface <EXUtilitiesInterface>
-
-@end
+#define UMUtilitiesInterface EXUtilitiesInterface

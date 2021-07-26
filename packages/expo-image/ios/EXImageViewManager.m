@@ -2,8 +2,8 @@
 
 #import <expo-image/EXImageViewManager.h>
 #import <expo-image/EXImageView.h>
-
 #import <React/RCTImageShadowView.h>
+#import "EXImageCustomCoders.h"
 
 @implementation EXImageViewManager
 
@@ -12,6 +12,11 @@ RCT_EXPORT_MODULE(ExpoImage)
 - (RCTShadowView *)shadowView
 {
   return [RCTImageShadowView new];
+}
+
++ (void)initialize
+{
+  [EXImageCustomCoders registerCustomCoders];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(source, NSDictionary)

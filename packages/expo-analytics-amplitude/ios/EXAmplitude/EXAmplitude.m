@@ -7,17 +7,17 @@
 
 @implementation EXAmplitude
 
-UM_EXPORT_MODULE(ExpoAmplitude);
+EX_EXPORT_MODULE(ExpoAmplitude);
 
 - (Amplitude *)amplitudeInstance
 {
   return [Amplitude instance];
 }
 
-UM_EXPORT_METHOD_AS(initializeAsync,
+EX_EXPORT_METHOD_AS(initializeAsync,
                     initializeAsync:(NSString *)apiKey
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   // TODO: remove the UIApplicationWillEnterForegroundNotification and
   // UIApplicationDidEnterBackgroundNotification observers and call enterForeground
@@ -26,65 +26,65 @@ UM_EXPORT_METHOD_AS(initializeAsync,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(setUserIdAsync,
+EX_EXPORT_METHOD_AS(setUserIdAsync,
                     setUserIdAsync:(NSString *)userId
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   [[self amplitudeInstance] setUserId:userId];
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(setUserPropertiesAsync,
+EX_EXPORT_METHOD_AS(setUserPropertiesAsync,
                     setUserPropertiesAsync:(NSDictionary *)properties
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   [[self amplitudeInstance] setUserProperties:properties];
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(clearUserPropertiesAsync,
-                    clearUserPropertiesAsyncWithResolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(clearUserPropertiesAsync,
+                    clearUserPropertiesAsyncWithResolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [[self amplitudeInstance] clearUserProperties];
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(logEventAsync,
+EX_EXPORT_METHOD_AS(logEventAsync,
                     logEventAsync:(NSString *)eventName
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   [[self amplitudeInstance] logEvent:eventName];
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(logEventWithPropertiesAsync,
+EX_EXPORT_METHOD_AS(logEventWithPropertiesAsync,
                     logEventWithPropertiesAsync:(NSString *)eventName
                     withProperties:(NSDictionary *)properties
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   [[self amplitudeInstance] logEvent:eventName withEventProperties:properties];
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(setGroupAsync,
+EX_EXPORT_METHOD_AS(setGroupAsync,
                     setGroupAsync:(NSString *)groupType
                     withGroupNames:(NSArray *)groupNames
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   [[self amplitudeInstance] setGroup:groupType groupName:groupNames];
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(setTrackingOptionsAsync,
+EX_EXPORT_METHOD_AS(setTrackingOptionsAsync,
                     setTrackingOptionsAsync:(NSDictionary *)options
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   AMPTrackingOptions *trackingOptions = [AMPTrackingOptions options];
   

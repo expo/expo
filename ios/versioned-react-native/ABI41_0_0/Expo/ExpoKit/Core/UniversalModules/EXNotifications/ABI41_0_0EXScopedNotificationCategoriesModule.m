@@ -13,7 +13,6 @@
 @implementation ABI41_0_0EXScopedNotificationCategoriesModule
 
 - (instancetype)initWithScopeKey:(NSString *)scopeKey
-                 andConstantsBinding:(ABI41_0_0EXConstantsBinding *)constantsBinding
 {
   if (self = [super init]) {
     _scopeKey = scopeKey;

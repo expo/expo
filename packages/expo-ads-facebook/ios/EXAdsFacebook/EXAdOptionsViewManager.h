@@ -1,9 +1,9 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
-#import <UMCore/UMViewManager.h>
+#import <ExpoModulesCore/EXViewManager.h>
 #import <FBAudienceNetwork/FBAudienceNetwork.h>
-#import <UMCore/UMModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXModuleRegistryConsumer.h>
 #import <UIKit/UIKit.h>
 
-@interface EXAdOptionsViewManager : UMViewManager <UMModuleRegistryConsumer>
+@interface EXAdOptionsViewManager : EXViewManager <EXModuleRegistryConsumer>
 @end
 

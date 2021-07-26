@@ -1,20 +1,38 @@
 import { ColorValue, NativeSyntheticEvent, ViewProps } from 'react-native';
 
+// @docsMissing
 export type CheckboxEvent = NativeSyntheticEvent<{ target: number; value: boolean }>;
 
-export interface CheckboxProps extends ViewProps {
-  /** The value of the checkbox. If true the checkbox will be turned on. Default value is false. */
+// @needsAudit
+export type CheckboxProps = ViewProps & {
+  /**
+   * Value indicating if the checkbox should be rendered as checked or not. Default value is `false`.
+   */
   value?: boolean;
-  /** If true the user won't be able to toggle the checkbox. Default value is false. */
+  /**
+   * If the checkbox is disabled, it becomes opaque and uncheckable.
+   */
   disabled?: boolean;
-  /** Sets the tint color of the checkbox */
+  /**
+   * The tint or color of the checkbox. This overrides the disabled opaque style.
+   */
   color?: ColorValue;
-  /** Used in case the props change removes the component. */
+  /**
+   * Callback that is invoked when the user presses the checkbox.
+   * @param event A native event containing the checkbox change.
+   */
   onChange?: (event: CheckboxEvent) => void;
-  /** Invoked with the new value when the value changes. */
+  /**
+   * Callback that is invoked when the user presses the checkbox.
+   * @param value A boolean indicating the new checked state of the checkbox.
+   */
   onValueChange?: (value: boolean) => void;
-}
+};
 
+// @docsMissing
 export type CheckboxComponent = React.FC<CheckboxProps> & {
+  /**
+   * @deprecated
+   */
   isAvailableAsync: () => Promise<boolean>;
 };

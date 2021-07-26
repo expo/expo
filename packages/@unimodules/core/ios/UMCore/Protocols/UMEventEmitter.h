@@ -2,6 +2,4 @@
 
 #import <ExpoModulesCore/EXEventEmitter.h>
 
-@protocol UMEventEmitter <EXEventEmitter>
-
-@end
+#define UMEventEmitter EXEventEmitter

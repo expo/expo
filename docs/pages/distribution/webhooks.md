@@ -8,7 +8,7 @@ After running that command, you'll be given a webhook signing secret, if you hav
 
 We call your webhook using an HTTP POST request and we pass data in the request body. Expo sends your webhook as a JSON object with following fields:
 
-- `status` - a string specifying whether your build has finished successfully (can be either `finished` or `errored`)
+- `status` - a string specifying whether your build has finished successfully (can be either `finished`, `errored`, or `canceled`)
 - `id` - the unique ID of your build
 - `artifactUrl` - the URL to the build artifact (only included if `status === 'finished'`)
 - `platform` - 'ios' | 'android'

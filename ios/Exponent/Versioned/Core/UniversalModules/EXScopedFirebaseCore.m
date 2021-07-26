@@ -13,7 +13,7 @@
   NSDictionary* _protectedAppNames;
 }
 
-- (instancetype)initWithScopeKey:(NSString *)scopeKey andConstantsBinding:(EXConstantsBinding *)constantsBinding
+- (instancetype)initWithScopeKey:(NSString *)scopeKey manifest:(EXUpdatesRawManifest *)manifest constantsBinding:(EXConstantsBinding *)constantsBinding
 {
   if (![@"expo" isEqualToString:constantsBinding.appOwnership]) {
     return [super init];
@@ -36,7 +36,7 @@
   // Determine project app name & options
   NSString *encodedScopeKey = [self.class encodedResourceName:scopeKey];
   NSString* appName = [NSString stringWithFormat:@"__sandbox_%@", encodedScopeKey];
-  NSDictionary* googleServicesFile = [self.class googleServicesFileFromConstantsManifest:constantsBinding];
+  NSDictionary* googleServicesFile = [self.class googleServicesFileFromManifest:manifest];
   FIROptions* options = [self.class optionsWithGoogleServicesFile:googleServicesFile];
   
   // Delete all previously created (project) apps, except for the currently
@@ -78,14 +78,11 @@
   return [base64 stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"="]];
 }
 
-+ (nullable NSDictionary *)googleServicesFileFromConstantsManifest:(nullable id<EXConstantsInterface>)constants
++ (nullable NSDictionary *)googleServicesFileFromManifest:(EXUpdatesRawManifest *)manifest
 {
   // load GoogleService-Info.plist from manifest
   @try {
-    if (constants == nil) return nil;
-    NSDictionary* manifest = constants.constants[@"manifest"];
-    NSDictionary* ios = manifest ? manifest[@"ios"] : nil;
-    NSString* googleServicesFile = ios ? ios[@"googleServicesFile"] : nil;
+    NSString* googleServicesFile = manifest.iosGoogleServicesFile;
     if (!googleServicesFile) return nil;
     NSData *data = [[NSData alloc] initWithBase64EncodedString:googleServicesFile options:0];
     NSError* error;

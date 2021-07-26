@@ -17,7 +17,7 @@ The first phase happens on your computer. EAS CLI is in charge of completing the
 
    - Depending on the value of `builds.ios.PROFILE_NAME.credentialsSource`, the credentials are obtained from either the local `credentials.json` file or from the EAS servers. If the `remote` mode is selected but no credentials exist yet, you're offered to generate them.
 
-3. **Generic** projects require an additional step: check whether the Xcode project is configured to be buildable on the EAS servers (i.e. ensure the correct bundle identifier and Apple Team ID are set).
+3. **Bare** projects require an additional step: check whether the Xcode project is configured to be buildable on the EAS servers (i.e. ensure the correct bundle identifier and Apple Team ID are set).
 4. Create the tarball containing a shallow clone of your local repository (`git clone --depth 1 ...`).
 5. Upload the project tarball to a private AWS S3 bucket and send the build request to EAS Build.
 
@@ -32,21 +32,16 @@ In this next phase, this is what happens when EAS Build picks up your request:
 1. Download the project tarball from a private AWS S3 bucket and unpack it.
 1. Run the `eas-build-pre-install` script from package.json if defined.
 1. Run `yarn install` in the project root (or `npm install` if `yarn.lock` does not exist).
-1. **Managed** projects require an additional step: Run `expo prebuild` to convert the project to a generic one.
+1. Restore the credentials
+   - Create a new keychain.
+   - Import the Distribution Certificate into the keychain.
+   - Write the Provisioning Profile to the `~/Library/MobileDevice/Provisioning Profiles` directory.
+   - Verify that the Distribution Certificate and Provisioning Profile match (every Provisioning Profile is assigned to a particular Distribution Certificate and cannot be used for building the iOS with any other certificate).
+
+1. **Managed** projects require an additional step: Run `expo prebuild` to convert the project to a bare one.
 1. Restore a previously saved cache identified by the `cache.key` value in the build profile. ([Learn more](../build/eas-json/).)
 1. Run `pod install` in the `ios` directory inside your project.
 1. Run the `eas-build-post-install` script from package.json if defined.
-1. **Generic** Restore the credentials (for managed projects it's done before `expo prebuild`):
-
-   - Create a new keychain.
-
-   - Import the Distribution Certificate into the keychain.
-
-   - Write the Provisioning Profile to the `~/Library/MobileDevice/Provisioning Profiles` directory.
-
-   - Verify that the Distribution Certificate and Provisioning Profile match (every Provisioning Profile is assigned to a particular Distribution Certificate and cannot be used for building the iOS with any other certificate).
-
-
 1. Update the Xcode project with the ID of the Provisioning Profile.
 1. Create `Gymfile` in the `ios` directory if it does **not** already exist (check out the [Default Gymfile](#default-gymfile) section).
 1. Run `fastlane gym` in the `ios` directory.

@@ -5,6 +5,14 @@
 
 @implementation ABI42_0_0EXUpdatesBaseLegacyRawManifest
 
+- (nullable NSDictionary *)expoClientConfigRootObject {
+  return self.rawManifestJSON;
+}
+
+- (nullable NSDictionary *)expoGoConfigRootObject {
+  return self.rawManifestJSON;
+}
+
 - (NSString *)stableLegacyId {
   NSString *originalFullName = [self.rawManifestJSON nullableStringForKey:@"originalFullName"];
   if (originalFullName) {
@@ -33,6 +41,10 @@
 
 - (nullable NSString *)sdkVersion {
   return [self.rawManifestJSON nullableStringForKey:@"sdkVersion"];
+}
+
+- (nullable NSArray *)assets {
+  return [self.rawManifestJSON nullableArrayForKey:@"assets"];
 }
 
 @end

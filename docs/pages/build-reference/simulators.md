@@ -26,8 +26,6 @@ To build your app for installation into an iOS simulator, you can create a new p
 
 Now, to run your build run `eas build -p ios --profile preview`. Remember that you can name the profile whatever you like; we named the profile "preview", but you could call it "simulator", "local", or "simulador" &mdash; whatever makes most sense for you.
 
-> The `distribution` field works identically in managed and generic projects.
-
 ## Installing your build on the simulator
 
 > If you haven't installed or run the iOS simulator before, follow the [iOS simulator guide](/workflow/ios-simulator.md) before proceeding.

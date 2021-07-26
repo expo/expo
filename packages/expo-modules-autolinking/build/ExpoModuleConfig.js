@@ -12,13 +12,15 @@ class ExpoModuleConfig {
      * Whether the module supports given platform.
      */
     supportsPlatform(platform) {
-        return this.rawConfig.platforms?.includes(platform) ?? false;
+        var _a, _b;
+        return (_b = (_a = this.rawConfig.platforms) === null || _a === void 0 ? void 0 : _a.includes(platform)) !== null && _b !== void 0 ? _b : false;
     }
     /**
      * Returns a list of names of Swift native modules classes to put to the generated modules provider file.
      */
     iosModulesClassNames() {
-        return this.rawConfig.ios?.modulesClassNames ?? [];
+        var _a, _b;
+        return (_b = (_a = this.rawConfig.ios) === null || _a === void 0 ? void 0 : _a.modulesClassNames) !== null && _b !== void 0 ? _b : [];
     }
     /**
      * Returns serializable raw config.

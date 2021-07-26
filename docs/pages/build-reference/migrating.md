@@ -30,6 +30,10 @@ Because we no longer publish at build time, `postPublish` hooks in `app.json` wi
 
 Given that we no longer publish the app prior to builds, there is no update manifest available until the app has download an over-the-air update. Usually this means that at least for the first launch of the app you won't have some fields available. If you are using `Constants.manifest` to access update fields, in particular `Constants.manifest.releaseChannel`, you should switch to `Updates.releaseChannel` instead.
 
+### `Constants.appOwnership` will be `null` in the resulting standalone app
+
+The `Constants.appOwnership` field no longer exists in standalone apps produced by EAS Build. If you were previously testing the environment with something like `const isStandaloneApp = Constants.appOwnership === "standalone"` then you can invert the logic: `const isStandaloneApp = Constants.appOwnership !== "expo"`.
+
 ### All assets referenced in source code are bundled
 
 With classic builds, `assetBundlePatterns` serves two purposes:

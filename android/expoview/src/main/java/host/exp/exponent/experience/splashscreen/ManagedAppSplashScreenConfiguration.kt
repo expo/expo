@@ -78,11 +78,13 @@ class ManagedAppSplashScreenConfiguration private constructor() {
       if (androidSplash != null) {
         val dpiRelatedImageUrl = getStringFromJSONObject(
           androidSplash,
-          *arrayOf("xxxhdpi", "xxhdpi", "xhdpi", "hdpi", "mdpi"
+          *arrayOf(
+            "xxxhdpi", "xxhdpi", "xhdpi", "hdpi", "mdpi"
+          )
+            .map { s -> "${s}Url" }
+            .map { s -> arrayOf(s) }
+            .toTypedArray()
         )
-          .map { s -> "${s}Url" }
-          .map { s -> arrayOf(s) }
-          .toTypedArray())
         if (dpiRelatedImageUrl != null) {
           return dpiRelatedImageUrl
         }

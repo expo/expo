@@ -18,7 +18,7 @@ fun RGBAtoARGB(rgba: String?): String? {
 fun isValidColor(color: String?): Boolean {
   return if (color == null) {
     false
-  } else{
+  } else {
     try {
       Color.parseColor(color)
       true
