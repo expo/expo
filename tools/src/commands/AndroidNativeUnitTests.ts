@@ -19,6 +19,7 @@ const excludedInTests = [
 ];
 
 const packagesNeedToBeTestedUsingBareExpo = [
+  'expo-dev-client',
   'expo-dev-menu',
   'expo-dev-launcher',
   'expo-dev-menu-interface',
