@@ -172,12 +172,16 @@ EX_EXPORT_METHOD_AS(getDocumentAsync,
       return;
     }
   }
+    
+  NSString *extension = [url pathExtension];
+  NSString *mimeType = [EXDocumentPickerModule getMimeType:extension];
   
   _resolve(@{
              @"type": @"success",
              @"uri": [newUrl absoluteString],
              @"name": [url lastPathComponent],
              @"size": @(fileSize),
+             @"mimeType": mimeType
              });
   _resolve = nil;
   _reject = nil;
@@ -225,6 +229,12 @@ EX_EXPORT_METHOD_AS(getDocumentAsync,
   }
   
   return folderSize;
+}
+
++ (NSString *)getMimeType:(NSString *)fileExtension{
+  NSString *UTI = (__bridge_transfer NSString *)UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)fileExtension, NULL);
+  NSString *mimeType = (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)UTI, kUTTagClassMIMEType);
+  return mimeType;
 }
 
 @end

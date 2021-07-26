@@ -88,7 +88,6 @@ class DocumentPickerModule(
           }
         }
       }
-
       if (documentDetails == null) {
         promise.reject("E_DOCUMENT_PICKER", "Failed to read the selected document.")
       } else {
@@ -96,9 +95,10 @@ class DocumentPickerModule(
           putString("type", "success")
           putString("uri", documentDetails.uri)
           putString("name", documentDetails.name)
-          if (documentDetails.size == null) {
-            putParcelable("size", null)
-          } else {
+          documentDetails.mimeType?.let {
+            putString("mimeType", documentDetails.mimeType)
+          }
+          documentDetails.size?.let {
             putInt("size", documentDetails.size)
           }
         }
