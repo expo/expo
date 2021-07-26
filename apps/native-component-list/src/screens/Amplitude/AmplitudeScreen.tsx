@@ -28,7 +28,7 @@ export default class AmplitudeApiScreen extends React.Component<object, State> {
   private testUserId: string = 'testUserId';
   private testEventName: string = 'test event';
   private testGroupType: string = 'testGroupType';
-  private timer: NodeJS.Timer;
+  private timer?: NodeJS.Timeout;
 
   _cleanup = (...keys: string[]) => {
     this.setState(keys.reduce((o, key) => ({ ...o, [key]: undefined }), {}));
