@@ -17,7 +17,7 @@ const sortByValue = (a: EnumValueData, b: EnumValueData) => {
     } else {
       const vA = parseInt(a.defaultValue, 10);
       const vB = parseInt(b.defaultValue, 10);
-      return vA > vB ? 1 : -1;
+      return vA - vB;
     }
   }
   return 0;
