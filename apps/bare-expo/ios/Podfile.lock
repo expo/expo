@@ -36,7 +36,6 @@ PODS:
     - ExpoModulesCore
   - EXCalendar (9.2.0):
     - ExpoModulesCore
-    - UMCore
   - EXCamera (11.1.1):
     - ExpoModulesCore
   - EXCellular (3.2.0):
@@ -1138,7 +1137,7 @@ SPEC CHECKSUMS:
   EXBattery: 65a5d98f83be408ed29b4e00f4c1a607dd585654
   EXBlur: eb7277c806220f1bed59547b4b5240e2de462aff
   EXBrightness: 4532d07a5c34ddc887e1b85eeaff42eef6882bb1
-  EXCalendar: 64807f071c86ef3d9813fec49f55c38d5854c235
+  EXCalendar: 69cfd91805f2070e0b2dc0f48d39f08d915a2de1
   EXCamera: d39ee631cecae1722c12a0b5fe4651a09b262863
   EXCellular: 73ab436dd57f6b79ce5d6d542f930fc790dac19c
   EXClipboard: 247c22246c4843351f2f89cc29b654ecd936eaa8
