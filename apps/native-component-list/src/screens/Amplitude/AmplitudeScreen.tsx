@@ -133,22 +133,6 @@ export default class AmplitudeApiScreen extends React.Component<object, State> {
     );
   };
 
-  // _setTrackingOptionsAsync = async () => {
-  //   await Amplitude.setTrackingOptionsAsync(this.trackingOptions).then(
-  //     () => {
-  //       this.setState({ result: 'Tracking options set' });
-  //       this._deferredResultCleanup();
-  //     },
-  //     () => {
-  //       this.setState({
-  //         error: true,
-  //         errorMessage: 'Failed to set tracking options. Make sure that provided API key is valid.',
-  //       });
-  //       this._deferredErrorCleanup();
-  //     }
-  //   );
-  // };
-
   render() {
     return (
       <ScrollView style={styles.container}>
