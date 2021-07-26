@@ -139,7 +139,7 @@ export default class AmplitudeApiScreen extends React.Component<object, State> {
         <Text>To conduct test:</Text>
         <Text>1. Login on https://analytics.amplitude.com/ on your organization account</Text>
         <Text>2. If there is no test project - create one</Text>
-        <Text>3. Go to Settings->Projects</Text>
+        <Text>3. Go to Settings/Projects</Text>
         <Text>4. Choose the test project</Text>
         <Text>5. Enter displayed API key into input field below</Text>
         <Text>6. Initialize amplitude module</Text>
