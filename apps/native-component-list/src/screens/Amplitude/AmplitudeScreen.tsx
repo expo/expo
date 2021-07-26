@@ -40,7 +40,7 @@ export default class AmplitudeApiScreen extends React.Component<object, State> {
     }
     this.timer = setTimeout(() => {
       this._cleanup(...keys);
-      this.timer = null;
+      this.timer = undefined;
     }, time);
   };
 
