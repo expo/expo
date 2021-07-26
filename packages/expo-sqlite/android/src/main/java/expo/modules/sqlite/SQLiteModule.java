@@ -13,9 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.Promise;
-import org.unimodules.core.interfaces.ExpoMethod;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.Promise;
+import expo.modules.core.interfaces.ExpoMethod;
 
 public class SQLiteModule extends ExportedModule {
   private static final boolean DEBUG_MODE = false;

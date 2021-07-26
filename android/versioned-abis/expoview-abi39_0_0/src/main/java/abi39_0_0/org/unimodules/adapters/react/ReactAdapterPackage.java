@@ -7,7 +7,6 @@ import abi39_0_0.com.facebook.react.bridge.ReactContext;
 import java.util.Arrays;
 import java.util.List;
 
-import abi39_0_0.org.unimodules.adapters.react.apploader.RNHeadlessAppLoader;
 import abi39_0_0.org.unimodules.adapters.react.services.CookieManagerModule;
 import abi39_0_0.org.unimodules.adapters.react.services.EventEmitterModule;
 import abi39_0_0.org.unimodules.adapters.react.services.FontManagerModule;
@@ -16,8 +15,6 @@ import abi39_0_0.org.unimodules.adapters.react.services.UIManagerModuleWrapper;
 import abi39_0_0.org.unimodules.core.BasePackage;
 import abi39_0_0.org.unimodules.core.interfaces.InternalModule;
 import abi39_0_0.org.unimodules.core.interfaces.Package;
-
-import org.unimodules.apploader.AppLoaderProvider;
 
 /**
  * A {@link Package} creating modules provided with the @unimodules/react-native-adapter package.

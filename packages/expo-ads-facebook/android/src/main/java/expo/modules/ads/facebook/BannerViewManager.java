@@ -7,9 +7,9 @@ import com.facebook.ads.AdSize;
 import java.util.Arrays;
 import java.util.List;
 
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.ViewManager;
-import org.unimodules.core.interfaces.ExpoProp;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.ViewManager;
+import expo.modules.core.interfaces.ExpoProp;
 
 public class BannerViewManager extends ViewManager<BannerView> {
   private ModuleRegistry mModuleRegistry;

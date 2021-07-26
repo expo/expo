@@ -6,8 +6,8 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.unimodules.core.ModuleRegistry
-import org.unimodules.core.interfaces.ActivityProvider
+import expo.modules.core.ModuleRegistry
+import expo.modules.core.interfaces.ActivityProvider
 import org.unimodules.test.core.PromiseMock
 import org.unimodules.test.core.assertResolved
 import org.unimodules.test.core.mockInternalModule

@@ -10,11 +10,10 @@ import com.facebook.react.ReactRootView;
 
 import java.util.List;
 
-import org.unimodules.adapters.react.ReactModuleRegistryProvider;
-import org.unimodules.core.interfaces.Package;
-import org.unimodules.core.interfaces.SingletonModule;
+import expo.modules.adapters.react.ReactModuleRegistryProvider;
+import expo.modules.core.interfaces.Package;
+import expo.modules.core.interfaces.SingletonModule;
 
-import expo.modules.splashscreen.SplashScreenImageResizeMode;
 import expo.modules.splashscreen.singletons.SplashScreen;
 import host.exp.exponent.Constants;
 import host.exp.expoview.ExpoViewBuildConfig;

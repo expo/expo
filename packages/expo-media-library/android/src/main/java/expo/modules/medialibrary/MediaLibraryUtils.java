@@ -17,7 +17,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
-import org.unimodules.core.Promise;
+import expo.modules.core.Promise;
 
 import java.io.File;
 import java.io.FileInputStream;

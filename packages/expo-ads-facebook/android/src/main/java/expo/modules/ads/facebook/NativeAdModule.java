@@ -5,10 +5,10 @@ import android.util.Log;
 
 import java.util.List;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.interfaces.ExpoMethod;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.Promise;
+import expo.modules.core.interfaces.ExpoMethod;
 
 public class NativeAdModule extends ExportedModule {
   private ModuleRegistry mModuleRegistry;

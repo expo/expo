@@ -3,7 +3,7 @@ package expo.modules.notifications.badge;
 import android.content.Context;
 import android.util.Log;
 
-import org.unimodules.core.interfaces.SingletonModule;
+import expo.modules.core.interfaces.SingletonModule;
 
 import expo.modules.notifications.badge.interfaces.BadgeManager;
 import me.leolin.shortcutbadger.ShortcutBadgeException;

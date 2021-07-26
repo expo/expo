@@ -6,7 +6,7 @@ import android.os.BatteryManager
 import android.os.PowerManager
 import io.mockk.every
 import io.mockk.mockk
-import org.unimodules.core.interfaces.services.EventEmitter
+import expo.modules.core.interfaces.services.EventEmitter
 import org.unimodules.test.core.mockkInternalModule
 
 fun mockContext(): Context {

@@ -67,14 +67,16 @@ android {
     abortOnError false
   }
   kotlinOptions {
-    jvmTarget = '1.8'
+    jvmTarget = JavaVersion.VERSION_1_8
   }
 }
 
 dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
-  implementation project(':unimodules-core')
   implementation 'androidx.annotation:annotation:1.2.0'
+
+  //noinspection GradleDynamicVersion
+  implementation 'com.facebook.react:react-native:+'
 }
 
 addLinkerPackage(project)

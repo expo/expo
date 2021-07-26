@@ -16,7 +16,7 @@ import com.google.android.gms.tasks.Task;
 import java.util.ArrayList;
 import java.util.Map;
 
-import org.unimodules.core.Promise;
+import expo.modules.core.Promise;
 
 public class Serialization {
 
