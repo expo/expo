@@ -50,7 +50,7 @@ export declare type Manifest = {
 };
 export declare type EASConfig = {
     /**
-     * The ID for this project. UUID. This value will not change when a project is transferred
+     * The ID for this project if it's using EAS. UUID. This value will not change when a project is transferred
      * between accounts or renamed.
      */
     projectId?: string;
