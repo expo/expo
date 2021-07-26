@@ -170,12 +170,12 @@ export default class DocumentationPage extends React.Component<Props, State> {
 
   private getCanonicalUrl = () => {
     if (this.isReferencePath()) {
-      return `https://docs.expo.io${Utilities.replaceVersionInUrl(
+      return `https://docs.expo.dev${Utilities.replaceVersionInUrl(
         this.props.url.pathname,
         'latest'
       )}`;
     } else {
-      return `https://docs.expo.io/${this.props.url.pathname}`;
+      return `https://docs.expo.dev/${this.props.url.pathname}`;
     }
   };
 
