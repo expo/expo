@@ -8,14 +8,14 @@ class ApplicationLifecycleDispatcher private constructor() {
 
     @JvmStatic
     fun onApplicationCreate(application: Application) {
-      ExpoModulesPackageList.getPackageList()
+      ExpoModulesPackageListDelegate.getPackageList()
         .flatMap { it.createApplicationLifecycleListeners(application) }
         .forEach { it.onCreate(application) }
     }
 
     @JvmStatic
     fun onConfigurationChanged(application: Application, newConfig: Configuration) {
-      ExpoModulesPackageList.getPackageList()
+      ExpoModulesPackageListDelegate.getPackageList()
         .flatMap { it.createApplicationLifecycleListeners(application) }
         .forEach { it.onConfigurationChanged(newConfig) }
     }

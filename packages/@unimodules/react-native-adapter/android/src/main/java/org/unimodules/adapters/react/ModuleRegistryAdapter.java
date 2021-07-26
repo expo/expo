@@ -23,7 +23,7 @@ public class ModuleRegistryAdapter implements ReactPackage {
   protected ReactAdapterPackage mReactAdapterPackage = new ReactAdapterPackage();
 
   public ModuleRegistryAdapter() {
-    mModuleRegistryProvider = new ReactModuleRegistryProvider(ExpoModulesPackageList.getPackageList(), null);
+    mModuleRegistryProvider = new ReactModuleRegistryProvider(ExpoModulesPackageListDelegate.getPackageList(), null);
   }
 
   public ModuleRegistryAdapter(ReactModuleRegistryProvider moduleRegistryProvider) {

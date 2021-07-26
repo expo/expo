@@ -5,7 +5,6 @@ apply plugin: 'maven'
 // Import autolinking script
 apply from: "../scripts/autolinking.gradle"
 
-
 group = 'host.exp.exponent'
 version = '0.1.1'
 
@@ -69,12 +68,26 @@ android {
   kotlinOptions {
     jvmTarget = '1.8'
   }
+
+  sourceSets {
+    main {
+      java {
+        srcDirs += new File(project.buildDir, generatedFilesSrcDir)
+      }
+    }
+  }
 }
 
-dependencies {
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
-  implementation project(':unimodules-core')
-  implementation 'androidx.annotation:annotation:1.2.0'
+// A task generating a package list of expo modules.
+task generateExpoModulesPackageList {
+  doLast {
+    generateExpoModulesPackageList()
+  }
 }
 
-addLinkerPackage(project)
+// Run that task during prebuilding phase.
+preBuild.dependsOn "generateExpoModulesPackageList"
+
+// Link expo modules as dependencies of the adapter. It uses `api` configuration so they all will be visible for the app as well.
+// A collection of the dependencies depends on the options passed to `useExpoModules` in your project's `settings.gradle`.
+addExpoModulesDependencies(project)
