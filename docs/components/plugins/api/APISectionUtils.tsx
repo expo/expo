@@ -57,6 +57,7 @@ const nonLinkableTypes = [
   'Omit',
   'Pick',
   'React.FC',
+  'ServiceActionResult',
   'StyleProp',
   'T',
   'TaskOptions',
@@ -195,6 +196,8 @@ export const resolveTypeName = ({
     );
   } else if (type === 'query' && queryType) {
     return queryType.name;
+  } else if (type === 'literal' && typeof value === 'boolean') {
+    return `${value}`;
   } else if (type === 'literal' && value) {
     return `'${value}'`;
   } else if (value === null) {
@@ -240,7 +243,11 @@ export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
   const deprecation = comment?.tags?.filter(tag => tag.tag === 'deprecated')[0];
   const deprecationNote = deprecation ? (
     <Quote key="deprecation-note">
-      <B>{deprecation.text.trim().length ? deprecation.text : 'Deprecated'}</B>
+      {deprecation.text.trim().length ? (
+        <ReactMarkdown renderers={renderers}>{deprecation.text}</ReactMarkdown>
+      ) : (
+        <B>Deprecated</B>
+      )}
     </Quote>
   ) : null;
 
