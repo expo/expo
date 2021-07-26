@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
       NSAssert([assetDict isKindOfClass:[NSDictionary class]], @"assets must be objects");
       id key = assetDict[@"key"];
       id urlString = assetDict[@"url"];
-      id type = assetDict[@"contentType"];
+      id type = assetDict[@"type"];
       id metadata = assetDict[@"metadata"];
       id mainBundleFilename = assetDict[@"mainBundleFilename"];
       NSAssert(key && [key isKindOfClass:[NSString class]], @"asset key should be a nonnull string");
