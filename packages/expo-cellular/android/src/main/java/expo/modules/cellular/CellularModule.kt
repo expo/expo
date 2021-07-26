@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.sip.SipManager
 import android.os.Build
-import android.os.Bundle
 import android.telephony.TelephonyManager
 import android.util.Log
 import org.unimodules.core.ExportedModule
@@ -32,23 +31,6 @@ class CellularModule(private val mContext: Context) : ExportedModule(mContext), 
   }
 
   @ExpoMethod
-  fun getCurrentCellularInfoAsync(promise: Promise) {
-    val telephonyManager =
-      (mContext.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager).takeIf {
-        it?.simState == TelephonyManager.SIM_STATE_READY
-      }
-    val bundle = Bundle().apply {
-      putBoolean("allowsVoip", SipManager.isVoipSupported(mContext))
-      putString("isoCountryCode", telephonyManager?.simCountryIso)
-      putString("carrier", telephonyManager?.simOperatorName)
-      putString("mobileCountryCode", telephonyManager?.simOperator?.substring(0, 3))
-      putString("mobileNetworkCode", telephonyManager?.simOperator?.substring(3))
-      putInt("generation", getCurrentGeneration(telephonyManager))
-    }
-    promise.resolve(bundle)
-  }
-
-  @ExpoMethod
   fun getCellularGenerationAsync(promise: Promise) {
     try {
       val telephonyManager = mContext.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager
@@ -56,6 +38,72 @@ class CellularModule(private val mContext: Context) : ExportedModule(mContext), 
     } catch (e: Exception) {
       Log.i(name, "Unable to access network type or not connected to a cellular network", e)
       promise.resolve(CellularGeneration.UNKNOWN.value)
+    }
+  }
+
+  @ExpoMethod
+  fun allowsVoipAsync(promise: Promise) {
+    try {
+      promise.resolve(SipManager.isVoipSupported(mContext))
+    } catch (e: Exception) {
+      Log.i(name, "Unable to access network type or not connected to a cellular network", e)
+      promise.resolve(false)
+    }
+  }
+
+  @ExpoMethod
+  fun getIsoCountryCodeAsync(promise: Promise) {
+    try {
+      val telephonyManager =
+        (mContext.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager).takeIf {
+          it?.simState == TelephonyManager.SIM_STATE_READY
+        }
+      promise.resolve(telephonyManager?.simCountryIso)
+    } catch (e: Exception) {
+      Log.i(name, "Unable to access network type or not connected to a cellular network", e)
+      promise.resolve(null)
+    }
+  }
+
+  @ExpoMethod
+  fun getCarrierNameAsync(promise: Promise) {
+    try {
+      val telephonyManager =
+        (mContext.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager).takeIf {
+          it?.simState == TelephonyManager.SIM_STATE_READY
+        }
+      promise.resolve(telephonyManager?.simOperatorName)
+    } catch (e: Exception) {
+      Log.i(name, "Unable to access network type or not connected to a cellular network", e)
+      promise.resolve(null)
+    }
+  }
+
+  @ExpoMethod
+  fun getMobileCountryCodeAsync(promise: Promise) {
+    try {
+      val telephonyManager =
+        (mContext.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager).takeIf {
+          it?.simState == TelephonyManager.SIM_STATE_READY
+        }
+      promise.resolve(telephonyManager?.simOperator?.substring(0, 3))
+    } catch (e: Exception) {
+      Log.i(name, "Unable to access network type or not connected to a cellular network", e)
+      promise.resolve(null)
+    }
+  }
+
+  @ExpoMethod
+  fun getMobileNetworkCodeAsync(promise: Promise) {
+    try {
+      val telephonyManager =
+        (mContext.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager).takeIf {
+          it?.simState == TelephonyManager.SIM_STATE_READY
+        }
+      promise.resolve(telephonyManager?.simOperator?.substring(3))
+    } catch (e: Exception) {
+      Log.i(name, "Unable to access network type or not connected to a cellular network", e)
+      promise.resolve(null)
     }
   }
 

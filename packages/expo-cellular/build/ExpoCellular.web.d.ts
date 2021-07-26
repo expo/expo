@@ -1,4 +1,4 @@
-import { CellularGeneration, CellularInfo } from './Cellular.types';
+import { CellularGeneration } from './Cellular.types';
 declare const _default: {
     readonly allowsVoip: null;
     readonly carrier: null;
@@ -6,6 +6,10 @@ declare const _default: {
     readonly mobileCountryCode: null;
     readonly mobileNetworkCode: null;
     getCellularGenerationAsync(): Promise<CellularGeneration>;
-    getCurrentCellularInfoAsync(): Promise<CellularInfo>;
+    allowsVoipAsync(): Promise<boolean | null>;
+    getIsoCountryCodeAsync(): Promise<string | null>;
+    getCarrierNameAsync(): Promise<string | null>;
+    getMobileCountryCodeAsync(): Promise<string | null>;
+    getMobileNetworkCodeAsync(): Promise<string | null>;
 };
 export default _default;

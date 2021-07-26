@@ -25,13 +25,7 @@ EX_EXPORT_MODULE(ExpoCellular);
 {
   CTCarrier *carrier = [self carrier];
 
-  return @{
-           @"allowsVoip": @(carrier.allowsVOIP),
-           @"carrier": EXNullIfNil(carrier.carrierName),
-           @"isoCountryCode": EXNullIfNil(carrier.isoCountryCode),
-           @"mobileCountryCode": EXNullIfNil(carrier.mobileCountryCode),
-           @"mobileNetworkCode": EXNullIfNil(carrier.mobileNetworkCode),
-           };
+  return [self getCurrentCellularInfo];
 }
 
 EX_EXPORT_METHOD_AS(getCellularGenerationAsync, getCellularGenerationAsyncWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject)
@@ -39,20 +33,29 @@ EX_EXPORT_METHOD_AS(getCellularGenerationAsync, getCellularGenerationAsyncWithRe
   resolve(@([[self class] getCellularGeneration]));
 }
 
-
-EX_EXPORT_METHOD_AS(getCurrentCellularInfoAsync, getCurrentCarrierAsyncWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(allowsVoipAsync, allowsVoipAsyncWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject)
 {
-  CTCarrier *carrier = [self carrier];
-  EXCellularGeneration generation = [[self class] getCellularGeneration];
+  resolve(@([self allowsVoip]));
+}
 
-  resolve(@{
-    @"allowsVoip": @(carrier.allowsVOIP),
-    @"carrier": EXNullIfNil(carrier.carrierName),
-    @"isoCountryCode": EXNullIfNil(carrier.isoCountryCode),
-    @"mobileCountryCode": EXNullIfNil(carrier.mobileCountryCode),
-    @"mobileNetworkCode": EXNullIfNil(carrier.mobileNetworkCode),
-    @"generation": @(generation),
-  });
+EX_EXPORT_METHOD_AS(getIsoCountryCodeAsync, getIsoCountryCodeAsyncWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject)
+{
+  resolve([self getIsoCountryCode]);
+}
+
+EX_EXPORT_METHOD_AS(getCarrierNameAsync, getCarrierNameAsyncWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject)
+{
+  resolve([self getCarrierName]);
+}
+
+EX_EXPORT_METHOD_AS(getMobileCountryCodeAsync, getMobileCountryCodeAsyncWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject)
+{
+  resolve([self getMobileCountryCode]);
+}
+
+EX_EXPORT_METHOD_AS(getMobileNetworkCodeAsync, getMobileNetworkCodeAsyncWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject)
+{
+  resolve([self getMobileNetworkCode]);
 }
 
 + (EXCellularGeneration)getCellularGeneration
@@ -107,6 +110,54 @@ EX_EXPORT_METHOD_AS(getCurrentCellularInfoAsync, getCurrentCarrierAsyncWithResol
   }
 
   return netinfo.subscriberCellularProvider;
+}
+
+- (NSDictionary *)getCurrentCellularInfo
+{
+  CTCarrier *carrier = [self carrier];
+
+  return @{
+    @"allowsVoip": @(carrier.allowsVOIP),
+    @"carrier": EXNullIfNil(carrier.carrierName),
+    @"isoCountryCode": EXNullIfNil(carrier.isoCountryCode),
+    @"mobileCountryCode": EXNullIfNil(carrier.mobileCountryCode),
+    @"mobileNetworkCode": EXNullIfNil(carrier.mobileNetworkCode),
+  };
+}
+
+- (BOOL) allowsVoip
+{
+  CTCarrier *carrier = [self carrier];
+
+  return carrier.allowsVOIP;
+}
+
+- (NSString *) getIsoCountryCode
+{
+  CTCarrier *carrier = [self carrier];
+  
+  return carrier.isoCountryCode;
+}
+
+- (NSString *) getCarrierName
+{
+  CTCarrier *carrier = [self carrier];
+  
+  return carrier.carrierName;
+}
+
+- (NSString *) getMobileCountryCode
+{
+  CTCarrier *carrier = [self carrier];
+  
+  return carrier.mobileCountryCode;
+}
+
+- (NSString *) getMobileNetworkCode
+{
+  CTCarrier *carrier = [self carrier];
+  
+  return carrier.mobileNetworkCode;
 }
 
 @end

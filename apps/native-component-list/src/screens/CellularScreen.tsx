@@ -1,5 +1,5 @@
 import * as Cellular from 'expo-cellular';
-import { CellularInfo } from 'expo-cellular/build/Cellular.types';
+import { CellularGeneration } from 'expo-cellular';
 import * as React from 'react';
 import { useState } from 'react';
 import { ScrollView } from 'react-native';
@@ -7,13 +7,29 @@ import { ScrollView } from 'react-native';
 import Button from '../components/Button';
 import MonoText from '../components/MonoText';
 
+type CellularInfo = {
+  allowsVoip: boolean | null;
+  carrier: string | null;
+  isoCountryCode: string | null;
+  mobileCountryCode: string | null;
+  mobileNetworkCode: string | null;
+  generation: CellularGeneration;
+};
+
 export default function CellularScreen() {
   const [cellularInfo, setCellularInfo] = useState<CellularInfo>();
 
   const _getCellularInfo = async () => {
     try {
-      const newCellularCarrier = await Cellular.getCurrentCellularInfoAsync();
-      setCellularInfo(newCellularCarrier);
+      const generation = await Cellular.getCellularGenerationAsync();
+      setCellularInfo({
+        allowsVoip: await Cellular.allowsVoipAsync(),
+        carrier: await Cellular.getCarrierNameAsync(),
+        isoCountryCode: await Cellular.getIsoCountryCodeAsync(),
+        mobileCountryCode: await Cellular.getMobileCountryCodeAsync(),
+        mobileNetworkCode: await Cellular.getMobileNetworkCodeAsync(),
+        generation,
+      });
     } catch (error) {
       alert(error.message);
     }
@@ -26,12 +42,7 @@ export default function CellularScreen() {
         <MonoText>
           {JSON.stringify(
             {
-              allowsVoip: cellularInfo.allowsVoip,
-              carrier: cellularInfo.carrier,
-              isoCountryCode: cellularInfo.isoCountryCode,
-              mobileCountryCode: cellularInfo.mobileCountryCode,
-              mobileNetworkCode: cellularInfo.mobileNetworkCode,
-              generation: cellularInfo.generation,
+              ...cellularInfo,
               generationName: generationMap[cellularInfo.generation ?? 0],
             },
             null,

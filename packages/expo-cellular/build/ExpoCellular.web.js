@@ -37,15 +37,20 @@ export default {
             return CellularGeneration.UNKNOWN;
         }
     },
-    async getCurrentCellularInfoAsync() {
-        return {
-            allowsVoip: this.allowsVoip,
-            isoCountryCode: this.isoCountryCode,
-            carrier: this.carrier,
-            mobileCountryCode: this.mobileCountryCode,
-            mobileNetworkCode: this.mobileNetworkCode,
-            generation: await this.getCellularGenerationAsync(),
-        };
+    async allowsVoipAsync() {
+        return null;
+    },
+    async getIsoCountryCodeAsync() {
+        return null;
+    },
+    async getCarrierNameAsync() {
+        return null;
+    },
+    async getMobileCountryCodeAsync() {
+        return null;
+    },
+    async getMobileNetworkCodeAsync() {
+        return null;
     },
 };
 //# sourceMappingURL=ExpoCellular.web.js.map

@@ -9,17 +9,27 @@ public class CellularModule: Module {
       // Constants are returned to JS only once, but the carrier may change over time.
       let carrier = Self.currentCarrier()
 
-      return [
-        "allowsVoip": carrier?.allowsVOIP,
-        "carrier": carrier?.carrierName,
-        "isoCountryCode": carrier?.isoCountryCode,
-        "mobileCountryCode": carrier?.mobileCountryCode,
-        "mobileNetworkCode": carrier?.mobileNetworkCode
-      ]
+      return Self.getCurrentCellularInfo()
     }
     method("getCellularGenerationAsync") { () -> Int in
       Self.currentCellularGeneration().rawValue
     }
+    method("allowsVoipAsync") { () -> Bool? in
+      Self.allowsVoip()
+    }
+    method("getIsoCountryCodeAsync") { () -> String? in
+      Self.getIsoCountryCode()
+    }
+    method("getCarrierNameAsync") { () -> String? in
+      Self.getCarrierName()
+    }
+    method("getMobileCountryCodeAsync") { () -> String? in
+      Self.getMobileCountryCode()
+    }
+    method("getMobileNetworkCodeAsync") { () -> String? in
+      Self.getMobileNetworkCode()
+    }
+
   }
 
   // MARK: - internals
@@ -65,7 +75,7 @@ public class CellularModule: Module {
   }
   
   
-  static func getCurrentCellularInfoAsync() -> [String: Any?] {
+  static func getCurrentCellularInfo() -> [String : Any?] {
     let carrier = Self.currentCarrier()
     let generation = Self.currentCellularGeneration()
 
@@ -101,5 +111,35 @@ public class CellularModule: Module {
       return providers.values.first
     }
     return netinfo.subscriberCellularProvider
+  }
+  
+  static func allowsVoip() -> Bool? {
+    let carrier = Self.currentCarrier()
+    
+    return carrier?.allowsVOIP
+  }
+  
+  static func getIsoCountryCode() -> String? {
+    let carrier = Self.currentCarrier()
+    
+    return carrier?.isoCountryCode
+  }
+  
+  static func getCarrierName() -> String? {
+    let carrier = Self.currentCarrier()
+    
+    return carrier?.carrierName
+  }
+  
+  static func getMobileCountryCode() -> String? {
+    let carrier = Self.currentCarrier()
+    
+    return carrier?.mobileCountryCode
+  }
+  
+  static func getMobileNetworkCode() -> String? {
+    let carrier = Self.currentCarrier()
+    
+    return carrier?.mobileNetworkCode
   }
 }
