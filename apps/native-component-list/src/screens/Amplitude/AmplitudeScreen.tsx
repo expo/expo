@@ -143,7 +143,9 @@ export default class AmplitudeApiScreen extends React.Component<object, State> {
         <Text>4. Choose the test project</Text>
         <Text>5. Enter displayed API key into input field below</Text>
         <Text>6. Initialize amplitude module</Text>
-        <Text>7. From your Amplitude project site, track if events are logged on "LOG *" buttons press</Text>
+        <Text>
+          7. From your Amplitude project site, track if events are logged on "LOG *" buttons press
+        </Text>
         <TextInput
           style={styles.textInputForApiKey}
           placeholder="Provide Amplitude API key"
