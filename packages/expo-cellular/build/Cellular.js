@@ -4,8 +4,6 @@ import ExpoCellular from './ExpoCellular';
 export { CellularGeneration };
 // @needsAudit
 /**
- * @deprecated field, use [`getCurrentCellularInfoAsync()`](#getcurrentcellularinfoasync) instead
- *
  * Indicates if the carrier allows making VoIP calls on its network. On Android, this checks whether
  * the system supports SIP-based VoIP API. See [here](https://developer.android.com/reference/android/net/sip/SipManager.html#isVoipSupported(android.content.Context))
  * to view more information.
@@ -20,12 +18,12 @@ export { CellularGeneration };
  * ```ts
  * Cellular.allowsVoip; // true or false
  * ```
+ * @deprecated Deprecated field, use [`getCurrentCellularInfoAsync()`](#getcurrentcellularinfoasync) instead.
+ *
  */
 export const allowsVoip = ExpoCellular ? ExpoCellular.allowsVoip : null;
 // @needsAudit
 /**
- * @deprecated field, use [`getCurrentCellularInfoAsync()`](#getcurrentcellularinfoasync) instead
- *
  * The name of the user’s home cellular service provider. If the device has dual SIM cards, only the
  * carrier for the currently active SIM card will be returned. On Android, this value is only
  * available when the SIM state is [`SIM_STATE_READY`](https://developer.android.com/reference/android/telephony/TelephonyManager.html#SIM_STATE_READY).
@@ -42,12 +40,12 @@ export const allowsVoip = ExpoCellular ? ExpoCellular.allowsVoip : null;
  * ```ts
  * Cellular.carrier; // "T-Mobile" or "Verizon"
  * ```
+ * @deprecated Deprecated field, use [`getCurrentCellularInfoAsync()`](#getcurrentcellularinfoasync) instead.
+ *
  */
 export const carrier = ExpoCellular ? ExpoCellular.carrier : null;
 // @needsAudit
 /**
- * @deprecated field, use [`getCurrentCellularInfoAsync()`](#getcurrentcellularinfoasync) instead
- *
  * The ISO country code for the user’s cellular service provider. On iOS, the value is `null` if any
  * of the following apply:
  * - The device is in airplane mode.
@@ -60,12 +58,12 @@ export const carrier = ExpoCellular ? ExpoCellular.carrier : null;
  * ```ts
  * Cellular.isoCountryCode; // "us" or "au"
  * ```
+ * @deprecated Deprecated field, use [`getCurrentCellularInfoAsync()`](#getcurrentcellularinfoasync) instead.
+ *
  */
 export const isoCountryCode = ExpoCellular ? ExpoCellular.isoCountryCode : null;
 // @needsAudit
 /**
- * @deprecated field, use [`getCurrentCellularInfoAsync()`](#getcurrentcellularinfoasync) instead
- *
  * The mobile country code (MCC) for the user’s current registered cellular service provider.
  * On Android, this value is only available when SIM state is [`SIM_STATE_READY`](https://developer.android.com/reference/android/telephony/TelephonyManager.html#SIM_STATE_READY). Otherwise, this
  * returns `null`. On iOS, the value may be null on hardware prior to iPhone 4S when in airplane mode.
@@ -79,14 +77,14 @@ export const isoCountryCode = ExpoCellular ? ExpoCellular.isoCountryCode : null;
  * ```ts
  * Cellular.mobileCountryCode; // "310"
  * ```
+ * @deprecated Deprecated field, use [`getCurrentCellularInfoAsync()`](#getcurrentcellularinfoasync) instead.
+ *
  */
 export const mobileCountryCode = ExpoCellular
     ? ExpoCellular.mobileCountryCode
     : null;
 // @needsAudit
 /**
- * @deprecated field, use [`getCurrentCellularInfoAsync()`](#getcurrentcellularinfoasync) instead
- *
  * The ISO country code for the user’s cellular service provider. On iOS, the value is `null` if
  * any of the following apply:
  * - The device is in airplane mode.
@@ -99,6 +97,8 @@ export const mobileCountryCode = ExpoCellular
  * ```ts
  * Cellular.mobileNetworkCode; // "260"
  * ```
+ * @deprecated Deprecated field, use [`getCurrentCellularInfoAsync()`](#getcurrentcellularinfoasync) instead.
+ *
  */
 export const mobileNetworkCode = ExpoCellular
     ? ExpoCellular.mobileNetworkCode
@@ -125,7 +125,11 @@ export async function getCellularGenerationAsync() {
     }
     return await ExpoCellular.getCellularGenerationAsync();
 }
+// @needsAudit
 /**
+ * @returns A promise that fulfills with a [`Cellular.CellularInfo`](#cellularinfo) object with
+ * information about the device's cellular connection.
+ *
  * Gets information about the device's current cellular connection. The return value of this method
  * changes if the device changes carriers, such as when swapping the SIM card or roaming.
  *
@@ -136,8 +140,10 @@ export async function getCellularGenerationAsync() {
  * This method should be used in favor of this module's constants because the cellular connection
  * may change during the lifetime of the app.
  *
- * @returns A promise that fulfills with a [`Cellular.CellularInfo`](#cellularinfo) object with
- * information about the device's cellular connection.
+ *  * # Example
+ * ```ts
+ * await Cellular.getCurrentCellularInfoAsync();
+ * ```
  */
 export async function getCurrentCellularInfoAsync() {
     if (!ExpoCellular.getCurrentCellularInfoAsync) {
