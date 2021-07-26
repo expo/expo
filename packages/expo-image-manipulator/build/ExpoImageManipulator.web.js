@@ -183,6 +183,17 @@ function actionCrop(canvas, action) {
     }
     return cropImage(canvas, originX, originY, width, height);
 }
+function actionFill(canvas, action) {
+    const { fill } = action;
+    const result = document.createElement('canvas');
+    result.width = canvas.width;
+    result.height = canvas.height;
+    const context = getContext(result);
+    context.fillStyle = fill;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(canvas, 0, 0, canvas.width, canvas.height);
+    return result;
+}
 function actionResize(canvas, action) {
     const { resize: { width, height }, } = action;
     const imageRatio = canvas.width / canvas.height;
@@ -220,6 +231,9 @@ export default {
         const result = actions.reduce((canvas, action) => {
             if (action.crop) {
                 return actionCrop(canvas, action);
+            }
+            else if (action.fill !== undefined) {
+                return actionFill(canvas, action);
             }
             else if (action.resize) {
                 return actionResize(canvas, action);

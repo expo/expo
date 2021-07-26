@@ -17,7 +17,7 @@ export function validateActions(actions) {
         if (typeof action !== 'object' || action === null) {
             throw new TypeError('Action must be an object');
         }
-        const supportedActionTypes = ['crop', 'flip', 'rotate', 'resize'];
+        const supportedActionTypes = ['crop', 'fill', 'flip', 'rotate', 'resize'];
         const actionKeys = Object.keys(action);
         if (actionKeys.length !== 1) {
             throw new TypeError(`Single action must contain exactly one transformation: ${supportedActionTypes.join(', ')}`);
@@ -28,6 +28,9 @@ export function validateActions(actions) {
         }
         if (actionType === 'crop') {
             validateCropAction(action);
+        }
+        else if (actionType === 'fill') {
+            validateFillAction(action);
         }
         else if (actionType === 'flip') {
             validateFlipAction(action);
@@ -49,6 +52,11 @@ function validateCropAction(action) {
         typeof action.crop.height === 'number';
     if (!isValid) {
         throw new TypeError('Crop action must be an object of shape { originX: number; originY: number; width: number; height: number }');
+    }
+}
+function validateFillAction(action) {
+    if (typeof action.fill !== 'string' || !action.fill.match(/^#(([0-9A-F]{2}){3})$/i)) {
+        throw new TypeError('Fill must be a string of format #RRGGBB');
     }
 }
 function validateFlipAction(action) {

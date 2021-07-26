@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added fill action to allow the color of transparent pixels to be set.
+
 ### 🐛 Bug fixes
 
 - Fix resize action validator to allow providing just one of `width` or `height`. ([#13369](https://github.com/expo/expo/pull/13369) by [@cruzach](https://github.com/cruzach))

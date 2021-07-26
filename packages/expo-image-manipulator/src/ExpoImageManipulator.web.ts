@@ -9,6 +9,7 @@ import {
   ActionFlip,
   ActionRotate,
   FlipType,
+  ActionFill,
 } from './ImageManipulator.types';
 
 /**
@@ -250,6 +251,21 @@ function actionCrop(canvas: HTMLCanvasElement, action: ActionCrop) {
   return cropImage(canvas, originX, originY, width, height);
 }
 
+function actionFill(canvas: HTMLCanvasElement, action: ActionFill) {
+  const { fill } = action as ActionFill;
+
+  const result = document.createElement('canvas');
+  result.width = canvas.width;
+  result.height = canvas.height;
+
+  const context = getContext(result);
+  context.fillStyle = fill;
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  context.drawImage(canvas, 0, 0, canvas.width, canvas.height);
+
+  return result;
+}
+
 function actionResize(canvas: HTMLCanvasElement, action: ActionResize) {
   const {
     resize: { width, height },
@@ -300,6 +316,8 @@ export default {
     const result = actions.reduce((canvas, action) => {
       if ((action as ActionCrop).crop) {
         return actionCrop(canvas, action as ActionCrop);
+      } else if ((action as ActionFill).fill !== undefined) {
+        return actionFill(canvas, action as ActionFill);
       } else if ((action as ActionResize).resize) {
         return actionResize(canvas, action as ActionResize);
       } else if ((action as ActionFlip).flip !== undefined) {

@@ -28,7 +28,10 @@ export declare type ActionCrop = {
         height: number;
     };
 };
-export declare type Action = ActionResize | ActionRotate | ActionFlip | ActionCrop;
+export declare type ActionFill = {
+    fill: string;
+};
+export declare type Action = ActionResize | ActionRotate | ActionFlip | ActionCrop | ActionFill;
 export declare enum SaveFormat {
     JPEG = "jpeg",
     PNG = "png",

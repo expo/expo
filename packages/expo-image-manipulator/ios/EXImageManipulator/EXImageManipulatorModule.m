@@ -17,6 +17,7 @@ static NSString* const ACTION_KEY_RESIZE = @"resize";
 static NSString* const ACTION_KEY_ROTATE = @"rotate";
 static NSString* const ACTION_KEY_FLIP = @"flip";
 static NSString* const ACTION_KEY_CROP = @"crop";
+static NSString* const ACTION_KEY_FILL = @"fill";
 
 static NSString* const SAVE_OPTIONS_KEY_FORMAT = @"format";
 static NSString* const SAVE_OPTIONS_KEY_COMPRESS = @"compress";
@@ -123,13 +124,18 @@ EX_EXPORT_METHOD_AS(manipulateAsync,
       }
 
     }
+      
+    if (action[ACTION_KEY_FILL]) {
+      actionsCounter += 1;
+    }
 
     if (actionsCounter != 1) {
-      *errorMessage = [NSString stringWithFormat:@"Single action must contain exactly one transformation from list: ['%@', '%@', '%@', '%@']",
+      *errorMessage = [NSString stringWithFormat:@"Single action must contain exactly one transformation from list: ['%@', '%@', '%@', '%@', '%@']",
                        ACTION_KEY_RESIZE,
                        ACTION_KEY_ROTATE,
                        ACTION_KEY_FLIP,
-                       ACTION_KEY_CROP];
+                       ACTION_KEY_CROP,
+                       ACTION_KEY_FILL];
       return NO;
     }
   }
@@ -234,6 +240,8 @@ EX_EXPORT_METHOD_AS(manipulateAsync,
       if (errorMessage != nil) {
         return reject(@"E_INVALID_CROP_DATA", errorMessage, nil);
       }
+    } else if (action[ACTION_KEY_FILL]) {
+      image = [self fillImage:image fill:action[ACTION_KEY_FILL]];
     }
   }
 
@@ -358,6 +366,40 @@ EX_EXPORT_METHOD_AS(manipulateAsync,
   image = [UIImage imageWithCGImage:cropCGImage scale:image.scale orientation:image.imageOrientation];
   CGImageRelease(cropCGImage);
   return image;
+}
+
+- (UIImage *)fillImage:(UIImage *)image fill:(NSString *)fill
+{
+  UIGraphicsBeginImageContext(image.size);
+  CGContextRef bitmap = UIGraphicsGetCurrentContext();
+  CGContextSetFillColorWithColor(bitmap, [self colorWithHexString:fill].CGColor);
+  CGRect rect = CGRectMake(0, 0, image.size.width, image.size.height);
+  CGContextFillRect(bitmap, rect);
+  [image drawInRect:rect];
+  image = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+  return image;
+}
+
+- (UIColor *)colorWithHexString:(NSString *)hexString
+{
+  if (!hexString || hexString.length != 7 || [hexString characterAtIndex:0] != '#') {
+    return nil;
+  }
+  hexString = [hexString substringWithRange:NSMakeRange(1, 6)];
+  NSScanner *scanner = [NSScanner scannerWithString:hexString];
+  unsigned int hex;
+  if ([scanner scanHexInt:&hex]) {
+    int r = (hex >> 16) & 0xFF;
+    int g = (hex >> 8) & 0xFF;
+    int b = (hex) & 0xFF;
+    
+    return [UIColor colorWithRed:r / 255.0f
+                           green:g / 255.0f
+                            blue:b / 255.0f
+                           alpha:1.0f];
+  }
+  return nil;
 }
 
 @end

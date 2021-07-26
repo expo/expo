@@ -65,6 +65,36 @@ describe(validateActions, () => {
     });
   });
 
+  describe('fill', () => {
+    test('invalid', () => {
+      expect(() => {
+        const action = ({
+          fill: true,
+        } as unknown) as ActionCrop;
+        validateActions([action]);
+      }).toThrow(/Fill must be a string of format #RRGGBB/);
+    });
+
+    test('invalid format', () => {
+      expect(() => {
+        const action = ({
+          fill: 'foo',
+        } as unknown) as ActionCrop;
+        validateActions([action]);
+      }).toThrow(/Fill must be a string of format #RRGGBB/);
+    });
+
+    test('valid', () => {
+      expect(() => {
+        validateActions([
+          {
+            fill: '#ffffff',
+          },
+        ]);
+      }).not.toThrow();
+    });
+  });
+
   describe('flip', () => {
     test('invalid', () => {
       expect(() => {

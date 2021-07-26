@@ -34,7 +34,11 @@ export type ActionCrop = {
   };
 };
 
-export type Action = ActionResize | ActionRotate | ActionFlip | ActionCrop;
+export type ActionFill = {
+  fill: string;
+};
+
+export type Action = ActionResize | ActionRotate | ActionFlip | ActionCrop | ActionFill;
 
 export enum SaveFormat {
   JPEG = 'jpeg',

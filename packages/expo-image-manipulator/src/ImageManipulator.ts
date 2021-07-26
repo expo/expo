@@ -1,4 +1,4 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { Platform, UnavailabilityError } from '@unimodules/core';
 
 import ExpoImageManipulator from './ExpoImageManipulator';
 import { Action, ImageResult, SaveFormat, SaveOptions } from './ImageManipulator.types';
@@ -16,6 +16,12 @@ export async function manipulateAsync(
   validateArguments(uri, actions, saveOptions);
 
   const { format = SaveFormat.JPEG, ...rest } = saveOptions;
+
+  // If output format is JPEG add a white background, not necessary on iOS.
+  if (format === SaveFormat.JPEG && Platform.OS !== 'ios') {
+    actions.push({ fill: '#ffffff' });
+  }
+
   return await ExpoImageManipulator.manipulateAsync(uri, actions, { format, ...rest });
 }
 
