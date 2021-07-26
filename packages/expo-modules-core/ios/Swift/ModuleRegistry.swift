@@ -31,6 +31,15 @@ public class ModuleRegistry: Sequence {
     }
   }
 
+  /**
+   Unregisters given module from the registry.
+   */
+  public func unregister(module: AnyModule) {
+    if let index = registry.firstIndex(where: { $1.module === module }) {
+      registry.remove(at: index)
+    }
+  }
+
   public func has(moduleWithName moduleName: String) -> Bool {
     return registry[moduleName] != nil
   }
@@ -45,5 +54,17 @@ public class ModuleRegistry: Sequence {
 
   public func makeIterator() -> IndexingIterator<[ModuleHolder]> {
     return registry.map({ $1 }).makeIterator()
+  }
+
+  internal func post(event: EventName) {
+    forEach { holder in
+      holder.post(event: event)
+    }
+  }
+
+  internal func post<PayloadType>(event: EventName, payload: PayloadType? = nil) {
+    forEach { holder in
+      holder.post(event: event, payload: payload)
+    }
   }
 }

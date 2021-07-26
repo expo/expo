@@ -1,6 +1,6 @@
 #import <EXBrightness/EXBrightness.h>
 #import <EXBrightness/EXSystemBrightnessPermissionRequester.h>
-#import <UMCore/UMUtilities.h>
+#import <ExpoModulesCore/EXUtilities.h>
 #import <ExpoModulesCore/EXPermissionsInterface.h>
 #import <ExpoModulesCore/EXPermissionsMethodsDelegate.h>
 
@@ -14,17 +14,17 @@
 
 @implementation EXBrightness
 
-UM_EXPORT_MODULE(ExpoBrightness);
+EX_EXPORT_MODULE(ExpoBrightness);
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
   [EXPermissionsMethodsDelegate registerRequesters:@[[EXSystemBrightnessPermissionRequester new]] withPermissionsManager:_permissionsManager];
 }
 
-UM_EXPORT_METHOD_AS(getPermissionsAsync,
-                    getPermissionsAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getPermissionsAsync,
+                    getPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                       withRequester:[EXSystemBrightnessPermissionRequester class]
@@ -32,9 +32,9 @@ UM_EXPORT_METHOD_AS(getPermissionsAsync,
                                                              reject:reject];
 }
 
-UM_EXPORT_METHOD_AS(requestPermissionsAsync,
-                    requestPermissionsAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(requestPermissionsAsync,
+                    requestPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[EXSystemBrightnessPermissionRequester class]
@@ -42,66 +42,66 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                                                                 reject:reject];
 }
 
-UM_EXPORT_METHOD_AS(setBrightnessAsync,
+EX_EXPORT_METHOD_AS(setBrightnessAsync,
                     setBrightnessAsync:(NSNumber *)brightnessValue
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
-  [UMUtilities performSynchronouslyOnMainThread:^{
+  [EXUtilities performSynchronouslyOnMainThread:^{
     [UIScreen mainScreen].brightness = [brightnessValue floatValue];
   }];
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(getBrightnessAsync,
-                    getBrightnessAsyncWithResolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getBrightnessAsync,
+                    getBrightnessAsyncWithResolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   __block float result = 0;
-  [UMUtilities performSynchronouslyOnMainThread:^{
+  [EXUtilities performSynchronouslyOnMainThread:^{
     result = [UIScreen mainScreen].brightness;
   }];
   resolve(@(result));
 }
 
-UM_EXPORT_METHOD_AS(getSystemBrightnessAsync,
-                    getSystemBrightnessAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getSystemBrightnessAsync,
+                    getSystemBrightnessAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   // stub for jest-expo-mock-generator
 }
 
-UM_EXPORT_METHOD_AS(setSystemBrightnessAsync,
-                    setSystemBrightnessAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(setSystemBrightnessAsync,
+                    setSystemBrightnessAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   // stub for jest-expo-mock-generator
 }
 
-UM_EXPORT_METHOD_AS(useSystemBrightnessAsync,
-                    useSystemBrightnessAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(useSystemBrightnessAsync,
+                    useSystemBrightnessAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   // stub for jest-expo-mock-generator
 }
 
-UM_EXPORT_METHOD_AS(isUsingSystemBrightnessAsync,
-                    isUsingSystemBrightnessAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(isUsingSystemBrightnessAsync,
+                    isUsingSystemBrightnessAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   // stub for jest-expo-mock-generator
 }
 
-UM_EXPORT_METHOD_AS(getSystemBrightnessModeAsync,
-                    getSystemBrightnessModeAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getSystemBrightnessModeAsync,
+                    getSystemBrightnessModeAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   // stub for jest-expo-mock-generator
 }
 
-UM_EXPORT_METHOD_AS(setSystemBrightnessModeAsync,
-                    setSystemBrightnessModeAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(setSystemBrightnessModeAsync,
+                    setSystemBrightnessModeAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   // stub for jest-expo-mock-generator
 }

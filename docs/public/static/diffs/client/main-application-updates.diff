@@ -19,10 +19,12 @@ index 15b21ef..f6f50f7 100644
      }
 
      @Override
-@@ -88,6 +89,7 @@ public class MainApplication extends Application implements ReactApplication {
+@@ -88,6 +89,9 @@ public class MainApplication extends Application implements ReactApplication {
      }
 
      DevLauncherController.initialize(this, getReactNativeHost());
-+    DevLauncherController.getInstance().setUpdatesInterface(UpdatesDevLauncherController.initialize(this));
++    if (BuildConfig.DEBUG) {
++      DevLauncherController.getInstance().setUpdatesInterface(UpdatesDevLauncherController.initialize(this));
++    }
      initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
    }

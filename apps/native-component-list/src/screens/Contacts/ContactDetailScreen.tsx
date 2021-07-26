@@ -36,6 +36,14 @@ export default function ContactDetailScreen(props: any) {
               Contacts.shareContactAsync(props.route.params.id, 'Call me :]');
             }}
           />
+          <HeaderIconButton
+            name="md-open"
+            onPress={async () => {
+              await Contacts.presentFormAsync(props.route.params.id);
+              // tslint:disable-next-line no-console
+              console.log('the native contact form has been closed');
+            }}
+          />
           {isIos && (
             <HeaderIconButton
               name="md-copy"

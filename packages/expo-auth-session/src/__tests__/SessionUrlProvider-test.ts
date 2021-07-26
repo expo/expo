@@ -90,6 +90,7 @@ if (Platform.OS !== 'web') {
       beforeEach(() => {
         mockProperty(Constants, 'executionEnvironment', 'storeClient');
         mockProperty(Constants.manifest, 'scheme', 'my-app');
+        mockProperty(Constants.manifest, 'hostUri', 'exp.host/@test/test');
       });
       it(`checks return url`, () => {
         mockProperty(Constants.manifest, 'hostUri', 'exp.host/@example/abc');

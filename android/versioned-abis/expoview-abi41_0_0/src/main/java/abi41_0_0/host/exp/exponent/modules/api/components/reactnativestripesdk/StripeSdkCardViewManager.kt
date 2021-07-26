@@ -1,11 +1,7 @@
 package abi41_0_0.host.exp.exponent.modules.api.components.reactnativestripesdk
 
 import abi41_0_0.com.facebook.react.bridge.ReadableMap
-import abi41_0_0.com.facebook.react.bridge.ReadableNativeMap
-import abi41_0_0.com.facebook.react.bridge.WritableMap
-import abi41_0_0.com.facebook.react.bridge.WritableNativeMap
 import abi41_0_0.com.facebook.react.common.MapBuilder
-import abi41_0_0.com.facebook.react.modules.core.ExceptionsManagerModule
 import abi41_0_0.com.facebook.react.uimanager.SimpleViewManager
 import abi41_0_0.com.facebook.react.uimanager.ThemedReactContext
 import abi41_0_0.com.facebook.react.uimanager.annotations.ReactProp
@@ -20,22 +16,23 @@ class StripeSdkCardViewManager : SimpleViewManager<StripeSdkCardView>() {
   override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any> {
     return MapBuilder.of(
       CardFocusEvent.EVENT_NAME, MapBuilder.of("registrationName", "onFocusChange"),
-      CardChangedEvent.EVENT_NAME, MapBuilder.of("registrationName", "onCardChange"))
+      CardChangedEvent.EVENT_NAME, MapBuilder.of("registrationName", "onCardChange")
+    )
   }
 
   @ReactProp(name = "postalCodeEnabled")
   fun setPostalCodeEnabled(view: StripeSdkCardView, postalCodeEnabled: Boolean = true) {
-    view.setPostalCodeEnabled(postalCodeEnabled);
+    view.setPostalCodeEnabled(postalCodeEnabled)
   }
 
   @ReactProp(name = "cardStyle")
   fun setCardStyle(view: StripeSdkCardView, cardStyle: ReadableMap) {
-    view.setCardStyle(cardStyle);
+    view.setCardStyle(cardStyle)
   }
 
   @ReactProp(name = "placeholder")
   fun setPlaceHolders(view: StripeSdkCardView, placeholder: ReadableMap) {
-    view.setPlaceHolders(placeholder);
+    view.setPlaceHolders(placeholder)
   }
 
   override fun createViewInstance(reactContext: ThemedReactContext): StripeSdkCardView {

@@ -21,7 +21,7 @@ private const val TAG = "ExpoSMS"
 private const val ERROR_TAG = "E_SMS"
 private const val OPTIONS_ATTACHMENTS_KEY = "attachments"
 
-class SMSModule(context: Context) : ExportedModule(context), LifecycleEventListener {
+class SMSModule(context: Context, private val smsPackage: String? = null) : ExportedModule(context), LifecycleEventListener {
   private lateinit var mModuleRegistry: ModuleRegistry
   private var mPendingPromise: Promise? = null
   private var mSMSComposerOpened = false
@@ -79,7 +79,13 @@ class SMSModule(context: Context) : ExportedModule(context), LifecycleEventListe
       }
     }
 
-    val defaultSMSPackage = Telephony.Sms.getDefaultSmsPackage(context)
+    val defaultSMSPackage: String?
+    if (smsPackage != null) {
+      defaultSMSPackage = smsPackage
+    } else {
+      defaultSMSPackage = Telephony.Sms.getDefaultSmsPackage(context)
+    }
+
     if (defaultSMSPackage != null) {
       smsIntent.setPackage(defaultSMSPackage)
     } else {
@@ -88,7 +94,6 @@ class SMSModule(context: Context) : ExportedModule(context), LifecycleEventListe
     }
     smsIntent.putExtra("exit_on_sent", true)
     smsIntent.putExtra("compose_mode", true)
-    smsIntent.putExtra(Intent.EXTRA_TEXT, message)
     smsIntent.putExtra("sms_body", message)
     mPendingPromise = promise
     val activityProvider = mModuleRegistry.getModule(
@@ -109,9 +114,11 @@ class SMSModule(context: Context) : ExportedModule(context), LifecycleEventListe
       // the only way to check the status of the message is to query the device's SMS database
       // but this requires READ_SMS permission, which Google is heavily restricting beginning Jan 2019
       // so we just resolve with an unknown value
-      promise.resolve(Bundle().apply {
-        putString("result", "unknown")
-      })
+      promise.resolve(
+        Bundle().apply {
+          putString("result", "unknown")
+        }
+      )
       mPendingPromise = null
     }
     mSMSComposerOpened = false

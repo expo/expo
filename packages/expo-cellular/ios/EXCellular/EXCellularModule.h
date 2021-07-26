@@ -13,6 +13,7 @@ typedef NS_ENUM(NSInteger, EXCellularGeneration) {
   EXCellularGeneration2G,
   EXCellularGeneration3G,
   EXCellularGeneration4G,
+  EXCellularGeneration5G,
 };
 
 @interface EXCellularModule : EXExportedModule <EXModuleRegistryConsumer>

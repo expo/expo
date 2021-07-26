@@ -1,7 +1,7 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <EXCamera/EXCameraMicrophonePermissionRequester.h>
-#import <UMCore/UMDefines.h>
+#import <ExpoModulesCore/EXDefines.h>
 #import <ExpoModulesCore/EXPermissionsInterface.h>
 
 #import <AVFoundation/AVFoundation.h>
@@ -20,7 +20,7 @@
   NSString *microphoneUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSMicrophoneUsageDescription"];
     
   if (!microphoneUsageDescription) {
-    UMFatal(UMErrorWithMessage(@"This app is missing NSMicrophoneUsageDescription, so audio services will fail. Add this entry to your bundle's Info.plist."));
+    EXFatal(EXErrorWithMessage(@"This app is missing NSMicrophoneUsageDescription, so audio services will fail. Add this entry to your bundle's Info.plist."));
     systemStatus = AVAuthorizationStatusDenied;
   } else {
     systemStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeAudio];
@@ -42,11 +42,11 @@
   };
 }
 
-- (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
+- (void)requestPermissionsWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
 {
-  UM_WEAKIFY(self)
+  EX_WEAKIFY(self)
   [AVCaptureDevice requestAccessForMediaType:AVMediaTypeAudio completionHandler:^(BOOL granted) {
-    UM_STRONGIFY(self)
+    EX_STRONGIFY(self)
     resolve([self getPermissions]);
   }];
 }

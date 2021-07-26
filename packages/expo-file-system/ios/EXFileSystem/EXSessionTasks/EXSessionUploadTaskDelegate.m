@@ -10,7 +10,7 @@
 
 @implementation EXSessionUploadTaskDelegate
 
-- (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject
+- (instancetype)initWithResolve:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject
 {
   if (self = [super initWithResolve:resolve reject:reject]) {
     _responseData = [NSMutableData new];
@@ -45,7 +45,7 @@
 {
   NSMutableDictionary *result = [[super parseServerResponse:response] mutableCopy];
   // TODO: add support for others response types (different encodings, files)
-  result[@"body"] = UMNullIfNil([[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding]);
+  result[@"body"] = EXNullIfNil([[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding]);
   return result;
 }
 

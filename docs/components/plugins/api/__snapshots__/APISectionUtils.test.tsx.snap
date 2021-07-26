@@ -2,7 +2,13 @@
 
 exports[`APISectionUtils.resolveTypeName Promise 1`] = `
 <div>
-  Promise
+  <a
+    class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+    href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+    rel="noopener noreferrer"
+  >
+    Promise
+  </a>
   &lt;
   <span>
     void
@@ -13,7 +19,13 @@ exports[`APISectionUtils.resolveTypeName Promise 1`] = `
 
 exports[`APISectionUtils.resolveTypeName Promise with custom type 1`] = `
 <div>
-  Promise
+  <a
+    class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+    href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+    rel="noopener noreferrer"
+  >
+    Promise
+  </a>
   &lt;
   <span>
     <a
@@ -96,27 +108,21 @@ exports[`APISectionUtils.resolveTypeName custom type non-linkable array 1`] = `
 </div>
 `;
 
-exports[`APISectionUtils.resolveTypeName extended props with multiple omits 1`] = `
+exports[`APISectionUtils.resolveTypeName custom type with single pick 1`] = `
 <div>
-  StyleProp
+  Pick
   &lt;
   <span>
-    Omit
-    &lt;
-    <span>
-      ViewStyle
-      , 
-    </span>
-    <span>
-      <span>
-        'backgroundColor'
-         | 
-      </span>
-      <span>
-        'borderRadius'
-      </span>
-    </span>
-    &gt;
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="/#fontresource"
+    >
+      FontResource
+    </a>
+    , 
+  </span>
+  <span>
+    'display'
   </span>
   &gt;
 </div>
@@ -147,7 +153,13 @@ exports[`APISectionUtils.resolveTypeName function with arguments 1`] = `
   <span>
     error
     : 
-    Error
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error"
+      rel="noopener noreferrer"
+    >
+      Error
+    </a>
   </span>
   ) 
   =&gt;
@@ -173,7 +185,13 @@ exports[`APISectionUtils.resolveTypeName function with non-linkable custom type 
   <span>
     error
     : 
-    Error
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error"
+      rel="noopener noreferrer"
+    >
+      Error
+    </a>
   </span>
   ) 
   =&gt;
@@ -211,7 +229,13 @@ exports[`APISectionUtils.resolveTypeName generic type 2`] = `
 
 exports[`APISectionUtils.resolveTypeName generic type in Promise 1`] = `
 <div>
-  Promise
+  <a
+    class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+    href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+    rel="noopener noreferrer"
+  >
+    Promise
+  </a>
   &lt;
   <span>
     <a
@@ -228,6 +252,51 @@ exports[`APISectionUtils.resolveTypeName generic type in Promise 1`] = `
       >
         Asset
       </a>
+    </span>
+    &gt;
+  </span>
+  &gt;
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName object reflection 1`] = `
+<div>
+  { 
+  <span>
+    target: number
+    , 
+  </span>
+  <span>
+    value: boolean
+  </span>
+   }
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName props with multiple omits 1`] = `
+<div>
+  StyleProp
+  &lt;
+  <span>
+    Omit
+    &lt;
+    <span>
+      <a
+        class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+        href="/react-native/view-style-props"
+      >
+        ViewStyle
+      </a>
+      , 
+    </span>
+    <span>
+      <span>
+        'backgroundColor'
+         | 
+      </span>
+      <span>
+        'borderRadius'
+      </span>
     </span>
     &gt;
   </span>

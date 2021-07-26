@@ -29,6 +29,13 @@ const filterDataByKind = (
     ? entries.filter((entry: GeneratedData) => entry.kind === kind && additionalCondition(entry))
     : [];
 
+const isHook = ({ name }: GeneratedData) =>
+  name.startsWith('use') &&
+  // note(simek): hardcode this exception until the method will be renamed
+  name !== 'useSystemBrightnessAsync';
+
+const isListener = ({ name }: GeneratedData) => name.endsWith('Listener');
+
 const renderAPI = (
   packageName: string,
   version: string = 'unversioned',
@@ -44,11 +51,11 @@ const renderAPI = (
     const methods = filterDataByKind(
       data,
       TypeDocKind.Function,
-      entry => !entry.name.includes('Listener')
+      entry => !isListener(entry) && !isHook(entry)
     );
-    const eventSubscriptions = filterDataByKind(data, TypeDocKind.Function, entry =>
-      entry.name.includes('Listener')
-    );
+    const hooks = filterDataByKind(data, TypeDocKind.Function, isHook);
+    const eventSubscriptions = filterDataByKind(data, TypeDocKind.Function, isListener);
+
     const types = filterDataByKind(
       data,
       TypeDocKind.TypeAlias,
@@ -84,7 +91,10 @@ const renderAPI = (
     const constants = filterDataByKind(
       data,
       TypeDocKind.Variable,
-      entry => (entry?.flags?.isConst || false) && entry?.type?.name !== 'React.FC'
+      entry =>
+        (entry?.flags?.isConst || false) &&
+        entry.name !== 'default' &&
+        entry?.type?.name !== 'React.FC'
     );
 
     const components = filterDataByKind(
@@ -101,6 +111,7 @@ const renderAPI = (
       <>
         <APISectionComponents data={components} componentsProps={componentsProps} />
         <APISectionConstants data={constants} apiName={apiName} />
+        <APISectionMethods data={hooks} header="Hooks" />
         <APISectionMethods data={methods} apiName={apiName} />
         <APISectionMethods
           data={eventSubscriptions}
