@@ -6,7 +6,8 @@ import kotlin.reflect.KProperty
 
 class KeyValueCachedPropertyProxy<TKey, TValue>(
   private var loader: (TKey) -> TValue,
-  private val container: WeakHashMap<TKey, TValue>) {
+  private val container: WeakHashMap<TKey, TValue>
+) {
 
   operator fun get(key: TKey): TValue {
     if (!container.containsKey(key)) {

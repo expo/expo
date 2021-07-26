@@ -32,7 +32,7 @@ buildscript {
 }
 
 plugins {
-  id "com.diffplug.spotless" version "5.12.1"
+  id "com.diffplug.spotless" version "5.14.1"
 }
 
 allprojects {
@@ -117,7 +117,7 @@ subprojects {
     }
     kotlin {
       target '**/*.kt'
-      ktlint().userData([
+      ktlint("0.41.0").userData([
           "disabled_rules"          : "no-wildcard-imports,import-ordering",
           "indent_size"             : "2",
           "continuation_indent_size": "4"

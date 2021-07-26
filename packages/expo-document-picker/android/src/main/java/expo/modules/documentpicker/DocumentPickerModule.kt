@@ -25,7 +25,7 @@ private const val OPEN_DOCUMENT_CODE = 4137
 
 class DocumentPickerModule(
   mContext: Context,
-  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate(),
+  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
 ) : ExportedModule(mContext), ActivityEventListener {
   private var mPromise: Promise? = null
   private var mCopyToCacheDirectory = true
@@ -88,7 +88,6 @@ class DocumentPickerModule(
           }
         }
       }
-
       if (documentDetails == null) {
         promise.reject("E_DOCUMENT_PICKER", "Failed to read the selected document.")
       } else {
@@ -96,9 +95,10 @@ class DocumentPickerModule(
           putString("type", "success")
           putString("uri", documentDetails.uri)
           putString("name", documentDetails.name)
-          if (documentDetails.size == null) {
-            putParcelable("size", null)
-          } else {
+          documentDetails.mimeType?.let {
+            putString("mimeType", documentDetails.mimeType)
+          }
+          documentDetails.size?.let {
             putInt("size", documentDetails.size)
           }
         }
@@ -120,10 +120,10 @@ class DocumentPickerModule(
       "DocumentPicker",
       FilenameUtils.getExtension(name)
     )
-
+    val outputFile = File(outputFilePath)
     try {
       context.contentResolver.openInputStream(documentUri).use { inputStream ->
-        FileOutputStream(File(outputFilePath)).use { outputStream ->
+        FileOutputStream(outputFile).use { outputStream ->
           IOUtils.copy(inputStream, outputStream)
         }
       }
@@ -131,7 +131,6 @@ class DocumentPickerModule(
       e.printStackTrace()
       return null
     }
-
-    return outputFilePath
+    return Uri.fromFile(outputFile).toString()
   }
 }

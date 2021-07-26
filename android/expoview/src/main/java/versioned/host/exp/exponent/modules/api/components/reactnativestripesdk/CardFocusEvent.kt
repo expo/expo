@@ -23,5 +23,4 @@ internal class CardFocusEvent constructor(viewTag: Int, private val focusField: 
   companion object {
     const val EVENT_NAME = "topFocusChange"
   }
-
 }

@@ -8,8 +8,9 @@ export declare type DocumentResult = {
 } | {
     type: 'success';
     name: string;
-    size: number;
+    size?: number;
     uri: string;
+    mimeType?: string;
     lastModified?: number;
     file?: File;
     output?: FileList | null;

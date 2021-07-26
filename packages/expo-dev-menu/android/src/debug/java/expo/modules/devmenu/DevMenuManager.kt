@@ -39,6 +39,8 @@ import expo.modules.devmenu.detectors.ShakeDetector
 import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
 import expo.modules.devmenu.modules.DevMenuSettings
 import expo.modules.devmenu.react.DevMenuPackagerCommandHandlersSwapper
+import expo.modules.devmenu.tests.DevMenuDisabledTestInterceptor
+import expo.modules.devmenu.tests.DevMenuTestInterceptor
 import expo.modules.devmenu.websockets.DevMenuCommandHandlersProvider
 import java.lang.ref.WeakReference
 
@@ -56,6 +58,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private var currentReactInstanceManager: WeakReference<ReactInstanceManager?> = WeakReference(null)
   private var currentScreenName: String? = null
   private val expoApiClient = DevMenuExpoApiClient()
+  var testInterceptor: DevMenuTestInterceptor = DevMenuDisabledTestInterceptor()
 
   //region helpers
 
@@ -204,19 +207,20 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     Log.i(DEV_MENU_TAG, "Delegate's context was loaded.")
 
     maybeInitDevMenuHost(reactContext.currentActivity?.application
-      ?: reactContext.applicationContext as Application)
+        ?: reactContext.applicationContext as Application)
     maybeStartDetectors(devMenuHost.getContext())
 
-    settings = if (reactContext.hasNativeModule(DevMenuSettings::class.java)) {
-      reactContext.getNativeModule(DevMenuSettings::class.java)!!
-    } else {
-      DevMenuDefaultSettings()
-    }.also {
-      shouldLaunchDevMenuOnStart = it.showsAtLaunch || !it.isOnboardingFinished
-      if (shouldLaunchDevMenuOnStart) {
-        reactContext.addLifecycleEventListener(this)
-      }
-    }
+    settings = testInterceptor.overrideSettings()
+        ?: if (reactContext.hasNativeModule(DevMenuSettings::class.java)) {
+          reactContext.getNativeModule(DevMenuSettings::class.java)!!
+        } else {
+          DevMenuDefaultSettings()
+        }.also {
+          shouldLaunchDevMenuOnStart = it.showsAtLaunch || !it.isOnboardingFinished
+          if (shouldLaunchDevMenuOnStart) {
+            reactContext.addLifecycleEventListener(this)
+          }
+        }
   }
 
   //endregion
@@ -420,4 +424,3 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   //endregion
 }
-

@@ -326,9 +326,10 @@ ABI40_0_0RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *ABI40_0_0EXGetScop
 
   ABI40_0_0EXScopedModuleRegistryAdapter *moduleRegistryAdapter = [[ABI40_0_0EXScopedModuleRegistryAdapter alloc] initWithModuleRegistryProvider:moduleRegistryProvider];
   ABI40_0_0UMModuleRegistry *moduleRegistry = [moduleRegistryAdapter moduleRegistryForParams:params
-                                                        forExperienceStableLegacyId:self.manifest.stableLegacyId
-                                                                 scopeKey:self.manifest.scopeKey
-                                                                 withKernelServices:services];
+                                                                 forExperienceStableLegacyId:self.manifest.stableLegacyId
+                                                                                    scopeKey:self.manifest.scopeKey
+                                                                                    manifest:self.manifest
+                                                                          withKernelServices:services];
   NSArray<id<ABI40_0_0RCTBridgeModule>> *expoModules = [moduleRegistryAdapter extraModulesForModuleRegistry:moduleRegistry];
   [extraModules addObjectsFromArray:expoModules];
 

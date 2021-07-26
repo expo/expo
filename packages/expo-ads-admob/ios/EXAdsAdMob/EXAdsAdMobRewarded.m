@@ -1,7 +1,7 @@
-#import <UMCore/UMUIManager.h>
-#import <UMCore/UMEventEmitterService.h>
+#import <ExpoModulesCore/EXUIManager.h>
+#import <ExpoModulesCore/EXEventEmitterService.h>
 #import <EXAdsAdMob/EXAdsAdMobRewarded.h>
-#import <UMCore/UMUtilitiesInterface.h>
+#import <ExpoModulesCore/EXUtilitiesInterface.h>
 
 static NSString *const EXAdsAdMobRewardedUserDidEarnReward = @"rewardedVideoUserDidEarnReward";
 static NSString *const EXAdsAdMobRewardedDidLoad = @"rewardedVideoDidLoad";
@@ -12,8 +12,8 @@ static NSString *const EXAdsAdMobRewardedDidDismiss = @"rewardedVideoDidDismiss"
 
 @interface EXAdsAdMobRewarded ()
 
-@property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
-@property (nonatomic, weak) id<UMUtilitiesInterface> utilities;
+@property (nonatomic, weak) id<EXEventEmitterService> eventEmitter;
+@property (nonatomic, weak) id<EXUtilitiesInterface> utilities;
 @property (nonatomic, strong) GADRewardedAd *rewardedAd;
 
 @end
@@ -21,17 +21,17 @@ static NSString *const EXAdsAdMobRewardedDidDismiss = @"rewardedVideoDidDismiss"
 @implementation EXAdsAdMobRewarded {
   NSString *_adUnitID;
   BOOL _hasListeners;
-  UMPromiseResolveBlock _requestAdResolver;
-  UMPromiseRejectBlock _requestAdRejecter;
-  UMPromiseResolveBlock _showAdResolver;
+  EXPromiseResolveBlock _requestAdResolver;
+  EXPromiseRejectBlock _requestAdRejecter;
+  EXPromiseResolveBlock _showAdResolver;
 }
 
-UM_EXPORT_MODULE(ExpoAdsAdMobRewardedVideoAdManager);
+EX_EXPORT_MODULE(ExpoAdsAdMobRewardedVideoAdManager);
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
-  _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
+  _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
+  _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
 }
 
 - (NSArray<NSString *> *)supportedEvents
@@ -60,19 +60,19 @@ UM_EXPORT_MODULE(ExpoAdsAdMobRewardedVideoAdManager);
   _hasListeners = NO;
 }
 
-UM_EXPORT_METHOD_AS(setAdUnitID,
+EX_EXPORT_METHOD_AS(setAdUnitID,
                     setAdUnitID:(NSString *)adUnitID
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   _adUnitID = adUnitID;
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(requestAd,
+EX_EXPORT_METHOD_AS(requestAd,
                     requestAdWithAdditionalRequestParams:(NSDictionary *)additionalRequestParams
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if (_requestAdRejecter == nil) {
     _requestAdResolver = resolve;
@@ -85,12 +85,12 @@ UM_EXPORT_METHOD_AS(requestAd,
       extras.additionalParameters = additionalRequestParams;
       [request registerAdNetworkExtras:extras];
     }
-    UM_WEAKIFY(self);
+    EX_WEAKIFY(self);
     dispatch_async(dispatch_get_main_queue(), ^{
-      UM_ENSURE_STRONGIFY(self);
+      EX_ENSURE_STRONGIFY(self);
       [self.rewardedAd loadRequest:request
                  completionHandler:^(GADRequestError * _Nullable error) {
-        UM_ENSURE_STRONGIFY(self);
+        EX_ENSURE_STRONGIFY(self);
         if (error) {
           [self _maybeSendEventWithName:EXAdsAdMobRewardedDidFailToLoad
                                    body:@{ @"name": [error description] }];
@@ -108,15 +108,15 @@ UM_EXPORT_METHOD_AS(requestAd,
   }
 }
 
-UM_EXPORT_METHOD_AS(showAd,
-                    showAd:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(showAd,
+                    showAd:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if (_showAdResolver == nil && self.rewardedAd.isReady) {
     _showAdResolver = resolve;
-    UM_WEAKIFY(self);
+    EX_WEAKIFY(self);
     dispatch_async(dispatch_get_main_queue(), ^{
-      UM_ENSURE_STRONGIFY(self);
+      EX_ENSURE_STRONGIFY(self);
       [self.rewardedAd presentFromRootViewController:self.utilities.currentViewController delegate:self];
     });
   } else if (self.rewardedAd.isReady) {
@@ -126,13 +126,13 @@ UM_EXPORT_METHOD_AS(showAd,
   }
 }
 
-UM_EXPORT_METHOD_AS(dismissAd,
-                    dismissAd:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(dismissAd,
+                    dismissAd:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     UIViewController *presentedViewController = self.utilities.currentViewController;
     if (presentedViewController != nil && [NSStringFromClass([presentedViewController class]) isEqualToString:@"GADInterstitialViewController"]) {
       [presentedViewController dismissViewControllerAnimated:true completion:^{
@@ -144,9 +144,9 @@ UM_EXPORT_METHOD_AS(dismissAd,
   });
 }
 
-UM_EXPORT_METHOD_AS(getIsReady,
-                    getIsReady:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getIsReady,
+                    getIsReady:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   resolve([NSNumber numberWithBool:self.rewardedAd.isReady]);
 }

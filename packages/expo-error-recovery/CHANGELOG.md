@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))
+
 ## 2.2.0 — 2021-06-16
 
 ### 🐛 Bug fixes
@@ -18,6 +20,7 @@
 
 ### 💡 Others
 
+- Add unit tests ([#13630](https://github.com/expo/expo/pull/13630) by [@kkafar](https://github.com/kkafar))
 - Build Android code using Java 8 to fix Android instrumented test build error. ([#12939](https://github.com/expo/expo/pull/12939) by [@kudo](https://github.com/kudo))
 
 ## 2.1.0 — 2021-03-10

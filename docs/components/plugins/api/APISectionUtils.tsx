@@ -11,6 +11,7 @@ import { B, P, Quote } from '~/components/base/paragraph';
 import {
   CommentData,
   MethodParamData,
+  PropData,
   TypeDefinitionData,
 } from '~/components/plugins/api/APIDataTypes';
 
@@ -50,9 +51,41 @@ export const mdInlineRenderers: MDRenderers = {
   paragraph: ({ children }) => (children ? <span>{children}</span> : null),
 };
 
-const nonLinkableTypes = ['Date', 'Error', 'T', 'TaskOptions', 'Uint8Array'];
+const nonLinkableTypes = [
+  'ColorValue',
+  'NativeSyntheticEvent',
+  'Omit',
+  'Pick',
+  'React.FC',
+  'ServiceActionResult',
+  'StyleProp',
+  'T',
+  'TaskOptions',
+  'Uint8Array',
+];
+
+const hardcodedTypeLinks: Record<string, string> = {
+  Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
+  Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
+  Promise:
+    'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
+  View: '../../react-native/view',
+  ViewProps: '../../react-native/view#props',
+  ViewStyle: '../../react-native/view-style-props/',
+};
+
+const renderWithLink = (name: string, type?: string) =>
+  nonLinkableTypes.includes(name) ? (
+    name + (type === 'array' ? '[]' : '')
+  ) : (
+    <Link href={hardcodedTypeLinks[name] || `#${name.toLowerCase()}`} key={`type-link-${name}`}>
+      {name}
+      {type === 'array' && '[]'}
+    </Link>
+  );
 
 export const resolveTypeName = ({
+  elements,
   elementType,
   name,
   type,
@@ -65,76 +98,54 @@ export const resolveTypeName = ({
   if (name) {
     if (type === 'reference') {
       if (typeArguments) {
-        if (name === 'Promise') {
+        if (name === 'Record' || name === 'React.ComponentProps') {
           return (
-            <span>
-              {name}&lt;{typeArguments.map(resolveTypeName)}&gt;
-            </span>
-          );
-        } else if (name === 'Record' || name === 'React.ComponentProps') {
-          return (
-            <span>
+            <>
               {name}&lt;
               {typeArguments.map((type, index) => (
                 <span key={`record-type-${index}`}>
                   {resolveTypeName(type)}
-                  {index !== typeArguments.length - 1 ? ', ' : ''}
+                  {index !== typeArguments.length - 1 ? ', ' : null}
                 </span>
               ))}
               &gt;
-            </span>
+            </>
           );
-        } else {
-          return `${typeArguments.map(resolveTypeName)}`;
-        }
-      } else {
-        if (nonLinkableTypes.includes(name)) {
-          return name;
         } else {
           return (
-            <Link href={`#${name.toLowerCase()}`} key={`type-link-${name}`}>
-              {name}
-            </Link>
+            <>
+              {renderWithLink(name)}
+              &lt;
+              {typeArguments.map((type, index) => (
+                <span key={`${name}-nested-type-${index}`}>
+                  {resolveTypeName(type)}
+                  {index !== typeArguments.length - 1 ? ', ' : null}
+                </span>
+              ))}
+              &gt;
+            </>
           );
         }
+      } else {
+        return renderWithLink(name);
       }
     } else {
       return name;
     }
   } else if (elementType?.name) {
     if (elementType.type === 'reference') {
-      return (
-        <Link href={`#${elementType.name?.toLowerCase()}`} key={`type-link-${elementType.name}`}>
-          {elementType.name}
-          {type === 'array' && '[]'}
-        </Link>
-      );
-    }
-    if (type === 'array') {
+      return renderWithLink(elementType.name, type);
+    } else if (type === 'array') {
       return elementType.name + '[]';
     }
     return elementType.name + type;
   } else if (type === 'union' && types?.length) {
-    return types
-      .map((t: TypeDefinitionData) =>
-        t.type === 'reference' ? (
-          <Link href={`#${t.name?.toLowerCase()}`} key={`type-link-${t.name}`}>
-            {t.name}
-          </Link>
-        ) : t.type === 'array' ? (
-          `${t.elementType?.name}[]`
-        ) : t.type === 'literal' && typeof t.value === 'string' ? (
-          `'${t.name || t.value}'`
-        ) : (
-          `${t.name || t.value}`
-        )
-      )
-      .map((valueToRender, index) => (
-        <span key={`union-type-${index}`}>
-          {valueToRender}
-          {index + 1 !== types.length && ' | '}
-        </span>
-      ));
+    return types.map(resolveTypeName).map((valueToRender, index) => (
+      <span key={`union-type-${index}`}>
+        {valueToRender}
+        {index + 1 !== types.length && ' | '}
+      </span>
+    ));
   } else if (declaration?.signatures) {
     const baseSignature = declaration.signatures[0];
     if (baseSignature?.parameters?.length) {
@@ -157,10 +168,40 @@ export const resolveTypeName = ({
         </>
       );
     }
+  } else if (type === 'reflection' && declaration?.children) {
+    return (
+      <>
+        {'{ '}
+        {declaration?.children.map((child: PropData, i) => (
+          <span key={`reflection-${name}-${i}`}>
+            {child.name + ': ' + resolveTypeName(child.type)}
+            {i + 1 !== declaration?.children?.length ? ', ' : null}
+          </span>
+        ))}
+        {' }'}
+      </>
+    );
+  } else if (type === 'tuple' && elements) {
+    return (
+      <>
+        [
+        {elements.map((elem, i) => (
+          <span key={`tuple-${name}-${i}`}>
+            {resolveTypeName(elem)}
+            {i + 1 !== elements.length ? ', ' : null}
+          </span>
+        ))}
+        ]
+      </>
+    );
   } else if (type === 'query' && queryType) {
     return queryType.name;
+  } else if (type === 'literal' && typeof value === 'boolean') {
+    return `${value}`;
   } else if (type === 'literal' && value) {
     return `'${value}'`;
+  } else if (value === null) {
+    return 'null';
   }
   return 'undefined';
 };
@@ -202,7 +243,11 @@ export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
   const deprecation = comment?.tags?.filter(tag => tag.tag === 'deprecated')[0];
   const deprecationNote = deprecation ? (
     <Quote key="deprecation-note">
-      <B>{deprecation.text.trim().length ? deprecation.text : 'Deprecated'}</B>
+      {deprecation.text.trim().length ? (
+        <ReactMarkdown renderers={renderers}>{deprecation.text}</ReactMarkdown>
+      ) : (
+        <B>Deprecated</B>
+      )}
     </Quote>
   ) : null;
 

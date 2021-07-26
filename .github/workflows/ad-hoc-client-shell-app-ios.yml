@@ -19,13 +19,13 @@ concurrency:
 
 jobs:
   build:
-    runs-on: macos-10.15
+    runs-on: macos-11
     steps:
       - uses: actions/checkout@v2
         with:
           submodules: true
-      - name: Switch to Xcode 12.1
-        run: sudo xcode-select --switch /Applications/Xcode_12.1.app
+      - name: Switch to Xcode 12.5.1
+        run: sudo xcode-select --switch /Applications/Xcode_12.5.1.app
       - name: Get cache key of git lfs files
         id: git-lfs
         run: echo "::set-output name=sha256::$(git lfs ls-files | openssl dgst -sha256)"

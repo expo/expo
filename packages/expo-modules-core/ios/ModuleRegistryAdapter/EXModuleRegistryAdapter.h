@@ -11,10 +11,12 @@
 NS_SWIFT_NAME(ModuleRegistryAdapter)
 @interface EXModuleRegistryAdapter : NSObject
 
-@property (nonatomic, readonly) EXModuleRegistryProvider *moduleRegistryProvider;
+@property (nonnull, nonatomic, readonly) EXModuleRegistryProvider *moduleRegistryProvider;
 
-- (instancetype)initWithModuleRegistryProvider:(EXModuleRegistryProvider *)moduleRegistryProvider;
-- (NSArray<id<RCTBridgeModule>> *)extraModulesForModuleRegistry:(EXModuleRegistry *)moduleRegistry;
-- (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge;
+- (instancetype)initWithModuleRegistryProvider:(nonnull EXModuleRegistryProvider *)moduleRegistryProvider;
+- (instancetype)initWithModuleRegistryProvider:(nonnull EXModuleRegistryProvider *)moduleRegistryProvider swiftModulesProviderClass:(nullable Class)swiftModulesProviderClass;
+
+- (nonnull NSArray<id<RCTBridgeModule>> *)extraModulesForModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry;
+- (nonnull NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(nonnull RCTBridge *)bridge;
 
 @end

@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove the deprecated, non-async methods: `initialize`, `setUserId`, `setUserProperties`, `clearUserProperties`, `logEvent`, `logEventWithProperties`, `setGroup` and `setTrackingOptions`. ([#13675](https://github.com/expo/expo/pull/13675) by [@Simek](https://github.com/Simek))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
@@ -11,6 +13,9 @@
 ### 💡 Others
 
 - Added unit tests ([#13747](https://github.com/expo/expo/pull/13747) by [@kkafar](https://github.com/kkafar))
+- Replace the generic object types with `Record`s. ([#13675](https://github.com/expo/expo/pull/13675) by [@Simek](https://github.com/Simek))
+- Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))
+- Converted Android code to Kotlin ([#13564](https://github.com/expo/expo/pull/13564) by [@kkafar](https://github.com/kkafar))
 
 ## 10.2.0 — 2021-06-16
 
@@ -20,7 +25,6 @@
 
 ### 💡 Others
 
-- Converted Android code to Kotlin ([#13564](https://github.com/expo/expo/pull/13564) by [@kkafar](https://github.com/kkafar))
 - Build Android code using Java 8 to fix Android instrumented test build error. ([#12939](https://github.com/expo/expo/pull/12939) by [@kudo](https://github.com/kudo))
 
 ## 10.1.0 — 2021-03-10
@@ -48,7 +52,7 @@
   - `logEventWithProperties` to `logEventWithPropertiesAsync`
   - `setGroup` to `setGroupAsync`
   - `setTrackingOptions` to `setTrackingOptionsAsync`
-([#9212](https://github.com/expo/expo/pull/9212/) by [@cruzach](https://github.com/cruzach))
+    ([#9212](https://github.com/expo/expo/pull/9212/) by [@cruzach](https://github.com/cruzach))
 - All methods now return a Promise. ([#9212](https://github.com/expo/expo/pull/9212/) by [@cruzach](https://github.com/cruzach))
 
 ## 8.3.1 — 2020-08-24

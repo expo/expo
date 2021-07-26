@@ -2,6 +2,10 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 
+// Import autolinking script
+apply from: "../scripts/autolinking.gradle"
+
+
 group = 'host.exp.exponent'
 version = '0.1.1'
 
@@ -72,3 +76,5 @@ dependencies {
   implementation project(':unimodules-core')
   implementation 'androidx.annotation:annotation:1.2.0'
 }
+
+addLinkerPackage(project)

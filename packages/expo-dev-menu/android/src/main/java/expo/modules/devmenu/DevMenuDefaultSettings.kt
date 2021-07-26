@@ -4,7 +4,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
 import expo.interfaces.devmenu.DevMenuSettingsInterface
 
-class DevMenuDefaultSettings : DevMenuSettingsInterface {
+open class DevMenuDefaultSettings : DevMenuSettingsInterface {
   private fun methodUnavailable() {
     throw NoSuchMethodError("You cannot change the default settings. Export `DevMenuSettings` module if you want to change the settings.")
   }
@@ -39,5 +39,4 @@ class DevMenuDefaultSettings : DevMenuSettingsInterface {
         putBoolean("showsAtLaunch", showsAtLaunch)
         putBoolean("isOnboardingFinished", isOnboardingFinished)
       }
-
 }

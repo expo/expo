@@ -2,6 +2,8 @@
 
 #import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesBaseRawManifest.h>
 
+#import <UIKit/UIKit.h>
+
 @implementation ABI41_0_0EXUpdatesBaseRawManifest
 
 - (instancetype)initWithRawManifestJSON:(NSDictionary *)rawManifestJSON {
@@ -22,58 +24,135 @@
 }
 
 - (nullable NSString *)revisionId {
-  return [self.rawManifestJSON nullableStringForKey:@"revisionId"];
+  NSDictionary *expoClientConfig = self.expoClientConfigRootObject;
+  if (!expoClientConfig) {
+    return nil;
+  }
+  return [expoClientConfig nullableStringForKey:@"revisionId"];
 }
 
 - (nullable NSString *)slug {
-  return [self.rawManifestJSON nullableStringForKey:@"slug"];
+  NSDictionary *expoClientConfig = self.expoClientConfigRootObject;
+  if (!expoClientConfig) {
+    return nil;
+  }
+  return [expoClientConfig nullableStringForKey:@"slug"];
 }
 
 - (nullable NSString *)appKey {
-  return [self.rawManifestJSON nullableStringForKey:@"appKey"];
+  NSDictionary *expoClientConfig = self.expoClientConfigRootObject;
+  if (!expoClientConfig) {
+    return nil;
+  }
+  return [expoClientConfig nullableStringForKey:@"appKey"];
 }
 
 - (nullable NSString *)name {
-  return [self.rawManifestJSON nullableStringForKey:@"name"];
+  NSDictionary *expoClientConfig = self.expoClientConfigRootObject;
+  if (!expoClientConfig) {
+    return nil;
+  }
+  return [expoClientConfig nullableStringForKey:@"name"];
 }
 
 - (nullable NSDictionary *)notificationPreferences {
-  return [self.rawManifestJSON nullableDictionaryForKey:@"notification"];
+  NSDictionary *expoClientConfig = self.expoClientConfigRootObject;
+  if (!expoClientConfig) {
+    return nil;
+  }
+  return [expoClientConfig nullableDictionaryForKey:@"notification"];
 }
 
 - (nullable NSDictionary *)updatesInfo {
-  return [self.rawManifestJSON nullableDictionaryForKey:@"updates"];
+  NSDictionary *expoClientConfig = self.expoClientConfigRootObject;
+  if (!expoClientConfig) {
+    return nil;
+  }
+  return [expoClientConfig nullableDictionaryForKey:@"updates"];
 }
 
 - (nullable NSDictionary *)iosConfig {
-  return [self.rawManifestJSON nullableDictionaryForKey:@"ios"];
+  NSDictionary *expoClientConfig = self.expoClientConfigRootObject;
+  if (!expoClientConfig) {
+    return nil;
+  }
+  return [expoClientConfig nullableDictionaryForKey:@"ios"];
 }
 
 - (nullable NSString *)hostUri {
-  return [self.rawManifestJSON nullableStringForKey:@"hostUri"];
+  NSDictionary *expoClientConfig = self.expoClientConfigRootObject;
+  if (!expoClientConfig) {
+    return nil;
+  }
+  return [expoClientConfig nullableStringForKey:@"hostUri"];
 }
 
 - (nullable NSString *)orientation {
-  return [self.rawManifestJSON nullableStringForKey:@"orientation"];
+  NSDictionary *expoClientConfig = self.expoClientConfigRootObject;
+  if (!expoClientConfig) {
+    return nil;
+  }
+  return [expoClientConfig nullableStringForKey:@"orientation"];
 }
 
 - (nullable NSDictionary *)experiments {
-  return [self.rawManifestJSON nullableDictionaryForKey:@"experiments"];
+  NSDictionary *expoClientConfig = self.expoClientConfigRootObject;
+  if (!expoClientConfig) {
+    return nil;
+  }
+  return [expoClientConfig nullableDictionaryForKey:@"experiments"];
 }
 
 - (nullable NSDictionary *)developer {
-  return [self.rawManifestJSON nullableDictionaryForKey:@"developer"];
+  NSDictionary *expoGoConfig = self.expoGoConfigRootObject;
+  if (!expoGoConfig) {
+    return nil;
+  }
+  return [expoGoConfig nullableDictionaryForKey:@"developer"];
+}
+
+- (nullable NSString *)facebookAppId {
+  NSDictionary *expoClientConfig = self.expoClientConfigRootObject;
+  if (!expoClientConfig) {
+    return nil;
+  }
+  return [expoClientConfig nullableStringForKey:@"facebookAppId"];
+}
+
+- (nullable NSString *)facebookApplicationName {
+  NSDictionary *expoClientConfig = self.expoClientConfigRootObject;
+  if (!expoClientConfig) {
+    return nil;
+  }
+  return [expoClientConfig nullableStringForKey:@"facebookDisplayName"];
+}
+
+- (BOOL)facebookAutoInitEnabled {
+  NSDictionary *expoClientConfig = self.expoClientConfigRootObject;
+  if (!expoClientConfig) {
+    return nil;
+  }
+  NSNumber *enabledNumber = [expoClientConfig nullableNumberForKey:@"facebookAutoInitEnabled"];
+  return enabledNumber != nil && [enabledNumber boolValue];
 }
 
 # pragma mark - Derived Methods
 
 - (BOOL)isDevelopmentMode {
-  NSDictionary *manifestPackagerOptsConfig = [self.rawManifestJSON nullableDictionaryForKey:@"packagerOpts"];
+  NSDictionary *expoGoConfig = self.expoGoConfigRootObject;
+  if (!expoGoConfig) {
+    return nil;
+  }
+  NSDictionary *manifestPackagerOptsConfig = [expoGoConfig nullableDictionaryForKey:@"packagerOpts"];
   return (self.developer != nil && manifestPackagerOptsConfig != nil && [@(YES) isEqualToNumber:manifestPackagerOptsConfig[@"dev"]]);
 }
 
 - (BOOL)isDevelopmentSilentLaunch {
-  NSDictionary *developmentClientSettings = self.rawManifestJSON[@"developmentClient"];
+  NSDictionary *expoGoConfig = self.expoGoConfigRootObject;
+  if (!expoGoConfig) {
+    return nil;
+  }
+  NSDictionary *developmentClientSettings = expoGoConfig[@"developmentClient"];
   if (developmentClientSettings && [developmentClientSettings isKindOfClass:[NSDictionary class]]) {
     id silentLaunch = developmentClientSettings[@"silentLaunch"];
     return silentLaunch && [@(YES) isEqual:silentLaunch];
@@ -90,18 +169,30 @@
   if (self.iosConfig && [self.iosConfig nullableStringForKey:@"userInterfaceStyle"]) {
     return [self.iosConfig nullableStringForKey:@"userInterfaceStyle"];
   }
-  return [self.rawManifestJSON nullableStringForKey:@"userInterfaceStyle"];
+  NSDictionary *expoClientConfig = self.expoClientConfigRootObject;
+  if (!expoClientConfig) {
+    return nil;
+  }
+  return [expoClientConfig nullableStringForKey:@"userInterfaceStyle"];
 }
 
-- (nullable NSString *)androidOrRootBackroundColor {
+- (nullable NSString *)iosOrRootBackgroundColor {
   if (self.iosConfig && [self.iosConfig nullableStringForKey:@"backgroundColor"]) {
     return [self.iosConfig nullableStringForKey:@"backgroundColor"];
   }
-  return [self.rawManifestJSON nullableStringForKey:@"backgroundColor"];
+  NSDictionary *expoClientConfig = self.expoClientConfigRootObject;
+  if (!expoClientConfig) {
+    return nil;
+  }
+  return [expoClientConfig nullableStringForKey:@"backgroundColor"];
 }
 
 - (nullable NSString *)iosSplashBackgroundColor {
-  return [[self class] getStringFromManifest:self.rawManifestJSON
+  NSDictionary *expoClientConfig = self.expoClientConfigRootObject;
+  if (!expoClientConfig) {
+    return nil;
+  }
+  return [[self class] getStringFromManifest:expoClientConfig
                                        paths:@[
                                          @[@"ios", @"splash", @"backgroundColor"],
                                          @[@"splash", @"backgroundColor"],
@@ -109,7 +200,11 @@
 }
 
 - (nullable NSString *)iosSplashImageUrl {
-  return [[self class] getStringFromManifest:self.rawManifestJSON
+  NSDictionary *expoClientConfig = self.expoClientConfigRootObject;
+  if (!expoClientConfig) {
+    return nil;
+  }
+  return [[self class] getStringFromManifest:expoClientConfig
                                        paths:@[
                                          [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad
                                          ? @[@"ios", @"splash", @"tabletImageUrl"]
@@ -120,11 +215,34 @@
 }
 
 - (nullable NSString *)iosSplashImageResizeMode {
-  return [[self class] getStringFromManifest:self.rawManifestJSON
+  NSDictionary *expoClientConfig = self.expoClientConfigRootObject;
+  if (!expoClientConfig) {
+    return nil;
+  }
+  return [[self class] getStringFromManifest:expoClientConfig
                                        paths:@[
                                          @[@"ios", @"splash", @"resizeMode"],
                                          @[@"splash", @"resizeMode"],
                                        ]];
+}
+
+- (nullable NSString *)iosGoogleServicesFile {
+  if (self.iosConfig) {
+    return [self.iosConfig nullableStringForKey:@"googleServicesFile"];
+  }
+  return nil;
+}
+
+- (nullable NSDictionary *)expoClientConfigRootObject {
+  @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                 reason:[NSString stringWithFormat:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)]
+                               userInfo:nil];
+}
+
+- (nullable NSDictionary *)expoGoConfigRootObject {
+  @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                 reason:[NSString stringWithFormat:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)]
+                               userInfo:nil];
 }
 
 + (NSString * _Nullable)getStringFromManifest:(NSDictionary *)manifest

@@ -7,7 +7,6 @@ import android.view.MotionEvent
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReadableMap
 import expo.interfaces.devmenu.expoapi.DevMenuExpoApiClientInterface
-import expo.interfaces.devmenu.items.DevMenuDataSourceInterface
 import expo.interfaces.devmenu.items.DevMenuDataSourceItem
 
 interface DevMenuManagerInterface {

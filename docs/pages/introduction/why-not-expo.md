@@ -21,7 +21,7 @@ Many device APIs are supported (check out the "SDK API Reference" in the sidebar
 <details><summary><h4>The SDK doesn't support all types of background code execution</h4></summary>
 <p>
 
-Background execution is the ability to run code when the app is not foregrounded or the device is sleeping. We support background geolocation (including geofencing) and background fetch, but we do not yet support background audio with the operating-system playback controls and you cannot handle push notifications in the background. This is a work in progress.
+Background execution is the ability to run code when the app is not foregrounded or the device is sleeping. We support background geolocation (including geofencing), background fetch, and handling notifications in the background, but we do not yet support background audio with the operating-system playback controls. This is a work in progress.
 
 </p>
 </details>

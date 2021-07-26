@@ -24,7 +24,7 @@ import Constants from 'expo-constants';
 
 ### `Constants.appOwnership`
 
-Returns `expo`, `standalone`, or `guest`. This property only applies to the managed workflow; in bare, the result is always `null`.
+Returns `expo`, `standalone`, or `guest`. This property only applies to the managed workflow and classic builds; for apps built with EAS Build and in bare workflow, the result is always `null`.
 
 - `expo`: The experience is running inside of the Expo Go app.
 - `standalone`: It is a [standalone app](../../../distribution/building-standalone-apps.md#building-standalone-apps).

@@ -92,7 +92,7 @@ jobs:
         run: ./gradlew assembleDebug
 
   ios:
-    runs-on: macos-latest
+    runs-on: macos-11
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
@@ -138,4 +138,4 @@ jobs:
         run: expo-cli eject
       - name: Build debug
         working-directory: ../development-client-ios-test
-        run: xcodebuild -workspace ios/developmentclientiostest.xcworkspace -scheme developmentclientiostest -configuration debug -sdk iphonesimulator14.4 -arch x86_64
+        run: xcodebuild -workspace ios/developmentclientiostest.xcworkspace -scheme developmentclientiostest -configuration debug -sdk iphonesimulator -arch x86_64

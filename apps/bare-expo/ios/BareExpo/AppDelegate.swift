@@ -12,7 +12,7 @@ import EXDevMenuInterface
 import EXDevMenu
 #endif
 
-#if FB_SONARKIT_ENABLED
+#if FB_SONARKIT_ENABLED && canImport(FlipperKit)
 import FlipperKit
 #endif
 
@@ -73,7 +73,7 @@ class AppDelegate: AppDelegateWrapper {
   }
   
   private func initializeFlipper(with application: UIApplication) {
-  #if FB_SONARKIT_ENABLED
+  #if FB_SONARKIT_ENABLED && canImport(FlipperKit)
     let client = FlipperClient.shared()
     let layoutDescriptorMapper = SKDescriptorMapper(defaults: ())
     client?.add(FlipperKitLayoutPlugin(rootNode: application, with: layoutDescriptorMapper!))
@@ -101,7 +101,7 @@ extension AppDelegate: RCTBridgeDelegate {
     #endif
   }
   
-  func extraModules(for bridge: RCTBridge!) -> [RCTBridgeModule]! {
+  func extraModules(for bridge: RCTBridge!) -> [RCTBridgeModule] {
     var extraModules = moduleRegistryAdapter.extraModules(for: bridge)
     // You can inject any extra modules that you would like here, more information at:
     // https://facebook.github.io/react-native/docs/native-modules-ios.html#dependency-injection
@@ -109,13 +109,13 @@ extension AppDelegate: RCTBridgeDelegate {
     // RCTDevMenu was removed when integrating React with Expo client:
     // https://github.com/expo/react-native/commit/7f2912e8005ea6e81c45935241081153b822b988
     // Let's bring it back in Bare Expo.
-    extraModules?.append(RCTDevMenu() as! RCTBridgeModule)
+    extraModules.append(RCTDevMenu() as! RCTBridgeModule)
     
     // Add AsyncStorage back to the project
     // https://github.com/expo/react-native/commit/bd1396034319e6e59f960fac7aeca1f483c2052d
     let documentDirectory = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! as NSString
     let storageDirectory = documentDirectory.appendingPathComponent("RCTAsyncLocalStorage_V1")
-    extraModules?.append(RCTAsyncLocalStorage(storageDirectory: storageDirectory))
+    extraModules.append(RCTAsyncLocalStorage(storageDirectory: storageDirectory))
     return extraModules
   }
 }

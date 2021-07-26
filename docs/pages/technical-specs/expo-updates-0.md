@@ -3,7 +3,9 @@ title: Expo Updates
 sidebar_title: Expo Updates
 ---
 
-version 0
+Version 0
+
+Updated 2021-05-24
 
 ---
 

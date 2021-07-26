@@ -5,6 +5,8 @@ sidebar_title: Expo Structured Field Values
 
 Version 0
 
+Updated 2021-05-24
+
 ---
 
 Structured Field Values for HTTP, [IETF RFC 8941](https://tools.ietf.org/html/rfc8941), is a proposal to formalize header syntax and facilitate nested data.

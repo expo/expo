@@ -4,8 +4,8 @@
 
 @implementation EXSessionTaskDelegate
 
-- (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
-                         reject:(UMPromiseRejectBlock)reject
+- (instancetype)initWithResolve:(EXPromiseResolveBlock)resolve
+                         reject:(EXPromiseRejectBlock)reject
 {
   if (self = [super init]) {
     _resolve = resolve;
@@ -29,7 +29,7 @@
   return @{
     @"status": @([httpResponse statusCode]),
     @"headers": [httpResponse allHeaderFields],
-    @"mimeType": UMNullIfNil([httpResponse MIMEType])
+    @"mimeType": EXNullIfNil([httpResponse MIMEType])
   };
 }
 

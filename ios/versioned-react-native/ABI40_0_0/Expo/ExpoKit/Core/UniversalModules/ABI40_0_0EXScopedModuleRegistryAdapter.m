@@ -38,9 +38,10 @@
 @implementation ABI40_0_0EXScopedModuleRegistryAdapter
 
 - (ABI40_0_0UMModuleRegistry *)moduleRegistryForParams:(NSDictionary *)params
-                  forExperienceStableLegacyId:(NSString *)experienceStableLegacyId
-                           scopeKey:(NSString *)scopeKey
-                           withKernelServices:(NSDictionary *)kernelServices
+                           forExperienceStableLegacyId:(NSString *)experienceStableLegacyId
+                                              scopeKey:(NSString *)scopeKey
+                                              manifest:(ABI40_0_0EXUpdatesRawManifest *)manifest
+                                    withKernelServices:(NSDictionary *)kernelServices
 {
   ABI40_0_0UMModuleRegistry *moduleRegistry = [self.moduleRegistryProvider moduleRegistry];
 
@@ -58,7 +59,7 @@
 #if __has_include(<ABI40_0_0EXFacebook/ABI40_0_0EXFacebook.h>)
   // only override in Expo client
   if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
-    ABI40_0_0EXScopedFacebook *scopedFacebook = [[ABI40_0_0EXScopedFacebook alloc] initWithScopeKey:scopeKey andParams:params];
+    ABI40_0_0EXScopedFacebook *scopedFacebook = [[ABI40_0_0EXScopedFacebook alloc] initWithScopeKey:scopeKey manifest:manifest];
     [moduleRegistry registerExportedModule:scopedFacebook];
   }
 #endif
@@ -143,7 +144,7 @@
 #endif
 
 #if __has_include(<ABI40_0_0EXFirebaseCore/ABI40_0_0EXFirebaseCore.h>)
-  ABI40_0_0EXScopedFirebaseCore *firebaseCoreModule = [[ABI40_0_0EXScopedFirebaseCore alloc] initWithScopeKey:scopeKey andConstantsBinding:constantsBinding];
+  ABI40_0_0EXScopedFirebaseCore *firebaseCoreModule = [[ABI40_0_0EXScopedFirebaseCore alloc] initWithScopeKey:scopeKey manifest:manifest constantsBinding:constantsBinding];
   [moduleRegistry registerExportedModule:firebaseCoreModule];
   [moduleRegistry registerInternalModule:firebaseCoreModule];
 #endif

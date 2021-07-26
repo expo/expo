@@ -54,7 +54,7 @@ internal class DevLauncherManifestTest {
   fun `checks if fromJson throws on invalid json`() {
     val manifest = """
     {
-      invalid json 
+      invalid json
     }
     """.trimIndent()
 

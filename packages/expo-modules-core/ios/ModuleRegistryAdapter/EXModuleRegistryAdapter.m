@@ -5,11 +5,13 @@
 #import <ExpoModulesCore/EXModuleRegistryAdapter.h>
 #import <ExpoModulesCore/EXViewManagerAdapterClassesRegistry.h>
 #import <ExpoModulesCore/EXModuleRegistryHolderReactModule.h>
+#import "ExpoModulesCore-Swift.h"
 
 @interface EXModuleRegistryAdapter ()
 
 @property (nonatomic, strong) EXModuleRegistryProvider *moduleRegistryProvider;
 @property (nonatomic, strong) EXViewManagerAdapterClassesRegistry *viewManagersClassesRegistry;
+@property (nonatomic, strong, nullable) id<ModulesProviderObjCProtocol> swiftModulesProvider;
 
 @end
 
@@ -24,6 +26,16 @@
   return self;
 }
 
+- (instancetype)initWithModuleRegistryProvider:(EXModuleRegistryProvider *)moduleRegistryProvider swiftModulesProviderClass:(nullable Class)swiftModulesProviderClass
+{
+  if (self = [self initWithModuleRegistryProvider:moduleRegistryProvider]) {
+    if ([swiftModulesProviderClass conformsToProtocol:@protocol(ModulesProviderObjCProtocol)]) {
+      _swiftModulesProvider = [swiftModulesProviderClass new];
+    }
+  }
+  return self;
+}
+
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
 {
   return [self extraModulesForModuleRegistry:[_moduleRegistryProvider moduleRegistry]];
@@ -32,14 +44,24 @@
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   NSMutableArray<id<RCTBridgeModule>> *extraModules = [NSMutableArray array];
-  
-  EXNativeModulesProxy *nativeModulesProxy = [[EXNativeModulesProxy alloc] initWithModuleRegistry:moduleRegistry];
-  
+
+  SwiftInteropBridge *swiftInteropBridge = [self swiftInteropBridgeModulesRegistry:moduleRegistry];
+  EXNativeModulesProxy *nativeModulesProxy = [[EXNativeModulesProxy alloc] initWithModuleRegistry:moduleRegistry swiftInteropBridge:swiftInteropBridge];
+
   [extraModules addObject:nativeModulesProxy];
-  
+
+  NSMutableSet *exportedSwiftViewModuleNames = [NSMutableSet new];
+
+  for (ViewModuleWrapper *swiftViewModule in [swiftInteropBridge getViewManagers]) {
+    Class wrappedViewModuleClass = [ViewModuleWrapper createViewModuleWrapperClassWithViewName:swiftViewModule.name];
+    [extraModules addObject:[[wrappedViewModuleClass alloc] initFrom:swiftViewModule]];
+    [exportedSwiftViewModuleNames addObject:swiftViewModule.name];
+  }
   for (EXViewManager *viewManager in [moduleRegistry getAllViewManagers]) {
-    Class viewManagerAdapterClass = [_viewManagersClassesRegistry viewManagerAdapterClassForViewManager:viewManager];
-    [extraModules addObject:[[viewManagerAdapterClass alloc] initWithViewManager:viewManager]];
+    if (![exportedSwiftViewModuleNames containsObject:viewManager.viewName]) {
+      Class viewManagerAdapterClass = [_viewManagersClassesRegistry viewManagerAdapterClassForViewManager:viewManager];
+      [extraModules addObject:[[viewManagerAdapterClass alloc] initWithViewManager:viewManager]];
+    }
   }
 
   // Silence React Native warning `Base module "%s" does not exist`
@@ -65,6 +87,15 @@
   // Here is our last call for finalizing initialization.
   [moduleRegistry initialize];
   return extraModules;
+}
+
+- (nullable SwiftInteropBridge *)swiftInteropBridgeModulesRegistry:(EXModuleRegistry *)moduleRegistry
+{
+  if (_swiftModulesProvider) {
+    return [[SwiftInteropBridge alloc] initWithModulesProvider:_swiftModulesProvider legacyModuleRegistry:moduleRegistry];
+  } else {
+    return nil;
+  }
 }
 
 @end

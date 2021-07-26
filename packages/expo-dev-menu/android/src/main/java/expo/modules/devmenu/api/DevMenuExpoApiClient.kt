@@ -44,10 +44,10 @@ class DevMenuExpoApiClient : DevMenuExpoApiClientInterface {
     return fetchGraphQL(
       GraphQLEndpoint,
       """
-      query DevMenu_Projects { 
+      query DevMenu_Projects {
         me {
-         apps(limit: ${options.limit}, offset: ${options.offset}) { 
-            id 
+         apps(limit: ${options.limit}, offset: ${options.offset}) {
+            id
           }
         }
       }
@@ -55,7 +55,6 @@ class DevMenuExpoApiClient : DevMenuExpoApiClientInterface {
       AuthHeader to secret
     ).await(httpClient)
   }
-
 
   override suspend fun queryUpdateChannels(appId: String, options: DevMenuGraphQLOptions): Response<List<DevMenuEASUpdates.Channel>> {
     val secret = ensureUserIsSignIn()
@@ -131,7 +130,7 @@ class DevMenuExpoApiClient : DevMenuExpoApiClientInterface {
     val gson = Gson()
     var json: JsonElement = gson.fromJson(bodyReader, JsonObject::class.java)
     for (path in dataPath) {
-      val next = (json as JsonObject?)?.get(path)  ?: return null
+      val next = (json as JsonObject?)?.get(path) ?: return null
       json = next
     }
 

@@ -13,7 +13,6 @@
 @implementation EXScopedNotificationCategoriesModule
 
 - (instancetype)initWithScopeKey:(NSString *)scopeKey
-                       andConstantsBinding:(EXConstantsBinding *)constantsBinding
 {
   if (self = [super init]) {
     _scopeKey = scopeKey;

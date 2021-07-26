@@ -28,20 +28,18 @@ An example configuration would look like this:
   "builds": {
     "android": {
       "release": {
-        "workflow": "managed"
+        "buildType": "app-bundle"
       },
       "development": {
-        "workflow": "managed",
         "distribution": "internal",
         "buildType": "development-client"
       }
     },
     "ios": {
       "release": {
-        "workflow": "managed"
+        "buildType": "release"
       },
       "development": {
-        "workflow": "managed",
         "distribution": "internal",
         "buildType": "development-client"
       }
@@ -61,21 +59,18 @@ An example configuration would look like this:
   "builds": {
     "android": {
       "release": {
-        "workflow": "generic",
         "gradleCommand": ":app:bundleRelease"
       },
       "development": {
-        "workflow": "generic",
         "distribution": "internal",
         "gradleCommand": ":app:assembleDebug"
       }
     },
     "ios": {
       "release": {
-        "workflow": "generic"
+        "schemeBuildConfiguration": "Release"
       },
       "development": {
-        "workflow": "generic",
         "distribution": "internal",
         "schemeBuildConfiguration": "Debug"
       }

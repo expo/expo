@@ -114,8 +114,11 @@ function getBundler(caller) {
     if (name === 'metro') {
       // This is a hack to determine if metro is being used.
       return 'metro';
+    } else if (name === 'next-babel-turbo-loader') {
+      // NextJS 11
+      return 'webpack';
     } else if (name === 'babel-loader') {
-      // This won't work in all cases as tools like Next.js could change the name of their loader.
+      // expo/webpack-config, gatsby, storybook, and next.js <10
       return 'webpack';
     }
   }

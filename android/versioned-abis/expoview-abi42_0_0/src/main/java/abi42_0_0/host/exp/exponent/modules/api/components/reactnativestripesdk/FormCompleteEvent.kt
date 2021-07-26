@@ -1,6 +1,5 @@
 package abi42_0_0.host.exp.exponent.modules.api.components.reactnativestripesdk
 import abi42_0_0.com.facebook.react.bridge.Arguments
-import abi42_0_0.com.facebook.react.bridge.ReadableMap
 import abi42_0_0.com.facebook.react.bridge.WritableMap
 import abi42_0_0.com.facebook.react.uimanager.events.Event
 import abi42_0_0.com.facebook.react.uimanager.events.RCTEventEmitter

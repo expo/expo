@@ -133,9 +133,9 @@ Consider the following example that changes the config name:
 `my-plugin.js`
 
 ```js
-module.exports = function withCustomName(config, name) {
+module.exports = function withPrefixedName(config, prefix) {
   // Modify the config
-  config.name = 'custom-' + name;
+  config.name = prefix + '-' + config.name;
   // Return the results
   return config;
 };
@@ -146,7 +146,9 @@ module.exports = function withCustomName(config, name) {
 ```json
 {
   "name": "my-app",
-  "plugins": ["./my-plugin", "app"]
+  "plugins": [
+    ["./my-plugin", "custom"]
+  ]
 }
 ```
 
@@ -157,7 +159,9 @@ module.exports = function withCustomName(config, name) {
 ```json
 {
   "name": "custom-my-app",
-  "plugins": ["./my-plugin", "app"]
+  "plugins": [
+    ["./my-plugin", "custom"]
+  ]
 }
 ```
 
@@ -460,6 +464,8 @@ Because of this reasoning, the root of a Node module is searched instead of righ
 
 ## Developing a Plugin
 
+> Use [modifier previews](https://github.com/expo/vscode-expo#expo-preview-modifier) to debug the results of your plugin live.
+
 To make plugin development easier, we've added plugin support to [`expo-module-scripts`](https://www.npmjs.com/package/expo-module-scripts). Refer to the [config plugins guide](https://github.com/expo/expo/tree/master/packages/expo-module-scripts#-config-plugin) for more info on using TypeScript, and Jest to build plugins.
 
 Plugins will generally have `@expo/config-plugins` installed as a dependency, and `expo-module-scripts`, `@expo/config-types` installed as a devDependencies.
@@ -497,6 +503,21 @@ If you aren't comfortable with setting up a monorepo, you can try manually runni
 - If you need to update the package, change the `version` in the package's `package.json` and repeat the process.
 
 ### Modifying the AndroidManifest.xml
+
+Packages should attempt to use the built-in `AndroidManifest.xml` [merging system](https://android-doc.github.io/tools/building/manifest-merge.html) before using a config plugin. This can be used for static, non-optional features like permissions. This will ensure features are merged during build-time and not prebuild-time, which minimizes the possibility of users forgetting to prebuild. The drawback is that users cannot use [introspection](#introspection) to preview the changes and debug any potential issues.
+
+Here is an example of a package's AndroidManifest.xml, which injects a required permission:
+
+```xml
+<!-- @info Include <code>xmlns:android="..."</code> to use <code>android:*</code> properties like <code>android:name</code> in your manifest. -->
+<manifest package="expo.modules.filesystem"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- @end -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+</manifest>
+```
+
+If you're building a plugin for your local project, or if your package needs more control, then you should implement a plugin.
 
 You can use built-in types and helpers to ease the process of working with complex objects.
 Here's an example of adding a `<meta-data android:name="..." android:value="..."/>` to the default `<application android:name=".MainApplication" />`.
@@ -590,6 +611,7 @@ export default createRunOncePlugin(
 - **Unit test your plugin**: Write Jest tests for complex modifications. If your plugin requires access to the filesystem, use a mock system (we strongly recommend [`memfs`][memfs]), you can see examples of this in the [`expo-notifications`](https://github.com/expo/expo/blob/fc3fb2e81ad3a62332fa1ba6956c1df1c3186464/packages/expo-notifications/plugin/src/__tests__/withNotificationsAndroid-test.ts#L34) plugin tests.
   - Notice the root [`/__mocks__`](https://github.com/expo/expo/tree/master/packages/expo-notifications/plugin/__mocks__) folder and [`plugin/jest.config.js`](https://github.com/expo/expo/blob/master/packages/expo-notifications/plugin/jest.config.js).
 - A TypeScript plugin is always better than a JavaScript plugin. Check out the [`expo-module-script` plugin][ems-plugin] tooling for more info.
+- Do not modify the `sdkVersion` via a config plugin, this can break commands like `expo install` and cause other unexpected issues.
 
 ### Versioning
 
@@ -634,7 +656,7 @@ Expo CLI commands can be profiled using `EXPO_PROFILE=1`.
 
 ## Introspection
 
-Introspection is an advanced technique used to read the evaluated results of modifiers without generating any code in the project. This can be used to quickly debug the results of [static modifications](#static-modification) without needing to run prebuild.
+Introspection is an advanced technique used to read the evaluated results of modifiers without generating any code in the project. This can be used to quickly debug the results of [static modifications](#static-modification) without needing to run prebuild. You can interact with introspection live, by using the [preview feature](https://github.com/expo/vscode-expo#expo-preview-modifier) of `vscode-expo`.
 
 You can try introspection by running `expo config --type introspect` in a project.
 
@@ -703,10 +725,10 @@ The `gradle.properties` is a static key/value pair that groovy files can read fr
 
 `gradle.properties`
 
-```
-/* @info Safely modified using the <code>withGradleProperties()</code> mod. */
+```properties
+# @info Safely modified using the <code>withGradleProperties()</code> mod. #
 expo.react.jsEngine=hermes
-/* @end */
+# @end #
 ```
 
 Then later in a Gradle file:
@@ -717,8 +739,7 @@ Then later in a Gradle file:
 project.ext.react = [
   /* @info This code would be added to the template ahead of time, but it could be regexed in using <code>withAppBuildGradle()</code> */
   enableHermes: findProperty('expo.react.jsEngine') ?: 'jsc'
-  /* @end */
-]
+/* @end */]
 ```
 
 - For keys in the `gradle.properties`, use camel case separated by `.`s, and usually starting with the `expo` prefix to denote that the property is managed by prebuild.
@@ -750,12 +771,12 @@ The `ios/Podfile` can be customized dangerously with regex, or statically via JS
 
 `Podfile`
 
-```rb
+```ruby
 require 'json'
 
-/* @info Import a JSON file and parse it in Ruby */
+# @info Import a JSON file and parse it in Ruby #
 podfileConfig = JSON.parse(File.read(File.join(__dir__, 'podfile.config.json')))
-/* @end */
+# @end #
 
 platform :ios, '11.0'
 

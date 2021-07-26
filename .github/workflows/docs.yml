@@ -28,7 +28,7 @@ jobs:
       - name: Install Node 14
         uses: actions/setup-node@v1
         with:
-          node-version: 14.x
+          node-version: '14.17'
       - name: Check out repository
         uses: actions/checkout@v2
         with:

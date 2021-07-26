@@ -24,7 +24,7 @@ class StripeSdkCardView(private val context: ThemedReactContext) : FrameLayout(c
   private var mEventDispatcher: EventDispatcher?
 
   init {
-    mCardWidget = CardInputWidget(context);
+    mCardWidget = CardInputWidget(context)
     mEventDispatcher = context.getNativeModule(UIManagerModule::class.java)?.eventDispatcher
 
     val binding = CardInputWidgetBinding.bind(mCardWidget)
@@ -45,7 +45,7 @@ class StripeSdkCardView(private val context: ThemedReactContext) : FrameLayout(c
     val borderColor = getValOr(value, "borderColor", null)
     val borderRadius = getIntOrNull(value, "borderRadius") ?: 0
     val textColor = getValOr(value, "textColor", null)
-    val fontSize = getIntOrNull(value,"fontSize")
+    val fontSize = getIntOrNull(value, "fontSize")
     val placeholderColor = getValOr(value, "placeholderColor", null)
     val textErrorColor = getValOr(value, "textErrorColor", null)
 
@@ -74,7 +74,7 @@ class StripeSdkCardView(private val context: ThemedReactContext) : FrameLayout(c
       binding.postalCodeEditText.textSize = it.toFloat()
     }
 
-    mCardWidget.setPadding(40, 0 ,40 ,0)
+    mCardWidget.setPadding(40, 0, 40, 0)
     mCardWidget.background = MaterialShapeDrawable(
       ShapeAppearanceModel()
         .toBuilder()
@@ -128,7 +128,8 @@ class StripeSdkCardView(private val context: ThemedReactContext) : FrameLayout(c
   fun onCardChanged() {
     mCardWidget.paymentMethodCard?.let { cardParams = it }
     mEventDispatcher?.dispatchEvent(
-      CardChangedEvent(id, cardDetails, mCardWidget.postalCodeEnabled, cardParams != null))
+      CardChangedEvent(id, cardDetails, mCardWidget.postalCodeEnabled, cardParams != null)
+    )
   }
 
   private fun setListeners() {
@@ -151,7 +152,8 @@ class StripeSdkCardView(private val context: ThemedReactContext) : FrameLayout(c
       override fun onFocusChange(focusField: CardInputListener.FocusField) {
         if (mEventDispatcher != null) {
           mEventDispatcher?.dispatchEvent(
-            CardFocusEvent(id, focusField.name))
+            CardFocusEvent(id, focusField.name)
+          )
         }
       }
     })
@@ -179,7 +181,6 @@ class StripeSdkCardView(private val context: ThemedReactContext) : FrameLayout(c
         onCardChanged()
       }
     })
-
   }
 
   override fun requestLayout() {
@@ -190,7 +191,8 @@ class StripeSdkCardView(private val context: ThemedReactContext) : FrameLayout(c
   private val mLayoutRunnable = Runnable {
     measure(
       MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
-      MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY))
+      MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY)
+    )
     layout(left, top, right, bottom)
   }
 }

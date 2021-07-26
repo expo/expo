@@ -36,7 +36,7 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 
 ### Config plugin setup (optional)
 
-If you're using EAS Build or the bare workflow, you can set your Android notification icon and color tint, add custom push notification sounds, and set your iOS notification environment using the `expo-notifications` config plugin ([what's a config plugin?](/guides/config-plugins.md)). To setup, just add the config plugin to the `plugins` array of your `app.json` or `app.config.js`:
+If you're using EAS Build, you can set your Android notification icon and color tint, add custom push notification sounds, and set your iOS notification environment using the `expo-notifications` config plugin ([what's a config plugin?](/guides/config-plugins.md)). To setup, just add the config plugin to the `plugins` array of your `app.json` or `app.config.js` as shown below, then rebuild the app.
 
 ```json
 {
@@ -66,8 +66,6 @@ If you're using EAS Build or the bare workflow, you can set your Android notific
 
 </p>
 </details>
-
-Then rebuild the app. If you're using the bare workflow, make sure to run `expo prebuild` first (this will apply the config plugin using [prebuilding](https://expo.fyi/prebuilding)).
 
 ### Android
 
@@ -720,26 +718,26 @@ Notifications.setNotificationHandler({
 
 When a notification is received while the app is backgrounded, using this function you can set a callback that will be run in response to that notification. Under the hood, this function is run using `expo-task-manager`. You **must** define the task _first_, with [`TaskManager.defineTask`](./task-manager.md/#taskmanagerdefinetasktaskname-task). Make sure you define it in the global scope.
 
-The `taskName` argument is the string you passed to `TaskManager.defineTask` as the "taskName". The callback function you define with `TaskManager.defineTask` will receive the following arguments:
+The `taskName` argument is the string you passed to `TaskManager.defineTask` as the "taskName". The callback function you define with `TaskManager.defineTask` will receive an object with the following fields:
 
 - **data**: The remote payload delivered by either FCM (Android) or APNs (iOS). [See here for details](#pushnotificationtrigger).
 - **error**: The error (if any) that occurred during execution of the task.
 - **executionInfo**: JSON object of additional info related to the task, including the `taskName`.
 
-#### Examples
-
-Implementing a notification handler that always shows the notification when it is received
+#### Example
 
 ```ts
+import * as TaskManager from 'expo-task-manager';
 import * as Notifications from 'expo-notifications';
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: false,
-  }),
+const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK';
+
+TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, ({ data, error, executionInfo }) => {
+  console.log('Received a notification in the background!');
+  // Do something with the notification data
 });
+
+Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
 ```
 
 ### `unregisterTaskAsync(taskName: string): void`
