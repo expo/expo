@@ -254,9 +254,8 @@ button.
 not appear on the screen.
       </span>
     </p>
-    <h4
-      class="  css-1j2s5xo-h4-h4-STYLES_H4"
-      data-components-heading="true"
+    <h3
+      class="css-icxoph-h3-h3-STYLES_H3"
       data-heading="true"
     >
       <div
@@ -309,7 +308,7 @@ not appear on the screen.
           </span>
         </a>
       </div>
-    </h4>
+    </h3>
     <br />
     <div>
       <ul
@@ -317,59 +316,13 @@ not appear on the screen.
         data-text="true"
       >
         <li
-          class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
+          class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
         >
           <h4
-            class="  css-1j2s5xo-h4-h4-STYLES_H4"
-            data-components-heading="true"
+            class="css-1j2s5xo-h4-h4-STYLES_H4"
             data-heading="true"
           >
-            <div
-              class="css-1rh3o5q-STYLES_PERMALINK"
-            >
-              <span
-                class="css-zonpcr-STYLES_PERMALINK_TARGET"
-                id="buttonstyle"
-              />
-              <a
-                class="css-15lh5hg-STYLES_PERMALINK_LINK"
-                href="#buttonstyle"
-              >
-                <span
-                  class="css-1icvi79-STYLED_PERMALINK_CONTENT"
-                >
-                  buttonStyle
-                </span>
-                <span
-                  class="css-10vdcw8-STYLES_PERMALINK_ICON"
-                >
-                  <svg
-                    aria-label="permalink"
-                    class="anchor-icon"
-                    fill="none"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                      stroke="#9B9B9B"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    />
-                    <path
-                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                      stroke="#9B9B9B"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    />
-                  </svg>
-                </span>
-              </a>
-            </div>
+            buttonStyle
           </h4>
           <p
             class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
@@ -402,59 +355,13 @@ not appear on the screen.
           </p>
         </li>
         <li
-          class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
+          class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
         >
           <h4
-            class="  css-1j2s5xo-h4-h4-STYLES_H4"
-            data-components-heading="true"
+            class="css-1j2s5xo-h4-h4-STYLES_H4"
             data-heading="true"
           >
-            <div
-              class="css-1rh3o5q-STYLES_PERMALINK"
-            >
-              <span
-                class="css-zonpcr-STYLES_PERMALINK_TARGET"
-                id="buttontype"
-              />
-              <a
-                class="css-15lh5hg-STYLES_PERMALINK_LINK"
-                href="#buttontype"
-              >
-                <span
-                  class="css-1icvi79-STYLED_PERMALINK_CONTENT"
-                >
-                  buttonType
-                </span>
-                <span
-                  class="css-10vdcw8-STYLES_PERMALINK_ICON"
-                >
-                  <svg
-                    aria-label="permalink"
-                    class="anchor-icon"
-                    fill="none"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                      stroke="#9B9B9B"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    />
-                    <path
-                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                      stroke="#9B9B9B"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    />
-                  </svg>
-                </span>
-              </a>
-            </div>
+            buttonType
           </h4>
           <p
             class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
@@ -487,59 +394,13 @@ not appear on the screen.
           </p>
         </li>
         <li
-          class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
+          class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
         >
           <h4
-            class="  css-1j2s5xo-h4-h4-STYLES_H4"
-            data-components-heading="true"
+            class="css-1j2s5xo-h4-h4-STYLES_H4"
             data-heading="true"
           >
-            <div
-              class="css-1rh3o5q-STYLES_PERMALINK"
-            >
-              <span
-                class="css-zonpcr-STYLES_PERMALINK_TARGET"
-                id="cornerradius"
-              />
-              <a
-                class="css-15lh5hg-STYLES_PERMALINK_LINK"
-                href="#cornerradius"
-              >
-                <span
-                  class="css-1icvi79-STYLED_PERMALINK_CONTENT"
-                >
-                  cornerRadius
-                </span>
-                <span
-                  class="css-10vdcw8-STYLES_PERMALINK_ICON"
-                >
-                  <svg
-                    aria-label="permalink"
-                    class="anchor-icon"
-                    fill="none"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                      stroke="#9B9B9B"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    />
-                    <path
-                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                      stroke="#9B9B9B"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    />
-                  </svg>
-                </span>
-              </a>
-            </div>
+            cornerRadius
           </h4>
           <p
             class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
@@ -581,59 +442,13 @@ not appear on the screen.
           </p>
         </li>
         <li
-          class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
+          class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
         >
           <h4
-            class="  css-1j2s5xo-h4-h4-STYLES_H4"
-            data-components-heading="true"
+            class="css-1j2s5xo-h4-h4-STYLES_H4"
             data-heading="true"
           >
-            <div
-              class="css-1rh3o5q-STYLES_PERMALINK"
-            >
-              <span
-                class="css-zonpcr-STYLES_PERMALINK_TARGET"
-                id="onpress"
-              />
-              <a
-                class="css-15lh5hg-STYLES_PERMALINK_LINK"
-                href="#onpress"
-              >
-                <span
-                  class="css-1icvi79-STYLED_PERMALINK_CONTENT"
-                >
-                  onPress
-                </span>
-                <span
-                  class="css-10vdcw8-STYLES_PERMALINK_ICON"
-                >
-                  <svg
-                    aria-label="permalink"
-                    class="anchor-icon"
-                    fill="none"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                      stroke="#9B9B9B"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    />
-                    <path
-                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                      stroke="#9B9B9B"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    />
-                  </svg>
-                </span>
-              </a>
-            </div>
+            onPress
           </h4>
           <p
             class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
@@ -677,59 +492,13 @@ in here.
           </p>
         </li>
         <li
-          class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
+          class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
         >
           <h4
-            class="  css-1j2s5xo-h4-h4-STYLES_H4"
-            data-components-heading="true"
+            class="css-1j2s5xo-h4-h4-STYLES_H4"
             data-heading="true"
           >
-            <div
-              class="css-1rh3o5q-STYLES_PERMALINK"
-            >
-              <span
-                class="css-zonpcr-STYLES_PERMALINK_TARGET"
-                id="style"
-              />
-              <a
-                class="css-15lh5hg-STYLES_PERMALINK_LINK"
-                href="#style"
-              >
-                <span
-                  class="css-1icvi79-STYLED_PERMALINK_CONTENT"
-                >
-                  style
-                </span>
-                <span
-                  class="css-10vdcw8-STYLES_PERMALINK_ICON"
-                >
-                  <svg
-                    aria-label="permalink"
-                    class="anchor-icon"
-                    fill="none"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                      stroke="#9B9B9B"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    />
-                    <path
-                      d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                      stroke="#9B9B9B"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                    />
-                  </svg>
-                </span>
-              </a>
-            </div>
+            style
           </h4>
           <p
             class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
@@ -755,7 +524,12 @@ in here.
                 Omit
                 &lt;
                 <span>
-                  ViewStyle
+                  <a
+                    class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                    href="/react-native/view-style-props"
+                  >
+                    ViewStyle
+                  </a>
                   , 
                 </span>
                 <span>
@@ -799,74 +573,31 @@ properties.
           </p>
         </li>
       </ul>
-      <div>
-        <h4
-          class="  css-1j2s5xo-h4-h4-STYLES_H4"
-          data-components-heading="true"
-          data-heading="true"
+      <h4
+        class="css-1j2s5xo-h4-h4-STYLES_H4"
+        data-heading="true"
+      >
+        Inherited Props
+      </h4>
+      <ul
+        class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+        data-text="true"
+      >
+        <li
+          class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
         >
-          <div
-            class="css-1rh3o5q-STYLES_PERMALINK"
+          <code
+            class="inline css-nuv12a-STYLES_INLINE_CODE"
           >
-            <span
-              class="css-zonpcr-STYLES_PERMALINK_TARGET"
-              id="inherited-props"
-            />
             <a
-              class="css-15lh5hg-STYLES_PERMALINK_LINK"
-              href="#inherited-props"
-            >
-              <span
-                class="css-1icvi79-STYLED_PERMALINK_CONTENT"
-              >
-                Inherited Props
-              </span>
-              <span
-                class="css-10vdcw8-STYLES_PERMALINK_ICON"
-              >
-                <svg
-                  aria-label="permalink"
-                  class="anchor-icon"
-                  fill="none"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                  <path
-                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                    stroke="#9B9B9B"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                  />
-                </svg>
-              </span>
-            </a>
-          </div>
-        </h4>
-        <ul
-          class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
-          data-text="true"
-        >
-          <li
-            class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
-          >
-            <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
+              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+              href="/react-native/view#props"
             >
               ViewProps
-            </code>
-          </li>
-        </ul>
-      </div>
+            </a>
+          </code>
+        </li>
+      </ul>
     </div>
   </div>
   <h2
@@ -943,10 +674,7 @@ properties.
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
               
-              getCredentialStateAsync
-              (
-              user
-              )
+              getCredentialStateAsync(user)
             </code>
           </span>
           <span
@@ -1037,7 +765,7 @@ properties.
       data-text="true"
     >
       <li
-        class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
       >
         <strong
           class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -1175,12 +903,18 @@ This should come from the user field of an
         data-text="true"
       >
         <li
-          class="docs-list-item css-127pgkm-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-npeppb-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
             class="inline css-nuv12a-STYLES_INLINE_CODE"
           >
-            Promise
+            <a
+              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+              href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+              rel="noopener noreferrer"
+            >
+              Promise
+            </a>
             &lt;
             <span>
               <a
@@ -1242,9 +976,7 @@ value depending on the state of the credential.
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
               
-              isAvailableAsync
-              (
-              )
+              isAvailableAsync()
             </code>
           </span>
           <span
@@ -1344,12 +1076,18 @@ value depending on the state of the credential.
         data-text="true"
       >
         <li
-          class="docs-list-item css-127pgkm-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-npeppb-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
             class="inline css-nuv12a-STYLES_INLINE_CODE"
           >
-            Promise
+            <a
+              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+              href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+              rel="noopener noreferrer"
+            >
+              Promise
+            </a>
             &lt;
             <span>
               boolean
@@ -1408,10 +1146,7 @@ value depending on the state of the credential.
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
               
-              refreshAsync
-              (
-              options
-              )
+              refreshAsync(options)
             </code>
           </span>
           <span
@@ -1502,7 +1237,7 @@ value depending on the state of the credential.
       data-text="true"
     >
       <li
-        class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
       >
         <strong
           class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -1581,12 +1316,18 @@ value depending on the state of the credential.
         data-text="true"
       >
         <li
-          class="docs-list-item css-127pgkm-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-npeppb-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
             class="inline css-nuv12a-STYLES_INLINE_CODE"
           >
-            Promise
+            <a
+              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+              href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+              rel="noopener noreferrer"
+            >
+              Promise
+            </a>
             &lt;
             <span>
               <a
@@ -1626,10 +1367,7 @@ value depending on the state of the credential.
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
               
-              signInAsync
-              (
-              options
-              )
+              signInAsync(options)
             </code>
           </span>
           <span
@@ -1720,7 +1458,7 @@ value depending on the state of the credential.
       data-text="true"
     >
       <li
-        class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
       >
         <strong
           class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -1873,12 +1611,18 @@ the user, since this remains the same for apps released by the same developer.
         data-text="true"
       >
         <li
-          class="docs-list-item css-127pgkm-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-npeppb-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
             class="inline css-nuv12a-STYLES_INLINE_CODE"
           >
-            Promise
+            <a
+              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+              href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+              rel="noopener noreferrer"
+            >
+              Promise
+            </a>
             &lt;
             <span>
               <a
@@ -1949,10 +1693,7 @@ sign-in operation.
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
               
-              signOutAsync
-              (
-              options
-              )
+              signOutAsync(options)
             </code>
           </span>
           <span
@@ -2043,7 +1784,7 @@ sign-in operation.
       data-text="true"
     >
       <li
-        class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
       >
         <strong
           class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -2122,12 +1863,18 @@ sign-in operation.
         data-text="true"
       >
         <li
-          class="docs-list-item css-127pgkm-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-npeppb-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
             class="inline css-nuv12a-STYLES_INLINE_CODE"
           >
-            Promise
+            <a
+              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+              href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+              rel="noopener noreferrer"
+            >
+              Promise
+            </a>
             &lt;
             <span>
               <a
@@ -2217,10 +1964,7 @@ sign-in operation.
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
               
-              addRevokeListener
-              (
-              listener
-              )
+              addRevokeListener(listener)
             </code>
           </span>
           <span
@@ -2311,7 +2055,7 @@ sign-in operation.
       data-text="true"
     >
       <li
-        class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
       >
         <strong
           class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -2387,7 +2131,7 @@ sign-in operation.
         data-text="true"
       >
         <li
-          class="docs-list-item css-127pgkm-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-npeppb-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
             class="inline css-nuv12a-STYLES_INLINE_CODE"
@@ -3959,24 +3703,7 @@ OAuth 2.0 protocol
       data-text="true"
     >
       <li
-        class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
-      >
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
-        >
-          AppleAuthenticationButtonStyle
-          .
-          BLACK
-        </code>
-         - 
-        <span>
-          <span>
-            Black button with white text.
-          </span>
-        </span>
-      </li>
-      <li
-        class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
       >
         <code
           class="inline css-nuv12a-STYLES_INLINE_CODE"
@@ -3984,6 +3711,12 @@ OAuth 2.0 protocol
           AppleAuthenticationButtonStyle
           .
           WHITE
+        </code>
+         : 
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          0
         </code>
          - 
         <span>
@@ -3993,7 +3726,7 @@ OAuth 2.0 protocol
         </span>
       </li>
       <li
-        class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
       >
         <code
           class="inline css-nuv12a-STYLES_INLINE_CODE"
@@ -4002,10 +3735,39 @@ OAuth 2.0 protocol
           .
           WHITE_OUTLINE
         </code>
+         : 
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          1
+        </code>
          - 
         <span>
           <span>
             White button with a black outline and black text.
+          </span>
+        </span>
+      </li>
+      <li
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+      >
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          AppleAuthenticationButtonStyle
+          .
+          BLACK
+        </code>
+         : 
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          2
+        </code>
+         - 
+        <span>
+          <span>
+            Black button with white text.
           </span>
         </span>
       </li>
@@ -4093,24 +3855,7 @@ OAuth 2.0 protocol
       data-text="true"
     >
       <li
-        class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
-      >
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
-        >
-          AppleAuthenticationButtonType
-          .
-          CONTINUE
-        </code>
-         - 
-        <span>
-          <span>
-            "Continue with Apple"
-          </span>
-        </span>
-      </li>
-      <li
-        class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
       >
         <code
           class="inline css-nuv12a-STYLES_INLINE_CODE"
@@ -4118,6 +3863,12 @@ OAuth 2.0 protocol
           AppleAuthenticationButtonType
           .
           SIGN_IN
+        </code>
+         : 
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          0
         </code>
          - 
         <span>
@@ -4127,7 +3878,30 @@ OAuth 2.0 protocol
         </span>
       </li>
       <li
-        class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+      >
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          AppleAuthenticationButtonType
+          .
+          CONTINUE
+        </code>
+         : 
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          1
+        </code>
+         - 
+        <span>
+          <span>
+            "Continue with Apple"
+          </span>
+        </span>
+      </li>
+      <li
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
       >
         <code
           class="inline css-nuv12a-STYLES_INLINE_CODE"
@@ -4135,6 +3909,12 @@ OAuth 2.0 protocol
           AppleAuthenticationButtonType
           .
           SIGN_UP
+        </code>
+         : 
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          2
         </code>
          - 
         <span>
@@ -4232,29 +4012,7 @@ OAuth 2.0 protocol
       data-text="true"
     >
       <li
-        class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
-      >
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
-        >
-          AppleAuthenticationCredentialState
-          .
-          AUTHORIZED
-        </code>
-      </li>
-      <li
-        class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
-      >
-        <code
-          class="inline css-nuv12a-STYLES_INLINE_CODE"
-        >
-          AppleAuthenticationCredentialState
-          .
-          NOT_FOUND
-        </code>
-      </li>
-      <li
-        class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
       >
         <code
           class="inline css-nuv12a-STYLES_INLINE_CODE"
@@ -4263,9 +4021,49 @@ OAuth 2.0 protocol
           .
           REVOKED
         </code>
+         : 
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          0
+        </code>
       </li>
       <li
-        class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+      >
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          AppleAuthenticationCredentialState
+          .
+          AUTHORIZED
+        </code>
+         : 
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          1
+        </code>
+      </li>
+      <li
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+      >
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          AppleAuthenticationCredentialState
+          .
+          NOT_FOUND
+        </code>
+         : 
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          2
+        </code>
+      </li>
+      <li
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
       >
         <code
           class="inline css-nuv12a-STYLES_INLINE_CODE"
@@ -4273,6 +4071,12 @@ OAuth 2.0 protocol
           AppleAuthenticationCredentialState
           .
           TRANSFERRED
+        </code>
+         : 
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          3
         </code>
       </li>
     </ul>
@@ -4338,7 +4142,7 @@ OAuth 2.0 protocol
       data-text="true"
     >
       <li
-        class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
       >
         <code
           class="inline css-nuv12a-STYLES_INLINE_CODE"
@@ -4346,6 +4150,12 @@ OAuth 2.0 protocol
           AppleAuthenticationOperation
           .
           IMPLICIT
+        </code>
+         : 
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          0
         </code>
          - 
         <span>
@@ -4355,7 +4165,7 @@ OAuth 2.0 protocol
         </span>
       </li>
       <li
-        class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
       >
         <code
           class="inline css-nuv12a-STYLES_INLINE_CODE"
@@ -4364,9 +4174,32 @@ OAuth 2.0 protocol
           .
           LOGIN
         </code>
+         : 
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          1
+        </code>
       </li>
       <li
-        class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+      >
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          AppleAuthenticationOperation
+          .
+          REFRESH
+        </code>
+         : 
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          2
+        </code>
+      </li>
+      <li
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
       >
         <code
           class="inline css-nuv12a-STYLES_INLINE_CODE"
@@ -4375,16 +4208,11 @@ OAuth 2.0 protocol
           .
           LOGOUT
         </code>
-      </li>
-      <li
-        class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
-      >
+         : 
         <code
           class="inline css-nuv12a-STYLES_INLINE_CODE"
         >
-          AppleAuthenticationOperation
-          .
-          REFRESH
+          3
         </code>
       </li>
     </ul>
@@ -4501,7 +4329,24 @@ You will still need to handle null values for any fields you request.
       data-text="true"
     >
       <li
-        class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+      >
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          AppleAuthenticationScope
+          .
+          FULL_NAME
+        </code>
+         : 
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          0
+        </code>
+      </li>
+      <li
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
       >
         <code
           class="inline css-nuv12a-STYLES_INLINE_CODE"
@@ -4510,16 +4355,11 @@ You will still need to handle null values for any fields you request.
           .
           EMAIL
         </code>
-      </li>
-      <li
-        class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
-      >
+         : 
         <code
           class="inline css-nuv12a-STYLES_INLINE_CODE"
         >
-          AppleAuthenticationScope
-          .
-          FULL_NAME
+          1
         </code>
       </li>
     </ul>
@@ -4593,24 +4433,30 @@ You will still need to handle null values for any fields you request.
       data-text="true"
     >
       <li
-        class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
       >
         <code
           class="inline css-nuv12a-STYLES_INLINE_CODE"
         >
           AppleAuthenticationUserDetectionStatus
           .
-          LIKELY_REAL
+          UNSUPPORTED
+        </code>
+         : 
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          0
         </code>
          - 
         <span>
           <span>
-            The user appears to be a real person.
+            The system does not support this determination and there is no data.
           </span>
         </span>
       </li>
       <li
-        class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
       >
         <code
           class="inline css-nuv12a-STYLES_INLINE_CODE"
@@ -4618,6 +4464,12 @@ You will still need to handle null values for any fields you request.
           AppleAuthenticationUserDetectionStatus
           .
           UNKNOWN
+        </code>
+         : 
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          1
         </code>
          - 
         <span>
@@ -4627,19 +4479,25 @@ You will still need to handle null values for any fields you request.
         </span>
       </li>
       <li
-        class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
       >
         <code
           class="inline css-nuv12a-STYLES_INLINE_CODE"
         >
           AppleAuthenticationUserDetectionStatus
           .
-          UNSUPPORTED
+          LIKELY_REAL
+        </code>
+         : 
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          2
         </code>
          - 
         <span>
           <span>
-            The system does not support this determination and there is no data.
+            The user appears to be a real person.
           </span>
         </span>
       </li>
@@ -4724,9 +4582,7 @@ exports[`APISection expo-pedometer 1`] = `
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
               
-              getPermissionsAsync
-              (
-              )
+              getPermissionsAsync()
             </code>
           </span>
           <span
@@ -4818,12 +4674,18 @@ exports[`APISection expo-pedometer 1`] = `
         data-text="true"
       >
         <li
-          class="docs-list-item css-127pgkm-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-npeppb-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
             class="inline css-nuv12a-STYLES_INLINE_CODE"
           >
-            Promise
+            <a
+              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+              href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+              rel="noopener noreferrer"
+            >
+              Promise
+            </a>
             &lt;
             <span>
               <a
@@ -4863,10 +4725,7 @@ exports[`APISection expo-pedometer 1`] = `
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
               
-              getStepCountAsync
-              (
-              start, end
-              )
+              getStepCountAsync(start, end)
             </code>
           </span>
           <span
@@ -4957,7 +4816,7 @@ exports[`APISection expo-pedometer 1`] = `
       data-text="true"
     >
       <li
-        class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
       >
         <strong
           class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -4967,7 +4826,13 @@ exports[`APISection expo-pedometer 1`] = `
           <code
             class="inline css-nuv12a-STYLES_INLINE_CODE"
           >
-            Date
+            <a
+              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+              href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date"
+              rel="noopener noreferrer"
+            >
+              Date
+            </a>
           </code>
           )
         </strong>
@@ -4979,7 +4844,7 @@ exports[`APISection expo-pedometer 1`] = `
         </span>
       </li>
       <li
-        class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
       >
         <strong
           class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -4989,7 +4854,13 @@ exports[`APISection expo-pedometer 1`] = `
           <code
             class="inline css-nuv12a-STYLES_INLINE_CODE"
           >
-            Date
+            <a
+              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+              href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date"
+              rel="noopener noreferrer"
+            >
+              Date
+            </a>
           </code>
           )
         </strong>
@@ -5067,12 +4938,18 @@ exports[`APISection expo-pedometer 1`] = `
         data-text="true"
       >
         <li
-          class="docs-list-item css-127pgkm-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-npeppb-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
             class="inline css-nuv12a-STYLES_INLINE_CODE"
           >
-            Promise
+            <a
+              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+              href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+              rel="noopener noreferrer"
+            >
+              Promise
+            </a>
             &lt;
             <span>
               <a
@@ -5183,9 +5060,7 @@ a start date that is more than seven days in the past returns only the available
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
               
-              isAvailableAsync
-              (
-              )
+              isAvailableAsync()
             </code>
           </span>
           <span
@@ -5285,12 +5160,18 @@ a start date that is more than seven days in the past returns only the available
         data-text="true"
       >
         <li
-          class="docs-list-item css-127pgkm-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-npeppb-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
             class="inline css-nuv12a-STYLES_INLINE_CODE"
           >
-            Promise
+            <a
+              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+              href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+              rel="noopener noreferrer"
+            >
+              Promise
+            </a>
             &lt;
             <span>
               boolean
@@ -5342,9 +5223,7 @@ available on this device.
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
               
-              requestPermissionsAsync
-              (
-              )
+              requestPermissionsAsync()
             </code>
           </span>
           <span
@@ -5436,12 +5315,18 @@ available on this device.
         data-text="true"
       >
         <li
-          class="docs-list-item css-127pgkm-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-npeppb-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
             class="inline css-nuv12a-STYLES_INLINE_CODE"
           >
-            Promise
+            <a
+              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+              href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+              rel="noopener noreferrer"
+            >
+              Promise
+            </a>
             &lt;
             <span>
               <a
@@ -5481,10 +5366,7 @@ available on this device.
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
               
-              watchStepCount
-              (
-              callback
-              )
+              watchStepCount(callback)
             </code>
           </span>
           <span
@@ -5575,7 +5457,7 @@ available on this device.
       data-text="true"
     >
       <li
-        class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
       >
         <strong
           class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -5682,7 +5564,7 @@ provided with a single argument that is
         data-text="true"
       >
         <li
-          class="docs-list-item css-127pgkm-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+          class="docs-list-item css-npeppb-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
         >
           <code
             class="inline css-nuv12a-STYLES_INLINE_CODE"
@@ -5992,7 +5874,7 @@ provided with a single argument that is
         data-text="true"
       >
         <li
-          class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
+          class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
         >
           <strong
             class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
@@ -6518,7 +6400,7 @@ provided with a single argument that is
       data-text="true"
     >
       <li
-        class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
       >
         <code
           class="inline css-nuv12a-STYLES_INLINE_CODE"
@@ -6527,9 +6409,15 @@ provided with a single argument that is
           .
           DENIED
         </code>
+         : 
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          "denied"
+        </code>
       </li>
       <li
-        class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
       >
         <code
           class="inline css-nuv12a-STYLES_INLINE_CODE"
@@ -6538,9 +6426,15 @@ provided with a single argument that is
           .
           GRANTED
         </code>
+         : 
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          "granted"
+        </code>
       </li>
       <li
-        class="docs-list-item css-1gn2hxr-STYLES_LIST_ITEM-LI"
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
       >
         <code
           class="inline css-nuv12a-STYLES_INLINE_CODE"
@@ -6548,6 +6442,12 @@ provided with a single argument that is
           PermissionStatus
           .
           UNDETERMINED
+        </code>
+         : 
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          "undetermined"
         </code>
       </li>
     </ul>

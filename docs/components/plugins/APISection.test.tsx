@@ -32,7 +32,7 @@ describe('APISection', () => {
       );
 
     expect(getAllByRole('heading', { level: 2 })).toHaveLength(5);
-    expect(getAllByRole('heading', { level: 3 })).toHaveLength(19);
+    expect(getAllByRole('heading', { level: 3 })).toHaveLength(20);
     expect(getAllByRole('table')).toHaveLength(6);
 
     expect(queryByText('Event Subscriptions'));
