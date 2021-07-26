@@ -39,7 +39,8 @@
 
 - (ABI42_0_0UMModuleRegistry *)moduleRegistryForParams:(NSDictionary *)params
                            forExperienceStableLegacyId:(NSString *)experienceStableLegacyId
-                                    scopeKey:(NSString *)scopeKey
+                                              scopeKey:(NSString *)scopeKey
+                                              manifest:(ABI42_0_0EXUpdatesRawManifest *)manifest
                                     withKernelServices:(NSDictionary *)kernelServices
 {
   ABI42_0_0UMModuleRegistry *moduleRegistry = [self.moduleRegistryProvider moduleRegistry];
@@ -58,7 +59,7 @@
 #if __has_include(<ABI42_0_0EXFacebook/ABI42_0_0EXFacebook.h>)
   // only override in Expo Go
   if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
-    ABI42_0_0EXScopedFacebook *scopedFacebook = [[ABI42_0_0EXScopedFacebook alloc] initWithScopeKey:scopeKey andParams:params];
+    ABI42_0_0EXScopedFacebook *scopedFacebook = [[ABI42_0_0EXScopedFacebook alloc] initWithScopeKey:scopeKey manifest:manifest];
     [moduleRegistry registerExportedModule:scopedFacebook];
   }
 #endif
@@ -143,7 +144,7 @@
 #endif
   
 #if __has_include(<ABI42_0_0EXFirebaseCore/ABI42_0_0EXFirebaseCore.h>)
-  ABI42_0_0EXScopedFirebaseCore *firebaseCoreModule = [[ABI42_0_0EXScopedFirebaseCore alloc] initWithScopeKey:scopeKey andConstantsBinding:constantsBinding];
+  ABI42_0_0EXScopedFirebaseCore *firebaseCoreModule = [[ABI42_0_0EXScopedFirebaseCore alloc] initWithScopeKey:scopeKey manifest:manifest constantsBinding:constantsBinding];
   [moduleRegistry registerExportedModule:firebaseCoreModule];
   [moduleRegistry registerInternalModule:firebaseCoreModule];
 #endif
@@ -188,7 +189,7 @@
 #if __has_include(<ABI42_0_0EXNotifications/ABI42_0_0EXNotificationCategoriesModule.h>)
   // only override in Expo Go
   if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
-    ABI42_0_0EXScopedNotificationCategoriesModule *scopedCategoriesModule = [[ABI42_0_0EXScopedNotificationCategoriesModule alloc] initWithScopeKey:scopeKey andConstantsBinding:constantsBinding];
+    ABI42_0_0EXScopedNotificationCategoriesModule *scopedCategoriesModule = [[ABI42_0_0EXScopedNotificationCategoriesModule alloc] initWithScopeKey:scopeKey];
     [moduleRegistry registerExportedModule:scopedCategoriesModule];
   }
   [ABI42_0_0EXScopedNotificationCategoriesModule maybeMigrateLegacyCategoryIdentifiersForProjectWithExperienceStableLegacyId:experienceStableLegacyId

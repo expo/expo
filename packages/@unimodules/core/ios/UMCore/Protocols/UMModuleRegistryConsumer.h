@@ -4,6 +4,4 @@
 #import <UMCore/UMModuleRegistry.h>
 #import <UMCore/UMDefines.h>
 
-@protocol UMModuleRegistryConsumer <EXModuleRegistryConsumer>
-
-@end
+#define UMModuleRegistryConsumer EXModuleRegistryConsumer

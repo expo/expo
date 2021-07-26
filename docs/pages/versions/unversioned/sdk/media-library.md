@@ -44,6 +44,14 @@ Checks user's permissions for accessing media library.
 
 A promise that resolves to an object of type [CameraRollPermissionResponse](#medialibrarycamerarollpermissionresponse).
 
+### `MediaLibrary.isAvailableAsync()`
+
+Returns whether the Media Library API is enabled on the current device
+
+#### Returns
+
+Async `boolean`, indicating whether the Media Library API is available on the current device.
+
 ### `MediaLibrary.presentPermissionsPickerAsync()`
 
 **Available only on iOS >= 14.** Allows the user to update the assets that your app has access to. The system modal is only displayed if the user originally allowed only `limited` access to their media library, otherwise this method is a no-op.

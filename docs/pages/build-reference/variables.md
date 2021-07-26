@@ -19,7 +19,6 @@ You can specify environment variables for specific build jobs using `eas.json`:
   "builds": {
     "android": {
       "release": {
-        "workflow": "generic",
         "env": {
           "API_URL": "https://api.production.com"
         }
@@ -27,7 +26,6 @@ You can specify environment variables for specific build jobs using `eas.json`:
     },
     "ios": {
       "release": {
-        "workflow": "generic",
         "env": {
           "API_URL": "https://api.production.com"
         }
@@ -44,13 +42,11 @@ You can access these variables in your application using the techniques describe
   "builds": {
     "ios": {
       "release": {
-        "workflow": "generic",
         "env": {
           "API_URL": "https://api.production.com"
         }
       },
       "test": {
-        "workflow": "generic",
         "distribution": "internal",
         "extends": "release"
       }

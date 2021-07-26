@@ -35,22 +35,26 @@ export interface ManifestAsset {
 /**
  * A modern manifest.
  */
-export interface Manifest {
+export declare type Manifest = {
     id: string;
     createdAt: string;
     runtimeVersion: string;
     launchAsset: ManifestAsset;
     assets: ManifestAsset[];
     metadata: object;
-}
-/**
- * A classic manifest https://docs.expo.io/guides/how-expo-works/#expo-manifest
- */
-export interface AppManifest extends ExpoConfig {
-    /** Published Apps Only */
-    releaseId?: string;
-    revisionId?: string;
-    releaseChannel?: string;
+    extra?: {
+        expoClient?: ExpoClientConfig;
+        expoGo?: ExpoGoConfig;
+    };
+};
+export declare type ExpoGoConfig = {
+    mainModuleName?: string;
+    debuggerHost?: string;
+    logUrl?: string;
+    developer?: {
+        tool?: string;
+        [key: string]: any;
+    };
     packagerOpts?: {
         hostType?: string;
         dev?: boolean;
@@ -61,14 +65,15 @@ export interface AppManifest extends ExpoConfig {
         lanType?: string;
         [key: string]: any;
     };
-    developer?: {
-        tool?: string;
-        [key: string]: any;
-    };
+};
+export declare type ExpoClientConfig = ExpoConfig & {
+    /** Published Apps Only */
+    releaseId?: string;
+    revisionId?: string;
+    releaseChannel?: string;
     bundleUrl: string;
-    debuggerHost?: string;
-    mainModuleName?: string;
-    logUrl?: string;
+    hostUri?: string;
+    publishedTime?: string;
     /**
      * The Expo account name and slug for this project.
      * @deprecated - Prefer `projectId` or `originalFullName` instead for identification and `scopeKey` for
@@ -97,8 +102,13 @@ export interface AppManifest extends ExpoConfig {
      * between accounts or renamed.
      */
     projectId?: string;
+};
+/**
+ * A classic manifest https://docs.expo.io/guides/how-expo-works/#expo-manifest
+ */
+export declare type AppManifest = ExpoClientConfig & ExpoGoConfig & {
     [key: string]: any;
-}
+};
 export interface PlatformManifest {
     ios?: IOSManifest;
     android?: AndroidManifest;
@@ -175,4 +185,11 @@ export interface Constants extends NativeConstants {
      * suppresses important warning about missing manifest.
      */
     __unsafeNoWarnManifest?: AppManifest;
+    /**
+     * @warning do not use this property. Use `manifest2` by default.
+     *
+     * In certain cases accessing manifest via this property
+     * suppresses important warning about missing manifest.
+     */
+    __unsafeNoWarnManifest2?: Manifest;
 }

@@ -11,7 +11,14 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = package['homepage']
   s.platform       = :ios, '11.0'
+  s.swift_version  = '5.4'
   s.source         = { git: 'https://github.com/expo/expo.git' }
+  s.header_dir     = 'ExpoModulesCore'
+
+  # Swift/Objective-C compatibility
+  s.pod_target_xcconfig = {
+    'DEFINES_MODULE' => 'YES'
+  }
 
   s.dependency 'React-Core'
 
@@ -20,5 +27,11 @@ Pod::Spec.new do |s|
     s.vendored_frameworks = "#{s.name}.xcframework"
   else
     s.source_files = '**/*.{h,m,swift}'
+  end
+
+  s.exclude_files = 'Tests/'
+
+  s.test_spec 'Tests' do |test_spec|
+    test_spec.source_files = 'Tests/**/*.swift'
   end
 end

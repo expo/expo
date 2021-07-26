@@ -25,15 +25,22 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)orientation;
 - (nullable NSDictionary *)experiments;
 - (nullable NSDictionary *)developer;
+- (nullable NSString *)facebookAppId;
+- (nullable NSString *)facebookApplicationName;
+- (BOOL)facebookAutoInitEnabled;
 
 - (BOOL)isDevelopmentMode;
 - (BOOL)isDevelopmentSilentLaunch;
 - (BOOL)isUsingDeveloperTool;
 - (nullable NSString *)userInterfaceStyle;
-- (nullable NSString *)androidOrRootBackroundColor;
+- (nullable NSString *)iosOrRootBackgroundColor;
 - (nullable NSString *)iosSplashBackgroundColor;
 - (nullable NSString *)iosSplashImageUrl;
 - (nullable NSString *)iosSplashImageResizeMode;
+- (nullable NSString *)iosGoogleServicesFile;
+
+- (nullable NSDictionary *)expoGoConfigRootObject;
+- (nullable NSDictionary *)expoClientConfigRootObject;
 
 @end
 

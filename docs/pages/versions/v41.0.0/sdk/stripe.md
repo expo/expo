@@ -21,7 +21,7 @@ If you're looking for a quick example, check out [this Snack](https://snack.expo
 
 ### Config plugin setup (optional)
 
-If you're using EAS Build or the bare workflow, you can do most of your Stripe setup using the `@stripe/stripe-react-native` config plugin ([what's a config plugin?](/guides/config-plugins.md)). To setup, just add the config plugin to the `plugins` array of your `app.json` or `app.config.js`:
+If you're using EAS Build, you can do most of your Stripe setup using the `@stripe/stripe-react-native` config plugin ([what's a config plugin?](/guides/config-plugins.md)). To setup, just add the config plugin to the `plugins` array of your `app.json` or `app.config.js` as shown below, then rebuild the app.
 
 ```json
 {
@@ -42,8 +42,6 @@ If you're using EAS Build or the bare workflow, you can do most of your Stripe s
 
 - **merchantIdentifier**: iOS only. This is the Apple merchant ID obtained [here](https://stripe.com/docs/apple-pay?platform=react-native). Otherwise, Apple Pay will not work as expected. If you have multiple merchantIdentifiers, you can set them in an array.
 - **enableGooglePay**: Android only. Boolean indicating whether or not Google Pay is enabled. Defaults to `false`.
-
-Then rebuild the app. If you're using the bare workflow, make sure to run `expo prebuild` first (this will apply the config plugin using [prebuilding](https://expo.fyi/prebuilding)).
 
 ## Example
 
@@ -67,7 +65,7 @@ If you're relying on redirects, you'll need to pass in a `urlScheme` to `initStr
 
 ```js
 urlScheme:
-  Constants.executionEnvironment === ExecutionEnvironment.StoreClient
+  Constants.appOwnership === 'expo'
     ? Linking.createURL('/--/')
     : Linking.createURL(''),
 ```
@@ -78,7 +76,7 @@ urlScheme:
 
 ### Standalone apps
 
-`@stripe/stripe-react-native` is supported in Expo Go on Android and iOS out of the box, **however**, for iOS, it is only available for standalone apps built with [EAS Build](/build/introduction.md), and not for apps built on the legacy build system- `expo build:ios`. Android apps built with `expo build:android` _will_ have access to the `@stripe/stripe-react-native` library.
+`@stripe/stripe-react-native` is supported in Expo Go on Android and iOS out of the box, **however**, for iOS, it is only available for standalone apps built with [EAS Build](/build/introduction.md), and not for apps built on the classic build system- `expo build:ios`. Android apps built with `expo build:android` _will_ have access to the `@stripe/stripe-react-native` library.
 
 ### Apple Pay
 

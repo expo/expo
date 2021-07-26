@@ -14,7 +14,6 @@ Pod::Spec.new do |s|
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.frameworks     = 'Photos','PhotosUI'
 
-  s.dependency 'UMCore'
   s.dependency 'ExpoModulesCore'
   s.dependency 'React-Core'
 

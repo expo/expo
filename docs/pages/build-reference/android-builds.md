@@ -17,7 +17,7 @@ The first phase happens on your computer. EAS CLI is in charge of completing the
 
    - Depending on the value of `builds.android.PROFILE_NAME.credentialsSource`, the credentials are obtained from either the local `credentials.json` file or from the EAS servers. If the `remote` mode is selected but no credentials exist yet, you're prompted to generate a new keystore.
 
-1. Additional step for **generic** projects: Check if the Android project is configured to be buildable on the EAS servers.
+1. Additional step for **bare** projects: Check if the Android project is configured to be buildable on the EAS servers.
 
    > In this step, EAS CLI checks whether `android/app/build.gradle` contains `apply from: "./eas-build.gradle"`.
    > If the project is not configured, EAS CLI runs auto-configuration steps ([learn more below](#project-auto-configuration)).
@@ -37,16 +37,12 @@ Next, this is what happens when EAS Build picks up your request:
 1. Run the `eas-build-pre-install` script from package.json if defined.
 1. Run `yarn install` in the project root (or `npm install` if `yarn.lock` does not exist).
 1. Additional steps for **managed** projects:
-
-   - Run `expo prebuild` to convert the project to a generic one.
+   - Run `expo prebuild` to convert the project to a bare one.
    - Configure the Android similarly to the step 3 from [Local Steps](#local-steps).
-
 1. Restore a previously saved cache identified by the `cache.key` value in the build profile. ([Learn more](../build/eas-json/).)
 1. Run the `eas-build-post-install` script from package.json if defined.
-
 1. Restore the keystore (if it was included in the build request).
 1. Run `./gradlew COMMAND` in the `android` directory inside your project.
-
    - `COMMAND` is the command defined in your `eas.json` at `builds.android.PROFILE_NAME.gradleCommand`. It defaults to `:app:bundleRelease` which produces the AAB (Android App Bundle).
 
 1. Run the `eas-build-pre-upload-artifacts` script from package.json if defined.
@@ -58,7 +54,7 @@ Next, this is what happens when EAS Build picks up your request:
 
 ## Project Auto-Configuration
 
-Every time you want to build a new Android app binary, we validate that the project is set up correctly so we can seamlessly run the build process on our servers. This mainly applies to generic projects, but similar steps are run when building managed projects.
+Every time you want to build a new Android app binary, we validate that the project is set up correctly so we can seamlessly run the build process on our servers. This mainly applies to bare projects, but similar steps are run when building managed projects.
 
 ### Android Keystore
 

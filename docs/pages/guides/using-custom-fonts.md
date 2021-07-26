@@ -19,9 +19,13 @@ $ expo install expo-font @expo-google-fonts/inter
 
 After that, you can integrate this in your project by using the `useFonts` hook in the root of your app.
 
+<SnackInline
+label="Google Fonts"
+dependencies={['expo-app-loading', '@expo-google-fonts/inter']}>
+
 ```jsx
 import React from 'react';
-import { Text } from 'react-native';
+import { View, Text } from 'react-native';
 import AppLoading from 'expo-app-loading';
 import { useFonts, Inter_900Black } from '@expo-google-fonts/inter';
 
@@ -32,11 +36,17 @@ export default function App() {
 
   if (!fontsLoaded) {
     return <AppLoading />;
+  } else {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ fontFamily: 'Inter_900Black', fontSize: 40 }}>Inter Black</Text>
+      </View>
+    );
   }
-
-  return <Text style={{ fontFamily: 'Inter_900Black' }}>Inter Black</Text>;
 }
 ```
+
+</SnackInline>
 
 ## A minimal but complete working example
 

@@ -2,6 +2,4 @@
 
 #import <ExpoModulesCore/EXLogHandler.h>
 
-@protocol UMLogHandler <EXLogHandler>
-
-@end
+#define UMLogHandler EXLogHandler

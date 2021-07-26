@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
   NSString *updateId = manifest.rawId;
   NSNumber *commitTime = manifest.commitTimeNumber;
   NSArray *assets = manifest.assets;
-
+  
   NSAssert(updateId != nil, @"update ID should not be null");
 
   NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:(NSString *)updateId];

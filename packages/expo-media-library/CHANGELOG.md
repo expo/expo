@@ -6,9 +6,13 @@
 
 ### 🎉 New features
 
+- Added `isAvailableAsync` method ([#13418](https://github.com/expo/expo/pull/13418) by [@danielmark0116](https://github.com/danielmark0116))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Migrated from `@unimodules/core` to `expo-modules-core`. ([#13755](https://github.com/expo/expo/pull/13755) by [@tsapeta](https://github.com/tsapeta))
 
 ## 12.1.0 — 2021-06-16
 

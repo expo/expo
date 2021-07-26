@@ -12,19 +12,19 @@
 
 @implementation EXPermissions
 
-UM_EXPORT_MODULE(ExpoPermissions);
+EX_EXPORT_MODULE(ExpoPermissions);
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _permissionsService = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
 }
 
 # pragma mark - Exported methods
 
-UM_EXPORT_METHOD_AS(getAsync,
+EX_EXPORT_METHOD_AS(getAsync,
                     getPermissionWithType:(NSString *)permissionType
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   id<EXPermissionsRequester> requester = [_permissionsService getPermissionRequesterForType:permissionType];
   if (requester == nil) {
@@ -35,10 +35,10 @@ UM_EXPORT_METHOD_AS(getAsync,
                                                  reject:reject];
 }
 
-UM_EXPORT_METHOD_AS(askAsync,
+EX_EXPORT_METHOD_AS(askAsync,
                     askAsyncForPermission:(NSString *)permissionType
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   id<EXPermissionsRequester> requester = [_permissionsService getPermissionRequesterForType:permissionType];
   if (requester == nil) {

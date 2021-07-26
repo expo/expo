@@ -43,23 +43,27 @@ export interface ManifestAsset {
 /**
  * A modern manifest.
  */
-export interface Manifest {
+export type Manifest = {
   id: string;
   createdAt: string;
   runtimeVersion: string;
   launchAsset: ManifestAsset;
   assets: ManifestAsset[];
   metadata: object;
-}
+  extra?: {
+    expoClient?: ExpoClientConfig;
+    expoGo?: ExpoGoConfig;
+  };
+};
 
-/**
- * A classic manifest https://docs.expo.io/guides/how-expo-works/#expo-manifest
- */
-export interface AppManifest extends ExpoConfig {
-  /** Published Apps Only */
-  releaseId?: string;
-  revisionId?: string;
-  releaseChannel?: string;
+export type ExpoGoConfig = {
+  mainModuleName?: string;
+  debuggerHost?: string;
+  logUrl?: string;
+  developer?: {
+    tool?: string;
+    [key: string]: any;
+  };
   packagerOpts?: {
     hostType?: string;
     dev?: boolean;
@@ -70,14 +74,16 @@ export interface AppManifest extends ExpoConfig {
     lanType?: string;
     [key: string]: any;
   };
-  developer?: {
-    tool?: string;
-    [key: string]: any;
-  };
+};
+
+export type ExpoClientConfig = ExpoConfig & {
+  /** Published Apps Only */
+  releaseId?: string;
+  revisionId?: string;
+  releaseChannel?: string;
   bundleUrl: string;
-  debuggerHost?: string;
-  mainModuleName?: string;
-  logUrl?: string;
+  hostUri?: string;
+  publishedTime?: string;
 
   /**
    * The Expo account name and slug for this project.
@@ -111,9 +117,15 @@ export interface AppManifest extends ExpoConfig {
    * between accounts or renamed.
    */
   projectId?: string;
+};
 
-  [key: string]: any;
-}
+/**
+ * A classic manifest https://docs.expo.io/guides/how-expo-works/#expo-manifest
+ */
+export type AppManifest = ExpoClientConfig &
+  ExpoGoConfig & {
+    [key: string]: any;
+  };
 
 export interface PlatformManifest {
   ios?: IOSManifest;
@@ -195,4 +207,11 @@ export interface Constants extends NativeConstants {
    * suppresses important warning about missing manifest.
    */
   __unsafeNoWarnManifest?: AppManifest;
+  /**
+   * @warning do not use this property. Use `manifest2` by default.
+   *
+   * In certain cases accessing manifest via this property
+   * suppresses important warning about missing manifest.
+   */
+  __unsafeNoWarnManifest2?: Manifest;
 }

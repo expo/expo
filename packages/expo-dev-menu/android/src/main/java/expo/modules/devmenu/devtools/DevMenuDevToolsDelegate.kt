@@ -58,7 +58,7 @@ class DevMenuDevToolsDelegate(
     }
   }
 
-  fun togglePerformanceMonitor(context: Context)  {
+  fun togglePerformanceMonitor(context: Context) {
     val reactDevManager = reactDevManager ?: return
     val devSettings = devSettings ?: return
 
@@ -100,8 +100,8 @@ class DevMenuDevToolsDelegate(
    * Such permission is required to enable performance monitor.
    */
   private fun requestOverlaysPermission(context: Context) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-      && !Settings.canDrawOverlays(context)) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+      !Settings.canDrawOverlays(context)) {
       val uri = Uri.parse("package:" + context.applicationContext.packageName)
       val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, uri).apply {
         flags = Intent.FLAG_ACTIVITY_NEW_TASK

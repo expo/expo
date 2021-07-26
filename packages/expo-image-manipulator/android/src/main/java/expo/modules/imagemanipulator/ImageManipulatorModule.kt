@@ -18,7 +18,6 @@ import org.unimodules.core.interfaces.ExpoMethod
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
 import java.util.*
 
 private const val TAG = "ExpoImageManipulator"
@@ -26,7 +25,7 @@ private const val ERROR_TAG = "E_IMAGE_MANIPULATOR"
 
 class ImageManipulatorModule(
   context: Context,
-  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate(),
+  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
 ) : ExportedModule(context) {
   private val mImageLoader: ImageLoaderInterface by moduleRegistry()
 
@@ -41,21 +40,24 @@ class ImageManipulatorModule(
   fun manipulateAsync(uri: String, actionsRaw: ArrayList<Any?>, saveOptionsRaw: ReadableArguments, promise: Promise) {
     val saveOptions = SaveOptions.fromArguments(saveOptionsRaw)
     val actions = Actions.fromArgument(actionsRaw)
-    mImageLoader.loadImageForManipulationFromURL(uri, object : ResultListener {
-      override fun onSuccess(bitmap: Bitmap) {
-        runActions(bitmap, actions, saveOptions, promise)
-      }
+    mImageLoader.loadImageForManipulationFromURL(
+      uri,
+      object : ResultListener {
+        override fun onSuccess(bitmap: Bitmap) {
+          runActions(bitmap, actions, saveOptions, promise)
+        }
 
-      override fun onFailure(cause: Throwable?) {
-        // No cleanup required here.
-        val basicMessage = "Could not get decoded bitmap of $uri"
-        if (cause != null) {
-          promise.reject("${ERROR_TAG}_DECODE", "$basicMessage: $cause", cause)
-        } else {
-          promise.reject("${ERROR_TAG}_DECODE", "$basicMessage.")
+        override fun onFailure(cause: Throwable?) {
+          // No cleanup required here.
+          val basicMessage = "Could not get decoded bitmap of $uri"
+          if (cause != null) {
+            promise.reject("${ERROR_TAG}_DECODE", "$basicMessage: $cause", cause)
+          } else {
+            promise.reject("${ERROR_TAG}_DECODE", "$basicMessage.")
+          }
         }
       }
-    })
+    )
   }
 
   private fun runActions(bitmap: Bitmap, actions: Actions, saveOptions: SaveOptions, promise: Promise) {
@@ -78,7 +80,7 @@ class ImageManipulatorModule(
     val result = Bundle().apply {
       putString("uri", Uri.fromFile(File(path)).toString())
       putInt("width", resultBitmap.width)
-      putInt("height", bitmap.height)
+      putInt("height", resultBitmap.height)
       if (base64String != null) {
         putString("base64", base64String)
       }

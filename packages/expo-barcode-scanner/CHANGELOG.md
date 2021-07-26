@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))
+
 ## 10.2.0 — 2021-06-16
 
 ### 🐛 Bug fixes

@@ -157,11 +157,9 @@ For example, maybe you want to use local credentials when deploying to the Amazo
   "builds": {
     "android": {
       "amazon": {
-        "workflow": "generic",
         "credentialsSource": "local"
       },
       "google": {
-        "workflow": "generic",
         "credentialsSource": "remote"
       }
     }

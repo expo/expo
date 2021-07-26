@@ -16,7 +16,7 @@ class SplashScreenController(
 ) {
   private val weakActivity = WeakReference(activity)
   private val contentView: ViewGroup = activity.findViewById(android.R.id.content)
-      ?: throw NoContentViewException()
+    ?: throw NoContentViewException()
   private var splashScreenView: View = splashScreenViewProvider.createSplashScreenView(activity)
   private val handler = Handler()
 

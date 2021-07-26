@@ -61,4 +61,23 @@ class NewRawManifest(json: JSONObject) : RawManifest(json) {
 
   @Throws(JSONException::class)
   fun getCreatedAt(): String = json.getString("createdAt")
+
+  override fun getExpoGoConfigRootObject(): JSONObject? {
+    return getExtra()?.optJSONObject("expoGo")
+  }
+
+  override fun getExpoClientConfigRootObject(): JSONObject? {
+    return getExtra()?.optJSONObject("expoClient")
+  }
+
+  override fun getSlug(): String? = null
+  override fun getAppKey(): String? = null
+
+  override fun getSortTime(): String {
+    return getCreatedAt()
+  }
+
+  private fun getExtra(): JSONObject? {
+    return json.optJSONObject("extra")
+  }
 }
