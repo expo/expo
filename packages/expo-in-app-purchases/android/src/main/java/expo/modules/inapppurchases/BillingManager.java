@@ -143,8 +143,9 @@ public class BillingManager implements PurchasesUpdatedListener {
           return;
         }
 
+        BillingFlowParams.SubscriptionUpdateParams updateParams = BillingFlowParams.SubscriptionUpdateParams.newBuilder().setOldSkuPurchaseToken(oldSku);
         BillingFlowParams purchaseParams = BillingFlowParams.newBuilder()
-          .setSkuDetails(skuDetails).setOldSku(oldSku).build();
+          .setSkuDetails(skuDetails).setSubscriptionUpdateParams(updateParams).build();
         mBillingClient.launchBillingFlow(mActivity, purchaseParams);
       }
     };
@@ -225,7 +226,6 @@ public class BillingManager implements PurchasesUpdatedListener {
         ConsumeParams consumeParams =
           ConsumeParams.newBuilder()
             .setPurchaseToken(purchaseToken)
-            .setDeveloperPayload(null)
             .build();
         // Consume the purchase async
         mBillingClient.consumeAsync(consumeParams, onConsumeListener);
@@ -258,22 +258,30 @@ public class BillingManager implements PurchasesUpdatedListener {
    */
   public void queryPurchases(final Promise promise) {
     Runnable queryToExecute = new Runnable() {
+      BillingResult inAppBillingResult;
+      List<Purchase> purchases = new ArrayList<>();
       @Override
       public void run() {
-        PurchasesResult purchasesResult = mBillingClient.queryPurchases(SkuType.INAPP);
-
-        // If there are subscriptions supported, we add subscription rows as well
-        if (purchasesResult != null && areSubscriptionsSupported()) {
-          PurchasesResult subscriptionResult
-            = mBillingClient.queryPurchases(SkuType.SUBS);
-
-          if (subscriptionResult != null && subscriptionResult.getResponseCode() == BillingResponseCode.OK) {
-            purchasesResult.getPurchasesList().addAll(
-              subscriptionResult.getPurchasesList());
+        mBillingClient.queryPurchasesAsync(SkuType.INAPP, new PurchasesResponseListener() {
+          @Override
+          public void onQueryPurchasesResponse(@NonNull BillingResult billingResult, @NonNull List<Purchase> inAppPurchases) {
+            inAppBillingResult = billingResult;
+            if (billingResult.getResponseCode() == BillingResponseCode.OK) {
+              purchases.addAll(inAppPurchases);
+            }
           }
-        }
+        });
 
-        onQueryPurchasesFinished(purchasesResult, promise);
+        mBillingClient.queryPurchasesAsync(SkuType.SUBS, new PurchasesResponseListener() {
+          @Override
+          public void onQueryPurchasesResponse(@NonNull BillingResult billingResult, @NonNull List<Purchase> subscriptionPurchases) {
+            if (areSubscriptionsSupported() && billingResult.getResponseCode() == BillingResponseCode.OK) {
+              purchases.addAll(subscriptionPurchases);
+            }
+          }
+        });
+
+        onQueryPurchasesFinished(inAppBillingResult, purchases, promise);
       }
     };
 
@@ -439,15 +447,13 @@ public class BillingManager implements PurchasesUpdatedListener {
   /**
    * Handle a result from querying of purchases and report an updated list to the listener
    */
-  private void onQueryPurchasesFinished(PurchasesResult result, final Promise promise) {
+  private void onQueryPurchasesFinished(@NonNull BillingResult billingResult, List<Purchase> purchasesList, final Promise promise) {
     // Have we been disposed of in the meantime? If so, or bad result code, then quit
-    if (mBillingClient == null || result == null || result.getResponseCode() != BillingResponseCode.OK) {
+    if (mBillingClient == null || billingResult.getResponseCode() != BillingResponseCode.OK) {
       promise.reject("E_QUERY_FAILED", "Billing client was null or query was unsuccessful");
       return;
     }
 
-    BillingResult billingResult = result.getBillingResult();
-    List<Purchase> purchasesList = result.getPurchasesList();
     ArrayList<Bundle> results = new ArrayList<>();
     for (Purchase purchase : purchasesList) {
       results.add(purchaseToBundle(purchase));
