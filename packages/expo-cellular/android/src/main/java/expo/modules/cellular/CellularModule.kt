@@ -20,7 +20,7 @@ class CellularModule(private val mContext: Context) : ExportedModule(mContext), 
       it?.simState == TelephonyManager.SIM_STATE_READY
     }
 
-  override fun getConstants(): HashMap<String, Any?> =
+  override fun getConstants() =
     HashMap<String, Any?>().apply {
       put("allowsVoip", SipManager.isVoipSupported(mContext))
       put("isoCountryCode", telephonyManager?.simCountryIso)
@@ -33,60 +33,35 @@ class CellularModule(private val mContext: Context) : ExportedModule(mContext), 
   fun getCellularGenerationAsync(promise: Promise) {
     try {
       promise.resolve(getCurrentGeneration())
-    } catch (e: Exception) {
-      Log.i(name, "Unable to access network type or not connected to a cellular network", e)
+    } catch (e: SecurityException) {
+      Log.w(name, "READ_PHONE_STATE permission is required to acquire network type", e)
       promise.resolve(CellularGeneration.UNKNOWN.value)
     }
   }
 
   @ExpoMethod
   fun allowsVoipAsync(promise: Promise) {
-    try {
-      promise.resolve(SipManager.isVoipSupported(mContext))
-    } catch (e: Exception) {
-      Log.i(name, "Unable to access network type or not connected to a cellular network", e)
-      promise.resolve(false)
-    }
+    promise.resolve(SipManager.isVoipSupported(mContext))
   }
 
   @ExpoMethod
   fun getIsoCountryCodeAsync(promise: Promise) {
-    try {
-      promise.resolve(telephonyManager?.simCountryIso)
-    } catch (e: Exception) {
-      Log.i(name, "Unable to access network type or not connected to a cellular network", e)
-      promise.resolve(null)
-    }
+    promise.resolve(telephonyManager?.simCountryIso)
   }
 
   @ExpoMethod
   fun getCarrierNameAsync(promise: Promise) {
-    try {
-      promise.resolve(telephonyManager?.simOperatorName)
-    } catch (e: Exception) {
-      Log.i(name, "Unable to access network type or not connected to a cellular network", e)
-      promise.resolve(null)
-    }
+    promise.resolve(telephonyManager?.simOperatorName)
   }
 
   @ExpoMethod
   fun getMobileCountryCodeAsync(promise: Promise) {
-    try {
-      promise.resolve(telephonyManager?.simOperator?.substring(0, 3))
-    } catch (e: Exception) {
-      Log.i(name, "Unable to access network type or not connected to a cellular network", e)
-      promise.resolve(null)
-    }
+    promise.resolve(telephonyManager?.simOperator?.substring(0, 3))
   }
 
   @ExpoMethod
   fun getMobileNetworkCodeAsync(promise: Promise) {
-    try {
-      promise.resolve(telephonyManager?.simOperator?.substring(3))
-    } catch (e: Exception) {
-      Log.i(name, "Unable to access network type or not connected to a cellular network", e)
-      promise.resolve(null)
-    }
+    promise.resolve(telephonyManager?.simOperator?.substring(3))
   }
 
   @SuppressLint("MissingPermission")
