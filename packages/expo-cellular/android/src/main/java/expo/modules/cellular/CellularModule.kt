@@ -15,26 +15,24 @@ import java.util.*
 class CellularModule(private val mContext: Context) : ExportedModule(mContext), RegistryLifecycleListener {
   override fun getName(): String = "ExpoCellular"
 
-  override fun getConstants(): HashMap<String, Any?> {
-    val telephonyManager =
-      (mContext.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager).takeIf {
-        it?.simState == TelephonyManager.SIM_STATE_READY
-      }
+  private val telephonyManager =
+    (mContext.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager).takeIf {
+      it?.simState == TelephonyManager.SIM_STATE_READY
+    }
 
-    return HashMap<String, Any?>().apply {
+  override fun getConstants(): HashMap<String, Any?> =
+    HashMap<String, Any?>().apply {
       put("allowsVoip", SipManager.isVoipSupported(mContext))
       put("isoCountryCode", telephonyManager?.simCountryIso)
       put("carrier", telephonyManager?.simOperatorName)
       put("mobileCountryCode", telephonyManager?.simOperator?.substring(0, 3))
       put("mobileNetworkCode", telephonyManager?.simOperator?.substring(3))
     }
-  }
 
   @ExpoMethod
   fun getCellularGenerationAsync(promise: Promise) {
     try {
-      val telephonyManager = mContext.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager
-      promise.resolve(getCurrentGeneration(telephonyManager))
+      promise.resolve(getCurrentGeneration())
     } catch (e: Exception) {
       Log.i(name, "Unable to access network type or not connected to a cellular network", e)
       promise.resolve(CellularGeneration.UNKNOWN.value)
@@ -54,10 +52,6 @@ class CellularModule(private val mContext: Context) : ExportedModule(mContext), 
   @ExpoMethod
   fun getIsoCountryCodeAsync(promise: Promise) {
     try {
-      val telephonyManager =
-        (mContext.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager).takeIf {
-          it?.simState == TelephonyManager.SIM_STATE_READY
-        }
       promise.resolve(telephonyManager?.simCountryIso)
     } catch (e: Exception) {
       Log.i(name, "Unable to access network type or not connected to a cellular network", e)
@@ -68,10 +62,6 @@ class CellularModule(private val mContext: Context) : ExportedModule(mContext), 
   @ExpoMethod
   fun getCarrierNameAsync(promise: Promise) {
     try {
-      val telephonyManager =
-        (mContext.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager).takeIf {
-          it?.simState == TelephonyManager.SIM_STATE_READY
-        }
       promise.resolve(telephonyManager?.simOperatorName)
     } catch (e: Exception) {
       Log.i(name, "Unable to access network type or not connected to a cellular network", e)
@@ -82,10 +72,6 @@ class CellularModule(private val mContext: Context) : ExportedModule(mContext), 
   @ExpoMethod
   fun getMobileCountryCodeAsync(promise: Promise) {
     try {
-      val telephonyManager =
-        (mContext.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager).takeIf {
-          it?.simState == TelephonyManager.SIM_STATE_READY
-        }
       promise.resolve(telephonyManager?.simOperator?.substring(0, 3))
     } catch (e: Exception) {
       Log.i(name, "Unable to access network type or not connected to a cellular network", e)
@@ -96,10 +82,6 @@ class CellularModule(private val mContext: Context) : ExportedModule(mContext), 
   @ExpoMethod
   fun getMobileNetworkCodeAsync(promise: Promise) {
     try {
-      val telephonyManager =
-        (mContext.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager).takeIf {
-          it?.simState == TelephonyManager.SIM_STATE_READY
-        }
       promise.resolve(telephonyManager?.simOperator?.substring(3))
     } catch (e: Exception) {
       Log.i(name, "Unable to access network type or not connected to a cellular network", e)
@@ -108,7 +90,7 @@ class CellularModule(private val mContext: Context) : ExportedModule(mContext), 
   }
 
   @SuppressLint("MissingPermission")
-  private fun getCurrentGeneration(telephonyManager: TelephonyManager?): Int {
+  private fun getCurrentGeneration(): Int {
     if (telephonyManager == null) {
       return CellularGeneration.UNKNOWN.value
     }
