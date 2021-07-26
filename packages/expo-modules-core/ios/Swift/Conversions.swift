@@ -28,7 +28,15 @@ internal class Conversions {
     case 10:
       return (array[0], array[1], array[2], array[3], array[4], array[5], array[6], array[7], array[8], array[9])
     default:
-      throw Errors.ArrayTooLong(size: array.count, limit: 10)
+      throw TooManyArgumentsError(count: array.count, limit: 10)
     }
+  }
+}
+
+internal struct TooManyArgumentsError: CodedError {
+  let count: Int
+  let limit: Int
+  var description: String {
+    "A number of arguments `\(count)` exceeds the limit of `\(limit)`"
   }
 }
