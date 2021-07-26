@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   if (!_filename) {
     if (_key) {
-      _filename = _key;
+      _filename = [NSString stringWithFormat:@"%@.%@", _key, _type];
     } else {
       // create a filename that's unlikely to collide with any other asset
       _filename = [NSString stringWithFormat:@"asset-%d-%u", (int)[NSDate date].timeIntervalSince1970, arc4random()];
