@@ -4,5 +4,6 @@ module.exports = {
   plugins: ['lodash'],
   rules: {
     'lodash/import-scope': [2, 'method'],
+    '@next/next/no-img-element': 0,
   },
 };

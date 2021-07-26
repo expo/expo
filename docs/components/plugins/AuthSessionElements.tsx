@@ -1,6 +1,5 @@
 import { css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
-import Image from 'next/image';
 import * as React from 'react';
 
 const STYLES_LINK = css`
@@ -72,7 +71,15 @@ export const SocialGridItem: React.FC<{
       background: theme.background.secondary,
       borderRadius: 4,
     }}>
-    {image && <Image src={image} width={56} height={56} />}
+    <img
+      style={{
+        width: 56,
+        height: 56,
+        marginBottom: '1.2em',
+      }}
+      alt={title}
+      src={image}
+    />
     <p
       style={{
         color: theme.text.default,
