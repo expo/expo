@@ -24,6 +24,12 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/Amplitude/AmplitudeScreen'));
+    },
+    name: 'Amplitude',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/ClipboardScreen'));
     },
     name: 'Clipboard',
