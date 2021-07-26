@@ -104,6 +104,7 @@ async function action({packageName, version = 'unversioned'}: ActionOptions) {
     'expo-haptics': ['Haptics.ts'],
     'expo-keep-awake': ['index.ts'],
     'expo-linear-gradient': ['LinearGradient.tsx'],
+    'expo-local-authentication': ['LocalAuthentication.ts'],
     'expo-localization': ['Localization.ts'],
     'expo-mail-composer': ['MailComposer.ts'],
     'expo-network': ['Network.ts'],
