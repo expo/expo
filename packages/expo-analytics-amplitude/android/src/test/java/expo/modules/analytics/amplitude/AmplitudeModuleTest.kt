@@ -43,7 +43,8 @@ internal class AmplitudeModuleTest {
         "property 1 key" to "property 1",
         "property 2 key" to "property 2",
       ),
-      promise)
+      promise
+    )
     assertRejected(promise)
   }
 
