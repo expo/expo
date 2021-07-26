@@ -21,7 +21,7 @@ open class AmplitudeModule(context: Context?) : ExportedModule(context) {
     return "ExpoAmplitude"
   }
 
-  protected fun getClient(apiKey: String?): AmplitudeClient {
+  protected open fun getClient(apiKey: String?): AmplitudeClient {
     return Amplitude.getInstance(apiKey)
   }
 
