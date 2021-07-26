@@ -15,9 +15,7 @@ const sortByValue = (a: EnumValueData, b: EnumValueData) => {
     if (a.defaultValue.includes(`'`) && b.defaultValue.includes(`'`)) {
       return a.defaultValue.localeCompare(b.defaultValue);
     } else {
-      const vA = parseInt(a.defaultValue, 10);
-      const vB = parseInt(b.defaultValue, 10);
-      return vA - vB;
+      return parseInt(a.defaultValue, 10) - parseInt(b.defaultValue, 10);
     }
   }
   return 0;
