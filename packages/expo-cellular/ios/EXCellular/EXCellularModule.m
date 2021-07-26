@@ -125,39 +125,29 @@ EX_EXPORT_METHOD_AS(getMobileNetworkCodeAsync, getMobileNetworkCodeAsyncWithReso
   };
 }
 
-- (BOOL) allowsVoip
+- (BOOL)allowsVoip
 {
-  CTCarrier *carrier = [self carrier];
-
-  return carrier.allowsVOIP;
+  return [self carrier].allowsVoip;
 }
 
-- (NSString *) getIsoCountryCode
+- (NSString *)getIsoCountryCode
 {
-  CTCarrier *carrier = [self carrier];
-  
-  return carrier.isoCountryCode;
+  return [self carrier].isoCountryCode;
 }
 
-- (NSString *) getCarrierName
+- (NSString *)getCarrierName
 {
-  CTCarrier *carrier = [self carrier];
-  
-  return carrier.carrierName;
+  return [self carrier].carrierName;
 }
 
-- (NSString *) getMobileCountryCode
+- (NSString *)getMobileCountryCode
 {
-  CTCarrier *carrier = [self carrier];
-  
-  return carrier.mobileCountryCode;
+  return [self carrier].mobileCountryCode;
 }
 
-- (NSString *) getMobileNetworkCode
+- (NSString *)getMobileNetworkCode
 {
-  CTCarrier *carrier = [self carrier];
-  
-  return carrier.mobileNetworkCode;
+  return [self carrier].mobileNetworkCode;
 }
 
 @end

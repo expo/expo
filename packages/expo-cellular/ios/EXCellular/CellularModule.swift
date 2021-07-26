@@ -15,19 +15,19 @@ public class CellularModule: Module {
       Self.currentCellularGeneration().rawValue
     }
     method("allowsVoipAsync") { () -> Bool? in
-      Self.allowsVoip()
+      Self.currentCarrier()?.allowsVoip
     }
     method("getIsoCountryCodeAsync") { () -> String? in
-      Self.getIsoCountryCode()
+      Self.currentCarrier()?.isoCountryCode
     }
     method("getCarrierNameAsync") { () -> String? in
-      Self.getCarrierName()
+      Self.currentCarrier()?.carrierName
     }
     method("getMobileCountryCodeAsync") { () -> String? in
-      Self.getMobileCountryCode()
+      Self.currentCarrier()?.mobileCountryCode
     }
     method("getMobileNetworkCodeAsync") { () -> String? in
-      Self.getMobileNetworkCode()
+      Self.currentCarrier()?.mobileNetworkCode
     }
 
   }
@@ -73,8 +73,6 @@ public class CellularModule: Module {
       return .unknown
     }
   }
-  
-  
   static func getCurrentCellularInfo() -> [String : Any?] {
     let carrier = Self.currentCarrier()
     let generation = Self.currentCellularGeneration()
@@ -111,35 +109,5 @@ public class CellularModule: Module {
       return providers.values.first
     }
     return netinfo.subscriberCellularProvider
-  }
-  
-  static func allowsVoip() -> Bool? {
-    let carrier = Self.currentCarrier()
-    
-    return carrier?.allowsVOIP
-  }
-  
-  static func getIsoCountryCode() -> String? {
-    let carrier = Self.currentCarrier()
-    
-    return carrier?.isoCountryCode
-  }
-  
-  static func getCarrierName() -> String? {
-    let carrier = Self.currentCarrier()
-    
-    return carrier?.carrierName
-  }
-  
-  static func getMobileCountryCode() -> String? {
-    let carrier = Self.currentCarrier()
-    
-    return carrier?.mobileCountryCode
-  }
-  
-  static func getMobileNetworkCode() -> String? {
-    let carrier = Self.currentCarrier()
-    
-    return carrier?.mobileNetworkCode
   }
 }
