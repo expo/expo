@@ -196,7 +196,7 @@ export const resolveTypeName = ({
     );
   } else if (type === 'query' && queryType) {
     return queryType.name;
-  } else if (type === 'literal' && (value === true || value === false)) {
+  } else if (type === 'literal' && typeof value === 'boolean') {
     return `${value}`;
   } else if (type === 'literal' && value) {
     return `'${value}'`;
