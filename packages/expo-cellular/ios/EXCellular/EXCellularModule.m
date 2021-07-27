@@ -127,7 +127,7 @@ EX_EXPORT_METHOD_AS(getMobileNetworkCodeAsync, getMobileNetworkCodeAsyncWithReso
 
 - (BOOL)allowsVoip
 {
-  return [self carrier].allowsVoip;
+  return [self carrier].allowsVOIP;
 }
 
 - (NSString *)getIsoCountryCode
