@@ -9,12 +9,12 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.Assert.assertTrue
 import org.robolectric.RobolectricTestRunner
+
 import org.unimodules.test.core.PromiseMock
 import org.unimodules.test.core.assertResolved
 import org.unimodules.test.core.mockInternalModule
 import org.unimodules.test.core.mockkInternalModule
 import org.unimodules.test.core.moduleRegistryMock
-
 
 @RunWith(RobolectricTestRunner::class)
 internal class ApplicationModuleTest {
@@ -25,8 +25,8 @@ internal class ApplicationModuleTest {
   fun initializeTest() {
     applicationModule = ApplicationModule(ApplicationProvider.getApplicationContext())
     val mockActivityProvider = mockkInternalModule<MockActivityProvider>(
-        relaxed = true,
-        asInterface = ActivityProvider::class.java
+      relaxed = true,
+      asInterface = ActivityProvider::class.java
     )
     moduleRegistry = moduleRegistryMock()
     moduleRegistry.mockInternalModule(mockActivityProvider)
