@@ -103,15 +103,19 @@ internal class WebBrowserModuleTest {
     initialize(mock)
 
     // when
-    module.openBrowserAsync("http://expo.io", browserArguments(
-      toolbarColor = "#000000",
-      browserPackage = "com.browser.package",
-      enableBarCollapsing = true,
-      enableDefaultShareMenuItem = true,
-      showInRecents = true,
-      createTask = true,
-      showTitle = true
-    ), promise)
+    module.openBrowserAsync(
+      "http://expo.io",
+      browserArguments(
+        toolbarColor = "#000000",
+        browserPackage = "com.browser.package",
+        enableBarCollapsing = true,
+        enableDefaultShareMenuItem = true,
+        showInRecents = true,
+        createTask = true,
+        showTitle = true
+      ),
+      promise
+    )
 
     intentSlot.captured.let {
       assertEquals("com.browser.package", it.`package`)
@@ -126,14 +130,18 @@ internal class WebBrowserModuleTest {
     initialize(mock)
 
     // when
-    module.openBrowserAsync("http://expo.io", browserArguments(
-      toolbarColor = "#000000",
-      browserPackage = "com.browser.package",
-      enableBarCollapsing = true,
-      enableDefaultShareMenuItem = true,
-      showInRecents = true,
-      showTitle = true
-    ), promise)
+    module.openBrowserAsync(
+      "http://expo.io",
+      browserArguments(
+        toolbarColor = "#000000",
+        browserPackage = "com.browser.package",
+        enableBarCollapsing = true,
+        enableDefaultShareMenuItem = true,
+        showInRecents = true,
+        showTitle = true
+      ),
+      promise
+    )
 
     intentSlot.captured.let {
       assertTrue(it.hasExtra(CustomTabsIntent.EXTRA_ENABLE_URLBAR_HIDING))
@@ -152,14 +160,18 @@ internal class WebBrowserModuleTest {
     initialize(mock)
 
     // when
-    module.openBrowserAsync("http://expo.io", browserArguments(
-      toolbarColor = "#000000",
-      browserPackage = "com.browser.package",
-      enableBarCollapsing = false,
-      enableDefaultShareMenuItem = false,
-      showInRecents = false,
-      showTitle = false
-    ), promise)
+    module.openBrowserAsync(
+      "http://expo.io",
+      browserArguments(
+        toolbarColor = "#000000",
+        browserPackage = "com.browser.package",
+        enableBarCollapsing = false,
+        enableDefaultShareMenuItem = false,
+        showInRecents = false,
+        showTitle = false
+      ),
+      promise
+    )
 
     intentSlot.captured.let {
       assertFalse(it.getBooleanExtra(CustomTabsIntent.EXTRA_ENABLE_URLBAR_HIDING, true))
@@ -177,11 +189,15 @@ internal class WebBrowserModuleTest {
     initialize(mock)
 
     // when
-    module.openBrowserAsync("http://expo.io", browserArguments(
-      toolbarColor = "#000000",
-      browserPackage = "com.browser.package",
-      createTask = false
-    ), promise)
+    module.openBrowserAsync(
+      "http://expo.io",
+      browserArguments(
+        toolbarColor = "#000000",
+        browserPackage = "com.browser.package",
+        createTask = false
+      ),
+      promise
+    )
 
     intentSlot.captured.let {
       assertFalse((it.flags and Intent.FLAG_ACTIVITY_NEW_TASK) > 0)

@@ -41,6 +41,13 @@ const imageTests: ImageTestGroup = {
       },
     },
     {
+      name: `require(expo.svg)`,
+      props: {
+        source: images.require_svg,
+        resizeMode: 'contain',
+      },
+    },
+    {
       name: `uri:.png`,
       props: {
         source: images.uri_png,
@@ -69,6 +76,13 @@ const imageTests: ImageTestGroup = {
       props: {
         defaultStyle: {},
         source: images.uri_ico,
+      },
+    },
+    {
+      name: `uri:.svg`,
+      props: {
+        source: images.uri_youtube_svg,
+        resizeMode: 'contain',
       },
     },
   ],

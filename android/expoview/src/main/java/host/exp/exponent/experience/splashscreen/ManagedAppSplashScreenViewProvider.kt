@@ -1,9 +1,7 @@
 package host.exp.exponent.experience.splashscreen
 
-import android.app.Activity
 import android.content.Context
 import android.view.View
-import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AlphaAnimation
 import com.squareup.picasso.Callback
@@ -58,19 +56,22 @@ class ManagedAppSplashScreenViewProvider(
     if (config.imageUrl == null) {
       return
     }
-    Picasso.with(context).load(config.imageUrl).into(splashScreenView.imageView, object : Callback {
-      override fun onSuccess() {
-        splashScreenView.imageView.visibility = View.VISIBLE
-        splashScreenView.imageView.animation = AlphaAnimation(0.0f, 1.0f).also {
-          it.duration = 300
-          it.interpolator = AccelerateDecelerateInterpolator()
-          it.fillAfter = true
+    Picasso.with(context).load(config.imageUrl).into(
+      splashScreenView.imageView,
+      object : Callback {
+        override fun onSuccess() {
+          splashScreenView.imageView.visibility = View.VISIBLE
+          splashScreenView.imageView.animation = AlphaAnimation(0.0f, 1.0f).also {
+            it.duration = 300
+            it.interpolator = AccelerateDecelerateInterpolator()
+            it.fillAfter = true
+          }
+        }
+
+        override fun onError() {
+          EXL.e(TAG, "Couldn't load image at url " + config.imageUrl)
         }
       }
-
-      override fun onError() {
-        EXL.e(TAG, "Couldn't load image at url " + config.imageUrl)
-      }
-    })
+    )
   }
 }

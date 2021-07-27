@@ -25,9 +25,12 @@ class ClipboardEventEmitter(context: Context, moduleRegistry: ModuleRegistry) : 
         if (isListening) {
           val clip = clipboard.primaryClip
           if (clip != null && clip.itemCount >= 1) {
-            eventEmitter.emit(onClipboardEventName, Bundle().apply {
-              putString("content", clip.getItemAt(0).text.toString())
-            })
+            eventEmitter.emit(
+              onClipboardEventName,
+              Bundle().apply {
+                putString("content", clip.getItemAt(0).text.toString())
+              }
+            )
           }
         }
       }

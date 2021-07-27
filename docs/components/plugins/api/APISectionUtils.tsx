@@ -11,6 +11,7 @@ import { B, P, Quote } from '~/components/base/paragraph';
 import {
   CommentData,
   MethodParamData,
+  PropData,
   TypeDefinitionData,
 } from '~/components/plugins/api/APIDataTypes';
 
@@ -52,8 +53,11 @@ export const mdInlineRenderers: MDRenderers = {
 
 const nonLinkableTypes = [
   'Date',
+  'ColorValue',
   'Error',
+  'NativeSyntheticEvent',
   'Omit',
+  'Pick',
   'Promise',
   'React.FC',
   'StyleProp',
@@ -170,6 +174,19 @@ export const resolveTypeName = ({
         </>
       );
     }
+  } else if (type === 'reflection' && declaration?.children) {
+    return (
+      <>
+        {'{ '}
+        {declaration?.children.map((child: PropData, i) => (
+          <span key={`reflection-${name}-${i}`}>
+            {child.name + ': ' + resolveTypeName(child.type)}
+            {i + 1 !== declaration?.children?.length ? ', ' : null}
+          </span>
+        ))}
+        {' }'}
+      </>
+    );
   } else if (type === 'tuple' && elements) {
     return (
       <>

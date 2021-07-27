@@ -39,13 +39,15 @@ internal class GetAssetInfoTests {
     val selectionArgsSlot = slot<Array<String>>()
 
     mockkStatic(MediaLibraryUtils::class)
-    every { MediaLibraryUtils.queryAssetInfo(
-      context,
-      capture(selectionSlot),
-      capture(selectionArgsSlot),
-      true,
-      promise
-    ) } just runs
+    every {
+      MediaLibraryUtils.queryAssetInfo(
+        context,
+        capture(selectionSlot),
+        capture(selectionArgsSlot),
+        true,
+        promise
+      )
+    } just runs
 
     val expectedSelection = "${MediaStore.Images.Media._ID}=?"
     val assetId = "testAssetId"
@@ -62,9 +64,11 @@ internal class GetAssetInfoTests {
   @Test
   fun `queryAssetInfo should resolve asset`() {
     // arrange
-    val context = mockContext with mockContentResolverForResult(arrayOf(
-      MockData.mockImage.toColumnArray()
-    ))
+    val context = mockContext with mockContentResolverForResult(
+      arrayOf(
+        MockData.mockImage.toColumnArray()
+      )
+    )
 
     mockkStatic(MediaLibraryUtils::class)
     every {

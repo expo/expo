@@ -28,10 +28,12 @@ class PrintModule(context: Context) : ExportedModule(context) {
   }
 
   override fun getConstants(): MutableMap<String, Any?> {
-    return hashMapOf("Orientation" to hashMapOf(
+    return hashMapOf(
+      "Orientation" to hashMapOf(
         "portrait" to ORIENTATION_PORTRAIT,
         "landscape" to ORIENTATION_LANDSCAPE
-    ))
+      )
+    )
   }
 
   @ExpoMethod
@@ -50,16 +52,19 @@ class PrintModule(context: Context) : ExportedModule(context) {
       // Renders HTML to PDF and then prints
       try {
         val renderTask = PrintPDFRenderTask(context, options, moduleRegistry)
-        renderTask.render(null, object : PrintPDFRenderTask.Callbacks() {
-          override fun onRenderFinished(document: PrintDocumentAdapter, outputFile: File?, numberOfPages: Int) {
-            printDocumentToPrinter(document, options)
-            promise.resolve(null)
-          }
+        renderTask.render(
+          null,
+          object : PrintPDFRenderTask.Callbacks() {
+            override fun onRenderFinished(document: PrintDocumentAdapter, outputFile: File?, numberOfPages: Int) {
+              printDocumentToPrinter(document, options)
+              promise.resolve(null)
+            }
 
-          override fun onRenderError(errorCode: String?, errorMessage: String?, exception: Exception?) {
-            promise.reject(errorCode, errorMessage, exception)
+            override fun onRenderError(errorCode: String?, errorMessage: String?, exception: Exception?) {
+              promise.reject(errorCode, errorMessage, exception)
+            }
           }
-        })
+        )
       } catch (e: Exception) {
         promise.reject("E_CANNOT_PRINT", "There was an error while trying to print HTML.", e)
       }
@@ -85,29 +90,34 @@ class PrintModule(context: Context) : ExportedModule(context) {
       return
     }
     val renderTask = PrintPDFRenderTask(context, options, moduleRegistry)
-    renderTask.render(filePath, object : PrintPDFRenderTask.Callbacks() {
-      override fun onRenderFinished(document: PrintDocumentAdapter, outputFile: File?, numberOfPages: Int) {
-        val uri = FileUtils.uriFromFile(outputFile).toString()
-        var base64: String? = null
-        if (options.containsKey("base64") && (options["base64"] as Boolean? == true)) {
-          try {
-            base64 = outputFile?.let { FileUtils.encodeFromFile(it) }
-          } catch (e: IOException) {
-            promise.reject("E_PRINT_BASE64_FAILED", "An error occurred while encoding PDF file to base64 string.", e)
-            return
+    renderTask.render(
+      filePath,
+      object : PrintPDFRenderTask.Callbacks() {
+        override fun onRenderFinished(document: PrintDocumentAdapter, outputFile: File?, numberOfPages: Int) {
+          val uri = FileUtils.uriFromFile(outputFile).toString()
+          var base64: String? = null
+          if (options.containsKey("base64") && (options["base64"] as Boolean? == true)) {
+            try {
+              base64 = outputFile?.let { encodeFromFile(it) }
+            } catch (e: IOException) {
+              promise.reject("E_PRINT_BASE64_FAILED", "An error occurred while encoding PDF file to base64 string.", e)
+              return
+            }
           }
+          promise.resolve(
+            Bundle().apply {
+              putString("uri", uri)
+              putInt("numberOfPages", numberOfPages)
+              if (base64 != null) putString("base64", base64)
+            }
+          )
         }
-        promise.resolve(Bundle().apply {
-          putString("uri", uri)
-          putInt("numberOfPages", numberOfPages)
-          if (base64 != null) putString("base64", base64)
-        })
-      }
 
-      override fun onRenderError(errorCode: String?, errorMessage: String?, exception: Exception?) {
-        promise.reject(errorCode, errorMessage, exception)
+        override fun onRenderError(errorCode: String?, errorMessage: String?, exception: Exception?) {
+          promise.reject(errorCode, errorMessage, exception)
+        }
       }
-    })
+    )
   }
 
   private fun printDocumentToPrinter(document: PrintDocumentAdapter, options: Map<String?, Any?>) {
