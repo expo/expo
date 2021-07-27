@@ -53,14 +53,14 @@ UM_EXPORT_MODULE(ExponentPrint);
            };
 }
 
-UM_EXPORT_METHOD_AS(print,
+EX_EXPORT_METHOD_AS(print,
                     print:(NSDictionary *)options
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [self _getPrintingDataForOptions:options callback:^(NSData *printingData, NSDictionary *errorDetails) {
     if (errorDetails != nil) {
-      reject(errorDetails[@"code"], errorDetails[@"message"], UMErrorWithMessage(errorDetails[@"message"]));
+      reject(errorDetails[@"code"], errorDetails[@"message"], EXErrorWithMessage(errorDetails[@"message"]));
       return;
     }
     
@@ -79,7 +79,7 @@ UM_EXPORT_METHOD_AS(print,
           printInteractionController.printFormatter = formatter;
         } else {
           NSString *message = [NSString stringWithFormat:@"The specified html string is not valid for printing."];
-          reject(@"E_HTML_INVALID", message, UMErrorWithMessage(message));
+          reject(@"E_HTML_INVALID", message, EXErrorWithMessage(message));
           return;
         }
       } else {
@@ -168,54 +168,64 @@ UM_EXPORT_METHOD_AS(selectPrinter,selectPrinter:(UMPromiseResolveBlock)resolve
   }
 }
 
-UM_EXPORT_METHOD_AS(printToFileAsync,
+EX_EXPORT_METHOD_AS(printToFileAsync,
                     printToFileWithOptions:(nonnull NSDictionary *)options
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
+  __block EXWKPDFRenderer *renderTask;
+  NSString *htmlString;
+  CGSize paperSize = [self _paperSizeFromOptions:options];
+    
+  void (^completionHandler)(NSError * _Nullable, NSData * _Nullable, int) =
+    ^(NSError * _Nullable error, NSData * _Nullable pdfData, int pagesCount) {
+      renderTask = nil;
+      if (error) {
+        reject(@"E_PRINT_PDF_NOT_RENDERED", @"Error occurred while printing to PDF.", error);
+        return;
+      }
+
+      NSString *filePath = [self _generatePath];
+      if (!filePath) {
+        reject(@"E_PRINT_SAVING_ERROR", @"Error occurred while generating path for PDF: generated path empty, is FileSystem module present?", nil);
+        return;
+      }
+      NSString *uri = [[NSURL fileURLWithPath:filePath] absoluteString];
+
+      NSError *writeError;
+      BOOL success = [pdfData writeToFile:filePath options:NSDataWritingAtomic error:&writeError];
+        NSLog(@"%@", filePath);
+
+      if (!success) {
+        reject(@"E_PRINT_SAVING_ERROR", @"Error occurred while saving PDF.", error);
+        return;
+      }
+
+      NSMutableDictionary *result = [@{ @"uri": uri, @"numberOfPages": @(pagesCount) } mutableCopy];
+
+      if (options[@"base64"] != nil && [options[@"base64"] boolValue]) {
+        result[@"base64"] = [pdfData base64EncodedStringWithOptions:0];
+      }
+      resolve(result);
+    };
+
   NSString *format = options[@"format"];
   
   if (format != nil && ![format isEqualToString:@"pdf"]) {
     reject(@"E_PRINT_UNSUPPORTED_FORMAT", [NSString stringWithFormat:@"Given format '%@' is not supported.", format], nil);
     return;
   }
-  
-  __block EXWKPDFRenderer *renderTask = [EXWKPDFRenderer new];
 
-  NSString *htmlString = options[@"html"] ?: @"";
-  CGSize paperSize = [self _paperSizeFromOptions:options];
-
-  [renderTask PDFWithHtml:htmlString pageSize:paperSize completionHandler:^(NSError * _Nullable error, NSData * _Nullable pdfData, int pagesCount) {
-    renderTask = nil;
-    if (error) {
-      reject(@"E_PRINT_PDF_NOT_RENDERED", @"Error occurred while printing to PDF.", error);
-      return;
-    }
-
-    NSString *filePath = [self _generatePath];
-    if (!filePath) {
-      reject(@"E_PRINT_SAVING_ERROR", @"Error occurred while generating path for PDF: generated path empty, is FileSystem module present?", nil);
-      return;
-    }
-    NSString *uri = [[NSURL fileURLWithPath:filePath] absoluteString];
-
-    NSError *writeError;
-    BOOL success = [pdfData writeToFile:filePath options:NSDataWritingAtomic error:&writeError];
-
-    if (!success) {
-      reject(@"E_PRINT_SAVING_ERROR", @"Error occurred while saving PDF.", error);
-      return;
-    }
-
-    NSMutableDictionary *result = [@{ @"uri": uri, @"numberOfPages": @(pagesCount) } mutableCopy];
-
-    if (options[@"base64"] != nil && [options[@"base64"] boolValue]) {
-      result[@"base64"] = [pdfData base64EncodedStringWithOptions:0];
-    }
-
-    resolve(result);
-  }];
+  if (options[@"markupFormatterIOS"] && [options[@"markupFormatterIOS"] isKindOfClass:[NSString class]]) {
+    htmlString = options[@"markupFormatterIOS"];
+    [self pdfWithHtmlMarkUpFormatter:htmlString pageSize:paperSize completionHandler:completionHandler];
+  } else {
+    htmlString = options[@"html"] ?: @"";
+    renderTask = [EXWKPDFRenderer new];
+    [renderTask PDFWithHtml:htmlString pageSize:paperSize completionHandler:completionHandler];
+  }
 }
+
 
 #pragma mark - UIPrintInteractionControllerDelegate
 
@@ -299,6 +309,7 @@ UM_EXPORT_METHOD_AS(printToFileAsync,
 
     NSString *htmlString = options[@"html"] ?: @"";
     CGSize paperSize = [self _paperSizeFromOptions:options];
+    NSLog(@"%i", paperSize);
     [renderTask PDFWithHtml:htmlString pageSize:paperSize completionHandler:^(NSError * _Nullable error, NSData * _Nullable pdfData, int pagesCount) {
       if (pdfData != nil) {
         callback(pdfData, nil);
@@ -360,6 +371,26 @@ UM_EXPORT_METHOD_AS(printToFileAsync,
   [fileSystem ensureDirExistsWithPath:directory];
   
   return [directory stringByAppendingPathComponent:fileName];
+}
+
+- (NSData*)pdfWithHtmlMarkUpFormatter:(NSString*)html pageSize:(CGSize)pageSize completionHandler:(void (^)(NSError * _Nullable, NSData * _Nullable, int))onFinished
+{
+  UIMarkupTextPrintFormatter * formatter = [[UIMarkupTextPrintFormatter alloc] initWithMarkupText:html];
+  UIPrintPageRenderer * render = [[UIPrintPageRenderer alloc] init];
+  [render addPrintFormatter:formatter startingAtPageAtIndex:0];
+    
+  CGRect frame = CGRectMake(0, 0, pageSize.width, pageSize.height);
+  [render setValue:[NSValue valueWithCGRect:frame] forKey:@"paperRect"];
+  [render setValue:[NSValue valueWithCGRect:frame] forKey:@"printableRect"];
+
+  NSMutableData* data = [[NSMutableData alloc] init];
+  UIGraphicsBeginPDFContextToData(data, CGRectZero, NULL);
+  for (int i = 0; i < render.numberOfPages; i++) {
+    UIGraphicsBeginPDFPage();
+    [render drawPageAtIndex:i inRect: UIGraphicsGetPDFContextBounds()];
+  }
+  UIGraphicsEndPDFContext();
+  onFinished(nil, data, render.numberOfPages);
 }
 
 @end

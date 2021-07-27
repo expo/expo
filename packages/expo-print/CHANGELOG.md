@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix calculating the number of pages when printing HTML on iOS. ([#13633](https://github.com/expo/expo/pull/13633) by [@dsokal](https://github.com/dsokal))
+- Add markupFormatter option in printToFileAsync (default option can't handle html page breaks).
 
 ### 💡 Others
 

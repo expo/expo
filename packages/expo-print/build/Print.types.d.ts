@@ -57,6 +57,11 @@ export declare type FilePrintOptions = {
      */
     html?: string;
     /**
+     * **Available on iOS only.** Alternative to `html` option that uses [UIMarkupTextPrintFormatter](https://developer.apple.com/documentation/uikit/uimarkuptextprintformatter)
+     * instead of WebView.
+     */
+    markupFormatterIOS?: string;
+    /**
      * Width of the single page in pixels. Defaults to `612` which is a width of US Letter paper
      * format with 72 PPI.
      */
