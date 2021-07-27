@@ -10,6 +10,7 @@ import {
   ActionRotate,
   FlipType,
   ActionFill,
+  SaveFormat,
 } from './ImageManipulator.types';
 
 /**
@@ -187,19 +188,10 @@ function getContext(canvas: HTMLCanvasElement): CanvasRenderingContext2D {
   return ctx;
 }
 
-function getResults(canvas: HTMLCanvasElement, options?: SaveOptions): ImageResult {
-  let base64;
-  if (options) {
-    const { format = 'png' } = options;
-    if (options.format === 'png' && options.compress !== undefined) {
-      console.warn('compress is not supported with png format.');
-    }
-    const quality = Math.min(1, Math.max(0, options.compress ?? 1));
-    base64 = canvas.toDataURL('image/' + format, quality);
-  } else {
-    // defaults to PNG with no loss
-    base64 = canvas.toDataURL();
-  }
+function getResults(canvas: HTMLCanvasElement, options: SaveOptions): ImageResult {
+  const { format = SaveFormat.JPEG, compress = 1 } = options;
+  const quality = Math.min(1, Math.max(0, compress));
+  const base64 = canvas.toDataURL('image/' + format, quality);
   return {
     uri: base64,
     width: canvas.width,

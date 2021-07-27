@@ -90,6 +90,9 @@ export function validateSaveOptions({ base64, compress, format }) {
         if (compress < 0 || compress > 1) {
             throw new TypeError('The "compress" argument must be a number between 0 and 1');
         }
+        if (format === SaveFormat.PNG) {
+            console.warn('The "compress" argument is not supported with png format');
+        }
     }
     const allowedFormats = [SaveFormat.JPEG, SaveFormat.PNG, SaveFormat.WEBP];
     if (format !== undefined && !allowedFormats.includes(format)) {
