@@ -77,4 +77,5 @@ export type UpdateEvent = {
   message?: string;
 };
 
-export type LocalAssets = { [remoteUrl: string]: string };
+// @docsMissing
+export type LocalAssets = Record<string, string>;

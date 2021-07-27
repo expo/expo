@@ -62,6 +62,4 @@ export declare type UpdateEvent = {
      */
     message?: string;
 };
-export declare type LocalAssets = {
-    [remoteUrl: string]: string;
-};
+export declare type LocalAssets = Record<string, string>;
