@@ -34,9 +34,6 @@
   "jest": {
     "preset": "expo-module-scripts/ios"
   },
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*"
-  },
   "dependencies": {
     "expo-modules-core": "~0.1.1",
     "query-string": "^6.2.0"

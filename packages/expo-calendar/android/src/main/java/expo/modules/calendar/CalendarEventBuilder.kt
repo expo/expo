@@ -2,7 +2,7 @@ package expo.modules.calendar
 
 import android.content.ContentValues
 import android.text.TextUtils
-import org.unimodules.core.arguments.ReadableArguments
+import expo.modules.core.arguments.ReadableArguments
 import java.util.*
 
 class CalendarEventBuilder(

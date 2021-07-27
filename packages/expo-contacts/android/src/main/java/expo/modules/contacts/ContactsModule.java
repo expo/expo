@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -17,13 +16,12 @@ import android.os.Parcelable;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.interfaces.ActivityEventListener;
-import org.unimodules.core.interfaces.ActivityProvider;
-import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.services.UIManager;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.Promise;
+import expo.modules.core.interfaces.ActivityEventListener;
+import expo.modules.core.interfaces.ActivityProvider;
+import expo.modules.core.interfaces.ExpoMethod;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,6 +44,7 @@ import expo.modules.contacts.models.PhoneNumberModel;
 import expo.modules.contacts.models.PostalAddressModel;
 import expo.modules.contacts.models.RelationshipModel;
 import expo.modules.contacts.models.UrlAddressModel;
+import expo.modules.core.interfaces.services.UIManager;
 import expo.modules.interfaces.permissions.Permissions;
 
 import static expo.modules.contacts.models.BaseModel.decodeList;

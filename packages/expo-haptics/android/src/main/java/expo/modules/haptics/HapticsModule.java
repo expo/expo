@@ -5,9 +5,9 @@ import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.Promise;
-import org.unimodules.core.interfaces.ExpoMethod;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.Promise;
+import expo.modules.core.interfaces.ExpoMethod;
 import expo.modules.haptics.arguments.HapticsInvalidArgumentException;
 import expo.modules.haptics.arguments.HapticsImpactType;
 import expo.modules.haptics.arguments.HapticsNotificationType;

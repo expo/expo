@@ -5,10 +5,10 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.Promise;
-import org.unimodules.core.arguments.ReadableArguments;
-import org.unimodules.core.interfaces.ExpoMethod;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.Promise;
+import expo.modules.core.arguments.ReadableArguments;
+import expo.modules.core.interfaces.ExpoMethod;
 
 import androidx.core.app.NotificationManagerCompat;
 

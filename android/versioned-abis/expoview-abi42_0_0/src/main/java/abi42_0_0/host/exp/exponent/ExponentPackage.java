@@ -13,7 +13,7 @@ import abi42_0_0.com.facebook.react.uimanager.ViewManager;
 import org.json.JSONException;
 import abi42_0_0.org.unimodules.adapters.react.ReactModuleRegistryProvider;
 import abi42_0_0.org.unimodules.core.interfaces.Package;
-import org.unimodules.core.interfaces.SingletonModule;
+import expo.modules.core.interfaces.SingletonModule;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;

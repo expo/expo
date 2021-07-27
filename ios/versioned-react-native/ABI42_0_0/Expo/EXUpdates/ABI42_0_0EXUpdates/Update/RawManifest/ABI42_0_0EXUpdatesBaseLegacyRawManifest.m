@@ -1,7 +1,7 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
 #import <ABI42_0_0EXUpdates/ABI42_0_0EXUpdatesBaseLegacyRawManifest.h>
-#import <ABI42_0_0EXUpdates/ABI42_0_0NSDictionary+EXUpdatesRawManifest.h>
+#import <ABI42_0_0EXUpdates/NSDictionary+ABI42_0_0EXUpdatesRawManifest.h>
 
 @implementation ABI42_0_0EXUpdatesBaseLegacyRawManifest
 

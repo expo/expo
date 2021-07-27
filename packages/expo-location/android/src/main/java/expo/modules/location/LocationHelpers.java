@@ -14,8 +14,8 @@ import com.google.android.gms.location.LocationRequest;
 
 import java.util.Map;
 
-import org.unimodules.core.Promise;
-import org.unimodules.core.errors.CodedException;
+import expo.modules.core.Promise;
+import expo.modules.core.errors.CodedException;
 import io.nlopez.smartlocation.location.config.LocationAccuracy;
 import io.nlopez.smartlocation.location.config.LocationParams;
 

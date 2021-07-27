@@ -12,8 +12,8 @@ import host.exp.exponent.kernel.ExperienceKey;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.interfaces.RegistryLifecycleListener;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.interfaces.RegistryLifecycleListener;
 
 import expo.modules.firebase.core.FirebaseCoreService;
 import expo.modules.firebase.core.FirebaseCoreOptions;

@@ -2,9 +2,9 @@ package expo.modules.av;
 
 import android.content.Context;
 
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.arguments.ReadableArguments;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.Promise;
+import expo.modules.core.arguments.ReadableArguments;
 import expo.modules.av.video.VideoView;
 
 public interface AVManagerInterface {

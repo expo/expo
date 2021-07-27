@@ -19,13 +19,13 @@ import com.stripe.android.model.Source.Flow;
 import com.stripe.android.model.SourceParams;
 import com.stripe.android.model.Token;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.interfaces.ActivityEventListener;
-import org.unimodules.core.interfaces.ActivityProvider;
-import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.services.UIManager;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.Promise;
+import expo.modules.core.interfaces.ActivityEventListener;
+import expo.modules.core.interfaces.ActivityProvider;
+import expo.modules.core.interfaces.ExpoMethod;
+import expo.modules.core.interfaces.services.UIManager;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;

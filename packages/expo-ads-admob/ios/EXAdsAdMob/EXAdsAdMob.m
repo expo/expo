@@ -16,17 +16,17 @@
 
 @implementation EXAdsAdMob
 
-UM_EXPORT_MODULE(ExpoAdsAdMob);
+EX_EXPORT_MODULE(ExpoAdsAdMob);
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
   [EXPermissionsMethodsDelegate registerRequesters:@[[EXAdsAdMobAppTrackingPermissionRequester new]] withPermissionsManager:_permissionsManager];
 }
 
-UM_EXPORT_METHOD_AS(getPermissionsAsync,
-                    getPermissionsAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getPermissionsAsync,
+                    getPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                       withRequester:[EXAdsAdMobAppTrackingPermissionRequester class]
@@ -34,9 +34,9 @@ UM_EXPORT_METHOD_AS(getPermissionsAsync,
                                                              reject:reject];
 }
 
-UM_EXPORT_METHOD_AS(requestPermissionsAsync,
-                    requestPermissionsAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(requestPermissionsAsync,
+                    requestPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[EXAdsAdMobAppTrackingPermissionRequester class]
@@ -44,10 +44,10 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                                                                 reject:reject];
 }
 
-UM_EXPORT_METHOD_AS(setTestDeviceIDAsync,
+EX_EXPORT_METHOD_AS(setTestDeviceIDAsync,
                     setTestDeviceID:(NSString *)testDeviceID
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   NSArray<NSString *>* testDeviceIdentifiers = nil;
   if (testDeviceID && ![testDeviceID isEqualToString:@""]) {

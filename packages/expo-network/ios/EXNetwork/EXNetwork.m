@@ -9,7 +9,7 @@
 
 @interface EXNetwork ()
 
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 @property (nonatomic) SCNetworkReachabilityRef reachabilityRef;
 @property (nonatomic) SCNetworkReachabilityFlags lastFlags;
 @property (nonatomic) NSString *type;
@@ -28,15 +28,15 @@
   return self;
 }
 
-UM_EXPORT_MODULE(ExpoNetwork);
+EX_EXPORT_MODULE(ExpoNetwork);
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }
 
-UM_EXPORT_METHOD_AS(getIpAddressAsync,
-                    getIpAddressAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getIpAddressAsync,
+                    getIpAddressAsyncWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject)
 {
   NSString *address = @"0.0.0.0";
   struct ifaddrs *interfaces = NULL;
@@ -69,9 +69,9 @@ UM_EXPORT_METHOD_AS(getIpAddressAsync,
   freeifaddrs(interfaces);
 }
 
-UM_EXPORT_METHOD_AS(getNetworkStateAsync,
-                    getNetworkStateAsyncWithResolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getNetworkStateAsync,
+                    getNetworkStateAsyncWithResolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   _reachabilityRef =  [self createReachabilityRef];
   SCNetworkReachabilityFlags flags = [self lastFlags];

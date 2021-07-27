@@ -77,6 +77,7 @@ export type EnumValueData = {
   name: string;
   comment?: CommentData;
   kind: TypeDocKind;
+  defaultValue?: string;
 };
 
 // Interfaces section
