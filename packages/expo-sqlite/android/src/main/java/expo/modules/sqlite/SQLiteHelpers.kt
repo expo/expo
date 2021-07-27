@@ -54,10 +54,7 @@ private fun isPragma(str: String): Boolean {
 }
 
 private fun isPragmaReadOnly(str: String): Boolean {
-  if (!isPragma(str)) {
-    return false
-  }
-  return !str.contains('=')
+  return isPragma(str) && !str.contains('=')
 }
 
 internal fun isSelect(str: String): Boolean {
@@ -76,28 +73,8 @@ internal fun isDelete(str: String): Boolean {
   return startsWithCaseInsensitive(str, "delete")
 }
 
-// identify an "insert"/"select" query more efficiently than with a Pattern
 private fun startsWithCaseInsensitive(str: String, substr: String): Boolean {
-  var i = -1
-  val len = str.length
-  while (++i < len) {
-    val ch = str[i]
-    if (!Character.isWhitespace(ch)) {
-      break
-    }
-  }
-  var j = -1
-  val substrLen = substr.length
-  while (++j < substrLen) {
-    if (j + i >= len) {
-      return false
-    }
-    val ch = str[j + i]
-    if (Character.toLowerCase(ch) != substr[j]) {
-      return false
-    }
-  }
-  return true
+  return str.trimStart().startsWith(substr, true);
 }
 
 internal fun convertParamsToStringArray(paramArrayArg: ArrayList<Any?>): Array<String?> {

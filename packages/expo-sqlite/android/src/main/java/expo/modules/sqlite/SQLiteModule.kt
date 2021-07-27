@@ -11,16 +11,13 @@ import java.io.File
 import java.io.IOException
 import java.util.*
 
-class SQLiteModule(private val mContext: Context) : ExportedModule(mContext) {
-  companion object {
-    private const val DEBUG_MODE = false
-    private val TAG = SQLiteModule::class.java.simpleName
-    private val EMPTY_ROWS = arrayOf<Array<Any?>>()
-    private val EMPTY_COLUMNS = arrayOf<String?>()
-    private val EMPTY_RESULT = SQLitePluginResult(EMPTY_ROWS, EMPTY_COLUMNS, 0, 0, null)
-    private val DATABASES: MutableMap<String, SQLiteDatabase?> = HashMap()
-  }
+private val TAG = SQLiteModule::class.java.simpleName
+private val EMPTY_ROWS = arrayOf<Array<Any?>>()
+private val EMPTY_COLUMNS = arrayOf<String?>()
+private val EMPTY_RESULT = SQLiteModule.SQLitePluginResult(EMPTY_ROWS, EMPTY_COLUMNS, 0, 0, null)
+private val DATABASES: MutableMap<String, SQLiteDatabase?> = HashMap()
 
+class SQLiteModule(private val mContext: Context) : ExportedModule(mContext) {
   override fun getName(): String {
     return "ExponentSQLite"
   }
@@ -43,9 +40,6 @@ class SQLiteModule(private val mContext: Context) : ExportedModule(mContext) {
             }
           }
         } catch (e: Throwable) {
-          if (DEBUG_MODE) {
-            e.printStackTrace()
-          }
           SQLitePluginResult(EMPTY_ROWS, EMPTY_COLUMNS, 0, 0, e)
         }
       }
