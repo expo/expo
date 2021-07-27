@@ -27,16 +27,13 @@ abstract class BaseSensorModule internal constructor(context: Context?) : Export
   protected abstract fun eventToMap(sensorEvent: SensorEvent): Bundle
 
   override fun onCreate(moduleRegistry: ModuleRegistry) {
-    // Unregister from old UIManager
-    if (this::moduleRegistry.isInitialized && moduleRegistry.getModule(UIManager::class.java) != null) {
-      moduleRegistry.getModule(UIManager::class.java).unregisterLifecycleEventListener(this)
-    }
     this.moduleRegistry = moduleRegistry
 
+    // Unregister from old UIManager
+    moduleRegistry.getModule(UIManager::class.java)?.unregisterLifecycleEventListener(this)
+
     // Register to new UIManager
-    if (moduleRegistry.getModule(UIManager::class.java) != null) {
-      moduleRegistry.getModule(UIManager::class.java).registerLifecycleEventListener(this)
-    }
+    moduleRegistry.getModule(UIManager::class.java)?.registerLifecycleEventListener(this)
   }
 
   override fun onSensorChanged(sensorEvent: SensorEvent) {

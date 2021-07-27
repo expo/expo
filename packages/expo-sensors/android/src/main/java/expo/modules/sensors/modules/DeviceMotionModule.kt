@@ -34,7 +34,7 @@ class DeviceMotionModule(context: Context?) : ExportedModule(context), SensorEve
   private var mRotationRateEvent: SensorEvent? = null
   private var mGravityEvent: SensorEvent? = null
   private lateinit var mServiceSubscriptions: MutableList<SensorServiceSubscriptionInterface>
-  private lateinit var mUiManager: UIManager
+  private lateinit var mUIManager: UIManager
   private lateinit var mModuleRegistry: ModuleRegistry
 
   private val mCurrentFrameCallback: ScheduleDispatchFrameCallback = ScheduleDispatchFrameCallback()
@@ -72,7 +72,7 @@ class DeviceMotionModule(context: Context?) : ExportedModule(context), SensorEve
 
   @ExpoMethod
   fun stopObserving(promise: Promise) {
-    mUiManager.runOnUiQueueThread {
+    mUIManager.runOnUiQueueThread {
       mServiceSubscriptions.forEach { it.stop() }
       mCurrentFrameCallback.stop()
       promise.resolve(null)
@@ -94,7 +94,7 @@ class DeviceMotionModule(context: Context?) : ExportedModule(context), SensorEve
 
   override fun onCreate(moduleRegistry: ModuleRegistry) {
     mEventEmitter = moduleRegistry.getModule(EventEmitter::class.java)
-    mUiManager = moduleRegistry.getModule(UIManager::class.java)
+    mUIManager = moduleRegistry.getModule(UIManager::class.java)
     mModuleRegistry = moduleRegistry
   }
 
@@ -137,7 +137,7 @@ class DeviceMotionModule(context: Context?) : ExportedModule(context), SensorEve
       }
       val curTime = System.currentTimeMillis()
       if (curTime - mLastUpdate > mUpdateInterval) {
-        mUiManager.runOnClientCodeQueueThread(mDispatchEventRunnable)
+        mUIManager.runOnClientCodeQueueThread(mDispatchEventRunnable)
         mLastUpdate = curTime
       }
     }
@@ -161,7 +161,7 @@ class DeviceMotionModule(context: Context?) : ExportedModule(context), SensorEve
       if (mIsPosted) {
         return
       }
-      mUiManager.runOnUiQueueThread { maybePost() }
+      mUIManager.runOnUiQueueThread { maybePost() }
     }
   }
 

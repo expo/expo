@@ -17,15 +17,13 @@ abstract class BaseService(protected val context: Context) : LifecycleEventListe
     mModuleRegistry = moduleRegistry
 
     // Register to new UIManager
-    if (mModuleRegistry.getModule(UIManager::class.java) != null) {
-      mModuleRegistry.getModule(UIManager::class.java).registerLifecycleEventListener(this)
-    }
+    mModuleRegistry.getModule(UIManager::class.java)?.registerLifecycleEventListener(this)
   }
 
   override fun onDestroy() {
     // Unregister from old UIManager
-    if (this::mModuleRegistry.isInitialized && mModuleRegistry.getModule(UIManager::class.java) != null) {
-      mModuleRegistry.getModule(UIManager::class.java).unregisterLifecycleEventListener(this)
+    if (this::mModuleRegistry.isInitialized) {
+      mModuleRegistry.getModule(UIManager::class.java)?.unregisterLifecycleEventListener(this)
     }
   }
 
