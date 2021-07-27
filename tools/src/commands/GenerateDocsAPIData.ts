@@ -120,6 +120,7 @@ async function action({packageName, version = 'unversioned'}: ActionOptions) {
     'expo-store-review': ['StoreReview.ts'],
     'expo-task-manager': ['TaskManager.ts'],
     'expo-tracking-transparency': ['TrackingTransparency.ts'],
+    'expo-updates': ['index.ts'],
     'expo-video-thumbnails': ['VideoThumbnails.ts'],
     'expo-web-browser': ['WebBrowser.ts'],
   };
