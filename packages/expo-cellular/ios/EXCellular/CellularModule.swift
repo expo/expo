@@ -5,17 +5,13 @@ public class CellularModule: Module {
   public func definition() -> ModuleDefinition {
     name("ExpoCellular")
     constants {
-      // FIXME: Carrier details shouldn't be constants.
-      // Constants are returned to JS only once, but the carrier may change over time.
-      let carrier = Self.currentCarrier()
-
-      return Self.getCurrentCellularInfo()
+      Self.getCurrentCellularInfo()
     }
     method("getCellularGenerationAsync") { () -> Int in
       Self.currentCellularGeneration().rawValue
     }
     method("allowsVoipAsync") { () -> Bool? in
-      Self.currentCarrier()?.allowsVoip
+      Self.currentCarrier()?.allowsVOIP
     }
     method("getIsoCountryCodeAsync") { () -> String? in
       Self.currentCarrier()?.isoCountryCode
@@ -29,7 +25,6 @@ public class CellularModule: Module {
     method("getMobileNetworkCodeAsync") { () -> String? in
       Self.currentCarrier()?.mobileNetworkCode
     }
-
   }
 
   // MARK: - internals
@@ -73,6 +68,7 @@ public class CellularModule: Module {
       return .unknown
     }
   }
+
   static func getCurrentCellularInfo() -> [String : Any?] {
     let carrier = Self.currentCarrier()
     let generation = Self.currentCellularGeneration()
