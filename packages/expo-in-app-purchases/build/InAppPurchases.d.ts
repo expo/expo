@@ -8,3 +8,4 @@ export declare function setPurchaseListener(callback: (result: IAPQueryResponse<
 export declare function finishTransactionAsync(purchase: InAppPurchase, consumeItem: boolean): Promise<void>;
 export declare function getBillingResponseCodeAsync(): Promise<number>;
 export declare function disconnectAsync(): Promise<void>;
+export declare function getCurrentSubscription(): Promise<any>;

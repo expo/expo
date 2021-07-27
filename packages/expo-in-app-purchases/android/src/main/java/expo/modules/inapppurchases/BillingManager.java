@@ -128,6 +128,23 @@ public class BillingManager implements PurchasesUpdatedListener {
     });
   }
 
+  public void querySubscriptions(final Promise promise) {
+    Runnable queryToExecute = () -> {
+      Purchase.PurchasesResult purchasesResult = mBillingClient.queryPurchases(BillingClient.SkuType.SUBS);
+
+      if (mBillingClient == null ||
+              purchasesResult.getResponseCode() != BillingClient.BillingResponse.OK) {
+        promise.reject("SUB_NOT_QUERIED", "Unable to retrieve latest subscriptions");
+        return;
+      }
+      // mPurchases.clear();
+      // onPurchasesUpdated(BillingClient.BillingResponse.OK, purchasesResult.getPurchasesList());
+      promise.resolve(purchasesResult.getPurchasesList());
+    };
+
+    executeServiceRequest(queryToExecute);
+  }
+
   /**
    * Start a purchase or subscription replace flow
    */

@@ -118,6 +118,10 @@ export async function disconnectAsync(): Promise<void> {
   connected = false;
 }
 
+export async function getCurrentSubscription(): Promise<any> {
+  return await ExpoInAppPurchases.getCurrentSubscription();
+}
+
 class ConnectionError extends CodedError {
   constructor(message: string) {
     super('ERR_IN_APP_PURCHASES_CONNECTION', message);

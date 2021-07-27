@@ -89,6 +89,10 @@ public class InAppPurchasesModule extends ExportedModule implements RegistryLife
     promise.resolve(null);
   }
 
+  public void getCurrentSubscription(final Promise promise) {
+    mBillingManager.querySubscriptions(promise);
+  }
+
   private Activity getCurrentActivity() {
     ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
     return activityProvider != null ? activityProvider.getCurrentActivity() : null;

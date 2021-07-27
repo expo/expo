@@ -70,6 +70,9 @@ export async function disconnectAsync() {
     await ExpoInAppPurchases.disconnectAsync();
     connected = false;
 }
+export async function getCurrentSubscription() {
+    return await ExpoInAppPurchases.getCurrentSubscription();
+}
 class ConnectionError extends CodedError {
     constructor(message) {
         super('ERR_IN_APP_PURCHASES_CONNECTION', message);
