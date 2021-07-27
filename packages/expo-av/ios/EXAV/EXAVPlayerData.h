@@ -32,7 +32,7 @@
                 resolver:(EXPromiseResolveBlock)resolve
                 rejecter:(EXPromiseRejectBlock)reject;
 
-typedef void (^SampleBufferCallback)(AVAudioPCMBuffer * _Nonnull buffer, double timestamp);
+typedef void (^SampleBufferCallback)(AudioBuffer *buffer, double timestamp);
 
 - (void)addSampleBufferCallback:(SampleBufferCallback)callback;
 - (void)removeSampleBufferCallback;

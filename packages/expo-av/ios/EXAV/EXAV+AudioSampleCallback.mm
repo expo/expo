@@ -44,9 +44,10 @@ using namespace facebook;
       auto callback = args[1].asObject(runtime).asFunction(runtime);
       auto callbackShared = std::make_shared<jsi::Function>(std::move(callback));
       
-      [sound addSampleBufferCallback:^(AVAudioPCMBuffer * _Nonnull buffer, double timestamp) {
-        auto channelsCount = (size_t) buffer.stride;
-        auto framesCount = buffer.frameLength;
+      [sound addSampleBufferCallback:^(AudioBuffer *buffer, double timestamp) {
+        auto channelsCount = (size_t) buffer->mNumberChannels;
+        auto framesCount = buffer->mDataByteSize;
+        double *data = (double *) buffer->mData;
         
         // TODO: Avoid copy by directly using ArrayBuffer?
         auto channels = jsi::Array(runtime, channelsCount);
@@ -56,15 +57,7 @@ using namespace facebook;
           auto frames = jsi::Array(runtime, framesCount);
           for (auto ii = 0; ii < framesCount; ii++) {
             
-            double frame;
-            if (buffer.floatChannelData != nil) {
-              frame = (double) buffer.floatChannelData[i][ii];
-            } else if (buffer.int32ChannelData != nil) {
-              frame = (double) buffer.int32ChannelData[i][ii];
-            } else if (buffer.int16ChannelData != nil) {
-              frame = (double) buffer.int16ChannelData[i][ii];
-            }
-            
+            double frame = data[ii];
             frames.setValueAtIndex(runtime, ii, jsi::Value(frame));
           }
           
