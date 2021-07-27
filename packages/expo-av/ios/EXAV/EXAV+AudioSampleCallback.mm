@@ -51,18 +51,21 @@ using namespace facebook;
         
         // TODO: Avoid copy by directly using ArrayBuffer?
         auto channels = jsi::Array(runtime, channelsCount);
-        for (auto i = 0; i < channelsCount; i++) {
+        // Channels in AudioBuffer are interleaved, so for `2` channels we do steps of `2`. ([0, 2, 4, 6, ...] and [1, 3, 5, 7, ...])
+        for (auto channelIndex = 0; channelIndex < channelsCount; channelIndex++) {
           auto channel = jsi::Object(runtime);
           
           auto frames = jsi::Array(runtime, framesCount);
-          for (auto ii = 0; ii < framesCount; ii++) {
-            
-            double frame = data[ii];
-            frames.setValueAtIndex(runtime, ii, jsi::Value(frame));
+          // Start at the channel offset (0, 1, ...) and increment by channel count (interleaved jump),
+          //    so for 2 channels we run [0, 2, 4, ..] and [1, 3, 5, ..]
+          //    and for 1 channel we run [0, 1, 2, ..]
+          for (auto frameIndex = channelIndex; frameIndex < framesCount; frameIndex += channelsCount) {
+            double frame = data[frameIndex];
+            frames.setValueAtIndex(runtime, frameIndex, jsi::Value(frame));
           }
           
           channel.setProperty(runtime, "frames", frames);
-          channels.setValueAtIndex(runtime, i, channel);
+          channels.setValueAtIndex(runtime, channelIndex, channel);
         }
         
         auto sample = jsi::Object(runtime);
