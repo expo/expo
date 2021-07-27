@@ -1141,8 +1141,8 @@ PODS:
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
-    - Folly
     - glog
+    - RCT-Folly
     - Yoga
   - ABI41_0_0stripe-react-native (0.1.0):
     - ABI41_0_0React
@@ -1742,8 +1742,8 @@ PODS:
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
-    - Folly
     - glog
+    - RCT-Folly
     - Yoga
   - ABI42_0_0RNScreens (3.4.0):
     - ABI42_0_0React-Core
@@ -2004,10 +2004,6 @@ PODS:
     - GoogleUtilities/Environment (~> 7.0)
     - GoogleUtilities/UserDefaults (~> 7.0)
     - PromisesObjC (~> 1.2)
-  - Folly (2016.09.26.00):
-    - boost-for-react-native
-    - DoubleConversion
-    - glog
   - glog (0.3.5)
   - Google-Maps-iOS-Utils (2.1.0):
     - Google-Maps-iOS-Utils/Clustering (= 2.1.0)
@@ -2878,7 +2874,6 @@ SPEC REPOS:
     - FirebaseCore
     - FirebaseCoreDiagnostics
     - FirebaseInstallations
-    - Folly
     - Google-Maps-iOS-Utils
     - Google-Mobile-Ads-SDK
     - GoogleAppMeasurement
@@ -3912,7 +3907,7 @@ SPEC CHECKSUMS:
   ABI41_0_0React-RCTText: fd7a686171057c27299084fbb7bea5115e588afb
   ABI41_0_0React-RCTVibration: ea2ae0f0559e32d2a17d28162ee1ce902fcf0f98
   ABI41_0_0ReactCommon: bedf6c58cbcd774db4ca5c5f9b39196493a683a6
-  ABI41_0_0RNReanimated: c4322a35931e9e96adc8b4651ce9f4917c6ac7ed
+  ABI41_0_0RNReanimated: 9ec256ef7b229c919835501640706028bf438678
   ABI41_0_0stripe-react-native: e1b0af5c90922f4180a678d6303a1afa7310b8f4
   ABI41_0_0UMAppLoader: c44d678dc80cd36783ecf36e036690eff34a28b2
   ABI41_0_0UMBarCodeScannerInterface: 7a08c48a07b33412c5a61465f96915bb778ae789
@@ -4019,7 +4014,7 @@ SPEC CHECKSUMS:
   ABI42_0_0React-RCTText: dadc12ceba79780500672bbd6e91cd2a3dcdbb35
   ABI42_0_0React-RCTVibration: e33d9640b1ce92f1e1c07989523289a7187ce9b1
   ABI42_0_0ReactCommon: c3bb4c4691c125880ac8c6d6a13a44744059738a
-  ABI42_0_0RNReanimated: b257b1df65e0675649b7664ef17242227b3f1d24
+  ABI42_0_0RNReanimated: c83b815abf46671c46634e2b3d3813e434ef174f
   ABI42_0_0RNScreens: 54491fe4857af5649b9bbcdb68f80bfaea9184df
   ABI42_0_0stripe-react-native: 4dacb836ee43e10d08e4f126ca6976f2b00df508
   ABI42_0_0UMAppLoader: dabb1f8c2f864f5559f314a0e027b6f9489d4687
@@ -4111,7 +4106,6 @@ SPEC CHECKSUMS:
   FirebaseCore: ac35d680a0bf32319a59966a1478e0741536b97b
   FirebaseCoreDiagnostics: 3d36e05da74cb8b7ce30e6594a8f201b982c725c
   FirebaseInstallations: a58d4f72ec5861840b84df489f2668d970df558a
-  Folly: 211775e49d8da0ca658aebc8eab89d642935755c
   glog: 73c2498ac6884b13ede40eda8228cb1eee9d9d62
   Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875
   Google-Mobile-Ads-SDK: 2f288748a42920d1c744946a460896a95b0e9110
