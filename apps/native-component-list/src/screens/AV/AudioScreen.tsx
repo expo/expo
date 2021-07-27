@@ -33,7 +33,7 @@ const WaveForm = () => {
         await soundObject.loadAsync(
           Asset.fromModule(require('../../../assets/sounds/polonez.mp3')),
           {
-            progressUpdateIntervalMillis: 150,
+            progressUpdateIntervalMillis: 99999,
           }
         );
         console.log('loaded');
