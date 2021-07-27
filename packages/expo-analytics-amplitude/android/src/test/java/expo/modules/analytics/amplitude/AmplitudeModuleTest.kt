@@ -9,7 +9,7 @@ import org.junit.Test
 import org.junit.Assert.assertNull
 import org.robolectric.RobolectricTestRunner
 
-import org.unimodules.core.arguments.ReadableArguments
+import expo.modules.core.arguments.ReadableArguments
 import org.unimodules.test.core.PromiseMock
 import org.unimodules.test.core.assertRejected
 import org.unimodules.test.core.assertResolved
