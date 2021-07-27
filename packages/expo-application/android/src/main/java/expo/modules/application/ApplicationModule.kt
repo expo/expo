@@ -106,9 +106,9 @@ class ApplicationModule(private val mContext: Context) : ExportedModule(mContext
             }
             promise.resolve(installReferrer.toString())
           }
-          InstallReferrerClient.InstallReferrerResponse.FEATURE_NOT_SUPPORTED ->             // API not available in the current Play Store app
+          InstallReferrerClient.InstallReferrerResponse.FEATURE_NOT_SUPPORTED -> // API not available in the current Play Store app
             promise.reject("ERR_APPLICATION_INSTALL_REFERRER_UNAVAILABLE", "The current Play Store app doesn't provide the installation referrer API, or the Play Store may not be installed.")
-          InstallReferrerClient.InstallReferrerResponse.SERVICE_UNAVAILABLE ->             // Connection could not be established
+          InstallReferrerClient.InstallReferrerResponse.SERVICE_UNAVAILABLE -> // Connection could not be established
             promise.reject("ERR_APPLICATION_INSTALL_REFERRER_CONNECTION", "Could not establish a connection to Google Play")
           else -> promise.reject("ERR_APPLICATION_INSTALL_REFERRER", "General error retrieving the install referrer: response code $responseCode")
         }
