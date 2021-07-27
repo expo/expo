@@ -1,1 +1,1 @@
-export * from './ExpoStoryApp';
+export { default } from './ExpoStoryApp';

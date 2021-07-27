@@ -1,16 +1,13 @@
 import fs from 'fs';
 import path from 'path';
 
-import { storiesFileDir } from './constants';
-import { getConfig } from './getConfig';
-import { IServerConfig } from './types';
+import { IServerConfig } from '../types';
+import { getStoriesCacheDir } from './shared';
 
-function writeRequiredFiles(serverConfig: IServerConfig) {
-  const config = getConfig(serverConfig);
-
+function writeRequiredFiles(config: IServerConfig) {
   const { projectRoot, watchRoot, port } = config;
 
-  const pathToStories = path.resolve(projectRoot, storiesFileDir);
+  const pathToStories = getStoriesCacheDir(config);
 
   if (!fs.existsSync(pathToStories)) {
     fs.mkdirSync(pathToStories, { recursive: true });

@@ -6,12 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.writeRequiredFiles = void 0;
 var fs_1 = __importDefault(require("fs"));
 var path_1 = __importDefault(require("path"));
-var constants_1 = require("./constants");
-var getConfig_1 = require("./getConfig");
-function writeRequiredFiles(serverConfig) {
-    var config = getConfig_1.getConfig(serverConfig);
+var shared_1 = require("./shared");
+function writeRequiredFiles(config) {
     var projectRoot = config.projectRoot, watchRoot = config.watchRoot, port = config.port;
-    var pathToStories = path_1.default.resolve(projectRoot, constants_1.storiesFileDir);
+    var pathToStories = shared_1.getStoriesCacheDir(config);
     if (!fs_1.default.existsSync(pathToStories)) {
         fs_1.default.mkdirSync(pathToStories, { recursive: true });
     }

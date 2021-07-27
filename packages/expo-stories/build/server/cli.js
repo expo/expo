@@ -16,8 +16,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var commander_1 = require("commander");
 var path_1 = __importDefault(require("path"));
-var constants_1 = require("./constants");
 var _1 = require("./");
+var shared_1 = require("./shared");
 commander_1.program.version('0.0.1');
 var startCommand = new commander_1.Command();
 startCommand
@@ -26,7 +26,7 @@ startCommand
     .option('-r, --projectRoot <path>', 'the directory for the server to run', process.cwd())
     .option('-w --watchRoot <path>', 'the directory for the server to watch', process.cwd())
     .action(function (options) {
-    options = __assign(__assign({}, constants_1.defaultConfig), options);
+    options = __assign(__assign({}, shared_1.defaultConfig), options);
     options.watchRoot = path_1.default.resolve(process.cwd(), options.watchRoot);
     _1.startServer(options);
 });

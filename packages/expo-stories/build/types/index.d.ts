@@ -13,3 +13,8 @@ export interface IStoryManifestItem {
     title: string;
     stories: any[];
 }
+export interface IStoryHttpServer {
+    refreshClients: () => void;
+    start: () => void;
+    cleanup: () => void;
+}

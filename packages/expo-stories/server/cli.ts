@@ -1,8 +1,8 @@
 import { program, Command } from 'commander';
 import path from 'path';
 
-import { defaultConfig } from './constants';
 import { startServer } from './';
+import { defaultConfig } from './shared';
 
 program.version('0.0.1');
 
