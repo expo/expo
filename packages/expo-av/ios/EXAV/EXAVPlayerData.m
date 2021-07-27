@@ -2,6 +2,28 @@
 
 #import <EXAV/EXAVPlayerData.h>
 
+// This struct is used to pass along data between the MTAudioProcessingTap callbacks.
+typedef struct AVAudioTapProcessorContext {
+  Boolean supportedTapProcessingFormat;
+  Boolean isNonInterleaved;
+  Float64 sampleRate;
+  AudioUnit audioUnit;
+  Float64 sampleCount;
+  float leftChannelVolume;
+  float rightChannelVolume;
+  void *self;
+} AVAudioTapProcessorContext;
+
+// MTAudioProcessingTap callbacks.
+static void tap_InitCallback(MTAudioProcessingTapRef tap, void *clientInfo, void **tapStorageOut);
+static void tap_FinalizeCallback(MTAudioProcessingTapRef tap);
+static void tap_PrepareCallback(MTAudioProcessingTapRef tap, CMItemCount maxFrames, const AudioStreamBasicDescription *processingFormat);
+static void tap_UnprepareCallback(MTAudioProcessingTapRef tap);
+static void tap_ProcessCallback(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioProcessingTapFlags flags, AudioBufferList *bufferListInOut, CMItemCount *numberFramesOut, MTAudioProcessingTapFlags *flagsOut);
+
+// Audio Unit callbacks.
+static OSStatus AU_RenderCallback(void *inRefCon, AudioUnitRenderActionFlags *ioActionFlags, const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber, UInt32 inNumberFrames, AudioBufferList *ioData);
+
 NSString *const EXAVPlayerDataStatusIsLoadedKeyPath = @"isLoaded";
 NSString *const EXAVPlayerDataStatusURIKeyPath = @"uri";
 NSString *const EXAVPlayerDataStatusHeadersKeyPath = @"headers";
@@ -33,6 +55,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 
 @property (nonatomic, weak) EXAV *exAV;
 @property (nonatomic, strong) SampleBufferCallback audioSampleBufferCallback;
+@property (readonly, nonatomic) AVAudioMix *avAudioMix;
 
 @property (nonatomic, assign) BOOL isLoaded;
 @property (nonatomic, strong) void (^loadFinishBlock)(BOOL success, NSDictionary *successStatus, NSString *error);
@@ -56,6 +79,9 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 @property (nonatomic, strong) NSArray<AVPlayerItem *> *items;
 
 @property (nonatomic, strong) EXPromiseResolveBlock replayResolve;
+
+@property (nonatomic) float centerFrequency; // [0 .. 1]
+@property (nonatomic) float bandwidth; // [0 .. 1]
 
 @end
 
@@ -91,6 +117,9 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     _playbackStalledObserver = nil;
     _statusUpdateCallback = nil;
     _observers = [NSMapTable new];
+    
+    _centerFrequency = (4980.0f / 23980.0f); // equals 5000 Hz (assuming sample rate is 48k)
+    _bandwidth = (500.0f / 11900.0f); // equals 600 Cents
     
     // These status props will be potentially reset by the following call to [self setStatus:parameters ...].
     _progressUpdateIntervalMillis = @(500);
@@ -129,55 +158,34 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     AVPlayerItem *firstPlayerItem = [AVPlayerItem playerItemWithAsset:avAsset];
     AVPlayerItem *secondPlayerItem = [AVPlayerItem playerItemWithAsset:avAsset];
     AVPlayerItem *thirdPlayerItem = [AVPlayerItem playerItemWithAsset:avAsset];
-    
-    // ---------------------------------------------------------------------------------------------------------------------------
-    
-    
-    
-    
-    // Continuing on from where we created the AVAsset...
-    AVAssetTrack *audioTrack = [[avAsset tracks] objectAtIndex:0];
-    AVMutableAudioMixInputParameters *inputParams = [AVMutableAudioMixInputParameters audioMixInputParametersWithTrack:audioTrack];
-    
-    // Create a processing tap for the input parameters
-    MTAudioProcessingTapCallbacks callbacks;
-    callbacks.version = kMTAudioProcessingTapCallbacksVersion_0;
-    callbacks.clientInfo = (__bridge void *)(self);
-    callbacks.init = init;
-    callbacks.prepare = prepare;
-    callbacks.process = process;
-    callbacks.unprepare = unprepare;
-    callbacks.finalize = finalize;
-    
-    MTAudioProcessingTapRef tap;
-    // The create function makes a copy of our callbacks struct
-    OSStatus err = MTAudioProcessingTapCreate(kCFAllocatorDefault, &callbacks,
-                                              kMTAudioProcessingTapCreationFlag_PostEffects, &tap);
-    if (err || !tap) {
-      NSLog(@"Unable to create the Audio Processing Tap");
-      return;
-    }
-    assert(tap);
-    
-    // Assign the tap to the input parameters
-    inputParams.audioTapProcessor = tap;
-    
-    // Create a new AVAudioMix and assign it to our AVPlayerItem
-    AVMutableAudioMix *audioMix = [AVMutableAudioMix audioMix];
-    audioMix.inputParameters = @[inputParams];
-    firstPlayerItem.audioMix = audioMix;
-    secondPlayerItem.audioMix = audioMix;
-    thirdPlayerItem.audioMix = audioMix;
-    
-    
-
-    // ---------------------------------------------------------------------------------------------------------------------------
-    
     self.items = @[firstPlayerItem, secondPlayerItem, thirdPlayerItem];
+    
     self.player = [AVQueuePlayer queuePlayerWithItems:@[firstPlayerItem, secondPlayerItem, thirdPlayerItem]];
     if (self.player) {
       [self _addObserver:self.player forKeyPath:EXAVPlayerDataObserverStatusKeyPath];
       [self _addObserver:self.player.currentItem forKeyPath:EXAVPlayerDataObserverStatusKeyPath];
+      
+      AVAudioMix *audioMix = self.audioMix;
+      if (audioMix) {
+        // Get pointer to Audio Unit stored in MTAudioProcessingTap context.
+        MTAudioProcessingTapRef audioProcessingTap = ((AVMutableAudioMixInputParameters *)audioMix.inputParameters[0]).audioTapProcessor;
+        AVAudioTapProcessorContext *context = (AVAudioTapProcessorContext *)MTAudioProcessingTapGetStorage(audioProcessingTap);
+        AudioUnit audioUnit = context->audioUnit;
+        if (audioUnit)
+        {
+          // Update center frequency of bandpass filter Audio Unit.
+          Float32 newCenterFrequency = (20.0f + ((context->sampleRate * 0.5f) - 20.0f) * self.centerFrequency); // Global, Hz, 20->(SampleRate/2), 5000
+          OSStatus status1 = AudioUnitSetParameter(audioUnit, kBandpassParam_CenterFrequency, kAudioUnitScope_Global, 0, newCenterFrequency, 0);
+          if (noErr != status1)
+            NSLog(@"AudioUnitSetParameter(kBandpassParam_CenterFrequency): %d", (int)status1);
+          
+          // Update bandwidth of bandpass filter Audio Unit.
+          Float32 newBandwidth = (100.0f + 11900.0f * self.bandwidth);
+          OSStatus status2 = AudioUnitSetParameter(audioUnit, kBandpassParam_Bandwidth, kAudioUnitScope_Global, 0, newBandwidth, 0); // Global, Cents, 100->12000, 600
+          if (noErr != status2)
+            NSLog(@"AudioUnitSetParameter(kBandpassParam_Bandwidth): %d", (int)status2);
+        }
+      }
     } else {
       NSString *errorMessage = @"Load encountered an error: [AVPlayer playerWithPlayerItem:] returned nil.";
       if (self.loadFinishBlock) {
@@ -222,6 +230,52 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   }];
 }
 
+#pragma mark - AudioMix
+
+- (AVAudioMix *)audioMix
+{
+  if (!_avAudioMix)
+  {
+    // TODO: Get AVAssetTrack more reliably!!
+    AVPlayerItem *item = self.items.firstObject;
+    AVAssetTrack *track = item.tracks.firstObject.assetTrack;
+    assert(track);
+    
+    AVMutableAudioMix *audioMix = [AVMutableAudioMix audioMix];
+    if (audioMix)
+    {
+      AVMutableAudioMixInputParameters *audioMixInputParameters = [AVMutableAudioMixInputParameters audioMixInputParametersWithTrack:track];
+      if (audioMixInputParameters)
+      {
+        MTAudioProcessingTapCallbacks callbacks;
+        
+        callbacks.version = kMTAudioProcessingTapCallbacksVersion_0;
+        callbacks.clientInfo = (__bridge void *)self,
+        callbacks.init = tap_InitCallback;
+        callbacks.finalize = tap_FinalizeCallback;
+        callbacks.prepare = tap_PrepareCallback;
+        callbacks.unprepare = tap_UnprepareCallback;
+        callbacks.process = tap_ProcessCallback;
+        
+        MTAudioProcessingTapRef audioProcessingTap;
+        if (noErr == MTAudioProcessingTapCreate(kCFAllocatorDefault, &callbacks, kMTAudioProcessingTapCreationFlag_PreEffects, &audioProcessingTap))
+        {
+          audioMixInputParameters.audioTapProcessor = audioProcessingTap;
+          
+          CFRelease(audioProcessingTap);
+          
+          audioMix.inputParameters = @[audioMixInputParameters];
+          
+          _avAudioMix = audioMix;
+        }
+      }
+    }
+  }
+  
+  return _avAudioMix;
+}
+
+/*
 #pragma mark - Audio Sample Buffer Callback
 
 void init(MTAudioProcessingTapRef tap, void *clientInfo, void **tapStorageOut)
@@ -266,27 +320,16 @@ void process(MTAudioProcessingTapRef tap, CMItemCount numberFrames,
   
   NSLog(@"Processing: %f", scalar);
 }
+ */
 
 - (void)addSampleBufferCallback:(SampleBufferCallback)callback
 {
   self.audioSampleBufferCallback = callback;
-  // TODO: addSampleBufferCallback
-  /*[_playerNode installTapOnBus:0
-   bufferSize:1024
-   format:nil
-   block:^(AVAudioPCMBuffer * _Nonnull buffer,
-   AVAudioTime * _Nonnull when) {
-   if (self.isNodePlaying) {
-   double timestamp = (double)when.sampleTime / _audioFile.processingFormat.sampleRate;
-   callback(buffer, timestamp);
-   }
-   }];*/
 }
 
 - (void)removeSampleBufferCallback
 {
   self.audioSampleBufferCallback = nil;
-  // TODO: removeSampleBufferCallback
 }
 
 #pragma mark - setStatus
@@ -1019,3 +1062,238 @@ void process(MTAudioProcessingTapRef tap, CMItemCount numberFrames,
 }
 
 @end
+
+#pragma mark - MTAudioProcessingTap Callbacks
+
+static void tap_InitCallback(MTAudioProcessingTapRef tap, void *clientInfo, void **tapStorageOut)
+{
+  NSLog(@"MTAudioProcessingTap: Initializing");
+  
+  AVAudioTapProcessorContext *context = calloc(1, sizeof(AVAudioTapProcessorContext));
+  
+  // Initialize MTAudioProcessingTap context.
+  context->supportedTapProcessingFormat = false;
+  context->isNonInterleaved = false;
+  context->sampleRate = NAN;
+  context->audioUnit = NULL;
+  context->sampleCount = 0.0f;
+  context->leftChannelVolume = 0.0f;
+  context->rightChannelVolume = 0.0f;
+  context->self = clientInfo;
+  
+  *tapStorageOut = context;
+}
+
+static void tap_FinalizeCallback(MTAudioProcessingTapRef tap)
+{
+  NSLog(@"MTAudioProcessingTap: Finalizing");
+  
+  AVAudioTapProcessorContext *context = (AVAudioTapProcessorContext *)MTAudioProcessingTapGetStorage(tap);
+  
+  // Clear MTAudioProcessingTap context.
+  context->self = NULL;
+  
+  free(context);
+}
+
+static void tap_PrepareCallback(MTAudioProcessingTapRef tap, CMItemCount maxFrames, const AudioStreamBasicDescription *processingFormat)
+{
+  NSLog(@"MTAudioProcessingTap: Preparing");
+  
+  AVAudioTapProcessorContext *context = (AVAudioTapProcessorContext *)MTAudioProcessingTapGetStorage(tap);
+  
+  // Store sample rate for -setCenterFrequency:.
+  context->sampleRate = processingFormat->mSampleRate;
+  
+  /* Verify processing format (this is not needed for Audio Unit, but for RMS calculation). */
+  
+  context->supportedTapProcessingFormat = true;
+  
+  if (processingFormat->mFormatID != kAudioFormatLinearPCM)
+  {
+    NSLog(@"Unsupported audio format ID for audioProcessingTap. LinearPCM only.");
+    context->supportedTapProcessingFormat = false;
+  }
+  
+  if (!(processingFormat->mFormatFlags & kAudioFormatFlagIsFloat))
+  {
+    NSLog(@"Unsupported audio format flag for audioProcessingTap. Float only.");
+    context->supportedTapProcessingFormat = false;
+  }
+  
+  if (processingFormat->mFormatFlags & kAudioFormatFlagIsNonInterleaved)
+  {
+    context->isNonInterleaved = true;
+  }
+  
+  /* Create bandpass filter Audio Unit */
+  
+  AudioUnit audioUnit;
+  
+  AudioComponentDescription audioComponentDescription;
+  audioComponentDescription.componentType = kAudioUnitType_Effect;
+  audioComponentDescription.componentSubType = kAudioUnitSubType_BandPassFilter;
+  audioComponentDescription.componentManufacturer = kAudioUnitManufacturer_Apple;
+  audioComponentDescription.componentFlags = 0;
+  audioComponentDescription.componentFlagsMask = 0;
+  
+  AudioComponent audioComponent = AudioComponentFindNext(NULL, &audioComponentDescription);
+  if (audioComponent)
+  {
+    if (noErr == AudioComponentInstanceNew(audioComponent, &audioUnit))
+    {
+      OSStatus status = noErr;
+      
+      // Set audio unit input/output stream format to processing format.
+      if (noErr == status)
+      {
+        status = AudioUnitSetProperty(audioUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, processingFormat, sizeof(AudioStreamBasicDescription));
+      }
+      if (noErr == status)
+      {
+        status = AudioUnitSetProperty(audioUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 0, processingFormat, sizeof(AudioStreamBasicDescription));
+      }
+      
+      // Set audio unit render callback.
+      if (noErr == status)
+      {
+        AURenderCallbackStruct renderCallbackStruct;
+        renderCallbackStruct.inputProc = AU_RenderCallback;
+        renderCallbackStruct.inputProcRefCon = (void *)tap;
+        status = AudioUnitSetProperty(audioUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, 0, &renderCallbackStruct, sizeof(AURenderCallbackStruct));
+      }
+      
+      // Set audio unit maximum frames per slice to max frames.
+      if (noErr == status)
+      {
+        UInt32 maximumFramesPerSlice = maxFrames;
+        status = AudioUnitSetProperty(audioUnit, kAudioUnitProperty_MaximumFramesPerSlice, kAudioUnitScope_Global, 0, &maximumFramesPerSlice, (UInt32)sizeof(UInt32));
+      }
+      
+      // Initialize audio unit.
+      if (noErr == status)
+      {
+        status = AudioUnitInitialize(audioUnit);
+      }
+      
+      if (noErr != status)
+      {
+        AudioComponentInstanceDispose(audioUnit);
+        audioUnit = NULL;
+      }
+      
+      context->audioUnit = audioUnit;
+    }
+  }
+}
+
+static void tap_UnprepareCallback(MTAudioProcessingTapRef tap)
+{
+  NSLog(@"MTAudioProcessingTap: Un-preparing");
+  
+  AVAudioTapProcessorContext *context = (AVAudioTapProcessorContext *)MTAudioProcessingTapGetStorage(tap);
+  
+  /* Release bandpass filter Audio Unit */
+  
+  if (context->audioUnit)
+  {
+    AudioUnitUninitialize(context->audioUnit);
+    AudioComponentInstanceDispose(context->audioUnit);
+    context->audioUnit = NULL;
+  }
+}
+
+static void tap_ProcessCallback(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioProcessingTapFlags flags, AudioBufferList *bufferListInOut, CMItemCount *numberFramesOut, MTAudioProcessingTapFlags *flagsOut)
+{
+  NSLog(@"MTAudioProcessingTap: Processing");
+  
+  AVAudioTapProcessorContext *context = (AVAudioTapProcessorContext *)MTAudioProcessingTapGetStorage(tap);
+  
+  OSStatus status;
+  
+  // Skip processing when format not supported.
+  if (!context->supportedTapProcessingFormat)
+  {
+    NSLog(@"Unsupported tap processing format.");
+    return;
+  }
+  
+  EXAVPlayerData *self = ((__bridge EXAVPlayerData *)context->self);
+  
+  // TODO: isBandpassFilterEnabled
+  if (/*self.isBandpassFilterEnabled*/ false)
+  {
+    // Apply bandpass filter Audio Unit.
+    AudioUnit audioUnit = context->audioUnit;
+    if (audioUnit)
+    {
+      AudioTimeStamp audioTimeStamp;
+      audioTimeStamp.mSampleTime = context->sampleCount;
+      audioTimeStamp.mFlags = kAudioTimeStampSampleTimeValid;
+      
+      status = AudioUnitRender(audioUnit, 0, &audioTimeStamp, 0, (UInt32)numberFrames, bufferListInOut);
+      if (noErr != status)
+      {
+        NSLog(@"AudioUnitRender(): %d", (int)status);
+        return;
+      }
+      
+      // Increment sample count for audio unit.
+      context->sampleCount += numberFrames;
+      
+      // Set number of frames out.
+      *numberFramesOut = numberFrames;
+    }
+  }
+  else
+  {
+    // Get actual audio buffers from MTAudioProcessingTap (AudioUnitRender() will fill bufferListInOut otherwise).
+    status = MTAudioProcessingTapGetSourceAudio(tap, numberFrames, bufferListInOut, flagsOut, NULL, numberFramesOut);
+    if (noErr != status)
+    {
+      NSLog(@"MTAudioProcessingTapGetSourceAudio: %d", (int)status);
+      return;
+    }
+  }
+  
+  // Calculate root mean square (RMS) for left and right audio channel.
+  for (UInt32 i = 0; i < bufferListInOut->mNumberBuffers; i++)
+  {
+    AudioBuffer *pBuffer = &bufferListInOut->mBuffers[i];
+    UInt32 cSamples = numberFrames * (context->isNonInterleaved ? 1 : pBuffer->mNumberChannels);
+    
+    float *pData = (float *)pBuffer->mData;
+    
+    float rms = 0.0f;
+    for (UInt32 j = 0; j < cSamples; j++)
+    {
+      rms += pData[j] * pData[j];
+    }
+    if (cSamples > 0)
+    {
+      rms = sqrtf(rms / cSamples);
+    }
+    
+    if (0 == i)
+    {
+      context->leftChannelVolume = rms;
+    }
+    if (1 == i || (0 == i && 1 == bufferListInOut->mNumberBuffers))
+    {
+      context->rightChannelVolume = rms;
+    }
+  }
+  
+  // TODO: Does this conform to PCMBuffer?
+  
+  self.audioSampleBufferCallback(&bufferListInOut->mBuffers[0], 0.0);
+}
+
+#pragma mark - Audio Unit Callbacks
+
+OSStatus AU_RenderCallback(void *inRefCon, AudioUnitRenderActionFlags *ioActionFlags, const AudioTimeStamp *inTimeStamp, UInt32 inBusNumber, UInt32 inNumberFrames, AudioBufferList *ioData)
+{
+  NSLog(@"MTAudioProcessingTap: Rendering");
+  // Just return audio buffers from MTAudioProcessingTap.
+  return MTAudioProcessingTapGetSourceAudio(inRefCon, inNumberFrames, ioData, NULL, NULL, NULL);
+}
