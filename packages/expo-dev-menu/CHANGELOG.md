@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed menu binds to all keyboard shortcuts on Android.
+
 ### 💡 Others
 
 ## 0.7.5 — 2021-07-08
