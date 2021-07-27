@@ -5,7 +5,7 @@ import org.json.JSONObject;
 import java.util.Arrays;
 import java.util.List;
 
-import org.unimodules.core.interfaces.Package;
+import expo.modules.core.interfaces.Package;
 
 import expo.modules.ads.admob.AdMobPackage;
 import expo.modules.ads.facebook.AdsFacebookPackage;

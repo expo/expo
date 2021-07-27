@@ -27,7 +27,7 @@ import com.facebook.soloader.SoLoader;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.unimodules.core.interfaces.Package;
+import expo.modules.core.interfaces.Package;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;

@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
-import org.unimodules.core.interfaces.InternalModule;
+import expo.modules.core.interfaces.InternalModule;
 
 import expo.modules.interfaces.constants.ConstantsInterface;
 

@@ -1,7 +1,7 @@
 package expo.modules.imagepicker
 
 import android.os.Bundle
-import org.unimodules.core.Promise
+import expo.modules.core.Promise
 
 /**
  * Class that represents a promise, which will not resolve immediately but saves results to the [PickerResultsStore].

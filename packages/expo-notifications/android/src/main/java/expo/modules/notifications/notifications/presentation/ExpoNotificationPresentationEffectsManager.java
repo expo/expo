@@ -3,7 +3,7 @@ package expo.modules.notifications.notifications.presentation;
 import android.app.Notification;
 import android.util.Log;
 
-import org.unimodules.core.interfaces.InternalModule;
+import expo.modules.core.interfaces.InternalModule;
 
 import java.util.ArrayList;
 import java.util.Collection;

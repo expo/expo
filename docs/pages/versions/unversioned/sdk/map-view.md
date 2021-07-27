@@ -89,7 +89,7 @@ No additional configuration is necessary to use `react-native-maps` in Expo Go. 
 
 > If you've already registered a project for another Google service on iOS, such as Google Sign In, you enable the **Maps SDK for iOS** on your project and jump to step 3.
 
-#### 1. Register a Google Cloud API project and enable the Maps SDK for Android
+#### 1. Register a Google Cloud API project and enable the Maps SDK for iOS
 
 - Open your browser to the [Google API Manager](https://console.developers.google.com/apis) and create a project.
 - Once it's created, go to the project and enable the **Maps SDK for iOS**

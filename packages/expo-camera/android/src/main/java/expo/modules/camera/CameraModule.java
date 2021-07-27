@@ -9,11 +9,11 @@ import com.google.android.cameraview.AspectRatio;
 import com.google.android.cameraview.Constants;
 import com.google.android.cameraview.Size;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.services.UIManager;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.Promise;
+import expo.modules.core.interfaces.ExpoMethod;
+import expo.modules.core.interfaces.services.UIManager;
 
 import java.io.File;
 import java.util.ArrayList;

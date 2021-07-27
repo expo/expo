@@ -3,11 +3,11 @@ package host.exp.exponent.taskManager;
 import android.content.Context;
 import android.util.Log;
 
-import org.unimodules.adapters.react.apploader.HeadlessAppLoaderNotifier;
-import org.unimodules.apploader.AppLoaderProvider;
-import org.unimodules.apploader.HeadlessAppLoader;
-import org.unimodules.core.interfaces.Consumer;
-import org.unimodules.core.interfaces.DoNotStrip;
+import expo.modules.adapters.react.apploader.HeadlessAppLoaderNotifier;
+import expo.modules.apploader.AppLoaderProvider;
+import expo.modules.apploader.HeadlessAppLoader;
+import expo.modules.core.interfaces.Consumer;
+import expo.modules.core.interfaces.DoNotStrip;
 
 import java.util.HashMap;
 import java.util.Map;

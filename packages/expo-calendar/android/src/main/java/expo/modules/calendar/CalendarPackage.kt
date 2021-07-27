@@ -1,7 +1,7 @@
 package expo.modules.calendar
 
 import android.content.Context
-import org.unimodules.core.BasePackage
+import expo.modules.core.BasePackage
 
 class CalendarPackage : BasePackage() {
   override fun createExportedModules(context: Context) = listOf(CalendarModule(context))

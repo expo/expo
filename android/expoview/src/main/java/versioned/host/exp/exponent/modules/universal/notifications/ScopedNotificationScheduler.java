@@ -4,7 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 
-import org.unimodules.core.Promise;
+import expo.modules.core.Promise;
 
 import java.util.ArrayList;
 import java.util.Arrays;

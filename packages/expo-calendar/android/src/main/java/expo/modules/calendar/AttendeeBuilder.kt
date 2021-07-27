@@ -1,7 +1,7 @@
 package expo.modules.calendar
 
 import android.content.ContentValues
-import org.unimodules.core.arguments.ReadableArguments
+import expo.modules.core.arguments.ReadableArguments
 
 class AttendeeBuilder(
   private val attendeeDetails: ReadableArguments

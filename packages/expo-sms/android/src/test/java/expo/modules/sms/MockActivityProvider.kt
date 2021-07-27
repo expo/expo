@@ -1,6 +1,6 @@
 package expo.modules.sms
 
-import org.unimodules.core.interfaces.ActivityProvider
-import org.unimodules.core.interfaces.InternalModule
+import expo.modules.core.interfaces.ActivityProvider
+import expo.modules.core.interfaces.InternalModule
 
 internal interface MockActivityProvider : ActivityProvider, InternalModule

@@ -3,8 +3,8 @@ package expo.modules.notifications.notifications.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import org.unimodules.core.Promise;
-import org.unimodules.core.arguments.ReadableArguments;
+import expo.modules.core.Promise;
+import expo.modules.core.arguments.ReadableArguments;
 
 import androidx.annotation.Nullable;
 import expo.modules.notifications.notifications.enums.NotificationPriority;

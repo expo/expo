@@ -6,11 +6,11 @@ import android.os.Build
 import com.google.android.gms.common.GooglePlayServicesUtil
 import com.google.android.play.core.review.ReviewManager
 import com.google.android.play.core.review.ReviewManagerFactory
-import org.unimodules.core.ExportedModule
-import org.unimodules.core.ModuleRegistry
-import org.unimodules.core.Promise
-import org.unimodules.core.interfaces.ActivityProvider
-import org.unimodules.core.interfaces.ExpoMethod
+import expo.modules.core.ExportedModule
+import expo.modules.core.ModuleRegistry
+import expo.modules.core.Promise
+import expo.modules.core.interfaces.ActivityProvider
+import expo.modules.core.interfaces.ExpoMethod
 
 class StoreReviewModule(private val mContext: Context) :
   ExportedModule(mContext) {

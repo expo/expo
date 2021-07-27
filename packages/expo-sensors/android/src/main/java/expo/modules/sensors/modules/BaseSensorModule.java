@@ -7,11 +7,11 @@ import android.hardware.SensorEventListener2;
 import android.os.Bundle;
 import android.util.Log;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.interfaces.LifecycleEventListener;
-import org.unimodules.core.interfaces.services.EventEmitter;
-import org.unimodules.core.interfaces.services.UIManager;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.interfaces.LifecycleEventListener;
+import expo.modules.core.interfaces.services.EventEmitter;
+import expo.modules.core.interfaces.services.UIManager;
 
 import expo.modules.interfaces.sensors.SensorServiceInterface;
 import expo.modules.interfaces.sensors.SensorServiceSubscriptionInterface;
