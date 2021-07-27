@@ -15,13 +15,14 @@ import java.util.*
 class CellularModule(private val mContext: Context) : ExportedModule(mContext), RegistryLifecycleListener {
   override fun getName(): String = "ExpoCellular"
 
-  private val telephonyManager =
+  private fun telephonyManager() =
     (mContext.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager).takeIf {
       it?.simState == TelephonyManager.SIM_STATE_READY
     }
 
   override fun getConstants() =
     HashMap<String, Any?>().apply {
+      val telephonyManager = telephonyManager()
       put("allowsVoip", SipManager.isVoipSupported(mContext))
       put("isoCountryCode", telephonyManager?.simCountryIso)
       put("carrier", telephonyManager?.simOperatorName)
@@ -46,29 +47,32 @@ class CellularModule(private val mContext: Context) : ExportedModule(mContext), 
 
   @ExpoMethod
   fun getIsoCountryCodeAsync(promise: Promise) {
+    val telephonyManager = telephonyManager()
     promise.resolve(telephonyManager?.simCountryIso)
   }
 
   @ExpoMethod
   fun getCarrierNameAsync(promise: Promise) {
+    val telephonyManager = telephonyManager()
     promise.resolve(telephonyManager?.simOperatorName)
   }
 
   @ExpoMethod
   fun getMobileCountryCodeAsync(promise: Promise) {
+    val telephonyManager = telephonyManager()
     promise.resolve(telephonyManager?.simOperator?.substring(0, 3))
   }
 
   @ExpoMethod
   fun getMobileNetworkCodeAsync(promise: Promise) {
+    val telephonyManager = telephonyManager()
     promise.resolve(telephonyManager?.simOperator?.substring(3))
   }
 
   @SuppressLint("MissingPermission")
   private fun getCurrentGeneration(): Int {
-    if (telephonyManager == null) {
-      return CellularGeneration.UNKNOWN.value
-    }
+    val telephonyManager = telephonyManager()
+      ?: return CellularGeneration.UNKNOWN.value
     val networkType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
       telephonyManager.dataNetworkType
     } else {
