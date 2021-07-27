@@ -8,14 +8,7 @@
 
 @interface EXAVPlayerData : NSObject <EXAVObject>
 
-// TODO: REMOVE THIS THIS ONLY EXISTS SO EVERYTHING COMPILES
 @property (nonatomic, strong) AVQueuePlayer *player;
-
-@property (nonatomic, strong) AVAudioEngine *engine;
-@property (nonatomic, strong) AVAudioPlayerNode *playerNode;
-@property (nonatomic, strong) AVAudioFile *audioFile;
-@property (nonatomic, strong) AVAudioUnitTimePitch *timePitch;
-@property (nonatomic, strong) AVAudioUnitVarispeed *speedControl;
 
 @property (nonatomic, strong) NSURL *url;
 @property (nonatomic, strong) NSDictionary *headers;
