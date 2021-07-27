@@ -375,22 +375,22 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
 
 - (NSData*)pdfWithHtmlMarkUpFormatter:(NSString*)html pageSize:(CGSize)pageSize completionHandler:(void (^)(NSError * _Nullable, NSData * _Nullable, int))onFinished
 {
-  UIMarkupTextPrintFormatter * formatter = [[UIMarkupTextPrintFormatter alloc] initWithMarkupText:html];
-  UIPrintPageRenderer * render = [[UIPrintPageRenderer alloc] init];
-  [render addPrintFormatter:formatter startingAtPageAtIndex:0];
+  UIMarkupTextPrintFormatter *formatter = [[UIMarkupTextPrintFormatter alloc] initWithMarkupText:html];
+  UIPrintPageRenderer *renderer = [[UIPrintPageRenderer alloc] init];
+  [renderer addPrintFormatter:formatter startingAtPageAtIndex:0];
     
   CGRect frame = CGRectMake(0, 0, pageSize.width, pageSize.height);
-  [render setValue:[NSValue valueWithCGRect:frame] forKey:@"paperRect"];
-  [render setValue:[NSValue valueWithCGRect:frame] forKey:@"printableRect"];
+  [renderer setValue:[NSValue valueWithCGRect:frame] forKey:@"paperRect"];
+  [renderer setValue:[NSValue valueWithCGRect:frame] forKey:@"printableRect"];
 
   NSMutableData* data = [[NSMutableData alloc] init];
   UIGraphicsBeginPDFContextToData(data, CGRectZero, NULL);
-  for (int i = 0; i < render.numberOfPages; i++) {
+  for (int i = 0; i < renderer.numberOfPages; i++) {
     UIGraphicsBeginPDFPage();
-    [render drawPageAtIndex:i inRect: UIGraphicsGetPDFContextBounds()];
+    [renderer drawPageAtIndex:i inRect: UIGraphicsGetPDFContextBounds()];
   }
   UIGraphicsEndPDFContext();
-  onFinished(nil, data, render.numberOfPages);
+  onFinished(nil, data, renderer.numberOfPages);
 }
 
 @end
