@@ -164,28 +164,6 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     if (self.player) {
       [self _addObserver:self.player forKeyPath:EXAVPlayerDataObserverStatusKeyPath];
       [self _addObserver:self.player.currentItem forKeyPath:EXAVPlayerDataObserverStatusKeyPath];
-      
-      AVAudioMix *audioMix = self.audioMix;
-      if (audioMix) {
-        // Get pointer to Audio Unit stored in MTAudioProcessingTap context.
-        MTAudioProcessingTapRef audioProcessingTap = ((AVMutableAudioMixInputParameters *)audioMix.inputParameters[0]).audioTapProcessor;
-        AVAudioTapProcessorContext *context = (AVAudioTapProcessorContext *)MTAudioProcessingTapGetStorage(audioProcessingTap);
-        AudioUnit audioUnit = context->audioUnit;
-        if (audioUnit)
-        {
-          // Update center frequency of bandpass filter Audio Unit.
-          Float32 newCenterFrequency = (20.0f + ((context->sampleRate * 0.5f) - 20.0f) * self.centerFrequency); // Global, Hz, 20->(SampleRate/2), 5000
-          OSStatus status1 = AudioUnitSetParameter(audioUnit, kBandpassParam_CenterFrequency, kAudioUnitScope_Global, 0, newCenterFrequency, 0);
-          if (noErr != status1)
-            NSLog(@"AudioUnitSetParameter(kBandpassParam_CenterFrequency): %d", (int)status1);
-          
-          // Update bandwidth of bandpass filter Audio Unit.
-          Float32 newBandwidth = (100.0f + 11900.0f * self.bandwidth);
-          OSStatus status2 = AudioUnitSetParameter(audioUnit, kBandpassParam_Bandwidth, kAudioUnitScope_Global, 0, newBandwidth, 0); // Global, Cents, 100->12000, 600
-          if (noErr != status2)
-            NSLog(@"AudioUnitSetParameter(kBandpassParam_Bandwidth): %d", (int)status2);
-        }
-      }
     } else {
       NSString *errorMessage = @"Load encountered an error: [AVPlayer playerWithPlayerItem:] returned nil.";
       if (self.loadFinishBlock) {
@@ -221,6 +199,8 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
         
         [self _addObserversForNewPlayer];
         
+        [self installTap];
+        
         if (self.loadFinishBlock) {
           self.loadFinishBlock(YES, [self getStatus], nil);
           self.loadFinishBlock = nil;
@@ -232,47 +212,58 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 
 #pragma mark - AudioMix
 
-- (AVAudioMix *)audioMix
+- (void)installTap
 {
-  if (!_avAudioMix)
-  {
-    // TODO: Get AVAssetTrack more reliably!!
-    AVPlayerItem *item = self.items.firstObject;
-    AVAssetTrack *track = item.tracks.firstObject.assetTrack;
-    assert(track);
-    
-    AVMutableAudioMix *audioMix = [AVMutableAudioMix audioMix];
-    if (audioMix)
-    {
-      AVMutableAudioMixInputParameters *audioMixInputParameters = [AVMutableAudioMixInputParameters audioMixInputParametersWithTrack:track];
-      if (audioMixInputParameters)
-      {
-        MTAudioProcessingTapCallbacks callbacks;
+  // TODO: Call function again when `currentItem` changed?
+  AVPlayerItem *item = [_player currentItem];
+  // TODO: Do we need to do this for every track in `item.tracks`?
+  AVAssetTrack *track = item.tracks.firstObject.assetTrack;
+  assert(track);
+  
+  AVMutableAudioMix *audioMix = [AVMutableAudioMix audioMix];
+  if (audioMix) {
+    AVMutableAudioMixInputParameters *audioMixInputParameters = [AVMutableAudioMixInputParameters audioMixInputParametersWithTrack:track];
+    if (audioMixInputParameters) {
+      MTAudioProcessingTapCallbacks callbacks;
+      
+      callbacks.version = kMTAudioProcessingTapCallbacksVersion_0;
+      callbacks.clientInfo = (__bridge void *)self,
+      callbacks.init = tap_InitCallback;
+      callbacks.finalize = tap_FinalizeCallback;
+      callbacks.prepare = tap_PrepareCallback;
+      callbacks.unprepare = tap_UnprepareCallback;
+      callbacks.process = tap_ProcessCallback;
+      
+      MTAudioProcessingTapRef audioProcessingTap;
+      OSStatus status = MTAudioProcessingTapCreate(kCFAllocatorDefault, &callbacks, kMTAudioProcessingTapCreationFlag_PreEffects, &audioProcessingTap);
+      if (status == noErr) {
+        audioMixInputParameters.audioTapProcessor = audioProcessingTap;
+        audioMix.inputParameters = @[audioMixInputParameters];
         
-        callbacks.version = kMTAudioProcessingTapCallbacksVersion_0;
-        callbacks.clientInfo = (__bridge void *)self,
-        callbacks.init = tap_InitCallback;
-        callbacks.finalize = tap_FinalizeCallback;
-        callbacks.prepare = tap_PrepareCallback;
-        callbacks.unprepare = tap_UnprepareCallback;
-        callbacks.process = tap_ProcessCallback;
-        
-        MTAudioProcessingTapRef audioProcessingTap;
-        if (noErr == MTAudioProcessingTapCreate(kCFAllocatorDefault, &callbacks, kMTAudioProcessingTapCreationFlag_PreEffects, &audioProcessingTap))
-        {
-          audioMixInputParameters.audioTapProcessor = audioProcessingTap;
+        AVAudioTapProcessorContext *context = (AVAudioTapProcessorContext *)MTAudioProcessingTapGetStorage(audioProcessingTap);
+        AudioUnit audioUnit = context->audioUnit;
+        if (audioUnit) {
+          // Update center frequency of bandpass filter Audio Unit.
+          Float32 newCenterFrequency = (20.0f + ((context->sampleRate * 0.5f) - 20.0f) * self.centerFrequency); // Global, Hz, 20->(SampleRate/2), 5000
+          OSStatus status1 = AudioUnitSetParameter(audioUnit, kBandpassParam_CenterFrequency, kAudioUnitScope_Global, 0, newCenterFrequency, 0);
+          if (noErr != status1)
+            NSLog(@"AudioUnitSetParameter(kBandpassParam_CenterFrequency): %d", (int)status1);
           
-          CFRelease(audioProcessingTap);
-          
-          audioMix.inputParameters = @[audioMixInputParameters];
-          
-          _avAudioMix = audioMix;
+          // Update bandwidth of bandpass filter Audio Unit.
+          Float32 newBandwidth = (100.0f + 11900.0f * self.bandwidth);
+          OSStatus status2 = AudioUnitSetParameter(audioUnit, kBandpassParam_Bandwidth, kAudioUnitScope_Global, 0, newBandwidth, 0); // Global, Cents, 100->12000, 600
+          if (noErr != status2)
+            NSLog(@"AudioUnitSetParameter(kBandpassParam_Bandwidth): %d", (int)status2);
         }
+        
+        [item setAudioMix:audioMix];
+        
+        CFRelease(audioProcessingTap);
+      } else {
+        NSLog(@"Failed to create MTAudioProcessingTap!");
       }
     }
   }
-  
-  return _avAudioMix;
 }
 
 /*
