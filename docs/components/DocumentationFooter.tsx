@@ -31,13 +31,13 @@ const STYLES_FOOTER_ICON = css`
 `;
 
 // Remove trailing slash and append .md
-function githubUrl(path: string) {
+export function githubUrl(path: string) {
+  if (path === '/versions/latest' || path === '/versions/unversioned') {
+    path = '/versions/unversioned/index';
+  }
+
   if (path.includes('/versions/latest/')) {
-    if (path === '/versions/latest') {
-      path = '/versions/unversioned/index';
-    } else {
-      path = path.replace('/versions/latest/', '/versions/unversioned/');
-    }
+    path = path.replace('/versions/latest/', '/versions/unversioned/');
   } else if (path.match(/v\d+\.\d+\.\d+\/?$/) || path === '/') {
     if (path[path.length - 1] === '/') {
       path = `${path}index`;

@@ -10,8 +10,8 @@ import android.print.PrintDocumentAdapterLayoutCallback
 import android.print.PrintDocumentAdapterWriteCallback
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import org.unimodules.core.ModuleRegistry
-import org.unimodules.core.interfaces.services.UIManager
+import expo.modules.core.ModuleRegistry
+import expo.modules.core.interfaces.services.UIManager
 import java.io.File
 import java.io.IOException
 import kotlin.math.roundToInt

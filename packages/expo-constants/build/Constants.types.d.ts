@@ -45,7 +45,15 @@ export declare type Manifest = {
     extra?: {
         expoClient?: ExpoClientConfig;
         expoGo?: ExpoGoConfig;
+        eas?: EASConfig;
     };
+};
+export declare type EASConfig = {
+    /**
+     * The ID for this project if it's using EAS. UUID. This value will not change when a project is transferred
+     * between accounts or renamed.
+     */
+    projectId?: string;
 };
 export declare type ExpoGoConfig = {
     mainModuleName?: string;
@@ -97,16 +105,11 @@ export declare type ExpoClientConfig = ExpoConfig & {
      * will not change when a project is transferred between accounts or renamed.
      */
     scopeKey?: string;
-    /**
-     * The ID for this project. UUID. This value will not change when a project is transferred
-     * between accounts or renamed.
-     */
-    projectId?: string;
 };
 /**
  * A classic manifest https://docs.expo.io/guides/how-expo-works/#expo-manifest
  */
-export declare type AppManifest = ExpoClientConfig & ExpoGoConfig & {
+export declare type AppManifest = ExpoClientConfig & ExpoGoConfig & EASConfig & {
     [key: string]: any;
 };
 export interface PlatformManifest {

@@ -27,21 +27,22 @@ abstract class RawManifest(protected val json: JSONObject) {
   }
 
   /**
-   * A best-effort immutable legacy ID for this experience. Formatted the same as getLegacyID.
-   * Stable through project transfers.
+   * A best-effort immutable legacy ID for this experience. Stable through project transfers.
+   * Should be used for calling Expo and EAS APIs during their transition to projectId.
    */
   @Throws(JSONException::class)
+  @Deprecated(message = "Prefer scopeKey or projectId depending on use case")
   abstract fun getStableLegacyID(): String
 
   /**
-   * A stable immutable scoping key for this experience. Should be used for scoping data that
-   * does not need to make calls externally with the legacy ID.
+   * A stable immutable scoping key for this experience. Should be used for scoping data on the
+   * client for this project when running in Expo Go.
    */
   @Throws(JSONException::class)
   abstract fun getScopeKey(): String
 
   /**
-   * A stable UUID for this Expo project. Should be used to call Expo APIs where possible.
+   * A stable UUID for this EAS project. Should be used to call EAS APIs.
    */
   abstract fun getProjectID(): String?
 
@@ -57,6 +58,7 @@ abstract class RawManifest(protected val json: JSONObject) {
    * Use getStableLegacyID for cases where a stable legacy format identifier of the experience is needed (experience scoping for example).
    */
   @Throws(JSONException::class)
+  @Deprecated(message = "Prefer scopeKey or projectId depending on use case")
   fun getLegacyID(): String = json.getString("id")
 
   @Throws(JSONException::class)

@@ -15,6 +15,9 @@
 
 ### 💡 Others
 
+- Added unit tests ([#13674](https://github.com/expo/expo/pull/13674) by [@kkafar](https://github.com/kkafar))
+- Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))
+
 ## 9.2.0 — 2021-06-16
 
 ### 🐛 Bug fixes

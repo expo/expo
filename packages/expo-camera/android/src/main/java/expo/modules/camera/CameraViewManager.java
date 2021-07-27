@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.unimodules.core.ViewManager;
-import org.unimodules.core.interfaces.ExpoProp;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.interfaces.services.UIManager;
+import expo.modules.core.ViewManager;
+import expo.modules.core.interfaces.ExpoProp;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.interfaces.services.UIManager;
 
 import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings;
 

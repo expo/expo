@@ -1,6 +1,6 @@
 package host.exp.exponent.notifications.managers;
 
-import org.unimodules.core.interfaces.Function;
+import expo.modules.core.interfaces.Function;
 
 import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.notifications.schedulers.Scheduler;

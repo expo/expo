@@ -32,6 +32,7 @@ public class CellularModule: Module {
     case cellular2G = 1
     case cellular3G = 2
     case cellular4G = 3
+    case cellular5G = 4
   }
 
   static func currentCellularGeneration() -> CellularGeneration {
@@ -53,6 +54,12 @@ public class CellularModule: Module {
     case CTRadioAccessTechnologyLTE:
       return .cellular4G
     default:
+      if #available(iOS 14.1, *) {
+        if (radioAccessTechnology == CTRadioAccessTechnologyNRNSA ||
+            radioAccessTechnology == CTRadioAccessTechnologyNR) {
+          return .cellular5G
+        }
+      }
       return .unknown
     }
   }

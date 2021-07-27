@@ -6,7 +6,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import org.json.JSONObject;
-import org.unimodules.core.arguments.ReadableArguments;
+import expo.modules.core.arguments.ReadableArguments;
 
 import java.util.List;
 import java.util.Map;

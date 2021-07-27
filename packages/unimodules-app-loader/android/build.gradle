@@ -78,6 +78,7 @@ repositories {
 
 dependencies {
   unimodule 'unimodules-core'
+  api project(':expo-modules-core')
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
 }

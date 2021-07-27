@@ -25,8 +25,8 @@ import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
 
-import org.unimodules.core.interfaces.services.EventEmitter;
-import org.unimodules.core.Promise;
+import expo.modules.core.interfaces.services.EventEmitter;
+import expo.modules.core.Promise;
 
 import java.util.HashMap;
 import java.util.HashSet;

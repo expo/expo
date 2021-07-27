@@ -5,7 +5,7 @@ import io.mockk.CapturingSlot
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
-import org.unimodules.core.arguments.ReadableArguments
+import expo.modules.core.arguments.ReadableArguments
 import org.unimodules.test.core.mockkInternalModule
 import org.unimodules.test.core.readableArgumentsOf
 

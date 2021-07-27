@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.EnumSet;
 
-import org.unimodules.core.ModuleRegistry;
+import expo.modules.core.ModuleRegistry;
 import expo.modules.filesystem.FilePermissionModule;
 
 import expo.modules.interfaces.constants.ConstantsInterface;

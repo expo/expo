@@ -6,8 +6,8 @@
 //  Copyright © 2017 650 Industries. All rights reserved.
 //
 
-#import <UMCore/UMExportedModule.h>
-#import <UMCore/UMModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXExportedModule.h>
+#import <ExpoModulesCore/EXModuleRegistryConsumer.h>
 
-@interface EXFaceDetectorModule : UMExportedModule <UMModuleRegistryConsumer>
+@interface EXFaceDetectorModule : EXExportedModule <EXModuleRegistryConsumer>
 @end

@@ -9,15 +9,15 @@ import android.net.Uri;
 import android.os.Bundle;
 import androidx.core.content.FileProvider;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.arguments.ReadableArguments;
-import org.unimodules.core.errors.InvalidArgumentException;
-import org.unimodules.core.interfaces.ActivityEventListener;
-import org.unimodules.core.interfaces.ActivityProvider;
-import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.services.UIManager;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.Promise;
+import expo.modules.core.arguments.ReadableArguments;
+import expo.modules.core.errors.InvalidArgumentException;
+import expo.modules.core.interfaces.ActivityEventListener;
+import expo.modules.core.interfaces.ActivityProvider;
+import expo.modules.core.interfaces.ExpoMethod;
+import expo.modules.core.interfaces.services.UIManager;
 
 import java.io.File;
 import java.net.URLConnection;

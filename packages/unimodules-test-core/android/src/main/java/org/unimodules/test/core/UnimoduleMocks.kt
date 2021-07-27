@@ -4,9 +4,9 @@ import io.mockk.MockKGateway
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
-import org.unimodules.core.ExportedModule
-import org.unimodules.core.ModuleRegistry
-import org.unimodules.core.interfaces.InternalModule
+import expo.modules.core.ExportedModule
+import expo.modules.core.ModuleRegistry
+import expo.modules.core.interfaces.InternalModule
 import java.util.*
 
 @JvmOverloads

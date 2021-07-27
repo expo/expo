@@ -5,8 +5,8 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import com.facebook.react.ReactRootView
+import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.splashscreen.singletons.SplashScreen
-import org.unimodules.core.interfaces.ReactActivityLifecycleListener
 
 class SplashScreenReactActivityLifecycleListener(activityContext: Context) : ReactActivityLifecycleListener {
   override fun onCreate(activity: Activity, savedInstanceState: Bundle?) {

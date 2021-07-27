@@ -38,4 +38,5 @@ const generationMap = {
   [Cellular.CellularGeneration.CELLULAR_2G]: '2G',
   [Cellular.CellularGeneration.CELLULAR_3G]: '3G',
   [Cellular.CellularGeneration.CELLULAR_4G]: '4G',
+  [Cellular.CellularGeneration.CELLULAR_5G]: '5G',
 };

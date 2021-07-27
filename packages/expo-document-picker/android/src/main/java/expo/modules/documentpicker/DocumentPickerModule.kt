@@ -7,15 +7,15 @@ import android.net.Uri
 import android.os.Bundle
 import org.apache.commons.io.FilenameUtils
 import org.apache.commons.io.IOUtils
-import org.unimodules.core.ExportedModule
-import org.unimodules.core.ModuleRegistry
-import org.unimodules.core.ModuleRegistryDelegate
-import org.unimodules.core.Promise
-import org.unimodules.core.interfaces.ActivityEventListener
-import org.unimodules.core.interfaces.ActivityProvider
-import org.unimodules.core.interfaces.ExpoMethod
-import org.unimodules.core.interfaces.services.UIManager
-import org.unimodules.core.utilities.FileUtilities
+import expo.modules.core.ExportedModule
+import expo.modules.core.ModuleRegistry
+import expo.modules.core.ModuleRegistryDelegate
+import expo.modules.core.Promise
+import expo.modules.core.interfaces.ActivityEventListener
+import expo.modules.core.interfaces.ActivityProvider
+import expo.modules.core.interfaces.ExpoMethod
+import expo.modules.core.interfaces.services.UIManager
+import expo.modules.core.utilities.FileUtilities
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -88,7 +88,6 @@ class DocumentPickerModule(
           }
         }
       }
-
       if (documentDetails == null) {
         promise.reject("E_DOCUMENT_PICKER", "Failed to read the selected document.")
       } else {
@@ -96,9 +95,10 @@ class DocumentPickerModule(
           putString("type", "success")
           putString("uri", documentDetails.uri)
           putString("name", documentDetails.name)
-          if (documentDetails.size == null) {
-            putParcelable("size", null)
-          } else {
+          documentDetails.mimeType?.let {
+            putString("mimeType", documentDetails.mimeType)
+          }
+          documentDetails.size?.let {
             putInt("size", documentDetails.size)
           }
         }
@@ -120,10 +120,10 @@ class DocumentPickerModule(
       "DocumentPicker",
       FilenameUtils.getExtension(name)
     )
-
+    val outputFile = File(outputFilePath)
     try {
       context.contentResolver.openInputStream(documentUri).use { inputStream ->
-        FileOutputStream(File(outputFilePath)).use { outputStream ->
+        FileOutputStream(outputFile).use { outputStream ->
           IOUtils.copy(inputStream, outputStream)
         }
       }
@@ -131,7 +131,6 @@ class DocumentPickerModule(
       e.printStackTrace()
       return null
     }
-
-    return outputFilePath
+    return Uri.fromFile(outputFile).toString()
   }
 }

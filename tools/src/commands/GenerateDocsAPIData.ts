@@ -87,6 +87,7 @@ const executeCommand = async (
 
 async function action({packageName, version = 'unversioned'}: ActionOptions) {
   const packagesMapping: Record<string, CommandAdditionalParams> = {
+    'expo-analytics-amplitude': ['Amplitude.ts'],
     'expo-analytics-segment': ['Segment.ts'],
     'expo-app-loading': ['index.ts'],
     'expo-apple-authentication': ['index.ts'],
@@ -94,13 +95,16 @@ async function action({packageName, version = 'unversioned'}: ActionOptions) {
     'expo-background-fetch': ['BackgroundFetch.ts'],
     'expo-battery': ['Battery.ts'],
     'expo-blur': ['index.ts'],
+    'expo-brightness': ['Brightness.ts'],
     'expo-cellular': ['Cellular.ts'],
+    'expo-checkbox': ['Checkbox.ts'],
     'expo-clipboard': ['Clipboard.ts'],
     'expo-facebook': [['Facebook.ts', 'Facebook.types.ts']],
     'expo-font': ['index.ts'],
     'expo-haptics': ['Haptics.ts'],
     'expo-keep-awake': ['index.ts'],
     'expo-linear-gradient': ['LinearGradient.tsx'],
+    'expo-local-authentication': ['LocalAuthentication.ts'],
     'expo-localization': ['Localization.ts'],
     'expo-mail-composer': ['MailComposer.ts'],
     'expo-network': ['Network.ts'],

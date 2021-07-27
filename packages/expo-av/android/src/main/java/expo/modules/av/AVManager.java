@@ -14,13 +14,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.arguments.ReadableArguments;
-import org.unimodules.core.interfaces.InternalModule;
-import org.unimodules.core.interfaces.LifecycleEventListener;
-import org.unimodules.core.interfaces.services.EventEmitter;
-import org.unimodules.core.interfaces.services.UIManager;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.Promise;
+import expo.modules.core.arguments.ReadableArguments;
+import expo.modules.core.interfaces.InternalModule;
+import expo.modules.core.interfaces.LifecycleEventListener;
+import expo.modules.core.interfaces.services.EventEmitter;
+import expo.modules.core.interfaces.services.UIManager;
 
 import java.io.File;
 import java.io.IOException;

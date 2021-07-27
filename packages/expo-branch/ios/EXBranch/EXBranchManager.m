@@ -1,12 +1,12 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
 #import <EXBranch/EXBranchManager.h>
-#import <UMCore/UMDefines.h>
+#import <ExpoModulesCore/EXDefines.h>
 #import <Branch/Branch.h>
 
 @implementation EXBranchManager
 
-UM_REGISTER_SINGLETON_MODULE(BranchManager)
+EX_REGISTER_SINGLETON_MODULE(BranchManager)
 
 + (BOOL)isBranchEnabled
 {

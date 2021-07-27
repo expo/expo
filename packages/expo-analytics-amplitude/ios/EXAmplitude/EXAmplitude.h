@@ -1,6 +1,6 @@
 //  Copyright © 2018 650 Industries. All rights reserved.
 
-#import <UMCore/UMExportedModule.h>
+#import <ExpoModulesCore/EXExportedModule.h>
 
-@interface EXAmplitude : UMExportedModule
+@interface EXAmplitude : EXExportedModule
 @end

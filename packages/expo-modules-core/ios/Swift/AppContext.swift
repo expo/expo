@@ -11,16 +11,22 @@ public class AppContext {
   /**
    The legacy module registry with modules written in the old-fashioned way.
    */
-  public let legacyModuleRegistry: EXModuleRegistry?
+  public private(set) var legacyModuleRegistry: EXModuleRegistry?
+
+  /**
+   Designated initializer without modules provider.
+   */
+  public init() {
+    listenToClientAppNotifications()
+  }
 
   /**
    Initializes the app context and registers provided modules in the module registry.
    */
-  public init(withModulesProvider provider: ModulesProviderProtocol, legacyModuleRegistry: EXModuleRegistry?) {
+  public convenience init(withModulesProvider provider: ModulesProviderProtocol, legacyModuleRegistry: EXModuleRegistry?) {
+    self.init()
     self.legacyModuleRegistry = legacyModuleRegistry
     moduleRegistry.register(fromProvider: provider)
-
-    listenToClientAppNotifications()
   }
 
   /**

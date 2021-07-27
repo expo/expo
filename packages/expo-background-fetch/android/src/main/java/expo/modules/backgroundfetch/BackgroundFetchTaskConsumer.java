@@ -9,7 +9,7 @@ import android.content.Intent;
 import android.os.SystemClock;
 import android.util.Log;
 
-import org.unimodules.core.interfaces.LifecycleEventListener;
+import expo.modules.core.interfaces.LifecycleEventListener;
 import org.unimodules.interfaces.taskManager.TaskConsumer;
 import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
 import org.unimodules.interfaces.taskManager.TaskExecutionCallback;

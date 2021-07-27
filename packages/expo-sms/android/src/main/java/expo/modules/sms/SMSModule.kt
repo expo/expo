@@ -9,19 +9,19 @@ import android.os.Bundle
 
 import java.util.ArrayList
 
-import org.unimodules.core.ExportedModule
-import org.unimodules.core.interfaces.LifecycleEventListener
-import org.unimodules.core.ModuleRegistry
-import org.unimodules.core.Promise
-import org.unimodules.core.interfaces.services.UIManager
-import org.unimodules.core.interfaces.ExpoMethod
-import org.unimodules.core.interfaces.ActivityProvider
+import expo.modules.core.ExportedModule
+import expo.modules.core.interfaces.LifecycleEventListener
+import expo.modules.core.ModuleRegistry
+import expo.modules.core.Promise
+import expo.modules.core.interfaces.services.UIManager
+import expo.modules.core.interfaces.ExpoMethod
+import expo.modules.core.interfaces.ActivityProvider
 
 private const val TAG = "ExpoSMS"
 private const val ERROR_TAG = "E_SMS"
 private const val OPTIONS_ATTACHMENTS_KEY = "attachments"
 
-class SMSModule(context: Context) : ExportedModule(context), LifecycleEventListener {
+class SMSModule(context: Context, private val smsPackage: String? = null) : ExportedModule(context), LifecycleEventListener {
   private lateinit var mModuleRegistry: ModuleRegistry
   private var mPendingPromise: Promise? = null
   private var mSMSComposerOpened = false
@@ -79,7 +79,13 @@ class SMSModule(context: Context) : ExportedModule(context), LifecycleEventListe
       }
     }
 
-    val defaultSMSPackage = Telephony.Sms.getDefaultSmsPackage(context)
+    val defaultSMSPackage: String?
+    if (smsPackage != null) {
+      defaultSMSPackage = smsPackage
+    } else {
+      defaultSMSPackage = Telephony.Sms.getDefaultSmsPackage(context)
+    }
+
     if (defaultSMSPackage != null) {
       smsIntent.setPackage(defaultSMSPackage)
     } else {

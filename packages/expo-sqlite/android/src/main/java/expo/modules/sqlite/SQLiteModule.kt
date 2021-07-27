@@ -4,9 +4,9 @@ package expo.modules.sqlite
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import org.unimodules.core.ExportedModule
-import org.unimodules.core.Promise
-import org.unimodules.core.interfaces.ExpoMethod
+import expo.modules.core.ExportedModule
+import expo.modules.core.Promise
+import expo.modules.core.interfaces.ExpoMethod
 import java.io.File
 import java.io.IOException
 import java.util.*

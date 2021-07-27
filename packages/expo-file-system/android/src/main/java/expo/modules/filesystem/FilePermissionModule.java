@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
-import org.unimodules.core.interfaces.InternalModule;
+import expo.modules.core.interfaces.InternalModule;
 
 import expo.modules.interfaces.filesystem.FilePermissionModuleInterface;
 import expo.modules.interfaces.filesystem.Permission;

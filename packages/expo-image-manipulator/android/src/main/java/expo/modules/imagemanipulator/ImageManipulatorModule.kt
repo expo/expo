@@ -9,12 +9,12 @@ import expo.modules.imagemanipulator.arguments.Actions
 import expo.modules.imagemanipulator.arguments.SaveOptions
 import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.interfaces.imageloader.ImageLoaderInterface.ResultListener
-import org.unimodules.core.ExportedModule
-import org.unimodules.core.ModuleRegistry
-import org.unimodules.core.ModuleRegistryDelegate
-import org.unimodules.core.Promise
-import org.unimodules.core.arguments.ReadableArguments
-import org.unimodules.core.interfaces.ExpoMethod
+import expo.modules.core.ExportedModule
+import expo.modules.core.ModuleRegistry
+import expo.modules.core.ModuleRegistryDelegate
+import expo.modules.core.Promise
+import expo.modules.core.arguments.ReadableArguments
+import expo.modules.core.interfaces.ExpoMethod
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -80,7 +80,7 @@ class ImageManipulatorModule(
     val result = Bundle().apply {
       putString("uri", Uri.fromFile(File(path)).toString())
       putInt("width", resultBitmap.width)
-      putInt("height", bitmap.height)
+      putInt("height", resultBitmap.height)
       if (base64String != null) {
         putString("base64", base64String)
       }

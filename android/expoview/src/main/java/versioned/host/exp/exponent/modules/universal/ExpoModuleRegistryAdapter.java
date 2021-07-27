@@ -3,11 +3,11 @@ package versioned.host.exp.exponent.modules.universal;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 
-import org.unimodules.adapters.react.ModuleRegistryAdapter;
-import org.unimodules.adapters.react.ReactModuleRegistryProvider;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.interfaces.InternalModule;
-import org.unimodules.core.interfaces.RegistryLifecycleListener;
+import expo.modules.adapters.react.ModuleRegistryAdapter;
+import expo.modules.adapters.react.ReactModuleRegistryProvider;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.interfaces.InternalModule;
+import expo.modules.core.interfaces.RegistryLifecycleListener;
 
 import java.util.List;
 import java.util.Map;

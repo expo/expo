@@ -8,8 +8,8 @@ import android.view.ViewGroup;
 import com.facebook.ads.MediaView;
 import com.facebook.ads.NativeAd;
 
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.interfaces.services.EventEmitter;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.interfaces.services.EventEmitter;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
