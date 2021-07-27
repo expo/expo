@@ -1,7 +1,5 @@
-import Checkbox from 'expo-checkbox';
+import Checkbox, { CheckboxProps } from 'expo-checkbox';
 import * as React from 'react';
-
-import { CheckboxProps } from '../Checkbox.types';
 
 function CheckboxExample(props: CheckboxProps) {
   const [value, setValue] = React.useState(false);

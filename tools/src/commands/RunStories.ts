@@ -5,20 +5,23 @@ import inquirer from 'inquirer';
 import path from 'path';
 
 import { runExpoCliAsync } from '../ExpoCLI';
+import Logger from '../Logger';
 
 type Action = {
   platform: 'android' | 'ios' | 'web';
-  packageName: string;
+  rebuild: boolean;
 };
 
-async function action({ platform, packageName }: Action) {
-  const cwdPkg = require(path.resolve(process.cwd(), 'package.json'));
-  const cwdPkgName = cwdPkg.name;
+async function action(packageName: string, options: Action) {
+  let { platform, rebuild = false } = options;
 
-  let buildStoryLoader = true;
+  if (!packageName) {
+    const cwdPkg = require(path.resolve(process.cwd(), 'package.json'));
+    const cwdPkgName = cwdPkg.name;
 
-  if (cwdPkgName && cwdPkgName !== '@expo/expo') {
-    packageName = cwdPkgName;
+    if (cwdPkgName && cwdPkgName !== '@expo/expo') {
+      packageName = cwdPkgName;
+    }
   }
 
   if (!packageName) {
@@ -50,7 +53,8 @@ async function action({ platform, packageName }: Action) {
   const targetName = projectName.split('-').join('');
 
   const projectRoot = path.resolve(examplesRoot, projectName);
-  if (fs.existsSync(projectRoot)) {
+
+  if (fs.existsSync(projectRoot) && !rebuild) {
     const { shouldRebuild } = await inquirer.prompt({
       type: 'confirm',
       name: 'shouldRebuild',
@@ -59,21 +63,23 @@ async function action({ platform, packageName }: Action) {
     });
 
     if (!shouldRebuild) {
-      console.log();
-      console.log(`Project found at ${projectRoot}`);
-      console.log();
+      Logger.log();
+      Logger.info(`Project found at ${projectRoot}`);
+      Logger.log();
     }
 
-    buildStoryLoader = shouldRebuild;
+    rebuild = shouldRebuild;
   }
 
-  if (buildStoryLoader) {
-    // @ts-ignore
-    fs.rmdirSync(projectRoot, { recursive: true, force: true });
+  if (rebuild) {
+    if (fs.existsSync(projectRoot)) {
+      // @ts-ignore
+      fs.rmdirSync(projectRoot, { recursive: true, force: true });
+    }
 
-    console.log();
-    console.log(`🛠  Building fresh story loader for ${packageName}`);
-    console.log();
+    Logger.log();
+    Logger.info(`🛠  Building fresh story loader for ${packageName}`);
+    Logger.log();
 
     // 1. initialize expo project w/ name
     await runExpoCliAsync('init', [projectName, '-t', 'bare-minimum', '--no-install'], {
@@ -168,7 +174,6 @@ async function action({ platform, packageName }: Action) {
 
   // Podfile
   const podfileRoot = path.resolve(projectRoot, 'ios/Podfile');
-
   fs.copyFileSync(path.resolve(templateRoot, 'ios/Podfile'), podfileRoot);
 
   // update target
@@ -188,12 +193,12 @@ async function action({ platform, packageName }: Action) {
   fs.copyFileSync(path.resolve(templateRoot, 'App.js'), path.resolve(projectRoot, 'App.js'));
 
   // 4. yarn + install deps
-  console.log('🧶 Yarning...');
-  console.log();
+  Logger.log('🧶 Yarning...');
+  Logger.log();
   await spawnAsync('yarn', ['install'], { cwd: projectRoot });
 
-  console.log('✅ Done!');
-  console.log();
+  Logger.log('✅ Done!');
+  Logger.log();
 
   if (!platform) {
     const { selectedPlatform } = await inquirer.prompt({
@@ -210,13 +215,13 @@ async function action({ platform, packageName }: Action) {
     platform = selectedPlatform;
   }
 
-  console.log();
+  Logger.log();
 
   if (platform === 'web') {
   } else {
     const command = `run:${platform}`;
-    console.log(`🛠  Building for ${platform}...this may take a few minutes`);
-    console.log();
+    Logger.log(`🛠  Building for ${platform}...this may take a few minutes`);
+    Logger.log();
     runExpoCliAsync(command, [], { cwd: projectRoot });
   }
 
@@ -225,8 +230,8 @@ async function action({ platform, packageName }: Action) {
 
 export default (program: any) => {
   program
-    .command('run-stories')
-    .option('-p, --platform <string>', 'Which platform we should run the app on')
-    .option('-n, --packageName <string>', 'The name of the package')
+    .command('run-stories [packageName]')
+    .option('-r, --rebuild', 'Rebuild the project from scratch')
+    .option('-p, --platform <string>', 'The platform the app will run in')
     .asyncAction(action);
 };

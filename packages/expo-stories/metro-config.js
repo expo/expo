@@ -1,6 +1,4 @@
-const path = require('path');
-
-const { storiesFileDir } = require('./build/server/constants');
+const { getStoriesCacheDir, getStoriesFile } = require('./build/server/shared');
 const { writeRequiredFiles } = require('./build/server/writeRequiredFiles');
 
 function withExpoStories(metroConfig) {
@@ -8,12 +6,12 @@ function withExpoStories(metroConfig) {
     projectRoot: metroConfig.projectRoot,
   });
 
-  metroConfig.resolver.extraNodeModules['generated-expo-stories'] = path.resolve(
-    metroConfig.projectRoot,
-    `${storiesFileDir}/stories.js`
-  );
+  const storiesDir = getStoriesCacheDir(metroConfig);
+  const storyFile = getStoriesFile(metroConfig);
 
-  metroConfig.watchFolders.push(path.resolve(metroConfig.projectRoot, storiesFileDir));
+  metroConfig.resolver.extraNodeModules['generated-expo-stories'] = storyFile;
+
+  metroConfig.watchFolders.push(storiesDir);
 
   return metroConfig;
 }

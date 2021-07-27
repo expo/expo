@@ -1,1 +1,0 @@
-{"version":3,"file":"NavigationEvents.js","sourceRoot":"","sources":["../../../shared/utilities/NavigationEvents.ts"],"names":[],"mappings":";;AAAA,uCAAyC;AAEzC,kBAAe,IAAI,wBAAY,EAAE,CAAC","sourcesContent":["import { EventEmitter } from 'fbemitter';\n\nexport default new EventEmitter();\n"]}
