@@ -497,7 +497,7 @@ public class NotificationHelper {
             if (data.containsKey("link")) {
               intent = new Intent(Intent.ACTION_VIEW, Uri.parse((String) data.get("link")));
             } else {
-              Class activityClass = KernelConstants.MAIN_ACTIVITY_CLASS;
+              Class activityClass = KernelConstants.INSTANCE.getMAIN_ACTIVITY_CLASS();
               intent = new Intent(context, activityClass);
               intent.putExtra(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY, experience.manifestUrl);
             }
@@ -523,7 +523,7 @@ public class NotificationHelper {
               NotificationActionCenter.setCategory((String) data.get("categoryId"), builder, context, new IntentProvider() {
                 @Override
                 public Intent provide() {
-                  Class activityClass = KernelConstants.MAIN_ACTIVITY_CLASS;
+                  Class activityClass = KernelConstants.INSTANCE.getMAIN_ACTIVITY_CLASS();
                   Intent intent = new Intent(context, activityClass);
                   intent.putExtra(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY, manifestUrl);
                   final ReceivedNotificationEvent notificationEvent = new ReceivedNotificationEvent(experienceScopeKey, body, id, false, false);

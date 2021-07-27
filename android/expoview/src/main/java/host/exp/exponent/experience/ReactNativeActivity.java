@@ -559,7 +559,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
   }
 
   public void onEventMainThread(KernelConstants.AddedExperienceEventEvent event) {
-    if (mManifestUrl != null && mManifestUrl.equals(event.manifestUrl)) {
+    if (mManifestUrl != null && mManifestUrl.equals(event.getManifestUrl())) {
       pollForEventsToSendToRN();
     }
   }
@@ -582,7 +582,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
         Set<KernelConstants.ExperienceEvent> events = KernelProvider.getInstance().consumeExperienceEvents(mManifestUrl);
 
         for (KernelConstants.ExperienceEvent event : events) {
-          existingEmitter.call("emit", event.eventName, event.eventPayload);
+          existingEmitter.call("emit", event.getEventName(), event.getEventPayload());
         }
       }
     } catch (Throwable e) {

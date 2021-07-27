@@ -158,7 +158,7 @@ class DevMenuManager {
           hideInActivity(activity)
         }
 
-        override fun onEventFailure(errorMessage: String) {
+        override fun onEventFailure(errorMessage: String?) {
           hideInActivity(activity)
         }
       }

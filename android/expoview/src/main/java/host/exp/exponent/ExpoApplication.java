@@ -48,14 +48,9 @@ public abstract class ExpoApplication extends MultiDexApplication {
     }
 
     if (!Constants.isStandaloneApp()) {
-      KernelConstants.MAIN_ACTIVITY_CLASS = LauncherActivity.class;
+      KernelConstants.INSTANCE.setMAIN_ACTIVITY_CLASS(LauncherActivity.class);
     }
-    KernelProvider.setFactory(new KernelProvider.KernelFactory() {
-      @Override
-      public KernelInterface create() {
-        return new Kernel();
-      }
-    });
+    KernelProvider.setFactory((KernelProvider.KernelFactory) Kernel::new);
 
     ExponentKernelModuleProvider.setFactory(ExponentKernelModule::new);
 
