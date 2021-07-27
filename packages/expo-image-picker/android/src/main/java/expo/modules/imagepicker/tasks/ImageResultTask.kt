@@ -2,9 +2,9 @@ package expo.modules.imagepicker.tasks
 
 import android.content.ContentResolver
 import android.net.Uri
-import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Base64
+import android.util.Log
 import androidx.exifinterface.media.ExifInterface
 import expo.modules.imagepicker.ImagePickerConstants
 import expo.modules.imagepicker.ImagePickerConstants.exifTags
@@ -12,8 +12,16 @@ import expo.modules.imagepicker.exporters.ImageExporter
 import expo.modules.imagepicker.exporters.ImageExporter.Listener
 import expo.modules.imagepicker.fileproviders.FileProvider
 import expo.modules.core.Promise
+import expo.modules.imagepicker.ModuleDestroyedException
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.io.IOException
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 open class ImageResultTask(
   private val promise: Promise,
@@ -21,45 +29,77 @@ open class ImageResultTask(
   private val contentResolver: ContentResolver,
   private val fileProvider: FileProvider,
   private val withExifData: Boolean,
-  private val imageExporter: ImageExporter
-) :
-  AsyncTask<Void?, Void?, Void?>() {
+  private val imageExporter: ImageExporter,
+  private val coroutineScope: CoroutineScope
+) {
 
-  override fun doInBackground(vararg params: Void?): Void? {
+  private val handler = CoroutineExceptionHandler { _, exception ->
+    if (exception is IOException) {
+      promise.reject(ImagePickerConstants.ERR_CAN_NOT_EXTRACT_METADATA, ImagePickerConstants.CAN_NOT_EXTRACT_METADATA_MESSAGE, exception)
+    }
+    throw exception
+  }
+
+  /**
+   * We need to make coroutine wait till the file is generated, while the underlying
+   * thread is free to continue executing other coroutines.
+   */
+  private suspend fun getFile(): File = suspendCancellableCoroutine { cancellableContinuation ->
     try {
       val outputFile = fileProvider.generateFile()
-      val exif: Bundle? = if (withExifData) readExif() else null
-
-      val imageExporterHandler = object : Listener {
-        override fun onResult(out: ByteArrayOutputStream?, width: Int, height: Int) {
-          val response = Bundle().apply {
-            putString("uri", Uri.fromFile(outputFile).toString())
-            putInt("width", width)
-            putInt("height", height)
-            putBoolean("cancelled", false)
-            putString("type", "image")
-
-            out?.let {
-              putString("base64", Base64.encodeToString(it.toByteArray(), Base64.NO_WRAP))
-            }
-            exif?.let {
-              putBundle("exif", it)
-            }
-          }
-          promise.resolve(response)
-        }
-
-        override fun onFailure(cause: Throwable?) {
-          promise.reject(ImagePickerConstants.ERR_CAN_NOT_SAVE_RESULT, ImagePickerConstants.CAN_NOT_SAVE_RESULT_MESSAGE, cause)
-        }
-      }
-
-      imageExporter.export(uri, outputFile, imageExporterHandler)
-    } catch (e: IOException) {
-      promise.reject(ImagePickerConstants.ERR_CAN_NOT_EXTRACT_METADATA, ImagePickerConstants.CAN_NOT_EXTRACT_METADATA_MESSAGE, e)
+      cancellableContinuation.resume(outputFile)
+    } catch (e: Exception) {
+      cancellableContinuation.resumeWithException(e)
     }
+  }
 
-    return null
+  /**
+   * We need to make coroutine wait till the exif data is being read, while the underlying
+   * thread is free to continue executing other coroutines.
+   */
+  private suspend fun getExifData(): Bundle? = suspendCancellableCoroutine { cancellableContinuation ->
+    try {
+      val exif = if (withExifData) readExif() else null
+      cancellableContinuation.resume(exif)
+    } catch (e: Exception) {
+      cancellableContinuation.resumeWithException(e)
+    }
+  }
+
+  fun execute() {
+    try {
+      coroutineScope.launch(handler) {
+        val outputFile = getFile()
+        val exif = getExifData()
+        val imageExporterHandler = object : Listener {
+          override fun onResult(out: ByteArrayOutputStream?, width: Int, height: Int) {
+            val response = Bundle().apply {
+              putString("uri", Uri.fromFile(outputFile).toString())
+              putInt("width", width)
+              putInt("height", height)
+              putBoolean("cancelled", false)
+              putString("type", "image")
+
+              out?.let {
+                putString("base64", Base64.encodeToString(it.toByteArray(), Base64.NO_WRAP))
+              }
+              exif?.let {
+                putBundle("exif", it)
+              }
+            }
+            promise.resolve(response)
+          }
+
+          override fun onFailure(cause: Throwable?) {
+            promise.reject(ImagePickerConstants.ERR_CAN_NOT_SAVE_RESULT, ImagePickerConstants.CAN_NOT_SAVE_RESULT_MESSAGE, cause)
+          }
+        }
+        imageExporter.export(uri, outputFile, imageExporterHandler)
+      }
+    } catch (e: ModuleDestroyedException) {
+      Log.d(ImagePickerConstants.TAG, ImagePickerConstants.COROUTINE_CANCELED, e)
+      promise.reject(e)
+    }
   }
 
   @Throws(IOException::class)
