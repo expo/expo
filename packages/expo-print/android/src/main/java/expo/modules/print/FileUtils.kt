@@ -39,15 +39,10 @@ object FileUtils {
 
   @Throws(IOException::class)
   fun copyToOutputStream(destination: ParcelFileDescriptor, callback: PrintDocumentAdapter.WriteResultCallback, input: InputStream) {
-    FileOutputStream(destination.fileDescriptor).use {
-      val buf = ByteArray(1024)
-      var bytesRead = input.read(buf)
-      while (bytesRead > 0) {
-        it.write(buf, 0, bytesRead)
-        bytesRead = input.read(buf)
-      }
-      callback.onWriteFinished(arrayOf(PageRange.ALL_PAGES))
+    FileOutputStream(destination.fileDescriptor).use { fileOut ->
+      input.copyTo(fileOut)
     }
+    callback.onWriteFinished(arrayOf(PageRange.ALL_PAGES))
   }
 
   fun decodeDataURI(uri: String): InputStream {
