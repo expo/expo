@@ -335,7 +335,7 @@ platform :android do
     )
   end
 
-  lane :prod_release do
+  lane :release do |track: "production"|
     build_gradle = File.read("../android/app/build.gradle")
 
     verify_changelog_exists(version_code: build_gradle.match(/versionCode (\d+)/)[1])
@@ -345,10 +345,18 @@ platform :android do
       package_name: "host.exp.exponent",
       metadata_path: "./fastlane/android/metadata",
       apk: "./android/app/build/outputs/apk/release/app-release.apk",
-      track: "production",
+      track: track,
       skip_upload_images: true,
       skip_upload_screenshots: true
     )
+  end
+
+  lane :prod_release do
+    release track: "production"
+  end
+
+  lane :beta_release do
+    release track: "beta"
   end
 
 end

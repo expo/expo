@@ -65,9 +65,19 @@ fastlane android devicefarm
 fastlane android build
 ```
 
+### android release
+```
+fastlane android release
+```
+
 ### android prod_release
 ```
 fastlane android prod_release
+```
+
+### android beta_release
+```
+fastlane android beta_release
 ```
 
 

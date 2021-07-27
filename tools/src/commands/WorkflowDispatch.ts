@@ -36,6 +36,13 @@ const CUSTOM_WORKFLOWS = {
       releaseGooglePlay: 'release-google-play',
     },
   },
+  'client-android-beta': {
+    name: 'Android Client Beta Release',
+    baseWorkflowSlug: 'client-android',
+    inputs: {
+      releaseGooglePlayPlay: 'release-google-play-beta',
+    },
+  },
   'client-android-simulator': {
     name: 'Android Client Simulator Release',
     baseWorkflowSlug: 'client-android',
