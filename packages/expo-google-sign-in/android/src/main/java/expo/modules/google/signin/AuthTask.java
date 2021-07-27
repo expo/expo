@@ -1,6 +1,6 @@
 package expo.modules.google.signin;
 
-import org.unimodules.core.Promise;
+import expo.modules.core.Promise;
 
 import static expo.modules.google.signin.GoogleSignInModule.ERROR_CONCURRENT_TASK_IN_PROGRESS;
 

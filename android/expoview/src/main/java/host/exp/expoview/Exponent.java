@@ -26,8 +26,8 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.io.output.TeeOutputStream;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.unimodules.core.interfaces.Package;
-import org.unimodules.core.interfaces.SingletonModule;
+import expo.modules.core.interfaces.Package;
+import expo.modules.core.interfaces.SingletonModule;
 
 import java.io.BufferedReader;
 import java.io.File;

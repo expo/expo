@@ -7,8 +7,8 @@ import androidx.browser.customtabs.CustomTabsClient;
 import androidx.browser.customtabs.CustomTabsServiceConnection;
 import androidx.browser.customtabs.CustomTabsSession;
 
-import org.unimodules.core.interfaces.InternalModule;
-import org.unimodules.core.interfaces.LifecycleEventListener;
+import expo.modules.core.interfaces.InternalModule;
+import expo.modules.core.interfaces.LifecycleEventListener;
 
 import java.util.Collections;
 import java.util.List;

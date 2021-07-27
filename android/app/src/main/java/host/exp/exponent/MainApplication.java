@@ -2,14 +2,13 @@ package host.exp.exponent;
 
 import com.facebook.react.ReactPackage;
 
-import org.unimodules.apploader.AppLoaderPackagesProviderInterface;
-import org.unimodules.core.interfaces.Package;
+import expo.modules.apploader.AppLoaderPackagesProviderInterface;
+import expo.modules.core.interfaces.Package;
 
 import java.util.Arrays;
 import java.util.List;
 
 import host.exp.exponent.generated.BasePackageList;
-import okhttp3.OkHttpClient;
 
 // Needed for `react-native link`
 // import com.facebook.react.ReactApplication;

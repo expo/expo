@@ -1,6 +1,6 @@
 package expo.modules.notifications.notifications.channels;
 
-import org.unimodules.core.errors.CodedRuntimeException;
+import expo.modules.core.errors.CodedRuntimeException;
 
 public class InvalidVibrationPatternException extends CodedRuntimeException {
   public InvalidVibrationPatternException(int invalidValueKey, Object invalidValue) {

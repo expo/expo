@@ -4,7 +4,7 @@ package expo.modules.sensors.services
 import android.content.Context
 import android.hardware.Sensor
 import expo.modules.interfaces.sensors.services.LinearAccelerationSensorServiceInterface
-import org.unimodules.core.interfaces.InternalModule
+import expo.modules.core.interfaces.InternalModule
 
 class LinearAccelerationSensorService(reactContext: Context?) : SubscribableSensorService(reactContext), InternalModule, LinearAccelerationSensorServiceInterface {
   override val sensorType: Int = Sensor.TYPE_LINEAR_ACCELERATION

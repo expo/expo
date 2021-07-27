@@ -24,9 +24,9 @@ internal object FileUtils {
 
   private fun toExtension(compressFormat: CompressFormat): String {
     return when (compressFormat) {
-      CompressFormat.JPEG -> ".jpeg"
+      CompressFormat.JPEG -> ".jpg"
       CompressFormat.PNG -> ".png"
-      else -> ".jpeg"
+      else -> ".jpg"
     }
   }
 }

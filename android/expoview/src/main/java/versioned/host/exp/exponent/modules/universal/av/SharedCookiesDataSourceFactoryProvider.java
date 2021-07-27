@@ -8,7 +8,7 @@ import com.google.android.exoplayer2.upstream.TransferListener;
 
 import java.util.Map;
 
-import org.unimodules.core.ModuleRegistry;
+import expo.modules.core.ModuleRegistry;
 import host.exp.exponent.utils.ScopedContext;
 
 public class SharedCookiesDataSourceFactoryProvider extends expo.modules.av.player.datasource.SharedCookiesDataSourceFactoryProvider {

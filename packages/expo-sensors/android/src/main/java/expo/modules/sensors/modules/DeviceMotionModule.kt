@@ -16,12 +16,12 @@ import expo.modules.interfaces.sensors.services.GravitySensorServiceInterface
 import expo.modules.interfaces.sensors.services.GyroscopeServiceInterface
 import expo.modules.interfaces.sensors.services.LinearAccelerationSensorServiceInterface
 import expo.modules.interfaces.sensors.services.RotationVectorSensorServiceInterface
-import org.unimodules.core.ExportedModule
-import org.unimodules.core.ModuleRegistry
-import org.unimodules.core.Promise
-import org.unimodules.core.interfaces.ExpoMethod
-import org.unimodules.core.interfaces.services.EventEmitter
-import org.unimodules.core.interfaces.services.UIManager
+import expo.modules.core.ExportedModule
+import expo.modules.core.ModuleRegistry
+import expo.modules.core.Promise
+import expo.modules.core.interfaces.ExpoMethod
+import expo.modules.core.interfaces.services.EventEmitter
+import expo.modules.core.interfaces.services.UIManager
 
 class DeviceMotionModule(context: Context?) : ExportedModule(context), SensorEventListener2 {
   private var mLastUpdate: Long = 0

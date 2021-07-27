@@ -5,7 +5,7 @@ import expo.modules.splashscreen.singletons.SplashScreen
 
 import abi39_0_0.org.unimodules.core.BasePackage
 import abi39_0_0.org.unimodules.core.ExportedModule
-import org.unimodules.core.interfaces.SingletonModule
+import expo.modules.core.interfaces.SingletonModule
 
 class SplashScreenPackage : BasePackage() {
   override fun createExportedModules(context: Context): List<ExportedModule> {

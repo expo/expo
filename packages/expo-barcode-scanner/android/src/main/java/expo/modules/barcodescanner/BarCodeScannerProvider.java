@@ -5,7 +5,7 @@ import android.content.Context;
 import java.util.Collections;
 import java.util.List;
 
-import org.unimodules.core.interfaces.InternalModule;
+import expo.modules.core.interfaces.InternalModule;
 import expo.modules.barcodescanner.scanners.ExpoBarCodeScanner;
 import expo.modules.barcodescanner.scanners.GMVBarCodeScanner;
 import expo.modules.barcodescanner.scanners.ZxingBarCodeScanner;

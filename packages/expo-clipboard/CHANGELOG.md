@@ -11,7 +11,7 @@
 ### 💡 Others
 
 - Clean up Android code. ([#13517](https://github.com/expo/expo/pull/13517) by [@mstach60161](https://github.com/mstach60161))
-([#13517](https://github.com/expo/expo/pull/13517) by [@mstach60161](https://github.com/mstach60161))
+- Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))
 
 ## 1.1.0 — 2021-06-16
 

@@ -14,11 +14,11 @@ import com.facebook.soloader.SoLoader;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.unimodules.adapters.react.ReactModuleRegistryProvider;
-import org.unimodules.apploader.AppLoaderPackagesProviderInterface;
-import org.unimodules.apploader.AppLoaderProvider;
-import org.unimodules.core.interfaces.Package;
-import org.unimodules.core.interfaces.SingletonModule;
+import expo.modules.adapters.react.ReactModuleRegistryProvider;
+import expo.modules.apploader.AppLoaderPackagesProviderInterface;
+import expo.modules.apploader.AppLoaderProvider;
+import expo.modules.core.interfaces.Package;
+import expo.modules.core.interfaces.SingletonModule;
 
 import java.util.List;
 import java.util.Map;

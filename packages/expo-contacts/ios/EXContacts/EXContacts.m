@@ -185,7 +185,7 @@ UM_EXPORT_METHOD_AS(presentFormAsync,
     CNContactStore *contactStore = [self _getContactStoreOrReject:reject];
     if(!contactStore) return;
   
-  [UMUtilities performSynchronouslyOnMainThread:^{
+    [UMUtilities performSynchronouslyOnMainThread:^{
     
         EXContactsViewController *controller;
         CNMutableContact *contact;
@@ -239,15 +239,17 @@ UM_EXPORT_METHOD_AS(presentFormAsync,
             isAnimated = [options[@"preventAnimation"] boolValue];
         
         UIViewController *parent = self->_utilities.currentViewController;
-        
+
+        [controller handleViewDisappeared:^{
+            resolve(nil);
+        }];
         // We need to wrap our contact view controller in UINavigationController.
         // See: https://stackoverflow.com/questions/38748969/cnui-error-contact-view-delayed-appearance-timed-out
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
         navigationController.modalPresentationStyle = UIModalPresentationFullScreen;
         self.presentingViewController = navigationController;
-        [parent presentViewController:navigationController animated:isAnimated completion:^{
-            resolve(nil);
-        }];
+
+        [parent presentViewController:navigationController animated:isAnimated completion:nil];
     }];
 }
 

@@ -2,8 +2,8 @@ package expo.modules.clipboard
 
 import android.content.Context
 
-import org.unimodules.core.BasePackage
-import org.unimodules.core.ExportedModule
+import expo.modules.core.BasePackage
+import expo.modules.core.ExportedModule
 
 class ClipboardPackage : BasePackage() {
   override fun createExportedModules(context: Context): List<ExportedModule> {

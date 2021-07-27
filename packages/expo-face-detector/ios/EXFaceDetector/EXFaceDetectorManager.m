@@ -70,9 +70,9 @@ static const NSString *kMinDetectionInterval = @"minDetectionInterval";
   // It allows us to smoothly toggle face detection without interrupting preview and reconfiguring camera session.
   if ([self isDetectingFaceEnabled] != newFaceDetecting) {
     _faceDetectionEnabled = newFaceDetecting;
-    UM_WEAKIFY(self);
+    EX_WEAKIFY(self);
     [self _runBlockIfQueueIsPresent:^{
-      UM_ENSURE_STRONGIFY(self);
+      EX_ENSURE_STRONGIFY(self);
       if ([self isDetectingFaceEnabled] && ![self isFaceDetecionRunning]) {
         [self tryEnablingFaceDetection];
       }
@@ -145,10 +145,10 @@ static const NSString *kMinDetectionInterval = @"minDetectionInterval";
       if([_session canAddOutput:output]) {
         [_session addOutput:output];
       } else {
-        UMLogError(@"Unable to add output to camera session! Face detection aborted!");
+        EXLogError(@"Unable to add output to camera session! Face detection aborted!");
       }
     } @catch (NSException *exception) {
-      UMLogWarn(@"%@", [exception description]);
+      EXLogWarn(@"%@", [exception description]);
     }
   }
 

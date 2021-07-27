@@ -17,9 +17,9 @@ import expo.modules.sensors.services.MagnetometerService
 import expo.modules.sensors.services.MagnetometerUncalibratedService
 import expo.modules.sensors.services.PedometerService
 import expo.modules.sensors.services.RotationVectorSensorService
-import org.unimodules.core.BasePackage
-import org.unimodules.core.ExportedModule
-import org.unimodules.core.interfaces.InternalModule
+import expo.modules.core.BasePackage
+import expo.modules.core.ExportedModule
+import expo.modules.core.interfaces.InternalModule
 
 class SensorsPackage : BasePackage() {
   override fun createInternalModules(context: Context): List<InternalModule> {

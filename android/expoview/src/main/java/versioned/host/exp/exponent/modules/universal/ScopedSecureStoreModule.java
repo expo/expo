@@ -4,8 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-import org.unimodules.core.Promise;
-import org.unimodules.core.arguments.ReadableArguments;
+import expo.modules.core.Promise;
+import expo.modules.core.arguments.ReadableArguments;
 
 import java.security.KeyStore;
 import java.util.Map;

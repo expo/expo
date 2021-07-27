@@ -11,7 +11,7 @@ import expo.modules.imagepicker.ImagePickerConstants.exifTags
 import expo.modules.imagepicker.exporters.ImageExporter
 import expo.modules.imagepicker.exporters.ImageExporter.Listener
 import expo.modules.imagepicker.fileproviders.FileProvider
-import org.unimodules.core.Promise
+import expo.modules.core.Promise
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 

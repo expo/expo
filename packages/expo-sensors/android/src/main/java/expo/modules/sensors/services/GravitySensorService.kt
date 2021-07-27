@@ -4,7 +4,7 @@ package expo.modules.sensors.services
 import android.content.Context
 import android.hardware.Sensor
 import expo.modules.interfaces.sensors.services.GravitySensorServiceInterface
-import org.unimodules.core.interfaces.InternalModule
+import expo.modules.core.interfaces.InternalModule
 
 class GravitySensorService(reactContext: Context?) : SubscribableSensorService(reactContext), InternalModule, GravitySensorServiceInterface {
   override val sensorType: Int = Sensor.TYPE_GRAVITY

@@ -8,7 +8,7 @@ import android.os.Bundle;
 import java.util.List;
 import java.util.Map;
 
-import org.unimodules.core.interfaces.SingletonModule;
+import expo.modules.core.interfaces.SingletonModule;
 
 public interface TaskServiceInterface extends SingletonModule {
 
