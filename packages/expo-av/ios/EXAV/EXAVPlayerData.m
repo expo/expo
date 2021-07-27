@@ -32,6 +32,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 @interface EXAVPlayerData ()
 
 @property (nonatomic, weak) EXAV *exAV;
+@property (nonatomic, strong) SampleBufferCallback audioSampleBufferCallback;
 
 @property (nonatomic, assign) BOOL isLoaded;
 @property (nonatomic, strong) void (^loadFinishBlock)(BOOL success, NSDictionary *successStatus, NSString *error);
@@ -125,11 +126,55 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     
     // We prepare three items for AVQueuePlayer, so when the first finishes playing,
     // second can start playing and the third can start preparing to play.
-    AVPlayerItem *firstplayerItem = [AVPlayerItem playerItemWithAsset:avAsset];
+    AVPlayerItem *firstPlayerItem = [AVPlayerItem playerItemWithAsset:avAsset];
     AVPlayerItem *secondPlayerItem = [AVPlayerItem playerItemWithAsset:avAsset];
     AVPlayerItem *thirdPlayerItem = [AVPlayerItem playerItemWithAsset:avAsset];
-    self.items = @[firstplayerItem, secondPlayerItem, thirdPlayerItem];
-    self.player = [AVQueuePlayer queuePlayerWithItems:@[firstplayerItem, secondPlayerItem, thirdPlayerItem]];
+    
+    // ---------------------------------------------------------------------------------------------------------------------------
+    
+    
+    
+    
+    // Continuing on from where we created the AVAsset...
+    AVAssetTrack *audioTrack = [[avAsset tracks] objectAtIndex:0];
+    AVMutableAudioMixInputParameters *inputParams = [AVMutableAudioMixInputParameters audioMixInputParametersWithTrack:audioTrack];
+    
+    // Create a processing tap for the input parameters
+    MTAudioProcessingTapCallbacks callbacks;
+    callbacks.version = kMTAudioProcessingTapCallbacksVersion_0;
+    callbacks.clientInfo = (__bridge void *)(self);
+    callbacks.init = init;
+    callbacks.prepare = prepare;
+    callbacks.process = process;
+    callbacks.unprepare = unprepare;
+    callbacks.finalize = finalize;
+    
+    MTAudioProcessingTapRef tap;
+    // The create function makes a copy of our callbacks struct
+    OSStatus err = MTAudioProcessingTapCreate(kCFAllocatorDefault, &callbacks,
+                                              kMTAudioProcessingTapCreationFlag_PostEffects, &tap);
+    if (err || !tap) {
+      NSLog(@"Unable to create the Audio Processing Tap");
+      return;
+    }
+    assert(tap);
+    
+    // Assign the tap to the input parameters
+    inputParams.audioTapProcessor = tap;
+    
+    // Create a new AVAudioMix and assign it to our AVPlayerItem
+    AVMutableAudioMix *audioMix = [AVMutableAudioMix audioMix];
+    audioMix.inputParameters = @[inputParams];
+    firstPlayerItem.audioMix = audioMix;
+    secondPlayerItem.audioMix = audioMix;
+    thirdPlayerItem.audioMix = audioMix;
+    
+    
+
+    // ---------------------------------------------------------------------------------------------------------------------------
+    
+    self.items = @[firstPlayerItem, secondPlayerItem, thirdPlayerItem];
+    self.player = [AVQueuePlayer queuePlayerWithItems:@[firstPlayerItem, secondPlayerItem, thirdPlayerItem]];
     if (self.player) {
       [self _addObserver:self.player forKeyPath:EXAVPlayerDataObserverStatusKeyPath];
       [self _addObserver:self.player.currentItem forKeyPath:EXAVPlayerDataObserverStatusKeyPath];
@@ -179,8 +224,52 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 
 #pragma mark - Audio Sample Buffer Callback
 
+void init(MTAudioProcessingTapRef tap, void *clientInfo, void **tapStorageOut)
+{
+  NSLog(@"Initialising the Audio Tap Processor");
+  *tapStorageOut = clientInfo;
+}
+
+void finalize(MTAudioProcessingTapRef tap)
+{
+  NSLog(@"Finalizing the Audio Tap Processor");
+}
+
+void prepare(MTAudioProcessingTapRef tap, CMItemCount maxFrames, const AudioStreamBasicDescription *processingFormat)
+{
+  NSLog(@"Preparing the Audio Tap Processor");
+}
+
+void unprepare(MTAudioProcessingTapRef tap)
+{
+  NSLog(@"Unpreparing the Audio Tap Processor");
+}
+
+#define LAKE_LEFT_CHANNEL (0)
+#define LAKE_RIGHT_CHANNEL (1)
+
+void process(MTAudioProcessingTapRef tap, CMItemCount numberFrames,
+             MTAudioProcessingTapFlags flags, AudioBufferList *bufferListInOut,
+             CMItemCount *numberFramesOut, MTAudioProcessingTapFlags *flagsOut)
+{
+  OSStatus err = MTAudioProcessingTapGetSourceAudio(tap, numberFrames, bufferListInOut,
+                                                    flagsOut, NULL, numberFramesOut);
+  if (err) NSLog(@"Error from GetSourceAudio: %ld", err);
+  
+  //LAKEViewController *self = (__bridge LAKEViewController *) MTAudioProcessingTapGetStorage(tap);
+  
+  float scalar = 0.0f;
+  
+  vDSP_vsmul(bufferListInOut->mBuffers[LAKE_RIGHT_CHANNEL].mData, 1, &scalar, bufferListInOut->mBuffers[LAKE_RIGHT_CHANNEL].mData, 1, bufferListInOut->mBuffers[LAKE_RIGHT_CHANNEL].mDataByteSize / sizeof(float));
+  vDSP_vsmul(bufferListInOut->mBuffers[LAKE_LEFT_CHANNEL].mData, 1, &scalar, bufferListInOut->mBuffers[LAKE_LEFT_CHANNEL].mData, 1, bufferListInOut->mBuffers[LAKE_LEFT_CHANNEL].mDataByteSize / sizeof(float));
+  
+  
+  NSLog(@"Processing: %f", scalar);
+}
+
 - (void)addSampleBufferCallback:(SampleBufferCallback)callback
 {
+  self.audioSampleBufferCallback = callback;
   // TODO: addSampleBufferCallback
   /*[_playerNode installTapOnBus:0
    bufferSize:1024
@@ -196,6 +285,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 
 - (void)removeSampleBufferCallback
 {
+  self.audioSampleBufferCallback = nil;
   // TODO: removeSampleBufferCallback
 }
 
