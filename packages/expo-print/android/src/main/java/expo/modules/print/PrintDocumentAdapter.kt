@@ -10,7 +10,7 @@ import android.print.PrintAttributes
 import android.print.PrintDocumentAdapter
 import android.print.PrintDocumentInfo
 import android.webkit.URLUtil
-import org.unimodules.core.Promise
+import expo.modules.core.Promise
 import java.io.IOException
 import java.net.URL
 

@@ -10,7 +10,6 @@ import expo.modules.core.ModuleRegistry
 import expo.modules.core.Promise
 import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.core.interfaces.ExpoMethod
-import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.IOException
 
@@ -99,7 +98,7 @@ class PrintModule(context: Context) : ExportedModule(context) {
           var base64: String? = null
           if (options.containsKey("base64") && (options["base64"] as Boolean? == true)) {
             try {
-              base64 = outputFile?.let { encodeFromFile(it) }
+              base64 = outputFile?.let { FileUtils.encodeFromFile(it) }
             } catch (e: IOException) {
               promise.reject("E_PRINT_BASE64_FAILED", "An error occurred while encoding PDF file to base64 string.", e)
               return
@@ -123,9 +122,9 @@ class PrintModule(context: Context) : ExportedModule(context) {
 
   private fun printDocumentToPrinter(document: PrintDocumentAdapter, options: Map<String?, Any?>) {
     val printManager = moduleRegistry
-        .getModule(ActivityProvider::class.java)
-        .currentActivity
-        ?.getSystemService(Context.PRINT_SERVICE) as? PrintManager
+      .getModule(ActivityProvider::class.java)
+      .currentActivity
+      ?.getSystemService(Context.PRINT_SERVICE) as? PrintManager
     val attributes = getAttributesFromOptions(options)
     printManager?.print(jobName, document, attributes.build())
   }
