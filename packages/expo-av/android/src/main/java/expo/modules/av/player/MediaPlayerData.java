@@ -11,7 +11,6 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.Surface;
 
-import org.unimodules.core.ModuleRegistry;
 import java.io.IOException;
 import java.net.CookieHandler;
 import java.net.HttpCookie;
@@ -24,7 +23,7 @@ import java.util.Map;
 
 import expo.modules.av.AVManagerInterface;
 import expo.modules.av.AudioFocusNotAcquiredException;
-
+import expo.modules.core.ModuleRegistry;
 
 class MediaPlayerData extends PlayerData implements
     MediaPlayer.OnBufferingUpdateListener,
