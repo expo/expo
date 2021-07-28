@@ -3,10 +3,17 @@ import { Playback, AVPlaybackSource, AVPlaybackStatus, AVPlaybackStatusToSet } f
 import { PitchCorrectionQuality } from '../Audio';
 export interface AudioChannel {
     /**
-     * All samples for this specific Audio Channel in PCM Buffer format.
+     * All samples for this specific Audio Channel in PCM Buffer format (-1 to 1).
      */
     frames: number[];
 }
+/**
+ * A single sample from an audio source. The sample contains all frames (PCM Buffer values) for each channel of the audio,
+ * so if the audio is _stereo_ (interleaved), there will be two channels, one for left and one for right audio.
+ *
+ * Use `Sound.getAverageLoudness(...)` to get the average loudness (RMS/RMV algorithm) of a single audio sample for visualization
+ * purposes.
+ */
 export interface AudioSample {
     /**
      * Data from each Channel in PCM Buffer format.
