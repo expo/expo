@@ -60,9 +60,9 @@ class SQLiteModule(private val mContext: Context) : ExportedModule(mContext) {
 
   // do a update/delete/insert operation
   private fun doUpdateInBackgroundAndPossiblyThrow(
-      sql: String,
-      bindArgs: Array<String?>?,
-      db: SQLiteDatabase
+    sql: String,
+    bindArgs: Array<String?>?,
+    db: SQLiteDatabase
   ): SQLitePluginResult {
     return db.compileStatement(sql).use { statement ->
       if (bindArgs != null) {
@@ -92,9 +92,9 @@ class SQLiteModule(private val mContext: Context) : ExportedModule(mContext) {
 
   // do a select operation
   private fun doSelectInBackgroundAndPossiblyThrow(
-      sql: String,
-      bindArgs: Array<String?>,
-      db: SQLiteDatabase
+    sql: String,
+    bindArgs: Array<String?>,
+    db: SQLiteDatabase
   ): SQLitePluginResult {
     return db.rawQuery(sql, bindArgs).use { cursor ->
       val numRows = cursor.count
@@ -153,11 +153,11 @@ class SQLiteModule(private val mContext: Context) : ExportedModule(mContext) {
   }
 
   internal class SQLitePluginResult(
-      val rows: Array<Array<Any?>>,
-      val columns: Array<String?>,
-      val rowsAffected: Int,
-      val insertId: Long,
-      val error: Throwable?
+    val rows: Array<Array<Any?>>,
+    val columns: Array<String?>,
+    val rowsAffected: Int,
+    val insertId: Long,
+    val error: Throwable?
   )
 
   private class ReadOnlyException : Exception("could not prepare statement (23 not authorized)")
