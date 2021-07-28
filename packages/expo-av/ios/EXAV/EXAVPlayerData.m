@@ -520,6 +520,18 @@ void process(MTAudioProcessingTapRef tap, CMItemCount numberFrames,
   : value;
 }
 
+- (double)getCurrentPositionPrecise
+{
+  NSNumber *durationMillis = [self _getRoundedMillisFromCMTime:_player.currentItem.duration];
+  if (durationMillis) {
+    durationMillis = [durationMillis doubleValue] < 0 ? 0 : durationMillis;
+  }
+  
+  NSNumber *positionMillis = [self _getRoundedMillisFromCMTime:[_player currentTime]];
+  positionMillis = [self _getClippedValueForValue:positionMillis withMin:@(0) withMax:durationMillis];
+  return positionMillis.doubleValue / 1000.0;
+}
+
 - (NSDictionary *)getStatus
 {
   if (!_isLoaded || _player == nil) {
@@ -1211,40 +1223,12 @@ static void tap_ProcessCallback(MTAudioProcessingTapRef tap, CMItemCount numberF
   
   EXAVPlayerData *self = ((__bridge EXAVPlayerData *)context->self);
   
-  // TODO: isBandpassFilterEnabled
-  if (/*self.isBandpassFilterEnabled*/ false)
+  // Get actual audio buffers from MTAudioProcessingTap
+  status = MTAudioProcessingTapGetSourceAudio(tap, numberFrames, bufferListInOut, flagsOut, NULL, numberFramesOut);
+  if (noErr != status)
   {
-    // Apply bandpass filter Audio Unit.
-    AudioUnit audioUnit = context->audioUnit;
-    if (audioUnit)
-    {
-      AudioTimeStamp audioTimeStamp;
-      audioTimeStamp.mSampleTime = context->sampleCount;
-      audioTimeStamp.mFlags = kAudioTimeStampSampleTimeValid;
-      
-      status = AudioUnitRender(audioUnit, 0, &audioTimeStamp, 0, (UInt32)numberFrames, bufferListInOut);
-      if (noErr != status)
-      {
-        NSLog(@"AudioUnitRender(): %d", (int)status);
-        return;
-      }
-      
-      // Increment sample count for audio unit.
-      context->sampleCount += numberFrames;
-      
-      // Set number of frames out.
-      *numberFramesOut = numberFrames;
-    }
-  }
-  else
-  {
-    // Get actual audio buffers from MTAudioProcessingTap (AudioUnitRender() will fill bufferListInOut otherwise).
-    status = MTAudioProcessingTapGetSourceAudio(tap, numberFrames, bufferListInOut, flagsOut, NULL, numberFramesOut);
-    if (noErr != status)
-    {
-      NSLog(@"MTAudioProcessingTapGetSourceAudio: %d", (int)status);
-      return;
-    }
+    NSLog(@"MTAudioProcessingTapGetSourceAudio: %d", (int)status);
+    return;
   }
   
   // Calculate root mean square (RMS) for left and right audio channel.
@@ -1276,8 +1260,8 @@ static void tap_ProcessCallback(MTAudioProcessingTapRef tap, CMItemCount numberF
   }
   
   // TODO: Does this conform to PCMBuffer?
-  
-  self.audioSampleBufferCallback(&bufferListInOut->mBuffers[0], 0.0);
+  double seconds = [self getCurrentPositionPrecise];
+  self.audioSampleBufferCallback(&bufferListInOut->mBuffers[0], seconds);
 }
 
 #pragma mark - Audio Unit Callbacks
