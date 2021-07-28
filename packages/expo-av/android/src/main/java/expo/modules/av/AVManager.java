@@ -13,12 +13,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.util.Log;
 
 import expo.modules.core.ModuleRegistry;
 import expo.modules.core.Promise;
 import expo.modules.core.arguments.ReadableArguments;
+import expo.modules.core.interfaces.DoNotStrip;
 import expo.modules.core.interfaces.InternalModule;
+import expo.modules.core.interfaces.JavaScriptContextProvider;
 import expo.modules.core.interfaces.LifecycleEventListener;
 import expo.modules.core.interfaces.services.EventEmitter;
 import expo.modules.core.interfaces.services.UIManager;
@@ -39,7 +40,6 @@ import java.util.UUID;
 import expo.modules.av.player.PlayerData;
 import expo.modules.av.video.VideoView;
 import expo.modules.av.video.VideoViewWrapper;
-import expo.modules.interfaces.filesystem.Permission;
 import expo.modules.interfaces.permissions.Permissions;
 import expo.modules.interfaces.permissions.PermissionsResponseListener;
 
