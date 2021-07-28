@@ -62,7 +62,6 @@ const nonLinkableTypes = [
   'T',
   'TaskOptions',
   'Uint8Array',
-  'ViewStyle',
   'RequestPermissionMethod',
   'GetPermissionMethod',
 ];
