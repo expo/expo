@@ -117,11 +117,7 @@ subprojects {
     }
     kotlin {
       target '**/*.kt'
-      ktlint("0.41.0").userData([
-          "disabled_rules"          : "no-wildcard-imports,import-ordering",
-          "indent_size"             : "2",
-          "continuation_indent_size": "4"
-      ])
+      ktlint("0.41.0")
       trimTrailingWhitespace()
       indentWithSpaces()
       endWithNewline()
