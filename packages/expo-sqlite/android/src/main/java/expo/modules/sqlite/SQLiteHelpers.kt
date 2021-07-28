@@ -41,11 +41,11 @@ private fun convertPluginResultToArray(result: SQLiteModule.SQLitePluginResult):
   }
 
   return arrayListOf(
-      result.error?.message,
-      result.insertId.toInt(),
-      result.rowsAffected,
-      result.columns,
-      rowsContent
+    result.error?.message,
+    result.insertId.toInt(),
+    result.rowsAffected,
+    result.columns,
+    rowsContent
   )
 }
 
@@ -74,7 +74,7 @@ internal fun isDelete(str: String): Boolean {
 }
 
 private fun startsWithCaseInsensitive(str: String, substr: String): Boolean {
-  return str.trimStart().startsWith(substr, true);
+  return str.trimStart().startsWith(substr, true)
 }
 
 internal fun convertParamsToStringArray(paramArrayArg: ArrayList<Any?>): Array<String?> {
@@ -91,6 +91,6 @@ internal fun convertParamsToStringArray(paramArrayArg: ArrayList<Any?>): Array<S
 
 private fun unescapeBlob(str: String): String {
   return str.replace("\u0001\u0001", "\u0000")
-      .replace("\u0001\u0002", "\u0001")
-      .replace("\u0002\u0002", "\u0002")
+    .replace("\u0001\u0002", "\u0001")
+    .replace("\u0002\u0002", "\u0002")
 }

@@ -53,8 +53,8 @@ class SQLiteModule(private val mContext: Context) : ExportedModule(mContext) {
   @ExpoMethod
   fun close(dbName: String, promise: Promise) {
     DATABASES
-        .remove(dbName)
-        ?.close()
+      .remove(dbName)
+      ?.close()
     promise.resolve(null)
   }
 
