@@ -67,7 +67,7 @@ module Expo
 
     # Bool that is true when Swift modules are enabled
     public def uses_swift_modules?
-      $ExpoUseExperimentalSwiftModules
+      $ExpoUseSwiftModules
     end
 
     # Returns whether there is at least one package that needs to be included in the generated modules provider.
