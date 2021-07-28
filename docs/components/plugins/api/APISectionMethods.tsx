@@ -8,6 +8,7 @@ import { MethodDefinitionData, MethodSignatureData } from '~/components/plugins/
 import {
   CommentTextBlock,
   mdRenderers,
+  parseParamName,
   renderParam,
   resolveTypeName,
 } from '~/components/plugins/api/APISectionUtils';
@@ -31,7 +32,9 @@ const renderMethod = (
         <InlineCode>
           {apiName ? `${apiName}.` : ''}
           {header !== 'Hooks'
-            ? `${name}(${parameters ? parameters?.map(param => param.name).join(', ') : ''})`
+            ? `${name}(${
+                parameters ? parameters?.map(param => parseParamName(param.name)).join(', ') : ''
+              })`
             : name}
         </InlineCode>
       </H3Code>
