@@ -93,12 +93,6 @@ export default class AudioScreen extends React.Component {
     console.log('Rendering AudioScreen');
 
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <WaveForm />
-      </View>
-    );
-
-    return (
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <HeadingText>Audio state</HeadingText>
         <ListButton title="Activate Audio" onPress={this._setAudioActive(true)} />

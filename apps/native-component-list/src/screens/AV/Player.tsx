@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/build/Ionicons';
 import Slider from '@react-native-community/slider';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   GestureResponderEvent,
   Platform,
@@ -13,7 +13,15 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
+import Reanimated, {
+  Extrapolate,
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 
+import { AudioSample, Sound } from '../../../../../packages/expo-av/build/Audio';
 import Colors from '../../constants/Colors';
 
 interface Props {
@@ -40,6 +48,7 @@ interface Props {
   setPositionAsync: (position: number) => Promise<any>;
   setIsLoopingAsync: (isLooping: boolean) => void;
   setVolume: (volume: number) => void;
+  setAudioSampleBufferCallback?: (callback: (sample: AudioSample) => void) => void;
 
   // Status
   isLoaded: boolean;
@@ -59,6 +68,7 @@ interface Props {
 export default function Player(props: Props) {
   const [isScrubbing, setIsScrubbing] = React.useState(false);
   const [initialScrubbingMillis, setInitialScrubbingMillis] = React.useState<undefined | number>();
+  const scale = useSharedValue(0.2);
 
   const _play = () => props.playAsync();
 
@@ -149,6 +159,25 @@ export default function Player(props: Props) {
     );
   };
 
+  useEffect(() => {
+    if (!props.setAudioSampleBufferCallback) return;
+    props.setAudioSampleBufferCallback((sample: AudioSample) => {
+      const loudness = Sound.getAverageLoudness(sample);
+      // 0.90 to 0.96 is the most interesting range, 0.96 to 0.99 is mostly bass in this song so emphasize it even more.
+      scale.value = interpolate(loudness, [0.9, 0.96, 0.99], [0.2, 1, 1.5], Extrapolate.CLAMP);
+    });
+  }, [props.setAudioSampleBufferCallback, scale]);
+  const waveformStyle = useAnimatedStyle(
+    () => ({
+      transform: [
+        {
+          scale: withSpring(scale.value, { mass: 1, damping: 500, stiffness: 1000 }),
+        },
+      ],
+    }),
+    [scale]
+  );
+
   return (
     <View style={props.style}>
       <View style={{ opacity: isScrubbing ? 0.8 : 1, backgroundColor: 'black' }}>
@@ -186,6 +215,7 @@ export default function Player(props: Props) {
             props.setVolume(volume);
           }}
         />
+        <Reanimated.View style={[styles.waveform, waveformStyle]} />
       </View>
 
       <View style={[styles.container, styles.buttonsContainer]}>
@@ -432,6 +462,13 @@ const styles = StyleSheet.create({
   playPauseIcon: {
     paddingTop: 11,
     fontSize: 34,
+  },
+  waveform: {
+    width: 40,
+    height: 40,
+    borderRadius: 70,
+    backgroundColor: 'black',
+    marginLeft: 10,
   },
   slider: {
     flex: 1,
