@@ -244,7 +244,7 @@ export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
   const deprecationNote = deprecation ? (
     <Quote key="deprecation-note">
       {deprecation.text.trim().length ? (
-        <ReactMarkdown renderers={renderers}>{deprecation.text}</ReactMarkdown>
+        <ReactMarkdown renderers={mdInlineRenderers}>{deprecation.text}</ReactMarkdown>
       ) : (
         <B>Deprecated</B>
       )}

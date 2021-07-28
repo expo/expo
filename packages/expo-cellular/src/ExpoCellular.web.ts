@@ -38,4 +38,20 @@ export default {
       return CellularGeneration.UNKNOWN;
     }
   },
+
+  async allowsVoipAsync(): Promise<boolean | null> {
+    return null;
+  },
+  async getIsoCountryCodeAsync(): Promise<string | null> {
+    return null;
+  },
+  async getCarrierNameAsync(): Promise<string | null> {
+    return null;
+  },
+  async getMobileCountryCodeAsync(): Promise<string | null> {
+    return null;
+  },
+  async getMobileNetworkCodeAsync(): Promise<string | null> {
+    return null;
+  },
 };
