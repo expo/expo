@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added fill action to allow the color of transparent pixels to be set.
+- Added fill action to allow the color of transparent pixels to be set. ([#13806](https://github.com/expo/expo/pull/13806) by [@mnightingale](https://github.com/mnightingale))
 
 ### 🐛 Bug fixes
 
@@ -15,12 +15,12 @@
 - Fix Android `manipulateAsync` returns incorrect height (original unmanipulated height). ([#13726](https://github.com/expo/expo/pull/13726) by [@mnightingale](https://github.com/mnightingale))
 - Fixed Android to use filename extension consistent with other platforms. ([#13726](https://github.com/expo/expo/pull/13726) by [@mnightingale](https://github.com/mnightingale))
 - Fixed rotation direction to be clockwise on web. ([#13760](https://github.com/expo/expo/pull/13760) by [@mnightingale](https://github.com/mnightingale))
-- Fixed web support for multiple actions.
+- Fixed web support for multiple actions. ([#13806](https://github.com/expo/expo/pull/13806) by [@mnightingale](https://github.com/mnightingale))
 
 ### 💡 Others
 
 - Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))
-- Refactored web to pass canvases to each action avoiding multiple calls to `toDataURL`.
+- Refactored web to pass canvases to each action avoiding multiple calls to `toDataURL`. ([#13806](https://github.com/expo/expo/pull/13806) by [@mnightingale](https://github.com/mnightingale))
 
 ## 9.2.0 — 2021-06-16
 
