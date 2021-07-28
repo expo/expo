@@ -32,7 +32,7 @@ public class SwiftInteropBridge: NSObject {
         if let error = error as? CodedError {
           reject(error.code, error.description, error)
         } else if let error = error {
-          reject("E_UNKNOWN_ERROR", error.localizedDescription, error)
+          reject("ERR_UNKNOWN_ERROR", error.localizedDescription, error)
         } else {
           resolve(value)
         }
