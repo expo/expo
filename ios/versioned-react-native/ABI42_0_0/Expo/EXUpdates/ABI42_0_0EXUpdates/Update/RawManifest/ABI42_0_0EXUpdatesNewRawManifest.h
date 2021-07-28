@@ -22,9 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (NSString *)scopeKey;
 
-/**
- * Incorrect for now until we figure out how to get this in the new manifest format.
- */
 - (nullable NSString *)projectId;
 
 - (NSString *)createdAt;

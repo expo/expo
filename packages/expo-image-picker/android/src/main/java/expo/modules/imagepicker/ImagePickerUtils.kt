@@ -6,7 +6,7 @@ import android.net.Uri
 import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
-import org.unimodules.core.utilities.FileUtilities.generateOutputPath
+import expo.modules.core.utilities.FileUtilities.generateOutputPath
 import java.io.File
 import java.io.IOException
 

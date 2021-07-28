@@ -170,7 +170,7 @@ public class PushNotificationHelper {
         final ReceivedNotificationEvent notificationEvent = new ReceivedNotificationEvent(experienceKey.getScopeKey(), body, notificationId, isMultiple, true);
 
         // Create pending intent
-        Intent intent = new Intent(context, KernelConstants.MAIN_ACTIVITY_CLASS);
+        Intent intent = new Intent(context, KernelConstants.INSTANCE.getMAIN_ACTIVITY_CLASS());
         intent.putExtra(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY, manifestUrl);
         intent.putExtra(KernelConstants.NOTIFICATION_KEY, body); // deprecated
         intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString());
@@ -236,7 +236,7 @@ public class PushNotificationHelper {
               NotificationActionCenter.setCategory(categoryId, notificationBuilder, context, new IntentProvider() {
                 @Override
                 public Intent provide() {
-                  Intent intent = new Intent(context, KernelConstants.MAIN_ACTIVITY_CLASS);
+                  Intent intent = new Intent(context, KernelConstants.INSTANCE.getMAIN_ACTIVITY_CLASS());
                   intent.putExtra(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY, manifestUrl);
                   intent.putExtra(KernelConstants.NOTIFICATION_KEY, body); // deprecated
                   intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString());

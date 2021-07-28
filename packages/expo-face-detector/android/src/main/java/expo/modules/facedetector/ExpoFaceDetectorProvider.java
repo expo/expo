@@ -2,7 +2,7 @@ package expo.modules.facedetector;
 
 import android.content.Context;
 
-import org.unimodules.core.interfaces.InternalModule;
+import expo.modules.core.interfaces.InternalModule;
 
 import java.util.Collections;
 import java.util.List;

@@ -17,7 +17,7 @@ import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber
 import com.facebook.imagepipeline.image.CloseableImage
 import com.facebook.imagepipeline.request.ImageRequest
 import expo.modules.interfaces.imageloader.ImageLoaderInterface
-import org.unimodules.core.interfaces.InternalModule
+import expo.modules.core.interfaces.InternalModule
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Future
 

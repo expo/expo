@@ -3,8 +3,8 @@ package expo.modules.webbrowser;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 
-import org.unimodules.core.errors.CurrentActivityNotFoundException;
-import org.unimodules.core.interfaces.InternalModule;
+import expo.modules.core.errors.CurrentActivityNotFoundException;
+import expo.modules.core.interfaces.InternalModule;
 
 import java.util.ArrayList;
 import java.util.List;

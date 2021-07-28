@@ -2,7 +2,7 @@ package abi39_0_0.org.unimodules.core;
 
 import abi39_0_0.org.unimodules.core.interfaces.InternalModule;
 import abi39_0_0.org.unimodules.core.interfaces.RegistryLifecycleListener;
-import org.unimodules.core.interfaces.SingletonModule;
+import expo.modules.core.interfaces.SingletonModule;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;

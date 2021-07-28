@@ -7,8 +7,8 @@
 #import <mach-o/arch.h>
 #import <sys/utsname.h>
 
-#import <UMCore/UMUtilitiesInterface.h>
-#import <UMCore/UMUtilities.h>
+#import <ExpoModulesCore/EXUtilitiesInterface.h>
+#import <ExpoModulesCore/EXUtilities.h>
 
 #if !(TARGET_OS_TV)
 @import Darwin.sys.sysctl;
@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXDevice
 
-UM_EXPORT_MODULE(ExpoDevice);
+EX_EXPORT_MODULE(ExpoDevice);
 
 - (dispatch_queue_t)methodQueue
 {
@@ -38,10 +38,10 @@ UM_EXPORT_MODULE(ExpoDevice);
            @"isDevice": @([[self class] isDevice]),
            @"brand": @"Apple",
            @"manufacturer": @"Apple",
-           @"modelId": UMNullIfNil([[self class] modelId]),
+           @"modelId": EXNullIfNil([[self class] modelId]),
            @"deviceYearClass": [[self class] deviceYear],
            @"totalMemory": @(NSProcessInfo.processInfo.physicalMemory),
-           @"supportedCpuArchitectures": UMNullIfNil([[self class] cpuArchitectures]),
+           @"supportedCpuArchitectures": EXNullIfNil([[self class] cpuArchitectures]),
            @"osName": currentDevice.systemName,
            @"osVersion": currentDevice.systemVersion,
            @"osBuildId": osBuildId,
@@ -50,24 +50,24 @@ UM_EXPORT_MODULE(ExpoDevice);
            };
 }
 
-UM_EXPORT_METHOD_AS(getDeviceTypeAsync,
-                    getDeviceTypeAsyncWithResolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getDeviceTypeAsync,
+                    getDeviceTypeAsyncWithResolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   resolve(@([[self class] deviceType]));
 }
 
-UM_EXPORT_METHOD_AS(getUptimeAsync,
-                    getUptimeAsyncWithResolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getUptimeAsync,
+                    getUptimeAsyncWithResolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   double uptimeMs = NSProcessInfo.processInfo.systemUptime * 1000;
   resolve(@(uptimeMs));
 }
 
-UM_EXPORT_METHOD_AS(isRootedExperimentalAsync,
-                    isRootedExperimentalAsyncWithResolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(isRootedExperimentalAsync,
+                    isRootedExperimentalAsyncWithResolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   resolve(@([[self class] isRooted]));
 }

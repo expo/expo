@@ -24,7 +24,7 @@ import com.stripe.android.model.Source;
 import com.stripe.android.model.SourceParams;
 import com.stripe.android.model.Token;
 
-import org.unimodules.core.Promise;
+import expo.modules.core.Promise;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;

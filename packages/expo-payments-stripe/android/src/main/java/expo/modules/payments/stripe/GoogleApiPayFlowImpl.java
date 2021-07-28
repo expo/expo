@@ -24,7 +24,7 @@ import com.stripe.android.model.Token;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.unimodules.core.Promise;
+import expo.modules.core.Promise;
 
 import java.util.Arrays;
 import java.util.Collection;

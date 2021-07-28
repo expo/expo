@@ -3,7 +3,7 @@ package expo.modules.camera.events;
 import android.os.Bundle;
 import androidx.core.util.Pools;
 
-import org.unimodules.core.interfaces.services.EventEmitter;
+import expo.modules.core.interfaces.services.EventEmitter;
 import expo.modules.camera.CameraViewManager;
 
 public class CameraMountErrorEvent extends EventEmitter.BaseEvent {

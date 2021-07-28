@@ -17,6 +17,7 @@ const LATEST_VERSION = `v${require('~/package.json').version}`;
 type Props = {
   packageName: string;
   apiName?: string;
+  forceVersion?: string;
 };
 
 const filterDataByKind = (
@@ -38,10 +39,14 @@ const isListener = ({ name }: GeneratedData) => name.endsWith('Listener');
 const renderAPI = (
   packageName: string,
   version: string = 'unversioned',
-  apiName?: string
+  apiName?: string,
+  isTestMode: boolean = false
 ): JSX.Element => {
   try {
-    const data = require(`~/public/static/data/${version}/${packageName}.json`).children;
+    // note(simek): When the path prefix is interpolated Next or Webpack fails to locate the file
+    const { children: data } = isTestMode
+      ? require(`../../public/static/data/${version}/${packageName}.json`)
+      : require(`~/public/static/data/${version}/${packageName}.json`);
 
     const methods = filterDataByKind(
       data,
@@ -86,7 +91,10 @@ const renderAPI = (
     const constants = filterDataByKind(
       data,
       TypeDocKind.Variable,
-      entry => (entry?.flags?.isConst || false) && entry?.type?.name !== 'React.FC'
+      entry =>
+        (entry?.flags?.isConst || false) &&
+        entry.name !== 'default' &&
+        entry?.type?.name !== 'React.FC'
     );
 
     const components = filterDataByKind(
@@ -123,11 +131,12 @@ const renderAPI = (
   }
 };
 
-const APISection: React.FC<Props> = ({ packageName, apiName }) => {
+const APISection: React.FC<Props> = ({ packageName, apiName, forceVersion }) => {
   const { version } = useContext(DocumentationPageContext);
   const resolvedVersion =
-    version === 'unversioned' ? version : version === 'latest' ? LATEST_VERSION : version;
-  return renderAPI(packageName, resolvedVersion, apiName);
+    forceVersion ||
+    (version === 'unversioned' ? version : version === 'latest' ? LATEST_VERSION : version);
+  return renderAPI(packageName, resolvedVersion, apiName, !!forceVersion);
 };
 
 export default APISection;

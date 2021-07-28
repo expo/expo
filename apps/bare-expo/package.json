@@ -100,6 +100,7 @@
     "@react-native-picker/picker": "1.16.1",
     "@react-native-segmented-control/segmented-control": "2.3.0",
     "@unimodules/react-native-adapter": "^6.4.0",
+    "expo-modules-core": "^0.1.1",
     "expo": "~42.0.0-alpha.0",
     "expo-camera": "~11.1.1",
     "expo-dev-client": "~0.4.5",

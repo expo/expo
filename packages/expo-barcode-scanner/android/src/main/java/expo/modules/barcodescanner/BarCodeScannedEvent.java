@@ -2,7 +2,7 @@ package expo.modules.barcodescanner;
 
 import android.os.Bundle;
 
-import org.unimodules.core.interfaces.services.EventEmitter;
+import expo.modules.core.interfaces.services.EventEmitter;
 
 import androidx.core.util.Pools;
 import expo.modules.barcodescanner.utils.BarCodeScannerResultSerializer;

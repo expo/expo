@@ -1776,53 +1776,46 @@ PODS:
   - EXAdsAdMob (10.1.0):
     - ExpoModulesCore
     - Google-Mobile-Ads-SDK (= 7.69.0)
-    - UMCore
   - EXAdsFacebook (10.1.0):
     - ExpoModulesCore
     - FBAudienceNetwork (= 6.5.0)
-    - UMCore
   - EXAmplitude (10.2.0):
     - Amplitude (~> 6.0.0)
-    - UMCore
+    - ExpoModulesCore
   - EXAppAuth (10.2.0):
     - AppAuth (~> 1.2)
     - UMCore
   - EXAppleAuthentication (3.2.0):
-    - UMCore
+    - ExpoModulesCore
   - EXApplication (3.2.0):
     - UMCore
   - EXAV (9.2.0):
     - ExpoModulesCore
-    - UMCore
   - EXBackgroundFetch (9.2.0):
-    - UMCore
+    - ExpoModulesCore
     - UMTaskManagerInterface
   - EXBarCodeScanner (10.2.0):
     - ExpoModulesCore
-    - UMCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
   - EXBattery (5.0.0):
-    - UMCore
+    - ExpoModulesCore
   - EXBlur (9.0.3):
-    - UMCore
+    - ExpoModulesCore
   - EXBranch (4.2.0):
     - Branch (= 0.35.0)
+    - ExpoModulesCore
     - React-Core
-    - UMCore
   - EXBrightness (9.2.0):
     - ExpoModulesCore
-    - UMCore
   - EXCalendar (9.2.0):
     - ExpoModulesCore
-    - UMCore
   - EXCamera (11.1.1):
     - ExpoModulesCore
-    - UMCore
   - EXCellular (3.2.0):
     - ExpoModulesCore
   - EXClipboard (1.1.0):
-    - UMCore
+    - ExpoModulesCore
   - EXConstants (11.0.0):
     - ExpoModulesCore
     - UMCore
@@ -1830,29 +1823,25 @@ PODS:
     - ExpoModulesCore
     - UMCore
   - EXCrypto (9.2.0):
-    - UMCore
+    - ExpoModulesCore
   - EXDevice (3.3.0):
-    - UMCore
+    - ExpoModulesCore
   - EXDocumentPicker (9.2.0):
     - ExpoModulesCore
-    - UMCore
   - EXErrorRecovery (2.2.0):
-    - UMCore
+    - ExpoModulesCore
   - EXFacebook (11.2.0):
     - ExpoModulesCore
     - FacebookSDK/CoreKit (= 9.2.0)
     - FacebookSDK/LoginKit (= 9.2.0)
-    - UMCore
   - EXFaceDetector (10.1.0):
     - ExpoModulesCore
     - GoogleMLKit/FaceDetection (= 2.1.0)
     - MLKitCommon (= 2.1.0)
     - MLKitFaceDetection (= 1.2.0)
     - MLKitVision (= 1.2.0)
-    - UMCore
   - EXFileSystem (11.1.0):
     - ExpoModulesCore
-    - UMCore
   - EXFirebaseAnalytics (4.1.0):
     - EXFirebaseCore
     - Firebase/Core (= 7.7.0)
@@ -1866,7 +1855,6 @@ PODS:
   - EXGL (10.4.0):
     - EXGL_CPP
     - ExpoModulesCore
-    - UMCore
   - EXGL_CPP (10.4.0):
     - React-jsi
   - EXGoogleSignIn (9.2.0):
@@ -1880,7 +1868,6 @@ PODS:
     - UMCore
   - EXImageManipulator (9.2.0):
     - ExpoModulesCore
-    - UMCore
   - EXImagePicker (10.2.0):
     - ExpoModulesCore
     - UMCore
@@ -1898,24 +1885,22 @@ PODS:
     - UMTaskManagerInterface
   - EXMailComposer (10.2.0):
     - ExpoModulesCore
-    - UMCore
   - EXMediaLibrary (12.1.0):
     - ExpoModulesCore
     - React-Core
-    - UMCore
   - EXNetwork (3.2.0):
-    - UMCore
+    - ExpoModulesCore
   - EXNotifications (0.12.0):
     - ExpoModulesCore
     - UMCore
   - EXPermissions (12.1.0):
     - ExpoModulesCore
-    - UMCore
   - ExpoModulesCore (0.1.1):
+    - React-Core
+  - ExpoModulesCore/Tests (0.1.1):
     - React-Core
   - EXPrint (10.2.0):
     - ExpoModulesCore
-    - UMCore
   - EXRandom (11.2.0):
     - React-Core
   - EXScreenCapture (3.2.0):
@@ -1924,20 +1909,19 @@ PODS:
     - React-Core
     - UMCore
   - EXSecureStore (10.2.0):
-    - UMCore
+    - ExpoModulesCore
   - EXSegment (10.2.0):
     - Analytics (= 4.0.4)
-    - UMCore
+    - ExpoModulesCore
   - EXSensors (10.2.0):
     - ExpoModulesCore
     - UMCore
   - EXSharing (9.2.0):
     - ExpoModulesCore
-    - UMCore
   - EXSMS (9.2.0):
-    - UMCore
+    - ExpoModulesCore
   - EXSpeech (9.2.0):
-    - UMCore
+    - ExpoModulesCore
   - EXSplashScreen (0.11.0):
     - React-Core
     - UMCore
@@ -1945,7 +1929,7 @@ PODS:
     - ExpoModulesCore
     - UMCore
   - EXStoreReview (4.1.0):
-    - UMCore
+    - ExpoModulesCore
   - EXStructuredHeaders (1.1.0):
     - UMCore
   - EXStructuredHeaders/Tests (1.1.0):
@@ -1970,9 +1954,8 @@ PODS:
   - EXUpdatesInterface (0.2.2)
   - EXVideoThumbnails (5.2.0):
     - ExpoModulesCore
-    - UMCore
   - EXWebBrowser (9.2.0):
-    - UMCore
+    - ExpoModulesCore
   - FacebookSDK/CoreKit (9.2.0):
     - FBSDKCoreKit (~> 9.2.0)
   - FacebookSDK/LoginKit (9.2.0):
@@ -2787,6 +2770,7 @@ DEPENDENCIES:
   - EXNotifications (from `../packages/expo-notifications/ios`)
   - EXPermissions (from `../packages/expo-permissions/ios`)
   - ExpoModulesCore (from `../packages/expo-modules-core/ios`)
+  - ExpoModulesCore/Tests (from `../packages/expo-modules-core/ios`)
   - EXPrint (from `../packages/expo-print/ios`)
   - EXRandom (from `../packages/expo-random/ios`)
   - EXScreenCapture (from `../packages/expo-screen-capture/ios`)
@@ -4017,73 +4001,73 @@ SPEC CHECKSUMS:
   Branch: 9a37f707974a128c37829033c49018b79c7e7a2d
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: cde416483dac037923206447da6e1454df403714
-  EXAdsAdMob: 07f64532e06b3dda91f8acae6dcc580df6833861
-  EXAdsFacebook: 8301dd6f17c436a731bbdad68c5be90b7dbaad24
-  EXAmplitude: b3ef1ed2ae853bccd08a685d2f0352c603b215fe
+  EXAdsAdMob: aeb474fc44d29866b259f6573c3726311befc664
+  EXAdsFacebook: 32a8b46b1df6cd3eec72a8cfa2213e313acc5887
+  EXAmplitude: 19866218bc855e6ac7a29e5c8ec1b24eab81b40c
   EXAppAuth: b7ecb4ce7634676985f67d2489054ea7727cd5e3
-  EXAppleAuthentication: 5994731faf4a3dd32be4a4b3e9feb930c2fa25c1
+  EXAppleAuthentication: a977ae8d2d0e39b2d838141ff82ba3fe54b329bf
   EXApplication: 9ff2a206009d6e55bca6c20b3f33d07986b51ef3
-  EXAV: 1e88c98d82a22cb21865e83ba8a9a11f75b6b12b
-  EXBackgroundFetch: 5a15dc52d77d5ea4b0896c283679e271447921d4
-  EXBarCodeScanner: 22f8d8ea393de371e80f9529664c07900e1e7639
-  EXBattery: 6adbf9706bbe00d266b17b7846d556db9dea82c2
-  EXBlur: 50d490040f3b14898ed8198d5125dc699189f4d9
-  EXBranch: 9c65961edddfb785cc26d8642f8f50e7e3c2e5ad
-  EXBrightness: b0eb62f204669cd7ae926847794b5bfabd595a4f
-  EXCalendar: 64807f071c86ef3d9813fec49f55c38d5854c235
-  EXCamera: 5a90a462cd0965bbf5e5ddb725115ac5109869e9
+  EXAV: 7f27c872fb45479d66e762a88484f58d52174131
+  EXBackgroundFetch: aeaddb8ff64e13b1c2766f1e4a09bb727a6330aa
+  EXBarCodeScanner: afd5eb520bb133688dc680453465842ffbcef47c
+  EXBattery: 65a5d98f83be408ed29b4e00f4c1a607dd585654
+  EXBlur: eb7277c806220f1bed59547b4b5240e2de462aff
+  EXBranch: ce0f9b7537d7ee1f1eb58803b05d7634c7264160
+  EXBrightness: 4532d07a5c34ddc887e1b85eeaff42eef6882bb1
+  EXCalendar: 69cfd91805f2070e0b2dc0f48d39f08d915a2de1
+  EXCamera: d39ee631cecae1722c12a0b5fe4651a09b262863
   EXCellular: c023099c6d53230d69c03a0ed0b515fbf2ffc5eb
-  EXClipboard: c66f7d22ba754496b0fc6b23a2cb9a3e10fa1581
+  EXClipboard: 247c22246c4843351f2f89cc29b654ecd936eaa8
   EXConstants: 0c200d22d140d3f1834dc51c4ebe0465ddaa82c5
   EXContacts: bc06f42aa1bc7fb5ed0f5b29287f772faa33ad55
-  EXCrypto: 46e28f1eb7ec3e2ae5aab652fe1dc4d46bafb386
-  EXDevice: 6f1eed02c099f5b382a12a40406c58868892aba6
-  EXDocumentPicker: fa00c1852b1780ddecbdeb1bb6e74165d5d44a45
-  EXErrorRecovery: 404d827bc7d42f306c062d58a60b06afc4d082b3
-  EXFacebook: 71cc9f6b6bbdf0bc702d65c287f23cab14cc6430
-  EXFaceDetector: e0908fe9700ed402a9658975a3eac719479b5205
-  EXFileSystem: 7cda0bbbdf6695c51c0e693799c6d54c04b53c94
+  EXCrypto: e64a6d6d3f785801384004a4197b0f95a23a2761
+  EXDevice: 74b193bafc7fc162eb435b8810b72143ab7743af
+  EXDocumentPicker: 52183e4bdffbbd50e61726066f529455227c5daa
+  EXErrorRecovery: 500f15bfbced54161641cf82c45d39103d33462a
+  EXFacebook: 052783a39c092ad47015e2e2af8e6d33e9d92089
+  EXFaceDetector: 47c8c4a10c5b86c5ea9c77ca7b517102833a6d9b
+  EXFileSystem: 9a77e33ba77e8b1ffbbe0625a211e3abee6f69ab
   EXFirebaseAnalytics: ca01838167729b67f838a673e4b3e0637faec118
   EXFirebaseCore: 9b5380fd62fce3c790fa1d6727a8d7cbbef4f0fb
   EXFont: 6e7d5a7a09fbd0ee801de76601b2e620c4d2f575
-  EXGL: 6c3cb47b094c185c6e3fdac50449a504458052c2
+  EXGL: 468113f7d19c139873e8e2b809ddef064ba847c0
   EXGL_CPP: dcca866c4f6af6694a12217fb2db3325acd19b57
   EXGoogleSignIn: d61beec381962b350f6ed60c9b65ae46ca26ef12
   EXHaptics: 718e4b457673bd88384a7fbb6f357c2138c771b0
   EXImageLoader: d3531a3fe530b22925c19977cb53bb43e3821fe6
-  EXImageManipulator: c4a7a24d867f8b2bb15e5d0d64ff8f3c2fb35761
+  EXImageManipulator: a5bec1d69308fa1f091378f6461ae348ec83105d
   EXImagePicker: 958720afb9395ee1168dcda28d9915345c4e7cae
   EXKeepAwake: f4105ef469be7b283f66ce2d7234bb71ac80cd26
   EXLinearGradient: 36053f529a48cc7534d6125b0ddc8dd17e091fdd
   EXLocalAuthentication: e6347880c31bc3b9693933780d3bc84823fe0698
   EXLocalization: 356f4e16a606cec21a77d6250528fde526152b45
   EXLocation: bdf1af6aa8fc4f4dc1fd21aa39760484026f8a5d
-  EXMailComposer: 3eefb2b73dd4587856a8b1f82daaed6156451b36
-  EXMediaLibrary: bdbcfe2435571f9c83d6ced2e28ec193d69bc40d
-  EXNetwork: 6682b2bbbd90e66c4738159abaf8cd206c25e8b8
+  EXMailComposer: d1976c864ee1d74907b15c98ec68ddf5ca2331b1
+  EXMediaLibrary: 3243417362d85fb5881c27bf0c944b502324f7b2
+  EXNetwork: c15bb1026d72d1eb3782710faf373ed35c6eb024
   EXNotifications: 296d9487163c2c08fffec5e79a5f9094bc016d9c
-  EXPermissions: 8eb648bd5c2115d01a39dc7c2ad4c94a5846e4cb
-  ExpoModulesCore: a70ccb0e2d7483de92f7a5b368f524b63809788c
-  EXPrint: 2dbe4d320687e559b46fdb01e330fdf875137094
+  EXPermissions: c7bead8f093700d5fcfb4f41238430a51702c5c8
+  ExpoModulesCore: 82ee658feb15e6804de9f3530c39c62ff900048b
+  EXPrint: 61bbaa43c42c1badfa46de5be015d7d798d33583
   EXRandom: ecb71f5d01991f29bb0277f8a2c35d168f85d637
   EXScreenCapture: c51844407fbac8bbca4415467bc43f2b7764d225
   EXScreenOrientation: e95cb77bbbbfee0d9cfa419fc713e1ab8a06eaba
-  EXSecureStore: 1aa80d49a3a101418bbd2675e2a0d32dceea10c2
-  EXSegment: 6d0d771e91760767a585db3e6746bda0d826f588
+  EXSecureStore: 351de40f612b4d6e44a69dc8f12d55403b45ec5d
+  EXSegment: e82309549eb4a0281c24940100f3dedc774ef75b
   EXSensors: 67423141a4aefbce82f04e61260570615b25b761
-  EXSharing: 0770022e43cdda54968fdd4166c3fcabd243c897
-  EXSMS: 1a1fcc1e825543b8b9256c230faf7663f0dec51d
-  EXSpeech: 0c4eb2bb758bab41f9cbf455cf673d2e344cc186
+  EXSharing: 6a3a3f675fc44d9442f761b1ec8351aba1e813f3
+  EXSMS: 4cd1d71d88a9c980bc215d33afeabb49a5a8d720
+  EXSpeech: 35e7d593b8a369ca7e219957bd61ac74aa7b23bd
   EXSplashScreen: da00ad1d61c395c5c81b252c5987e8f83cba230a
   EXSQLite: faed80cf1f7ec5a116c44aae3ca9abff7315553b
-  EXStoreReview: 40674cc897a6d7fd249969b86d1833f67b99170a
+  EXStoreReview: c7148fdc794a7e32a454eedda801360226fa8b4e
   EXStructuredHeaders: 384ccdf0c09ed0be8fc73d4b2d70e436cd195975
   EXTaskManager: 91fef764a2ec7690aa8070f862098df064facdc4
   EXTrackingTransparency: 212dcc45e24c0e3ec8ea89e4d93c1d123c5a1fb4
   EXUpdates: 555bae578b14cfd76cc9e46cbd0a010dc6edddd2
   EXUpdatesInterface: b68e78b912a03fff7901a5f46ec200c45e3506a5
-  EXVideoThumbnails: f8a7d2330578131361c0a4f6e981a6e58baf1290
-  EXWebBrowser: 76783ba5dcb8699237746ecf41a9643d428a4cc5
+  EXVideoThumbnails: 0a74ef339680e1aa52e30c53bc56990e9d8af0e8
+  EXWebBrowser: b244cd85281a2b8f90a4ce81d674e3dc4f4ccc5e
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6
   FBAudienceNetwork: cfe55330dcc4e9a1df083c34a346ca7f8e32951e
   FBLazyVector: 3ef4a7f62e7db01092f9d517d2ebc0d0677c4a37
@@ -4151,6 +4135,6 @@ SPEC CHECKSUMS:
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 57c679a3db102899bc876a899804e78034217bd9
+PODFILE CHECKSUM: 69ce016b5097862f7c506e7daafaf3ed664304bb
 
 COCOAPODS: 1.10.1

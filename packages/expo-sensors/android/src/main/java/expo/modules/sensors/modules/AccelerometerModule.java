@@ -8,8 +8,8 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 
-import org.unimodules.core.Promise;
-import org.unimodules.core.interfaces.ExpoMethod;
+import expo.modules.core.Promise;
+import expo.modules.core.interfaces.ExpoMethod;
 
 import expo.modules.interfaces.sensors.SensorServiceInterface;
 import expo.modules.interfaces.sensors.services.AccelerometerServiceInterface;

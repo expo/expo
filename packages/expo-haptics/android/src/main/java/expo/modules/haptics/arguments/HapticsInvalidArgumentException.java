@@ -1,6 +1,6 @@
 package expo.modules.haptics.arguments;
 
-import org.unimodules.core.errors.CodedException;
+import expo.modules.core.errors.CodedException;
 
 public class HapticsInvalidArgumentException extends CodedException {
   HapticsInvalidArgumentException(String message) {

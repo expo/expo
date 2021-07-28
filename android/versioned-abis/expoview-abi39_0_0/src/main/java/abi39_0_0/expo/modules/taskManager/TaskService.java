@@ -12,9 +12,9 @@ import android.os.PersistableBundle;
 import android.util.Log;
 
 import org.json.JSONObject;
-import org.unimodules.apploader.AppLoaderProvider;
-import org.unimodules.apploader.HeadlessAppLoader;
-import org.unimodules.core.interfaces.SingletonModule;
+import expo.modules.apploader.AppLoaderProvider;
+import expo.modules.apploader.HeadlessAppLoader;
+import expo.modules.core.interfaces.SingletonModule;
 import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
 import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
 import org.unimodules.interfaces.taskManager.TaskInterface;

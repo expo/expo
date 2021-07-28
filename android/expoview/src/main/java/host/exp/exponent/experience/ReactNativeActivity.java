@@ -25,7 +25,7 @@ import com.facebook.react.modules.core.PermissionListener;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.unimodules.core.interfaces.Package;
+import expo.modules.core.interfaces.Package;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -559,7 +559,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
   }
 
   public void onEventMainThread(KernelConstants.AddedExperienceEventEvent event) {
-    if (mManifestUrl != null && mManifestUrl.equals(event.manifestUrl)) {
+    if (mManifestUrl != null && mManifestUrl.equals(event.getManifestUrl())) {
       pollForEventsToSendToRN();
     }
   }
@@ -582,7 +582,7 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
         Set<KernelConstants.ExperienceEvent> events = KernelProvider.getInstance().consumeExperienceEvents(mManifestUrl);
 
         for (KernelConstants.ExperienceEvent event : events) {
-          existingEmitter.call("emit", event.eventName, event.eventPayload);
+          existingEmitter.call("emit", event.getEventName(), event.getEventPayload());
         }
       }
     } catch (Throwable e) {

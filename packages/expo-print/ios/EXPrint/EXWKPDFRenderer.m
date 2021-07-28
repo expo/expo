@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <EXPrint/EXWKPDFRenderer.h>
-#import <UMCore/UMDefines.h>
+#import <ExpoModulesCore/EXDefines.h>
 #import <EXPrint/EXWKSnapshotPDFRenderer.h>
 
 @interface EXWKPDFRenderer () <WKNavigationDelegate>
@@ -33,9 +33,9 @@
     return;
   }
 
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   [_renderer PDFFromWebView:webView completionHandler:^(NSError * _Nullable error, NSData * _Nullable data, int pagesCount) {
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     self.onRenderingFinished(error, data, pagesCount);
   }];
 }

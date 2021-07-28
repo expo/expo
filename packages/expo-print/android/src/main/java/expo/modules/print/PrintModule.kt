@@ -13,11 +13,11 @@ import android.print.PrintDocumentInfo
 import android.print.PrintManager
 import android.util.Base64
 import android.webkit.URLUtil
-import org.unimodules.core.ExportedModule
-import org.unimodules.core.ModuleRegistry
-import org.unimodules.core.Promise
-import org.unimodules.core.interfaces.ActivityProvider
-import org.unimodules.core.interfaces.ExpoMethod
+import expo.modules.core.ExportedModule
+import expo.modules.core.ModuleRegistry
+import expo.modules.core.Promise
+import expo.modules.core.interfaces.ActivityProvider
+import expo.modules.core.interfaces.ExpoMethod
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileOutputStream

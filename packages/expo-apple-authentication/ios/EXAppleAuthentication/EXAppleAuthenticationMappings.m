@@ -1,7 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <EXAppleAuthentication/EXAppleAuthenticationMappings.h>
-#import <UMCore/UMLogManager.h>
+#import <ExpoModulesCore/EXLogManager.h>
 
 @implementation EXAppleAuthenticationMappings
 
@@ -77,12 +77,12 @@
 + (NSDictionary *)exportFullName:(NSPersonNameComponents *)nameComponents
 {
   return @{
-           @"namePrefix": UMNullIfNil(nameComponents.namePrefix),
-           @"givenName": UMNullIfNil(nameComponents.givenName),
-           @"middleName": UMNullIfNil(nameComponents.middleName),
-           @"familyName": UMNullIfNil(nameComponents.familyName),
-           @"nameSuffix": UMNullIfNil(nameComponents.nameSuffix),
-           @"nickname": UMNullIfNil(nameComponents.nickname)
+           @"namePrefix": EXNullIfNil(nameComponents.namePrefix),
+           @"givenName": EXNullIfNil(nameComponents.givenName),
+           @"middleName": EXNullIfNil(nameComponents.middleName),
+           @"familyName": EXNullIfNil(nameComponents.familyName),
+           @"nameSuffix": EXNullIfNil(nameComponents.nameSuffix),
+           @"nickname": EXNullIfNil(nameComponents.nickname)
            };
 }
 

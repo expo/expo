@@ -1,12 +1,12 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <UMCore/UMExportedModule.h>
-#import <UMCore/UMModuleRegistryConsumer.h>
-#import <UMCore/UMEventEmitter.h>
+#import <ExpoModulesCore/EXExportedModule.h>
+#import <ExpoModulesCore/EXModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXEventEmitter.h>
 #import <ExpoModulesCore/EXFileSystemInterface.h>
 
-@interface EXFileSystem : UMExportedModule <UMEventEmitter, UMModuleRegistryConsumer, EXFileSystemInterface>
+@interface EXFileSystem : EXExportedModule <EXEventEmitter, EXModuleRegistryConsumer, EXFileSystemInterface>
 
 @property (nonatomic, readonly) NSString *documentDirectory;
 @property (nonatomic, readonly) NSString *cachesDirectory;
@@ -26,13 +26,13 @@
 
 + (void)getInfoForFile:(NSURL *)fileUri
            withOptions:(NSDictionary *)optionxs
-              resolver:(UMPromiseResolveBlock)resolve
-              rejecter:(UMPromiseRejectBlock)reject;
+              resolver:(EXPromiseResolveBlock)resolve
+              rejecter:(EXPromiseRejectBlock)reject;
 
 + (void)copyFrom:(NSURL *)from
               to:(NSURL *)to
-        resolver:(UMPromiseResolveBlock)resolve
-        rejecter:(UMPromiseRejectBlock)reject;
+        resolver:(EXPromiseResolveBlock)resolve
+        rejecter:(EXPromiseRejectBlock)reject;
 
 @end
 
