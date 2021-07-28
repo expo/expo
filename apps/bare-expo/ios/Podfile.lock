@@ -202,7 +202,7 @@ PODS:
     - UMCore
   - EXSMS (9.2.3):
     - UMCore
-  - EXSpeech (9.2.0):
+  - EXSpeech (9.2.1):
     - UMCore
   - EXSplashScreen (0.11.2):
     - React-Core
@@ -705,7 +705,7 @@ PODS:
   - SDWebImage/Core (5.11.0)
   - UMAppLoader (2.2.0)
   - UMCore (7.1.1)
-  - UMReactNativeAdapter (6.3.4):
+  - UMReactNativeAdapter (6.3.5):
     - ExpoModulesCore
     - React-Core
     - UMCore
@@ -1263,7 +1263,7 @@ SPEC CHECKSUMS:
   EXSensors: 423ccb735109a7a47c280ec639638447dedf8298
   EXSharing: 567f4b9f38a5266ec2f51973e2efe3b4aaf0bf69
   EXSMS: 9571a38e371461ca0eca0bccf59db7ad92e813ee
-  EXSpeech: 0c4eb2bb758bab41f9cbf455cf673d2e344cc186
+  EXSpeech: 383ebe43433a44990b0fd3534f0abc658b990f42
   EXSplashScreen: c8aaa61439c73e8d1d1118ded584a7b2269211b6
   EXSQLite: cddb3b3f4c6999761c157b88dc8b55c7af2cd86b
   EXStoreReview: 40674cc897a6d7fd249969b86d1833f67b99170a
@@ -1348,7 +1348,7 @@ SPEC CHECKSUMS:
   SDWebImage: 7acbb57630ac7db4a495547fb73916ff3e432f6b
   UMAppLoader: 21af63390e55c82e037fb9752d93114a80ecf16e
   UMCore: 912510bbff567298d738590f17788a8516f9d7f3
-  UMReactNativeAdapter: 98b6a68dd3bde695aaba13131d312dd45c3b6c76
+  UMReactNativeAdapter: d18b9ea7f342d323fd9624970b8f327ebef81747
   UMTaskManagerInterface: 2be431101b73604e64fbfffcf759336f9d8fccbb
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a

@@ -4,13 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Revert [#12734](https://github.com/expo/expo/pull/12734). expo-asset@8.3.3 or above requires expo-updates to specify assets with file extensions. ([#13733](https://github.com/expo/expo/pull/13733) by [@jkhales](https://github.com/jkhales))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.8.3 — 2021-07-28
+
+### 🛠 Breaking changes
+
+- Revert [#12734](https://github.com/expo/expo/pull/12734). expo-asset@8.3.3 or above requires expo-updates to specify assets with file extensions. ([#13733](https://github.com/expo/expo/pull/13733) by [@jkhales](https://github.com/jkhales))
 
 ## 0.8.2 — 2021-07-13
 

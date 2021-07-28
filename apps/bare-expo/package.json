@@ -99,7 +99,7 @@
     "@react-native-community/viewpager": "5.0.11",
     "@react-native-picker/picker": "1.16.1",
     "@react-native-segmented-control/segmented-control": "2.3.0",
-    "@unimodules/react-native-adapter": "^6.3.4",
+    "@unimodules/react-native-adapter": "^6.3.5",
     "expo": "~42.0.3",
     "expo-camera": "~11.2.2",
     "expo-dev-client": "~0.4.5",
@@ -133,7 +133,7 @@
     "detox": "^18.13.0",
     "expo-module-scripts": "^2.0.0",
     "expo-yarn-workspaces": "^1.5.2",
-    "jest-expo": "~42.0.1",
+    "jest-expo": "~42.1.0",
     "jest-expo-puppeteer": "^1.1.0",
     "puppeteer": "^2.1.1"
   }

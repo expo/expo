@@ -42,7 +42,7 @@
     "expo-permissions": "~12.1.1",
     "expo-random": "~11.2.0",
     "expo-secure-store": "~10.2.0",
-    "expo-speech": "~9.2.0",
+    "expo-speech": "~9.2.1",
     "expo-sqlite": "~9.2.1",
     "expo-task-manager": "~9.2.2",
     "expo-web-browser": "~9.2.0",
