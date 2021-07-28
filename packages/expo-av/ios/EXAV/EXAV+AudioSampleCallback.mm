@@ -46,7 +46,7 @@ using namespace facebook;
       
       [sound addSampleBufferCallback:^(AudioBuffer *buffer, double timestamp) {
         auto channelsCount = (size_t) buffer->mNumberChannels;
-        auto framesCount = buffer->mDataByteSize;
+        auto framesCount = buffer->mDataByteSize / sizeof(float);
         float *data = (float *) buffer->mData;
         
         // TODO: Avoid copy by directly using ArrayBuffer?
