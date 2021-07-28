@@ -39,7 +39,7 @@ abstract class BaseSensorModule internal constructor(context: Context?) : Export
   override fun onSensorChanged(sensorEvent: SensorEvent) {
     val eventEmitter = moduleRegistry.getModule(EventEmitter::class.java)
     eventEmitter?.emit(eventName, eventToMap(sensorEvent))
-        ?: Log.e("E_SENSOR_MODULE", "Could not emit $eventName event, no event emitter present.")
+      ?: Log.e("E_SENSOR_MODULE", "Could not emit $eventName event, no event emitter present.")
   }
 
   override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) = Unit

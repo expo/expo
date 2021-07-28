@@ -100,11 +100,11 @@ class DeviceMotionModule(context: Context?) : ExportedModule(context), SensorEve
 
   private fun getSensorKernelServices(): List<SensorServiceInterface> {
     return arrayListOf(
-        mModuleRegistry.getModule(GyroscopeServiceInterface::class.java),
-        mModuleRegistry.getModule(LinearAccelerationSensorServiceInterface::class.java),
-        mModuleRegistry.getModule(AccelerometerServiceInterface::class.java),
-        mModuleRegistry.getModule(RotationVectorSensorServiceInterface::class.java),
-        mModuleRegistry.getModule(GravitySensorServiceInterface::class.java)
+      mModuleRegistry.getModule(GyroscopeServiceInterface::class.java),
+      mModuleRegistry.getModule(LinearAccelerationSensorServiceInterface::class.java),
+      mModuleRegistry.getModule(AccelerometerServiceInterface::class.java),
+      mModuleRegistry.getModule(RotationVectorSensorServiceInterface::class.java),
+      mModuleRegistry.getModule(GravitySensorServiceInterface::class.java)
     )
   }
 
@@ -175,37 +175,49 @@ class DeviceMotionModule(context: Context?) : ExportedModule(context), SensorEve
     val map = Bundle()
     var interval = 0.0
     if (mAccelerationEvent != null) {
-      map.putBundle("acceleration", Bundle().apply {
-        putDouble("x", mAccelerationEvent!!.values[0].toDouble())
-        putDouble("y", mAccelerationEvent!!.values[1].toDouble())
-        putDouble("z", mAccelerationEvent!!.values[2].toDouble())
-      })
+      map.putBundle(
+        "acceleration",
+        Bundle().apply {
+          putDouble("x", mAccelerationEvent!!.values[0].toDouble())
+          putDouble("y", mAccelerationEvent!!.values[1].toDouble())
+          putDouble("z", mAccelerationEvent!!.values[2].toDouble())
+        }
+      )
       interval = mAccelerationEvent!!.timestamp.toDouble()
     }
     if (mAccelerationIncludingGravityEvent != null && mGravityEvent != null) {
-      map.putBundle("accelerationIncludingGravity", Bundle().apply {
-        putDouble("x", (mAccelerationIncludingGravityEvent!!.values[0] - 2 * mGravityEvent!!.values[0]).toDouble())
-        putDouble("y", (mAccelerationIncludingGravityEvent!!.values[1] - 2 * mGravityEvent!!.values[1]).toDouble())
-        putDouble("z", (mAccelerationIncludingGravityEvent!!.values[2] - 2 * mGravityEvent!!.values[2]).toDouble())
-      })
+      map.putBundle(
+        "accelerationIncludingGravity",
+        Bundle().apply {
+          putDouble("x", (mAccelerationIncludingGravityEvent!!.values[0] - 2 * mGravityEvent!!.values[0]).toDouble())
+          putDouble("y", (mAccelerationIncludingGravityEvent!!.values[1] - 2 * mGravityEvent!!.values[1]).toDouble())
+          putDouble("z", (mAccelerationIncludingGravityEvent!!.values[2] - 2 * mGravityEvent!!.values[2]).toDouble())
+        }
+      )
       interval = mAccelerationIncludingGravityEvent!!.timestamp.toDouble()
     }
     if (mRotationRateEvent != null) {
-      map.putBundle("rotationRate", Bundle().apply {
-        putDouble("alpha", Math.toDegrees(mRotationRateEvent!!.values[0].toDouble()))
-        putDouble("beta", Math.toDegrees(mRotationRateEvent!!.values[1].toDouble()))
-        putDouble("gamma", Math.toDegrees(mRotationRateEvent!!.values[2].toDouble()))
-      })
+      map.putBundle(
+        "rotationRate",
+        Bundle().apply {
+          putDouble("alpha", Math.toDegrees(mRotationRateEvent!!.values[0].toDouble()))
+          putDouble("beta", Math.toDegrees(mRotationRateEvent!!.values[1].toDouble()))
+          putDouble("gamma", Math.toDegrees(mRotationRateEvent!!.values[2].toDouble()))
+        }
+      )
       interval = mRotationRateEvent!!.timestamp.toDouble()
     }
     if (mRotationEvent != null) {
       SensorManager.getRotationMatrixFromVector(mRotationMatrix, mRotationEvent!!.values)
       SensorManager.getOrientation(mRotationMatrix, mRotationResult)
-      map.putBundle("rotation", Bundle().apply {
-        putDouble("alpha", (-mRotationResult[0]).toDouble())
-        putDouble("beta", (-mRotationResult[1]).toDouble())
-        putDouble("gamma", mRotationResult[2].toDouble())
-      })
+      map.putBundle(
+        "rotation",
+        Bundle().apply {
+          putDouble("alpha", (-mRotationResult[0]).toDouble())
+          putDouble("beta", (-mRotationResult[1]).toDouble())
+          putDouble("gamma", mRotationResult[2].toDouble())
+        }
+      )
       interval = mRotationEvent!!.timestamp.toDouble()
     }
     map.putDouble("interval", interval)
