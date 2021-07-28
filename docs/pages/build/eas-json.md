@@ -88,7 +88,7 @@ Generally, the schema of this file looks like this:
       "android": {
         "image": "default",
         "env": {
-            "PLATFORM": "android"
+          "PLATFORM": "android"
         }
       },
       "ios": {
