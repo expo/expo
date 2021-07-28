@@ -9,13 +9,6 @@ typedef struct AVAudioTapProcessorContext {
   void *self;
 } AVAudioTapProcessorContext;
 
-// MTAudioProcessingTap callbacks.
-static void tap_InitCallback(MTAudioProcessingTapRef tap, void *clientInfo, void **tapStorageOut);
-static void tap_FinalizeCallback(MTAudioProcessingTapRef tap);
-static void tap_PrepareCallback(MTAudioProcessingTapRef tap, CMItemCount maxFrames, const AudioStreamBasicDescription *processingFormat);
-static void tap_UnprepareCallback(MTAudioProcessingTapRef tap);
-static void tap_ProcessCallback(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioProcessingTapFlags flags, AudioBufferList *bufferListInOut, CMItemCount *numberFramesOut, MTAudioProcessingTapFlags *flagsOut);
-
 NSString *const EXAVPlayerDataStatusIsLoadedKeyPath = @"isLoaded";
 NSString *const EXAVPlayerDataStatusURIKeyPath = @"uri";
 NSString *const EXAVPlayerDataStatusHeadersKeyPath = @"headers";
@@ -220,11 +213,11 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
       
       callbacks.version = kMTAudioProcessingTapCallbacksVersion_0;
       callbacks.clientInfo = (__bridge void *)self,
-      callbacks.init = tap_InitCallback;
-      callbacks.finalize = tap_FinalizeCallback;
-      callbacks.prepare = tap_PrepareCallback;
-      callbacks.unprepare = tap_UnprepareCallback;
-      callbacks.process = tap_ProcessCallback;
+      callbacks.init = tapInit;
+      callbacks.finalize = tapFinalize;
+      callbacks.prepare = tapPrepare;
+      callbacks.unprepare = tapUnprepare;
+      callbacks.process = tapProcess;
       
       MTAudioProcessingTapRef audioProcessingTap;
       OSStatus status = MTAudioProcessingTapCreate(kCFAllocatorDefault, &callbacks, kMTAudioProcessingTapCreationFlag_PreEffects, &audioProcessingTap);
@@ -242,52 +235,81 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   }
 }
 
-/*
-#pragma mark - Audio Sample Buffer Callback
+#pragma mark - Audio Sample Buffer Callbacks
 
-void init(MTAudioProcessingTapRef tap, void *clientInfo, void **tapStorageOut)
+void tapInit(MTAudioProcessingTapRef tap, void *clientInfo, void **tapStorageOut)
 {
-  NSLog(@"Initialising the Audio Tap Processor");
-  *tapStorageOut = clientInfo;
+  AVAudioTapProcessorContext *context = calloc(1, sizeof(AVAudioTapProcessorContext));
+  
+  // Initialize MTAudioProcessingTap context.
+  context->isNonInterleaved = false;
+  context->self = clientInfo;
+  
+  *tapStorageOut = context;
 }
 
-void finalize(MTAudioProcessingTapRef tap)
+void tapFinalize(MTAudioProcessingTapRef tap)
 {
-  NSLog(@"Finalizing the Audio Tap Processor");
+  AVAudioTapProcessorContext *context = (AVAudioTapProcessorContext *)MTAudioProcessingTapGetStorage(tap);
+  
+  // Clear MTAudioProcessingTap context.
+  context->self = NULL;
+  
+  free(context);
 }
 
-void prepare(MTAudioProcessingTapRef tap, CMItemCount maxFrames, const AudioStreamBasicDescription *processingFormat)
+void tapPrepare(MTAudioProcessingTapRef tap, CMItemCount maxFrames, const AudioStreamBasicDescription *processingFormat)
 {
-  NSLog(@"Preparing the Audio Tap Processor");
+  AVAudioTapProcessorContext *context = (AVAudioTapProcessorContext *)MTAudioProcessingTapGetStorage(tap);
+  
+  context->supportedTapProcessingFormat = true;
+  
+  if (processingFormat->mFormatID != kAudioFormatLinearPCM)
+  {
+    NSLog(@"Audio Format ID for audioProcessingTap: LinearPCM");
+    // context->supportedTapProcessingFormat = false;
+  }
+  if (!(processingFormat->mFormatFlags & kAudioFormatFlagIsFloat))
+  {
+    NSLog(@"Audio Format ID for audioProcessingTap: Float only");
+    // context->supportedTapProcessingFormat = false;
+  }
+  
+  if (processingFormat->mFormatFlags & kAudioFormatFlagIsNonInterleaved)
+  {
+    context->isNonInterleaved = true;
+  }
 }
 
-void unprepare(MTAudioProcessingTapRef tap)
+void tapUnprepare(MTAudioProcessingTapRef tap)
 {
-  NSLog(@"Unpreparing the Audio Tap Processor");
+  AVAudioTapProcessorContext *context = (AVAudioTapProcessorContext *)MTAudioProcessingTapGetStorage(tap);
+  context->self = NULL;
 }
 
-#define LAKE_LEFT_CHANNEL (0)
-#define LAKE_RIGHT_CHANNEL (1)
-
-void process(MTAudioProcessingTapRef tap, CMItemCount numberFrames,
-             MTAudioProcessingTapFlags flags, AudioBufferList *bufferListInOut,
-             CMItemCount *numberFramesOut, MTAudioProcessingTapFlags *flagsOut)
+void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioProcessingTapFlags flags, AudioBufferList *bufferListInOut, CMItemCount *numberFramesOut, MTAudioProcessingTapFlags *flagsOut)
 {
-  OSStatus err = MTAudioProcessingTapGetSourceAudio(tap, numberFrames, bufferListInOut,
-                                                    flagsOut, NULL, numberFramesOut);
-  if (err) NSLog(@"Error from GetSourceAudio: %ld", err);
+  AVAudioTapProcessorContext *context = (AVAudioTapProcessorContext *)MTAudioProcessingTapGetStorage(tap);
   
-  //LAKEViewController *self = (__bridge LAKEViewController *) MTAudioProcessingTapGetStorage(tap);
+  if (!context->self)
+  {
+    NSLog(@"Audio Processing Tap has been destroyed!");
+    return;
+  }
   
-  float scalar = 0.0f;
+  EXAVPlayerData *self = ((__bridge EXAVPlayerData *)context->self);
   
-  vDSP_vsmul(bufferListInOut->mBuffers[LAKE_RIGHT_CHANNEL].mData, 1, &scalar, bufferListInOut->mBuffers[LAKE_RIGHT_CHANNEL].mData, 1, bufferListInOut->mBuffers[LAKE_RIGHT_CHANNEL].mDataByteSize / sizeof(float));
-  vDSP_vsmul(bufferListInOut->mBuffers[LAKE_LEFT_CHANNEL].mData, 1, &scalar, bufferListInOut->mBuffers[LAKE_LEFT_CHANNEL].mData, 1, bufferListInOut->mBuffers[LAKE_LEFT_CHANNEL].mDataByteSize / sizeof(float));
+  // Get actual audio buffers from MTAudioProcessingTap
+  OSStatus status = MTAudioProcessingTapGetSourceAudio(tap, numberFrames, bufferListInOut, flagsOut, NULL, numberFramesOut);
+  if (noErr != status)
+  {
+    NSLog(@"MTAudioProcessingTapGetSourceAudio: %d", (int)status);
+    return;
+  }
   
-  
-  NSLog(@"Processing: %f", scalar);
+  double seconds = [self getCurrentPositionPrecise];
+  self.audioSampleBufferCallback(&bufferListInOut->mBuffers[0], seconds);
 }
- */
 
 - (void)addSampleBufferCallback:(SampleBufferCallback)callback
 {
@@ -1041,79 +1063,3 @@ void process(MTAudioProcessingTapRef tap, CMItemCount numberFrames,
 }
 
 @end
-
-#pragma mark - MTAudioProcessingTap Callbacks
-
-static void tap_InitCallback(MTAudioProcessingTapRef tap, void *clientInfo, void **tapStorageOut)
-{
-  AVAudioTapProcessorContext *context = calloc(1, sizeof(AVAudioTapProcessorContext));
-  
-  // Initialize MTAudioProcessingTap context.
-  context->isNonInterleaved = false;
-  context->self = clientInfo;
-  
-  *tapStorageOut = context;
-}
-
-static void tap_FinalizeCallback(MTAudioProcessingTapRef tap)
-{
-  AVAudioTapProcessorContext *context = (AVAudioTapProcessorContext *)MTAudioProcessingTapGetStorage(tap);
-  
-  // Clear MTAudioProcessingTap context.
-  context->self = NULL;
-  
-  free(context);
-}
-
-static void tap_PrepareCallback(MTAudioProcessingTapRef tap, CMItemCount maxFrames, const AudioStreamBasicDescription *processingFormat)
-{
-  AVAudioTapProcessorContext *context = (AVAudioTapProcessorContext *)MTAudioProcessingTapGetStorage(tap);
-    
-  context->supportedTapProcessingFormat = true;
-  
-  if (processingFormat->mFormatID != kAudioFormatLinearPCM)
-  {
-    NSLog(@"Audio Format ID for audioProcessingTap: LinearPCM");
-    // context->supportedTapProcessingFormat = false;
-  }
-  if (!(processingFormat->mFormatFlags & kAudioFormatFlagIsFloat))
-  {
-    NSLog(@"Audio Format ID for audioProcessingTap: Float only");
-    // context->supportedTapProcessingFormat = false;
-  }
-  
-  if (processingFormat->mFormatFlags & kAudioFormatFlagIsNonInterleaved)
-  {
-    context->isNonInterleaved = true;
-  }
-}
-
-static void tap_UnprepareCallback(MTAudioProcessingTapRef tap)
-{
-  AVAudioTapProcessorContext *context = (AVAudioTapProcessorContext *)MTAudioProcessingTapGetStorage(tap);
-  context->self = NULL;
-}
-
-static void tap_ProcessCallback(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioProcessingTapFlags flags, AudioBufferList *bufferListInOut, CMItemCount *numberFramesOut, MTAudioProcessingTapFlags *flagsOut)
-{
-  AVAudioTapProcessorContext *context = (AVAudioTapProcessorContext *)MTAudioProcessingTapGetStorage(tap);
-  
-  if (!context->self)
-  {
-    NSLog(@"Audio Processing Tap has been destroyed!");
-    return;
-  }
-  
-  EXAVPlayerData *self = ((__bridge EXAVPlayerData *)context->self);
-  
-  // Get actual audio buffers from MTAudioProcessingTap
-  OSStatus status = MTAudioProcessingTapGetSourceAudio(tap, numberFrames, bufferListInOut, flagsOut, NULL, numberFramesOut);
-  if (noErr != status)
-  {
-    NSLog(@"MTAudioProcessingTapGetSourceAudio: %d", (int)status);
-    return;
-  }
-  
-  double seconds = [self getCurrentPositionPrecise];
-  self.audioSampleBufferCallback(&bufferListInOut->mBuffers[0], seconds);
-}
