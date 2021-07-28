@@ -34,9 +34,9 @@ exports.Stack = void 0;
 var styleguide_native_1 = require("@expo/styleguide-native");
 var React = __importStar(require("react"));
 var react_native_1 = require("react-native");
+var react_native_async_stack_1 = require("react-native-async-stack");
+Object.defineProperty(exports, "Stack", { enumerable: true, get: function () { return react_native_async_stack_1.Stack; } });
 var ExpoStoryLoader_1 = require("./ExpoStoryLoader");
-var async_stack_1 = require("./async-stack");
-Object.defineProperty(exports, "Stack", { enumerable: true, get: function () { return async_stack_1.Stack; } });
 // this is resolved via customization (extraNodeModules) in metro-config / webpack-config
 var stories = require('generated-expo-stories');
 // aggregate stories
@@ -51,7 +51,7 @@ Object.keys(stories).forEach(function (key) {
     storyData[parentConfig.id].stories.push(storyConfig);
 });
 function App() {
-    return (React.createElement(async_stack_1.StackContainer, null,
+    return (React.createElement(react_native_async_stack_1.StackContainer, null,
         React.createElement(ExpoStoryApp, null)));
 }
 exports.default = App;
@@ -66,7 +66,7 @@ function ExpoStoryApp() {
             React.createElement(react_native_1.Text, { style: styles.storyTitle }, "Expo Story Loader"),
             React.createElement(react_native_1.ScrollView, { style: styles.storyButtonsContainer }, parentStories.map(function (story) {
                 return (React.createElement(StoryButton, { key: story.id, title: story.title, onPress: function () {
-                        async_stack_1.Stack.push({
+                        react_native_async_stack_1.Stack.push({
                             element: React.createElement(StoriesScreen, { parentStoryId: story.id }),
                             headerProps: { title: story.title },
                         });
@@ -86,14 +86,14 @@ function StoriesScreen(_a) {
             return (React.createElement(react_native_1.View, { key: story.id },
                 story.stories.map(function (s) {
                     return (React.createElement(StoryButton, { key: s.id, title: s.name, onPress: function () {
-                            async_stack_1.Stack.push({
+                            react_native_async_stack_1.Stack.push({
                                 element: React.createElement(ExpoStoryLoader_1.ExpoStoryLoader, { selectedStoryId: s.id }),
                                 headerProps: { title: s.name },
                             });
                         } }));
                 }),
                 story.stories.length > 1 && (React.createElement(StoryButton, { title: "See All", color: styleguide_native_1.lightTheme.button.tertiary.background, onPress: function () {
-                        async_stack_1.Stack.push({
+                        react_native_async_stack_1.Stack.push({
                             element: React.createElement(ExpoStoryLoader_1.ExpoStoryLoader, { selectedStoryId: story.id, displayStoryTitle: true }),
                             headerProps: { title: story.title + " Stories" },
                         });

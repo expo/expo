@@ -47,6 +47,7 @@
     "esbuild": "^0.12.15",
     "express": "^4.17.1",
     "glob": "^7.1.7",
+    "react-native-async-stack": "^1.0.2",
     "react-native-svg": "^12.1.1",
     "sane": "^5.0.1",
     "ws": "^7.5.1"

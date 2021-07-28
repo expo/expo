@@ -17582,6 +17582,11 @@ react-native-appearance@~0.3.3, react-native-appearance@~0.3.4:
     invariant "^2.2.4"
     use-subscription "^1.0.0"
 
+react-native-async-stack@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/react-native-async-stack/-/react-native-async-stack-1.0.2.tgz#b967a96869570ca06af3a6acffcb4bc7dca9fd60"
+  integrity sha512-v9I/D3y2Cc7pwP3fyfPT8JvgG4WeGp8l4zusV8xaaqhZQMhVmUZeoXKVvf2LsWrVxX48EGtyjIOfZXq7Z0ecEw==
+
 react-native-branch@5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/react-native-branch/-/react-native-branch-5.0.0.tgz#9d2102abb3c9a577ce4327e434151ece2b4c7c78"

@@ -1,9 +1,9 @@
 import { lightTheme, shadows, spacing } from '@expo/styleguide-native';
 import * as React from 'react';
 import { View, SafeAreaView, Pressable, Text, StyleSheet, ScrollView } from 'react-native';
+import { Stack, StackContainer } from 'react-native-async-stack';
 
 import { ExpoStoryLoader } from './ExpoStoryLoader';
-import { Stack, StackContainer } from './async-stack';
 
 // this is resolved via customization (extraNodeModules) in metro-config / webpack-config
 const stories = require('generated-expo-stories');
