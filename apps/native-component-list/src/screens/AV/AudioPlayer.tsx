@@ -4,6 +4,7 @@ import { Audio, AVPlaybackStatus } from 'expo-av';
 import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 
+import { AudioSample } from '../../../../../packages/expo-av/build/Audio';
 import Player from './Player';
 
 type PlaybackSource =
@@ -50,6 +51,7 @@ export default class AudioPlayer extends React.Component<Props, State> {
 
   _sound?: Audio.Sound;
   private prevStatus?: AVPlaybackStatus;
+  private audioSampleBufferCallback: ((sample: AudioSample) => void) | null = null;
 
   componentDidMount() {
     this._loadSoundAsync(this.props.source);
@@ -75,6 +77,9 @@ export default class AudioPlayer extends React.Component<Props, State> {
       const status = await soundObject.getStatusAsync();
       this._updateStateToStatus(status);
       this._sound = soundObject;
+      if (this.audioSampleBufferCallback != null) {
+        this._sound.onAudioSampleReceived = this.audioSampleBufferCallback;
+      }
     } catch (error) {
       this.setState({ errorMessage: error.message });
     }
@@ -100,6 +105,13 @@ export default class AudioPlayer extends React.Component<Props, State> {
 
   _setVolumeAsync = async (volume: number) => this._sound!.setVolumeAsync(volume);
 
+  _setAudioSampleBufferCallback = (callback: ((sample: AudioSample) => void) | null) => {
+    this.audioSampleBufferCallback = callback;
+    if (this._sound != null) {
+      this._sound.onAudioSampleReceived = callback;
+    }
+  };
+
   _setRateAsync = async (
     rate: number,
     shouldCorrectPitch: boolean,
@@ -121,6 +133,7 @@ export default class AudioPlayer extends React.Component<Props, State> {
         setRateAsync={this._setRateAsync}
         setIsMutedAsync={this._setIsMutedAsync}
         setVolume={this._setVolumeAsync}
+        setAudioSampleBufferCallback={this._setAudioSampleBufferCallback}
       />
     );
   }
