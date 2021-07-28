@@ -5,6 +5,11 @@ apply plugin: 'maven'
 group = 'host.exp.exponent'
 version = '9.2.0'
 
+def NODE_MODULES = "${rootDir}/.."
+if (new File("${NODE_MODULES}/node_modules").exists()) {
+  NODE_MODULES = "${NODE_MODULES}/node_modules"
+}
+
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
   ext.safeExtGet = { prop, fallback ->
@@ -68,7 +73,7 @@ android {
         cppFlags "-fexceptions", "-frtti", "-std=c++1y"
         abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
         arguments '-DANDROID_STL=c++_shared',
-                "-DNODE_MODULES_DIR=${rootDir}/../node_modules"
+                "-DNODE_MODULES_DIR=${NODE_MODULES}"
       }
     }
   }
@@ -113,7 +118,7 @@ dependencies {
   extractHeaders 'com.facebook.fbjni:fbjni:0.2.2:headers'
   extractJNI 'com.facebook.fbjni:fbjni:0.2.2'
 
-  def rnAAR = fileTree("${rootDir}/../node_modules/react-native/android").matching({ it.include "**/**/*.aar" }).singleFile
+  def rnAAR = fileTree("${NODE_MODULES}/react-native/android").matching({ it.include "**/**/*.aar" }).singleFile
   extractJNI(files(rnAAR))
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
