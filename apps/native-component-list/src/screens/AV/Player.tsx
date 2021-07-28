@@ -1,6 +1,7 @@
 import Ionicons from '@expo/vector-icons/build/Ionicons';
 import Slider from '@react-native-community/slider';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
+import { Audio } from 'expo-av';
 import React, { useEffect } from 'react';
 import {
   GestureResponderEvent,
@@ -21,7 +22,6 @@ import Reanimated, {
   withSpring,
 } from 'react-native-reanimated';
 
-import { AudioSample, Sound } from '../../../../../packages/expo-av/build/Audio';
 import Colors from '../../constants/Colors';
 
 interface Props {
@@ -48,7 +48,7 @@ interface Props {
   setPositionAsync: (position: number) => Promise<any>;
   setIsLoopingAsync: (isLooping: boolean) => void;
   setVolume: (volume: number) => void;
-  setAudioSampleBufferCallback?: (callback: ((sample: AudioSample) => void) | null) => void;
+  setAudioSampleBufferCallback?: (callback: ((sample: Audio.AudioSample) => void) | null) => void;
 
   // Status
   isLoaded: boolean;
@@ -162,8 +162,8 @@ export default function Player(props: Props) {
   useEffect(() => {
     if (!props.setAudioSampleBufferCallback) return;
 
-    props.setAudioSampleBufferCallback((sample: AudioSample) => {
-      const loudness = Sound.getAverageLoudness(sample);
+    props.setAudioSampleBufferCallback((sample: Audio.AudioSample) => {
+      const loudness = Audio.Sound.getAverageLoudness(sample);
       // 0.90 to 0.96 is the most interesting range, 0.96 to 0.99 is mostly bass in this song so emphasize it even more.
       scale.value = interpolate(loudness, [0.9, 0.96, 0.99], [0.2, 1, 1.5], Extrapolate.CLAMP);
     });

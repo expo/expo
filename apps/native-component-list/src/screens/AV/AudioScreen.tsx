@@ -16,8 +16,6 @@ export default class AudioScreen extends React.Component {
   _setAudioActive = (active: boolean) => () => Audio.setIsEnabledAsync(active);
 
   render() {
-    console.log('Rendering AudioScreen');
-
     return (
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <HeadingText>Audio state</HeadingText>
