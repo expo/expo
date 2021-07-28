@@ -104,6 +104,7 @@ Manipulate the image provided via `uri`. Available modifications are rotating, f
   - **rotate (_number_)** -- Degrees to rotate the image. Rotation is clockwise when the value is positive and counter-clockwise when negative.
   - **flip (_string_)** -- `ImageManipulator.FlipType.{Vertical, Horizontal}`. Only one flip per transformation is available. If you want to flip according to both axes then provide two separate transformations.
   - **crop (_object_)** -- An object of shape `{ originX, originY, width, height }`. Fields specify top-left corner and dimensions of a crop rectangle.
+  - **fill (_string_)** -- Color to fill transparent pixels. Accepts `#RRGGBB` hex format.
 
 - **saveOptions (_object_)** -- A map defining how modified image should be saved:
   - **compress (_number_)** -- A value in range `0.0` - `1.0` specifying compression level of the result image. `1` means no compression (highest quality) and `0` the highest compression (lowest quality).
