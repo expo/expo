@@ -71,7 +71,7 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
         Bundle().apply {
           putBoolean("success", false)
           putString("error", convertErrorCode(errMsgId))
-          putString("message", errString.toString())
+          putString("warning", errString.toString())
         }
       )
       promise = null
@@ -154,7 +154,7 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
         Bundle().apply {
           putBoolean("success", false)
           putString("error", "not_enrolled")
-          putString("message", "KeyguardManager#isDeviceSecure() returned false")
+          putString("warning", "KeyguardManager#isDeviceSecure() returned false")
         }
       )
       return
@@ -165,7 +165,7 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
         Bundle().apply {
           putBoolean("success", false)
           putString("error", "not_available")
-          putString("message", "getCurrentActivity() returned null")
+          putString("warning", "getCurrentActivity() returned null")
         }
       )
       return
