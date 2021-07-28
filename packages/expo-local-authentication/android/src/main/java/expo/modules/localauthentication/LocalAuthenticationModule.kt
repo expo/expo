@@ -67,11 +67,13 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
     override fun onAuthenticationError(errMsgId: Int, errString: CharSequence) {
       isAuthenticating = false
       biometricPrompt = null
-      promise?.resolve(Bundle().apply {
-        putBoolean("success", false)
-        putString("error", convertErrorCode(errMsgId))
-        putString("warning", errString.toString())
-      })
+      promise?.resolve(
+        Bundle().apply {
+          putBoolean("success", false)
+          putString("error", convertErrorCode(errMsgId))
+          putString("warning", errString.toString())
+        }
+      )
       promise = null
     }
   }
@@ -148,20 +150,24 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
       return
     }
     if (!keyguardManager.isDeviceSecure) {
-      promise.resolve(Bundle().apply {
-        putBoolean("success", false)
-        putString("error", "not_enrolled")
-        putString("warning", "KeyguardManager#isDeviceSecure() returned false")
-      })
+      promise.resolve(
+        Bundle().apply {
+          putBoolean("success", false)
+          putString("error", "not_enrolled")
+          putString("warning", "KeyguardManager#isDeviceSecure() returned false")
+        }
+      )
       return
     }
     val fragmentActivity = currentActivity as FragmentActivity?
     if (fragmentActivity == null) {
-      promise.resolve(Bundle().apply {
-        putBoolean("success", false)
-        putString("error", "not_available")
-        putString("warning", "getCurrentActivity() returned null")
-      })
+      promise.resolve(
+        Bundle().apply {
+          putBoolean("success", false)
+          putString("error", "not_available")
+          putString("warning", "getCurrentActivity() returned null")
+        }
+      )
       return
     }
 
