@@ -1,6 +1,6 @@
 package expo.modules.documentpicker
 
-import org.unimodules.core.Promise
+import expo.modules.core.Promise
 
 data class DocumentPickerOptions(val type: String, val copyToCacheDirectory: Boolean, val types: Array<String>?) {
   companion object {
