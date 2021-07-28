@@ -58,6 +58,5 @@ target_link_libraries(
         ${LOG_LIB}
         ${FBJNI_LIBRARY}
         ${REACT_NATIVE_JNI_LIB}
-        # ${REACT_NATIVE_UTILS_LIB}
         android
 )

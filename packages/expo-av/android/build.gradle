@@ -118,8 +118,17 @@ dependencies {
   extractHeaders 'com.facebook.fbjni:fbjni:0.2.2:headers'
   extractJNI 'com.facebook.fbjni:fbjni:0.2.2'
 
-  def rnAAR = fileTree("${NODE_MODULES}/react-native/android").matching({ it.include "**/*.aar" }).singleFile
-  extractJNI(files(rnAAR))
+  def rnAARs = fileTree("${NODE_MODULES}/react-native/android").matching({ it.include "**/*.aar" })
+  if (rnAARs.any()) {
+    // node_modules/react-native has a .aar, extract headers
+    def rnAAR = rnAARs.singleFile
+    extractJNI(files(rnAAR))
+  } else {
+    // there is no prebuilt react-native.aar, we must be building from source. directly include the headers
+    def rnAndroid = fileTree("${NODE_MODULES}/react-native/ReactAndroid")
+    // TODO: Build from ReactAndroid/ and React/ headers source?
+    logger.error("node_modules/react-native/android does not contain a *.aar file! Cannot build expo-av. TODO: Build from ReactAndroid/ source?")
+  }
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
 
