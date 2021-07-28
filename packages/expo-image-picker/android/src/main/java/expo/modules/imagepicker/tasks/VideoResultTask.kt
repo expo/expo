@@ -19,15 +19,15 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 class VideoResultTask(
-    private val promise: Promise,
-    private val uri: Uri,
-    private val contentResolver: ContentResolver,
-    private val fileProvider: FileProvider,
-    private val mediaMetadataRetriever: MediaMetadataRetriever,
-    private val coroutineScope: CoroutineScope
+  private val promise: Promise,
+  private val uri: Uri,
+  private val contentResolver: ContentResolver,
+  private val fileProvider: FileProvider,
+  private val mediaMetadataRetriever: MediaMetadataRetriever,
+  private val coroutineScope: CoroutineScope
 ) {
   private fun extractMediaMetadata(key: Int): Int =
-      mediaMetadataRetriever.extractMetadata(key)!!.toInt()
+    mediaMetadataRetriever.extractMetadata(key)!!.toInt()
 
   /**
    * We need to make coroutine wait till the video is saved, while the underlying

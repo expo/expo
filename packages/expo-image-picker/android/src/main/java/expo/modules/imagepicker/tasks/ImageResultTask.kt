@@ -23,13 +23,13 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 open class ImageResultTask(
-    private val promise: Promise,
-    private val uri: Uri,
-    private val contentResolver: ContentResolver,
-    private val fileProvider: FileProvider,
-    private val withExifData: Boolean,
-    private val imageExporter: ImageExporter,
-    private val coroutineScope: CoroutineScope
+  private val promise: Promise,
+  private val uri: Uri,
+  private val contentResolver: ContentResolver,
+  private val fileProvider: FileProvider,
+  private val withExifData: Boolean,
+  private val imageExporter: ImageExporter,
+  private val coroutineScope: CoroutineScope
 ) {
   /**
    * We need to make coroutine wait till the file is generated, while the underlying
