@@ -19,26 +19,14 @@ If you only want to use EAS Build for a single platform, that's fine. If you cha
 
 The command will create an `eas.json` file in the root directory with the default configuration. It looks something like this:
 
+
 ```json
 {
-  "builds": {
-    "android": {
-      "release": {
-        "buildType": "app-bundle"
-      },
-      "development": {
-        "buildType": "development-client",
-        "distribution": "internal",
-      }
-    },
-    "ios": {
-      "release": {
-        "buildType": "release"
-      },
-      "development": {
-        "buildType": "development-client",
-        "distribution": "internal"
-      }
+  "build": {
+    "release": {},
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
     }
   }
 }
