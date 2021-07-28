@@ -39,7 +39,7 @@ using namespace facebook;
       throw jsi::JSError(runtime, message.UTF8String);
     }
     
-    if (argsCount > 1 && args[1].isObject() && !args[1].isUndefined()) {
+    if (argsCount > 1 && args[1].isObject() && !args[1].isUndefined() && !args[1].isNull()) {
       // second parameter received, it's the callback function.
       auto callback = args[1].asObject(runtime).asFunction(runtime);
       auto callbackShared = std::make_shared<jsi::Function>(std::move(callback));
