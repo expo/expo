@@ -9,7 +9,6 @@ import expo.modules.core.Promise
 import expo.modules.imagepicker.ImagePickerConstants
 import expo.modules.imagepicker.ModuleDestroyedException
 import expo.modules.imagepicker.fileproviders.FileProvider
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -20,29 +19,15 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 class VideoResultTask(
-  private val promise: Promise,
-  private val uri: Uri,
-  private val contentResolver: ContentResolver,
-  private val fileProvider: FileProvider,
-  private val mediaMetadataRetriever: MediaMetadataRetriever,
-  private val coroutineScope: CoroutineScope
+    private val promise: Promise,
+    private val uri: Uri,
+    private val contentResolver: ContentResolver,
+    private val fileProvider: FileProvider,
+    private val mediaMetadataRetriever: MediaMetadataRetriever,
+    private val coroutineScope: CoroutineScope
 ) {
-  private val handler = CoroutineExceptionHandler { _, exception ->
-    when (exception) {
-      is NullPointerException ->
-        promise.reject(ImagePickerConstants.ERR_CAN_NOT_EXTRACT_METADATA, ImagePickerConstants.CAN_NOT_EXTRACT_METADATA_MESSAGE, exception)
-      is IllegalArgumentException ->
-        promise.reject(ImagePickerConstants.ERR_CAN_NOT_EXTRACT_METADATA, ImagePickerConstants.CAN_NOT_EXTRACT_METADATA_MESSAGE, exception)
-      is SecurityException ->
-        promise.reject(ImagePickerConstants.ERR_CAN_NOT_EXTRACT_METADATA, ImagePickerConstants.CAN_NOT_EXTRACT_METADATA_MESSAGE, exception)
-      is IOException ->
-        promise.reject(ImagePickerConstants.ERR_CAN_NOT_SAVE_RESULT, ImagePickerConstants.CAN_NOT_SAVE_RESULT_MESSAGE, exception)
-      else -> throw exception
-    }
-  }
-
   private fun extractMediaMetadata(key: Int): Int =
-    mediaMetadataRetriever.extractMetadata(key)!!.toInt()
+      mediaMetadataRetriever.extractMetadata(key)!!.toInt()
 
   /**
    * We need to make coroutine wait till the video is saved, while the underlying
@@ -59,8 +44,8 @@ class VideoResultTask(
   }
 
   fun execute() {
-    try {
-      coroutineScope.launch(handler) {
+    coroutineScope.launch {
+      try {
         val outputFile = getFile()
         val response = Bundle().apply {
           putString("uri", Uri.fromFile(outputFile).toString())
@@ -72,10 +57,21 @@ class VideoResultTask(
           putInt("duration", extractMediaMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION))
         }
         promise.resolve(response)
+      } catch (e: ModuleDestroyedException) {
+        Log.d(ImagePickerConstants.TAG, ImagePickerConstants.COROUTINE_CANCELED, e)
+        promise.reject(e)
+      } catch (e: NullPointerException) {
+        promise.reject(ImagePickerConstants.ERR_CAN_NOT_EXTRACT_METADATA, ImagePickerConstants.CAN_NOT_EXTRACT_METADATA_MESSAGE, e)
+      } catch (e: IllegalArgumentException) {
+        promise.reject(ImagePickerConstants.ERR_CAN_NOT_EXTRACT_METADATA, ImagePickerConstants.CAN_NOT_EXTRACT_METADATA_MESSAGE, e)
+      } catch (e: SecurityException) {
+        promise.reject(ImagePickerConstants.ERR_CAN_NOT_EXTRACT_METADATA, ImagePickerConstants.CAN_NOT_EXTRACT_METADATA_MESSAGE, e)
+      } catch (e: IOException) {
+        promise.reject(ImagePickerConstants.ERR_CAN_NOT_SAVE_RESULT, ImagePickerConstants.CAN_NOT_SAVE_RESULT_MESSAGE, e)
+      } catch (e: Exception) {
+        Log.e(ImagePickerConstants.TAG, ImagePickerConstants.UNKNOWN_EXCEPTION, e)
+        promise.reject(ImagePickerConstants.UNKNOWN_EXCEPTION, e)
       }
-    } catch (e: ModuleDestroyedException) {
-      Log.d(ImagePickerConstants.TAG, ImagePickerConstants.COROUTINE_CANCELED, e)
-      promise.reject(e)
     }
   }
 

@@ -6,14 +6,13 @@ import android.os.Bundle
 import android.util.Base64
 import android.util.Log
 import androidx.exifinterface.media.ExifInterface
+import expo.modules.core.Promise
 import expo.modules.imagepicker.ImagePickerConstants
 import expo.modules.imagepicker.ImagePickerConstants.exifTags
+import expo.modules.imagepicker.ModuleDestroyedException
 import expo.modules.imagepicker.exporters.ImageExporter
 import expo.modules.imagepicker.exporters.ImageExporter.Listener
 import expo.modules.imagepicker.fileproviders.FileProvider
-import expo.modules.core.Promise
-import expo.modules.imagepicker.ModuleDestroyedException
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -24,22 +23,14 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 open class ImageResultTask(
-  private val promise: Promise,
-  private val uri: Uri,
-  private val contentResolver: ContentResolver,
-  private val fileProvider: FileProvider,
-  private val withExifData: Boolean,
-  private val imageExporter: ImageExporter,
-  private val coroutineScope: CoroutineScope
+    private val promise: Promise,
+    private val uri: Uri,
+    private val contentResolver: ContentResolver,
+    private val fileProvider: FileProvider,
+    private val withExifData: Boolean,
+    private val imageExporter: ImageExporter,
+    private val coroutineScope: CoroutineScope
 ) {
-
-  private val handler = CoroutineExceptionHandler { _, exception ->
-    if (exception is IOException) {
-      promise.reject(ImagePickerConstants.ERR_CAN_NOT_EXTRACT_METADATA, ImagePickerConstants.CAN_NOT_EXTRACT_METADATA_MESSAGE, exception)
-    }
-    throw exception
-  }
-
   /**
    * We need to make coroutine wait till the file is generated, while the underlying
    * thread is free to continue executing other coroutines.
@@ -67,8 +58,8 @@ open class ImageResultTask(
   }
 
   fun execute() {
-    try {
-      coroutineScope.launch(handler) {
+    coroutineScope.launch {
+      try {
         val outputFile = getFile()
         val exif = getExifData()
         val imageExporterHandler = object : Listener {
@@ -95,10 +86,15 @@ open class ImageResultTask(
           }
         }
         imageExporter.export(uri, outputFile, imageExporterHandler)
+      } catch (e: ModuleDestroyedException) {
+        Log.i(ImagePickerConstants.TAG, ImagePickerConstants.COROUTINE_CANCELED, e)
+        promise.reject(ImagePickerConstants.COROUTINE_CANCELED, e)
+      } catch (e: IOException) {
+        promise.reject(ImagePickerConstants.ERR_CAN_NOT_EXTRACT_METADATA, ImagePickerConstants.CAN_NOT_EXTRACT_METADATA_MESSAGE, e)
+      } catch (e: Exception) {
+        Log.e(ImagePickerConstants.TAG, ImagePickerConstants.UNKNOWN_EXCEPTION, e)
+        promise.reject(ImagePickerConstants.UNKNOWN_EXCEPTION, e)
       }
-    } catch (e: ModuleDestroyedException) {
-      Log.d(ImagePickerConstants.TAG, ImagePickerConstants.COROUTINE_CANCELED, e)
-      promise.reject(e)
     }
   }
 
