@@ -70,5 +70,5 @@ function usePermission(
  * This can be used to quickly create specific permission hooks in every module.
  */
 export function createPermissionHook(factoryOptions: PermissionHookFactoryOptions) {
-  return (options: PermissionHookOptions) => usePermission({ ...factoryOptions, ...options });
+  return (options: PermissionHookOptions = {}) => usePermission({ ...factoryOptions, ...options });
 }

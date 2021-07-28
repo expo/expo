@@ -17,5 +17,5 @@ declare type GetPermissionMethod = () => Promise<PermissionResponse | null>;
  * Create a new permission hook with the permission methods built-in.
  * This can be used to quickly create specific permission hooks in every module.
  */
-export declare function createPermissionHook(factoryOptions: PermissionHookFactoryOptions): (options: PermissionHookOptions) => [PermissionResponse | null, RequestPermissionMethod, GetPermissionMethod];
+export declare function createPermissionHook(factoryOptions: PermissionHookFactoryOptions): (options?: PermissionHookOptions) => [PermissionResponse | null, RequestPermissionMethod, GetPermissionMethod];
 export {};

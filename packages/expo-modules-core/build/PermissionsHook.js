@@ -44,6 +44,6 @@ function usePermission(options) {
  * This can be used to quickly create specific permission hooks in every module.
  */
 export function createPermissionHook(factoryOptions) {
-    return (options) => usePermission({ ...factoryOptions, ...options });
+    return (options = {}) => usePermission({ ...factoryOptions, ...options });
 }
 //# sourceMappingURL=PermissionsHook.js.map
