@@ -142,6 +142,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   @SuppressWarnings("JavaJniMissingFunction")
   private native void installJSIBindings(long jsRuntimePointer, CallInvokerHolderImpl jsCallInvokerHolder);
 
+  @SuppressWarnings("unused")
   @DoNotStrip
   private PlayerData getMediaPlayerById(int id) {
     return mSoundMap.get(id);
@@ -165,12 +166,12 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     if (mModuleRegistry != null) {
       final UIManager uiManager = mModuleRegistry.getModule(UIManager.class);
 
-      //uiManager.runOnClientCodeQueueThread(() -> {
+      uiManager.runOnClientCodeQueueThread(() -> {
         final JavaScriptContextProvider jsContextProvider = mModuleRegistry.getModule(JavaScriptContextProvider.class);
         CallInvokerHolderImpl callInvoker = (CallInvokerHolderImpl) ((ReactContext) mContext).getCatalystInstance().getJSCallInvokerHolder();
 
         installJSIBindings(jsContextProvider.getJavaScriptContextRef(), callInvoker);
-      //});
+      });
     }
   }
 
