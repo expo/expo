@@ -20,7 +20,7 @@ export default {
     const input = document.createElement('input');
     input.style.display = 'none';
     input.setAttribute('type', 'file');
-    input.setAttribute('accept', type);
+    input.setAttribute('accept', type as string);
     input.setAttribute('id', uuidv4());
     if (multiple) {
       input.setAttribute('multiple', 'multiple');
