@@ -11,6 +11,16 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import com.theartofdev.edmodo.cropper.CropImage
+import expo.modules.core.ExportedModule
+import expo.modules.core.ModuleRegistry
+import expo.modules.core.ModuleRegistryDelegate
+import expo.modules.core.Promise
+import expo.modules.core.interfaces.ActivityEventListener
+import expo.modules.core.interfaces.ActivityProvider
+import expo.modules.core.interfaces.ExpoMethod
+import expo.modules.core.interfaces.LifecycleEventListener
+import expo.modules.core.interfaces.services.UIManager
+import expo.modules.core.utilities.FileUtilities.generateOutputPath
 import expo.modules.imagepicker.ImagePickerOptions.Companion.optionsFromMap
 import expo.modules.imagepicker.exporters.CompressionImageExporter
 import expo.modules.imagepicker.exporters.CropImageExporter
@@ -25,16 +35,9 @@ import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.permissions.PermissionsResponse
 import expo.modules.interfaces.permissions.PermissionsResponseListener
 import expo.modules.interfaces.permissions.PermissionsStatus
-import expo.modules.core.ExportedModule
-import expo.modules.core.ModuleRegistry
-import expo.modules.core.ModuleRegistryDelegate
-import expo.modules.core.Promise
-import expo.modules.core.interfaces.ActivityEventListener
-import expo.modules.core.interfaces.ActivityProvider
-import expo.modules.core.interfaces.ExpoMethod
-import expo.modules.core.interfaces.LifecycleEventListener
-import expo.modules.core.interfaces.services.UIManager
-import expo.modules.core.utilities.FileUtilities.generateOutputPath
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import java.io.IOException
 import java.lang.ref.WeakReference
 
@@ -47,6 +50,15 @@ class ImagePickerModule(
   private var mCameraCaptureURI: Uri? = null
   private var mPromise: Promise? = null
   private var mPickerOptions: ImagePickerOptions? = null
+  private val moduleCoroutineScope = CoroutineScope(Dispatchers.IO)
+
+  override fun onDestroy() {
+    try {
+      moduleCoroutineScope.cancel(ModuleDestroyedException())
+    } catch (e: IllegalStateException) {
+      Log.e(ImagePickerConstants.TAG, "The scope does not have a job in it")
+    }
+  }
 
   /**
    * Android system sometimes kills the `MainActivity` after the `ImagePicker` finishes.
@@ -342,7 +354,7 @@ class ImagePickerModule(
     if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
       val result = CropImage.getActivityResult(intent)
       val exporter = CropImageExporter(result.rotation, result.cropRect, pickerOptions.isBase64)
-      ImageResultTask(promise, result.uri, contentResolver, CropFileProvider(result.uri), pickerOptions.isExif, exporter).execute()
+      ImageResultTask(promise, result.uri, contentResolver, CropFileProvider(result.uri), pickerOptions.isExif, exporter, moduleCoroutineScope).execute()
       return
     }
 
@@ -371,7 +383,7 @@ class ImagePickerModule(
         CompressionImageExporter(mImageLoader, pickerOptions.quality, pickerOptions.isBase64)
       }
 
-      ImageResultTask(promise, uri, contentResolver, CacheFileProvider(mContext.cacheDir, deduceExtension(type)), pickerOptions.isExif, exporter).execute()
+      ImageResultTask(promise, uri, contentResolver, CacheFileProvider(mContext.cacheDir, deduceExtension(type)), pickerOptions.isExif, exporter, moduleCoroutineScope).execute()
       return
     }
 
@@ -379,7 +391,7 @@ class ImagePickerModule(
       val metadataRetriever = MediaMetadataRetriever().apply {
         setDataSource(mContext, uri)
       }
-      VideoResultTask(promise, uri, contentResolver, CacheFileProvider(mContext.cacheDir, ".mp4"), metadataRetriever).execute()
+      VideoResultTask(promise, uri, contentResolver, CacheFileProvider(mContext.cacheDir, ".mp4"), metadataRetriever, moduleCoroutineScope).execute()
     } catch (e: RuntimeException) {
       e.printStackTrace()
       promise.reject(ImagePickerConstants.ERR_CAN_NOT_EXTRACT_METADATA, ImagePickerConstants.CAN_NOT_EXTRACT_METADATA_MESSAGE, e)
