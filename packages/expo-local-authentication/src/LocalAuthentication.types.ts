@@ -1,4 +1,6 @@
-export type LocalAuthenticationResult = { success: true } | { success: false; error: string; warning?: string };
+export type LocalAuthenticationResult =
+  | { success: true }
+  | { success: false; error: string; warning?: string };
 
 // @needsAudit
 export enum AuthenticationType {
