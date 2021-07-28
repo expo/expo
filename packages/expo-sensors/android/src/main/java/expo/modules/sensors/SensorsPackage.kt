@@ -24,27 +24,27 @@ import expo.modules.core.interfaces.InternalModule
 class SensorsPackage : BasePackage() {
   override fun createInternalModules(context: Context): List<InternalModule> {
     return listOf<InternalModule>(
-        AccelerometerService(context),
-        BarometerService(context),
-        GravitySensorService(context),
-        GyroscopeService(context),
-        LinearAccelerationSensorService(context),
-        MagnetometerService(context),
-        MagnetometerUncalibratedService(context),
-        RotationVectorSensorService(context),
-        PedometerService(context)
+      AccelerometerService(context),
+      BarometerService(context),
+      GravitySensorService(context),
+      GyroscopeService(context),
+      LinearAccelerationSensorService(context),
+      MagnetometerService(context),
+      MagnetometerUncalibratedService(context),
+      RotationVectorSensorService(context),
+      PedometerService(context)
     )
   }
 
   override fun createExportedModules(context: Context): List<ExportedModule> {
     return listOf<ExportedModule>(
-        AccelerometerModule(context),
-        BarometerModule(context),
-        GyroscopeModule(context),
-        DeviceMotionModule(context),
-        MagnetometerModule(context),
-        MagnetometerUncalibratedModule(context),
-        PedometerModule(context)
+      AccelerometerModule(context),
+      BarometerModule(context),
+      GyroscopeModule(context),
+      DeviceMotionModule(context),
+      MagnetometerModule(context),
+      MagnetometerUncalibratedModule(context),
+      PedometerModule(context)
     )
   }
 }
