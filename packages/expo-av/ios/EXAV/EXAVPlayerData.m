@@ -40,7 +40,6 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 
 @property (nonatomic, weak) EXAV *exAV;
 @property (nonatomic, strong) SampleBufferCallback audioSampleBufferCallback;
-@property (readonly, nonatomic) AVAudioMix *avAudioMix;
 
 @property (nonatomic, assign) BOOL isLoaded;
 @property (nonatomic, strong) void (^loadFinishBlock)(BOOL success, NSDictionary *successStatus, NSString *error);
@@ -65,9 +64,6 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 
 @property (nonatomic, strong) EXPromiseResolveBlock replayResolve;
 
-@property (nonatomic) float centerFrequency; // [0 .. 1]
-@property (nonatomic) float bandwidth; // [0 .. 1]
-
 @end
 
 @implementation EXAVPlayerData
@@ -88,24 +84,21 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 {
   if ((self = [super init])) {
     _exAV = exAV;
-    
+
     _isLoaded = NO;
     _loadFinishBlock = loadFinishBlock;
-    
+
     _player = nil;
-    
+
     _url = [NSURL URLWithString:[source objectForKey:EXAVPlayerDataStatusURIKeyPath]];
     _headers = [self validatedRequestHeaders:source[EXAVPlayerDataStatusHeadersKeyPath]];
-    
+
     _timeObserver = nil;
     _finishObserver = nil;
     _playbackStalledObserver = nil;
     _statusUpdateCallback = nil;
     _observers = [NSMapTable new];
-    
-    _centerFrequency = (4980.0f / 23980.0f); // equals 5000 Hz (assuming sample rate is 48k)
-    _bandwidth = (500.0f / 11900.0f); // equals 600 Cents
-    
+
     // These status props will be potentially reset by the following call to [self setStatus:parameters ...].
     _progressUpdateIntervalMillis = @(500);
     _currentPosition = kCMTimeZero;
@@ -118,12 +111,12 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     _volume = @(1.0);
     _isMuted = NO;
     _isLooping = NO;
-    
+
     [self setStatus:parameters resolver:nil rejecter:nil];
-    
+
     [self _loadNewPlayer];
   }
-  
+
   return self;
 }
 
@@ -131,20 +124,20 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 {
   NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
   AVURLAsset *avAsset = [AVURLAsset URLAssetWithURL:_url options:@{AVURLAssetHTTPCookiesKey : cookies, @"AVURLAssetHTTPHeaderFieldsKey": _headers}];
-  
+
   // unless we preload, the asset will not necessarily load the duration by the time we try to play it.
   // http://stackoverflow.com/questions/20581567/avplayer-and-avfoundationerrordomain-code-11819
   EX_WEAKIFY(self);
   [avAsset loadValuesAsynchronouslyForKeys:@[ @"duration" ] completionHandler:^{
     EX_ENSURE_STRONGIFY(self);
-    
+
     // We prepare three items for AVQueuePlayer, so when the first finishes playing,
     // second can start playing and the third can start preparing to play.
     AVPlayerItem *firstPlayerItem = [AVPlayerItem playerItemWithAsset:avAsset];
     AVPlayerItem *secondPlayerItem = [AVPlayerItem playerItemWithAsset:avAsset];
     AVPlayerItem *thirdPlayerItem = [AVPlayerItem playerItemWithAsset:avAsset];
     self.items = @[firstPlayerItem, secondPlayerItem, thirdPlayerItem];
-    
+
     self.player = [AVQueuePlayer queuePlayerWithItems:@[firstPlayerItem, secondPlayerItem, thirdPlayerItem]];
     if (self.player) {
       [self _addObserver:self.player forKeyPath:EXAVPlayerDataObserverStatusKeyPath];
@@ -172,18 +165,18 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
       dispatch_async(self.exAV.methodQueue, ^{
         EX_ENSURE_STRONGIFY(self);
         self.currentPosition = self.player.currentTime;
-        
+
         self.player.currentItem.audioTimePitchAlgorithm = self.pitchCorrectionQuality;
         self.player.volume = self.volume.floatValue;
         self.player.muted = self.isMuted;
         [self _updateLooping:self.isLooping];
-        
+
         [self _tryPlayPlayerWithRateAndMuteIfNecessary];
-        
+
         self.isLoaded = YES;
-        
+
         [self _addObserversForNewPlayer];
-        
+
         if (self.loadFinishBlock) {
           self.loadFinishBlock(YES, [self getStatus], nil);
           self.loadFinishBlock = nil;
@@ -198,16 +191,20 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 - (void)installTap
 {
   AVPlayerItem *item = [_player currentItem];
-  // TODO: Do we need to do this for every track in `item.tracks`?
+  // TODO: What if a player item has multiple tracks?
   AVAssetTrack *track = item.tracks.firstObject.assetTrack;
-  assert(track);
-  
+  if (!track)
+  {
+    NSLog(@"Failed to find a track in the current player item!");
+    return;
+  }
+
   AVMutableAudioMix *audioMix = [AVMutableAudioMix audioMix];
   if (audioMix) {
     AVMutableAudioMixInputParameters *audioMixInputParameters = [AVMutableAudioMixInputParameters audioMixInputParametersWithTrack:track];
     if (audioMixInputParameters) {
       MTAudioProcessingTapCallbacks callbacks;
-      
+
       callbacks.version = kMTAudioProcessingTapCallbacksVersion_0;
       callbacks.clientInfo = (__bridge void *)self,
       callbacks.init = tapInit;
@@ -215,15 +212,15 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
       callbacks.prepare = tapPrepare;
       callbacks.unprepare = tapUnprepare;
       callbacks.process = tapProcess;
-      
+
       MTAudioProcessingTapRef audioProcessingTap;
       OSStatus status = MTAudioProcessingTapCreate(kCFAllocatorDefault, &callbacks, kMTAudioProcessingTapCreationFlag_PreEffects, &audioProcessingTap);
       if (status == noErr) {
         audioMixInputParameters.audioTapProcessor = audioProcessingTap;
         audioMix.inputParameters = @[audioMixInputParameters];
-        
+
         [item setAudioMix:audioMix];
-        
+
         CFRelease(audioProcessingTap);
       } else {
         NSLog(@"Failed to create MTAudioProcessingTap!");
@@ -243,41 +240,41 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 void tapInit(MTAudioProcessingTapRef tap, void *clientInfo, void **tapStorageOut)
 {
   AVAudioTapProcessorContext *context = calloc(1, sizeof(AVAudioTapProcessorContext));
-  
+
   // Initialize MTAudioProcessingTap context.
   context->isNonInterleaved = false;
   context->self = clientInfo;
-  
+
   *tapStorageOut = context;
 }
 
 void tapFinalize(MTAudioProcessingTapRef tap)
 {
   AVAudioTapProcessorContext *context = (AVAudioTapProcessorContext *)MTAudioProcessingTapGetStorage(tap);
-  
+
   // Clear MTAudioProcessingTap context.
   context->self = NULL;
-  
+
   free(context);
 }
 
 void tapPrepare(MTAudioProcessingTapRef tap, CMItemCount maxFrames, const AudioStreamBasicDescription *processingFormat)
 {
   AVAudioTapProcessorContext *context = (AVAudioTapProcessorContext *)MTAudioProcessingTapGetStorage(tap);
-  
+
   context->supportedTapProcessingFormat = true;
-  
+
   if (processingFormat->mFormatID != kAudioFormatLinearPCM)
   {
     NSLog(@"Audio Format ID for audioProcessingTap: LinearPCM");
-    // context->supportedTapProcessingFormat = false;
+    // TODO: Does LinearPCM work with the audio sample buffer callback?
   }
   if (!(processingFormat->mFormatFlags & kAudioFormatFlagIsFloat))
   {
     NSLog(@"Audio Format ID for audioProcessingTap: Float only");
-    // context->supportedTapProcessingFormat = false;
+    // TODO: Does Float work with the audio sample buffer callback?
   }
-  
+
   if (processingFormat->mFormatFlags & kAudioFormatFlagIsNonInterleaved)
   {
     context->isNonInterleaved = true;
@@ -293,20 +290,20 @@ void tapUnprepare(MTAudioProcessingTapRef tap)
 void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioProcessingTapFlags flags, AudioBufferList *bufferListInOut, CMItemCount *numberFramesOut, MTAudioProcessingTapFlags *flagsOut)
 {
   AVAudioTapProcessorContext *context = (AVAudioTapProcessorContext *)MTAudioProcessingTapGetStorage(tap);
-  
+
   if (!context->self)
   {
     NSLog(@"Audio Processing Tap has been destroyed!");
     return;
   }
-  
+
   EXAVPlayerData *self = ((__bridge EXAVPlayerData *)context->self);
-  
+
   if (!self.audioSampleBufferCallback)
   {
     return;
   }
-  
+
   // Get actual audio buffers from MTAudioProcessingTap
   OSStatus status = MTAudioProcessingTapGetSourceAudio(tap, numberFrames, bufferListInOut, flagsOut, NULL, numberFramesOut);
   if (noErr != status)
@@ -314,7 +311,7 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
     NSLog(@"MTAudioProcessingTapGetSourceAudio: %d", (int)status);
     return;
   }
-  
+
   double seconds = [self getCurrentPositionPrecise];
   self.audioSampleBufferCallback(&bufferListInOut->mBuffers[0], seconds);
 }
@@ -367,56 +364,56 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
 {
   BOOL mustUpdateTimeObserver = NO;
   BOOL mustSeek = NO;
-  
+
   if ([parameters objectForKey:EXAVPlayerDataStatusProgressUpdateIntervalMillisKeyPath] != nil) {
     NSNumber *progressUpdateIntervalMillis = parameters[EXAVPlayerDataStatusProgressUpdateIntervalMillisKeyPath];
     mustUpdateTimeObserver = ![progressUpdateIntervalMillis isEqualToNumber:_progressUpdateIntervalMillis];
     _progressUpdateIntervalMillis = progressUpdateIntervalMillis;
   }
-  
+
   // To prevent a race condition, we set _currentPosition at the end of this method.
   CMTime newPosition = _currentPosition;
-  
+
   if ([parameters objectForKey:EXAVPlayerDataStatusPositionMillisKeyPath] != nil) {
     NSNumber *currentPositionMillis = parameters[EXAVPlayerDataStatusPositionMillisKeyPath];
-    
+
     // We only seek if the new position is different from _currentPosition by a whole number of milliseconds.
     mustSeek = currentPositionMillis.longValue != [self _getRoundedMillisFromCMTime:_currentPosition].longValue;
     if (mustSeek) {
       newPosition = CMTimeMakeWithSeconds(currentPositionMillis.floatValue / 1000, NSEC_PER_SEC);
     }
   }
-  
+
   // Default values, see: https://developer.apple.com/documentation/avfoundation/avplayer/1388493-seek
   CMTime toleranceBefore = kCMTimePositiveInfinity;
   CMTime toleranceAfter = kCMTimePositiveInfinity;
-  
+
   // We need to set toleranceBefore only if we will seek
   if (mustSeek && [parameters objectForKey:EXAVPlayerDataStatusSeekMillisToleranceBeforeKeyPath] != nil) {
     NSNumber *seekMillisToleranceBefore = parameters[EXAVPlayerDataStatusSeekMillisToleranceBeforeKeyPath];
     toleranceBefore = CMTimeMakeWithSeconds(seekMillisToleranceBefore.floatValue / 1000, NSEC_PER_SEC);
   }
-  
+
   // We need to set toleranceAfter only if we will seek
   if (mustSeek && [parameters objectForKey:EXAVPlayerDataStatusSeekMillisToleranceAfterKeyPath] != nil) {
     NSNumber *seekMillisToleranceAfter = parameters[EXAVPlayerDataStatusSeekMillisToleranceAfterKeyPath];
     toleranceAfter = CMTimeMakeWithSeconds(seekMillisToleranceAfter.floatValue / 1000, NSEC_PER_SEC);
   }
-  
+
   if ([parameters objectForKey:EXAVPlayerDataStatusShouldPlayKeyPath] != nil) {
     NSNumber *shouldPlay = parameters[EXAVPlayerDataStatusShouldPlayKeyPath];
     _shouldPlay = shouldPlay.boolValue;
   }
-  
+
   if ([parameters objectForKey:EXAVPlayerDataStatusRateKeyPath] != nil) {
     NSNumber *rate = parameters[EXAVPlayerDataStatusRateKeyPath];
     _rate = rate;
   }
-  
+
   if (parameters[EXAVPlayerDataStatusPitchCorrectionQualityKeyPath] != nil) {
     _pitchCorrectionQuality = parameters[EXAVPlayerDataStatusPitchCorrectionQualityKeyPath];
   }
-  
+
   if ([parameters objectForKey:EXAVPlayerDataStatusShouldCorrectPitchKeyPath] != nil) {
     NSNumber *shouldCorrectPitch = parameters[EXAVPlayerDataStatusShouldCorrectPitchKeyPath];
     _shouldCorrectPitch = shouldCorrectPitch.boolValue;
@@ -433,38 +430,38 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
     NSNumber *isLooping = parameters[EXAVPlayerDataStatusIsLoopingKeyPath];
     [self _updateLooping:isLooping.boolValue];
   }
-  
+
   if (_player && _isLoaded) {
     // Pause / mute first if necessary.
     if (![self _shouldPlayerPlay]) {
       [_player pause];
     }
-    
+
     if (_isMuted || ![self _isPlayerPlaying]) {
       _player.muted = _isMuted;
     }
-    
+
     // Apply idempotent parameters.
     if (_shouldCorrectPitch) {
       _player.currentItem.audioTimePitchAlgorithm = _pitchCorrectionQuality;
     } else {
       _player.currentItem.audioTimePitchAlgorithm = AVAudioTimePitchAlgorithmVarispeed;
     }
-    
+
     _player.volume = _volume.floatValue;
-    
+
     // Apply parameters necessary after seek.
     EX_WEAKIFY(self);
     void (^applyPostSeekParameters)(BOOL) = ^(BOOL seekSucceeded) {
       EX_ENSURE_STRONGIFY(self);
       self.currentPosition = self.player.currentTime;
-      
+
       if (mustUpdateTimeObserver) {
         [self _updateTimeObserver];
       }
-      
+
       NSError *audioSessionError = [self _tryPlayPlayerWithRateAndMuteIfNecessary];
-      
+
       if (audioSessionError) {
         if (reject) {
           reject(@"E_AV_PLAY", @"Play encountered an error: audio session not activated.", audioSessionError);
@@ -476,14 +473,14 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
       } else if (resolve) {
         resolve([self getStatus]);
       }
-      
+
       if (!resolve || !reject) {
         [self _callStatusUpdateCallback];
       }
-      
+
       [self.exAV demoteAudioSessionIfPossible];
     };
-    
+
     // Apply seek if necessary.
     if (mustSeek) {
       [_player seekToTime:newPosition toleranceBefore:toleranceBefore toleranceAfter:toleranceAfter completionHandler:^(BOOL seekSucceeded) {
@@ -524,8 +521,8 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
 - (NSNumber *)_getClippedValueForValue:(NSNumber *)value withMin:(NSNumber *)min withMax:(NSNumber *)max
 {
   return (min != nil && [value doubleValue] < [min doubleValue]) ? min
-  : (max != nil && [value doubleValue] > [max doubleValue]) ? max
-  : value;
+        : (max != nil && [value doubleValue] > [max doubleValue]) ? max
+        : value;
 }
 
 - (double)getCurrentPositionPrecise
@@ -534,7 +531,7 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
   if (durationMillis) {
     durationMillis = [durationMillis doubleValue] < 0 ? 0 : durationMillis;
   }
-  
+
   NSNumber *positionMillis = [self _getRoundedMillisFromCMTime:[_player currentTime]];
   positionMillis = [self _getClippedValueForValue:positionMillis withMin:@(0) withMax:durationMillis];
   return positionMillis.doubleValue / 1000.0;
@@ -545,21 +542,21 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
   if (!_isLoaded || _player == nil) {
     return [EXAVPlayerData getUnloadedStatus];
   }
-  
+
   AVPlayerItem *currentItem = _player.currentItem;
   if (_player.status != AVPlayerStatusReadyToPlay || currentItem.status != AVPlayerItemStatusReadyToPlay) {
     return [EXAVPlayerData getUnloadedStatus];
   }
-  
+
   // Get duration and position:
   NSNumber *durationMillis = [self _getRoundedMillisFromCMTime:currentItem.duration];
   if (durationMillis) {
     durationMillis = [durationMillis doubleValue] < 0 ? 0 : durationMillis;
   }
-  
+
   NSNumber *positionMillis = [self _getRoundedMillisFromCMTime:[_player currentTime]];
   positionMillis = [self _getClippedValueForValue:positionMillis withMin:@(0) withMax:durationMillis];
-  
+
   // Calculate playable duration:
   NSNumber *playableDurationMillis;
   if (_player.status == AVPlayerStatusReadyToPlay) {
@@ -576,7 +573,7 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
       playableDurationMillis = [self _getClippedValueForValue:playableDurationMillis withMin:@(0) withMax:durationMillis];
     }
   }
-  
+
   // Calculate if the player is buffering
   BOOL isPlaying = [self _isPlayerPlaying];
   BOOL isBuffering;
@@ -588,35 +585,35 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
   } else {
     isBuffering = !_player.currentItem.isPlaybackLikelyToKeepUp && _player.currentItem.isPlaybackBufferEmpty;
   }
-  
+
   // TODO : react-native-video includes the iOS-only keys seekableDuration and canReverse (etc) flags.
   //        Consider adding these.
-  NSMutableDictionary *mutableStatus = [@{EXAVPlayerDataStatusIsLoadedKeyPath: @(YES),
-                                          
-                                          EXAVPlayerDataStatusURIKeyPath: [_url absoluteString],
-                                          
-                                          EXAVPlayerDataStatusProgressUpdateIntervalMillisKeyPath: _progressUpdateIntervalMillis,
-                                          // positionMillis, playableDurationMillis, and durationMillis may be nil and are added after this definition.
-                                          
-                                          EXAVPlayerDataStatusShouldPlayKeyPath: @(_shouldPlay),
-                                          EXAVPlayerDataStatusIsPlayingKeyPath: @(isPlaying),
-                                          EXAVPlayerDataStatusIsBufferingKeyPath: @(isBuffering),
-                                          
-                                          EXAVPlayerDataStatusRateKeyPath: _rate,
-                                          EXAVPlayerDataStatusShouldCorrectPitchKeyPath: @(_shouldCorrectPitch),
-                                          EXAVPlayerDataStatusPitchCorrectionQualityKeyPath: _pitchCorrectionQuality,
-                                          EXAVPlayerDataStatusVolumeKeyPath: @(_player.volume),
-                                          EXAVPlayerDataStatusIsMutedKeyPath: @(_player.muted),
-                                          EXAVPlayerDataStatusIsLoopingKeyPath: @(_isLooping),
-                                          
-                                          EXAVPlayerDataStatusDidJustFinishKeyPath: @(NO),
-                                          EXAVPlayerDataStatusHasJustBeenInterruptedKeyPath: @(NO),
+  NSMutableDictionary *mutableStatus = [@{
+    EXAVPlayerDataStatusIsLoadedKeyPath: @(YES),
+
+    EXAVPlayerDataStatusURIKeyPath: [_url absoluteString],
+    EXAVPlayerDataStatusProgressUpdateIntervalMillisKeyPath: _progressUpdateIntervalMillis,
+    // positionMillis, playableDurationMillis, and durationMillis may be nil and are added after this definition.
+
+    EXAVPlayerDataStatusShouldPlayKeyPath: @(_shouldPlay),
+    EXAVPlayerDataStatusIsPlayingKeyPath: @(isPlaying),
+    EXAVPlayerDataStatusIsBufferingKeyPath: @(isBuffering),
+
+    EXAVPlayerDataStatusRateKeyPath: _rate,
+    EXAVPlayerDataStatusShouldCorrectPitchKeyPath: @(_shouldCorrectPitch),
+    EXAVPlayerDataStatusPitchCorrectionQualityKeyPath: _pitchCorrectionQuality,
+    EXAVPlayerDataStatusVolumeKeyPath: @(_player.volume),
+    EXAVPlayerDataStatusIsMutedKeyPath: @(_player.muted),
+    EXAVPlayerDataStatusIsLoopingKeyPath: @(_isLooping),
+
+    EXAVPlayerDataStatusDidJustFinishKeyPath: @(NO),
+    EXAVPlayerDataStatusHasJustBeenInterruptedKeyPath: @(NO),
   } mutableCopy];
-  
+
   mutableStatus[EXAVPlayerDataStatusPlayableDurationMillisKeyPath] = playableDurationMillis;
   mutableStatus[EXAVPlayerDataStatusDurationMillisKeyPath] = durationMillis;
   mutableStatus[EXAVPlayerDataStatusPositionMillisKeyPath] = positionMillis;
-  
+
   return mutableStatus;
 }
 
@@ -728,7 +725,7 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
 - (void)_removeObserversForPlayerItem:(AVPlayerItem *)playerItem
 {
   [self _tryRemoveObserver:playerItem forKeyPath:EXAVPlayerDataObserverStatusKeyPath];
-  
+
   NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
   if (_finishObserver) {
     [center removeObserver:_finishObserver];
@@ -738,7 +735,7 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
     [center removeObserver:_playbackStalledObserver];
     _playbackStalledObserver = nil;
   }
-  
+
   [self _tryRemoveObserver:playerItem forKeyPath:EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath];
 }
 
@@ -746,7 +743,7 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
 {
   NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
   EX_WEAKIFY(self);
-  
+
   void (^didPlayToEndTimeObserverBlock)(NSNotification *note) = ^(NSNotification *note) {
     EX_ENSURE_STRONGIFY(self);
     __strong EXAV *strongEXAV = self.exAV;
@@ -766,17 +763,17 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
       });
     }
   };
-  
+
   _finishObserver = [center addObserverForName:AVPlayerItemDidPlayToEndTimeNotification
                                         object:[_player currentItem]
                                          queue:nil
                                     usingBlock:didPlayToEndTimeObserverBlock];
-  
+
   void (^playbackStalledObserverBlock)(NSNotification *note) = ^(NSNotification *note) {
     EX_ENSURE_STRONGIFY(self);
     [self _callStatusUpdateCallback];
   };
-  
+
   _playbackStalledObserver = [center addObserverForName:AVPlayerItemPlaybackStalledNotification
                                                  object:[_player currentItem]
                                                   queue:nil
@@ -788,18 +785,18 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
 - (void)_updateTimeObserver
 {
   [self _removeTimeObserver];
-  
+
   EX_WEAKIFY(self);
-  
+
   CMTime interval = CMTimeMakeWithSeconds(_progressUpdateIntervalMillis.floatValue / 1000.0, NSEC_PER_SEC);
-  
+
   void (^timeObserverBlock)(CMTime time) = ^(CMTime time) {
     EX_ENSURE_STRONGIFY(self);
     __strong EXAV *strongEXAV = self.exAV;
     if (strongEXAV) {
       dispatch_async(strongEXAV.methodQueue, ^{
         EX_ENSURE_STRONGIFY(self);
-        
+
         if (self && self.player.status == AVPlayerStatusReadyToPlay) {
           self.currentPosition = time; // We keep track of _currentPosition to reset the AVPlayer in handleMediaServicesReset.
           [self _callStatusUpdateCallback];
@@ -807,7 +804,7 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
       });
     }
   };
-  
+
   _timeObserver = [_player addPeriodicTimeObserverForInterval:interval
                                                         queue:NULL
                                                    usingBlock:timeObserverBlock];
@@ -817,7 +814,7 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
 {
   [self _removeObservers];
   [self _updateTimeObserver];
-  
+
   [self _addObserver:_player forKeyPath:EXAVPlayerDataObserverRateKeyPath];
   NSUInteger currentItemObservationOptions = NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew;
   [self _addObserver:_player forKeyPath:EXAVPlayerDataObserverCurrentItemKeyPath options:currentItemObservationOptions];
@@ -834,9 +831,9 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
     [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     return;
   }
-  
+
   __weak EXAVPlayerData *weakSelf = nil;
-  
+
   // Specification of Objective-C always allows creation of weak references,
   // however on iOS trying to create a weak reference to a deallocated object
   // results in throwing an exception. If this happens we have nothing to do
@@ -849,12 +846,12 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
   } @catch (NSException *exception) {
     return;
   }
-  
+
   __strong EXAV *strongEXAV = _exAV;
   if (strongEXAV == nil) {
     return;
   }
-  
+
   dispatch_async(strongEXAV.methodQueue, ^{
     __strong EXAVPlayerData *strongSelf = weakSelf;
     if (strongSelf) {
@@ -894,10 +891,10 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
             strongSelf.replayResolve([strongSelf getStatus]);
             strongSelf.replayResolve = nil;
           }
-          
+
           int observedRate = strongSelf.observedRate.floatValue * 1000;
           int currentRate = strongSelf.player.rate * 1000;
-          
+
           if (abs(observedRate - currentRate) > 1) {
             [strongSelf _callStatusUpdateCallback];
             strongSelf.observedRate = @(strongSelf.player.rate);
@@ -921,7 +918,7 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
           AVPlayerItem *removedPlayerItem = change[NSKeyValueChangeOldKey];
           if (removedPlayerItem && removedPlayerItem != (id)[NSNull null]) {
             // Observers may have been removed in _finishObserver or replayWithStatus:resolver:rejecter
-            
+
             // Rewind player item and re-add to queue
             if (CMTimeCompare(removedPlayerItem.currentTime, kCMTimeZero) != 0) {
               // In some cases (when using HSLS/m3u8 files), the completionHandler
@@ -934,7 +931,7 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
             }
             [strongSelf.player insertItem:removedPlayerItem afterItem:nil];
           }
-          
+
           if (self.audioSampleBufferCallback != nil) {
             // Tap is installed per item, so we re-install for the new item.
             [self installTap];
@@ -1023,13 +1020,13 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
 {
   // See here: https://developer.apple.com/library/content/qa/qa1749/_index.html
   // (this is an unlikely notification to receive, but best practices suggests that we catch it just in case)
-  
+
   _isLoaded = NO;
-  
+
   // We want to temporarily disable _statusUpdateCallback so that all of the new state changes don't trigger a waterfall of updates:
   void (^callback)(NSDictionary *) = _statusUpdateCallback;
   _statusUpdateCallback = nil;
-  
+
   EX_WEAKIFY(self);
   _loadFinishBlock = ^(BOOL success, NSDictionary *successStatus, NSString *error) {
     EX_ENSURE_STRONGIFY(self);
@@ -1044,10 +1041,10 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
       self.errorCallback(error);
     }
   };
-  
+
   [self _removeTimeObserver];
   [self _removeObservers];
-  
+
   [self _loadNewPlayer];
 }
 
