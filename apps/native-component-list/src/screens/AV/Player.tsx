@@ -48,7 +48,7 @@ interface Props {
   setPositionAsync: (position: number) => Promise<any>;
   setIsLoopingAsync: (isLooping: boolean) => void;
   setVolume: (volume: number) => void;
-  setAudioSampleBufferCallback?: (callback: (sample: AudioSample) => void) => void;
+  setAudioSampleBufferCallback?: (callback: ((sample: AudioSample) => void) | null) => void;
 
   // Status
   isLoaded: boolean;
@@ -161,6 +161,7 @@ export default function Player(props: Props) {
 
   useEffect(() => {
     if (!props.setAudioSampleBufferCallback) return;
+
     props.setAudioSampleBufferCallback((sample: AudioSample) => {
       const loudness = Sound.getAverageLoudness(sample);
       // 0.90 to 0.96 is the most interesting range, 0.96 to 0.99 is mostly bass in this song so emphasize it even more.

@@ -184,8 +184,6 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
         
         [self _addObserversForNewPlayer];
         
-        [self installTap];
-        
         if (self.loadFinishBlock) {
           self.loadFinishBlock(YES, [self getStatus], nil);
           self.loadFinishBlock = nil;
@@ -937,8 +935,10 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
             [strongSelf.player insertItem:removedPlayerItem afterItem:nil];
           }
           
-          // Tap is installed per item, so we re-install for the new item.
-          [self installTap];
+          if (self.audioSampleBufferCallback != nil) {
+            // Tap is installed per item, so we re-install for the new item.
+            [self installTap];
+          }
         }
       } else if (object == strongSelf.player.currentItem) {
         if ([keyPath isEqualToString:EXAVPlayerDataObserverStatusKeyPath]) {
