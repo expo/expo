@@ -26,10 +26,17 @@ public class SwiftInteropBridge: NSObject {
                          withArgs args: [Any],
                          resolve: @escaping EXPromiseResolveBlock,
                          reject: @escaping EXPromiseRejectBlock) {
-    let promise = Promise(resolver: resolve, rejecter: reject)
     registry
       .get(moduleHolderForName: moduleName)?
-      .call(method: methodName, args: args, promise: promise)
+      .call(method: methodName, args: args) { value, error in
+        if let error = error as? CodedError {
+          reject(error.code, error.description, error)
+        } else if let error = error {
+          reject("ERR_UNKNOWN_ERROR", error.localizedDescription, error)
+        } else {
+          resolve(value)
+        }
+      }
   }
 
   @objc
