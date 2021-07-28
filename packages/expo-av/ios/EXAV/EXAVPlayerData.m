@@ -234,6 +234,12 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   }
 }
 
+- (void)uninstallTap
+{
+  AVPlayerItem *item = [_player currentItem];
+  [item setAudioMix:nil];
+}
+
 #pragma mark - Audio Sample Buffer Callbacks
 
 void tapInit(MTAudioProcessingTapRef tap, void *clientInfo, void **tapStorageOut)
@@ -298,6 +304,11 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
   
   EXAVPlayerData *self = ((__bridge EXAVPlayerData *)context->self);
   
+  if (!self.audioSampleBufferCallback)
+  {
+    return;
+  }
+  
   // Get actual audio buffers from MTAudioProcessingTap
   OSStatus status = MTAudioProcessingTapGetSourceAudio(tap, numberFrames, bufferListInOut, flagsOut, NULL, numberFramesOut);
   if (noErr != status)
@@ -313,11 +324,13 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
 - (void)addSampleBufferCallback:(SampleBufferCallback)callback
 {
   self.audioSampleBufferCallback = callback;
+  [self installTap];
 }
 
 - (void)removeSampleBufferCallback
 {
   self.audioSampleBufferCallback = nil;
+  [self uninstallTap];
 }
 
 #pragma mark - setStatus
