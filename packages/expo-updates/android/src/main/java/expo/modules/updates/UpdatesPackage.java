@@ -6,9 +6,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.unimodules.core.BasePackage;
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.interfaces.InternalModule;
+import expo.modules.core.BasePackage;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.interfaces.InternalModule;
 
 public class UpdatesPackage extends BasePackage {
   @Override

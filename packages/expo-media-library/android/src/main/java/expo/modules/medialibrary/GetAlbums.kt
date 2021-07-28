@@ -6,7 +6,7 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.MediaStore.Images.Media
-import org.unimodules.core.Promise
+import expo.modules.core.Promise
 
 internal open class GetAlbums(private val mContext: Context, private val mPromise: Promise) :
   AsyncTask<Void?, Void?, Void?>() {

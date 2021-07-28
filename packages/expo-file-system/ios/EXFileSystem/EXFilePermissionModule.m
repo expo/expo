@@ -4,13 +4,13 @@
 
 @interface EXFilePermissionModule ()
 
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation EXFilePermissionModule
 
-UM_REGISTER_MODULE();
+EX_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
@@ -61,7 +61,7 @@ UM_REGISTER_MODULE();
   return filePermissions;
 }
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry {
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry {
   _moduleRegistry = moduleRegistry;
 }
 

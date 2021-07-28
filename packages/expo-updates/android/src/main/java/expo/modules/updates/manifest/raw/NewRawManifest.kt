@@ -25,11 +25,13 @@ class NewRawManifest(json: JSONObject) : RawManifest(json) {
   @Throws(JSONException::class)
   override fun getScopeKey(): String = getID()
 
-  /**
-   * Incorrect for now until we figure out how to get this in the new manifest format.
-   */
   override fun getProjectID(): String? {
-    return null
+    val easConfig = getExtra()?.optJSONObject("eas") ?: return null
+    return if (easConfig.has("projectId")) {
+      easConfig.getString("projectId")
+    } else {
+      null
+    }
   }
 
   @Throws(JSONException::class)

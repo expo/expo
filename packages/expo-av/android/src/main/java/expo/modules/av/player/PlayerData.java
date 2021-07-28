@@ -6,8 +6,8 @@ import android.os.Bundle;
 import android.util.Pair;
 import android.view.Surface;
 
-import org.unimodules.core.Promise;
-import org.unimodules.core.arguments.ReadableArguments;
+import expo.modules.core.Promise;
+import expo.modules.core.arguments.ReadableArguments;
 
 import java.util.Map;
 

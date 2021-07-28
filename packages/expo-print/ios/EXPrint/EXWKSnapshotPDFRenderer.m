@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <EXPrint/EXWKSnapshotPDFRenderer.h>
-#import <UMCore/UMDefines.h>
+#import <ExpoModulesCore/EXDefines.h>
 
 @interface EXWKSnapshotPDFRenderer ()
 
@@ -11,9 +11,9 @@
 
 - (void)PDFFromWebView:(WKWebView *)webView completionHandler:(void (^)(NSError * _Nullable, NSData * _Nullable, int))handler
 {
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   [webView evaluateJavaScript:@"window.innerHeight + ' ' + document.documentElement.scrollHeight" completionHandler:^(id jsResult, NSError * _Nullable error) {
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     NSString *jsResultString = jsResult;
     NSArray *items = [jsResultString componentsSeparatedByString:@" "];
     CGFloat pageHeight = [items[0] doubleValue];
@@ -58,7 +58,7 @@
       }
     }];
   } else {
-    NSError *error = UMErrorWithMessage(@"Unexpected error occurred - on iOS under 11.0 use EXWKViewPDFRenderer.");
+    NSError *error = EXErrorWithMessage(@"Unexpected error occurred - on iOS under 11.0 use EXWKViewPDFRenderer.");
     completionHandler(error);
   }
 }

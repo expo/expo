@@ -27,7 +27,7 @@ import com.facebook.soloader.SoLoader;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.unimodules.core.interfaces.Package;
+import expo.modules.core.interfaces.Package;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
@@ -486,10 +486,10 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     new ExponentNotificationManager(this).maybeCreateNotificationChannelGroup(mManifest);
 
     Kernel.ExperienceActivityTask task = mKernel.getExperienceActivityTask(mManifestUrl);
-    task.taskId = getTaskId();
-    task.experienceActivity = new WeakReference<>(this);
-    task.activityId = mActivityId;
-    task.bundleUrl = bundleUrl;
+    task.setTaskId(getTaskId());
+    task.setExperienceActivity(new WeakReference<>(this));
+    task.setActivityId(mActivityId);
+    task.setBundleUrl(bundleUrl);
 
     mSDKVersion = manifest.getSDKVersionNullable();
     mIsShellApp = manifestUrl.equals(Constants.INITIAL_URL);
@@ -544,11 +544,11 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
       // if the kernel has an intent for our manifest url, that's the intent that triggered
       // the loading of this experience.
-      if (options.uri != null) {
-        mIntentUri = options.uri;
+      if (options.getUri() != null) {
+        mIntentUri = options.getUri();
       }
 
-      notificationObject = options.notificationObject;
+      notificationObject = options.getNotificationObject();
     }
 
     final ExponentNotification finalNotificationObject = notificationObject;
@@ -630,9 +630,9 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
   public void handleOptions(KernelConstants.ExperienceOptions options) {
     try {
-      if (options.uri != null) {
-        handleUri(options.uri);
-        String uri = options.uri;
+      if (options.getUri() != null) {
+        handleUri(options.getUri());
+        String uri = options.getUri();
 
         if (uri != null) {
           RNObject rctDeviceEventEmitter = new RNObject("com.facebook.react.modules.core.DeviceEventManagerModule$RCTDeviceEventEmitter");
@@ -643,16 +643,16 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
             .call("emit", "Exponent.openUri", uri);
         }
 
-        BranchManager.handleLink(this, options.uri, mDetachSdkVersion);
+        BranchManager.handleLink(this, options.getUri(), mDetachSdkVersion);
       }
 
-      if ((options.notification != null || options.notificationObject != null) && mDetachSdkVersion != null) {
+      if ((options.getNotification() != null || options.getNotificationObject() != null) && mDetachSdkVersion != null) {
         RNObject rctDeviceEventEmitter = new RNObject("com.facebook.react.modules.core.DeviceEventManagerModule$RCTDeviceEventEmitter");
         rctDeviceEventEmitter.loadVersion(mDetachSdkVersion);
 
         mReactInstanceManager.callRecursive("getCurrentReactContext")
           .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
-          .call("emit", "Exponent.notification", options.notificationObject.toWriteableMap(mDetachSdkVersion, "selected"));
+          .call("emit", "Exponent.notification", options.getNotificationObject().toWriteableMap(mDetachSdkVersion, "selected"));
       }
     } catch (Throwable e) {
       EXL.e(TAG, e);

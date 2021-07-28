@@ -31,6 +31,15 @@ public class ModuleRegistry: Sequence {
     }
   }
 
+  /**
+   Unregisters given module from the registry.
+   */
+  public func unregister(module: AnyModule) {
+    if let index = registry.firstIndex(where: { $1.module === module }) {
+      registry.remove(at: index)
+    }
+  }
+
   public func has(moduleWithName moduleName: String) -> Bool {
     return registry[moduleName] != nil
   }

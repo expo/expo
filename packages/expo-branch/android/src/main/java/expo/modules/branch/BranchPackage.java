@@ -7,8 +7,8 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 
-import org.unimodules.core.BasePackage;
-import org.unimodules.core.interfaces.InternalModule;
+import expo.modules.core.BasePackage;
+import expo.modules.core.interfaces.InternalModule;
 
 import java.util.Collections;
 import java.util.List;

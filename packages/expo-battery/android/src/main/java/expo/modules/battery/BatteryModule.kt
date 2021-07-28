@@ -6,12 +6,12 @@ import android.content.IntentFilter
 import android.os.BatteryManager
 import android.os.Build
 import android.os.PowerManager
-import org.unimodules.core.ExportedModule
-import org.unimodules.core.ModuleRegistry
-import org.unimodules.core.Promise
-import org.unimodules.core.interfaces.ExpoMethod
-import org.unimodules.core.interfaces.RegistryLifecycleListener
-import org.unimodules.core.interfaces.services.EventEmitter
+import expo.modules.core.ExportedModule
+import expo.modules.core.ModuleRegistry
+import expo.modules.core.Promise
+import expo.modules.core.interfaces.ExpoMethod
+import expo.modules.core.interfaces.RegistryLifecycleListener
+import expo.modules.core.interfaces.services.EventEmitter
 
 class BatteryModule(context: Context) : ExportedModule(context), RegistryLifecycleListener {
   private val NAME = "ExpoBattery"

@@ -127,7 +127,7 @@ def generateBasePackageList(List<Unimodule> unimodules) {
 
   fileBuilder.append("import java.util.Arrays;\n")
   fileBuilder.append("import java.util.List;\n")
-  fileBuilder.append("import org.unimodules.core.interfaces.Package;\n\n")
+  fileBuilder.append("import expo.modules.core.interfaces.Package;\n\n")
 
   fileBuilder.append("public class BasePackageList {\n")
   fileBuilder.append("  public List<Package> getPackageList() {\n")

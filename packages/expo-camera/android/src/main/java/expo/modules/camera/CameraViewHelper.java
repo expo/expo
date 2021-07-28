@@ -17,7 +17,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-import org.unimodules.core.interfaces.services.EventEmitter;
+import expo.modules.core.interfaces.services.EventEmitter;
 import expo.modules.camera.events.BarCodeScannedEvent;
 import expo.modules.camera.events.CameraMountErrorEvent;
 import expo.modules.camera.events.CameraReadyEvent;

@@ -241,8 +241,8 @@ public abstract class BaseExperienceActivity extends MultipleVersionReactNativeA
         ErrorActivity.addError(error);
 
         // Just use the last error message for now, is there a better way to do this?
-        errorMessage = error.errorMessage;
-        if (error.isFatal) {
+        errorMessage = error.getErrorMessage();
+        if (error.isFatal()) {
           isFatal = true;
         }
       }

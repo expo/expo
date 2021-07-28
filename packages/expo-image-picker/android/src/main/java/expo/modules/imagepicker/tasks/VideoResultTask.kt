@@ -7,7 +7,7 @@ import android.os.AsyncTask
 import android.os.Bundle
 import expo.modules.imagepicker.ImagePickerConstants
 import expo.modules.imagepicker.fileproviders.FileProvider
-import org.unimodules.core.Promise
+import expo.modules.core.Promise
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException

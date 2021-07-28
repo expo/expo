@@ -9,8 +9,8 @@ import android.view.WindowManager;
 
 import java.util.List;
 
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.interfaces.services.EventEmitter;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.interfaces.services.EventEmitter;
 
 import expo.modules.interfaces.barcodescanner.BarCodeScannerResult;
 import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings;

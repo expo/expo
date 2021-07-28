@@ -9,12 +9,11 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
 
-import org.unimodules.adapters.react.ApplicationLifecycleDispatcher;
-import org.unimodules.adapters.react.ReactNativeHostWrapper;
-
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import expo.modules.adapters.react.ApplicationLifecycleDispatcher;
+import expo.modules.adapters.react.ReactNativeHostWrapper;
 import expo.modules.devlauncher.DevLauncherController;
 
 public class MainApplication extends Application implements ReactApplication {

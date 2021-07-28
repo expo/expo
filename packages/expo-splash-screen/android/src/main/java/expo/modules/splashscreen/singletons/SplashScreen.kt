@@ -4,7 +4,7 @@ import android.app.Activity
 import android.util.Log
 import android.view.ViewGroup
 import expo.modules.splashscreen.*
-import org.unimodules.core.interfaces.SingletonModule
+import expo.modules.core.interfaces.SingletonModule
 import java.util.*
 
 object SplashScreen : SingletonModule {

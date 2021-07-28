@@ -8,12 +8,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.webkit.URLUtil;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.arguments.ReadableArguments;
-import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.utilities.FileUtilities;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.Promise;
+import expo.modules.core.arguments.ReadableArguments;
+import expo.modules.core.interfaces.ExpoMethod;
+import expo.modules.core.utilities.FileUtilities;
 
 import java.io.File;
 import java.io.FileOutputStream;

@@ -3,7 +3,7 @@
 
 @implementation EXBannerViewManager
 
-UM_EXPORT_MODULE(CTKBannerViewManager)
+EX_EXPORT_MODULE(CTKBannerViewManager)
 
 - (UIView *)view
 {
@@ -20,12 +20,12 @@ UM_EXPORT_MODULE(CTKBannerViewManager)
   return @[@"onAdPress", @"onAdError"];
 }
 
-UM_VIEW_PROPERTY(size, NSNumber *, EXBannerView)
+EX_VIEW_PROPERTY(size, NSNumber *, EXBannerView)
 {
   [view setSize:value];
 }
 
-UM_VIEW_PROPERTY(placementId, NSString *, EXBannerView)
+EX_VIEW_PROPERTY(placementId, NSString *, EXBannerView)
 {
   [view setPlacementId:value];
 }

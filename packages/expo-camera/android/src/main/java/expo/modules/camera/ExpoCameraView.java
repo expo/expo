@@ -12,11 +12,11 @@ import android.view.View;
 import com.google.android.cameraview.CameraView;
 import com.google.android.cameraview.Size;
 
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.interfaces.LifecycleEventListener;
-import org.unimodules.core.interfaces.services.EventEmitter;
-import org.unimodules.core.interfaces.services.UIManager;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.Promise;
+import expo.modules.core.interfaces.LifecycleEventListener;
+import expo.modules.core.interfaces.services.EventEmitter;
+import expo.modules.core.interfaces.services.UIManager;
 
 import java.io.File;
 import java.io.IOException;

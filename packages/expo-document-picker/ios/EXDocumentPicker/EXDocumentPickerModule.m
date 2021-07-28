@@ -2,7 +2,7 @@
 
 
 #import <EXDocumentPicker/EXDocumentPickerModule.h>
-#import <UMCore/UMUtilitiesInterface.h>
+#import <ExpoModulesCore/EXUtilitiesInterface.h>
 #import <ExpoModulesCore/EXFileSystemInterface.h>
 
 #import <UIKit/UIKit.h>
@@ -62,12 +62,12 @@ static NSString * EXConvertMimeTypeToUTI(NSString *mimeType)
 
 @interface EXDocumentPickerModule () <UIDocumentPickerDelegate, UIAdaptivePresentationControllerDelegate>
 
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) id<EXFileSystemInterface> fileSystem;
-@property (nonatomic, weak) id<UMUtilitiesInterface> utilities;
+@property (nonatomic, weak) id<EXUtilitiesInterface> utilities;
 
-@property (nonatomic, strong) UMPromiseResolveBlock resolve;
-@property (nonatomic, strong) UMPromiseRejectBlock reject;
+@property (nonatomic, strong) EXPromiseResolveBlock resolve;
+@property (nonatomic, strong) EXPromiseRejectBlock reject;
 
 @property (nonatomic, assign) BOOL shouldCopyToCacheDirectory;
 
@@ -75,22 +75,22 @@ static NSString * EXConvertMimeTypeToUTI(NSString *mimeType)
 
 @implementation EXDocumentPickerModule
 
-UM_EXPORT_MODULE(ExpoDocumentPicker);
+EX_EXPORT_MODULE(ExpoDocumentPicker);
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
   
   if (_moduleRegistry != nil) {
     _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
-    _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
+    _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
   }
 }
 
-UM_EXPORT_METHOD_AS(getDocumentAsync,
+EX_EXPORT_METHOD_AS(getDocumentAsync,
                     options:(NSDictionary *)options
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   if (_resolve != nil) {
     return reject(@"E_DOCUMENT_PICKER", @"Different document picking in progress. Await other document picking first.", nil);
@@ -110,10 +110,10 @@ UM_EXPORT_METHOD_AS(getDocumentAsync,
     
   _shouldCopyToCacheDirectory = options[@"copyToCacheDirectory"] && [options[@"copyToCacheDirectory"] boolValue] == YES;
 
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
 
   dispatch_async(dispatch_get_main_queue(), ^{
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     UIDocumentPickerViewController *documentPickerVC;
 
     @try {
@@ -186,12 +186,16 @@ UM_EXPORT_METHOD_AS(getDocumentAsync,
       return;
     }
   }
+    
+  NSString *extension = [url pathExtension];
+  NSString *mimeType = [EXDocumentPickerModule getMimeType:extension];
   
   _resolve(@{
              @"type": @"success",
              @"uri": [newUrl absoluteString],
              @"name": [url lastPathComponent],
              @"size": @(fileSize),
+             @"mimeType": mimeType
              });
   _resolve = nil;
   _reject = nil;
@@ -239,6 +243,12 @@ UM_EXPORT_METHOD_AS(getDocumentAsync,
   }
   
   return folderSize;
+}
+
++ (NSString *)getMimeType:(NSString *)fileExtension{
+  NSString *UTI = (__bridge_transfer NSString *)UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)fileExtension, NULL);
+  NSString *mimeType = (__bridge_transfer NSString *)UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)UTI, kUTTagClassMIMEType);
+  return mimeType;
 }
 
 @end

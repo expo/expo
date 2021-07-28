@@ -4,7 +4,7 @@ import android.os.Bundle;
 
 import com.facebook.react.ReactPackage;
 
-import org.unimodules.core.interfaces.Package;
+import expo.modules.core.interfaces.Package;
 
 import java.util.List;
 

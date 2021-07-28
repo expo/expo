@@ -5,20 +5,25 @@ public class CellularModule: Module {
   public func definition() -> ModuleDefinition {
     name("ExpoCellular")
     constants {
-      // FIXME: Carrier details shouldn't be constants.
-      // Constants are returned to JS only once, but the carrier may change over time.
-      let carrier = Self.currentCarrier()
-
-      return [
-        "allowsVoip": carrier?.allowsVOIP,
-        "carrier": carrier?.carrierName,
-        "isoCountryCode": carrier?.isoCountryCode,
-        "mobileCountryCode": carrier?.mobileCountryCode,
-        "mobileNetworkCode": carrier?.mobileNetworkCode
-      ]
+      Self.getCurrentCellularInfo()
     }
     method("getCellularGenerationAsync") { () -> Int in
       Self.currentCellularGeneration().rawValue
+    }
+    method("allowsVoipAsync") { () -> Bool? in
+      Self.currentCarrier()?.allowsVOIP
+    }
+    method("getIsoCountryCodeAsync") { () -> String? in
+      Self.currentCarrier()?.isoCountryCode
+    }
+    method("getCarrierNameAsync") { () -> String? in
+      Self.currentCarrier()?.carrierName
+    }
+    method("getMobileCountryCodeAsync") { () -> String? in
+      Self.currentCarrier()?.mobileCountryCode
+    }
+    method("getMobileNetworkCodeAsync") { () -> String? in
+      Self.currentCarrier()?.mobileNetworkCode
     }
   }
 
@@ -62,6 +67,20 @@ public class CellularModule: Module {
       }
       return .unknown
     }
+  }
+
+  static func getCurrentCellularInfo() -> [String : Any?] {
+    let carrier = Self.currentCarrier()
+    let generation = Self.currentCellularGeneration()
+
+    return [
+      "allowsVoip": carrier?.allowsVOIP,
+      "carrier": carrier?.carrierName,
+      "isoCountryCode": carrier?.isoCountryCode,
+      "mobileCountryCode": carrier?.mobileCountryCode,
+      "mobileNetworkCode": carrier?.mobileNetworkCode,
+      "generation": generation.rawValue,
+    ]
   }
 
   static func currentRadioAccessTechnology() -> String? {

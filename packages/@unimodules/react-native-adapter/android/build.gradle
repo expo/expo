@@ -2,9 +2,6 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 
-// Import autolinking script
-apply from: "../scripts/autolinking.gradle"
-
 group = 'org.unimodules'
 version = '6.4.0'
 
@@ -48,16 +45,6 @@ uploadArchives {
   }
 }
 
-// A task generating a package list of expo modules.
-task generateExpoModulesPackageList {
-  doLast {
-    generateExpoModulesPackageList()
-  }
-}
-
-// Run that task during prebuilding phase.
-preBuild.dependsOn "generateExpoModulesPackageList"
-
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 30)
 
@@ -76,13 +63,6 @@ android {
   lintOptions {
     abortOnError false
   }
-  sourceSets {
-    main {
-      java {
-        srcDirs += new File(project.buildDir, generatedFilesSrcDir)
-      }
-    }
-  }
 }
 
 apply from: project(":unimodules-core").file("../unimodules-core.gradle")
@@ -97,7 +77,3 @@ dependencies {
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
 }
-
-// Link expo modules as dependencies of the adapter. It uses `api` configuration so they all will be visible for the app as well.
-// A collection of the dependencies depends on the options passed to `useExpoModules` in your project's `settings.gradle`.
-addExpoModulesDependencies(project)

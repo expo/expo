@@ -10,7 +10,7 @@ import android.view.TextureView;
 
 import java.util.List;
 
-import org.unimodules.core.ModuleRegistry;
+import expo.modules.core.ModuleRegistry;
 
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface;
 import expo.modules.interfaces.barcodescanner.BarCodeScannerProviderInterface;

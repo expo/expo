@@ -6,13 +6,13 @@ import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.speech.tts.Voice;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.LifecycleEventListener;
-import org.unimodules.core.interfaces.services.EventEmitter;
-import org.unimodules.core.interfaces.services.UIManager;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.Promise;
+import expo.modules.core.interfaces.ExpoMethod;
+import expo.modules.core.interfaces.LifecycleEventListener;
+import expo.modules.core.interfaces.services.EventEmitter;
+import expo.modules.core.interfaces.services.UIManager;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;

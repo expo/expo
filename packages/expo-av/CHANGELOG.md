@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Default audio recording settings on ios are now `extension: '.m4a'` and `outputFormat: RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC` so as to ensure cross-platform compatibility. ([#13492](https://github.com/expo/expo/pull/13492) by [@actuallymentor](https://github.com/actuallymentor))
+
 ### 🎉 New features
 
 - Add web support for recording. ([#8721](https://github.com/expo/expo/pull/8721) by [@WazzaJB](https://github.com/WazzaJB) and [@mnightingale](https://github.com/mnightingale))
@@ -14,6 +16,8 @@
 - Fix inline playback on Safari iOS (web). ([#13628](https://github.com/expo/expo/pull/13628) by [@andreibarabas](https://github.com/andreibarabas) and [@IjzerenHein](https://github.com/IjzerenHein))
 
 ### 💡 Others
+
+- Migrated from `@unimodules/core` to `expo-modules-core`. ([#13745](https://github.com/expo/expo/pull/13745) by [@tsapeta](https://github.com/tsapeta))
 
 ## 9.2.3 — 2021-06-30
 

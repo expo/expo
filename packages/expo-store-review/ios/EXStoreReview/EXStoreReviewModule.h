@@ -1,8 +1,8 @@
 //  Copyright © 2018 650 Industries. All rights reserved.
 
-#import <UMCore/UMExportedModule.h>
-#import <UMCore/UMModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXExportedModule.h>
+#import <ExpoModulesCore/EXModuleRegistryConsumer.h>
 
-@interface EXStoreReviewModule : UMExportedModule
+@interface EXStoreReviewModule : EXExportedModule
 
 @end

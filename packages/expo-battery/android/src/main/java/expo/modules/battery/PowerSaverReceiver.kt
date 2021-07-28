@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.PowerManager
-import org.unimodules.core.interfaces.services.EventEmitter
+import expo.modules.core.interfaces.services.EventEmitter
 
 private val POWERMODE_EVENT_NAME = "Expo.powerModeDidChange"
 
