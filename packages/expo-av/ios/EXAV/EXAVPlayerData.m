@@ -199,7 +199,6 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 
 - (void)installTap
 {
-  // TODO: Call function again when `currentItem` changed?
   AVPlayerItem *item = [_player currentItem];
   // TODO: Do we need to do this for every track in `item.tracks`?
   AVAssetTrack *track = item.tracks.firstObject.assetTrack;
@@ -924,6 +923,9 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
             }
             [strongSelf.player insertItem:removedPlayerItem afterItem:nil];
           }
+          
+          // Tap is installed per item, so we re-install for the new item.
+          [self installTap];
         }
       } else if (object == strongSelf.player.currentItem) {
         if ([keyPath isEqualToString:EXAVPlayerDataObserverStatusKeyPath]) {
