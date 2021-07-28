@@ -47,7 +47,7 @@ using namespace facebook;
       [sound addSampleBufferCallback:^(AudioBuffer *buffer, double timestamp) {
         auto channelsCount = (size_t) buffer->mNumberChannels;
         auto framesCount = buffer->mDataByteSize;
-        double *data = (double *) buffer->mData;
+        float *data = (float *) buffer->mData;
         
         // TODO: Avoid copy by directly using ArrayBuffer?
         auto channels = jsi::Array(runtime, channelsCount);
@@ -60,7 +60,7 @@ using namespace facebook;
           //    so for 2 channels we run [0, 2, 4, ..] and [1, 3, 5, ..]
           //    and for 1 channel we run [0, 1, 2, ..]
           for (auto frameIndex = channelIndex; frameIndex < framesCount; frameIndex += channelsCount) {
-            double frame = data[frameIndex];
+            double frame = (double) data[frameIndex];
             frames.setValueAtIndex(runtime, frameIndex, jsi::Value(frame));
           }
           
