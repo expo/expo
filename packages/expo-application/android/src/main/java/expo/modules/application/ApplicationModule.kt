@@ -36,7 +36,7 @@ class ApplicationModule(private val mContext: Context) : ExportedModule(mContext
   override fun onCreate(moduleRegistry: ModuleRegistry) {
     mModuleRegistry = moduleRegistry
     mActivityProvider = moduleRegistry.getModule(ActivityProvider::class.java)
-    mActivity = mActivityProvider!!.currentActivity
+    mActivity = mActivityProvider?.currentActivity
   }
 
   override fun getConstants(): Map<String, Any> {
