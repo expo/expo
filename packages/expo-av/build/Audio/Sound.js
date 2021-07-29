@@ -1,28 +1,87 @@
-import { EventEmitter } from 'expo-modules-core';
+import { EventEmitter, Platform } from '@unimodules/core';
 import { PlaybackMixin, assertStatusValuesInBounds, getNativeSourceAndFullInitialStatusForLoadAsync, getUnloadedStatus, } from '../AV';
 import ExponentAV from '../ExponentAV';
 import { throwIfAudioIsDisabled } from './AudioAvailability';
 export class Sound {
-    _loaded = false;
-    _loading = false;
-    _key = null;
-    _lastStatusUpdate = null;
-    _lastStatusUpdateTime = null;
-    _subscriptions = [];
-    _eventEmitter = new EventEmitter(ExponentAV);
-    _coalesceStatusUpdatesInMillis = 100;
-    _onPlaybackStatusUpdate = null;
-    /** @deprecated Use `Sound.createAsync()` instead */
-    static create = async (source, initialStatus = {}, onPlaybackStatusUpdate = null, downloadFirst = true) => {
-        console.warn(`Sound.create is deprecated in favor of Sound.createAsync with the same API except for the new method name`);
-        return Sound.createAsync(source, initialStatus, onPlaybackStatusUpdate, downloadFirst);
-    };
-    static createAsync = async (source, initialStatus = {}, onPlaybackStatusUpdate = null, downloadFirst = true) => {
-        const sound = new Sound();
-        sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
-        const status = await sound.loadAsync(source, initialStatus, downloadFirst);
-        return { sound, status };
-    };
+    constructor() {
+        this._loaded = false;
+        this._loading = false;
+        this._key = null;
+        this._lastStatusUpdate = null;
+        this._lastStatusUpdateTime = null;
+        this._subscriptions = [];
+        this._eventEmitter = new EventEmitter(ExponentAV);
+        this._coalesceStatusUpdatesInMillis = 100;
+        this._onPlaybackStatusUpdate = null;
+        this._onAudioSampleReceived = null;
+        this._internalStatusUpdateCallback = ({ key, status, }) => {
+            if (this._key === key) {
+                this._callOnPlaybackStatusUpdateForNewStatus(status);
+            }
+        };
+        this._internalErrorCallback = ({ key, error }) => {
+            if (this._key === key) {
+                this._errorCallback(error);
+            }
+        };
+        this._errorCallback = (error) => {
+            this._clearSubscriptions();
+            this._loaded = false;
+            this._key = null;
+            this._callOnPlaybackStatusUpdateForNewStatus(getUnloadedStatus(error));
+        };
+        // ### Unified playback API ### (consistent with Video.js)
+        // All calls automatically call onPlaybackStatusUpdate as a side effect.
+        // Get status API
+        this.getStatusAsync = async () => {
+            if (this._loaded) {
+                return this._performOperationAndHandleStatusAsync(() => ExponentAV.getStatusForSound(this._key));
+            }
+            const status = getUnloadedStatus();
+            this._callOnPlaybackStatusUpdateForNewStatus(status);
+            return status;
+        };
+    }
+    get onAudioSampleReceived() {
+        return this._onAudioSampleReceived;
+    }
+    set onAudioSampleReceived(callback) {
+        if (global.__av_sound_setOnAudioSampleReceivedCallback == null) {
+            if (Platform.OS === 'android' || Platform.OS === 'ios') {
+                throw new Error('Failed to set Audio Sample Buffer callback! The JSI function seems to not be installed correctly.');
+            }
+            else {
+                throw new Error(`'onAudioSampleReceived' is not supported on ${Platform.OS}!`);
+            }
+        }
+        if (this._key == null) {
+            throw new Error('Cannot set Audio Sample Buffer callback when the Sound instance has not been successfully loaded/initialized!');
+        }
+        if (typeof this._key !== 'number') {
+            throw new Error(`Cannot set Audio Sample Buffer callback when Sound instance key is of type ${typeof this
+                ._key}! (expected: number)`);
+        }
+        this._onAudioSampleReceived = callback;
+        global.__av_sound_setOnAudioSampleReceivedCallback(this._key, callback);
+    }
+    static getAverageLoudness(sampleOrChannel) {
+        if ('frames' in sampleOrChannel) {
+            // it's a single `AudioChannel`
+            // https://developer.apple.com/documentation/accelerate/1450655-vdsp_rmsqv
+            const frameSum = sampleOrChannel.frames.reduce((prev, curr) => {
+                const x = curr ** 2;
+                return prev + x;
+            }, 0);
+            const rmsValue = Math.sqrt(frameSum / sampleOrChannel.frames.length);
+            const decibel = 10 * Math.log10(rmsValue); // ranges from -160dB to 0dB
+            return (160 + decibel) / 160; // map 0...160 to 0...1
+        }
+        else {
+            // it's a full `AudioSample`
+            const sumOfAllChannels = sampleOrChannel.channels.reduce((prev, curr) => prev + this.getAverageLoudness(curr), 0);
+            return sumOfAllChannels / sampleOrChannel.channels.length;
+        }
+    }
     // Internal methods
     _callOnPlaybackStatusUpdateForNewStatus(status) {
         const shouldDismissBasedOnCoalescing = this._lastStatusUpdateTime &&
@@ -45,16 +104,6 @@ export class Sound {
             throw new Error('Cannot complete operation because sound is not loaded.');
         }
     }
-    _internalStatusUpdateCallback = ({ key, status, }) => {
-        if (this._key === key) {
-            this._callOnPlaybackStatusUpdateForNewStatus(status);
-        }
-    };
-    _internalErrorCallback = ({ key, error }) => {
-        if (this._key === key) {
-            this._errorCallback(error);
-        }
-    };
     // TODO: We can optimize by only using time observer on native if (this._onPlaybackStatusUpdate).
     _subscribeToNativeEvents() {
         if (this._loaded) {
@@ -66,23 +115,6 @@ export class Sound {
         this._subscriptions.forEach(e => e.remove());
         this._subscriptions = [];
     }
-    _errorCallback = (error) => {
-        this._clearSubscriptions();
-        this._loaded = false;
-        this._key = null;
-        this._callOnPlaybackStatusUpdateForNewStatus(getUnloadedStatus(error));
-    };
-    // ### Unified playback API ### (consistent with Video.js)
-    // All calls automatically call onPlaybackStatusUpdate as a side effect.
-    // Get status API
-    getStatusAsync = async () => {
-        if (this._loaded) {
-            return this._performOperationAndHandleStatusAsync(() => ExponentAV.getStatusForSound(this._key));
-        }
-        const status = getUnloadedStatus();
-        this._callOnPlaybackStatusUpdateForNewStatus(status);
-        return status;
-    };
     setOnPlaybackStatusUpdate(onPlaybackStatusUpdate) {
         this._onPlaybackStatusUpdate = onPlaybackStatusUpdate;
         this.getStatusAsync();
@@ -149,17 +181,17 @@ export class Sound {
             shouldPlay: true,
         }));
     }
-    // Methods of the Playback interface that are set via PlaybackMixin
-    playAsync;
-    playFromPositionAsync;
-    pauseAsync;
-    stopAsync;
-    setPositionAsync;
-    setRateAsync;
-    setVolumeAsync;
-    setIsMutedAsync;
-    setIsLoopingAsync;
-    setProgressUpdateIntervalAsync;
 }
+/** @deprecated Use `Sound.createAsync()` instead */
+Sound.create = async (source, initialStatus = {}, onPlaybackStatusUpdate = null, downloadFirst = true) => {
+    console.warn(`Sound.create is deprecated in favor of Sound.createAsync with the same API except for the new method name`);
+    return Sound.createAsync(source, initialStatus, onPlaybackStatusUpdate, downloadFirst);
+};
+Sound.createAsync = async (source, initialStatus = {}, onPlaybackStatusUpdate = null, downloadFirst = true) => {
+    const sound = new Sound();
+    sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+    const status = await sound.loadAsync(source, initialStatus, downloadFirst);
+    return { sound, status };
+};
 Object.assign(Sound.prototype, PlaybackMixin);
 //# sourceMappingURL=Sound.js.map
