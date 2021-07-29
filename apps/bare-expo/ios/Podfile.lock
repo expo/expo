@@ -138,6 +138,11 @@ PODS:
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React
+  - expo-dev-launcher/Tests (0.6.5):
+    - expo-dev-menu-interface
+    - EXUpdatesInterface
+    - React
+    - React-CoreModules
   - expo-dev-launcher/Unsafe (0.6.5):
     - expo-dev-menu-interface
     - EXUpdatesInterface
@@ -714,6 +719,7 @@ DEPENDENCIES:
   - EXPermissions (from `../../../packages/expo-permissions/ios`)
   - expo-dev-client (from `../../../packages/expo-dev-client`)
   - expo-dev-launcher (from `../../../packages/expo-dev-launcher`)
+  - expo-dev-launcher/Tests (from `../../../packages/expo-dev-launcher`)
   - expo-dev-menu (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu-interface (from `../../../packages/expo-dev-menu-interface`)
   - expo-image (from `../../../packages/expo-image`)
@@ -1171,7 +1177,7 @@ SPEC CHECKSUMS:
   EXNotifications: 296d9487163c2c08fffec5e79a5f9094bc016d9c
   EXPermissions: c7bead8f093700d5fcfb4f41238430a51702c5c8
   expo-dev-client: 6f833f384c5fcc59e96a91268601dabcd16f70f0
-  expo-dev-launcher: 696f20b99996080a3eebdaa723627a614e526ada
+  expo-dev-launcher: 820a1c30483718a054a2ef0498a99cd588bfa82a
   expo-dev-menu: c1d43574828f37cb541a0bb52fe7bb7829586147
   expo-dev-menu-interface: 848563c91c9f36f963a8456e885129a46f4cdfa1
   expo-image: ea170930bd8bc42328ee74ff4dc861ca31587dc8
@@ -1270,6 +1276,6 @@ SPEC CHECKSUMS:
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 0bc068eb4bf5e58571139cbf292a92e626939289
+PODFILE CHECKSUM: f331210d64cfd0446d6e7c8df31842a096c50f66
 
 COCOAPODS: 1.10.1
