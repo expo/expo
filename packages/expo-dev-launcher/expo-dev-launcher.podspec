@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
   s.source         = { :git => 'https://github.com/github_account/expo-development-client.git', :tag => "#{s.version}" }
   s.source_files   = 'ios/**/*.{h,m,swift,cpp}'
   s.preserve_paths = 'ios/**/*.{h,m,swift}'
-  s.exclude_files  = 'ios/Unsafe/**/*.{h,m,mm,swift,cpp}'
+  s.exclude_files  = ['ios/Unsafe/**/*.{h,m,mm,swift,cpp}', 'ios/Tests/**/*.{h,m,swift}']
   s.requires_arc   = true
   s.header_dir     = 'EXDevLauncher'
 
@@ -46,6 +46,11 @@ Pod::Spec.new do |s|
   
   s.subspec 'Main' do |main|
     main.dependency "expo-dev-launcher/Unsafe"
+  end
+
+  s.test_spec 'Tests' do |test_spec|
+    test_spec.source_files = 'ios/Tests/**/*.{h,m,swift}'
+    test_spec.dependency "React-CoreModules"
   end
   
   s.default_subspec = 'Main'
