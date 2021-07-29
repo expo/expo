@@ -1,6 +1,4 @@
-//
-// Created by Marc Rousavy on 12.07.21.
-//
+// Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
 #include "JPlayerData.h"
 

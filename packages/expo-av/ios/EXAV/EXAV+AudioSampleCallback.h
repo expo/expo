@@ -1,9 +1,4 @@
-//
-//  EXAV+AudioSampleCallback.h
-//  EXAV
-//
-//  Created by Marc Rousavy on 09.07.21.
-//
+// Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
 #pragma once
 
