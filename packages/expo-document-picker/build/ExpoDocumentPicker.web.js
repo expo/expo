@@ -22,6 +22,7 @@ export default {
             input.addEventListener('change', () => {
                 if (input.files) {
                     const targetFile = input.files[0];
+                    const mimeType = targetFile.type;
                     const reader = new FileReader();
                     reader.onerror = () => {
                         reject(new Error(`Failed to read the selected media because the operation failed.`));
@@ -31,6 +32,7 @@ export default {
                         resolve({
                             type: 'success',
                             uri,
+                            mimeType,
                             name: targetFile.name,
                             file: targetFile,
                             lastModified: targetFile.lastModified,
