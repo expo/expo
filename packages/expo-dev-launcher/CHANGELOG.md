@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed issue where Expo-hosted manifest URLs with `/index.exp?...` suffix could not be opened properly.
+
 ### 💡 Others
 
 - Add basic setup for iOS unit tests. ([#13824](https://github.com/expo/expo/pull/13824) by [@esamelson](https://github.com/esamelson))
