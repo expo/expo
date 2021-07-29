@@ -33,8 +33,8 @@ export async function test(t) {
         );
         t.expect(result).toBeDefined();
         t.expect(typeof result.uri).toBe('string');
-        t.expect(typeof result.width).toBe('number');
-        t.expect(typeof result.height).toBe('number');
+        t.expect(result.width).toBe(100);
+        t.expect(result.height).toBe(100);
       });
 
       t.it('saves with default format', async () => {
