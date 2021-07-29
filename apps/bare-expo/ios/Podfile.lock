@@ -153,6 +153,7 @@ PODS:
   - expo-dev-launcher/Tests (0.6.5):
     - expo-dev-menu-interface
     - EXUpdatesInterface
+    - OHHTTPStubs
     - React
     - React-CoreModules
   - expo-dev-launcher/Unsafe (0.6.5):
@@ -414,6 +415,19 @@ PODS:
     - nanopb/encode (= 2.30907.0)
   - nanopb/decode (2.30907.0)
   - nanopb/encode (2.30907.0)
+  - OHHTTPStubs (9.1.0):
+    - OHHTTPStubs/Default (= 9.1.0)
+  - OHHTTPStubs/Core (9.1.0)
+  - OHHTTPStubs/Default (9.1.0):
+    - OHHTTPStubs/Core
+    - OHHTTPStubs/JSON
+    - OHHTTPStubs/NSURLSession
+    - OHHTTPStubs/OHPathHelpers
+  - OHHTTPStubs/JSON (9.1.0):
+    - OHHTTPStubs/Core
+  - OHHTTPStubs/NSURLSession (9.1.0):
+    - OHHTTPStubs/Core
+  - OHHTTPStubs/OHPathHelpers (9.1.0)
   - OpenSSL-Universal (1.1.180)
   - PromisesObjC (1.2.12)
   - Protobuf (3.15.8)
@@ -899,6 +913,7 @@ SPEC REPOS:
     - MLKitFaceDetection
     - MLKitVision
     - nanopb
+    - OHHTTPStubs
     - OpenSSL-Universal
     - PromisesObjC
     - Protobuf
@@ -1255,7 +1270,7 @@ SPEC CHECKSUMS:
   EXNotifications: f0d0a38e97c9a790f5fb3c14efab79b9ece83a7e
   EXPermissions: 916efb5b817cb0a40160c0cd2f369af3c23a78be
   expo-dev-client: afef34fe62fd2f853cb3feb7b0ea1da3ed7717e9
-  expo-dev-launcher: 820a1c30483718a054a2ef0498a99cd588bfa82a
+  expo-dev-launcher: 0b3fe43607f31238f49445e7310e185675061762
   expo-dev-menu: c1d43574828f37cb541a0bb52fe7bb7829586147
   expo-dev-menu-interface: 848563c91c9f36f963a8456e885129a46f4cdfa1
   expo-image: 2fded43b1489487d7e84911caaadc821258f4905
@@ -1311,6 +1326,7 @@ SPEC CHECKSUMS:
   MLKitFaceDetection: 5b92261dd6e4205e3dab0df62537ac3f4e90e5db
   MLKitVision: 51385878c9100024478971856510f9271ff555b5
   nanopb: 59221d7f958fb711001e6a449489542d92ae113e
+  OHHTTPStubs: 90eac6d8f2c18317baeca36698523dc67c513831
   OpenSSL-Universal: 1aa4f6a6ee7256b83db99ec1ccdaa80d10f9af9b
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
   Protobuf: adb85cd18a15bd1a777c158af9fd6e612a0e6d69
