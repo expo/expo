@@ -58,7 +58,7 @@ void JAVManager::installJSIBindings(jlong jsRuntimePointer,
 
         if (argsCount > 1 && args[1].isObject() && !args[1].isUndefined()) {
             // second parameter received, it's the callback function.
-            auto message = "Setting Audio Sample Buffer Callback for Player " + std::to_string(playerId) + "..."
+            auto message = "Setting Audio Sample Buffer Callback for Player " + std::to_string(playerId) + "...";
             __android_log_write(ANDROID_LOG_INFO, TAG, message.c_str());
 
             auto callback = args[1].asObject(runtime).asFunction(runtime);
