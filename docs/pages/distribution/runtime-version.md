@@ -2,12 +2,13 @@
 title: Runtime Version
 ---
 
-Expo Update allows you to publish over the air updates to apps. The update must be for an app running a
-[compatible](../workflow/publishing/#what-version-of-the-app-will-my) runtime. You may use a runtime other than an Expo SDK, by specifying a runtime version.
+> Custom runtime versions are not supported on the classic build system (`expo build`); these apps will always use the SDK version as the basis for determining runtime compatibility. 
+
+Over-the-air updates with `expo-updates` will only work in binaries with a [compatible](../workflow/publishing/#what-version-of-the-app-will-my) runtime. By default, the runtime version is the Expo SDK version: the runtime is the set of libraries in the Expo SDK. Apps built with EAS Build will include only the dependencies that are present at the time that the app binary is built, and so the Expo SDK version will often not properly describe the runtime of the app. In these cases, you can start using `runtimeVersion` and it will take precedence over the Expo SDK version.
 
 The runtime version should be specified in your `app.json`:
 
-```typescript
+```json
 {
 	expo: {
 		...
@@ -15,13 +16,12 @@ The runtime version should be specified in your `app.json`:
 	}
 }
 ```
-## Publishing
+## Setting the runtime version for an update
 
-[Publishes](../workflow/publishing/#how-to-publish) run with the runtime version set in the `app.json` will be delivered to builds running the same runtime version.
+[Updates](/workflow/publishing.md#how-to-publish) published with the runtime version set in the `app.json` will be delivered to builds running the same runtime version, and only to those builds.
 
-## Builds
+## Setting the runtime version for a build
 
-Apps running a custom runtime version can be built with [EAS Build](../build/introduction/).
 
 There are two ways to set the runtime version of a build.
 
