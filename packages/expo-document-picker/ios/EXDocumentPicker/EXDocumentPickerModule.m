@@ -97,17 +97,8 @@ EX_EXPORT_METHOD_AS(getDocumentAsync,
   }
   _resolve = resolve;
   _reject = reject;
-  
-  NSString *mimeType = options[@"type"] ?: @"*/*";
-  NSArray *mimeTypes;
-  if ([mimeType isKindOfClass:[NSString class]]) {
-      mimeTypes = @[mimeType];
-  } else if ([mimeType isKindOfClass:[NSArray class]]) {
-      mimeTypes = mimeType;
-  } else {
-    return reject(@"E_DOCUMENT_PICKER", @"Wrong mime type.", nil);
-  }
     
+  NSArray *mimeTypes = options[@"type"] ?: @[@"*/*"];
   _shouldCopyToCacheDirectory = options[@"copyToCacheDirectory"] && [options[@"copyToCacheDirectory"] boolValue] == YES;
 
   EX_WEAKIFY(self);

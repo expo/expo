@@ -24,8 +24,8 @@ private const val TAG = "ExpoDocumentPicker"
 private const val OPEN_DOCUMENT_CODE = 4137
 
 class DocumentPickerModule(
-  mContext: Context,
-  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
+    mContext: Context,
+    private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
 ) : ExportedModule(mContext), ActivityEventListener {
   private var mPromise: Promise? = null
   private var mCopyToCacheDirectory = true
@@ -53,9 +53,11 @@ class DocumentPickerModule(
     mCopyToCacheDirectory = pickerOptions.copyToCacheDirectory
     val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
       addCategory(Intent.CATEGORY_OPENABLE)
-      type = pickerOptions.type
-      pickerOptions.types?.let {
-        putExtra(Intent.EXTRA_MIME_TYPES, it)
+      type = if (pickerOptions.types.size > 1) {
+        putExtra(Intent.EXTRA_MIME_TYPES, pickerOptions.types)
+        "*/*"
+      } else {
+        pickerOptions.types[0]
       }
     }
     mActivityProvider.currentActivity.startActivityForResult(intent, OPEN_DOCUMENT_CODE)
@@ -115,9 +117,9 @@ class DocumentPickerModule(
 
   private fun copyDocumentToCacheDirectory(documentUri: Uri, name: String): String? {
     val outputFilePath = FileUtilities.generateOutputPath(
-      context.cacheDir,
-      "DocumentPicker",
-      FilenameUtils.getExtension(name)
+        context.cacheDir,
+        "DocumentPicker",
+        FilenameUtils.getExtension(name)
     )
     val outputFile = File(outputFilePath)
     try {
