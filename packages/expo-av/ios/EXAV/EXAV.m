@@ -110,7 +110,7 @@ EX_EXPORT_MODULE(ExponentAV);
   if (jsRuntimePtr) {
     [self installJSIBindingsForRuntime:jsRuntimePtr withSoundDictionary:_soundDictionary];
   } else {
-    UMLogWarn(@"EXAV: Cannot install Audio Sample Buffer callback. Do you have 'Remote Debugging' enabled in your app's Developer Menu (https://reactnative.dev/docs/debugging)? Audio Sample Buffer callbacks are not supported while using Remote Debugging, you will need to disable it to use them.");
+    UMLogWarn(@"EXAV: Cannot install Audio Sample Buffer callback. Do you have 'Remote Debugging' enabled in your app's Developer Menu (https://docs.expo.dev/workflow/debugging)? Audio Sample Buffer callbacks are not supported while using Remote Debugging, you will need to disable it to use them.");
   }
   
   return @{
