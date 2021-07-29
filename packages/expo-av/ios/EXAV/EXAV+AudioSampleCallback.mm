@@ -27,7 +27,7 @@ using namespace facebook;
 
     auto avId = static_cast<int>(args[0].asNumber());
 
-    NSLog(@"SET CALLBACK FOR RECORDER %i...", avId);
+    EXLogInfo(@"Setting Audio Sample Buffer callback for Player #%i...", avId);
     auto sound = [strongSoundDictionary objectForKey:@(avId)];
     if (sound == nil) {
       auto message = [NSString stringWithFormat:@"Sound Instance with ID %i does not exist!", avId];

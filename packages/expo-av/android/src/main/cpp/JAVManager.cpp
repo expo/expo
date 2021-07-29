@@ -58,7 +58,8 @@ void JAVManager::installJSIBindings(jlong jsRuntimePointer,
 
         if (argsCount > 1 && args[1].isObject() && !args[1].isUndefined()) {
             // second parameter received, it's the callback function.
-            __android_log_write(ANDROID_LOG_INFO, TAG, "Setting Sample Buffer Callback...");
+            auto message = "Setting Audio Sample Buffer Callback for Player " + playerId + "..."
+            __android_log_write(ANDROID_LOG_INFO, TAG, message.c_str());
 
             auto callback = args[1].asObject(runtime).asFunction(runtime);
             auto callbackShared = std::make_shared<jsi::Function>(std::move(callback));
@@ -112,7 +113,6 @@ void JAVManager::installJSIBindings(jlong jsRuntimePointer,
             mediaPlayer->unsetSampleBufferCallback();
         }
 
-        __android_log_write(ANDROID_LOG_INFO, TAG, "Finished.");
         return jsi::Value::undefined();
     };
     runtime.global().setProperty(runtime,
