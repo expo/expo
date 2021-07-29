@@ -5,8 +5,8 @@ import android.content.Context;
 import java.util.Collections;
 import java.util.List;
 
-import expo.modules.core.BasePackage;
-import expo.modules.core.ExportedModule;
+import org.unimodules.core.BasePackage;
+import org.unimodules.core.ExportedModule;
 
 public class InAppPurchasesPackage extends BasePackage {
   @Override

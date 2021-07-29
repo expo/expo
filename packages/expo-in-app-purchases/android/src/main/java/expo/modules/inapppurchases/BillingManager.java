@@ -25,8 +25,8 @@ import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
 
-import expo.modules.core.interfaces.services.EventEmitter;
-import expo.modules.core.Promise;
+import org.unimodules.core.interfaces.services.EventEmitter;
+import org.unimodules.core.Promise;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -133,7 +133,7 @@ public class BillingManager implements PurchasesUpdatedListener {
       Purchase.PurchasesResult purchasesResult = mBillingClient.queryPurchases(BillingClient.SkuType.SUBS);
 
       if (mBillingClient == null ||
-              purchasesResult.getResponseCode() != BillingClient.BillingResponse.OK) {
+              purchasesResult.getResponseCode() != BillingResponseCode.OK) {
         promise.reject("SUB_NOT_QUERIED", "Unable to retrieve latest subscriptions");
         return;
       }

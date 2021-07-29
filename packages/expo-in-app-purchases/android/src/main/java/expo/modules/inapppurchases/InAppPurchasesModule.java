@@ -5,13 +5,13 @@ import java.util.List;
 import android.content.Context;
 import android.app.Activity;
 
-import expo.modules.core.ExportedModule;
-import expo.modules.core.ModuleRegistry;
-import expo.modules.core.Promise;
-import expo.modules.core.interfaces.ExpoMethod;
-import expo.modules.core.interfaces.ActivityProvider;
-import expo.modules.core.interfaces.RegistryLifecycleListener;
-import expo.modules.core.interfaces.services.EventEmitter;
+import org.unimodules.core.ExportedModule;
+import org.unimodules.core.ModuleRegistry;
+import org.unimodules.core.Promise;
+import org.unimodules.core.interfaces.ExpoMethod;
+import org.unimodules.core.interfaces.ActivityProvider;
+import org.unimodules.core.interfaces.RegistryLifecycleListener;
+import org.unimodules.core.interfaces.services.EventEmitter;
 
 public class InAppPurchasesModule extends ExportedModule implements RegistryLifecycleListener {
   private static final String TAG = InAppPurchasesModule.class.getSimpleName();
