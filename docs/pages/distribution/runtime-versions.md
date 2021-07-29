@@ -1,5 +1,5 @@
 ---
-title: Runtime Version
+title: Runtime Versions
 ---
 
 > Custom runtime versions are not supported on the classic build system (`expo build`); these apps will always use the SDK version as the basis for determining runtime compatibility. 
@@ -10,10 +10,9 @@ The runtime version should be specified in your `app.json`:
 
 ```json
 {
-	expo: {
-		...
-		runtimeVersion: "2.718",
-	}
+  "expo": {
+    "runtimeVersion": "2.718"
+  }
 }
 ```
 ## Setting the runtime version for an update
@@ -28,14 +27,14 @@ There are two ways to set the runtime version of a build.
 1. (Recommended) After setting the runtime version in your `app.json`, run `expo prebuild`.
 2. Edit Expo.plist on iOS and AndroidManifest.xml on Android. In Expo.plist, add an entry whose key is `EXUpdatesRuntimeVersion` and value is a string set to the desired runtime version. In AndroidManifest.xml, add a `<meta-data>` element whose `android:name` attribute is `expo.modules.updates.EXPO_RUNTIME_VERSION` and `android:value` attribute is the desired runtime version.
 
-	### iOS
+### Ios
 
-	```diff
-	+ <key>EXUpdatesRuntimeVersion</key>
-    + <string>2.718</string>
-	```
-	### Android
+```DIFF
++ <KEY>exuPDATESrUNTIMEvERSION</KEY>
++ <STRING>2.718</STRING>
+```
+### aNDROID
 
-	```diff
-	+ <meta-data android:name="expo.modules.updates.EXPO_RUNTIME_VERSION" android:value="2.718"/>
-	```
+```DIFF
++ <META-DATA ANDROID:NAME="EXPO.MODULES.UPDATES.expo_runtime_version" ANDROID:VALUE="2.718"/>
+```
