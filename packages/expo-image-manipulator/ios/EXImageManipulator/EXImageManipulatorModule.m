@@ -48,7 +48,7 @@ EX_EXPORT_METHOD_AS(manipulateAsync,
   NSString *path = [url.path stringByStandardizingPath];
 
   if ([[url scheme] isEqualToString:@"data"]) {
-    NSData *data = [[NSData alloc]initWithContentsOfURL:url];
+    NSData *data = [[NSData alloc] initWithContentsOfURL:url];
     if (data != nil) {
       UIImage *image = [UIImage imageWithData:data];
       image = [self fixOrientation:image];
