@@ -54,6 +54,9 @@ export const localAssets: LocalAssets = ExpoUpdates.localAssets ?? {};
 export const isEmergencyLaunch: boolean = ExpoUpdates.isEmergencyLaunch || false;
 
 // @docsMissing
+/**
+ * @hidden
+ */
 export const isUsingEmbeddedAssets: boolean = ExpoUpdates.isUsingEmbeddedAssets || false;
 
 let _manifest = ExpoUpdates.manifest;
