@@ -42,6 +42,12 @@ export interface AudioSample {
 
 type TAudioSampleCallback = ((sample: AudioSample) => void) | null;
 
+declare let global: {
+  __av_sound_setOnAudioSampleReceivedCallback:
+    | ((key: number, callback: TAudioSampleCallback) => void)
+    | undefined;
+};
+
 type AudioInstance = number | HTMLMediaElement | null;
 export class Sound implements Playback {
   _loaded: boolean = false;
@@ -59,7 +65,6 @@ export class Sound implements Playback {
     return this._onAudioSampleReceived;
   }
   set onAudioSampleReceived(callback: TAudioSampleCallback) {
-    // @ts-expect-error
     if (global.__av_sound_setOnAudioSampleReceivedCallback == null) {
       if (Platform.OS === 'android' || Platform.OS === 'ios') {
         throw new Error(
@@ -81,7 +86,6 @@ export class Sound implements Playback {
       );
     }
     this._onAudioSampleReceived = callback;
-    // @ts-expect-error
     global.__av_sound_setOnAudioSampleReceivedCallback(this._key, callback);
   }
 
