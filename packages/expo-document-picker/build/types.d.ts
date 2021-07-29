@@ -5,8 +5,8 @@ export declare type DocumentPickerOptions = {
     /**
      * The [MIME type](https://en.wikipedia.org/wiki/Media_type) of the documents that are available
      * to be picked. Is also supports wildcards like `'image/*'` to choose any image. To allow any type
-     * of document you can use `'* /*'`.
-     * @default `'* /*'`
+     * of document you can use `'&ast;/*'`.
+     * @default `'&ast;/*'`
      */
     type?: string;
     /**

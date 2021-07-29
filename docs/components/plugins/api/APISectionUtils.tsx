@@ -226,8 +226,8 @@ export type CommentTextBlockProps = {
   beforeContent?: JSX.Element;
 };
 
-export const parseCommentContent = (content?: string) =>
-  content && content.length ? content.replace(/\* \//g, '*/') : content;
+export const parseCommentContent = (content?: string): string =>
+  content && content.length ? content.replace(/&ast;/g, '*') : '';
 
 export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
   comment,
