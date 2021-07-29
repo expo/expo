@@ -26,7 +26,7 @@ Apps running a custom runtime version can be built with [EAS Build](../build/int
 There are two ways to set the runtime version of a build.
 
 1. (Recommended) After setting the runtime version in your `app.json`, run `expo prebuild`.
-2. Manually edit the Plist/AndroidManifest.xml:
+2. Edit Expo.plist on iOS and AndroidManifest.xml on Android. In Expo.plist, add an entry whose key is `EXUpdatesRuntimeVersion` and value is a string set to the desired runtime version. In AndroidManifest.xml, add a `<meta-data>` element whose `android:name` attribute is `expo.modules.updates.EXPO_RUNTIME_VERSION` and `android:value` attribute is the desired runtime version.
 
 	### iOS
 
