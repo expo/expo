@@ -36,6 +36,9 @@ export const updateId: string | null =
 export const releaseChannel: string = ExpoUpdates.releaseChannel ?? 'default';
 
 // @docsMissing
+/**
+ * @hidden
+ */
 export const localAssets: LocalAssets = ExpoUpdates.localAssets ?? {};
 
 // @needsAudit
