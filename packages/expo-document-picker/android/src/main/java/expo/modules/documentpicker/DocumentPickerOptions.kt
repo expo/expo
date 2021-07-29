@@ -5,6 +5,10 @@ import expo.modules.core.Promise
 data class DocumentPickerOptions(val copyToCacheDirectory: Boolean, val types: Array<String>) {
   companion object {
     fun optionsFromMap(options: Map<String, Any?>, promise: Promise): DocumentPickerOptions? {
+      if (options.containsKey("type") && options["type"] == null) {
+        promise.reject("ERR_INVALID_OPTION", "type must be a list of strings")
+        return null
+      }
       var mimeTypes = arrayListOf("*/*")
       options["type"]?.let {
         val types = it as ArrayList<*>
