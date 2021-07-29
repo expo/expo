@@ -689,7 +689,7 @@ class Kernel : KernelInterface() {
             }
           }
 
-          override fun onBundleCompleted(localBundlePath: String) {
+          override fun onBundleCompleted(localBundlePath: String?) {
             Exponent.getInstance().runOnUiThread { sendBundleToExperienceActivity(localBundlePath) }
           }
 
