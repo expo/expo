@@ -12,6 +12,9 @@ export declare const updateId: string | null;
  * The name of the release channel currently configured in this standalone or bare app.
  */
 export declare const releaseChannel: string;
+/**
+ * @hidden
+ */
 export declare const localAssets: LocalAssets;
 /**
  * `expo-updates` does its very best to always launch monotonically newer versions of your app so
@@ -23,6 +26,9 @@ export declare const localAssets: LocalAssets;
  * can use this constant to provide special behavior for this rare case.
  */
 export declare const isEmergencyLaunch: boolean;
+/**
+ * @hidden
+ */
 export declare const isUsingEmbeddedAssets: boolean;
 /**
  * If `expo-updates` is enabled, this is the [manifest](/guides/how-expo-works#expo-development-server)

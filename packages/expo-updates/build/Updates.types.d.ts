@@ -62,4 +62,7 @@ export declare type UpdateEvent = {
      */
     message?: string;
 };
+/**
+ * @hidden
+ */
 export declare type LocalAssets = Record<string, string>;

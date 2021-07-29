@@ -18,6 +18,9 @@ export const updateId = ExpoUpdates.updateId && typeof ExpoUpdates.updateId === 
  */
 export const releaseChannel = ExpoUpdates.releaseChannel ?? 'default';
 // @docsMissing
+/**
+ * @hidden
+ */
 export const localAssets = ExpoUpdates.localAssets ?? {};
 // @needsAudit
 /**
@@ -31,6 +34,9 @@ export const localAssets = ExpoUpdates.localAssets ?? {};
  */
 export const isEmergencyLaunch = ExpoUpdates.isEmergencyLaunch || false;
 // @docsMissing
+/**
+ * @hidden
+ */
 export const isUsingEmbeddedAssets = ExpoUpdates.isUsingEmbeddedAssets || false;
 let _manifest = ExpoUpdates.manifest;
 if (ExpoUpdates.manifestString) {
