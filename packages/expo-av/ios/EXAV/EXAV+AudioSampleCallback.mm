@@ -41,8 +41,7 @@ using namespace facebook;
     
     if (argsCount > 1 && args[1].isObject() && !args[1].isUndefined() && !args[1].isNull()) {
       // second parameter received, it's the callback function.
-      auto callback = args[1].asObject(runtime).asFunction(runtime);
-      auto callbackShared = std::make_shared<jsi::Function>(std::move(callback));
+      __block auto callback = args[1].asObject(runtime).asFunction(runtime);
       
       [sound addSampleBufferCallback:^(AudioBuffer *buffer, double timestamp) {
         auto channelsCount = (size_t) buffer->mNumberChannels;
@@ -71,7 +70,7 @@ using namespace facebook;
         auto sample = jsi::Object(runtime);
         sample.setProperty(runtime, "channels", channels);
         sample.setProperty(runtime, "timestamp", jsi::Value(timestamp));
-        callbackShared->call(runtime, sample);
+        callback.call(runtime, sample);
       }];
     } else {
       // second parameter omitted or undefined, so remove callback
