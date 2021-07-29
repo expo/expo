@@ -19,11 +19,10 @@ class NewRawManifest(json: JSONObject) : RawManifest(json) {
   @Throws(JSONException::class)
   override fun getStableLegacyID(): String = getID()
 
-  /**
-   * Incorrect for now until we figure out how to get this in the new manifest format.
-   */
   @Throws(JSONException::class)
-  override fun getScopeKey(): String = getID()
+  override fun getScopeKey(): String {
+    return json.getJSONObject("extra").getString("scopeKey")
+  }
 
   override fun getProjectID(): String? {
     val easConfig = getExtra()?.optJSONObject("eas") ?: return null

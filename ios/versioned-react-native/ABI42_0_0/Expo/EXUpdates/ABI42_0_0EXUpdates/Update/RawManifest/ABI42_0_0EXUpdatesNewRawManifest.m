@@ -13,7 +13,7 @@
 }
 
 - (NSString *)scopeKey {
-  return self.rawId;
+  return [[self.rawManifestJSON dictionaryForKey:@"extra"] stringForKey:@"scopeKey"];
 }
 
 - (NSString *)projectId {
@@ -44,7 +44,7 @@
       return [runtimeVersion substringWithRange:matchRange];
     }
   }
-  
+
   return nil;
 }
 
