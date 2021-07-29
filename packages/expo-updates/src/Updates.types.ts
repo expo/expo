@@ -78,4 +78,7 @@ export type UpdateEvent = {
 };
 
 // @docsMissing
+/**
+ * @hidden
+ */
 export type LocalAssets = Record<string, string>;
