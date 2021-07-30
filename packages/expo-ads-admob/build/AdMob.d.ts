@@ -1,7 +1,17 @@
-import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'expo-modules-core';
-export { PermissionResponse, PermissionStatus, PermissionExpiration };
+import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions } from 'expo-modules-core';
+export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };
 export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
 export declare function getPermissionsAsync(): Promise<PermissionResponse>;
+/**
+ * Check or request permissions for adsmob.
+ * This uses both `requestPermissionAsync` and `getPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = ExpoAdsAdMob.usePermission();
+ * ```
+ */
+export declare const usePermissions: (options?: PermissionHookOptions | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse | null>, () => Promise<PermissionResponse | null>];
 /**
  * Returns whether the AdMob API is enabled on the current device. This does not check the native configuration.
  *
