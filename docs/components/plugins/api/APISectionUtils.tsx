@@ -53,8 +53,11 @@ export const mdInlineRenderers: MDRenderers = {
 
 const nonLinkableTypes = [
   'ColorValue',
+  'E',
+  'EventSubscription',
   'File',
   'FileList',
+  'Manifest',
   'NativeSyntheticEvent',
   'Omit',
   'Pick',
@@ -251,7 +254,7 @@ export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
   const deprecationNote = deprecation ? (
     <Quote key="deprecation-note">
       {deprecation.text.trim().length ? (
-        <ReactMarkdown renderers={renderers}>{deprecation.text}</ReactMarkdown>
+        <ReactMarkdown renderers={mdInlineRenderers}>{deprecation.text}</ReactMarkdown>
       ) : (
         <B>Deprecated</B>
       )}

@@ -47,6 +47,16 @@ EX_EXPORT_METHOD_AS(manipulateAsync,
   }
   NSString *path = [url.path stringByStandardizingPath];
 
+  if ([[url scheme] isEqualToString:@"data"]) {
+    NSData *data = [[NSData alloc] initWithContentsOfURL:url];
+    if (data != nil) {
+      UIImage *image = [UIImage imageWithData:data];
+      image = [self fixOrientation:image];
+      [self manipulateImage:image actions:actions saveOptions:saveOptions resolver:resolve rejecter:reject];
+      return;
+    }
+  }
+
   if (!_fileSystem) {
     return reject(@"E_MISSING_MODULE", @"No FileSystem module.", nil);
   }

@@ -9,6 +9,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent
 import android.view.MotionEvent
+import android.view.inputmethod.InputMethodManager
+import androidx.core.content.ContextCompat.getSystemService
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.LifecycleEventListener
@@ -327,6 +329,15 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   }
 
   override fun onKeyEvent(keyCode: Int, event: KeyEvent): Boolean {
+    val imm = delegateActivity?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+    // The keyboard is active. We don't want to handle events that should go to text inputs.
+    // RN uses onKeyUp to handle all events connected with dev options. We need to do the same to override them.
+    // However, this event is also triggered when input is edited. A better way to handle that case
+    // is use onKeyDown event. However, it doesn't work well with key commands and we can't override RN implementation in that approach.
+    if (imm?.isAcceptingText != false) {
+      return false
+    }
+
     if (keyCode == KeyEvent.KEYCODE_MENU) {
       delegateActivity?.let { openMenu(it) }
       return true

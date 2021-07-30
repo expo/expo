@@ -1,15 +1,9 @@
-/**
- * An object returned by [`authenticateAsync`](#localauthenticationauthenticateasyncoptions) method.
- */
 export declare type LocalAuthenticationResult = {
-    /**
-     * A boolean indicating whether or not the authentication was successful.
-     */
-    success: boolean;
-    /**
-     * The error code in the case when authentication fails.
-     */
-    error?: string;
+    success: true;
+} | {
+    success: false;
+    error: string;
+    warning?: string;
 };
 export declare enum AuthenticationType {
     /**

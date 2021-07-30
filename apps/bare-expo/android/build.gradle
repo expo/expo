@@ -83,10 +83,15 @@ subprojects {
   spotless {
     kotlin {
       target '**/*.kt'
-      ktlint().userData([
-          "disabled_rules"          : "no-wildcard-imports,import-ordering",
-          "indent_size"             : "2",
-          "continuation_indent_size": "4"
+      ktlint("0.41.0").userData([
+        "disabled_rules"           : "no-wildcard-imports,import-ordering",
+        "charset"                  : "utf-8",
+        "end_of_line"              : "lf",
+        "indent_size"              : "2",
+        "indent_style"             : "space",
+        "insert_final_newline"     : "true",
+        "tab_width"                : "2",
+        "trim_trailing_whitespace" : "true"
       ])
       trimTrailingWhitespace()
       indentWithSpaces()

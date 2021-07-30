@@ -9,6 +9,7 @@
 - Use stable manifest ID where applicable. ([#12964](https://github.com/expo/expo/pull/12964) by [@wschurman](https://github.com/wschurman))
 - Update JS code to read manifest2 when manifest is not available. ([#13602](https://github.com/expo/expo/pull/13602) by [@wschurman](https://github.com/wschurman))
 - Update location of EAS projectId in new manifest. ([#13739](https://github.com/expo/expo/pull/13739) by [@wschurman](https://github.com/wschurman))
+- Update location of scopeKey in new manifest. ([#13817](https://github.com/expo/expo/pull/13817) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 

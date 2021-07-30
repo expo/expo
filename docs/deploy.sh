@@ -3,7 +3,7 @@
 set -euo pipefail
 
 scriptdir=$(dirname "${BASH_SOURCE[0]}")
-declare -a buckets=("docs.expo.io" "docs.expo.dev")
+declare -a buckets=("docs.expo.dev")
 target="${1-$scriptdir/out}"
 
 if [ ! -d "$target" ]; then

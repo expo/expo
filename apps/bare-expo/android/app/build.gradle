@@ -210,6 +210,9 @@ dependencies {
     }
 
     androidTestImplementation('com.wix:detox:+')
+
+    // LeakCanary 2 dependency
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
 }
 
 // Run this once to be able to run the application with BUCK
