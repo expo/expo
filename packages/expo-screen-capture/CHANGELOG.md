@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Export missing `Subscription` type. ([#13352](https://github.com/expo/expo/pull/13352) by [@Simek](https://github.com/Simek))
+- Refactor deprecated `Handler()` constructor([#13843](https://github.com/expo/expo/pull/13843) by [m1st4ke](https://github.com/m1st4ke))
 
 ## 3.2.0 — 2021-06-16
 
