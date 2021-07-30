@@ -65,6 +65,8 @@ const nonLinkableTypes = [
   'T',
   'TaskOptions',
   'Uint8Array',
+  'RequestPermissionMethod',
+  'GetPermissionMethod',
 ];
 
 const hardcodedTypeLinks: Record<string, string> = {

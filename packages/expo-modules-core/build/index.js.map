@@ -1,1 +1,1 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"AAAA,cAAc,wBAAwB,CAAC","sourcesContent":["export * from './PermissionsInterface';\n"]}
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"AAAA,cAAc,wBAAwB,CAAC;AACvC,cAAc,mBAAmB,CAAC","sourcesContent":["export * from './PermissionsInterface';\nexport * from './PermissionsHook';\n"]}
