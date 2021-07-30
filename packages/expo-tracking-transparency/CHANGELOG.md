@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add useTrackingPermissions hook from modules factory. ([#13864](https://github.com/expo/expo/pull/13864) by [@bycedric](https://github.com/bycedric))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
