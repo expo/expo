@@ -2,11 +2,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { PermissionResponse } from './PermissionsInterface';
 
-interface PermissionHookFactoryOptions {
+interface PermissionHookFactoryOptions<T extends PermissionResponse> {
   /** The permission method that requests the user to grant permission. */
-  requestMethod?: () => Promise<PermissionResponse>;
+  requestMethod?: () => Promise<T>;
   /** The permission method that only fetches the current permission status. */
-  getMethod?: () => Promise<PermissionResponse>;
+  getMethod?: () => Promise<T>;
 }
 
 export interface PermissionHookOptions {
@@ -17,19 +17,19 @@ export interface PermissionHookOptions {
 }
 
 // These types are identical, but improves the readability for suggestions in editors
-type RequestPermissionMethod = () => Promise<PermissionResponse | null>;
-type GetPermissionMethod = () => Promise<PermissionResponse | null>;
+type RequestPermissionMethod<T extends PermissionResponse> = () => Promise<T | null>;
+type GetPermissionMethod<T extends PermissionResponse> = () => Promise<T | null>;
 
 /**
  * Get or request permission for protected functionality within the app.
  * It uses separate permission requesters to interact with a single permission.
  * By default, the hook will only retrieve the permission status.
  */
-function usePermission(
-  options: PermissionHookOptions & PermissionHookFactoryOptions
-): [PermissionResponse | null, RequestPermissionMethod, GetPermissionMethod] {
+function usePermission<T extends PermissionResponse>(
+  options: PermissionHookOptions & PermissionHookFactoryOptions<T>
+): [T | null, RequestPermissionMethod<T>, GetPermissionMethod<T>] {
   const isMounted = useRef(true);
-  const [status, setStatus] = useState<PermissionResponse | null>(null);
+  const [status, setStatus] = useState<T | null>(null);
   const { getMethod, requestMethod, get = true, request = false } = options;
 
   const getPermission = useCallback(async () => {
@@ -69,6 +69,9 @@ function usePermission(
  * Create a new permission hook with the permission methods built-in.
  * This can be used to quickly create specific permission hooks in every module.
  */
-export function createPermissionHook(factoryOptions: PermissionHookFactoryOptions) {
-  return (options: PermissionHookOptions = {}) => usePermission({ ...factoryOptions, ...options });
+export function createPermissionHook<T extends PermissionResponse>(
+  factoryOptions: PermissionHookFactoryOptions<T>
+) {
+  return (options: PermissionHookOptions = {}) =>
+    usePermission<T>({ ...factoryOptions, ...options });
 }
