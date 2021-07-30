@@ -1,4 +1,4 @@
-import { PermissionStatus, PermissionResponse } from 'expo-modules-core';
+import { PermissionStatus, PermissionResponse, PermissionHookOptions } from 'expo-modules-core';
 import { LocationAccuracy, LocationCallback, LocationGeocodedAddress, LocationGeocodedLocation, LocationHeadingCallback, LocationHeadingObject, LocationLastKnownOptions, LocationObject, LocationOptions, LocationPermissionResponse, LocationProviderStatus, LocationRegion, LocationSubscription, LocationTaskOptions, LocationActivityType, LocationGeofencingEventType, LocationGeofencingRegionState, LocationGeocodingOptions } from './Location.types';
 import { LocationEventEmitter } from './LocationEventEmitter';
 import { setGoogleApiKey } from './LocationGoogleGeocoding';
@@ -62,6 +62,16 @@ export declare function getForegroundPermissionsAsync(): Promise<LocationPermiss
  */
 export declare function requestForegroundPermissionsAsync(): Promise<LocationPermissionResponse>;
 /**
+ * Check or request permissions for the foreground location.
+ * This uses both `requestForegroundPermissionsAsync` and `getForegroundPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Location.useForegroundPermissions();
+ * ```
+ */
+export declare const useForegroundPermissions: (options?: PermissionHookOptions | undefined) => [LocationPermissionResponse | null, () => Promise<LocationPermissionResponse | null>, () => Promise<LocationPermissionResponse | null>];
+/**
  * Gets the current state of background location permissions.
  */
 export declare function getBackgroundPermissionsAsync(): Promise<PermissionResponse>;
@@ -69,6 +79,16 @@ export declare function getBackgroundPermissionsAsync(): Promise<PermissionRespo
  * Requests the user to grant background location permissions.
  */
 export declare function requestBackgroundPermissionsAsync(): Promise<PermissionResponse>;
+/**
+ * Check or request permissions for the foreground location.
+ * This uses both `requestBackgroundPermissionsAsync` and `getBackgroundPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Location.useBackgroundPermissions();
+ * ```
+ */
+export declare const useBackgroundPermissions: (options?: PermissionHookOptions | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse | null>, () => Promise<PermissionResponse | null>];
 /**
  * Returns `true` if the device has location services enabled or `false` otherwise.
  */
@@ -86,6 +106,6 @@ export declare function hasStartedGeofencingAsync(taskName: string): Promise<boo
  */
 export declare function setApiKey(apiKey: string): void;
 export { LocationEventEmitter as EventEmitter, _getCurrentWatchId };
-export { LocationAccuracy as Accuracy, LocationActivityType as ActivityType, LocationGeofencingEventType as GeofencingEventType, LocationGeofencingRegionState as GeofencingRegionState, PermissionStatus, setGoogleApiKey, };
+export { LocationAccuracy as Accuracy, LocationActivityType as ActivityType, LocationGeofencingEventType as GeofencingEventType, LocationGeofencingRegionState as GeofencingRegionState, PermissionStatus, PermissionHookOptions, setGoogleApiKey, };
 export { installWebGeolocationPolyfill } from './GeolocationPolyfill';
 export * from './Location.types';

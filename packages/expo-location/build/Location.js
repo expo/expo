@@ -1,5 +1,5 @@
 import { Platform } from '@unimodules/core';
-import { PermissionStatus } from 'expo-modules-core';
+import { PermissionStatus, createPermissionHook, } from 'expo-modules-core';
 import ExpoLocation from './ExpoLocation';
 import { LocationAccuracy, LocationActivityType, LocationGeofencingEventType, LocationGeofencingRegionState, } from './Location.types';
 import { LocationEventEmitter } from './LocationEventEmitter';
@@ -130,6 +130,20 @@ export async function getForegroundPermissionsAsync() {
 export async function requestForegroundPermissionsAsync() {
     return await ExpoLocation.requestForegroundPermissionsAsync();
 }
+// @needsAudit
+/**
+ * Check or request permissions for the foreground location.
+ * This uses both `requestForegroundPermissionsAsync` and `getForegroundPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Location.useForegroundPermissions();
+ * ```
+ */
+export const useForegroundPermissions = createPermissionHook({
+    getMethod: getForegroundPermissionsAsync,
+    requestMethod: requestForegroundPermissionsAsync,
+});
 /**
  * Gets the current state of background location permissions.
  */
@@ -142,6 +156,20 @@ export async function getBackgroundPermissionsAsync() {
 export async function requestBackgroundPermissionsAsync() {
     return await ExpoLocation.requestBackgroundPermissionsAsync();
 }
+// @needsAudit
+/**
+ * Check or request permissions for the foreground location.
+ * This uses both `requestBackgroundPermissionsAsync` and `getBackgroundPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Location.useBackgroundPermissions();
+ * ```
+ */
+export const useBackgroundPermissions = createPermissionHook({
+    getMethod: getBackgroundPermissionsAsync,
+    requestMethod: requestBackgroundPermissionsAsync,
+});
 // --- Location service
 /**
  * Returns `true` if the device has location services enabled or `false` otherwise.
