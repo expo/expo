@@ -1,4 +1,4 @@
-import { Platform, UnavailabilityError } from 'expo-modules-core';
+import { createPermissionHook, Platform, UnavailabilityError } from 'expo-modules-core';
 import * as React from 'react';
 import { findNodeHandle } from 'react-native';
 import { PermissionStatus, } from './Camera.types';
@@ -79,9 +79,15 @@ export default class Camera extends React.Component {
         flashMode: CameraManager.FlashMode.off,
         whiteBalance: CameraManager.WhiteBalance.auto,
     };
+    /**
+     * @deprecated use `getCameraPermissionsAync` instead.
+     */
     static async getPermissionsAsync() {
         return CameraManager.getPermissionsAsync();
     }
+    /**
+     * @deprecated use `requestCameraPermissionsAync` instead.
+     */
     static async requestPermissionsAsync() {
         return CameraManager.requestPermissionsAsync();
     }
@@ -91,12 +97,40 @@ export default class Camera extends React.Component {
     static async requestCameraPermissionsAsync() {
         return CameraManager.requestCameraPermissionsAsync();
     }
+    // @needsAudit
+    /**
+     * Check or request permissions to access the camera.
+     * This uses both `requestCameraPermissionsAsync` and `getCameraPermissionsAsync` to interact with the permissions.
+     *
+     * @example
+     * ```ts
+     * const [status, requestPermission] = Camera.useCameraPermissions();
+     * ```
+     */
+    static useCameraPermissions = createPermissionHook({
+        getMethod: Camera.getCameraPermissionsAsync,
+        requestMethod: Camera.requestCameraPermissionsAsync,
+    });
     static async getMicrophonePermissionsAsync() {
         return CameraManager.getMicrophonePermissionsAsync();
     }
     static async requestMicrophonePermissionsAsync() {
         return CameraManager.requestMicrophonePermissionsAsync();
     }
+    // @needsAudit
+    /**
+     * Check or request permissions to access the microphone.
+     * This uses both `requestMicrophonePermissionsAsync` and `getMicrophonePermissionsAsync` to interact with the permissions.
+     *
+     * @example
+     * ```ts
+     * const [status, requestPermission] = Camera.useMicrophonePermissions();
+     * ```
+     */
+    static useMicrophonePermissions = createPermissionHook({
+        getMethod: Camera.getMicrophonePermissionsAsync,
+        requestMethod: Camera.requestMicrophonePermissionsAsync,
+    });
     _cameraHandle;
     _cameraRef;
     _lastEvents = {};

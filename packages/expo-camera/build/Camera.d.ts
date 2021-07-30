@@ -12,12 +12,38 @@ export default class Camera extends React.Component<CameraProps> {
         whiteBalance: Record<"auto" | "sunny" | "cloudy" | "shadow" | "incandescent" | "fluorescent" | "continuous" | "manual", string | number | undefined>;
     };
     static defaultProps: CameraProps;
+    /**
+     * @deprecated use `getCameraPermissionsAync` instead.
+     */
     static getPermissionsAsync(): Promise<PermissionResponse>;
+    /**
+     * @deprecated use `requestCameraPermissionsAync` instead.
+     */
     static requestPermissionsAsync(): Promise<PermissionResponse>;
     static getCameraPermissionsAsync(): Promise<PermissionResponse>;
     static requestCameraPermissionsAsync(): Promise<PermissionResponse>;
+    /**
+     * Check or request permissions to access the camera.
+     * This uses both `requestCameraPermissionsAsync` and `getCameraPermissionsAsync` to interact with the permissions.
+     *
+     * @example
+     * ```ts
+     * const [status, requestPermission] = Camera.useCameraPermissions();
+     * ```
+     */
+    static useCameraPermissions: (options?: import("expo-modules-core").PermissionHookOptions | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse | null>, () => Promise<PermissionResponse | null>];
     static getMicrophonePermissionsAsync(): Promise<PermissionResponse>;
     static requestMicrophonePermissionsAsync(): Promise<PermissionResponse>;
+    /**
+     * Check or request permissions to access the microphone.
+     * This uses both `requestMicrophonePermissionsAsync` and `getMicrophonePermissionsAsync` to interact with the permissions.
+     *
+     * @example
+     * ```ts
+     * const [status, requestPermission] = Camera.useMicrophonePermissions();
+     * ```
+     */
+    static useMicrophonePermissions: (options?: import("expo-modules-core").PermissionHookOptions | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse | null>, () => Promise<PermissionResponse | null>];
     _cameraHandle?: number | null;
     _cameraRef?: React.Component | null;
     _lastEvents: {
