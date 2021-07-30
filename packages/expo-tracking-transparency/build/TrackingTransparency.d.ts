@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions } from 'expo-modules-core';
 /**
  * Requests the user to authorize or deny access to app-related data that can be used for tracking
  * the user or the device. Examples of data used for tracking include email address, device ID,
@@ -22,7 +22,7 @@ import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'expo
 export declare function requestTrackingPermissionsAsync(): Promise<PermissionResponse>;
 /**
  * Checks whether or not the user has authorized the app to access app-related data that can be used
- * for tracking the user or the device. See `requestPermissionsAsync` for more details.
+ * for tracking the user or the device. See `requestTrackingPermissionsAsync` for more details.
  *
  * On Android, web, and iOS 13 and below, this method always returns that the permission was
  * granted.
@@ -38,6 +38,16 @@ export declare function requestTrackingPermissionsAsync(): Promise<PermissionRes
  */
 export declare function getTrackingPermissionsAsync(): Promise<PermissionResponse>;
 /**
+ * Check or ask the user to authorize the app and access app-related data that can be used
+ * for tracking the user or the device. See `requestTrackingPermissionsAsync` for more details.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = useTrackingPermissions();
+ * ```
+ */
+export declare const useTrackingPermissions: (options?: PermissionHookOptions | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse | null>, () => Promise<PermissionResponse | null>];
+/**
  * Returns whether the TrackingTransparency API is available on the current device.
  *
  * @returns Currently this is `true` on iOS 14 and above only. On devices where the
@@ -45,4 +55,4 @@ export declare function getTrackingPermissionsAsync(): Promise<PermissionRespons
  * resolve to `granted`.
  */
 export declare function isAvailable(): boolean;
-export { PermissionResponse, PermissionStatus, PermissionExpiration };
+export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };

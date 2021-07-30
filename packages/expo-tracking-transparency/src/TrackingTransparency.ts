@@ -2,7 +2,9 @@ import {
   PermissionResponse,
   PermissionStatus,
   PermissionExpiration,
+  PermissionHookOptions,
   UnavailabilityError,
+  createPermissionHook,
 } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
@@ -48,7 +50,7 @@ export async function requestTrackingPermissionsAsync(): Promise<PermissionRespo
 
 /**
  * Checks whether or not the user has authorized the app to access app-related data that can be used
- * for tracking the user or the device. See `requestPermissionsAsync` for more details.
+ * for tracking the user or the device. See `requestTrackingPermissionsAsync` for more details.
  *
  * On Android, web, and iOS 13 and below, this method always returns that the permission was
  * granted.
@@ -73,6 +75,21 @@ export async function getTrackingPermissionsAsync(): Promise<PermissionResponse>
   return await ExpoTrackingTransparency.getPermissionsAsync();
 }
 
+// @needsAudit
+/**
+ * Check or ask the user to authorize the app and access app-related data that can be used
+ * for tracking the user or the device. See `requestTrackingPermissionsAsync` for more details.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = useTrackingPermissions();
+ * ```
+ */
+export const useTrackingPermissions = createPermissionHook({
+  getMethod: getTrackingPermissionsAsync,
+  requestMethod: requestTrackingPermissionsAsync,
+});
+
 /**
  * Returns whether the TrackingTransparency API is available on the current device.
  *
@@ -88,4 +105,4 @@ export function isAvailable(): boolean {
   );
 }
 
-export { PermissionResponse, PermissionStatus, PermissionExpiration };
+export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };
