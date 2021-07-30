@@ -75,17 +75,17 @@ EX_EXPORT_MODULE(ExponentAV);
     _audioIsEnabled = YES;
     _currentAudioSessionMode = EXAVAudioSessionModeInactive;
     _isBackgrounded = NO;
-    
+
     _audioInterruptionMode = EXAudioInterruptionModeMixWithOthers;
     _playsInSilentMode = false;
     _allowsAudioRecording = false;
     _staysActiveInBackground = false;
-    
+
     _soundDictionaryKeyCount = 0;
     _soundDictionary = [NSMutableDictionary new];
     _isBeingObserved = NO;
     _videoSet = [NSHashTable weakObjectsHashTable];
-    
+
     _audioRecorderFilename = nil;
     _audioRecorderSettings = nil;
     _audioRecorder = nil;
@@ -104,7 +104,7 @@ EX_EXPORT_MODULE(ExponentAV);
 - (NSDictionary *)constantsToExport
 {
   // install JSI bindings here because `constantsToExport` is called when the JS runtime has been created
-  
+
   id<EXJavaScriptContextProvider> jsContextProvider = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXJavaScriptContextProvider)];
   void *jsRuntimePtr = [jsContextProvider javaScriptRuntimePointer];
   if (jsRuntimePtr) {
@@ -112,7 +112,7 @@ EX_EXPORT_MODULE(ExponentAV);
   } else {
     UMLogWarn(@"EXAV: Cannot install Audio Sample Buffer callback. Do you have 'Remote Debugging' enabled in your app's Developer Menu (https://docs.expo.dev/workflow/debugging)? Audio Sample Buffer callbacks are not supported while using Remote Debugging, you will need to disable it to use them.");
   }
-  
+
   return @{
     @"Qualities": @{
         @"Low": AVAudioTimePitchAlgorithmLowQualityZeroLatency,
@@ -141,7 +141,7 @@ EX_EXPORT_MODULE(ExponentAV);
 {
   [_kernelAudioSessionManagerDelegate moduleDidForeground:self];
   _isBackgrounded = NO;
-  
+
   [self _runBlockForAllAVObjects:^(NSObject<EXAVObject> *exAVObject) {
     [exAVObject appDidForeground];
   }];
@@ -152,7 +152,7 @@ EX_EXPORT_MODULE(ExponentAV);
   _isBackgrounded = YES;
   if (!_staysActiveInBackground) {
     [self _deactivateAudioSession]; // This will pause all players and stop all recordings
-    
+
     [self _runBlockForAllAVObjects:^(NSObject<EXAVObject> *exAVObject) {
       [exAVObject appDidBackgroundStayActive:NO];
     }];
@@ -205,7 +205,7 @@ EX_EXPORT_MODULE(ExponentAV);
   EXAudioInterruptionMode interruptionMode = ((NSNumber *)mode[@"interruptionModeIOS"]).intValue;
   BOOL allowsRecording = ((NSNumber *)mode[@"allowsRecordingIOS"]).boolValue;
   BOOL shouldPlayInBackground = ((NSNumber *)mode[@"staysActiveInBackground"]).boolValue;
-  
+
   if (!playsInSilentMode && interruptionMode == EXAudioInterruptionModeDuckOthers) {
     return EXErrorWithMessage(@"Impossible audio mode: playsInSilentMode == false and duckOthers == true cannot be set on iOS.");
   } else if (!playsInSilentMode && allowsRecording) {
@@ -218,12 +218,12 @@ EX_EXPORT_MODULE(ExponentAV);
         [_audioRecorder pause];
       }
     }
-    
+
     _playsInSilentMode = playsInSilentMode;
     _audioInterruptionMode = interruptionMode;
     _allowsAudioRecording = allowsRecording;
     _staysActiveInBackground = shouldPlayInBackground;
-    
+
     if (_currentAudioSessionMode != EXAVAudioSessionModeInactive) {
       return [self _updateAudioSessionCategoryForAudioSessionMode:[self _getAudioSessionModeRequired]];
     }
@@ -235,7 +235,7 @@ EX_EXPORT_MODULE(ExponentAV);
 {
   AVAudioSessionCategory requiredAudioCategory;
   AVAudioSessionCategoryOptions requiredAudioCategoryOptions = 0;
-  
+
   if (!_playsInSilentMode) {
     // _allowsRecording is guaranteed to be false, and _interruptionMode is guaranteed to not be EXAudioInterruptionModeDuckOthers (see above)
     if (_audioInterruptionMode == EXAudioInterruptionModeDoNotMix) {
@@ -259,25 +259,25 @@ EX_EXPORT_MODULE(ExponentAV);
         break;
     }
   }
-  
+
   if ([[_kernelAudioSessionManagerDelegate activeCategory] isEqual:requiredAudioCategory] && [_kernelAudioSessionManagerDelegate activeCategoryOptions] == requiredAudioCategoryOptions) {
     return nil;
   }
-  
+
   return [_kernelAudioSessionManagerDelegate setCategory:requiredAudioCategory withOptions:requiredAudioCategoryOptions forModule:self];
 }
 
 - (EXAVAudioSessionMode)_getAudioSessionModeRequired
 {
   __block EXAVAudioSessionMode audioSessionModeRequired = EXAVAudioSessionModeInactive;
-  
+
   [self _runBlockForAllAVObjects:^(NSObject<EXAVObject> *exAVObject) {
     EXAVAudioSessionMode audioSessionModeRequiredByThisObject = [exAVObject getAudioSessionModeRequired];
     if (audioSessionModeRequiredByThisObject > audioSessionModeRequired) {
       audioSessionModeRequired = audioSessionModeRequiredByThisObject;
     }
   }];
-  
+
   if (_audioRecorder) {
     if (_audioRecorderShouldBeginRecording || [_audioRecorder isRecording]) {
       audioSessionModeRequired = EXAVAudioSessionModeActive;
@@ -285,7 +285,7 @@ EX_EXPORT_MODULE(ExponentAV);
       audioSessionModeRequired = EXAVAudioSessionModeActiveMuted;
     }
   }
-  
+
   return audioSessionModeRequired;
 }
 
@@ -297,25 +297,25 @@ EX_EXPORT_MODULE(ExponentAV);
   if (_isBackgrounded && !_staysActiveInBackground && ![_kernelAudioSessionManagerDelegate isActiveForModule:self]) {
     return EXErrorWithMessage(@"This experience is currently in the background, so the audio session could not be activated.");
   }
-  
+
   EXAVAudioSessionMode audioSessionModeRequired = [self _getAudioSessionModeRequired];
-  
+
   if (audioSessionModeRequired == EXAVAudioSessionModeInactive) {
     return nil;
   }
-  
+
   NSError *error;
-  
+
   error = [self _updateAudioSessionCategoryForAudioSessionMode:audioSessionModeRequired];
   if (error) {
     return error;
   }
-  
+
   error = [_kernelAudioSessionManagerDelegate setActive:YES forModule:self];
   if (error) {
     return error;
   }
-  
+
   _currentAudioSessionMode = audioSessionModeRequired;
   return nil;
 }
@@ -325,7 +325,7 @@ EX_EXPORT_MODULE(ExponentAV);
   if (_currentAudioSessionMode == EXAVAudioSessionModeInactive) {
     return nil;
   }
-  
+
   // We must have all players, recorders, and videos paused in order to effectively deactivate the session.
   [self _runBlockForAllAVObjects:^(NSObject<EXAVObject> *exAVObject) {
     [exAVObject pauseImmediately];
@@ -333,9 +333,9 @@ EX_EXPORT_MODULE(ExponentAV);
   if (_audioRecorder && [_audioRecorder isRecording]) {
     [_audioRecorder pause];
   }
-  
+
   NSError *error = [_kernelAudioSessionManagerDelegate setActive:NO forModule:self];
-  
+
   if (!error) {
     _currentAudioSessionMode = EXAVAudioSessionModeInactive;
   }
@@ -345,13 +345,13 @@ EX_EXPORT_MODULE(ExponentAV);
 - (NSError *)demoteAudioSessionIfPossible
 {
   EXAVAudioSessionMode audioSessionModeRequired = [self _getAudioSessionModeRequired];
-  
+
   // Current audio session mode is lower than the required one
   // (we should rather promote the session than demote it).
   if (_currentAudioSessionMode <= audioSessionModeRequired) {
     return nil;
   }
-  
+
   // We require the session to be muted and it is active.
   // Let's only update the category.
   if (audioSessionModeRequired == EXAVAudioSessionModeActiveMuted) {
@@ -361,7 +361,7 @@ EX_EXPORT_MODULE(ExponentAV);
     }
     return error;
   }
-  
+
   // We require the session to be inactive and it is active, let's deactivate it!
   return [self _deactivateAudioSession];
 }
@@ -372,7 +372,7 @@ EX_EXPORT_MODULE(ExponentAV);
   if (interruptionType.unsignedIntegerValue == AVAudioSessionInterruptionTypeBegan) {
     _currentAudioSessionMode = EXAVAudioSessionModeInactive;
   }
-  
+
   [self _runBlockForAllAVObjects:^(NSObject<EXAVObject> *exAVObject) {
     [exAVObject handleAudioSessionInterruption:notification];
   }];
@@ -382,13 +382,13 @@ EX_EXPORT_MODULE(ExponentAV);
 {
   // See here: https://developer.apple.com/library/content/qa/qa1749/_index.html
   // (this is an unlikely notification to receive, but best practices suggests that we catch it just in case)
-  
+
   _currentAudioSessionMode = EXAVAudioSessionModeInactive;
-  
+
   [self _runBlockForAllAVObjects:^(NSObject<EXAVObject> *exAVObject) {
     [exAVObject handleMediaServicesReset:nil];
   }];
-  
+
   if (_audioRecorder) {
     [self _removeAudioRecorder:NO];
     [self _createNewAudioRecorder];
@@ -484,13 +484,13 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
 - (void)_setNewAudioRecorderFilenameAndSettings:(NSDictionary *)optionsFromJS
 {
   NSDictionary *iosOptionsFromJS = optionsFromJS[EXAudioRecordingOptionsKey];
-  
+
   NSString *extension = iosOptionsFromJS[EXAudioRecordingOptionExtensionKey];
   _audioRecorderFilename = [NSString stringWithFormat:@"recording-%@%@", [[NSUUID UUID] UUIDString], extension];
-  
+
   NSString *bitRateStrategy = [self _getBitRateStrategyFromEnum:iosOptionsFromJS[EXAudioRecordingOptionBitRateStrategyKey]];
   NSDictionary<NSString *, NSString *> *avKeysForRecordingOptionsKeys = [self _getAVKeysForRecordingOptionsKeys:bitRateStrategy];
-  
+
   NSMutableDictionary *recorderSettings = [NSMutableDictionary new];
   for (NSString *recordingOptionsKey in avKeysForRecordingOptionsKeys) {
     if (iosOptionsFromJS[recordingOptionsKey]) {
@@ -498,7 +498,7 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
     }
   }
   recorderSettings[AVEncoderBitRateStrategyKey] = bitRateStrategy;
-  
+
   if (
       iosOptionsFromJS[EXAudioRecordingOptionOutputFormatKey] &&
       [iosOptionsFromJS[EXAudioRecordingOptionOutputFormatKey] isKindOfClass:[NSString class]]
@@ -506,7 +506,7 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
     recorderSettings[AVFormatIDKey] =
     @([self _getFormatIDFromString:iosOptionsFromJS[EXAudioRecordingOptionOutputFormatKey]]);
   }
-  
+
   _audioRecorderSettings = recorderSettings;
 }
 
@@ -515,18 +515,18 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
   if (_audioRecorder) {
     return EXErrorWithMessage(@"Recorder is already prepared.");
   }
-  
+
   id<EXFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
-  
+
   if (!fileSystem) {
     return EXErrorWithMessage(@"No FileSystem module.");
   }
-  
+
   NSString *directory = [fileSystem.cachesDirectory stringByAppendingPathComponent:@"AV"];
   [fileSystem ensureDirExistsWithPath:directory];
   NSString *soundFilePath = [directory stringByAppendingPathComponent:_audioRecorderFilename];
   NSURL *soundFileURL = [NSURL fileURLWithPath:soundFilePath];
-  
+
   NSError *error;
   AVAudioRecorder *recorder = [[AVAudioRecorder alloc] initWithURL:soundFileURL
                                                           settings:_audioRecorderSettings
@@ -548,19 +548,19 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
     int durationMillisFromRecorder = [self _getDurationMillisOfRecordingAudioRecorder];
     // After stop, the recorder's duration goes to zero, so we replace it with the correct duration in this case.
     int durationMillis = durationMillisFromRecorder == 0 ? _audioRecorderDurationMillis : durationMillisFromRecorder;
-    
+
     NSMutableDictionary *result = [@{
       @"canRecord": @(YES),
       @"isRecording": @([_audioRecorder isRecording]),
       @"durationMillis": @(durationMillis),
     } mutableCopy];
-    
+
     if (_audioRecorder.meteringEnabled) {
       [_audioRecorder updateMeters];
       float currentLevel = [_audioRecorder averagePowerForChannel: 0];
       result[@"metering"] = @(currentLevel);
     }
-    
+
     return result;
   } else {
     return nil;
@@ -602,7 +602,7 @@ EX_EXPORT_METHOD_AS(setAudioIsEnabled,
                     rejecter:(EXPromiseRejectBlock)reject)
 {
   _audioIsEnabled = value;
-  
+
   if (!value) {
     [self _deactivateAudioSession];
   }
@@ -615,7 +615,7 @@ EX_EXPORT_METHOD_AS(setAudioMode,
                     rejecter:(EXPromiseRejectBlock)reject)
 {
   NSError *error = [self _setAudioMode:mode];
-  
+
   if (error) {
     reject(@"E_AUDIO_AUDIOMODE", nil, error);
   } else {
@@ -632,7 +632,7 @@ EX_EXPORT_METHOD_AS(loadForSound,
                     rejecter:(EXPromiseRejectBlock)loadError)
 {
   NSNumber *key = @(_soundDictionaryKeyCount++);
-  
+
   EX_WEAKIFY(self);
   EXAVPlayerData *data = [[EXAVPlayerData alloc] initWithEXAV:self
                                                    withSource:source
@@ -654,7 +654,7 @@ EX_EXPORT_METHOD_AS(loadForSound,
     }];
     [self _removeSoundForKey:key];
   };
-  
+
   data.statusUpdateCallback = ^(NSDictionary *status) {
     EX_ENSURE_STRONGIFY(self);
     if (self.isBeingObserved) {
@@ -662,7 +662,7 @@ EX_EXPORT_METHOD_AS(loadForSound,
       [self sendEventWithName:EXDidUpdatePlaybackStatusEventName body:response];
     }
   };
-  
+
   _soundDictionary[key] = data;
 }
 
@@ -812,10 +812,10 @@ EX_EXPORT_METHOD_AS(prepareAudioRecorder,
     reject(@"E_AUDIO_AUDIOMODE", @"Recording not allowed on iOS. Enable with Audio.setAudioModeAsync.", nil);
     return;
   }
-  
+
   [self _setNewAudioRecorderFilenameAndSettings:options];
   NSError *error = [self _createNewAudioRecorder];
-  
+
   if (_audioRecorder && !error) {
     _audioRecorderIsPreparing = true;
     error = [self promoteAudioSessionIfNecessary];
@@ -833,7 +833,7 @@ EX_EXPORT_METHOD_AS(prepareAudioRecorder,
     if (options[EXAudioRecordingOptionsIsMeteringEnabledKey]) {
       _audioRecorder.meteringEnabled = true;
     }
-    
+
     resolve(@{@"uri": [[_audioRecorder url] absoluteString],
               @"status": [self _getAudioRecorderStatus]});
     _audioRecorderIsPreparing = false;
@@ -928,9 +928,9 @@ EX_EXPORT_METHOD_AS(unloadAudioRecorder,
   [_kernelAudioSessionManagerDelegate moduleWillDeallocate:self];
   [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXAppLifecycleService)] unregisterAppLifecycleListener:self];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  
+
   // This will clear all @properties and deactivate the audio session:
-  
+
   for (NSObject<EXAVObject> *video in [_videoSet allObjects]) {
     [video pauseImmediately];
     [_videoSet removeObject:video];
