@@ -9,11 +9,12 @@
 #include <string>
 
 namespace expo {
+namespace av {
 
 using namespace facebook;
 using namespace jni;
 
-using TSelf = local_ref<HybridClass<expo::JPlayerData>::jhybriddata>;
+using TSelf = local_ref<HybridClass<expo::av::JPlayerData>::jhybriddata>;
 
 TSelf JPlayerData::initHybrid(alias_ref<HybridClass::jhybridobject> jThis) {
     return makeCxxInstance(jThis);
@@ -62,4 +63,5 @@ void JPlayerData::unsetSampleBufferCallback() {
     setEnableSampleBufferCallback(false);
 }
 
+} // namespace av
 } // namespace expo

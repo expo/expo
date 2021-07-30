@@ -7,7 +7,7 @@
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     return facebook::jni::initialize(vm, [] {
-        expo::JAVManager::registerNatives();
-        expo::JPlayerData::registerNatives();
+        expo::av::JAVManager::registerNatives();
+        expo::av::JPlayerData::registerNatives();
     });
 }

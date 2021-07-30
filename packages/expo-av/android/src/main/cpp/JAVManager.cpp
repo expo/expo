@@ -16,11 +16,12 @@
 #include <android/log.h>
 
 namespace expo {
+namespace av {
 
 using namespace facebook;
 using namespace jni;
 
-using TSelf = local_ref<HybridClass<expo::JAVManager>::jhybriddata>;
+using TSelf = local_ref<HybridClass<expo::av::JAVManager>::jhybriddata>;
 
 TSelf JAVManager::initHybrid(alias_ref<jhybridobject> jThis) {
     return makeCxxInstance(jThis);
@@ -123,4 +124,5 @@ void JAVManager::installJSIBindings(jlong jsRuntimePointer,
                                                                        function));
 }
 
+} // namespace av
 } // namespace expo

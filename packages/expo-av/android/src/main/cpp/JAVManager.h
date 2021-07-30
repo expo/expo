@@ -14,6 +14,7 @@
 #include "JPlayerData.h"
 
 namespace expo {
+namespace av {
 
 using namespace facebook;
 
@@ -38,4 +39,5 @@ private:
     JPlayerData* getMediaPlayerById(int id);
 };
 
+} // namespace av
 } // namespace expo

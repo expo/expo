@@ -8,6 +8,7 @@
 #include <memory>
 
 namespace expo {
+namespace av {
 
 using namespace facebook;
 using SampleBufferCallback = std::function<void(jni::local_ref<jni::JArrayByte>, double)>;
@@ -36,4 +37,5 @@ private:
     {}
 };
 
+} // namespace av
 } // namespace expo
