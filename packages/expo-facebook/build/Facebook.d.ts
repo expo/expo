@@ -1,6 +1,6 @@
-import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions } from 'expo-modules-core';
 import { FacebookAuthenticationCredential, FacebookLoginResult, FacebookOptions, FacebookInitializationOptions } from './Facebook.types';
-export { FacebookLoginResult, FacebookOptions, FacebookAuthenticationCredential, FacebookInitializationOptions, PermissionResponse, PermissionStatus, PermissionExpiration, };
+export { FacebookLoginResult, FacebookOptions, FacebookAuthenticationCredential, FacebookInitializationOptions, PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, };
 declare type Params = {
     [key: string]: string | number;
 };
@@ -37,6 +37,16 @@ export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
  * @returns A promise that resolves to an object of type [PermissionResponse](#permissionresponse).
  */
 export declare function getPermissionsAsync(): Promise<PermissionResponse>;
+/**
+ * Check or request permissions to use data tracking.
+ * This uses both `requestPermissionsAsync` and `getPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Facebook.usePermissions();
+ * ```
+ */
+export declare const usePermissions: (options?: PermissionHookOptions | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse | null>, () => Promise<PermissionResponse | null>];
 /**
  * Prompts the user to log into Facebook and grants your app permission to access their Facebook data. On iOS and Android, if the Facebook app isn't installed then a web view will be used to authenticate.
  *
