@@ -56,7 +56,7 @@ void JAVManager::installJSIBindings(jlong jsRuntimePointer,
             throw jsi::JSError(runtime, message.c_str());
         }
 
-        if (argsCount > 1 && args[1].isObject() && !args[1].isUndefined()) {
+        if (argsCount > 1 && args[1].isObject()) {
             // second parameter received, it's the callback function.
             auto message = "Setting Audio Sample Buffer Callback for Player " + std::to_string(playerId) + "...";
             __android_log_write(ANDROID_LOG_INFO, TAG, message.c_str());
@@ -83,7 +83,7 @@ void JAVManager::installJSIBindings(jlong jsRuntimePointer,
                     for (size_t ii = 0; ii < size; ii++) {
                         // `buffer` is interpreted as a 8-bit unsigned integer (byte), so it ranges from
                         // 0 to 255. To normalize it to a -1..1 scale we subtract 128 and divide by 128.
-                        double frame = ((double)buffer[ii] - 128) / 128.0;
+                        double frame = (static_cast<double>(buffer[ii]) - 128) / 128.0;
                         frames.setValueAtIndex(runtime, ii, jsi::Value(frame));
                     }
 
@@ -116,9 +116,9 @@ void JAVManager::installJSIBindings(jlong jsRuntimePointer,
         return jsi::Value::undefined();
     };
     runtime.global().setProperty(runtime,
-                                 "__av_sound_setOnAudioSampleReceivedCallback",
+                                 "__EXAV_setOnAudioSampleReceivedCallback",
                                  jsi::Function::createFromHostFunction(runtime,
-                                                                       jsi::PropNameID::forAscii(runtime, "__av_sound_setOnAudioSampleReceivedCallback"),
+                                                                       jsi::PropNameID::forAscii(runtime, "__EXAV_setOnAudioSampleReceivedCallback"),
                                                                        2,
                                                                        function));
 }

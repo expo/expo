@@ -34,7 +34,7 @@ using namespace facebook;
       throw jsi::JSError(runtime, message.UTF8String);
     }
 
-    if (argsCount > 1 && args[1].isObject() && !args[1].isUndefined() && !args[1].isNull()) {
+    if (argsCount > 1 && args[1].isObject()) {
       // second parameter received, it's the callback function.
       __block auto callback = args[1].asObject(runtime).asFunction(runtime);
 
@@ -76,9 +76,9 @@ using namespace facebook;
   };
 
   runtime.global().setProperty(runtime,
-                               "__av_sound_setOnAudioSampleReceivedCallback",
+                               "__EXAV_setOnAudioSampleReceivedCallback",
                                jsi::Function::createFromHostFunction(runtime,
-                                                                     jsi::PropNameID::forUtf8(runtime, "__av_sound_setOnAudioSampleReceivedCallback"),
+                                                                     jsi::PropNameID::forUtf8(runtime, "__EXAV_setOnAudioSampleReceivedCallback"),
                                                                      2, // [AV-Instance ID, Callback]
                                                                      std::move(setAudioSampleCallback)));
 }

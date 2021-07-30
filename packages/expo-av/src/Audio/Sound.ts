@@ -44,7 +44,7 @@ export type AudioSample = {
 type TAudioSampleCallback = ((sample: AudioSample) => void) | null;
 
 declare let global: {
-  __av_sound_setOnAudioSampleReceivedCallback:
+  __EXAV_setOnAudioSampleReceivedCallback:
     | ((key: number, callback: TAudioSampleCallback) => void)
     | undefined;
 };
@@ -66,7 +66,7 @@ export class Sound implements Playback {
     return this._onAudioSampleReceived;
   }
   set onAudioSampleReceived(callback: TAudioSampleCallback) {
-    if (global.__av_sound_setOnAudioSampleReceivedCallback == null) {
+    if (global.__EXAV_setOnAudioSampleReceivedCallback == null) {
       if (Platform.OS === 'android' || Platform.OS === 'ios') {
         throw new Error(
           'Failed to set Audio Sample Buffer callback! The JSI function seems to not be installed correctly.'
@@ -87,7 +87,7 @@ export class Sound implements Playback {
       );
     }
     this._onAudioSampleReceived = callback;
-    global.__av_sound_setOnAudioSampleReceivedCallback(this._key, callback);
+    global.__EXAV_setOnAudioSampleReceivedCallback(this._key, callback);
   }
 
   /** @deprecated Use `Sound.createAsync()` instead */
