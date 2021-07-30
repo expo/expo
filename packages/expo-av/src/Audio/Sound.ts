@@ -14,12 +14,13 @@ import { PitchCorrectionQuality } from '../Audio';
 import ExponentAV from '../ExponentAV';
 import { throwIfAudioIsDisabled } from './AudioAvailability';
 
-export interface AudioChannel {
+export type AudioChannel = {
   /**
    * All samples for this specific Audio Channel in PCM Buffer format (-1 to 1).
    */
   frames: number[];
-}
+};
+
 /**
  * A single sample from an audio source. The sample contains all frames (PCM Buffer values) for each channel of the audio,
  * so if the audio is _stereo_ (interleaved), there will be two channels, one for left and one for right audio.
@@ -27,7 +28,7 @@ export interface AudioChannel {
  * Use `Sound.getAverageLoudness(...)` to get the average loudness (RMS/RMV algorithm) of a single audio sample for visualization
  * purposes.
  */
-export interface AudioSample {
+export type AudioSample = {
   /**
    * Data from each Channel in PCM Buffer format.
    */
@@ -38,7 +39,7 @@ export interface AudioSample {
    * * `1.0` is one second after the start of the track.
    */
   timestamp: number;
-}
+};
 
 type TAudioSampleCallback = ((sample: AudioSample) => void) | null;
 

@@ -1,12 +1,12 @@
 import { EventEmitter } from 'expo-modules-core';
 import { Playback, AVPlaybackSource, AVPlaybackStatus, AVPlaybackStatusToSet } from '../AV';
 import { PitchCorrectionQuality } from '../Audio';
-export interface AudioChannel {
+export declare type AudioChannel = {
     /**
      * All samples for this specific Audio Channel in PCM Buffer format (-1 to 1).
      */
     frames: number[];
-}
+};
 /**
  * A single sample from an audio source. The sample contains all frames (PCM Buffer values) for each channel of the audio,
  * so if the audio is _stereo_ (interleaved), there will be two channels, one for left and one for right audio.
@@ -14,7 +14,7 @@ export interface AudioChannel {
  * Use `Sound.getAverageLoudness(...)` to get the average loudness (RMS/RMV algorithm) of a single audio sample for visualization
  * purposes.
  */
-export interface AudioSample {
+export declare type AudioSample = {
     /**
      * Data from each Channel in PCM Buffer format.
      */
@@ -25,7 +25,7 @@ export interface AudioSample {
      * * `1.0` is one second after the start of the track.
      */
     timestamp: number;
-}
+};
 declare type TAudioSampleCallback = ((sample: AudioSample) => void) | null;
 declare type AudioInstance = number | HTMLMediaElement | null;
 export declare class Sound implements Playback {
