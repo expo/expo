@@ -11,8 +11,7 @@
 namespace expo {
 namespace av {
 
-using namespace facebook;
-using namespace jni;
+namespace jni = facebook::jni;
 
 using TSelf = local_ref<HybridClass<expo::av::JPlayerData>::jhybriddata>;
 

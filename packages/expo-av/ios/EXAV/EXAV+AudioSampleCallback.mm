@@ -6,7 +6,7 @@
 
 #import <jsi/jsi.h>
 
-using namespace facebook;
+namespace jsi = facebook::jsi;
 
 @implementation EXAV (AudioSampleCallback)
 

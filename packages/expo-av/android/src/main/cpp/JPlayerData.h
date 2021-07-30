@@ -10,7 +10,8 @@
 namespace expo {
 namespace av {
 
-using namespace facebook;
+namespace jni = facebook::jni;
+
 using SampleBufferCallback = std::function<void(jni::local_ref<jni::JArrayByte>, double)>;
 
 class JPlayerData : public jni::HybridClass<JPlayerData> {

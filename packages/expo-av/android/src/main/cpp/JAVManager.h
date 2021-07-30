@@ -16,7 +16,7 @@
 namespace expo {
 namespace av {
 
-using namespace facebook;
+namespace jni = facebook::jni;
 
 class JAVManager : public jni::HybridClass<JAVManager> {
 public:
