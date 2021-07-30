@@ -1,5 +1,5 @@
 import { UnavailabilityError } from '@unimodules/core';
-import { PermissionStatus } from 'expo-modules-core';
+import { PermissionStatus, createPermissionHook, } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
 import ExpoCalendar from './ExpoCalendar';
 export var DayOfTheWeek;
@@ -345,6 +345,34 @@ export async function requestRemindersPermissionsAsync() {
     }
     return await ExpoCalendar.requestRemindersPermissionsAsync();
 }
+// @needsAudit
+/**
+ * Check or request permissions to access the calendar.
+ * This uses both `getCalendarPermissionsAsync` and `requestCalendarPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Calendar.useCalendarPermissions();
+ * ```
+ */
+export const useCalendarPermissions = createPermissionHook({
+    getMethod: getCalendarPermissionsAsync,
+    requestMethod: requestCalendarPermissionsAsync,
+});
+// @needsAudit
+/**
+ * Check or request permissions to access reminders.
+ * This uses both `getRemindersPermissionsAsync` and `requestRemindersPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Calendar.useRemindersPermissions();
+ * ```
+ */
+export const useRemindersPermissions = createPermissionHook({
+    getMethod: getRemindersPermissionsAsync,
+    requestMethod: requestRemindersPermissionsAsync,
+});
 export const EntityTypes = {
     EVENT: 'event',
     REMINDER: 'reminder',
