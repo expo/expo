@@ -72,7 +72,7 @@
     "cross-env": "^5.2.0",
     "danger": "^9.2.10",
     "esbuild-loader": "^2.13.1",
-    "eslint": "^7.29.0",
+    "eslint": "^7.31.0",
     "eslint-config-next": "^10.2.3",
     "eslint-config-universe": "^7.0.1",
     "eslint-plugin-lodash": "^7.2.0",
