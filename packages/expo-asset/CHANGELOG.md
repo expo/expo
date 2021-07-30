@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Reapply [#12624](https://github.com/expo/expo/pull/12624)  ([#13789](https://github.com/expo/expo/pull/13789) by [@jkhales](https://github.com/jkhales))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
