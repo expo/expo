@@ -4,7 +4,7 @@ title: Runtime Versions
 
 > Custom runtime versions are not supported on the classic build system (`expo build`); these apps will always use the SDK version as the basis for determining runtime compatibility. 
 
-Over-the-air updates with `expo-updates` will only work in binaries with a [compatible](../workflow/publishing/#what-version-of-the-app-will-my) runtime. By default, the runtime version is the Expo SDK version: the runtime is the set of libraries in the Expo SDK. Apps built with EAS Build will include only the dependencies that are present at the time that the app binary is built, and so the Expo SDK version will often not properly describe the runtime of the app. In these cases, you can start using `runtimeVersion` and it will take precedence over the Expo SDK version.
+Over-the-air updates with `expo-updates` work only in apps with a [compatible](../workflow/publishing/#what-version-of-the-app-will-my) runtime. By default, the runtime version is the Expo SDK version: the runtime is the set of libraries in the Expo SDK. If you choose to customize your runtime by adding or removing modules with native code, the Expo SDK version will no longer properly describe the runtime of the app. In these cases, you need to specify a `runtimeVersion` to ensure your updates are delivered only to compatible clients.  This `runtimeVersion` should be updated whenever you update your project's native modules and change the JS–native interface.
 
 A runtime version must conform to this [description](../versions/latest/config/app/#runtimeversion)
 
