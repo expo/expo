@@ -19,10 +19,11 @@ namespace expo {
 namespace av {
 
 namespace jsi = facebook::jsi;
+namespace jni = facebook::jni;
 
-using TSelf = local_ref<HybridClass<expo::av::JAVManager>::jhybriddata>;
+using TSelf = jni::local_ref<jni::HybridClass<expo::av::JAVManager>::jhybriddata>;
 
-TSelf JAVManager::initHybrid(alias_ref<jhybridobject> jThis) {
+TSelf JAVManager::initHybrid(jni::alias_ref<jhybridobject> jThis) {
     return makeCxxInstance(jThis);
 }
 
