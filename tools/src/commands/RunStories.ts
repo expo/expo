@@ -54,22 +54,22 @@ async function action(packageName: string, options: Action) {
 
   const projectRoot = path.resolve(examplesRoot, projectName);
 
-  if (fs.existsSync(projectRoot) && !rebuild) {
-    const { shouldRebuild } = await inquirer.prompt({
-      type: 'confirm',
-      name: 'shouldRebuild',
-      message: 'This project has already been built - do you want to rebuild it from scratch?',
-      default: false,
-    });
+  // if (fs.existsSync(projectRoot) && !rebuild) {
+  //   const { shouldRebuild } = await inquirer.prompt({
+  //     type: 'confirm',
+  //     name: 'shouldRebuild',
+  //     message: 'This project has already been built - do you want to rebuild it from scratch?',
+  //     default: false,
+  //   });
 
-    if (!shouldRebuild) {
-      Logger.log();
-      Logger.info(`Project found at ${projectRoot}`);
-      Logger.log();
-    }
+  //   if (!shouldRebuild) {
+  //     Logger.log();
+  //     Logger.info(`Project found at ${projectRoot}`);
+  //     Logger.log();
+  //   }
 
-    rebuild = shouldRebuild;
-  }
+  //   rebuild = shouldRebuild;
+  // }
 
   if (rebuild) {
     if (fs.existsSync(projectRoot)) {
@@ -218,11 +218,20 @@ async function action(packageName: string, options: Action) {
   Logger.log();
 
   if (platform === 'web') {
+    // TODO
   } else {
     const command = `run:${platform}`;
     Logger.log(`🛠  Building for ${platform}...this may take a few minutes`);
     Logger.log();
-    runExpoCliAsync(command, [], { cwd: projectRoot });
+    runExpoCliAsync(command, [], { cwd: projectRoot }).catch((error) => {
+      Logger.error(error.message);
+
+      // cleanup on error
+      if (fs.existsSync(projectRoot)) {
+        // @ts-ignore
+        fs.rmdirSync(projectRoot, { recursive: true, force: true });
+      }
+    });
   }
 
   spawnAsync('yarn', ['stories'], { cwd: projectRoot }).catch(() => {});
