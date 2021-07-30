@@ -9,6 +9,8 @@
 
 ### 🎉 New features
 
+- Add usePermissions hook from modules factory. ([#13856](https://github.com/expo/expo/pull/13856) by [@bycedric](https://github.com/bycedric))
+
 ### 🐛 Bug fixes
 
 - Fixed Android intent XML parsing issues. ([#13401](https://github.com/expo/expo/pull/13401) by [@quicksnap](https://github.com/quicksnap))
