@@ -46,7 +46,7 @@ export class Sound {
         return this._onAudioSampleReceived;
     }
     set onAudioSampleReceived(callback) {
-        if (global.__av_sound_setOnAudioSampleReceivedCallback == null) {
+        if (global.__EXAV_setOnAudioSampleReceivedCallback == null) {
             if (Platform.OS === 'android' || Platform.OS === 'ios') {
                 throw new Error('Failed to set Audio Sample Buffer callback! The JSI function seems to not be installed correctly.');
             }
@@ -62,7 +62,7 @@ export class Sound {
                 ._key}! (expected: number)`);
         }
         this._onAudioSampleReceived = callback;
-        global.__av_sound_setOnAudioSampleReceivedCallback(this._key, callback);
+        global.__EXAV_setOnAudioSampleReceivedCallback(this._key, callback);
     }
     static getAverageLoudness(sampleOrChannel) {
         if ('frames' in sampleOrChannel) {
