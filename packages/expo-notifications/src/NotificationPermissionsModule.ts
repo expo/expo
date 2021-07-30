@@ -1,5 +1,5 @@
 import { Platform } from '@unimodules/core';
-import { PermissionStatus } from 'expo-modules-core';
+import { createPermissionHook, PermissionStatus } from 'expo-modules-core';
 
 import {
   NativeNotificationPermissionsRequest,
@@ -72,15 +72,36 @@ async function resolvePermissionAsync({
   return convertPermissionStatus('denied');
 }
 
+async function getPermissionsAsync(): Promise<NotificationPermissionsStatus> {
+  return resolvePermissionAsync({ shouldAsk: false });
+}
+
+async function requestPermissionsAsync(
+  request: NativeNotificationPermissionsRequest
+): Promise<NotificationPermissionsStatus> {
+  return resolvePermissionAsync({ shouldAsk: true });
+}
+
+// @needsAudit
+/**
+ * Check or request permissions to send and receive push notifications.
+ * This uses both `requestPermissionsAsync` and `getPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Notifications.usePermissions();
+ * ```
+ */
+const usePermissions = createPermissionHook({
+  getMethod: getPermissionsAsync,
+  // @ts-ignore - We need generics for this one
+  requestMethod: requestPermissionsAsync,
+});
+
 export default {
   addListener: () => {},
   removeListeners: () => {},
-  async getPermissionsAsync(): Promise<NotificationPermissionsStatus> {
-    return resolvePermissionAsync({ shouldAsk: false });
-  },
-  async requestPermissionsAsync(
-    request: NativeNotificationPermissionsRequest
-  ): Promise<NotificationPermissionsStatus> {
-    return resolvePermissionAsync({ shouldAsk: true });
-  },
+  getPermissionsAsync,
+  requestPermissionsAsync,
+  usePermissions,
 } as NotificationPermissionsModule;
