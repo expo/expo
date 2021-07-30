@@ -3,6 +3,7 @@ import { IosPlist } from '@expo/xdl';
 import fs from 'fs';
 import inquirer from 'inquirer';
 import path from 'path';
+import { podInstallAsync } from '../CocoaPods';
 
 import { runExpoCliAsync } from '../ExpoCLI';
 import Logger from '../Logger';
@@ -10,10 +11,11 @@ import Logger from '../Logger';
 type Action = {
   platform: 'android' | 'ios' | 'web';
   rebuild: boolean;
+  clearCache: boolean;
 };
 
 async function action(packageName: string, options: Action) {
-  let { platform, rebuild = false } = options;
+  let { platform, rebuild = false, clearCache = false } = options;
 
   if (!packageName) {
     const cwdPkg = require(path.resolve(process.cwd(), 'package.json'));
@@ -53,23 +55,6 @@ async function action(packageName: string, options: Action) {
   const targetName = projectName.split('-').join('');
 
   const projectRoot = path.resolve(examplesRoot, projectName);
-
-  // if (fs.existsSync(projectRoot) && !rebuild) {
-  //   const { shouldRebuild } = await inquirer.prompt({
-  //     type: 'confirm',
-  //     name: 'shouldRebuild',
-  //     message: 'This project has already been built - do you want to rebuild it from scratch?',
-  //     default: false,
-  //   });
-
-  //   if (!shouldRebuild) {
-  //     Logger.log();
-  //     Logger.info(`Project found at ${projectRoot}`);
-  //     Logger.log();
-  //   }
-
-  //   rebuild = shouldRebuild;
-  // }
 
   if (rebuild) {
     if (fs.existsSync(projectRoot)) {
@@ -197,6 +182,16 @@ async function action(packageName: string, options: Action) {
   Logger.log();
   await spawnAsync('yarn', ['install'], { cwd: projectRoot });
 
+  if (clearCache) {
+    Logger.log('🧶 Clearing cache...');
+    Logger.log();
+
+    const podLockfilePath = path.resolve(projectRoot, 'ios', 'Podfile.lock');
+    if (fs.existsSync(podLockfilePath)) {
+      fs.unlinkSync(podLockfilePath);
+    }
+  }
+
   Logger.log('✅ Done!');
   Logger.log();
 
@@ -241,6 +236,7 @@ export default (program: any) => {
   program
     .command('run-stories [packageName]')
     .option('-r, --rebuild', 'Rebuild the project from scratch')
+    .option('-c, --clear-cache', 'Clear and reinstall depedencies')
     .option('-p, --platform <string>', 'The platform the app will run in')
     .asyncAction(action);
 };
