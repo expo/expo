@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Add usePermissions hook from modules factory. ([#13857](https://github.com/expo/expo/pull/13857) by [@bycedric](https://github.com/bycedric))
+
 ### 🐛 Bug fixes
 
 - `logPurchaseAsync` on iOS now accepts an `NSNumber` type, which has no user-facing impact besides fixing an error message in the App Events console. ([#13369](https://github.com/expo/expo/pull/13369) by [@cruzach](https://github.com/cruzach))
