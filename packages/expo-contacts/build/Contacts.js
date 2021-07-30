@@ -1,5 +1,5 @@
 import { UnavailabilityError } from '@unimodules/core';
-import { PermissionStatus } from 'expo-modules-core';
+import { PermissionStatus, createPermissionHook, } from 'expo-modules-core';
 import { Platform, Share } from 'react-native';
 import { v4 as uuidv4 } from 'uuid';
 import ExpoContacts from './ExpoContacts';
@@ -179,6 +179,20 @@ export async function requestPermissionsAsync() {
     }
     return await ExpoContacts.requestPermissionsAsync();
 }
+// @needsAudit
+/**
+ * Check or request permissions to access contacts.
+ * This uses both `requestPermissionsAsync` and `getPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Contacts.usePermissions();
+ * ```
+ */
+export const usePermissions = createPermissionHook({
+    getMethod: getPermissionsAsync,
+    requestMethod: requestPermissionsAsync,
+});
 // Legacy
 export const PHONE_NUMBERS = 'phoneNumbers';
 export const EMAILS = 'emails';

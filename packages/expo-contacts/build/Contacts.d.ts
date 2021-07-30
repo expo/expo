@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus, PermissionHookOptions } from 'expo-modules-core';
 export declare type CalendarFormatType = typeof CalendarFormats.Gregorian | typeof CalendarFormats.Buddhist | typeof CalendarFormats.Chinese | typeof CalendarFormats.Coptic | typeof CalendarFormats.EthiopicAmeteMihret | typeof CalendarFormats.EthiopicAmeteAlem | typeof CalendarFormats.Hebrew | typeof CalendarFormats.ISO8601 | typeof CalendarFormats.Indian | typeof CalendarFormats.Islamic | typeof CalendarFormats.IslamicCivil | typeof CalendarFormats.Japanese | typeof CalendarFormats.Persian | typeof CalendarFormats.RepublicOfChina | typeof CalendarFormats.IslamicTabular | typeof CalendarFormats.IslamicUmmAlQura;
 export declare type ContainerType = typeof ContainerTypes.Local | typeof ContainerTypes.Exchange | typeof ContainerTypes.CardDAV | typeof ContainerTypes.Unassigned;
 export declare type ContactType = typeof ContactTypes.Person | typeof ContactTypes.Company;
@@ -149,7 +149,7 @@ export declare type Container = {
     id: string;
     type: ContainerType;
 };
-export { PermissionStatus, PermissionResponse };
+export { PermissionStatus, PermissionResponse, PermissionHookOptions };
 /**
  * Returns whether the Contacts API is enabled on the current device. This does not check the app permissions.
  *
@@ -176,6 +176,16 @@ export declare function getDefaultContainerIdAsync(): Promise<string>;
 export declare function getContainersAsync(containerQuery: ContainerQuery): Promise<Container[]>;
 export declare function getPermissionsAsync(): Promise<PermissionResponse>;
 export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
+/**
+ * Check or request permissions to access contacts.
+ * This uses both `requestPermissionsAsync` and `getPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Contacts.usePermissions();
+ * ```
+ */
+export declare const usePermissions: (options?: PermissionHookOptions | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse | null>, () => Promise<PermissionResponse | null>];
 export declare const PHONE_NUMBERS = "phoneNumbers";
 export declare const EMAILS = "emails";
 export declare const ADDRESSES = "addresses";

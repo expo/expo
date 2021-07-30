@@ -1,5 +1,10 @@
 import { UnavailabilityError } from '@unimodules/core';
-import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
+import {
+  PermissionResponse,
+  PermissionStatus,
+  PermissionHookOptions,
+  createPermissionHook,
+} from 'expo-modules-core';
 import { Platform, Share } from 'react-native';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -233,7 +238,7 @@ export type Container = {
   type: ContainerType;
 };
 
-export { PermissionStatus, PermissionResponse };
+export { PermissionStatus, PermissionResponse, PermissionHookOptions };
 
 /**
  * Returns whether the Contacts API is enabled on the current device. This does not check the app permissions.
@@ -475,6 +480,21 @@ export async function requestPermissionsAsync(): Promise<PermissionResponse> {
 
   return await ExpoContacts.requestPermissionsAsync();
 }
+
+// @needsAudit
+/**
+ * Check or request permissions to access contacts.
+ * This uses both `requestPermissionsAsync` and `getPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Contacts.usePermissions();
+ * ```
+ */
+export const usePermissions = createPermissionHook({
+  getMethod: getPermissionsAsync,
+  requestMethod: requestPermissionsAsync,
+});
 
 // Legacy
 export const PHONE_NUMBERS = 'phoneNumbers';
