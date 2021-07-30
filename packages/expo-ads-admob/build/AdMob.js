@@ -34,7 +34,7 @@ export async function getPermissionsAsync() {
  *
  * @example
  * ```ts
- * const [status, requestPermission] = ExpoAdsAdMob.usePermission();
+ * const [status, requestPermission] = AdsAdMob.usePermission();
  * ```
  */
 export const usePermissions = createPermissionHook({

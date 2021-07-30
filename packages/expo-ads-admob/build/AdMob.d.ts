@@ -8,7 +8,7 @@ export declare function getPermissionsAsync(): Promise<PermissionResponse>;
  *
  * @example
  * ```ts
- * const [status, requestPermission] = ExpoAdsAdMob.usePermission();
+ * const [status, requestPermission] = AdsAdMob.usePermission();
  * ```
  */
 export declare const usePermissions: (options?: PermissionHookOptions | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse | null>, () => Promise<PermissionResponse | null>];
