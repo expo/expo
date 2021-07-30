@@ -27,8 +27,9 @@ class ScreenshotEventEmitter(val context: Context, moduleRegistry: ModuleRegistr
     moduleRegistry.getModule(UIManager::class.java).registerLifecycleEventListener(this)
     eventEmitter = moduleRegistry.getModule(EventEmitter::class.java)
     val looper = Looper.myLooper()
-        ?: throw RuntimeException(
-            "Can't create handler inside thread ${Thread.currentThread()}")
+      ?: throw RuntimeException(
+        "Can't create handler inside thread ${Thread.currentThread()}"
+      )
     val contentObserver: ContentObserver = object : ContentObserver(Handler(looper)) {
       override fun onChange(selfChange: Boolean, uri: Uri?) {
         super.onChange(selfChange, uri)
