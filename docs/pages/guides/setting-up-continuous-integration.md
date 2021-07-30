@@ -444,7 +444,7 @@ Here are some extra links that might help you further.
 
 ### Extra tutorials
 
-- [Setting up Expo and Bitbucket Pipelines](https://blog.expo.io/setting-up-expo-and-bitbucket-pipelines-8995ef036a18)
+- [Setting up Expo and Bitbucket Pipelines](https://blog.expo.dev/setting-up-expo-and-bitbucket-pipelines-8995ef036a18)
 
 ### Example repositories from this guide
 

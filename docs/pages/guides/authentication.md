@@ -71,7 +71,7 @@ import * as WebBrowser from 'expo-web-browser';
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
 
-/* @info Using the Expo proxy will redirect the user through auth.expo.io enabling you to use web links when configuring your project with an OAuth provider. This is not available on web. */
+/* @info Using the Expo proxy will redirect the user through auth.expo.dev enabling you to use web links when configuring your project with an OAuth provider. This is not available on web. */
 const useProxy = true;
 /* @end */
 
@@ -530,7 +530,7 @@ You must use the proxy service in the Expo Go app because `exp://` cannot be add
 
 <img alt="Facebook Console for URIs" src="/static/images/sdk/auth-session/guide/facebook-proxy-guide.png" />
 
-- Under "Valid OAuth Redirect URIs" add `https://auth.expo.io/@username/slug` and any other web URLs you may want to add.
+- Under "Valid OAuth Redirect URIs" add `https://auth.expo.dev/@username/slug` and any other web URLs you may want to add.
 - Press "Save Changes" in the footer.
 - Copy the "App ID" in the header into your `expoClientId: '<YOUR FBID>'`. Ex: `{ expoClientId: '474614477183384' }` (no `fb` prefix).
 - Now you're ready to use the demo component in the Expo Go app on iOS and Android.
@@ -797,7 +797,7 @@ export default function App() {
 
 - Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
   - Expo Go: `exp://localhost:19000/--/*`
-  - Expo Go + Proxy: `https://auth.expo.io/@you/your-app`
+  - Expo Go + Proxy: `https://auth.expo.dev/@you/your-app`
   - Standalone or Bare: `com.your.app://*`
   - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
@@ -954,7 +954,7 @@ export default function App() {
 
 - Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
   - Expo Go: `exp://localhost:19000/--/*`
-  - Expo Go + Proxy: `https://auth.expo.io/@you/your-app`
+  - Expo Go + Proxy: `https://auth.expo.dev/@you/your-app`
   - Standalone or Bare: `com.your.app://*`
   - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
@@ -1069,8 +1069,8 @@ First, be sure to login to your Expo account `expo login`. This will be part of 
 
 - **Application Type**: Web Application
 - Give it a name (e.g. "Expo Go Proxy").
-- **URIs** (Authorized JavaScript origins): https://auth.expo.io
-- **Authorized redirect URIs**: https://auth.expo.io/@your-username/your-project-slug
+- **URIs** (Authorized JavaScript origins): https://auth.expo.dev
+- **Authorized redirect URIs**: https://auth.expo.dev/@your-username/your-project-slug
 
 #### iOS Native
 
@@ -1189,10 +1189,10 @@ export default function App() {
   - https://console.developers.google.com/apis/credentials/oauthclient/YOUR_GUID.apps.googleusercontent.com
 - Under "URIs" add your hosts URLs
   - Web dev: https://localhost:19006
-  - Expo Go Proxy: https://auth.expo.io
+  - Expo Go Proxy: https://auth.expo.dev
 - Under "Authorized redirect URIs"
   - Web dev: https://localhost:19006 -- this is assuming you want to invoke `WebBrowser.maybeCompleteAuthSession();` from the root URL of your app.
-  - Expo Go Proxy: https://auth.expo.io/@yourname/your-app
+  - Expo Go Proxy: https://auth.expo.dev/@yourname/your-app
 
 <img alt="Google Firebase Console for URIs" src="/static/images/sdk/auth-session/guide/google-firebase-auth-console.png" />
 
@@ -1511,7 +1511,7 @@ export default function App() {
 
 - Provider only allows one redirect URI per app. You'll need an individual app for every method you want to use:
   - Expo Go: `exp://localhost:19000/--/*`
-  - Expo Go + Proxy: `https://auth.expo.io/@you/your-app`
+  - Expo Go + Proxy: `https://auth.expo.dev/@you/your-app`
   - Standalone or Bare: `com.your.app://*`
   - Web: `https://yourwebsite.com/*`
 - The `redirectUri` requires 2 slashes (`://`).
@@ -1760,7 +1760,7 @@ export default function App() {
     - Run `expo start:web --https` to run with **https**, auth won't work otherwise.
   - _Custom app_: `your-scheme://`
     - Scheme should be specified in app.json `expo.scheme: 'your-scheme'`, then added to the app code with `makeRedirectUri({ native: 'your-scheme://' })`)
-  - _Proxy_: `https://auth.expo.io/@username/slug`
+  - _Proxy_: `https://auth.expo.dev/@username/slug`
     - If `useProxy` is enabled (native only), change **username** for your Expo username and **slug** for the `slug` in your app.json. Try not to change the slug for your app after using it for auth as this can lead to versioning issues.
   - _Web production_: `https://yourwebsite.com`
     - Set this to whatever your deployed website URL is.
@@ -2317,7 +2317,7 @@ Here are a few examples of some common redirect URI patterns you may end up usin
 
 #### Expo Proxy
 
-> `https://auth.expo.io/@yourname/your-app`
+> `https://auth.expo.dev/@yourname/your-app`
 
 - **Environment:** Development or production projects in Expo Go, or in a standalone build.
 - **Create:** Use `AuthSession.makeRedirectUri({ useProxy: true })` to create this URI.

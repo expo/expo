@@ -179,7 +179,7 @@ export default function App() {
 
 </SnackInline>
 
-Or view the [Full Phone Authentication test snack](https://snack.expo.io/@ijzerenhein/firebase-phone-full-auth-demo).
+Or view the [Full Phone Authentication test snack](https://snack.expo.dev/@ijzerenhein/firebase-phone-full-auth-demo).
 
 ## Customizing the appearance
 

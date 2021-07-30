@@ -26,7 +26,7 @@ Expo offers a shared configuration file we call a _manifest_.
 
 - Configuration that you would typically do inside of your Xcode / plist files or Android studio / xml files is handled through `app.json`. For example, if you want to lock the orientation, change your icon, customize your splash screen, add/remove permissions and entitlements (in standalone apps), configure keys for Google Maps and other services, you set this in `app.json` and it will apply to both iOS and Android. [See the guide here](/workflow/configuration.md).
 
-In the managed workflow, you can share your app with anyone, anywhere in the world while you're working through the Expo Go app [(available on the App / Play Store)](https://expo.io). Scan a QR code, or enter in a phone number and we'll send you a link that will instantly load your app on your device.
+In the managed workflow, you can share your app with anyone, anywhere in the world while you're working through the Expo Go app [(available on the App / Play Store)](https://expo.dev). Scan a QR code, or enter in a phone number and we'll send you a link that will instantly load your app on your device.
 
 - Instead of having to sign up several external testers through App Store Connect, you can easily have them download the Expo Go app and immediately have a working version on their phone.
 
@@ -56,9 +56,9 @@ If you prefer to build your app on your own machine, you can [follow these steps
 
 - [snack.expo.dev](https://snack.expo.dev)
   - The best way to test and share examples and small projects directly from your browser. Point your phone at the QR code and you have a sandbox environment you can build in the browser and test directly on your device.
-- [docs.expo.io](/versions/latest/)
+- [docs.expo.dev](/versions/latest/)
   - If there's something you don't understand or wish to learn more about, this is a great place to start.
-- [forums.expo.io](https://forums.expo.io)
+- [forums.expo.dev](https://forums.expo.dev)
   - The fastest way to get help from the Expo team or community
 - [github.com/expo](https://github.com/expo)
   - the Expo Go app and SDK are all open source. If there's something you'd like to fix, or figure out how we implement our native modules, you're welcome to look through the code yourself!

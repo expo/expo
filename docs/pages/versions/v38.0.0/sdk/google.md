@@ -270,7 +270,7 @@ If you need to access Google APIs using the user's authorization you need to pas
 
 - **Inside of Expo apps**
   When your app is running as an Expo experience, the process is a little different. Due to Google's restrictions, the only way to make this work is via web authentication flow. Once you have your code, send it to your backend and exchange it, but make sure to set the `redirect_uri` query parameter to the same value you used on your client side call to Google.
-  (Something similar to https://auth.expo.io/@username/your-app-slug). With Expo, you can easily authenticate your user with the [`expo-auth-session`][expo-app-session] module:
+  (Something similar to https://auth.expo.dev/@username/your-app-slug). With Expo, you can easily authenticate your user with the [`expo-auth-session`][expo-app-session] module:
 
 ```javascript
 let result = await AuthSession.startAsync({

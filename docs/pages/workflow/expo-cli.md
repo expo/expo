@@ -914,7 +914,7 @@ Alias: `expo ui`
 <details>
 <summary>
 <h4>expo eject</h4>
-<p>Create native iOS and Android project files. Learn more: https://docs.expo.io/workflow/customizing/</p>
+<p>Create native iOS and Android project files. Learn more: https://docs.expo.dev/workflow/customizing/</p>
 </summary>
 <p>
 
@@ -931,7 +931,7 @@ Alias: `expo ui`
 <details>
 <summary>
 <h4>expo prebuild</h4>
-<p>Experimental: Create native iOS and Android project files before building natively. Learn more: https://docs.expo.io/workflow/customizing/</p>
+<p>Experimental: Create native iOS and Android project files before building natively. Learn more: https://docs.expo.dev/workflow/customizing/</p>
 </summary>
 <p>
 

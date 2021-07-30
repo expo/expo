@@ -75,9 +75,9 @@ The typical flow for browser-based authentication in mobile apps is as follows:
 - **Authentication provider redirects**: upon successful authentication, the authentication provider should redirect back to the application by redirecting to URL provided by the app in the query parameters on the sign in page ([read more about how linking works in mobile apps](../../../guides/linking.md)), _provided that the URL is in the allowlist of allowed redirect URLs_. Allowlisting redirect URLs is important to prevent malicious actors from pretending to be your application. The redirect includes data in the URL (such as user id and token), either in the location hash, query parameters, or both.
 - **App handles redirect**: the redirect is handled by the app and data is parsed from the redirect URL.
 
-## What `auth.expo.io` does for you
+## What `auth.expo.dev` does for you
 
-> The `auth.expo.io` proxy is only used when `startAsync` is called, or when `useProxy: true` is passed to the `promptAsync()` method of an `AuthRequest`.
+> The `auth.expo.dev` proxy is only used when `startAsync` is called, or when `useProxy: true` is passed to the `promptAsync()` method of an `AuthRequest`.
 
 ### It reduces boilerplate
 
@@ -89,9 +89,9 @@ The typical flow for browser-based authentication in mobile apps is as follows:
 
 ### It makes redirect URL allowlists easier to manage for development and working in teams
 
-Additionally, `AuthSession` **simplifies setting up authorized redirect URLs** by using an Expo service that sits between you and your authentication provider ([read Security considerations for caveats](#security-considerations)). This is particularly valuable with Expo because your app can live at various URLs. In development, you can have a tunnel URL, a lan URL, and a localhost URL. The tunnel URL on your machine for the same app will be different from a co-worker's machine. When you publish your app, that will be another URL that you need to allowlist. If you have multiple environments that you publish to, each of those will also need to be allowlisted. `AuthSession` gets around this by only having you allowlist one URL with your authentication provider: `https://auth.expo.io/@your-username/your-app-slug`. When authentication is successful, your authentication provider will redirect to that Expo Auth URL, and then the Expo Auth service will redirect back to your application. If the URL that the auth service is redirecting back to does not match the published URL for the app or the standalone app scheme (eg: `exp://expo.io/@your-username/your-app-slug`, or `yourscheme://`), then it will show a warning page before asking the user to sign in. This means that in development you will see this warning page when you sign in, a small price to pay for the convenience.
+Additionally, `AuthSession` **simplifies setting up authorized redirect URLs** by using an Expo service that sits between you and your authentication provider ([read Security considerations for caveats](#security-considerations)). This is particularly valuable with Expo because your app can live at various URLs. In development, you can have a tunnel URL, a lan URL, and a localhost URL. The tunnel URL on your machine for the same app will be different from a co-worker's machine. When you publish your app, that will be another URL that you need to allowlist. If you have multiple environments that you publish to, each of those will also need to be allowlisted. `AuthSession` gets around this by only having you allowlist one URL with your authentication provider: `https://auth.expo.dev/@your-username/your-app-slug`. When authentication is successful, your authentication provider will redirect to that Expo Auth URL, and then the Expo Auth service will redirect back to your application. If the URL that the auth service is redirecting back to does not match the published URL for the app or the standalone app scheme (eg: `exp://expo.dev/@your-username/your-app-slug`, or `yourscheme://`), then it will show a warning page before asking the user to sign in. This means that in development you will see this warning page when you sign in, a small price to pay for the convenience.
 
-How does this work? When you open an authentication session with `AuthSession`, it first visits `https://auth.expo.io/@your-username/your-app-slug/start` and passes in the `authUrl` and `returnUrl` (the URL to redirect back to your application) in the query parameters. The Expo Auth service saves away the `returnUrl` (and if it is not a published URL or your registered custom theme, shows a warning page) and then sends the user off to the `authUrl`. When the authentication provider redirects back to `https://auth.expo.io/@your-username/your-app-slug` on success, the Expo Auth services redirects back to the `returnUrl` that was provided on initiating the authentication flow.
+How does this work? When you open an authentication session with `AuthSession`, it first visits `https://auth.expo.dev/@your-username/your-app-slug/start` and passes in the `authUrl` and `returnUrl` (the URL to redirect back to your application) in the query parameters. The Expo Auth service saves away the `returnUrl` (and if it is not a published URL or your registered custom theme, shows a warning page) and then sends the user off to the `authUrl`. When the authentication provider redirects back to `https://auth.expo.dev/@your-username/your-app-slug` on success, the Expo Auth services redirects back to the `returnUrl` that was provided on initiating the authentication flow.
 
 ## Security considerations
 
@@ -129,7 +129,7 @@ If an Implicit grant flow was used, you can pass the `response.params` to `Token
 
 - **request (_AuthRequest | null_)** -- An instance of [`AuthRequest`](#authrequest) that can be used to prompt the user for authorization. This will be `null` until the auth request has finished loading.
 - **response (_AuthSessionResult | null_)** -- This is `null` until `promptAsync` has been invoked. Once fulfilled it will return information about the authorization.
-- **promptAsync (_function_)** -- When invoked, a web browser will open up and prompt the user for authentication. Accepts an [`AuthRequestPromptOptions`](#authrequestpromptoptions) object with options about how the prompt will execute. You can use this to enable the Expo proxy service `auth.expo.io`.
+- **promptAsync (_function_)** -- When invoked, a web browser will open up and prompt the user for authentication. Accepts an [`AuthRequestPromptOptions`](#authrequestpromptoptions) object with options about how the prompt will execute. You can use this to enable the Expo proxy service `auth.expo.dev`.
 
 ### `useAutoDiscovery`
 
@@ -155,7 +155,7 @@ Create a redirect url for the current platform and environment. You need to manu
 
 - **Web:** Generates a path based on the current `window.location`. For production web apps, you should hard code the URL as well.
 - **Managed workflow:** Uses the `scheme` property of your `app.config.js` or `app.json`.
-  - **Proxy:** Uses auth.expo.io as the base URL for the path. This only works in Expo Go and standalone environments.
+  - **Proxy:** Uses auth.expo.dev as the base URL for the path. This only works in Expo Go and standalone environments.
 - **Bare workflow:** Will fallback to using the `native` option for bare workflow React Native apps.
 
 #### Arguments
@@ -230,7 +230,7 @@ Initiate an authentication session with the given options. Only one `AuthSession
 
   - **authUrl (_string_)** -- **Required**. The URL that points to the sign in page that you would like to open the user to.
 
-  - **returnUrl (_string_)** -- The URL to return to the application. In managed apps, it's optional (defaults to `${Constants.linkingUrl}expo-auth-session`, for example, `exp://expo.io/@yourname/your-app-slug+expo-auth-session`). However, in the bare app, it's required - `AuthSession` needs to know where to wait for the response. Hence, this method will throw an exception, if you don't provide `returnUrl`.
+  - **returnUrl (_string_)** -- The URL to return to the application. In managed apps, it's optional (defaults to `${Constants.linkingUrl}expo-auth-session`, for example, `exp://expo.dev/@yourname/your-app-slug+expo-auth-session`). However, in the bare app, it's required - `AuthSession` needs to know where to wait for the response. Hence, this method will throw an exception, if you don't provide `returnUrl`.
 
   - **showInRecents (_optional_) (_boolean_)** -- (_Android only_) a boolean determining whether browsed website should be shown as separate entry in Android recents/multitasking view. Default: `false`
 
@@ -254,14 +254,14 @@ Cancels an active `AuthSession` if there is one. No return value, but if there i
 AuthSession.getRedirectUrl(extraPath?: string): string
 ```
 
-Get the URL that your authentication provider needs to redirect to. For example: `https://auth.expo.io/@your-username/your-app-slug`. You can pass an additional path component to be appended to the default redirect URL.
+Get the URL that your authentication provider needs to redirect to. For example: `https://auth.expo.dev/@your-username/your-app-slug`. You can pass an additional path component to be appended to the default redirect URL.
 
 > **Note** This method will throw an exception if you're using the bare workflow on native.
 
 ```js
 const url = AuthSession.getRedirectUrl('redirect');
 
-// Managed: https://auth.expo.io/@your-username/your-app-slug/redirect
+// Managed: https://auth.expo.dev/@your-username/your-app-slug/redirect
 // Web: https://localhost:19006/redirect
 ```
 
@@ -367,7 +367,7 @@ Options passed to the `promptAsync()` method of `AuthRequest`s.
 
 | Name          | Type       | Description                                                                                 | Default         |
 | ------------- | ---------- | ------------------------------------------------------------------------------------------- | --------------- |
-| useProxy      | `?boolean` | Should use `auth.expo.io` proxy for redirecting requests. Only works in managed native apps | `false`         |
+| useProxy      | `?boolean` | Should use `auth.expo.dev` proxy for redirecting requests. Only works in managed native apps | `false`         |
 | showInRecents | `?boolean` | Should browsed website be shown as a separate entry in Android multitasker                  | `false`         |
 | url           | `?string`  | URL that'll begin the auth request, usually this should be left undefined                   | Preloaded value |
 
@@ -496,7 +496,7 @@ Options passed to `makeRedirectUriAsync`.
 | native          | `?string`  | The URI scheme that will be used in a bare React Native or standalone Expo app                      |
 | path            | `?string`  | Optional path to append to a URI                                                                    |
 | preferLocalhost | `?boolean` | Attempt to convert the Expo server IP address to localhost. Should only be used with iOS simulators |
-| useProxy        | `?boolean` | Should use the `auth.expo.io` proxy                                                                 |
+| useProxy        | `?boolean` | Should use the `auth.expo.dev` proxy                                                                 |
 
 ### `TokenType`
 
@@ -551,7 +551,7 @@ A hook used for opinionated Google authentication that works across platforms.
 
 - **request (_GoogleAuthRequest | null_)** -- An instance of [`GoogleAuthRequest`](#googleauthrequest) that can be used to prompt the user for authorization. This will be `null` until the auth request has finished loading.
 - **response (_AuthSessionResult | null_)** -- This is `null` until `promptAsync` has been invoked. Once fulfilled it will return information about the authorization.
-- **promptAsync (_function_)** -- When invoked, a web browser will open up and prompt the user for authentication. Accepts an [`AuthRequestPromptOptions`](#authrequestpromptoptions) object with options about how the prompt will execute. This **should not** be used to enable the Expo proxy service `auth.expo.io`, as the proxy will be automatically enabled based on the platform.
+- **promptAsync (_function_)** -- When invoked, a web browser will open up and prompt the user for authentication. Accepts an [`AuthRequestPromptOptions`](#authrequestpromptoptions) object with options about how the prompt will execute. This **should not** be used to enable the Expo proxy service `auth.expo.dev`, as the proxy will be automatically enabled based on the platform.
 
 ### discovery
 

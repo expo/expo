@@ -114,7 +114,7 @@ module.exports = {
       })
     );
 
-    const domains = ['docs.expo.io', 'docs.expo.dev'];
+    const domains = ['docs.expo.dev', 'docs.expo.dev'];
 
     for (const domain of domains) {
       // Create a sitemap for crawlers like Google and Algolia

@@ -2,7 +2,7 @@
 
 This is the public documentation for **Expo**, its SDK, client, and services.
 
-You can access this documentation online at https://docs.expo.io/. It's built using next.js on top of the https://github.com/vercel/docs codebase.
+You can access this documentation online at https://docs.expo.dev/. It's built using next.js on top of the https://github.com/vercel/docs codebase.
 
 > **Contributors:** Please make sure that you edit the docs in the `pages/versions/unversioned` directory if you want your changes to apply to the next SDK version too!
 
