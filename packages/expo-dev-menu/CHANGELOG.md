@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed menu binds to all keyboard shortcuts on Android. ([#13794](https://github.com/expo/expo/pull/13794) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 0.7.5 — 2021-07-08
