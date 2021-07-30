@@ -56,7 +56,7 @@ async function action(packageName: string, options: Action) {
 
   const projectRoot = path.resolve(examplesRoot, projectName);
 
-  if (rebuild) {
+  if (rebuild || !fs.existsSync(projectRoot)) {
     if (fs.existsSync(projectRoot)) {
       // @ts-ignore
       fs.rmdirSync(projectRoot, { recursive: true, force: true });
@@ -218,18 +218,29 @@ async function action(packageName: string, options: Action) {
     const command = `run:${platform}`;
     Logger.log(`🛠  Building for ${platform}...this may take a few minutes`);
     Logger.log();
-    runExpoCliAsync(command, [], { cwd: projectRoot }).catch((error) => {
-      Logger.error(error.message);
 
-      // cleanup on error
-      if (fs.existsSync(projectRoot)) {
-        // @ts-ignore
-        fs.rmdirSync(projectRoot, { recursive: true, force: true });
-      }
+    const { child: expoProcess } = spawnAsync('expo', [command], {
+      cwd: projectRoot,
+      stdio: 'inherit',
+    });
+
+    const { child: storiesProcess } = spawnAsync('yarn', ['stories'], {
+      cwd: projectRoot,
+      stdio: 'inherit',
+    });
+
+    process.on('SIGINT', () => {
+      expoProcess.kill('SIGINT');
+      storiesProcess.kill('SIGINT');
+      process.exit();
+    });
+
+    process.on('SIGTERM', () => {
+      expoProcess.kill('SIGTERM');
+      storiesProcess.kill('SIGTERM');
+      process.exit();
     });
   }
-
-  spawnAsync('yarn', ['stories'], { cwd: projectRoot }).catch(() => {});
 }
 
 export default (program: any) => {
