@@ -101,7 +101,8 @@ dependencies {
 
   api "io.insert-koin:koin-core:3.1.2"
 
-  testImplementation 'androidx.test:core:1.0.0'
+  testImplementation 'androidx.test:core:1.4.0'
+  testImplementation 'androidx.test:core-ktx:1.4.0'
   testImplementation "com.google.truth:truth:1.1.2"
   testImplementation 'com.squareup.okhttp3:mockwebserver:4.3.1'
   testImplementation "io.insert-koin:koin-test:3.1.2"
